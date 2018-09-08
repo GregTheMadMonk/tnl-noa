@@ -22,10 +22,10 @@
 namespace TNL {
 namespace Containers {
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
-Array< Element, Device, Index >::
+Array< Value, Device, Index >::
 Array()
 : size( 0 ),
   data( 0 ),
@@ -34,10 +34,10 @@ Array()
 {
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
-Array< Element, Device, Index >::
+Array< Value, Device, Index >::
 Array( const IndexType& size )
 : size( 0 ),
   data( 0 ),
@@ -47,11 +47,11 @@ Array( const IndexType& size )
    this->setSize( size );
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
-Array< Element, Device, Index >::
-Array( Element* data,
+Array< Value, Device, Index >::
+Array( Value* data,
        const IndexType& size )
 : size( size ),
   data( data ),
@@ -60,11 +60,11 @@ Array( Element* data,
 {
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
-Array< Element, Device, Index >::
-Array( Array< Element, Device, Index >& array,
+Array< Value, Device, Index >::
+Array( Array< Value, Device, Index >& array,
        const IndexType& begin,
        const IndexType& size )
 : size( size ),
@@ -92,54 +92,54 @@ Array( Array< Element, Device, Index >& array,
    }
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
 String
-Array< Element, Device, Index >::
+Array< Value, Device, Index >::
 getType()
 {
    return String( "Containers::Array< " ) +
-          TNL::getType< Element >() + ", " +
+          TNL::getType< Value >() + ", " +
           Device::getDeviceType() + ", " +
           TNL::getType< Index >() + " >";
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
 String
-Array< Element, Device, Index >::
+Array< Value, Device, Index >::
 getTypeVirtual() const
 {
    return this->getType();
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
 String
-Array< Element, Device, Index >::
+Array< Value, Device, Index >::
 getSerializationType()
 {
    return HostType::getType();
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
 String
-Array< Element, Device, Index >::
+Array< Value, Device, Index >::
 getSerializationTypeVirtual() const
 {
    return this->getSerializationType();
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
 void
-Array< Element, Device, Index >::
+Array< Value, Device, Index >::
 releaseData() const
 {
    if( this->referenceCounter )
@@ -160,11 +160,11 @@ releaseData() const
    this->referenceCounter = 0;
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
 void
-Array< Element, Device, Index >::
+Array< Value, Device, Index >::
 setSize( const Index size )
 {
    TNL_ASSERT_GE( size, 0, "Array size must be non-negative." );
@@ -184,34 +184,34 @@ setSize( const Index size )
    }
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
 __cuda_callable__
 Index
-Array< Element, Device, Index >::
+Array< Value, Device, Index >::
 getSize() const
 {
    return this -> size;
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
    template< typename ArrayT >
 void
-Array< Element, Device, Index >::
+Array< Value, Device, Index >::
 setLike( const ArrayT& array )
 {
    setSize( array.getSize() );
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
 void
-Array< Element, Device, Index >::
-bind( Element* data,
+Array< Value, Device, Index >::
+bind( Value* data,
       const Index size )
 {
    TNL_ASSERT_TRUE( data, "Null pointer cannot be bound." );
@@ -220,18 +220,18 @@ bind( Element* data,
    this->size = size;
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
    template< typename ArrayT >
 void
-Array< Element, Device, Index >::
+Array< Value, Device, Index >::
 bind( const ArrayT& array,
       const IndexType& begin,
       const IndexType& size )
 {
    // all template parameters of Array must match, otherwise binding does not make sense
-   static_assert( std::is_same< Element, typename ArrayT::ElementType >::value, "ElementType of both arrays must be the same." );
+   static_assert( std::is_same< Value, typename ArrayT::ValueType >::value, "ValueType of both arrays must be the same." );
    static_assert( std::is_same< Device, typename ArrayT::DeviceType >::value, "DeviceType of both arrays must be the same." );
    static_assert( std::is_same< Index, typename ArrayT::IndexType >::value, "IndexType of both arrays must be the same." );
    TNL_ASSERT_TRUE( array.getData(), "Empty array cannot be bound." );
@@ -243,7 +243,7 @@ bind( const ArrayT& array,
       this->size = size;
    else
       this->size = array.getSize() - begin;
-   this->data = const_cast< Element* >( &array.getData()[ begin ] );
+   this->data = const_cast< Value* >( &array.getData()[ begin ] );
    this->allocationPointer = array.allocationPointer;
    if( array.allocationPointer )
    {
@@ -260,13 +260,13 @@ bind( const ArrayT& array,
    }
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
    template< int Size >
 void
-Array< Element, Device, Index >::
-bind( StaticArray< Size, Element >& array )
+Array< Value, Device, Index >::
+bind( StaticArray< Size, Value >& array )
 {
    this->releaseData();
    this->size = Size;
@@ -274,12 +274,12 @@ bind( StaticArray< Size, Element >& array )
 }
 
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
 void
-Array< Element, Device, Index >::
-swap( Array< Element, Device, Index >& array )
+Array< Value, Device, Index >::
+swap( Array< Value, Device, Index >& array )
 {
    TNL::swap( this->size, array.size );
    TNL::swap( this->data, array.data );
@@ -287,33 +287,33 @@ swap( Array< Element, Device, Index >& array )
    TNL::swap( this->referenceCounter, array.referenceCounter );
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
 void
-Array< Element, Device, Index >::
+Array< Value, Device, Index >::
 reset()
 {
    this->releaseData();
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
 void
-Array< Element, Device, Index >::
-setElement( const Index& i, const Element& x )
+Array< Value, Device, Index >::
+setElement( const Index& i, const Value& x )
 {
    TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
    TNL_ASSERT_LT( i, this->getSize(), "Element index is out of bounds." );
    return Algorithms::ArrayOperations< Device >::setMemoryElement( &( this->data[ i ] ), x );
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
-Element
-Array< Element, Device, Index >::
+Value
+Array< Value, Device, Index >::
 getElement( const Index& i ) const
 {
    TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
@@ -321,32 +321,32 @@ getElement( const Index& i ) const
    return Algorithms::ArrayOperations< Device >::getMemoryElement( & ( this->data[ i ] ) );
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
 bool
-Array< Element, Device, Index >::
-containsValue( const Element& v ) const
+Array< Value, Device, Index >::
+containsValue( const Value& v ) const
 {
    return Algorithms::ArrayOperations< Device >::containsValue( this->data, this->size, v );
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
 bool
-Array< Element, Device, Index >::
-containsOnlyValue( const Element& v ) const
+Array< Value, Device, Index >::
+containsOnlyValue( const Value& v ) const
 {
    return Algorithms::ArrayOperations< Device >::containsOnlyValue( this->data, this->size, v );
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
 __cuda_callable__
-inline Element&
-Array< Element, Device, Index >::
+inline Value&
+Array< Value, Device, Index >::
 operator[] ( const Index& i )
 {
    TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
@@ -354,12 +354,12 @@ operator[] ( const Index& i )
    return this->data[ i ];
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
 __cuda_callable__
-inline const Element&
-Array< Element, Device, Index >::
+inline const Value&
+Array< Value, Device, Index >::
 operator[] ( const Index& i ) const
 {
    TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
@@ -367,12 +367,12 @@ operator[] ( const Index& i ) const
    return this->data[ i ];
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
-Array< Element, Device, Index >&
-Array< Element, Device, Index >::
-operator = ( const Array< Element, Device, Index >& array )
+Array< Value, Device, Index >&
+Array< Value, Device, Index >::
+operator = ( const Array< Value, Device, Index >& array )
 {
    //TNL_ASSERT_EQ( array.getSize(), this->getSize(), "Array sizes must be the same." );
    if( this->getSize() != array.getSize() )
@@ -385,17 +385,17 @@ operator = ( const Array< Element, Device, Index >& array )
    return ( *this );
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
    template< typename ArrayT >
-Array< Element, Device, Index >&
-Array< Element, Device, Index >::
+Array< Value, Device, Index >&
+Array< Value, Device, Index >::
 operator = ( const ArrayT& array )
 {
    //TNL_ASSERT_EQ( array.getSize(), this->getSize(), "Array sizes must be the same." );
    if( this->getSize() != array.getSize() )
-      this->setLike( array );   
+      this->setLike( array );
    if( this->getSize() > 0 )
       Algorithms::ArrayOperations< Device, typename ArrayT::DeviceType >::
          copyMemory( this->getData(),
@@ -404,12 +404,12 @@ operator = ( const ArrayT& array )
    return ( *this );
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
    template< typename ArrayT >
 bool
-Array< Element, Device, Index >::
+Array< Value, Device, Index >::
 operator == ( const ArrayT& array ) const
 {
    if( array.getSize() != this->getSize() )
@@ -422,62 +422,62 @@ operator == ( const ArrayT& array ) const
                            array.getSize() );
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
    template< typename ArrayT >
-bool Array< Element, Device, Index >::operator != ( const ArrayT& array ) const
+bool Array< Value, Device, Index >::operator != ( const ArrayT& array ) const
 {
    return ! ( ( *this ) == array );
 }
 
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
-void Array< Element, Device, Index >::setValue( const Element& e )
+void Array< Value, Device, Index >::setValue( const Value& e )
 {
    TNL_ASSERT_TRUE( this->getData(), "Attempted to set a value of an empty array." );
    Algorithms::ArrayOperations< Device >::setMemory( this->getData(), e, this->getSize() );
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
 __cuda_callable__
-const Element* Array< Element, Device, Index >::getData() const
+const Value* Array< Value, Device, Index >::getData() const
 {
    return this -> data;
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
 __cuda_callable__
-Element* Array< Element, Device, Index >::getData()
+Value* Array< Value, Device, Index >::getData()
 {
    return this -> data;
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
-Array< Element, Device, Index >::operator bool() const
+Array< Value, Device, Index >::operator bool() const
 {
    return data != 0;
 }
 
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
-bool Array< Element, Device, Index >::save( File& file ) const
+bool Array< Value, Device, Index >::save( File& file ) const
 {
    if( ! Object::save( file ) )
       return false;
    if( ! file.write( &this->size ) )
       return false;
-   if( this->size != 0 && ! ArrayIO< Element, Device, Index >::save( file, this->data, this->size ) )
+   if( this->size != 0 && ! ArrayIO< Value, Device, Index >::save( file, this->data, this->size ) )
    {
       std::cerr << "I was not able to save " << this->getType()
            << " with size " << this -> getSize() << std::endl;
@@ -486,11 +486,11 @@ bool Array< Element, Device, Index >::save( File& file ) const
    return true;
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
 bool
-Array< Element, Device, Index >::
+Array< Value, Device, Index >::
 load( File& file )
 {
    if( ! Object::load( file ) )
@@ -509,7 +509,7 @@ load( File& file )
    setSize( _size );
    if( _size )
    {
-      if( ! ArrayIO< Element, Device, Index >::load( file, this->data, this->size ) )
+      if( ! ArrayIO< Value, Device, Index >::load( file, this->data, this->size ) )
       {
          std::cerr << "I was not able to load " << this->getType()
                     << " with size " << this -> getSize() << std::endl;
@@ -519,11 +519,11 @@ load( File& file )
    return true;
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
 bool
-Array< Element, Device, Index >::
+Array< Value, Device, Index >::
 boundLoad( File& file )
 {
    if( ! Object::load( file ) )
@@ -548,7 +548,7 @@ boundLoad( File& file )
    else setSize( _size );
    if( _size )
    {
-      if( ! ArrayIO< Element, Device, Index >::load( file, this->data, this->size ) )
+      if( ! ArrayIO< Value, Device, Index >::load( file, this->data, this->size ) )
       {
          std::cerr << "I was not able to load " << this->getType()
                    << " with size " << this -> getSize() << std::endl;
@@ -559,17 +559,17 @@ boundLoad( File& file )
 }
 
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
-Array< Element, Device, Index >::
+Array< Value, Device, Index >::
 ~Array()
 {
    this->releaseData();
 }
 
-template< typename Element, typename Device, typename Index >
-std::ostream& operator << ( std::ostream& str, const Array< Element, Device, Index >& v )
+template< typename Value, typename Device, typename Index >
+std::ostream& operator << ( std::ostream& str, const Array< Value, Device, Index >& v )
 {
    str << "[ ";
    if( v.getSize() > 0 )

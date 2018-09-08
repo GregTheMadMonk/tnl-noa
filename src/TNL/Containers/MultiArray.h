@@ -18,21 +18,21 @@
 namespace TNL {
 namespace Containers {   
 
-template< int Dimension, typename Element = double, typename Device = Devices::Host, typename Index = int >
-class MultiArray : public Array< Element, Device, Index >
+template< int Dimension, typename Value = double, typename Device = Devices::Host, typename Index = int >
+class MultiArray : public Array< Value, Device, Index >
 {
 };
 
-template< typename Element, typename Device, typename Index >
-class MultiArray< 1, Element, Device, Index > : public Array< Element, Device, Index >
+template< typename Value, typename Device, typename Index >
+class MultiArray< 1, Value, Device, Index > : public Array< Value, Device, Index >
 {
    public:
    enum { Dimension = 1};
-   typedef Element ElementType;
+   typedef Value ValueType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef MultiArray< 1, Element, Devices::Host, Index > HostType;
-   typedef MultiArray< 1, Element, Devices::Cuda, Index > CudaType;
+   typedef MultiArray< 1, Value, Devices::Host, Index > HostType;
+   typedef MultiArray< 1, Value, Devices::Cuda, Index > CudaType;
 
 
    MultiArray();
@@ -61,19 +61,19 @@ class MultiArray< 1, Element, Device, Index > : public Array< Element, Device, I
 
    __cuda_callable__ Index getElementIndex( const Index i ) const;
 
-   void setElement( const Index i, Element value );
+   void setElement( const Index i, Value value );
 
    //! This method can be used for general access to the elements of the arrays.
    /*! It does not return reference but value. So it can be used to access
     *  arrays in different address space (usually GPU device).
     *  See also operator().
     */
-   Element getElement( const Index i ) const;
+   Value getElement( const Index i ) const;
 
    //! Operator for accessing elements of the array.
-   __cuda_callable__ Element& operator()( const Index i );
+   __cuda_callable__ Value& operator()( const Index i );
 
-   __cuda_callable__ const Element& operator()( const Index i ) const;
+   __cuda_callable__ const Value& operator()( const Index i ) const;
 
 
    template< typename MultiArrayT >
@@ -82,10 +82,10 @@ class MultiArray< 1, Element, Device, Index > : public Array< Element, Device, I
    template< typename MultiArrayT >
    bool operator != ( const MultiArrayT& array ) const;
 
-   MultiArray< 1, Element, Device, Index >& operator = ( const MultiArray< 1, Element, Device, Index >& array );
+   MultiArray< 1, Value, Device, Index >& operator = ( const MultiArray< 1, Value, Device, Index >& array );
 
    template< typename MultiArrayT >
-   MultiArray< 1, Element, Device, Index >& operator = ( const MultiArrayT& array );
+   MultiArray< 1, Value, Device, Index >& operator = ( const MultiArrayT& array );
 
    //! Method for saving the object to a file as a binary data
    bool save( File& file ) const;
@@ -102,16 +102,16 @@ class MultiArray< 1, Element, Device, Index > : public Array< Element, Device, I
    Containers::StaticVector< 1, Index > dimensions;
 };
 
-template< typename Element, typename Device, typename Index >
-class MultiArray< 2, Element, Device, Index > : public Array< Element, Device, Index >
+template< typename Value, typename Device, typename Index >
+class MultiArray< 2, Value, Device, Index > : public Array< Value, Device, Index >
 {
    public:
    enum { Dimension = 2 };
-   typedef Element ElementType;
+   typedef Value ValueType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef MultiArray< 2, Element, Devices::Host, Index > HostType;
-   typedef MultiArray< 2, Element, Devices::Cuda, Index > CudaType;
+   typedef MultiArray< 2, Value, Devices::Host, Index > HostType;
+   typedef MultiArray< 2, Value, Devices::Cuda, Index > CudaType;
 
 
    MultiArray();
@@ -140,23 +140,23 @@ class MultiArray< 2, Element, Device, Index > : public Array< Element, Device, I
 
    __cuda_callable__ Index getElementIndex( const Index j, const Index i ) const;
 
-   void setElement( const Index j, const Index i, Element value );
+   void setElement( const Index j, const Index i, Value value );
 
    //! This method can be used for general access to the elements of the arrays.
    /*! It does not return reference but value. So it can be used to access
     *  arrays in different adress space (usualy GPU device).
     *  See also operator().
     */
-   Element getElement( const Index j, const Index i ) const;
+   Value getElement( const Index j, const Index i ) const;
 
    //! Operator for accessing elements of the array.
    /*! It returns reference to given elements so it cannot be
     *  used to access elements of arrays in different address space
     *  (GPU device usually).
     */
-   __cuda_callable__ Element& operator()( const Index j, const Index i );
+   __cuda_callable__ Value& operator()( const Index j, const Index i );
 
-   __cuda_callable__ const Element& operator()( const Index j, const Index i ) const;
+   __cuda_callable__ const Value& operator()( const Index j, const Index i ) const;
 
    template< typename MultiArrayT >
    bool operator == ( const MultiArrayT& array ) const;
@@ -164,10 +164,10 @@ class MultiArray< 2, Element, Device, Index > : public Array< Element, Device, I
    template< typename MultiArrayT >
    bool operator != ( const MultiArrayT& array ) const;
 
-   MultiArray< 2, Element, Device, Index >& operator = ( const MultiArray< 2, Element, Device, Index >& array );
+   MultiArray< 2, Value, Device, Index >& operator = ( const MultiArray< 2, Value, Device, Index >& array );
 
    template< typename MultiArrayT >
-   MultiArray< 2, Element, Device, Index >& operator = ( const MultiArrayT& array );
+   MultiArray< 2, Value, Device, Index >& operator = ( const MultiArrayT& array );
 
    //! Method for saving the object to a file as a binary data
    bool save( File& file ) const;
@@ -184,17 +184,17 @@ class MultiArray< 2, Element, Device, Index > : public Array< Element, Device, I
    Containers::StaticVector< 2, Index > dimensions;
 };
 
-template< typename Element, typename Device, typename Index >
-class MultiArray< 3, Element, Device, Index > : public Array< Element, Device, Index >
+template< typename Value, typename Device, typename Index >
+class MultiArray< 3, Value, Device, Index > : public Array< Value, Device, Index >
 {
    public:
 
    enum { Dimension = 3 };
-   typedef Element ElementType;
+   typedef Value ValueType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef MultiArray< 3, Element, Devices::Host, Index > HostType;
-   typedef MultiArray< 3, Element, Devices::Cuda, Index > CudaType;
+   typedef MultiArray< 3, Value, Devices::Host, Index > HostType;
+   typedef MultiArray< 3, Value, Devices::Cuda, Index > CudaType;
 
 
    MultiArray();
@@ -223,23 +223,23 @@ class MultiArray< 3, Element, Device, Index > : public Array< Element, Device, I
 
    __cuda_callable__ Index getElementIndex( const Index k, const Index j, const Index i ) const;
 
-   void setElement( const Index k, const Index j, const Index i, Element value );
+   void setElement( const Index k, const Index j, const Index i, Value value );
 
    //! This method can be used for general access to the elements of the arrays.
    /*! It does not return reference but value. So it can be used to access
     *  arrays in different adress space (usualy GPU device).
     *  See also operator().
     */
-   Element getElement( const Index k, const Index j, const Index i ) const;
+   Value getElement( const Index k, const Index j, const Index i ) const;
 
    //! Operator for accessing elements of the array.
    /*! It returns reference to given elements so it cannot be
     *  used to access elements of arrays in different adress space
     *  (GPU device usualy).
     */
-   __cuda_callable__ Element& operator()( const Index k, const Index j, const Index i );
+   __cuda_callable__ Value& operator()( const Index k, const Index j, const Index i );
 
-   __cuda_callable__ const Element& operator()( const Index k, const Index j, const Index i ) const;
+   __cuda_callable__ const Value& operator()( const Index k, const Index j, const Index i ) const;
 
    template< typename MultiArrayT >
    bool operator == ( const MultiArrayT& array ) const;
@@ -247,10 +247,10 @@ class MultiArray< 3, Element, Device, Index > : public Array< Element, Device, I
    template< typename MultiArrayT >
    bool operator != ( const MultiArrayT& array ) const;
 
-   MultiArray< 3, Element, Device, Index >& operator = ( const MultiArray< 3, Element, Device, Index >& array );
+   MultiArray< 3, Value, Device, Index >& operator = ( const MultiArray< 3, Value, Device, Index >& array );
 
    template< typename MultiArrayT >
-   MultiArray< 3, Element, Device, Index >& operator = ( const MultiArrayT& array );
+   MultiArray< 3, Value, Device, Index >& operator = ( const MultiArrayT& array );
 
    //! Method for saving the object to a file as a binary data
    bool save( File& file ) const;
@@ -267,17 +267,17 @@ class MultiArray< 3, Element, Device, Index > : public Array< Element, Device, I
    Containers::StaticVector< 3, Index > dimensions;
 };
 
-template< typename Element, typename Device, typename Index >
-class MultiArray< 4, Element, Device, Index > : public Array< Element, Device, Index >
+template< typename Value, typename Device, typename Index >
+class MultiArray< 4, Value, Device, Index > : public Array< Value, Device, Index >
 {
    public:
 
    enum { Dimension = 4 };
-   typedef Element ElementType;
+   typedef Value ValueType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef MultiArray< 4, Element, Devices::Host, Index > HostType;
-   typedef MultiArray< 4, Element, Devices::Cuda, Index > CudaType;
+   typedef MultiArray< 4, Value, Devices::Host, Index > HostType;
+   typedef MultiArray< 4, Value, Devices::Cuda, Index > CudaType;
 
 
    MultiArray();
@@ -306,23 +306,23 @@ class MultiArray< 4, Element, Device, Index > : public Array< Element, Device, I
 
    __cuda_callable__ Index getElementIndex( const Index l, const Index k, const Index j, const Index i ) const;
 
-   void setElement( const Index l, const Index k, const Index j, const Index i, Element value );
+   void setElement( const Index l, const Index k, const Index j, const Index i, Value value );
 
    //! This method can be used for general access to the elements of the arrays.
    /*! It does not return reference but value. So it can be used to access
     *  arrays in different adress space (usualy GPU device).
     *  See also operator().
     */
-   Element getElement( const Index l, const Index k, const Index j, const Index i ) const;
+   Value getElement( const Index l, const Index k, const Index j, const Index i ) const;
 
    //! Operator for accessing elements of the array.
    /*! It returns reference to given elements so it cannot be
     *  used to access elements of arrays in different adress space
     *  (GPU device usualy).
     */
-   __cuda_callable__ Element& operator()( const Index l, const Index k, const Index j, const Index i );
+   __cuda_callable__ Value& operator()( const Index l, const Index k, const Index j, const Index i );
 
-   __cuda_callable__ const Element& operator()( const Index l, const Index k, const Index j, const Index i ) const;
+   __cuda_callable__ const Value& operator()( const Index l, const Index k, const Index j, const Index i ) const;
 
    template< typename MultiArrayT >
    bool operator == ( const MultiArrayT& array ) const;
@@ -330,10 +330,10 @@ class MultiArray< 4, Element, Device, Index > : public Array< Element, Device, I
    template< typename MultiArrayT >
    bool operator != ( const MultiArrayT& array ) const;
 
-   MultiArray< 4, Element, Device, Index >& operator = ( const MultiArray< 4, Element, Device, Index >& array );
+   MultiArray< 4, Value, Device, Index >& operator = ( const MultiArray< 4, Value, Device, Index >& array );
 
    template< typename MultiArrayT >
-   MultiArray< 4, Element, Device, Index >& operator = ( const MultiArrayT& array );
+   MultiArray< 4, Value, Device, Index >& operator = ( const MultiArrayT& array );
 
    //! Method for saving the object to a file as a binary data
    bool save( File& file ) const;
@@ -350,17 +350,17 @@ class MultiArray< 4, Element, Device, Index > : public Array< Element, Device, I
    Containers::StaticVector< 4, Index > dimensions;
 };
 
-template< typename Element, typename device, typename Index >
-std::ostream& operator << ( std::ostream& str, const MultiArray< 1, Element, device, Index >& array );
+template< typename Value, typename device, typename Index >
+std::ostream& operator << ( std::ostream& str, const MultiArray< 1, Value, device, Index >& array );
 
-template< typename Element, typename device, typename Index >
-std::ostream& operator << ( std::ostream& str, const MultiArray< 2, Element, device, Index >& array );
+template< typename Value, typename device, typename Index >
+std::ostream& operator << ( std::ostream& str, const MultiArray< 2, Value, device, Index >& array );
 
-template< typename Element, typename device, typename Index >
-std::ostream& operator << ( std::ostream& str, const MultiArray< 3, Element, device, Index >& array );
+template< typename Value, typename device, typename Index >
+std::ostream& operator << ( std::ostream& str, const MultiArray< 3, Value, device, Index >& array );
 
-template< typename Element, typename device, typename Index >
-std::ostream& operator << ( std::ostream& str, const MultiArray< 4, Element, device, Index >& array );
+template< typename Value, typename device, typename Index >
+std::ostream& operator << ( std::ostream& str, const MultiArray< 4, Value, device, Index >& array );
 
 } // namespace Containers
 } // namespace TNL

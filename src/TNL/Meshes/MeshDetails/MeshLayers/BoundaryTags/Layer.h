@@ -97,7 +97,7 @@ public:
    void updateBoundaryIndices( DimensionTag )
    {
       // Array does not have sum(), Vector of bools does not fit due to arithmetics
-      Containers::Vector< typename BoundaryTagsArray::ElementType, typename BoundaryTagsArray::DeviceType, typename BoundaryTagsArray::IndexType > _boundaryTagsVector;
+      Containers::Vector< typename BoundaryTagsArray::ValueType, typename BoundaryTagsArray::DeviceType, typename BoundaryTagsArray::IndexType > _boundaryTagsVector;
       _boundaryTagsVector.bind( boundaryTags.getData(), boundaryTags.getSize() );
       const GlobalIndexType boundaryEntities = _boundaryTagsVector.template sum< GlobalIndexType >();
       boundaryIndices.setSize( boundaryEntities );

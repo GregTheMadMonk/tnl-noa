@@ -18,22 +18,22 @@
 namespace TNL {
 namespace Containers {
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index,
-          bool Elementwise = std::is_base_of< Object, Element >::value >
+          bool Elementwise = std::is_base_of< Object, Value >::value >
 class ArrayIO
 {};
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
-class ArrayIO< Element, Device, Index, true >
+class ArrayIO< Value, Device, Index, true >
 {
    public:
 
    static bool save( File& file,
-                     const Element* data,
+                     const Value* data,
                      const Index elements )
    {
       for( Index i = 0; i < elements; i++ )
@@ -46,7 +46,7 @@ class ArrayIO< Element, Device, Index, true >
    }
 
    static bool load( File& file,
-                     Element* data,
+                     Value* data,
                      const Index elements )
    {
       for( Index i = 0; i < elements; i++ )
@@ -59,25 +59,25 @@ class ArrayIO< Element, Device, Index, true >
    }
 };
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
-class ArrayIO< Element, Device, Index, false >
+class ArrayIO< Value, Device, Index, false >
 {
    public:
 
    static bool save( File& file,
-                     const Element* data,
+                     const Value* data,
                      const Index elements )
    {
-      return file.write< Element, Device, Index >( data, elements );
+      return file.write< Value, Device, Index >( data, elements );
    }
 
    static bool load( File& file,
-                     Element* data,
+                     Value* data,
                      const Index elements )
    {
-      return file.read< Element, Device, Index >( data, elements );
+      return file.read< Value, Device, Index >( data, elements );
    }
 
 };

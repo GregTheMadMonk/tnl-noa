@@ -10,39 +10,41 @@
 
 #pragma once
 
+#include "IndexedMap.h"
+
 namespace TNL {
 namespace Containers {
 
-template< typename Element,
+template< typename Value,
           typename Index,
           typename Key >
-void IndexedMap< Element, Index, Key >::reset()
+void IndexedMap< Value, Index, Key >::reset()
 {
    map.clear();
 }
 
-template< typename Element,
+template< typename Value,
           typename Index,
           typename Key >
-Index IndexedMap< Element, Index, Key >::getSize() const
+Index IndexedMap< Value, Index, Key >::getSize() const
 {
    return map.size();
 }
 
-template< typename Element,
+template< typename Value,
           typename Index,
           typename Key >
-Index IndexedMap< Element, Index, Key >::insert( const Element &data )
+Index IndexedMap< Value, Index, Key >::insert( const Value &data )
 {
    STDMapIteratorType iter = map.insert( STDMapValueType( Key( data ),
                                          DataWithIndex( data, getSize() ) ) ).first;
    return iter->second.index;
 }
 
-template< typename Element,
+template< typename Value,
           typename Index,
           typename Key >
-bool IndexedMap< Element, Index, Key >::find( const Element &data, Index& index ) const
+bool IndexedMap< Value, Index, Key >::find( const Value &data, Index& index ) const
 {
    STDMapIteratorType iter = map.find( Key( data ) );
    if (iter == map.end())
@@ -51,11 +53,11 @@ bool IndexedMap< Element, Index, Key >::find( const Element &data, Index& index 
    return true;
 }
 
-template< typename Element,
+template< typename Value,
           typename Index,
           typename Key >
    template<typename ArrayType>
-void IndexedMap< Element, Index, Key >::toArray( ArrayType& array ) const
+void IndexedMap< Value, Index, Key >::toArray( ArrayType& array ) const
 {
    TNL_ASSERT( array.getSize() == getSize(),
                std::cerr << "array.getSize() = " << array.getSize()
@@ -67,26 +69,26 @@ void IndexedMap< Element, Index, Key >::toArray( ArrayType& array ) const
       array[ iter->second.index ] = iter->second.data;
 }
 
-template< typename Element,
+template< typename Value,
           typename Index,
           typename Key >
-const Element& IndexedMap< Element, Index, Key >::getElement( KeyType key ) const
+const Value& IndexedMap< Value, Index, Key >::getElement( KeyType key ) const
 {
    return map[ key ];
 }
 
-template< typename Element,
+template< typename Value,
           typename Index,
           typename Key >
-Element& IndexedMap< Element, Index, Key >::getElement( KeyType key )
+Value& IndexedMap< Value, Index, Key >::getElement( KeyType key )
 {
    return map[ key ];
 }
 
-template< typename Element,
+template< typename Value,
           typename Index,
           typename Key >
-void IndexedMap< Element, Index, Key >::print( std::ostream& str ) const
+void IndexedMap< Value, Index, Key >::print( std::ostream& str ) const
 {
    STDMapIteratorType iter = map.begin();
    str << iter->second.data;
@@ -98,10 +100,10 @@ void IndexedMap< Element, Index, Key >::print( std::ostream& str ) const
    }
 }
 
-template< typename Element,
+template< typename Value,
           typename Index,
           typename Key >
-std::ostream& operator<<( std::ostream& str, IndexedMap< Element, Index, Key >& set )
+std::ostream& operator<<( std::ostream& str, IndexedMap< Value, Index, Key >& set )
 {
    set.print( str );
    return str;

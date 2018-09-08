@@ -18,30 +18,30 @@
 namespace TNL {
 namespace Containers {
 
-template< typename Element, typename Device, typename Index >
+template< typename Value, typename Device, typename Index >
 class Array;
 
-template< int Size, typename Element >
+template< int Size, typename Value >
 class StaticArray;
 
-template< typename Element,
+template< typename Value,
           typename Device = Devices::Host,
           typename Index = int >
 class ArrayView
 {
 public:
-   using ElementType = Element;
+   using ValueType = Value;
    using DeviceType = Device;
    using IndexType = Index;
-   using HostType = ArrayView< Element, Devices::Host, Index >;
-   using CudaType = ArrayView< Element, Devices::Cuda, Index >;
+   using HostType = ArrayView< Value, Devices::Host, Index >;
+   using CudaType = ArrayView< Value, Devices::Cuda, Index >;
 
    __cuda_callable__
    ArrayView() = default;
 
    // explicit initialization by raw data pointer and size
    __cuda_callable__
-   ArrayView( Element* data, Index size );
+   ArrayView( Value* data, Index size );
 
    // Copy-constructor does shallow copy, so views can be passed-by-value into
    // CUDA kernels and they can be captured-by-value in __cuda_callable__
@@ -49,10 +49,10 @@ public:
    __cuda_callable__
    ArrayView( const ArrayView& ) = default;
 
-   // "Templated copy-constructor" accepting any cv-qualification of Element
-   template< typename Element_ >
+   // "Templated copy-constructor" accepting any cv-qualification of Value
+   template< typename Value_ >
    __cuda_callable__
-   ArrayView( ArrayView< Element_, Device, Index >& array )
+   ArrayView( ArrayView< Value_, Device, Index >& array )
    : data(array.getData()), size(array.getSize()) {}
 
    // default move-constructor
@@ -60,28 +60,28 @@ public:
    ArrayView( ArrayView&& ) = default;
 
    // initialization from other array containers (using shallow copy)
-   template< typename Element_ >  // template catches both const and non-const qualified Element
+   template< typename Value_ >  // template catches both const and non-const qualified Value
    __cuda_callable__
-   ArrayView( Array< Element_, Device, Index >& array );
+   ArrayView( Array< Value_, Device, Index >& array );
 
-   template< int Size, typename Element_ >  // template catches both const and non-const qualified Element
+   template< int Size, typename Value_ >  // template catches both const and non-const qualified Value
    __cuda_callable__
-   ArrayView( StaticArray< Size, Element_ >& array );
+   ArrayView( StaticArray< Size, Value_ >& array );
 
-   // these constructors will be used only when Element is const-qualified
+   // these constructors will be used only when Value is const-qualified
    // (const views are initializable by const references)
-   template< typename Element_ >  // template catches both const and non-const qualified Element
+   template< typename Value_ >  // template catches both const and non-const qualified Value
    __cuda_callable__
-   ArrayView( const Array< Element_, Device, Index >& array );
+   ArrayView( const Array< Value_, Device, Index >& array );
 
-   template< int Size, typename Element_ >  // template catches both const and non-const qualified Element
+   template< int Size, typename Value_ >  // template catches both const and non-const qualified Value
    __cuda_callable__
-   ArrayView( const StaticArray< Size, Element_ >& array );
+   ArrayView( const StaticArray< Size, Value_ >& array );
 
 
    // methods for rebinding (reinitialization)
    __cuda_callable__
-   void bind( Element* data, const Index size );
+   void bind( Value* data, const Index size );
 
    // Note that you can also bind directly to Array and other types implicitly
    // convertible to ArrayView.
@@ -93,8 +93,8 @@ public:
    // must match (i.e. copy-assignment cannot resize).
    ArrayView& operator=( const ArrayView& view );
 
-   template< typename Element_, typename Device_, typename Index_ >
-   ArrayView& operator=( const ArrayView< Element_, Device_, Index_ >& view );
+   template< typename Value_, typename Device_, typename Index_ >
+   ArrayView& operator=( const ArrayView< Value_, Device_, Index_ >& view );
 
 
    static String getType();
@@ -107,51 +107,51 @@ public:
    void reset();
 
    __cuda_callable__
-   const Element* getData() const;
+   const Value* getData() const;
 
    __cuda_callable__
-   Element* getData();
+   Value* getData();
 
    __cuda_callable__
    Index getSize() const;
 
-   void setElement( Index i, Element value );
+   void setElement( Index i, Value value );
 
-   Element getElement( Index i ) const;
-
-   __cuda_callable__
-   Element& operator[]( Index i );
+   Value getElement( Index i ) const;
 
    __cuda_callable__
-   const Element& operator[]( Index i ) const;
+   Value& operator[]( Index i );
 
-   template< typename Element_, typename Device_, typename Index_ >
-   bool operator==( const ArrayView< Element_, Device_, Index_ >& view ) const;
+   __cuda_callable__
+   const Value& operator[]( Index i ) const;
 
-   template< typename Element_, typename Device_, typename Index_ >
-   bool operator!=( const ArrayView< Element_, Device_, Index_ >& view ) const;
+   template< typename Value_, typename Device_, typename Index_ >
+   bool operator==( const ArrayView< Value_, Device_, Index_ >& view ) const;
 
-   void setValue( Element value );
+   template< typename Value_, typename Device_, typename Index_ >
+   bool operator!=( const ArrayView< Value_, Device_, Index_ >& view ) const;
+
+   void setValue( Value value );
 
    // Checks if there is an element with given value in this array
-   bool containsValue( Element value ) const;
+   bool containsValue( Value value ) const;
 
    // Checks if all elements in this array have the same given value
-   bool containsOnlyValue( Element value ) const;
+   bool containsOnlyValue( Value value ) const;
 
    //! Returns true if non-zero size is set.
    operator bool() const;
 
 protected:
    //! Pointer to allocated data
-   Element* data = nullptr;
+   Value* data = nullptr;
 
    //! Number of allocated elements
    Index size = 0;
 };
 
-template< typename Element, typename Device, typename Index >
-std::ostream& operator<<( std::ostream& str, const ArrayView< Element, Device, Index >& v );
+template< typename Value, typename Device, typename Index >
+std::ostream& operator<<( std::ostream& str, const ArrayView< Value, Device, Index >& v );
 
 } // namespace Containers
 } // namespace TNL

@@ -16,11 +16,11 @@
 namespace TNL {
 namespace Containers {   
 
-template< int Size, typename Element >
+template< int Size, typename Value >
 class StaticArray
 {
    public:
-   typedef Element ElementType;
+   typedef Value ValueType;
    typedef int     IndexType;
    enum { size = Size };
 
@@ -31,15 +31,15 @@ class StaticArray
    // reference: https://stackoverflow.com/q/4610503
    template< typename _unused = void >
    __cuda_callable__
-   inline StaticArray( const Element v[ Size ] );
+   inline StaticArray( const Value v[ Size ] );
 
    //! This sets all vector components to v
    __cuda_callable__
-   inline StaticArray( const Element& v );
+   inline StaticArray( const Value& v );
 
    //! Copy constructor
    __cuda_callable__
-   inline StaticArray( const StaticArray< Size, Element >& v );
+   inline StaticArray( const StaticArray< Size, Value >& v );
 
    static String getType();
 
@@ -47,23 +47,23 @@ class StaticArray
    inline int getSize() const;
 
    __cuda_callable__
-   inline Element* getData();
+   inline Value* getData();
 
    __cuda_callable__
-   inline const Element* getData() const;
+   inline const Value* getData() const;
 
    __cuda_callable__
-   inline const Element& operator[]( int i ) const;
+   inline const Value& operator[]( int i ) const;
 
    __cuda_callable__
-   inline Element& operator[]( int i );
+   inline Value& operator[]( int i );
 
    __cuda_callable__
-   inline StaticArray< Size, Element >& operator = ( const StaticArray< Size, Element >& array );
+   inline StaticArray< Size, Value >& operator = ( const StaticArray< Size, Value >& array );
 
    template< typename Array >
    __cuda_callable__
-   inline StaticArray< Size, Element >& operator = ( const Array& array );
+   inline StaticArray< Size, Value >& operator = ( const Array& array );
 
    template< typename Array >
    __cuda_callable__
@@ -73,12 +73,12 @@ class StaticArray
    __cuda_callable__
    inline bool operator != ( const Array& array ) const;
  
-   template< typename OtherElement >
+   template< typename OtherValue >
    __cuda_callable__
-   operator StaticArray< Size, OtherElement >() const;
+   operator StaticArray< Size, OtherValue >() const;
 
    __cuda_callable__
-   inline void setValue( const ElementType& val );
+   inline void setValue( const ValueType& val );
 
    bool save( File& file ) const;
 
@@ -89,14 +89,14 @@ class StaticArray
    std::ostream& write( std::ostream& str, const char* separator = " " ) const;
 
    protected:
-   Element data[ Size ];
+   Value data[ Size ];
 };
 
-template< typename Element >
-class StaticArray< 1, Element >
+template< typename Value >
+class StaticArray< 1, Value >
 {
    public:
-   typedef Element ElementType;
+   typedef Value ValueType;
    typedef int     IndexType;
    enum { size = 1 };
 
@@ -107,14 +107,14 @@ class StaticArray< 1, Element >
    // reference: https://stackoverflow.com/q/4610503
    template< typename _unused = void >
    __cuda_callable__
-   inline StaticArray( const Element v[ size ] );
+   inline StaticArray( const Value v[ size ] );
 
    __cuda_callable__
-   inline StaticArray( const Element& v );
+   inline StaticArray( const Value& v );
 
    //! Copy constructor
    __cuda_callable__
-   inline StaticArray( const StaticArray< size, Element >& v );
+   inline StaticArray( const StaticArray< size, Value >& v );
 
    static String getType();
 
@@ -122,31 +122,31 @@ class StaticArray< 1, Element >
    inline int getSize() const;
 
    __cuda_callable__
-   inline Element* getData();
+   inline Value* getData();
 
    __cuda_callable__
-   inline const Element* getData() const;
+   inline const Value* getData() const;
 
    __cuda_callable__
-   inline const Element& operator[]( int i ) const;
+   inline const Value& operator[]( int i ) const;
 
    __cuda_callable__
-   inline Element& operator[]( int i );
-
-   //! Returns the first coordinate
-   __cuda_callable__
-   inline Element& x();
+   inline Value& operator[]( int i );
 
    //! Returns the first coordinate
    __cuda_callable__
-   inline const Element& x() const;
+   inline Value& x();
+
+   //! Returns the first coordinate
+   __cuda_callable__
+   inline const Value& x() const;
 
    __cuda_callable__
-   inline StaticArray< 1, Element >& operator = ( const StaticArray< 1, Element >& array );
+   inline StaticArray< 1, Value >& operator = ( const StaticArray< 1, Value >& array );
 
    template< typename Array >
    __cuda_callable__
-   inline StaticArray< 1, Element >& operator = ( const Array& array );
+   inline StaticArray< 1, Value >& operator = ( const Array& array );
 
    template< typename Array >
    __cuda_callable__
@@ -156,13 +156,13 @@ class StaticArray< 1, Element >
    __cuda_callable__
    inline bool operator != ( const Array& array ) const;
  
-   template< typename OtherElement >
+   template< typename OtherValue >
    __cuda_callable__
-   operator StaticArray< 1, OtherElement >() const;
+   operator StaticArray< 1, OtherValue >() const;
 
    __cuda_callable__
    inline
-   void setValue( const ElementType& val );
+   void setValue( const ValueType& val );
 
    bool save( File& file ) const;
 
@@ -173,14 +173,14 @@ class StaticArray< 1, Element >
    std::ostream& write( std::ostream& str, const char* separator = " " ) const;
 
    protected:
-   Element data[ size ];
+   Value data[ size ];
 };
 
-template< typename Element >
-class StaticArray< 2, Element >
+template< typename Value >
+class StaticArray< 2, Value >
 {
    public:
-   typedef Element ElementType;
+   typedef Value ValueType;
    typedef int     IndexType;
    enum { size = 2 };
 
@@ -191,18 +191,18 @@ class StaticArray< 2, Element >
    // reference: https://stackoverflow.com/q/4610503
    template< typename _unused = void >
    __cuda_callable__
-   inline StaticArray( const Element v[ size ] );
+   inline StaticArray( const Value v[ size ] );
 
    //! This sets all vector components to v
    __cuda_callable__
-   inline StaticArray( const Element& v );
+   inline StaticArray( const Value& v );
 
    __cuda_callable__
-   inline StaticArray( const Element& v1, const Element& v2 );
+   inline StaticArray( const Value& v1, const Value& v2 );
 
    //! Copy constructor
    __cuda_callable__
-   inline StaticArray( const StaticArray< size, Element >& v );
+   inline StaticArray( const StaticArray< size, Value >& v );
 
    static String getType();
 
@@ -210,39 +210,39 @@ class StaticArray< 2, Element >
    inline int getSize() const;
 
    __cuda_callable__
-   inline Element* getData();
+   inline Value* getData();
 
    __cuda_callable__
-   inline const Element* getData() const;
+   inline const Value* getData() const;
 
    __cuda_callable__
-   inline const Element& operator[]( int i ) const;
+   inline const Value& operator[]( int i ) const;
 
    __cuda_callable__
-   inline Element& operator[]( int i );
-
-   //! Returns the first coordinate
-   __cuda_callable__
-   inline Element& x();
+   inline Value& operator[]( int i );
 
    //! Returns the first coordinate
    __cuda_callable__
-   inline const Element& x() const;
+   inline Value& x();
+
+   //! Returns the first coordinate
+   __cuda_callable__
+   inline const Value& x() const;
 
    //! Returns the second coordinate
    __cuda_callable__
-   inline Element& y();
+   inline Value& y();
 
    //! Returns the second coordinate
    __cuda_callable__
-   inline const Element& y() const;
+   inline const Value& y() const;
 
    __cuda_callable__
-   inline StaticArray< 2, Element >& operator = ( const StaticArray< 2, Element >& array );
+   inline StaticArray< 2, Value >& operator = ( const StaticArray< 2, Value >& array );
 
    template< typename Array >
    __cuda_callable__
-   inline StaticArray< 2, Element >& operator = ( const Array& array );
+   inline StaticArray< 2, Value >& operator = ( const Array& array );
 
    template< typename Array >
    __cuda_callable__
@@ -252,12 +252,12 @@ class StaticArray< 2, Element >
    __cuda_callable__
    inline bool operator != ( const Array& array ) const;
  
-   template< typename OtherElement >
+   template< typename OtherValue >
    __cuda_callable__
-   operator StaticArray< 2, OtherElement >() const;
+   operator StaticArray< 2, OtherValue >() const;
  
    __cuda_callable__
-   inline void setValue( const ElementType& val );
+   inline void setValue( const ValueType& val );
 
    bool save( File& file ) const;
 
@@ -268,14 +268,14 @@ class StaticArray< 2, Element >
    std::ostream& write( std::ostream& str, const char* separator = " " ) const;
 
    protected:
-   Element data[ size ];
+   Value data[ size ];
 };
 
-template< typename Element >
-class StaticArray< 3, Element >
+template< typename Value >
+class StaticArray< 3, Value >
 {
    public:
-   typedef Element ElementType;
+   typedef Value ValueType;
    typedef int     IndexType;
    enum { size = 3 };
 
@@ -286,18 +286,18 @@ class StaticArray< 3, Element >
    // reference: https://stackoverflow.com/q/4610503
    template< typename _unused = void >
    __cuda_callable__
-   inline StaticArray( const Element v[ size ] );
+   inline StaticArray( const Value v[ size ] );
 
    //! This sets all vector components to v
    __cuda_callable__
-   inline StaticArray( const Element& v );
+   inline StaticArray( const Value& v );
 
    __cuda_callable__
-   inline StaticArray( const Element& v1, const Element& v2, const Element& v3 );
+   inline StaticArray( const Value& v1, const Value& v2, const Value& v3 );
 
    //! Copy constructor
    __cuda_callable__
-   inline StaticArray( const StaticArray< size, Element >& v );
+   inline StaticArray( const StaticArray< size, Value >& v );
 
    static String getType();
 
@@ -305,47 +305,47 @@ class StaticArray< 3, Element >
    inline int getSize() const;
 
    __cuda_callable__
-   inline Element* getData();
+   inline Value* getData();
 
    __cuda_callable__
-   inline const Element* getData() const;
+   inline const Value* getData() const;
 
    __cuda_callable__
-   inline const Element& operator[]( int i ) const;
+   inline const Value& operator[]( int i ) const;
 
    __cuda_callable__
-   inline Element& operator[]( int i );
-
-   //! Returns the first coordinate
-   __cuda_callable__
-   inline Element& x();
+   inline Value& operator[]( int i );
 
    //! Returns the first coordinate
    __cuda_callable__
-   inline const Element& x() const;
+   inline Value& x();
+
+   //! Returns the first coordinate
+   __cuda_callable__
+   inline const Value& x() const;
 
    //! Returns the second coordinate
    __cuda_callable__
-   inline Element& y();
+   inline Value& y();
 
    //! Returns the second coordinate
    __cuda_callable__
-   inline const Element& y() const;
+   inline const Value& y() const;
 
    //! Returns the third coordinate
    __cuda_callable__
-   inline Element& z();
+   inline Value& z();
 
    //! Returns the third coordinate
    __cuda_callable__
-   inline const Element& z() const;
+   inline const Value& z() const;
 
    __cuda_callable__
-   inline StaticArray< 3, Element >& operator = ( const StaticArray< 3, Element >& array );
+   inline StaticArray< 3, Value >& operator = ( const StaticArray< 3, Value >& array );
 
    template< typename Array >
    __cuda_callable__
-   inline StaticArray< 3, Element >& operator = ( const Array& array );
+   inline StaticArray< 3, Value >& operator = ( const Array& array );
 
    template< typename Array >
    __cuda_callable__
@@ -355,12 +355,12 @@ class StaticArray< 3, Element >
    __cuda_callable__
    inline bool operator != ( const Array& array ) const;
  
-   template< typename OtherElement >
+   template< typename OtherValue >
    __cuda_callable__
-   operator StaticArray< 3, OtherElement >() const;
+   operator StaticArray< 3, OtherValue >() const;
 
    __cuda_callable__
-   inline void setValue( const ElementType& val );
+   inline void setValue( const ValueType& val );
 
    bool save( File& file ) const;
 
@@ -371,11 +371,11 @@ class StaticArray< 3, Element >
    std::ostream& write( std::ostream& str, const char* separator = " " ) const;
 
    protected:
-   Element data[ size ];
+   Value data[ size ];
 };
 
-template< int Size, typename Element >
-std::ostream& operator << ( std::ostream& str, const StaticArray< Size, Element >& a );
+template< int Size, typename Value >
+std::ostream& operator << ( std::ostream& str, const StaticArray< Size, Value >& a );
 
 } // namespace Containers
 } // namespace TNL

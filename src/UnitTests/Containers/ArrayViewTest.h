@@ -21,7 +21,7 @@
 using namespace TNL;
 using namespace TNL::Containers;
 
-// minimal custom data structure usable as ElementType in Array
+// minimal custom data structure usable as ValueType in Array
 struct MyData
 {
    double data;
@@ -58,7 +58,7 @@ class ArrayViewTest : public ::testing::Test
 {
 protected:
    using ArrayType = Array;
-   using ViewType = ArrayView< typename Array::ElementType, typename Array::DeviceType, typename Array::IndexType >;
+   using ViewType = ArrayView< typename Array::ValueType, typename Array::DeviceType, typename Array::IndexType >;
 };
 
 // types for which ArrayViewTest is instantiated
@@ -137,7 +137,7 @@ TYPED_TEST( ArrayViewTest, constructors )
 {
    using ArrayType = typename TestFixture::ArrayType;
    using ViewType = typename TestFixture::ViewType;
-   using ConstViewType = ArrayView< const typename ArrayType::ElementType, typename ArrayType::DeviceType, typename ArrayType::IndexType >;
+   using ConstViewType = ArrayView< const typename ArrayType::ValueType, typename ArrayType::DeviceType, typename ArrayType::IndexType >;
 
    ArrayType a( 10 );
    EXPECT_EQ( a.getSize(), 10 );
@@ -147,7 +147,7 @@ TYPED_TEST( ArrayViewTest, constructors )
    EXPECT_EQ( v.getData(), a.getData() );
 
    if( std::is_same< typename ArrayType::DeviceType, Devices::Host >::value ) {
-      typename ArrayType::ElementType data[ 10 ];
+      typename ArrayType::ValueType data[ 10 ];
       ViewType w( data, 10 );
       EXPECT_EQ( w.getData(), data );
 
@@ -186,7 +186,7 @@ TYPED_TEST( ArrayViewTest, bind )
    EXPECT_EQ( v.getSize(), 10 );
 
    if( std::is_same< typename ArrayType::DeviceType, Devices::Host >::value ) {
-      typename ArrayType::ElementType data[ 10 ] = { 1, 2, 3, 4, 5, 6, 7, 8, 10 };
+      typename ArrayType::ValueType data[ 10 ] = { 1, 2, 3, 4, 5, 6, 7, 8, 10 };
       a.bind( data, 10 );
       EXPECT_EQ( a.getData(), data );
       EXPECT_EQ( a.getSize(), 10 );
@@ -240,11 +240,11 @@ TYPED_TEST( ArrayViewTest, reset )
    EXPECT_EQ( u.getData(), nullptr );
 }
 
-template< typename Element, typename Index >
-void testArrayViewElementwiseAccess( Array< Element, Devices::Host, Index >&& a )
+template< typename Value, typename Index >
+void testArrayViewElementwiseAccess( Array< Value, Devices::Host, Index >&& a )
 {
    a.setSize( 10 );
-   using ViewType = ArrayView< Element, Devices::Host, Index >;
+   using ViewType = ArrayView< Value, Devices::Host, Index >;
    ViewType u( a );
    for( int i = 0; i < 10; i++ ) {
       u.setElement( i, i );
@@ -255,21 +255,21 @@ void testArrayViewElementwiseAccess( Array< Element, Devices::Host, Index >&& a 
 }
 
 #ifdef HAVE_CUDA
-template< typename ElementType, typename IndexType >
-__global__ void testSetGetElementKernel( ArrayView< ElementType, Devices::Cuda, IndexType > v )
+template< typename ValueType, typename IndexType >
+__global__ void testSetGetElementKernel( ArrayView< ValueType, Devices::Cuda, IndexType > v )
 {
    if( threadIdx.x < v.getSize() )
       v[ threadIdx.x ] = threadIdx.x;
 }
 #endif /* HAVE_CUDA */
 
-template< typename Element, typename Index >
-void testArrayViewElementwiseAccess( Array< Element, Devices::Cuda, Index >&& u )
+template< typename Value, typename Index >
+void testArrayViewElementwiseAccess( Array< Value, Devices::Cuda, Index >&& u )
 {
 #ifdef HAVE_CUDA
    u.setSize( 10 );
-   using ArrayType = Array< Element, Devices::Cuda, Index >;
-   using ViewType = ArrayView< Element, Devices::Cuda, Index >;
+   using ArrayType = Array< Value, Devices::Cuda, Index >;
+   using ViewType = ArrayView< Value, Devices::Cuda, Index >;
    ViewType v( u );
    testSetGetElementKernel<<< 1, 16 >>>( v );
    TNL_CHECK_CUDA_DEVICE;
@@ -279,8 +279,8 @@ void testArrayViewElementwiseAccess( Array< Element, Devices::Cuda, Index >&& u 
 #endif
 }
 
-template< typename Element, typename Index >
-void testArrayViewElementwiseAccess( Array< Element, Devices::MIC, Index >&& u )
+template< typename Value, typename Index >
+void testArrayViewElementwiseAccess( Array< Value, Devices::MIC, Index >&& u )
 {
 #ifdef HAVE_MIC
    // TODO
@@ -370,7 +370,7 @@ TYPED_TEST( ArrayViewTest, comparisonOperator )
    EXPECT_TRUE( a_host == u );
    // FIXME: what operator is called without explicit retyping?
 //   EXPECT_TRUE( w != a_host );
-   EXPECT_TRUE( w != (ArrayView< typename ArrayType::ElementType, Devices::Host, typename ArrayType::IndexType >) a_host );
+   EXPECT_TRUE( w != (ArrayView< typename ArrayType::ValueType, Devices::Host, typename ArrayType::IndexType >) a_host );
    EXPECT_TRUE( a_host != w );
 
    v.reset();
@@ -441,7 +441,7 @@ TYPED_TEST( ArrayViewTest, assignmentOperator )
 
 // test works only for arithmetic types
 template< typename ArrayType,
-          typename = typename std::enable_if< std::is_arithmetic< typename ArrayType::ElementType >::value >::type >
+          typename = typename std::enable_if< std::is_arithmetic< typename ArrayType::ValueType >::value >::type >
 void testArrayAssignmentWithDifferentType()
 {
    ArrayType a( 10 );
@@ -453,7 +453,7 @@ void testArrayAssignmentWithDifferentType()
       a_host.setElement( i, i );
    }
 
-   using ViewType = ArrayView< typename ArrayType::ElementType, typename ArrayType::DeviceType, typename ArrayType::IndexType >;
+   using ViewType = ArrayView< typename ArrayType::ValueType, typename ArrayType::DeviceType, typename ArrayType::IndexType >;
    ViewType u( a );
    typename ViewType::HostType u_host( a_host );
    using ShortViewType = ArrayView< short, typename ArrayType::DeviceType, short >;
@@ -479,7 +479,7 @@ void testArrayAssignmentWithDifferentType()
 }
 
 template< typename ArrayType,
-          typename = typename std::enable_if< ! std::is_arithmetic< typename ArrayType::ElementType >::value >::type,
+          typename = typename std::enable_if< ! std::is_arithmetic< typename ArrayType::ValueType >::value >::type,
           typename = void >
 void testArrayAssignmentWithDifferentType()
 {

@@ -21,7 +21,7 @@
 using namespace TNL;
 using namespace TNL::Containers;
 
-// minimal custom data structure usable as ElementType in Array
+// minimal custom data structure usable as ValueType in Array
 struct MyData
 {
    double data;
@@ -156,7 +156,7 @@ TYPED_TEST( ArrayTest, constructors )
    EXPECT_EQ( v.getSize(), 10 );
 
    if( std::is_same< typename ArrayType::DeviceType, Devices::Host >::value ) {
-      typename ArrayType::ElementType data[ 10 ];
+      typename ArrayType::ValueType data[ 10 ];
       ArrayType w( data, 10 );
       EXPECT_EQ( w.getData(), data );
 
@@ -239,7 +239,7 @@ TYPED_TEST( ArrayTest, bind )
    EXPECT_EQ( v.getElement( 0 ), 50 );
 
    if( std::is_same< typename ArrayType::DeviceType, Devices::Host >::value ) {
-      typename ArrayType::ElementType data[ 10 ] = { 1, 2, 3, 4, 5, 6, 7, 8, 10 };
+      typename ArrayType::ValueType data[ 10 ] = { 1, 2, 3, 4, 5, 6, 7, 8, 10 };
       u.bind( data, 10 );
       EXPECT_EQ( u.getData(), data );
       EXPECT_EQ( u.getSize(), 10 );
@@ -288,8 +288,8 @@ TYPED_TEST( ArrayTest, reset )
    EXPECT_EQ( u.getData(), nullptr );
 }
 
-template< typename Element, typename Index >
-void testArrayElementwiseAccess( Array< Element, Devices::Host, Index >&& u )
+template< typename Value, typename Index >
+void testArrayElementwiseAccess( Array< Value, Devices::Host, Index >&& u )
 {
    u.setSize( 10 );
    for( int i = 0; i < 10; i++ ) {
@@ -301,20 +301,20 @@ void testArrayElementwiseAccess( Array< Element, Devices::Host, Index >&& u )
 }
 
 #ifdef HAVE_CUDA
-template< typename ElementType, typename IndexType >
-__global__ void testSetGetElementKernel( Array< ElementType, Devices::Cuda, IndexType >* u )
+template< typename ValueType, typename IndexType >
+__global__ void testSetGetElementKernel( Array< ValueType, Devices::Cuda, IndexType >* u )
 {
    if( threadIdx.x < ( *u ).getSize() )
       ( *u )[ threadIdx.x ] = threadIdx.x;
 }
 #endif /* HAVE_CUDA */
 
-template< typename Element, typename Index >
-void testArrayElementwiseAccess( Array< Element, Devices::Cuda, Index >&& u )
+template< typename Value, typename Index >
+void testArrayElementwiseAccess( Array< Value, Devices::Cuda, Index >&& u )
 {
 #ifdef HAVE_CUDA
    u.setSize( 10 );
-   using ArrayType = Array< Element, Devices::Cuda, Index >;
+   using ArrayType = Array< Value, Devices::Cuda, Index >;
    ArrayType* kernel_u = Devices::Cuda::passToDevice( u );
    testSetGetElementKernel<<< 1, 16 >>>( kernel_u );
    Devices::Cuda::freeFromDevice( kernel_u );
@@ -325,8 +325,8 @@ void testArrayElementwiseAccess( Array< Element, Devices::Cuda, Index >&& u )
 #endif
 }
 
-template< typename Element, typename Index >
-void testArrayElementwiseAccess( Array< Element, Devices::MIC, Index >&& u )
+template< typename Value, typename Index >
+void testArrayElementwiseAccess( Array< Value, Devices::MIC, Index >&& u )
 {
 #ifdef HAVE_MIC
    // TODO
@@ -457,7 +457,7 @@ TYPED_TEST( ArrayTest, assignmentOperator )
 
 // test works only for arithmetic types
 template< typename ArrayType,
-          typename = typename std::enable_if< std::is_arithmetic< typename ArrayType::ElementType >::value >::type >
+          typename = typename std::enable_if< std::is_arithmetic< typename ArrayType::ValueType >::value >::type >
 void testArrayAssignmentWithDifferentType()
 {
    ArrayType u( 10 );
@@ -485,7 +485,7 @@ void testArrayAssignmentWithDifferentType()
 }
 
 template< typename ArrayType,
-          typename = typename std::enable_if< ! std::is_arithmetic< typename ArrayType::ElementType >::value >::type,
+          typename = typename std::enable_if< ! std::is_arithmetic< typename ArrayType::ValueType >::value >::type,
           typename = void >
 void testArrayAssignmentWithDifferentType()
 {
@@ -561,7 +561,7 @@ TYPED_TEST( ArrayTest, referenceCountingConstructors )
 
    // copies of a static array
    if( std::is_same< typename ArrayType::DeviceType, Devices::Host >::value ) {
-      typename ArrayType::ElementType data[ 10 ] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+      typename ArrayType::ValueType data[ 10 ] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
       ArrayType u( data, 10 );
       ArrayType v( u );
       ArrayType w( v );
@@ -586,7 +586,7 @@ TYPED_TEST( ArrayTest, referenceCountingBind )
 
    // copies of a static array
    if( std::is_same< typename ArrayType::DeviceType, Devices::Host >::value ) {
-      typename ArrayType::ElementType data[ 10 ] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+      typename ArrayType::ValueType data[ 10 ] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
       ArrayType u( data, 10 );
       ArrayType v;
       v.bind( u );

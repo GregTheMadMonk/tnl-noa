@@ -24,7 +24,7 @@ class StaticArrayTest : public ::testing::Test
 {
 protected:
    using ArrayType = Array;
-   using ElementType = typename Array::ElementType;
+   using ValueType = typename Array::ValueType;
 };
 
 // types for which ArrayTest is instantiated
@@ -61,10 +61,10 @@ TYPED_TEST_CASE( StaticArrayTest, StaticArrayTypes );
 TYPED_TEST( StaticArrayTest, constructors )
 {
    using ArrayType = typename TestFixture::ArrayType;
-   using ElementType = typename TestFixture::ElementType;
+   using ValueType = typename TestFixture::ValueType;
    constexpr int Size = ArrayType::size;
 
-   ElementType data[ Size ];
+   ValueType data[ Size ];
    for( int i = 0; i < Size; i++ )
       data[ i ] = i;
 
@@ -110,16 +110,16 @@ TYPED_TEST( StaticArrayTest, getData )
    EXPECT_TRUE( u2.getData() );
 }
 
-template< typename Element >
-void checkCoordinates( StaticArray< 1, Element >& u )
+template< typename Value >
+void checkCoordinates( StaticArray< 1, Value >& u )
 {
    EXPECT_EQ( u.x(), 0 );
    u.x() += 1;
    EXPECT_EQ( u.x(), 1 );
 }
 
-template< typename Element >
-void checkCoordinates( StaticArray< 2, Element >& u )
+template< typename Value >
+void checkCoordinates( StaticArray< 2, Value >& u )
 {
    EXPECT_EQ( u.x(), 0 );
    EXPECT_EQ( u.y(), 1 );
@@ -129,8 +129,8 @@ void checkCoordinates( StaticArray< 2, Element >& u )
    EXPECT_EQ( u.y(), 2 );
 }
 
-template< typename Element >
-void checkCoordinates( StaticArray< 3, Element >& u )
+template< typename Value >
+void checkCoordinates( StaticArray< 3, Value >& u )
 {
    EXPECT_EQ( u.x(), 0 );
    EXPECT_EQ( u.y(), 1 );
@@ -143,8 +143,8 @@ void checkCoordinates( StaticArray< 3, Element >& u )
    EXPECT_EQ( u.z(), 3 );
 }
 
-template< int _Size, typename Element >
-void checkCoordinates( StaticArray< _Size, Element >& u )
+template< int _Size, typename Value >
+void checkCoordinates( StaticArray< _Size, Value >& u )
 {
 }
 
@@ -284,14 +284,14 @@ TYPED_TEST( StaticArrayTest, streamOperator )
 TYPED_TEST( StaticArrayTest, BindToArray )
 {
    using ArrayType = typename TestFixture::ArrayType;
-   using ElementType = typename TestFixture::ElementType;
+   using ValueType = typename TestFixture::ValueType;
    constexpr int Size = ArrayType::size;
 
    ArrayType a;
    for( int i = 0; i < Size; i++ )
       a[ i ] = i+1;
 
-   Array< ElementType, Devices::Host > sharedArray;
+   Array< ValueType, Devices::Host > sharedArray;
    sharedArray.bind( a );
    for( int i = 0; i < Size; i++ )
       EXPECT_EQ( a[ i ], sharedArray[ i ] );

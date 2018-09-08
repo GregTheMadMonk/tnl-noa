@@ -20,7 +20,7 @@
 
 using namespace TNL;
 
-template< typename MeshPointer, typename Element, typename Real, typename Index >
+template< typename MeshPointer, typename Value, typename Real, typename Index >
 bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const Config::ParameterContainer& parameters )
 {
    bool verbose = parameters. getParameter< bool >( "verbose" );
@@ -157,7 +157,7 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const Con
 }
 
 
-template< typename MeshPointer, typename Element, typename Real, typename Index >
+template< typename MeshPointer, typename Value, typename Real, typename Index >
 bool computeDifferenceOfVectors( const MeshPointer& meshPointer, const Config::ParameterContainer& parameters )
 {
    bool verbose = parameters. getParameter< bool >( "verbose" );
@@ -291,21 +291,21 @@ bool computeDifferenceOfVectors( const MeshPointer& meshPointer, const Config::P
    return true;
 }
 
-template< typename MeshPointer, typename Element, typename Real, typename Index >
+template< typename MeshPointer, typename Value, typename Real, typename Index >
 bool computeDifference( const MeshPointer& meshPointer, const String& objectType, const Config::ParameterContainer& parameters )
 {
    if( objectType == "Functions::MeshFunction" ||
        objectType == "tnlMeshFunction" )  // TODO: remove deprecated type name
-      return computeDifferenceOfMeshFunctions< MeshPointer, Element, Real, Index >( meshPointer, parameters );
+      return computeDifferenceOfMeshFunctions< MeshPointer, Value, Real, Index >( meshPointer, parameters );
    if( objectType == "Containers::Vector" ||
        objectType == "tnlVector" || objectType == "tnlSharedVector" )   // TODO: remove deprecated type name
-      return computeDifferenceOfVectors< MeshPointer, Element, Real, Index >( meshPointer, parameters );
+      return computeDifferenceOfVectors< MeshPointer, Value, Real, Index >( meshPointer, parameters );
    std::cerr << "Unknown object type " << objectType << "." << std::endl;
    return false;
 }
 
 
-template< typename MeshPointer, typename Element, typename Real >
+template< typename MeshPointer, typename Value, typename Real >
 bool setIndexType( const MeshPointer& meshPointer,
                    const String& inputFileName,
                    const Containers::List< String >& parsedObjectType,
@@ -323,12 +323,12 @@ bool setIndexType( const MeshPointer& meshPointer,
 
    if( parsedObjectType[ 0 ] == "Functions::MeshFunction" ||
        parsedObjectType[ 0 ] == "tnlMeshFunction" )                      // TODO: remove deprecated type names
-      return computeDifference< MeshPointer, Element, Real, typename MeshPointer::ObjectType::IndexType >( meshPointer, parsedObjectType[ 0 ], parameters );
+      return computeDifference< MeshPointer, Value, Real, typename MeshPointer::ObjectType::IndexType >( meshPointer, parsedObjectType[ 0 ], parameters );
    
    if( indexType == "int" )
-      return computeDifference< MeshPointer, Element, Real, int >( meshPointer, parsedObjectType[ 0 ], parameters );
+      return computeDifference< MeshPointer, Value, Real, int >( meshPointer, parsedObjectType[ 0 ], parameters );
    if( indexType == "long-int" )
-      return computeDifference< MeshPointer, Element, Real, long int >( meshPointer, parsedObjectType[ 0 ], parameters );
+      return computeDifference< MeshPointer, Value, Real, long int >( meshPointer, parsedObjectType[ 0 ], parameters );
    std::cerr << "Unknown index type " << indexType << "." << std::endl;
    return false;
 }
@@ -337,11 +337,11 @@ template< typename MeshPointer >
 bool setTupleType( const MeshPointer& meshPointer,
                    const String& inputFileName,
                    const Containers::List< String >& parsedObjectType,
-                   const Containers::List< String >& parsedElementType,
+                   const Containers::List< String >& parsedValueType,
                    const Config::ParameterContainer& parameters )
 {
-   int dimensions = atoi( parsedElementType[ 1 ].getString() );
-   String dataType = parsedElementType[ 2 ];
+   int dimensions = atoi( parsedValueType[ 1 ].getString() );
+   String dataType = parsedValueType[ 2 ];
    if( dataType == "float" )
       switch( dimensions )
       {
@@ -385,7 +385,7 @@ bool setTupleType( const MeshPointer& meshPointer,
 }
 
 template< typename MeshPointer >
-bool setElementType( const MeshPointer& meshPointer,
+bool setValueType( const MeshPointer& meshPointer,
                      const String& inputFileName,
                      const Containers::List< String >& parsedObjectType,
                      const Config::ParameterContainer& parameters )
@@ -411,14 +411,14 @@ bool setElementType( const MeshPointer& meshPointer,
       return setIndexType< MeshPointer, double, double >( meshPointer, inputFileName, parsedObjectType, parameters );
    if( elementType == "long double" )
       return setIndexType< MeshPointer, long double, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
-   Containers::List< String > parsedElementType;
-   if( ! parseObjectType( elementType, parsedElementType ) )
+   Containers::List< String > parsedValueType;
+   if( ! parseObjectType( elementType, parsedValueType ) )
    {
       std::cerr << "Unable to parse object type " << elementType << "." << std::endl;
       return false;
    }
-   if( parsedElementType[ 0 ] == "Containers::StaticVector" )
-      return setTupleType< MeshPointer >( meshPointer, inputFileName, parsedObjectType, parsedElementType, parameters );
+   if( parsedValueType[ 0 ] == "Containers::StaticVector" )
+      return setTupleType< MeshPointer >( meshPointer, inputFileName, parsedObjectType, parsedValueType, parameters );
 
    std::cerr << "Unknown element type " << elementType << "." << std::endl;
    return false;
@@ -461,7 +461,7 @@ bool processFiles( const Config::ParameterContainer& parameters )
       std::cerr << "Unable to parse object type " << objectType << "." << std::endl;
       return false;
    }
-   setElementType< MeshPointer >( meshPointer, inputFiles[ 0 ], parsedObjectType, parameters );
+   setValueType< MeshPointer >( meshPointer, inputFiles[ 0 ], parsedObjectType, parameters );
    return true;
 }
 
