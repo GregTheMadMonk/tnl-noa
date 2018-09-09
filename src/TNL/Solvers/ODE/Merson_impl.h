@@ -96,10 +96,10 @@ Merson< Problem > :: Merson()
 };
 
 template< typename Problem >
-String Merson< Problem > :: getType() const
+String Merson< Problem > :: getType()
 {
    return String( "Merson< " ) +
-          Problem :: getType() +
+          Problem::getType() +
           String( " >" );
 };
 

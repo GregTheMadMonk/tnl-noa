@@ -34,7 +34,7 @@ Euler< Problem > :: Euler()
 };
 
 template< typename Problem >
-String Euler< Problem > :: getType() const
+String Euler< Problem > :: getType()
 {
    return String( "Euler< " ) +
           Problem :: getType() +

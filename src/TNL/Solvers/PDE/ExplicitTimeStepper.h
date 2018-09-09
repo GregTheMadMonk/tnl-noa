@@ -27,20 +27,23 @@ class ExplicitTimeStepper
 {
    public:
 
-      typedef Problem ProblemType;
-      typedef OdeSolver< ExplicitTimeStepper< Problem, OdeSolver > > OdeSolverType;
-      typedef typename Problem::RealType RealType;
-      typedef typename Problem::DeviceType DeviceType;
-      typedef typename Problem::IndexType IndexType;
-      typedef typename Problem::MeshType MeshType;
-      typedef Pointers::SharedPointer< MeshType > MeshPointer;
-      typedef typename ProblemType::DofVectorType DofVectorType;
-      typedef Pointers::SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
-      typedef IterativeSolverMonitor< RealType, IndexType > SolverMonitorType;
+      using ProblemType = Problem;
+      using RealType = typename Problem::RealType;
+      using DeviceType = typename Problem::DeviceType;
+      using IndexType = typename Problem::IndexType;
+      using MeshType = typename Problem::MeshType;
+      using MeshPointer = Pointers::SharedPointer< MeshType >;
+      using DofVectorType = typename ProblemType::DofVectorType;
+      using DofVectorPointer = Pointers::SharedPointer< DofVectorType, DeviceType >;
+      using SolverMonitorType = IterativeSolverMonitor< RealType, IndexType >;
       using CommunicatorType = typename Problem::CommunicatorType;
+      using OdeSolverType = OdeSolver< ExplicitTimeStepper< Problem, OdeSolver > >;
+      using OdeSolverPointer = Pointers::SharedPointer< OdeSolverType, DeviceType >;
 
       static_assert( ProblemType::isTimeDependent(), "The problem is not time dependent." );
 
+      static String getType();
+      
       ExplicitTimeStepper();
 
       static void configSetup( Config::ConfigDescription& config,
@@ -79,7 +82,7 @@ class ExplicitTimeStepper
 
    protected:
 
-      OdeSolverType* odeSolver;
+      OdeSolverPointer odeSolver;
 
       SolverMonitorType* solverMonitor;
 
