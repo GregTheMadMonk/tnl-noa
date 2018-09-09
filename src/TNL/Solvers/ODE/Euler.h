@@ -35,7 +35,7 @@ class Euler : public ExplicitSolver< Problem >
 
    Euler();
 
-   String getType() const;
+   static String getType();
 
    static void configSetup( Config::ConfigDescription& config,
                             const String& prefix = "" );

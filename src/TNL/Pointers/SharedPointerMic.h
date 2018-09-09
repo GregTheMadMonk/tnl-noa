@@ -188,7 +188,8 @@ class SharedPointer< Object, Devices::MIC > : public SmartPointer
          this->free();
          this->pd = (PointerData*) ptr.pd;
          this->mic_pointer = ptr.mic_pointer;
-         this->pd->counter += 1;
+         if( this->pd != nullptr )
+            this->pd->counter += 1;
 #ifdef TNL_DEBUG_SHARED_POINTERS
          std::cerr << "Copy-assigned shared pointer: counter = " << this->pd->counter << ", type: " << demangle(typeid(ObjectType).name()) << std::endl;
 #endif
@@ -203,7 +204,8 @@ class SharedPointer< Object, Devices::MIC > : public SmartPointer
          this->free();
          this->pd = (PointerData*) ptr.pd;
          this->mic_pointer = ptr.mic_pointer;
-         this->pd->counter += 1;
+         if( this->pd != nullptr )
+            this->pd->counter += 1;
 #ifdef TNL_DEBUG_SHARED_POINTERS
          std::cerr << "Copy-assigned shared pointer: counter = " << this->pd->counter << ", type: " << demangle(typeid(ObjectType).name()) << std::endl;
 #endif

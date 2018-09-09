@@ -27,7 +27,7 @@ namespace ODE {
 
 template< class Problem >
 class ExplicitSolver : public IterativeSolver< typename Problem::RealType,
-                                                     typename Problem::IndexType >
+                                               typename Problem::IndexType >
 {
    public:
  

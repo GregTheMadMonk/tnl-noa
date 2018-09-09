@@ -18,10 +18,22 @@ namespace PDE {
 
 template< typename Problem,
           template < typename OdeProblem > class OdeSolver >
+String
+ExplicitTimeStepper< Problem, OdeSolver >::
+getType()
+{
+   return String( "ExplicitTimeStepper< " ) +
+          Problem::getType() + ", " +
+          OdeSolverType::getType() + ", " +
+          String( " >" );
+};
+   
+   
+template< typename Problem,
+          template < typename OdeProblem > class OdeSolver >
 ExplicitTimeStepper< Problem, OdeSolver >::
 ExplicitTimeStepper()
-: odeSolver( 0 ),
-  problem( 0 ),
+: problem( 0 ),
   timeStep( 0 ),
   allIterations( 0 )
 {
@@ -43,7 +55,7 @@ ExplicitTimeStepper< Problem, OdeSolver >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   return true;
+   return this->odeSolver->setup( parameters, prefix );
 }
 
 template< typename Problem,

@@ -32,7 +32,7 @@ class Merson : public ExplicitSolver< Problem >
 
    Merson();
 
-   String getType() const;
+   static String getType();
 
    static void configSetup( Config::ConfigDescription& config,
                             const String& prefix = "" );
