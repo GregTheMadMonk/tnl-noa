@@ -1,3 +1,4 @@
+add_subdirectory( simple-examples )
 add_subdirectory( heat-equation )
 add_subdirectory( transport-equation )
 add_subdirectory( navier-stokes )
