@@ -163,7 +163,8 @@ class SharedPointer<  Object, Devices::Host > : public SmartPointer
       {
          this->free();
          this->pd = (PointerData*) ptr.pd;
-         this->pd->counter += 1;
+         if( this->pd != nullptr )
+            this->pd->counter += 1;
          return *this;
       }
 
@@ -174,7 +175,8 @@ class SharedPointer<  Object, Devices::Host > : public SmartPointer
       {
          this->free();
          this->pd = (PointerData*) ptr.pd;
-         this->pd->counter += 1;
+         if( this->pd != nullptr )
+            this->pd->counter += 1;
          return *this;
       }
 
