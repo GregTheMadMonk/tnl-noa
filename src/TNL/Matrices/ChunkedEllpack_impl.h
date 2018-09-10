@@ -95,7 +95,7 @@ void ChunkedEllpack< Real, Device, Index >::setDimensions( const IndexType rows,
 template< typename Real,
           typename Device,
           typename Index >
-void ChunkedEllpack< Real, Device, Index >::resolveSliceSizes( const Containers::Vector< Index, Devices::Host, Index >& rowLengths )
+void ChunkedEllpack< Real, Device, Index >::resolveSliceSizes( ConstCompressedRowLengthsVectorView rowLengths )
 {
    /****
     * Iterate over rows and allocate slices so that each slice has
@@ -132,7 +132,7 @@ void ChunkedEllpack< Real, Device, Index >::resolveSliceSizes( const Containers:
 template< typename Real,
           typename Device,
           typename Index >
-bool ChunkedEllpack< Real, Device, Index >::setSlice( const CompressedRowLengthsVector& rowLengths,
+bool ChunkedEllpack< Real, Device, Index >::setSlice( ConstCompressedRowLengthsVectorView rowLengths,
                                                                const IndexType sliceIndex,
                                                                IndexType& elementsToAllocation )
 {
@@ -215,7 +215,7 @@ bool ChunkedEllpack< Real, Device, Index >::setSlice( const CompressedRowLengths
 template< typename Real,
           typename Device,
           typename Index >
-void ChunkedEllpack< Real, Device, Index >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
+void ChunkedEllpack< Real, Device, Index >::setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths )
 {
    TNL_ASSERT_GT( this->getRows(), 0, "cannot set row lengths of an empty matrix" );
    TNL_ASSERT_GT( this->getColumns(), 0, "cannot set row lengths of an empty matrix" );
@@ -1336,7 +1336,7 @@ class ChunkedEllpackDeviceDependentCode< Devices::Host >
       template< typename Real,
                 typename Index >
       static void resolveSliceSizes( ChunkedEllpack< Real, Device, Index >& matrix,
-                                     const typename ChunkedEllpack< Real, Device, Index >::CompressedRowLengthsVector& rowLengths )
+                                     typename ChunkedEllpack< Real, Device, Index >::ConstCompressedRowLengthsVectorView rowLengths )
       {
          matrix.resolveSliceSizes( rowLengths );
       }
@@ -1397,7 +1397,7 @@ class ChunkedEllpackDeviceDependentCode< Devices::Cuda >
       template< typename Real,
                 typename Index >
       static void resolveSliceSizes( ChunkedEllpack< Real, Device, Index >& matrix,
-                                     const typename ChunkedEllpack< Real, Device, Index >::CompressedRowLengthsVector& rowLengths )
+                                     typename ChunkedEllpack< Real, Device, Index >::ConstCompressedRowLengthsVectorView rowLengths )
       {
       }
  

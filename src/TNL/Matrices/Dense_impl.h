@@ -83,7 +83,7 @@ void Dense< Real, Device, Index >::setLike( const Dense< Real2, Device2, Index2 
 template< typename Real,
           typename Device,
           typename Index >
-void Dense< Real, Device, Index >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
+void Dense< Real, Device, Index >::setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths )
 {
 }
 

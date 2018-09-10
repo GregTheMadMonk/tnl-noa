@@ -77,6 +77,7 @@ public:
    typedef Index IndexType;
    typedef tnlChunkedEllpackSliceInfo< IndexType > ChunkedEllpackSliceInfo;
    typedef typename Sparse< RealType, DeviceType, IndexType >:: CompressedRowLengthsVector CompressedRowLengthsVector;
+   typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
    typedef ChunkedEllpack< Real, Device, Index > ThisType;
    typedef ChunkedEllpack< Real, Devices::Host, Index > HostType;
    typedef ChunkedEllpack< Real, Devices::Cuda, Index > CudaType;
@@ -97,7 +98,7 @@ public:
    void setDimensions( const IndexType rows,
                        const IndexType columns );
 
-   void setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths );
+   void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths );
 
    IndexType getRowLength( const IndexType row ) const;
 
@@ -253,9 +254,9 @@ public:
 
 protected:
 
-   void resolveSliceSizes( const Containers::Vector< Index, Devices::Host, Index >& rowLengths );
+   void resolveSliceSizes( ConstCompressedRowLengthsVectorView rowLengths );
 
-   bool setSlice( const CompressedRowLengthsVector& rowLengths,
+   bool setSlice( ConstCompressedRowLengthsVectorView rowLengths,
                   const IndexType sliceIdx,
                   IndexType& elementsToAllocation );
 

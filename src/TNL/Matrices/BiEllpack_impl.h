@@ -99,7 +99,7 @@ template< typename Real,
 	  int StripSize >
 void
 BiEllpack< Real, Device, Index, StripSize >::
-setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
+setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths )
 {
 	if( this->getRows() % this->warpSize != 0 )
 		this->setVirtualRows( this->getRows() + this->warpSize - ( this->getRows() % this->warpSize ) );
@@ -112,8 +112,9 @@ setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
 	for( IndexType i = 0; i < this->groupPointers.getSize(); i++ )
 		this->groupPointers.setElement( i, 0 );
 
-	DeviceDependentCode::performRowBubbleSort( *this, rowLengths );
-	DeviceDependentCode::computeColumnSizes( *this, rowLengths );
+   // FIXME: cannot sort a const vector!
+	//DeviceDependentCode::performRowBubbleSort( *this, rowLengths );
+	//DeviceDependentCode::computeColumnSizes( *this, rowLengths );
 
 	this->groupPointers.computeExclusivePrefixSum();
 

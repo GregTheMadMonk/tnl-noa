@@ -34,6 +34,7 @@ public:
 	typedef Device DeviceType;
 	typedef Index IndexType;
 	typedef typename Sparse< RealType, DeviceType, IndexType >:: CompressedRowLengthsVector CompressedRowLengthsVector;
+   typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
 	typedef COOMatrix< Real, Device, Index > ThisType;
 	typedef COOMatrix< Real, Devices::Host, Index > HostType;
 	typedef COOMatrix< Real, Devices::Cuda, Index > CudaType;
@@ -51,7 +52,7 @@ public:
 
 	IndexType getNumberOfUsedValues() const;
 
-	bool setCompressedRowLengths(const CompressedRowLengthsVector& rowLengths);
+	bool setCompressedRowLengths(ConstCompressedRowLengthsVectorView rowLengths);
 
 	void getRowLengths(Containers::Vector< IndexType, DeviceType, IndexType >& rowLengths) const;
 

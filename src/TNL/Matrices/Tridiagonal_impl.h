@@ -75,7 +75,7 @@ void Tridiagonal< Real, Device, Index >::setDimensions( const IndexType rows,
 template< typename Real,
           typename Device,
           typename Index >
-void Tridiagonal< Real, Device, Index >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
+void Tridiagonal< Real, Device, Index >::setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths )
 {
    if( rowLengths[ 0 ] > 2 )
       throw std::logic_error( "Too many non-zero elements per row in a tri-diagonal matrix." );

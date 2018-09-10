@@ -27,6 +27,7 @@ public:
 	typedef Device DeviceType;
 	typedef Index IndexType;
 	typedef typename Sparse< RealType, DeviceType, IndexType >::CompressedRowLengthsVector CompressedRowLengthsVector;
+   typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
 	typedef typename Sparse< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
 	typedef typename Sparse< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
 	typedef BiEllpackSymmetric< Real, Device, Index > ThisType;
@@ -41,7 +42,7 @@ public:
 
 	void setDimensions( const IndexType rows, const IndexType columns );
 
-	void setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths );
+   void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths );
 
 	IndexType getRowLength( const IndexType row ) const;
 

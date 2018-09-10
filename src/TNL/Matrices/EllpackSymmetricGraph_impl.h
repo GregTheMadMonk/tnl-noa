@@ -83,7 +83,7 @@ void EllpackSymmetricGraph< Real, Device, Index >::setDimensions( const IndexTyp
 template< typename Real,
           typename Device,
           typename Index >
-void EllpackSymmetricGraph< Real, Device, Index >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
+void EllpackSymmetricGraph< Real, Device, Index >::setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths )
 {
    TNL_ASSERT( this->getRows() > 0, );
    TNL_ASSERT( this->getColumns() > 0, );

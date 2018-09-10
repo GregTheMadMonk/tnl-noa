@@ -66,7 +66,7 @@ void EllpackSymmetric< Real, Device, Index >::setDimensions( const IndexType row
 template< typename Real,
           typename Device,
           typename Index >
-void EllpackSymmetric< Real, Device, Index >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
+void EllpackSymmetric< Real, Device, Index >::setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths )
 {
    TNL_ASSERT( this->getRows() > 0, );
    TNL_ASSERT( this->getColumns() > 0, );

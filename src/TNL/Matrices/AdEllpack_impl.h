@@ -182,7 +182,7 @@ template< typename Real,
           typename Index >
 void
 AdEllpack< Real, Device, Index >::
-setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
+setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths )
 {
     TNL_ASSERT( this->getRows() > 0, );
     TNL_ASSERT( this->getColumns() > 0, );
@@ -250,7 +250,7 @@ Index AdEllpack< Real, Device, Index >::getTotalLoad() const
 template< typename Real,
           typename Device,
           typename Index >
-void AdEllpack< Real, Device, Index >::performRowLengthsTest( const CompressedRowLengthsVector& rowLengths )
+void AdEllpack< Real, Device, Index >::performRowLengthsTest( ConstCompressedRowLengthsVectorView rowLengths )
 {
     bool found = false;
     for( IndexType row = 0; row < this->getRows(); row++ )
@@ -694,8 +694,8 @@ template< typename Real,
           typename Device,
           typename Index >
 bool AdEllpack< Real, Device, Index >::balanceLoad( const RealType average,
-                                                             const CompressedRowLengthsVector& rowLengths,
-                                                             warpList* list )
+                                                    ConstCompressedRowLengthsVectorView rowLengths,
+                                                    warpList* list )
 {
     IndexType offset, rowOffset, localLoad, reduceMap[ 32 ];
 

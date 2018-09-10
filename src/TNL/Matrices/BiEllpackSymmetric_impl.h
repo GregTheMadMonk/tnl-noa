@@ -96,7 +96,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int StripSize >
-void BiEllpackSymmetric< Real, Device, Index, StripSize >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
+void BiEllpackSymmetric< Real, Device, Index, StripSize >::setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths )
 {
     if( this->getRows() % this->warpSize != 0 )
         this->setVirtualRows( this->getRows() + this->warpSize - ( this->getRows() % this->warpSize ) );
@@ -108,7 +108,7 @@ void BiEllpackSymmetric< Real, Device, Index, StripSize >::setCompressedRowLengt
     for( IndexType i = 0; i < this->groupPointers.getSize(); i++ )
         this->groupPointers.setElement( i, 0 );
 
-   // TODO: fix this
+   // FIXME: cannot sort a const vector!
     //DeviceDependentCode::performRowBubbleSort( *this, rowLengths );
     //DeviceDependentCode::computeColumnSizes( *this, rowLengths );
 

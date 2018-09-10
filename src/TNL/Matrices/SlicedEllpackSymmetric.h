@@ -30,7 +30,7 @@ template< typename Real,
           typename Index,
           int SliceSize >
 __global__ void SlicedEllpackSymmetric_computeMaximalRowLengthInSlices_CudaKernel( SlicedEllpack< Real, Devices::Cuda, Index, SliceSize >* matrix,
-                                                                                   const typename SlicedEllpackSymmetric< Real, Devices::Cuda, Index, SliceSize >::CompressedRowLengthsVector* rowLengths,
+                                                                                   typename SlicedEllpackSymmetric< Real, Devices::Cuda, Index, SliceSize >::ConstCompressedRowLengthsVectorView rowLengths,
                                                                                    int gridIdx );
 #endif
 
@@ -46,6 +46,7 @@ class SlicedEllpackSymmetric : public Sparse< Real, Device, Index >
    typedef Device DeviceType;
    typedef Index IndexType;
    typedef typename Sparse< RealType, DeviceType, IndexType >::CompressedRowLengthsVector CompressedRowLengthsVector;
+   typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
    typedef SlicedEllpackSymmetric< Real, Device, Index > ThisType;
@@ -62,7 +63,7 @@ class SlicedEllpackSymmetric : public Sparse< Real, Device, Index >
    void setDimensions( const IndexType rows,
                        const IndexType columns );
 
-   void setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths );
+   void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths );
 
    IndexType getRowLength( const IndexType row ) const;
 
@@ -196,7 +197,7 @@ class SlicedEllpackSymmetric : public Sparse< Real, Device, Index >
    // TODO: The friend declaration above does not work because of __global__ storage specifier. Therefore we declare the following method as public. Fix this, when possible.
 
    public:
-   __device__ void computeMaximalRowLengthInSlicesCuda( const CompressedRowLengthsVector& rowLengths,
+   __device__ void computeMaximalRowLengthInSlicesCuda( ConstCompressedRowLengthsVectorView rowLengths,
                                                         const IndexType sliceIdx );
 
 #endif

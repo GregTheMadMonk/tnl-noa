@@ -39,6 +39,7 @@ public:
    typedef Device DeviceType;
    typedef Index IndexType;
    typedef typename Matrix< Real, Device, Index >::CompressedRowLengthsVector CompressedRowLengthsVector;
+   typedef typename Matrix< Real, Device, Index >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
    typedef Tridiagonal< Real, Device, Index > ThisType;
    typedef Tridiagonal< Real, Devices::Host, Index > HostType;
    typedef Tridiagonal< Real, Devices::Cuda, Index > CudaType;
@@ -58,7 +59,7 @@ public:
    void setDimensions( const IndexType rows,
                        const IndexType columns );
 
-   void setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths );
+   void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths );
 
    IndexType getRowLength( const IndexType row ) const;
 

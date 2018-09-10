@@ -43,6 +43,15 @@ template< typename Real,
 void Matrix< Real, Device, Index >::getCompressedRowLengths( CompressedRowLengthsVector& rowLengths ) const
 {
    rowLengths.setSize( this->getRows() );
+   getCompressedRowLengths( CompressedRowLengthsVectorView( rowLengths ) );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void Matrix< Real, Device, Index >::getCompressedRowLengths( CompressedRowLengthsVectorView rowLengths ) const
+{
+   TNL_ASSERT_EQ( rowLengths.getSize(), this->getRows(), "invalid size of the rowLengths vector" );
    for( IndexType row = 0; row < this->getRows(); row++ )
       rowLengths.setElement( row, this->getRowLength( row ) );
 }

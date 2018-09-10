@@ -45,6 +45,7 @@ public:
    typedef Device DeviceType;
    typedef Index IndexType;
    typedef typename Sparse< RealType, DeviceType, IndexType >:: CompressedRowLengthsVector CompressedRowLengthsVector;
+   typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
    typedef CSR< Real, Device, Index > ThisType;
    typedef CSR< Real, Devices::Host, Index > HostType;
    typedef CSR< Real, Devices::Cuda, Index > CudaType;
@@ -68,7 +69,7 @@ public:
    void setDimensions( const IndexType rows,
                        const IndexType columns );
 
-   void setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths );
+   void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths );
 
    IndexType getRowLength( const IndexType row ) const;
 

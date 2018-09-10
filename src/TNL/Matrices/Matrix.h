@@ -13,6 +13,7 @@
 #include <TNL/Object.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Containers/Vector.h>
+#include <TNL/Containers/VectorView.h>
 
 namespace TNL {
 namespace Matrices {   
@@ -27,6 +28,8 @@ public:
    typedef Device DeviceType;
    typedef Index IndexType;
    typedef Containers::Vector< IndexType, DeviceType, IndexType > CompressedRowLengthsVector;
+   typedef Containers::VectorView< IndexType, DeviceType, IndexType > CompressedRowLengthsVectorView;
+   typedef Containers::VectorView< const IndexType, DeviceType, IndexType > ConstCompressedRowLengthsVectorView;
    typedef Containers::Vector< RealType, DeviceType, IndexType > ValuesVector;
 
    Matrix();
@@ -34,13 +37,15 @@ public:
    virtual void setDimensions( const IndexType rows,
                                  const IndexType columns );
 
-   virtual void setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths ) = 0;
+   virtual void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths ) = 0;
 
    virtual IndexType getRowLength( const IndexType row ) const = 0;
 
    // TODO: implementation is not parallel
    // TODO: it would be nice if padding zeros could be stripped
-   virtual void getCompressedRowLengths( CompressedRowLengthsVector& rowLengths ) const;
+   void getCompressedRowLengths( CompressedRowLengthsVector& rowLengths ) const;
+
+   virtual void getCompressedRowLengths( CompressedRowLengthsVectorView rowLengths ) const;
 
    template< typename Real2, typename Device2, typename Index2 >
    void setLike( const Matrix< Real2, Device2, Index2 >& matrix );

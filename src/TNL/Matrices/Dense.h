@@ -40,6 +40,7 @@ public:
    typedef Device DeviceType;
    typedef Index IndexType;
    typedef typename Matrix< Real, Device, Index >::CompressedRowLengthsVector CompressedRowLengthsVector;
+   typedef typename Matrix< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
    typedef Dense< Real, Device, Index > ThisType;
    typedef Dense< Real, Devices::Host, Index > HostType;
    typedef Dense< Real, Devices::Cuda, Index > CudaType;
@@ -66,7 +67,7 @@ public:
    /****
     * This method is only for the compatibility with the sparse matrices.
     */
-   void setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths );
+   void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths );
 
    /****
     * Returns maximal number of the nonzero matrix elements that can be stored

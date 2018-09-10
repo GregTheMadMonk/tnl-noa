@@ -83,6 +83,7 @@ public:
     typedef Device DeviceType;
     typedef Index IndexType;
     typedef typename Sparse< RealType, DeviceType, IndexType >::CompressedRowLengthsVector CompressedRowLengthsVector;
+    typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
     typedef AdEllpack< Real, Device, Index > ThisType;
     typedef AdEllpack< Real, Devices::Host, Index > HostType;
     typedef AdEllpack< Real, Devices::Cuda, Index > CudaType;
@@ -93,7 +94,7 @@ public:
 
     String getTypeVirtual() const;
 
-    void setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths );
+    void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths );
 
     IndexType getWarp( const IndexType row ) const;
 
@@ -155,7 +156,7 @@ public:
     void print( std::ostream& str ) const;
 
     bool balanceLoad( const RealType average,
-                      const CompressedRowLengthsVector& rowLengths,
+                      ConstCompressedRowLengthsVectorView rowLengths,
                       warpList* list );
 
     void computeWarps( const IndexType SMs,
@@ -166,7 +167,7 @@ public:
 
     void performRowTest();
 
-    void performRowLengthsTest( const CompressedRowLengthsVector& rowLengths );
+    void performRowLengthsTest( ConstCompressedRowLengthsVectorView rowLengths );
 
     IndexType getTotalLoad() const;
 

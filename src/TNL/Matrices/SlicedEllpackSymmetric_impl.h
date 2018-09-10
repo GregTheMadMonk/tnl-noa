@@ -64,7 +64,7 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-void SlicedEllpackSymmetric< Real, Device, Index, SliceSize >::setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
+void SlicedEllpackSymmetric< Real, Device, Index, SliceSize >::setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths )
 {
    TNL_ASSERT( this->getRows() > 0, );
    TNL_ASSERT( this->getColumns() > 0, );
@@ -693,8 +693,8 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-__device__ void SlicedEllpackSymmetric< Real, Device, Index, SliceSize >::computeMaximalRowLengthInSlicesCuda( const CompressedRowLengthsVector& rowLengths,
-                                                                                                                  const IndexType sliceIdx )
+__device__ void SlicedEllpackSymmetric< Real, Device, Index, SliceSize >::computeMaximalRowLengthInSlicesCuda( ConstCompressedRowLengthsVectorView rowLengths,
+                                                                                                               const IndexType sliceIdx )
 {
    Index rowIdx = sliceIdx * SliceSize;
    Index rowInSliceIdx( 0 );
@@ -763,7 +763,7 @@ class SlicedEllpackSymmetricDeviceDependentCode< Devices::Host >
                 typename Index,
                 int SliceSize >
       static bool computeMaximalRowLengthInSlices( SlicedEllpackSymmetric< Real, Device, Index, SliceSize >& matrix,
-                                                   const typename SlicedEllpackSymmetric< Real, Device, Index >::RowLengthsVector& rowLengths )
+                                                   typename SlicedEllpackSymmetric< Real, Device, Index >::ConstCompressedRowLengthsVectorView rowLengths )
       {
          Index row( 0 ), slice( 0 ), sliceRowLength( 0 );
          while( row < matrix.getRows() )
@@ -806,11 +806,11 @@ template< typename Real,
           typename Index,
           int SliceSize >
 __global__ void SlicedEllpackSymmetric_computeMaximalRowLengthInSlices_CudaKernel( SlicedEllpackSymmetric< Real, Devices::Cuda, Index, SliceSize >* matrix,
-                                                                                   const typename SlicedEllpackSymmetric< Real, Devices::Cuda, Index, SliceSize >::RowLengthsVector* rowLengths,
+                                                                                   typename SlicedEllpackSymmetric< Real, Devices::Cuda, Index, SliceSize >::ConstCompressedRowLengthsVectorView rowLengths,
                                                                                    int gridIdx )
 {
    const Index sliceIdx = gridIdx * Devices::Cuda::getMaxGridSize() * blockDim.x + blockIdx.x * blockDim.x + threadIdx.x;
-   matrix->computeMaximalRowLengthInSlicesCuda( *rowLengths, sliceIdx );
+   matrix->computeMaximalRowLengthInSlicesCuda( rowLengths, sliceIdx );
 }
 #endif
 
@@ -863,13 +863,12 @@ class SlicedEllpackSymmetricDeviceDependentCode< Devices::Cuda >
                 typename Index,
                 int SliceSize >
       static bool computeMaximalRowLengthInSlices( SlicedEllpackSymmetric< Real, Device, Index, SliceSize >& matrix,
-                                                   const typename SlicedEllpackSymmetric< Real, Device, Index >::RowLengthsVector& rowLengths )
+                                                   typename SlicedEllpackSymmetric< Real, Device, Index >::ConstCompressedRowLengthsVectorView rowLengths )
       {
 #ifdef HAVE_CUDA
          typedef SlicedEllpackSymmetric< Real, Device, Index, SliceSize > Matrix;
          typedef typename Matrix::RowLengthsVector CompressedRowLengthsVector;
          Matrix* kernel_matrix = Devices::Cuda::passToDevice( matrix );
-         CompressedRowLengthsVector* kernel_rowLengths = Devices::Cuda::passToDevice( rowLengths );
          const Index numberOfSlices = roundUpDivision( matrix.getRows(), SliceSize );
          dim3 cudaBlockSize( 256 ), cudaGridSize( Devices::Cuda::getMaxGridSize() );
          const Index cudaBlocks = roundUpDivision( numberOfSlices, cudaBlockSize.x );
@@ -880,11 +879,10 @@ class SlicedEllpackSymmetricDeviceDependentCode< Devices::Cuda >
                cudaGridSize.x = cudaBlocks % Devices::Cuda::getMaxGridSize();
             SlicedEllpackSymmetric_computeMaximalRowLengthInSlices_CudaKernel< Real, Index, SliceSize ><<< cudaGridSize, cudaBlockSize >>>
                                                                              ( kernel_matrix,
-                                                                               kernel_rowLengths,
+                                                                               rowLengths,
                                                                                gridIdx );
          }
          Devices::Cuda::freeFromDevice( kernel_matrix );
-         Devices::Cuda::freeFromDevice( kernel_rowLengths );
          TNL_CHECK_CUDA_DEVICE;
 #endif
       }

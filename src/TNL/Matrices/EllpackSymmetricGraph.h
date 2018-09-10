@@ -28,6 +28,7 @@ class EllpackSymmetricGraph : public Sparse< Real, Device, Index >
    typedef Device DeviceType;
    typedef Index IndexType;
    typedef typename Sparse< RealType, DeviceType, IndexType >::CompressedRowLengthsVector CompressedRowLengthsVector;
+   typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
    typedef EllpackSymmetricGraph< Real, Device, Index > ThisType;
@@ -44,7 +45,7 @@ class EllpackSymmetricGraph : public Sparse< Real, Device, Index >
    void setDimensions( const IndexType rows,
                        const IndexType columns );
 
-   void setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths );
+   void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths );
 
    bool setConstantRowLengths( const IndexType& rowLengths );
 
