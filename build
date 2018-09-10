@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 TARGET=TNL
 PREFIX=${HOME}/.local
 INSTALL="no"
@@ -78,8 +80,7 @@ do
     esac
 done
 
-if test ${HELP} = "yes";
-then
+if [[ ${HELP} == "yes" ]]; then
     echo "TNL build options:"
     echo ""
     echo "   --build=Debug/Release                 Build type."
@@ -107,31 +108,48 @@ then
     exit 1
 fi
 
-if test ${WITH_CLANG} = "yes";
-then
+if [[ ${WITH_CLANG} == "yes" ]]; then
    export CXX=clang++
    export CC=clang
 fi
 
-if test ${WITH_MPI} = "yes";
-then
-    if ! [ -x  "$(command -v mpic++)" ]; then
+if [[ ${WITH_MPI} == "yes" ]]; then
+    if [[ ! -x  "$(command -v mpic++)" ]]; then
        echo "Warning:mpic++ is not installed on this system. MPI support is turned off." 
     else
+       # instruct OpenMPI to use the original compiler
+       # reference: https://www.open-mpi.org/faq/?category=mpi-apps#override-wrappers-after-v1.0
+       # FIXME: this does not work with CUDA_HOST_COMPILER=mpic++
+#       if [ -n "$CXX" ]; then
+#          export OMPI_CXX="$CXX"
+#       fi
        export CXX=mpic++
        export CUDA_HOST_COMPILER=mpic++
     fi
-    if ! [ -x  "$(command -v mpicc)" ]; then
+    if [[ ! -x  "$(command -v mpicc)" ]]; then
        echo "Warning: mpicc is not installed on this system." 
     else
+       # instruct OpenMPI to use the original compiler
+       # reference: https://www.open-mpi.org/faq/?category=mpi-apps#override-wrappers-after-v1.0
+#       if [ -n "$CC" ]; then
+#          export OMPI_CC="$CC"
+#       fi
        export CC=mpicc
     fi
 fi
 
+if hash ninja 2>/dev/null; then
+   generator=Ninja
+   make=ninja
+   check_file="build.ninja"
+else
+   generator="Unix Makefiles"
+   make=make
+   check_file="Makefile"
+fi
 
-echo "Configuring ${BUILD} $TARGET ..."
-
-${CMAKE} ${ROOT_DIR} \
+cmake_command="${CMAKE} ${ROOT_DIR} \
+         -G ${generator} \
          -DCMAKE_BUILD_TYPE=${BUILD} \
          -DCMAKE_INSTALL_PREFIX=${PREFIX} \
          -DOFFLINE_BUILD=${OFFLINE_BUILD} \
@@ -152,32 +170,47 @@ ${CMAKE} ${ROOT_DIR} \
          -DINSTANTIATE_LONG_DOUBLE=${INSTANTIATE_LONG_DOUBLE} \
          -DINSTANTIATE_INT=${INSTANTIATE_INT} \
          -DINSTANTIATE_LONG_INT=${INSTANTIATE_LONG_INT} \
-         -DOPTIMIZED_VECTOR_HOST_OPERATIONS=${OPTIMIZED_VECTOR_HOST_OPERATIONS}
+         -DOPTIMIZED_VECTOR_HOST_OPERATIONS=${OPTIMIZED_VECTOR_HOST_OPERATIONS}"
 
-if test $? != 0; then
-    echo "Error: cmake exited with error code."
-    exit 1
-fi
-
-if test ${CMAKE_ONLY} = "yes";
-then
-    exit 0
-fi
-
-if [[ -n ${BUILD_JOBS} ]]; then
-    # override $MAKEFLAGS from parent environment
-    export MAKEFLAGS=-j${BUILD_JOBS}
-elif [[ -z ${MAKEFLAGS} ]]; then
-    # $BUILD_JOBS and $MAKEFLAGS are not set => set default value
-    BUILD_JOBS=$(grep "core id" /proc/cpuinfo | sort -u | wc -l)
-    export MAKEFLAGS=-j${BUILD_JOBS}
-fi
-
-if [[ -n ${BUILD_JOBS} ]]; then
-    echo "Building ${BUILD} $TARGET using $BUILD_JOBS processors ..."
+# Skip running cmake if it was already run and the cmake command is the same.
+# The build system (e.g. make) will call it automatically if necessary (e.g.
+# when some CMakeLists.txt changes).
+if [[ -f ".cmake_command" ]]; then
+   last_cmake_command=$(cat ".cmake_command" 2>/dev/null)
 else
-    # number of processors is unknown - it is encoded in $MAKEFLAGS from parent environment
-    echo "Building ${BUILD} $TARGET ..."
+   last_cmake_command=""
+fi
+if [[ ! -f "$check_file" ]] || [[ "$last_cmake_command" != "$cmake_command" ]]; then
+   echo "Configuring ${BUILD} $TARGET ..."
+   $cmake_command
+   echo -n "$cmake_command" > ".cmake_command"
+fi
+
+if [[ ${CMAKE_ONLY} == "yes" ]]; then
+   exit 0
+fi
+
+if [[ "$make" == "make" ]]; then
+   if [[ -n ${BUILD_JOBS} ]]; then
+      # override $MAKEFLAGS from parent environment
+      export MAKEFLAGS=-j${BUILD_JOBS}
+   elif [[ -z ${MAKEFLAGS} ]]; then
+      # $BUILD_JOBS and $MAKEFLAGS are not set => set default value
+      BUILD_JOBS=$(grep "core id" /proc/cpuinfo | sort -u | wc -l)
+      export MAKEFLAGS=-j${BUILD_JOBS}
+   fi
+else
+   if [[ -z ${BUILD_JOBS} ]]; then
+      BUILD_JOBS=$(grep "core id" /proc/cpuinfo | sort -u | wc -l)
+   fi
+   make="$make -j$BUILD_JOBS"
+fi
+
+if [[ -n ${BUILD_JOBS} ]]; then
+   echo "Building ${BUILD} $TARGET using $BUILD_JOBS processors ..."
+else
+   # number of processors is unknown - it is encoded in $MAKEFLAGS from parent environment
+   echo "Building ${BUILD} $TARGET ..."
 fi
 
 if [[ "$INSTALL" == "yes" ]]; then
@@ -187,19 +220,8 @@ else
    make_target="all"
 fi
 
-make ${VERBOSE} $make_target
-if test $? != 0; then
-    echo "Error: Build process failed."
-    exit 1
+$make ${VERBOSE} $make_target
+
+if [[ ${WITH_TESTS} == "yes" ]]; then
+   CTEST_OUTPUT_ON_FAILURE=1 $make test
 fi
-
-
-if test ${WITH_TESTS} = "yes";
-then
-    make test CTEST_OUTPUT_ON_FAILURE=1
-    if test $? != 0; then
-        echo "Error: Some test did not pass successfuly."
-    fi
-fi
-
-exit 0
