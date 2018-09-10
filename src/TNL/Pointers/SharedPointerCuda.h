@@ -142,25 +142,25 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
 
       const Object* operator->() const
       {
-         TNL_ASSERT( this->pd != nullptr, "Attempt of dereferencing of null pointer" );
+         TNL_ASSERT_TRUE( this->pd != nullptr, "Attempt of dereferencing of null pointer" );
          return &this->pd->data;
       }
 
       Object* operator->()
       {
-         TNL_ASSERT( this->pd != nullptr, "Attempt of dereferencing of null pointer" );
+         TNL_ASSERT_TRUE( this->pd != nullptr, "Attempt of dereferencing of null pointer" );
          return &this->pd->data;
       }
 
       const Object& operator *() const
       {
-         TNL_ASSERT( this->pd != nullptr, "Attempt of dereferencing of null pointer" );
+         TNL_ASSERT_TRUE( this->pd != nullptr, "Attempt of dereferencing of null pointer" );
          return this->pd->data;
       }
 
       Object& operator *()
       {
-         TNL_ASSERT( this->pd != nullptr, "Attempt of dereferencing of null pointer" );
+         TNL_ASSERT_TRUE( this->pd != nullptr, "Attempt of dereferencing of null pointer" );
          return this->pd->data;
       }
 
@@ -180,7 +180,7 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
       __cuda_callable__
       const Object& getData() const
       {
-         TNL_ASSERT( this->pd != nullptr, "Attempt of dereferencing of null pointer" );
+         TNL_ASSERT_TRUE( this->pd != nullptr, "Attempt of dereferencing of null pointer" );
          return this->pd->data;
       }      
       
@@ -188,7 +188,7 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
       __cuda_callable__
       Object& modifyData()
       {
-         TNL_ASSERT( this->pd != nullptr, "Attempt of dereferencing of null pointer" );
+         TNL_ASSERT_TRUE( this->pd != nullptr, "Attempt of dereferencing of null pointer" );
          return this->pd->data;
       }
 
@@ -403,26 +403,26 @@ class SharedPointer<  Object, Devices::Cuda > : public SmartPointer
 
       const Object* operator->() const
       {
-         TNL_ASSERT( this->pd != nullptr, "Attempt of dereferencing of null pointer" );
+         TNL_ASSERT_TRUE( this->pd != nullptr, "Attempt of dereferencing of null pointer" );
          return &this->pd->data;
       }
 
       Object* operator->()
       {
-         TNL_ASSERT( this->pd != nullptr, "Attempt of dereferencing of null pointer" );
+         TNL_ASSERT_TRUE( this->pd != nullptr, "Attempt of dereferencing of null pointer" );
          this->pd->maybe_modified = true;
          return &this->pd->data;
       }
 
       const Object& operator *() const
       {
-         TNL_ASSERT( this->pd != nullptr, "Attempt of dereferencing of null pointer" );
+         TNL_ASSERT_TRUE( this->pd != nullptr, "Attempt of dereferencing of null pointer" );
          return this->pd->data;
       }
 
       Object& operator *()
       {
-         TNL_ASSERT( this->pd != nullptr, "Attempt of dereferencing of null pointer" );
+         TNL_ASSERT_TRUE( this->pd != nullptr, "Attempt of dereferencing of null pointer" );
          this->pd->maybe_modified = true;
          return this->pd->data;
       }
