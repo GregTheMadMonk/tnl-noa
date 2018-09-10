@@ -148,29 +148,31 @@ else
    check_file="Makefile"
 fi
 
-cmake_command="${CMAKE} ${ROOT_DIR} \
-         -G ${generator} \
-         -DCMAKE_BUILD_TYPE=${BUILD} \
-         -DCMAKE_INSTALL_PREFIX=${PREFIX} \
-         -DOFFLINE_BUILD=${OFFLINE_BUILD} \
-         -DWITH_MIC=${WITH_MIC} \
-         -DWITH_CUDA=${WITH_CUDA} \
-         -DWITH_CUDA_ARCH=${WITH_CUDA_ARCH} \
-         -DWITH_OPENMP=${WITH_OPENMP} \
-         -DWITH_GMP=${WITH_GMP} \
-         -DWITH_TESTS=${WITH_TESTS} \
-         -DWITH_COVERAGE=${WITH_COVERAGE} \
-         -DWITH_EXAMPLES=${WITH_EXAMPLES} \
-         -DWITH_TOOLS=${WITH_TOOLS} \
-         -DWITH_PYTHON=${WITH_PYTHON} \
-         -DDCMTK_DIR=${DCMTK_DIR} \
-         -DWITH_TEMPLATE_INSTANTIATION=${WITH_TEMPLATE_INSTANTIATION} \
-         -DINSTANTIATE_FLOAT=${INSTANTIATE_FLOAT} \
-         -DINSTANTIATE_DOUBLE=${INSTANTIATE_DOUBLE} \
-         -DINSTANTIATE_LONG_DOUBLE=${INSTANTIATE_LONG_DOUBLE} \
-         -DINSTANTIATE_INT=${INSTANTIATE_INT} \
-         -DINSTANTIATE_LONG_INT=${INSTANTIATE_LONG_INT} \
-         -DOPTIMIZED_VECTOR_HOST_OPERATIONS=${OPTIMIZED_VECTOR_HOST_OPERATIONS}"
+cmake_command=(
+   ${CMAKE} ${ROOT_DIR}
+         -G "${generator}"
+         -DCMAKE_BUILD_TYPE=${BUILD}
+         -DCMAKE_INSTALL_PREFIX=${PREFIX}
+         -DOFFLINE_BUILD=${OFFLINE_BUILD}
+         -DWITH_MIC=${WITH_MIC}
+         -DWITH_CUDA=${WITH_CUDA}
+         -DWITH_CUDA_ARCH=${WITH_CUDA_ARCH}
+         -DWITH_OPENMP=${WITH_OPENMP}
+         -DWITH_GMP=${WITH_GMP}
+         -DWITH_TESTS=${WITH_TESTS}
+         -DWITH_COVERAGE=${WITH_COVERAGE}
+         -DWITH_EXAMPLES=${WITH_EXAMPLES}
+         -DWITH_TOOLS=${WITH_TOOLS}
+         -DWITH_PYTHON=${WITH_PYTHON}
+         -DDCMTK_DIR=${DCMTK_DIR}
+         -DWITH_TEMPLATE_INSTANTIATION=${WITH_TEMPLATE_INSTANTIATION}
+         -DINSTANTIATE_FLOAT=${INSTANTIATE_FLOAT}
+         -DINSTANTIATE_DOUBLE=${INSTANTIATE_DOUBLE}
+         -DINSTANTIATE_LONG_DOUBLE=${INSTANTIATE_LONG_DOUBLE}
+         -DINSTANTIATE_INT=${INSTANTIATE_INT}
+         -DINSTANTIATE_LONG_INT=${INSTANTIATE_LONG_INT}
+         -DOPTIMIZED_VECTOR_HOST_OPERATIONS=${OPTIMIZED_VECTOR_HOST_OPERATIONS}
+)
 
 # Skip running cmake if it was already run and the cmake command is the same.
 # The build system (e.g. make) will call it automatically if necessary (e.g.
@@ -180,10 +182,10 @@ if [[ -f ".cmake_command" ]]; then
 else
    last_cmake_command=""
 fi
-if [[ ! -f "$check_file" ]] || [[ "$last_cmake_command" != "$cmake_command" ]]; then
+if [[ ! -f "$check_file" ]] || [[ "$last_cmake_command" != "${cmake_command[@]}" ]]; then
    echo "Configuring ${BUILD} $TARGET ..."
-   $cmake_command
-   echo -n "$cmake_command" > ".cmake_command"
+   "${cmake_command[@]}"
+   echo -n "${cmake_command[@]}" > ".cmake_command"
 fi
 
 if [[ ${CMAKE_ONLY} == "yes" ]]; then
