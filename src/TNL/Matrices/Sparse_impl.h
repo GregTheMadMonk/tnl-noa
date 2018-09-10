@@ -122,7 +122,8 @@ void Sparse< Real, Device, Index >::allocateMatrixElements( const IndexType& num
     * Setting a column index to this->columns means that the
     * index is undefined.
     */
-   this->columnIndexes.setValue( this->columns );
+   if( numberOfMatrixElements > 0 )
+      this->columnIndexes.setValue( this->columns );
 }
 
 template< typename Real,

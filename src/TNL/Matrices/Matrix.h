@@ -38,7 +38,9 @@ public:
 
    virtual IndexType getRowLength( const IndexType row ) const = 0;
 
-   virtual void getCompressedRowLengths( Containers::Vector< IndexType, DeviceType, IndexType >& rowLengths ) const;
+   // TODO: implementation is not parallel
+   // TODO: it would be nice if padding zeros could be stripped
+   virtual void getCompressedRowLengths( CompressedRowLengthsVector& rowLengths ) const;
 
    template< typename Real2, typename Device2, typename Index2 >
    void setLike( const Matrix< Real2, Device2, Index2 >& matrix );
@@ -88,6 +90,7 @@ public:
    
    ValuesVector& getValues();
 
+   // TODO: parallelize and optimize for sparse matrices
    template< typename Matrix >
    bool operator == ( const Matrix& matrix ) const;
 
