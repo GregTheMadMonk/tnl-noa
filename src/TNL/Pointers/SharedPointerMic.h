@@ -126,17 +126,20 @@ class SharedPointer< Object, Devices::MIC > : public SmartPointer
 
       const Object* operator->() const
       {
+         TNL_ASSERT( this->pd != nullptr, "Attempt of dereferencing of null pointer" );
          return &this->pd->data;
       }
 
       Object* operator->()
       {
+         TNL_ASSERT( this->pd != nullptr, "Attempt of dereferencing of null pointer" );
          this->pd->maybe_modified = true;
          return &this->pd->data;
       }
 
       const Object& operator *() const
       {
+         TNL_ASSERT( this->pd != nullptr, "Attempt of dereferencing of null pointer" );
          return this->pd->data;
       }
 
