@@ -142,21 +142,25 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
 
       const Object* operator->() const
       {
+         TNL_ASSERT( this->pd != nullptr, "Attempt of dereferencing of null pointer" );
          return &this->pd->data;
       }
 
       Object* operator->()
       {
+         TNL_ASSERT( this->pd != nullptr, "Attempt of dereferencing of null pointer" );
          return &this->pd->data;
       }
 
       const Object& operator *() const
       {
+         TNL_ASSERT( this->pd != nullptr, "Attempt of dereferencing of null pointer" );
          return this->pd->data;
       }
 
       Object& operator *()
       {
+         TNL_ASSERT( this->pd != nullptr, "Attempt of dereferencing of null pointer" );
          return this->pd->data;
       }
 
@@ -176,6 +180,7 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
       __cuda_callable__
       const Object& getData() const
       {
+         TNL_ASSERT( this->pd != nullptr, "Attempt of dereferencing of null pointer" );
          return this->pd->data;
       }      
       
@@ -183,6 +188,7 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
       __cuda_callable__
       Object& modifyData()
       {
+         TNL_ASSERT( this->pd != nullptr, "Attempt of dereferencing of null pointer" );
          return this->pd->data;
       }
 
@@ -203,7 +209,7 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
       {
          this->free();
          this->pd = (PointerData*) ptr.pd;
-         if( this->pd != nullptr ) 
+         if( this->pd != nullptr )
             this->pd->counter += 1;
          return *this;
       }
@@ -397,22 +403,26 @@ class SharedPointer<  Object, Devices::Cuda > : public SmartPointer
 
       const Object* operator->() const
       {
+         TNL_ASSERT( this->pd != nullptr, "Attempt of dereferencing of null pointer" );
          return &this->pd->data;
       }
 
       Object* operator->()
       {
+         TNL_ASSERT( this->pd != nullptr, "Attempt of dereferencing of null pointer" );
          this->pd->maybe_modified = true;
          return &this->pd->data;
       }
 
       const Object& operator *() const
       {
+         TNL_ASSERT( this->pd != nullptr, "Attempt of dereferencing of null pointer" );
          return this->pd->data;
       }
 
       Object& operator *()
       {
+         TNL_ASSERT( this->pd != nullptr, "Attempt of dereferencing of null pointer" );
          this->pd->maybe_modified = true;
          return this->pd->data;
       }
@@ -464,7 +474,8 @@ class SharedPointer<  Object, Devices::Cuda > : public SmartPointer
          this->free();
          this->pd = (PointerData*) ptr.pd;
          this->cuda_pointer = ptr.cuda_pointer;
-         this->pd->counter += 1;
+         if( this->pd != nullptr )
+            this->pd->counter += 1;
 #ifdef TNL_DEBUG_SHARED_POINTERS
          std::cerr << "Copy-assigned shared pointer: counter = " << this->pd->counter << ", type: " << demangle(typeid(ObjectType).name()) << std::endl;
 #endif
@@ -479,7 +490,8 @@ class SharedPointer<  Object, Devices::Cuda > : public SmartPointer
          this->free();
          this->pd = (PointerData*) ptr.pd;
          this->cuda_pointer = ptr.cuda_pointer;
-         this->pd->counter += 1;
+         if( this->pd != nullptr )
+            this->pd->counter += 1;
 #ifdef TNL_DEBUG_SHARED_POINTERS
          std::cerr << "Copy-assigned shared pointer: counter = " << this->pd->counter << ", type: " << demangle(typeid(ObjectType).name()) << std::endl;
 #endif

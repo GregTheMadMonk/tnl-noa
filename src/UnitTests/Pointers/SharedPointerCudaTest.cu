@@ -107,6 +107,20 @@ TEST( SharedPointerCudaTest, getDataArrayTest )
 #endif
 };
 
+TEST( SharedPointerCudaTest, nullptrAssignement )
+{
+#ifdef HAVE_CUDA
+   using TestType = Pointers::SharedPointer< double, Devices::Cuda >;
+   TestType p1( 5 ), p2( nullptr );
+   
+   // This should not crash
+   p1 = p2;
+   
+   ASSERT_FALSE( p1 );
+   ASSERT_FALSE( p2 );
+#endif
+}
+
 
 #endif
 
