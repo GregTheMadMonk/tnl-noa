@@ -79,9 +79,9 @@ void check_Inner_1D(int rank, int nproc, const DofType& dof, typename DofType::R
 };
 
 /*
- * Light check of 1D distriover grid and its synchronization. 
- * Number of process is not limitated.
- * Overlap is limitated to 1
+ * Light check of 1D distributed grid and its synchronization. 
+ * Number of process is not limited.
+ * Overlap is limited to 1
  * Only double is tested as dof Real type -- it may be changed, extend test
  * Global size is hardcoded as 10 -- it can be changed, extend test
  */
@@ -222,9 +222,9 @@ TEST_F(DistributedGridTest_1D, SynchronizerNeighborsTest )
 }
 
 
-TEST_F(DistributedGridTest_1D, LinearFunctionTest )
+TEST_F(DistributedGridTest_1D, EvaluateLinearFunction )
 {
-   //fill meshfunction with linear function (physical center of cell corresponds with its coordinates in grid) 
+   //fill mesh function with linear function (physical center of cell corresponds with its coordinates in grid) 
    setDof_1D(dof,-1);
    linearFunctionEvaluator.evaluateAllEntities(meshFunctionPtr, linearFunctionPtr);
    meshFunctionPtr->template synchronize<CommunicatorType>();
@@ -239,7 +239,55 @@ TEST_F(DistributedGridTest_1D, LinearFunctionTest )
 }
 
 
-TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsTest )
+TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithoutMask )
+{
+   // Setup periodic boundaries
+   // TODO: I do not know how to do it better with GTEST
+   typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
+   SubdomainOverlapsGetter< GridType, CommunicatorType >::
+      getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1 );
+   distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
+   distributedGrid->setupGrid(*gridptr);
+   dof.setSize( gridptr->template getEntitiesCount< Cell >() );
+   maskDofs.setSize( gridptr->template getEntitiesCount< Cell >() );
+   meshFunctionPtr->bind( gridptr, dof );
+   maskPointer->bind( gridptr, maskDofs );
+   
+   setDof_1D( dof, -rank-1 );
+   maskDofs.setValue( true );
+   constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr, constFunctionPtr );
+   meshFunctionPtr->template synchronize<CommunicatorType>( true );
+   if( rank == 0 )
+      EXPECT_EQ( dof[ 1 ], -nproc ) << "Left Overlap was filled by wrong process.";
+   if( rank == nproc-1 )
+      EXPECT_EQ( dof[ dof.getSize() - 2 ], -1 )<< "Right Overlap was filled by wrong process.";
+}
+
+TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithActiveMask )
+{
+   // Setup periodic boundaries
+   // TODO: I do not know how to do it better with GTEST
+   typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
+   SubdomainOverlapsGetter< GridType, CommunicatorType >::
+      getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1 );
+   distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
+   distributedGrid->setupGrid(*gridptr);
+   dof.setSize( gridptr->template getEntitiesCount< Cell >() );
+   maskDofs.setSize( gridptr->template getEntitiesCount< Cell >() );
+   meshFunctionPtr->bind( gridptr, dof );
+   maskPointer->bind( gridptr, maskDofs );
+   
+   setDof_1D( dof, -rank-1 );
+   maskDofs.setValue( true );
+   constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr, constFunctionPtr );
+   meshFunctionPtr->template synchronize<CommunicatorType>( true, maskPointer );
+   if( rank == 0 )
+      EXPECT_EQ( dof[ 1 ], -nproc ) << "Left Overlap was filled by wrong process.";
+   if( rank == nproc-1 )
+      EXPECT_EQ( dof[ dof.getSize() - 2 ], -1 )<< "Right Overlap was filled by wrong process.";
+}
+
+TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithInactiveMaskOnLeft )
 {
    // Setup periodic boundaries
    // TODO: I do not know how to do it better with GTEST
@@ -253,19 +301,8 @@ TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsTest )
    meshFunctionPtr->bind( gridptr, dof );
    maskPointer->bind( gridptr, maskDofs );
 
-   
-   // Test with active mask
    setDof_1D( dof, -rank-1 );
    maskDofs.setValue( true );
-   constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr, constFunctionPtr );
-   meshFunctionPtr->template synchronize<CommunicatorType>( true, maskPointer );
-   if( rank == 0 )
-      EXPECT_EQ( dof[ 1 ], -nproc ) << "Left Overlap was filled by wrong process.";
-   if( rank == nproc-1 )
-      EXPECT_EQ( dof[ dof.getSize() - 2 ], -1 )<< "Right Overlap was filled by wrong process.";
-   
-   // Test with inactive mask on the left boundary
-   setDof_1D( dof, -rank-1 );
    maskDofs.setElement( 1, false );
    constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr , constFunctionPtr );
    meshFunctionPtr->template synchronize<CommunicatorType>( true, maskPointer );
@@ -274,9 +311,25 @@ TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsTest )
       EXPECT_EQ( dof[ 1 ], 0 ) << "Left Overlap was filled by wrong process.";
    if( rank == nproc-1 )
       EXPECT_EQ( dof[ dof.getSize() - 2 ], -1 )<< "Right Overlap was filled by wrong process.";
-   
-   // Test with inactive mask on both sides
+}
+
+TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithInactiveMask )
+{
+   // Setup periodic boundaries
+   // TODO: I do not know how to do it better with GTEST
+   typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
+   SubdomainOverlapsGetter< GridType, CommunicatorType >::
+      getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1 );
+   distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
+   distributedGrid->setupGrid(*gridptr);
+   dof.setSize( gridptr->template getEntitiesCount< Cell >() );
+   maskDofs.setSize( gridptr->template getEntitiesCount< Cell >() );
+   meshFunctionPtr->bind( gridptr, dof );
+   maskPointer->bind( gridptr, maskDofs );
+
    setDof_1D( dof, -rank-1 );
+   maskDofs.setValue( true );
+   maskDofs.setElement( 1, false );   
    maskDofs.setElement( dof.getSize() - 2, false );
    constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr , constFunctionPtr );
    meshFunctionPtr->template synchronize<CommunicatorType>( true, maskPointer );
