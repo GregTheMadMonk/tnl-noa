@@ -65,9 +65,9 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
 
    public:
 
-      typedef Object ObjectType;
-      typedef Devices::Cuda DeviceType;
-      typedef SharedPointer<  Object, Devices::Cuda > ThisType;
+      using ObjectType = Object;
+      using DeviceType = Devices::Cuda; 
+      using ThisType = SharedPointer<  Object, Devices::Host >;
 
       SharedPointer( std::nullptr_t )
       : pd( nullptr )
@@ -317,9 +317,9 @@ class SharedPointer<  Object, Devices::Cuda > : public SmartPointer
 
    public:
 
-      typedef Object ObjectType;
-      typedef Devices::Cuda DeviceType;
-      typedef SharedPointer<  Object, Devices::Cuda > ThisType;
+      using ObjectType = Object;
+      using DeviceType = Devices::Cuda; 
+      using ThisType = SharedPointer<  Object, Devices::Host >;
 
       SharedPointer( std::nullptr_t )
       : pd( nullptr ),

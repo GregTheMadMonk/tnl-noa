@@ -40,9 +40,9 @@ class SharedPointer< Object, Devices::MIC > : public SmartPointer
 
    public:
 
-      typedef Object ObjectType;
-      typedef Devices::MIC DeviceType;
-      typedef SharedPointer< Object, Devices::MIC> ThisType;
+      using ObjectType = Object;
+      using DeviceType = Devices::MIC; 
+      using ThisType = SharedPointer<  Object, Devices::Host >;
 
       SharedPointer( std::nullptr_t )
       : pd( nullptr ),
