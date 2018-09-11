@@ -14,14 +14,13 @@
 
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
+#include <TNL/Devices/MIC.h>
 #include <TNL/Pointers/SmartPointer.h>
 
-#include <cstring>
-
-#include <TNL/Devices/MIC.h>
-
+#include <cstring>  // std::memcpy, std::memcmp
 
 namespace TNL {
+namespace Pointers {
 
 /***
  * The DevicePointer is like SharedPointer, except it takes an existing host
@@ -705,7 +704,7 @@ class DevicePointer< Object, Devices::MIC > : public SmartPointer
          if( ! this->mic_pointer )
             return false;
          Devices::MIC::CopyToMIC((void*)this->mic_pointer,(void*)this->pointer,sizeof(ObjectType));
-                 
+
          // set last-sync state
          this->set_last_sync_state();
          Devices::MIC::insertSmartPointer( this );
@@ -754,15 +753,16 @@ class DevicePointer< Object, Devices::MIC > : public SmartPointer
 };
 #endif
 
+} // namespace Pointers
 
-#if  (!defined(NDEBUG)) && (!defined(HAVE_MIC)) 
+#if (!defined(NDEBUG)) && (!defined(HAVE_MIC))
 namespace Assert {
 
 template< typename Object, typename Device >
-struct Formatter< DevicePointer< Object, Device > >
+struct Formatter< Pointers::DevicePointer< Object, Device > >
 {
    static std::string
-   printToString( const DevicePointer< Object, Device >& value )
+   printToString( const Pointers::DevicePointer< Object, Device >& value )
    {
       ::std::stringstream ss;
       ss << "(DevicePointer< " << Object::getType() << ", " << Device::getDeviceType()

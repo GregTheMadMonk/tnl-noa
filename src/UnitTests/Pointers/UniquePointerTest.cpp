@@ -18,6 +18,7 @@
 #endif
 
 using namespace TNL;
+using namespace TNL::Pointers;
 
 #ifdef HAVE_GTEST 
 TEST( UniquePointerTest, ConstructorTest )

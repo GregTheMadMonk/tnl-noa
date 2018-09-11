@@ -32,17 +32,16 @@ class Traverser< Meshes::Grid< 3, Real, Device, Index >, GridEntity, 3 >
       template< typename UserData,
                 typename EntitiesProcessor >
       void processBoundaryEntities( const GridPointer& gridPointer,
-                                       UserData& userData ) const;
+                                    UserData& userData ) const;
 
       template< typename UserData,
                 typename EntitiesProcessor >
       void processInteriorEntities( const GridPointer& gridPointer,
-                                       UserData& userData ) const;
+                                    UserData& userData ) const;
       template< typename UserData,
                 typename EntitiesProcessor >
       void processAllEntities( const GridPointer& gridPointer,
-                                 UserData& userData ) const;
- 
+                               UserData& userData ) const;
 };
 
 template< typename Real,
@@ -61,17 +60,16 @@ class Traverser< Meshes::Grid< 3, Real, Device, Index >, GridEntity, 2 >
       template< typename UserData,
                 typename EntitiesProcessor >
       void processBoundaryEntities( const GridPointer& gridPointer,
-                                       UserData& userData ) const;
+                                    UserData& userData ) const;
 
       template< typename UserData,
                 typename EntitiesProcessor >
       void processInteriorEntities( const GridPointer& gridPointer,
-                                       UserData& userData ) const;
+                                    UserData& userData ) const;
       template< typename UserData,
                 typename EntitiesProcessor >
       void processAllEntities( const GridPointer& gridPointer,
-                                 UserData& userData ) const;
- 
+                               UserData& userData ) const;
 };
 
 template< typename Real,
@@ -90,18 +88,17 @@ class Traverser< Meshes::Grid< 3, Real, Device, Index >, GridEntity, 1 >
       template< typename UserData,
                 typename EntitiesProcessor >
       void processBoundaryEntities( const GridPointer& gridPointer,
-                                       UserData& userData ) const;
+                                    UserData& userData ) const;
 
       template< typename UserData,
                 typename EntitiesProcessor >
       void processInteriorEntities( const GridPointer& gridPointer,
-                                       UserData& userData ) const;
+                                    UserData& userData ) const;
 
       template< typename UserData,
                 typename EntitiesProcessor >
       void processAllEntities( const GridPointer& gridPointer,
-                                 UserData& userData ) const;
- 
+                               UserData& userData ) const;
 };
 
 template< typename Real,
@@ -120,17 +117,17 @@ class Traverser< Meshes::Grid< 3, Real, Device, Index >, GridEntity, 0 >
       template< typename UserData,
                 typename EntitiesProcessor >
       void processBoundaryEntities( const GridPointer& gridPointer,
-                                       UserData& userData ) const;
+                                    UserData& userData ) const;
 
       template< typename UserData,
                 typename EntitiesProcessor >
       void processInteriorEntities( const GridPointer& gridPointer,
-                                       UserData& userData ) const;
- 
+                                    UserData& userData ) const;
+
       template< typename UserData,
                 typename EntitiesProcessor >
       void processAllEntities( const GridPointer& gridPointer,
-                                 UserData& userData ) const;
+                               UserData& userData ) const;
 };
 
 } // namespace Meshes

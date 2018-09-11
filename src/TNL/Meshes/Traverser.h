@@ -34,12 +34,12 @@ class Traverser
       template< typename UserData,
                 typename EntitiesProcessor >
       void processInteriorEntities( const MeshPointer& meshPointer,
-                                       UserData& userData ) const;
+                                    UserData& userData ) const;
 
       template< typename UserData,
                 typename EntitiesProcessor >
       void processAllEntities( const MeshPointer& meshPointer,
-                                 UserData& userData ) const;
+                               UserData& userData ) const;
 };
 
 template< typename MeshConfig,
@@ -60,12 +60,12 @@ class Traverser< Mesh< MeshConfig, Devices::Cuda >, MeshEntity, EntitiesDimensio
       template< typename UserData,
                 typename EntitiesProcessor >
       void processInteriorEntities( const MeshPointer& meshPointer,
-                                       UserData& userData ) const;
+                                    UserData& userData ) const;
 
       template< typename UserData,
                 typename EntitiesProcessor >
       void processAllEntities( const MeshPointer& meshPointer,
-                                 UserData& userData ) const;
+                               UserData& userData ) const;
 };
 
 } // namespace Meshes

@@ -37,8 +37,8 @@
 
 
 namespace TNL {
-   namespace Pointers {
-   
+namespace Pointers {
+
 template< typename Object,
           typename Device = typename Object::DeviceType >
 class SharedPointer
@@ -46,9 +46,9 @@ class SharedPointer
    static_assert( ! std::is_same< Device, void >::value, "The device cannot be void. You need to specify the device explicitly in your code." );
 };
 
-   } // namespace Pointers
+} // namespace Pointers
 
-#if  (!defined(NDEBUG)) && (!defined(HAVE_MIC)) 
+#if (!defined(NDEBUG)) && (!defined(HAVE_MIC))
 namespace Assert {
 
 template< typename Object, typename Device >

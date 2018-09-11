@@ -12,16 +12,18 @@
 
 #pragma once
 
+#include "SharedPointer.h"
+
 #include <TNL/Devices/MIC.h>
 #include <TNL/Pointers/SmartPointer.h>
 
+#include <cstring>  // std::memcpy, std::memcmp
+#include <cstddef>  // std::nullptr_t
+
 namespace TNL {
-   namespace Pointers {
-      
+namespace Pointers {
+
 #ifdef HAVE_MIC
-/****
- * Specialization for MIC
- */
 template< typename Object>
 class SharedPointer< Object, Devices::MIC > : public SmartPointer
 {
@@ -256,14 +258,14 @@ class SharedPointer< Object, Devices::MIC > : public SmartPointer
             std::cerr << "   ( " << sizeof( Object ) << " bytes, MIC adress " << this->mic_pointer << " )" << std::endl;
 #endif
             TNL_ASSERT( this->mic_pointer, );
-            
-            Devices::MIC::CopyToMIC((void*)this->mic_pointer,(void*) &this->pd->data,sizeof(Object));    
+
+            Devices::MIC::CopyToMIC((void*)this->mic_pointer,(void*) &this->pd->data,sizeof(Object));
             this->set_last_sync_state();
             return true;
          }
          return false; //??
       }
-      
+
       void clear()
       {
          this->free();
@@ -304,10 +306,10 @@ class SharedPointer< Object, Devices::MIC > : public SmartPointer
          this->pd = new PointerData( args... );
          if( ! this->pd )
             return false;
-         
+
          mic_pointer=(Object*)Devices::MIC::AllocMIC(sizeof(Object));
          Devices::MIC::CopyToMIC((void*)this->mic_pointer,(void*) &this->pd->data,sizeof(Object));
-         
+
          if( ! this->mic_pointer )
             return false;
          // set last-sync state
@@ -365,6 +367,6 @@ class SharedPointer< Object, Devices::MIC > : public SmartPointer
       Object* mic_pointer;
 };
 #endif
-      
-   } //namespace Pointers
+
+} // namespace Pointers
 } // namespace TNL
