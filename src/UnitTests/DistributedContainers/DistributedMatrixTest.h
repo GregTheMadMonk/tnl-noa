@@ -70,6 +70,7 @@ protected:
    using IndexType = typename DistributedMatrix::IndexType;
    using IndexMap = typename DistributedMatrix::IndexMapType;
    using DistributedMatrixType = DistributedMatrix;
+   using Partitioner = DistributedContainers::Partitioner< IndexMap, CommunicatorType >;
 
    using RowLengthsVector = typename DistributedMatrixType::CompressedRowLengthsVector;
    using GlobalVector = Containers::Vector< RealType, DeviceType, IndexType >;
@@ -88,7 +89,7 @@ protected:
 
    void SetUp() override
    {
-      const IndexMap map = DistributedContainers::Partitioner< IndexMap, CommunicatorType >::splitRange( globalSize, group );
+      const IndexMap map = Partitioner::splitRange( globalSize, group );
       matrix.setDistribution( map, globalSize, group );
       rowLengths.setDistribution( map, group );
 
@@ -220,6 +221,7 @@ TYPED_TEST( DistributedMatrixTest, vectorProduct_globalInput )
 TYPED_TEST( DistributedMatrixTest, vectorProduct_distributedInput )
 {
    using DistributedVector = typename TestFixture::DistributedVector;
+   using Partitioner = typename TestFixture::Partitioner;
 
    this->matrix.setCompressedRowLengths( this->rowLengths );
    setMatrix( this->matrix, this->rowLengths );
@@ -227,7 +229,7 @@ TYPED_TEST( DistributedMatrixTest, vectorProduct_distributedInput )
    DistributedVector inVector( this->matrix.getRowIndexMap(), this->matrix.getCommunicationGroup() );
    inVector.setValue( 1 );
    DistributedVector outVector( this->matrix.getRowIndexMap(), this->matrix.getCommunicationGroup() );
-   this->matrix.vectorProduct( inVector, outVector );
+   this->matrix.template vectorProduct< Partitioner >( inVector, outVector );
 
    EXPECT_EQ( outVector, this->rowLengths );
 }

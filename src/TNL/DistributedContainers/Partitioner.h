@@ -42,6 +42,29 @@ public:
       else
          return IndexMap( 0, 0, globalSize );
    }
+
+   // Gets the owner of given global index.
+   __cuda_callable__
+   static int getOwner( Index i, Index globalSize, int partitions )
+   {
+      return i * partitions / globalSize;
+   }
+
+   // Gets the offset of data for given rank.
+   __cuda_callable__
+   static Index getOffset( Index globalSize, int rank, int partitions )
+   {
+      return rank * globalSize / partitions;
+   }
+
+   // Gets the size of data assigned to given rank.
+   __cuda_callable__
+   static Index getSizeForRank( Index globalSize, int rank, int partitions )
+   {
+      const Index begin = min( globalSize, rank * globalSize / partitions );
+      const Index end = min( globalSize, (rank + 1) * globalSize / partitions );
+      return end - begin;
+   }
 };
 
 } // namespace DistributedContainers

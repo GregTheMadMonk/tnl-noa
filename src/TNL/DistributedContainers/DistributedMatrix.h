@@ -14,11 +14,16 @@
 
 #include <type_traits>  // std::add_const
 
-#include <TNL/Containers/Vector.h>
 #include <TNL/Matrices/SparseRow.h>
 #include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/DistributedContainers/IndexMap.h>
 #include <TNL/DistributedContainers/DistributedVector.h>
+
+// buffers for vectorProduct
+#include <vector>
+#include <utility>  // std::pair
+#include <TNL/Matrices/Dense.h>
+#include <TNL/Containers/Vector.h>
 
 namespace TNL {
 namespace DistributedContainers {
@@ -139,19 +144,49 @@ public:
    void vectorProduct( const Vector& inVector,
                        DistVector< RealOut >& outVector ) const;
 
-   // optimization for matrix-vector multiplication
-   void updateVectorProductPrefetchPattern();
+   // Optimization for matrix-vector multiplication:
+   // - communication pattern matrix is an nproc x nproc binary matrix C, where
+   //   C_ij = 1 iff the i-th process needs data from the j-th process
+   // - assembly of the i-th row involves traversal of the local matrix stored
+   //   in the i-th process
+   // - assembly the full matrix needs all-to-all communication
+   template< typename Partitioner >
+   void updateVectorProductCommunicationPattern();
 
    // multiplication with a distributed vector
-   template< typename RealIn,
+   // (not const because it modifies internal bufers)
+   template< typename Partitioner,
+             typename RealIn,
              typename RealOut >
    void vectorProduct( const DistVector< RealIn >& inVector,
-                       DistVector< RealOut >& outVector ) const;
+                       DistVector< RealOut >& outVector );
 
 protected:
    IndexMap rowIndexMap;
    CommunicationGroup group = Communicator::NullGroup;
    Matrix localMatrix;
+
+   void resetBuffers()
+   {
+      commPattern.reset();
+      globalBuffer.reset();
+      commRequests.clear();
+   }
+
+   // communication pattern for matrix-vector product
+   // TODO: probably should be stored elsewhere
+   Matrices::Dense< bool, Devices::Host, int > commPattern;
+
+   // span of rows with only block-diagonal entries
+   std::pair< IndexType, IndexType > localOnlySpan;
+
+   // global buffer for operations such as distributed matrix-vector multiplication
+   // TODO: probably should be stored elsewhere
+   Containers::Vector< RealType, DeviceType, IndexType > globalBuffer;
+
+   // buffer for asynchronous communication requests
+   // TODO: probably should be stored elsewhere
+   std::vector< typename CommunicatorType::Request > commRequests;
 
 private:
    // TODO: disabled until they are implemented
