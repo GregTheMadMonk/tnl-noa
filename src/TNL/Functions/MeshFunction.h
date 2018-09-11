@@ -184,6 +184,11 @@ class MeshFunction :
    
 };
 
+template< typename Mesh,
+          int MeshEntityDimension,
+          typename Real >
+std::ostream& operator << ( std::ostream& str, const MeshFunction< Mesh, MeshEntityDimension, Real >& f );
+
 } // namespace Functions
 } // namespace TNL
 

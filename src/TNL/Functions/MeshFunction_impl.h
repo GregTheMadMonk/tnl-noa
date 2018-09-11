@@ -571,7 +571,17 @@ setupSynchronizer( DistributedMeshType *distributedMesh )
       this->synchronizer.setDistributedGrid( distributedMesh );
 }
 
- 
+template< typename Mesh,
+          int MeshEntityDimension,
+          typename Real >
+std::ostream&
+operator << ( std::ostream& str, const MeshFunction< Mesh, MeshEntityDimension, Real >& f )
+{
+   str << f.getData();
+   return str;
+}
+
+
 } // namespace Functions
 } // namespace TNL
 
