@@ -88,8 +88,10 @@ void check_Inner_1D(int rank, int nproc, const DofType& dof, typename DofType::R
 
 typedef MpiCommunicator CommunicatorType;
 typedef Grid<1,double,Host,int> GridType;
-typedef MeshFunction<GridType> MeshFunctionType;
-typedef Vector<double,Host,int> DofType;
+typedef MeshFunction< GridType > MeshFunctionType;
+typedef MeshFunction< GridType, GridType::getMeshDimension(), bool > MaskType;
+typedef Vector< double,Host,int> DofType;
+typedef Vector< bool, Host, int > MaskDofType;
 typedef typename GridType::Cell Cell;
 typedef typename GridType::IndexType IndexType; 
 typedef typename GridType::PointType PointType; 
@@ -101,9 +103,11 @@ class DistributedGridTest_1D : public ::testing::Test
 
       DistributedMesh< GridType > *distributedGrid;
       DofType dof;
+      MaskDofType maskDofs;
 
       Pointers::SharedPointer< GridType > gridptr;
       Pointers::SharedPointer< MeshFunctionType > meshFunctionPtr;
+      Pointers::SharedPointer< MaskType > maskPointer;
 
       MeshFunctionEvaluator< MeshFunctionType, ConstFunction< double, 1 > > constFunctionEvaluator;
       Pointers::SharedPointer< ConstFunction< double, 1 >, Host > constFunctionPtr;
@@ -245,16 +249,43 @@ TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsTest )
    distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
    distributedGrid->setupGrid(*gridptr);
    dof.setSize( gridptr->template getEntitiesCount< Cell >() );
+   maskDofs.setSize( gridptr->template getEntitiesCount< Cell >() );
    meshFunctionPtr->bind( gridptr, dof );
+   maskPointer->bind( gridptr, maskDofs );
 
+   
+   // Test with active mask
    setDof_1D( dof, -rank-1 );
-   constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr , constFunctionPtr );
-   meshFunctionPtr->template synchronize<CommunicatorType>( true );
-
+   maskDofs.setValue( true );
+   constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr, constFunctionPtr );
+   meshFunctionPtr->template synchronize<CommunicatorType>( true, maskPointer );
    if( rank == 0 )
       EXPECT_EQ( dof[ 1 ], -nproc ) << "Left Overlap was filled by wrong process.";
    if( rank == nproc-1 )
       EXPECT_EQ( dof[ dof.getSize() - 2 ], -1 )<< "Right Overlap was filled by wrong process.";
+   
+   // Test with inactive mask on the left boundary
+   setDof_1D( dof, -rank-1 );
+   maskDofs.setElement( 1, false );
+   constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr , constFunctionPtr );
+   meshFunctionPtr->template synchronize<CommunicatorType>( true, maskPointer );
+   
+   if( rank == 0 )
+      EXPECT_EQ( dof[ 1 ], 0 ) << "Left Overlap was filled by wrong process.";
+   if( rank == nproc-1 )
+      EXPECT_EQ( dof[ dof.getSize() - 2 ], -1 )<< "Right Overlap was filled by wrong process.";
+   
+   // Test with inactive mask on both sides
+   setDof_1D( dof, -rank-1 );
+   maskDofs.setElement( dof.getSize() - 2, false );
+   constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr , constFunctionPtr );
+   meshFunctionPtr->template synchronize<CommunicatorType>( true, maskPointer );
+   
+   if( rank == 0 )
+      EXPECT_EQ( dof[ 1 ], 0 ) << "Left Overlap was filled by wrong process.";
+   if( rank == nproc-1 )
+      EXPECT_EQ( dof[ dof.getSize() - 2 ], nproc - 1 )<< "Right Overlap was filled by wrong process.";   
+   
 }
 
 TEST_F(DistributedGridTest_1D, SynchronizePeriodicBoundariesLinearTest )

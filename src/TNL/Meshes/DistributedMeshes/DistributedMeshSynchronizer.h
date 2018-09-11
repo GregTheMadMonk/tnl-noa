@@ -26,7 +26,7 @@ class DistributedMeshSynchronizer
       void setDistributedGrid( DistributedMeshType *distributedGrid )
       {
          TNL_ASSERT_TRUE( false, "Distribution of this type of mesh is NOT implemented" );
-      }; 
+      } 
 
 };
 

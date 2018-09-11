@@ -548,15 +548,17 @@ write( const String& fileName,
 template< typename Mesh,
           int MeshEntityDimension,
           typename Real >
-template< typename CommunicatorType>
+template< typename CommunicatorType,
+          typename PeriodicBoundariesMaskType >
 void
 MeshFunction< Mesh, MeshEntityDimension, Real >:: 
-synchronize( bool periodicBoundaries )
+synchronize( bool periodicBoundaries,
+             const Pointers::SharedPointer< PeriodicBoundariesMaskType, DeviceType >& mask )
 {
     auto distrMesh = this->getMesh().getDistributedMesh();
     if(distrMesh != NULL && distrMesh->isDistributed())
     {
-        this->synchronizer.template synchronize<CommunicatorType>( *this, periodicBoundaries );
+        this->synchronizer.template synchronize<CommunicatorType>( *this, periodicBoundaries, mask );
     }
 }
 

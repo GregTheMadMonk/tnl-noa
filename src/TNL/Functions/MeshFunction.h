@@ -164,8 +164,11 @@ class MeshFunction :
  
       using Object::boundLoad;
 
-      template< typename CommunicatorType>
-      void synchronize( bool withPeriodicBoundaryConditions = false );
+      template< typename CommunicatorType,
+                typename PeriodicBoundariesMaskType = MeshFunction< Mesh, MeshEntityDimension, bool > >
+      void synchronize( bool withPeriodicBoundaryConditions = false,
+                        const Pointers::SharedPointer< PeriodicBoundariesMaskType, DeviceType >& mask =
+                           Pointers::SharedPointer< PeriodicBoundariesMaskType, DeviceType >( nullptr ) );
 
  
    protected:

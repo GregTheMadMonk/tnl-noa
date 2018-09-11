@@ -75,12 +75,15 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 1, GridReal, D
 
       };
 
-      template<typename CommunicatorType, typename MeshFunctionType>
+      template< typename CommunicatorType,
+                typename MeshFunctionType,
+                typename PeriodicBoundariesMaskPointer = Pointers::SharedPointer< MeshFunctionType > >
       void synchronize( MeshFunctionType &meshFunction,
-                        bool periodicBoundaries = false )
+                        bool periodicBoundaries = false,
+                        const PeriodicBoundariesMaskPointer& mask = PeriodicBoundariesMaskPointer( nullptr ) )
       {
          TNL_ASSERT_TRUE( isSet, "Synchronizer is not set, but used to synchronize" );
-
+         
          if( !distributedGrid->isDistributed() )
             return;
 
@@ -109,7 +112,8 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 1, GridReal, D
                       leftSource, rightSource,
                       lowerOverlap, upperOverlap,
                       neighbors,
-                      periodicBoundaries );
+                      periodicBoundaries,
+                      PeriodicBoundariesMaskPointer( nullptr ) ); // the mask is used only when receiving data 
 
          //async send
          typename CommunicatorType::Request requests[ 4 ];
@@ -156,24 +160,33 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 1, GridReal, D
             lowerOverlap,
             upperOverlap,
             neighbors,
-            periodicBoundaries );
+            periodicBoundaries,
+            mask );
       }
       
    private:
-      template <typename Real_, typename MeshFunctionType >
-      void copyBuffers( MeshFunctionType& meshFunction, TNL::Containers::Array<Real_,Device>* buffers, bool toBuffer,
+      template< typename Real_,
+                typename MeshFunctionType,
+                typename PeriodicBoundariesMaskPointer >
+      void copyBuffers( 
+         MeshFunctionType& meshFunction,
+         TNL::Containers::Array<Real_,Device>* buffers,
+         bool toBuffer,
          int left, int right,
          const SubdomainOverlapsType& lowerOverlap,
          const SubdomainOverlapsType& upperOverlap,
          const int* neighbors,
-         bool periodicBoundaries )
+         bool periodicBoundaries,
+         const PeriodicBoundariesMaskPointer& mask )
       
       {
-         typedef BufferEntitiesHelper< MeshFunctionType, 1, Real_, Device > Helper;
-         if( neighbors[ Left ] != -1 || periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ Left ].getData(), left, lowerOverlap.x(), toBuffer );
-         if( neighbors[ Right ] != -1 || periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ Right ].getData(), right, upperOverlap.x(), toBuffer );
+         typedef BufferEntitiesHelper< MeshFunctionType, PeriodicBoundariesMaskPointer, 1, Real_, Device > Helper;
+         bool leftIsBoundary = ( neighbors[ Left ] == -1 );
+         bool rightIsBoundary = ( neighbors[ Right ] == -1 );
+         if( ! leftIsBoundary || periodicBoundaries )
+            Helper::BufferEntities( meshFunction, mask, buffers[ Left ].getData(), leftIsBoundary, left, lowerOverlap.x(), toBuffer );
+         if( ! rightIsBoundary || periodicBoundaries )
+            Helper::BufferEntities( meshFunction, mask, buffers[ Right ].getData(), rightIsBoundary, right, upperOverlap.x(), toBuffer );
       }
 
       Containers::Array<RealType, Device> sendBuffers[ 2 ], receiveBuffers[ 2 ];
