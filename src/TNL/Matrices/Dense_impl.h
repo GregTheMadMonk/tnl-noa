@@ -155,6 +155,33 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
+Real& Dense< Real, Device, Index >::operator()( const IndexType row,
+                                                const IndexType column )
+{
+   TNL_ASSERT( row >= 0 && row < this->getRows() &&
+              column >= 0 && column < this->getColumns(),
+              printf( " row = %d, column = %d, this->getRows = %d, this->getColumns() = %d \n", row, column, this->getRows(), this->getColumns() ) );
+   return this->values.operator[]( this->getElementIndex( row, column ) );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__
+const Real& Dense< Real, Device, Index >::operator()( const IndexType row,
+                                                      const IndexType column ) const
+{
+   TNL_ASSERT( row >= 0 && row < this->getRows() &&
+              column >= 0 && column < this->getColumns(),
+              printf( " row = %d, column = %d, this->getRows = %d, this->getColumns() = %d \n", row, column, this->getRows(), this->getColumns() ) );
+   return this->values.operator[]( this->getElementIndex( row, column ) );
+}
+
+
+template< typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__
 bool Dense< Real, Device, Index >::setElementFast( const IndexType row,
                                                             const IndexType column,
                                                             const RealType& value )
@@ -295,7 +322,7 @@ template< typename Real,
           typename Index >
 __cuda_callable__
 const Real& Dense< Real, Device, Index >::getElementFast( const IndexType row,
-                                                            const IndexType column ) const
+                                                          const IndexType column ) const
 {
    TNL_ASSERT( row >= 0 && row < this->getRows() &&
               column >= 0 && column < this->getColumns(),

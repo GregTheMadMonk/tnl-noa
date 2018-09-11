@@ -88,6 +88,14 @@ public:
    void setValue( const RealType& v );
 
    __cuda_callable__
+   Real& operator()( const IndexType row,
+                     const IndexType column );
+
+   __cuda_callable__
+   const Real& operator()( const IndexType row,
+                           const IndexType column ) const;
+
+   __cuda_callable__
    bool setElementFast( const IndexType row,
                         const IndexType column,
                         const RealType& value );
