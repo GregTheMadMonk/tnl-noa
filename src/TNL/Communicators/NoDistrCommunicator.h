@@ -29,9 +29,9 @@ class NoDistrCommunicator
 
       typedef int Request;
       typedef int CommunicationGroup;
-      static Request NullRequest;
-      static CommunicationGroup AllGroup;
-      static CommunicationGroup NullGroup;
+      static constexpr Request NullRequest = -1;
+      static constexpr CommunicationGroup AllGroup = 1;
+      static constexpr CommunicationGroup NullGroup = 0;
 
       static void configSetup( Config::ConfigDescription& config, const String& prefix = "" ){};
  
@@ -41,12 +41,7 @@ class NoDistrCommunicator
          return true;
       }
       
-      static void Init(int argc, char **argv, bool redirect=false)
-      {
-          NullRequest = -1;
-          AllGroup = 1;
-          NullGroup = 0;
-      }
+      static void Init(int argc, char **argv, bool redirect=false) {}
       
       static void setRedirection( bool redirect_ ) {}
       
@@ -135,11 +130,6 @@ class NoDistrCommunicator
 
       static void writeProlog( Logger& logger ){};
 };
-
-
-  int NoDistrCommunicator::NullRequest;
-  int NoDistrCommunicator::AllGroup;
-  int NoDistrCommunicator::NullGroup;
 
 } // namespace <unnamed>
 } // namespace Communicators

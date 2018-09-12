@@ -146,11 +146,6 @@ class MpiCommunicator
       {
 #ifdef HAVE_MPI
          MPI_Init( &argc, &argv );
-         NullRequest=MPI_REQUEST_NULL;
-         AllGroup=MPI_COMM_WORLD;
-         NullGroup=MPI_COMM_NULL;
-         redirect = true;
-
          selectGPU();
 #endif
       }
@@ -171,10 +166,9 @@ class MpiCommunicator
             //redirect output to files...
             if(GetRank(AllGroup)!=0)
             {
-               std::cout<< GetRank(AllGroup) <<": Redirecting std::out to file" <<std::endl;
-               String stdoutFile;
-               stdoutFile=String( "./stdout-")+convertToString(GetRank(MPI_COMM_WORLD))+String(".txt");
-               filestr.open (stdoutFile.getString());
+               std::cout << GetRank(AllGroup) << ": Redirecting std::cout to file" << std::endl;
+               const String stdoutFile = String("./stdout-") + convertToString(GetRank(AllGroup)) + String(".txt");
+               filestr.open(stdoutFile.getString());
                psbuf = filestr.rdbuf();
                std::cout.rdbuf(psbuf);
             }
@@ -434,16 +428,15 @@ class MpiCommunicator
       static MPI_Comm AllGroup;
       static MPI_Comm NullGroup;
 #else
-      static int NullRequest;
-      static int AllGroup;
-      static int NullGroup;
+      static constexpr int NullRequest = -1;
+      static constexpr int AllGroup = 1;
+      static constexpr int NullGroup = 0;
 #endif
     private :
-      static std::streambuf *psbuf;
-      static std::streambuf *backup;
+      static std::streambuf* psbuf;
+      static std::streambuf* backup;
       static std::ofstream filestr;
       static bool redirect;
-      static bool inited;
 
       static void selectGPU(void)
       {
@@ -489,25 +482,20 @@ class MpiCommunicator
 };
 
 #ifdef HAVE_MPI
-MPI_Request MpiCommunicator::NullRequest;
-MPI_Comm MpiCommunicator::AllGroup;
-MPI_Comm MpiCommunicator::NullGroup;
-#else
-int MpiCommunicator::NullRequest;
-int MpiCommunicator::AllGroup;
-int MpiCommunicator::NullGroup;
+MPI_Request MpiCommunicator::NullRequest = MPI_REQUEST_NULL;
+MPI_Comm MpiCommunicator::AllGroup = MPI_COMM_WORLD;
+MPI_Comm MpiCommunicator::NullGroup = MPI_COMM_NULL;
 #endif
-std::streambuf *MpiCommunicator::psbuf;
-std::streambuf *MpiCommunicator::backup;
+std::streambuf* MpiCommunicator::psbuf = nullptr;
+std::streambuf* MpiCommunicator::backup = nullptr;
 std::ofstream MpiCommunicator::filestr;
-bool MpiCommunicator::redirect;
-bool MpiCommunicator::inited;
+bool MpiCommunicator::redirect = true;
 
 #ifdef HAVE_MPI
+// TODO: this duplicates MpiCommunicator::MPIDataType
 template<typename Type>
-class MPITypeResolver
+struct MPITypeResolver
 {
-    public:
     static inline MPI_Datatype getType()
     {
         TNL_ASSERT_TRUE(false, "Fatal Error - Unknown MPI Type");
@@ -515,54 +503,54 @@ class MPITypeResolver
     };
 };
 
-template<> class MPITypeResolver<char>
+template<> struct MPITypeResolver<char>
 {
-    public:static inline MPI_Datatype getType(){return MPI_CHAR;};
+    static inline MPI_Datatype getType(){return MPI_CHAR;};
 };
 
-template<> class MPITypeResolver<short int>
+template<> struct MPITypeResolver<short int>
 {
-    public:static inline MPI_Datatype getType(){return MPI_SHORT;};
+    static inline MPI_Datatype getType(){return MPI_SHORT;};
 };
 
-template<> class MPITypeResolver<long int>
+template<> struct MPITypeResolver<long int>
 {
-    public:static inline MPI_Datatype getType(){return MPI_LONG;};
+    static inline MPI_Datatype getType(){return MPI_LONG;};
 };
 
-template<> class MPITypeResolver<unsigned char>
+template<> struct MPITypeResolver<unsigned char>
 {
-    public:static inline MPI_Datatype getType(){return MPI_UNSIGNED_CHAR;};
+    static inline MPI_Datatype getType(){return MPI_UNSIGNED_CHAR;};
 };
 
-template<> class MPITypeResolver<unsigned short int>
+template<> struct MPITypeResolver<unsigned short int>
 {
-    public:static inline MPI_Datatype getType(){return MPI_UNSIGNED_SHORT;};
+    static inline MPI_Datatype getType(){return MPI_UNSIGNED_SHORT;};
 };
 
-template<> class MPITypeResolver<unsigned int>
+template<> struct MPITypeResolver<unsigned int>
 {
-    public:static inline MPI_Datatype getType(){return MPI_UNSIGNED;};
+    static inline MPI_Datatype getType(){return MPI_UNSIGNED;};
 };
 
-template<> class MPITypeResolver<unsigned long int>
+template<> struct MPITypeResolver<unsigned long int>
 {
-    public:static inline MPI_Datatype getType(){return MPI_UNSIGNED_LONG;};
+    static inline MPI_Datatype getType(){return MPI_UNSIGNED_LONG;};
 };
 
-template<> class MPITypeResolver<float>
+template<> struct MPITypeResolver<float>
 {
-    public:static inline MPI_Datatype getType(){return MPI_FLOAT;};
+    static inline MPI_Datatype getType(){return MPI_FLOAT;};
 };
 
-template<> class MPITypeResolver<double>
+template<> struct MPITypeResolver<double>
 {
-    public:static inline MPI_Datatype getType(){return MPI_DOUBLE;};
+    static inline MPI_Datatype getType(){return MPI_DOUBLE;};
 };
 
-template<> class MPITypeResolver<long double>
+template<> struct MPITypeResolver<long double>
 {
-    public:static inline MPI_Datatype getType(){return MPI_LONG_DOUBLE;};
+    static inline MPI_Datatype getType(){return MPI_LONG_DOUBLE;};
 };
 #endif
 
