@@ -121,6 +121,19 @@ TEST( SharedPointerCudaTest, nullptrAssignement )
 #endif
 }
 
+TEST( SharedPointerCudaTest, swap )
+{
+#ifdef HAVE_CUDA
+   using TestType = Pointers::SharedPointer< double, Devices::Cuda >;
+   TestType p1( 1 ), p2( 2 );
+   
+   p1.swap( p2 );
+   
+   ASSERT_EQ( *p1, 2 );
+   ASSERT_EQ( *p2, 1 );
+#endif
+}
+
 
 #endif
 

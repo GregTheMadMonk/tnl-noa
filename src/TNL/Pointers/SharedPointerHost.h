@@ -18,7 +18,8 @@
 #include <TNL/Devices/CudaCallable.h>
 #include <TNL/Pointers/SmartPointer.h>
 
-#include <cstddef>  // std::nullptr_t
+#include <cstddef>   // std::nullptr_t
+#include <algorithm> // swap
 
 namespace TNL {
 namespace Pointers {
