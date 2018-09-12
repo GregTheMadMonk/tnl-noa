@@ -13,10 +13,6 @@
 #include <TNL/Logger.h>
 #include <TNL/Communicators/MpiDefs.h>
 
-#ifdef HAVE_MPI
-#include <mpi.h>
-#endif
-
 namespace TNL {
 namespace Communicators {
 namespace {
@@ -121,6 +117,15 @@ class NoDistrCommunicator
                           CommunicationGroup group )
       {
          memcpy( ( void* ) reduced_data, ( void* ) data, count * sizeof( T ) );
+      }
+
+      template< typename T >
+      static void Alltoall( const T* sendData,
+                            int sendCount,
+                            T* receiveData,
+                            int receiveCount,
+                            CommunicationGroup group )
+      {
       }
 
       static void CreateNewGroup(bool meToo, int myRank, CommunicationGroup &oldGroup, CommunicationGroup &newGroup)
