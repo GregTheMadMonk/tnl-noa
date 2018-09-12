@@ -49,21 +49,25 @@ class UniquePointer< Object, Devices::Host > : public SmartPointer
 
       const Object* operator->() const
       {
+         TNL_ASSERT_TRUE( this->pointer, "Attempt to dereference a null pointer" );
          return this->pointer;
       }
 
       Object* operator->()
       {
+         TNL_ASSERT_TRUE( this->pointer, "Attempt to dereference a null pointer" );
          return this->pointer;
       }
 
       const Object& operator *() const
       {
+         TNL_ASSERT_TRUE( this->pointer, "Attempt to dereference a null pointer" );
          return *( this->pointer );
       }
 
       Object& operator *()
       {
+         TNL_ASSERT_TRUE( this->pointer, "Attempt to dereference a null pointer" );
          return *( this->pointer );
       }
 
@@ -82,12 +86,14 @@ class UniquePointer< Object, Devices::Host > : public SmartPointer
       template< typename Device = Devices::Host >
       const Object& getData() const
       {
+         TNL_ASSERT_TRUE( this->pointer, "Attempt to dereference a null pointer" );
          return *( this->pointer );
       }
 
       template< typename Device = Devices::Host >
       Object& modifyData()
       {
+         TNL_ASSERT_TRUE( this->pointer, "Attempt to dereference a null pointer" );
          return *( this->pointer );
       }
 
@@ -146,22 +152,26 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
 
       const Object* operator->() const
       {
+         TNL_ASSERT_TRUE( this->pd, "Attempt to dereference a null pointer" );
          return &this->pd->data;
       }
 
       Object* operator->()
       {
+         TNL_ASSERT_TRUE( this->pd, "Attempt to dereference a null pointer" );
          this->pd->maybe_modified = true;
          return &this->pd->data;
       }
 
       const Object& operator *() const
       {
+         TNL_ASSERT_TRUE( this->pd, "Attempt to dereference a null pointer" );
          return this->pd->data;
       }
 
       Object& operator *()
       {
+         TNL_ASSERT_TRUE( this->pd, "Attempt to dereference a null pointer" );
          this->pd->maybe_modified = true;
          return this->pd->data;
       }
@@ -182,8 +192,8 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
       const Object& getData() const
       {
          static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value, "Only Devices::Host or Devices::Cuda devices are accepted here." );
-         TNL_ASSERT( this->pd, );
-         TNL_ASSERT( this->cuda_pointer, );
+         TNL_ASSERT_TRUE( this->pd, "Attempt to dereference a null pointer" );
+         TNL_ASSERT_TRUE( this->cuda_pointer, "Attempt to dereference a null pointer" );
          if( std::is_same< Device, Devices::Host >::value )
             return this->pd->data;
          if( std::is_same< Device, Devices::Cuda >::value )
@@ -194,8 +204,8 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
       Object& modifyData()
       {
          static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value, "Only Devices::Host or Devices::Cuda devices are accepted here." );
-         TNL_ASSERT( this->pd, );
-         TNL_ASSERT( this->cuda_pointer, );
+         TNL_ASSERT_TRUE( this->pd, "Attempt to dereference a null pointer" );
+         TNL_ASSERT_TRUE( this->cuda_pointer, "Attempt to dereference a null pointer" );
          if( std::is_same< Device, Devices::Host >::value )
          {
             this->pd->maybe_modified = true;
@@ -274,14 +284,14 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
 
       void set_last_sync_state()
       {
-         TNL_ASSERT( this->pd, );
+         TNL_ASSERT_TRUE( this->pd, "Attempt to dereference a null pointer" );
          std::memcpy( (void*) &this->pd->data_image, (void*) &this->pd->data, sizeof( ObjectType ) );
          this->pd->maybe_modified = false;
       }
 
       bool modified()
       {
-         TNL_ASSERT( this->pd, );
+         TNL_ASSERT_TRUE( this->pd, "Attempt to dereference a null pointer" );
          // optimization: skip bitwise comparison if we're sure that the data is the same
          if( ! this->pd->maybe_modified )
             return false;
@@ -328,22 +338,26 @@ class UniquePointer< Object, Devices::MIC > : public SmartPointer
 
       const Object* operator->() const
       {
+         TNL_ASSERT_TRUE( this->pd, "Attempt to dereference a null pointer" );
          return &this->pd->data;
       }
 
       Object* operator->()
       {
+         TNL_ASSERT_TRUE( this->pd, "Attempt to dereference a null pointer" );
          this->pd->maybe_modified = true;
          return &this->pd->data;
       }
 
       const Object& operator *() const
       {
+         TNL_ASSERT_TRUE( this->pd, "Attempt to dereference a null pointer" );
          return this->pd->data;
       }
 
       Object& operator *()
       {
+         TNL_ASSERT_TRUE( this->pd, "Attempt to dereference a null pointer" );
          this->pd->maybe_modified = true;
          return this->pd->data;
       }
@@ -357,8 +371,8 @@ class UniquePointer< Object, Devices::MIC > : public SmartPointer
       const Object& getData() const
       {
          static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::MIC >::value, "Only Devices::Host or Devices::MIC devices are accepted here." );
-         TNL_ASSERT( this->pd, );
-         TNL_ASSERT( this->mic_pointer, );
+         TNL_ASSERT_TRUE( this->pd, "Attempt to dereference a null pointer" );
+         TNL_ASSERT_TRUE( this->mic_pointer, "Attempt to dereference a null pointer" );
          if( std::is_same< Device, Devices::Host >::value )
             return this->pd->data;
          if( std::is_same< Device, Devices::MIC >::value )
@@ -369,8 +383,8 @@ class UniquePointer< Object, Devices::MIC > : public SmartPointer
       Object& modifyData()
       {
          static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::MIC >::value, "Only Devices::Host or Devices::MIC devices are accepted here." );
-         TNL_ASSERT( this->pd, );
-         TNL_ASSERT( this->mic_pointer, );
+         TNL_ASSERT_TRUE( this->pd, "Attempt to dereference a null pointer" );
+         TNL_ASSERT_TRUE( this->mic_pointer, "Attempt to dereference a null pointer" );
          if( std::is_same< Device, Devices::Host >::value )
          {
             this->pd->maybe_modified = true;
@@ -448,14 +462,14 @@ class UniquePointer< Object, Devices::MIC > : public SmartPointer
 
       void set_last_sync_state()
       {
-         TNL_ASSERT( this->pd, );
+         TNL_ASSERT_TRUE( this->pd, "Attempt to dereference a null pointer" );
          std::memcpy( (void*) &this->pd->data_image, (void*) &this->pd->data, sizeof( ObjectType ) );
          this->pd->maybe_modified = false;
       }
 
       bool modified()
       {
-         TNL_ASSERT( this->pd, );
+         TNL_ASSERT_TRUE( this->pd, "Attempt to dereference a null pointer" );
          // optimization: skip bitwise comparison if we're sure that the data is the same
          if( ! this->pd->maybe_modified )
             return false;
