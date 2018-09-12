@@ -41,7 +41,7 @@ template< class T > class ListDataElement;
 template< class T > class List
 {
    public:
-      typedef T ElementType;
+      typedef T ValueType;
 
       //! Basic constructor
       List();

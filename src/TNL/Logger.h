@@ -53,33 +53,3 @@ class Logger
 } // namespace TNL
 
 #include <TNL/Logger_impl.h>
-
-namespace TNL {
-
-#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
-extern template void Logger::writeParameter< char* >( const String&,
-                                                      const String&,
-                                                      const Config::ParameterContainer&,
-                                                      int );
-extern template void Logger::writeParameter< double >( const String&,
-                                                       const String&,
-                                                       const Config::ParameterContainer&,
-                                                       int );
-extern template void Logger::writeParameter< int >( const String&,
-                                                    const String&,
-                                                    const Config::ParameterContainer&,
-                                                    int );
-
-// TODO: fix this
-//extern template void Logger :: WriteParameter< char* >( const char*,
-//                                                        const char*&,
-//                                                        int );
-extern template void Logger::writeParameter< double >( const String&,
-                                                       const double&,
-                                                       int );
-extern template void Logger::writeParameter< int >( const String&,
-                                                    const int&,
-                                                    int );
-#endif
-
-} // namespace TNL

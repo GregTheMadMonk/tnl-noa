@@ -21,12 +21,12 @@ namespace TNL {
 namespace Containers {
 
 // explicit initialization by raw data pointer and size
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
 __cuda_callable__
-ArrayView< Element, Device, Index >::
-ArrayView( Element* data, Index size ) : data(data), size(size)
+ArrayView< Value, Device, Index >::
+ArrayView( Value* data, Index size ) : data(data), size(size)
 {
    TNL_ASSERT_GE( size, 0, "ArrayView size was initialized with a negative size." );
    TNL_ASSERT_TRUE( (data == nullptr && size == 0) || (data != nullptr && size > 0),
@@ -34,58 +34,58 @@ ArrayView( Element* data, Index size ) : data(data), size(size)
 }
 
 // initialization from other array containers (using shallow copy)
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
-   template< typename Element_ >
+   template< typename Value_ >
 __cuda_callable__
-ArrayView< Element, Device, Index >::
-ArrayView( Array< Element_, Device, Index >& array )
+ArrayView< Value, Device, Index >::
+ArrayView( Array< Value_, Device, Index >& array )
 {
    this->bind( array.getData(), array.getSize() );
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
-   template< int Size, typename Element_ >
+   template< int Size, typename Value_ >
 __cuda_callable__
-ArrayView< Element, Device, Index >::
-ArrayView( StaticArray< Size, Element_ >& array )
+ArrayView< Value, Device, Index >::
+ArrayView( StaticArray< Size, Value_ >& array )
 {
    this->bind( array.getData(), Size );
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
-   template< typename Element_ >
+   template< typename Value_ >
 __cuda_callable__
-ArrayView< Element, Device, Index >::
-ArrayView( const Array< Element_, Device, Index >& array )
+ArrayView< Value, Device, Index >::
+ArrayView( const Array< Value_, Device, Index >& array )
 {
    this->bind( array.getData(), array.getSize() );
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
-   template< int Size, typename Element_ >
+   template< int Size, typename Value_ >
 __cuda_callable__
-ArrayView< Element, Device, Index >::
-ArrayView( const StaticArray< Size, Element_ >& array )
+ArrayView< Value, Device, Index >::
+ArrayView( const StaticArray< Size, Value_ >& array )
 {
    this->bind( array.getData(), Size );
 }
 
 // methods for rebinding (reinitialization)
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
 __cuda_callable__
 void
-ArrayView< Element, Device, Index >::
-bind( Element* data, Index size )
+ArrayView< Value, Device, Index >::
+bind( Value* data, Index size )
 {
    TNL_ASSERT_GE( size, 0, "ArrayView size was initialized with a negative size." );
    TNL_ASSERT_TRUE( (data == nullptr && size == 0) || (data != nullptr && size > 0),
@@ -95,11 +95,11 @@ bind( Element* data, Index size )
    this->size = size;
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
 __cuda_callable__
-void ArrayView< Element, Device, Index >::bind( ArrayView view )
+void ArrayView< Value, Device, Index >::bind( ArrayView view )
 {
    bind( view.getData(), view.getSize() );
 }
@@ -107,11 +107,11 @@ void ArrayView< Element, Device, Index >::bind( ArrayView view )
 
 // Copy-assignment does deep copy, just like regular array, but the sizes
 // must match (i.e. copy-assignment cannot resize).
-template< typename Element,
+template< typename Value,
            typename Device,
            typename Index >
-ArrayView< Element, Device, Index >&
-ArrayView< Element, Device, Index >::
+ArrayView< Value, Device, Index >&
+ArrayView< Value, Device, Index >::
 operator=( const ArrayView& view )
 {
    TNL_ASSERT_EQ( getSize(), view.getSize(), "The sizes of the array views must be equal, views are not resizable." );
@@ -120,13 +120,13 @@ operator=( const ArrayView& view )
    return *this;
 }
 
-template< typename Element,
+template< typename Value,
            typename Device,
            typename Index >
-   template< typename Element_, typename Device_, typename Index_ >
-ArrayView< Element, Device, Index >&
-ArrayView< Element, Device, Index >::
-operator=( const ArrayView< Element_, Device_, Index_ >& view )
+   template< typename Value_, typename Device_, typename Index_ >
+ArrayView< Value, Device, Index >&
+ArrayView< Value, Device, Index >::
+operator=( const ArrayView< Value_, Device_, Index_ >& view )
 {
    TNL_ASSERT_EQ( getSize(), view.getSize(), "The sizes of the array views must be equal, views are not resizable." );
    if( getSize() > 0 )
@@ -135,38 +135,38 @@ operator=( const ArrayView< Element_, Device_, Index_ >& view )
 }
 
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
 String
-ArrayView< Element, Device, Index >::
+ArrayView< Value, Device, Index >::
 getType()
 {
    return String( "Containers::ArrayView< " ) + ", " +
-                  TNL::getType< Element >() + ", " +
+                  TNL::getType< Value >() + ", " +
                   Device::getDeviceType() + ", " +
                   TNL::getType< Index >() + " >";
 }
 
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
 __cuda_callable__
 void
-ArrayView< Element, Device, Index >::
+ArrayView< Value, Device, Index >::
 swap( ArrayView& array )
 {
    TNL::swap( data, array.data );
    TNL::swap( size, array.size );
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
 __cuda_callable__
 void
-ArrayView< Element, Device, Index >::
+ArrayView< Value, Device, Index >::
 reset()
 {
    data = nullptr;
@@ -174,56 +174,56 @@ reset()
 }
 
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
 __cuda_callable__
 const
-Element* ArrayView< Element, Device, Index >::
+Value* ArrayView< Value, Device, Index >::
 getData() const
 {
    return data;
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
 __cuda_callable__
-Element*
-ArrayView< Element, Device, Index >::
+Value*
+ArrayView< Value, Device, Index >::
 getData()
 {
    return data;
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
 __cuda_callable__
 Index
-ArrayView< Element, Device, Index >::
+ArrayView< Value, Device, Index >::
 getSize() const
 {
    return size;
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
 void
-ArrayView< Element, Device, Index >::
-setElement( Index i, Element value )
+ArrayView< Value, Device, Index >::
+setElement( Index i, Value value )
 {
    TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
    TNL_ASSERT_LT( i, this->getSize(), "Element index is out of bounds." );
    return Algorithms::ArrayOperations< Device >::setMemoryElement( &data[ i ], value );
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
-Element
-ArrayView< Element, Device, Index >::
+Value
+ArrayView< Value, Device, Index >::
 getElement( Index i ) const
 {
    TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
@@ -231,11 +231,11 @@ getElement( Index i ) const
    return Algorithms::ArrayOperations< Device >::getMemoryElement( &data[ i ] );
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
 __cuda_callable__
-Element& ArrayView< Element, Device, Index >::
+Value& ArrayView< Value, Device, Index >::
 operator[]( Index i )
 {
    TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
@@ -243,12 +243,12 @@ operator[]( Index i )
    return data[ i ];
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
 __cuda_callable__
 const
-Element& ArrayView< Element, Device, Index >::
+Value& ArrayView< Value, Device, Index >::
 operator[]( Index i ) const
 {
    TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
@@ -256,13 +256,13 @@ operator[]( Index i ) const
    return data[ i ];
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
-   template< typename Element_, typename Device_, typename Index_ >
+   template< typename Value_, typename Device_, typename Index_ >
 bool
-ArrayView< Element, Device, Index >::
-operator==( const ArrayView< Element_, Device_, Index_ >& view ) const
+ArrayView< Value, Device, Index >::
+operator==( const ArrayView< Value_, Device_, Index_ >& view ) const
 {
    if( view.getSize() != getSize() )
       return false;
@@ -271,60 +271,60 @@ operator==( const ArrayView< Element_, Device_, Index_ >& view ) const
    return Algorithms::ArrayOperations< Device, Device_ >::compareMemory( getData(), view.getData(), getSize() );
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
-   template< typename Element_, typename Device_, typename Index_ >
+   template< typename Value_, typename Device_, typename Index_ >
 bool
-ArrayView< Element, Device, Index >::
-operator!=( const ArrayView< Element_, Device_, Index_ >& view ) const
+ArrayView< Value, Device, Index >::
+operator!=( const ArrayView< Value_, Device_, Index_ >& view ) const
 {
    return ! ( *this == view );
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
 void
-ArrayView< Element, Device, Index >::
-setValue( Element value )
+ArrayView< Value, Device, Index >::
+setValue( Value value )
 {
    TNL_ASSERT_GT( size, 0, "Attempted to set value to an empty array view." );
    Algorithms::ArrayOperations< Device >::setMemory( getData(), value, getSize() );
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
 bool
-ArrayView< Element, Device, Index >::
-containsValue( Element value ) const
+ArrayView< Value, Device, Index >::
+containsValue( Value value ) const
 {
    return Algorithms::ArrayOperations< Device >::containsValue( data, size, value );
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
 bool
-ArrayView< Element, Device, Index >::
-containsOnlyValue( Element value ) const
+ArrayView< Value, Device, Index >::
+containsOnlyValue( Value value ) const
 {
    return Algorithms::ArrayOperations< Device >::containsOnlyValue( data, size, value );
 }
 
-template< typename Element,
+template< typename Value,
           typename Device,
           typename Index >
-ArrayView< Element, Device, Index >::
+ArrayView< Value, Device, Index >::
 operator bool() const
 {
    return data;
 }
 
 
-template< typename Element, typename Device, typename Index >
-std::ostream& operator<<( std::ostream& str, const ArrayView< Element, Device, Index >& v )
+template< typename Value, typename Device, typename Index >
+std::ostream& operator<<( std::ostream& str, const ArrayView< Value, Device, Index >& v )
 {
    str << "[ ";
    if( v.getSize() > 0 )

@@ -27,9 +27,4 @@ SET( headers BoundaryGridEntityChecker.h
              Traverser_Grid3D.h
              Traverser_Grid3D_impl.h )
 
-SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Meshes/GridDetails )    
-SET( tnl_mesh_griddetails_SOURCES
-     ${CURRENT_DIR}/Grid_impl.cpp
-     PARENT_SCOPE )
-
 INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Meshes/GridDetails )

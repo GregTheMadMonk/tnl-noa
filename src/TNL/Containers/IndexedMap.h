@@ -11,70 +11,67 @@
 #pragma once
 
 #include <map>
-#include <stdexcept>
+#include <iostream>
 
 namespace TNL {
 namespace Containers {
 
-template< typename Element,
+template< typename Value,
           typename Index,
           typename Key >
 class IndexedMap
 {
-   public:
-
-   typedef Element   ElementType;
-   typedef Index     IndexType;
-   typedef Key       KeyType;
+public:
+   using ValueType = Value;
+   using IndexType = Index;
+   using KeyType = Key;
 
    void reset();
 
    IndexType getSize() const;
 
-   IndexType insert( const ElementType &data );
+   IndexType insert( const ValueType &data );
 
-   bool find( const ElementType &data, IndexType& index ) const;
+   bool find( const ValueType &data, IndexType& index ) const;
 
    template< typename ArrayType >
    void toArray( ArrayType& array ) const;
 
-   const Element& getElement( KeyType key ) const;
+   const Value& getElement( KeyType key ) const;
 
-   Element& getElement( KeyType key );
- 
+   Value& getElement( KeyType key );
+
    void print( std::ostream& str ) const;
 
-   protected:
-
+protected:
    struct DataWithIndex
    {
       // This constructor is here only because of bug in g++, we might fix it later.
       // http://stackoverflow.com/questions/22357887/comparing-two-mapiterators-why-does-it-need-the-copy-constructor-of-stdpair
       DataWithIndex(){};
- 
-      DataWithIndex( const DataWithIndex& d ) : data( d.data ), index( d.index) {}
- 
-      explicit DataWithIndex( const Element data) : data( data ) {}
 
-      DataWithIndex( const Element data,
+      DataWithIndex( const DataWithIndex& d ) : data( d.data ), index( d.index) {}
+
+      explicit DataWithIndex( const Value data) : data( data ) {}
+
+      DataWithIndex( const Value data,
                      const Index index) : data(data), index(index) {}
 
-      Element data;
+      Value data;
       Index index;
    };
 
-   typedef std::map< Key, DataWithIndex >      STDMapType;
-   typedef typename STDMapType::value_type     STDMapValueType;
-   typedef typename STDMapType::const_iterator STDMapIteratorType;
+   using STDMapType = std::map< Key, DataWithIndex >;
+   using STDMapValueType = typename STDMapType::value_type;
+   using STDMapIteratorType = typename STDMapType::const_iterator;
 
    STDMapType map;
-
 };
 
-template< typename Element,
+template< typename Value,
           typename Index,
           typename Key >
-std::ostream& operator <<( std::ostream& str, IndexedMap< Element, Index, Key >& set );
+std::ostream& operator <<( std::ostream& str, IndexedMap< Value, Index, Key >& set );
 
 } // namespace Containers
 } // namespace TNL

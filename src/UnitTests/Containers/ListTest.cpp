@@ -59,7 +59,7 @@ TYPED_TEST( ListTest, constructor )
 TYPED_TEST( ListTest, operations )
 {
    using ListType = typename TestFixture::ListType;
-   using ElementType = typename ListType::ElementType;
+   using ValueType = typename ListType::ValueType;
 
    ListType a, b;
 
@@ -68,10 +68,10 @@ TYPED_TEST( ListTest, operations )
    a.Prepend( 2 );
    a.Insert( 3, 1 );
    EXPECT_EQ( a.getSize(), 4 );
-   EXPECT_EQ( a[ 0 ], (ElementType) 2 );
-   EXPECT_EQ( a[ 1 ], (ElementType) 3 );
-   EXPECT_EQ( a[ 2 ], (ElementType) 0 );
-   EXPECT_EQ( a[ 3 ], (ElementType) 1 );
+   EXPECT_EQ( a[ 0 ], (ValueType) 2 );
+   EXPECT_EQ( a[ 1 ], (ValueType) 3 );
+   EXPECT_EQ( a[ 2 ], (ValueType) 0 );
+   EXPECT_EQ( a[ 3 ], (ValueType) 1 );
 
    b = a;
    EXPECT_EQ( b.getSize(), 4 );
@@ -79,36 +79,36 @@ TYPED_TEST( ListTest, operations )
 
    b.Insert( 4, 4 );
    EXPECT_NE( a, b );
-   EXPECT_EQ( b[ 4 ], (ElementType) 4 );
+   EXPECT_EQ( b[ 4 ], (ValueType) 4 );
 
    a.AppendList( b );
    EXPECT_EQ( a.getSize(), 9 );
-   EXPECT_EQ( a[ 0 ], (ElementType) 2 );
-   EXPECT_EQ( a[ 1 ], (ElementType) 3 );
-   EXPECT_EQ( a[ 2 ], (ElementType) 0 );
-   EXPECT_EQ( a[ 3 ], (ElementType) 1 );
-   EXPECT_EQ( a[ 4 ], (ElementType) 2 );
-   EXPECT_EQ( a[ 5 ], (ElementType) 3 );
-   EXPECT_EQ( a[ 6 ], (ElementType) 0 );
-   EXPECT_EQ( a[ 7 ], (ElementType) 1 );
-   EXPECT_EQ( a[ 8 ], (ElementType) 4 );
+   EXPECT_EQ( a[ 0 ], (ValueType) 2 );
+   EXPECT_EQ( a[ 1 ], (ValueType) 3 );
+   EXPECT_EQ( a[ 2 ], (ValueType) 0 );
+   EXPECT_EQ( a[ 3 ], (ValueType) 1 );
+   EXPECT_EQ( a[ 4 ], (ValueType) 2 );
+   EXPECT_EQ( a[ 5 ], (ValueType) 3 );
+   EXPECT_EQ( a[ 6 ], (ValueType) 0 );
+   EXPECT_EQ( a[ 7 ], (ValueType) 1 );
+   EXPECT_EQ( a[ 8 ], (ValueType) 4 );
 
    a.PrependList( b );
    EXPECT_EQ( a.getSize(), 14 );
-   EXPECT_EQ( a[ 0 ],  (ElementType) 2 );
-   EXPECT_EQ( a[ 1 ],  (ElementType) 3 );
-   EXPECT_EQ( a[ 2 ],  (ElementType) 0 );
-   EXPECT_EQ( a[ 3 ],  (ElementType) 1 );
-   EXPECT_EQ( a[ 4 ],  (ElementType) 4 );
-   EXPECT_EQ( a[ 5 ],  (ElementType) 2 );
-   EXPECT_EQ( a[ 6 ],  (ElementType) 3 );
-   EXPECT_EQ( a[ 7 ],  (ElementType) 0 );
-   EXPECT_EQ( a[ 8 ],  (ElementType) 1 );
-   EXPECT_EQ( a[ 9 ],  (ElementType) 2 );
-   EXPECT_EQ( a[ 10 ], (ElementType) 3 );
-   EXPECT_EQ( a[ 11 ], (ElementType) 0 );
-   EXPECT_EQ( a[ 12 ], (ElementType) 1 );
-   EXPECT_EQ( a[ 13 ], (ElementType) 4 );
+   EXPECT_EQ( a[ 0 ],  (ValueType) 2 );
+   EXPECT_EQ( a[ 1 ],  (ValueType) 3 );
+   EXPECT_EQ( a[ 2 ],  (ValueType) 0 );
+   EXPECT_EQ( a[ 3 ],  (ValueType) 1 );
+   EXPECT_EQ( a[ 4 ],  (ValueType) 4 );
+   EXPECT_EQ( a[ 5 ],  (ValueType) 2 );
+   EXPECT_EQ( a[ 6 ],  (ValueType) 3 );
+   EXPECT_EQ( a[ 7 ],  (ValueType) 0 );
+   EXPECT_EQ( a[ 8 ],  (ValueType) 1 );
+   EXPECT_EQ( a[ 9 ],  (ValueType) 2 );
+   EXPECT_EQ( a[ 10 ], (ValueType) 3 );
+   EXPECT_EQ( a[ 11 ], (ValueType) 0 );
+   EXPECT_EQ( a[ 12 ], (ValueType) 1 );
+   EXPECT_EQ( a[ 13 ], (ValueType) 4 );
 }
 #endif
 
