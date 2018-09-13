@@ -422,15 +422,9 @@ INCLUDE_DIRECTORIES( ${PROJECT_BUILD_PATH} )
 LINK_DIRECTORIES( ${LIBRARY_OUTPUT_PATH} )
 
 # Add all subdirectories
-# Note that it is important to start building examples as soon as possible,
-# because they take the longest time and other stuff can be pipelined before
-# they are finished (at least with Ninja).
-if( WITH_EXAMPLES STREQUAL "yes" )
-   add_subdirectory( examples )
-endif( WITH_EXAMPLES STREQUAL "yes" )
-if( WITH_TESTS STREQUAL "yes" )
+if( ${WITH_TESTS} )
     add_subdirectory( tests )
-endif( WITH_TESTS STREQUAL "yes" )
+endif()
 add_subdirectory( src )
 add_subdirectory( share )
 
