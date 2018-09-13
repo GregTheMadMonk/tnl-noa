@@ -88,7 +88,7 @@ if [[ ${HELP} == "yes" ]]; then
     echo "   --prefix=PATH                         Prefix for the installation directory. ${HOME}/local by default."
     echo "   --install=yes/no                      Enables the installation of TNL files."
     echo "   --offline-build=yes/no                Disables online updates during the build. 'no' by default."
-    echo "   --with-mpi=yes/no                     Enables MPI. 'no' by default (Intel Compiler required)."
+    echo "   --with-mpi=yes/no                     Enables MPI. 'yes' by default (OpenMPI required)."
     echo "   --with-mic=yes/no                     Enables MIC (Intel Xeon Phi). 'no' by default (Intel Compiler required)."
     echo "   --with-cuda=yes/no                    Enables CUDA. 'yes' by default (CUDA Toolkit is required)."
     echo "   --with-cuda-arch=all/auto/30/35/...   Chooses CUDA architecture. 'auto' by default."
