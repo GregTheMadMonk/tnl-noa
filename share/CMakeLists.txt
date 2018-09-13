@@ -1,1 +1,2 @@
-add_subdirectory( Tools )
+add_subdirectory (cmake)
+add_subdirectory (pkgconfig)
