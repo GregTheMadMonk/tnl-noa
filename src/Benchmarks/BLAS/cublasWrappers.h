@@ -8,14 +8,14 @@ inline cublasStatus_t
 cublasIgamax( cublasHandle_t handle, int n,
               const float           *x, int incx, int *result )
 {
-    return cublasIsamax( handle, n, x, incx, result );
+   return cublasIsamax( handle, n, x, incx, result );
 }
 
 inline cublasStatus_t
 cublasIgamax( cublasHandle_t handle, int n,
               const double          *x, int incx, int *result )
 {
-    return cublasIdamax( handle, n, x, incx, result );
+   return cublasIdamax( handle, n, x, incx, result );
 }
 
 
@@ -23,14 +23,14 @@ inline cublasStatus_t
 cublasIgamin( cublasHandle_t handle, int n,
               const float           *x, int incx, int *result )
 {
-    return cublasIsamin( handle, n, x, incx, result );
+   return cublasIsamin( handle, n, x, incx, result );
 }
 
 inline cublasStatus_t
 cublasIgamin( cublasHandle_t handle, int n,
               const double          *x, int incx, int *result )
 {
-    return cublasIdamin( handle, n, x, incx, result );
+   return cublasIdamin( handle, n, x, incx, result );
 }
 
 
@@ -38,14 +38,14 @@ inline cublasStatus_t
 cublasGasum( cublasHandle_t handle, int n,
              const float           *x, int incx, float  *result )
 {
-    return cublasSasum( handle, n, x, incx, result );
+   return cublasSasum( handle, n, x, incx, result );
 }
 
 inline cublasStatus_t
 cublasGasum( cublasHandle_t handle, int n,
              const double          *x, int incx, double *result )
 {
-    return cublasDasum( handle, n, x, incx, result );
+   return cublasDasum( handle, n, x, incx, result );
 }
 
 
@@ -55,7 +55,7 @@ cublasGaxpy( cublasHandle_t handle, int n,
              const float           *x, int incx,
              float                 *y, int incy )
 {
-    return cublasSaxpy( handle, n, alpha, x, incx, y, incy );
+   return cublasSaxpy( handle, n, alpha, x, incx, y, incy );
 }
 
 inline cublasStatus_t
@@ -64,7 +64,7 @@ cublasGaxpy( cublasHandle_t handle, int n,
              const double          *x, int incx,
              double                *y, int incy )
 {
-    return cublasDaxpy( handle, n, alpha, x, incx, y, incy );
+   return cublasDaxpy( handle, n, alpha, x, incx, y, incy );
 }
 
 
@@ -74,7 +74,7 @@ cublasGdot( cublasHandle_t handle, int n,
             const float        *y, int incy,
             float         *result )
 {
-    return cublasSdot( handle, n, x, incx, y, incy, result );
+   return cublasSdot( handle, n, x, incx, y, incy, result );
 }
 
 inline cublasStatus_t
@@ -83,7 +83,7 @@ cublasGdot( cublasHandle_t handle, int n,
             const double       *y, int incy,
             double        *result )
 {
-    return cublasDdot( handle, n, x, incx, y, incy, result );
+   return cublasDdot( handle, n, x, incx, y, incy, result );
 }
 
 
@@ -91,14 +91,14 @@ inline cublasStatus_t
 cublasGnrm2( cublasHandle_t handle, int n,
              const float           *x, int incx, float  *result )
 {
-    return cublasSnrm2( handle, n, x, incx, result );
+   return cublasSnrm2( handle, n, x, incx, result );
 }
 
 inline cublasStatus_t
 cublasGnrm2( cublasHandle_t handle, int n,
              const double          *x, int incx, double *result )
 {
-    return cublasDnrm2( handle, n, x, incx, result );
+   return cublasDnrm2( handle, n, x, incx, result );
 }
 
 
@@ -107,7 +107,7 @@ cublasGscal( cublasHandle_t handle, int n,
              const float           *alpha,
              float           *x, int incx )
 {
-    return cublasSscal( handle, n, alpha, x, incx );
+   return cublasSscal( handle, n, alpha, x, incx );
 }
 
 inline cublasStatus_t
@@ -115,7 +115,7 @@ cublasGscal( cublasHandle_t handle, int n,
              const double          *alpha,
              double          *x, int incx )
 {
-    return cublasDscal( handle, n, alpha, x, incx );
+   return cublasDscal( handle, n, alpha, x, incx );
 }
 
 #endif
