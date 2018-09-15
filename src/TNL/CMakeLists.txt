@@ -19,6 +19,7 @@ ADD_SUBDIRECTORY( legacy )
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL )
 
 set( headers
+     Atomic.h
      Assert.h
      CudaSharedMemory.h
      CudaStreamPool.h
