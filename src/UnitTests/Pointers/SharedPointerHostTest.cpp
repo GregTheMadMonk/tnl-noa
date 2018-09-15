@@ -51,6 +51,17 @@ TEST( SharedPointerCudaTest, nullptrAssignement )
    ASSERT_FALSE( p2 );
 }
 
+TEST( SharedPointerCudaTest, swap )
+{
+   using TestType = Pointers::SharedPointer< double, Devices::Host >;
+   TestType p1( 1 ), p2( 2 );
+   
+   p1.swap( p2 );
+   
+   ASSERT_EQ( *p1, 2 );
+   ASSERT_EQ( *p2, 1 );
+}
+
 #endif
 
 #include "../GtestMissingError.h"

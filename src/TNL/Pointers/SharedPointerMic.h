@@ -17,8 +17,9 @@
 #include <TNL/Devices/MIC.h>
 #include <TNL/Pointers/SmartPointer.h>
 
-#include <cstring>  // std::memcpy, std::memcmp
-#include <cstddef>  // std::nullptr_t
+#include <cstring>   // std::memcpy, std::memcmp
+#include <cstddef>   // std::nullptr_t
+#include <algorithm> // swap
 
 namespace TNL {
 namespace Pointers {
@@ -44,7 +45,7 @@ class SharedPointer< Object, Devices::MIC > : public SmartPointer
 
       using ObjectType = Object;
       using DeviceType = Devices::MIC; 
-      using ThisType = SharedPointer<  Object, Devices::Host >;
+      using ThisType = SharedPointer<  Object, Devices::MIC >;
 
       SharedPointer( std::nullptr_t )
       : pd( nullptr ),

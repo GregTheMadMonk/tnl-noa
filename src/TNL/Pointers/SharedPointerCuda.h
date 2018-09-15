@@ -17,8 +17,9 @@
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Pointers/SmartPointer.h>
 
-#include <cstring>  // std::memcpy, std::memcmp
-#include <cstddef>  // std::nullptr_t
+#include <cstring>   // std::memcpy, std::memcmp
+#include <cstddef>   // std::nullptr_t
+#include <algorithm> // swap
 
 //#define TNL_DEBUG_SHARED_POINTERS
 
@@ -67,7 +68,7 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
 
       using ObjectType = Object;
       using DeviceType = Devices::Cuda; 
-      using ThisType = SharedPointer<  Object, Devices::Host >;
+      using ThisType = SharedPointer<  Object, Devices::Cuda >;
 
       SharedPointer( std::nullptr_t )
       : pd( nullptr )
@@ -321,7 +322,7 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
 
       using ObjectType = Object;
       using DeviceType = Devices::Cuda; 
-      using ThisType = SharedPointer<  Object, Devices::Host >;
+      using ThisType = SharedPointer<  Object, Devices::Cuda >;
 
       SharedPointer( std::nullptr_t )
       : pd( nullptr ),
