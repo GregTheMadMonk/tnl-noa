@@ -168,24 +168,6 @@ T sign( const T& a )
    return ( T ) 1;
 }
 
-template< class T >
-__cuda_callable__
-bool isNan( const T& v )
-{
-#if defined HAVE_CUDA
-   #if defined(__CUDA_ARCH__)
-      return isnan( v );
-   #else
-      #if defined (__GNUC__) && ( __GNUC__  < 5 )
-         return false;
-      #else
-         return std::isnan( v );
-      #endif
-   #endif
-#else
-   return std::isnan( v );
-#endif
-}
 template< typename Real >
 __cuda_callable__
 bool isSmall( const Real& v,
