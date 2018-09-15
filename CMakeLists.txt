@@ -62,6 +62,20 @@ else()
     set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/bin )
 endif()
 
+# check if the compiler is good enough
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+   # GCC 5.0 is the first release with full C++11 support (due to libstdc++)
+   # https://gcc.gnu.org/gcc-5/changes.html
+   if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "5.0")
+      message(FATAL_ERROR "Insufficient GCC version")
+   endif()
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+   # Clang 3.4 has full C++14 support: http://clang.llvm.org/cxx_status.html
+   if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "3.4")
+      message(FATAL_ERROR "Insufficient Clang version")
+   endif()
+endif()
+
 # set Debug/Release options
 set( CMAKE_CXX_FLAGS "-std=c++11 -pthread -Wall -Wno-unused-local-typedefs -Wno-unused-variable" )
 set( CMAKE_CXX_FLAGS_DEBUG "-g" )
