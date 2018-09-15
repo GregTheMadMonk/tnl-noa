@@ -263,10 +263,9 @@ bool convertObject( const MeshPointer& meshPointer,
       typedef Meshes::Grid< Dimension, Real, Devices::Host, Index > GridType;
       typedef typename GridType::PointType PointType;
       typedef typename GridType::CoordinatesType CoordinatesType;
-      GridType grid;
-      grid. setDomain( PointType( 0.0 ), PointType( 1.0 ) );
-      grid. setDimensions( CoordinatesType( multiVector. getDimensions() ) );
-      const Real spaceStep = grid. getSpaceSteps(). x();
+//      GridType grid;
+//      grid. setDomain( PointType( 0.0 ), PointType( 1.0 ) );
+//      grid. setDimensions( CoordinatesType( multiVector. getDimensions() ) );
 //      if( ! grid. write( multiVector, outputFileName, outputFormat ) )
          return false;
    }
