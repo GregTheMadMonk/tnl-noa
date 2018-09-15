@@ -16,10 +16,6 @@
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Meshes/TypeResolver/TypeResolver.h>
 #include <TNL/Solvers/BuildConfigTags.h>
-#include <TNL/Solvers/Linear/SOR.h>
-#include <TNL/Solvers/Linear/CG.h>
-#include <TNL/Solvers/Linear/BICGStab.h>
-#include <TNL/Solvers/Linear/GMRES.h>
 #include <TNL/Solvers/SolverStarter.h>
 #include <TNL/Meshes/DummyMesh.h>
 
