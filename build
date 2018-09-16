@@ -114,17 +114,18 @@ if [[ ${WITH_CLANG} == "yes" ]]; then
 fi
 
 if [[ ${WITH_MPI} == "yes" ]]; then
-    if [[ ! -x  "$(command -v mpic++)" ]]; then
-       echo "Warning:mpic++ is not installed on this system. MPI support is turned off." 
+    # NOTE: OpenMPI provides mpic++, but Intel MPI does not
+    if [[ ! -x  "$(command -v mpicxx)" ]]; then
+       echo "Warning: mpicxx is not installed on this system. MPI support is turned off."
     else
        # instruct OpenMPI to use the original compiler
        # reference: https://www.open-mpi.org/faq/?category=mpi-apps#override-wrappers-after-v1.0
-       # FIXME: this does not work with CUDA_HOST_COMPILER=mpic++
+       # FIXME: this does not work with CUDA_HOST_COMPILER=mpicxx
 #       if [ -n "$CXX" ]; then
 #          export OMPI_CXX="$CXX"
 #       fi
-       export CXX=mpic++
-       export CUDA_HOST_COMPILER=mpic++
+       export CXX=mpicxx
+       export CUDA_HOST_COMPILER=mpicxx
     fi
     if [[ ! -x  "$(command -v mpicc)" ]]; then
        echo "Warning: mpicc is not installed on this system." 

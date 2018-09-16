@@ -123,10 +123,11 @@ endif()
 #####
 # Check for MPI -- poznej podle vraperu compileru -- da se testovat preklad bez MPI
 #
-if( ${CXX_COMPILER_NAME} STREQUAL "mpic++" )
+if( ${CXX_COMPILER_NAME} STREQUAL "mpicxx" )
    message( "MPI compiler detected."    )
    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_MPI" )
-   set( CUDA_HOST_COMPILER "mpic++" )
+   set( CUDA_HOST_COMPILER "mpicxx" )
+   set( BUILD_MPI ON )
 endif()
 
 ####
@@ -164,7 +165,7 @@ if( ${WITH_CUDA} )
             endif()
         endif()
         # An extra CUDA_ARCH_HOST_COMPILER variable for compiling tnl-cuda-arch alone,
-        # because it SHOULD NOT be compiled using mpic++, which would cause weird
+        # because it SHOULD NOT be compiled using mpicxx, which would cause weird
         # RPATH_CHANGE error in cmake.
         # FIXME: find better solution to switch between MPI-enabled and MPI-disabled binaries in cmake
         if( NOT $ENV{CUDA_ARCH_HOST_COMPILER} STREQUAL "" )
