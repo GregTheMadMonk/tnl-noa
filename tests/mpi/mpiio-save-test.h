@@ -2,6 +2,7 @@
 
 #define MPIIO
 #include <TNL/Communicators/MpiCommunicator.h>
+#include <TNL/Communicators/ScopedInitializer.h>
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
@@ -38,7 +39,7 @@ int main(int argc, char **argv)
         typedef typename DistributedGridType::CoordinatesType CoordinatesType;
         typedef LinearFunction<double,DIM> LinearFunctionType;
 
-        CommunicatorType::Init(argc, argv);
+        Communicators::ScopedInitializer< CommunicatorType > mpi_init(argc, argv);
 
         Pointers::SharedPointer< LinearFunctionType, Device > linearFunctionPtr;
         MeshFunctionEvaluator< MeshFunctionType, LinearFunctionType > linearFunctionEvaluator;    
@@ -81,9 +82,6 @@ int main(int argc, char **argv)
         
         String fileName=String("./meshFunction.tnl");
         DistributedGridIO<MeshFunctionType,MpiIO> ::save(fileName, *meshFunctionptr );
-
-        CommunicatorType::Finalize();
-
 }
 
 #else

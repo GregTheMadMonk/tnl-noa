@@ -9,6 +9,7 @@
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Communicators/NoDistrCommunicator.h>
+#include <TNL/Communicators/ScopedInitializer.h>
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
@@ -56,7 +57,7 @@ int main ( int argc, char *argv[])
   typedef LinearFunction<double,DIMENSION> LinearFunctionType;
   typedef ConstFunction<double,DIMENSION> ConstFunctionType;
   
-  CommunicatorType::Init(argc,argv);
+  Communicators::ScopedInitializer< CommunicatorType > mpi(argc, argv);
 
   int size=10;
   int cycles=1;
@@ -165,12 +166,8 @@ int main ( int argc, char *argv[])
     cout <<"sync: "<<sync.getRealTime()<<endl;
     cout<<"all: "<<all.getRealTime()<<endl<<endl;
   }
-  
-
-  CommunicatorType::Finalize();
 
   return 0;
-
 }
 
 #else

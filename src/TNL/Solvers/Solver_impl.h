@@ -14,8 +14,8 @@
 #include <TNL/Solvers/SolverStarter.h>
 #include <TNL/Solvers/SolverConfig.h>
 #include <TNL/Devices/Cuda.h>
-#include <TNL/Communicators/NoDistrCommunicator.h>
 #include <TNL/Communicators/MpiCommunicator.h>
+#include <TNL/Communicators/ScopedInitializer.h>
 
 namespace TNL {
 namespace Solvers {
@@ -34,19 +34,15 @@ run( int argc, char* argv[] )
    configDescription.addDelimiter( "Parallelization setup:" );
    Devices::Host::configSetup( configDescription );
    Devices::Cuda::configSetup( configDescription );
-   Communicators::NoDistrCommunicator::configSetup( configDescription );
    Communicators::MpiCommunicator::configSetup( configDescription );
-   
-   Communicators::NoDistrCommunicator::Init(argc,argv);
-   Communicators::MpiCommunicator::Init(argc,argv);
+
+   Communicators::ScopedInitializer< Communicators::MpiCommunicator > mpi( argc, argv );
 
    if( ! parseCommandLine( argc, argv, configDescription, parameters ) )
       return false;
 
    SolverInitiator< ProblemSetter, MeshConfig > solverInitiator;
-   bool ret= solverInitiator.run( parameters );
-
-	return ret;
+   return solverInitiator.run( parameters );
 };
 
 } // namespace Solvers

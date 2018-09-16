@@ -13,6 +13,7 @@
 #ifdef HAVE_MPI    
 
 #include <TNL/Communicators/MpiCommunicator.h>
+#include <TNL/Communicators/ScopedInitializer.h>
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
@@ -422,7 +423,7 @@ TEST(NoMPI, NoTest)
   };
 #endif
 
-#include "../../src/UnitTests/GtestMissingError.h"
+#include "../../GtestMissingError.h"
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_GTEST
@@ -435,14 +436,9 @@ int main( int argc, char* argv[] )
        delete listeners.Release(listeners.default_result_printer());
        listeners.Append(new MinimalistBufferedPrinter);
 
-       CommunicatorType::Init(argc,argv);
+       Communicators::ScopedInitializer< CommunicatorType > mpi(argc, argv);
     #endif
-       int result= RUN_ALL_TESTS();
-
-    #ifdef HAVE_MPI
-       CommunicatorType::Finalize();
-    #endif
-       return result;
+       return RUN_ALL_TESTS();
 #else
    
    throw GtestMissingError();

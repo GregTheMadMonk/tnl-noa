@@ -149,7 +149,7 @@ class MpiCommunicator
          return true;
       }
 
-      static void Init(int argc, char **argv )
+      static void Init(int& argc, char**& argv )
       {
 #ifdef HAVE_MPI
          MPI_Init( &argc, &argv );

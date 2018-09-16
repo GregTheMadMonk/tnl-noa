@@ -213,15 +213,13 @@ TEST(CutMeshFunction, 3D_2)
 
 #endif
 
-#include "../../src/UnitTests/GtestMissingError.h"
+#include "../../GtestMissingError.h"
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_GTEST
    ::testing::InitGoogleTest( &argc, argv );
-       int result= RUN_ALL_TESTS();
-       return result;
+   return RUN_ALL_TESTS();
 #else
-   
    throw GtestMissingError();
 #endif
 }
