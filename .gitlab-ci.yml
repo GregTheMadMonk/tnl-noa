@@ -18,6 +18,7 @@ stages:
     WITH_CUDA: "no"
     WITH_CUDA_ARCH: "auto"
     WITH_MIC: "no"
+    WITH_MPI: "no"
     WITH_TESTS: "yes"
     WITH_COVERAGE: "no"
     # these are built only in the "full" config
@@ -30,6 +31,11 @@ stages:
 .build_template_def: &build_template
     stage: build
     script:
+        # set MPI compiler wrapper
+        - if [[ ${WITH_MPI} == "yes" ]]; then
+                export CXX=mpicxx;
+                export CC=mpicc;
+          fi
         # all cores including hyperthreading
 #        - export NUM_CORES=$(grep "core id" /proc/cpuinfo | wc -l)
 #       # all pyhsical cores
@@ -86,6 +92,32 @@ cuda_base_Release:
         WITH_CUDA: "yes"
         BUILD_TYPE: Release
 
+cuda_mpi_Debug:
+    <<: *build_template
+    tags:
+        - openmp
+        - gpu
+        - mpi
+    variables:
+        <<: *default_cmake_flags
+        WITH_OPENMP: "yes"
+        WITH_CUDA: "yes"
+        WITH_MPI: "yes"
+        BUILD_TYPE: Debug
+
+cuda_mpi_Release:
+    <<: *build_template
+    tags:
+        - openmp
+        - gpu
+        - mpi
+    variables:
+        <<: *default_cmake_flags
+        WITH_OPENMP: "yes"
+        WITH_CUDA: "yes"
+        WITH_MPI: "yes"
+        BUILD_TYPE: Release
+
 cuda_full_Debug:
     <<: *build_template
     tags:
@@ -123,6 +155,28 @@ default_base_Release:
     <<: *build_template
     variables:
         <<: *default_cmake_flags
+        BUILD_TYPE: Release
+
+default_mpi_Debug:
+    <<: *build_template
+    tags:
+        - openmp
+        - mpi
+    variables:
+        <<: *default_cmake_flags
+        WITH_OPENMP: "yes"
+        WITH_MPI: "yes"
+        BUILD_TYPE: Debug
+
+default_mpi_Release:
+    <<: *build_template
+    tags:
+        - openmp
+        - mpi
+    variables:
+        <<: *default_cmake_flags
+        WITH_OPENMP: "yes"
+        WITH_MPI: "yes"
         BUILD_TYPE: Release
 
 default_full_Debug:
