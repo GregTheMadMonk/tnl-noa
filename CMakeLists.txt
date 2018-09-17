@@ -29,6 +29,7 @@ option(WITH_TESTS "Build tests" ON)
 option(WITH_COVERAGE "Enable code coverage reports from unit tests" OFF)
 option(WITH_EXAMPLES "Compile the 'examples' directory" ON)
 option(WITH_TOOLS "Compile the 'src/Tools' directory" ON)
+option(WITH_BENCHMARKS "Compile the 'src/Benchmarks' directory" ON)
 option(WITH_PYTHON "Compile the Python bindings" ON)
 option(WITH_TEMPLATES_INSTANTIATION "Enable explicit template instantiation" OFF)
 
@@ -421,15 +422,9 @@ INCLUDE_DIRECTORIES( ${PROJECT_BUILD_PATH} )
 LINK_DIRECTORIES( ${LIBRARY_OUTPUT_PATH} )
 
 # Add all subdirectories
-# Note that it is important to start building examples as soon as possible,
-# because they take the longest time and other stuff can be pipelined before
-# they are finished (at least with Ninja).
-if( WITH_EXAMPLES STREQUAL "yes" )
-   add_subdirectory( examples )
-endif( WITH_EXAMPLES STREQUAL "yes" )
-if( WITH_TESTS STREQUAL "yes" )
+if( ${WITH_TESTS} )
     add_subdirectory( tests )
-endif( WITH_TESTS STREQUAL "yes" )
+endif()
 add_subdirectory( src )
 add_subdirectory( share )
 
@@ -473,6 +468,7 @@ message( "   WITH_TESTS=${WITH_TESTS}" )
 message( "   WITH_COVERAGE=${WITH_COVERAGE}" )
 message( "   WITH_EXAMPLES=${WITH_EXAMPLES}" )
 message( "   WITH_TOOLS=${WITH_TOOLS}" )
+message( "   WITH_BENCHMARKS=${WITH_BENCHMARKS}" )
 message( "   WITH_PYTHON=${WITH_PYTHON}" )
 message( "   WITH_TEMPLATES_INSTANTIATION=${WITH_TEMPLATES_INSTANTIATION}" )
 # Print compiler options
