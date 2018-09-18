@@ -20,24 +20,22 @@ namespace DistributedContainers {
 
 template< typename Real,
           typename Device = Devices::Host,
-          typename Communicator = Communicators::MpiCommunicator,
           typename Index = int,
-          typename IndexMap = Subrange< Index > >
+          typename Communicator = Communicators::MpiCommunicator >
 class DistributedVector
-: public DistributedArray< Real, Device, Communicator, Index, IndexMap >
+: public DistributedArray< Real, Device, Index, Communicator >
 {
    using CommunicationGroup = typename Communicator::CommunicationGroup;
-   using BaseType = DistributedArray< Real, Device, Communicator, Index, IndexMap >;
+   using BaseType = DistributedArray< Real, Device, Index, Communicator >;
 public:
    using RealType = Real;
    using DeviceType = Device;
    using CommunicatorType = Communicator;
    using IndexType = Index;
-   using IndexMapType = IndexMap;
    using LocalVectorViewType = Containers::VectorView< Real, Device, Index >;
    using ConstLocalVectorViewType = Containers::VectorView< typename std::add_const< Real >::type, Device, Index >;
-   using HostType = DistributedVector< Real, Devices::Host, Communicator, Index, IndexMap >;
-   using CudaType = DistributedVector< Real, Devices::Cuda, Communicator, Index, IndexMap >;
+   using HostType = DistributedVector< Real, Devices::Host, Index, Communicator >;
+   using CudaType = DistributedVector< Real, Devices::Cuda, Index, Communicator >;
 
    // inherit all constructors and assignment operators from Array
    using BaseType::DistributedArray;

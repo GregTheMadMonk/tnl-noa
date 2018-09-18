@@ -12,7 +12,7 @@ void setLinearSequence( Vector& deviceVector )
    typename Vector::HostType a;
    a.setLike( deviceVector );
    for( int i = 0; i < a.getLocalVectorView().getSize(); i++ ) {
-      const auto gi = a.getIndexMap().getGlobalIndex( i );
+      const auto gi = a.getLocalRange().getGlobalIndex( i );
       a[ gi ] = gi;
    }
    deviceVector = a;
@@ -31,7 +31,7 @@ void setNegativeLinearSequence( Vector& deviceVector )
    typename Vector::HostType a;
    a.setLike( deviceVector );
    for( int i = 0; i < a.getLocalVectorView().getSize(); i++ ) {
-      const auto gi = a.getIndexMap().getGlobalIndex( i );
+      const auto gi = a.getLocalRange().getGlobalIndex( i );
       a[ gi ] = -gi;
    }
    deviceVector = a;
@@ -67,8 +67,7 @@ protected:
    using DeviceType = typename DistributedVector::DeviceType;
    using CommunicatorType = typename DistributedVector::CommunicatorType;
    using IndexType = typename DistributedVector::IndexType;
-   using IndexMap = typename DistributedVector::IndexMapType;
-   using DistributedVectorType = DistributedContainers::DistributedVector< RealType, DeviceType, CommunicatorType, IndexType, IndexMap >;
+   using DistributedVectorType = DistributedVector;
    using VectorViewType = typename DistributedVectorType::LocalVectorViewType;
 
    const int globalSize = 97;  // prime number to force non-uniform distribution
@@ -82,10 +81,11 @@ protected:
 
    DistributedVectorTest()
    {
-      const IndexMap map = DistributedContainers::Partitioner< IndexMap, CommunicatorType >::splitRange( globalSize, group );
-      x.setDistribution( map, group );
-      y.setDistribution( map, group );
-      z.setDistribution( map, group );
+      using LocalRangeType = typename DistributedVector::LocalRangeType;
+      const LocalRangeType localRange = DistributedContainers::Partitioner< IndexType, CommunicatorType >::splitRange( globalSize, group );
+      x.setDistribution( localRange, globalSize, group );
+      y.setDistribution( localRange, globalSize, group );
+      z.setDistribution( localRange, globalSize, group );
 
       setConstantSequence( x, 1 );
       setLinearSequence( y );
@@ -95,12 +95,12 @@ protected:
 
 // types for which DistributedVectorTest is instantiated
 using DistributedVectorTypes = ::testing::Types<
-   DistributedVector< double, Devices::Host, Communicators::MpiCommunicator, int, Subrange< int > >,
-   DistributedVector< double, Devices::Host, Communicators::NoDistrCommunicator, int, Subrange< int > >
+   DistributedVector< double, Devices::Host, int, Communicators::MpiCommunicator >,
+   DistributedVector< double, Devices::Host, int, Communicators::NoDistrCommunicator >
 #ifdef HAVE_CUDA
    ,
-   DistributedVector< double, Devices::Cuda, Communicators::MpiCommunicator, int, Subrange< int > >,
-   DistributedVector< double, Devices::Cuda, Communicators::NoDistrCommunicator, int, Subrange< int > >
+   DistributedVector< double, Devices::Cuda, int, Communicators::MpiCommunicator >,
+   DistributedVector< double, Devices::Cuda, int, Communicators::NoDistrCommunicator >
 #endif
 >;
 
@@ -204,13 +204,13 @@ TYPED_TEST( DistributedVectorTest, scalarMultiplication )
 {
    this->y *= 2;
    for( int i = 0; i < this->y.getLocalVectorView().getSize(); i++ ) {
-      const auto gi = this->y.getIndexMap().getGlobalIndex( i );
+      const auto gi = this->y.getLocalRange().getGlobalIndex( i );
       EXPECT_EQ( this->y.getElement( gi ), 2 * gi );
    }
 
    this->y.scalarMultiplication( 2 );
    for( int i = 0; i < this->y.getLocalVectorView().getSize(); i++ ) {
-      const auto gi = this->y.getIndexMap().getGlobalIndex( i );
+      const auto gi = this->y.getLocalRange().getGlobalIndex( i );
       EXPECT_EQ( this->y.getElement( gi ), 4 * gi );
    }
 }
@@ -228,13 +228,13 @@ TYPED_TEST( DistributedVectorTest, addVector )
 {
    this->x.addVector( this->y, 3.0, 1.0 );
    for( int i = 0; i < this->y.getLocalVectorView().getSize(); i++ ) {
-      const auto gi = this->y.getIndexMap().getGlobalIndex( i );
+      const auto gi = this->y.getLocalRange().getGlobalIndex( i );
       EXPECT_EQ( this->x.getElement( gi ), 1 + 3 * gi );
    }
 
    this->y += this->z;
    for( int i = 0; i < this->y.getLocalVectorView().getSize(); i++ ) {
-      const auto gi = this->y.getIndexMap().getGlobalIndex( i );
+      const auto gi = this->y.getLocalRange().getGlobalIndex( i );
       EXPECT_EQ( this->y.getElement( gi ), 0 );
    }
 }
@@ -243,7 +243,7 @@ TYPED_TEST( DistributedVectorTest, addVectors )
 {
    this->x.addVectors( this->y, 3.0, this->z, 1.0, 2.0 );
    for( int i = 0; i < this->y.getLocalVectorView().getSize(); i++ ) {
-      const auto gi = this->y.getIndexMap().getGlobalIndex( i );
+      const auto gi = this->y.getLocalRange().getGlobalIndex( i );
       EXPECT_EQ( this->x.getElement( gi ), 2 + 3 * gi - gi );
    }
 }
