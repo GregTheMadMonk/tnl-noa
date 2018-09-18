@@ -1,5 +1,5 @@
 /***************************************************************************
-                          IndexMap.h  -  description
+                          Subrange.h  -  description
                              -------------------
     begin                : Sep 6, 2018
     copyright            : (C) 2018 by Tomas Oberhuber et al.
@@ -30,29 +30,26 @@ public:
    Subrange() = default;
 
    __cuda_callable__
-   Subrange( Index begin, Index end, Index globalSize )
+   Subrange( Index begin, Index end )
    {
-      setSubrange( begin, end, globalSize );
+      setSubrange( begin, end );
    }
 
    // Sets the local subrange and global range size.
    __cuda_callable__
-   void setSubrange( Index begin, Index end, Index globalSize )
+   void setSubrange( Index begin, Index end )
    {
       TNL_ASSERT_LE( begin, end, "begin must be before end" );
       TNL_ASSERT_GE( begin, 0, "begin must be non-negative" );
-      TNL_ASSERT_LE( end - begin, globalSize, "end of the subrange is outside of gloabl range" );
-      offset = begin;
-      localSize = end - begin;
-      this->globalSize = globalSize;
+      this->begin = begin;
+      this->end = end;
    }
 
    __cuda_callable__
    void reset()
    {
-      offset = 0;
-      localSize = 0;
-      globalSize = 0;
+      begin = 0;
+      end = 0;
    }
 
    static String getType()
@@ -64,36 +61,37 @@ public:
    __cuda_callable__
    bool isLocal( Index i ) const
    {
-      return offset <= i && i < offset + localSize;
+      return begin <= i && i < end;
    }
 
-   // Gets the offset of the subrange.
+   // Gets the begin of the subrange.
    __cuda_callable__
-   Index getOffset() const
+   Index getBegin() const
    {
-      return offset;
+      return begin;
+   }
+
+   // Gets the begin of the subrange.
+   __cuda_callable__
+   Index getEnd() const
+   {
+      return end;
    }
 
    // Gets number of local indices.
    __cuda_callable__
-   Index getLocalSize() const
+   Index getSize() const
    {
-      return localSize;
-   }
-
-   // Gets number of global indices.
-   __cuda_callable__
-   Index getGlobalSize() const
-   {
-      return globalSize;
+      return end - begin;
    }
 
    // Gets local index for given global index.
    __cuda_callable__
    Index getLocalIndex( Index i ) const
    {
-      TNL_ASSERT_TRUE( isLocal( i ), "Given global index was not found in the local index set." );
-      return i - offset;
+      TNL_ASSERT_GE( i, getBegin(), "Given global index was not found in the local index set." );
+      TNL_ASSERT_LT( i, getEnd(), "Given global index was not found in the local index set." );
+      return i - begin;
    }
 
    // Gets global index for given local index.
@@ -101,15 +99,14 @@ public:
    Index getGlobalIndex( Index i ) const
    {
       TNL_ASSERT_GE( i, 0, "Given local index was not found in the local index set." );
-      TNL_ASSERT_LT( i, localSize, "Given local index was not found in the local index set." );
-      return i + offset;
+      TNL_ASSERT_LT( i, getSize(), "Given local index was not found in the local index set." );
+      return i + begin;
    }
 
    bool operator==( const Subrange& other ) const
    {
-      return offset == other.offset &&
-             localSize == other.localSize &&
-             globalSize == other.globalSize;
+      return begin == other.begin &&
+             end == other.end;
    }
 
    bool operator!=( const Subrange& other ) const
@@ -118,13 +115,9 @@ public:
    }
 
 protected:
-   Index offset = 0;
-   Index localSize = 0;
-   Index globalSize = 0;
+   Index begin = 0;
+   Index end = 0;
 };
-
-// TODO: implement a general IndexMap class, e.g. based on collection of subranges as in deal.II:
-// https://www.dealii.org/8.4.0/doxygen/deal.II/classIndexSet.html
 
 } // namespace DistributedContainers
 } // namespace TNL

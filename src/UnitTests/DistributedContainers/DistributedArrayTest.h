@@ -34,7 +34,6 @@ protected:
    using DeviceType = typename DistributedArray::DeviceType;
    using CommunicatorType = typename DistributedArray::CommunicatorType;
    using IndexType = typename DistributedArray::IndexType;
-   using IndexMap = typename DistributedArray::IndexMapType;
    using DistributedArrayType = DistributedArray;
    using ArrayViewType = typename DistributedArrayType::LocalArrayViewType;
    using ArrayType = typename DistributedArrayType::LocalArrayType;
@@ -48,24 +47,25 @@ protected:
    const int rank = CommunicatorType::GetRank(group);
    const int nproc = CommunicatorType::GetSize(group);
 
-   void SetUp() override
+   DistributedArrayTest()
    {
-      const IndexMap map = DistributedContainers::Partitioner< IndexMap, CommunicatorType >::splitRange( globalSize, group );
-      distributedArray.setDistribution( map, group );
+      using LocalRangeType = typename DistributedArray::LocalRangeType;
+      const LocalRangeType localRange = DistributedContainers::Partitioner< IndexType, CommunicatorType >::splitRange( globalSize, group );
+      distributedArray.setDistribution( localRange, globalSize, group );
 
-      ASSERT_EQ( distributedArray.getIndexMap(), map );
-      ASSERT_EQ( distributedArray.getCommunicationGroup(), group );
+      EXPECT_EQ( distributedArray.getLocalRange(), localRange );
+      EXPECT_EQ( distributedArray.getCommunicationGroup(), group );
    }
 };
 
 // types for which DistributedArrayTest is instantiated
 using DistributedArrayTypes = ::testing::Types<
-   DistributedArray< double, Devices::Host, Communicators::MpiCommunicator, int, Subrange< int > >,
-   DistributedArray< double, Devices::Host, Communicators::NoDistrCommunicator, int, Subrange< int > >
+   DistributedArray< double, Devices::Host, int, Communicators::MpiCommunicator >,
+   DistributedArray< double, Devices::Host, int, Communicators::NoDistrCommunicator >
 #ifdef HAVE_CUDA
    ,
-   DistributedArray< double, Devices::Cuda, Communicators::MpiCommunicator, int, Subrange< int > >,
-   DistributedArray< double, Devices::Cuda, Communicators::NoDistrCommunicator, int, Subrange< int > >
+   DistributedArray< double, Devices::Cuda, int, Communicators::MpiCommunicator >,
+   DistributedArray< double, Devices::Cuda, int, Communicators::NoDistrCommunicator >
 #endif
 >;
 
@@ -132,16 +132,15 @@ TYPED_TEST( DistributedArrayTest, setValue )
 TYPED_TEST( DistributedArrayTest, elementwiseAccess )
 {
    using ArrayViewType = typename TestFixture::ArrayViewType;
-   using IndexMap = typename TestFixture::IndexMap;
    using IndexType = typename TestFixture::IndexType;
 
    this->distributedArray.setValue( 0 );
    ArrayViewType localArrayView = this->distributedArray.getLocalArrayView();
-   const IndexMap map = this->distributedArray.getIndexMap();
+   const auto localRange = this->distributedArray.getLocalRange();
 
    // check initial value
    for( IndexType i = 0; i < localArrayView.getSize(); i++ ) {
-      const IndexType gi = map.getGlobalIndex( i );
+      const IndexType gi = localRange.getGlobalIndex( i );
       EXPECT_EQ( localArrayView.getElement( i ), 0 );
       EXPECT_EQ( this->distributedArray.getElement( gi ), 0 );
       if( std::is_same< typename TestFixture::DeviceType, Devices::Host >::value )
@@ -150,13 +149,13 @@ TYPED_TEST( DistributedArrayTest, elementwiseAccess )
 
    // use setValue
    for( IndexType i = 0; i < localArrayView.getSize(); i++ ) {
-      const IndexType gi = map.getGlobalIndex( i );
+      const IndexType gi = localRange.getGlobalIndex( i );
       this->distributedArray.setElement( gi, i + 1 );
    }
 
    // check set value
    for( IndexType i = 0; i < localArrayView.getSize(); i++ ) {
-      const IndexType gi = map.getGlobalIndex( i );
+      const IndexType gi = localRange.getGlobalIndex( i );
       EXPECT_EQ( localArrayView.getElement( i ), i + 1 );
       EXPECT_EQ( this->distributedArray.getElement( gi ), i + 1 );
       if( std::is_same< typename TestFixture::DeviceType, Devices::Host >::value )
@@ -168,13 +167,13 @@ TYPED_TEST( DistributedArrayTest, elementwiseAccess )
    // use operator[]
    if( std::is_same< typename TestFixture::DeviceType, Devices::Host >::value ) {
       for( IndexType i = 0; i < localArrayView.getSize(); i++ ) {
-         const IndexType gi = map.getGlobalIndex( i );
+         const IndexType gi = localRange.getGlobalIndex( i );
          this->distributedArray[ gi ] = i + 1;
       }
 
       // check set value
       for( IndexType i = 0; i < localArrayView.getSize(); i++ ) {
-         const IndexType gi = map.getGlobalIndex( i );
+         const IndexType gi = localRange.getGlobalIndex( i );
          EXPECT_EQ( localArrayView.getElement( i ), i + 1 );
          EXPECT_EQ( this->distributedArray.getElement( gi ), i + 1 );
          EXPECT_EQ( this->distributedArray[ gi ], i + 1 );
@@ -207,17 +206,16 @@ TYPED_TEST( DistributedArrayTest, copyAssignment )
 TYPED_TEST( DistributedArrayTest, comparisonOperators )
 {
    using DistributedArrayType = typename TestFixture::DistributedArrayType;
-   using IndexMap = typename TestFixture::IndexMap;
    using IndexType = typename TestFixture::IndexType;
 
-   const IndexMap map = this->distributedArray.getIndexMap();
+   const auto localRange = this->distributedArray.getLocalRange();
    DistributedArrayType& u = this->distributedArray;
    DistributedArrayType v, w;
    v.setLike( u );
    w.setLike( u );
 
    for( int i = 0; i < u.getLocalArrayView().getSize(); i ++ ) {
-      const IndexType gi = map.getGlobalIndex( i );
+      const IndexType gi = localRange.getGlobalIndex( i );
       u.setElement( gi, i );
       v.setElement( gi, i );
       w.setElement( gi, 2 * i );
@@ -242,11 +240,11 @@ TYPED_TEST( DistributedArrayTest, comparisonOperators )
 TYPED_TEST( DistributedArrayTest, containsValue )
 {
    using IndexType = typename TestFixture::IndexType;
-   using IndexMap = typename TestFixture::IndexMap;
-   const IndexMap map = this->distributedArray.getIndexMap();
+
+   const auto localRange = this->distributedArray.getLocalRange();
 
    for( int i = 0; i < this->distributedArray.getLocalArrayView().getSize(); i++ ) {
-      const IndexType gi = map.getGlobalIndex( i );
+      const IndexType gi = localRange.getGlobalIndex( i );
       this->distributedArray.setElement( gi, i % 10 );
    }
 
@@ -260,11 +258,11 @@ TYPED_TEST( DistributedArrayTest, containsValue )
 TYPED_TEST( DistributedArrayTest, containsOnlyValue )
 {
    using IndexType = typename TestFixture::IndexType;
-   using IndexMap = typename TestFixture::IndexMap;
-   const IndexMap map = this->distributedArray.getIndexMap();
+
+   const auto localRange = this->distributedArray.getLocalRange();
 
    for( int i = 0; i < this->distributedArray.getLocalArrayView().getSize(); i++ ) {
-      const IndexType gi = map.getGlobalIndex( i );
+      const IndexType gi = localRange.getGlobalIndex( i );
       this->distributedArray.setElement( gi, i % 10 );
    }
 

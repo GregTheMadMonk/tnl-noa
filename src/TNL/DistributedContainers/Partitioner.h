@@ -1,5 +1,5 @@
 /***************************************************************************
-                          DistributedArray.h  -  description
+                          Partitioner.h  -  description
                              -------------------
     begin                : Sep 6, 2018
     copyright            : (C) 2018 by Tomas Oberhuber et al.
@@ -12,35 +12,31 @@
 
 #pragma once
 
-#include "IndexMap.h"
+#include "Subrange.h"
 
 #include <TNL/Math.h>
 
 namespace TNL {
 namespace DistributedContainers {
 
-template< typename IndexMap, typename Communicator >
-class Partitioner
-{};
-
 template< typename Index, typename Communicator >
-class Partitioner< Subrange< Index >, Communicator >
+class Partitioner
 {
    using CommunicationGroup = typename Communicator::CommunicationGroup;
 public:
-   using IndexMap = Subrange< Index >;
+   using SubrangeType = Subrange< Index >;
 
-   static IndexMap splitRange( Index globalSize, CommunicationGroup group )
+   static SubrangeType splitRange( Index globalSize, CommunicationGroup group )
    {
       if( group != Communicator::NullGroup ) {
          const int rank = Communicator::GetRank( group );
          const int partitions = Communicator::GetSize( group );
          const Index begin = min( globalSize, rank * globalSize / partitions );
          const Index end = min( globalSize, (rank + 1) * globalSize / partitions );
-         return IndexMap( begin, end, globalSize );
+         return SubrangeType( begin, end );
       }
       else
-         return IndexMap( 0, 0, globalSize );
+         return SubrangeType( 0, 0 );
    }
 
    // Gets the owner of given global index.
@@ -66,6 +62,12 @@ public:
       return end - begin;
    }
 };
+
+// TODO:
+// - partitioner in deal.II stores also ghost indices:
+//   https://www.dealii.org/8.4.0/doxygen/deal.II/classUtilities_1_1MPI_1_1Partitioner.html
+// - ghost indices are stored in a general IndexMap class (based on collection of subranges):
+//   https://www.dealii.org/8.4.0/doxygen/deal.II/classIndexSet.html
 
 } // namespace DistributedContainers
 } // namespace TNL

@@ -22,49 +22,47 @@ namespace DistributedContainers {
 
 template< typename Value,
           typename Device,
-          typename Communicator,
           typename Index,
-          typename IndexMap >
-DistributedArray< Value, Device, Communicator, Index, IndexMap >::
-DistributedArray( IndexMap indexMap, CommunicationGroup group )
+          typename Communicator >
+DistributedArray< Value, Device, Index, Communicator >::
+DistributedArray( LocalRangeType localRange, IndexType globalSize, CommunicationGroup group )
 {
-   setDistribution( indexMap, group );
+   setDistribution( localRange, globalSize, group );
 }
 
 template< typename Value,
           typename Device,
-          typename Communicator,
           typename Index,
-          typename IndexMap >
+          typename Communicator >
 void
-DistributedArray< Value, Device, Communicator, Index, IndexMap >::
-setDistribution( IndexMap indexMap, CommunicationGroup group )
+DistributedArray< Value, Device, Index, Communicator >::
+setDistribution( LocalRangeType localRange, IndexType globalSize, CommunicationGroup group )
 {
-   this->indexMap = indexMap;
+   TNL_ASSERT_LE( localRange.getEnd(), globalSize, "end of the local range is outside of the global range" );
+   this->localRange = localRange;
+   this->globalSize = globalSize;
    this->group = group;
    if( group != Communicator::NullGroup )
-      localData.setSize( indexMap.getLocalSize() );
+      localData.setSize( localRange.getSize() );
 }
 
 template< typename Value,
           typename Device,
-          typename Communicator,
           typename Index,
-          typename IndexMap >
-const IndexMap&
-DistributedArray< Value, Device, Communicator, Index, IndexMap >::
-getIndexMap() const
+          typename Communicator >
+const Subrange< Index >&
+DistributedArray< Value, Device, Index, Communicator >::
+getLocalRange() const
 {
-   return indexMap;
+   return localRange;
 }
 
 template< typename Value,
           typename Device,
-          typename Communicator,
           typename Index,
-          typename IndexMap >
+          typename Communicator >
 typename Communicator::CommunicationGroup
-DistributedArray< Value, Device, Communicator, Index, IndexMap >::
+DistributedArray< Value, Device, Index, Communicator >::
 getCommunicationGroup() const
 {
    return group;
@@ -72,11 +70,10 @@ getCommunicationGroup() const
 
 template< typename Value,
           typename Device,
-          typename Communicator,
           typename Index,
-          typename IndexMap >
-typename DistributedArray< Value, Device, Communicator, Index, IndexMap >::LocalArrayViewType
-DistributedArray< Value, Device, Communicator, Index, IndexMap >::
+          typename Communicator >
+typename DistributedArray< Value, Device, Index, Communicator >::LocalArrayViewType
+DistributedArray< Value, Device, Index, Communicator >::
 getLocalArrayView()
 {
    return localData;
@@ -84,11 +81,10 @@ getLocalArrayView()
 
 template< typename Value,
           typename Device,
-          typename Communicator,
           typename Index,
-          typename IndexMap >
-typename DistributedArray< Value, Device, Communicator, Index, IndexMap >::ConstLocalArrayViewType
-DistributedArray< Value, Device, Communicator, Index, IndexMap >::
+          typename Communicator >
+typename DistributedArray< Value, Device, Index, Communicator >::ConstLocalArrayViewType
+DistributedArray< Value, Device, Index, Communicator >::
 getLocalArrayView() const
 {
    return localData;
@@ -96,26 +92,24 @@ getLocalArrayView() const
 
 template< typename Value,
           typename Device,
-          typename Communicator,
           typename Index,
-          typename IndexMap >
+          typename Communicator >
 void
-DistributedArray< Value, Device, Communicator, Index, IndexMap >::
+DistributedArray< Value, Device, Index, Communicator >::
 copyFromGlobal( ConstLocalArrayViewType globalArray )
 {
-   TNL_ASSERT_EQ( indexMap.getGlobalSize(), globalArray.getSize(),
+   TNL_ASSERT_EQ( getSize(), globalArray.getSize(),
                   "given global array has different size than the distributed array" );
 
    LocalArrayViewType localView( localData );
-   const IndexMap indexMap = getIndexMap();
+   const LocalRangeType localRange = getLocalRange();
 
    auto kernel = [=] __cuda_callable__ ( IndexType i ) mutable
    {
-      if( indexMap.isLocal( i ) )
-         localView[ indexMap.getLocalIndex( i ) ] = globalArray[ i ];
+      localView[ i ] = globalArray[ localRange.getGlobalIndex( i ) ];
    };
 
-   ParallelFor< DeviceType >::exec( (IndexType) 0, indexMap.getGlobalSize(), kernel );
+   ParallelFor< DeviceType >::exec( (IndexType) 0, localRange.getSize(), kernel );
 }
 
 
@@ -125,29 +119,26 @@ copyFromGlobal( ConstLocalArrayViewType globalArray )
 
 template< typename Value,
           typename Device,
-          typename Communicator,
           typename Index,
-          typename IndexMap >
+          typename Communicator >
 String
-DistributedArray< Value, Device, Communicator, Index, IndexMap >::
+DistributedArray< Value, Device, Index, Communicator >::
 getType()
 {
    return String( "DistributedContainers::DistributedArray< " ) +
           TNL::getType< Value >() + ", " +
           Device::getDeviceType() + ", " +
-          // TODO: communicators don't have a getType method
-          "<Communicator>, " +
           TNL::getType< Index >() + ", " +
-          IndexMap::getType() + " >";
+          // TODO: communicators don't have a getType method
+          "<Communicator> >";
 }
 
 template< typename Value,
           typename Device,
-          typename Communicator,
           typename Index,
-          typename IndexMap >
+          typename Communicator >
 String
-DistributedArray< Value, Device, Communicator, Index, IndexMap >::
+DistributedArray< Value, Device, Index, Communicator >::
 getTypeVirtual() const
 {
    return getType();
@@ -155,52 +146,50 @@ getTypeVirtual() const
 
 template< typename Value,
           typename Device,
-          typename Communicator,
           typename Index,
-          typename IndexMap >
+          typename Communicator >
    template< typename Array >
 void
-DistributedArray< Value, Device, Communicator, Index, IndexMap >::
+DistributedArray< Value, Device, Index, Communicator >::
 setLike( const Array& array )
 {
-   indexMap = array.getIndexMap();
+   localRange = array.getLocalRange();
+   globalSize = array.getSize();
    group = array.getCommunicationGroup();
    localData.setLike( array.getLocalArrayView() );
 }
 
 template< typename Value,
           typename Device,
-          typename Communicator,
           typename Index,
-          typename IndexMap >
+          typename Communicator >
 void
-DistributedArray< Value, Device, Communicator, Index, IndexMap >::
+DistributedArray< Value, Device, Index, Communicator >::
 reset()
 {
-   indexMap.reset();
+   localRange.reset();
+   globalSize = 0;
    group = Communicator::NullGroup;
    localData.reset();
 }
 
 template< typename Value,
           typename Device,
-          typename Communicator,
           typename Index,
-          typename IndexMap >
+          typename Communicator >
 Index
-DistributedArray< Value, Device, Communicator, Index, IndexMap >::
+DistributedArray< Value, Device, Index, Communicator >::
 getSize() const
 {
-   return indexMap.getGlobalSize();
+   return globalSize;
 }
 
 template< typename Value,
           typename Device,
-          typename Communicator,
           typename Index,
-          typename IndexMap >
+          typename Communicator >
 void
-DistributedArray< Value, Device, Communicator, Index, IndexMap >::
+DistributedArray< Value, Device, Index, Communicator >::
 setValue( ValueType value )
 {
    localData.setValue( value );
@@ -208,65 +197,60 @@ setValue( ValueType value )
 
 template< typename Value,
           typename Device,
-          typename Communicator,
           typename Index,
-          typename IndexMap >
+          typename Communicator >
 void
-DistributedArray< Value, Device, Communicator, Index, IndexMap >::
+DistributedArray< Value, Device, Index, Communicator >::
 setElement( IndexType i, ValueType value )
 {
-   const IndexType li = indexMap.getLocalIndex( i );
+   const IndexType li = localRange.getLocalIndex( i );
    localData.setElement( li, value );
 }
 
 template< typename Value,
           typename Device,
-          typename Communicator,
           typename Index,
-          typename IndexMap >
+          typename Communicator >
 Value
-DistributedArray< Value, Device, Communicator, Index, IndexMap >::
+DistributedArray< Value, Device, Index, Communicator >::
 getElement( IndexType i ) const
 {
-   const IndexType li = indexMap.getLocalIndex( i );
+   const IndexType li = localRange.getLocalIndex( i );
    return localData.getElement( li );
 }
 
 template< typename Value,
           typename Device,
-          typename Communicator,
           typename Index,
-          typename IndexMap >
+          typename Communicator >
 __cuda_callable__
 Value&
-DistributedArray< Value, Device, Communicator, Index, IndexMap >::
+DistributedArray< Value, Device, Index, Communicator >::
 operator[]( IndexType i )
 {
-   const IndexType li = indexMap.getLocalIndex( i );
+   const IndexType li = localRange.getLocalIndex( i );
    return localData[ li ];
 }
 
 template< typename Value,
           typename Device,
-          typename Communicator,
           typename Index,
-          typename IndexMap >
+          typename Communicator >
 __cuda_callable__
 const Value&
-DistributedArray< Value, Device, Communicator, Index, IndexMap >::
+DistributedArray< Value, Device, Index, Communicator >::
 operator[]( IndexType i ) const
 {
-   const IndexType li = indexMap.getLocalIndex( i );
+   const IndexType li = localRange.getLocalIndex( i );
    return localData[ li ];
 }
 
 template< typename Value,
           typename Device,
-          typename Communicator,
           typename Index,
-          typename IndexMap >
-DistributedArray< Value, Device, Communicator, Index, IndexMap >&
-DistributedArray< Value, Device, Communicator, Index, IndexMap >::
+          typename Communicator >
+DistributedArray< Value, Device, Index, Communicator >&
+DistributedArray< Value, Device, Index, Communicator >::
 operator=( const DistributedArray& array )
 {
    setLike( array );
@@ -276,12 +260,11 @@ operator=( const DistributedArray& array )
 
 template< typename Value,
           typename Device,
-          typename Communicator,
           typename Index,
-          typename IndexMap >
+          typename Communicator >
    template< typename Array >
-DistributedArray< Value, Device, Communicator, Index, IndexMap >&
-DistributedArray< Value, Device, Communicator, Index, IndexMap >::
+DistributedArray< Value, Device, Index, Communicator >&
+DistributedArray< Value, Device, Index, Communicator >::
 operator=( const Array& array )
 {
    setLike( array );
@@ -291,19 +274,19 @@ operator=( const Array& array )
 
 template< typename Value,
           typename Device,
-          typename Communicator,
           typename Index,
-          typename IndexMap >
+          typename Communicator >
    template< typename Array >
 bool
-DistributedArray< Value, Device, Communicator, Index, IndexMap >::
+DistributedArray< Value, Device, Index, Communicator >::
 operator==( const Array& array ) const
 {
    // we can't run allreduce if the communication groups are different
    if( group != array.getCommunicationGroup() )
       return false;
    const bool localResult =
-         indexMap == array.getIndexMap() &&
+         localRange == array.getLocalRange() &&
+         globalSize == array.getSize() &&
          localData == array.getLocalArrayView();
    bool result = true;
    if( group != CommunicatorType::NullGroup )
@@ -313,12 +296,11 @@ operator==( const Array& array ) const
 
 template< typename Value,
           typename Device,
-          typename Communicator,
           typename Index,
-          typename IndexMap >
+          typename Communicator >
    template< typename Array >
 bool
-DistributedArray< Value, Device, Communicator, Index, IndexMap >::
+DistributedArray< Value, Device, Index, Communicator >::
 operator!=( const Array& array ) const
 {
    return ! (*this == array);
@@ -326,11 +308,10 @@ operator!=( const Array& array ) const
 
 template< typename Value,
           typename Device,
-          typename Communicator,
           typename Index,
-          typename IndexMap >
+          typename Communicator >
 bool
-DistributedArray< Value, Device, Communicator, Index, IndexMap >::
+DistributedArray< Value, Device, Index, Communicator >::
 containsValue( ValueType value ) const
 {
    bool result = false;
@@ -343,11 +324,10 @@ containsValue( ValueType value ) const
 
 template< typename Value,
           typename Device,
-          typename Communicator,
           typename Index,
-          typename IndexMap >
+          typename Communicator >
 bool
-DistributedArray< Value, Device, Communicator, Index, IndexMap >::
+DistributedArray< Value, Device, Index, Communicator >::
 containsOnlyValue( ValueType value ) const
 {
    bool result = true;
@@ -360,10 +340,9 @@ containsOnlyValue( ValueType value ) const
 
 template< typename Value,
           typename Device,
-          typename Communicator,
           typename Index,
-          typename IndexMap >
-DistributedArray< Value, Device, Communicator, Index, IndexMap >::
+          typename Communicator >
+DistributedArray< Value, Device, Index, Communicator >::
 operator bool() const
 {
    return getSize() != 0;

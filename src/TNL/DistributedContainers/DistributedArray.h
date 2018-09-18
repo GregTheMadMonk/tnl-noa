@@ -17,16 +17,15 @@
 #include <TNL/Containers/Array.h>
 #include <TNL/Containers/ArrayView.h>
 #include <TNL/Communicators/MpiCommunicator.h>
-#include <TNL/DistributedContainers/IndexMap.h>
+#include <TNL/DistributedContainers/Subrange.h>
 
 namespace TNL {
 namespace DistributedContainers {
 
 template< typename Value,
           typename Device = Devices::Host,
-          typename Communicator = Communicators::MpiCommunicator,
           typename Index = int,
-          typename IndexMap = Subrange< Index > >
+          typename Communicator = Communicators::MpiCommunicator >
 class DistributedArray
 : public Object
 {
@@ -36,22 +35,22 @@ public:
    using DeviceType = Device;
    using CommunicatorType = Communicator;
    using IndexType = Index;
-   using IndexMapType = IndexMap;
+   using LocalRangeType = Subrange< Index >;
    using LocalArrayType = Containers::Array< Value, Device, Index >;
    using LocalArrayViewType = Containers::ArrayView< Value, Device, Index >;
    using ConstLocalArrayViewType = Containers::ArrayView< typename std::add_const< Value >::type, Device, Index >;
-   using HostType = DistributedArray< Value, Devices::Host, Communicator, Index, IndexMap >;
-   using CudaType = DistributedArray< Value, Devices::Cuda, Communicator, Index, IndexMap >;
+   using HostType = DistributedArray< Value, Devices::Host, Index, Communicator >;
+   using CudaType = DistributedArray< Value, Devices::Cuda, Index, Communicator >;
 
    DistributedArray() = default;
 
    DistributedArray( DistributedArray& ) = default;
 
-   DistributedArray( IndexMap indexMap, CommunicationGroup group = Communicator::AllGroup );
+   DistributedArray( LocalRangeType localRange, Index globalSize, CommunicationGroup group = Communicator::AllGroup );
 
-   void setDistribution( IndexMap indexMap, CommunicationGroup group = Communicator::AllGroup );
+   void setDistribution( LocalRangeType localRange, Index globalSize, CommunicationGroup group = Communicator::AllGroup );
 
-   const IndexMap& getIndexMap() const;
+   const LocalRangeType& getLocalRange() const;
 
    CommunicationGroup getCommunicationGroup() const;
 
@@ -125,7 +124,8 @@ public:
    // TODO: serialization (save, load, boundLoad)
 
 protected:
-   IndexMap indexMap;
+   LocalRangeType localRange;
+   IndexType globalSize = 0;
    CommunicationGroup group = Communicator::NullGroup;
    LocalArrayType localData;
 
