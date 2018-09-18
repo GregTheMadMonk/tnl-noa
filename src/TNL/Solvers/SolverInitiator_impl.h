@@ -16,10 +16,6 @@
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Meshes/TypeResolver/TypeResolver.h>
 #include <TNL/Solvers/BuildConfigTags.h>
-#include <TNL/Solvers/Linear/SOR.h>
-#include <TNL/Solvers/Linear/CG.h>
-#include <TNL/Solvers/Linear/BICGStab.h>
-#include <TNL/Solvers/Linear/GMRES.h>
 #include <TNL/Solvers/SolverStarter.h>
 #include <TNL/Meshes/DummyMesh.h>
 
@@ -190,15 +186,9 @@ class CommunicatorTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, t
    public:
       static bool run( const Config::ParameterContainer& parameters )
       {
-         if(Communicators::MpiCommunicator::isDistributed())
-         {     
-               bool ret=SolverInitiatorMeshResolver< ProblemSetter, Real, Device, Index, ConfigTag, Communicators::MpiCommunicator >::run( parameters );
-               Communicators::MpiCommunicator::Finalize();      
-               return ret;
-         }
-         Communicators::MpiCommunicator::Finalize();
+         if( Communicators::MpiCommunicator::isDistributed() )
+            return SolverInitiatorMeshResolver< ProblemSetter, Real, Device, Index, ConfigTag, Communicators::MpiCommunicator >::run( parameters );
          return SolverInitiatorMeshResolver< ProblemSetter, Real, Device, Index, ConfigTag, Communicators::NoDistrCommunicator >::run( parameters );
-         
       }
 };
 

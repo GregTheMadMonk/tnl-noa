@@ -19,6 +19,7 @@ ADD_SUBDIRECTORY( legacy )
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL )
 
 set( headers
+     Atomic.h
      Assert.h
      CudaSharedMemory.h
      CudaStreamPool.h
@@ -99,31 +100,32 @@ TARGET_LINK_LIBRARIES( tnl
 
 INSTALL( TARGETS tnl DESTINATION lib )
 
-IF( BUILD_MPI )
-
-   ADD_LIBRARY( tnl-mpi_static STATIC ${tnl_SOURCES} )
-   INSTALL( TARGETS tnl-mpi_static DESTINATION lib )
-
-   if( BUILD_CUDA )
-      CUDA_ADD_LIBRARY( tnl-mpi SHARED ${tnl_CUDA__SOURCES}
-                        OPTIONS ${CUDA_ADD_LIBRARY_OPTIONS} )
-      # the static library with CUDA support has to be built separately
-      CUDA_ADD_LIBRARY( tnl-mpi-cuda_static STATIC ${tnl_CUDA__SOURCES} )
-      INSTALL( TARGETS tnl-mpi-cuda_static DESTINATION lib )
-   else( BUILD_CUDA )
-      ADD_LIBRARY( tnl-mpi SHARED ${tnl_SOURCES} )
-   endif( BUILD_CUDA )
-
-   SET_TARGET_PROPERTIES( tnl-mpi PROPERTIES
-                          VERSION ${tnlVersion} )
-#   SET_TARGET_PROPERTIES( tnl-mpi
-#                          LINK_INTERFACE_LIBRARIES "")
-
-
-   TARGET_LINK_LIBRARIES( tnl-mpi
-                          ${MPI_LIBRARIES} )
-   INSTALL( TARGETS tnl-mpi DESTINATION lib )
-
-endif()
+# NOTE: this is not necessary until something in the library file actually depends on MPI
+#IF( BUILD_MPI )
+#
+#   ADD_LIBRARY( tnl-mpi_static STATIC ${tnl_SOURCES} )
+#   INSTALL( TARGETS tnl-mpi_static DESTINATION lib )
+#
+#   if( BUILD_CUDA )
+#      CUDA_ADD_LIBRARY( tnl-mpi SHARED ${tnl_CUDA__SOURCES}
+#                        OPTIONS ${CUDA_ADD_LIBRARY_OPTIONS} )
+#      # the static library with CUDA support has to be built separately
+#      CUDA_ADD_LIBRARY( tnl-mpi-cuda_static STATIC ${tnl_CUDA__SOURCES} )
+#      INSTALL( TARGETS tnl-mpi-cuda_static DESTINATION lib )
+#   else( BUILD_CUDA )
+#      ADD_LIBRARY( tnl-mpi SHARED ${tnl_SOURCES} )
+#   endif( BUILD_CUDA )
+#
+#   SET_TARGET_PROPERTIES( tnl-mpi PROPERTIES
+#                          VERSION ${tnlVersion} )
+##   SET_TARGET_PROPERTIES( tnl-mpi
+##                          LINK_INTERFACE_LIBRARIES "")
+#
+#
+#   TARGET_LINK_LIBRARIES( tnl-mpi
+#                          ${MPI_LIBRARIES} )
+#   INSTALL( TARGETS tnl-mpi DESTINATION lib )
+#
+#endif()
 
 INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY} )

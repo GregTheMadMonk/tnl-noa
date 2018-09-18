@@ -87,7 +87,7 @@ BICGStabL< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
    }
 
    sigma[ 0 ] = r_0.lpNorm( 2.0 );
-   if( isNan( sigma[ 0 ] ) )
+   if( std::isnan( sigma[ 0 ] ) )
       throw std::runtime_error( "BiCGstab(ell): initial residue is NAN" );
 
    r_ast = r_0;

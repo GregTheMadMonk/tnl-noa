@@ -107,7 +107,7 @@ bool IterativeSolver< Real, Index> :: checkNextIteration()
 {
    this->refreshSolverMonitor();
 
-   if( isNan( this->getResidue() ) ||
+   if( std::isnan( this->getResidue() ) ||
        this->getIterations() > this->getMaxIterations()  ||
        ( this->getResidue() > this->getDivergenceResidue() && this->getIterations() >= this->getMinIterations() ) ||
        ( this->getResidue() < this->getConvergenceResidue() && this->getIterations() >= this->getMinIterations() ) )
@@ -120,7 +120,7 @@ bool
 IterativeSolver< Real, Index>::
 checkConvergence()
 {
-   if( isNan( this->getResidue() ) )
+   if( std::isnan( this->getResidue() ) )
    {
       std::cerr << std::endl << "The residue is NaN." << std::endl;
       return false;

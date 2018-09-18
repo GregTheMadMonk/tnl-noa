@@ -1,5 +1,16 @@
 ADD_SUBDIRECTORY( TNL )
 
+# Note that it is important to start building examples as soon as possible,
+# because they take the longest time and other stuff can be pipelined before
+# they are finished (at least with Ninja).
+if( ${WITH_EXAMPLES} )
+   add_subdirectory( Examples )
+endif()
+
+if( ${WITH_BENCHMARKS} )
+   ADD_SUBDIRECTORY( Benchmarks )
+endif()
+
 if( ${WITH_TOOLS} )
    ADD_SUBDIRECTORY( Tools )
 endif()

@@ -17,8 +17,8 @@
 #include <TNL/Meshes/DummyMesh.h>
 #include <TNL/Meshes/Grid.h>
 
-#include <TNL/Communicators/NoDistrCommunicator.h>
 #include <TNL/Communicators/MpiCommunicator.h>
+#include <TNL/Communicators/ScopedInitializer.h>
 
 
 using namespace TNL;
@@ -51,18 +51,14 @@ void setupConfig( Config::ConfigDescription& config )
 
 int main( int argc, char* argv[] )
 {
-
    Config::ParameterContainer parameters;
    Config::ConfigDescription configDescription;
 
    setupConfig( configDescription );
-   
-   Communicators::NoDistrCommunicator::configSetup( configDescription );
    Communicators::MpiCommunicator::configSetup( configDescription );
-   
-   Communicators::NoDistrCommunicator::Init(argc,argv);
-   Communicators::MpiCommunicator::Init(argc,argv);   
- 
+
+   Communicators::ScopedInitializer< Communicators::MpiCommunicator > mpi(argc, argv);
+
    if( ! parseCommandLine( argc, argv, configDescription, parameters ) )
       return EXIT_FAILURE;
 
@@ -83,9 +79,5 @@ int main( int argc, char* argv[] )
    if( ! resolveMeshType( parsedMeshType, parameters ) )
       return EXIT_FAILURE;
 
-#ifdef HAVE_MPI
-   Communicators::MpiCommunicator::Finalize();
-#endif
-      
    return EXIT_SUCCESS;
 }

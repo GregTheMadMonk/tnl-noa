@@ -121,7 +121,7 @@ TEST(XYZ, 3D )
 
 #endif
 
-#include "../../src/UnitTests/GtestMissingError.h"
+#include "../../GtestMissingError.h"
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_GTEST

@@ -201,10 +201,9 @@ containsValue( const Element* data,
    TNL_ASSERT_GE( size, 0, "" );
    if( size == 0 ) return false;
    bool result = false;
-   using Operation = Algorithms::ParallelReductionContainsValue< Element >;
-   Operation reductionContainsValue;
+   Algorithms::ParallelReductionContainsValue< Element > reductionContainsValue;
    reductionContainsValue.setValue( value );
-   Reduction< Devices::Cuda >::template reduce< Operation, Index >( reductionContainsValue, size, data, 0, result );
+   Reduction< Devices::Cuda >::reduce( reductionContainsValue, size, data, 0, result );
    return result;
 }
 
@@ -220,10 +219,9 @@ containsOnlyValue( const Element* data,
    TNL_ASSERT_GE( size, 0, "" );
    if( size == 0 ) return false;
    bool result = false;
-   using Operation = Algorithms::ParallelReductionContainsOnlyValue< Element >;
-   Operation reductionContainsOnlyValue;
+   Algorithms::ParallelReductionContainsOnlyValue< Element > reductionContainsOnlyValue;
    reductionContainsOnlyValue.setValue( value );
-   Reduction< Devices::Cuda >::template reduce< Operation, Index >( reductionContainsOnlyValue, size, data, 0, result );
+   Reduction< Devices::Cuda >::reduce( reductionContainsOnlyValue, size, data, 0, result );
    return result;
 }
 

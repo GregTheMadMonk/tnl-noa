@@ -29,6 +29,7 @@ option(WITH_TESTS "Build tests" ON)
 option(WITH_COVERAGE "Enable code coverage reports from unit tests" OFF)
 option(WITH_EXAMPLES "Compile the 'examples' directory" ON)
 option(WITH_TOOLS "Compile the 'src/Tools' directory" ON)
+option(WITH_BENCHMARKS "Compile the 'src/Benchmarks' directory" ON)
 option(WITH_PYTHON "Compile the Python bindings" ON)
 option(WITH_TEMPLATES_INSTANTIATION "Enable explicit template instantiation" OFF)
 
@@ -60,6 +61,20 @@ else()
     set( PROJECT_TOOLS_PATH ${PROJECT_SOURCE_DIR}/Release/bin )
     set( LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/lib )
     set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/bin )
+endif()
+
+# check if the compiler is good enough
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+   # GCC 5.0 is the first release with full C++11 support (due to libstdc++)
+   # https://gcc.gnu.org/gcc-5/changes.html
+   if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "5.0")
+      message(FATAL_ERROR "Insufficient GCC version")
+   endif()
+elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+   # Clang 3.4 has full C++14 support: http://clang.llvm.org/cxx_status.html
+   if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "3.4")
+      message(FATAL_ERROR "Insufficient Clang version")
+   endif()
 endif()
 
 # set Debug/Release options
@@ -109,10 +124,11 @@ endif()
 #####
 # Check for MPI -- poznej podle vraperu compileru -- da se testovat preklad bez MPI
 #
-if( ${CXX_COMPILER_NAME} STREQUAL "mpic++" )
+if( ${CXX_COMPILER_NAME} STREQUAL "mpicxx" )
    message( "MPI compiler detected."    )
    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_MPI" )
-   set( CUDA_HOST_COMPILER "mpic++" )
+   set( CUDA_HOST_COMPILER "mpicxx" )
+   set( BUILD_MPI ON )
 endif()
 
 ####
@@ -150,7 +166,7 @@ if( ${WITH_CUDA} )
             endif()
         endif()
         # An extra CUDA_ARCH_HOST_COMPILER variable for compiling tnl-cuda-arch alone,
-        # because it SHOULD NOT be compiled using mpic++, which would cause weird
+        # because it SHOULD NOT be compiled using mpicxx, which would cause weird
         # RPATH_CHANGE error in cmake.
         # FIXME: find better solution to switch between MPI-enabled and MPI-disabled binaries in cmake
         if( NOT $ENV{CUDA_ARCH_HOST_COMPILER} STREQUAL "" )
@@ -406,15 +422,9 @@ INCLUDE_DIRECTORIES( ${PROJECT_BUILD_PATH} )
 LINK_DIRECTORIES( ${LIBRARY_OUTPUT_PATH} )
 
 # Add all subdirectories
-# Note that it is important to start building examples as soon as possible,
-# because they take the longest time and other stuff can be pipelined before
-# they are finished (at least with Ninja).
-if( WITH_EXAMPLES STREQUAL "yes" )
-   add_subdirectory( examples )
-endif( WITH_EXAMPLES STREQUAL "yes" )
-if( WITH_TESTS STREQUAL "yes" )
+if( ${WITH_TESTS} )
     add_subdirectory( tests )
-endif( WITH_TESTS STREQUAL "yes" )
+endif()
 add_subdirectory( src )
 add_subdirectory( share )
 
@@ -458,6 +468,7 @@ message( "   WITH_TESTS=${WITH_TESTS}" )
 message( "   WITH_COVERAGE=${WITH_COVERAGE}" )
 message( "   WITH_EXAMPLES=${WITH_EXAMPLES}" )
 message( "   WITH_TOOLS=${WITH_TOOLS}" )
+message( "   WITH_BENCHMARKS=${WITH_BENCHMARKS}" )
 message( "   WITH_PYTHON=${WITH_PYTHON}" )
 message( "   WITH_TEMPLATES_INSTANTIATION=${WITH_TEMPLATES_INSTANTIATION}" )
 # Print compiler options

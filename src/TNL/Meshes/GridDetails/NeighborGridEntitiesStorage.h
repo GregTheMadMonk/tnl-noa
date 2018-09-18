@@ -22,12 +22,7 @@ template< typename GridEntity,
           int NeighborEntityDimension,
           typename GridEntityConfig,
           bool storage = GridEntityConfig::template neighborEntityStorage< GridEntity >( NeighborEntityDimension ) >
-class NeighborGridEntityLayer{};   
-   
-template< typename GridEntity,
-          int NeighborEntityDimension,
-          typename GridEntityConfig >
-class NeighborGridEntityLayer< GridEntity, NeighborEntityDimension, GridEntityConfig, true >
+class NeighborGridEntityLayer
 : public NeighborGridEntityLayer< GridEntity, NeighborEntityDimension - 1, GridEntityConfig >
 {
    public:
@@ -63,8 +58,9 @@ class NeighborGridEntityLayer< GridEntity, NeighborEntityDimension, GridEntityCo
 };
 
 template< typename GridEntity,
-          typename GridEntityConfig >
-class NeighborGridEntityLayer< GridEntity, 0, GridEntityConfig, true >
+          typename GridEntityConfig,
+          bool storage >
+class NeighborGridEntityLayer< GridEntity, 0, GridEntityConfig, storage >
 {
    public:
  
@@ -92,52 +88,6 @@ class NeighborGridEntityLayer< GridEntity, 0, GridEntityConfig, true >
  
       NeighborEntityGetterType neighborEntities;
 };
-
-template< typename GridEntity,
-          int NeighborEntityDimension,
-          typename GridEntityConfig >
-class NeighborGridEntityLayer< GridEntity, NeighborEntityDimension, GridEntityConfig, false >
-: public NeighborGridEntityLayer< GridEntity, NeighborEntityDimension - 1, GridEntityConfig >
-{
-   public:
-      
-      typedef NeighborGridEntityLayer< GridEntity, NeighborEntityDimension - 1, GridEntityConfig > BaseType;      
-      typedef NeighborGridEntityGetter< GridEntity, NeighborEntityDimension > NeighborEntityGetterType;
-
-      using BaseType::getNeighborEntities;
- 
-      __cuda_callable__
-      NeighborGridEntityLayer( const GridEntity& entity )
-      : BaseType( entity )
-      {}
-
-      __cuda_callable__
-      const NeighborEntityGetterType& getNeighborEntities( const DimensionTag< NeighborEntityDimension >& tag ) const {}
- 
-      __cuda_callable__
-      void refresh( const typename GridEntity::GridType& grid,
-                    const typename GridEntity::GridType::IndexType& entityIndex ) {}
-};
-
-template< typename GridEntity,
-          typename GridEntityConfig >
-class NeighborGridEntityLayer< GridEntity, 0, GridEntityConfig, false >
-{
-   public:
-      
-      typedef NeighborGridEntityGetter< GridEntity, 0 > NeighborEntityGetterType;
-         
-      __cuda_callable__
-      NeighborGridEntityLayer( const GridEntity& entity ){}
-
-      __cuda_callable__
-      const NeighborEntityGetterType& getNeighborEntities( const DimensionTag< 0 >& tag ) const {}
- 
-      __cuda_callable__
-      void refresh( const typename GridEntity::GridType& grid,
-                    const typename GridEntity::GridType::IndexType& entityIndex ) {}
-};
-
 
 
 

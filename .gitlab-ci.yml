@@ -18,14 +18,24 @@ stages:
     WITH_CUDA: "no"
     WITH_CUDA_ARCH: "auto"
     WITH_MIC: "no"
+    WITH_MPI: "no"
     WITH_TESTS: "yes"
     WITH_COVERAGE: "no"
-    WITH_EXAMPLES: "yes"
+    # these are built only in the "full" config
+    WITH_BENCHMARKS: "no"
+    WITH_EXAMPLES: "no"
+    WITH_TOOLS: "no"
+    WITH_PYTHON: "no"
 
 # template for build jobs
 .build_template_def: &build_template
     stage: build
     script:
+        # set MPI compiler wrapper
+        - if [[ ${WITH_MPI} == "yes" ]]; then
+                export CXX=mpicxx;
+                export CC=mpicc;
+          fi
         # all cores including hyperthreading
 #        - export NUM_CORES=$(grep "core id" /proc/cpuinfo | wc -l)
 #       # all pyhsical cores
@@ -46,7 +56,10 @@ stages:
                 -DWITH_MIC=${WITH_MIC}
                 -DWITH_TESTS=${WITH_TESTS}
                 -DWITH_COVERAGE=${WITH_COVERAGE}
+                -DWITH_BENCHMARKS=${WITH_BENCHMARKS}
                 -DWITH_EXAMPLES=${WITH_EXAMPLES}
+                -DWITH_TOOLS=${WITH_TOOLS}
+                -DWITH_PYTHON=${WITH_PYTHON}
 #        - make
 #        - make test
 #        - make install
@@ -61,7 +74,7 @@ stages:
 # Cuda builds are specified first because they take more time than host-only builds,
 # which can be allocated on hosts whitout GPUs.
 
-cuda_Debug:
+cuda_base_Debug:
     <<: *build_template
     tags:
         - gpu
@@ -70,7 +83,7 @@ cuda_Debug:
         WITH_CUDA: "yes"
         BUILD_TYPE: Debug
 
-cuda_Release:
+cuda_base_Release:
     <<: *build_template
     tags:
         - gpu
@@ -79,7 +92,33 @@ cuda_Release:
         WITH_CUDA: "yes"
         BUILD_TYPE: Release
 
-cuda+openmp_Debug:
+cuda_mpi_Debug:
+    <<: *build_template
+    tags:
+        - openmp
+        - gpu
+        - mpi
+    variables:
+        <<: *default_cmake_flags
+        WITH_OPENMP: "yes"
+        WITH_CUDA: "yes"
+        WITH_MPI: "yes"
+        BUILD_TYPE: Debug
+
+cuda_mpi_Release:
+    <<: *build_template
+    tags:
+        - openmp
+        - gpu
+        - mpi
+    variables:
+        <<: *default_cmake_flags
+        WITH_OPENMP: "yes"
+        WITH_CUDA: "yes"
+        WITH_MPI: "yes"
+        BUILD_TYPE: Release
+
+cuda_full_Debug:
     <<: *build_template
     tags:
         - openmp
@@ -89,8 +128,12 @@ cuda+openmp_Debug:
         WITH_OPENMP: "yes"
         WITH_CUDA: "yes"
         BUILD_TYPE: Debug
+        WITH_BENCHMARKS: "yes"
+        WITH_EXAMPLES: "yes"
+        WITH_TOOLS: "yes"
+        WITH_PYTHON: "yes"
 
-cuda+openmp_Release:
+cuda_full_Release:
     <<: *build_template
     tags:
         - openmp
@@ -100,17 +143,43 @@ cuda+openmp_Release:
         WITH_OPENMP: "yes"
         WITH_CUDA: "yes"
         BUILD_TYPE: Release
+        WITH_BENCHMARKS: "yes"
+        WITH_EXAMPLES: "yes"
+        WITH_TOOLS: "yes"
+        WITH_PYTHON: "yes"
 
-default_Debug:
+default_base_Debug:
     <<: *build_template
 
-default_Release:
+default_base_Release:
     <<: *build_template
     variables:
         <<: *default_cmake_flags
         BUILD_TYPE: Release
 
-openmp_Debug:
+default_mpi_Debug:
+    <<: *build_template
+    tags:
+        - openmp
+        - mpi
+    variables:
+        <<: *default_cmake_flags
+        WITH_OPENMP: "yes"
+        WITH_MPI: "yes"
+        BUILD_TYPE: Debug
+
+default_mpi_Release:
+    <<: *build_template
+    tags:
+        - openmp
+        - mpi
+    variables:
+        <<: *default_cmake_flags
+        WITH_OPENMP: "yes"
+        WITH_MPI: "yes"
+        BUILD_TYPE: Release
+
+default_full_Debug:
     <<: *build_template
     tags:
         - openmp
@@ -118,8 +187,12 @@ openmp_Debug:
         <<: *default_cmake_flags
         WITH_OPENMP: "yes"
         BUILD_TYPE: Debug
+        WITH_BENCHMARKS: "yes"
+        WITH_EXAMPLES: "yes"
+        WITH_TOOLS: "yes"
+        WITH_PYTHON: "yes"
 
-openmp_Release:
+default_full_Release:
     <<: *build_template
     tags:
         - openmp
@@ -127,3 +200,7 @@ openmp_Release:
         <<: *default_cmake_flags
         WITH_OPENMP: "yes"
         BUILD_TYPE: Release
+        WITH_BENCHMARKS: "yes"
+        WITH_EXAMPLES: "yes"
+        WITH_TOOLS: "yes"
+        WITH_PYTHON: "yes"

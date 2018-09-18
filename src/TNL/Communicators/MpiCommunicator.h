@@ -16,7 +16,10 @@
 
 #ifdef HAVE_MPI
 #include <mpi.h>
-#include <mpi-ext.h>
+#ifdef OMPI_MAJOR_VERSION
+   // header specific to OpenMPI (needed for CUDA-aware detection)
+   #include <mpi-ext.h>
+#endif
 
 #ifdef HAVE_CUDA
     #include <TNL/Devices/Cuda.h>
@@ -74,7 +77,11 @@ class MpiCommunicator
 
       static bool isDistributed()
       {
+#ifdef HAVE_MPI
          return GetSize(AllGroup)>1;
+#else
+         return false;
+#endif
       }
 
       static void configSetup( Config::ConfigDescription& config, const String& prefix = "" )
@@ -142,7 +149,7 @@ class MpiCommunicator
          return true;
       }
 
-      static void Init(int argc, char **argv )
+      static void Init(int& argc, char**& argv )
       {
 #ifdef HAVE_MPI
          MPI_Init( &argc, &argv );
@@ -173,6 +180,8 @@ class MpiCommunicator
                std::cout.rdbuf(psbuf);
             }
          }
+#else
+         throw Exceptions::MPISupportMissing();
 #endif
       }
 
@@ -199,7 +208,7 @@ class MpiCommunicator
          MPI_Finalized(&finalized);
          return initialized && !finalized;
 #else
-        return false;
+         throw Exceptions::MPISupportMissing();
 #endif
       }
 
@@ -212,7 +221,7 @@ class MpiCommunicator
         MPI_Comm_rank(group,&rank);
         return rank;
 #else
-        return 1;
+         throw Exceptions::MPISupportMissing();
 #endif
       }
 
@@ -225,7 +234,7 @@ class MpiCommunicator
          MPI_Comm_size(group,&size);
          return size;
 #else
-         return 1;
+         throw Exceptions::MPISupportMissing();
 #endif
       }
 
@@ -250,6 +259,8 @@ class MpiCommunicator
             /***END OF HACK***/
 
             MPI_Dims_create(nproc, dim, distr);
+#else
+            throw Exceptions::MPISupportMissing();
 #endif
         }
 
@@ -419,7 +430,7 @@ class MpiCommunicator
             MPI_Comm_split(oldGroup, MPI_UNDEFINED, GetRank(oldGroup), &newGroup);
         }
 #else
-        newGroup=oldGroup;
+         throw Exceptions::MPISupportMissing();
 #endif
       }
 
