@@ -16,7 +16,8 @@
 
 #include <TNL/Matrices/SparseRow.h>
 #include <TNL/Communicators/MpiCommunicator.h>
-#include <TNL/DistributedContainers/IndexMap.h>
+#include <TNL/DistributedContainers/Subrange.h>
+#include <TNL/DistributedContainers/Partitioner.h>
 #include <TNL/DistributedContainers/DistributedVector.h>
 
 // buffers for vectorProduct
@@ -31,15 +32,16 @@ namespace DistributedContainers {
 // TODO: 2D distribution for dense matrices (maybe it should be in different template,
 //       because e.g. setRowFast doesn't make sense for dense matrices)
 template< typename Matrix,
-          typename Communicator = Communicators::MpiCommunicator,
-          typename IndexMap = Subrange< typename Matrix::IndexType > >
+          typename Communicator = Communicators::MpiCommunicator >
 class DistributedMatrix
 : public Object
 {
    using CommunicationGroup = typename Communicator::CommunicationGroup;
 
    template< typename Real >
-   using DistVector = DistributedVector< Real, typename Matrix::DeviceType, Communicator, typename Matrix::IndexType, IndexMap >;
+   using DistVector = DistributedVector< Real, typename Matrix::DeviceType, typename Matrix::IndexType, Communicator >;
+
+   using Partitioner = DistributedContainers::Partitioner< typename Matrix::IndexType, Communicator >;
 
 public:
    using MatrixType = Matrix;
@@ -47,12 +49,12 @@ public:
    using DeviceType = typename Matrix::DeviceType;
    using IndexType = typename Matrix::IndexType;
    using CommunicatorType = Communicator;
-   using IndexMapType = IndexMap;
+   using LocalRangeType = Subrange< typename Matrix::IndexType >;
 
-   using HostType = DistributedMatrix< typename Matrix::HostType, Communicator, IndexMap >;
-   using CudaType = DistributedMatrix< typename Matrix::CudaType, Communicator, IndexMap >;
+   using HostType = DistributedMatrix< typename Matrix::HostType, Communicator >;
+   using CudaType = DistributedMatrix< typename Matrix::CudaType, Communicator >;
 
-   using CompressedRowLengthsVector = DistributedVector< IndexType, DeviceType, CommunicatorType, IndexType, IndexMapType >;
+   using CompressedRowLengthsVector = DistributedVector< IndexType, DeviceType, IndexType, CommunicatorType >;
 
    using MatrixRow = Matrices::SparseRow< RealType, IndexType >;
    using ConstMatrixRow = Matrices::SparseRow< typename std::add_const< RealType >::type, typename std::add_const< IndexType >::type >;
@@ -61,11 +63,11 @@ public:
 
    DistributedMatrix( DistributedMatrix& ) = default;
 
-   DistributedMatrix( IndexMap rowIndexMap, IndexType columns, CommunicationGroup group = Communicator::AllGroup );
+   DistributedMatrix( LocalRangeType localRowRange, IndexType rows, IndexType columns, CommunicationGroup group = Communicator::AllGroup );
 
-   void setDistribution( IndexMap rowIndexMap, IndexType columns, CommunicationGroup group = Communicator::AllGroup );
+   void setDistribution( LocalRangeType localRowRange, IndexType rows, IndexType columns, CommunicationGroup group = Communicator::AllGroup );
 
-   const IndexMap& getRowIndexMap() const;
+   const LocalRangeType& getLocalRowRange() const;
 
    CommunicationGroup getCommunicationGroup() const;
 
@@ -150,19 +152,18 @@ public:
    // - assembly of the i-th row involves traversal of the local matrix stored
    //   in the i-th process
    // - assembly the full matrix needs all-to-all communication
-   template< typename Partitioner >
    void updateVectorProductCommunicationPattern();
 
    // multiplication with a distributed vector
    // (not const because it modifies internal bufers)
-   template< typename Partitioner,
-             typename RealIn,
+   template< typename RealIn,
              typename RealOut >
    void vectorProduct( const DistVector< RealIn >& inVector,
                        DistVector< RealOut >& outVector );
 
 protected:
-   IndexMap rowIndexMap;
+   LocalRangeType localRowRange;
+   IndexType rows = 0;  // global rows count
    CommunicationGroup group = Communicator::NullGroup;
    Matrix localMatrix;
 

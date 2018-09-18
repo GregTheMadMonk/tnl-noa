@@ -12,7 +12,7 @@ void setLinearSequence( Vector& deviceVector, typename Vector::RealType offset =
    typename Vector::HostType a;
    a.setLike( deviceVector );
    for( int i = 0; i < a.getLocalVectorView().getSize(); i++ ) {
-      const auto gi = a.getIndexMap().getGlobalIndex( i );
+      const auto gi = a.getLocalRange().getGlobalIndex( i );
       a[ gi ] = gi + offset;
    }
    deviceVector = a;
@@ -28,7 +28,7 @@ void setMatrix( Matrix& matrix, const RowLengths& rowLengths )
    hostMatrix.setCompressedRowLengths( hostRowLengths );
 
    for( int i = 0; i < hostMatrix.getLocalMatrix().getRows(); i++ ) {
-      const auto gi = hostMatrix.getRowIndexMap().getGlobalIndex( i );
+      const auto gi = hostMatrix.getLocalRowRange().getGlobalIndex( i );
       for( int j = 0; j < hostRowLengths[ gi ]; j++ )
          hostMatrix.setElement( gi, hostMatrix.getColumns() - j - 1, 1 );
    }
@@ -68,13 +68,11 @@ protected:
    using DeviceType = typename DistributedMatrix::DeviceType;
    using CommunicatorType = typename DistributedMatrix::CommunicatorType;
    using IndexType = typename DistributedMatrix::IndexType;
-   using IndexMap = typename DistributedMatrix::IndexMapType;
    using DistributedMatrixType = DistributedMatrix;
-   using Partitioner = DistributedContainers::Partitioner< IndexMap, CommunicatorType >;
 
    using RowLengthsVector = typename DistributedMatrixType::CompressedRowLengthsVector;
    using GlobalVector = Containers::Vector< RealType, DeviceType, IndexType >;
-   using DistributedVector = DistributedContainers::DistributedVector< RealType, DeviceType, CommunicatorType, IndexType, IndexMap >;
+   using DistributedVector = DistributedContainers::DistributedVector< RealType, DeviceType, IndexType, CommunicatorType >;
 
    const int globalSize = 97;  // prime number to force non-uniform distribution
 
@@ -87,14 +85,15 @@ protected:
 
    RowLengthsVector rowLengths;
 
-   void SetUp() override
+   DistributedMatrixTest()
    {
-      const IndexMap map = Partitioner::splitRange( globalSize, group );
-      matrix.setDistribution( map, globalSize, group );
-      rowLengths.setDistribution( map, group );
+      using LocalRangeType = typename DistributedMatrix::LocalRangeType;
+      const LocalRangeType localRange = DistributedContainers::Partitioner< IndexType, CommunicatorType >::splitRange( globalSize, group );
+      matrix.setDistribution( localRange, globalSize, globalSize, group );
+      rowLengths.setDistribution( localRange, globalSize, group );
 
-      ASSERT_EQ( matrix.getRowIndexMap(), map );
-      ASSERT_EQ( matrix.getCommunicationGroup(), group );
+      EXPECT_EQ( matrix.getLocalRowRange(), localRange );
+      EXPECT_EQ( matrix.getCommunicationGroup(), group );
 
       setLinearSequence( rowLengths, 1 );
    }
@@ -102,12 +101,12 @@ protected:
 
 // types for which DistributedMatrixTest is instantiated
 using DistributedMatrixTypes = ::testing::Types<
-   DistributedMatrix< Matrices::CSR< double, Devices::Host, int >, Communicators::MpiCommunicator, Subrange< int > >,
-   DistributedMatrix< Matrices::CSR< double, Devices::Host, int >, Communicators::NoDistrCommunicator, Subrange< int > >
+   DistributedMatrix< Matrices::CSR< double, Devices::Host, int >, Communicators::MpiCommunicator >,
+   DistributedMatrix< Matrices::CSR< double, Devices::Host, int >, Communicators::NoDistrCommunicator >
 #ifdef HAVE_CUDA
    ,
-   DistributedMatrix< Matrices::CSR< double, Devices::Cuda, int >, Communicators::MpiCommunicator, Subrange< int > >,
-   DistributedMatrix< Matrices::CSR< double, Devices::Cuda, int >, Communicators::NoDistrCommunicator, Subrange< int > >
+   DistributedMatrix< Matrices::CSR< double, Devices::Cuda, int >, Communicators::MpiCommunicator >,
+   DistributedMatrix< Matrices::CSR< double, Devices::Cuda, int >, Communicators::NoDistrCommunicator >
 #endif
 >;
 
@@ -152,13 +151,13 @@ TYPED_TEST( DistributedMatrixTest, reset )
 TYPED_TEST( DistributedMatrixTest, setCompressedRowLengths )
 {
    for( int i = 0; i < this->matrix.getLocalMatrix().getRows(); i++ ) {
-      const auto gi = this->matrix.getRowIndexMap().getGlobalIndex( i );
+      const auto gi = this->matrix.getLocalRowRange().getGlobalIndex( i );
       EXPECT_EQ( this->matrix.getRowLength( gi ), 0 );
       EXPECT_EQ( this->matrix.getLocalMatrix().getRowLength( i ), 0 );
    }
    this->matrix.setCompressedRowLengths( this->rowLengths );
    for( int i = 0; i < this->matrix.getLocalMatrix().getRows(); i++ ) {
-      const auto gi = this->matrix.getRowIndexMap().getGlobalIndex( i );
+      const auto gi = this->matrix.getLocalRowRange().getGlobalIndex( i );
       EXPECT_EQ( this->matrix.getRowLength( gi ), gi + 1 );
       EXPECT_EQ( this->matrix.getLocalMatrix().getRowLength( i ), gi + 1 );
    }
@@ -183,12 +182,12 @@ TYPED_TEST( DistributedMatrixTest, setGetElement )
 
    this->matrix.setCompressedRowLengths( this->rowLengths );
    for( int i = 0; i < this->matrix.getLocalMatrix().getRows(); i++ ) {
-      const auto gi = this->matrix.getRowIndexMap().getGlobalIndex( i );
+      const auto gi = this->matrix.getLocalRowRange().getGlobalIndex( i );
       for( int j = 0; j < this->rowLengths.getElement( gi ); j++ )
          this->matrix.setElement( gi, j,  gi + j );
    }
    for( int i = 0; i < this->matrix.getLocalMatrix().getRows(); i++ ) {
-      const auto gi = this->matrix.getRowIndexMap().getGlobalIndex( i );
+      const auto gi = this->matrix.getLocalRowRange().getGlobalIndex( i );
       for( int j = 0; j < this->rowLengths.getElement( gi ); j++ ) {
          EXPECT_EQ( this->matrix.getElement( gi, j ), gi + j );
          EXPECT_EQ( this->matrix.getLocalMatrix().getElement( i, j ), gi + j );
@@ -212,7 +211,7 @@ TYPED_TEST( DistributedMatrixTest, vectorProduct_globalInput )
 
    GlobalVector inVector( this->globalSize );
    inVector.setValue( 1 );
-   DistributedVector outVector( this->matrix.getRowIndexMap(), this->matrix.getCommunicationGroup() );
+   DistributedVector outVector( this->matrix.getLocalRowRange(), this->globalSize, this->matrix.getCommunicationGroup() );
    this->matrix.vectorProduct( inVector, outVector );
 
    EXPECT_EQ( outVector, this->rowLengths );
@@ -221,15 +220,14 @@ TYPED_TEST( DistributedMatrixTest, vectorProduct_globalInput )
 TYPED_TEST( DistributedMatrixTest, vectorProduct_distributedInput )
 {
    using DistributedVector = typename TestFixture::DistributedVector;
-   using Partitioner = typename TestFixture::Partitioner;
 
    this->matrix.setCompressedRowLengths( this->rowLengths );
    setMatrix( this->matrix, this->rowLengths );
 
-   DistributedVector inVector( this->matrix.getRowIndexMap(), this->matrix.getCommunicationGroup() );
+   DistributedVector inVector( this->matrix.getLocalRowRange(), this->globalSize, this->matrix.getCommunicationGroup() );
    inVector.setValue( 1 );
-   DistributedVector outVector( this->matrix.getRowIndexMap(), this->matrix.getCommunicationGroup() );
-   this->matrix.template vectorProduct< Partitioner >( inVector, outVector );
+   DistributedVector outVector( this->matrix.getLocalRowRange(), this->globalSize, this->matrix.getCommunicationGroup() );
+   this->matrix.vectorProduct( inVector, outVector );
 
    EXPECT_EQ( outVector, this->rowLengths );
 }
