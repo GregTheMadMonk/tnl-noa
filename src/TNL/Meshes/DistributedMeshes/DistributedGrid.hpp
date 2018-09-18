@@ -512,7 +512,10 @@ String
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 printProcessCoords() const
 {
-   return convertToString(this->subdomainCoordinates[0])+String("-")+convertToString(this->subdomainCoordinates[1])+String("-")+convertToString(this->subdomainCoordinates[2]);
+   String res = convertToString(this->subdomainCoordinates[0]);
+   for(int i=1; i<Dimension; i++)
+        res=res+String("-")+convertToString(this->subdomainCoordinates[i]);
+   return res;
 };
 
 template< int Dimension, typename Real, typename Device, typename Index >
