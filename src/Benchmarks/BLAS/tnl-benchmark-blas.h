@@ -109,11 +109,12 @@ main( int argc, char* argv[] )
 
    if( ! parseCommandLine( argc, argv, conf_desc, parameters ) ) {
       conf_desc.printUsage( argv[ 0 ] );
-      return 1;
+      return EXIT_FAILURE;
    }
 
-   Devices::Host::setup( parameters );
-   Devices::Cuda::setup( parameters );
+   if( ! Devices::Host::setup( parameters ) ||
+       ! Devices::Cuda::setup( parameters ) )
+      return EXIT_FAILURE;
 
    const String & logFileName = parameters.getParameter< String >( "log-file" );
    const String & outputMode = parameters.getParameter< String >( "output-mode" );
