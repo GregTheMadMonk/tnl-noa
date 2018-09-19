@@ -59,6 +59,8 @@ setup( const Config::ParameterContainer& parameters,
    }
    std::cout << " [ OK ] " << std::endl;
    
+   problem->setMesh( this->mesh );
+
    /****
     * Set-up common data
     */
