@@ -16,6 +16,8 @@
 #include <iomanip>
 #include <map>
 #include <vector>
+#include <exception>
+#include <limits>
 
 #include <TNL/Timer.h>
 #include <TNL/String.h>
@@ -310,7 +312,6 @@ public:
    {
       closeTable();
       writeTitle( title );
-      monitor.setStage( title.getString() );
    }
 
    // Marks the start of a new benchmark (with custom metadata)
@@ -320,7 +321,6 @@ public:
    {
       closeTable();
       writeTitle( title );
-      monitor.setStage( title.getString() );
       // add loops to metadata
       metadata["loops"] = String(loops);
       writeMetadata( metadata );
@@ -347,6 +347,7 @@ public:
                  const double datasetSize = 0.0, // in GB
                  const double baseTime = 0.0 )
    {
+      monitor.setStage( operation.getString() );
       if( metadataColumns.size() > 0 && String(metadataColumns[ 0 ].first) == "operation" ) {
          metadataColumns[ 0 ].second = operation;
       }
@@ -401,13 +402,19 @@ public:
          ComputeFunction & compute )
    {
       double time;
-      if( verbose ) {
-         // run the monitor main loop
-         Solvers::SolverMonitorThread monitor_thread( monitor );
-         time = timeFunction( compute, reset, loops, monitor );
+      try {
+         if( verbose ) {
+            // run the monitor main loop
+            Solvers::SolverMonitorThread monitor_thread( monitor );
+            time = timeFunction( compute, reset, loops, monitor );
+         }
+         else {
+            time = timeFunction( compute, reset, loops, monitor );
+         }
       }
-      else {
-         time = timeFunction( compute, reset, loops, monitor );
+      catch ( const std::exception& e ) {
+         std::cerr << "timeFunction failed due to a C++ exception with description: " << e.what() << std::endl;
+         time = std::numeric_limits<double>::quiet_NaN();
       }
 
       const double bandwidth = datasetSize / time;
@@ -449,6 +456,12 @@ public:
    }
 
    using Logging::save;
+
+   Solvers::IterativeSolverMonitor< double, int >&
+   getMonitor()
+   {
+      return monitor;
+   }
 
 protected:
    int loops;
