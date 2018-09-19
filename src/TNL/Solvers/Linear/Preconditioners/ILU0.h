@@ -152,19 +152,19 @@ protected:
    }
 
    // TODO: extend Matrices::copySparseMatrix accordingly
-   template< typename Matrix,
-             typename = typename std::enable_if< ! std::is_same< DeviceType, typename Matrix::DeviceType >::value >::type >
-   void copyMatrix( const Matrix& matrix )
+   template< typename MatrixT,
+             typename = typename std::enable_if< ! std::is_same< DeviceType, typename MatrixT::DeviceType >::value >::type >
+   void copyMatrix( const MatrixT& matrix )
    {
-      typename Matrix::CudaType A_tmp;
+      typename MatrixT::CudaType A_tmp;
       A_tmp = matrix;
       Matrices::copySparseMatrix( A, A_tmp );
    }
 
-   template< typename Matrix,
-             typename = typename std::enable_if< std::is_same< DeviceType, typename Matrix::DeviceType >::value >::type,
+   template< typename MatrixT,
+             typename = typename std::enable_if< std::is_same< DeviceType, typename MatrixT::DeviceType >::value >::type,
              typename = void >
-   void copyMatrix( const Matrix& matrix )
+   void copyMatrix( const MatrixT& matrix )
    {
       Matrices::copySparseMatrix( A, matrix );
    }
