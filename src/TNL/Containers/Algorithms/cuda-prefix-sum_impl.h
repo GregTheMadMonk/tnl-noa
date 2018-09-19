@@ -9,14 +9,15 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #pragma once
-   
+
 #include <iostream>
 
 #include <TNL/Math.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Exceptions/CudaBadAlloc.h>
 #include <TNL/Containers/Algorithms/ReductionOperations.h>
-   
+#include <TNL/Containers/Array.h>
+
 #ifdef HAVE_CUDA
 
 namespace TNL {
