@@ -57,6 +57,46 @@ solve( ConstVectorViewType b, VectorViewType x ) const
    ParallelFor< DeviceType >::exec( (IndexType) 0, diagonal.getSize(), kernel );
 }
 
+
+template< typename Matrix, typename Communicator >
+void
+Diagonal< DistributedContainers::DistributedMatrix< Matrix, Communicator > >::
+update( const MatrixPointer& matrixPointer )
+{
+   TNL_ASSERT_GT( matrixPointer->getRows(), 0, "empty matrix" );
+   TNL_ASSERT_EQ( matrixPointer->getRows(), matrixPointer->getColumns(), "matrix must be square" );
+
+   diagonal.setSize( matrixPointer->getLocalMatrix().getRows() );
+
+   LocalVectorViewType diag_view( diagonal );
+   const MatrixType* kernel_matrix = &matrixPointer.template getData< DeviceType >();
+
+   auto kernel = [=] __cuda_callable__ ( IndexType i ) mutable
+   {
+      const IndexType gi = kernel_matrix->getLocalRowRange().getGlobalIndex( i );
+      diag_view[ i ] = kernel_matrix->getLocalMatrix().getElementFast( i, gi );
+   };
+
+   ParallelFor< DeviceType >::exec( (IndexType) 0, diagonal.getSize(), kernel );
+}
+
+template< typename Matrix, typename Communicator >
+void
+Diagonal< DistributedContainers::DistributedMatrix< Matrix, Communicator > >::
+solve( ConstVectorViewType b, VectorViewType x ) const
+{
+   ConstLocalVectorViewType diag_view( diagonal );
+   const auto b_view = b.getLocalVectorView();
+   auto x_view = x.getLocalVectorView();
+
+   auto kernel = [=] __cuda_callable__ ( IndexType i ) mutable
+   {
+      x_view[ i ] = b_view[ i ] / diag_view[ i ];
+   };
+
+   ParallelFor< DeviceType >::exec( (IndexType) 0, diagonal.getSize(), kernel );
+}
+
 } // namespace Preconditioners
 } // namespace Linear
 } // namespace Solvers

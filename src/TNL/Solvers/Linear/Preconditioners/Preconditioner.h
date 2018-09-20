@@ -16,6 +16,8 @@
 #include <TNL/Pointers/SharedPointer.h>
 #include <TNL/Config/ParameterContainer.h>
 
+#include "../Traits.h"
+
 namespace TNL {
 namespace Solvers {
 namespace Linear {
@@ -28,8 +30,8 @@ public:
    using RealType = typename Matrix::RealType;
    using DeviceType = typename Matrix::DeviceType;
    using IndexType = typename Matrix::IndexType;
-   using VectorViewType = Containers::VectorView< RealType, DeviceType, IndexType >;
-   using ConstVectorViewType = Containers::VectorView< typename std::add_const< RealType >::type, DeviceType, IndexType >;
+   using VectorViewType = typename Traits< Matrix >::VectorViewType;
+   using ConstVectorViewType = typename Traits< Matrix >::ConstVectorViewType;
    using MatrixType = Matrix;
    using MatrixPointer = Pointers::SharedPointer< typename std::add_const< MatrixType >::type >;
 

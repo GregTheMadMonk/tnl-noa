@@ -30,7 +30,9 @@ update( const MatrixPointer& matrixPointer )
    TNL_ASSERT_GT( matrixPointer->getRows(), 0, "empty matrix" );
    TNL_ASSERT_EQ( matrixPointer->getRows(), matrixPointer->getColumns(), "matrix must be square" );
 
-   const IndexType N = matrixPointer->getRows();
+   const auto& localMatrix = Traits< Matrix >::getLocalMatrix( *matrixPointer );
+   const IndexType N = localMatrix.getRows();
+   const IndexType minColumn = getMinColumn( *matrixPointer );
 
    L.setDimensions( N, N );
    U.setDimensions( N, N );
@@ -41,15 +43,17 @@ update( const MatrixPointer& matrixPointer )
    L_rowLengths.setSize( N );
    U_rowLengths.setSize( N );
    for( IndexType i = 0; i < N; i++ ) {
-      const auto row = matrixPointer->getRow( i );
-      const auto max_length = matrixPointer->getRowLength( i );
+      const auto row = localMatrix.getRow( i );
+      const auto max_length = localMatrix.getRowLength( i );
       IndexType L_entries = 0;
       IndexType U_entries = 0;
       for( IndexType j = 0; j < max_length; j++ ) {
          const auto column = row.getElementColumn( j );
-         if( column < i )
+         if( column < minColumn )
+            continue;
+         if( column < i + minColumn )
             L_entries++;
-         else if( column < N )
+         else if( column < N + minColumn )
             U_entries++;
          else
             break;
@@ -64,10 +68,23 @@ update( const MatrixPointer& matrixPointer )
    // The factors L and U are stored separately and the rows of U are reversed.
    for( IndexType i = 0; i < N; i++ ) {
       // copy all non-zero entries from A into L and U
-      const auto max_length = matrixPointer->getRowLength( i );
-      IndexType columns[ max_length ];
-      RealType values[ max_length ];
-      matrixPointer->getRowFast( i, columns, values );
+      const auto max_length = localMatrix.getRowLength( i );
+      IndexType all_columns[ max_length ];
+      RealType all_values[ max_length ];
+      localMatrix.getRowFast( i, all_columns, all_values );
+
+      // skip non-local elements
+      IndexType* columns = all_columns;
+      RealType* values = all_values;
+      while( columns[0] < minColumn ) {
+         columns++;
+         values++;
+      }
+
+      // update column column indices
+      if( minColumn > 0 )
+         for( IndexType c_j = 0; c_j < max_length; c_j++ )
+            all_columns[ c_j ] -= minColumn;
 
       const auto L_entries = L_rowLengths[ i ];
       const auto U_entries = U_rowLengths[ N - 1 - i ];
@@ -106,8 +123,11 @@ update( const MatrixPointer& matrixPointer )
 template< typename Matrix, typename Real, typename Index >
 void
 ILU0_impl< Matrix, Real, Devices::Host, Index >::
-solve( ConstVectorViewType b, VectorViewType x ) const
+solve( ConstVectorViewType _b, VectorViewType _x ) const
 {
+   const auto b = Traits< Matrix >::getLocalVectorView( _b );
+   auto x = Traits< Matrix >::getLocalVectorView( _x );
+
    // Step 1: solve y from Ly = b
    triangularSolveLower< true >( L, x, b );
 

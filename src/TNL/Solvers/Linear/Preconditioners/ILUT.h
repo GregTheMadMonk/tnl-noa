@@ -72,6 +72,20 @@ protected:
 
    // The factors L and U are stored separately and the rows of U are reversed.
    Matrices::CSR< RealType, DeviceType, IndexType > L, U;
+
+   // Specialized methods to distinguish between normal and distributed matrices
+   // in the implementation.
+   template< typename M >
+   static IndexType getMinColumn( const M& m )
+   {
+      return 0;
+   }
+
+   template< typename M >
+   static IndexType getMinColumn( const DistributedContainers::DistributedMatrix< M >& m )
+   {
+      return m.getLocalRowRange().getBegin();
+   }
 };
 
 template< typename Matrix, typename Real, typename Index >

@@ -64,6 +64,20 @@ public:
 protected:
    // The factors L and U are stored separately and the rows of U are reversed.
    Matrices::CSR< RealType, DeviceType, IndexType > L, U;
+
+   // Specialized methods to distinguish between normal and distributed matrices
+   // in the implementation.
+   template< typename M >
+   static IndexType getMinColumn( const M& m )
+   {
+      return 0;
+   }
+
+   template< typename M >
+   static IndexType getMinColumn( const DistributedContainers::DistributedMatrix< M >& m )
+   {
+      return m.getLocalRowRange().getBegin();
+   }
 };
 
 template< typename Matrix >
@@ -169,6 +183,30 @@ protected:
       Matrices::copySparseMatrix( A, matrix );
    }
 #endif
+};
+
+template< typename Matrix, typename Communicator >
+class ILU0_impl< DistributedContainers::DistributedMatrix< Matrix, Communicator >, double, Devices::Cuda, int >
+: public Preconditioner< DistributedContainers::DistributedMatrix< Matrix, Communicator > >
+{
+   using MatrixType = DistributedContainers::DistributedMatrix< Matrix, Communicator >;
+public:
+   using RealType = double;
+   using DeviceType = Devices::Cuda;
+   using IndexType = int;
+   using typename Preconditioner< MatrixType >::VectorViewType;
+   using typename Preconditioner< MatrixType >::ConstVectorViewType;
+   using typename Preconditioner< MatrixType >::MatrixPointer;
+
+   virtual void update( const MatrixPointer& matrixPointer ) override
+   {
+      throw std::runtime_error("ILU0 is not implemented yet for CUDA and distributed matrices.");
+   }
+
+   virtual void solve( ConstVectorViewType b, VectorViewType x ) const override
+   {
+      throw std::runtime_error("ILU0 is not implemented yet for CUDA and distributed matrices.");
+   }
 };
 
 template< typename Matrix, typename Real, typename Index >

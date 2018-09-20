@@ -43,7 +43,9 @@ update( const MatrixPointer& matrixPointer )
    TNL_ASSERT_GT( matrixPointer->getRows(), 0, "empty matrix" );
    TNL_ASSERT_EQ( matrixPointer->getRows(), matrixPointer->getColumns(), "matrix must be square" );
 
-   const IndexType N = matrixPointer->getRows();
+   const auto& localMatrix = Traits< Matrix >::getLocalMatrix( *matrixPointer );
+   const IndexType N = localMatrix.getRows();
+   const IndexType minColumn = getMinColumn( *matrixPointer );
 
    L.setDimensions( N, N );
    U.setDimensions( N, N );
@@ -59,15 +61,17 @@ update( const MatrixPointer& matrixPointer )
    L_rowLengths.setSize( N );
    U_rowLengths.setSize( N );
    for( IndexType i = 0; i < N; i++ ) {
-      const auto row = matrixPointer->getRow( i );
-      const auto max_length = matrixPointer->getRowLength( i );
+      const auto row = localMatrix.getRow( i );
+      const auto max_length = localMatrix.getRowLength( i );
       IndexType L_entries = 0;
       IndexType U_entries = 0;
       for( IndexType j = 0; j < max_length; j++ ) {
          const auto column = row.getElementColumn( j );
-         if( column < i )
+         if( column < minColumn )
+            continue;
+         if( column < i + minColumn )
             L_entries++;
-         else if( column < N )
+         else if( column < N + minColumn )
             U_entries++;
          else
             break;
@@ -103,15 +107,20 @@ update( const MatrixPointer& matrixPointer )
    // Incomplete LU factorization with threshold
    // (see Saad - Iterative methods for sparse linear systems, section 10.4)
    for( IndexType i = 0; i < N; i++ ) {
-      const auto max_length = matrixPointer->getRowLength( i );
-      const auto A_i = matrixPointer->getRow( i );
+      const auto max_length = localMatrix.getRowLength( i );
+      const auto A_i = localMatrix.getRow( i );
 
       RealType A_i_norm = 0.0;
 
       // copy A_i into the full vector w
       timer_copy_into_w.start();
       for( IndexType c_j = 0; c_j < max_length; c_j++ ) {
-         const auto j = A_i.getElementColumn( c_j );
+         auto j = A_i.getElementColumn( c_j );
+         if( minColumn > 0 ) {
+            // skip non-local elements
+            if( j < minColumn ) continue;
+            j -= minColumn;
+         }
          // handle ellpack dummy entries
          if( j >= N ) break;
          w[ j ] = A_i.getElementValue( c_j );
@@ -132,7 +141,7 @@ update( const MatrixPointer& matrixPointer )
          if( w_k == 0.0 )
             continue;
 
-         w_k /= matrixPointer->getElementFast( k, k );
+         w_k /= localMatrix.getElementFast( k, k + minColumn );
 
          // apply dropping rule to w_k
          if( std::abs( w_k ) < tau_i )
@@ -245,8 +254,11 @@ update( const MatrixPointer& matrixPointer )
 template< typename Matrix, typename Real, typename Index >
 void
 ILUT_impl< Matrix, Real, Devices::Host, Index >::
-solve( ConstVectorViewType b, VectorViewType x ) const
+solve( ConstVectorViewType _b, VectorViewType _x ) const
 {
+   const auto b = Traits< Matrix >::getLocalVectorView( _b );
+   auto x = Traits< Matrix >::getLocalVectorView( _x );
+
    // Step 1: solve y from Ly = b
    triangularSolveLower< false >( L, x, b );
 
