@@ -52,13 +52,14 @@ HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, Differenti
 getPrologHeader() const
 {
    if( this->cudaKernelType == "pure-c" )
-      return String( "Heat Equation Benchmark PURE-C test" );
+      return "Heat Equation Benchmark PURE-C test";
    if( this->cudaKernelType == "templated" )
-      return String( "Heat Equation Benchmark TEMPLATED test" );
+      return "Heat Equation Benchmark TEMPLATED test";
    if( this->cudaKernelType == "templated-compact" )
-      return String( "Heat Equation Benchmark TEMPLATED COMPACT test" );
+      return "Heat Equation Benchmark TEMPLATED COMPACT test";
    if( this->cudaKernelType == "tunning" )
-      return String( "Heat Equation Benchmark TUNNIG test" );            
+      return "Heat Equation Benchmark TUNNIG test";
+   return "";
 }
 
 template< typename Mesh,
@@ -706,11 +707,12 @@ applyBoundaryConditions( const RealType& time,
 #endif
       userData.boundaryConditions = &this->boundaryConditionPointer.template getData< Devices::Cuda >();
       Meshes::Traverser< MeshType, Cell > meshTraverser;
+      // */
       /*meshTraverser.template processBoundaryEntities< UserData,
                                                 BoundaryEntitiesProcessor >
                                                     ( mesh,
                                                       userData );*/
-      // */
+
       /*_boundaryConditionsKernel< BoundaryEntitiesProcessor, UserData, MeshType, RealType, IndexType >
       <<< cudaGridSize, cudaBlockSize >>>
          ( &mesh.template getData< Devices::Cuda >(),

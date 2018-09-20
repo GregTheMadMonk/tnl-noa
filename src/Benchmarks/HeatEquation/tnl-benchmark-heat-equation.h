@@ -100,6 +100,7 @@ class HeatEquationBenchmarkSetter
           typedef HeatEquationBenchmarkProblem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator, CommunicatorType > Problem;
           SolverStarter solverStarter;
           return solverStarter.template run< Problem >( parameters );*/
+          return false;
       }
 
 };
