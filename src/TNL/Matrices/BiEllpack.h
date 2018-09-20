@@ -10,8 +10,8 @@
 
 /****
  * This class implements BiELL format from:
- * 
- * Zheng C., Gu S., Gu T.-X., Yang B., Liu X.-P., 
+ *
+ * Zheng C., Gu S., Gu T.-X., Yang B., Liu X.-P.,
  * BiELL: A bisection ELLPACK-based storage format for optimizing SpMV on GPUs,
  * Journal of Parallel and Distributed Computing, 74 (7), pp. 2639-2647, 2014.
  */
@@ -143,7 +143,6 @@ public:
 
 //	void verifyRowLengths( const typename BiEllpack< Real, Device, Index, StripSize >::CompressedRowLengthsVector& rowLengths );
 
-   
 	template< typename InVector,
 			  typename OutVector >
 #ifdef HAVE_CUDA
