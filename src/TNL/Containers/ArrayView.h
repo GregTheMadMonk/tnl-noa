@@ -52,7 +52,7 @@ public:
    // "Templated copy-constructor" accepting any cv-qualification of Value
    template< typename Value_ >
    __cuda_callable__
-   ArrayView( ArrayView< Value_, Device, Index >& array )
+   ArrayView( const ArrayView< Value_, Device, Index >& array )
    : data(array.getData()), size(array.getSize()) {}
 
    // default move-constructor

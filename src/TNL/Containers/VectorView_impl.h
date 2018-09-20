@@ -243,7 +243,7 @@ template< typename Real,
    template< typename Vector >
 typename VectorView< Real, Device, Index >::NonConstReal
 VectorView< Real, Device, Index >::
-scalarProduct( const Vector& v )
+scalarProduct( const Vector& v ) const
 {
    return Algorithms::VectorOperations< Device >::template getScalarProduct< VectorView, Vector, NonConstReal >( *this, v );
 }

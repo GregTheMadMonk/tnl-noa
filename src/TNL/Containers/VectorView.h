@@ -109,7 +109,7 @@ public:
 
    //! Computes scalar dot product
    template< typename Vector >
-   NonConstReal scalarProduct( const Vector& v );
+   NonConstReal scalarProduct( const Vector& v ) const;
 
    //! Computes this = thisMultiplicator * this + alpha * x.
    template< typename Vector >
