@@ -7,18 +7,18 @@ TARGET_LINK_LIBRARIES( BoundaryTagsTest
                            tnl )
 
 # Mesh cannot be compiled by nvcc < 9 due to bugs in the compiler
-if( ${BUILD_CUDA} AND ${CUDA_VERSION_MAJOR} GREATER_EQUAL 9 )
-   CUDA_ADD_EXECUTABLE( MeshTest MeshTest.cu
-                        OPTIONS ${CXX_TESTS_FLAGS} )
-   TARGET_LINK_LIBRARIES( MeshTest
-                           ${GTEST_BOTH_LIBRARIES}
-                           tnl )
+if( ${BUILD_CUDA} AND ( ${CUDA_VERSION_MAJOR} GREATER 9 OR ${CUDA_VERSION_MAJOR} EQUAL 9 ) )
+    CUDA_ADD_EXECUTABLE( MeshTest MeshTest.cu
+                         OPTIONS ${CXX_TESTS_FLAGS} )
+    TARGET_LINK_LIBRARIES( MeshTest
+                            ${GTEST_BOTH_LIBRARIES}
+                            tnl )
 
-   CUDA_ADD_EXECUTABLE( MeshOrderingTest MeshOrderingTest.cu
-                        OPTIONS ${CXX_TESTS_FLAGS} )
-   TARGET_LINK_LIBRARIES( MeshOrderingTest
-                           ${GTEST_BOTH_LIBRARIES}
-                           tnl )
+    CUDA_ADD_EXECUTABLE( MeshOrderingTest MeshOrderingTest.cu
+                         OPTIONS ${CXX_TESTS_FLAGS} )
+    TARGET_LINK_LIBRARIES( MeshOrderingTest
+                            ${GTEST_BOTH_LIBRARIES}
+                            tnl )
 else()
    ADD_EXECUTABLE( MeshTest MeshTest.cpp )
    TARGET_COMPILE_OPTIONS( MeshTest PRIVATE ${CXX_TESTS_FLAGS} )

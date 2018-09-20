@@ -1135,6 +1135,7 @@ template< typename Real,
           int SliceSize >
 template< typename InVector,
           typename OutVector >
+__device__
 void SlicedEllpackSymmetricGraph< Real, Device, Index, SliceSize >::spmvCuda( const InVector& inVector,
                                                                               OutVector& outVector,
                                                                               const int globalIdx,

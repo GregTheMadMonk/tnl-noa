@@ -119,7 +119,7 @@ evaluateEntities( OutVectorFieldPointer& meshFunction,
    typedef Functions::VectorFieldEvaluatorAssignmentEntitiesProcessor< MeshType, TraverserUserData > AssignmentEntitiesProcessor;
    typedef Functions::VectorFieldEvaluatorAdditionEntitiesProcessor< MeshType, TraverserUserData > AdditionEntitiesProcessor;
    //typedef typename OutVectorField::MeshPointer OutMeshPointer;
-   typedef SharedPointer< TraverserUserData, DeviceType > TraverserUserDataPointer;
+   typedef Pointers::SharedPointer< TraverserUserData, DeviceType > TraverserUserDataPointer;
    
    SharedPointer< TraverserUserData, DeviceType >
       userData( &function.template getData< DeviceType >(),

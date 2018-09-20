@@ -47,7 +47,8 @@ class TestFunction : public Domain< FunctionDimension, SpaceDomain >
                             cosine };
 
       enum Operators { identity,
-                       heaviside };
+                       heaviside,
+                       smoothHeaviside };
 
    public:
 

@@ -1,4 +1,5 @@
-SET( headers LaxFridrichs.h )
+SET( headers LaxFridrichs.h
+             Upwind.h )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Operators/Advection )
 

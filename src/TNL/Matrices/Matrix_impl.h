@@ -133,6 +133,20 @@ bool Matrix< Real, Device, Index >::operator != ( const MatrixT& matrix ) const
 template< typename Real,
           typename Device,
           typename Index >
+void
+Matrix< Real, Device, Index >::
+copyFromHostToCuda( Matrix< Real, Devices::Host, Index >& matrix )
+{
+    this->numberOfColors = matrix.getNumberOfColors();
+    this->columns = matrix.getColumns();
+    this->rows = matrix.getRows();
+
+    this->values.setSize( matrix.getValuesSize() );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 bool Matrix< Real, Device, Index >::save( File& file ) const
 {
    if( ! Object::save( file ) ||
@@ -210,21 +224,6 @@ computeColorsVector(Containers::Vector<Index, Device, Index> &colorsVector)
         }
     }
 }
-
-template< typename Real,
-          typename Device,
-          typename Index >
-void
-Matrix< Real, Device, Index >::
-copyFromHostToCuda( Matrix< Real, Devices::Host, Index >& matrix )
-{
-    this->numberOfColors = matrix.getNumberOfColors();
-    this->columns = matrix.getColumns();
-    this->rows = matrix.getRows();
-
-    this->values.setSize( matrix.getValuesSize() );
-}
-
 
 #ifdef HAVE_CUDA
 template< typename Matrix,

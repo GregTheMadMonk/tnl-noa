@@ -96,7 +96,7 @@ public:
 
    template< typename Matrix >
    bool operator != ( const Matrix& matrix ) const;
-
+   
    virtual bool save( File& file ) const;
 
    virtual bool load( File& file );

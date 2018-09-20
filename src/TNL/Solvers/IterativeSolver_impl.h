@@ -37,7 +37,11 @@ void IterativeSolver< Real, Index> :: configSetup( Config::ConfigDescription& co
 {
    config.addEntry< int >   ( prefix + "max-iterations", "Maximal number of iterations the solver may perform.", 1000000000 );
    config.addEntry< int >   ( prefix + "min-iterations", "Minimal number of iterations the solver must perform.", 0 );
-   config.addEntry< double >( prefix + "convergence-residue", "Convergence occurs when the residue drops bellow this limit.", 1.0e-6 );
+   
+   // The default value for the convergence residue MUST be zero since not in all problems we want to stop the solver
+   // when we reach a state near a steady state. This can be only temporary if, for example, when the boundary conditions
+   // are time dependent (growing velocity at inlet starting from 0).
+   config.addEntry< double >( prefix + "convergence-residue", "Convergence occurs when the residue drops bellow this limit.", 0.0 );
    config.addEntry< double >( prefix + "divergence-residue", "Divergence occurs when the residue exceeds given limit.", DBL_MAX );
    // TODO: setting refresh rate should be done in SolverStarter::setup (it's not a parameter of the IterativeSolver)
    config.addEntry< int >   ( prefix + "refresh-rate", "Number of iterations between solver monitor refreshes.", 1 );
@@ -107,7 +111,12 @@ bool IterativeSolver< Real, Index> :: checkNextIteration()
 {
    this->refreshSolverMonitor();
 
-   if( std::isnan( this->getResidue() ) ||
+   if(
+#ifndef HAVE_CUDA      
+      std::isnan( this->getResidue() ) ||
+      // TODO: Fix this !!!!
+      // this does not work (at least) with nvcc 8.0 and g++ 5.4
+#endif      
        this->getIterations() > this->getMaxIterations()  ||
        ( this->getResidue() > this->getDivergenceResidue() && this->getIterations() >= this->getMinIterations() ) ||
        ( this->getResidue() < this->getConvergenceResidue() && this->getIterations() >= this->getMinIterations() ) )

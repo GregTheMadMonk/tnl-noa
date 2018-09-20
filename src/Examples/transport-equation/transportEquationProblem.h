@@ -92,7 +92,7 @@ public PDEProblem< Mesh,
 
    protected:
 
-      MeshFunctionPointer uPointer;
+      MeshFunctionPointer uPointer, velocityX, velocityY, velocityZ;
 
       DifferentialOperatorPointer differentialOperatorPointer;
 
@@ -101,6 +101,16 @@ public PDEProblem< Mesh,
       RightHandSidePointer rightHandSidePointer;
       
       VelocityFieldPointer velocityField;
+      
+      int dimension;
+      String choice;
+      RealType size;
+      long step = 0;
+      MeshFunctionType analyt;
+      RealType speedX;
+      RealType speedY;
+      RealType speedZ;
+      RealType schemeSize;      
 };
 
 } // namespace TNL

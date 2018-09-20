@@ -50,8 +50,11 @@ class PhysicalVariablesGetter
             RealType operator()( const EntityType& meshEntity,
                                         const RealType& time = 0.0 ) const
             {
-               return momentum.template getData< DeviceType >()( meshEntity ) / 
-                      density.template getData< DeviceType >()( meshEntity );
+               if( density.template getData< DeviceType >()( meshEntity ) == 0.0 )
+                  return 0;
+               else
+                  return momentum.template getData< DeviceType >()( meshEntity ) / 
+                         density.template getData< DeviceType >()( meshEntity );
             }
             
          protected:
@@ -77,7 +80,10 @@ class PhysicalVariablesGetter
                const RealType e = energy.template getData< DeviceType >()( meshEntity );
                const RealType rho = density.template getData< DeviceType >()( meshEntity );
                const RealType momentumNorm = momentum.template getData< DeviceType >().getVector( meshEntity ).lpNorm( 2.0 );
-               return ( gamma - 1.0 ) * ( e - 0.5 * momentumNorm * momentumNorm / rho );
+               if( rho == 0.0 )
+                  return 0;
+               else
+                  return ( gamma - 1.0 ) * ( e - 0.5 * momentumNorm * momentumNorm / rho );
             }
             
          protected:

@@ -84,24 +84,31 @@ class eulerSetter
                 SolverStarter solverStarter;
                 return solverStarter.template run< Problem >( parameters );
              }
-             typedef Operators::NeumannBoundaryConditions< MeshType, Constant, Real, Index > BoundaryConditions;
-             typedef eulerProblem< MeshType, BoundaryConditions, RightHandSide, CommunicatorType, ApproximateOperator > Problem;
-             SolverStarter solverStarter;
-             return solverStarter.template run< Problem >( parameters );
+             if( boundaryConditionsType == "neumann" )
+             {
+               typedef Operators::NeumannBoundaryConditions< MeshType, Constant, Real, Index > BoundaryConditions;
+               typedef eulerProblem< MeshType, BoundaryConditions, RightHandSide, CommunicatorType, ApproximateOperator > Problem;
+               SolverStarter solverStarter;
+               return solverStarter.template run< Problem >( parameters );
+             }
           }
           typedef Functions::MeshFunction< MeshType > MeshFunction;
           if( boundaryConditionsType == "dirichlet" )
           {
              typedef Operators::DirichletBoundaryConditions< MeshType, MeshFunction, MeshType::getMeshDimension(), Real, Index > BoundaryConditions;
-             typedef eulerProblem< MeshType, BoundaryConditions, RightHandSide,  CommunicatorType, ApproximateOperator> Problem;
+             typedef eulerProblem< MeshType, BoundaryConditions, RightHandSide, CommunicatorType, ApproximateOperator> Problem;
              SolverStarter solverStarter;
              return solverStarter.template run< Problem >( parameters );
           }
-          typedef Operators::NeumannBoundaryConditions< MeshType, MeshFunction, Real, Index > BoundaryConditions;
-          typedef eulerProblem< MeshType, BoundaryConditions, RightHandSide, CommunicatorType ,ApproximateOperator > Problem;
-          SolverStarter solverStarter;
-          return solverStarter.template run< Problem >( parameters );
-      }
+          if( boundaryConditionsType == "neumann" )
+          {
+             typedef Operators::NeumannBoundaryConditions< MeshType, MeshFunction, Real, Index > BoundaryConditions;
+             typedef eulerProblem< MeshType, BoundaryConditions, RightHandSide, CommunicatorType, ApproximateOperator > Problem;
+             SolverStarter solverStarter;
+             return solverStarter.template run< Problem >( parameters );
+          }
+
+      return true;}
 
 };
 

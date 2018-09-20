@@ -143,6 +143,7 @@ public:
 
 //	void verifyRowLengths( const typename BiEllpack< Real, Device, Index, StripSize >::CompressedRowLengthsVector& rowLengths );
 
+   
 	template< typename InVector,
 			  typename OutVector >
 #ifdef HAVE_CUDA

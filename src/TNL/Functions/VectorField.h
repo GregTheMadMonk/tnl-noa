@@ -252,6 +252,14 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, Real > >
       }
 
       template< typename EntityType >
+      void setValue( const EntityType& meshEntity,
+                     const FunctionType& value )
+      {
+         for(int i = 0; i < Size; i++ )
+            this->vectorfield[ i ].setValue( meshEntity.getIndex(), value[ i ] );
+      }
+
+      template< typename EntityType >
       __cuda_callable__
       VectorType getVector( const EntityType& meshEntity ) const
       {

@@ -297,6 +297,88 @@ void check_Overlap_2D(int rank, GridType &grid, DofType &dof, typename DofType::
     }
 }
 
+/*Expect 9 process
+ */
+template<typename DofType,typename GridType>
+void checkNeighbor_2D(int rank, GridType &grid, DofType &dof)
+{
+    if(rank==0)//Up Left
+    {
+        checkRightEdge(grid,dof,true,false,1);
+        checkDownEdge(grid,dof,true,false,3);
+        checkConner(grid,dof,false,false,4);
+        
+    }
+    
+    if(rank==1)//Up Center
+    {
+        checkLeftEdge(grid,dof,true,false,0);
+        checkRightEdge(grid,dof,true,false,2);
+        checkConner(grid,dof,false,true,3);
+        checkDownEdge(grid,dof,false,false,4);
+        checkConner(grid,dof,false,false,5);
+    }
+    
+    if(rank==2)//Up Right
+    {
+        checkLeftEdge(grid,dof,true,false,1);
+        checkConner(grid,dof,false,true,4);
+        checkDownEdge(grid,dof,false,true,5);
+    }
+    
+    if(rank==3)//Center Left
+    {
+        checkUpEdge(grid,dof,true,false,0);
+        checkConner(grid,dof,true,false,1);
+        checkRightEdge(grid,dof,false,false,4);
+        checkDownEdge(grid,dof,true,false,6);
+        checkConner(grid,dof,false,false,7);
+    }
+    
+    if(rank==4)//Center Center
+    {
+        checkConner(grid,dof,true,true,0);
+        checkUpEdge(grid,dof,false,false,1);
+        checkConner(grid,dof,true,false,2);
+        checkLeftEdge(grid,dof,false,false,3);
+        checkRightEdge(grid,dof,false,false,5);
+        checkConner(grid,dof,false,true,6);
+        checkDownEdge(grid,dof,false,false,7);
+        checkConner(grid,dof,false,false,8);
+    }
+    
+    if(rank==5)//Center Right
+    {
+        checkConner(grid,dof,true,true,1);
+        checkUpEdge(grid,dof,false,true,2);
+        checkLeftEdge(grid,dof,false,false,4);
+        checkConner(grid,dof,false,true,7);
+        checkDownEdge(grid,dof,false,true,8);
+    }
+    
+    if(rank==6)//Down Left
+    {
+        checkUpEdge(grid,dof,true,false,3);
+        checkConner(grid,dof,true,false,4);
+        checkRightEdge(grid,dof,false,true,7);
+    }
+    
+    if(rank==7) //Down Center
+    {
+        checkConner(grid,dof,true,true,3);
+        checkUpEdge(grid,dof,false,false,4);
+        checkConner(grid,dof,true,false,5);
+        checkLeftEdge(grid,dof,false,true,6);
+        checkRightEdge(grid,dof,false,true,8);
+    }
+    
+    if(rank==8) //Down Right
+    {
+        checkConner(grid,dof,true,true,4);
+        checkUpEdge(grid,dof,false,true,5);
+        checkLeftEdge(grid,dof,false,true,7);
+    }
+}
 
 
 template<typename DofType,typename GridType>
