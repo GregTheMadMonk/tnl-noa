@@ -36,7 +36,7 @@ public:
 
    virtual void update( const MatrixPointer& matrixPointer ) override;
 
-   virtual bool solve( ConstVectorViewType b, VectorViewType x ) const override;
+   virtual void solve( ConstVectorViewType b, VectorViewType x ) const override;
 
    String getType() const
    {
