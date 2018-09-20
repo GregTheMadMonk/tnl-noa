@@ -64,7 +64,7 @@ public:
 
    virtual void update( const MatrixPointer& matrixPointer ) override;
 
-   virtual bool solve( ConstVectorViewType b, VectorViewType x ) const override;
+   virtual void solve( ConstVectorViewType b, VectorViewType x ) const override;
 
 protected:
    Index p = 0;
@@ -92,7 +92,7 @@ public:
       throw std::runtime_error("Not Iplemented yet for CUDA");
    }
 
-   virtual bool solve( ConstVectorViewType b, VectorViewType x ) const override
+   virtual void solve( ConstVectorViewType b, VectorViewType x ) const override
    {
       throw std::runtime_error("Not Iplemented yet for CUDA");
    }
@@ -115,7 +115,7 @@ public:
       throw std::runtime_error("Not Iplemented yet for MIC");
    }
 
-   virtual bool solve( ConstVectorViewType b, VectorViewType x ) const override
+   virtual void solve( ConstVectorViewType b, VectorViewType x ) const override
    {
       throw std::runtime_error("Not Iplemented yet for MIC");
    }

@@ -46,10 +46,9 @@ public:
    virtual void update( const MatrixPointer& matrixPointer )
    {}
 
-   virtual bool solve( ConstVectorViewType b, VectorViewType x ) const
+   virtual void solve( ConstVectorViewType b, VectorViewType x ) const
    {
       TNL_ASSERT_TRUE( false, "The solve() method of a dummy preconditioner should not be called." );
-      return true;
    }
 
    String getType() const

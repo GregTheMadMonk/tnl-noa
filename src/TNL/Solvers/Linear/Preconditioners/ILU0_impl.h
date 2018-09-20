@@ -103,7 +103,7 @@ update( const MatrixPointer& matrixPointer )
 }
 
 template< typename Matrix, typename Real, typename Index >
-bool
+void
 ILU0_impl< Matrix, Real, Devices::Host, Index >::
 solve( ConstVectorViewType b, VectorViewType x ) const
 {
@@ -147,8 +147,6 @@ solve( ConstVectorViewType b, VectorViewType x ) const
 
       x[ i ] /= U_ii;
    }
-
-   return true;
 }
 
 
@@ -262,7 +260,7 @@ update( const MatrixPointer& matrixPointer )
 }
 
 template< typename Matrix >
-bool
+void
 ILU0_impl< Matrix, double, Devices::Cuda, int >::
 solve( ConstVectorViewType b, VectorViewType x ) const
 {
@@ -290,8 +288,6 @@ solve( ConstVectorViewType b, VectorViewType x ) const
                           y.getData(),
                           x.getData(),
                           policy_U, (void*) pBuffer.getData() );
-
-   return true;
 #else
    throw std::runtime_error("The program was not compiled with the CUSPARSE library. Pass -DHAVE_CUSPARSE -lcusparse to the compiler.");
 #endif

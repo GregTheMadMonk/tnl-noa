@@ -241,7 +241,7 @@ update( const MatrixPointer& matrixPointer )
 }
 
 template< typename Matrix, typename Real, typename Index >
-bool
+void
 ILUT_impl< Matrix, Real, Devices::Host, Index >::
 solve( ConstVectorViewType b, VectorViewType x ) const
 {
@@ -289,8 +289,6 @@ solve( ConstVectorViewType b, VectorViewType x ) const
 
       x[ i ] /= U_ii;
    }
-
-   return true;
 }
 
 } // namespace Preconditioners
