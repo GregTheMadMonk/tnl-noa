@@ -46,6 +46,7 @@ void setNegativeLinearSequence( Vector& deviceVector )
 #include <TNL/Communicators/NoDistrCommunicator.h>
 #include <TNL/Communicators/ScopedInitializer.h>
 #include <TNL/DistributedContainers/DistributedVector.h>
+#include <TNL/DistributedContainers/DistributedVectorView.h>
 #include <TNL/DistributedContainers/Partitioner.h>
 
 using namespace TNL;
@@ -69,12 +70,15 @@ protected:
    using IndexType = typename DistributedVector::IndexType;
    using DistributedVectorType = DistributedVector;
    using VectorViewType = typename DistributedVectorType::LocalVectorViewType;
+   using DistributedVectorView = DistributedContainers::DistributedVectorView< RealType, DeviceType, IndexType, CommunicatorType >;
 
    const int globalSize = 97;  // prime number to force non-uniform distribution
 
    const typename CommunicatorType::CommunicationGroup group = CommunicatorType::AllGroup;
 
    DistributedVectorType x, y, z;
+
+   DistributedVectorView x_view, y_view, z_view;
 
    const int rank = CommunicatorType::GetRank(group);
    const int nproc = CommunicatorType::GetSize(group);
@@ -86,6 +90,10 @@ protected:
       x.setDistribution( localRange, globalSize, group );
       y.setDistribution( localRange, globalSize, group );
       z.setDistribution( localRange, globalSize, group );
+
+      x_view.bind( x );
+      y_view.bind( y );
+      z_view.bind( z );
 
       setConstantSequence( x, 1 );
       setLinearSequence( y );
@@ -111,6 +119,10 @@ TYPED_TEST( DistributedVectorTest, max )
    EXPECT_EQ( this->x.max(), 1 );
    EXPECT_EQ( this->y.max(), this->globalSize - 1 );
    EXPECT_EQ( this->z.max(), 0 );
+
+   EXPECT_EQ( this->x_view.max(), 1 );
+   EXPECT_EQ( this->y_view.max(), this->globalSize - 1 );
+   EXPECT_EQ( this->z_view.max(), 0 );
 }
 
 TYPED_TEST( DistributedVectorTest, min )
@@ -118,6 +130,10 @@ TYPED_TEST( DistributedVectorTest, min )
    EXPECT_EQ( this->x.min(), 1 );
    EXPECT_EQ( this->y.min(), 0 );
    EXPECT_EQ( this->z.min(), 1 - this->globalSize );
+
+   EXPECT_EQ( this->x_view.min(), 1 );
+   EXPECT_EQ( this->y_view.min(), 0 );
+   EXPECT_EQ( this->z_view.min(), 1 - this->globalSize );
 }
 
 TYPED_TEST( DistributedVectorTest, absMax )
@@ -125,6 +141,10 @@ TYPED_TEST( DistributedVectorTest, absMax )
    EXPECT_EQ( this->x.absMax(), 1 );
    EXPECT_EQ( this->y.absMax(), this->globalSize - 1 );
    EXPECT_EQ( this->z.absMax(), this->globalSize - 1 );
+
+   EXPECT_EQ( this->x_view.absMax(), 1 );
+   EXPECT_EQ( this->y_view.absMax(), this->globalSize - 1 );
+   EXPECT_EQ( this->z_view.absMax(), this->globalSize - 1 );
 }
 
 TYPED_TEST( DistributedVectorTest, absMin )
@@ -132,6 +152,10 @@ TYPED_TEST( DistributedVectorTest, absMin )
    EXPECT_EQ( this->x.absMin(), 1 );
    EXPECT_EQ( this->y.absMin(), 0 );
    EXPECT_EQ( this->z.absMin(), 0 );
+
+   EXPECT_EQ( this->x_view.absMin(), 1 );
+   EXPECT_EQ( this->y_view.absMin(), 0 );
+   EXPECT_EQ( this->z_view.absMin(), 0 );
 }
 
 TYPED_TEST( DistributedVectorTest, lpNorm )
@@ -142,9 +166,14 @@ TYPED_TEST( DistributedVectorTest, lpNorm )
    const RealType expectedL1norm = this->globalSize;
    const RealType expectedL2norm = std::sqrt( this->globalSize );
    const RealType expectedL3norm = std::cbrt( this->globalSize );
+
    EXPECT_EQ( this->x.lpNorm( 1.0 ), expectedL1norm );
    EXPECT_EQ( this->x.lpNorm( 2.0 ), expectedL2norm );
    EXPECT_NEAR( this->x.lpNorm( 3.0 ), expectedL3norm, epsilon );
+
+   EXPECT_EQ( this->x_view.lpNorm( 1.0 ), expectedL1norm );
+   EXPECT_EQ( this->x_view.lpNorm( 2.0 ), expectedL2norm );
+   EXPECT_NEAR( this->x_view.lpNorm( 3.0 ), expectedL3norm, epsilon );
 }
 
 TYPED_TEST( DistributedVectorTest, sum )
@@ -152,30 +181,46 @@ TYPED_TEST( DistributedVectorTest, sum )
    EXPECT_EQ( this->x.sum(), this->globalSize );
    EXPECT_EQ( this->y.sum(), 0.5 * this->globalSize * ( this->globalSize - 1 ) );
    EXPECT_EQ( this->z.sum(), - 0.5 * this->globalSize * ( this->globalSize - 1 ) );
+
+   EXPECT_EQ( this->x_view.sum(), this->globalSize );
+   EXPECT_EQ( this->y_view.sum(), 0.5 * this->globalSize * ( this->globalSize - 1 ) );
+   EXPECT_EQ( this->z_view.sum(), - 0.5 * this->globalSize * ( this->globalSize - 1 ) );
 }
 
 TYPED_TEST( DistributedVectorTest, differenceMax )
 {
    EXPECT_EQ( this->x.differenceMax( this->y ), 1 );
    EXPECT_EQ( this->y.differenceMax( this->x ), this->globalSize - 2 );
+
+   EXPECT_EQ( this->x_view.differenceMax( this->y_view ), 1 );
+   EXPECT_EQ( this->y_view.differenceMax( this->x_view ), this->globalSize - 2 );
 }
 
 TYPED_TEST( DistributedVectorTest, differenceMin )
 {
    EXPECT_EQ( this->x.differenceMin( this->y ), 2 - this->globalSize );
    EXPECT_EQ( this->y.differenceMin( this->x ), -1 );
+
+   EXPECT_EQ( this->x_view.differenceMin( this->y_view ), 2 - this->globalSize );
+   EXPECT_EQ( this->y_view.differenceMin( this->x_view ), -1 );
 }
 
 TYPED_TEST( DistributedVectorTest, differenceAbsMax )
 {
    EXPECT_EQ( this->x.differenceAbsMax( this->y ), this->globalSize - 2 );
    EXPECT_EQ( this->y.differenceAbsMax( this->x ), this->globalSize - 2 );
+
+   EXPECT_EQ( this->x_view.differenceAbsMax( this->y_view ), this->globalSize - 2 );
+   EXPECT_EQ( this->y_view.differenceAbsMax( this->x_view ), this->globalSize - 2 );
 }
 
 TYPED_TEST( DistributedVectorTest, differenceAbsMin )
 {
    EXPECT_EQ( this->x.differenceAbsMin( this->y ), 0 );
    EXPECT_EQ( this->y.differenceAbsMin( this->x ), 0 );
+
+   EXPECT_EQ( this->x_view.differenceAbsMin( this->y_view ), 0 );
+   EXPECT_EQ( this->y_view.differenceAbsMin( this->x_view ), 0 );
 }
 
 TYPED_TEST( DistributedVectorTest, differenceLpNorm )
@@ -188,9 +233,14 @@ TYPED_TEST( DistributedVectorTest, differenceLpNorm )
    const RealType expectedL1norm = this->globalSize;
    const RealType expectedL2norm = std::sqrt( this->globalSize );
    const RealType expectedL3norm = std::cbrt( this->globalSize );
+
    EXPECT_EQ( this->x.differenceLpNorm( this->y, 1.0 ), expectedL1norm );
    EXPECT_EQ( this->x.differenceLpNorm( this->y, 2.0 ), expectedL2norm );
    EXPECT_NEAR( this->x.differenceLpNorm( this->y, 3.0 ), expectedL3norm, epsilon );
+
+   EXPECT_EQ( this->x_view.differenceLpNorm( this->y_view, 1.0 ), expectedL1norm );
+   EXPECT_EQ( this->x_view.differenceLpNorm( this->y_view, 2.0 ), expectedL2norm );
+   EXPECT_NEAR( this->x_view.differenceLpNorm( this->y_view, 3.0 ), expectedL3norm, epsilon );
 }
 
 TYPED_TEST( DistributedVectorTest, differenceSum )
@@ -198,6 +248,10 @@ TYPED_TEST( DistributedVectorTest, differenceSum )
    EXPECT_EQ( this->x.differenceSum( this->x ), 0 );
    EXPECT_EQ( this->y.differenceSum( this->x ), 0.5 * this->globalSize * ( this->globalSize - 1 ) - this->globalSize );
    EXPECT_EQ( this->y.differenceSum( this->y ), 0 );
+
+   EXPECT_EQ( this->x_view.differenceSum( this->x_view ), 0 );
+   EXPECT_EQ( this->y_view.differenceSum( this->x_view ), 0.5 * this->globalSize * ( this->globalSize - 1 ) - this->globalSize );
+   EXPECT_EQ( this->y_view.differenceSum( this->y_view ), 0 );
 }
 
 TYPED_TEST( DistributedVectorTest, scalarMultiplication )
@@ -213,6 +267,20 @@ TYPED_TEST( DistributedVectorTest, scalarMultiplication )
       const auto gi = this->y.getLocalRange().getGlobalIndex( i );
       EXPECT_EQ( this->y.getElement( gi ), 4 * gi );
    }
+
+   setLinearSequence( this->y );
+
+   this->y_view *= 2;
+   for( int i = 0; i < this->y_view.getLocalVectorView().getSize(); i++ ) {
+      const auto gi = this->y_view.getLocalRange().getGlobalIndex( i );
+      EXPECT_EQ( this->y_view.getElement( gi ), 2 * gi );
+   }
+
+   this->y_view.scalarMultiplication( 2 );
+   for( int i = 0; i < this->y_view.getLocalVectorView().getSize(); i++ ) {
+      const auto gi = this->y_view.getLocalRange().getGlobalIndex( i );
+      EXPECT_EQ( this->y_view.getElement( gi ), 4 * gi );
+   }
 }
 
 TYPED_TEST( DistributedVectorTest, scalarProduct )
@@ -222,6 +290,12 @@ TYPED_TEST( DistributedVectorTest, scalarProduct )
    EXPECT_EQ( this->y.scalarProduct( this->x ), 0.5 * this->globalSize * ( this->globalSize - 1 ) );
    EXPECT_EQ( this->x.scalarProduct( this->z ), - 0.5 * this->globalSize * ( this->globalSize - 1 ) );
    EXPECT_EQ( this->z.scalarProduct( this->x ), - 0.5 * this->globalSize * ( this->globalSize - 1 ) );
+
+   EXPECT_EQ( this->x_view.scalarProduct( this->x_view ), this->globalSize );
+   EXPECT_EQ( this->x_view.scalarProduct( this->y_view ), 0.5 * this->globalSize * ( this->globalSize - 1 ) );
+   EXPECT_EQ( this->y_view.scalarProduct( this->x_view ), 0.5 * this->globalSize * ( this->globalSize - 1 ) );
+   EXPECT_EQ( this->x_view.scalarProduct( this->z_view ), - 0.5 * this->globalSize * ( this->globalSize - 1 ) );
+   EXPECT_EQ( this->z_view.scalarProduct( this->x_view ), - 0.5 * this->globalSize * ( this->globalSize - 1 ) );
 }
 
 TYPED_TEST( DistributedVectorTest, addVector )
@@ -237,6 +311,21 @@ TYPED_TEST( DistributedVectorTest, addVector )
       const auto gi = this->y.getLocalRange().getGlobalIndex( i );
       EXPECT_EQ( this->y.getElement( gi ), 0 );
    }
+
+   setConstantSequence( this->x, 1 );
+   setLinearSequence( this->y );
+
+   this->x_view.addVector( this->y_view, 3.0, 1.0 );
+   for( int i = 0; i < this->y_view.getLocalVectorView().getSize(); i++ ) {
+      const auto gi = this->y_view.getLocalRange().getGlobalIndex( i );
+      EXPECT_EQ( this->x_view.getElement( gi ), 1 + 3 * gi );
+   }
+
+   this->y_view += this->z_view;
+   for( int i = 0; i < this->y_view.getLocalVectorView().getSize(); i++ ) {
+      const auto gi = this->y_view.getLocalRange().getGlobalIndex( i );
+      EXPECT_EQ( this->y_view.getElement( gi ), 0 );
+   }
 }
 
 TYPED_TEST( DistributedVectorTest, addVectors )
@@ -245,6 +334,14 @@ TYPED_TEST( DistributedVectorTest, addVectors )
    for( int i = 0; i < this->y.getLocalVectorView().getSize(); i++ ) {
       const auto gi = this->y.getLocalRange().getGlobalIndex( i );
       EXPECT_EQ( this->x.getElement( gi ), 2 + 3 * gi - gi );
+   }
+
+   setConstantSequence( this->x, 1 );
+
+   this->x_view.addVectors( this->y_view, 3.0, this->z_view, 1.0, 2.0 );
+   for( int i = 0; i < this->y_view.getLocalVectorView().getSize(); i++ ) {
+      const auto gi = this->y_view.getLocalRange().getGlobalIndex( i );
+      EXPECT_EQ( this->x_view.getElement( gi ), 2 + 3 * gi - gi );
    }
 }
 
