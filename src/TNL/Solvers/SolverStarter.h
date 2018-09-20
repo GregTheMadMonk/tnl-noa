@@ -31,7 +31,7 @@ class SolverStarter
    template< typename Solver >
    bool writeEpilog( std::ostream& str, const Solver& solver );
 
-   template< typename Problem, typename TimeStepper, typename DiscreteSolver >
+   template< typename Problem, typename TimeStepper >
    bool runPDESolver( Problem& problem,
                       const Config::ParameterContainer& parameters );
 

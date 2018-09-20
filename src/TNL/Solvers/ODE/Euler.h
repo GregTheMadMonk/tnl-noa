@@ -30,12 +30,12 @@ class Euler : public ExplicitSolver< Problem >
    typedef typename Problem :: RealType RealType;
    typedef typename Problem :: DeviceType DeviceType;
    typedef typename Problem :: IndexType IndexType;
-   typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
+   typedef Pointers::SharedPointer<  DofVectorType, DeviceType > DofVectorPointer;
 
 
    Euler();
 
-   String getType() const;
+   static String getType();
 
    static void configSetup( Config::ConfigDescription& config,
                             const String& prefix = "" );

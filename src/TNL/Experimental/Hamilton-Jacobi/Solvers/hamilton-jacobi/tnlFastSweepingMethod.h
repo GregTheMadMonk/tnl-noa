@@ -12,7 +12,7 @@
 
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Functions/Analytic/Constant.h>
-#include <TNL/SharedPointer.h>
+#include <TNL/Pointers/SharedPointer.h>
 #include "tnlDirectEikonalMethodsBase.h"
 
 
@@ -39,8 +39,9 @@ class FastSweepingMethod< Meshes::Grid< 1, Real, Device, Index >, Anisotropy >
       typedef Index IndexType;
       typedef Anisotropy AnisotropyType;
       typedef tnlDirectEikonalMethodsBase< Meshes::Grid< 1, Real, Device, Index > > BaseType;
-      using MeshPointer = SharedPointer< MeshType >;
-      using AnisotropyPointer = SharedPointer< AnisotropyType, DeviceType >;
+      using MeshPointer = Pointers::SharedPointer<  MeshType >;
+      using AnisotropyPointer = Pointers::SharedPointer< AnisotropyType, DeviceType >;
+      
       
       using typename BaseType::InterfaceMapType;
       using typename BaseType::MeshFunctionType;
@@ -81,8 +82,8 @@ class FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Anisotropy >
       typedef Index IndexType;
       typedef Anisotropy AnisotropyType;
       typedef tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > > BaseType;
-      using MeshPointer = SharedPointer< MeshType >;
-      using AnisotropyPointer = SharedPointer< AnisotropyType, DeviceType >;
+      using MeshPointer = Pointers::SharedPointer<  MeshType >;
+      using AnisotropyPointer = Pointers::SharedPointer< AnisotropyType, DeviceType >;
 
       using typename BaseType::InterfaceMapType;
       using typename BaseType::MeshFunctionType;
@@ -121,8 +122,8 @@ class FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Anisotropy >
       typedef Index IndexType;
       typedef Anisotropy AnisotropyType;
       typedef tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > > BaseType;
-      using MeshPointer = SharedPointer< MeshType >;
-      using AnisotropyPointer = SharedPointer< AnisotropyType, DeviceType >;
+      using MeshPointer = Pointers::SharedPointer<  MeshType >;
+      using AnisotropyPointer = Pointers::SharedPointer< AnisotropyType, DeviceType >;
       
       using typename BaseType::InterfaceMapType;
       using typename BaseType::MeshFunctionType;

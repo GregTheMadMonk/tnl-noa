@@ -10,8 +10,9 @@
 
 #pragma once
 
-#include <TNL/SharedPointer.h>
+#include <TNL/Pointers/SharedPointer.h>
 #include <TNL/Functions/FunctionAdapter.h>
+#include <TNL/Meshes/Traverser.h>
 
 namespace TNL {
 namespace Solvers {
@@ -77,26 +78,26 @@ class LinearSystemAssembler
                                                    RightHandSide,
                                                    DofVector > TraverserUserData;
 
-   //typedef SharedPointer< Matrix, DeviceType > MatrixPointer;
-   typedef SharedPointer< DifferentialOperator, DeviceType > DifferentialOperatorPointer;
-   typedef SharedPointer< BoundaryConditions, DeviceType > BoundaryConditionsPointer;
-   typedef SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
-   typedef SharedPointer< MeshFunction, DeviceType > MeshFunctionPointer;
-   typedef SharedPointer< DofVector, DeviceType > DofVectorPointer;
+   //typedef Pointers::SharedPointer<  Matrix, DeviceType > MatrixPointer;
+   typedef Pointers::SharedPointer<  DifferentialOperator, DeviceType > DifferentialOperatorPointer;
+   typedef Pointers::SharedPointer<  BoundaryConditions, DeviceType > BoundaryConditionsPointer;
+   typedef Pointers::SharedPointer<  RightHandSide, DeviceType > RightHandSidePointer;
+   typedef Pointers::SharedPointer<  MeshFunction, DeviceType > MeshFunctionPointer;
+   typedef Pointers::SharedPointer<  DofVector, DeviceType > DofVectorPointer;
    
    void setDifferentialOperator( const DifferentialOperatorPointer& differentialOperatorPointer )
    {
-      this->userDataPointer->differentialOperator = &differentialOperatorPointer.template getData< DeviceType >();
+      this->userData.differentialOperator = &differentialOperatorPointer.template getData< DeviceType >();
    }
 
    void setBoundaryConditions( const BoundaryConditionsPointer& boundaryConditionsPointer )
    {
-      this->userDataPointer->boundaryConditions = &boundaryConditionsPointer.template getData< DeviceType >();
+      this->userData.boundaryConditions = &boundaryConditionsPointer.template getData< DeviceType >();
    }
 
    void setRightHandSide( const RightHandSidePointer& rightHandSidePointer )
    {
-      this->userDataPointer->rightHandSide = &rightHandSidePointer.template getData< DeviceType >();
+      this->userData.rightHandSide = &rightHandSidePointer.template getData< DeviceType >();
    }
    
    template< typename EntityType, typename Matrix >
@@ -104,7 +105,7 @@ class LinearSystemAssembler
                   const RealType& tau,
                   const MeshPointer& meshPointer,
                   const MeshFunctionPointer& uPointer,
-                  SharedPointer< Matrix >& matrixPointer,
+                  Pointers::SharedPointer<  Matrix >& matrixPointer,
                   DofVectorPointer& bPointer )
    {
       static_assert( std::is_same< MeshFunction,
@@ -115,20 +116,20 @@ class LinearSystemAssembler
 
       const IndexType maxRowLength = matrixPointer.template getData< Devices::Host >().getMaxRowLength();
       TNL_ASSERT_GT( maxRowLength, 0, "maximum row length must be positive" );
-      this->userDataPointer->time = time;
-      this->userDataPointer->tau = tau;
-      this->userDataPointer->u = &uPointer.template getData< DeviceType >();
-      this->userDataPointer->matrix = ( void* ) &matrixPointer.template modifyData< DeviceType >();
-      this->userDataPointer->b = &bPointer.template modifyData< DeviceType >();
+      this->userData.time = time;
+      this->userData.tau = tau;
+      this->userData.u = &uPointer.template getData< DeviceType >();
+      this->userData.matrix = ( void* ) &matrixPointer.template modifyData< DeviceType >();
+      this->userData.b = &bPointer.template modifyData< DeviceType >();
       Meshes::Traverser< MeshType, EntityType > meshTraverser;
       meshTraverser.template processBoundaryEntities< TraverserUserData,
                                                       TraverserBoundaryEntitiesProcessor< Matrix> >
                                                     ( meshPointer,
-                                                      userDataPointer );
+                                                      userData );
       meshTraverser.template processInteriorEntities< TraverserUserData,
                                                       TraverserInteriorEntitiesProcessor< Matrix > >
                                                     ( meshPointer,
-                                                      userDataPointer );
+                                                      userData );
       
    }
 
@@ -190,7 +191,7 @@ class LinearSystemAssembler
    };
 
 protected:
-   SharedPointer< TraverserUserData, DeviceType > userDataPointer;
+   TraverserUserData userData;
 };
 
 } // namespace PDE

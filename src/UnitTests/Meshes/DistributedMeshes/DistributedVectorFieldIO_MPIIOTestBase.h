@@ -41,7 +41,7 @@ class TestDistributedVectorFieldMPIIO{
 
     static void TestSave()
     {
-        SharedPointer< LinearFunctionType, Device > linearFunctionPtr;
+        Pointers::SharedPointer< LinearFunctionType, Device > linearFunctionPtr;
         MeshFunctionEvaluator< MeshFunctionType, LinearFunctionType > linearFunctionEvaluator;    
         
         //save distributed meshfunction into file
@@ -51,14 +51,14 @@ class TestDistributedVectorFieldMPIIO{
         PointType globalProportions;
         globalProportions.setValue(10);
 
-        SharedPointer<MeshType> globalGrid;
+        Pointers::SharedPointer<MeshType> globalGrid;
         globalGrid->setDimensions(globalProportions);
         globalGrid->setDomain(globalOrigin,globalProportions);
         
         DistributedGridType distributedGrid;
         distributedGrid.template setGlobalGrid<CommunicatorType>( *globalGrid );
 
-        SharedPointer<MeshType> gridptr;        
+        Pointers::SharedPointer<MeshType> gridptr;        
         distributedGrid.setupGrid(*gridptr);
         typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
         SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
@@ -117,7 +117,7 @@ class TestDistributedVectorFieldMPIIO{
     
     static void TestLoad()
     {
-        SharedPointer< LinearFunctionType, Device > linearFunctionPtr;
+        Pointers::SharedPointer< LinearFunctionType, Device > linearFunctionPtr;
         MeshFunctionEvaluator< MeshFunctionType, LinearFunctionType > linearFunctionEvaluator;    
 
         //Crete distributed grid            
@@ -127,7 +127,7 @@ class TestDistributedVectorFieldMPIIO{
         PointType globalProportions;
         globalProportions.setValue(50);
 
-        SharedPointer<MeshType> globalGrid;
+        Pointers::SharedPointer<MeshType> globalGrid;
         globalGrid->setDimensions(globalProportions);
         globalGrid->setDomain(globalOrigin,globalProportions);
 
@@ -158,7 +158,7 @@ class TestDistributedVectorFieldMPIIO{
             file.close();
         }
 
-        SharedPointer<MeshType> loadGridptr;
+        Pointers::SharedPointer<MeshType> loadGridptr;
         VectorFieldType loadVectorField;
         distributedGrid.setupGrid(*loadGridptr);
         
@@ -171,7 +171,7 @@ class TestDistributedVectorFieldMPIIO{
         for(int i=0;i<vctdim;i++)
             (loadVectorField[i])->template synchronize<CommunicatorType>(); //need synchronization for overlaps to be filled corectly in loadDof
 
-        SharedPointer<MeshType> evalGridPtr;
+        Pointers::SharedPointer<MeshType> evalGridPtr;
         VectorFieldType evalVectorField;
         distributedGrid.setupGrid(*evalGridPtr);
         

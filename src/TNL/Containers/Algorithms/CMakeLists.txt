@@ -1,5 +1,3 @@
-ADD_SUBDIRECTORY( TemplateExplicitInstantiation )
-
 set( headers ArrayOperations.h
              ArrayOperationsHost_impl.h
              ArrayOperationsCuda_impl.h

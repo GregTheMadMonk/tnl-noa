@@ -272,7 +272,7 @@ class ChunkedEllpackTester : public CppUnit :: TestCase
    }
 };
 #else /* HAVE_CPPUNIT */
-template< typename ElementType, typename Device, typename IndexType >
+template< typename ValueType, typename Device, typename IndexType >
 class ChunkedEllpackTester{};
 #endif /* HAVE_CPPUNIT */
 

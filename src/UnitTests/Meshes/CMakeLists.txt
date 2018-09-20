@@ -59,19 +59,22 @@ ADD_TEST( MeshEntityTest ${EXECUTABLE_OUTPUT_PATH}/MeshEntityTest${CMAKE_EXECUTA
 #   SET( VTK_COMMON_LIBRARIES vtkCommonCore ; vtkIOLegacy )
 #endif( VTK_FOUND )
 
-# Mesh cannot be compiled by nvcc < 9 due to bugs in the compiler
-if( ${BUILD_CUDA} AND ( ${CUDA_VERSION_MAJOR} GREATER 9 OR ${CUDA_VERSION_MAJOR} EQUAL 9 ) )
-   CUDA_ADD_EXECUTABLE( MeshReaderTest MeshReaderTest.cu
-                        OPTIONS ${CXX_TESTS_FLAGS} )
-   TARGET_LINK_LIBRARIES( MeshReaderTest
-                           ${GTEST_BOTH_LIBRARIES}
-                           ${VTK_COMMON_LIBRARIES}
-                           tnl )
-else()
-   ADD_EXECUTABLE( MeshReaderTest MeshReaderTest.cpp )
-   TARGET_COMPILE_OPTIONS( MeshReaderTest PRIVATE ${CXX_TESTS_FLAGS} )
-   TARGET_LINK_LIBRARIES( MeshReaderTest
-                           ${GTEST_BOTH_LIBRARIES}
-                           ${VTK_COMMON_LIBRARIES}
-                           tnl )
-endif()
+## MeshReaderTest is not a unit test so we disable it, because it takes
+## a long time to compile.
+##
+## Mesh cannot be compiled by nvcc < 9 due to bugs in the compiler
+#if( ${BUILD_CUDA} AND ${CUDA_VERSION_MAJOR} GREATER_EQUAL 9 )
+#   CUDA_ADD_EXECUTABLE( MeshReaderTest MeshReaderTest.cu
+#                        OPTIONS ${CXX_TESTS_FLAGS} )
+#   TARGET_LINK_LIBRARIES( MeshReaderTest
+#                           ${GTEST_BOTH_LIBRARIES}
+#                           ${VTK_COMMON_LIBRARIES}
+#                           tnl )
+#else()
+#   ADD_EXECUTABLE( MeshReaderTest MeshReaderTest.cpp )
+#   TARGET_COMPILE_OPTIONS( MeshReaderTest PRIVATE ${CXX_TESTS_FLAGS} )
+#   TARGET_LINK_LIBRARIES( MeshReaderTest
+#                           ${GTEST_BOTH_LIBRARIES}
+#                           ${VTK_COMMON_LIBRARIES}
+#                           tnl )
+#endif()

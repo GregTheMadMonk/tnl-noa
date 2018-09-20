@@ -99,6 +99,15 @@ getElementValue( const Index& elementIndex ) const
 }
 
 template< typename Real, typename Index >
+__cuda_callable__
+Index
+SparseRow< Real, Index >::
+getLength() const
+{
+   return length;
+}
+
+template< typename Real, typename Index >
 void
 SparseRow< Real, Index >::
 print( std::ostream& str ) const

@@ -14,7 +14,8 @@
 
 #include <type_traits>
 
-#include <TNL/Object.h>
+#include "Preconditioner.h"
+
 #include <TNL/Containers/Vector.h>
 #include <TNL/Matrices/CSR.h>
 
@@ -27,62 +28,68 @@ namespace Solvers {
 namespace Linear {
 namespace Preconditioners {
 
-template< typename Real, typename Device, typename Index >
-class ILU0
+// implementation template
+template< typename Matrix, typename Real, typename Device, typename Index >
+class ILU0_impl
 {};
 
-template< typename Real, typename Index >
-class ILU0< Real, Devices::Host, Index >
+// actual template to be used by users
+template< typename Matrix >
+class ILU0
+: public ILU0_impl< Matrix, typename Matrix::RealType, typename Matrix::DeviceType, typename Matrix::IndexType >
 {
 public:
-   typedef Real RealType;
-   typedef Devices::Host DeviceType;
-   typedef Index IndexType;
-
-   template< typename MatrixPointer >
-   void update( const MatrixPointer& matrixPointer );
-
-   template< typename Vector1, typename Vector2 >
-   bool solve( const Vector1& b, Vector2& x ) const;
-
    String getType() const
    {
       return String( "ILU0" );
    }
+};
+
+template< typename Matrix, typename Real, typename Index >
+class ILU0_impl< Matrix, Real, Devices::Host, Index >
+: public Preconditioner< Matrix >
+{
+public:
+   using RealType = Real;
+   using DeviceType = Devices::Host;
+   using IndexType = Index;
+   using typename Preconditioner< Matrix >::VectorViewType;
+   using typename Preconditioner< Matrix >::ConstVectorViewType;
+   using typename Preconditioner< Matrix >::MatrixPointer;
+
+   virtual void update( const MatrixPointer& matrixPointer ) override;
+
+   virtual bool solve( ConstVectorViewType b, VectorViewType x ) const override;
 
 protected:
-//   Matrices::CSR< RealType, DeviceType, IndexType > A;
    Matrices::CSR< RealType, DeviceType, IndexType > L;
    Matrices::CSR< RealType, DeviceType, IndexType > U;
 };
 
-template<>
-class ILU0< double, Devices::Cuda, int >
+template< typename Matrix >
+class ILU0_impl< Matrix, double, Devices::Cuda, int >
+: public Preconditioner< Matrix >
 {
 public:
    using RealType = double;
    using DeviceType = Devices::Cuda;
    using IndexType = int;
+   using typename Preconditioner< Matrix >::VectorViewType;
+   using typename Preconditioner< Matrix >::ConstVectorViewType;
+   using typename Preconditioner< Matrix >::MatrixPointer;
 
-   ILU0()
+   ILU0_impl()
    {
 #if defined(HAVE_CUDA) && defined(HAVE_CUSPARSE)
       cusparseCreate( &handle );
 #endif
    }
 
-   template< typename MatrixPointer >
-   void update( const MatrixPointer& matrixPointer );
+   virtual void update( const MatrixPointer& matrixPointer ) override;
 
-   template< typename Vector1, typename Vector2 >
-   bool solve( const Vector1& b, Vector2& x ) const;
+   virtual bool solve( ConstVectorViewType b, VectorViewType x ) const override;
 
-   String getType() const
-   {
-      return String( "ILU0" );
-   }
-
-   ~ILU0()
+   ~ILU0_impl()
    {
 #if defined(HAVE_CUDA) && defined(HAVE_CUSPARSE)
       resetMatrices();
@@ -145,58 +152,47 @@ protected:
    }
 
    // TODO: extend Matrices::copySparseMatrix accordingly
-   template< typename Matrix,
-             typename = typename std::enable_if< ! std::is_same< DeviceType, typename Matrix::DeviceType >::value >::type >
-   void copyMatrix( const Matrix& matrix )
+   template< typename MatrixT,
+             typename = typename std::enable_if< ! std::is_same< DeviceType, typename MatrixT::DeviceType >::value >::type >
+   void copyMatrix( const MatrixT& matrix )
    {
-      typename Matrix::CudaType A_tmp;
+      typename MatrixT::CudaType A_tmp;
       A_tmp = matrix;
       Matrices::copySparseMatrix( A, A_tmp );
    }
 
-   template< typename Matrix,
-             typename = typename std::enable_if< std::is_same< DeviceType, typename Matrix::DeviceType >::value >::type,
+   template< typename MatrixT,
+             typename = typename std::enable_if< std::is_same< DeviceType, typename MatrixT::DeviceType >::value >::type,
              typename = void >
-   void copyMatrix( const Matrix& matrix )
+   void copyMatrix( const MatrixT& matrix )
    {
       Matrices::copySparseMatrix( A, matrix );
    }
 #endif
 };
 
-#ifdef HAVE_MIC
-template< typename Real, typename Index >
-class ILU0< Real, Devices::MIC, Index >
+template< typename Matrix, typename Real, typename Index >
+class ILU0_impl< Matrix, Real, Devices::MIC, Index >
+: public Preconditioner< Matrix >
 {
 public:
-   typedef Real RealType;
-   typedef Devices::MIC DeviceType;
-   typedef Index IndexType;
+   using RealType = Real;
+   using DeviceType = Devices::MIC;
+   using IndexType = Index;
+   using typename Preconditioner< Matrix >::VectorViewType;
+   using typename Preconditioner< Matrix >::ConstVectorViewType;
+   using typename Preconditioner< Matrix >::MatrixPointer;
 
-   template< typename MatrixPointer >
-   void update( const MatrixPointer& matrixPointer )
+   virtual void update( const MatrixPointer& matrixPointer ) override
    {
       throw std::runtime_error("Not Iplemented yet for MIC");
    }
 
-   template< typename Vector1, typename Vector2 >
-   bool solve( const Vector1& b, Vector2& x ) const
+   virtual bool solve( ConstVectorViewType b, VectorViewType x ) const override
    {
       throw std::runtime_error("Not Iplemented yet for MIC");
    }
-
-   String getType() const
-   {
-      return String( "ILU0" );
-   }
-
-protected:
-//   Matrices::CSR< RealType, DeviceType, IndexType > A;
-   Matrices::CSR< RealType, DeviceType, IndexType > L;
-   Matrices::CSR< RealType, DeviceType, IndexType > U;
 };
-
-#endif
 
 } // namespace Preconditioners
 } // namespace Linear

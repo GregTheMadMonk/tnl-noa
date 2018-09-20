@@ -15,7 +15,7 @@
 
 #include <TNL/Problems/PDEProblem.h>
 #include <TNL/Functions/MeshFunction.h>
-#include <TNL/SharedPointer.h>
+#include <TNL/Pointers/SharedPointer.h>
 #include "tnlFastSweepingMethod.h"
 
 template< typename Mesh,
@@ -38,13 +38,13 @@ class tnlDirectEikonalProblem
       typedef Functions::MeshFunction< Mesh > MeshFunctionType;
       typedef Problems::PDEProblem< Mesh, Communicator, RealType, DeviceType, IndexType > BaseType;
       using AnisotropyType = Anisotropy;
-      using AnisotropyPointer = SharedPointer< AnisotropyType, DeviceType >;
-      using MeshFunctionPointer = SharedPointer< MeshFunctionType >;
+      using AnisotropyPointer = Pointers::SharedPointer< AnisotropyType, DeviceType >;
+      using MeshFunctionPointer = Pointers::SharedPointer< MeshFunctionType >;
 
       using typename BaseType::MeshType;
       using typename BaseType::DofVectorType;
-      using MeshPointer = SharedPointer< MeshType >;
-      using DofVectorPointer = SharedPointer< DofVectorType >;
+      using MeshPointer = Pointers::SharedPointer< MeshType >;
+      using DofVectorPointer = Pointers::SharedPointer< DofVectorType >;
       
       static constexpr bool isTimeDependent() { return false; };
 

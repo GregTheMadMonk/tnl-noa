@@ -16,10 +16,6 @@
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Meshes/TypeResolver/TypeResolver.h>
 #include <TNL/Solvers/BuildConfigTags.h>
-#include <TNL/Solvers/Linear/SOR.h>
-#include <TNL/Solvers/Linear/CG.h>
-#include <TNL/Solvers/Linear/BICGStab.h>
-#include <TNL/Solvers/Linear/GMRES.h>
 #include <TNL/Solvers/SolverStarter.h>
 #include <TNL/Meshes/DummyMesh.h>
 
@@ -73,8 +69,6 @@ template< template< typename Real, typename Device, typename Index, typename Mes
 bool SolverInitiator< ProblemSetter, ConfigTag > :: run( const Config::ParameterContainer& parameters )
 {
    const String& realType = parameters. getParameter< String >( "real-type" );
-   if( parameters. getParameter< int >( "verbose" ) )
-     std::cout << "Setting RealType to   ... " << realType << std::endl;
    if( realType == "float" )
       return SolverInitiatorRealResolver< ProblemSetter, float, ConfigTag >::run( parameters );
    if( realType == "double" )
@@ -94,9 +88,6 @@ class SolverInitiatorRealResolver< ProblemSetter, Real, ConfigTag, true >
       static bool run( const Config::ParameterContainer& parameters )
       {
          const String& device = parameters. getParameter< String >( "device" );
-         if( parameters. getParameter< int >( "verbose" ) )
-           std::cout << "Setting DeviceType to ... " << device << std::endl;
-
          if( device == "host" )
             return SolverInitiatorDeviceResolver< ProblemSetter, Real, Devices::Host, ConfigTag >::run( parameters );
          if( device == "cuda" )
@@ -131,8 +122,6 @@ class SolverInitiatorDeviceResolver< ProblemSetter, Real, Device, ConfigTag, tru
       static bool run( const Config::ParameterContainer& parameters )
       {
          const String& indexType = parameters. getParameter< String >( "index-type" );
-         if( parameters. getParameter< int >( "verbose" ) )
-           std::cout << "Setting IndexType to  ... " << indexType << std::endl;
          if( indexType == "short-int" )
             return SolverInitiatorIndexResolver< ProblemSetter, Real, Device, short int, ConfigTag >::run( parameters );
          if( indexType == "int" )
@@ -197,15 +186,9 @@ class CommunicatorTypeResolver< ProblemSetter, Real, Device, Index, ConfigTag, t
    public:
       static bool run( const Config::ParameterContainer& parameters )
       {
-         if(Communicators::MpiCommunicator::isDistributed())
-         {     
-               bool ret=SolverInitiatorMeshResolver< ProblemSetter, Real, Device, Index, ConfigTag, Communicators::MpiCommunicator >::run( parameters );
-               Communicators::MpiCommunicator::Finalize();      
-               return ret;
-         }
-         Communicators::MpiCommunicator::Finalize();
+         if( Communicators::MpiCommunicator::isDistributed() )
+            return SolverInitiatorMeshResolver< ProblemSetter, Real, Device, Index, ConfigTag, Communicators::MpiCommunicator >::run( parameters );
          return SolverInitiatorMeshResolver< ProblemSetter, Real, Device, Index, ConfigTag, Communicators::NoDistrCommunicator >::run( parameters );
-         
       }
 };
 

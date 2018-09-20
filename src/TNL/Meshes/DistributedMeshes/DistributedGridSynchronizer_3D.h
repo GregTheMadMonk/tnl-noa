@@ -38,12 +38,10 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 3, GridReal, D
 
    public:
       typedef typename Grid< 3, GridReal, Device, Index >::Cell Cell;
-      typedef typename Functions::MeshFunction< Grid< 3, GridReal, Device, Index >,EntityDimension, RealType> MeshFunctionType;
+      // FIXME: clang does not like this (incomplete type error)
+//      typedef typename Functions::MeshFunction< Grid< 3, GridReal, Device, Index >,EntityDimension, RealType> MeshFunctionType;
       typedef typename Grid< 3, GridReal, Device, Index >::DistributedMeshType DistributedGridType; 
-      typedef typename MeshFunctionType::RealType Real;
       typedef typename DistributedGridType::CoordinatesType CoordinatesType;
-      template< typename Real_ >
-      using BufferEntitiesHelperType = BufferEntitiesHelper< MeshFunctionType, 3, Real_, Device >;
       using SubdomainOverlapsType = typename DistributedGridType::SubdomainOverlapsType;
           
       DistributedMeshSynchronizer()
@@ -105,9 +103,12 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 3, GridReal, D
         
      }
         
-      template<typename CommunicatorType>
+      template< typename CommunicatorType,
+                typename MeshFunctionType,
+                typename PeriodicBoundariesMaskPointer = Pointers::SharedPointer< MeshFunctionType > >
       void synchronize( MeshFunctionType &meshFunction,
-                        bool periodicBoundaries = false )
+                        bool periodicBoundaries = false,
+                        const PeriodicBoundariesMaskPointer& mask = PeriodicBoundariesMaskPointer( nullptr ) )
       {
 
          TNL_ASSERT_TRUE( isSet, "Synchronizer is not set, but used to synchronize" );
@@ -121,7 +122,7 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 3, GridReal, D
         
          westSource   = lowerOverlap.x();
          eastSource   = localGridSize.x() - 2 * upperOverlap.x();
-         northSource   = lowerOverlap.y();
+         northSource  = lowerOverlap.y();
          southSource  = localGridSize.y() - 2 * upperOverlap.y();
          bottomSource = lowerOverlap.z();
          topSource    = localGridSize.z() - 2 * upperOverlap.z();
@@ -162,7 +163,8 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 3, GridReal, D
             xCenter, yCenter, zCenter,
             lowerOverlap, upperOverlap, localSize,
             neighbors,
-            periodicBoundaries );
+            periodicBoundaries,
+            PeriodicBoundariesMaskPointer( nullptr ) ); // the mask is used only when receiving data );
         
          //async send and receive
          typename CommunicatorType::Request requests[52];
@@ -192,83 +194,122 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 3, GridReal, D
             xCenter, yCenter, zCenter,
             lowerOverlap, upperOverlap, localSize,
             neighbors,
-            periodicBoundaries );
+            periodicBoundaries,
+            mask );
     }
     
    private:
       
-      template< typename Real_ >
-      void copyBuffers( MeshFunctionType meshFunction, Containers::Array<Real_, Device, Index>* buffers, bool toBuffer,
-              int west, int east, int north, int south, int bottom, int top,
-              int xcenter, int ycenter, int zcenter,
-              const CoordinatesType& lowerOverlap,
-              const CoordinatesType& upperOverlap,
-              const CoordinatesType& localSize,
-              const int *neighbor,
-              bool periodicBoundaries )
+      template< typename Real_, 
+                typename MeshFunctionType,
+                typename PeriodicBoundariesMaskPointer >
+      void copyBuffers( 
+         MeshFunctionType& meshFunction,
+         Containers::Array<Real_, Device, Index>* buffers,
+         bool toBuffer,
+         int west, int east, int north, int south, int bottom, int top,
+         int xcenter, int ycenter, int zcenter,
+         const CoordinatesType& lowerOverlap,
+         const CoordinatesType& upperOverlap,
+         const CoordinatesType& localSize,
+         const int* neighbor,
+         bool periodicBoundaries,
+         const PeriodicBoundariesMaskPointer& mask )
       {
-         using Helper = BufferEntitiesHelper< MeshFunctionType, 3, Real_, Device >;
+         bool westIsBoundary = ( neighbor[ West ] == -1 );
+         bool eastIsBoundary = ( neighbor[ East ] == -1 );
+         bool northIsBoundary = ( neighbor[ North ] == -1 );
+         bool southIsBoundary = ( neighbor[ South ] == -1 );
+         bool bottomIsBoundary = ( neighbor[ Bottom ] == -1 );
+         bool topIsBoundary = ( neighbor[ Top ] == -1 );
+
+         bool northWestIsBoundary = ( neighbor[ NorthWest ] == -1 );
+         bool northEastIsBoundary = ( neighbor[ NorthEast ] == -1 );
+         bool southWestIsBoundary = ( neighbor[ SouthWest ] == -1 );
+         bool southEastIsBoundary = ( neighbor[ SouthEast ] == -1 );
+         
+         bool bottomWestIsBoundary = ( neighbor[ BottomWest ] == -1 );
+         bool bottomEastIsBoundary = ( neighbor[ BottomEast ] == -1 );
+         bool bottomNorthIsBoundary = ( neighbor[ BottomNorth ] == -1 );
+         bool bottomSouthIsBoundary = ( neighbor[ BottomSouth ] == -1 );
+
+         bool topWestIsBoundary = ( neighbor[ TopWest ] == -1 );
+         bool topEastIsBoundary = ( neighbor[ TopEast ] == -1 );
+         bool topNorthIsBoundary = ( neighbor[ TopNorth ] == -1 );
+         bool topSouthIsBoundary = ( neighbor[ TopSouth ] == -1 );
+
+         bool bottomNorthWestIsBoundary = ( neighbor[ BottomNorthWest ] == -1 );
+         bool bottomNorthEastIsBoundary = ( neighbor[ BottomNorthEast ] == -1 );
+         bool bottomSouthWestIsBoundary = ( neighbor[ BottomSouthWest ] == -1 );
+         bool bottomSouthEastIsBoundary = ( neighbor[ BottomSouthEast ] == -1 );
+
+         bool topNorthWestIsBoundary = ( neighbor[ TopNorthWest ] == -1 );
+         bool topNorthEastIsBoundary = ( neighbor[ TopNorthEast ] == -1 );
+         bool topSouthWestIsBoundary = ( neighbor[ TopSouthWest ] == -1 );
+         bool topSouthEastIsBoundary = ( neighbor[ TopSouthEast ] == -1 );
+         
+         using Helper = BufferEntitiesHelper< MeshFunctionType, PeriodicBoundariesMaskPointer, 3, Real_, Device >;
          //X-Y-Z
-         if( neighbor[ West ] != -1 || periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ West ].getData(),   west,    ycenter, zcenter, lowerOverlap.x(), localSize.y(),     localSize.z(),    toBuffer );
-         if( neighbor[ East ] != -1 || periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ East ].getData(),   east,    ycenter, zcenter, upperOverlap.x(), localSize.y(),     localSize.z(),    toBuffer );
-         if( neighbor[ North ] != -1 || periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ North ].getData(),  xcenter, north,   zcenter, localSize.x(),    lowerOverlap.y(),  localSize.z(),    toBuffer );
-         if( neighbor[ South ] != -1 || periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ South ].getData(),  xcenter, south,   zcenter, localSize.x(),     upperOverlap.y(), localSize.z(),    toBuffer );
-         if( neighbor[ Bottom ] != -1 || periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ Bottom ].getData(), xcenter, ycenter, bottom,  localSize.x(),     localSize.y(),    lowerOverlap.z(), toBuffer );
-         if( neighbor[ Top ] != -1 || periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ Top ].getData(),    xcenter, ycenter, top,     localSize.x(),     localSize.y(),    upperOverlap.z(), toBuffer );	
+         if( ! westIsBoundary || periodicBoundaries )
+            Helper::BufferEntities( meshFunction, mask, buffers[ West ].getData(),   westIsBoundary,   west,    ycenter, zcenter, lowerOverlap.x(), localSize.y(),     localSize.z(),    toBuffer );
+         if( ! eastIsBoundary || periodicBoundaries )
+            Helper::BufferEntities( meshFunction, mask, buffers[ East ].getData(),   eastIsBoundary,   east,    ycenter, zcenter, upperOverlap.x(), localSize.y(),     localSize.z(),    toBuffer );
+         if( ! northIsBoundary || periodicBoundaries )
+            Helper::BufferEntities( meshFunction, mask, buffers[ North ].getData(),  northIsBoundary,  xcenter, north,   zcenter, localSize.x(),    lowerOverlap.y(),  localSize.z(),    toBuffer );
+         if( ! southIsBoundary || periodicBoundaries )
+            Helper::BufferEntities( meshFunction, mask, buffers[ South ].getData(),  southIsBoundary,  xcenter, south,   zcenter, localSize.x(),     upperOverlap.y(), localSize.z(),    toBuffer );
+         if( ! bottomIsBoundary || periodicBoundaries )
+            Helper::BufferEntities( meshFunction, mask, buffers[ Bottom ].getData(), bottomIsBoundary, xcenter, ycenter, bottom,  localSize.x(),     localSize.y(),    lowerOverlap.z(), toBuffer );
+         if( ! topIsBoundary || periodicBoundaries )
+            Helper::BufferEntities( meshFunction, mask, buffers[ Top ].getData(),    topIsBoundary,    xcenter, ycenter, top,     localSize.x(),     localSize.y(),    upperOverlap.z(), toBuffer );	
          
          //XY
-         if( neighbor[ NorthWest ] != -1 || periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ NorthWest ].getData(), west, north, zcenter, lowerOverlap.x(), lowerOverlap.y(), localSize.z(), toBuffer );
-         if( neighbor[ NorthEast ] != -1 || periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ NorthEast ].getData(), east, north, zcenter, upperOverlap.x(), lowerOverlap.y(), localSize.z(), toBuffer );
-         if( neighbor[ SouthWest ] != -1 || periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ SouthWest ].getData(), west, south, zcenter, lowerOverlap.x(), upperOverlap.y(), localSize.z(), toBuffer );
-         if( neighbor[ SouthEast ] != -1 || periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ SouthEast ].getData(), east, south, zcenter, upperOverlap.x(), upperOverlap.y(), localSize.z(), toBuffer );
+         if( ! northWestIsBoundary || periodicBoundaries )
+            Helper::BufferEntities( meshFunction, mask, buffers[ NorthWest ].getData(), northWestIsBoundary, west, north, zcenter, lowerOverlap.x(), lowerOverlap.y(), localSize.z(), toBuffer );
+         if( ! northEastIsBoundary || periodicBoundaries )
+            Helper::BufferEntities( meshFunction, mask, buffers[ NorthEast ].getData(), northEastIsBoundary, east, north, zcenter, upperOverlap.x(), lowerOverlap.y(), localSize.z(), toBuffer );
+         if( ! southWestIsBoundary || periodicBoundaries )
+            Helper::BufferEntities( meshFunction, mask, buffers[ SouthWest ].getData(), southWestIsBoundary, west, south, zcenter, lowerOverlap.x(), upperOverlap.y(), localSize.z(), toBuffer );
+         if( ! southEastIsBoundary || periodicBoundaries )
+            Helper::BufferEntities( meshFunction, mask, buffers[ SouthEast ].getData(), southEastIsBoundary, east, south, zcenter, upperOverlap.x(), upperOverlap.y(), localSize.z(), toBuffer );
          
          //XZ
-         if( neighbor[ BottomWest ] != -1 || periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ BottomWest ].getData(), west, ycenter, bottom, lowerOverlap.x(), localSize.y(), lowerOverlap.z(), toBuffer );
-         if( neighbor[ BottomEast ] != -1 || periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ BottomEast ].getData(), east, ycenter, bottom, upperOverlap.x(), localSize.y(), lowerOverlap.z(), toBuffer );
-         if( neighbor[ TopWest ] != -1 || periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ TopWest ].getData(),    west, ycenter, top,    lowerOverlap.x(), localSize.y(), upperOverlap.z(), toBuffer );
-         if( neighbor[ TopEast ] != -1 || periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ TopEast ].getData(),    east, ycenter, top,    upperOverlap.x(), localSize.y(), upperOverlap.z(), toBuffer );   
+         if( ! bottomWestIsBoundary || periodicBoundaries )
+            Helper::BufferEntities( meshFunction, mask, buffers[ BottomWest ].getData(), bottomWestIsBoundary, west, ycenter, bottom, lowerOverlap.x(), localSize.y(), lowerOverlap.z(), toBuffer );
+         if( ! bottomEastIsBoundary || periodicBoundaries )
+            Helper::BufferEntities( meshFunction, mask, buffers[ BottomEast ].getData(), bottomEastIsBoundary, east, ycenter, bottom, upperOverlap.x(), localSize.y(), lowerOverlap.z(), toBuffer );
+         if( ! topWestIsBoundary || periodicBoundaries )
+            Helper::BufferEntities( meshFunction, mask, buffers[ TopWest ].getData(),    topWestIsBoundary,    west, ycenter, top,    lowerOverlap.x(), localSize.y(), upperOverlap.z(), toBuffer );
+         if( ! topEastIsBoundary || periodicBoundaries )
+            Helper::BufferEntities( meshFunction, mask, buffers[ TopEast ].getData(),    topEastIsBoundary,    east, ycenter, top,    upperOverlap.x(), localSize.y(), upperOverlap.z(), toBuffer );   
          
          //YZ
-         if( neighbor[ BottomNorth ] != -1 || periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ BottomNorth ].getData(), xcenter, north, bottom, localSize.x(), lowerOverlap.y(), lowerOverlap.z(), toBuffer );
-         if( neighbor[ BottomSouth ] != -1 || periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ BottomSouth ].getData(), xcenter, south, bottom, localSize.x(), upperOverlap.y(), lowerOverlap.z(), toBuffer );
-         if( neighbor[ TopNorth ] != -1 || periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ TopNorth ].getData(),    xcenter, north, top,    localSize.x(), lowerOverlap.y(), upperOverlap.z(), toBuffer );
-         if( neighbor[ TopSouth ] != -1 || periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ TopSouth ].getData(),    xcenter, south, top,    localSize.x(), upperOverlap.y(), upperOverlap.z(), toBuffer );
+         if( ! bottomNorthIsBoundary || periodicBoundaries )
+            Helper::BufferEntities( meshFunction, mask, buffers[ BottomNorth ].getData(), bottomNorthIsBoundary, xcenter, north, bottom, localSize.x(), lowerOverlap.y(), lowerOverlap.z(), toBuffer );
+         if( ! bottomSouthIsBoundary || periodicBoundaries )
+            Helper::BufferEntities( meshFunction, mask, buffers[ BottomSouth ].getData(), bottomSouthIsBoundary, xcenter, south, bottom, localSize.x(), upperOverlap.y(), lowerOverlap.z(), toBuffer );
+         if( ! topNorthIsBoundary || periodicBoundaries )
+            Helper::BufferEntities( meshFunction, mask, buffers[ TopNorth ].getData(),    topNorthIsBoundary,    xcenter, north, top,    localSize.x(), lowerOverlap.y(), upperOverlap.z(), toBuffer );
+         if( ! topSouthIsBoundary || periodicBoundaries )
+            Helper::BufferEntities( meshFunction, mask, buffers[ TopSouth ].getData(),    topSouthIsBoundary,    xcenter, south, top,    localSize.x(), upperOverlap.y(), upperOverlap.z(), toBuffer );
          
          //XYZ
-         if( neighbor[ BottomNorthWest ] != -1 || periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ BottomNorthWest ].getData(), west, north, bottom, lowerOverlap.x(), lowerOverlap.y(), lowerOverlap.z(), toBuffer );
-         if( neighbor[ BottomNorthEast ] != -1 || periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ BottomNorthEast ].getData(), east, north, bottom, upperOverlap.x(), lowerOverlap.y(), lowerOverlap.z(), toBuffer );
-         if( neighbor[ BottomSouthWest ] != -1 || periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ BottomSouthWest ].getData(), west, south, bottom, lowerOverlap.x(), upperOverlap.y(), lowerOverlap.z(), toBuffer );
-         if( neighbor[ BottomSouthEast ] != -1 || periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ BottomSouthEast ].getData(), east, south, bottom, upperOverlap.x(), upperOverlap.y(), lowerOverlap.z(), toBuffer );
-         if( neighbor[ TopNorthWest ] != -1 || periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ TopNorthWest ].getData(),    west, north, top,    lowerOverlap.x(), lowerOverlap.y(), upperOverlap.z(), toBuffer );
-         if( neighbor[ TopNorthEast ] != -1 || periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ TopNorthEast ].getData(),    east, north, top,    upperOverlap.x(), lowerOverlap.y(), upperOverlap.z(), toBuffer );
-         if( neighbor[ TopSouthWest ] != -1 || periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ TopSouthWest ].getData(),    west, south, top,    lowerOverlap.x(), upperOverlap.y(), upperOverlap.z(), toBuffer );
-         if( neighbor[ TopSouthEast ] != -1 || periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ TopSouthEast ].getData(),    east, south, top,    upperOverlap.x(), upperOverlap.y(), upperOverlap.z(), toBuffer );   
+         if( ! bottomNorthWestIsBoundary || periodicBoundaries )
+            Helper::BufferEntities( meshFunction, mask, buffers[ BottomNorthWest ].getData(), bottomNorthWestIsBoundary, west, north, bottom, lowerOverlap.x(), lowerOverlap.y(), lowerOverlap.z(), toBuffer );
+         if( ! bottomNorthEastIsBoundary || periodicBoundaries )
+            Helper::BufferEntities( meshFunction, mask, buffers[ BottomNorthEast ].getData(), bottomNorthEastIsBoundary, east, north, bottom, upperOverlap.x(), lowerOverlap.y(), lowerOverlap.z(), toBuffer );
+         if( ! bottomSouthWestIsBoundary || periodicBoundaries )
+            Helper::BufferEntities( meshFunction, mask, buffers[ BottomSouthWest ].getData(), bottomSouthWestIsBoundary, west, south, bottom, lowerOverlap.x(), upperOverlap.y(), lowerOverlap.z(), toBuffer );
+         if( ! bottomSouthEastIsBoundary || periodicBoundaries )
+            Helper::BufferEntities( meshFunction, mask, buffers[ BottomSouthEast ].getData(), bottomSouthEastIsBoundary, east, south, bottom, upperOverlap.x(), upperOverlap.y(), lowerOverlap.z(), toBuffer );
+         if( ! topNorthWestIsBoundary || periodicBoundaries )
+            Helper::BufferEntities( meshFunction, mask, buffers[ TopNorthWest ].getData(),    topNorthWestIsBoundary,    west, north, top,    lowerOverlap.x(), lowerOverlap.y(), upperOverlap.z(), toBuffer );
+         if( ! topNorthEastIsBoundary || periodicBoundaries )
+            Helper::BufferEntities( meshFunction, mask, buffers[ TopNorthEast ].getData(),    topNorthEastIsBoundary,    east, north, top,    upperOverlap.x(), lowerOverlap.y(), upperOverlap.z(), toBuffer );
+         if( ! topSouthWestIsBoundary || periodicBoundaries )
+            Helper::BufferEntities( meshFunction, mask, buffers[ TopSouthWest ].getData(),    topSouthEastIsBoundary,    west, south, top,    lowerOverlap.x(), upperOverlap.y(), upperOverlap.z(), toBuffer );
+         if( ! topSouthEastIsBoundary || periodicBoundaries )
+            Helper::BufferEntities( meshFunction, mask, buffers[ TopSouthEast ].getData(),    topSouthEastIsBoundary,    east, south, top,    upperOverlap.x(), upperOverlap.y(), upperOverlap.z(), toBuffer );   
       }
     
    private:

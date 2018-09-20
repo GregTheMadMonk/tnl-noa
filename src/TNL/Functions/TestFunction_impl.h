@@ -37,6 +37,8 @@
 #include <TNL/Operators/Analytic/Heaviside.h>
 #include <TNL/Operators/Analytic/SmoothHeaviside.h>
 
+#include "TestFunction.h"
+
 namespace TNL {
 namespace Functions {   
 
@@ -423,6 +425,7 @@ TestFunction< FunctionDimension, Real, Device >::
 getPartialDerivative( const PointType& vertex,
           const Real& time ) const
 {
+   TNL_ASSERT_TRUE( this->function, "The test function was not set properly." );
    using namespace TNL::Functions::Analytic;
    using namespace TNL::Operators::Analytic;
    Real scale( 1.0 );

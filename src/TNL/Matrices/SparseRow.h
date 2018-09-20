@@ -49,6 +49,9 @@ class SparseRow
       __cuda_callable__
       const Real& getElementValue( const Index& elementIndex ) const;
 
+      __cuda_callable__
+      Index getLength() const;
+
       void print( std::ostream& str ) const;
 
    protected:

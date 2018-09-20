@@ -43,7 +43,7 @@ class OperatorFunctionTest
    typedef typename MeshType::PointType PointType;
    typedef Functions::Analytic::ExpBump< MeshType::getMeshDimension(), RealType > TestFunctionType;
    typedef Functions::MeshFunction< MeshType, MeshType::getMeshDimension() > MeshFunctionType;
-   typedef SharedPointer< MeshType > MeshPointer;
+   typedef Pointers::SharedPointer<  MeshType > MeshPointer;
 
    OperatorFunctionTest(){};
 
@@ -90,7 +90,7 @@ class OperatorFunctionTest
  
    void testWithBoundaryConditions()
    {
-      SharedPointer< MeshType > mesh;
+      Pointers::SharedPointer<  MeshType > mesh;
       typedef Operators::DirichletBoundaryConditions< MeshType > BoundaryConditionsType;
       typedef Functions::OperatorFunction< Operator, MeshFunctionType, BoundaryConditionsType, EvaluateOnFly > OperatorFunctionType;
       mesh->setDimensions( CoordinatesType( 25 ) );

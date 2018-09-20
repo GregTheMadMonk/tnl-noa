@@ -12,7 +12,7 @@
 
 #include <TNL/Problems/Problem.h>
 #include <TNL/Problems/CommonData.h>
-#include <TNL/SharedPointer.h>
+#include <TNL/Pointers/SharedPointer.h>
 #include <TNL/Matrices/SlicedEllpack.h>
 #include <TNL/Solvers/PDE/TimeDependentPDESolver.h>
 
@@ -34,15 +34,15 @@ class PDEProblem : public Problem< Real, Device, Index >
       using typename BaseType::IndexType;
 
       using MeshType = Mesh;
-      using MeshPointer = SharedPointer< MeshType, DeviceType >;
+      using MeshPointer = Pointers::SharedPointer< MeshType, DeviceType >;
       using DistributedMeshType = Meshes::DistributedMeshes::DistributedMesh< MeshType >;
       using SubdomainOverlapsType = typename DistributedMeshType::SubdomainOverlapsType;
       using DofVectorType = Containers::Vector< RealType, DeviceType, IndexType>;
-      using DofVectorPointer = SharedPointer< DofVectorType, DeviceType >;
+      using DofVectorPointer = Pointers::SharedPointer< DofVectorType, DeviceType >;
       using MatrixType = Matrices::SlicedEllpack< RealType, DeviceType, IndexType >;
       using CommunicatorType = Communicator;
       using CommonDataType = CommonData;
-      using CommonDataPointer = SharedPointer< CommonDataType, DeviceType >;
+      using CommonDataPointer = Pointers::SharedPointer< CommonDataType, DeviceType >;
 
       static constexpr bool isTimeDependent() { return true; };
       
@@ -87,8 +87,8 @@ class PDEProblem : public Problem< Real, Device, Index >
                        const RealType& tau,
                        DofVectorPointer& dofs );
  
-      void setExplicitBoundaryConditions( const RealType& time,
-                                          DofVectorPointer& dofs );
+      void applyBoundaryConditions( const RealType& time,
+                                       DofVectorPointer& dofs );
 
       template< typename Matrix >
       void saveFailedLinearSystem( const Matrix& matrix,

@@ -10,40 +10,17 @@
 
 #pragma once
 
+#include <cmath>
+
 #include "GMRES.h"
 
 namespace TNL {
 namespace Solvers {
 namespace Linear {
 
-template< typename Matrix,
-           typename Preconditioner >
-GMRES< Matrix, Preconditioner >::
-GMRES()
-: size( 0 ),
-  restarting_min( 10 ),
-  restarting_max( 10 ),
-  restarting_step_min( 3 ),
-  restarting_step_max( 3 )
-{
-   /****
-    * Clearing the shared pointer means that there is no
-    * preconditioner set.
-    */
-   this->preconditioner.clear();
-}
-
-template< typename Matrix,
-          typename Preconditioner >
-GMRES< Matrix, Preconditioner >::
-~GMRES()
-{
-}
-
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 String
-GMRES< Matrix, Preconditioner >::
+GMRES< Matrix >::
 getType() const
 {
    return String( "GMRES< " ) +
@@ -51,39 +28,34 @@ getType() const
           this->preconditioner -> getType() + " >";
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 void
-GMRES< Matrix, Preconditioner >::
+GMRES< Matrix >::
 configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
-   //IterativeSolver< RealType, IndexType >::configSetup( config, prefix );
    config.addEntry< int >( prefix + "gmres-restarting-min", "Minimal number of iterations after which the GMRES restarts.", 10 );
    config.addEntry< int >( prefix + "gmres-restarting-max", "Maximal number of iterations after which the GMRES restarts.", 10 );
    config.addEntry< int >( prefix + "gmres-restarting-step-min", "Minimal adjusting step for the adaptivity of the GMRES restarting parameter.", 3 );
    config.addEntry< int >( prefix + "gmres-restarting-step-max", "Maximal adjusting step for the adaptivity of the GMRES restarting parameter.", 3 );
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 bool
-GMRES< Matrix, Preconditioner >::
+GMRES< Matrix >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   IterativeSolver< RealType, IndexType >::setup( parameters, prefix );
    restarting_min = parameters.getParameter< int >( "gmres-restarting-min" );
    this->setRestarting( parameters.getParameter< int >( "gmres-restarting-max" ) );
    restarting_step_min = parameters.getParameter< int >( "gmres-restarting-step-min" );
    restarting_step_max = parameters.getParameter< int >( "gmres-restarting-step-max" );
-   return true;
+   return LinearSolver< Matrix >::setup( parameters, prefix );
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 void
-GMRES< Matrix, Preconditioner >::
+GMRES< Matrix >::
 setRestarting( IndexType rest )
 {
    if( size != 0 )
@@ -91,32 +63,12 @@ setRestarting( IndexType rest )
    restarting_max = rest;
 }
 
-template< typename Matrix,
-          typename Preconditioner >
-void
-GMRES< Matrix, Preconditioner >::
-setMatrix( const MatrixPointer& matrix )
-{
-   this->matrix = matrix;
-}
-
-template< typename Matrix,
-          typename Preconditioner >
-void
-GMRES< Matrix, Preconditioner >::
-setPreconditioner( const PreconditionerPointer& preconditioner )
-{
-   this->preconditioner = preconditioner;
-}
-
-template< typename Matrix,
-          typename Preconditioner >
-   template< typename Vector, typename ResidueGetter >
+template< typename Matrix >
 bool
-GMRES< Matrix, Preconditioner >::
-solve( const Vector& b, Vector& x )
+GMRES< Matrix >::
+solve( ConstVectorViewType b, VectorViewType x )
 {
-   TNL_ASSERT_TRUE( matrix, "No matrix was set in GMRES. Call setMatrix() before solve()." );
+   TNL_ASSERT_TRUE( this->matrix, "No matrix was set in GMRES. Call setMatrix() before solve()." );
    if( restarting_min <= 0 || restarting_max <= 0 || restarting_min > restarting_max )
    {
       std::cerr << "Wrong value for the GMRES restarting parameters: r_min = " << restarting_min
@@ -129,7 +81,7 @@ solve( const Vector& b, Vector& x )
                 << ", d_max = " << restarting_step_max << std::endl;
       return false;
    }
-   setSize( matrix -> getRows(), restarting_max );
+   setSize( this->matrix->getRows(), restarting_max );
 
    IndexType _size = size;
  
@@ -145,19 +97,19 @@ solve( const Vector& b, Vector& x )
    /****
     * 1. Solve r from M r = b - A x_0
     */
-   if( preconditioner )
+   if( this->preconditioner )
    {
       this->preconditioner->solve( b, _M_tmp );
       normb = _M_tmp.lpNorm( ( RealType ) 2.0 );
 
-      matrix -> vectorProduct( x, _M_tmp );
+      this->matrix->vectorProduct( x, _M_tmp );
       _M_tmp.addVector( b, ( RealType ) 1.0, -1.0 );
 
       this->preconditioner->solve( _M_tmp, _r );
    }
    else
    {
-      matrix -> vectorProduct( x, _r );
+      this->matrix->vectorProduct( x, _r );
       normb = b.lpNorm( ( RealType ) 2.0 );
       _r.addVector( b, ( RealType ) 1.0, -1.0 );
    }
@@ -232,13 +184,13 @@ solve( const Vector& b, Vector& x )
          /****
           * Solve w from M w = A v_i
           */
-         if( preconditioner )
+         if( this->preconditioner )
          {
-            matrix->vectorProduct( vi, _M_tmp );
+            this->matrix->vectorProduct( vi, _M_tmp );
             this->preconditioner->solve( _M_tmp, w );
          }
          else
-             matrix->vectorProduct( vi, w );
+             this->matrix->vectorProduct( vi, w );
  
          //cout << " i = " << i << " vi = " << vi << std::endl;
 
@@ -320,16 +272,16 @@ solve( const Vector& b, Vector& x )
        */
       const RealType beta_old = beta;
       beta = 0.0;
-      if( preconditioner )
+      if( this->preconditioner )
       {
-         matrix -> vectorProduct( x, _M_tmp );
+         this->matrix->vectorProduct( x, _M_tmp );
          _M_tmp.addVector( b, ( RealType ) 1.0, -1.0 );
-         preconditioner -> solve( _M_tmp, _r );
+         this->preconditioner->solve( _M_tmp, _r );
          beta = _r.lpNorm( ( RealType ) 2.0 );
       }
       else
       {
-         matrix -> vectorProduct( x, _r );
+         this->matrix->vectorProduct( x, _r );
          _r.addVector( b, ( RealType ) 1.0, -1.0 );
          beta = _r.lpNorm( ( RealType ) 2.0 );
       }
@@ -347,11 +299,10 @@ solve( const Vector& b, Vector& x )
    return this->checkConvergence();
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
    template< typename VectorT >
 void
-GMRES< Matrix, Preconditioner >::
+GMRES< Matrix >::
 update( IndexType k,
         IndexType m,
         const Containers::Vector< RealType, Devices::Host, IndexType >& H,
@@ -383,10 +334,9 @@ update( IndexType k,
    }
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 void
-GMRES< Matrix, Preconditioner >::
+GMRES< Matrix >::
 generatePlaneRotation( RealType& dx,
                        RealType& dy,
                        RealType& cs,
@@ -412,10 +362,9 @@ generatePlaneRotation( RealType& dx,
       }
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 void
-GMRES< Matrix, Preconditioner >::
+GMRES< Matrix >::
 applyPlaneRotation( RealType& dx,
                     RealType& dy,
                     RealType& cs,
@@ -426,10 +375,9 @@ applyPlaneRotation( RealType& dx,
    dx = temp;
 }
 
-template< typename Matrix,
-          typename Preconditioner >
+template< typename Matrix >
 void
-GMRES< Matrix, Preconditioner >::
+GMRES< Matrix >::
 setSize( IndexType _size, IndexType m )
 {
    if( size == _size && restarting_max == m )

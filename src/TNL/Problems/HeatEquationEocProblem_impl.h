@@ -47,6 +47,12 @@ setup( const Config::ParameterContainer& parameters,
    if( ! this->boundaryConditionPointer->setup( this->getMesh(), parameters, prefix ) ||
        ! this->rightHandSidePointer->setup( parameters ) )
       return false;
+   this->explicitUpdater.setDifferentialOperator( this->differentialOperatorPointer );
+   this->explicitUpdater.setBoundaryConditions( this->boundaryConditionPointer );
+   this->explicitUpdater.setRightHandSide( this->rightHandSidePointer );
+   this->systemAssembler.setDifferentialOperator( this->differentialOperatorPointer );
+   this->systemAssembler.setBoundaryConditions( this->boundaryConditionPointer );
+   this->systemAssembler.setRightHandSide( this->rightHandSidePointer );   
    return true;
 }
 

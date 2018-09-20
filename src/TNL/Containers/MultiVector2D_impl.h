@@ -238,33 +238,5 @@ std::ostream& operator << ( std::ostream& str, const MultiVector< 2, Real, Devic
    return str;
 }
 
-#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
-
-#ifdef INSTANTIATE_FLOAT
-extern template class MultiVector< 2, float,  Devices::Host, int >;
-#endif
-extern template class MultiVector< 2, double, Devices::Host, int >;
-#ifdef INSTANTIATE_LONG_INT
-#ifdef INSTANTIATE_FLOAT
-extern template class MultiVector< 2, float,  Devices::Host, long int >;
-#endif
-extern template class MultiVector< 2, double, Devices::Host, long int >;
-#endif
-
-#ifdef HAVE_CUDA
-/*#ifdef INSTANTIATE_FLOAT
-extern template class MultiVector< 2, float,  Devices::Cuda, int >;
-#endif
-extern template class MultiVector< 2, double, Devices::Cuda, int >;
-#ifdef INSTANTIATE_LONG_INT
-#ifdef INSTANTIATE_FLOAT
-extern template class MultiVector< 2, float,  Devices::Cuda, long int >;
-#endif
-extern template class MultiVector< 2, double, Devices::Cuda, long int >;
-#endif*/
-#endif
-
-#endif
-
 } // namespace Containers
 } // namespace TNL

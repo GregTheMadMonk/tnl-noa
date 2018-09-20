@@ -39,7 +39,7 @@ class ArrayOperations< Devices::Host >
                                     const Element& value );
 
       template< typename Element >
-      static Element getMemoryElement( Element* data );
+      static Element getMemoryElement( const Element* data );
 
       template< typename Element, typename Index >
       static bool setMemory( Element* data,
@@ -81,17 +81,15 @@ class ArrayOperations< Devices::Cuda >
       template< typename Element, typename Index >
       static void allocateMemory( Element*& data,
                                   const Index size );
-      
+
       template< typename Element >
       static void freeMemory( Element* data );
 
       template< typename Element >
-      __cuda_callable__
       static void setMemoryElement( Element* data,
                                     const Element& value );
 
       template< typename Element >
-      __cuda_callable__
       static Element getMemoryElement( const Element* data );
 
       template< typename Element, typename Index >

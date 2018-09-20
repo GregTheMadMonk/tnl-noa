@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Meshes/Grid.h>
-#include <TNL/SharedPointer.h>
+#include <TNL/Pointers/SharedPointer.h>
 #include <TNL/CudaStreamPool.h>
 
 namespace TNL {
@@ -35,7 +35,7 @@ class GridTraverser< Meshes::Grid< 1, Real, Devices::Host, Index > >
    public:
       
       typedef Meshes::Grid< 1, Real, Devices::Host, Index > GridType;
-      typedef SharedPointer< GridType > GridPointer;
+      typedef Pointers::SharedPointer<  GridType > GridPointer;
       typedef Real RealType;
       typedef Devices::Host DeviceType;
       typedef Index IndexType;
@@ -51,7 +51,7 @@ class GridTraverser< Meshes::Grid< 1, Real, Devices::Host, Index > >
          const GridPointer& gridPointer,
          const CoordinatesType begin,
          const CoordinatesType end,
-         SharedPointer< UserData, DeviceType >& userData,
+         UserData& userData,
          const int& stream = 0 );
 };
 
@@ -65,7 +65,7 @@ class GridTraverser< Meshes::Grid< 1, Real, Devices::Cuda, Index > >
    public:
       
       typedef Meshes::Grid< 1, Real, Devices::Cuda, Index > GridType;
-      typedef SharedPointer< GridType > GridPointer;
+      typedef Pointers::SharedPointer<  GridType > GridPointer;
       typedef Real RealType;
       typedef Devices::Cuda DeviceType;
       typedef Index IndexType;
@@ -81,7 +81,7 @@ class GridTraverser< Meshes::Grid< 1, Real, Devices::Cuda, Index > >
          const GridPointer& gridPointer,
          const CoordinatesType& begin,
          const CoordinatesType& end,
-         SharedPointer< UserData, DeviceType >& userData,
+         UserData& userData,
          const int& stream = 0 );
 };
 
@@ -95,7 +95,7 @@ class GridTraverser< Meshes::Grid< 1, Real, Devices::MIC, Index > >
    public:
       
       typedef Meshes::Grid< 1, Real, Devices::MIC, Index > GridType;
-      typedef SharedPointer< GridType > GridPointer;
+      typedef Pointers::SharedPointer<  GridType > GridPointer;
       typedef Real RealType;
       typedef Devices::MIC DeviceType;
       typedef Index IndexType;
@@ -111,7 +111,7 @@ class GridTraverser< Meshes::Grid< 1, Real, Devices::MIC, Index > >
          const GridPointer& gridPointer,
          const CoordinatesType& begin,
          const CoordinatesType& end,
-         SharedPointer< UserData, DeviceType >& userData,
+         UserData& userData,
          const int& stream = 0 );
 };
 
@@ -127,7 +127,7 @@ class GridTraverser< Meshes::Grid< 2, Real, Devices::Host, Index > >
    public:
       
       typedef Meshes::Grid< 2, Real, Devices::Host, Index > GridType;
-      typedef SharedPointer< GridType > GridPointer;
+      typedef Pointers::SharedPointer<  GridType > GridPointer;
       typedef Real RealType;
       typedef Devices::Host DeviceType;
       typedef Index IndexType;
@@ -146,7 +146,7 @@ class GridTraverser< Meshes::Grid< 2, Real, Devices::Host, Index > >
          const GridPointer& gridPointer,
          const CoordinatesType begin,
          const CoordinatesType end,
-         SharedPointer< UserData, DeviceType >& userData,
+         UserData& userData,
          // FIXME: hack around nvcc bug (error: default argument not at end of parameter list)
 //         const int& stream = 0,
          const int& stream,
@@ -165,7 +165,7 @@ class GridTraverser< Meshes::Grid< 2, Real, Devices::Cuda, Index > >
    public:
       
       typedef Meshes::Grid< 2, Real, Devices::Cuda, Index > GridType;
-      typedef SharedPointer< GridType > GridPointer;
+      typedef Pointers::SharedPointer<  GridType > GridPointer;
       typedef Real RealType;
       typedef Devices::Cuda DeviceType;
       typedef Index IndexType;
@@ -184,7 +184,7 @@ class GridTraverser< Meshes::Grid< 2, Real, Devices::Cuda, Index > >
          const GridPointer& gridPointer,
          const CoordinatesType& begin,
          const CoordinatesType& end,
-         SharedPointer< UserData, DeviceType >& userData,
+         UserData& userData,
          // FIXME: hack around nvcc bug (error: default argument not at end of parameter list)
 //         const int& stream = 0,
          const int& stream,
@@ -203,7 +203,7 @@ class GridTraverser< Meshes::Grid< 2, Real, Devices::MIC, Index > >
    public:
       
       typedef Meshes::Grid< 2, Real, Devices::MIC, Index > GridType;
-      typedef SharedPointer< GridType > GridPointer;
+      typedef Pointers::SharedPointer<  GridType > GridPointer;
       typedef Real RealType;
       typedef Devices::MIC DeviceType;
       typedef Index IndexType;
@@ -222,7 +222,7 @@ class GridTraverser< Meshes::Grid< 2, Real, Devices::MIC, Index > >
          const GridPointer& gridPointer,
          const CoordinatesType& begin,
          const CoordinatesType& end,
-         SharedPointer< UserData, DeviceType >& userData,
+         UserData& userData,
          // FIXME: hack around nvcc bug (error: default argument not at end of parameter list)
 //         const int& stream = 0,
          const int& stream,
@@ -241,7 +241,7 @@ class GridTraverser< Meshes::Grid< 3, Real, Devices::Host, Index > >
    public:
       
       typedef Meshes::Grid< 3, Real, Devices::Host, Index > GridType;
-      typedef SharedPointer< GridType > GridPointer;
+      typedef Pointers::SharedPointer<  GridType > GridPointer;
       typedef Real RealType;
       typedef Devices::Host DeviceType;
       typedef Index IndexType;
@@ -261,7 +261,7 @@ class GridTraverser< Meshes::Grid< 3, Real, Devices::Host, Index > >
          const GridPointer& gridPointer,
          const CoordinatesType begin,
          const CoordinatesType end,
-         SharedPointer< UserData, DeviceType >& userData,
+         UserData& userData,
          // FIXME: hack around nvcc bug (error: default argument not at end of parameter list)
 //         const int& stream = 0,
          const int& stream,
@@ -280,7 +280,7 @@ class GridTraverser< Meshes::Grid< 3, Real, Devices::Cuda, Index > >
    public:
       
       typedef Meshes::Grid< 3, Real, Devices::Cuda, Index > GridType;
-      typedef SharedPointer< GridType > GridPointer;
+      typedef Pointers::SharedPointer<  GridType > GridPointer;
       typedef Real RealType;
       typedef Devices::Cuda DeviceType;
       typedef Index IndexType;
@@ -300,7 +300,7 @@ class GridTraverser< Meshes::Grid< 3, Real, Devices::Cuda, Index > >
          const GridPointer& gridPointer,
          const CoordinatesType& begin,
          const CoordinatesType& end,
-         SharedPointer< UserData, DeviceType >& userData,
+         UserData& userData,
          // FIXME: hack around nvcc bug (error: default argument not at end of parameter list)
 //         const int& stream = 0,
          const int& stream,
@@ -319,7 +319,7 @@ class GridTraverser< Meshes::Grid< 3, Real, Devices::MIC, Index > >
    public:
       
       typedef Meshes::Grid< 3, Real, Devices::MIC, Index > GridType;
-      typedef SharedPointer< GridType > GridPointer;
+      typedef Pointers::SharedPointer<  GridType > GridPointer;
       typedef Real RealType;
       typedef Devices::MIC DeviceType;
       typedef Index IndexType;
@@ -339,7 +339,7 @@ class GridTraverser< Meshes::Grid< 3, Real, Devices::MIC, Index > >
          const GridPointer& gridPointer,
          const CoordinatesType& begin,
          const CoordinatesType& end,
-         SharedPointer< UserData, DeviceType >& userData,
+         UserData& userData,
          // FIXME: hack around nvcc bug (error: default argument not at end of parameter list)
 //         const int& stream = 0,
          const int& stream,

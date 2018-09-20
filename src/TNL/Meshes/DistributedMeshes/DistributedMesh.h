@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <TNL/Containers/StaticVector.h>
+
 namespace TNL {
 namespace Meshes { 
 namespace DistributedMeshes {
@@ -18,10 +20,13 @@ template< typename MeshType >
 class DistributedMesh
 {
 public:
-    bool IsDistributed(void)
-    {
-        return false;
-    };
+   // FIXME: this is not going to work
+   using SubdomainOverlapsType = Containers::StaticVector< MeshType::getMeshDimension(), typename MeshType::GlobalIndexType >;
+
+   bool IsDistributed(void)
+   {
+      return false;
+   };
 };
 
 } // namespace DistributedMeshes

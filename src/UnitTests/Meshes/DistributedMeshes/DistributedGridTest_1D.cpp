@@ -13,6 +13,7 @@
 #ifdef HAVE_MPI    
 
 #include <TNL/Communicators/MpiCommunicator.h>
+#include <TNL/Communicators/ScopedInitializer.h>
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
@@ -79,17 +80,19 @@ void check_Inner_1D(int rank, int nproc, const DofType& dof, typename DofType::R
 };
 
 /*
- * Light check of 1D distriover grid and its synchronization. 
- * Number of process is not limitated.
- * Overlap is limitated to 1
+ * Light check of 1D distributed grid and its synchronization. 
+ * Number of process is not limited.
+ * Overlap is limited to 1
  * Only double is tested as dof Real type -- it may be changed, extend test
  * Global size is hardcoded as 10 -- it can be changed, extend test
  */
 
 typedef MpiCommunicator CommunicatorType;
 typedef Grid<1,double,Host,int> GridType;
-typedef MeshFunction<GridType> MeshFunctionType;
-typedef Vector<double,Host,int> DofType;
+typedef MeshFunction< GridType > MeshFunctionType;
+typedef MeshFunction< GridType, GridType::getMeshDimension(), bool > MaskType;
+typedef Vector< double,Host,int> DofType;
+typedef Vector< bool, Host, int > MaskDofType;
 typedef typename GridType::Cell Cell;
 typedef typename GridType::IndexType IndexType; 
 typedef typename GridType::PointType PointType; 
@@ -101,15 +104,17 @@ class DistributedGridTest_1D : public ::testing::Test
 
       DistributedMesh< GridType > *distributedGrid;
       DofType dof;
+      MaskDofType maskDofs;
 
-      SharedPointer< GridType > gridptr;
-      SharedPointer< MeshFunctionType > meshFunctionPtr;
+      Pointers::SharedPointer< GridType > gridptr;
+      Pointers::SharedPointer< MeshFunctionType > meshFunctionPtr;
+      Pointers::SharedPointer< MaskType > maskPointer;
 
       MeshFunctionEvaluator< MeshFunctionType, ConstFunction< double, 1 > > constFunctionEvaluator;
-      SharedPointer< ConstFunction< double, 1 >, Host > constFunctionPtr;
+      Pointers::SharedPointer< ConstFunction< double, 1 >, Host > constFunctionPtr;
 
       MeshFunctionEvaluator< MeshFunctionType, LinearFunction< double, 1 > > linearFunctionEvaluator;
-      SharedPointer< LinearFunction< double, 1 >, Host > linearFunctionPtr;
+      Pointers::SharedPointer< LinearFunction< double, 1 >, Host > linearFunctionPtr;
 
       int rank;
       int nproc;
@@ -218,9 +223,9 @@ TEST_F(DistributedGridTest_1D, SynchronizerNeighborsTest )
 }
 
 
-TEST_F(DistributedGridTest_1D, LinearFunctionTest )
+TEST_F(DistributedGridTest_1D, EvaluateLinearFunction )
 {
-   //fill meshfunction with linear function (physical center of cell corresponds with its coordinates in grid) 
+   //fill mesh function with linear function (physical center of cell corresponds with its coordinates in grid) 
    setDof_1D(dof,-1);
    linearFunctionEvaluator.evaluateAllEntities(meshFunctionPtr, linearFunctionPtr);
    meshFunctionPtr->template synchronize<CommunicatorType>();
@@ -235,7 +240,7 @@ TEST_F(DistributedGridTest_1D, LinearFunctionTest )
 }
 
 
-TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsTest )
+TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithoutMask )
 {
    // Setup periodic boundaries
    // TODO: I do not know how to do it better with GTEST
@@ -245,16 +250,96 @@ TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsTest )
    distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
    distributedGrid->setupGrid(*gridptr);
    dof.setSize( gridptr->template getEntitiesCount< Cell >() );
+   maskDofs.setSize( gridptr->template getEntitiesCount< Cell >() );
    meshFunctionPtr->bind( gridptr, dof );
-
+   maskPointer->bind( gridptr, maskDofs );
+   
    setDof_1D( dof, -rank-1 );
-   constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr , constFunctionPtr );
+   maskDofs.setValue( true );
+   constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr, constFunctionPtr );
    meshFunctionPtr->template synchronize<CommunicatorType>( true );
-
    if( rank == 0 )
       EXPECT_EQ( dof[ 1 ], -nproc ) << "Left Overlap was filled by wrong process.";
    if( rank == nproc-1 )
       EXPECT_EQ( dof[ dof.getSize() - 2 ], -1 )<< "Right Overlap was filled by wrong process.";
+}
+
+TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithActiveMask )
+{
+   // Setup periodic boundaries
+   // TODO: I do not know how to do it better with GTEST
+   typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
+   SubdomainOverlapsGetter< GridType, CommunicatorType >::
+      getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1 );
+   distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
+   distributedGrid->setupGrid(*gridptr);
+   dof.setSize( gridptr->template getEntitiesCount< Cell >() );
+   maskDofs.setSize( gridptr->template getEntitiesCount< Cell >() );
+   meshFunctionPtr->bind( gridptr, dof );
+   maskPointer->bind( gridptr, maskDofs );
+   
+   setDof_1D( dof, -rank-1 );
+   maskDofs.setValue( true );
+   constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr, constFunctionPtr );
+   meshFunctionPtr->template synchronize<CommunicatorType>( true, maskPointer );
+   if( rank == 0 )
+      EXPECT_EQ( dof[ 1 ], -nproc ) << "Left Overlap was filled by wrong process.";
+   if( rank == nproc-1 )
+      EXPECT_EQ( dof[ dof.getSize() - 2 ], -1 )<< "Right Overlap was filled by wrong process.";
+}
+
+TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithInactiveMaskOnLeft )
+{
+   // Setup periodic boundaries
+   // TODO: I do not know how to do it better with GTEST
+   typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
+   SubdomainOverlapsGetter< GridType, CommunicatorType >::
+      getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1 );
+   distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
+   distributedGrid->setupGrid(*gridptr);
+   dof.setSize( gridptr->template getEntitiesCount< Cell >() );
+   maskDofs.setSize( gridptr->template getEntitiesCount< Cell >() );
+   meshFunctionPtr->bind( gridptr, dof );
+   maskPointer->bind( gridptr, maskDofs );
+
+   setDof_1D( dof, -rank-1 );
+   maskDofs.setValue( true );
+   maskDofs.setElement( 1, false );
+   constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr , constFunctionPtr );
+   meshFunctionPtr->template synchronize<CommunicatorType>( true, maskPointer );
+   
+   if( rank == 0 )
+      EXPECT_EQ( dof[ 1 ], 0 ) << "Left Overlap was filled by wrong process.";
+   if( rank == nproc-1 )
+      EXPECT_EQ( dof[ dof.getSize() - 2 ], -1 )<< "Right Overlap was filled by wrong process.";
+}
+
+TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithInactiveMask )
+{
+   // Setup periodic boundaries
+   // TODO: I do not know how to do it better with GTEST
+   typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
+   SubdomainOverlapsGetter< GridType, CommunicatorType >::
+      getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1 );
+   distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
+   distributedGrid->setupGrid(*gridptr);
+   dof.setSize( gridptr->template getEntitiesCount< Cell >() );
+   maskDofs.setSize( gridptr->template getEntitiesCount< Cell >() );
+   meshFunctionPtr->bind( gridptr, dof );
+   maskPointer->bind( gridptr, maskDofs );
+
+   setDof_1D( dof, -rank-1 );
+   maskDofs.setValue( true );
+   maskDofs.setElement( 1, false );   
+   maskDofs.setElement( dof.getSize() - 2, false );
+   constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr , constFunctionPtr );
+   meshFunctionPtr->template synchronize<CommunicatorType>( true, maskPointer );
+   
+   if( rank == 0 )
+      EXPECT_EQ( dof[ 1 ], 0 ) << "Left Overlap was filled by wrong process.";
+   if( rank == nproc-1 )
+      EXPECT_EQ( dof[ dof.getSize() - 2 ], nproc - 1 )<< "Right Overlap was filled by wrong process.";   
+   
 }
 
 TEST_F(DistributedGridTest_1D, SynchronizePeriodicBoundariesLinearTest )
@@ -338,7 +423,7 @@ TEST(NoMPI, NoTest)
   };
 #endif
 
-#include "../../src/UnitTests/GtestMissingError.h"
+#include "../../GtestMissingError.h"
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_GTEST
@@ -351,14 +436,9 @@ int main( int argc, char* argv[] )
        delete listeners.Release(listeners.default_result_printer());
        listeners.Append(new MinimalistBufferedPrinter);
 
-       CommunicatorType::Init(argc,argv);
+       Communicators::ScopedInitializer< CommunicatorType > mpi(argc, argv);
     #endif
-       int result= RUN_ALL_TESTS();
-
-    #ifdef HAVE_MPI
-       CommunicatorType::Finalize();
-    #endif
-       return result;
+       return RUN_ALL_TESTS();
 #else
    
    throw GtestMissingError();

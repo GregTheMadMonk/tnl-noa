@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/DevicePointer.h>
+#include <TNL/Pointers/DevicePointer.h>
 #include <TNL/ParallelFor.h>
 
 namespace TNL {
@@ -43,8 +43,8 @@ void permuteMultimapKeys( Multimap& multimap, const PermutationVector& perm )
       destValues = srcValues;
    };
 
-   DevicePointer< Multimap > multimapPointer( multimap );
-   DevicePointer< Multimap > multimapCopyPointer( multimapCopy );
+   Pointers::DevicePointer< Multimap > multimapPointer( multimap );
+   Pointers::DevicePointer< Multimap > multimapCopyPointer( multimapCopy );
 
    ParallelFor< DeviceType >::exec( (IndexType) 0, multimap.getKeysRange(),
                                     kernel,
@@ -76,7 +76,7 @@ void permuteMultimapValues( Multimap& multimap, const PermutationVector& iperm )
          values[ v ] = iperm[ values[ v ] ];
    };
 
-   DevicePointer< Multimap > multimapPointer( multimap );
+   Pointers::DevicePointer< Multimap > multimapPointer( multimap );
    ParallelFor< DeviceType >::exec( (IndexType) 0, multimap.getKeysRange(),
                                     kernel,
                                     &multimapPointer.template modifyData< DeviceType >(),

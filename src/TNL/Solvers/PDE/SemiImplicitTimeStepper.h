@@ -10,17 +10,19 @@
 
 #pragma once
 
+#include <memory>  // std::shared_ptr
+
 #include <TNL/Timer.h>
 #include <TNL/Logger.h>
-#include <TNL/SharedPointer.h>
+#include <TNL/Pointers/SharedPointer.h>
 #include <TNL/Solvers/IterativeSolverMonitor.h>
+#include <TNL/Solvers/Linear/LinearSolver.h>
 
 namespace TNL {
 namespace Solvers {
-namespace PDE {   
+namespace PDE {
 
-template< typename Problem,
-          typename LinearSystemSolver >
+template< typename Problem >
 class SemiImplicitTimeStepper
 {
    public:
@@ -31,16 +33,16 @@ class SemiImplicitTimeStepper
    typedef typename Problem::IndexType IndexType;
    typedef typename Problem::MeshType MeshType;
    typedef typename Problem::MeshPointer MeshPointer;
-   typedef typename ProblemType::DofVectorType DofVectorType;   
-   typedef LinearSystemSolver LinearSystemSolverType;
-   typedef typename LinearSystemSolverType::PreconditionerType PreconditionerType;
+   typedef typename ProblemType::DofVectorType DofVectorType;
    typedef typename ProblemType::MatrixType MatrixType;
-   typedef SharedPointer< MatrixType, DeviceType > MatrixPointer;
-   typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
-   typedef SharedPointer< PreconditionerType, DeviceType > PreconditionerPointer;
+   typedef Pointers::SharedPointer< MatrixType, DeviceType > MatrixPointer;
+   typedef Pointers::SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
    typedef IterativeSolverMonitor< RealType, IndexType > SolverMonitorType;
 
-   SemiImplicitTimeStepper();
+   using LinearSolverType = Linear::LinearSolver< MatrixType >;
+   using LinearSolverPointer = std::shared_ptr< LinearSolverType >;
+   using PreconditionerType = typename LinearSolverType::PreconditionerType;
+   using PreconditionerPointer = std::shared_ptr< PreconditionerType >;
 
    static void configSetup( Config::ConfigDescription& config,
                             const String& prefix = "" );
@@ -54,11 +56,7 @@ class SemiImplicitTimeStepper
 
    ProblemType* getProblem() const;
 
-   void setSolver( LinearSystemSolver& linearSystemSolver );
-
    void setSolverMonitor( SolverMonitorType& solverMonitor );
-
-   LinearSystemSolverType* getSolver() const;
 
    bool setTimeStep( const RealType& timeStep );
 
@@ -72,23 +70,25 @@ class SemiImplicitTimeStepper
 
    protected:
 
-   Problem* problem;
+   // raw pointers with setters
+   Problem* problem = nullptr;
+   SolverMonitorType* solverMonitor = nullptr;
 
+   // smart pointers initialized to the default-created objects
    MatrixPointer matrix;
-
    DofVectorPointer rightHandSidePointer;
 
-   LinearSystemSolver* linearSystemSolver;
+   // uninitialized smart pointers (they are initialized in the setup method)
+   LinearSolverPointer linearSystemSolver = nullptr;
+   PreconditionerPointer preconditioner = nullptr;
 
-   SolverMonitorType* solverMonitor;
-
-   RealType timeStep;
+   RealType timeStep = 0.0;
 
    Timer preIterateTimer, linearSystemAssemblerTimer, preconditionerUpdateTimer, linearSystemSolverTimer, postIterateTimer;
- 
-   bool verbose;
- 
-   long long int allIterations;
+
+   bool verbose = false;
+
+   long long int allIterations = 0;
 };
 
 } // namespace PDE
@@ -96,4 +96,3 @@ class SemiImplicitTimeStepper
 } // namespace TNL
 
 #include <TNL/Solvers/PDE/SemiImplicitTimeStepper_impl.h>
-

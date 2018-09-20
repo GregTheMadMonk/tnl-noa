@@ -40,7 +40,7 @@ void Matrix< Real, Device, Index >::setDimensions( const IndexType rows,
 template< typename Real,
           typename Device,
           typename Index >
-void Matrix< Real, Device, Index >::getCompressedRowLengths( Containers::Vector< IndexType, DeviceType, IndexType >& rowLengths ) const
+void Matrix< Real, Device, Index >::getCompressedRowLengths( CompressedRowLengthsVector& rowLengths ) const
 {
    rowLengths.setSize( this->getRows() );
    for( IndexType row = 0; row < this->getRows(); row++ )
@@ -180,6 +180,7 @@ void Matrix< Real, Device, Index >::print( std::ostream& str ) const
 template< typename Real,
           typename Device,
           typename Index >
+__cuda_callable__
 const Index&
 Matrix< Real, Device, Index >::
 getNumberOfColors() const

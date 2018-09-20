@@ -380,8 +380,6 @@ void
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 setupNeighbors()
 {
-   int *neighbors = this->neighbors;
-
    for( int i = 0; i < getNeighborsCount(); i++ )
    {
       auto direction = Directions::template getXYZ< Dimension >( i );

@@ -12,7 +12,7 @@
 
 #include <TNL/StaticFor.h>
 #include <TNL/ParallelFor.h>
-#include <TNL/DevicePointer.h>
+#include <TNL/Pointers/DevicePointer.h>
 #include <TNL/Meshes/DimensionTag.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshEntityTraits.h>
 
@@ -141,7 +141,7 @@ public:
          };
 
          const GlobalIndexType facesCount = mesh.template getEntitiesCount< Mesh::getMeshDimension() - 1 >();
-         DevicePointer< Mesh > meshPointer( mesh );
+         Pointers::DevicePointer< Mesh > meshPointer( mesh );
          ParallelFor< DeviceType >::exec( (GlobalIndexType) 0, facesCount,
                                           kernel,
                                           &meshPointer.template modifyData< DeviceType >() );

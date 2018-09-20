@@ -23,8 +23,8 @@ bool performExtrude( const Config::ParameterContainer& parameters,
                      MeshFunction& f,
                      const ProfileMeshFunction& profile )
 {
-   using MeshPointer = SharedPointer< typename MeshFunction::MeshType >;
-   using ProfileMeshPointer = SharedPointer< typename ProfileMeshFunction::MeshType >;
+   using MeshPointer = Pointers::SharedPointer< typename MeshFunction::MeshType >;
+   using ProfileMeshPointer = Pointers::SharedPointer< typename ProfileMeshFunction::MeshType >;
    using ProfileMeshType = typename ProfileMeshFunction::MeshType;
    using MeshType = typename MeshFunction::MeshType;
    using RealType = typename MeshFunction::RealType;
@@ -177,7 +177,7 @@ bool
 readProfileMeshFunction( const Config::ParameterContainer& parameters )
 {
    String profileMeshFile = parameters.getParameter< String >( "profile-mesh" );
-   using ProfileMeshPointer = SharedPointer< typename ProfileMeshFunction::MeshType >;
+   using ProfileMeshPointer = Pointers::SharedPointer< typename ProfileMeshFunction::MeshType >;
    ProfileMeshPointer profileMesh;
    if( ! profileMesh->load( profileMeshFile ) )
    {
@@ -192,7 +192,7 @@ readProfileMeshFunction( const Config::ParameterContainer& parameters )
       return false;
    }
    String meshFile = parameters.getParameter< String >( "mesh" );
-   using MeshPointer = SharedPointer< Mesh >;
+   using MeshPointer = Pointers::SharedPointer< Mesh >;
    MeshPointer mesh;
    if( ! mesh->load( meshFile ) )
    {

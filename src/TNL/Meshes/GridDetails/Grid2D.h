@@ -99,7 +99,6 @@ class Grid< 2, Real, Device, Index > : public Object
    inline Index getEntityIndex( const Entity& entity ) const;
 
    __cuda_callable__
-
    inline const PointType& getSpaceSteps() const;
 
    inline void setSpaceSteps(const PointType& steps);

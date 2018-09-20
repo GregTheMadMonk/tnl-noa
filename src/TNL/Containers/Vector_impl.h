@@ -14,25 +14,7 @@
 #include <TNL/Containers/Algorithms/VectorOperations.h>
 
 namespace TNL {
-namespace Containers {   
-
-template< typename Real,
-          typename Device,
-          typename Index >
-Vector< Real, Device, Index >::
-Vector()
-{
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-Vector< Real, Device, Index >::
-Vector( const Index size )
-{
-   this->setSize( size );
-}
-
+namespace Containers {
 
 template< typename Real,
           typename Device,
@@ -98,51 +80,6 @@ addElement( const IndexType i,
             const RealType& thisElementMultiplicator )
 {
    Algorithms::VectorOperations< Device >::addElement( *this, i, value, thisElementMultiplicator );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-Vector< Real, Device, Index >&
-Vector< Real, Device, Index >::
-operator = ( const Vector< Real, Device, Index >& vector )
-{
-   Containers::Array< Real, Device, Index >::operator = ( vector );
-   return ( *this );
-};
-
-template< typename Real,
-           typename Device,
-           typename Index >
-   template< typename VectorT >
-Vector< Real, Device, Index >&
-Vector< Real, Device, Index >::
-operator = ( const VectorT& vector )
-{
-   Containers::Array< Real, Device, Index >::operator = ( vector );
-   return ( *this );
-};
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename VectorT >
-bool
-Vector< Real, Device, Index >::
-operator == ( const VectorT& vector ) const
-{
-   return Containers::Array< Real, Device, Index >::operator == ( vector );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename VectorT >
-bool
-Vector< Real, Device, Index >::
-operator != ( const VectorT& vector ) const
-{
-   return Containers::Array< Real, Device, Index >::operator != ( vector );
 }
 
 template< typename Real,
@@ -386,51 +323,6 @@ computeExclusivePrefixSum( const IndexType begin,
 {
    Algorithms::VectorOperations< Device >::computeExclusivePrefixSum( *this, begin, end );
 }
-
-
-#ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION
-
-#ifdef INSTANTIATE_FLOAT
-extern template class Vector< float, Devices::Host, int >;
-extern template Vector< float, Devices::Host, int >& Vector< float, Devices::Host, int >:: operator = ( const Vector< double, Devices::Host, int >& vector );
-#endif
-
-extern template class Vector< double, Devices::Host, int >;
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template class Vector< long double, Devices::Host, int >;
-#endif
-
-#ifdef INSTANTIATE_LONG_INT
-#ifdef INSTANTIATE_FLOAT
-extern template class Vector< float, Devices::Host, long int >;
-#endif
-extern template class Vector< double, Devices::Host, long int >;
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template class Vector< long double, Devices::Host, long int >;
-#endif
-#endif
-
-#ifdef HAVE_CUDA
-#ifdef INSTANTIATE_FLOAT
-extern template class Vector< float, Devices::Cuda, int >;
-#endif
-extern template class Vector< double, Devices::Cuda, int >;
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template class Vector< long double, Devices::Cuda, int >;
-#endif
-
-#ifdef INSTANTIATE_LONG_INT
-#ifdef INSTANTIATE_FLOAT
-extern template class Vector< float, Devices::Cuda, long int >;
-#endif
-extern template class Vector< double, Devices::Cuda, long int >;
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template class Vector< long double, Devices::Cuda, long int >;
-#endif
-#endif
-#endif
-
-#endif
 
 } // namespace Containers
 } // namespace TNL

@@ -164,7 +164,7 @@ class TestCopyEntities
 
 			PointType origin;
 			PointType proportions;
-			SharedPointer<MeshType> gridptr;
+			Pointers::SharedPointer<MeshType> gridptr;
 
 			origin.setValue(-0.5);
 			proportions.setValue(10);
@@ -182,7 +182,7 @@ class TestCopyEntities
 
 			PointType originOut;
 			PointType proportionsOut;
-			SharedPointer<MeshType> gridOutPtr;
+			Pointers::SharedPointer<MeshType> gridOutPtr;
 
 			originOut.setValue(0.5);	
 			proportionsOut.setValue(8);		

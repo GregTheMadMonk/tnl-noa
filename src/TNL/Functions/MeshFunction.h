@@ -14,7 +14,7 @@
 #include <TNL/Functions/Domain.h>
 #include <TNL/Functions/MeshFunctionGnuplotWriter.h>
 #include <TNL/Functions/MeshFunctionVTKWriter.h>
-#include <TNL/SharedPointer.h>
+#include <TNL/Pointers/SharedPointer.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
 
@@ -36,7 +36,7 @@ class MeshFunction :
       using MeshType = Mesh;
       using DeviceType = typename MeshType::DeviceType;
       using IndexType = typename MeshType::GlobalIndexType;
-      using MeshPointer = SharedPointer< MeshType >;      
+      using MeshPointer = Pointers::SharedPointer< MeshType >;      
       using RealType = Real;
       using VectorType = Containers::Vector< RealType, DeviceType, IndexType >;
       using ThisType = Functions::MeshFunction< MeshType, MeshEntityDimension, RealType >;
@@ -61,7 +61,7 @@ class MeshFunction :
       
       template< typename Vector >
       MeshFunction( const MeshPointer& meshPointer,
-                    SharedPointer< Vector >& data,
+                    Pointers::SharedPointer<  Vector >& data,
                     const IndexType& offset = 0 );      
  
       static String getType();
@@ -80,6 +80,10 @@ class MeshFunction :
                   const String& prefix = "" );
  
       void bind( ThisType& meshFunction );
+      
+      template< typename Vector >
+      void bind( const Vector& data,
+                 const IndexType& offset = 0 );
  
       template< typename Vector >
       void bind( const MeshPointer& meshPointer,
@@ -88,7 +92,7 @@ class MeshFunction :
       
       template< typename Vector >
       void bind( const MeshPointer& meshPointer,
-                 const SharedPointer< Vector >& dataPtr,
+                 const Pointers::SharedPointer<  Vector >& dataPtr,
                  const IndexType& offset = 0 );
       
       void setMesh( const MeshPointer& meshPointer );
@@ -161,8 +165,11 @@ class MeshFunction :
  
       using Object::boundLoad;
 
-      template< typename CommunicatorType>
-      void synchronize( bool withPeriodicBoundaryConditions = false );
+      template< typename CommunicatorType,
+                typename PeriodicBoundariesMaskType = MeshFunction< Mesh, MeshEntityDimension, bool > >
+      void synchronize( bool withPeriodicBoundaryConditions = false,
+                        const Pointers::SharedPointer< PeriodicBoundariesMaskType, DeviceType >& mask =
+                           Pointers::SharedPointer< PeriodicBoundariesMaskType, DeviceType >( nullptr ) );
 
  
    protected:
@@ -180,6 +187,11 @@ class MeshFunction :
       void setupSynchronizer( DistributedMeshType *distributedMesh );
    
 };
+
+template< typename Mesh,
+          int MeshEntityDimension,
+          typename Real >
+std::ostream& operator << ( std::ostream& str, const MeshFunction< Mesh, MeshEntityDimension, Real >& f );
 
 } // namespace Functions
 } // namespace TNL

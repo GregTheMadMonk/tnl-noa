@@ -167,11 +167,11 @@ public:
    void getTransposition( const Tridiagonal< Real2, Device, Index2 >& matrix,
                           const RealType& matrixMultiplicator = 1.0 );
 
-   template< typename Vector >
+   template< typename Vector1, typename Vector2 >
    __cuda_callable__
-   void performSORIteration( const Vector& b,
+   void performSORIteration( const Vector1& b,
                              const IndexType row,
-                             Vector& x,
+                             Vector2& x,
                              const RealType& omega = 1.0 ) const;
 
    // copy assignment

@@ -84,9 +84,9 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, Real > >
       
       typedef Mesh MeshType;
       typedef Real RealType;
-      typedef SharedPointer< MeshType > MeshPointer;
+      typedef Pointers::SharedPointer<  MeshType > MeshPointer;
       typedef MeshFunction< MeshType, MeshEntityDimension, RealType > FunctionType;
-      typedef SharedPointer< FunctionType > FunctionPointer;
+      typedef Pointers::SharedPointer<  FunctionType > FunctionPointer;
       typedef typename MeshType::DeviceType DeviceType;
       typedef typename MeshType::GlobalIndexType IndexType;
       typedef VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, RealType > > ThisType;
@@ -201,7 +201,7 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, Real > >
       
       template< typename Vector >
       void bind( const MeshPointer& meshPointer,
-                 const SharedPointer< Vector >& dataPtr,
+                 const Pointers::SharedPointer< Vector >& dataPtr,
                  IndexType offset = 0 )
       {
          TNL_ASSERT_GE( dataPtr->getSize(), offset + Size * this->vectorField[ 0 ]->getDofs( meshPointer ),

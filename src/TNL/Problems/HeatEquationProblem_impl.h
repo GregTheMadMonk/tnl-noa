@@ -101,6 +101,12 @@ setup( const Config::ParameterContainer& parameters,
    if(param=="LocalCopy")
         distributedIOType=Meshes::DistributedMeshes::LocalCopy;
 
+   this->explicitUpdater.setDifferentialOperator( this->differentialOperatorPointer );
+   this->explicitUpdater.setBoundaryConditions( this->boundaryConditionPointer );
+   this->explicitUpdater.setRightHandSide( this->rightHandSidePointer );
+   this->systemAssembler.setDifferentialOperator( this->differentialOperatorPointer );
+   this->systemAssembler.setBoundaryConditions( this->boundaryConditionPointer );
+   this->systemAssembler.setRightHandSide( this->rightHandSidePointer );
    return true;
 }
 
@@ -177,7 +183,7 @@ setupLinearSystem( MatrixPointer& matrixPointer )
 {
    const IndexType dofs = this->getDofs();
    typedef typename MatrixPointer::ObjectType::CompressedRowLengthsVector CompressedRowLengthsVectorType;
-   SharedPointer< CompressedRowLengthsVectorType > rowLengthsPointer;
+   Pointers::SharedPointer<  CompressedRowLengthsVectorType > rowLengthsPointer;
    rowLengthsPointer->setSize( dofs );
    Matrices::MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowLengthsVectorType > matrixSetter;
    matrixSetter.template getCompressedRowLengths< typename Mesh::Cell >(
@@ -248,11 +254,22 @@ getExplicitUpdate( const RealType& time,
     */
    
    this->bindDofs( uDofs );
-   MeshFunctionPointer fuPointer( this->getMesh(), fuDofs );
-   this->explicitUpdater.setDifferentialOperator( this->differentialOperatorPointer ),
-   this->explicitUpdater.setBoundaryConditions( this->boundaryConditionPointer ),
-   this->explicitUpdater.setRightHandSide( this->rightHandSidePointer ),
-   this->explicitUpdater.template update< typename Mesh::Cell, Communicator >( time, tau, this->getMesh(), this->uPointer, fuPointer );
+   this->fuPointer->bind( this->getMesh(), *fuDofs );
+   this->explicitUpdater.template update< typename Mesh::Cell, Communicator >( time, tau, this->getMesh(), this->uPointer, this->fuPointer );
+}
+
+template< typename Mesh,
+          typename BoundaryCondition,
+          typename RightHandSide,
+          typename Communicator,
+          typename DifferentialOperator >
+void 
+HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
+applyBoundaryConditions( const RealType& time,
+                         DofVectorPointer& uDofs )
+{
+   this->bindDofs( uDofs );
+   this->explicitUpdater.template applyBoundaryConditions< typename Mesh::Cell >( this->getMesh(), time, this->uPointer );
 }
 
 template< typename Mesh,
@@ -270,9 +287,6 @@ assemblyLinearSystem( const RealType& time,
                       DofVectorPointer& bPointer )
 {
    this->bindDofs( dofsPointer );
-   this->systemAssembler.setDifferentialOperator( this->differentialOperatorPointer );
-   this->systemAssembler.setBoundaryConditions( this->boundaryConditionPointer );
-   this->systemAssembler.setRightHandSide( this->rightHandSidePointer );
    this->systemAssembler.template assembly< typename Mesh::Cell, typename MatrixPointer::ObjectType >( 
       time,
       tau,

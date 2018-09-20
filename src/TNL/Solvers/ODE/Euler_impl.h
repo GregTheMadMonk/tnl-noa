@@ -34,7 +34,7 @@ Euler< Problem > :: Euler()
 };
 
 template< typename Problem >
-String Euler< Problem > :: getType() const
+String Euler< Problem > :: getType()
 {
    return String( "Euler< " ) +
           Problem :: getType() +
@@ -127,6 +127,7 @@ bool Euler< Problem > :: solve( DofVectorPointer& u )
        */
       if( currentTau + time == this -> stopTime ) this->setResidue( lastResidue );
       time += currentTau;
+      this->problem->applyBoundaryConditions( time, u );
 
       if( ! this->nextIteration() )
          return this->checkConvergence();

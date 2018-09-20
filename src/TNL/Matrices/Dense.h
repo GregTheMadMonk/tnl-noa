@@ -88,6 +88,14 @@ public:
    void setValue( const RealType& v );
 
    __cuda_callable__
+   Real& operator()( const IndexType row,
+                     const IndexType column );
+
+   __cuda_callable__
+   const Real& operator()( const IndexType row,
+                           const IndexType column ) const;
+
+   __cuda_callable__
    bool setElementFast( const IndexType row,
                         const IndexType column,
                         const RealType& value );
@@ -177,10 +185,10 @@ public:
    void getTransposition( const Matrix& matrix,
                           const RealType& matrixMultiplicator = 1.0 );
 
-   template< typename Vector >
-   void performSORIteration( const Vector& b,
+   template< typename Vector1, typename Vector2 >
+   void performSORIteration( const Vector1& b,
                              const IndexType row,
-                             Vector& x,
+                             Vector2& x,
                              const RealType& omega = 1.0 ) const;
 
    // copy assignment

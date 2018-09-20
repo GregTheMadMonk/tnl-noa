@@ -138,7 +138,7 @@ public:
       auto kernel1 = [] __cuda_callable__
          ( IndexType i,
            const Mesh* mesh,
-           typename StorageArrayType::ElementType* entitiesArray,
+           typename StorageArrayType::ValueType* entitiesArray,
            const IndexType* perm )
       {
          entitiesArray[ i ] = mesh->template getEntity< Dimension >( perm[ i ] );
@@ -148,14 +148,14 @@ public:
       auto kernel2 = [] __cuda_callable__
          ( IndexType i,
            Mesh* mesh,
-           const typename StorageArrayType::ElementType* entitiesArray )
+           const typename StorageArrayType::ValueType* entitiesArray )
       {
          auto& entity = mesh->template getEntity< Dimension >( i );
          entity = entitiesArray[ i ];
          entity.setIndex( i );
       };
 
-      DevicePointer< Mesh > meshPointer( mesh );
+      Pointers::DevicePointer< Mesh > meshPointer( mesh );
       ParallelFor< DeviceType >::exec( (IndexType) 0, entitiesCount,
                                        kernel1,
                                        &meshPointer.template getData< DeviceType >(),

@@ -30,8 +30,8 @@ TEST(CutMeshFunction, 2D)
   
 
    //Original MeshFunciton --filed with linear function
-   SharedPointer<MeshType> originalGrid;
-   SharedPointer<MeshFunction<MeshType>> meshFunctionptr;
+   Pointers::SharedPointer<MeshType> originalGrid;
+   Pointers::SharedPointer<MeshFunction<MeshType>> meshFunctionptr;
  
    PointType origin;
    origin.setValue(-0.5);
@@ -46,11 +46,11 @@ TEST(CutMeshFunction, 2D)
    meshFunctionptr->bind(originalGrid,dof);
 
    MeshFunctionEvaluator< MeshFunction<MeshType>, LinearFunctionType > linearFunctionEvaluator;
-   SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
+   Pointers::SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
    linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
  
    //Prepare Mesh Function parts for Cut 
-   SharedPointer<CutMeshType> cutGrid;
+   Pointers::SharedPointer<CutMeshType> cutGrid;
    DofType cutDof(0);
    bool inCut=CutMeshFunction<NoDistrCommunicator,MeshFunction<MeshType>,CutMeshType,DofType>::Cut(
             *meshFunctionptr,*cutGrid, cutDof, 
@@ -93,8 +93,8 @@ TEST(CutMeshFunction, 3D_1)
   
 
    //Original MeshFunciton --filed with linear function
-   SharedPointer<MeshType> originalGrid;
-   SharedPointer<MeshFunction<MeshType>> meshFunctionptr;
+   Pointers::SharedPointer<MeshType> originalGrid;
+   Pointers::SharedPointer<MeshFunction<MeshType>> meshFunctionptr;
  
    PointType origin;
    origin.setValue(-0.5);
@@ -109,11 +109,11 @@ TEST(CutMeshFunction, 3D_1)
    meshFunctionptr->bind(originalGrid,dof);
 
    MeshFunctionEvaluator< MeshFunction<MeshType>, LinearFunctionType > linearFunctionEvaluator;
-   SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
+   Pointers::SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
    linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
  
    //Prepare Mesh Function parts for Cut 
-   SharedPointer<CutMeshType> cutGrid;
+   Pointers::SharedPointer<CutMeshType> cutGrid;
    DofType cutDof(0);
    bool inCut=CutMeshFunction<NoDistrCommunicator,MeshFunction<MeshType>,CutMeshType,DofType>::Cut(
             *meshFunctionptr,*cutGrid, cutDof, 
@@ -156,8 +156,8 @@ TEST(CutMeshFunction, 3D_2)
   
 
    //Original MeshFunciton --filed with linear function
-   SharedPointer<MeshType> originalGrid;
-   SharedPointer<MeshFunction<MeshType>> meshFunctionptr;
+   Pointers::SharedPointer<MeshType> originalGrid;
+   Pointers::SharedPointer<MeshFunction<MeshType>> meshFunctionptr;
  
    PointType origin;
    origin.setValue(-0.5);
@@ -172,11 +172,11 @@ TEST(CutMeshFunction, 3D_2)
    meshFunctionptr->bind(originalGrid,dof);
 
    MeshFunctionEvaluator< MeshFunction<MeshType>, LinearFunctionType > linearFunctionEvaluator;
-   SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
+   Pointers::SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
    linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
  
    //Prepare Mesh Function parts for Cut 
-   SharedPointer<CutMeshType> cutGrid;
+   Pointers::SharedPointer<CutMeshType> cutGrid;
    DofType cutDof(0);
    bool inCut=CutMeshFunction<NoDistrCommunicator, MeshFunction<MeshType>,CutMeshType,DofType>::Cut(
             *meshFunctionptr,*cutGrid, cutDof, 
@@ -213,15 +213,13 @@ TEST(CutMeshFunction, 3D_2)
 
 #endif
 
-#include "../../src/UnitTests/GtestMissingError.h"
+#include "../../GtestMissingError.h"
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_GTEST
    ::testing::InitGoogleTest( &argc, argv );
-       int result= RUN_ALL_TESTS();
-       return result;
+   return RUN_ALL_TESTS();
 #else
-   
    throw GtestMissingError();
 #endif
 }

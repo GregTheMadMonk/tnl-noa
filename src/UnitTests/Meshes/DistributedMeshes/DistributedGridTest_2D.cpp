@@ -15,6 +15,7 @@
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Communicators/MpiCommunicator.h>
+#include <TNL/Communicators/ScopedInitializer.h>
 #include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
 
 #include "../../Functions/Functions.h"
@@ -397,28 +398,34 @@ void check_Inner_2D(int rank, GridType grid, DofType dof, typename DofType::Real
 typedef MpiCommunicator CommunicatorType;
 typedef Grid<2,double,Host,int> GridType;
 typedef MeshFunction<GridType> MeshFunctionType;
+typedef MeshFunction< GridType, GridType::getMeshDimension(), bool > MaskType;
 typedef Vector<double,Host,int> DofType;
+typedef Vector< bool, Host, int > MaskDofType;
 typedef typename GridType::Cell Cell;
 typedef typename GridType::IndexType IndexType; 
 typedef typename GridType::PointType PointType; 
 typedef DistributedMesh<GridType> DistributedGridType;
 
-class DistributedGirdTest_2D : public ::testing::Test
+class DistributedGridTest_2D : public ::testing::Test
 {
     
    public:
+      
+      using CoordinatesType = typename GridType::CoordinatesType;
 
       DistributedGridType *distributedGrid;
       DofType *dof;
+      MaskDofType maskDofs;
 
-      SharedPointer<GridType> gridPtr;
-      SharedPointer<MeshFunctionType> meshFunctionPtr;
+      Pointers::SharedPointer<GridType> gridPtr;
+      Pointers::SharedPointer<MeshFunctionType> meshFunctionPtr;
+      Pointers::SharedPointer< MaskType > maskPointer;
 
       MeshFunctionEvaluator< MeshFunctionType, ConstFunction<double,2> > constFunctionEvaluator;
-      SharedPointer< ConstFunction<double,2>, Host > constFunctionPtr;
+      Pointers::SharedPointer< ConstFunction<double,2>, Host > constFunctionPtr;
 
       MeshFunctionEvaluator< MeshFunctionType, LinearFunction<double,2> > linearFunctionEvaluator;
-      SharedPointer< LinearFunction<double,2>, Host > linearFunctionPtr;
+      Pointers::SharedPointer< LinearFunction<double,2>, Host > linearFunctionPtr;
 
       int rank;
       int nproc;    
@@ -463,7 +470,7 @@ class DistributedGirdTest_2D : public ::testing::Test
       }
 };
 
-TEST_F(DistributedGirdTest_2D, evaluateAllEntities)
+TEST_F(DistributedGridTest_2D, evaluateAllEntities)
 {
    //Check Traversars
    //All entities, without overlap
@@ -475,7 +482,7 @@ TEST_F(DistributedGirdTest_2D, evaluateAllEntities)
    check_Inner_2D(rank, *gridPtr, *dof, rank);
 }
 
-TEST_F(DistributedGirdTest_2D, evaluateBoundaryEntities)
+TEST_F(DistributedGridTest_2D, evaluateBoundaryEntities)
 {
     //Boundary entities, without overlap
     setDof_2D(*dof,-1);
@@ -486,7 +493,7 @@ TEST_F(DistributedGirdTest_2D, evaluateBoundaryEntities)
     check_Inner_2D(rank, *gridPtr, *dof, -1);
 }
 
-TEST_F(DistributedGirdTest_2D, evaluateInteriorEntities)
+TEST_F(DistributedGridTest_2D, evaluateInteriorEntities)
 {
     //Inner entities, without overlap
     setDof_2D(*dof,-1);
@@ -496,7 +503,7 @@ TEST_F(DistributedGirdTest_2D, evaluateInteriorEntities)
     check_Inner_2D(rank, *gridPtr, *dof, rank);
 }    
 
-TEST_F(DistributedGirdTest_2D, LinearFunctionTest)
+TEST_F(DistributedGridTest_2D, LinearFunctionTest)
 {
     //fill meshfunction with linear function (physical center of cell corresponds with its coordinates in grid) 
     setDof_2D(*dof,-1);
@@ -512,7 +519,7 @@ TEST_F(DistributedGirdTest_2D, LinearFunctionTest)
     }
 }
 
-TEST_F(DistributedGirdTest_2D, SynchronizerNeighborTest )
+TEST_F(DistributedGridTest_2D, SynchronizerNeighborTest )
 {
    //Expect 9 processes
    setDof_2D(*dof,-1);
@@ -598,7 +605,7 @@ TEST_F(DistributedGirdTest_2D, SynchronizerNeighborTest )
     }   
 }
 
-TEST_F(DistributedGirdTest_2D, SynchronizerNeighborPeriodicBoundariesTest )
+TEST_F(DistributedGridTest_2D, SynchronizerNeighborPeriodicBoundariesWithoutMask )
 {
    // Setup periodic boundaries
    // TODO: I do not know how to do it better with GTEST - additional setup 
@@ -669,6 +676,416 @@ TEST_F(DistributedGirdTest_2D, SynchronizerNeighborPeriodicBoundariesTest )
    }
 }
 
+TEST_F(DistributedGridTest_2D, SynchronizerNeighborPeriodicBoundariesWithActiveMask )
+{
+   // Setup periodic boundaries
+   // TODO: I do not know how to do it better with GTEST - additional setup 
+   // of the periodic boundaries
+   typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
+   SubdomainOverlapsGetter< GridType, CommunicatorType >::
+      getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1 );
+   distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
+   distributedGrid->setupGrid(*gridPtr);
+   dof->setSize( gridPtr->template getEntitiesCount< Cell >() );
+   maskDofs.setSize( gridPtr->template getEntitiesCount< Cell >() );
+   meshFunctionPtr->bind( gridPtr, *dof );
+   maskPointer->bind( gridPtr, maskDofs );
+   
+   //Expecting 9 processes
+   setDof_2D(*dof, -rank-1 );
+   maskDofs.setValue( true );
+   constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr , constFunctionPtr );
+   meshFunctionPtr->template synchronize<CommunicatorType>( true, maskPointer );
+   
+   if( rank == 0 )
+   {
+      SCOPED_TRACE( "Up Left" );
+      checkLeftBoundary( *gridPtr, *dof, false,  true, -3 );
+      checkUpBoundary(   *gridPtr, *dof, false,  true, -7 );
+   }
+    
+   if( rank == 1 )
+   {
+      SCOPED_TRACE( "Up Center" );
+      checkUpBoundary( *gridPtr, *dof, true, true, -8 );
+   }
+    
+   if( rank == 2 )
+   {
+      SCOPED_TRACE( "Up Right" );
+      checkRightBoundary( *gridPtr, *dof, false, true, -1 );
+      checkUpBoundary(    *gridPtr, *dof, true, false, -9 );
+   }
+    
+   if( rank == 3 )
+   {
+      SCOPED_TRACE( "Center Left" );
+      checkLeftBoundary( *gridPtr, *dof, true, true, -6 );
+   } 
+        
+   if( rank == 5 )
+   {
+      SCOPED_TRACE( "Center Right" );
+      checkRightBoundary( *gridPtr, *dof, true, true, -4 );
+   }
+    
+   if( rank == 6 )
+   {
+      SCOPED_TRACE( "Down Left" );
+      checkDownBoundary( *gridPtr, *dof, false,  true, -1 );
+      checkLeftBoundary( *gridPtr, *dof, true,  false,  -9 );
+   }
+    
+   if( rank == 7 )
+   {
+      SCOPED_TRACE( "Down Center" );
+      checkDownBoundary( *gridPtr, *dof, true, true, -2 );
+   }
+
+   if( rank == 8 )
+   {
+      SCOPED_TRACE( "Down Right" );
+      checkDownBoundary(  *gridPtr, *dof, true, false, -3 );
+      checkRightBoundary( *gridPtr, *dof, true, false, -7 );
+   }
+}
+
+TEST_F(DistributedGridTest_2D, SynchronizerNeighborPeriodicBoundariesWithInactiveMaskOnLeft )
+{
+   // Setup periodic boundaries
+   // TODO: I do not know how to do it better with GTEST - additional setup 
+   // of the periodic boundaries
+   typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
+   SubdomainOverlapsGetter< GridType, CommunicatorType >::
+      getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1 );
+   distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
+   distributedGrid->setupGrid(*gridPtr);
+   dof->setSize( gridPtr->template getEntitiesCount< Cell >() );
+   maskDofs.setSize( gridPtr->template getEntitiesCount< Cell >() );
+   meshFunctionPtr->bind( gridPtr, *dof );
+   maskPointer->bind( gridPtr, maskDofs );
+   
+   //Expecting 9 processes
+   setDof_2D(*dof, -rank-1 );
+   maskDofs.setValue( true );
+   if( distributedGrid->getNeighbors()[ Left ] == -1 )
+   {
+      for( IndexType i = 0; i < gridPtr->getDimensions().y(); i++ )
+      {
+         typename GridType::Cell cell( *gridPtr );
+         cell.getCoordinates() = CoordinatesType( 1, i );
+         cell.refresh();
+         maskPointer->getData().setElement( cell.getIndex(), false );
+      }
+   }
+   constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr , constFunctionPtr );
+   meshFunctionPtr->template synchronize<CommunicatorType>( true, maskPointer );
+   
+   if( rank == 0 )
+   {
+      SCOPED_TRACE( "Up Left" );
+      checkLeftBoundary( *gridPtr, *dof, false,  true, 0 );
+      checkUpBoundary(   *gridPtr, *dof, false,  true, -7 );
+   }
+    
+   if( rank == 1 )
+   {
+      SCOPED_TRACE( "Up Center" );
+      checkUpBoundary( *gridPtr, *dof, true, true, -8 );
+   }
+    
+   if( rank == 2 )
+   {
+      SCOPED_TRACE( "Up Right" );
+      checkRightBoundary( *gridPtr, *dof, false, true, -1 );
+      checkUpBoundary(    *gridPtr, *dof, true, false, -9 );
+   }
+    
+   if( rank == 3 )
+   {
+      SCOPED_TRACE( "Center Left" );
+      checkLeftBoundary( *gridPtr, *dof, true, true, 3 );
+   } 
+        
+   if( rank == 5 )
+   {
+      SCOPED_TRACE( "Center Right" );
+      checkRightBoundary( *gridPtr, *dof, true, true, -4 );
+   }
+    
+   if( rank == 6 )
+   {
+      SCOPED_TRACE( "Down Left" );
+      checkDownBoundary( *gridPtr, *dof, false,  true, -1 );
+      checkLeftBoundary( *gridPtr, *dof, true,  false,  6 );
+   }
+    
+   if( rank == 7 )
+   {
+      SCOPED_TRACE( "Down Center" );
+      checkDownBoundary( *gridPtr, *dof, true, true, -2 );
+   }
+
+   if( rank == 8 )
+   {
+      SCOPED_TRACE( "Down Right" );
+      checkDownBoundary(  *gridPtr, *dof, true, false, -3 );
+      checkRightBoundary( *gridPtr, *dof, true, false, -7 );
+   }
+}
+
+TEST_F(DistributedGridTest_2D, SynchronizerNeighborPeriodicBoundariesWithInActiveMaskOnRight )
+{
+   // Setup periodic boundaries
+   // TODO: I do not know how to do it better with GTEST - additional setup 
+   // of the periodic boundaries
+   typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
+   SubdomainOverlapsGetter< GridType, CommunicatorType >::
+      getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1 );
+   distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
+   distributedGrid->setupGrid(*gridPtr);
+   dof->setSize( gridPtr->template getEntitiesCount< Cell >() );
+   maskDofs.setSize( gridPtr->template getEntitiesCount< Cell >() );
+   meshFunctionPtr->bind( gridPtr, *dof );
+   maskPointer->bind( gridPtr, maskDofs );
+   
+   //Expecting 9 processes
+   setDof_2D(*dof, -rank-1 );
+   maskDofs.setValue( true );
+   if( distributedGrid->getNeighbors()[ Right ] == -1 )
+   {
+      for( IndexType i = 0; i < gridPtr->getDimensions().y(); i++ )
+      {
+         typename GridType::Cell cell( *gridPtr );
+         cell.getCoordinates() = CoordinatesType( gridPtr->getDimensions().x() - 2, i );
+         cell.refresh();
+         maskPointer->getData().setElement( cell.getIndex(), false );
+      }
+   }
+   constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr , constFunctionPtr );
+   meshFunctionPtr->template synchronize<CommunicatorType>( true, maskPointer );
+   
+   if( rank == 0 )
+   {
+      SCOPED_TRACE( "Up Left" );
+      checkLeftBoundary( *gridPtr, *dof, false,  true, -3 );
+      checkUpBoundary(   *gridPtr, *dof, false,  true, -7 );
+   }
+    
+   if( rank == 1 )
+   {
+      SCOPED_TRACE( "Up Center" );
+      checkUpBoundary( *gridPtr, *dof, true, true, -8 );
+   }
+    
+   if( rank == 2 )
+   {
+      SCOPED_TRACE( "Up Right" );
+      checkRightBoundary( *gridPtr, *dof, false, true, 2 );
+      checkUpBoundary(    *gridPtr, *dof, true, false, -9 );
+   }
+    
+   if( rank == 3 )
+   {
+      SCOPED_TRACE( "Center Left" );
+      checkLeftBoundary( *gridPtr, *dof, true, true, -6 );
+   } 
+        
+   if( rank == 5 )
+   {
+      SCOPED_TRACE( "Center Right" );
+      checkRightBoundary( *gridPtr, *dof, true, true, 5 );
+   }
+    
+   if( rank == 6 )
+   {
+      SCOPED_TRACE( "Down Left" );
+      checkDownBoundary( *gridPtr, *dof, false,  true, -1 );
+      checkLeftBoundary( *gridPtr, *dof, true,  false,  -9 );
+   }
+    
+   if( rank == 7 )
+   {
+      SCOPED_TRACE( "Down Center" );
+      checkDownBoundary( *gridPtr, *dof, true, true, -2 );
+   }
+
+   if( rank == 8 )
+   {
+      SCOPED_TRACE( "Down Right" );
+      checkDownBoundary(  *gridPtr, *dof, true, false, -3 );
+      checkRightBoundary( *gridPtr, *dof, true, false, 8 );
+   }
+}
+
+TEST_F(DistributedGridTest_2D, SynchronizerNeighborPeriodicBoundariesWithInActiveMaskUp )
+{
+   // Setup periodic boundaries
+   // TODO: I do not know how to do it better with GTEST - additional setup 
+   // of the periodic boundaries
+   typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
+   SubdomainOverlapsGetter< GridType, CommunicatorType >::
+      getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1 );
+   distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
+   distributedGrid->setupGrid(*gridPtr);
+   dof->setSize( gridPtr->template getEntitiesCount< Cell >() );
+   maskDofs.setSize( gridPtr->template getEntitiesCount< Cell >() );
+   meshFunctionPtr->bind( gridPtr, *dof );
+   maskPointer->bind( gridPtr, maskDofs );
+   
+   //Expecting 9 processes
+   setDof_2D(*dof, -rank-1 );
+   maskDofs.setValue( true );
+   if( distributedGrid->getNeighbors()[ Up ] == -1 )
+   {
+      for( IndexType i = 0; i < gridPtr->getDimensions().x(); i++ )
+      {
+         typename GridType::Cell cell( *gridPtr );
+         cell.getCoordinates() = CoordinatesType( i, 1 );
+         cell.refresh();
+         maskPointer->getData().setElement( cell.getIndex(), false );
+      }
+   }
+   constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr , constFunctionPtr );
+   meshFunctionPtr->template synchronize<CommunicatorType>( true, maskPointer );
+   
+   if( rank == 0 )
+   {
+      SCOPED_TRACE( "Up Left" );
+      checkLeftBoundary( *gridPtr, *dof, false,  true, -3 );
+      checkUpBoundary(   *gridPtr, *dof, false,  true, 0 );
+   }
+    
+   if( rank == 1 )
+   {
+      SCOPED_TRACE( "Up Center" );
+      checkUpBoundary( *gridPtr, *dof, true, true, 1 );
+   }
+    
+   if( rank == 2 )
+   {
+      SCOPED_TRACE( "Up Right" );
+      checkRightBoundary( *gridPtr, *dof, false, true, -1 );
+      checkUpBoundary(    *gridPtr, *dof, true, false, 2 );
+   }
+    
+   if( rank == 3 )
+   {
+      SCOPED_TRACE( "Center Left" );
+      checkLeftBoundary( *gridPtr, *dof, true, true, -6 );
+   } 
+        
+   if( rank == 5 )
+   {
+      SCOPED_TRACE( "Center Right" );
+      checkRightBoundary( *gridPtr, *dof, true, true, -4 );
+   }
+    
+   if( rank == 6 )
+   {
+      SCOPED_TRACE( "Down Left" );
+      checkDownBoundary( *gridPtr, *dof, false,  true, -1 );
+      checkLeftBoundary( *gridPtr, *dof, true,  false,  -9 );
+   }
+    
+   if( rank == 7 )
+   {
+      SCOPED_TRACE( "Down Center" );
+      checkDownBoundary( *gridPtr, *dof, true, true, -2 );
+   }
+
+   if( rank == 8 )
+   {
+      SCOPED_TRACE( "Down Right" );
+      checkDownBoundary(  *gridPtr, *dof, true, false, -3 );
+      checkRightBoundary( *gridPtr, *dof, true, false, -7 );
+   }
+}
+
+TEST_F(DistributedGridTest_2D, SynchronizerNeighborPeriodicBoundariesWithInActiveMaskDown )
+{
+   // Setup periodic boundaries
+   // TODO: I do not know how to do it better with GTEST - additional setup 
+   // of the periodic boundaries
+   typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
+   SubdomainOverlapsGetter< GridType, CommunicatorType >::
+      getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1 );
+   distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
+   distributedGrid->setupGrid(*gridPtr);
+   dof->setSize( gridPtr->template getEntitiesCount< Cell >() );
+   maskDofs.setSize( gridPtr->template getEntitiesCount< Cell >() );
+   meshFunctionPtr->bind( gridPtr, *dof );
+   maskPointer->bind( gridPtr, maskDofs );
+   
+   //Expecting 9 processes
+   setDof_2D(*dof, -rank-1 );
+   maskDofs.setValue( true );
+   if( distributedGrid->getNeighbors()[ Down ] == -1 )
+   {
+      for( IndexType i = 0; i < gridPtr->getDimensions().x(); i++ )
+      {
+         typename GridType::Cell cell( *gridPtr );
+         cell.getCoordinates() = CoordinatesType( i, gridPtr->getDimensions().y() - 2 );
+         cell.refresh();
+         maskPointer->getData().setElement( cell.getIndex(), false );
+      }
+   }
+   constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr , constFunctionPtr );
+   meshFunctionPtr->template synchronize<CommunicatorType>( true, maskPointer );
+   
+   if( rank == 0 )
+   {
+      SCOPED_TRACE( "Up Left" );
+      checkLeftBoundary( *gridPtr, *dof, false,  true, -3 );
+      checkUpBoundary(   *gridPtr, *dof, false,  true, -7 );
+   }
+    
+   if( rank == 1 )
+   {
+      SCOPED_TRACE( "Up Center" );
+      checkUpBoundary( *gridPtr, *dof, true, true, -8 );
+   }
+    
+   if( rank == 2 )
+   {
+      SCOPED_TRACE( "Up Right" );
+      checkRightBoundary( *gridPtr, *dof, false, true, -1 );
+      checkUpBoundary(    *gridPtr, *dof, true, false, -9 );
+   }
+    
+   if( rank == 3 )
+   {
+      SCOPED_TRACE( "Center Left" );
+      checkLeftBoundary( *gridPtr, *dof, true, true, -6 );
+   } 
+        
+   if( rank == 5 )
+   {
+      SCOPED_TRACE( "Center Right" );
+      checkRightBoundary( *gridPtr, *dof, true, true, -4 );
+   }
+    
+   if( rank == 6 )
+   {
+      SCOPED_TRACE( "Down Left" );
+      checkDownBoundary( *gridPtr, *dof, false,  true, 6 );
+      checkLeftBoundary( *gridPtr, *dof, true,  false,  -9 );
+   }
+    
+   if( rank == 7 )
+   {
+      SCOPED_TRACE( "Down Center" );
+      checkDownBoundary( *gridPtr, *dof, true, true, 7 );
+   }
+
+   if( rank == 8 )
+   {
+      SCOPED_TRACE( "Down Right" );
+      checkDownBoundary(  *gridPtr, *dof, true, false, 8 );
+      checkRightBoundary( *gridPtr, *dof, true, false, -7 );
+   }
+}
+ 
 #else
 TEST(NoMPI, NoTest)
 {
@@ -715,7 +1132,7 @@ TEST(NoMPI, NoTest)
   };
 #endif
 
-#include "../../src/UnitTests/GtestMissingError.h"
+#include "../../GtestMissingError.h"
 int main( int argc, char* argv[] )
 {
 #ifdef HAVE_GTEST
@@ -728,14 +1145,9 @@ int main( int argc, char* argv[] )
        delete listeners.Release(listeners.default_result_printer());
        listeners.Append(new MinimalistBufferedPrinter);
 
-       CommunicatorType::Init(argc,argv);
+       Communicators::ScopedInitializer< CommunicatorType > mpi(argc, argv);
     #endif
-       int result= RUN_ALL_TESTS();
-
-    #ifdef HAVE_MPI
-       CommunicatorType::Finalize();
-    #endif
-       return result;
+       return RUN_ALL_TESTS();
 #else
    
    throw GtestMissingError();

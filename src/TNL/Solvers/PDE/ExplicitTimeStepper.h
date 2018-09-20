@@ -14,7 +14,7 @@
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Timer.h>
 #include <TNL/Logger.h>
-#include <TNL/SharedPointer.h>
+#include <TNL/Pointers/SharedPointer.h>
 #include <TNL/Solvers/IterativeSolverMonitor.h>
 
 namespace TNL {
@@ -27,20 +27,23 @@ class ExplicitTimeStepper
 {
    public:
 
-      typedef Problem ProblemType;
-      typedef OdeSolver< ExplicitTimeStepper< Problem, OdeSolver > > OdeSolverType;
-      typedef typename Problem::RealType RealType;
-      typedef typename Problem::DeviceType DeviceType;
-      typedef typename Problem::IndexType IndexType;
-      typedef typename Problem::MeshType MeshType;
-      typedef SharedPointer< MeshType > MeshPointer;
-      typedef typename ProblemType::DofVectorType DofVectorType;
-      typedef SharedPointer< DofVectorType, DeviceType > DofVectorPointer;
-      typedef IterativeSolverMonitor< RealType, IndexType > SolverMonitorType;
+      using ProblemType = Problem;
+      using RealType = typename Problem::RealType;
+      using DeviceType = typename Problem::DeviceType;
+      using IndexType = typename Problem::IndexType;
+      using MeshType = typename Problem::MeshType;
+      using MeshPointer = Pointers::SharedPointer< MeshType >;
+      using DofVectorType = typename ProblemType::DofVectorType;
+      using DofVectorPointer = Pointers::SharedPointer< DofVectorType, DeviceType >;
+      using SolverMonitorType = IterativeSolverMonitor< RealType, IndexType >;
       using CommunicatorType = typename Problem::CommunicatorType;
+      using OdeSolverType = OdeSolver< ExplicitTimeStepper< Problem, OdeSolver > >;
+      using OdeSolverPointer = Pointers::SharedPointer< OdeSolverType, DeviceType >;
 
       static_assert( ProblemType::isTimeDependent(), "The problem is not time dependent." );
 
+      static String getType();
+      
       ExplicitTimeStepper();
 
       static void configSetup( Config::ConfigDescription& config,
@@ -72,11 +75,14 @@ class ExplicitTimeStepper
                            DofVectorPointer& _u,
                            DofVectorPointer& _fu );
 
+      void applyBoundaryConditions( const RealType& time,
+                                 DofVectorPointer& _u );
+
       bool writeEpilog( Logger& logger ) const;
 
    protected:
 
-      OdeSolverType* odeSolver;
+      OdeSolverPointer odeSolver;
 
       SolverMonitorType* solverMonitor;
 

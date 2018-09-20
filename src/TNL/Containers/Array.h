@@ -23,24 +23,24 @@ template< int, typename > class StaticArray;
  * Array handles memory allocation and sharing of the same data between more Arrays.
  *
  */
-template< typename Element,
+template< typename Value,
           typename Device = Devices::Host,
           typename Index = int >
 class Array : public Object
 {
    public:
 
-      typedef Element ElementType;
+      typedef Value ValueType;
       typedef Device DeviceType;
       typedef Index IndexType;
-      typedef Containers::Array< Element, Devices::Host, Index > HostType;
-      typedef Containers::Array< Element, Devices::Cuda, Index > CudaType;
+      typedef Containers::Array< Value, Devices::Host, Index > HostType;
+      typedef Containers::Array< Value, Devices::Cuda, Index > CudaType;
 
       Array();
 
       Array( const IndexType& size );
 
-      Array( Element* data,
+      Array( Value* data,
              const IndexType& size );
 
       Array( Array& array,
@@ -67,7 +67,7 @@ class Array : public Object
       template< typename ArrayT >
       void setLike( const ArrayT& array );
 
-      void bind( Element* _data,
+      void bind( Value* _data,
                  const Index _size );
 
       template< typename ArrayT >
@@ -76,25 +76,23 @@ class Array : public Object
                  const IndexType& size = 0 );
 
       template< int Size >
-      void bind( StaticArray< Size, Element >& array );
+      void bind( StaticArray< Size, Value >& array );
 
       void swap( Array& array );
 
       void reset();
 
-      void setElement( const Index& i, const Element& x );
+      __cuda_callable__ const Value* getData() const;
 
-      Element getElement( const Index& i ) const;
+      __cuda_callable__ Value* getData();
 
-      // Checks if there is an element with value v in this array
-      bool containsValue( const Element& v ) const;
+      void setElement( const Index& i, const Value& x );
 
-      // Checks if all elements in this array have the same value v
-      bool containsOnlyValue( const Element& v ) const;
+      Value getElement( const Index& i ) const;
 
-      __cuda_callable__ inline Element& operator[] ( const Index& i );
+      __cuda_callable__ inline Value& operator[] ( const Index& i );
 
-      __cuda_callable__ inline const Element& operator[] ( const Index& i ) const;
+      __cuda_callable__ inline const Value& operator[] ( const Index& i ) const;
 
       Array& operator = ( const Array& array );
 
@@ -107,24 +105,18 @@ class Array : public Object
       template< typename ArrayT >
       bool operator != ( const ArrayT& array ) const;
 
-      void setValue( const Element& e );
+      void setValue( const Value& v );
 
-      __cuda_callable__ const Element* getData() const;
+      // Checks if there is an element with value v in this array
+      bool containsValue( const Value& v ) const;
 
-      __cuda_callable__ Element* getData();
+      // Checks if all elements in this array have the same value v
+      bool containsOnlyValue( const Value& v ) const;
 
       /*!
        * Returns true if non-zero size is set.
        */
       operator bool() const;
-
-      //! This method measures data transfers done by this vector.
-      /*!
-       * Every time one touches this grid touches * size * sizeof( Real ) bytes are added
-       * to transfered bytes in tnlStatistics.
-       */
-      template< typename IndexType2 = Index >
-      void touch( IndexType2 touches = 1 ) const;
 
       //! Method for saving the object to a file as a binary data.
       bool save( File& file ) const;
@@ -157,7 +149,7 @@ class Array : public Object
       mutable Index size;
 
       //! Pointer to data
-      mutable Element* data;
+      mutable Value* data;
 
       /****
        * Pointer to the originally allocated data. They might differ if one
@@ -166,7 +158,7 @@ class Array : public Object
        * deallocate the array. If outer data (not allocated by TNL) are bind
        * then this pointer is zero since no deallocation is necessary.
        */
-      mutable Element* allocationPointer;
+      mutable Value* allocationPointer;
 
       /****
        * Counter of objects sharing this array or some parts of it. The reference counter is
@@ -176,8 +168,8 @@ class Array : public Object
       mutable int* referenceCounter;
 };
 
-template< typename Element, typename Device, typename Index >
-std::ostream& operator << ( std::ostream& str, const Array< Element, Device, Index >& v );
+template< typename Value, typename Device, typename Index >
+std::ostream& operator << ( std::ostream& str, const Array< Value, Device, Index >& v );
 
 } // namespace Containers
 } // namespace TNL

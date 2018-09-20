@@ -2,6 +2,7 @@
 
 #define MPIIO
 #include <TNL/Communicators/MpiCommunicator.h>
+#include <TNL/Communicators/ScopedInitializer.h>
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
@@ -38,9 +39,9 @@ int main(int argc, char **argv)
         typedef typename DistributedGridType::CoordinatesType CoordinatesType;
         typedef LinearFunction<double,DIM> LinearFunctionType;
 
-        CommunicatorType::Init(argc, argv);
+        Communicators::ScopedInitializer< CommunicatorType > mpi_init(argc, argv);
 
-        SharedPointer< LinearFunctionType, Device > linearFunctionPtr;
+        Pointers::SharedPointer< LinearFunctionType, Device > linearFunctionPtr;
         MeshFunctionEvaluator< MeshFunctionType, LinearFunctionType > linearFunctionEvaluator;    
                 
         //save distributed meshfunction into files
@@ -69,8 +70,8 @@ int main(int argc, char **argv)
         SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
         distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
-        SharedPointer<MeshType> gridptr;
-        SharedPointer<MeshFunctionType> meshFunctionptr;
+        Pointers::SharedPointer<MeshType> gridptr;
+        Pointers::SharedPointer<MeshFunctionType> meshFunctionptr;
         distributedGrid.setupGrid(*gridptr);
        
         DofType dof(gridptr->template getEntitiesCount< Cell >());
@@ -81,9 +82,6 @@ int main(int argc, char **argv)
         
         String fileName=String("./meshFunction.tnl");
         DistributedGridIO<MeshFunctionType,MpiIO> ::save(fileName, *meshFunctionptr );
-
-        CommunicatorType::Finalize();
-
 }
 
 #else

@@ -13,10 +13,6 @@
 #include <TNL/Logger.h>
 #include <TNL/Communicators/MpiDefs.h>
 
-#ifdef HAVE_MPI
-#include <mpi.h>
-#endif
-
 namespace TNL {
 namespace Communicators {
 namespace {
@@ -29,8 +25,9 @@ class NoDistrCommunicator
 
       typedef int Request;
       typedef int CommunicationGroup;
-      static Request NullRequest;
-      static CommunicationGroup AllGroup;
+      static constexpr Request NullRequest = -1;
+      static constexpr CommunicationGroup AllGroup = 1;
+      static constexpr CommunicationGroup NullGroup = 0;
 
       static void configSetup( Config::ConfigDescription& config, const String& prefix = "" ){};
  
@@ -40,10 +37,7 @@ class NoDistrCommunicator
          return true;
       }
       
-      static void Init(int argc, char **argv, bool redirect=false)
-      {
-          NullRequest=-1;
-      }
+      static void Init(int& argc, char**& argv) {}
       
       static void setRedirection( bool redirect_ ) {}
       
@@ -105,13 +99,13 @@ class NoDistrCommunicator
       }
 
       template< typename T >
-      static void Allreduce( T* data,
+      static void Allreduce( const T* data,
                              T* reduced_data,
                              int count,
                              const MPI_Op &op,
                              CommunicationGroup group )
       {
-         memcpy( ( void* ) reduced_data, ( void* ) data, count * sizeof( T ) );
+         memcpy( ( void* ) reduced_data, ( const void* ) data, count * sizeof( T ) );
       }
 
       template< typename T >
@@ -125,6 +119,15 @@ class NoDistrCommunicator
          memcpy( ( void* ) reduced_data, ( void* ) data, count * sizeof( T ) );
       }
 
+      template< typename T >
+      static void Alltoall( const T* sendData,
+                            int sendCount,
+                            T* receiveData,
+                            int receiveCount,
+                            CommunicationGroup group )
+      {
+      }
+
       static void CreateNewGroup(bool meToo, int myRank, CommunicationGroup &oldGroup, CommunicationGroup &newGroup)
       {
          newGroup=oldGroup;
@@ -132,10 +135,6 @@ class NoDistrCommunicator
 
       static void writeProlog( Logger& logger ){};
 };
-
-
-  int NoDistrCommunicator::NullRequest;
-  int NoDistrCommunicator::AllGroup;
 
 } // namespace <unnamed>
 } // namespace Communicators

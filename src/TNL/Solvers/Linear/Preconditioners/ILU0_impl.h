@@ -19,12 +19,11 @@
 namespace TNL {
 namespace Solvers {
 namespace Linear {
-namespace Preconditioners {   
+namespace Preconditioners {
 
-template< typename Real, typename Index >
-   template< typename MatrixPointer >
+template< typename Matrix, typename Real, typename Index >
 void
-ILU0< Real, Devices::Host, Index >::
+ILU0_impl< Matrix, Real, Devices::Host, Index >::
 update( const MatrixPointer& matrixPointer )
 {
    TNL_ASSERT_GT( matrixPointer->getRows(), 0, "empty matrix" );
@@ -79,7 +78,7 @@ update( const MatrixPointer& matrixPointer )
          const auto L_i = L.getRow( i );
          const auto U_i = U.getRow( N - 1 - i );
 
-         // loop for k = 0, ..., i - 2; but only over the non-zero entries
+         // loop for k = 0, ..., i - 1; but only over the non-zero entries
          for( IndexType c_k = 0; c_k < L_entries; c_k++ ) {
             const auto k = L_i.getElementColumn( c_k );
 
@@ -103,11 +102,10 @@ update( const MatrixPointer& matrixPointer )
    }
 }
 
-template< typename Real, typename Index >
-   template< typename Vector1, typename Vector2 >
+template< typename Matrix, typename Real, typename Index >
 bool
-ILU0< Real, Devices::Host, Index >::
-solve( const Vector1& b, Vector2& x ) const
+ILU0_impl< Matrix, Real, Devices::Host, Index >::
+solve( ConstVectorViewType b, VectorViewType x ) const
 {
    TNL_ASSERT_EQ( b.getSize(), L.getRows(), "wrong size of the right hand side" );
    TNL_ASSERT_EQ( x.getSize(), L.getRows(), "wrong size of the solution vector" );
@@ -154,9 +152,9 @@ solve( const Vector1& b, Vector2& x ) const
 }
 
 
-   template< typename MatrixPointer >
+template< typename Matrix >
 void
-ILU0< double, Devices::Cuda, int >::
+ILU0_impl< Matrix, double, Devices::Cuda, int >::
 update( const MatrixPointer& matrixPointer )
 {
 #ifdef HAVE_CUDA
@@ -263,10 +261,10 @@ update( const MatrixPointer& matrixPointer )
 #endif
 }
 
-   template< typename Vector1, typename Vector2 >
+template< typename Matrix >
 bool
-ILU0< double, Devices::Cuda, int >::
-solve( const Vector1& b, Vector2& x ) const
+ILU0_impl< Matrix, double, Devices::Cuda, int >::
+solve( ConstVectorViewType b, VectorViewType x ) const
 {
 #ifdef HAVE_CUDA
 #ifdef HAVE_CUSPARSE

@@ -14,7 +14,7 @@
 #include <TNL/Containers/Algorithms/VectorOperations.h>
 
 namespace TNL {
-namespace Containers {   
+namespace Containers {
 namespace Algorithms {
 
 static const int OpenMPVectorOperationsThreshold = 512; // TODO: check this threshold
@@ -41,17 +41,16 @@ addElement( Vector& v,
    v[ i ] = thisElementMultiplicator * v[ i ] + value;
 }
 
-template< typename Vector >
-typename Vector::RealType
+template< typename Vector, typename ResultType >
+ResultType
 VectorOperations< Devices::Host >::
 getVectorMax( const Vector& v )
 {
-   typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
    TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
 
-   Real result = v.getElement( 0 );
+   ResultType result = v.getElement( 0 );
    const Index n = v.getSize();
 #if defined( HAVE_OPENMP ) && _OPENMP >= 201107  // OpenMP 3.1 added support for min/max reduction operations
 #pragma omp parallel for reduction(max:result) if( TNL::Devices::Host::isOMPEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
@@ -61,17 +60,16 @@ getVectorMax( const Vector& v )
    return result;
 }
 
-template< typename Vector >
-typename Vector::RealType
+template< typename Vector, typename ResultType >
+ResultType
 VectorOperations< Devices::Host >::
 getVectorMin( const Vector& v )
 {
-   typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
    TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
 
-   Real result = v.getElement( 0 );
+   ResultType result = v.getElement( 0 );
    const Index n = v.getSize();
 #if defined( HAVE_OPENMP ) && _OPENMP >= 201107  // OpenMP 3.1 added support for min/max reduction operations
 #pragma omp parallel for reduction(min:result) if( TNL::Devices::Host::isOMPEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
@@ -81,44 +79,42 @@ getVectorMin( const Vector& v )
    return result;
 }
 
-template< typename Vector >
-typename Vector::RealType
+template< typename Vector, typename ResultType >
+ResultType
 VectorOperations< Devices::Host >::
 getVectorAbsMax( const Vector& v )
 {
-   typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
    TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
 
-   Real result = TNL::abs( v.getElement( 0 ) );
+   ResultType result = TNL::abs( v.getElement( 0 ) );
    const Index n = v.getSize();
 #if defined( HAVE_OPENMP ) && _OPENMP >= 201107  // OpenMP 3.1 added support for min/max reduction operations
 #pragma omp parallel for reduction(max:result) if( TNL::Devices::Host::isOMPEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif
    for( Index i = 1; i < n; i ++ )
-      result = max( result, ( Real ) TNL::abs( v.getElement( i ) ) );
+      result = max( result, (ResultType) TNL::abs( v.getElement( i ) ) );
    return result;
 }
 
 
-template< typename Vector >
-typename Vector::RealType
+template< typename Vector, typename ResultType >
+ResultType
 VectorOperations< Devices::Host >::
 getVectorAbsMin( const Vector& v )
 {
-   typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
 
    TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
 
-   Real result = TNL::abs( v.getElement( 0 ) );
+   ResultType result = TNL::abs( v.getElement( 0 ) );
    const Index n = v.getSize();
 #if defined( HAVE_OPENMP ) && _OPENMP >= 201107  // OpenMP 3.1 added support for min/max reduction operations
 #pragma omp parallel for reduction(min:result) if( TNL::Devices::Host::isOMPEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif
    for( Index i = 1; i < n; i ++ )
-      result = min( result, ( Real ) TNL::abs( v.getElement( i ) ) );
+      result = min( result, (ResultType) TNL::abs( v.getElement( i ) ) );
    return result;
 }
 
@@ -248,19 +244,18 @@ getVectorSum( const Vector& v )
    return result;
 }
 
-template< typename Vector1, typename Vector2 >
-typename Vector1::RealType
+template< typename Vector1, typename Vector2, typename ResultType >
+ResultType
 VectorOperations< Devices::Host >::
 getVectorDifferenceMax( const Vector1& v1,
                         const Vector2& v2 )
 {
-   typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
    TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
    TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
 
-   Real result = v1.getElement( 0 ) - v2.getElement( 0 );
+   ResultType result = v1.getElement( 0 ) - v2.getElement( 0 );
    const Index n = v1.getSize();
 #if defined( HAVE_OPENMP ) && _OPENMP >= 201107  // OpenMP 3.1 added support for min/max reduction operations
 #pragma omp parallel for reduction(max:result) if( TNL::Devices::Host::isOMPEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
@@ -270,19 +265,18 @@ getVectorDifferenceMax( const Vector1& v1,
    return result;
 }
 
-template< typename Vector1, typename Vector2 >
-typename Vector1::RealType
+template< typename Vector1, typename Vector2, typename ResultType >
+ResultType
 VectorOperations< Devices::Host >::
 getVectorDifferenceMin( const Vector1& v1,
                         const Vector2& v2 )
 {
-   typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
    TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
    TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
 
-   Real result = v1.getElement( 0 ) - v2.getElement( 0 );
+   ResultType result = v1.getElement( 0 ) - v2.getElement( 0 );
    const Index n = v1.getSize();
 #if defined( HAVE_OPENMP ) && _OPENMP >= 201107  // OpenMP 3.1 added support for min/max reduction operations
 #pragma omp parallel for reduction(min:result) if( TNL::Devices::Host::isOMPEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
@@ -292,47 +286,45 @@ getVectorDifferenceMin( const Vector1& v1,
    return result;
 }
 
-template< typename Vector1, typename Vector2 >
-typename Vector1::RealType
+template< typename Vector1, typename Vector2, typename ResultType >
+ResultType
 VectorOperations< Devices::Host >::
 getVectorDifferenceAbsMax( const Vector1& v1,
                            const Vector2& v2 )
 {
-   typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
    TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
    TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
 
-   Real result = TNL::abs( v1.getElement( 0 ) - v2.getElement( 0 ) );
+   ResultType result = TNL::abs( v1.getElement( 0 ) - v2.getElement( 0 ) );
    const Index n = v1.getSize();
 #if defined( HAVE_OPENMP ) && _OPENMP >= 201107  // OpenMP 3.1 added support for min/max reduction operations
 #pragma omp parallel for reduction(max:result) if( TNL::Devices::Host::isOMPEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif
    for( Index i = 1; i < n; i ++ )
-      result =  max( result, ( Real ) TNL::abs( v1.getElement( i ) - v2.getElement( i ) ) );
+      result =  max( result, (ResultType) TNL::abs( v1.getElement( i ) - v2.getElement( i ) ) );
    return result;
 }
 
-template< typename Vector1, typename Vector2 >
-typename Vector1::RealType
+template< typename Vector1, typename Vector2, typename ResultType >
+ResultType
 VectorOperations< Devices::Host >::
 getVectorDifferenceAbsMin( const Vector1& v1,
                            const Vector2& v2 )
 {
-   typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
    TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
    TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
 
-   Real result = TNL::abs( v1[ 0 ] - v2[ 0 ] );
+   ResultType result = TNL::abs( v1[ 0 ] - v2[ 0 ] );
    const Index n = v1.getSize();
 #if defined( HAVE_OPENMP ) && _OPENMP >= 201107  // OpenMP 3.1 added support for min/max reduction operations
 #pragma omp parallel for reduction(min:result) if( TNL::Devices::Host::isOMPEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif
    for( Index i = 1; i < n; i ++ )
-      result =  min( result, ( Real ) TNL::abs( v1[ i ] - v2[ i ] ) );
+      result =  min( result, (ResultType) TNL::abs( v1[ i ] - v2[ i ] ) );
    return result;
 }
 
@@ -363,7 +355,6 @@ VectorOperations< Devices::Host >::
 getVectorDifferenceL2Norm( const Vector1& v1,
                            const Vector2& v2 )
 {
-   typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
    TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
@@ -376,7 +367,7 @@ getVectorDifferenceL2Norm( const Vector1& v1,
 #endif
    for( Index i = 0; i < n; i ++ )
    {
-      Real aux = TNL::abs( v1[ i ] - v2[ i ] );
+      ResultType aux = TNL::abs( v1[ i ] - v2[ i ] );
       result += aux * aux;
    }
    return std::sqrt( result );
@@ -452,13 +443,12 @@ vectorScalarMultiplication( Vector& v,
 }
 
 
-template< typename Vector1, typename Vector2 >
-typename Vector1::RealType
+template< typename Vector1, typename Vector2, typename ResultType >
+ResultType
 VectorOperations< Devices::Host >::
 getScalarProduct( const Vector1& v1,
                   const Vector2& v2 )
 {
-   typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
 
    TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
@@ -467,13 +457,14 @@ getScalarProduct( const Vector1& v1,
 
 #ifdef OPTIMIZED_VECTOR_HOST_OPERATIONS
 #ifdef __GNUC__
+   typedef typename Vector1::RealType Real;
    // We need to get the address of the first element to avoid
    // bounds checking in TNL::Array::operator[]
    const Real* V1 = v1.getData();
    const Real* V2 = v2.getData();
 #endif
 
-   Real dot1 = 0.0, dot2 = 0.0, dot3 = 0.0, dot4 = 0.0;
+   ResultType dot1 = 0.0, dot2 = 0.0, dot3 = 0.0, dot4 = 0.0;
    Index i = 0;
    const Index unroll_limit = n - n % 4;
 #ifdef HAVE_OPENMP
@@ -504,7 +495,7 @@ getScalarProduct( const Vector1& v1,
 
 #else // OPTIMIZED_VECTOR_HOST_OPERATIONS
 
-   Real result( 0.0 );
+   ResultType result( 0.0 );
 #ifdef HAVE_OPENMP
    #pragma omp parallel for reduction(+:result) if( TNL::Devices::Host::isOMPEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
 #endif
@@ -651,268 +642,3 @@ computeExclusivePrefixSum( Vector& v,
 } // namespace Algorithms
 } // namespace Containers
 } // namespace TNL
-
-#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
-
-#include <TNL/Containers/Vector.h>
-
-namespace TNL {
-namespace Containers {   
-namespace Algorithms {
-
-/****
- * Max
- */
-extern template int         VectorOperations< Devices::Host >::getVectorMax( const Vector< int, Devices::Host, int >& v );
-extern template long int    VectorOperations< Devices::Host >::getVectorMax( const Vector< long int, Devices::Host, int >& v );
-#ifdef INSTANTIATE_FLOAT
-extern template float       VectorOperations< Devices::Host >::getVectorMax( const Vector< float, Devices::Host, int >& v );
-#endif
-extern template double      VectorOperations< Devices::Host >::getVectorMax( const Vector< double, Devices::Host, int >& v );
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double VectorOperations< Devices::Host >::getVectorMax( const Vector< long double, Devices::Host, int >& v );
-#endif
-
-#ifdef INSTANTIATE_LONG_INT
-extern template int         VectorOperations< Devices::Host >::getVectorMax( const Vector< int, Devices::Host, long int >& v );
-extern template long int    VectorOperations< Devices::Host >::getVectorMax( const Vector< long int, Devices::Host, long int >& v );
-#ifdef INSTANTIATE_FLOAT
-extern template float       VectorOperations< Devices::Host >::getVectorMax( const Vector< float, Devices::Host, long int >& v );
-#endif
-extern template double      VectorOperations< Devices::Host >::getVectorMax( const Vector< double, Devices::Host, long int >& v );
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double VectorOperations< Devices::Host >::getVectorMax( const Vector< long double, Devices::Host, long int >& v );
-#endif
-#endif
-
-/****
- * Min
- */
-extern template int         VectorOperations< Devices::Host >::getVectorMin( const Vector< int, Devices::Host, int >& v );
-extern template long int    VectorOperations< Devices::Host >::getVectorMin( const Vector< long int, Devices::Host, int >& v );
-#ifdef INSTANTIATE_FLOAT
-extern template float       VectorOperations< Devices::Host >::getVectorMin( const Vector< float, Devices::Host, int >& v );
-#endif
-extern template double      VectorOperations< Devices::Host >::getVectorMin( const Vector< double, Devices::Host, int >& v );
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double VectorOperations< Devices::Host >::getVectorMin( const Vector< long double, Devices::Host, int >& v );
-#endif
-
-#ifdef INSTANTIATE_LONG_INT
-extern template int         VectorOperations< Devices::Host >::getVectorMin( const Vector< int, Devices::Host, long int >& v );
-extern template long int    VectorOperations< Devices::Host >::getVectorMin( const Vector< long int, Devices::Host, long int >& v );
-#ifdef INSTANTIATE_FLOAT
-extern template float       VectorOperations< Devices::Host >::getVectorMin( const Vector< float, Devices::Host, long int >& v );
-#endif
-extern template double      VectorOperations< Devices::Host >::getVectorMin( const Vector< double, Devices::Host, long int >& v );
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double VectorOperations< Devices::Host >::getVectorMin( const Vector< long double, Devices::Host, long int >& v );
-#endif
-#endif
-
-/****
- * Abs max
- */
-extern template int         VectorOperations< Devices::Host >::getVectorAbsMax( const Vector< int, Devices::Host, int >& v );
-extern template long int    VectorOperations< Devices::Host >::getVectorAbsMax( const Vector< long int, Devices::Host, int >& v );
-#ifdef INSTANTIATE_FLOAT
-extern template float       VectorOperations< Devices::Host >::getVectorAbsMax( const Vector< float, Devices::Host, int >& v );
-#endif
-extern template double      VectorOperations< Devices::Host >::getVectorAbsMax( const Vector< double, Devices::Host, int >& v );
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double VectorOperations< Devices::Host >::getVectorAbsMax( const Vector< long double, Devices::Host, int >& v );
-#endif
-
-#ifdef INSTANTIATE_LONG_INT
-extern template int         VectorOperations< Devices::Host >::getVectorAbsMax( const Vector< int, Devices::Host, long int >& v );
-extern template long int    VectorOperations< Devices::Host >::getVectorAbsMax( const Vector< long int, Devices::Host, long int >& v );
-#ifdef INSTANTIATE_FLOAT
-extern template float       VectorOperations< Devices::Host >::getVectorAbsMax( const Vector< float, Devices::Host, long int >& v );
-#endif
-extern template double      VectorOperations< Devices::Host >::getVectorAbsMax( const Vector< double, Devices::Host, long int >& v );
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double VectorOperations< Devices::Host >::getVectorAbsMax( const Vector< long double, Devices::Host, long int >& v );
-#endif
-#endif
-
-/****
- * Abs min
- */
-extern template int         VectorOperations< Devices::Host >::getVectorAbsMin( const Vector< int, Devices::Host, int >& v );
-extern template long int    VectorOperations< Devices::Host >::getVectorAbsMin( const Vector< long int, Devices::Host, int >& v );
-#ifdef INSTANTIATE_FLOAT
-extern template float       VectorOperations< Devices::Host >::getVectorAbsMin( const Vector< float, Devices::Host, int >& v );
-#endif
-extern template double      VectorOperations< Devices::Host >::getVectorAbsMin( const Vector< double, Devices::Host, int >& v );
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double VectorOperations< Devices::Host >::getVectorAbsMin( const Vector< long double, Devices::Host, int >& v );
-#endif
-
-#ifdef INSTANTIATE_LONG_INT
-extern template int         VectorOperations< Devices::Host >::getVectorAbsMin( const Vector< int, Devices::Host, long int >& v );
-extern template long int    VectorOperations< Devices::Host >::getVectorAbsMin( const Vector< long int, Devices::Host, long int >& v );
-#ifdef INSTANTIATE_FLOAT
-extern template float       VectorOperations< Devices::Host >::getVectorAbsMin( const Vector< float, Devices::Host, long int >& v );
-#endif
-extern template double      VectorOperations< Devices::Host >::getVectorAbsMin( const Vector< double, Devices::Host, long int >& v );
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double VectorOperations< Devices::Host >::getVectorAbsMin( const Vector< long double, Devices::Host, long int >& v );
-#endif
-#endif
-
-/****
- * Lp norm
- */
-extern template int         VectorOperations< Devices::Host >::getVectorLpNorm( const Vector< int, Devices::Host, int >& v, const int& p );
-extern template long int    VectorOperations< Devices::Host >::getVectorLpNorm( const Vector< long int, Devices::Host, int >& v, const long int& p );
-#ifdef INSTANTIATE_FLOAT
-extern template float       VectorOperations< Devices::Host >::getVectorLpNorm( const Vector< float, Devices::Host, int >& v, const float& p );
-#endif
-extern template double      VectorOperations< Devices::Host >::getVectorLpNorm( const Vector< double, Devices::Host, int >& v, const double& p );
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double VectorOperations< Devices::Host >::getVectorLpNorm( const Vector< long double, Devices::Host, int >& v, const long double& p );
-#endif
-
-#ifdef INSTANTIATE_LONG_INT
-extern template int         VectorOperations< Devices::Host >::getVectorLpNorm( const Vector< int, Devices::Host, long int >& v, const int& p );
-extern template long int    VectorOperations< Devices::Host >::getVectorLpNorm( const Vector< long int, Devices::Host, long int >& v, const long int& p );
-#ifdef INSTANTIATE_FLOAT
-extern template float       VectorOperations< Devices::Host >::getVectorLpNorm( const Vector< float, Devices::Host, long int >& v, const float& p );
-#endif
-extern template double      VectorOperations< Devices::Host >::getVectorLpNorm( const Vector< double, Devices::Host, long int >& v, const double& p );
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double VectorOperations< Devices::Host >::getVectorLpNorm( const Vector< long double, Devices::Host, long int >& v, const long double& p );
-#endif
-#endif
-
-/****
- * Sum
- */
-extern template int         VectorOperations< Devices::Host >::getVectorSum( const Vector< int, Devices::Host, int >& v );
-extern template long int    VectorOperations< Devices::Host >::getVectorSum( const Vector< long int, Devices::Host, int >& v );
-#ifdef INSTANTIATE_FLOAT
-extern template float       VectorOperations< Devices::Host >::getVectorSum( const Vector< float, Devices::Host, int >& v );
-#endif
-extern template double      VectorOperations< Devices::Host >::getVectorSum( const Vector< double, Devices::Host, int >& v );
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double VectorOperations< Devices::Host >::getVectorSum( const Vector< long double, Devices::Host, int >& v );
-#endif
-
-#ifdef INSTANTIATE_LONG_INT
-extern template int         VectorOperations< Devices::Host >::getVectorSum( const Vector< int, Devices::Host, long int >& v );
-extern template long int    VectorOperations< Devices::Host >::getVectorSum( const Vector< long int, Devices::Host, long int >& v );
-#ifdef INSTANTIATE_FLOAT
-extern template float       VectorOperations< Devices::Host >::getVectorSum( const Vector< float, Devices::Host, long int >& v );
-#endif
-extern template double      VectorOperations< Devices::Host >::getVectorSum( const Vector< double, Devices::Host, long int >& v );
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double VectorOperations< Devices::Host >::getVectorSum( const Vector< long double, Devices::Host, long int >& v );
-#endif
-#endif
-
-/****
- * Difference max
- */
-extern template int         VectorOperations< Devices::Host >::getVectorDifferenceMax( const Vector< int, Devices::Host, int >& v1, const Vector< int, Devices::Host, int >& v2 );
-extern template long int    VectorOperations< Devices::Host >::getVectorDifferenceMax( const Vector< long int, Devices::Host, int >& v1, const Vector< long int, Devices::Host, int >& v2 );
-#ifdef INSTANTIATE_FLOAT
-extern template float       VectorOperations< Devices::Host >::getVectorDifferenceMax( const Vector< float, Devices::Host, int >& v1,  const Vector< float, Devices::Host, int >& v2);
-#endif
-extern template double      VectorOperations< Devices::Host >::getVectorDifferenceMax( const Vector< double, Devices::Host, int >& v1, const Vector< double, Devices::Host, int >& v2 );
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double VectorOperations< Devices::Host >::getVectorDifferenceMax( const Vector< long double, Devices::Host, int >& v1, const Vector< long double, Devices::Host, int >& v2 );
-#endif
-
-#ifdef INSTANTIATE_LONG_INT
-extern template int         VectorOperations< Devices::Host >::getVectorDifferenceMax( const Vector< int, Devices::Host, long int >& v1, const Vector< int, Devices::Host, long int >& v2 );
-extern template long int    VectorOperations< Devices::Host >::getVectorDifferenceMax( const Vector< long int, Devices::Host, long int >& v1, const Vector< long int, Devices::Host, long int >& v2 );
-#ifdef INSTANTIATE_FLOAT
-extern template float       VectorOperations< Devices::Host >::getVectorDifferenceMax( const Vector< float, Devices::Host, long int >& v1, const Vector< float, Devices::Host, long int >& v2 );
-#endif
-extern template double      VectorOperations< Devices::Host >::getVectorDifferenceMax( const Vector< double, Devices::Host, long int >& v1, const Vector< double, Devices::Host, long int >& v2 );
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double VectorOperations< Devices::Host >::getVectorDifferenceMax( const Vector< long double, Devices::Host, long int >& v1, const Vector< long double, Devices::Host, long int >& v2 );
-#endif
-#endif
-
-/****
- * Difference min
- */
-extern template int         VectorOperations< Devices::Host >::getVectorDifferenceMin( const Vector< int, Devices::Host, int >& v1, const Vector< int, Devices::Host, int >& v2 );
-extern template long int    VectorOperations< Devices::Host >::getVectorDifferenceMin( const Vector< long int, Devices::Host, int >& v1, const Vector< long int, Devices::Host, int >& v2 );
-#ifdef INSTANTIATE_FLOAT
-extern template float       VectorOperations< Devices::Host >::getVectorDifferenceMin( const Vector< float, Devices::Host, int >& v1,  const Vector< float, Devices::Host, int >& v2);
-#endif
-extern template double      VectorOperations< Devices::Host >::getVectorDifferenceMin( const Vector< double, Devices::Host, int >& v1, const Vector< double, Devices::Host, int >& v2 );
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double VectorOperations< Devices::Host >::getVectorDifferenceMin( const Vector< long double, Devices::Host, int >& v1, const Vector< long double, Devices::Host, int >& v2 );
-#endif
-
-#ifdef INSTANTIATE_LONG_INT
-extern template int         VectorOperations< Devices::Host >::getVectorDifferenceMin( const Vector< int, Devices::Host, long int >& v1, const Vector< int, Devices::Host, long int >& v2 );
-extern template long int    VectorOperations< Devices::Host >::getVectorDifferenceMin( const Vector< long int, Devices::Host, long int >& v1, const Vector< long int, Devices::Host, long int >& v2 );
-#ifdef INSTANTIATE_FLOAT
-extern template float       VectorOperations< Devices::Host >::getVectorDifferenceMin( const Vector< float, Devices::Host, long int >& v1, const Vector< float, Devices::Host, long int >& v2 );
-#endif
-extern template double      VectorOperations< Devices::Host >::getVectorDifferenceMin( const Vector< double, Devices::Host, long int >& v1, const Vector< double, Devices::Host, long int >& v2 );
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double VectorOperations< Devices::Host >::getVectorDifferenceMin( const Vector< long double, Devices::Host, long int >& v1, const Vector< long double, Devices::Host, long int >& v2 );
-#endif
-#endif
-
-/****
- * Difference abs max
- */
-extern template int         VectorOperations< Devices::Host >::getVectorDifferenceAbsMax( const Vector< int, Devices::Host, int >& v1, const Vector< int, Devices::Host, int >& v2 );
-extern template long int    VectorOperations< Devices::Host >::getVectorDifferenceAbsMax( const Vector< long int, Devices::Host, int >& v1, const Vector< long int, Devices::Host, int >& v2 );
-#ifdef INSTANTIATE_FLOAT
-extern template float       VectorOperations< Devices::Host >::getVectorDifferenceAbsMax( const Vector< float, Devices::Host, int >& v1,  const Vector< float, Devices::Host, int >& v2);
-#endif
-extern template double      VectorOperations< Devices::Host >::getVectorDifferenceAbsMax( const Vector< double, Devices::Host, int >& v1, const Vector< double, Devices::Host, int >& v2 );
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double VectorOperations< Devices::Host >::getVectorDifferenceAbsMax( const Vector< long double, Devices::Host, int >& v1, const Vector< long double, Devices::Host, int >& v2 );
-#endif
-
-#ifdef INSTANTIATE_LONG_INT
-extern template int         VectorOperations< Devices::Host >::getVectorDifferenceAbsMax( const Vector< int, Devices::Host, long int >& v1, const Vector< int, Devices::Host, long int >& v2 );
-extern template long int    VectorOperations< Devices::Host >::getVectorDifferenceAbsMax( const Vector< long int, Devices::Host, long int >& v1, const Vector< long int, Devices::Host, long int >& v2 );
-#ifdef INSTANTIATE_FLOAT
-extern template float       VectorOperations< Devices::Host >::getVectorDifferenceAbsMax( const Vector< float, Devices::Host, long int >& v1, const Vector< float, Devices::Host, long int >& v2 );
-#endif
-extern template double      VectorOperations< Devices::Host >::getVectorDifferenceAbsMax( const Vector< double, Devices::Host, long int >& v1, const Vector< double, Devices::Host, long int >& v2 );
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double VectorOperations< Devices::Host >::getVectorDifferenceAbsMax( const Vector< long double, Devices::Host, long int >& v1, const Vector< long double, Devices::Host, long int >& v2 );
-#endif
-#endif
-
-/****
- * Difference abs min
- */
-extern template int         VectorOperations< Devices::Host >::getVectorDifferenceAbsMin( const Vector< int, Devices::Host, int >& v1, const Vector< int, Devices::Host, int >& v2 );
-extern template long int    VectorOperations< Devices::Host >::getVectorDifferenceAbsMin( const Vector< long int, Devices::Host, int >& v1, const Vector< long int, Devices::Host, int >& v2 );
-#ifdef INSTANTIATE_FLOAT
-extern template float       VectorOperations< Devices::Host >::getVectorDifferenceAbsMin( const Vector< float, Devices::Host, int >& v1,  const Vector< float, Devices::Host, int >& v2);
-#endif
-extern template double      VectorOperations< Devices::Host >::getVectorDifferenceAbsMin( const Vector< double, Devices::Host, int >& v1, const Vector< double, Devices::Host, int >& v2 );
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double VectorOperations< Devices::Host >::getVectorDifferenceAbsMin( const Vector< long double, Devices::Host, int >& v1, const Vector< long double, Devices::Host, int >& v2 );
-#endif
-
-
-#ifdef INSTANTIATE_LONG_INT
-extern template int         VectorOperations< Devices::Host >::getVectorDifferenceAbsMin( const Vector< int, Devices::Host, long int >& v1, const Vector< int, Devices::Host, long int >& v2 );
-extern template long int    VectorOperations< Devices::Host >::getVectorDifferenceAbsMin( const Vector< long int, Devices::Host, long int >& v1, const Vector< long int, Devices::Host, long int >& v2 );
-#ifdef INSTANTIATE_FLOAT
-extern template float       VectorOperations< Devices::Host >::getVectorDifferenceAbsMin( const Vector< float, Devices::Host, long int >& v1, const Vector< float, Devices::Host, long int >& v2 );
-#endif
-extern template double      VectorOperations< Devices::Host >::getVectorDifferenceAbsMin( const Vector< double, Devices::Host, long int >& v1, const Vector< double, Devices::Host, long int >& v2 );
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template long double VectorOperations< Devices::Host >::getVectorDifferenceAbsMin( const Vector< long double, Devices::Host, long int >& v1, const Vector< long double, Devices::Host, long int >& v2 );
-#endif
-#endif
-
-} // namespace Algorithms
-} // namespace Containers
-} // namespace TNL
-
-#endif

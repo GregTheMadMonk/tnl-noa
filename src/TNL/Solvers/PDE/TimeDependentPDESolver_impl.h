@@ -18,9 +18,8 @@ namespace Solvers {
 namespace PDE {   
 
 template< typename Problem,
-          typename DiscreteSolver,
           typename TimeStepper >
-TimeDependentPDESolver< Problem, DiscreteSolver, TimeStepper >::
+TimeDependentPDESolver< Problem, TimeStepper >::
 TimeDependentPDESolver()
 : problem( 0 ),
   initialTime( 0.0 ),
@@ -32,10 +31,9 @@ TimeDependentPDESolver()
 
 
 template< typename Problem,
-          typename DiscreteSolver,   
           typename TimeStepper >
 void
-TimeDependentPDESolver< Problem, DiscreteSolver, TimeStepper >::
+TimeDependentPDESolver< Problem, TimeStepper >::
 configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
@@ -49,10 +47,9 @@ configSetup( Config::ConfigDescription& config,
 }
 
 template< typename Problem,
-          typename DiscreteSolver,   
           typename TimeStepper >
 bool
-TimeDependentPDESolver< Problem, DiscreteSolver, TimeStepper >::
+TimeDependentPDESolver< Problem, TimeStepper >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
@@ -100,11 +97,11 @@ setup( const Config::ParameterContainer& parameters,
    /***
     * Set-up the initial condition
     */
-   std::cout << "Setting up the initial condition ... ";
    typedef typename Problem :: DofVectorType DofVectorType;
-   if( ! this->problem->setInitialCondition( parameters, this->dofsPointer ) )
+   if( ! this->problem->setInitialCondition( parameters, this->dofsPointer ) ) {
+      std::cerr << "Failed to set up the initial condition." << std::endl;
       return false;
-   std::cout << " [ OK ]" << std::endl;
+   }
 
    /****
     * Initialize the time discretisation
@@ -119,26 +116,18 @@ setup( const Config::ParameterContainer& parameters,
       return false;
 
    /****
-    * Set-up the discrete solver
-    */
-   if( ! this->discreteSolver.setup( parameters ) )
-      return false;
-   
-   /****
     * Set-up the time stepper
     */
    if( ! this->timeStepper.setup( parameters ) )
       return false;
-   this->timeStepper.setSolver( this->discreteSolver );
    this->timeStepper.setSolverMonitor( *this->solverMonitorPointer );      
    return true;
 }
 
 template< typename Problem,
-          typename DiscreteSolver,   
           typename TimeStepper >
 bool
-TimeDependentPDESolver< Problem, DiscreteSolver, TimeStepper >::
+TimeDependentPDESolver< Problem, TimeStepper >::
 writeProlog( Logger& logger,
              const Config::ParameterContainer& parameters )
 {   
@@ -173,40 +162,36 @@ writeProlog( Logger& logger,
 }
 
 template< typename Problem,
-          typename DiscreteSolver,   
           typename TimeStepper >
 void
-TimeDependentPDESolver< Problem, DiscreteSolver, TimeStepper >::
+TimeDependentPDESolver< Problem, TimeStepper >::
 setProblem( ProblemType& problem )
 {
    this->problem = &problem;
 }
 
 template< typename Problem,
-          typename DiscreteSolver,   
           typename TimeStepper >
 void
-TimeDependentPDESolver< Problem, DiscreteSolver, TimeStepper >::
+TimeDependentPDESolver< Problem, TimeStepper >::
 setInitialTime( const RealType& initialTime )
 {
    this->initialTime = initialTime;
 }
 
 template< typename Problem,
-          typename DiscreteSolver,   
           typename TimeStepper >
 const typename Problem::RealType&
-TimeDependentPDESolver< Problem, DiscreteSolver, TimeStepper >::
+TimeDependentPDESolver< Problem, TimeStepper >::
 getInitialTime() const
 {
    return this->initialTime;
 }
 
 template< typename Problem,
-          typename DiscreteSolver,   
           typename TimeStepper >
 bool
-TimeDependentPDESolver< Problem, DiscreteSolver, TimeStepper >::
+TimeDependentPDESolver< Problem, TimeStepper >::
 setFinalTime( const RealType& finalTime )
 {
    if( finalTime <= this->initialTime )
@@ -219,20 +204,18 @@ setFinalTime( const RealType& finalTime )
 }
 
 template< typename Problem,
-          typename DiscreteSolver,   
           typename TimeStepper >
 const typename Problem::RealType&
-TimeDependentPDESolver< Problem, DiscreteSolver, TimeStepper >::
+TimeDependentPDESolver< Problem, TimeStepper >::
 getFinalTime() const
 {
    return this->finalTime;
 }
 
 template< typename Problem,
-          typename DiscreteSolver,   
           typename TimeStepper >
 bool
-TimeDependentPDESolver< Problem, DiscreteSolver, TimeStepper >::
+TimeDependentPDESolver< Problem, TimeStepper >::
 setSnapshotPeriod( const RealType& period )
 {
    if( period <= 0 )
@@ -245,20 +228,18 @@ setSnapshotPeriod( const RealType& period )
 }
 
 template< typename Problem,
-          typename DiscreteSolver,   
           typename TimeStepper >
 const typename Problem::RealType&
-TimeDependentPDESolver< Problem, DiscreteSolver, TimeStepper >::
+TimeDependentPDESolver< Problem, TimeStepper >::
 getSnapshotPeriod() const
 {
    return this->snapshotPeriod;
 }
 
 template< typename Problem,
-          typename DiscreteSolver,   
           typename TimeStepper >
 bool
-TimeDependentPDESolver< Problem, DiscreteSolver, TimeStepper >::
+TimeDependentPDESolver< Problem, TimeStepper >::
 setTimeStep( const RealType& timeStep )
 {
    if( timeStep <= 0 )
@@ -271,20 +252,18 @@ setTimeStep( const RealType& timeStep )
 }
  
 template< typename Problem,
-          typename DiscreteSolver,   
           typename TimeStepper >
 const typename Problem::RealType&
-TimeDependentPDESolver< Problem, DiscreteSolver, TimeStepper >::
+TimeDependentPDESolver< Problem, TimeStepper >::
 getTimeStep() const
 {
    return this->timeStep;
 }
 
 template< typename Problem,
-          typename DiscreteSolver,   
           typename TimeStepper >
 bool
-TimeDependentPDESolver< Problem, DiscreteSolver, TimeStepper >::
+TimeDependentPDESolver< Problem, TimeStepper >::
 solve()
 {
    TNL_ASSERT_TRUE( problem, "No problem was set in PDESolver." );
@@ -343,10 +322,9 @@ solve()
 }
 
 template< typename Problem,
-          typename DiscreteSolver,   
           typename TimeStepper >
 bool
-TimeDependentPDESolver< Problem, DiscreteSolver, TimeStepper >::
+TimeDependentPDESolver< Problem, TimeStepper >::
 writeEpilog( Logger& logger ) const
 {
    return ( this->timeStepper.writeEpilog( logger ) &&

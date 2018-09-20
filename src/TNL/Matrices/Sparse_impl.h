@@ -11,7 +11,7 @@
 #pragma once
 
 #include "Sparse.h"
-#include <TNL/DevicePointer.h>
+#include <TNL/Pointers/DevicePointer.h>
 
 namespace TNL {
 namespace Matrices {
@@ -122,7 +122,8 @@ void Sparse< Real, Device, Index >::allocateMatrixElements( const IndexType& num
     * Setting a column index to this->columns means that the
     * index is undefined.
     */
-   this->columnIndexes.setValue( this->columns );
+   if( numberOfMatrixElements > 0 )
+      this->columnIndexes.setValue( this->columns );
 }
 
 template< typename Real,
@@ -246,8 +247,8 @@ copySparseMatrix( Matrix1& A, const Matrix2& B )
       typename Matrix1::CompressedRowLengthsVector rowLengths;
       rowLengths.setSize( rows );
 
-      DevicePointer< Matrix1 > Apointer( A );
-      const DevicePointer< const Matrix2 > Bpointer( B );
+      Pointers::DevicePointer< Matrix1 > Apointer( A );
+      const Pointers::DevicePointer< const Matrix2 > Bpointer( B );
 
       // set row lengths
       Devices::Cuda::synchronizeDevice();

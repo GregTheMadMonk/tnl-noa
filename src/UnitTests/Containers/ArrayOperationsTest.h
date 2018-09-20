@@ -23,23 +23,23 @@ using namespace TNL::Containers::Algorithms;
 constexpr int ARRAY_TEST_SIZE = 5000;
 
 // test fixture for typed tests
-template< typename Element >
+template< typename Value >
 class ArrayOperationsTest : public ::testing::Test
 {
 protected:
-   using ElementType = Element;
+   using ValueType = Value;
 };
 
 // types for which ArrayTest is instantiated
-using ElementTypes = ::testing::Types< short int, int, long, float, double >;
+using ValueTypes = ::testing::Types< short int, int, long, float, double >;
 
-TYPED_TEST_CASE( ArrayOperationsTest, ElementTypes );
+TYPED_TEST_CASE( ArrayOperationsTest, ValueTypes );
 
 TYPED_TEST( ArrayOperationsTest, allocateMemory_host )
 {
-   using ElementType = typename TestFixture::ElementType;
+   using ValueType = typename TestFixture::ValueType;
 
-   ElementType* data;
+   ValueType* data;
    ArrayOperations< Devices::Host >::allocateMemory( data, ARRAY_TEST_SIZE );
    ASSERT_NE( data, nullptr );
 
@@ -48,13 +48,13 @@ TYPED_TEST( ArrayOperationsTest, allocateMemory_host )
 
 TYPED_TEST( ArrayOperationsTest, setMemoryElement_host )
 {
-   using ElementType = typename TestFixture::ElementType;
+   using ValueType = typename TestFixture::ValueType;
    const int size = ARRAY_TEST_SIZE;
 
-   ElementType *data;
+   ValueType *data;
    ArrayOperations< Devices::Host >::allocateMemory( data, size );
    for( int i = 0; i < size; i++ ) {
-      ArrayOperations< Devices::Host >::setMemoryElement( data + i, (ElementType) i );
+      ArrayOperations< Devices::Host >::setMemoryElement( data + i, (ValueType) i );
       EXPECT_EQ( data[ i ], i );
       EXPECT_EQ( ArrayOperations< Devices::Host >::getMemoryElement( data + i ), i );
    }
@@ -63,12 +63,12 @@ TYPED_TEST( ArrayOperationsTest, setMemoryElement_host )
 
 TYPED_TEST( ArrayOperationsTest, setMemory_host )
 {
-   using ElementType = typename TestFixture::ElementType;
+   using ValueType = typename TestFixture::ValueType;
    const int size = ARRAY_TEST_SIZE;
 
-   ElementType *data;
+   ValueType *data;
    ArrayOperations< Devices::Host >::allocateMemory( data, size );
-   ArrayOperations< Devices::Host >::setMemory( data, (ElementType) 13, size );
+   ArrayOperations< Devices::Host >::setMemory( data, (ValueType) 13, size );
    for( int i = 0; i < size; i ++ )
       EXPECT_EQ( data[ i ], 13 );
    ArrayOperations< Devices::Host >::freeMemory( data );
@@ -76,14 +76,14 @@ TYPED_TEST( ArrayOperationsTest, setMemory_host )
 
 TYPED_TEST( ArrayOperationsTest, copyMemory_host )
 {
-   using ElementType = typename TestFixture::ElementType;
+   using ValueType = typename TestFixture::ValueType;
    const int size = ARRAY_TEST_SIZE;
 
-   ElementType *data1, *data2;
+   ValueType *data1, *data2;
    ArrayOperations< Devices::Host >::allocateMemory( data1, size );
    ArrayOperations< Devices::Host >::allocateMemory( data2, size );
-   ArrayOperations< Devices::Host >::setMemory( data1, (ElementType) 13, size );
-   ArrayOperations< Devices::Host >::copyMemory< ElementType, ElementType >( data2, data1, size );
+   ArrayOperations< Devices::Host >::setMemory( data1, (ValueType) 13, size );
+   ArrayOperations< Devices::Host >::copyMemory< ValueType, ValueType >( data2, data1, size );
    for( int i = 0; i < size; i ++ )
       EXPECT_EQ( data1[ i ], data2[ i ]);
    ArrayOperations< Devices::Host >::freeMemory( data1 );
@@ -92,7 +92,7 @@ TYPED_TEST( ArrayOperationsTest, copyMemory_host )
 
 TYPED_TEST( ArrayOperationsTest, copyMemoryWithConversion_host )
 {
-   using ElementType = typename TestFixture::ElementType;
+   using ValueType = typename TestFixture::ValueType;
    const int size = ARRAY_TEST_SIZE;
 
    int *data1;
@@ -109,17 +109,17 @@ TYPED_TEST( ArrayOperationsTest, copyMemoryWithConversion_host )
 
 TYPED_TEST( ArrayOperationsTest, compareMemory_host )
 {
-   using ElementType = typename TestFixture::ElementType;
+   using ValueType = typename TestFixture::ValueType;
    const int size = ARRAY_TEST_SIZE;
 
-   ElementType *data1, *data2;
+   ValueType *data1, *data2;
    ArrayOperations< Devices::Host >::allocateMemory( data1, size );
    ArrayOperations< Devices::Host >::allocateMemory( data2, size );
-   ArrayOperations< Devices::Host >::setMemory( data1, (ElementType) 7, size );
-   ArrayOperations< Devices::Host >::setMemory( data2, (ElementType) 0, size );
-   EXPECT_FALSE( ( ArrayOperations< Devices::Host >::compareMemory< ElementType, ElementType >( data1, data2, size ) ) );
-   ArrayOperations< Devices::Host >::setMemory( data2, (ElementType) 7, size );
-   EXPECT_TRUE( ( ArrayOperations< Devices::Host >::compareMemory< ElementType, ElementType >( data1, data2, size ) ) );
+   ArrayOperations< Devices::Host >::setMemory( data1, (ValueType) 7, size );
+   ArrayOperations< Devices::Host >::setMemory( data2, (ValueType) 0, size );
+   EXPECT_FALSE( ( ArrayOperations< Devices::Host >::compareMemory< ValueType, ValueType >( data1, data2, size ) ) );
+   ArrayOperations< Devices::Host >::setMemory( data2, (ValueType) 7, size );
+   EXPECT_TRUE( ( ArrayOperations< Devices::Host >::compareMemory< ValueType, ValueType >( data1, data2, size ) ) );
    ArrayOperations< Devices::Host >::freeMemory( data1 );
    ArrayOperations< Devices::Host >::freeMemory( data2 );
 }
@@ -204,10 +204,10 @@ TYPED_TEST( ArrayOperationsTest, containsOnlyValue_host )
 #ifdef HAVE_CUDA
 TYPED_TEST( ArrayOperationsTest, allocateMemory_cuda )
 {
-   using ElementType = typename TestFixture::ElementType;
+   using ValueType = typename TestFixture::ValueType;
    const int size = ARRAY_TEST_SIZE;
 
-   ElementType* data;
+   ValueType* data;
    ArrayOperations< Devices::Cuda >::allocateMemory( data, size );
    ASSERT_TRUE( TNL_CHECK_CUDA_DEVICE );
    ASSERT_NE( data, nullptr );
@@ -218,20 +218,20 @@ TYPED_TEST( ArrayOperationsTest, allocateMemory_cuda )
 
 TYPED_TEST( ArrayOperationsTest, setMemoryElement_cuda )
 {
-   using ElementType = typename TestFixture::ElementType;
+   using ValueType = typename TestFixture::ValueType;
    const int size = ARRAY_TEST_SIZE;
 
-   ElementType* data;
+   ValueType* data;
    ArrayOperations< Devices::Cuda >::allocateMemory( data, size );
    ASSERT_TRUE( TNL_CHECK_CUDA_DEVICE );
 
    for( int i = 0; i < size; i++ )
-      ArrayOperations< Devices::Cuda >::setMemoryElement( &data[ i ], (ElementType) i );
+      ArrayOperations< Devices::Cuda >::setMemoryElement( &data[ i ], (ValueType) i );
 
    for( int i = 0; i < size; i++ )
    {
-      ElementType d;
-      ASSERT_EQ( cudaMemcpy( &d, &data[ i ], sizeof( ElementType ), cudaMemcpyDeviceToHost ), cudaSuccess );
+      ValueType d;
+      ASSERT_EQ( cudaMemcpy( &d, &data[ i ], sizeof( ValueType ), cudaMemcpyDeviceToHost ), cudaSuccess );
       EXPECT_EQ( d, i );
       EXPECT_EQ( ArrayOperations< Devices::Cuda >::getMemoryElement( &data[ i ] ), i );
    }
@@ -242,16 +242,16 @@ TYPED_TEST( ArrayOperationsTest, setMemoryElement_cuda )
 
 TYPED_TEST( ArrayOperationsTest, setMemory_cuda )
 {
-   using ElementType = typename TestFixture::ElementType;
+   using ValueType = typename TestFixture::ValueType;
    const int size = ARRAY_TEST_SIZE;
 
-   ElementType *hostData, *deviceData;
+   ValueType *hostData, *deviceData;
    ArrayOperations< Devices::Host >::allocateMemory( hostData, size );
    ArrayOperations< Devices::Cuda >::allocateMemory( deviceData, size );
-   ArrayOperations< Devices::Host >::setMemory( hostData, (ElementType) 0, size );
-   ArrayOperations< Devices::Cuda >::setMemory( deviceData, (ElementType) 13, size );
+   ArrayOperations< Devices::Host >::setMemory( hostData, (ValueType) 0, size );
+   ArrayOperations< Devices::Cuda >::setMemory( deviceData, (ValueType) 13, size );
    ASSERT_TRUE( TNL_CHECK_CUDA_DEVICE );
-   ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< ElementType, ElementType >( hostData, deviceData, size );
+   ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< ValueType, ValueType >( hostData, deviceData, size );
    ASSERT_TRUE( TNL_CHECK_CUDA_DEVICE );
    for( int i = 0; i < size; i++ )
       EXPECT_EQ( hostData[ i ], 13 );
@@ -261,19 +261,19 @@ TYPED_TEST( ArrayOperationsTest, setMemory_cuda )
 
 TYPED_TEST( ArrayOperationsTest, copyMemory_cuda )
 {
-   using ElementType = typename TestFixture::ElementType;
+   using ValueType = typename TestFixture::ValueType;
    const int size = ARRAY_TEST_SIZE;
 
-   ElementType *hostData, *hostData2, *deviceData, *deviceData2;
+   ValueType *hostData, *hostData2, *deviceData, *deviceData2;
    ArrayOperations< Devices::Host >::allocateMemory( hostData, size );
    ArrayOperations< Devices::Host >::allocateMemory( hostData2, size );
    ArrayOperations< Devices::Cuda >::allocateMemory( deviceData, size );
    ArrayOperations< Devices::Cuda >::allocateMemory( deviceData2, size );
-   ArrayOperations< Devices::Host >::setMemory( hostData, (ElementType) 13, size );
-   ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory< ElementType >( deviceData, hostData, size );
-   ArrayOperations< Devices::Cuda >::copyMemory< ElementType, ElementType >( deviceData2, deviceData, size );
-   ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< ElementType, ElementType >( hostData2, deviceData2, size );
-   EXPECT_TRUE( ( ArrayOperations< Devices::Host >::compareMemory< ElementType, ElementType >( hostData, hostData2, size) ) );
+   ArrayOperations< Devices::Host >::setMemory( hostData, (ValueType) 13, size );
+   ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory< ValueType >( deviceData, hostData, size );
+   ArrayOperations< Devices::Cuda >::copyMemory< ValueType, ValueType >( deviceData2, deviceData, size );
+   ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< ValueType, ValueType >( hostData2, deviceData2, size );
+   EXPECT_TRUE( ( ArrayOperations< Devices::Host >::compareMemory< ValueType, ValueType >( hostData, hostData2, size) ) );
    ArrayOperations< Devices::Host >::freeMemory( hostData );
    ArrayOperations< Devices::Host >::freeMemory( hostData2 );
    ArrayOperations< Devices::Cuda >::freeMemory( deviceData );
@@ -306,26 +306,26 @@ TYPED_TEST( ArrayOperationsTest, copyMemoryWithConversions_cuda )
 
 TYPED_TEST( ArrayOperationsTest, compareMemory_cuda )
 {
-   using ElementType = typename TestFixture::ElementType;
+   using ValueType = typename TestFixture::ValueType;
    const int size = ARRAY_TEST_SIZE;
 
-   ElementType *hostData, *deviceData, *deviceData2;
+   ValueType *hostData, *deviceData, *deviceData2;
    ArrayOperations< Devices::Host >::allocateMemory( hostData, size );
    ArrayOperations< Devices::Cuda >::allocateMemory( deviceData, size );
    ArrayOperations< Devices::Cuda >::allocateMemory( deviceData2, size );
 
-   ArrayOperations< Devices::Host >::setMemory( hostData, (ElementType) 7, size );
-   ArrayOperations< Devices::Cuda >::setMemory( deviceData, (ElementType) 8, size );
-   ArrayOperations< Devices::Cuda >::setMemory( deviceData2, (ElementType) 9, size );
-   EXPECT_FALSE(( ArrayOperations< Devices::Host, Devices::Cuda >::compareMemory< ElementType, ElementType >( hostData, deviceData, size ) ));
-   EXPECT_FALSE(( ArrayOperations< Devices::Cuda, Devices::Host >::compareMemory< ElementType, ElementType >( deviceData, hostData, size ) ));
-   EXPECT_FALSE(( ArrayOperations< Devices::Cuda >::compareMemory< ElementType, ElementType >( deviceData, deviceData2, size ) ));
+   ArrayOperations< Devices::Host >::setMemory( hostData, (ValueType) 7, size );
+   ArrayOperations< Devices::Cuda >::setMemory( deviceData, (ValueType) 8, size );
+   ArrayOperations< Devices::Cuda >::setMemory( deviceData2, (ValueType) 9, size );
+   EXPECT_FALSE(( ArrayOperations< Devices::Host, Devices::Cuda >::compareMemory< ValueType, ValueType >( hostData, deviceData, size ) ));
+   EXPECT_FALSE(( ArrayOperations< Devices::Cuda, Devices::Host >::compareMemory< ValueType, ValueType >( deviceData, hostData, size ) ));
+   EXPECT_FALSE(( ArrayOperations< Devices::Cuda >::compareMemory< ValueType, ValueType >( deviceData, deviceData2, size ) ));
 
-   ArrayOperations< Devices::Cuda >::setMemory( deviceData, (ElementType) 7, size );
-   ArrayOperations< Devices::Cuda >::setMemory( deviceData2, (ElementType) 7, size );
-   EXPECT_TRUE(( ArrayOperations< Devices::Host, Devices::Cuda >::compareMemory< ElementType, ElementType >( hostData, deviceData, size ) ));
-   EXPECT_TRUE(( ArrayOperations< Devices::Cuda, Devices::Host >::compareMemory< ElementType, ElementType >( deviceData, hostData, size ) ));
-   EXPECT_TRUE(( ArrayOperations< Devices::Cuda >::compareMemory< ElementType, ElementType >( deviceData, deviceData2, size ) ));
+   ArrayOperations< Devices::Cuda >::setMemory( deviceData, (ValueType) 7, size );
+   ArrayOperations< Devices::Cuda >::setMemory( deviceData2, (ValueType) 7, size );
+   EXPECT_TRUE(( ArrayOperations< Devices::Host, Devices::Cuda >::compareMemory< ValueType, ValueType >( hostData, deviceData, size ) ));
+   EXPECT_TRUE(( ArrayOperations< Devices::Cuda, Devices::Host >::compareMemory< ValueType, ValueType >( deviceData, hostData, size ) ));
+   EXPECT_TRUE(( ArrayOperations< Devices::Cuda >::compareMemory< ValueType, ValueType >( deviceData, deviceData2, size ) ));
 
    ArrayOperations< Devices::Host >::freeMemory( hostData );
    ArrayOperations< Devices::Cuda >::freeMemory( deviceData );

@@ -17,109 +17,109 @@
 namespace TNL {
 namespace Containers {   
 
-template< int Size, typename Element >
+template< int Size, typename Value >
 __cuda_callable__
-inline StaticArray< Size, Element >::StaticArray()
+inline StaticArray< Size, Value >::StaticArray()
 {
 };
 
-template< int Size, typename Element >
+template< int Size, typename Value >
    template< typename _unused >
 __cuda_callable__
-inline StaticArray< Size, Element >::StaticArray( const Element v[ Size ] )
+inline StaticArray< Size, Value >::StaticArray( const Value v[ Size ] )
 {
    for( int i = 0; i < Size; i++ )
       data[ i ] = v[ i ];
 }
 
-template< int Size, typename Element >
+template< int Size, typename Value >
 __cuda_callable__
-inline StaticArray< Size, Element >::StaticArray( const Element& v )
+inline StaticArray< Size, Value >::StaticArray( const Value& v )
 {
    for( int i = 0; i < Size; i++ )
       data[ i ] = v;
 }
 
-template< int Size, typename Element >
+template< int Size, typename Value >
 __cuda_callable__
-inline StaticArray< Size, Element >::StaticArray( const StaticArray< Size, Element >& v )
+inline StaticArray< Size, Value >::StaticArray( const StaticArray< Size, Value >& v )
 {
    for( int i = 0; i < Size; i++ )
       data[ i ] = v[ i ];
 }
 
-template< int Size, typename Element >
-String StaticArray< Size, Element >::getType()
+template< int Size, typename Value >
+String StaticArray< Size, Value >::getType()
 {
    return String( "Containers::StaticArray< " ) +
           String( Size ) +
           String( ", " ) +
-          TNL::getType< Element >() +
+          TNL::getType< Value >() +
           String( " >" );
 }
 
-template< int Size, typename Element >
+template< int Size, typename Value >
 __cuda_callable__
-inline int StaticArray< Size, Element >::getSize() const
+inline int StaticArray< Size, Value >::getSize() const
 {
    return size;
 }
 
-template< int Size, typename Element >
+template< int Size, typename Value >
 __cuda_callable__
-inline Element* StaticArray< Size, Element >::getData()
+inline Value* StaticArray< Size, Value >::getData()
 {
    return data;
 }
 
-template< int Size, typename Element >
+template< int Size, typename Value >
 __cuda_callable__
-inline const Element* StaticArray< Size, Element >::getData() const
+inline const Value* StaticArray< Size, Value >::getData() const
 {
    return data;
 }
 
-template< int Size, typename Element >
+template< int Size, typename Value >
 __cuda_callable__
-inline const Element& StaticArray< Size, Element >::operator[]( int i ) const
+inline const Value& StaticArray< Size, Value >::operator[]( int i ) const
 {
    TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
    TNL_ASSERT_LT( i, size, "Element index is out of bounds." );
    return data[ i ];
 }
 
-template< int Size, typename Element >
+template< int Size, typename Value >
 __cuda_callable__
-inline Element& StaticArray< Size, Element >::operator[]( int i )
+inline Value& StaticArray< Size, Value >::operator[]( int i )
 {
    TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
    TNL_ASSERT_LT( i, size, "Element index is out of bounds." );
    return data[ i ];
 }
 
-template< int Size, typename Element >
+template< int Size, typename Value >
 __cuda_callable__
-inline StaticArray< Size, Element >& StaticArray< Size, Element >::operator = ( const StaticArray< Size, Element >& array )
+inline StaticArray< Size, Value >& StaticArray< Size, Value >::operator = ( const StaticArray< Size, Value >& array )
 {
    for( int i = 0; i < size; i++ )
       data[ i ] = array[ i ];
    return *this;
 }
 
-template< int Size, typename Element >
+template< int Size, typename Value >
    template< typename Array >
 __cuda_callable__
-inline StaticArray< Size, Element >& StaticArray< Size, Element >::operator = ( const Array& array )
+inline StaticArray< Size, Value >& StaticArray< Size, Value >::operator = ( const Array& array )
 {
    for( int i = 0; i < size; i++ )
       data[ i ] = array[ i ];
    return *this;
 }
 
-template< int Size, typename Element >
+template< int Size, typename Value >
    template< typename Array >
 __cuda_callable__
-inline bool StaticArray< Size, Element >::operator == ( const Array& array ) const
+inline bool StaticArray< Size, Value >::operator == ( const Array& array ) const
 {
    if( ( int ) size != ( int ) Array::size )
       return false;
@@ -129,38 +129,38 @@ inline bool StaticArray< Size, Element >::operator == ( const Array& array ) con
    return true;
 }
 
-template< int Size, typename Element >
+template< int Size, typename Value >
    template< typename Array >
 __cuda_callable__
-inline bool StaticArray< Size, Element >::operator != ( const Array& array ) const
+inline bool StaticArray< Size, Value >::operator != ( const Array& array ) const
 {
    return ! this->operator == ( array );
 }
 
-template< int Size, typename Element >
-   template< typename OtherElement >
+template< int Size, typename Value >
+   template< typename OtherValue >
 __cuda_callable__
-StaticArray< Size, Element >::
-operator StaticArray< Size, OtherElement >() const
+StaticArray< Size, Value >::
+operator StaticArray< Size, OtherValue >() const
 {
-   StaticArray< Size, OtherElement > aux;
+   StaticArray< Size, OtherValue > aux;
    for( int i = 0; i < Size; i++ )
       aux[ i ] = data[ i ];
    return aux;
 }
 
-template< int Size, typename Element >
+template< int Size, typename Value >
 __cuda_callable__
-inline void StaticArray< Size, Element >::setValue( const ElementType& val )
+inline void StaticArray< Size, Value >::setValue( const ValueType& val )
 {
    for( int i = 0; i < Size; i++ )
       data[ i ] = val;
 }
 
-template< int Size, typename Element >
-bool StaticArray< Size, Element >::save( File& file ) const
+template< int Size, typename Value >
+bool StaticArray< Size, Value >::save( File& file ) const
 {
-   if( ! file. write< Element, Devices::Host, int >( data, size ) )
+   if( ! file. write< Value, Devices::Host, int >( data, size ) )
    {
       std::cerr << "Unable to write " << getType() << "." << std::endl;
       return false;
@@ -168,10 +168,10 @@ bool StaticArray< Size, Element >::save( File& file ) const
    return true;
 }
 
-template< int Size, typename Element >
-bool StaticArray< Size, Element >::load( File& file)
+template< int Size, typename Value >
+bool StaticArray< Size, Value >::load( File& file)
 {
-   if( ! file.read< Element, Devices::Host, int >( data, size ) )
+   if( ! file.read< Value, Devices::Host, int >( data, size ) )
    {
       std::cerr << "Unable to read " << getType() << "." << std::endl;
       return false;
@@ -179,8 +179,8 @@ bool StaticArray< Size, Element >::load( File& file)
    return true;
 }
 
-template< int Size, typename Element >
-void StaticArray< Size, Element >::sort()
+template< int Size, typename Value >
+void StaticArray< Size, Value >::sort()
 {
    /****
     * We assume that the array data is small and so
@@ -192,8 +192,8 @@ void StaticArray< Size, Element >::sort()
             swap( data[ i ], data[ i+1 ] );
 }
 
-template< int Size, typename Element >
-std::ostream& StaticArray< Size, Element >::write( std::ostream& str, const char* separator ) const
+template< int Size, typename Value >
+std::ostream& StaticArray< Size, Value >::write( std::ostream& str, const char* separator ) const
 {
    for( int i = 0; i < Size - 1; i++ )
       str << data[ i ] << separator;
@@ -202,35 +202,14 @@ std::ostream& StaticArray< Size, Element >::write( std::ostream& str, const char
 }
 
 
-template< int Size, typename Element >
-std::ostream& operator << ( std::ostream& str, const StaticArray< Size, Element >& a )
+template< int Size, typename Value >
+std::ostream& operator << ( std::ostream& str, const StaticArray< Size, Value >& a )
 {
    str << "[ ";
    a.write( str, ", " );
    str << " ]";
    return str;
 };
-
-#ifdef UNDEF //TEMPLATE_EXPLICIT_INSTANTIATION
-
-// TODO: it does not work with CUDA
-
-#ifndef HAVE_CUDA
-extern template class StaticArray< 4, char >;
-extern template class StaticArray< 4, int >;
-#ifdef INSTANTIATE_LONG_INT
-extern template class StaticArray< 4, long int >;
-#endif
-#ifdef INSTANTIATE_FLOAT
-extern template class StaticArray< 4, float >;
-#endif
-extern template class StaticArray< 4, double >;
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template class StaticArray< 4, long double >;
-#endif
-#endif
-
-#endif
 
 } // namespace Containers
 } // namespace TNL

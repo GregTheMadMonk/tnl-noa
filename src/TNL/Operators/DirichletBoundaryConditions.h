@@ -39,7 +39,7 @@ class DirichletBoundaryConditions
       typedef typename MeshType::DeviceType DeviceType;
       typedef Index IndexType;
       
-      typedef SharedPointer< Mesh > MeshPointer;
+      typedef Pointers::SharedPointer<  Mesh > MeshPointer;
       typedef Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
       typedef typename MeshType::PointType PointType;
 

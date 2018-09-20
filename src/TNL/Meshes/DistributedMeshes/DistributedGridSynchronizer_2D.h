@@ -39,12 +39,10 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 2, GridReal, D
     public:
       
       typedef typename Grid< 2, GridReal, Device, Index >::Cell Cell;
-      typedef typename Functions::MeshFunction< Grid< 2, GridReal, Device, Index >,EntityDimension, RealType> MeshFunctionType;
+      // FIXME: clang does not like this (incomplete type error)
+//      typedef typename Functions::MeshFunction< Grid< 2, GridReal, Device, Index >,EntityDimension, RealType> MeshFunctionType;
       typedef typename Grid< 2, GridReal, Device, Index >::DistributedMeshType DistributedGridType; 
-      typedef typename MeshFunctionType::RealType Real;
       typedef typename DistributedGridType::CoordinatesType CoordinatesType;
-      template< typename Real_ >
-      using BufferEntitiesHelperType = BufferEntitiesHelper< MeshFunctionType, 2, Real_, Device >;
       using SubdomainOverlapsType = typename DistributedGridType::SubdomainOverlapsType;
 
 
@@ -88,9 +86,12 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 2, GridReal, D
 
       }
 
-      template<typename CommunicatorType>
+      template< typename CommunicatorType,
+                typename MeshFunctionType,
+                typename PeriodicBoundariesMaskPointer = Pointers::SharedPointer< MeshFunctionType > >
       void synchronize( MeshFunctionType &meshFunction,
-                        bool periodicBoundaries = false )
+                        bool periodicBoundaries = false,
+                        const PeriodicBoundariesMaskPointer& mask = PeriodicBoundariesMaskPointer( nullptr ) )
       {
 
          TNL_ASSERT_TRUE( isSet, "Synchronizer is not set, but used to synchronize" );
@@ -136,7 +137,8 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 2, GridReal, D
             xCenter, yCenter,
             lowerOverlap, upperOverlap, localSize,
             neighbors,
-            periodicBoundaries );
+            periodicBoundaries,
+            PeriodicBoundariesMaskPointer( nullptr ) ); // the mask is used only when receiving data
 
          //async send and receive
          typename CommunicatorType::Request requests[ 16 ];
@@ -166,39 +168,55 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 2, GridReal, D
               xCenter, yCenter,
               lowerOverlap, upperOverlap, localSize,
               neighbors,
-              periodicBoundaries );
+              periodicBoundaries,
+              mask );
       }
     
    private:
       
-      template< typename Real_ >
-      void copyBuffers(MeshFunctionType meshFunction, Containers::Array<Real_, Device, Index> * buffers, bool toBuffer,
-                       int left, int right, int up, int down,
-                       int xcenter, int ycenter,
-                       const CoordinatesType& lowerOverlap,
-                       const CoordinatesType& upperOverlap,
-                       const CoordinatesType& localSize,
-                       const int *neighbors,
-                       bool periodicBoundaries )
+      template< typename Real_,
+                typename MeshFunctionType,
+                typename PeriodicBoundariesMaskPointer >
+      void copyBuffers( 
+         MeshFunctionType& meshFunction,
+         Containers::Array<Real_, Device, Index>* buffers,
+         bool toBuffer,
+         int left, int right, int up, int down,
+         int xcenter, int ycenter,
+         const CoordinatesType& lowerOverlap,
+         const CoordinatesType& upperOverlap,
+         const CoordinatesType& localSize,
+         const int *neighbors,
+         bool periodicBoundaries,
+         const PeriodicBoundariesMaskPointer& mask )
       {
          // TODO: SWAP up and down
-         using Helper = BufferEntitiesHelper< MeshFunctionType, 2, Real_, Device >;
-         if( neighbors[ Left ] != -1 || periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ Left ].getData(), left, ycenter, lowerOverlap.x(), localSize.y(), toBuffer );
-         if( neighbors[ Right ] != -1 || periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ Right ].getData(), right, ycenter, upperOverlap.x(), localSize.y(), toBuffer );
-         if( neighbors[ Up ] != -1 || periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ Up ].getData(), xcenter, up, localSize.x(), lowerOverlap.y(), toBuffer );
-         if( neighbors[ Down ] != -1 || periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ Down ].getData(), xcenter, down, localSize.x(), upperOverlap.y(), toBuffer );
-         if( neighbors[ UpLeft ] != -1 || periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ UpLeft ].getData(), left, up, lowerOverlap.x(), lowerOverlap.y(), toBuffer );
-         if( neighbors[ UpRight ] != -1 || periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ UpRight ].getData(), right, up, upperOverlap.x(), lowerOverlap.y(), toBuffer );
-         if( neighbors[ DownLeft ] != -1 || periodicBoundaries )        
-            Helper::BufferEntities( meshFunction, buffers[ DownLeft ].getData(), left, down, lowerOverlap.x(), upperOverlap.y(), toBuffer );
-         if( neighbors[ DownRight ] != -1 || periodicBoundaries )
-            Helper::BufferEntities( meshFunction, buffers[ DownRight ].getData(), right, down, upperOverlap.x(), upperOverlap.y(), toBuffer );
+         bool leftIsBoundary = ( neighbors[ Left ] == -1 );
+         bool rightIsBoundary = ( neighbors[ Right ] == -1 );
+         bool upIsBoundary = ( neighbors[ Up ] == -1 );
+         bool downIsBoundary = ( neighbors[ Down ] == -1 );
+         bool upLeftIsBoundary = ( neighbors[ UpLeft ] == -1 );
+         bool upRightIsBoundary = ( neighbors[ UpRight ] == -1 );
+         bool downLeftIsBoundary = ( neighbors[ DownLeft ] == -1 );
+         bool downRightIsBoundary = ( neighbors[ DownRight ] == -1 );
+         
+         using Helper = BufferEntitiesHelper< MeshFunctionType, PeriodicBoundariesMaskPointer, 2, Real_, Device >;
+         if( ! leftIsBoundary || periodicBoundaries )
+            Helper::BufferEntities( meshFunction, mask, buffers[ Left      ].getData(), leftIsBoundary,      left,    ycenter, lowerOverlap.x(), localSize.y(),    toBuffer );
+         if( ! rightIsBoundary || periodicBoundaries )
+            Helper::BufferEntities( meshFunction, mask, buffers[ Right     ].getData(), rightIsBoundary,     right,   ycenter, upperOverlap.x(), localSize.y(),    toBuffer );
+         if( ! upIsBoundary || periodicBoundaries )
+            Helper::BufferEntities( meshFunction, mask, buffers[ Up        ].getData(), upIsBoundary,        xcenter, up,      localSize.x(),    lowerOverlap.y(), toBuffer );
+         if( ! downIsBoundary || periodicBoundaries )
+            Helper::BufferEntities( meshFunction, mask, buffers[ Down      ].getData(), downIsBoundary,      xcenter, down,    localSize.x(),    upperOverlap.y(), toBuffer );
+         if( ! upLeftIsBoundary || periodicBoundaries )
+            Helper::BufferEntities( meshFunction, mask, buffers[ UpLeft    ].getData(), upLeftIsBoundary,    left,    up,      lowerOverlap.x(), lowerOverlap.y(), toBuffer );
+         if( ! upRightIsBoundary || periodicBoundaries )
+            Helper::BufferEntities( meshFunction, mask, buffers[ UpRight   ].getData(), upRightIsBoundary,   right,   up,      upperOverlap.x(), lowerOverlap.y(), toBuffer );
+         if( ! downLeftIsBoundary || periodicBoundaries )        
+            Helper::BufferEntities( meshFunction, mask, buffers[ DownLeft  ].getData(), downLeftIsBoundary,  left,    down,    lowerOverlap.x(), upperOverlap.y(), toBuffer );
+         if( ! downRightIsBoundary || periodicBoundaries )
+            Helper::BufferEntities( meshFunction, mask, buffers[ DownRight ].getData(), downRightIsBoundary, right,   down,    upperOverlap.x(), upperOverlap.y(), toBuffer );
       }
       
       DistributedGridType *distributedGrid;

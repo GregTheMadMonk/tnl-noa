@@ -27,7 +27,7 @@
 
 #include <TNL/Meshes/DimensionTag.h>
 #include <TNL/Meshes/Mesh.h>
-#include <TNL/DevicePointer.h>
+#include <TNL/Pointers/DevicePointer.h>
 #include <TNL/ParallelFor.h>
 #include <TNL/StaticFor.h>
 
@@ -57,8 +57,8 @@ public:
          const IndexType entitiesCount = mesh.template getEntitiesCount< DimensionTag::value >();
          auto& superentitiesStorage = mesh.template getSuperentityStorageNetwork< DimensionTag::value, SuperdimensionTag::value >();
          using Multimap = typename std::remove_reference< decltype(superentitiesStorage) >::type;
-         DevicePointer< Mesh > meshPointer( mesh );
-         DevicePointer< Multimap > superentitiesStoragePointer( superentitiesStorage );
+         Pointers::DevicePointer< Mesh > meshPointer( mesh );
+         Pointers::DevicePointer< Multimap > superentitiesStoragePointer( superentitiesStorage );
 
          auto kernel = [] __cuda_callable__
             ( IndexType i,
@@ -97,8 +97,8 @@ public:
          const IndexType entitiesCount = mesh.template getEntitiesCount< SuperdimensionTag::value >();
          auto& subentitiesStorage = mesh.template getSubentityStorageNetwork< SuperdimensionTag::value, DimensionTag::value >();
          using Multimap = typename std::remove_reference< decltype(subentitiesStorage) >::type;
-         DevicePointer< Mesh > meshPointer( mesh );
-         DevicePointer< Multimap > subentitiesStoragePointer( subentitiesStorage );
+         Pointers::DevicePointer< Mesh > meshPointer( mesh );
+         Pointers::DevicePointer< Multimap > subentitiesStoragePointer( subentitiesStorage );
 
          auto kernel = [] __cuda_callable__
             ( IndexType i,

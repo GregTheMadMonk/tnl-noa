@@ -78,12 +78,16 @@ void Cuda::removeSmartPointer( SmartPointer* pointer )
 
 bool Cuda::synchronizeDevice( int deviceId )
 {
+#ifdef HAVE_CUDA_UNIFIED_MEMORY
+   return true;
+#else
    if( deviceId < 0 )
       deviceId = Devices::CudaDeviceInfo::getActiveDevice();
    smartPointersSynchronizationTimer.start();
    bool b = smartPointersRegister.synchronizeDevice( deviceId );
    smartPointersSynchronizationTimer.stop();
    return b;
+#endif
 }
 
 } // namespace Devices

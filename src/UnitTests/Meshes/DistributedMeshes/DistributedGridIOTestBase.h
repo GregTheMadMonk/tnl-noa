@@ -12,6 +12,7 @@
 #ifdef HAVE_MPI
 
 #include "DistributedGridIOTest.h"
+#include <TNL/Communicators/ScopedInitializer.h>
 
 TEST( DistributedGridIO, Save_1D )
 {
@@ -134,16 +135,11 @@ int main( int argc, char* argv[] )
        delete listeners.Release(listeners.default_result_printer());
        listeners.Append(new MinimalistBufferedPrinter);
 
-       CommunicatorType::Init(argc,argv );
+       Communicators::ScopedInitializer< CommunicatorType > mpi(argc, argv);
        CommunicatorType::setRedirection( false );
        CommunicatorType::setupRedirection();
     #endif
-       int result= RUN_ALL_TESTS();
-
-    #ifdef HAVE_MPI
-       CommunicatorType::Finalize();
-    #endif
-       return result;
+       return RUN_ALL_TESTS();
 #else
    
    throw GtestMissingError();

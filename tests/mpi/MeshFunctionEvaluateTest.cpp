@@ -16,12 +16,13 @@ using namespace std;
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Communicators/NoDistrCommunicator.h>
+#include <TNL/Communicators/ScopedInitializer.h>
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
 
 #include <TNL/Timer.h>
-#include  <TNL/SharedPointer.h>
+#include <TNL/Pointers/SharedPointer.h>
 
 //#define DIMENSION 3
 //#define OUTPUT 
@@ -62,7 +63,7 @@ int main ( int argc, char *argv[])
    typedef LinearFunction<double,DIMENSION> LinearFunctionType;
    typedef ConstFunction<double,DIMENSION> ConstFunctionType;
   
-   CommunicatorType::Init(argc,argv);
+   Communicators::ScopedInitializer< CommunicatorType > mpi(argc, argv);
 
    int size=9;
    int cycles=1;
@@ -111,8 +112,8 @@ int main ( int argc, char *argv[])
    SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
    distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
-   SharedPointer<MeshType> gridptr;
-   SharedPointer<MeshFunctionType> meshFunctionptr;
+   Pointers::SharedPointer<MeshType> gridptr;
+   Pointers::SharedPointer<MeshFunctionType> meshFunctionptr;
    MeshFunctionEvaluator< MeshFunctionType, LinearFunctionType > linearFunctionEvaluator;
    MeshFunctionEvaluator< MeshFunctionType, ConstFunctionType > constFunctionEvaluator;
  
@@ -124,8 +125,8 @@ int main ( int argc, char *argv[])
   
    meshFunctionptr->bind(gridptr,dof);  
   
-   SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
-   SharedPointer< ConstFunctionType, Host > constFunctionPtr; 
+   Pointers::SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
+   Pointers::SharedPointer< ConstFunctionType, Host > constFunctionPtr; 
    
   
   
@@ -173,7 +174,6 @@ int main ( int argc, char *argv[])
       cout <<"sync: "<<sync.getRealTime()<<endl;
       cout<<"all: "<<all.getRealTime()<<endl<<endl;
    }
-   CommunicatorType::Finalize();
 #else
   std::cout<<"MPI not Supported." << std::endl;
 #endif

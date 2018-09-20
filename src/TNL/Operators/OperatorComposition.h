@@ -50,7 +50,7 @@ class OperatorComposition
       typedef typename InnerOperator::IndexType IndexType;
       typedef ExactOperatorComposition< typename OuterOperator::ExactOperatorType,
                                            typename InnerOperator::ExactOperatorType > ExactOperatorType;
-      typedef SharedPointer< MeshType > MeshPointer;
+      typedef Pointers::SharedPointer<  MeshType > MeshPointer;
       
       static constexpr int getPreimageEntitiesDimension() { return InnerOperator::getImageEntitiesDimension(); };
       static constexpr int getImageEntitiesDimension() { return OuterOperator::getImageEntitiesDimension(); };
@@ -131,7 +131,7 @@ class OperatorComposition< OuterOperator, InnerOperator, void >
       typedef Functions::OperatorFunction< InnerOperator, ImageFunctionType > OuterOperatorFunction;
       typedef typename InnerOperator::RealType RealType;
       typedef typename InnerOperator::IndexType IndexType;
-      typedef SharedPointer< MeshType > MeshPointer;
+      typedef Pointers::SharedPointer<  MeshType > MeshPointer;
       
       OperatorComposition( const OuterOperator& outerOperator,
                               InnerOperator& innerOperator,

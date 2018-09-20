@@ -31,8 +31,8 @@ class tnlDirectEikonalMethodsBase< Meshes::Grid< 1, Real, Device, Index > >
       typedef Index IndexType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       typedef Functions::MeshFunction< MeshType, 1, bool > InterfaceMapType;
-      using MeshFunctionPointer = SharedPointer< MeshFunctionType >;
-      using InterfaceMapPointer = SharedPointer< InterfaceMapType >;
+      using MeshFunctionPointer = Pointers::SharedPointer< MeshFunctionType >;
+      using InterfaceMapPointer = Pointers::SharedPointer< InterfaceMapType >;
       
       void initInterface( const MeshFunctionPointer& input,
                           MeshFunctionPointer& output,
@@ -61,8 +61,8 @@ class tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >
       typedef Index IndexType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       typedef Functions::MeshFunction< MeshType, 2, bool > InterfaceMapType;
-      using MeshFunctionPointer = SharedPointer< MeshFunctionType >;
-      using InterfaceMapPointer = SharedPointer< InterfaceMapType >;      
+      using MeshFunctionPointer = Pointers::SharedPointer< MeshFunctionType >;
+      using InterfaceMapPointer = Pointers::SharedPointer< InterfaceMapType >;      
 
       void initInterface( const MeshFunctionPointer& input,
                           MeshFunctionPointer& output,
@@ -90,8 +90,8 @@ class tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > >
       typedef Index IndexType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       typedef Functions::MeshFunction< MeshType, 3, bool > InterfaceMapType;
-      using MeshFunctionPointer = SharedPointer< MeshFunctionType >;
-      using InterfaceMapPointer = SharedPointer< InterfaceMapType >;      
+      using MeshFunctionPointer = Pointers::SharedPointer< MeshFunctionType >;
+      using InterfaceMapPointer = Pointers::SharedPointer< InterfaceMapType >;      
 
       void initInterface( const MeshFunctionPointer& input,
                           MeshFunctionPointer& output,

@@ -12,7 +12,7 @@
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/FileName.h>
 #include <TNL/Meshes/Grid.h>
-#include <TNL/SharedPointer.h>
+#include <TNL/Pointers/SharedPointer.h>
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Images/PGMImage.h>
 #include <TNL/Images/PNGImage.h>
@@ -48,7 +48,7 @@ bool processImages( const Config::ParameterContainer& parameters )
     bool verbose = parameters.getParameter< bool >( "verbose" );
  
     using GridType = Meshes::Grid< 2, Real, Devices::Host, int >;
-    using GridPointer = SharedPointer< GridType >;
+    using GridPointer = Pointers::SharedPointer< GridType >;
     using MeshFunctionType = Functions::MeshFunction< GridType >;
     GridPointer grid;
     MeshFunctionType meshFunction;
