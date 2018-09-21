@@ -62,8 +62,8 @@ public:
    virtual void solve( ConstVectorViewType b, VectorViewType x ) const override;
 
 protected:
-   Matrices::CSR< RealType, DeviceType, IndexType > L;
-   Matrices::CSR< RealType, DeviceType, IndexType > U;
+   // The factors L and U are stored separately and the rows of U are reversed.
+   Matrices::CSR< RealType, DeviceType, IndexType > L, U;
 };
 
 template< typename Matrix >

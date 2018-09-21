@@ -71,8 +71,7 @@ protected:
    Real tau = 1e-4;
 
    // The factors L and U are stored separately and the rows of U are reversed.
-   Matrices::CSR< RealType, DeviceType, IndexType > L;
-   Matrices::CSR< RealType, DeviceType, IndexType > U;
+   Matrices::CSR< RealType, DeviceType, IndexType > L, U;
 };
 
 template< typename Matrix, typename Real, typename Index >

@@ -13,6 +13,7 @@
 #pragma once
 
 #include "ILU0.h"
+#include "TriangularSolve.h"
 
 #include <TNL/Exceptions/CudaSupportMissing.h>
 
@@ -40,19 +41,19 @@ update( const MatrixPointer& matrixPointer )
    L_rowLengths.setSize( N );
    U_rowLengths.setSize( N );
    for( IndexType i = 0; i < N; i++ ) {
-       const auto row = matrixPointer->getRow( i );
-       const auto max_length = matrixPointer->getRowLength( i );
-       IndexType L_entries = 0;
-       IndexType U_entries = 0;
-       for( IndexType j = 0; j < max_length; j++ ) {
-           const auto column = row.getElementColumn( j );
-           if( column < i )
-               L_entries++;
-           else if( column < N )
-              U_entries++;
-           else
-               break;
-       }
+      const auto row = matrixPointer->getRow( i );
+      const auto max_length = matrixPointer->getRowLength( i );
+      IndexType L_entries = 0;
+      IndexType U_entries = 0;
+      for( IndexType j = 0; j < max_length; j++ ) {
+         const auto column = row.getElementColumn( j );
+         if( column < i )
+            L_entries++;
+         else if( column < N )
+            U_entries++;
+         else
+            break;
+      }
       L_rowLengths[ i ] = L_entries;
       U_rowLengths[ N - 1 - i ] = U_entries;
    }
@@ -107,46 +108,11 @@ void
 ILU0_impl< Matrix, Real, Devices::Host, Index >::
 solve( ConstVectorViewType b, VectorViewType x ) const
 {
-   TNL_ASSERT_EQ( b.getSize(), L.getRows(), "wrong size of the right hand side" );
-   TNL_ASSERT_EQ( x.getSize(), L.getRows(), "wrong size of the solution vector" );
-
-   const IndexType N = x.getSize();
-
    // Step 1: solve y from Ly = b
-   for( IndexType i = 0; i < N; i++ ) {
-      x[ i ] = b[ i ];
-
-      const auto L_entries = L.getRowLength( i );
-
-      // this condition is to avoid segfaults on empty L.getRow( i )
-      if( L_entries > 0 ) {
-         const auto L_i = L.getRow( i );
-
-         // loop for j = 0, ..., i - 1; but only over the non-zero entries
-         for( IndexType c_j = 0; c_j < L_entries; c_j++ ) {
-            const auto j = L_i.getElementColumn( c_j );
-            x[ i ] -= L_i.getElementValue( c_j ) * x[ j ];
-         }
-      }
-   }
+   triangularSolveLower< true >( L, x, b );
 
    // Step 2: solve x from Ux = y
-   for( IndexType i = N - 1; i >= 0; i-- ) {
-      const IndexType U_idx = N - 1 - i;
-
-      const auto U_entries = U.getRowLength( U_idx );
-      const auto U_i = U.getRow( U_idx );
-
-      const auto U_ii = U_i.getElementValue( 0 );
-
-      // loop for j = i+1, ..., N-1; but only over the non-zero entries
-      for( IndexType c_j = 1; c_j < U_entries ; c_j++ ) {
-         const auto j = U_i.getElementColumn( c_j );
-         x[ i ] -= U_i.getElementValue( c_j ) * x[ j ];
-      }
-
-      x[ i ] /= U_ii;
-   }
+   triangularSolveUpper< true, true >( U, x, x );
 }
 
 
