@@ -63,6 +63,10 @@ else()
     set( EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/Release/bin )
 endif()
 
+# This is to avoid error "file RPATH_CHANGE could not write new RPATH" when 
+# LIBRARY_OUTPUT_PATH is different from RUNPATH
+set(CMAKE_BUILD_WITH_INSTALL_RPATH TRUE)
+
 # check if the compiler is good enough
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
    # GCC 5.0 is the first release with full C++11 support (due to libstdc++)
