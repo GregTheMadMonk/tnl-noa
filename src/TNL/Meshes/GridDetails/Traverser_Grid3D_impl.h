@@ -57,7 +57,7 @@ processBoundaryEntities( const GridPointer& gridPointer,
          GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
             gridPointer,
             begin,
-            CoordinatesType( begin.x(), end.x(), end.y() ),
+            CoordinatesType( begin.x(), end.y(), end.z() ),
             userData,
             0 );
       }
