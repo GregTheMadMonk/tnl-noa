@@ -282,7 +282,7 @@ class MpiCommunicator
             TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
             TNL_ASSERT_NE(group, NullGroup, "ISend cannot be called with NullGroup");
             Request req;
-            MPI_Isend((const void*) data, count, MPIDataType(data) , dest, 0, group, &req);
+            MPI_Isend( const_cast< void* >( ( const void* ) data ), count, MPIDataType(data) , dest, 0, group, &req);
             return req;
 #else
             throw Exceptions::MPISupportMissing();
@@ -334,7 +334,7 @@ class MpiCommunicator
         {
 #ifdef HAVE_MPI
             TNL_ASSERT_NE(group, NullGroup, "Allreduce cannot be called with NullGroup");
-            MPI_Allreduce( (const void*) data, (void*) reduced_data,count,MPIDataType(data),op,group);
+            MPI_Allreduce( const_cast< void* >( ( void* ) data ), (void*) reduced_data,count,MPIDataType(data),op,group);
 #else
             throw Exceptions::MPISupportMissing();
 #endif
@@ -366,7 +366,7 @@ class MpiCommunicator
          {
 #ifdef HAVE_MPI
             TNL_ASSERT_NE(group, NullGroup, "Reduce cannot be called with NullGroup");
-            MPI_Reduce( (const void*) data, (void*) reduced_data,count,MPIDataType(data),op,root,group);
+            MPI_Reduce( const_cast< void* >( ( void*) data ), (void*) reduced_data,count,MPIDataType(data),op,root,group);
 #else
             throw Exceptions::MPISupportMissing();
 #endif
@@ -386,7 +386,7 @@ class MpiCommunicator
 #ifdef HAVE_MPI
             TNL_ASSERT_NE(group, NullGroup, "SendReceive cannot be called with NullGroup");
             MPI_Status status;
-            MPI_Sendrecv( ( const void* ) sendData,
+            MPI_Sendrecv( const_cast< void* >( ( void* ) sendData ),
                           sendCount,
                           MPIDataType( sendData ),
                           destination,
@@ -412,7 +412,7 @@ class MpiCommunicator
          {
 #ifdef HAVE_MPI
             TNL_ASSERT_NE(group, NullGroup, "SendReceive cannot be called with NullGroup");
-            MPI_Alltoall( ( const void* ) sendData,
+            MPI_Alltoall( const_cast< void* >( ( void* ) sendData ),
                           sendCount,
                           MPIDataType( sendData ),
                           ( void* ) receiveData,
@@ -433,7 +433,7 @@ class MpiCommunicator
          }
       }
 
-      static void CreateNewGroup(bool meToo,int myRank, CommunicationGroup &oldGroup, CommunicationGroup &newGroup)
+      static void CreateNewGroup( bool meToo, int myRank, CommunicationGroup &oldGroup, CommunicationGroup &newGroup )
       {
 #ifdef HAVE_MPI
         if(meToo)
