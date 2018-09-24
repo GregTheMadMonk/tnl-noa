@@ -521,7 +521,10 @@ String
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 printProcessDistr() const
 {
-   return convertToString(this->domainDecomposition[0])+String("-")+convertToString(this->domainDecomposition[1])+String("-")+convertToString(this->domainDecomposition[2]);
+   String res = convertToString(this->domainDecomposition[0]);
+   for(int i=1; i<Dimension; i++)
+        res=res+String("-")+convertToString(this->domainDecomposition[i]);
+   return res;
 };  
 
 template< int Dimension, typename Real, typename Device, typename Index >
