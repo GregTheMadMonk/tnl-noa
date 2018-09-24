@@ -82,8 +82,8 @@ public:
    using MetadataMap = std::map< const char*, String >;
    using MetadataColumns = std::vector<MetadataElement>;
 
-   using HeaderElements = std::initializer_list< String >;
-   using RowElements = std::initializer_list< double >;
+   using HeaderElements = std::vector< String >;
+   using RowElements = std::vector< double >;
 
    Logging( bool verbose = true )
    : verbose(verbose)
@@ -116,8 +116,6 @@ public:
    writeTableHeader( const String & spanningElement,
                      const HeaderElements & subElements )
    {
-      using namespace std;
-
       if( verbose && header_changed ) {
          for( auto & it : metadataColumns ) {
             std::cout << std::setw( 20 ) << it.first;
@@ -170,8 +168,6 @@ public:
    writeTableRow( const String & spanningElement,
                   const RowElements & subElements )
    {
-      using namespace std;
-
       if( verbose ) {
          for( auto & it : metadataColumns ) {
             std::cout << std::setw( 20 ) << it.second;
@@ -282,6 +278,27 @@ protected:
    MetadataColumns metadataColumns;
    bool header_changed = true;
    std::vector< std::pair< String, int > > horizontalGroups;
+};
+
+
+struct BenchmarkResult
+{
+   using HeaderElements = Logging::HeaderElements;
+   using RowElements = Logging::RowElements;
+
+   double bandwidth = std::numeric_limits<double>::quiet_NaN();
+   double time = std::numeric_limits<double>::quiet_NaN();
+   double speedup = std::numeric_limits<double>::quiet_NaN();
+
+   virtual HeaderElements getTableHeader() const
+   {
+      return HeaderElements({"bandwidth", "time", "speedup"});
+   }
+
+   virtual RowElements getRowElements() const
+   {
+      return RowElements({ bandwidth, time, speedup });
+   }
 };
 
 
@@ -399,49 +416,45 @@ public:
    double
    time( ResetFunction reset,
          const String & performer,
-         ComputeFunction & compute )
+         ComputeFunction & compute,
+         BenchmarkResult & result )
    {
-      double time;
+      result.time = std::numeric_limits<double>::quiet_NaN();
       try {
          if( verbose ) {
             // run the monitor main loop
             Solvers::SolverMonitorThread monitor_thread( monitor );
-            time = timeFunction( compute, reset, loops, monitor );
+            result.time = timeFunction( compute, reset, loops, monitor );
          }
          else {
-            time = timeFunction( compute, reset, loops, monitor );
+            result.time = timeFunction( compute, reset, loops, monitor );
          }
       }
       catch ( const std::exception& e ) {
          std::cerr << "timeFunction failed due to a C++ exception with description: " << e.what() << std::endl;
-         time = std::numeric_limits<double>::quiet_NaN();
       }
 
-      const double bandwidth = datasetSize / time;
-      const double speedup = this->baseTime / time;
+      result.bandwidth = datasetSize / result.time;
+      result.speedup = this->baseTime / result.time;
       if( this->baseTime == 0.0 )
-         this->baseTime = time;
+         this->baseTime = result.time;
 
-      writeTableHeader( performer, HeaderElements({"bandwidth", "time", "speedup"}) );
-      writeTableRow( performer, RowElements({ bandwidth, time, speedup }) );
+      writeTableHeader( performer, result.getTableHeader() );
+      writeTableRow( performer, result.getRowElements() );
 
       return this->baseTime;
    }
 
-   // Recursive template function to deal with multiple computations with the
-   // same reset function.
    template< typename ResetFunction,
              typename ComputeFunction,
              typename... NextComputations >
    inline double
    time( ResetFunction reset,
          const String & performer,
-         ComputeFunction & compute,
-         NextComputations & ... nextComputations )
+         ComputeFunction & compute )
    {
-      time( reset, performer, compute );
-      time( reset, nextComputations... );
-      return this->baseTime;
+      BenchmarkResult result;
+      return time( reset, performer, compute, result );
    }
 
    // Adds an error message to the log. Should be called in places where the

@@ -102,9 +102,8 @@ benchmarkArrayOperations( Benchmark & benchmark,
    };
 #ifdef HAVE_CUDA
    benchmark.setOperation( "copy (operator=)", datasetSize, copyBasetime );
-   benchmark.time( reset1,
-                   "CPU->GPU", copyAssignHostCuda,
-                   "GPU->CPU", copyAssignCudaHost );
+   benchmark.time( reset1, "CPU->GPU", copyAssignHostCuda );
+   benchmark.time( reset1, "GPU->CPU", copyAssignCudaHost );
 #endif
 
 
