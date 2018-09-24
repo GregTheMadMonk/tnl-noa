@@ -103,23 +103,49 @@ benchmarkSolver( Benchmark& benchmark,
          throw std::runtime_error("solver did not converge");
    };
 
-   benchmark.time( reset, performer, compute );
+   // subclass BenchmarkResult to add extra columns to the benchmark
+   // (iterations, preconditioned residue, true residue)
+   struct MyBenchmarkResult : public BenchmarkResult
+   {
+      using HeaderElements = BenchmarkResult::HeaderElements;
+      using RowElements = BenchmarkResult::RowElements;
 
-   // TODO: add extra columns to the benchmark (iterations, preconditioned residue, true residue)
-//   Vector r;
-//   r.setLike( x );
-//   matrix->vectorProduct( x, r );
-//   r.addVector( b, 1.0, -1.0 );
-//   const double trueResidue = r.lpNorm( 2.0 ) / b.lpNorm( 2.0 );
+      Solver< Matrix >& solver;
+      const SharedPointer< Matrix >& matrix;
+      const Vector& x;
+      const Vector& b;
 
-//    std::cout << "Converged: " << solver.checkConvergence() << ", iterations = " << solver.getIterations() << ", residue = " << solver.getResidue() << "    " << std::endl;
-//    std::cout << "Mean time: " << time / loops << " seconds." << std::endl;
-//    std::cout << outputPrefix
-//              << "converged: "   << std::setw( 5) << std::boolalpha << ( ! std::isnan(solver.getResidue()) && solver.getResidue() < solver.getConvergenceResidue() ) << "   "
-//              << "iterations = " << std::setw( 4) << solver.getIterations() << "   "
-//              << "preconditioned residue = " << std::setw(10) << solver.getResidue() << "   "
-//              << "true residue = " << std::setw(10) << trueResidue << "   "
-//              << "mean time = "  << std::setw( 9) << time / loops << " seconds." << std::endl;
+      MyBenchmarkResult( Solver< Matrix >& solver,
+                         const SharedPointer< Matrix >& matrix,
+                         const Vector& x,
+                         const Vector& b )
+      : solver(solver), matrix(matrix), x(x), b(b)
+      {}
+
+      virtual HeaderElements getTableHeader() const override
+      {
+         return HeaderElements({"time", "speedup", "converged", "iterations", "residue_precond", "residue_true"});
+      }
+
+      virtual RowElements getRowElements() const override
+      {
+         const bool converged = ! std::isnan(solver.getResidue()) && solver.getResidue() < solver.getConvergenceResidue();
+         const long iterations = solver.getIterations();
+         const double residue_precond = solver.getResidue();
+
+         Vector r;
+         r.setLike( x );
+         matrix->vectorProduct( x, r );
+         r.addVector( b, 1.0, -1.0 );
+         const double residue_true = r.lpNorm( 2.0 ) / b.lpNorm( 2.0 );
+
+         return RowElements({ time, speedup, (double) converged, (double) iterations,
+                              residue_precond, residue_true });
+      }
+   };
+   MyBenchmarkResult benchmarkResult( solver, matrix, x, b );
+
+   benchmark.time( reset, performer, compute, benchmarkResult );
 }
 
 #ifdef HAVE_ARMADILLO
@@ -131,8 +157,6 @@ benchmarkArmadillo( const Config::ParameterContainer& parameters,
                     const Vector& x0,
                     const Vector& b )
 {
-    using namespace TNL;
-
     // copy matrix into Armadillo's class
     // sp_mat is in CSC format
     arma::uvec _colptr( matrix->getRowPointers().getSize() );
