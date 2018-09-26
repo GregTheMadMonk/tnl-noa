@@ -755,6 +755,23 @@ TEST( VectorSpecialCasesTest, initializationOfVectorViewByArrayView )
    EXPECT_EQ( v_view.sum(), 0 );
 }
 
+TEST( VectorSpecialCasesTest, defaultConstructors )
+{
+   using ArrayType = Containers::Array< int, Devices::Host >;
+   using VectorViewType = VectorView< int, Devices::Host >;
+   using ArrayViewType = ArrayView< int, Devices::Host >;
+
+   ArrayType a( 100 );
+   a.setValue( 0 );
+
+   ArrayViewType a_view;
+   a_view.bind( a );
+
+   VectorViewType v_view;
+   v_view.bind( a );
+   EXPECT_EQ( v_view.getData(), a_view.getData() );
+}
+
 #endif // HAVE_GTEST
 
 
