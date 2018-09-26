@@ -6,8 +6,6 @@ SET( headers BICGStab.h
              BICGStabL_impl.h
              CG.h
              CG_impl.h
-             CWYGMRES.h
-             CWYGMRES_impl.h
              GMRES.h
              GMRES_impl.h
              Jacobi.h

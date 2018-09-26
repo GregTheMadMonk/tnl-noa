@@ -19,7 +19,6 @@
 #include <TNL/Solvers/Linear/BICGStab.h>
 #include <TNL/Solvers/Linear/BICGStabL.h>
 #include <TNL/Solvers/Linear/GMRES.h>
-#include <TNL/Solvers/Linear/CWYGMRES.h>
 #include <TNL/Solvers/Linear/TFQMR.h>
 #include <TNL/Solvers/Linear/UmfpackWrapper.h>
 #include <TNL/Solvers/Linear/Preconditioners/Diagonal.h>
@@ -45,8 +44,6 @@ getLinearSolver( const Config::ParameterContainer& parameters )
       return std::make_shared< Linear::BICGStabL< MatrixType > >();
    if( discreteSolver == "gmres" )
       return std::make_shared< Linear::GMRES< MatrixType > >();
-   if( discreteSolver == "cwygmres" )
-      return std::make_shared< Linear::CWYGMRES< MatrixType > >();
    if( discreteSolver == "tfqmr" )
       return std::make_shared< Linear::TFQMR< MatrixType > >();
 #ifdef HAVE_UMFPACK
@@ -54,7 +51,7 @@ getLinearSolver( const Config::ParameterContainer& parameters )
       return std::make_shared< Linear::UmfpackWrapper< MatrixType > >();
 #endif
 
-   std::cerr << "Unknown semi-implicit discrete solver " << discreteSolver << ". It can be only: sor, cg, bicgstab, bicgstabl, gmres, cwygmres, tfqmr";
+   std::cerr << "Unknown semi-implicit discrete solver " << discreteSolver << ". It can be only: sor, cg, bicgstab, bicgstabl, gmres, tfqmr";
 #ifdef HAVE_UMFPACK
    std::cerr << ", umfpack"
 #endif
