@@ -459,8 +459,10 @@ hauseholder_apply_trunc( HostView out,
    // no-op if the problem is not distributed
    CommunicatorType::Bcast( YL_i.getData(), YL_i.getSize(), 0, Traits::getCommunicationGroup( *this->matrix ) );
 
-   // TODO: is aux always 1?
-   const RealType aux = T[ i + i * (restarting_max + 1) ] * y_i.scalarProduct( z );
+   // NOTE: aux = t_i * (y_i, z) = 1  since  t_i = 2 / ||y_i||^2  and
+   //       (y_i, z) = ||z_trunc||^2 + |z_i| ||z_trunc|| = ||y_i||^2 / 2
+//   const RealType aux = T[ i + i * (restarting_max + 1) ] * y_i.scalarProduct( z );
+   constexpr RealType aux = 1.0;
    if( localOffset == 0 ) {
       if( std::is_same< DeviceType, Devices::Host >::value ) {
          for( int k = 0; k <= i; k++ )
