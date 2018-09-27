@@ -340,6 +340,21 @@ class MpiCommunicator
 #endif
         }
 
+        // in-place variant of Allreduce
+        template< typename T >
+        static void Allreduce( T* data,
+                               int count,
+                               const MPI_Op &op,
+                               CommunicationGroup group)
+        {
+#ifdef HAVE_MPI
+            TNL_ASSERT_NE(group, NullGroup, "Allreduce cannot be called with NullGroup");
+            MPI_Allreduce( MPI_IN_PLACE, (void*) data,count,MPIDataType(data),op,group);
+#else
+            throw Exceptions::MPISupportMissing();
+#endif
+        }
+
 
          template< typename T >
          static void Reduce( const T* data,

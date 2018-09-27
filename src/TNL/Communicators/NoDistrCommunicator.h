@@ -108,6 +108,15 @@ class NoDistrCommunicator
          memcpy( ( void* ) reduced_data, ( const void* ) data, count * sizeof( T ) );
       }
 
+      // in-place variant of Allreduce
+      template< typename T >
+      static void Allreduce( T* data,
+                             int count,
+                             const MPI_Op &op,
+                             CommunicationGroup group )
+      {
+      }
+
       template< typename T >
       static void Reduce( T* data,
                           T* reduced_data,
