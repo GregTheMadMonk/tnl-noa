@@ -14,8 +14,6 @@
 
 #include "LinearSolver.h"
 
-#include <TNL/Containers/Vector.h>
-
 namespace TNL {
 namespace Solvers {
 namespace Linear {
@@ -25,12 +23,19 @@ class GMRES
 : public LinearSolver< Matrix >
 {
    using Base = LinearSolver< Matrix >;
+
+   // compatibility shortcuts
+   using Traits = Linear::Traits< Matrix >;
+   using CommunicatorType = typename Traits::CommunicatorType;
+
 public:
    using RealType = typename Base::RealType;
    using DeviceType = typename Base::DeviceType;
    using IndexType = typename Base::IndexType;
+   // distributed vectors/views
    using VectorViewType = typename Base::VectorViewType;
    using ConstVectorViewType = typename Base::ConstVectorViewType;
+   using VectorType = typename Traits::VectorType;
 
    String getType() const;
 
@@ -43,11 +48,12 @@ public:
    bool solve( ConstVectorViewType b, VectorViewType x ) override;
 
 protected:
-   using ConstDeviceView = Containers::VectorView< const RealType, DeviceType, IndexType >;
-   using DeviceView = Containers::VectorView< RealType, DeviceType, IndexType >;
-   using HostView = Containers::VectorView< RealType, Devices::Host, IndexType >;
-   using DeviceVector = Containers::Vector< RealType, DeviceType, IndexType >;
-   using HostVector = Containers::Vector< RealType, Devices::Host, IndexType >;
+   // local vectors/views
+   using ConstDeviceView = typename Traits::ConstLocalVectorViewType;
+   using DeviceView = typename Traits::LocalVectorViewType;
+   using HostView = typename DeviceView::HostType;
+   using DeviceVector = typename Traits::LocalVectorType;
+   using HostVector = typename DeviceVector::HostType;
 
    enum class Variant { MGS, MGSR, CWY };
 
@@ -57,36 +63,37 @@ protected:
 
    void compute_residue( VectorViewType r, ConstVectorViewType x, ConstVectorViewType b );
 
-   void preconditioned_matvec( DeviceVector& w, ConstDeviceView v );
+   void preconditioned_matvec( VectorViewType w, ConstVectorViewType v );
 
-   void hauseholder_generate( DeviceVector& Y,
-                              HostVector& T,
-                              const int i,
-                              DeviceVector& w );
+// nvcc allows __cuda_callable__ lambdas only in public methods
+#ifdef __NVCC__
+public:
+#endif
+   void hauseholder_generate( const int i,
+                              VectorViewType y_i,
+                              ConstVectorViewType z );
+#ifdef __NVCC__
+protected:
+#endif
 
    void hauseholder_apply_trunc( HostView out,
-                                 DeviceVector& Y,
-                                 HostVector& T,
                                  const int i,
-                                 DeviceVector& w );
+                                 VectorViewType y_i,
+                                 ConstVectorViewType z );
 
-   void hauseholder_cwy( DeviceVector& w,
-                         DeviceVector& Y,
-                         HostVector& T,
+   void hauseholder_cwy( VectorViewType v,
                          const int i );
 
-   void hauseholder_cwy_transposed( DeviceVector& w,
-                                    DeviceVector& Y,
-                                    HostVector& T,
+   void hauseholder_cwy_transposed( VectorViewType z,
                                     const int i,
-                                    DeviceVector& z );
+                                    ConstVectorViewType w );
 
    template< typename Vector >
    void update( const int k,
                 const int m,
                 const HostVector& H,
                 const HostVector& s,
-                DeviceVector& v,
+                DeviceVector& V,
                 Vector& x );
 
    void generatePlaneRotation( RealType& dx,
@@ -101,15 +108,28 @@ protected:
 
    void apply_givens_rotations( const int i, const int m );
 
+   void setSize( const VectorViewType& x );
 
-   void setSize( const IndexType size );
+   // Specialized methods to distinguish between normal and distributed matrices
+   // in the implementation.
+   template< typename M >
+   static IndexType getLocalOffset( const M& m )
+   {
+      return 0;
+   }
+
+   template< typename M >
+   static IndexType getLocalOffset( const DistributedContainers::DistributedMatrix< M >& m )
+   {
+      return m.getLocalRowRange().getBegin();
+   }
 
    // selected GMRES variant
    Variant variant = Variant::CWY;
 
-   // single vectors
-   DeviceVector r, w, z, _M_tmp;
-   // matrices (in column-major format)
+   // single vectors (distributed)
+   VectorType r, w, z, _M_tmp;
+   // matrices (in column-major format) (local)
    DeviceVector V, Y;
    // (CWY only) duplicate of the upper (m+1)x(m+1) submatrix of Y (it is lower triangular) for fast access
    HostVector YL, T;
@@ -118,6 +138,7 @@ protected:
 
    IndexType size = 0;
    IndexType ldSize = 0;
+   IndexType localOffset = 0;
    int restarting_min = 10;
    int restarting_max = 10;
    int restarting_step_min = 3;

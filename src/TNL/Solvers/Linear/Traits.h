@@ -12,7 +12,10 @@
 
 #pragma once
 
+#include <TNL/Communicators/NoDistrCommunicator.h>
+#include <TNL/Containers/Vector.h>
 #include <TNL/Containers/VectorView.h>
+#include <TNL/DistributedContainers/DistributedVector.h>
 #include <TNL/DistributedContainers/DistributedVectorView.h>
 #include <TNL/DistributedContainers/DistributedMatrix.h>
 
@@ -23,6 +26,8 @@ namespace Linear {
 template< typename Matrix >
 struct Traits
 {
+   using CommunicatorType = Communicators::NoDistrCommunicator;
+
    using VectorType = Containers::Vector
          < typename Matrix::RealType,
            typename Matrix::DeviceType,
@@ -45,11 +50,15 @@ struct Traits
    static const Matrix& getLocalMatrix( const Matrix& m ) { return m; }
    static ConstLocalVectorViewType getLocalVectorView( ConstVectorViewType v ) { return v; }
    static LocalVectorViewType getLocalVectorView( VectorViewType v ) { return v; }
+
+   static typename CommunicatorType::CommunicationGroup getCommunicationGroup( const Matrix& m ) { return CommunicatorType::AllGroup; }
 };
 
 template< typename Matrix, typename Communicator >
 struct Traits< DistributedContainers::DistributedMatrix< Matrix, Communicator > >
 {
+   using CommunicatorType = Communicator;
+
    using VectorType = DistributedContainers::DistributedVector
          < typename Matrix::RealType,
            typename Matrix::DeviceType,
@@ -84,6 +93,8 @@ struct Traits< DistributedContainers::DistributedMatrix< Matrix, Communicator > 
    { return m.getLocalMatrix(); }
    static ConstLocalVectorViewType getLocalVectorView( ConstVectorViewType v ) { return v.getLocalVectorView(); }
    static LocalVectorViewType getLocalVectorView( VectorViewType v ) { return v.getLocalVectorView(); }
+
+   static typename CommunicatorType::CommunicationGroup getCommunicationGroup( const DistributedContainers::DistributedMatrix< Matrix, Communicator >& m ) { return m.getCommunicationGroup(); }
 };
 
 } // namespace Linear
