@@ -314,12 +314,12 @@ class MpiCommunicator
         }
 
         template< typename T >
-        static void Bcast(  T& data, int count, int root,CommunicationGroup group)
+        static void Bcast( T* data, int count, int root, CommunicationGroup group)
         {
 #ifdef HAVE_MPI
            TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
            TNL_ASSERT_NE(group, NullGroup, "BCast cannot be called with NullGroup");
-           MPI_Bcast((void*) &data, count,  MPIDataType(data), root, group);
+           MPI_Bcast((void*) data, count, MPIDataType(data), root, group);
 #else
            throw Exceptions::MPISupportMissing();
 #endif

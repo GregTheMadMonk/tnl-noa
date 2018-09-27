@@ -93,8 +93,8 @@ class NoDistrCommunicator
       {
       }
 
-      template< typename T > 
-      static void Bcast(  T& data, int count, int root, CommunicationGroup group)
+      template< typename T >
+      static void Bcast( T* data, int count, int root, CommunicationGroup group)
       {
       }
 
