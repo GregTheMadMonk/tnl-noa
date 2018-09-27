@@ -93,8 +93,8 @@ public:
    // must match (i.e. copy-assignment cannot resize).
    ArrayView& operator=( const ArrayView& view );
 
-   template< typename Value_, typename Device_, typename Index_ >
-   ArrayView& operator=( const ArrayView< Value_, Device_, Index_ >& view );
+   template< typename Array >
+   ArrayView& operator=( const Array& array );
 
 
    static String getType();

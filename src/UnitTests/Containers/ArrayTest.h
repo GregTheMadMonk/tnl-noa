@@ -62,19 +62,16 @@ protected:
 
 // types for which ArrayTest is instantiated
 using ArrayTypes = ::testing::Types<
-   Array< short,  Devices::Host, short >,
    Array< int,    Devices::Host, short >,
    Array< long,   Devices::Host, short >,
    Array< float,  Devices::Host, short >,
    Array< double, Devices::Host, short >,
    Array< MyData, Devices::Host, short >,
-   Array< short,  Devices::Host, int >,
    Array< int,    Devices::Host, int >,
    Array< long,   Devices::Host, int >,
    Array< float,  Devices::Host, int >,
    Array< double, Devices::Host, int >,
    Array< MyData, Devices::Host, int >,
-   Array< short,  Devices::Host, long >,
    Array< int,    Devices::Host, long >,
    Array< long,   Devices::Host, long >,
    Array< float,  Devices::Host, long >,
@@ -83,19 +80,16 @@ using ArrayTypes = ::testing::Types<
    // FIXME: this segfaults in String::~String()
 //   Array< String, Devices::Host, long >,
 #ifdef HAVE_CUDA
-   Array< short,  Devices::Cuda, short >,
    Array< int,    Devices::Cuda, short >,
    Array< long,   Devices::Cuda, short >,
    Array< float,  Devices::Cuda, short >,
    Array< double, Devices::Cuda, short >,
    Array< MyData, Devices::Cuda, short >,
-   Array< short,  Devices::Cuda, int >,
    Array< int,    Devices::Cuda, int >,
    Array< long,   Devices::Cuda, int >,
    Array< float,  Devices::Cuda, int >,
    Array< double, Devices::Cuda, int >,
    Array< MyData, Devices::Cuda, int >,
-   Array< short,  Devices::Cuda, long >,
    Array< int,    Devices::Cuda, long >,
    Array< long,   Devices::Cuda, long >,
    Array< float,  Devices::Cuda, long >,
@@ -103,21 +97,18 @@ using ArrayTypes = ::testing::Types<
    Array< MyData, Devices::Cuda, long >,
 #endif
 #ifdef HAVE_MIC
-   Array< short,  Devices::MIC, short >,
    Array< int,    Devices::MIC, short >,
    Array< long,   Devices::MIC, short >,
    Array< float,  Devices::MIC, short >,
    Array< double, Devices::MIC, short >,
    // TODO: MyData does not work on MIC
 //   Array< MyData, Devices::MIC, short >,
-   Array< short,  Devices::MIC, int >,
    Array< int,    Devices::MIC, int >,
    Array< long,   Devices::MIC, int >,
    Array< float,  Devices::MIC, int >,
    Array< double, Devices::MIC, int >,
    // TODO: MyData does not work on MIC
 //   Array< MyData, Devices::MIC, int >,
-   Array< short,  Devices::MIC, long >,
    Array< int,    Devices::MIC, long >,
    Array< long,   Devices::MIC, long >,
    Array< float,  Devices::MIC, long >,

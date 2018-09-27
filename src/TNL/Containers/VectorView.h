@@ -47,6 +47,9 @@ public:
    using ArrayView< Real, Device, Index >::ArrayView;
 #endif
 
+   // inherit all ArrayView's assignment operators
+   using BaseType::operator=;
+
    // In C++14, default constructors cannot be inherited, although Clang
    // and GCC since version 7.0 inherit them.
    // https://stackoverflow.com/a/51854172

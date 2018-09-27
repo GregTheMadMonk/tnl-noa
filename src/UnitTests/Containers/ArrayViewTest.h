@@ -14,7 +14,9 @@
 #include <type_traits>
 
 #include <TNL/Containers/Array.h>
+#include <TNL/Containers/Vector.h>
 #include <TNL/Containers/ArrayView.h>
+#include <TNL/Containers/VectorView.h>
 
 #include "gtest/gtest.h"
 
@@ -53,91 +55,95 @@ std::ostream& operator<<( std::ostream& str, const MyData& v )
 
 
 // test fixture for typed tests
-template< typename Array >
+template< typename View >
 class ArrayViewTest : public ::testing::Test
 {
 protected:
-   using ArrayType = Array;
-   using ViewType = ArrayView< typename Array::ValueType, typename Array::DeviceType, typename Array::IndexType >;
+   using ViewType = View;
+   using ArrayType = Array< typename View::ValueType, typename View::DeviceType, typename View::IndexType >;
 };
 
 // types for which ArrayViewTest is instantiated
-using ArrayTypes = ::testing::Types<
-   Array< short,  Devices::Host, short >,
-   Array< int,    Devices::Host, short >,
-   Array< long,   Devices::Host, short >,
-   Array< float,  Devices::Host, short >,
-   Array< double, Devices::Host, short >,
-   Array< MyData, Devices::Host, short >,
-   Array< short,  Devices::Host, int >,
-   Array< int,    Devices::Host, int >,
-   Array< long,   Devices::Host, int >,
-   Array< float,  Devices::Host, int >,
-   Array< double, Devices::Host, int >,
-   Array< MyData, Devices::Host, int >,
-   Array< short,  Devices::Host, long >,
-   Array< int,    Devices::Host, long >,
-   Array< long,   Devices::Host, long >,
-   Array< float,  Devices::Host, long >,
-   Array< double, Devices::Host, long >,
-   Array< MyData, Devices::Host, long >
+using ViewTypes = ::testing::Types<
+   ArrayView< int,    Devices::Host, short >,
+   ArrayView< long,   Devices::Host, short >,
+   ArrayView< float,  Devices::Host, short >,
+   ArrayView< double, Devices::Host, short >,
+   ArrayView< MyData, Devices::Host, short >,
+   ArrayView< int,    Devices::Host, int >,
+   ArrayView< long,   Devices::Host, int >,
+   ArrayView< float,  Devices::Host, int >,
+   ArrayView< double, Devices::Host, int >,
+   ArrayView< MyData, Devices::Host, int >,
+   ArrayView< int,    Devices::Host, long >,
+   ArrayView< long,   Devices::Host, long >,
+   ArrayView< float,  Devices::Host, long >,
+   ArrayView< double, Devices::Host, long >,
+   ArrayView< MyData, Devices::Host, long >,
    // FIXME: this segfaults in String::~String()
-//   , Array< String, Devices::Host, long >
+//   , ArrayView< String, Devices::Host, long >,
+#ifdef HAVE_CUDA
+   ArrayView< int,    Devices::Cuda, short >,
+   ArrayView< long,   Devices::Cuda, short >,
+   ArrayView< float,  Devices::Cuda, short >,
+   ArrayView< double, Devices::Cuda, short >,
+   ArrayView< MyData, Devices::Cuda, short >,
+   ArrayView< int,    Devices::Cuda, int >,
+   ArrayView< long,   Devices::Cuda, int >,
+   ArrayView< float,  Devices::Cuda, int >,
+   ArrayView< double, Devices::Cuda, int >,
+   ArrayView< MyData, Devices::Cuda, int >,
+   ArrayView< int,    Devices::Cuda, long >,
+   ArrayView< long,   Devices::Cuda, long >,
+   ArrayView< float,  Devices::Cuda, long >,
+   ArrayView< double, Devices::Cuda, long >,
+   ArrayView< MyData, Devices::Cuda, long >,
+#endif
+#ifdef HAVE_MIC
+   ArrayView< int,    Devices::MIC, short >,
+   ArrayView< long,   Devices::MIC, short >,
+   ArrayView< float,  Devices::MIC, short >,
+   ArrayView< double, Devices::MIC, short >,
+   // TODO: MyData does not work on MIC
+//   ArrayView< MyData, Devices::MIC, short >,
+   ArrayView< int,    Devices::MIC, int >,
+   ArrayView< long,   Devices::MIC, int >,
+   ArrayView< float,  Devices::MIC, int >,
+   ArrayView< double, Devices::MIC, int >,
+   // TODO: MyData does not work on MIC
+//   ArrayView< MyData, Devices::MIC, int >,
+   ArrayView< int,    Devices::MIC, long >,
+   ArrayView< long,   Devices::MIC, long >,
+   ArrayView< float,  Devices::MIC, long >,
+   ArrayView< double, Devices::MIC, long >,
+   // TODO: MyData does not work on MIC
+//   ArrayView< MyData, Devices::MIC, long >,
+#endif
+
+   // all ArrayView tests should also work with VectorView
+   // (but we can't test all types because the argument list would be too long...)
+   VectorView< float,  Devices::Host, long >,
+   VectorView< double, Devices::Host, long >
 #ifdef HAVE_CUDA
    ,
-   Array< short,  Devices::Cuda, short >,
-   Array< int,    Devices::Cuda, short >,
-   Array< long,   Devices::Cuda, short >,
-   Array< float,  Devices::Cuda, short >,
-   Array< double, Devices::Cuda, short >,
-   Array< MyData, Devices::Cuda, short >,
-   Array< short,  Devices::Cuda, int >,
-   Array< int,    Devices::Cuda, int >,
-   Array< long,   Devices::Cuda, int >,
-   Array< float,  Devices::Cuda, int >,
-   Array< double, Devices::Cuda, int >,
-   Array< MyData, Devices::Cuda, int >,
-   Array< short,  Devices::Cuda, long >,
-   Array< int,    Devices::Cuda, long >,
-   Array< long,   Devices::Cuda, long >,
-   Array< float,  Devices::Cuda, long >,
-   Array< double, Devices::Cuda, long >,
-   Array< MyData, Devices::Cuda, long >
+   VectorView< float,  Devices::Cuda, long >,
+   VectorView< double, Devices::Cuda, long >
 #endif
 #ifdef HAVE_MIC
    ,
-   Array< short,  Devices::MIC, short >,
-   Array< int,    Devices::MIC, short >,
-   Array< long,   Devices::MIC, short >,
-   Array< float,  Devices::MIC, short >,
-   Array< double, Devices::MIC, short >,
-   // TODO: MyData does not work on MIC
-//   Array< MyData, Devices::MIC, short >,
-   Array< short,  Devices::MIC, int >,
-   Array< int,    Devices::MIC, int >,
-   Array< long,   Devices::MIC, int >,
-   Array< float,  Devices::MIC, int >,
-   Array< double, Devices::MIC, int >,
-   // TODO: MyData does not work on MIC
-//   Array< MyData, Devices::MIC, int >,
-   Array< short,  Devices::MIC, long >,
-   Array< int,    Devices::MIC, long >,
-   Array< long,   Devices::MIC, long >,
-   Array< float,  Devices::MIC, long >,
-   Array< double, Devices::MIC, long >
-   // TODO: MyData does not work on MIC
-//   Array< MyData, Devices::MIC, long >
+   VectorView< float,  Devices::MIC, long >,
+   VectorView< double, Devices::MIC, long >
 #endif
 >;
 
-TYPED_TEST_CASE( ArrayViewTest, ArrayTypes );
+TYPED_TEST_CASE( ArrayViewTest, ViewTypes );
 
 
 TYPED_TEST( ArrayViewTest, constructors )
 {
    using ArrayType = typename TestFixture::ArrayType;
    using ViewType = typename TestFixture::ViewType;
-   using ConstViewType = ArrayView< const typename ArrayType::ValueType, typename ArrayType::DeviceType, typename ArrayType::IndexType >;
+   using ConstViewType = VectorView< const typename ArrayType::ValueType, typename ArrayType::DeviceType, typename ArrayType::IndexType >;
 
    ArrayType a( 10 );
    EXPECT_EQ( a.getSize(), 10 );
@@ -410,6 +416,7 @@ TYPED_TEST( ArrayViewTest, assignmentOperator )
 {
    using ArrayType = typename TestFixture::ArrayType;
    using ViewType = typename TestFixture::ViewType;
+   using ConstViewType = VectorView< const typename ArrayType::ValueType, typename ArrayType::DeviceType, typename ArrayType::IndexType >;
 
    ArrayType a( 10 ), b( 10 );
    typename ArrayType::HostType a_host( 10 );
@@ -437,6 +444,11 @@ TYPED_TEST( ArrayViewTest, assignmentOperator )
    u_host = u;
    EXPECT_EQ( u_host, u );
    EXPECT_EQ( u_host.getData(), a_host.getData() );
+
+   // assignment of const view to non-const view
+   v.setValue( 0 );
+   ConstViewType c( u );
+   v = c;
 }
 
 // test works only for arithmetic types

@@ -123,14 +123,14 @@ operator=( const ArrayView& view )
 template< typename Value,
            typename Device,
            typename Index >
-   template< typename Value_, typename Device_, typename Index_ >
+   template< typename Array >
 ArrayView< Value, Device, Index >&
 ArrayView< Value, Device, Index >::
-operator=( const ArrayView< Value_, Device_, Index_ >& view )
+operator=( const Array& array )
 {
-   TNL_ASSERT_EQ( getSize(), view.getSize(), "The sizes of the array views must be equal, views are not resizable." );
+   TNL_ASSERT_EQ( getSize(), array.getSize(), "The sizes of the array views must be equal, views are not resizable." );
    if( getSize() > 0 )
-      Algorithms::ArrayOperations< Device, Device_ >::copyMemory( getData(), view.getData(), getSize() );
+      Algorithms::ArrayOperations< Device, typename Array::DeviceType >::copyMemory( getData(), array.getData(), getSize() );
    return *this;
 }
 
