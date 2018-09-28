@@ -43,8 +43,6 @@
 
 #include "LinearSolver.h"
 
-#include <TNL/Containers/Vector.h>
-
 namespace TNL {
 namespace Solvers {
 namespace Linear {
@@ -54,12 +52,18 @@ class BICGStabL
 : public LinearSolver< Matrix >
 {
    using Base = LinearSolver< Matrix >;
+
+   // compatibility shortcut
+   using Traits = Linear::Traits< Matrix >;
+
 public:
    using RealType = typename Base::RealType;
    using DeviceType = typename Base::DeviceType;
    using IndexType = typename Base::IndexType;
+   // distributed vectors/views
    using VectorViewType = typename Base::VectorViewType;
    using ConstVectorViewType = typename Base::ConstVectorViewType;
+   using VectorType = typename Traits::VectorType;
 
    String getType() const;
 
@@ -75,7 +79,11 @@ protected:
    using DeviceVector = Containers::Vector< RealType, DeviceType, IndexType >;
    using HostVector = Containers::Vector< RealType, Devices::Host, IndexType >;
 
-   void setSize( IndexType size );
+   void compute_residue( VectorViewType r, ConstVectorViewType x, ConstVectorViewType b );
+
+   void preconditioned_matvec( ConstVectorViewType src, VectorViewType dst );
+
+   void setSize( const VectorViewType& x );
 
    int ell = 1;
 
@@ -83,12 +91,13 @@ protected:
 
    // matrices (in column-major format)
    DeviceVector R, U;
-   // single vectors
-   DeviceVector r_ast, M_tmp, res_tmp;
+   // single vectors (distributed)
+   VectorType r_ast, M_tmp, res_tmp;
    // host-only storage
    HostVector T, sigma, g_0, g_1, g_2;
 
-   IndexType size, ldSize;
+   IndexType size = 0;
+   IndexType ldSize = 0;
 };
 
 } // namespace Linear
