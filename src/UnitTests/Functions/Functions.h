@@ -1,5 +1,5 @@
 /***************************************************************************
-                          DistributedGridTest.cpp  -  description
+                          Functions.h  -  description
                              -------------------
     begin                : Sep 6, 2017
     copyright            : (C) 2017 by Tomas Oberhuber et al.

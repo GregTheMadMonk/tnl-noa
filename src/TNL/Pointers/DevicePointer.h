@@ -393,9 +393,7 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
             TNL_ASSERT( this->pointer, );
             TNL_ASSERT( this->cuda_pointer, );
             cudaMemcpy( (void*) this->cuda_pointer, (void*) this->pointer, sizeof( ObjectType ), cudaMemcpyHostToDevice );
-            if( ! TNL_CHECK_CUDA_DEVICE ) {
-               return false;
-            }
+            TNL_CHECK_CUDA_DEVICE;
             this->set_last_sync_state();
             return true;
          }

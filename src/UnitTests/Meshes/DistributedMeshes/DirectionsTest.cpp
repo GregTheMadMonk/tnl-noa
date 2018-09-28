@@ -3,7 +3,6 @@
 
 #include <TNL/Meshes/DistributedMeshes/Directions.h>
 #include <TNL/Containers/StaticVector.h>
-#include <TNL/StaticVectorFor.h>
 
 using namespace TNL::Meshes::DistributedMeshes;
 using namespace TNL::Containers;

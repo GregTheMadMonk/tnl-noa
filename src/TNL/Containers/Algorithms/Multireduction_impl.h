@@ -49,7 +49,7 @@ static constexpr int Multireduction_minGpuDataSize = 256;//65536; //16384;//1024
  *    hostResult: output array of size = n
  */
 template< typename Operation, typename Index >
-bool
+void
 Multireduction< Devices::Cuda >::
 reduce( Operation& operation,
         const int n,
@@ -75,18 +75,17 @@ reduce( Operation& operation,
     */
    if( n * ldInput1 < Multireduction_minGpuDataSize ) {
       DataType1 hostArray1[ Multireduction_minGpuDataSize ];
-      if( ! ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( hostArray1, deviceInput1, n * ldInput1 ) )
-         return false;
+      ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( hostArray1, deviceInput1, n * ldInput1 );
       if( deviceInput2 ) {
          using _DT2 = typename std::conditional< std::is_same< DataType2, void >::value, DataType1, DataType2 >::type;
          _DT2 hostArray2[ Multireduction_minGpuDataSize ];
-         if( ! ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( hostArray2, (_DT2*) deviceInput2, size ) )
-            return false;
-         return Multireduction< Devices::Host >::reduce( operation, n, size, hostArray1, ldInput1, hostArray2, hostResult );
+         ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( hostArray2, (_DT2*) deviceInput2, size );
+         Multireduction< Devices::Host >::reduce( operation, n, size, hostArray1, ldInput1, hostArray2, hostResult );
       }
       else {
-         return Multireduction< Devices::Host >::reduce( operation, n, size, hostArray1, ldInput1, (DataType2*) nullptr, hostResult );
+         Multireduction< Devices::Host >::reduce( operation, n, size, hostArray1, ldInput1, (DataType2*) nullptr, hostResult );
       }
+      return;
    }
 
    #ifdef CUDA_REDUCTION_PROFILING
@@ -117,8 +116,7 @@ reduce( Operation& operation,
     * Transfer the reduced data from device to host.
     */
    ResultType resultArray[ n * reducedSize ];
-   if( ! ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( resultArray, deviceAux1, n * reducedSize ) )
-      return false;
+   ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( resultArray, deviceAux1, n * reducedSize );
 
    #ifdef CUDA_REDUCTION_PROFILING
       timer.stop();
@@ -146,7 +144,7 @@ reduce( Operation& operation,
       std::cout << "   Multireduction of small data set on CPU took " << timer.getRealTime() << " sec. " << std::endl;
    #endif
 
-   return TNL_CHECK_CUDA_DEVICE;
+   TNL_CHECK_CUDA_DEVICE;
 #else
    throw Exceptions::CudaSupportMissing();
 #endif
@@ -163,7 +161,7 @@ reduce( Operation& operation,
  *    hostResult: output array of size = n
  */
 template< typename Operation, typename Index >
-bool
+void
 Multireduction< Devices::Host >::
 reduce( Operation& operation,
         const int n,
@@ -249,12 +247,10 @@ reduce( Operation& operation,
 #ifdef HAVE_OPENMP
    }
 #endif
-
-   return true;
 }
 
 template< typename Operation, typename Index >
-bool
+void
 Multireduction< Devices::MIC >::
 reduce( Operation& operation,
         const int n,
@@ -267,10 +263,8 @@ reduce( Operation& operation,
    TNL_ASSERT( n > 0, );
    TNL_ASSERT( size <= ldInput1, );
 
-   std::cout << "Not Implemented yet Multireduction< Devices::MIC >::reduce" << std::endl;
-   return true;
+   throw std::runtime_error("Not Implemented yet Multireduction< Devices::MIC >::reduce");
 }
-
 
 } // namespace Algorithms
 } // namespace Containers

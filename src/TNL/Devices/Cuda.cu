@@ -103,11 +103,10 @@ void Cuda::printThreadsSetup( const dim3& blockSize,
 }
 
 
-bool Cuda::checkDevice( const char* file_name, int line, cudaError error )
-{   
-   if( error == cudaSuccess )
-      return true;
-   throw Exceptions::CudaRuntimeError( error, file_name, line );
+void Cuda::checkDevice( const char* file_name, int line, cudaError error )
+{
+   if( error != cudaSuccess )
+      throw Exceptions::CudaRuntimeError( error, file_name, line );
 }
 
 std::ostream& operator << ( std::ostream& str, const dim3& d )

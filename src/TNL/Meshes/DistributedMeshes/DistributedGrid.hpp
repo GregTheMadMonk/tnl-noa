@@ -11,9 +11,7 @@
 #pragma once
 
 #include <cstdlib>
-#include <TNL/StaticVectorFor.h>
 #include <TNL/Communicators/MpiCommunicator.h>
-#include <TNL/Exceptions/UnsupportedDimension.h>
 
 #include <iostream>
 

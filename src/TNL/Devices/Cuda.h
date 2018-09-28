@@ -153,9 +153,9 @@ class Cuda
     * of calling cudaGetLastError() inside the method.
     * We recommend to use macro 'TNL_CHECK_CUDA_DEVICE' defined bellow.
     */
-   static bool checkDevice( const char* file_name, int line, cudaError error );
+   static void checkDevice( const char* file_name, int line, cudaError error );
 #else
-   static bool checkDevice() { return false; };
+   static void checkDevice() {}
 #endif
    
    static void configSetup( Config::ConfigDescription& config, const String& prefix = "" );
