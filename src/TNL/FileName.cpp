@@ -22,6 +22,14 @@ FileName::FileName()
 : index( 0 ), digitsCount( 5 )
 {
 }
+
+FileName::FileName( const String& fileNameBase )
+: fileNameBase( fileNameBase ),
+   index( 0 ),
+   digitsCount( 5 )
+{
+}
+
 FileName::FileName( const String& fileNameBase, 
                     const String& extension )
 : fileNameBase( fileNameBase ),
