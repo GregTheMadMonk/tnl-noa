@@ -42,14 +42,14 @@ class ArrayOperations< Devices::Host >
       static Element getMemoryElement( const Element* data );
 
       template< typename Element, typename Index >
-      static bool setMemory( Element* data,
+      static void setMemory( Element* data,
                              const Element& value,
                              const Index size );
 
       template< typename DestinationElement,
                 typename SourceElement,
                 typename Index >
-      static bool copyMemory( DestinationElement* destination,
+      static void copyMemory( DestinationElement* destination,
                               const SourceElement* source,
                               const Index size );
 
@@ -93,14 +93,14 @@ class ArrayOperations< Devices::Cuda >
       static Element getMemoryElement( const Element* data );
 
       template< typename Element, typename Index >
-      static bool setMemory( Element* data,
+      static void setMemory( Element* data,
                              const Element& value,
                              const Index size );
 
       template< typename DestinationElement,
                 typename SourceElement,
                 typename Index >
-      static bool copyMemory( DestinationElement* destination,
+      static void copyMemory( DestinationElement* destination,
                               const SourceElement* source,
                               const Index size );
 
@@ -132,7 +132,7 @@ class ArrayOperations< Devices::Cuda, Devices::Host >
       template< typename DestinationElement,
                 typename SourceElement,
                 typename Index >
-      static bool copyMemory( DestinationElement* destination,
+      static void copyMemory( DestinationElement* destination,
                               const SourceElement* source,
                               const Index size );
 
@@ -152,7 +152,7 @@ class ArrayOperations< Devices::Host, Devices::Cuda >
       template< typename DestinationElement,
                 typename SourceElement,
                 typename Index >
-      static bool copyMemory( DestinationElement* destination,
+      static void copyMemory( DestinationElement* destination,
                               const SourceElement* source,
                               const Index size );
 
@@ -185,14 +185,14 @@ class ArrayOperations< Devices::MIC >
       static Element getMemoryElement( const Element* data );
 
       template< typename Element, typename Index >
-      static bool setMemory( Element* data,
+      static void setMemory( Element* data,
                              const Element& value,
                              const Index size );
 
       template< typename DestinationElement,
                 typename SourceElement,
                 typename Index >
-      static bool copyMemory( DestinationElement* destination,
+      static void copyMemory( DestinationElement* destination,
                               const SourceElement* source,
                               const Index size );
 
@@ -224,7 +224,7 @@ class ArrayOperations< Devices::MIC, Devices::Host >
       template< typename DestinationElement,
                 typename SourceElement,
                 typename Index >
-      static bool copyMemory( DestinationElement* destination,
+      static void copyMemory( DestinationElement* destination,
                               const SourceElement* source,
                               const Index size );
 
@@ -244,7 +244,7 @@ class ArrayOperations< Devices::Host, Devices::MIC >
       template< typename DestinationElement,
                 typename SourceElement,
                 typename Index >
-      static bool copyMemory( DestinationElement* destination,
+      static void copyMemory( DestinationElement* destination,
                               const SourceElement* source,
                               const Index size );
 

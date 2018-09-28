@@ -78,7 +78,7 @@ getMemoryElement( const Element* data )
 }
 
 template< typename Element, typename Index >
-bool
+void
 ArrayOperations< Devices::MIC >::
 setMemory( Element* data,
            const Element& value,
@@ -95,7 +95,6 @@ setMemory( Element* data,
        for(int i=0;i<size;i++)
            dst[i]=tmp;
    }
-   return true;
 #else
    throw Exceptions::MICSupportMissing();
 #endif
@@ -104,7 +103,7 @@ setMemory( Element* data,
 template< typename DestinationElement,
           typename SourceElement,
           typename Index >
-bool
+void
 ArrayOperations< Devices::MIC >::
 copyMemory( DestinationElement* destination,
             const SourceElement* source,
@@ -123,7 +122,6 @@ copyMemory( DestinationElement* destination,
          {
              memcpy(dst_ptr.pointer,src_ptr.pointer,size*sizeof(DestinationElement));
          }
-         return true;
       }
       else
       {
@@ -136,13 +134,10 @@ copyMemory( DestinationElement* destination,
              for(int i=0;i<size;i++)
                  dst_ptr.pointer[i]=src_ptr.pointer[i];
          }
-         return true;
-
       }
    #else
       throw Exceptions::MICSupportMissing();
    #endif
-      return false;
 }
 
 template< typename Element1,
@@ -242,7 +237,7 @@ containsOnlyValue( const Element* data,
 template< typename DestinationElement,
           typename SourceElement,
           typename Index >
-bool
+void
 ArrayOperations< Devices::Host, Devices::MIC >::
 copyMemory( DestinationElement* destination,
             const SourceElement* source,
@@ -267,7 +262,6 @@ copyMemory( DestinationElement* destination,
          }
 
          memcpy((void*)destination,(void*)&tmp,size*sizeof(SourceElement));
-         return true;
       }
       else
       {
@@ -277,7 +271,6 @@ copyMemory( DestinationElement* destination,
           {
               memcpy((void*)tmp,src_ptr.pointer,size*sizeof(SourceElement));
           }
-          return true;
       }
    }
    else
@@ -297,7 +290,6 @@ copyMemory( DestinationElement* destination,
          }
 
          memcpy((void*)destination,(void*)&tmp,size*sizeof(DestinationElement));
-         return true;
       }
       else
       {
@@ -309,10 +301,8 @@ copyMemory( DestinationElement* destination,
               for(int i=0;i<size;i++)
                   dst[i]=src_ptr.pointer[i];
           }
-          return true;
       }
    }
-   return false;
 #else
    throw Exceptions::MICSupportMissing();
 #endif
@@ -368,7 +358,7 @@ compareMemory( const Element1* destination,
 template< typename DestinationElement,
           typename SourceElement,
           typename Index >
-bool
+void
 ArrayOperations< Devices::MIC, Devices::Host >::
 copyMemory( DestinationElement* destination,
             const SourceElement* source,
@@ -393,8 +383,6 @@ copyMemory( DestinationElement* destination,
          {
               memcpy(dst_ptr.pointer,(void*)&tmp,size*sizeof(SourceElement));
          }
-
-         return true;
       }
       else
       {
@@ -404,7 +392,6 @@ copyMemory( DestinationElement* destination,
           {
               memcpy(dst_ptr.pointer,(void*)tmp,size*sizeof(SourceElement));
           }
-          return true;
       }
    }
    else
@@ -423,7 +410,6 @@ copyMemory( DestinationElement* destination,
               for(int i=0;i<size;i++)
                   dst_ptr.pointer[i]=src[i];
          }
-         return true;
       }
       else
       {
@@ -435,10 +421,8 @@ copyMemory( DestinationElement* destination,
               for(int i=0;i<size;i++)
                   dst_ptr.pointer[i]=src[i];
           }
-          return true;
       }
    }
-   return false;
 #else
    throw Exceptions::MICSupportMissing();
 #endif

@@ -75,13 +75,11 @@ reduce( Operation& operation,
     */
    if( n * ldInput1 < Multireduction_minGpuDataSize ) {
       DataType1 hostArray1[ Multireduction_minGpuDataSize ];
-      if( ! ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( hostArray1, deviceInput1, n * ldInput1 ) )
-         return false;
+      ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( hostArray1, deviceInput1, n * ldInput1 );
       if( deviceInput2 ) {
          using _DT2 = typename std::conditional< std::is_same< DataType2, void >::value, DataType1, DataType2 >::type;
          _DT2 hostArray2[ Multireduction_minGpuDataSize ];
-         if( ! ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( hostArray2, (_DT2*) deviceInput2, size ) )
-            return false;
+         ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( hostArray2, (_DT2*) deviceInput2, size );
          return Multireduction< Devices::Host >::reduce( operation, n, size, hostArray1, ldInput1, hostArray2, hostResult );
       }
       else {
@@ -117,8 +115,7 @@ reduce( Operation& operation,
     * Transfer the reduced data from device to host.
     */
    ResultType resultArray[ n * reducedSize ];
-   if( ! ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( resultArray, deviceAux1, n * reducedSize ) )
-      return false;
+   ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( resultArray, deviceAux1, n * reducedSize );
 
    #ifdef CUDA_REDUCTION_PROFILING
       timer.stop();

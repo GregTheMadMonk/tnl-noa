@@ -62,7 +62,7 @@ getMemoryElement( const Element* data )
 }
 
 template< typename Element, typename Index >
-bool
+void
 ArrayOperations< Devices::Host >::
 setMemory( Element* data,
            const Element& value,
@@ -70,13 +70,12 @@ setMemory( Element* data,
 {
    for( Index i = 0; i < size; i ++ )
       data[ i ] = value;
-   return true;
 }
 
 template< typename DestinationElement,
           typename SourceElement,
           typename Index >
-bool
+void
 ArrayOperations< Devices::Host >::
 copyMemory( DestinationElement* destination,
             const SourceElement* source,
@@ -100,7 +99,6 @@ copyMemory( DestinationElement* destination,
    else
       for( Index i = 0; i < size; i ++ )
          destination[ i ] = ( DestinationElement ) source[ i ];
-   return true;
 }
 
 template< typename DestinationElement,

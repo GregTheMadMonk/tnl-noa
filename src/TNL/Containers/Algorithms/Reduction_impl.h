@@ -70,13 +70,11 @@ reduce( Operation& operation,
    if( can_reduce_all_on_host && size <= Reduction_minGpuDataSize )
    {
       typename std::remove_const< DataType1 >::type hostArray1[ Reduction_minGpuDataSize ];
-      if( ! ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( hostArray1, deviceInput1, size ) )
-         return false;
+      ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( hostArray1, deviceInput1, size );
       if( deviceInput2 ) {
          using _DT2 = typename std::conditional< std::is_same< DataType2, void >::value, DataType1, DataType2 >::type;
          typename std::remove_const< _DT2 >::type hostArray2[ Reduction_minGpuDataSize ];
-         if( ! ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( hostArray2, (_DT2*) deviceInput2, size ) )
-            return false;
+         ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( hostArray2, (_DT2*) deviceInput2, size );
          return Reduction< Devices::Host >::reduce( operation, size, hostArray1, hostArray2, result );
       }
       else {
@@ -111,9 +109,8 @@ reduce( Operation& operation,
        * Transfer the reduced data from device to host.
        */
       ResultType resultArray[ reducedSize ];
-      if( ! ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( resultArray, deviceAux1, reducedSize ) )
-         return false;
-    
+      ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( resultArray, deviceAux1, reducedSize );
+
       #ifdef CUDA_REDUCTION_PROFILING
          timer.stop();
          std::cout << "   Transferring data to CPU took " << timer.getRealTime() << " sec. " << std::endl;
@@ -153,8 +150,7 @@ reduce( Operation& operation,
       #endif
 
       ResultType resultArray[ 1 ];
-      if( ! ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( resultArray, deviceAux1, reducedSize ) )
-         return false;
+      ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( resultArray, deviceAux1, reducedSize );
       result = resultArray[ 0 ];
 
       #ifdef CUDA_REDUCTION_PROFILING
