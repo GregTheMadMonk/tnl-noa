@@ -89,7 +89,7 @@ class MpiCommunicator
 #ifdef HAVE_MPI
          config.addEntry< bool >( "redirect-mpi-output", "Only process with rank 0 prints to console. Other processes are redirected to files.", true );
          config.addEntry< bool >( "mpi-gdb-debug", "Wait for GDB to attach the master MPI process.", false );
-         config.addEntry< int >( "mpi-process-to-attach", "Number of the MPI process to be attached by GDB.", 0 );
+         config.addEntry< int >( "mpi-process-to-attach", "Number of the MPI process to be attached by GDB. Set -1 for all processes.", 0 );
 #endif
       }
 
