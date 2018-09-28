@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mfilename.h  -  description
+                          FileName.h  -  description
                              -------------------
     begin                : 2007/06/18
     copyright            : (C) 2007 by Tomas Oberhuber
@@ -14,12 +14,6 @@
 
 namespace TNL {
 
-/*void FileNameBaseNumberEnding( const char* base_name,
-                               int number,
-                               int index_size,
-                               const char* ending,
-                               String& file_name );*/
-
 String getFileExtension( const String fileName );
 
 void removeFileExtension( String& file_name );
@@ -30,6 +24,11 @@ class FileName
       
       FileName();
       
+      FileName( const String& fileNameBase );
+      
+      FileName( const String& fileNameBase, 
+                const String& extension );
+      
       void setFileNameBase( const String& fileNameBase );
       
       void setExtension( const String& extension );
@@ -38,14 +37,21 @@ class FileName
       
       void setDigitsCount( const int digitsCount );
       
+      void setDistributedSystemNodeId( int nodeId );
+      
+      template< typename Coordinates >
+      void setDistributedSystemNodeId( const Coordinates& nodeId );
+      
       String getFileName();
       
    protected:
    
-      String fileNameBase, extension;
+      String fileNameBase, extension, distributedSystemNodeId;
       
       int index, digitsCount;
    
 };
 
 } // namespace TNL
+
+#include <TNL/FileName.hpp>

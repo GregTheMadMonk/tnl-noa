@@ -1,5 +1,5 @@
 /***************************************************************************
-                          mfilename.cpp  -  description
+                          FileName.cpp  -  description
                              -------------------
     begin                : 2007/06/18
     copyright            : (C) 2007 by Tomas Oberhuber
@@ -20,6 +20,14 @@ namespace TNL {
    
 FileName::FileName()
 : index( 0 ), digitsCount( 5 )
+{
+}
+FileName::FileName( const String& fileNameBase, 
+                    const String& extension )
+: fileNameBase( fileNameBase ),
+   extension( extension ),
+   index( 0 ),
+   digitsCount( 5 )
 {
 }
       
@@ -43,37 +51,23 @@ void FileName::setDigitsCount( const int digitsCount )
    this->digitsCount = digitsCount;
 }
 
+void FileName::setDistributedSystemNodeId( int nodeId )
+{
+   this->distributedSystemNodeId = "-";
+   this->distributedSystemNodeId += convertToString( nodeId );
+}
+
 String FileName::getFileName()
 {
    std::stringstream stream;
    stream << this->fileNameBase 
           << std::setw( this->digitsCount )
           << std::setfill( '0' )
-          << index
+          << this->index
+          << this->distributedSystemNodeId
           << "." << this->extension;
    return String( stream.str().data() );
 }
-
-/*void FileNameBaseNumberEnding( const char* base_name,
-                               int number,
-                               int index_size,
-                               const char* ending,
-                               String& file_name )
-{
-   file_name. setString( base_name );
-   char snumber[ 1024 ], zeros[ 1024 ];;
-   sprintf( snumber, "%d", number );
-   int len = strlen( snumber );
-
-   const int k = min( 1024, index_size );
-   int i;
-   for( i = len; i < k ; i ++ )
-      zeros[ i - len ] = '0';
-   zeros[ k - len ] = 0;
-   file_name += zeros;
-   file_name += snumber;
-   file_name += ending;
-}*/
 
 String getFileExtension( const String fileName )
 {
