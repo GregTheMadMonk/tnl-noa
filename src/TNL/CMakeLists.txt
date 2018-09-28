@@ -14,8 +14,6 @@ ADD_SUBDIRECTORY( Pointers )
 ADD_SUBDIRECTORY( Problems )
 ADD_SUBDIRECTORY( Solvers )
 
-ADD_SUBDIRECTORY( legacy )
-
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL )
 
 set( headers
@@ -57,8 +55,6 @@ set( tnl_SOURCES ${tnl_config_SOURCES}
                  ${tnl_pointers_SOURCES}
                  ${tnl_solvers_SOURCES}
 
-                 ${tnl_legacy_SOURCES}
-
                  ${common_SOURCES} )
 
 set( tnl_CUDA__SOURCES ${tnl_config_CUDA__SOURCES}
@@ -73,7 +69,6 @@ set( tnl_CUDA__SOURCES ${tnl_config_CUDA__SOURCES}
                        ${tnl_problems_CUDA__SOURCES}
                        ${tnl_solvers_CUDA__SOURCES}
 
-                       ${tnl_legacy_CUDA__SOURCES}
                        ${common_SOURCES} )
 
 
