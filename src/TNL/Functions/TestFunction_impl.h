@@ -137,8 +137,7 @@ setupFunction( const Config::ParameterContainer& parameters,
    {
       this->function = Devices::Cuda::passToDevice( *auxFunction );
       delete auxFunction;
-      if( ! TNL_CHECK_CUDA_DEVICE )
-         return false;
+      TNL_CHECK_CUDA_DEVICE;
    }
    return true;
 }
@@ -167,8 +166,7 @@ setupOperator( const Config::ParameterContainer& parameters,
    {
       this->operator_ = Devices::Cuda::passToDevice( *auxOperator );
       delete auxOperator;
-      if( ! TNL_CHECK_CUDA_DEVICE )
-         return false;
+      TNL_CHECK_CUDA_DEVICE;
    }
    return true;
 }

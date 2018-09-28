@@ -11,6 +11,7 @@
 #pragma once
 
 #include <type_traits>
+#include <memory>
 
 #include <TNL/File.h>
 #include <TNL/Exceptions/CudaSupportMissing.h>
@@ -89,35 +90,27 @@ bool File::read_impl( Type* buffer,
    this->readElements = 0;
    const std::size_t host_buffer_size = std::min( FileGPUvsCPUTransferBufferSize / sizeof( Type ), elements );
    using BaseType = typename std::remove_cv< Type >::type;
-   BaseType* host_buffer = new BaseType[ host_buffer_size ];
+   std::unique_ptr< BaseType[] > host_buffer{ new BaseType[ host_buffer_size ] };
 
    while( readElements < elements )
    {
       std::size_t transfer = std::min( elements - readElements, host_buffer_size );
-      std::size_t transfered = std::fread( host_buffer, sizeof( Type ), transfer, file );
+      std::size_t transfered = std::fread( host_buffer.get(), sizeof( Type ), transfer, file );
       if( transfered != transfer )
       {
          std::cerr << "I am not able to read the data from the file " << fileName << "." << std::endl;
          std::cerr << transfered << " bytes were transfered. " << std::endl;
          std::perror( "Fread ended with the error code" );
-         delete[] host_buffer;
          return false;
       }
 
-      cudaMemcpy( ( void* ) & ( buffer[ readElements ] ),
-                  host_buffer,
+      cudaMemcpy( (void*) &buffer[ readElements ],
+                  (void*) host_buffer.get(),
                   transfer * sizeof( Type ),
                   cudaMemcpyHostToDevice );
-      if( ! TNL_CHECK_CUDA_DEVICE )
-      {
-         std::cerr << "Transfer of data from the CUDA device to the file " << this->fileName
-              << " failed." << std::endl;
-         delete[] host_buffer;
-         return false;
-      }
+      TNL_CHECK_CUDA_DEVICE;
       this->readElements += transfer;
    }
-   delete[] host_buffer;
    return true;
 #else
    throw Exceptions::CudaSupportMissing();
@@ -233,35 +226,27 @@ bool File::write_impl( const Type* buffer,
    const std::size_t host_buffer_size = std::min( FileGPUvsCPUTransferBufferSize / sizeof( Type ),
                                              elements );
    using BaseType = typename std::remove_cv< Type >::type;
-   BaseType* host_buffer = new BaseType[ host_buffer_size ];
+   std::unique_ptr< BaseType[] > host_buffer{ new BaseType[ host_buffer_size ] };
 
    while( this->writtenElements < elements )
    {
       std::size_t transfer = std::min( elements - this->writtenElements, host_buffer_size );
-      cudaMemcpy( host_buffer,
-                  ( void* ) & ( buffer[ this->writtenElements ] ),
+      cudaMemcpy( (void*) host_buffer.get(),
+                  (void*) &buffer[ this->writtenElements ],
                   transfer * sizeof( Type ),
                   cudaMemcpyDeviceToHost );
-      if( ! TNL_CHECK_CUDA_DEVICE )
-      {
-         std::cerr << "Transfer of data from the file " << this->fileName
-              << " to the CUDA device failed." << std::endl;
-         delete[] host_buffer;
-         return false;
-      }
-      if( std::fwrite( host_buffer,
+      TNL_CHECK_CUDA_DEVICE;
+      if( std::fwrite( host_buffer.get(),
                        sizeof( Type ),
                        transfer,
                        this->file ) != transfer )
       {
          std::cerr << "I am not able to write the data to the file " << fileName << "." << std::endl;
          std::perror( "Fwrite ended with the error code" );
-         delete[] host_buffer;
          return false;
       }
       this->writtenElements += transfer;
    }
-   delete[] host_buffer;
    return true;
 #else
    throw Exceptions::CudaSupportMissing();

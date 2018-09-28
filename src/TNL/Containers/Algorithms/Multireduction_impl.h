@@ -146,7 +146,8 @@ reduce( Operation& operation,
       std::cout << "   Multireduction of small data set on CPU took " << timer.getRealTime() << " sec. " << std::endl;
    #endif
 
-   return TNL_CHECK_CUDA_DEVICE;
+   TNL_CHECK_CUDA_DEVICE;
+   return true;
 #else
    throw Exceptions::CudaSupportMissing();
 #endif

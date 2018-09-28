@@ -162,8 +162,9 @@ reduce( Operation& operation,
          std::cout << "   Transferring the result to CPU took " << timer.getRealTime() << " sec. " << std::endl;
       #endif
    }
- 
-   return TNL_CHECK_CUDA_DEVICE;
+
+   TNL_CHECK_CUDA_DEVICE;
+   return true;
 #else
    throw Exceptions::CudaSupportMissing();
 #endif

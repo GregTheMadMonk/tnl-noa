@@ -209,11 +209,11 @@ TYPED_TEST( ArrayOperationsTest, allocateMemory_cuda )
 
    ValueType* data;
    ArrayOperations< Devices::Cuda >::allocateMemory( data, size );
-   ASSERT_TRUE( TNL_CHECK_CUDA_DEVICE );
+   ASSERT_NO_THROW( TNL_CHECK_CUDA_DEVICE );
    ASSERT_NE( data, nullptr );
 
    ArrayOperations< Devices::Cuda >::freeMemory( data );
-   ASSERT_TRUE( TNL_CHECK_CUDA_DEVICE );
+   ASSERT_NO_THROW( TNL_CHECK_CUDA_DEVICE );
 }
 
 TYPED_TEST( ArrayOperationsTest, setMemoryElement_cuda )
@@ -223,7 +223,7 @@ TYPED_TEST( ArrayOperationsTest, setMemoryElement_cuda )
 
    ValueType* data;
    ArrayOperations< Devices::Cuda >::allocateMemory( data, size );
-   ASSERT_TRUE( TNL_CHECK_CUDA_DEVICE );
+   ASSERT_NO_THROW( TNL_CHECK_CUDA_DEVICE );
 
    for( int i = 0; i < size; i++ )
       ArrayOperations< Devices::Cuda >::setMemoryElement( &data[ i ], (ValueType) i );
@@ -237,7 +237,7 @@ TYPED_TEST( ArrayOperationsTest, setMemoryElement_cuda )
    }
 
    ArrayOperations< Devices::Cuda >::freeMemory( data );
-   ASSERT_TRUE( TNL_CHECK_CUDA_DEVICE );
+   ASSERT_NO_THROW( TNL_CHECK_CUDA_DEVICE );
 }
 
 TYPED_TEST( ArrayOperationsTest, setMemory_cuda )
@@ -250,9 +250,9 @@ TYPED_TEST( ArrayOperationsTest, setMemory_cuda )
    ArrayOperations< Devices::Cuda >::allocateMemory( deviceData, size );
    ArrayOperations< Devices::Host >::setMemory( hostData, (ValueType) 0, size );
    ArrayOperations< Devices::Cuda >::setMemory( deviceData, (ValueType) 13, size );
-   ASSERT_TRUE( TNL_CHECK_CUDA_DEVICE );
+   ASSERT_NO_THROW( TNL_CHECK_CUDA_DEVICE );
    ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< ValueType, ValueType >( hostData, deviceData, size );
-   ASSERT_TRUE( TNL_CHECK_CUDA_DEVICE );
+   ASSERT_NO_THROW( TNL_CHECK_CUDA_DEVICE );
    for( int i = 0; i < size; i++ )
       EXPECT_EQ( hostData[ i ], 13 );
    ArrayOperations< Devices::Host >::freeMemory( hostData );
