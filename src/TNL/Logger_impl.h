@@ -17,9 +17,9 @@ namespace TNL {
 
 template< typename T >
 void Logger::writeParameter( const String& label,
-                                const String& parameterName,
-                                const Config::ParameterContainer& parameters,
-                                int parameterLevel )
+                             const String& parameterName,
+                             const Config::ParameterContainer& parameters,
+                             int parameterLevel )
 {
    stream << "| ";
    int i;
