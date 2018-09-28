@@ -39,7 +39,7 @@ namespace Algorithms {
 static constexpr int Reduction_minGpuDataSize = 256;//65536; //16384;//1024;//256;
 
 template< typename Operation, typename Index >
-bool
+void
 Reduction< Devices::Cuda >::
 reduce( Operation& operation,
         const Index size,
@@ -54,7 +54,7 @@ reduce( Operation& operation,
    typedef typename Operation::DataType2 DataType2;
    typedef typename Operation::ResultType ResultType;
    typedef typename Operation::LaterReductionOperation LaterReductionOperation;
- 
+
    /***
     * Only fundamental and pointer types can be safely reduced on host. Complex
     * objects stored on the device might contain pointers into the device memory,
@@ -75,11 +75,12 @@ reduce( Operation& operation,
          using _DT2 = typename std::conditional< std::is_same< DataType2, void >::value, DataType1, DataType2 >::type;
          typename std::remove_const< _DT2 >::type hostArray2[ Reduction_minGpuDataSize ];
          ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( hostArray2, (_DT2*) deviceInput2, size );
-         return Reduction< Devices::Host >::reduce( operation, size, hostArray1, hostArray2, result );
+         Reduction< Devices::Host >::reduce( operation, size, hostArray1, hostArray2, result );
       }
       else {
-         return Reduction< Devices::Host >::reduce( operation, size, hostArray1, (DataType2*) nullptr, result );
+         Reduction< Devices::Host >::reduce( operation, size, hostArray1, (DataType2*) nullptr, result );
       }
+      return;
    }
 
    #ifdef CUDA_REDUCTION_PROFILING
@@ -117,13 +118,13 @@ reduce( Operation& operation,
          timer.reset();
          timer.start();
       #endif
-    
+
       /***
        * Reduce the data on the host system.
        */
       LaterReductionOperation laterReductionOperation;
       Reduction< Devices::Host >::reduce( laterReductionOperation, reducedSize, resultArray, (void*) nullptr, result );
-    
+
       #ifdef CUDA_REDUCTION_PROFILING
          timer.stop();
          std::cout << "   Reduction of small data set on CPU took " << timer.getRealTime() << " sec. " << std::endl;
@@ -160,14 +161,13 @@ reduce( Operation& operation,
    }
 
    TNL_CHECK_CUDA_DEVICE;
-   return true;
 #else
    throw Exceptions::CudaSupportMissing();
 #endif
 };
 
 template< typename Operation, typename Index >
-bool
+void
 Reduction< Devices::Host >::
 reduce( Operation& operation,
         const Index size,
@@ -224,8 +224,6 @@ reduce( Operation& operation,
 #ifdef HAVE_OPENMP
    }
 #endif
-
-   return true;
 }
 
 } // namespace Algorithms

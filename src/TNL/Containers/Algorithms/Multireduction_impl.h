@@ -49,7 +49,7 @@ static constexpr int Multireduction_minGpuDataSize = 256;//65536; //16384;//1024
  *    hostResult: output array of size = n
  */
 template< typename Operation, typename Index >
-bool
+void
 Multireduction< Devices::Cuda >::
 reduce( Operation& operation,
         const int n,
@@ -80,11 +80,12 @@ reduce( Operation& operation,
          using _DT2 = typename std::conditional< std::is_same< DataType2, void >::value, DataType1, DataType2 >::type;
          _DT2 hostArray2[ Multireduction_minGpuDataSize ];
          ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( hostArray2, (_DT2*) deviceInput2, size );
-         return Multireduction< Devices::Host >::reduce( operation, n, size, hostArray1, ldInput1, hostArray2, hostResult );
+         Multireduction< Devices::Host >::reduce( operation, n, size, hostArray1, ldInput1, hostArray2, hostResult );
       }
       else {
-         return Multireduction< Devices::Host >::reduce( operation, n, size, hostArray1, ldInput1, (DataType2*) nullptr, hostResult );
+         Multireduction< Devices::Host >::reduce( operation, n, size, hostArray1, ldInput1, (DataType2*) nullptr, hostResult );
       }
+      return;
    }
 
    #ifdef CUDA_REDUCTION_PROFILING
@@ -144,7 +145,6 @@ reduce( Operation& operation,
    #endif
 
    TNL_CHECK_CUDA_DEVICE;
-   return true;
 #else
    throw Exceptions::CudaSupportMissing();
 #endif
@@ -161,7 +161,7 @@ reduce( Operation& operation,
  *    hostResult: output array of size = n
  */
 template< typename Operation, typename Index >
-bool
+void
 Multireduction< Devices::Host >::
 reduce( Operation& operation,
         const int n,
@@ -247,12 +247,10 @@ reduce( Operation& operation,
 #ifdef HAVE_OPENMP
    }
 #endif
-
-   return true;
 }
 
 template< typename Operation, typename Index >
-bool
+void
 Multireduction< Devices::MIC >::
 reduce( Operation& operation,
         const int n,
@@ -265,10 +263,8 @@ reduce( Operation& operation,
    TNL_ASSERT( n > 0, );
    TNL_ASSERT( size <= ldInput1, );
 
-   std::cout << "Not Implemented yet Multireduction< Devices::MIC >::reduce" << std::endl;
-   return true;
+   throw std::runtime_error("Not Implemented yet Multireduction< Devices::MIC >::reduce");
 }
-
 
 } // namespace Algorithms
 } // namespace Containers

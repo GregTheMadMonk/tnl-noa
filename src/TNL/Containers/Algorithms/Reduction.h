@@ -30,7 +30,7 @@ class Reduction< Devices::Cuda >
 {
 public:
    template< typename Operation, typename Index >
-   static bool
+   static void
    reduce( Operation& operation,
            const Index size,
            const typename Operation::DataType1* deviceInput1,
@@ -43,7 +43,7 @@ class Reduction< Devices::Host >
 {
 public:
    template< typename Operation, typename Index >
-   static bool
+   static void
    reduce( Operation& operation,
            const Index size,
            const typename Operation::DataType1* deviceInput1,
@@ -56,7 +56,7 @@ class Reduction< Devices::MIC >
 {
 public:
    template< typename Operation, typename Index >
-   static bool
+   static void
    reduce( Operation& operation,
            const Index size,
            const typename Operation::DataType1* deviceInput1,

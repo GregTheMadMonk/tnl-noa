@@ -18,7 +18,7 @@
 
 namespace TNL {
 namespace Containers {
-namespace Algorithms {   
+namespace Algorithms {
 
 template< typename Device >
 class Multireduction
@@ -30,7 +30,7 @@ class Multireduction< Devices::Cuda >
 {
 public:
    template< typename Operation, typename Index >
-   static bool
+   static void
    reduce( Operation& operation,
            const int n,
            const Index size,
@@ -45,7 +45,7 @@ class Multireduction< Devices::Host >
 {
 public:
    template< typename Operation, typename Index >
-   static bool
+   static void
    reduce( Operation& operation,
            const int n,
            const Index size,
@@ -60,7 +60,7 @@ class Multireduction< Devices::MIC >
 {
 public:
    template< typename Operation, typename Index >
-   static bool
+   static void
    reduce( Operation& operation,
            const int n,
            const Index size,

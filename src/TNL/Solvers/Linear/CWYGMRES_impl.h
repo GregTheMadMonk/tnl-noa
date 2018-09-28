@@ -398,18 +398,14 @@ hauseholder_generate( DeviceVector& Y,
       // aux = Y_{i-1}^T * y_i
       RealType aux[ i ];
       Containers::Algorithms::ParallelReductionScalarProduct< RealType, RealType > scalarProduct;
-      if( ! Containers::Algorithms::Multireduction< DeviceType >::reduce
+      Containers::Algorithms::Multireduction< DeviceType >::reduce
                ( scalarProduct,
                  i,
                  size,
                  Y.getData(),
                  ldSize,
                  y_i.getData(),
-                 aux ) )
-      {
-         std::cerr << "multireduction failed" << std::endl;
-         throw 1;
-      }
+                 aux );
 
       // [T_i]_{0..i-1} = - T_{i-1} * t_i * aux
       for( int k = 0; k < i; k++ ) {
@@ -497,18 +493,14 @@ hauseholder_cwy_transposed( DeviceVector& z,
    // aux = Y_i^T * w
    RealType aux[ i + 1 ];
    Containers::Algorithms::ParallelReductionScalarProduct< RealType, RealType > scalarProduct;
-   if( ! Containers::Algorithms::Multireduction< DeviceType >::reduce
+   Containers::Algorithms::Multireduction< DeviceType >::reduce
             ( scalarProduct,
               i + 1,
               size,
               Y.getData(),
               ldSize,
               w.getData(),
-              aux ) )
-   {
-      std::cerr << "multireduction failed" << std::endl;
-      throw 1;
-   }
+              aux );
 
    // aux = T_i^T * aux
    // Note that T_i^T is lower triangular, so we can overwrite the aux vector with the result in place
