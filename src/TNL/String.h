@@ -52,7 +52,11 @@ public:
    //! Copy constructor
    String( const String& str );
    
-   //! Convert anything to a string
+   //////
+   /// Templated constructor
+   ///
+   /// It must be explicit otherwise it is called recursively from inside of its
+   /// definition ( in operator << ). It leads to stack overflow and segmentation fault.
    template< typename T >
    explicit
    String( T value )

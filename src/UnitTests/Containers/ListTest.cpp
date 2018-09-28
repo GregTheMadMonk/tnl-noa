@@ -63,10 +63,10 @@ TYPED_TEST( ListTest, operations )
 
    ListType a, b;
 
-   a.Append( 0 );
-   a.Append( 1 );
-   a.Prepend( 2 );
-   a.Insert( 3, 1 );
+   a.Append( (ValueType) 0 );
+   a.Append( (ValueType) 1 );
+   a.Prepend( (ValueType) 2 );
+   a.Insert( (ValueType) 3, 1 );
    EXPECT_EQ( a.getSize(), 4 );
    EXPECT_EQ( a[ 0 ], (ValueType) 2 );
    EXPECT_EQ( a[ 1 ], (ValueType) 3 );
@@ -77,7 +77,7 @@ TYPED_TEST( ListTest, operations )
    EXPECT_EQ( b.getSize(), 4 );
    EXPECT_EQ( a, b );
 
-   b.Insert( 4, 4 );
+   b.Insert( ( ValueType ) 4, 4 );
    EXPECT_NE( a, b );
    EXPECT_EQ( b[ 4 ], (ValueType) 4 );
 
