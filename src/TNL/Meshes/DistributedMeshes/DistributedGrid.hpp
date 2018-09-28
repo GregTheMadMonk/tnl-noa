@@ -11,7 +11,6 @@
 #pragma once
 
 #include <cstdlib>
-#include <TNL/StaticVectorFor.h>
 #include <TNL/Communicators/MpiCommunicator.h>
 
 #include <iostream>
