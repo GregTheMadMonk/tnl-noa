@@ -462,7 +462,7 @@ public:
 };
 
 template< typename Data1, typename Data2, typename Result = Data1 >
-class ParallelReductionDiffAbsSum : public ParallelReductionMax< Result, Result >
+class ParallelReductionDiffAbsSum : public ParallelReductionSum< Result, Result >
 {
 public:
    using DataType1 = Data1;
