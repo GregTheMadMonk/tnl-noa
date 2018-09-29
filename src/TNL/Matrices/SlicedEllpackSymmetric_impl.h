@@ -75,7 +75,7 @@ void SlicedEllpackSymmetric< Real, Device, Index, SliceSize >::setCompressedRowL
    // TODO: Uncomment the next line and fix the compilation
    //DeviceDependentCode::computeMaximalRowLengthInSlices( *this, rowLengths );
 
-   TNL_ASSERT( false, "code fix required" );
+   throw std::runtime_error("code fix required");
 
    this->maxRowLength = rowLengths.max();
 
@@ -743,6 +743,7 @@ class SlicedEllpackSymmetricDeviceDependentCode< Devices::Host >
       template< typename Real,
                 typename Index,
                 int SliceSize >
+      __cuda_callable__
       static void initRowTraverseFast( const SlicedEllpackSymmetric< Real, Device, Index, SliceSize >& matrix,
                                        const Index row,
                                        Index& rowBegin,
@@ -762,7 +763,7 @@ class SlicedEllpackSymmetricDeviceDependentCode< Devices::Host >
       template< typename Real,
                 typename Index,
                 int SliceSize >
-      static bool computeMaximalRowLengthInSlices( SlicedEllpackSymmetric< Real, Device, Index, SliceSize >& matrix,
+      static void computeMaximalRowLengthInSlices( SlicedEllpackSymmetric< Real, Device, Index, SliceSize >& matrix,
                                                    typename SlicedEllpackSymmetric< Real, Device, Index >::ConstCompressedRowLengthsVectorView rowLengths )
       {
          Index row( 0 ), slice( 0 ), sliceRowLength( 0 );
@@ -862,7 +863,7 @@ class SlicedEllpackSymmetricDeviceDependentCode< Devices::Cuda >
       template< typename Real,
                 typename Index,
                 int SliceSize >
-      static bool computeMaximalRowLengthInSlices( SlicedEllpackSymmetric< Real, Device, Index, SliceSize >& matrix,
+      static void computeMaximalRowLengthInSlices( SlicedEllpackSymmetric< Real, Device, Index, SliceSize >& matrix,
                                                    typename SlicedEllpackSymmetric< Real, Device, Index >::ConstCompressedRowLengthsVectorView rowLengths )
       {
 #ifdef HAVE_CUDA

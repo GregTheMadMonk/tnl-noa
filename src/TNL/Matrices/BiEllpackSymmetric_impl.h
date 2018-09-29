@@ -149,7 +149,7 @@ Index BiEllpackSymmetric< Real, Device, Index, StripSize >::getNumberOfGroups( c
                        << " this->getName() = " << std::endl );
 
     IndexType strip = row / this->warpSize;
-    IndexType rowStripPermutation = this->rowPermArray.getElement( row ) - this->warpSize * strip;
+    IndexType rowStripPermutation = this->rowPermArray[ row ] - this->warpSize * strip;
     IndexType numberOfGroups = this->logWarpSize + 1;
     IndexType bisection = 1;
     for( IndexType i = 0; i < this->logWarpSize + 1; i++ )
@@ -158,6 +158,12 @@ Index BiEllpackSymmetric< Real, Device, Index, StripSize >::getNumberOfGroups( c
             return ( numberOfGroups - i );
         bisection *= 2;
     }
+    // FIXME: non-void function always has to return something sensible
+#ifndef __CUDA_ARCH__
+    throw "bug - row was not found";
+#else
+    TNL_ASSERT_TRUE( false, "bug - row was not found" );
+#endif
 }
 
 template< typename Real,
@@ -390,6 +396,7 @@ bool BiEllpackSymmetric< Real, Device, Index, StripSize >::setRow( const IndexTy
     }
     if( thisElementPtr == numberOfElements )
         return true;
+    return false;
 }
 
 template< typename Real,
@@ -576,8 +583,8 @@ __cuda_callable__
 Index BiEllpackSymmetric< Real, Device, Index, StripSize >::getGroupLength( const Index strip,
                                                                             const Index group ) const
 {
-    return this->groupPointers.getElement( strip * ( this->logWarpSize + 1 ) + group + 1 )
-            - this->groupPointers.getElement( strip * ( this->logWarpSize + 1 ) + group );
+    return this->groupPointers[ strip * ( this->logWarpSize + 1 ) + group + 1 ]
+            - this->groupPointers[ strip * ( this->logWarpSize + 1 ) + group ];
 }
 
 template< typename Real,

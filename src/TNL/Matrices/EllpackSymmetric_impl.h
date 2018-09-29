@@ -85,7 +85,7 @@ bool EllpackSymmetric< Real, Device, Index >::setConstantRowLengths( const Index
              std::cerr << " rowLengths = " << rowLengths );
    this->rowLengths = rowLengths;
    if( this->rows > 0 )
-      return allocateElements();
+      allocateElements();
    return true;
 }
 

@@ -153,10 +153,8 @@ class EllpackSymmetricGraph : public Sparse< Real, Device, Index >
                   const int color ) const;
 #endif
 
-   __cuda_callable__
    void computePermutationArray();
 
-   __cuda_callable__
    bool rearrangeMatrix( bool verbose );
 
    bool save( File& file ) const;
@@ -182,21 +180,20 @@ class EllpackSymmetricGraph : public Sparse< Real, Device, Index >
    __cuda_callable__
    Index getRowsOfColor( IndexType color ) const;
 
-   __cuda_callable__
    void copyFromHostToCuda( EllpackSymmetricGraph< Real, Devices::Host, Index >& matrix );
 
    __cuda_callable__
-   Containers::Vector< Index, Device, Index > getPermutationArray();
+   Containers::Vector< Index, Device, Index >& getPermutationArray();
 
    __cuda_callable__
-   Containers::Vector< Index, Device, Index > getInversePermutation();
+   Containers::Vector< Index, Device, Index >& getInversePermutation();
 
    __cuda_callable__
-   Containers::Vector< Index, Device, Index > getColorPointers();
+   Containers::Vector< Index, Device, Index >& getColorPointers();
 
    protected:
 
-   bool allocateElements();
+   void allocateElements();
 
    IndexType rowLengths, alignedRows;
 

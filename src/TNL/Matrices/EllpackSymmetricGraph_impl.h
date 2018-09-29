@@ -102,7 +102,7 @@ template< typename Real,
 __cuda_callable__
 Index EllpackSymmetricGraph< Real, Device, Index >::getRowsOfColor( IndexType color ) const
 {
-   return this->colorPointers.getElement( color + 1 ) - this->colorPointers.getElement( color );
+   return this->colorPointers[ color + 1 ] - this->colorPointers[ color ];
 }
 
 /*
@@ -174,7 +174,6 @@ void EllpackSymmetricGraph< Real, Device, Index >::computeColorsVector( Containe
 template< typename Real,
           typename Device,
           typename Index >
-__cuda_callable__
 void EllpackSymmetricGraph< Real, Device, Index >::computePermutationArray()
 {
    // init vector of colors and permutation array
@@ -238,7 +237,6 @@ void EllpackSymmetricGraph< Real, Device, Index >::verifyPermutationArray()
 template< typename Real,
           typename Device,
           typename Index >
-__cuda_callable__
 bool EllpackSymmetricGraph< Real, Device, Index >::rearrangeMatrix( bool verbose )
 {
    // first we need to know permutation
@@ -296,7 +294,8 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-Containers::Vector< Index, Device, Index > EllpackSymmetricGraph< Real, Device, Index >::getPermutationArray()
+Containers::Vector< Index, Device, Index >&
+EllpackSymmetricGraph< Real, Device, Index >::getPermutationArray()
 {
     return this->permutationArray;
 }
@@ -305,7 +304,8 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-Containers::Vector< Index, Device, Index > EllpackSymmetricGraph< Real, Device, Index >::getInversePermutation()
+Containers::Vector< Index, Device, Index >&
+EllpackSymmetricGraph< Real, Device, Index >::getInversePermutation()
 {
     return this->inversePermutationArray;
 }
@@ -314,7 +314,8 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-Containers::Vector< Index, Device, Index > EllpackSymmetricGraph< Real, Device, Index >::getColorPointers()
+Containers::Vector< Index, Device, Index >&
+EllpackSymmetricGraph< Real, Device, Index >::getColorPointers()
 {
     return this->colorPointers;
 }
@@ -322,7 +323,6 @@ Containers::Vector< Index, Device, Index > EllpackSymmetricGraph< Real, Device, 
 template< typename Real,
           typename Device,
           typename Index >
-__cuda_callable__
 void EllpackSymmetricGraph< Real, Device, Index >::copyFromHostToCuda( EllpackSymmetricGraph< Real, Devices::Host, Index >& matrix )
 {
     //  TODO: fix
@@ -331,17 +331,17 @@ void EllpackSymmetricGraph< Real, Device, Index >::copyFromHostToCuda( EllpackSy
     this->rearranged = true;
     this->rowLengths = matrix.getRowLengthsInt();
     this->alignedRows = matrix.getAlignedRows();
-    Containers::Vector< Index, Devices::Host, Index > colorPointers = matrix.getColorPointers();
+    Containers::Vector< Index, Devices::Host, Index >& colorPointers = matrix.getColorPointers();
     this->colorPointers.setSize( colorPointers.getSize() );
     for( IndexType i = 0; i < colorPointers.getSize(); i++ )
         this->colorPointers.setElement( i, colorPointers[ i ] );
 
-    Containers::Vector< Index,Devices::Host, Index > permutationArray = matrix.getPermutationArray();
+    Containers::Vector< Index,Devices::Host, Index >& permutationArray = matrix.getPermutationArray();
     this->permutationArray.setSize( permutationArray.getSize() );
     for( IndexType i = 0; i < permutationArray.getSize(); i++ )
         this->permutationArray.setElement( i, permutationArray[ i ] );
 
-    Containers::Vector< Index, Devices::Host, Index > inversePermutation = matrix.getInversePermutation();
+    Containers::Vector< Index, Devices::Host, Index >& inversePermutation = matrix.getInversePermutation();
     this->inversePermutationArray.setSize( inversePermutation.getSize() );
     for( IndexType i = 0; i < inversePermutation.getSize(); i++ )
         this->inversePermutationArray.setElement( i, inversePermutation[ i ] );
@@ -363,7 +363,7 @@ bool EllpackSymmetricGraph< Real, Device, Index >::setConstantRowLengths( const 
    TNL_ASSERT( rowLengths > 0, std::cerr << " rowLengths = " << rowLengths );
    this->rowLengths = rowLengths;
    if( this->rows > 0 )
-      return allocateElements();
+      allocateElements();
    return true;
 }
 
@@ -445,37 +445,37 @@ bool EllpackSymmetricGraph< Real, Device, Index > :: addElementFast( const Index
                                                                      const RealType& thisElementMultiplicator )
 {
    typedef EllpackSymmetricGraphDeviceDependentCode< DeviceType > DDCType;
-   IndexType i = DDCType::getRowBegin( *this, this->permutationArray.getElement( row ) );
-   const IndexType rowEnd = DDCType::getRowEnd( *this, this->permutationArray.getElement( row ) );
+   IndexType i = DDCType::getRowBegin( *this, this->permutationArray[ row ] );
+   const IndexType rowEnd = DDCType::getRowEnd( *this, this->permutationArray[ row ] );
    const IndexType step = DDCType::getElementStep( *this );
 
    while( i < rowEnd &&
-         this->columnIndexes.getElement( i ) < column &&
-         this->columnIndexes.getElement( i ) != this->getPaddingIndex() ) i += step;
+         this->columnIndexes[ i ] < column &&
+         this->columnIndexes[ i ] != this->getPaddingIndex() ) i += step;
    if( i == rowEnd )
       return false;
-   if( this->columnIndexes.getElement( i ) == column )
+   if( this->columnIndexes[ i ] == column )
    {
-      this->values.setElement( i, thisElementMultiplicator * this->values.getElement( i ) + value);
+      this->values[ i ] = thisElementMultiplicator * this->values[ i ] + value;
       return true;
    }
    else
-      if( this->columnIndexes.getElement( i ) == this->getPaddingIndex() ) // artificial zero
+      if( this->columnIndexes[ i ] == this->getPaddingIndex() ) // artificial zero
       {
-         this->columnIndexes.setElement( i, column);
-         this->values.setElement( i, value);
+         this->columnIndexes[ i ] = column;
+         this->values[ i ] = value;
       }
       else
       {
          Index j = rowEnd - step;
          while( j > i )
          {
-            this->columnIndexes.setElement( j, this->columnIndexes.getElement( j - step ) );
-            this->values.setElement( j, this->values.getElement( j - step ) );
+            this->columnIndexes[ j ] = this->columnIndexes[ j - step ];
+            this->values[ j ] = this->values[ j - step ];
             j -= step;
          }
-         this->columnIndexes.setElement( i, column );
-         this->values.setElement( i, value );
+         this->columnIndexes[ i ] = column;
+         this->values[ i ] = value;
       }
    return true;
 }
@@ -783,6 +783,7 @@ bool EllpackSymmetricGraph< Real, Device, Index >::help( bool verbose )
 {
     if( !this->rearranged )
         return this->rearrangeMatrix( verbose );
+    return true;
 }
 
 template< typename Real,
@@ -810,7 +811,7 @@ void EllpackSymmetricGraph< Real, Device, Index >::print( std::ostream& str ) co
 template< typename Real,
           typename Device,
           typename Index >
-bool EllpackSymmetricGraph< Real, Device, Index >::allocateElements()
+void EllpackSymmetricGraph< Real, Device, Index >::allocateElements()
 {
    Sparse< Real, Device, Index >::allocateMatrixElements( this->alignedRows * this->rowLengths );
 }

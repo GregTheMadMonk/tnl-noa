@@ -318,6 +318,8 @@ Index AdEllpack< Real, Device, Index >::getWarp( const IndexType row ) const
             ( ( this->rowOffset.getElement( searchedWarp ) < row ) && ( this->rowOffset.getElement( searchedWarp + 1 ) >= row ) ) )
             return searchedWarp;
     }
+    // FIXME: non-void function always has to return something sensible
+    throw "bug - row was not found";
 }
 
 template< typename Real,
@@ -474,7 +476,6 @@ bool AdEllpack< Real, Device, Index >::setRow( const IndexType row,
         warp++;
 
     bool found = false;
-    IndexType length = 0;
     IndexType elementPtr;
     IndexType elPtr = 0;
     while( ( !found ) && ( elPtr < elements ) )

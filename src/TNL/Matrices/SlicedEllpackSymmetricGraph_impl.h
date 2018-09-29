@@ -701,7 +701,6 @@ Index SlicedEllpackSymmetricGraph< Real, Device, Index, SliceSize >::getRealRowL
 
    Index rowBegin = slicePointer + rowLength * ( row - sliceIdx * SliceSize );
    Index rowEnd = rowBegin + rowLength;
-   Index step = 1;
    Index length = 0;
    for( Index i = rowBegin; i < rowEnd; i++ )
       if( this->columnIndexes.getElement( i ) != this->getPaddingIndex() )
@@ -764,7 +763,6 @@ bool SlicedEllpackSymmetricGraph< Real, Device, Index, SliceSize >::rearrangeMat
         for( IndexType row = slice * SliceSize; row < (slice + 1) * SliceSize && row < this->getRows(); row++ )
         {
             IndexType rowBegin = slicePointerOrig + rowLengthOrig * ( row - slice * SliceSize );
-            IndexType rowEnd = rowBegin + rowLengthOrig;
             IndexType elementPointer = rowBegin;
 
             IndexType sliceNew = this->permutationArray.getElement( row ) / SliceSize;
@@ -1040,7 +1038,7 @@ class SlicedEllpackSymmetricGraphDeviceDependentCode< Devices::Host >
       template< typename Real,
                 typename Index,
                 int SliceSize >
-      static bool computeMaximalRowLengthInSlices( SlicedEllpackSymmetricGraph< Real, Device, Index, SliceSize >& matrix,
+      static void computeMaximalRowLengthInSlices( SlicedEllpackSymmetricGraph< Real, Device, Index, SliceSize >& matrix,
                                                    typename SlicedEllpackSymmetricGraph< Real, Device, Index >::ConstCompressedRowLengthsVectorView rowLengths,
                                                    Containers::Vector< Index, Device, Index >& sliceRowLengths,
                                                    Containers::Vector< Index, Device, Index >& slicePointers )
@@ -1233,7 +1231,7 @@ class SlicedEllpackSymmetricGraphDeviceDependentCode< Devices::Cuda >
       template< typename Real,
                 typename Index,
                 int SliceSize >
-      static bool computeMaximalRowLengthInSlices( SlicedEllpackSymmetricGraph< Real, Device, Index, SliceSize >& matrix,
+      static void computeMaximalRowLengthInSlices( SlicedEllpackSymmetricGraph< Real, Device, Index, SliceSize >& matrix,
                                                    typename SlicedEllpackSymmetricGraph< Real, Device, Index >::ConstCompressedRowLengthsVectorView rowLengths,
                                                    Containers::Vector< Index, Device, Index >& sliceRowLengths,
                                                    Containers::Vector< Index, Device, Index >& slicePointers )

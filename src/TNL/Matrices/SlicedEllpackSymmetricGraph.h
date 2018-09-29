@@ -195,10 +195,8 @@ class SlicedEllpackSymmetricGraph : public Sparse< Real, Device, Index >
 
     void copyFromHostToCuda( SlicedEllpackSymmetricGraph< Real, Devices::Host, Index, SliceSize >& matrix );
 
-   __cuda_callable__
    bool rearrangeMatrix( bool verbose = false );
 
-   __cuda_callable__
    void computePermutationArray();
 
    Containers::Vector< Index, Device, Index > getSlicePointers();
