@@ -71,7 +71,7 @@ timeFunction( ComputeFunction compute,
       timer.stop();
    }
 
-   return timer.getRealTime();
+   return timer.getRealTime() / loops;
 }
 
 
