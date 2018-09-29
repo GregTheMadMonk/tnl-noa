@@ -78,13 +78,13 @@ class NoDistrCommunicator
       };
 
       template <typename T>
-      static Request ISend( const T *data, int count, int dest, CommunicationGroup group)
+      static Request ISend( const T *data, int count, int dest, int tag, CommunicationGroup group)
       {
           return 1;
       }
 
       template <typename T>
-      static Request IRecv( const T *data, int count, int src, CommunicationGroup group)
+      static Request IRecv( const T *data, int count, int src, int tag, CommunicationGroup group)
       {
           return 1;
       }

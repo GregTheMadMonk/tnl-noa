@@ -148,16 +148,20 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 2, GridReal, D
          
          //send everything, receive everything 
          for( int i = 0; i < 8; i++ )
+         {
+            //TNL_MPI_PRINT( "neighbors[ "  << i << "  ] = " << neighbors[ i ] << " periodicNeighbors[ " << i << " ] = " << periodicNeighbors[ i ] );
             if( neighbors[ i ] != -1 )
             {
-               requests[ requestsCount++ ] = CommunicatorType::ISend( sendBuffers[ i ].getData(), sizes[ i ], neighbors[ i ], group );
-               requests[ requestsCount++ ] = CommunicatorType::IRecv( receiveBuffers[ i ].getData(), sizes[ i ], neighbors[ i ], group );
+               requests[ requestsCount++ ] = CommunicatorType::ISend( sendBuffers[ i ].getData(), sizes[ i ], neighbors[ i ], 0, group );
+               requests[ requestsCount++ ] = CommunicatorType::IRecv( receiveBuffers[ i ].getData(), sizes[ i ], neighbors[ i ], 0, group );
             }
             else if( periodicBoundaries )
             {
-               requests[ requestsCount++ ] = CommunicatorType::ISend( sendBuffers[ i ].getData(), sizes[ i ], periodicNeighbors[ i ], group );
-               requests[ requestsCount++ ] = CommunicatorType::IRecv( receiveBuffers[ i ].getData(), sizes[ i ], periodicNeighbors[ i ], group );
+               //TNL_MPI_PRINT( i << " -> " << periodicNeighbors[ i ] );
+               requests[ requestsCount++ ] = CommunicatorType::ISend( sendBuffers[ i ].getData(), sizes[ i ], periodicNeighbors[ i ], 0, group );
+               requests[ requestsCount++ ] = CommunicatorType::IRecv( receiveBuffers[ i ].getData(), sizes[ i ], periodicNeighbors[ i ], 0, group );
             }
+         }
 
          //wait until send is done
          CommunicatorType::WaitAll( requests, requestsCount );

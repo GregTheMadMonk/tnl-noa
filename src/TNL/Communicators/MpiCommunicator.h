@@ -276,13 +276,13 @@ class MpiCommunicator
         }
 
          template <typename T>
-         static Request ISend( const T* data, int count, int dest, CommunicationGroup group)
+         static Request ISend( const T* data, int count, int dest, int tag, CommunicationGroup group)
          {
 #ifdef HAVE_MPI
             TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
             TNL_ASSERT_NE(group, NullGroup, "ISend cannot be called with NullGroup");
             Request req;
-            MPI_Isend( const_cast< void* >( ( const void* ) data ), count, MPIDataType(data) , dest, 0, group, &req);
+            MPI_Isend( const_cast< void* >( ( const void* ) data ), count, MPIDataType(data) , dest, tag, group, &req);
             return req;
 #else
             throw Exceptions::MPISupportMissing();
@@ -290,13 +290,13 @@ class MpiCommunicator
         }
 
          template <typename T>
-         static Request IRecv( T* data, int count, int src, CommunicationGroup group)
+         static Request IRecv( T* data, int count, int src, int tag, CommunicationGroup group)
          {
 #ifdef HAVE_MPI
             TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
             TNL_ASSERT_NE(group, NullGroup, "IRecv cannot be called with NullGroup");
             Request req;
-            MPI_Irecv((void*) data, count, MPIDataType(data) , src, 0, group, &req);
+            MPI_Irecv((void*) data, count, MPIDataType(data) , src, tag, group, &req);
             return req;
 #else
             throw Exceptions::MPISupportMissing();
