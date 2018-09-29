@@ -183,11 +183,8 @@ compareMemory( const Element1* destination,
 {
    TNL_ASSERT_TRUE( destination, "Attempted to compare data through a nullptr." );
    TNL_ASSERT_TRUE( source, "Attempted to compare data through a nullptr." );
-   //TODO: The parallel reduction on the CUDA device with different element types is needed.
-   bool result = false;
    Algorithms::ParallelReductionEqualities< Element1, Element2 > reductionEqualities;
-   Reduction< Devices::Cuda >::reduce( reductionEqualities, size, destination, source, result );
-   return result;
+   return Reduction< Devices::Cuda >::reduce( reductionEqualities, size, destination, source );
 }
 
 template< typename Element,
@@ -201,11 +198,9 @@ containsValue( const Element* data,
    TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
    TNL_ASSERT_GE( size, 0, "" );
    if( size == 0 ) return false;
-   bool result = false;
    Algorithms::ParallelReductionContainsValue< Element > reductionContainsValue;
    reductionContainsValue.setValue( value );
-   Reduction< Devices::Cuda >::reduce( reductionContainsValue, size, data, 0, result );
-   return result;
+   return Reduction< Devices::Cuda >::reduce( reductionContainsValue, size, data, nullptr );
 }
 
 template< typename Element,
@@ -219,11 +214,9 @@ containsOnlyValue( const Element* data,
    TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
    TNL_ASSERT_GE( size, 0, "" );
    if( size == 0 ) return false;
-   bool result = false;
    Algorithms::ParallelReductionContainsOnlyValue< Element > reductionContainsOnlyValue;
    reductionContainsOnlyValue.setValue( value );
-   Reduction< Devices::Cuda >::reduce( reductionContainsOnlyValue, size, data, 0, result );
-   return result;
+   return Reduction< Devices::Cuda >::reduce( reductionContainsOnlyValue, size, data, nullptr );
 }
 
 

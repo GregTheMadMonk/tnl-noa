@@ -10,7 +10,7 @@
 
 // Implemented by: Tomas Oberhuber, Jakub Klinkovsky
 
-#pragma once 
+#pragma once
 
 #include "Reduction.h"
 
@@ -39,13 +39,12 @@ namespace Algorithms {
 static constexpr int Reduction_minGpuDataSize = 256;//65536; //16384;//1024;//256;
 
 template< typename Operation, typename Index >
-void
+typename Operation::ResultType
 Reduction< Devices::Cuda >::
 reduce( Operation& operation,
         const Index size,
         const typename Operation::DataType1* deviceInput1,
-        const typename Operation::DataType2* deviceInput2,
-        typename Operation::ResultType& result )
+        const typename Operation::DataType2* deviceInput2 )
 {
 #ifdef HAVE_CUDA
 
@@ -75,12 +74,11 @@ reduce( Operation& operation,
          using _DT2 = typename std::conditional< std::is_same< DataType2, void >::value, DataType1, DataType2 >::type;
          typename std::remove_const< _DT2 >::type hostArray2[ Reduction_minGpuDataSize ];
          ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( hostArray2, (_DT2*) deviceInput2, size );
-         Reduction< Devices::Host >::reduce( operation, size, hostArray1, hostArray2, result );
+         return Reduction< Devices::Host >::reduce( operation, size, hostArray1, hostArray2 );
       }
       else {
-         Reduction< Devices::Host >::reduce( operation, size, hostArray1, (DataType2*) nullptr, result );
+         return Reduction< Devices::Host >::reduce( operation, size, hostArray1, (DataType2*) nullptr );
       }
-      return;
    }
 
    #ifdef CUDA_REDUCTION_PROFILING
@@ -123,12 +121,14 @@ reduce( Operation& operation,
        * Reduce the data on the host system.
        */
       LaterReductionOperation laterReductionOperation;
-      Reduction< Devices::Host >::reduce( laterReductionOperation, reducedSize, resultArray, (void*) nullptr, result );
+      const ResultType result = Reduction< Devices::Host >::reduce( laterReductionOperation, reducedSize, resultArray, (void*) nullptr );
 
       #ifdef CUDA_REDUCTION_PROFILING
          timer.stop();
          std::cout << "   Reduction of small data set on CPU took " << timer.getRealTime() << " sec. " << std::endl;
       #endif
+
+      return result;
    }
    else {
       /***
@@ -152,28 +152,27 @@ reduce( Operation& operation,
 
       ResultType resultArray[ 1 ];
       ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( resultArray, deviceAux1, reducedSize );
-      result = resultArray[ 0 ];
+      const ResultType result = resultArray[ 0 ];
 
       #ifdef CUDA_REDUCTION_PROFILING
          timer.stop();
          std::cout << "   Transferring the result to CPU took " << timer.getRealTime() << " sec. " << std::endl;
       #endif
-   }
 
-   TNL_CHECK_CUDA_DEVICE;
+      return result;
+   }
 #else
    throw Exceptions::CudaSupportMissing();
 #endif
 };
 
 template< typename Operation, typename Index >
-void
+typename Operation::ResultType
 Reduction< Devices::Host >::
 reduce( Operation& operation,
         const Index size,
         const typename Operation::DataType1* input1,
-        const typename Operation::DataType2* input2,
-        typename Operation::ResultType& result )
+        const typename Operation::DataType2* input2 )
 {
    typedef Index IndexType;
    typedef typename Operation::DataType1 DataType1;
@@ -182,45 +181,43 @@ reduce( Operation& operation,
 
 #ifdef HAVE_OPENMP
    constexpr int block_size = 128;
-   if( TNL::Devices::Host::isOMPEnabled() && size >= 2 * block_size )
+   if( TNL::Devices::Host::isOMPEnabled() && size >= 2 * block_size ) {
+      // global result variable
+      ResultType result = operation.initialValue();
 #pragma omp parallel
-   {
-      const int blocks = size / block_size;
-
-      // first thread initializes the global result variable
-      #pragma omp single nowait
       {
-         result = operation.initialValue();
-      }
+         const int blocks = size / block_size;
 
-      // initialize thread-local result variable
-      ResultType r = operation.initialValue();
+         // initialize thread-local result variable
+         ResultType r = operation.initialValue();
 
-      #pragma omp for nowait
-      for( int b = 0; b < blocks; b++ ) {
-         const int offset = b * block_size;
-         for( IndexType i = 0; i < block_size; i++ )
-            operation.firstReduction( r, offset + i, input1, input2 );
-      }
+         #pragma omp for nowait
+         for( int b = 0; b < blocks; b++ ) {
+            const int offset = b * block_size;
+            for( IndexType i = 0; i < block_size; i++ )
+               operation.firstReduction( r, offset + i, input1, input2 );
+         }
 
-      // the first thread that reaches here processes the last, incomplete block
-      #pragma omp single nowait
-      {
-         for( IndexType i = blocks * block_size; i < size; i++ )
-            operation.firstReduction( r, i, input1, input2 );
-      }
+         // the first thread that reaches here processes the last, incomplete block
+         #pragma omp single nowait
+         {
+            for( IndexType i = blocks * block_size; i < size; i++ )
+               operation.firstReduction( r, i, input1, input2 );
+         }
 
-      // inter-thread reduction of local results
-      #pragma omp critical
-      {
-         operation.commonReduction( result, r );
+         // inter-thread reduction of local results
+         #pragma omp critical
+         {
+            operation.commonReduction( result, r );
       }
+      return result;
    }
    else {
 #endif
-      result = operation.initialValue();
+      ResultType result = operation.initialValue();
       for( IndexType i = 0; i < size; i++ )
          operation.firstReduction( result, i, input1, input2 );
+      return result;
 #ifdef HAVE_OPENMP
    }
 #endif

@@ -30,12 +30,11 @@ class Reduction< Devices::Cuda >
 {
 public:
    template< typename Operation, typename Index >
-   static void
+   static typename Operation::ResultType
    reduce( Operation& operation,
            const Index size,
            const typename Operation::DataType1* deviceInput1,
-           const typename Operation::DataType2* deviceInput2,
-           typename Operation::ResultType& result );
+           const typename Operation::DataType2* deviceInput2 );
 };
 
 template<>
@@ -43,12 +42,11 @@ class Reduction< Devices::Host >
 {
 public:
    template< typename Operation, typename Index >
-   static void
+   static typename Operation::ResultType
    reduce( Operation& operation,
            const Index size,
            const typename Operation::DataType1* deviceInput1,
-           const typename Operation::DataType2* deviceInput2,
-           typename Operation::ResultType& result );
+           const typename Operation::DataType2* deviceInput2 );
 };
 
 template<>
@@ -56,12 +54,11 @@ class Reduction< Devices::MIC >
 {
 public:
    template< typename Operation, typename Index >
-   static void
+   static typename Operation::ResultType
    reduce( Operation& operation,
            const Index size,
            const typename Operation::DataType1* deviceInput1,
-           const typename Operation::DataType2* deviceInput2,
-           typename Operation::ResultType& result );
+           const typename Operation::DataType2* deviceInput2 );
 };
 
 } // namespace Algorithms

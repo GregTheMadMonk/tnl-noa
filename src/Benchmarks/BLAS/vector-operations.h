@@ -88,15 +88,12 @@ benchmarkVectorOperations( Benchmark & benchmark,
       resultHost = hostVector.max();
    };
    auto maxHostGeneral = [&]() {
-      Real result( 0 );
       Containers::Algorithms::ParallelReductionMax< Real > operation;
-      Containers::Algorithms::Reduction< Devices::Host >::reduce(
-              operation,
-              hostVector.getSize(),
-              hostVector.getData(),
-              ( Real* ) 0,
-              result );
-      return result;
+      return Containers::Algorithms::Reduction< Devices::Host >::reduce(
+                 operation,
+                 hostVector.getSize(),
+                 hostVector.getData(),
+                 ( Real* ) 0 );
    };
    auto maxCuda = [&]() {
       resultDevice = deviceVector.max();
@@ -113,15 +110,12 @@ benchmarkVectorOperations( Benchmark & benchmark,
       resultHost = hostVector.min();
    };
    auto minHostGeneral = [&]() {
-      Real result( 0 );
       Containers::Algorithms::ParallelReductionMin< Real > operation;
-      Containers::Algorithms::Reduction< Devices::Host >::reduce(
-              operation,
-              hostVector.getSize(),
-              hostVector.getData(),
-              ( Real* ) 0,
-              result );
-      return result;
+      return Containers::Algorithms::Reduction< Devices::Host >::reduce(
+                 operation,
+                 hostVector.getSize(),
+                 hostVector.getData(),
+                 ( Real* ) 0 );
    };
    auto minCuda = [&]() {
       resultDevice = deviceVector.min();
@@ -138,15 +132,12 @@ benchmarkVectorOperations( Benchmark & benchmark,
       resultHost = hostVector.absMax();
    };
    auto absMaxHostGeneral = [&]() {
-      Real result( 0 );
       Containers::Algorithms::ParallelReductionAbsMax< Real > operation;
-      Containers::Algorithms::Reduction< Devices::Host >::reduce(
-              operation,
-              hostVector.getSize(),
-              hostVector.getData(),
-              ( Real* ) 0,
-              result );
-      return result;
+      return Containers::Algorithms::Reduction< Devices::Host >::reduce(
+                 operation,
+                 hostVector.getSize(),
+                 hostVector.getData(),
+                 ( Real* ) 0 );
    };
    auto absMaxCuda = [&]() {
       resultDevice = deviceVector.absMax();
@@ -173,15 +164,12 @@ benchmarkVectorOperations( Benchmark & benchmark,
       resultHost = hostVector.absMin();
    };
    auto absMinHostGeneral = [&]() {
-      Real result( 0 );
       Containers::Algorithms::ParallelReductionAbsMin< Real > operation;
-      Containers::Algorithms::Reduction< Devices::Host >::reduce(
-              operation,
-              hostVector.getSize(),
-              hostVector.getData(),
-              ( Real* ) 0,
-              result );
-      return result;
+      return Containers::Algorithms::Reduction< Devices::Host >::reduce(
+                 operation,
+                 hostVector.getSize(),
+                 hostVector.getData(),
+                 ( Real* ) 0 );
    };
    auto absMinCuda = [&]() {
       resultDevice = deviceVector.absMin();
@@ -208,15 +196,12 @@ benchmarkVectorOperations( Benchmark & benchmark,
       resultHost = hostVector.sum();
    };
    auto sumHostGeneral = [&]() {
-      Real result( 0 );
       Containers::Algorithms::ParallelReductionSum< Real > operation;
-      Containers::Algorithms::Reduction< Devices::Host >::reduce(
-              operation,
-              hostVector.getSize(),
-              hostVector.getData(),
-              ( Real* ) 0,
-              result );
-      return result;
+      return Containers::Algorithms::Reduction< Devices::Host >::reduce(
+                 operation,
+                 hostVector.getSize(),
+                 hostVector.getData(),
+                 ( Real* ) 0 );
    };
    auto sumCuda = [&]() {
       resultDevice = deviceVector.sum();
@@ -233,15 +218,12 @@ benchmarkVectorOperations( Benchmark & benchmark,
       resultHost = hostVector.lpNorm( 1.0 );
    };
    auto l1normHostGeneral = [&]() {
-      Real result( 0 );
       Containers::Algorithms::ParallelReductionAbsSum< Real > operation;
-      Containers::Algorithms::Reduction< Devices::Host >::reduce(
-              operation,
-              hostVector.getSize(),
-              hostVector.getData(),
-              ( Real* ) 0,
-              result );
-      return result;
+      return Containers::Algorithms::Reduction< Devices::Host >::reduce(
+                 operation,
+                 hostVector.getSize(),
+                 hostVector.getData(),
+                 ( Real* ) 0 );
    };
    auto l1normCuda = [&]() {
       resultDevice = deviceVector.lpNorm( 1.0 );
@@ -266,15 +248,12 @@ benchmarkVectorOperations( Benchmark & benchmark,
       resultHost = hostVector.lpNorm( 2.0 );
    };
    auto l2normHostGeneral = [&]() {
-      Real result( 0 );
       Containers::Algorithms::ParallelReductionL2Norm< Real > operation;
-      Containers::Algorithms::Reduction< Devices::Host >::reduce(
-              operation,
-              hostVector.getSize(),
-              hostVector.getData(),
-              ( Real* ) 0,
-              result );
-      return result;
+      return Containers::Algorithms::Reduction< Devices::Host >::reduce(
+                 operation,
+                 hostVector.getSize(),
+                 hostVector.getData(),
+                 ( Real* ) 0 );
    };
    auto l2normCuda = [&]() {
       resultDevice = deviceVector.lpNorm( 2.0 );
@@ -299,16 +278,13 @@ benchmarkVectorOperations( Benchmark & benchmark,
       resultHost = hostVector.lpNorm( 3.0 );
    };
    auto l3normHostGeneral = [&]() {
-      Real result( 0 );
       Containers::Algorithms::ParallelReductionLpNorm< Real > operation;
       operation.setPower( 3.0 );
-      Containers::Algorithms::Reduction< Devices::Host >::reduce(
-              operation,
-              hostVector.getSize(),
-              hostVector.getData(),
-              ( Real* ) 0,
-              result );
-      return result;
+      return Containers::Algorithms::Reduction< Devices::Host >::reduce(
+                 operation,
+                 hostVector.getSize(),
+                 hostVector.getData(),
+                 ( Real* ) 0 );
    };
    auto l3normCuda = [&]() {
       resultDevice = deviceVector.lpNorm( 3.0 );
@@ -325,15 +301,12 @@ benchmarkVectorOperations( Benchmark & benchmark,
       resultHost = hostVector.scalarProduct( hostVector2 );
    };
    auto scalarProductHostGeneral = [&]() {
-      Real result( 0 );
       Containers::Algorithms::ParallelReductionScalarProduct< Real, Real > operation;
-      Containers::Algorithms::Reduction< Devices::Host >::reduce(
-              operation,
-              hostVector.getSize(),
-              hostVector.getData(),
-              hostVector2.getData(),
-              result );
-      return result;
+      return Containers::Algorithms::Reduction< Devices::Host >::reduce(
+                 operation,
+                 hostVector.getSize(),
+                 hostVector.getData(),
+                 hostVector2.getData() );
    };
    auto scalarProductCuda = [&]() {
       resultDevice = deviceVector.scalarProduct( deviceVector2 );
