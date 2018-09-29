@@ -520,42 +520,6 @@ addVector( Vector1& y,
 
    const Index n = y.getSize();
 
-#ifdef OPTIMIZED_VECTOR_HOST_OPERATIONS
-#ifdef __GNUC__
-   // We need to get the address of the first element to avoid
-   // bounds checking in TNL::Array::operator[]
-   typedef typename Vector1::RealType Real;   
-         Real* Y = y.getData();
-   const Real* X = x.getData();
-#endif
-
-   Index i = 0;
-   const Index unroll_limit = n - n % 4;
-#ifdef HAVE_OPENMP
-   #pragma omp parallel for \
-      if( n > OpenMPVectorOperationsThreshold ) \
-      lastprivate(i)
-#endif
-   for(i = 0; i < unroll_limit; i += 4)
-   {
-#ifdef __GNUC__
-      __builtin_prefetch(&y[ i + PrefetchDistance ], 1, 0);
-      __builtin_prefetch(&x[ i + PrefetchDistance ], 0, 0);
-#endif
-      y[ i ]     = thisMultiplicator * y[ i ]     + alpha * x[ i ];
-      y[ i + 1 ] = thisMultiplicator * y[ i + 1 ] + alpha * x[ i + 1 ];
-      y[ i + 2 ] = thisMultiplicator * y[ i + 2 ] + alpha * x[ i + 2 ];
-      y[ i + 3 ] = thisMultiplicator * y[ i + 3 ] + alpha * x[ i + 3 ];
-   }
-
-   while( i < n )
-   {
-      y[i] = thisMultiplicator * y[ i ] + alpha * x[ i ];
-      i++;
-   }
-
-#else // OPTIMIZED_VECTOR_HOST_OPERATIONS
-
    if( thisMultiplicator == 1.0 )
 #ifdef HAVE_OPENMP
 #pragma omp parallel for if( TNL::Devices::Host::isOMPEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
@@ -568,7 +532,6 @@ addVector( Vector1& y,
 #endif
       for( Index i = 0; i < n; i ++ )
          y[ i ] = thisMultiplicator * y[ i ] + alpha * x[ i ];
-#endif // OPTIMIZED_VECTOR_HOST_OPERATIONS
 }
 
 template< typename Vector1,
