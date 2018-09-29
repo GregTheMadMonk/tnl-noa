@@ -34,7 +34,6 @@ INSTANTIATE_INT="yes"
 INSTANTIATE_LONG_DOUBLE="no"
 INSTANTIATE_DOUBLE="yes"
 INSTANTIATE_FLOAT="no"
-OPTIMIZED_VECTOR_HOST_OPERATIONS="no"
 
 for option in "$@"
 do
@@ -75,7 +74,6 @@ do
                                            INSTANTIATE_DOUBLE="yes"
                                            INSTANTIATE_FLOAT="no"
                                            WITH_CUDA_ARCH="auto" ;;
-        --optimize-vector-host-operations=* ) OPTIMIZED_VECTOR_HOST_OPERATIONS="yes" ;;
         *                                ) 
            echo "Unknown option ${option}. Use --help for more information."
            exit 1 ;;
@@ -175,7 +173,6 @@ cmake_command=(
          -DINSTANTIATE_LONG_DOUBLE=${INSTANTIATE_LONG_DOUBLE}
          -DINSTANTIATE_INT=${INSTANTIATE_INT}
          -DINSTANTIATE_LONG_INT=${INSTANTIATE_LONG_INT}
-         -DOPTIMIZED_VECTOR_HOST_OPERATIONS=${OPTIMIZED_VECTOR_HOST_OPERATIONS}
 )
 
 # Skip running cmake if it was already run and the cmake command is the same.

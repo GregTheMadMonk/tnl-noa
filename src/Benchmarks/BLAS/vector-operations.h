@@ -87,20 +87,11 @@ benchmarkVectorOperations( Benchmark & benchmark,
    auto maxHost = [&]() {
       resultHost = hostVector.max();
    };
-   auto maxHostGeneral = [&]() {
-      Containers::Algorithms::ParallelReductionMax< Real > operation;
-      return Containers::Algorithms::Reduction< Devices::Host >::reduce(
-                 operation,
-                 hostVector.getSize(),
-                 hostVector.getData(),
-                 ( Real* ) 0 );
-   };
    auto maxCuda = [&]() {
       resultDevice = deviceVector.max();
    };
    benchmark.setOperation( "max", datasetSize );
    benchmark.time( reset1, "CPU", maxHost );
-   benchmark.time( reset1, "CPU (general)", maxHostGeneral );
 #ifdef HAVE_CUDA
    benchmark.time( reset1, "GPU", maxCuda );
 #endif
@@ -109,20 +100,11 @@ benchmarkVectorOperations( Benchmark & benchmark,
    auto minHost = [&]() {
       resultHost = hostVector.min();
    };
-   auto minHostGeneral = [&]() {
-      Containers::Algorithms::ParallelReductionMin< Real > operation;
-      return Containers::Algorithms::Reduction< Devices::Host >::reduce(
-                 operation,
-                 hostVector.getSize(),
-                 hostVector.getData(),
-                 ( Real* ) 0 );
-   };
    auto minCuda = [&]() {
       resultDevice = deviceVector.min();
    };
    benchmark.setOperation( "min", datasetSize );
    benchmark.time( reset1, "CPU", minHost );
-   benchmark.time( reset1, "CPU (general)", minHostGeneral );
 #ifdef HAVE_CUDA
    benchmark.time( reset1, "GPU", minCuda );
 #endif
@@ -130,14 +112,6 @@ benchmarkVectorOperations( Benchmark & benchmark,
 
    auto absMaxHost = [&]() {
       resultHost = hostVector.absMax();
-   };
-   auto absMaxHostGeneral = [&]() {
-      Containers::Algorithms::ParallelReductionAbsMax< Real > operation;
-      return Containers::Algorithms::Reduction< Devices::Host >::reduce(
-                 operation,
-                 hostVector.getSize(),
-                 hostVector.getData(),
-                 ( Real* ) 0 );
    };
    auto absMaxCuda = [&]() {
       resultDevice = deviceVector.absMax();
@@ -153,7 +127,6 @@ benchmarkVectorOperations( Benchmark & benchmark,
 #endif
    benchmark.setOperation( "absMax", datasetSize );
    benchmark.time( reset1, "CPU", absMaxHost );
-   benchmark.time( reset1, "CPU (general)", absMaxHostGeneral );
 #ifdef HAVE_CUDA
    benchmark.time( reset1, "GPU", absMaxCuda );
    benchmark.time( reset1, "cuBLAS", absMaxCublas );
@@ -162,14 +135,6 @@ benchmarkVectorOperations( Benchmark & benchmark,
 
    auto absMinHost = [&]() {
       resultHost = hostVector.absMin();
-   };
-   auto absMinHostGeneral = [&]() {
-      Containers::Algorithms::ParallelReductionAbsMin< Real > operation;
-      return Containers::Algorithms::Reduction< Devices::Host >::reduce(
-                 operation,
-                 hostVector.getSize(),
-                 hostVector.getData(),
-                 ( Real* ) 0 );
    };
    auto absMinCuda = [&]() {
       resultDevice = deviceVector.absMin();
@@ -185,7 +150,6 @@ benchmarkVectorOperations( Benchmark & benchmark,
 #endif
    benchmark.setOperation( "absMin", datasetSize );
    benchmark.time( reset1, "CPU", absMinHost );
-   benchmark.time( reset1, "CPU (general)", absMinHostGeneral );
 #ifdef HAVE_CUDA
    benchmark.time( reset1, "GPU", absMinCuda );
    benchmark.time( reset1, "cuBLAS", absMinCublas );
@@ -195,20 +159,11 @@ benchmarkVectorOperations( Benchmark & benchmark,
    auto sumHost = [&]() {
       resultHost = hostVector.sum();
    };
-   auto sumHostGeneral = [&]() {
-      Containers::Algorithms::ParallelReductionSum< Real > operation;
-      return Containers::Algorithms::Reduction< Devices::Host >::reduce(
-                 operation,
-                 hostVector.getSize(),
-                 hostVector.getData(),
-                 ( Real* ) 0 );
-   };
    auto sumCuda = [&]() {
       resultDevice = deviceVector.sum();
    };
    benchmark.setOperation( "sum", datasetSize );
    benchmark.time( reset1, "CPU", sumHost );
-   benchmark.time( reset1, "CPU (general)", sumHostGeneral );
 #ifdef HAVE_CUDA
    benchmark.time( reset1, "GPU", sumCuda );
 #endif
@@ -216,14 +171,6 @@ benchmarkVectorOperations( Benchmark & benchmark,
 
    auto l1normHost = [&]() {
       resultHost = hostVector.lpNorm( 1.0 );
-   };
-   auto l1normHostGeneral = [&]() {
-      Containers::Algorithms::ParallelReductionAbsSum< Real > operation;
-      return Containers::Algorithms::Reduction< Devices::Host >::reduce(
-                 operation,
-                 hostVector.getSize(),
-                 hostVector.getData(),
-                 ( Real* ) 0 );
    };
    auto l1normCuda = [&]() {
       resultDevice = deviceVector.lpNorm( 1.0 );
@@ -237,7 +184,6 @@ benchmarkVectorOperations( Benchmark & benchmark,
 #endif
    benchmark.setOperation( "l1 norm", datasetSize );
    benchmark.time( reset1, "CPU", l1normHost );
-   benchmark.time( reset1, "CPU (general)", l1normHostGeneral );
 #ifdef HAVE_CUDA
    benchmark.time( reset1, "GPU", l1normCuda );
    benchmark.time( reset1, "cuBLAS", l1normCublas );
@@ -246,14 +192,6 @@ benchmarkVectorOperations( Benchmark & benchmark,
 
    auto l2normHost = [&]() {
       resultHost = hostVector.lpNorm( 2.0 );
-   };
-   auto l2normHostGeneral = [&]() {
-      Containers::Algorithms::ParallelReductionL2Norm< Real > operation;
-      return Containers::Algorithms::Reduction< Devices::Host >::reduce(
-                 operation,
-                 hostVector.getSize(),
-                 hostVector.getData(),
-                 ( Real* ) 0 );
    };
    auto l2normCuda = [&]() {
       resultDevice = deviceVector.lpNorm( 2.0 );
@@ -267,7 +205,6 @@ benchmarkVectorOperations( Benchmark & benchmark,
 #endif
    benchmark.setOperation( "l2 norm", datasetSize );
    benchmark.time( reset1, "CPU", l2normHost );
-   benchmark.time( reset1, "CPU (general)", l2normHostGeneral );
 #ifdef HAVE_CUDA
    benchmark.time( reset1, "GPU", l2normCuda );
    benchmark.time( reset1, "cuBLAS", l2normCublas );
@@ -277,21 +214,11 @@ benchmarkVectorOperations( Benchmark & benchmark,
    auto l3normHost = [&]() {
       resultHost = hostVector.lpNorm( 3.0 );
    };
-   auto l3normHostGeneral = [&]() {
-      Containers::Algorithms::ParallelReductionLpNorm< Real > operation;
-      operation.setPower( 3.0 );
-      return Containers::Algorithms::Reduction< Devices::Host >::reduce(
-                 operation,
-                 hostVector.getSize(),
-                 hostVector.getData(),
-                 ( Real* ) 0 );
-   };
    auto l3normCuda = [&]() {
       resultDevice = deviceVector.lpNorm( 3.0 );
    };
    benchmark.setOperation( "l3 norm", datasetSize );
    benchmark.time( reset1, "CPU", l3normHost );
-   benchmark.time( reset1, "CPU (general)", l3normHostGeneral );
 #ifdef HAVE_CUDA
    benchmark.time( reset1, "GPU", l3normCuda );
 #endif
@@ -299,14 +226,6 @@ benchmarkVectorOperations( Benchmark & benchmark,
 
    auto scalarProductHost = [&]() {
       resultHost = hostVector.scalarProduct( hostVector2 );
-   };
-   auto scalarProductHostGeneral = [&]() {
-      Containers::Algorithms::ParallelReductionScalarProduct< Real, Real > operation;
-      return Containers::Algorithms::Reduction< Devices::Host >::reduce(
-                 operation,
-                 hostVector.getSize(),
-                 hostVector.getData(),
-                 hostVector2.getData() );
    };
    auto scalarProductCuda = [&]() {
       resultDevice = deviceVector.scalarProduct( deviceVector2 );
@@ -321,7 +240,6 @@ benchmarkVectorOperations( Benchmark & benchmark,
 #endif
    benchmark.setOperation( "scalar product", 2 * datasetSize );
    benchmark.time( reset1, "CPU", scalarProductHost );
-   benchmark.time( reset1, "CPU (general)", scalarProductHostGeneral );
 #ifdef HAVE_CUDA
    benchmark.time( reset1, "GPU", scalarProductCuda );
    benchmark.time( reset1, "cuBLAS", scalarProductCublas );
