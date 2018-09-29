@@ -379,7 +379,7 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
          return false;
       }            
       
-      cudaThreadSynchronize();
+      cudaDeviceSynchronize();
       cudaMemcpy( max_du, cuda_max_du, cudaUpdateBlocks.x * sizeof( Real ), cudaMemcpyDeviceToHost );
       if( ( cudaErr = cudaGetLastError() ) != cudaSuccess )
       {

@@ -305,7 +305,7 @@ void Merson< Problem >::computeKFunctions( DofVectorPointer& u,
       const IndexType threadsPerGrid = Devices::Cuda::getMaxGridSize() * cudaBlockSize.x;
 
       this->problem->getExplicitUpdate( time, tau, u, k1 );
-      cudaThreadSynchronize();
+      cudaDeviceSynchronize();
 
       for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx ++ )
       {
@@ -313,10 +313,10 @@ void Merson< Problem >::computeKFunctions( DofVectorPointer& u,
          const IndexType currentSize = min( size - gridOffset, threadsPerGrid );
          computeK2Arg<<< cudaBlocks, cudaBlockSize >>>( currentSize, tau, &_u[ gridOffset ], &_k1[ gridOffset ], &_kAux[ gridOffset ] );
       }
-      cudaThreadSynchronize();
+      cudaDeviceSynchronize();
       this->problem->applyBoundaryConditions( time + tau_3, kAux );
       this->problem->getExplicitUpdate( time + tau_3, tau, kAux, k2 );
-      cudaThreadSynchronize();
+      cudaDeviceSynchronize();
 
       for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx ++ )
       {
@@ -324,10 +324,10 @@ void Merson< Problem >::computeKFunctions( DofVectorPointer& u,
          const IndexType currentSize = min( size - gridOffset, threadsPerGrid );
          computeK3Arg<<< cudaBlocks, cudaBlockSize >>>( currentSize, tau, &_u[ gridOffset ], &_k1[ gridOffset ], &_k2[ gridOffset ], &_kAux[ gridOffset ] );
       }
-      cudaThreadSynchronize();
+      cudaDeviceSynchronize();
       this->problem->applyBoundaryConditions( time + tau_3, kAux );
       this->problem->getExplicitUpdate( time + tau_3, tau, kAux, k3 );
-      cudaThreadSynchronize();
+      cudaDeviceSynchronize();
 
       for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx ++ )
       {
@@ -335,10 +335,10 @@ void Merson< Problem >::computeKFunctions( DofVectorPointer& u,
          const IndexType currentSize = min( size - gridOffset, threadsPerGrid );
          computeK4Arg<<< cudaBlocks, cudaBlockSize >>>( currentSize, tau, &_u[ gridOffset ], &_k1[ gridOffset ], &_k3[ gridOffset ], &_kAux[ gridOffset ] );
       }
-      cudaThreadSynchronize();
+      cudaDeviceSynchronize();
       this->problem->applyBoundaryConditions( time + 0.5 * tau, kAux );
       this->problem->getExplicitUpdate( time + 0.5 * tau, tau, kAux, k4 );
-      cudaThreadSynchronize();
+      cudaDeviceSynchronize();
 
       for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx ++ )
       {
@@ -346,10 +346,10 @@ void Merson< Problem >::computeKFunctions( DofVectorPointer& u,
          const IndexType currentSize = min( size - gridOffset, threadsPerGrid );
          computeK5Arg<<< cudaBlocks, cudaBlockSize >>>( currentSize, tau, &_u[ gridOffset ], &_k1[ gridOffset ], &_k3[ gridOffset ], &_k4[ gridOffset ], &_kAux[ gridOffset ] );
       }
-      cudaThreadSynchronize();
+      cudaDeviceSynchronize();
       this->problem->applyBoundaryConditions( time + tau, kAux );
       this->problem->getExplicitUpdate( time + tau, tau, kAux, k5 );
-      cudaThreadSynchronize();
+      cudaDeviceSynchronize();
 #endif
    }
 }
@@ -409,7 +409,7 @@ typename Problem :: RealType Merson< Problem > :: computeError( const RealType t
                                                               &_k4[ gridOffset ],
                                                               &_k5[ gridOffset ],
                                                               &_kAux[ gridOffset ] );
-         cudaThreadSynchronize();
+         cudaDeviceSynchronize();
          eps = std::max( eps, kAux->max() );
       }
 #endif
@@ -468,7 +468,7 @@ void Merson< Problem >::computeNewTimeLevel( const RealType time,
                                                                        &_u[ gridOffset ],
                                                                        this->cudaBlockResidue.getData() );
          localResidue += this->cudaBlockResidue.sum();
-         cudaThreadSynchronize();
+         cudaDeviceSynchronize();
       }
       this->problem->applyBoundaryConditions( time, u );
 

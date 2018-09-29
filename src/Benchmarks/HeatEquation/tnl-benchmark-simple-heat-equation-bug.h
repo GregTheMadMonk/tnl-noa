@@ -47,7 +47,7 @@ int main( int argc, char* argv[] )
    while( iteration < 10000 )
    {
       testKernel< GridEntity ><<< cudaGridSize, cudaBlockSize >>>();
-      cudaThreadSynchronize();
+      cudaDeviceSynchronize();
       iteration++;
    }
    auto t_stop = std::chrono::high_resolution_clock::now();   

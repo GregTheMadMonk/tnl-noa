@@ -933,7 +933,7 @@ class EllpackDeviceDependentCode< Devices::Cuda >
             //Devices::Cuda::freeFromDevice( kernel_inVector );
             //Devices::Cuda::freeFromDevice( kernel_outVector );
             TNL_CHECK_CUDA_DEVICE;
-            cudaThreadSynchronize();
+            cudaDeviceSynchronize();
          #endif
  
       }
