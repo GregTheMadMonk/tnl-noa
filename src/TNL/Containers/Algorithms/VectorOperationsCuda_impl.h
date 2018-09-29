@@ -49,14 +49,11 @@ getVectorMax( const Vector& v )
 
    TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
 
-   ResultType result( 0 );
    Algorithms::ParallelReductionMax< RealType, ResultType > operation;
-   Reduction< Devices::Cuda >::reduce( operation,
-                                       v.getSize(),
-                                       v.getData(),
-                                       ( RealType* ) 0,
-                                       result );
-   return result;
+   return Reduction< Devices::Cuda >::reduce( operation,
+                                              v.getSize(),
+                                              v.getData(),
+                                              ( RealType* ) 0 );
 }
 
 template< typename Vector, typename ResultType >
@@ -68,14 +65,11 @@ getVectorMin( const Vector& v )
 
    TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
 
-   ResultType result( 0 );
    Algorithms::ParallelReductionMin< RealType, ResultType > operation;
-   Reduction< Devices::Cuda >::reduce( operation,
-                                       v.getSize(),
-                                       v.getData(),
-                                       ( RealType* ) 0,
-                                       result );
-   return result;
+   return Reduction< Devices::Cuda >::reduce( operation,
+                                              v.getSize(),
+                                              v.getData(),
+                                              ( RealType* ) 0 );
 }
 
 template< typename Vector, typename ResultType >
@@ -87,14 +81,11 @@ getVectorAbsMax( const Vector& v )
 
    TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
 
-   ResultType result( 0 );
    Algorithms::ParallelReductionAbsMax< RealType, ResultType > operation;
-   Reduction< Devices::Cuda >::reduce( operation,
-                                       v.getSize(),
-                                       v.getData(),
-                                       ( RealType* ) 0,
-                                       result );
-   return result;
+   return Reduction< Devices::Cuda >::reduce( operation,
+                                              v.getSize(),
+                                              v.getData(),
+                                              ( RealType* ) 0 );
 }
 
 template< typename Vector, typename ResultType >
@@ -106,14 +97,11 @@ getVectorAbsMin( const Vector& v )
 
    TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
 
-   ResultType result( 0 );
    Algorithms::ParallelReductionAbsMin< RealType, ResultType > operation;
-   Reduction< Devices::Cuda >::reduce( operation,
-                                       v.getSize(),
-                                       v.getData(),
-                                       ( RealType* ) 0,
-                                       result );
-   return result;
+   return Reduction< Devices::Cuda >::reduce( operation,
+                                              v.getSize(),
+                                              v.getData(),
+                                              ( RealType* ) 0 );
 }
 
 template< typename Vector, typename ResultType >
@@ -125,14 +113,11 @@ getVectorL1Norm( const Vector& v )
 
    TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
 
-   ResultType result( 0 );
    Algorithms::ParallelReductionAbsSum< RealType, ResultType > operation;
-   Reduction< Devices::Cuda >::reduce( operation,
-                                       v.getSize(),
-                                       v.getData(),
-                                       ( RealType* ) 0,
-                                       result );
-   return result;
+   return Reduction< Devices::Cuda >::reduce( operation,
+                                              v.getSize(),
+                                              v.getData(),
+                                              ( RealType* ) 0 );
 }
 
 template< typename Vector, typename ResultType >
@@ -144,13 +129,11 @@ getVectorL2Norm( const Vector& v )
 
    TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
 
-   ResultType result( 0 );
    Algorithms::ParallelReductionL2Norm< Real, ResultType > operation;
-   Reduction< Devices::Cuda >::reduce( operation,
-                                       v.getSize(),
-                                       v.getData(),
-                                       ( Real* ) 0,
-                                       result );
+   const ResultType result = Reduction< Devices::Cuda >::reduce( operation,
+                                                                 v.getSize(),
+                                                                 v.getData(),
+                                                                 ( Real* ) 0 );
    return std::sqrt( result );
 }
 
@@ -169,14 +152,13 @@ getVectorLpNorm( const Vector& v,
       return getVectorL1Norm< Vector, ResultType >( v );
    if( p == 2 )
       return getVectorL2Norm< Vector, ResultType >( v );
-   ResultType result( 0 );
+
    Algorithms::ParallelReductionLpNorm< Real, ResultType, Real_ > operation;
    operation.setPower( p );
-   Reduction< Devices::Cuda >::reduce( operation,
-                                       v.getSize(),
-                                       v.getData(),
-                                       ( Real* ) 0,
-                                       result );
+   const ResultType result = Reduction< Devices::Cuda >::reduce( operation,
+                                                                 v.getSize(),
+                                                                 v.getData(),
+                                                                 ( Real* ) 0 );
    return std::pow( result, 1.0 / p );
 }
 
@@ -189,14 +171,11 @@ getVectorSum( const Vector& v )
 
    TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
 
-   ResultType result( 0 );
    Algorithms::ParallelReductionSum< Real, ResultType > operation;
-   Reduction< Devices::Cuda >::reduce( operation,
-                                       v.getSize(),
-                                       v.getData(),
-                                       ( Real* ) 0,
-                                       result );
-   return result;
+   return Reduction< Devices::Cuda >::reduce( operation,
+                                              v.getSize(),
+                                              v.getData(),
+                                              ( Real* ) 0 );
 }
 
 template< typename Vector1, typename Vector2, typename ResultType >
@@ -208,14 +187,11 @@ getVectorDifferenceMax( const Vector1& v1,
    TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
    TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
 
-   ResultType result( 0 );
    Algorithms::ParallelReductionDiffMax< typename Vector1::RealType, typename Vector2::RealType, ResultType > operation;
-   Reduction< Devices::Cuda >::reduce( operation,
-                                       v1.getSize(),
-                                       v1.getData(),
-                                       v2.getData(),
-                                       result );
-   return result;
+   return Reduction< Devices::Cuda >::reduce( operation,
+                                              v1.getSize(),
+                                              v1.getData(),
+                                              v2.getData() );
 }
 
 template< typename Vector1, typename Vector2, typename ResultType >
@@ -227,14 +203,11 @@ getVectorDifferenceMin( const Vector1& v1,
    TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
    TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
 
-   ResultType result( 0 );
    Algorithms::ParallelReductionDiffMin< typename Vector1::RealType, typename Vector2::RealType, ResultType > operation;
-   Reduction< Devices::Cuda >::reduce( operation,
-                                       v1.getSize(),
-                                       v1.getData(),
-                                       v2.getData(),
-                                       result );
-   return result;
+   return Reduction< Devices::Cuda >::reduce( operation,
+                                              v1.getSize(),
+                                              v1.getData(),
+                                              v2.getData() );
 }
 
 
@@ -247,14 +220,11 @@ getVectorDifferenceAbsMax( const Vector1& v1,
    TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
    TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
 
-   ResultType result( 0 );
    Algorithms::ParallelReductionDiffAbsMax< typename Vector1::RealType, typename Vector2::RealType, ResultType > operation;
-   Reduction< Devices::Cuda >::reduce( operation,
-                                       v1.getSize(),
-                                       v1.getData(),
-                                       v2.getData(),
-                                       result );
-   return result;
+   return Reduction< Devices::Cuda >::reduce( operation,
+                                              v1.getSize(),
+                                              v1.getData(),
+                                              v2.getData() );
 }
 
 template< typename Vector1, typename Vector2, typename ResultType >
@@ -266,14 +236,11 @@ getVectorDifferenceAbsMin( const Vector1& v1,
    TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
    TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
 
-   ResultType result( 0 );
    Algorithms::ParallelReductionDiffAbsMin< typename Vector1::RealType, typename Vector2::RealType, ResultType > operation;
-   Reduction< Devices::Cuda >::reduce( operation,
-                                       v1.getSize(),
-                                       v1.getData(),
-                                       v2.getData(),
-                                       result );
-   return result;
+   return Reduction< Devices::Cuda >::reduce( operation,
+                                              v1.getSize(),
+                                              v1.getData(),
+                                              v2.getData() );
 }
 
 template< typename Vector1, typename Vector2, typename ResultType >
@@ -285,14 +252,11 @@ getVectorDifferenceL1Norm( const Vector1& v1,
    TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
    TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
 
-   ResultType result( 0 );
    Algorithms::ParallelReductionDiffAbsSum< typename Vector1::RealType, typename Vector2::RealType, ResultType > operation;
-   Reduction< Devices::Cuda >::reduce( operation,
-                                       v1.getSize(),
-                                       v1.getData(),
-                                       v2.getData(),
-                                       result );
-   return result;
+   return Reduction< Devices::Cuda >::reduce( operation,
+                                              v1.getSize(),
+                                              v1.getData(),
+                                              v2.getData() );
 }
 
 template< typename Vector1, typename Vector2, typename ResultType >
@@ -301,18 +265,14 @@ VectorOperations< Devices::Cuda >::
 getVectorDifferenceL2Norm( const Vector1& v1,
                            const Vector2& v2 )
 {
-   typedef typename Vector1::RealType Real;
-
    TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
    TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
 
-   ResultType result( 0 );
    Algorithms::ParallelReductionDiffL2Norm< typename Vector1::RealType, typename Vector2::RealType, ResultType > operation;
-   Reduction< Devices::Cuda >::reduce( operation,
-                                       v1.getSize(),
-                                       v1.getData(),
-                                       v2.getData(),
-                                       result );
+   const ResultType result = Reduction< Devices::Cuda >::reduce( operation,
+                                                                 v1.getSize(),
+                                                                 v1.getData(),
+                                                                 v2.getData() );
    return std::sqrt( result );
 }
 
@@ -323,20 +283,21 @@ getVectorDifferenceLpNorm( const Vector1& v1,
                            const Vector2& v2,
                            const Real_ p )
 {
-   typedef typename Vector1::RealType Real;
-
    TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
    TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
    TNL_ASSERT_GE( p, 1.0, "Parameter of the L^p norm must be at least 1.0." );
 
-   ResultType result( 0 );
+   if( p == 1.0 )
+      return getVectorDifferenceL1Norm< Vector1, Vector2, ResultType >( v1, v2 );
+   if( p == 2.0 )
+      return getVectorDifferenceL2Norm< Vector1, Vector2, ResultType >( v1, v2 );
+
    Algorithms::ParallelReductionDiffLpNorm< typename Vector1::RealType, typename Vector2::RealType, ResultType, Real_ > operation;
    operation.setPower( p );
-   Reduction< Devices::Cuda >::reduce( operation,
-                                       v1.getSize(),
-                                       v1.getData(),
-                                       v2.getData(),
-                                       result );
+   const ResultType result = Reduction< Devices::Cuda >::reduce( operation,
+                                                                 v1.getSize(),
+                                                                 v1.getData(),
+                                                                 v2.getData() );
    return std::pow( result, 1.0 / p );
 }
 
@@ -346,19 +307,14 @@ VectorOperations< Devices::Cuda >::
 getVectorDifferenceSum( const Vector1& v1,
                         const Vector2& v2 )
 {
-   typedef typename Vector1::RealType Real;
-
    TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
    TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
 
-   ResultType result( 0 );
    Algorithms::ParallelReductionDiffSum< typename Vector1::RealType, typename Vector2::RealType, ResultType > operation;
-   Reduction< Devices::Cuda >::reduce( operation,
-                                       v1.getSize(),
-                                       v1.getData(),
-                                       v2.getData(),
-                                       result );
-   return result;
+   return Reduction< Devices::Cuda >::reduce( operation,
+                                              v1.getSize(),
+                                              v1.getData(),
+                                              v2.getData() );
 }
 
 #ifdef HAVE_CUDA
@@ -412,14 +368,11 @@ getScalarProduct( const Vector1& v1,
    TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
    TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
 
-   ResultType result( 0 );
    Algorithms::ParallelReductionScalarProduct< typename Vector1::RealType, typename Vector2::RealType, ResultType > operation;
-   Reduction< Devices::Cuda >::reduce( operation,
-                                       v1.getSize(),
-                                       v1.getData(),
-                                       v2.getData(),
-                                       result );
-   return result;
+   return Reduction< Devices::Cuda >::reduce( operation,
+                                              v1.getSize(),
+                                              v1.getData(),
+                                              v2.getData() );
 }
 
 #ifdef HAVE_CUDA
