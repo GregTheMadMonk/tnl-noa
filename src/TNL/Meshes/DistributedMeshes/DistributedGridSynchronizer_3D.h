@@ -172,8 +172,8 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 3, GridReal, D
          group=*((typename CommunicatorType::CommunicationGroup *)(distributedGrid->getCommunicationGroup()));
          int requestsCount( 0 );
 		                
-         //send everything, recieve everything 
-         for( int i=0; i<26; i++ )
+         //send everything, receive everything
+         for( int i = 0; i <  26; i++ )
             if( neighbors[ i ] != -1 )
             {
                requests[ requestsCount++ ] = CommunicatorType::ISend( sendBuffers[ i ].getData(),  sizes[ i ], neighbors[ i ], 0, group );
@@ -181,8 +181,8 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 3, GridReal, D
             }
             else if( periodicBoundaries )
       	   {
-               requests[ requestsCount++ ] = CommunicatorType::ISend( sendBuffers[ i ].getData(),  sizes[ i ], periodicNeighbors[ i ], 0, group );
-               requests[ requestsCount++ ] = CommunicatorType::IRecv( receiveBuffers[ i ].getData(),  sizes[ i ], periodicNeighbors[ i ], 0, group );
+               requests[ requestsCount++ ] = CommunicatorType::ISend( sendBuffers[ i ].getData(),  sizes[ i ], periodicNeighbors[ i ], 1, group );
+               requests[ requestsCount++ ] = CommunicatorType::IRecv( receiveBuffers[ i ].getData(),  sizes[ i ], periodicNeighbors[ i ], 1, group );
             }
 
         //wait until send is done
