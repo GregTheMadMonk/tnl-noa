@@ -41,16 +41,17 @@ TYPED_TEST_CASE( ListTest, ListTypes );
 TYPED_TEST( ListTest, constructor )
 {
    using ListType = typename TestFixture::ListType;
+   using ValueType = typename ListType::ValueType;
 
    ListType list;
    EXPECT_TRUE( list.isEmpty() );
    EXPECT_EQ( list.getSize(), 0 );
 
-   list.Append( 0 );
+   list.Append( ( ValueType ) 0 );
    EXPECT_EQ( list.getSize(), 1 );
 
    ListType copy( list );
-   list.Append( 0 );
+   list.Append( ( ValueType ) 0 );
    EXPECT_EQ( list.getSize(), 2 );
    EXPECT_EQ( copy.getSize(), 1 );
    EXPECT_EQ( copy[ 0 ], list[ 0 ] );

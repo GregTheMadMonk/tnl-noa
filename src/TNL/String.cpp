@@ -47,6 +47,13 @@ String::String( const String& str )
    setString( str.getString() );
 }
 
+String::String( const bool b )
+   : string( nullptr ), length( 0 )
+{
+   if( b ) this->setString( "true" );
+   else this->setString( "false" );
+}
+
 String String::getType()
 {
    return String( "String" );

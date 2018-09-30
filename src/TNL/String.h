@@ -59,13 +59,15 @@ public:
    /// definition ( in operator << ). It leads to stack overflow and segmentation fault.
    template< typename T >
    explicit
-   String( T value )
+   String( const T& value )
       : string( nullptr ), length( 0 )
    {
       std::stringstream str;
       str << value;
       setString( str.str().data() );
    }
+
+   String( const bool b );
 
    //! Destructor
    ~String();
