@@ -66,6 +66,20 @@ ELSE(  BUILD_CUDA )
                               tnl )
 ENDIF( BUILD_CUDA )
 
+IF( BUILD_CUDA )
+   CUDA_ADD_EXECUTABLE( MultireductionTest MultireductionTest.cu
+                        OPTIONS ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( MultireductionTest
+                              ${GTEST_BOTH_LIBRARIES}
+                              tnl )
+ELSE(  BUILD_CUDA )
+   ADD_EXECUTABLE( MultireductionTest MultireductionTest.cpp )
+   TARGET_COMPILE_OPTIONS( MultireductionTest PRIVATE ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( MultireductionTest
+                              ${GTEST_BOTH_LIBRARIES}
+                              tnl )
+ENDIF( BUILD_CUDA )
+
 ADD_EXECUTABLE( StaticVectorTest StaticVectorTest.cpp )
 TARGET_COMPILE_OPTIONS( StaticVectorTest PRIVATE ${CXX_TESTS_FLAGS} )
 TARGET_LINK_LIBRARIES( StaticVectorTest
@@ -93,6 +107,7 @@ ADD_TEST( ArrayTest ${EXECUTABLE_OUTPUT_PATH}/ArrayTest${CMAKE_EXECUTABLE_SUFFIX
 ADD_TEST( ArrayViewTest ${EXECUTABLE_OUTPUT_PATH}/ArrayViewTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( StaticArrayTest ${EXECUTABLE_OUTPUT_PATH}/StaticArrayTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( VectorTest ${EXECUTABLE_OUTPUT_PATH}/VectorTest${CMAKE_EXECUTABLE_SUFFIX} )
+ADD_TEST( MultireductionTest ${EXECUTABLE_OUTPUT_PATH}/MultireductionTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( StaticVectorTest ${EXECUTABLE_OUTPUT_PATH}/StaticVectorTest${CMAKE_EXECUTABLE_SUFFIX} )
 #ADD_TEST( MultiArrayTest ${EXECUTABLE_OUTPUT_PATH}/MultiArrayTest${CMAKE_EXECUTABLE_SUFFIX} )
 
