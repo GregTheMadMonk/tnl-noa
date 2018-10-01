@@ -193,8 +193,8 @@ reduce( Operation& operation,
 
          #pragma omp for nowait
          for( int b = 0; b < blocks; b++ ) {
-            const int offset = b * block_size;
-            for( IndexType i = 0; i < block_size; i += 4 ) {
+            const IndexType offset = b * block_size;
+            for( int i = 0; i < block_size; i += 4 ) {
                operation.firstReduction( r[ 0 ], offset + i,     input1, input2 );
                operation.firstReduction( r[ 1 ], offset + i + 1, input1, input2 );
                operation.firstReduction( r[ 2 ], offset + i + 2, input1, input2 );
