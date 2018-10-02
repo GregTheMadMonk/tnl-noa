@@ -57,7 +57,8 @@ class DistributedGridIO<Functions::MeshFunction<MeshType>,LocalCopy,Device>
         newMesh->setOrigin(origin+TNL::Containers::Scale(spaceSteps,localBegin));
         
         File meshFile;
-        meshFile.open( fileName+String("-mesh-")+distrGrid->printProcessCoords()+String(".tnl"),IOMode::write);
+        bool ok=meshFile.open( fileName+String("-mesh-")+distrGrid->printProcessCoords()+String(".tnl"),IOMode::write);
+        TNL_ASSERT_TRUE(ok,"Not able to open mesh file to write");
         newMesh->save( meshFile );
         meshFile.close();
 
@@ -72,7 +73,8 @@ class DistributedGridIO<Functions::MeshFunction<MeshType>,LocalCopy,Device>
         CopyEntitiesHelper<MeshFunctionType>::Copy(meshFunction,newMeshFunction,localBegin,zeroCoord,localSize);
 
         File file;
-        file.open( fileName+String("-")+distrGrid->printProcessCoords()+String(".tnl"), IOMode::write );
+        ok=file.open( fileName+String("-")+distrGrid->printProcessCoords()+String(".tnl"), IOMode::write );
+        TNL_ASSERT_TRUE(ok,"Not able to open file to write");
         bool ret=newMeshFunction.save(file);
         file.close();
 
@@ -110,7 +112,8 @@ class DistributedGridIO<Functions::MeshFunction<MeshType>,LocalCopy,Device>
         zeroCoord.setValue(0);        
 
         File file;
-        file.open( fileName+String("-")+distrGrid->printProcessCoords()+String(".tnl"), IOMode::read );
+        bool ok=file.open( fileName+String("-")+distrGrid->printProcessCoords()+String(".tnl"), IOMode::read );
+        TNL_ASSERT_TRUE(ok,"Not able to open file to read");
         bool result=newMeshFunction.boundLoad(file);
         file.close();
         CopyEntitiesHelper<MeshFunctionType>::Copy(newMeshFunction,meshFunction,zeroCoord,localBegin,localSize);

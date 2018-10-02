@@ -244,8 +244,8 @@ class TestDistributedGridIO
             
         linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
  
-        String FileName=String("/tmp/test-file.tnl");
-        DistributedGridIO<MeshFunctionType> ::save(FileName, *meshFunctionptr );
+        String fileName=String("test-file-distriburtegrid-io-save.tnl");
+        DistributedGridIO<MeshFunctionType> ::save(fileName, *meshFunctionptr );
 
 
        //create similar local mesh function and evaluate linear function on it
@@ -273,8 +273,10 @@ class TestDistributedGridIO
 
         loadDof.setValue(-1);
         
+        String localFileName= fileName+String("-")+distributedGrid.printProcessCoords()+String(".tnl");
+
         File file;
-        file.open( FileName+String("-")+distributedGrid.printProcessCoords(), IOMode::read );
+        file.open(localFileName, IOMode::read );
         loadMeshFunctionptr->boundLoad(file);
         file.close();
 
@@ -282,6 +284,11 @@ class TestDistributedGridIO
         {
             EXPECT_EQ( localDof.getElement(i), loadDof.getElement(i)) << "Compare Loaded and evaluated Dof Failed for: "<< i;
         }
+
+        EXPECT_EQ( std::remove( localFileName.getString()) , 0 );
+
+       //remove meshfile
+       EXPECT_EQ( std::remove( (fileName+String("-mesh-")+distributedGrid.printProcessCoords()+String(".tnl")).getString()) , 0 );
     }
     
     static void TestLoad()
@@ -326,9 +333,10 @@ class TestDistributedGridIO
         linearFunctionEvaluator.evaluateAllEntities(localMeshFunctionptr , linearFunctionPtr);
 
 
-        String FileName=String("/tmp/test-file.tnl");
+        String fileName=String("test-file-distributedgrid-io-load.tnl");
+        String localFileName=fileName+String("-")+distributedGrid.printProcessCoords()+String(".tnl");
         File file;
-        file.open( FileName+String("-")+distributedGrid.printProcessCoords(), IOMode::write );        
+        file.open( localFileName, IOMode::write );        
         localMeshFunctionptr->save(file);
         file.close();
 
@@ -343,7 +351,7 @@ class TestDistributedGridIO
         loadDof.setValue(0);
         loadMeshFunctionptr->bind(loadGridptr,loadDof);
 
-        DistributedGridIO<MeshFunctionType> ::load(FileName, *loadMeshFunctionptr );
+        DistributedGridIO<MeshFunctionType> ::load(fileName, *loadMeshFunctionptr );
 
         loadMeshFunctionptr->template synchronize<CommunicatorType>(); //need synchronization for overlaps to be filled corectly in loadDof
 
@@ -363,7 +371,9 @@ class TestDistributedGridIO
         for(int i=0;i<dof.getSize();i++)
         {
             EXPECT_EQ( dof.getElement(i), loadDof.getElement(i)) << "Compare Loaded and evaluated Dof Failed for: "<< i;
-        }       
+        }
+
+        EXPECT_EQ( std::remove( localFileName.getString()) , 0 );
     }
 };
 
