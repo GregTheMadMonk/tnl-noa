@@ -151,12 +151,13 @@ class DistributedGridIO_MPIIOBase
        MPI_Comm group=*((MPI_Comm*)(distrGrid->getCommunicationGroup()));
 
 	   MPI_File file;
-       MPI_File_open( group,
+      int ok=MPI_File_open( group,
                       const_cast< char* >( fileName.getString() ),
                       MPI_MODE_CREATE | MPI_MODE_WRONLY,
                       MPI_INFO_NULL,
                       &file);
-
+      TNL_ASSERT_EQ(ok,0,"Open file falied");
+      
 		int written=save(file,meshFunction, data,0);
 
         MPI_File_close(&file);
@@ -322,13 +323,14 @@ class DistributedGridIO_MPIIOBase
         MPI_Comm group=*((MPI_Comm*)(distrGrid->getCommunicationGroup()));
 
         MPI_File file;
-        MPI_File_open( group,
+        int ok=MPI_File_open( group,
                       const_cast< char* >( fileName.getString() ),
                       MPI_MODE_RDONLY,
                       MPI_INFO_NULL,
                       &file );
+        TNL_ASSERT_EQ(ok,0,"Open file falied");
 
-		bool ret= load(file, meshFunction, data,0)>0;
+		  bool ret= load(file, meshFunction, data,0)>0;
 
         MPI_File_close(&file);
 

@@ -80,7 +80,7 @@ class TestDistributedGridMPIIO{
             
         linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
  
-        String FileName=String("/tmp/test-file.tnl");
+        String FileName=String("test-file-mpiio-save.tnl");
         DistributedGridIO<MeshFunctionType,MpiIO> ::save(FileName, *meshFunctionptr );
 
        //first process compare results
@@ -108,6 +108,7 @@ class TestDistributedGridMPIIO{
             {
               EXPECT_EQ( globalEvaluatedDof.getElement(i), loadDof.getElement(i)) << "Compare Loaded and evaluated Dof Failed for: "<< i;
             }
+            EXPECT_EQ( std::remove( FileName.getString()) , 0 );
         }
     }
     
@@ -135,7 +136,7 @@ class TestDistributedGridMPIIO{
         SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
         distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
-        String FileName=String("/tmp/test-file.tnl");         
+        String FileName=String("/tmp/test-file-mpiio-load.tnl");         
 
         //Prepare file   
         if(CommunicatorType::GetRank(CommunicatorType::AllGroup)==0)
@@ -177,6 +178,11 @@ class TestDistributedGridMPIIO{
         for(int i=0;i<evalDof.getSize();i++)
         {
             EXPECT_EQ( evalDof.getElement(i), loadDof.getElement(i)) << "Compare Loaded and evaluated Dof Failed for: "<< i;
+        }
+
+        if(CommunicatorType::GetRank(CommunicatorType::AllGroup)==0)
+        {
+            EXPECT_EQ( std::remove( FileName.getString()) , 0 );
         }
         
     }
