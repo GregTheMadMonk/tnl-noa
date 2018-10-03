@@ -223,6 +223,11 @@ else
    make_target="all"
 fi
 
+# make expects VERBOSE=1, ninja expects -v
+if [[ "$make" != "make" ]] && [[ "$VERBOSE" ]]; then
+   VERBOSE="-v"
+fi
+
 $make ${VERBOSE} $make_target
 
 if [[ ${WITH_TESTS} == "yes" ]]; then
