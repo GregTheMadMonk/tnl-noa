@@ -38,14 +38,15 @@ public:
    //! Basic constructor
    String();
 
-   //! Constructor with char pointer
-   /*! @param prefix_cut_off says length of the prefix that is going to be omitted and
-       @param sufix_cut_off says the same about sufix.
-    */
+   //////
+   /// Constructor with char pointer
+   ///
+   /// @param prefix_cut_off says length of the prefix that is going to be omitted and
+   /// @param sufix_cut_off says the same about sufix.
    String( const char* c,
            int prefix_cut_off = 0,
            int sufix_cut_off = 0 );
-   
+
    String( char* c,
            int prefix_cut_off = 0,
            int sufix_cut_off = 0 );
