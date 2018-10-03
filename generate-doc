@@ -1,0 +1,20 @@
+#!/bin/bash
+
+PREFIX=${HOME}/.local
+INSTALL="yes"
+
+
+for option in "$@"
+do
+   case $option in
+      --prefix=*                       ) PREFIX="${option#*=}" ;;
+      --install=*                      ) INSTALL="${option#*=}" ;;
+   esac
+done
+
+doxygen
+
+if [[ "$INSTALL" == "yes" ]]; then
+   cp -r Documentation/* ${PREFIX}/share/doc
+fi
+
