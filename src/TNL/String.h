@@ -25,141 +25,135 @@ class String;
 template< typename T >
 String convertToString( const T& value );
 
-//! Class for managing strings
+/////
+// \brief Class for managing strings
 class String
 {
-   //! Pointer to char ended with zero
-   char* string;
+   public:
 
-   //! Length of the allocated piece of memory
-   int length;
+      /////
+      /// \brief Basic constructor
+      String();
 
-public:
-   //! Basic constructor
-   String();
-   
-   //! Constructor from const char*
-   String( const char* str );   
+      /////
+      /// \brief Constructor with char pointer.      
+      /// Constructor with char pointer.
+      /// @param prefix_cut_off says length of the prefix that is going to be omitted and
+      /// @param sufix_cut_off says the same about suffix.
+      String( const char* c,
+              int prefix_cut_off = 0,
+              int sufix_cut_off = 0 );
 
-   //////
-   /// Constructor with char pointer
-   ///
-   /// @param prefix_cut_off says length of the prefix that is going to be omitted and
-   /// @param sufix_cut_off says the same about sufix.
-   String( const char* c,
-           int prefix_cut_off,
-           int sufix_cut_off = 0 );
+      static String getType();
 
-   //! Copy constructor
-   String( const String& str );
-   
-   //////
-   /// Templated constructor
-   ///
-   /// It must be explicit otherwise it is called recursively from inside of its
-   /// definition ( in operator << ). It leads to stack overflow and segmentation fault.
-   template< typename T >
-   explicit
-   String( const T& value )
-      : string( nullptr ), length( 0 )
-   {
-      std::stringstream str;
-      str << value;
-      setString( str.str().data() );
-   }
+      //! Copy constructor
+      String( const String& str );
 
-   String( const bool b );
+      //! Convert anything to a string
+      template< typename T >
+      explicit
+      String( T value )
+         : string( nullptr ), length( 0 )
+      {
+         setString( convertToString( value ).getString() );
+      }
 
-   //! Destructor
-   ~String();
-   
-   static String getType();
+      //! Destructor
+      ~String();
 
-   //! Return length of the string
-   int getLength() const;
-   int getSize() const;
+      //! Return length of the string
+      int getLength() const;
+      int getSize() const;
 
-   //! Return currently allocated size
-   int getAllocatedSize() const;
+      //! Return currently allocated size
+      int getAllocatedSize() const;
 
-   //! Reserve space for given number of characters
-   void setSize( int size );
+      //! Reserve space for given number of characters
+      void setSize( int size );
 
-   //! Set string from given char pointer
-   /*! @param prefix_cut_off says length of the prefix that is going to be omitted and
-       @param sufix_cut_off says the same about sufix.
-    */
-   void setString( const char* c,
-                   int prefix_cut_off = 0,
-                   int sufix_cut_off = 0 );
+      //! Set string from given char pointer
+      /*! @param prefix_cut_off says length of the prefix that is going to be omitted and
+          @param sufix_cut_off says the same about sufix.
+       */
+      void setString( const char* c,
+                      int prefix_cut_off = 0,
+                      int sufix_cut_off = 0 );
 
-   //! Return pointer to data
-   const char* getString() const;
+      //! Return pointer to data
+      const char* getString() const;
 
-   //! Return pointer to data
-   char* getString();
+      //! Return pointer to data
+      char* getString();
 
-   //! Operator for accesing particular chars of the string
-   const char& operator[]( int i ) const;
+      //! Operator for accesing particular chars of the string
+      const char& operator[]( int i ) const;
 
-   //! Operator for accesing particular chars of the string
-   char& operator[]( int i );
+      //! Operator for accesing particular chars of the string
+      char& operator[]( int i );
 
-   /****
-    * Operators for C strings
-    */
-   String& operator=( const char* str );
-   String& operator+=( const char* str );
-   String operator+( const char* str ) const;
-   bool operator==( const char* str ) const;
-   bool operator!=( const char* str ) const;
- 
-   /****
-    * Operators for Strings
-    */
-   String& operator=( const String& str );
-   String& operator+=( const String& str );
-   String operator+( const String& str ) const;
-   bool operator==( const String& str ) const;
-   bool operator!=( const String& str ) const;
+      /****
+       * Operators for C strings
+       */
+      String& operator=( const char* str );
+      String& operator+=( const char* str );
+      String operator+( const char* str ) const;
+      bool operator==( const char* str ) const;
+      bool operator!=( const char* str ) const;
 
-   /****
-    * Operators for single characters
-    */
-   String& operator=( char str );
-   String& operator+=( char str );
-   String operator+( char str ) const;
-   bool operator==( char str ) const;
-   bool operator!=( char str ) const;
+      /****
+       * Operators for Strings
+       */
+      String& operator=( const String& str );
+      String& operator+=( const String& str );
+      String operator+( const String& str ) const;
+      bool operator==( const String& str ) const;
+      bool operator!=( const String& str ) const;
 
-   //! Cast to bool operator
-   operator bool() const;
+      /****
+       * Operators for single characters
+       */
+      String& operator=( char str );
+      String& operator+=( char str );
+      String operator+( char str ) const;
+      bool operator==( char str ) const;
+      bool operator!=( char str ) const;
 
-   //! Cast to bool with negation operator
-   bool operator!() const;
+      //! Cast to bool operator
+      operator bool() const;
 
-   String replace( const String& pattern,
-                   const String& replaceWith,
-                   int count = 0 ) const;
+      //! Cast to bool with negation operator
+      bool operator!() const;
 
-   String strip( char strip = ' ' ) const;
+      String replace( const String& pattern,
+                      const String& replaceWith,
+                      int count = 0 ) const;
 
-   //! Split the string into list of strings w.r.t. given separator.
-   int split( Containers::List< String >& list, const char separator = ' ' ) const;
+      String strip( char strip = ' ' ) const;
 
-   //! Write to a binary file
-   bool save( File& file ) const;
+      //! Split the string into list of strings w.r.t. given separator.
+      int split( Containers::List< String >& list, const char separator = ' ' ) const;
 
-   //! Read from binary file
-   bool load( File& file );
+      //! Write to a binary file
+      bool save( File& file ) const;
 
-   //! Broadcast to other nodes in MPI cluster
-//   void MPIBcast( int root, MPI_Comm mpi_comm = MPI_COMM_WORLD );
+      //! Read from binary file
+      bool load( File& file );
 
-   //! Read one line from given stream.
-   bool getLine( std::istream& stream );
+      //! Broadcast to other nodes in MPI cluster
+   //   void MPIBcast( int root, MPI_Comm mpi_comm = MPI_COMM_WORLD );
 
-   friend std::ostream& operator<<( std::ostream& stream, const String& str );
+      //! Read one line from given stream.
+      bool getLine( std::istream& stream );
+
+      friend std::ostream& operator<<( std::ostream& stream, const String& str );
+
+   protected:
+      //! Pointer to char ended with zero
+      char* string;
+
+      //! Length of the allocated piece of memory
+      int length;
+
 };
 
 String operator+( char string1, const String& string2 );
