@@ -26,7 +26,7 @@ template< typename Real,
           typename Anisotropy >
 FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Anisotropy >::
 FastSweepingMethod()
-: maxIterations( 100 )
+: maxIterations( 1 )
 {
    
 }
@@ -250,7 +250,7 @@ solve( const MeshPointer& mesh,
           
           tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > > ptr;
           
-          aux1<<< gridSize, blockSize >>>( auxPtr.template modifyData< Device>(), dAux,1 );
+          //aux1<<< gridSize, blockSize >>>( auxPtr.template modifyData< Device>(), dAux,1 );
           
           //int BlockIter = 1;// = (bool*)malloc( ( numBlocksX * numBlocksY ) * sizeof( bool ) );
 
@@ -261,7 +261,7 @@ solve( const MeshPointer& mesh,
           int nBlocks = ( numBlocksX * numBlocksY )/512 + ((( numBlocksX * numBlocksY )%512 != 0) ? 1:0);
           int *dBlock;
           cudaMalloc(&dBlock, nBlocks * sizeof( int ) );
-          
+          int oddEvenBlock = 0;
           while( BlockIterD )
           {
            /*for( int i = 0; i < numBlocksX * numBlocksY; i++ )
@@ -269,19 +269,30 @@ solve( const MeshPointer& mesh,
                        
             CudaUpdateCellCaller<<< gridSize, blockSize >>>( ptr,
                                                              interfaceMapPtr.template getData< Device >(),
-                                                             dAux,
-                                                             BlockIterDevice );
+                                                             auxPtr.template modifyData< Device>(),
+                                                             BlockIterDevice,
+                                                             oddEvenBlock );
+	    TNL_CHECK_CUDA_DEVICE;
+            oddEvenBlock= (oddEvenBlock == 0) ? 1: 0;
+            CudaUpdateCellCaller<<< gridSize, blockSize >>>( ptr,
+                                                             interfaceMapPtr.template getData< Device >(),
+                                                             auxPtr.template modifyData< Device>(),
+                                                             BlockIterDevice,
+                                                             oddEvenBlock );
+	    TNL_CHECK_CUDA_DEVICE;
+            oddEvenBlock= (oddEvenBlock == 0) ? 1: 0;
             
             CudaParallelReduc<<< nBlocks , 512 >>>( BlockIterDevice, dBlock, ( numBlocksX * numBlocksY ) );
+	    TNL_CHECK_CUDA_DEVICE;
             CudaParallelReduc<<< 1, nBlocks >>>( dBlock, dBlock, nBlocks );
-            
+            TNL_CHECK_CUDA_DEVICE;
             cudaMemcpy(&BlockIterD, &dBlock[0], sizeof( int ), cudaMemcpyDeviceToHost);
                                    
             /*for( int i = 1; i < numBlocksX * numBlocksY; i++ )
                 BlockIter[ 0 ] = BlockIter[ 0 ] || BlockIter[ i ];*/
             
           }
-          aux1<<<gridSize,blockSize>>>( auxPtr.template modifyData< Device>(), dAux, 0 );
+          //aux1<<<gridSize,blockSize>>>( auxPtr.template modifyData< Device>(), dAux, 0 );
           cudaFree( dAux );
           cudaFree( BlockIterDevice );
           cudaFree( dBlock );
@@ -299,7 +310,7 @@ solve( const MeshPointer& mesh,
 }
 
 #ifdef HAVE_CUDA
-template < typename Real, typename Device, typename Index >
+/*template < typename Real, typename Device, typename Index >
 __global__ void aux1( Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& aux, Real *dAux, int a )
 {
     int i = threadIdx.x + blockDim.x*blockIdx.x;
@@ -314,7 +325,7 @@ __global__ void aux1( Functions::MeshFunction< Meshes::Grid< 2, Real, Device, In
         aux[ j*mesh.getDimensions().x() + i ] = dAux[ j*mesh.getDimensions().x() + i ];
     }
     
-}
+}*/
 
 __global__ void CudaParallelReduc( int *BlockIterDevice, int *dBlock, int nBlocks )
 {
@@ -366,8 +377,8 @@ __global__ void CudaParallelReduc( int *BlockIterDevice, int *dBlock, int nBlock
 template < typename Real, typename Device, typename Index >
 __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > > ptr,
                                       const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index >, 2, bool >& interfaceMap,
-                                      Real *aux,
-                                      int *BlockIterDevice )
+                                      Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& aux,
+                                      int *BlockIterDevice, int oddEvenBlock )
 {
     int thri = threadIdx.x; int thrj = threadIdx.y;
     int blIdx = blockIdx.x; int blIdy = blockIdx.y;
@@ -417,109 +428,114 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
     }
     __syncthreads();
     
-    if( thri == 0 )
-    {        
-        if( dimX > (blIdx+1) * blockDim.x  && thrj+1 < ykolik )
-            sArray[thrj+1][xkolik] = aux[ blIdy*blockDim.y*dimX - dimX + blIdx*blockDim.x - 1 + (thrj+1)*dimX + xkolik ];
-        else
-            sArray[thrj+1][xkolik] = std::numeric_limits< Real >::max();
-    }
-    
-    if( thri == 1 )
+    if( (blIdy%2  + blIdx) % 2 == oddEvenBlock )
     {
-        if( blIdx != 0 && thrj+1 < ykolik )
-            sArray[thrj+1][0] = aux[ blIdy*blockDim.y*dimX - dimX + blIdx*blockDim.x - 1 + (thrj+1)*dimX ];
-        else
-            sArray[thrj+1][0] = std::numeric_limits< Real >::max();
-    }
     
-    if( thri == 2 )
-    {
-        if( dimY > (blIdy+1) * blockDim.y  && thri+1 < xkolik )
-            sArray[ykolik][thrj+1] = aux[ blIdy*blockDim.y*dimX - dimX + blIdx*blockDim.x - 1 + ykolik*dimX + thrj+1 ];
-        else
-           sArray[ykolik][thrj+1] = std::numeric_limits< Real >::max();
-    }
-    
-    if( thri == 3 )
-    {
-        if( blIdy != 0 && thrj+1 < xkolik )
-            sArray[0][thrj+1] = aux[ blIdy*blockDim.y*dimX - dimX + blIdx*blockDim.x - 1 + thrj+1 ];
-        else
-            sArray[0][thrj+1] = std::numeric_limits< Real >::max();
-    }
-    
-        
-    if( i < mesh.getDimensions().x() && j < mesh.getDimensions().y() )
-    {    
-        sArray[thrj+1][thri+1] = aux[ j*mesh.getDimensions().x() + i ];
-    }
-    __syncthreads();  
+        if( thri == 0 )
+        {        
+            if( dimX > (blIdx+1) * blockDim.x  && thrj+1 < ykolik )
+                sArray[thrj+1][xkolik] = aux[ blIdy*blockDim.y*dimX - dimX + blIdx*blockDim.x - 1 + (thrj+1)*dimX + xkolik ];
+            else
+                sArray[thrj+1][xkolik] = std::numeric_limits< Real >::max();
+        }
 
-    while( changed[ 0 ] )
-    {
-        __syncthreads();
-        
-        changed[ currentIndex] = false;
-        
-    //calculation of update cell
+        if( thri == 1 )
+        {
+            if( blIdx != 0 && thrj+1 < ykolik )
+                sArray[thrj+1][0] = aux[ blIdy*blockDim.y*dimX - dimX + blIdx*blockDim.x - 1 + (thrj+1)*dimX ];
+            else
+                sArray[thrj+1][0] = std::numeric_limits< Real >::max();
+        }
+
+        if( thri == 2 )
+        {
+            if( dimY > (blIdy+1) * blockDim.y  && thri+1 < xkolik )
+                sArray[ykolik][thrj+1] = aux[ blIdy*blockDim.y*dimX - dimX + blIdx*blockDim.x - 1 + ykolik*dimX + thrj+1 ];
+            else
+               sArray[ykolik][thrj+1] = std::numeric_limits< Real >::max();
+        }
+
+        if( thri == 3 )
+        {
+            if( blIdy != 0 && thrj+1 < xkolik )
+                sArray[0][thrj+1] = aux[ blIdy*blockDim.y*dimX - dimX + blIdx*blockDim.x - 1 + thrj+1 ];
+            else
+                sArray[0][thrj+1] = std::numeric_limits< Real >::max();
+        }
+
+
         if( i < mesh.getDimensions().x() && j < mesh.getDimensions().y() )
-        {
-            if( ! interfaceMap[ j * mesh.getDimensions().x() + i ] )
-            {
-                changed[ currentIndex ] = ptr.updateCell( sArray, thri+1, thrj+1, hx,hy);
-            }
+        {    
+            sArray[thrj+1][thri+1] = aux[ j*mesh.getDimensions().x() + i ];
         }
-        __syncthreads();
+        __syncthreads();  
+
+        while( changed[ 0 ] )
+        {
+            __syncthreads();
+
+            changed[ currentIndex] = false;
+
+        //calculation of update cell
+            if( i < mesh.getDimensions().x() && j < mesh.getDimensions().y() )
+            {
+                if( ! interfaceMap[ j * mesh.getDimensions().x() + i ] )
+                {
+                    changed[ currentIndex ] = ptr.updateCell( sArray, thri+1, thrj+1, hx,hy);
+                }
+            }
+            __syncthreads();
+
+        //pyramid reduction
+            if( blockDim.x*blockDim.y == 1024 )
+            {
+                if( currentIndex < 512 )
+                {
+                    changed[ currentIndex ] = changed[ currentIndex ] || changed[ currentIndex + 512 ];
+                }
+            }
+            __syncthreads();
+            if( blockDim.x*blockDim.y >= 512 )
+            {
+                if( currentIndex < 256 )
+                {
+                    changed[ currentIndex ] = changed[ currentIndex ] || changed[ currentIndex + 256 ];
+                }
+            }
+            __syncthreads();
+            if( blockDim.x*blockDim.y >= 256 )
+            {
+                if( currentIndex < 128 )
+                {
+                    changed[ currentIndex ] = changed[ currentIndex ] || changed[ currentIndex + 128 ];
+                }
+            }
+            __syncthreads();
+            if( blockDim.x*blockDim.y >= 128 )
+            {
+                if( currentIndex < 64 )
+                {
+                    changed[ currentIndex ] = changed[ currentIndex ] || changed[ currentIndex + 64 ];
+                }
+            }
+            __syncthreads();
+            if( currentIndex < 32 ) //POUZE IF JSOU SINCHRONNI NA JEDNOM WARPU
+            {
+                if( true ) changed[ currentIndex ] = changed[ currentIndex ] || changed[ currentIndex + 32 ];
+                if( currentIndex < 16 ) changed[ currentIndex ] = changed[ currentIndex ] || changed[ currentIndex + 16 ];
+                if( currentIndex < 8 ) changed[ currentIndex ] = changed[ currentIndex ] || changed[ currentIndex + 8 ];
+                if( currentIndex < 4 ) changed[ currentIndex ] = changed[ currentIndex ] || changed[ currentIndex + 4 ];
+                if( currentIndex < 2 ) changed[ currentIndex ] = changed[ currentIndex ] || changed[ currentIndex + 2 ];
+                if( currentIndex < 1 ) changed[ currentIndex ] = changed[ currentIndex ] || changed[ currentIndex + 1 ];
+            }
+            if( changed[ 0 ] && thri == 0 && thrj == 0 )
+                BlockIterDevice[ blIdy * numOfBlockx + blIdx ] = 1;
+            __syncthreads();
+        }
         
-    //pyramid reduction
-        if( blockDim.x*blockDim.y == 1024 )
-        {
-            if( currentIndex < 512 )
-            {
-                changed[ currentIndex ] = changed[ currentIndex ] || changed[ currentIndex + 512 ];
-            }
-        }
-        __syncthreads();
-        if( blockDim.x*blockDim.y >= 512 )
-        {
-            if( currentIndex < 256 )
-            {
-                changed[ currentIndex ] = changed[ currentIndex ] || changed[ currentIndex + 256 ];
-            }
-        }
-        __syncthreads();
-        if( blockDim.x*blockDim.y >= 256 )
-        {
-            if( currentIndex < 128 )
-            {
-                changed[ currentIndex ] = changed[ currentIndex ] || changed[ currentIndex + 128 ];
-            }
-        }
-        __syncthreads();
-        if( blockDim.x*blockDim.y >= 128 )
-        {
-            if( currentIndex < 64 )
-            {
-                changed[ currentIndex ] = changed[ currentIndex ] || changed[ currentIndex + 64 ];
-            }
-        }
-        __syncthreads();
-        if( currentIndex < 32 ) //POUZE IF JSOU SINCHRONNI NA JEDNOM WARPU
-        {
-            if( true ) changed[ currentIndex ] = changed[ currentIndex ] || changed[ currentIndex + 32 ];
-            if( currentIndex < 16 ) changed[ currentIndex ] = changed[ currentIndex ] || changed[ currentIndex + 16 ];
-            if( currentIndex < 8 ) changed[ currentIndex ] = changed[ currentIndex ] || changed[ currentIndex + 8 ];
-            if( currentIndex < 4 ) changed[ currentIndex ] = changed[ currentIndex ] || changed[ currentIndex + 4 ];
-            if( currentIndex < 2 ) changed[ currentIndex ] = changed[ currentIndex ] || changed[ currentIndex + 2 ];
-            if( currentIndex < 1 ) changed[ currentIndex ] = changed[ currentIndex ] || changed[ currentIndex + 1 ];
-        }
-        if( changed[ 0 ] && thri == 0 && thrj == 0 )
-            BlockIterDevice[ blIdy * numOfBlockx + blIdx ] = 1;
-        __syncthreads();
+        if( i < mesh.getDimensions().x() && j < mesh.getDimensions().y() && (!interfaceMap[ j * mesh.getDimensions().x() + i ]) )
+            aux[ j * mesh.getDimensions().x() + i ] = sArray[ thrj + 1 ][ thri + 1 ];
+
     }
-  
-    if( i < mesh.getDimensions().x() && j < mesh.getDimensions().y() && (!interfaceMap[ j * mesh.getDimensions().x() + i ]) )
-        aux[ j * mesh.getDimensions().x() + i ] = sArray[ thrj + 1 ][ thri + 1 ];
 }
 #endif

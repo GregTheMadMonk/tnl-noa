@@ -129,12 +129,12 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
 template < typename Real, typename Device, typename Index >
 __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > > ptr,
                                       const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index >, 2, bool >& interfaceMap,
-                                      Real *aux,
-                                      int *BlockIterDevice);
+                                      Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& aux,
+                                      int *BlockIterDevice, int oddEvenBlock);
 __global__ void CudaParallelReduc( int *BlockIterDevice, int *dBlock, int nBlocks );
 
-template < typename Real, typename Device, typename Index >
-__global__ void aux1( Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& aux, Real *dAux, int a );
+/*template < typename Real, typename Device, typename Index >
+__global__ void aux1( Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& aux, Real *dAux, int a );*/
 
 template < typename Real, typename Device, typename Index >
 __global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& input, 
