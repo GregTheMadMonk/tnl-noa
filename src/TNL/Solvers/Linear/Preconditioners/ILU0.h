@@ -12,8 +12,6 @@
 
 #pragma once
 
-#include <type_traits>
-
 #include "Preconditioner.h"
 
 #include <TNL/Containers/Vector.h>
@@ -172,24 +170,6 @@ protected:
          info_U = 0;
       }
       pBuffer.reset();
-   }
-
-   // TODO: extend Matrices::copySparseMatrix accordingly
-   template< typename MatrixT,
-             typename = typename std::enable_if< ! std::is_same< DeviceType, typename MatrixT::DeviceType >::value >::type >
-   void copyMatrix( const MatrixT& matrix )
-   {
-      typename MatrixT::CudaType A_tmp;
-      A_tmp = matrix;
-      Matrices::copySparseMatrix( *A, A_tmp );
-   }
-
-   template< typename MatrixT,
-             typename = typename std::enable_if< std::is_same< DeviceType, typename MatrixT::DeviceType >::value >::type,
-             typename = void >
-   void copyMatrix( const MatrixT& matrix )
-   {
-      Matrices::copySparseMatrix( *A, matrix );
    }
 #endif
 };

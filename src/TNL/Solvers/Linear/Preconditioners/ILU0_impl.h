@@ -147,7 +147,7 @@ update( const MatrixPointer& matrixPointer )
 
    // Note: the decomposition will be in-place, matrices L and U will have the
    // storage of A
-   copyMatrix( *matrixPointer );
+   copySparseMatrix( *A, *matrixPointer );
 
    allocate_LU();
 

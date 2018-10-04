@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <type_traits>
+
 #include <TNL/Pointers/DevicePointer.h>
 
 namespace TNL {
@@ -67,10 +69,11 @@ SparseMatrixCopyKernel( Matrix1* A,
 }
 #endif
 
-
-template< typename Matrix1, typename Matrix2 >
-void
-copySparseMatrix( Matrix1& A, const Matrix2& B )
+// copy on the same device
+template< typename Matrix1,
+          typename Matrix2 >
+typename std::enable_if< std::is_same< typename Matrix1::DeviceType, typename Matrix2::DeviceType >::value >::type
+copySparseMatrix_impl( Matrix1& A, const Matrix2& B )
 {
    static_assert( std::is_same< typename Matrix1::RealType, typename Matrix2::RealType >::value,
                   "The matrices must have the same RealType." );
@@ -155,6 +158,24 @@ copySparseMatrix( Matrix1& A, const Matrix2& B )
       throw Exceptions::CudaSupportMissing();
 #endif
    }
+}
+
+// cross-device copy
+template< typename Matrix1,
+          typename Matrix2 >
+typename std::enable_if< ! std::is_same< typename Matrix1::DeviceType, typename Matrix2::DeviceType >::value >::type
+copySparseMatrix_impl( Matrix1& A, const Matrix2& B )
+{
+   typename Matrix2::CudaType B_tmp;
+   B_tmp = B;
+   copySparseMatrix_impl( A, B_tmp );
+}
+
+template< typename Matrix1, typename Matrix2 >
+void
+copySparseMatrix( Matrix1& A, const Matrix2& B )
+{
+   copySparseMatrix_impl( A, B );
 }
 
 } // namespace Matrices
