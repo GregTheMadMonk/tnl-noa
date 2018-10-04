@@ -14,6 +14,8 @@ SET( headers AdEllpack.h
              Multidiagonal_impl.h
              Sparse.h
              Sparse_impl.h
+             SparseOperations.h
+             SparseOperations_impl.h
              Ellpack.h
              Ellpack_impl.h
              SlicedEllpack.h
