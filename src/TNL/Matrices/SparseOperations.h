@@ -22,6 +22,15 @@ namespace Matrices {
 template< typename Matrix1, typename Matrix2 >
 void copySparseMatrix( Matrix1& A, const Matrix2& B );
 
+// NOTE: if `has_symmetric_pattern`, the sparsity pattern of `A` is assumed
+// to be symmetric and it is just copied to `B`. Otherwise, the sparsity
+// pattern of `A^T + A` is copied to `B`.
+template< typename Matrix, typename AdjacencyMatrix >
+void
+copyAdjacencyStructure( const Matrix& A, AdjacencyMatrix& B,
+                        bool has_symmetric_pattern = false,
+                        bool ignore_diagonal = true );
+
 } // namespace Matrices
 } // namespace TNL
 

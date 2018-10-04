@@ -13,6 +13,7 @@
 #pragma once
 
 #include <type_traits>
+#include <stdexcept>
 
 #include <TNL/Pointers/DevicePointer.h>
 
@@ -176,6 +177,74 @@ void
 copySparseMatrix( Matrix1& A, const Matrix2& B )
 {
    copySparseMatrix_impl( A, B );
+}
+
+
+template< typename Matrix, typename AdjacencyMatrix >
+void
+copyAdjacencyStructure( const Matrix& A, AdjacencyMatrix& B,
+                        bool has_symmetric_pattern,
+                        bool ignore_diagonal )
+{
+   static_assert( std::is_same< typename Matrix::DeviceType, Devices::Host >::value,
+                  "The function is not implemented for CUDA matrices - it would require atomic insertions "
+                  "of elements into the sparse format." );
+   static_assert( std::is_same< typename Matrix::DeviceType, typename AdjacencyMatrix::DeviceType >::value,
+                  "The matrices must be allocated on the same device." );
+   static_assert( std::is_same< typename Matrix::IndexType, typename AdjacencyMatrix::IndexType >::value,
+                  "The matrices must have the same IndexType." );
+//   static_assert( std::is_same< typename AdjacencyMatrix::RealType, bool >::value,
+//                  "The RealType of the adjacency matrix must be bool." );
+
+   using IndexType = typename Matrix::IndexType;
+
+   if( A.getRows() != A.getColumns() ) {
+      throw std::logic_error( "The matrix is not square: " + std::to_string( A.getRows() ) + " rows, "
+                              + std::to_string( A.getColumns() ) + " columns." );
+   }
+
+   const IndexType N = A.getRows();
+   B.setDimensions( N, N );
+
+   // set row lengths
+   typename AdjacencyMatrix::CompressedRowLengthsVector rowLengths;
+   rowLengths.setSize( N );
+   rowLengths.setValue( 0 );
+   for( IndexType i = 0; i < A.getRows(); i++ ) {
+      const int maxLength = A.getRowLength( i );
+      const auto row = A.getRow( i );
+      IndexType length = 0;
+      for( int c_j = 0; c_j < maxLength; c_j++ ) {
+         const IndexType j = row.getElementColumn( c_j );
+         if( j >= A.getColumns() )
+            break;
+         length++;
+         if( ! has_symmetric_pattern && i != j )
+            if( A.getElement( j, i ) == 0 )
+               rowLengths[ j ]++;
+      }
+      if( ignore_diagonal )
+         length--;
+      rowLengths[ i ] += length;
+   }
+   B.setCompressedRowLengths( rowLengths );
+
+   // set non-zeros
+   for( IndexType i = 0; i < A.getRows(); i++ ) {
+      const int maxLength = A.getRowLength( i );
+      const auto row = A.getRow( i );
+      for( int c_j = 0; c_j < maxLength; c_j++ ) {
+         const IndexType j = row.getElementColumn( c_j );
+         if( j >= A.getColumns() )
+            break;
+         if( ! ignore_diagonal || i != j )
+            if( A.getElement( i, j ) != 0 ) {
+               B.setElement( i, j, true );
+               if( ! has_symmetric_pattern )
+                  B.setElement( j, i, true );
+            }
+      }
+   }
 }
 
 } // namespace Matrices
