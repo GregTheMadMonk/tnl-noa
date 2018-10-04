@@ -225,7 +225,7 @@ reduce( Operation& operation,
          }
       }
 
-      // reduction of local results
+      // local reduction of unrolled results
       for( int k = 0; k < n; k++ ) {
          ResultType* _r = r + 4 * k;
          operation.commonReduction( _r[ 0 ], _r[ 1 ] );
@@ -242,22 +242,65 @@ reduce( Operation& operation,
    }
    else {
 #endif
-      for( int k = 0; k < n; k++ )
-         result[ k ] = operation.initialValue();
+      if( blocks > 1 ) {
+         // initialize array for unrolled results
+         // (it is accessed as a row-major matrix with n rows and 4 columns)
+         ResultType r[ n * 4 ];
+         for( int k = 0; k < n * 4; k++ )
+            r[ k ] = operation.initialValue();
 
-      for( int b = 0; b < blocks; b++ ) {
-         const IndexType offset = b * block_size;
+         // main reduction (explicitly unrolled loop)
+         for( int b = 0; b < blocks; b++ ) {
+            const IndexType offset = b * block_size;
+            for( int k = 0; k < n; k++ ) {
+               const DataType1* _input1 = input1 + k * ldInput1;
+               ResultType* _r = r + 4 * k;
+               for( int i = 0; i < block_size; i += 4 ) {
+                  operation.firstReduction( _r[ 0 ], offset + i,     _input1, input2 );
+                  operation.firstReduction( _r[ 1 ], offset + i + 1, _input1, input2 );
+                  operation.firstReduction( _r[ 2 ], offset + i + 2, _input1, input2 );
+                  operation.firstReduction( _r[ 3 ], offset + i + 3, _input1, input2 );
+               }
+            }
+         }
+
+         // reduction of the last, incomplete block (not unrolled)
          for( int k = 0; k < n; k++ ) {
             const DataType1* _input1 = input1 + k * ldInput1;
-            for( int i = 0; i < block_size; i++ )
-               operation.firstReduction( result[ k ], offset + i, _input1, input2 );
+            ResultType* _r = r + 4 * k;
+            for( IndexType i = blocks * block_size; i < size; i++ )
+               operation.firstReduction( _r[ 0 ], i, _input1, input2 );
+         }
+
+         // reduction of unrolled results
+         for( int k = 0; k < n; k++ ) {
+            ResultType* _r = r + 4 * k;
+            operation.commonReduction( _r[ 0 ], _r[ 1 ] );
+            operation.commonReduction( _r[ 0 ], _r[ 2 ] );
+            operation.commonReduction( _r[ 0 ], _r[ 3 ] );
+
+            // copy the result into the output parameter
+            result[ k ] = _r[ 0 ];
          }
       }
+      else {
+         for( int k = 0; k < n; k++ )
+            result[ k ] = operation.initialValue();
 
-      for( int k = 0; k < n; k++ ) {
-         const DataType1* _input1 = input1 + k * ldInput1;
-         for( IndexType i = blocks * block_size; i < size; i++ )
-            operation.firstReduction( result[ k ], i, _input1, input2 );
+         for( int b = 0; b < blocks; b++ ) {
+            const IndexType offset = b * block_size;
+            for( int k = 0; k < n; k++ ) {
+               const DataType1* _input1 = input1 + k * ldInput1;
+               for( int i = 0; i < block_size; i++ )
+                  operation.firstReduction( result[ k ], offset + i, _input1, input2 );
+            }
+         }
+
+         for( int k = 0; k < n; k++ ) {
+            const DataType1* _input1 = input1 + k * ldInput1;
+            for( IndexType i = blocks * block_size; i < size; i++ )
+               operation.firstReduction( result[ k ], i, _input1, input2 );
+         }
       }
 #ifdef HAVE_OPENMP
    }

@@ -179,15 +179,15 @@ reduce( Operation& operation,
    typedef typename Operation::DataType2 DataType2;
    typedef typename Operation::ResultType ResultType;
 
-#ifdef HAVE_OPENMP
    constexpr int block_size = 128;
+   const int blocks = size / block_size;
+
+#ifdef HAVE_OPENMP
    if( TNL::Devices::Host::isOMPEnabled() && size >= 2 * block_size ) {
       // global result variable
       ResultType result = operation.initialValue();
 #pragma omp parallel
       {
-         const int blocks = size / block_size;
-
          // initialize array for thread-local results
          ResultType r[ 4 ] = { operation.initialValue() };
 
@@ -209,7 +209,7 @@ reduce( Operation& operation,
                operation.firstReduction( r[ 0 ], i, input1, input2 );
          }
 
-         // reduction of local results
+         // local reduction of unrolled results
          operation.commonReduction( r[ 0 ], r[ 1 ] );
          operation.commonReduction( r[ 0 ], r[ 2 ] );
          operation.commonReduction( r[ 0 ], r[ 3 ] );
@@ -224,10 +224,38 @@ reduce( Operation& operation,
    }
    else {
 #endif
-      ResultType result = operation.initialValue();
-      for( IndexType i = 0; i < size; i++ )
-         operation.firstReduction( result, i, input1, input2 );
-      return result;
+      if( blocks > 1 ) {
+         // initialize array for unrolled results
+         ResultType r[ 4 ] = { operation.initialValue() };
+
+         // main reduction (explicitly unrolled loop)
+         for( int b = 0; b < blocks; b++ ) {
+            const IndexType offset = b * block_size;
+            for( int i = 0; i < block_size; i += 4 ) {
+               operation.firstReduction( r[ 0 ], offset + i,     input1, input2 );
+               operation.firstReduction( r[ 1 ], offset + i + 1, input1, input2 );
+               operation.firstReduction( r[ 2 ], offset + i + 2, input1, input2 );
+               operation.firstReduction( r[ 3 ], offset + i + 3, input1, input2 );
+            }
+         }
+
+         // reduction of the last, incomplete block (not unrolled)
+         for( IndexType i = blocks * block_size; i < size; i++ )
+            operation.firstReduction( r[ 0 ], i, input1, input2 );
+
+         // reduction of unrolled results
+         operation.commonReduction( r[ 0 ], r[ 1 ] );
+         operation.commonReduction( r[ 0 ], r[ 2 ] );
+         operation.commonReduction( r[ 0 ], r[ 3 ] );
+
+         return r[ 0 ];
+      }
+      else {
+         ResultType result = operation.initialValue();
+         for( IndexType i = 0; i < size; i++ )
+            operation.firstReduction( result, i, input1, input2 );
+         return result;
+      }
 #ifdef HAVE_OPENMP
    }
 #endif
