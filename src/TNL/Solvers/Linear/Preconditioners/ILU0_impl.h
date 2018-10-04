@@ -16,6 +16,7 @@
 #include "TriangularSolve.h"
 
 #include <TNL/Exceptions/CudaSupportMissing.h>
+#include <TNL/ParallelFor.h>
 
 namespace TNL {
 namespace Solvers {
@@ -38,13 +39,11 @@ update( const MatrixPointer& matrixPointer )
    U.setDimensions( N, N );
 
    // copy row lengths
-   typename decltype(L)::CompressedRowLengthsVector L_rowLengths;
-   typename decltype(U)::CompressedRowLengthsVector U_rowLengths;
-   L_rowLengths.setSize( N );
-   U_rowLengths.setSize( N );
+   typename decltype(L)::CompressedRowLengthsVector L_rowLengths( N );
+   typename decltype(U)::CompressedRowLengthsVector U_rowLengths( N );
    for( IndexType i = 0; i < N; i++ ) {
       const auto row = localMatrix.getRow( i );
-      const auto max_length = localMatrix.getRowLength( i );
+      const auto max_length = row.getLength();
       IndexType L_entries = 0;
       IndexType U_entries = 0;
       for( IndexType j = 0; j < max_length; j++ ) {
@@ -150,10 +149,14 @@ update( const MatrixPointer& matrixPointer )
    // storage of A
    copyMatrix( *matrixPointer );
 
-   const int m = A.getRows();
-   const int nnz = A.getValues().getSize();
+   allocate_LU();
 
-   y.setSize( m );
+   const int N = A->getRows();
+   const int nnz_A = A->getValues().getSize();
+   const int nnz_L = L->getValues().getSize();
+   const int nnz_U = U->getValues().getSize();
+
+   y.setSize( N );
 
    // create matrix descriptors
    cusparseCreateMatDescr( &descr_A );
@@ -172,36 +175,40 @@ update( const MatrixPointer& matrixPointer )
    cusparseSetMatFillMode( descr_U, CUSPARSE_FILL_MODE_UPPER );
    cusparseSetMatDiagType( descr_U, CUSPARSE_DIAG_TYPE_NON_UNIT );
 
+   TNL_CHECK_CUDA_DEVICE;
+
    // create info structures
    cusparseCreateCsrilu02Info( &info_A );
    cusparseCreateCsrsv2Info( &info_L );
    cusparseCreateCsrsv2Info( &info_U );
+   TNL_CHECK_CUDA_DEVICE;
 
    // query how much memory will be needed in csrilu02 and csrsv2, and allocate the buffer
    int pBufferSize_A, pBufferSize_L, pBufferSize_U;
-   cusparseDcsrilu02_bufferSize( handle, m, nnz, descr_A,
-                                 A.getValues().getData(),
-                                 A.getRowPointers().getData(),
-                                 A.getColumnIndexes().getData(),
+   cusparseDcsrilu02_bufferSize( handle, N, nnz_A, descr_A,
+                                 A->getValues().getData(),
+                                 A->getRowPointers().getData(),
+                                 A->getColumnIndexes().getData(),
                                  info_A, &pBufferSize_A );
-   cusparseDcsrsv2_bufferSize( handle, trans_L, m, nnz, descr_L,
-                               A.getValues().getData(),
-                               A.getRowPointers().getData(),
-                               A.getColumnIndexes().getData(),
+   cusparseDcsrsv2_bufferSize( handle, trans_L, N, nnz_L, descr_L,
+                               L->getValues().getData(),
+                               L->getRowPointers().getData(),
+                               L->getColumnIndexes().getData(),
                                info_L, &pBufferSize_L );
-   cusparseDcsrsv2_bufferSize( handle, trans_U, m, nnz, descr_U,
-                               A.getValues().getData(),
-                               A.getRowPointers().getData(),
-                               A.getColumnIndexes().getData(),
+   cusparseDcsrsv2_bufferSize( handle, trans_U, N, nnz_U, descr_U,
+                               U->getValues().getData(),
+                               U->getRowPointers().getData(),
+                               U->getColumnIndexes().getData(),
                                info_U, &pBufferSize_U );
+   TNL_CHECK_CUDA_DEVICE;
    const int pBufferSize = max( pBufferSize_A, max( pBufferSize_L, pBufferSize_U ) );
    pBuffer.setSize( pBufferSize );
 
    // Symbolic analysis of the incomplete LU decomposition
-   cusparseDcsrilu02_analysis( handle, m, nnz, descr_A,
-                               A.getValues().getData(),
-                               A.getRowPointers().getData(),
-                               A.getColumnIndexes().getData(),
+   cusparseDcsrilu02_analysis( handle, N, nnz_A, descr_A,
+                               A->getValues().getData(),
+                               A->getRowPointers().getData(),
+                               A->getColumnIndexes().getData(),
                                info_A, policy_A, pBuffer.getData() );
    int structural_zero;
    cusparseStatus_t
@@ -210,26 +217,27 @@ update( const MatrixPointer& matrixPointer )
       std::cerr << "A(" << structural_zero << ", " << structural_zero << ") is missing." << std::endl;
       throw 1;
    }
+   TNL_CHECK_CUDA_DEVICE;
 
    // Analysis for the triangular solves for L and U
    // Trick: the lower (upper) triangular part of A has the same sparsity
    // pattern as L (U), so we can do the analysis for csrsv2 on the matrix A.
-   cusparseDcsrsv2_analysis( handle, trans_L, m, nnz, descr_L,
-                             A.getValues().getData(),
-                             A.getRowPointers().getData(),
-                             A.getColumnIndexes().getData(),
-                             info_L, policy_L, pBuffer.getData() );
-   cusparseDcsrsv2_analysis( handle, trans_U, m, nnz, descr_U,
-                             A.getValues().getData(),
-                             A.getRowPointers().getData(),
-                             A.getColumnIndexes().getData(),
-                             info_U, policy_U, pBuffer.getData() );
+//   cusparseDcsrsv2_analysis( handle, trans_L, N, nnz_A, descr_L,
+//                             A->getValues().getData(),
+//                             A->getRowPointers().getData(),
+//                             A->getColumnIndexes().getData(),
+//                             info_L, policy_L, pBuffer.getData() );
+//   cusparseDcsrsv2_analysis( handle, trans_U, N, nnz_A, descr_U,
+//                             A->getValues().getData(),
+//                             A->getRowPointers().getData(),
+//                             A->getColumnIndexes().getData(),
+//                             info_U, policy_U, pBuffer.getData() );
 
    // Numerical incomplete LU decomposition
-   cusparseDcsrilu02( handle, m, nnz, descr_A,
-                      A.getValues().getData(),
-                      A.getRowPointers().getData(),
-                      A.getColumnIndexes().getData(),
+   cusparseDcsrilu02( handle, N, nnz_A, descr_A,
+                      A->getValues().getData(),
+                      A->getRowPointers().getData(),
+                      A->getColumnIndexes().getData(),
                       info_A, policy_A, pBuffer.getData() );
    int numerical_zero;
    status = cusparseXcsrilu02_zeroPivot( handle, info_A, &numerical_zero );
@@ -237,6 +245,111 @@ update( const MatrixPointer& matrixPointer )
       std::cerr << "A(" << numerical_zero << ", " << numerical_zero << ") is zero." << std::endl;
       throw 1;
    }
+   TNL_CHECK_CUDA_DEVICE;
+
+   // Split the factors L and U into separate storages
+   copy_triangular_factors();
+
+   // Analysis for the triangular solves for L and U
+   cusparseDcsrsv2_analysis( handle, trans_L, N, nnz_L, descr_L,
+                             L->getValues().getData(),
+                             L->getRowPointers().getData(),
+                             L->getColumnIndexes().getData(),
+                             info_L, policy_L, pBuffer.getData() );
+   cusparseDcsrsv2_analysis( handle, trans_U, N, nnz_U, descr_U,
+                             U->getValues().getData(),
+                             U->getRowPointers().getData(),
+                             U->getColumnIndexes().getData(),
+                             info_U, policy_U, pBuffer.getData() );
+   TNL_CHECK_CUDA_DEVICE;
+#else
+   throw std::runtime_error("The program was not compiled with the CUSPARSE library. Pass -DHAVE_CUSPARSE -lcusparse to the compiler.");
+#endif
+#else
+   throw Exceptions::CudaSupportMissing();
+#endif
+}
+
+template< typename Matrix >
+void
+ILU0_impl< Matrix, double, Devices::Cuda, int >::
+allocate_LU()
+{
+#ifdef HAVE_CUDA
+#ifdef HAVE_CUSPARSE
+   const int N = A->getRows();
+   L->setDimensions( N, N );
+   U->setDimensions( N, N );
+
+   // extract raw pointer
+   Devices::Cuda::synchronizeDevice();
+   const CSR* kernel_A = &A.template getData< DeviceType >();
+
+   // copy row lengths
+   typename CSR::CompressedRowLengthsVector L_rowLengths( N );
+   typename CSR::CompressedRowLengthsVector U_rowLengths( N );
+   Containers::VectorView< typename decltype(L_rowLengths)::RealType, DeviceType, IndexType > L_rowLengths_view( L_rowLengths );
+   Containers::VectorView< typename decltype(U_rowLengths)::RealType, DeviceType, IndexType > U_rowLengths_view( U_rowLengths );
+   auto kernel_copy_row_lengths = [=] __cuda_callable__ ( IndexType i ) mutable
+   {
+      const auto row = kernel_A->getRow( i );
+      const int max_length = row.getLength();
+      int L_entries = 0;
+      int U_entries = 0;
+      for( int c_j = 0; c_j < max_length; c_j++ ) {
+         const IndexType j = row.getElementColumn( c_j );
+         if( j < i )
+            L_entries++;
+         else if( j < N )
+            U_entries++;
+         else
+            break;
+      }
+      L_rowLengths_view[ i ] = L_entries;
+      U_rowLengths_view[ i ] = U_entries;
+   };
+   ParallelFor< DeviceType >::exec( (IndexType) 0, N, kernel_copy_row_lengths );
+   L->setCompressedRowLengths( L_rowLengths );
+   U->setCompressedRowLengths( U_rowLengths );
+#else
+   throw std::runtime_error("The program was not compiled with the CUSPARSE library. Pass -DHAVE_CUSPARSE -lcusparse to the compiler.");
+#endif
+#else
+   throw Exceptions::CudaSupportMissing();
+#endif
+}
+
+template< typename Matrix >
+void
+ILU0_impl< Matrix, double, Devices::Cuda, int >::
+copy_triangular_factors()
+{
+#ifdef HAVE_CUDA
+#ifdef HAVE_CUSPARSE
+   const int N = A->getRows();
+
+   // extract raw pointers
+   Devices::Cuda::synchronizeDevice();
+   CSR* kernel_L = &L.template modifyData< DeviceType >();
+   CSR* kernel_U = &U.template modifyData< DeviceType >();
+   const CSR* kernel_A = &A.template getData< DeviceType >();
+
+   // copy values from A to L and U
+   auto kernel_copy_values = [=] __cuda_callable__ ( IndexType i ) mutable
+   {
+      const auto row = kernel_A->getRow( i );
+      const int max_length = row.getLength();
+      for( int c_j = 0; c_j < max_length; c_j++ ) {
+         const IndexType j = row.getElementColumn( c_j );
+         if( j < i )
+            kernel_L->setElementFast( i, j, row.getElementValue( c_j ) );
+         else if( j < N )
+            kernel_U->setElementFast( i, j, row.getElementValue( c_j ) );
+         else
+            break;
+      }
+   };
+   ParallelFor< DeviceType >::exec( (IndexType) 0, N, kernel_copy_values );
 #else
    throw std::runtime_error("The program was not compiled with the CUSPARSE library. Pass -DHAVE_CUSPARSE -lcusparse to the compiler.");
 #endif
@@ -252,28 +365,31 @@ solve( ConstVectorViewType b, VectorViewType x ) const
 {
 #ifdef HAVE_CUDA
 #ifdef HAVE_CUSPARSE
-   const int m = A.getRows();
-   const int nnz = A.getValues().getSize();
+   const int N = A->getRows();
+   const int nnz_L = L->getValues().getSize();
+   const int nnz_U = U->getValues().getSize();
 
    // Step 1: solve y from Ly = b
-   cusparseDcsrsv2_solve( handle, trans_L, m, nnz, &alpha, descr_L,
-                          A.getValues().getData(),
-                          A.getRowPointers().getData(),
-                          A.getColumnIndexes().getData(),
+   cusparseDcsrsv2_solve( handle, trans_L, N, nnz_L, &alpha, descr_L,
+                          L->getValues().getData(),
+                          L->getRowPointers().getData(),
+                          L->getColumnIndexes().getData(),
                           info_L,
                           b.getData(),
                           (RealType*) y.getData(),
                           policy_L, (void*) pBuffer.getData() );
 
    // Step 2: solve x from Ux = y
-   cusparseDcsrsv2_solve( handle, trans_U, m, nnz, &alpha, descr_U,
-                          A.getValues().getData(),
-                          A.getRowPointers().getData(),
-                          A.getColumnIndexes().getData(),
+   cusparseDcsrsv2_solve( handle, trans_U, N, nnz_U, &alpha, descr_U,
+                          U->getValues().getData(),
+                          U->getRowPointers().getData(),
+                          U->getColumnIndexes().getData(),
                           info_U,
                           y.getData(),
                           x.getData(),
                           policy_U, (void*) pBuffer.getData() );
+
+   TNL_CHECK_CUDA_DEVICE;
 #else
    throw std::runtime_error("The program was not compiled with the CUSPARSE library. Pass -DHAVE_CUSPARSE -lcusparse to the compiler.");
 #endif

@@ -18,6 +18,7 @@
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Matrices/CSR.h>
+#include <TNL/Pointers/UniquePointer.h>
 
 #if defined(HAVE_CUDA) && defined(HAVE_CUSPARSE)
 #include <cusparse.h>
@@ -111,9 +112,14 @@ public:
 #endif
    }
 
+   // must be public because nvcc does not allow extended lambdas in private or protected regions
+   void allocate_LU();
+   void copy_triangular_factors();
 protected:
+
 #if defined(HAVE_CUDA) && defined(HAVE_CUSPARSE)
-   Matrices::CSR< RealType, DeviceType, IndexType > A;
+   using CSR = Matrices::CSR< RealType, DeviceType, IndexType >;
+   Pointers::UniquePointer< CSR > A, L, U;
    Containers::Vector< RealType, DeviceType, IndexType > y;
 
    cusparseHandle_t handle;
@@ -128,6 +134,9 @@ protected:
    const cusparseSolvePolicy_t policy_A = CUSPARSE_SOLVE_POLICY_USE_LEVEL;
    const cusparseSolvePolicy_t policy_L = CUSPARSE_SOLVE_POLICY_USE_LEVEL;
    const cusparseSolvePolicy_t policy_U = CUSPARSE_SOLVE_POLICY_USE_LEVEL;
+//   const cusparseSolvePolicy_t policy_A = CUSPARSE_SOLVE_POLICY_NO_LEVEL;
+//   const cusparseSolvePolicy_t policy_L = CUSPARSE_SOLVE_POLICY_NO_LEVEL;
+//   const cusparseSolvePolicy_t policy_U = CUSPARSE_SOLVE_POLICY_NO_LEVEL;
    const cusparseOperation_t trans_L  = CUSPARSE_OPERATION_NON_TRANSPOSE;
    const cusparseOperation_t trans_U  = CUSPARSE_OPERATION_NON_TRANSPOSE;
 
@@ -172,7 +181,7 @@ protected:
    {
       typename MatrixT::CudaType A_tmp;
       A_tmp = matrix;
-      Matrices::copySparseMatrix( A, A_tmp );
+      Matrices::copySparseMatrix( *A, A_tmp );
    }
 
    template< typename MatrixT,
@@ -180,7 +189,7 @@ protected:
              typename = void >
    void copyMatrix( const MatrixT& matrix )
    {
-      Matrices::copySparseMatrix( A, matrix );
+      Matrices::copySparseMatrix( *A, matrix );
    }
 #endif
 };
