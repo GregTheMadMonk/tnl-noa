@@ -42,17 +42,4 @@ SET( headers AdEllpack.h
              MultidiagonalRow.h
              MultidiagonalRow_impl.h  )
 
-SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Matrices )
-set( common_SOURCES  )
-
-SET( tnl_matrices_SOURCES 
-     ${common_SOURCES}
-     PARENT_SCOPE )
-
-if( BUILD_CUDA )
-   SET( tnl_matrices_CUDA__SOURCES 
-        ${common_SOURCES}
-        PARENT_SCOPE )
-endif()
-
 INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Matrices )
