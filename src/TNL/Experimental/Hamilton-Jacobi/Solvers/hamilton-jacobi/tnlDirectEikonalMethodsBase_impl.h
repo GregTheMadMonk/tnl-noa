@@ -945,7 +945,7 @@ updateCell( volatile Real sArray[18][18], int thri, int thrj, const Real hx, con
     {
         sArray[ thrj ][ thri ] = argAbsMin( value, tmp );
         tmp = value - sArray[ thrj ][ thri ];
-        if ( fabs( tmp ) >  0.01*hx )
+        if ( fabs( tmp ) >  0.001*hx )
             return true;
         else
             return false;
@@ -957,7 +957,7 @@ updateCell( volatile Real sArray[18][18], int thri, int thrj, const Real hx, con
             ( pom[ 1 ] - pom[ 0 ] ) * ( pom[ 1 ] - pom[ 0 ] ) ) )/( pom[ 3 ] * pom[ 3 ] + pom[ 4 ] * pom[ 4 ] );
         sArray[ thrj ][ thri ] = argAbsMin( value, tmp );
         tmp = value - sArray[ thrj ][ thri ];
-        if ( fabs( tmp ) > 0.01*hx )
+        if ( fabs( tmp ) > 0.001*hx )
             return true;
         else
             return false;
@@ -989,7 +989,7 @@ updateCell( volatile Real sArray[18], int thri, const Real h, const Real v )
     sArray[ thri ] = argAbsMin( value, tmp );
     
     tmp = value - sArray[ thri ];
-    if ( fabs( tmp ) >  0.01*h )
+    if ( fabs( tmp ) >  0.001*h )
         return true;
     else
         return false;
@@ -1032,7 +1032,7 @@ updateCell( volatile Real sArray[10][10][10], int thri, int thrj, int thrk,
     {
         sArray[ thrk ][ thrj ][ thri ] = argAbsMin( value, tmp );
         tmp = value - sArray[ thrk ][ thrj ][ thri ];
-        if ( fabs( tmp ) >  0.01*hx )
+        if ( fabs( tmp ) >  0.001*hx )
             return true;
         else
             return false;
@@ -1046,7 +1046,7 @@ updateCell( volatile Real sArray[10][10][10], int thri, int thrj, int thrk,
         {
             sArray[ thrk ][ thrj ][ thri ] = argAbsMin( value, tmp );
             tmp = value - sArray[ thrk ][ thrj ][ thri ];
-            if ( fabs( tmp ) > 0.01*hx )
+            if ( fabs( tmp ) > 0.001*hx )
                 return true;
             else
                 return false;
@@ -1059,7 +1059,7 @@ updateCell( volatile Real sArray[10][10][10], int thri, int thrj, int thrk,
                 hx * hx * ( b - c ) * ( b - c ) ) )/( hx * hx * hy * hy + hy * hy * hz * hz + hz * hz * hx *hx );
             sArray[ thrk ][ thrj ][ thri ] = argAbsMin( value, tmp );
             tmp = value - sArray[ thrk ][ thrj ][ thri ];
-            if ( fabs( tmp ) > 0.01*hx )
+            if ( fabs( tmp ) > 0.001*hx )
                 return true;
             else
                 return false;
