@@ -161,15 +161,28 @@ copySparseMatrix_impl( Matrix1& A, const Matrix2& B )
    }
 }
 
-// cross-device copy
+// cross-device copy (host -> gpu)
 template< typename Matrix1,
           typename Matrix2 >
-typename std::enable_if< ! std::is_same< typename Matrix1::DeviceType, typename Matrix2::DeviceType >::value >::type
+typename std::enable_if< ! std::is_same< typename Matrix1::DeviceType, typename Matrix2::DeviceType >::value &&
+                           std::is_same< typename Matrix2::DeviceType, Devices::Host >::value >::type
 copySparseMatrix_impl( Matrix1& A, const Matrix2& B )
 {
    typename Matrix2::CudaType B_tmp;
    B_tmp = B;
    copySparseMatrix_impl( A, B_tmp );
+}
+
+// cross-device copy (gpu -> host)
+template< typename Matrix1,
+          typename Matrix2 >
+typename std::enable_if< ! std::is_same< typename Matrix1::DeviceType, typename Matrix2::DeviceType >::value &&
+                           std::is_same< typename Matrix2::DeviceType, Devices::Cuda >::value >::type
+copySparseMatrix_impl( Matrix1& A, const Matrix2& B )
+{
+   typename Matrix1::CudaType A_tmp;
+   copySparseMatrix_impl( A_tmp, B );
+   A = A_tmp;
 }
 
 template< typename Matrix1, typename Matrix2 >
