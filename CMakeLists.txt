@@ -240,7 +240,6 @@ endif()
 # Check for OpenMP
 #
 if( OPENMP_FOUND AND ${WITH_OPENMP} )
-   message( "Enabled OpenMP support." )
    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_OPENMP ${OpenMP_CXX_FLAGS}" )
 endif()
 
