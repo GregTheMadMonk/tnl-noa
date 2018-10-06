@@ -37,9 +37,9 @@ option(WITH_TEMPLATES_INSTANTIATION "Enable explicit template instantiation" OFF
 set( TNL_TARGET_INCLUDE_DIRECTORY "include/TNL" )
 set( TNL_TARGET_DATA_DIRECTORY "share/TNL" )
 
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
-
-include( OptimizeForArchitecture )
+# set cmake's include path so that we can include modules from
+# the cmake directory in the TNL repository
+set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
 
 # Note that in cmake 3.10 the FindOpenMP module is broken - it does not work when
 # CMAKE_EXECUTABLE_SUFFIX is not empty, see https://www.mail-archive.com/cmake@cmake.org/msg56886.html
