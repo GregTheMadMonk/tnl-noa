@@ -31,6 +31,20 @@ copyAdjacencyStructure( const Matrix& A, AdjacencyMatrix& B,
                         bool has_symmetric_pattern = false,
                         bool ignore_diagonal = true );
 
+// Applies a permutation to the rows of a sparse matrix and its inverse
+// permutation to the columns of the matrix, i.e. A_perm = P*A*P^{-1}, where
+// P is the permutation matrix represented by the perm vector and P^{-1} is the
+// inverse permutation represented by the iperm vector.
+template< typename Matrix1, typename Matrix2, typename PermutationVector >
+void
+reorderSparseMatrix( const Matrix1& A, Matrix2& A_perm,
+                     const PermutationVector& perm, const PermutationVector& iperm );
+
+// TODO: the method does not belong here, but there is no better place...
+template< typename Vector, typename PermutationVector >
+void
+reorderVector( const Vector& src, Vector& dest, const PermutationVector& perm );
+
 } // namespace Matrices
 } // namespace TNL
 

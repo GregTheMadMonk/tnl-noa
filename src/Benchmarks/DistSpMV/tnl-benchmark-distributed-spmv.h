@@ -190,7 +190,7 @@ struct SpmvBenchmark
          PermutationVector perm, iperm;
          getTrivialOrdering( matrix, perm, iperm );
          MatrixType matrix_perm;
-         reorderMatrix( matrix, matrix_perm, perm, iperm );
+         Matrices::reorderSparseMatrix( matrix, matrix_perm, perm, iperm );
          if( CommunicatorType::isDistributed() )
             runDistributed( benchmark, metadata, parameters, matrix_perm, vector );
          else

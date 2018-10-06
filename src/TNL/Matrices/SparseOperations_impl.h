@@ -14,8 +14,10 @@
 
 #include <type_traits>
 #include <stdexcept>
+#include <algorithm>
 
 #include <TNL/Pointers/DevicePointer.h>
+#include <TNL/ParallelFor.h>
 
 namespace TNL {
 namespace Matrices {
@@ -258,6 +260,100 @@ copyAdjacencyStructure( const Matrix& A, AdjacencyMatrix& B,
             }
       }
    }
+}
+
+
+template< typename Matrix1, typename Matrix2, typename PermutationVector >
+void
+reorderSparseMatrix( const Matrix1& matrix1, Matrix2& matrix2, const PermutationVector& perm, const PermutationVector& iperm )
+{
+   // TODO: implement on GPU
+   static_assert( std::is_same< typename Matrix1::DeviceType, Devices::Host >::value, "matrix reordering is implemented only for host" );
+   static_assert( std::is_same< typename Matrix2::DeviceType, Devices::Host >::value, "matrix reordering is implemented only for host" );
+   static_assert( std::is_same< typename PermutationVector::DeviceType, Devices::Host >::value, "matrix reordering is implemented only for host" );
+
+   using IndexType = typename Matrix1::IndexType;
+
+   matrix2.setDimensions( matrix1.getRows(), matrix1.getColumns() );
+
+   // set row lengths
+   typename Matrix2::CompressedRowLengthsVector rowLengths;
+   rowLengths.setSize( matrix1.getRows() );
+   for( IndexType i = 0; i < matrix1.getRows(); i++ ) {
+      const IndexType maxLength = matrix1.getRowLength( perm[ i ] );
+      const auto row = matrix1.getRow( perm[ i ] );
+      IndexType length = 0;
+      for( IndexType j = 0; j < maxLength; j++ )
+         if( row.getElementColumn( j ) < matrix1.getColumns() )
+            length++;
+      rowLengths[ i ] = length;
+   }
+   matrix2.setCompressedRowLengths( rowLengths );
+
+   // set row elements
+   for( IndexType i = 0; i < matrix2.getRows(); i++ ) {
+      const IndexType rowLength = rowLengths[ i ];
+
+      // extract sparse row
+      const auto row1 = matrix1.getRow( perm[ i ] );
+
+      // permute
+      typename Matrix2::IndexType columns[ rowLength ];
+      typename Matrix2::RealType values[ rowLength ];
+      for( IndexType j = 0; j < rowLength; j++ ) {
+         columns[ j ] = iperm[ row1.getElementColumn( j ) ];
+         values[ j ] = row1.getElementValue( j );
+      }
+
+      // sort
+      IndexType indices[ rowLength ];
+      for( IndexType j = 0; j < rowLength; j++ )
+         indices[ j ] = j;
+      // nvcc does not allow lambdas to capture VLAs, even in host code (WTF!?)
+      //    error: a variable captured by a lambda cannot have a type involving a variable-length array
+      IndexType* _columns = columns;
+      auto comparator = [=]( IndexType a, IndexType b ) {
+         return _columns[ a ] < _columns[ b ];
+      };
+      std::sort( indices, indices + rowLength, comparator );
+
+      typename Matrix2::IndexType sortedColumns[ rowLength ];
+      typename Matrix2::RealType sortedValues[ rowLength ];
+      for( IndexType j = 0; j < rowLength; j++ ) {
+         sortedColumns[ j ] = columns[ indices[ j ] ];
+         sortedValues[ j ] = values[ indices[ j ] ];
+      }
+
+      matrix2.setRow( i, sortedColumns, sortedValues, rowLength );
+   }
+}
+
+template< typename Vector, typename PermutationVector >
+void
+reorderVector( const Vector& src, Vector& dest, const PermutationVector& perm )
+{
+   TNL_ASSERT_EQ( src.getSize(), perm.getSize(),
+                  "Source vector and permutation must have the same size." );
+   using RealType = typename Vector::RealType;
+   using DeviceType = typename Vector::DeviceType;
+   using IndexType = typename Vector::IndexType;
+
+   auto kernel = [] __cuda_callable__
+      ( IndexType i,
+        const RealType* src,
+        RealType* dest,
+        const typename PermutationVector::RealType* perm )
+   {
+      dest[ i ] = src[ perm[ i ] ];
+   };
+
+   dest.setLike( src );
+
+   ParallelFor< DeviceType >::exec( (IndexType) 0, src.getSize(),
+                                    kernel,
+                                    src.getData(),
+                                    dest.getData(),
+                                    perm.getData() );
 }
 
 } // namespace Matrices
