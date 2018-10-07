@@ -272,8 +272,8 @@ solve( const MeshPointer& mesh,
                                                               interfaceMapPtr.template getData< Device >(),
                                                               auxPtr.template modifyData< Device>(),
                                                               BlockIterDevice );
-            CudaParallelReduc<<< nBlocks , 512 >>>( BlockIterDevice, dBlock, ( numBlocksX * numBlocksY * numBlocksZ ) );
-            CudaParallelReduc<<< 1, nBlocks >>>( dBlock, dBlock, nBlocks );
+            //CudaParallelReduc<<< nBlocks , 512 >>>( BlockIterDevice, dBlock, ( numBlocksX * numBlocksY * numBlocksZ ) );
+            //CudaParallelReduc<<< 1, nBlocks >>>( dBlock, dBlock, nBlocks );
             
             cudaMemcpy(&BlockIterD, &dBlock[0], sizeof( int ), cudaMemcpyDeviceToHost);
                                    
