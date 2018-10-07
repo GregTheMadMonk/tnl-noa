@@ -113,6 +113,8 @@ T1 meet2DCondition( T1 a, T1 b, const T2 ha, const T2 hb, const T1 value, double
 template < typename T1 >
 __cuda_callable__ void sortMinims( T1 pom[] );
 
+template < typename Index >
+void GetNeighbours( TNL::Containers::Array< int, Devices::Host, Index > BlockIter, int numBlockX, int numBlockY );
 
 #ifdef HAVE_CUDA
 template < typename Real, typename Device, typename Index >
@@ -130,8 +132,11 @@ template < typename Real, typename Device, typename Index >
 __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > > ptr,
                                       const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index >, 2, bool >& interfaceMap,
                                       Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& aux,
-                                      int *BlockIterDevice, int oddEvenBlock);
-__global__ void CudaParallelReduc( int *BlockIterDevice, int *dBlock, int nBlocks );
+                                      TNL::Containers::Array< int, Devices::Cuda, Index > BlockIterDevice );
+
+template < typename Index >
+__global__ void CudaParallelReduc( TNL::Containers::Array< int, Devices::Cuda, Index > BlockIterDevice,
+                                   TNL::Containers::Array< int, Devices::Cuda, Index > dBlock, int nBlocks );
 
 /*template < typename Real, typename Device, typename Index >
 __global__ void aux1( Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& aux, Real *dAux, int a );*/
