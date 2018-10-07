@@ -93,9 +93,12 @@ set( CMAKE_SHARED_LINKER_FLAGS "" )
 set( CMAKE_SHARED_LINKER_FLAGS_DEBUG "-rdynamic" )
 set( CMAKE_SHARED_LINKER_FLAGS_RELEASE "" )
 
-get_filename_component( CXX_COMPILER_NAME ${CMAKE_CXX_COMPILER} NAME )
-if( CXX_COMPILER_NAME MATCHES "icpc" )
-   message( "Intel compiler detected..."    )
+# disable GCC's infamous "maybe-uninitialized" warning (it produces mostly false positives)
+if( CMAKE_CXX_COMPILER_ID STREQUAL "GNU" )
+   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-maybe-uninitialized" )
+endif()
+
+if( CMAKE_CXX_COMPILER_ID STREQUAL "Intel" )
    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_ICPC -wd2568 -wd2571 -wd2570")
    #####
    #  Check for MIC
@@ -124,6 +127,7 @@ endif()
 #####
 # Check for MPI -- poznej podle vraperu compileru -- da se testovat preklad bez MPI
 #
+get_filename_component( CXX_COMPILER_NAME ${CMAKE_CXX_COMPILER} NAME )
 if( ${CXX_COMPILER_NAME} STREQUAL "mpicxx" )
    message( "MPI compiler detected."    )
    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_MPI" )
