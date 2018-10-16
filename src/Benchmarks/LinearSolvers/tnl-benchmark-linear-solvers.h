@@ -361,9 +361,11 @@ struct LinearSolversBenchmark
          getTrivialOrdering( *matrixPointer, perm, iperm );
          SharedPointer< MatrixType > matrix_perm;
          VectorType x0_perm, b_perm;
+         x0_perm.setLike( x0 );
+         b_perm.setLike( b );
          Matrices::reorderSparseMatrix( *matrixPointer, *matrix_perm, perm, iperm );
-         Matrices::reorderVector( x0, x0_perm, perm );
-         Matrices::reorderVector( b, b_perm, perm );
+         Matrices::reorderArray( x0, x0_perm, perm );
+         Matrices::reorderArray( b, b_perm, perm );
          if( CommunicatorType::isDistributed() )
             runDistributed( benchmark, metadata, parameters, matrix_perm, x0_perm, b_perm );
          else

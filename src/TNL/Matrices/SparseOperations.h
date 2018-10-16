@@ -35,15 +35,15 @@ copyAdjacencyStructure( const Matrix& A, AdjacencyMatrix& B,
 // permutation to the columns of the matrix, i.e. A_perm = P*A*P^{-1}, where
 // P is the permutation matrix represented by the perm vector and P^{-1} is the
 // inverse permutation represented by the iperm vector.
-template< typename Matrix1, typename Matrix2, typename PermutationVector >
+template< typename Matrix1, typename Matrix2, typename PermutationArray >
 void
 reorderSparseMatrix( const Matrix1& A, Matrix2& A_perm,
-                     const PermutationVector& perm, const PermutationVector& iperm );
+                     const PermutationArray& perm, const PermutationArray& iperm );
 
 // TODO: the method does not belong here, but there is no better place...
-template< typename Vector, typename PermutationVector >
+template< typename Array1, typename Array2, typename PermutationArray >
 void
-reorderVector( const Vector& src, Vector& dest, const PermutationVector& perm );
+reorderArray( const Array1& src, Array2& dest, const PermutationArray& perm );
 
 } // namespace Matrices
 } // namespace TNL

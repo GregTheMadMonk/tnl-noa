@@ -263,14 +263,14 @@ copyAdjacencyStructure( const Matrix& A, AdjacencyMatrix& B,
 }
 
 
-template< typename Matrix1, typename Matrix2, typename PermutationVector >
+template< typename Matrix1, typename Matrix2, typename PermutationArray >
 void
-reorderSparseMatrix( const Matrix1& matrix1, Matrix2& matrix2, const PermutationVector& perm, const PermutationVector& iperm )
+reorderSparseMatrix( const Matrix1& matrix1, Matrix2& matrix2, const PermutationArray& perm, const PermutationArray& iperm )
 {
    // TODO: implement on GPU
    static_assert( std::is_same< typename Matrix1::DeviceType, Devices::Host >::value, "matrix reordering is implemented only for host" );
    static_assert( std::is_same< typename Matrix2::DeviceType, Devices::Host >::value, "matrix reordering is implemented only for host" );
-   static_assert( std::is_same< typename PermutationVector::DeviceType, Devices::Host >::value, "matrix reordering is implemented only for host" );
+   static_assert( std::is_same< typename PermutationArray::DeviceType, Devices::Host >::value, "matrix reordering is implemented only for host" );
 
    using IndexType = typename Matrix1::IndexType;
 
@@ -328,26 +328,30 @@ reorderSparseMatrix( const Matrix1& matrix1, Matrix2& matrix2, const Permutation
    }
 }
 
-template< typename Vector, typename PermutationVector >
+template< typename Array1, typename Array2, typename PermutationArray >
 void
-reorderVector( const Vector& src, Vector& dest, const PermutationVector& perm )
+reorderArray( const Array1& src, Array2& dest, const PermutationArray& perm )
 {
+   static_assert( std::is_same< typename Array1::DeviceType, typename Array2::DeviceType >::value,
+                  "Arrays must reside on the same device." );
+   static_assert( std::is_same< typename Array1::DeviceType, typename PermutationArray::DeviceType >::value,
+                  "Arrays must reside on the same device." );
    TNL_ASSERT_EQ( src.getSize(), perm.getSize(),
-                  "Source vector and permutation must have the same size." );
-   using RealType = typename Vector::RealType;
-   using DeviceType = typename Vector::DeviceType;
-   using IndexType = typename Vector::IndexType;
+                  "Source array and permutation must have the same size." );
+   TNL_ASSERT_EQ( dest.getSize(), perm.getSize(),
+                  "Destination array and permutation must have the same size." );
+
+   using DeviceType = typename Array1::DeviceType;
+   using IndexType = typename Array1::IndexType;
 
    auto kernel = [] __cuda_callable__
       ( IndexType i,
-        const RealType* src,
-        RealType* dest,
-        const typename PermutationVector::RealType* perm )
+        const typename Array1::ValueType* src,
+        typename Array2::ValueType* dest,
+        const typename PermutationArray::ValueType* perm )
    {
       dest[ i ] = src[ perm[ i ] ];
    };
-
-   dest.setLike( src );
 
    ParallelFor< DeviceType >::exec( (IndexType) 0, src.getSize(),
                                     kernel,
