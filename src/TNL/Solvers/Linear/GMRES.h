@@ -1,18 +1,18 @@
 /***************************************************************************
                           GMRES.h  -  description
                              -------------------
-    begin                : 2007/07/31
-    copyright            : (C) 2007 by Tomas Oberhuber
+    begin                : May 13, 2016
+    copyright            : (C) 2016 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 /* See Copyright Notice in tnl/Copyright */
 
+// Implemented by: Jakub Klinkovsky
+
 #pragma once
 
 #include "LinearSolver.h"
-
-#include <TNL/Containers/Vector.h>
 
 namespace TNL {
 namespace Solvers {
@@ -23,12 +23,19 @@ class GMRES
 : public LinearSolver< Matrix >
 {
    using Base = LinearSolver< Matrix >;
+
+   // compatibility shortcuts
+   using Traits = Linear::Traits< Matrix >;
+   using CommunicatorType = typename Traits::CommunicatorType;
+
 public:
    using RealType = typename Base::RealType;
    using DeviceType = typename Base::DeviceType;
    using IndexType = typename Base::IndexType;
+   // distributed vectors/views
    using VectorViewType = typename Base::VectorViewType;
    using ConstVectorViewType = typename Base::ConstVectorViewType;
+   using VectorType = typename Traits::VectorType;
 
    String getType() const;
 
@@ -38,18 +45,56 @@ public:
    bool setup( const Config::ParameterContainer& parameters,
                const String& prefix = "" ) override;
 
-   void setRestarting( IndexType rest );
-
    bool solve( ConstVectorViewType b, VectorViewType x ) override;
 
 protected:
-   template< typename VectorT >
-   void update( IndexType k,
-                IndexType m,
-                const Containers::Vector< RealType, Devices::Host, IndexType >& H,
-                const Containers::Vector< RealType, Devices::Host, IndexType >& s,
-                Containers::Vector< RealType, DeviceType, IndexType >& v,
-                VectorT& x );
+   // local vectors/views
+   using ConstDeviceView = typename Traits::ConstLocalVectorViewType;
+   using DeviceView = typename Traits::LocalVectorViewType;
+   using HostView = typename DeviceView::HostType;
+   using DeviceVector = typename Traits::LocalVectorType;
+   using HostVector = typename DeviceVector::HostType;
+
+   enum class Variant { MGS, MGSR, CWY };
+
+   int orthogonalize_MGS( const int m, const RealType normb, const RealType beta );
+
+   int orthogonalize_CWY( const int m, const RealType normb, const RealType beta );
+
+   void compute_residue( VectorViewType r, ConstVectorViewType x, ConstVectorViewType b );
+
+   void preconditioned_matvec( VectorViewType w, ConstVectorViewType v );
+
+// nvcc allows __cuda_callable__ lambdas only in public methods
+#ifdef __NVCC__
+public:
+#endif
+   void hauseholder_generate( const int i,
+                              VectorViewType y_i,
+                              ConstVectorViewType z );
+#ifdef __NVCC__
+protected:
+#endif
+
+   void hauseholder_apply_trunc( HostView out,
+                                 const int i,
+                                 VectorViewType y_i,
+                                 ConstVectorViewType z );
+
+   void hauseholder_cwy( VectorViewType v,
+                         const int i );
+
+   void hauseholder_cwy_transposed( VectorViewType z,
+                                    const int i,
+                                    ConstVectorViewType w );
+
+   template< typename Vector >
+   void update( const int k,
+                const int m,
+                const HostVector& H,
+                const HostVector& s,
+                DeviceVector& V,
+                Vector& x );
 
    void generatePlaneRotation( RealType& dx,
                                RealType& dy,
@@ -61,17 +106,43 @@ protected:
                             RealType& cs,
                             RealType& sn );
 
+   void apply_givens_rotations( const int i, const int m );
 
-   void setSize( IndexType _size, IndexType m );
+   void setSize( const VectorViewType& x );
 
-   Containers::Vector< RealType, DeviceType, IndexType > _r, w, _v, _M_tmp;
-   Containers::Vector< RealType, Devices::Host, IndexType > _s, _cs, _sn, _H;
+   // Specialized methods to distinguish between normal and distributed matrices
+   // in the implementation.
+   template< typename M >
+   static IndexType getLocalOffset( const M& m )
+   {
+      return 0;
+   }
+
+   template< typename M >
+   static IndexType getLocalOffset( const DistributedContainers::DistributedMatrix< M >& m )
+   {
+      return m.getLocalRowRange().getBegin();
+   }
+
+   // selected GMRES variant
+   Variant variant = Variant::CWY;
+
+   // single vectors (distributed)
+   VectorType r, w, z, _M_tmp;
+   // matrices (in column-major format) (local)
+   DeviceVector V, Y;
+   // (CWY only) duplicate of the upper (m+1)x(m+1) submatrix of Y (it is lower triangular) for fast access
+   HostVector YL, T;
+   // host-only storage for Givens rotations and the least squares problem
+   HostVector cs, sn, H, s;
 
    IndexType size = 0;
-   IndexType restarting_min = 10;
-   IndexType restarting_max = 10;
-   IndexType restarting_step_min = 3;
-   IndexType restarting_step_max = 3;
+   IndexType ldSize = 0;
+   IndexType localOffset = 0;
+   int restarting_min = 10;
+   int restarting_max = 10;
+   int restarting_step_min = 3;
+   int restarting_step_max = 3;
 };
 
 } // namespace Linear

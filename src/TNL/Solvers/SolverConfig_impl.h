@@ -21,7 +21,6 @@
 #include <TNL/Solvers/Linear/BICGStab.h>
 #include <TNL/Solvers/Linear/BICGStabL.h>
 #include <TNL/Solvers/Linear/GMRES.h>
-#include <TNL/Solvers/Linear/CWYGMRES.h>
 #include <TNL/Solvers/Linear/TFQMR.h>
 #include <TNL/Solvers/Linear/UmfpackWrapper.h>
 #include <TNL/Solvers/Linear/Preconditioners/Diagonal.h>
@@ -135,7 +134,6 @@ bool SolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDescri
       config.addEntryEnum( "cg" );
       config.addEntryEnum( "bicgstab" );
       config.addEntryEnum( "bicgstabl" );
-      config.addEntryEnum( "cwygmres" );
       config.addEntryEnum( "gmres" );
       config.addEntryEnum( "tfqmr" );
       config.addEntryEnum( "sor" );
@@ -174,10 +172,7 @@ bool SolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDescri
       Linear::CG< MatrixType >::configSetup( config );
       Linear::BICGStab< MatrixType >::configSetup( config );
       Linear::BICGStabL< MatrixType >::configSetup( config );
-
-      // GMRES and CWYGMRES have the same options
       Linear::GMRES< MatrixType >::configSetup( config );
-
       Linear::TFQMR< MatrixType >::configSetup( config );
       Linear::SOR< MatrixType >::configSetup( config );
 

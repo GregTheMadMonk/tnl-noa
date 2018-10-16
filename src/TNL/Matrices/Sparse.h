@@ -14,7 +14,7 @@
 #include <TNL/Matrices/SparseRow.h>
 
 namespace TNL {
-namespace Matrices {   
+namespace Matrices {
 
 template< typename Real,
           typename Device,
@@ -62,14 +62,8 @@ class Sparse : public Matrix< Real, Device, Index >
    Index maxRowLength;
 };
 
-
-// This cannot be a method of the Sparse class, because the implementation uses
-// methods (marked with __cuda_callable__) which are defined only on the
-// subclasses, but are not virtual methods of Sparse.
-template< typename Matrix1, typename Matrix2 >
-void copySparseMatrix( Matrix1& A, const Matrix2& B );
-
 } // namespace Matrices
 } // namespace TNL
 
 #include <TNL/Matrices/Sparse_impl.h>
+#include <TNL/Matrices/SparseOperations.h>

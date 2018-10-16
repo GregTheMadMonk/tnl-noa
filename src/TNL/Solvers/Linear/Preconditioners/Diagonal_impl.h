@@ -14,107 +14,87 @@
 
 #include "Diagonal.h"
 
+#include <TNL/ParallelFor.h>
+
 namespace TNL {
 namespace Solvers {
 namespace Linear {
 namespace Preconditioners {
-
-#ifdef HAVE_CUDA
-template< typename Real, typename Index, typename Matrix >
-__global__ void matrixDiagonalToVectorKernel( const Matrix* matrix,
-                                              Real* diagonal,
-                                              Index size ) {
-   Index elementIdx = blockDim. x * blockIdx. x + threadIdx. x;
-   const Index maxGridSize = blockDim. x * gridDim. x;
-   while( elementIdx < size )
-   {
-      diagonal[ elementIdx ] = matrix->getElementFast( elementIdx, elementIdx );
-      elementIdx += maxGridSize;
-   }
-}
-
-template< typename Real, typename Index >
-__global__ void elementwiseVectorDivisionKernel( const Real* left,
-                                                 const Real* right,
-                                                 Real* result,
-                                                 Index size )
-{
-   Index elementIdx = blockDim. x * blockIdx. x + threadIdx. x;
-   const Index maxGridSize = blockDim. x * gridDim. x;
-   while( elementIdx < size )
-   {
-      result[ elementIdx ] = left[ elementIdx ] / right[ elementIdx ];
-      elementIdx += maxGridSize;
-   }
-}
-#endif
 
 template< typename Matrix >
 void
 Diagonal< Matrix >::
 update( const MatrixPointer& matrixPointer )
 {
-//  std::cout << getType() << "->setMatrix()" << std::endl;
-
    TNL_ASSERT_GT( matrixPointer->getRows(), 0, "empty matrix" );
    TNL_ASSERT_EQ( matrixPointer->getRows(), matrixPointer->getColumns(), "matrix must be square" );
 
-   if( diagonal.getSize() != matrixPointer->getRows() )
-      diagonal.setSize( matrixPointer->getRows() );
+   diagonal.setSize( matrixPointer->getRows() );
 
-   if( std::is_same< DeviceType, Devices::Host >::value )
-   {
-      for( int i = 0; i < diagonal.getSize(); i++ ) {
-         diagonal[ i ] = matrixPointer->getElement( i, i );
-      }
-   }
-   if( std::is_same< DeviceType, Devices::Cuda >::value )
-   {
-#ifdef HAVE_CUDA
-      const IndexType& size = diagonal.getSize();
-      dim3 cudaBlockSize( 256 );
-      dim3 cudaBlocks;
-      cudaBlocks.x = min( Devices::Cuda::getMaxGridSize(), Devices::Cuda::getNumberOfBlocks( size, cudaBlockSize.x ) );
+   VectorViewType diag_view( diagonal );
+   const Matrix* kernel_matrix = &matrixPointer.template getData< DeviceType >();
 
-      Devices::Cuda::synchronizeDevice();
-      matrixDiagonalToVectorKernel<<< cudaBlocks, cudaBlockSize >>>(
-            &matrixPointer.template getData< Devices::Cuda >(),
-            diagonal.getData(),
-            size );
-      TNL_CHECK_CUDA_DEVICE;
-#endif
-   }
+   auto kernel = [=] __cuda_callable__ ( IndexType i ) mutable
+   {
+      diag_view[ i ] = kernel_matrix->getElementFast( i, i );
+   };
+
+   ParallelFor< DeviceType >::exec( (IndexType) 0, diagonal.getSize(), kernel );
 }
 
 template< typename Matrix >
-bool
+void
 Diagonal< Matrix >::
 solve( ConstVectorViewType b, VectorViewType x ) const
 {
-   if( std::is_same< DeviceType, Devices::Host >::value )
-   {
-      for( int i = 0; i < diagonal.getSize(); i++ ) {
-         x[ i ] = b[ i ] / diagonal[ i ];
-      }
-   }
-   if( std::is_same< DeviceType, Devices::Cuda >::value )
-   {
-#ifdef HAVE_CUDA
-      const IndexType& size = diagonal.getSize();
-      dim3 cudaBlockSize( 256 );
-      dim3 cudaBlocks;
-      cudaBlocks.x = min( Devices::Cuda::getMaxGridSize(), Devices::Cuda::getNumberOfBlocks( size, cudaBlockSize.x ) );
+   ConstVectorViewType diag_view( diagonal );
 
-      elementwiseVectorDivisionKernel<<< cudaBlocks, cudaBlockSize >>>(
-            b.getData(),
-            diagonal.getData(),
-            x.getData(),
-            size );
+   auto kernel = [=] __cuda_callable__ ( IndexType i ) mutable
+   {
+      x[ i ] = b[ i ] / diag_view[ i ];
+   };
 
-      TNL_CHECK_CUDA_DEVICE;
-#endif
-   }
-   return true;
+   ParallelFor< DeviceType >::exec( (IndexType) 0, diagonal.getSize(), kernel );
+}
+
+
+template< typename Matrix, typename Communicator >
+void
+Diagonal< DistributedContainers::DistributedMatrix< Matrix, Communicator > >::
+update( const MatrixPointer& matrixPointer )
+{
+   TNL_ASSERT_GT( matrixPointer->getRows(), 0, "empty matrix" );
+   TNL_ASSERT_EQ( matrixPointer->getRows(), matrixPointer->getColumns(), "matrix must be square" );
+
+   diagonal.setSize( matrixPointer->getLocalMatrix().getRows() );
+
+   LocalVectorViewType diag_view( diagonal );
+   const MatrixType* kernel_matrix = &matrixPointer.template getData< DeviceType >();
+
+   auto kernel = [=] __cuda_callable__ ( IndexType i ) mutable
+   {
+      const IndexType gi = kernel_matrix->getLocalRowRange().getGlobalIndex( i );
+      diag_view[ i ] = kernel_matrix->getLocalMatrix().getElementFast( i, gi );
+   };
+
+   ParallelFor< DeviceType >::exec( (IndexType) 0, diagonal.getSize(), kernel );
+}
+
+template< typename Matrix, typename Communicator >
+void
+Diagonal< DistributedContainers::DistributedMatrix< Matrix, Communicator > >::
+solve( ConstVectorViewType b, VectorViewType x ) const
+{
+   ConstLocalVectorViewType diag_view( diagonal );
+   const auto b_view = b.getLocalVectorView();
+   auto x_view = x.getLocalVectorView();
+
+   auto kernel = [=] __cuda_callable__ ( IndexType i ) mutable
+   {
+      x_view[ i ] = b_view[ i ] / diag_view[ i ];
+   };
+
+   ParallelFor< DeviceType >::exec( (IndexType) 0, diagonal.getSize(), kernel );
 }
 
 } // namespace Preconditioners
