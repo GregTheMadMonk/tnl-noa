@@ -31,17 +31,17 @@ else()
                               tnl )
 endif()
 
+ADD_EXECUTABLE( FileNameTest FileNameTest.cpp )
+TARGET_COMPILE_OPTIONS( FileNameTest PRIVATE ${CXX_TESTS_FLAGS} )
+TARGET_LINK_LIBRARIES( FileNameTest ${GTEST_BOTH_LIBRARIES} tnl )
+
 ADD_EXECUTABLE( StringTest StringTest.cpp )
 TARGET_COMPILE_OPTIONS( StringTest PRIVATE ${CXX_TESTS_FLAGS} )
-TARGET_LINK_LIBRARIES( StringTest
-                           ${GTEST_BOTH_LIBRARIES}
-                           tnl )
+TARGET_LINK_LIBRARIES( StringTest ${GTEST_BOTH_LIBRARIES} tnl )
 
 ADD_EXECUTABLE( ObjectTest ObjectTest.cpp )
 TARGET_COMPILE_OPTIONS( ObjectTest PRIVATE ${CXX_TESTS_FLAGS} )
-TARGET_LINK_LIBRARIES( ObjectTest
-                           ${GTEST_BOTH_LIBRARIES} 
-                           tnl )
+TARGET_LINK_LIBRARIES( ObjectTest ${GTEST_BOTH_LIBRARIES} tnl )
 
 ADD_EXECUTABLE( SaveAndLoadMeshfunctionTest SaveAndLoadMeshfunctionTest.cpp )
 TARGET_COMPILE_OPTIONS( SaveAndLoadMeshfunctionTest PRIVATE ${CXX_TESTS_FLAGS} )
