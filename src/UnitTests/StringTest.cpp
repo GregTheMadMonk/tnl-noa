@@ -284,6 +284,23 @@ TEST( StringTest, SaveLoad )
 
    EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
 };
+
+TEST( StringTest, getLine )
+{
+   std::stringstream str;
+   str << "Line 1" << std::endl;
+   str << "Line 2" << std::endl;
+   str.seekg( 0 );
+
+   String s;
+
+   s.getLine( str );
+   EXPECT_EQ( s, "Line 1" );
+
+   s.getLine( str );
+   EXPECT_EQ( s, "Line 2" );
+};
+
 #endif
 
 
