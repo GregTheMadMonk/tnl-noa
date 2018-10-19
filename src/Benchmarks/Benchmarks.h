@@ -16,10 +16,17 @@
 #include <iomanip>
 #include <map>
 #include <vector>
+#include <exception>
+#include <limits>
 
 #include <TNL/Timer.h>
 #include <TNL/String.h>
 #include <TNL/Solvers/IterativeSolverMonitor.h>
+
+#include <TNL/Devices/Host.h>
+#include <TNL/Devices/SystemInfo.h>
+#include <TNL/Devices/CudaDeviceInfo.h>
+#include <TNL/Communicators/MpiCommunicator.h>
 
 namespace TNL {
 namespace Benchmarks {
@@ -64,7 +71,7 @@ timeFunction( ComputeFunction compute,
       timer.stop();
    }
 
-   return timer.getRealTime();
+   return timer.getRealTime() / loops;
 }
 
 
@@ -75,8 +82,8 @@ public:
    using MetadataMap = std::map< const char*, String >;
    using MetadataColumns = std::vector<MetadataElement>;
 
-   using HeaderElements = std::initializer_list< String >;
-   using RowElements = std::initializer_list< double >;
+   using HeaderElements = std::vector< String >;
+   using RowElements = std::vector< double >;
 
    Logging( bool verbose = true )
    : verbose(verbose)
@@ -109,8 +116,6 @@ public:
    writeTableHeader( const String & spanningElement,
                      const HeaderElements & subElements )
    {
-      using namespace std;
-
       if( verbose && header_changed ) {
          for( auto & it : metadataColumns ) {
             std::cout << std::setw( 20 ) << it.first;
@@ -163,8 +168,6 @@ public:
    writeTableRow( const String & spanningElement,
                   const RowElements & subElements )
    {
-      using namespace std;
-
       if( verbose ) {
          for( auto & it : metadataColumns ) {
             std::cout << std::setw( 20 ) << it.second;
@@ -278,6 +281,27 @@ protected:
 };
 
 
+struct BenchmarkResult
+{
+   using HeaderElements = Logging::HeaderElements;
+   using RowElements = Logging::RowElements;
+
+   double bandwidth = std::numeric_limits<double>::quiet_NaN();
+   double time = std::numeric_limits<double>::quiet_NaN();
+   double speedup = std::numeric_limits<double>::quiet_NaN();
+
+   virtual HeaderElements getTableHeader() const
+   {
+      return HeaderElements({"bandwidth", "time", "speedup"});
+   }
+
+   virtual RowElements getRowElements() const
+   {
+      return RowElements({ bandwidth, time, speedup });
+   }
+};
+
+
 class Benchmark
 : protected Logging
 {
@@ -305,7 +329,6 @@ public:
    {
       closeTable();
       writeTitle( title );
-      monitor.setStage( title.getString() );
    }
 
    // Marks the start of a new benchmark (with custom metadata)
@@ -315,7 +338,6 @@ public:
    {
       closeTable();
       writeTitle( title );
-      monitor.setStage( title.getString() );
       // add loops to metadata
       metadata["loops"] = String(loops);
       writeMetadata( metadata );
@@ -342,6 +364,7 @@ public:
                  const double datasetSize = 0.0, // in GB
                  const double baseTime = 0.0 )
    {
+      monitor.setStage( operation.getString() );
       if( metadataColumns.size() > 0 && String(metadataColumns[ 0 ].first) == "operation" ) {
          metadataColumns[ 0 ].second = operation;
       }
@@ -393,43 +416,45 @@ public:
    double
    time( ResetFunction reset,
          const String & performer,
-         ComputeFunction & compute )
+         ComputeFunction & compute,
+         BenchmarkResult & result )
    {
-      double time;
-      if( verbose ) {
-         // run the monitor main loop
-         Solvers::SolverMonitorThread monitor_thread( monitor );
-         time = timeFunction( compute, reset, loops, monitor );
+      result.time = std::numeric_limits<double>::quiet_NaN();
+      try {
+         if( verbose ) {
+            // run the monitor main loop
+            Solvers::SolverMonitorThread monitor_thread( monitor );
+            result.time = timeFunction( compute, reset, loops, monitor );
+         }
+         else {
+            result.time = timeFunction( compute, reset, loops, monitor );
+         }
       }
-      else {
-         time = timeFunction( compute, reset, loops, monitor );
+      catch ( const std::exception& e ) {
+         std::cerr << "timeFunction failed due to a C++ exception with description: " << e.what() << std::endl;
       }
 
-      const double bandwidth = datasetSize / time;
-      const double speedup = this->baseTime / time;
+      result.bandwidth = datasetSize / result.time;
+      result.speedup = this->baseTime / result.time;
       if( this->baseTime == 0.0 )
-         this->baseTime = time;
+         this->baseTime = result.time;
 
-      writeTableHeader( performer, HeaderElements({"bandwidth", "time", "speedup"}) );
-      writeTableRow( performer, RowElements({ bandwidth, time, speedup }) );
+      writeTableHeader( performer, result.getTableHeader() );
+      writeTableRow( performer, result.getRowElements() );
 
       return this->baseTime;
    }
 
-   // Recursive template function to deal with multiple computations with the
-   // same reset function.
    template< typename ResetFunction,
              typename ComputeFunction,
              typename... NextComputations >
    inline double
    time( ResetFunction reset,
          const String & performer,
-         ComputeFunction & compute,
-         NextComputations & ... nextComputations )
+         ComputeFunction & compute )
    {
-      time( reset, performer, compute );
-      time( reset, nextComputations... );
-      return this->baseTime;
+      BenchmarkResult result;
+      return time( reset, performer, compute, result );
    }
 
    // Adds an error message to the log. Should be called in places where the
@@ -445,12 +470,62 @@ public:
 
    using Logging::save;
 
+   Solvers::IterativeSolverMonitor< double, int >&
+   getMonitor()
+   {
+      return monitor;
+   }
+
 protected:
    int loops;
    double datasetSize = 0.0;
    double baseTime = 0.0;
    Solvers::IterativeSolverMonitor< double, int > monitor;
 };
+
+
+Benchmark::MetadataMap getHardwareMetadata()
+{
+   const int cpu_id = 0;
+   Devices::CacheSizes cacheSizes = Devices::SystemInfo::getCPUCacheSizes( cpu_id );
+   String cacheInfo = String( cacheSizes.L1data ) + ", "
+                       + String( cacheSizes.L1instruction ) + ", "
+                       + String( cacheSizes.L2 ) + ", "
+                       + String( cacheSizes.L3 );
+#ifdef HAVE_CUDA
+   const int activeGPU = Devices::CudaDeviceInfo::getActiveDevice();
+   const String deviceArch = String( Devices::CudaDeviceInfo::getArchitectureMajor( activeGPU ) ) + "." +
+                             String( Devices::CudaDeviceInfo::getArchitectureMinor( activeGPU ) );
+#endif
+   Benchmark::MetadataMap metadata {
+       { "host name", Devices::SystemInfo::getHostname() },
+       { "architecture", Devices::SystemInfo::getArchitecture() },
+       { "system", Devices::SystemInfo::getSystemName() },
+       { "system release", Devices::SystemInfo::getSystemRelease() },
+       { "start time", Devices::SystemInfo::getCurrentTime() },
+#ifdef HAVE_MPI
+       { "number of MPI processes", Communicators::MpiCommunicator::GetSize( Communicators::MpiCommunicator::AllGroup ) },
+#endif
+       { "OpenMP enabled", Devices::Host::isOMPEnabled() },
+       { "OpenMP threads", Devices::Host::getMaxThreadsCount() },
+       { "CPU model name", Devices::SystemInfo::getCPUModelName( cpu_id ) },
+       { "CPU cores", Devices::SystemInfo::getNumberOfCores( cpu_id ) },
+       { "CPU threads per core", Devices::SystemInfo::getNumberOfThreads( cpu_id ) / Devices::SystemInfo::getNumberOfCores( cpu_id ) },
+       { "CPU max frequency (MHz)", Devices::SystemInfo::getCPUMaxFrequency( cpu_id ) / 1e3 },
+       { "CPU cache sizes (L1d, L1i, L2, L3) (kiB)", cacheInfo },
+#ifdef HAVE_CUDA
+       { "GPU name", Devices::CudaDeviceInfo::getDeviceName( activeGPU ) },
+       { "GPU architecture", deviceArch },
+       { "GPU CUDA cores", Devices::CudaDeviceInfo::getCudaCores( activeGPU ) },
+       { "GPU clock rate (MHz)", (double) Devices::CudaDeviceInfo::getClockRate( activeGPU ) / 1e3 },
+       { "GPU global memory (GB)", (double) Devices::CudaDeviceInfo::getGlobalMemory( activeGPU ) / 1e9 },
+       { "GPU memory clock rate (MHz)", (double) Devices::CudaDeviceInfo::getMemoryClockRate( activeGPU ) / 1e3 },
+       { "GPU memory ECC enabled", Devices::CudaDeviceInfo::getECCEnabled( activeGPU ) },
+#endif
+   };
+
+   return metadata;
+}
 
 } // namespace Benchmarks
 } // namespace TNL

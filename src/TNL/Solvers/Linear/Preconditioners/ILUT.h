@@ -64,15 +64,28 @@ public:
 
    virtual void update( const MatrixPointer& matrixPointer ) override;
 
-   virtual bool solve( ConstVectorViewType b, VectorViewType x ) const override;
+   virtual void solve( ConstVectorViewType b, VectorViewType x ) const override;
 
 protected:
    Index p = 0;
    Real tau = 1e-4;
 
    // The factors L and U are stored separately and the rows of U are reversed.
-   Matrices::CSR< RealType, DeviceType, IndexType > L;
-   Matrices::CSR< RealType, DeviceType, IndexType > U;
+   Matrices::CSR< RealType, DeviceType, IndexType > L, U;
+
+   // Specialized methods to distinguish between normal and distributed matrices
+   // in the implementation.
+   template< typename M >
+   static IndexType getMinColumn( const M& m )
+   {
+      return 0;
+   }
+
+   template< typename M >
+   static IndexType getMinColumn( const DistributedContainers::DistributedMatrix< M >& m )
+   {
+      return m.getLocalRowRange().getBegin();
+   }
 };
 
 template< typename Matrix, typename Real, typename Index >
@@ -92,7 +105,7 @@ public:
       throw std::runtime_error("Not Iplemented yet for CUDA");
    }
 
-   virtual bool solve( ConstVectorViewType b, VectorViewType x ) const override
+   virtual void solve( ConstVectorViewType b, VectorViewType x ) const override
    {
       throw std::runtime_error("Not Iplemented yet for CUDA");
    }
@@ -115,7 +128,7 @@ public:
       throw std::runtime_error("Not Iplemented yet for MIC");
    }
 
-   virtual bool solve( ConstVectorViewType b, VectorViewType x ) const override
+   virtual void solve( ConstVectorViewType b, VectorViewType x ) const override
    {
       throw std::runtime_error("Not Iplemented yet for MIC");
    }

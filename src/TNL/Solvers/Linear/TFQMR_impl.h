@@ -29,7 +29,7 @@ String TFQMR< Matrix > :: getType() const
 template< typename Matrix >
 bool TFQMR< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
 {
-   this->setSize( this->matrix->getRows() );
+   this->setSize( x );
 
    RealType tau, theta, eta, rho, alpha, b_norm, w_norm;
 
@@ -129,19 +129,16 @@ bool TFQMR< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
 }
 
 template< typename Matrix >
-void TFQMR< Matrix > :: setSize( IndexType size )
+void TFQMR< Matrix > :: setSize( const VectorViewType& x )
 {
-   if( this->size == size )
-      return;
-   this->size = size;
-   d.setSize( size );
-   r.setSize( size );
-   w.setSize( size );
-   u.setSize( size );
-   v.setSize( size );
-   r_ast.setSize( size );
-   Au.setSize( size );
-   M_tmp.setSize( size );
+   d.setLike( x );
+   r.setLike( x );
+   w.setLike( x );
+   u.setLike( x );
+   v.setLike( x );
+   r_ast.setLike( x );
+   Au.setLike( x );
+   M_tmp.setLike( x );
 }
 
 } // namespace Linear

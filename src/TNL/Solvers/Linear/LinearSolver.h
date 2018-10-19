@@ -17,8 +17,9 @@
 
 #include <TNL/Solvers/IterativeSolver.h>
 #include <TNL/Solvers/Linear/Preconditioners/Preconditioner.h>
-#include <TNL/Containers/VectorView.h>
 #include <TNL/Pointers/SharedPointer.h>
+
+#include "Traits.h"
 
 namespace TNL {
 namespace Solvers {
@@ -32,8 +33,8 @@ public:
    using RealType = typename Matrix::RealType;
    using DeviceType = typename Matrix::DeviceType;
    using IndexType = typename Matrix::IndexType;
-   using VectorViewType = Containers::VectorView< RealType, DeviceType, IndexType >;
-   using ConstVectorViewType = Containers::VectorView< typename std::add_const< RealType >::type, DeviceType, IndexType >;
+   using VectorViewType = typename Traits< Matrix >::VectorViewType;
+   using ConstVectorViewType = typename Traits< Matrix >::ConstVectorViewType;
    using MatrixType = Matrix;
    using MatrixPointer = Pointers::SharedPointer< typename std::add_const< MatrixType >::type >;
    using PreconditionerType = Preconditioners::Preconditioner< MatrixType >;

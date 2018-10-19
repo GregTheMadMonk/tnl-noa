@@ -308,6 +308,14 @@ TEST( StringTest, split )
    String( "abracadabra" ).split( list, 'A' );
    ASSERT_EQ( list.getSize(), 1 );
    EXPECT_EQ( list[ 0 ], "abracadabra" );
+
+   /// !!!!
+   String( "a,,b,c" ).split( list, ',' );
+   ASSERT_EQ( list.getSize(), 4 );
+   EXPECT_EQ( list[ 0 ], "a" );
+   EXPECT_EQ( list[ 1 ], "" );
+   EXPECT_EQ( list[ 2 ], "b" );
+   EXPECT_EQ( list[ 3 ], "c" );
 }
 
 TEST( StringTest, SaveLoad )
@@ -324,6 +332,23 @@ TEST( StringTest, SaveLoad )
 
    EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
 };
+
+TEST( StringTest, getLine )
+{
+   std::stringstream str;
+   str << "Line 1" << std::endl;
+   str << "Line 2" << std::endl;
+   str.seekg( 0 );
+
+   String s;
+
+   s.getLine( str );
+   EXPECT_EQ( s, "Line 1" );
+
+   s.getLine( str );
+   EXPECT_EQ( s, "Line 2" );
+};
+
 #endif
 
 

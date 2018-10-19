@@ -37,9 +37,9 @@ option(WITH_TEMPLATES_INSTANTIATION "Enable explicit template instantiation" OFF
 set( TNL_TARGET_INCLUDE_DIRECTORY "include/TNL" )
 set( TNL_TARGET_DATA_DIRECTORY "share/TNL" )
 
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
-
-include( OptimizeForArchitecture )
+# set cmake's include path so that we can include modules from
+# the cmake directory in the TNL repository
+set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
 
 # Note that in cmake 3.10 the FindOpenMP module is broken - it does not work when
 # CMAKE_EXECUTABLE_SUFFIX is not empty, see https://www.mail-archive.com/cmake@cmake.org/msg56886.html
@@ -93,9 +93,12 @@ set( CMAKE_SHARED_LINKER_FLAGS "" )
 set( CMAKE_SHARED_LINKER_FLAGS_DEBUG "-rdynamic" )
 set( CMAKE_SHARED_LINKER_FLAGS_RELEASE "" )
 
-get_filename_component( CXX_COMPILER_NAME ${CMAKE_CXX_COMPILER} NAME )
-if( CXX_COMPILER_NAME MATCHES "icpc" )
-   message( "Intel compiler detected..."    )
+# disable GCC's infamous "maybe-uninitialized" warning (it produces mostly false positives)
+if( CMAKE_CXX_COMPILER_ID STREQUAL "GNU" )
+   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-maybe-uninitialized" )
+endif()
+
+if( CMAKE_CXX_COMPILER_ID STREQUAL "Intel" )
    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_ICPC -wd2568 -wd2571 -wd2570")
    #####
    #  Check for MIC
@@ -124,6 +127,7 @@ endif()
 #####
 # Check for MPI -- poznej podle vraperu compileru -- da se testovat preklad bez MPI
 #
+get_filename_component( CXX_COMPILER_NAME ${CMAKE_CXX_COMPILER} NAME )
 if( ${CXX_COMPILER_NAME} STREQUAL "mpicxx" )
    message( "MPI compiler detected."    )
    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_MPI" )
@@ -240,7 +244,6 @@ endif()
 # Check for OpenMP
 #
 if( OPENMP_FOUND AND ${WITH_OPENMP} )
-   message( "Enabled OpenMP support." )
    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_OPENMP ${OpenMP_CXX_FLAGS}" )
 endif()
 
@@ -454,19 +457,19 @@ INCLUDE( CPack )
 
 # Print custom build options
 message( "-- Build options:" )
-message( "   OFFLINE_BUILD=${OFFLINE_BUILD}" )
-message( "   WITH_MIC=${WITH_MIC}" )
-message( "   WITH_CUDA=${WITH_CUDA}" )
-message( "   WITH_CUDA_ARCH=${WITH_CUDA_ARCH}" )
-message( "   WITH_OPENMP=${WITH_OPENMP}" )
-message( "   WITH_GMP=${WITH_GMP}" )
-message( "   WITH_TESTS=${WITH_TESTS}" )
-message( "   WITH_COVERAGE=${WITH_COVERAGE}" )
-message( "   WITH_EXAMPLES=${WITH_EXAMPLES}" )
-message( "   WITH_TOOLS=${WITH_TOOLS}" )
-message( "   WITH_BENCHMARKS=${WITH_BENCHMARKS}" )
-message( "   WITH_PYTHON=${WITH_PYTHON}" )
-message( "   WITH_TEMPLATES_INSTANTIATION=${WITH_TEMPLATES_INSTANTIATION}" )
+message( "   OFFLINE_BUILD = ${OFFLINE_BUILD}" )
+message( "   WITH_MIC = ${WITH_MIC}" )
+message( "   WITH_CUDA = ${WITH_CUDA}" )
+message( "   WITH_CUDA_ARCH = ${WITH_CUDA_ARCH}" )
+message( "   WITH_OPENMP = ${WITH_OPENMP}" )
+message( "   WITH_GMP = ${WITH_GMP}" )
+message( "   WITH_TESTS = ${WITH_TESTS}" )
+message( "   WITH_COVERAGE = ${WITH_COVERAGE}" )
+message( "   WITH_EXAMPLES = ${WITH_EXAMPLES}" )
+message( "   WITH_TOOLS = ${WITH_TOOLS}" )
+message( "   WITH_BENCHMARKS = ${WITH_BENCHMARKS}" )
+message( "   WITH_PYTHON = ${WITH_PYTHON}" )
+message( "   WITH_TEMPLATES_INSTANTIATION = ${WITH_TEMPLATES_INSTANTIATION}" )
 # Print compiler options
 message( "-- Compiler options:" )
 message( "   CMAKE_CXX_FLAGS = ${CMAKE_CXX_FLAGS}" )

@@ -12,12 +12,11 @@
 
 #pragma once
 
-#include <type_traits>
-
 #include "Preconditioner.h"
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Matrices/CSR.h>
+#include <TNL/Pointers/UniquePointer.h>
 
 #if defined(HAVE_CUDA) && defined(HAVE_CUSPARSE)
 #include <cusparse.h>
@@ -59,11 +58,25 @@ public:
 
    virtual void update( const MatrixPointer& matrixPointer ) override;
 
-   virtual bool solve( ConstVectorViewType b, VectorViewType x ) const override;
+   virtual void solve( ConstVectorViewType b, VectorViewType x ) const override;
 
 protected:
-   Matrices::CSR< RealType, DeviceType, IndexType > L;
-   Matrices::CSR< RealType, DeviceType, IndexType > U;
+   // The factors L and U are stored separately and the rows of U are reversed.
+   Matrices::CSR< RealType, DeviceType, IndexType > L, U;
+
+   // Specialized methods to distinguish between normal and distributed matrices
+   // in the implementation.
+   template< typename M >
+   static IndexType getMinColumn( const M& m )
+   {
+      return 0;
+   }
+
+   template< typename M >
+   static IndexType getMinColumn( const DistributedContainers::DistributedMatrix< M >& m )
+   {
+      return m.getLocalRowRange().getBegin();
+   }
 };
 
 template< typename Matrix >
@@ -87,7 +100,7 @@ public:
 
    virtual void update( const MatrixPointer& matrixPointer ) override;
 
-   virtual bool solve( ConstVectorViewType b, VectorViewType x ) const override;
+   virtual void solve( ConstVectorViewType b, VectorViewType x ) const override;
 
    ~ILU0_impl()
    {
@@ -97,9 +110,14 @@ public:
 #endif
    }
 
+   // must be public because nvcc does not allow extended lambdas in private or protected regions
+   void allocate_LU();
+   void copy_triangular_factors();
 protected:
+
 #if defined(HAVE_CUDA) && defined(HAVE_CUSPARSE)
-   Matrices::CSR< RealType, DeviceType, IndexType > A;
+   using CSR = Matrices::CSR< RealType, DeviceType, IndexType >;
+   Pointers::UniquePointer< CSR > A, L, U;
    Containers::Vector< RealType, DeviceType, IndexType > y;
 
    cusparseHandle_t handle;
@@ -114,6 +132,9 @@ protected:
    const cusparseSolvePolicy_t policy_A = CUSPARSE_SOLVE_POLICY_USE_LEVEL;
    const cusparseSolvePolicy_t policy_L = CUSPARSE_SOLVE_POLICY_USE_LEVEL;
    const cusparseSolvePolicy_t policy_U = CUSPARSE_SOLVE_POLICY_USE_LEVEL;
+//   const cusparseSolvePolicy_t policy_A = CUSPARSE_SOLVE_POLICY_NO_LEVEL;
+//   const cusparseSolvePolicy_t policy_L = CUSPARSE_SOLVE_POLICY_NO_LEVEL;
+//   const cusparseSolvePolicy_t policy_U = CUSPARSE_SOLVE_POLICY_NO_LEVEL;
    const cusparseOperation_t trans_L  = CUSPARSE_OPERATION_NON_TRANSPOSE;
    const cusparseOperation_t trans_U  = CUSPARSE_OPERATION_NON_TRANSPOSE;
 
@@ -150,25 +171,31 @@ protected:
       }
       pBuffer.reset();
    }
-
-   // TODO: extend Matrices::copySparseMatrix accordingly
-   template< typename MatrixT,
-             typename = typename std::enable_if< ! std::is_same< DeviceType, typename MatrixT::DeviceType >::value >::type >
-   void copyMatrix( const MatrixT& matrix )
-   {
-      typename MatrixT::CudaType A_tmp;
-      A_tmp = matrix;
-      Matrices::copySparseMatrix( A, A_tmp );
-   }
-
-   template< typename MatrixT,
-             typename = typename std::enable_if< std::is_same< DeviceType, typename MatrixT::DeviceType >::value >::type,
-             typename = void >
-   void copyMatrix( const MatrixT& matrix )
-   {
-      Matrices::copySparseMatrix( A, matrix );
-   }
 #endif
+};
+
+template< typename Matrix, typename Communicator >
+class ILU0_impl< DistributedContainers::DistributedMatrix< Matrix, Communicator >, double, Devices::Cuda, int >
+: public Preconditioner< DistributedContainers::DistributedMatrix< Matrix, Communicator > >
+{
+   using MatrixType = DistributedContainers::DistributedMatrix< Matrix, Communicator >;
+public:
+   using RealType = double;
+   using DeviceType = Devices::Cuda;
+   using IndexType = int;
+   using typename Preconditioner< MatrixType >::VectorViewType;
+   using typename Preconditioner< MatrixType >::ConstVectorViewType;
+   using typename Preconditioner< MatrixType >::MatrixPointer;
+
+   virtual void update( const MatrixPointer& matrixPointer ) override
+   {
+      throw std::runtime_error("ILU0 is not implemented yet for CUDA and distributed matrices.");
+   }
+
+   virtual void solve( ConstVectorViewType b, VectorViewType x ) const override
+   {
+      throw std::runtime_error("ILU0 is not implemented yet for CUDA and distributed matrices.");
+   }
 };
 
 template< typename Matrix, typename Real, typename Index >
@@ -188,7 +215,7 @@ public:
       throw std::runtime_error("Not Iplemented yet for MIC");
    }
 
-   virtual bool solve( ConstVectorViewType b, VectorViewType x ) const override
+   virtual void solve( ConstVectorViewType b, VectorViewType x ) const override
    {
       throw std::runtime_error("Not Iplemented yet for MIC");
    }

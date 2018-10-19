@@ -21,7 +21,7 @@ TODO:
  - implementovat tuple pro snazsi a snad efektivnejsi prenos dat na GPU
  - nebylo by nutne definovat pomocne datove structury pro traverser
  - data by se na hostu preskupila do souvisleho bloku dat a ten se prenesl najednou
-
+ - JK: tohle je zbytecny resit, od toho je lambda capture - staci prepsat traversery obecne pomoci ParallelFor
 
 TODO: CUDA unified memory
  - pretizit operator new s cudaMallocManaged, pak by bylo mozne vytvaret CUDA objekty pristupne pro host a device
@@ -33,17 +33,18 @@ se s nimi pracovat postaru
 
 
 TODO: implementace maticovych resicu
-      * Gaussova eliminace
-      * SOR metoda
-      * Jacobiho metoda
-      * IDR metody 
+ - Gaussova eliminace
+ - IDR metody
+existujici solvery ktere je treba dodelat
+ - CG (nema predpodmineni, otestovat)
+ - SOR, jacobi (nejsou paralelni, otestovat ze funguji pro vsechny typy matic)
 
 TODO: Nahradit sablonovy parametr dimenze sitove entity za typ entity. Pak by se mohlo zkusit, napriklad u gridu
       odvozovat entity, ktere obsahuji predpocitane indexy pro dopredne, zpetne, nebo centralni diference. Uzivatel
       by si mohl definovat vlastni entity. Mohlo by to zvysit efektivitu.
       U nestrukturovanych siti by se do entit mohly doplnovat ukazatele na struktury s dalsimi informacemi jako 
-      objemy nebo delky entyt apod.
-      za tim ucelem nahradit setIndex v grdi entity za update(), aby to bylo obecnejsi
+      objemy nebo delky entit apod.
+      za tim ucelem nahradit setIndex v grid entity za update(), aby to bylo obecnejsi
 
-TODO: metodu pro tnlString pro nahrazeni napr. podretezce XXXXX indexem 00001 tj. uXXXXX.bin -> u00001.bin
+TODO: metodu pro String pro nahrazeni napr. podretezce XXXXX indexem 00001 tj. uXXXXX.bin -> u00001.bin
       to by melo byt robustnejsi, nez doposavadni pristup 

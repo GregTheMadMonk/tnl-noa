@@ -48,7 +48,7 @@ setup( const Config::ParameterContainer& parameters,
 template< typename Matrix >
 bool BICGStab< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
 {
-   this->setSize( this->matrix->getRows() );
+   this->setSize( x );
 
    RealType alpha, beta, omega, aux, rho, rho_old, b_norm;
 
@@ -161,15 +161,15 @@ bool BICGStab< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
 }
 
 template< typename Matrix >
-void BICGStab< Matrix > :: setSize( IndexType size )
+void BICGStab< Matrix > :: setSize( const VectorViewType& x )
 {
-   r.setSize( size );
-   r_ast.setSize( size );
-   p.setSize( size );
-   s.setSize( size );
-   Ap.setSize( size );
-   As.setSize( size );
-   M_tmp.setSize( size );
+   r.setLike( x );
+   r_ast.setLike( x );
+   p.setLike( x );
+   s.setLike( x );
+   Ap.setLike( x );
+   As.setLike( x );
+   M_tmp.setLike( x );
 }
 
 } // namespace Linear

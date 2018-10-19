@@ -179,7 +179,7 @@ reduce( Operation& operation,
    typedef typename Operation::DataType2 DataType2;
    typedef typename Operation::ResultType ResultType;
 
-   const int block_size = 128;
+   constexpr int block_size = 128;
    const int blocks = size / block_size;
 
 #ifdef HAVE_OPENMP
@@ -194,17 +194,23 @@ reduce( Operation& operation,
       }
 
       // initialize array for thread-local results
-      ResultType r[ n ];
-      for( int k = 0; k < n; k++ )
+      // (it is accessed as a row-major matrix with n rows and 4 columns)
+      ResultType r[ n * 4 ];
+      for( int k = 0; k < n * 4; k++ )
          r[ k ] = operation.initialValue();
 
       #pragma omp for nowait
       for( int b = 0; b < blocks; b++ ) {
-         const int offset = b * block_size;
+         const IndexType offset = b * block_size;
          for( int k = 0; k < n; k++ ) {
             const DataType1* _input1 = input1 + k * ldInput1;
-            for( IndexType i = 0; i < block_size; i++ )
-               operation.firstReduction( r[ k ], offset + i, _input1, input2 );
+            ResultType* _r = r + 4 * k;
+            for( int i = 0; i < block_size; i += 4 ) {
+               operation.firstReduction( _r[ 0 ], offset + i,     _input1, input2 );
+               operation.firstReduction( _r[ 1 ], offset + i + 1, _input1, input2 );
+               operation.firstReduction( _r[ 2 ], offset + i + 2, _input1, input2 );
+               operation.firstReduction( _r[ 3 ], offset + i + 3, _input1, input2 );
+            }
          }
       }
 
@@ -213,36 +219,88 @@ reduce( Operation& operation,
       {
          for( int k = 0; k < n; k++ ) {
             const DataType1* _input1 = input1 + k * ldInput1;
+            ResultType* _r = r + 4 * k;
             for( IndexType i = blocks * block_size; i < size; i++ )
-               operation.firstReduction( r[ k ], i, _input1, input2 );
+               operation.firstReduction( _r[ 0 ], i, _input1, input2 );
          }
+      }
+
+      // local reduction of unrolled results
+      for( int k = 0; k < n; k++ ) {
+         ResultType* _r = r + 4 * k;
+         operation.commonReduction( _r[ 0 ], _r[ 1 ] );
+         operation.commonReduction( _r[ 0 ], _r[ 2 ] );
+         operation.commonReduction( _r[ 0 ], _r[ 3 ] );
       }
 
       // inter-thread reduction of local results
       #pragma omp critical
       {
          for( int k = 0; k < n; k++ )
-            operation.commonReduction( result[ k ], r[ k ] );
+            operation.commonReduction( result[ k ], r[ 4 * k ] );
       }
    }
    else {
 #endif
-      for( int k = 0; k < n; k++ )
-         result[ k ] = operation.initialValue();
+      if( blocks > 1 ) {
+         // initialize array for unrolled results
+         // (it is accessed as a row-major matrix with n rows and 4 columns)
+         ResultType r[ n * 4 ];
+         for( int k = 0; k < n * 4; k++ )
+            r[ k ] = operation.initialValue();
 
-      for( int b = 0; b < blocks; b++ ) {
-         const int offset = b * block_size;
+         // main reduction (explicitly unrolled loop)
+         for( int b = 0; b < blocks; b++ ) {
+            const IndexType offset = b * block_size;
+            for( int k = 0; k < n; k++ ) {
+               const DataType1* _input1 = input1 + k * ldInput1;
+               ResultType* _r = r + 4 * k;
+               for( int i = 0; i < block_size; i += 4 ) {
+                  operation.firstReduction( _r[ 0 ], offset + i,     _input1, input2 );
+                  operation.firstReduction( _r[ 1 ], offset + i + 1, _input1, input2 );
+                  operation.firstReduction( _r[ 2 ], offset + i + 2, _input1, input2 );
+                  operation.firstReduction( _r[ 3 ], offset + i + 3, _input1, input2 );
+               }
+            }
+         }
+
+         // reduction of the last, incomplete block (not unrolled)
          for( int k = 0; k < n; k++ ) {
             const DataType1* _input1 = input1 + k * ldInput1;
-            for( IndexType i = 0; i < block_size; i++ )
-               operation.firstReduction( result[ k ], offset + i, _input1, input2 );
+            ResultType* _r = r + 4 * k;
+            for( IndexType i = blocks * block_size; i < size; i++ )
+               operation.firstReduction( _r[ 0 ], i, _input1, input2 );
+         }
+
+         // reduction of unrolled results
+         for( int k = 0; k < n; k++ ) {
+            ResultType* _r = r + 4 * k;
+            operation.commonReduction( _r[ 0 ], _r[ 1 ] );
+            operation.commonReduction( _r[ 0 ], _r[ 2 ] );
+            operation.commonReduction( _r[ 0 ], _r[ 3 ] );
+
+            // copy the result into the output parameter
+            result[ k ] = _r[ 0 ];
          }
       }
+      else {
+         for( int k = 0; k < n; k++ )
+            result[ k ] = operation.initialValue();
 
-      for( int k = 0; k < n; k++ ) {
-         const DataType1* _input1 = input1 + k * ldInput1;
-         for( IndexType i = blocks * block_size; i < size; i++ )
-            operation.firstReduction( result[ k ], i, _input1, input2 );
+         for( int b = 0; b < blocks; b++ ) {
+            const IndexType offset = b * block_size;
+            for( int k = 0; k < n; k++ ) {
+               const DataType1* _input1 = input1 + k * ldInput1;
+               for( int i = 0; i < block_size; i++ )
+                  operation.firstReduction( result[ k ], offset + i, _input1, input2 );
+            }
+         }
+
+         for( int k = 0; k < n; k++ ) {
+            const DataType1* _input1 = input1 + k * ldInput1;
+            for( IndexType i = blocks * block_size; i < size; i++ )
+               operation.firstReduction( result[ k ], i, _input1, input2 );
+         }
       }
 #ifdef HAVE_OPENMP
    }

@@ -14,6 +14,8 @@ SET( headers AdEllpack.h
              Multidiagonal_impl.h
              Sparse.h
              Sparse_impl.h
+             SparseOperations.h
+             SparseOperations_impl.h
              Ellpack.h
              Ellpack_impl.h
              SlicedEllpack.h
@@ -39,18 +41,5 @@ SET( headers AdEllpack.h
              MultidiagonalMatrixSetter_impl.h
              MultidiagonalRow.h
              MultidiagonalRow_impl.h  )
-
-SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Matrices )
-set( common_SOURCES  )
-
-SET( tnl_matrices_SOURCES 
-     ${common_SOURCES}
-     PARENT_SCOPE )
-
-if( BUILD_CUDA )
-   SET( tnl_matrices_CUDA__SOURCES 
-        ${common_SOURCES}
-        PARENT_SCOPE )
-endif()
 
 INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Matrices )

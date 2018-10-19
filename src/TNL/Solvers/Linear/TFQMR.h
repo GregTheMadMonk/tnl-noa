@@ -12,8 +12,6 @@
 
 #include "LinearSolver.h"
 
-#include <TNL/Containers/Vector.h>
-
 namespace TNL {
 namespace Solvers {
 namespace Linear {
@@ -35,11 +33,9 @@ public:
    bool solve( ConstVectorViewType b, VectorViewType x ) override;
 
 protected:
-   void setSize( IndexType size );
+   void setSize( const VectorViewType& x );
 
-   Containers::Vector< RealType, DeviceType, IndexType > d, r, w, u, v, r_ast, Au, M_tmp;
-
-   IndexType size = 0;
+   typename Traits< Matrix >::VectorType d, r, w, u, v, r_ast, Au, M_tmp;
 };
 
 } // namespace Linear
