@@ -13,7 +13,6 @@
 #pragma once
 
 #include <ostream>
-
 #include <TNL/Assert.h>
 #include <TNL/String.h>
 #include <TNL/param-types.h>

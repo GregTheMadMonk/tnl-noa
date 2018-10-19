@@ -308,6 +308,14 @@ TEST( StringTest, split )
    String( "abracadabra" ).split( list, 'A' );
    ASSERT_EQ( list.getSize(), 1 );
    EXPECT_EQ( list[ 0 ], "abracadabra" );
+
+   /// !!!!
+   String( "a,,b,c" ).split( list, ',' );
+   ASSERT_EQ( list.getSize(), 4 );
+   EXPECT_EQ( list[ 0 ], "a" );
+   EXPECT_EQ( list[ 1 ], "" );
+   EXPECT_EQ( list[ 2 ], "b" );
+   EXPECT_EQ( list[ 3 ], "c" );
 }
 
 TEST( StringTest, SaveLoad )
