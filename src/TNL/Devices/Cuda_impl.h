@@ -14,6 +14,8 @@
 #include <TNL/Exceptions/CudaBadAlloc.h>
 #include <TNL/Exceptions/CudaSupportMissing.h>
 #include <TNL/CudaSharedMemory.h>
+#include <TNL/Config/ConfigDescription.h>
+#include <TNL/Config/ParameterContainer.h>
 
 namespace TNL {
 namespace Devices {
@@ -158,6 +160,34 @@ template< typename Element >
 __device__ Element* Cuda::getSharedMemory()
 {
    return CudaSharedMemory< Element >();
+}
+
+inline void
+Cuda::configSetup( Config::ConfigDescription& config,
+                   const String& prefix )
+{
+#ifdef HAVE_CUDA
+   config.addEntry< int >( prefix + "cuda-device", "Choose CUDA device to run the computation.", 0 );
+#else
+   config.addEntry< int >( prefix + "cuda-device", "Choose CUDA device to run the computation (not supported on this system).", 0 );
+#endif
+}
+
+inline bool
+Cuda::setup( const Config::ParameterContainer& parameters,
+             const String& prefix )
+{
+#ifdef HAVE_CUDA
+   int cudaDevice = parameters.getParameter< int >( prefix + "cuda-device" );
+   if( cudaSetDevice( cudaDevice ) != cudaSuccess )
+   {
+      std::cerr << "I cannot activate CUDA device number " << cudaDevice << "." << std::endl;
+      return false;
+   }
+   smartPointersSynchronizationTimer.reset();
+   smartPointersSynchronizationTimer.stop();
+#endif
+   return true;
 }
 
 // double-precision atomicAdd function for Maxwell and older GPUs

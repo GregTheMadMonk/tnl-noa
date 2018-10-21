@@ -10,8 +10,6 @@
 
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Math.h>
-#include <TNL/Config/ConfigDescription.h>
-#include <TNL/Config/ParameterContainer.h>
 #include <TNL/Devices/CudaDeviceInfo.h>
 
 namespace TNL {
@@ -35,34 +33,6 @@ int Cuda::getNumberOfGrids( const int blocks,
                             const int gridSize )
 {
    return roundUpDivision( blocks, gridSize );
-}
-
-void Cuda::configSetup( Config::ConfigDescription& config,
-                        const String& prefix )
-{
-// FIXME: HAVE_CUDA is never defined in .cpp files
-#ifdef HAVE_CUDA
-   config.addEntry< int >( prefix + "cuda-device", "Choose CUDA device to run the computation.", 0 );
-#else
-   config.addEntry< int >( prefix + "cuda-device", "Choose CUDA device to run the computation (not supported on this system).", 0 );
-#endif
-}
-
-bool Cuda::setup( const Config::ParameterContainer& parameters,
-                  const String& prefix )
-{
-// FIXME: HAVE_CUDA is never defined in .cpp files
-#ifdef HAVE_CUDA
-   int cudaDevice = parameters.getParameter< int >( prefix + "cuda-device" );
-   if( cudaSetDevice( cudaDevice ) != cudaSuccess )
-   {
-      std::cerr << "I cannot activate CUDA device number " << cudaDevice << "." << std::endl;
-      return false;
-   }
-   smartPointersSynchronizationTimer.reset();
-   smartPointersSynchronizationTimer.stop();
-#endif
-   return true;
 }
 
 void Cuda::insertSmartPointer( SmartPointer* pointer )
