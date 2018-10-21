@@ -8,7 +8,6 @@ set (headers Cuda.h
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Devices )
 set( common_SOURCES
-     ${CURRENT_DIR}/Cuda.cpp
      ${CURRENT_DIR}/Host.cpp 
      ${CURRENT_DIR}/MIC.cpp
      ${CURRENT_DIR}/SystemInfo.cpp )
@@ -16,7 +15,6 @@ set( common_SOURCES
 IF( BUILD_CUDA )
    set( tnl_devices_CUDA__SOURCES
         ${common_SOURCES} 
-        ${CURRENT_DIR}/Cuda.cu
         ${CURRENT_DIR}/CudaDeviceInfo.cu
         PARENT_SCOPE )
 ENDIF()    

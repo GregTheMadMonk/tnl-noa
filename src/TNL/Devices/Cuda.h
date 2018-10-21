@@ -31,7 +31,12 @@ class Cuda
 {
    public:
 
-   static String getDeviceType();
+   static inline String getDeviceType();
+
+   static inline void configSetup( Config::ConfigDescription& config, const String& prefix = "" );
+
+   static inline bool setup( const Config::ParameterContainer& parameters,
+                             const String& prefix = "" );
 
    __cuda_callable__ static inline constexpr int getMaxGridSize();
 
@@ -66,16 +71,16 @@ class Cuda
     * number of the CUDA threads and the block size.
     * It is obsolete and it will be replaced by setupThreads.
     */
-   static int getNumberOfBlocks( const int threads,
-                                 const int blockSize );
+   static inline int getNumberOfBlocks( const int threads,
+                                        const int blockSize );
 
    /****
     * This functions helps to count number of CUDA grids depending on the 
     * number of the CUDA blocks and maximum grid size.
     * It is obsolete and it will be replaced by setupThreads.
     */
-   static int getNumberOfGrids( const int blocks,
-                                const int gridSize = getMaxGridSize() );
+   static inline int getNumberOfGrids( const int blocks,
+                                       const int gridSize = getMaxGridSize() );
    
 #ifdef HAVE_CUDA   
    /*! This method sets up gridSize and computes number of grids depending
@@ -153,29 +158,24 @@ class Cuda
     * of calling cudaGetLastError() inside the method.
     * We recommend to use macro 'TNL_CHECK_CUDA_DEVICE' defined bellow.
     */
-   static void checkDevice( const char* file_name, int line, cudaError error );
+   static inline void checkDevice( const char* file_name, int line, cudaError error );
 #else
-   static void checkDevice() {}
+   static inline void checkDevice() {}
 #endif
-   
-   static void configSetup( Config::ConfigDescription& config, const String& prefix = "" );
-      
-   static bool setup( const Config::ParameterContainer& parameters,
-                      const String& prefix = "" );
-   
-   static void insertSmartPointer( SmartPointer* pointer );
-   
-   static void removeSmartPointer( SmartPointer* pointer );
-   
+
+   static inline void insertSmartPointer( SmartPointer* pointer );
+
+   static inline void removeSmartPointer( SmartPointer* pointer );
+
    // Negative deviceId means that CudaDeviceInfo::getActiveDevice will be
    // called to get the device ID.
-   static bool synchronizeDevice( int deviceId = -1 );
-   
-   static Timer smartPointersSynchronizationTimer;
-   
+   static inline bool synchronizeDevice( int deviceId = -1 );
+
+   static inline Timer& getSmartPointersSynchronizationTimer();
+
    protected:
-   
-   static SmartPointersRegister smartPointersRegister;
+
+   static inline SmartPointersRegister& getSmartPointersRegister();
 };
 
 #ifdef HAVE_CUDA
@@ -185,7 +185,9 @@ class Cuda
 #endif
 
 #ifdef HAVE_CUDA
-std::ostream& operator << ( std::ostream& str, const dim3& d );
+namespace {
+   std::ostream& operator << ( std::ostream& str, const dim3& d );
+}
 #endif
 
 #ifdef HAVE_CUDA
