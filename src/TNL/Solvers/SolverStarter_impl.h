@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include <TNL/tnlConfig.h>
 #include <TNL/Logger.h>
 #include <TNL/String.h>
 #include <TNL/Devices/Cuda.h>

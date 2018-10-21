@@ -24,7 +24,7 @@ SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Images )
 # DCMTK currently does not support shared libraries. When it does _impl.h files
 # could be replaced with .cpp and DCMTK might be link with TNL.
 #
-if( HAVE_DCMTK )
+if( DCMTK_FOUND )
     set( common_SOURCES )       
 else()
    set( common_SOURCES )

@@ -16,7 +16,6 @@
 #include <sys/utsname.h>
 #include <sys/stat.h>
 
-#include <TNL/tnlConfig.h>
 #include <TNL/Devices/SystemInfo.h>
 #include <TNL/Logger.h>
 
@@ -252,7 +251,7 @@ size_t SystemInfo::getFreeMemory()
    long pages = sysconf(_SC_PHYS_PAGES);
    long page_size = sysconf(_SC_PAGE_SIZE);
    return pages * page_size;
-};
+}
 
 } // namespace Devices
 } // namespace TNL

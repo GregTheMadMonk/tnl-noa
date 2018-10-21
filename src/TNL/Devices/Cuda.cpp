@@ -10,7 +10,6 @@
 
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Math.h>
-#include <TNL/tnlConfig.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Devices/CudaDeviceInfo.h>

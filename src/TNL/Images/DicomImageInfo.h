@@ -13,8 +13,6 @@
 
 #pragma once
 
-#include <TNL/tnlConfig.h>
-
 #ifdef HAVE_DCMTK_H
 #define HAVE_CONFIG_H
 #include <dcmtk/dcmdata/dcfilefo.h>
