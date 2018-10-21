@@ -6,7 +6,6 @@ SET( headers
      ConfigDelimiter.h
      ConfigDescription.h     	    
      ParameterContainer.h
-     DefaultBasicTypesChecker.h 
     )
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Config )
