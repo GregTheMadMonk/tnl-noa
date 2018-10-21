@@ -309,33 +309,6 @@ if( ${WITH_GMP} )
    endif()
 endif()
 
-####
-# Check for some system header
-#
-find_path( SYS_RESOURCE_INCLUDE_DIR sys/resource.h
-           /usr/include/x86_64-linux-gnu
-           /usr/include  
-           DOC "System resources headers." )
-if( ${SYS_RESOURCE_INCLUDE_DIR} STREQUAL "SYS_RESOURCE_INCLUDE_DIR-NOTFOUND" )
-    message( "Missing header file sys/time.h" )
-    set( HAVE_SYS_RESOURCE_H "//#define HAVE_SYS_RESOURCE_H 1" )
-else()
-    #include_directories( ${SYS_RESOURCE_INCLUDE_DIR} )
-    set( HAVE_SYS_RESOURCE_H "#define HAVE_SYS_RESOURCE_H 1" )
-endif()
-
-find_path( SYS_IOCTL_INCLUDE_DIR sys/ioctl.h
-           /usr/include/x86_64-linux-gnu
-           /usr/include  
-           DOC "System ioctl headers." )
-if( ${SYS_IOCTL_INCLUDE_DIR} STREQUAL "SYS_IOCTL_INCLUDE_DIR-NOTFOUND" )
-    message( "Missing header file sys/time.h" )
-    set( HAVE_SYS_IOCTL_H "//#define HAVE_SYS_IOCTL_H 1" )
-else()
-    #include_directories( ${SYS_IOCTL_INCLUDE_DIR} )
-    set( HAVE_SYS_IOCTL_H "#define HAVE_SYS_IOCTL_H 1" )
-endif()
-
 if( ${WITH_TESTS} )
    enable_testing()
 

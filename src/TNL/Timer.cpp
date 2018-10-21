@@ -11,8 +11,9 @@
 #include <TNL/Timer.h>
 #include <TNL/Logger.h>
 
-#include <TNL/tnlConfig.h>
-#ifdef HAVE_SYS_RESOURCE_H
+// check if we are on a POSIX system or Windows,
+// see https://stackoverflow.com/a/4575466
+#if !defined(_WIN32) && !defined(_WIN64)
    #include <sys/resource.h>
 #endif
 
@@ -84,7 +85,7 @@ typename Timer::TimePoint Timer::readRealTime() const
 
 double Timer::readCPUTime() const
 {
-#ifdef HAVE_SYS_RESOURCE_H
+#if !defined(_WIN32) && !defined(_WIN64)
    rusage initUsage;
    getrusage( RUSAGE_SELF, &initUsage );
    return initUsage. ru_utime. tv_sec + 1.0e-6 * ( double ) initUsage. ru_utime. tv_usec;
