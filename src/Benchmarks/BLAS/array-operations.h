@@ -30,7 +30,7 @@ benchmarkArrayOperations( Benchmark & benchmark,
    typedef Containers::Array< Real, Devices::Cuda, Index > CudaArray;
    using namespace std;
 
-   double datasetSize = ( double ) ( loops * size ) * sizeof( Real ) / oneGB;
+   double datasetSize = (double) size * sizeof( Real ) / oneGB;
 
    HostArray hostArray, hostArray2;
    CudaArray deviceArray, deviceArray2;

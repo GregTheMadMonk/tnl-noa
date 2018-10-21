@@ -36,7 +36,7 @@ benchmarkVectorOperations( Benchmark & benchmark,
    typedef Containers::Vector< Real, Devices::Cuda, Index > CudaVector;
    using namespace std;
 
-   double datasetSize = ( double ) ( loops * size ) * sizeof( Real ) / oneGB;
+   double datasetSize = (double) size * sizeof( Real ) / oneGB;
 
    HostVector hostVector, hostVector2;
    CudaVector deviceVector, deviceVector2;
@@ -252,7 +252,7 @@ benchmarkVectorOperations( Benchmark & benchmark,
    hostVector.computePrefixSum();
    timer.stop();
    timeHost = timer.getTime();
-   bandwidth = 2 * datasetSize / loops / timer.getTime();
+   bandwidth = 2 * datasetSize / timer.getTime();
    std::cout << "  CPU: bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << std::endl;
 
    timer.reset();
@@ -260,7 +260,7 @@ benchmarkVectorOperations( Benchmark & benchmark,
    deviceVector.computePrefixSum();
    timer.stop();
    timeDevice = timer.getTime();
-   bandwidth = 2 * datasetSize / loops / timer.getTime();
+   bandwidth = 2 * datasetSize / timer.getTime();
    std::cout << "  GPU: bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << std::endl;
    std::cout << "  CPU/GPU speedup: " << timeHost / timeDevice << std::endl;
 

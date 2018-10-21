@@ -139,7 +139,7 @@ benchmarkSpMV( Benchmark & benchmark,
 
    const int elements = setHostTestMatrix< HostMatrix >( hostMatrix, elementsPerRow );
    setCudaTestMatrix< DeviceMatrix >( deviceMatrix, elementsPerRow );
-   const double datasetSize = ( double ) loops * elements * ( 2 * sizeof( Real ) + sizeof( int ) ) / oneGB;
+   const double datasetSize = (double) elements * ( 2 * sizeof( Real ) + sizeof( int ) ) / oneGB;
 
    // reset function
    auto reset = [&]() {
