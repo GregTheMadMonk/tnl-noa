@@ -11,20 +11,16 @@
 #pragma once
 
 #include <iostream>
-#include <unistd.h>
+
 #include <TNL/String.h>
 #include <TNL/Assert.h>
 #include <TNL/Pointers/SmartPointersRegister.h>
 #include <TNL/Timer.h>
 #include <TNL/Devices/CudaCallable.h>
+#include <TNL/Config/ConfigDescription.h>
+#include <TNL/Config/ParameterContainer.h>
 
 namespace TNL {
-
-namespace Config { 
-   class ConfigDescription;
-   class ParameterContainer;
-}
-
 namespace Devices {
 
 class Cuda

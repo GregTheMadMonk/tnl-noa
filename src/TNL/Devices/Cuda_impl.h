@@ -17,8 +17,6 @@
 #include <TNL/Exceptions/CudaSupportMissing.h>
 #include <TNL/Exceptions/CudaRuntimeError.h>
 #include <TNL/CudaSharedMemory.h>
-#include <TNL/Config/ConfigDescription.h>
-#include <TNL/Config/ParameterContainer.h>
 
 namespace TNL {
 namespace Devices {

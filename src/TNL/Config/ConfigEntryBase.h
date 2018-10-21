@@ -11,7 +11,7 @@
 #pragma once
 
 namespace TNL {
-namespace Config {   
+namespace Config {
 
 struct ConfigEntryBase
 {
@@ -24,26 +24,27 @@ struct ConfigEntryBase
    bool hasDefaultValue;
 
    ConfigEntryBase( const String& name,
-                       const String& description,
-                       bool required )
+                    const String& description,
+                    bool required )
       : name( name ),
         description( description ),
         required( required ),
-        hasDefaultValue( false ){}
+        hasDefaultValue( false )
+   {}
 
    virtual String getEntryType() const = 0;
 
    virtual String getUIEntryType() const = 0;
 
-   virtual bool isDelimiter() const { return false; };
+   virtual bool isDelimiter() const { return false; }
 
-   virtual String printDefaultValue() const { return "";};
+   virtual String printDefaultValue() const { return ""; }
 
-   virtual bool hasEnumValues() const { return false; };
+   virtual bool hasEnumValues() const { return false; }
 
-   virtual void printEnumValues() const {};
+   virtual void printEnumValues() const {}
 
-   virtual ~ConfigEntryBase() {};
+   virtual ~ConfigEntryBase() = default;
 };
 
 } // namespace Config

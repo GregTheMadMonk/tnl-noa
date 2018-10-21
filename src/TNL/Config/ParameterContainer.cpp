@@ -35,62 +35,15 @@ bool matob( const char* value, bool& ret_val )
    return false;
 }
 
-ParameterContainer::
-ParameterContainer()
-{
-}
-
-bool
-Config::ParameterContainer::
-addParameter( const String& name,
-              const String& value )
-{
-   return parameters. Append( new tnlParameter< String >( name, TNL::getType< String >().getString(), String( value ) ) );
-}
-
-bool
-Config::ParameterContainer::
-setParameter( const String& name,
-              const String& value )
-{
-   int i;
-   for( i = 0; i < parameters. getSize(); i ++ )
-   {
-      if( parameters[ i ] -> name == name )
-      {
-         if( parameters[ i ] -> type == TNL::getType< String >() )
-         {
-            ( ( tnlParameter< String > * ) parameters[ i ] )->value = value;
-            return true;
-         }
-         else
-         {
-            std::cerr << "Parameter " << name << " already exists with different type "
-                 << parameters[ i ] -> type << " not "
-                 << TNL::getType< String>() << std::endl;
-            abort();
-            return false;
-         }
-      }
-   }
-   return addParameter( name, value );
-};
-
 bool
 Config::ParameterContainer::
 checkParameter( const String& name ) const
 {
-   int i;
-   const int parameters_num = parameters. getSize();
-   for( i = 0; i < parameters_num; i ++ )
-      if( parameters[ i ] -> name == name ) return true;
+   const int size = parameters.size();
+   for( int i = 0; i < size; i++ )
+      if( parameters[ i ]->name == name )
+         return true;
    return false;
-}
-
-ParameterContainer::
-~ParameterContainer()
-{
-   parameters. DeepEraseAll();
 }
 
 /*void ParameterContainer::MPIBcast( int root, MPI_Comm mpi_comm )
@@ -162,6 +115,8 @@ ParameterContainer::
 #endif
 }
 */
+
+
 bool
 parseCommandLine( int argc, char* argv[],
                   const Config::ConfigDescription& config_description,
@@ -221,7 +176,7 @@ parseCommandLine( int argc, char* argv[],
                integer_list = new Containers::List< int >;
             if( parsedEntryType[ 1 ] == "double" )
                real_list = new Containers::List< double >;
- 
+
             while( i < argc && ( ( argv[ i ] )[ 0 ] != '-' || ( atof( argv[ i ] ) < 0.0 && ( integer_list || real_list ) ) ) )
             {
                const char* value = argv[ i ++ ];

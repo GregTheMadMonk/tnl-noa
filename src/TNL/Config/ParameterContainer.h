@@ -8,47 +8,47 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#pragma once 
+#pragma once
 
-#include <TNL/Containers/List.h>
+#include <vector>
+#include <memory>
+
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/param-types.h>
 //#include <TNL/Debugging/StackBacktrace.h>
 
 namespace TNL {
-namespace Config {   
+namespace Config {
 
-struct tnlParameterBase
+struct ParameterBase
 {
-   tnlParameterBase( const String& _name,
-                     const String& _type )
-   : name( _name ), type( _type ){};
- 
+   ParameterBase( const String& name,
+                  const String& type )
+   : name( name ), type( type )
+   {}
+
    String name, type;
 
+   // Virtual destructor is needed to avoid undefined behaviour when deleting the
+   // ParameterContainer::parameters vector, see https://stackoverflow.com/a/8752126
+   virtual ~ParameterBase() = default;
 };
 
-template< class T > struct tnlParameter : public tnlParameterBase
+template< class T >
+struct Parameter : public ParameterBase
 {
-   tnlParameter( const String& _name,
-                 const String& _type,
-                 const T& val )
-   : tnlParameterBase( _name, _type ), value( val ){};
+   Parameter( const String& name,
+              const String& type,
+              const T& value )
+   : ParameterBase( name, type ), value( value )
+   {}
 
    T value;
 };
 
-//template< class T > const char* getType( const T& val );
-
 class ParameterContainer
 {
-   public:
-
-   /**
-    * \brief Basic constructor.
-    */
-   ParameterContainer();
-
+public:
    /**
     * \brief Adds new parameter to the ParameterContainer.
     *
@@ -56,11 +56,9 @@ class ParameterContainer
     * \param name Name of the new parameter.
     * \param value Value assigned to the parameter.
     */
-   template< class T > bool addParameter( const String& name,
-                                          const T& value );
-
+   template< class T >
    bool addParameter( const String& name,
-                      const String& value );
+                      const T& value );
 
    /**
     * \brief Checks whether the parameter \e name already exists in ParameterContainer.
@@ -76,11 +74,9 @@ class ParameterContainer
     * \param name Name of parameter.
     * \param value Value of type T assigned to the parameter.
     */
-   template< class T > bool setParameter( const String& name,
-                                          const T& value );
-
+   template< class T >
    bool setParameter( const String& name,
-                      const String& value );
+                      const T& value );
 
    /**
     * \brief Checks whether the parameter \e name is given the \e value.
@@ -96,22 +92,23 @@ class ParameterContainer
     * \par Example
     * \include ParameterContainerExample.cpp
     */
-   template< class T > bool getParameter( const String& name,
-                                          T& value,
-                                          bool verbose = true ) const
+   template< class T >
+   bool getParameter( const String& name,
+                      T& value,
+                      bool verbose = true ) const
    {
-      int i;
-      const int size = parameters. getSize();
-      for( i = 0; i < size; i ++ )
-         if( parameters[ i ] -> name == name )
+      for( int i = 0; i < (int) parameters.size(); i++ )
+         if( parameters[ i ]->name == name )
          {
-            value = ( ( tnlParameter< T >* ) parameters[ i ] ) -> value;
+            // dynamic_cast throws std::bad_cast if parameters[i] does not have the type Parameter<T>
+            const Parameter< T >& parameter = dynamic_cast< Parameter< T >& >( *parameters[ i ] );
+            value = parameter.value;
             return true;
          }
       if( verbose )
       {
          std::cerr << "Missing parameter '" << name << "'." << std::endl;
-         throw(0); //PrintStackBacktrace;
+         throw 0; //PrintStackBacktrace;
       }
       return false;
    }
@@ -121,30 +118,26 @@ class ParameterContainer
     *
     * \param name Name of parameter.
     */
-   template< class T > const T& getParameter( const String& name ) const
+   template< class T >
+   T getParameter( const String& name ) const
    {
-      int i;
-      const int size = parameters. getSize();
-      for( i = 0; i < size; i ++ )
-         if( parameters[ i ] -> name == name )
-            return ( ( tnlParameter< T >* ) parameters[ i ] ) -> value;
+      for( int i = 0; i < (int) parameters.size(); i++ )
+         if( parameters[ i ]->name == name )
+         {
+            // dynamic_cast throws std::bad_cast if parameters[i] does not have the type Parameter<T>
+            const Parameter< T >& parameter = dynamic_cast< Parameter< T >& >( *parameters[ i ] );
+            return parameter.value;
+         }
       std::cerr << "The program attempts to get unknown parameter " << name << std::endl;
       std::cerr << "Aborting the program." << std::endl;
-      abort();
+      throw 0;
    }
- 
+
    //! Broadcast to other nodes in MPI cluster
-  // void MPIBcast( int root, MPI_Comm mpi_comm = MPI_COMM_WORLD );
+   //void MPIBcast( int root, MPI_Comm mpi_comm = MPI_COMM_WORLD );
 
-   /**
-    * \brief Basic destructor.
-    */
-   ~ParameterContainer();
-
-   protected:
-
-   Containers::List< tnlParameterBase* > parameters;
-
+protected:
+   std::vector< std::unique_ptr< ParameterBase > > parameters;
 };
 
 bool parseCommandLine( int argc, char* argv[],
@@ -157,7 +150,8 @@ bool
 ParameterContainer::
 addParameter( const String& name, const T& value )
 {
-   return parameters. Append( new tnlParameter< T >( name, TNL::getType< T >().getString(), value ) );
+   parameters.push_back( std::make_unique< Parameter< T > >( name, TNL::getType< T >(), value ) );
+   return true;
 };
 
 template< class T >
@@ -166,23 +160,18 @@ ParameterContainer::
 setParameter( const String& name,
               const T& value )
 {
-   int i;
-   for( i = 0; i < parameters. getSize(); i ++ )
-   {
-      if( parameters[ i ] -> name == name )
-      {
-         if( parameters[ i ] -> type == TNL::getType< T >() )
-         {
-            ( ( tnlParameter< T > * ) parameters[ i ] ) -> value = value;
+   for( int i = 0; i < (int) parameters.size(); i++ ) {
+      if( parameters[ i ]->name == name ) {
+         if( parameters[ i ]->type == TNL::getType< T >() ) {
+            Parameter< T >& parameter = dynamic_cast< Parameter< T >& >( *parameters[ i ] );
+            parameter.value = value;
             return true;
          }
-         else
-         {
+         else {
             std::cerr << "Parameter " << name << " already exists with different type "
-                 << parameters[ i ] -> type << " not "
-                 << TNL::getType< T >() << std::endl;
-            abort( );
-            return false;
+                      << parameters[ i ]->type << " not "
+                      << TNL::getType< T >() << std::endl;
+            throw 0;
          }
       }
    }

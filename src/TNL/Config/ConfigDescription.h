@@ -10,8 +10,23 @@
 
 #pragma once
 
+#include <vector>
+#include <memory>
+
+// std::make_unique does not exist until C++14
+// https://stackoverflow.com/a/9657991
+#if __cplusplus < 201402L
+namespace std {
+   template<typename T, typename ...Args>
+   std::unique_ptr<T> make_unique( Args&& ...args )
+   {
+      return std::unique_ptr<T>( new T( std::forward<Args>(args)... ) );
+   }
+}
+#endif
+
+#include <TNL/Assert.h>
 #include <TNL/String.h>
-#include <TNL/Containers/List.h>
 #include <TNL/param-types.h>
 #include <TNL/Config/ConfigEntryType.h>
 #include <TNL/Config/ConfigEntry.h>
@@ -25,13 +40,7 @@ class ParameterContainer;
 
 class ConfigDescription
 {
-   public:
-
-   /**
-    * \brief Basic constructor.
-    */
-   ConfigDescription();
-
+public:
    /**
     * \brief Adds new entry to the configuration description.
     *
@@ -43,8 +52,8 @@ class ConfigDescription
    void addEntry( const String& name,
                   const String& description )
    {
-      currentEntry = new ConfigEntry< EntryType >( name, description, false );
-      entries.Append( currentEntry );
+      entries.push_back( std::make_unique< ConfigEntry< EntryType > >( name, description, false ) );
+      currentEntry = entries.back().get();
    }
 
    /**
@@ -58,8 +67,8 @@ class ConfigDescription
    void addRequiredEntry( const String& name,
                           const String& description )
    {
-      currentEntry = new ConfigEntry< EntryType >( name, description, true );
-      entries.Append( currentEntry );
+      entries.push_back( std::make_unique< ConfigEntry< EntryType > >( name, description, true ) );
+      currentEntry = entries.back().get();
    }
 
    /**
@@ -75,11 +84,8 @@ class ConfigDescription
                   const String& description,
                   const EntryType& defaultValue )
    {
-      currentEntry = new ConfigEntry< EntryType >( name,
-                                                   description,
-                                                   false,
-                                                   defaultValue );
-      entries. Append( currentEntry );
+      entries.push_back( std::make_unique< ConfigEntry< EntryType > >( name, description, false, defaultValue ) );
+      currentEntry = entries.back().get();
    }
 
    /**
@@ -93,8 +99,8 @@ class ConfigDescription
    void addList( const String& name,
                  const String& description )
    {
-      currentEntry = new ConfigEntryList< EntryType >( name, description, false );
-      entries.Append( currentEntry );
+      entries.push_back( std::make_unique< ConfigEntryList< EntryType > >( name, description, false ) );
+      currentEntry = entries.back().get();
    }
 
    /**
@@ -108,8 +114,8 @@ class ConfigDescription
    void addRequiredList( const String& name,
                          const String& description )
    {
-      currentEntry = new ConfigEntryList< EntryType >( name, description, true );
-      entries.Append( currentEntry );
+      entries.push_back( std::make_unique< ConfigEntryList< EntryType > >( name, description, true ) );
+      currentEntry = entries.back().get();
    }
 
    /**
@@ -125,11 +131,8 @@ class ConfigDescription
                  const String& description,
                  const EntryType& defaultValue )
    {
-      currentEntry = new ConfigEntryList< EntryType >( name,
-                                                          description,
-                                                          false,
-                                                          defaultValue );
-      entries. Append( currentEntry );
+      entries.push_back( std::make_unique< ConfigEntryList< EntryType > >( name, description, false, defaultValue ) );
+      currentEntry = entries.back().get();
    }
 
    /**
@@ -142,8 +145,9 @@ class ConfigDescription
    template< typename EntryType >
    void addEntryEnum( const EntryType& entryEnum )
    {
-      TNL_ASSERT( this->currentEntry,);
-      ( ( ConfigEntry< EntryType >* ) currentEntry )->getEnumValues().Append( entryEnum );
+      TNL_ASSERT_TRUE( this->currentEntry, "there is no current entry" );
+      ConfigEntry< EntryType >& entry = dynamic_cast< ConfigEntry< EntryType >& >( *currentEntry );
+      entry.getEnumValues().push_back( entryEnum );
    }
 
    /**
@@ -154,8 +158,9 @@ class ConfigDescription
     */
    void addEntryEnum( const char* entryEnum )
    {
-      TNL_ASSERT( this->currentEntry,);
-      ( ( ConfigEntry< String >* ) currentEntry )->getEnumValues().Append( String( entryEnum ) );
+      TNL_ASSERT_TRUE( this->currentEntry, "there is no current entry" );
+      ConfigEntry< String >& entry = dynamic_cast< ConfigEntry< String >& >( *currentEntry );
+      entry.getEnumValues().push_back( String( entryEnum ) );
    }
 
    /**
@@ -165,8 +170,8 @@ class ConfigDescription
     */
    void addDelimiter( const String& delimiter )
    {
-      entries.Append( new ConfigDelimiter( delimiter ) );
-      currentEntry = 0;
+      entries.push_back( std::make_unique< ConfigDelimiter >( delimiter ) );
+      currentEntry = nullptr;
    }
 
    /**
@@ -176,43 +181,46 @@ class ConfigDescription
     */
    const ConfigEntryBase* getEntry( const String& name ) const
    {
-      for( int i = 0; i < entries.getSize(); i++ )
+      const int entries_num = entries.size();
+      for( int i = 0; i < entries_num; i++ )
          if( entries[ i ]->name == name )
-            return entries[ i ];
-      return NULL;
+            return entries[ i ].get();
+      return nullptr;
    }
 
- 
+
    //! Returns empty string if given entry does not exist
    //const String getEntryType( const char* name ) const;
 
    //! Returns zero pointer if there is no default value
-   template< class T > const T* getDefaultValue( const String& name ) const
+   template< class T >
+   const T* getDefaultValue( const String& name ) const
    {
-      int i;
-      const int entries_num = entries. getSize();
-      for( i = 0; i < entries_num; i ++ )
-         if( entries[ i ] -> name == name )
-         {
-            if( entries[ i ] -> hasDefaultValue )
-               return ( ( ConfigEntry< T > * ) entries[ i ] ) -> default_value;
-            else return NULL;
+      const int entries_num = entries.size();
+      for( int i = 0; i < entries_num; i++ )
+         if( entries[ i ]->name == name ) {
+            if( entries[ i ]->hasDefaultValue ) {
+               const ConfigEntry< T >& entry = dynamic_cast< ConfigEntry< T >& >( *entries[ i ] );
+               return entry->default_value;
+            }
+            return nullptr;
          }
       std::cerr << "Asking for the default value of unknown parameter." << std::endl;
-      return NULL;
+      return nullptr;
    }
  
    //! Returns zero pointer if there is no default value
-   template< class T > T* getDefaultValue( const String& name )
+   template< class T >
+   T* getDefaultValue( const String& name )
    {
-      int i;
-      const int entries_num = entries. getSize();
-      for( i = 0; i < entries_num; i ++ )
-         if( entries[ i ] -> name == name )
-         {
-            if( entries[ i ] -> hasDefaultValue )
-               return ( ( ConfigEntry< T > * ) entries[ i ] ) -> default_value;
-            else return NULL;
+      const int entries_num = entries.size();
+      for( int i = 0; i < entries_num; i++ )
+         if( entries[ i ] -> name == name ) {
+            if( entries[ i ] -> hasDefaultValue ) {
+               ConfigEntry< T >& entry = dynamic_cast< ConfigEntry< T >& >( *entries[ i ] );
+               return entry->default_value;
+            }
+            return nullptr;
          }
       std::cerr << "Asking for the default value of unknown parameter." << std::endl;
       return NULL;
@@ -243,19 +251,10 @@ class ConfigDescription
 
    //bool parseConfigDescription( const char* file_name );
 
-   /**
-    * \brief Basic destructor.
-    */
-   ~ConfigDescription();
-
-   protected:
-
-   Containers::List< ConfigEntryBase* > entries;
-
-   ConfigEntryBase* currentEntry;
-
+protected:
+   std::vector< std::unique_ptr< ConfigEntryBase > > entries;
+   ConfigEntryBase* currentEntry = nullptr;
 };
 
 } //namespace Config
 } //namespace TNL
-

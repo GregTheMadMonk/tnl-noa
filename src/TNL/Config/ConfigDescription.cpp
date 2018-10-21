@@ -10,31 +10,23 @@
 
 #include <fstream>
 #include <iomanip>
+#include <string>
+
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 
 namespace TNL {
-namespace Config {    
+namespace Config {
 
-ConfigDescription :: ConfigDescription()
-: currentEntry( 0 )
-{
-}
-
-ConfigDescription :: ~ConfigDescription()
-{
-   entries.DeepEraseAll();
-}
-
-void ConfigDescription::printUsage( const char* program_name ) const
+void
+ConfigDescription::
+printUsage( const char* program_name ) const
 {
    std::cout << "Usage of: " << program_name << std::endl << std::endl;
-   int i, j;
-   //const int group_num = groups. getSize();
-   const int entries_num = entries. getSize();
+   const int entries_num = entries.size();
    int max_name_length( 0 );
    int max_type_length( 0 );
-   for( j = 0; j < entries_num; j ++ )
+   for( int j = 0; j < entries_num; j++ )
       if( ! entries[ j ]->isDelimiter() )
       {
          max_name_length = std::max( max_name_length,
@@ -44,7 +36,7 @@ void ConfigDescription::printUsage( const char* program_name ) const
       }
    max_name_length += 2; // this is for '--'
 
-   for( j = 0; j < entries_num; j ++ )
+   for( int j = 0; j < entries_num; j++ )
    {
       if( entries[ j ]->isDelimiter() )
       {
@@ -81,11 +73,12 @@ void ConfigDescription::printUsage( const char* program_name ) const
    std::cout << std::endl;
 }
 
-void Config::ConfigDescription :: addMissingEntries( Config::ParameterContainer& parameter_container ) const
+void
+ConfigDescription::
+addMissingEntries( Config::ParameterContainer& parameter_container ) const
 {
-   int i;
-   const int size = entries.getSize();
-   for( i = 0; i < size; i ++ )
+   const int size = entries.size();
+   for( int i = 0; i < size; i++ )
    {
       const char* entry_name = entries[ i ]->name.getString();
       if( entries[ i ]->hasDefaultValue &&
@@ -93,57 +86,54 @@ void Config::ConfigDescription :: addMissingEntries( Config::ParameterContainer&
       {
          if( entries[ i ]->getEntryType() == "String" )
          {
-            parameter_container. addParameter< String >(
-               entry_name,
-               ( ( ConfigEntry< String >* ) entries[ i ] ) -> defaultValue );
+            ConfigEntry< String >& entry = dynamic_cast< ConfigEntry< String >& >( *entries[ i ] );
+            parameter_container.addParameter< String >( entry_name, entry.defaultValue );
             continue;
          }
          if( entries[ i ]->getEntryType() == "bool" )
          {
-            parameter_container. addParameter< bool >(
-               entry_name,
-               ( ( ConfigEntry< bool >* ) entries[ i ] ) -> defaultValue );
+            ConfigEntry< bool >& entry = dynamic_cast< ConfigEntry< bool >& >( *entries[ i ] );
+            parameter_container.addParameter< bool >( entry_name, entry.defaultValue );
             continue;
          }
          if( entries[ i ]->getEntryType() == "int" )
          {
-            parameter_container. addParameter< int >(
-               entry_name,
-               ( ( ConfigEntry< int >* ) entries[ i ] ) -> defaultValue );
+            ConfigEntry< int >& entry = dynamic_cast< ConfigEntry< int >& >( *entries[ i ] );
+            parameter_container.addParameter< int >( entry_name, entry.defaultValue );
             continue;
          }
          if( entries[ i ]->getEntryType() == "double" )
          {
-            parameter_container. addParameter< double >(
-               entry_name,
-               ( ( ConfigEntry< double >* ) entries[ i ] ) -> defaultValue );
+            ConfigEntry< double >& entry = dynamic_cast< ConfigEntry< double >& >( *entries[ i ] );
+            parameter_container.addParameter< double >( entry_name, entry.defaultValue );
             continue;
          }
       }
    }
 }
 
-bool Config::ConfigDescription :: checkMissingEntries( Config::ParameterContainer& parameter_container,
-                                                  bool printUsage,
-                                                  const char* programName ) const
+bool
+Config::ConfigDescription::
+checkMissingEntries( Config::ParameterContainer& parameter_container,
+                     bool printUsage,
+                     const char* programName ) const
 {
-   int i;
-   const int size = entries. getSize();
-   Containers::List< String > missingParameters;
-   for( i = 0; i < size; i ++ )
+   const int size = entries.size();
+   std::vector< std::string > missingParameters;
+   for( int i = 0; i < size; i++ )
    {
-      const char* entry_name = entries[ i ] -> name. getString();
+      const char* entry_name = entries[ i ] -> name.getString();
       if( entries[ i ] -> required &&
-          ! parameter_container. checkParameter( entry_name ) )
-         missingParameters.Append( entry_name );
+          ! parameter_container.checkParameter( entry_name ) )
+         missingParameters.push_back( entry_name );
    }
-   if( missingParameters.getSize() != 0 )
+   if( missingParameters.size() > 0 )
    {
       std::cerr << "Some mandatory parameters are misssing. They are listed at the end. " << std::endl;
       if( printUsage )
          this->printUsage( programName );
-      std::cerr << "Add the following missing  parameters to the command line: " << std::endl << "   ";
-      for( int i = 0; i < missingParameters.getSize(); i++ )
+      std::cerr << "Add the following missing parameters to the command line: " << std::endl << "   ";
+      for( int i = 0; i < (int) missingParameters.size(); i++ )
          std::cerr << "--" << missingParameters[ i ] << " ... ";
       std::cerr << std::endl;
       return false;

@@ -8,9 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#pragma once 
+#pragma once
 
-#include <TNL/Containers/List.h>
+#include <vector>
 
 namespace TNL {
 namespace Config {
@@ -23,10 +23,10 @@ template<> inline String getUIEntryType< bool >()      { return "bool"; };
 template<> inline String getUIEntryType< int >()       { return "integer"; };
 template<> inline String getUIEntryType< double >()    { return "real"; };
 
-template<> inline String getUIEntryType< Containers::List< String > >() { return "list of string"; };
-template<> inline String getUIEntryType< Containers::List< bool > >()      { return "list of bool"; };
-template<> inline String getUIEntryType< Containers::List< int > >()       { return "list of integer"; };
-template<> inline String getUIEntryType< Containers::List< double > >()    { return "list of real"; };
+template<> inline String getUIEntryType< std::vector< String > >() { return "list of string"; };
+template<> inline String getUIEntryType< std::vector< bool > >()      { return "list of bool"; };
+template<> inline String getUIEntryType< std::vector< int > >()       { return "list of integer"; };
+template<> inline String getUIEntryType< std::vector< double > >()    { return "list of real"; };
 
 struct ConfigEntryType
 {
@@ -34,18 +34,19 @@ struct ConfigEntryType
 
    bool list_entry;
 
-   ConfigEntryType(){};
+   ConfigEntryType() {}
 
    ConfigEntryType( const String& _basic_type,
                      const bool _list_entry )
    : basic_type( _basic_type ),
-     list_entry( _list_entry ){}
+     list_entry( _list_entry )
+   {}
 
    void Reset()
    {
       basic_type. setString( 0 );
       list_entry = false;
-   };
+   }
 };
 
 } // namespace Config

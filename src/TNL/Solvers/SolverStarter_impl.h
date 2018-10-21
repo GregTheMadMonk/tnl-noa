@@ -406,8 +406,8 @@ bool SolverStarter< ConfigTag > :: writeEpilog( std::ostream& str, const Solver&
    if( std::is_same< typename Solver::DeviceType, TNL::Devices::Cuda >::value )
    {
       logger.writeParameter< const char* >( "GPU synchronization time:", "" );
-      TNL::Devices::Cuda::smartPointersSynchronizationTimer.writeLog( logger, 1 );
-   }   
+      TNL::Devices::Cuda::getSmartPointersSynchronizationTimer().writeLog( logger, 1 );
+   }
    logger.writeParameter< const char* >( "I/O time:", "" );
    this->ioTimer.writeLog( logger, 1 );
    logger.writeParameter< const char* >( "Total time:", "" );
