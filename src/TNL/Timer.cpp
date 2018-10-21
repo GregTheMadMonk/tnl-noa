@@ -15,11 +15,6 @@
 #ifdef HAVE_SYS_RESOURCE_H
    #include <sys/resource.h>
 #endif
-#ifdef HAVE_SYS_TIME_H
-   #include <stddef.h>
-   #include <sys/time.h>
-   #define HAVE_TIME
-#endif
 
 namespace TNL {
 
@@ -34,8 +29,8 @@ void Timer::reset()
 {
    this->initialCPUTime = 0;
    this->totalCPUTime = 0.0;
-   this->initialRealTime = 0;
-   this->totalRealTime = 0.0;
+   this->initialRealTime = TimePoint();
+   this->totalRealTime = Duration();
    this->initialCPUCycles = 0;
    this->totalCPUCycles = 0;
    this->stopState = true;
@@ -64,33 +59,27 @@ void Timer::start()
 double Timer::getRealTime() const
 {
    if( ! this->stopState )
-    return this->readRealTime() - this->initialRealTime;
-   return this->totalRealTime;
+      return durationToDouble( this->readRealTime() - this->initialRealTime );
+   return durationToDouble( this->totalRealTime );
 }
 
 double Timer::getCPUTime() const
 {
    if( ! this->stopState )
-    return this->readCPUTime() - this->initialCPUTime;
+      return this->readCPUTime() - this->initialCPUTime;
    return this->totalCPUTime;
 }
 
 unsigned long long int Timer::getCPUCycles() const
 {
    if( ! this->stopState )
-    return this->readCPUCycles() - this->initialCPUCycles;
+      return this->readCPUCycles() - this->initialCPUCycles;
    return this->totalCPUCycles;
 }
 
-double Timer::readRealTime() const
+typename Timer::TimePoint Timer::readRealTime() const
 {
-#ifdef HAVE_TIME
-   struct timeval tp;
-   int rtn = gettimeofday( &tp, NULL );
-   return ( double ) tp. tv_sec + 1.0e-6 * ( double ) tp. tv_usec;
-#else
-   return -1;
-#endif
+   return std::chrono::high_resolution_clock::now();
 }
 
 double Timer::readCPUTime() const
@@ -107,6 +96,12 @@ double Timer::readCPUTime() const
 unsigned long long int Timer::readCPUCycles() const
 {
    return this->rdtsc();
+}
+
+double Timer::durationToDouble( const Duration& duration ) const
+{
+   std::chrono::duration< double > dur( duration );
+   return dur.count();
 }
 
 
