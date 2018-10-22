@@ -258,13 +258,21 @@ solve( const MeshPointer& mesh,
                  
           tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > > ptr;
           
-          int *BlockIterDevice;
+          
           int BlockIterD = 1;
           
-          cudaMalloc(&BlockIterDevice, ( numBlocksX * numBlocksY * numBlocksZ ) * sizeof( int ) );
+          TNL::Containers::Array< int, Devices::Cuda, IndexType > BlockIterDevice;
+          BlockIterDevice.setSize( numBlocksX * numBlocksY * numBlocksZ );
+          BlockIterDevice.setValue( 1 );
+          /*int *BlockIterDevice;
+          cudaMalloc(&BlockIterDevice, ( numBlocksX * numBlocksY * numBlocksZ ) * sizeof( int ) );*/
           int nBlocks = ( numBlocksX * numBlocksY * numBlocksZ )/512 + ((( numBlocksX * numBlocksY * numBlocksZ )%512 != 0) ? 1:0);
-          int *dBlock;
-          cudaMalloc(&dBlock, nBlocks * sizeof( int ) );
+          
+          TNL::Containers::Array< int, Devices::Cuda, IndexType > dBlock;
+          dBlock.setSize( nBlocks );
+          dBlock.setValue( 0 );
+          /*int *dBlock;
+          cudaMalloc(&dBlock, nBlocks * sizeof( int ) );*/
           
           while( BlockIterD )
           {
@@ -272,17 +280,24 @@ solve( const MeshPointer& mesh,
                                                               interfaceMapPtr.template getData< Device >(),
                                                               auxPtr.template modifyData< Device>(),
                                                               BlockIterDevice );
-            //CudaParallelReduc<<< nBlocks , 512 >>>( BlockIterDevice, dBlock, ( numBlocksX * numBlocksY * numBlocksZ ) );
-            //CudaParallelReduc<<< 1, nBlocks >>>( dBlock, dBlock, nBlocks );
+            cudaDeviceSynchronize();
+            TNL_CHECK_CUDA_DEVICE;
             
+            CudaParallelReduc<<< nBlocks , 512 >>>( BlockIterDevice, dBlock, ( numBlocksX * numBlocksY * numBlocksZ ) );
+            cudaDeviceSynchronize();
+            TNL_CHECK_CUDA_DEVICE;
+            
+            CudaParallelReduc<<< 1, nBlocks >>>( dBlock, dBlock, nBlocks );
+            cudaDeviceSynchronize();
+            TNL_CHECK_CUDA_DEVICE;
             cudaMemcpy(&BlockIterD, &dBlock[0], sizeof( int ), cudaMemcpyDeviceToHost);
                                    
             /*for( int i = 1; i < numBlocksX * numBlocksY; i++ )
                 BlockIter[ 0 ] = BlockIter[ 0 ] || BlockIter[ i ];*/
             
           }
-          cudaFree( BlockIterDevice );
-          cudaFree( dBlock );
+          //cudaFree( BlockIterDevice );
+          //cudaFree( dBlock );
           cudaDeviceSynchronize();
           TNL_CHECK_CUDA_DEVICE;
           aux = *auxPtr;
@@ -302,7 +317,7 @@ template < typename Real, typename Device, typename Index >
 __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > > ptr,
                                       const Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index >, 3, bool >& interfaceMap,
                                       Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index > >& aux,
-                                      int *BlockIterDevice )
+                                      TNL::Containers::Array< int, Devices::Cuda, Index > BlockIterDevice )
 {
     int thri = threadIdx.x; int thrj = threadIdx.y; int thrk = threadIdx.z;
     int blIdx = blockIdx.x; int blIdy = blockIdx.y; int blIdz = blockIdx.z;

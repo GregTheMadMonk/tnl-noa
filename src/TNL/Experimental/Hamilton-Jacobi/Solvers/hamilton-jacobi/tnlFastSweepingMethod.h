@@ -88,7 +88,8 @@ class FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Anisotropy >
       using typename BaseType::InterfaceMapType;
       using typename BaseType::MeshFunctionType;
       using typename BaseType::InterfaceMapPointer;
-      using typename BaseType::MeshFunctionPointer;      
+      using typename BaseType::MeshFunctionPointer;
+      using typename BaseType::ArrayContainer;
 
       FastSweepingMethod();
       
