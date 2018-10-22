@@ -135,7 +135,7 @@ class String
       /// This function overloads operator!=().
       bool operator!=( char str ) const;
 
-      /// \brief Cast to bool operator.
+      /// \brief Cast to bool operator. Converts string to boolean expression (true or false).
       operator bool() const;
 
       /// \brief Cast to bool with negation operator.
@@ -158,25 +158,27 @@ class String
       /// @param separator Character, which separates substrings in given string. Empty character can not be used.
       int split( Containers::List< String >& list, const char separator = ' ' ) const;
 
-      /// Write to a binary file
+      /// Writes to a binary file and returns boolean expression based on the success in writing into the file.
       bool save( File& file ) const;
 
-      /// Read from binary file
+      /// Reads from binary file and returns boolean expression based on the success in reading the file.
       bool load( File& file );
 
-      //! Broadcast to other nodes in MPI cluster
+      /// !!! Mozem dat prec???
+      // Broadcast to other nodes in MPI cluster
       //   void MPIBcast( int root, MPI_Comm mpi_comm = MPI_COMM_WORLD );
 
-      /// Read one line from given stream.
+      /// Reads one line from given stream.
       bool getLine( std::istream& stream );
 
+      ///toto neviem co
       friend std::ostream& operator<<( std::ostream& stream, const String& str );
 
    protected:
-      /// Pointer to char ended with zero
+      /// Pointer to char ended with zero ...Preco?
       char* string;
 
-      /// Length of the allocated piece of memory
+      /// Length of the allocated piece of memory.
       int length;
 
 };
@@ -187,6 +189,7 @@ String operator+( char string1, const String& string2 );
 /// Returns concatenation of \e string1 and \e string2.
 String operator+( const char* string1, const String& string2 );
 
+/// Toto neviem co
 std::ostream& operator<<( std::ostream& stream, const String& str );
 
 template< typename T >
