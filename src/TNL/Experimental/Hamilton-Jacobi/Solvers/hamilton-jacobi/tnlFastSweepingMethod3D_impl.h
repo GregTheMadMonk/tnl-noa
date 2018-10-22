@@ -280,12 +280,17 @@ solve( const MeshPointer& mesh,
                                                               interfaceMapPtr.template getData< Device >(),
                                                               auxPtr.template modifyData< Device>(),
                                                               BlockIterDevice );
+<<<<<<< HEAD
             cudaDeviceSynchronize();
             TNL_CHECK_CUDA_DEVICE;
             
             CudaParallelReduc<<< nBlocks , 512 >>>( BlockIterDevice, dBlock, ( numBlocksX * numBlocksY * numBlocksZ ) );
             cudaDeviceSynchronize();
             TNL_CHECK_CUDA_DEVICE;
+=======
+            //CudaParallelReduc<<< nBlocks , 512 >>>( BlockIterDevice, dBlock, ( numBlocksX * numBlocksY * numBlocksZ ) );
+            //CudaParallelReduc<<< 1, nBlocks >>>( dBlock, dBlock, nBlocks );
+>>>>>>> da336fb8bd927bc927bde8bde5876b18f07a23cf
             
             CudaParallelReduc<<< 1, nBlocks >>>( dBlock, dBlock, nBlocks );
             cudaDeviceSynchronize();
