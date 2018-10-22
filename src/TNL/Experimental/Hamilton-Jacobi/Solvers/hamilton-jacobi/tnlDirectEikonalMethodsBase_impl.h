@@ -92,6 +92,199 @@ initInterface( const MeshFunctionPointer& _input,
 template< typename Real,
           typename Device,
           typename Index >
+void 
+tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >::
+updateBlocks( InterfaceMapType interfaceMap,
+              MeshFunctionType aux,
+              ArrayContainer BlockIterHost, int numThreadsPerBlock )
+{
+  for( int i = 0; i < BlockIterHost.getSize(); i++ )
+  {
+    if( BlockIterHost[ i ] )
+    {
+      MeshType mesh = interfaceMap.template getMesh< Devices::Host >();
+    
+      int dimX = mesh.getDimensions().x(); int dimY = mesh.getDimensions().y();
+      int numOfBlockx = dimY/numThreadsPerBlock + ((dimY%numThreadsPerBlock != 0) ? 1:0);
+      int numOfBlocky = dimX/numThreadsPerBlock + ((dimX%numThreadsPerBlock != 0) ? 1:0);
+      int xkolik = numThreadsPerBlock + 1;
+      int ykolik = numThreadsPerBlock + 1;
+      
+      int blIdx = i%numOfBlockx;
+      int blIdy = i/numOfBlocky;
+      
+      if( numOfBlockx - 1 == blIdx )
+        xkolik = dimX - (blIdx)*numThreadsPerBlock+1;
+      
+      if( numOfBlocky -1 == blIdy )
+        ykolik = dimY - (blIdy)*numThreadsPerBlock+1;
+    
+        
+      /*bool changed[numThreadsPerBlock*numThreadsPerBlock];
+      changed[ 0 ] = 1;*/
+      Real hx = mesh.getSpaceSteps().x();
+      Real hy = mesh.getSpaceSteps().y();
+      
+      Real changed1[ 16*16 ];
+      /*Real changed2[ 16*16 ];
+      Real changed3[ 16*16 ];
+      Real changed4[ 16*16 ];*/
+      Real sArray[18][18];
+      
+      for( int thri = 0; thri < numThreadsPerBlock + 2; thri++ )
+        for( int thrj = 0; thrj < numThreadsPerBlock + 2; thrj++ )
+          sArray[thrj][thri] = std::numeric_limits< Real >::max();
+    
+      BlockIterHost[ blIdy * numOfBlockx + blIdx ] = 0;
+    
+      for( int thrj = 0; thrj < numThreadsPerBlock + 1; thrj++ )
+      {        
+        if( dimX > (blIdx+1) * numThreadsPerBlock  && thrj+1 < ykolik )
+          sArray[thrj+1][xkolik] = aux[ blIdy*numThreadsPerBlock*dimX - dimX + blIdx*numThreadsPerBlock - 1 + (thrj+1)*dimX + xkolik ];
+        else
+         sArray[thrj+1][xkolik] = std::numeric_limits< Real >::max();
+      
+    
+        if( blIdx != 0 && thrj+1 < ykolik )
+          sArray[thrj+1][0] = aux[ blIdy*numThreadsPerBlock*dimX - dimX + blIdx*numThreadsPerBlock - 1 + (thrj+1)*dimX ];
+        else
+          sArray[thrj+1][0] = std::numeric_limits< Real >::max();
+    
+        if( dimY > (blIdy+1) * numThreadsPerBlock  && thrj+1 < xkolik )
+          sArray[ykolik][thrj+1] = aux[ blIdy*numThreadsPerBlock*dimX - dimX + blIdx*numThreadsPerBlock - 1 + ykolik*dimX + thrj+1 ];
+        else
+          sArray[ykolik][thrj+1] = std::numeric_limits< Real >::max();
+      
+        if( blIdy != 0 && thrj+1 < xkolik )
+          sArray[0][thrj+1] = aux[ blIdy*numThreadsPerBlock*dimX - dimX + blIdx*numThreadsPerBlock - 1 + thrj+1 ];
+        else
+          sArray[0][thrj+1] = std::numeric_limits< Real >::max();
+      }
+    
+      for( int k = 0; k < numThreadsPerBlock; k++ )
+        for( int l = 0; l < numThreadsPerBlock; l++ ) 
+          sArray[k+1][l+1] = aux[ blIdy * numThreadsPerBlock * dimX + numThreadsPerBlock * blIdx  + k*dimX + l ];
+
+      for( int k = 0; k < numThreadsPerBlock; k++ ) 
+        for( int l = 0; l < numThreadsPerBlock; l++ ){
+          changed1[ k*numThreadsPerBlock + l ] = 0;
+          /*changed2[ k*numThreadsPerBlock + l ] = 0;
+          changed3[ k*numThreadsPerBlock + l ] = 0;
+          changed4[ k*numThreadsPerBlock + l ] = 0;*/
+          if( blIdy * numThreadsPerBlock * dimX + numThreadsPerBlock * blIdx  + k*dimX + l < dimX*dimY )
+          {
+            if( ! interfaceMap[ blIdy * numThreadsPerBlock * dimX + numThreadsPerBlock * blIdx  + k*dimX + l ] )
+            {
+              changed1[ k*numThreadsPerBlock + l ] = this->updateCell( sArray, l+1, k+1, hx,hy);
+            }
+          }
+        }
+
+      for( int k = numThreadsPerBlock-1; k > -1; k-- ) 
+        for( int l = 0; l < numThreadsPerBlock; l++ ) { 
+          if( blIdy * numThreadsPerBlock * dimX + numThreadsPerBlock * blIdx  + k*dimX + l < dimX*dimY )
+          {
+            if( ! interfaceMap[ blIdy * numThreadsPerBlock * dimX + numThreadsPerBlock * blIdx  + k*dimX + l ] )
+            {
+              /*changed2[ k*numThreadsPerBlock + l ] = */this->updateCell( sArray, l+1, k+1, hx,hy);
+            }
+          }
+        }
+
+      for( int k = 0; k < numThreadsPerBlock; k++ ) 
+        for( int l = numThreadsPerBlock-1; l >-1; l-- ) { 
+          if( blIdy * numThreadsPerBlock * dimX + numThreadsPerBlock * blIdx  + k*dimX + l < dimX*dimY )
+          {
+            if( ! interfaceMap[ blIdy * numThreadsPerBlock * dimX + numThreadsPerBlock * blIdx  + k*dimX + l ] )
+            {
+              /*changed3[ k*numThreadsPerBlock + l ] = */this->updateCell( sArray, l+1, k+1, hx,hy);
+            }
+          }
+        }
+
+      for( int k = numThreadsPerBlock-1; k > -1; k-- ) 
+        for( int l = numThreadsPerBlock-1; l >-1; l-- ) { 
+          if( blIdy * numThreadsPerBlock * dimX + numThreadsPerBlock * blIdx  + k*dimX + l < dimX*dimY )
+          {
+            if( ! interfaceMap[ blIdy * numThreadsPerBlock * dimX + numThreadsPerBlock * blIdx  + k*dimX + l ] )
+            {
+              /*changed4[ k*numThreadsPerBlock + l ] = */this->updateCell( sArray, l+1, k+1, hx,hy);
+            }
+          }
+        }
+
+      for( int k = numThreadsPerBlock-1; k > -1; k-- ) 
+        for( int l = numThreadsPerBlock-1; l >-1; l-- ){
+          changed1[ 0 ] = changed1[ 0 ] || changed1[ k*numThreadsPerBlock + l ];
+          /*changed2[ 0 ] = changed2[ 0 ] || changed2[ k*numThreadsPerBlock + l ];
+          changed3[ 0 ] = changed3[ 0 ] || changed3[ k*numThreadsPerBlock + l ];
+          changed4[ 0 ] = changed4[ 0 ] || changed4[ k*numThreadsPerBlock + l ];*/
+        }
+      
+      if( changed1[ 0 ] /*|| changed2[ 0 ] ||changed3[ 0 ] ||changed4[ 0 ]*/ )
+        BlockIterHost[ blIdy * numOfBlockx + blIdx ] = 1;
+
+      for( int k = 0; k < numThreadsPerBlock; k++ ){ 
+        for( int l = 0; l < numThreadsPerBlock; l++ ) {       
+          if( blIdy * numThreadsPerBlock * dimX + numThreadsPerBlock * blIdx  + k*dimX + l < dimX*dimY &&
+              (!interfaceMap[ blIdy * numThreadsPerBlock * dimX + numThreadsPerBlock * blIdx  + k*dimX + l ]) )
+            aux[ blIdy * numThreadsPerBlock * dimX + numThreadsPerBlock * blIdx  + k*dimX + l ] = sArray[ k + 1 ][ l + 1 ];
+          //std::cout<< sArray[k+1][l+1];
+        }
+        //std::cout<<std::endl;
+      }
+    }
+  }
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void 
+tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >::
+getNeighbours( ArrayContainer BlockIterHost, int numBlockX, int numBlockY )
+{
+  int* BlockIterPom; 
+  BlockIterPom = new int [numBlockX * numBlockY];
+  
+  for(int i = 0; i < numBlockX * numBlockY; i++)
+  {
+    BlockIterPom[ i ] = 0;  
+    if( BlockIterHost[ i ] )
+    {
+      // i = k*numBlockY + m;
+      int m=0, k=0;
+      m = i%numBlockX;
+      k = i/numBlockX;
+      if( k > 0 )
+        BlockIterPom[i - numBlockX] = 1;
+      if( k < numBlockY - 1 )
+        BlockIterPom[i + numBlockX] = 1;
+      
+      if( m < numBlockX - 1 )
+        BlockIterPom[ i+1 ] = 1;
+      if( m > 0 )
+        BlockIterPom[ i-1 ] = 1;
+    }
+  }
+  for(int i = 0; i < numBlockX * numBlockY; i++ )
+      //if( !BlockIter[ i ] )
+        BlockIterHost[ i ] = BlockIterPom[ i ];
+      /*else
+        BlockIter[ i ] = 0;*/
+  /*for( int i = numBlockX-1; i > -1; i-- )
+  {
+      for( int j = 0; j< numBlockY; j++ )
+          std::cout << BlockIterHost[ i*numBlockY + j ];
+      std::cout << std::endl;
+  }
+  std::cout << std::endl;*/
+  delete[] BlockIterPom;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
    template< typename MeshEntity >
 void
 tnlDirectEikonalMethodsBase< Meshes::Grid< 1, Real, Device, Index > >::
