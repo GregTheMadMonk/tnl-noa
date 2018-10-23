@@ -26,17 +26,20 @@ template< typename T >
 String convertToString( const T& value );
 
 /////
-// \brief Class for managing strings.
+// Class for managing strings.
 class String
 {
    public:
 
       /////
-      /// \brief Basic constructor. Constructs an empty string object, with the length of zero characters.
+      /// Basic constructor.
+
+      /// Constructs an empty string object with the length of zero characters.
       String();
 
       /////
-      /// \brief Constructor with char pointer.      
+      /// Constructor with char pointer.
+
       /// Copies the null-terminated character sequence (C-string) pointed by \e c.
       /// Constructs a string initialized with the 8-bit string \e c, excluding the given number of \e prefix_cut_off and \e sufix_cut_off characters.
       /// @param prefix_cut_off determines the length of the prefix that is going to be omitted from the string \e c
@@ -45,6 +48,7 @@ class String
               int prefix_cut_off = 0,
               int sufix_cut_off = 0 );
 
+      /// Odstranit???
       String( char* c,
               int prefix_cut_off = 0,
               int sufix_cut_off = 0 );
@@ -53,10 +57,12 @@ class String
       static String getType();
 
       /////
-      /// \brief Copy constructor. Constructs a copy of the string \e str.
+      /// Copy constructor.
+
+      /// Constructs a copy of the string \e str.
       String( const String& str );
 
-      /// \brief Converts anything to a string.
+      /// Converts anything to a string.
       template< typename T >
       String( T value )
          : string( nullptr ), length( 0 )
@@ -64,11 +70,12 @@ class String
          setString( convertToString( value ).getString() );
       }
 
-      /// \brief Destructor.
+      /// Destructor.
       ~String();
 
-      /// Returns the number of characters in given string. Equivalent to \c getSize().
+      /// Returns the number of characters in given string. Equivalent to getSize().
       int getLength() const;
+
       /// Returns the number of characters in given string.
       int getSize() const;
 
@@ -93,14 +100,19 @@ class String
       /// Returns pointer to data.
       char* getString();
 
-      /// \brief Operator for accesing particular chars of the string. This function overloads operator[](). It returns a reference to the character at position \e i in given string.
+      /// Operator for accesing particular chars of the string.
+
+      ///This function overloads operator[](). It returns a reference to the character at position \e i in given string.
       const char& operator[]( int i ) const;
 
-      /// \brief Operator for accesing particular chars of the string. It returns the character at the position \e i in given string as a modifiable reference.
+      /// Operator for accesing particular chars of the string.
+
+      ///It returns the character at the position \e i in given string as a modifiable reference.
       char& operator[]( int i );
 
       /////
-      /// \brief Operators for C strings.
+      /// Operators for C strings.
+
       /// This function overloads operator=(). It assigns \e str to this string, replacing its current contents.
       String& operator=( const char* str );
       /// This function overloads operator+=(). It appends the string \e str to this string.
@@ -113,7 +125,8 @@ class String
       bool operator!=( const char* str ) const;
 
       /////
-      /// \brief Operators for Strings.
+      /// Operators for Strings.
+
       /// This function assigns \e str to this string and returns a reference to this string.
       String& operator=( const String& str );
       /// This function appends the string \e str onto the end of this string and returns a reference to this string.
@@ -126,7 +139,8 @@ class String
       bool operator!=( const String& str ) const;
 
       /////
-      /// \brief Operators for single characters.
+      /// Operators for single characters.
+
       /// This function overloads operator=(). It assigns character /e str to this string.
       String& operator=( char str );
       /// This function overloads operator+=(). It appends character /e str to this string.
@@ -138,24 +152,30 @@ class String
       /// This function overloads operator!=().
       bool operator!=( char str ) const;
 
-      /// \brief Cast to bool operator. Converts string to boolean expression (true or false).
+      /// Cast to bool operator.
+
+      ///Converts string to boolean expression (true or false).
       operator bool() const;
 
-      /// \brief Cast to bool with negation operator.
+      /// Cast to bool with negation operator.
       bool operator!() const;
 
       /////
-      /// \brief Replaces portion of string.
+      /// Replaces portion of string.
+
       ///It replaces section \e pattern from this string with new piece of string \e replaceWith.
       ///If parameter \e count is defined, the function makes replacement several times, every time when it finds the same pattern in this string.
       String replace( const String& pattern,
                       const String& replaceWith,
                       int count = 0 ) const;
 
-      /// \brief Trims/strips given string. It removes all spaces from string except for single spaces between words.
+      /// Trims/strips given string.
+
+      /// It removes all spaces from string except for single spaces between words.
       String strip( char strip = ' ' ) const;
 
-      /// \brief Splits string into list of strings with respect to given \e separator.
+      /// Splits string into list of strings with respect to given \e separator.
+
       /// It splits the string into list of substrings wherever \e separator occurs, and returs list of those strings.
       /// When \e separator does not appear anywhere in the given string, this function returns a single-element list containing given sting.
       /// @param separator Character, which separates substrings in given string. Empty character can not be used.
@@ -167,7 +187,7 @@ class String
       /// Reads from binary file and returns boolean expression based on the success in reading the file.
       bool load( File& file );
 
-      /// !!! Mozem dat prec???
+      // Mozem dat prec??? !!!!
       // Broadcast to other nodes in MPI cluster
       //   void MPIBcast( int root, MPI_Comm mpi_comm = MPI_COMM_WORLD );
 
@@ -183,7 +203,6 @@ class String
 
       /// Length of the allocated piece of memory.
       int length;
-
 
 };
 
