@@ -36,11 +36,22 @@ class String
       String();
 
       /////
-      /// \brief Constructor with char pointer.      
+      /// \brief Constructor with char pointer.
+      ///
       /// Copies the null-terminated character sequence (C-string) pointed by \e c.
-      /// Constructs a string initialized with the 8-bit string \e c, excluding the given number of \e prefix_cut_off and \e sufix_cut_off characters.
-      /// @param prefix_cut_off determines the length of the prefix that is going to be omitted from the string \e c
-      /// @param sufix_cut_off determines the length of the sufix that is going to be omitted from the string \e c
+      /// Constructs a string initialized with the 8-bit string \e c, excluding
+      /// the given number of \e prefix_cut_off and \e sufix_cut_off characters.
+      ///
+      /// @param prefix_cut_off Determines the length of the prefix that is going
+      /// to be omitted from the string \e c.
+      /// @param sufix_cut_off Determines the length of the sufix that is going
+      /// to be omitted from the string \e c.
+      ///
+      /// \par Example
+      /// \code String str( "xxstringxxx", 2, 3 ); \endcode
+      ///
+      /// \par Output
+      /// str = string
       String( const char* c,
               int prefix_cut_off = 0,
               int sufix_cut_off = 0 );
@@ -49,7 +60,17 @@ class String
       static String getType();
 
       /////
-      /// \brief Copy constructor. Constructs a copy of the string \e str.
+      /// \brief Copy constructor.
+      ///
+      /// Constructs a copy of the string \e str.
+      ///
+      /// \par Example
+      /// \code
+            String str1( "Something" );
+            String str2( str1 );
+      /// \endcode
+      /// \par Output
+      /// str1 = Something \n str2 = Something
       String( const String& str );
 
       /// \brief Converts anything to a string.
@@ -72,103 +93,175 @@ class String
       /// Returns size of allocated storage for given string. 
       int getAllocatedSize() const;
 
-      /// Reserves space for given number of characters (\e size).
-      /// Requests to allocate storage for given \e size (number of characters).
+      /////
+      /// Reserves space for given \e size.
+      /// Requests to allocate storage for given \e size.
+      /// @param size Number of characters.
       void setSize( int size );
 
       /////
-      /// Sets string from given char pointer \e c.
-      /// @param prefix_cut_off determines the length of the prefix that is going to be omitted from the string \e c
-      /// @param sufix_cut_off determines the length of the sufix that is going to be omitted from the string \e c
+      /// \brief Sets string from given char pointer \e c.
+      ///
+      /// @param prefix_cut_off determines the length of the prefix that is
+      /// going to be omitted from the string \e c
+      /// @param sufix_cut_off determines the length of the sufix that is going
+      /// to be omitted from the string \e c
       void setString( const char* c,
                       int prefix_cut_off = 0,
                       int sufix_cut_off = 0 );
 
-      /// Returns pointer to data. It returns the content of the given string.
+      /////
+      /// \brief Returns pointer to data.
+      ///
+      /// It returns the content of the given string. The content can not be
+      /// changed by user.
       const char* getString() const;
 
-      /// Returns pointer to data.
+      /// \brief Returns pointer to data.
+      ///
+      /// It returns the content of the given string. The content can be changed
+      /// by user.
       char* getString();
 
-      /// \brief Operator for accesing particular chars of the string. This function overloads operator[](). It returns a reference to the character at position \e i in given string.
+      /////
+      /// \brief Operator for accesing particular chars of the string.
+      ///
+      /// This function overloads operator[](). It returns a reference to
+      /// the character at position \e i in given string.
+      /// The character can not be changed be user.
       const char& operator[]( int i ) const;
 
-      /// \brief Operator for accesing particular chars of the string. It returns the character at the position \e i in given string as a modifiable reference.
+      /// \brief Operator for accesing particular chars of the string.
+      ///
+      /// It returns the character at the position \e i in given string as
+      /// a modifiable reference.
       char& operator[]( int i );
 
       /////
-      /// \brief Operators for C strings.
-      /// This function overloads operator=(). It assigns \e str to this string, replacing its current contents.
+      // Operators for C strings.
+
+      /// \brief This function overloads operator=().
+      ///
+      /// It assigns C string \e str to this string, replacing its current contents.
       String& operator=( const char* str );
-      /// This function overloads operator+=(). It appends the string \e str to this string.
+      /// \brief This function overloads operator+=().
+      ///
+      /// It appends the C string \e str to this string.
       String& operator+=( const char* str );
-      /// This function concatenates strings and returns a newly constructed string object.
+      /// \brief This function concatenates C strings \e str and returns a newly
+      /// constructed string object.
       String operator+( const char* str ) const;
-      /// This function overloads operator==().
+      /// \brief This function overloads operator==().
       bool operator==( const char* str ) const;
-      /// This function overloads operator!=().
+      /// \brief This function overloads operator!=().
       bool operator!=( const char* str ) const;
 
       /////
-      /// \brief Operators for Strings.
-      /// This function assigns \e str to this string and returns a reference to this string.
+      // Operators for Strings.
+
+      /// This function assigns \e str to this string and returns a reference to
+      /// this string.
       String& operator=( const String& str );
-      /// This function appends the string \e str onto the end of this string and returns a reference to this string.
+      /// This function appends the string \e str onto the end of this string
+      /// and returns a reference to this string.
       String& operator+=( const String& str );
-      /// This function concatenates strings and returns a newly constructed string object.
+      /// This function concatenates strings \e str and returns a newly
+      /// constructed string object.
       String operator+( const String& str ) const;
-      /// This function overloads operator==(). It returns \c true if this string is equal to \e str, otherwise returns \c false.
+      /// \brief This function overloads operator==().
+      ///
+      /// It returns \c true if this string is equal to \e str, otherwise returns
+      /// \c false.
       bool operator==( const String& str ) const;
-      /// This function overloads operator!=(). It returns \c true if this string is not equal to \e str, otherwise returns \c false.
+      /// \brief This function overloads operator!=().
+      ///
+      /// It returns \c true if this string is not equal to \e str, otherwise
+      /// returns \c false.
       bool operator!=( const String& str ) const;
 
       /////
-      /// \brief Operators for single characters.
-      /// This function overloads operator=(). It assigns character /e str to this string.
+      // Operators for single characters.
+
+      /// \brief This function overloads operator=().
+      ///
+      /// It assigns character /e str to this string.
       String& operator=( char str );
-      /// This function overloads operator+=(). It appends character /e str to this string.
+      /// \brief This function overloads operator+=().
+      ///
+      /// It appends character /e str to this string.
       String& operator+=( char str );
       // This function concatenates strings and returns a newly constructed string object.
       String operator+( char str ) const;
       // This function concatenates strings and returns a newly constructed string object.
       bool operator==( char str ) const;
-      /// This function overloads operator!=().
+      /// \brief This function overloads operator!=().
       bool operator!=( char str ) const;
 
-      /// \brief Cast to bool operator. Converts string to boolean expression (true or false).
+      /// \brief Cast to bool operator.
+      ///
+      /// This function overloads operator bool(). It converts string to boolean
+      /// expression (true or false).
       operator bool() const;
 
       /// \brief Cast to bool with negation operator.
+      ///
+      /// This function overloads operator!(). It converts string to boolean
+      /// expression (false or true).
       bool operator!() const;
 
       /////
       /// \brief Replaces portion of string.
-      ///It replaces section \e pattern from this string with new piece of string \e replaceWith.
-      ///If parameter \e count is defined, the function makes replacement several times, every time when it finds the same pattern in this string.
+      ///
+      /// Replaces section \e pattern from this string with new piece of string \e replaceWith.
+      /// If parameter \e count is defined, the function makes replacement several times,
+      /// every time when it finds the same pattern in this string.
+      /// @param pattern Section of given string that will be replaced.
+      /// @param replaceWith New piece of string that will be used to replace \e pattern.
+      /// @param count A whole number that specifies how many replacements should be done.
       String replace( const String& pattern,
                       const String& replaceWith,
                       int count = 0 ) const;
 
-      /// \brief Trims/strips given string. It removes all spaces from string except for single spaces between words.
+      /////
+      /// \brief Trims/strips given string.
+      ///
+      /// Removes all spaces from given string except for single spaces between words.
       String strip( char strip = ' ' ) const;
 
       /// \brief Splits string into list of strings with respect to given \e separator.
-      /// It splits the string into list of substrings wherever \e separator occurs, and returs list of those strings.
-      /// When \e separator does not appear anywhere in the given string, this function returns a single-element list containing given sting.
-      /// @param separator Character, which separates substrings in given string. Empty character can not be used.
+      ///
+      /// Splits the string into list of substrings wherever \e separator occurs,
+      /// and returs list of those strings. When \e separator does not appear
+      /// anywhere in the given string, this function returns a single-element list
+      /// containing given sting.
+      /// @param list Name of list.
+      /// @param separator Character, which separates substrings in given string.
+      /// Empty character can not be used.
       int split( Containers::List< String >& list, const char separator = ' ' ) const;
 
-      /// Writes to a binary file and returns boolean expression based on the success in writing into the file.
+      /////
+      /// \brief Function for saving file.
+      ///
+      /// Writes to a binary file and returns boolean expression based on the
+      /// success in writing into the file.
       bool save( File& file ) const;
 
-      /// Reads from binary file and returns boolean expression based on the success in reading the file.
+      /////
+      /// \brief Function for loading from file.
+      ///
+      /// Reads from binary file and returns boolean expression based on the
+      /// success in reading the file.
       bool load( File& file );
 
-      /// !!! Mozem dat prec???
       // Broadcast to other nodes in MPI cluster
       //   void MPIBcast( int root, MPI_Comm mpi_comm = MPI_COMM_WORLD );
 
-      /// Reads one line from given stream.
+
+      /////
+      /// \brief Function for getting a line from stream.
+      ///
+      /// Reads one line from given stream and returns either the line or boolean
+      /// expression based on the success in reading the line.
       bool getLine( std::istream& stream );
 
       ///toto neviem co
@@ -178,7 +271,7 @@ class String
       /// Pointer to char ended with zero ...Preco?
       char* string;
 
-      /// Length of the allocated piece of memory.
+      /// Length of allocated piece of memory.
       int length;
 
 };
