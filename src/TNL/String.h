@@ -26,13 +26,20 @@ template< typename T >
 String convertToString( const T& value );
 
 /////
-// \brief Class for managing strings.
+/// \brief Class for managing strings.
+///
+/// \par Example
+/// \include StringExample.cpp
+/// \par Output
+/// \include StringOutput.cpp
 class String
 {
    public:
 
       /////
-      /// \brief Basic constructor. Constructs an empty string object, with the length of zero characters.
+      /// \brief Basic constructor.
+      ///
+      /// Constructs an empty string object with the length of zero characters.
       String();
 
       /////
@@ -46,12 +53,6 @@ class String
       /// to be omitted from the string \e c.
       /// @param sufix_cut_off Determines the length of the sufix that is going
       /// to be omitted from the string \e c.
-      ///
-      /// \par Example
-      /// \code String str( "xxstringxxx", 2, 3 ); \endcode
-      ///
-      /// \par Output
-      /// str = string
       String( const char* c,
               int prefix_cut_off = 0,
               int sufix_cut_off = 0 );
@@ -63,17 +64,12 @@ class String
       /// \brief Copy constructor.
       ///
       /// Constructs a copy of the string \e str.
-      ///
-      /// \par Example
-      /// \code
-            String str1( "Something" );
-            String str2( str1 );
-      /// \endcode
-      /// \par Output
-      /// str1 = Something \n str2 = Something
       String( const String& str );
 
       /// \brief Converts anything to a string.
+      ///
+      /// This function converts any type of value into type string.
+      /// @param value Word of any type (e.g. int, bool, double,...).
       template< typename T >
       explicit
       String( T value )
@@ -96,6 +92,7 @@ class String
       /////
       /// Reserves space for given \e size.
       /// Requests to allocate storage for given \e size.
+      /// It allocates one more byte for the terminating 0.
       /// @param size Number of characters.
       void setSize( int size );
 
@@ -253,6 +250,8 @@ class String
       /// success in reading the file.
       bool load( File& file );
 
+
+      // !!! Mozem dat prec??? 
       // Broadcast to other nodes in MPI cluster
       //   void MPIBcast( int root, MPI_Comm mpi_comm = MPI_COMM_WORLD );
 
@@ -274,7 +273,7 @@ class String
       /// Length of allocated piece of memory.
       int length;
 
-};
+}; // class String
 
 /// Returns concatenation of \e string1 and \e string2.
 String operator+( char string1, const String& string2 );
