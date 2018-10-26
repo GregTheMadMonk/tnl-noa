@@ -8,7 +8,6 @@ set (headers Cuda.h
 
 SET( CURRENT_DIR ${CMAKE_SOURCE_DIR}/src/TNL/Devices )
 set( common_SOURCES
-     ${CURRENT_DIR}/Host.cpp 
      ${CURRENT_DIR}/MIC.cpp
      ${CURRENT_DIR}/SystemInfo.cpp )
 
