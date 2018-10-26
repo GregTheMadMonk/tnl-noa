@@ -37,7 +37,6 @@ set( headers
      StaticVectorFor.h )
 
 set( common_SOURCES
-     File.cpp
      FileName.cpp
      Object.cpp
      Logger.cpp

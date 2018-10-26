@@ -45,22 +45,22 @@ const size_t FileGPUvsCPUTransferBufferSize = 5 * 2<<20;
 // \include FileExample.out
 class File
 {
-   IOMode mode;
+   IOMode mode = IOMode::undefined;
 
-   std::FILE* file;
+   std::FILE* file = nullptr;
 
-   bool fileOK;
+   bool fileOK = false;
 
    String fileName;
 
-   std::size_t writtenElements;
+   std::size_t writtenElements = 0;
 
-   std::size_t readElements;
+   std::size_t readElements = 0;
 
    public:
 
    /// \brief Basic constructor.
-   File();
+   File() = default;
 
    /// \brief Destructor.
    ~File();
