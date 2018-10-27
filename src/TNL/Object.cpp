@@ -106,8 +106,7 @@ bool getObjectType( File& file, String& type )
       std::cerr << "Unable to read file " << file. getFileName() << " ... " << std::endl;
       return false;
    }
-   if( strncmp( mn, magic_number, 5 ) != 0 &&
-       strncmp( mn, "SIM33", 5 ) != 0 )
+   if( strncmp( mn, magic_number, 5 ) != 0 )
    {
        std::cout << "Not a TNL file (wrong magic number)." << std::endl;
        return false;
