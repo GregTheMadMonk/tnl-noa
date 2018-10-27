@@ -12,7 +12,6 @@
 #include <string.h>
 #include <TNL/String.h>
 #include <TNL/Assert.h>
-#include <TNL/Containers/List.h>
 #include <TNL/File.h>
 #include <TNL/Math.h>
 #ifdef USE_MPI
@@ -335,25 +334,21 @@ String::strip( char strip ) const
    return "";
 }
 
-int String::split( Containers::List< String >& list,
-                   const char separator,
-                   bool skipEmpty ) const
+std::vector< String > String::split( const char separator, bool skipEmpty ) const
 {
-   list.reset();
+   std::vector< String > parts;
    String s;
-   for( int i = 0; i < this->getLength(); i ++ )
-   {
-      if( ( *this )[ i ] == separator )
-      {
+   for( int i = 0; i < this->getLength(); i++ ) {
+      if( ( *this )[ i ] == separator ) {
          if( ! skipEmpty || s != "" )
-            list.Append( s );
+            parts.push_back( s );
          s = "";
       }
       else s += ( *this )[ i ];
    }
    if( ! skipEmpty || s != "" )
-      list.Append( s );
-   return list.getSize();
+      parts.push_back( s );
+   return parts;
 }
 
 

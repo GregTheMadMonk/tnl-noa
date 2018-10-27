@@ -12,14 +12,11 @@
 
 #include <iostream>
 #include <sstream>
+#include <vector>
 
 namespace TNL {
 
 class File;
-namespace Containers {
-   template< class T > class List;
-}
-
 class String;
 
 template< typename T >
@@ -237,10 +234,9 @@ class String
       /// and returs list of those strings. When \e separator does not appear
       /// anywhere in the given string, this function returns a single-element list
       /// containing given sting.
-      /// @param list Name of list.
       /// @param separator Character, which separates substrings in given string.
       /// Empty character can not be used.
-      int split( Containers::List< String >& list, const char separator = ' ', bool skipEmpty = false ) const;
+      std::vector< String > split( const char separator = ' ', bool skipEmpty = false ) const;
 
       /////
       /// \brief Function for saving file.

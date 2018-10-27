@@ -16,7 +16,6 @@
 
 #include <TNL/String.h>
 #include <TNL/File.h>
-#include <TNL/Containers/List.h>
 
 using namespace TNL;
 
@@ -286,46 +285,46 @@ TEST( StringTest, strip )
 
 TEST( StringTest, split )
 {
-   Containers::List< String > list;
+   std::vector< String > parts;
 
-   String( "A B C" ).split( list, ' ' );
-   ASSERT_EQ( list.getSize(), 3 );
-   EXPECT_EQ( list[ 0 ], "A" );
-   EXPECT_EQ( list[ 1 ], "B" );
-   EXPECT_EQ( list[ 2 ], "C" );
+   parts = String( "A B C" ).split( ' ' );
+   ASSERT_EQ( (int) parts.size(), 3 );
+   EXPECT_EQ( parts[ 0 ], "A" );
+   EXPECT_EQ( parts[ 1 ], "B" );
+   EXPECT_EQ( parts[ 2 ], "C" );
 
-   String( "abracadabra" ).split( list, 'a' );
-   ASSERT_EQ( list.getSize(), 6 );
-   EXPECT_EQ( list[ 0 ], "" );
-   EXPECT_EQ( list[ 1 ], "br" );
-   EXPECT_EQ( list[ 2 ], "c" );
-   EXPECT_EQ( list[ 3 ], "d" );
-   EXPECT_EQ( list[ 4 ], "br" );
-   EXPECT_EQ( list[ 5 ], "" );
-   
-   String( "abracadabra" ).split( list, 'a', true );
-   ASSERT_EQ( list.getSize(), 4 );
-   EXPECT_EQ( list[ 0 ], "br" );
-   EXPECT_EQ( list[ 1 ], "c" );
-   EXPECT_EQ( list[ 2 ], "d" );
-   EXPECT_EQ( list[ 3 ], "br" );
+   parts = String( "abracadabra" ).split( 'a' );
+   ASSERT_EQ( (int) parts.size(), 6 );
+   EXPECT_EQ( parts[ 0 ], "" );
+   EXPECT_EQ( parts[ 1 ], "br" );
+   EXPECT_EQ( parts[ 2 ], "c" );
+   EXPECT_EQ( parts[ 3 ], "d" );
+   EXPECT_EQ( parts[ 4 ], "br" );
+   EXPECT_EQ( parts[ 5 ], "" );
 
-   String( "abracadabra" ).split( list, 'b' );
-   ASSERT_EQ( list.getSize(), 3 );
-   EXPECT_EQ( list[ 0 ], "a" );
-   EXPECT_EQ( list[ 1 ], "racada" );
-   EXPECT_EQ( list[ 2 ], "ra" );
+   parts = String( "abracadabra" ).split( 'a', true );
+   ASSERT_EQ( (int) parts.size(), 4 );
+   EXPECT_EQ( parts[ 0 ], "br" );
+   EXPECT_EQ( parts[ 1 ], "c" );
+   EXPECT_EQ( parts[ 2 ], "d" );
+   EXPECT_EQ( parts[ 3 ], "br" );
 
-   String( "abracadabra" ).split( list, 'A' );
-   ASSERT_EQ( list.getSize(), 1 );
-   EXPECT_EQ( list[ 0 ], "abracadabra" );
+   parts = String( "abracadabra" ).split( 'b' );
+   ASSERT_EQ( (int) parts.size(), 3 );
+   EXPECT_EQ( parts[ 0 ], "a" );
+   EXPECT_EQ( parts[ 1 ], "racada" );
+   EXPECT_EQ( parts[ 2 ], "ra" );
 
-   String( "a,,b,c" ).split( list, ',' );
-   ASSERT_EQ( list.getSize(), 4 );
-   EXPECT_EQ( list[ 0 ], "a" );
-   EXPECT_EQ( list[ 1 ], "" );
-   EXPECT_EQ( list[ 2 ], "b" );
-   EXPECT_EQ( list[ 3 ], "c" );
+   parts = String( "abracadabra" ).split( 'A' );
+   ASSERT_EQ( (int) parts.size(), 1 );
+   EXPECT_EQ( parts[ 0 ], "abracadabra" );
+
+   parts = String( "a,,b,c" ).split( ',' );
+   ASSERT_EQ( (int) parts.size(), 4 );
+   EXPECT_EQ( parts[ 0 ], "a" );
+   EXPECT_EQ( parts[ 1 ], "" );
+   EXPECT_EQ( parts[ 2 ], "b" );
+   EXPECT_EQ( parts[ 3 ], "c" );
 }
 
 TEST( StringTest, SaveLoad )

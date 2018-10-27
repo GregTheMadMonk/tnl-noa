@@ -11,7 +11,6 @@
 #pragma once
 
 #include <iomanip>
-#include <TNL/Containers/List.h>
 #include <TNL/String.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Timer.h>
@@ -166,9 +165,8 @@ template< typename Matrix >
 bool MatrixReader< Matrix >::checkMtxHeader( const String& header,
                                                 bool& symmetric )
 {
-   Containers::List< String > parsedLine;
-   header.split( parsedLine );
-   if( parsedLine.getSize() < 5 )
+   std::vector< String > parsedLine = header.split();
+   if( (int) parsedLine.size() < 5 )
       return false;
    if( parsedLine[ 0 ] != "%%MatrixMarket" )
       return false;
@@ -212,7 +210,7 @@ bool MatrixReader< Matrix >::readMtxHeader( std::istream& file,
    file.seekg( 0, std::ios::beg );
    String line;
    bool headerParsed( false );
-   Containers::List< String > parsedLine;
+   std::vector< String > parsedLine;
    while( true )
    {
       line.getLine( file );
@@ -233,15 +231,14 @@ bool MatrixReader< Matrix >::readMtxHeader( std::istream& file,
          return false;
       }
 
-      parsedLine.reset();
-      line.split( parsedLine );
-      if( parsedLine. getSize() != 3 )
+      parsedLine = line.split();
+      if( (int) parsedLine.size() != 3 )
       {
          std::cerr << "Wrong number of parameters in the matrix header." << std::endl;
          return false;
       }
-      rows = atoi( parsedLine[ 0 ]. getString() );
-      columns = atoi( parsedLine[ 1 ]. getString() );
+      rows = atoi( parsedLine[ 0 ].getString() );
+      columns = atoi( parsedLine[ 1 ].getString() );
       if( verbose )
         std::cout << " The matrix has " << rows
               << " rows and " << columns << " columns. " << std::endl;
@@ -389,9 +386,8 @@ bool MatrixReader< Matrix >::parseMtxLineWithElement( const String& line,
                                                          IndexType& column,
                                                          RealType& value )
 {
-   Containers::List< String > parsedLine;
-   line.split( parsedLine );
-   if( parsedLine.getSize() != 3 )
+   std::vector< String > parsedLine = line.split();
+   if( (int) parsedLine.size() != 3 )
    {
       std::cerr << "Wrong number of parameters in the matrix row at line:" << line << std::endl;
       return false;
