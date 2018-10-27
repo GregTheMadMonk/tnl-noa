@@ -10,7 +10,7 @@
 
 #include <TNL/File.h>
 
-#ifdef HAVE_GTEST 
+#ifdef HAVE_GTEST
 #include <gtest/gtest.h>
 
 using namespace TNL;
@@ -19,6 +19,12 @@ TEST( FileTest, CloseEmpty )
 {
    File file;
    ASSERT_TRUE( file.close() );
+}
+
+TEST( FileTest, OpenInvalid )
+{
+   File file;
+   EXPECT_THROW( file.open( "invalid-file.tnl", IOMode::read ), std::ios_base::failure );
 }
 
 TEST( FileTest, WriteAndRead )
