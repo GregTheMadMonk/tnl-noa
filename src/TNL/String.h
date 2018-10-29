@@ -91,7 +91,7 @@ class String
 
       /////
       /// Reserves space for given \e size.
-      /// Requests to allocate storage for given \e size.
+      /// Requests to allocate storage space of given \e size to avoid memory reallocation.
       /// It allocates one more byte for the terminating 0.
       /// @param size Number of characters.
       void setSize( int size );
@@ -251,7 +251,7 @@ class String
       bool load( File& file );
 
 
-      // !!! Mozem dat prec??? 
+      // !!! Mozem dat prec???
       // Broadcast to other nodes in MPI cluster
       //   void MPIBcast( int root, MPI_Comm mpi_comm = MPI_COMM_WORLD );
 
