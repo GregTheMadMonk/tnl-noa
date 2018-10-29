@@ -22,6 +22,95 @@ using SE_cuda = TNL::Matrices::SlicedEllpack< int, TNL::Devices::Cuda, int, 2 >;
 #ifdef HAVE_GTEST 
 #include <gtest/gtest.h>
 
+
+/*
+ * Sets up the following 7x6 sparse matrix:
+ *
+ *    /              2  1 \
+ *    |           5  4  3 |
+ *    |        8  7  6    |
+ *    |    11 10  9       |
+ *    | 14 13 12          |
+ *    | 16 15             |
+ *    \ 17                /
+ */
+template< typename Matrix >
+void setupAntiTriDiagMatrix (Matrix& m)
+{
+    const int rows = 7;
+    const int cols = 6;
+    m.reset();
+    m.setDimensions( rows, cols );
+    typename Matrix::CompressedRowLengthsVector rowLengths;
+    rowLengths.setSize( rows );
+    rowLengths.setValue( 3 );
+    rowLengths.setElement( 0, 4);
+    rowLengths.setElement( 1,  4 );
+    m.setCompressedRowLengths( rowLengths );
+    
+    int value = 1;
+    for ( int i = 0; i < rows; i++ )
+        for ( int j = cols - 1; j > 2; j-- )
+            if ( j - i + 1 < cols && j - i + 1 >= 0 )
+                m.setElement( i, j - i + 1, value++ );
+}
+
+template< typename Matrix >
+void checkAntiTriDiagMatrix( Matrix& m )
+{
+   ASSERT_EQ( m.getRows(), 7 );
+   ASSERT_EQ( m.getColumns(), 6 );
+
+   EXPECT_EQ( m.getElement( 0, 0 ),  0 );
+   EXPECT_EQ( m.getElement( 0, 1 ),  0 );
+   EXPECT_EQ( m.getElement( 0, 2 ),  0 );
+   EXPECT_EQ( m.getElement( 0, 3 ),  0 );
+   EXPECT_EQ( m.getElement( 0, 4 ),  2 );
+   EXPECT_EQ( m.getElement( 0, 5 ),  1);
+
+   EXPECT_EQ( m.getElement( 1, 0 ),  0 );
+   EXPECT_EQ( m.getElement( 1, 1 ),  0 );
+   EXPECT_EQ( m.getElement( 1, 2 ),  0 );
+   EXPECT_EQ( m.getElement( 1, 3 ),  5 );
+   EXPECT_EQ( m.getElement( 1, 4 ),  4 );
+   EXPECT_EQ( m.getElement( 1, 5 ),  3 );
+
+   EXPECT_EQ( m.getElement( 2, 0 ),  0 );
+   EXPECT_EQ( m.getElement( 2, 1 ),  0 );
+   EXPECT_EQ( m.getElement( 2, 2 ),  8 );
+   EXPECT_EQ( m.getElement( 2, 3 ),  7 );
+   EXPECT_EQ( m.getElement( 2, 4 ),  6 );
+   EXPECT_EQ( m.getElement( 2, 5 ),  0 );
+
+   EXPECT_EQ( m.getElement( 3, 0 ),  0 );
+   EXPECT_EQ( m.getElement( 3, 1 ), 11 );
+   EXPECT_EQ( m.getElement( 3, 2 ), 10 );
+   EXPECT_EQ( m.getElement( 3, 3 ),  9 );
+   EXPECT_EQ( m.getElement( 3, 4 ),  0 );
+   EXPECT_EQ( m.getElement( 3, 5 ),  0 );
+
+   EXPECT_EQ( m.getElement( 4, 0 ), 14 );
+   EXPECT_EQ( m.getElement( 4, 1 ), 13 );
+   EXPECT_EQ( m.getElement( 4, 2 ), 12 );
+   EXPECT_EQ( m.getElement( 4, 3 ),  0 );
+   EXPECT_EQ( m.getElement( 4, 4 ),  0 );
+   EXPECT_EQ( m.getElement( 4, 5 ),  0 );
+
+   EXPECT_EQ( m.getElement( 5, 0 ), 16 );
+   EXPECT_EQ( m.getElement( 5, 1 ), 15 );
+   EXPECT_EQ( m.getElement( 5, 2 ),  0 );
+   EXPECT_EQ( m.getElement( 5, 3 ),  0 );
+   EXPECT_EQ( m.getElement( 5, 4 ),  0 );
+   EXPECT_EQ( m.getElement( 5, 5 ),  0 );
+
+   EXPECT_EQ( m.getElement( 6, 0 ), 17 );
+   EXPECT_EQ( m.getElement( 6, 1 ),  0 );
+   EXPECT_EQ( m.getElement( 6, 2 ),  0 );
+   EXPECT_EQ( m.getElement( 6, 3 ),  0 );
+   EXPECT_EQ( m.getElement( 6, 4 ),  0 );
+   EXPECT_EQ( m.getElement( 6, 5 ),  0 );
+}
+
 /*
  * Sets up the following 7x6 sparse matrix:
  *
@@ -34,7 +123,7 @@ using SE_cuda = TNL::Matrices::SlicedEllpack< int, TNL::Devices::Cuda, int, 2 >;
  *    \               17 /
  */
 template< typename Matrix >
-void setupMatrix( Matrix& m )
+void setupTriDiagMatrix( Matrix& m )
 {
    const int rows = 7;
    const int cols = 6;
@@ -55,7 +144,7 @@ void setupMatrix( Matrix& m )
 }
 
 template< typename Matrix >
-void checkMatrix( Matrix& m )
+void checkTriDiagMatrix( Matrix& m )
 {
    ASSERT_EQ( m.getRows(), 7 );
    ASSERT_EQ( m.getColumns(), 6 );
@@ -114,24 +203,30 @@ template< typename Matrix1, typename Matrix2 >
 void testCopyAssignment()
 {
    Matrix1 m1;
-   setupMatrix( m1 );
-   checkMatrix( m1 );
+//   setupTriDiagMatrix( m1 );
+//   checkTriDiagMatrix( m1 );
+   setupAntiTriDiagMatrix( m1 );
+   checkAntiTriDiagMatrix( m1 );
 
    Matrix2 m2;
    m2 = m1;
-   checkMatrix( m2 );
+//   checkTriDiagMatrix( m2 );
+   checkAntiTriDiagMatrix( m2 );
 }
 
 template< typename Matrix1, typename Matrix2 >
 void testConversion()
 {
    Matrix1 m1;
-   setupMatrix( m1 );
-   checkMatrix( m1 );
+//   setupTriDiagMatrix( m1 );
+//   checkTriDiagMatrix( m1 );
+   setupAntiTriDiagMatrix( m1 );
+   checkAntiTriDiagMatrix( m1 );
 
    Matrix2 m2;
    TNL::Matrices::copySparseMatrix( m2, m1 );
-   checkMatrix( m2 );
+//   checkTriDiagMatrix( m2 );
+   checkAntiTriDiagMatrix( m2 );
 }
 
 
