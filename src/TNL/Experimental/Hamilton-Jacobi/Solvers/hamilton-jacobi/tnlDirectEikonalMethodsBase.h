@@ -74,12 +74,16 @@ class tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >
                                          const MeshEntity& cell,
                                          const RealType velocity = 1.0 );
       
-      __cuda_callable__ bool updateCell( volatile Real sArray[18][18],
+      template< int sizeSArray >
+      __cuda_callable__ bool updateCell( volatile Real *sArray,
                                          int thri, int thrj, const Real hx, const Real hy,
                                          const Real velocity = 1.0 );
+      
+      template< int sizeSArray >
       void updateBlocks( InterfaceMapType interfaceMap,
                          MeshFunctionType aux,
-                         ArrayContainer BlockIterHost, int numThreadsPerBlock );
+                         MeshFunctionType helpFunc,
+                         ArrayContainer BlockIterHost, int numThreadsPerBlock/*, Real **sArray*/ );
       
       void getNeighbours( ArrayContainer BlockIterHost, int numBlockX, int numBlockY  );
 };
@@ -119,9 +123,6 @@ T1 meet2DCondition( T1 a, T1 b, const T2 ha, const T2 hb, const T1 value, double
 template < typename T1 >
 __cuda_callable__ void sortMinims( T1 pom[] );
 
-template < typename Index >
-void GetNeighbours( TNL::Containers::Array< int, Devices::Host, Index > BlockIter, int numBlockX, int numBlockY );
-
 #ifdef HAVE_CUDA
 template < typename Real, typename Device, typename Index >
 __global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 1, Real, Device, Index > >& input, 
@@ -134,15 +135,12 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
                                       Functions::MeshFunction< Meshes::Grid< 1, Real, Device, Index > >& aux,
                                       bool *BlockIterDevice );
 
-template < typename Real, typename Device, typename Index >
+template < int sizeSArray, typename Real, typename Device, typename Index >
 __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > > ptr,
                                       const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index >, 2, bool >& interfaceMap,
-                                      Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& aux,
-<<<<<<< HEAD
-                                      TNL::Containers::Array< int, Devices::Cuda, Index > BlockIterDevice, int ne = 1 );
-=======
-                                      TNL::Containers::Array< int, Devices::Cuda, Index > BlockIterDevice );
->>>>>>> da336fb8bd927bc927bde8bde5876b18f07a23cf
+                                      const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& aux,
+                                      Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& helpFunc,
+                                      TNL::Containers::Array< int, Devices::Cuda, Index > BlockIterDevice, int oddEvenBlock =0);
 
 template < typename Index >
 __global__ void CudaParallelReduc( TNL::Containers::Array< int, Devices::Cuda, Index > BlockIterDevice,
