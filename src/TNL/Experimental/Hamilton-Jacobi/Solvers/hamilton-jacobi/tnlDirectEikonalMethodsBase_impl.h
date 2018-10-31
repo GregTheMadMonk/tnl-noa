@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include "tnlFastSweepingMethod.h"
+#include "tnlDirectEikonalMethodsBase.h"
 
 template< typename Real,
         typename Device,
@@ -135,7 +136,7 @@ updateBlocks( InterfaceMapType interfaceMap,
       bool changed = false;
       
       
-      RealType *sArray;
+      Real *sArray;
       sArray = new Real[ sizeSArray * sizeSArray ];
       if( sArray == nullptr )
         std::cout << "Error while allocating memory for sArray." << std::endl;
@@ -175,7 +176,7 @@ updateBlocks( InterfaceMapType interfaceMap,
             //std::cout << "proslo i = " << k * numThreadsPerBlock + l << std::endl;
             if( ! interfaceMap[ blIdy * numThreadsPerBlock * dimX + numThreadsPerBlock * blIdx  + k*dimX + l ] )
             {
-              pom = this->updateCell<sizeSArray>( sArray/*[i]*/, l+1, k+1, hx,hy);
+              pom = this->template updateCell< sizeSArray >( sArray, l+1, k+1, hx,hy);
               changed = changed || pom;
             }
           }
@@ -195,7 +196,7 @@ updateBlocks( InterfaceMapType interfaceMap,
           {
             if( ! interfaceMap[ blIdy * numThreadsPerBlock * dimX + numThreadsPerBlock * blIdx  + k*dimX + l ] )
             {
-              this->updateCell<sizeSArray>( sArray/*[i]*/, l+1, k+1, hx,hy);
+              this->template updateCell< sizeSArray >( sArray, l+1, k+1, hx,hy);
             }
           }
         }
@@ -213,7 +214,7 @@ updateBlocks( InterfaceMapType interfaceMap,
           {
             if( ! interfaceMap[ blIdy * numThreadsPerBlock * dimX + numThreadsPerBlock * blIdx  + k*dimX + l ] )
             {
-              this->updateCell<sizeSArray>( sArray/*[i]*/, l+1, k+1, hx,hy);
+              this->template updateCell< sizeSArray >( sArray, l+1, k+1, hx,hy);
             }
           }
         }
@@ -231,7 +232,7 @@ updateBlocks( InterfaceMapType interfaceMap,
           {
             if( ! interfaceMap[ blIdy * numThreadsPerBlock * dimX + numThreadsPerBlock * blIdx  + k*dimX + l ] )
             {
-              this->updateCell<sizeSArray>( sArray/*[i]*/, l+1, k+1, hx,hy);
+              this->template updateCell< sizeSArray >( sArray, l+1, k+1, hx, hy, 1.0);
             }
           }
         }
@@ -258,7 +259,7 @@ updateBlocks( InterfaceMapType interfaceMap,
         }
         //std::cout<<std::endl;
       }
-      //delete []sArray;
+      delete []sArray;
     }
   }
 }
@@ -914,7 +915,58 @@ __cuda_callable__ void sortMinims( T1 pom[] )
   }   
 }
 
-
+template< typename Real,
+        typename Device,
+        typename Index >
+template< int sizeSArray >
+__cuda_callable__
+bool
+tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >::
+updateCell( volatile Real *sArray, int thri, int thrj, const Real hx, const Real hy,
+        const Real v )
+{
+  const RealType value = sArray[ thrj * sizeSArray + thri ];
+  RealType a, b, tmp = std::numeric_limits< RealType >::max();
+  
+  b = TNL::argAbsMin( sArray[ (thrj+1) * sizeSArray + thri ],
+          sArray[ (thrj-1) * sizeSArray + thri ] );
+  
+  a = TNL::argAbsMin( sArray[ thrj * sizeSArray + thri+1 ],
+          sArray[ thrj * sizeSArray + thri-1 ] );
+  
+  if( fabs( a ) == std::numeric_limits< RealType >::max() && 
+          fabs( b ) == std::numeric_limits< RealType >::max() )
+    return false;
+  
+  RealType pom[6] = { a, b, std::numeric_limits< RealType >::max(), (RealType)hx, (RealType)hy, 0.0 };
+  sortMinims( pom );
+  tmp = pom[ 0 ] + TNL::sign( value ) * pom[ 3 ]/v;
+  
+  
+  if( fabs( tmp ) < fabs( pom[ 1 ] ) ) 
+  {
+    sArray[ thrj * sizeSArray + thri ] = argAbsMin( value, tmp );
+    tmp = value - sArray[ thrj * sizeSArray + thri ];
+    if ( fabs( tmp ) >  0.001*hx )
+      return true;
+    else
+      return false;
+  }
+  else
+  {
+    tmp = ( pom[ 3 ] * pom[ 3 ] * pom[ 1 ] + pom[ 4 ] * pom[ 4 ] * pom[ 0 ] + 
+            TNL::sign( value ) * pom[ 3 ] * pom[ 4 ] * TNL::sqrt( ( pom[ 3 ] * pom[ 3 ] +  pom[ 4 ] *  pom[ 4 ] )/( v * v ) - 
+            ( pom[ 1 ] - pom[ 0 ] ) * ( pom[ 1 ] - pom[ 0 ] ) ) )/( pom[ 3 ] * pom[ 3 ] + pom[ 4 ] * pom[ 4 ] );
+    sArray[ thrj * sizeSArray + thri ] = argAbsMin( value, tmp );
+    tmp = value - sArray[ thrj * sizeSArray + thri ];
+    if ( fabs( tmp ) > 0.001*hx )
+      return true;
+    else
+      return false;
+  }
+  
+  return false;
+}
 
 #ifdef HAVE_CUDA
 template < typename Real, typename Device, typename Index >
@@ -1133,58 +1185,7 @@ __global__ void CudaInitCaller3d( const Functions::MeshFunction< Meshes::Grid< 3
 }
 
 
-template< typename Real,
-        typename Device,
-        typename Index >
-template< int sizeSArray >
-__cuda_callable__
-bool
-tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >::
-updateCell( volatile Real *sArray, int thri, int thrj, const Real hx, const Real hy,
-        const Real v )
-{
-  const RealType value = sArray[ thrj * sizeSArray + thri ];
-  RealType a, b, tmp = std::numeric_limits< RealType >::max();
-  
-  b = TNL::argAbsMin( sArray[ (thrj+1) * sizeSArray + thri ],
-          sArray[ (thrj-1) * sizeSArray + thri ] );
-  
-  a = TNL::argAbsMin( sArray[ thrj * sizeSArray + thri+1 ],
-          sArray[ thrj * sizeSArray + thri-1 ] );
-  
-  if( fabs( a ) == std::numeric_limits< RealType >::max() && 
-          fabs( b ) == std::numeric_limits< RealType >::max() )
-    return false;
-  
-  RealType pom[6] = { a, b, std::numeric_limits< RealType >::max(), (RealType)hx, (RealType)hy, 0.0 };
-  sortMinims( pom );
-  tmp = pom[ 0 ] + TNL::sign( value ) * pom[ 3 ]/v;
-  
-  
-  if( fabs( tmp ) < fabs( pom[ 1 ] ) ) 
-  {
-    sArray[ thrj * sizeSArray + thri ] = argAbsMin( value, tmp );
-    tmp = value - sArray[ thrj * sizeSArray + thri ];
-    if ( fabs( tmp ) >  0.001*hx )
-      return true;
-    else
-      return false;
-  }
-  else
-  {
-    tmp = ( pom[ 3 ] * pom[ 3 ] * pom[ 1 ] + pom[ 4 ] * pom[ 4 ] * pom[ 0 ] + 
-            TNL::sign( value ) * pom[ 3 ] * pom[ 4 ] * TNL::sqrt( ( pom[ 3 ] * pom[ 3 ] +  pom[ 4 ] *  pom[ 4 ] )/( v * v ) - 
-            ( pom[ 1 ] - pom[ 0 ] ) * ( pom[ 1 ] - pom[ 0 ] ) ) )/( pom[ 3 ] * pom[ 3 ] + pom[ 4 ] * pom[ 4 ] );
-    sArray[ thrj * sizeSArray + thri ] = argAbsMin( value, tmp );
-    tmp = value - sArray[ thrj * sizeSArray + thri ];
-    if ( fabs( tmp ) > 0.001*hx )
-      return true;
-    else
-      return false;
-  }
-  
-  return false;
-}
+
 
 template< typename Real,
         typename Device,
