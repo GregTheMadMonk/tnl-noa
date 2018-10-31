@@ -203,30 +203,40 @@ template< typename Matrix1, typename Matrix2 >
 void testCopyAssignment()
 {
    Matrix1 m1;
-//   setupTriDiagMatrix( m1 );
-//   checkTriDiagMatrix( m1 );
-   setupAntiTriDiagMatrix( m1 );
-   checkAntiTriDiagMatrix( m1 );
+   setupTriDiagMatrix( m1 );
+   checkTriDiagMatrix( m1 );
+   
+//   Matrix1 m11;
+//   setupAntiTriDiagMatrix( m11 );
+//   checkAntiTriDiagMatrix( m11 );
 
    Matrix2 m2;
    m2 = m1;
-//   checkTriDiagMatrix( m2 );
-   checkAntiTriDiagMatrix( m2 );
+   checkTriDiagMatrix( m2 );
+   
+//   Matrix2 m22;
+//   m22 = m11;
+//   checkAntiTriDiagMatrix( m22 );
 }
 
 template< typename Matrix1, typename Matrix2 >
 void testConversion()
 {
    Matrix1 m1;
-//   setupTriDiagMatrix( m1 );
-//   checkTriDiagMatrix( m1 );
-   setupAntiTriDiagMatrix( m1 );
-   checkAntiTriDiagMatrix( m1 );
+   setupTriDiagMatrix( m1 );
+   checkTriDiagMatrix( m1 );
+   
+//   Matrix1 m11;
+//   setupAntiTriDiagMatrix( m11 );
+//   checkAntiTriDiagMatrix( m11 );
 
    Matrix2 m2;
    TNL::Matrices::copySparseMatrix( m2, m1 );
-//   checkTriDiagMatrix( m2 );
-   checkAntiTriDiagMatrix( m2 );
+   checkTriDiagMatrix( m2 );
+   
+//   Matrix2 m22;
+//   TNL::Matrices::copySparseMatrix( m22, m11 );
+//   checkAntiTriDiagMatrix( m22 );
 }
 
 
