@@ -148,7 +148,7 @@ __global__ void CudaParallelReduc( TNL::Containers::Array< int, Devices::Cuda, I
 
 template < typename Index >
 __global__ void GetNeighbours( TNL::Containers::Array< int, Devices::Cuda, Index > BlockIterDevice,
-                               /*TNL::Containers::Array< int, Devices::Cuda, Index > BlockIterPom,*/ int numBlockX, int numBlockY );
+                               TNL::Containers::Array< int, Devices::Cuda, Index > BlockIterPom, int numBlockX, int numBlockY );
 
 template < typename Real, typename Device, typename Index >
 __global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& input, 
