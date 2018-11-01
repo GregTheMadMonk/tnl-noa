@@ -123,6 +123,7 @@ solve( const MeshPointer& mesh,
         helpFunc = helpFunc1;
         this->template updateBlocks< 1026 >( interfaceMap, *auxPtr, *helpFunc, BlockIterHost, numThreadsPerBlock/*, sArray*/ );
         
+        //Reduction      
         for( int i = 0; i < BlockIterHost.getSize(); i++ ){
           if( IsCalculationDone == 0 ){
             IsCalculationDone = IsCalculationDone || BlockIterHost[ i ];
@@ -130,6 +131,7 @@ solve( const MeshPointer& mesh,
           }
         }
         numWhile++;
+        std::cout <<"numWhile = "<< numWhile <<std::endl;
         
         for( int j = numBlocksY-1; j>-1; j-- ){
           for( int i = 0; i < numBlocksX; i++ )
@@ -146,7 +148,6 @@ solve( const MeshPointer& mesh,
          std::cout << std::endl;
          }
          std::cout << std::endl;*/
-        //Reduction      
         
         //std::cout<<std::endl;
         string s( "aux-"+ std::to_string(numWhile) + ".tnl");
@@ -171,7 +172,7 @@ solve( const MeshPointer& mesh,
        if( ! interfaceMap( cell ) )
        this->updateCell( aux, cell );
        }
-       }
+       } 
        
        //aux.save( "aux-1.tnl" );
        
@@ -261,12 +262,12 @@ solve( const MeshPointer& mesh,
       TNL_CHECK_CUDA_DEVICE;
       
       
-      /*TNL::Containers::Array< int, Devices::Cuda, IndexType > BlockIterPom;
-       BlockIterPom.setSize( numBlocksX * numBlocksY  );
-       BlockIterPom.setValue( 0 );*/
+      TNL::Containers::Array< int, Devices::Cuda, IndexType > BlockIterPom;
+      BlockIterPom.setSize( numBlocksX * numBlocksY  );
+      BlockIterPom.setValue( 0 );
       /*TNL::Containers::Array< int, Devices::Host, IndexType > BlockIterPom1;
-       BlockIterPom1.setSize( numBlocksX * numBlocksY  );
-       BlockIterPom1.setValue( 0 );*/
+      BlockIterPom1.setSize( numBlocksX * numBlocksY  );
+      BlockIterPom1.setValue( 0 );*/
       /*int *BlockIterDevice;
        cudaMalloc((void**) &BlockIterDevice, ( numBlocksX * numBlocksY ) * sizeof( int ) );*/
       int nBlocksNeigh = ( numBlocksX * numBlocksY )/1024 + ((( numBlocksX * numBlocksY )%1024 != 0) ? 1:0);
@@ -284,9 +285,7 @@ solve( const MeshPointer& mesh,
        cudaMalloc((void**) &dBlock, nBlocks * sizeof( int ) );*/
       
       
-      MeshFunctionPointer helpFunc1;
-      helpFunc1->setMesh(mesh);
-      
+      MeshFunctionPointer helpFunc1( mesh );      
       MeshFunctionPointer helpFunc( mesh );
       
       helpFunc1 = auxPtr;
@@ -301,82 +300,93 @@ solve( const MeshPointer& mesh,
         /** HERE IS CHESS METHOD **/
         
         /*auxPtr = helpFunc;
-        
-        CudaUpdateCellCaller<18><<< gridSize, blockSize >>>( ptr,
-                interfaceMapPtr.template getData< Device >(),
-                auxPtr.template getData< Device>(),
-                helpFunc.template modifyData< Device>(),
-                BlockIterDevice,
-                oddEvenBlock );
-        cudaDeviceSynchronize();
-        TNL_CHECK_CUDA_DEVICE;
-        auxPtr = helpFunc;
-        
-        oddEvenBlock= (oddEvenBlock == 0) ? 1: 0;
-        
-        CudaUpdateCellCaller<18><<< gridSize, blockSize >>>( ptr,
-                interfaceMapPtr.template getData< Device >(),
-                auxPtr.template getData< Device>(),
-                helpFunc.template modifyData< Device>(),
-                BlockIterDevice,
-                oddEvenBlock );
-        cudaDeviceSynchronize();
-        TNL_CHECK_CUDA_DEVICE;
-        auxPtr = helpFunc;
-        
-        oddEvenBlock= (oddEvenBlock == 0) ? 1: 0;
-        
-        CudaParallelReduc<<< nBlocks , 1024 >>>( BlockIterDevice, dBlock, ( numBlocksX * numBlocksY ) );
-        cudaDeviceSynchronize();
-        TNL_CHECK_CUDA_DEVICE;
-        CudaParallelReduc<<< 1, nBlocks >>>( dBlock, dBlock, nBlocks );
-        cudaDeviceSynchronize();
-        TNL_CHECK_CUDA_DEVICE;
-        
-        BlockIterD = dBlock.getElement( 0 );*/
+         
+         CudaUpdateCellCaller<18><<< gridSize, blockSize >>>( ptr,
+         interfaceMapPtr.template getData< Device >(),
+         auxPtr.template getData< Device>(),
+         helpFunc.template modifyData< Device>(),
+         BlockIterDevice,
+         oddEvenBlock );
+         cudaDeviceSynchronize();
+         TNL_CHECK_CUDA_DEVICE;
+         auxPtr = helpFunc;
+         
+         oddEvenBlock= (oddEvenBlock == 0) ? 1: 0;
+         
+         CudaUpdateCellCaller<18><<< gridSize, blockSize >>>( ptr,
+         interfaceMapPtr.template getData< Device >(),
+         auxPtr.template getData< Device>(),
+         helpFunc.template modifyData< Device>(),
+         BlockIterDevice,
+         oddEvenBlock );
+         cudaDeviceSynchronize();
+         TNL_CHECK_CUDA_DEVICE;
+         auxPtr = helpFunc;
+         
+         oddEvenBlock= (oddEvenBlock == 0) ? 1: 0;
+         
+         CudaParallelReduc<<< nBlocks , 1024 >>>( BlockIterDevice, dBlock, ( numBlocksX * numBlocksY ) );
+         cudaDeviceSynchronize();
+         TNL_CHECK_CUDA_DEVICE;
+         CudaParallelReduc<<< 1, nBlocks >>>( dBlock, dBlock, nBlocks );
+         cudaDeviceSynchronize();
+         TNL_CHECK_CUDA_DEVICE;
+         
+         BlockIterD = dBlock.getElement( 0 );*/
         
         /**------------------------------------------------------------------------------------------------*/
         
         
         /** HERE IS FIM **/
         
-         helpFunc1 = auxPtr;
-         auxPtr = helpFunc;
-         helpFunc = helpFunc1;
-         
-         //int pocBloku = 0;
-         Devices::Cuda::synchronizeDevice();
-         CudaUpdateCellCaller<18><<< gridSize, blockSize >>>( ptr,
-         interfaceMapPtr.template getData< Device >(),
-         auxPtr.template modifyData< Device>(),
-         helpFunc.template modifyData< Device>(),
-         BlockIterDevice );
-         cudaDeviceSynchronize();
-         TNL_CHECK_CUDA_DEVICE;
-         
-         //std::cout << "Pocet aktivnich bloku = " << pocBloku << std::endl;
-         
-         GetNeighbours<<< nBlocksNeigh, 1024 >>>( BlockIterDevice, numBlocksX, numBlocksY );
-         cudaDeviceSynchronize();
-         TNL_CHECK_CUDA_DEVICE;
-         
-         //std::cout<< "Probehlo" << std::endl;
-         
-         //TNL::swap( auxPtr, helpFunc );
-         
-         
-         CudaParallelReduc<<< nBlocks , 1024 >>>( BlockIterDevice, dBlock, ( numBlocksX * numBlocksY ) );
-         TNL_CHECK_CUDA_DEVICE;
-         
-         CudaParallelReduc<<< 1, nBlocks >>>( dBlock, dBlock, nBlocks );
-         TNL_CHECK_CUDA_DEVICE;
-         
-         
-         BlockIterD = dBlock.getElement( 0 );
-         //cudaMemcpy( &BlockIterD, &dBlock[0], sizeof( int ), cudaMemcpyDeviceToHost);
-         cudaDeviceSynchronize();
-         TNL_CHECK_CUDA_DEVICE;
-         
+        helpFunc1 = auxPtr;
+        auxPtr = helpFunc;
+        helpFunc = helpFunc1;
+        TNL_CHECK_CUDA_DEVICE;
+        
+        //int pocBloku = 0;
+        Devices::Cuda::synchronizeDevice();
+        CudaUpdateCellCaller<18><<< gridSize, blockSize >>>( ptr,
+                interfaceMapPtr.template getData< Device >(),
+                auxPtr.template modifyData< Device>(),
+                helpFunc.template modifyData< Device>(),
+                BlockIterDevice );
+        cudaDeviceSynchronize();
+        TNL_CHECK_CUDA_DEVICE;
+        
+        //std::cout << "Pocet aktivnich bloku = " << pocBloku << std::endl;
+        //BlockIterPom1 = BlockIterDevice;
+        ///for( int i =0; i< numBlocksX; i++ ){
+        //  for( int j = 0; j < numBlocksY; j++ )
+        //  {
+        //    std::cout << BlockIterPom1[j*numBlocksX + i];
+        //  }
+        //  std::cout << std::endl;
+        //}
+        //std::cout << std::endl;
+        
+        GetNeighbours<<< nBlocksNeigh, 1024 >>>( BlockIterDevice, BlockIterPom, numBlocksX, numBlocksY );
+        cudaDeviceSynchronize();
+        TNL_CHECK_CUDA_DEVICE;
+        BlockIterDevice = BlockIterPom;
+        
+        //std::cout<< "Probehlo" << std::endl;
+        
+        //TNL::swap( auxPtr, helpFunc );
+        
+        
+        CudaParallelReduc<<< nBlocks , 1024 >>>( BlockIterDevice, dBlock, ( numBlocksX * numBlocksY ) );
+        TNL_CHECK_CUDA_DEVICE;
+        
+        CudaParallelReduc<<< 1, nBlocks >>>( dBlock, dBlock, nBlocks );
+        TNL_CHECK_CUDA_DEVICE;
+        
+        
+        BlockIterD = dBlock.getElement( 0 );
+        //cudaMemcpy( &BlockIterD, &dBlock[0], sizeof( int ), cudaMemcpyDeviceToHost);
+        cudaDeviceSynchronize();
+        TNL_CHECK_CUDA_DEVICE;
+        
         
         /**-----------------------------------------------------------------------------------------------------------*/
         /*for( int i = 1; i < numBlocksX * numBlocksY; i++ )
@@ -392,7 +402,6 @@ solve( const MeshPointer& mesh,
        cudaFree( dBlock );
        delete BlockIter;*/
       cudaDeviceSynchronize();
-      
       TNL_CHECK_CUDA_DEVICE;
       
       aux = *auxPtr;
@@ -410,7 +419,7 @@ solve( const MeshPointer& mesh,
 
 template < typename Index >
 __global__ void GetNeighbours( TNL::Containers::Array< int, Devices::Cuda, Index > BlockIterDevice,
-        /*TNL::Containers::Array< int, Devices::Cuda, Index > BlockIterPom,*/ int numBlockX, int numBlockY )
+        TNL::Containers::Array< int, Devices::Cuda, Index > BlockIterPom, int numBlockX, int numBlockY )
 {
   int i = blockIdx.x * 1024 + threadIdx.x;
   
@@ -430,7 +439,7 @@ __global__ void GetNeighbours( TNL::Containers::Array< int, Devices::Cuda, Index
       pom = 1;//BlockIterPom[ i ] = 1;
     }
     
-    BlockIterDevice[ i ] = pom;//BlockIterPom[ i ];
+    BlockIterPom[ i ] = pom;//BlockIterPom[ i ];
   }
 }
 
@@ -514,14 +523,16 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
   int i = threadIdx.x + blockDim.x*blockIdx.x;
   int j = blockDim.y*blockIdx.y + threadIdx.y;
   /** FOR CHESS METHOD */
-  if( (blockIdx.y%2  + blockIdx.x) % 2 == oddEvenBlock )
-  {
-    /**-----------------------------------------*/
+  //if( (blockIdx.y%2  + blockIdx.x) % 2 == oddEvenBlock )
+  //{
+  /**------------------------------------------*/
+  
+  
+  /** FOR FIM METHOD */
     
-    
-    /** FOR FIM METHOD */
-    /*if( BlockIterDevice[ blockIdx.y * gridDim.x + blockIdx.x] )
-     {*/ 
+  if( BlockIterDevice[ blockIdx.y * gridDim.x + blockIdx.x ] )
+  { 
+    __syncthreads();
     /**-----------------------------------------*/
     const Meshes::Grid< 2, Real, Device, Index >& mesh = interfaceMap.template getMesh< Devices::Cuda >();
     __shared__ volatile int dimX;

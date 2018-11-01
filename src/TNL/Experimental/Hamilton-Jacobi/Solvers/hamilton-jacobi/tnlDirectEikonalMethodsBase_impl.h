@@ -134,6 +134,7 @@ updateBlocks( InterfaceMapType interfaceMap,
       Real hy = mesh.getSpaceSteps().y();
       
       bool changed = false;
+      BlockIterHost[ blIdy * numOfBlockx + blIdx ] = 0;
       
       
       Real *sArray;
@@ -143,53 +144,52 @@ updateBlocks( InterfaceMapType interfaceMap,
       
       for( int thri = 0; thri < sizeSArray; thri++ ){
         for( int thrj = 0; thrj < sizeSArray; thrj++ )
-          sArray/*[i]*/[ thri * sizeSArray + thrj ] = std::numeric_limits< Real >::max();
+          sArray[ thri * sizeSArray + thrj ] = std::numeric_limits< Real >::max();
       }
       
-      BlockIterHost[ blIdy * numOfBlockx + blIdx ] = 0;
       
       for( int thrj = 0; thrj < numThreadsPerBlock + 1; thrj++ )
       {        
         if( dimX > (blIdx+1) * numThreadsPerBlock  && thrj+1 < ykolik )
-          sArray/*[i]*/[ ( thrj+1 )* sizeSArray +xkolik] = aux[ blIdy*numThreadsPerBlock*dimX - dimX + blIdx*numThreadsPerBlock - 1 + (thrj+1)*dimX + xkolik ];
+          sArray[ ( thrj+1 )* sizeSArray +xkolik] = aux[ blIdy*numThreadsPerBlock*dimX - dimX + blIdx*numThreadsPerBlock - 1 + (thrj+1)*dimX + xkolik ];
         
         
         if( blIdx != 0 && thrj+1 < ykolik )
-          sArray/*[i]*/[(thrj+1)* sizeSArray] = aux[ blIdy*numThreadsPerBlock*dimX - dimX + blIdx*numThreadsPerBlock - 1 + (thrj+1)*dimX ];
+          sArray[(thrj+1)* sizeSArray] = aux[ blIdy*numThreadsPerBlock*dimX - dimX + blIdx*numThreadsPerBlock - 1 + (thrj+1)*dimX ];
         
         if( dimY > (blIdy+1) * numThreadsPerBlock  && thrj+1 < xkolik )
-          sArray/*[i]*/[ykolik * sizeSArray + thrj+1] = aux[ blIdy*numThreadsPerBlock*dimX - dimX + blIdx*numThreadsPerBlock - 1 + ykolik*dimX + thrj+1 ];
+          sArray[ykolik * sizeSArray + thrj+1] = aux[ blIdy*numThreadsPerBlock*dimX - dimX + blIdx*numThreadsPerBlock - 1 + ykolik*dimX + thrj+1 ];
         
         if( blIdy != 0 && thrj+1 < xkolik )
-          sArray/*[i]*/[thrj+1] = aux[ blIdy*numThreadsPerBlock*dimX - dimX + blIdx*numThreadsPerBlock - 1 + thrj+1 ];
+          sArray[thrj+1] = aux[ blIdy*numThreadsPerBlock*dimX - dimX + blIdx*numThreadsPerBlock - 1 + thrj+1 ];
       }
       
       for( int k = 0; k < numThreadsPerBlock; k++ ){
         for( int l = 0; l < numThreadsPerBlock; l++ )
           if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX )
-            sArray/*[i]*/[(k+1) * sizeSArray + l+1] = aux[ blIdy * numThreadsPerBlock * dimX + numThreadsPerBlock * blIdx  + k*dimX + l ];
+            sArray[(k+1) * sizeSArray + l+1] = aux[ blIdy * numThreadsPerBlock * dimX + numThreadsPerBlock * blIdx  + k*dimX + l ];
       }
-      bool pom = false;
+      
       for( int k = 0; k < numThreadsPerBlock; k++ ){ 
         for( int l = 0; l < numThreadsPerBlock; l++ ){
           if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX ){
             //std::cout << "proslo i = " << k * numThreadsPerBlock + l << std::endl;
             if( ! interfaceMap[ blIdy * numThreadsPerBlock * dimX + numThreadsPerBlock * blIdx  + k*dimX + l ] )
             {
-              pom = this->template updateCell< sizeSArray >( sArray, l+1, k+1, hx,hy);
-              changed = changed || pom;
+              changed = this->template updateCell< sizeSArray >( sArray, l+1, k+1, hx,hy) || changed;
+              
             }
           }
         }
       }
       /*aux.save( "aux-1pruch.tnl" );
-      for( int k = 0; k < sizeSArray; k++ ){ 
-        for( int l = 0; l < sizeSArray; l++ ) {
-          std::cout << sArray[ k * sizeSArray + l] << " ";
-        }
-        std::cout << std::endl;
-      }*/
-           
+       for( int k = 0; k < sizeSArray; k++ ){ 
+       for( int l = 0; l < sizeSArray; l++ ) {
+       std::cout << sArray[ k * sizeSArray + l] << " ";
+       }
+       std::cout << std::endl;
+       }*/
+      
       for( int k = 0; k < numThreadsPerBlock; k++ ) 
         for( int l = numThreadsPerBlock-1; l >-1; l-- ) { 
           if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX )
@@ -201,12 +201,12 @@ updateBlocks( InterfaceMapType interfaceMap,
           }
         }
       /*aux.save( "aux-2pruch.tnl" );
-      for( int k = 0; k < sizeSArray; k++ ){ 
-        for( int l = 0; l < sizeSArray; l++ ) {
-          std::cout << sArray[ k * sizeSArray + l] << " ";
-        }
-        std::cout << std::endl;
-      }*/
+       for( int k = 0; k < sizeSArray; k++ ){ 
+       for( int l = 0; l < sizeSArray; l++ ) {
+       std::cout << sArray[ k * sizeSArray + l] << " ";
+       }
+       std::cout << std::endl;
+       }*/
       
       for( int k = numThreadsPerBlock-1; k > -1; k-- ) 
         for( int l = 0; l < numThreadsPerBlock; l++ ) {
@@ -219,12 +219,12 @@ updateBlocks( InterfaceMapType interfaceMap,
           }
         }
       /*aux.save( "aux-3pruch.tnl" );
-      for( int k = 0; k < sizeSArray; k++ ){ 
-        for( int l = 0; l < sizeSArray; l++ ) {
-          std::cout << sArray[ k * sizeSArray + l] << " ";
-        }
-        std::cout << std::endl;
-      }*/
+       for( int k = 0; k < sizeSArray; k++ ){ 
+       for( int l = 0; l < sizeSArray; l++ ) {
+       std::cout << sArray[ k * sizeSArray + l] << " ";
+       }
+       std::cout << std::endl;
+       }*/
       
       for( int k = numThreadsPerBlock-1; k > -1; k-- ){
         for( int l = numThreadsPerBlock-1; l >-1; l-- ) { 
@@ -238,12 +238,12 @@ updateBlocks( InterfaceMapType interfaceMap,
         }
       }
       /*aux.save( "aux-4pruch.tnl" );
-      for( int k = 0; k < sizeSArray; k++ ){ 
-        for( int l = 0; l < sizeSArray; l++ ) {
-          std::cout << sArray[ k * sizeSArray + l] << " ";
-        }
-        std::cout << std::endl;
-      }*/
+       for( int k = 0; k < sizeSArray; k++ ){ 
+       for( int l = 0; l < sizeSArray; l++ ) {
+       std::cout << sArray[ k * sizeSArray + l] << " ";
+       }
+       std::cout << std::endl;
+       }*/
       
       
       if( changed ){
@@ -254,7 +254,7 @@ updateBlocks( InterfaceMapType interfaceMap,
       for( int k = 0; k < numThreadsPerBlock; k++ ){ 
         for( int l = 0; l < numThreadsPerBlock; l++ ) {
           if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX )      
-            helpFunc[ blIdy * numThreadsPerBlock * dimX + numThreadsPerBlock * blIdx  + k*dimX + l ] = sArray/*[i]*/[ (k + 1)* sizeSArray + l + 1 ];
+            helpFunc[ blIdy * numThreadsPerBlock * dimX + numThreadsPerBlock * blIdx  + k*dimX + l ] = sArray[ (k + 1)* sizeSArray + l + 1 ];
           //std::cout<< sArray[k+1][l+1];
         }
         //std::cout<<std::endl;
