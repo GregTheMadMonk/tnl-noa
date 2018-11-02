@@ -46,8 +46,13 @@ void setupUnevenRowSizeMatrix( Matrix& m )
     typename Matrix::CompressedRowLengthsVector rowLengths;
     rowLengths.setSize( rows );
     rowLengths.setValue( 5 );
-//    rowLengths.setElement( 0, 4);
-//    rowLengths.setElement( 1,  4 );
+    rowLengths.setElement( 0, 2 );
+    rowLengths.setElement( 1,  3 );
+    rowLengths.setElement( 2,  3 );
+    rowLengths.setElement( 5,  2 );
+    rowLengths.setElement( 6,  1 );
+    rowLengths.setElement( 7,  1 );
+    rowLengths.setElement( 9,  1 );
     m.setCompressedRowLengths( rowLengths );
     
     int value = 1;
@@ -335,57 +340,57 @@ void checkTriDiagMatrix( Matrix& m )
 template< typename Matrix1, typename Matrix2 >
 void testCopyAssignment()
 {
-   Matrix1 m1;
-   setupTriDiagMatrix( m1 );
-   checkTriDiagMatrix( m1 );
+//   Matrix1 m1;
+//   setupTriDiagMatrix( m1 );
+//   checkTriDiagMatrix( m1 );
    
 //   Matrix1 m11;
 //   setupAntiTriDiagMatrix( m11 );
 //   checkAntiTriDiagMatrix( m11 );
    
-//   Matrix1 m111;
-//   setupUnevenRowSizeMatrix( m111 );
-//   checkUnevenRowSizeMatrix( m111 );
+   Matrix1 m111;
+   setupUnevenRowSizeMatrix( m111 );
+   checkUnevenRowSizeMatrix( m111 );
 
-   Matrix2 m2;
-   m2 = m1;
-   checkTriDiagMatrix( m2 );
+//   Matrix2 m2;
+//   m2 = m1;
+//   checkTriDiagMatrix( m2 );
    
 //   Matrix2 m22;
 //   m22 = m11;
 //   checkAntiTriDiagMatrix( m22 );
    
-//   Matrix2 m222;
-//   m222 = m111;
-//   checkUnevenRowSizeMatrix( m222 );
+   Matrix2 m222;
+   m222 = m111;
+   checkUnevenRowSizeMatrix( m222 );
 }
 
 template< typename Matrix1, typename Matrix2 >
 void testConversion()
 {
-   Matrix1 m1;
-   setupTriDiagMatrix( m1 );
-   checkTriDiagMatrix( m1 );
+//   Matrix1 m1;
+//   setupTriDiagMatrix( m1 );
+//   checkTriDiagMatrix( m1 );
    
 //   Matrix1 m11;
 //   setupAntiTriDiagMatrix( m11 );
 //   checkAntiTriDiagMatrix( m11 );
    
-//   Matrix1 m111;
-//   setupUnevenRowSizeMatrix( m111 );
-//   checkUnevenRowSizeMatrix( m111 );
+   Matrix1 m111;
+   setupUnevenRowSizeMatrix( m111 );
+   checkUnevenRowSizeMatrix( m111 );
 
-   Matrix2 m2;
-   TNL::Matrices::copySparseMatrix( m2, m1 );
-   checkTriDiagMatrix( m2 );
+//   Matrix2 m2;
+//   TNL::Matrices::copySparseMatrix( m2, m1 );
+//   checkTriDiagMatrix( m2 );
    
 //   Matrix2 m22;
 //   TNL::Matrices::copySparseMatrix( m22, m11 );
 //   checkAntiTriDiagMatrix( m22 );
    
-//   Matrix2 m222;
-//   TNL::Matrices::copySparseMatrix( m222, m111 );
-//   checkUnevenRowSizeMatrix( m222 );
+   Matrix2 m222;
+   TNL::Matrices::copySparseMatrix( m222, m111 );
+   checkUnevenRowSizeMatrix( m222 );
 }
 
 
