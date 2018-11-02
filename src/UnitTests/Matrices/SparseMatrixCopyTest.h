@@ -340,57 +340,80 @@ void checkTriDiagMatrix( Matrix& m )
 template< typename Matrix1, typename Matrix2 >
 void testCopyAssignment()
 {
-   Matrix1 triDiag1;
-   setupTriDiagMatrix( triDiag1 );
-   checkTriDiagMatrix( triDiag1 );
+   {
+        SCOPED_TRACE("Tri Diagonal Matrix");
+        
+        Matrix1 triDiag1;
+        setupTriDiagMatrix( triDiag1 );
+        checkTriDiagMatrix( triDiag1 );
+        
+        Matrix2 triDiag2;
+        triDiag2 = triDiag1;
+        checkTriDiagMatrix( triDiag2 );
+   }
    
-   Matrix1 antiTriDiag1;
-   setupAntiTriDiagMatrix( antiTriDiag1 );
-   checkAntiTriDiagMatrix( antiTriDiag1 );
+   {
+        SCOPED_TRACE("Anti Tri Diagonal Matrix");
+                
+        Matrix1 antiTriDiag1;
+        setupAntiTriDiagMatrix( antiTriDiag1 );
+        checkAntiTriDiagMatrix( antiTriDiag1 );
+        
+        Matrix2 antiTriDiag2;
+        antiTriDiag2 = antiTriDiag1;
+        checkAntiTriDiagMatrix( antiTriDiag2 );
+   }
    
-   Matrix1 unevenRowSize1;
-   setupUnevenRowSizeMatrix( unevenRowSize1 );
-   checkUnevenRowSizeMatrix( unevenRowSize1 );
-
-   Matrix2 triDiag2;
-   triDiag2 = triDiag1;
-   checkTriDiagMatrix( triDiag2 );
-   
-   Matrix2 antiTriDiag2;
-   antiTriDiag2 = antiTriDiag1;
-   checkAntiTriDiagMatrix( antiTriDiag2 );
-   
-   Matrix2 unevenRowSize2;
-   unevenRowSize2 = unevenRowSize1;
-   checkUnevenRowSizeMatrix( unevenRowSize2 );
+   {
+        SCOPED_TRACE("Uneven Row Size Matrix");
+        Matrix1 unevenRowSize1;
+        setupUnevenRowSizeMatrix( unevenRowSize1 );
+        checkUnevenRowSizeMatrix( unevenRowSize1 );
+        
+        Matrix2 unevenRowSize2;
+        unevenRowSize2 = unevenRowSize1;
+        checkUnevenRowSizeMatrix( unevenRowSize2 );
+   }
 }
 
 template< typename Matrix1, typename Matrix2 >
 void testConversion()
 {
-   Matrix1 triDiag1;
-   setupTriDiagMatrix( triDiag1 );
-   checkTriDiagMatrix( triDiag1 );
+    
+   {
+        SCOPED_TRACE("Tri Diagonal Matrix");
+        
+        Matrix1 triDiag1;
+        setupTriDiagMatrix( triDiag1 );
+        checkTriDiagMatrix( triDiag1 );
+        
+        Matrix2 triDiag2;
+        TNL::Matrices::copySparseMatrix( triDiag2, triDiag1 );
+        checkTriDiagMatrix( triDiag2 );
+   }
    
-   Matrix1 antiTriDiag1;
-   setupAntiTriDiagMatrix( antiTriDiag1 );
-   checkAntiTriDiagMatrix( antiTriDiag1 );
+   {
+        SCOPED_TRACE("Anti Tri Diagonal Matrix");
+                
+        Matrix1 antiTriDiag1;
+        setupAntiTriDiagMatrix( antiTriDiag1 );
+        checkAntiTriDiagMatrix( antiTriDiag1 );
+        
+        Matrix2 antiTriDiag2;
+        TNL::Matrices::copySparseMatrix( antiTriDiag2, antiTriDiag1 );
+        checkAntiTriDiagMatrix( antiTriDiag2 );
+   }
    
-   Matrix1 unevenRowSize1;
-   setupUnevenRowSizeMatrix( unevenRowSize1 );
-   checkUnevenRowSizeMatrix( unevenRowSize1 );
-
-   Matrix2 triDiag2;
-   TNL::Matrices::copySparseMatrix( triDiag2, triDiag1 );
-   checkTriDiagMatrix( triDiag2 );
-   
-   Matrix2 antiTriDiag2;
-   TNL::Matrices::copySparseMatrix( antiTriDiag2, antiTriDiag1 );
-   checkAntiTriDiagMatrix( antiTriDiag2 );
-   
-   Matrix2 unevenRowSize2;
-   TNL::Matrices::copySparseMatrix( unevenRowSize2, unevenRowSize1 );
-   checkUnevenRowSizeMatrix( unevenRowSize2 );
+   {
+        SCOPED_TRACE("Uneven Row Size Matrix");
+        Matrix1 unevenRowSize1;
+        setupUnevenRowSizeMatrix( unevenRowSize1 );
+        checkUnevenRowSizeMatrix( unevenRowSize1 );
+        
+        Matrix2 unevenRowSize2;
+        TNL::Matrices::copySparseMatrix( unevenRowSize2, unevenRowSize1 );
+        checkUnevenRowSizeMatrix( unevenRowSize2 );
+   }
 }
 
 
