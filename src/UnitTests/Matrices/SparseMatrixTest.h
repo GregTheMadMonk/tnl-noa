@@ -12,34 +12,45 @@
 #include <TNL/Matrices/Ellpack.h>
 #include <TNL/Matrices/SlicedEllpack.h>
 
-using CSR_host = TNL::Matrices::CSR< int, TNL::Devices::Host, int >;
-using CSR_cuda = TNL::Matrices::CSR< int, TNL::Devices::Cuda, int >;
+using CSR_host_float = TNL::Matrices::CSR< float, TNL::Devices::Host, int >;
+using CSR_host_int = TNL::Matrices::CSR< int, TNL::Devices::Host, int >;
+
+using CSR_cuda_float = TNL::Matrices::CSR< float, TNL::Devices::Cuda, int >;
+using CSR_cuda_int = TNL::Matrices::CSR< int, TNL::Devices::Cuda, int >;
 
 #ifdef HAVE_GTEST 
 #include <gtest/gtest.h>
+/*
 
-template< typename Matrix >
+template< typename MatrixHostFloat, typename MatrixHostInt, typename MatrixCudaFloat, typename MatrixCudaInt >
 void testGetType()
 {
-    Matrix<float, TNL::Devices::Cuda, int> floatCudaMatrix;
-//    using CSR_host_getType = TNL::Matrices::CSR< float, TNL::Devices::Host, int>
-    Matrix<float, TNL::Devices::Host, int> floatHostMatrix;
-//    using CSR_cuda_getType = TNL::Matrices::CSR< float, TNL::Devices::Cuda, int>
-    EXPECT_STREQ( floatCudaMatrix.getType(), "Matrices::CSR< float, Cuda >");
+    MatrixHostFloat mtrxHostFloat;
+    MatrixHostInt mtrxHostInt;
+    MatrixCudaFloat mtrxCudaFloat;
+    MatrixCudaInt mtrxCudaInt;
+    
+    //string str = "Matrices::CSR< float, Devices::Host >";
+    
+    EXPECT_STREQ( mtrxHostFloat.getType(), String("Matrices::CSR< float, Devices::Host >") );
+    EXPECT_STREQ( mtrxHostInt.getType(), String("Matrices::CSR< int, Devices::Host >") );
+    EXPECT_STREQ( mtrxCudaFloat.getType(), "Matrices::CSR< float, Cuda >" );
+    EXPECT_STREQ( mtrxCudaInt.getType(), "Matrices::CSR< int, Cuda >" );
+    
 }
 
-TEST( SparseMatrixTest, GetTypeTest )
+TEST( SparseMatrixTest, CSR_GetTypeTest )
 {
-   testGetType< CSR_host >();
+   testGetType< CSR_host_float, CSR_host_int, CSR_cuda_float, CSR_cuda_int >();
 }
 
 #ifdef HAVE_CUDA
-TEST( SparseMatrixTest, GetTypeTest )
+TEST( SparseMatrixTest, GetTypeTestCuda )
 {
-   testGetType< CSR_cuda >();
+   testGetType< CSR_host_float, CSR_host_int, CSR_cuda_float, CSR_cuda_int >();
 }
 #endif
-
+*/
 #endif
 
 #include "../GtestMissingError.h"
