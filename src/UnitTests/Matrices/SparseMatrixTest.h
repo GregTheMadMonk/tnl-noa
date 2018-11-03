@@ -25,7 +25,7 @@ void testGetType()
 //    using CSR_host_getType = TNL::Matrices::CSR< float, TNL::Devices::Host, int>
     Matrix<float, TNL::Devices::Host, int> floatHostMatrix;
 //    using CSR_cuda_getType = TNL::Matrices::CSR< float, TNL::Devices::Cuda, int>
-    EXPECT_EQ( floatCudaMatrix.getType(), "Matrices::CSR< float, Cuda >");
+    EXPECT_STREQ( floatCudaMatrix.getType(), "Matrices::CSR< float, Cuda >");
 }
 
 TEST( SparseMatrixTest, GetTypeTest )
