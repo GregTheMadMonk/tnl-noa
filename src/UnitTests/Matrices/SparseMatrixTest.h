@@ -18,14 +18,6 @@ using CSR_cuda = TNL::Matrices::CSR< int, TNL::Devices::Cuda, int >;
 #ifdef HAVE_GTEST 
 #include <gtest/gtest.h>
 
-template< typename Matrix >
-void testGetType()
-{
-    Matrix<float> matrix;
-    m;
-    matrix.getType();
-}
-
 #endif
 
 #include "../GtestMissingError.h"
