@@ -18,6 +18,28 @@ using CSR_cuda = TNL::Matrices::CSR< int, TNL::Devices::Cuda, int >;
 #ifdef HAVE_GTEST 
 #include <gtest/gtest.h>
 
+template< typename Matrix >
+void testGetType()
+{
+    Matrix<float, TNL::Devices::Cuda, int> floatCudaMatrix;
+//    using CSR_host_getType = TNL::Matrices::CSR< float, TNL::Devices::Host, int>
+    Matrix<float, TNL::Devices::Host, int> floatHostMatrix;
+//    using CSR_cuda_getType = TNL::Matrices::CSR< float, TNL::Devices::Cuda, int>
+    EXPECT_EQ( floatCudaMatrix.getType(), "Matrices::CSR< float, Cuda >");
+}
+
+TEST( SparseMatrixTest, GetTypeTest )
+{
+   testGetType< CSR_host >();
+}
+
+#ifdef HAVE_CUDA
+TEST( SparseMatrixTest, GetTypeTest )
+{
+   testGetType< CSR_cuda >();
+}
+#endif
+
 #endif
 
 #include "../GtestMissingError.h"
