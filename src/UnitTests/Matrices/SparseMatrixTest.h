@@ -14,14 +14,17 @@
 
 using CSR_host = TNL::Matrices::CSR< int, TNL::Devices::Host, int >;
 using CSR_cuda = TNL::Matrices::CSR< int, TNL::Devices::Cuda, int >;
-using E_host = TNL::Matrices::Ellpack< int, TNL::Devices::Host, int >;
-using E_cuda = TNL::Matrices::Ellpack< int, TNL::Devices::Cuda, int >;
-using SE_host = TNL::Matrices::SlicedEllpack< int, TNL::Devices::Host, int, 2 >;
-using SE_cuda = TNL::Matrices::SlicedEllpack< int, TNL::Devices::Cuda, int, 2 >;
 
 #ifdef HAVE_GTEST 
 #include <gtest/gtest.h>
-//TODO Tests go in here
+
+template< typename Matrix >
+void testGetType()
+{
+    Matrix<float> matrix;
+    m;
+    matrix.getType();
+}
 
 #endif
 
