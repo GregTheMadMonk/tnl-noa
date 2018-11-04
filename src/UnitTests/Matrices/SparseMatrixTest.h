@@ -48,6 +48,16 @@ void cuda_testGetType()
     EXPECT_EQ( mtrxCudaInt.getType(), TNL::String( "Matrices::CSR< int, Cuda >" ) );
 }
 
+template< typename Matrix >
+void testSetDimensions()
+{
+    Matrix m;
+    m.setDimensions( 9, 8 );
+    
+    EXPECT_EQ( m.getRows(), 9);
+    EXPECT_EQ( m.getColumns(), 8);
+}
+
 TEST( SparseMatrixTest, CSR_GetTypeTest_Host )
 {
    host_testGetType< CSR_host_float, CSR_host_int >();
@@ -57,6 +67,18 @@ TEST( SparseMatrixTest, CSR_GetTypeTest_Host )
 TEST( SparseMatrixTest, CSR_GetTypeTest_Cuda )
 {
    cuda_testGetType< CSR_cuda_float, CSR_cuda_int >();
+}
+#endif
+
+TEST( SparseMatrixTest, CSR_testSetDimensions_Host )
+{
+   testSetDimensions< CSR_host_int >();
+}
+
+#ifdef HAVE_CUDA
+TEST( SparseMatrixTest, CSR_SetDimensionsTest_Cuda )
+{
+   testSetDimensions< CSR_cuda_int >();
 }
 #endif
 
