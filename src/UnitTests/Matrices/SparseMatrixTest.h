@@ -56,18 +56,6 @@ void test_SetDimensions()
     
     EXPECT_EQ( m.getRows(), 9);
     EXPECT_EQ( m.getColumns(), 8);
-    
-    EXPECT_EQ( m.getRowPointers().getSize(), m.getRows() + 1 );
-    
-    EXPECT_EQ( m.getRowPointers().getElement(0), 0 );
-    EXPECT_EQ( m.getRowPointers().getElement(1), 0 );
-    EXPECT_EQ( m.getRowPointers().getElement(2), 0 );
-    EXPECT_EQ( m.getRowPointers().getElement(3), 0 );
-    EXPECT_EQ( m.getRowPointers().getElement(4), 0 );
-    EXPECT_EQ( m.getRowPointers().getElement(5), 0 );
-    EXPECT_EQ( m.getRowPointers().getElement(6), 0 );
-    EXPECT_EQ( m.getRowPointers().getElement(7), 0 );
-    EXPECT_EQ( m.getRowPointers().getElement(8), 0 );
 }
 
 template< typename Matrix >
@@ -98,8 +86,6 @@ void test_SetCompressedRowLengths()
     EXPECT_EQ( m.getRowLength( 7), 6 );
     EXPECT_EQ( m.getRowLength( 8), 7 );
     EXPECT_EQ( m.getRowLength( 9), 8 );
-    
-    // TODO: Implement rowPointers test.
 }
 
 template< typename Matrix1, typename Matrix2 >
@@ -120,9 +106,6 @@ void test_SetLike()
     
     EXPECT_EQ( m1.getRows(), m2.getRows() );
     EXPECT_EQ( m1.getColumns(), m2.getColumns() );
-    
-    // TODO: Implement number of matrix elements test.
-    // TOOD: Implement rowPointers test.
 }
 
 TEST( SparseMatrixTest, CSR_GetTypeTest_Host )
