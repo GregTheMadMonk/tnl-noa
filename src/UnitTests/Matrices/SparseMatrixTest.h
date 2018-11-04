@@ -51,8 +51,11 @@ void cuda_test_GetType()
 template< typename Matrix >
 void test_SetDimensions()
 {
+    const int rows = 9;
+    const int cols = 8;
+    
     Matrix m;
-    m.setDimensions( 9, 8 );
+    m.setDimensions( rows, cols );
     
     EXPECT_EQ( m.getRows(), 9);
     EXPECT_EQ( m.getColumns(), 8);
@@ -61,10 +64,10 @@ void test_SetDimensions()
 template< typename Matrix >
 void test_SetCompressedRowLengths()
 {
-    Matrix m;
     const int rows = 10;
     const int cols = 11;
     
+    Matrix m;
     m.reset();
     m.setDimensions( rows, cols );
     typename Matrix::CompressedRowLengthsVector rowLengths;
@@ -146,7 +149,6 @@ void test_SetElement()
     EXPECT_EQ( m.getElement( 2, 2 ), 3 );
     EXPECT_EQ( m.getElement( 3, 3 ), 4 );
     EXPECT_EQ( m.getElement( 4, 4 ), 5 );
-    
 }
 
 TEST( SparseMatrixTest, CSR_GetTypeTest_Host )
