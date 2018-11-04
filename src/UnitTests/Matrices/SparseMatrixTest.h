@@ -26,7 +26,7 @@ using CSR_cuda_int = TNL::Matrices::CSR< int, TNL::Devices::Cuda, int >;
 
 
 template< typename MatrixHostFloat, typename MatrixHostInt >
-void host_testGetType()
+void host_test_GetType()
 {
     MatrixHostFloat mtrxHostFloat;
     MatrixHostInt mtrxHostInt;
@@ -39,7 +39,7 @@ void host_testGetType()
 //           CUDA into the function in the TEST, to be tested, then we could have a problem.
 
 template< typename MatrixCudaFloat, typename MatrixCudaInt >
-void cuda_testGetType()
+void cuda_test_GetType()
 {
     MatrixCudaFloat mtrxCudaFloat;
     MatrixCudaInt mtrxCudaInt;
@@ -49,7 +49,7 @@ void cuda_testGetType()
 }
 
 template< typename Matrix >
-void testSetDimensions()
+void test_SetDimensions()
 {
     Matrix m;
     m.setDimensions( 9, 8 );
@@ -59,7 +59,7 @@ void testSetDimensions()
 }
 
 template< typename Matrix >
-void testSetCompressedRowLengths()
+void test_SetCompressedRowLengths()
 {
     Matrix m;
     const int rows = 10;
@@ -90,37 +90,37 @@ void testSetCompressedRowLengths()
 
 TEST( SparseMatrixTest, CSR_GetTypeTest_Host )
 {
-   host_testGetType< CSR_host_float, CSR_host_int >();
+   host_test_GetType< CSR_host_float, CSR_host_int >();
 }
 
 #ifdef HAVE_CUDA
 TEST( SparseMatrixTest, CSR_GetTypeTest_Cuda )
 {
-   cuda_testGetType< CSR_cuda_float, CSR_cuda_int >();
+   cuda_test_GetType< CSR_cuda_float, CSR_cuda_int >();
 }
 #endif
 
 TEST( SparseMatrixTest, CSR_SetDimensionsTest_Host )
 {
-   testSetDimensions< CSR_host_int >();
+   test_SetDimensions< CSR_host_int >();
 }
 
 #ifdef HAVE_CUDA
 TEST( SparseMatrixTest, CSR_SetDimensionsTest_Cuda )
 {
-   testSetDimensions< CSR_cuda_int >();
+   test_SetDimensions< CSR_cuda_int >();
 }
 #endif
 
 TEST( SparseMatrixTest, CSR_setCompressedRowLengthsTest_Host )
 {
-   testSetCompressedRowLengths< CSR_host_int >();
+   test_SetCompressedRowLengths< CSR_host_int >();
 }
 
 #ifdef HAVE_CUDA
 TEST( SparseMatrixTest, CSR_setCompressedRowLengthsTest_Cuda )
 {
-   testSetCompressedRowLengths< CSR_cuda_int >();
+   test_SetCompressedRowLengths< CSR_cuda_int >();
 }
 #endif
 
