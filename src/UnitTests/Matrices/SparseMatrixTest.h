@@ -57,7 +57,17 @@ void test_SetDimensions()
     EXPECT_EQ( m.getRows(), 9);
     EXPECT_EQ( m.getColumns(), 8);
     
-    // TODO: Implement rowPointers test.
+    EXPECT_EQ( m.getRowPointers().getSize(), m.getRows() + 1 );
+    
+    EXPECT_EQ( m.getRowPointers().getElement(0), 0 );
+    EXPECT_EQ( m.getRowPointers().getElement(1), 0 );
+    EXPECT_EQ( m.getRowPointers().getElement(2), 0 );
+    EXPECT_EQ( m.getRowPointers().getElement(3), 0 );
+    EXPECT_EQ( m.getRowPointers().getElement(4), 0 );
+    EXPECT_EQ( m.getRowPointers().getElement(5), 0 );
+    EXPECT_EQ( m.getRowPointers().getElement(6), 0 );
+    EXPECT_EQ( m.getRowPointers().getElement(7), 0 );
+    EXPECT_EQ( m.getRowPointers().getElement(8), 0 );
 }
 
 template< typename Matrix >
