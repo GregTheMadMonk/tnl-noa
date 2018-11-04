@@ -58,6 +58,36 @@ void testSetDimensions()
     EXPECT_EQ( m.getColumns(), 8);
 }
 
+template< typename Matrix >
+void testSetCompressedRowLengths()
+{
+    Matrix m;
+    const int rows = 10;
+    const int cols = 11;
+    
+    m.reset();
+    m.setDimensions( rows, cols );
+    typename Matrix::CompressedRowLengthsVector rowLengths;
+    rowLengths.setSize( rows );
+    rowLengths.setValue( 3 );
+    int value = 1;
+    for (int i = 2; i < rows; i++)
+        rowLengths.setElement( i, value++ );
+    
+    m.setCompressedRowLengths( rowLengths );
+    
+    EXPECT_EQ( m.getRowLength( 0), 3 );
+    EXPECT_EQ( m.getRowLength( 1), 3 );
+    EXPECT_EQ( m.getRowLength( 2), 1 );
+    EXPECT_EQ( m.getRowLength( 3), 2 );
+    EXPECT_EQ( m.getRowLength( 4), 3 );
+    EXPECT_EQ( m.getRowLength( 5), 4 );
+    EXPECT_EQ( m.getRowLength( 6), 5 );
+    EXPECT_EQ( m.getRowLength( 7), 6 );
+    EXPECT_EQ( m.getRowLength( 8), 7 );
+    EXPECT_EQ( m.getRowLength( 9), 8 );
+}
+
 TEST( SparseMatrixTest, CSR_GetTypeTest_Host )
 {
    host_testGetType< CSR_host_float, CSR_host_int >();
@@ -70,7 +100,7 @@ TEST( SparseMatrixTest, CSR_GetTypeTest_Cuda )
 }
 #endif
 
-TEST( SparseMatrixTest, CSR_testSetDimensions_Host )
+TEST( SparseMatrixTest, CSR_SetDimensionsTest_Host )
 {
    testSetDimensions< CSR_host_int >();
 }
@@ -79,6 +109,18 @@ TEST( SparseMatrixTest, CSR_testSetDimensions_Host )
 TEST( SparseMatrixTest, CSR_SetDimensionsTest_Cuda )
 {
    testSetDimensions< CSR_cuda_int >();
+}
+#endif
+
+TEST( SparseMatrixTest, CSR_setCompressedRowLengthsTest_Host )
+{
+   testSetCompressedRowLengths< CSR_host_int >();
+}
+
+#ifdef HAVE_CUDA
+TEST( SparseMatrixTest, CSR_setCompressedRowLengthsTest_Cuda )
+{
+   testSetCompressedRowLengths< CSR_cuda_int >();
 }
 #endif
 
