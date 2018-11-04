@@ -89,7 +89,7 @@ void test_SetCompressedRowLengths()
     EXPECT_EQ( m.getRowLength( 8), 7 );
     EXPECT_EQ( m.getRowLength( 9), 8 );
     
-    // TOOD: Implement rowPointers test.
+    // TODO: Implement rowPointers test.
 }
 
 template< typename Matrix1, typename Matrix2 >
