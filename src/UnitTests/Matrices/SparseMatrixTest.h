@@ -71,7 +71,7 @@ void test_SetCompressedRowLengths()
     rowLengths.setSize( rows );
     rowLengths.setValue( 3 );
     int value = 1;
-    for (int i = 2; i < rows; i++)
+    for( int i = 2; i < rows; i++ )
         rowLengths.setElement( i, value++ );
     
     m.setCompressedRowLengths( rowLengths );
@@ -121,6 +121,32 @@ void test_Reset()
     
     EXPECT_EQ( m.getRows(), 0 );
     EXPECT_EQ( m.getColumns(), 0 );
+}
+
+template< typename Matrix >
+void test_SetElement()
+{
+    const int rows = 5;
+    const int cols = 5;
+    
+    Matrix m;
+    m.reset();
+    m.setDimensions( rows, cols );
+    typename Matrix::CompressedRowLengthsVector rowLengths;
+    rowLengths.setSize( rows );
+    rowLengths.setValue( 1 );
+    m.setCompressedRowLengths( rowLengths );    
+    
+    int value = 1;
+    for( int i = 0; i < rows; i++ )
+        m.setElement( i, i, value++ );
+    
+    EXPECT_EQ( m.getElement( 0, 0 ), 1 );
+    EXPECT_EQ( m.getElement( 1, 1 ), 2 );
+    EXPECT_EQ( m.getElement( 2, 2 ), 3 );
+    EXPECT_EQ( m.getElement( 3, 3 ), 4 );
+    EXPECT_EQ( m.getElement( 4, 4 ), 5 );
+    
 }
 
 TEST( SparseMatrixTest, CSR_GetTypeTest_Host )
@@ -173,29 +199,25 @@ TEST( SparseMatrixTest, CSR_setLikeTest_Cuda )
 
 TEST( SparseMatrixTest, CSR_resetTest_Host )
 {
-    {   
-        SCOPED_TRACE( "CSR_resetTest_Host_Float" );
-        test_Reset< CSR_host_float >();
-    }    
-    
-    {
-        SCOPED_TRACE( "CSR_resetTest_Host_Int" );
-        test_Reset< CSR_host_int >();
-    }
+    test_Reset< CSR_host_int >();
 }
 
 #ifdef HAVE_CUDA
 TEST( SparseMatrixTest, CSR_resetTest_Cuda )
 {
-    {
-        SCOPED_TRACE( "CSR_resetTest_Cuda_Float" );
-        test_Reset< CSR_cuda_float >();
-    }
-    
-    {   
-        SCOPED_TRACE( "CSR_resetTest_Cuda_Int" );
-        test_Reset< CSR_cuda_int >();
-    }
+    test_Reset< CSR_cuda_int >();
+}
+#endif
+
+TEST( SparseMatrixTest, CSR_setElementTest_Host )
+{
+    test_SetElement< CSR_host_int >();
+}
+
+#ifdef HAVE_CUDA
+TEST( SparseMatrixTest, CSR_setElementTest_Cuda )
+{
+    test_SetElement< CSR_cuda_int >();
 }
 #endif
 
