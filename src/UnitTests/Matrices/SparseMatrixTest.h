@@ -108,6 +108,21 @@ void test_SetLike()
     EXPECT_EQ( m1.getColumns(), m2.getColumns() );
 }
 
+template< typename Matrix >
+void test_Reset()
+{
+    const int rows = 5;
+    const int cols = 4;
+    
+    Matrix m;
+    m.setDimensions( rows, cols );
+    
+    m.reset();
+    
+    EXPECT_EQ( m.getRows(), 0 );
+    EXPECT_EQ( m.getColumns(), 0 );
+}
+
 TEST( SparseMatrixTest, CSR_GetTypeTest_Host )
 {
    host_test_GetType< CSR_host_float, CSR_host_int >();
@@ -153,6 +168,34 @@ TEST( SparseMatrixTest, CSR_setLikeTest_Host )
 TEST( SparseMatrixTest, CSR_setLikeTest_Cuda )
 {
    test_SetLike< CSR_cuda_int, CSR_cuda_float >();
+}
+#endif
+
+TEST( SparseMatrixTest, CSR_resetTest_Host )
+{
+    {   
+        SCOPED_TRACE( "CSR_resetTest_Host_Float" );
+        test_Reset< CSR_host_float >();
+    }    
+    
+    {
+        SCOPED_TRACE( "CSR_resetTest_Host_Int" );
+        test_Reset< CSR_host_int >();
+    }
+}
+
+#ifdef HAVE_CUDA
+TEST( SparseMatrixTest, CSR_resetTest_Cuda )
+{
+    {
+        SCOPED_TRACE( "CSR_resetTest_Cuda_Float" );
+        test_Reset< CSR_cuda_float >();
+    }
+    
+    {   
+        SCOPED_TRACE( "CSR_resetTest_Cuda_Int" );
+        test_Reset< CSR_cuda_int >();
+    }
 }
 #endif
 
