@@ -56,6 +56,8 @@ void test_SetDimensions()
     
     EXPECT_EQ( m.getRows(), 9);
     EXPECT_EQ( m.getColumns(), 8);
+    
+    // TODO: Implement rowPointers test.
 }
 
 template< typename Matrix >
@@ -86,6 +88,31 @@ void test_SetCompressedRowLengths()
     EXPECT_EQ( m.getRowLength( 7), 6 );
     EXPECT_EQ( m.getRowLength( 8), 7 );
     EXPECT_EQ( m.getRowLength( 9), 8 );
+    
+    // TOOD: Implement rowPointers test.
+}
+
+template< typename Matrix1, typename Matrix2 >
+void test_SetLike()
+{
+    const int rows = 8;
+    const int cols = 7;
+    
+    Matrix1 m1;
+    m1.reset();
+    m1.setDimensions( rows + 1, cols + 2 );
+    
+    Matrix2 m2;
+    m2.reset();
+    m2.setDimensions( rows, cols );
+    
+    m1.setLike( m2 );
+    
+    EXPECT_EQ( m1.getRows(), m2.getRows() );
+    EXPECT_EQ( m1.getColumns(), m2.getColumns() );
+    
+    // TODO: Implement number of matrix elements test.
+    // TOOD: Implement rowPointers test.
 }
 
 TEST( SparseMatrixTest, CSR_GetTypeTest_Host )
@@ -121,6 +148,18 @@ TEST( SparseMatrixTest, CSR_setCompressedRowLengthsTest_Host )
 TEST( SparseMatrixTest, CSR_setCompressedRowLengthsTest_Cuda )
 {
    test_SetCompressedRowLengths< CSR_cuda_int >();
+}
+#endif
+
+TEST( SparseMatrixTest, CSR_setLikeTest_Host )
+{
+   test_SetLike< CSR_host_int, CSR_host_float >();
+}
+
+#ifdef HAVE_CUDA
+TEST( SparseMatrixTest, CSR_setLikeTest_Cuda )
+{
+   test_SetLike< CSR_cuda_int, CSR_cuda_float >();
 }
 #endif
 
