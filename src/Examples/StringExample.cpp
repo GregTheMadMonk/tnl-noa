@@ -81,32 +81,58 @@ int main()
     String g;
     g = 'y';
     cout << "g:" << g << endl;
-    
+
     String h( "x" );
     h += g;
     cout << "h:" << h << endl;
-    
+
     String i;
     i = 'a' + 'b';
     cout << "i:" << i << endl;
-    
+
     String letter1( "u" );
     if ( letter1 == "u" ) cout << "Letters are the same." << endl;
-    
+
     String letter2( "v" );
     if ( letter2 != "w" ) cout << "Letters are different." << endl;
-    
-    //Cast to bool operators
+
+    // Cast to bool operators
     String full( "string" );
     if ( full ) cout << "String is not empty." << endl;
-    
+
     String empty;
     if ( !empty ) cout << "String is empty." << endl;
-    
-    //replace
+
+    // replace
     String phrase( "Hakuna matata" );
     new_phrase = phrase.replace( "a", "u", 2 );
     cout << "new_phrase:" << new_phrase << endl;
-    
-    
+
+    // strip
+    String names("       Josh Martin   John  Marley Charles   ");
+    better_names = names.strip();
+    cout << "better_names:" << better_names << endl;
+
+    // split
+    String dates("3/4/2005;8/7/2011;11/12/2019");
+    list_dates = dates.split( list, ';' );
+    cout << "list_dates:" << list_dates << endl;
+
+    // save
+    String("Header").save(my-file.tnl); // saves "Header" into file my-file.tnl
+
+    // load
+    String strg;
+    strg.load(my-file.tnl);
+    cout << "strg:" << strg << endl;
+
+    // get line
+    std::stringstream text;
+    text << "Hello!" << std::endl;
+    text << "What's up?" << std::endl;
+
+    String str;
+    str.getLine( text );
+    cout << "str:" << str << endl;
+
 }

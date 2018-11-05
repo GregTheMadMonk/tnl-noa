@@ -15,22 +15,63 @@
 #endif
 
 #include <TNL/FileName.h>
+#include <TNL/String.h>
 
 using namespace TNL;
 
 #ifdef HAVE_GTEST 
 TEST( FileNameTest, Constructor )
 {
-   /*String str1( "string1" );
-   String str2( "xxxstring2", 3 );
-   String str3( "string3xxx", 0, 3 );
-   String str4( "xxxstring4xxx", 3, 3 );
+    FileName fname;
 
-   EXPECT_EQ( strcmp( str1.getString(), "string1" ), 0 );
-   EXPECT_EQ( strcmp( str2.getString(), "string2" ), 0 );
-   EXPECT_EQ( strcmp( str3.getString(), "string3" ), 0 );
-   EXPECT_EQ( strcmp( str4.getString(), "string4" ), 0 );*/
+    EXPECT_EQ( strcmp( fname.getFileName(), "00000." ), 0 );
 }
+
+TEST( FileNameTest, Base )
+{
+    FileName fname;
+    fname.setFileNameBase("name");
+
+    EXPECT_EQ( strcmp( fname.getFileName(), "name00000." ), 0 );
+}
+
+/*TEST( FileNameTest, Extension )
+{
+    FileName fname;
+    fname.setExtension("tnl");
+
+    EXPECT_EQ( strcmp( fname.getFileName(), "00000.tnl" ), 0 );
+}*/
+
+/*TEST( FileNameTest, Index )
+{
+    FileName fname1;
+    FileName fname2;
+    fname1.setIndex(1);
+    fname2.setIndex(50);
+
+    EXPECT_EQ( strcmp( fname1.getFileName(), "00001." ), 0 );
+    EXPECT_EQ( strcmp( fname2.getFileName(), "00050." ), 0 );
+}*/
+
+/*TEST( FileNameTest, DigitsCount )
+{
+    FileName fname;
+    fname.setDigitsCount(4);
+
+    EXPECT_EQ( strcmp( fname.getFileName(), "0000." ), 0 );
+}
+
+TEST( FileNameTest, AllTogether )
+{
+    FileName fname;
+    fname.setFileNameBase("name");
+    fname.setExtension("tnl");
+    fname.setIndex(8);
+    fname.setDigitsCount(3);
+
+    EXPECT_EQ( strcmp( fname.getFileName(), "name008.tnl" ), 0 );
+}*/
 #endif
 
 
