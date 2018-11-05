@@ -31,7 +31,7 @@ String convertToString( const T& value );
 /// \par Example
 /// \include StringExample.cpp
 /// \par Output
-/// \include StringOutput.cpp
+/// \include StringExample.out
 class String
 {
    public:

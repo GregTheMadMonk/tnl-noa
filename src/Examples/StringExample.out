@@ -32,9 +32,21 @@ i: ab
 Letters are the same.
 Letters are different.
 
-//Cast to bool operators
+// Cast to bool operators
 String is not empty.
 String is empty.
         
-//replace
+// replace
 new_phrase: Hukunu matata
+
+// strip
+list_dates: 3/4/2005 8/7/2011 11/12/2019
+
+// save
+true
+
+// load
+strg: Header
+
+// get line
+str: Hello!
