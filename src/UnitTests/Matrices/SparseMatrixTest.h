@@ -23,7 +23,7 @@
  * setElementFast()                 ::TEST? How to test __cuda_callable__?
  * setElement()                         ::DONE
  * addElementFast()                 ::TEST? How to test __cuda_callable__?
- * addElement()
+ * addElement()                     ::HOW?  How to use the thisElementMultiplicator? Does it need testing?
  * setRowFast()                     ::TEST? How to test __cuda_callable__?
  * setRow()
  * addRowFast()                     ::TEST? How to test __cuda_callable__?
@@ -198,6 +198,34 @@ void test_SetElement()
     EXPECT_EQ( m.getElement( 4, 4 ), 5 );
 }
 
+template< typename Matrix >
+void test_AddElement()
+{
+    const int rows = 6;
+    const int cols = 5;
+    
+    Matrix m;
+    m.reset();
+    m.setDimensions( rows, cols );
+    typename Matrix::CompressedRowLengthsVector rowLengths;
+    rowLengths.setSize( rows );
+    rowLengths.setValue( 3 );
+    m.setCompressedRowLengths( rowLengths );
+    
+    int value = 1;
+    for( int i = 0; i < rows; i++ )
+        m.addElement( i, 0, value++, 0.0 );
+    
+    m.addElement( 0, 4, 1, 0.0 );
+    
+    EXPECT_EQ( m.getElement( 0, 0 ), 1 );
+    EXPECT_EQ( m.getElement( 1, 0 ), 2 );
+    EXPECT_EQ( m.getElement( 2, 0 ), 3 );
+    EXPECT_EQ( m.getElement( 3, 0 ), 4 );
+    EXPECT_EQ( m.getElement( 4, 0 ), 5 );
+    EXPECT_EQ( m.getElement( 5, 0 ), 6 );
+}
+
 TEST( SparseMatrixTest, CSR_GetTypeTest_Host )
 {
    host_test_GetType< CSR_host_float, CSR_host_int >();
@@ -267,6 +295,18 @@ TEST( SparseMatrixTest, CSR_setElementTest_Host )
 TEST( SparseMatrixTest, CSR_setElementTest_Cuda )
 {
     test_SetElement< CSR_cuda_int >();
+}
+#endif
+
+TEST( SparseMatrixTest, CSR_addElementTest_Host )
+{
+    test_AddElement< CSR_host_int >();
+}
+
+#ifdef HAVE_CUDA
+TEST( SparseMatrixTest, CSR_addElementTest_Cuda )
+{
+    test_AddElement< CSR_cuda_int >();
 }
 #endif
 
