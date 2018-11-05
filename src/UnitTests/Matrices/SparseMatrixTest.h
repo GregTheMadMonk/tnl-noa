@@ -16,7 +16,7 @@
  * getSerializationTypeVirtual()    ::TEST? This just calls getSerializationType().
  * setDimensions()                      ::DONE
  * setCompressedRowLengths()            ::DONE
- * getRowLength()                   ::USED! in test_setCompressedRowLengths() to verify the test.
+ * getRowLength()                   ::USED! in test_SetCompressedRowLengths() to verify the test itself.
  * getRowLengthFast()               ::TEST? How to test __cuda_callable__?
  * setLike()                            ::DONE
  * reset()                              ::DONE
@@ -25,11 +25,11 @@
  * addElementFast()                 ::TEST? How to test __cuda_callable__?
  * addElement()                     ::HOW?  How to use the thisElementMultiplicator? Does it need testing?
  * setRowFast()                     ::TEST? How to test __cuda_callable__?
- * setRow()
+ * setRow()                             ::DONE
  * addRowFast()                     ::TEST? How to test __cuda_callable__?
- * addRow()
+ * addRow()                         ::NOT IMPLEMENTED! Implement? Is it supposed to add an extra row to the matrix or arr elements of a row to another row in the matrix?
  * getElementFast()                 ::TEST? How to test __cuda_callable__?
- * getElement()
+ * getElement()                     ::USED! in test_SetElement(), test_AddElement() and test_setRow() to verify the test itself.
  * getRowFast()                     ::TEST? How to test __cuda_callable__?
  * MatrixRow getRow()               ::TEST? How to test __cuda_callable__?
  * ConstMatrixRow getRow()          ::TEST? How to test __cuda_callable__?
