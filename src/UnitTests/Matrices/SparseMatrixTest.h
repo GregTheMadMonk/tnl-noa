@@ -311,33 +311,82 @@ void test_SetRow()
     int row2 [ 3 ] = { 22, 22, 22 }; int colIndexes2 [3] = { 0, 1, 2 };
     int row3 [ 3 ] = { 33, 33, 33 }; int colIndexes3 [3] = { 3, 4, 5 };
     
-    m.setRow(0, colIndexes1, row1, 3);
-    m.setRow(1, colIndexes2, row2, 3);
-    m.setRow(2, colIndexes3, row3, 3);
+    m.setRow( 0, colIndexes1, row1, 3 );
+    m.setRow( 1, colIndexes2, row2, 3 );
+    m.setRow( 2, colIndexes3, row3, 3 );
     
-    EXPECT_EQ( m.getElement( 0, 0 ), 11);
-    EXPECT_EQ( m.getElement( 0, 1 ), 11);
-    EXPECT_EQ( m.getElement( 0, 2 ), 11);
-    EXPECT_EQ( m.getElement( 0, 3 ),  0);
-    EXPECT_EQ( m.getElement( 0, 4 ),  0);
-    EXPECT_EQ( m.getElement( 0, 5 ),  0);
-    EXPECT_EQ( m.getElement( 0, 6 ),  0);
+    EXPECT_EQ( m.getElement( 0, 0 ), 11 );
+    EXPECT_EQ( m.getElement( 0, 1 ), 11 );
+    EXPECT_EQ( m.getElement( 0, 2 ), 11 );
+    EXPECT_EQ( m.getElement( 0, 3 ),  0 );
+    EXPECT_EQ( m.getElement( 0, 4 ),  0 );
+    EXPECT_EQ( m.getElement( 0, 5 ),  0 );
+    EXPECT_EQ( m.getElement( 0, 6 ),  0 );
     
-    EXPECT_EQ( m.getElement( 1, 0 ), 22);
-    EXPECT_EQ( m.getElement( 1, 1 ), 22);
-    EXPECT_EQ( m.getElement( 1, 2 ), 22);
-    EXPECT_EQ( m.getElement( 1, 3 ),  0);
-    EXPECT_EQ( m.getElement( 1, 4 ),  0);
-    EXPECT_EQ( m.getElement( 1, 5 ),  0);
-    EXPECT_EQ( m.getElement( 1, 6 ),  0);
+    EXPECT_EQ( m.getElement( 1, 0 ), 22 );
+    EXPECT_EQ( m.getElement( 1, 1 ), 22 );
+    EXPECT_EQ( m.getElement( 1, 2 ), 22 );
+    EXPECT_EQ( m.getElement( 1, 3 ),  0 );
+    EXPECT_EQ( m.getElement( 1, 4 ),  0 );
+    EXPECT_EQ( m.getElement( 1, 5 ),  0 );
+    EXPECT_EQ( m.getElement( 1, 6 ),  0 );
     
-    EXPECT_EQ( m.getElement( 2, 0 ),  0);
-    EXPECT_EQ( m.getElement( 2, 1 ),  0);
-    EXPECT_EQ( m.getElement( 2, 2 ),  0);
-    EXPECT_EQ( m.getElement( 2, 3 ), 33);
-    EXPECT_EQ( m.getElement( 2, 4 ), 33);
-    EXPECT_EQ( m.getElement( 2, 5 ), 33);
-    EXPECT_EQ( m.getElement( 2, 6 ),  0);
+    EXPECT_EQ( m.getElement( 2, 0 ),  0 );
+    EXPECT_EQ( m.getElement( 2, 1 ),  0 );
+    EXPECT_EQ( m.getElement( 2, 2 ),  0 );
+    EXPECT_EQ( m.getElement( 2, 3 ), 33 );
+    EXPECT_EQ( m.getElement( 2, 4 ), 33 );
+    EXPECT_EQ( m.getElement( 2, 5 ), 33 );
+    EXPECT_EQ( m.getElement( 2, 6 ),  0 );
+}
+
+template< typename Matrix >
+void test_VectorProduct()
+{
+/*
+ * Sets up the following 5x4 sparse matrix:
+ *
+ *    /  1  2  3  0 \
+ *    |  0  0  0  4 |
+ *    |  5  6  7  0 |
+ *    |  0  8  9 10 |
+ *    \  0  0 11 12 /
+ */
+//    const int m_rows = 5;
+//    const int m_cols = 4;
+//    
+//    Matrix m;
+//    m.reset();
+//    m.setDimensions( m_rows, m_cols );
+//    typename Matrix::CompressedRowLengthsVector rowLengths;
+//    rowLengths.setSize( m_rows );
+//    rowLengths.setValue( 4 );
+//    m.setCompressedRowLengths( rowLengths );
+//    
+//    int value = 1;
+//    for( int i = 0; i < m_cols - 1; i++ )   // 0th row
+//        m.setElement( 0, i, value++ );
+//    
+//        m.setElement( 1, 3, value++ );      // 1st row
+//        
+//    for( int i = 0; i < m_cols - 1; i++ )   // 2nd row
+//        m.setElement( 2, i, value++ );
+//        
+//    for( int i = 1; i < m_cols; i++ )       // 3rd row
+//        m.setElement( 3, i, value++ );
+//        
+//    for( int i = 2; i < m_cols; i++ )       // 4th row
+//        m.setElement( 4, i, value++ );
+//        
+//    const int inVector [ 5 ] = { 1, 1, 1, 1, 1 };
+//    int outVector [ 4 ] = { 0, 0, 0, 0 };
+//    
+//    m.vectorProduct( inVector, outVector);
+//    
+//    EXPECT_EQ( outVector[0],  6 );
+//    EXPECT_EQ( outVector[1], 16 );
+//    EXPECT_EQ( outVector[2], 30 );
+//    EXPECT_EQ( outVector[3], 26 );
 }
 
 TEST( SparseMatrixTest, CSR_GetTypeTest_Host )
@@ -433,6 +482,18 @@ TEST( SparseMatrixTest, CSR_setRowTest_Host )
 TEST( SparseMatrixTest, CSR_setRowTest_Cuda )
 {
     test_SetRow< CSR_cuda_int >();
+}
+#endif
+
+TEST( SparseMatrixTest, CSR_vectorProductTest_Host )
+{
+    test_VectorProduct< CSR_host_int >();
+}
+
+#ifdef HAVE_CUDA
+TEST( SparseMatrixTest, CSR_vectorProductTest_Cuda )
+{
+    test_VectorProduct< CSR_cuda_int >();
 }
 #endif
 
