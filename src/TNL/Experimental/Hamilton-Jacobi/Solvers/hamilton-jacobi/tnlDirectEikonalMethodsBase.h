@@ -160,11 +160,17 @@ __global__ void CudaInitCaller3d( const Functions::MeshFunction< Meshes::Grid< 3
                                   Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index > >& output,
                                   Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index >, 3, bool >& interfaceMap );
 
-template < typename Real, typename Device, typename Index >
+template < int sizeSArray, typename Real, typename Device, typename Index >
 __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > > ptr,
                                       const Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index >, 3, bool >& interfaceMap,
-                                      Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index > >& aux,
+                                      const Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index > >& aux,
+                                      Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index > >& helpFunc,
                                       TNL::Containers::Array< int, Devices::Cuda, Index > BlockIterDevice );
+
+template < typename Index >
+__global__ void GetNeighbours3D( TNL::Containers::Array< int, Devices::Cuda, Index > BlockIterDevice,
+        TNL::Containers::Array< int, Devices::Cuda, Index > BlockIterPom,
+        int numBlockX, int numBlockY, int numBlockZ );
 #endif
 
 #include "tnlDirectEikonalMethodsBase_impl.h"
