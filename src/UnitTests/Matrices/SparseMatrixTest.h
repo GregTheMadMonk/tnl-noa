@@ -197,9 +197,33 @@ void test_SetElement()
         m.setElement( i, i, value++ );
     
     EXPECT_EQ( m.getElement( 0, 0 ), 1 );
+    EXPECT_EQ( m.getElement( 0, 1 ), 0 );
+    EXPECT_EQ( m.getElement( 0, 2 ), 0 );
+    EXPECT_EQ( m.getElement( 0, 3 ), 0 );
+    EXPECT_EQ( m.getElement( 0, 4 ), 0 );
+    
+    EXPECT_EQ( m.getElement( 1, 0 ), 0 );
     EXPECT_EQ( m.getElement( 1, 1 ), 2 );
+    EXPECT_EQ( m.getElement( 1, 2 ), 0 );
+    EXPECT_EQ( m.getElement( 1, 3 ), 0 );
+    EXPECT_EQ( m.getElement( 1, 4 ), 0 );
+    
+    EXPECT_EQ( m.getElement( 2, 0 ), 0 );
+    EXPECT_EQ( m.getElement( 2, 1 ), 0 );
     EXPECT_EQ( m.getElement( 2, 2 ), 3 );
+    EXPECT_EQ( m.getElement( 2, 3 ), 0 );
+    EXPECT_EQ( m.getElement( 2, 4 ), 0 );
+    
+    EXPECT_EQ( m.getElement( 3, 0 ), 0 );
+    EXPECT_EQ( m.getElement( 3, 1 ), 0 );
+    EXPECT_EQ( m.getElement( 3, 2 ), 0 );
     EXPECT_EQ( m.getElement( 3, 3 ), 4 );
+    EXPECT_EQ( m.getElement( 3, 4 ), 0 );
+    
+    EXPECT_EQ( m.getElement( 4, 0 ), 0 );
+    EXPECT_EQ( m.getElement( 4, 1 ), 0 );
+    EXPECT_EQ( m.getElement( 4, 2 ), 0 );
+    EXPECT_EQ( m.getElement( 4, 3 ), 0 );
     EXPECT_EQ( m.getElement( 4, 4 ), 5 );
 }
 
