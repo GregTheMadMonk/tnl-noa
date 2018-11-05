@@ -8,6 +8,53 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+// TODO
+/*
+ * getType()                        ::HOW?  How to test this for each format? edit string how?
+ * getTypeVirtual()                 ::TEST? This just calls getType().
+ * getSerializationType()           ::TEST? This just calls HostType::getType().
+ * getSerializationTypeVirtual()    ::TEST? This just calls getSerializationType().
+ * setDimensions()                      ::DONE
+ * setCompressedRowLengths()            ::DONE
+ * getRowLength()                   ::USED! in test_setCompressedRowLengths() to verify the test.
+ * getRowLengthFast()               ::TEST? How to test __cuda_callable__?
+ * setLike()                            ::DONE
+ * reset()                              ::DONE
+ * setElementFast()                 ::TEST? How to test __cuda_callable__?
+ * setElement()                         ::DONE
+ * addElementFast()                 ::TEST? How to test __cuda_callable__?
+ * addElement()
+ * setRowFast()                     ::TEST? How to test __cuda_callable__?
+ * setRow()
+ * addRowFast()                     ::TEST? How to test __cuda_callable__?
+ * addRow()
+ * getElementFast()                 ::TEST? How to test __cuda_callable__?
+ * getElement()
+ * getRowFast()                     ::TEST? How to test __cuda_callable__?
+ * MatrixRow getRow()               ::TEST? How to test __cuda_callable__?
+ * ConstMatrixRow getRow()          ::TEST? How to test __cuda_callable__?
+ * rowVectorProduct()               ::TEST? How to test __cuda_callable__?
+ * vectorProduct()
+ * addMatrix()
+ * getTransposition()
+ * performSORIteration()
+ * operator=()
+ * save( File& file)
+ * load( File& file )
+ * save( String& fileName )
+ * load( String& fileName )
+ * print()
+ * setCudaKernelType()
+ * getCudaKernelType()              ::TEST? How to test __cuda_callable__?
+ * setCudaWarpSize()
+ * getCudaWarpSize()
+ * setHybridModeSplit()
+ * getHybridModeSplit()             ::TEST? How to test __cuda_callable__?
+ * spmvCudaVectorized()             ::TEST? How to test __device__?
+ * vectorProductCuda()              ::TEST? How to test __device__?
+ */
+
+
 #include <TNL/Matrices/CSR.h>
 #include <TNL/Matrices/Ellpack.h>
 #include <TNL/Matrices/SlicedEllpack.h>
