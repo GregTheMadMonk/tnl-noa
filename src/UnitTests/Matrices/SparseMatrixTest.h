@@ -219,6 +219,7 @@ void test_AddElement()
     m.addElement( 0, 4, 1, 0.0 );
     
     EXPECT_EQ( m.getElement( 0, 0 ), 1 );
+    EXPECT_EQ( m.getElement( 0, 4 ), 1 );
     EXPECT_EQ( m.getElement( 1, 0 ), 2 );
     EXPECT_EQ( m.getElement( 2, 0 ), 3 );
     EXPECT_EQ( m.getElement( 3, 0 ), 4 );
