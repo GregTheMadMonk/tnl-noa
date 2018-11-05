@@ -85,7 +85,7 @@ solve( const MeshPointer& mesh,
   {
     if( std::is_same< DeviceType, Devices::Host >::value )
     {
-      int numThreadsPerBlock = 1024;
+      int numThreadsPerBlock = 16;
       
       
       int numBlocksX = mesh->getDimensions().x() / numThreadsPerBlock + (mesh->getDimensions().x() % numThreadsPerBlock != 0 ? 1:0);
@@ -115,13 +115,13 @@ solve( const MeshPointer& mesh,
        }
        std::cout<<std::endl;*/
       unsigned int numWhile = 0;
-      while( IsCalculationDone  )
+      while( IsCalculationDone && numWhile < 1 )
       {      
         IsCalculationDone = 0;
         helpFunc1 = auxPtr;
         auxPtr = helpFunc;
         helpFunc = helpFunc1;
-        this->template updateBlocks< 1026 >( interfaceMap, *auxPtr, *helpFunc, BlockIterHost, numThreadsPerBlock/*, sArray*/ );
+        this->template updateBlocks< 18 >( interfaceMap, *auxPtr, *helpFunc, BlockIterHost, numThreadsPerBlock/*, sArray*/ );
         
         //Reduction      
         for( int i = 0; i < BlockIterHost.getSize(); i++ ){
@@ -394,9 +394,7 @@ solve( const MeshPointer& mesh,
         numIter ++;
       }
       if( numIter == 1 ){
-        helpFunc1 = auxPtr;
         auxPtr = helpFunc;
-        helpFunc = helpFunc1;
       }
       /*cudaFree( BlockIterDevice );
        cudaFree( dBlock );
@@ -535,10 +533,10 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
     __syncthreads();
     /**-----------------------------------------*/
     const Meshes::Grid< 2, Real, Device, Index >& mesh = interfaceMap.template getMesh< Devices::Cuda >();
-    __shared__ volatile int dimX;
-    __shared__ volatile int dimY;
-    __shared__ volatile Real hx;
-    __shared__ volatile Real hy;
+    __shared__ int dimX;
+    __shared__ int dimY;
+    __shared__ Real hx;
+    __shared__ Real hy;
     if( thri==0 && thrj == 0)
     {
       dimX = mesh.getDimensions().x();
