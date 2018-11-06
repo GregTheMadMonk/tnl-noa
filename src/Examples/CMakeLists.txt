@@ -17,3 +17,7 @@ add_subdirectory( flow-vl )
 #add_subdirectory( hamilton-jacobi-parallel-map )
 #add_subdirectory( fast-sweeping-map )
 #add_subdirectory( narrow-band )
+
+
+ADD_EXECUTABLE( StringExample StringExample.cpp )
+target_link_libraries( StringExample tnl )
