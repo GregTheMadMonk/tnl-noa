@@ -39,7 +39,7 @@ class String
       /////
       /// \brief Basic constructor.
       ///
-      /// Constructs an empty string object with the length of zero characters.
+      /// Constructs an empty string object.
       String();
 
       /////
@@ -88,17 +88,33 @@ class String
       /// Returns the number of characters in given string. Equivalent to getSize().
       int getLength() const;
 
-      /// Returns the number of characters in given string.
+      /// \brief Returns the number of characters in given string.
+      ///
+      /// \par Example
+      /// \include StringExampleGetSize.cpp
+      /// \par Output
+      /// \include StringExampleGetSize.out
       int getSize() const;
 
-      /// Returns size of allocated storage for given string. 
+      /// Returns size of allocated storage for given string.
+      ///
+      /// \par Example
+      /// \include StringExampleGetAllocatedSize.cpp
+      /// \par Output
+      /// \include StringExampleGetAllocatedSize.out
       int getAllocatedSize() const;
 
       /////
-      /// Reserves space for given \e size.
+      /// \brief Reserves space for given \e size.
+      ///
       /// Requests to allocate storage space of given \e size to avoid memory reallocation.
       /// It allocates one more byte for the terminating 0.
       /// @param size Number of characters.
+      ///
+      /// \par Example
+      /// \include StringExampleSetSize.cpp
+      /// \par Output
+      /// \include StringExampleSetSize.out
       void setSize( int size );
 
       /////
@@ -186,11 +202,11 @@ class String
 
       /// \brief This function overloads operator=().
       ///
-      /// It assigns character /e str to this string.
+      /// It assigns character \e str to this string.
       String& operator=( char str );
       /// \brief This function overloads operator+=().
       ///
-      /// It appends character /e str to this string.
+      /// It appends character \e str to this string.
       String& operator+=( char str );
       // This function concatenates strings and returns a newly constructed string object.
       String operator+( char str ) const;
