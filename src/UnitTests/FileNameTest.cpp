@@ -35,31 +35,31 @@ TEST( FileNameTest, Base )
     EXPECT_EQ( fname.getFileName(), "name00000." );
 }
 
-/*TEST( FileNameTest, Extension )
+TEST( FileNameTest, Extension )
 {
     FileName fname;
     fname.setExtension("tnl");
 
-    EXPECT_EQ( strcmp( fname.getFileName(), "00000.tnl" ), 0 );
-}*/
+    EXPECT_EQ( fname.getFileName(), "00000.tnl" );
+}
 
-/*TEST( FileNameTest, Index )
+TEST( FileNameTest, Index )
 {
     FileName fname1;
     FileName fname2;
     fname1.setIndex(1);
     fname2.setIndex(50);
 
-    EXPECT_EQ( strcmp( fname1.getFileName(), "00001." ), 0 );
-    EXPECT_EQ( strcmp( fname2.getFileName(), "00050." ), 0 );
-}*/
+    EXPECT_EQ( fname1.getFileName(), "00001." );
+    EXPECT_EQ( fname2.getFileName(), "00050." );
+}
 
-/*TEST( FileNameTest, DigitsCount )
+TEST( FileNameTest, DigitsCount )
 {
     FileName fname;
     fname.setDigitsCount(4);
 
-    EXPECT_EQ( strcmp( fname.getFileName(), "0000." ), 0 );
+    EXPECT_EQ( fname.getFileName(), "0000." );
 }
 
 TEST( FileNameTest, AllTogether )
@@ -70,8 +70,8 @@ TEST( FileNameTest, AllTogether )
     fname.setIndex(8);
     fname.setDigitsCount(3);
 
-    EXPECT_EQ( strcmp( fname.getFileName(), "name008.tnl" ), 0 );
-}*/
+    EXPECT_EQ( fname.getFileName(), "name008.tnl" );
+}
 #endif
 
 
