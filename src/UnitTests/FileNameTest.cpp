@@ -24,7 +24,7 @@ TEST( FileNameTest, Constructor )
 {
     FileName fname;
 
-    EXPECT_EQ( strcmp( fname.getFileName(), "00000." ), 0 );
+    EXPECT_EQ( fname.getFileName(), "00000." );
 }
 
 TEST( FileNameTest, Base )
@@ -32,7 +32,7 @@ TEST( FileNameTest, Base )
     FileName fname;
     fname.setFileNameBase("name");
 
-    EXPECT_EQ( strcmp( fname.getFileName(), "name00000." ), 0 );
+    EXPECT_EQ( fname.getFileName(), "name00000." );
 }
 
 /*TEST( FileNameTest, Extension )
