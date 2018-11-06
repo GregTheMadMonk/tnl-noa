@@ -39,13 +39,12 @@ class String
       /////
       /// \brief Basic constructor.
       ///
-      /// Constructs an empty string object with the length of zero characters.
+      /// Constructs an empty string object.
       String();
 
       /////
       /// \brief Constructor with char pointer.
       ///
-      /// Copies the null-terminated character sequence (C-string) pointed by \e c.
       /// Constructs a string initialized with the 8-bit string \e c, excluding
       /// the given number of \e prefix_cut_off and \e sufix_cut_off characters.
       ///
@@ -74,6 +73,7 @@ class String
       /// \brief Converts anything to a string.
       ///
       /// This function converts any type of value into type string.
+      /// @tparam T is a type of a value to be converted
       /// @param value Word of any type (e.g. int, bool, double,...).
       template< typename T >
       String( T value )
@@ -85,13 +85,13 @@ class String
       /// \brief Destructor.
       ~String();
 
-      /// Returns the number of characters in given string. Equivalent to getSize().
+      /// \brief Returns the number of characters in given string. Equivalent to getSize().
       int getLength() const;
 
-      /// Returns the number of characters in given string.
+      /// \brief Returns the number of characters in given string.
       int getSize() const;
 
-      /// Returns size of allocated storage for given string. 
+      /// \brief Returns size of allocated storage for given string. 
       int getAllocatedSize() const;
 
       /////
@@ -115,25 +115,23 @@ class String
       /////
       /// \brief Returns pointer to data.
       ///
-      /// It returns the content of the given string. The content can not be
-      /// changed by user.
+      /// It returns the content of the given string as a constant pointer to char.
       const char* getString() const;
 
       /// \brief Returns pointer to data.
       ///
-      /// It returns the content of the given string. The content can be changed
-      /// by user.
+      /// It returns the content of the given string as a non-constant pointer to char.
       char* getString();
 
       /////
-      /// \brief Operator for accesing particular chars of the string.
+      /// \brief Operator for accessing particular chars of the string.
       ///
       /// This function overloads operator[](). It returns a reference to
       /// the character at position \e i in given string.
       /// The character can not be changed be user.
       const char& operator[]( int i ) const;
 
-      /// \brief Operator for accesing particular chars of the string.
+      /// \brief Operator for accessing particular chars of the string.
       ///
       /// It returns the character at the position \e i in given string as
       /// a modifiable reference.
@@ -244,22 +242,16 @@ class String
       /////
       /// \brief Function for saving file.
       ///
-      /// Writes to a binary file and returns boolean expression based on the
+      /// Writes the string to a binary file and returns boolean expression based on the
       /// success in writing into the file.
       bool save( File& file ) const;
 
       /////
       /// \brief Function for loading from file.
       ///
-      /// Reads from binary file and returns boolean expression based on the
+      /// Reads a string from binary file and returns boolean expression based on the
       /// success in reading the file.
       bool load( File& file );
-
-
-      // !!! Mozem dat prec???
-      // Broadcast to other nodes in MPI cluster
-      //   void MPIBcast( int root, MPI_Comm mpi_comm = MPI_COMM_WORLD );
-
 
       /////
       /// \brief Function for getting a line from stream.
@@ -268,11 +260,11 @@ class String
       /// expression based on the success in reading the line.
       bool getLine( std::istream& stream );
 
-      ///toto neviem co
       friend std::ostream& operator<<( std::ostream& stream, const String& str );
 
    protected:
-      /// Pointer to char ended with zero ...Preco?
+      
+      /// Pointer to char ended with zero byte
       char* string;
 
       /// Length of allocated piece of memory.
@@ -286,7 +278,7 @@ String operator+( char string1, const String& string2 );
 /// Returns concatenation of \e string1 and \e string2.
 String operator+( const char* string1, const String& string2 );
 
-/// Toto neviem co
+/// Performs the string output to a stream
 std::ostream& operator<<( std::ostream& stream, const String& str );
 
 template< typename T >
