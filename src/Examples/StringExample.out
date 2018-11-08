@@ -5,7 +5,7 @@ str3: string
 str4: 28.4          //string type
 
 //functions
-size of string: 6 bytes
+size of string: 8 bytes
 alloc_size: 256
 memory: 512
 setter: Something new

@@ -15,7 +15,7 @@
 #endif
 
 #include <TNL/FileName.h>
-#include <TNL/String.h>
+// #include <TNL/String.h>
 
 using namespace TNL;
 
@@ -71,6 +71,7 @@ TEST( FileNameTest, AllTogether )
     fname.setDigitsCount(3);
 
     EXPECT_EQ( fname.getFileName(), "name008.tnl" );
+    EXPECT_EQ( getFileExtension(fname.getFileName()), "tnl" );
 }
 #endif
 
