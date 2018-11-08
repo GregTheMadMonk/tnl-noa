@@ -57,6 +57,8 @@
 // GENERAL TODO
 /*
  * For every function, EXPECT_EQ needs to be done, even for zeros in matrices.
+ * Figure out __cuda_callable_. When trying to call __cuda_callable__ functions
+ *      a segmentation fault (core dumped) is thrown.
  */
 
 
