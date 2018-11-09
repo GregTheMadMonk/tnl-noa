@@ -36,9 +36,8 @@ enum class IOMode
  */
 const size_t FileGPUvsCPUTransferBufferSize = 5 * 2<<20;
 
-/*
- * This file is aimed mainly for the binary data. It supports transparent compression.
- */
+
+/// Class file is aimed mainly for the binary data. It supports transparent compression.
 class File
 {
    IOMode mode;
@@ -55,10 +54,19 @@ class File
 
    public:
 
+   /// Basic constructor.
    File();
 
+   /// Destructor.
    ~File();
 
+   /////
+   /// \brief Opens given file. 
+   ///
+   /// Opens file with given \e fileName and returns true/false based on the success in opening the file.
+   /// \param fileName String which indicates name of the file user wants to open.
+   /// \param mode Indicates what user needs to do with opened file.
+   /// Modes to choose: IOMode::read or IOMode::write.
    bool open( const String& fileName,
               const IOMode mode );
 
@@ -92,6 +100,7 @@ class File
    template< typename Type, typename Device = Devices::Host >
    bool write( const Type* buffer );
 
+   /// \brief Closes given file and returns true/false based on the success in closing the file.
    bool close();
 
 protected:
