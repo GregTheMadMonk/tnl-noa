@@ -66,10 +66,10 @@ class Timer
  
    protected:
 
-      /// Function for reading the real time from timer.
+      /// Function for reading the real time.
       double readRealTime() const;
 
-      /// \brief Function for reading the CPU time from timer.
+      /// \brief Function for reading the CPU time.
       ///
       /// CPU time is the time that measures how long it takes processor
       /// to complete all computations.
@@ -84,7 +84,7 @@ class Timer
  
    unsigned long long int initialCPUCycles, totalCPUCycles;
 
-   /// \brief Saves information about state of the timer. 
+   /// \brief Saves information about state of the timer.
    ///
    /// Knows whether the timer is currently stopped or not.
    bool stopState;
