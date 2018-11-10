@@ -11,45 +11,46 @@
 // TODO
 /*
  * getType()                        ::HOW?  How to test this for each format? edit string how?
+ *      Found the mistake for Cuda instead of Devices::Cuda. Incorrect String in src/TNL/Devices/Cuda.cpp
  * getTypeVirtual()                 ::TEST? This just calls getType().
  * getSerializationType()           ::TEST? This just calls HostType::getType().
  * getSerializationTypeVirtual()    ::TEST? This just calls getSerializationType().
  * setDimensions()                      ::DONE
  * setCompressedRowLengths()            ::DONE
  * getRowLength()                   ::USED! In test_SetCompressedRowLengths() to verify the test itself.
- * getRowLengthFast()               ::TEST? How to test __cuda_callable__?
+ * getRowLengthFast()               ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
  * setLike()                            ::DONE
  * reset()                              ::DONE
- * setElementFast()                 ::TEST? How to test __cuda_callable__?
+ * setElementFast()                 ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
  * setElement()                         ::DONE
- * addElementFast()                 ::TEST? How to test __cuda_callable__?
- * addElement()                     ::HOW?  How to use the thisElementMultiplicator? Does it need testing?
- * setRowFast()                     ::TEST? How to test __cuda_callable__?
+ * addElementFast()                 ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
+ * addElement()                         ::DONE
+ * setRowFast()                     ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
  * setRow()                             ::DONE
- * addRowFast()                     ::TEST? How to test __cuda_callable__?
- * addRow()                         ::NOT IMPLEMENTED! Implement? Is it supposed to add an extra row to the matrix or arr elements of a row to another row in the matrix?
- * getElementFast()                 ::TEST? How to test __cuda_callable__?
+ * addRowFast()                     ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
+ * addRow()                         ::NOT IMPLEMENTED! This calls addRowFast() which isn't implemented. Implement? Is it supposed to add an extra row to the matrix or add elements of a row to another row in the matrix?
+ * getElementFast()                 ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
  * getElement()                     ::USED! In test_SetElement(), test_AddElement() and test_setRow() to verify the test itself.
- * getRowFast()                     ::TEST? How to test __cuda_callable__?
- * MatrixRow getRow()               ::TEST? How to test __cuda_callable__?
- * ConstMatrixRow getRow()          ::TEST? How to test __cuda_callable__?
- * rowVectorProduct()               ::TEST? How to test __cuda_callable__?
- * vectorProduct()                  ::HOW? Throwing errors in CSR_impl.h (779) no instance matches the arguments when using int arrays. When tried using Vector_impl.h index out of bounds or CUDA illegal memory access
+ * getRowFast()                     ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
+ * MatrixRow getRow()               ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
+ * ConstMatrixRow getRow()          ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
+ * rowVectorProduct()               ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
+ * vectorProduct()                  ::HOW? Throwing abort CUDA illegal memory access errors.
  * addMatrix()                      ::NOT IMPLEMENTED!
  * getTransposition()               ::NOT IMPLMENETED!
- * performSORIteration()            ::HOW? What does this do? Ax=b but splitting A into D(:=Diagonal) L(:=Lower Triangular) U(=Upper Triangular) matrices. What is the omega(relaxation/residual factor??)? https://en.wikipedia.org/wiki/Successive_over-relaxation
+ * performSORIteration()            ::HOW? Throws segmentation fault CUDA.
  * operator=()                      ::HOW? What is this supposed to enable? Overloading operators?
  * save( File& file)                ::USED! In save( String& fileName )
  * load( File& file )               ::USED! In load( String& fileName )
  * save( String& fileName )             ::DONE
  * load( String& fileName )             ::DONE
- * print()
- * setCudaKernelType()
- * getCudaKernelType()              ::TEST? How to test __cuda_callable__?
- * setCudaWarpSize()
- * getCudaWarpSize()
- * setHybridModeSplit()
- * getHybridModeSplit()             ::TEST? How to test __cuda_callable__?
+ * print()                              ::DONE
+ * setCudaKernelType()              ::NOT SUPPOSED TO TEST! via notes from 8.11.2018 supervisor meeting.
+ * getCudaKernelType()              ::NOT SUPPOSED TO TEST! via notes from 8.11.2018 supervisor meeting.
+ * setCudaWarpSize()                ::NOT SUPPOSED TO TEST! via notes from 8.11.2018 supervisor meeting.
+ * getCudaWarpSize()                ::NOT SUPPOSED TO TEST! via notes from 8.11.2018 supervisor meeting.
+ * setHybridModeSplit()             ::NOT SUPPOSED TO TEST! via notes from 8.11.2018 supervisor meeting.
+ * getHybridModeSplit()             ::NOT SUPPOSED TO TEST! via notes from 8.11.2018 supervisor meeting.
  * spmvCudaVectorized()             ::TEST? How to test __device__?
  * vectorProductCuda()              ::TEST? How to test __device__?
  */
@@ -59,6 +60,7 @@
  * For every function, EXPECT_EQ needs to be done, even for zeros in matrices.
  * Figure out __cuda_callable_. When trying to call __cuda_callable__ functions
  *      a segmentation fault (core dumped) is thrown.
+ *  ==>__cuda_callable__ works only for CPU at the moment. (for loops vs thread kernel assignment)
  */
 
 
@@ -68,6 +70,7 @@
 
 #include <TNL/Containers/VectorView.h>
 #include <TNL/Math.h>
+#include <iostream>
 
 using CSR_host_float = TNL::Matrices::CSR< float, TNL::Devices::Host, int >;
 using CSR_host_int = TNL::Matrices::CSR< int, TNL::Devices::Host, int >;
@@ -98,8 +101,8 @@ void cuda_test_GetType()
     MatrixCudaFloat mtrxCudaFloat;
     MatrixCudaInt mtrxCudaInt;
 
-    EXPECT_EQ( mtrxCudaFloat.getType(), TNL::String( "Matrices::CSR< float, Cuda >" ) );
-    EXPECT_EQ( mtrxCudaInt.getType(), TNL::String( "Matrices::CSR< int, Cuda >" ) );
+    EXPECT_EQ( mtrxCudaFloat.getType(), TNL::String( "Matrices::CSR< float, Cuda >" ) );    // This is mistakenly labeled in /src/TNL/Devices/Cuda.cpp
+    EXPECT_EQ( mtrxCudaInt.getType(), TNL::String( "Matrices::CSR< int, Cuda >" ) );        // Should be Devices::Cuda
 }
 
 template< typename Matrix >
@@ -111,8 +114,8 @@ void test_SetDimensions()
     Matrix m;
     m.setDimensions( rows, cols );
     
-    EXPECT_EQ( m.getRows(), 9);
-    EXPECT_EQ( m.getColumns(), 8);
+    EXPECT_EQ( m.getRows(), 9 );
+    EXPECT_EQ( m.getColumns(), 8 );
 }
 
 template< typename Matrix >
@@ -133,16 +136,16 @@ void test_SetCompressedRowLengths()
     
     m.setCompressedRowLengths( rowLengths );
     
-    EXPECT_EQ( m.getRowLength( 0), 3 );
-    EXPECT_EQ( m.getRowLength( 1), 3 );
-    EXPECT_EQ( m.getRowLength( 2), 1 );
-    EXPECT_EQ( m.getRowLength( 3), 2 );
-    EXPECT_EQ( m.getRowLength( 4), 3 );
-    EXPECT_EQ( m.getRowLength( 5), 4 );
-    EXPECT_EQ( m.getRowLength( 6), 5 );
-    EXPECT_EQ( m.getRowLength( 7), 6 );
-    EXPECT_EQ( m.getRowLength( 8), 7 );
-    EXPECT_EQ( m.getRowLength( 9), 8 );
+    EXPECT_EQ( m.getRowLength( 0 ), 3 );
+    EXPECT_EQ( m.getRowLength( 1 ), 3 );
+    EXPECT_EQ( m.getRowLength( 2 ), 1 );
+    EXPECT_EQ( m.getRowLength( 3 ), 2 );
+    EXPECT_EQ( m.getRowLength( 4 ), 3 );
+    EXPECT_EQ( m.getRowLength( 5 ), 4 );
+    EXPECT_EQ( m.getRowLength( 6 ), 5 );
+    EXPECT_EQ( m.getRowLength( 7 ), 6 );
+    EXPECT_EQ( m.getRowLength( 8 ), 7 );
+    EXPECT_EQ( m.getRowLength( 9 ), 8 );
 }
 
 template< typename Matrix1, typename Matrix2 >
@@ -168,6 +171,15 @@ void test_SetLike()
 template< typename Matrix >
 void test_Reset()
 {
+/*
+ * Sets up the following 5x4 sparse matrix:
+ *
+ *    /  0  0  0  0 \
+ *    |  0  0  0  0 |
+ *    |  0  0  0  0 |
+ *    |  0  0  0  0 |
+ *    \  0  0  0  0 /
+ */
     const int rows = 5;
     const int cols = 4;
     
@@ -183,6 +195,15 @@ void test_Reset()
 template< typename Matrix >
 void test_SetElement()
 {
+/*
+ * Sets up the following 5x5 sparse matrix:
+ *
+ *    /  1  0  0  0  0 \
+ *    |  0  2  0  0  0 |
+ *    |  0  0  3  0  0 |
+ *    |  0  0  0  4  0 |
+ *    \  0  0  0  0  5 /
+ */
     const int rows = 5;
     const int cols = 5;
     
@@ -232,6 +253,16 @@ void test_SetElement()
 template< typename Matrix >
 void test_AddElement()
 {
+/*
+ * Sets up the following 6x5 sparse matrix:
+ *
+ *    /  1  2  3  0  0 \
+ *    |  0  4  5  6  0 |
+ *    |  0  0  7  8  9 |
+ *    | 10  0  0  0  0 |
+ *    |  0 11  0  0  0 |
+ *    \  0  0  0 12  0 /
+ */
     const int rows = 6;
     const int cols = 5;
     
@@ -244,51 +275,136 @@ void test_AddElement()
     m.setCompressedRowLengths( rowLengths );
     
     int value = 1;
-    for( int i = 0; i < rows; i++ )
-        m.addElement( i, 0, value++, 0.0 );
+    for( int i = 0; i < cols - 2; i++ )     // 0th row
+        m.setElement( 0, i, value++ );
     
-    m.addElement( 0, 4, 1, 0.0 );
+    for( int i = 1; i < cols - 1; i++ )     // 1st row
+        m.setElement( 1, i, value++ );
+        
+    for( int i = 2; i < cols; i++ )         // 2nd row
+        m.setElement( 2, i, value++ );
+        
+        m.setElement( 3, 0, value++ );      // 3rd row
+        
+        m.setElement( 4, 1, value++ );      // 4th row
     
-    EXPECT_EQ( m.getElement( 0, 0 ), 1 );
-    EXPECT_EQ( m.getElement( 0, 1 ), 0 );
-    EXPECT_EQ( m.getElement( 0, 2 ), 0 );
-    EXPECT_EQ( m.getElement( 0, 3 ), 0 );
-    EXPECT_EQ( m.getElement( 0, 4 ), 1 );
+        m.setElement( 5, 3, value++ );      // 5th row
     
-    EXPECT_EQ( m.getElement( 1, 0 ), 2 );
-    EXPECT_EQ( m.getElement( 1, 1 ), 0 );
-    EXPECT_EQ( m.getElement( 1, 2 ), 0 );
-    EXPECT_EQ( m.getElement( 1, 3 ), 0 );
-    EXPECT_EQ( m.getElement( 1, 4 ), 0 );
+    // Check the set elements
+    EXPECT_EQ( m.getElement( 0, 0 ),  1 );
+    EXPECT_EQ( m.getElement( 0, 1 ),  2 );
+    EXPECT_EQ( m.getElement( 0, 2 ),  3 );
+    EXPECT_EQ( m.getElement( 0, 3 ),  0 );
+    EXPECT_EQ( m.getElement( 0, 4 ),  0 );
     
-    EXPECT_EQ( m.getElement( 2, 0 ), 3 );
-    EXPECT_EQ( m.getElement( 2, 1 ), 0 );
-    EXPECT_EQ( m.getElement( 2, 2 ), 0 );
-    EXPECT_EQ( m.getElement( 2, 3 ), 0 );
-    EXPECT_EQ( m.getElement( 2, 4 ), 0 );
+    EXPECT_EQ( m.getElement( 1, 0 ),  0 );
+    EXPECT_EQ( m.getElement( 1, 1 ),  4 );
+    EXPECT_EQ( m.getElement( 1, 2 ),  5 );
+    EXPECT_EQ( m.getElement( 1, 3 ),  6 );
+    EXPECT_EQ( m.getElement( 1, 4 ),  0 );
     
-    EXPECT_EQ( m.getElement( 3, 0 ), 4 );
-    EXPECT_EQ( m.getElement( 3, 1 ), 0 );
-    EXPECT_EQ( m.getElement( 3, 2 ), 0 );
-    EXPECT_EQ( m.getElement( 3, 3 ), 0 );
-    EXPECT_EQ( m.getElement( 3, 4 ), 0 );
+    EXPECT_EQ( m.getElement( 2, 0 ),  0 );
+    EXPECT_EQ( m.getElement( 2, 1 ),  0 );
+    EXPECT_EQ( m.getElement( 2, 2 ),  7 );
+    EXPECT_EQ( m.getElement( 2, 3 ),  8 );
+    EXPECT_EQ( m.getElement( 2, 4 ),  9 );
     
-    EXPECT_EQ( m.getElement( 4, 0 ), 5 );
-    EXPECT_EQ( m.getElement( 4, 1 ), 0 );
-    EXPECT_EQ( m.getElement( 4, 2 ), 0 );
-    EXPECT_EQ( m.getElement( 4, 3 ), 0 );
-    EXPECT_EQ( m.getElement( 4, 4 ), 0 );
+    EXPECT_EQ( m.getElement( 3, 0 ), 10 );
+    EXPECT_EQ( m.getElement( 3, 1 ),  0 );
+    EXPECT_EQ( m.getElement( 3, 2 ),  0 );
+    EXPECT_EQ( m.getElement( 3, 3 ),  0 );
+    EXPECT_EQ( m.getElement( 3, 4 ),  0 );
     
-    EXPECT_EQ( m.getElement( 5, 0 ), 6 );
-    EXPECT_EQ( m.getElement( 5, 1 ), 0 );
-    EXPECT_EQ( m.getElement( 5, 2 ), 0 );
-    EXPECT_EQ( m.getElement( 5, 3 ), 0 );
-    EXPECT_EQ( m.getElement( 5, 4 ), 0 );
+    EXPECT_EQ( m.getElement( 4, 0 ),  0 );
+    EXPECT_EQ( m.getElement( 4, 1 ), 11 );
+    EXPECT_EQ( m.getElement( 4, 2 ),  0 );
+    EXPECT_EQ( m.getElement( 4, 3 ),  0 );
+    EXPECT_EQ( m.getElement( 4, 4 ),  0 );
+    
+    EXPECT_EQ( m.getElement( 5, 0 ),  0 );
+    EXPECT_EQ( m.getElement( 5, 1 ),  0 );
+    EXPECT_EQ( m.getElement( 5, 2 ),  0 );
+    EXPECT_EQ( m.getElement( 5, 3 ), 12 );
+    EXPECT_EQ( m.getElement( 5, 4 ),  0 );
+    
+    // Add new elements to the old elements with a multiplying factor applied to the old elements.
+/*
+ * The following setup results in the following 6x5 sparse matrix:
+ *
+ *    /  3  6  9  0  0 \
+ *    |  0 12 15 18  0 |
+ *    |  0  0 21 24 27 |
+ *    | 30 11 12  0  0 |
+ *    |  0 35 14 15  0 |
+ *    \  0  0 16 41 18 /
+ */
+    int newValue = 1;
+    for( int i = 0; i < cols - 2; i++ )         // 0th row
+        m.addElement( 0, i, newValue++, 2.0 );
+    
+    for( int i = 1; i < cols - 1; i++ )         // 1st row
+        m.addElement( 1, i, newValue++, 2.0 );
+        
+    for( int i = 2; i < cols; i++ )             // 2nd row
+        m.addElement( 2, i, newValue++, 2.0 );
+        
+    for( int i = 0; i < cols - 2; i++ )         // 3rd row
+        m.addElement( 3, i, newValue++, 2.0 );
+    
+    for( int i = 1; i < cols - 1; i++ )         // 4th row
+        m.addElement( 4, i, newValue++, 2.0 );
+    
+    for( int i = 2; i < cols; i++ )             // 5th row
+        m.addElement( 5, i, newValue++, 2.0 );
+    
+    
+    EXPECT_EQ( m.getElement( 0, 0 ),  3 );
+    EXPECT_EQ( m.getElement( 0, 1 ),  6 );
+    EXPECT_EQ( m.getElement( 0, 2 ),  9 );
+    EXPECT_EQ( m.getElement( 0, 3 ),  0 );
+    EXPECT_EQ( m.getElement( 0, 4 ),  0 );
+    
+    EXPECT_EQ( m.getElement( 1, 0 ),  0 );
+    EXPECT_EQ( m.getElement( 1, 1 ), 12 );
+    EXPECT_EQ( m.getElement( 1, 2 ), 15 );
+    EXPECT_EQ( m.getElement( 1, 3 ), 18 );
+    EXPECT_EQ( m.getElement( 1, 4 ),  0 );
+    
+    EXPECT_EQ( m.getElement( 2, 0 ),  0 );
+    EXPECT_EQ( m.getElement( 2, 1 ),  0 );
+    EXPECT_EQ( m.getElement( 2, 2 ), 21 );
+    EXPECT_EQ( m.getElement( 2, 3 ), 24 );
+    EXPECT_EQ( m.getElement( 2, 4 ), 27 );
+    
+    EXPECT_EQ( m.getElement( 3, 0 ), 30 );
+    EXPECT_EQ( m.getElement( 3, 1 ), 11 );
+    EXPECT_EQ( m.getElement( 3, 2 ), 12 );
+    EXPECT_EQ( m.getElement( 3, 3 ),  0 );
+    EXPECT_EQ( m.getElement( 3, 4 ),  0 );
+    
+    EXPECT_EQ( m.getElement( 4, 0 ),  0 );
+    EXPECT_EQ( m.getElement( 4, 1 ), 35 );
+    EXPECT_EQ( m.getElement( 4, 2 ), 14 );
+    EXPECT_EQ( m.getElement( 4, 3 ), 15 );
+    EXPECT_EQ( m.getElement( 4, 4 ),  0 );
+    
+    EXPECT_EQ( m.getElement( 5, 0 ),  0 );
+    EXPECT_EQ( m.getElement( 5, 1 ),  0 );
+    EXPECT_EQ( m.getElement( 5, 2 ), 16 );
+    EXPECT_EQ( m.getElement( 5, 3 ), 41 );
+    EXPECT_EQ( m.getElement( 5, 4 ), 18 );
 }
 
 template< typename Matrix >
 void test_SetRow()
 {
+/*
+ * Sets up the following 3x7 sparse matrix:
+ *
+ *    /  0  0  0  1  1  1  0 \
+ *    |  2  2  2  0  0  0  0 |
+ *    \  3  3  3  0  0  0  0 /
+ */
     const int rows = 3;
     const int cols = 7;
     
@@ -354,7 +470,6 @@ void test_VectorProduct()
  *    |  0  8  9 10 |
  *    \  0  0 11 12 /
  */
-    bool testRan = false;
     const int m_rows = 5;
     const int m_cols = 4;
     
@@ -381,117 +496,106 @@ void test_VectorProduct()
     for( int i = 2; i < m_cols; i++ )       // 4th row
         m.setElement( 4, i, value++ );
     
-//                        #include <TNL/Containers/Vector.h>
-//                        #include <TNL/Containers/VectorView.h>
-//                    
-//                        using namespace TNL;
-//                        using namespace TNL::Containers;
-//                        using namespace TNL::Containers::Algorithms;
-//                        
-//                        Vector< int, Devices::Host, int > inVector;
-//                        inVector.setSize( 5 );
-//                        for( int i = 0; i < inVector.getSize(); i++ )        
-//                            inVector.setElement( i, 1 );
-//                        
-//                        Vector< int, Devices::Host, int > outVector;  
-//                        outVector.setSize( 4 );                        // ERROR: out of bounds, if set to 3 or 4. CUDA illegal memory access when set to 5.
-//                        for( int j = 0; j < outVector.getSize(); j++ )
-//                            outVector.setElement( j, 0 );//outVector[ j ] = 0;
+    #include <TNL/Containers/Vector.h>
+    #include <TNL/Containers/VectorView.h>
+
+    using namespace TNL;
+    using namespace TNL::Containers;
+    using namespace TNL::Containers::Algorithms;
+
+    Vector< int, Devices::Host, int > inVector;
+    inVector.setSize( 4 );
+    for( int i = 0; i < inVector.getSize(); i++ )        
+        inVector.setElement( i, 2 );
+
+    Vector< int, Devices::Host, int > outVector;  
+    outVector.setSize( 5 );
+    for( int j = 0; j < outVector.getSize(); j++ )
+        outVector.setElement( j, 0 );
+ 
     
-//    const int inVector [ 5 ] = { 1, 1, 1, 1, 1 };
-//    int outVector [ 4 ] = { 0, 0, 0, 0 };
-//    
-//    m.vectorProduct( inVector, outVector); // ERROR: This throws an error when Vector<> declarations are used.
-//    testRan = true;    
-//    EXPECT_EQ( outVector.getElement( 0 ),  6 );
-//    EXPECT_EQ( outVector.getElement( 1 ), 16 );
-//    EXPECT_EQ( outVector.getElement( 2 ), 30 );
-//    EXPECT_EQ( outVector.getElement( 3 ), 26 );
-        
-    EXPECT_TRUE( testRan );
-    std::cout << "TEST DID NOT RUN. NOT IMPLETENTED.\n";
+    m.vectorProduct( inVector, outVector); // ERROR: This throws an error when Vector<> declarations are used.
+   
+    EXPECT_EQ( outVector.getElement( 0 ), 12 );
+    EXPECT_EQ( outVector.getElement( 1 ),  8 );
+    EXPECT_EQ( outVector.getElement( 2 ), 36 );
+    EXPECT_EQ( outVector.getElement( 3 ), 54 );
+    EXPECT_EQ( outVector.getElement( 4 ), 46 );
 }
 
 template< typename Matrix >
 void test_PerformSORIteration()
 {
 /*
- * Sets up the following 5x4 sparse matrix:
+ * Sets up the following 4x4 sparse matrix:
  *
- *    /  1  2  3  0 \
- *    |  0  4  0  5 |
- *    |  6  7  8  0 |
- *    \  0  9 10 11 /
+ *    /  4  1  0  0 \
+ *    |  1  4  1  0 |
+ *    |  0  1  4  1 |
+ *    \  0  0  1  4 /
  */
-    bool testRan = false;
-//    const int m_rows = 4;
-//    const int m_cols = 4;
-//    
-//    Matrix m;
-//    m.reset();
-//    m.setDimensions( m_rows, m_cols );
-//    typename Matrix::CompressedRowLengthsVector rowLengths;
-//    rowLengths.setSize( m_rows );
-//    rowLengths.setValue( 3 );
-//    m.setCompressedRowLengths( rowLengths );
-//    
-//    int value = 1;
-//    for( int i = 0; i < m_cols - 1; i++ )   // 0th row
-//        m.setElement( 0, i, value++ );
-//        
-//        m.setElement( 1, 1, value++ );
-//        m.setElement( 1, 3, value++ );      // 1st row
-//        
-//    for( int i = 0; i < m_cols - 1; i++ )   // 2nd row
-//        m.setElement( 2, i, value++ );
-//        
-//    for( int i = 1; i < m_cols; i++ )       // 3rd row
-//        m.setElement( 3, i, value++ );
-//    
-//    // Print out the Matrix
-//    std::cout << "Matrix m: \n";
-//    for( int i = 0; i < m_rows; i++ )
-//    {
-//        std::cout << "| ";
-//        for(int j = 0; j < m_cols; j++ )
-//            std::cout << m.getElement( i, j ) << " ";
-//        std::cout << " |\n";
-//    }
-//    std::cout << std::endl;
-//    
-//    int bVector [ 4 ] = { 6, 9, 21, 30 };
-//    int xVector [ 4 ] = { 1, 1, 1, 1 };
-//    
-//    m.performSORIteration( bVector, 0, xVector, 1);
-//    m.performSORIteration( bVector, 1, xVector, 1);
-//    m.performSORIteration( bVector, 2, xVector, 1);
-//    m.performSORIteration( bVector, 3, xVector, 1);
-//    
-//    std::cout << "\n[ ";
-//    for( int i = 0; i < 4; i++ )
-//        std::cout << xVector[ i ] << " ";
-//    std::cout << " ]\n";
-//    
-//    std::cout << "\n[ ";
-//    for( int i = 0; i < 4; i++ )
-//        std::cout << bVector[ i ] << " ";
-//    std::cout << " ]\n";
-//    
-//    testRan = true;
-//    EXPECT_EQ( xVector[ 0 ], 1 );
-//    EXPECT_EQ( xVector[ 1 ], 1 );
-//    EXPECT_EQ( xVector[ 2 ], 1 );
-//    EXPECT_EQ( xVector[ 3 ], 1 );
+    const int m_rows = 4;
+    const int m_cols = 4;
     
-    EXPECT_TRUE( testRan );
-    std::cout << "TEST DID NOT RUN. NOT IMPLETENTED.\n";
+    Matrix m;
+    m.reset();
+    m.setDimensions( m_rows, m_cols );
+    typename Matrix::CompressedRowLengthsVector rowLengths;
+    rowLengths.setSize( m_rows );
+    rowLengths.setValue( 3 );
+    m.setCompressedRowLengths( rowLengths );
+    
+    m.setElement( 0, 0, 4.0 );        // 0th row
+    m.setElement( 0, 1, 1.0);
+        
+    m.setElement( 1, 0, 1.0 );        // 1st row
+    m.setElement( 1, 1, 4.0 );
+    m.setElement( 1, 2, 1.0 );
+        
+    m.setElement( 2, 1, 1.0 );        // 2nd row
+    m.setElement( 2, 2, 4.0 );
+    m.setElement( 2, 3, 1.0 );
+        
+    m.setElement( 3, 2, 1.0 );        // 3rd row
+    m.setElement( 3, 3, 4.0 );
+    
+    float bVector [ 4 ] = { 1.0, 1.0, 1.0, 1.0 };
+    float xVector [ 4 ] = { 1.0, 1.0, 1.0, 1.0 };
+    
+    m.performSORIteration( bVector, 0, xVector, 1);
+    
+    EXPECT_EQ( xVector[ 0 ], 0.0 );
+    EXPECT_EQ( xVector[ 1 ], 1.0 );
+    EXPECT_EQ( xVector[ 2 ], 1.0 );
+    EXPECT_EQ( xVector[ 3 ], 1.0 );
+    
+    m.performSORIteration( bVector, 1, xVector, 1);
+    
+    EXPECT_EQ( xVector[ 0 ], 0.0 );
+    EXPECT_EQ( xVector[ 1 ], 0.0 );
+    EXPECT_EQ( xVector[ 2 ], 1.0 );
+    EXPECT_EQ( xVector[ 3 ], 1.0 );
+    
+    m.performSORIteration( bVector, 2, xVector, 1);
+    
+    EXPECT_EQ( xVector[ 0 ], 0.0 );
+    EXPECT_EQ( xVector[ 1 ], 0.0 );
+    EXPECT_EQ( xVector[ 2 ], 0.0 );
+    EXPECT_EQ( xVector[ 3 ], 1.0 );
+    
+    m.performSORIteration( bVector, 3, xVector, 1);
+    
+    EXPECT_EQ( xVector[ 0 ], 0.0 );
+    EXPECT_EQ( xVector[ 1 ], 0.0 );
+    EXPECT_EQ( xVector[ 2 ], 0.0 );
+    EXPECT_EQ( xVector[ 3 ], 0.25 );
 }
 
 template< typename Matrix >
 void test_SaveAndLoad()
 {
 /*
- * Sets up the following 5x4 sparse matrix:
+ * Sets up the following 4x4 sparse matrix:
  *
  *    /  1  2  3  0 \
  *    |  0  4  0  5 |
@@ -522,7 +626,7 @@ void test_SaveAndLoad()
     for( int i = 1; i < m_cols; i++ )       // 3rd row
         savedMatrix.setElement( 3, i, value++ );
         
-    savedMatrix.save( "/home/lukas/m" );
+    savedMatrix.save( "matrixFile" );
     
     Matrix loadedMatrix;
     loadedMatrix.reset();
@@ -533,7 +637,7 @@ void test_SaveAndLoad()
     loadedMatrix.setCompressedRowLengths( rowLengths2 );
     
     
-    loadedMatrix.load( "/home/lukas/m" );
+    loadedMatrix.load( "matrixFile" );
     
     EXPECT_EQ( savedMatrix.getElement( 0, 0 ), loadedMatrix.getElement( 0, 0 ) );
     EXPECT_EQ( savedMatrix.getElement( 0, 1 ), loadedMatrix.getElement( 0, 1 ) );
@@ -555,28 +659,91 @@ void test_SaveAndLoad()
     EXPECT_EQ( savedMatrix.getElement( 3, 2 ), loadedMatrix.getElement( 3, 2 ) );
     EXPECT_EQ( savedMatrix.getElement( 3, 3 ), loadedMatrix.getElement( 3, 3 ) );
     
+    std::cout << "\nThis will create a file called 'matrixFile' (of the matrix created in the test function), in .../tnl-dev/Debug/bin/!\n\n";
 }
 
-
-TEST( SparseMatrixTest, CSR_GetTypeTest_Host )
+template< typename Matrix >
+void test_Print()
 {
-   host_test_GetType< CSR_host_float, CSR_host_int >();
+/*
+ * Sets up the following 5x4 sparse matrix:
+ *
+ *    /  1  2  3  0 \
+ *    |  0  0  0  4 |
+ *    |  5  6  7  0 |
+ *    |  0  8  9 10 |
+ *    \  0  0 11 12 /
+ */
+    const int m_rows = 5;
+    const int m_cols = 4;
+    
+    Matrix m;
+    m.reset();
+    m.setDimensions( m_rows, m_cols );
+    typename Matrix::CompressedRowLengthsVector rowLengths;
+    rowLengths.setSize( m_rows );
+    rowLengths.setValue( 3 );
+    m.setCompressedRowLengths( rowLengths );
+    
+    int value = 1;
+    for( int i = 0; i < m_cols - 1; i++ )   // 0th row
+        m.setElement( 0, i, value++ );
+    
+        m.setElement( 1, 3, value++ );      // 1st row
+        
+    for( int i = 0; i < m_cols - 1; i++ )   // 2nd row
+        m.setElement( 2, i, value++ );
+        
+    for( int i = 1; i < m_cols; i++ )       // 3rd row
+        m.setElement( 3, i, value++ );
+        
+    for( int i = 2; i < m_cols; i++ )       // 4th row
+        m.setElement( 4, i, value++ );
+    
+    // This is from: https://stackoverflow.com/questions/5193173/getting-cout-output-to-a-stdstring
+    #include <sstream>
+    std::stringstream printed;
+    std::stringstream couted;
+    
+    // This is from: https://stackoverflow.com/questions/19485536/redirect-output-of-an-function-printing-to-console-to-string
+    //change the underlying buffer and save the old buffer
+    auto old_buf = std::cout.rdbuf(printed.rdbuf()); 
+
+    m.print( std::cout ); //all the std::cout goes to ss
+
+    std::cout.rdbuf(old_buf); //reset
+    
+    //printed << printed.str() << std::endl;
+    couted << "Row: 0 ->  Col:0->1	 Col:1->2	 Col:2->3\t\n"
+               "Row: 1 ->  Col:3->4\t\n"
+               "Row: 2 ->  Col:0->5	 Col:1->6	 Col:2->7\t\n"
+               "Row: 3 ->  Col:1->8	 Col:2->9	 Col:3->10\t\n"
+               "Row: 4 ->  Col:2->11	 Col:3->12\t\n";
+    
+    EXPECT_EQ( printed.str(), couted.str() );
 }
 
-#ifdef HAVE_CUDA
-TEST( SparseMatrixTest, CSR_GetTypeTest_Cuda )
-{
-   cuda_test_GetType< CSR_cuda_float, CSR_cuda_int >();
-}
-#endif
+//// test_getType is not general enough yet. DO NOT TEST IT YET.
 
-TEST( SparseMatrixTest, CSR_SetDimensionsTest_Host )
+//TEST( SparseMatrixTest, CSR_GetTypeTest_Host )
+//{
+//   host_test_GetType< CSR_host_float, CSR_host_int >();
+//}
+//
+//#ifdef HAVE_CUDA
+//TEST( SparseMatrixTest, CSR_GetTypeTest_Cuda )
+//{
+//   cuda_test_GetType< CSR_cuda_float, CSR_cuda_int >();
+//}
+//#endif
+
+TEST( SparseMatrixTest, CSR_setDimensionsTest_Host )
 {
    test_SetDimensions< CSR_host_int >();
 }
 
 #ifdef HAVE_CUDA
-TEST( SparseMatrixTest, CSR_SetDimensionsTest_Cuda )
+TEST( SparseMatrixTest, CSR_setDimensionsTest_Cuda )
 {
    test_SetDimensions< CSR_cuda_int >();
 }
@@ -662,19 +829,32 @@ TEST( SparseMatrixTest, CSR_vectorProductTest_Host )
 #ifdef HAVE_CUDA
 TEST( SparseMatrixTest, CSR_vectorProductTest_Cuda )
 {
-    test_VectorProduct< CSR_cuda_int >();
+//    test_VectorProduct< CSR_cuda_int >();
+    bool testRan = false;
+    EXPECT_TRUE( testRan );
+    std::cout << "\nTEST DID NOT RUN. NOT WOKRING.\n\n";
+    std::cout << "If launched, this test throws the following message: \n";
+    std::cout << "      terminate called after throwing an instance of 'TNL::Exceptions::CudaRuntimeError'\n";
+    std::cout << "        what():  CUDA ERROR 77 (cudaErrorIllegalAddress): an illegal memory access was encountered.\n";
+    std::cout << "      Source: line 57 in /home/lukas/tnl-dev/src/TNL/Containers/Algorithms/ArrayOperationsCuda_impl.h: an illegal memory access was encountered\n";
+    std::cout << "      [1]    7238 abort (core dumped)  ./SparseMatrixTest-dbg\n\n";
 }
 #endif
 
 TEST( SparseMatrixTest, CSR_perforSORIterationTest_Host )
 {
-    test_PerformSORIteration< CSR_host_int >();
+    test_PerformSORIteration< CSR_host_float >();
 }
 
 #ifdef HAVE_CUDA
 TEST( SparseMatrixTest, CSR_perforSORIterationTest_Cuda )
 {
-    test_PerformSORIteration< CSR_cuda_int >();
+//    test_PerformSORIteration< CSR_cuda_float >();
+    bool testRan = false;
+    EXPECT_TRUE( testRan );
+    std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
+    std::cout << "If launched, this test throws the following message: \n";
+    std::cout << "      [1]    16958 segmentation fault (core dumped)  ./SparseMatrixTest-dbg\n\n";
 }
 #endif
 
@@ -687,6 +867,18 @@ TEST( SparseMatrixTest, CSR_saveAndLoadTest_Host )
 TEST( SparseMatrixTest, CSR_saveAndLoadTest_Cuda )
 {
     test_SaveAndLoad< CSR_cuda_int >();
+}
+#endif
+
+TEST( SparseMatrixTest, CSR_printTest_Host )
+{
+    test_Print< CSR_host_int >();
+}
+
+#ifdef HAVE_CUDA
+TEST( SparseMatrixTest, CSR_printTest_Cuda )
+{
+    test_Print< CSR_cuda_int >();
 }
 #endif
 
