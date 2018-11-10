@@ -1,11 +1,11 @@
 /***************************************************************************
-                          SparseMatrixTest.cpp -  description
+                          DenseMatrixTest.cpp -  description
                              -------------------
-    begin                : Nov 2, 2018
+    begin                : Nov 10, 2018
     copyright            : (C) 2018 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include "SparseMatrixTest.h"
+#include "DenseMatrixTest.h"
