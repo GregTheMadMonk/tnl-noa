@@ -426,9 +426,9 @@ void test_SetRow()
         m.setElement( 2, i, value + 2);
     }
     
-    int row1 [ 3 ] = { 11, 11, 11 }; int colIndexes1 [3] = { 0, 1, 2 };
-    int row2 [ 3 ] = { 22, 22, 22 }; int colIndexes2 [3] = { 0, 1, 2 };
-    int row3 [ 3 ] = { 33, 33, 33 }; int colIndexes3 [3] = { 3, 4, 5 };
+    int row1 [ 3 ] = { 11, 11, 11 }; int colIndexes1 [ 3 ] = { 0, 1, 2 };
+    int row2 [ 3 ] = { 22, 22, 22 }; int colIndexes2 [ 3 ] = { 0, 1, 2 };
+    int row3 [ 3 ] = { 33, 33, 33 }; int colIndexes3 [ 3 ] = { 3, 4, 5 };
     
     m.setRow( 0, colIndexes1, row1, 3 );
     m.setRow( 1, colIndexes2, row2, 3 );
