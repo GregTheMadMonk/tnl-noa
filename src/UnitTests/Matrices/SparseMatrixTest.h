@@ -36,7 +36,7 @@
  * MatrixRow getRow()               ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
  * ConstMatrixRow getRow()          ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
  * rowVectorProduct()               ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
- * vectorProduct()                  ::HOW? Throwing abort CUDA illegal memory access errors.
+ * vectorProduct()                  ::HOW? Throwing abort,  CUDA illegal memory access errors.
  * addMatrix()                      ::NOT IMPLEMENTED!
  * getTransposition()               ::NOT IMPLMENETED!
  * performSORIteration()            ::HOW? Throws segmentation fault CUDA.
@@ -46,12 +46,12 @@
  * save( String& fileName )             ::DONE
  * load( String& fileName )             ::DONE
  * print()                              ::DONE
- * setCudaKernelType()              ::NOT SUPPOSED TO TEST! via notes from 8.11.2018 supervisor meeting.
- * getCudaKernelType()              ::NOT SUPPOSED TO TEST! via notes from 8.11.2018 supervisor meeting.
- * setCudaWarpSize()                ::NOT SUPPOSED TO TEST! via notes from 8.11.2018 supervisor meeting.
- * getCudaWarpSize()                ::NOT SUPPOSED TO TEST! via notes from 8.11.2018 supervisor meeting.
- * setHybridModeSplit()             ::NOT SUPPOSED TO TEST! via notes from 8.11.2018 supervisor meeting.
- * getHybridModeSplit()             ::NOT SUPPOSED TO TEST! via notes from 8.11.2018 supervisor meeting.
+ * setCudaKernelType()              ::NOT SUPPOSED TO TEST! via notes from 1.11.2018 supervisor meeting.
+ * getCudaKernelType()              ::NOT SUPPOSED TO TEST! via notes from 1.11.2018 supervisor meeting.
+ * setCudaWarpSize()                ::NOT SUPPOSED TO TEST! via notes from 1.11.2018 supervisor meeting.
+ * getCudaWarpSize()                ::NOT SUPPOSED TO TEST! via notes from 1.11.2018 supervisor meeting.
+ * setHybridModeSplit()             ::NOT SUPPOSED TO TEST! via notes from 1.11.2018 supervisor meeting.
+ * getHybridModeSplit()             ::NOT SUPPOSED TO TEST! via notes from 1.11.2018 supervisor meeting.
  * spmvCudaVectorized()             ::TEST? How to test __device__?
  * vectorProductCuda()              ::TEST? How to test __device__?
  */
@@ -515,7 +515,7 @@ void test_VectorProduct()
         outVector.setElement( j, 0 );
  
     
-    m.vectorProduct( inVector, outVector); // ERROR: This throws an error when Vector<> declarations are used.
+    m.vectorProduct( inVector, outVector);
    
     EXPECT_EQ( outVector.getElement( 0 ), 12 );
     EXPECT_EQ( outVector.getElement( 1 ),  8 );
@@ -627,7 +627,7 @@ void test_SaveAndLoad()
     for( int i = 1; i < m_cols; i++ )       // 3rd row
         savedMatrix.setElement( 3, i, value++ );
         
-    savedMatrix.save( "matrixFile" );
+    savedMatrix.save( "sparseMatrixFile" );
     
     Matrix loadedMatrix;
     loadedMatrix.reset();
@@ -638,7 +638,7 @@ void test_SaveAndLoad()
     loadedMatrix.setCompressedRowLengths( rowLengths2 );
     
     
-    loadedMatrix.load( "matrixFile" );
+    loadedMatrix.load( "sparseMatrixFile" );
     
     EXPECT_EQ( savedMatrix.getElement( 0, 0 ), loadedMatrix.getElement( 0, 0 ) );
     EXPECT_EQ( savedMatrix.getElement( 0, 1 ), loadedMatrix.getElement( 0, 1 ) );
@@ -660,7 +660,27 @@ void test_SaveAndLoad()
     EXPECT_EQ( savedMatrix.getElement( 3, 2 ), loadedMatrix.getElement( 3, 2 ) );
     EXPECT_EQ( savedMatrix.getElement( 3, 3 ), loadedMatrix.getElement( 3, 3 ) );
     
-    std::cout << "\nThis will create a file called 'matrixFile' (of the matrix created in the test function), in .../tnl-dev/Debug/bin/!\n\n";
+    EXPECT_EQ( savedMatrix.getElement( 0, 0 ),  1 );
+    EXPECT_EQ( savedMatrix.getElement( 0, 1 ),  2 );
+    EXPECT_EQ( savedMatrix.getElement( 0, 2 ),  3 );
+    EXPECT_EQ( savedMatrix.getElement( 0, 3 ),  0 );
+    
+    EXPECT_EQ( savedMatrix.getElement( 1, 0 ),  0 );
+    EXPECT_EQ( savedMatrix.getElement( 1, 1 ),  4 );
+    EXPECT_EQ( savedMatrix.getElement( 1, 2 ),  0 );
+    EXPECT_EQ( savedMatrix.getElement( 1, 3 ),  5 );
+    
+    EXPECT_EQ( savedMatrix.getElement( 2, 0 ),  6 );
+    EXPECT_EQ( savedMatrix.getElement( 2, 1 ),  7 );
+    EXPECT_EQ( savedMatrix.getElement( 2, 2 ),  8 );
+    EXPECT_EQ( savedMatrix.getElement( 2, 3 ),  0 );
+    
+    EXPECT_EQ( savedMatrix.getElement( 3, 0 ),  0 );
+    EXPECT_EQ( savedMatrix.getElement( 3, 1 ),  9 );
+    EXPECT_EQ( savedMatrix.getElement( 3, 2 ), 10 );
+    EXPECT_EQ( savedMatrix.getElement( 3, 3 ), 11 );
+    
+    std::cout << "\nThis will create a file called 'sparseMatrixFile' (of the matrix created in the test function), in .../tnl-dev/Debug/bin/\n\n";
 }
 
 template< typename Matrix >
@@ -728,49 +748,49 @@ void test_Print()
 
 //TEST( SparseMatrixTest, CSR_GetTypeTest_Host )
 //{
-//   host_test_GetType< CSR_host_float, CSR_host_int >();
+//    host_test_GetType< CSR_host_float, CSR_host_int >();
 //}
 //
 //#ifdef HAVE_CUDA
 //TEST( SparseMatrixTest, CSR_GetTypeTest_Cuda )
 //{
-//   cuda_test_GetType< CSR_cuda_float, CSR_cuda_int >();
+//    cuda_test_GetType< CSR_cuda_float, CSR_cuda_int >();
 //}
 //#endif
 
 TEST( SparseMatrixTest, CSR_setDimensionsTest_Host )
 {
-   test_SetDimensions< CSR_host_int >();
+    test_SetDimensions< CSR_host_int >();
 }
 
 #ifdef HAVE_CUDA
 TEST( SparseMatrixTest, CSR_setDimensionsTest_Cuda )
 {
-   test_SetDimensions< CSR_cuda_int >();
+    test_SetDimensions< CSR_cuda_int >();
 }
 #endif
 
 TEST( SparseMatrixTest, CSR_setCompressedRowLengthsTest_Host )
 {
-   test_SetCompressedRowLengths< CSR_host_int >();
+    test_SetCompressedRowLengths< CSR_host_int >();
 }
 
 #ifdef HAVE_CUDA
 TEST( SparseMatrixTest, CSR_setCompressedRowLengthsTest_Cuda )
 {
-   test_SetCompressedRowLengths< CSR_cuda_int >();
+    test_SetCompressedRowLengths< CSR_cuda_int >();
 }
 #endif
 
 TEST( SparseMatrixTest, CSR_setLikeTest_Host )
 {
-   test_SetLike< CSR_host_int, CSR_host_float >();
+    test_SetLike< CSR_host_int, CSR_host_float >();
 }
 
 #ifdef HAVE_CUDA
 TEST( SparseMatrixTest, CSR_setLikeTest_Cuda )
 {
-   test_SetLike< CSR_cuda_int, CSR_cuda_float >();
+    test_SetLike< CSR_cuda_int, CSR_cuda_float >();
 }
 #endif
 
@@ -833,7 +853,7 @@ TEST( SparseMatrixTest, CSR_vectorProductTest_Cuda )
 //    test_VectorProduct< CSR_cuda_int >();
     bool testRan = false;
     EXPECT_TRUE( testRan );
-    std::cout << "\nTEST DID NOT RUN. NOT WOKRING.\n\n";
+    std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
     std::cout << "If launched, this test throws the following message: \n";
     std::cout << "      terminate called after throwing an instance of 'TNL::Exceptions::CudaRuntimeError'\n";
     std::cout << "        what():  CUDA ERROR 77 (cudaErrorIllegalAddress): an illegal memory access was encountered.\n";
