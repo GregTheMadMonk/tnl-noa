@@ -36,7 +36,8 @@
  * MatrixRow getRow()               ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
  * ConstMatrixRow getRow()          ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
  * rowVectorProduct()               ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
- * vectorProduct()                  ::HOW? Throwing abort,  CUDA illegal memory access errors.
+ * vectorProduct()                      ::DONE
+ *      This used to throw illegal memory access, but instead of using ints for vectors, using Types, helped.
  * addMatrix()                      ::NOT IMPLEMENTED!
  * getTransposition()               ::NOT IMPLMENETED!
  * performSORIteration()            ::HOW? Throws segmentation fault CUDA.
@@ -855,14 +856,6 @@ TEST( SparseMatrixTest, CSR_vectorProductTest_Host )
 TEST( SparseMatrixTest, CSR_vectorProductTest_Cuda )
 {
     test_VectorProduct< CSR_cuda_int >();
-//    bool testRan = false;
-//    EXPECT_TRUE( testRan );
-//    std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
-//    std::cout << "If launched, this test throws the following message: \n";
-//    std::cout << "      terminate called after throwing an instance of 'TNL::Exceptions::CudaRuntimeError'\n";
-//    std::cout << "        what():  CUDA ERROR 77 (cudaErrorIllegalAddress): an illegal memory access was encountered.\n";
-//    std::cout << "      Source: line 57 in /home/lukas/tnl-dev/src/TNL/Containers/Algorithms/ArrayOperationsCuda_impl.h: an illegal memory access was encountered\n";
-//    std::cout << "      [1]    7238 abort (core dumped)  ./SparseMatrixTest-dbg\n\n";
 }
 #endif
 
