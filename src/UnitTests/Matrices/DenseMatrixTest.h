@@ -44,7 +44,8 @@
  * MatrixRow getRow()                   ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
  * ConstMatrixRow getRow()              ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
  * rowVectorProduct()                   ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
- * vectorProduct()                      ::HOW? Throwing abort, CUDA illegal memory access errors.
+ * vectorProduct()                          ::DONE
+ *      This used to throw illegal memory access, but instead of using ints for vectors, using Types, helped.
  * addMatrix()                              ::DONE
  * DenseMatrixProductKernel()           ::HOW? How to test __global__?
  * getMatrixProdut()                    ::HOW? It won't build: When testing CPU: no parameters match function DenseMatrixProductKernel(); when testing GPU: identifier tnlCudaMin is undefined. 
@@ -64,9 +65,10 @@
 
 // GENERAL TODO
 /*
+ * Template tests for all formats.
  * Figure out __cuda_callable_. When trying to call __cuda_callable__ functions
- *      a segmentation fault (core dumped) is thrown.
- *  ==>__cuda_callable__ works only for CPU at the moment. (for loops vs thread kernel assignment)
+ *          a segmentation fault (core dumped) is thrown.
+ *      ==>__cuda_callable__ works only for CPU at the moment. (for loops vs thread kernel assignment)
  */
 
 
@@ -86,7 +88,12 @@ using Dense_cuda_float = TNL::Matrices::Dense< float, TNL::Devices::Cuda, int >;
 using Dense_cuda_int = TNL::Matrices::Dense< int, TNL::Devices::Cuda, int >;
 
 #ifdef HAVE_GTEST 
+#include <type_traits>
+
 #include <gtest/gtest.h>
+
+using namespace TNL;
+using namespace TNL::Containers;
 
 
 template< typename MatrixHostFloat, typename MatrixHostInt >
@@ -115,6 +122,7 @@ void cuda_test_GetType()
 template< typename Matrix >
 void test_SetDimensions()
 {
+    
     const int rows = 9;
     const int cols = 8;
     
@@ -181,6 +189,9 @@ void test_GetNumberOfMatrixElements()
 template< typename Matrix >
 void test_GetNumberOfNonzeroMatrixElements()
 {
+    typedef typename Matrix::RealType RealType;
+    typedef typename Matrix::DeviceType DeviceType;
+    typedef typename Matrix::IndexType IndexType;  
 /*
  * Sets up the following 7x6 dense matrix:
  *
@@ -199,7 +210,7 @@ void test_GetNumberOfNonzeroMatrixElements()
     m.reset();
     m.setDimensions( rows, cols );
     
-    int value = 1;
+    RealType value = 1;
     for( int i = 0; i < rows; i++ )
         for( int j = 0; j < cols; j++ )
             m.setElement( i, j, value++ );
@@ -237,16 +248,19 @@ void test_Reset()
 template< typename Matrix >
 void test_SetValue()
 {
+    typedef typename Matrix::RealType RealType;
+    typedef typename Matrix::DeviceType DeviceType;
+    typedef typename Matrix::IndexType IndexType;  
 /*
  * Sets up the following 7x6 dense matrix:
  *
- *    /  0  2  3  4  5  6 \
+ *    /  1  2  3  4  5  6 \
  *    |  7  8  9 10 11 12 |
  *    | 13 14 15 16 17 18 |
  *    | 19 20 21 22 23 24 |
  *    | 25 26 27 28 29 30 |
  *    | 31 32 33 34 35 36 |
- *    \ 37 38 39 40 41  0 /
+ *    \ 37 38 39 40 41 42 /
  */
     const int rows = 7;
     const int cols = 6;
@@ -255,10 +269,59 @@ void test_SetValue()
     m.reset();
     m.setDimensions( rows, cols );
     
-    int value = 1;
+    RealType value = 1;
     for( int i = 0; i < rows; i++ )
         for( int j = 0; j < cols; j++ )
             m.setElement( i, j, value++ );
+    
+    EXPECT_EQ( m.getElement( 0, 0 ),  1 );
+    EXPECT_EQ( m.getElement( 0, 1 ),  2 );
+    EXPECT_EQ( m.getElement( 0, 2 ),  3 );
+    EXPECT_EQ( m.getElement( 0, 3 ),  4 );
+    EXPECT_EQ( m.getElement( 0, 4 ),  5 );
+    EXPECT_EQ( m.getElement( 0, 5 ),  6 );
+    
+    EXPECT_EQ( m.getElement( 1, 0 ),  7 );
+    EXPECT_EQ( m.getElement( 1, 1 ),  8 );
+    EXPECT_EQ( m.getElement( 1, 2 ),  9 );
+    EXPECT_EQ( m.getElement( 1, 3 ), 10 );
+    EXPECT_EQ( m.getElement( 1, 4 ), 11 );
+    EXPECT_EQ( m.getElement( 1, 5 ), 12 );
+    
+    EXPECT_EQ( m.getElement( 2, 0 ), 13 );
+    EXPECT_EQ( m.getElement( 2, 1 ), 14 );
+    EXPECT_EQ( m.getElement( 2, 2 ), 15 );
+    EXPECT_EQ( m.getElement( 2, 3 ), 16 );
+    EXPECT_EQ( m.getElement( 2, 4 ), 17 );
+    EXPECT_EQ( m.getElement( 2, 5 ), 18 );
+    
+    EXPECT_EQ( m.getElement( 3, 0 ), 19 );
+    EXPECT_EQ( m.getElement( 3, 1 ), 20 );
+    EXPECT_EQ( m.getElement( 3, 2 ), 21 );
+    EXPECT_EQ( m.getElement( 3, 3 ), 22 );
+    EXPECT_EQ( m.getElement( 3, 4 ), 23 );
+    EXPECT_EQ( m.getElement( 3, 5 ), 24 );
+    
+    EXPECT_EQ( m.getElement( 4, 0 ), 25 );
+    EXPECT_EQ( m.getElement( 4, 1 ), 26 );
+    EXPECT_EQ( m.getElement( 4, 2 ), 27 );
+    EXPECT_EQ( m.getElement( 4, 3 ), 28 );
+    EXPECT_EQ( m.getElement( 4, 4 ), 29 );
+    EXPECT_EQ( m.getElement( 4, 5 ), 30 );
+    
+    EXPECT_EQ( m.getElement( 5, 0 ), 31 );
+    EXPECT_EQ( m.getElement( 5, 1 ), 32 );
+    EXPECT_EQ( m.getElement( 5, 2 ), 33 );
+    EXPECT_EQ( m.getElement( 5, 3 ), 34 );
+    EXPECT_EQ( m.getElement( 5, 4 ), 35 );
+    EXPECT_EQ( m.getElement( 5, 5 ), 36 );
+    
+    EXPECT_EQ( m.getElement( 6, 0 ), 37 );
+    EXPECT_EQ( m.getElement( 6, 1 ), 38 );
+    EXPECT_EQ( m.getElement( 6, 2 ), 39 );
+    EXPECT_EQ( m.getElement( 6, 3 ), 40 );
+    EXPECT_EQ( m.getElement( 6, 4 ), 41 );
+    EXPECT_EQ( m.getElement( 6, 5 ), 42 );
     
     // Set the values of all elements to a certain number
     m.setValue( 42 );
@@ -316,6 +379,9 @@ void test_SetValue()
 template< typename Matrix >
 void test_SetElement()
 {
+    typedef typename Matrix::RealType RealType;
+    typedef typename Matrix::DeviceType DeviceType;
+    typedef typename Matrix::IndexType IndexType;
 /*
  * Sets up the following 5x5 dense matrix:
  *
@@ -332,7 +398,7 @@ void test_SetElement()
     m.reset();
     m.setDimensions( rows, cols );    
     
-    int value = 1;
+    RealType value = 1;
     for( int i = 0; i < rows; i++ )
         for( int j = 0; j < cols; j++ )
             m.setElement( i, j, value++ );
@@ -371,6 +437,9 @@ void test_SetElement()
 template< typename Matrix >
 void test_AddElement()
 {
+    typedef typename Matrix::RealType RealType;
+    typedef typename Matrix::DeviceType DeviceType;
+    typedef typename Matrix::IndexType IndexType;
 /*
  * Sets up the following 6x5 dense matrix:
  *
@@ -388,7 +457,7 @@ void test_AddElement()
     m.reset();
     m.setDimensions( rows, cols );
     
-    int value = 1;
+    RealType value = 1;
     for( int i = 0; i < rows; i++ )
         for( int j = 0; j < cols; j++ )
             m.setElement( i, j, value++ );
@@ -441,10 +510,11 @@ void test_AddElement()
  *    | 63 66 69 72 75 |
  *    \ 78 81 84 87 90 /
  */
-    int newValue = 1;
+    RealType newValue = 1;
+    RealType multiplicator = 2;
     for( int i = 0; i < rows; i++ )
         for( int j = 0; j < cols; j++ )
-            m.addElement( i, j, newValue++, 2.0 );    
+            m.addElement( i, j, newValue++, multiplicator );    
     
     EXPECT_EQ( m.getElement( 0, 0 ),  3 );
     EXPECT_EQ( m.getElement( 0, 1 ),  6 );
@@ -486,6 +556,9 @@ void test_AddElement()
 template< typename Matrix >
 void test_SetRow()
 {
+    typedef typename Matrix::RealType RealType;
+    typedef typename Matrix::DeviceType DeviceType;
+    typedef typename Matrix::IndexType IndexType;
 /*
  * Sets up the following 3x7 dense matrix:
  *
@@ -500,19 +573,21 @@ void test_SetRow()
     m.reset();
     m.setDimensions( rows, cols );
     
-    int value = 1;
+    RealType value = 1;
     for( int i = 0; i < rows; i++ )
         for( int j = 0; j < cols; j++ )
-            m.setElement( i, j, value++ );
-        
+            m.setElement( i, j, value++ );       
     
-    int row1 [ 5 ] = { 11, 11, 11, 11, 11 }; int colIndexes1 [ 5 ] = { 0, 1, 2, 3, 4 };
-    int row2 [ 5 ] = { 22, 22, 22, 22, 22 }; int colIndexes2 [ 5 ] = { 0, 1, 2, 3, 4 };
-    int row3 [ 5 ] = { 33, 33, 33, 33, 33 }; int colIndexes3 [ 5 ] = { 2, 3, 4, 5, 6 };
+    RealType row1 [ 5 ] = { 11, 11, 11, 11, 11 }; IndexType colIndexes1 [ 5 ] = { 0, 1, 2, 3, 4 };
+    RealType row2 [ 5 ] = { 22, 22, 22, 22, 22 }; IndexType colIndexes2 [ 5 ] = { 0, 1, 2, 3, 4 };
+    RealType row3 [ 5 ] = { 33, 33, 33, 33, 33 }; IndexType colIndexes3 [ 5 ] = { 2, 3, 4, 5, 6 };
     
-    m.setRow( 0, colIndexes1, row1, 5 );
-    m.setRow( 1, colIndexes2, row2, 5 );
-    m.setRow( 2, colIndexes3, row3, 5 );
+    IndexType row = 0;
+    IndexType elements = 5;
+    
+    m.setRow( row++, colIndexes1, row1, elements );
+    m.setRow( row++, colIndexes2, row2, elements );
+    m.setRow( row++, colIndexes3, row3, elements );
     
     EXPECT_EQ( m.getElement( 0, 0 ), 11 );
     EXPECT_EQ( m.getElement( 0, 1 ), 11 );
@@ -542,6 +617,9 @@ void test_SetRow()
 template< typename Matrix >
 void test_AddRow()
 {
+    typedef typename Matrix::RealType RealType;
+    typedef typename Matrix::DeviceType DeviceType;
+    typedef typename Matrix::IndexType IndexType;
 /*
  * Sets up the following 6x5 dense matrix:
  *
@@ -559,7 +637,7 @@ void test_AddRow()
     m.reset();
     m.setDimensions( rows, cols );
     
-    int value = 1;
+    RealType value = 1;
     for( int i = 0; i < rows; i++ )
         for( int j = 0; j < cols; j++ )
             m.setElement( i, j, value++ );
@@ -613,19 +691,23 @@ void test_AddRow()
  *    \ 78 81 84 87 90 /
  */
     
-    int row0 [ 5 ] = { 11, 11, 11, 11, 0 }; int colIndexes0 [ 5 ] = { 0, 1, 2, 3, 4 };
-    int row1 [ 5 ] = { 22, 22, 22, 22, 0 }; int colIndexes1 [ 5 ] = { 0, 1, 2, 3, 4 };
-    int row2 [ 5 ] = { 33, 33, 33, 33, 0 }; int colIndexes2 [ 5 ] = { 0, 1, 2, 3, 4 };
-    int row3 [ 5 ] = { 44, 44, 44, 44, 0 }; int colIndexes3 [ 5 ] = { 0, 1, 2, 3, 4 };
-    int row4 [ 5 ] = { 55, 55, 55, 55, 0 }; int colIndexes4 [ 5 ] = { 0, 1, 2, 3, 4 };
-    int row5 [ 5 ] = { 66, 66, 66, 66, 0 }; int colIndexes5 [ 5 ] = { 0, 1, 2, 3, 4 };
+    RealType row0 [ 5 ] = { 11, 11, 11, 11, 0 }; IndexType colIndexes0 [ 5 ] = { 0, 1, 2, 3, 4 };
+    RealType row1 [ 5 ] = { 22, 22, 22, 22, 0 }; IndexType colIndexes1 [ 5 ] = { 0, 1, 2, 3, 4 };
+    RealType row2 [ 5 ] = { 33, 33, 33, 33, 0 }; IndexType colIndexes2 [ 5 ] = { 0, 1, 2, 3, 4 };
+    RealType row3 [ 5 ] = { 44, 44, 44, 44, 0 }; IndexType colIndexes3 [ 5 ] = { 0, 1, 2, 3, 4 };
+    RealType row4 [ 5 ] = { 55, 55, 55, 55, 0 }; IndexType colIndexes4 [ 5 ] = { 0, 1, 2, 3, 4 };
+    RealType row5 [ 5 ] = { 66, 66, 66, 66, 0 }; IndexType colIndexes5 [ 5 ] = { 0, 1, 2, 3, 4 };
     
-    m.addRow( 0, colIndexes0, row0, 5, 0.0 );
-    m.addRow( 1, colIndexes1, row1, 5, 1.0 );
-    m.addRow( 2, colIndexes2, row2, 5, 2.0 );
-    m.addRow( 3, colIndexes3, row3, 5, 3.0 );
-    m.addRow( 4, colIndexes4, row4, 5, 4.0 );
-    m.addRow( 5, colIndexes5, row5, 5, 5.0 );
+    IndexType row = 0;
+    IndexType elements = 5;
+    RealType thisRowMultiplicator = 0;
+    
+    m.addRow( row++, colIndexes0, row0, elements, thisRowMultiplicator++ );
+    m.addRow( row++, colIndexes1, row1, elements, thisRowMultiplicator++ );
+    m.addRow( row++, colIndexes2, row2, elements, thisRowMultiplicator++ );
+    m.addRow( row++, colIndexes3, row3, elements, thisRowMultiplicator++ );
+    m.addRow( row++, colIndexes4, row4, elements, thisRowMultiplicator++ );
+    m.addRow( row++, colIndexes5, row5, elements, thisRowMultiplicator++ );
     
     EXPECT_EQ( m.getElement( 0, 0 ),  11 );
     EXPECT_EQ( m.getElement( 0, 1 ),  11 );
@@ -667,6 +749,9 @@ void test_AddRow()
 template< typename Matrix >
 void test_VectorProduct()
 {
+    typedef typename Matrix::RealType RealType;
+    typedef typename Matrix::DeviceType DeviceType;
+    typedef typename Matrix::IndexType IndexType;
 /*
  * Sets up the following 5x4 dense matrix:
  *
@@ -683,24 +768,17 @@ void test_VectorProduct()
     m.reset();
     m.setDimensions( rows, cols );
     
-    int value = 1;
+    RealType value = 1;
     for( int i = 0; i < rows; i++ )
         for( int j = 0; j < cols; j++)
             m.setElement( i, j, value++ );
-    
-    #include <TNL/Containers/Vector.h>
-    #include <TNL/Containers/VectorView.h>
 
-    using namespace TNL;
-    using namespace TNL::Containers;
-    using namespace TNL::Containers::Algorithms;
-
-    Vector< int, Devices::Host, int > inVector;
+    Vector< RealType, DeviceType, IndexType > inVector;
     inVector.setSize( 4 );
     for( int i = 0; i < inVector.getSize(); i++ )        
         inVector.setElement( i, 2 );
 
-    Vector< int, Devices::Host, int > outVector;  
+    Vector< RealType, DeviceType, IndexType > outVector;  
     outVector.setSize( 5 );
     for( int j = 0; j < outVector.getSize(); j++ )
         outVector.setElement( j, 0 );
@@ -718,6 +796,9 @@ void test_VectorProduct()
 template< typename Matrix >
 void test_AddMatrix()
 {
+    typedef typename Matrix::RealType RealType;
+    typedef typename Matrix::DeviceType DeviceType;
+    typedef typename Matrix::IndexType IndexType;
 /*
  * Sets up the following 5x4 dense matrix:
  *
@@ -734,7 +815,7 @@ void test_AddMatrix()
     m.reset();
     m.setDimensions( rows, cols );
     
-    int value = 1;
+    RealType value = 1;
     for( int i = 0; i < rows; i++ )
         for( int j = 0; j < cols; j++)
             m.setElement( i, j, value++ );
@@ -753,7 +834,7 @@ void test_AddMatrix()
     m2.reset();
     m2.setDimensions( rows, cols );
     
-    int newValue = 1;
+    RealType newValue = 1;
     for( int i = 0; i < rows; i++ )
         for( int j = 0; j < cols; j++)
             m2.setElement( i, j, newValue++ );
@@ -774,8 +855,8 @@ void test_AddMatrix()
     
     mResult = m;
     
-    int matrixMultiplicator = 2;
-    int thisMatrixMultiplicator = 1;
+    RealType matrixMultiplicator = 2;
+    RealType thisMatrixMultiplicator = 1;
     
     mResult.addMatrix( m2, matrixMultiplicator, thisMatrixMultiplicator );
     
@@ -833,6 +914,9 @@ void test_AddMatrix()
 template< typename Matrix >
 void test_GetMatrixProduct()
 {
+    typedef typename Matrix::RealType RealType;
+    typedef typename Matrix::DeviceType DeviceType;
+    typedef typename Matrix::IndexType IndexType;
 /*
  * Sets up the following 5x4 dense matrix:
  *
@@ -849,7 +933,7 @@ void test_GetMatrixProduct()
     leftMatrix.reset();
     leftMatrix.setDimensions( leftRows, leftCols );
     
-    int value = 1;
+    RealType value = 1;
     for( int i = 0; i < leftRows; i++ )
         for( int j = 0; j < leftCols; j++)
             leftMatrix.setElement( i, j, value++ );
@@ -869,7 +953,7 @@ void test_GetMatrixProduct()
     rightMatrix.reset();
     rightMatrix.setDimensions( rightRows, rightCols );
     
-    int newValue = 1;
+    RealType newValue = 1;
     for( int i = 0; i < rightRows; i++ )
         for( int j = 0; j < rightCols; j++)
             rightMatrix.setElement( i, j, newValue++ );
@@ -889,8 +973,8 @@ void test_GetMatrixProduct()
     mResult.setDimensions( leftRows, rightCols );
     mResult.setValue( 0 );
     
-    int leftMatrixMultiplicator = 1;
-    int rightMatrixMultiplicator = 2;
+    RealType leftMatrixMultiplicator = 1;
+    RealType rightMatrixMultiplicator = 2;
 /*   
  *      /  1  2  3  4 \                            /  220  240  260  280  300 \
  *      |  5  6  7  8 |       /  1  2  3  4  5 \   |  492  544  596  648  700 |
@@ -935,6 +1019,9 @@ void test_GetMatrixProduct()
 template< typename Matrix >
 void test_GetTransposition()
 {
+    typedef typename Matrix::RealType RealType;
+    typedef typename Matrix::DeviceType DeviceType;
+    typedef typename Matrix::IndexType IndexType;
 /*
  * Sets up the following 3x2 dense matrix:
  *
@@ -949,7 +1036,7 @@ void test_GetTransposition()
     m.reset();
     m.setDimensions( rows, cols );
 
-    int value = 1;
+    RealType value = 1;
     for( int i = 0; i < rows; i++ )
         for( int j = 0; j < cols; j++ )
             m.setElement( i, j, value++ );
@@ -968,7 +1055,9 @@ void test_GetTransposition()
     
     mTransposed.print( std::cout );
     
-    mTransposed.getTransposition( m, 1.0 );
+    RealType matrixMultiplicator = 1;
+    
+    mTransposed.getTransposition( m, matrixMultiplicator );
     
     mTransposed.print( std::cout );
     
@@ -1003,7 +1092,7 @@ void test_GetTransposition()
             //    m.reset();
             //    m.setDimensions( rows, cols );
             //    
-            //    int value = 1;
+            //    RealType value = 1;
             //    for( int i = 0; i < rows; i++ )
             //        for( int j = 0; j < cols; j++)
             //            m.setElement( i, j, value++ );
@@ -1025,7 +1114,7 @@ void test_GetTransposition()
             //    mResult.setDimensions( resultRows, resultCols );
             //    mResult.setValue( 0 );
             //    
-            //    int matrixMultiplicator = 2;
+            //    RealType matrixMultiplicator = 2;
             //    
             //    mResult.getTransposition( m, matrixMultiplicator );
     
@@ -1074,6 +1163,9 @@ void test_GetTransposition()
 template< typename Matrix >
 void test_PerformSORIteration()
 {
+    typedef typename Matrix::RealType RealType;
+    typedef typename Matrix::DeviceType DeviceType;
+    typedef typename Matrix::IndexType IndexType;
 /*
  * Sets up the following 4x4 dense matrix:
  *
@@ -1109,31 +1201,34 @@ void test_PerformSORIteration()
     m.setElement( 3, 2, 1.0 );
     m.setElement( 3, 3, 4.0 );
     
-    float bVector [ 4 ] = { 1.0, 1.0, 1.0, 1.0 };
-    float xVector [ 4 ] = { 1.0, 1.0, 1.0, 1.0 };
+    RealType bVector [ 4 ] = { 1.0, 1.0, 1.0, 1.0 };
+    RealType xVector [ 4 ] = { 1.0, 1.0, 1.0, 1.0 };
     
-    m.performSORIteration( bVector, 0, xVector, 1);
+    IndexType row = 0;
+    RealType omega = 1;
+    
+    m.performSORIteration( bVector, row++, xVector, omega);
     
     EXPECT_EQ( xVector[ 0 ], -0.5 );
     EXPECT_EQ( xVector[ 1 ],  1.0 );
     EXPECT_EQ( xVector[ 2 ],  1.0 );
     EXPECT_EQ( xVector[ 3 ],  1.0 );
     
-    m.performSORIteration( bVector, 1, xVector, 1);
+    m.performSORIteration( bVector, row++, xVector, omega);
     
     EXPECT_EQ( xVector[ 0 ], -0.5 );
     EXPECT_EQ( xVector[ 1 ], -0.125 );
     EXPECT_EQ( xVector[ 2 ],  1.0 );
     EXPECT_EQ( xVector[ 3 ],  1.0 );
     
-    m.performSORIteration( bVector, 2, xVector, 1);
+    m.performSORIteration( bVector, row++, xVector, omega);
     
     EXPECT_EQ( xVector[ 0 ], -0.5 );
     EXPECT_EQ( xVector[ 1 ], -0.125 );
     EXPECT_EQ( xVector[ 2 ],  0.15625 );
     EXPECT_EQ( xVector[ 3 ],  1.0 );
     
-    m.performSORIteration( bVector, 3, xVector, 1);
+    m.performSORIteration( bVector, row++, xVector, omega);
     
     EXPECT_EQ( xVector[ 0 ], -0.5 );
     EXPECT_EQ( xVector[ 1 ], -0.125 );
@@ -1144,6 +1239,9 @@ void test_PerformSORIteration()
 template< typename Matrix >
 void test_SaveAndLoad()
 {
+    typedef typename Matrix::RealType RealType;
+    typedef typename Matrix::DeviceType DeviceType;
+    typedef typename Matrix::IndexType IndexType;
 /*
  * Sets up the following 4x4 dense matrix:
  *
@@ -1159,7 +1257,7 @@ void test_SaveAndLoad()
     savedMatrix.reset();
     savedMatrix.setDimensions( rows, cols );
     
-    int value = 1;
+    RealType value = 1;
     for( int i = 0; i < rows; i++ )
         for( int j = 0; j < cols; j++ )
             savedMatrix.setElement( i, j, value++ );
@@ -1218,6 +1316,9 @@ void test_SaveAndLoad()
 template< typename Matrix >
 void test_Print()
 {
+    typedef typename Matrix::RealType RealType;
+    typedef typename Matrix::DeviceType DeviceType;
+    typedef typename Matrix::IndexType IndexType;
 /*
  * Sets up the following 5x4 sparse matrix:
  *
@@ -1234,7 +1335,7 @@ void test_Print()
     m.reset();
     m.setDimensions( rows, cols );
     
-    int value = 1;
+    RealType value = 1;
     for( int i = 0; i < rows; i++)
         for( int j = 0; j < cols; j++)
             m.setElement( i, j, value++ );
@@ -1262,6 +1363,152 @@ void test_Print()
     EXPECT_EQ( printed.str(), couted.str() );
 }
 
+// test fixture for typed tests
+template< typename Matrix >
+class MatrixTest : public ::testing::Test
+{
+protected:
+   using MatrixType = Matrix;
+};
+
+// types for which MatrixTest is instantiated
+using MatrixTypes = ::testing::Types
+<
+    TNL::Matrices::Dense< int,    TNL::Devices::Host, short >,
+    TNL::Matrices::Dense< long,   TNL::Devices::Host, short >,
+    TNL::Matrices::Dense< float,  TNL::Devices::Host, short >,
+    TNL::Matrices::Dense< double, TNL::Devices::Host, short >,
+    TNL::Matrices::Dense< int,    TNL::Devices::Host, int >,
+    TNL::Matrices::Dense< long,   TNL::Devices::Host, int >,
+    TNL::Matrices::Dense< float,  TNL::Devices::Host, int >,
+    TNL::Matrices::Dense< double, TNL::Devices::Host, int >,
+    TNL::Matrices::Dense< int,    TNL::Devices::Host, long >,
+    TNL::Matrices::Dense< long,   TNL::Devices::Host, long >,
+    TNL::Matrices::Dense< float,  TNL::Devices::Host, long >,
+    TNL::Matrices::Dense< double, TNL::Devices::Host, long >,
+#ifdef HAVE_CUDA
+    TNL::Matrices::Dense< int,    TNL::Devices::Cuda, short >,
+    TNL::Matrices::Dense< long,   TNL::Devices::Cuda, short >,
+    TNL::Matrices::Dense< float,  TNL::Devices::Cuda, short >,
+    TNL::Matrices::Dense< double, TNL::Devices::Cuda, short >,
+    TNL::Matrices::Dense< int,    TNL::Devices::Cuda, int >,
+    TNL::Matrices::Dense< long,   TNL::Devices::Cuda, int >,
+    TNL::Matrices::Dense< float,  TNL::Devices::Cuda, int >,
+    TNL::Matrices::Dense< double, TNL::Devices::Cuda, int >,
+    TNL::Matrices::Dense< int,    TNL::Devices::Cuda, long >,
+    TNL::Matrices::Dense< long,   TNL::Devices::Cuda, long >,
+    TNL::Matrices::Dense< float,  TNL::Devices::Cuda, long >,
+    TNL::Matrices::Dense< double, TNL::Devices::Cuda, long >
+#endif
+>;
+
+TYPED_TEST_CASE( MatrixTest, MatrixTypes );
+
+TYPED_TEST( MatrixTest, setDimensionsTest )
+{
+    using MatrixType = typename TestFixture::MatrixType;
+    
+    test_SetDimensions< MatrixType >();
+}
+
+TYPED_TEST( MatrixTest, setLikeTest )
+{
+    using MatrixType = typename TestFixture::MatrixType;
+    
+    test_SetLike< MatrixType, MatrixType >();
+}
+
+TYPED_TEST( MatrixTest, getRowLengthTest )
+{
+    using MatrixType = typename TestFixture::MatrixType;
+    
+    test_GetRowLength< MatrixType >();
+}
+
+TYPED_TEST( MatrixTest, getNumberOfMatrixElementsTest )
+{
+    using MatrixType = typename TestFixture::MatrixType;
+    
+    test_GetNumberOfMatrixElements< MatrixType >();
+}
+
+TYPED_TEST( MatrixTest, getNumberOfNonzeroMatrixElementsTest )
+{
+    using MatrixType = typename TestFixture::MatrixType;
+    
+    test_GetNumberOfNonzeroMatrixElements< MatrixType >();
+}
+
+TYPED_TEST( MatrixTest, resetTest )
+{
+    using MatrixType = typename TestFixture::MatrixType;
+    
+    test_Reset< MatrixType >();
+}
+
+TYPED_TEST( MatrixTest, setValueTest )
+{
+    using MatrixType = typename TestFixture::MatrixType;
+    
+    test_SetValue< MatrixType >();
+}
+
+TYPED_TEST( MatrixTest, setElementTest )
+{
+    using MatrixType = typename TestFixture::MatrixType;
+    
+    test_SetElement< MatrixType >();
+}
+
+TYPED_TEST( MatrixTest, addElementTest )
+{
+    using MatrixType = typename TestFixture::MatrixType;
+    
+    test_AddElement< MatrixType >();
+}
+
+TYPED_TEST( MatrixTest, setRowTest )
+{
+    using MatrixType = typename TestFixture::MatrixType;
+    
+    test_SetRow< MatrixType >();
+}
+
+TYPED_TEST( MatrixTest, addRowTest )
+{
+    using MatrixType = typename TestFixture::MatrixType;
+    
+    test_AddRow< MatrixType >();
+}
+
+TYPED_TEST( MatrixTest, vectorProductTest )
+{
+    using MatrixType = typename TestFixture::MatrixType;
+    
+    test_VectorProduct< MatrixType >();
+}
+
+TYPED_TEST( MatrixTest, addMatrixTest )
+{
+    using MatrixType = typename TestFixture::MatrixType;
+    
+    test_AddMatrix< MatrixType >();
+}
+
+TYPED_TEST( MatrixTest, saveAndLoadTest )
+{
+    using MatrixType = typename TestFixture::MatrixType;
+    
+    test_SaveAndLoad< MatrixType >();
+}
+
+TYPED_TEST( MatrixTest, printTest )
+{
+    using MatrixType = typename TestFixture::MatrixType;
+    
+    test_Print< MatrixType >();
+}
+
 //// test_getType is not general enough yet. DO NOT TEST IT YET.
 
 //TEST( DenseMatrixTest, Dense_GetTypeTest_Host )
@@ -1275,170 +1522,6 @@ void test_Print()
 //    cuda_test_GetType< Dense_cuda_float, Dense_cuda_int >();
 //}
 //#endif
-
-TEST( DenseMatrixTest, DeDense_setDimensionsTest_Host )
-{
-    test_SetDimensions< Dense_host_int >();
-}
-
-#ifdef HAVE_CUDA
-TEST( DenseMatrixTest, Dense_setDimensionsTest_Cuda )
-{
-    test_SetDimensions< Dense_cuda_int >();
-}
-#endif
-
-TEST( DenseMatrixTest, Dense_setLikeTest_Host )
-{
-    test_SetLike< Dense_host_int, Dense_host_float >();
-}
-
-#ifdef HAVE_CUDA
-TEST( DenseMatrixTest, Dense_setLikeTest_Cuda )
-{
-    test_SetLike< Dense_cuda_int, Dense_cuda_float >();
-}
-#endif
-
-TEST( DenseMatrixTest, Dense_getRowLengthTest_Host )
-{
-    test_GetRowLength< Dense_host_int >();
-}
-
-#ifdef HAVE_CUDA
-TEST( DenseMatrixTest, Dense_getRowLengthTest_Cuda )
-{
-    test_GetRowLength< Dense_cuda_int >();
-}
-#endif
-
-TEST( DenseMatrixTest, Dense_getNumberOfMatrixElementsTest_Host )
-{
-    test_GetNumberOfMatrixElements< Dense_host_int >();
-}
-
-#ifdef HAVE_CUDA
-TEST( DenseMatrixTest, Dense_getNumberOfMatrixElementsTest_Cuda )
-{
-    test_GetNumberOfMatrixElements< Dense_cuda_int >();
-}
-#endif
-
-TEST( DenseMatrixTest, Dense_getNumberOfNonzeroMatrixElementsTest_Host )
-{
-    test_GetNumberOfNonzeroMatrixElements< Dense_host_int >();
-}
-
-#ifdef HAVE_CUDA
-TEST( DenseMatrixTest, Dense_getNumberOfNonzeroMatrixElementsTest_Cuda )
-{
-    test_GetNumberOfNonzeroMatrixElements< Dense_cuda_int >();
-}
-#endif
-
-TEST( DenseMatrixTest, Dense_resetTest_Host )
-{
-    test_Reset< Dense_host_int >();
-}
-
-#ifdef HAVE_CUDA
-TEST( DenseMatrixTest, Dense_resetTest_Cuda )
-{
-    test_Reset< Dense_cuda_int >();
-}
-#endif
-
-TEST( DenseMatrixTest, Dense_setValueTest_Host )
-{
-    test_SetValue< Dense_host_int >();
-}
-
-#ifdef HAVE_CUDA
-TEST( DenseMatrixTest, Dense_setValueTest_Cuda )
-{
-    test_SetValue< Dense_cuda_int >();
-}
-#endif
-
-TEST( DenseMatrixTest, Dense_setElementTest_Host )
-{
-    test_SetElement< Dense_host_int >();
-}
-
-#ifdef HAVE_CUDA
-TEST( DenseMatrixTest, Dense_setElementTest_Cuda )
-{
-    test_SetElement< Dense_cuda_int >();
-}
-#endif
-
-TEST( DenseMatrixTest, Dense_addElementTest_Host )
-{
-    test_AddElement< Dense_host_int >();
-}
-
-#ifdef HAVE_CUDA
-TEST( DenseMatrixTest, Dense_addElementTest_Cuda )
-{
-    test_AddElement< Dense_cuda_int >();
-}
-#endif
-
-TEST( DenseMatrixTest, Dense_setRowTest_Host )
-{
-    test_SetRow< Dense_host_int >();
-}
-
-#ifdef HAVE_CUDA
-TEST( DenseMatrixTest, Dense_setRowTest_Cuda )
-{
-    test_SetRow< Dense_cuda_int >();
-}
-#endif
-
-TEST( DenseMatrixTest, Dense_addRowTest_Host )
-{
-    test_AddRow< Dense_host_int >();
-}
-
-#ifdef HAVE_CUDA
-TEST( DenseMatrixTest, Dense_addRowTest_Cuda )
-{
-    test_AddRow< Dense_cuda_int >();
-}
-#endif
-
-TEST( DenseMatrixTest, Dense_vectorProductTest_Host )
-{
-    test_VectorProduct< Dense_host_int >();
-}
-
-#ifdef HAVE_CUDA
-TEST( DenseMatrixTest, Dense_vectorProductTest_Cuda )
-{
-//   test_VectorProduct< Dense_cuda_int >();
-    bool testRan = false;
-    EXPECT_TRUE( testRan );
-    std::cout << "\nTEST DID NOT RUN. NOT WOKRING.\n\n";
-    std::cout << "If launched, this test throws the following message: \n";
-    std::cout << "      terminate called after throwing an instance of 'TNL::Exceptions::CudaRuntimeError'\n";
-    std::cout << "        what():  CUDA ERROR 77 (cudaErrorIllegalAddress): an illegal memory access was encountered.\n";
-    std::cout << "      Source: line 57 in /home/lukas/tnl-dev/src/TNL/Containers/Algorithms/ArrayOperationsCuda_impl.h: an illegal memory access was encountered\n";
-    std::cout << "      [1]    22515 abort (core dumped)  ./SparseMatrixTest-dbg\n\n";
-}
-#endif
-
-TEST( DenseMatrixTest, Dense_addMatrixTest_Host )
-{
-    test_AddMatrix< Dense_host_int >();
-}
-
-#ifdef HAVE_CUDA
-TEST( DenseMatrixTest, Dense_addMatrixTest_Cuda )
-{
-    test_AddMatrix< Dense_cuda_int >();
-}
-#endif
 
 TEST( DenseMatrixTest, Dense_getMatrixProductTest_Host )
 {
@@ -1543,30 +1626,6 @@ TEST( DenseMatrixTest, Dense_performSORIterationTest_Cuda )
     std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
     std::cout << "If launched, this test throws the following message: \n";
     std::cout << "      [1]    6992 segmentation fault (core dumped)  ./SparseMatrixTest-dbg\n\n";
-}
-#endif
-
-TEST( DenseMatrixTest, Dense_saveAndLoadTest_Host )
-{
-    test_SaveAndLoad< Dense_host_int >();
-}
-
-#ifdef HAVE_CUDA
-TEST( DenseMatrixTest, Dense_saveAndLoadTest_Cuda )
-{
-    test_SaveAndLoad< Dense_cuda_int >();
-}
-#endif
-
-TEST( DenseMatrixTest, Dense_printTest_Host )
-{
-    test_Print< Dense_host_int >();
-}
-
-#ifdef HAVE_CUDA
-TEST( DenseMatrixTest, Dense_printTest_Cuda )
-{
-    test_Print< Dense_cuda_int >();
 }
 #endif
 
