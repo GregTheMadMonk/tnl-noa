@@ -503,13 +503,17 @@ void test_VectorProduct()
     using namespace TNL;
     using namespace TNL::Containers;
     using namespace TNL::Containers::Algorithms;
+    
+    typedef typename Matrix::RealType RealType;
+    typedef typename Matrix::DeviceType DeviceType;
+    typedef typename Matrix::IndexType IndexType;
 
-    Vector< int, Devices::Host, int > inVector;
+    Vector< RealType, DeviceType, IndexType > inVector;
     inVector.setSize( 4 );
     for( int i = 0; i < inVector.getSize(); i++ )        
         inVector.setElement( i, 2 );
 
-    Vector< int, Devices::Host, int > outVector;  
+    Vector< RealType, DeviceType, IndexType > outVector;  
     outVector.setSize( 5 );
     for( int j = 0; j < outVector.getSize(); j++ )
         outVector.setElement( j, 0 );
@@ -850,15 +854,15 @@ TEST( SparseMatrixTest, CSR_vectorProductTest_Host )
 #ifdef HAVE_CUDA
 TEST( SparseMatrixTest, CSR_vectorProductTest_Cuda )
 {
-//    test_VectorProduct< CSR_cuda_int >();
-    bool testRan = false;
-    EXPECT_TRUE( testRan );
-    std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
-    std::cout << "If launched, this test throws the following message: \n";
-    std::cout << "      terminate called after throwing an instance of 'TNL::Exceptions::CudaRuntimeError'\n";
-    std::cout << "        what():  CUDA ERROR 77 (cudaErrorIllegalAddress): an illegal memory access was encountered.\n";
-    std::cout << "      Source: line 57 in /home/lukas/tnl-dev/src/TNL/Containers/Algorithms/ArrayOperationsCuda_impl.h: an illegal memory access was encountered\n";
-    std::cout << "      [1]    7238 abort (core dumped)  ./SparseMatrixTest-dbg\n\n";
+    test_VectorProduct< CSR_cuda_int >();
+//    bool testRan = false;
+//    EXPECT_TRUE( testRan );
+//    std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
+//    std::cout << "If launched, this test throws the following message: \n";
+//    std::cout << "      terminate called after throwing an instance of 'TNL::Exceptions::CudaRuntimeError'\n";
+//    std::cout << "        what():  CUDA ERROR 77 (cudaErrorIllegalAddress): an illegal memory access was encountered.\n";
+//    std::cout << "      Source: line 57 in /home/lukas/tnl-dev/src/TNL/Containers/Algorithms/ArrayOperationsCuda_impl.h: an illegal memory access was encountered\n";
+//    std::cout << "      [1]    7238 abort (core dumped)  ./SparseMatrixTest-dbg\n\n";
 }
 #endif
 
