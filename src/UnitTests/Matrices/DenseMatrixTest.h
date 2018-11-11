@@ -51,6 +51,7 @@
  * DenseTranspositionAlignedKernel()    ::HOW? How to test __global__?
  * DenseTranspositionNonAlignedKernel() ::HOW? How to test __global__?
  * getTransposition()                   ::HOW? It won't build when testing CPU: no parameters match functions DenseTranspositionAlignedKernel() and DenseTranspositionNonAlignedKernel(). On GPU if will throw terminate and (core dumped).
+ *      MISTAKE! For GPU it works completely fine, when rows == cols. Otherwise it throws assertion failed.
  * performSORIteration()                ::HOW? Throws segmentation fault CUDA.
  * operator=()                          ::HOW? What is this supposed to enable? Overloading operators?
  * save( String& fileName )                 ::DONE
@@ -935,71 +936,138 @@ template< typename Matrix >
 void test_GetTransposition()
 {
 /*
- * Sets up the following 5x4 dense matrix:
+ * Sets up the following 3x2 dense matrix:
  *
- *    /  1  2  3  4 \
- *    |  5  6  7  8 |
- *    |  9 10 11 12 |
- *    | 13 14 15 16 |
- *    \ 17 18 19 20 /
+ *    /  1  2 \
+ *    |  3  4 |
+ *    \  5  6 /
  */
-    const int rows = 5;
-    const int cols = 4;
-    
+    const int rows = 3;
+    const int cols = 2;
+
     Matrix m;
     m.reset();
     m.setDimensions( rows, cols );
-    
+
     int value = 1;
     for( int i = 0; i < rows; i++ )
-        for( int j = 0; j < cols; j++)
+        for( int j = 0; j < cols; j++ )
             m.setElement( i, j, value++ );
+
+    m.print( std::cout );
     
-    /*
- * Sets up the following 5x5 resulting dense matrix:
+/*
+ * Sets up the following 2x3 dense matrix:
  *
- *    /  0  0  0  0 \
- *    |  0  0  0  0 |
- *    |  0  0  0  0 |
- *    |  0  0  0  0 |
- *    \  0  0  0  0 /
+ *    /  0  0  0 \
+ *    \  0  0  0 /
+ */ 
+    Matrix mTransposed;
+    mTransposed.reset();
+    mTransposed.setDimensions( cols, rows );
+    
+    mTransposed.print( std::cout );
+    
+    mTransposed.getTransposition( m, 1.0 );
+    
+    mTransposed.print( std::cout );
+    
+/*
+ * Should result in the following 2x3 dense matrix:
+ *
+ *    /  1  3  5 \
+ *    \  2  4  6 /
+ */ 
+    
+    EXPECT_EQ( mTransposed.getElement( 0, 0 ), 1 );
+    EXPECT_EQ( mTransposed.getElement( 0, 1 ), 3 );
+    EXPECT_EQ( mTransposed.getElement( 0, 2 ), 5 );
+    
+    EXPECT_EQ( mTransposed.getElement( 1, 0 ), 2 );
+    EXPECT_EQ( mTransposed.getElement( 1, 1 ), 4 );
+    EXPECT_EQ( mTransposed.getElement( 1, 2 ), 6 );
+    
+/*
+ * Sets up the following 5x5 dense matrix:
+ *
+ *    /  1  2  3  4  5 \
+ *    |  6  7  8  9 10 |
+ *    | 11 12 13 14 15 |
+ *    | 16 17 18 19 20 |
+ *    \ 21 22 23 24 25 /
  */
-    const int resultRows = cols;
-    const int resultCols = rows;
+            //    const int rows = 5;
+            //    const int cols = 5;
+            //    
+            //    Matrix m;
+            //    m.reset();
+            //    m.setDimensions( rows, cols );
+            //    
+            //    int value = 1;
+            //    for( int i = 0; i < rows; i++ )
+            //        for( int j = 0; j < cols; j++)
+            //            m.setElement( i, j, value++ );
     
-    Matrix mResult;
-    mResult.reset();
-    mResult.setDimensions( resultRows, resultCols );
-    mResult.setValue( 0 );
+/*
+ * Sets up the following 5x5 dense matrix:
+ *
+ *    /  2 12 22 32 42 \
+ *    |  4 14 24 34 44 |
+ *    |  6 16 26 36 46 |
+ *    |  8 18 28 38 48 |
+ *    \ 10 20 30 40 50 /
+ */
+            //    const int resultRows = cols;
+            //    const int resultCols = rows;
+            //    
+            //    Matrix mResult;
+            //    mResult.reset();
+            //    mResult.setDimensions( resultRows, resultCols );
+            //    mResult.setValue( 0 );
+            //    
+            //    int matrixMultiplicator = 2;
+            //    
+            //    mResult.getTransposition( m, matrixMultiplicator );
     
-    int matrixMultiplicator = 2;
-    
-    mResult.getTransposition( m, matrixMultiplicator );
-    
-    EXPECT_EQ( mResult.getElement( 0, 0 ),  2 );
-    EXPECT_EQ( mResult.getElement( 0, 1 ), 10 );
-    EXPECT_EQ( mResult.getElement( 0, 2 ), 18 );
-    EXPECT_EQ( mResult.getElement( 0, 3 ), 26 );
-    EXPECT_EQ( mResult.getElement( 0, 4 ), 34 );
-    
-    EXPECT_EQ( mResult.getElement( 1, 0 ),  4 );
-    EXPECT_EQ( mResult.getElement( 1, 1 ), 12 );
-    EXPECT_EQ( mResult.getElement( 1, 2 ), 20 );
-    EXPECT_EQ( mResult.getElement( 1, 3 ), 28 );
-    EXPECT_EQ( mResult.getElement( 1, 4 ), 36 );
-    
-    EXPECT_EQ( mResult.getElement( 2, 0 ),  6 );
-    EXPECT_EQ( mResult.getElement( 2, 1 ), 14 );
-    EXPECT_EQ( mResult.getElement( 2, 2 ), 22 );
-    EXPECT_EQ( mResult.getElement( 2, 3 ), 30 );
-    EXPECT_EQ( mResult.getElement( 2, 4 ), 38 );
-    
-    EXPECT_EQ( mResult.getElement( 3, 0 ),  8 );
-    EXPECT_EQ( mResult.getElement( 3, 1 ), 16 );
-    EXPECT_EQ( mResult.getElement( 3, 2 ), 24 );
-    EXPECT_EQ( mResult.getElement( 3, 3 ), 32 );
-    EXPECT_EQ( mResult.getElement( 3, 4 ), 40 );
-    
+/*
+ * Should result in the following 5x5 resulting dense matrix:
+ *
+ *    /  0  0  0  0  0 \
+ *    |  0  0  0  0  0 |
+ *    |  0  0  0  0  0 |
+ *    |  0  0  0  0  0 |
+ *    \  0  0  0  0  0 /
+ */
+            //    
+            //    EXPECT_EQ( mResult.getElement( 0, 0 ),  2 );
+            //    EXPECT_EQ( mResult.getElement( 0, 1 ), 12 );
+            //    EXPECT_EQ( mResult.getElement( 0, 2 ), 22 );
+            //    EXPECT_EQ( mResult.getElement( 0, 3 ), 32 );
+            //    EXPECT_EQ( mResult.getElement( 0, 4 ), 42 );
+            //    
+            //    EXPECT_EQ( mResult.getElement( 1, 0 ),  4 );
+            //    EXPECT_EQ( mResult.getElement( 1, 1 ), 14 );
+            //    EXPECT_EQ( mResult.getElement( 1, 2 ), 24 );
+            //    EXPECT_EQ( mResult.getElement( 1, 3 ), 34 );
+            //    EXPECT_EQ( mResult.getElement( 1, 4 ), 44 );
+            //    
+            //    EXPECT_EQ( mResult.getElement( 2, 0 ),  6 );
+            //    EXPECT_EQ( mResult.getElement( 2, 1 ), 16 );
+            //    EXPECT_EQ( mResult.getElement( 2, 2 ), 26 );
+            //    EXPECT_EQ( mResult.getElement( 2, 3 ), 36 );
+            //    EXPECT_EQ( mResult.getElement( 2, 4 ), 46 );
+            //    
+            //    EXPECT_EQ( mResult.getElement( 3, 0 ),  8 );
+            //    EXPECT_EQ( mResult.getElement( 3, 1 ), 18 );
+            //    EXPECT_EQ( mResult.getElement( 3, 2 ), 28 );
+            //    EXPECT_EQ( mResult.getElement( 3, 3 ), 38 );
+            //    EXPECT_EQ( mResult.getElement( 3, 4 ), 48 );
+            //    
+            //    EXPECT_EQ( mResult.getElement( 4, 0 ), 10 );
+            //    EXPECT_EQ( mResult.getElement( 4, 1 ), 20 );
+            //    EXPECT_EQ( mResult.getElement( 4, 2 ), 30 );
+            //    EXPECT_EQ( mResult.getElement( 4, 3 ), 40 );
+            //    EXPECT_EQ( mResult.getElement( 4, 4 ), 50 );
 }
 
 
