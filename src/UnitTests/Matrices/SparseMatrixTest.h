@@ -565,31 +565,38 @@ void test_PerformSORIteration()
     m.setElement( 3, 2, 1.0 );        // 3rd row
     m.setElement( 3, 3, 4.0 );
     
-    float bVector [ 4 ] = { 1.0, 1.0, 1.0, 1.0 };
-    float xVector [ 4 ] = { 1.0, 1.0, 1.0, 1.0 };
+    typedef typename Matrix::RealType RealType;
+    typedef typename Matrix::DeviceType DeviceType;
+    typedef typename Matrix::IndexType IndexType;
     
-    m.performSORIteration( bVector, 0, xVector, 1);
+    RealType bVector [ 4 ] = { 1, 1, 1, 1 };
+    RealType xVector [ 4 ] = { 1, 1, 1, 1 };
+    
+    IndexType row = 0;
+    RealType omega = 1;
+    
+    m.performSORIteration( bVector, row++, xVector, omega);
     
     EXPECT_EQ( xVector[ 0 ], 0.0 );
     EXPECT_EQ( xVector[ 1 ], 1.0 );
     EXPECT_EQ( xVector[ 2 ], 1.0 );
     EXPECT_EQ( xVector[ 3 ], 1.0 );
     
-    m.performSORIteration( bVector, 1, xVector, 1);
+    m.performSORIteration( bVector, row++, xVector, omega);
     
     EXPECT_EQ( xVector[ 0 ], 0.0 );
     EXPECT_EQ( xVector[ 1 ], 0.0 );
     EXPECT_EQ( xVector[ 2 ], 1.0 );
     EXPECT_EQ( xVector[ 3 ], 1.0 );
     
-    m.performSORIteration( bVector, 2, xVector, 1);
+    m.performSORIteration( bVector, row++, xVector, omega);
     
     EXPECT_EQ( xVector[ 0 ], 0.0 );
     EXPECT_EQ( xVector[ 1 ], 0.0 );
     EXPECT_EQ( xVector[ 2 ], 0.0 );
     EXPECT_EQ( xVector[ 3 ], 1.0 );
     
-    m.performSORIteration( bVector, 3, xVector, 1);
+    m.performSORIteration( bVector, row++, xVector, omega);
     
     EXPECT_EQ( xVector[ 0 ], 0.0 );
     EXPECT_EQ( xVector[ 1 ], 0.0 );
