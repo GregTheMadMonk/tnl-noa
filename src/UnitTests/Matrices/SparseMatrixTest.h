@@ -123,6 +123,10 @@ void test_SetDimensions()
 template< typename Matrix >
 void test_SetCompressedRowLengths()
 {
+    typedef typename Matrix::RealType RealType;
+    typedef typename Matrix::DeviceType DeviceType;
+    typedef typename Matrix::IndexType IndexType;
+    
     const int rows = 10;
     const int cols = 11;
     
@@ -132,7 +136,8 @@ void test_SetCompressedRowLengths()
     typename Matrix::CompressedRowLengthsVector rowLengths;
     rowLengths.setSize( rows );
     rowLengths.setValue( 3 );
-    int value = 1;
+    
+    RealType value = 1;
     for( int i = 2; i < rows; i++ )
         rowLengths.setElement( i, value++ );
     
@@ -197,6 +202,9 @@ void test_Reset()
 template< typename Matrix >
 void test_SetElement()
 {
+    typedef typename Matrix::RealType RealType;
+    typedef typename Matrix::DeviceType DeviceType;
+    typedef typename Matrix::IndexType IndexType;
 /*
  * Sets up the following 5x5 sparse matrix:
  *
@@ -217,7 +225,7 @@ void test_SetElement()
     rowLengths.setValue( 1 );
     m.setCompressedRowLengths( rowLengths );    
     
-    int value = 1;
+    RealType value = 1;
     for( int i = 0; i < rows; i++ )
         m.setElement( i, i, value++ );
     
@@ -255,6 +263,9 @@ void test_SetElement()
 template< typename Matrix >
 void test_AddElement()
 {
+    typedef typename Matrix::RealType RealType;
+    typedef typename Matrix::DeviceType DeviceType;
+    typedef typename Matrix::IndexType IndexType;
 /*
  * Sets up the following 6x5 sparse matrix:
  *
@@ -276,7 +287,7 @@ void test_AddElement()
     rowLengths.setValue( 3 );
     m.setCompressedRowLengths( rowLengths );
     
-    int value = 1;
+    RealType value = 1;
     for( int i = 0; i < cols - 2; i++ )     // 0th row
         m.setElement( 0, i, value++ );
     
@@ -340,7 +351,7 @@ void test_AddElement()
  *    |  0 35 14 15  0 |
  *    \  0  0 16 41 18 /
  */
-    int newValue = 1;
+    RealType newValue = 1;
     for( int i = 0; i < cols - 2; i++ )         // 0th row
         m.addElement( 0, i, newValue++, 2.0 );
     
@@ -400,6 +411,9 @@ void test_AddElement()
 template< typename Matrix >
 void test_SetRow()
 {
+    typedef typename Matrix::RealType RealType;
+    typedef typename Matrix::DeviceType DeviceType;
+    typedef typename Matrix::IndexType IndexType;
 /*
  * Sets up the following 3x7 sparse matrix:
  *
@@ -419,7 +433,7 @@ void test_SetRow()
     rowLengths.setElement( 1, 3 );
     m.setCompressedRowLengths( rowLengths );
     
-    int value = 1;
+    RealType value = 1;
     for( int i = 0; i < 3; i++ )
     {
         m.setElement( 0, i + 3, value );
@@ -427,13 +441,16 @@ void test_SetRow()
         m.setElement( 2, i, value + 2);
     }
     
-    int row1 [ 3 ] = { 11, 11, 11 }; int colIndexes1 [ 3 ] = { 0, 1, 2 };
-    int row2 [ 3 ] = { 22, 22, 22 }; int colIndexes2 [ 3 ] = { 0, 1, 2 };
-    int row3 [ 3 ] = { 33, 33, 33 }; int colIndexes3 [ 3 ] = { 3, 4, 5 };
+    RealType row1 [ 3 ] = { 11, 11, 11 }; IndexType colIndexes1 [ 3 ] = { 0, 1, 2 };
+    RealType row2 [ 3 ] = { 22, 22, 22 }; IndexType colIndexes2 [ 3 ] = { 0, 1, 2 };
+    RealType row3 [ 3 ] = { 33, 33, 33 }; IndexType colIndexes3 [ 3 ] = { 3, 4, 5 };
     
-    m.setRow( 0, colIndexes1, row1, 3 );
-    m.setRow( 1, colIndexes2, row2, 3 );
-    m.setRow( 2, colIndexes3, row3, 3 );
+    RealType row = 0;
+    IndexType elements = 3;
+    
+    m.setRow( row++, colIndexes1, row1, elements );
+    m.setRow( row++, colIndexes2, row2, elements );
+    m.setRow( row++, colIndexes3, row3, elements );
     
     EXPECT_EQ( m.getElement( 0, 0 ), 11 );
     EXPECT_EQ( m.getElement( 0, 1 ), 11 );
@@ -463,6 +480,9 @@ void test_SetRow()
 template< typename Matrix >
 void test_VectorProduct()
 {
+    typedef typename Matrix::RealType RealType;
+    typedef typename Matrix::DeviceType DeviceType;
+    typedef typename Matrix::IndexType IndexType;
 /*
  * Sets up the following 5x4 sparse matrix:
  *
@@ -483,7 +503,7 @@ void test_VectorProduct()
     rowLengths.setValue( 3 );
     m.setCompressedRowLengths( rowLengths );
     
-    int value = 1;
+    RealType value = 1;
     for( int i = 0; i < m_cols - 1; i++ )   // 0th row
         m.setElement( 0, i, value++ );
     
@@ -504,10 +524,6 @@ void test_VectorProduct()
     using namespace TNL;
     using namespace TNL::Containers;
     using namespace TNL::Containers::Algorithms;
-    
-    typedef typename Matrix::RealType RealType;
-    typedef typename Matrix::DeviceType DeviceType;
-    typedef typename Matrix::IndexType IndexType;
 
     Vector< RealType, DeviceType, IndexType > inVector;
     inVector.setSize( 4 );
@@ -811,6 +827,62 @@ TYPED_TEST( SparseMatrixTest, setCompressedRowLengthsTest )
     test_SetCompressedRowLengths< SparseMatrixType >();
 }
 
+TYPED_TEST( SparseMatrixTest, setLikeTest )
+{
+    using SparseMatrixType = typename TestFixture::SparseMatrixType;
+    
+    test_SetLike< SparseMatrixType, SparseMatrixType >();
+}
+
+TYPED_TEST( SparseMatrixTest, resetTest )
+{
+    using SparseMatrixType = typename TestFixture::SparseMatrixType;
+    
+    test_Reset< SparseMatrixType >();
+}
+
+TYPED_TEST( SparseMatrixTest, setElementTest )
+{
+    using SparseMatrixType = typename TestFixture::SparseMatrixType;
+    
+    test_SetElement< SparseMatrixType >();
+}
+
+TYPED_TEST( SparseMatrixTest, addElementTest )
+{
+    using SparseMatrixType = typename TestFixture::SparseMatrixType;
+    
+    test_AddElement< SparseMatrixType >();
+}
+
+TYPED_TEST( SparseMatrixTest, setRowTest )
+{
+    using SparseMatrixType = typename TestFixture::SparseMatrixType;
+    
+    test_SetRow< SparseMatrixType >();
+}
+
+TYPED_TEST( SparseMatrixTest, vectorProductTest )
+{
+    using SparseMatrixType = typename TestFixture::SparseMatrixType;
+    
+    test_VectorProduct< SparseMatrixType >();
+}
+
+TYPED_TEST( SparseMatrixTest, saveAndLoadTest )
+{
+    using SparseMatrixType = typename TestFixture::SparseMatrixType;
+    
+    test_SaveAndLoad< SparseMatrixType >();
+}
+
+TYPED_TEST( SparseMatrixTest, printTest )
+{
+    using SparseMatrixType = typename TestFixture::SparseMatrixType;
+    
+    test_Print< SparseMatrixType >();
+}
+
 //// test_getType is not general enough yet. DO NOT TEST IT YET.
 
 //TEST( SparseMatrixTest, CSR_GetTypeTest_Host )
@@ -824,102 +896,6 @@ TYPED_TEST( SparseMatrixTest, setCompressedRowLengthsTest )
 //    cuda_test_GetType< CSR_cuda_float, CSR_cuda_int >();
 //}
 //#endif
-
-//TEST( SparseMatrixTest, CSR_setDimensionsTest_Host )
-//{
-//    test_SetDimensions< CSR_host_int >();
-//}
-//
-//#ifdef HAVE_CUDA
-//TEST( SparseMatrixTest, CSR_setDimensionsTest_Cuda )
-//{
-//    test_SetDimensions< CSR_cuda_int >();
-//}
-//#endif
-
-//TEST( SparseMatrixTest, CSR_setCompressedRowLengthsTest_Host )
-//{
-//    test_SetCompressedRowLengths< CSR_host_int >();
-//}
-//
-//#ifdef HAVE_CUDA
-//TEST( SparseMatrixTest, CSR_setCompressedRowLengthsTest_Cuda )
-//{
-//    test_SetCompressedRowLengths< CSR_cuda_int >();
-//}
-//#endif
-//
-//TEST( SparseMatrixTest, CSR_setLikeTest_Host )
-//{
-//    test_SetLike< CSR_host_int, CSR_host_float >();
-//}
-
-#ifdef HAVE_CUDA
-TEST( SparseMatrixTest, CSR_setLikeTest_Cuda )
-{
-    test_SetLike< CSR_cuda_int, CSR_cuda_float >();
-}
-#endif
-
-TEST( SparseMatrixTest, CSR_resetTest_Host )
-{
-    test_Reset< CSR_host_int >();
-}
-
-#ifdef HAVE_CUDA
-TEST( SparseMatrixTest, CSR_resetTest_Cuda )
-{
-    test_Reset< CSR_cuda_int >();
-}
-#endif
-
-TEST( SparseMatrixTest, CSR_setElementTest_Host )
-{
-    test_SetElement< CSR_host_int >();
-}
-
-#ifdef HAVE_CUDA
-TEST( SparseMatrixTest, CSR_setElementTest_Cuda )
-{
-    test_SetElement< CSR_cuda_int >();
-}
-#endif
-
-TEST( SparseMatrixTest, CSR_addElementTest_Host )
-{
-    test_AddElement< CSR_host_int >();
-}
-
-#ifdef HAVE_CUDA
-TEST( SparseMatrixTest, CSR_addElementTest_Cuda )
-{
-    test_AddElement< CSR_cuda_int >();
-}
-#endif
-
-TEST( SparseMatrixTest, CSR_setRowTest_Host )
-{
-    test_SetRow< CSR_host_int >();
-}
-
-#ifdef HAVE_CUDA
-TEST( SparseMatrixTest, CSR_setRowTest_Cuda )
-{
-    test_SetRow< CSR_cuda_int >();
-}
-#endif
-
-TEST( SparseMatrixTest, CSR_vectorProductTest_Host )
-{
-    test_VectorProduct< CSR_host_int >();
-}
-
-#ifdef HAVE_CUDA
-TEST( SparseMatrixTest, CSR_vectorProductTest_Cuda )
-{
-    test_VectorProduct< CSR_cuda_int >();
-}
-#endif
 
 TEST( SparseMatrixTest, CSR_perforSORIterationTest_Host )
 {
@@ -935,30 +911,6 @@ TEST( SparseMatrixTest, CSR_perforSORIterationTest_Cuda )
     std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
     std::cout << "If launched, this test throws the following message: \n";
     std::cout << "      [1]    16958 segmentation fault (core dumped)  ./SparseMatrixTest-dbg\n\n";
-}
-#endif
-
-TEST( SparseMatrixTest, CSR_saveAndLoadTest_Host )
-{
-    test_SaveAndLoad< CSR_host_int >();
-}
-
-#ifdef HAVE_CUDA
-TEST( SparseMatrixTest, CSR_saveAndLoadTest_Cuda )
-{
-    test_SaveAndLoad< CSR_cuda_int >();
-}
-#endif
-
-TEST( SparseMatrixTest, CSR_printTest_Host )
-{
-    test_Print< CSR_host_int >();
-}
-
-#ifdef HAVE_CUDA
-TEST( SparseMatrixTest, CSR_printTest_Cuda )
-{
-    test_Print< CSR_cuda_int >();
 }
 #endif
 
