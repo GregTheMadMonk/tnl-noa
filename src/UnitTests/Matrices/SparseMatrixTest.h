@@ -756,6 +756,61 @@ void test_Print()
     EXPECT_EQ( printed.str(), couted.str() );
 }
 
+// test fixture for typed tests
+template< typename Matrix >
+class SparseMatrixTest : public ::testing::Test
+{
+protected:
+   using SparseMatrixType = Matrix;
+};
+
+// types for which MatrixTest is instantiated
+using SparseMatrixTypes = ::testing::Types
+<
+    TNL::Matrices::CSR< int,    TNL::Devices::Host, short >,
+    TNL::Matrices::CSR< long,   TNL::Devices::Host, short >,
+    TNL::Matrices::CSR< float,  TNL::Devices::Host, short >,
+    TNL::Matrices::CSR< double, TNL::Devices::Host, short >,
+    TNL::Matrices::CSR< int,    TNL::Devices::Host, int >,
+    TNL::Matrices::CSR< long,   TNL::Devices::Host, int >,
+    TNL::Matrices::CSR< float,  TNL::Devices::Host, int >,
+    TNL::Matrices::CSR< double, TNL::Devices::Host, int >,
+    TNL::Matrices::CSR< int,    TNL::Devices::Host, long >,
+    TNL::Matrices::CSR< long,   TNL::Devices::Host, long >,
+    TNL::Matrices::CSR< float,  TNL::Devices::Host, long >,
+    TNL::Matrices::CSR< double, TNL::Devices::Host, long >,
+#ifdef HAVE_CUDA
+    TNL::Matrices::CSR< int,    TNL::Devices::Cuda, short >,
+    TNL::Matrices::CSR< long,   TNL::Devices::Cuda, short >,
+    TNL::Matrices::CSR< float,  TNL::Devices::Cuda, short >,
+    TNL::Matrices::CSR< double, TNL::Devices::Cuda, short >,
+    TNL::Matrices::CSR< int,    TNL::Devices::Cuda, int >,
+    TNL::Matrices::CSR< long,   TNL::Devices::Cuda, int >,
+    TNL::Matrices::CSR< float,  TNL::Devices::Cuda, int >,
+    TNL::Matrices::CSR< double, TNL::Devices::Cuda, int >,
+    TNL::Matrices::CSR< int,    TNL::Devices::Cuda, long >,
+    TNL::Matrices::CSR< long,   TNL::Devices::Cuda, long >,
+    TNL::Matrices::CSR< float,  TNL::Devices::Cuda, long >,
+    TNL::Matrices::CSR< double, TNL::Devices::Cuda, long >
+#endif
+>;
+
+TYPED_TEST_CASE( SparseMatrixTest, SparseMatrixTypes );
+
+TYPED_TEST( SparseMatrixTest, setDimensionsTest )
+{
+    using SparseMatrixType = typename TestFixture::SparseMatrixType;
+    
+    test_SetDimensions< SparseMatrixType >();
+}
+
+TYPED_TEST( SparseMatrixTest, setCompressedRowLengthsTest )
+{
+    using SparseMatrixType = typename TestFixture::SparseMatrixType;
+    
+    test_SetCompressedRowLengths< SparseMatrixType >();
+}
+
 //// test_getType is not general enough yet. DO NOT TEST IT YET.
 
 //TEST( SparseMatrixTest, CSR_GetTypeTest_Host )
@@ -770,34 +825,34 @@ void test_Print()
 //}
 //#endif
 
-TEST( SparseMatrixTest, CSR_setDimensionsTest_Host )
-{
-    test_SetDimensions< CSR_host_int >();
-}
+//TEST( SparseMatrixTest, CSR_setDimensionsTest_Host )
+//{
+//    test_SetDimensions< CSR_host_int >();
+//}
+//
+//#ifdef HAVE_CUDA
+//TEST( SparseMatrixTest, CSR_setDimensionsTest_Cuda )
+//{
+//    test_SetDimensions< CSR_cuda_int >();
+//}
+//#endif
 
-#ifdef HAVE_CUDA
-TEST( SparseMatrixTest, CSR_setDimensionsTest_Cuda )
-{
-    test_SetDimensions< CSR_cuda_int >();
-}
-#endif
-
-TEST( SparseMatrixTest, CSR_setCompressedRowLengthsTest_Host )
-{
-    test_SetCompressedRowLengths< CSR_host_int >();
-}
-
-#ifdef HAVE_CUDA
-TEST( SparseMatrixTest, CSR_setCompressedRowLengthsTest_Cuda )
-{
-    test_SetCompressedRowLengths< CSR_cuda_int >();
-}
-#endif
-
-TEST( SparseMatrixTest, CSR_setLikeTest_Host )
-{
-    test_SetLike< CSR_host_int, CSR_host_float >();
-}
+//TEST( SparseMatrixTest, CSR_setCompressedRowLengthsTest_Host )
+//{
+//    test_SetCompressedRowLengths< CSR_host_int >();
+//}
+//
+//#ifdef HAVE_CUDA
+//TEST( SparseMatrixTest, CSR_setCompressedRowLengthsTest_Cuda )
+//{
+//    test_SetCompressedRowLengths< CSR_cuda_int >();
+//}
+//#endif
+//
+//TEST( SparseMatrixTest, CSR_setLikeTest_Host )
+//{
+//    test_SetLike< CSR_host_int, CSR_host_float >();
+//}
 
 #ifdef HAVE_CUDA
 TEST( SparseMatrixTest, CSR_setLikeTest_Cuda )
