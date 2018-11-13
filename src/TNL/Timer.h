@@ -100,7 +100,10 @@ class Timer
    ///
    /// Knows whether the timer is currently stopped or not.
    bool stopState;
- 
+
+   /// \brief Time Stamp Counter returning number of CPU cycles since reset.
+   ///
+   /// Only for x86 compatibile CPUs.
    inline unsigned long long rdtsc() const
    {
      unsigned hi, lo;
@@ -109,6 +112,7 @@ class Timer
    }
 };
 
+// !!! Odstranit ???!!!
 extern Timer defaultTimer;
 
 } // namespace TNL
