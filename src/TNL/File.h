@@ -61,7 +61,7 @@ class File
    ~File();
 
    /////
-   /// \brief Opens given file. 
+   /// \brief Opens given file.
    ///
    /// Opens file with given \e fileName and returns true/false based on the success in opening the file.
    /// \param fileName String which indicates name of the file user wants to open.
