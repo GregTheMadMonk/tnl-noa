@@ -1,8 +1,10 @@
 #include <iostream>
+#include <TNL/String.h>
 
-using namespace TNL
+using namespace TNL;
+using namespace std;
        
-int main()
+int main( int argc, char* argv[] )
 {
     // constructors
     String str1;
@@ -16,23 +18,24 @@ int main()
     cout << "str4:" << str4 << endl;
 
     // functions
-    int size = str3.getSize();
+    /*int size = str3.getSize();
     cout << "size of string:" << size << "bytes" << endl;
 
     int alloc_size = str3.getAllocatedSize();
     cout << "alloc_size:" << alloc_size << endl;
 
-    int memory = str1.setSize( 256 );
-    cout << "memory:" << memory << endl;
+    str1.setSize( 256 );
+    size = str3.getSize();
+    cout << "size of string:" << size << "bytes" << endl;*/
 
     String str
     setter = str.setString( "Something new" );
     cout << "setter:" << setter << endl;
 
-    int getter = str4.getString();
+    const char* getter = str4.getString();
     cout << "getter:" << getter << endl;
 
-    String word( computer ) ;
+    String word( "computer" ) ;
     third_letter = word[2];
     cout << "third_letter:" << third_letter << endl;
 
