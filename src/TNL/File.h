@@ -37,7 +37,7 @@ enum class IOMode
 const size_t FileGPUvsCPUTransferBufferSize = 5 * 2<<20;
 
 
-/// Class file is aimed mainly for the binary data. It supports transparent compression.
+/// Class file is aimed mainly for the binary data.
 class File
 {
    IOMode mode;
@@ -66,21 +66,23 @@ class File
    /// Opens file with given \e fileName and returns true/false based on the success in opening the file.
    /// \param fileName String which indicates name of the file user wants to open.
    /// \param mode Indicates what user needs to do with opened file.
-   /// Modes to choose: IOMode::read or IOMode::write.
+   /// Modes to choose: IOMode::read or IOMode::write or IOMode::undefined.
    bool open( const String& fileName,
               const IOMode mode );
 
-
+   /// \brief Returns name of given file.
    const String& getFileName() const
    {
       return this->fileName;
    }
 
+   /// Returns read elements.
    long int getReadElements() const
    {
       return this->readElements;
    }
 
+   /// Returns written elements.
    long int getWrittenElements() const
    {
       return this->writtenElements;
@@ -90,6 +92,7 @@ class File
    bool read( Type* buffer,
               const Index& elements );
 
+   // Toto je treba??
    template< typename Type, typename Device = Devices::Host >
    bool read( Type* buffer );
 
@@ -97,6 +100,7 @@ class File
    bool write( const Type* buffer,
                const Index elements );
 
+   // Toto je treba?
    template< typename Type, typename Device = Devices::Host >
    bool write( const Type* buffer );
 
@@ -147,6 +151,10 @@ protected:
                     const std::size_t& elements );
 };
 
+/// Returns true if the file exists and false otherwise.
+///
+/// Finds out if the file \e fileName exists.
+/// \param fileName Name of the file that user wants to find in the PC.
 bool fileExists( const String& fileName );
 
 } // namespace TNL
