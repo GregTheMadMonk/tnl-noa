@@ -23,7 +23,7 @@ class Timer
       /////
       /// \brief Basic constructor.
       ///
-      /// This function creates a new timer.
+      /// This function creates a new timer and resets it.
       Timer();
 
       /////
@@ -34,48 +34,60 @@ class Timer
       void reset();
 
       ////
-      /// \brief Stops timer.
+      /// \brief Stops (pauses) the timer.
       ///
-      /// Stops all time and cycle measurements such as real time, CPU time and CPU cycles.
+      /// Pauses all time and cycle measurements such as real time, CPU time and
+      /// CPU cycles, but does not set them to zero.
       void stop();
 
       /////
       /// \brief Starts timer.
       ///
-      /// Starts all time and cycle measurements such as real time, CPU time and CPU cycles.
+      /// Starts all time and cycle measurements such as real time, CPU time and
+      /// CPU cycles. Function start() can be used also after using stop() function.
+      /// The timer then continues measuring the time without reseting.
       void start();
 
-      /// \brief Counts the real (clock) time starting after the function \c start() is called.
+      /// \brief Returs the real (clock/timer) time.
+      ///
+      /// It returns the elapsed time between calling the start() and stop() functions.
+      /// Starts counting the real time after the function start() is called and
+      /// pauses when the function stop() is called.
+      /// If the timer have been started more then one time without resetting,
+      /// the real time is counted by adding all intervals (between start and stop
+      /// functions) together.
+      /// This function can be called while the timer is running, there is no
+      /// need to use stop() function first.
       double getRealTime() const;
 
       /////
-      /// \brief Measures the CPU time.
+      /// \brief Returns the CPU time.
       ///
       /// CPU time is the time that measures how long it takes processor
       /// to complete all computations.
       double getCPUTime() const;
 
-      /// Counts the number of CPU cycles (machine cycles).
+      /// Returns the number of CPU cycles (machine cycles).
       unsigned long long int getCPUCycles() const;
 
       /// \brief Writes a record to the \e logger.
       ///
       /// \param logger
-      /// \param logLevel
+      /// \param logLevel A whole number from zero up, which indicates the indent.
       bool writeLog( Logger& logger, int logLevel = 0 ) const;
  
    protected:
 
-      /// Function for reading the real time.
+      /// Function for measuring the real time.
       double readRealTime() const;
 
-      /// \brief Function for reading the CPU time.
+      /// \brief Function for measuring the CPU time.
       ///
       /// CPU time is the time that measures how long it takes processor
       /// to complete all computations.
       double readCPUTime() const;
 
-      /// \brief Function for reading the number of CPU cycles (machine cycles).
+      /// \brief Function for counting the number of CPU cycles (machine cycles).
       unsigned long long int readCPUCycles() const;
       
 
