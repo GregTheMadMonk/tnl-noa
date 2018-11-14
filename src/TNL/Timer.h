@@ -53,7 +53,7 @@ class Timer
       /// It returns the elapsed time between calling the start() and stop() functions.
       /// Starts counting the real time after the function start() is called and
       /// pauses when the function stop() is called.
-      /// If the timer have been started more then one time without resetting,
+      /// If the timer have been started more then once without resetting,
       /// the real time is counted by adding all intervals (between start and stop
       /// functions) together.
       /// This function can be called while the timer is running, there is no
@@ -70,7 +70,7 @@ class Timer
       /// Returns the number of CPU cycles (machine cycles).
       unsigned long long int getCPUCycles() const;
 
-      /// \brief Writes a record to the \e logger.
+      /// \brief Writes a record into the \e logger.
       ///
       /// \param logger
       /// \param logLevel A whole number from zero up, which indicates the indent.
@@ -96,7 +96,7 @@ class Timer
  
    unsigned long long int initialCPUCycles, totalCPUCycles;
 
-   /// \brief Saves information about state of the timer.
+   /// \brief Saves information about the state of given timer.
    ///
    /// Knows whether the timer is currently stopped or not.
    bool stopState;

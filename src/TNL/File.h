@@ -88,7 +88,7 @@ class File
       return this->writtenElements;
    }
 
-   /// \brief Function that gets elements from given file.
+   /// \brief Method that can write particular data type from given file into GPU. (Function that gets particular elements from given file.)
    ///
    /// Returns boolean value based on the succes in reading elements from given file.
    /// \param buffer Pointer in memory.
@@ -101,7 +101,7 @@ class File
    template< typename Type, typename Device = Devices::Host >
    bool read( Type* buffer );
 
-   /// \brief Function that writes elements into given file.
+   /// \brief Method that can write particular data type from CPU into given file. (Function that writes particular elements into given file.)
    ///
    /// Returns boolean value based on the succes in writing elements into given file.
    /// \param buffer Pointer in memory.
