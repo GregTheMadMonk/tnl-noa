@@ -88,6 +88,11 @@ class File
       return this->writtenElements;
    }
 
+   /// \brief Function that gets elements from given file.
+   ///
+   /// Returns boolean value based on the succes in reading elements from given file.
+   /// \param buffer Pointer in memory.
+   /// \param elements Number of elements the user wants to get (read) from given file.
    template< typename Type, typename Device = Devices::Host, typename Index = int >
    bool read( Type* buffer,
               const Index& elements );
@@ -96,6 +101,11 @@ class File
    template< typename Type, typename Device = Devices::Host >
    bool read( Type* buffer );
 
+   /// \brief Function that writes elements into given file.
+   ///
+   /// Returns boolean value based on the succes in writing elements into given file.
+   /// \param buffer Pointer in memory.
+   /// \param elements Number of elements the user wants to write into the given file.
    template< typename Type, typename Device = Devices::Host, typename Index = int >
    bool write( const Type* buffer,
                const Index elements );
