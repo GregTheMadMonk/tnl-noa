@@ -19,6 +19,7 @@ class Logger
 {
    public:
 
+   /////
    /// \brief Basic constructor.
    ///
    /// \param _width Integer that defines the width of logger.
@@ -26,6 +27,7 @@ class Logger
    Logger( int _width,
               std::ostream& _stream );
 
+   /////
    /// \brief Creates header in given logger.
    ///
    /// \param title String desribing the title/header.
@@ -34,11 +36,12 @@ class Logger
    /// \brief Creates predefined separator - structure in the logger.
    void writeSeparator();
 
-   /// \brief Inserts information about system parameters into logger.
+   /// \brief Inserts information about various system parameters into logger.
    ///
    /// \param parameters
    bool writeSystemInformation( const Config::ParameterContainer& parameters );
 
+   /////
    /// \brief Inserts a line with current time into logger.
    ///
    /// \param label Description of the current time line.
