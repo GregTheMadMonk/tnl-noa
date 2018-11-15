@@ -76,13 +76,13 @@ class File
       return this->fileName;
    }
 
-   /// Returns read elements.
+   /// Returns number of read elements.
    long int getReadElements() const
    {
       return this->readElements;
    }
 
-   /// Returns written elements.
+   /// Returns number of written elements.
    long int getWrittenElements() const
    {
       return this->writtenElements;
