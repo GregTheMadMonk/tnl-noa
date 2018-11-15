@@ -37,9 +37,9 @@ stages:
                 export CC=mpicc;
           fi
         # all cores including hyperthreading
-        - export NUM_CORES=$(grep "core id" /proc/cpuinfo | wc -l)
-        # all pyhsical cores
-#        - export NUM_CORES=$(grep "core id" /proc/cpuinfo | sort -u | wc -l)
+#        - export NUM_CORES=$(grep "core id" /proc/cpuinfo | wc -l)
+#       # all pyhsical cores
+        - export NUM_CORES=$(grep "core id" /proc/cpuinfo | sort -u | wc -l)
         # ninja does not have -l
 #        - export MAKEFLAGS="-l$(echo 1.5*$NUM_CORES | bc) -j$NUM_CORES"
         - export NINJAFLAGS="-j$NUM_CORES"
