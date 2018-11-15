@@ -70,18 +70,19 @@
 #include <TNL/Matrices/Ellpack.h>
 #include <TNL/Matrices/SlicedEllpack.h>
 
+#include <TNL/Containers/Vector.h>
 #include <TNL/Containers/VectorView.h>
 #include <TNL/Math.h>
 #include <iostream>
+
+#ifdef HAVE_GTEST 
+#include <gtest/gtest.h>
 
 using CSR_host_float = TNL::Matrices::CSR< float, TNL::Devices::Host, int >;
 using CSR_host_int = TNL::Matrices::CSR< int, TNL::Devices::Host, int >;
 
 using CSR_cuda_float = TNL::Matrices::CSR< float, TNL::Devices::Cuda, int >;
 using CSR_cuda_int = TNL::Matrices::CSR< int, TNL::Devices::Cuda, int >;
-
-#ifdef HAVE_GTEST 
-#include <gtest/gtest.h>
 
 
 template< typename MatrixHostFloat, typename MatrixHostInt >
@@ -110,8 +111,12 @@ void cuda_test_GetType()
 template< typename Matrix >
 void test_SetDimensions()
 {
-    const int rows = 9;
-    const int cols = 8;
+    using RealType = typename Matrix::RealType;
+    using DeviceType = typename Matrix::DeviceType;
+    using IndexType = typename Matrix::IndexType;
+    
+    const IndexType rows = 9;
+    const IndexType cols = 8;
     
     Matrix m;
     m.setDimensions( rows, cols );
@@ -123,12 +128,12 @@ void test_SetDimensions()
 template< typename Matrix >
 void test_SetCompressedRowLengths()
 {
-    typedef typename Matrix::RealType RealType;
-    typedef typename Matrix::DeviceType DeviceType;
-    typedef typename Matrix::IndexType IndexType;
+    using RealType = typename Matrix::RealType;
+    using DeviceType = typename Matrix::DeviceType;
+    using IndexType = typename Matrix::IndexType;
     
-    const int rows = 10;
-    const int cols = 11;
+    const IndexType rows = 10;
+    const IndexType cols = 11;
     
     Matrix m;
     m.reset();
@@ -138,7 +143,7 @@ void test_SetCompressedRowLengths()
     rowLengths.setValue( 3 );
     
     RealType value = 1;
-    for( int i = 2; i < rows; i++ )
+    for( IndexType i = 2; i < rows; i++ )
         rowLengths.setElement( i, value++ );
     
     m.setCompressedRowLengths( rowLengths );
@@ -158,8 +163,14 @@ void test_SetCompressedRowLengths()
 template< typename Matrix1, typename Matrix2 >
 void test_SetLike()
 {
-    const int rows = 8;
-    const int cols = 7;
+    using RealType = typename Matrix1::RealType;
+    using DeviceType = typename Matrix1::DeviceType;
+    using IndexType = typename Matrix1::IndexType;
+    
+    
+    
+    const IndexType rows = 8;
+    const IndexType cols = 7;
     
     Matrix1 m1;
     m1.reset();
@@ -178,6 +189,10 @@ void test_SetLike()
 template< typename Matrix >
 void test_Reset()
 {
+    using RealType = typename Matrix::RealType;
+    using DeviceType = typename Matrix::DeviceType;
+    using IndexType = typename Matrix::IndexType;
+    
 /*
  * Sets up the following 5x4 sparse matrix:
  *
@@ -187,8 +202,8 @@ void test_Reset()
  *    |  0  0  0  0 |
  *    \  0  0  0  0 /
  */
-    const int rows = 5;
-    const int cols = 4;
+    const IndexType rows = 5;
+    const IndexType cols = 4;
     
     Matrix m;
     m.setDimensions( rows, cols );
@@ -202,9 +217,9 @@ void test_Reset()
 template< typename Matrix >
 void test_SetElement()
 {
-    typedef typename Matrix::RealType RealType;
-    typedef typename Matrix::DeviceType DeviceType;
-    typedef typename Matrix::IndexType IndexType;
+    using RealType = typename Matrix::RealType;
+    using DeviceType = typename Matrix::DeviceType;
+    using IndexType = typename Matrix::IndexType;
 /*
  * Sets up the following 5x5 sparse matrix:
  *
@@ -214,8 +229,8 @@ void test_SetElement()
  *    |  0  0  0  4  0 |
  *    \  0  0  0  0  5 /
  */
-    const int rows = 5;
-    const int cols = 5;
+    const IndexType rows = 5;
+    const IndexType cols = 5;
     
     Matrix m;
     m.reset();
@@ -226,7 +241,7 @@ void test_SetElement()
     m.setCompressedRowLengths( rowLengths );    
     
     RealType value = 1;
-    for( int i = 0; i < rows; i++ )
+    for( IndexType i = 0; i < rows; i++ )
         m.setElement( i, i, value++ );
     
     EXPECT_EQ( m.getElement( 0, 0 ), 1 );
@@ -263,9 +278,9 @@ void test_SetElement()
 template< typename Matrix >
 void test_AddElement()
 {
-    typedef typename Matrix::RealType RealType;
-    typedef typename Matrix::DeviceType DeviceType;
-    typedef typename Matrix::IndexType IndexType;
+    using RealType = typename Matrix::RealType;
+    using DeviceType = typename Matrix::DeviceType;
+    using IndexType = typename Matrix::IndexType;
 /*
  * Sets up the following 6x5 sparse matrix:
  *
@@ -276,8 +291,8 @@ void test_AddElement()
  *    |  0 11  0  0  0 |
  *    \  0  0  0 12  0 /
  */
-    const int rows = 6;
-    const int cols = 5;
+    const IndexType rows = 6;
+    const IndexType cols = 5;
     
     Matrix m;
     m.reset();
@@ -288,13 +303,13 @@ void test_AddElement()
     m.setCompressedRowLengths( rowLengths );
     
     RealType value = 1;
-    for( int i = 0; i < cols - 2; i++ )     // 0th row
+    for( IndexType i = 0; i < cols - 2; i++ )     // 0th row
         m.setElement( 0, i, value++ );
     
-    for( int i = 1; i < cols - 1; i++ )     // 1st row
+    for( IndexType i = 1; i < cols - 1; i++ )     // 1st row
         m.setElement( 1, i, value++ );
         
-    for( int i = 2; i < cols; i++ )         // 2nd row
+    for( IndexType i = 2; i < cols; i++ )         // 2nd row
         m.setElement( 2, i, value++ );
         
         m.setElement( 3, 0, value++ );      // 3rd row
@@ -352,22 +367,22 @@ void test_AddElement()
  *    \  0  0 16 41 18 /
  */
     RealType newValue = 1;
-    for( int i = 0; i < cols - 2; i++ )         // 0th row
+    for( IndexType i = 0; i < cols - 2; i++ )         // 0th row
         m.addElement( 0, i, newValue++, 2.0 );
     
-    for( int i = 1; i < cols - 1; i++ )         // 1st row
+    for( IndexType i = 1; i < cols - 1; i++ )         // 1st row
         m.addElement( 1, i, newValue++, 2.0 );
         
-    for( int i = 2; i < cols; i++ )             // 2nd row
+    for( IndexType i = 2; i < cols; i++ )             // 2nd row
         m.addElement( 2, i, newValue++, 2.0 );
         
-    for( int i = 0; i < cols - 2; i++ )         // 3rd row
+    for( IndexType i = 0; i < cols - 2; i++ )         // 3rd row
         m.addElement( 3, i, newValue++, 2.0 );
     
-    for( int i = 1; i < cols - 1; i++ )         // 4th row
+    for( IndexType i = 1; i < cols - 1; i++ )         // 4th row
         m.addElement( 4, i, newValue++, 2.0 );
     
-    for( int i = 2; i < cols; i++ )             // 5th row
+    for( IndexType i = 2; i < cols; i++ )             // 5th row
         m.addElement( 5, i, newValue++, 2.0 );
     
     
@@ -411,9 +426,9 @@ void test_AddElement()
 template< typename Matrix >
 void test_SetRow()
 {
-    typedef typename Matrix::RealType RealType;
-    typedef typename Matrix::DeviceType DeviceType;
-    typedef typename Matrix::IndexType IndexType;
+    using RealType = typename Matrix::RealType;
+    using DeviceType = typename Matrix::DeviceType;
+    using IndexType = typename Matrix::IndexType;
 /*
  * Sets up the following 3x7 sparse matrix:
  *
@@ -421,8 +436,8 @@ void test_SetRow()
  *    |  2  2  2  0  0  0  0 |
  *    \  3  3  3  0  0  0  0 /
  */
-    const int rows = 3;
-    const int cols = 7;
+    const IndexType rows = 3;
+    const IndexType cols = 7;
     
     Matrix m;
     m.reset();
@@ -434,7 +449,7 @@ void test_SetRow()
     m.setCompressedRowLengths( rowLengths );
     
     RealType value = 1;
-    for( int i = 0; i < 3; i++ )
+    for( IndexType i = 0; i < 3; i++ )
     {
         m.setElement( 0, i + 3, value );
         m.setElement( 1, i, value + 1 );
@@ -480,9 +495,9 @@ void test_SetRow()
 template< typename Matrix >
 void test_VectorProduct()
 {
-    typedef typename Matrix::RealType RealType;
-    typedef typename Matrix::DeviceType DeviceType;
-    typedef typename Matrix::IndexType IndexType;
+    using RealType = typename Matrix::RealType;
+    using DeviceType = typename Matrix::DeviceType;
+    using IndexType = typename Matrix::IndexType;
 /*
  * Sets up the following 5x4 sparse matrix:
  *
@@ -492,8 +507,8 @@ void test_VectorProduct()
  *    |  0  8  9 10 |
  *    \  0  0 11 12 /
  */
-    const int m_rows = 5;
-    const int m_cols = 4;
+    const IndexType m_rows = 5;
+    const IndexType m_cols = 4;
     
     Matrix m;
     m.reset();
@@ -504,35 +519,30 @@ void test_VectorProduct()
     m.setCompressedRowLengths( rowLengths );
     
     RealType value = 1;
-    for( int i = 0; i < m_cols - 1; i++ )   // 0th row
+    for( IndexType i = 0; i < m_cols - 1; i++ )   // 0th row
         m.setElement( 0, i, value++ );
     
         m.setElement( 1, 3, value++ );      // 1st row
         
-    for( int i = 0; i < m_cols - 1; i++ )   // 2nd row
+    for( IndexType i = 0; i < m_cols - 1; i++ )   // 2nd row
         m.setElement( 2, i, value++ );
         
-    for( int i = 1; i < m_cols; i++ )       // 3rd row
+    for( IndexType i = 1; i < m_cols; i++ )       // 3rd row
         m.setElement( 3, i, value++ );
         
-    for( int i = 2; i < m_cols; i++ )       // 4th row
+    for( IndexType i = 2; i < m_cols; i++ )       // 4th row
         m.setElement( 4, i, value++ );
+
+    using VectorType = TNL::Containers::Vector< RealType, DeviceType, IndexType >;
     
-    #include <TNL/Containers/Vector.h>
-    #include <TNL/Containers/VectorView.h>
-
-    using namespace TNL;
-    using namespace TNL::Containers;
-    using namespace TNL::Containers::Algorithms;
-
-    Vector< RealType, DeviceType, IndexType > inVector;
+    VectorType inVector;
     inVector.setSize( 4 );
-    for( int i = 0; i < inVector.getSize(); i++ )        
+    for( IndexType i = 0; i < inVector.getSize(); i++ )        
         inVector.setElement( i, 2 );
 
-    Vector< RealType, DeviceType, IndexType > outVector;  
+    VectorType outVector;  
     outVector.setSize( 5 );
-    for( int j = 0; j < outVector.getSize(); j++ )
+    for( IndexType j = 0; j < outVector.getSize(); j++ )
         outVector.setElement( j, 0 );
  
     
@@ -548,6 +558,10 @@ void test_VectorProduct()
 template< typename Matrix >
 void test_PerformSORIteration()
 {
+    using RealType = typename Matrix::RealType;
+    using DeviceType = typename Matrix::DeviceType;
+    using IndexType = typename Matrix::IndexType;
+    
 /*
  * Sets up the following 4x4 sparse matrix:
  *
@@ -556,8 +570,8 @@ void test_PerformSORIteration()
  *    |  0  1  4  1 |
  *    \  0  0  1  4 /
  */
-    const int m_rows = 4;
-    const int m_cols = 4;
+    const IndexType m_rows = 4;
+    const IndexType m_cols = 4;
     
     Matrix m;
     m.reset();
@@ -580,10 +594,6 @@ void test_PerformSORIteration()
         
     m.setElement( 3, 2, 1.0 );        // 3rd row
     m.setElement( 3, 3, 4.0 );
-    
-    typedef typename Matrix::RealType RealType;
-    typedef typename Matrix::DeviceType DeviceType;
-    typedef typename Matrix::IndexType IndexType;
     
     RealType bVector [ 4 ] = { 1, 1, 1, 1 };
     RealType xVector [ 4 ] = { 1, 1, 1, 1 };
@@ -623,6 +633,10 @@ void test_PerformSORIteration()
 template< typename Matrix >
 void test_SaveAndLoad()
 {
+    using RealType = typename Matrix::RealType;
+    using DeviceType = typename Matrix::DeviceType;
+    using IndexType = typename Matrix::IndexType;
+    
 /*
  * Sets up the following 4x4 sparse matrix:
  *
@@ -631,8 +645,8 @@ void test_SaveAndLoad()
  *    |  6  7  8  0 |
  *    \  0  9 10 11 /
  */
-    const int m_rows = 4;
-    const int m_cols = 4;
+    const IndexType m_rows = 4;
+    const IndexType m_cols = 4;
     
     Matrix savedMatrix;
     savedMatrix.reset();
@@ -642,17 +656,17 @@ void test_SaveAndLoad()
     rowLengths.setValue( 3 );
     savedMatrix.setCompressedRowLengths( rowLengths );
     
-    int value = 1;
-    for( int i = 0; i < m_cols - 1; i++ )   // 0th row
+    RealType value = 1;
+    for( IndexType i = 0; i < m_cols - 1; i++ )   // 0th row
         savedMatrix.setElement( 0, i, value++ );
         
         savedMatrix.setElement( 1, 1, value++ );
         savedMatrix.setElement( 1, 3, value++ );      // 1st row
         
-    for( int i = 0; i < m_cols - 1; i++ )   // 2nd row
+    for( IndexType i = 0; i < m_cols - 1; i++ )   // 2nd row
         savedMatrix.setElement( 2, i, value++ );
         
-    for( int i = 1; i < m_cols; i++ )       // 3rd row
+    for( IndexType i = 1; i < m_cols; i++ )       // 3rd row
         savedMatrix.setElement( 3, i, value++ );
         
     savedMatrix.save( "sparseMatrixFile" );
@@ -714,6 +728,10 @@ void test_SaveAndLoad()
 template< typename Matrix >
 void test_Print()
 {
+    using RealType = typename Matrix::RealType;
+    using DeviceType = typename Matrix::DeviceType;
+    using IndexType = typename Matrix::IndexType;
+    
 /*
  * Sets up the following 5x4 sparse matrix:
  *
@@ -723,8 +741,8 @@ void test_Print()
  *    |  0  8  9 10 |
  *    \  0  0 11 12 /
  */
-    const int m_rows = 5;
-    const int m_cols = 4;
+    const IndexType m_rows = 5;
+    const IndexType m_cols = 4;
     
     Matrix m;
     m.reset();
@@ -734,19 +752,19 @@ void test_Print()
     rowLengths.setValue( 3 );
     m.setCompressedRowLengths( rowLengths );
     
-    int value = 1;
-    for( int i = 0; i < m_cols - 1; i++ )   // 0th row
+    RealType value = 1;
+    for( IndexType i = 0; i < m_cols - 1; i++ )   // 0th row
         m.setElement( 0, i, value++ );
     
         m.setElement( 1, 3, value++ );      // 1st row
         
-    for( int i = 0; i < m_cols - 1; i++ )   // 2nd row
+    for( IndexType i = 0; i < m_cols - 1; i++ )   // 2nd row
         m.setElement( 2, i, value++ );
         
-    for( int i = 1; i < m_cols; i++ )       // 3rd row
+    for( IndexType i = 1; i < m_cols; i++ )       // 3rd row
         m.setElement( 3, i, value++ );
         
-    for( int i = 2; i < m_cols; i++ )       // 4th row
+    for( IndexType i = 2; i < m_cols; i++ )       // 4th row
         m.setElement( 4, i, value++ );
     
     // This is from: https://stackoverflow.com/questions/5193173/getting-cout-output-to-a-stdstring
@@ -911,6 +929,7 @@ TEST( SparseMatrixTest, CSR_perforSORIterationTest_Cuda )
     std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
     std::cout << "If launched, this test throws the following message: \n";
     std::cout << "      [1]    16958 segmentation fault (core dumped)  ./SparseMatrixTest-dbg\n\n";
+    std::cout << "\n THIS IS NOT IMPLEMENTED FOR CUDA YET!!\n\n";
 }
 #endif
 
