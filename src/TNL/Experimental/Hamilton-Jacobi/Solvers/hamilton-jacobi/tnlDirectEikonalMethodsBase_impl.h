@@ -148,6 +148,7 @@ updateBlocks( InterfaceMapType interfaceMap,
       }
       
       
+      //printf("numThreadsPerBlock = %d\n", numThreadsPerBlock);
       for( int thrj = 0; thrj < numThreadsPerBlock + 1; thrj++ )
       {        
         if( dimX > (blIdx+1) * numThreadsPerBlock  && thrj+1 < ykolik )
@@ -263,6 +264,370 @@ updateBlocks( InterfaceMapType interfaceMap,
     }
   }
 }
+template< typename Real,
+        typename Device,
+        typename Index >
+template< int sizeSArray >
+void
+tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > >::
+updateBlocks( const InterfaceMapType interfaceMap,
+        const MeshFunctionType aux,
+        MeshFunctionType& helpFunc,
+        ArrayContainer BlockIterHost, int numThreadsPerBlock/*, Real **sArray*/ )
+{  
+//#pragma omp parallel for schedule( dynamic )
+  for( int i = 0; i < BlockIterHost.getSize(); i++ )
+  {
+    if( BlockIterHost[ i ] )
+    {
+      MeshType mesh = interfaceMap.template getMesh< Devices::Host >();
+      
+      int dimX = mesh.getDimensions().x(); int dimY = mesh.getDimensions().y();
+      int dimZ = mesh.getDimensions().z();
+      //std::cout << "dimX = " << dimX << " ,dimY = " << dimY << std::endl;
+      int numOfBlocky = dimY/numThreadsPerBlock + ((dimY%numThreadsPerBlock != 0) ? 1:0);
+      int numOfBlockx = dimX/numThreadsPerBlock + ((dimX%numThreadsPerBlock != 0) ? 1:0);
+      int numOfBlockz = dimZ/numThreadsPerBlock + ((dimZ%numThreadsPerBlock != 0) ? 1:0);
+      //std::cout << "numOfBlockx = " << numOfBlockx << " ,numOfBlocky = " << numOfBlocky << std::endl;
+      int xkolik = numThreadsPerBlock + 1;
+      int ykolik = numThreadsPerBlock + 1;
+      int zkolik = numThreadsPerBlock + 1;
+      
+      
+      int blIdz = i/( numOfBlockx * numOfBlocky );
+      int blIdy = (i-blIdz*numOfBlockx * numOfBlocky )/(numOfBlockx );
+      int blIdx = (i-blIdz*numOfBlockx * numOfBlocky )%( numOfBlockx );
+      //std::cout << "blIdx = " << blIdx << " ,blIdy = " << blIdy << std::endl;
+      
+      if( numOfBlockx - 1 == blIdx )
+        xkolik = dimX - (blIdx)*numThreadsPerBlock+1;
+      if( numOfBlocky -1 == blIdy )
+        ykolik = dimY - (blIdy)*numThreadsPerBlock+1;
+      if( numOfBlockz-1 == blIdz )
+        zkolik = dimZ - (blIdz)*numThreadsPerBlock+1;
+      //std::cout << "xkolik = " << xkolik << " ,ykolik = " << ykolik << std::endl;
+      
+      
+      /*bool changed[numThreadsPerBlock*numThreadsPerBlock];
+       changed[ 0 ] = 1;*/
+      Real hx = mesh.getSpaceSteps().x();
+      Real hy = mesh.getSpaceSteps().y();
+      Real hz = mesh.getSpaceSteps().z();
+      
+      bool changed = false;
+      BlockIterHost[ i ] = 0;
+      
+      
+      Real *sArray;
+      sArray = new Real[ sizeSArray * sizeSArray * sizeSArray ];
+      if( sArray == nullptr )
+        std::cout << "Error while allocating memory for sArray." << std::endl;
+      
+      for( int k = 0; k < sizeSArray; k++ )
+        for( int l = 0; l < sizeSArray; l++ )
+          for( int m = 0; m < sizeSArray; m++ ){
+            sArray[ m * sizeSArray * sizeSArray + k * sizeSArray + l ] = std::numeric_limits< Real >::max();
+          }
+      
+      
+      for( int thrk = 0; thrk < numThreadsPerBlock; thrk++ )
+        for( int thrj = 0; thrj < numThreadsPerBlock; thrj++ )
+        {
+          if( blIdx != 0 && thrj+1 < ykolik && thrk+1 < zkolik )
+            sArray[(thrk+1 )* sizeSArray * sizeSArray + (thrj+1)*sizeSArray + 0] = 
+                    aux[ blIdz*numThreadsPerBlock * dimX * dimY + blIdy * numThreadsPerBlock*dimX + blIdx*numThreadsPerBlock + thrj * dimX -1 + thrk*dimX*dimY ];
+          
+          if( dimX > (blIdx+1) * numThreadsPerBlock && thrj+1 < ykolik && thrk+1 < zkolik )
+            sArray[ (thrk+1) * sizeSArray * sizeSArray + (thrj+1) *sizeSArray + xkolik ] = 
+                    aux[ blIdz*numThreadsPerBlock * dimX * dimY + blIdy *numThreadsPerBlock*dimX+ blIdx*numThreadsPerBlock + numThreadsPerBlock + thrj * dimX + thrk*dimX*dimY ];
+          
+          if( blIdy != 0 && thrj+1 < xkolik && thrk+1 < zkolik )
+            sArray[ (thrk+1) * sizeSArray * sizeSArray +0*sizeSArray + thrj+1] = 
+                    aux[ blIdz*numThreadsPerBlock * dimX * dimY + blIdy * numThreadsPerBlock*dimX + blIdx*numThreadsPerBlock - dimX + thrj + thrk*dimX*dimY ];
+          
+          if( dimY > (blIdy+1) * numThreadsPerBlock && thrj+1 < xkolik && thrk+1 < zkolik )
+            sArray[ (thrk+1) * sizeSArray * sizeSArray + ykolik*sizeSArray + thrj+1] = 
+                    aux[ blIdz*numThreadsPerBlock * dimX * dimY + (blIdy+1) * numThreadsPerBlock*dimX + blIdx*numThreadsPerBlock + thrj + thrk*dimX*dimY ];
+          
+          if( blIdz != 0 && thrj+1 < ykolik && thrk+1 < xkolik )
+            sArray[ 0 * sizeSArray * sizeSArray +(thrj+1 )* sizeSArray + thrk+1] = 
+                    aux[ blIdz*numThreadsPerBlock * dimX * dimY + blIdy * numThreadsPerBlock*dimX + blIdx*numThreadsPerBlock - dimX * dimY + thrj * dimX + thrk ];
+          
+          if( dimZ > (blIdz+1) * numThreadsPerBlock && thrj+1 < ykolik && thrk+1 < xkolik )
+            sArray[zkolik * sizeSArray * sizeSArray + (thrj+1) * sizeSArray + thrk+1] = 
+                    aux[ (blIdz+1)*numThreadsPerBlock * dimX * dimY + blIdy * numThreadsPerBlock*dimX + blIdx*numThreadsPerBlock + thrj * dimX + thrk ];
+        }
+      
+      for( int m = 0; m < numThreadsPerBlock; m++ ){
+        for( int k = 0; k < numThreadsPerBlock; k++ ){
+          for( int l = 0; l < numThreadsPerBlock; l++ ){
+            if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX && blIdz * numThreadsPerBlock + m < dimZ )
+              sArray[(m+1) * sizeSArray * sizeSArray + (k+1) *sizeSArray + l+1] = 
+                      aux[ blIdz * numThreadsPerBlock * dimX * dimY + blIdy * numThreadsPerBlock * dimX + blIdx*numThreadsPerBlock + m*dimX*dimY + k*dimX + l ];
+          }
+        }
+      }
+      /*string s;
+      int numWhile = 0;
+      for( int k = 0; k < numThreadsPerBlock; k++ ){
+        for( int l = 0; l < numThreadsPerBlock; l++ ) 
+          for( int m = 0; m < numThreadsPerBlock; m++ )
+            if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX && blIdz * numThreadsPerBlock + m < dimZ )     
+              helpFunc[ m*dimX*dimY + k*dimX + l ] = sArray[ (m+1) * sizeSArray * sizeSArray + (k+1) *sizeSArray + l+1 ];
+      } 
+      numWhile++;
+      s = "helpFunc-"+ std::to_string(numWhile) + ".tnl";
+      helpFunc.save( s );*/
+      
+      for( int m = 0; m < numThreadsPerBlock; m++ ){
+        for( int k = 0; k < numThreadsPerBlock; k++ ){ 
+          for( int l = 0; l < numThreadsPerBlock; l++ ){
+            if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX && blIdz * numThreadsPerBlock + m < dimZ ){
+              //std::cout << "proslo i = " << k * numThreadsPerBlock + l << std::endl;
+              if( ! interfaceMap[ blIdz * numThreadsPerBlock * dimX * dimY + blIdy * numThreadsPerBlock * dimX + blIdx*numThreadsPerBlock + m*dimX*dimY + k*dimX + l  ] )
+              {
+                //printf("In with point m  = %d, k = %d, l = %d\n", m, k, l);
+                changed = this->template updateCell3D< sizeSArray >( sArray, l+1, k+1, m+1, hx,hy,hz) || changed;
+                
+              }
+            }
+          }
+        }
+      }
+      /*for( int k = 0; k < numThreadsPerBlock; k++ ){
+        for( int l = 0; l < numThreadsPerBlock; l++ ) 
+          for( int m = 0; m < numThreadsPerBlock; m++ )
+            if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX && blIdz * numThreadsPerBlock + m < dimZ )     
+              helpFunc[ m*dimX*dimY + k*dimX + l ] = sArray[ (m+1) * sizeSArray * sizeSArray + (k+1) *sizeSArray + l+1 ];
+      } 
+      numWhile++;
+      s = "helpFunc-"+ std::to_string(numWhile) + ".tnl";
+      helpFunc.save( s );*/
+      
+      for( int m = numThreadsPerBlock-1; m >-1; m-- ){
+        for( int k = 0; k < numThreadsPerBlock; k++ ){
+          for( int l = 0; l <numThreadsPerBlock; l++ ){
+            if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX && blIdz * numThreadsPerBlock + m < dimZ )
+            {
+              if( ! interfaceMap[ blIdz * numThreadsPerBlock * dimX * dimY + blIdy * numThreadsPerBlock * dimX + blIdx*numThreadsPerBlock + m*dimX*dimY + k*dimX + l  ] )
+              {
+                this->template updateCell3D< sizeSArray >( sArray, l+1, k+1, m+1, hx,hy,hz);
+              }
+            }
+          }
+        }
+      }
+      /*for( int k = 0; k < numThreadsPerBlock; k++ ){
+        for( int l = 0; l < numThreadsPerBlock; l++ ) 
+          for( int m = 0; m < numThreadsPerBlock; m++ )
+            if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX && blIdz * numThreadsPerBlock + m < dimZ )     
+              helpFunc[ m*dimX*dimY + k*dimX + l ] = sArray[ (m+1) * sizeSArray * sizeSArray + (k+1) *sizeSArray + l+1 ];
+      } 
+      numWhile++;
+      s = "helpFunc-"+ std::to_string(numWhile) + ".tnl";
+      helpFunc.save( s );*/
+      
+      for( int m = 0; m < numThreadsPerBlock; m++ ){
+        for( int k = 0; k < numThreadsPerBlock; k++ ){
+          for( int l = numThreadsPerBlock-1; l >-1; l-- ){
+            if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX && blIdz * numThreadsPerBlock + m < dimZ )
+            {
+              if( ! interfaceMap[ blIdz * numThreadsPerBlock * dimX * dimY + blIdy * numThreadsPerBlock * dimX + blIdx*numThreadsPerBlock + m*dimX*dimY + k*dimX + l  ] )
+              {
+                this->template updateCell3D< sizeSArray >( sArray, l+1, k+1, m+1, hx,hy,hz);
+              }
+            }
+          }
+        }
+      }
+      /*for( int k = 0; k < numThreadsPerBlock; k++ ){
+        for( int l = 0; l < numThreadsPerBlock; l++ ) 
+          for( int m = 0; m < numThreadsPerBlock; m++ )
+            if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX && blIdz * numThreadsPerBlock + m < dimZ )     
+              helpFunc[ m*dimX*dimY + k*dimX + l ] = sArray[ (m+1) * sizeSArray * sizeSArray + (k+1) *sizeSArray + l+1 ];
+      } 
+      numWhile++;
+      s = "helpFunc-"+ std::to_string(numWhile) + ".tnl";
+      helpFunc.save( s );
+      */
+      for( int m = numThreadsPerBlock-1; m >-1; m-- ){
+        for( int k = 0; k < numThreadsPerBlock; k++ ){
+          for( int l = numThreadsPerBlock-1; l >-1; l-- ){
+            if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX && blIdz * numThreadsPerBlock + m < dimZ )
+            {
+              if( ! interfaceMap[ blIdz * numThreadsPerBlock * dimX * dimY + blIdy * numThreadsPerBlock * dimX + blIdx*numThreadsPerBlock + m*dimX*dimY + k*dimX + l  ] )
+              {
+                this->template updateCell3D< sizeSArray >(  sArray, l+1, k+1, m+1, hx,hy,hz);
+              }
+            }
+          }
+        }
+      }
+      /*for( int k = 0; k < numThreadsPerBlock; k++ ){
+        for( int l = 0; l < numThreadsPerBlock; l++ ) 
+          for( int m = 0; m < numThreadsPerBlock; m++ )
+            if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX && blIdz * numThreadsPerBlock + m < dimZ )     
+              helpFunc[ m*dimX*dimY + k*dimX + l ] = sArray[ (m+1) * sizeSArray * sizeSArray + (k+1) *sizeSArray + l+1 ];
+      } 
+      numWhile++;
+      s = "helpFunc-"+ std::to_string(numWhile) + ".tnl";
+      helpFunc.save( s );*/
+      
+      for( int m = 0; m < numThreadsPerBlock; m++ ){
+        for( int k = numThreadsPerBlock-1; k > -1; k-- ){
+          for( int l = 0; l <numThreadsPerBlock; l++ ){
+            if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX && blIdz * numThreadsPerBlock + m < dimZ )
+            {
+              if( ! interfaceMap[blIdz * numThreadsPerBlock * dimX * dimY + blIdy * numThreadsPerBlock * dimX + blIdx*numThreadsPerBlock + m*dimX*dimY + k*dimX + l  ] )
+              {
+                this->template updateCell3D< sizeSArray >( sArray, l+1, k+1, m+1, hx,hy,hz);
+              }
+            }
+          }
+        }
+      }
+      /*for( int k = 0; k < numThreadsPerBlock; k++ ){
+        for( int l = 0; l < numThreadsPerBlock; l++ ) 
+          for( int m = 0; m < numThreadsPerBlock; m++ )
+            if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX && blIdz * numThreadsPerBlock + m < dimZ )     
+              helpFunc[ m*dimX*dimY + k*dimX + l ] = sArray[ (m+1) * sizeSArray * sizeSArray + (k+1) *sizeSArray + l+1 ];
+      } 
+      numWhile++;
+      s = "helpFunc-"+ std::to_string(numWhile) + ".tnl";
+      helpFunc.save( s );*/
+      
+      for( int m = numThreadsPerBlock-1; m >-1; m-- ){
+        for( int k = numThreadsPerBlock-1; k > -1; k-- ){
+          for( int l = 0; l <numThreadsPerBlock; l++ ){
+            if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX && blIdz * numThreadsPerBlock + m < dimZ )
+            {
+              if( ! interfaceMap[ blIdz * numThreadsPerBlock * dimX * dimY + blIdy * numThreadsPerBlock * dimX + blIdx*numThreadsPerBlock + m*dimX*dimY + k*dimX + l  ] )
+              {
+                this->template updateCell3D< sizeSArray >( sArray, l+1, k+1, m+1, hx,hy,hz);
+              }
+            }
+          }
+        }
+      }
+      /*for( int k = 0; k < numThreadsPerBlock; k++ ){
+        for( int l = 0; l < numThreadsPerBlock; l++ ) 
+          for( int m = 0; m < numThreadsPerBlock; m++ )
+            if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX && blIdz * numThreadsPerBlock + m < dimZ )     
+              helpFunc[ m*dimX*dimY + k*dimX + l ] = sArray[ (m+1) * sizeSArray * sizeSArray + (k+1) *sizeSArray + l+1 ];
+      } 
+      numWhile++;
+      s = "helpFunc-"+ std::to_string(numWhile) + ".tnl";
+      helpFunc.save( s );*/
+      
+      for( int m = 0; m < numThreadsPerBlock; m++ ){
+        for( int k = numThreadsPerBlock-1; k > -1; k-- ){
+          for( int l = numThreadsPerBlock-1; l >-1; l-- ){
+            if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX && blIdz * numThreadsPerBlock + m < dimZ )
+            {
+              if( ! interfaceMap[ blIdz * numThreadsPerBlock * dimX * dimY + blIdy * numThreadsPerBlock * dimX + blIdx*numThreadsPerBlock + m*dimX*dimY + k*dimX + l  ] )
+              {
+                this->template updateCell3D< sizeSArray >( sArray, l+1, k+1, m+1, hx,hy,hz);
+              }
+            }
+          }
+        }
+      }
+      /*for( int k = 0; k < numThreadsPerBlock; k++ ){
+        for( int l = 0; l < numThreadsPerBlock; l++ ) 
+          for( int m = 0; m < numThreadsPerBlock; m++ )
+            if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX && blIdz * numThreadsPerBlock + m < dimZ )     
+              helpFunc[ m*dimX*dimY + k*dimX + l ] = sArray[ (m+1) * sizeSArray * sizeSArray + (k+1) *sizeSArray + l+1 ];
+      } 
+      numWhile++;
+      s = "helpFunc-"+ std::to_string(numWhile) + ".tnl";
+      helpFunc.save( s );*/
+      
+      
+      for( int m = numThreadsPerBlock-1; m >-1; m-- ){
+        for( int k = numThreadsPerBlock-1; k > -1; k-- ){
+          for( int l = numThreadsPerBlock-1; l >-1; l-- ){
+            if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX && blIdz * numThreadsPerBlock + m < dimZ )
+            {
+              if( ! interfaceMap[ blIdz * numThreadsPerBlock * dimX * dimY + blIdy * numThreadsPerBlock * dimX + blIdx*numThreadsPerBlock + m*dimX*dimY + k*dimX + l  ] )
+              {
+                this->template updateCell3D< sizeSArray >( sArray, l+1, k+1, m+1, hx,hy,hz);
+              }
+            }
+          }
+        }
+      }
+      /*for( int k = 0; k < numThreadsPerBlock; k++ ){
+        for( int l = 0; l < numThreadsPerBlock; l++ ) 
+          for( int m = 0; m < numThreadsPerBlock; m++ )
+            if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX && blIdz * numThreadsPerBlock + m < dimZ )     
+              helpFunc[ m*dimX*dimY + k*dimX + l ] = sArray[ (m+1) * sizeSArray * sizeSArray + (k+1) *sizeSArray + l+1 ];
+      } 
+      numWhile++;
+      s = "helpFunc-"+ std::to_string(numWhile) + ".tnl";
+      helpFunc.save( s );*/
+      
+      if( changed ){
+        BlockIterHost[ i ] = 1;
+      }
+      
+      
+      for( int k = 0; k < numThreadsPerBlock; k++ ){ 
+        for( int l = 0; l < numThreadsPerBlock; l++ ) {
+          for( int m = 0; m < numThreadsPerBlock; m++ ){
+            if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX && blIdz * numThreadsPerBlock + m < dimZ ){      
+              helpFunc[ blIdz * numThreadsPerBlock * dimX * dimY + blIdy * numThreadsPerBlock * dimX + blIdx*numThreadsPerBlock + m*dimX*dimY + k*dimX + l ] = 
+                      sArray[ (m+1) * sizeSArray * sizeSArray + (k+1) *sizeSArray + l+1 ];
+              //std::cout << helpFunc[ m*dimX*dimY + k*dimX + l ] << " ";
+            }
+          }
+          //std::cout << std::endl;
+        }
+        //std::cout << std::endl;
+      }
+      //helpFunc.save( "helpF.tnl");
+      delete []sArray;
+    }
+  }
+}
+template< typename Real,
+        typename Device,
+        typename Index >
+void 
+tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > >::
+getNeighbours( ArrayContainer BlockIterHost, int numBlockX, int numBlockY, int numBlockZ )
+{
+  int* BlockIterPom; 
+  BlockIterPom = new int [ numBlockX * numBlockY * numBlockZ ];
+  
+  for( int i = 0; i< BlockIterHost.getSize(); i++)
+  {
+    BlockIterPom[ i ] = 0;
+    
+    int m=0, l=0, k=0;
+    l = i/( numBlockX * numBlockY );
+    k = (i-l*numBlockX * numBlockY )/(numBlockX );
+    m = (i-l*numBlockX * numBlockY )%( numBlockX );
+    
+    if( m > 0 && BlockIterHost[ i - 1 ] ){
+      BlockIterPom[ i ] = 1;
+    }else if( m < numBlockX -1 && BlockIterHost[ i + 1 ] ){
+      BlockIterPom[ i ] = 1;
+    }else if( k > 0 && BlockIterHost[ i - numBlockX ] ){
+      BlockIterPom[ i ] = 1;
+    }else if( k < numBlockY -1 && BlockIterHost[ i + numBlockX ] ){
+      BlockIterPom[ i ] = 1;
+    }else if( l > 0 && BlockIterHost[ i - numBlockX*numBlockY ] ){
+      BlockIterPom[ i ] = 1;
+    }else if( l < numBlockZ-1 && BlockIterHost[ i + numBlockX*numBlockY ] ){
+      BlockIterPom[ i ] = 1;
+    }
+  }
+  for( int i = 0; i< BlockIterHost.getSize(); i++)
+  { 
+    BlockIterHost[ i ] = BlockIterPom[ i ];
+  }
+}
+
 
 template< typename Real,
         typename Device,
@@ -619,8 +984,8 @@ initInterface( const MeshFunctionPointer& _input,
         {
           cell.refresh();
           output[ cell.getIndex() ] =
-                  input( cell ) > 0 ? std::numeric_limits< RealType >::max() :
-                    - std::numeric_limits< RealType >::max();
+                  input( cell ) > 0 ? 10://std::numeric_limits< RealType >::max() :
+                    -10;//- std::numeric_limits< RealType >::max();
           interfaceMap[ cell.getIndex() ] = false;
         }
     
@@ -967,6 +1332,82 @@ updateCell( volatile Real *sArray, int thri, int thrj, const Real hx, const Real
   
   return false;
 }
+template< typename Real,
+        typename Device,
+        typename Index >
+template< int sizeSArray >
+__cuda_callable__ 
+bool 
+tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > >::
+updateCell3D( volatile Real *sArray, int thri, int thrj, int thrk,
+        const Real hx, const Real hy, const Real hz, const Real v )
+{
+  const RealType value = sArray[thrk *sizeSArray * sizeSArray + thrj * sizeSArray + thri];
+  
+  RealType a, b, c, tmp = std::numeric_limits< RealType >::max();
+  
+  c = TNL::argAbsMin( sArray[ (thrk+1)* sizeSArray*sizeSArray + thrj * sizeSArray + thri ],
+          sArray[ (thrk-1) * sizeSArray *sizeSArray + thrj* sizeSArray + thri ] );
+  
+  b = TNL::argAbsMin( sArray[ thrk* sizeSArray*sizeSArray + (thrj+1) * sizeSArray + thri ],
+          sArray[ thrk* sizeSArray * sizeSArray + (thrj-1)* sizeSArray +thri ] );
+  
+  a = TNL::argAbsMin( sArray[ thrk* sizeSArray* sizeSArray  + thrj* sizeSArray + thri+1 ],
+          sArray[ thrk* sizeSArray * sizeSArray + thrj* sizeSArray +thri-1 ] );
+  
+  /*if( thrk == 8 )
+    printf("Calculating a = %f, b = %f, c = %f\n" , a, b, c );*/
+  
+  if( fabs( a ) == 10&& //std::numeric_limits< RealType >::max() && 
+          fabs( b ) == 10&&//std::numeric_limits< RealType >::max() &&
+          fabs( c ) == 10)//std::numeric_limits< RealType >::max() )
+    return false;
+  
+  RealType pom[6] = { a, b, c, (RealType)hx, (RealType)hy, (RealType)hz};
+  
+  sortMinims( pom );
+  
+  tmp = pom[ 0 ] + TNL::sign( value ) * pom[ 3 ];
+  if( fabs( tmp ) < fabs( pom[ 1 ] ) ) 
+  {
+    sArray[ thrk* sizeSArray* sizeSArray + thrj* sizeSArray + thri ] = argAbsMin( value, tmp );
+    tmp = value - sArray[ thrk* sizeSArray* sizeSArray  + thrj* sizeSArray + thri ];
+    if ( fabs( tmp ) >  0.001*hx )
+      return true;
+    else
+      return false;
+  }
+  else
+  {
+    tmp = ( pom[ 3 ] * pom[ 3 ] * pom[ 1 ] + pom[ 4 ] * pom[ 4 ] * pom[ 0 ] + 
+            TNL::sign( value ) * pom[ 3 ] * pom[ 4 ] * TNL::sqrt( ( pom[ 3 ] * pom[ 3 ] +  pom[ 4 ] *  pom[ 4 ] )/( v * v ) - 
+            ( pom[ 1 ] - pom[ 0 ] ) * ( pom[ 1 ] - pom[ 0 ] ) ) )/( pom[ 3 ] * pom[ 3 ] + pom[ 4 ] * pom[ 4 ] );
+    if( fabs( tmp ) < fabs( pom[ 2 ]) ) 
+    {
+      sArray[ thrk* sizeSArray* sizeSArray  + thrj* sizeSArray + thri ] = argAbsMin( value, tmp );
+      tmp = value - sArray[ thrk* sizeSArray* sizeSArray  + thrj* sizeSArray + thri ];
+      if ( fabs( tmp ) > 0.001*hx )
+        return true;
+      else
+        return false;
+    }
+    else
+    {
+      tmp = ( hy * hy * hz * hz * a + hx * hx * hz * hz * b + hx * hx * hy * hy * c +
+              TNL::sign( value ) * hx * hy * hz * TNL::sqrt( ( hx * hx * hz * hz + hy * hy * hz * hz + hx * hx * hy * hy)/( v * v ) - 
+              hz * hz * ( a - b ) * ( a - b ) - hy * hy * ( a - c ) * ( a - c ) -
+              hx * hx * ( b - c ) * ( b - c ) ) )/( hx * hx * hy * hy + hy * hy * hz * hz + hz * hz * hx *hx );
+      sArray[ thrk* sizeSArray* sizeSArray  + thrj* sizeSArray + thri ] = argAbsMin( value, tmp );
+      tmp = value - sArray[ thrk* sizeSArray* sizeSArray  + thrj* sizeSArray + thri ];
+      if ( fabs( tmp ) > 0.001*hx )
+        return true;
+      else
+        return false;
+    }
+  }
+  
+  return false;
+}
 
 #ifdef HAVE_CUDA
 template < typename Real, typename Device, typename Index >
@@ -1214,79 +1655,5 @@ updateCell( volatile Real sArray[18], int thri, const Real h, const Real v )
     return true;
   else
     return false;
-}
-
-template< typename Real,
-        typename Device,
-        typename Index >
-__cuda_callable__ 
-bool 
-tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > >::
-updateCell( volatile Real sArray[10][10][10], int thri, int thrj, int thrk,
-        const Real hx, const Real hy, const Real hz, const Real v )
-{
-  const RealType value = sArray[thrk][thrj][thri];
-  //std::cout << value << std::endl;
-  RealType a, b, c, tmp = std::numeric_limits< RealType >::max();
-  
-  c = TNL::argAbsMin( sArray[ thrk+1 ][ thrj ][ thri ],
-          sArray[ thrk-1 ][ thrj ][ thri ] );
-  
-  b = TNL::argAbsMin( sArray[ thrk ][ thrj+1 ][ thri ],
-          sArray[ thrk ][ thrj-1 ][ thri ] );
-  
-  a = TNL::argAbsMin( sArray[ thrk ][ thrj ][ thri+1 ],
-          sArray[ thrk ][ thrj ][ thri-1 ] );
-  
-  
-  if( fabs( a ) == std::numeric_limits< RealType >::max() && 
-          fabs( b ) == std::numeric_limits< RealType >::max() &&
-          fabs( c ) == std::numeric_limits< RealType >::max() )
-    return false;
-  
-  RealType pom[6] = { a, b, c, (RealType)hx, (RealType)hy, (RealType)hz};
-  
-  sortMinims( pom );
-  
-  tmp = pom[ 0 ] + TNL::sign( value ) * pom[ 3 ];
-  if( fabs( tmp ) < fabs( pom[ 1 ] ) ) 
-  {
-    sArray[ thrk ][ thrj ][ thri ] = argAbsMin( value, tmp );
-    tmp = value - sArray[ thrk ][ thrj ][ thri ];
-    if ( fabs( tmp ) >  0.001*hx )
-      return true;
-    else
-      return false;
-  }
-  else
-  {
-    tmp = ( pom[ 3 ] * pom[ 3 ] * pom[ 1 ] + pom[ 4 ] * pom[ 4 ] * pom[ 0 ] + 
-            TNL::sign( value ) * pom[ 3 ] * pom[ 4 ] * TNL::sqrt( ( pom[ 3 ] * pom[ 3 ] +  pom[ 4 ] *  pom[ 4 ] )/( v * v ) - 
-            ( pom[ 1 ] - pom[ 0 ] ) * ( pom[ 1 ] - pom[ 0 ] ) ) )/( pom[ 3 ] * pom[ 3 ] + pom[ 4 ] * pom[ 4 ] );
-    if( fabs( tmp ) < fabs( pom[ 2 ]) ) 
-    {
-      sArray[ thrk ][ thrj ][ thri ] = argAbsMin( value, tmp );
-      tmp = value - sArray[ thrk ][ thrj ][ thri ];
-      if ( fabs( tmp ) > 0.001*hx )
-        return true;
-      else
-        return false;
-    }
-    else
-    {
-      tmp = ( hy * hy * hz * hz * a + hx * hx * hz * hz * b + hx * hx * hy * hy * c +
-              TNL::sign( value ) * hx * hy * hz * TNL::sqrt( ( hx * hx * hz * hz + hy * hy * hz * hz + hx * hx * hy * hy)/( v * v ) - 
-              hz * hz * ( a - b ) * ( a - b ) - hy * hy * ( a - c ) * ( a - c ) -
-              hx * hx * ( b - c ) * ( b - c ) ) )/( hx * hx * hy * hy + hy * hy * hz * hz + hz * hz * hx *hx );
-      sArray[ thrk ][ thrj ][ thri ] = argAbsMin( value, tmp );
-      tmp = value - sArray[ thrk ][ thrj ][ thri ];
-      if ( fabs( tmp ) > 0.001*hx )
-        return true;
-      else
-        return false;
-    }
-  }
-  
-  return false;
 }
 #endif
