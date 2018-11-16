@@ -15,9 +15,12 @@
 
 #include "tnlFastSweepingMethod.h"
 #include <TNL/Devices/Cuda.h>
+#include <TNL/Communicators/MpiDefs.h>
+
+
+
+
 #include <string.h>
-
-
 #include <iostream>
 #include <fstream>
 
@@ -80,16 +83,48 @@ solve( const MeshPointer& mesh,
   MeshFunctionType aux = *auxPtr;
   
   
+//#ifdef HAVE_MPI
+  bool a = Communicators::MpiCommunicator::IsInitialized();
+  if( a )
+    printf("Je Init\n");
+  else
+    printf("Neni Init\n");
+//#endif
   
   while( iteration < this->maxIterations )
   {
     if( std::is_same< DeviceType, Devices::Host >::value )
     {
-      int numThreadsPerBlock = 16;
+      int numThreadsPerBlock = -1;
+      
+      numThreadsPerBlock = ( mesh->getDimensions().x()/2 + (mesh->getDimensions().x() % 2 != 0 ? 1:0));
+      //printf("numThreadsPerBlock = %d\n", numThreadsPerBlock);
+      if( numThreadsPerBlock <= 16 )
+        numThreadsPerBlock = 16;
+      else if(numThreadsPerBlock <= 32 )
+        numThreadsPerBlock = 32;
+      else if(numThreadsPerBlock <= 64 )
+        numThreadsPerBlock = 64;
+      else if(numThreadsPerBlock <= 128 )
+        numThreadsPerBlock = 128;
+      else if(numThreadsPerBlock <= 256 )
+        numThreadsPerBlock = 256;
+      else if(numThreadsPerBlock <= 512 )
+        numThreadsPerBlock = 512;
+      else
+        numThreadsPerBlock = 1024;
+      //printf("numThreadsPerBlock = %d\n", numThreadsPerBlock);
+      
+      if( numThreadsPerBlock == -1 ){
+        printf("Fail in setting numThreadsPerBlock.\n");
+        break;
+      }
+      
       
       
       int numBlocksX = mesh->getDimensions().x() / numThreadsPerBlock + (mesh->getDimensions().x() % numThreadsPerBlock != 0 ? 1:0);
       int numBlocksY = mesh->getDimensions().y() / numThreadsPerBlock + (mesh->getDimensions().y() % numThreadsPerBlock != 0 ? 1:0);
+      
       //std::cout << "numBlocksX = " << numBlocksX << std::endl;
       
       /*Real **sArray = new Real*[numBlocksX*numBlocksY];
@@ -115,13 +150,29 @@ solve( const MeshPointer& mesh,
        }
        std::cout<<std::endl;*/
       unsigned int numWhile = 0;
-      while( IsCalculationDone && numWhile < 1 )
+      while( IsCalculationDone )
       {      
         IsCalculationDone = 0;
         helpFunc1 = auxPtr;
         auxPtr = helpFunc;
         helpFunc = helpFunc1;
-        this->template updateBlocks< 18 >( interfaceMap, *auxPtr, *helpFunc, BlockIterHost, numThreadsPerBlock/*, sArray*/ );
+        switch ( numThreadsPerBlock ){
+          case 16:
+            this->template updateBlocks< 18 >( interfaceMap, *auxPtr, *helpFunc, BlockIterHost, numThreadsPerBlock/*, sArray*/ );
+          case 32:
+            this->template updateBlocks< 34 >( interfaceMap, *auxPtr, *helpFunc, BlockIterHost, numThreadsPerBlock/*, sArray*/ );
+          case 64:
+            this->template updateBlocks< 66 >( interfaceMap, *auxPtr, *helpFunc, BlockIterHost, numThreadsPerBlock/*, sArray*/ );
+          case 128:
+            this->template updateBlocks< 130 >( interfaceMap, *auxPtr, *helpFunc, BlockIterHost, numThreadsPerBlock/*, sArray*/ );
+          case 256:
+            this->template updateBlocks< 258 >( interfaceMap, *auxPtr, *helpFunc, BlockIterHost, numThreadsPerBlock/*, sArray*/ );
+          case 512:
+            this->template updateBlocks< 514 >( interfaceMap, *auxPtr, *helpFunc, BlockIterHost, numThreadsPerBlock/*, sArray*/ );
+          default:
+            this->template updateBlocks< 1028 >( interfaceMap, *auxPtr, *helpFunc, BlockIterHost, numThreadsPerBlock/*, sArray*/ );
+        }
+        
         
         //Reduction      
         for( int i = 0; i < BlockIterHost.getSize(); i++ ){
@@ -131,14 +182,14 @@ solve( const MeshPointer& mesh,
           }
         }
         numWhile++;
-        std::cout <<"numWhile = "<< numWhile <<std::endl;
+        /*std::cout <<"numWhile = "<< numWhile <<std::endl;
         
         for( int j = numBlocksY-1; j>-1; j-- ){
           for( int i = 0; i < numBlocksX; i++ )
             std::cout << BlockIterHost[ j * numBlocksX + i ];
           std::cout << std::endl;
         }
-        std::cout << std::endl;
+        std::cout << std::endl;*/
         
         this->getNeighbours( BlockIterHost, numBlocksX, numBlocksY );
         
@@ -150,8 +201,8 @@ solve( const MeshPointer& mesh,
          std::cout << std::endl;*/
         
         //std::cout<<std::endl;
-        string s( "aux-"+ std::to_string(numWhile) + ".tnl");
-        aux.save( s );
+        //string s( "aux-"+ std::to_string(numWhile) + ".tnl");
+        //aux.save( s );
       }
       if( numWhile == 1 ){
         auxPtr = helpFunc;
@@ -266,8 +317,8 @@ solve( const MeshPointer& mesh,
       BlockIterPom.setSize( numBlocksX * numBlocksY  );
       BlockIterPom.setValue( 0 );
       /*TNL::Containers::Array< int, Devices::Host, IndexType > BlockIterPom1;
-      BlockIterPom1.setSize( numBlocksX * numBlocksY  );
-      BlockIterPom1.setValue( 0 );*/
+       BlockIterPom1.setSize( numBlocksX * numBlocksY  );
+       BlockIterPom1.setValue( 0 );*/
       /*int *BlockIterDevice;
        cudaMalloc((void**) &BlockIterDevice, ( numBlocksX * numBlocksY ) * sizeof( int ) );*/
       int nBlocksNeigh = ( numBlocksX * numBlocksY )/1024 + ((( numBlocksX * numBlocksY )%1024 != 0) ? 1:0);
@@ -408,6 +459,7 @@ solve( const MeshPointer& mesh,
     }
     iteration++;
   }
+  //#endif
   aux.save("aux-final.tnl");
 }
 
@@ -527,7 +579,7 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
   
   
   /** FOR FIM METHOD */
-    
+  
   if( BlockIterDevice[ blockIdx.y * gridDim.x + blockIdx.x ] )
   { 
     __syncthreads();

@@ -64,9 +64,6 @@ solve( const MeshPointer& mesh,
   interfaceMapPtr->setMesh( mesh );
   std::cout << "Initiating the interface cells ..." << std::endl;
   BaseType::initInterface( u, auxPtr, interfaceMapPtr );
-#ifdef HAVE_CUDA
-  cudaDeviceSynchronize();
-#endif
   auxPtr->save( "aux-ini.tnl" );   
   
   typename MeshType::Cell cell( *mesh );
@@ -78,170 +75,259 @@ solve( const MeshPointer& mesh,
   {
     if( std::is_same< DeviceType, Devices::Host >::value )
     {
-      for( cell.getCoordinates().z() = 0;
-              cell.getCoordinates().z() < mesh->getDimensions().z();
-              cell.getCoordinates().z()++ )
-      {
-        for( cell.getCoordinates().y() = 0;
-                cell.getCoordinates().y() < mesh->getDimensions().y();
-                cell.getCoordinates().y()++ )
-        {
-          for( cell.getCoordinates().x() = 0;
-                  cell.getCoordinates().x() < mesh->getDimensions().x();
-                  cell.getCoordinates().x()++ )
-          {
-            cell.refresh();
-            if( ! interfaceMap( cell ) )
-              this->updateCell( aux, cell );
-          }
-        }
-      }
-      //aux.save( "aux-1.tnl" );
+      int numThreadsPerBlock = 64;
       
-      for( cell.getCoordinates().z() = 0;
-              cell.getCoordinates().z() < mesh->getDimensions().z();
-              cell.getCoordinates().z()++ )
-      {
-        for( cell.getCoordinates().y() = 0;
-                cell.getCoordinates().y() < mesh->getDimensions().y();
-                cell.getCoordinates().y()++ )
-        {
-          for( cell.getCoordinates().x() = mesh->getDimensions().x() - 1;
-                  cell.getCoordinates().x() >= 0 ;
-                  cell.getCoordinates().x()-- )		
-          {
-            //std::cerr << "2 -> ";
-            cell.refresh();
-            if( ! interfaceMap( cell ) )            
-              this->updateCell( aux, cell );
-          }
-        }
-      }
-      //aux.save( "aux-2.tnl" );
-      for( cell.getCoordinates().z() = 0;
-              cell.getCoordinates().z() < mesh->getDimensions().z();
-              cell.getCoordinates().z()++ )
-      {
-        for( cell.getCoordinates().y() = mesh->getDimensions().y() - 1;
-                cell.getCoordinates().y() >= 0 ;
-                cell.getCoordinates().y()-- )
-        {
-          for( cell.getCoordinates().x() = 0;
-                  cell.getCoordinates().x() < mesh->getDimensions().x();
-                  cell.getCoordinates().x()++ )
-          {
-            //std::cerr << "3 -> ";
-            cell.refresh();
-            if( ! interfaceMap( cell ) )            
-              this->updateCell( aux, cell );
-          }
-        }
-      }
-      //aux.save( "aux-3.tnl" );
       
-      for( cell.getCoordinates().z() = 0;
-              cell.getCoordinates().z() < mesh->getDimensions().z();
-              cell.getCoordinates().z()++ )
-      {
-        for( cell.getCoordinates().y() = mesh->getDimensions().y() - 1;
-                cell.getCoordinates().y() >= 0;
-                cell.getCoordinates().y()-- )
-        {
-          for( cell.getCoordinates().x() = mesh->getDimensions().x() - 1;
-                  cell.getCoordinates().x() >= 0 ;
-                  cell.getCoordinates().x()-- )		
-          {
-            //std::cerr << "4 -> ";
-            cell.refresh();
-            if( ! interfaceMap( cell ) )            
-              this->updateCell( aux, cell );
-          }
-        }
-      }     
-      //aux.save( "aux-4.tnl" );
+      int numBlocksX = mesh->getDimensions().x() / numThreadsPerBlock + (mesh->getDimensions().x() % numThreadsPerBlock != 0 ? 1:0);
+      int numBlocksY = mesh->getDimensions().y() / numThreadsPerBlock + (mesh->getDimensions().y() % numThreadsPerBlock != 0 ? 1:0);
+      int numBlocksZ = mesh->getDimensions().z() / numThreadsPerBlock + (mesh->getDimensions().z() % numThreadsPerBlock != 0 ? 1:0);
+      //std::cout << "numBlocksX = " << numBlocksX << std::endl;
       
-      for( cell.getCoordinates().z() = mesh->getDimensions().z() - 1;
-              cell.getCoordinates().z() >= 0;
-              cell.getCoordinates().z()-- )
-      {
-        for( cell.getCoordinates().y() = 0;
-                cell.getCoordinates().y() < mesh->getDimensions().y();
-                cell.getCoordinates().y()++ )
-        {
-          for( cell.getCoordinates().x() = 0;
-                  cell.getCoordinates().x() < mesh->getDimensions().x();
-                  cell.getCoordinates().x()++ )
-          {
-            //std::cerr << "5 -> ";
-            cell.refresh();
-            if( ! interfaceMap( cell ) )
-              this->updateCell( aux, cell );
-          }
-        }
-      }
-      //aux.save( "aux-5.tnl" );
+      /*Real **sArray = new Real*[numBlocksX*numBlocksY];
+       for( int i = 0; i < numBlocksX * numBlocksY; i++ )
+       sArray[ i ] = new Real [ (numThreadsPerBlock + 2)*(numThreadsPerBlock + 2)];*/
       
-      for( cell.getCoordinates().z() = mesh->getDimensions().z() - 1;
-              cell.getCoordinates().z() >= 0;
-              cell.getCoordinates().z()-- )
-      {
-        for( cell.getCoordinates().y() = 0;
-                cell.getCoordinates().y() < mesh->getDimensions().y();
-                cell.getCoordinates().y()++ )
-        {
-          for( cell.getCoordinates().x() = mesh->getDimensions().x() - 1;
-                  cell.getCoordinates().x() >= 0 ;
-                  cell.getCoordinates().x()-- )		
-          {
-            //std::cerr << "6 -> ";
-            cell.refresh();
-            if( ! interfaceMap( cell ) )            
-              this->updateCell( aux, cell );
-          }
-        }
-      }
-      //aux.save( "aux-6.tnl" );
+      ArrayContainer BlockIterHost;
+      BlockIterHost.setSize( numBlocksX * numBlocksY * numBlocksZ );
+      BlockIterHost.setValue( 1 );
+      int IsCalculationDone = 1;
       
-      for( cell.getCoordinates().z() = mesh->getDimensions().z() - 1;
-              cell.getCoordinates().z() >= 0;
-              cell.getCoordinates().z()-- )
-      {
-        for( cell.getCoordinates().y() = mesh->getDimensions().y() - 1;
-                cell.getCoordinates().y() >= 0 ;
-                cell.getCoordinates().y()-- )
-        {
-          for( cell.getCoordinates().x() = 0;
-                  cell.getCoordinates().x() < mesh->getDimensions().x();
-                  cell.getCoordinates().x()++ )
-          {
-            //std::cerr << "7 -> ";
-            cell.refresh();
-            if( ! interfaceMap( cell ) )            
-              this->updateCell( aux, cell );
+      MeshFunctionPointer helpFunc( mesh );
+      MeshFunctionPointer helpFunc1( mesh );
+      helpFunc1 = auxPtr;
+      auxPtr = helpFunc;
+      helpFunc = helpFunc1;
+      //std::cout<< "Size = " << BlockIterHost.getSize() << std::endl;
+      /*for( int k = numBlocksX-1; k >-1; k-- ){
+       for( int l = 0; l < numBlocksY; l++ ){
+       std::cout<< BlockIterHost[ l*numBlocksX  + k ];
+       }
+       std::cout<<std::endl;
+       }
+       std::cout<<std::endl;*/
+      unsigned int numWhile = 0;
+      while( IsCalculationDone  )
+      {      
+        IsCalculationDone = 0;
+        helpFunc1 = auxPtr;
+        auxPtr = helpFunc;
+        helpFunc = helpFunc1;
+        this->template updateBlocks< 66 >( interfaceMap, *auxPtr, *helpFunc, BlockIterHost, numThreadsPerBlock/*, sArray*/ );
+        
+        //Reduction      
+        for( int i = 0; i < BlockIterHost.getSize(); i++ ){
+          if( IsCalculationDone == 0 ){
+            IsCalculationDone = IsCalculationDone || BlockIterHost[ i ];
+            //break;
           }
         }
+        numWhile++;
+        std::cout <<"numWhile = "<< numWhile <<std::endl;
+        /*for( int k = 0; k < numBlocksZ; k++ ){
+          for( int j = numBlocksY-1; j>-1; j-- ){
+            for( int i = 0; i < numBlocksX; i++ ){
+              //std::cout << (*auxPtr)[ k * numBlocksX * numBlocksY + j * numBlocksX + i ] << " ";
+              std::cout << BlockIterHost[ k * numBlocksX * numBlocksY + j * numBlocksX + i ];
+            }
+            std::cout << std::endl;
+          }
+          std::cout << std::endl;
+        }
+        std::cout << std::endl;*/
+        
+        this->getNeighbours( BlockIterHost, numBlocksX, numBlocksY, numBlocksZ );
+        
+        /*for( int k = 0; k < numBlocksZ; k++ ){
+          for( int j = numBlocksY-1; j>-1; j-- ){
+            for( int i = 0; i < numBlocksX; i++ ){
+              //std::cout << (*auxPtr)[ k * numBlocksX * numBlocksY + j * numBlocksX + i ] << " ";
+              std::cout << BlockIterHost[ k * numBlocksX * numBlocksY + j * numBlocksX + i ];
+            }
+            std::cout << std::endl;
+          }
+          std::cout << std::endl;
+        }*/
+        
+        /*for( int j = numBlocksY-1; j>-1; j-- ){
+         for( int i = 0; i < numBlocksX; i++ )
+         std::cout << "BlockIterHost = "<< j*numBlocksX + i<< " ," << BlockIterHost[ j * numBlocksX + i ];
+         std::cout << std::endl;
+         }
+         std::cout << std::endl;*/
+        
+        //std::cout<<std::endl;
+        //string s( "aux-"+ std::to_string(numWhile) + ".tnl");
+        //aux.save( s );
       }
-      //aux.save( "aux-7.tnl" );
+      if( numWhile == 1 ){
+        auxPtr = helpFunc;
+      }
+      aux = *auxPtr;
       
-      for( cell.getCoordinates().z() = mesh->getDimensions().z() - 1;
-              cell.getCoordinates().z() >= 0;
-              cell.getCoordinates().z()-- )
-      {
-        for( cell.getCoordinates().y() = mesh->getDimensions().y() - 1;
-                cell.getCoordinates().y() >= 0;
-                cell.getCoordinates().y()-- )
-        {
-          for( cell.getCoordinates().x() = mesh->getDimensions().x() - 1;
-                  cell.getCoordinates().x() >= 0 ;
-                  cell.getCoordinates().x()-- )		
-          {
-            //std::cerr << "8 -> ";
-            cell.refresh();
-            if( ! interfaceMap( cell ) )            
-              this->updateCell( aux, cell );
-          }
-        }
-      }
+      /*for( cell.getCoordinates().z() = 0;
+       cell.getCoordinates().z() < mesh->getDimensions().z();
+       cell.getCoordinates().z()++ )
+       {
+       for( cell.getCoordinates().y() = 0;
+       cell.getCoordinates().y() < mesh->getDimensions().y();
+       cell.getCoordinates().y()++ )
+       {
+       for( cell.getCoordinates().x() = 0;
+       cell.getCoordinates().x() < mesh->getDimensions().x();
+       cell.getCoordinates().x()++ )
+       {
+       cell.refresh();
+       if( ! interfaceMap( cell ) )
+       this->updateCell( aux, cell );
+       }
+       }
+       }
+       //aux.save( "aux-1.tnl" );
+       
+       for( cell.getCoordinates().z() = 0;
+       cell.getCoordinates().z() < mesh->getDimensions().z();
+       cell.getCoordinates().z()++ )
+       {
+       for( cell.getCoordinates().y() = 0;
+       cell.getCoordinates().y() < mesh->getDimensions().y();
+       cell.getCoordinates().y()++ )
+       {
+       for( cell.getCoordinates().x() = mesh->getDimensions().x() - 1;
+       cell.getCoordinates().x() >= 0 ;
+       cell.getCoordinates().x()-- )		
+       {
+       //std::cerr << "2 -> ";
+       cell.refresh();
+       if( ! interfaceMap( cell ) )            
+       this->updateCell( aux, cell );
+       }
+       }
+       }
+       //aux.save( "aux-2.tnl" );
+       for( cell.getCoordinates().z() = 0;
+       cell.getCoordinates().z() < mesh->getDimensions().z();
+       cell.getCoordinates().z()++ )
+       {
+       for( cell.getCoordinates().y() = mesh->getDimensions().y() - 1;
+       cell.getCoordinates().y() >= 0 ;
+       cell.getCoordinates().y()-- )
+       {
+       for( cell.getCoordinates().x() = 0;
+       cell.getCoordinates().x() < mesh->getDimensions().x();
+       cell.getCoordinates().x()++ )
+       {
+       //std::cerr << "3 -> ";
+       cell.refresh();
+       if( ! interfaceMap( cell ) )            
+       this->updateCell( aux, cell );
+       }
+       }
+       }
+       //aux.save( "aux-3.tnl" );
+       
+       for( cell.getCoordinates().z() = 0;
+       cell.getCoordinates().z() < mesh->getDimensions().z();
+       cell.getCoordinates().z()++ )
+       {
+       for( cell.getCoordinates().y() = mesh->getDimensions().y() - 1;
+       cell.getCoordinates().y() >= 0;
+       cell.getCoordinates().y()-- )
+       {
+       for( cell.getCoordinates().x() = mesh->getDimensions().x() - 1;
+       cell.getCoordinates().x() >= 0 ;
+       cell.getCoordinates().x()-- )		
+       {
+       //std::cerr << "4 -> ";
+       cell.refresh();
+       if( ! interfaceMap( cell ) )            
+       this->updateCell( aux, cell );
+       }
+       }
+       }     
+       //aux.save( "aux-4.tnl" );
+       
+       for( cell.getCoordinates().z() = mesh->getDimensions().z() - 1;
+       cell.getCoordinates().z() >= 0;
+       cell.getCoordinates().z()-- )
+       {
+       for( cell.getCoordinates().y() = 0;
+       cell.getCoordinates().y() < mesh->getDimensions().y();
+       cell.getCoordinates().y()++ )
+       {
+       for( cell.getCoordinates().x() = 0;
+       cell.getCoordinates().x() < mesh->getDimensions().x();
+       cell.getCoordinates().x()++ )
+       {
+       //std::cerr << "5 -> ";
+       cell.refresh();
+       if( ! interfaceMap( cell ) )
+       this->updateCell( aux, cell );
+       }
+       }
+       }
+       //aux.save( "aux-5.tnl" );
+       
+       for( cell.getCoordinates().z() = mesh->getDimensions().z() - 1;
+       cell.getCoordinates().z() >= 0;
+       cell.getCoordinates().z()-- )
+       {
+       for( cell.getCoordinates().y() = 0;
+       cell.getCoordinates().y() < mesh->getDimensions().y();
+       cell.getCoordinates().y()++ )
+       {
+       for( cell.getCoordinates().x() = mesh->getDimensions().x() - 1;
+       cell.getCoordinates().x() >= 0 ;
+       cell.getCoordinates().x()-- )		
+       {
+       //std::cerr << "6 -> ";
+       cell.refresh();
+       if( ! interfaceMap( cell ) )            
+       this->updateCell( aux, cell );
+       }
+       }
+       }
+       //aux.save( "aux-6.tnl" );
+       
+       for( cell.getCoordinates().z() = mesh->getDimensions().z() - 1;
+       cell.getCoordinates().z() >= 0;
+       cell.getCoordinates().z()-- )
+       {
+       for( cell.getCoordinates().y() = mesh->getDimensions().y() - 1;
+       cell.getCoordinates().y() >= 0 ;
+       cell.getCoordinates().y()-- )
+       {
+       for( cell.getCoordinates().x() = 0;
+       cell.getCoordinates().x() < mesh->getDimensions().x();
+       cell.getCoordinates().x()++ )
+       {
+       //std::cerr << "7 -> ";
+       cell.refresh();
+       if( ! interfaceMap( cell ) )            
+       this->updateCell( aux, cell );
+       }
+       }
+       }
+       //aux.save( "aux-7.tnl" );
+       
+       for( cell.getCoordinates().z() = mesh->getDimensions().z() - 1;
+       cell.getCoordinates().z() >= 0;
+       cell.getCoordinates().z()-- )
+       {
+       for( cell.getCoordinates().y() = mesh->getDimensions().y() - 1;
+       cell.getCoordinates().y() >= 0;
+       cell.getCoordinates().y()-- )
+       {
+       for( cell.getCoordinates().x() = mesh->getDimensions().x() - 1;
+       cell.getCoordinates().x() >= 0 ;
+       cell.getCoordinates().x()-- )		
+       {
+       //std::cerr << "8 -> ";
+       cell.refresh();
+       if( ! interfaceMap( cell ) )            
+       this->updateCell( aux, cell );
+       }
+       }
+       }*/
     }
     if( std::is_same< DeviceType, Devices::Cuda >::value )
     {
@@ -389,7 +475,7 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
   {
     __syncthreads();
     
-    __shared__ volatile bool changed[ (sizeSArray - 2)*(sizeSArray - 2)*(sizeSArray - 2)];
+    __shared__ volatile bool changed[ 8*8*8/*(sizeSArray - 2)*(sizeSArray - 2)*(sizeSArray - 2)*/];
     
     changed[ currentIndex ] = false;
     if( thrj == 0 && thri == 0 && thrk == 0 )
@@ -402,6 +488,7 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
     
     if( thrj == 1 && thri == 1 && thrk == 1 )
     {
+      //printf( "We are in the calculation. Block = %d.\n",blockIdx.z * gridDim.x * gridDim.y + blockIdx.y * gridDim.x + blockIdx.x  );
       hx = mesh.getSpaceSteps().x();
       hy = mesh.getSpaceSteps().y();
       hz = mesh.getSpaceSteps().z();
@@ -410,8 +497,8 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
       dimZ = mesh.getDimensions().z();
       BlockIterDevice[ blockIdx.z * gridDim.x * gridDim.y + blockIdx.y * gridDim.x + blockIdx.x ] = 0;
     }
-    __shared__ volatile Real sArray[sizeSArray][sizeSArray][sizeSArray];
-    sArray[thrk+1][thrj+1][thri+1] = std::numeric_limits< Real >::max();
+    __shared__ volatile Real sArray[ 10*10*10/*sizeSArray * sizeSArray * sizeSArray*/ ];
+    sArray[(thrk+1)* sizeSArray * sizeSArray + (thrj+1) *sizeSArray + thri+1] = std::numeric_limits< Real >::max();
     
     //filling sArray edges
     int numOfBlockx;
@@ -426,6 +513,7 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
     numOfBlockx = gridDim.x;
     numOfBlocky = gridDim.y;
     numOfBlockz = gridDim.z;
+    __syncthreads();
     
     if( numOfBlockx - 1 == blIdx )
       xkolik = dimX - (blIdx)*blockDim.x+1;
@@ -438,54 +526,55 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
     if( thri == 0 )
     {        
       if( blIdx != 0 && thrj+1 < ykolik && thrk+1 < zkolik )
-        sArray[thrk+1][thrj+1][0] = aux[ blIdz*blockDim.z * dimX * dimY + blIdy * blockDim.y*dimX + blIdx*blockDim.x + thrj * dimX -1 + thrk*dimX*dimY ];
+        sArray[(thrk+1 )* sizeSArray * sizeSArray + (thrj+1)*sizeSArray + 0] = aux[ blIdz*blockDim.z * dimX * dimY + blIdy * blockDim.y*dimX + blIdx*blockDim.x + thrj * dimX -1 + thrk*dimX*dimY ];
       else
-        sArray[thrk+1][thrj+1][0] = std::numeric_limits< Real >::max();
+        sArray[(thrk+1)* sizeSArray * sizeSArray + (thrj+1)*sizeSArray + 0] = std::numeric_limits< Real >::max();
     }
     
     if( thri == 1 )
     {
       if( dimX > (blIdx+1) * blockDim.x && thrj+1 < ykolik && thrk+1 < zkolik )
-        sArray[thrk+1][thrj+1][9] = aux[ blIdz*blockDim.z * dimX * dimY + blIdy *blockDim.y*dimX+ blIdx*blockDim.x + blockDim.x + thrj * dimX + thrk*dimX*dimY ];
+        sArray[ (thrk+1) * sizeSArray * sizeSArray + (thrj+1) *sizeSArray + xkolik ] = aux[ blIdz*blockDim.z * dimX * dimY + blIdy *blockDim.y*dimX+ blIdx*blockDim.x + blockDim.x + thrj * dimX + thrk*dimX*dimY ];
       else
-        sArray[thrk+1][thrj+1][9] = std::numeric_limits< Real >::max();
+        sArray[ (thrk+1) * sizeSArray * sizeSArray + (thrj+1)*sizeSArray + xkolik] = std::numeric_limits< Real >::max();
     }
     if( thri == 2 )
     {        
       if( blIdy != 0 && thrj+1 < xkolik && thrk+1 < zkolik )
-        sArray[thrk+1][0][thrj+1] = aux[ blIdz*blockDim.z * dimX * dimY + blIdy * blockDim.y*dimX + blIdx*blockDim.x - dimX + thrj + thrk*dimX*dimY ];
+        sArray[ (thrk+1) * sizeSArray * sizeSArray +0*sizeSArray + thrj+1] = aux[ blIdz*blockDim.z * dimX * dimY + blIdy * blockDim.y*dimX + blIdx*blockDim.x - dimX + thrj + thrk*dimX*dimY ];
       else
-        sArray[thrk+1][0][thrj+1] = std::numeric_limits< Real >::max();
+        sArray[ (thrk+1) * sizeSArray * sizeSArray + 0*sizeSArray + thrj+1] = std::numeric_limits< Real >::max();
     }
     
     if( thri == 3 )
     {
       if( dimY > (blIdy+1) * blockDim.y && thrj+1 < xkolik && thrk+1 < zkolik )
-        sArray[thrk+1][9][thrj+1] = aux[ blIdz*blockDim.z * dimX * dimY + (blIdy+1) * blockDim.y*dimX + blIdx*blockDim.x + thrj + thrk*dimX*dimY ];
+        sArray[ (thrk+1) * sizeSArray * sizeSArray + ykolik*sizeSArray + thrj+1] = aux[ blIdz*blockDim.z * dimX * dimY + (blIdy+1) * blockDim.y*dimX + blIdx*blockDim.x + thrj + thrk*dimX*dimY ];
       else
-        sArray[thrk+1][9][thrj+1] = std::numeric_limits< Real >::max();
+        sArray[ (thrk+1) * sizeSArray * sizeSArray + ykolik*sizeSArray + thrj+1] = std::numeric_limits< Real >::max();
     }
     if( thri == 4 )
     {        
       if( blIdz != 0 && thrj+1 < ykolik && thrk+1 < xkolik )
-        sArray[0][thrj+1][thrk+1] = aux[ blIdz*blockDim.z * dimX * dimY + blIdy * blockDim.y*dimX + blIdx*blockDim.x - dimX * dimY + thrj * dimX + thrk ];
+        sArray[ 0 * sizeSArray * sizeSArray +(thrj+1 )* sizeSArray + thrk+1] = aux[ blIdz*blockDim.z * dimX * dimY + blIdy * blockDim.y*dimX + blIdx*blockDim.x - dimX * dimY + thrj * dimX + thrk ];
       else
-        sArray[0][thrj+1][thrk+1] = std::numeric_limits< Real >::max();
+        sArray[0 * sizeSArray * sizeSArray + (thrj+1) *sizeSArray + thrk+1] = std::numeric_limits< Real >::max();
     }
     
     if( thri == 5 )
     {
       if( dimZ > (blIdz+1) * blockDim.z && thrj+1 < ykolik && thrk+1 < xkolik )
-        sArray[9][thrj+1][thrk+1] = aux[ (blIdz+1)*blockDim.z * dimX * dimY + blIdy * blockDim.y*dimX + blIdx*blockDim.x + thrj * dimX + thrk ];
+        sArray[zkolik * sizeSArray * sizeSArray + (thrj+1) * sizeSArray + thrk+1] = aux[ (blIdz+1)*blockDim.z * dimX * dimY + blIdy * blockDim.y*dimX + blIdx*blockDim.x + thrj * dimX + thrk ];
       else
-        sArray[9][thrj+1][thrk+1] = std::numeric_limits< Real >::max();
+        sArray[zkolik * sizeSArray * sizeSArray + (thrj+1) * sizeSArray + thrk+1] = std::numeric_limits< Real >::max();
     }
     
     if( i < dimX && j < dimY && k < dimZ )
     {
-      sArray[thrk+1][thrj+1][thri+1] = aux[ k*dimX*dimY + j*dimX + i ];
+      sArray[(thrk+1) * sizeSArray * sizeSArray + (thrj+1) *sizeSArray + thri+1] = aux[ k*dimX*dimY + j*dimX + i ];
     }
     __syncthreads(); 
+    
     while( changed[ 0 ] )
     {
       __syncthreads();
@@ -493,11 +582,11 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
       changed[ currentIndex ] = false;
       
       //calculation of update cell
-      if( i < mesh.getDimensions().x() && j < mesh.getDimensions().y() && k < dimZ )
+      if( i < dimX && j < dimY && k < dimZ )
       {
-        if( ! interfaceMap[ k*dimX*dimY + j * mesh.getDimensions().x() + i ] )
+        if( ! interfaceMap[ k*dimX*dimY + j * dimX + i ] )
         {
-          changed[ currentIndex ] = ptr.updateCell( sArray, thri+1, thrj+1, thrk+1, hx,hy,hz);
+          changed[ currentIndex ] = ptr.updateCell3D< sizeSArray >( sArray, thri+1, thrj+1, thrk+1, hx,hy,hz);
         }
       }
       __syncthreads();
@@ -535,7 +624,7 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
         }
       }
       __syncthreads();
-      if( currentIndex < 32 ) //POUZE IF JSOU SINCHRONNI NA JEDNOM WARPU
+      if( currentIndex < 32 )
       {
         if( true ) changed[ currentIndex ] = changed[ currentIndex ] || changed[ currentIndex + 32 ];
         if( currentIndex < 16 ) changed[ currentIndex ] = changed[ currentIndex ] || changed[ currentIndex + 16 ];
@@ -548,7 +637,8 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
       
       /*if(thri == 0 && thrj ==0 && thrk ==0 && blIdx == 0 && blIdy == 0 && blIdz == 0)
        {
-       for(int m = 0; m < 8; m++){
+       //for(int m = 0; m < 8; m++){
+       int m = 4;
        for(int n = 0; n<8; n++){
        for(int b=0; b<8; b++)
        printf(" %i ", changed[m*64 + n*8 + b]);
@@ -556,16 +646,19 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
        }
        printf("\n \n");
        }
-       }*/
+       //}*/
+      
       if( changed[ 0 ] && thri == 0 && thrj == 0 && thrk == 0 )
       {
-        BlockIterDevice[ blIdz * numOfBlockx * numOfBlocky + blIdy * numOfBlockx + blIdx ] = 1;
+        //printf( "Setting block calculation. Block = %d.\n",blockIdx.z * gridDim.x * gridDim.y + blockIdx.y * gridDim.x + blockIdx.x  );
+        BlockIterDevice[ blIdz * gridDim.x * gridDim.y + blIdy * gridDim.x + blIdx ] = 1;
       }
       __syncthreads();
     }
     
     if( i < dimX && j < dimY && k < dimZ )
-      helpFunc[ k*dimX*dimY + j * dimX + i ] = sArray[thrk+1][ thrj + 1 ][ thri + 1 ];
+      helpFunc[ k*dimX*dimY + j * dimX + i ] = sArray[ (thrk+1) * sizeSArray * sizeSArray + (thrj+1) * sizeSArray + thri+1 ];
+    
   } 
 }  
 #endif
