@@ -11,7 +11,6 @@
 #include <set>
 #include <iomanip>
 #include <cstring>
-#include <ctime>
 
 #include <unistd.h>
 #include <sys/utsname.h>
@@ -65,13 +64,9 @@ SystemInfo::getCurrentTime( const char* format )
 {
    const std::time_t time_since_epoch = std::time( nullptr );
    std::tm* localtime = std::localtime( &time_since_epoch );
-   // TODO: use std::put_time in the future (available since GCC 5)
-//   std::stringstream ss;
-//   ss << std::put_time( localtime, format );
-//   return String( ss.str().c_str() );
-   char buffer[1024];
-   std::strftime( buffer, 1024, format, localtime );
-   return String( buffer );
+   std::stringstream ss;
+   ss << std::put_time( localtime, format );
+   return String( ss.str().c_str() );
 }
 
 
