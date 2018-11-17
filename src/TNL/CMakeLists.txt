@@ -39,7 +39,6 @@ set( headers
      StaticVectorFor.h )
 
 set( common_SOURCES
-     FileName.cpp
      String.cpp )
 
 set( tnl_SOURCES ${tnl_config_SOURCES}
