@@ -145,7 +145,7 @@ public:
             commRequests.push_back( CommunicatorType::ISend(
                      inVector.getLocalVectorView().getData(),
                      inVector.getLocalVectorView().getSize(),
-                     i, group ) );
+                     i, 0, group ) );
 
       // receive data that we need
       for( int j = 0; j < commPattern.getRows(); j++ )
@@ -153,7 +153,7 @@ public:
             commRequests.push_back( CommunicatorType::IRecv(
                      &globalBuffer[ Partitioner::getOffset( globalBuffer.getSize(), j, nproc ) ],
                      Partitioner::getSizeForRank( globalBuffer.getSize(), j, nproc ),
-                     j, group ) );
+                     j, 0, group ) );
 
       // general variant
       if( localOnlySpan.first >= localOnlySpan.second ) {
