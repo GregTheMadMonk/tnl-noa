@@ -8,7 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#pragma once 
+#pragma once
+
+#include <vector>
 
 #include <TNL/Experimental/Arithmetics/Real.h>
 #include <TNL/String.h>
@@ -16,7 +18,27 @@
 namespace TNL {
 
 template< typename T >
-String getType() { return T::getType(); }
+String getType();
+
+namespace __getType_impl {
+
+template< typename T >
+struct getTypeHelper
+{
+   static String get() { return T::getType(); }
+};
+
+// wrappers for STL containers
+template< typename T >
+struct getTypeHelper< std::vector< T > >
+{
+   static String get() { return String( "std::vector< " ) + TNL::getType< T >() + " >"; }
+};
+
+} // namespace __getType_impl
+
+template< typename T >
+String getType() { return __getType_impl::getTypeHelper< T >::get(); }
 
 // non-const specializations
 template<> inline String getType< void >() { return String( "void" ); }

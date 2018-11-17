@@ -155,41 +155,27 @@ parseCommandLine( int argc, char* argv[],
             std::cerr << "Missing value for the parameter " << option << "." << std::endl;
             return false;
          }
-         Containers::List< String > parsedEntryType;
-         if( ! parseObjectType( entryType, parsedEntryType ) )
+         std::vector< String > parsedEntryType = parseObjectType( entryType );
+         if( parsedEntryType.size() == 0 )
          {
             std::cerr << "Internal error: Unknown config entry type " << entryType << "." << std::endl;
             return false;
          }
-         if( parsedEntryType[ 0 ] == "Containers::List" )
+         if( parsedEntryType[ 0 ] == "ConfigEntryList" )
          {
-            Containers::List< String >* string_list( 0 );
-            Containers::List< bool >* bool_list( 0 );
-            Containers::List< int >* integer_list( 0 );
-            Containers::List< double >* real_list( 0 );
+            std::vector< String > string_list;
+            std::vector< bool > bool_list;
+            std::vector< int > integer_list;
+            std::vector< double > real_list;
 
-            if( parsedEntryType[ 1 ] == "String" )
-               string_list = new Containers::List< String >;
-            if( parsedEntryType[ 1 ] == "bool" )
-               bool_list = new Containers::List< bool >;
-            if( parsedEntryType[ 1 ] == "int" )
-               integer_list = new Containers::List< int >;
-            if( parsedEntryType[ 1 ] == "double" )
-               real_list = new Containers::List< double >;
-
-            while( i < argc && ( ( argv[ i ] )[ 0 ] != '-' || ( atof( argv[ i ] ) < 0.0 && ( integer_list || real_list ) ) ) )
+            while( i < argc && ( ( argv[ i ] )[ 0 ] != '-' || ( atof( argv[ i ] ) < 0.0 && ( parsedEntryType[ 1 ] == "int" || parsedEntryType[ 1 ] == "double" ) ) ) )
             {
                const char* value = argv[ i ++ ];
-               if( string_list )
+               if( parsedEntryType[ 1 ] == "String" )
                {
-                  /*if( ! ( ( ConfigEntry< Containers::List< String > >* )  entry )->checkValue( String( value ) ) )
-                  {
-                     delete string_list;
-                     return false;
-                  }*/
-                  string_list -> Append( String( value ) );
+                  string_list.push_back( String( value ) );
                }
-               if( bool_list )
+               if( parsedEntryType[ 1 ] == "bool" )
                {
                   bool bool_val;
                   if( ! matob( value, bool_val ) )
@@ -197,47 +183,25 @@ parseCommandLine( int argc, char* argv[],
                      std::cerr << "Yes/true or no/false is required for the parameter " << option << "." << std::endl;
                      parse_error = true;
                   }
-                  else bool_list -> Append( bool_val );
+                  else bool_list.push_back( bool_val );
                }
-               if( integer_list )
+               if( parsedEntryType[ 1 ] == "int" )
                {
-                  /*if( ! ( ConfigEntry< Containers::List< int > >* ) entry->checkValue( atoi( value ) ) )
-                  {
-                     delete integer_list;
-                     return false;
-                  }*/
-                  integer_list -> Append( atoi( value ) );
+                  integer_list.push_back( atoi( value ) );
                }
-               if( real_list )
+               if( parsedEntryType[ 1 ] == "double" )
                {
-                  /*if( ! ( ConfigEntry< Containers::List< double > >* ) entry->checkValue( atof( value ) ) )
-                  {
-                     delete real_list;
-                     return false;
-                  }*/
-                  real_list -> Append( atof( value ) );
+                  real_list.push_back( atof( value ) );
                }
             }
-            if( string_list )
-            {
-               parameters.addParameter< Containers::List< String > >( option, *string_list );
-               delete string_list;
-            }
-            if( bool_list )
-            {
-               parameters.addParameter< Containers::List< bool > >( option, *bool_list );
-               delete bool_list;
-            }
-            if( integer_list )
-            {
-               parameters.addParameter< Containers::List< int > >( option, *integer_list );
-               delete integer_list;
-            }
-            if( real_list )
-            {
-               parameters.addParameter< Containers::List< double > >( option, *real_list );
-               delete real_list;
-            }
+            if( string_list.size() )
+               parameters.addParameter< std::vector< String > >( option, string_list );
+            if( bool_list.size() )
+               parameters.addParameter< std::vector< bool > >( option, bool_list );
+            if( integer_list.size() )
+               parameters.addParameter< std::vector< int > >( option, integer_list );
+            if( real_list.size() )
+               parameters.addParameter< std::vector< double > >( option, real_list );
             if( i < argc ) i --;
             continue;
          }

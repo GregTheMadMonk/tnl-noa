@@ -12,7 +12,6 @@
 
 #include <TNL/String.h>
 #include <TNL/Object.h>
-#include <TNL/Containers/List.h>
 #include <TNL/Meshes/Readers/EntityShape.h>
 
 namespace TNL {
@@ -34,8 +33,8 @@ public:
          return EXIT_FAILURE;
       }
 
-      Containers::List< String > parsedMeshType;
-      if( ! parseObjectType( objectType, parsedMeshType ) ) {
+      const std::vector< String > parsedMeshType = parseObjectType( objectType );
+      if( ! parsedMeshType.size() ) {
          std::cerr << "Unable to parse the mesh type " << meshType << "." << std::endl;
          return false;
       }
@@ -55,14 +54,17 @@ public:
             cellShape = EntityShape::Hexahedron;
       }
       else if( meshType == "Meshes::Mesh" ) {
-         Containers::List< String > parsedMeshConfig;
-         if( ! parseObjectType( parsedMeshType[ 1 ], parsedMeshConfig ) ) {
+         const std::vector< String > parsedMeshConfig = parseObjectType( parsedMeshType[ 1 ] );
+         if( ! parsedMeshConfig.size() ) {
             std::cerr << "Unable to parse the mesh config type " << parsedMeshType[ 1 ] << "." << std::endl;
             return false;
          }
-         if( parsedMeshConfig.getSize() != 7 ) {
-            std::cerr << "The parsed mesh config type has wrong size (expected 7 elements):" << std::endl
-                      << parsedMeshConfig << std::endl;
+         if( parsedMeshConfig.size() != 7 ) {
+            std::cerr << "The parsed mesh config type has wrong size (expected 7 elements):" << std::endl;
+            std::cerr << "[ ";
+            for( std::size_t i = 0; i < parsedMeshConfig.size() - 1; i++ )
+               std::cerr << parsedMeshConfig[ i ] << ", ";
+            std::cerr << parsedMeshConfig.back() << " ]" << std::endl;
             return false;
          }
 

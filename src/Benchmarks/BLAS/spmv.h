@@ -14,7 +14,6 @@
 
 #include "../Benchmarks.h"
 
-#include <TNL/Containers/List.h>
 #include <TNL/Pointers/DevicePointer.h>
 #include <TNL/Matrices/CSR.h>
 #include <TNL/Matrices/Ellpack.h>
@@ -111,8 +110,7 @@ benchmarkSpMV( Benchmark & benchmark,
    CudaVector deviceVector, deviceVector2;
 
    // create benchmark group
-   Containers::List< String > parsedType;
-   parseObjectType( HostMatrix::getType(), parsedType );
+   const std::vector< String > parsedType = parseObjectType( HostMatrix::getType() );
 #ifdef HAVE_CUDA
    benchmark.createHorizontalGroup( parsedType[ 0 ], 2 );
 #else

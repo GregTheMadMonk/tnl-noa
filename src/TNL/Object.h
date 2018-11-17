@@ -10,10 +10,11 @@
 
 #pragma once
 
+#include <vector>
+
 #include <TNL/Devices/CudaCallable.h>
 #include <TNL/String.h>
 #include <TNL/File.h>
-#include <TNL/Containers/List.h>
 
 namespace TNL {
 
@@ -108,7 +109,7 @@ bool getObjectType( File& file, String& type );
 
 bool getObjectType( const String& file_name, String& type );
 
-bool parseObjectType( const String& objectType,
-                      Containers::List< String >& parsedObjectType );
+std::vector< String >
+parseObjectType( const String& objectType );
 
 } // namespace TNL

@@ -130,11 +130,11 @@ bool getObjectType( const String& fileName, String& type )
    return getObjectType( binaryFile, type );
 }
 
-bool parseObjectType( const String& objectType,
-                      Containers::List< String >& parsedObjectType )
+std::vector< String >
+parseObjectType( const String& objectType )
 {
-   parsedObjectType.reset();
-   int objectTypeLength = objectType. getLength();
+   std::vector< String > parsedObjectType;
+   const int objectTypeLength = objectType.getLength();
    int i = 0;
    /****
     * The object type consists of the following:
@@ -143,11 +143,10 @@ bool parseObjectType( const String& objectType,
     * character '<'.
     */
    while( i < objectTypeLength && objectType[ i ] != '<' )
-      i ++;
-   String objectName( objectType. getString(), 0, objectTypeLength - i );
-   if( ! parsedObjectType. Append( objectName ) )
-      return false;
-   i ++;
+      i++;
+   String objectName( objectType.getString(), 0, objectTypeLength - i );
+   parsedObjectType.push_back( objectName );
+   i++;
 
    /****
     * Now, we will extract the parameters.
@@ -160,7 +159,7 @@ bool parseObjectType( const String& objectType,
    while( i < objectTypeLength )
    {
       if( objectType[ i ] == '<' )
-         templateBrackets ++;
+         templateBrackets++;
       if( ! templateBrackets )
       {
          if( objectType[ i ] == ',' ||
@@ -168,19 +167,19 @@ bool parseObjectType( const String& objectType,
          {
             if( buffer != "" )
             {
-               if( ! parsedObjectType. Append( buffer.strip( ' ' ) ) )
-                  return false;
-               buffer. setString( "" );
+               parsedObjectType.push_back( buffer.strip( ' ' ) );
+               buffer.setString( "" );
             }
          }
          else buffer += objectType[ i ];
       }
       else buffer += objectType[ i ];
       if( objectType[ i ] == '>' )
-         templateBrackets --;
-      i ++;
+         templateBrackets--;
+      i++;
    }
-   return true;
+
+   return parsedObjectType;
 }
 
 } // namespace TNL

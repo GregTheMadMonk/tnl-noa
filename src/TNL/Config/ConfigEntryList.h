@@ -50,7 +50,7 @@ struct ConfigEntryList : public ConfigEntryBase
 
    String getEntryType() const
    {
-      return String("List< ") + TNL::getType< EntryType >() + " >";
+      return String("ConfigEntryList< ") + TNL::getType< EntryType >() + " >";
    }
 
    String getUIEntryType() const

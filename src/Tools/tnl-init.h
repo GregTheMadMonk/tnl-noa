@@ -264,7 +264,7 @@ bool resolveRealType( const Config::ParameterContainer& parameters )
 
 
 template< int Dimension, typename RealType, typename IndexType >
-bool resolveMesh( const Containers::List< String >& parsedMeshType,
+bool resolveMesh( const std::vector< String >& parsedMeshType,
                   const Config::ParameterContainer& parameters )
 {
   std::cout << "+ -> Setting mesh type to " << parsedMeshType[ 0 ] << " ... " << std::endl;
@@ -279,7 +279,7 @@ bool resolveMesh( const Containers::List< String >& parsedMeshType,
 }
 
 template< int Dimension, typename RealType >
-bool resolveIndexType( const Containers::List< String >& parsedMeshType,
+bool resolveIndexType( const std::vector< String >& parsedMeshType,
                        const Config::ParameterContainer& parameters )
 {
   std::cout << "+ -> Setting index type to " << parsedMeshType[ 4 ] << " ... " << std::endl;
@@ -293,7 +293,7 @@ bool resolveIndexType( const Containers::List< String >& parsedMeshType,
 }
 
 template< int Dimension >
-bool resolveRealType( const Containers::List< String >& parsedMeshType,
+bool resolveRealType( const std::vector< String >& parsedMeshType,
                       const Config::ParameterContainer& parameters )
 {
   std::cout << "+ -> Setting real type to " << parsedMeshType[ 2 ] << " ... " << std::endl;
@@ -309,7 +309,7 @@ bool resolveRealType( const Containers::List< String >& parsedMeshType,
    return false;
 }
 
-bool resolveMeshType( const Containers::List< String >& parsedMeshType,
+bool resolveMeshType( const std::vector< String >& parsedMeshType,
                       const Config::ParameterContainer& parameters )
 {
   std::cout << "+ -> Setting dimensions to " << parsedMeshType[ 1 ] << " ... " << std::endl;
