@@ -39,7 +39,6 @@ set( headers
 set( common_SOURCES
      FileName.cpp
      Object.cpp
-     Logger.cpp
      String.cpp
      Timer.cpp )
 
