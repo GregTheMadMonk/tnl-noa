@@ -1,5 +1,5 @@
 /***************************************************************************
-                          String.cpp  -  description
+                          String_impl.h  -  description
                              -------------------
     begin                : 2004/04/10 16:36
     copyright            : (C) 2004 by Tomas Oberhuber
@@ -7,6 +7,8 @@
  ***************************************************************************/
 
 /* See Copyright Notice in tnl/Copyright */
+
+#pragma once
 
 #include <TNL/String.h>
 #include <TNL/Assert.h>
@@ -17,46 +19,46 @@
 
 namespace TNL {
 
-String String::getType()
+inline String String::getType()
 {
    return String( "String" );
 }
 
-int String::getLength() const
+inline int String::getLength() const
 {
    return getSize();
 }
 
-int String::getSize() const
+inline int String::getSize() const
 {
    return this->size();
 }
 
-int String::getAllocatedSize() const
+inline int String::getAllocatedSize() const
 {
    return this->capacity();
 }
 
-void String::setSize( int size )
+inline void String::setSize( int size )
 {
    TNL_ASSERT_GE( size, 0, "string size must be non-negative" );
    this->reserve( size );
 }
 
-const char* String::getString() const
+inline const char* String::getString() const
 {
    return this->c_str();
 }
 
 
-const char& String::operator[]( int i ) const
+inline const char& String::operator[]( int i ) const
 {
    TNL_ASSERT( i >= 0 && i < getLength(),
                std::cerr << "Accessing char outside the string." );
    return std::string::operator[]( i );
 }
 
-char& String::operator[]( int i )
+inline char& String::operator[]( int i )
 {
    TNL_ASSERT( i >= 0 && i < getLength(),
                std::cerr << "Accessing char outside the string." );
@@ -67,23 +69,23 @@ char& String::operator[]( int i )
 /****
  * Operators for single characters
  */
-String& String::operator+=( char str )
+inline String& String::operator+=( char str )
 {
    std::string::operator+=( str );
    return *this;
 }
 
-String String::operator+( char str ) const
+inline String String::operator+( char str ) const
 {
    return String( *this ) += str;
 }
 
-bool String::operator==( char str ) const
+inline bool String::operator==( char str ) const
 {
    return std::string( *this ) == std::string( 1, str );
 }
 
-bool String::operator!=( char str ) const
+inline bool String::operator!=( char str ) const
 {
    return ! operator==( str );
 }
@@ -92,23 +94,23 @@ bool String::operator!=( char str ) const
 /****
  * Operators for C strings
  */
-String& String::operator+=( const char* str )
+inline String& String::operator+=( const char* str )
 {
    std::string::operator+=( str );
    return *this;
 }
 
-String String::operator+( const char* str ) const
+inline String String::operator+( const char* str ) const
 {
    return String( *this ) += str;
 }
 
-bool String::operator==( const char* str ) const
+inline bool String::operator==( const char* str ) const
 {
    return std::string( *this ) == str;
 }
 
-bool String::operator!=( const char* str ) const
+inline bool String::operator!=( const char* str ) const
 {
    return ! operator==( str );
 }
@@ -117,23 +119,23 @@ bool String::operator!=( const char* str ) const
 /****
  * Operators for std::string
  */
-String& String::operator+=( const std::string& str )
+inline String& String::operator+=( const std::string& str )
 {
    std::string::operator+=( str );
    return *this;
 }
 
-String String::operator+( const std::string& str ) const
+inline String String::operator+( const std::string& str ) const
 {
    return String( *this ) += str;
 }
 
-bool String::operator==( const std::string& str ) const
+inline bool String::operator==( const std::string& str ) const
 {
    return std::string( *this ) == str;
 }
 
-bool String::operator!=( const std::string& str ) const
+inline bool String::operator!=( const std::string& str ) const
 {
    return ! operator==( str );
 }
@@ -142,41 +144,42 @@ bool String::operator!=( const std::string& str ) const
 /****
  * Operators for String
  */
-String& String::operator+=( const String& str )
+inline String& String::operator+=( const String& str )
 {
    std::string::operator+=( str );
    return *this;
 }
 
-String String::operator+( const String& str ) const
+inline String String::operator+( const String& str ) const
 {
    return String( *this ) += str;
 }
 
-bool String::operator==( const String& str ) const
+inline bool String::operator==( const String& str ) const
 {
    return std::string( *this ) == str;
 }
 
-bool String::operator!=( const String& str ) const
+inline bool String::operator!=( const String& str ) const
 {
    return ! operator==( str );
 }
 
 
-String::operator bool () const
+inline String::operator bool () const
 {
    return getLength();
 }
 
-bool String::operator!() const
+inline bool String::operator!() const
 {
    return ! operator bool();
 }
 
-String String::replace( const String& pattern,
-                        const String& replaceWith,
-                        int count ) const
+inline String
+String::replace( const String& pattern,
+                 const String& replaceWith,
+                 int count ) const
 {
    std::string newString = *this;
 
@@ -195,7 +198,7 @@ String String::replace( const String& pattern,
    return newString;
 }
 
-String
+inline String
 String::strip( char strip ) const
 {
    int prefix_cut_off = 0;
@@ -212,7 +215,8 @@ String::strip( char strip ) const
    return "";
 }
 
-std::vector< String > String::split( const char separator, bool skipEmpty ) const
+inline std::vector< String >
+String::split( const char separator, bool skipEmpty ) const
 {
    std::vector< String > parts;
    String s;
@@ -229,7 +233,8 @@ std::vector< String > String::split( const char separator, bool skipEmpty ) cons
    return parts;
 }
 
-/*void String :: MPIBcast( int root, MPI_Comm comm )
+/*
+inline void String :: MPIBcast( int root, MPI_Comm comm )
 {
 #ifdef USE_MPI
    dbgFunctionName( "mString", "MPIBcast" );
@@ -257,22 +262,22 @@ std::vector< String > String::split( const char separator, bool skipEmpty ) cons
 }
 */
 
-String operator+( char string1, const String& string2 )
+inline String operator+( char string1, const String& string2 )
 {
    return convertToString( string1 ) + string2;
 }
 
-String operator+( const char* string1, const String& string2 )
+inline String operator+( const char* string1, const String& string2 )
 {
    return String( string1 ) + string2;
 }
 
-String operator+( const std::string& string1, const String& string2 )
+inline String operator+( const std::string& string1, const String& string2 )
 {
    return String( string1 ) + string2;
 }
 
-std::ostream& operator<<( std::ostream& stream, const String& str )
+inline std::ostream& operator<<( std::ostream& stream, const String& str )
 {
    stream << str.getString();
    return stream;

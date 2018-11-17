@@ -243,3 +243,5 @@ template<> inline String convertToString( const bool& b )
 }
 
 } // namespace TNL
+
+#include <TNL/String_impl.h>
