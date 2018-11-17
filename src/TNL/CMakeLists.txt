@@ -26,6 +26,7 @@ set( headers
      FileName.h
      FileName.hpp
      Object.h
+     Object_impl.h
      Logger.h
      Logger_impl.h
      Math.h
@@ -38,7 +39,6 @@ set( headers
 
 set( common_SOURCES
      FileName.cpp
-     Object.cpp
      String.cpp
      Timer.cpp )
 

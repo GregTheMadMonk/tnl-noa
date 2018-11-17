@@ -113,3 +113,5 @@ std::vector< String >
 parseObjectType( const String& objectType );
 
 } // namespace TNL
+
+#include <TNL/Object_impl.h>

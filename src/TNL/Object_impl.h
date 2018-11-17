@@ -1,5 +1,5 @@
 /***************************************************************************
-                          Object.cpp  -  description
+                          Object_impl.h  -  description
                              -------------------
     begin                : 2005/10/15
     copyright            : (C) 2005 by Tomas Oberhuber
@@ -8,37 +8,39 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/Object.h>
-#include <TNL/Assert.h>
+#pragma once
+
 #include <iostream>
 #include <fstream>
 #include <cstring>
 
+#include <TNL/Object.h>
+
 namespace TNL {
 
-const char magic_number[] = "TNLMN";
+static constexpr char magic_number[] = "TNLMN";
 
-String Object :: getType()
+inline String Object :: getType()
 {
    return String( "Object" );
 }
 
-String Object :: getTypeVirtual() const
+inline String Object :: getTypeVirtual() const
 {
    return this->getType();
 }
 
-String Object :: getSerializationType()
+inline String Object :: getSerializationType()
 {
    return String( "Object" );
 }
 
-String Object :: getSerializationTypeVirtual() const
+inline String Object :: getSerializationTypeVirtual() const
 {
    return this->getSerializationType();
 }
 
-bool Object :: save( File& file ) const
+inline bool Object :: save( File& file ) const
 {
    if( ! file. write( magic_number, strlen( magic_number ) ) )
       return false;
@@ -46,7 +48,7 @@ bool Object :: save( File& file ) const
    return true;
 }
 
-bool Object :: load( File& file )
+inline bool Object :: load( File& file )
 {
    String objectType;
    if( ! getObjectType( file, objectType ) )
@@ -59,12 +61,12 @@ bool Object :: load( File& file )
    return true;
 }
 
-bool Object :: boundLoad( File& file )
+inline bool Object :: boundLoad( File& file )
 {
    return load( file );
 }
 
-bool Object :: save( const String& fileName ) const
+inline bool Object :: save( const String& fileName ) const
 {
    File file;
    if( ! file. open( fileName, IOMode::write ) )
@@ -75,7 +77,7 @@ bool Object :: save( const String& fileName ) const
    return this->save( file );
 }
 
-bool Object :: load( const String& fileName )
+inline bool Object :: load( const String& fileName )
 {
    File file;
    if( ! file. open( fileName, IOMode::read ) )
@@ -86,7 +88,7 @@ bool Object :: load( const String& fileName )
    return this->load( file );
 }
 
-bool Object :: boundLoad( const String& fileName )
+inline bool Object :: boundLoad( const String& fileName )
 {
    File file;
    if( ! file. open( fileName, IOMode::read ) )
@@ -98,7 +100,7 @@ bool Object :: boundLoad( const String& fileName )
 }
 
 
-bool getObjectType( File& file, String& type )
+inline bool getObjectType( File& file, String& type )
 {
    char mn[ 10 ];
    if( ! file. read( mn, strlen( magic_number ) ) )
@@ -119,7 +121,7 @@ bool getObjectType( File& file, String& type )
    return true;
 }
 
-bool getObjectType( const String& fileName, String& type )
+inline bool getObjectType( const String& fileName, String& type )
 {
    File binaryFile;
    if( ! binaryFile. open( fileName, IOMode::read ) )
@@ -130,7 +132,7 @@ bool getObjectType( const String& fileName, String& type )
    return getObjectType( binaryFile, type );
 }
 
-std::vector< String >
+inline std::vector< String >
 parseObjectType( const String& objectType )
 {
    std::vector< String > parsedObjectType;
