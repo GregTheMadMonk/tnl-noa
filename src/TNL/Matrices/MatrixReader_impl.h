@@ -92,7 +92,7 @@ bool MatrixReader< Matrix >::verifyMtxFile( std::istream& file,
    IndexType processedElements( 0 );
    Timer timer;
    timer.start();
-   while( line.getLine( file ) )
+   while( std::getline( file, line ) )
    {
       if( line[ 0 ] == '%' ) continue;
       if( ! dimensionsLine )
@@ -141,7 +141,7 @@ bool MatrixReader< Matrix >::findLineByElement( std::istream& file,
    bool symmetricMatrix( false );
    bool dimensionsLine( false );
    lineNumber = 0;
-   while( line.getLine( file ) )
+   while( std::getline( file, line ) )
    {
       lineNumber++;
       if( line[ 0 ] == '%' ) continue;
@@ -213,7 +213,7 @@ bool MatrixReader< Matrix >::readMtxHeader( std::istream& file,
    std::vector< String > parsedLine;
    while( true )
    {
-      line.getLine( file );
+      std::getline( file, line );
       if( ! headerParsed )
       {
          headerParsed = checkMtxHeader( line, symmetric );
@@ -269,7 +269,7 @@ bool MatrixReader< Matrix >::computeCompressedRowLengthsFromMtxFile( std::istrea
    IndexType numberOfElements( 0 );
    Timer timer;
    timer.start();
-   while( line.getLine( file ) )
+   while( std::getline( file, line ) )
    {
       if( line[ 0 ] == '%' ) continue;
       if( ! dimensionsLine )
@@ -340,7 +340,7 @@ bool MatrixReader< Matrix >::readMatrixElementsFromMtxFile( std::istream& file,
    IndexType processedElements( 0 );
    Timer timer;
    timer.start();
-   while( line.getLine( file ) )
+   while( std::getline( file, line ) )
    {
       if( line[ 0 ] == '%' ) continue;
       if( ! dimensionsLine )

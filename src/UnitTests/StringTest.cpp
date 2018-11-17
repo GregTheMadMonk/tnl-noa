@@ -23,20 +23,7 @@ using namespace TNL;
 TEST( StringTest, BasicConstructor )
 {
    String str;
-   EXPECT_EQ( strcmp( str.getString(), "" ), 0 );
-}
-
-TEST( StringTest, ConstructorWithChar )
-{
-   String str1( "string1" );
-   String str2( "xxxstring2", 3 );
-   String str3( "string3xxx", 0, 3 );
-   String str4( "xxxstring4xxx", 3, 3 );
-
-   EXPECT_EQ( strcmp( str1.getString(), "string1" ), 0 );
-   EXPECT_EQ( strcmp( str2.getString(), "string2" ), 0 );
-   EXPECT_EQ( strcmp( str3.getString(), "string3" ), 0 );
-   EXPECT_EQ( strcmp( str4.getString(), "string4" ), 0 );
+   EXPECT_STREQ( str.getString(), "" );
 }
 
 TEST( StringTest, CopyConstructor )
@@ -46,8 +33,8 @@ TEST( StringTest, CopyConstructor )
    String string2( string );
    String emptyString2( emptyString );
 
-   EXPECT_EQ( strcmp( string2.getString(), "string1" ), 0 );
-   EXPECT_EQ( strcmp( emptyString2.getString(), "" ), 0 );
+   EXPECT_STREQ( string2.getString(), "string1" );
+   EXPECT_STREQ( emptyString2.getString(), "" );
 }
 
 TEST( StringTest, convertToString )
@@ -57,10 +44,10 @@ TEST( StringTest, convertToString )
    String string3 = convertToString( true );
    String string4 = convertToString( false );
 
-   EXPECT_EQ( strcmp( string1.getString(), "10" ), 0 );
-   EXPECT_EQ( strcmp( string2.getString(), "-5" ), 0 );
-   EXPECT_EQ( strcmp( string3.getString(), "true" ), 0 );
-   EXPECT_EQ( strcmp( string4.getString(), "false" ), 0 );
+   EXPECT_STREQ( string1.getString(), "10" );
+   EXPECT_STREQ( string2.getString(), "-5" );
+   EXPECT_STREQ( string3.getString(), "true" );
+   EXPECT_STREQ( string4.getString(), "false" );
 }
 
 TEST( StringTest, GetSize )
@@ -88,35 +75,15 @@ TEST( StringTest, GetAllocatedSize )
 {
     String str( "MeineKleine" );
 
-    EXPECT_EQ( str.getAllocatedSize(), 256 );
+    EXPECT_EQ( str.getLength(), 11 );
+    EXPECT_GE( str.getAllocatedSize(), str.getLength() );
 }
 
 TEST( StringTest, SetSize )
 {
    String str;
    str.setSize( 42 );
-   EXPECT_EQ( str.getAllocatedSize(), 256 );
-   // it allocates one more byte for the terminating 0
-   str.setSize( 256 );
-   EXPECT_EQ( str.getAllocatedSize(), 512 );
-}
-
-TEST( StringTest, SetString )
-{
-   String str1, str2, str3, str4;
-
-   str1.setString( "string1" );
-   str2.setString( "xxxstring2", 3 );
-   str3.setString( "string3xxx", 0, 3 );
-   str4.setString( "xxxstring4xxx", 3, 3 );
-
-   EXPECT_EQ( strcmp( str1.getString(), "string1" ), 0 );
-   EXPECT_EQ( strcmp( str2.getString(), "string2" ), 0 );
-   EXPECT_EQ( strcmp( str3.getString(), "string3" ), 0 );
-   EXPECT_EQ( strcmp( str4.getString(), "string4" ), 0 );
-
-   str4.setString( "string4_2", 0, 2 );
-   EXPECT_EQ( strcmp( str4.getString(), "string4" ), 0 );
+   EXPECT_GT( str.getAllocatedSize(), 0 );
 }
 
 TEST( StringTest, GetString )
@@ -145,28 +112,28 @@ TEST( StringTest, CStringOperators )
    // assignment operator
    String string1;
    string1 = "string";
-   EXPECT_EQ( strcmp( string1.getString(), "string" ), 0 );
+   EXPECT_STREQ( string1.getString(), "string" );
 
    // addition
    string1 += "string2";
-   EXPECT_EQ( strcmp( string1.getString(), "stringstring2" ), 0 );
+   EXPECT_STREQ( string1.getString(), "stringstring2" );
 
    // addition that forces a new page allocation
    string1 += " long long long long long long long long long long long long long long"
               " long long long long long long long long long long long long long long"
               " long long long long long long long long long long long long long long"
               " long long long long long long long long long long long long long long";
-   EXPECT_EQ( strcmp( string1.getString(),
+   EXPECT_STREQ( string1.getString(),
               "stringstring2"
               " long long long long long long long long long long long long long long"
               " long long long long long long long long long long long long long long"
               " long long long long long long long long long long long long long long"
-              " long long long long long long long long long long long long long long" ),
-            0 );
+              " long long long long long long long long long long long long long long"
+            );
 
    // addition
-   EXPECT_EQ( strcmp( (String( "foo " ) + "bar").getString(), "foo bar" ), 0 );
-   EXPECT_EQ( strcmp( ("foo" + String( " bar" )).getString(), "foo bar" ), 0 );
+   EXPECT_STREQ( (String( "foo " ) + "bar").getString(), "foo bar" );
+   EXPECT_STREQ( ("foo" + String( " bar" )).getString(), "foo bar" );
 
    // comparison
    EXPECT_EQ( String( "foo" ), "foo" );
@@ -180,12 +147,12 @@ TEST( StringTest, StringOperators )
    String string1( "string" );
    String string2;
    string2 = string1;
-   EXPECT_EQ( strcmp( string2.getString(), "string" ), 0 );
+   EXPECT_STREQ( string2.getString(), "string" );
 
    // addition
-   string1.setString( "foo " );
+   string1 = "foo ";
    string1 += String( "bar" );
-   EXPECT_EQ( strcmp( string1.getString(), "foo bar" ), 0 );
+   EXPECT_STREQ( string1.getString(), "foo bar" );
 
    // comparison
    EXPECT_EQ( String( "foo bar" ), string1 );
@@ -205,12 +172,20 @@ TEST( StringTest, StringOperators )
                    "long long long long long long long long long long long "
                    "long long long long long long long long long long long" );
    string3[ 255 ] = 0;
-   EXPECT_EQ( string3,
+   // std::string knows the original length
+   EXPECT_NE( string3,
               String( "long long long long long long long long long long long "
                       "long long long long long long long long long long long "
                       "long long long long long long long long long long long "
                       "long long long long long long long long long long long "
                       "long long long long long long long " ) );
+   // C string can be terminated in the middle
+   EXPECT_STREQ( string3.getString(),
+                      "long long long long long long long long long long long "
+                      "long long long long long long long long long long long "
+                      "long long long long long long long long long long long "
+                      "long long long long long long long long long long long "
+                      "long long long long long long long " );
 
    // addition
    EXPECT_EQ( String( "foo " ) + String( "bar" ), "foo bar" );
@@ -221,30 +196,30 @@ TEST( StringTest, SingleCharacterOperators )
    // assignment
    String string1;
    string1 = 'A';
-   EXPECT_EQ( strcmp( string1.getString(), "A" ), 0 );
+   EXPECT_STREQ( string1.getString(), "A" );
 
    // addition of a single character
    String string2( "string " );
    string2 += 'A';
-   EXPECT_EQ( strcmp( string2.getString(), "string A" ), 0 );
+   EXPECT_STREQ( string2.getString(), "string A" );
 
    // addition of a single character that causes new page allocation
-   string2.setString( "long long long long long long long long long long long long long "
-                      "long long long long long long long long long long long long long "
-                      "long long long long long long long long long long long long long "
-                      "long long long long long long long long long long long long " );
+   string2 = "long long long long long long long long long long long long long "
+             "long long long long long long long long long long long long long "
+             "long long long long long long long long long long long long long "
+             "long long long long long long long long long long long long ";
    ASSERT_EQ( string2.getLength(), 255 );
    string2 += 'B';
-   EXPECT_EQ( strcmp( string2.getString(),
+   EXPECT_STREQ( string2.getString(),
                   "long long long long long long long long long long long long long "
                   "long long long long long long long long long long long long long "
                   "long long long long long long long long long long long long long "
-                  "long long long long long long long long long long long long B" ),
-              0 );
+                  "long long long long long long long long long long long long B"
+               );
 
    // addition
-   EXPECT_EQ( strcmp( (String( "A " ) + 'B').getString(), "A B" ), 0 );
-   EXPECT_EQ( strcmp( ('A' + String( " B" )).getString(), "A B" ), 0 );
+   EXPECT_STREQ( (String( "A " ) + 'B').getString(), "A B" );
+   EXPECT_STREQ( ('A' + String( " B" )).getString(), "A B" );
 
    // comparison
    EXPECT_EQ( String( "A" ), 'A' );
@@ -257,7 +232,7 @@ TEST( StringTest, CastToBoolOperator )
    String string;
    EXPECT_TRUE( ! string );
    EXPECT_FALSE( string );
-   string.setString( "foo" );
+   string = "foo";
    EXPECT_TRUE( string );
    EXPECT_FALSE( ! string );
 }
@@ -340,22 +315,6 @@ TEST( StringTest, SaveLoad )
    EXPECT_EQ( str1, str2 );
 
    EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
-};
-
-TEST( StringTest, getLine )
-{
-   std::stringstream str;
-   str << "Line 1" << std::endl;
-   str << "Line 2" << std::endl;
-   str.seekg( 0 );
-
-   String s;
-
-   s.getLine( str );
-   EXPECT_EQ( s, "Line 1" );
-
-   s.getLine( str );
-   EXPECT_EQ( s, "Line 2" );
 };
 
 #endif

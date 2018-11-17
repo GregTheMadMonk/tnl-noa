@@ -94,20 +94,18 @@ inline String FileName::getFileName()
 
 inline String getFileExtension( const String fileName )
 {
-   int size = fileName. getLength();
+   const int size = fileName.getLength();
    int i = 1;
-   while( fileName. getString()[ size - i ] != '.' && size > i  ) i ++ ;
-   String result;
-   result.setString( fileName. getString(), size - i + 1 );
-   return result;
+   while( fileName[ size - i ] != '.' && size > i ) i++;
+   return fileName.substr( size - i + 1 );
 }
 
 inline void removeFileExtension( String& fileName )
 {
-   int size = fileName. getLength();
+   const int size = fileName.getLength();
    int i = 1;
-   while( fileName. getString()[ size - i ] != '.' && size > i  ) i ++ ;
-   fileName. setString( fileName. getString(), 0, i );
+   while( fileName[ size - i ] != '.' && size > i ) i++;
+   fileName = fileName.substr( 0, size - i + 1 );
 }
 
 } // namespace TNL

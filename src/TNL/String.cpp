@@ -8,46 +8,19 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <cstring>
-#include <string.h>
 #include <TNL/String.h>
 #include <TNL/Assert.h>
 #include <TNL/File.h>
 #include <TNL/Math.h>
-#ifdef USE_MPI
-   #include <mpi.h>
-#endif
+//#ifdef USE_MPI
+//   #include <mpi.h>
+//#endif
 
 namespace TNL {
-
-const unsigned int STRING_PAGE = 256;
-
-String::String()
-   : string( nullptr ), length( 0 )
-{
-   setString( nullptr );
-}
-
-String::String( const char* c, int prefix_cut_off, int sufix_cut_off )
-   : string( nullptr ), length( 0 )
-{
-   setString( c, prefix_cut_off, sufix_cut_off );
-}
-
-String::String( const String& str )
-   : string( nullptr ), length( 0 )
-{
-   setString( str.getString() );
-}
 
 String String::getType()
 {
    return String( "String" );
-}
-
-String::~String()
-{
-   if( string ) delete[] string;
 }
 
 int String::getLength() const
@@ -57,178 +30,47 @@ int String::getLength() const
 
 int String::getSize() const
 {
-   return strlen( string );
+   return this->size();
 }
 
 int String::getAllocatedSize() const
 {
-   return length;
+   return this->capacity();
 }
 
 void String::setSize( int size )
 {
    TNL_ASSERT_GE( size, 0, "string size must be non-negative" );
-   const int _length = STRING_PAGE * ( size / STRING_PAGE + 1 );
-   TNL_ASSERT_GE( _length, 0, "_length size must be non-negative" );
-   if( length != _length ) {
-      if( string ) {
-         delete[] string;
-         string = nullptr;
-      }
-      string = new char[ _length ];
-      length = _length;
-   }
-}
-
-void String::setString( const char* c, int prefix_cut_off, int sufix_cut_off )
-{
-   if( ! c ) {
-      if( ! string )
-         setSize( 1 );
-      string[ 0 ] = 0;
-      return;
-   }
-   const int c_len = ( int ) strlen( c );
-   const int _length = max( 0, c_len - prefix_cut_off - sufix_cut_off );
-
-   if( length < _length || length == 0 )
-      setSize( _length );
-   TNL_ASSERT( string, );
-   memcpy( string, c + min( c_len, prefix_cut_off ), _length * sizeof( char ) );
-   string[ _length ] = 0;
+   this->reserve( size );
 }
 
 const char* String::getString() const
 {
-   return string;
-}
-
-char* String::getString()
-{
-   return string;
+   return this->c_str();
 }
 
 
 const char& String::operator[]( int i ) const
 {
-   TNL_ASSERT( i >= 0 && i < length,
+   TNL_ASSERT( i >= 0 && i < getLength(),
                std::cerr << "Accessing char outside the string." );
-   return string[ i ];
+   return std::string::operator[]( i );
 }
 
 char& String::operator[]( int i )
 {
-   TNL_ASSERT( i >= 0 && i < length,
+   TNL_ASSERT( i >= 0 && i < getLength(),
                std::cerr << "Accessing char outside the string." );
-   return string[ i ];
-}
-
-
-/****
- * Operators for C strings
- */
-String& String::operator=( const char* str )
-{
-   setString( str );
-   return *this;
-}
-
-String& String::operator+=( const char* str )
-{
-   if( str )
-   {
-      const int len1 = strlen( string );
-      const int len2 = strlen( str );
-      if( len1 + len2 < length )
-         memcpy( string + len1, str, sizeof( char ) * ( len2 + 1 ) );
-      else
-      {
-         char* tmp_string = string;
-         length = STRING_PAGE * ( ( len1 + len2 ) / STRING_PAGE + 1 );
-         string = new char[ length ];
-         memcpy( string, tmp_string, sizeof( char ) * len1 );
-         memcpy( string + len1, str, sizeof( char ) * ( len2 + 1 ) );
-      }
-   }
-   return *this;
-}
-
-String String::operator+( const char* str ) const
-{
-   return String( *this ) += str;
-}
-
-bool String::operator==( const char* str ) const
-{
-   TNL_ASSERT( string && str, );
-   return strcmp( string, str ) == 0;
-}
-
-bool String::operator!=( const char* str ) const
-{
-   return ! operator==( str );
-}
-
-
-/****
- * Operators for Strings
- */
-String& String::operator=( const String& str )
-{
-   setString( str.getString() );
-   return *this;
-}
-
-String& String::operator+=( const String& str )
-{
-   return operator+=( str.getString() );
-}
-
-String String::operator+( const String& str ) const
-{
-   return String( *this ) += str;
-}
-
-bool String::operator==( const String& str ) const
-{
-   TNL_ASSERT( string && str.string, );
-   return strcmp( string, str.string ) == 0;
-}
-
-bool String::operator!=( const String& str ) const
-{
-   return ! operator==( str );
+   return std::string::operator[]( i );
 }
 
 
 /****
  * Operators for single characters
  */
-String& String::operator=( char str )
+String& String::operator+=( char str )
 {
-   string[ 0 ] = str;
-   string[ 1 ] = 0;
-   return *this;
-}
-
-String& String::operator+=( const char str )
-{
-   const int len1 = strlen( string );
-   if( len1 + 1 < length )
-   {
-      string[ len1 ] = str;
-      string[ len1 + 1 ] = 0;
-   }
-   else
-   {
-      char* tmp_string = string;
-      length += STRING_PAGE;
-      string = new char[ length ];
-      memcpy( string, tmp_string, sizeof( char ) * len1 );
-      string[ len1 ] = str;
-      string[ len1 + 1 ] = 0;
-   }
-
+   std::string::operator+=( str );
    return *this;
 }
 
@@ -239,7 +81,7 @@ String String::operator+( char str ) const
 
 bool String::operator==( char str ) const
 {
-   return *this == convertToString( str );
+   return std::string( *this ) == std::string( 1, str );
 }
 
 bool String::operator!=( char str ) const
@@ -248,10 +90,84 @@ bool String::operator!=( char str ) const
 }
 
 
+/****
+ * Operators for C strings
+ */
+String& String::operator+=( const char* str )
+{
+   std::string::operator+=( str );
+   return *this;
+}
+
+String String::operator+( const char* str ) const
+{
+   return String( *this ) += str;
+}
+
+bool String::operator==( const char* str ) const
+{
+   return std::string( *this ) == str;
+}
+
+bool String::operator!=( const char* str ) const
+{
+   return ! operator==( str );
+}
+
+
+/****
+ * Operators for std::string
+ */
+String& String::operator+=( const std::string& str )
+{
+   std::string::operator+=( str );
+   return *this;
+}
+
+String String::operator+( const std::string& str ) const
+{
+   return String( *this ) += str;
+}
+
+bool String::operator==( const std::string& str ) const
+{
+   return std::string( *this ) == str;
+}
+
+bool String::operator!=( const std::string& str ) const
+{
+   return ! operator==( str );
+}
+
+
+/****
+ * Operators for String
+ */
+String& String::operator+=( const String& str )
+{
+   std::string::operator+=( str );
+   return *this;
+}
+
+String String::operator+( const String& str ) const
+{
+   return String( *this ) += str;
+}
+
+bool String::operator==( const String& str ) const
+{
+   return std::string( *this ) == str;
+}
+
+bool String::operator!=( const String& str ) const
+{
+   return ! operator==( str );
+}
+
+
 String::operator bool () const
 {
-   if( string[ 0 ] ) return true;
-   return false;
+   return getLength();
 }
 
 bool String::operator!() const
@@ -263,56 +179,19 @@ String String::replace( const String& pattern,
                         const String& replaceWith,
                         int count ) const
 {
-   const int length = this->getLength();
-   const int patternLength = pattern.getLength();
-   const int replaceWithLength = replaceWith.getLength();
+   std::string newString = *this;
 
-   int patternPointer = 0;
-   int occurrences = 0;
-   for( int i = 0; i < length; i++ )
-   {
-      if( this->string[ i ] == pattern[ patternPointer ] )
-         patternPointer++;
-      if( patternPointer == patternLength )
-      {
-         occurrences++;
-         patternPointer = 0;
-      }
+   std::size_t index = 0;
+   for( int i = 0; i < count || count == 0; i++ ) {
+      // locate the substring to replace
+      index = newString.find( pattern, index );
+      if( index == std::string::npos )
+         break;
+
+      // make the replacement
+      newString.replace( index, pattern.getLength(), replaceWith );
+      index += replaceWith.getLength();
    }
-   if( count > 0 && occurrences > count )
-      occurrences = count;
-
-   String newString;
-   const int newStringLength = length + occurrences * ( replaceWithLength - patternLength );
-   newString.setSize( newStringLength );
-
-   int newStringHead = 0;
-   patternPointer = 0;
-   occurrences = 0;
-   for( int i = 0; i < length; i++ ) {
-      // copy current character
-      newString[ newStringHead++ ] = this->string[ i ];
-
-      // check if pattern matches
-      if( this->string[ i ] == pattern[ patternPointer ] )
-         patternPointer++;
-      else
-         patternPointer = 0;
-
-      // handle full match
-      if( patternPointer == patternLength ) {
-         // skip unwanted replacements
-         if( count == 0 || occurrences < count ) {
-            newStringHead -= patternLength;
-            for( int j = 0; j < replaceWithLength; j++ )
-               newString[ newStringHead++ ] = replaceWith[ j ];
-         }
-         occurrences++;
-         patternPointer = 0;
-      }
-   }
-
-   newString[ newStringHead ] = 0;
 
    return newString;
 }
@@ -330,7 +209,7 @@ String::strip( char strip ) const
       sufix_cut_off++;
 
    if( prefix_cut_off + sufix_cut_off < getLength() )
-      return String( getString(), prefix_cut_off, sufix_cut_off );
+      return substr( prefix_cut_off, getLength() - prefix_cut_off - sufix_cut_off );
    return "";
 }
 
@@ -354,30 +233,27 @@ std::vector< String > String::split( const char separator, bool skipEmpty ) cons
 
 bool String::save( File& file ) const
 {
-   TNL_ASSERT( string,
-              std::cerr << "string = " << string );
-
-   int len = strlen( string );
+   const int len = getLength();
    if( ! file.write( &len ) )
       return false;
-   if( ! file.write( string, len ) )
+   if( ! file.write( this->c_str(), len ) )
       return false;
    return true;
 }
 
 bool String::load( File& file )
 {
-   int _length;
-   if( ! file.read( &_length ) ) {
+   int length;
+   if( ! file.read( &length ) ) {
       std::cerr << "I was not able to read String length." << std::endl;
       return false;
    }
-   setSize( _length );
-   if( _length && ! file.read( string, _length ) ) {
+   char buffer[ length ];
+   if( length && ! file.read( buffer, length ) ) {
       std::cerr << "I was not able to read a String with a length " << length << "." << std::endl;
       return false;
    }
-   string[ _length ] = 0;
+   this->assign( buffer, length );
    return true;
 }
 
@@ -408,14 +284,6 @@ bool String::load( File& file )
 #endif
 }
 */
-bool String :: getLine( std::istream& stream )
-{
-   std::string str;
-   getline( stream, str );
-   this->setString( str.c_str() );
-   if( ! ( *this ) ) return false;
-   return true;
-}
 
 String operator+( char string1, const String& string2 )
 {
@@ -423,6 +291,11 @@ String operator+( char string1, const String& string2 )
 }
 
 String operator+( const char* string1, const String& string2 )
+{
+   return String( string1 ) + string2;
+}
+
+String operator+( const std::string& string1, const String& string2 )
 {
    return String( string1 ) + string2;
 }

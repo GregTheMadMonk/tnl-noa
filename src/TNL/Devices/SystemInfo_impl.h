@@ -193,7 +193,7 @@ SystemInfo::parseCPUInfo( void )
       {
          i = strlen( "model name" );
          while( line[ i ] != ':' && line[ i ] ) i ++;
-         info.CPUModelName.setString( &line[ i + 1 ] );
+         info.CPUModelName = &line[ i + 1 ];
          continue;
       }
       if( strncmp( line, "cpu cores", strlen( "cpu cores" ) ) == 0 )

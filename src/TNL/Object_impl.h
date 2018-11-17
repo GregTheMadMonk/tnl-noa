@@ -146,7 +146,7 @@ parseObjectType( const String& objectType )
     */
    while( i < objectTypeLength && objectType[ i ] != '<' )
       i++;
-   String objectName( objectType.getString(), 0, objectTypeLength - i );
+   String objectName = objectType.substr( 0, i );
    parsedObjectType.push_back( objectName );
    i++;
 
@@ -170,7 +170,7 @@ parseObjectType( const String& objectType )
             if( buffer != "" )
             {
                parsedObjectType.push_back( buffer.strip( ' ' ) );
-               buffer.setString( "" );
+               buffer.clear();
             }
          }
          else buffer += objectType[ i ];

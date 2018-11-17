@@ -12,6 +12,8 @@
 
 #include <vector>
 
+#include <TNL/String.h>
+
 namespace TNL {
 namespace Config {
 
@@ -19,14 +21,14 @@ template< typename EntryType >
 inline String getUIEntryType() { return "Unknown type."; };
 
 template<> inline String getUIEntryType< String >() { return "string"; };
-template<> inline String getUIEntryType< bool >()      { return "bool"; };
-template<> inline String getUIEntryType< int >()       { return "integer"; };
-template<> inline String getUIEntryType< double >()    { return "real"; };
+template<> inline String getUIEntryType< bool >()   { return "bool"; };
+template<> inline String getUIEntryType< int >()    { return "integer"; };
+template<> inline String getUIEntryType< double >() { return "real"; };
 
 template<> inline String getUIEntryType< std::vector< String > >() { return "list of string"; };
-template<> inline String getUIEntryType< std::vector< bool > >()      { return "list of bool"; };
-template<> inline String getUIEntryType< std::vector< int > >()       { return "list of integer"; };
-template<> inline String getUIEntryType< std::vector< double > >()    { return "list of real"; };
+template<> inline String getUIEntryType< std::vector< bool > >()   { return "list of bool"; };
+template<> inline String getUIEntryType< std::vector< int > >()    { return "list of integer"; };
+template<> inline String getUIEntryType< std::vector< double > >() { return "list of real"; };
 
 struct ConfigEntryType
 {
@@ -34,17 +36,17 @@ struct ConfigEntryType
 
    bool list_entry;
 
-   ConfigEntryType() {}
+   ConfigEntryType() = default;
 
    ConfigEntryType( const String& _basic_type,
-                     const bool _list_entry )
+                    const bool _list_entry )
    : basic_type( _basic_type ),
      list_entry( _list_entry )
    {}
 
    void Reset()
    {
-      basic_type. setString( 0 );
+      basic_type.clear();
       list_entry = false;
    }
 };
