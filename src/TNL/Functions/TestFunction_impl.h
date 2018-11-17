@@ -960,45 +960,5 @@ TestFunction< FunctionDimension, Real, Device >::
    deleteFunctions();
 }
 
-
-#ifdef TEMPLATE_EXPLICIT_INSTANTIATION
-
-#ifdef INSTANTIATE_FLOAT
-extern template class TestFunction< 1, float, Devices::Host >;
-extern template class TestFunction< 2, float, Devices::Host >;
-extern template class TestFunction< 3, float, Devices::Host >;
-#endif
-
-extern template class TestFunction< 1, double, Devices::Host >;
-extern template class TestFunction< 2, double, Devices::Host >;
-extern template class TestFunction< 3, double, Devices::Host >;
-
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template class TestFunction< 1, long double, Devices::Host >;
-extern template class TestFunction< 2, long double, Devices::Host >;
-extern template class TestFunction< 3, long double, Devices::Host >;
-#endif
-
-#ifdef HAVE_CUDA
-#ifdef INSTANTIATE_FLOAT
-extern template class TestFunction< 1, float, Devices::Cuda>;
-extern template class TestFunction< 2, float, Devices::Cuda >;
-extern template class TestFunction< 3, float, Devices::Cuda >;
-#endif
-
-extern template class TestFunction< 1, double, Devices::Cuda >;
-extern template class TestFunction< 2, double, Devices::Cuda >;
-extern template class TestFunction< 3, double, Devices::Cuda >;
-
-#ifdef INSTANTIATE_LONG_DOUBLE
-extern template class TestFunction< 1, long double, Devices::Cuda >;
-extern template class TestFunction< 2, long double, Devices::Cuda >;
-extern template class TestFunction< 3, long double, Devices::Cuda >;
-#endif
-#endif
-
-#endif
-
 } // namespace Functions
 } // namespace TNL
-
