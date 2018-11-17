@@ -5,8 +5,7 @@ if( HAVE_GMP )
    TARGET_COMPILE_OPTIONS( MultiPrecisionTest PRIVATE ${CXX_TESTS_FLAGS} )
    TARGET_LINK_LIBRARIES( MultiPrecisionTest
                               ${GTEST_BOTH_LIBRARIES}
-                              ${GMP_LIBRARIES}
-                              tnl )
+                              ${GMP_LIBRARIES} )
    ADD_TEST( MultiPrecisionTest ${EXECUTABLE_OUTPUT_PATH}/MultiPrecisionTest${CMAKE_EXECUTABLE_SUFFIX} )
 endif( HAVE_GMP )
 
@@ -14,15 +13,11 @@ endif( HAVE_GMP )
 # TODO: Fix the following tests                           
 #ADD_EXECUTABLE( QuadTest QuadTest.cpp )
 #TARGET_COMPILE_OPTIONS( QuadTest PRIVATE ${CXX_TESTS_FLAGS} )
-#TARGET_LINK_LIBRARIES( QuadTest
-#                           ${GTEST_BOTH_LIBRARIES}
-#                           tnl )
+#TARGET_LINK_LIBRARIES( QuadTest ${GTEST_BOTH_LIBRARIES} )
                            
 #ADD_EXECUTABLE( DoubleTest DoubleTest.cpp )
 #TARGET_COMPILE_OPTIONS( DoubleTest PRIVATE ${CXX_TESTS_FLAGS} )
-#TARGET_LINK_LIBRARIES( DoubleTest
-#                           ${GTEST_BOTH_LIBRARIES}
-#                           tnl )
+#TARGET_LINK_LIBRARIES( DoubleTest ${GTEST_BOTH_LIBRARIES} )
                            
 
 #ADD_TEST( QuadTest ${EXECUTABLE_OUTPUT_PATH}/QuadTest${CMAKE_EXECUTABLE_SUFFIX} )

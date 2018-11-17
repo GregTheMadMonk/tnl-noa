@@ -7,10 +7,8 @@ set( tnl_inviscid_flow_sw_SOURCES
                
 IF( BUILD_CUDA )
    CUDA_ADD_EXECUTABLE(tnl-euler-sw euler.cu)
-   target_link_libraries (tnl-euler-sw tnl )
 ELSE(  BUILD_CUDA )               
    ADD_EXECUTABLE(tnl-euler-sw${debugExt} euler.cpp)     
-   target_link_libraries (tnl-euler-sw tnl )
 ENDIF( BUILD_CUDA )
 
 

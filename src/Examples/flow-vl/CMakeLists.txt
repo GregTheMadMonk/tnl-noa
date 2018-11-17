@@ -7,10 +7,8 @@ set( tnl_flow_vl_SOURCES
                
 IF( BUILD_CUDA )
    CUDA_ADD_EXECUTABLE(tnl-navier-stokes-vl navierStokes.cu)
-   target_link_libraries (tnl-navier-stokes-vl tnl )
 ELSE(  BUILD_CUDA )               
    ADD_EXECUTABLE(tnl-navier-stokes-vl navierStokes.cpp)     
-   target_link_libraries (tnl-navier-stokes-vl tnl )
 ENDIF( BUILD_CUDA )
 
 

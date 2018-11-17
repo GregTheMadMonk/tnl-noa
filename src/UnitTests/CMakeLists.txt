@@ -6,47 +6,37 @@ ADD_SUBDIRECTORY( Pointers )
 
 ADD_EXECUTABLE( AssertTest AssertTest.cpp )
 TARGET_COMPILE_OPTIONS( AssertTest PRIVATE ${CXX_TESTS_FLAGS} )
-TARGET_LINK_LIBRARIES( AssertTest
-                           ${GTEST_BOTH_LIBRARIES}
-                           tnl )
+TARGET_LINK_LIBRARIES( AssertTest ${GTEST_BOTH_LIBRARIES} )
 
 if( BUILD_CUDA )
    CUDA_ADD_EXECUTABLE( AssertCudaTest AssertCudaTest.cu OPTIONS ${CXX_TESTS_FLAGS} )
-   TARGET_LINK_LIBRARIES( AssertCudaTest
-                              ${GTEST_BOTH_LIBRARIES}
-                              tnl )
+   TARGET_LINK_LIBRARIES( AssertCudaTest ${GTEST_BOTH_LIBRARIES} )
 endif()
 
 if( BUILD_CUDA )
    CUDA_ADD_EXECUTABLE( FileTest FileTest.cu OPTIONS ${CXX_TESTS_FLAGS} )
-   TARGET_LINK_LIBRARIES( FileTest
-                              ${GTEST_BOTH_LIBRARIES}
-                              tnl )
+   TARGET_LINK_LIBRARIES( FileTest ${GTEST_BOTH_LIBRARIES} )
 else()
    ADD_EXECUTABLE( FileTest FileTest.cpp )
    TARGET_COMPILE_OPTIONS( FileTest PRIVATE ${CXX_TESTS_FLAGS} )
-   TARGET_LINK_LIBRARIES( FileTest
-                              ${GTEST_BOTH_LIBRARIES}
-                              tnl )
+   TARGET_LINK_LIBRARIES( FileTest ${GTEST_BOTH_LIBRARIES} )
 endif()
 
 ADD_EXECUTABLE( FileNameTest FileNameTest.cpp )
 TARGET_COMPILE_OPTIONS( FileNameTest PRIVATE ${CXX_TESTS_FLAGS} )
-TARGET_LINK_LIBRARIES( FileNameTest ${GTEST_BOTH_LIBRARIES} tnl )
+TARGET_LINK_LIBRARIES( FileNameTest ${GTEST_BOTH_LIBRARIES} )
 
 ADD_EXECUTABLE( StringTest StringTest.cpp )
 TARGET_COMPILE_OPTIONS( StringTest PRIVATE ${CXX_TESTS_FLAGS} )
-TARGET_LINK_LIBRARIES( StringTest ${GTEST_BOTH_LIBRARIES} tnl )
+TARGET_LINK_LIBRARIES( StringTest ${GTEST_BOTH_LIBRARIES} )
 
 ADD_EXECUTABLE( ObjectTest ObjectTest.cpp )
 TARGET_COMPILE_OPTIONS( ObjectTest PRIVATE ${CXX_TESTS_FLAGS} )
-TARGET_LINK_LIBRARIES( ObjectTest ${GTEST_BOTH_LIBRARIES} tnl )
+TARGET_LINK_LIBRARIES( ObjectTest ${GTEST_BOTH_LIBRARIES} )
 
 ADD_EXECUTABLE( SaveAndLoadMeshfunctionTest SaveAndLoadMeshfunctionTest.cpp )
 TARGET_COMPILE_OPTIONS( SaveAndLoadMeshfunctionTest PRIVATE ${CXX_TESTS_FLAGS} )
-TARGET_LINK_LIBRARIES( SaveAndLoadMeshfunctionTest
-                           ${GTEST_BOTH_LIBRARIES} 
-                           tnl )
+TARGET_LINK_LIBRARIES( SaveAndLoadMeshfunctionTest ${GTEST_BOTH_LIBRARIES} )
 
 ADD_TEST( AssertTest ${EXECUTABLE_OUTPUT_PATH}/AssertTest${CMAKE_EXECUTABLE_SUFFIX} )
 if( BUILD_CUDA )

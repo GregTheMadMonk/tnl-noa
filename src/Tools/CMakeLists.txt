@@ -5,31 +5,18 @@ CONFIGURE_FILE( "tnl-link.in" "${PROJECT_TOOLS_PATH}/tnl-link" @ONLY )
 CONFIGURE_FILE( "tnl-bindir.in" "${PROJECT_TOOLS_PATH}/tnl-bindir" @ONLY )
 
 ADD_EXECUTABLE(tnl-grid-setup tnl-grid-setup.cpp )
-target_link_libraries (tnl-grid-setup tnl )
-
 ADD_EXECUTABLE(tnl-grid-to-mesh tnl-grid-to-mesh.cpp )
-target_link_libraries (tnl-grid-to-mesh tnl )
-
 ADD_EXECUTABLE(tnl-mesh-converter tnl-mesh-converter.cpp )
-target_link_libraries (tnl-mesh-converter tnl )
-
 ADD_EXECUTABLE(tnl-init tnl-init.cpp )
-target_link_libraries (tnl-init tnl )
-
 ADD_EXECUTABLE(tnl-view tnl-view.cpp )
-target_link_libraries (tnl-view tnl )
-
 ADD_EXECUTABLE(tnl-diff tnl-diff.cpp )
-target_link_libraries (tnl-diff tnl )
+ADD_EXECUTABLE(tnl-lattice-init tnl-lattice-init.cpp )
 
 ADD_EXECUTABLE(tnl-image-converter tnl-image-converter.cpp )
-target_link_libraries (tnl-image-converter tnl ${PNG_LIBRARIES} ${JPEG_LIBRARIES} )
+target_link_libraries(tnl-image-converter ${PNG_LIBRARIES} ${JPEG_LIBRARIES} )
 
 ADD_EXECUTABLE(tnl-dicom-reader tnl-dicom-reader.cpp )
-target_link_libraries (tnl-dicom-reader tnl ${DCMTK_LIBRARIES} )
-
-ADD_EXECUTABLE(tnl-lattice-init tnl-lattice-init.cpp )
-target_link_libraries (tnl-lattice-init tnl )
+target_link_libraries(tnl-dicom-reader ${DCMTK_LIBRARIES} )
 
 IF( BUILD_CUDA )
    CUDA_ADD_EXECUTABLE( tnl-cuda-arch tnl-cuda-arch.cu )
