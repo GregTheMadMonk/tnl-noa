@@ -1,5 +1,5 @@
 /***************************************************************************
-                          SystemInfo.cpp  -  description
+                          SystemInfo_impl.h  -  description
                              -------------------
     begin                : Jul 8, 2018
     copyright            : (C) 2018 by Tomas Oberhuber et al.
@@ -7,6 +7,8 @@
  ***************************************************************************/
 
 /* See Copyright Notice in tnl/Copyright */
+
+#pragma once
 
 #include <set>
 #include <iomanip>
@@ -17,17 +19,11 @@
 #include <sys/stat.h>
 
 #include <TNL/Devices/SystemInfo.h>
-#include <TNL/Logger.h>
 
 namespace TNL {
 namespace Devices {
 
-int SystemInfo::numberOfProcessors( 0 );
-String SystemInfo::CPUModelName( "" );
-int SystemInfo::CPUThreads( 0 );
-int SystemInfo::CPUCores( 0 );
-
-String
+inline String
 SystemInfo::getHostname( void )
 {
    char host_name[ 256 ];
@@ -35,7 +31,7 @@ SystemInfo::getHostname( void )
    return String( host_name );
 }
 
-String
+inline String
 SystemInfo::getArchitecture( void )
 {
    utsname uts;
@@ -43,7 +39,7 @@ SystemInfo::getArchitecture( void )
    return String( uts.machine );
 }
 
-String
+inline String
 SystemInfo::getSystemName( void )
 {
    utsname uts;
@@ -51,7 +47,7 @@ SystemInfo::getSystemName( void )
    return String( uts.sysname );
 }
 
-String
+inline String
 SystemInfo::getSystemRelease( void )
 {
    utsname uts;
@@ -59,7 +55,7 @@ SystemInfo::getSystemRelease( void )
    return String( uts.release );
 }
 
-String
+inline String
 SystemInfo::getCurrentTime( const char* format )
 {
    const std::time_t time_since_epoch = std::time( nullptr );
@@ -70,46 +66,58 @@ SystemInfo::getCurrentTime( const char* format )
 }
 
 
-int
+inline int
 SystemInfo::getNumberOfProcessors( void )
 {
-   if( numberOfProcessors == 0 )
-      parseCPUInfo();
+   static int numberOfProcessors = 0;
+   if( numberOfProcessors == 0 ) {
+      CPUInfo info = parseCPUInfo();
+      numberOfProcessors = info.numberOfProcessors;
+   }
    return numberOfProcessors;
 }
 
-String
+inline String
 SystemInfo::getOnlineCPUs( void )
 {
    std::string online = readFile< std::string >( "/sys/devices/system/cpu/online" );
    return String( online.c_str() );
 }
 
-int
+inline int
 SystemInfo::getNumberOfCores( int cpu_id )
 {
-   if( CPUCores == 0 )
-      parseCPUInfo();
+   static int CPUCores = 0;
+   if( CPUCores == 0 ) {
+      CPUInfo info = parseCPUInfo();
+      CPUCores = info.CPUCores;
+   }
    return CPUCores;
 }
 
-int
+inline int
 SystemInfo::getNumberOfThreads( int cpu_id )
 {
-   if( CPUThreads == 0 )
-      parseCPUInfo();
+   static int CPUThreads = 0;
+   if( CPUThreads == 0 ) {
+      CPUInfo info = parseCPUInfo();
+      CPUThreads = info.CPUThreads;
+   }
    return CPUThreads;
 }
 
-String
+inline String
 SystemInfo::getCPUModelName( int cpu_id )
 {
-   if( CPUModelName == "" )
-      parseCPUInfo();
+   static String CPUModelName;
+   if( CPUModelName == "" ) {
+      CPUInfo info = parseCPUInfo();
+      CPUModelName = info.CPUModelName;
+   }
    return CPUModelName;
 }
 
-int
+inline int
 SystemInfo::getCPUMaxFrequency( int cpu_id )
 {
    String fileName( "/sys/devices/system/cpu/cpu" );
@@ -117,7 +125,7 @@ SystemInfo::getCPUMaxFrequency( int cpu_id )
    return readFile< int >( fileName );
 }
 
-CacheSizes
+inline CacheSizes
 SystemInfo::getCPUCacheSizes( int cpu_id )
 {
    String directory( "/sys/devices/system/cpu/cpu" );
@@ -148,59 +156,23 @@ SystemInfo::getCPUCacheSizes( int cpu_id )
    return sizes;
 }
 
-void
-SystemInfo::
-writeDeviceInfo( Logger& logger )
+inline size_t
+SystemInfo::getFreeMemory()
 {
-// compiler detection macros:
-// http://nadeausoftware.com/articles/2012/10/c_c_tip_how_detect_compiler_name_and_version_using_compiler_predefined_macros
-// https://docs.nvidia.com/cuda/cuda-compiler-driver-nvcc/index.html#compilation-phases
-#if defined(__NVCC__)
-   #define TNL_STRINGIFY(x) #x
-   const char* compiler_name = "Nvidia NVCC (" TNL_STRINGIFY(__CUDACC_VER_MAJOR__) "." TNL_STRINGIFY(__CUDACC_VER_MINOR__) "." TNL_STRINGIFY(__CUDACC_VER_BUILD__) ")";
-   #undef TNL_STRINGIFY
-#elif defined(__clang__)
-   const char* compiler_name = "Clang/LLVM (" __VERSION__ ")";
-#elif defined(__ICC) || defined(__INTEL_COMPILER)
-   const char* compiler_name = "Intel ICPC (" __VERSION__ ")";
-#elif defined(__GNUC__) || defined(__GNUG__)
-   const char* compiler_name = "GNU G++ (" __VERSION__ ")";
-#else
-   const char* compiler_name = "(unknown)";
-#endif
-
-   logger.writeParameter< String >( "Host name:", getHostname() );
-   logger.writeParameter< String >( "System:", getSystemName() );
-   logger.writeParameter< String >( "Release:", getSystemRelease() );
-   logger.writeParameter< String >( "Architecture:", getArchitecture() );
-   logger.writeParameter< String >( "TNL compiler:", compiler_name );
-   // FIXME: generalize for multi-socket systems, here we consider only the first found CPU
-   const int cpu_id = 0;
-   const int threads = getNumberOfThreads( cpu_id );
-   const int cores = getNumberOfCores( cpu_id );
-   int threadsPerCore = 0;
-   if( cores > 0 )
-      threadsPerCore = threads / cores;
-   logger.writeParameter< String >( "CPU info", String("") );
-   logger.writeParameter< String >( "Model name:", getCPUModelName( cpu_id ), 1 );
-   logger.writeParameter< int >( "Cores:", cores, 1 );
-   logger.writeParameter< int >( "Threads per core:", threadsPerCore, 1 );
-   logger.writeParameter< float >( "Max clock rate (in MHz):", getCPUMaxFrequency( cpu_id ) / 1000, 1 );
-   CacheSizes cacheSizes = getCPUCacheSizes( cpu_id );
-   String cacheInfo = convertToString( cacheSizes.L1data ) + ", "
-                       + convertToString( cacheSizes.L1instruction ) + ", "
-                       + convertToString( cacheSizes.L2 ) + ", "
-                       + convertToString( cacheSizes.L3 );
-   logger.writeParameter< String >( "Cache (L1d, L1i, L2, L3):", cacheInfo, 1 );
+   long pages = sysconf(_SC_PHYS_PAGES);
+   long page_size = sysconf(_SC_PAGE_SIZE);
+   return pages * page_size;
 }
 
-void
+
+inline SystemInfo::CPUInfo
 SystemInfo::parseCPUInfo( void )
 {
+   CPUInfo info;
    std::ifstream file( "/proc/cpuinfo" );
    if( ! file ) {
       std::cerr << "Unable to read information from /proc/cpuinfo." << std::endl;
-      return;
+      return info;
    }
 
    char line[ 1024 ];
@@ -221,32 +193,26 @@ SystemInfo::parseCPUInfo( void )
       {
          i = strlen( "model name" );
          while( line[ i ] != ':' && line[ i ] ) i ++;
-         CPUModelName.setString( &line[ i + 1 ] );
+         info.CPUModelName.setString( &line[ i + 1 ] );
          continue;
       }
       if( strncmp( line, "cpu cores", strlen( "cpu cores" ) ) == 0 )
       {
          i = strlen( "cpu MHz" );
          while( line[ i ] != ':' && line[ i ] ) i ++;
-         CPUCores = atoi( &line[ i + 1 ] );
+         info.CPUCores = atoi( &line[ i + 1 ] );
          continue;
       }
       if( strncmp( line, "siblings", strlen( "siblings" ) ) == 0 )
       {
          i = strlen( "siblings" );
          while( line[ i ] != ':' && line[ i ] ) i ++;
-         CPUThreads = atoi( &line[ i + 1 ] );
+         info.CPUThreads = atoi( &line[ i + 1 ] );
       }
    }
-   numberOfProcessors = processors.size();
-}
+   info.numberOfProcessors = processors.size();
 
-
-size_t SystemInfo::getFreeMemory()
-{
-   long pages = sysconf(_SC_PHYS_PAGES);
-   long page_size = sysconf(_SC_PAGE_SIZE);
-   return pages * page_size;
+   return info;
 }
 
 } // namespace Devices
