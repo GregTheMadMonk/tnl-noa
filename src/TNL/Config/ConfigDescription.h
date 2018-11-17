@@ -10,20 +10,11 @@
 
 #pragma once
 
+#include <iomanip>
+#include <string>
 #include <vector>
 #include <memory>
-
-// std::make_unique does not exist until C++14
-// https://stackoverflow.com/a/9657991
-#if __cplusplus < 201402L
-namespace std {
-   template<typename T, typename ...Args>
-   std::unique_ptr<T> make_unique( Args&& ...args )
-   {
-      return std::unique_ptr<T>( new T( std::forward<Args>(args)... ) );
-   }
-}
-#endif
+#include "make_unique.h"
 
 #include <TNL/Assert.h>
 #include <TNL/String.h>
@@ -32,11 +23,10 @@ namespace std {
 #include <TNL/Config/ConfigEntry.h>
 #include <TNL/Config/ConfigEntryList.h>
 #include <TNL/Config/ConfigDelimiter.h>
+#include <TNL/Config/ParameterContainer.h>
 
 namespace TNL {
 namespace Config {
-
-class ParameterContainer;
 
 class ConfigDescription
 {
@@ -245,21 +235,130 @@ public:
     * If there is missing entry with defined default value in the Config::ParameterContainer it is going to be added.
     * \param parameter_container Name of the ParameterContainer object.
     */
-   void addMissingEntries( Config::ParameterContainer& parameter_container ) const;
+   void addMissingEntries( Config::ParameterContainer& parameter_container ) const
+   {
+      const int size = entries.size();
+      for( int i = 0; i < size; i++ )
+      {
+         const char* entry_name = entries[ i ]->name.getString();
+         if( entries[ i ]->hasDefaultValue &&
+             ! parameter_container.checkParameter( entry_name ) )
+         {
+            if( entries[ i ]->getEntryType() == "String" )
+            {
+               ConfigEntry< String >& entry = dynamic_cast< ConfigEntry< String >& >( *entries[ i ] );
+               parameter_container.addParameter< String >( entry_name, entry.defaultValue );
+               continue;
+            }
+            if( entries[ i ]->getEntryType() == "bool" )
+            {
+               ConfigEntry< bool >& entry = dynamic_cast< ConfigEntry< bool >& >( *entries[ i ] );
+               parameter_container.addParameter< bool >( entry_name, entry.defaultValue );
+               continue;
+            }
+            if( entries[ i ]->getEntryType() == "int" )
+            {
+               ConfigEntry< int >& entry = dynamic_cast< ConfigEntry< int >& >( *entries[ i ] );
+               parameter_container.addParameter< int >( entry_name, entry.defaultValue );
+               continue;
+            }
+            if( entries[ i ]->getEntryType() == "double" )
+            {
+               ConfigEntry< double >& entry = dynamic_cast< ConfigEntry< double >& >( *entries[ i ] );
+               parameter_container.addParameter< double >( entry_name, entry.defaultValue );
+               continue;
+            }
+         }
+      }
+   }
 
    //! Check for all entries with the flag 'required'.
    /*! Returns false if any parameter is missing.
     */
    bool checkMissingEntries( Config::ParameterContainer& parameter_container,
                              bool printUsage,
-                             const char* programName ) const;
+                             const char* programName ) const
+   {
+      const int size = entries.size();
+      std::vector< std::string > missingParameters;
+      for( int i = 0; i < size; i++ )
+      {
+         const char* entry_name = entries[ i ] -> name.getString();
+         if( entries[ i ] -> required &&
+             ! parameter_container.checkParameter( entry_name ) )
+            missingParameters.push_back( entry_name );
+      }
+      if( missingParameters.size() > 0 )
+      {
+         std::cerr << "Some mandatory parameters are misssing. They are listed at the end. " << std::endl;
+         if( printUsage )
+            this->printUsage( programName );
+         std::cerr << "Add the following missing parameters to the command line: " << std::endl << "   ";
+         for( int i = 0; i < (int) missingParameters.size(); i++ )
+            std::cerr << "--" << missingParameters[ i ] << " ... ";
+         std::cerr << std::endl;
+         return false;
+      }
+      return true;
+   }
 
    /**
     * \brief Prints configuration description with the \e program_name at the top.
     *
     * \param program_name Name of the program
     */
-   void printUsage( const char* program_name ) const;
+   void printUsage( const char* program_name ) const
+   {
+      std::cout << "Usage of: " << program_name << std::endl << std::endl;
+      const int entries_num = entries.size();
+      int max_name_length( 0 );
+      int max_type_length( 0 );
+      for( int j = 0; j < entries_num; j++ )
+         if( ! entries[ j ]->isDelimiter() )
+         {
+            max_name_length = std::max( max_name_length,
+                        entries[ j ] -> name. getLength() );
+            max_type_length = std::max( max_type_length,
+                        entries[ j ] -> getUIEntryType().getLength() );
+         }
+      max_name_length += 2; // this is for '--'
+
+      for( int j = 0; j < entries_num; j++ )
+      {
+         if( entries[ j ]->isDelimiter() )
+         {
+            std::cout << std::endl;
+            std::cout << entries[ j ]->description;
+            std::cout << std::endl << std::endl;
+         }
+         else
+         {
+            std::cout << std::setw( max_name_length + 3 ) << String( "--" ) + entries[ j ]->name
+                 << std::setw( max_type_length + 5 ) << entries[ j ] -> getUIEntryType()
+                 << "    " << entries[ j ]->description;
+            if( entries[ j ] -> required )
+               std::cout << " *** REQUIRED ***";
+            if( entries[ j ]->hasEnumValues() )
+            {
+               std::cout << std::endl
+                    << std::setw( max_name_length + 3 ) << ""
+                    << std::setw( max_type_length + 5 ) << ""
+                    << "    ";
+               entries[ j ]->printEnumValues();
+            }
+            if( entries[ j ]->hasDefaultValue )
+            {
+               std::cout << std::endl
+                    << std::setw( max_name_length + 3 ) << ""
+                    << std::setw( max_type_length + 5 ) << ""
+                    << "    ";
+               std::cout << "- Default value is: " << entries[ j ]->printDefaultValue();
+            }
+            std::cout << std::endl;
+         }
+      }
+      std::cout << std::endl;
+   }
 
    //bool parseConfigDescription( const char* file_name );
 
@@ -270,3 +369,5 @@ protected:
 
 } //namespace Config
 } //namespace TNL
+
+#include <TNL/Config/parseCommandLine.h>

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          Config::ParameterContainer.cpp  -  description
+                          parseCommandLine.h  -  description
                              -------------------
     begin                : 2007/06/15
     copyright            : (C) 2007 by Tomas Oberhuber
@@ -8,121 +8,47 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <ctype.h>
-#include <cstring>
-#include <stdio.h>
+#pragma once
 
-#include "ParameterContainer.h"
-#include <TNL/Object.h>
+#include <cstring>
+#include <string>
+
+//#include <TNL/Object.h>
+#include <TNL/Config/ConfigDescription.h>
+#include <TNL/Config/ParameterContainer.h>
 
 namespace TNL {
-namespace Config {    
 
-bool matob( const char* value, bool& ret_val )
-{
-   if( strcasecmp( value, "yes" ) == 0 ||
-       strcasecmp( value, "true" ) == 0  )
-   {
-      ret_val =  true;
-      return true;
-   }
-   if( strcasecmp( value, "no" ) == 0 ||
-       strcasecmp( value, "false" ) == 0  )
-   {
-      ret_val = false;
-      return true;
-   }
-   return false;
-}
+std::vector< String >
+parseObjectType( const String& objectType );
 
-bool
-Config::ParameterContainer::
-checkParameter( const String& name ) const
-{
-   const int size = parameters.size();
-   for( int i = 0; i < size; i++ )
-      if( parameters[ i ]->name == name )
-         return true;
-   return false;
-}
+namespace Config {
 
-/*void ParameterContainer::MPIBcast( int root, MPI_Comm mpi_comm )
-{
-#ifdef USE_MPI
-   int i;
-   int size = parameters. getSize();
-   :: MPIBcast( size, 1, root, mpi_comm );
-   for( i = 0; i < size; i ++ )
-   {
-      if( MPIGetRank() == root )
-      {
-         tnlParameterBase* param = parameters[ i ];
-         param -> type. MPIBcast( root, MPI_COMM_WORLD );
-         param -> name. MPIBcast( root, MPI_COMM_WORLD );
-         if( param -> type == "String" )
-         {
-            ( ( tnlParameter< String >* ) param ) -> value. MPIBcast( root, mpi_comm );
-         }
-         if( param -> type == "bool" )
-         {
-            :: MPIBcast( ( ( tnlParameter< bool >* ) param ) -> value, 1, root, mpi_comm );
-         }
-         if( param -> type == "int" )
-         {
-            :: MPIBcast( ( ( tnlParameter< int >* ) param ) -> value, 1, root, mpi_comm );
-         }
-         if( param -> type == "double" )
-         {
-            :: MPIBcast( ( ( tnlParameter< double >* ) param ) -> value, 1, root, mpi_comm );
-         }
-      }
-      else
-      {
-         String param_type, param_name;
-         param_type. MPIBcast( root, MPI_COMM_WORLD );
-         param_name. MPIBcast( root, MPI_COMM_WORLD );
-         if( param_type == "mString" )
-         {
-            String val;
-            val. MPIBcast( root, mpi_comm );
-            addParameter< String >( param_name. getString(),
-                                     val );
-         }
-         if( param_type == "bool" )
-         {
-            bool val;
-            :: MPIBcast( val, 1, root, mpi_comm );
-            addParameter< bool >( param_name. getString(),
-                                  val );
-         }
-         if( param_type == "int" )
-         {
-            int val;
-            :: MPIBcast( val, 1, root, mpi_comm );
-            addParameter< int >( param_name. getString(),
-                                 val );
-         }
-         if( param_type == "double" )
-         {
-            double val;
-            :: MPIBcast( val, 1, root, mpi_comm );
-            addParameter< double >( param_name. getString(),
-                                    val );
-         }
-
-      }
-   }
-#endif
-}
-*/
-
-
-bool
+inline bool
 parseCommandLine( int argc, char* argv[],
                   const Config::ConfigDescription& config_description,
                   Config::ParameterContainer& parameters,
-                  bool printUsage )
+                  bool printUsage = true )
 {
+   auto iequals = []( const std::string& a, const std::string& b )
+   {
+      if( a.size() != b.size() )
+         return false;
+      for( unsigned int i = 0; i < a.size(); i++ )
+         if( std::tolower(a[i]) != std::tolower(b[i]) )
+            return false;
+      return true;
+   };
+
+   auto matob = [iequals]( const char* value )
+   {
+      if( iequals( value, "yes" ) || iequals( value, "true" ) )
+         return true;
+      if( iequals( value, "no" ) || iequals( value, "false" ) )
+         return true;
+      return false;
+   };
+
    int i;
    bool parse_error( false );
    for( i = 1; i < argc; i ++ )
@@ -177,13 +103,12 @@ parseCommandLine( int argc, char* argv[],
                }
                if( parsedEntryType[ 1 ] == "bool" )
                {
-                  bool bool_val;
-                  if( ! matob( value, bool_val ) )
+                  if( ! matob( value ) )
                   {
                      std::cerr << "Yes/true or no/false is required for the parameter " << option << "." << std::endl;
                      parse_error = true;
                   }
-                  else bool_list.push_back( bool_val );
+                  else bool_list.push_back( true );
                }
                if( parsedEntryType[ 1 ] == "int" )
                {
@@ -216,13 +141,12 @@ parseCommandLine( int argc, char* argv[],
             }
             if( parsedEntryType[ 0 ] == "bool" )
             {
-               bool bool_val;
-               if( ! matob( value, bool_val ) )
+               if( ! matob( value ) )
                {
                   std::cerr << "Yes/true or no/false is required for the parameter " << option << "." << std::endl;
                   parse_error = true;
                }
-               else parameters.addParameter< bool >( option, bool_val );
+               else parameters.addParameter< bool >( option, true );
                continue;
             }
             if( parsedEntryType[ 0 ] == "int" )

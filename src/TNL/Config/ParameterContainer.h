@@ -12,8 +12,8 @@
 
 #include <vector>
 #include <memory>
+#include "make_unique.h"
 
-#include <TNL/Config/ConfigDescription.h>
 #include <TNL/param-types.h>
 //#include <TNL/Debugging/StackBacktrace.h>
 
@@ -58,14 +58,25 @@ public:
     */
    template< class T >
    bool addParameter( const String& name,
-                      const T& value );
+                      const T& value )
+   {
+      parameters.push_back( std::make_unique< Parameter< T > >( name, TNL::getType< T >(), value ) );
+      return true;
+   }
 
    /**
     * \brief Checks whether the parameter \e name already exists in ParameterContainer.
     *
     * \param name Name of the parameter.
     */
-   bool checkParameter( const String& name ) const;
+   bool checkParameter( const String& name ) const
+   {
+      const int size = parameters.size();
+      for( int i = 0; i < size; i++ )
+         if( parameters[ i ]->name == name )
+            return true;
+      return false;
+   }
 
    /**
     * \brief Assigns new \e value to the parameter \e name.
@@ -76,7 +87,25 @@ public:
     */
    template< class T >
    bool setParameter( const String& name,
-                      const T& value );
+                      const T& value )
+   {
+      for( int i = 0; i < (int) parameters.size(); i++ ) {
+         if( parameters[ i ]->name == name ) {
+            if( parameters[ i ]->type == TNL::getType< T >() ) {
+               Parameter< T >& parameter = dynamic_cast< Parameter< T >& >( *parameters[ i ] );
+               parameter.value = value;
+               return true;
+            }
+            else {
+               std::cerr << "Parameter " << name << " already exists with different type "
+                         << parameters[ i ]->type << " not "
+                         << TNL::getType< T >() << std::endl;
+               throw 0;
+            }
+         }
+      }
+      return addParameter< T >( name, value );
+   }
 
    /**
     * \brief Checks whether the parameter \e name is given the \e value.
@@ -133,49 +162,80 @@ public:
       throw 0;
    }
 
+/*
    //! Broadcast to other nodes in MPI cluster
-   //void MPIBcast( int root, MPI_Comm mpi_comm = MPI_COMM_WORLD );
+   void MPIBcast( int root, MPI_Comm mpi_comm = MPI_COMM_WORLD )
+   {
+   #ifdef USE_MPI
+      int i;
+      int size = parameters. getSize();
+      :: MPIBcast( size, 1, root, mpi_comm );
+      for( i = 0; i < size; i ++ )
+      {
+         if( MPIGetRank() == root )
+         {
+            tnlParameterBase* param = parameters[ i ];
+            param -> type. MPIBcast( root, MPI_COMM_WORLD );
+            param -> name. MPIBcast( root, MPI_COMM_WORLD );
+            if( param -> type == "String" )
+            {
+               ( ( tnlParameter< String >* ) param ) -> value. MPIBcast( root, mpi_comm );
+            }
+            if( param -> type == "bool" )
+            {
+               :: MPIBcast( ( ( tnlParameter< bool >* ) param ) -> value, 1, root, mpi_comm );
+            }
+            if( param -> type == "int" )
+            {
+               :: MPIBcast( ( ( tnlParameter< int >* ) param ) -> value, 1, root, mpi_comm );
+            }
+            if( param -> type == "double" )
+            {
+               :: MPIBcast( ( ( tnlParameter< double >* ) param ) -> value, 1, root, mpi_comm );
+            }
+         }
+         else
+         {
+            String param_type, param_name;
+            param_type. MPIBcast( root, MPI_COMM_WORLD );
+            param_name. MPIBcast( root, MPI_COMM_WORLD );
+            if( param_type == "mString" )
+            {
+               String val;
+               val. MPIBcast( root, mpi_comm );
+               addParameter< String >( param_name. getString(),
+                                        val );
+            }
+            if( param_type == "bool" )
+            {
+               bool val;
+               :: MPIBcast( val, 1, root, mpi_comm );
+               addParameter< bool >( param_name. getString(),
+                                     val );
+            }
+            if( param_type == "int" )
+            {
+               int val;
+               :: MPIBcast( val, 1, root, mpi_comm );
+               addParameter< int >( param_name. getString(),
+                                    val );
+            }
+            if( param_type == "double" )
+            {
+               double val;
+               :: MPIBcast( val, 1, root, mpi_comm );
+               addParameter< double >( param_name. getString(),
+                                       val );
+            }
+
+         }
+      }
+   #endif
+   }
+*/
 
 protected:
    std::vector< std::unique_ptr< ParameterBase > > parameters;
-};
-
-bool parseCommandLine( int argc, char* argv[],
-                       const ConfigDescription& config_description,
-                       ParameterContainer& parameters,
-                       bool printUsage = true );
-
-template< class T >
-bool
-ParameterContainer::
-addParameter( const String& name, const T& value )
-{
-   parameters.push_back( std::make_unique< Parameter< T > >( name, TNL::getType< T >(), value ) );
-   return true;
-};
-
-template< class T >
-bool
-ParameterContainer::
-setParameter( const String& name,
-              const T& value )
-{
-   for( int i = 0; i < (int) parameters.size(); i++ ) {
-      if( parameters[ i ]->name == name ) {
-         if( parameters[ i ]->type == TNL::getType< T >() ) {
-            Parameter< T >& parameter = dynamic_cast< Parameter< T >& >( *parameters[ i ] );
-            parameter.value = value;
-            return true;
-         }
-         else {
-            std::cerr << "Parameter " << name << " already exists with different type "
-                      << parameters[ i ]->type << " not "
-                      << TNL::getType< T >() << std::endl;
-            throw 0;
-         }
-      }
-   }
-   return addParameter< T >( name, value );
 };
 
 } // namespace Config
