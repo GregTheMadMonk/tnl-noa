@@ -35,12 +35,12 @@ set( headers
      StaticFor.h
      String.h
      Timer.h
+     Timer_impl.h
      StaticVectorFor.h )
 
 set( common_SOURCES
      FileName.cpp
-     String.cpp
-     Timer.cpp )
+     String.cpp )
 
 set( tnl_SOURCES ${tnl_config_SOURCES}
                  ${tnl_containers_SOURCES}

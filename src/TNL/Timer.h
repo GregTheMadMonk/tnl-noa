@@ -132,7 +132,6 @@ class Timer
    }
 };
 
-extern Timer defaultTimer;
-
 } // namespace TNL
 
+#include <TNL/Timer_impl.h>
