@@ -148,16 +148,142 @@ void test_SetCompressedRowLengths()
     
     m.setCompressedRowLengths( rowLengths );
     
-    EXPECT_EQ( m.getRowLength( 0 ), 3 );
-    EXPECT_EQ( m.getRowLength( 1 ), 3 );
-    EXPECT_EQ( m.getRowLength( 2 ), 1 );
-    EXPECT_EQ( m.getRowLength( 3 ), 2 );
-    EXPECT_EQ( m.getRowLength( 4 ), 3 );
-    EXPECT_EQ( m.getRowLength( 5 ), 4 );
-    EXPECT_EQ( m.getRowLength( 6 ), 5 );
-    EXPECT_EQ( m.getRowLength( 7 ), 6 );
-    EXPECT_EQ( m.getRowLength( 8 ), 7 );
-    EXPECT_EQ( m.getRowLength( 9 ), 8 );
+    bool test = false;
+    
+    std::cout << TNL::String ( m.getType() ) << std::endl;
+    if( m.getType() == TNL::String( "Matrices::CSR< int, Devices::Host >" ) || m.getType() == TNL::String( "Matrices::CSR< long int, Devices::Host >" ) )
+    {
+        test = true;
+        std::cout << "\n    1 The if statement went through!!! \n";
+    }
+    
+//    if( TNL::String( m.getType() ) == ( TNL::String( "Matrices::CSR< ") +
+//                         TNL::String( TNL::getType< RealType >() ) +
+//                         TNL::String( ", " ) +
+//                         TNL::String( "Devices::Host" ) +
+//                         TNL::String( ", " ) +
+//                         TNL::String( TNL::getType< IndexType >() ) +
+//                         TNL::String( " >" ) ) 
+//                       || 
+//                       ( TNL::String( "Matrices::CSR< ") +
+//                         TNL::String( TNL::getType< RealType >() ) +
+//                         TNL::String( ", " ) +
+//                         TNL::String( "Cuda" ) +
+//                         TNL::String( ", " ) +
+//                         TNL::String( TNL::getType< IndexType >() ) +
+//                         TNL::String( " >" ) )
+//      )
+//    {
+//        test = true;
+//    }
+    
+    if (test)
+    {
+        std::cout << "\n    2 The if statement went through!!! \n";
+    }
+    
+    if( m.getType() == TNL::String( TNL::String( "Matrices::CSR< ") +
+                       TNL::String( TNL::getType< RealType >() ) +
+                       TNL::String( ", " ) +
+                       TNL::String( "Devices::Host" ) +
+                       TNL::String( ", " ) +
+                       TNL::String( TNL::getType< IndexType >() ) +
+                       TNL::String( " >" ) ) 
+                       || 
+        m.getType() == TNL::String( TNL::String( "Matrices::CSR< ") +
+                       TNL::String( TNL::getType< RealType >() ) +
+                       TNL::String( ", " ) +
+                       TNL::String( "Cuda" ) +
+                       TNL::String( ", " ) +
+                       TNL::String( TNL::getType< IndexType >() ) +
+                       TNL::String( " >" ) )
+      )
+    {
+        std::cout << "\nIf for CSR\n";
+        std::cout << TNL::String ( m.getType() ) << std::endl;
+        EXPECT_EQ( m.getRowLength( 0 ), 3 );
+        EXPECT_EQ( m.getRowLength( 1 ), 3 );
+        EXPECT_EQ( m.getRowLength( 2 ), 1 );
+        EXPECT_EQ( m.getRowLength( 3 ), 2 );
+        EXPECT_EQ( m.getRowLength( 4 ), 3 );
+        EXPECT_EQ( m.getRowLength( 5 ), 4 );
+        EXPECT_EQ( m.getRowLength( 6 ), 5 );
+        EXPECT_EQ( m.getRowLength( 7 ), 6 );
+        EXPECT_EQ( m.getRowLength( 8 ), 7 );
+        EXPECT_EQ( m.getRowLength( 9 ), 8 );
+    }
+    
+    if( m.getType() ==  TNL::String( TNL::String( "Matrices::Ellpack< ") +
+                         TNL::String( TNL::getType< RealType >() ) +
+                         TNL::String( ", " ) +
+                         TNL::String( "Devices::Host" ) +
+                         TNL::String( ", " ) +
+                         TNL::String( TNL::getType< IndexType >() ) +
+                         TNL::String( " >" ) ) 
+                       || 
+        m.getType() == TNL::String( TNL::String( "Matrices::SlicedEllpack< ") +
+                         TNL::String( TNL::getType< RealType >() ) +
+                         TNL::String( ", " ) +
+                         TNL::String( "Devices::Host" ) +
+                         TNL::String( " >" ) )
+      )
+    {
+        std::cout << "\nIf for Ellpack Host\n";
+        std::cout << TNL::String ( m.getType() ) << std::endl;
+        EXPECT_EQ( m.getRowLength( 0 ), 8 );
+        EXPECT_EQ( m.getRowLength( 1 ), 8 );
+        EXPECT_EQ( m.getRowLength( 2 ), 8 );
+        EXPECT_EQ( m.getRowLength( 3 ), 8 );
+        EXPECT_EQ( m.getRowLength( 4 ), 8 );
+        EXPECT_EQ( m.getRowLength( 5 ), 8 );
+        EXPECT_EQ( m.getRowLength( 6 ), 8 );
+        EXPECT_EQ( m.getRowLength( 7 ), 8 );
+        EXPECT_EQ( m.getRowLength( 8 ), 8 );
+        EXPECT_EQ( m.getRowLength( 9 ), 8 );
+    }
+    else if( m.getType() == TNL::String( TNL::String( "Matrices::Ellpack< ") +
+                              TNL::String( TNL::getType< RealType >() ) +
+                              TNL::String( ", " ) +
+                              TNL::String( "Cuda" ) +
+                              TNL::String( ", " ) +
+                              TNL::String( TNL::getType< IndexType >() ) +
+                              TNL::String( " >" ) )
+                            || 
+             m.getType() == TNL::String( TNL::String( "Matrices::SlicedEllpack< ") +
+                              TNL::String( TNL::getType< RealType >() ) +
+                              TNL::String( ", " ) +
+                              TNL::String( "Cuda" ) +
+                              TNL::String( " >" ) )
+            
+           )
+    {
+        std::cout << "\nIf for Ellpack Cuda\n";
+        std::cout << TNL::String ( m.getType() ) << std::endl;
+        EXPECT_EQ( m.getRowLength( 0 ), 8 );
+        EXPECT_EQ( m.getRowLength( 1 ), 8 );
+        EXPECT_EQ( m.getRowLength( 2 ), 8 );
+        EXPECT_EQ( m.getRowLength( 3 ), 8 );
+        EXPECT_EQ( m.getRowLength( 4 ), 8 );
+        EXPECT_EQ( m.getRowLength( 5 ), 8 );
+        EXPECT_EQ( m.getRowLength( 6 ), 8 );
+        EXPECT_EQ( m.getRowLength( 7 ), 8 );
+        EXPECT_EQ( m.getRowLength( 8 ), 8 );
+        EXPECT_EQ( m.getRowLength( 9 ), 8 );
+    }
+    else
+    {
+        std::cout << "\nElse for Everything else\n";
+        EXPECT_EQ( m.getRowLength( 0 ), 3 );
+        EXPECT_EQ( m.getRowLength( 1 ), 3 );
+        EXPECT_EQ( m.getRowLength( 2 ), 1 );
+        EXPECT_EQ( m.getRowLength( 3 ), 2 );
+        EXPECT_EQ( m.getRowLength( 4 ), 3 );
+        EXPECT_EQ( m.getRowLength( 5 ), 4 );
+        EXPECT_EQ( m.getRowLength( 6 ), 5 );
+        EXPECT_EQ( m.getRowLength( 7 ), 6 );
+        EXPECT_EQ( m.getRowLength( 8 ), 7 );
+        EXPECT_EQ( m.getRowLength( 9 ), 8 );
+    }
 }
 
 template< typename Matrix1, typename Matrix2 >
@@ -792,14 +918,14 @@ void test_Print()
 
 // test fixture for typed tests
 template< typename Matrix >
-class SparseMatrixTest : public ::testing::Test
+class CSRMatrixTest : public ::testing::Test
 {
 protected:
-   using SparseMatrixType = Matrix;
+   using CSRMatrixType = Matrix;
 };
 
 // types for which MatrixTest is instantiated
-using SparseMatrixTypes = ::testing::Types
+using CSRMatrixTypes = ::testing::Types
 <
     TNL::Matrices::CSR< int,    TNL::Devices::Host, short >,
     TNL::Matrices::CSR< long,   TNL::Devices::Host, short >,
@@ -829,76 +955,233 @@ using SparseMatrixTypes = ::testing::Types
 #endif
 >;
 
-TYPED_TEST_CASE( SparseMatrixTest, SparseMatrixTypes );
+TYPED_TEST_CASE( CSRMatrixTest, CSRMatrixTypes);
 
-TYPED_TEST( SparseMatrixTest, setDimensionsTest )
+TYPED_TEST( CSRMatrixTest, setDimensionsTest )
 {
-    using SparseMatrixType = typename TestFixture::SparseMatrixType;
+    using CSRMatrixType = typename TestFixture::CSRMatrixType;
     
-    test_SetDimensions< SparseMatrixType >();
+    test_SetDimensions< CSRMatrixType >();
 }
 
-TYPED_TEST( SparseMatrixTest, setCompressedRowLengthsTest )
+TYPED_TEST( CSRMatrixTest, setCompressedRowLengthsTest )
 {
-    using SparseMatrixType = typename TestFixture::SparseMatrixType;
+    using CSRMatrixType = typename TestFixture::CSRMatrixType;
     
-    test_SetCompressedRowLengths< SparseMatrixType >();
+    test_SetCompressedRowLengths< CSRMatrixType >();
+//    bool testRan = false;
+//    EXPECT_TRUE( testRan );
+//    std::cout << "\n\n THIS TEST DID NOT RUN!\n";
+//    std::cout << "\n This method isn't testable for different forMats, their implementations differ based on their algorithm.\n\n";
 }
 
-TYPED_TEST( SparseMatrixTest, setLikeTest )
+TYPED_TEST( CSRMatrixTest, setLikeTest )
 {
-    using SparseMatrixType = typename TestFixture::SparseMatrixType;
+    using CSRMatrixType = typename TestFixture::CSRMatrixType;
     
-    test_SetLike< SparseMatrixType, SparseMatrixType >();
+    test_SetLike< CSRMatrixType, CSRMatrixType >();
 }
 
-TYPED_TEST( SparseMatrixTest, resetTest )
+TYPED_TEST( CSRMatrixTest, resetTest )
 {
-    using SparseMatrixType = typename TestFixture::SparseMatrixType;
+    using CSRMatrixType = typename TestFixture::CSRMatrixType;
     
-    test_Reset< SparseMatrixType >();
+    test_Reset< CSRMatrixType >();
 }
 
-TYPED_TEST( SparseMatrixTest, setElementTest )
+TYPED_TEST( CSRMatrixTest, setElementTest )
 {
-    using SparseMatrixType = typename TestFixture::SparseMatrixType;
+    using CSRMatrixType = typename TestFixture::CSRMatrixType;
     
-    test_SetElement< SparseMatrixType >();
+    test_SetElement< CSRMatrixType >();
 }
 
-TYPED_TEST( SparseMatrixTest, addElementTest )
+TYPED_TEST( CSRMatrixTest, addElementTest )
 {
-    using SparseMatrixType = typename TestFixture::SparseMatrixType;
+    using CSRMatrixType = typename TestFixture::CSRMatrixType;
     
-    test_AddElement< SparseMatrixType >();
+    test_AddElement< CSRMatrixType >();
 }
 
-TYPED_TEST( SparseMatrixTest, setRowTest )
+TYPED_TEST( CSRMatrixTest, setRowTest )
 {
-    using SparseMatrixType = typename TestFixture::SparseMatrixType;
+    using CSRMatrixType = typename TestFixture::CSRMatrixType;
     
-    test_SetRow< SparseMatrixType >();
+    test_SetRow< CSRMatrixType >();
 }
 
-TYPED_TEST( SparseMatrixTest, vectorProductTest )
+TYPED_TEST( CSRMatrixTest, vectorProductTest )
 {
-    using SparseMatrixType = typename TestFixture::SparseMatrixType;
+    using CSRMatrixType = typename TestFixture::CSRMatrixType;
     
-    test_VectorProduct< SparseMatrixType >();
+    test_VectorProduct< CSRMatrixType >();
 }
 
-TYPED_TEST( SparseMatrixTest, saveAndLoadTest )
+TYPED_TEST( CSRMatrixTest, saveAndLoadTest )
 {
-    using SparseMatrixType = typename TestFixture::SparseMatrixType;
+    using CSRMatrixType = typename TestFixture::CSRMatrixType;
     
-    test_SaveAndLoad< SparseMatrixType >();
+    test_SaveAndLoad< CSRMatrixType >();
 }
 
-TYPED_TEST( SparseMatrixTest, printTest )
+TYPED_TEST( CSRMatrixTest, printTest )
 {
-    using SparseMatrixType = typename TestFixture::SparseMatrixType;
+    using CSRMatrixType = typename TestFixture::CSRMatrixType;
     
-    test_Print< SparseMatrixType >();
+    test_Print< CSRMatrixType >();
+}
+
+//// test_getType is not general enough yet. DO NOT TEST IT YET.
+
+//TEST( SparseMatrixTest, CSR_GetTypeTest_Host )
+//{
+//    host_test_GetType< CSR_host_float, CSR_host_int >();
+//}
+//
+//#ifdef HAVE_CUDA
+//TEST( SparseMatrixTest, CSR_GetTypeTest_Cuda )
+//{
+//    cuda_test_GetType< CSR_cuda_float, CSR_cuda_int >();
+//}
+//#endif
+
+// test fixture for typed tests
+template< typename Matrix >
+class EllpackMatrixTest : public ::testing::Test
+{
+protected:
+   using EllpackMatrixType = Matrix;
+};
+
+// types for which MatrixTest is instantiated
+using EllpackMatrixTypes = ::testing::Types
+<
+    TNL::Matrices::Ellpack< int,    TNL::Devices::Host, short >,
+    TNL::Matrices::Ellpack< long,   TNL::Devices::Host, short >,
+    TNL::Matrices::Ellpack< float,  TNL::Devices::Host, short >,
+    TNL::Matrices::Ellpack< double, TNL::Devices::Host, short >,
+    TNL::Matrices::Ellpack< int,    TNL::Devices::Host, int >,
+    TNL::Matrices::Ellpack< long,   TNL::Devices::Host, int >,
+    TNL::Matrices::Ellpack< float,  TNL::Devices::Host, int >,
+    TNL::Matrices::Ellpack< double, TNL::Devices::Host, int >,
+    TNL::Matrices::Ellpack< int,    TNL::Devices::Host, long >,
+    TNL::Matrices::Ellpack< long,   TNL::Devices::Host, long >,
+    TNL::Matrices::Ellpack< float,  TNL::Devices::Host, long >,
+    TNL::Matrices::Ellpack< double, TNL::Devices::Host, long >,
+    TNL::Matrices::SlicedEllpack< int,    TNL::Devices::Host, short >,
+    TNL::Matrices::SlicedEllpack< long,   TNL::Devices::Host, short >,
+    TNL::Matrices::SlicedEllpack< float,  TNL::Devices::Host, short >,
+    TNL::Matrices::SlicedEllpack< double, TNL::Devices::Host, short >,
+    TNL::Matrices::SlicedEllpack< int,    TNL::Devices::Host, int >,
+    TNL::Matrices::SlicedEllpack< long,   TNL::Devices::Host, int >,
+    TNL::Matrices::SlicedEllpack< float,  TNL::Devices::Host, int >,
+    TNL::Matrices::SlicedEllpack< double, TNL::Devices::Host, int >,
+    TNL::Matrices::SlicedEllpack< int,    TNL::Devices::Host, long >,
+    TNL::Matrices::SlicedEllpack< long,   TNL::Devices::Host, long >,
+    TNL::Matrices::SlicedEllpack< float,  TNL::Devices::Host, long >,
+    TNL::Matrices::SlicedEllpack< double, TNL::Devices::Host, long >,
+#ifdef HAVE_CUDA
+    TNL::Matrices::Ellpack< int,    TNL::Devices::Cuda, short >,
+    TNL::Matrices::Ellpack< long,   TNL::Devices::Cuda, short >,
+    TNL::Matrices::Ellpack< float,  TNL::Devices::Cuda, short >,
+    TNL::Matrices::Ellpack< double, TNL::Devices::Cuda, short >,
+    TNL::Matrices::Ellpack< int,    TNL::Devices::Cuda, int >,
+    TNL::Matrices::Ellpack< long,   TNL::Devices::Cuda, int >,
+    TNL::Matrices::Ellpack< float,  TNL::Devices::Cuda, int >,
+    TNL::Matrices::Ellpack< double, TNL::Devices::Cuda, int >,
+    TNL::Matrices::Ellpack< int,    TNL::Devices::Cuda, long >,
+    TNL::Matrices::Ellpack< long,   TNL::Devices::Cuda, long >,
+    TNL::Matrices::Ellpack< float,  TNL::Devices::Cuda, long >,
+    TNL::Matrices::Ellpack< double, TNL::Devices::Cuda, long >,
+    TNL::Matrices::SlicedEllpack< int,    TNL::Devices::Cuda, short >,
+    TNL::Matrices::SlicedEllpack< long,   TNL::Devices::Cuda, short >,
+    TNL::Matrices::SlicedEllpack< float,  TNL::Devices::Cuda, short >,
+    TNL::Matrices::SlicedEllpack< double, TNL::Devices::Cuda, short >,
+    TNL::Matrices::SlicedEllpack< int,    TNL::Devices::Cuda, int >,
+    TNL::Matrices::SlicedEllpack< long,   TNL::Devices::Cuda, int >,
+    TNL::Matrices::SlicedEllpack< float,  TNL::Devices::Cuda, int >,
+    TNL::Matrices::SlicedEllpack< double, TNL::Devices::Cuda, int >,
+    TNL::Matrices::SlicedEllpack< int,    TNL::Devices::Cuda, long >,
+    TNL::Matrices::SlicedEllpack< long,   TNL::Devices::Cuda, long >,
+    TNL::Matrices::SlicedEllpack< float,  TNL::Devices::Cuda, long >,
+    TNL::Matrices::SlicedEllpack< double, TNL::Devices::Cuda, long >
+#endif
+>;
+
+TYPED_TEST_CASE( EllpackMatrixTest, EllpackMatrixTypes );
+
+TYPED_TEST( EllpackMatrixTest, setDimensionsTest )
+{
+    using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
+    
+    test_SetDimensions< EllpackMatrixType >();
+}
+
+TYPED_TEST( EllpackMatrixTest, setCompressedRowLengthsTest )
+{
+    using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
+    
+    test_SetCompressedRowLengths< EllpackMatrixType >();
+//    bool testRan = false;
+//    EXPECT_TRUE( testRan );
+//    std::cout << "\n\n THIS TEST DID NOT RUN!\n";
+//    std::cout << "\n This method isn't testable for different forMats, their implementations differ based on their algorithm.\n\n";
+}
+
+TYPED_TEST( EllpackMatrixTest, setLikeTest )
+{
+    using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
+    
+    test_SetLike< EllpackMatrixType, EllpackMatrixType >();
+}
+
+TYPED_TEST( EllpackMatrixTest, resetTest )
+{
+    using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
+    
+    test_Reset< EllpackMatrixType >();
+}
+
+TYPED_TEST( EllpackMatrixTest, setElementTest )
+{
+    using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
+    
+    test_SetElement< EllpackMatrixType >();
+}
+
+TYPED_TEST( EllpackMatrixTest, addElementTest )
+{
+    using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
+    
+    test_AddElement< EllpackMatrixType >();
+}
+
+TYPED_TEST( EllpackMatrixTest, setRowTest )
+{
+    using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
+    
+    test_SetRow< EllpackMatrixType >();
+}
+
+TYPED_TEST( EllpackMatrixTest, vectorProductTest )
+{
+    using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
+    
+    test_VectorProduct< EllpackMatrixType >();
+}
+
+TYPED_TEST( EllpackMatrixTest, saveAndLoadTest )
+{
+    using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
+    
+    test_SaveAndLoad< EllpackMatrixType >();
+}
+
+TYPED_TEST( EllpackMatrixTest, printTest )
+{
+    using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
+    
+    test_Print< EllpackMatrixType >();
 }
 
 //// test_getType is not general enough yet. DO NOT TEST IT YET.
