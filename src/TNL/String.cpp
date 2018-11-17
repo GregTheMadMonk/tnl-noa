@@ -10,7 +10,6 @@
 
 #include <TNL/String.h>
 #include <TNL/Assert.h>
-#include <TNL/File.h>
 #include <TNL/Math.h>
 //#ifdef USE_MPI
 //   #include <mpi.h>
@@ -228,33 +227,6 @@ std::vector< String > String::split( const char separator, bool skipEmpty ) cons
    if( ! skipEmpty || s != "" )
       parts.push_back( s );
    return parts;
-}
-
-
-bool String::save( File& file ) const
-{
-   const int len = getLength();
-   if( ! file.write( &len ) )
-      return false;
-   if( ! file.write( this->c_str(), len ) )
-      return false;
-   return true;
-}
-
-bool String::load( File& file )
-{
-   int length;
-   if( ! file.read( &length ) ) {
-      std::cerr << "I was not able to read String length." << std::endl;
-      return false;
-   }
-   char buffer[ length ];
-   if( length && ! file.read( buffer, length ) ) {
-      std::cerr << "I was not able to read a String with a length " << length << "." << std::endl;
-      return false;
-   }
-   this->assign( buffer, length );
-   return true;
 }
 
 /*void String :: MPIBcast( int root, MPI_Comm comm )

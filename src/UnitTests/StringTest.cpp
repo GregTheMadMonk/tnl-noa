@@ -307,11 +307,11 @@ TEST( StringTest, SaveLoad )
    String str1( "testing-string" );
    File file;
    file.open( "test-file.tnl", IOMode::write );
-   ASSERT_TRUE( str1.save( file ) );
+   ASSERT_NO_THROW( file << str1 );
    file.close();
    file.open( "test-file.tnl", IOMode::read );
    String str2;
-   ASSERT_TRUE( str2.load( file ) );
+   ASSERT_NO_THROW( file >> str2 );
    EXPECT_EQ( str1, str2 );
 
    EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );

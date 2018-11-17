@@ -17,6 +17,8 @@
 #include <TNL/Assert.h>
 #include <TNL/Exceptions/CudaSupportMissing.h>
 #include <TNL/Exceptions/MICSupportMissing.h>
+#include <TNL/Exceptions/FileSerializationError.h>
+#include <TNL/Exceptions/FileDeserializationError.h>
 
 namespace TNL {
 
@@ -245,6 +247,31 @@ inline bool fileExists( const String& fileName )
    std::fstream file;
    file.open( fileName.getString(), std::ios::in );
    return ! file.fail();
+}
+
+
+// serialization of strings
+inline File& operator<<( File& file, const std::string& str )
+{
+   const int len = str.size();
+   if( ! file.write( &len ) )
+      throw Exceptions::FileSerializationError( getType< int >(), file.getFileName() );
+   if( ! file.write( str.c_str(), len ) )
+      throw Exceptions::FileSerializationError( "String", file.getFileName() );
+   return file;
+}
+
+// deserialization of strings
+inline File& operator>>( File& file, std::string& str )
+{
+   int length;
+   if( ! file.read( &length ) )
+      throw Exceptions::FileDeserializationError( getType< int >(), file.getFileName() );
+   char buffer[ length ];
+   if( length && ! file.read( buffer, length ) )
+      throw Exceptions::FileDeserializationError( "String", file.getFileName() );
+   str.assign( buffer, length );
+   return file;
 }
 
 } // namespace TNL

@@ -42,9 +42,9 @@ inline String Object :: getSerializationTypeVirtual() const
 
 inline bool Object :: save( File& file ) const
 {
-   if( ! file. write( magic_number, strlen( magic_number ) ) )
+   if( ! file.write( magic_number, strlen( magic_number ) ) )
       return false;
-   if( ! this->getSerializationTypeVirtual().save( file ) ) return false;
+   file << this->getSerializationTypeVirtual();
    return true;
 }
 
@@ -69,7 +69,7 @@ inline bool Object :: boundLoad( File& file )
 inline bool Object :: save( const String& fileName ) const
 {
    File file;
-   if( ! file. open( fileName, IOMode::write ) )
+   if( ! file.open( fileName, IOMode::write ) )
    {
       std::cerr << "I am not able to open the file " << fileName << " for writing." << std::endl;
       return false;
@@ -80,7 +80,7 @@ inline bool Object :: save( const String& fileName ) const
 inline bool Object :: load( const String& fileName )
 {
    File file;
-   if( ! file. open( fileName, IOMode::read ) )
+   if( ! file.open( fileName, IOMode::read ) )
    {
       std::cerr << "I am not able to open the file " << fileName << " for reading." << std::endl;
       return false;
@@ -91,7 +91,7 @@ inline bool Object :: load( const String& fileName )
 inline bool Object :: boundLoad( const String& fileName )
 {
    File file;
-   if( ! file. open( fileName, IOMode::read ) )
+   if( ! file.open( fileName, IOMode::read ) )
    {
       std::cerr << "I am not able to open the file " << fileName << " for reading." << std::endl;
       return false;
@@ -103,9 +103,9 @@ inline bool Object :: boundLoad( const String& fileName )
 inline bool getObjectType( File& file, String& type )
 {
    char mn[ 10 ];
-   if( ! file. read( mn, strlen( magic_number ) ) )
+   if( ! file.read( mn, strlen( magic_number ) ) )
    {
-      std::cerr << "Unable to read file " << file. getFileName() << " ... " << std::endl;
+      std::cerr << "Unable to read file " << file.getFileName() << " ... " << std::endl;
       return false;
    }
    if( strncmp( mn, magic_number, 5 ) != 0 )
@@ -113,18 +113,14 @@ inline bool getObjectType( File& file, String& type )
        std::cout << "Not a TNL file (wrong magic number)." << std::endl;
        return false;
    }
-   if( ! type. load( file ) )
-   {
-       std::cerr << "Cannot load the object type." << std::endl;
-       return false;
-   }
+   file >> type;
    return true;
 }
 
 inline bool getObjectType( const String& fileName, String& type )
 {
    File binaryFile;
-   if( ! binaryFile. open( fileName, IOMode::read ) )
+   if( ! binaryFile.open( fileName, IOMode::read ) )
    {
       std::cerr << "I am not able to open the file " << fileName << " for detecting the object inside!" << std::endl;
       return false;

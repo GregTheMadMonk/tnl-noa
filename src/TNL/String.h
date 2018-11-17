@@ -17,7 +17,6 @@
 
 namespace TNL {
 
-class File;
 class String;
 
 /////
@@ -212,20 +211,6 @@ public:
    /// containing given sting.
    /// @param separator Character, which separates substrings in given string.
    std::vector< String > split( const char separator = ' ', bool skipEmpty = false ) const;
-
-   /////
-   /// \brief Function for saving file.
-   ///
-   /// Writes the string to a binary file and returns boolean expression based on the
-   /// success in writing into the file.
-   bool save( File& file ) const;
-
-   /////
-   /// \brief Function for loading from file.
-   ///
-   /// Reads a string from binary file and returns boolean expression based on the
-   /// success in reading the file.
-   bool load( File& file );
 
    //! Broadcast to other nodes in MPI cluster
 //   void MPIBcast( int root, MPI_Comm mpi_comm = MPI_COMM_WORLD );

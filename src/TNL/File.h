@@ -151,6 +151,12 @@ protected:
 /// \param fileName Name of the file that user wants to find in the PC.
 bool fileExists( const String& fileName );
 
+// serialization of strings
+File& operator<<( File& file, const std::string& str );
+
+// deserialization of strings
+File& operator>>( File& file, std::string& str );
+
 } // namespace TNL
 
 #include <TNL/File_impl.h>
