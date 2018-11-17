@@ -181,6 +181,10 @@ public:
     */
    const ConfigEntryBase* getEntry( const String& name ) const
    {
+      // ConfigDelimiter has empty name
+      if( ! name )
+         return nullptr;
+
       const int entries_num = entries.size();
       for( int i = 0; i < entries_num; i++ )
          if( entries[ i ]->name == name )
@@ -196,6 +200,10 @@ public:
    template< class T >
    const T* getDefaultValue( const String& name ) const
    {
+      // ConfigDelimiter has empty name
+      if( ! name )
+         return nullptr;
+
       const int entries_num = entries.size();
       for( int i = 0; i < entries_num; i++ )
          if( entries[ i ]->name == name ) {
@@ -213,6 +221,10 @@ public:
    template< class T >
    T* getDefaultValue( const String& name )
    {
+      // ConfigDelimiter has empty name
+      if( ! name )
+         return nullptr;
+
       const int entries_num = entries.size();
       for( int i = 0; i < entries_num; i++ )
          if( entries[ i ] -> name == name ) {
@@ -223,7 +235,7 @@ public:
             return nullptr;
          }
       std::cerr << "Asking for the default value of unknown parameter." << std::endl;
-      return NULL;
+      return nullptr;
    }
 
    /**
