@@ -11,7 +11,6 @@
 #pragma once
 
 #include <iomanip>
-#include <TNL/Timer.h>
 #include <TNL/Experimental/Arithmetics/FlopsCounter.h>
 #include <TNL/Object.h>
 #include <TNL/Solvers/IterativeSolverMonitor.h>
@@ -67,8 +66,6 @@ class ExplicitSolver : public IterativeSolver< typename Problem::RealType,
  
    void setVerbose( IndexType v );
 
-   void setTimer( Timer* timer );
-
    virtual bool solve( DofVectorPointer& u ) = 0;
 
    void setTestingMode( bool testingMode );
@@ -98,8 +95,6 @@ protected:
 
    IndexType verbosity;
 
-   Timer* timer;
- 
    bool testingMode;
 
    Problem* problem;

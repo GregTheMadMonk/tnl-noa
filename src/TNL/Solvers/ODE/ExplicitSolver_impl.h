@@ -22,7 +22,6 @@ ExplicitSolver()
    tau( 0.0 ),
    maxTau( DBL_MAX ),
    verbosity( 0 ),
-   timer( &defaultTimer ),
    testingMode( false ),
    problem( 0 )//,
    //solverMonitor( 0 )
@@ -128,14 +127,6 @@ ExplicitSolver< Problem >::
 setVerbose( IndexType v )
 {
    this->verbosity = v;
-};
-
-template< class Problem >
-void
-ExplicitSolver< Problem >::
-setTimer( Timer* timer )
-{
-   this->timer = timer;
 };
 
 template< class Problem >
