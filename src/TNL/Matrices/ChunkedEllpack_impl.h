@@ -179,10 +179,29 @@ bool ChunkedEllpack< Real, Device, Index >::setSlice( ConstCompressedRowLengthsV
     */
    IndexType maxChunkInSlice( 0 );
    for( IndexType i = sliceBegin; i < sliceEnd; i++ )
-      maxChunkInSlice = max( maxChunkInSlice,
-                          ceil( ( RealType ) rowLengths[ i ] /
-                                ( RealType ) this->rowToChunkMapping[ i ] ) );
-   TNL_ASSERT( maxChunkInSlice > 0,
+   {       
+//       ALL OF THE FOLLOWING std::couts are for troubleshooting purposes, can be deleted.
+//       std::cout << "Troubleshooting invalid ceil operation: " << std::endl;
+//       std::cout << "maxChunkInSlice = " << maxChunkInSlice << std::endl;
+//       std::cout << "( RealType ) rowLengths[ i ] = " <<  ( RealType ) rowLengths[ i ] << std::endl;
+//       std::cout << "( RealType ) this->rowToChunkMapping[ i ] = " <<  ( RealType ) this->rowToChunkMapping[ i ] << std::endl;
+//       std::cout << " ceil( RealType / RealType ) = " << ceil( ( RealType ) rowLengths[ i ] / ( RealType ) this->rowToChunkMapping[ i ] ) << std::endl;
+//       std::cout << "( int ) rowLengths[ i ] = " <<  ( int ) rowLengths[ i ] << std::endl;
+//       std::cout << "( int ) this->rowToChunkMapping[ i ] = " <<  ( int ) this->rowToChunkMapping[ i ] << std::endl;
+//       std::cout << " ceil( int / int ) = " << ceil( ( int ) rowLengths[ i ] / ( int ) this->rowToChunkMapping[ i ] ) << std::endl;
+//       std::cout << "( float ) rowLengths[ i ] = " <<  ( float ) rowLengths[ i ] << std::endl;
+//       std::cout << "( float ) this->rowToChunkMapping[ i ] = " <<  ( float ) this->rowToChunkMapping[ i ] << std::endl;
+//       std::cout << " ceil( float / float ) = " << ceil( ( float ) rowLengths[ i ] / ( float ) this->rowToChunkMapping[ i ] ) << std::endl;
+//       The ceil function doesn't work when rowLengths and the other this.->... is 
+//       typecasted into ( RealType ), because when RealType is int, it will perform 
+//       an integer division and return the int as a double, which in this case 
+//       will be zero and make the assertion fail ( https://stackoverflow.com/questions/33273359/in-c-using-the-ceil-a-division-is-not-working ).
+//       To fix this, typecast them to ( float ), instead of ( RealType )
+       maxChunkInSlice = max( maxChunkInSlice,
+                          ceil( ( float ) rowLengths[ i ] /
+                                ( float ) this->rowToChunkMapping[ i ] ) );
+   }
+      TNL_ASSERT( maxChunkInSlice > 0,
               std::cerr << " maxChunkInSlice = " << maxChunkInSlice << std::endl );
 
    /****
