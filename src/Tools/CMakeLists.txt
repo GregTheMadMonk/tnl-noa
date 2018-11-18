@@ -31,9 +31,6 @@ target_link_libraries (tnl-dicom-reader tnl ${DCMTK_LIBRARIES} )
 ADD_EXECUTABLE(tnl-lattice-init tnl-lattice-init.cpp )
 target_link_libraries (tnl-lattice-init tnl )
 
-ADD_EXECUTABLE( tnl-functions-benchmark functions-benchmark.cpp )
-target_link_libraries( tnl-functions-benchmark tnl )
-
 IF( BUILD_CUDA )
    CUDA_ADD_EXECUTABLE( tnl-cuda-arch tnl-cuda-arch.cu )
    INSTALL( TARGETS tnl-cuda-arch
