@@ -54,7 +54,6 @@ INSTALL( FILES ${PROJECT_TOOLS_PATH}/tnl-bindir
                ${PROJECT_TOOLS_PATH}/tnl-link
                tnl-time-series2png
                tnl-err2eoc
-               tnl-eoc-test-log
                tnl-log-to-html.py
          DESTINATION bin
          PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
