@@ -62,6 +62,7 @@ protected:
 
 // types for which ArrayTest is instantiated
 using ArrayTypes = ::testing::Types<
+#ifndef HAVE_CUDA
    Array< int,    Devices::Host, short >,
    Array< long,   Devices::Host, short >,
    Array< float,  Devices::Host, short >,
@@ -76,9 +77,10 @@ using ArrayTypes = ::testing::Types<
    Array< long,   Devices::Host, long >,
    Array< float,  Devices::Host, long >,
    Array< double, Devices::Host, long >,
-   Array< MyData, Devices::Host, long >,
+   Array< MyData, Devices::Host, long >
    // FIXME: this segfaults in String::~String()
-//   Array< String, Devices::Host, long >,
+//   Array< String, Devices::Host, long >
+#endif
 #ifdef HAVE_CUDA
    Array< int,    Devices::Cuda, short >,
    Array< long,   Devices::Cuda, short >,
@@ -94,9 +96,10 @@ using ArrayTypes = ::testing::Types<
    Array< long,   Devices::Cuda, long >,
    Array< float,  Devices::Cuda, long >,
    Array< double, Devices::Cuda, long >,
-   Array< MyData, Devices::Cuda, long >,
+   Array< MyData, Devices::Cuda, long >
 #endif
 #ifdef HAVE_MIC
+   ,
    Array< int,    Devices::MIC, short >,
    Array< long,   Devices::MIC, short >,
    Array< float,  Devices::MIC, short >,
@@ -112,15 +115,18 @@ using ArrayTypes = ::testing::Types<
    Array< int,    Devices::MIC, long >,
    Array< long,   Devices::MIC, long >,
    Array< float,  Devices::MIC, long >,
-   Array< double, Devices::MIC, long >,
+   Array< double, Devices::MIC, long >
    // TODO: MyData does not work on MIC
-//   Array< MyData, Devices::MIC, long >,
+//   Array< MyData, Devices::MIC, long >
 #endif
 
    // all array tests should also work with Vector
    // (but we can't test all types because the argument list would be too long...)
+#ifndef HAVE_CUDA
+   ,
    Vector< float,  Devices::Host, long >,
    Vector< double, Devices::Host, long >
+#endif
 #ifdef HAVE_CUDA
    ,
    Vector< float,  Devices::Cuda, long >,
