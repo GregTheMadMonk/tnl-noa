@@ -71,6 +71,10 @@
 #include <TNL/Matrices/Ellpack.h>
 #include <TNL/Matrices/SlicedEllpack.h>
 
+#include <TNL/Matrices/ChunkedEllpack.h>
+#include <TNL/Matrices/AdEllpack.h>
+#include <TNL/Matrices/BiEllpack.h>
+
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/VectorView.h>
 #include <TNL/Math.h>
@@ -842,6 +846,117 @@ void test_Print()
 
 // test fixture for typed tests
 template< typename Matrix >
+class CHEllpackMatrixTest : public ::testing::Test
+{
+protected:
+   using CHEllpackMatrixType = Matrix;
+};
+
+// types for which MatrixTest is instantiated
+using CHEllpackMatrixTypes = ::testing::Types
+<
+    TNL::Matrices::ChunkedEllpack< int,    TNL::Devices::Host, short >,
+    TNL::Matrices::ChunkedEllpack< long,   TNL::Devices::Host, short >,
+    TNL::Matrices::ChunkedEllpack< float,  TNL::Devices::Host, short >,
+    TNL::Matrices::ChunkedEllpack< double, TNL::Devices::Host, short >,
+    TNL::Matrices::ChunkedEllpack< int,    TNL::Devices::Host, int >,
+    TNL::Matrices::ChunkedEllpack< long,   TNL::Devices::Host, int >,
+    TNL::Matrices::ChunkedEllpack< float,  TNL::Devices::Host, int >,
+    TNL::Matrices::ChunkedEllpack< double, TNL::Devices::Host, int >,
+    TNL::Matrices::ChunkedEllpack< int,    TNL::Devices::Host, long >,
+    TNL::Matrices::ChunkedEllpack< long,   TNL::Devices::Host, long >,
+    TNL::Matrices::ChunkedEllpack< float,  TNL::Devices::Host, long >,
+    TNL::Matrices::ChunkedEllpack< double, TNL::Devices::Host, long >,
+#ifdef HAVE_CUDA
+    TNL::Matrices::ChunkedEllpack< int,    TNL::Devices::Cuda, short >,
+    TNL::Matrices::ChunkedEllpack< long,   TNL::Devices::Cuda, short >,
+    TNL::Matrices::ChunkedEllpack< float,  TNL::Devices::Cuda, short >,
+    TNL::Matrices::ChunkedEllpack< double, TNL::Devices::Cuda, short >,
+    TNL::Matrices::ChunkedEllpack< int,    TNL::Devices::Cuda, int >,
+    TNL::Matrices::ChunkedEllpack< long,   TNL::Devices::Cuda, int >,
+    TNL::Matrices::ChunkedEllpack< float,  TNL::Devices::Cuda, int >,
+    TNL::Matrices::ChunkedEllpack< double, TNL::Devices::Cuda, int >,
+    TNL::Matrices::ChunkedEllpack< int,    TNL::Devices::Cuda, long >,
+    TNL::Matrices::ChunkedEllpack< long,   TNL::Devices::Cuda, long >,
+    TNL::Matrices::ChunkedEllpack< float,  TNL::Devices::Cuda, long >,
+    TNL::Matrices::ChunkedEllpack< double, TNL::Devices::Cuda, long >
+#endif
+>;
+
+TYPED_TEST_CASE( CHEllpackMatrixTest, CHEllpackMatrixTypes);
+
+TYPED_TEST( CHEllpackMatrixTest, setDimensionsTest )
+{
+    using CHEllpackMatrixType = typename TestFixture::CHEllpackMatrixType;
+    
+    test_SetDimensions< CHEllpackMatrixType >();
+}
+
+TYPED_TEST( CHEllpackMatrixTest, setCompressedRowLengthsTest )
+{
+    using CHEllpackMatrixType = typename TestFixture::CHEllpackMatrixType;
+    
+    test_SetCompressedRowLengths< CHEllpackMatrixType >();
+}
+
+TYPED_TEST( CHEllpackMatrixTest, setLikeTest )
+{
+    using CHEllpackMatrixType = typename TestFixture::CHEllpackMatrixType;
+    
+    test_SetLike< CHEllpackMatrixType, CHEllpackMatrixType >();
+}
+
+TYPED_TEST( CHEllpackMatrixTest, resetTest )
+{
+    using CHEllpackMatrixType = typename TestFixture::CHEllpackMatrixType;
+    
+    test_Reset< CHEllpackMatrixType >();
+}
+
+TYPED_TEST( CHEllpackMatrixTest, setElementTest )
+{
+    using CHEllpackMatrixType = typename TestFixture::CHEllpackMatrixType;
+    
+    test_SetElement< CHEllpackMatrixType >();
+}
+
+TYPED_TEST( CHEllpackMatrixTest, addElementTest )
+{
+    using CHEllpackMatrixType = typename TestFixture::CHEllpackMatrixType;
+    
+    test_AddElement< CHEllpackMatrixType >();
+}
+
+TYPED_TEST( CHEllpackMatrixTest, setRowTest )
+{
+    using CHEllpackMatrixType = typename TestFixture::CHEllpackMatrixType;
+    
+    test_SetRow< CHEllpackMatrixType >();
+}
+
+TYPED_TEST( CHEllpackMatrixTest, vectorProductTest )
+{
+    using CHEllpackMatrixType = typename TestFixture::CHEllpackMatrixType;
+    
+    test_VectorProduct< CHEllpackMatrixType >();
+}
+
+TYPED_TEST( CHEllpackMatrixTest, saveAndLoadTest )
+{
+    using CHEllpackMatrixType = typename TestFixture::CHEllpackMatrixType;
+    
+    test_SaveAndLoad< CHEllpackMatrixType >();
+}
+
+TYPED_TEST( CHEllpackMatrixTest, printTest )
+{
+    using CHEllpackMatrixType = typename TestFixture::CHEllpackMatrixType;
+    
+    test_Print< CHEllpackMatrixType >();
+}
+
+// test fixture for typed tests
+template< typename Matrix >
 class CSRMatrixTest : public ::testing::Test
 {
 protected:
@@ -893,10 +1008,6 @@ TYPED_TEST( CSRMatrixTest, setCompressedRowLengthsTest )
     using CSRMatrixType = typename TestFixture::CSRMatrixType;
     
     test_SetCompressedRowLengths< CSRMatrixType >();
-//    bool testRan = false;
-//    EXPECT_TRUE( testRan );
-//    std::cout << "\n\n THIS TEST DID NOT RUN!\n";
-//    std::cout << "\n This method isn't testable for different forMats, their implementations differ based on their algorithm.\n\n";
 }
 
 TYPED_TEST( CSRMatrixTest, setLikeTest )
@@ -954,20 +1065,6 @@ TYPED_TEST( CSRMatrixTest, printTest )
     
     test_Print< CSRMatrixType >();
 }
-
-//// test_getType is not general enough yet. DO NOT TEST IT YET.
-
-//TEST( SparseMatrixTest, CSR_GetTypeTest_Host )
-//{
-//    host_test_GetType< CSR_host_float, CSR_host_int >();
-//}
-//
-//#ifdef HAVE_CUDA
-//TEST( SparseMatrixTest, CSR_GetTypeTest_Cuda )
-//{
-//    cuda_test_GetType< CSR_cuda_float, CSR_cuda_int >();
-//}
-//#endif
 
 // test fixture for typed tests
 template< typename Matrix >
