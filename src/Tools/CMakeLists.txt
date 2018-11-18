@@ -52,7 +52,6 @@ INSTALL( TARGETS tnl-init
 INSTALL( FILES ${PROJECT_TOOLS_PATH}/tnl-bindir
                ${PROJECT_TOOLS_PATH}/tnl-compile
                ${PROJECT_TOOLS_PATH}/tnl-link
-               tnl-time-series2png
                tnl-err2eoc
                tnl-log-to-html.py
          DESTINATION bin
