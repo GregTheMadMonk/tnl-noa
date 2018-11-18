@@ -28,6 +28,7 @@
  * addElement()                         ::DONE
  * setRowFast()                     ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
  * setRow()                             ::DONE
+ *      MISTAKE!!! In SlicedEllpack: addElement(), line 263, "column <= this->rows" shouldn't it be: "column <= this->columns", otherwise test_SetRow causes the assertion to fail.
  * addRowFast()                     ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
  * addRow()                         ::NOT IMPLEMENTED! This calls addRowFast() which isn't implemented. Implement? Is it supposed to add an extra row to the matrix or add elements of a row to another row in the matrix?
  * getElementFast()                 ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
@@ -148,59 +149,15 @@ void test_SetCompressedRowLengths()
     
     m.setCompressedRowLengths( rowLengths );
     
-    bool test = false;
-    
-    std::cout << TNL::String ( m.getType() ) << std::endl;
-    if( m.getType() == TNL::String( "Matrices::CSR< int, Devices::Host >" ) || m.getType() == TNL::String( "Matrices::CSR< long int, Devices::Host >" ) )
-    {
-        test = true;
-        std::cout << "\n    1 The if statement went through!!! \n";
-    }
-    
-//    if( TNL::String( m.getType() ) == ( TNL::String( "Matrices::CSR< ") +
-//                         TNL::String( TNL::getType< RealType >() ) +
-//                         TNL::String( ", " ) +
-//                         TNL::String( "Devices::Host" ) +
-//                         TNL::String( ", " ) +
-//                         TNL::String( TNL::getType< IndexType >() ) +
-//                         TNL::String( " >" ) ) 
-//                       || 
-//                       ( TNL::String( "Matrices::CSR< ") +
-//                         TNL::String( TNL::getType< RealType >() ) +
-//                         TNL::String( ", " ) +
-//                         TNL::String( "Cuda" ) +
-//                         TNL::String( ", " ) +
-//                         TNL::String( TNL::getType< IndexType >() ) +
-//                         TNL::String( " >" ) )
-//      )
-//    {
-//        test = true;
-//    }
-    
-    if (test)
-    {
-        std::cout << "\n    2 The if statement went through!!! \n";
-    }
-    
     if( m.getType() == TNL::String( TNL::String( "Matrices::CSR< ") +
                        TNL::String( TNL::getType< RealType >() ) +
                        TNL::String( ", " ) +
-                       TNL::String( "Devices::Host" ) +
-                       TNL::String( ", " ) +
-                       TNL::String( TNL::getType< IndexType >() ) +
-                       TNL::String( " >" ) ) 
-                       || 
-        m.getType() == TNL::String( TNL::String( "Matrices::CSR< ") +
-                       TNL::String( TNL::getType< RealType >() ) +
-                       TNL::String( ", " ) +
-                       TNL::String( "Cuda" ) +
+                       TNL::String( Matrix::DeviceType::getDeviceType() ) +
                        TNL::String( ", " ) +
                        TNL::String( TNL::getType< IndexType >() ) +
                        TNL::String( " >" ) )
       )
     {
-        std::cout << "\nIf for CSR\n";
-        std::cout << TNL::String ( m.getType() ) << std::endl;
         EXPECT_EQ( m.getRowLength( 0 ), 3 );
         EXPECT_EQ( m.getRowLength( 1 ), 3 );
         EXPECT_EQ( m.getRowLength( 2 ), 1 );
@@ -212,53 +169,21 @@ void test_SetCompressedRowLengths()
         EXPECT_EQ( m.getRowLength( 8 ), 7 );
         EXPECT_EQ( m.getRowLength( 9 ), 8 );
     }
-    
-    if( m.getType() ==  TNL::String( TNL::String( "Matrices::Ellpack< ") +
-                         TNL::String( TNL::getType< RealType >() ) +
-                         TNL::String( ", " ) +
-                         TNL::String( "Devices::Host" ) +
-                         TNL::String( ", " ) +
-                         TNL::String( TNL::getType< IndexType >() ) +
-                         TNL::String( " >" ) ) 
-                       || 
-        m.getType() == TNL::String( TNL::String( "Matrices::SlicedEllpack< ") +
-                         TNL::String( TNL::getType< RealType >() ) +
-                         TNL::String( ", " ) +
-                         TNL::String( "Devices::Host" ) +
-                         TNL::String( " >" ) )
-      )
-    {
-        std::cout << "\nIf for Ellpack Host\n";
-        std::cout << TNL::String ( m.getType() ) << std::endl;
-        EXPECT_EQ( m.getRowLength( 0 ), 8 );
-        EXPECT_EQ( m.getRowLength( 1 ), 8 );
-        EXPECT_EQ( m.getRowLength( 2 ), 8 );
-        EXPECT_EQ( m.getRowLength( 3 ), 8 );
-        EXPECT_EQ( m.getRowLength( 4 ), 8 );
-        EXPECT_EQ( m.getRowLength( 5 ), 8 );
-        EXPECT_EQ( m.getRowLength( 6 ), 8 );
-        EXPECT_EQ( m.getRowLength( 7 ), 8 );
-        EXPECT_EQ( m.getRowLength( 8 ), 8 );
-        EXPECT_EQ( m.getRowLength( 9 ), 8 );
-    }
-    else if( m.getType() == TNL::String( TNL::String( "Matrices::Ellpack< ") +
-                              TNL::String( TNL::getType< RealType >() ) +
-                              TNL::String( ", " ) +
-                              TNL::String( "Cuda" ) +
-                              TNL::String( ", " ) +
-                              TNL::String( TNL::getType< IndexType >() ) +
-                              TNL::String( " >" ) )
+    else if( m.getType() ==  TNL::String( TNL::String( "Matrices::Ellpack< ") +
+                             TNL::String( TNL::getType< RealType >() ) +
+                             TNL::String( ", " ) +
+                             TNL::String( Matrix::DeviceType::getDeviceType() ) +
+                             TNL::String( ", " ) +
+                             TNL::String( TNL::getType< IndexType >() ) +
+                             TNL::String( " >" ) ) 
                             || 
              m.getType() == TNL::String( TNL::String( "Matrices::SlicedEllpack< ") +
-                              TNL::String( TNL::getType< RealType >() ) +
-                              TNL::String( ", " ) +
-                              TNL::String( "Cuda" ) +
-                              TNL::String( " >" ) )
-            
+                            TNL::String( TNL::getType< RealType >() ) +
+                            TNL::String( ", " ) +
+                            TNL::String( Matrix::DeviceType::getDeviceType() ) +
+                            TNL::String( " >" ) )
            )
     {
-        std::cout << "\nIf for Ellpack Cuda\n";
-        std::cout << TNL::String ( m.getType() ) << std::endl;
         EXPECT_EQ( m.getRowLength( 0 ), 8 );
         EXPECT_EQ( m.getRowLength( 1 ), 8 );
         EXPECT_EQ( m.getRowLength( 2 ), 8 );
@@ -272,7 +197,6 @@ void test_SetCompressedRowLengths()
     }
     else
     {
-        std::cout << "\nElse for Everything else\n";
         EXPECT_EQ( m.getRowLength( 0 ), 3 );
         EXPECT_EQ( m.getRowLength( 1 ), 3 );
         EXPECT_EQ( m.getRowLength( 2 ), 1 );
@@ -579,7 +503,7 @@ void test_SetRow()
     {
         m.setElement( 0, i + 3, value );
         m.setElement( 1, i, value + 1 );
-        m.setElement( 2, i, value + 2);
+        m.setElement( 2, i, value + 2 );
     }
     
     RealType row1 [ 3 ] = { 11, 11, 11 }; IndexType colIndexes1 [ 3 ] = { 0, 1, 2 };
