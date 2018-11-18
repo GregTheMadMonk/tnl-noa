@@ -60,12 +60,11 @@ stages:
                 -DWITH_EXAMPLES=${WITH_EXAMPLES}
                 -DWITH_TOOLS=${WITH_TOOLS}
                 -DWITH_PYTHON=${WITH_PYTHON}
-#        - make
-#        - make test
+        # "install" implies the "all" target
 #        - make install
-        - ninja ${NINJAFLAGS}
+#        - make test
+        - ninja ${NINJAFLAGS} install
         - ninja test
-        - ninja install
         - popd
     variables:
         <<: *default_cmake_flags
@@ -73,15 +72,23 @@ stages:
 
 # Cuda builds are specified first because they take more time than host-only builds,
 # which can be allocated on hosts whitout GPUs.
+# Similarly, release builds are launched first to avoid the tail effect (they take
+# significantly more time than debug builds).
 
-cuda_base_Debug:
+cuda_full_Release:
     <<: *build_template
     tags:
+        - openmp
         - gpu
     variables:
         <<: *default_cmake_flags
+        WITH_OPENMP: "yes"
         WITH_CUDA: "yes"
-        BUILD_TYPE: Debug
+        BUILD_TYPE: Release
+        WITH_BENCHMARKS: "yes"
+        WITH_EXAMPLES: "yes"
+        WITH_TOOLS: "yes"
+        WITH_PYTHON: "yes"
 
 cuda_base_Release:
     <<: *build_template
@@ -91,19 +98,6 @@ cuda_base_Release:
         <<: *default_cmake_flags
         WITH_CUDA: "yes"
         BUILD_TYPE: Release
-
-cuda_mpi_Debug:
-    <<: *build_template
-    tags:
-        - openmp
-        - gpu
-        - mpi
-    variables:
-        <<: *default_cmake_flags
-        WITH_OPENMP: "yes"
-        WITH_CUDA: "yes"
-        WITH_MPI: "yes"
-        BUILD_TYPE: Debug
 
 cuda_mpi_Release:
     <<: *build_template
@@ -133,20 +127,28 @@ cuda_full_Debug:
         WITH_TOOLS: "yes"
         WITH_PYTHON: "yes"
 
-cuda_full_Release:
+cuda_base_Debug:
+    <<: *build_template
+    tags:
+        - gpu
+    variables:
+        <<: *default_cmake_flags
+        WITH_CUDA: "yes"
+        BUILD_TYPE: Debug
+
+cuda_mpi_Debug:
     <<: *build_template
     tags:
         - openmp
         - gpu
+        - mpi
     variables:
         <<: *default_cmake_flags
         WITH_OPENMP: "yes"
         WITH_CUDA: "yes"
-        BUILD_TYPE: Release
-        WITH_BENCHMARKS: "yes"
-        WITH_EXAMPLES: "yes"
-        WITH_TOOLS: "yes"
-        WITH_PYTHON: "yes"
+        WITH_MPI: "yes"
+        BUILD_TYPE: Debug
+
 
 default_base_Debug:
     <<: *build_template
