@@ -1,7 +1,6 @@
 add_subdirectory (tnl-quickstart)
 
 CONFIGURE_FILE( "tnl-compile.in" "${PROJECT_TOOLS_PATH}/tnl-compile" @ONLY )
-CONFIGURE_FILE( "tnl-link.in" "${PROJECT_TOOLS_PATH}/tnl-link" @ONLY )
 CONFIGURE_FILE( "tnl-bindir.in" "${PROJECT_TOOLS_PATH}/tnl-bindir" @ONLY )
 
 ADD_EXECUTABLE(tnl-grid-setup tnl-grid-setup.cpp )
@@ -38,7 +37,6 @@ INSTALL( TARGETS tnl-init
 
 INSTALL( FILES ${PROJECT_TOOLS_PATH}/tnl-bindir
                ${PROJECT_TOOLS_PATH}/tnl-compile
-               ${PROJECT_TOOLS_PATH}/tnl-link
                tnl-err2eoc
                tnl-log-to-html.py
          DESTINATION bin
