@@ -112,7 +112,9 @@ template< class T > class List
       /// Erases all data elements.
       void reset();
 
-      /// Erases all data elements with contained data.
+      /// \brief Erases all data elements with contained data.
+      ///
+      /// Frees dynamicaly allocated data inside the data elements
       void DeepEraseAll();
 
       /// Saves the list in binary format.
