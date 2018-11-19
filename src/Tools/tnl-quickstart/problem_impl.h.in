@@ -8,33 +8,36 @@
 #include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
 
 template< typename Mesh,
+          typename Communicator,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
 TNL::String
-{problemBaseName}Problem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+{problemBaseName}Problem< Mesh, Communicator, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getTypeStatic()
 {{
    return TNL::String( "{problemBaseName}Problem< " ) + Mesh :: getTypeStatic() + " >";
 }}
 
 template< typename Mesh,
+          typename Communicator,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
 TNL::String 
-{problemBaseName}Problem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
+{problemBaseName}Problem< Mesh, Communicator, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getPrologHeader() const
 {{    
    return TNL::String( "{problemName}" );
 }}
 
 template< typename Mesh,
+          typename Communicator,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
 void
-{problemBaseName}Problem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::    
+{problemBaseName}Problem< Mesh, Communicator, BoundaryCondition, RightHandSide, DifferentialOperator >::    
 writeProlog( TNL::Logger& logger, const TNL::Config::ParameterContainer& parameters ) const
 {{
    /****
@@ -44,13 +47,13 @@ writeProlog( TNL::Logger& logger, const TNL::Config::ParameterContainer& paramet
 }}
 
 template< typename Mesh,
+          typename Communicator,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
 bool
-{problemBaseName}Problem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::        
-setup( const MeshPointer& meshPointer,
-       const TNL::Config::ParameterContainer& parameters,
+{problemBaseName}Problem< Mesh, Communicator, BoundaryCondition, RightHandSide, DifferentialOperator >::        
+setup( const TNL::Config::ParameterContainer& parameters,
        const TNL::String& prefix )
 {{
    if( ! this->boundaryCondition->setup( meshPointer, parameters, "boundary-conditions-" ) ||
@@ -60,44 +63,44 @@ setup( const MeshPointer& meshPointer,
 }}
 
 template< typename Mesh,
+          typename Communicator,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-typename {problemBaseName}Problem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::IndexType
-    {problemBaseName}Problem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::            
-getDofs( const MeshPointer& mesh ) const
+typename {problemBaseName}Problem< Mesh, Communicator, BoundaryCondition, RightHandSide, DifferentialOperator >::IndexType
+    {problemBaseName}Problem< Mesh, Communicator, BoundaryCondition, RightHandSide, DifferentialOperator >::            
+getDofs() const
 {{
    /****
     * Return number of  DOFs (degrees of freedom) i.e. number
     * of unknowns to be resolved by the main solver.
     */
-   return mesh->template getEntitiesCount< typename MeshType::Cell >();
+   return this->getMesh()->template getEntitiesCount< typename MeshType::Cell >();
 }}
 
 template< typename Mesh,
+          typename Communicator,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
 void
-{problemBaseName}Problem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::            
-bindDofs( const MeshPointer& mesh,
-          DofVectorPointer& dofVector )    
+{problemBaseName}Problem< Mesh, Communicator, BoundaryCondition, RightHandSide, DifferentialOperator >::            
+bindDofs( DofVectorPointer& dofVector )    
 {{
 }}
 
 template< typename Mesh,
+          typename Communicator,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
 bool
-{problemBaseName}Problem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::            
+{problemBaseName}Problem< Mesh, Communicator, BoundaryCondition, RightHandSide, DifferentialOperator >::            
 setInitialCondition( const TNL::Config::ParameterContainer& parameters,    
-                     const MeshPointer& mesh,
-                     DofVectorPointer& dofs,
-                     MeshDependentDataPointer& meshDependentData )
+                     DofVectorPointer& dofs )
 {{
    const TNL::String& initialConditionFile = parameters.getParameter< TNL::String >( "initial-condition" );
-   TNL::Functions::MeshFunction< Mesh > u( mesh, dofs );
+   TNL::Functions::MeshFunction< Mesh > u( this->getMesh(), dofs );
    if( ! u.boundLoad( initialConditionFile ) )
    {{
       std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << std::endl;
@@ -107,22 +110,22 @@ setInitialCondition( const TNL::Config::ParameterContainer& parameters,
 }}
 
 template< typename Mesh,
+          typename Communicator,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
    template< typename MatrixPointer >
 bool
-{problemBaseName}Problem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::                
-setupLinearSystem( const MeshPointer& meshPointer,
-                   MatrixPointer& matrixPointer )
+{problemBaseName}Problem< Mesh, Communicator, BoundaryCondition, RightHandSide, DifferentialOperator >::                
+setupLinearSystem( MatrixPointer& matrixPointer )
 {{
-   const IndexType dofs = this->getDofs( meshPointer );
+   const IndexType dofs = this->getDofs( this->getMesh() );
    typedef typename MatrixPointer::ObjectType::CompressedRowLengthsVector CompressedRowLengthsVectorType;
    TNL::SharedPointer< CompressedRowLengthsVectorType > rowLengthsPointer;
    if( ! rowLengthsPointer->setSize( dofs ) )
       return false;
    TNL::Matrices::MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowLengthsVectorType > matrixSetter;
-   matrixSetter.template getCompressedRowLengths< typename Mesh::Cell >( meshPointer,
+   matrixSetter.template getCompressedRowLengths< typename Mesh::Cell >( this->getMesh(),
                                                                          differentialOperator,
                                                                          boundaryCondition,
                                                                          rowLengthsPointer );
@@ -133,19 +136,18 @@ setupLinearSystem( const MeshPointer& meshPointer,
 }}
 
 template< typename Mesh,
+          typename Communicator,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
 bool
-{problemBaseName}Problem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::                    
+{problemBaseName}Problem< Mesh, Communicator, BoundaryCondition, RightHandSide, DifferentialOperator >::                    
 makeSnapshot( const RealType& time,
               const IndexType& step,
-              const MeshPointer& mesh,
-              DofVectorPointer& dofs,
-              MeshDependentDataPointer& meshDependentData )
+              DofVectorPointer& dofs )
 {{
    std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
-   this->bindDofs( mesh, dofs );
+   this->bindDofs( this->getMesh(), dofs );
    TNL::FileName fileName;
    fileName.setFileNameBase( "u-" );
    fileName.setExtension( "tnl" );
@@ -156,17 +158,16 @@ makeSnapshot( const RealType& time,
 }}
 
 template< typename Mesh,
+          typename Communicator,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
 void
-{problemBaseName}Problem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::                    
+{problemBaseName}Problem< Mesh, Communicator, BoundaryCondition, RightHandSide, DifferentialOperator >::                    
 getExplicitUpdate( const RealType& time,
                    const RealType& tau,
-                   const MeshPointer& mesh,
                    DofVectorPointer& _u,
-                   DofVectorPointer& _fu,
-                   MeshDependentDataPointer& meshDependentData )
+                   DofVectorPointer& _fu )
 {{
    /****
     * If you use an explicit solver like EulerSolver or MersonSolver, you
@@ -177,28 +178,27 @@ getExplicitUpdate( const RealType& time,
     * You may use supporting mesh dependent data if you need.
     */
 
-   TNL::SharedPointer< MeshFunctionType > uPointer( mesh, _u ); 
-   TNL::SharedPointer< MeshFunctionType > fuPointer( mesh, _fu ); 
+   TNL::SharedPointer< MeshFunctionType > uPointer( this->getMesh(), _u ); 
+   TNL::SharedPointer< MeshFunctionType > fuPointer( this->getMesh(), _fu ); 
    this->explicitUpdater.setDifferentialOperator( this->differentialOperator ),
    this->explicitUpdater.setBoundaryConditions( this->boundaryCondition ),
    this->explicitUpdater.setRightHandSide( this->rightHandSide ),
-   this->explicitUpdater.template update< typename Mesh::Cell >( time, tau, mesh, uPointer, fuPointer );
+   this->explicitUpdater.template update< typename Mesh::Cell >( time, tau, this->getMesh(), uPointer, fuPointer );
 }}
 
 template< typename Mesh,
+          typename Communicator,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
    template< typename MatrixPointer >
 void
-{problemBaseName}Problem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::                
+{problemBaseName}Problem< Mesh, Communicator, BoundaryCondition, RightHandSide, DifferentialOperator >::                
 assemblyLinearSystem( const RealType& time,
                       const RealType& tau,
-                      const MeshPointer& mesh,
                       DofVectorPointer& _u,
                       MatrixPointer& matrixPointer,
-                      DofVectorPointer& b,
-                      MeshDependentDataPointer& meshDependentData )
+                      DofVectorPointer& b )
 {{
    /****
     * If you implement a (semi-)implicit solver, this method is supposed
@@ -206,14 +206,14 @@ assemblyLinearSystem( const RealType& time,
     * You may use supporting mesh dependent data if you need.
     */
 
-   TNL::SharedPointer< TNL::Functions::MeshFunction< Mesh > > uPointer( mesh, _u );
+   TNL::SharedPointer< TNL::Functions::MeshFunction< Mesh > > uPointer( this->getMesh(), _u );
    this->systemAssembler.setDifferentialOperator( this->differentialOperator );
    this->systemAssembler.setBoundaryConditions( this->boundaryCondition );
    this->systemAssembler.setRightHandSide( this->rightHandSide );
    this->systemAssembler.template assembly< typename Mesh::Cell, typename MatrixPointer::ObjectType >( 
       time,
       tau,
-      mesh,
+      this->getMesh(),
       uPointer,
       matrixPointer,
       b );

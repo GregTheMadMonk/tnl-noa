@@ -47,7 +47,8 @@ template< typename Real,
           typename Index,
           typename MeshType,
           typename ConfigTag,
-          typename SolverStarter >
+          typename SolverStarter,
+          typename CommunicatorType >
 class {problemBaseName}Setter
 {{
    public:
@@ -75,12 +76,12 @@ class {problemBaseName}Setter
              if( boundaryConditionsType == "dirichlet" )
              {{
                 typedef Operators::DirichletBoundaryConditions< MeshType, ConstantFunction, MeshType::getMeshDimension(), Real, Index > BoundaryConditions;
-                typedef {problemBaseName}Problem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
+                typedef {problemBaseName}Problem< MeshType, Communicator, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
                 SolverStarter solverStarter;
                 return solverStarter.template run< Problem >( parameters );
              }}
              typedef Operators::NeumannBoundaryConditions< MeshType, ConstantFunction, Real, Index > BoundaryConditions;
-             typedef {problemBaseName}Problem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
+             typedef {problemBaseName}Problem< MeshType, Communicator, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
              SolverStarter solverStarter;
              return solverStarter.template run< Problem >( parameters );
           }}
@@ -88,12 +89,12 @@ class {problemBaseName}Setter
           if( boundaryConditionsType == "dirichlet" )
           {{    
              typedef Operators::DirichletBoundaryConditions< MeshType, MeshFunction, MeshType::getMeshDimension(), Real, Index > BoundaryConditions;
-             typedef {problemBaseName}Problem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
+             typedef {problemBaseName}Problem< MeshType, Communicator, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
              SolverStarter solverStarter;
              return solverStarter.template run< Problem >( parameters );
           }}
           typedef Operators::NeumannBoundaryConditions< MeshType, MeshFunction, Real, Index > BoundaryConditions;
-          typedef {problemBaseName}Problem< MeshType, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
+          typedef {problemBaseName}Problem< MeshType, Communicator, BoundaryConditions, RightHandSide, ApproximateOperator > Problem;
           SolverStarter solverStarter;
           return solverStarter.template run< Problem >( parameters );
       }}
