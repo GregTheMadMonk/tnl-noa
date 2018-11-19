@@ -844,16 +844,238 @@ void test_Print()
     EXPECT_EQ( printed.str(), couted.str() );
 }
 
+//// test fixture for typed tests
+//template< typename Matrix >
+//class AdEllpackMatrixTest : public ::testing::Test
+//{
+//protected:
+//   using AdEllpackMatrixType = Matrix;
+//};
+//
+//// types for which MatrixTest is instantiated
+//using AdEllpackMatrixTypes = ::testing::Types
+//<
+//    TNL::Matrices::AdEllpack< int,    TNL::Devices::Host, short >,
+//    TNL::Matrices::AdEllpack< long,   TNL::Devices::Host, short >,
+//    TNL::Matrices::AdEllpack< float,  TNL::Devices::Host, short >,
+//    TNL::Matrices::AdEllpack< double, TNL::Devices::Host, short >,
+//    TNL::Matrices::AdEllpack< int,    TNL::Devices::Host, int >,
+//    TNL::Matrices::AdEllpack< long,   TNL::Devices::Host, int >,
+//    TNL::Matrices::AdEllpack< float,  TNL::Devices::Host, int >,
+//    TNL::Matrices::AdEllpack< double, TNL::Devices::Host, int >,
+//    TNL::Matrices::AdEllpack< int,    TNL::Devices::Host, long >,
+//    TNL::Matrices::AdEllpack< long,   TNL::Devices::Host, long >,
+//    TNL::Matrices::AdEllpack< float,  TNL::Devices::Host, long >,
+//    TNL::Matrices::AdEllpack< double, TNL::Devices::Host, long >,
+//#ifdef HAVE_CUDA
+//    TNL::Matrices::AdEllpack< int,    TNL::Devices::Cuda, short >,
+//    TNL::Matrices::AdEllpack< long,   TNL::Devices::Cuda, short >,
+//    TNL::Matrices::AdEllpack< float,  TNL::Devices::Cuda, short >,
+//    TNL::Matrices::AdEllpack< double, TNL::Devices::Cuda, short >,
+//    TNL::Matrices::AdEllpack< int,    TNL::Devices::Cuda, int >,
+//    TNL::Matrices::AdEllpack< long,   TNL::Devices::Cuda, int >,
+//    TNL::Matrices::AdEllpack< float,  TNL::Devices::Cuda, int >,
+//    TNL::Matrices::AdEllpack< double, TNL::Devices::Cuda, int >,
+//    TNL::Matrices::AdEllpack< int,    TNL::Devices::Cuda, long >,
+//    TNL::Matrices::AdEllpack< long,   TNL::Devices::Cuda, long >,
+//    TNL::Matrices::AdEllpack< float,  TNL::Devices::Cuda, long >,
+//    TNL::Matrices::AdEllpack< double, TNL::Devices::Cuda, long >
+//#endif
+//>;
+//
+//TYPED_TEST_CASE( AdEllpackMatrixTest, AdEllpackMatrixTypes);
+//
+//TYPED_TEST( AdEllpackMatrixTest, setDimensionsTest )
+//{
+//    using AdEllpackMatrixType = typename TestFixture::AdEllpackMatrixType;
+//    
+//    test_SetDimensions< AdEllpackMatrixType >();
+//}
+//
+//TYPED_TEST( AdEllpackMatrixTest, setCompressedRowLengthsTest )
+//{
+//    using AdEllpackMatrixType = typename TestFixture::AdEllpackMatrixType;
+//    
+//    test_SetCompressedRowLengths< AdEllpackMatrixType >();
+//}
+//
+//TYPED_TEST( AdEllpackMatrixTest, setLikeTest )
+//{
+//    using AdEllpackMatrixType = typename TestFixture::AdEllpackMatrixType;
+//    
+//    test_SetLike< AdEllpackMatrixType, AdEllpackMatrixType >();
+//}
+//
+//TYPED_TEST( AdEllpackMatrixTest, resetTest )
+//{
+//    using AdEllpackMatrixType = typename TestFixture::AdEllpackMatrixType;
+//    
+//    test_Reset< AdEllpackMatrixType >();
+//}
+//
+//TYPED_TEST( AdEllpackMatrixTest, setElementTest )
+//{
+//    using AdEllpackMatrixType = typename TestFixture::AdEllpackMatrixType;
+//    
+//    test_SetElement< AdEllpackMatrixType >();
+//}
+//
+//TYPED_TEST( AdEllpackMatrixTest, addElementTest )
+//{
+//    using AdEllpackMatrixType = typename TestFixture::AdEllpackMatrixType;
+//    
+//    test_AddElement< AdEllpackMatrixType >();
+//}
+//
+//TYPED_TEST( AdEllpackMatrixTest, setRowTest )
+//{
+//    using AdEllpackMatrixType = typename TestFixture::AdEllpackMatrixType;
+//    
+//    test_SetRow< AdEllpackMatrixType >();
+//}
+//
+//TYPED_TEST( AdEllpackMatrixTest, vectorProductTest )
+//{
+//    using AdEllpackMatrixType = typename TestFixture::AdEllpackMatrixType;
+//    
+//    test_VectorProduct< AdEllpackMatrixType >();
+//}
+//
+//TYPED_TEST( AdEllpackMatrixTest, saveAndLoadTest )
+//{
+//    using AdEllpackMatrixType = typename TestFixture::AdEllpackMatrixType;
+//    
+//    test_SaveAndLoad< AdEllpackMatrixType >();
+//}
+//
+//TYPED_TEST( AdEllpackMatrixTest, printTest )
+//{
+//    using AdEllpackMatrixType = typename TestFixture::AdEllpackMatrixType;
+//    
+//    test_Print< AdEllpackMatrixType >();
+//}
+//
+//// test fixture for typed tests
+//template< typename Matrix >
+//class BiEllpackMatrixTest : public ::testing::Test
+//{
+//protected:
+//   using BiEllpackMatrixType = Matrix;
+//};
+//
+//// types for which MatrixTest is instantiated
+//using BiEllpackMatrixTypes = ::testing::Types
+//<
+//    TNL::Matrices::BiEllpack< int,    TNL::Devices::Host, short >,
+//    TNL::Matrices::BiEllpack< long,   TNL::Devices::Host, short >,
+//    TNL::Matrices::BiEllpack< float,  TNL::Devices::Host, short >,
+//    TNL::Matrices::BiEllpack< double, TNL::Devices::Host, short >,
+//    TNL::Matrices::BiEllpack< int,    TNL::Devices::Host, int >,
+//    TNL::Matrices::BiEllpack< long,   TNL::Devices::Host, int >,
+//    TNL::Matrices::BiEllpack< float,  TNL::Devices::Host, int >,
+//    TNL::Matrices::BiEllpack< double, TNL::Devices::Host, int >,
+//    TNL::Matrices::BiEllpack< int,    TNL::Devices::Host, long >,
+//    TNL::Matrices::BiEllpack< long,   TNL::Devices::Host, long >,
+//    TNL::Matrices::BiEllpack< float,  TNL::Devices::Host, long >,
+//    TNL::Matrices::BiEllpack< double, TNL::Devices::Host, long >//,
+////#ifdef HAVE_CUDA
+////    TNL::Matrices::BiEllpack< int,    TNL::Devices::Cuda, short >,
+////    TNL::Matrices::BiEllpack< long,   TNL::Devices::Cuda, short >,
+////    TNL::Matrices::BiEllpack< float,  TNL::Devices::Cuda, short >,
+////    TNL::Matrices::BiEllpack< double, TNL::Devices::Cuda, short >,
+////    TNL::Matrices::BiEllpack< int,    TNL::Devices::Cuda, int >,
+////    TNL::Matrices::BiEllpack< long,   TNL::Devices::Cuda, int >,
+////    TNL::Matrices::BiEllpack< float,  TNL::Devices::Cuda, int >,
+////    TNL::Matrices::BiEllpack< double, TNL::Devices::Cuda, int >,
+////    TNL::Matrices::BiEllpack< int,    TNL::Devices::Cuda, long >,
+////    TNL::Matrices::BiEllpack< long,   TNL::Devices::Cuda, long >,
+////    TNL::Matrices::BiEllpack< float,  TNL::Devices::Cuda, long >,
+////    TNL::Matrices::BiEllpack< double, TNL::Devices::Cuda, long >
+////#endif
+//>;
+//
+//TYPED_TEST_CASE( BiEllpackMatrixTest, BiEllpackMatrixTypes);
+//
+//TYPED_TEST( BiEllpackMatrixTest, setDimensionsTest )
+//{
+//    using BiEllpackMatrixType = typename TestFixture::BiEllpackMatrixType;
+//    
+//    test_SetDimensions< BiEllpackMatrixType >();
+//}
+//
+//TYPED_TEST( BiEllpackMatrixTest, setCompressedRowLengthsTest )
+//{
+//    using BiEllpackMatrixType = typename TestFixture::BiEllpackMatrixType;
+//    
+//    test_SetCompressedRowLengths< BiEllpackMatrixType >();
+//}
+//
+//TYPED_TEST( BiEllpackMatrixTest, setLikeTest )
+//{
+//    using BiEllpackMatrixType = typename TestFixture::BiEllpackMatrixType;
+//    
+//    test_SetLike< BiEllpackMatrixType, BiEllpackMatrixType >();
+//}
+//
+//TYPED_TEST( BiEllpackMatrixTest, resetTest )
+//{
+//    using BiEllpackMatrixType = typename TestFixture::BiEllpackMatrixType;
+//    
+//    test_Reset< BiEllpackMatrixType >();
+//}
+//
+//TYPED_TEST( BiEllpackMatrixTest, setElementTest )
+//{
+//    using BiEllpackMatrixType = typename TestFixture::BiEllpackMatrixType;
+//    
+//    test_SetElement< BiEllpackMatrixType >();
+//}
+//
+//TYPED_TEST( BiEllpackMatrixTest, addElementTest )
+//{
+//    using BiEllpackMatrixType = typename TestFixture::BiEllpackMatrixType;
+//    
+//    test_AddElement< BiEllpackMatrixType >();
+//}
+//
+//TYPED_TEST( BiEllpackMatrixTest, setRowTest )
+//{
+//    using BiEllpackMatrixType = typename TestFixture::BiEllpackMatrixType;
+//    
+//    test_SetRow< BiEllpackMatrixType >();
+//}
+//
+//TYPED_TEST( BiEllpackMatrixTest, vectorProductTest )
+//{
+//    using BiEllpackMatrixType = typename TestFixture::BiEllpackMatrixType;
+//    
+//    test_VectorProduct< BiEllpackMatrixType >();
+//}
+//
+//TYPED_TEST( BiEllpackMatrixTest, saveAndLoadTest )
+//{
+//    using BiEllpackMatrixType = typename TestFixture::BiEllpackMatrixType;
+//    
+//    test_SaveAndLoad< BiEllpackMatrixType >();
+//}
+//
+//TYPED_TEST( BiEllpackMatrixTest, printTest )
+//{
+//    using BiEllpackMatrixType = typename TestFixture::BiEllpackMatrixType;
+//    
+//    test_Print< BiEllpackMatrixType >();
+//}
+
 // test fixture for typed tests
 template< typename Matrix >
-class CHEllpackMatrixTest : public ::testing::Test
+class ChEllpackMatrixTest : public ::testing::Test
 {
 protected:
-   using CHEllpackMatrixType = Matrix;
+   using ChEllpackMatrixType = Matrix;
 };
 
 // types for which MatrixTest is instantiated
-using CHEllpackMatrixTypes = ::testing::Types
+using ChEllpackMatrixTypes = ::testing::Types
 <
     TNL::Matrices::ChunkedEllpack< int,    TNL::Devices::Host, short >,
     TNL::Matrices::ChunkedEllpack< long,   TNL::Devices::Host, short >,
@@ -883,76 +1105,76 @@ using CHEllpackMatrixTypes = ::testing::Types
 #endif
 >;
 
-TYPED_TEST_CASE( CHEllpackMatrixTest, CHEllpackMatrixTypes);
+TYPED_TEST_CASE( ChEllpackMatrixTest, ChEllpackMatrixTypes);
 
-TYPED_TEST( CHEllpackMatrixTest, setDimensionsTest )
+TYPED_TEST( ChEllpackMatrixTest, setDimensionsTest )
 {
-    using CHEllpackMatrixType = typename TestFixture::CHEllpackMatrixType;
+    using ChEllpackMatrixType = typename TestFixture::ChEllpackMatrixType;
     
-    test_SetDimensions< CHEllpackMatrixType >();
+    test_SetDimensions< ChEllpackMatrixType >();
 }
 
-TYPED_TEST( CHEllpackMatrixTest, setCompressedRowLengthsTest )
+TYPED_TEST( ChEllpackMatrixTest, setCompressedRowLengthsTest )
 {
-    using CHEllpackMatrixType = typename TestFixture::CHEllpackMatrixType;
+    using ChEllpackMatrixType = typename TestFixture::ChEllpackMatrixType;
     
-    test_SetCompressedRowLengths< CHEllpackMatrixType >();
+    test_SetCompressedRowLengths< ChEllpackMatrixType >();
 }
 
-TYPED_TEST( CHEllpackMatrixTest, setLikeTest )
+TYPED_TEST( ChEllpackMatrixTest, setLikeTest )
 {
-    using CHEllpackMatrixType = typename TestFixture::CHEllpackMatrixType;
+    using ChEllpackMatrixType = typename TestFixture::ChEllpackMatrixType;
     
-    test_SetLike< CHEllpackMatrixType, CHEllpackMatrixType >();
+    test_SetLike< ChEllpackMatrixType, ChEllpackMatrixType >();
 }
 
-TYPED_TEST( CHEllpackMatrixTest, resetTest )
+TYPED_TEST( ChEllpackMatrixTest, resetTest )
 {
-    using CHEllpackMatrixType = typename TestFixture::CHEllpackMatrixType;
+    using ChEllpackMatrixType = typename TestFixture::ChEllpackMatrixType;
     
-    test_Reset< CHEllpackMatrixType >();
+    test_Reset< ChEllpackMatrixType >();
 }
 
-TYPED_TEST( CHEllpackMatrixTest, setElementTest )
+TYPED_TEST( ChEllpackMatrixTest, setElementTest )
 {
-    using CHEllpackMatrixType = typename TestFixture::CHEllpackMatrixType;
+    using ChEllpackMatrixType = typename TestFixture::ChEllpackMatrixType;
     
-    test_SetElement< CHEllpackMatrixType >();
+    test_SetElement< ChEllpackMatrixType >();
 }
 
-TYPED_TEST( CHEllpackMatrixTest, addElementTest )
+TYPED_TEST( ChEllpackMatrixTest, addElementTest )
 {
-    using CHEllpackMatrixType = typename TestFixture::CHEllpackMatrixType;
+    using ChEllpackMatrixType = typename TestFixture::ChEllpackMatrixType;
     
-    test_AddElement< CHEllpackMatrixType >();
+    test_AddElement< ChEllpackMatrixType >();
 }
 
-TYPED_TEST( CHEllpackMatrixTest, setRowTest )
+TYPED_TEST( ChEllpackMatrixTest, setRowTest )
 {
-    using CHEllpackMatrixType = typename TestFixture::CHEllpackMatrixType;
+    using ChEllpackMatrixType = typename TestFixture::ChEllpackMatrixType;
     
-    test_SetRow< CHEllpackMatrixType >();
+    test_SetRow< ChEllpackMatrixType >();
 }
 
-TYPED_TEST( CHEllpackMatrixTest, vectorProductTest )
+TYPED_TEST( ChEllpackMatrixTest, vectorProductTest )
 {
-    using CHEllpackMatrixType = typename TestFixture::CHEllpackMatrixType;
+    using ChEllpackMatrixType = typename TestFixture::ChEllpackMatrixType;
     
-    test_VectorProduct< CHEllpackMatrixType >();
+    test_VectorProduct< ChEllpackMatrixType >();
 }
 
-TYPED_TEST( CHEllpackMatrixTest, saveAndLoadTest )
+TYPED_TEST( ChEllpackMatrixTest, saveAndLoadTest )
 {
-    using CHEllpackMatrixType = typename TestFixture::CHEllpackMatrixType;
+    using ChEllpackMatrixType = typename TestFixture::ChEllpackMatrixType;
     
-    test_SaveAndLoad< CHEllpackMatrixType >();
+    test_SaveAndLoad< ChEllpackMatrixType >();
 }
 
-TYPED_TEST( CHEllpackMatrixTest, printTest )
+TYPED_TEST( ChEllpackMatrixTest, printTest )
 {
-    using CHEllpackMatrixType = typename TestFixture::CHEllpackMatrixType;
+    using ChEllpackMatrixType = typename TestFixture::ChEllpackMatrixType;
     
-    test_Print< CHEllpackMatrixType >();
+    test_Print< ChEllpackMatrixType >();
 }
 
 // test fixture for typed tests
