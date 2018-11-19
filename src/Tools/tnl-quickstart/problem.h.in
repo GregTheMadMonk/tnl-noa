@@ -17,25 +17,26 @@ class {problemBaseName}Problem:
                                      Communicator,
                                      typename DifferentialOperator::RealType,
                                      typename Mesh::DeviceType,
-                                     typename DifferentialOperator::IndexType >
+                                     typename Mesh::IndexType >
 {{
    public:
 
       typedef typename DifferentialOperator::RealType RealType;
       typedef typename Mesh::DeviceType DeviceType;
-      typedef typename DifferentialOperator::IndexType IndexType;
-      typedef TNL::Functions::MeshFunction< Mesh > MeshFunctionType;
-      typedef TNL::Problems::PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
-      typedef TNL::SharedPointer< DifferentialOperator > DifferentialOperatorPointer;
-      typedef TNL::SharedPointer< BoundaryCondition > BoundaryConditionPointer;
-      typedef TNL::SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
+      typedef typename Mesh::IndexType IndexType;
+      typedef TNL::Functions::MeshFunction< Mesh, Mesh::getMeshDimension(), RealType > MeshFunctionType;
+      typedef TNL::Problems::PDEProblem< Mesh, Communicator, RealType, DeviceType, IndexType > BaseType;
+      typedef TNL::Pointers::SharedPointer< MeshFunctionType > MeshFunctionPointer;
+      typedef TNL::Pointers::SharedPointer< DifferentialOperator > DifferentialOperatorPointer;
+      typedef TNL::Pointers::SharedPointer< BoundaryCondition > BoundaryConditionPointer;
+      typedef TNL::Pointers::SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
 
       using typename BaseType::MeshType;
       using typename BaseType::MeshPointer;
       using typename BaseType::DofVectorType;
       using typename BaseType::DofVectorPointer;
 
-      using CommunicatorType Communicator;
+      using CommunicatorType = Communicator;
 
       static TNL::String getTypeStatic();
 

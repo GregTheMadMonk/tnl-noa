@@ -56,7 +56,7 @@ bool
 setup( const TNL::Config::ParameterContainer& parameters,
        const TNL::String& prefix )
 {{
-   if( ! this->boundaryCondition->setup( meshPointer, parameters, "boundary-conditions-" ) ||
+   if( ! this->boundaryCondition->setup( this->getMesh(), parameters, "boundary-conditions-" ) ||
        ! this->rightHandSide->setup( parameters, "right-hand-side-" ) )
       return false;
    return true;
@@ -100,7 +100,7 @@ setInitialCondition( const TNL::Config::ParameterContainer& parameters,
                      DofVectorPointer& dofs )
 {{
    const TNL::String& initialConditionFile = parameters.getParameter< TNL::String >( "initial-condition" );
-   TNL::Functions::MeshFunction< Mesh > u( this->getMesh(), dofs );
+   MeshFunctionType u( this->getMesh(), dofs );
    if( ! u.boundLoad( initialConditionFile ) )
    {{
       std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << std::endl;
@@ -119,19 +119,17 @@ bool
 {problemBaseName}Problem< Mesh, Communicator, BoundaryCondition, RightHandSide, DifferentialOperator >::                
 setupLinearSystem( MatrixPointer& matrixPointer )
 {{
-   const IndexType dofs = this->getDofs( this->getMesh() );
+   const IndexType dofs = this->getDofs();
    typedef typename MatrixPointer::ObjectType::CompressedRowLengthsVector CompressedRowLengthsVectorType;
-   TNL::SharedPointer< CompressedRowLengthsVectorType > rowLengthsPointer;
-   if( ! rowLengthsPointer->setSize( dofs ) )
-      return false;
+   TNL::Pointers::SharedPointer< CompressedRowLengthsVectorType > rowLengthsPointer;
+   rowLengthsPointer->setSize( dofs );
    TNL::Matrices::MatrixSetter< MeshType, DifferentialOperator, BoundaryCondition, CompressedRowLengthsVectorType > matrixSetter;
    matrixSetter.template getCompressedRowLengths< typename Mesh::Cell >( this->getMesh(),
                                                                          differentialOperator,
                                                                          boundaryCondition,
                                                                          rowLengthsPointer );
    matrixPointer->setDimensions( dofs, dofs );
-   if( ! matrixPointer->setCompressedRowLengths( *rowLengthsPointer ) )
-      return false;
+   matrixPointer->setCompressedRowLengths( *rowLengthsPointer );
    return true;
 }}
 
@@ -147,7 +145,7 @@ makeSnapshot( const RealType& time,
               DofVectorPointer& dofs )
 {{
    std::cout << std::endl << "Writing output at time " << time << " step " << step << "." << std::endl;
-   this->bindDofs( this->getMesh(), dofs );
+   this->bindDofs( dofs );
    TNL::FileName fileName;
    fileName.setFileNameBase( "u-" );
    fileName.setExtension( "tnl" );
@@ -178,12 +176,12 @@ getExplicitUpdate( const RealType& time,
     * You may use supporting mesh dependent data if you need.
     */
 
-   TNL::SharedPointer< MeshFunctionType > uPointer( this->getMesh(), _u ); 
-   TNL::SharedPointer< MeshFunctionType > fuPointer( this->getMesh(), _fu ); 
-   this->explicitUpdater.setDifferentialOperator( this->differentialOperator ),
-   this->explicitUpdater.setBoundaryConditions( this->boundaryCondition ),
-   this->explicitUpdater.setRightHandSide( this->rightHandSide ),
-   this->explicitUpdater.template update< typename Mesh::Cell >( time, tau, this->getMesh(), uPointer, fuPointer );
+   TNL::Pointers::SharedPointer< MeshFunctionType > uPointer( this->getMesh(), _u ); 
+   TNL::Pointers::SharedPointer< MeshFunctionType > fuPointer( this->getMesh(), _fu ); 
+   this->explicitUpdater.setDifferentialOperator( this->differentialOperator );
+   this->explicitUpdater.setBoundaryConditions( this->boundaryCondition );
+   this->explicitUpdater.setRightHandSide( this->rightHandSide );
+   this->explicitUpdater.template update< typename Mesh::Cell, CommunicatorType >( time, tau, this->getMesh(), uPointer, fuPointer );
 }}
 
 template< typename Mesh,
@@ -206,7 +204,7 @@ assemblyLinearSystem( const RealType& time,
     * You may use supporting mesh dependent data if you need.
     */
 
-   TNL::SharedPointer< TNL::Functions::MeshFunction< Mesh > > uPointer( this->getMesh(), _u );
+   MeshFunctionPointer uPointer( this->getMesh(), _u );
    this->systemAssembler.setDifferentialOperator( this->differentialOperator );
    this->systemAssembler.setBoundaryConditions( this->boundaryCondition );
    this->systemAssembler.setRightHandSide( this->rightHandSide );

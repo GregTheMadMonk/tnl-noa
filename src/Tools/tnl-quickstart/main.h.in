@@ -48,7 +48,7 @@ template< typename Real,
           typename MeshType,
           typename ConfigTag,
           typename SolverStarter,
-          typename CommunicatorType >
+          typename Communicator >
 class {problemBaseName}Setter
 {{
    public:

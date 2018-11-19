@@ -34,7 +34,7 @@ operator()( const MeshFunction& u,
     * The following example is the Laplace operator approximated 
     * by the Finite difference method.
     */  
-   static_assert( MeshEntity::entityDimension == {meshDimension}, "Wrong mesh entity dimensions." );
+   static_assert( MeshEntity::getEntityDimension() == {meshDimension}, "Wrong mesh entity dimensions." );
    static_assert( MeshFunction::getEntitiesDimension() == {meshDimension}, "Wrong preimage function" );
    const typename MeshEntity::template NeighborEntities< {meshDimension} >& neighborEntities = entity.getNeighborEntities(); 
 
@@ -84,7 +84,7 @@ setMatrixElements( const PreimageFunction& u,
                    Matrix& matrix,
                    Vector& b ) const
 {{
-   static_assert( MeshEntity::entityDimension == {meshDimension}, "Wrong mesh entity dimensions." );
+   static_assert( MeshEntity::getEntityDimension() == {meshDimension}, "Wrong mesh entity dimensions." );
    static_assert( PreimageFunction::getEntitiesDimension() == {meshDimension}, "Wrong preimage function" );
 
    /****

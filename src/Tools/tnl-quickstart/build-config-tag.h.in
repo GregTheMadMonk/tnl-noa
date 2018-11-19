@@ -20,31 +20,21 @@ template<> struct ConfigTagIndex< {problemBaseName}BuildConfigTag, short int >{{
 template<> struct ConfigTagIndex< {problemBaseName}BuildConfigTag, long int >{{ enum {{ enabled = false }}; }};
     
 /****
- * With how many dimensions may have the problem to be solved...
- */    
-template< int Dimension > struct ConfigTagDimension< {problemBaseName}BuildConfigTag, Dimension >{{ enum {{ enabled = ( Dimension == 1 ) }}; }};
+ * The mesh type will be resolved by the Solver by default.
+ * (The detailed mesh configuration is in TNL/Meshes/BuildConfigTags.h)
+ */
+template<> struct ConfigTagMeshResolve< {problemBaseName}BuildConfigTag >{{ enum {{ enabled = true }}; }};
 
 /****
- * Use of Meshes::Grid is enabled for allowed dimensions and Real, Device and Index types.
+ * All time discretisations (explicit, semi-impicit and implicit ) are
+ * enabled by default.
  */
-template< int Dimension, typename Real, typename Device, typename Index >
-   struct ConfigTagMesh< {problemBaseName}BuildConfigTag, Meshes::Grid< Dimension, Real, Device, Index > >
-      {{ enum {{ enabled = ConfigTagDimension< {problemBaseName}BuildConfigTag, Dimension >::enabled  &&
-                         ConfigTagReal< {problemBaseName}BuildConfigTag, Real >::enabled &&
-                         ConfigTagDevice< {problemBaseName}BuildConfigTag, Device >::enabled &&
-                         ConfigTagIndex< {problemBaseName}BuildConfigTag, Index >::enabled }}; }};
+template< typename TimeDiscretisation > struct ConfigTagTimeDiscretisation< {problemBaseName}BuildConfigTag, TimeDiscretisation >{{ enum {{ enabled = true }}; }};
 
 /****
- * Please, chose your preferred time discretization  here.
+ * All explicit solvers are enabled by default
  */
-template<> struct ConfigTagTimeDiscretisation< {problemBaseName}BuildConfigTag, ExplicitTimeDiscretisationTag >{{ enum {{ enabled = true }}; }};
-template<> struct ConfigTagTimeDiscretisation< {problemBaseName}BuildConfigTag, SemiImplicitTimeDiscretisationTag >{{ enum {{ enabled = true }}; }};
-template<> struct ConfigTagTimeDiscretisation< {problemBaseName}BuildConfigTag, ImplicitTimeDiscretisationTag >{{ enum {{ enabled = false }}; }};
-
-/****
- * Only the Runge-Kutta-Merson solver is enabled by default.
- */
-template<> struct ConfigTagExplicitSolver< {problemBaseName}BuildConfigTag, ExplicitEulerSolverTag >{{ enum {{ enabled = false }}; }};
+template< typename ExplicitSolver > struct ConfigTagExplicitSolver< {problemBaseName}BuildConfigTag, ExplicitSolver >{{ enum {{ enabled = true }}; }};
 
 }} // namespace Solvers
 }} // namespace TNL
