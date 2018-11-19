@@ -15,7 +15,12 @@ namespace TNL {
 
 class Logger;
 
-/// \brief Class for time measuring
+/// \brief Class for time measuring.
+///
+/// \par Example
+/// \include TimerExample.cpp
+// \par Output
+// \include TimerExample.out
 class Timer
 {
    public:
@@ -48,7 +53,8 @@ class Timer
       /// The timer then continues measuring the time without reseting.
       void start();
 
-      /// \brief Returs the real (clock/timer) time.
+      /////
+      /// \brief Returs the elapsed time on given timer.
       ///
       /// It returns the elapsed time between calling the start() and stop() functions.
       /// Starts counting the real time after the function start() is called and
@@ -61,7 +67,7 @@ class Timer
       double getRealTime() const;
 
       /////
-      /// \brief Returns the CPU time.
+      /// \brief Returns the elapsed CPU time on given timer.
       ///
       /// CPU time is the time that measures how long it takes processor
       /// to complete all computations.
@@ -78,7 +84,9 @@ class Timer
  
    protected:
 
-      /// Function for measuring the real time.
+      /// \brief Function for measuring the real time.
+      ///
+      /// Returns the current calendar time.
       double readRealTime() const;
 
       /// \brief Function for measuring the CPU time.

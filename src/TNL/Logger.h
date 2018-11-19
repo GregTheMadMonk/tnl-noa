@@ -23,7 +23,7 @@ class Logger
    /// \brief Basic constructor.
    ///
    /// \param _width Integer that defines the width of logger.
-   /// \param _stream Where to create the logger, e.g. cout or a certain file.s
+   /// \param _stream Where to create the logger, e.g. cout or a certain files.
    Logger( int _width,
               std::ostream& _stream );
 

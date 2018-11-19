@@ -38,6 +38,11 @@ const size_t FileGPUvsCPUTransferBufferSize = 5 * 2<<20;
 
 
 /// Class file is aimed mainly for the binary data.
+///
+/// \par Example
+/// \include FileExample.cpp
+// \par Output
+// \include FileExample.out
 class File
 {
    IOMode mode;
@@ -91,7 +96,7 @@ class File
    /// \brief Method that can write particular data type from given file into GPU. (Function that gets particular elements from given file.)
    ///
    /// Returns boolean value based on the succes in reading elements from given file.
-   /// \param buffer Pointer in memory.
+   /// \param buffer Pointer in memory (where the read elements are stored?).
    /// \param elements Number of elements the user wants to get (read) from given file.
    template< typename Type, typename Device = Devices::Host, typename Index = int >
    bool read( Type* buffer,
