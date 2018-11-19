@@ -16,6 +16,7 @@ SET( headers BICGStab.h
              SOR_impl.h
              TFQMR.h
              TFQMR_impl.h
+             Traits.h
              UmfpackWrapper.h
              UmfpackWrapper_impl.h
    )
