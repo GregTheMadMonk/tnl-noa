@@ -37,7 +37,7 @@ enum class IOMode
 const size_t FileGPUvsCPUTransferBufferSize = 5 * 2<<20;
 
 
-/// Class file is aimed mainly for the binary data.
+///\brief Class file is aimed mainly for the binary data.
 ///
 /// \par Example
 /// \include FileExample.cpp

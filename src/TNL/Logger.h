@@ -15,6 +15,7 @@
 
 namespace TNL {
 
+/// Vytvari tabulku s logem vypoctu   
 class Logger
 {
    public:
@@ -22,41 +23,43 @@ class Logger
    /////
    /// \brief Basic constructor.
    ///
-   /// \param _width Integer that defines the width of logger.
-   /// \param _stream Where to create the logger, e.g. cout or a certain files.
+   /// \param _width Integer that defines the width of the log.
+   /// \param _stream Defines output stream where the log will be printed out.
    Logger( int _width,
               std::ostream& _stream );
 
    /////
-   /// \brief Creates header in given logger.
+   /// \brief Creates header in given log.
+   /// 
+   /// The header usually contains title of the program.
    ///
-   /// \param title String desribing the title/header.
+   /// \param title String containing the header title.
    void writeHeader( const String& title );
 
-   /// \brief Creates predefined separator - structure in the logger.
+   /// \brief Creates separator for structuring the log.
    void writeSeparator();
 
-   /// \brief Inserts information about various system parameters into logger.
+   /// \brief Inserts information about various system parameters into the log.
    ///
-   /// \param parameters
+   /// \param parameters is a container with configuration parameters
    bool writeSystemInformation( const Config::ParameterContainer& parameters );
 
    /////
-   /// \brief Inserts a line with current time into logger.
+   /// \brief Inserts a line with current time into the log.
    ///
-   /// \param label Description of the current time line.
+   /// \param label Label to be printed to the log together with the current time.
    void writeCurrentTime( const char* label );
 
    // TODO: add units
-   template< typename T >
+   template< typename ParameterType >
    void writeParameter( const String& label,
                         const String& parameterName,
                         const Config::ParameterContainer& parameters,
                         int parameterLevel = 0 );
 
-   template< typename T >
+   template< typename ParameterType >
    void writeParameter( const String& label,
-                        const T& value,
+                        const ParameterType& value,
                         int parameterLevel = 0 );
 
    protected:

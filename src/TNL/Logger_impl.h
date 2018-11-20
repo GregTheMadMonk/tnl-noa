@@ -15,7 +15,7 @@
 
 namespace TNL {
 
-template< typename T >
+template< typename ParameterType >
 void Logger::writeParameter( const String& label,
                              const String& parameterName,
                              const Config::ParameterContainer& parameters,
@@ -26,16 +26,16 @@ void Logger::writeParameter( const String& label,
    for( i = 0; i < parameterLevel; i ++ )
       stream << " ";
    std::stringstream str;
-   str << parameters.getParameter< T >( parameterName );
+   str << parameters.getParameter< ParameterType >( parameterName );
    stream  << label
            << std::setw( width - label.getLength() - parameterLevel - 3 )
            << str.str() << " |" << std::endl;
 }
 
-template< typename T >
+template< typename ParameterType >
 void Logger :: writeParameter( const String& label,
-                                  const T& value,
-                                  int parameterLevel )
+                               const ParameterType& value,
+                               int parameterLevel )
 {
    stream << "| ";
    int i;

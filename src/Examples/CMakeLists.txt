@@ -18,6 +18,11 @@ add_subdirectory( flow-vl )
 #add_subdirectory( fast-sweeping-map )
 #add_subdirectory( narrow-band )
 
+ADD_EXECUTABLE( FileExample FileExample.cpp )
+target_link_libraries( FileExample tnl )
 
 ADD_EXECUTABLE( StringExample StringExample.cpp )
 target_link_libraries( StringExample tnl )
+
+ADD_EXECUTABLE( TimerExample TimerExample.cpp )
+target_link_libraries( TimerExample tnl )
