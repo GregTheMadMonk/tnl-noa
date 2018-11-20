@@ -54,7 +54,7 @@ class Timer
       void start();
 
       /////
-      /// \brief Returs the elapsed time on given timer.
+      /// \brief Returns the elapsed time on given timer.
       ///
       /// It returns the elapsed time between calling the start() and stop() functions.
       /// Starts counting the real time after the function start() is called and
