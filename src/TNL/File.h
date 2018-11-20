@@ -37,7 +37,7 @@ enum class IOMode
 const size_t FileGPUvsCPUTransferBufferSize = 5 * 2<<20;
 
 
-///\brief Class file is aimed mainly for the binary data.
+///\brief Class file is aimed mainly for saving and loading binary data.
 ///
 /// \par Example
 /// \include FileExample.cpp
@@ -59,10 +59,10 @@ class File
 
    public:
 
-   /// Basic constructor.
+   /// \brief Basic constructor.
    File();
 
-   /// Destructor.
+   /// \brief Destructor.
    ~File();
 
    /////
@@ -95,8 +95,12 @@ class File
 
    /// \brief Method that can write particular data type from given file into GPU. (Function that gets particular elements from given file.)
    ///
-   /// Returns boolean value based on the succes in reading elements from given file.
-   /// \param buffer Pointer in memory (where the read elements are stored?).
+   /// Returns \e true when the elements are successfully read from given file. Otherwise returns \e false.
+   ///
+   /// \tparam Type Type of data.
+   /// \tparam Device Place where data are stored after reading from file. For example Devices::Host or Devices::Cuda.
+   /// \tparam Index Type of index by which the elements are indexed.
+   /// \param buffer Pointer in memory where the elements are loaded and stored after reading.
    /// \param elements Number of elements the user wants to get (read) from given file.
    template< typename Type, typename Device = Devices::Host, typename Index = int >
    bool read( Type* buffer,
@@ -109,7 +113,11 @@ class File
    /// \brief Method that can write particular data type from CPU into given file. (Function that writes particular elements into given file.)
    ///
    /// Returns boolean value based on the succes in writing elements into given file.
-   /// \param buffer Pointer in memory.
+   ///
+   /// \tparam Type Type of data.
+   /// \tparam Device Place from where data are loaded before writing into file. For example Devices::Host or Devices::Cuda.
+   /// \tparam Index Type of index by which the elements are indexed.
+   /// \param buffer Pointer in memory from where the elements are loaded before writing into file.
    /// \param elements Number of elements the user wants to write into the given file.
    template< typename Type, typename Device = Devices::Host, typename Index = int >
    bool write( const Type* buffer,

@@ -49,21 +49,21 @@ class Timer
       /// \brief Starts timer.
       ///
       /// Starts all time and cycle measurements such as real time, CPU time and
-      /// CPU cycles. Function start() can be used also after using stop() function.
+      /// CPU cycles. Method start() can be used also after using stop() method.
       /// The timer then continues measuring the time without reseting.
       void start();
 
       /////
       /// \brief Returns the elapsed time on given timer.
       ///
-      /// It returns the elapsed time between calling the start() and stop() functions.
-      /// Starts counting the real time after the function start() is called and
-      /// pauses when the function stop() is called.
+      /// It returns the elapsed time between calling the start() and stop() methods.
+      /// Starts counting the real time after the method start() is called and
+      /// pauses when the method stop() is called.
       /// If the timer have been started more then once without resetting,
       /// the real time is counted by adding all intervals (between start and stop
-      /// functions) together.
+      /// methods) together.
       /// This function can be called while the timer is running, there is no
-      /// need to use stop() function first.
+      /// need to use stop() method first.
       double getRealTime() const;
 
       /////
@@ -86,7 +86,7 @@ class Timer
 
       /// \brief Function for measuring the real time.
       ///
-      /// Returns the current calendar time.
+      /// Returns number of seconds since Epoch, 1970-01-01 00:00:00 UTC.
       double readRealTime() const;
 
       /// \brief Function for measuring the CPU time.

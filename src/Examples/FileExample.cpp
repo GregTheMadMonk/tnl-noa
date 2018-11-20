@@ -19,7 +19,6 @@ int main()
     file.read( title2, 4);
     file.close();
 
-    if fileExists( "new-file.tnl" )
-         std::remove( "new-file.tnl" );
+    cout << "title2:" << title2 <<endl;
 }
 
