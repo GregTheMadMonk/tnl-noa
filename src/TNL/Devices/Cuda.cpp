@@ -23,7 +23,7 @@ Timer Cuda::smartPointersSynchronizationTimer;
 
 String Cuda::getDeviceType()
 {
-   return String( "Cuda" );
+   return String( "Devices::Cuda" );
 }
 
 int Cuda::getNumberOfBlocks( const int threads,
