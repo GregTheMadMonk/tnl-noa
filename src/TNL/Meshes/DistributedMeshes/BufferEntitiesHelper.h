@@ -13,6 +13,7 @@
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/ParallelFor.h>
+#include <TNL/Containers/StaticVector.h>
 
 namespace TNL {
 namespace Meshes { 
@@ -43,10 +44,14 @@ class BufferEntitiesHelper< MeshFunctionType, MaskPointer, 1, RealType, Device, 
          const MaskPointer& maskPointer,
          RealType* buffer,
          bool isBoundary,
-         const Index& beginx,
-         const Index& sizex,
+         const Containers::StaticVector<1,Index>& begin,
+         const Containers::StaticVector<1,Index>& size,
          bool tobuffer )
       {
+
+         Index beginx=begin.x();
+         Index sizex=size.x();
+
          auto mesh = meshFunction.getMesh();
          RealType* meshFunctionData = meshFunction.getData().getData();
          const typename MaskPointer::ObjectType* mask( nullptr );
@@ -83,12 +88,16 @@ class BufferEntitiesHelper< MeshFunctionType, MaskPointer, 2, RealType, Device, 
          const MaskPointer& maskPointer,
          RealType* buffer,
          bool isBoundary,
-         const Index& beginx,
-         const Index& beginy,
-         const Index& sizex,
-         const Index& sizey,
+         const Containers::StaticVector<2,Index>& begin,
+         const Containers::StaticVector<2,Index>& size,
          bool tobuffer)
       {
+
+         Index beginx=begin.x();
+         Index beginy=begin.y();
+         Index sizex=size.x();
+         Index sizey=size.y();
+
          auto mesh=meshFunction.getMesh();
          RealType* meshFunctionData = meshFunction.getData().getData();      
          const typename MaskPointer::ObjectType* mask( nullptr );
@@ -127,14 +136,17 @@ class BufferEntitiesHelper< MeshFunctionType, MaskPointer, 3, RealType, Device, 
          const MaskPointer& maskPointer,
          RealType* buffer,
          bool isBoundary,
-         const Index& beginx,
-         const Index& beginy,
-         const Index& beginz,
-         const Index& sizex,
-         const Index& sizey,
-         const Index& sizez,
+         const Containers::StaticVector<3,Index>& begin,
+         const Containers::StaticVector<3,Index>& size,
          bool tobuffer)
       {
+
+         Index beginx=begin.x();
+         Index beginy=begin.y();
+         Index beginz=begin.z();
+         Index sizex=size.x();
+         Index sizey=size.y();
+         Index sizez=size.z();
 
          auto mesh=meshFunction.getMesh();
          RealType * meshFunctionData=meshFunction.getData().getData();

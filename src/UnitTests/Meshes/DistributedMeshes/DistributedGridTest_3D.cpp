@@ -663,7 +663,7 @@ class DistributedGirdTest_3D : public ::testing::Test
          delete distributedGrid;
       }
 };
-
+/*
 TEST_F(DistributedGirdTest_3D, evaluateAllEntities)
 {
 
@@ -695,7 +695,7 @@ TEST_F(DistributedGirdTest_3D, evaluateInteriorEntities)
     check_Boundary_3D(rank, *gridptr, *dof, -1);
     check_Overlap_3D(rank, *gridptr, *dof, -1);
     check_Inner_3D(rank, *gridptr, *dof, rank);
-}   
+}   */
 
 TEST_F(DistributedGirdTest_3D, LinearFunctionTest)
 {
