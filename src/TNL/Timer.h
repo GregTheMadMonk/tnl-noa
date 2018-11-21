@@ -17,6 +17,7 @@ class Logger;
 
 /// \brief Class for time measuring.
 ///
+/// Counts the elapsed time in seconds between the start() and stop() methods.
 /// \par Example
 /// \include TimerExample.cpp
 // \par Output
@@ -56,7 +57,7 @@ class Timer
       /////
       /// \brief Returns the elapsed time on given timer.
       ///
-      /// It returns the elapsed time between calling the start() and stop() methods.
+      /// It returns the elapsed time (in seconds) between calling the start() and stop() methods.
       /// Starts counting the real time after the method start() is called and
       /// pauses when the method stop() is called.
       /// If the timer have been started more then once without resetting,
@@ -69,17 +70,23 @@ class Timer
       /////
       /// \brief Returns the elapsed CPU time on given timer.
       ///
-      /// CPU time is the time that measures how long it takes processor
-      /// to complete all computations.
+      /// The CPU time is measured in seconds.
+      /// CPU time is the amount of time for which a central processing unit (CPU)
+      /// was used for processing instructions of a computer program or operating system.
+      /// The CPU time is measured by adding the amount of CPU time between start() and stop()
+      /// methods together.
       double getCPUTime() const;
 
-      /// Returns the number of CPU cycles (machine cycles).
+      /// \brief Returns the number of CPU cycles (machine cycles).
+      ///
+      /// CPU cycles are counted by adding the number of CPU cycles between start() and stop()
+      /// methods together.
       unsigned long long int getCPUCycles() const;
 
       /// \brief Writes a record into the \e logger.
       ///
       /// \param logger
-      /// \param logLevel A whole number from zero up, which indicates the indent.
+      /// \param logLevel A non-negative integer recording the log record indent.
       bool writeLog( Logger& logger, int logLevel = 0 ) const;
  
    protected:
@@ -91,8 +98,8 @@ class Timer
 
       /// \brief Function for measuring the CPU time.
       ///
-      /// CPU time is the time that measures how long it takes processor
-      /// to complete all computations.
+      /// CPU time is the amount of time for which a central processing unit (CPU)
+      /// was used for processing instructions of a computer program or operating system.
       double readCPUTime() const;
 
       /// \brief Function for counting the number of CPU cycles (machine cycles).
@@ -106,7 +113,7 @@ class Timer
 
    /// \brief Saves information about the state of given timer.
    ///
-   /// Knows whether the timer is currently stopped or not.
+   /// Knows whether the timer is currently stopped or it is running.
    bool stopState;
 
    /// \brief Time Stamp Counter returning number of CPU cycles since reset.
