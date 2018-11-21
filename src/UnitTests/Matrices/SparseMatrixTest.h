@@ -1074,6 +1074,11 @@ protected:
    using ChEllpackMatrixType = Matrix;
 };
 
+// columnIndexes of ChunkedEllpack appear to be broken, when printed, it prints out a bunch of 4s.
+// rowPointers have interesting elements? 0 18 36 42 54 72 96 126 162 204 256 when rows = 10, cols = 11; rowLengths = 3 3 1 2 3 4 5 6 7 8
+// and 0 52 103 154 205 256 when rows = 5, cols = 4; rowLengths = 3 3 3 3 3
+
+
 // types for which MatrixTest is instantiated
 using ChEllpackMatrixTypes = ::testing::Types
 <
