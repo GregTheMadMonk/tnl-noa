@@ -147,7 +147,7 @@ void test_SetCompressedRowLengths()
     rowLengths.setSize( rows );
     rowLengths.setValue( 3 );
     
-    RealType value = 1;
+    IndexType value = 1;
     for( IndexType i = 2; i < rows; i++ )
         rowLengths.setElement( i, value++ );
     
