@@ -59,6 +59,7 @@ template< class T > class List
       /// Destroys the list. References to the values in the list become invalid.
       ~List();
 
+      /// Returns the type of list.
       static String getType();
 
       /// Returns \e true if the list contains no items, otherwise returns \e false.
