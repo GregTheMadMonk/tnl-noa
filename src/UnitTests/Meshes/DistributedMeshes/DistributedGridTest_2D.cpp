@@ -400,6 +400,7 @@ TEST_F(DistributedGridTest_2D, evaluateAllEntities)
    check_Inner_2D(rank, *gridPtr, *dof, rank);
 }
 
+
 TEST_F(DistributedGridTest_2D, evaluateBoundaryEntities)
 {
     //Boundary entities, without overlap
@@ -686,7 +687,7 @@ TEST_F(DistributedGridTest_2D, SynchronizerNeighborPeriodicBoundariesWithInactiv
    //Expecting 9 processes
    setDof_2D(*dof, -rank-1 );
    maskDofs.setValue( true );
-   if( distributedGrid->getNeighbors()[ Left ] == -1 )
+   if( distributedGrid->getNeighbors()[ ZzYzXm ] == -1 )
    {
       for( IndexType i = 0; i < gridPtr->getDimensions().y(); i++ )
       {
@@ -770,7 +771,7 @@ TEST_F(DistributedGridTest_2D, SynchronizerNeighborPeriodicBoundariesWithInActiv
    //Expecting 9 processes
    setDof_2D(*dof, -rank-1 );
    maskDofs.setValue( true );
-   if( distributedGrid->getNeighbors()[ Right ] == -1 )
+   if( distributedGrid->getNeighbors()[ ZzYzXp ] == -1 )
    {
       for( IndexType i = 0; i < gridPtr->getDimensions().y(); i++ )
       {
@@ -854,7 +855,7 @@ TEST_F(DistributedGridTest_2D, SynchronizerNeighborPeriodicBoundariesWithInActiv
    //Expecting 9 processes
    setDof_2D(*dof, -rank-1 );
    maskDofs.setValue( true );
-   if( distributedGrid->getNeighbors()[ Up ] == -1 )
+   if( distributedGrid->getNeighbors()[ ZzYmXz ] == -1 )
    {
       for( IndexType i = 0; i < gridPtr->getDimensions().x(); i++ )
       {
@@ -938,7 +939,7 @@ TEST_F(DistributedGridTest_2D, SynchronizerNeighborPeriodicBoundariesWithInActiv
    //Expecting 9 processes
    setDof_2D(*dof, -rank-1 );
    maskDofs.setValue( true );
-   if( distributedGrid->getNeighbors()[ Down ] == -1 )
+   if( distributedGrid->getNeighbors()[ ZzYpXz ] == -1 )
    {
       for( IndexType i = 0; i < gridPtr->getDimensions().x(); i++ )
       {
