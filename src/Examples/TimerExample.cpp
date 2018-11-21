@@ -12,7 +12,8 @@ int main()
     time.start();
     usleep(microseconds);
     time.stop();
-    time.getRealTime();
+    cout << "before reset:" << time.getRealTime() << endl;
     time.reset();
+    cout << "after reset:" << time.getRealTime() << endl;
 }
 
