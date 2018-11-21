@@ -170,8 +170,13 @@ template< int Dimension, typename Real, typename Device, typename Index >
 void
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 setOverlaps( const SubdomainOverlapsType& lower,
-             const SubdomainOverlapsType& upper )
+             const SubdomainOverlapsType& upper,
+             const SubdomainOverlapsType& globalLower,
+             const SubdomainOverlapsType& globalUpper )
 {
+   this->globalLowerOverlap = globalLower;
+   this->globalUpperOverlap = globalUpper;
+
    this->lowerOverlap = lower;
    this->upperOverlap = upper;
 
@@ -256,6 +261,22 @@ DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 getUpperOverlap() const
 {
    return this->upperOverlap;
+};
+
+template< int Dimension, typename Real, typename Device, typename Index >     
+const typename DistributedMesh< Grid< Dimension, Real, Device, Index > >::CoordinatesType&
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
+getGlobalLowerOverlap() const
+{
+   return this->globalLowerOverlap;
+};
+
+template< int Dimension, typename Real, typename Device, typename Index >     
+const typename DistributedMesh< Grid< Dimension, Real, Device, Index > >::CoordinatesType&
+DistributedMesh< Grid< Dimension, Real, Device, Index > >::
+getGlobalUpperOverlap() const
+{
+   return this->globalUpperOverlap;
 };
 
 template< int Dimension, typename Real, typename Device, typename Index >     

@@ -642,13 +642,14 @@ class DistributedGirdTest_3D : public ::testing::Test
          globalGrid.setDimensions(size,size,size);
          globalGrid.setDomain(globalOrigin,globalProportions);
 
-         typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
          distributedGrid=new DistributedGridType();
          distributedGrid->setDomainDecomposition( typename DistributedGridType::CoordinatesType( 3, 3, 3 ) );
          distributedGrid->template setGlobalGrid<CommunicatorType>( globalGrid );
          distributedGrid->setupGrid(*gridptr);    
-         SubdomainOverlapsGetter< GridType, CommunicatorType >::getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1 );
-         distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
+         typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap,globalLowerOverlap, globalUpperOverlap;
+         SubdomainOverlapsGetter< GridType, CommunicatorType >::
+            getOverlaps( distributedGrid, lowerOverlap, upperOverlap,globalLowerOverlap, globalUpperOverlap, 1 );
+         distributedGrid->setOverlaps( lowerOverlap, upperOverlap, globalLowerOverlap, globalUpperOverlap );
 
          distributedGrid->setupGrid(*gridptr);
          dof=new DofType(gridptr->template getEntitiesCount< Cell >());
@@ -663,7 +664,7 @@ class DistributedGirdTest_3D : public ::testing::Test
          delete distributedGrid;
       }
 };
-/*
+
 TEST_F(DistributedGirdTest_3D, evaluateAllEntities)
 {
 
@@ -695,7 +696,7 @@ TEST_F(DistributedGirdTest_3D, evaluateInteriorEntities)
     check_Boundary_3D(rank, *gridptr, *dof, -1);
     check_Overlap_3D(rank, *gridptr, *dof, -1);
     check_Inner_3D(rank, *gridptr, *dof, rank);
-}   */
+}   
 
 TEST_F(DistributedGirdTest_3D, LinearFunctionTest)
 {

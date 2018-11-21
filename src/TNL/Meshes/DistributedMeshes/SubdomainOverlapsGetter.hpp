@@ -27,6 +27,8 @@ SubdomainOverlapsGetter< Grid< Dimension, Real, Device, Index >, Communicator >:
 getOverlaps( const DistributedMeshType* distributedMesh,
              SubdomainOverlapsType& lower,
              SubdomainOverlapsType& upper,
+             SubdomainOverlapsType& globalLower,
+             SubdomainOverlapsType& globalUpper,
              IndexType subdomainOverlapSize,
              const SubdomainOverlapsType& periodicBoundariesOverlapSize )
 {
@@ -38,6 +40,9 @@ getOverlaps( const DistributedMeshType* distributedMesh,
    
    for( int i = 0; i < Dimension; i++ )
    {
+      globalLower[i]=subdomainOverlapSize;
+      globalUpper[i]=subdomainOverlapSize;
+
       if( subdomainCoordinates[ i ] > 0 )
          lower[ i ] = subdomainOverlapSize;
       else
