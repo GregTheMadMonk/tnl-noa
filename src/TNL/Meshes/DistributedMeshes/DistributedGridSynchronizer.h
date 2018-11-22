@@ -146,13 +146,13 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< MeshDimension,
          for( int i=0; i<this->getNeighborCount(); i++ )
             if( neighbors[ i ] != -1 )
             {
-               requests[ requestsCount++ ] = CommunicatorType::ISend( sendBuffers[ i ].getData(),  sendSizes[ i ], neighbors[ i ], group );
-               requests[ requestsCount++ ] = CommunicatorType::IRecv( recieveBuffers[ i ].getData(),  sendSizes[ i ], neighbors[ i ], group );
+               requests[ requestsCount++ ] = CommunicatorType::ISend( sendBuffers[ i ].getData(),  sendSizes[ i ], neighbors[ i ], 0, group );
+               requests[ requestsCount++ ] = CommunicatorType::IRecv( recieveBuffers[ i ].getData(),  sendSizes[ i ], neighbors[ i ], 0, group );
             }
             else if( periodicBoundaries && sendSizes[ i ] !=0 )
       	   {
-               requests[ requestsCount++ ] = CommunicatorType::ISend( sendBuffers[ i ].getData(),  sendSizes[ i ], periodicNeighbors[ i ], group );
-               requests[ requestsCount++ ] = CommunicatorType::IRecv( recieveBuffers[ i ].getData(),  sendSizes[ i ], periodicNeighbors[ i ], group );
+               requests[ requestsCount++ ] = CommunicatorType::ISend( sendBuffers[ i ].getData(),  sendSizes[ i ], periodicNeighbors[ i ], 1, group );
+               requests[ requestsCount++ ] = CommunicatorType::IRecv( recieveBuffers[ i ].getData(),  sendSizes[ i ], periodicNeighbors[ i ], 1, group );
             }
 
         //wait until send is done
