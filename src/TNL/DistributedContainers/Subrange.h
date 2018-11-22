@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <ostream>
+
 #include <TNL/Assert.h>
 #include <TNL/String.h>
 #include <TNL/param-types.h>
@@ -118,6 +120,13 @@ protected:
    Index begin = 0;
    Index end = 0;
 };
+
+// due to formatting in TNL::Assert
+template< typename Index >
+std::ostream& operator<<( std::ostream& str, const Subrange< Index >& range )
+{
+   return str << Subrange< Index >::getType() << "( " << range.getBegin() << ", " << range.getEnd() << " )";
+}
 
 } // namespace DistributedContainers
 } // namespace TNL

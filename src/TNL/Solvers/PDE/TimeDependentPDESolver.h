@@ -86,7 +86,7 @@ class TimeDependentPDESolver
 
       MeshPointer meshPointer;
 
-      Meshes::DistributedMeshes::DistributedMesh<MeshType> distrMesh;
+      Meshes::DistributedMeshes::DistributedMesh<MeshType> distributedMesh;
 
       DofVectorPointer dofsPointer;
 

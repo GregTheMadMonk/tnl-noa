@@ -37,35 +37,42 @@ class String
 public:
    //! Basic constructor
    String();
+   
+   //! Constructor from const char*
+   String( const char* str );   
 
    //! Constructor with char pointer
    /*! @param prefix_cut_off says length of the prefix that is going to be omitted and
        @param sufix_cut_off says the same about sufix.
     */
    String( const char* c,
-           int prefix_cut_off = 0,
+           int prefix_cut_off,
            int sufix_cut_off = 0 );
-   
-   String( char* c,
-           int prefix_cut_off = 0,
-           int sufix_cut_off = 0 );
-
-
-   static String getType();
 
    //! Copy constructor
    String( const String& str );
-
-   //! Convert anything to a string
+   
+   //////
+   /// Templated constructor
+   ///
+   /// It must be explicit otherwise it is called recursively from inside of its
+   /// definition ( in operator << ). It leads to stack overflow and segmentation fault.
    template< typename T >
-   String( T value )
+   explicit
+   String( const T& value )
       : string( nullptr ), length( 0 )
    {
-      setString( convertToString( value ).getString() );
+      std::stringstream str;
+      str << value;
+      setString( str.str().data() );
    }
+
+   String( const bool b );
 
    //! Destructor
    ~String();
+   
+   static String getType();
 
    //! Return length of the string
    int getLength() const;

@@ -43,7 +43,7 @@ runBlasBenchmarks( Benchmark & benchmark,
                            metadata );
    for( std::size_t size = minSize; size <= maxSize; size *= 2 ) {
       benchmark.setMetadataColumns( Benchmark::MetadataColumns({
-         {"size", size},
+         {"size", String( size ) },
       } ));
       benchmarkArrayOperations< Real >( benchmark, loops, size );
    }
@@ -53,7 +53,7 @@ runBlasBenchmarks( Benchmark & benchmark,
                            metadata );
    for( std::size_t size = minSize; size <= maxSize; size *= sizeStepFactor ) {
       benchmark.setMetadataColumns( Benchmark::MetadataColumns({
-         {"size", size},
+         { "size", String( size ) },
       } ));
       benchmarkVectorOperations< Real >( benchmark, loops, size );
    }
@@ -63,9 +63,9 @@ runBlasBenchmarks( Benchmark & benchmark,
                            metadata );
    for( std::size_t size = minSize; size <= maxSize; size *= 2 ) {
       benchmark.setMetadataColumns( Benchmark::MetadataColumns({
-         {"rows", size},
-         {"columns", size},
-         {"elements per row", elementsPerRow},
+         {"rows", String( size ) },
+         {"columns", String( size ) },
+         {"elements per row", String( elementsPerRow ) },
       } ));
       benchmarkSpmvSynthetic< Real >( benchmark, loops, size, elementsPerRow );
    }

@@ -614,7 +614,7 @@ TEST_F(DistributedGridTest_2D, SynchronizerNeighborPeriodicBoundariesWithActiveM
    maskDofs.setValue( true );
    constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr , constFunctionPtr );
    meshFunctionPtr->template synchronize<CommunicatorType>( true, maskPointer );
-   
+
    if( rank == 0 )
    {
       SCOPED_TRACE( "Up Left" );

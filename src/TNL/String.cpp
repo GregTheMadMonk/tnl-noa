@@ -29,10 +29,10 @@ String::String()
    setString( nullptr );
 }
 
-String::String( char* c, int prefix_cut_off, int sufix_cut_off )
+String::String( const char* str )
    : string( nullptr ), length( 0 )
 {
-   setString( c, prefix_cut_off, sufix_cut_off );
+   setString( str );
 }
 
 String::String( const char* c, int prefix_cut_off, int sufix_cut_off )
@@ -45,6 +45,13 @@ String::String( const String& str )
    : string( nullptr ), length( 0 )
 {
    setString( str.getString() );
+}
+
+String::String( const bool b )
+   : string( nullptr ), length( 0 )
+{
+   if( b ) this->setString( "true" );
+   else this->setString( "false" );
 }
 
 String String::getType()

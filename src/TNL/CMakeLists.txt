@@ -25,6 +25,7 @@ set( headers
      File.h
      File_impl.h
      FileName.h
+     FileName.hpp
      Object.h
      Logger.h
      Logger_impl.h

@@ -126,30 +126,30 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< 1, GridReal, D
          {
             TNL_ASSERT_GE( sendBuffers[ Left ].getSize(), lowerOverlap.x(), "" );
             TNL_ASSERT_GE( receiveBuffers[ Left ].getSize(), lowerOverlap.x(), "" );
-            requests[ requestsCount++ ] = CommunicatorType::ISend( sendBuffers[ Left ].getData(), lowerOverlap.x(), neighbors[ Left ], group );
-            requests[ requestsCount++ ] = CommunicatorType::IRecv( receiveBuffers[ Left ].getData(), lowerOverlap.x(), neighbors[ Left ], group );
+            requests[ requestsCount++ ] = CommunicatorType::ISend( sendBuffers[ Left ].getData(), lowerOverlap.x(), neighbors[ Left ], 0, group );
+            requests[ requestsCount++ ] = CommunicatorType::IRecv( receiveBuffers[ Left ].getData(), lowerOverlap.x(), neighbors[ Left ], 0, group );
          }
          else if( periodicBoundaries )
          {
             TNL_ASSERT_GE( sendBuffers[ Left ].getSize(), lowerOverlap.x(), "" );
             TNL_ASSERT_GE( receiveBuffers[ Left ].getSize(), lowerOverlap.x(), "" );            
-            requests[ requestsCount++ ] = CommunicatorType::ISend( sendBuffers[ Left ].getData(), lowerOverlap.x(), periodicNeighbors[ Left ], group );
-            requests[ requestsCount++ ] = CommunicatorType::IRecv( receiveBuffers[ Left ].getData(), lowerOverlap.x(), periodicNeighbors[ Left ], group );
+            requests[ requestsCount++ ] = CommunicatorType::ISend( sendBuffers[ Left ].getData(), lowerOverlap.x(), periodicNeighbors[ Left ], 1, group );
+            requests[ requestsCount++ ] = CommunicatorType::IRecv( receiveBuffers[ Left ].getData(), lowerOverlap.x(), periodicNeighbors[ Left ], 1, group );
          }        
 
          if( neighbors[ Right ] != -1 )
          {
             TNL_ASSERT_GE( sendBuffers[ Right ].getSize(), upperOverlap.x(), "" );
             TNL_ASSERT_GE( receiveBuffers[ Right ].getSize(), upperOverlap.x(), "" );
-            requests[ requestsCount++ ] = CommunicatorType::ISend( sendBuffers[ Right ].getData(), upperOverlap.x(), neighbors[ Right ], group );
-            requests[ requestsCount++ ] = CommunicatorType::IRecv( receiveBuffers[ Right ].getData(), upperOverlap.x(), neighbors[ Right ], group );
+            requests[ requestsCount++ ] = CommunicatorType::ISend( sendBuffers[ Right ].getData(), upperOverlap.x(), neighbors[ Right ], 0, group );
+            requests[ requestsCount++ ] = CommunicatorType::IRecv( receiveBuffers[ Right ].getData(), upperOverlap.x(), neighbors[ Right ], 0, group );
          }
          else if( periodicBoundaries )
          {
             TNL_ASSERT_GE( sendBuffers[ Right ].getSize(), upperOverlap.x(), "" );
             TNL_ASSERT_GE( receiveBuffers[ Right ].getSize(), upperOverlap.x(), "" );
-            requests[ requestsCount++ ] = CommunicatorType::ISend( sendBuffers[ Right ].getData(), upperOverlap.x(), periodicNeighbors[ Right ], group );
-            requests[ requestsCount++ ] = CommunicatorType::IRecv( receiveBuffers[ Right ].getData(), upperOverlap.x(), periodicNeighbors[ Right ], group );
+            requests[ requestsCount++ ] = CommunicatorType::ISend( sendBuffers[ Right ].getData(), upperOverlap.x(), periodicNeighbors[ Right ], 1, group );
+            requests[ requestsCount++ ] = CommunicatorType::IRecv( receiveBuffers[ Right ].getData(), upperOverlap.x(), periodicNeighbors[ Right ], 1, group );
          }
          
          //wait until send and receive is done
