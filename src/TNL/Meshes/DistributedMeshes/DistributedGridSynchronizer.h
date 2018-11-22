@@ -212,8 +212,6 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< MeshDimension,
       Containers::Array<RealType, Device, Index> sendBuffers[getNeighborCount()];
       Containers::Array<RealType, Device, Index> recieveBuffers[getNeighborCount()];
       Containers::StaticArray< getNeighborCount(), int > sendSizes;
-      Containers::StaticArray< getNeighborCount(), int > recieveSizes;
-
   
       CoordinatesType sendDimensions[getNeighborCount()];
       CoordinatesType recieveDimensions[getNeighborCount()];
