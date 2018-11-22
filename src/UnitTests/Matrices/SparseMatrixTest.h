@@ -1066,6 +1066,8 @@ void test_Print()
 //    test_Print< BiEllpackMatrixType >();
 //}
 
+// GTEST ::testing::Types<> has a limit of 38.
+
 // test fixture for typed tests
 template< typename Matrix >
 class ChEllpackMatrixTest : public ::testing::Test
@@ -1370,10 +1372,6 @@ TYPED_TEST( EllpackMatrixTest, setCompressedRowLengthsTest )
     using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
     
     test_SetCompressedRowLengths< EllpackMatrixType >();
-//    bool testRan = false;
-//    EXPECT_TRUE( testRan );
-//    std::cout << "\n\n THIS TEST DID NOT RUN!\n";
-//    std::cout << "\n This method isn't testable for different forMats, their implementations differ based on their algorithm.\n\n";
 }
 
 TYPED_TEST( EllpackMatrixTest, setLikeTest )
@@ -1445,6 +1443,251 @@ TYPED_TEST( EllpackMatrixTest, printTest )
 //    cuda_test_GetType< CSR_cuda_float, CSR_cuda_int >();
 //}
 //#endif
+
+
+// ATTEMPTED TO COMBINE THEM ALL TOGETHER:
+
+//// test fixture for typed tests
+//template< typename Matrix >
+//class SparseMatrixTest : public ::testing::Test
+//{
+//protected:
+//   using ChEllpackMatrixType = Matrix;
+//   using CSRMatrixType = Matrix;
+//   using EllpackMatrixType = Matrix;
+////   using SlpackMatrixType = Matrix;
+//};
+//
+//// types for which MatrixTest is instantiated
+//using ChEllpackMatrixTypes = ::testing::Types
+//<
+//    TNL::Matrices::ChunkedEllpack< int,    TNL::Devices::Host, short >,
+//    TNL::Matrices::ChunkedEllpack< long,   TNL::Devices::Host, short >,
+//    TNL::Matrices::ChunkedEllpack< float,  TNL::Devices::Host, short >,
+//    TNL::Matrices::ChunkedEllpack< double, TNL::Devices::Host, short >,
+//    TNL::Matrices::ChunkedEllpack< int,    TNL::Devices::Host, int >,
+//    TNL::Matrices::ChunkedEllpack< long,   TNL::Devices::Host, int >,
+//    TNL::Matrices::ChunkedEllpack< float,  TNL::Devices::Host, int >,
+//    TNL::Matrices::ChunkedEllpack< double, TNL::Devices::Host, int >,
+//    TNL::Matrices::ChunkedEllpack< int,    TNL::Devices::Host, long >,
+//    TNL::Matrices::ChunkedEllpack< long,   TNL::Devices::Host, long >,
+//    TNL::Matrices::ChunkedEllpack< float,  TNL::Devices::Host, long >,
+//    TNL::Matrices::ChunkedEllpack< double, TNL::Devices::Host, long >,
+//#ifdef HAVE_CUDA
+//    TNL::Matrices::ChunkedEllpack< int,    TNL::Devices::Cuda, short >,
+//    TNL::Matrices::ChunkedEllpack< long,   TNL::Devices::Cuda, short >,
+//    TNL::Matrices::ChunkedEllpack< float,  TNL::Devices::Cuda, short >,
+//    TNL::Matrices::ChunkedEllpack< double, TNL::Devices::Cuda, short >,
+//    TNL::Matrices::ChunkedEllpack< int,    TNL::Devices::Cuda, int >,
+//    TNL::Matrices::ChunkedEllpack< long,   TNL::Devices::Cuda, int >,
+//    TNL::Matrices::ChunkedEllpack< float,  TNL::Devices::Cuda, int >,
+//    TNL::Matrices::ChunkedEllpack< double, TNL::Devices::Cuda, int >,
+//    TNL::Matrices::ChunkedEllpack< int,    TNL::Devices::Cuda, long >,
+//    TNL::Matrices::ChunkedEllpack< long,   TNL::Devices::Cuda, long >,
+//    TNL::Matrices::ChunkedEllpack< float,  TNL::Devices::Cuda, long >,
+//    TNL::Matrices::ChunkedEllpack< double, TNL::Devices::Cuda, long >
+//#endif
+//>;
+//
+//// types for which MatrixTest is instantiated
+//using CSRMatrixTypes = ::testing::Types
+//<
+//    TNL::Matrices::CSR< int,    TNL::Devices::Host, short >,
+//    TNL::Matrices::CSR< long,   TNL::Devices::Host, short >,
+//    TNL::Matrices::CSR< float,  TNL::Devices::Host, short >,
+//    TNL::Matrices::CSR< double, TNL::Devices::Host, short >,
+//    TNL::Matrices::CSR< int,    TNL::Devices::Host, int >,
+//    TNL::Matrices::CSR< long,   TNL::Devices::Host, int >,
+//    TNL::Matrices::CSR< float,  TNL::Devices::Host, int >,
+//    TNL::Matrices::CSR< double, TNL::Devices::Host, int >,
+//    TNL::Matrices::CSR< int,    TNL::Devices::Host, long >,
+//    TNL::Matrices::CSR< long,   TNL::Devices::Host, long >,
+//    TNL::Matrices::CSR< float,  TNL::Devices::Host, long >,
+//    TNL::Matrices::CSR< double, TNL::Devices::Host, long >,
+//#ifdef HAVE_CUDA
+//    TNL::Matrices::CSR< int,    TNL::Devices::Cuda, short >,
+//    TNL::Matrices::CSR< long,   TNL::Devices::Cuda, short >,
+//    TNL::Matrices::CSR< float,  TNL::Devices::Cuda, short >,
+//    TNL::Matrices::CSR< double, TNL::Devices::Cuda, short >,
+//    TNL::Matrices::CSR< int,    TNL::Devices::Cuda, int >,
+//    TNL::Matrices::CSR< long,   TNL::Devices::Cuda, int >,
+//    TNL::Matrices::CSR< float,  TNL::Devices::Cuda, int >,
+//    TNL::Matrices::CSR< double, TNL::Devices::Cuda, int >,
+//    TNL::Matrices::CSR< int,    TNL::Devices::Cuda, long >,
+//    TNL::Matrices::CSR< long,   TNL::Devices::Cuda, long >,
+//    TNL::Matrices::CSR< float,  TNL::Devices::Cuda, long >,
+//    TNL::Matrices::CSR< double, TNL::Devices::Cuda, long >
+//#endif
+//>;
+//
+//// types for which MatrixTest is instantiated
+//using EllpackMatrixTypes = ::testing::Types
+//<
+//    TNL::Matrices::Ellpack< int,    TNL::Devices::Host, short >,
+//    TNL::Matrices::Ellpack< long,   TNL::Devices::Host, short >,
+//    TNL::Matrices::Ellpack< float,  TNL::Devices::Host, short >,
+//    TNL::Matrices::Ellpack< double, TNL::Devices::Host, short >,
+//    TNL::Matrices::Ellpack< int,    TNL::Devices::Host, int >,
+//    TNL::Matrices::Ellpack< long,   TNL::Devices::Host, int >,
+//    TNL::Matrices::Ellpack< float,  TNL::Devices::Host, int >,
+//    TNL::Matrices::Ellpack< double, TNL::Devices::Host, int >,
+//    TNL::Matrices::Ellpack< int,    TNL::Devices::Host, long >,
+//    TNL::Matrices::Ellpack< long,   TNL::Devices::Host, long >,
+//    TNL::Matrices::Ellpack< float,  TNL::Devices::Host, long >,
+//    TNL::Matrices::Ellpack< double, TNL::Devices::Host, long >,
+//    TNL::Matrices::SlicedEllpack< int,    TNL::Devices::Host, short >,
+//    TNL::Matrices::SlicedEllpack< long,   TNL::Devices::Host, short >,
+//    TNL::Matrices::SlicedEllpack< float,  TNL::Devices::Host, short >,
+//    TNL::Matrices::SlicedEllpack< double, TNL::Devices::Host, short >,
+//    TNL::Matrices::SlicedEllpack< int,    TNL::Devices::Host, int >,
+//    TNL::Matrices::SlicedEllpack< long,   TNL::Devices::Host, int >,
+//    TNL::Matrices::SlicedEllpack< float,  TNL::Devices::Host, int >,
+//    TNL::Matrices::SlicedEllpack< double, TNL::Devices::Host, int >,
+//    TNL::Matrices::SlicedEllpack< int,    TNL::Devices::Host, long >,
+//    TNL::Matrices::SlicedEllpack< long,   TNL::Devices::Host, long >,
+//    TNL::Matrices::SlicedEllpack< float,  TNL::Devices::Host, long >,
+//    TNL::Matrices::SlicedEllpack< double, TNL::Devices::Host, long >,
+//#ifdef HAVE_CUDA
+//    TNL::Matrices::Ellpack< int,    TNL::Devices::Cuda, short >,
+//    TNL::Matrices::Ellpack< long,   TNL::Devices::Cuda, short >,
+//    TNL::Matrices::Ellpack< float,  TNL::Devices::Cuda, short >,
+//    TNL::Matrices::Ellpack< double, TNL::Devices::Cuda, short >,
+//    TNL::Matrices::Ellpack< int,    TNL::Devices::Cuda, int >,
+//    TNL::Matrices::Ellpack< long,   TNL::Devices::Cuda, int >,
+//    TNL::Matrices::Ellpack< float,  TNL::Devices::Cuda, int >,
+//    TNL::Matrices::Ellpack< double, TNL::Devices::Cuda, int >,
+//    TNL::Matrices::Ellpack< int,    TNL::Devices::Cuda, long >,
+//    TNL::Matrices::Ellpack< long,   TNL::Devices::Cuda, long >,
+//    TNL::Matrices::Ellpack< float,  TNL::Devices::Cuda, long >,
+//    TNL::Matrices::Ellpack< double, TNL::Devices::Cuda, long >,
+//    TNL::Matrices::SlicedEllpack< int,    TNL::Devices::Cuda, short >,
+//    TNL::Matrices::SlicedEllpack< long,   TNL::Devices::Cuda, short >,
+//    TNL::Matrices::SlicedEllpack< float,  TNL::Devices::Cuda, short >,
+//    TNL::Matrices::SlicedEllpack< double, TNL::Devices::Cuda, short >,
+//    TNL::Matrices::SlicedEllpack< int,    TNL::Devices::Cuda, int >,
+//    TNL::Matrices::SlicedEllpack< long,   TNL::Devices::Cuda, int >,
+//    TNL::Matrices::SlicedEllpack< float,  TNL::Devices::Cuda, int >,
+//    TNL::Matrices::SlicedEllpack< double, TNL::Devices::Cuda, int >,
+//    TNL::Matrices::SlicedEllpack< int,    TNL::Devices::Cuda, long >,
+//    TNL::Matrices::SlicedEllpack< long,   TNL::Devices::Cuda, long >,
+//    TNL::Matrices::SlicedEllpack< float,  TNL::Devices::Cuda, long >,
+//    TNL::Matrices::SlicedEllpack< double, TNL::Devices::Cuda, long >
+//#endif
+//>;
+//
+//TYPED_TEST_CASE( SparseMatrixTest, ChEllpackMatrixTypes ); // TYPED_TEST_CASE doesn't have more parameters.
+//TYPED_TEST_CASE( SparseMatrixTest, CSRMatrixTypes);        // GTEST doesn't allow redeclaration
+//TYPED_TEST_CASE( SparseMatrixTest, EllpackMatrixTypes);
+//
+//TYPED_TEST( SparseMatrixTest, setDimensionsTest )
+//{
+//    using ChEllpackMatrixType = typename TestFixture::CSRMatrixType;
+//    using CSRMatrixType = typename TestFixture::CSRMatrixType;
+//    using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
+//    
+//    test_SetDimensions< ChEllpackMatrixType >();
+//    test_SetDimensions< CSRMatrixType >();
+//    test_SetDimensions< EllpackMatrixType >();
+//}
+//
+//TYPED_TEST( SparseMatrixTest, setCompressedRowLengthsTest )
+//{
+//    using ChEllpackMatrixType = typename TestFixture::CSRMatrixType;
+//    using CSRMatrixType = typename TestFixture::CSRMatrixType;
+//    using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
+//    
+//    test_SetCompressedRowLengths< ChEllpackMatrixType >();
+//    test_SetCompressedRowLengths< CSRMatrixType >();
+//    test_SetCompressedRowLengths< EllpackMatrixType >();
+//}
+//
+//TYPED_TEST( SparseMatrixTest, setLikeTest )
+//{
+//    using ChEllpackMatrixType = typename TestFixture::CSRMatrixType;
+//    using CSRMatrixType = typename TestFixture::CSRMatrixType;
+//    using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
+//    
+//    test_SetLike< ChEllpackMatrixType, ChEllpackMatrixType >();
+//    test_SetLike< CSRMatrixType, CSRMatrixType >();
+//    test_SetLike< EllpackMatrixType, EllpackMatrixType >();
+//}
+//
+//TYPED_TEST( SparseMatrixTest, resetTest )
+//{
+//    using ChEllpackMatrixType = typename TestFixture::CSRMatrixType;
+//    using CSRMatrixType = typename TestFixture::CSRMatrixType;
+//    using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
+//    
+//    test_Reset< ChEllpackMatrixType >();
+//    test_Reset< CSRMatrixType >();
+//    test_Reset< EllpackMatrixType >();
+//}
+//
+//TYPED_TEST( SparseMatrixTest, setElementTest )
+//{
+//    using ChEllpackMatrixType = typename TestFixture::CSRMatrixType;
+//    using CSRMatrixType = typename TestFixture::CSRMatrixType;
+//    using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
+//    
+//    test_SetElement< ChEllpackMatrixType >();
+//    test_SetElement< CSRMatrixType >();
+//    test_SetElement< EllpackMatrixType >();
+//}
+//
+//TYPED_TEST( SparseMatrixTest, addElementTest )
+//{
+//    using ChEllpackMatrixType = typename TestFixture::CSRMatrixType;
+//    using CSRMatrixType = typename TestFixture::CSRMatrixType;
+//    using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
+//    
+//    test_AddElement< ChEllpackMatrixType >();
+//    test_AddElement< CSRMatrixType >();
+//    test_AddElement< EllpackMatrixType >();
+//}
+//
+//TYPED_TEST( SparseMatrixTest, setRowTest )
+//{
+//    using ChEllpackMatrixType = typename TestFixture::CSRMatrixType;
+//    using CSRMatrixType = typename TestFixture::CSRMatrixType;
+//    using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
+//    
+//    test_SetRow< ChEllpackMatrixType >();
+//    test_SetRow< CSRMatrixType >();
+//    test_SetRow< EllpackMatrixType >();
+//}
+//
+//TYPED_TEST( SparseMatrixTest, vectorProductTest )
+//{
+//    using ChEllpackMatrixType = typename TestFixture::CSRMatrixType;
+//    using CSRMatrixType = typename TestFixture::CSRMatrixType;
+//    using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
+//    
+//    test_VectorProduct< ChEllpackMatrixType >();
+//    test_VectorProduct< CSRMatrixType >();
+//    test_VectorProduct< EllpackMatrixType >();
+//}
+//
+//TYPED_TEST( SparseMatrixTest, saveAndLoadTest )
+//{
+//    using ChEllpackMatrixType = typename TestFixture::CSRMatrixType;
+//    using CSRMatrixType = typename TestFixture::CSRMatrixType;
+//    using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
+//    
+//    test_SaveAndLoad< ChEllpackMatrixType >();
+//    test_SaveAndLoad< CSRMatrixType >();
+//    test_SaveAndLoad< EllpackMatrixType >();
+//}
+//
+//TYPED_TEST( SparseMatrixTest, printTest )
+//{
+//    using ChEllpackMatrixType = typename TestFixture::CSRMatrixType;
+//    using CSRMatrixType = typename TestFixture::CSRMatrixType;
+//    using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
+//    
+//    test_Print< ChEllpackMatrixType >();
+//    test_Print< CSRMatrixType >();
+//    test_Print< EllpackMatrixType >();
+//}
 
 TEST( SparseMatrixTest, CSR_perforSORIterationTest_Host )
 {
