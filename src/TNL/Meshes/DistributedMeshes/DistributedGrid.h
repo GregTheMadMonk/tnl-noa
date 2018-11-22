@@ -62,9 +62,7 @@ class DistributedMesh< Grid< Dimension, Real, Device, Index > >
       const GridType& getGlobalGrid() const;
       
       void setOverlaps( const SubdomainOverlapsType& lower,
-                        const SubdomainOverlapsType& upper,
-                        const SubdomainOverlapsType& globalLower,
-                        const SubdomainOverlapsType& globalUpper );
+                        const SubdomainOverlapsType& upper);
       
       void setupGrid( GridType& grid);
 
@@ -80,11 +78,6 @@ class DistributedMesh< Grid< Dimension, Real, Device, Index > >
       const SubdomainOverlapsType& getLowerOverlap() const;
       
       const SubdomainOverlapsType& getUpperOverlap() const;
-
-      //original overlaps set by user - same values return all subdomains..
-      const SubdomainOverlapsType& getGlobalLowerOverlap() const;
-      
-      const SubdomainOverlapsType& getGlobalUpperOverlap() const;
 
       //number of elements of local sub domain WITHOUT overlap
       // TODO: getSubdomainDimensions

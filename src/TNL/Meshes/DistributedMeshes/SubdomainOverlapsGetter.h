@@ -73,8 +73,6 @@ class SubdomainOverlapsGetter< Grid< Dimension, Real, Device, Index >, Communica
       static void getOverlaps( const DistributedMeshType* distributedMesh,
                                SubdomainOverlapsType& lower,
                                SubdomainOverlapsType& upper,
-                               SubdomainOverlapsType& globalLower,
-                               SubdomainOverlapsType& globalUpper,
                                IndexType subdomainOverlapSize,
                                const SubdomainOverlapsType& periodicBoundariesOverlapSize = 0 );
    

@@ -646,10 +646,10 @@ class DistributedGirdTest_3D : public ::testing::Test
          distributedGrid->setDomainDecomposition( typename DistributedGridType::CoordinatesType( 3, 3, 3 ) );
          distributedGrid->template setGlobalGrid<CommunicatorType>( globalGrid );
          distributedGrid->setupGrid(*gridptr);    
-         typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap,globalLowerOverlap, globalUpperOverlap;
+         typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
          SubdomainOverlapsGetter< GridType, CommunicatorType >::
-            getOverlaps( distributedGrid, lowerOverlap, upperOverlap,globalLowerOverlap, globalUpperOverlap, 1 );
-         distributedGrid->setOverlaps( lowerOverlap, upperOverlap, globalLowerOverlap, globalUpperOverlap );
+            getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1 );
+         distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
 
          distributedGrid->setupGrid(*gridptr);
          dof=new DofType(gridptr->template getEntitiesCount< Cell >());

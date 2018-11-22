@@ -369,10 +369,10 @@ class DistributedGridTest_2D : public ::testing::Test
          distributedGrid=new DistributedGridType();
          distributedGrid->setDomainDecomposition( typename DistributedGridType::CoordinatesType( 3, 3 ) );
          distributedGrid->template setGlobalGrid<CommunicatorType>( globalGrid );
-         typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap,globalLowerOverlap, globalUpperOverlap;
+         typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
          SubdomainOverlapsGetter< GridType, CommunicatorType >::
-            getOverlaps( distributedGrid, lowerOverlap, upperOverlap,globalLowerOverlap, globalUpperOverlap, 1 );
-         distributedGrid->setOverlaps( lowerOverlap, upperOverlap, globalLowerOverlap, globalUpperOverlap );
+            getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1 );
+         distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
          distributedGrid->setupGrid(*gridPtr);
 
          dof=new DofType(gridPtr->template getEntitiesCount< Cell >());

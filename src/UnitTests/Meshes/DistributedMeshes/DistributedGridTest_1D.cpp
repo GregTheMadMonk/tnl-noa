@@ -140,12 +140,12 @@ class DistributedGridTest_1D : public ::testing::Test
          overlap.setValue(1);
          distributedGrid=new DistributedGridType();
 
-         typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap,globalLowerOverlap, globalUpperOverlap;
+         typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
          distributedGrid->template setGlobalGrid<CommunicatorType>( globalGrid );
          //distributedGrid->setupGrid(*gridptr);    
          SubdomainOverlapsGetter< GridType, CommunicatorType >::
-            getOverlaps( distributedGrid, lowerOverlap, upperOverlap,globalLowerOverlap, globalUpperOverlap, 1 );
-         distributedGrid->setOverlaps( lowerOverlap, upperOverlap,globalLowerOverlap, globalUpperOverlap );
+            getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1 );
+         distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
 
          distributedGrid->setupGrid(*gridptr);
          dof.setSize( gridptr->template getEntitiesCount< Cell >() );
@@ -157,10 +157,10 @@ class DistributedGridTest_1D : public ::testing::Test
       
       void SetUpPeriodicBoundaries()
       {
-         typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap,globalLowerOverlap, globalUpperOverlap;
+         typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
          SubdomainOverlapsGetter< GridType, CommunicatorType >::
-            getOverlaps( distributedGrid, lowerOverlap, upperOverlap,globalLowerOverlap, globalUpperOverlap, 1 );
-         distributedGrid->setOverlaps( lowerOverlap, upperOverlap, globalLowerOverlap, globalUpperOverlap );
+            getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1 );
+         distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
          distributedGrid->setupGrid(*gridptr);         
       }
 
@@ -238,8 +238,8 @@ TEST_F(DistributedGridTest_1D, EvaluateLinearFunction )
    EXPECT_EQ(meshFunctionPtr->getValue(entity), (*linearFunctionPtr)(entity)) << "Linear function Overlap error on right Edge.";
 }
 
-/*
-TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithoutMask )
+
+/*TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithoutMask )
 {
    // Setup periodic boundaries
    // TODO: I do not know how to do it better with GTEST
@@ -257,12 +257,16 @@ TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithoutMask )
    maskDofs.setValue( true );
    constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr, constFunctionPtr );
    meshFunctionPtr->template synchronize<CommunicatorType>( true );
+
+   std::cout << rank << ": " << dof << std::endl;
+
    if( rank == 0 )
       EXPECT_EQ( dof[ 1 ], -nproc ) << "Left Overlap was filled by wrong process.";
    if( rank == nproc-1 )
       EXPECT_EQ( dof[ dof.getSize() - 2 ], -1 )<< "Right Overlap was filled by wrong process.";
-}
+}*/
 
+/*
 TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithActiveMask )
 {
    // Setup periodic boundaries
