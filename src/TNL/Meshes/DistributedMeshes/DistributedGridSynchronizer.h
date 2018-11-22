@@ -70,16 +70,18 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< MeshDimension,
        
          const CoordinatesType& localBegin = this->distributedGrid->getLocalBegin(); 
          const CoordinatesType& localSize = this->distributedGrid->getLocalSize(); 
-         const CoordinatesType& localGridSize = this->distributedGrid->getLocalGridSize();         
+         const CoordinatesType& localGridSize = this->distributedGrid->getLocalGridSize();
+
+         const int *neighbors = distributedGrid->getNeighbors();
 
          for( int i=0; i<this->getNeighborCount(); i++ )
          {
             Index sendSize=1;//sended and recieve areas has same size
 
-            //bool isBoundary=( neighbor[ i ] == -1 );
-            auto directions=Directions::template getXYZ<this->getMeshDimension()>(i);
+           // bool isBoundary=( neighbor[ i ] == -1 );
+            auto directions=Directions::template getXYZ<getMeshDimension()>(i);
 
-            sendDimensions[i]=localSize;//sended and recieve areas has same dimensions
+            sendDimensions[i]=localSize;//send and recieve areas has same dimensions
             sendBegin[i]=localBegin;
             recieveBegin[i]=localBegin;
 
@@ -104,8 +106,25 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< MeshDimension,
             sendSizes[ i ] = sendSize;
             sendBuffers[ i ].setSize( sendSize );
             recieveBuffers[ i ].setSize( sendSize);
+
+            //Periodic-BC copy from overlap into domain
+            //if Im on boundary, and i is direction of the boundary i will swap source and destination
+            //i do this only for basic 6 directions, 
+            //because this swap at conners and edges produces writing multiple values at sam place in localsubdomain
+            {
+               if(  (  i==ZzYzXm || i==ZzYzXp 
+                     ||i==ZzYmXz || i==ZzYpXz 
+                     ||i==ZmYzXz || i==ZpYzXz ) 
+                  && neighbors[ i ] == -1) 
+               {
+                  //swap begins
+                  CoordinatesType tmp = sendBegin[i];
+                  sendBegin[i]=recieveBegin[i];
+                  recieveBegin[i]=tmp;
+               }
+            }
+
          }
-        
      }
         
       template< typename CommunicatorType,
@@ -122,11 +141,6 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< MeshDimension,
          
          const int *neighbors = distributedGrid->getNeighbors();
          const int *periodicNeighbors = distributedGrid->getPeriodicNeighbors();
-         
-        if( periodicBoundaries )
-         {
-            std::cerr<<"TOTALY DEMAGED by refactorization" << std::endl;
-         }         
         
          //fill send buffers
          copyBuffers( meshFunction, 
@@ -181,7 +195,7 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< MeshDimension,
          bool periodicBoundaries,
          const PeriodicBoundariesMaskPointer& mask )
       {
-         using Helper = BufferEntitiesHelper< MeshFunctionType, PeriodicBoundariesMaskPointer, this->getMeshDimension(), Real_, Device >;
+         using Helper = BufferEntitiesHelper< MeshFunctionType, PeriodicBoundariesMaskPointer, getMeshDimension(), Real_, Device >;
        
          for(int i=0;i<this->getNeighborCount();i++)
          {

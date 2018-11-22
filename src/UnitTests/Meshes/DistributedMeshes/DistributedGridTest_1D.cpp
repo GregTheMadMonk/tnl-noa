@@ -239,7 +239,7 @@ TEST_F(DistributedGridTest_1D, EvaluateLinearFunction )
 }
 
 
-/*TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithoutMask )
+TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithoutMask )
 {
    // Setup periodic boundaries
    // TODO: I do not know how to do it better with GTEST
@@ -258,15 +258,13 @@ TEST_F(DistributedGridTest_1D, EvaluateLinearFunction )
    constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr, constFunctionPtr );
    meshFunctionPtr->template synchronize<CommunicatorType>( true );
 
-   std::cout << rank << ": " << dof << std::endl;
-
    if( rank == 0 )
       EXPECT_EQ( dof[ 1 ], -nproc ) << "Left Overlap was filled by wrong process.";
    if( rank == nproc-1 )
       EXPECT_EQ( dof[ dof.getSize() - 2 ], -1 )<< "Right Overlap was filled by wrong process.";
-}*/
+}
 
-/*
+
 TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithActiveMask )
 {
    // Setup periodic boundaries
@@ -377,7 +375,7 @@ TEST_F(DistributedGridTest_1D, SynchronizePeriodicBoundariesLinearTest )
    if( rank == nproc - 1 )
       EXPECT_EQ( meshFunctionPtr->getValue(entity2), -1 ) << "Linear function Overlap error on right Edge.";
 }
-*/
+
 
 
 #else
