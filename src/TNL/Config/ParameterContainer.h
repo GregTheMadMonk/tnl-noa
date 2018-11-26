@@ -44,8 +44,17 @@ class ParameterContainer
 {
    public:
 
+   /**
+    * \brief Basic constructor.
+    */
    ParameterContainer();
 
+   /**
+    * \brief Adds parameter
+    * @tparam T Type of parameter value.
+    * @param name Name of the parameter.
+    * @param value Value assigned to the parameter.
+    */
    template< class T > bool addParameter( const String& name,
                                           const T& value );
 
