@@ -60,7 +60,7 @@ class Timer
       /// It returns the elapsed time (in seconds) between calling the start() and stop() methods.
       /// Starts counting the real time after the method start() is called and
       /// pauses when the method stop() is called.
-      /// If the timer have been started more then once without resetting,
+      /// If the timer has been started more then once without resetting,
       /// the real time is counted by adding all intervals (between start and stop
       /// methods) together.
       /// This function can be called while the timer is running, there is no
