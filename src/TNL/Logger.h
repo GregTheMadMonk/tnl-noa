@@ -33,7 +33,7 @@ class Logger
    /// 
    /// The header usually contains title of the program.
    ///
-   /// \param title String containing the header title.
+   /// \param title A String containing the header title.
    void writeHeader( const String& title );
 
    /// \brief Creates separator used as a log structure.
@@ -78,8 +78,10 @@ class Logger
 
    protected:
 
+   /// \brief Integer defining the width of the log.
    int width;
 
+   /// \brief Output stream where the log will be printed out.
    std::ostream& stream;
 };
 
