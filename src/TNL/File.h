@@ -66,12 +66,13 @@ class File
    ~File();
 
    /////
-   /// \brief Opens given file.
+   /// \brief Attempts to open given file and returns \e true after the file is
+   /// successfully opened. Otherwise returns \e false.
    ///
    /// Opens file with given \e fileName and returns true/false based on the success in opening the file.
    /// \param fileName String which indicates name of the file user wants to open.
    /// \param mode Indicates what user needs to do with opened file.
-   /// Modes to choose: IOMode::read or IOMode::write or IOMode::undefined.
+   /// Modes to choose: IOMode::read, IOMode::write or IOMode::undefined.
    bool open( const String& fileName,
               const IOMode mode );
 
@@ -81,13 +82,13 @@ class File
       return this->fileName;
    }
 
-   /// Returns number of read elements.
+   /// \brief Returns number of read elements.
    long int getReadElements() const
    {
       return this->readElements;
    }
 
-   /// Returns number of written elements.
+   /// \brief Returns number of written elements.
    long int getWrittenElements() const
    {
       return this->writtenElements;
@@ -112,12 +113,12 @@ class File
 
    /// \brief Method that can write particular data type from CPU into given file. (Function that writes particular elements into given file.)
    ///
-   /// Returns boolean value based on the succes in writing elements into given file.
+   /// Returns \e true when the elements are successfully written into given file. Otherwise returns \e false.
    ///
    /// \tparam Type Type of data.
-   /// \tparam Device Place from where data are loaded before writing into file. For example Devices::Host or Devices::Cuda.
+   /// \tparam Device Place from where the data are loaded before writing into file. For example Devices::Host or Devices::Cuda.
    /// \tparam Index Type of index by which the elements are indexed.
-   /// \param buffer Pointer in memory from where the elements are loaded before writing into file.
+   /// \param buffer Pointer in memory where the elements are loaded from before writing into file.
    /// \param elements Number of elements the user wants to write into the given file.
    template< typename Type, typename Device = Devices::Host, typename Index = int >
    bool write( const Type* buffer,
@@ -127,7 +128,8 @@ class File
    template< typename Type, typename Device = Devices::Host >
    bool write( const Type* buffer );
 
-   /// \brief Closes given file and returns true/false based on the success in closing the file.
+   /// \brief Attempts to close given file and returns \e true when the file is
+   /// successfully closed. Otherwise returns \e false.
    bool close();
 
 protected:
