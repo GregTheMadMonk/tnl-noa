@@ -19,7 +19,7 @@
 namespace TNL {
 
 /***
- * This function returns minimum of two numbers.
+ * \brief This function returns minimum of two numbers.
  * GPU device code uses the functions defined in the CUDA's math_functions.h,
  * MIC uses trivial override and host uses the STL functions.
  */
@@ -43,7 +43,7 @@ ResultType min( const T1& a, const T2& b )
 
 
 /***
- * This function returns maximum of two numbers.
+ * \brief This function returns maximum of two numbers.
  * GPU device code uses the functions defined in the CUDA's math_functions.h,
  * MIC uses trivial override and host uses the STL functions.
  */
@@ -66,7 +66,7 @@ ResultType max( const T1& a, const T2& b )
 }
 
 /***
- * This function returns absolute value of given number.
+ * \brief This function returns absolute value of given number.
  */
 template< class T >
 __cuda_callable__ inline
@@ -87,7 +87,7 @@ T abs( const T& n )
 }
 
 /***
- * This function returns argument of minimum of two numbers.
+ * \brief This function returns argument of minimum of two numbers.
  */
 template< typename T1, typename T2, typename ResultType = typename std::common_type< T1, T2 >::type >
 __cuda_callable__ inline
@@ -97,7 +97,7 @@ ResultType argMin( const T1& a, const T2& b )
 }
 
 /***
- * This function returns argument of maximum of two numbers.
+ * \brief This function returns argument of maximum of two numbers.
  */
 template< typename T1, typename T2, typename ResultType = typename std::common_type< T1, T2 >::type >
 __cuda_callable__
@@ -107,7 +107,7 @@ ResultType argMax( const T1& a, const T2& b )
 }
 
 /***
- * This function returns argument of minimum of absolute values of two numbers.
+ * \brief This function returns argument of minimum of absolute values of two numbers.
  */
 template< typename T1, typename T2, typename ResultType = typename std::common_type< T1, T2 >::type >
 __cuda_callable__ inline
@@ -117,7 +117,7 @@ ResultType argAbsMin( const T1& a, const T2& b )
 }
 
 /***
- * This function returns argument of maximum of absolute values of two numbers.
+ * \brief This function returns argument of maximum of absolute values of two numbers.
  */
 template< typename T1, typename T2, typename ResultType = typename std::common_type< T1, T2 >::type >
 __cuda_callable__
@@ -137,7 +137,9 @@ ResultType pow( const T1& base, const T2& exp )
 #endif
 }
 
-
+/**
+ * \brief This function returns square root of a value.
+ */
 template< typename T >
 __cuda_callable__ inline
 T sqrt( const T& value )
@@ -149,7 +151,9 @@ T sqrt( const T& value )
 #endif
 }
 
-
+/**
+ * \brief This function swaps values of two parameters.
+ */
 template< typename Type >
 __cuda_callable__
 void swap( Type& a, Type& b )
@@ -159,6 +163,11 @@ void swap( Type& a, Type& b )
    b = tmp;
 }
 
+/**
+ * \brief This function represents the signum function.
+ *
+ * It extracts the sign of a real number.
+ */
 template< class T >
 __cuda_callable__
 T sign( const T& a )
