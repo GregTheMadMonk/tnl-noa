@@ -48,6 +48,7 @@ class String
       /// Constructs a string initialized with the 8-bit string \e c, excluding
       /// the given number of \e prefix_cut_off and \e sufix_cut_off characters.
       ///
+      /// @param c Pointer to an array of characters.
       /// @param prefix_cut_off Determines the length of the prefix that is going
       /// to be omitted from the string \e c.
       /// @param sufix_cut_off Determines the length of the sufix that is going
@@ -61,13 +62,14 @@ class String
               int prefix_cut_off = 0,
               int sufix_cut_off = 0 );
 
-      /// Returns type of string - String.
+      /// \brief Returns type of string - String.
       static String getType();
 
       /////
       /// \brief Copy constructor.
       ///
       /// Constructs a copy of the string \e str.
+      /// @param str Another string object, whose value is copied.
       String( const String& str );
 
       /// \brief Converts anything to a string.
@@ -96,7 +98,7 @@ class String
       /// \include StringExampleGetSize.out
       int getSize() const;
 
-      /// Returns size of allocated storage for given string.
+      /// \brief Returns size of allocated storage for given string.
       ///
       /// \par Example
       /// \include StringExampleGetAllocatedSize.cpp
@@ -175,23 +177,23 @@ class String
       /////
       // Operators for Strings.
 
-      /// This function assigns \e str to this string and returns a reference to
+      /// \brief This function assigns \e str to this string and returns a reference to
       /// this string.
       String& operator=( const String& str );
-      /// This function appends the string \e str onto the end of this string
+      /// \brief This function appends the string \e str onto the end of this string
       /// and returns a reference to this string.
       String& operator+=( const String& str );
-      /// This function concatenates strings \e str and returns a newly
+      /// \brief This function concatenates strings \e str and returns a newly
       /// constructed string object.
       String operator+( const String& str ) const;
       /// \brief This function overloads operator==().
       ///
-      /// It returns \c true if this string is equal to \e str, otherwise returns
+      /// Returns \c true if this string is equal to \e str, otherwise returns
       /// \c false.
       bool operator==( const String& str ) const;
       /// \brief This function overloads operator!=().
       ///
-      /// It returns \c true if this string is not equal to \e str, otherwise
+      /// Returns \c true if this string is not equal to \e str, otherwise
       /// returns \c false.
       bool operator!=( const String& str ) const;
 
@@ -200,15 +202,15 @@ class String
 
       /// \brief This function overloads operator=().
       ///
-      /// It assigns character \e str to this string.
+      /// Assigns character \e str to this string.
       String& operator=( char str );
       /// \brief This function overloads operator+=().
       ///
-      /// It appends character \e str to this string.
+      /// Appends character \e str to this string.
       String& operator+=( char str );
-      // This function concatenates strings and returns a newly constructed string object.
+      // \brief This function concatenates strings and returns a newly constructed string object.
       String operator+( char str ) const;
-      // This function concatenates strings and returns a newly constructed string object.
+      // \brief This function concatenates strings and returns a newly constructed string object.
       bool operator==( char str ) const;
       /// \brief This function overloads operator!=().
       bool operator!=( char str ) const;
@@ -280,21 +282,21 @@ class String
 
    protected:
       
-      /// Pointer to char ended with zero byte
+      /// \brief Pointer to char ended with zero byte.
       char* string;
 
-      /// Length of allocated piece of memory.
+      /// \brief Length of allocated piece of memory.
       int length;
 
 }; // class String
 
-/// Returns concatenation of \e string1 and \e string2.
+/// \brief Returns concatenation of \e string1 and \e string2.
 String operator+( char string1, const String& string2 );
 
-/// Returns concatenation of \e string1 and \e string2.
+/// \brief Returns concatenation of \e string1 and \e string2.
 String operator+( const char* string1, const String& string2 );
 
-/// Performs the string output to a stream
+/// \brief Performs the string output to a stream
 std::ostream& operator<<( std::ostream& stream, const String& str );
 
 template< typename T >
