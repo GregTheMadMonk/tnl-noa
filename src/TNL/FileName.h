@@ -24,6 +24,9 @@ String getFileExtension( const String fileName );
 
 void removeFileExtension( String& file_name );
 
+/// \brief Class for creating the full name of a file.
+///
+/// Merges base name, index number and extention to create the full name of a file.
 class FileName
 {
    public:
@@ -42,7 +45,7 @@ class FileName
       /// \brief Sets the extension of given file.
       ///
       /// Sets \e extension as suffix of a file name.
-      /// @param extension String that specifies extension of file (without dot).
+      /// @param extension A String that specifies extension of file (without dot).
       /// Suffix of a file name. E.g. doc, xls, tnl.
       void setExtension( const String& extension );
 
@@ -58,7 +61,7 @@ class FileName
       /// @param digitsCount Integer - number of digits.
       void setDigitsCount( const int digitsCount );
       
-      /// Creates appropriate name for given file.
+      /// \brief Creates appropriate name for given file.
       ///
       /// Creates particular file name using \e fileNameBase, \e digitsCount,
       /// \e index and \e extension.
