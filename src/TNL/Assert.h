@@ -33,6 +33,13 @@
 #if defined(NDEBUG) || defined(HAVE_MIC)
 
 // empty macros for optimized build
+/**
+ * \brief Assert that the expression \e val evaluates to \e true.
+ *
+ * The assertion succeeds if, and only if, \e val evaluates to equal to \e true.
+ * On success the test continues without any side effects.
+ * On failure the test is terminated with the error message \e msg.
+ */
 #define TNL_ASSERT_TRUE( val, msg )
 #define TNL_ASSERT_FALSE( val, msg )
 #define TNL_ASSERT_EQ( val1, val2, msg )

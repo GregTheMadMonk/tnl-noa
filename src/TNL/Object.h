@@ -17,8 +17,9 @@
 
 namespace TNL {
 
-//! This is basic class for all 'large' objects like matrices, meshes, grids, solvers etc.
-/*!
+/**
+ * \brief This is the basic class for all 'large' objects like matrices, meshes, grids, solvers, etc..
+ *
  *  Objects like numerical grids, meshes, matrices large vectors etc.
  *  are inherited by this class. This class provides name for such objects. Giving
  *  a name to each bigger object is compulsory. The name can help to locate

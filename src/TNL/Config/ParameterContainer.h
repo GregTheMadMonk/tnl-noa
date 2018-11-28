@@ -50,10 +50,11 @@ class ParameterContainer
    ParameterContainer();
 
    /**
-    * \brief Adds parameter
-    * @tparam T Type of parameter value.
-    * @param name Name of the parameter.
-    * @param value Value assigned to the parameter.
+    * \brief Adds new parameter to the ParameterContainer.
+    *
+    * \tparam T Type of parameter value.
+    * \param name Name of the new parameter.
+    * \param value Value assigned to the parameter.
     */
    template< class T > bool addParameter( const String& name,
                                           const T& value );
@@ -61,8 +62,20 @@ class ParameterContainer
    bool addParameter( const String& name,
                       const String& value );
 
+   /**
+    * \brief Checks whether the parameter \e name already exists in ParameterContainer.
+    *
+    * \param name Name of the parameter.
+    */
    bool checkParameter( const String& name ) const;
 
+   /**
+    * \brief Assigns new \e value to the parameter \e name.
+    *
+    * \tparam T Type of the parameter value.
+    * \param name Name of parameter.
+    * \param value Value of type T assigned to the parameter.
+    */
    template< class T > bool setParameter( const String& name,
                                           const T& value );
 
@@ -89,6 +102,11 @@ class ParameterContainer
       return false;
    }
 
+   /**
+    * \brief Returns parameter value.
+    *
+    * \param name Name of parameter.
+    */
    template< class T > const T& getParameter( const String& name ) const
    {
       int i;
@@ -104,6 +122,9 @@ class ParameterContainer
    //! Broadcast to other nodes in MPI cluster
   // void MPIBcast( int root, MPI_Comm mpi_comm = MPI_COMM_WORLD );
 
+   /**
+    * \brief Basic destructor.
+    */
    ~ParameterContainer();
 
    protected:
