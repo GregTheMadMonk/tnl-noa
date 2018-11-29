@@ -665,6 +665,7 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
     {    
       sArray[(thrj+1)*sizeSArray + thri+1] = aux[ j*dimX + i ];
     }
+    __syncthreads();  
     
     while( changed[ 0 ] )
     {
