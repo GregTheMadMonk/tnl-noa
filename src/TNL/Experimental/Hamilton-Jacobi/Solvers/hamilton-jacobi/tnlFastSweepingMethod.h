@@ -1,9 +1,9 @@
 /***************************************************************************
-                          FastSweepingMethod.h  -  description
-                             -------------------
-    begin                : Jul 14, 2016
-    copyright            : (C) 2017 by Tomas Oberhuber
-    email                : tomas.oberhuber@fjfi.cvut.cz
+ FastSweepingMethod.h  -  description
+ -------------------
+ begin                : Jul 14, 2016
+ copyright            : (C) 2017 by Tomas Oberhuber
+ email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 /* See Copyright Notice in tnl/Copyright */
@@ -17,131 +17,134 @@
 
 
 template< typename Mesh,
-          typename Anisotropy = Functions::Analytic::Constant< Mesh::getMeshDimension(), typename Mesh::RealType > >
+        typename Anisotropy = Functions::Analytic::Constant< Mesh::getMeshDimension(), typename Mesh::RealType > >
 class FastSweepingMethod
 {   
 };
 
 template< typename Real,
-          typename Device,
-          typename Index,
-          typename Anisotropy >
+        typename Device,
+        typename Index,
+        typename Anisotropy >
 class FastSweepingMethod< Meshes::Grid< 1, Real, Device, Index >, Anisotropy >
-   : public tnlDirectEikonalMethodsBase< Meshes::Grid< 1, Real, Device, Index > >
+: public tnlDirectEikonalMethodsBase< Meshes::Grid< 1, Real, Device, Index > >
 {
-   //static_assert(  std::is_same< Device, TNL::Devices::Host >::value, "The fast sweeping method works only on CPU." );
-   
-   public:
-      
-      typedef Meshes::Grid< 1, Real, Device, Index > MeshType;
-      typedef Real RealType;
-      typedef Device DeviceType;
-      typedef Index IndexType;
-      typedef Anisotropy AnisotropyType;
-      typedef tnlDirectEikonalMethodsBase< Meshes::Grid< 1, Real, Device, Index > > BaseType;
-      using MeshPointer = Pointers::SharedPointer<  MeshType >;
-      using AnisotropyPointer = Pointers::SharedPointer< AnisotropyType, DeviceType >;
-      
-      
-      using typename BaseType::InterfaceMapType;
-      using typename BaseType::MeshFunctionType;
-      using typename BaseType::InterfaceMapPointer;
-      using typename BaseType::MeshFunctionPointer;
-      
-      
-      FastSweepingMethod();
-      
-      const IndexType& getMaxIterations() const;
-      
-      void setMaxIterations( const IndexType& maxIterations );
-      
-      void solve( const MeshPointer& mesh,
-                  const AnisotropyPointer& anisotropy,
-                  MeshFunctionPointer& u );
-      
-      
-   protected:
+  //static_assert(  std::is_same< Device, TNL::Devices::Host >::value, "The fast sweeping method works only on CPU." );
+  
+  public:
+    
+    typedef Meshes::Grid< 1, Real, Device, Index > MeshType;
+    typedef Real RealType;
+    typedef Device DeviceType;
+    typedef Index IndexType;
+    typedef Anisotropy AnisotropyType;
+    typedef tnlDirectEikonalMethodsBase< Meshes::Grid< 1, Real, Device, Index > > BaseType;
+    using MeshPointer = Pointers::SharedPointer<  MeshType >;
+    using AnisotropyPointer = Pointers::SharedPointer< AnisotropyType, DeviceType >;
+    
+    
+    using typename BaseType::InterfaceMapType;
+    using typename BaseType::MeshFunctionType;
+    using typename BaseType::InterfaceMapPointer;
+    using typename BaseType::MeshFunctionPointer;
+    
+    
+    FastSweepingMethod();
+    
+    const IndexType& getMaxIterations() const;
+    
+    void setMaxIterations( const IndexType& maxIterations );
+    
+    void solve( const MeshPointer& mesh,
+            const AnisotropyPointer& anisotropy,
+            MeshFunctionPointer& u );
+    
+    
+    protected:
       
       const IndexType maxIterations;
 };
 
 template< typename Real,
-          typename Device,
-          typename Index,
-          typename Anisotropy >
+        typename Device,
+        typename Index,
+        typename Anisotropy >
 class FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Anisotropy >
-   : public tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >
+: public tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >
 {
-   //static_assert(  std::is_same< Device, TNL::Devices::Host >::value, "The fast sweeping method works only on CPU." );
-   
-   public:
-      
-      typedef Meshes::Grid< 2, Real, Device, Index > MeshType;
-      typedef Real RealType;
-      typedef Device DeviceType;
-      typedef Index IndexType;
-      typedef Anisotropy AnisotropyType;
-      typedef tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > > BaseType;
-      using MeshPointer = Pointers::SharedPointer<  MeshType >;
-      using AnisotropyPointer = Pointers::SharedPointer< AnisotropyType, DeviceType >;
-
-      using typename BaseType::InterfaceMapType;
-      using typename BaseType::MeshFunctionType;
-      using typename BaseType::InterfaceMapPointer;
-      using typename BaseType::MeshFunctionPointer;      
-
-      FastSweepingMethod();
-      
-      const IndexType& getMaxIterations() const;
-      
-      void setMaxIterations( const IndexType& maxIterations );
-      
-      void solve( const MeshPointer& mesh,
-                  const AnisotropyPointer& anisotropy,
-                  MeshFunctionPointer& u );
-      
-   protected:
+  //static_assert(  std::is_same< Device, TNL::Devices::Host >::value, "The fast sweeping method works only on CPU." );
+  
+  public:
+    
+    typedef Meshes::Grid< 2, Real, Device, Index > MeshType;
+    typedef Real RealType;
+    typedef Device DeviceType;
+    typedef Index IndexType;
+    typedef Anisotropy AnisotropyType;
+    typedef tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > > BaseType;
+    using MeshPointer = Pointers::SharedPointer<  MeshType >;
+    using AnisotropyPointer = Pointers::SharedPointer< AnisotropyType, DeviceType >;
+    
+    using typename BaseType::InterfaceMapType;
+    using typename BaseType::MeshFunctionType;
+    using typename BaseType::InterfaceMapPointer;
+    using typename BaseType::MeshFunctionPointer;
+    using typename BaseType::ArrayContainer;
+    
+    FastSweepingMethod();
+    
+    const IndexType& getMaxIterations() const;
+    
+    void setMaxIterations( const IndexType& maxIterations );
+    
+    void solve( const MeshPointer& mesh,
+            const AnisotropyPointer& anisotropy,
+            MeshFunctionPointer& u );
+    
+    protected:
       
       const IndexType maxIterations;
 };
 
 template< typename Real,
-          typename Device,
-          typename Index,
-          typename Anisotropy >
+        typename Device,
+        typename Index,
+        typename Anisotropy >
 class FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Anisotropy >
-   : public tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > >
+: public tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > >
 {
-   //static_assert(  std::is_same< Device, TNL::Devices::Host >::value, "The fast sweeping method works only on CPU." );
-   
-   public:
-      
-      typedef Meshes::Grid< 3, Real, Device, Index > MeshType;
-      typedef Real RealType;
-      typedef Device DeviceType;
-      typedef Index IndexType;
-      typedef Anisotropy AnisotropyType;
-      typedef tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > > BaseType;
-      using MeshPointer = Pointers::SharedPointer<  MeshType >;
-      using AnisotropyPointer = Pointers::SharedPointer< AnisotropyType, DeviceType >;
-      
-      using typename BaseType::InterfaceMapType;
-      using typename BaseType::MeshFunctionType;
-      using typename BaseType::InterfaceMapPointer;
-      using typename BaseType::MeshFunctionPointer;      
-      
-      FastSweepingMethod();
-      
-      const IndexType& getMaxIterations() const;
-      
-      void setMaxIterations( const IndexType& maxIterations );
-      
-      void solve( const MeshPointer& mesh,
-                  const AnisotropyPointer& anisotropy,
-                  MeshFunctionPointer& u );
-      
-      
-   protected:
+  //static_assert(  std::is_same< Device, TNL::Devices::Host >::value, "The fast sweeping method works only on CPU." );
+  
+  public:
+    
+    typedef Meshes::Grid< 3, Real, Device, Index > MeshType;
+    typedef Real RealType;
+    typedef Device DeviceType;
+    typedef Index IndexType;
+    typedef Anisotropy AnisotropyType;
+    typedef tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > > BaseType;
+    using MeshPointer = Pointers::SharedPointer<  MeshType >;
+    using AnisotropyPointer = Pointers::SharedPointer< AnisotropyType, DeviceType >;
+    
+    using typename BaseType::InterfaceMapType;
+    using typename BaseType::MeshFunctionType;
+    using typename BaseType::InterfaceMapPointer;
+    using typename BaseType::MeshFunctionPointer;   
+    using typename BaseType::ArrayContainer;
+    
+    
+    FastSweepingMethod();
+    
+    const IndexType& getMaxIterations() const;
+    
+    void setMaxIterations( const IndexType& maxIterations );
+    
+    void solve( const MeshPointer& mesh,
+            const AnisotropyPointer& anisotropy,
+            MeshFunctionPointer& u );
+    
+    
+    protected:
       
       const IndexType maxIterations;
 };

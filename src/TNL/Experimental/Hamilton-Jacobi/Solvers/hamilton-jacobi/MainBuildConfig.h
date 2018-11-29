@@ -23,7 +23,7 @@ namespace Solvers {
 /****
  * Turn off support for float and long double.
  */
-template<> struct ConfigTagReal< HamiltonJacobiBuildConfig, float > { enum { enabled = false }; };
+template<> struct ConfigTagReal< HamiltonJacobiBuildConfig, float > { enum { enabled = true }; };
 template<> struct ConfigTagReal< HamiltonJacobiBuildConfig, long double > { enum { enabled = false }; };
 
 /****
