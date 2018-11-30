@@ -123,6 +123,16 @@ Index SlicedEllpack< Real, Device, Index, SliceSize >::getRowLengthFast( const I
 
 template< typename Real,
           typename Device,
+          typename Index ,
+          int SliceSize >
+Index SlicedEllpack< Real, Device, Index, SliceSize >::getNonZeroRowLength( const IndexType row ) const
+{
+    ConstMatrixRow matrixRow = getRow( row );
+    return matrixRow.getNonZeroElementsCount();
+}
+
+template< typename Real,
+          typename Device,
           typename Index,
           int SliceSize >
    template< typename Real2,

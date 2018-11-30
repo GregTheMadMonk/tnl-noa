@@ -11,6 +11,7 @@
 #pragma once
 
 #include <TNL/Matrices/SparseRow.h>
+#include <TNL/ParallelFor.h>
 
 namespace TNL {
 namespace Matrices {   
@@ -105,6 +106,32 @@ SparseRow< Real, Index >::
 getLength() const
 {
    return length;
+}
+
+template< typename Real, typename Index >
+__cuda_callable__
+Index
+SparseRow< Real, Index >::
+getNonZeroElementsCount() const
+{
+    using NonConstIndex = typename std::remove_const< Index >::type;
+    
+    NonConstIndex elementCount ( 0 );
+    
+//    auto computeNonzeros = [this, &elementCount] /*__cuda_callable__*/ ( NonConstIndex i ) mutable
+//    {
+//        if( getElementValue( i ) != ( Real ) 0 )
+//            elementCount++;
+//    };
+   
+//    ParallelFor< Device >::exec( ( NonConstIndex ) 0, length, computeNonzeros );
+//    The ParallelFor::exec() function needs a < DeviceType >, how to get this into SparseRow?
+   
+    for( NonConstIndex i = 0; i < length; i++ )
+        if( getElementValue( i ) != 0 ) // This returns the same amount of elements in a row as does getRowLength(). WHY?
+            elementCount++;
+    
+    return elementCount;
 }
 
 template< typename Real, typename Index >
