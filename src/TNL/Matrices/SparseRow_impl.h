@@ -13,6 +13,10 @@
 #include <TNL/Matrices/SparseRow.h>
 #include <TNL/ParallelFor.h>
 
+// Following includes are here to enable usage of std::vector and std::cout. To avoid having to include Device type (HOW would this be done anyway)
+#include <iostream>
+#include <vector>
+
 namespace TNL {
 namespace Matrices {   
 
@@ -115,6 +119,7 @@ SparseRow< Real, Index >::
 getNonZeroElementsCount() const
 {
     using NonConstIndex = typename std::remove_const< Index >::type;
+    // using DeviceType = typename TNL::Matrices::Matrix::DeviceType;
     
     NonConstIndex elementCount ( 0 );
     
@@ -126,9 +131,14 @@ getNonZeroElementsCount() const
    
 //    ParallelFor< Device >::exec( ( NonConstIndex ) 0, length, computeNonzeros );
 //    The ParallelFor::exec() function needs a < DeviceType >, how to get this into SparseRow?
+    /*
+     
+     */
+    
+    // std::vector< Real > vls = values; // Size of values should be something like: (sizeof(this->values)/sizeof(*this->values)) from https://stackoverflow.com/questions/4108313/how-do-i-find-the-length-of-an-array
    
-    for( NonConstIndex i = 0; i < length; i++ )
-        if( getElementValue( i ) != 0 ) // This returns the same amount of elements in a row as does getRowLength(). WHY?
+    for( NonConstIndex i = 0; i < length; i++ ) // this->values doesn't have anything similar to getSize().
+        if( this->values[ i * step ] != 0.0 ) // This returns the same amount of elements in a row as does getRowLength(). WHY?
             elementCount++;
     
     return elementCount;
