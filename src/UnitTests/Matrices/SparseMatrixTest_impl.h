@@ -136,66 +136,108 @@ void test_SetCompressedRowLengths()
     
     m.setCompressedRowLengths( rowLengths );
     
+    RealType realValue = 1; // Do this for every individual row, to assure that non-zero values are not assigned where they're not supposed to be, aka, outside of compressed Row Length
+    for( IndexType i = 0; i < rows; i++ )
+        for( IndexType j = 0; j < cols; j++ )
+            m.setElement( i, j, realValue++ );
     
-    if( m.getType() == TNL::String( TNL::String( "Matrices::CSR< ") +
-                       TNL::String( TNL::getType< RealType >() ) +
-                       TNL::String( ", " ) +
-                       TNL::String( Matrix::DeviceType::getDeviceType() ) +
-                       TNL::String( ", " ) +
-                       TNL::String( TNL::getType< IndexType >() ) +
-                       TNL::String( " >" ) )
-      )
-    {
-        EXPECT_EQ( m.getRowLength( 0 ), 3 );
-        EXPECT_EQ( m.getRowLength( 1 ), 3 );
-        EXPECT_EQ( m.getRowLength( 2 ), 1 );
-        EXPECT_EQ( m.getRowLength( 3 ), 2 );
-        EXPECT_EQ( m.getRowLength( 4 ), 3 );
-        EXPECT_EQ( m.getRowLength( 5 ), 4 );
-        EXPECT_EQ( m.getRowLength( 6 ), 5 );
-        EXPECT_EQ( m.getRowLength( 7 ), 6 );
-        EXPECT_EQ( m.getRowLength( 8 ), 7 );
-        EXPECT_EQ( m.getRowLength( 9 ), 8 );
-    }
-    else if( m.getType() == TNL::String( TNL::String( "Matrices::Ellpack< ") +
-                            TNL::String( TNL::getType< RealType >() ) +
-                            TNL::String( ", " ) +
-                            TNL::String( Matrix::DeviceType::getDeviceType() ) +
-                            TNL::String( ", " ) +
-                            TNL::String( TNL::getType< IndexType >() ) +
-                            TNL::String( " >" ) ) 
-                            || 
-             m.getType() == TNL::String( TNL::String( "Matrices::SlicedEllpack< ") +
-                            TNL::String( TNL::getType< RealType >() ) +
-                            TNL::String( ", " ) +
-                            TNL::String( Matrix::DeviceType::getDeviceType() ) +
-                            TNL::String( " >" ) )
-           )
-    {
-        EXPECT_EQ( m.getRowLength( 0 ), 8 );
-        EXPECT_EQ( m.getRowLength( 1 ), 8 );
-        EXPECT_EQ( m.getRowLength( 2 ), 8 );
-        EXPECT_EQ( m.getRowLength( 3 ), 8 );
-        EXPECT_EQ( m.getRowLength( 4 ), 8 );
-        EXPECT_EQ( m.getRowLength( 5 ), 8 );
-        EXPECT_EQ( m.getRowLength( 6 ), 8 );
-        EXPECT_EQ( m.getRowLength( 7 ), 8 );
-        EXPECT_EQ( m.getRowLength( 8 ), 8 );
-        EXPECT_EQ( m.getRowLength( 9 ), 8 );
-    }
-    else
-    {
-        EXPECT_EQ( m.getRowLength( 0 ), 3 );
-        EXPECT_EQ( m.getRowLength( 1 ), 3 );
-        EXPECT_EQ( m.getRowLength( 2 ), 1 );
-        EXPECT_EQ( m.getRowLength( 3 ), 2 );
-        EXPECT_EQ( m.getRowLength( 4 ), 3 );
-        EXPECT_EQ( m.getRowLength( 5 ), 4 );
-        EXPECT_EQ( m.getRowLength( 6 ), 5 );
-        EXPECT_EQ( m.getRowLength( 7 ), 6 );
-        EXPECT_EQ( m.getRowLength( 8 ), 7 );
-        EXPECT_EQ( m.getRowLength( 9 ), 8 );
-    }
+    
+    EXPECT_EQ( m.getNonZeroRowLength( 0 ), 3 );
+    EXPECT_EQ( m.getNonZeroRowLength( 1 ), 3 );
+    EXPECT_EQ( m.getNonZeroRowLength( 2 ), 1 );
+    EXPECT_EQ( m.getNonZeroRowLength( 3 ), 2 );
+    EXPECT_EQ( m.getNonZeroRowLength( 4 ), 3 );
+    EXPECT_EQ( m.getNonZeroRowLength( 5 ), 4 );
+    EXPECT_EQ( m.getNonZeroRowLength( 6 ), 5 );
+    EXPECT_EQ( m.getNonZeroRowLength( 7 ), 6 );
+    EXPECT_EQ( m.getNonZeroRowLength( 8 ), 7 );
+    EXPECT_EQ( m.getNonZeroRowLength( 9 ), 8 );
+    
+//    if( m.getType() == TNL::String( TNL::String( "Matrices::CSR< ") +
+//                       TNL::String( TNL::getType< RealType >() ) +
+//                       TNL::String( ", " ) +
+//                       TNL::String( Matrix::DeviceType::getDeviceType() ) +
+//                       //TNL::String( ", " ) +
+//                       //TNL::String( TNL::getType< IndexType >() ) +
+//                       TNL::String( " >" ) )
+//      )
+//    {
+//        EXPECT_EQ( m.getRowLength( 0 ), 3 );
+//        EXPECT_EQ( m.getRowLength( 1 ), 3 );
+//        EXPECT_EQ( m.getRowLength( 2 ), 1 );
+//        EXPECT_EQ( m.getRowLength( 3 ), 2 );
+//        EXPECT_EQ( m.getRowLength( 4 ), 3 );
+//        EXPECT_EQ( m.getRowLength( 5 ), 4 );
+//        EXPECT_EQ( m.getRowLength( 6 ), 5 );
+//        EXPECT_EQ( m.getRowLength( 7 ), 6 );
+//        EXPECT_EQ( m.getRowLength( 8 ), 7 );
+//        EXPECT_EQ( m.getRowLength( 9 ), 8 );
+//    }
+//    else if( m.getType() == TNL::String( TNL::String( "Matrices::AdEllpack< ") +
+//                            TNL::String( TNL::getType< RealType >() ) +
+//                            TNL::String( ", " ) +
+//                            TNL::String( Matrix::DeviceType::getDeviceType() ) +
+//                            TNL::String( ", " ) +
+//                            TNL::String( TNL::getType< IndexType >() ) +
+//                            TNL::String( " >" ) ) 
+//                            || 
+//             m.getType() == TNL::String( TNL::String( "Matrices::SlicedEllpack< ") +
+//                            TNL::String( TNL::getType< RealType >() ) +
+//                            TNL::String( ", " ) +
+//                            TNL::String( Matrix::DeviceType::getDeviceType() ) +
+//                            TNL::String( " >" ) )
+//           )
+//    {
+//        EXPECT_EQ( m.getRowLength( 0 ), 8 );
+//        EXPECT_EQ( m.getRowLength( 1 ), 8 );
+//        EXPECT_EQ( m.getRowLength( 2 ), 8 );
+//        EXPECT_EQ( m.getRowLength( 3 ), 8 );
+//        EXPECT_EQ( m.getRowLength( 4 ), 8 );
+//        EXPECT_EQ( m.getRowLength( 5 ), 8 );
+//        EXPECT_EQ( m.getRowLength( 6 ), 8 );
+//        EXPECT_EQ( m.getRowLength( 7 ), 8 );
+//        EXPECT_EQ( m.getRowLength( 8 ), 8 );
+//        EXPECT_EQ( m.getRowLength( 9 ), 8 );
+//    }
+//    else if( m.getType() == TNL::String( TNL::String( "Matrices::Ellpack< ") +
+//                            TNL::String( TNL::getType< RealType >() ) +
+//                            TNL::String( ", " ) +
+//                            TNL::String( Matrix::DeviceType::getDeviceType() ) +
+//                            TNL::String( ", " ) +
+//                            TNL::String( TNL::getType< IndexType >() ) +
+//                            TNL::String( " >" ) ) 
+//                            ||
+//             m.getType() == TNL::String( TNL::String( "Matrices::ChunkedEllpack< ") +
+//                            TNL::String( TNL::getType< RealType >() ) +
+//                            TNL::String( ", " ) +
+//                            TNL::String( Matrix::DeviceType::getDeviceType() ) +
+//                            TNL::String( " >" ) )
+//           )
+//    {
+//        EXPECT_EQ( m.getNonZeroRowLength( 0 ), 3 );
+//        EXPECT_EQ( m.getNonZeroRowLength( 1 ), 3 );
+//        EXPECT_EQ( m.getNonZeroRowLength( 2 ), 1 );
+//        EXPECT_EQ( m.getNonZeroRowLength( 3 ), 2 );
+//        EXPECT_EQ( m.getNonZeroRowLength( 4 ), 3 );
+//        EXPECT_EQ( m.getNonZeroRowLength( 5 ), 4 );
+//        EXPECT_EQ( m.getNonZeroRowLength( 6 ), 5 );
+//        EXPECT_EQ( m.getNonZeroRowLength( 7 ), 6 );
+//        EXPECT_EQ( m.getNonZeroRowLength( 8 ), 7 );
+//        EXPECT_EQ( m.getNonZeroRowLength( 9 ), 8 );
+//    }
+//    else
+//    {
+//        EXPECT_EQ( m.getRowLength( 0 ), 3 );
+//        EXPECT_EQ( m.getRowLength( 1 ), 3 );
+//        EXPECT_EQ( m.getRowLength( 2 ), 1 );
+//        EXPECT_EQ( m.getRowLength( 3 ), 2 );
+//        EXPECT_EQ( m.getRowLength( 4 ), 3 );
+//        EXPECT_EQ( m.getRowLength( 5 ), 4 );
+//        EXPECT_EQ( m.getRowLength( 6 ), 5 );
+//        EXPECT_EQ( m.getRowLength( 7 ), 6 );
+//        EXPECT_EQ( m.getRowLength( 8 ), 7 );
+//        EXPECT_EQ( m.getRowLength( 9 ), 8 );
+//    }
 }
 
 template< typename Matrix1, typename Matrix2 >

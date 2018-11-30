@@ -311,6 +311,15 @@ Index ChunkedEllpack< Real, Device, Index >::getRowLengthFast( const IndexType r
 template< typename Real,
           typename Device,
           typename Index >
+Index ChunkedEllpack< Real, Device, Index >::getNonZeroRowLength( const IndexType row ) const
+{
+    ConstMatrixRow matrixRow = getRow( row );
+    return matrixRow.getNonZeroElementsCount();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
    template< typename Real2,
              typename Device2,
              typename Index2 >
@@ -979,10 +988,10 @@ getRow( const IndexType rowIndex ) const
 {
    const IndexType rowOffset = this->rowPointers[ rowIndex ];
    const IndexType rowLength = this->rowPointers[ rowIndex + 1 ] - rowOffset;
-   return MatrixRow( &this->columnIndexes[ rowOffset ],
-                     &this->values[ rowOffset ],
-                     rowLength,
-                     1 );
+   return ConstMatrixRow( &this->columnIndexes[ rowOffset ],
+                          &this->values[ rowOffset ],
+                          rowLength,
+                          1 );
 }
 
 

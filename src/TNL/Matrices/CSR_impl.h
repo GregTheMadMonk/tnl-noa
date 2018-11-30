@@ -134,6 +134,15 @@ Index CSR< Real, Device, Index >::getRowLengthFast( const IndexType row ) const
 template< typename Real,
           typename Device,
           typename Index >
+Index CSR< Real, Device, Index >::getNonZeroRowLength( const IndexType row ) const
+{
+    ConstMatrixRow matrixRow = getRow( row );
+    return matrixRow.getNonZeroElementsCount();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
    template< typename Real2,
              typename Device2,
              typename Index2 >
