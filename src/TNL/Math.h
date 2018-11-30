@@ -215,7 +215,7 @@ inline int roundUpDivision( const int num, const int div )
 }
 
 /**
- * \brief This function rounds \e number to the nearest multiple of number \e multiple.
+ * \brief This function rounds up \e number to the nearest multiple of number \e multiple.
  *
  * @param number Integer we want to round.
  * @param multiple Integer.
