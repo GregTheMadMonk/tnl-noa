@@ -25,6 +25,8 @@
 #include <solvers/pde/tnlLinearSystemAssembler.h>
 #include <functions/tnlMeshFunction.h>
 
+#include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
+
 template< typename Mesh,
 		    typename DifferentialOperator,
 		    typename BoundaryCondition,
