@@ -127,9 +127,6 @@ class tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > >
             const Real velocity = 1.0 );
 };
 
-template < typename T1, typename T2 >
-T1 meet2DCondition( T1 a, T1 b, const T2 ha, const T2 hb, const T1 value, double v = 1);
-
 template < typename T1 >
 __cuda_callable__ void sortMinims( T1 pom[] );
 
