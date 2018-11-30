@@ -96,10 +96,10 @@ template< typename Real,
 template< int sizeSArray >
 void
 tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >::
-updateBlocks( const InterfaceMapType& interfaceMap,
-        MeshFunctionType& aux,
-        MeshFunctionType& helpFunc,
-        ArrayContainer& BlockIterHost, int numThreadsPerBlock/*, Real **sArray*/ )
+updateBlocks( InterfaceMapType interfaceMap,
+        MeshFunctionType aux,
+        MeshFunctionType helpFunc,
+        ArrayContainer BlockIterHost, IndexType numThreadsPerBlock/*, Real **sArray*/ )
 {
 #pragma omp parallel for schedule( dynamic )
   for( IndexType i = 0; i < BlockIterHost.getSize(); i++ )
@@ -267,13 +267,13 @@ updateBlocks( const InterfaceMapType& interfaceMap,
 template< typename Real,
         typename Device,
         typename Index >
-template< int sizeSArray >
+template< IndexType sizeSArray >
 void
 tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > >::
 updateBlocks( const InterfaceMapType& interfaceMap,
         const MeshFunctionType& aux,
         MeshFunctionType& helpFunc,
-        ArrayContainer& BlockIterHost, int numThreadsPerBlock/*, Real **sArray*/ )
+        ArrayContainer BlockIterHost, IndexType numThreadsPerBlock/*, Real **sArray*/ )
 {  
 //#pragma omp parallel for schedule( dynamic )
   for( IndexType i = 0; i < BlockIterHost.getSize(); i++ )

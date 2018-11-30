@@ -97,11 +97,11 @@ solve( const MeshPointer& mesh,
   if( i == 0 ) {
     printf( "0: mesh x: %d\n", mesh->getDimensions().x() );
     printf( "0: mesh y: %d\n", mesh->getDimensions().y() );
-    //aux.save("aux_proc0.tnl");
-    /*for( int k = 0; k < mesh->getDimensions().x()*mesh->getDimensions().y(); k++ )
+    aux.save("aux_proc0.tnl");
+    for( int k = 0; k < 16*16; k++ )
       aux[ k ] = 10;
-    for( int k = 0; k < mesh->getDimensions().x(); k++ ){
-      for( int l = 0; l < mesh->getDimensions().y(); l++ )
+    for( int k = 0; k < 16; k++ ){
+      for( int l = 0; l < 16; l++ )
         printf("%f.2\t",aux[ k * 16 + l ] );
     printf("\n");
     }*/
