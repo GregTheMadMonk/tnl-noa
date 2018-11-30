@@ -123,24 +123,12 @@ setInitialCondition( const Config::ParameterContainer& parameters,
 {
   this->bindDofs( mesh, dofs );
   const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
-  if(CommunicatorType::isDistributed())
+  if( ! this->solution.boundLoad( initialConditionFile ) )
   {
-    std::cout<<"Nodes Distribution: " << uPointer->getMesh().getDistributedMesh()->printProcessDistr() << std::endl;
-    if(distributedIOType==Meshes::DistributedMeshes::MpiIO)
-      Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::MpiIO> ::load(initialConditionFile, *uPointer );
-    if(distributedIOType==Meshes::DistributedMeshes::LocalCopy)
-      Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::LocalCopy> ::load(initialConditionFile, *uPointer );
-    uPointer->template synchronize<CommunicatorType>();
+    std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." <<std::endl;
+    return false;
   }
-  else
-  {
-    if( ! this->solution.boundLoad( initialConditionFile ) )
-    {
-      std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." <<std::endl;
-      return false;
-    }
-  }
-   return true;
+  return true;
 }
 
 template< typename Mesh,
