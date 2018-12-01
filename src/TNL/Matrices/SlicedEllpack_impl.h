@@ -128,7 +128,7 @@ template< typename Real,
 Index SlicedEllpack< Real, Device, Index, SliceSize >::getNonZeroRowLength( const IndexType row ) const
 {
     ConstMatrixRow matrixRow = getRow( row );
-    return matrixRow.getNonZeroElementsCount();
+    return matrixRow.getNonZeroElementsCount( Device::getDeviceType() );
 }
 
 template< typename Real,

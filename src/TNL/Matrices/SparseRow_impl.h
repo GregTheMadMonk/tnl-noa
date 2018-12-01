@@ -116,31 +116,50 @@ template< typename Real, typename Index >
 __cuda_callable__
 Index
 SparseRow< Real, Index >::
-getNonZeroElementsCount() const
+getNonZeroElementsCount( TNL::String deviceType ) const
 {
+    using CudaType = typename TNL::Devices::Cuda;
+    using HostType = typename TNL::Devices::Host;
+    
     using NonConstIndex = typename std::remove_const< Index >::type;
-    // using DeviceType = typename TNL::Matrices::Matrix::DeviceType;
+//    using DeviceType = typename TNL::Matrices::Matrix::DeviceType;
     
-    NonConstIndex elementCount ( 0 );
+    static NonConstIndex elementCount ( 0 );
     
-//    auto computeNonzeros = [this, &elementCount] /*__cuda_callable__*/ ( NonConstIndex i ) mutable
-//    {
-//        if( getElementValue( i ) != ( Real ) 0 )
-//            elementCount++;
-//    };
-   
-//    ParallelFor< Device >::exec( ( NonConstIndex ) 0, length, computeNonzeros );
-//    The ParallelFor::exec() function needs a < DeviceType >, how to get this into SparseRow?
-    /*
-     
-     */
+    elementCount = 0; // Make sure it is reset. Without this seemingly useless step, it returned incorrect values.
     
-    // std::vector< Real > vls = values; // Size of values should be something like: (sizeof(this->values)/sizeof(*this->values)) from https://stackoverflow.com/questions/4108313/how-do-i-find-the-length-of-an-array
-   
-    for( NonConstIndex i = 0; i < length; i++ ) // this->values doesn't have anything similar to getSize().
-        if( this->values[ i * step ] != 0.0 ) // This returns the same amount of elements in a row as does getRowLength(). WHY?
+    auto computeNonZeros = [=] __cuda_callable__ ( NonConstIndex i ) mutable
+    {
+        //std::cout << "this->values[ i * step ] = " << this->values[ i * step ] << " != 0.0/n";
+        if( this->values[ i * step ] != 0.0 )
             elementCount++;
+        
+        //std::cout << "End of lambda elementCount = " << elementCount << "/n";
+    };
     
+    if( deviceType == TNL::String( "Devices::Host" ) )
+    {
+        // Where to end the loop? the variable "length" seems to lead to illegal memory access. ??Because length is the length of the entire row, we want just the length of values.??
+        ParallelFor< HostType >::exec( ( NonConstIndex ) 0, length, computeNonZeros );
+    }
+    
+    else if( deviceType == TNL::String( "Cuda" ) )
+    {
+        ParallelFor< CudaType >::exec( ( NonConstIndex ) 0, length, computeNonZeros );
+    }
+    
+    // The ParallelFor::exec() function needs a < DeviceType >, how to get this into SparseRow?
+   
+    
+//    // THE FOLLOWING doesn't work on GPU
+//    for( NonConstIndex i = 0; i < length; i++ )
+//    {
+//        std::cout << "this->values[ i * step ] = " << this->values[ i * step ] << " != 0.0" << std::endl;
+//        if( this->values[ i * step ] != 0.0 ) // Returns the same amount of elements in a row as does getRowLength() in ChunkedEllpack. WHY?
+//            elementCount++;
+//    }
+    
+    // std::cout << "Element Count = " << elementCount << "\n";
     return elementCount;
 }
 

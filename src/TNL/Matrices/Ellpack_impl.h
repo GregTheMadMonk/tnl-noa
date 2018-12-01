@@ -129,7 +129,7 @@ template< typename Real,
 Index Ellpack< Real, Device, Index >::getNonZeroRowLength( const IndexType row ) const
 {
     ConstMatrixRow matrixRow = getRow( row );
-    return matrixRow.getNonZeroElementsCount();
+    return matrixRow.getNonZeroElementsCount( Device::getDeviceType() );
 }
 
 template< typename Real,

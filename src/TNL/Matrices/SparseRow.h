@@ -53,7 +53,7 @@ class SparseRow
       Index getLength() const;
       
       __cuda_callable__
-      Index getNonZeroElementsCount() const;
+      Index getNonZeroElementsCount( TNL::String deviceType ) const;
 
       void print( std::ostream& str ) const;
 

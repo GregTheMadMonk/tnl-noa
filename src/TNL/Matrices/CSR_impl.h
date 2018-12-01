@@ -136,8 +136,28 @@ template< typename Real,
           typename Index >
 Index CSR< Real, Device, Index >::getNonZeroRowLength( const IndexType row ) const
 {
-    ConstMatrixRow matrixRow = getRow( row );
-    return matrixRow.getNonZeroElementsCount();
+    ConstMatrixRow matrixRow = this->getRow( row );
+    IndexType count = matrixRow.getNonZeroElementsCount( TNL::String( Device::getDeviceType() ) );
+//    return count;
+    // getRow() was throwing segmentation faults.
+    // FOR THIS TO WORK, I had to change getRow() from [ rowIndex ] to .getElement( rowIndex ).
+    
+    
+    // THE FOLLOWING throws: /home/lukas/tnl-dev/src/TNL/ParallelFor.h(92): error: identifier "" is undefined in device code
+//    static IndexType elementCount ( 0 );
+//    ConstMatrixRow matrixRow = this->getRow( row );
+//    
+//    elementCount = 0; // Make sure it is reset. Without this seemingly useless step, it returned incorrect values.
+//    
+//    auto computeNonZeros = [matrixRow] __cuda_callable__ ( IndexType i ) mutable
+//    {
+//        if( matrixRow.getElementValue( i ) != 0.0 )
+//            elementCount++;
+//    };
+//    
+//    ParallelFor< DeviceType >::exec( (IndexType) 0, matrixRow.getLength(), computeNonZeros );
+//    
+//    return elementCount;
 }
 
 template< typename Real,
@@ -439,12 +459,19 @@ typename CSR< Real, Device, Index >::ConstMatrixRow
 CSR< Real, Device, Index >::
 getRow( const IndexType rowIndex ) const
 {
-   const IndexType rowOffset = this->rowPointers[ rowIndex ];
-   const IndexType rowLength = this->rowPointers[ rowIndex + 1 ] - rowOffset;
-   return ConstMatrixRow( &this->columnIndexes[ rowOffset ],
-                          &this->values[ rowOffset ],
-                          rowLength,
-                          1 );
+    const IndexType rowOffset = this->rowPointers.getElement( rowIndex );
+    const IndexType rowLength = this->rowPointers.getElement( rowIndex + 1 ) - rowOffset;
+    return ConstMatrixRow( &this->columnIndexes[ rowOffset ],
+                           &this->values[ rowOffset ],
+                           rowLength,
+                           1 );
+    
+//   const IndexType rowOffset = this->rowPointers[ rowIndex ];
+//   const IndexType rowLength = this->rowPointers[ rowIndex + 1 ] - rowOffset;
+//   return ConstMatrixRow( &this->columnIndexes[ rowOffset ],
+//                          &this->values[ rowOffset ],
+//                          rowLength,
+//                          1 );
 }
 
 template< typename Real,
