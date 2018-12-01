@@ -198,8 +198,8 @@ bool ChunkedEllpack< Real, Device, Index >::setSlice( ConstCompressedRowLengthsV
 //       will be zero and make the assertion fail ( https://stackoverflow.com/questions/33273359/in-c-using-the-ceil-a-division-is-not-working ).
 //       To fix this, typecast them to ( float ), instead of ( RealType )
        maxChunkInSlice = max( maxChunkInSlice,
-                          ceil( ( float ) rowLengths[ i ] /
-                                ( float ) this->rowToChunkMapping[ i ] ) );
+                          ceil( ( double ) rowLengths[ i ] /
+                                ( double ) this->rowToChunkMapping[ i ] ) );
    }
       TNL_ASSERT( maxChunkInSlice > 0,
               std::cerr << " maxChunkInSlice = " << maxChunkInSlice << std::endl );
@@ -314,7 +314,22 @@ template< typename Real,
 Index ChunkedEllpack< Real, Device, Index >::getNonZeroRowLength( const IndexType row ) const
 {
     ConstMatrixRow matrixRow = getRow( row );
-    return matrixRow.getNonZeroElementsCount();
+    return matrixRow.getNonZeroElementsCount( Device::getDeviceType() );
+    
+//    IndexType elementCount ( 0 );
+//    ConstMatrixRow matrixRow = this->getRow( row );
+//    
+//    auto computeNonZeros = [&] /*__cuda_callable__*/ ( IndexType i ) mutable
+//    {
+//        std::cout << "matrixRow.getElementValue( i ) = " << matrixRow.getElementValue( i ) << " != 0.0" << std::endl;
+//        if( matrixRow.getElementValue( i ) !=  0.0 )
+//            elementCount++;
+//        
+//        std::cout << "End of lambda elementCount = " << elementCount << std::endl;
+//    };
+//   
+//    ParallelFor< DeviceType >::exec( ( IndexType ) 0, matrixRow.getLength(), computeNonZeros );
+//    return elementCount;
 }
 
 template< typename Real,
