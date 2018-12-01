@@ -130,16 +130,44 @@ void test_SetCompressedRowLengths()
     rowLengths.setSize( rows );
     rowLengths.setValue( 3 );
     
-    IndexType value = 1;
+    IndexType rowLength = 1;
     for( IndexType i = 2; i < rows; i++ )
-        rowLengths.setElement( i, value++ );
+        rowLengths.setElement( i, rowLength++ );
     
     m.setCompressedRowLengths( rowLengths );
     
-    RealType realValue = 1; // Do this for every individual row, to assure that non-zero values are not assigned where they're not supposed to be, aka, outside of compressed Row Length
-    for( IndexType i = 0; i < rows; i++ )
-        for( IndexType j = 0; j < cols; j++ )
-            m.setElement( i, j, realValue++ );
+    // Insert values into the rows.
+    RealType value = 1;
+    
+    for( IndexType i = 0; i < 3; i++ )      // 0th row
+        m.setElement( 0, i, value++ );
+    
+    for( IndexType i = 0; i < 3; i++ )      // 1st row
+        m.setElement( 1, i, value++ );
+    
+    for( IndexType i = 0; i < 1; i++ )      // 2nd row
+        m.setElement( 2, i, value++ );
+    
+    for( IndexType i = 0; i < 2; i++ )      // 3rd row
+        m.setElement( 3, i, value++ );
+        
+    for( IndexType i = 0; i < 3; i++ )      // 4th row
+        m.setElement( 4, i, value++ );
+        
+    for( IndexType i = 0; i < 4; i++ )      // 5th row
+        m.setElement( 5, i, value++ );
+
+    for( IndexType i = 0; i < 5; i++ )      // 6th row
+        m.setElement( 6, i, value++ );
+
+    for( IndexType i = 0; i < 6; i++ )      // 7th row
+        m.setElement( 7, i, value++ );
+
+    for( IndexType i = 0; i < 7; i++ )      // 8th row
+        m.setElement( 8, i, value++ );
+
+    for( IndexType i = 0; i < 8; i++ )      // 9th row
+        m.setElement( 9, i, value++ );
     
     
     EXPECT_EQ( m.getNonZeroRowLength( 0 ), 3 );
