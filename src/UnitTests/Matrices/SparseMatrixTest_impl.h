@@ -130,9 +130,9 @@ void test_SetCompressedRowLengths()
     rowLengths.setSize( rows );
     rowLengths.setValue( 3 );
     
-    IndexType rowLength = 1;
-    for( IndexType i = 2; i < rows; i++ )
-        rowLengths.setElement( i, rowLength++ );
+//    IndexType rowLength = 1;
+//    for( IndexType i = 2; i < rows; i++ )
+//        rowLengths.setElement( i, rowLength++ );
     
     m.setCompressedRowLengths( rowLengths );
     
@@ -145,28 +145,28 @@ void test_SetCompressedRowLengths()
     for( IndexType i = 0; i < 3; i++ )      // 1st row
         m.setElement( 1, i, value++ );
     
-    for( IndexType i = 0; i < 1; i++ )      // 2nd row
+    for( IndexType i = 0; i < 3; i++ )      // 2nd row
         m.setElement( 2, i, value++ );
     
-    for( IndexType i = 0; i < 2; i++ )      // 3rd row
+    for( IndexType i = 0; i < 3; i++ )      // 3rd row
         m.setElement( 3, i, value++ );
         
     for( IndexType i = 0; i < 3; i++ )      // 4th row
         m.setElement( 4, i, value++ );
         
-    for( IndexType i = 0; i < 4; i++ )      // 5th row
+    for( IndexType i = 0; i < 3; i++ )      // 5th row
         m.setElement( 5, i, value++ );
 
-    for( IndexType i = 0; i < 5; i++ )      // 6th row
+    for( IndexType i = 0; i < 3; i++ )      // 6th row
         m.setElement( 6, i, value++ );
 
-    for( IndexType i = 0; i < 6; i++ )      // 7th row
+    for( IndexType i = 0; i < 3; i++ )      // 7th row
         m.setElement( 7, i, value++ );
 
-    for( IndexType i = 0; i < 7; i++ )      // 8th row
+    for( IndexType i = 0; i < 3; i++ )      // 8th row
         m.setElement( 8, i, value++ );
 
-    for( IndexType i = 0; i < 8; i++ )      // 9th row
+    for( IndexType i = 0; i < 3; i++ )      // 9th row
         m.setElement( 9, i, value++ );
     
     
