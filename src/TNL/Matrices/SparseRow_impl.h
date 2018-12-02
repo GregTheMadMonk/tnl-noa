@@ -122,12 +122,16 @@ getNonZeroElementsCount( TNL::String deviceType ) const
     using HostType = typename TNL::Devices::Host;
     
     using NonConstIndex = typename std::remove_const< Index >::type;
-//    using DeviceType = typename TNL::Matrices::Matrix::DeviceType;
     
-    static NonConstIndex elementCount ( 0 );
+    // If this is static, it will trigger a illegal memory address
+    // How to get it into the lambda function?
+    NonConstIndex elementCount ( 0 );
     
-    elementCount = 0; // Make sure it is reset. Without this seemingly useless step, it returned incorrect values.
     
+    // elementCount = 0; // Only if it is static. Make sure it is reset. Without this seemingly useless step, it returned incorrect values.
+    
+    // PROBLEM: Lambda function with __cuda_callable__ CANNOT pass values by reference!!
+    // PROBLEM: Lambda function which takes in anything via capture list, cannot return anything. (Maybe dont capture anything? pass this->values by parameter and return count?)
     auto computeNonZeros = [=] __cuda_callable__ ( NonConstIndex i ) mutable
     {
         //std::cout << "this->values[ i * step ] = " << this->values[ i * step ] << " != 0.0/n";
@@ -137,9 +141,10 @@ getNonZeroElementsCount( TNL::String deviceType ) const
         //std::cout << "End of lambda elementCount = " << elementCount << "/n";
     };
     
+    
+    // Decide which ParallelFor will be executed, either Host or Cuda.
     if( deviceType == TNL::String( "Devices::Host" ) )
     {
-        // Where to end the loop? the variable "length" seems to lead to illegal memory access. ??Because length is the length of the entire row, we want just the length of values.??
         ParallelFor< HostType >::exec( ( NonConstIndex ) 0, length, computeNonZeros );
     }
     
@@ -147,8 +152,6 @@ getNonZeroElementsCount( TNL::String deviceType ) const
     {
         ParallelFor< CudaType >::exec( ( NonConstIndex ) 0, length, computeNonZeros );
     }
-    
-    // The ParallelFor::exec() function needs a < DeviceType >, how to get this into SparseRow?
    
     
 //    // THE FOLLOWING doesn't work on GPU
@@ -160,6 +163,7 @@ getNonZeroElementsCount( TNL::String deviceType ) const
 //    }
     
     // std::cout << "Element Count = " << elementCount << "\n";
+    
     return elementCount;
 }
 
