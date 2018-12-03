@@ -18,7 +18,7 @@
 
 namespace TNL {
 
-/***
+/**
  * \brief This function returns minimum of two numbers.
  *
  * GPU device code uses the functions defined in the CUDA's math_functions.h,
@@ -43,7 +43,7 @@ ResultType min( const T1& a, const T2& b )
 }
 
 
-/***
+/**
  * \brief This function returns maximum of two numbers.
  *
  * GPU device code uses the functions defined in the CUDA's math_functions.h,
@@ -191,8 +191,8 @@ T sign( const T& a )
  *
  * It tests whether the number \e v is in \e tolerance, in other words, whether
  * \e v in absolute value is less then or equal to \e tolerance.
- * @param v Real number.
- * @param tolerance Critical value which is set to 0.00001 by defalt.
+ * \param v Real number.
+ * \param tolerance Critical value which is set to 0.00001 by defalt.
  */
 template< typename Real >
 __cuda_callable__
@@ -205,8 +205,8 @@ bool isSmall( const Real& v,
 /**
  * \brief This function divides \e num by \e div and rounds up the result.
  *
- * @param num An integer considered as dividend.
- * @param div An integer considered as divisor.
+ * \param num An integer considered as dividend.
+ * \param div An integer considered as divisor.
  */
 __cuda_callable__
 inline int roundUpDivision( const int num, const int div )
@@ -217,8 +217,8 @@ inline int roundUpDivision( const int num, const int div )
 /**
  * \brief This function rounds up \e number to the nearest multiple of number \e multiple.
  *
- * @param number Integer we want to round.
- * @param multiple Integer.
+ * \param number Integer we want to round.
+ * \param multiple Integer.
  */
 __cuda_callable__
 inline int roundToMultiple( int number, int multiple )
@@ -226,12 +226,24 @@ inline int roundToMultiple( int number, int multiple )
    return multiple*( number/ multiple + ( number % multiple != 0 ) );
 }
 
+/**
+ * \brief This function checks if \e x is an integral power of two.
+ *
+ * Returns \e true if \e x is a power of two. Otherwise returns \e false.
+ * \param x Integer.
+ */
 __cuda_callable__
 inline bool isPow2( int x )
 {
    return ( ( x & ( x - 1 ) ) == 0 );
 }
 
+/**
+ * \brief This function checks if \e x is an integral power of two.
+ *
+ * Returns \e true if \e x is a power of two. Otherwise returns \e false.
+ * \param x Long integer.
+ */
 __cuda_callable__
 inline bool isPow2( long int x )
 {
