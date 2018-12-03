@@ -26,9 +26,9 @@ template< class T > class ListDataElement;
 /*! To acces elements in the list one can use method getSize() and
     operator[](). To add elements there are methods Append(),
     Prepend() and Insert() to insert an element at given
-    position. To erase particular element there is merthod
+    position. To erase particular element there is method
     Erase() taking the element position. To erase all elements
-    there is method EraseAll. There are also alternatives DeepErase()
+    there is method reset(). There are also alternatives DeepErase()
     and DeepEraseAll() to free dynamicaly allocated data inside the
     data elements.
     The list stores pointer to last accesed element so if one goes
@@ -51,7 +51,7 @@ template< class T > class List
       /// \brief Copy constructor.
       ///
       /// Construct a copy of \e list.
-      /// @param list Name of another list.
+      /// \param list Name of another list.
       List( const List& list );
 
       /// \brief Destructor.
@@ -96,18 +96,27 @@ template< class T > class List
       bool Insert( const T& data, const int& ind );
 
       /// Appends copy of another list.
+      ///
+      /// \param lst Name of another list.
       bool AppendList( const List< T >& lst );
 
       /// Prepends copy of another list.
+      ///
+      /// \param lst Name of another list.
       bool PrependList( const List< T >& lst );
 
+      /// Transforms list to an \e array.
       template< typename Array >
       void toArray( Array& array );
 
       /// Erases data element at given position.
+      ///
+      /// \param ind Index of the data element one chooses to remove.
       void Erase( const int& ind );
 
       /// Erases data element with contained data at given position.
+      ///
+      /// \param ind Index of the data element one chooses to remove.
       void DeepErase( const int& ind );
 
       /// Erases all data elements.
@@ -119,15 +128,23 @@ template< class T > class List
       void DeepEraseAll();
 
       /// Saves the list in binary format.
+      ///
+      /// \param file Name of file.
       bool Save( File& file ) const;
 
       /// Saves the list in binary format using method save of type T.
+      ///
+      /// \param file Name of file.
       bool DeepSave( File& file ) const;
 
-      /// Loads the list.
+      /// Loads the list from file.
+      ///
+      /// \param file Name of file.
       bool Load( File& file );
 
-      /// Loads the list using method Load of the type T.
+      /// Loads the list from file using method Load of the type T.
+      ///
+      /// \param file Name of file.
       bool DeepLoad( File& file );
  
    protected:
