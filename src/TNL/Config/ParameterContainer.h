@@ -89,9 +89,9 @@ class ParameterContainer
     * If the parameter does not have any value or has different value then the given
     * \e value the method returns \e false and shows message when \e verbose is \e true.
     *
-    * @param name Name of parameter.
-    * @param value Value of type T we want to check whether is assigned to the parameter.
-    * @param verbose Boolean value defining whether to show error message (when true) or not (when false).
+    * \param name Name of parameter.
+    * \param value Value of type T we want to check whether is assigned to the parameter.
+    * \param verbose Boolean value defining whether to show error message (when true) or not (when false).
     */
    template< class T > bool getParameter( const String& name,
                                           T& value,

@@ -33,7 +33,7 @@ class Object
 {
    public:
 
-      /****
+      /**
        * \brief Type getter.
        *
        * Returns the type in C++ style - for example the returned value
@@ -43,7 +43,7 @@ class Object
 
       virtual String getTypeVirtual() const;   
 
-      /****
+      /**
        * \brief This is used for load and save methods.
        *
        * Each object is saved as if it was stored on Devices::Host. So even Vector< double, Devices::Cuda >
@@ -53,21 +53,21 @@ class Object
 
       virtual String getSerializationTypeVirtual() const;
 
-      /***
+      /**
        * \brief Method for saving the object to a file as a binary data.
        *
        * \param file Name of file object.
        */
       virtual bool save( File& file ) const;
 
-      /***
+      /**
        * \brief Method for restoring the object from a file.
        *
        * \param file Name of file object.
        */
       virtual bool load( File& file );
 
-      /***
+      /**
        * \brief Method for restoring the object from a file.
        *
        * \param file Name of file object.

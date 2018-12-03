@@ -27,8 +27,18 @@ class ConfigDescription
 {
    public:
 
+   /**
+    * \brief Basic constructor.
+    */
    ConfigDescription();
 
+   /**
+    * \brief Adds new entry to the configuration description.
+    *
+    * \tparam EntryType Type of the entry.
+    * \param name Name of the entry.
+    * \param description More specific information about the entry.
+    */
    template< typename EntryType >
    void addEntry( const String& name,
                   const String& description )
@@ -37,6 +47,13 @@ class ConfigDescription
       entries.Append( currentEntry );
    }
 
+   /**
+    * \brief Adds new entry to the configuration description.
+    *
+    * \tparam EntryType Type of the entry.
+    * \param name Name of the entry.
+    * \param description More specific information about the entry.
+    */
    template< typename EntryType >
    void addRequiredEntry( const String& name,
                           const String& description )
@@ -44,7 +61,15 @@ class ConfigDescription
       currentEntry = new ConfigEntry< EntryType >( name, description, true );
       entries.Append( currentEntry );
    }
- 
+
+   /**
+    * \brief Adds new entry to the configuration description.
+    *
+    * \tparam EntryType Type of the entry.
+    * \param name Name of the entry.
+    * \param description More specific information about the entry.
+    * \param defaultValue Default value of the entry.
+    */
    template< typename EntryType >
    void addEntry( const String& name,
                   const String& description,
@@ -57,6 +82,13 @@ class ConfigDescription
       entries. Append( currentEntry );
    }
 
+   /**
+    * \brief Adds new list to the configuration description.
+    *
+    * \tparam EntryType Type of the list.
+    * \param name Name of the list.
+    * \param description More specific information about the list.
+    */
    template< typename EntryType >
    void addList( const String& name,
                  const String& description )
@@ -65,6 +97,13 @@ class ConfigDescription
       entries.Append( currentEntry );
    }
 
+   /**
+    * \brief Adds new list to the configuration description.
+    *
+    * \tparam EntryType Type of the list.
+    * \param name Name of the list.
+    * \param description More specific information about the list.
+    */
    template< typename EntryType >
    void addRequiredList( const String& name,
                          const String& description )
@@ -73,6 +112,14 @@ class ConfigDescription
       entries.Append( currentEntry );
    }
 
+   /**
+    * \brief Adds new list to the configuration description.
+    *
+    * \tparam EntryType Type of the list.
+    * \param name Name of the list.
+    * \param description More specific information about the list.
+    * \param defaultValue Default value of the list.
+    */
    template< typename EntryType >
    void addList( const String& name,
                  const String& description,
@@ -162,6 +209,9 @@ class ConfigDescription
 
    //bool parseConfigDescription( const char* file_name );
 
+   /**
+    * \brief Basic destructor.
+    */
    ~ConfigDescription();
 
    protected:
