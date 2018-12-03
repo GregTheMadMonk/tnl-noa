@@ -135,10 +135,9 @@ template< typename Real,
           typename Device,
           typename Index >
 Index CSR< Real, Device, Index >::getNonZeroRowLength( const IndexType row ) const
-{
+{    
     ConstMatrixRow matrixRow = this->getRow( row );
-    IndexType count = matrixRow.getNonZeroElementsCount( TNL::String( Device::getDeviceType() ) );
-//    return count;
+    return matrixRow.getNonZeroElementsCount( TNL::String( Device::getDeviceType() ) );
     // getRow() was throwing segmentation faults.
     // FOR THIS TO WORK, I had to change getRow() from [ rowIndex ] to .getElement( rowIndex ).
     
@@ -459,19 +458,12 @@ typename CSR< Real, Device, Index >::ConstMatrixRow
 CSR< Real, Device, Index >::
 getRow( const IndexType rowIndex ) const
 {
-    const IndexType rowOffset = this->rowPointers.getElement( rowIndex );
-    const IndexType rowLength = this->rowPointers.getElement( rowIndex + 1 ) - rowOffset;
+    const IndexType rowOffset = this->rowPointers[ rowIndex ];
+    const IndexType rowLength = this->rowPointers[ rowIndex + 1 ] - rowOffset;
     return ConstMatrixRow( &this->columnIndexes[ rowOffset ],
                            &this->values[ rowOffset ],
                            rowLength,
                            1 );
-    
-//   const IndexType rowOffset = this->rowPointers[ rowIndex ];
-//   const IndexType rowLength = this->rowPointers[ rowIndex + 1 ] - rowOffset;
-//   return ConstMatrixRow( &this->columnIndexes[ rowOffset ],
-//                          &this->values[ rowOffset ],
-//                          rowLength,
-//                          1 );
 }
 
 template< typename Real,
