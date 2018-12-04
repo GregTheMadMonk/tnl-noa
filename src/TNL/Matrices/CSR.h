@@ -13,6 +13,9 @@
 #include <TNL/Matrices/Sparse.h>
 #include <TNL/Containers/Vector.h>
 
+#include <TNL/Devices/Cuda.h>
+#include <TNL/Exceptions/CudaBadAlloc.h>
+
 namespace TNL {
 namespace Matrices {
    
@@ -80,8 +83,14 @@ public:
    __cuda_callable__
    IndexType getRowLengthFast( const IndexType row ) const;
    
+#ifdef HAVE_CUDA
+   //__device__
+   //void getNonZeroRowLengthCudaKernel( const MatrixRow row, typename MatrixRow::IndexType* result );
+   
    IndexType getNonZeroRowLength( const IndexType row ) const;
-
+   
+   IndexType getNonZeroRowLengthFast( const IndexType row ) const;
+#endif
    template< typename Real2, typename Device2, typename Index2 >
    void setLike( const CSR< Real2, Device2, Index2 >& matrix );
 

@@ -112,6 +112,16 @@ getLength() const
    return length;
 }
 
+//template< typename MatrixRow >
+//__global__ void getNonZeroRowLengthCudaKernel( const MatrixRow row, typename MatrixRow::IndexType* result )
+//{
+//   int threadId = blockIdx.x * blockDim.x + threadIdx.x;
+//   if( threadId == 0 )
+//   {
+//      result = row->getNonZeroElementsCount();
+//   }
+//}
+
 template< typename Real, typename Index >
 __cuda_callable__
 Index
