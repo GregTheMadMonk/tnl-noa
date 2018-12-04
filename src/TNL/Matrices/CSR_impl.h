@@ -131,13 +131,38 @@ Index CSR< Real, Device, Index >::getRowLengthFast( const IndexType row ) const
    return this->rowPointers[ row + 1 ] - this->rowPointers[ row ];
 }
 
+// TODO: presunout do SparseRow
+template< typename MatrixRow >
+__global__ void getNonZeroRowLengthCudaKernel( const MatrixRow row, typename MatrixRow::IndexType* result )
+{
+   int threadId = blockIdx.x * blockDim.x + threadIdx.x;
+   if( threadId == 0 )
+   {
+      result = row->getNonZeroElementsCount();
+   }
+}
+
 template< typename Real,
           typename Device,
           typename Index >
 Index CSR< Real, Device, Index >::getNonZeroRowLength( const IndexType row ) const
-{    
-    ConstMatrixRow matrixRow = this->getRow( row );
-    return matrixRow.getNonZeroElementsCount( TNL::String( Device::getDeviceType() ) );
+{  
+   if( std::is_same< DeviceType, Devices::Host >::value )
+   {
+      ConstMatrixRow matrixRow = this->getRow( row );
+      return matrixRow.getNonZeroElementsCount();
+   }
+   if( std::is_same< DeviceType, Devices::Cuda >::value )
+   {
+      ConstMatrixRow matrixRow = this->getRow( row );
+      IndexType resultHost;
+      IndexType* resultCuda = Devices::Cuda::passToDevice( resultHost );
+      getNonZeroRowLengthCudaKernel<<< 1, 1 >>>( row, &resultCuda );
+      resultHost = Devices::Cuda::passFromDevice( resultCuda );
+      Devices::Cuda::freeFromDevice( resultCuda );
+      return resultHost;
+   }
+   
     // getRow() was throwing segmentation faults.
     // FOR THIS TO WORK, I had to change getRow() from [ rowIndex ] to .getElement( rowIndex ).
     
@@ -157,6 +182,16 @@ Index CSR< Real, Device, Index >::getNonZeroRowLength( const IndexType row ) con
 //    ParallelFor< DeviceType >::exec( (IndexType) 0, matrixRow.getLength(), computeNonZeros );
 //    
 //    return elementCount;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__
+Index CSR< Real, Device, Index >::getNonZeroRowLengthFast( const IndexType row ) const
+{  
+   ConstMatrixRow matrixRow = this->getRow( row );
+   return matrixRow.getNonZeroElementsCount();
 }
 
 template< typename Real,
