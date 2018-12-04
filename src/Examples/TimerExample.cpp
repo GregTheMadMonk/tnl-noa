@@ -16,5 +16,7 @@ int main()
     time.reset();
     cout << "after reset:" << time.getRealTime() << endl;
     // writeLog example
+    Logger log1(50,stream);
+    writeLog( log1, 0 );
 }
 

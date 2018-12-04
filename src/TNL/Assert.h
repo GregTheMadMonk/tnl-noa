@@ -103,6 +103,7 @@
  * The assertion succeeds if, and only if, ___tnl__assert_condition is valid.
  * On success the test continues without any side effects.
  * On failure the test is terminated with the error message \e ___tnl__assert_command.
+ */
 #define TNL_ASSERT( ___tnl__assert_condition, ___tnl__assert_command )
 
 #else /* #ifdef NDEBUG */

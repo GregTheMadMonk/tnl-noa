@@ -85,7 +85,7 @@ class Timer
 
       /// \brief Writes a record into the \e logger.
       ///
-      /// \param logger
+      /// \param logger Name of Logger object.
       /// \param logLevel A non-negative integer recording the log record indent.
       bool writeLog( Logger& logger, int logLevel = 0 ) const;
  
