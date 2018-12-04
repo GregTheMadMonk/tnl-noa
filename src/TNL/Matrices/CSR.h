@@ -45,17 +45,17 @@ private:
 public:
 
    using RealType = Real;
-   //typedef Real RealType;
-   typedef Device DeviceType;
-   typedef Index IndexType;
+   using DeviceType = Device;
+   using IndexType = Index;
    typedef typename Sparse< RealType, DeviceType, IndexType >:: CompressedRowLengthsVector CompressedRowLengthsVector;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
    typedef CSR< Real, Device, Index > ThisType;
    typedef CSR< Real, Devices::Host, Index > HostType;
    typedef CSR< Real, Devices::Cuda, Index > CudaType;
    typedef Sparse< Real, Device, Index > BaseType;
-   typedef typename BaseType::MatrixRow MatrixRow;
+   //typedef typename BaseType::MatrixRow MatrixRow;
    
+   using MatrixRow = typename BaseType::MatrixRow;
    using ConstMatrixRow = typename BaseType::ConstMatrixRow;
    //using typename BaseType::ConstMatrixRow;
    //typedef SparseRow< const RealType, const IndexType > ConstMatrixRow;
