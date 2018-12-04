@@ -41,7 +41,8 @@ private:
 
 public:
 
-   typedef Real RealType;
+   using RealType = Real;
+   //typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
    typedef typename Sparse< RealType, DeviceType, IndexType >:: CompressedRowLengthsVector CompressedRowLengthsVector;
@@ -51,7 +52,10 @@ public:
    typedef CSR< Real, Devices::Cuda, Index > CudaType;
    typedef Sparse< Real, Device, Index > BaseType;
    typedef typename BaseType::MatrixRow MatrixRow;
-   typedef SparseRow< const RealType, const IndexType > ConstMatrixRow;
+   
+   using ConstMatrixRow = typename BaseType::ConstMatrixRow;
+   //using typename BaseType::ConstMatrixRow;
+   //typedef SparseRow< const RealType, const IndexType > ConstMatrixRow;
 
 
    enum SPMVCudaKernel { scalar, vector, hybrid };

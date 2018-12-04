@@ -116,7 +116,7 @@ template< typename Real, typename Index >
 __cuda_callable__
 Index
 SparseRow< Real, Index >::
-getNonZeroElementsCount( TNL::String deviceType ) const
+getNonZeroElementsCount() const
 {
     using NonConstIndex = typename std::remove_const< Index >::type;
     

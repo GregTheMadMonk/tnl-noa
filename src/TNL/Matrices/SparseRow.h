@@ -21,6 +21,9 @@ namespace Matrices {
 template< typename Real, typename Index >
 class SparseRow
 {
+   using RealType = Real;
+   using IndexType = Index;
+   
    public:
 
       __cuda_callable__
@@ -53,7 +56,7 @@ class SparseRow
       Index getLength() const;
       
       __cuda_callable__
-      Index getNonZeroElementsCount( TNL::String deviceType ) const;
+      Index getNonZeroElementsCount() const;
 
       void print( std::ostream& str ) const;
 
