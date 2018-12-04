@@ -63,7 +63,8 @@
  * For every function, EXPECT_EQ needs to be done, even for zeros in matrices.
  * Figure out __cuda_callable_. When trying to call __cuda_callable__ functions
  *      a segmentation fault (core dumped) is thrown.
- *  ==>__cuda_callable__ works only for CPU at the moment. (for loops vs thread kernel assignment)
+ *  ==>__cuda_callable__ works only for CPU at the moment. (for loops vs thread kernel assignment).
+ *                       If we want to use __cuda_callable__ on the GPU, we need to call it as a kernel.
  */
 
 #include <TNL/Containers/Vector.h>
@@ -82,7 +83,7 @@ void host_test_GetType()
     
     
     EXPECT_EQ( mtrxHostFloat.getType(), TNL::String( "Matrices::CSR< float, Devices::Host >" ) );
-    EXPECT_EQ( mtrxHostInt.getType(), TNL::String( "Matrices::CSR< int, Devices::Host >" ) );
+    EXPECT_EQ( mtrxHostInt.getType(), TNL::String( "Matrices::CSR< int, Devices::Host >" ) ); 
 }
 
 template< typename MatrixCudaFloat, typename MatrixCudaInt >
