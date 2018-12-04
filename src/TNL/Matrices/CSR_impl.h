@@ -131,9 +131,11 @@ Index CSR< Real, Device, Index >::getRowLengthFast( const IndexType row ) const
    return this->rowPointers[ row + 1 ] - this->rowPointers[ row ];
 }
 
-// TODO: presunout do SparseRow
+#ifdef HAVE_CUDA
+// TODO: move to SparseRow
 template< typename MatrixRow >
-__global__ void getNonZeroRowLengthCudaKernel( const MatrixRow row, typename MatrixRow::IndexType* result )
+__global__
+void getNonZeroRowLengthCudaKernel( const MatrixRow row, typename MatrixRow::IndexType* result )
 {
    int threadId = blockIdx.x * blockDim.x + threadIdx.x;
    if( threadId == 0 )
@@ -193,6 +195,7 @@ Index CSR< Real, Device, Index >::getNonZeroRowLengthFast( const IndexType row )
    ConstMatrixRow matrixRow = this->getRow( row );
    return matrixRow.getNonZeroElementsCount();
 }
+#endif
 
 template< typename Real,
           typename Device,
