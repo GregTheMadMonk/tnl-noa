@@ -133,16 +133,17 @@ Index CSR< Real, Device, Index >::getRowLengthFast( const IndexType row ) const
 
 #ifdef HAVE_CUDA
 // TODO: move to SparseRow
-template< typename MatrixRow >
+template< typename MatrixRow, typename Index >
 __global__
-void getNonZeroRowLengthCudaKernel( const MatrixRow row, typename MatrixRow::IndexType* result )
+void getNonZeroRowLengthCudaKernel( const MatrixRow row, Index* result )
 {
    int threadId = blockIdx.x * blockDim.x + threadIdx.x;
    if( threadId == 0 )
    {
-      result = row->getNonZeroElementsCount();
+      *result = row.getNonZeroElementsCount();
    }
 }
+#endif
 
 template< typename Real,
           typename Device,
@@ -156,34 +157,31 @@ Index CSR< Real, Device, Index >::getNonZeroRowLength( const IndexType row ) con
    }
    if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
-      ConstMatrixRow matrixRow = this->getRow( row );
-      IndexType resultHost;
+      IndexType *cols = new IndexType[4];
+      std::cout << "crash1" << std::endl;
+      RealType *vals = new RealType[4];
+      std::cout << "crash2" << std::endl;
+      for( int i = 0; i < 4; i++ )
+      {
+          cols[i] = i;
+          vals[i] = 1.0;
+      }
+      std::cout << "crash3" << std::endl;
+      ConstMatrixRow matrixRow(cols, vals, 4, 1); // = this->getRow( row ); // If the program even compiles, this line fails because a segfault is thrown on the first line of getRow()
+      std::cout << "crash4" << std::endl;
+      IndexType resultHost ( 0 );
       IndexType* resultCuda = Devices::Cuda::passToDevice( resultHost );
-      getNonZeroRowLengthCudaKernel<<< 1, 1 >>>( row, &resultCuda );
-      resultHost = Devices::Cuda::passFromDevice( resultCuda );
+      std::cout << "resultCuda = " << resultCuda << std::endl;
+      // PROBLEM: If thee second parameter of getNonZeroRowLengthCudaKernel is '&resultCuda', the following issue is thrown:
+      //          'error: no instance of function template "TNL::Matrices::getNonZeroRowLengthCudaKernel" matches the argument list'
+      /*TNL::Matrices::*/getNonZeroRowLengthCudaKernel< ConstMatrixRow, IndexType ><<< 1, 1 >>>( matrixRow, resultCuda ); // matrixRow works fine, tested them both separately
+      std::cout << "resultCuda = " << resultCuda << std::endl;
+      std::cout << "crash5" << std::endl;
+      resultHost = Devices::Cuda::passFromDevice( resultCuda ); // This causes a crash: Illegal memory address.
+      std::cout << "crash6" << std::endl;
       Devices::Cuda::freeFromDevice( resultCuda );
       return resultHost;
    }
-   
-    // getRow() was throwing segmentation faults.
-    // FOR THIS TO WORK, I had to change getRow() from [ rowIndex ] to .getElement( rowIndex ).
-    
-    
-    // THE FOLLOWING throws: /home/lukas/tnl-dev/src/TNL/ParallelFor.h(92): error: identifier "" is undefined in device code
-//    static IndexType elementCount ( 0 );
-//    ConstMatrixRow matrixRow = this->getRow( row );
-//    
-//    elementCount = 0; // Make sure it is reset. Without this seemingly useless step, it returned incorrect values.
-//    
-//    auto computeNonZeros = [matrixRow] __cuda_callable__ ( IndexType i ) mutable
-//    {
-//        if( matrixRow.getElementValue( i ) != 0.0 )
-//            elementCount++;
-//    };
-//    
-//    ParallelFor< DeviceType >::exec( (IndexType) 0, matrixRow.getLength(), computeNonZeros );
-//    
-//    return elementCount;
 }
 
 template< typename Real,
@@ -195,7 +193,6 @@ Index CSR< Real, Device, Index >::getNonZeroRowLengthFast( const IndexType row )
    ConstMatrixRow matrixRow = this->getRow( row );
    return matrixRow.getNonZeroElementsCount();
 }
-#endif
 
 template< typename Real,
           typename Device,

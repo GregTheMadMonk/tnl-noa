@@ -55,9 +55,6 @@ class SparseRow
       __cuda_callable__
       Index getLength() const;
       
-//      __global__ 
-//      void getNonZeroRowLengthCudaKernel( const MatrixRow row, typename MatrixRow::IndexType* result );
-      
       __cuda_callable__
       Index getNonZeroElementsCount() const;
 
