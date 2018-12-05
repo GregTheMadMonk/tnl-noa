@@ -131,20 +131,6 @@ Index CSR< Real, Device, Index >::getRowLengthFast( const IndexType row ) const
    return this->rowPointers[ row + 1 ] - this->rowPointers[ row ];
 }
 
-#ifdef HAVE_CUDA
-// TODO: move to SparseRow
-template< typename MatrixRow, typename Index >
-__global__
-void getNonZeroRowLengthCudaKernel( const MatrixRow row, Index* result )
-{
-   int threadId = blockIdx.x * blockDim.x + threadIdx.x;
-   if( threadId == 0 )
-   {
-      *result = row.getNonZeroElementsCount();
-   }
-}
-#endif
-
 template< typename Real,
           typename Device,
           typename Index >
@@ -158,27 +144,29 @@ Index CSR< Real, Device, Index >::getNonZeroRowLength( const IndexType row ) con
    if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
       IndexType *cols = new IndexType[4];
-      std::cout << "crash1" << std::endl;
       RealType *vals = new RealType[4];
-      std::cout << "crash2" << std::endl;
       for( int i = 0; i < 4; i++ )
       {
           cols[i] = i;
           vals[i] = 1.0;
       }
-      std::cout << "crash3" << std::endl;
-      ConstMatrixRow matrixRow(cols, vals, 4, 1); // = this->getRow( row ); // If the program even compiles, this line fails because a segfault is thrown on the first line of getRow()
-      std::cout << "crash4" << std::endl;
+      ConstMatrixRow matrixRow(cols, vals, 4, 1);
+//      ConstMatrixRow matrixRow = this->getRow( row );// If the program even compiles, this line fails because a segfault is thrown on the first line of getRow()
+      // WHEN debugging with GDB:
+      //  (gdb) p this->rowPointers[0]
+      //    Could not find operator[].
+      //  (gdb) p rowPointers.getElement(0)
+      //    Attempt to take address of value not located in memory.
       IndexType resultHost ( 0 );
       IndexType* resultCuda = Devices::Cuda::passToDevice( resultHost );
-      std::cout << "resultCuda = " << resultCuda << std::endl;
-      // PROBLEM: If thee second parameter of getNonZeroRowLengthCudaKernel is '&resultCuda', the following issue is thrown:
+      // PROBLEM: If the second parameter of getNonZeroRowLengthCudaKernel is '&resultCuda', the following issue is thrown:
       //          'error: no instance of function template "TNL::Matrices::getNonZeroRowLengthCudaKernel" matches the argument list'
-      /*TNL::Matrices::*/getNonZeroRowLengthCudaKernel< ConstMatrixRow, IndexType ><<< 1, 1 >>>( matrixRow, resultCuda ); // matrixRow works fine, tested them both separately
-      std::cout << "resultCuda = " << resultCuda << std::endl;
-      std::cout << "crash5" << std::endl;
-      resultHost = Devices::Cuda::passFromDevice( resultCuda ); // This causes a crash: Illegal memory address.
-      std::cout << "crash6" << std::endl;
+      TNL::Matrices::getNonZeroRowLengthCudaKernel< ConstMatrixRow, IndexType ><<< 1, 1 >>>( matrixRow, resultCuda ); // matrixRow works fine, tested them both separately
+      delete []cols;
+      delete []vals;
+      std::cout << "Checkpoint BEFORE passFromDevice" << std::endl;
+      resultHost = Devices::Cuda::passFromDevice( resultCuda ); // This causes a crash: Illegal memory address in Cuda_impl.h at TNL_CHECK_CUDA_DEVICE
+      std::cout << "Checkpoint AFTER passFromDevice" << std::endl;
       Devices::Cuda::freeFromDevice( resultCuda );
       return resultHost;
    }

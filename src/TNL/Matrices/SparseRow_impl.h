@@ -112,16 +112,18 @@ getLength() const
    return length;
 }
 
-//template< typename MatrixRow >
-//__global__ 
-//void getNonZeroRowLengthCudaKernel( const MatrixRow row, typename MatrixRow::IndexType* result )
-//{
-//   int threadId = blockIdx.x * blockDim.x + threadIdx.x;
-//   if( threadId == 0 )
-//   {
-//      result = row->getNonZeroElementsCount();
-//   }
-//}
+#ifdef HAVE_CUDA
+template< typename MatrixRow, typename Index >
+__global__
+void getNonZeroRowLengthCudaKernel( const MatrixRow row, Index* result )
+{
+   int threadId = blockIdx.x * blockDim.x + threadIdx.x;
+   if( threadId == 0 )
+   {
+      *result = row.getNonZeroElementsCount();
+   }
+}
+#endif
 
 template< typename Real, typename Index >
 __cuda_callable__
@@ -140,7 +142,7 @@ getNonZeroElementsCount() const
             elementCount++;
     }
     
-//     std::cout << "Element Count = " << elementCount << "\n";
+//    std::cout << "Element Count = " << elementCount << "\n";
     
     return elementCount;
 }
