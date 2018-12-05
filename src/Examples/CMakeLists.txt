@@ -24,6 +24,9 @@ target_link_libraries( ConfigDescriptionExample tnl )
 ADD_EXECUTABLE( FileExample FileExample.cpp )
 target_link_libraries( FileExample tnl )
 
+ADD_EXECUTABLE( ListExample ListExample.cpp )
+target_link_libraries( ListExample tnl )
+
 ADD_EXECUTABLE( LoggerExample LoggerExample.cpp )
 target_link_libraries( LoggerExample tnl )
 
