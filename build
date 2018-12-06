@@ -111,6 +111,9 @@ fi
 if [[ ${WITH_CLANG} == "yes" ]]; then
    export CXX=clang++
    export CC=clang
+else
+   export CXX=g++
+   export CC=gcc
 fi
 
 if [[ ${WITH_MPI} == "yes" ]]; then
@@ -124,8 +127,9 @@ if [[ ${WITH_MPI} == "yes" ]]; then
 #       if [ -n "$CXX" ]; then
 #          export OMPI_CXX="$CXX"
 #       fi
-       export CXX=mpicxx
+       export CUDA_ARCH_HOST_COMPILER="$CXX"
        export CUDA_HOST_COMPILER=mpicxx
+       export CXX=mpicxx
     fi
     if [[ ! -x  "$(command -v mpicc)" ]]; then
        echo "Warning: mpicc is not installed on this system." 
