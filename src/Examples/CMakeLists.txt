@@ -30,6 +30,10 @@ target_link_libraries( ListExample tnl )
 ADD_EXECUTABLE( LoggerExample LoggerExample.cpp )
 target_link_libraries( LoggerExample tnl )
 
+ADD_EXECUTABLE( MathExample MathExample.cpp )
+target_link_libraries( MathExample tnl )
+
+
 ADD_EXECUTABLE( StringExample StringExample.cpp )
 target_link_libraries( StringExample tnl )
 

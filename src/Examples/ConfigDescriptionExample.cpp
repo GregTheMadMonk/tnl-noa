@@ -1,5 +1,5 @@
 #include <iostream>
-#include <TNL/ConfigDescription.h>
+#include <ConfigDescription.h>
 
 using namespace TNL;
 using namespace std;
