@@ -74,10 +74,25 @@ class Object
        */
       virtual bool boundLoad( File& file );
 
+      /**
+       * \brief Method for saving the object to a file as a binary data.
+       *
+       * \param fileName String defining the name of a file.
+       */
       bool save( const String& fileName ) const;
 
+      /**
+       * \brief Method for restoring the object from a file.
+       *
+       * \param fileName String defining the name of a file.
+       */
       bool load( const String& fileName );
 
+       /**
+       * \brief Method for restoring the object from a file.
+       *
+       * \param fileName String defining the name of a file.
+       */
       bool boundLoad( const String& fileName );
       
       /// Destructor.
