@@ -138,6 +138,7 @@ Index CSR< Real, Device, Index >::getNonZeroRowLength( const IndexType row ) con
 {
     // TODO: Fix/Implement
     TNL_ASSERT( false, std::cerr << "TODO: Fix/Implement" );
+    return 0;
 //    if( std::is_same< DeviceType, Devices::Host >::value )
 //    {
 //       ConstMatrixRow matrixRow = this->getRow( row );
