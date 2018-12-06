@@ -137,9 +137,16 @@ TYPED_TEST( AdEllpackMatrixTest, setDimensionsTest )
 
 TYPED_TEST( AdEllpackMatrixTest, setCompressedRowLengthsTest )
 {
-    using AdEllpackMatrixType = typename TestFixture::AdEllpackMatrixType;
+//    using AdEllpackMatrixType = typename TestFixture::AdEllpackMatrixType;
     
-    test_SetCompressedRowLengths< AdEllpackMatrixType >();
+//    test_SetCompressedRowLengths< AdEllpackMatrixType >();
+    
+    bool testRan = false;
+    EXPECT_TRUE( testRan );
+    std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
+    std::cout << "      This test is dependent on the input format. \n";
+    std::cout << "      Almost every format allocates elements per row differently.\n\n";
+    std::cout << "\n    TODO: Finish implementation of getNonZeroRowLength (Only non-zero elements, not the number of allocated elements.)\n\n";
 }
 
 TYPED_TEST( AdEllpackMatrixTest, setLikeTest )
@@ -248,9 +255,16 @@ TYPED_TEST( BiEllpackMatrixTest, setDimensionsTest )
 
 TYPED_TEST( BiEllpackMatrixTest, setCompressedRowLengthsTest )
 {
-    using BiEllpackMatrixType = typename TestFixture::BiEllpackMatrixType;
+//    using BiEllpackMatrixType = typename TestFixture::BiEllpackMatrixType;
     
-    test_SetCompressedRowLengths< BiEllpackMatrixType >();
+//    test_SetCompressedRowLengths< BiEllpackMatrixType >();
+    
+    bool testRan = false;
+    EXPECT_TRUE( testRan );
+    std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
+    std::cout << "      This test is dependent on the input format. \n";
+    std::cout << "      Almost every format allocates elements per row differently.\n\n";
+    std::cout << "\n    TODO: Finish implementation of getNonZeroRowLength (Only non-zero elements, not the number of allocated elements.)\n\n";
 }
 
 TYPED_TEST( BiEllpackMatrixTest, setLikeTest )
@@ -368,9 +382,16 @@ TYPED_TEST( ChunkedEllpackMatrixTest, setDimensionsTest )
 
 TYPED_TEST( ChunkedEllpackMatrixTest, setCompressedRowLengthsTest )
 {
-    using ChunkedEllpackMatrixType = typename TestFixture::ChunkedEllpackMatrixType;
+//    using ChunkedEllpackMatrixType = typename TestFixture::ChunkedEllpackMatrixType;
     
-    test_SetCompressedRowLengths< ChunkedEllpackMatrixType >();
+//    test_SetCompressedRowLengths< ChunkedEllpackMatrixType >();
+    
+    bool testRan = false;
+    EXPECT_TRUE( testRan );
+    std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
+    std::cout << "      This test is dependent on the input format. \n";
+    std::cout << "      Almost every format allocates elements per row differently.\n\n";
+    std::cout << "\n    TODO: Finish implementation of getNonZeroRowLength (Only non-zero elements, not the number of allocated elements.)\n\n";
 }
 
 TYPED_TEST( ChunkedEllpackMatrixTest, setLikeTest )
@@ -479,9 +500,16 @@ TYPED_TEST( CSRMatrixTest, setDimensionsTest )
 
 TYPED_TEST( CSRMatrixTest, setCompressedRowLengthsTest )
 {
-    using CSRMatrixType = typename TestFixture::CSRMatrixType;
+//    using CSRMatrixType = typename TestFixture::CSRMatrixType;
     
-    test_SetCompressedRowLengths< CSRMatrixType >();
+//    test_SetCompressedRowLengths< CSRMatrixType >();
+    
+    bool testRan = false;
+    EXPECT_TRUE( testRan );
+    std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
+    std::cout << "      This test is dependent on the input format. \n";
+    std::cout << "      Almost every format allocates elements per row differently.\n\n";
+    std::cout << "\n    TODO: Finish implementation of getNonZeroRowLength (Only non-zero elements, not the number of allocated elements.)\n\n";
 }
 
 TYPED_TEST( CSRMatrixTest, setLikeTest )
@@ -590,9 +618,16 @@ TYPED_TEST( EllpackMatrixTest, setDimensionsTest )
 
 TYPED_TEST( EllpackMatrixTest, setCompressedRowLengthsTest )
 {
-    using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
+//    using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
     
-    test_SetCompressedRowLengths< EllpackMatrixType >();
+//    test_SetCompressedRowLengths< EllpackMatrixType >();
+    
+    bool testRan = false;
+    EXPECT_TRUE( testRan );
+    std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
+    std::cout << "      This test is dependent on the input format. \n";
+    std::cout << "      Almost every format allocates elements per row differently.\n\n";
+    std::cout << "\n    TODO: Finish implementation of getNonZeroRowLength (Only non-zero elements, not the number of allocated elements.)\n\n";
 }
 
 TYPED_TEST( EllpackMatrixTest, setLikeTest )
@@ -701,9 +736,16 @@ TYPED_TEST( SlicedEllpackMatrixTest, setDimensionsTest )
 
 TYPED_TEST( SlicedEllpackMatrixTest, setCompressedRowLengthsTest )
 {
-    using SlicedEllpackMatrixType = typename TestFixture::SlicedEllpackMatrixType;
+//    using SlicedEllpackMatrixType = typename TestFixture::SlicedEllpackMatrixType;
     
-    test_SetCompressedRowLengths< SlicedEllpackMatrixType >();
+//    test_SetCompressedRowLengths< SlicedEllpackMatrixType >();
+    
+    bool testRan = false;
+    EXPECT_TRUE( testRan );
+    std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
+    std::cout << "      This test is dependent on the input format. \n";
+    std::cout << "      Almost every format allocates elements per row differently.\n\n";
+    std::cout << "\n    TODO: Finish implementation of getNonZeroRowLength (Only non-zero elements, not the number of allocated elements.)\n\n";
 }
 
 TYPED_TEST( SlicedEllpackMatrixTest, setLikeTest )
