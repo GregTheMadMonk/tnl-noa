@@ -135,6 +135,7 @@ getNonZeroElementsCount() const
 {
 //    TODO: Fix/Implement
     TNL_ASSERT( false, std::cerr << "TODO: Fix/Implement" );
+    return 0;
 //    using NonConstIndex = typename std::remove_const< Index >::type;
 //    
 //    NonConstIndex elementCount ( 0 );
