@@ -36,17 +36,38 @@ class Array : public Object
       typedef Containers::Array< Value, Devices::Host, Index > HostType;
       typedef Containers::Array< Value, Devices::Cuda, Index > CudaType;
 
+      /** \brief Basic constructor. */
       Array();
 
+      /**
+       * \brief Constructor with size.
+       *
+       * \param size Number of array elements. / Size of allocated memory.
+       */
       Array( const IndexType& size );
 
+      /**
+       * \brief Constructor with data and size.
+       *
+       * \param data
+       * \param size Number of array elements.
+       */
       Array( Value* data,
              const IndexType& size );
 
+      /**
+       * \brief Copy constructor.
+       *
+       * Copies \e size elements from existing \e array into a new array.
+       * \param array Existing array that is about to be copied.
+       * \param begin Index from which the array is copied.
+       * \param size Number of array elements that should be copied.
+       */
       Array( Array& array,
              const IndexType& begin = 0,
              const IndexType& size = 0 );
 
+      /** \brief Returns type of string - String. */
       static String getType();
 
       virtual String getTypeVirtual() const;
@@ -56,14 +77,24 @@ class Array : public Object
       virtual String getSerializationTypeVirtual() const;
 
       /****
-       * This sets size of the array. If the array shares data with other arrays
-       * these data are released. If the current data are not shared and the current
-       * size is the same as the new one, nothing happens.
+       * \brief Method for setting the size of an array.
+       *
+       * If the array shares data with other arrays these data are released.
+       * If the current data are not shared and the current size is the same
+       * as the new one, nothing happens.
+       *
+       * \param size Number of array elements.
        */
       void setSize( Index size );
 
       __cuda_callable__ Index getSize() const;
 
+      /**
+       * \brief Assigns features of the existing \e array to the given array.
+       *
+       * \tparam ArrayT Type of array.
+       * \param array Existing array.
+       */
       template< typename ArrayT >
       void setLike( const ArrayT& array );
 
