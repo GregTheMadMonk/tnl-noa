@@ -19,9 +19,8 @@ namespace Containers {
 
 template< int, typename > class StaticArray;
 
-/****
+/**
  * Array handles memory allocation and sharing of the same data between more Arrays.
- *
  */
 template< typename Value,
           typename Device = Devices::Host,
@@ -111,14 +110,30 @@ class Array : public Object
 
       void swap( Array& array );
 
+      /**
+       * \brief Resets the given array.
+       *
+       * Releases all data from array.
+       */
       void reset();
 
       __cuda_callable__ const Value* getData() const;
 
       __cuda_callable__ Value* getData();
 
+      /**
+       * \brief Sets the value \e x of the array element at position \e i.
+       *
+       * \param i Index position.
+       * \param x New value of an element.
+       */
       void setElement( const Index& i, const Value& x );
 
+      /**
+       * \brief Accesses specified element at the position \e i.
+       *
+       * \param i Index position of an element.
+       */
       Value getElement( const Index& i ) const;
 
       __cuda_callable__ inline Value& operator[] ( const Index& i );
@@ -138,25 +153,34 @@ class Array : public Object
 
       void setValue( const Value& v );
 
-      // Checks if there is an element with value v in this array
+      /**
+       * Checks if there is an element with value v in this array
+       */
       bool containsValue( const Value& v ) const;
 
-      // Checks if all elements in this array have the same value v
+      /**
+       * Checks if all elements in this array have the same value v
+       */
       bool containsOnlyValue( const Value& v ) const;
 
-      /*!
+      /**
        * Returns true if non-zero size is set.
        */
       operator bool() const;
 
-      //! Method for saving the object to a file as a binary data.
+      /**
+       * \brief Method for saving the object to a \e file as a binary data.
+       */
       bool save( File& file ) const;
 
-      //! Method for loading the object from a file as a binary data.
+      /**
+       * Method for loading the object from a file as a binary data.
+       */
       bool load( File& file );
 
-      //! This method loads data without reallocation.
-      /****
+      /**
+       * \brief This method loads data without reallocation.
+       *
        * This is useful for loading data into shared arrays.
        * If the array was not initialize yet, common load is
        * performed. Otherwise, the array size must fit with
