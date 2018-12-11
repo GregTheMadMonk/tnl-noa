@@ -37,5 +37,11 @@ target_link_libraries( MathExample tnl )
 ADD_EXECUTABLE( StringExample StringExample.cpp )
 target_link_libraries( StringExample tnl )
 
+ADD_EXECUTABLE( StringExampleGetSize StringExampleGetSize.cpp )
+target_link_libraries( StringExampleGetSize tnl )
+
+ADD_EXECUTABLE( StringExampleGetAllocatedSize StringExampleGetAllocatedSize.cpp )
+target_link_libraries( StringExampleGetAllocatedSize tnl )
+
 ADD_EXECUTABLE( TimerExample TimerExample.cpp )
 target_link_libraries( TimerExample tnl )
