@@ -21,6 +21,10 @@ template< int, typename > class StaticArray;
 
 /**
  * Array handles memory allocation and sharing of the same data between more Arrays.
+ *
+ * \tparam Value Type of array values.
+ * \tparam Device Device type.
+ * \tparam Index Type of index.
  */
 template< typename Value,
           typename Device = Devices::Host,
@@ -35,7 +39,10 @@ class Array : public Object
       typedef Containers::Array< Value, Devices::Host, Index > HostType;
       typedef Containers::Array< Value, Devices::Cuda, Index > CudaType;
 
-      /** \brief Basic constructor. */
+      /** \brief Basic constructor.
+       *
+       * Constructs an empty array with the size of zero.
+       */
       Array();
 
       /**
@@ -113,7 +120,7 @@ class Array : public Object
       template< int Size >
       void bind( StaticArray< Size, Value >& array );
 
-      /** 
+      /**
        * \brief Swaps all features of given array with existing \e array.
        *
        * Swaps sizes, all values (data), allocated memory and references of given
@@ -168,14 +175,18 @@ class Array : public Object
        */
       __cuda_callable__ inline const Value& operator[] ( const Index& i ) const;
 
+      /** Assigns \e array to the given array, replacing its current contents. */
       Array& operator = ( const Array& array );
 
+      /** Assigns \e array to the given array, replacing its current contents. */
       template< typename ArrayT >
       Array& operator = ( const ArrayT& array );
 
+      /** \brief This function checks whether the given array is equal to \e array. */
       template< typename ArrayT >
       bool operator == ( const ArrayT& array ) const;
 
+      /** \brief This function checks whether the given array is not equal to \e array. */
       template< typename ArrayT >
       bool operator != ( const ArrayT& array ) const;
 
@@ -253,7 +264,7 @@ class Array : public Object
        * \brief Pointer to the originally allocated data.
        *
        * They might differ if one long array is partitioned into more shorter
-       * arrays. Each of them must know the pointer on allocated data because 
+       * arrays. Each of them must know the pointer on allocated data because
        * the last one must deallocate the array. If outer data (not allocated
        * by TNL) are bind then this pointer is zero since no deallocation is
        * necessary.

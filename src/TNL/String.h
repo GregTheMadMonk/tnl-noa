@@ -208,9 +208,11 @@ class String
       ///
       /// Appends character \e str to this string.
       String& operator+=( char str );
-      // \brief This function concatenates strings and returns a newly constructed string object.
+      /// \brief This function concatenates strings and returns a newly constructed string object.
       String operator+( char str ) const;
-      // \brief This function concatenates strings and returns a newly constructed string object.
+      /// \brief This function checks whether the given string is equal to \e str.
+      ///
+      /// It returns \e true when the given string is equal to \e str. Otherwise returns \e false.
       bool operator==( char str ) const;
       /// \brief This function overloads operator!=().
       bool operator!=( char str ) const;

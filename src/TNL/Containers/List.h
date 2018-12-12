@@ -22,7 +22,7 @@ namespace Containers {
 
 template< class T > class ListDataElement;
 
-//! Template for double linked lists
+/// \brief Template for double linked lists
 /*! To acces elements in the list one can use method getSize() and
     operator[](). To add elements there are methods Append(),
     Prepend() and Insert() to insert an element at given
