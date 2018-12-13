@@ -891,7 +891,6 @@ EXCLUDE_SYMLINKS       = NO
 
 EXCLUDE_PATTERNS       = */Communicators/* \
                          */Config/* \
-                         */Containers/* \
                          */Debugging/* \
                          */Devices/* \
                          */DistributedContainers/* \

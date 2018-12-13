@@ -508,12 +508,12 @@ Benchmark::MetadataMap getHardwareMetadata()
                                        ? Communicators::MpiCommunicator::GetSize( Communicators::MpiCommunicator::AllGroup )
                                        : 1 },
 #endif
-       { "OpenMP enabled", Devices::Host::isOMPEnabled() },
-       { "OpenMP threads", Devices::Host::getMaxThreadsCount() },
+       { "OpenMP enabled", String( Devices::Host::isOMPEnabled() ) },
+       { "OpenMP threads", String( Devices::Host::getMaxThreadsCount() ) },
        { "CPU model name", Devices::SystemInfo::getCPUModelName( cpu_id ) },
-       { "CPU cores", Devices::SystemInfo::getNumberOfCores( cpu_id ) },
-       { "CPU threads per core", Devices::SystemInfo::getNumberOfThreads( cpu_id ) / Devices::SystemInfo::getNumberOfCores( cpu_id ) },
-       { "CPU max frequency (MHz)", Devices::SystemInfo::getCPUMaxFrequency( cpu_id ) / 1e3 },
+       { "CPU cores", String( Devices::SystemInfo::getNumberOfCores( cpu_id ) ) },
+       { "CPU threads per core", String( Devices::SystemInfo::getNumberOfThreads( cpu_id ) / Devices::SystemInfo::getNumberOfCores( cpu_id ) ) },
+       { "CPU max frequency (MHz)", String( Devices::SystemInfo::getCPUMaxFrequency( cpu_id ) / 1e3 ) },
        { "CPU cache sizes (L1d, L1i, L2, L3) (kiB)", cacheInfo },
 #ifdef HAVE_CUDA
        { "GPU name", Devices::CudaDeviceInfo::getDeviceName( activeGPU ) },

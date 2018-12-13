@@ -177,11 +177,11 @@ struct SpmvBenchmark
       benchmark.setMetadataColumns( Benchmark::MetadataColumns({
          // TODO: strip the device
 //         {"matrix type", matrix.getType()},
-         {"rows", matrix.getRows()},
-         {"columns", matrix.getColumns()},
+         {"rows", String( matrix.getRows() ) },
+         {"columns", String( matrix.getColumns() ) },
          // FIXME: getMaxRowLengths() returns 0 for matrices loaded from file
 //         {"max elements per row", matrix.getMaxRowLength()},
-         {"max elements per row", maxRowLength},
+         {"max elements per row", String( maxRowLength ) },
       } ));
 
       const bool reorder = parameters.getParameter< bool >( "reorder-dofs" );
