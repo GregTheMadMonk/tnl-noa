@@ -1,13 +1,14 @@
 #include <iostream>
-#include <TNL/ConfigDescription.h>
+#include <TNL/Config/ConfigDescription.h>
+#include <TNL/Containers/List.h>
+#include <TNL/Containers/Array.h>
 
 using namespace TNL;
 using namespace std;
        
 int main()
 {
-    template List< int > lst;
-    List lst;
+    Containers::List< int > lst;
     lst.isEmpty();
 
     lst.Append(1);
@@ -18,6 +19,6 @@ int main()
 
     lst.Insert(2,1);
 
-    Array array;
-    lst.template toArray< int >(array);
+    Containers::Array<int> array;
+    lst.toArray(array);
 }

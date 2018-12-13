@@ -7,7 +7,7 @@ using namespace std;
        
 int main()
 {
-    File file;
+    /*File file;
 
     file.open( String("new-file.tnl"), IOMode::write );
     String title("Header");
@@ -19,6 +19,6 @@ int main()
     file.read( title2, 4);
     file.close();
 
-    cout << "title2:" << title2 <<endl;
+    cout << "title2:" << title2 <<endl;*/
 }
 

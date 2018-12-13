@@ -1,5 +1,6 @@
 #include <iostream>
 #include <TNL/Timer.h>
+#include <TNL/Logger.h>
 #include <unistd.h>
 
 using namespace TNL;
@@ -16,7 +17,7 @@ int main()
     time.reset();
     cout << "after reset:" << time.getRealTime() << endl;
     // writeLog example
-    Logger log1(50,stream);
-    writeLog( log1, 0 );
+    Logger log1(50,cout);
+    time.writeLog( log1, 0 );
 }
 

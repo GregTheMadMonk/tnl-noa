@@ -1,13 +1,13 @@
 #include <iostream>
 #include <TNL/Logger.h>
-#include <TNL/Config::ParameterContainer.h>
+#include <TNL/Config/ParameterContainer.h>
 
 using namespace TNL;
 using namespace std;
        
 int main()
 {
-    Logger logger(50,stream);
+    Logger logger(50,cout);
     
     Config::ParameterContainer parameters;
     logger.writeSystemInformation(parameters);

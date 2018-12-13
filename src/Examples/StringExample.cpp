@@ -1,5 +1,7 @@
 #include <iostream>
 #include <TNL/String.h>
+#include <TNL/Containers/List.h>
+#include <TNL/File.h>
 
 using namespace TNL;
 using namespace std;
@@ -28,15 +30,16 @@ int main( int argc, char* argv[] )
     size = str3.getSize();
     cout << "size of string:" << size << "bytes" << endl;*/
 
-    String str
-    setter = str.setString( "Something new" );
+    String str;
+    str.setString( "Something new" );
+    String setter = str;
     cout << "setter:" << setter << endl;
 
     const char* getter = str4.getString();
     cout << "getter:" << getter << endl;
 
     String word( "computer" ) ;
-    third_letter = word[2];
+    char third_letter = word[2];
     cout << "third_letter:" << third_letter << endl;
 
     // Operators for C Strings
@@ -60,7 +63,7 @@ int main( int argc, char* argv[] )
 
     // Operators for Strings
     String d1( "Cheese" );
-    d = d1;
+    String d = d1;
     cout << "d:" << d << endl;
 
     String e( "Mac&" );
@@ -108,25 +111,27 @@ int main( int argc, char* argv[] )
 
     // replace
     String phrase( "Hakuna matata" );
-    new_phrase = phrase.replace( "a", "u", 2 );
+    String new_phrase = phrase.replace( "a", "u", 2 );
     cout << "new_phrase:" << new_phrase << endl;
 
     // strip
     String names("       Josh Martin   John  Marley Charles   ");
-    better_names = names.strip();
+    String better_names = names.strip();
     cout << "better_names:" << better_names << endl;
 
     // split
     String dates("3/4/2005;8/7/2011;11/12/2019");
-    list_dates = dates.split( list, ';' );
-    cout << "list_dates:" << list_dates << endl;
+    Containers::List<String> list;
+    dates.split( list, ';' );
+    cout << "list_dates:" << list << endl;
 
     // save
-    String("Header").save(my-file.tnl); // saves "Header" into file my-file.tnl
+    File myFile;
+    String("Header").save(myFile); // saves "Header" into myFile
 
     // load
     String strg;
-    strg.load(my-file.tnl);
+    strg.load(myFile);
     cout << "strg:" << strg << endl;
 
     // get line
@@ -134,8 +139,8 @@ int main( int argc, char* argv[] )
     text << "Hello!" << std::endl;
     text << "What's up?" << std::endl;
 
-    String str;
-    str.getLine( text );
-    cout << "str:" << str << endl;
+    String string;
+    string.getLine( text );
+    cout << "str:" << string << endl;
 
 }

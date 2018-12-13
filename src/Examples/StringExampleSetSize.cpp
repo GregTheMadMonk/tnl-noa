@@ -1,10 +1,13 @@
 #include <iostream>
+#include <TNL/String.h>
 
-using namespace TNL
+using namespace TNL;
+using namespace std;
        
 int main()
 {
-    int memory 
+    String memory;
     memory.setSize( 256 );
-    cout << "memory:" << memory << endl;
+    int memorysize = memory.getSize();
+    cout << "memory:" << memorysize << endl;
 }
