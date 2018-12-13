@@ -35,7 +35,6 @@ class FileName
       FileName( const String& fileNameBase, 
                 const String& extension );
       
-
       /// \brief Sets the base name of given file.
       ///
       /// Sets \e fileNameBase as the base name of given file.

@@ -311,7 +311,7 @@ TEST( StringTest, split )
    ASSERT_EQ( list.getSize(), 1 );
    EXPECT_EQ( list[ 0 ], "abracadabra" );
 
-   /// !!!! ma problem s prazdnym stringom !!!!
+   // !!!! ma problem s prazdnym stringom !!!!
    String( "a,,b,c" ).split( list, ',' );
    ASSERT_EQ( list.getSize(), 4 );
    EXPECT_EQ( list[ 0 ], "a" );
@@ -350,12 +350,6 @@ TEST( StringTest, getLine )
    s.getLine( str );
    EXPECT_EQ( s, "Line 2" );
 };
-
-/*TEST( StringTest, OperatorCudny )
-{
-    String str("String1");
-    EXPECT_EQ(strcmp(String( "a", str ), "aString1"), 0 );
-};*/
 
 #endif
 

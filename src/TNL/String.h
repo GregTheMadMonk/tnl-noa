@@ -83,7 +83,7 @@ class String
       /// \brief Destructor.
       ~String();
 
-      /// Returns the number of characters in given string. Equivalent to \c getSize().
+      /// \brief Returns the number of characters in given string. Equivalent to getSize().
       int getLength() const;
 
       /// \brief Returns the number of characters in given string.
