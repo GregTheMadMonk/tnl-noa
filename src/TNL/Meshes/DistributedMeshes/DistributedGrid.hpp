@@ -51,11 +51,11 @@ DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   this->domainDecomposition.x() = parameters.getParameter< int >( "grid-domain-decomposition-x" );
+   this->domainDecomposition[ 0 ] = parameters.getParameter< int >( "grid-domain-decomposition-x" );
    if( Dimension > 1 )
-      this->domainDecomposition.y() = parameters.getParameter< int >( "grid-domain-decomposition-y" );
+      this->domainDecomposition[ 1 ] = parameters.getParameter< int >( "grid-domain-decomposition-y" );
    if( Dimension > 2 )
-      this->domainDecomposition.z() = parameters.getParameter< int >( "grid-domain-decomposition-z" );
+      this->domainDecomposition[ 2 ] = parameters.getParameter< int >( "grid-domain-decomposition-z" );
    return true;
 }
 
@@ -521,7 +521,10 @@ String
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 printProcessDistr() const
 {
-   return convertToString(this->domainDecomposition[0])+String("-")+convertToString(this->domainDecomposition[1])+String("-")+convertToString(this->domainDecomposition[2]);
+   String res = convertToString(this->domainDecomposition[0]);
+   for(int i=1; i<Dimension; i++)
+        res=res+String("-")+convertToString(this->domainDecomposition[i]);
+   return res;
 };  
 
 template< int Dimension, typename Real, typename Device, typename Index >

@@ -504,7 +504,9 @@ Benchmark::MetadataMap getHardwareMetadata()
        { "system release", Devices::SystemInfo::getSystemRelease() },
        { "start time", Devices::SystemInfo::getCurrentTime() },
 #ifdef HAVE_MPI
-       { "number of MPI processes", Communicators::MpiCommunicator::GetSize( Communicators::MpiCommunicator::AllGroup ) },
+       { "number of MPI processes", (Communicators::MpiCommunicator::IsInitialized())
+                                       ? Communicators::MpiCommunicator::GetSize( Communicators::MpiCommunicator::AllGroup )
+                                       : 1 },
 #endif
        { "OpenMP enabled", Devices::Host::isOMPEnabled() },
        { "OpenMP threads", Devices::Host::getMaxThreadsCount() },

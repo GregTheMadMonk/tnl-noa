@@ -173,7 +173,7 @@ writeDeviceInfo( Logger& logger )
    logger.writeParameter< String >( "Model name:", getCPUModelName( cpu_id ), 1 );
    logger.writeParameter< int >( "Cores:", cores, 1 );
    logger.writeParameter< int >( "Threads per core:", threadsPerCore, 1 );
-   logger.writeParameter< String >( "Max clock rate (in MHz):", getCPUMaxFrequency( cpu_id ) / 1000, 1 );
+   logger.writeParameter< float >( "Max clock rate (in MHz):", getCPUMaxFrequency( cpu_id ) / 1000, 1 );
    CacheSizes cacheSizes = getCPUCacheSizes( cpu_id );
    String cacheInfo = String( cacheSizes.L1data ) + ", "
                        + String( cacheSizes.L1instruction ) + ", "

@@ -31,9 +31,6 @@ target_link_libraries (tnl-dicom-reader tnl ${DCMTK_LIBRARIES} )
 ADD_EXECUTABLE(tnl-lattice-init tnl-lattice-init.cpp )
 target_link_libraries (tnl-lattice-init tnl )
 
-ADD_EXECUTABLE( tnl-functions-benchmark functions-benchmark.cpp )
-target_link_libraries( tnl-functions-benchmark tnl )
-
 IF( BUILD_CUDA )
    CUDA_ADD_EXECUTABLE( tnl-cuda-arch tnl-cuda-arch.cu )
    INSTALL( TARGETS tnl-cuda-arch
@@ -55,9 +52,7 @@ INSTALL( TARGETS tnl-init
 INSTALL( FILES ${PROJECT_TOOLS_PATH}/tnl-bindir
                ${PROJECT_TOOLS_PATH}/tnl-compile
                ${PROJECT_TOOLS_PATH}/tnl-link
-               tnl-time-series2png
                tnl-err2eoc
-               tnl-eoc-test-log
                tnl-log-to-html.py
          DESTINATION bin
          PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )

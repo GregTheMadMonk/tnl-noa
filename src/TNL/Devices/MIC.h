@@ -71,7 +71,7 @@ class MIC
    
         static String getDeviceType()
         {
-            return String( "MIC" );
+            return String( "Devices::MIC" );
         };
         
 #ifdef HAVE_MIC  

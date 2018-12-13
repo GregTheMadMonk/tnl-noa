@@ -39,12 +39,29 @@ void barrier( const DistributedContainers::DistributedMatrix< Matrix, Communicat
    Communicator::Barrier( matrix.getCommunicationGroup() );
 }
 
+template< typename Device >
+bool checkDevice( const Config::ParameterContainer& parameters )
+{
+   const String device = parameters.getParameter< String >( "devices" );
+   if( device == "all" )
+      return true;
+   if( std::is_same< Device, Devices::Host >::value && device == "host" )
+      return true;
+   if( std::is_same< Device, Devices::Cuda >::value && device == "cuda" )
+      return true;
+   return false;
+}
+
 template< template<typename> class Preconditioner, typename Matrix >
 void
 benchmarkPreconditionerUpdate( Benchmark& benchmark,
                                const Config::ParameterContainer& parameters,
                                const SharedPointer< Matrix >& matrix )
 {
+   // skip benchmarks on devices which the user did not select
+   if( ! checkDevice< typename Matrix::DeviceType >( parameters ) )
+      return;
+
    barrier( matrix );
    const char* performer = getPerformer< typename Matrix::DeviceType >();
    Preconditioner< Matrix > preconditioner;
@@ -67,6 +84,10 @@ benchmarkSolver( Benchmark& benchmark,
                  const Vector& x0,
                  const Vector& b )
 {
+   // skip benchmarks on devices which the user did not select
+   if( ! checkDevice< typename Matrix::DeviceType >( parameters ) )
+      return;
+
    barrier( matrix );
    const char* performer = getPerformer< typename Matrix::DeviceType >();
 

@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <type_traits>
+
 #include <TNL/Meshes/Writers/VTKWriter.h>
 #include <TNL/Meshes/Readers/EntityShape.h>
 
@@ -19,68 +21,63 @@ namespace Writers {
 
 namespace __impl {
 
-template< typename Entity >
+template< typename T, typename R = void >
+struct enable_if_type
+{
+   using type = R;
+};
+
+template< typename T, typename Enable = void >
+struct has_entity_topology : std::false_type {};
+
+template< typename T >
+struct has_entity_topology< T, typename enable_if_type< typename T::EntityTopology >::type >
+: std::true_type
+{};
+
+
+template< typename Entity,
+          bool _is_mesh_entity = has_entity_topology< Entity >::value >
 struct VerticesPerEntity
 {
    static constexpr int count = Entity::getVerticesCount();
 };
 
 template< typename MeshConfig, typename Device >
-struct VerticesPerEntity< MeshEntity< MeshConfig, Device, Topologies::Vertex > >
+struct VerticesPerEntity< MeshEntity< MeshConfig, Device, Topologies::Vertex >, true >
 {
    static constexpr int count = 1;
 };
 
-template< typename Grid, typename Config >
-struct VerticesPerEntity< GridEntity< Grid, 0, Config > >
+template< typename GridEntity >
+struct VerticesPerEntity< GridEntity, false >
 {
-   static constexpr int count = 1;
-};
+private:
+   static constexpr int dim = GridEntity::getEntityDimension();
+   static_assert( dim >= 0 && dim <= 3, "unexpected dimension of the grid entity" );
 
-template< typename Grid, typename Config >
-struct VerticesPerEntity< GridEntity< Grid, 1, Config > >
-{
-   static constexpr int count = 2;
-};
-
-template< typename Grid, typename Config >
-struct VerticesPerEntity< GridEntity< Grid, 2, Config > >
-{
-   static constexpr int count = 4;
-};
-
-template< typename Grid, typename Config >
-struct VerticesPerEntity< GridEntity< Grid, 3, Config > >
-{
-   static constexpr int count = 8;
+public:
+   static constexpr int count =
+      (dim == 0) ? 1 :
+      (dim == 1) ? 2 :
+      (dim == 2) ? 4 :
+                   8;
 };
 
 
 template< typename GridEntity >
-struct GridEntityShape {};
-
-template< typename Grid, typename Config >
-struct GridEntityShape< GridEntity< Grid, 0, Config > >
+struct GridEntityShape
 {
-   static constexpr Readers::EntityShape shape = Readers::EntityShape::Vertex;
-};
+private:
+   static constexpr int dim = GridEntity::getEntityDimension();
+   static_assert( dim >= 0 && dim <= 3, "unexpected dimension of the grid entity" );
 
-template< typename Grid, typename Config >
-struct GridEntityShape< GridEntity< Grid, 1, Config > >
-{
-   static constexpr Readers::EntityShape shape = Readers::EntityShape::Line;
-};
-
-template< typename Grid, typename Config >
-struct GridEntityShape< GridEntity< Grid, 2, Config > >
-{
-   static constexpr Readers::EntityShape shape = Readers::EntityShape::Pixel;
-};
-
-template< typename Grid, typename Config >
-struct GridEntityShape< GridEntity< Grid, 3, Config > >
-{
-   static constexpr Readers::EntityShape shape = Readers::EntityShape::Voxel;
+public:
+   static constexpr Readers::EntityShape shape =
+      (dim == 0) ? Readers::EntityShape::Vertex :
+      (dim == 1) ? Readers::EntityShape::Line :
+      (dim == 2) ? Readers::EntityShape::Pixel :
+                   Readers::EntityShape::Voxel;
 };
 
 

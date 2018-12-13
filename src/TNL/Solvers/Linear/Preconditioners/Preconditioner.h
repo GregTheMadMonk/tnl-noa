@@ -15,6 +15,7 @@
 #include <TNL/Containers/VectorView.h>
 #include <TNL/Pointers/SharedPointer.h>
 #include <TNL/Config/ParameterContainer.h>
+#include <TNL/Solvers/Linear/Traits.h>
 
 #include "../Traits.h"
 

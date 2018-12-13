@@ -4,7 +4,7 @@
 
 template< typename Mesh, typename Real >
 class {problemBaseName}Rhs
-  : public TNL::Functions::Domain< Mesh::meshDimension, TNL::Functions::MeshDomain >
+  : public TNL::Functions::Domain< Mesh::getMeshDimension(), TNL::Functions::MeshDomain >
 {{
    public:
 

@@ -57,11 +57,6 @@ class String
               int prefix_cut_off = 0,
               int sufix_cut_off = 0 );
 
-      /// Odstranit???
-      String( char* c,
-              int prefix_cut_off = 0,
-              int sufix_cut_off = 0 );
-
       /// \brief Returns type of string - String.
       static String getType();
 
@@ -78,6 +73,7 @@ class String
       /// @tparam T is a type of a value to be converted
       /// @param value Word of any type (e.g. int, bool, double,...).
       template< typename T >
+      explicit
       String( T value )
          : string( nullptr ), length( 0 )
       {

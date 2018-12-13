@@ -8,33 +8,35 @@
 
 
 template< typename Mesh,
+          typename Communicator,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
 class {problemBaseName}Problem:
    public TNL::Problems::PDEProblem< Mesh,
-                         typename DifferentialOperator::RealType,
-                         typename Mesh::DeviceType,
-                         typename DifferentialOperator::IndexType >
+                                     Communicator,
+                                     typename DifferentialOperator::RealType,
+                                     typename Mesh::DeviceType,
+                                     typename Mesh::IndexType >
 {{
    public:
 
       typedef typename DifferentialOperator::RealType RealType;
       typedef typename Mesh::DeviceType DeviceType;
-      typedef typename DifferentialOperator::IndexType IndexType;
-      typedef TNL::Functions::MeshFunction< Mesh > MeshFunctionType;
-      typedef TNL::Problems::PDEProblem< Mesh, RealType, DeviceType, IndexType > BaseType;
-      typedef TNL::SharedPointer< DifferentialOperator > DifferentialOperatorPointer;
-      typedef TNL::SharedPointer< BoundaryCondition > BoundaryConditionPointer;
-      typedef TNL::SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
+      typedef typename Mesh::IndexType IndexType;
+      typedef TNL::Functions::MeshFunction< Mesh, Mesh::getMeshDimension(), RealType > MeshFunctionType;
+      typedef TNL::Problems::PDEProblem< Mesh, Communicator, RealType, DeviceType, IndexType > BaseType;
+      typedef TNL::Pointers::SharedPointer< MeshFunctionType > MeshFunctionPointer;
+      typedef TNL::Pointers::SharedPointer< DifferentialOperator > DifferentialOperatorPointer;
+      typedef TNL::Pointers::SharedPointer< BoundaryCondition > BoundaryConditionPointer;
+      typedef TNL::Pointers::SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
 
       using typename BaseType::MeshType;
       using typename BaseType::MeshPointer;
       using typename BaseType::DofVectorType;
       using typename BaseType::DofVectorPointer;
-      using typename BaseType::MeshDependentDataType;
-      using typename BaseType::MeshDependentDataPointer;
 
+      using CommunicatorType = Communicator;
 
       static TNL::String getTypeStatic();
 
@@ -43,51 +45,42 @@ class {problemBaseName}Problem:
       void writeProlog( TNL::Logger& logger,
                         const TNL::Config::ParameterContainer& parameters ) const;
 
-      bool setup( const MeshPointer& meshPointer,
-                  const TNL::Config::ParameterContainer& parameters,
+      bool setup( const TNL::Config::ParameterContainer& parameters,
                   const TNL::String& prefix );
 
 
       bool setInitialCondition( const TNL::Config::ParameterContainer& parameters,
-                                const MeshPointer& mesh,
-                                DofVectorPointer& dofs,
-                                MeshDependentDataPointer& meshDependentData );
+                                DofVectorPointer& dofs );
 
       template< typename MatrixPointer >
-      bool setupLinearSystem( const MeshPointer& mesh,
-                              MatrixPointer& matrixPointer );
+      bool setupLinearSystem( MatrixPointer& matrixPointer );
 
       bool makeSnapshot( const RealType& time,
                          const IndexType& step,
-                         const MeshPointer& mesh,
-                         DofVectorPointer& dofs,
-                         MeshDependentDataPointer& meshDependentData );
+                         DofVectorPointer& dofs );
 
-      IndexType getDofs( const MeshPointer& mesh ) const;
+      IndexType getDofs() const;
 
-      void bindDofs( const MeshPointer& mesh,
-                     DofVectorPointer& dofs );
+      void bindDofs( DofVectorPointer& dofs );
 
       void getExplicitUpdate( const RealType& time,
                               const RealType& tau,
-                              const MeshPointer& mesh,
                               DofVectorPointer& _u,
-                              DofVectorPointer& _fu,
-                              MeshDependentDataPointer& meshDependentData );
+                              DofVectorPointer& _fu );
 
       template< typename MatrixPointer >
       void assemblyLinearSystem( const RealType& time,
                                  const RealType& tau,
-                                 const MeshPointer& mesh,
                                  DofVectorPointer& dofs,
                                  MatrixPointer& matrixPointer,
-                                 DofVectorPointer& rightHandSide,
-                                 MeshDependentDataPointer& meshDependentData );
+                                 DofVectorPointer& rightHandSide );
 
    protected:
     
       DifferentialOperatorPointer differentialOperator;
+
       BoundaryConditionPointer boundaryCondition;
+
       RightHandSidePointer rightHandSide;
    
       TNL::Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;

@@ -497,6 +497,12 @@ configSetup( Config::ConfigDescription& config )
    config.addEntry< String >( "solvers", "Comma-separated list of solvers to run benchmarks for. Options: gmres, cwygmres, tfqmr, bicgstab, bicgstab-ell.", "all" );
    config.addEntry< String >( "preconditioners", "Comma-separated list of preconditioners to run benchmarks for. Options: jacobi, ilu0, ilut.", "all" );
    config.addEntry< bool >( "with-preconditioner-update", "Run benchmark for the preconditioner update.", true );
+   config.addEntry< String >( "devices", "Run benchmarks on these devices.", "all" );
+   config.addEntryEnum( "all" );
+   config.addEntryEnum( "host" );
+   #ifdef HAVE_CUDA
+   config.addEntryEnum( "cuda" );
+   #endif
 
    config.addDelimiter( "Device settings:" );
    Devices::Host::configSetup( config );

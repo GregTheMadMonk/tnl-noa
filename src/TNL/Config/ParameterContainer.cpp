@@ -206,7 +206,7 @@ parseCommandLine( int argc, char* argv[],
             std::cerr << "Internal error: Unknown config entry type " << entryType << "." << std::endl;
             return false;
          }
-         if( parsedEntryType[ 0 ] == "List" )
+         if( parsedEntryType[ 0 ] == "Containers::List" )
          {
             Containers::List< String >* string_list( 0 );
             Containers::List< bool >* bool_list( 0 );

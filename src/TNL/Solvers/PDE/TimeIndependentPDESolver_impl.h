@@ -45,21 +45,17 @@ TimeIndependentPDESolver< Problem >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   /****
-    * Load the mesh from the mesh file
-    */
+   /////
+   // Load the mesh from the mesh file
+   //
    const String& meshFile = parameters.getParameter< String >( "mesh" );
-   std::cout << "Loading a mesh from the file " << meshFile << "...";
-   if( ! this->mesh->load( meshFile ) )
-   {
-      std::cerr << std::endl;
-      std::cerr << "I am not able to load the mesh from the file " << meshFile << "." << std::endl;
-      std::cerr << " You may create it with tools like tnl-grid-setup or tnl-mesh-convert." << std::endl;
+   this->distributedMesh.setup( parameters, prefix );
+   if( ! Meshes::loadMesh< typename Problem::CommunicatorType >( meshFile, *this->meshPointer, distributedMesh ) )
       return false;
-   }
-   std::cout << " [ OK ] " << std::endl;
+   if( ! Meshes::decomposeMesh< Problem >( parameters, prefix, *this->meshPointer, distributedMesh, *problem ) )
+      return false;
    
-   problem->setMesh( this->mesh );
+   problem->setMesh( this->meshPointer );
 
    /****
     * Set-up common data
@@ -110,7 +106,7 @@ writeProlog( Logger& logger,
    logger.writeHeader( problem->getPrologHeader() );
    problem->writeProlog( logger, parameters );
    logger.writeSeparator();
-   mesh->writeProlog( logger );
+   meshPointer->writeProlog( logger );
    logger.writeSeparator();
    const String& solverName = parameters. getParameter< String >( "discrete-solver" );
    logger.writeParameter< String >( "Discrete solver:", "discrete-solver", parameters );

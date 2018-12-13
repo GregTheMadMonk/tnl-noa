@@ -56,13 +56,14 @@ setup( const Config::ParameterContainer& parameters,
    
    BaseType::setup( parameters, prefix );
    
-   /****
-    * Load the mesh from the mesh file
-    */
+   /////
+   // Load the mesh from the mesh file
+   //
    const String& meshFile = parameters.getParameter< String >( "mesh" );
-   if( ! Meshes::loadMesh< typename Problem::CommunicatorType >( meshFile, *this->meshPointer, distrMesh ) )
+   this->distributedMesh.setup( parameters, prefix );
+   if( ! Meshes::loadMesh< typename Problem::CommunicatorType >( meshFile, *this->meshPointer, distributedMesh ) )
       return false;
-   if( ! Meshes::decomposeMesh< Problem >( parameters, prefix, *this->meshPointer, distrMesh, *problem ) )
+   if( ! Meshes::decomposeMesh< Problem >( parameters, prefix, *this->meshPointer, distributedMesh, *problem ) )
       return false;
    
    problem->setMesh( this->meshPointer );

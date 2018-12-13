@@ -1,5 +1,6 @@
 ADD_SUBDIRECTORY( Config )
 ADD_SUBDIRECTORY( Containers )
+ADD_SUBDIRECTORY( DistributedContainers )
 ADD_SUBDIRECTORY( Communicators )
 ADD_SUBDIRECTORY( Debugging )
 ADD_SUBDIRECTORY( Devices )
@@ -24,6 +25,7 @@ set( headers
      File.h
      File_impl.h
      FileName.h
+     FileName.hpp
      Object.h
      Logger.h
      Logger_impl.h

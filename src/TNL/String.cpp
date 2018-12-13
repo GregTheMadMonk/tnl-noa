@@ -29,12 +29,6 @@ String::String()
    setString( nullptr );
 }
 
-String::String( char* c, int prefix_cut_off, int sufix_cut_off )
-   : string( nullptr ), length( 0 )
-{
-   setString( c, prefix_cut_off, sufix_cut_off );
-}
-
 String::String( const char* c, int prefix_cut_off, int sufix_cut_off )
    : string( nullptr ), length( 0 )
 {
