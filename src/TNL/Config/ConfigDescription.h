@@ -27,8 +27,18 @@ class ConfigDescription
 {
    public:
 
+   /**
+    * \brief Basic constructor.
+    */
    ConfigDescription();
 
+   /**
+    * \brief Adds new entry to the configuration description.
+    *
+    * \tparam EntryType Type of the entry.
+    * \param name Name of the entry.
+    * \param description More specific information about the entry.
+    */
    template< typename EntryType >
    void addEntry( const String& name,
                   const String& description )
@@ -37,6 +47,13 @@ class ConfigDescription
       entries.Append( currentEntry );
    }
 
+   /**
+    * \brief Adds new entry to the configuration description, that requires set value.
+    *
+    * \tparam EntryType Type of the entry.
+    * \param name Name of the entry.
+    * \param description More specific information about the entry.
+    */
    template< typename EntryType >
    void addRequiredEntry( const String& name,
                           const String& description )
@@ -44,7 +61,15 @@ class ConfigDescription
       currentEntry = new ConfigEntry< EntryType >( name, description, true );
       entries.Append( currentEntry );
    }
- 
+
+   /**
+    * \brief Adds new entry to the configuration description.
+    *
+    * \tparam EntryType Type of the entry.
+    * \param name Name of the entry.
+    * \param description More specific information about the entry.
+    * \param defaultValue Default value of the entry.
+    */
    template< typename EntryType >
    void addEntry( const String& name,
                   const String& description,
@@ -57,6 +82,13 @@ class ConfigDescription
       entries. Append( currentEntry );
    }
 
+   /**
+    * \brief Adds new list to the configuration description.
+    *
+    * \tparam EntryType Type of the list.
+    * \param name Name of the list.
+    * \param description More specific information about the list.
+    */
    template< typename EntryType >
    void addList( const String& name,
                  const String& description )
@@ -65,6 +97,13 @@ class ConfigDescription
       entries.Append( currentEntry );
    }
 
+   /**
+    * \brief Adds new list to the configuration description, that requires specific value.
+    *
+    * \tparam EntryType Type of the list.
+    * \param name Name of the list.
+    * \param description More specific information about the list.
+    */
    template< typename EntryType >
    void addRequiredList( const String& name,
                          const String& description )
@@ -73,6 +112,14 @@ class ConfigDescription
       entries.Append( currentEntry );
    }
 
+   /**
+    * \brief Adds new list to the configuration description.
+    *
+    * \tparam EntryType Type of the list.
+    * \param name Name of the list.
+    * \param description More specific information about the list.
+    * \param defaultValue Default value of the list.
+    */
    template< typename EntryType >
    void addList( const String& name,
                  const String& description,
@@ -85,6 +132,13 @@ class ConfigDescription
       entries. Append( currentEntry );
    }
 
+   /**
+    * \brief Adds new entry enumeration of type \e EntryType.
+    *
+    * Adds new option of setting an entry value.
+    * \tparam EntryType Type of the entry enumeration.
+    * \param entryEnum Value of the entry enumeration.
+    */
    template< typename EntryType >
    void addEntryEnum( const EntryType& entryEnum )
    {
@@ -92,18 +146,34 @@ class ConfigDescription
       ( ( ConfigEntry< EntryType >* ) currentEntry )->getEnumValues().Append( entryEnum );
    }
 
+   /**
+    * \brief Adds new entry enumeration of type \e char.
+    *
+    * Adds new option of setting an entry value.
+    * \param entryEnum Value of the entry enumeration.
+    */
    void addEntryEnum( const char* entryEnum )
    {
       TNL_ASSERT( this->currentEntry,);
       ( ( ConfigEntry< String >* ) currentEntry )->getEnumValues().Append( String( entryEnum ) );
    }
 
+   /**
+    * \brief Adds delimeter/section to the configuration description.
+    *
+    * \param delimeter String that defines how the delimeter looks like.
+    */
    void addDelimiter( const String& delimiter )
    {
       entries.Append( new ConfigDelimiter( delimiter ) );
       currentEntry = 0;
    }
 
+   /**
+    * \brief Gets entry out of the configuration description.
+    *
+    * \param name Name of the entry.
+    */
    const ConfigEntryBase* getEntry( const String& name ) const
    {
       for( int i = 0; i < entries.getSize(); i++ )
@@ -148,7 +218,13 @@ class ConfigDescription
       return NULL;
    }
 
-   //! If there is missing entry with defined default value in the Config::ParameterContainer it is going to be added
+   /**
+    * \brief Fills in the parameters from the \e parameter_container.
+    *
+    * Parameters which were not defined in the command line by user but have their default value are added to the congiguration description.
+    * If there is missing entry with defined default value in the Config::ParameterContainer it is going to be added.
+    * \param parameter_container Name of the ParameterContainer object.
+    */
    void addMissingEntries( Config::ParameterContainer& parameter_container ) const;
 
    //! Check for all entries with the flag 'required'.
@@ -158,10 +234,18 @@ class ConfigDescription
                              bool printUsage,
                              const char* programName ) const;
 
+   /**
+    * \brief Prints configuration description with the \e program_name at the top.
+    *
+    * \param program_name Name of the program
+    */
    void printUsage( const char* program_name ) const;
 
    //bool parseConfigDescription( const char* file_name );
 
+   /**
+    * \brief Basic destructor.
+    */
    ~ConfigDescription();
 
    protected:

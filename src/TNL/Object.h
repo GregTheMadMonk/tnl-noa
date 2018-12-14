@@ -17,8 +17,9 @@
 
 namespace TNL {
 
-//! This is basic class for all 'large' objects like matrices, meshes, grids, solvers etc.
-/*!
+/**
+ * \brief This is the basic class for all 'large' objects like matrices, meshes, grids, solvers, etc..
+ *
  *  Objects like numerical grids, meshes, matrices large vectors etc.
  *  are inherited by this class. This class provides name for such objects. Giving
  *  a name to each bigger object is compulsory. The name can help to locate
@@ -32,17 +33,19 @@ class Object
 {
    public:
 
-      /****
-       * Type getter. This returns the type in C++ style - for example the returned value
+      /**
+       * \brief Type getter.
+       *
+       * Returns the type in C++ style - for example the returned value
        * may look as follows: "Vector< double, Devices::Cuda >".
        */
-
       static String getType();      
 
       virtual String getTypeVirtual() const;   
 
-      /****
-       * This is used for load and save methods.
+      /**
+       * \brief This is used for load and save methods.
+       *
        * Each object is saved as if it was stored on Devices::Host. So even Vector< double, Devices::Cuda >
        * is saved as Vector< double, Devices::Host >.
        */
@@ -50,22 +53,49 @@ class Object
 
       virtual String getSerializationTypeVirtual() const;
 
-      //! Method for saving the object to a file as a binary data
+      /**
+       * \brief Method for saving the object to a file as a binary data.
+       *
+       * \param file Name of file object.
+       */
       virtual bool save( File& file ) const;
 
-      //! Method for restoring the object from a file
+      /**
+       * \brief Method for restoring the object from a file.
+       *
+       * \param file Name of file object.
+       */
       virtual bool load( File& file );
 
-      //! Method for restoring the object from a file
+      /**
+       * \brief Method for restoring the object from a file.
+       *
+       * \param file Name of file object.
+       */
       virtual bool boundLoad( File& file );
 
+      /**
+       * \brief Method for saving the object to a file as a binary data.
+       *
+       * \param fileName String defining the name of a file.
+       */
       bool save( const String& fileName ) const;
 
+      /**
+       * \brief Method for restoring the object from a file.
+       *
+       * \param fileName String defining the name of a file.
+       */
       bool load( const String& fileName );
 
+       /**
+       * \brief Method for restoring the object from a file.
+       *
+       * \param fileName String defining the name of a file.
+       */
       bool boundLoad( const String& fileName );
       
-      //! Destructor
+      /// Destructor.
       // FIXME: __cuda_callable__ would have to be added to every overriding destructor,
       // even if the object's constructor is not __cuda_callable__
       //   __cuda_callable__

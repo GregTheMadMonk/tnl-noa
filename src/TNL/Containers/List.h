@@ -22,13 +22,13 @@ namespace Containers {
 
 template< class T > class ListDataElement;
 
-//! Template for double linked lists
+/// \brief Template for double linked lists
 /*! To acces elements in the list one can use method getSize() and
     operator[](). To add elements there are methods Append(),
     Prepend() and Insert() to insert an element at given
-    position. To erase particular element there is merthod
+    position. To erase particular element there is method
     Erase() taking the element position. To erase all elements
-    there is method EraseAll. There are also alternatives DeepErase()
+    there is method reset(). There are also alternatives DeepErase()
     and DeepEraseAll() to free dynamicaly allocated data inside the
     data elements.
     The list stores pointer to last accesed element so if one goes
@@ -43,27 +43,35 @@ template< class T > class List
    public:
       typedef T ValueType;
 
-      //! Basic constructor
+      /// \brief Basic constructor.
+      ///
+      /// Constructs an empty list.
       List();
 
-      //! Copy constructor
+      /// \brief Copy constructor.
+      ///
+      /// Construct a copy of \e list.
+      /// \param list Name of another list.
       List( const List& list );
 
-      //! Destructor
+      /// \brief Destructor.
+      ///
+      /// Destroys the list. References to the values in the list become invalid.
       ~List();
 
+      /// Returns the type of list.
       static String getType();
 
-      //! If the list is empty return 'true'
+      /// Returns \e true if the list contains no items, otherwise returns \e false.
       bool isEmpty() const;
 
-      //! Return size of the list
+      /// Returns number of items in the list.
       int getSize() const;
 
-      //! Indexing operator
+      /// Indexing operator.
       T& operator[] ( const int& ind );
 
-      //! Indexing operator for constant instances
+      /// Indexing operator for constant instances.
       const T& operator[] ( const int& ind ) const;
 
       const List& operator = ( const List& lst );
@@ -72,64 +80,89 @@ template< class T > class List
 
       bool operator != ( const List& lst ) const;
 
-      //! Append new data element
+      /// \brief Appends new data element.
+      ///
+      /// Inserts \e data at the end of the list.
       bool Append( const T& data );
 
-      //! Prepend new data element
+      /// \brief Prepends new data element.
+      ///
+      /// Inserts \e data at the beginning of the list.
       bool Prepend( const T& data );
 
-      //! Insert new data element at given position
+      /// \brief Inserts new data element at given position.
+      ///
+      /// Inserts \e data at index position \e ind in the list.
       bool Insert( const T& data, const int& ind );
 
-      //! Append copy of another list
+      /// Appends copy of another list.
+      ///
+      /// \param lst Name of another list.
       bool AppendList( const List< T >& lst );
 
-      //! Prepend copy of another list
+      /// Prepends copy of another list.
+      ///
+      /// \param lst Name of another list.
       bool PrependList( const List< T >& lst );
 
+      /// Transforms list to an \e array.
       template< typename Array >
       void toArray( Array& array );
 
-      //! Erase data element at given position
+      /// Erases data element at given position.
+      ///
+      /// \param ind Index of the data element one chooses to remove.
       void Erase( const int& ind );
 
-      //! Erase data element with contained data at given position
+      /// Erases data element with contained data at given position.
+      ///
+      /// \param ind Index of the data element one chooses to remove.
       void DeepErase( const int& ind );
 
-      //! Erase all data elements
+      /// Erases all data elements.
       void reset();
 
-      //! Erase all data elements with contained data
+      /// \brief Erases all data elements with contained data.
+      ///
+      /// Frees dynamicaly allocated data inside the data elements
       void DeepEraseAll();
 
-      //! Save the list in binary format
+      /// Saves the list in binary format.
+      ///
+      /// \param file Name of file.
       bool Save( File& file ) const;
 
-      //! Save the list in binary format using method save of type T
+      /// Saves the list in binary format using method save of type T.
+      ///
+      /// \param file Name of file.
       bool DeepSave( File& file ) const;
 
-      //! Load the list
+      /// Loads the list from file.
+      ///
+      /// \param file Name of file.
       bool Load( File& file );
 
-      //! Load the list using method Load of the type T
+      /// Loads the list from file using method Load of the type T.
+      ///
+      /// \param file Name of file.
       bool DeepLoad( File& file );
  
    protected:
-      //! Pointer to the first element
+      /// Pointer to the first element.
       ListDataElement< T >* first;
 
-      //! Pointer to the last element
+      /// Pointer to the last element.
       /*! We use pointer to last element while adding new element to keep order of elements
        */
       ListDataElement< T >* last;
 
-      //! List size
+      /// List size.
       int size;
 
-      //! Iterator
+      /// Iterator.
       mutable ListDataElement< T >* iterator;
 
-      //! Iterator index
+      /// Iterator index.
       mutable int index;
 };
 

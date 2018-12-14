@@ -504,25 +504,25 @@ Benchmark::MetadataMap getHardwareMetadata()
        { "system release", Devices::SystemInfo::getSystemRelease() },
        { "start time", Devices::SystemInfo::getCurrentTime() },
 #ifdef HAVE_MPI
-       { "number of MPI processes", (Communicators::MpiCommunicator::IsInitialized())
+       { "number of MPI processes", String( (Communicators::MpiCommunicator::IsInitialized())
                                        ? Communicators::MpiCommunicator::GetSize( Communicators::MpiCommunicator::AllGroup )
-                                       : 1 },
+                                       : 1 ) },
 #endif
-       { "OpenMP enabled", Devices::Host::isOMPEnabled() },
-       { "OpenMP threads", Devices::Host::getMaxThreadsCount() },
+       { "OpenMP enabled", String( Devices::Host::isOMPEnabled() ) },
+       { "OpenMP threads", String( Devices::Host::getMaxThreadsCount() ) },
        { "CPU model name", Devices::SystemInfo::getCPUModelName( cpu_id ) },
-       { "CPU cores", Devices::SystemInfo::getNumberOfCores( cpu_id ) },
-       { "CPU threads per core", Devices::SystemInfo::getNumberOfThreads( cpu_id ) / Devices::SystemInfo::getNumberOfCores( cpu_id ) },
-       { "CPU max frequency (MHz)", Devices::SystemInfo::getCPUMaxFrequency( cpu_id ) / 1e3 },
+       { "CPU cores", String( Devices::SystemInfo::getNumberOfCores( cpu_id ) ) },
+       { "CPU threads per core", String( Devices::SystemInfo::getNumberOfThreads( cpu_id ) / Devices::SystemInfo::getNumberOfCores( cpu_id ) ) },
+       { "CPU max frequency (MHz)", String( Devices::SystemInfo::getCPUMaxFrequency( cpu_id ) / 1e3 ) },
        { "CPU cache sizes (L1d, L1i, L2, L3) (kiB)", cacheInfo },
 #ifdef HAVE_CUDA
        { "GPU name", Devices::CudaDeviceInfo::getDeviceName( activeGPU ) },
-       { "GPU architecture", deviceArch },
-       { "GPU CUDA cores", Devices::CudaDeviceInfo::getCudaCores( activeGPU ) },
-       { "GPU clock rate (MHz)", (double) Devices::CudaDeviceInfo::getClockRate( activeGPU ) / 1e3 },
-       { "GPU global memory (GB)", (double) Devices::CudaDeviceInfo::getGlobalMemory( activeGPU ) / 1e9 },
-       { "GPU memory clock rate (MHz)", (double) Devices::CudaDeviceInfo::getMemoryClockRate( activeGPU ) / 1e3 },
-       { "GPU memory ECC enabled", Devices::CudaDeviceInfo::getECCEnabled( activeGPU ) },
+       { "GPU architecture", String( deviceArch ) },
+       { "GPU CUDA cores", String( Devices::CudaDeviceInfo::getCudaCores( activeGPU ) ) },
+       { "GPU clock rate (MHz)", String( (double) Devices::CudaDeviceInfo::getClockRate( activeGPU ) / 1e3 ) },
+       { "GPU global memory (GB)", String( (double) Devices::CudaDeviceInfo::getGlobalMemory( activeGPU ) / 1e9 ) },
+       { "GPU memory clock rate (MHz)", String( (double) Devices::CudaDeviceInfo::getMemoryClockRate( activeGPU ) / 1e3 ) },
+       { "GPU memory ECC enabled", String( Devices::CudaDeviceInfo::getECCEnabled( activeGPU ) ) },
 #endif
    };
 

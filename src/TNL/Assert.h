@@ -33,14 +33,77 @@
 #if defined(NDEBUG) || defined(HAVE_MIC)
 
 // empty macros for optimized build
+/**
+ * \brief Asserts that the expression \e val evaluates to \e true.
+ *
+ * The assertion succeeds if, and only if, \e val evaluates to equal to \e true.
+ * On success the test continues without any side effects.
+ * On failure the test is terminated with the error message \e msg.
+ */
 #define TNL_ASSERT_TRUE( val, msg )
+/**
+ * \brief Asserts that the expression \e val evaluates to \e false.
+ *
+ * The assertion succeeds if, and only if, \e val evaluates to equal to \e false.
+ * On success the test continues without any side effects.
+ * On failure the test is terminated with the error message \e msg.
+ */
 #define TNL_ASSERT_FALSE( val, msg )
+/**
+ * \brief Asserts that the expression \e val1 is equal to \e val2.
+ *
+ * The assertion succeeds if, and only if, \e val1 and \e val2 are equal.
+ * On success the test continues without any side effects.
+ * On failure the test is terminated with the error message \e msg.
+ */
 #define TNL_ASSERT_EQ( val1, val2, msg )
+/**
+ * \brief Asserts that the expression \e val1 is not equal to \e val2.
+ *
+ * The assertion succeeds if, and only if, \e val1 and \e val2 are not equal.
+ * On success the test continues without any side effects.
+ * On failure the test is terminated with the error message \e msg.
+ */
 #define TNL_ASSERT_NE( val1, val2, msg )
+/**
+ * \brief Asserts that the expression \e val1 is less than or equal to \e val2.
+ *
+ * The assertion succeeds if, and only if, \e val1 is less than or equal to \e val2.
+ * On success the test continues without any side effects.
+ * On failure the test is terminated with the error message \e msg.
+ */
 #define TNL_ASSERT_LE( val1, val2, msg )
+/**
+ * \brief Asserts that the expression \e val1 is less than \e val2.
+ *
+ * The assertion succeeds if, and only if, \e val1 is less than \e val2.
+ * On success the test continues without any side effects.
+ * On failure the test is terminated with the error message \e msg.
+ */
 #define TNL_ASSERT_LT( val1, val2, msg )
+/**
+ * \brief Asserts that the expression \e val1 is greater than or equal to \e val2.
+ *
+ * The assertion succeeds if, and only if, \e val1 is greater than or equal to \e val2.
+ * On success the test continues without any side effects.
+ * On failure the test is terminated with the error message \e msg.
+ */
 #define TNL_ASSERT_GE( val1, val2, msg )
+/**
+ * \brief Asserts that the expression \e val1 is greater than \e val2.
+ *
+ * The assertion succeeds if, and only if, \e val1 is greater than \e val2.
+ * On success the test continues without any side effects.
+ * On failure the test is terminated with the error message \e msg.
+ */
 #define TNL_ASSERT_GT( val1, val2, msg )
+/**
+ * \brief Asserts that the specified \e ___tnl__assert_condition is valid.
+ *
+ * The assertion succeeds if, and only if, ___tnl__assert_condition is valid.
+ * On success the test continues without any side effects.
+ * On failure the test is terminated with the error message \e ___tnl__assert_command.
+ */
 #define TNL_ASSERT( ___tnl__assert_condition, ___tnl__assert_command )
 
 #else /* #ifdef NDEBUG */

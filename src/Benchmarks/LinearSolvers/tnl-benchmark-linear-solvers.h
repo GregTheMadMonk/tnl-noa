@@ -347,11 +347,11 @@ struct LinearSolversBenchmark
       benchmark.setMetadataColumns( Benchmark::MetadataColumns({
          // TODO: strip the device
 //         {"matrix type", matrixPointer->getType()},
-         {"rows", matrixPointer->getRows()},
-         {"columns", matrixPointer->getColumns()},
+         {"rows", String( matrixPointer->getRows() ) },
+         {"columns", String( matrixPointer->getColumns() ) },
          // FIXME: getMaxRowLengths() returns 0 for matrices loaded from file
 //         {"max elements per row", matrixPointer->getMaxRowLength()},
-         {"max elements per row", maxRowLength},
+         {"max elements per row", String( maxRowLength ) },
       } ));
 
       const bool reorder = parameters.getParameter< bool >( "reorder-dofs" );

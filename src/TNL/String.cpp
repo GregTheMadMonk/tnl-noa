@@ -29,12 +29,6 @@ String::String()
    setString( nullptr );
 }
 
-String::String( const char* str )
-   : string( nullptr ), length( 0 )
-{
-   setString( str );
-}
-
 String::String( const char* c, int prefix_cut_off, int sufix_cut_off )
    : string( nullptr ), length( 0 )
 {
@@ -45,13 +39,6 @@ String::String( const String& str )
    : string( nullptr ), length( 0 )
 {
    setString( str.getString() );
-}
-
-String::String( const bool b )
-   : string( nullptr ), length( 0 )
-{
-   if( b ) this->setString( "true" );
-   else this->setString( "false" );
 }
 
 String String::getType()
@@ -348,22 +335,24 @@ String::strip( char strip ) const
    return "";
 }
 
-int String::split( Containers::List< String >& list, const char separator ) const
+int String::split( Containers::List< String >& list,
+                   const char separator,
+                   bool skipEmpty ) const
 {
    list.reset();
-   String copy( *this );
-   int len = copy.getLength();
-   for( int i = 0; i < len; i ++ )
-      if( copy[ i ] == separator )
-         copy[ i ] = 0;
-   for( int i = 0; i < len; i ++ )
+   String s;
+   for( int i = 0; i < this->getLength(); i ++ )
    {
-      if( copy[ i ] == 0 ) continue;
-      String new_string;
-      new_string.setString( &copy.getString()[ i ] );
-      i += new_string.getLength();
-      list.Append( new_string );
+      if( ( *this )[ i ] == separator )
+      {
+         if( ! skipEmpty || s != "" )
+            list.Append( s );
+         s = "";
+      }
+      else s += ( *this )[ i ];
    }
+   if( ! skipEmpty || s != "" )
+      list.Append( s );
    return list.getSize();
 }
 

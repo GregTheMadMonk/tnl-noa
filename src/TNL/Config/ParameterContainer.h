@@ -44,22 +44,55 @@ class ParameterContainer
 {
    public:
 
+   /**
+    * \brief Basic constructor.
+    */
    ParameterContainer();
 
+   /**
+    * \brief Adds new parameter to the ParameterContainer.
+    *
+    * \tparam T Type of parameter value.
+    * \param name Name of the new parameter.
+    * \param value Value assigned to the parameter.
+    */
    template< class T > bool addParameter( const String& name,
                                           const T& value );
 
    bool addParameter( const String& name,
                       const String& value );
 
+   /**
+    * \brief Checks whether the parameter \e name already exists in ParameterContainer.
+    *
+    * \param name Name of the parameter.
+    */
    bool checkParameter( const String& name ) const;
 
+   /**
+    * \brief Assigns new \e value to the parameter \e name.
+    *
+    * \tparam T Type of the parameter value.
+    * \param name Name of parameter.
+    * \param value Value of type T assigned to the parameter.
+    */
    template< class T > bool setParameter( const String& name,
                                           const T& value );
 
    bool setParameter( const String& name,
                       const String& value );
 
+   /**
+    * \brief Checks whether the parameter \e name is given the \e value.
+    *
+    * Returns \e true if the parameter \e name is given the \e value.
+    * If the parameter does not have any value or has different value then the given
+    * \e value the method returns \e false and shows message when \e verbose is \e true.
+    *
+    * \param name Name of parameter.
+    * \param value Value of type T we want to check whether is assigned to the parameter.
+    * \param verbose Boolean value defining whether to show error message (when true) or not (when false).
+    */
    template< class T > bool getParameter( const String& name,
                                           T& value,
                                           bool verbose = true ) const
@@ -80,6 +113,11 @@ class ParameterContainer
       return false;
    }
 
+   /**
+    * \brief Returns parameter value.
+    *
+    * \param name Name of parameter.
+    */
    template< class T > const T& getParameter( const String& name ) const
    {
       int i;
@@ -95,6 +133,9 @@ class ParameterContainer
    //! Broadcast to other nodes in MPI cluster
   // void MPIBcast( int root, MPI_Comm mpi_comm = MPI_COMM_WORLD );
 
+   /**
+    * \brief Basic destructor.
+    */
    ~ParameterContainer();
 
    protected:

@@ -15,6 +15,7 @@ done
 doxygen
 
 if [[ "$INSTALL" == "yes" ]]; then
-   cp -r Documentation/* ${PREFIX}/share/doc
+   mkdir -p ${PREFIX}/share/doc/tnl
+   cp -r Documentation/* ${PREFIX}/share/doc/tnl
 fi
 

@@ -8,6 +8,8 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+// Implemented by Nina Dzugasova
+
 #ifdef HAVE_GTEST 
 #include <gtest/gtest.h>
 #endif
@@ -62,6 +64,34 @@ TEST( StringTest, ConstructorWithNumber )
    EXPECT_EQ( strcmp( string4.getString(), "false" ), 0 );
 }
 
+TEST( StringTest, GetSize )
+{
+    String str1( "string" );
+    String str2( "12345" );
+    String str3( "string3" );
+    String str4( "String_4" );
+    String str5( "Last String" );
+
+    EXPECT_EQ( str1.getSize(), 6 );
+    EXPECT_EQ( str2.getSize(), 5 );
+    EXPECT_EQ( str3.getSize(), 7 );
+    EXPECT_EQ( str4.getSize(), 8 );
+    EXPECT_EQ( str5.getSize(), 11 );
+
+    EXPECT_EQ( str1.getLength(), 6 );
+    EXPECT_EQ( str2.getLength(), 5 );
+    EXPECT_EQ( str3.getLength(), 7 );
+    EXPECT_EQ( str4.getLength(), 8 );
+    EXPECT_EQ( str5.getLength(), 11 );
+}
+
+TEST( StringTest, GetAllocatedSize )
+{
+    String str( "MeineKleine" );
+
+    EXPECT_EQ( str.getAllocatedSize(), 256 );
+}
+
 TEST( StringTest, SetSize )
 {
    String str;
@@ -85,6 +115,15 @@ TEST( StringTest, SetString )
    EXPECT_EQ( strcmp( str2.getString(), "string2" ), 0 );
    EXPECT_EQ( strcmp( str3.getString(), "string3" ), 0 );
    EXPECT_EQ( strcmp( str4.getString(), "string4" ), 0 );
+
+   str4.setString( "string4_2", 0, 2 );
+   EXPECT_EQ( strcmp( str4.getString(), "string4" ), 0 );
+}
+
+TEST( StringTest, GetString )
+{
+    String str( "MyString" );
+    EXPECT_EQ( strcmp( str.getString(), "MyString" ), 0 );
 }
 
 TEST( StringTest, IndexingOperator )
@@ -229,6 +268,9 @@ TEST( StringTest, replace )
    EXPECT_EQ( String( "string" ).replace( "ing", "bc" ), "strbc" );
    EXPECT_EQ( String( "abracadabra" ).replace( "ab", "CAT" ), "CATracadCATra" );
    EXPECT_EQ( String( "abracadabra" ).replace( "ab", "CAT", 1 ), "CATracadabra" );
+   EXPECT_NE( String( "abracadabra" ).replace( "ab", "CAT", 2 ), "abracadCATra" );
+   EXPECT_NE( String( "abracadabra" ).replace( "ab", "CAT", 2 ), "abracadabra" );
+   EXPECT_EQ( String( "abracadabra" ).replace( "ab", "CAT", 2 ), "CATracadCATra" );
 }
 
 TEST( StringTest, strip )
@@ -253,6 +295,15 @@ TEST( StringTest, split )
    EXPECT_EQ( list[ 2 ], "C" );
 
    String( "abracadabra" ).split( list, 'a' );
+   ASSERT_EQ( list.getSize(), 6 );
+   EXPECT_EQ( list[ 0 ], "" );
+   EXPECT_EQ( list[ 1 ], "br" );
+   EXPECT_EQ( list[ 2 ], "c" );
+   EXPECT_EQ( list[ 3 ], "d" );
+   EXPECT_EQ( list[ 4 ], "br" );
+   EXPECT_EQ( list[ 5 ], "" );
+   
+   String( "abracadabra" ).split( list, 'a', true );
    ASSERT_EQ( list.getSize(), 4 );
    EXPECT_EQ( list[ 0 ], "br" );
    EXPECT_EQ( list[ 1 ], "c" );
@@ -268,6 +319,13 @@ TEST( StringTest, split )
    String( "abracadabra" ).split( list, 'A' );
    ASSERT_EQ( list.getSize(), 1 );
    EXPECT_EQ( list[ 0 ], "abracadabra" );
+
+   String( "a,,b,c" ).split( list, ',' );
+   ASSERT_EQ( list.getSize(), 4 );
+   EXPECT_EQ( list[ 0 ], "a" );
+   EXPECT_EQ( list[ 1 ], "" );
+   EXPECT_EQ( list[ 2 ], "b" );
+   EXPECT_EQ( list[ 3 ], "c" );
 }
 
 TEST( StringTest, SaveLoad )
@@ -284,8 +342,24 @@ TEST( StringTest, SaveLoad )
 
    EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
 };
-#endif
 
+TEST( StringTest, getLine )
+{
+   std::stringstream str;
+   str << "Line 1" << std::endl;
+   str << "Line 2" << std::endl;
+   str.seekg( 0 );
+
+   String s;
+
+   s.getLine( str );
+   EXPECT_EQ( s, "Line 1" );
+
+   s.getLine( str );
+   EXPECT_EQ( s, "Line 2" );
+};
+
+#endif
 
 #include "GtestMissingError.h"
 int main( int argc, char* argv[] )
@@ -297,3 +371,4 @@ int main( int argc, char* argv[] )
    throw GtestMissingError();
 #endif
 }
+
