@@ -114,7 +114,11 @@ benchmarkSpMV( Benchmark & benchmark,
    // create benchmark group
    Containers::List< String > parsedType;
    parseObjectType( HostMatrix::getType(), parsedType );
+#ifdef HAVE_CUDA
    benchmark.createHorizontalGroup( parsedType[ 0 ], 2 );
+#else
+   benchmark.createHorizontalGroup( parsedType[ 0 ], 1 );
+#endif
 
    hostRowLengths.setSize( size );
    hostMatrix.setDimensions( size, size );
