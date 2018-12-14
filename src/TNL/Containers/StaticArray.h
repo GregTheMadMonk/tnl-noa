@@ -24,6 +24,11 @@ class StaticArray
    typedef int     IndexType;
    enum { size = Size };
 
+   /**
+    * \brief Basic constructor.
+    *
+    * Constructs an empty static array. Once it is constructed, its size can not be changed.
+    */
    __cuda_callable__
    inline StaticArray();
 
@@ -33,42 +38,83 @@ class StaticArray
    __cuda_callable__
    inline StaticArray( const Value v[ Size ] );
 
-   //! This sets all vector components to v
+   /**
+    * \brief Constructor that sets all vector components to value \e v.
+    */
    __cuda_callable__
    inline StaticArray( const Value& v );
 
-   //! Copy constructor
+   /**
+    * \brief Copy constructor.
+    *
+    * Constructs a copy of another static array \e v.
+    */
    __cuda_callable__
    inline StaticArray( const StaticArray< Size, Value >& v );
 
+   /**
+    * \brief Gets type of this array.
+    */
    static String getType();
 
+   /**
+    * \brief Gets size of this array.
+    */
    __cuda_callable__
    inline int getSize() const;
 
+   /**
+    * \brief Gets all data of this array.
+    */
    __cuda_callable__
    inline Value* getData();
 
    __cuda_callable__
    inline const Value* getData() const;
 
+   /**
+    * \brief Accesses specified element at the position \e i and returns a reference to its value.
+    *
+    * \param i Index position of an element.
+    */
    __cuda_callable__
    inline const Value& operator[]( int i ) const;
 
+   /**
+    * \brief Accesses specified element at the position \e i and returns a reference to its value.
+    *
+    * \param i Index position of an element.
+    */
    __cuda_callable__
    inline Value& operator[]( int i );
 
+   /**
+    * \brief Assigns another static \e array to this array, replacing its current contents.
+    */
    __cuda_callable__
    inline StaticArray< Size, Value >& operator = ( const StaticArray< Size, Value >& array );
 
+   /**
+    * \brief Assigns another static \e array to this array, replacing its current contents.
+    */
    template< typename Array >
    __cuda_callable__
    inline StaticArray< Size, Value >& operator = ( const Array& array );
 
+   /**
+    * \brief This function checks whether this static array is equal to another \e array.
+    *
+    * Return \e true if the arrays are equal in size. Otherwise returns \e false.
+    */
    template< typename Array >
    __cuda_callable__
    inline bool operator == ( const Array& array ) const;
 
+   /**
+    * \brief This function checks whether this static array is not equal to another \e array.
+    *
+    * Return \e true if the arrays are not equal in size. Otherwise returns \e false.
+    */
    template< typename Array >
    __cuda_callable__
    inline bool operator != ( const Array& array ) const;
@@ -77,11 +123,22 @@ class StaticArray
    __cuda_callable__
    operator StaticArray< Size, OtherValue >() const;
 
+   /**
+    * \brief Sets all values of this static array to \e val.
+    */
    __cuda_callable__
    inline void setValue( const ValueType& val );
 
+   /**
+    * \brief Saves this static array into the \e file.
+    * \param file Reference to a file.
+    */
    bool save( File& file ) const;
 
+   /**
+    * \brief Loads data from the \e file to this static array.
+    * \param file Reference to a file.
+    */
    bool load( File& file);
 
    void sort();
