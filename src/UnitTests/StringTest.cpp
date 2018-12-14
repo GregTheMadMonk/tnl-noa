@@ -295,6 +295,15 @@ TEST( StringTest, split )
    EXPECT_EQ( list[ 2 ], "C" );
 
    String( "abracadabra" ).split( list, 'a' );
+   ASSERT_EQ( list.getSize(), 6 );
+   EXPECT_EQ( list[ 0 ], "" );
+   EXPECT_EQ( list[ 1 ], "br" );
+   EXPECT_EQ( list[ 2 ], "c" );
+   EXPECT_EQ( list[ 3 ], "d" );
+   EXPECT_EQ( list[ 4 ], "br" );
+   EXPECT_EQ( list[ 5 ], "" );
+   
+   String( "abracadabra" ).split( list, 'a', true );
    ASSERT_EQ( list.getSize(), 4 );
    EXPECT_EQ( list[ 0 ], "br" );
    EXPECT_EQ( list[ 1 ], "c" );
@@ -311,7 +320,6 @@ TEST( StringTest, split )
    ASSERT_EQ( list.getSize(), 1 );
    EXPECT_EQ( list[ 0 ], "abracadabra" );
 
-   // !!!! ma problem s prazdnym stringom !!!!
    String( "a,,b,c" ).split( list, ',' );
    ASSERT_EQ( list.getSize(), 4 );
    EXPECT_EQ( list[ 0 ], "a" );
@@ -353,7 +361,6 @@ TEST( StringTest, getLine )
 
 #endif
 
-
 #include "GtestMissingError.h"
 int main( int argc, char* argv[] )
 {
@@ -364,3 +371,4 @@ int main( int argc, char* argv[] )
    throw GtestMissingError();
 #endif
 }
+

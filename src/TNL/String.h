@@ -253,7 +253,7 @@ class String
       /// @param list Name of list.
       /// @param separator Character, which separates substrings in given string.
       /// Empty character can not be used.
-      int split( Containers::List< String >& list, const char separator = ' ' ) const;
+      int split( Containers::List< String >& list, const char separator = ' ', bool skipEmpty = false ) const;
 
       /////
       /// \brief Function for saving file.
