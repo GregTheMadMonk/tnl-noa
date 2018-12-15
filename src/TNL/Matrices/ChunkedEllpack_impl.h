@@ -198,7 +198,7 @@ bool ChunkedEllpack< Real, Device, Index >::setSlice( ConstCompressedRowLengthsV
 //       will be zero and make the assertion fail ( https://stackoverflow.com/questions/33273359/in-c-using-the-ceil-a-division-is-not-working ).
 //       To fix this, typecast them to ( float ), instead of ( RealType )
        maxChunkInSlice = max( maxChunkInSlice,
-                          ceil( roundUpDivision( rowLengths[ i ], this->rowToChunkMapping[ i ] ) );
+                          roundUpDivision( rowLengths[ i ], this->rowToChunkMapping[ i ] );
    }
       TNL_ASSERT( maxChunkInSlice > 0,
               std::cerr << " maxChunkInSlice = " << maxChunkInSlice << std::endl );
