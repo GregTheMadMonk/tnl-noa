@@ -427,11 +427,11 @@ void test_AddElement()
     for( IndexType i = 2; i < cols; i++ )         // 2nd row
         m.setElement( 2, i, value++ );
         
-        m.setElement( 3, 0, value++ );      // 3rd row
-        
-        m.setElement( 4, 1, value++ );      // 4th row
-    
-        m.setElement( 5, 3, value++ );      // 5th row
+    m.setElement( 3, 0, value++ );      // 3rd row
+     
+    m.setElement( 4, 1, value++ );      // 4th row
+ 
+    m.setElement( 5, 3, value++ );      // 5th row
     
         
     // Check the set elements
@@ -645,7 +645,7 @@ void test_VectorProduct()
     for( IndexType i = 0; i < m_cols - 1; i++ )   // 0th row
         m.setElement( 0, i, value++ );
     
-        m.setElement( 1, 3, value++ );      // 1st row
+    m.setElement( 1, 3, value++ );      // 1st row
         
     for( IndexType i = 0; i < m_cols - 1; i++ )   // 2nd row
         m.setElement( 2, i, value++ );
@@ -790,8 +790,8 @@ void test_SaveAndLoad()
     for( IndexType i = 0; i < m_cols - 1; i++ )   // 0th row
         savedMatrix.setElement( 0, i, value++ );
         
-        savedMatrix.setElement( 1, 1, value++ );
-        savedMatrix.setElement( 1, 3, value++ );      // 1st row
+    savedMatrix.setElement( 1, 1, value++ );
+    savedMatrix.setElement( 1, 3, value++ );      // 1st row
         
     for( IndexType i = 0; i < m_cols - 1; i++ )   // 2nd row
         savedMatrix.setElement( 2, i, value++ );
@@ -888,7 +888,7 @@ void test_Print()
     for( IndexType i = 0; i < m_cols - 1; i++ )   // 0th row
         m.setElement( 0, i, value++ );
     
-        m.setElement( 1, 3, value++ );      // 1st row
+    m.setElement( 1, 3, value++ );      // 1st row
         
     for( IndexType i = 0; i < m_cols - 1; i++ )   // 2nd row
         m.setElement( 2, i, value++ );
