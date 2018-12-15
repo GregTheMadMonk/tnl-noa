@@ -123,6 +123,16 @@ Index SlicedEllpack< Real, Device, Index, SliceSize >::getRowLengthFast( const I
 
 template< typename Real,
           typename Device,
+          typename Index ,
+          int SliceSize >
+Index SlicedEllpack< Real, Device, Index, SliceSize >::getNonZeroRowLength( const IndexType row ) const
+{
+    ConstMatrixRow matrixRow = getRow( row );
+    return matrixRow.getNonZeroElementsCount( Device::getDeviceType() );
+}
+
+template< typename Real,
+          typename Device,
           typename Index,
           int SliceSize >
    template< typename Real2,
@@ -212,7 +222,7 @@ bool SlicedEllpack< Real, Device, Index, SliceSize >::addElementFast( const Inde
                                                                                const RealType& thisElementMultiplicator )
 {
    TNL_ASSERT( row >= 0 && row < this->rows &&
-              column >= 0 && column <= this->rows,
+              column >= 0 && column <= this->columns,
               std::cerr << " row = " << row
                    << " column = " << column
                    << " this->rows = " << this->rows
@@ -260,7 +270,7 @@ bool SlicedEllpack< Real, Device, Index, SliceSize >::addElement( const IndexTyp
                                                                            const RealType& thisElementMultiplicator )
 {
    TNL_ASSERT( row >= 0 && row < this->rows &&
-              column >= 0 && column <= this->rows,
+              column >= 0 && column <= this->columns,
               std::cerr << " row = " << row
                    << " column = " << column
                    << " this->rows = " << this->rows

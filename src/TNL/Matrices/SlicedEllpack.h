@@ -95,6 +95,8 @@ public:
 
    __cuda_callable__
    IndexType getRowLengthFast( const IndexType row ) const;
+   
+   IndexType getNonZeroRowLength( const IndexType row ) const;
 
    template< typename Real2, typename Device2, typename Index2 >
    void setLike( const SlicedEllpack< Real2, Device2, Index2, SliceSize >& matrix );

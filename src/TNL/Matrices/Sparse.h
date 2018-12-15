@@ -30,6 +30,7 @@ class Sparse : public Matrix< Real, Device, Index >
    typedef Containers::Vector< IndexType, DeviceType, IndexType > ColumnIndexesVector;
    typedef Matrix< Real, Device, Index > BaseType;
    typedef SparseRow< RealType, IndexType > MatrixRow;
+   typedef SparseRow< const RealType, const IndexType > ConstMatrixRow;
 
    Sparse();
 

@@ -134,6 +134,60 @@ Index CSR< Real, Device, Index >::getRowLengthFast( const IndexType row ) const
 template< typename Real,
           typename Device,
           typename Index >
+Index CSR< Real, Device, Index >::getNonZeroRowLength( const IndexType row ) const
+{
+    // TODO: Fix/Implement
+    TNL_ASSERT( false, std::cerr << "TODO: Fix/Implement" );
+    return 0;
+//    if( std::is_same< DeviceType, Devices::Host >::value )
+//    {
+//       ConstMatrixRow matrixRow = this->getRow( row );
+//       return matrixRow.getNonZeroElementsCount();
+//    }
+//    if( std::is_same< DeviceType, Devices::Cuda >::value )
+//    {
+//       IndexType *cols = new IndexType[4];
+//       RealType *vals = new RealType[4];
+//       for( int i = 0; i < 4; i++ )
+//       {
+//           cols[i] = i;
+//           vals[i] = 1.0;
+//       }
+//       ConstMatrixRow matrixRow(cols, vals, 4, 1);
+// //      ConstMatrixRow matrixRow = this->getRow( row );// If the program even compiles, this line fails because a segfault is thrown on the first line of getRow()
+//       // WHEN debugging with GDB:
+//       //  (gdb) p this->rowPointers[0]
+//       //    Could not find operator[].
+//       //  (gdb) p rowPointers.getElement(0)
+//       //    Attempt to take address of value not located in memory.
+//       IndexType resultHost ( 0 );
+//       IndexType* resultCuda = Devices::Cuda::passToDevice( resultHost );
+//       // PROBLEM: If the second parameter of getNonZeroRowLengthCudaKernel is '&resultCuda', the following issue is thrown:
+//       //          'error: no instance of function template "TNL::Matrices::getNonZeroRowLengthCudaKernel" matches the argument list'
+//       TNL::Matrices::getNonZeroRowLengthCudaKernel< ConstMatrixRow, IndexType ><<< 1, 1 >>>( matrixRow, resultCuda ); // matrixRow works fine, tested them both separately
+//       delete []cols;
+//       delete []vals;
+//       std::cout << "Checkpoint BEFORE passFromDevice" << std::endl;
+//       resultHost = Devices::Cuda::passFromDevice( resultCuda ); // This causes a crash: Illegal memory address in Cuda_impl.h at TNL_CHECK_CUDA_DEVICE
+//       std::cout << "Checkpoint AFTER passFromDevice" << std::endl;
+//       Devices::Cuda::freeFromDevice( resultCuda );
+//       return resultHost;
+//   }
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__
+Index CSR< Real, Device, Index >::getNonZeroRowLengthFast( const IndexType row ) const
+{  
+   ConstMatrixRow matrixRow = this->getRow( row );
+   return matrixRow.getNonZeroElementsCount();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
    template< typename Real2,
              typename Device2,
              typename Index2 >
@@ -430,12 +484,12 @@ typename CSR< Real, Device, Index >::ConstMatrixRow
 CSR< Real, Device, Index >::
 getRow( const IndexType rowIndex ) const
 {
-   const IndexType rowOffset = this->rowPointers[ rowIndex ];
-   const IndexType rowLength = this->rowPointers[ rowIndex + 1 ] - rowOffset;
-   return ConstMatrixRow( &this->columnIndexes[ rowOffset ],
-                          &this->values[ rowOffset ],
-                          rowLength,
-                          1 );
+    const IndexType rowOffset = this->rowPointers[ rowIndex ];
+    const IndexType rowLength = this->rowPointers[ rowIndex + 1 ] - rowOffset;
+    return ConstMatrixRow( &this->columnIndexes[ rowOffset ],
+                           &this->values[ rowOffset ],
+                           rowLength,
+                           1 );
 }
 
 template< typename Real,

@@ -11,6 +11,11 @@
 #pragma once
 
 #include <TNL/Matrices/SparseRow.h>
+#include <TNL/ParallelFor.h>
+
+// Following includes are here to enable usage of std::vector and std::cout. To avoid having to include Device type (HOW would this be done anyway)
+#include <iostream>
+#include <vector>
 
 namespace TNL {
 namespace Matrices {   
@@ -105,6 +110,46 @@ SparseRow< Real, Index >::
 getLength() const
 {
    return length;
+}
+
+#ifdef HAVE_CUDA
+template< typename MatrixRow, typename Index >
+__global__
+void getNonZeroRowLengthCudaKernel( const MatrixRow row, Index* result )
+{
+//    TODO: Fix/Implement
+    TNL_ASSERT( false, std::cerr << "TODO: Fix/Implement" );
+//    int threadId = blockIdx.x * blockDim.x + threadIdx.x;
+//    if( threadId == 0 )
+//    {
+//       *result = row.getNonZeroElementsCount();
+//    }
+}
+#endif
+
+template< typename Real, typename Index >
+__cuda_callable__
+Index
+SparseRow< Real, Index >::
+getNonZeroElementsCount() const
+{
+//    TODO: Fix/Implement
+    TNL_ASSERT( false, std::cerr << "TODO: Fix/Implement" );
+    return 0;
+//    using NonConstIndex = typename std::remove_const< Index >::type;
+//    
+//    NonConstIndex elementCount ( 0 );
+//   
+//    for( NonConstIndex i = 0; i < length; i++ )
+//    {
+////        std::cout << "this->values[ i * step ] = " << this->values[ i * step ] << " != 0.0" << std::endl;
+//        if( this->values[ i * step ] != 0.0 ) // Returns the same amount of elements in a row as does getRowLength() in ChunkedEllpack. WHY?
+//            elementCount++;
+//    }
+//    
+////    std::cout << "Element Count = " << elementCount << "\n";
+//    
+//    return elementCount;
 }
 
 template< typename Real, typename Index >

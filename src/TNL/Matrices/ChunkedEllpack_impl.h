@@ -179,10 +179,28 @@ bool ChunkedEllpack< Real, Device, Index >::setSlice( ConstCompressedRowLengthsV
     */
    IndexType maxChunkInSlice( 0 );
    for( IndexType i = sliceBegin; i < sliceEnd; i++ )
-      maxChunkInSlice = max( maxChunkInSlice,
-                          ceil( ( RealType ) rowLengths[ i ] /
-                                ( RealType ) this->rowToChunkMapping[ i ] ) );
-   TNL_ASSERT( maxChunkInSlice > 0,
+   {       
+//       ALL OF THE FOLLOWING std::couts are for troubleshooting purposes, can be deleted.
+//       std::cout << "Troubleshooting invalid ceil operation: " << std::endl;
+//       std::cout << "maxChunkInSlice = " << maxChunkInSlice << std::endl;
+//       std::cout << "( RealType ) rowLengths[ i ] = " <<  ( RealType ) rowLengths[ i ] << std::endl;
+//       std::cout << "( RealType ) this->rowToChunkMapping[ i ] = " <<  ( RealType ) this->rowToChunkMapping[ i ] << std::endl;
+//       std::cout << " ceil( RealType / RealType ) = " << ceil( ( RealType ) rowLengths[ i ] / ( RealType ) this->rowToChunkMapping[ i ] ) << std::endl;
+//       std::cout << "( int ) rowLengths[ i ] = " <<  ( int ) rowLengths[ i ] << std::endl;
+//       std::cout << "( int ) this->rowToChunkMapping[ i ] = " <<  ( int ) this->rowToChunkMapping[ i ] << std::endl;
+//       std::cout << " ceil( int / int ) = " << ceil( ( int ) rowLengths[ i ] / ( int ) this->rowToChunkMapping[ i ] ) << std::endl;
+//       std::cout << "( float ) rowLengths[ i ] = " <<  ( float ) rowLengths[ i ] << std::endl;
+//       std::cout << "( float ) this->rowToChunkMapping[ i ] = " <<  ( float ) this->rowToChunkMapping[ i ] << std::endl;
+//       std::cout << " ceil( float / float ) = " << ceil( ( float ) rowLengths[ i ] / ( float ) this->rowToChunkMapping[ i ] ) << std::endl;
+//       The ceil function doesn't work when rowLengths and the other this.->... is 
+//       typecasted into ( RealType ), because when RealType is int, it will perform 
+//       an integer division and return the int as a double, which in this case 
+//       will be zero and make the assertion fail ( https://stackoverflow.com/questions/33273359/in-c-using-the-ceil-a-division-is-not-working ).
+//       To fix this, typecast them to ( float ), instead of ( RealType )
+       maxChunkInSlice = max( maxChunkInSlice,
+                          roundUpDivision( rowLengths[ i ], this->rowToChunkMapping[ i ] ) );
+   }
+      TNL_ASSERT( maxChunkInSlice > 0,
               std::cerr << " maxChunkInSlice = " << maxChunkInSlice << std::endl );
 
    /****
@@ -231,6 +249,13 @@ void ChunkedEllpack< Real, Device, Index >::setCompressedRowLengths( ConstCompre
          this->setSlice( rowLengths, sliceIndex, elementsToAllocation );
       this->rowPointers.computePrefixSum();
    }
+   
+//   std::cout << "\ngetRowLength after first if: " << std::endl;
+//   for( IndexType i = 0; i < rowLengths.getSize(); i++ )
+//   {
+//       std::cout << getRowLength( i ) << std::endl;
+//   }
+//   std::cout << "\n";
 
    if( std::is_same< Device, Devices::Cuda >::value )
    {
@@ -255,6 +280,7 @@ void ChunkedEllpack< Real, Device, Index >::setCompressedRowLengths( ConstCompre
       elementsToAllocation = hostMatrix.values.getSize();
    }
    this->maxRowLength = rowLengths.max();
+//   std::cout << "\nrowLengths.max() = " << rowLengths.max() << std::endl;
    Sparse< Real, Device, Index >::allocateMatrixElements( elementsToAllocation );
 }
 
@@ -279,6 +305,30 @@ Index ChunkedEllpack< Real, Device, Index >::getRowLengthFast( const IndexType r
    TNL_ASSERT( sliceIndex < this->rows, );
    const IndexType& chunkSize = slices[ sliceIndex ].chunkSize;
    return rowPointers[ row + 1 ] - rowPointers[ row ];
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+Index ChunkedEllpack< Real, Device, Index >::getNonZeroRowLength( const IndexType row ) const
+{
+    ConstMatrixRow matrixRow = getRow( row );
+    return matrixRow.getNonZeroElementsCount( Device::getDeviceType() );
+    
+//    IndexType elementCount ( 0 );
+//    ConstMatrixRow matrixRow = this->getRow( row );
+//    
+//    auto computeNonZeros = [&] /*__cuda_callable__*/ ( IndexType i ) mutable
+//    {
+//        std::cout << "matrixRow.getElementValue( i ) = " << matrixRow.getElementValue( i ) << " != 0.0" << std::endl;
+//        if( matrixRow.getElementValue( i ) !=  0.0 )
+//            elementCount++;
+//        
+//        std::cout << "End of lambda elementCount = " << elementCount << std::endl;
+//    };
+//   
+//    ParallelFor< DeviceType >::exec( ( IndexType ) 0, matrixRow.getLength(), computeNonZeros );
+//    return elementCount;
 }
 
 template< typename Real,
@@ -952,10 +1002,10 @@ getRow( const IndexType rowIndex ) const
 {
    const IndexType rowOffset = this->rowPointers[ rowIndex ];
    const IndexType rowLength = this->rowPointers[ rowIndex + 1 ] - rowOffset;
-   return MatrixRow( &this->columnIndexes[ rowOffset ],
-                     &this->values[ rowOffset ],
-                     rowLength,
-                     1 );
+   return ConstMatrixRow( &this->columnIndexes[ rowOffset ],
+                          &this->values[ rowOffset ],
+                          rowLength,
+                          1 );
 }
 
 

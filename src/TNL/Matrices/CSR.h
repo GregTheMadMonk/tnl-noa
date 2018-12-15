@@ -13,6 +13,9 @@
 #include <TNL/Matrices/Sparse.h>
 #include <TNL/Containers/Vector.h>
 
+#include <TNL/Devices/Cuda.h>
+#include <TNL/Exceptions/CudaBadAlloc.h>
+
 namespace TNL {
 namespace Matrices {
    
@@ -41,17 +44,21 @@ private:
 
 public:
 
-   typedef Real RealType;
-   typedef Device DeviceType;
-   typedef Index IndexType;
+   using RealType = Real;
+   using DeviceType = Device;
+   using IndexType = Index;
    typedef typename Sparse< RealType, DeviceType, IndexType >:: CompressedRowLengthsVector CompressedRowLengthsVector;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
    typedef CSR< Real, Device, Index > ThisType;
    typedef CSR< Real, Devices::Host, Index > HostType;
    typedef CSR< Real, Devices::Cuda, Index > CudaType;
    typedef Sparse< Real, Device, Index > BaseType;
-   typedef typename BaseType::MatrixRow MatrixRow;
-   typedef SparseRow< const RealType, const IndexType > ConstMatrixRow;
+   //typedef typename BaseType::MatrixRow MatrixRow;
+   
+   using MatrixRow = typename BaseType::MatrixRow;
+   using ConstMatrixRow = typename BaseType::ConstMatrixRow;
+   //using typename BaseType::ConstMatrixRow;
+   //typedef SparseRow< const RealType, const IndexType > ConstMatrixRow;
 
 
    enum SPMVCudaKernel { scalar, vector, hybrid };
@@ -75,7 +82,11 @@ public:
 
    __cuda_callable__
    IndexType getRowLengthFast( const IndexType row ) const;
-
+   
+   IndexType getNonZeroRowLength( const IndexType row ) const;
+   
+   IndexType getNonZeroRowLengthFast( const IndexType row ) const;
+   
    template< typename Real2, typename Device2, typename Index2 >
    void setLike( const CSR< Real2, Device2, Index2 >& matrix );
 
