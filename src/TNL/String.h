@@ -263,8 +263,6 @@ class String
       /// expression based on the success in reading the line.
       bool getLine( std::istream& stream );
 
-      friend std::ostream& operator<<( std::ostream& stream, const String& str );
-
    protected:
       
       /// \brief Pointer to char ended with zero byte.
