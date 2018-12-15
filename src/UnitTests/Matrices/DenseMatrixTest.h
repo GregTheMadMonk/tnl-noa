@@ -1404,9 +1404,9 @@ using MatrixTypes = ::testing::Types
     TNL::Matrices::Dense< int,    TNL::Devices::Host, long >,
     TNL::Matrices::Dense< long,   TNL::Devices::Host, long >,
     TNL::Matrices::Dense< float,  TNL::Devices::Host, long >,
-    TNL::Matrices::Dense< double, TNL::Devices::Host, long >,
+    TNL::Matrices::Dense< double, TNL::Devices::Host, long >
 #ifdef HAVE_CUDA
-    TNL::Matrices::Dense< int,    TNL::Devices::Cuda, short >,
+    ,TNL::Matrices::Dense< int,    TNL::Devices::Cuda, short >,
     TNL::Matrices::Dense< long,   TNL::Devices::Cuda, short >,
     TNL::Matrices::Dense< float,  TNL::Devices::Cuda, short >,
     TNL::Matrices::Dense< double, TNL::Devices::Cuda, short >,

@@ -354,9 +354,9 @@ using ChEllpackMatrixTypes = ::testing::Types
     TNL::Matrices::ChunkedEllpack< int,    TNL::Devices::Host, long >,
     TNL::Matrices::ChunkedEllpack< long,   TNL::Devices::Host, long >,
     TNL::Matrices::ChunkedEllpack< float,  TNL::Devices::Host, long >,
-    TNL::Matrices::ChunkedEllpack< double, TNL::Devices::Host, long >,
+    TNL::Matrices::ChunkedEllpack< double, TNL::Devices::Host, long >
 #ifdef HAVE_CUDA
-    TNL::Matrices::ChunkedEllpack< int,    TNL::Devices::Cuda, short >,
+    ,TNL::Matrices::ChunkedEllpack< int,    TNL::Devices::Cuda, short >,
     TNL::Matrices::ChunkedEllpack< long,   TNL::Devices::Cuda, short >,
     TNL::Matrices::ChunkedEllpack< float,  TNL::Devices::Cuda, short >,
     TNL::Matrices::ChunkedEllpack< double, TNL::Devices::Cuda, short >,
@@ -472,9 +472,9 @@ using CSRMatrixTypes = ::testing::Types
     TNL::Matrices::CSR< int,    TNL::Devices::Host, long >,
     TNL::Matrices::CSR< long,   TNL::Devices::Host, long >,
     TNL::Matrices::CSR< float,  TNL::Devices::Host, long >,
-    TNL::Matrices::CSR< double, TNL::Devices::Host, long >,
+    TNL::Matrices::CSR< double, TNL::Devices::Host, long >
 #ifdef HAVE_CUDA
-    TNL::Matrices::CSR< int,    TNL::Devices::Cuda, short >,
+    ,TNL::Matrices::CSR< int,    TNL::Devices::Cuda, short >,
     TNL::Matrices::CSR< long,   TNL::Devices::Cuda, short >,
     TNL::Matrices::CSR< float,  TNL::Devices::Cuda, short >,
     TNL::Matrices::CSR< double, TNL::Devices::Cuda, short >,
@@ -590,9 +590,9 @@ using EllpackMatrixTypes = ::testing::Types
     TNL::Matrices::Ellpack< int,    TNL::Devices::Host, long >,
     TNL::Matrices::Ellpack< long,   TNL::Devices::Host, long >,
     TNL::Matrices::Ellpack< float,  TNL::Devices::Host, long >,
-    TNL::Matrices::Ellpack< double, TNL::Devices::Host, long >,
+    TNL::Matrices::Ellpack< double, TNL::Devices::Host, long >
 #ifdef HAVE_CUDA
-    TNL::Matrices::Ellpack< int,    TNL::Devices::Cuda, short >,
+    ,TNL::Matrices::Ellpack< int,    TNL::Devices::Cuda, short >,
     TNL::Matrices::Ellpack< long,   TNL::Devices::Cuda, short >,
     TNL::Matrices::Ellpack< float,  TNL::Devices::Cuda, short >,
     TNL::Matrices::Ellpack< double, TNL::Devices::Cuda, short >,
@@ -708,9 +708,9 @@ using SlicedEllpackMatrixTypes = ::testing::Types
     TNL::Matrices::SlicedEllpack< int,    TNL::Devices::Host, long >,
     TNL::Matrices::SlicedEllpack< long,   TNL::Devices::Host, long >,
     TNL::Matrices::SlicedEllpack< float,  TNL::Devices::Host, long >,
-    TNL::Matrices::SlicedEllpack< double, TNL::Devices::Host, long >,
+    TNL::Matrices::SlicedEllpack< double, TNL::Devices::Host, long >
 #ifdef HAVE_CUDA
-    TNL::Matrices::SlicedEllpack< int,    TNL::Devices::Cuda, short >,
+    ,TNL::Matrices::SlicedEllpack< int,    TNL::Devices::Cuda, short >,
     TNL::Matrices::SlicedEllpack< long,   TNL::Devices::Cuda, short >,
     TNL::Matrices::SlicedEllpack< float,  TNL::Devices::Cuda, short >,
     TNL::Matrices::SlicedEllpack< double, TNL::Devices::Cuda, short >,
