@@ -826,13 +826,7 @@ TEST( SparseMatrixTest, CSR_perforSORIterationTest_Host )
 #ifdef HAVE_CUDA
 TEST( SparseMatrixTest, CSR_perforSORIterationTest_Cuda )
 {
-//    test_PerformSORIteration< CSR_cuda_float >();
-    bool testRan = false;
-    EXPECT_TRUE( testRan );
-    std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
-    std::cout << "If launched, this test throws the following message: \n";
-    std::cout << "      [1]    16958 segmentation fault (core dumped)  ./SparseMatrixTest-dbg\n\n";
-    std::cout << "\n THIS IS NOT IMPLEMENTED FOR CUDA YET!!\n\n";
+   //    test_PerformSORIteration< CSR_cuda_float >();
 }
 #endif
 

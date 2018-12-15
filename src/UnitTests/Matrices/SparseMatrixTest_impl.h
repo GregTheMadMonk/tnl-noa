@@ -762,18 +762,18 @@ void test_PerformSORIteration()
 template< typename Matrix >
 void test_SaveAndLoad()
 {
-    using RealType = typename Matrix::RealType;
-    using DeviceType = typename Matrix::DeviceType;
-    using IndexType = typename Matrix::IndexType;
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
     
-/*
- * Sets up the following 4x4 sparse matrix:
- *
- *    /  1  2  3  0 \
- *    |  0  4  0  5 |
- *    |  6  7  8  0 |
- *    \  0  9 10 11 /
- */
+   /*
+    * Sets up the following 4x4 sparse matrix:
+    *
+    *    /  1  2  3  0 \
+    *    |  0  4  0  5 |
+    *    |  6  7  8  0 |
+    *    \  0  9 10 11 /
+    */
     
     const IndexType m_rows = 4;
     const IndexType m_cols = 4;
@@ -853,7 +853,7 @@ void test_SaveAndLoad()
     EXPECT_EQ( savedMatrix.getElement( 3, 2 ), 10 );
     EXPECT_EQ( savedMatrix.getElement( 3, 3 ), 11 );
     
-    std::cout << "\nThis will create a file called 'sparseMatrixFile' (of the matrix created in the test function), in .../tnl-dev/Debug/bin/\n\n";
+    std::remove( "sparseMatrixFile" );
 }
 
 template< typename Matrix >
