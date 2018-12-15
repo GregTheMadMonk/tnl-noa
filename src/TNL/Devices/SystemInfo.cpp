@@ -118,7 +118,7 @@ int
 SystemInfo::getCPUMaxFrequency( int cpu_id )
 {
    String fileName( "/sys/devices/system/cpu/cpu" );
-   fileName += String( cpu_id ) + "/cpufreq/cpuinfo_max_freq";
+   fileName += convertToString( cpu_id ) + "/cpufreq/cpuinfo_max_freq";
    return readFile< int >( fileName );
 }
 
@@ -126,11 +126,11 @@ CacheSizes
 SystemInfo::getCPUCacheSizes( int cpu_id )
 {
    String directory( "/sys/devices/system/cpu/cpu" );
-   directory += String( cpu_id ) + "/cache";
+   directory += convertToString( cpu_id ) + "/cache";
 
    CacheSizes sizes;
    for( int i = 0; i <= 3; i++ ) {
-      const String cache = directory + "/index" + String( i );
+      const String cache = directory + "/index" + convertToString( i );
 
       // check if the directory exists
       struct stat st;
@@ -175,10 +175,10 @@ writeDeviceInfo( Logger& logger )
    logger.writeParameter< int >( "Threads per core:", threadsPerCore, 1 );
    logger.writeParameter< float >( "Max clock rate (in MHz):", getCPUMaxFrequency( cpu_id ) / 1000, 1 );
    CacheSizes cacheSizes = getCPUCacheSizes( cpu_id );
-   String cacheInfo = String( cacheSizes.L1data ) + ", "
-                       + String( cacheSizes.L1instruction ) + ", "
-                       + String( cacheSizes.L2 ) + ", "
-                       + String( cacheSizes.L3 );
+   String cacheInfo = convertToString( cacheSizes.L1data ) + ", "
+                       + convertToString( cacheSizes.L1instruction ) + ", "
+                       + convertToString( cacheSizes.L2 ) + ", "
+                       + convertToString( cacheSizes.L3 );
    logger.writeParameter< String >( "Cache (L1d, L1i, L2, L3):", cacheInfo, 1 );
 }
 

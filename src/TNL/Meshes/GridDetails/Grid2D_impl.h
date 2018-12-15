@@ -42,7 +42,7 @@ template< typename Real,
 String Grid< 2, Real, Device, Index > :: getType()
 {
    return String( "Meshes::Grid< " ) +
-          String( getMeshDimension() ) + ", " +
+          convertToString( getMeshDimension() ) + ", " +
           String( TNL::getType< RealType >() ) + ", " +
           String( Device :: getDeviceType() ) + ", " +
           String( TNL::getType< IndexType >() ) + " >";

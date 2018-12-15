@@ -240,7 +240,7 @@ String String::operator+( char str ) const
 
 bool String::operator==( char str ) const
 {
-   return *this == String( str );
+   return *this == convertToString( str );
 }
 
 bool String::operator!=( char str ) const
@@ -424,7 +424,7 @@ bool String :: getLine( std::istream& stream )
 
 String operator+( char string1, const String& string2 )
 {
-   return String( string1 ) + string2;
+   return convertToString( string1 ) + string2;
 }
 
 String operator+( const char* string1, const String& string2 )

@@ -176,12 +176,12 @@ struct SpmvBenchmark
       benchmark.newBenchmark( name, metadata );
       benchmark.setMetadataColumns( Benchmark::MetadataColumns({
          // TODO: strip the device
-//         {"matrix type", matrix.getType()},
-         {"rows", String( matrix.getRows() ) },
-         {"columns", String( matrix.getColumns() ) },
+//         { "matrix type", matrix.getType() },
+         { "rows", convertToString( matrix.getRows() ) },
+         { "columns", convertToString( matrix.getColumns() ) },
          // FIXME: getMaxRowLengths() returns 0 for matrices loaded from file
-//         {"max elements per row", matrix.getMaxRowLength()},
-         {"max elements per row", String( maxRowLength ) },
+//         { "max elements per row", matrix.getMaxRowLength() },
+         { "max elements per row", convertToString( maxRowLength ) },
       } ));
 
       const bool reorder = parameters.getParameter< bool >( "reorder-dofs" );

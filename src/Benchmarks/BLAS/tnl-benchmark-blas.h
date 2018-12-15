@@ -42,7 +42,7 @@ runBlasBenchmarks( Benchmark & benchmark,
                            metadata );
    for( std::size_t size = minSize; size <= maxSize; size *= 2 ) {
       benchmark.setMetadataColumns( Benchmark::MetadataColumns({
-         {"size", convertToString( size ) },
+         { "size", convertToString( size ) },
       } ));
       benchmarkArrayOperations< Real >( benchmark, size );
    }
@@ -62,9 +62,9 @@ runBlasBenchmarks( Benchmark & benchmark,
                            metadata );
    for( std::size_t size = minSize; size <= maxSize; size *= 2 ) {
       benchmark.setMetadataColumns( Benchmark::MetadataColumns({
-         {"rows", convertToString( size ) },
-         {"columns", convertToString( size ) },
-         {"elements per row", convertToString( elementsPerRow ) },
+         { "rows", convertToString( size ) },
+         { "columns", convertToString( size ) },
+         { "elements per row", convertToString( elementsPerRow ) },
       } ));
       benchmarkSpmvSynthetic< Real >( benchmark, size, elementsPerRow );
    }

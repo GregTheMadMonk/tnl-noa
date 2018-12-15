@@ -339,7 +339,7 @@ public:
       closeTable();
       writeTitle( title );
       // add loops to metadata
-      metadata["loops"] = String(loops);
+      metadata["loops"] = convertToString(loops);
       writeMetadata( metadata );
    }
 
@@ -488,14 +488,14 @@ Benchmark::MetadataMap getHardwareMetadata()
 {
    const int cpu_id = 0;
    Devices::CacheSizes cacheSizes = Devices::SystemInfo::getCPUCacheSizes( cpu_id );
-   String cacheInfo = String( cacheSizes.L1data ) + ", "
-                       + String( cacheSizes.L1instruction ) + ", "
-                       + String( cacheSizes.L2 ) + ", "
-                       + String( cacheSizes.L3 );
+   String cacheInfo = convertToString( cacheSizes.L1data ) + ", "
+                       + convertToString( cacheSizes.L1instruction ) + ", "
+                       + convertToString( cacheSizes.L2 ) + ", "
+                       + convertToString( cacheSizes.L3 );
 #ifdef HAVE_CUDA
    const int activeGPU = Devices::CudaDeviceInfo::getActiveDevice();
-   const String deviceArch = String( Devices::CudaDeviceInfo::getArchitectureMajor( activeGPU ) ) + "." +
-                             String( Devices::CudaDeviceInfo::getArchitectureMinor( activeGPU ) );
+   const String deviceArch = convertToString( Devices::CudaDeviceInfo::getArchitectureMajor( activeGPU ) ) + "." +
+                             convertToString( Devices::CudaDeviceInfo::getArchitectureMinor( activeGPU ) );
 #endif
    Benchmark::MetadataMap metadata {
        { "host name", Devices::SystemInfo::getHostname() },
@@ -504,25 +504,25 @@ Benchmark::MetadataMap getHardwareMetadata()
        { "system release", Devices::SystemInfo::getSystemRelease() },
        { "start time", Devices::SystemInfo::getCurrentTime() },
 #ifdef HAVE_MPI
-       { "number of MPI processes", String( (Communicators::MpiCommunicator::IsInitialized())
+       { "number of MPI processes", convertToString( (Communicators::MpiCommunicator::IsInitialized())
                                        ? Communicators::MpiCommunicator::GetSize( Communicators::MpiCommunicator::AllGroup )
                                        : 1 ) },
 #endif
-       { "OpenMP enabled", String( Devices::Host::isOMPEnabled() ) },
-       { "OpenMP threads", String( Devices::Host::getMaxThreadsCount() ) },
+       { "OpenMP enabled", convertToString( Devices::Host::isOMPEnabled() ) },
+       { "OpenMP threads", convertToString( Devices::Host::getMaxThreadsCount() ) },
        { "CPU model name", Devices::SystemInfo::getCPUModelName( cpu_id ) },
-       { "CPU cores", String( Devices::SystemInfo::getNumberOfCores( cpu_id ) ) },
-       { "CPU threads per core", String( Devices::SystemInfo::getNumberOfThreads( cpu_id ) / Devices::SystemInfo::getNumberOfCores( cpu_id ) ) },
-       { "CPU max frequency (MHz)", String( Devices::SystemInfo::getCPUMaxFrequency( cpu_id ) / 1e3 ) },
+       { "CPU cores", convertToString( Devices::SystemInfo::getNumberOfCores( cpu_id ) ) },
+       { "CPU threads per core", convertToString( Devices::SystemInfo::getNumberOfThreads( cpu_id ) / Devices::SystemInfo::getNumberOfCores( cpu_id ) ) },
+       { "CPU max frequency (MHz)", convertToString( Devices::SystemInfo::getCPUMaxFrequency( cpu_id ) / 1e3 ) },
        { "CPU cache sizes (L1d, L1i, L2, L3) (kiB)", cacheInfo },
 #ifdef HAVE_CUDA
        { "GPU name", Devices::CudaDeviceInfo::getDeviceName( activeGPU ) },
-       { "GPU architecture", String( deviceArch ) },
-       { "GPU CUDA cores", String( Devices::CudaDeviceInfo::getCudaCores( activeGPU ) ) },
-       { "GPU clock rate (MHz)", String( (double) Devices::CudaDeviceInfo::getClockRate( activeGPU ) / 1e3 ) },
-       { "GPU global memory (GB)", String( (double) Devices::CudaDeviceInfo::getGlobalMemory( activeGPU ) / 1e9 ) },
-       { "GPU memory clock rate (MHz)", String( (double) Devices::CudaDeviceInfo::getMemoryClockRate( activeGPU ) / 1e3 ) },
-       { "GPU memory ECC enabled", String( Devices::CudaDeviceInfo::getECCEnabled( activeGPU ) ) },
+       { "GPU architecture", deviceArch },
+       { "GPU CUDA cores", convertToString( Devices::CudaDeviceInfo::getCudaCores( activeGPU ) ) },
+       { "GPU clock rate (MHz)", convertToString( (double) Devices::CudaDeviceInfo::getClockRate( activeGPU ) / 1e3 ) },
+       { "GPU global memory (GB)", convertToString( (double) Devices::CudaDeviceInfo::getGlobalMemory( activeGPU ) / 1e9 ) },
+       { "GPU memory clock rate (MHz)", convertToString( (double) Devices::CudaDeviceInfo::getMemoryClockRate( activeGPU ) / 1e3 ) },
+       { "GPU memory ECC enabled", convertToString( Devices::CudaDeviceInfo::getECCEnabled( activeGPU ) ) },
 #endif
    };
 

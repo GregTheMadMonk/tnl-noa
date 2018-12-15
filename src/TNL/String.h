@@ -67,19 +67,6 @@ class String
       /// @param str Another string object, whose value is copied.
       String( const String& str );
 
-      /// \brief Converts anything to a string.
-      ///
-      /// This function converts any type of value into type string.
-      /// @tparam T is a type of a value to be converted
-      /// @param value Word of any type (e.g. int, bool, double,...).
-      template< typename T >
-      explicit
-      String( T value )
-         : string( nullptr ), length( 0 )
-      {
-         setString( convertToString( value ).getString() );
-      }
-
       /// \brief Destructor.
       ~String();
 

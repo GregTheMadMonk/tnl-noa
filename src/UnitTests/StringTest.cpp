@@ -51,12 +51,12 @@ TEST( StringTest, CopyConstructor )
    EXPECT_EQ( strcmp( emptyString2.getString(), "" ), 0 );
 }
 
-TEST( StringTest, ConstructorWithNumber )
+TEST( StringTest, convertToString )
 {
-   String string1( 10 );
-   String string2( -5 );
-   String string3( true );
-   String string4( false );
+   String string1 = convertToString( 10 );
+   String string2 = convertToString( -5 );
+   String string3 = convertToString( true );
+   String string4 = convertToString( false );
 
    EXPECT_EQ( strcmp( string1.getString(), "10" ), 0 );
    EXPECT_EQ( strcmp( string2.getString(), "-5" ), 0 );

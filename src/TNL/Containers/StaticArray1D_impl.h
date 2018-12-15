@@ -48,7 +48,7 @@ template< typename Value >
 String StaticArray< 1, Value >::getType()
 {
    return String( "Containers::StaticArray< " ) +
-          String( size ) +
+          convertToString( size ) +
           String( ", " ) +
           TNL::getType< Value >() +
           String( " >" );

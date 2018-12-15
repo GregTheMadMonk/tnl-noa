@@ -56,7 +56,7 @@ template< typename Real >
 String StaticVector< 1, Real >::getType()
 {
    return String( "Containers::StaticVector< " ) +
-          String( 1 ) +
+          convertToString( 1 ) +
           String( ", " ) +
           TNL::getType< Real >() +
           String( " >" );

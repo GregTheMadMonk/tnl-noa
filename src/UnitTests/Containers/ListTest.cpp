@@ -16,6 +16,35 @@
 using namespace TNL;
 using namespace TNL::Containers;
 
+// minimal custom data structure usable as ValueType in List
+struct MyData
+{
+   double data;
+
+   __cuda_callable__
+   MyData() : data(0) {}
+
+   template< typename T >
+   __cuda_callable__
+   MyData( T v ) : data(v) {}
+
+   __cuda_callable__
+   bool operator==( const MyData& v ) const { return data == v.data; }
+
+   __cuda_callable__
+   bool operator!=( const MyData& v ) const { return data != v.data; }
+
+   static String getType()
+   {
+      return String( "MyData" );
+   }
+};
+
+std::ostream& operator<<( std::ostream& str, const MyData& v )
+{
+   return str << v.data;
+}
+
 
 // test fixture for typed tests
 template< typename List >
@@ -32,7 +61,7 @@ using ListTypes = ::testing::Types<
    List< long   >,
    List< float  >,
    List< double >,
-   List< String >
+   List< MyData >
 >;
 
 TYPED_TEST_CASE( ListTest, ListTypes );
