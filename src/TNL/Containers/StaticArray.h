@@ -32,6 +32,9 @@ class StaticArray
    __cuda_callable__
    inline StaticArray();
 
+   /**
+    * \brief Constructor that sets all array components (with the number of \e Size) to value \e v.
+    */
    // Note: the template avoids ambiguity of overloaded functions with literal 0 and pointer
    // reference: https://stackoverflow.com/q/4610503
    template< typename _unused = void >
@@ -39,7 +42,7 @@ class StaticArray
    inline StaticArray( const Value v[ Size ] );
 
    /**
-    * \brief Constructor that sets all vector components to value \e v.
+    * \brief Constructor that sets all array components to value \e v.
     */
    __cuda_callable__
    inline StaticArray( const Value& v );

@@ -109,14 +109,40 @@ class Array : public Object
       template< typename ArrayT >
       void setLike( const ArrayT& array );
 
+      /**
+       * \brief Binds \e _data with this array.
+       *
+       * Releases old data and binds this array with new \e _data. Also sets new
+       * \e _size of this array.
+       * @param _data Pointer to new data.
+       * @param _size Size of new _data. Number of elements.
+       */
       void bind( Value* _data,
                  const Index _size );
 
+      /**
+       * \brief Binds this array with another \e array.
+       *
+       * Releases old data and binds this array with new \e array starting at
+       * position \e begin. Also sets new \e size of this array.
+       * \tparam ArrayT Type of array.
+       * \param array Reference to a new array.
+       * \param begin Starting index position.
+       * \param size Size of new array. Number of elements.
+       */
       template< typename ArrayT >
       void bind( const ArrayT& array,
                  const IndexType& begin = 0,
                  const IndexType& size = 0 );
 
+      /**
+       * \brief Binds this array with a static array of size \e Size.
+       *
+       * Releases old data and binds this array with a static array of size \e
+       * Size.
+       * \tparam Size Size of array.
+       * \param array Reference to a static array.
+       */
       template< int Size >
       void bind( StaticArray< Size, Value >& array );
 
