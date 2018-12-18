@@ -20,7 +20,7 @@ namespace Containers {
 template< int, typename > class StaticArray;
 
 /**
- * Array handles memory allocation and sharing of the same data between more Arrays.
+ * \brief Array handles memory allocation and sharing of the same data between more Arrays.
  *
  * \tparam Value Type of array values.
  * \tparam Device Device type.
