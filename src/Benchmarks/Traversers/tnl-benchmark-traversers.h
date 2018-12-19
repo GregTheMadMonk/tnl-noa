@@ -13,6 +13,7 @@
 #pragma once
 
 #include "../Benchmarks.h"
+#include "grid-traversing.h"
 
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Devices/Host.h>
@@ -33,8 +34,8 @@ void setupConfig( Config::ConfigDescription& config )
    config.addEntryEnum( "double" );
    config.addEntryEnum( "all" );
    config.addEntry< int >( "dimension", "Set the problem dimension. 0 means all dimensions 1,2 and 3.", 0 );   
-   config.addEntry< std::size_t >( "min-size", "Minimum size of arrays/vectors used in the benchmark.", 10 );
-   config.addEntry< std::size_t >( "max-size", "Minimum size of arrays/vectors used in the benchmark.", 1000 );
+   config.addEntry< int >( "min-size", "Minimum size of arrays/vectors used in the benchmark.", 10 );
+   config.addEntry< int >( "max-size", "Minimum size of arrays/vectors used in the benchmark.", 1000 );
    config.addEntry< int >( "size-step-factor", "Factor determining the size of arrays/vectors used in the benchmark. First size is min-size and each following size is stepFactor*previousSize, up to max-size.", 2 );
    config.addEntry< int >( "loops", "Number of iterations for every computation.", 10 );   
    config.addEntry< int >( "verbose", "Verbose mode.", 1 );
@@ -47,16 +48,26 @@ void setupConfig( Config::ConfigDescription& config )
 template< int Dimension >
 bool runBenchmark( const Config::ParameterContainer& parameters,
                    Benchmark& benchmark,
-                   Benchmark::MetadataMap& metadat )
+                   Benchmark::MetadataMap& metadata )
 {
    // FIXME: getParameter< std::size_t >() does not work with parameters added with addEntry< int >(),
    // which have a default value. The workaround below works for int values, but it is not possible
    // to pass 64-bit integer values
    // const std::size_t minSize = parameters.getParameter< std::size_t >( "min-size" );
    // const std::size_t maxSize = parameters.getParameter< std::size_t >( "max-size" );
-   const std::size_t minSize = parameters.getParameter< std::size_t >( "min-size" );
-   const std::size_t maxSize = parameters.getParameter< std::size_t >( "max-size" );
+   const int minSize = parameters.getParameter< int >( "min-size" );
+   const int maxSize = parameters.getParameter< int >( "max-size" );
    
+   // Full grid traversing
+   benchmark.newBenchmark( String("Full grid traversing " + convertToString( Dimension ) + "D" ), metadata );
+   for( std::size_t size = minSize; size <= maxSize; size *= 2 )
+   {
+      benchmark.setMetadataColumns( Benchmark::MetadataColumns({
+         {"size", convertToString( size ) },
+      } ));
+      benchmarkTraversingFullGrid< Dimension >::run( benchmark, size );
+   }   
+   return true;
 }
 
 template< int Dimension >
