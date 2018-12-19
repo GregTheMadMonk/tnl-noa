@@ -43,7 +43,7 @@ class StaticArray
     *
     * Once this static array is constructed, its size can not be changed.
     * \tparam _unused
-    * \param v[Size] 
+    * \param v[Size]
     */
    // Note: the template avoids ambiguity of overloaded functions with literal 0 and pointer
    // reference: https://stackoverflow.com/q/4610503
@@ -168,7 +168,7 @@ class StaticArray
     * \brief Writes the array values into stream \e str with specified \e separator.
     *
     * @param str Reference to a stream.
-    * @param separator Character separating the array values in the stream \e str. 
+    * @param separator Character separating the array values in the stream \e str.
     * Is set to " " by default.
     */
    std::ostream& write( std::ostream& str, const char* separator = " " ) const;
@@ -222,7 +222,6 @@ class StaticArray< 1, Value >
    __cuda_callable__
    inline const Value* getData() const;
 
-   
    /** \brief See StaticArray::operator[]( int i ) const.*/
    __cuda_callable__
    inline const Value& operator[]( int i ) const;

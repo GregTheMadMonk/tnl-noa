@@ -124,6 +124,13 @@ int main( int argc, char* argv[] )
     Containers::List<String> list;
     dates.split( list, ';' );
     cout << "list_dates:" << list << endl;
+    
+    String cars("opel,mazda,,skoda,");
+    Containers::List<String> list3, list5;
+    cars.split(list3, ',', true);
+    cars.split(list5, ',');
+    cout << "split with true:" << list3 << endl;
+    cout << "split with false:" << list5 << endl;
 
     // save
     File myFile;
