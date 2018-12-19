@@ -73,16 +73,16 @@ class Array : public Object
              const IndexType& begin = 0,
              const IndexType& size = 0 );
 
-      /** \brief Returns type of array value, device type and the type of index. */
+      /** \brief Returns type of array Value, Device type and the type of Index. */
       static String getType();
 
-      /** \brief Returns type of array value, device type and the type of index. */
+      /** \brief Returns type of array Value, Device type and the type of Index. */
       virtual String getTypeVirtual() const;
 
-      /** \brief Returns (host) type of array value, device type and the type of index. */
+      /** \brief Returns (host) type of array Value, Device type and the type of Index. */
       static String getSerializationType();
 
-      /** \brief Returns (host) type of array value, device type and the type of index. */
+      /** \brief Returns (host) type of array Value, Device type and the type of Index. */
       virtual String getSerializationTypeVirtual() const;
 
       /**

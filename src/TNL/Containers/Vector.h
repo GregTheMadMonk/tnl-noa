@@ -15,6 +15,9 @@
 namespace TNL {
 namespace Containers {
 
+/**
+ * \brief Class for storing vector elements and handling vector operations.
+ */
 template< typename Real = double,
           typename Device = Devices::Host,
           typename Index = int >
@@ -29,44 +32,95 @@ class Vector
    typedef Vector< Real, TNL::Devices::Host, Index > HostType;
    typedef Vector< Real, TNL::Devices::Cuda, Index > CudaType;
 
-   // inherit all constructors and assignment operators from Array
+   /** Constructors and assignment operators are inherited from the class Array. */
    using Array< Real, Device, Index >::Array;
    using Array< Real, Device, Index >::operator=;
 
+   /** \brief Returns type of vector Real value, Device type and the type of Index. */
    static String getType();
 
+   /** \brief Returns type of vector Real value, Device type and the type of Index. */
    virtual String getTypeVirtual() const;
 
+   /** \brief Returns (host) type of vector Real value, Device type and the type of Index. */
    static String getSerializationType();
 
+   /** \brief Returns (host) type of vector Real value, Device type and the type of Index. */
    virtual String getSerializationTypeVirtual() const;
 
+   /**
+    * \brief Adds another element to this vector.
+    *
+    * New element has index type \e i and reference to its real type \e value.
+    */
    void addElement( const IndexType i,
                     const RealType& value );
 
+   /**
+    * \brief Adds another element with multiplicator to this vector.
+    *
+    * New element has index type \e i and reference to its real type \e value
+    * multiplied by \e thisElementMultiplicator.
+    */
    template< typename Scalar >
    void addElement( const IndexType i,
                     const RealType& value,
                     const Scalar thisElementMultiplicator );
 
+   /**
+    * \brief This function subtracts \e vector from this vector and returns the resulting vector.
+    *
+    * The subtraction is applied to all the vector elements separately.
+    * \param vector Reference to another vector.
+    */
    template< typename VectorT >
    Vector& operator -= ( const VectorT& vector );
 
+   /**
+    * \brief This function adds \e vector from this vector and returns the resulting vector.
+    *
+    * The addition is applied to all the vector elements separately.
+    * \param vector Reference to another vector.
+    */
    template< typename VectorT >
    Vector& operator += ( const VectorT& vector );
 
+   /**
+    * \brief This function multiplies this vector by \e c and returns the resulting vector.
+    *
+    * The multiplication is applied to all the vector elements separately.
+    * \param c Multiplicator.
+    */
    template< typename Scalar >
    Vector& operator *= ( const Scalar c );
 
+   /**
+    * \brief This function divides this vector by \e c and returns the resulting vector.
+    *
+    * The division is applied to all the vector elements separately.
+    * \param c Divisor.
+    */
    template< typename Scalar >
    Vector& operator /= ( const Scalar c );
 
+   /**
+    * \brief Returns the maximum value out of all vector elements.
+    */
    Real max() const;
 
+   /**
+    * \brief Returns the minimum value out of all vector elements.
+    */
    Real min() const;
 
+   /**
+    * \brief Returns the maximum absolute value out of all vector elements.
+    */
    Real absMax() const;
 
+   /**
+    * \brief Returns the minimum absolute value out of all vector elements.
+    */
    Real absMin() const;
 
    template< typename ResultType = RealType, typename Scalar >
