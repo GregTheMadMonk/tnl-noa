@@ -44,6 +44,48 @@ void setupConfig( Config::ConfigDescription& config )
    Devices::Cuda::configSetup( config );   
 }
 
+template< int Dimension >
+bool runBenchmark( const Config::ParameterContainer& parameters,
+                   Benchmark& benchmark,
+                   Benchmark::MetadataMap& metadat )
+{
+   // FIXME: getParameter< std::size_t >() does not work with parameters added with addEntry< int >(),
+   // which have a default value. The workaround below works for int values, but it is not possible
+   // to pass 64-bit integer values
+   // const std::size_t minSize = parameters.getParameter< std::size_t >( "min-size" );
+   // const std::size_t maxSize = parameters.getParameter< std::size_t >( "max-size" );
+   const std::size_t minSize = parameters.getParameter< std::size_t >( "min-size" );
+   const std::size_t maxSize = parameters.getParameter< std::size_t >( "max-size" );
+   
+}
+
+template< int Dimension >
+bool setupBenchmark( const Config::ParameterContainer& parameters )
+{
+   const String & logFileName = parameters.getParameter< String >( "log-file" );
+   const String & outputMode = parameters.getParameter< String >( "output-mode" );
+   const String & precision = parameters.getParameter< String >( "precision" );
+   const unsigned sizeStepFactor = parameters.getParameter< unsigned >( "size-step-factor" );
+   const unsigned loops = parameters.getParameter< unsigned >( "loops" );
+   const unsigned verbose = parameters.getParameter< unsigned >( "verbose" );
+
+   Benchmark benchmark( loops, verbose );
+   Benchmark::MetadataMap metadata = getHardwareMetadata();
+   runBenchmark< Dimension >( parameters, benchmark, metadata );
+   
+   auto mode = std::ios::out;
+   if( outputMode == "append" )
+       mode |= std::ios::app;
+   std::ofstream logFile( logFileName.getString(), mode );   
+   
+   if( ! benchmark.save( logFile ) )
+   {
+      std::cerr << "Failed to write the benchmark results to file '" << parameters.getParameter< String >( "log-file" ) << "'." << std::endl;
+      return false;
+   }
+   return true;
+}
+
 int main( int argc, char* argv[] )
 {
    Config::ConfigDescription config;
@@ -59,44 +101,30 @@ int main( int argc, char* argv[] )
        ! Devices::Cuda::setup( parameters ) )
       return EXIT_FAILURE;
    
-   const String & logFileName = parameters.getParameter< String >( "log-file" );
-   const String & outputMode = parameters.getParameter< String >( "output-mode" );
-   const String & precision = parameters.getParameter< String >( "precision" );
-   // FIXME: getParameter< std::size_t >() does not work with parameters added with addEntry< int >(),
-   // which have a default value. The workaround below works for int values, but it is not possible
-   // to pass 64-bit integer values
-   // const std::size_t minSize = parameters.getParameter< std::size_t >( "min-size" );
-   // const std::size_t maxSize = parameters.getParameter< std::size_t >( "max-size" );
    const int dimension = parameters.getParameter< int >( "dimension" );
-   const std::size_t minSize = parameters.getParameter< std::size_t >( "min-size" );
-   const std::size_t maxSize = parameters.getParameter< std::size_t >( "max-size" );
-   const unsigned sizeStepFactor = parameters.getParameter< unsigned >( "size-step-factor" );
-   const unsigned loops = parameters.getParameter< unsigned >( "loops" );
-   const unsigned verbose = parameters.getParameter< unsigned >( "verbose" );
-   
    bool status( false );
    if( ! dimension )
    {
-      status = performBenchmark< 1 >( parameters );
-      status |= performBenchmark< 2 >( parameters );
-      status |= performBenchmark< 3 >( parameters );
+      status = setupBenchmark< 1 >( parameters );
+      status |= setupBenchmark< 2 >( parameters );
+      status |= setupBenchmark< 3 >( parameters );
    }
    else
    {
       switch( dimension )
       {
          case 1:
-            status = performBenchmark< 1 >( parameters );
+            status = setupBenchmark< 1 >( parameters );
             break;
          case 2:
-            status = performBenchmark< 2 >( parameters );
+            status = setupBenchmark< 2 >( parameters );
             break;
          case 3:
-            status = performBenchmark< 3 >( parameters );
+            status = setupBenchmark< 3 >( parameters );
             break;
       }
    }
    if( status == false )
       return EXIT_FAILURE;
-   return EXIT_SUCCES;
+   return EXIT_SUCCESS;
 }
