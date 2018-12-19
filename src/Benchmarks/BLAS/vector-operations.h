@@ -64,7 +64,7 @@ benchmarkVectorOperations( Benchmark & benchmark,
       deviceVector.setValue( 1.0 );
 #endif
       // A relatively harmless call to keep the compiler from realizing we
-      // don't actually do any useful work with the result of the reduciton.
+      // don't actually do any useful work with the result of the reduction.
       srand48(resultHost);
       resultHost = resultDevice = 0.0;
    };
