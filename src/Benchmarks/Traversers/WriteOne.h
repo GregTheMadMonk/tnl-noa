@@ -39,13 +39,13 @@ class WriteOne< 1, Device, Real, Index >
       static void run( std::size_t size )
       {
          Vector v( size );
-         auto writeOne = []( Index i, Real* data )
+         auto writeOne = [] __cuda_callable__ ( Index i, Real* data )
          {
             data[ i ] = 1.0;
          };
          
          
-         ParallelFor< Devices::Host >::exec( ( std::size_t ) 0, size, writeOne, v.getData() );
+         ParallelFor< Device >::exec( ( std::size_t ) 0, size, writeOne, v.getData() );
       }
 };
 
