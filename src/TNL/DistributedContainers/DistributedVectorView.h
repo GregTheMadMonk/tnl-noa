@@ -67,9 +67,11 @@ public:
    template< typename Vector >
    DistributedVectorView& operator+=( const Vector& vector );
 
-   DistributedVectorView& operator*=( RealType c );
+   template< typename Scalar >
+   DistributedVectorView& operator*=( Scalar c );
 
-   DistributedVectorView& operator/=( RealType c );
+   template< typename Scalar >
+   DistributedVectorView& operator/=( Scalar c );
 
    NonConstReal max() const;
 

@@ -55,9 +55,11 @@ class Vector
    template< typename VectorT >
    Vector& operator += ( const VectorT& vector );
 
-   Vector& operator *= ( const RealType& c );
+   template< typename Scalar >
+   Vector& operator *= ( const Scalar c );
 
-   Vector& operator /= ( const RealType& c );
+   template< typename Scalar >
+   Vector& operator /= ( const Scalar c );
 
    Real max() const;
 

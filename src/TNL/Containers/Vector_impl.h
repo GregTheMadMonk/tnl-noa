@@ -110,9 +110,10 @@ operator += ( const VectorT& vector )
 template< typename Real,
           typename Device,
           typename Index >
+   template< typename Scalar >
 Vector< Real, Device, Index >&
 Vector< Real, Device, Index >::
-operator *= ( const RealType& c )
+operator *= ( const Scalar c )
 {
    Algorithms::VectorOperations< Device >::vectorScalarMultiplication( *this, c );
    return *this;
@@ -121,9 +122,10 @@ operator *= ( const RealType& c )
 template< typename Real,
           typename Device,
           typename Index >
+   template< typename Scalar >
 Vector< Real, Device, Index >&
 Vector< Real, Device, Index >::
-operator /= ( const RealType& c )
+operator /= ( const Scalar c )
 {
    Algorithms::VectorOperations< Device >::vectorScalarMultiplication( *this, 1.0 / c );
    return *this;

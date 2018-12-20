@@ -157,9 +157,10 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Communicator >
+   template< typename Scalar >
 DistributedVector< Real, Device, Index, Communicator >&
 DistributedVector< Real, Device, Index, Communicator >::
-operator*=( RealType c )
+operator*=( Scalar c )
 {
    if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
       getLocalVectorView() *= c;
@@ -171,9 +172,10 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Communicator >
+   template< typename Scalar >
 DistributedVector< Real, Device, Index, Communicator >&
 DistributedVector< Real, Device, Index, Communicator >::
-operator/=( RealType c )
+operator/=( Scalar c )
 {
    if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
       getLocalVectorView() /= c;

@@ -69,9 +69,11 @@ public:
    template< typename Vector >
    DistributedVector& operator+=( const Vector& vector );
 
-   DistributedVector& operator*=( RealType c );
+   template< typename Scalar >
+   DistributedVector& operator*=( Scalar c );
 
-   DistributedVector& operator/=( RealType c );
+   template< typename Scalar >
+   DistributedVector& operator/=( Scalar c );
 
    Real max() const;
 

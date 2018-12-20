@@ -80,9 +80,11 @@ public:
    template< typename Vector >
    VectorView& operator+=( const Vector& vector );
 
-   VectorView& operator*=( RealType c );
+   template< typename Scalar >
+   VectorView& operator*=( Scalar c );
 
-   VectorView& operator/=( RealType c );
+   template< typename Scalar >
+   VectorView& operator/=( Scalar c );
 
    NonConstReal max() const;
 

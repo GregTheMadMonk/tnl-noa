@@ -78,9 +78,10 @@ operator+=( const Vector& vector )
 template< typename Real,
           typename Device,
           typename Index >
+   template< typename Scalar >
 VectorView< Real, Device, Index >&
 VectorView< Real, Device, Index >::
-operator*=( RealType c )
+operator*=( Scalar c )
 {
    Algorithms::VectorOperations< Device >::vectorScalarMultiplication( *this, c );
    return *this;
@@ -89,9 +90,10 @@ operator*=( RealType c )
 template< typename Real,
           typename Device,
           typename Index >
+   template< typename Scalar >
 VectorView< Real, Device, Index >&
 VectorView< Real, Device, Index >::
-operator/=( RealType c )
+operator/=( Scalar c )
 {
    Algorithms::VectorOperations< Device >::vectorScalarMultiplication( *this, 1.0 / c );
    return *this;
