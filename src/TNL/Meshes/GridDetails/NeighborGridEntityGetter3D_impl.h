@@ -163,7 +163,9 @@ class NeighborGridEntityGetter<
                    << " entity.getMesh().getDimensions() = " << entity.getMesh().getDimensions()
                    << " EntityDimension = " << EntityDimension );
 #ifndef HAVE_CUDA // TODO: fix this to work with CUDA
-         if( ( stepX != 0 && stepY != 0 && stepZ != 0 ) ||
+         if( ( stepX != 0 && stepY != 0 ) ||
+             ( stepX != 0 && stepZ != 0 ) ||
+             ( stepY != 0 && stepZ != 0 ) ||
              ( stepX < -stencilSize || stepX > stencilSize ||
                stepY < -stencilSize || stepY > stencilSize ||
                stepZ < -stencilSize || stepZ > stencilSize ) )
