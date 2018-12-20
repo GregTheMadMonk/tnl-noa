@@ -102,7 +102,7 @@ getType()
 {
    return String( "Functions::MeshFunction< " ) +
                      Mesh::getType() + ", " +
-                     String( MeshEntityDimension ) + ", " +
+                     convertToString( MeshEntityDimension ) + ", " +
                     TNL::getType< Real >() +
                      " >";
 };
@@ -126,7 +126,7 @@ getSerializationType()
 {
    return String( "Functions::MeshFunction< " ) +
                      Mesh::getSerializationType() + ", " +
-                     String( MeshEntityDimension ) + ", " +
+                     convertToString( MeshEntityDimension ) + ", " +
                     TNL::getType< Real >() +
                      " >";
 };

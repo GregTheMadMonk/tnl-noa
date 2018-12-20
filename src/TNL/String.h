@@ -67,19 +67,6 @@ class String
       /// @param str Another string object, whose value is copied.
       String( const String& str );
 
-      /// \brief Converts anything to a string.
-      ///
-      /// This function converts any type of value into type string.
-      /// @tparam T is a type of a value to be converted
-      /// @param value Word of any type (e.g. int, bool, double,...).
-      template< typename T >
-      explicit
-      String( T value )
-         : string( nullptr ), length( 0 )
-      {
-         setString( convertToString( value ).getString() );
-      }
-
       /// \brief Destructor.
       ~String();
 
@@ -275,8 +262,6 @@ class String
       /// Reads one line from given stream and returns either the line or boolean
       /// expression based on the success in reading the line.
       bool getLine( std::istream& stream );
-
-      friend std::ostream& operator<<( std::ostream& stream, const String& str );
 
    protected:
       

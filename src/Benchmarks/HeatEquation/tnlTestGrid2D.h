@@ -214,11 +214,11 @@ template< typename Real,
           typename Index >
 String Meshes::Grid< 2, Real, Device, Index > :: getType()
 {
-   return TNL::String( "Meshes::Grid< " ) +
-          TNL::String( getMeshDimension() ) + ", " +
-          TNL::String( ::getType< RealType >() ) + ", " +
-          TNL::String( Device :: getDeviceType() ) + ", " +
-          TNL::String( ::getType< IndexType >() ) + " >";
+   return String( "Meshes::Grid< " ) +
+          convertToString( getMeshDimension() ) + ", " +
+          String( ::getType< RealType >() ) + ", " +
+          String( Device :: getDeviceType() ) + ", " +
+          String( ::getType< IndexType >() ) + " >";
 }
 
 template< typename Real,
@@ -979,11 +979,11 @@ template< typename Real,
           typename Index >
 String Meshes::Grid< 2, Real, Device, Index > :: getType()
 {
-   return TNL::String( "Meshes::Grid< " ) +
-          TNL::String( getMeshDimension() ) + ", " +
-          TNL::String( ::getType< RealType >() ) + ", " +
-          TNL::String( Device :: getDeviceType() ) + ", " +
-          TNL::String( ::getType< IndexType >() ) + " >";
+   return String( "Meshes::Grid< " ) +
+          convertToString( getMeshDimension() ) + ", " +
+          String( ::getType< RealType >() ) + ", " +
+          String( Device :: getDeviceType() ) + ", " +
+          String( ::getType< IndexType >() ) + " >";
 }
 
 template< typename Real,

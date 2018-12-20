@@ -89,7 +89,7 @@ setup( const Config::ParameterContainer& parameters,
             return false;
          Containers::StaticVector< Dimension, RealType > velocity;
          for( int i = 0; i < Dimension; i++ )
-            velocity[ i ] = parameters.getParameter< double >( "velocity-field-" + String( i ) + "-constant" );
+            velocity[ i ] = parameters.getParameter< double >( "velocity-field-" + convertToString( i ) + "-constant" );
 
          Functions::MeshFunctionEvaluator< MeshFunction, ExactSolutionType > evaluator;
          RealType time( 0.0 );

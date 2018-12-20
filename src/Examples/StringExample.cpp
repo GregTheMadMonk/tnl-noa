@@ -12,7 +12,7 @@ int main( int argc, char* argv[] )
     String str1;
     String str2( "xxstringxxx", 2, 3 );
     String str3( str2 );                    // copy constructor
-    String str4( 28.4 );                    // converts to string
+    String str4 = convertToString( 28.4 );  // converts to string
 
     cout << "str1:" << str1 << endl;
     cout << "str2:" << str2 << endl;
@@ -93,7 +93,7 @@ int main( int argc, char* argv[] )
     cout << "h:" << h << endl;
 
     String i;
-    i = 'a' + 'b';
+    i = convertToString( 'a' ) + 'b';
     cout << "i:" << i << endl;
 
     String letter1( "u" );

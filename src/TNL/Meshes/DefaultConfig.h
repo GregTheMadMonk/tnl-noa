@@ -50,7 +50,7 @@ struct DefaultConfig
    {
       return String( "Meshes::DefaultConfig< " ) +
              Cell::getType() + ", " +
-             String( WorldDimension ) + ", " +
+             convertToString( WorldDimension ) + ", " +
              TNL::getType< Real >() + ", " +
              TNL::getType< GlobalIndex >() + ", " +
              TNL::getType< LocalIndex >() + ", " +

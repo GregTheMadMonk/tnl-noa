@@ -188,7 +188,7 @@ benchmarkIterativeSolvers( Benchmark& benchmark,
          benchmark.setOperation("BiCGstab (Jacobi)");
          for( int ell = 1; ell <= ell_max; ell++ ) {
             parameters.template setParameter< int >( "bicgstab-ell", ell );
-            benchmark.setOperation("BiCGstab(" + String(ell) + ") (Jacobi)");
+            benchmark.setOperation("BiCGstab(" + convertToString(ell) + ") (Jacobi)");
             benchmarkSolver< BICGStabL, Diagonal >( benchmark, parameters, matrixPointer, x0, b );
             #ifdef HAVE_CUDA
             benchmarkSolver< BICGStabL, Diagonal >( benchmark, parameters, cudaMatrixPointer, cuda_x0, cuda_b );
@@ -244,7 +244,7 @@ benchmarkIterativeSolvers( Benchmark& benchmark,
       if( solvers.count( "bicgstab-ell" ) ) {
          for( int ell = 1; ell <= ell_max; ell++ ) {
             parameters.template setParameter< int >( "bicgstab-ell", ell );
-            benchmark.setOperation("BiCGstab(" + String(ell) + ") (ILU0)");
+            benchmark.setOperation("BiCGstab(" + convertToString(ell) + ") (ILU0)");
             benchmarkSolver< BICGStabL, ILU0 >( benchmark, parameters, matrixPointer, x0, b );
             #ifdef HAVE_CUDA
             benchmarkSolver< BICGStabL, ILU0 >( benchmark, parameters, cudaMatrixPointer, cuda_x0, cuda_b );
@@ -300,7 +300,7 @@ benchmarkIterativeSolvers( Benchmark& benchmark,
       if( solvers.count( "bicgstab-ell" ) ) {
          for( int ell = 1; ell <= ell_max; ell++ ) {
             parameters.template setParameter< int >( "bicgstab-ell", ell );
-            benchmark.setOperation("BiCGstab(" + String(ell) + ") (ILUT)");
+            benchmark.setOperation("BiCGstab(" + convertToString(ell) + ") (ILUT)");
             benchmarkSolver< BICGStabL, ILUT >( benchmark, parameters, matrixPointer, x0, b );
             #ifdef HAVE_CUDA
             benchmarkSolver< BICGStabL, ILUT >( benchmark, parameters, cudaMatrixPointer, cuda_x0, cuda_b );
@@ -346,12 +346,12 @@ struct LinearSolversBenchmark
       benchmark.newBenchmark( name, metadata );
       benchmark.setMetadataColumns( Benchmark::MetadataColumns({
          // TODO: strip the device
-//         {"matrix type", matrixPointer->getType()},
-         {"rows", String( matrixPointer->getRows() ) },
-         {"columns", String( matrixPointer->getColumns() ) },
+//         { "matrix type", matrixPointer->getType() },
+         { "rows", convertToString( matrixPointer->getRows() ) },
+         { "columns", convertToString( matrixPointer->getColumns() ) },
          // FIXME: getMaxRowLengths() returns 0 for matrices loaded from file
-//         {"max elements per row", matrixPointer->getMaxRowLength()},
-         {"max elements per row", String( maxRowLength ) },
+//         { "max elements per row", matrixPointer->getMaxRowLength() },
+         { "max elements per row", convertToString( maxRowLength ) },
       } ));
 
       const bool reorder = parameters.getParameter< bool >( "reorder-dofs" );

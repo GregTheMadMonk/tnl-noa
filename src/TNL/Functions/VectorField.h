@@ -36,7 +36,7 @@ class VectorField
                                const String& prefix = "" )
       {
          for( int i = 0; i < Size; i++ )
-            FunctionType::configSetup( config, prefix + String( i ) + "-" );
+            FunctionType::configSetup( config, prefix + convertToString( i ) + "-" );
       }
 
       template< typename MeshPointer >
@@ -45,7 +45,7 @@ class VectorField
                   const String& prefix = "" )
       {
          for( int i = 0; i < Size; i++ )
-            if( ! vectorField[ i ].setup( parameters, prefix + String( i ) + "-" ) )
+            if( ! vectorField[ i ].setup( parameters, prefix + convertToString( i ) + "-" ) )
             {
                std::cerr << "Unable to setup " << i << "-th coordinate of the vector field." << std::endl;
                return false;
@@ -103,7 +103,7 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, Real > >
                                const String& prefix = "" )
       {
          for( int i = 0; i < Size; i++ )
-            FunctionType::configSetup( config, prefix + String( i ) + "-" );
+            FunctionType::configSetup( config, prefix + convertToString( i ) + "-" );
       }
       
       VectorField() {};
@@ -117,7 +117,7 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, Real > >
       static String getType()
       {
          return String( "Functions::VectorField< " ) +
-                  String( Size) + ", " +
+                  convertToString( Size) + ", " +
                  FunctionType::getType() +
                   " >";
       }
@@ -130,7 +130,7 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, Real > >
       static String getSerializationType()
       {
          return String( "Functions::VectorField< " ) +
-                  String( Size) + ", " +
+                  convertToString( Size) + ", " +
                  FunctionType::getSerializationType() +
                   " >";         
       }
@@ -164,7 +164,7 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, Real > >
                   const String& prefix = "" )
       {
          for( int i = 0; i < Size; i++ )
-            if( ! vectorField[ i ].setup( meshPointer, parameters, prefix + String( i ) + "-" ) )
+            if( ! vectorField[ i ].setup( meshPointer, parameters, prefix + convertToString( i ) + "-" ) )
             {
                std::cerr << "Unable to setup " << i << "-th coordinate of the vector field." << std::endl;
                return false;

@@ -198,8 +198,8 @@ writeDeviceInfo( Logger& logger )
 //      logger.writeParameter< int >( "Device no.", i, 1 );
       int i = getActiveDevice();
       logger.writeParameter< String >( "Name", getDeviceName( i ), 2 );
-      String deviceArch = String( getArchitectureMajor( i ) ) + "." +
-                              String( getArchitectureMinor( i ) );
+      String deviceArch = convertToString( getArchitectureMajor( i ) ) + "." +
+                          convertToString( getArchitectureMinor( i ) );
       logger.writeParameter< String >( "Architecture", deviceArch, 2 );
       logger.writeParameter< int >( "CUDA cores", getCudaCores( i ), 2 );
       double clockRate = ( double ) getClockRate( i ) / 1.0e3;

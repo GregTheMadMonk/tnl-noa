@@ -49,7 +49,7 @@ StaticVector< Size, Real >::setup( const Config::ParameterContainer& parameters,
                                    const String& prefix )
 {
    for( int i = 0; i < Size; i++ )
-      if( ! parameters.template getParameter< double >( prefix + String( i ), this->data[ i ] ) )
+      if( ! parameters.template getParameter< double >( prefix + convertToString( i ), this->data[ i ] ) )
          return false;
    return true;
 }
@@ -58,7 +58,7 @@ template< int Size, typename Real >
 String StaticVector< Size, Real >::getType()
 {
    return String( "Containers::StaticVector< " ) +
-          String( Size ) +
+          convertToString( Size ) +
           String( ", " ) +
           TNL::getType< Real >() +
           String( " >" );
