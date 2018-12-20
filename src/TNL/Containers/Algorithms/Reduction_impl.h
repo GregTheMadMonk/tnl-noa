@@ -213,9 +213,9 @@ reduce( Operation& operation,
          }
 
          // local reduction of unrolled results
-         operation.commonReduction( r[ 0 ], r[ 1 ] );
          operation.commonReduction( r[ 0 ], r[ 2 ] );
-         operation.commonReduction( r[ 0 ], r[ 3 ] );
+         operation.commonReduction( r[ 1 ], r[ 3 ] );
+         operation.commonReduction( r[ 0 ], r[ 1 ] );
 
          // inter-thread reduction of local results
          #pragma omp critical
@@ -250,9 +250,9 @@ reduce( Operation& operation,
             operation.firstReduction( r[ 0 ], i, input1, input2 );
 
          // reduction of unrolled results
-         operation.commonReduction( r[ 0 ], r[ 1 ] );
          operation.commonReduction( r[ 0 ], r[ 2 ] );
-         operation.commonReduction( r[ 0 ], r[ 3 ] );
+         operation.commonReduction( r[ 1 ], r[ 3 ] );
+         operation.commonReduction( r[ 0 ], r[ 1 ] );
 
          return r[ 0 ];
       }
