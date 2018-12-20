@@ -189,7 +189,10 @@ reduce( Operation& operation,
 #pragma omp parallel
       {
          // initialize array for thread-local results
-         ResultType r[ 4 ] = { operation.initialValue() };
+         ResultType r[ 4 ] = { operation.initialValue(),
+                               operation.initialValue(),
+                               operation.initialValue(),
+                               operation.initialValue() };
 
          #pragma omp for nowait
          for( int b = 0; b < blocks; b++ ) {
@@ -226,7 +229,10 @@ reduce( Operation& operation,
 #endif
       if( blocks > 1 ) {
          // initialize array for unrolled results
-         ResultType r[ 4 ] = { operation.initialValue() };
+         ResultType r[ 4 ] = { operation.initialValue(),
+                               operation.initialValue(),
+                               operation.initialValue(),
+                               operation.initialValue() };
 
          // main reduction (explicitly unrolled loop)
          for( int b = 0; b < blocks; b++ ) {
