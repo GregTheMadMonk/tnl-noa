@@ -13,7 +13,7 @@
 #pragma once
 
 #include "../Benchmarks.h"
-#include "WriteOne.h"
+
 
 #include <TNL/Containers/Vector.h>
 
@@ -29,24 +29,6 @@ class benchmarkTraversingFullGrid
 
       static void run ( Benchmark& benchmark, std::size_t size )
       {
-         auto reset = [&]()
-         {};
-         
-         auto testHost = [&] ()
-         {
-            WriteOne< Dimension, Devices::Host, Real, Index >::run( size );
-         }; 
-         
-         auto testCuda = [&] ()
-         {
-            WriteOne< Dimension, Devices::Cuda, Real, Index >::run( size );
-         }; 
-         
-         benchmark.setOperation( "writeOne", size * sizeof( Real ) );
-         benchmark.time( reset, "CPU", testHost );
-#ifdef HAVE_CUDA
-         benchmark.time( reset, "GPU", testCuda );
-#endif
 
       }
 };
