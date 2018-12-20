@@ -26,6 +26,7 @@
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/SystemInfo.h>
 #include <TNL/Devices/CudaDeviceInfo.h>
+#include <TNL/Config/ConfigDescription.h>
 #include <TNL/Communicators/MpiCommunicator.h>
 
 namespace TNL {
@@ -40,6 +41,7 @@ double
 timeFunction( ComputeFunction compute,
               ResetFunction reset,
               int loops,
+              int minTime, 
               Monitor && monitor = Monitor() )
 {
    // the timer is constructed zero-initialized and stopped
@@ -52,7 +54,11 @@ timeFunction( ComputeFunction compute,
    reset();
    compute();
 
-   for(int i = 0; i < loops; ++i) {
+   int i;
+   for( i = 0;
+        i < loops && ( ! minTime || timer.getRealTime() < ( double ) minTime );
+        ++i) 
+   {
       // abuse the monitor's "time" for loops
       monitor.setTime( i + 1 );
 
@@ -71,7 +77,7 @@ timeFunction( ComputeFunction compute,
       timer.stop();
    }
 
-   return timer.getRealTime() / loops;
+   return timer.getRealTime() / ( double ) i;
 }
 
 
@@ -88,6 +94,12 @@ public:
    Logging( bool verbose = true )
    : verbose(verbose)
    {}
+
+   void
+   setVerbose( bool verbose)
+   {
+      this->verbose = verbose;
+   }
 
    void
    writeTitle( const String & title )
@@ -309,18 +321,36 @@ public:
    using Logging::MetadataElement;
    using Logging::MetadataMap;
    using Logging::MetadataColumns;
-
+   
    Benchmark( int loops = 10,
               bool verbose = true )
    : Logging(verbose), loops(loops)
    {}
+   
+   static void configSetup( Config::ConfigDescription& config )
+   {
+      config.addEntry< int >( "loops", "Number of iterations for every computation.", 10 );
+      config.addEntry< int >( "min-time", "Minimal real time in seconds for every computation.", 1 );
+   }
 
+   void setup( const Config::ParameterContainer& parameters )
+   {
+      this->loops = parameters.getParameter< unsigned >( "loops" );
+      this->minTime = parameters.getParameter< unsigned >( "min-time" );
+      const unsigned verbose = parameters.getParameter< unsigned >( "verbose" );
+      Logging::setVerbose( verbose );
+   }
    // TODO: ensure that this is not called in the middle of the benchmark
    // (or just remove it completely?)
    void
    setLoops( int loops )
    {
       this->loops = loops;
+   }
+   
+   void setMinTime( int minTime )
+   {
+      this->minTime = minTime;
    }
 
    // Marks the start of a new benchmark
@@ -424,10 +454,10 @@ public:
          if( verbose ) {
             // run the monitor main loop
             Solvers::SolverMonitorThread monitor_thread( monitor );
-            result.time = timeFunction( compute, reset, loops, monitor );
+            result.time = timeFunction( compute, reset, loops, minTime, monitor );
          }
          else {
-            result.time = timeFunction( compute, reset, loops, monitor );
+            result.time = timeFunction( compute, reset, minTime, loops, monitor );
          }
       }
       catch ( const std::exception& e ) {
@@ -477,7 +507,7 @@ public:
    }
 
 protected:
-   int loops;
+   int loops, minTime = 1;
    double datasetSize = 0.0;
    double baseTime = 0.0;
    Solvers::IterativeSolverMonitor< double, int > monitor;
