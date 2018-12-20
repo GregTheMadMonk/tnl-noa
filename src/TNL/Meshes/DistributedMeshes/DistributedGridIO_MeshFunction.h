@@ -57,7 +57,7 @@ class DistributedGridIO<Functions::MeshFunction<MeshType>,LocalCopy,Device>
         newMesh->setOrigin(origin+TNL::Containers::Scale(spaceSteps,localBegin));
         
         File meshFile;
-        if( meshFile.open( fileName+String("-mesh-")+distrGrid->printProcessCoords()+String(".tnl"),IOMode::write) )
+        if( ! meshFile.open( fileName+String("-mesh-")+distrGrid->printProcessCoords()+String(".tnl"),IOMode::write) )
         {
            std::cerr << "Not able to open mesh file to write" << std::endl;
            return false;
