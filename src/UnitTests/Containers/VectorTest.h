@@ -513,6 +513,13 @@ TYPED_TEST( VectorTest, addVector )
    setLinearSequence( y );
    x_view.addVector( y_view, 3.0, 1.0 );
    EXPECT_EQ( x, expected2 );
+
+   // multiplication by floating-point scalars which produces integer values
+   setConstantSequence( x, 2 );
+   setConstantSequence( y, 4 );
+   x.addVector( y, 2.5, -1.5 );
+   EXPECT_EQ( x.min(), 7 );
+   EXPECT_EQ( x.max(), 7 );
 }
 
 TYPED_TEST( VectorTest, addVectors )
@@ -553,6 +560,14 @@ TYPED_TEST( VectorTest, addVectors )
    setConstantSequence( z, 2 );
    x_view.addVectors( y_view, 3.0, z_view, 1.0, 2.0 );
    EXPECT_EQ( x, expected2 );
+
+   // multiplication by floating-point scalars which produces integer values
+   setConstantSequence( x, 2 );
+   setConstantSequence( y, 4 );
+   setConstantSequence( z, 6 );
+   x.addVectors( y, 2.5, z, -1.5, -1.5 );
+   EXPECT_EQ( x.min(), -2 );
+   EXPECT_EQ( x.max(), -2 );
 }
 
 TYPED_TEST( VectorTest, prefixSum )

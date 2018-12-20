@@ -44,9 +44,10 @@ class Vector
    void addElement( const IndexType i,
                     const RealType& value );
 
+   template< typename Scalar >
    void addElement( const IndexType i,
                     const RealType& value,
-                    const RealType& thisElementMultiplicator );
+                    const Scalar thisElementMultiplicator );
 
    template< typename VectorT >
    Vector& operator -= ( const VectorT& vector );
@@ -66,8 +67,8 @@ class Vector
 
    Real absMin() const;
 
-   template< typename ResultType = RealType, typename Real_ >
-   ResultType lpNorm( const Real_ p ) const;
+   template< typename ResultType = RealType, typename Scalar >
+   ResultType lpNorm( const Scalar p ) const;
 
    template< typename ResultType = RealType >
    ResultType sum() const;
@@ -84,31 +85,32 @@ class Vector
    template< typename Vector >
    Real differenceAbsMin( const Vector& v ) const;
 
-   template< typename ResultType = RealType, typename Vector, typename Real_ >
-   ResultType differenceLpNorm( const Vector& v, const Real_ p ) const;
+   template< typename ResultType = RealType, typename Vector, typename Scalar >
+   ResultType differenceLpNorm( const Vector& v, const Scalar p ) const;
 
    template< typename ResultType = RealType, typename Vector >
    ResultType differenceSum( const Vector& v ) const;
 
-   void scalarMultiplication( const Real& alpha );
+   template< typename Scalar >
+   void scalarMultiplication( const Scalar alpha );
 
    //! Computes scalar dot product
    template< typename Vector >
    Real scalarProduct( const Vector& v ) const;
 
    //! Computes this = thisMultiplicator * this + multiplicator * v.
-   template< typename Vector >
+   template< typename Vector, typename Scalar1 = Real, typename Scalar2 = Real >
    void addVector( const Vector& v,
-                   const Real& multiplicator = 1.0,
-                   const Real& thisMultiplicator = 1.0 );
+                   const Scalar1 multiplicator = 1.0,
+                   const Scalar2 thisMultiplicator = 1.0 );
 
    //! Computes this = thisMultiplicator * this + multiplicator1 * v1 + multiplicator2 * v2.
-   template< typename Vector >
-   void addVectors( const Vector& v1,
-                    const Real& multiplicator1,
-                    const Vector& v2,
-                    const Real& multiplicator2,
-                    const Real& thisMultiplicator = 1.0 );
+   template< typename Vector1, typename Vector2, typename Scalar1, typename Scalar2, typename Scalar3 = Real >
+   void addVectors( const Vector1& v1,
+                    const Scalar1 multiplicator1,
+                    const Vector2& v2,
+                    const Scalar2 multiplicator2,
+                    const Scalar3 thisMultiplicator = 1.0 );
 
    void computePrefixSum();
 

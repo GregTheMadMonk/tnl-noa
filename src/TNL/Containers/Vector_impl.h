@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#pragma once 
+#pragma once
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/Algorithms/VectorOperations.h>
@@ -27,7 +27,7 @@ getType()
                   TNL::getType< Real >() + ", " +
                   Device::getDeviceType() + ", " +
                   TNL::getType< Index >() + " >";
-};
+}
 
 template< typename Real,
           typename Device,
@@ -37,7 +37,7 @@ Vector< Real, Device, Index >::
 getTypeVirtual() const
 {
    return this->getType();
-};
+}
 
 template< typename Real,
           typename Device,
@@ -47,7 +47,7 @@ Vector< Real, Device, Index >::
 getSerializationType()
 {
    return HostType::getType();
-};
+}
 
 template< typename Real,
           typename Device,
@@ -57,7 +57,7 @@ Vector< Real, Device, Index >::
 getSerializationTypeVirtual() const
 {
    return this->getSerializationType();
-};
+}
 
 template< typename Real,
           typename Device,
@@ -73,11 +73,12 @@ addElement( const IndexType i,
 template< typename Real,
           typename Device,
           typename Index >
+   template< typename Scalar >
 void
 Vector< Real, Device, Index >::
 addElement( const IndexType i,
             const RealType& value,
-            const RealType& thisElementMultiplicator )
+            const Scalar thisElementMultiplicator )
 {
    Algorithms::VectorOperations< Device >::addElement( *this, i, value, thisElementMultiplicator );
 }
@@ -165,8 +166,8 @@ Real Vector< Real, Device, Index >::absMin() const
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename ResultType, typename Real_ >
-ResultType Vector< Real, Device, Index >::lpNorm( const Real_ p ) const
+   template< typename ResultType, typename Scalar >
+ResultType Vector< Real, Device, Index >::lpNorm( const Scalar p ) const
 {
    return Algorithms::VectorOperations< Device >::template getVectorLpNorm< Vector, ResultType >( *this, p );
 }
@@ -223,8 +224,8 @@ Real Vector< Real, Device, Index >::differenceAbsMin( const VectorT& v ) const
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename ResultType, typename VectorT, typename Real_ >
-ResultType Vector< Real, Device, Index >::differenceLpNorm( const VectorT& v, const Real_ p ) const
+   template< typename ResultType, typename VectorT, typename Scalar >
+ResultType Vector< Real, Device, Index >::differenceLpNorm( const VectorT& v, const Scalar p ) const
 {
    return Algorithms::VectorOperations< Device >::template getVectorDifferenceLpNorm< Vector, VectorT, ResultType >( *this, v, p );
 }
@@ -243,7 +244,8 @@ ResultType Vector< Real, Device, Index >::differenceSum( const VectorT& v ) cons
 template< typename Real,
           typename Device,
           typename Index >
-void Vector< Real, Device, Index >::scalarMultiplication( const Real& alpha )
+   template< typename Scalar >
+void Vector< Real, Device, Index >::scalarMultiplication( const Scalar alpha )
 {
    Algorithms::VectorOperations< Device >::vectorScalarMultiplication( *this, alpha );
 }
@@ -252,7 +254,7 @@ void Vector< Real, Device, Index >::scalarMultiplication( const Real& alpha )
 template< typename Real,
           typename Device,
           typename Index >
-template< typename VectorT >
+   template< typename VectorT >
 Real Vector< Real, Device, Index >::scalarProduct( const VectorT& v ) const
 {
    return Algorithms::VectorOperations< Device >::getScalarProduct( *this, v );
@@ -261,12 +263,12 @@ Real Vector< Real, Device, Index >::scalarProduct( const VectorT& v ) const
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename VectorT >
+   template< typename VectorT, typename Scalar1, typename Scalar2 >
 void
 Vector< Real, Device, Index >::
 addVector( const VectorT& x,
-           const Real& multiplicator,
-           const Real& thisMultiplicator )
+           const Scalar1 multiplicator,
+           const Scalar2 thisMultiplicator )
 {
    Algorithms::VectorOperations< Device >::addVector( *this, x, multiplicator, thisMultiplicator );
 }
@@ -274,14 +276,14 @@ addVector( const VectorT& x,
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename VectorT >
+   template< typename Vector1, typename Vector2, typename Scalar1, typename Scalar2, typename Scalar3 >
 void
 Vector< Real, Device, Index >::
-addVectors( const VectorT& v1,
-            const Real& multiplicator1,
-            const VectorT& v2,
-            const Real& multiplicator2,
-            const Real& thisMultiplicator )
+addVectors( const Vector1& v1,
+            const Scalar1 multiplicator1,
+            const Vector2& v2,
+            const Scalar2 multiplicator2,
+            const Scalar3 thisMultiplicator )
 {
    Algorithms::VectorOperations< Device >::addVectors( *this, v1, multiplicator1, v2, multiplicator2, thisMultiplicator );
 }

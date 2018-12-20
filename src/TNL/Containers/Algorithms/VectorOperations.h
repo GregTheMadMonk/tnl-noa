@@ -30,11 +30,11 @@ public:
                            const typename Vector::IndexType i,
                            const typename Vector::RealType& value );
 
-   template< typename Vector >
+   template< typename Vector, typename Scalar >
    static void addElement( Vector& v,
                            const typename Vector::IndexType i,
                            const typename Vector::RealType& value,
-                           const typename Vector::RealType& thisElementMultiplicator );
+                           const Scalar thisElementMultiplicator );
 
    template< typename Vector, typename ResultType = typename Vector::RealType >
    static ResultType getVectorMax( const Vector& v );
@@ -54,9 +54,8 @@ public:
    template< typename Vector, typename ResultType = typename Vector::RealType >
    static ResultType getVectorL2Norm( const Vector& v );
 
-   template< typename Vector, typename ResultType = typename Vector::RealType, typename Real_ >
-   static ResultType getVectorLpNorm( const Vector& v,
-                                      const Real_ p );
+   template< typename Vector, typename ResultType = typename Vector::RealType, typename Scalar >
+   static ResultType getVectorLpNorm( const Vector& v, const Scalar p );
 
    template< typename Vector, typename ResultType = typename Vector::RealType >
    static ResultType getVectorSum( const Vector& v );
@@ -79,32 +78,31 @@ public:
    template< typename Vector1, typename Vector2, typename ResultType = typename Vector1::RealType >
    static ResultType getVectorDifferenceL2Norm( const Vector1& v1, const Vector2& v2 );
 
-   template< typename Vector1, typename Vector2, typename ResultType = typename Vector1::RealType, typename Real_ >
-   static ResultType getVectorDifferenceLpNorm( const Vector1& v1, const Vector2& v2, const Real_ p );
+   template< typename Vector1, typename Vector2, typename ResultType = typename Vector1::RealType, typename Scalar >
+   static ResultType getVectorDifferenceLpNorm( const Vector1& v1, const Vector2& v2, const Scalar p );
 
    template< typename Vector1, typename Vector2, typename ResultType = typename Vector1::RealType >
    static ResultType getVectorDifferenceSum( const Vector1& v1, const Vector2& v2 );
 
-   template< typename Vector >
-   static void vectorScalarMultiplication( Vector& v,
-                                           const typename Vector::RealType& alpha );
+   template< typename Vector, typename Scalar >
+   static void vectorScalarMultiplication( Vector& v, Scalar alpha );
 
    template< typename Vector1, typename Vector2, typename ResultType = typename Vector1::RealType >
    static ResultType getScalarProduct( const Vector1& v1, const Vector2& v2 );
 
-   template< typename Vector1, typename Vector2 >
+   template< typename Vector1, typename Vector2, typename Scalar1, typename Scalar2 >
    static void addVector( Vector1& y,
                           const Vector2& x,
-                          const typename Vector2::RealType& alpha,
-                          const typename Vector1::RealType& thisMultiplicator = 1.0 );
+                          const Scalar1 alpha,
+                          const Scalar2 thisMultiplicator = 1.0 );
 
-   template< typename Vector1, typename Vector2, typename Vector3 >
+   template< typename Vector1, typename Vector2, typename Vector3, typename Scalar1, typename Scalar2, typename Scalar3 >
    static void addVectors( Vector1& v,
                            const Vector2& v1,
-                           const typename Vector2::RealType& multiplicator1,
+                           const Scalar1 multiplicator1,
                            const Vector3& v2,
-                           const typename Vector3::RealType& multiplicator2,
-                           const typename Vector1::RealType& thisMultiplicator = 1.0 );
+                           const Scalar2 multiplicator2,
+                           const Scalar3 thisMultiplicator = 1.0 );
 
    template< typename Vector >
    static void computePrefixSum( Vector& v,
@@ -126,11 +124,11 @@ public:
                            const typename Vector::IndexType i,
                            const typename Vector::RealType& value );
 
-   template< typename Vector >
+   template< typename Vector, typename Scalar >
    static void addElement( Vector& v,
                            const typename Vector::IndexType i,
                            const typename Vector::RealType& value,
-                           const typename Vector::RealType& thisElementMultiplicator );
+                           const Scalar thisElementMultiplicator );
 
    template< typename Vector, typename ResultType = typename Vector::RealType >
    static ResultType getVectorMax( const Vector& v );
@@ -150,9 +148,8 @@ public:
    template< typename Vector, typename ResultType = typename Vector::RealType >
    static ResultType getVectorL2Norm( const Vector& v );
 
-   template< typename Vector, typename ResultType = typename Vector::RealType, typename Real_ >
-   static ResultType getVectorLpNorm( const Vector& v,
-                                      const Real_ p );
+   template< typename Vector, typename ResultType = typename Vector::RealType, typename Scalar >
+   static ResultType getVectorLpNorm( const Vector& v, const Scalar p );
 
    template< typename Vector, typename ResultType = typename Vector::RealType >
    static ResultType getVectorSum( const Vector& v );
@@ -175,32 +172,31 @@ public:
    template< typename Vector1, typename Vector2, typename ResultType = typename Vector1::RealType >
    static ResultType getVectorDifferenceL2Norm( const Vector1& v1, const Vector2& v2 );
 
-   template< typename Vector1, typename Vector2, typename ResultType = typename Vector1::RealType, typename Real_ >
-   static ResultType getVectorDifferenceLpNorm( const Vector1& v1, const Vector2& v2, const Real_ p );
+   template< typename Vector1, typename Vector2, typename ResultType = typename Vector1::RealType, typename Scalar >
+   static ResultType getVectorDifferenceLpNorm( const Vector1& v1, const Vector2& v2, const Scalar p );
 
    template< typename Vector1, typename Vector2, typename ResultType = typename Vector1::RealType >
    static ResultType getVectorDifferenceSum( const Vector1& v1, const Vector2& v2 );
 
-   template< typename Vector >
-   static void vectorScalarMultiplication( Vector& v,
-                                           const typename Vector::RealType& alpha );
+   template< typename Vector, typename Scalar >
+   static void vectorScalarMultiplication( Vector& v, const Scalar alpha );
 
    template< typename Vector1, typename Vector2, typename ResultType = typename Vector1::RealType >
    static ResultType getScalarProduct( const Vector1& v1, const Vector2& v2 );
 
-   template< typename Vector1, typename Vector2 >
+   template< typename Vector1, typename Vector2, typename Scalar1, typename Scalar2 >
    static void addVector( Vector1& y,
                           const Vector2& x,
-                          const typename Vector2::RealType& alpha,
-                          const typename Vector1::RealType& thisMultiplicator = 1.0 );
+                          const Scalar1 alpha,
+                          const Scalar2 thisMultiplicator = 1.0 );
 
-   template< typename Vector1, typename Vector2, typename Vector3 >
+   template< typename Vector1, typename Vector2, typename Vector3, typename Scalar1, typename Scalar2, typename Scalar3 >
    static void addVectors( Vector1& v,
                            const Vector2& v1,
-                           const typename Vector2::RealType& multiplicator1,
+                           const Scalar1 multiplicator1,
                            const Vector3& v2,
-                           const typename Vector3::RealType& multiplicator2,
-                           const typename Vector1::RealType& thisMultiplicator = 1.0 );
+                           const Scalar2 multiplicator2,
+                           const Scalar3 thisMultiplicator = 1.0 );
 
    template< typename Vector >
    static void computePrefixSum( Vector& v,
@@ -223,11 +219,11 @@ public:
                            const typename Vector::IndexType i,
                            const typename Vector::RealType& value );
 
-   template< typename Vector >
+   template< typename Vector, typename Scalar >
    static void addElement( Vector& v,
                            const typename Vector::IndexType i,
                            const typename Vector::RealType& value,
-                           const typename Vector::RealType& thisElementMultiplicator );
+                           const Scalar thisElementMultiplicator );
 
    template< typename Vector, typename ResultType = typename Vector::RealType >
    static ResultType getVectorMax( const Vector& v );
@@ -247,9 +243,8 @@ public:
    template< typename Vector, typename ResultType = typename Vector::RealType >
    static ResultType getVectorL2Norm( const Vector& v );
 
-   template< typename Vector, typename ResultType = typename Vector::RealType, typename Real_ >
-   static ResultType getVectorLpNorm( const Vector& v,
-                                      const Real_ p );
+   template< typename Vector, typename ResultType = typename Vector::RealType, typename Scalar >
+   static ResultType getVectorLpNorm( const Vector& v, const Scalar p );
 
    template< typename Vector, typename ResultType = typename Vector::RealType >
    static ResultType getVectorSum( const Vector& v );
@@ -272,32 +267,31 @@ public:
    template< typename Vector1, typename Vector2, typename ResultType = typename Vector1::RealType >
    static ResultType getVectorDifferenceL2Norm( const Vector1& v1, const Vector2& v2 );
 
-   template< typename Vector1, typename Vector2, typename ResultType = typename Vector1::RealType, typename Real_ >
-   static ResultType getVectorDifferenceLpNorm( const Vector1& v1, const Vector2& v2, const Real_ p );
+   template< typename Vector1, typename Vector2, typename ResultType = typename Vector1::RealType, typename Scalar >
+   static ResultType getVectorDifferenceLpNorm( const Vector1& v1, const Vector2& v2, const Scalar p );
 
    template< typename Vector1, typename Vector2, typename ResultType = typename Vector1::RealType >
    static ResultType getVectorDifferenceSum( const Vector1& v1, const Vector2& v2 );
 
-   template< typename Vector >
-   static void vectorScalarMultiplication( Vector& v,
-                                           const typename Vector::RealType& alpha );
+   template< typename Vector, typename Scalar >
+   static void vectorScalarMultiplication( Vector& v, const Scalar alpha );
 
    template< typename Vector1, typename Vector2, typename ResultType = typename Vector1::RealType >
    static ResultType getScalarProduct( const Vector1& v1, const Vector2& v2 );
 
-   template< typename Vector1, typename Vector2 >
+   template< typename Vector1, typename Vector2, typename Scalar1, typename Scalar2 >
    static void addVector( Vector1& y,
                           const Vector2& x,
-                          const typename Vector2::RealType& alpha,
-                          const typename Vector1::RealType& thisMultiplicator = 1.0 );
+                          const Scalar1 alpha,
+                          const Scalar2 thisMultiplicator = 1.0 );
 
-   template< typename Vector1, typename Vector2, typename Vector3 >
+   template< typename Vector1, typename Vector2, typename Vector3, typename Scalar1, typename Scalar2, typename Scalar3 >
    static void addVectors( Vector1& v,
                            const Vector2& v1,
-                           const typename Vector2::RealType& multiplicator1,
+                           const Scalar1 multiplicator1,
                            const Vector3& v2,
-                           const typename Vector3::RealType& multiplicator2,
-                           const typename Vector1::RealType& thisMultiplicator = 1.0 );
+                           const Scalar2 multiplicator2,
+                           const Scalar3 thisMultiplicator = 1.0 );
 
    template< typename Vector >
    static void computePrefixSum( Vector& v,

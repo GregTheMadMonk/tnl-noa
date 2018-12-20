@@ -56,9 +56,10 @@ public:
    void addElement( IndexType i,
                     RealType value );
 
+   template< typename Scalar >
    void addElement( IndexType i,
                     RealType value,
-                    RealType thisElementMultiplicator );
+                    Scalar thisElementMultiplicator );
 
    template< typename Vector >
    DistributedVectorView& operator-=( const Vector& vector );
@@ -78,8 +79,8 @@ public:
 
    NonConstReal absMin() const;
 
-   template< typename ResultType = NonConstReal, typename Real_ >
-   ResultType lpNorm( Real_ p ) const;
+   template< typename ResultType = NonConstReal, typename Scalar >
+   ResultType lpNorm( Scalar p ) const;
 
    template< typename ResultType = NonConstReal >
    ResultType sum() const;
@@ -96,31 +97,32 @@ public:
    template< typename Vector >
    NonConstReal differenceAbsMin( const Vector& v ) const;
 
-   template< typename ResultType = NonConstReal, typename Vector, typename Real_ >
-   ResultType differenceLpNorm( const Vector& v, Real_ p ) const;
+   template< typename ResultType = NonConstReal, typename Vector, typename Scalar >
+   ResultType differenceLpNorm( const Vector& v, Scalar p ) const;
 
    template< typename ResultType = NonConstReal, typename Vector >
    ResultType differenceSum( const Vector& v ) const;
 
-   void scalarMultiplication( Real alpha );
+   template< typename Scalar >
+   void scalarMultiplication( Scalar alpha );
 
    //! Computes scalar dot product
    template< typename Vector >
    NonConstReal scalarProduct( const Vector& v ) const;
 
    //! Computes this = thisMultiplicator * this + alpha * x.
-   template< typename Vector >
+   template< typename Vector, typename Scalar1 = Real, typename Scalar2 = Real >
    void addVector( const Vector& x,
-                   Real alpha = 1.0,
-                   Real thisMultiplicator = 1.0 );
+                   Scalar1 alpha = 1.0,
+                   Scalar2 thisMultiplicator = 1.0 );
 
    //! Computes this = thisMultiplicator * this + multiplicator1 * v1 + multiplicator2 * v2.
-   template< typename Vector >
-   void addVectors( const Vector& v1,
-                    Real multiplicator1,
-                    const Vector& v2,
-                    Real multiplicator2,
-                    Real thisMultiplicator = 1.0 );
+   template< typename Vector1, typename Vector2, typename Scalar1, typename Scalar2, typename Scalar3 = Real >
+   void addVectors( const Vector1& v1,
+                    Scalar1 multiplicator1,
+                    const Vector2& v2,
+                    Scalar2 multiplicator2,
+                    Scalar3 thisMultiplicator = 1.0 );
 
    void computePrefixSum();
 

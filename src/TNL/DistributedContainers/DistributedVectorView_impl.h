@@ -84,11 +84,12 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Communicator >
+   template< typename Scalar >
 void
 DistributedVectorView< Real, Device, Index, Communicator >::
 addElement( IndexType i,
             RealType value,
-            RealType thisElementMultiplicator )
+            Scalar thisElementMultiplicator )
 {
    if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
       const IndexType li = this->getLocalRange().getLocalIndex( i );
@@ -241,13 +242,13 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Communicator >
-   template< typename ResultType, typename Real_ >
+   template< typename ResultType, typename Scalar >
 ResultType
 DistributedVectorView< Real, Device, Index, Communicator >::
-lpNorm( const Real_ p ) const
+lpNorm( const Scalar p ) const
 {
    const auto group = this->getCommunicationGroup();
-   ResultType result = Containers::Algorithms::ParallelReductionLpNorm< Real, ResultType, Real_ >::initialValue();
+   ResultType result = Containers::Algorithms::ParallelReductionLpNorm< Real, ResultType, Scalar >::initialValue();
    if( group != CommunicatorType::NullGroup ) {
       const ResultType localResult = std::pow( getLocalVectorView().lpNorm( p ), p );
       CommunicatorType::Allreduce( &localResult, &result, 1, MPI_SUM, group );
@@ -378,13 +379,13 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Communicator >
-   template< typename ResultType, typename Vector, typename Real_ >
+   template< typename ResultType, typename Vector, typename Scalar >
 ResultType
 DistributedVectorView< Real, Device, Index, Communicator >::
-differenceLpNorm( const Vector& v, const Real_ p ) const
+differenceLpNorm( const Vector& v, const Scalar p ) const
 {
    const auto group = this->getCommunicationGroup();
-   ResultType result = Containers::Algorithms::ParallelReductionDiffLpNorm< Real, typename Vector::RealType, ResultType, Real_ >::initialValue();
+   ResultType result = Containers::Algorithms::ParallelReductionDiffLpNorm< Real, typename Vector::RealType, ResultType, Scalar >::initialValue();
    if( group != CommunicatorType::NullGroup ) {
       const ResultType localResult = std::pow( getLocalVectorView().differenceLpNorm( v.getLocalVectorView(), p ), p );
       CommunicatorType::Allreduce( &localResult, &result, 1, MPI_SUM, group );
@@ -422,9 +423,10 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Communicator >
+   template< typename Scalar >
 void
 DistributedVectorView< Real, Device, Index, Communicator >::
-scalarMultiplication( Real alpha )
+scalarMultiplication( Scalar alpha )
 {
    if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
       getLocalVectorView().scalarMultiplication( alpha );
@@ -453,12 +455,12 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Communicator >
-   template< typename Vector >
+   template< typename Vector, typename Scalar1, typename Scalar2 >
 void
 DistributedVectorView< Real, Device, Index, Communicator >::
 addVector( const Vector& x,
-           Real alpha,
-           Real thisMultiplicator )
+           Scalar1 alpha,
+           Scalar2 thisMultiplicator )
 {
    TNL_ASSERT_EQ( this->getSize(), x.getSize(),
                   "Vector sizes must be equal." );
@@ -476,14 +478,14 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Communicator >
-   template< typename Vector >
+   template< typename Vector1, typename Vector2, typename Scalar1, typename Scalar2, typename Scalar3 >
 void
 DistributedVectorView< Real, Device, Index, Communicator >::
-addVectors( const Vector& v1,
-            Real multiplicator1,
-            const Vector& v2,
-            Real multiplicator2,
-            Real thisMultiplicator )
+addVectors( const Vector1& v1,
+            Scalar1 multiplicator1,
+            const Vector2& v2,
+            Scalar2 multiplicator2,
+            Scalar3 thisMultiplicator )
 {
    TNL_ASSERT_EQ( this->getSize(), v1.getSize(),
                   "Vector sizes must be equal." );

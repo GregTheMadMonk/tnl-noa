@@ -29,13 +29,13 @@ addElement( Vector& v,
    v[ i ] += value;
 }
 
-template< typename Vector >
+template< typename Vector, typename Scalar >
 void
 VectorOperations< Devices::Cuda >::
 addElement( Vector& v,
             const typename Vector::IndexType i,
             const typename Vector::RealType& value,
-            const typename Vector::RealType& thisElementMultiplicator )
+            const Scalar thisElementMultiplicator )
 {
    v[ i ] = thisElementMultiplicator * v[ i ] + value;
 }
@@ -137,11 +137,11 @@ getVectorL2Norm( const Vector& v )
    return std::sqrt( result );
 }
 
-template< typename Vector, typename ResultType, typename Real_ >
+template< typename Vector, typename ResultType, typename Scalar >
 ResultType
 VectorOperations< Devices::Cuda >::
 getVectorLpNorm( const Vector& v,
-                 const Real_ p )
+                 const Scalar p )
 {
    typedef typename Vector::RealType Real;
 
@@ -153,7 +153,7 @@ getVectorLpNorm( const Vector& v,
    if( p == 2 )
       return getVectorL2Norm< Vector, ResultType >( v );
 
-   Algorithms::ParallelReductionLpNorm< Real, ResultType, Real_ > operation;
+   Algorithms::ParallelReductionLpNorm< Real, ResultType, Scalar > operation;
    operation.setPower( p );
    const ResultType result = Reduction< Devices::Cuda >::reduce( operation,
                                                                  v.getSize(),
@@ -276,12 +276,12 @@ getVectorDifferenceL2Norm( const Vector1& v1,
    return std::sqrt( result );
 }
 
-template< typename Vector1, typename Vector2, typename ResultType, typename Real_ >
+template< typename Vector1, typename Vector2, typename ResultType, typename Scalar >
 ResultType
 VectorOperations< Devices::Cuda >::
 getVectorDifferenceLpNorm( const Vector1& v1,
                            const Vector2& v2,
-                           const Real_ p )
+                           const Scalar p )
 {
    TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
    TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
@@ -292,7 +292,7 @@ getVectorDifferenceLpNorm( const Vector1& v1,
    if( p == 2.0 )
       return getVectorDifferenceL2Norm< Vector1, Vector2, ResultType >( v1, v2 );
 
-   Algorithms::ParallelReductionDiffLpNorm< typename Vector1::RealType, typename Vector2::RealType, ResultType, Real_ > operation;
+   Algorithms::ParallelReductionDiffLpNorm< typename Vector1::RealType, typename Vector2::RealType, ResultType, Scalar > operation;
    operation.setPower( p );
    const ResultType result = Reduction< Devices::Cuda >::reduce( operation,
                                                                  v1.getSize(),
@@ -318,11 +318,11 @@ getVectorDifferenceSum( const Vector1& v1,
 }
 
 #ifdef HAVE_CUDA
-template< typename Real, typename Index >
+template< typename Real, typename Index, typename Scalar >
 __global__ void
 vectorScalarMultiplicationCudaKernel( Real* data,
                                       Index size,
-                                      Real alpha )
+                                      Scalar alpha )
 {
    Index elementIdx = blockDim.x * blockIdx.x + threadIdx.x;
    const Index maxGridSize = blockDim.x * gridDim.x;
@@ -334,11 +334,11 @@ vectorScalarMultiplicationCudaKernel( Real* data,
 }
 #endif
 
-template< typename Vector >
+template< typename Vector, typename Scalar >
 void
 VectorOperations< Devices::Cuda >::
 vectorScalarMultiplication( Vector& v,
-                            const typename Vector::RealType& alpha )
+                            const Scalar alpha )
 {
    TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
 
@@ -376,14 +376,13 @@ getScalarProduct( const Vector1& v1,
 }
 
 #ifdef HAVE_CUDA
-template< typename Real,
-          typename Index >
+template< typename Real1, typename Real2, typename Index, typename Scalar1, typename Scalar2 >
 __global__ void
-vectorAddVectorCudaKernel( Real* y,
-                           const Real* x,
+vectorAddVectorCudaKernel( Real1* y,
+                           const Real2* x,
                            const Index size,
-                           const Real alpha,
-                           const Real thisMultiplicator )
+                           const Scalar1 alpha,
+                           const Scalar2 thisMultiplicator )
 {
    Index elementIdx = blockDim.x * blockIdx.x + threadIdx.x;
    const Index maxGridSize = blockDim.x * gridDim.x;
@@ -402,13 +401,13 @@ vectorAddVectorCudaKernel( Real* y,
 }
 #endif
 
-template< typename Vector1, typename Vector2 >
+template< typename Vector1, typename Vector2, typename Scalar1, typename Scalar2 >
 void
 VectorOperations< Devices::Cuda >::
 addVector( Vector1& y,
            const Vector2& x,
-           const typename Vector2::RealType& alpha,
-           const typename Vector1::RealType& thisMultiplicator )
+           const Scalar1 alpha,
+           const Scalar2 thisMultiplicator )
 {
    TNL_ASSERT_GT( x.getSize(), 0, "Vector size must be positive." );
    TNL_ASSERT_EQ( x.getSize(), y.getSize(), "The vector sizes must be the same." );
@@ -435,16 +434,16 @@ addVector( Vector1& y,
 }
 
 #ifdef HAVE_CUDA
-template< typename Real,
-          typename Index >
+template< typename Real1, typename Real2, typename Real3, typename Index,
+          typename Scalar1, typename Scalar2, typename Scalar3 >
 __global__ void
-vectorAddVectorsCudaKernel( Real* v,
-                            const Real* v1,
-                            const Real* v2,
+vectorAddVectorsCudaKernel( Real1* v,
+                            const Real2* v1,
+                            const Real3* v2,
                             const Index size,
-                            const Real multiplicator1,
-                            const Real multiplicator2,
-                            const Real thisMultiplicator )
+                            const Scalar1 multiplicator1,
+                            const Scalar2 multiplicator2,
+                            const Scalar3 thisMultiplicator )
 {
    Index elementIdx = blockDim.x * blockIdx.x + threadIdx.x;
    const Index maxGridSize = blockDim.x * gridDim.x;
@@ -466,17 +465,16 @@ vectorAddVectorsCudaKernel( Real* v,
 }
 #endif
 
-template< typename Vector1,
-          typename Vector2,
-          typename Vector3 >
+template< typename Vector1, typename Vector2, typename Vector3,
+          typename Scalar1, typename Scalar2, typename Scalar3 >
 void
 VectorOperations< Devices::Cuda >::
 addVectors( Vector1& v,
             const Vector2& v1,
-            const typename Vector2::RealType& multiplicator1,
+            const Scalar1 multiplicator1,
             const Vector3& v2,
-            const typename Vector3::RealType& multiplicator2,
-            const typename Vector1::RealType& thisMultiplicator )
+            const Scalar2 multiplicator2,
+            const Scalar3 thisMultiplicator )
 {
    TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
    TNL_ASSERT_EQ( v.getSize(), v1.getSize(), "The vector sizes must be the same." );

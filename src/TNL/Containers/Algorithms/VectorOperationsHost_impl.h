@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#pragma once 
+#pragma once
 
 #include <TNL/Math.h>
 #include <TNL/Containers/Algorithms/VectorOperations.h>
@@ -30,13 +30,13 @@ addElement( Vector& v,
    v[ i ] += value;
 }
 
-template< typename Vector >
+template< typename Vector, typename Scalar >
 void
 VectorOperations< Devices::Host >::
 addElement( Vector& v,
             const typename Vector::IndexType i,
             const typename Vector::RealType& value,
-            const typename Vector::RealType& thisElementMultiplicator )
+            const Scalar thisElementMultiplicator )
 {
    v[ i ] = thisElementMultiplicator * v[ i ] + value;
 }
@@ -139,11 +139,11 @@ getVectorL2Norm( const Vector& v )
    return std::sqrt( result );
 }
 
-template< typename Vector, typename ResultType, typename Real_ >
+template< typename Vector, typename ResultType, typename Scalar >
 ResultType
 VectorOperations< Devices::Host >::
 getVectorLpNorm( const Vector& v,
-                 const Real_ p )
+                 const Scalar p )
 {
    typedef typename Vector::RealType Real;
 
@@ -155,7 +155,7 @@ getVectorLpNorm( const Vector& v,
    if( p == 2.0 )
       return getVectorL2Norm< Vector, ResultType >( v );
 
-   Algorithms::ParallelReductionLpNorm< Real, ResultType, Real_ > operation;
+   Algorithms::ParallelReductionLpNorm< Real, ResultType, Scalar > operation;
    operation.setPower( p );
    const ResultType result = Reduction< Devices::Host >::reduce( operation,
                                                                  v.getSize(),
@@ -278,12 +278,12 @@ getVectorDifferenceL2Norm( const Vector1& v1,
 }
 
 
-template< typename Vector1, typename Vector2, typename ResultType, typename Real_ >
+template< typename Vector1, typename Vector2, typename ResultType, typename Scalar >
 ResultType
 VectorOperations< Devices::Host >::
 getVectorDifferenceLpNorm( const Vector1& v1,
                            const Vector2& v2,
-                           const Real_ p )
+                           const Scalar p )
 {
    TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
    TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
@@ -294,7 +294,7 @@ getVectorDifferenceLpNorm( const Vector1& v1,
    if( p == 2.0 )
       return getVectorDifferenceL2Norm< Vector1, Vector2, ResultType >( v1, v2 );
 
-   Algorithms::ParallelReductionDiffLpNorm< typename Vector1::RealType, typename Vector2::RealType, ResultType, Real_ > operation;
+   Algorithms::ParallelReductionDiffLpNorm< typename Vector1::RealType, typename Vector2::RealType, ResultType, Scalar > operation;
    operation.setPower( p );
    const ResultType result = Reduction< Devices::Host >::reduce( operation,
                                                                  v1.getSize(),
@@ -320,11 +320,11 @@ getVectorDifferenceSum( const Vector1& v1,
 }
 
 
-template< typename Vector >
+template< typename Vector, typename Scalar >
 void
 VectorOperations< Devices::Host >::
 vectorScalarMultiplication( Vector& v,
-                            const typename Vector::RealType& alpha )
+                            const Scalar alpha )
 {
    typedef typename Vector::IndexType Index;
 
@@ -355,13 +355,13 @@ getScalarProduct( const Vector1& v1,
                                               v2.getData() );
 }
 
-template< typename Vector1, typename Vector2 >
+template< typename Vector1, typename Vector2, typename Scalar1, typename Scalar2 >
 void
 VectorOperations< Devices::Host >::
 addVector( Vector1& y,
            const Vector2& x,
-           const typename Vector2::RealType& alpha,
-           const typename Vector1::RealType& thisMultiplicator )
+           const Scalar1 alpha,
+           const Scalar2 thisMultiplicator )
 {
    typedef typename Vector1::IndexType Index;
 
@@ -384,17 +384,16 @@ addVector( Vector1& y,
          y[ i ] = thisMultiplicator * y[ i ] + alpha * x[ i ];
 }
 
-template< typename Vector1,
-          typename Vector2,
-          typename Vector3 >
+template< typename Vector1, typename Vector2, typename Vector3,
+          typename Scalar1, typename Scalar2, typename Scalar3 >
 void
 VectorOperations< Devices::Host >::
 addVectors( Vector1& v,
             const Vector2& v1,
-            const typename Vector2::RealType& multiplicator1,
+            const Scalar1 multiplicator1,
             const Vector3& v2,
-            const typename Vector3::RealType& multiplicator2,
-            const typename Vector1::RealType& thisMultiplicator )
+            const Scalar2 multiplicator2,
+            const Scalar3 thisMultiplicator )
 {
    typedef typename Vector1::IndexType Index;
 

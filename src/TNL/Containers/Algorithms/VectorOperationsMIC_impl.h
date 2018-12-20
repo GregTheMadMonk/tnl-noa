@@ -33,13 +33,13 @@ addElement( Vector& v,
    v.setElement(i,v.getElemet(i)+value);
 }
 
-template< typename Vector >
+template< typename Vector, typename Scalar >
 void
 VectorOperations< Devices::MIC >::
 addElement( Vector& v,
             const typename Vector::IndexType i,
             const typename Vector::RealType& value,
-            const typename Vector::RealType& thisElementMultiplicator )
+            const Scalar thisElementMultiplicator )
 {
    //v[ i ] = thisElementMultiplicator * v[ i ] + value;
    //cout << "Errorous function, not clear wher should be called (device or Host)" <<std::endl;
@@ -187,11 +187,11 @@ getVectorL2Norm( const Vector& v )
    return TNL::sqrt( result );
 }
 
-template< typename Vector, typename ResultType, typename Real_ >
+template< typename Vector, typename ResultType, typename Scalar >
 ResultType
 VectorOperations< Devices::MIC >::
 getVectorLpNorm( const Vector& v,
-                 const Real_ p )
+                 const Scalar p )
 {
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
@@ -410,12 +410,12 @@ getVectorDifferenceL2Norm( const Vector1& v1,
 }
 
 
-template< typename Vector1, typename Vector2, typename ResultType, typename Real_ >
+template< typename Vector1, typename Vector2, typename ResultType, typename Scalar >
 ResultType
 VectorOperations< Devices::MIC >::
 getVectorDifferenceLpNorm( const Vector1& v1,
                            const Vector2& v2,
-                           const Real_ p )
+                           const Scalar p )
 {
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
@@ -475,11 +475,10 @@ getVectorDifferenceSum( const Vector1& v1,
 }
 
 
-template< typename Vector >
+template< typename Vector, typename Scalar >
 void
 VectorOperations< Devices::MIC >::
-vectorScalarMultiplication( Vector& v,
-                            const typename Vector::RealType& alpha )
+vectorScalarMultiplication( Vector& v, const Scalar alpha )
 {
    typedef typename Vector::RealType Real;
    typedef typename Vector::IndexType Index;
@@ -489,7 +488,7 @@ vectorScalarMultiplication( Vector& v,
    const Index n = v. getSize();
    Devices::MICHider<Real > vct;
    vct.pointer=v.getData();
-   Real a=alpha;
+   Scalar a=alpha;
 
    #pragma offload target(mic) in(vct,a,n)
    {
@@ -544,13 +543,13 @@ getScalarProduct( const Vector1& v1,
    return result;
 }
 
-template< typename Vector1, typename Vector2 >
+template< typename Vector1, typename Vector2, typename Scalar1, typename Scalar2 >
 void
 VectorOperations< Devices::MIC >::
 addVector( Vector1& y,
            const Vector2& x,
-           const typename Vector2::RealType& alpha,
-           const typename Vector1::RealType& thisMultiplicator )
+           const Scalar1 alpha,
+           const Scalar2 thisMultiplicator )
 {
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
@@ -562,8 +561,8 @@ addVector( Vector1& y,
    Devices::MICHider<const Real> vct2;
    vct.pointer=y.getData();
    vct2.pointer=x.getData();
-   Real a=alpha;
-   Real t=thisMultiplicator;
+   Scalar1 a=alpha;
+   Scalar2 t=thisMultiplicator;
 
    #pragma offload target(mic) in(vct,vct2,n,a,t)
    {
@@ -572,17 +571,16 @@ addVector( Vector1& y,
    }
 }
 
-template< typename Vector1,
-          typename Vector2,
-          typename Vector3 >
+template< typename Vector1, typename Vector2, typename Vector3,
+          typename Scalar1, typename Scalar2, typename Scalar3 >
 void
 VectorOperations< Devices::MIC >::
 addVectors( Vector1& v,
             const Vector2& v1,
-            const typename Vector2::RealType& multiplicator1,
+            const Scalar1 multiplicator1,
             const Vector3& v2,
-            const typename Vector3::RealType& multiplicator2,
-            const typename Vector1::RealType& thisMultiplicator )
+            const Scalar2 multiplicator2,
+            const Scalar3 thisMultiplicator )
 {
    typedef typename Vector1::RealType Real;
    typedef typename Vector1::IndexType Index;
@@ -597,9 +595,9 @@ addVectors( Vector1& v,
    vct.pointer=v.getData();
    vct1.pointer=v1.getData();
    vct2.pointer=v2.getData();
-   Real t=thisMultiplicator;
-   Real m1=multiplicator1;
-   Real m2=multiplicator2;
+   Scalar1 m1=multiplicator1;
+   Scalar2 m2=multiplicator2;
+   Scalar3 t=thisMultiplicator;
 
    #pragma offload target(mic) in(vct,vct1,vct2,n,t,m1,m2)
    {
