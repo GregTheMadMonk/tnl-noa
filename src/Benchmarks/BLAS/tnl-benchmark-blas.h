@@ -32,7 +32,6 @@ runBlasBenchmarks( Benchmark & benchmark,
                    const std::size_t & minSize,
                    const std::size_t & maxSize,
                    const double & sizeStepFactor,
-                   const unsigned & loops,
                    const unsigned & elementsPerRow )
 {
    const String precision = getType< Real >();
@@ -45,7 +44,7 @@ runBlasBenchmarks( Benchmark & benchmark,
       benchmark.setMetadataColumns( Benchmark::MetadataColumns({
          {"size", convertToString( size ) },
       } ));
-      benchmarkArrayOperations< Real >( benchmark, loops, size );
+      benchmarkArrayOperations< Real >( benchmark, size );
    }
 
    // Vector operations
@@ -55,7 +54,7 @@ runBlasBenchmarks( Benchmark & benchmark,
       benchmark.setMetadataColumns( Benchmark::MetadataColumns({
          { "size", convertToString( size ) },
       } ));
-      benchmarkVectorOperations< Real >( benchmark, loops, size );
+      benchmarkVectorOperations< Real >( benchmark, size );
    }
 
    // Sparse matrix-vector multiplication
@@ -67,7 +66,7 @@ runBlasBenchmarks( Benchmark & benchmark,
          {"columns", convertToString( size ) },
          {"elements per row", convertToString( elementsPerRow ) },
       } ));
-      benchmarkSpmvSynthetic< Real >( benchmark, loops, size, elementsPerRow );
+      benchmarkSpmvSynthetic< Real >( benchmark, size, elementsPerRow );
    }
 }
 
@@ -145,9 +144,9 @@ main( int argc, char* argv[] )
    Benchmark::MetadataMap metadata = getHardwareMetadata();
 
    if( precision == "all" || precision == "float" )
-      runBlasBenchmarks< float >( benchmark, metadata, minSize, maxSize, sizeStepFactor, loops, elementsPerRow );
+      runBlasBenchmarks< float >( benchmark, metadata, minSize, maxSize, sizeStepFactor, elementsPerRow );
    if( precision == "all" || precision == "double" )
-      runBlasBenchmarks< double >( benchmark, metadata, minSize, maxSize, sizeStepFactor, loops, elementsPerRow );
+      runBlasBenchmarks< double >( benchmark, metadata, minSize, maxSize, sizeStepFactor, elementsPerRow );
 
    if( ! benchmark.save( logFile ) ) {
       std::cerr << "Failed to write the benchmark results to file '" << parameters.getParameter< String >( "log-file" ) << "'." << std::endl;

@@ -29,7 +29,6 @@ template< typename Real = double,
           typename Index = int >
 bool
 benchmarkVectorOperations( Benchmark & benchmark,
-                           const int & loops,
                            const long & size )
 {
    typedef Containers::Vector< Real, Devices::Host, Index > HostVector;

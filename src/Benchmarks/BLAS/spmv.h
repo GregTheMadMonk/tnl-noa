@@ -95,7 +95,6 @@ template< typename Real,
           template< typename, typename, typename > class Vector = Containers::Vector >
 bool
 benchmarkSpMV( Benchmark & benchmark,
-               const int & loops,
                const int & size,
                const int elementsPerRow = 5 )
 {
@@ -176,16 +175,15 @@ template< typename Real = double,
           typename Index = int >
 bool
 benchmarkSpmvSynthetic( Benchmark & benchmark,
-                        const int & loops,
                         const int & size,
                         const int & elementsPerRow )
 {
    bool result = true;
    // TODO: benchmark all formats from tnl-benchmark-spmv (different parameters of the base formats)
-   result |= benchmarkSpMV< Real, Matrices::CSR >( benchmark, loops, size, elementsPerRow );
-   result |= benchmarkSpMV< Real, Matrices::Ellpack >( benchmark, loops, size, elementsPerRow );
-   result |= benchmarkSpMV< Real, SlicedEllpack >( benchmark, loops, size, elementsPerRow );
-   result |= benchmarkSpMV< Real, Matrices::ChunkedEllpack >( benchmark, loops, size, elementsPerRow );
+   result |= benchmarkSpMV< Real, Matrices::CSR >( benchmark, size, elementsPerRow );
+   result |= benchmarkSpMV< Real, Matrices::Ellpack >( benchmark, size, elementsPerRow );
+   result |= benchmarkSpMV< Real, SlicedEllpack >( benchmark, size, elementsPerRow );
+   result |= benchmarkSpMV< Real, Matrices::ChunkedEllpack >( benchmark, size, elementsPerRow );
    return result;
 }
 

@@ -23,7 +23,6 @@ template< typename Real = double,
           typename Index = int >
 bool
 benchmarkArrayOperations( Benchmark & benchmark,
-                          const int & loops,
                           const long & size )
 {
    typedef Containers::Array< Real, Devices::Host, Index > HostArray;
