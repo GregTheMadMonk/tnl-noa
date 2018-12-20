@@ -44,7 +44,6 @@ class WriteOne< 1, Device, Real, Index >
             data[ i ] = 1.0;
          };
          
-         
          ParallelFor< Device >::exec( ( std::size_t ) 0, size, writeOne, v.getData() );
       }
 };
@@ -61,7 +60,17 @@ class WriteOne< 2, Device, Real, Index >
       
       static void run( std::size_t size )
       {
+         Vector v( size * size );
+         auto writeOne = [=] __cuda_callable__ ( Index i, Index j,  Real* data )
+         {
+            data[ i * size + j ] = 1.0;
+         };
          
+         ParallelFor2D< Device >::exec( ( std::size_t ) 0,
+                                        ( std::size_t ) 0,
+                                        size,
+                                        size,
+                                        writeOne, v.getData() );         
       }
 };
 
@@ -76,7 +85,19 @@ class WriteOne< 3, Device, Real, Index >
       
       static void run( std::size_t size )
       {
+         Vector v( size * size * size );
+         auto writeOne = [=] __cuda_callable__ ( Index i, Index j, Index k, Real* data )
+         {
+            data[ ( i * size + j ) * size + k ] = 1.0;
+         };
          
+         ParallelFor3D< Device >::exec( ( std::size_t ) 0, 
+                                        ( std::size_t ) 0, 
+                                        ( std::size_t ) 0, 
+                                        size,
+                                        size,
+                                        size,
+                                        writeOne, v.getData() );         
       }
 };
 
