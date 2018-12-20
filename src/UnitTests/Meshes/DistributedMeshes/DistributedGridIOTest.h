@@ -276,7 +276,7 @@ class TestDistributedGridIO
         String localFileName= fileName+String("-")+distributedGrid.printProcessCoords()+String(".tnl");
 
         File file;
-        file.open(localFileName, IOMode::read );
+        ASSERT_TRUE( file.open(localFileName, IOMode::read ) );
         loadMeshFunctionptr->boundLoad(file);
         file.close();
 
@@ -336,7 +336,7 @@ class TestDistributedGridIO
         String fileName=String("test-file-distributedgrid-io-load.tnl");
         String localFileName=fileName+String("-")+distributedGrid.printProcessCoords()+String(".tnl");
         File file;
-        file.open( localFileName, IOMode::write );        
+        ASSERT_TRUE( file.open( localFileName, IOMode::write ) );
         localMeshFunctionptr->save(file);
         file.close();
 
