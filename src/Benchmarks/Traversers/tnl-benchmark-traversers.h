@@ -13,7 +13,8 @@
 #pragma once
 
 #include "../Benchmarks.h"
-#include "grid-traversing.h"
+//#include "grid-traversing.h"
+#include "GridTraversersBenchmark.h"
 
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Devices/Host.h>
@@ -23,29 +24,10 @@
 using namespace TNL;
 using namespace TNL::Benchmarks;
 
-void setupConfig( Config::ConfigDescription& config )
-{
-   config.addEntry< String >( "log-file", "Log file name.", "tnl-benchmark-blas.log");
-   config.addEntry< String >( "output-mode", "Mode for opening the log file.", "overwrite" );
-   config.addEntryEnum( "append" );
-   config.addEntryEnum( "overwrite" );
-   config.addEntry< String >( "precision", "Precision of the arithmetics.", "double" );
-   config.addEntryEnum( "float" );
-   config.addEntryEnum( "double" );
-   config.addEntryEnum( "all" );
-   config.addEntry< int >( "dimension", "Set the problem dimension. 0 means all dimensions 1,2 and 3.", 0 );   
-   config.addEntry< int >( "min-size", "Minimum size of arrays/vectors used in the benchmark.", 10 );
-   config.addEntry< int >( "max-size", "Minimum size of arrays/vectors used in the benchmark.", 1000 );
-   config.addEntry< int >( "size-step-factor", "Factor determining the size of arrays/vectors used in the benchmark. First size is min-size and each following size is stepFactor*previousSize, up to max-size.", 2 );
-   config.addEntry< int >( "loops", "Number of iterations for every computation.", 10 );   
-   config.addEntry< int >( "verbose", "Verbose mode.", 1 );
 
-   config.addDelimiter( "Device settings:" );
-   Devices::Host::configSetup( config );
-   Devices::Cuda::configSetup( config );   
-}
-
-template< int Dimension >
+template< int Dimension,
+          typename Real = float,
+          typename Index = int >
 bool runBenchmark( const Config::ParameterContainer& parameters,
                    Benchmark& benchmark,
                    Benchmark::MetadataMap& metadata )
@@ -62,12 +44,57 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
    benchmark.newBenchmark( String("Full grid traversing " + convertToString( Dimension ) + "D" ), metadata );
    for( std::size_t size = minSize; size <= maxSize; size *= 2 )
    {
-      benchmark.setMetadataColumns( Benchmark::MetadataColumns({
-         {"size", convertToString( size ) },
-      } ));
-      benchmarkTraversingFullGrid< Dimension >::run( benchmark, size );
+
+      GridTraversersBenchmark< Dimension, Devices::Host, Real, Index > hostTraverserBenchmark( size );
+      GridTraversersBenchmark< Dimension, Devices::Cuda, Real, Index > cudaTraverserBenchmark( size );         
+
+      auto reset = [&]() {};
+      
+      benchmark.setMetadataColumns(
+         Benchmark::MetadataColumns( 
+            {  {"size", convertToString( size ) }, } ) );
+
+      auto hostWriteOne = [&] ()
+      {
+         hostTraverserBenchmark.writeOne();
+      }; 
+
+      auto cudaWriteOne = [&] ()
+      {
+         cudaTraverserBenchmark.writeOne();
+      }; 
+
+      benchmark.setOperation( "writeOne", size * sizeof( Real ) );
+      benchmark.time( reset, "CPU", hostWriteOne );
+#ifdef HAVE_CUDA
+      benchmark.time( reset, "GPU", cudaWriteOne );
+#endif
+      
    }   
    return true;
+}
+
+void setupConfig( Config::ConfigDescription& config )
+{
+   config.addEntry< String >( "log-file", "Log file name.", "tnl-benchmark-blas.log");
+   config.addEntry< String >( "output-mode", "Mode for opening the log file.", "overwrite" );
+   config.addEntryEnum( "append" );
+   config.addEntryEnum( "overwrite" );
+   config.addEntry< String >( "precision", "Precision of the arithmetics.", "double" );
+   config.addEntryEnum( "float" );
+   config.addEntryEnum( "double" );
+   config.addEntryEnum( "all" );
+   config.addEntry< int >( "dimension", "Set the problem dimension. 0 means all dimensions 1,2 and 3.", 0 );   
+   config.addEntry< int >( "min-size", "Minimum size of arrays/vectors used in the benchmark.", 10 );
+   config.addEntry< int >( "max-size", "Minimum size of arrays/vectors used in the benchmark.", 1000 );
+   config.addEntry< int >( "size-step-factor", "Factor determining the size of arrays/vectors used in the benchmark. First size is min-size and each following size is stepFactor*previousSize, up to max-size.", 2 );
+   config.addEntry< bool >( "verbose", "Verbose mode.", true );
+
+   Benchmark::configSetup( config );
+   
+   config.addDelimiter( "Device settings:" );
+   Devices::Host::configSetup( config );
+   Devices::Cuda::configSetup( config );   
 }
 
 template< int Dimension >
@@ -77,10 +104,9 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
    const String & outputMode = parameters.getParameter< String >( "output-mode" );
    const String & precision = parameters.getParameter< String >( "precision" );
    const unsigned sizeStepFactor = parameters.getParameter< unsigned >( "size-step-factor" );
-   const unsigned loops = parameters.getParameter< unsigned >( "loops" );
-   const unsigned verbose = parameters.getParameter< unsigned >( "verbose" );
+   
 
-   Benchmark benchmark( loops, verbose );
+   Benchmark benchmark; //( loops, verbose );
    Benchmark::MetadataMap metadata = getHardwareMetadata();
    runBenchmark< Dimension >( parameters, benchmark, metadata );
    
