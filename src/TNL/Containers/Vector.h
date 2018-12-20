@@ -123,44 +123,109 @@ class Vector
     */
    Real absMin() const;
 
+   /**
+    * \brief Returns the length of this vector in p-dimensional vector space.
+    *
+    * \tparam
+    * \param p Number specifying the dimension of vector space.
+    */
    template< typename ResultType = RealType, typename Scalar >
    ResultType lpNorm( const Scalar p ) const;
 
+   /**
+    * \brief Returns sum of all vector elements.
+    */
    template< typename ResultType = RealType >
    ResultType sum() const;
 
+   /**
+    * \brief Returns maximal difference between elements of this vector and vector \e v.
+    *
+    * \tparam Vector Type of vector.
+    * \param v Reference to another vector of the same size as this vector.
+    */
    template< typename Vector >
    Real differenceMax( const Vector& v ) const;
 
+   /**
+    * \brief Returns minimal difference between elements of this vector and vector \e v.
+    *
+    * \tparam Vector Type of vector.
+    * \param v Reference to another vector of the same size as this vector.
+    */
    template< typename Vector >
    Real differenceMin( const Vector& v ) const;
 
+   /**
+    * \brief Returns maximal absolute difference between elements of this vector and vector \e v.
+    *
+    * \tparam Vector Type of vector.
+    * \param v Reference to another vector of the same size as this vector.
+    */
    template< typename Vector >
    Real differenceAbsMax( const Vector& v ) const;
 
+   /**
+    * \brief Returns minimal absolute difference between elements of this vector and vector \e v.
+    *
+    * \tparam Vector Type of vector.
+    * \param v Reference to another vector of the same size as this vector.
+    */
    template< typename Vector >
    Real differenceAbsMin( const Vector& v ) const;
 
+   /**
+    * \brief Returns difference between L^p norms of this vector and vector \e v.
+    *
+    * See also lpNorm(const Real_ p).
+    *
+    * \param v Reference to another vector.
+    * \param p Number specifying the dimension of vector space.
+    */
    template< typename ResultType = RealType, typename Vector, typename Scalar >
    ResultType differenceLpNorm( const Vector& v, const Scalar p ) const;
 
+   /**
+    * \brief Returns difference between sums of elements of this vector and vector \e v.
+    *
+    * \param v Reference to another vector.
+    */
    template< typename ResultType = RealType, typename Vector >
    ResultType differenceSum( const Vector& v ) const;
 
+   /**
+    * \brief Returns this vector multiplied by scalar \e alpha.
+    *
+    * This function multiplies every element of this vector by scalar \e alpha.
+    * \param alpha Reference to a real number.
+    */
    template< typename Scalar >
    void scalarMultiplication( const Scalar alpha );
 
-   //! Computes scalar dot product
+   /**
+    * \brief Computes scalar (dot) product.
+    *
+    * An algebraic operation that takes two equal-length vectors and returns a single number.
+    *
+    * \tparam vector Type of vector.
+    * \param v Reference to another vector of the same size as this vector.
+    */
    template< typename Vector >
    Real scalarProduct( const Vector& v ) const;
 
-   //! Computes this = thisMultiplicator * this + multiplicator * v.
+   /**
+    * \brief Returns the result of following: thisMultiplicator * this + multiplicator * v.
+    */
    template< typename Vector, typename Scalar1 = Real, typename Scalar2 = Real >
    void addVector( const Vector& v,
                    const Scalar1 multiplicator = 1.0,
                    const Scalar2 thisMultiplicator = 1.0 );
 
-   //! Computes this = thisMultiplicator * this + multiplicator1 * v1 + multiplicator2 * v2.
+   /**
+    * \brief Returns the result of following: thisMultiplicator * this + multiplicator1 * v1 + multiplicator2 * v2.
+    *
+    * \param
+    */
    template< typename Vector1, typename Vector2, typename Scalar1, typename Scalar2, typename Scalar3 = Real >
    void addVectors( const Vector1& v1,
                     const Scalar1 multiplicator1,
