@@ -54,20 +54,20 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
          Benchmark::MetadataColumns( 
             {  {"size", convertToString( size ) }, } ) );
 
-      auto hostWriteOne = [&] ()
+      auto hostWriteOneUsingParallelFor = [&] ()
       {
-         hostTraverserBenchmark.writeOne();
+         hostTraverserBenchmark.writeOneUsingParallelFor();
       }; 
 
-      auto cudaWriteOne = [&] ()
+      auto cudaWriteOneUsingParallelFor = [&] ()
       {
-         cudaTraverserBenchmark.writeOne();
+         cudaTraverserBenchmark.writeOneUsingParallelFor();
       }; 
 
-      benchmark.setOperation( "writeOne", size * sizeof( Real ) );
-      benchmark.time( reset, "CPU", hostWriteOne );
+      benchmark.setOperation( "write 1 using parallel for", size * sizeof( Real ) / oneGB );
+      benchmark.time( reset, "CPU", hostWriteOneUsingParallelFor );
 #ifdef HAVE_CUDA
-      benchmark.time( reset, "GPU", cudaWriteOne );
+      benchmark.time( reset, "GPU", cudaWriteOneUsingParallelFor );
 #endif
       
    }   

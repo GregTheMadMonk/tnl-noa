@@ -43,7 +43,7 @@ Grid< 2, Real, Device, Index >::Grid( const Index xSize, const Index ySize )
 : numberOfCells( 0 ),
   numberOfNxFaces( 0 ),
   numberOfNyFaces( 0 ),
-  numberOfFaces( 0 ),   
+  numberOfFaces( 0 ),
   numberOfVertices( 0 ),
   distGrid(nullptr)
 {

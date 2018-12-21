@@ -82,8 +82,8 @@ class Grid< 2, Real, Device, Index > : public Object
 
    /**
     * \brief Sets the size of dimensions.
-    * \param xSize Size of dimesion x.
-    * \param ySize Size of dimesion y.
+    * \param xSize Size of dimension x.
+    * \param ySize Size of dimension y.
     */
    void setDimensions( const Index xSize, const Index ySize );
 
