@@ -41,7 +41,7 @@ double
 timeFunction( ComputeFunction compute,
               ResetFunction reset,
               int loops,
-              int minTime, 
+              const double& minTime, 
               Monitor && monitor = Monitor() )
 {
    // the timer is constructed zero-initialized and stopped
@@ -56,7 +56,7 @@ timeFunction( ComputeFunction compute,
 
    int i;
    for( i = 0;
-        i < loops || timer.getRealTime() < ( double ) minTime;
+        i < loops || timer.getRealTime() < minTime;
         ++i) 
    {
       // abuse the monitor's "time" for loops
@@ -330,13 +330,13 @@ public:
    static void configSetup( Config::ConfigDescription& config )
    {
       config.addEntry< int >( "loops", "Number of iterations for every computation.", 10 );
-      config.addEntry< int >( "min-time", "Minimal real time in seconds for every computation.", 1 );
+      config.addEntry< double >( "min-time", "Minimal real time in seconds for every computation.", 1 );
    }
 
    void setup( const Config::ParameterContainer& parameters )
    {
       this->loops = parameters.getParameter< unsigned >( "loops" );
-      this->minTime = parameters.getParameter< unsigned >( "min-time" );
+      this->minTime = parameters.getParameter< double >( "min-time" );
       const unsigned verbose = parameters.getParameter< unsigned >( "verbose" );
       Logging::setVerbose( verbose );
    }
@@ -348,7 +348,7 @@ public:
       this->loops = loops;
    }
    
-   void setMinTime( int minTime )
+   void setMinTime( const double& minTime )
    {
       this->minTime = minTime;
    }
@@ -507,7 +507,8 @@ public:
    }
 
 protected:
-   int loops, minTime = 1;
+   int loops = 1;
+   double minTime = 1;
    double datasetSize = 0.0;
    double baseTime = 0.0;
    Solvers::IterativeSolverMonitor< double, int > monitor;
