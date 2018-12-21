@@ -43,7 +43,7 @@ public:
    __cuda_callable__
    static int getOwner( Index i, Index globalSize, int partitions )
    {
-      return i * partitions / globalSize;
+      return min( partitions - 1, i / (globalSize / partitions) );
    }
 
    // Gets the offset of data for given rank.
