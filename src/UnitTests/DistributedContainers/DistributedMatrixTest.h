@@ -214,7 +214,9 @@ TYPED_TEST( DistributedMatrixTest, vectorProduct_globalInput )
    DistributedVector outVector( this->matrix.getLocalRowRange(), this->globalSize, this->matrix.getCommunicationGroup() );
    this->matrix.vectorProduct( inVector, outVector );
 
-   EXPECT_EQ( outVector, this->rowLengths );
+   EXPECT_EQ( outVector, this->rowLengths )
+      << "outVector.getLocalVectorView() = " << outVector.getLocalVectorView()
+      << ",\nthis->rowLengths.getLocalVectorView() = " << this->rowLengths.getLocalVectorView();
 }
 
 TYPED_TEST( DistributedMatrixTest, vectorProduct_distributedInput )
@@ -229,7 +231,9 @@ TYPED_TEST( DistributedMatrixTest, vectorProduct_distributedInput )
    DistributedVector outVector( this->matrix.getLocalRowRange(), this->globalSize, this->matrix.getCommunicationGroup() );
    this->matrix.vectorProduct( inVector, outVector );
 
-   EXPECT_EQ( outVector, this->rowLengths );
+   EXPECT_EQ( outVector, this->rowLengths )
+      << "outVector.getLocalVectorView() = " << outVector.getLocalVectorView()
+      << ",\nthis->rowLengths.getLocalVectorView() = " << this->rowLengths.getLocalVectorView();
 }
 
 #endif  // HAVE_GTEST

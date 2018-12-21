@@ -11,6 +11,7 @@ SET( headers DistributedArray.h
              DistributedVectorView_impl.h
              Partitioner.h
              Subrange.h
+             ThreePartVector.h
     )
 
 INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/DistributedContainers )
