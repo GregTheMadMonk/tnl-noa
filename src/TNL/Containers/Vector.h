@@ -223,8 +223,6 @@ class Vector
 
    /**
     * \brief Returns the result of following: thisMultiplicator * this + multiplicator1 * v1 + multiplicator2 * v2.
-    *
-    * \param
     */
    template< typename Vector1, typename Vector2, typename Scalar1, typename Scalar2, typename Scalar3 = Real >
    void addVectors( const Vector1& v1,
@@ -233,12 +231,48 @@ class Vector
                     const Scalar2 multiplicator2,
                     const Scalar3 thisMultiplicator = 1.0 );
 
+   /**
+    * \brief Returns specific sums of elements of this vector.
+    *
+    * Goes in order from the first element to the last one and for every element
+    * in this vector computes sum of all previous elements including the element.
+    * Therefore this method returns a new vector with the length of this vector.
+    */
    void computePrefixSum();
 
+   /**
+    * \brief Returns specific sums of elements of this vector.
+    *
+    * Does the same as computePrefixSum(), but computes only sums for elements
+    * with the index in range from \e begin to \e end. The other elements of this
+    * vector remain untouched - with the same value. Therefore this method returns
+    * a new vector with the length of this vector.
+    *
+    * \param begin Index of the element in this vector which to begin with.
+    * \param end Index of the element in this vector which to end with.
+    */
    void computePrefixSum( const IndexType begin, const IndexType end );
 
+   /**
+    * \brief Returns specific sums of elements of this vector.
+    *
+    * Goes in order from the first element to the last one and for every element
+    * in this vector computes sum of all previous elements excluding the element.
+    * Therefore returns a new vector with the length of this vector.
+    */
    void computeExclusivePrefixSum();
 
+   /**
+    * \brief Returns specific sums of elements of this vector.
+    *
+    * Does the same as computeExclusivePrefixSum(), but computes only sums for elements
+    * with the index in range from \e begin to \e end. The other elements of this
+    * vector remain untouched - with the same value. Therefore this method returns
+    * a new vector with the length of this vector.
+    *
+    * \param begin Index of the element in this vector which to begin with.
+    * \param end Index of the element in this vector which to end with.
+    */
    void computeExclusivePrefixSum( const IndexType begin, const IndexType end );
 };
 
