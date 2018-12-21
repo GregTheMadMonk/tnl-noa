@@ -43,7 +43,12 @@ public:
    __cuda_callable__
    static int getOwner( Index i, Index globalSize, int partitions )
    {
-      return min( partitions - 1, i / (globalSize / partitions) );
+      int owner = i * partitions / globalSize;
+      if( owner < partitions - 1 && i >= getOffset( globalSize, owner + 1, partitions ) )
+         owner++;
+      TNL_ASSERT_GE( i, getOffset( globalSize, owner, partitions ), "BUG in getOwner" );
+      TNL_ASSERT_LT( i, getOffset( globalSize, owner + 1, partitions ), "BUG in getOwner" );
+      return owner;
    }
 
    // Gets the offset of data for given rank.
