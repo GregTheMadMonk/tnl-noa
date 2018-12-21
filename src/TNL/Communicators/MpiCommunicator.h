@@ -584,15 +584,17 @@ template<> struct MPITypeResolver<long double>
 } // namespace Communicators
 } // namespace TNL
 
-#define TNL_MPI_PRINT( message )                                                                                         \
-for( int j = 0; j < TNL::Communicators::MpiCommunicator::GetSize( TNL::Communicators::MpiCommunicator::AllGroup ); j++ ) \
-   {                                                                                                                     \
-      if( j == TNL::Communicators::MpiCommunicator::GetRank( TNL::Communicators::MpiCommunicator::AllGroup ) )           \
-      {                                                                                                                  \
-         std::cerr << "Node " << j << " of "                                                                             \
-                   << TNL::Communicators::MpiCommunicator::GetSize( TNL::Communicators::MpiCommunicator::AllGroup )      \
-                   << " : " << message << std::endl;                                                                     \
-      }                                                                                                                  \
-      TNL::Communicators::MpiCommunicator::Barrier( TNL::Communicators::MpiCommunicator::AllGroup );                     \
-   }
+#define TNL_MPI_PRINT( message )                                                                                              \
+for( int __tnl_mpi_print_j = 0;                                                                                               \
+     __tnl_mpi_print_j < TNL::Communicators::MpiCommunicator::GetSize( TNL::Communicators::MpiCommunicator::AllGroup );       \
+     __tnl_mpi_print_j++ )                                                                                                    \
+{                                                                                                                             \
+   if( __tnl_mpi_print_j == TNL::Communicators::MpiCommunicator::GetRank( TNL::Communicators::MpiCommunicator::AllGroup ) )   \
+   {                                                                                                                          \
+      std::cerr << "Node " << __tnl_mpi_print_j << " of "                                                                     \
+                << TNL::Communicators::MpiCommunicator::GetSize( TNL::Communicators::MpiCommunicator::AllGroup )              \
+                << " : " << message << std::endl;                                                                             \
+   }                                                                                                                          \
+   TNL::Communicators::MpiCommunicator::Barrier( TNL::Communicators::MpiCommunicator::AllGroup );                             \
+}
 
