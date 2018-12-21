@@ -107,6 +107,7 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
    
 
    Benchmark benchmark; //( loops, verbose );
+   benchmark.setup( parameters );
    Benchmark::MetadataMap metadata = getHardwareMetadata();
    runBenchmark< Dimension >( parameters, benchmark, metadata );
    
