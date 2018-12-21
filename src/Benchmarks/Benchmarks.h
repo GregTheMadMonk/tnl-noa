@@ -56,7 +56,7 @@ timeFunction( ComputeFunction compute,
 
    int i;
    for( i = 0;
-        i < loops && ( ! minTime || timer.getRealTime() < ( double ) minTime );
+        i < loops || timer.getRealTime() < ( double ) minTime;
         ++i) 
    {
       // abuse the monitor's "time" for loops
