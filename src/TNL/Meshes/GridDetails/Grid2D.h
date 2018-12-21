@@ -61,6 +61,8 @@ class Grid< 2, Real, Device, Index > : public Object
    /**
     * \brief See Grid1D::getType().
     */
+   Grid( const Index xSize, const Index ySize );
+
    static String getType();
 
    /**

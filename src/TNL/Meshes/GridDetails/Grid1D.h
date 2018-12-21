@@ -60,6 +60,8 @@ class Grid< 1, Real, Device, Index > : public Object
     * \brief Basic constructor.
     */
    Grid();
+   
+   Grid( const Index xSize );
 
    /**
     * \brief Returns type of grid Real (value), Device type and the type of Index.
