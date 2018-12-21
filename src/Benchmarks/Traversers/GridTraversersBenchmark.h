@@ -65,23 +65,21 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
       {
          class EntitiesProcessor
          {
-            
          };
-         
+
          class UserData
          {
-            
          };
-         
+
          Traverser traverser;
          /*traverser.template processAllEntities< UserData, EntitiesProcessor >
                                            ( meshPointer,
                                              userData );*/
-         
+
       }
-      
+
       protected:
-         
+
          Index size;
          Vector v;
          Grid grid;
