@@ -117,18 +117,22 @@ public:
       localOnlySpan.first = local_span.getElement( 0 );
       localOnlySpan.second = local_span.getElement( 1 );
 
-      // copy the buffer into all rows of the commPattern* matrices
+      // copy the buffer into all rows of the preCommPattern* matrices
+      // (in-place copy does not work with some OpenMPI configurations)
+      Matrices::Dense< IndexType, Devices::Host, int > preCommPatternStarts, preCommPatternEnds;
+      preCommPatternStarts.setLike( commPatternStarts );
+      preCommPatternEnds.setLike( commPatternEnds );
       for( int j = 0; j < nproc; j++ )
       for( int i = 0; i < nproc; i++ ) {
-         commPatternStarts.setElementFast( j, i, span_starts.getElement( i ) );
-         commPatternEnds.setElementFast( j, i, span_ends.getElement( i ) );
+         preCommPatternStarts.setElementFast( j, i, span_starts.getElement( i ) );
+         preCommPatternEnds.setElementFast( j, i, span_ends.getElement( i ) );
       }
 
       // assemble the commPattern* matrices
-      CommunicatorType::Alltoall( &commPatternStarts(0, 0), nproc,
+      CommunicatorType::Alltoall( &preCommPatternStarts(0, 0), nproc,
                                   &commPatternStarts(0, 0), nproc,
                                   group );
-      CommunicatorType::Alltoall( &commPatternEnds(0, 0), nproc,
+      CommunicatorType::Alltoall( &preCommPatternEnds(0, 0), nproc,
                                   &commPatternEnds(0, 0), nproc,
                                   group );
    }
