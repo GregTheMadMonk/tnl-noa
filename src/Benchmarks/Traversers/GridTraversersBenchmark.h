@@ -16,6 +16,10 @@
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Containers/Vector.h>
+#include <TNL/Meshes/Grid.h>
+#include <TNL/Meshes/GridEntityConfig.h>
+#include <TNL/Meshes/Traverser.h>
+#include <TNL/Functions/MeshFunction.h>
 
 namespace TNL {
    namespace Benchmarks {
@@ -35,26 +39,52 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
    public:
       
       using Vector = Containers::Vector< Real, Device, Index >;
+      using Grid = Meshes::Grid< 1, Real, Device, Index >;
+      using Coordinates = typename Grid::CoordinatesType;
+      using MeshFunction = Functions::MeshFunction< Grid >;
+      using Cell = typename Grid::EntityType< 1, Meshes::GridEntityNoStencilStorage >;
+      using Traverser = Meshes::Traverser< Grid, Cell >;
       
       GridTraversersBenchmark( Index size )
-      :v( size ), size( size )
-      {}
+      :v( size ), size( size ), grid( size )
+      {
+      }
       
-      void writeOne()
+      void writeOneUsingParallelFor()
       {
          
          auto f = [] __cuda_callable__ ( Index i, Real* data )
          {
-            data[ i ] = i;
+            data[ i ] = 1.0;
          };
          
          ParallelFor< Device >::exec( ( Index ) 0, size, f, v.getData() );
+      }
+      
+      void writeOneUsingTraverser()
+      {
+         class EntitiesProcessor
+         {
+            
+         };
+         
+         class UserData
+         {
+            
+         };
+         
+         Traverser traverser;
+         /*traverser.template processAllEntities< UserData, EntitiesProcessor >
+                                           ( meshPointer,
+                                             userData );*/
+         
       }
       
       protected:
          
          Index size;
          Vector v;
+         Grid grid;
 };
 
 
@@ -66,16 +96,20 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
    public:
       
       using Vector = Containers::Vector< Real, Device, Index >;
+      using Grid = Meshes::Grid< 2, Real, Device, Index >;
+      using Coordinates = typename Grid::CoordinatesType;
       
       GridTraversersBenchmark( Index size )
-      :size( size ), v( size * size )  { }
+      :size( size ), v( size * size ), grid( size, size )
+      {
+      }
       
-      void writeOne()
+      void writeOneUsingParallelFor()
       {
          Index _size = this->size;
          auto f = [=] __cuda_callable__ ( Index i, Index j,  Real* data )
          {
-            data[ i * _size + j ] = i + j;
+            data[ i * _size + j ] = 1.0;
          };
          
          ParallelFor2D< Device >::exec( ( Index ) 0,
@@ -88,8 +122,8 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
    protected:
         
       Index size;
-      
       Vector v;
+      Grid grid;
       
 };
 
@@ -101,16 +135,22 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
    public:
       
       using Vector = Containers::Vector< Real, Device, Index >;
+      using Grid = Meshes::Grid< 3, Real, Device, Index >;
+      using Coordinates = typename Grid::CoordinatesType;
       
       GridTraversersBenchmark( Index size )
-      : size( size ), v( size * size * size ) {}
+      : size( size ),
+        v( size * size * size ),
+        grid( size, size, size )
+      {
+      }
       
-      void writeOne()
+      void writeOneUsingParallelFor()
       {
          Index _size = this->size;
          auto f = [=] __cuda_callable__ ( Index i, Index j, Index k, Real* data )
          {
-            data[ ( i * _size + j ) * _size + k ] = i + j + k;
+            data[ ( i * _size + j ) * _size + k ] = 1.0;
          };
          
          ParallelFor3D< Device >::exec( ( Index ) 0, 
@@ -126,6 +166,7 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
       
       Index size;
       Vector v;
+      Grid grid;
       
 };
 
