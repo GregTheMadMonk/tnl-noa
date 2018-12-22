@@ -64,7 +64,7 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
          cudaTraverserBenchmark.writeOneUsingParallelFor();
       }; 
 
-      benchmark.setOperation( "write 1 using parallel for", size * sizeof( Real ) / oneGB );
+      benchmark.setOperation( "write 1 using parallel for", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
       benchmark.time( reset, "CPU", hostWriteOneUsingParallelFor );
 #ifdef HAVE_CUDA
       benchmark.time( reset, "GPU", cudaWriteOneUsingParallelFor );

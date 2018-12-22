@@ -105,7 +105,7 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
       void writeOneUsingParallelFor()
       {
          Index _size = this->size;
-         auto f = [=] __cuda_callable__ ( Index i, Index j,  Real* data )
+         auto f = [=] __cuda_callable__ ( Index j, Index i,  Real* data )
          {
             data[ i * _size + j ] = 1.0;
          };
@@ -146,7 +146,7 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
       void writeOneUsingParallelFor()
       {
          Index _size = this->size;
-         auto f = [=] __cuda_callable__ ( Index i, Index j, Index k, Real* data )
+         auto f = [=] __cuda_callable__ ( Index k, Index j, Index i, Real* data )
          {
             data[ ( i * _size + j ) * _size + k ] = 1.0;
          };
