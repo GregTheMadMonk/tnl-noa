@@ -54,6 +54,9 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
          Benchmark::MetadataColumns( 
             {  {"size", convertToString( size ) }, } ) );
 
+      /****
+       * Write one using parallel for
+       */
       auto hostWriteOneUsingParallelFor = [&] ()
       {
          hostTraverserBenchmark.writeOneUsingParallelFor();
@@ -69,6 +72,26 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
 #ifdef HAVE_CUDA
       benchmark.time( reset, "GPU", cudaWriteOneUsingParallelFor );
 #endif
+
+      /****
+       * Write one using traverser
+       */
+      auto hostWriteOneUsingTraverser = [&] ()
+      {
+         hostTraverserBenchmark.writeOneUsingTraverser();
+      }; 
+
+      auto cudaWriteOneUsingTraverser = [&] ()
+      {
+         cudaTraverserBenchmark.writeOneUsingTraverser();
+      }; 
+      
+      benchmark.setOperation( "write 1 using traverser", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
+      benchmark.time( reset, "CPU", hostWriteOneUsingTraverser );
+#ifdef HAVE_CUDA
+      benchmark.time( reset, "GPU", cudaWriteOneUsingTraverser );
+#endif
+      
       
    }   
    return true;
@@ -76,7 +99,7 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
 
 void setupConfig( Config::ConfigDescription& config )
 {
-   config.addEntry< String >( "log-file", "Log file name.", "tnl-benchmark-blas.log");
+   config.addEntry< String >( "log-file", "Log file name.", "tnl-benchmark-traversers.log");
    config.addEntry< String >( "output-mode", "Mode for opening the log file.", "overwrite" );
    config.addEntryEnum( "append" );
    config.addEntryEnum( "overwrite" );

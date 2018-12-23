@@ -20,9 +20,41 @@
 #include <TNL/Meshes/GridEntityConfig.h>
 #include <TNL/Meshes/Traverser.h>
 #include <TNL/Functions/MeshFunction.h>
+#include <TNL/Pointers/SharedPointer.h>
 
 namespace TNL {
    namespace Benchmarks {
+      
+
+template< typename TraverserUserData >
+class WriteOneEntitiesProcessor
+{
+   public:
+      
+      using MeshType = typename TraverserUserData::MeshType;
+      using DeviceType = typename MeshType::DeviceType;
+
+      template< typename GridEntity >
+      __cuda_callable__
+      static inline void processEntity( const MeshType& mesh,
+                                        TraverserUserData& userData,
+                                        const GridEntity& entity )
+      {
+         auto& u = userData.u.template modifyData< DeviceType >();
+         u( entity ) = 1.0;
+      }
+};
+
+template< typename MeshFunctionPointer >
+class WriteOneUserData
+{
+   public:
+      
+      using MeshType = typename MeshFunctionPointer::ObjectType::MeshType;
+      
+      MeshFunctionPointer u;
+      
+};
       
 
 template< int Dimension,
@@ -40,14 +72,19 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
       
       using Vector = Containers::Vector< Real, Device, Index >;
       using Grid = Meshes::Grid< 1, Real, Device, Index >;
+      using GridPointer = Pointers::SharedPointer< Grid >;
       using Coordinates = typename Grid::CoordinatesType;
       using MeshFunction = Functions::MeshFunction< Grid >;
+      using MeshFunctionPointer = Pointers::SharedPointer< MeshFunction >;
       using Cell = typename Grid::EntityType< 1, Meshes::GridEntityNoStencilStorage >;
       using Traverser = Meshes::Traverser< Grid, Cell >;
+      using WriteOneTraverserUserDataType = WriteOneUserData< MeshFunctionPointer >;
+      using WriteOneEntitiesProcessorType = WriteOneEntitiesProcessor< WriteOneTraverserUserDataType >;
       
       GridTraversersBenchmark( Index size )
-      :v( size ), size( size ), grid( size )
+      :v( size ), size( size ), grid( size ), u( grid )
       {
+         userData.u = this->u;
       }
       
       void writeOneUsingParallelFor()
@@ -63,26 +100,18 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
       
       void writeOneUsingTraverser()
       {
-         class EntitiesProcessor
-         {
-         };
-
-         class UserData
-         {
-         };
-
-         Traverser traverser;
-         /*traverser.template processAllEntities< UserData, EntitiesProcessor >
-                                           ( meshPointer,
-                                             userData );*/
-
+         traverser.template processAllEntities< WriteOneTraverserUserDataType, WriteOneEntitiesProcessorType >
+            ( grid, userData );
       }
 
       protected:
 
          Index size;
          Vector v;
-         Grid grid;
+         GridPointer grid;
+         MeshFunctionPointer u;
+         Traverser traverser;
+         WriteOneTraverserUserDataType userData;
 };
 
 
@@ -95,11 +124,20 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
       
       using Vector = Containers::Vector< Real, Device, Index >;
       using Grid = Meshes::Grid< 2, Real, Device, Index >;
+      using GridPointer = Pointers::SharedPointer< Grid >;
       using Coordinates = typename Grid::CoordinatesType;
+      using MeshFunction = Functions::MeshFunction< Grid >;
+      using MeshFunctionPointer = Pointers::SharedPointer< MeshFunction >;
+      using Cell = typename Grid::EntityType< 2, Meshes::GridEntityNoStencilStorage >;
+      using Traverser = Meshes::Traverser< Grid, Cell >;
+      using TraverserUserData = WriteOneUserData< MeshFunctionPointer >;
+      using WriteOneTraverserUserDataType = WriteOneUserData< MeshFunctionPointer >;
+      using WriteOneEntitiesProcessorType = WriteOneEntitiesProcessor< WriteOneTraverserUserDataType >;
       
       GridTraversersBenchmark( Index size )
-      :size( size ), v( size * size ), grid( size, size )
+      :size( size ), v( size * size ), grid( size, size ), u( grid )
       {
+         userData.u = this->u;
       }
       
       void writeOneUsingParallelFor()
@@ -116,13 +154,22 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
                                         this->size,
                                         f, v.getData() );
       }
+      
+      void writeOneUsingTraverser()
+      {
+         traverser.template processAllEntities< WriteOneTraverserUserDataType, WriteOneEntitiesProcessorType >
+            ( grid, userData );
+      }
+
 
    protected:
         
       Index size;
       Vector v;
-      Grid grid;
-      
+      GridPointer grid;
+      MeshFunctionPointer u;
+      Traverser traverser;
+      WriteOneTraverserUserDataType userData;
 };
 
 template< typename Device,
@@ -134,13 +181,23 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
       
       using Vector = Containers::Vector< Real, Device, Index >;
       using Grid = Meshes::Grid< 3, Real, Device, Index >;
+      using GridPointer = Pointers::SharedPointer< Grid >;
       using Coordinates = typename Grid::CoordinatesType;
+      using MeshFunction = Functions::MeshFunction< Grid >;
+      using MeshFunctionPointer = Pointers::SharedPointer< MeshFunction >;
+      using Cell = typename Grid::EntityType< 3, Meshes::GridEntityNoStencilStorage >;
+      using Traverser = Meshes::Traverser< Grid, Cell >;
+      using TraverserUserData = WriteOneUserData< MeshFunctionPointer >;
+      using WriteOneTraverserUserDataType = WriteOneUserData< MeshFunctionPointer >;
+      using WriteOneEntitiesProcessorType = WriteOneEntitiesProcessor< WriteOneTraverserUserDataType >;
       
       GridTraversersBenchmark( Index size )
       : size( size ),
         v( size * size * size ),
-        grid( size, size, size )
+        grid( size, size, size ),
+        u( grid )
       {
+         userData.u = this->u;
       }
       
       void writeOneUsingParallelFor()
@@ -159,13 +216,21 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
                                         this->size,
                                         f, v.getData() );         
       }
+      
+      void writeOneUsingTraverser()
+      {
+         traverser.template processAllEntities< WriteOneTraverserUserDataType, WriteOneEntitiesProcessorType >
+            ( grid, userData );
+      }      
 
    protected:
       
       Index size;
       Vector v;
-      Grid grid;
-      
+      GridPointer grid;
+      MeshFunctionPointer u;
+      Traverser traverser;
+      WriteOneTraverserUserDataType userData;      
 };
 
 
