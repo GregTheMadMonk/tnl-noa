@@ -3,8 +3,6 @@
 #include <TNL/Assert.h>
 #include <TNL/Containers/StaticVector.h>
 
-using namespace std;
-
 namespace TNL {
 namespace Meshes { 
 namespace DistributedMeshes {

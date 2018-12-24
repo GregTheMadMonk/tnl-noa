@@ -11,6 +11,8 @@
 
 #pragma once
 
+#include <iostream>
+
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Logger.h>
 #include <TNL/Meshes/DistributedMeshes/Directions.h>
@@ -136,7 +138,7 @@ class DistributedMesh< Grid< Dimension, Real, Device, Index > >
 
       void setupNeighbors();
       
-      void print( ostream& str ) const;
+      void print( std::ostream& str ) const;
 
       GridType globalGrid;
       PointType localOrigin;

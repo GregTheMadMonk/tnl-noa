@@ -13,8 +13,6 @@
 #include <cstdlib>
 #include <TNL/Communicators/MpiCommunicator.h>
 
-#include <iostream>
-
 #include "DistributedGrid.h"
 
 namespace TNL {
@@ -538,7 +536,7 @@ writeProlog( Logger& logger )
 template< int Dimension, typename Real, typename Device, typename Index >    
 void
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
-print( ostream& str ) const
+print( std::ostream& str ) const
 {
    using Communicator = Communicators::MpiCommunicator;
    for( int j = 0; j < Communicator::GetSize( Communicator::AllGroup ); j++ )
