@@ -111,7 +111,6 @@ void setupConfig( Config::ConfigDescription& config )
    config.addEntry< int >( "min-size", "Minimum size of arrays/vectors used in the benchmark.", 10 );
    config.addEntry< int >( "max-size", "Minimum size of arrays/vectors used in the benchmark.", 1000 );
    config.addEntry< int >( "size-step-factor", "Factor determining the size of arrays/vectors used in the benchmark. First size is min-size and each following size is stepFactor*previousSize, up to max-size.", 2 );
-   config.addEntry< bool >( "verbose", "Verbose mode.", true );
 
    Benchmark::configSetup( config );
    

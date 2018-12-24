@@ -48,12 +48,13 @@ timeFunction( ComputeFunction compute,
    Timer timer;
 
    // set timer to the monitor
-   monitor.setTimer( timer );
+   //monitor.setTimer( timer );
 
    // warm up
    reset();
    compute();
 
+   //timer.start();
    int i;
    for( i = 0;
         i < loops || timer.getRealTime() < minTime;
@@ -91,12 +92,12 @@ public:
    using HeaderElements = std::vector< String >;
    using RowElements = std::vector< double >;
 
-   Logging( bool verbose = true )
+   Logging( int verbose = true )
    : verbose(verbose)
    {}
 
    void
-   setVerbose( bool verbose)
+   setVerbose( int verbose)
    {
       this->verbose = verbose;
    }
@@ -286,7 +287,7 @@ protected:
    std::string header_indent;
    std::string body_indent;
 
-   bool verbose;
+   int verbose;
    MetadataColumns metadataColumns;
    bool header_changed = true;
    std::vector< std::pair< String, int > > horizontalGroups;
@@ -331,13 +332,14 @@ public:
    {
       config.addEntry< int >( "loops", "Number of iterations for every computation.", 10 );
       config.addEntry< double >( "min-time", "Minimal real time in seconds for every computation.", 1 );
+      config.addEntry< int >( "verbose", "Verbose mode, the higher number the more verbosity.", 1 );
    }
 
    void setup( const Config::ParameterContainer& parameters )
    {
       this->loops = parameters.getParameter< unsigned >( "loops" );
       this->minTime = parameters.getParameter< double >( "min-time" );
-      const unsigned verbose = parameters.getParameter< unsigned >( "verbose" );
+      const int verbose = parameters.getParameter< unsigned >( "verbose" );
       Logging::setVerbose( verbose );
    }
    // TODO: ensure that this is not called in the middle of the benchmark
@@ -451,13 +453,13 @@ public:
    {
       result.time = std::numeric_limits<double>::quiet_NaN();
       try {
-         if( verbose ) {
+         if( verbose > 1 ) {
             // run the monitor main loop
             Solvers::SolverMonitorThread monitor_thread( monitor );
             result.time = timeFunction( compute, reset, loops, minTime, monitor );
          }
          else {
-            result.time = timeFunction( compute, reset, minTime, loops, monitor );
+            result.time = timeFunction( compute, reset, loops, minTime, monitor );
          }
       }
       catch ( const std::exception& e ) {
