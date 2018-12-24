@@ -5,12 +5,12 @@
 
 using namespace TNL;
 using namespace std;
-       
+
 int main( int argc, char* argv[] )
 {
     // constructors
     String str1;
-    String str2( "xxstringxxx", 2, 3 );
+    String str2( "string" );
     String str3( str2 );                    // copy constructor
     String str4 = convertToString( 28.4 );  // converts to string
 
@@ -30,9 +30,7 @@ int main( int argc, char* argv[] )
     size = str3.getSize();
     cout << "size of string:" << size << "bytes" << endl;*/
 
-    String str;
-    str.setString( "Something new" );
-    String setter = str;
+    String setter = "Something new";
     cout << "setter:" << setter << endl;
 
     const char* getter = str4.getString();
@@ -121,33 +119,21 @@ int main( int argc, char* argv[] )
 
     // split
     String dates("3/4/2005;8/7/2011;11/12/2019");
-    Containers::List<String> list;
-    dates.split( list, ';' );
-    cout << "list_dates:" << list << endl;
+    std::vector<String> list = dates.split(';');
+    cout << "list_dates: " << list[0] << ", " << list[1] << ", " << list[2] << endl;
 
     String cars("opel,mazda,,skoda,");
-    Containers::List<String> list3, list5;
-    cars.split(list3, ',', true);
-    cars.split(list5, ',');
-    cout << "split with true:" << list3 << endl;
-    cout << "split with false:" << list5 << endl;
+    std::vector<String> list3 = cars.split(',', true);
+    cout << "split with true:" << list3[0] << ", " << list3[1] << ", " << list3[2] << endl;
+    std::vector<String> list5 = cars.split(',');
+    cout << "split with false:" << list5[0] << ", " << list5[1] << ", " << list5[2] << ", " << list5[3] << endl;
 
     // save
     File myFile;
-    String("Header").save(myFile); // saves "Header" into myFile
+    myFile << String("Header"); // saves "Header" into myFile
 
     // load
     String strg;
-    strg.load(myFile);
+    myFile >> strg;
     cout << "strg:" << strg << endl;
-
-    // get line
-    std::stringstream text;
-    text << "Hello!" << std::endl;
-    text << "What's up?" << std::endl;
-
-    String string;
-    string.getLine( text );
-    cout << "str:" << string << endl;
-
 }
