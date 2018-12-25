@@ -34,53 +34,60 @@ namespace Benchmarks {
 
 const double oneGB = 1024.0 * 1024.0 * 1024.0;
 
-template< typename ComputeFunction,
-          typename ResetFunction,
-          typename Monitor = TNL::Solvers::IterativeSolverMonitor< double, int > >
-double
-timeFunction( ComputeFunction compute,
-              ResetFunction reset,
-              int loops,
-              const double& minTime, 
-              Monitor && monitor = Monitor() )
+template< typename Device >
+class FunctionTimer
 {
-   // the timer is constructed zero-initialized and stopped
-   Timer timer;
+   public:
+      using DeviceType = Device;
 
-   // set timer to the monitor
-   monitor.setTimer( timer );
+      template< typename ComputeFunction,
+                typename ResetFunction,
+                typename Monitor = TNL::Solvers::IterativeSolverMonitor< double, int > >
+      static double
+      timeFunction( ComputeFunction compute,
+                    ResetFunction reset,
+                    int loops,
+                    const double& minTime, 
+                    Monitor && monitor = Monitor() )
+      {
+         // the timer is constructed zero-initialized and stopped
+         Timer timer;
 
-   // warm up
-   reset();
-   compute();
+         // set timer to the monitor
+         monitor.setTimer( timer );
 
-   //timer.start();
-   int i;
-   for( i = 0;
-        i < loops || timer.getRealTime() < minTime;
-        ++i) 
-   {
-      // abuse the monitor's "time" for loops
-      monitor.setTime( i + 1 );
+         // warm up
+         reset();
+         compute();
 
-      reset();
+         //timer.start();
+         int i;
+         for( i = 0;
+              i < loops || timer.getRealTime() < minTime;
+              ++i) 
+         {
+            // abuse the monitor's "time" for loops
+            monitor.setTime( i + 1 );
 
-      // Explicit synchronization of the CUDA device
-      // TODO: not necessary for host computations
-#ifdef HAVE_CUDA
-      cudaDeviceSynchronize();
+            reset();
+
+            // Explicit synchronization of the CUDA device
+#ifdef HAVE_CUDA      
+            if( std::is_same< Device, Devices::Cuda >::value )
+               cudaDeviceSynchronize();
 #endif
-      timer.start();
-      compute();
+            timer.start();
+            compute();
 #ifdef HAVE_CUDA
-      cudaDeviceSynchronize();
+            if( std::is_same< Device, Devices::Cuda >::value )
+               cudaDeviceSynchronize();
 #endif
-      timer.stop();
-   }
+            timer.stop();
+         }
 
-   return timer.getRealTime() / ( double ) i;
-}
-
+         return timer.getRealTime() / ( double ) i;
+      }
+};
 
 class Logging
 {
@@ -443,7 +450,8 @@ public:
    // "speedup" columns.
    // TODO: allow custom columns bound to lambda functions (e.g. for Gflops calculation)
    // Also terminates the recursion of the following variadic template.
-   template< typename ResetFunction,
+   template< typename Device,
+             typename ResetFunction,
              typename ComputeFunction >
    double
    time( ResetFunction reset,
@@ -456,10 +464,10 @@ public:
          if( verbose > 1 ) {
             // run the monitor main loop
             Solvers::SolverMonitorThread monitor_thread( monitor );
-            result.time = timeFunction( compute, reset, loops, minTime, monitor );
+            result.time = FunctionTimer< Device >::timeFunction( compute, reset, loops, minTime, monitor );
          }
          else {
-            result.time = timeFunction( compute, reset, loops, minTime, monitor );
+            result.time = FunctionTimer< Device >::timeFunction( compute, reset, loops, minTime, monitor );
          }
       }
       catch ( const std::exception& e ) {
@@ -477,7 +485,8 @@ public:
       return this->baseTime;
    }
 
-   template< typename ResetFunction,
+   template< typename Device, 
+             typename ResetFunction,
              typename ComputeFunction,
              typename... NextComputations >
    inline double
@@ -486,7 +495,7 @@ public:
          ComputeFunction & compute )
    {
       BenchmarkResult result;
-      return time( reset, performer, compute, result );
+      return time< Device, ResetFunction, ComputeFunction >( reset, performer, compute, result );
    }
 
    // Adds an error message to the log. Should be called in places where the

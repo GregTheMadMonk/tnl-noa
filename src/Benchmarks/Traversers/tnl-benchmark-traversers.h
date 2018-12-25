@@ -41,7 +41,7 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
    const int maxSize = parameters.getParameter< int >( "max-size" );
 
    // Full grid traversing
-   benchmark.newBenchmark( String("Full grid traversing - write 1" + convertToString( Dimension ) + "D" ), metadata );
+   benchmark.newBenchmark( String("Full grid traversing - write 1 " + convertToString( Dimension ) + "D" ), metadata );
    for( std::size_t size = minSize; size <= maxSize; size *= 2 )
    {
 
@@ -78,9 +78,9 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
       };
 
       benchmark.setOperation( "Pure C", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
-      benchmark.time( hostReset, "CPU", hostWriteOneUsingPureC );
+      benchmark.time< Devices::Host >( hostReset, "CPU", hostWriteOneUsingPureC );
 #ifdef HAVE_CUDA
-      benchmark.time( cudaReset, "GPU", cudaWriteOneUsingPureC );
+      benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaWriteOneUsingPureC );
 #endif
 
       /****
@@ -97,9 +97,9 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
       }; 
 
       benchmark.setOperation( "parallel for", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
-      benchmark.time( hostReset, "CPU", hostWriteOneUsingParallelFor );
+      benchmark.time< Devices::Host >( hostReset, "CPU", hostWriteOneUsingParallelFor );
 #ifdef HAVE_CUDA
-      benchmark.time( cudaReset, "GPU", cudaWriteOneUsingParallelFor );
+      benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaWriteOneUsingParallelFor );
 #endif
 
       /****
@@ -113,12 +113,12 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
       auto cudaWriteOneUsingTraverser = [&] ()
       {
          cudaTraverserBenchmark.writeOneUsingTraverser();
-      }
+      };
 
       benchmark.setOperation( "traverser", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
-      benchmark.time( hostReset, "CPU", hostWriteOneUsingTraverser );
+      benchmark.time< Devices::Host >( hostReset, "CPU", hostWriteOneUsingTraverser );
 #ifdef HAVE_CUDA
-      benchmark.time( cudaReset, "GPU", cudaWriteOneUsingTraverser );
+      benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaWriteOneUsingTraverser );
 #endif
    }
    return true;
