@@ -163,9 +163,9 @@ benchmarkSpMV( Benchmark & benchmark,
    };
 
    benchmark.setOperation( datasetSize );
-   benchmark.time( reset, "CPU", spmvHost );
+   benchmark.time< Devices::Host >( reset, "CPU", spmvHost );
 #ifdef HAVE_CUDA
-   benchmark.time( reset, "GPU", spmvCuda );
+   benchmark.time< Devices::Cuda >( reset, "GPU", spmvCuda );
 #endif
 
    return true;
