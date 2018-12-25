@@ -39,20 +39,49 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
    // const std::size_t maxSize = parameters.getParameter< std::size_t >( "max-size" );
    const int minSize = parameters.getParameter< int >( "min-size" );
    const int maxSize = parameters.getParameter< int >( "max-size" );
-   
+
    // Full grid traversing
-   benchmark.newBenchmark( String("Full grid traversing " + convertToString( Dimension ) + "D" ), metadata );
+   benchmark.newBenchmark( String("Full grid traversing - write 1" + convertToString( Dimension ) + "D" ), metadata );
    for( std::size_t size = minSize; size <= maxSize; size *= 2 )
    {
 
       GridTraversersBenchmark< Dimension, Devices::Host, Real, Index > hostTraverserBenchmark( size );
       GridTraversersBenchmark< Dimension, Devices::Cuda, Real, Index > cudaTraverserBenchmark( size );         
 
-      auto reset = [&]() {};
+      auto noReset = []() {};
+
+      auto hostReset = [&]()
+      {
+         hostTraverserBenchmark.reset();
+      };
+
+      auto cudaReset = [&]()
+      {
+         cudaTraverserBenchmark.reset();
+      };
       
       benchmark.setMetadataColumns(
          Benchmark::MetadataColumns( 
             {  {"size", convertToString( size ) }, } ) );
+
+      /****
+       * Write one using C for
+       */
+      auto hostWriteOneUsingPureC = [&] ()
+      {
+         hostTraverserBenchmark.writeOneUsingPureC();
+      };
+
+      auto cudaWriteOneUsingPureC = [&] ()
+      {
+         cudaTraverserBenchmark.writeOneUsingPureC();
+      };
+
+      benchmark.setOperation( "Pure C", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
+      benchmark.time( hostReset, "CPU", hostWriteOneUsingPureC );
+#ifdef HAVE_CUDA
+      benchmark.time( cudaReset, "GPU", cudaWriteOneUsingPureC );
+#endif
 
       /****
        * Write one using parallel for
@@ -67,10 +96,10 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
          cudaTraverserBenchmark.writeOneUsingParallelFor();
       }; 
 
-      benchmark.setOperation( "write 1 using parallel for", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
-      benchmark.time( reset, "CPU", hostWriteOneUsingParallelFor );
+      benchmark.setOperation( "parallel for", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
+      benchmark.time( hostReset, "CPU", hostWriteOneUsingParallelFor );
 #ifdef HAVE_CUDA
-      benchmark.time( reset, "GPU", cudaWriteOneUsingParallelFor );
+      benchmark.time( cudaReset, "GPU", cudaWriteOneUsingParallelFor );
 #endif
 
       /****
@@ -84,16 +113,14 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
       auto cudaWriteOneUsingTraverser = [&] ()
       {
          cudaTraverserBenchmark.writeOneUsingTraverser();
-      }; 
-      
-      benchmark.setOperation( "write 1 using traverser", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
-      benchmark.time( reset, "CPU", hostWriteOneUsingTraverser );
+      }
+
+      benchmark.setOperation( "traverser", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
+      benchmark.time( hostReset, "CPU", hostWriteOneUsingTraverser );
 #ifdef HAVE_CUDA
-      benchmark.time( reset, "GPU", cudaWriteOneUsingTraverser );
+      benchmark.time( cudaReset, "GPU", cudaWriteOneUsingTraverser );
 #endif
-      
-      
-   }   
+   }
    return true;
 }
 
@@ -107,16 +134,16 @@ void setupConfig( Config::ConfigDescription& config )
    config.addEntryEnum( "float" );
    config.addEntryEnum( "double" );
    config.addEntryEnum( "all" );
-   config.addEntry< int >( "dimension", "Set the problem dimension. 0 means all dimensions 1,2 and 3.", 0 );   
+   config.addEntry< int >( "dimension", "Set the problem dimension. 0 means all dimensions 1,2 and 3.", 0 );
    config.addEntry< int >( "min-size", "Minimum size of arrays/vectors used in the benchmark.", 10 );
    config.addEntry< int >( "max-size", "Minimum size of arrays/vectors used in the benchmark.", 1000 );
    config.addEntry< int >( "size-step-factor", "Factor determining the size of arrays/vectors used in the benchmark. First size is min-size and each following size is stepFactor*previousSize, up to max-size.", 2 );
 
    Benchmark::configSetup( config );
-   
+
    config.addDelimiter( "Device settings:" );
    Devices::Host::configSetup( config );
-   Devices::Cuda::configSetup( config );   
+   Devices::Cuda::configSetup( config );
 }
 
 template< int Dimension >
@@ -126,18 +153,17 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
    const String & outputMode = parameters.getParameter< String >( "output-mode" );
    const String & precision = parameters.getParameter< String >( "precision" );
    const unsigned sizeStepFactor = parameters.getParameter< unsigned >( "size-step-factor" );
-   
 
    Benchmark benchmark; //( loops, verbose );
    benchmark.setup( parameters );
    Benchmark::MetadataMap metadata = getHardwareMetadata();
    runBenchmark< Dimension >( parameters, benchmark, metadata );
-   
+
    auto mode = std::ios::out;
    if( outputMode == "append" )
        mode |= std::ios::app;
    std::ofstream logFile( logFileName.getString(), mode );   
-   
+
    if( ! benchmark.save( logFile ) )
    {
       std::cerr << "Failed to write the benchmark results to file '" << parameters.getParameter< String >( "log-file" ) << "'." << std::endl;

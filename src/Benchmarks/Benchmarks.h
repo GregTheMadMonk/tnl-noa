@@ -48,7 +48,7 @@ timeFunction( ComputeFunction compute,
    Timer timer;
 
    // set timer to the monitor
-   //monitor.setTimer( timer );
+   monitor.setTimer( timer );
 
    // warm up
    reset();
