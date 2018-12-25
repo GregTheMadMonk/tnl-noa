@@ -120,6 +120,7 @@ ADD_TEST( StaticVectorOperationsTest ${EXECUTABLE_OUTPUT_PATH}/StaticVectorOpera
 
 
 ADD_SUBDIRECTORY( Multimaps )
+ADD_SUBDIRECTORY( ndarray )
 
 
 if( ${BUILD_MPI} )
