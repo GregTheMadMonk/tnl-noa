@@ -48,8 +48,6 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
       GridTraversersBenchmark< Dimension, Devices::Host, Real, Index > hostTraverserBenchmark( size );
       GridTraversersBenchmark< Dimension, Devices::Cuda, Real, Index > cudaTraverserBenchmark( size );         
 
-      auto noReset = []() {};
-
       auto hostReset = [&]()
       {
          hostTraverserBenchmark.reset();
@@ -78,10 +76,17 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
       };
 
       benchmark.setOperation( "Pure C", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
+      benchmark.time< Devices::Host >( "CPU", hostWriteOneUsingPureC );
+#ifdef HAVE_CUDA
+      benchmark.time< Devices::Cuda >( "GPU", cudaWriteOneUsingPureC );
+#endif
+      
+      benchmark.setOperation( "Pure C RST", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
       benchmark.time< Devices::Host >( hostReset, "CPU", hostWriteOneUsingPureC );
 #ifdef HAVE_CUDA
       benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaWriteOneUsingPureC );
 #endif
+      
 
       /****
        * Write one using parallel for
