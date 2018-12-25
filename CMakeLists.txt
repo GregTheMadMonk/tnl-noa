@@ -152,7 +152,7 @@ endif()
 # Check for CUDA
 #
 if( ${WITH_CUDA} )
-    find_package( CUDA )
+    find_package( CUDA 9.0 )
     if( CUDA_FOUND )
         set( BUILD_CUDA TRUE)
         set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF)
