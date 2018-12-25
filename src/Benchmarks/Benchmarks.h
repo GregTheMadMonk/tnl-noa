@@ -46,46 +46,84 @@ class FunctionTimer
       static double
       timeFunction( ComputeFunction compute,
                     ResetFunction reset,
-                    int loops,
-                    const double& minTime, 
-                    Monitor && monitor = Monitor() )
+                    int maxLoops,
+                    const double& minTime,
+                    int verbose = 1,
+                    Monitor && monitor = Monitor(),
+                    bool performReset = true )
       {
          // the timer is constructed zero-initialized and stopped
          Timer timer;
 
          // set timer to the monitor
-         monitor.setTimer( timer );
+         if( verbose > 1 )
+            monitor.setTimer( timer );
 
          // warm up
          reset();
          compute();
 
-         //timer.start();
-         int i;
-         for( i = 0;
-              i < loops || timer.getRealTime() < minTime;
-              ++i) 
+         int loops;
+         // If we do not perform reset function and don't need
+         // the monitor, the timer is not interrupted after each loop.
+         if( ! performReset && verbose < 2 )
          {
-            // abuse the monitor's "time" for loops
-            monitor.setTime( i + 1 );
-
-            reset();
-
+            timer.start();
             // Explicit synchronization of the CUDA device
 #ifdef HAVE_CUDA      
-            if( std::is_same< Device, Devices::Cuda >::value )
-               cudaDeviceSynchronize();
-#endif
-            timer.start();
-            compute();
+               if( std::is_same< Device, Devices::Cuda >::value )
+                  cudaDeviceSynchronize();
+#endif            
+            for( loops = 0;
+                 loops < maxLoops || timer.getRealTime() < minTime;
+                 ++loops) 
+               compute();
+            // Explicit synchronization of the CUDA device
 #ifdef HAVE_CUDA
             if( std::is_same< Device, Devices::Cuda >::value )
                cudaDeviceSynchronize();
 #endif
             timer.stop();
          }
+         else
+         {
+            for( loops = 0;
+                 loops < maxLoops || timer.getRealTime() < minTime;
+                 ++loops) 
+            {
+               // abuse the monitor's "time" for loops
+               monitor.setTime( loops + 1 );
 
-         return timer.getRealTime() / ( double ) i;
+               reset();
+
+               // Explicit synchronization of the CUDA device
+#ifdef HAVE_CUDA      
+               if( std::is_same< Device, Devices::Cuda >::value )
+                  cudaDeviceSynchronize();
+#endif
+               timer.start();
+               compute();
+#ifdef HAVE_CUDA
+               if( std::is_same< Device, Devices::Cuda >::value )
+                  cudaDeviceSynchronize();
+#endif
+               timer.stop();
+            }
+         }
+         return timer.getRealTime() / ( double ) loops;
+      }
+
+      template< typename ComputeFunction,
+                typename Monitor = TNL::Solvers::IterativeSolverMonitor< double, int > >
+      static double
+      timeFunction( ComputeFunction compute,
+                    int maxLoops,
+                    const double& minTime,
+                    int verbose = 1,
+                    Monitor && monitor = Monitor() )
+      {
+         auto noReset = [] () {};
+         return timeFunction( compute, noReset, maxLoops, minTime, verbose, monitor, false );
       }
 };
 
@@ -464,10 +502,10 @@ public:
          if( verbose > 1 ) {
             // run the monitor main loop
             Solvers::SolverMonitorThread monitor_thread( monitor );
-            result.time = FunctionTimer< Device >::timeFunction( compute, reset, loops, minTime, monitor );
+            result.time = FunctionTimer< Device >::timeFunction( compute, reset, loops, minTime, verbose, monitor );
          }
          else {
-            result.time = FunctionTimer< Device >::timeFunction( compute, reset, loops, minTime, monitor );
+            result.time = FunctionTimer< Device >::timeFunction( compute, reset, loops, minTime, verbose, monitor );
          }
       }
       catch ( const std::exception& e ) {
@@ -496,6 +534,53 @@ public:
    {
       BenchmarkResult result;
       return time< Device, ResetFunction, ComputeFunction >( reset, performer, compute, result );
+   }
+   
+   /****
+    * The same methods as above but without reset function
+    */
+   template< typename Device,
+             typename ComputeFunction >
+   double
+   time( const String & performer,
+         ComputeFunction & compute,
+         BenchmarkResult & result )
+   {
+      result.time = std::numeric_limits<double>::quiet_NaN();
+      try {
+         if( verbose > 1 ) {
+            // run the monitor main loop
+            Solvers::SolverMonitorThread monitor_thread( monitor );
+            result.time = FunctionTimer< Device >::timeFunction( compute, loops, minTime, verbose, monitor );
+         }
+         else {
+            result.time = FunctionTimer< Device >::timeFunction( compute, loops, minTime, verbose, monitor );
+         }
+      }
+      catch ( const std::exception& e ) {
+         std::cerr << "timeFunction failed due to a C++ exception with description: " << e.what() << std::endl;
+      }
+
+      result.bandwidth = datasetSize / result.time;
+      result.speedup = this->baseTime / result.time;
+      if( this->baseTime == 0.0 )
+         this->baseTime = result.time;
+
+      writeTableHeader( performer, result.getTableHeader() );
+      writeTableRow( performer, result.getRowElements() );
+
+      return this->baseTime;
+   }
+
+   template< typename Device, 
+             typename ComputeFunction,
+             typename... NextComputations >
+   inline double
+   time( const String & performer,
+         ComputeFunction & compute )
+   {
+      BenchmarkResult result;
+      return time< Device, ComputeFunction >( performer, compute, result );
    }
 
    // Adds an error message to the log. Should be called in places where the
