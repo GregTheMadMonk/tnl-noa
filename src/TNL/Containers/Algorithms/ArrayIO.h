@@ -17,6 +17,7 @@
 
 namespace TNL {
 namespace Containers {
+namespace Algorithms {
 
 template< typename Value,
           typename Device,
@@ -82,5 +83,6 @@ class ArrayIO< Value, Device, Index, false >
 
 };
 
+} // namespace Algorithms
 } // namespace Containers
 } // namespace TNL

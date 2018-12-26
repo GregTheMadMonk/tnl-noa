@@ -1,4 +1,5 @@
-set( headers ArrayOperations.h
+set( headers ArrayIO.h
+             ArrayOperations.h
              ArrayOperationsHost_impl.h
              ArrayOperationsCuda_impl.h
              ArrayOperationsMIC_impl.h

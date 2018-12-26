@@ -29,7 +29,6 @@ set( headers Array.h
              DistributedVectorView_impl.h
              Partitioner.h
              Subrange.h
-             ArrayIO.h
              IndexedMap.h
              IndexedMap_impl.h
              IndexedSet.h

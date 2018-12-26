@@ -16,7 +16,7 @@
 #include <TNL/Math.h>
 #include <TNL/param-types.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
-#include <TNL/Containers/ArrayIO.h>
+#include <TNL/Containers/Algorithms/ArrayIO.h>
 #include <TNL/Containers/Array.h>
 
 namespace TNL {
@@ -476,7 +476,7 @@ bool Array< Value, Device, Index >::save( File& file ) const
       return false;
    if( ! file.write( &this->size ) )
       return false;
-   if( this->size != 0 && ! ArrayIO< Value, Device, Index >::save( file, this->data, this->size ) )
+   if( this->size != 0 && ! Algorithms::ArrayIO< Value, Device, Index >::save( file, this->data, this->size ) )
    {
       std::cerr << "I was not able to save " << this->getType()
            << " with size " << this -> getSize() << std::endl;
@@ -508,7 +508,7 @@ load( File& file )
    setSize( _size );
    if( _size )
    {
-      if( ! ArrayIO< Value, Device, Index >::load( file, this->data, this->size ) )
+      if( ! Algorithms::ArrayIO< Value, Device, Index >::load( file, this->data, this->size ) )
       {
          std::cerr << "I was not able to load " << this->getType()
                     << " with size " << this -> getSize() << std::endl;
@@ -547,7 +547,7 @@ boundLoad( File& file )
    else setSize( _size );
    if( _size )
    {
-      if( ! ArrayIO< Value, Device, Index >::load( file, this->data, this->size ) )
+      if( ! Algorithms::ArrayIO< Value, Device, Index >::load( file, this->data, this->size ) )
       {
          std::cerr << "I was not able to load " << this->getType()
                    << " with size " << this -> getSize() << std::endl;
