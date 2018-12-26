@@ -17,7 +17,7 @@
 #include <TNL/Math.h>
 
 namespace TNL {
-namespace DistributedContainers {
+namespace Containers {
 
 template< typename Index, typename Communicator >
 class Partitioner
@@ -74,5 +74,5 @@ public:
 // - ghost indices are stored in a general IndexMap class (based on collection of subranges):
 //   https://www.dealii.org/8.4.0/doxygen/deal.II/classIndexSet.html
 
-} // namespace DistributedContainers
+} // namespace Containers
 } // namespace TNL

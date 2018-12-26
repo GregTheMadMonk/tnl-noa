@@ -16,13 +16,13 @@
 
 #include <TNL/Matrices/SparseRow.h>
 #include <TNL/Communicators/MpiCommunicator.h>
-#include <TNL/DistributedContainers/Subrange.h>
-#include <TNL/DistributedContainers/DistributedVector.h>
-#include <TNL/DistributedContainers/DistributedVectorView.h>
-#include <TNL/DistributedContainers/DistributedSpMV.h>
+#include <TNL/Containers/Subrange.h>
+#include <TNL/Containers/DistributedVector.h>
+#include <TNL/Containers/DistributedVectorView.h>
+#include <TNL/Matrices/DistributedSpMV.h>
 
 namespace TNL {
-namespace DistributedContainers {
+namespace Matrices {
 
 template< typename T, typename R = void >
 struct enable_if_type
@@ -53,12 +53,12 @@ public:
    using DeviceType = typename Matrix::DeviceType;
    using IndexType = typename Matrix::IndexType;
    using CommunicatorType = Communicator;
-   using LocalRangeType = Subrange< typename Matrix::IndexType >;
+   using LocalRangeType = Containers::Subrange< typename Matrix::IndexType >;
 
    using HostType = DistributedMatrix< typename Matrix::HostType, Communicator >;
    using CudaType = DistributedMatrix< typename Matrix::CudaType, Communicator >;
 
-   using CompressedRowLengthsVector = DistributedVector< IndexType, DeviceType, IndexType, CommunicatorType >;
+   using CompressedRowLengthsVector = Containers::DistributedVector< IndexType, DeviceType, IndexType, CommunicatorType >;
 
    using MatrixRow = Matrices::SparseRow< RealType, IndexType >;
    using ConstMatrixRow = Matrices::SparseRow< typename std::add_const< RealType >::type, typename std::add_const< IndexType >::type >;
@@ -180,7 +180,7 @@ private:
    using Object::boundLoad;
 };
 
-} // namespace DistributedContainers
+} // namespace Matrices
 } // namespace TNL
 
 #include "DistributedMatrix_impl.h"

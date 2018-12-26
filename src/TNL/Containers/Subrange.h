@@ -19,7 +19,7 @@
 #include <TNL/param-types.h>
 
 namespace TNL {
-namespace DistributedContainers {
+namespace Containers {
 
 // Specifies a subrange [begin, end) of a range [0, gloablSize).
 template< typename Index >
@@ -128,5 +128,5 @@ std::ostream& operator<<( std::ostream& str, const Subrange< Index >& range )
    return str << Subrange< Index >::getType() << "( " << range.getBegin() << ", " << range.getEnd() << " )";
 }
 
-} // namespace DistributedContainers
+} // namespace Containers
 } // namespace TNL

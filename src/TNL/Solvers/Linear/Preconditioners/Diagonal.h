@@ -48,11 +48,11 @@ protected:
 };
 
 template< typename Matrix, typename Communicator >
-class Diagonal< DistributedContainers::DistributedMatrix< Matrix, Communicator > >
-: public Preconditioner< DistributedContainers::DistributedMatrix< Matrix, Communicator > >
+class Diagonal< Matrices::DistributedMatrix< Matrix, Communicator > >
+: public Preconditioner< Matrices::DistributedMatrix< Matrix, Communicator > >
 {
 public:
-   using MatrixType = DistributedContainers::DistributedMatrix< Matrix, Communicator >;
+   using MatrixType = Matrices::DistributedMatrix< Matrix, Communicator >;
    using RealType = typename MatrixType::RealType;
    using DeviceType = typename MatrixType::DeviceType;
    using IndexType = typename MatrixType::IndexType;

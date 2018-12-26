@@ -23,7 +23,7 @@ SET( headers AdEllpack.h
              ChunkedEllpack.h
              ChunkedEllpack_impl.h
              CSR.h
-             CSR_impl.h 
+             CSR_impl.h
              MatrixOperations.h
              MatrixReader.h
              MatrixReader_impl.h
@@ -40,6 +40,11 @@ SET( headers AdEllpack.h
              MultidiagonalMatrixSetter.h
              MultidiagonalMatrixSetter_impl.h
              MultidiagonalRow.h
-             MultidiagonalRow_impl.h  )
+             MultidiagonalRow_impl.h
+             DistributedMatrix.h
+             DistributedMatrix_impl.h
+             DistributedSpMV.h
+             ThreePartVector.h
+)
 
 INSTALL( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Matrices )

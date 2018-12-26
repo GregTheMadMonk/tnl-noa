@@ -1,5 +1,4 @@
 ADD_SUBDIRECTORY( Containers )
-ADD_SUBDIRECTORY( DistributedContainers )
 ADD_SUBDIRECTORY( Functions )
 ADD_SUBDIRECTORY( Matrices )
 ADD_SUBDIRECTORY( Meshes )

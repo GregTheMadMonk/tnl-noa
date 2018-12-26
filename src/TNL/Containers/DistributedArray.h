@@ -17,10 +17,10 @@
 #include <TNL/Containers/Array.h>
 #include <TNL/Containers/ArrayView.h>
 #include <TNL/Communicators/MpiCommunicator.h>
-#include <TNL/DistributedContainers/Subrange.h>
+#include <TNL/Containers/Subrange.h>
 
 namespace TNL {
-namespace DistributedContainers {
+namespace Containers {
 
 template< typename Value,
           typename Device = Devices::Host,
@@ -136,7 +136,7 @@ private:
    using Object::boundLoad;
 };
 
-} // namespace DistributedContainers
+} // namespace Containers
 } // namespace TNL
 
 #include "DistributedArray_impl.h"

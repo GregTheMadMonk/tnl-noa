@@ -31,3 +31,23 @@ ENDIF( BUILD_CUDA )
 ADD_TEST( SparseMatrixCopyTest ${EXECUTABLE_OUTPUT_PATH}/SparseMatrixCopyTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( SparseMatrixTest ${EXECUTABLE_OUTPUT_PATH}/SparseMatrixTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( DenseMatrixTest ${EXECUTABLE_OUTPUT_PATH}/SparseMatrixTest${CMAKE_EXECUTABLE_SUFFIX} )
+
+
+if( ${BUILD_MPI} )
+   if( BUILD_CUDA )
+      CUDA_ADD_EXECUTABLE( DistributedMatrixTest DistributedMatrixTest.cu
+                           OPTIONS ${CXX_TESTS_FLAGS} )
+      TARGET_LINK_LIBRARIES( DistributedMatrixTest
+                                 ${GTEST_BOTH_LIBRARIES}
+                                 tnl )
+   else()
+      ADD_EXECUTABLE( DistributedMatrixTest DistributedMatrixTest.cpp )
+      TARGET_COMPILE_OPTIONS( DistributedMatrixTest PRIVATE ${CXX_TESTS_FLAGS} )
+      TARGET_LINK_LIBRARIES( DistributedMatrixTest
+                                 ${GTEST_BOTH_LIBRARIES}
+                                 tnl )
+   endif()
+
+   SET( mpi_test_parameters -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedMatrixTest${CMAKE_EXECUTABLE_SUFFIX}" )
+   ADD_TEST( NAME DistributedMatrixTest COMMAND "mpirun" ${mpi_test_parameters})
+endif()

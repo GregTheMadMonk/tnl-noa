@@ -1,7 +1,7 @@
 /***************************************************************************
-                          DistributedVectorView_impl.h  -  description
+                          DistributedVector_impl.h  -  description
                              -------------------
-    begin                : Sep 20, 2018
+    begin                : Sep 7, 2018
     copyright            : (C) 2018 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -14,18 +14,18 @@
 
 #include <stdexcept>  // std::runtime_error
 
-#include "DistributedVectorView.h"
+#include "DistributedVector.h"
 #include <TNL/Containers/Algorithms/ReductionOperations.h>
 
 namespace TNL {
-namespace DistributedContainers {
+namespace Containers {
 
 template< typename Real,
           typename Device,
           typename Index,
           typename Communicator >
-typename DistributedVectorView< Real, Device, Index, Communicator >::LocalVectorViewType
-DistributedVectorView< Real, Device, Index, Communicator >::
+typename DistributedVector< Real, Device, Index, Communicator >::LocalVectorViewType
+DistributedVector< Real, Device, Index, Communicator >::
 getLocalVectorView()
 {
    return this->getLocalArrayView();
@@ -35,8 +35,8 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Communicator >
-typename DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType
-DistributedVectorView< Real, Device, Index, Communicator >::
+typename DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType
+DistributedVector< Real, Device, Index, Communicator >::
 getLocalVectorView() const
 {
    return this->getLocalArrayView();
@@ -48,15 +48,26 @@ template< typename Real,
           typename Index,
           typename Communicator >
 String
-DistributedVectorView< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Communicator >::
 getType()
 {
-   return String( "DistributedContainers::DistributedVectorView< " ) +
+   return String( "Containers::DistributedVector< " ) +
           TNL::getType< Real >() + ", " +
           Device::getDeviceType() + ", " +
           TNL::getType< Index >() + ", " +
           // TODO: communicators don't have a getType method
           "<Communicator> >";
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Communicator >
+String
+DistributedVector< Real, Device, Index, Communicator >::
+getTypeVirtual() const
+{
+   return getType();
 }
 
 
@@ -69,7 +80,7 @@ template< typename Real,
           typename Index,
           typename Communicator >
 void
-DistributedVectorView< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Communicator >::
 addElement( IndexType i,
             RealType value )
 {
@@ -86,7 +97,7 @@ template< typename Real,
           typename Communicator >
    template< typename Scalar >
 void
-DistributedVectorView< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Communicator >::
 addElement( IndexType i,
             RealType value,
             Scalar thisElementMultiplicator )
@@ -103,8 +114,8 @@ template< typename Real,
           typename Index,
           typename Communicator >
    template< typename Vector >
-DistributedVectorView< Real, Device, Index, Communicator >&
-DistributedVectorView< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Communicator >&
+DistributedVector< Real, Device, Index, Communicator >::
 operator-=( const Vector& vector )
 {
    TNL_ASSERT_EQ( this->getSize(), vector.getSize(),
@@ -125,8 +136,8 @@ template< typename Real,
           typename Index,
           typename Communicator >
    template< typename Vector >
-DistributedVectorView< Real, Device, Index, Communicator >&
-DistributedVectorView< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Communicator >&
+DistributedVector< Real, Device, Index, Communicator >::
 operator+=( const Vector& vector )
 {
    TNL_ASSERT_EQ( this->getSize(), vector.getSize(),
@@ -147,8 +158,8 @@ template< typename Real,
           typename Index,
           typename Communicator >
    template< typename Scalar >
-DistributedVectorView< Real, Device, Index, Communicator >&
-DistributedVectorView< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Communicator >&
+DistributedVector< Real, Device, Index, Communicator >::
 operator*=( Scalar c )
 {
    if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
@@ -162,8 +173,8 @@ template< typename Real,
           typename Index,
           typename Communicator >
    template< typename Scalar >
-DistributedVectorView< Real, Device, Index, Communicator >&
-DistributedVectorView< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Communicator >&
+DistributedVector< Real, Device, Index, Communicator >::
 operator/=( Scalar c )
 {
    if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
@@ -176,12 +187,12 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Communicator >
-typename DistributedVectorView< Real, Device, Index, Communicator >::NonConstReal
-DistributedVectorView< Real, Device, Index, Communicator >::
+Real
+DistributedVector< Real, Device, Index, Communicator >::
 max() const
 {
    const auto group = this->getCommunicationGroup();
-   NonConstReal result = Containers::Algorithms::ParallelReductionMax< Real >::initialValue();
+   Real result = Containers::Algorithms::ParallelReductionMax< Real >::initialValue();
    if( group != CommunicatorType::NullGroup ) {
       const Real localResult = getLocalVectorView().max();
       CommunicatorType::Allreduce( &localResult, &result, 1, MPI_MAX, group );
@@ -193,12 +204,12 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Communicator >
-typename DistributedVectorView< Real, Device, Index, Communicator >::NonConstReal
-DistributedVectorView< Real, Device, Index, Communicator >::
+Real
+DistributedVector< Real, Device, Index, Communicator >::
 min() const
 {
    const auto group = this->getCommunicationGroup();
-   NonConstReal result = Containers::Algorithms::ParallelReductionMin< Real >::initialValue();
+   Real result = Containers::Algorithms::ParallelReductionMin< Real >::initialValue();
    if( group != CommunicatorType::NullGroup ) {
       const Real localResult = getLocalVectorView().min();
       CommunicatorType::Allreduce( &localResult, &result, 1, MPI_MIN, group );
@@ -210,12 +221,12 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Communicator >
-typename DistributedVectorView< Real, Device, Index, Communicator >::NonConstReal
-DistributedVectorView< Real, Device, Index, Communicator >::
+Real
+DistributedVector< Real, Device, Index, Communicator >::
 absMax() const
 {
    const auto group = this->getCommunicationGroup();
-   NonConstReal result = Containers::Algorithms::ParallelReductionAbsMax< Real >::initialValue();
+   Real result = Containers::Algorithms::ParallelReductionAbsMax< Real >::initialValue();
    if( group != CommunicatorType::NullGroup ) {
       const Real localResult = getLocalVectorView().absMax();
       CommunicatorType::Allreduce( &localResult, &result, 1, MPI_MAX, group );
@@ -227,12 +238,12 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Communicator >
-typename DistributedVectorView< Real, Device, Index, Communicator >::NonConstReal
-DistributedVectorView< Real, Device, Index, Communicator >::
+Real
+DistributedVector< Real, Device, Index, Communicator >::
 absMin() const
 {
    const auto group = this->getCommunicationGroup();
-   NonConstReal result = Containers::Algorithms::ParallelReductionAbsMin< Real >::initialValue();
+   Real result = Containers::Algorithms::ParallelReductionAbsMin< Real >::initialValue();
    if( group != CommunicatorType::NullGroup ) {
       const Real localResult = getLocalVectorView().absMin();
       CommunicatorType::Allreduce( &localResult, &result, 1, MPI_MIN, group );
@@ -246,7 +257,7 @@ template< typename Real,
           typename Communicator >
    template< typename ResultType, typename Scalar >
 ResultType
-DistributedVectorView< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Communicator >::
 lpNorm( const Scalar p ) const
 {
    const auto group = this->getCommunicationGroup();
@@ -265,7 +276,7 @@ template< typename Real,
           typename Communicator >
    template< typename ResultType >
 ResultType
-DistributedVectorView< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Communicator >::
 sum() const
 {
    const auto group = this->getCommunicationGroup();
@@ -282,8 +293,8 @@ template< typename Real,
           typename Index,
           typename Communicator >
    template< typename Vector >
-typename DistributedVectorView< Real, Device, Index, Communicator >::NonConstReal
-DistributedVectorView< Real, Device, Index, Communicator >::
+Real
+DistributedVector< Real, Device, Index, Communicator >::
 differenceMax( const Vector& v ) const
 {
    TNL_ASSERT_EQ( this->getSize(), v.getSize(),
@@ -294,7 +305,7 @@ differenceMax( const Vector& v ) const
                   "Multiary operations are supported only on vectors within the same communication group." );
 
    const auto group = this->getCommunicationGroup();
-   NonConstReal result = Containers::Algorithms::ParallelReductionDiffMax< Real, typename Vector::RealType >::initialValue();
+   Real result = Containers::Algorithms::ParallelReductionDiffMax< Real, typename Vector::RealType >::initialValue();
    if( group != CommunicatorType::NullGroup ) {
       const Real localResult = getLocalVectorView().differenceMax( v.getLocalVectorView() );
       CommunicatorType::Allreduce( &localResult, &result, 1, MPI_MAX, group );
@@ -307,8 +318,8 @@ template< typename Real,
           typename Index,
           typename Communicator >
    template< typename Vector >
-typename DistributedVectorView< Real, Device, Index, Communicator >::NonConstReal
-DistributedVectorView< Real, Device, Index, Communicator >::
+Real
+DistributedVector< Real, Device, Index, Communicator >::
 differenceMin( const Vector& v ) const
 {
    TNL_ASSERT_EQ( this->getSize(), v.getSize(),
@@ -319,7 +330,7 @@ differenceMin( const Vector& v ) const
                   "Multiary operations are supported only on vectors within the same communication group." );
 
    const auto group = this->getCommunicationGroup();
-   NonConstReal result = Containers::Algorithms::ParallelReductionDiffMin< Real, typename Vector::RealType >::initialValue();
+   Real result = Containers::Algorithms::ParallelReductionDiffMin< Real, typename Vector::RealType >::initialValue();
    if( group != CommunicatorType::NullGroup ) {
       const Real localResult = getLocalVectorView().differenceMin( v.getLocalVectorView() );
       CommunicatorType::Allreduce( &localResult, &result, 1, MPI_MIN, group );
@@ -332,8 +343,8 @@ template< typename Real,
           typename Index,
           typename Communicator >
    template< typename Vector >
-typename DistributedVectorView< Real, Device, Index, Communicator >::NonConstReal
-DistributedVectorView< Real, Device, Index, Communicator >::
+Real
+DistributedVector< Real, Device, Index, Communicator >::
 differenceAbsMax( const Vector& v ) const
 {
    TNL_ASSERT_EQ( this->getSize(), v.getSize(),
@@ -344,7 +355,7 @@ differenceAbsMax( const Vector& v ) const
                   "Multiary operations are supported only on vectors within the same communication group." );
 
    const auto group = this->getCommunicationGroup();
-   NonConstReal result = Containers::Algorithms::ParallelReductionDiffAbsMax< Real, typename Vector::RealType >::initialValue();
+   Real result = Containers::Algorithms::ParallelReductionDiffAbsMax< Real, typename Vector::RealType >::initialValue();
    if( group != CommunicatorType::NullGroup ) {
       const Real localResult = getLocalVectorView().differenceAbsMax( v.getLocalVectorView() );
       CommunicatorType::Allreduce( &localResult, &result, 1, MPI_MAX, group );
@@ -357,8 +368,8 @@ template< typename Real,
           typename Index,
           typename Communicator >
    template< typename Vector >
-typename DistributedVectorView< Real, Device, Index, Communicator >::NonConstReal
-DistributedVectorView< Real, Device, Index, Communicator >::
+Real
+DistributedVector< Real, Device, Index, Communicator >::
 differenceAbsMin( const Vector& v ) const
 {
    TNL_ASSERT_EQ( this->getSize(), v.getSize(),
@@ -369,7 +380,7 @@ differenceAbsMin( const Vector& v ) const
                   "Multiary operations are supported only on vectors within the same communication group." );
 
    const auto group = this->getCommunicationGroup();
-   NonConstReal result = Containers::Algorithms::ParallelReductionDiffAbsMin< Real, typename Vector::RealType >::initialValue();
+   Real result = Containers::Algorithms::ParallelReductionDiffAbsMin< Real, typename Vector::RealType >::initialValue();
    if( group != CommunicatorType::NullGroup ) {
       const Real localResult = getLocalVectorView().differenceAbsMin( v.getLocalVectorView() );
       CommunicatorType::Allreduce( &localResult, &result, 1, MPI_MIN, group );
@@ -383,7 +394,7 @@ template< typename Real,
           typename Communicator >
    template< typename ResultType, typename Vector, typename Scalar >
 ResultType
-DistributedVectorView< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Communicator >::
 differenceLpNorm( const Vector& v, const Scalar p ) const
 {
    const auto group = this->getCommunicationGroup();
@@ -402,7 +413,7 @@ template< typename Real,
           typename Communicator >
    template< typename ResultType, typename Vector >
 ResultType
-DistributedVectorView< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Communicator >::
 differenceSum( const Vector& v ) const
 {
    TNL_ASSERT_EQ( this->getSize(), v.getSize(),
@@ -427,7 +438,7 @@ template< typename Real,
           typename Communicator >
    template< typename Scalar >
 void
-DistributedVectorView< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Communicator >::
 scalarMultiplication( Scalar alpha )
 {
    if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
@@ -440,12 +451,12 @@ template< typename Real,
           typename Index,
           typename Communicator >
    template< typename Vector >
-typename DistributedVectorView< Real, Device, Index, Communicator >::NonConstReal
-DistributedVectorView< Real, Device, Index, Communicator >::
+Real
+DistributedVector< Real, Device, Index, Communicator >::
 scalarProduct( const Vector& v ) const
 {
    const auto group = this->getCommunicationGroup();
-   NonConstReal result = Containers::Algorithms::ParallelReductionScalarProduct< Real, typename Vector::RealType >::initialValue();
+   Real result = Containers::Algorithms::ParallelReductionScalarProduct< Real, typename Vector::RealType >::initialValue();
    if( group != CommunicatorType::NullGroup ) {
       const Real localResult = getLocalVectorView().scalarProduct( v.getLocalVectorView() );
       CommunicatorType::Allreduce( &localResult, &result, 1, MPI_SUM, group );
@@ -459,7 +470,7 @@ template< typename Real,
           typename Communicator >
    template< typename Vector, typename Scalar1, typename Scalar2 >
 void
-DistributedVectorView< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Communicator >::
 addVector( const Vector& x,
            Scalar1 alpha,
            Scalar2 thisMultiplicator )
@@ -482,7 +493,7 @@ template< typename Real,
           typename Communicator >
    template< typename Vector1, typename Vector2, typename Scalar1, typename Scalar2, typename Scalar3 >
 void
-DistributedVectorView< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Communicator >::
 addVectors( const Vector1& v1,
             Scalar1 multiplicator1,
             const Vector2& v2,
@@ -516,7 +527,7 @@ template< typename Real,
           typename Index,
           typename Communicator >
 void
-DistributedVectorView< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Communicator >::
 computePrefixSum()
 {
    throw std::runtime_error("Distributed prefix sum is not implemented yet.");
@@ -527,7 +538,7 @@ template< typename Real,
           typename Index,
           typename Communicator >
 void
-DistributedVectorView< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Communicator >::
 computePrefixSum( IndexType begin, IndexType end )
 {
    throw std::runtime_error("Distributed prefix sum is not implemented yet.");
@@ -538,7 +549,7 @@ template< typename Real,
           typename Index,
           typename Communicator >
 void
-DistributedVectorView< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Communicator >::
 computeExclusivePrefixSum()
 {
    throw std::runtime_error("Distributed prefix sum is not implemented yet.");
@@ -549,11 +560,11 @@ template< typename Real,
           typename Index,
           typename Communicator >
 void
-DistributedVectorView< Real, Device, Index, Communicator >::
+DistributedVector< Real, Device, Index, Communicator >::
 computeExclusivePrefixSum( IndexType begin, IndexType end )
 {
    throw std::runtime_error("Distributed prefix sum is not implemented yet.");
 }
 
-} // namespace DistributedContainers
+} // namespace Containers
 } // namespace TNL

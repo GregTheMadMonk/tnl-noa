@@ -12,8 +12,8 @@
 
 #pragma once
 
-#include <TNL/DistributedContainers/Partitioner.h>
-#include <TNL/DistributedContainers/DistributedVectorView.h>
+#include <TNL/Containers/Partitioner.h>
+#include <TNL/Containers/DistributedVectorView.h>
 
 // buffers
 #include <vector>
@@ -22,7 +22,7 @@
 #include <TNL/Matrices/Dense.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/VectorView.h>
-#include <TNL/DistributedContainers/ThreePartVector.h>
+#include <TNL/Matrices/ThreePartVector.h>
 
 // operations
 #include <type_traits>  // std::add_const
@@ -31,7 +31,7 @@
 #include <TNL/Pointers/DevicePointer.h>
 
 namespace TNL {
-namespace DistributedContainers {
+namespace Matrices {
 
 template< typename Matrix, typename Communicator >
 class DistributedSpMV
@@ -43,7 +43,7 @@ public:
    using IndexType = typename Matrix::IndexType;
    using CommunicatorType = Communicator;
    using CommunicationGroup = typename CommunicatorType::CommunicationGroup;
-   using Partitioner = DistributedContainers::Partitioner< typename Matrix::IndexType, Communicator >;
+   using Partitioner = Containers::Partitioner< typename Matrix::IndexType, Communicator >;
 
    // - communication pattern: vector components whose indices are in the range
    //   [start_ij, end_ij) are copied from the j-th process to the i-th process
@@ -199,7 +199,7 @@ public:
       else {
          auto outVectorView = outVector.getLocalVectorView();
          const Pointers::DevicePointer< const MatrixType > localMatrixPointer( localMatrix );
-         using InView = DistributedVectorView< const typename InVector::RealType, typename InVector::DeviceType, typename InVector::IndexType, typename InVector::CommunicatorType >;
+         using InView = Containers::DistributedVectorView< const typename InVector::RealType, typename InVector::DeviceType, typename InVector::IndexType, typename InVector::CommunicatorType >;
          const InView inView( inVector );
 
          // matrix-vector multiplication using local-only rows
@@ -242,11 +242,11 @@ protected:
    std::pair< IndexType, IndexType > localOnlySpan;
 
    // global buffer for non-local elements of the vector
-   ThreePartVector< RealType, DeviceType, IndexType > globalBuffer;
+   __DistributedSpMV_impl::ThreePartVector< RealType, DeviceType, IndexType > globalBuffer;
 
    // buffer for asynchronous communication requests
    std::vector< typename CommunicatorType::Request > commRequests;
 };
 
-} // namespace DistributedContainers
+} // namespace Matrices
 } // namespace TNL

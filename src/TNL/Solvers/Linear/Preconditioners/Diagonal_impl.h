@@ -60,7 +60,7 @@ solve( ConstVectorViewType b, VectorViewType x ) const
 
 template< typename Matrix, typename Communicator >
 void
-Diagonal< DistributedContainers::DistributedMatrix< Matrix, Communicator > >::
+Diagonal< Matrices::DistributedMatrix< Matrix, Communicator > >::
 update( const MatrixPointer& matrixPointer )
 {
    TNL_ASSERT_GT( matrixPointer->getRows(), 0, "empty matrix" );
@@ -82,7 +82,7 @@ update( const MatrixPointer& matrixPointer )
 
 template< typename Matrix, typename Communicator >
 void
-Diagonal< DistributedContainers::DistributedMatrix< Matrix, Communicator > >::
+Diagonal< Matrices::DistributedMatrix< Matrix, Communicator > >::
 solve( ConstVectorViewType b, VectorViewType x ) const
 {
    ConstLocalVectorViewType diag_view( diagonal );

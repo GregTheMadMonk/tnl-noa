@@ -42,12 +42,11 @@ void setMatrix( Matrix& matrix, const RowLengths& rowLengths )
 #include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Communicators/NoDistrCommunicator.h>
 #include <TNL/Communicators/ScopedInitializer.h>
-#include <TNL/DistributedContainers/DistributedMatrix.h>
-#include <TNL/DistributedContainers/Partitioner.h>
+#include <TNL/Matrices/DistributedMatrix.h>
+#include <TNL/Containers/Partitioner.h>
 #include <TNL/Matrices/CSR.h>
 
 using namespace TNL;
-using namespace TNL::DistributedContainers;
 
 /*
  * Light check of DistributedMatrix.
@@ -72,7 +71,7 @@ protected:
 
    using RowLengthsVector = typename DistributedMatrixType::CompressedRowLengthsVector;
    using GlobalVector = Containers::Vector< RealType, DeviceType, IndexType >;
-   using DistributedVector = DistributedContainers::DistributedVector< RealType, DeviceType, IndexType, CommunicatorType >;
+   using DistributedVector = Containers::DistributedVector< RealType, DeviceType, IndexType, CommunicatorType >;
 
    const int globalSize = 97;  // prime number to force non-uniform distribution
 
@@ -88,7 +87,7 @@ protected:
    DistributedMatrixTest()
    {
       using LocalRangeType = typename DistributedMatrix::LocalRangeType;
-      const LocalRangeType localRange = DistributedContainers::Partitioner< IndexType, CommunicatorType >::splitRange( globalSize, group );
+      const LocalRangeType localRange = Containers::Partitioner< IndexType, CommunicatorType >::splitRange( globalSize, group );
       matrix.setDistribution( localRange, globalSize, globalSize, group );
       rowLengths.setDistribution( localRange, globalSize, group );
 
@@ -101,12 +100,12 @@ protected:
 
 // types for which DistributedMatrixTest is instantiated
 using DistributedMatrixTypes = ::testing::Types<
-   DistributedMatrix< Matrices::CSR< double, Devices::Host, int >, Communicators::MpiCommunicator >,
-   DistributedMatrix< Matrices::CSR< double, Devices::Host, int >, Communicators::NoDistrCommunicator >
+   Matrices::DistributedMatrix< Matrices::CSR< double, Devices::Host, int >, Communicators::MpiCommunicator >,
+   Matrices::DistributedMatrix< Matrices::CSR< double, Devices::Host, int >, Communicators::NoDistrCommunicator >
 #ifdef HAVE_CUDA
    ,
-   DistributedMatrix< Matrices::CSR< double, Devices::Cuda, int >, Communicators::MpiCommunicator >,
-   DistributedMatrix< Matrices::CSR< double, Devices::Cuda, int >, Communicators::NoDistrCommunicator >
+   Matrices::DistributedMatrix< Matrices::CSR< double, Devices::Cuda, int >, Communicators::MpiCommunicator >,
+   Matrices::DistributedMatrix< Matrices::CSR< double, Devices::Cuda, int >, Communicators::NoDistrCommunicator >
 #endif
 >;
 

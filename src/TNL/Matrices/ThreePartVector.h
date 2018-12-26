@@ -16,7 +16,8 @@
 #include <TNL/Containers/VectorView.h>
 
 namespace TNL {
-namespace DistributedContainers {
+namespace Matrices {
+namespace __DistributedSpMV_impl {
 
 template< typename Real,
           typename Device = Devices::Host,
@@ -153,5 +154,6 @@ protected:
    ConstVectorView middle;
 };
 
-} // namespace DistributedContainers
+} // namespace __DistributedSpMV_impl
+} // namespace Matrices
 } // namespace TNL

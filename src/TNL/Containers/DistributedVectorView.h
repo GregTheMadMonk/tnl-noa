@@ -12,11 +12,11 @@
 
 #pragma once
 
-#include <TNL/DistributedContainers/DistributedArrayView.h>
+#include <TNL/Containers/DistributedArrayView.h>
 #include <TNL/Containers/VectorView.h>
 
 namespace TNL {
-namespace DistributedContainers {
+namespace Containers {
 
 template< typename Real,
           typename Device = Devices::Host,
@@ -135,7 +135,7 @@ public:
    void computeExclusivePrefixSum( IndexType begin, IndexType end );
 };
 
-} // namespace DistributedContainers
+} // namespace Containers
 } // namespace TNL
 
 #include "DistributedVectorView_impl.h"

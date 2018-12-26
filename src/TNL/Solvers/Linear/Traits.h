@@ -15,9 +15,9 @@
 #include <TNL/Communicators/NoDistrCommunicator.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/VectorView.h>
-#include <TNL/DistributedContainers/DistributedVector.h>
-#include <TNL/DistributedContainers/DistributedVectorView.h>
-#include <TNL/DistributedContainers/DistributedMatrix.h>
+#include <TNL/Containers/DistributedVector.h>
+#include <TNL/Containers/DistributedVectorView.h>
+#include <TNL/Matrices/DistributedMatrix.h>
 
 namespace TNL {
 namespace Solvers {
@@ -55,21 +55,21 @@ struct Traits
 };
 
 template< typename Matrix, typename Communicator >
-struct Traits< DistributedContainers::DistributedMatrix< Matrix, Communicator > >
+struct Traits< Matrices::DistributedMatrix< Matrix, Communicator > >
 {
    using CommunicatorType = Communicator;
 
-   using VectorType = DistributedContainers::DistributedVector
+   using VectorType = Containers::DistributedVector
          < typename Matrix::RealType,
            typename Matrix::DeviceType,
            typename Matrix::IndexType,
            Communicator >;
-   using VectorViewType = DistributedContainers::DistributedVectorView
+   using VectorViewType = Containers::DistributedVectorView
          < typename Matrix::RealType,
            typename Matrix::DeviceType,
            typename Matrix::IndexType,
            Communicator >;
-   using ConstVectorViewType = DistributedContainers::DistributedVectorView
+   using ConstVectorViewType = Containers::DistributedVectorView
          < typename std::add_const< typename Matrix::RealType >::type,
            typename Matrix::DeviceType,
            typename Matrix::IndexType,
@@ -89,12 +89,12 @@ struct Traits< DistributedContainers::DistributedMatrix< Matrix, Communicator > 
            typename Matrix::IndexType >;
 
    // compatibility wrappers for some DistributedMatrix methods
-   static const Matrix& getLocalMatrix( const DistributedContainers::DistributedMatrix< Matrix, Communicator >& m )
+   static const Matrix& getLocalMatrix( const Matrices::DistributedMatrix< Matrix, Communicator >& m )
    { return m.getLocalMatrix(); }
    static ConstLocalVectorViewType getLocalVectorView( ConstVectorViewType v ) { return v.getLocalVectorView(); }
    static LocalVectorViewType getLocalVectorView( VectorViewType v ) { return v.getLocalVectorView(); }
 
-   static typename CommunicatorType::CommunicationGroup getCommunicationGroup( const DistributedContainers::DistributedMatrix< Matrix, Communicator >& m ) { return m.getCommunicationGroup(); }
+   static typename CommunicatorType::CommunicationGroup getCommunicationGroup( const Matrices::DistributedMatrix< Matrix, Communicator >& m ) { return m.getCommunicationGroup(); }
 };
 
 } // namespace Linear

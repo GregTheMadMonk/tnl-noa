@@ -15,7 +15,7 @@
 #include "DistributedMatrix.h"
 
 namespace TNL {
-namespace DistributedContainers {
+namespace Matrices {
 
 template< typename Matrix,
           typename Communicator >
@@ -43,7 +43,7 @@ setDistribution( LocalRangeType localRowRange, IndexType rows, IndexType columns
 template< typename Matrix,
           typename Communicator >
 __cuda_callable__
-const Subrange< typename Matrix::IndexType >&
+const Containers::Subrange< typename Matrix::IndexType >&
 DistributedMatrix< Matrix, Communicator >::
 getLocalRowRange() const
 {
@@ -77,7 +77,7 @@ String
 DistributedMatrix< Matrix, Communicator >::
 getType()
 {
-   return String( "DistributedContainers::DistributedMatrix< " ) +
+   return String( "Matrices::DistributedMatrix< " ) +
           Matrix::getType() + ", " +
           // TODO: communicators don't have a getType method
           "<Communicator>" + " >";
@@ -356,5 +356,5 @@ vectorProduct( const InVector& inVector,
    const_cast< DistributedMatrix* >( this )->spmv.vectorProduct( outVector, localMatrix, inVector, getCommunicationGroup() );
 }
 
-} // namespace DistributedContainers
+} // namespace Matrices
 } // namespace TNL

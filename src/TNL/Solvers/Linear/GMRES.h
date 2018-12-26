@@ -119,7 +119,7 @@ protected:
    }
 
    template< typename M >
-   static IndexType getLocalOffset( const DistributedContainers::DistributedMatrix< M >& m )
+   static IndexType getLocalOffset( const Matrices::DistributedMatrix< M >& m )
    {
       return m.getLocalRowRange().getBegin();
    }

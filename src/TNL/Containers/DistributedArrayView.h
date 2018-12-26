@@ -12,10 +12,10 @@
 
 #pragma once
 
-#include <TNL/DistributedContainers/DistributedArray.h>
+#include <TNL/Containers/DistributedArray.h>
 
 namespace TNL {
-namespace DistributedContainers {
+namespace Containers {
 
 template< typename Value,
           typename Device = Devices::Host,
@@ -146,7 +146,7 @@ protected:
    LocalArrayViewType localData;
 };
 
-} // namespace DistributedContainers
+} // namespace Containers
 } // namespace TNL
 
 #include "DistributedArrayView_impl.h"

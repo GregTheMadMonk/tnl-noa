@@ -3,7 +3,7 @@
 #include <TNL/Pointers/SharedPointer.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Solvers/IterativeSolverMonitor.h>
-#include <TNL/DistributedContainers/DistributedMatrix.h>
+#include <TNL/Matrices/DistributedMatrix.h>
 
 #include "../Benchmarks.h"
 
@@ -34,7 +34,7 @@ void barrier( const Matrix& matrix )
 }
 
 template< typename Matrix, typename Communicator >
-void barrier( const DistributedContainers::DistributedMatrix< Matrix, Communicator >& matrix )
+void barrier( const Matrices::DistributedMatrix< Matrix, Communicator >& matrix )
 {
    Communicator::Barrier( matrix.getCommunicationGroup() );
 }

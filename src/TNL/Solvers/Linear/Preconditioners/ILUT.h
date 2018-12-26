@@ -82,7 +82,7 @@ protected:
    }
 
    template< typename M >
-   static IndexType getMinColumn( const DistributedContainers::DistributedMatrix< M >& m )
+   static IndexType getMinColumn( const Matrices::DistributedMatrix< M >& m )
    {
       return m.getLocalRowRange().getBegin();
    }

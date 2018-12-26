@@ -12,11 +12,11 @@
 #include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Communicators/NoDistrCommunicator.h>
 #include <TNL/Communicators/ScopedInitializer.h>
-#include <TNL/DistributedContainers/DistributedArray.h>
-#include <TNL/DistributedContainers/Partitioner.h>
+#include <TNL/Containers/DistributedArray.h>
+#include <TNL/Containers/Partitioner.h>
 
 using namespace TNL;
-using namespace TNL::DistributedContainers;
+using namespace TNL::Containers;
 
 /*
  * Light check of DistributedArray.
@@ -50,7 +50,7 @@ protected:
    DistributedArrayTest()
    {
       using LocalRangeType = typename DistributedArray::LocalRangeType;
-      const LocalRangeType localRange = DistributedContainers::Partitioner< IndexType, CommunicatorType >::splitRange( globalSize, group );
+      const LocalRangeType localRange = Partitioner< IndexType, CommunicatorType >::splitRange( globalSize, group );
       distributedArray.setDistribution( localRange, globalSize, group );
 
       EXPECT_EQ( distributedArray.getLocalRange(), localRange );

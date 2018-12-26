@@ -73,7 +73,7 @@ protected:
    }
 
    template< typename M >
-   static IndexType getMinColumn( const DistributedContainers::DistributedMatrix< M >& m )
+   static IndexType getMinColumn( const Matrices::DistributedMatrix< M >& m )
    {
       return m.getLocalRowRange().getBegin();
    }
@@ -175,10 +175,10 @@ protected:
 };
 
 template< typename Matrix, typename Communicator >
-class ILU0_impl< DistributedContainers::DistributedMatrix< Matrix, Communicator >, double, Devices::Cuda, int >
-: public Preconditioner< DistributedContainers::DistributedMatrix< Matrix, Communicator > >
+class ILU0_impl< Matrices::DistributedMatrix< Matrix, Communicator >, double, Devices::Cuda, int >
+: public Preconditioner< Matrices::DistributedMatrix< Matrix, Communicator > >
 {
-   using MatrixType = DistributedContainers::DistributedMatrix< Matrix, Communicator >;
+   using MatrixType = Matrices::DistributedMatrix< Matrix, Communicator >;
 public:
    using RealType = double;
    using DeviceType = Devices::Cuda;

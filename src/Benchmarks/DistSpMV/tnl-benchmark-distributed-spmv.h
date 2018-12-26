@@ -23,9 +23,9 @@
 #include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Communicators/NoDistrCommunicator.h>
 #include <TNL/Communicators/ScopedInitializer.h>
-#include <TNL/DistributedContainers/Partitioner.h>
-#include <TNL/DistributedContainers/DistributedVector.h>
-#include <TNL/DistributedContainers/DistributedMatrix.h>
+#include <TNL/Containers/Partitioner.h>
+#include <TNL/Containers/DistributedVector.h>
+#include <TNL/Matrices/DistributedMatrix.h>
 
 #include "../Benchmarks.h"
 #include "ordering.h"
@@ -151,9 +151,9 @@ struct SpmvBenchmark
    using IndexType = typename MatrixType::IndexType;
    using VectorType = Containers::Vector< RealType, DeviceType, IndexType >;
 
-   using Partitioner = DistributedContainers::Partitioner< IndexType, CommunicatorType >;
-   using DistributedMatrix = DistributedContainers::DistributedMatrix< MatrixType, CommunicatorType >;
-   using DistributedVector = DistributedContainers::DistributedVector< RealType, DeviceType, IndexType, CommunicatorType >;
+   using Partitioner = Containers::Partitioner< IndexType, CommunicatorType >;
+   using DistributedMatrix = Matrices::DistributedMatrix< MatrixType, CommunicatorType >;
+   using DistributedVector = Containers::DistributedVector< RealType, DeviceType, IndexType, CommunicatorType >;
    using DistributedRowLengths = typename DistributedMatrix::CompressedRowLengthsVector;
 
    static bool

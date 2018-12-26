@@ -45,12 +45,12 @@ void setNegativeLinearSequence( Vector& deviceVector )
 #include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Communicators/NoDistrCommunicator.h>
 #include <TNL/Communicators/ScopedInitializer.h>
-#include <TNL/DistributedContainers/DistributedVector.h>
-#include <TNL/DistributedContainers/DistributedVectorView.h>
-#include <TNL/DistributedContainers/Partitioner.h>
+#include <TNL/Containers/DistributedVector.h>
+#include <TNL/Containers/DistributedVectorView.h>
+#include <TNL/Containers/Partitioner.h>
 
 using namespace TNL;
-using namespace TNL::DistributedContainers;
+using namespace TNL::Containers;
 
 /*
  * Light check of DistributedVector.
@@ -70,7 +70,7 @@ protected:
    using IndexType = typename DistributedVector::IndexType;
    using DistributedVectorType = DistributedVector;
    using VectorViewType = typename DistributedVectorType::LocalVectorViewType;
-   using DistributedVectorView = DistributedContainers::DistributedVectorView< RealType, DeviceType, IndexType, CommunicatorType >;
+   using DistributedVectorView = Containers::DistributedVectorView< RealType, DeviceType, IndexType, CommunicatorType >;
 
    const int globalSize = 97;  // prime number to force non-uniform distribution
 
@@ -86,7 +86,7 @@ protected:
    DistributedVectorTest()
    {
       using LocalRangeType = typename DistributedVector::LocalRangeType;
-      const LocalRangeType localRange = DistributedContainers::Partitioner< IndexType, CommunicatorType >::splitRange( globalSize, group );
+      const LocalRangeType localRange = Partitioner< IndexType, CommunicatorType >::splitRange( globalSize, group );
       x.setDistribution( localRange, globalSize, group );
       y.setDistribution( localRange, globalSize, group );
       z.setDistribution( localRange, globalSize, group );
