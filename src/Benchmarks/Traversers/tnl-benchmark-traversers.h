@@ -23,6 +23,7 @@
 
 using namespace TNL;
 using namespace TNL::Benchmarks;
+using namespace TNL::Benchmarks::Traversers;
 
 
 template< int Dimension,
@@ -40,13 +41,14 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
    const int minSize = parameters.getParameter< int >( "min-size" );
    const int maxSize = parameters.getParameter< int >( "max-size" );
 
-   // Full grid traversing
-   benchmark.newBenchmark( String("Full grid traversing - write 1 " + convertToString( Dimension ) + "D" ), metadata );
+   /****
+    * Full grid traversing
+    */
+   benchmark.newBenchmark( String("Traversing without boundary conditions" + convertToString( Dimension ) + "D" ), metadata );
    for( std::size_t size = minSize; size <= maxSize; size *= 2 )
    {
-
       GridTraversersBenchmark< Dimension, Devices::Host, Real, Index > hostTraverserBenchmark( size );
-      GridTraversersBenchmark< Dimension, Devices::Cuda, Real, Index > cudaTraverserBenchmark( size );         
+      GridTraversersBenchmark< Dimension, Devices::Cuda, Real, Index > cudaTraverserBenchmark( size );
 
       auto hostReset = [&]()
       {
@@ -86,7 +88,6 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
 #ifdef HAVE_CUDA
       benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaWriteOneUsingPureC );
 #endif
-      
 
       /****
        * Write one using parallel for
@@ -94,12 +95,12 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
       auto hostWriteOneUsingParallelFor = [&] ()
       {
          hostTraverserBenchmark.writeOneUsingParallelFor();
-      }; 
+      };
 
       auto cudaWriteOneUsingParallelFor = [&] ()
       {
          cudaTraverserBenchmark.writeOneUsingParallelFor();
-      }; 
+      };
 
       benchmark.setOperation( "parallel for", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
       benchmark.time< Devices::Host >( "CPU", hostWriteOneUsingParallelFor );
@@ -137,8 +138,107 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
 #ifdef HAVE_CUDA
       benchmark.time< Devices::Cuda >( "GPU", cudaWriteOneUsingTraverser );
 #endif
-
    }
+
+   /****
+    * Full grid traversing
+    */
+   benchmark.newBenchmark( String("Traversing with boundary conditions" + convertToString( Dimension ) + "D" ), metadata );
+   for( std::size_t size = minSize; size <= maxSize; size *= 2 )
+   {
+      GridTraversersBenchmark< Dimension, Devices::Host, Real, Index > hostTraverserBenchmark( size );
+      GridTraversersBenchmark< Dimension, Devices::Cuda, Real, Index > cudaTraverserBenchmark( size );
+
+      auto hostReset = [&]()
+      {
+         hostTraverserBenchmark.reset();
+      };
+
+      auto cudaReset = [&]()
+      {
+         cudaTraverserBenchmark.reset();
+      };
+      
+      benchmark.setMetadataColumns(
+         Benchmark::MetadataColumns( 
+            {  {"size", convertToString( size ) }, } ) );
+
+      /****
+       * Write one using C for
+       */
+      auto hostTraverseUsingPureC = [&] ()
+      {
+         hostTraverserBenchmark.traverseUsingPureC();
+      };
+
+      auto cudaTraverseUsingPureC = [&] ()
+      {
+         cudaTraverserBenchmark.traverseUsingPureC();
+      };
+
+      benchmark.setOperation( "Pure C", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
+      benchmark.time< Devices::Host >( "CPU", hostTraverseUsingPureC );
+#ifdef HAVE_CUDA
+      benchmark.time< Devices::Cuda >( "GPU", cudaTraverseUsingPureC );
+#endif
+      
+      benchmark.setOperation( "Pure C RST", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
+      benchmark.time< Devices::Host >( hostReset, "CPU", hostTraverseUsingPureC );
+#ifdef HAVE_CUDA
+      benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaTraverseUsingPureC );
+#endif
+
+      /****
+       * Write one using parallel for
+       */
+      auto hostTraverseUsingParallelFor = [&] ()
+      {
+         hostTraverserBenchmark.writeOneUsingParallelFor();
+      };
+
+      auto cudaTraverseUsingParallelFor = [&] ()
+      {
+         cudaTraverserBenchmark.writeOneUsingParallelFor();
+      };
+
+      benchmark.setOperation( "parallel for", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
+      benchmark.time< Devices::Host >( "CPU", hostTraverseUsingParallelFor );
+#ifdef HAVE_CUDA
+      benchmark.time< Devices::Cuda >( "GPU", cudaTraverseUsingParallelFor );
+#endif
+      
+      benchmark.setOperation( "parallel for RST", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
+      benchmark.time< Devices::Host >( hostReset, "CPU", hostTraverseUsingParallelFor );
+#ifdef HAVE_CUDA
+      benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaTraverseUsingParallelFor );
+#endif
+
+      /****
+       * Write one using traverser
+       */
+      auto hostTraverseUsingTraverser = [&] ()
+      {
+         hostTraverserBenchmark.writeOneUsingTraverser();
+      };
+
+      auto cudaTraverseUsingTraverser = [&] ()
+      {
+         cudaTraverserBenchmark.writeOneUsingTraverser();
+      };
+
+      benchmark.setOperation( "traverser", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
+      benchmark.time< Devices::Host >( hostReset, "CPU", hostTraverseUsingTraverser );
+#ifdef HAVE_CUDA
+      benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaTraverseUsingTraverser );
+#endif
+
+      benchmark.setOperation( "traverser RST", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
+      benchmark.time< Devices::Host >( "CPU", hostTraverseUsingTraverser );
+#ifdef HAVE_CUDA
+      benchmark.time< Devices::Cuda >( "GPU", cudaTraverseUsingTraverser );
+#endif
+   }
+
    return true;
 }
 
