@@ -1,5 +1,5 @@
 /***************************************************************************
-                          WriteOne.h  -  description
+                          GridTraversersBenchmark.h  -  description
                              -------------------
     begin                : Dec 19, 2018
     copyright            : (C) 2018 by oberhuber
@@ -21,10 +21,11 @@
 #include <TNL/Meshes/Traverser.h>
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Pointers/SharedPointer.h>
+#include "cuda-kernels.h"
 
 namespace TNL {
    namespace Benchmarks {
-      
+      namespace Traversers {
 
 template< typename TraverserUserData >
 class WriteOneEntitiesProcessor
@@ -55,35 +56,6 @@ class WriteOneUserData
       MeshFunctionPointer u;
 };
 
-template< typename Real,
-          typename Index >
-__global__ void simpleCudaKernel1D( const Index size, const dim3 gridIdx, Real* v_data  )
-{
-   const Index threadIdx_x = ( gridIdx.x * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   if( threadIdx_x < size )
-      v_data[ threadIdx_x ] = 1.0;
-}
-
-template< typename Real,
-          typename Index >
-__global__ void simpleCudaKernel2D( const Index size, const dim3 gridIdx, Real* v_data  )
-{
-   const Index threadIdx_x = ( gridIdx.x * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   const Index threadIdx_y = ( gridIdx.y * Devices::Cuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;
-   if( threadIdx_x < size && threadIdx_y < size )
-      v_data[ threadIdx_y * size + threadIdx_x ] = 1.0;
-}
-
-template< typename Real,
-          typename Index >
-__global__ void simpleCudaKernel3D( const Index size, const dim3 gridIdx, Real* v_data  )
-{
-   const Index threadIdx_x = ( gridIdx.x * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   const Index threadIdx_y = ( gridIdx.y * Devices::Cuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;
-   const Index threadIdx_z = ( gridIdx.z * Devices::Cuda::getMaxGridSize() + blockIdx.z ) * blockDim.z + threadIdx.z;
-   if( threadIdx_x < size && threadIdx_y < size && threadIdx_z < size )
-      v_data[ ( threadIdx_z * size + threadIdx_y ) * size + threadIdx_x ] = 1.0;
-}
 
 template< int Dimension,
           typename Device,
@@ -147,12 +119,12 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
                   gridsCount,
                   gridIdx,
                   gridSize );
-               simpleCudaKernel1D<<< gridSize, blockSize >>>( size, gridIdx, v_data );
+               fullGridTraverseKernel1D<<< gridSize, blockSize >>>( size, gridIdx, v_data );
             }
 #endif
          }
       }
-      
+
       void writeOneUsingParallelFor()
       {
          auto f = [] __cuda_callable__ ( Index i, Real* data )
@@ -164,6 +136,56 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
 
       void writeOneUsingTraverser()
       {
+         traverser.template processAllEntities< WriteOneTraverserUserDataType, WriteOneEntitiesProcessorType >
+            ( grid, userData );
+      }
+
+      void traverseUsingPureC()
+      {
+         if( std::is_same< Device, Devices::Host >::value )
+         {
+            v_data[ 0 ] = 2;
+            for( int i = 1; i < size - 1; i++ )
+               v_data[ i ] = 1.0;
+            v_data[ size - 1 ] =  2;
+         }
+         else // Device == Devices::Cuda
+         {
+#ifdef HAVE_CUDA
+            dim3 blockSize( 256 ), blocksCount, gridsCount;
+            Devices::Cuda::setupThreads(
+               blockSize,
+               blocksCount,
+               gridsCount,
+               size );
+            dim3 gridIdx;
+            for( gridIdx.x = 0; gridIdx.x < gridsCount.x; gridIdx.x++ )
+            {
+               dim3 gridSize;
+               Devices::Cuda::setupGrid(
+                  blocksCount,
+                  gridsCount,
+                  gridIdx,
+                  gridSize );
+               boundariesTraverseKernel1D<<< gridSize, blockSize >>>( size, gridIdx, v_data );
+            }
+            for( gridIdx.x = 0; gridIdx.x < gridsCount.x; gridIdx.x++ )
+            {
+               dim3 gridSize;
+               Devices::Cuda::setupGrid(
+                  blocksCount,
+                  gridsCount,
+                  gridIdx,
+                  gridSize );
+               interiorTraverseKernel1D<<< gridSize, blockSize >>>( size, gridIdx, v_data );
+            }
+#endif
+         }
+      }
+
+      void traverseUsingTraverser()
+      {
+         // TODO !!!!!!!!!!!!!!!!!!!!!!
          traverser.template processAllEntities< WriteOneTraverserUserDataType, WriteOneEntitiesProcessorType >
             ( grid, userData );
       }
@@ -240,7 +262,7 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
                      gridsCount,
                      gridIdx,
                      gridSize );
-                  simpleCudaKernel2D<<< gridSize, blockSize >>>( size, gridIdx, v_data );
+                  fullGridTraverseKernel2D<<< gridSize, blockSize >>>( size, gridIdx, v_data );
                }
 #endif
          }
@@ -263,6 +285,69 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
 
       void writeOneUsingTraverser()
       {
+         traverser.template processAllEntities< WriteOneTraverserUserDataType, WriteOneEntitiesProcessorType >
+            ( grid, userData );
+      }
+
+      void traverseUsingPureC()
+      {
+         if( std::is_same< Device, Devices::Host >::value )
+         {
+            for( int i = 0; i < size; i++ )
+            {
+               v_data[ i * size ] = 2.0;
+               v_data[ i * size + size - 1 ] = 2.0;
+            }
+            for( int j = 1; j < size - 1; j++ )
+            {
+               v_data[ j ] = 2.0;
+               v_data[ ( size - 1 ) * size + j ] = 2.0;
+            }
+
+            for( int i = 1; i < size - 1; i++ )
+               for( int j = 1; j < size - 1; j++ )
+                  v_data[ i * size + j ] = 1.0;
+         }
+         else // Device == Devices::Cuda
+         {
+#ifdef HAVE_CUDA
+            dim3 blockSize( 256 ), blocksCount, gridsCount;
+            Devices::Cuda::setupThreads(
+               blockSize,
+               blocksCount,
+               gridsCount,
+               size,
+               size );
+            dim3 gridIdx;
+            for( gridIdx.y = 0; gridIdx.y < gridsCount.y; gridIdx.y++ )
+               for( gridIdx.x = 0; gridIdx.x < gridsCount.x; gridIdx.x++ )
+               {
+                  dim3 gridSize;
+                  Devices::Cuda::setupGrid(
+                     blocksCount,
+                     gridsCount,
+                     gridIdx,
+                     gridSize );
+                  boundariesTraverseKernel2D<<< gridSize, blockSize >>>( size, gridIdx, v_data );
+               }
+            for( gridIdx.y = 0; gridIdx.y < gridsCount.y; gridIdx.y++ )
+               for( gridIdx.x = 0; gridIdx.x < gridsCount.x; gridIdx.x++ )
+               {
+                  dim3 gridSize;
+                  Devices::Cuda::setupGrid(
+                     blocksCount,
+                     gridsCount,
+                     gridIdx,
+                     gridSize );
+                  interiorTraverseKernel2D<<< gridSize, blockSize >>>( size, gridIdx, v_data );
+               }
+#endif
+         }
+      }
+
+      void traversingUsingTraverser()
+      {
+         // TODO !!!!!!!!!!!!!!!!!!!!!!
          traverser.template processAllEntities< WriteOneTraverserUserDataType, WriteOneEntitiesProcessorType >
             ( grid, userData );
       }
@@ -344,12 +429,12 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
                         gridsCount,
                         gridIdx,
                         gridSize );
-                     simpleCudaKernel3D<<< gridSize, blockSize >>>( size, gridIdx, v_data );
+                     fullGridTraverseKernel3D<<< gridSize, blockSize >>>( size, gridIdx, v_data );
                   }
 #endif
          }
       }
-      
+
       void writeOneUsingParallelFor()
       {
          Index _size = this->size;
@@ -358,20 +443,96 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
             data[ ( i * _size + j ) * _size + k ] = 1.0;
          };
          
-         ParallelFor3D< Device >::exec( ( Index ) 0, 
-                                        ( Index ) 0, 
-                                        ( Index ) 0, 
+         ParallelFor3D< Device >::exec( ( Index ) 0,
+                                        ( Index ) 0,
+                                        ( Index ) 0,
                                         this->size,
                                         this->size,
                                         this->size,
-                                        f, v.getData() );         
+                                        f, v.getData() );
       }
-      
+
       void writeOneUsingTraverser()
       {
          traverser.template processAllEntities< WriteOneTraverserUserDataType, WriteOneEntitiesProcessorType >
             ( grid, userData );
-      }      
+      }
+
+      void traverseUsingPureC()
+      {
+         if( std::is_same< Device, Devices::Host >::value )
+         {
+            for( int i = 0; i < size; i++ )
+               for( int j = 0; j < size; j++ )
+               {
+                  v_data[ ( i * size + j ) * size ] = 2.0;
+                  v_data[ ( i * size + j ) * size + size - 1 ] = 2.0;
+               }
+            for( int j = 0; j < size; j++ )
+               for( int k = 1; k < size - 1; k++ )
+               {
+                  v_data[ j * size + k ] = 1.0;
+                  v_data[ ( ( size - 1) * size + j ) * size + k ] = 1.0;
+               }
+
+            for( int i = 1; i < size -1; i++ )
+               for( int k = 1; k < size - 1; k++ )
+               {
+                  v_data[ ( i * size ) * size + k ] = 2.0;
+                  v_data[ ( i * size + size - 1 ) * size + k ] = 2.0;
+               }
+
+            for( int i = 1; i < size -1; i++ )
+               for( int j = 1; j < size -1; j++ )
+                  for( int k = 1; k < size - 1; k++ )
+                     v_data[ ( i * size + j ) * size + k ] = 1.0;
+         }
+         else // Device == Devices::Cuda
+         {
+#ifdef HAVE_CUDA
+            dim3 blockSize( 256 ), blocksCount, gridsCount;
+            Devices::Cuda::setupThreads(
+               blockSize,
+               blocksCount,
+               gridsCount,
+               size,
+               size,
+               size );
+            dim3 gridIdx;
+            for( gridIdx.z = 0; gridIdx.z < gridsCount.z; gridIdx.z++ )
+               for( gridIdx.y = 0; gridIdx.y < gridsCount.y; gridIdx.y++ )
+                  for( gridIdx.x = 0; gridIdx.x < gridsCount.x; gridIdx.x++ )
+                  {
+                     dim3 gridSize;
+                     Devices::Cuda::setupGrid(
+                        blocksCount,
+                        gridsCount,
+                        gridIdx,
+                        gridSize );
+                     boundariesTraverseKernel3D<<< gridSize, blockSize >>>( size, gridIdx, v_data );
+                  }
+            for( gridIdx.z = 0; gridIdx.z < gridsCount.z; gridIdx.z++ )
+               for( gridIdx.y = 0; gridIdx.y < gridsCount.y; gridIdx.y++ )
+                  for( gridIdx.x = 0; gridIdx.x < gridsCount.x; gridIdx.x++ )
+                  {
+                     dim3 gridSize;
+                     Devices::Cuda::setupGrid(
+                        blocksCount,
+                        gridsCount,
+                        gridIdx,
+                        gridSize );
+                     interiorTraverseKernel3D<<< gridSize, blockSize >>>( size, gridIdx, v_data );
+                  }
+#endif
+         }
+      }
+
+      void traverseUsingTraverser()
+      {
+         // TODO !!!!!!!!!!!!!!!!!!!!!!
+         traverser.template processAllEntities< WriteOneTraverserUserDataType, WriteOneEntitiesProcessorType >
+            ( grid, userData );
+      }
 
    protected:
       
@@ -384,6 +545,6 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
       WriteOneTraverserUserDataType userData;      
 };
 
-
+      } // namespace Traversers
    } // namespace Benchmarks
 } // namespace TNL
