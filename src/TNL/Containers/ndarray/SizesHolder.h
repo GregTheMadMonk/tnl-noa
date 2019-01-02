@@ -257,9 +257,9 @@ std::ostream& operator<<( std::ostream& str, const SizesHolder< Index, sizes... 
 }
 
 
-// helper for the forInternal method
 namespace __ndarray_impl {
 
+// helper for the forInternal method
 template< typename SizesHolder,
           std::size_t ConstValue >
 struct SubtractedSizesHolder
@@ -273,6 +273,40 @@ struct SubtractedSizesHolder< SizesHolder< Index, sizes... >, ConstValue >
 //   using type = SizesHolder< Index, std::max( (std::size_t) 0, sizes - ConstValue )... >;
    using type = SizesHolder< Index, ( (sizes >= ConstValue) ? sizes - ConstValue : 0 )... >;
 };
+
+
+// wrapper for localBegins in DistributedNDArray (static sizes cannot be distributed, begins are always 0)
+template< typename SizesHolder >
+struct LocalBeginsHolder : public SizesHolder
+{
+   template< std::size_t dimension >
+   static constexpr std::size_t getStaticSize()
+   {
+      static_assert( dimension < SizesHolder::getDimension(), "Invalid dimension passed to getStaticSize()." );
+      return 0;
+   }
+
+   template< std::size_t level >
+   __cuda_callable__
+   typename SizesHolder::IndexType getSize() const
+   {
+      if( SizesHolder::template getStaticSize< level >() != 0 )
+         return 0;
+      return SizesHolder::template getSize< level >();
+   }
+};
+
+template< typename Index,
+          std::size_t... sizes >
+std::ostream& operator<<( std::ostream& str, const __ndarray_impl::LocalBeginsHolder< SizesHolder< Index, sizes... > >& holder )
+{
+   str << "LocalBeginsHolder< SizesHolder< ";
+   TemplateStaticFor< std::size_t, 0, sizeof...(sizes) - 1, __ndarray_impl::SizesHolderStaticSizePrinter >::execHost( str, (SizesHolder< Index, sizes... >) holder );
+   str << holder.template getStaticSize< sizeof...(sizes) - 1 >() << " > >( ";
+   TemplateStaticFor< std::size_t, 0, sizeof...(sizes) - 1, __ndarray_impl::SizesHolderSizePrinter >::execHost( str, holder );
+   str << holder.template getSize< sizeof...(sizes) - 1 >() << " )";
+   return str;
+}
 
 } // namespace __ndarray_impl
 

@@ -355,6 +355,42 @@ filter_sequence( std::integer_sequence< Index, vals... > )
    return concat_sequences( FilterSingle< Mask >( std::integer_sequence< Index, vals >{} )... );
 }
 
+
+/*
+ * make_constant_integer_sequence, make_constant_index_sequence - helper
+ * templates for the generation of constant sequences like
+ * std::make_integer_sequence, std::make_index_sequence
+ */
+template< typename T, typename N, T v > struct gen_const_seq;
+template< typename T, typename N, T v > using gen_const_seq_t = typename gen_const_seq< T, N, v >::type;
+
+template< typename T, typename N, T v >
+struct gen_const_seq
+{
+   using type = decltype(concat_sequences(
+                     gen_const_seq_t<T, std::integral_constant<T, N::value/2>, v>{},
+                     gen_const_seq_t<T, std::integral_constant<T, N::value - N::value/2>, v>{}
+                  ));
+};
+
+template< typename T, T v >
+struct gen_const_seq< T, std::integral_constant<T, 0>, v >
+{
+   using type = std::integer_sequence<T>;
+};
+
+template< typename T, T v >
+struct gen_const_seq< T, std::integral_constant<T, 1>, v >
+{
+   using type = std::integer_sequence<T, v>;
+};
+
+template< typename T, T N, T value >
+using make_constant_integer_sequence = gen_const_seq_t< T, std::integral_constant<T, N>, value >;
+
+template< std::size_t N, std::size_t value >
+using make_constant_index_sequence = gen_const_seq_t< std::size_t, std::integral_constant<std::size_t, N>, value >;
+
 } // namespace __ndarray_impl
 } // namespace Containers
 } // namespace TNL

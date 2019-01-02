@@ -12,8 +12,11 @@
 
 #pragma once
 
+#include <array>
+
 #include <TNL/Assert.h>
 #include <TNL/Devices/CudaCallable.h>
+#include <TNL/StaticFor.h>
 
 #include <TNL/Containers/ndarray/Meta.h>
 
@@ -161,6 +164,84 @@ void assertIndicesInBounds( const SizesHolder& sizes, Index&& i, IndexTypes&&...
    TNL_ASSERT_LT( i, size, "Input error - some index is out of bounds." );
 #endif
    assertIndicesInBounds( sizes, std::forward< IndexTypes >( indices )... );
+}
+
+
+// A variadic bounds-checker for distributed indices with overlaps
+template< typename SizesHolder1, typename SizesHolder2, typename Overlaps >
+__cuda_callable__
+void assertIndicesInRange( const SizesHolder1&, const SizesHolder2&, const Overlaps& )
+{}
+
+template< typename SizesHolder1,
+          typename SizesHolder2,
+          typename Overlaps,
+          typename Index,
+          typename... IndexTypes >
+__cuda_callable__
+void assertIndicesInRange( const SizesHolder1& begins, const SizesHolder2& ends, const Overlaps& overlaps, Index&& i, IndexTypes&&... indices )
+{
+   static_assert( SizesHolder1::getDimension() == SizesHolder2::getDimension(),
+                  "Inconsistent begins and ends." );
+#ifndef NDEBUG
+   // sizes.template getSize<...>() cannot be inside the assert macro, but the variables
+   // shouldn't be declared when compiling without assertions
+   constexpr std::size_t level = SizesHolder1::getDimension() - sizeof...(indices) - 1;
+   const auto begin = begins.template getSize< level >();
+   const auto end = ends.template getSize< level >();
+   TNL_ASSERT_LE( begin - get<level>( overlaps ), i, "Input error - some index is below the lower bound." );
+   TNL_ASSERT_LT( i, end + get<level>( overlaps ), "Input error - some index is above the upper bound." );
+#endif
+   assertIndicesInRange( begins, ends, overlaps, std::forward< IndexTypes >( indices )... );
+}
+
+
+template< typename SizesHolder,
+          typename Overlaps,
+          typename Sequence >
+struct IndexUnshiftHelper
+{};
+
+template< typename SizesHolder,
+          typename Overlaps,
+          std::size_t... N >
+struct IndexUnshiftHelper< SizesHolder, Overlaps, std::index_sequence< N... > >
+{
+   template< typename Func,
+             typename... Indices >
+   __cuda_callable__
+   static auto apply( const SizesHolder& begins, Func&& f, Indices&&... indices ) -> decltype(auto)
+   {
+      return f( ( get<N>( Overlaps{} ) + std::forward< Indices >( indices ) - begins.template getSize< N >() )... );
+   }
+
+   template< typename Func,
+             typename... Indices >
+   static auto apply_host( const SizesHolder& begins, Func&& f, Indices&&... indices ) -> decltype(auto)
+   {
+      return f( ( get<N>( Overlaps{} ) + std::forward< Indices >( indices ) - begins.template getSize< N >() )... );
+   }
+};
+
+template< typename SizesHolder,
+          typename Overlaps = make_constant_index_sequence< SizesHolder::getDimension(), 0 >,
+          typename Func,
+          typename... Indices >
+__cuda_callable__
+auto call_with_unshifted_indices( const SizesHolder& begins, Func&& f, Indices&&... indices ) -> decltype(auto)
+{
+   return IndexUnshiftHelper< SizesHolder, Overlaps, std::make_index_sequence< sizeof...( Indices ) > >
+          ::apply( begins, std::forward< Func >( f ), std::forward< Indices >( indices )... );
+}
+
+template< typename SizesHolder,
+          typename Overlaps = make_constant_index_sequence< SizesHolder::getDimension(), 0 >,
+          typename Func,
+          typename... Indices >
+auto host_call_with_unshifted_indices( const SizesHolder& begins, Func&& f, Indices&&... indices ) -> decltype(auto)
+{
+   return IndexUnshiftHelper< SizesHolder, Overlaps, std::make_index_sequence< sizeof...( Indices ) > >
+          ::apply_host( begins, std::forward< Func >( f ), std::forward< Indices >( indices )... );
 }
 
 
