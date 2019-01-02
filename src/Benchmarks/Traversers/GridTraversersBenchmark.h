@@ -99,7 +99,7 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
          if( std::is_same< Device, Devices::Host >::value )
          {
             for( int i = 0; i < size; i++ )
-               v_data[ i ] = 1.0;
+               v_data[ i ] += 1.0;
          }
          else // Device == Devices::Cuda
          {
@@ -129,7 +129,7 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
       {
          auto f = [] __cuda_callable__ ( Index i, Real* data )
          {
-            data[ i ] = 1.0;
+            data[ i ] = +1.0;
          };
          ParallelFor< Device >::exec( ( Index ) 0, size, f, v.getData() );
       }
@@ -271,7 +271,7 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
       void writeOneUsingParallelFor()
       {
          Index _size = this->size;
-         auto f = [=] __cuda_callable__ ( Index j, Index i,  Real* data )
+         auto f = [=] __cuda_callable__ ( Index i, Index j,  Real* data )
          {
             data[ i * _size + j ] = 1.0;
          };
@@ -438,7 +438,7 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
       void writeOneUsingParallelFor()
       {
          Index _size = this->size;
-         auto f = [=] __cuda_callable__ ( Index k, Index j, Index i, Real* data )
+         auto f = [=] __cuda_callable__ ( Index i, Index j, Index k, Real* data )
          {
             data[ ( i * _size + j ) * _size + k ] = 1.0;
          };
