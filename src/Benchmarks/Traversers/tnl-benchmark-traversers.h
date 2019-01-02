@@ -41,26 +41,35 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
    // const std::size_t maxSize = parameters.getParameter< std::size_t >( "max-size" );
    const int minSize = parameters.getParameter< int >( "min-size" );
    const int maxSize = parameters.getParameter< int >( "max-size" );
+#ifdef HAVE_CUDA
+   const bool withCuda = parameters.getParameter< bool >( "with-cuda" );
+#else
+   const bool withCuda = false;
+#endif
 
    /****
-    * Full grid traversing
+    * Full grid traversing with no boundary conditions
     */
    benchmark.newBenchmark( String("Traversing without boundary conditions" + convertToString( Dimension ) + "D" ), metadata );
    for( std::size_t size = minSize; size <= maxSize; size *= 2 )
    {
       GridTraversersBenchmark< Dimension, Devices::Host, Real, Index > hostTraverserBenchmark( size );
+#ifdef HAVE_CUDA
       GridTraversersBenchmark< Dimension, Devices::Cuda, Real, Index > cudaTraverserBenchmark( size );
+#endif
 
       auto hostReset = [&]()
       {
          hostTraverserBenchmark.reset();
       };
 
+#ifdef HAVE_CUDA
       auto cudaReset = [&]()
       {
          cudaTraverserBenchmark.reset();
       };
-      
+#endif
+
       benchmark.setMetadataColumns(
          Benchmark::MetadataColumns( 
             {  {"size", convertToString( size ) }, } ) );
@@ -136,26 +145,33 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
          hostTraverserBenchmark.writeOneUsingTraverser();
       };
 
+#ifdef HAVE_CUDA
       auto cudaWriteOneUsingTraverser = [&] ()
       {
          cudaTraverserBenchmark.writeOneUsingTraverser();
       };
-
-      benchmark.setOperation( "traverser", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
-      benchmark.time< Devices::Host >( hostReset, "CPU", hostWriteOneUsingTraverser );
-#ifdef HAVE_CUDA
-      benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaWriteOneUsingTraverser );
 #endif
 
-      benchmark.setOperation( "traverser RST", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
-      benchmark.time< Devices::Host >( "CPU", hostWriteOneUsingTraverser );
+      if( tests == "all" || tests == "no-bc-traverser" )
+      {
+         benchmark.setOperation( "traverser", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
+         benchmark.time< Devices::Host >( hostReset, "CPU", hostWriteOneUsingTraverser );
 #ifdef HAVE_CUDA
-      benchmark.time< Devices::Cuda >( "GPU", cudaWriteOneUsingTraverser );
+         if( withCuda )
+            benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaWriteOneUsingTraverser );
 #endif
+
+         benchmark.setOperation( "traverser RST", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
+         benchmark.time< Devices::Host >( "CPU", hostWriteOneUsingTraverser );
+#ifdef HAVE_CUDA
+         if( withCuda )
+            benchmark.time< Devices::Cuda >( "GPU", cudaWriteOneUsingTraverser );
+#endif
+      }
    }
 
    /****
-    * Full grid traversing
+    * Full grid traversing including boundary conditions
     */
    benchmark.newBenchmark( String("Traversing with boundary conditions" + convertToString( Dimension ) + "D" ), metadata );
    for( std::size_t size = minSize; size <= maxSize; size *= 2 )
