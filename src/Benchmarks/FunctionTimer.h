@@ -22,7 +22,8 @@ namespace TNL {
    namespace Benchmarks {
 
 
-template< typename Device >
+template< typename Device,
+          bool timing >
 class FunctionTimer
 {
    public:
@@ -56,14 +57,15 @@ class FunctionTimer
          // the monitor, the timer is not interrupted after each loop.
          if( ! performReset && verbose < 2 )
          {
-            timer.start();
+            if( timing )
+               timer.start();
             // Explicit synchronization of the CUDA device
 #ifdef HAVE_CUDA      
                if( std::is_same< Device, Devices::Cuda >::value )
                   cudaDeviceSynchronize();
 #endif            
             for( loops = 0;
-                 loops < maxLoops || timer.getRealTime() < minTime;
+                 loops < maxLoops || ( timing && timer.getRealTime() < minTime );
                  ++loops) 
                compute();
             // Explicit synchronization of the CUDA device
@@ -71,12 +73,13 @@ class FunctionTimer
             if( std::is_same< Device, Devices::Cuda >::value )
                cudaDeviceSynchronize();
 #endif
-            timer.stop();
+            if( timing )
+               timer.stop();
          }
          else
          {
             for( loops = 0;
-                 loops < maxLoops || timer.getRealTime() < minTime;
+                 loops < maxLoops || ( timing && timer.getRealTime() < minTime );
                  ++loops) 
             {
                // abuse the monitor's "time" for loops
@@ -89,16 +92,21 @@ class FunctionTimer
                if( std::is_same< Device, Devices::Cuda >::value )
                   cudaDeviceSynchronize();
 #endif
-               timer.start();
+               if( timing )
+                  timer.start();
                compute();
 #ifdef HAVE_CUDA
                if( std::is_same< Device, Devices::Cuda >::value )
                   cudaDeviceSynchronize();
 #endif
-               timer.stop();
+               if( timing )
+                  timer.stop();
             }
          }
-         return timer.getRealTime() / ( double ) loops;
+         if( timing )
+            return timer.getRealTime() / ( double ) loops;
+         else
+            return std::numeric_limits<double>::quiet_NaN();
       }
 
       template< typename ComputeFunction,

@@ -74,6 +74,7 @@ public:
    {
       config.addEntry< int >( "loops", "Number of iterations for every computation.", 10 );
       config.addEntry< double >( "min-time", "Minimal real time in seconds for every computation.", 1 );
+      config.addEntry< bool >( "timing", "Turns off (or on) the timing (for the purpose of profiling).", true );
       config.addEntry< int >( "verbose", "Verbose mode, the higher number the more verbosity.", 1 );
    }
 
@@ -81,6 +82,7 @@ public:
    {
       this->loops = parameters.getParameter< unsigned >( "loops" );
       this->minTime = parameters.getParameter< double >( "min-time" );
+      this->timing = parameters.getParameter< bool >( "timing" );
       const int verbose = parameters.getParameter< unsigned >( "verbose" );
       Logging::setVerbose( verbose );
    }
@@ -199,10 +201,16 @@ public:
          if( verbose > 1 ) {
             // run the monitor main loop
             Solvers::SolverMonitorThread monitor_thread( monitor );
-            result.time = FunctionTimer< Device >::timeFunction( compute, reset, loops, minTime, verbose, monitor );
+            if( this->timing )
+               result.time = FunctionTimer< Device, true >::timeFunction( compute, reset, loops, minTime, verbose, monitor );
+            else
+               result.time = FunctionTimer< Device, false >::timeFunction( compute, reset, loops, minTime, verbose, monitor );
          }
          else {
-            result.time = FunctionTimer< Device >::timeFunction( compute, reset, loops, minTime, verbose, monitor );
+            if( this->timing )
+               result.time = FunctionTimer< Device, true >::timeFunction( compute, reset, loops, minTime, verbose, monitor );
+            else
+               result.time = FunctionTimer< Device, false >::timeFunction( compute, reset, loops, minTime, verbose, monitor );
          }
       }
       catch ( const std::exception& e ) {
@@ -232,7 +240,7 @@ public:
       BenchmarkResult result;
       return time< Device, ResetFunction, ComputeFunction >( reset, performer, compute, result );
    }
-   
+
    /****
     * The same methods as above but without reset function
     */
@@ -248,10 +256,16 @@ public:
          if( verbose > 1 ) {
             // run the monitor main loop
             Solvers::SolverMonitorThread monitor_thread( monitor );
-            result.time = FunctionTimer< Device >::timeFunction( compute, loops, minTime, verbose, monitor );
+            if( this->timing )
+               result.time = FunctionTimer< Device, true >::timeFunction( compute, loops, minTime, verbose, monitor );
+            else
+               result.time = FunctionTimer< Device, false >::timeFunction( compute, loops, minTime, verbose, monitor );
          }
          else {
-            result.time = FunctionTimer< Device >::timeFunction( compute, loops, minTime, verbose, monitor );
+            if( this->timing )
+               result.time = FunctionTimer< Device, true >::timeFunction( compute, loops, minTime, verbose, monitor );
+            else
+               result.time = FunctionTimer< Device, false >::timeFunction( compute, loops, minTime, verbose, monitor );
          }
       }
       catch ( const std::exception& e ) {
@@ -304,6 +318,7 @@ protected:
    double minTime = 1;
    double datasetSize = 0.0;
    double baseTime = 0.0;
+   bool timing = true;
    Solvers::IterativeSolverMonitor< double, int > monitor;
 };
 
