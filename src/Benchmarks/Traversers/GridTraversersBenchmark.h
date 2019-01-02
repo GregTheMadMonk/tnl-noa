@@ -76,7 +76,7 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
       using Coordinates = typename Grid::CoordinatesType;
       using MeshFunction = Functions::MeshFunction< Grid >;
       using MeshFunctionPointer = Pointers::SharedPointer< MeshFunction >;
-      using Cell = typename Grid::EntityType< 1, Meshes::GridEntityNoStencilStorage >;
+      using Cell = typename Grid::template EntityType< 1, Meshes::GridEntityNoStencilStorage >;
       using Traverser = Meshes::Traverser< Grid, Cell >;
       using WriteOneTraverserUserDataType = WriteOneUserData< MeshFunctionPointer >;
       using WriteOneEntitiesProcessorType = WriteOneEntitiesProcessor< WriteOneTraverserUserDataType >;
@@ -215,7 +215,7 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
       using Coordinates = typename Grid::CoordinatesType;
       using MeshFunction = Functions::MeshFunction< Grid >;
       using MeshFunctionPointer = Pointers::SharedPointer< MeshFunction >;
-      using Cell = typename Grid::EntityType< 2, Meshes::GridEntityNoStencilStorage >;
+      using Cell = typename Grid::template EntityType< 2, Meshes::GridEntityNoStencilStorage >;
       using Traverser = Meshes::Traverser< Grid, Cell >;
       using TraverserUserData = WriteOneUserData< MeshFunctionPointer >;
       using WriteOneTraverserUserDataType = WriteOneUserData< MeshFunctionPointer >;
@@ -376,7 +376,7 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
       using Coordinates = typename Grid::CoordinatesType;
       using MeshFunction = Functions::MeshFunction< Grid >;
       using MeshFunctionPointer = Pointers::SharedPointer< MeshFunction >;
-      using Cell = typename Grid::EntityType< 3, Meshes::GridEntityNoStencilStorage >;
+      using Cell = typename Grid::template EntityType< 3, Meshes::GridEntityNoStencilStorage >;
       using Traverser = Meshes::Traverser< Grid, Cell >;
       using TraverserUserData = WriteOneUserData< MeshFunctionPointer >;
       using WriteOneTraverserUserDataType = WriteOneUserData< MeshFunctionPointer >;
