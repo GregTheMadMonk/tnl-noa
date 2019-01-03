@@ -42,7 +42,7 @@ class WriteOneEntitiesProcessor
                                         const GridEntity& entity )
       {
          auto& u = userData.u.template modifyData< DeviceType >();
-         u( entity ) = 1.0;
+         u( entity ) += 1.0;
       }
 };
 
@@ -126,6 +126,15 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
       }
 
       void writeOneUsingParallelFor()
+      {
+         auto f = [] __cuda_callable__ ( Index i, Real* data )
+         {
+            data[ i ] = +1.0;
+         };
+         ParallelFor< Device >::exec( ( Index ) 0, size, f, v.getData() );
+      }
+
+      void writeOneUsingParallelForAndGridEntity()
       {
          auto f = [] __cuda_callable__ ( Index i, Real* data )
          {
@@ -267,8 +276,23 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
 #endif
          }
       }
-      
+
       void writeOneUsingParallelFor()
+      {
+         Index _size = this->size;
+         auto f = [=] __cuda_callable__ ( Index i, Index j,  Real* data )
+         {
+            data[ i * _size + j ] = 1.0;
+         };
+         
+         ParallelFor2D< Device >::exec( ( Index ) 0,
+                                        ( Index ) 0,
+                                        this->size,
+                                        this->size,
+                                        f, v.getData() );
+      }
+
+      void writeOneUsingParallelForAndGridEntity()
       {
          Index _size = this->size;
          auto f = [=] __cuda_callable__ ( Index i, Index j,  Real* data )
@@ -443,6 +467,23 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
             data[ ( i * _size + j ) * _size + k ] = 1.0;
          };
          
+         ParallelFor3D< Device >::exec( ( Index ) 0,
+                                        ( Index ) 0,
+                                        ( Index ) 0,
+                                        this->size,
+                                        this->size,
+                                        this->size,
+                                        f, v.getData() );
+      }
+
+      void writeOneUsingParallelForAndGridEntity()
+      {
+         Index _size = this->size;
+         auto f = [=] __cuda_callable__ ( Index i, Index j, Index k, Real* data )
+         {
+            data[ ( i * _size + j ) * _size + k ] = 1.0;
+         };
+
          ParallelFor3D< Device >::exec( ( Index ) 0,
                                         ( Index ) 0,
                                         ( Index ) 0,

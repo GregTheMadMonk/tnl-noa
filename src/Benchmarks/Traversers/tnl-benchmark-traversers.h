@@ -77,28 +77,27 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
       /****
        * Write one using C for
        */
-      auto hostWriteOneUsingPureC = [&] ()
-      {
-         hostTraverserBenchmark.writeOneUsingPureC();
-      };
-
-#ifdef HAVE_CUDA
-      auto cudaWriteOneUsingPureC = [&] ()
-      {
-         cudaTraverserBenchmark.writeOneUsingPureC();
-      };
-#endif
-
       if( tests == "all" || tests == "no-bc-pure-c")
       {
          benchmark.setOperation( "Pure C", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
+
+         auto hostWriteOneUsingPureC = [&] ()
+         {
+            hostTraverserBenchmark.writeOneUsingPureC();
+         };
          benchmark.time< Devices::Host >( "CPU", hostWriteOneUsingPureC );
+
 #ifdef HAVE_CUDA
+         auto cudaWriteOneUsingPureC = [&] ()
+         {
+            cudaTraverserBenchmark.writeOneUsingPureC();
+         };
          if( withCuda )
             benchmark.time< Devices::Cuda >( "GPU", cudaWriteOneUsingPureC );
 #endif
          benchmark.setOperation( "Pure C RST", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
          benchmark.time< Devices::Host >( hostReset, "CPU", hostWriteOneUsingPureC );
+
 #ifdef HAVE_CUDA
          if( withCuda )
             benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaWriteOneUsingPureC );
@@ -108,27 +107,24 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
       /****
        * Write one using parallel for
        */
-      auto hostWriteOneUsingParallelFor = [&] ()
-      {
-         hostTraverserBenchmark.writeOneUsingParallelFor();
-      };
-
-#ifdef HAVE_CUDA
-      auto cudaWriteOneUsingParallelFor = [&] ()
-      {
-         cudaTraverserBenchmark.writeOneUsingParallelFor();
-      };
-#endif
-
       if( tests == "all" || tests == "no-bc-parallel-for" )
       {
          benchmark.setOperation( "parallel for", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
+
+         auto hostWriteOneUsingParallelFor = [&] ()
+         {
+            hostTraverserBenchmark.writeOneUsingParallelFor();
+         };
          benchmark.time< Devices::Host >( "CPU", hostWriteOneUsingParallelFor );
+
 #ifdef HAVE_CUDA
+         auto cudaWriteOneUsingParallelFor = [&] ()
+         {
+            cudaTraverserBenchmark.writeOneUsingParallelFor();
+         };
          if( withCuda )
             benchmark.time< Devices::Cuda >( "GPU", cudaWriteOneUsingParallelFor );
 #endif
-
          benchmark.setOperation( "parallel for RST", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
          benchmark.time< Devices::Host >( hostReset, "CPU", hostWriteOneUsingParallelFor );
 #ifdef HAVE_CUDA
@@ -138,25 +134,51 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
       }
 
       /****
-       * Write one using traverser
+       * Write one using parallel for with grid entity
        */
-      auto hostWriteOneUsingTraverser = [&] ()
+      if( tests == "all" || tests == "no-bc-parallel-for-and-grid-entity" )
       {
-         hostTraverserBenchmark.writeOneUsingTraverser();
-      };
+         auto hostWriteOneUsingParallelForAndGridEntity = [&] ()
+         {
+            hostTraverserBenchmark.writeOneUsingParallelForAndGridEntity();
+         };
+         benchmark.setOperation( "par.for+grid ent.", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
+         benchmark.time< Devices::Host >( "CPU", hostWriteOneUsingParallelForAndGridEntity );
 
 #ifdef HAVE_CUDA
-      auto cudaWriteOneUsingTraverser = [&] ()
-      {
-         cudaTraverserBenchmark.writeOneUsingTraverser();
-      };
+         auto cudaWriteOneUsingParallelForAndGridEntity = [&] ()
+         {
+            cudaTraverserBenchmark.writeOneUsingParallelForAndGridEntity();
+         };
+         if( withCuda )
+            benchmark.time< Devices::Cuda >( "GPU", cudaWriteOneUsingParallelForAndGridEntity );
 #endif
 
+         benchmark.setOperation( "par.for+grid ent. RST", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
+         benchmark.time< Devices::Host >( hostReset, "CPU", hostWriteOneUsingParallelForAndGridEntity );
+#ifdef HAVE_CUDA
+         if( withCuda )
+            benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaWriteOneUsingParallelForAndGridEntity );
+#endif
+      }
+
+      /****
+       * Write one using traverser
+       */
       if( tests == "all" || tests == "no-bc-traverser" )
       {
          benchmark.setOperation( "traverser", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
+         auto hostWriteOneUsingTraverser = [&] ()
+         {
+            hostTraverserBenchmark.writeOneUsingTraverser();
+         };
          benchmark.time< Devices::Host >( hostReset, "CPU", hostWriteOneUsingTraverser );
+
 #ifdef HAVE_CUDA
+         auto cudaWriteOneUsingTraverser = [&] ()
+         {
+            cudaTraverserBenchmark.writeOneUsingTraverser();
+         };
          if( withCuda )
             benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaWriteOneUsingTraverser );
 #endif
@@ -298,6 +320,7 @@ void setupConfig( Config::ConfigDescription& config )
    config.addEntryEnum( "all" );
    config.addEntryEnum( "no-bc-pure-c" );
    config.addEntryEnum( "no-bc-parallel-for" );
+   config.addEntryEnum( "no-bc-parallel-for-and-grid-entity" );
    config.addEntryEnum( "no-bc-traverser" );
    config.addEntryEnum( "bc-pure-c" );
    config.addEntryEnum( "bc-parallel-for" );
@@ -343,7 +366,7 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
    auto mode = std::ios::out;
    if( outputMode == "append" )
        mode |= std::ios::app;
-   std::ofstream logFile( logFileName.getString(), mode );   
+   std::ofstream logFile( logFileName.getString(), mode );
 
    if( ! benchmark.save( logFile ) )
    {
