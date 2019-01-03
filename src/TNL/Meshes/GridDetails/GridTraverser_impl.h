@@ -58,30 +58,35 @@ processEntities(
       if( Devices::Host::isOMPEnabled() && end.x() - begin.x() > 512 )
       {
 #pragma omp parallel firstprivate( begin, end )
-         GridEntity entity( *gridPointer );
-#pragma omp for
-         for( IndexType x = begin.x(); x <= end.x(); x ++ )
          {
-            entity.getCoordinates().x() = x;
-            entity.refresh();
-            EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
+            GridEntity entity( *gridPointer );
+#pragma omp for
+            // TODO: g++ 5.5 crashes when coding this loop without auxiliary x as bellow
+            for( IndexType x = begin.x(); x <= end.x(); x++ )
+            {
+               entity.getCoordinates().x() = x;
+               entity.refresh();
+               EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
+            }
          }
       }
       else
       {
          GridEntity entity( *gridPointer );
-         for( IndexType x = begin.x(); x <= end.x(); x ++ )
+         for( entity.getCoordinates().x() = begin.x();
+              entity.getCoordinates().x() <= end.x();
+              entity.getCoordinates().x() ++ )
          {
-            entity.getCoordinates().x() = x;
             entity.refresh();
             EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
          }
       }
 #else
       GridEntity entity( *gridPointer );
-      for( IndexType x = begin.x(); x <= end.x(); x ++ )
+      for( entity.getCoordinates().x() = begin.x();
+           entity.getCoordinates().x() <= end.x();
+           entity.getCoordinates().x() ++ )
       {
-         entity.getCoordinates().x() = x;
          entity.refresh();
          EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
       }
@@ -332,35 +337,51 @@ processEntities(
    }
    else
    {
-      //TODO: This does not work with gcc-5.4 and older, should work at gcc 6.x
-/*#pragma omp parallel for firstprivate( entity, begin, end ) if( Devices::Host::isOMPEnabled() )
-      for( entity.getCoordinates().y() = begin.y();
-           entity.getCoordinates().y() <= end.y();
-           entity.getCoordinates().y() ++ )
-         for( entity.getCoordinates().x() = begin.x();
-              entity.getCoordinates().x() <= end.x();
-              entity.getCoordinates().x() ++ )
-         {
-            entity.refresh();
-            EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
-         }*/
 #ifdef HAVE_OPENMP
-#pragma omp parallel firstprivate( begin, end ) if( Devices::Host::isOMPEnabled() )
-#endif
+      if( Devices::Host::isOMPEnabled() )
       {
-         GridEntity entity( *gridPointer, begin, gridEntityParameters... );
-#ifdef HAVE_OPENMP
-#pragma omp for 
-#endif
-         for( IndexType y = begin.y(); y <= end.y(); y ++ )
-            for( IndexType x = begin.x(); x <= end.x(); x ++ )
-            {
-               entity.getCoordinates().x() = x;
-               entity.getCoordinates().y() = y;
-               entity.refresh();
-               EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
-            }
+#pragma omp parallel firstprivate( begin, end )
+         {
+            GridEntity entity( *gridPointer );
+#pragma omp for
+            // TODO: g++ 5.5 crashes when coding this loop without auxiliary x and y as bellow
+            for( IndexType y = begin.y(); y <= end.y(); y ++ )
+               for( IndexType x = begin.x(); x <= end.x(); x ++ )
+               {
+                  entity.getCoordinates().x() = x;
+                  entity.getCoordinates().y() = y;
+                  entity.refresh();
+                  EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
+               }
+         }
       }
+      else
+      {
+         GridEntity entity( *gridPointer );
+         for( entity.getCoordinates().y() = begin.y();
+              entity.getCoordinates().y() <= end.y();
+              entity.getCoordinates().y() ++ )
+            for( entity.getCoordinates().x() = begin.x();
+                 entity.getCoordinates().x() <= end.x();
+                 entity.getCoordinates().x() ++ )
+               {
+                  entity.refresh();
+                  EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
+               }
+      }
+#else
+      GridEntity entity( *gridPointer );
+         for( entity.getCoordinates().y() = begin.y();
+              entity.getCoordinates().y() <= end.y();
+              entity.getCoordinates().y() ++ )
+            for( entity.getCoordinates().x() = begin.x();
+                 entity.getCoordinates().x() <= end.x();
+                 entity.getCoordinates().x() ++ )
+               {
+                  entity.refresh();
+                  EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
+               }
+#endif
    }
 }
 
@@ -426,7 +447,7 @@ GridTraverser2DBoundaryAlongX(
    typename GridType::CoordinatesType coordinates;
 
    coordinates.x() = beginX + Devices::Cuda::getGlobalThreadIdx_x( gridIdx );
-   coordinates.y() = fixedY;  
+   coordinates.y() = fixedY;
    
    if( coordinates.x() <= endX )
    {
@@ -436,7 +457,7 @@ GridTraverser2DBoundaryAlongX(
       ( *grid,
         userData,
         entity );
-   }   
+   }
 }
 
 // Boundary traverser using streams
@@ -648,7 +669,7 @@ processEntities(
    if( processOnlyBoundaryEntities && 
        ( GridEntity::getEntityDimension() == 2 || GridEntity::getEntityDimension() == 0 ) )
    {
-#ifdef GRID_TRAVERSER_USE_STREAMS            
+#ifdef GRID_TRAVERSER_USE_STREAMS
       dim3 cudaBlockSize( 256 );
       dim3 cudaBlocksCountAlongX, cudaGridsCountAlongX,
            cudaBlocksCountAlongY, cudaGridsCountAlongY;
@@ -960,8 +981,45 @@ processEntities(
    }
    else
    {
-      // TODO: this does not work with gcc-5.4 and older, should work at gcc 6.x
-/*#pragma omp parallel for firstprivate( entity, begin, end ) if( Devices::Host::isOMPEnabled() )      
+#ifdef HAVE_OPENMP
+      if( Devices::Host::isOMPEnabled() )
+      {
+#pragma omp parallel firstprivate( begin, end )
+         {
+            GridEntity entity( *gridPointer );
+#pragma omp for
+            // TODO: g++ 5.5 crashes when coding this loop without auxiliary x and y as bellow
+            for( IndexType z = begin.z(); z <= end.z(); z ++ )
+               for( IndexType y = begin.y(); y <= end.y(); y ++ )
+                  for( IndexType x = begin.x(); x <= end.x(); x ++ )
+                  {
+                     entity.getCoordinates().x() = x;
+                     entity.getCoordinates().y() = y;
+                     entity.getCoordinates().z() = z;
+                     entity.refresh();
+                     EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
+                  }
+         }
+      }
+      else
+      {
+         GridEntity entity( *gridPointer );
+         for( entity.getCoordinates().z() = begin.z();
+              entity.getCoordinates().z() <= end.z();
+              entity.getCoordinates().z() ++ )
+            for( entity.getCoordinates().y() = begin.y();
+                 entity.getCoordinates().y() <= end.y();
+                 entity.getCoordinates().y() ++ )
+               for( entity.getCoordinates().x() = begin.x();
+                    entity.getCoordinates().x() <= end.x();
+                    entity.getCoordinates().x() ++ )
+                  {
+                     entity.refresh();
+                     EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
+                  }
+      }
+#else
+      GridEntity entity( *gridPointer );
       for( entity.getCoordinates().z() = begin.z();
            entity.getCoordinates().z() <= end.z();
            entity.getCoordinates().z() ++ )
@@ -971,29 +1029,11 @@ processEntities(
             for( entity.getCoordinates().x() = begin.x();
                  entity.getCoordinates().x() <= end.x();
                  entity.getCoordinates().x() ++ )
-            {
-               entity.refresh();
-               EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
-            }*/
-#ifdef HAVE_OPENMP
-#pragma omp parallel firstprivate( begin, end ) if( Devices::Host::isOMPEnabled() )
-#endif
-      {
-         GridEntity entity( *gridPointer, begin, gridEntityParameters... );
-#ifdef HAVE_OPENMP
-#pragma omp for
-#endif
-         for( IndexType z = begin.z(); z <= end.z(); z ++ )
-            for( IndexType y = begin.y(); y <= end.y(); y ++ )
-               for( IndexType x = begin.x(); x <= end.x(); x ++ )
                {
-                  entity.getCoordinates().x() = x;
-                  entity.getCoordinates().y() = y;
-                  entity.getCoordinates().z() = z;
                   entity.refresh();
                   EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
-            }
-      }      
+               }
+#endif
    }
 }
 
