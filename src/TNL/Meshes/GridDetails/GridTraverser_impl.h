@@ -54,15 +54,6 @@ processEntities(
    }
    else
    {
-      //TODO: This does not work with gcc-5.4 and older, should work at gcc 6.x
-/*#pragma omp parallel for firstprivate( entity, begin, end ) if( Devices::Host::isOMPEnabled() )
-      for( entity.getCoordinates().x() = begin.x();
-           entity.getCoordinates().x() <= end.x();
-           entity.getCoordinates().x() ++ )
-      {
-         entity.refresh();
-         EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
-      }*/ 
 #ifdef HAVE_OPENMP
       if( Devices::Host::isOMPEnabled() && end.x() - begin.x() > 512 )
       {
@@ -95,23 +86,6 @@ processEntities(
          EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
       }
 #endif
-
-/*
-#pragma omp parallel firstprivate( begin, end ) if( Devices::Host::isOMPEnabled() )
-#endif
-      {
-         GridEntity entity( *gridPointer );
-#ifdef HAVE_OPENMP
-#pragma omp for 
-#endif
-         for( IndexType x = begin.x(); x <= end.x(); x ++ )
-         {
-            entity.getCoordinates().x() = x;
-            entity.refresh();
-            EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
-         }      
-      }*/
-      
    }
 }
 
@@ -385,7 +359,7 @@ processEntities(
                entity.getCoordinates().y() = y;
                entity.refresh();
                EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
-            }      
+            }
       }
    }
 }
