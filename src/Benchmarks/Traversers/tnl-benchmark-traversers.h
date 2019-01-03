@@ -39,8 +39,8 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
    // to pass 64-bit integer values
    // const std::size_t minSize = parameters.getParameter< std::size_t >( "min-size" );
    // const std::size_t maxSize = parameters.getParameter< std::size_t >( "max-size" );
-   const int minSize = parameters.getParameter< int >( "min-size" );
-   const int maxSize = parameters.getParameter< int >( "max-size" );
+   const std::size_t minSize = parameters.getParameter< int >( "min-size" );
+   const std::size_t maxSize = parameters.getParameter< int >( "max-size" );
 #ifdef HAVE_CUDA
    const bool withCuda = parameters.getParameter< bool >( "with-cuda" );
 #else
@@ -85,7 +85,7 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
          {
             hostTraverserBenchmark.writeOneUsingPureC();
          };
-         benchmark.time< Devices::Host >( "CPU", hostWriteOneUsingPureC );
+         benchmark.time< Devices::Host >( hostReset, "CPU", hostWriteOneUsingPureC );
 
 #ifdef HAVE_CUDA
          auto cudaWriteOneUsingPureC = [&] ()
@@ -95,13 +95,13 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
          if( withCuda )
             benchmark.time< Devices::Cuda >( "GPU", cudaWriteOneUsingPureC );
 #endif
-         benchmark.setOperation( "Pure C RST", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
+         /*benchmark.setOperation( "Pure C RST", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
          benchmark.time< Devices::Host >( hostReset, "CPU", hostWriteOneUsingPureC );
 
 #ifdef HAVE_CUDA
          if( withCuda )
             benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaWriteOneUsingPureC );
-#endif
+#endif*/
       }
 
       /****
@@ -115,7 +115,7 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
          {
             hostTraverserBenchmark.writeOneUsingParallelFor();
          };
-         benchmark.time< Devices::Host >( "CPU", hostWriteOneUsingParallelFor );
+         benchmark.time< Devices::Host >( hostReset, "CPU", hostWriteOneUsingParallelFor );
 
 #ifdef HAVE_CUDA
          auto cudaWriteOneUsingParallelFor = [&] ()
@@ -123,14 +123,14 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
             cudaTraverserBenchmark.writeOneUsingParallelFor();
          };
          if( withCuda )
-            benchmark.time< Devices::Cuda >( "GPU", cudaWriteOneUsingParallelFor );
+            benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaWriteOneUsingParallelFor );
 #endif
-         benchmark.setOperation( "parallel for RST", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
+         /*benchmark.setOperation( "parallel for RST", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
          benchmark.time< Devices::Host >( hostReset, "CPU", hostWriteOneUsingParallelFor );
 #ifdef HAVE_CUDA
          if( withCuda )
             benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaWriteOneUsingParallelFor );
-#endif
+#endif*/
       }
 
       /****
@@ -143,7 +143,7 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
             hostTraverserBenchmark.writeOneUsingParallelForAndGridEntity();
          };
          benchmark.setOperation( "par.for+grid ent.", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
-         benchmark.time< Devices::Host >( "CPU", hostWriteOneUsingParallelForAndGridEntity );
+         benchmark.time< Devices::Host >( hostReset, "CPU", hostWriteOneUsingParallelForAndGridEntity );
 
 #ifdef HAVE_CUDA
          auto cudaWriteOneUsingParallelForAndGridEntity = [&] ()
@@ -151,15 +151,15 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
             cudaTraverserBenchmark.writeOneUsingParallelForAndGridEntity();
          };
          if( withCuda )
-            benchmark.time< Devices::Cuda >( "GPU", cudaWriteOneUsingParallelForAndGridEntity );
+            benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaWriteOneUsingParallelForAndGridEntity );
 #endif
 
-         benchmark.setOperation( "par.for+grid ent. RST", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
+         /*benchmark.setOperation( "par.for+grid ent. RST", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
          benchmark.time< Devices::Host >( hostReset, "CPU", hostWriteOneUsingParallelForAndGridEntity );
 #ifdef HAVE_CUDA
          if( withCuda )
             benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaWriteOneUsingParallelForAndGridEntity );
-#endif
+#endif*/
       }
 
       /****
@@ -172,7 +172,7 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
             hostTraverserBenchmark.writeOneUsingParallelForAndMeshFunction();
          };
          benchmark.setOperation( "par.for+mesh fc.", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
-         benchmark.time< Devices::Host >( "CPU", hostWriteOneUsingParallelForAndMeshFunction );
+         benchmark.time< Devices::Host >( hostReset, "CPU", hostWriteOneUsingParallelForAndMeshFunction );
 
 #ifdef HAVE_CUDA
          auto cudaWriteOneUsingParallelForAndMeshFunction = [&] ()
@@ -180,15 +180,15 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
             cudaTraverserBenchmark.writeOneUsingParallelForAndMeshFunction();
          };
          if( withCuda )
-            benchmark.time< Devices::Cuda >( "GPU", cudaWriteOneUsingParallelForAndGridMeshFunction );
+            benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaWriteOneUsingParallelForAndGridMeshFunction );
 #endif
 
-         benchmark.setOperation( "par.for+mesh fc. RST", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
+         /*benchmark.setOperation( "par.for+mesh fc. RST", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
          benchmark.time< Devices::Host >( hostReset, "CPU", hostWriteOneUsingParallelForAndMeshFunction );
 #ifdef HAVE_CUDA
          if( withCuda )
             benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaWriteOneUsingParallelForAndMeshFunction );
-#endif
+#endif*/
       }
 
       /****
@@ -211,14 +211,15 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
          if( withCuda )
             benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaWriteOneUsingTraverser );
 #endif
-
+/*
          benchmark.setOperation( "traverser RST", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
-         benchmark.time< Devices::Host >( "CPU", hostWriteOneUsingTraverser );
+         benchmark.time< Devices::Host >( hostReset, "CPU", hostWriteOneUsingTraverser );
 #ifdef HAVE_CUDA
          if( withCuda )
             benchmark.time< Devices::Cuda >( "GPU", cudaWriteOneUsingTraverser );
-#endif
+#endif*/
       }
+      std::cout << "--------------------------------------------------------------------------------------------------------" << std::endl;
    }
 
    /****

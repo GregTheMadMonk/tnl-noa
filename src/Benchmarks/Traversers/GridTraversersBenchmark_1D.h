@@ -22,6 +22,7 @@
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Pointers/SharedPointer.h>
 #include "cuda-kernels.h"
+#include "GridTraversersBenchmark.h"
 
 namespace TNL {
    namespace Benchmarks {
@@ -46,7 +47,7 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
       using WriteOneEntitiesProcessorType = WriteOneEntitiesProcessor< WriteOneTraverserUserDataType >;
       
       GridTraversersBenchmark( Index size )
-      :v( size ), size( size ), grid( size ), u( grid )
+      :size( size ), v( size ), grid( size ), u( grid )
       {
          userData.u = this->u;
          v_data = v.getData();
@@ -93,7 +94,7 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
       {
          auto f = [] __cuda_callable__ ( Index i, Real* data )
          {
-            data[ i ] = +1.0;
+            data[ i ] += 1.0;
          };
          ParallelFor< Device >::exec( ( Index ) 0, size, f, v.getData() );
       }
@@ -106,7 +107,7 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
             Cell entity( *currentGrid );
             entity.getCoordinates().x() = i;
             entity.refresh();
-            data[ entity.getIndex() ] = +1.0;
+            data[ entity.getIndex() ] += 1.0;
          };
          ParallelFor< Device >::exec( ( Index ) 0, size, f, v.getData() );
       }
@@ -117,18 +118,36 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
          MeshFunction* _u = &u.template modifyData< Device >();
          auto f = [=] __cuda_callable__ ( Index i, Real* data )
          {
-            Cell entity( *currentGrid );
+            Cell entity( grid.template getData< Device >() );
             entity.getCoordinates().x() = i;
             entity.refresh();
-            ( *_u )( entity ) = +1.0;
+            //( *_u )( entity ) += 1.0;
+            WriteOneEntitiesProcessorType::processEntity( *currentGrid, userData, entity );
          };
          ParallelFor< Device >::exec( ( Index ) 0, size, f, v.getData() );
       }
 
       void writeOneUsingTraverser()
       {
+         using CoordinatesType = typename Grid::CoordinatesType;
          traverser.template processAllEntities< WriteOneTraverserUserDataType, WriteOneEntitiesProcessorType >
             ( grid, userData );
+         
+         /*Meshes::GridTraverser< Grid >::template processEntities< Cell, WriteOneEntitiesProcessorType, WriteOneTraverserUserDataType, false >(
+           grid,
+           CoordinatesType( 0 ),
+           grid->getDimensions() - CoordinatesType( 1 ),
+           userData );*/
+         /*const CoordinatesType begin( 0 );
+         const CoordinatesType end = CoordinatesType( size ) - CoordinatesType( 1 );
+         MeshFunction* _u = &u.template modifyData< Device >();
+         Cell entity( *grid );
+         for( Index x = begin.x(); x <= end.x(); x ++ )
+         {
+            entity.getCoordinates().x() = x;
+            entity.refresh();
+            WriteOneEntitiesProcessorType::processEntity( entity.getMesh(), userData, entity );
+         }*/
       }
 
       void traverseUsingPureC()
