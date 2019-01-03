@@ -163,6 +163,35 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
       }
 
       /****
+       * Write one using parallel for with mesh function
+       */
+      if( tests == "all" || tests == "no-bc-parallel-for-and-mesh-function" )
+      {
+         auto hostWriteOneUsingParallelForAndMeshFunction = [&] ()
+         {
+            hostTraverserBenchmark.writeOneUsingParallelForAndMeshFunction();
+         };
+         benchmark.setOperation( "par.for+mesh fc.", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
+         benchmark.time< Devices::Host >( "CPU", hostWriteOneUsingParallelForAndMeshFunction );
+
+#ifdef HAVE_CUDA
+         auto cudaWriteOneUsingParallelForAndMeshFunction = [&] ()
+         {
+            cudaTraverserBenchmark.writeOneUsingParallelForAndMeshFunction();
+         };
+         if( withCuda )
+            benchmark.time< Devices::Cuda >( "GPU", cudaWriteOneUsingParallelForAndGridMeshFunction );
+#endif
+
+         benchmark.setOperation( "par.for+mesh fc. RST", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
+         benchmark.time< Devices::Host >( hostReset, "CPU", hostWriteOneUsingParallelForAndMeshFunction );
+#ifdef HAVE_CUDA
+         if( withCuda )
+            benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaWriteOneUsingParallelForAndMeshFunction );
+#endif
+      }
+
+      /****
        * Write one using traverser
        */
       if( tests == "all" || tests == "no-bc-traverser" )
