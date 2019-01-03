@@ -252,7 +252,7 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
       GridPointer grid;
       MeshFunctionPointer u;
       Traverser traverser;
-      WriteOneTraverserUserDataType userData;      
+      WriteOneTraverserUserDataType userData;
 };
 
       } // namespace Traversers

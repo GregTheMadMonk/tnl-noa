@@ -65,7 +65,7 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
          {
             for( int i = 0; i < size; i++ )
                for( int j = 0; j < size; j++ )
-                  v_data[ i * size + j ] = 1.0;
+                  v_data[ i * size + j ] += 1.0;
          }
          else // Device == Devices::Cuda
          {
@@ -150,8 +150,27 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
 
       void writeOneUsingTraverser()
       {
+         using CoordinatesType = typename Grid::CoordinatesType;
          traverser.template processAllEntities< WriteOneTraverserUserDataType, WriteOneEntitiesProcessorType >
             ( grid, userData );
+         
+         /*Meshes::GridTraverser< Grid >::template processEntities< Cell, WriteOneEntitiesProcessorType, WriteOneTraverserUserDataType, false >(
+           grid,
+           CoordinatesType( 0 ),
+           grid->getDimensions() - CoordinatesType( 1 ),
+           userData );*/
+         /*const CoordinatesType begin( 0 );
+         const CoordinatesType end = CoordinatesType( size ) - CoordinatesType( 1 );
+         MeshFunction* _u = &u.template modifyData< Device >();
+         Cell entity( *grid );
+         for( Index y = begin.y(); y <= end.y(); y ++ )
+            for( Index x = begin.x(); x <= end.x(); x ++ )
+            {
+               entity.getCoordinates().x() = x;
+               entity.getCoordinates().y() = y;
+               entity.refresh();
+               WriteOneEntitiesProcessorType::processEntity( entity.getMesh(), userData, entity );
+            }*/
       }
 
       void traverseUsingPureC()
