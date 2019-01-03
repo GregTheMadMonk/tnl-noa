@@ -73,6 +73,7 @@ public:
    static void configSetup( Config::ConfigDescription& config )
    {
       config.addEntry< int >( "loops", "Number of iterations for every computation.", 10 );
+      config.addEntry< bool >( "reset", "Call reset function between loops.", true );
       config.addEntry< double >( "min-time", "Minimal real time in seconds for every computation.", 1 );
       config.addEntry< bool >( "timing", "Turns off (or on) the timing (for the purpose of profiling).", true );
       config.addEntry< int >( "verbose", "Verbose mode, the higher number the more verbosity.", 1 );
@@ -81,6 +82,7 @@ public:
    void setup( const Config::ParameterContainer& parameters )
    {
       this->loops = parameters.getParameter< unsigned >( "loops" );
+      this->reset = parameters.getParameter< bool >( "reset" );
       this->minTime = parameters.getParameter< double >( "min-time" );
       this->timing = parameters.getParameter< bool >( "timing" );
       const int verbose = parameters.getParameter< unsigned >( "verbose" );
@@ -114,8 +116,11 @@ public:
    {
       closeTable();
       writeTitle( title );
-      // add loops to metadata
+      // add loops and reset flag to metadata
       metadata["loops"] = convertToString(loops);
+      metadata["reset"] = convertToString( reset );
+      metadata["minimal test time"] = convertToString( minTime );
+      metadata["timing"] = convertToString( timing );
       writeMetadata( metadata );
    }
 
@@ -202,15 +207,27 @@ public:
             // run the monitor main loop
             Solvers::SolverMonitorThread monitor_thread( monitor );
             if( this->timing )
-               result.time = FunctionTimer< Device, true >::timeFunction( compute, reset, loops, minTime, verbose, monitor );
+               if( this->reset )
+                  result.time = FunctionTimer< Device, true >::timeFunction( compute, reset, loops, minTime, verbose, monitor );
+               else
+                  result.time = FunctionTimer< Device, true >::timeFunction( compute, loops, minTime, verbose, monitor );
             else
-               result.time = FunctionTimer< Device, false >::timeFunction( compute, reset, loops, minTime, verbose, monitor );
+               if( this->reset )
+                  result.time = FunctionTimer< Device, false >::timeFunction( compute, reset, loops, minTime, verbose, monitor );
+               else
+                  result.time = FunctionTimer< Device, false >::timeFunction( compute, loops, minTime, verbose, monitor );
          }
          else {
             if( this->timing )
-               result.time = FunctionTimer< Device, true >::timeFunction( compute, reset, loops, minTime, verbose, monitor );
+               if( this->reset )
+                  result.time = FunctionTimer< Device, true >::timeFunction( compute, reset, loops, minTime, verbose, monitor );
+               else
+                  result.time = FunctionTimer< Device, true >::timeFunction( compute, loops, minTime, verbose, monitor );
             else
-               result.time = FunctionTimer< Device, false >::timeFunction( compute, reset, loops, minTime, verbose, monitor );
+               if( this->reset )
+                  result.time = FunctionTimer< Device, false >::timeFunction( compute, reset, loops, minTime, verbose, monitor );
+               else
+                  result.time = FunctionTimer< Device, false >::timeFunction( compute, loops, minTime, verbose, monitor );
          }
       }
       catch ( const std::exception& e ) {
@@ -319,6 +336,7 @@ protected:
    double datasetSize = 0.0;
    double baseTime = 0.0;
    bool timing = true;
+   bool reset = true;
    Solvers::IterativeSolverMonitor< double, int > monitor;
 };
 
