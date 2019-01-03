@@ -64,6 +64,39 @@ processEntities(
          EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
       }*/ 
 #ifdef HAVE_OPENMP
+      if( Devices::Host::isOMPEnabled() && end.x() - begin.x() > 512 )
+      {
+#pragma omp parallel firstprivate( begin, end )
+         GridEntity entity( *gridPointer );
+#pragma omp for
+         for( IndexType x = begin.x(); x <= end.x(); x ++ )
+         {
+            entity.getCoordinates().x() = x;
+            entity.refresh();
+            EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
+         }
+      }
+      else
+      {
+         GridEntity entity( *gridPointer );
+         for( IndexType x = begin.x(); x <= end.x(); x ++ )
+         {
+            entity.getCoordinates().x() = x;
+            entity.refresh();
+            EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
+         }
+      }
+#else
+      GridEntity entity( *gridPointer );
+      for( IndexType x = begin.x(); x <= end.x(); x ++ )
+      {
+         entity.getCoordinates().x() = x;
+         entity.refresh();
+         EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
+      }
+#endif
+
+/*
 #pragma omp parallel firstprivate( begin, end ) if( Devices::Host::isOMPEnabled() )
 #endif
       {
@@ -77,7 +110,7 @@ processEntities(
             entity.refresh();
             EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
          }      
-      }
+      }*/
       
    }
 }
