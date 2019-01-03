@@ -86,6 +86,8 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
       {
          userData.u = this->u;
          v_data = v.getData();
+         hostGrid = &grid.template getData< Devices::Host >();
+         cudaGrid = &grid.template getData< Devices::Cuda >();
       }
 
       void reset()
@@ -136,9 +138,17 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
 
       void writeOneUsingParallelForAndGridEntity()
       {
-         auto f = [] __cuda_callable__ ( Index i, Real* data )
+         const Grid* currentGrid;
+         if( std::is_same< Device, Devices::Host >::value )
+            currentGrid = hostGrid;
+         else
+            currentGrid = cudaGrid;
+         auto f = [=] __cuda_callable__ ( Index i, Real* data )
          {
-            data[ i ] = +1.0;
+            Cell entity( *currentGrid );
+            entity.getCoordinates().x() = i;
+            entity.refresh();
+            data[ entity.getIndex() ] = +1.0;
          };
          ParallelFor< Device >::exec( ( Index ) 0, size, f, v.getData() );
       }
@@ -199,15 +209,17 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
             ( grid, userData );
       }
 
-      protected:
+   protected:
 
-         Index size;
-         Vector v;
-         Real* v_data;
-         GridPointer grid;
-         MeshFunctionPointer u;
-         Traverser traverser;
-         WriteOneTraverserUserDataType userData;
+      Index size;
+      Vector v;
+      Real* v_data;
+      GridPointer grid;
+      const Grid* hostGrid;
+      const Grid* cudaGrid;
+      MeshFunctionPointer u;
+      Traverser traverser;
+      WriteOneTraverserUserDataType userData;
 };
 
 
@@ -235,6 +247,8 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
       {
          userData.u = this->u;
          v_data = v.getData();
+         hostGrid = &grid.template getData< Devices::Host >();
+         cudaGrid = &grid.template getData< Devices::Cuda >();
       }
 
       void reset()
@@ -282,7 +296,7 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
          Index _size = this->size;
          auto f = [=] __cuda_callable__ ( Index i, Index j,  Real* data )
          {
-            data[ i * _size + j ] = 1.0;
+            data[ i * _size + j ] += 1.0;
          };
          
          ParallelFor2D< Device >::exec( ( Index ) 0,
@@ -294,10 +308,18 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
 
       void writeOneUsingParallelForAndGridEntity()
       {
-         Index _size = this->size;
+         const Grid* currentGrid;
+         if( std::is_same< Device, Devices::Host >::value )
+            currentGrid = hostGrid;
+         else
+            currentGrid = cudaGrid;
          auto f = [=] __cuda_callable__ ( Index i, Index j,  Real* data )
          {
-            data[ i * _size + j ] = 1.0;
+            Cell entity( *currentGrid );
+            entity.getCoordinates().y() = i;
+            entity.getCoordinates().x() = j;
+            entity.refresh();
+            data[ entity.getIndex() ] += 1.0;
          };
          
          ParallelFor2D< Device >::exec( ( Index ) 0,
@@ -382,6 +404,8 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
       Vector v;
       Real* v_data;
       GridPointer grid;
+      const Grid* hostGrid;
+      const Grid* cudaGrid;
       MeshFunctionPointer u;
       Traverser traverser;
       WriteOneTraverserUserDataType userData;
@@ -414,6 +438,8 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
       {
          userData.u = this->u;
          v_data = v.getData();
+         hostGrid = &grid.template getData< Devices::Host >();
+         cudaGrid = &grid.template getData< Devices::Cuda >();
       }
 
       void reset()
@@ -429,7 +455,7 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
             for( int i = 0; i < size; i++ )
                for( int j = 0; j < size; j++ )
                   for( int k = 0; k < size; k++ )
-                     v_data[ ( i * size + j ) * size + k ] = 1.0;
+                     v_data[ ( i * size + j ) * size + k ] += 1.0;
          }
          else // Device == Devices::Cuda
          {
@@ -464,7 +490,7 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
          Index _size = this->size;
          auto f = [=] __cuda_callable__ ( Index i, Index j, Index k, Real* data )
          {
-            data[ ( i * _size + j ) * _size + k ] = 1.0;
+            data[ ( i * _size + j ) * _size + k ] += 1.0;
          };
          
          ParallelFor3D< Device >::exec( ( Index ) 0,
@@ -478,10 +504,20 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
 
       void writeOneUsingParallelForAndGridEntity()
       {
+         const Grid* currentGrid;
+         if( std::is_same< Device, Devices::Host >::value )
+            currentGrid = hostGrid;
+         else
+            currentGrid = cudaGrid;
          Index _size = this->size;
          auto f = [=] __cuda_callable__ ( Index i, Index j, Index k, Real* data )
          {
-            data[ ( i * _size + j ) * _size + k ] = 1.0;
+            Cell entity( *currentGrid );
+            entity.getCoordinates().z() = i;
+            entity.getCoordinates().y() = j;
+            entity.getCoordinates().x() = k;
+            entity.refresh();
+            data[ entity.getIndex() ] += 1.0;
          };
 
          ParallelFor3D< Device >::exec( ( Index ) 0,
@@ -581,6 +617,8 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
       Vector v;
       Real* v_data;
       GridPointer grid;
+      const Grid* hostGrid;
+      const Grid* cudaGrid;
       MeshFunctionPointer u;
       Traverser traverser;
       WriteOneTraverserUserDataType userData;      
