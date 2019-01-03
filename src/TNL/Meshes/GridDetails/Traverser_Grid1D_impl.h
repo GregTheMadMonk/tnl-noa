@@ -146,7 +146,7 @@ processAllEntities(
            gridPointer,
            CoordinatesType( 0 ),
            gridPointer->getDimensions() - CoordinatesType( 1 ),
-           userData );  
+           userData );
    }
    else //Distributed
    {
