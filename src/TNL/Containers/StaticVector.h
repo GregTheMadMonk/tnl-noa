@@ -16,6 +16,12 @@
 namespace TNL {
 namespace Containers {   
 
+ /**
+ * \brief Vector with constant size.
+ *
+ * \param Size Size of static array. Number of its elements.
+ * \param Real Type of the values in the static vector.
+ */
 template< int Size, typename Real = double >
 class StaticVector : public StaticArray< Size, Real >
 {
@@ -24,41 +30,88 @@ class StaticVector : public StaticArray< Size, Real >
    typedef StaticVector< Size, Real > ThisType;
    enum { size = Size };
 
+   /**
+    * \brief Basic constructor.
+    *
+    * Constructs an empty static vector.
+    */
    __cuda_callable__
    StaticVector();
 
+   /**
+    * \brief Constructor that sets all vector components (with the number of \e Size) to value \e v.
+    *
+    * Once this static array is constructed, its size can not be changed.
+    * \tparam _unused
+    * \param v[Size]
+    */
    // Note: the template avoids ambiguity of overloaded functions with literal 0 and pointer
    // reference: https://stackoverflow.com/q/4610503
    template< typename _unused = void >
    __cuda_callable__
    StaticVector( const Real v[ Size ] );
 
-   //! This sets all vector components to v
+   /**
+    * \brief Constructor that sets all vector components to value \e v.
+    *
+    * \param v Reference to a value.
+    */
    __cuda_callable__
    StaticVector( const Real& v );
 
-   //! Copy constructor
+   /**
+    * \brief Copy constructor.
+    *
+    * Constructs a copy of another static vector \e v.
+    */
    __cuda_callable__
    StaticVector( const StaticVector< Size, Real >& v );
 
    bool setup( const Config::ParameterContainer& parameters,
                const String& prefix = "" );      
 
+   /**
+    * \brief Gets type of this vector.
+    */
    static String getType();
 
-   //! Adding operator
+   /**
+    * \brief Adding operator.
+    *
+    * This function adds \e vector from this static vector and returns the resulting vector.
+    * The addition is applied to all the vector elements separately.
+    * \param vector Reference to another vector.
+    */
    __cuda_callable__
    StaticVector& operator += ( const StaticVector& v );
 
-   //! Subtracting operator
+   /**
+    * \brief Subtracting operator.
+    *
+    * This function subtracts \e vector from this static vector and returns the resulting vector.
+    * The subtraction is applied to all the vector elements separately.
+    * \param vector Reference to another vector.
+    */
    __cuda_callable__
    StaticVector& operator -= ( const StaticVector& v );
 
-   //! Multiplication with number
+   /**
+    * \brief Multiplication by number.
+    *
+    * This function multiplies this static vector by \e c and returns the resulting vector.
+    * The multiplication is applied to all the vector elements separately.
+    * \param c Multiplicator.
+    */
    __cuda_callable__
    StaticVector& operator *= ( const Real& c );
    
-   //! Division by number
+   /**
+    * \brief Division by number
+    *
+    * This function divides this static vector by \e c and returns the resulting vector.
+    * The division is applied to all the vector elements separately.
+    * \param c Divisor.
+    */
    __cuda_callable__
    StaticVector& operator /= ( const Real& c );
    
@@ -94,9 +147,17 @@ class StaticVector : public StaticArray< Size, Real >
    __cuda_callable__
    operator StaticVector< Size, OtherReal >() const;
 
+   /**
+    * \brief Returns static vector with all elements in absolute value.
+    */
    __cuda_callable__
    ThisType abs() const;
 
+   /**
+    * \brief Returns the length of this vector in p-dimensional vector space.
+    *
+    * \param p Number specifying the dimension of vector space.
+    */
    __cuda_callable__
    Real lpNorm( const Real& p ) const;
 
