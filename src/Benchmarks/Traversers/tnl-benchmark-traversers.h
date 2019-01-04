@@ -189,6 +189,8 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
       }
       std::cout << "--------------------------------------------------------------------------------------------------------" << std::endl;
    }
+   return true;
+
 
    /****
     * Full grid traversing including boundary conditions

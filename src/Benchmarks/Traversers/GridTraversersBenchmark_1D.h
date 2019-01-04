@@ -154,10 +154,10 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
       {
          if( std::is_same< Device, Devices::Host >::value )
          {
-            v_data[ 0 ] = 2;
+            v_data[ 0 ] = +2;
             for( int i = 1; i < size - 1; i++ )
-               v_data[ i ] = 1.0;
-            v_data[ size - 1 ] =  2;
+               v_data[ i ] = +1.0;
+            v_data[ size - 1 ] = +2;
          }
          else // Device == Devices::Cuda
          {
