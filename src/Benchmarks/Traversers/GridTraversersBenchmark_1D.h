@@ -116,15 +116,15 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
       {
          const Grid* currentGrid = &grid.template getData< Device >();
          MeshFunction* _u = &u.template modifyData< Device >();
-         auto f = [=] __cuda_callable__ ( Index i, Real* data )
+         auto f = [=] __cuda_callable__ ( Index i )
          {
-            Cell entity( grid.template getData< Device >() );
+            Cell entity( *currentGrid );
             entity.getCoordinates().x() = i;
             entity.refresh();
-            //( *_u )( entity ) += 1.0;
-            WriteOneEntitiesProcessorType::processEntity( *currentGrid, userData, entity );
+            ( *_u )( entity ) += 1.0;
+            //WriteOneEntitiesProcessorType::processEntity( *currentGrid, userData, entity );
          };
-         ParallelFor< Device >::exec( ( Index ) 0, size, f, v.getData() );
+         ParallelFor< Device >::exec( ( Index ) 0, size, f );
       }
 
       void writeOneUsingTraverser()
