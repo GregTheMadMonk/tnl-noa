@@ -69,18 +69,19 @@ struct ParallelFor2D
       if( TNL::Devices::Host::isOMPEnabled() )
       {
 #pragma omp parallel for
-         for( Index i = startX; i < endX; i++ )
-            for( Index j = startY; j < endY; j++ )
-               f( i, j, args... );
-      }
-      else
-         for( Index i = startX; i < endX; i++ )
-            for( Index j = startY; j < endY; j++ )
-               f( i, j, args... );
-#else
-      for( Index i = startX; i < endX; i++ )
          for( Index j = startY; j < endY; j++ )
+         for( Index i = startX; i < endX; i++ )
             f( i, j, args... );
+      }
+      else {
+         for( Index j = startY; j < endY; j++ )
+         for( Index i = startX; i < endX; i++ )
+            f( i, j, args... );
+      }
+#else
+      for( Index j = startY; j < endY; j++ )
+      for( Index i = startX; i < endX; i++ )
+         f( i, j, args... );
 #endif
    }
 };
@@ -99,21 +100,22 @@ struct ParallelFor3D
      if( TNL::Devices::Host::isOMPEnabled() )
      {
 #pragma omp parallel for collapse(2)
+      for( Index k = startZ; k < endZ; k++ )
+      for( Index j = startY; j < endY; j++ )
       for( Index i = startX; i < endX; i++ )
-         for( Index j = startY; j < endY; j++ )
-            for( Index k = startZ; k < endZ; k++ )
-               f( i, j, k, args... );
+         f( i, j, k, args... );
      }
-     else
-         for( Index i = startX; i < endX; i++ )
-            for( Index j = startY; j < endY; j++ )
-               for( Index k = startZ; k < endZ; k++ )
-                  f( i, j, k, args... );
-#else
-      for( Index i = startX; i < endX; i++ )
+     else {
+         for( Index k = startZ; k < endZ; k++ )
          for( Index j = startY; j < endY; j++ )
-            for( Index k = startZ; k < endZ; k++ )
-               f( i, j, k, args... );
+         for( Index i = startX; i < endX; i++ )
+            f( i, j, k, args... );
+     }
+#else
+      for( Index k = startZ; k < endZ; k++ )
+      for( Index j = startY; j < endY; j++ )
+      for( Index i = startX; i < endX; i++ )
+         f( i, j, k, args... );
 #endif
    }
 };
