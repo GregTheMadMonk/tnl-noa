@@ -109,6 +109,13 @@ template< class T > class List
       template< typename Array >
       void toArray( Array& array );
 
+      /***
+       * \brief Checks if there is an element with value \e v in given array.
+       *
+       * \param v Reference to a value.
+       */
+      bool containsValue( const T& v ) const;
+
       /// Erases data element at given position.
       ///
       /// \param ind Index of the data element one chooses to remove.
@@ -146,7 +153,7 @@ template< class T > class List
       ///
       /// \param file Name of file.
       bool DeepLoad( File& file );
- 
+
    protected:
       /// Pointer to the first element.
       ListDataElement< T >* first;

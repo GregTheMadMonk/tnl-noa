@@ -207,6 +207,14 @@ void List< T >::toArray( Array& array )
    for( int i = 0; i < this->getSize(); i++ )
       array[ i ] = ( *this )[ i ];
 }
+template< typename T >
+bool List< T >::containsValue( const T& v ) const
+{
+   for( int i = 0; i < this->getSize(); i++ )
+      if( ( *this )[ i ] == v )
+         return true;
+   return false;
+}
 
 template< typename T >
 void List< T >::Erase( const int& ind )
