@@ -78,7 +78,7 @@ class StaticVector : public StaticArray< Size, Real >
    /**
     * \brief Adding operator.
     *
-    * This function adds \e vector from this static vector and returns the resulting vector.
+    * This function adds \e vector from this static vector and returns the resulting static vector.
     * The addition is applied to all the vector elements separately.
     * \param vector Reference to another vector.
     */
@@ -88,7 +88,7 @@ class StaticVector : public StaticArray< Size, Real >
    /**
     * \brief Subtracting operator.
     *
-    * This function subtracts \e vector from this static vector and returns the resulting vector.
+    * This function subtracts \e vector from this static vector and returns the resulting static vector.
     * The subtraction is applied to all the vector elements separately.
     * \param vector Reference to another vector.
     */
@@ -98,7 +98,7 @@ class StaticVector : public StaticArray< Size, Real >
    /**
     * \brief Multiplication by number.
     *
-    * This function multiplies this static vector by \e c and returns the resulting vector.
+    * This function multiplies this static vector by \e c and returns the resulting static vector.
     * The multiplication is applied to all the vector elements separately.
     * \param c Multiplicator.
     */
@@ -108,38 +108,86 @@ class StaticVector : public StaticArray< Size, Real >
    /**
     * \brief Division by number
     *
-    * This function divides this static vector by \e c and returns the resulting vector.
+    * This function divides this static vector by \e c and returns the resulting static vector.
     * The division is applied to all the vector elements separately.
     * \param c Divisor.
     */
    __cuda_callable__
    StaticVector& operator /= ( const Real& c );
    
-   //! Addition operator
+   /**
+    * \brief Addition operator.
+    *
+    * This function adds static vector \e u to this static vector and returns the resulting static vector.
+    * The addition is applied to all the vector elements separately.
+    * \param u Reference to another static vector.
+    */
    __cuda_callable__
    StaticVector operator + ( const StaticVector& u ) const;
 
-   //! Subtraction operator
+   /**
+    * \brief Subtraction operator.
+    *
+    * This function subtracts static vector \e u from this static vector and returns the resulting static vector.
+    * The subtraction is applied to all the vector elements separately.
+    * \param u Reference to another static vector.
+    */
    __cuda_callable__
    StaticVector operator - ( const StaticVector& u ) const;
 
-   //! Multiplication with number
+   /**
+    * \brief Multiplication by number.
+    *
+    * This function multipies this static vector by \e c and returns the resulting static vector.
+    * The addition is applied to all the vector elements separately.
+    * \param c Multiplicator.
+    */
    __cuda_callable__
    StaticVector operator * ( const Real& c ) const;
 
-   //! Scalar product
+   /**
+    * \brief Computes scalar (dot) product.
+    *
+    * An algebraic operation that takes two equal-length vectors and returns a single number.
+    *
+    * \param u Reference to another static vector of the same size as this static vector.
+    */
    __cuda_callable__
    Real operator * ( const StaticVector& u ) const;
 
+   /**
+    * \brief Compares this static vector with static vector \e v.
+    *
+    * Returns \e true if this static vector is smaller then static vector \e v.
+    * \param v Another static vector.
+    */
    __cuda_callable__
    bool operator < ( const StaticVector& v ) const;
 
+   /**
+    * \brief Compares this static vector with static vector \e v.
+    *
+    * Returns \e true if this static vector is smaller then or equal to static vector \e v.
+    * \param v Another static vector.
+    */
    __cuda_callable__
    bool operator <= ( const StaticVector& v ) const;
 
+   /**
+    * \brief Compares this static vector with static vector \e v.
+    *
+    * Returns \e true if this static vector is greater then static vector \e v.
+    * \param v Another static vector.
+    */
    __cuda_callable__
    bool operator > ( const StaticVector& v ) const;
 
+   /**
+    * \brief Compares this static vector with static vector \e v.
+    *
+    * Returns \e true if this static vector is greater then or equal to static vector \e v.
+    * \param v Another static vector.
+    */
    __cuda_callable__
    bool operator >= ( const StaticVector& v ) const;
 
