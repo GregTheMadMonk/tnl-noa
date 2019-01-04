@@ -104,7 +104,7 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
          Index _size = this->size;
          auto f = [=] __cuda_callable__ ( Index i, Index j, Index k, Real* data )
          {
-            data[ ( i * _size + j ) * _size + k ] += 1.0;
+            data[ ( k * _size + j ) * _size + i ] += 1.0;
          };
          
          ParallelFor3D< Device >::exec( ( Index ) 0,
@@ -122,9 +122,9 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
          auto f = [=] __cuda_callable__ ( Index i, Index j, Index k, Real* data )
          {
             Cell entity( *currentGrid );
-            entity.getCoordinates().z() = i;
+            entity.getCoordinates().x() = i;
             entity.getCoordinates().y() = j;
-            entity.getCoordinates().x() = k;
+            entity.getCoordinates().z() = k;
             entity.refresh();
             data[ entity.getIndex() ] += 1.0;
          };
@@ -145,9 +145,9 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
          auto f = [=] __cuda_callable__ ( Index i, Index j, Index k, Real* data )
          {
             Cell entity( *currentGrid );
-            entity.getCoordinates().z() = i;
+            entity.getCoordinates().x() = i;
             entity.getCoordinates().y() = j;
-            entity.getCoordinates().x() = k;
+            entity.getCoordinates().z() = k;
             entity.refresh();
             ( *_u )( entity ) += 1.0;
          };
