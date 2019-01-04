@@ -57,13 +57,14 @@ class FunctionTimer
          // the monitor, the timer is not interrupted after each loop.
          if( ! performReset && verbose < 2 )
          {
-            if( timing )
-               timer.start();
             // Explicit synchronization of the CUDA device
-#ifdef HAVE_CUDA      
+#ifdef HAVE_CUDA
                if( std::is_same< Device, Devices::Cuda >::value )
                   cudaDeviceSynchronize();
-#endif            
+#endif
+            if( timing )
+               timer.start();
+
             for( loops = 0;
                  loops < maxLoops || ( timing && timer.getRealTime() < minTime );
                  ++loops) 
