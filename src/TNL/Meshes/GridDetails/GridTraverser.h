@@ -351,5 +351,7 @@ class GridTraverser< Meshes::Grid< 3, Real, Devices::MIC, Index > >
 } // namespace Meshes
 } // namespace TNL
 
-#include <TNL/Meshes/GridDetails/GridTraverser_impl.h>
+#include <TNL/Meshes/GridDetails/GridTraverser_1D.hpp>
+#include <TNL/Meshes/GridDetails/GridTraverser_2D.hpp>
+#include <TNL/Meshes/GridDetails/GridTraverser_3D.hpp>
 
