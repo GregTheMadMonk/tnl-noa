@@ -64,7 +64,7 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
          if( std::is_same< Device, Devices::Host >::value )
          {
             for( int i = 0; i < size; i++ )
-               v_data[ i ] += 1.0;
+               v_data[ i ] += (Real) 1.0;
          }
          else // Device == Devices::Cuda
          {
@@ -94,7 +94,7 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
       {
          auto f = [] __cuda_callable__ ( Index i, Real* data )
          {
-            data[ i ] += 1.0;
+            data[ i ] += (Real) 1.0;
          };
          ParallelFor< Device >::exec( ( Index ) 0, size, f, v.getData() );
       }
@@ -107,7 +107,7 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
             Cell entity( *currentGrid );
             entity.getCoordinates().x() = i;
             entity.refresh();
-            data[ entity.getIndex() ] += 1.0;
+            data[ entity.getIndex() ] += (Real) 1.0;
          };
          ParallelFor< Device >::exec( ( Index ) 0, size, f, v.getData() );
       }
@@ -121,7 +121,7 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
             Cell entity( *currentGrid );
             entity.getCoordinates().x() = i;
             entity.refresh();
-            ( *_u )( entity ) += 1.0;
+            ( *_u )( entity ) += (Real) 1.0;
             //WriteOneEntitiesProcessorType::processEntity( *currentGrid, userData, entity );
          };
          ParallelFor< Device >::exec( ( Index ) 0, size, f );
@@ -154,10 +154,10 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
       {
          if( std::is_same< Device, Devices::Host >::value )
          {
-            v_data[ 0 ] = +2;
+            v_data[ 0 ] += (Real) 2;
             for( int i = 1; i < size - 1; i++ )
-               v_data[ i ] = +1.0;
-            v_data[ size - 1 ] = +2;
+               v_data[ i ] += (Real) 1.0;
+            v_data[ size - 1 ] +=  (Real) 2;
          }
          else // Device == Devices::Cuda
          {

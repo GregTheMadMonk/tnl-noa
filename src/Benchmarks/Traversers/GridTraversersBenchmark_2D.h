@@ -65,7 +65,7 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
          {
             for( int i = 0; i < size; i++ )
                for( int j = 0; j < size; j++ )
-                  v_data[ i * size + j ] += 1.0;
+                  v_data[ i * size + j ] += (Real) 1.0;
          }
          else // Device == Devices::Cuda
          {
@@ -98,7 +98,7 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
          Index _size = this->size;
          auto f = [=] __cuda_callable__ ( Index i, Index j,  Real* data )
          {
-            data[ j * _size + i ] += 1.0;
+            data[ j * _size + i ] += (Real) 1.0;
          };
          
          ParallelFor2D< Device >::exec( ( Index ) 0,
@@ -117,7 +117,7 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
             entity.getCoordinates().x() = i;
             entity.getCoordinates().y() = j;
             entity.refresh();
-            data[ entity.getIndex() ] += 1.0;
+            data[ entity.getIndex() ] += (Real) 1.0;
          };
          
          ParallelFor2D< Device >::exec( ( Index ) 0,
@@ -137,7 +137,7 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
             entity.getCoordinates().x() = i;
             entity.getCoordinates().y() = j;
             entity.refresh();
-            ( *_u )( entity ) += 1.0;
+            ( *_u )( entity ) += (Real) 1.0;
          };
          
          ParallelFor2D< Device >::exec( ( Index ) 0,
@@ -179,18 +179,18 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
          {
             for( int i = 0; i < size; i++ )
             {
-               v_data[ i * size ] = 2.0;
-               v_data[ i * size + size - 1 ] = 2.0;
+               v_data[ i * size ] += (Real) 2.0;
+               v_data[ i * size + size - 1 ] += (Real) 2.0;
             }
             for( int j = 1; j < size - 1; j++ )
             {
-               v_data[ j ] = 2.0;
-               v_data[ ( size - 1 ) * size + j ] = 2.0;
+               v_data[ j ] += (Real) 2.0;
+               v_data[ ( size - 1 ) * size + j ] += (Real) 2.0;
             }
 
             for( int i = 1; i < size - 1; i++ )
                for( int j = 1; j < size - 1; j++ )
-                  v_data[ i * size + j ] = 1.0;
+                  v_data[ i * size + j ] += (Real) 1.0;
          }
          else // Device == Devices::Cuda
          {

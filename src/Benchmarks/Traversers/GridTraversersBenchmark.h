@@ -42,7 +42,7 @@ class WriteOneEntitiesProcessor
                                         const GridEntity& entity )
       {
          auto& u = userData.u.template modifyData< DeviceType >();
-         u( entity ) += 1.0;
+         u( entity ) += (typename MeshType::RealType) 1.0;
       }
 };
 
