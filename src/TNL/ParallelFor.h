@@ -41,7 +41,7 @@ struct ParallelFor
       // to '#pragma omp parallel for if( TNL::Devices::Host::isOMPEnabled() && end - start > 512 )'
       if( TNL::Devices::Host::isOMPEnabled() && end - start > 512 )
       {
-#pragma omp parallel for
+         #pragma omp parallel for
          for( Index i = start; i < end; i++ )
             f( i, args... );
       }
@@ -68,19 +68,20 @@ struct ParallelFor2D
       // to '#pragma omp parallel for if( TNL::Devices::Host::isOMPEnabled() )'
       if( TNL::Devices::Host::isOMPEnabled() )
       {
-#pragma omp parallel for
-         for( Index i = startX; i < endX; i++ )
-            for( Index j = startY; j < endY; j++ )
-               f( i, j, args... );
-      }
-      else
-         for( Index i = startX; i < endX; i++ )
-            for( Index j = startY; j < endY; j++ )
-               f( i, j, args... );
-#else
-      for( Index i = startX; i < endX; i++ )
+         #pragma omp parallel for
          for( Index j = startY; j < endY; j++ )
+         for( Index i = startX; i < endX; i++ )
             f( i, j, args... );
+      }
+      else {
+         for( Index j = startY; j < endY; j++ )
+         for( Index i = startX; i < endX; i++ )
+            f( i, j, args... );
+      }
+#else
+      for( Index j = startY; j < endY; j++ )
+      for( Index i = startX; i < endX; i++ )
+         f( i, j, args... );
 #endif
    }
 };
@@ -96,24 +97,25 @@ struct ParallelFor3D
 #ifdef HAVE_OPENMP
       // Benchmarks show that this is significantly faster compared
       // to '#pragma omp parallel for if( TNL::Devices::Host::isOMPEnabled() )'
-     if( TNL::Devices::Host::isOMPEnabled() )
-     {
-#pragma omp parallel for collapse(2)
-      for( Index i = startX; i < endX; i++ )
+      if( TNL::Devices::Host::isOMPEnabled() )
+      {
+         #pragma omp parallel for collapse(2)
+         for( Index k = startZ; k < endZ; k++ )
          for( Index j = startY; j < endY; j++ )
-            for( Index k = startZ; k < endZ; k++ )
-               f( i, j, k, args... );
-     }
-     else
          for( Index i = startX; i < endX; i++ )
-            for( Index j = startY; j < endY; j++ )
-               for( Index k = startZ; k < endZ; k++ )
-                  f( i, j, k, args... );
-#else
-      for( Index i = startX; i < endX; i++ )
+            f( i, j, k, args... );
+      }
+      else {
+         for( Index k = startZ; k < endZ; k++ )
          for( Index j = startY; j < endY; j++ )
-            for( Index k = startZ; k < endZ; k++ )
-               f( i, j, k, args... );
+         for( Index i = startX; i < endX; i++ )
+            f( i, j, k, args... );
+      }
+#else
+      for( Index k = startZ; k < endZ; k++ )
+      for( Index j = startY; j < endY; j++ )
+      for( Index i = startX; i < endX; i++ )
+         f( i, j, k, args... );
 #endif
    }
 };

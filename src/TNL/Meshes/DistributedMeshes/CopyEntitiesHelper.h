@@ -15,8 +15,8 @@
 #include <TNL/ParallelFor.h>
 
 namespace TNL {
-namespace Meshes { 
-namespace DistributedMeshes { 
+namespace Meshes {
+namespace DistributedMeshes {
 
 template<typename MeshFunctionType,
          int dim=MeshFunctionType::getMeshDimension()>
@@ -40,7 +40,7 @@ class CopyEntitiesHelper<MeshFunctionType, 1>
     typedef typename MeshFunctionType::MeshType::GlobalIndexType Index;
 
     static void Copy(MeshFunctionType &from, MeshFunctionType &to, CoordinatesType &fromBegin, CoordinatesType &toBegin, CoordinatesType &size)
-    {        
+    {
         auto toData=to.getData().getData();
         auto fromData=from.getData().getData();
         auto fromMesh=from.getMesh();
@@ -49,9 +49,9 @@ class CopyEntitiesHelper<MeshFunctionType, 1>
         {
             Cell fromEntity(fromMesh);
             Cell toEntity(toMesh);
-            toEntity.getCoordinates().x()=toBegin.x()+i;            
+            toEntity.getCoordinates().x()=toBegin.x()+i;
             toEntity.refresh();
-            fromEntity.getCoordinates().x()=fromBegin.x()+i;            
+            fromEntity.getCoordinates().x()=fromBegin.x()+i;
             fromEntity.refresh();
             toData[toEntity.getIndex()]=fromData[fromEntity.getIndex()];
         };
@@ -77,20 +77,19 @@ class CopyEntitiesHelper<MeshFunctionType,2>
         auto fromData=from.getData().getData();
         auto fromMesh=from.getMesh();
         auto toMesh=to.getMesh();
-        auto kernel = [fromData,toData, fromMesh, toMesh, fromBegin, toBegin] __cuda_callable__ ( Index j, Index i )
+        auto kernel = [fromData,toData, fromMesh, toMesh, fromBegin, toBegin] __cuda_callable__ ( Index i, Index j )
         {
             Cell fromEntity(fromMesh);
             Cell toEntity(toMesh);
             toEntity.getCoordinates().x()=toBegin.x()+i;
-            toEntity.getCoordinates().y()=toBegin.y()+j;            
+            toEntity.getCoordinates().y()=toBegin.y()+j;
             toEntity.refresh();
             fromEntity.getCoordinates().x()=fromBegin.x()+i;
-            fromEntity.getCoordinates().y()=fromBegin.y()+j;            
+            fromEntity.getCoordinates().y()=fromBegin.y()+j;
             fromEntity.refresh();
             toData[toEntity.getIndex()]=fromData[fromEntity.getIndex()];
         };
-        ParallelFor2D< typename MeshFunctionType::MeshType::DeviceType >::exec( (Index)0,(Index)0,(Index)size.y(), (Index)size.x(), kernel );
-
+        ParallelFor2D< typename MeshFunctionType::MeshType::DeviceType >::exec( (Index)0,(Index)0,(Index)size.x(), (Index)size.y(), kernel );
     }
 
 };
@@ -110,25 +109,23 @@ class CopyEntitiesHelper<MeshFunctionType,3>
         auto fromData=from.getData().getData();
         auto fromMesh=from.getMesh();
         auto toMesh=to.getMesh();
-        auto kernel = [fromData,toData, fromMesh, toMesh, fromBegin, toBegin] __cuda_callable__ ( Index k, Index j, Index i )
+        auto kernel = [fromData,toData, fromMesh, toMesh, fromBegin, toBegin] __cuda_callable__ ( Index i, Index j, Index k )
         {
             Cell fromEntity(fromMesh);
             Cell toEntity(toMesh);
             toEntity.getCoordinates().x()=toBegin.x()+i;
             toEntity.getCoordinates().y()=toBegin.y()+j;
-            toEntity.getCoordinates().z()=toBegin.z()+k;                                
+            toEntity.getCoordinates().z()=toBegin.z()+k;
             toEntity.refresh();
             fromEntity.getCoordinates().x()=fromBegin.x()+i;
             fromEntity.getCoordinates().y()=fromBegin.y()+j;
-            fromEntity.getCoordinates().z()=fromBegin.z()+k;            
+            fromEntity.getCoordinates().z()=fromBegin.z()+k;
             fromEntity.refresh();
             toData[toEntity.getIndex()]=fromData[fromEntity.getIndex()];
         };
-        ParallelFor3D< typename MeshFunctionType::MeshType::DeviceType >::exec( (Index)0,(Index)0,(Index)0,(Index)size.z() ,(Index)size.y(), (Index)size.x(), kernel );
+        ParallelFor3D< typename MeshFunctionType::MeshType::DeviceType >::exec( (Index)0,(Index)0,(Index)0,(Index)size.x(),(Index)size.y(), (Index)size.z(), kernel );
     }
 };
-
-
 
 
 } // namespace DistributedMeshes
