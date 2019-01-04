@@ -94,7 +94,7 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
             cudaTraverserBenchmark.writeOneUsingPureC();
          };
          if( withCuda )
-            benchmark.time< Devices::Cuda >( "GPU", cudaWriteOneUsingPureC );
+            benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaWriteOneUsingPureC );
 #endif
       }
 
@@ -297,15 +297,15 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
       if( tests.containsValue( "all" ) || tests.containsValue( "bc-traverser" ) )
       {
          benchmark.setOperation( "traverser", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
-         benchmark.time< Devices::Host >( hostReset, "CPU", hostTraverseUsingTraverser );
-#ifdef HAVE_CUDA
-         benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaTraverseUsingTraverser );
-#endif
-
-         benchmark.setOperation( "traverser RST", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
          benchmark.time< Devices::Host >( "CPU", hostTraverseUsingTraverser );
 #ifdef HAVE_CUDA
          benchmark.time< Devices::Cuda >( "GPU", cudaTraverseUsingTraverser );
+#endif
+
+         benchmark.setOperation( "traverser RST", pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
+         benchmark.time< Devices::Host >( hostReset, "CPU", hostTraverseUsingTraverser );
+#ifdef HAVE_CUDA
+         benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaTraverseUsingTraverser );
 #endif
       }
    }
