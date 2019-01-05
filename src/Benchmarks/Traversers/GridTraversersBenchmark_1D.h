@@ -97,7 +97,7 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
          {
             data[ i ] += (Real) 1.0;
          };
-         ParallelFor< Device >::exec( ( Index ) 0, size, f, v.getData() );
+         ParallelFor< Device, AsynchronousMode >::exec( ( Index ) 0, size, f, v.getData() );
       }
 
       void addOneUsingParallelForAndGridEntity()
@@ -110,7 +110,7 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
             entity.refresh();
             data[ entity.getIndex() ] += (Real) 1.0;
          };
-         ParallelFor< Device >::exec( ( Index ) 0, size, f, v.getData() );
+         ParallelFor< Device, AsynchronousMode >::exec( ( Index ) 0, size, f, v.getData() );
       }
 
       void addOneUsingParallelForAndMeshFunction()
@@ -125,7 +125,7 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
             ( *_u )( entity ) += (Real) 1.0;
             //WriteOneEntitiesProcessorType::processEntity( *currentGrid, userData, entity );
          };
-         ParallelFor< Device >::exec( ( Index ) 0, size, f );
+         ParallelFor< Device, AsynchronousMode >::exec( ( Index ) 0, size, f );
       }
 
       void addOneUsingTraverser()
