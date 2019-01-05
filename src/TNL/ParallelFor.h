@@ -15,7 +15,7 @@
 #include <TNL/Devices/CudaDeviceInfo.h>
 #include <TNL/Math.h>
 
-/*
+/****
  * The implementation of ParallelFor is not meant to provide maximum performance
  * at every cost, but maximum flexibility for operating with data stored on the
  * device.
@@ -28,7 +28,10 @@
 
 namespace TNL {
 
-template< typename Device = Devices::Host >
+enum ParallelForMode { SynchronousMode, AsynchronousMode };
+   
+template< typename Device = Devices::Host,
+          ParallelForMode Mode = SynchronousMode >
 struct ParallelFor
 {
    template< typename Index,
@@ -55,7 +58,8 @@ struct ParallelFor
    }
 };
 
-template< typename Device = Devices::Host >
+template< typename Device = Devices::Host,
+          ParallelForMode Mode = SynchronousMode >
 struct ParallelFor2D
 {
    template< typename Index,
@@ -86,7 +90,8 @@ struct ParallelFor2D
    }
 };
 
-template< typename Device = Devices::Host >
+template< typename Device = Devices::Host,
+          ParallelForMode Mode = SynchronousMode >
 struct ParallelFor3D
 {
    template< typename Index,
@@ -185,8 +190,8 @@ ParallelFor3DKernel( Index startX, Index startY, Index startZ, Index endX, Index
 }
 #endif
 
-template<>
-struct ParallelFor< Devices::Cuda >
+template< ParallelForMode Mode >
+struct ParallelFor< Devices::Cuda, Mode >
 {
    template< typename Index,
              typename Function,
@@ -208,8 +213,11 @@ struct ParallelFor< Devices::Cuda >
             ParallelForKernel< true ><<< gridSize, blockSize >>>( start, end, f, args... );
          }
 
-         cudaDeviceSynchronize();
-         TNL_CHECK_CUDA_DEVICE;
+         if( Mode == SynchronousMode )
+         {
+            cudaDeviceSynchronize();
+            TNL_CHECK_CUDA_DEVICE;
+         }
       }
 #else
       throw Exceptions::CudaSupportMissing();
@@ -217,8 +225,8 @@ struct ParallelFor< Devices::Cuda >
    }
 };
 
-template<>
-struct ParallelFor2D< Devices::Cuda >
+template< ParallelForMode Mode >
+struct ParallelFor2D< Devices::Cuda, Mode >
 {
    template< typename Index,
              typename Function,
@@ -264,8 +272,11 @@ struct ParallelFor2D< Devices::Cuda >
             ParallelFor2DKernel< true, true ><<< gridSize, blockSize >>>
                ( startX, startY, endX, endY, f, args... );
 
-         cudaDeviceSynchronize();
-         TNL_CHECK_CUDA_DEVICE;
+         if( Mode == SynchronousMode )
+         {
+            cudaDeviceSynchronize();
+            TNL_CHECK_CUDA_DEVICE;
+         }
       }
 #else
       throw Exceptions::CudaSupportMissing();
@@ -273,8 +284,8 @@ struct ParallelFor2D< Devices::Cuda >
    }
 };
 
-template<>
-struct ParallelFor3D< Devices::Cuda >
+template< ParallelForMode Mode >
+struct ParallelFor3D< Devices::Cuda, Mode >
 {
    template< typename Index,
              typename Function,
@@ -359,8 +370,11 @@ struct ParallelFor3D< Devices::Cuda >
             ParallelFor3DKernel< true, true, true ><<< gridSize, blockSize >>>
                ( startX, startY, startZ, endX, endY, endZ, f, args... );
 
-         cudaDeviceSynchronize();
-         TNL_CHECK_CUDA_DEVICE;
+         if( Mode == SynchronousMode )
+         {
+            cudaDeviceSynchronize();
+            TNL_CHECK_CUDA_DEVICE;
+         }
       }
 #else
       throw Exceptions::CudaSupportMissing();
