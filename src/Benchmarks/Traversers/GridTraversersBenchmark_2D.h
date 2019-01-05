@@ -42,14 +42,13 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
       using MeshFunctionPointer = Pointers::SharedPointer< MeshFunction >;
       using Cell = typename Grid::template EntityType< 2, Meshes::GridEntityNoStencilStorage >;
       using Traverser = Meshes::Traverser< Grid, Cell >;
-      using TraverserUserData = WriteOneUserData< MeshFunctionPointer >;
-      using WriteOneTraverserUserDataType = WriteOneUserData< MeshFunctionPointer >;
-      using WriteOneEntitiesProcessorType = WriteOneEntitiesProcessor< WriteOneTraverserUserDataType >;
+      using UserDataType = BenchmarkTraverserUserData< MeshFunction >;
+      using AddOneEntitiesProcessorType = AddOneEntitiesProcessor< UserDataType >;
 
       GridTraversersBenchmark( Index size )
       :size( size ), v( size * size ), grid( size, size ), u( grid )
       {
-         userData.u = this->u;
+         userData.u = &this->u.template modifyData< Device >();
          v_data = v.getData();
       }
 
@@ -59,7 +58,7 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
          u->getData().setValue( 0.0 );
       };
 
-      void writeOneUsingPureC()
+      void addOneUsingPureC()
       {
          if( std::is_same< Device, Devices::Host >::value )
          {
@@ -93,7 +92,7 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
          }
       }
 
-      void writeOneUsingParallelFor()
+      void addOneUsingParallelFor()
       {
          Index _size = this->size;
          auto f = [=] __cuda_callable__ ( Index i, Index j,  Real* data )
@@ -108,7 +107,7 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
                                         f, v.getData() );
       }
 
-      void writeOneUsingParallelForAndGridEntity()
+      void addOneUsingParallelForAndGridEntity()
       {
          const Grid* currentGrid = &grid.template getData< Device >();
          auto f = [=] __cuda_callable__ ( Index i, Index j,  Real* data )
@@ -127,7 +126,7 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
                                         f, v.getData() );
       }
 
-      void writeOneUsingParallelForAndMeshFunction()
+      void addOneUsingParallelForAndMeshFunction()
       {
          const Grid* currentGrid = &grid.template getData< Device >();
          MeshFunction* _u = &u.template modifyData< Device >();
@@ -148,10 +147,10 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
       }
 
 
-      void writeOneUsingTraverser()
+      void addOneUsingTraverser()
       {
          using CoordinatesType = typename Grid::CoordinatesType;
-         traverser.template processAllEntities< WriteOneTraverserUserDataType, WriteOneEntitiesProcessorType >
+         traverser.template processAllEntities< UserDataType, AddOneEntitiesProcessorType >
             ( grid, userData );
          
          /*Meshes::GridTraverser< Grid >::template processEntities< Cell, WriteOneEntitiesProcessorType, WriteOneTraverserUserDataType, false >(
@@ -232,7 +231,7 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
       void traversingUsingTraverser()
       {
          // TODO !!!!!!!!!!!!!!!!!!!!!!
-         traverser.template processAllEntities< WriteOneTraverserUserDataType, WriteOneEntitiesProcessorType >
+         traverser.template processAllEntities< UserDataType, AddOneEntitiesProcessorType >
             ( grid, userData );
       }
 
@@ -244,7 +243,7 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
       GridPointer grid;
       MeshFunctionPointer u;
       Traverser traverser;
-      WriteOneTraverserUserDataType userData;
+      UserDataType userData;
 };
 
       } // namespace Traversers

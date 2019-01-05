@@ -21,40 +21,16 @@
 #include <TNL/Meshes/Traverser.h>
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Pointers/SharedPointer.h>
+
+#include "GridTraverserBenchmarkHelper.h"
+#include "BenchmarkTraverserUserData.h"
 #include "cuda-kernels.h"
 
 namespace TNL {
    namespace Benchmarks {
       namespace Traversers {
 
-template< typename TraverserUserData >
-class WriteOneEntitiesProcessor
-{
-   public:
-      
-      using MeshType = typename TraverserUserData::MeshType;
-      using DeviceType = typename MeshType::DeviceType;
 
-      template< typename GridEntity >
-      __cuda_callable__
-      static inline void processEntity( const MeshType& mesh,
-                                        TraverserUserData& userData,
-                                        const GridEntity& entity )
-      {
-         auto& u = userData.u.template modifyData< DeviceType >();
-         u( entity ) += (typename MeshType::RealType) 1.0;
-      }
-};
-
-template< typename MeshFunctionPointer >
-class WriteOneUserData
-{
-   public:
-      
-      using MeshType = typename MeshFunctionPointer::ObjectType::MeshType;
-      
-      MeshFunctionPointer u;
-};
 
 template< int Dimension,
           typename Device,
