@@ -74,7 +74,7 @@ public:
    {
       config.addEntry< int >( "loops", "Number of iterations for every computation.", 10 );
       config.addEntry< bool >( "reset", "Call reset function between loops.", true );
-      config.addEntry< double >( "min-time", "Minimal real time in seconds for every computation.", 1 );
+      config.addEntry< double >( "min-time", "Minimal real time in seconds for every computation.", 0.0 );
       config.addEntry< bool >( "timing", "Turns off (or on) the timing (for the purpose of profiling).", true );
       config.addEntry< int >( "verbose", "Verbose mode, the higher number the more verbosity.", 1 );
    }

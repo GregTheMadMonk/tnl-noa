@@ -48,9 +48,9 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
       using AddOneEntitiesProcessorType = AddOneEntitiesProcessor< UserDataType >;
       
       GridTraversersBenchmark( Index size )
-      :size( size ), v( size ), grid( size ), u( grid )
+      :size( size ), v( size ), grid( size ), u( grid ),
+       userData( this->u )
       {
-         userData.u = &this->u.template modifyData< Device >();
          v_data = v.getData();
       }
 
