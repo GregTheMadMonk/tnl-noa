@@ -199,7 +199,31 @@ processEntities(
    }
    else
    {
-      dim3 cudaBlockSize( 256 );
+      dim3 blockSize( 256 ), blocksCount, gridsCount;
+      Devices::Cuda::setupThreads(
+         blockSize,
+         blocksCount,
+         gridsCount,
+         end.x() - begin.x() + 1 );
+      dim3 gridIdx;
+      for( gridIdx.x = 0; gridIdx.x < gridsCount.x; gridIdx.x++ )
+      {
+         dim3 gridSize;
+         Devices::Cuda::setupGrid(
+            blocksCount,
+            gridsCount,
+            gridIdx,
+            gridSize );
+         GridTraverser1D< Real, Index, GridEntity, UserData, EntitiesProcessor >
+            <<< blocksCount, blockSize, 0, s >>>
+            ( &gridPointer.template getData< Devices::Cuda >(),
+              userData,
+              begin,
+              end,
+              gridIdx.x );
+      }
+
+      /*dim3 cudaBlockSize( 256 );
       dim3 cudaBlocks;
       cudaBlocks.x = Devices::Cuda::getNumberOfBlocks( end.x() - begin.x() + 1, cudaBlockSize.x );
       const IndexType cudaXGrids = Devices::Cuda::getNumberOfGrids( cudaBlocks.x );
