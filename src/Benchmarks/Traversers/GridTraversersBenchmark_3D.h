@@ -52,9 +52,9 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
       : size( size ),
         v( size * size * size ),
         grid( size, size, size ),
-        u( grid )
+        u( grid ),
+        userData( u )
       {
-         userData.u = &this->u.template modifyData< Device >();
          v_data = v.getData();
       }
 

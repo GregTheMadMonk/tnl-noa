@@ -14,6 +14,7 @@
 
 #include "AddOneEntitiesProcessor.h"
 #include "BenchmarkTraverserUserData.h"
+#include "SimpleCell.h"
 
 namespace TNL {
    namespace Benchmarks {
@@ -38,13 +39,16 @@ _GridTraverser1D(
    typedef Meshes::Grid< 1, Real, Devices::Cuda, Index > GridType;
    typename GridType::CoordinatesType coordinates;
  
+   GridEntity entity;//( *grid, );
+   //entity.getCoordinates().x() = begin.x() + ( gridIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    coordinates.x() = begin.x() + ( gridIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    if( coordinates <= end )
-   {   
-      GridEntity entity( *grid, coordinates );
-      entity.refresh();
-      ( userData.u->getData() )[ coordinates.x() ] += ( RealType ) 1.0;
-      //( *userData.u )( entity) += 1.0;
+   {
+      //entity.refresh();
+      //( userData.u->getData() )[ entity.getIndex( coordinates ) ] += ( RealType ) 1.0;
+      //( userData.u->getData() )[ coordinates.x() ] += ( RealType ) 1.0;
+      userData.data[ coordinates.x() ] += ( RealType ) 1.0;
+      //( *userData.u )( entity ) += ( RealType ) 1.0;
       //EntitiesProcessor::processEntity( entity.getMesh(), userData, entity );
    }
 }
@@ -66,8 +70,9 @@ class GridTraverserBenchmarkHelper< Grid, Devices::Host >
       using CoordinatesType = typename Grid::CoordinatesType;
       using MeshFunction = Functions::MeshFunction< Grid >;
       using MeshFunctionPointer = Pointers::SharedPointer< MeshFunction >;
-      using Cell = typename Grid::template EntityType< 1, Meshes::GridEntityNoStencilStorage >;
-      using Traverser = Meshes::Traverser< Grid, Cell >;
+      using CellType = typename Grid::template EntityType< 1, Meshes::GridEntityNoStencilStorage >;
+      using SimpleCellType = SimpleCell< GridType >;
+      using Traverser = Meshes::Traverser< Grid, CellType >;
       using UserDataType = BenchmarkTraverserUserData< MeshFunction >;
       using AddOneEntitiesProcessorType = AddOneEntitiesProcessor< UserDataType >;
 
@@ -84,13 +89,13 @@ class GridTraverserBenchmarkHelper< Grid, Devices::Host >
          const CoordinatesType begin( 0 );
          const CoordinatesType end = CoordinatesType( size ) - CoordinatesType( 1 );
          //MeshFunction* _u = &u.template modifyData< Device >();
-         Cell entity( *grid );
+         /*SimpleCellType entity( *grid );
          for( IndexType x = begin.x(); x <= end.x(); x ++ )
          {
             entity.getCoordinates().x() = x;
             entity.refresh();
             AddOneEntitiesProcessorType::processEntity( entity.getMesh(), userData, entity );
-         }
+         }*/
 
       }
 };
@@ -107,8 +112,9 @@ class GridTraverserBenchmarkHelper< Grid, Devices::Cuda >
       using CoordinatesType = typename Grid::CoordinatesType;
       using MeshFunction = Functions::MeshFunction< Grid >;
       using MeshFunctionPointer = Pointers::SharedPointer< MeshFunction >;
-      using Cell = typename Grid::template EntityType< 1, Meshes::GridEntityNoStencilStorage >;
-      using Traverser = Meshes::Traverser< Grid, Cell >;
+      using CellType = typename Grid::template EntityType< 1, Meshes::GridEntityNoStencilStorage >;
+      using SimpleCellType = SimpleCell< GridType >;
+      using Traverser = Meshes::Traverser< Grid, CellType >;
       using UserDataType = BenchmarkTraverserUserData< MeshFunction >;
       using AddOneEntitiesProcessorType = AddOneEntitiesProcessor< UserDataType >;
 
@@ -132,7 +138,7 @@ class GridTraverserBenchmarkHelper< Grid, Devices::Cuda >
                   gridsCount,
                   gridIdx,
                   gridSize );
-               _GridTraverser1D< RealType, IndexType, Cell, UserDataType, AddOneEntitiesProcessorType >
+               _GridTraverser1D< RealType, IndexType, SimpleCellType, UserDataType, AddOneEntitiesProcessorType >
                <<< blocksCount, blockSize >>>
                ( &grid.template getData< Devices::Cuda >(),
                  userData,
