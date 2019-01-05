@@ -19,7 +19,7 @@
 #pragma once
 
 namespace TNL {
-namespace Functions {   
+   namespace Functions {
 
 template< typename Mesh,
           int MeshEntityDimension,
@@ -48,7 +48,6 @@ template< typename Mesh,
 MeshFunction< Mesh, MeshEntityDimension, Real >::
 MeshFunction( const ThisType& meshFunction )
 {
-
     setupSynchronizer(meshFunction.meshPointer->getDistributedMesh());
 
    this->meshPointer=meshFunction.meshPointer;
@@ -240,7 +239,6 @@ bind( const MeshPointer& meshPointer,
    this->meshPointer=meshPointer;
    this->data.bind( *data, offset, getMesh().template getEntitiesCount< typename Mesh::template EntityType< MeshEntityDimension > >() );
 }
-
 
 template< typename Mesh,
           int MeshEntityDimension,
@@ -578,7 +576,6 @@ operator << ( std::ostream& str, const MeshFunction< Mesh, MeshEntityDimension, 
    return str;
 }
 
-
-} // namespace Functions
+   } // namespace Functions
 } // namespace TNL
 
