@@ -42,6 +42,7 @@ processEntities(
    const CoordinatesType begin,
    const CoordinatesType end,
    UserData& userData,
+   GridTraverserMode mode,
    const int& stream,
    const GridEntityParameters&... gridEntityParameters )
 {
@@ -324,6 +325,7 @@ processEntities(
    const CoordinatesType& begin,
    const CoordinatesType& end,
    UserData& userData,
+   GridTraverserMode mode,
    const int& stream,
    const GridEntityParameters&... gridEntityParameters )
 {
@@ -390,7 +392,7 @@ processEntities(
                   ( &gridPointer.template getData< Devices::Cuda >(),
                     userData,
                     begin.x(),
-                    end.x(),               
+                    end.x(),
                     begin.z() + 1,
                     end.z() - 1,
                     begin.y(),
@@ -401,7 +403,7 @@ processEntities(
                   ( &gridPointer.template getData< Devices::Cuda >(),
                     userData,
                     begin.x(),
-                    end.x(),               
+                    end.x(),
                     begin.z() + 1,
                     end.z() - 1,
                     end.y(),
@@ -417,7 +419,7 @@ processEntities(
                   ( &gridPointer.template getData< Devices::Cuda >(),
                     userData,
                     begin.y() + 1,
-                    end.y() - 1,               
+                    end.y() - 1,
                     begin.z() + 1,
                     end.z() - 1,
                     begin.x(),
@@ -428,7 +430,7 @@ processEntities(
                   ( &gridPointer.template getData< Devices::Cuda >(),
                     userData,
                     begin.y() + 1,
-                    end.y() - 1,               
+                    end.y() - 1,
                     begin.z() + 1,
                     end.z() - 1,
                     end.x(),
@@ -440,7 +442,7 @@ processEntities(
       cudaStreamSynchronize( s3 );
       cudaStreamSynchronize( s4 );
       cudaStreamSynchronize( s5 );
-      cudaStreamSynchronize( s6 );      
+      cudaStreamSynchronize( s6 );
       TNL_CHECK_CUDA_DEVICE;
    }
    else
@@ -506,6 +508,7 @@ processEntities(
    const CoordinatesType& begin,
    const CoordinatesType& end,
    UserData& userData,
+   GridTraverserMode mode,
    const int& stream,
    const GridEntityParameters&... gridEntityParameters )
 {

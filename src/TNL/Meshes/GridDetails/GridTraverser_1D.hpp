@@ -41,6 +41,7 @@ processEntities(
    const CoordinatesType begin,
    const CoordinatesType end,
    UserData& userData,
+   GridTraverserMode mode,
    const int& stream )
 {
    GridEntity entity( *gridPointer );
@@ -177,13 +178,14 @@ processEntities(
    const CoordinatesType& begin,
    const CoordinatesType& end,
    UserData& userData,
+   GridTraverserMode mode,
    const int& stream )
 {
 #ifdef HAVE_CUDA
    auto& pool = CudaStreamPool::getInstance();
    const cudaStream_t& s = pool.getStream( stream );
 
-   Devices::Cuda::synchronizeDevice();
+   //Devices::Cuda::synchronizeDevice();
    if( processOnlyBoundaryEntities )
    {
       dim3 cudaBlockSize( 2 );
@@ -209,15 +211,20 @@ processEntities(
               userData,
               begin,
               end,
-              gridXIdx );
+              gridXIdx );*/
    }
 
-   // only launches into the stream 0 are synchronized
-   /*if( stream == 0 )
+#ifdef NDEBUG
+   if( mode == synchronousMode )
    {
       cudaStreamSynchronize( s );
       TNL_CHECK_CUDA_DEVICE;
-   }*/
+   }
+#else
+   cudaStreamSynchronize( s );
+   TNL_CHECK_CUDA_DEVICE;
+#endif
+
 #else
    throw Exceptions::CudaSupportMissing();
 #endif
@@ -241,6 +248,7 @@ processEntities(
    const CoordinatesType& begin,
    const CoordinatesType& end,
    UserData& userData,
+   GridTraverserMode mode,
    const int& stream )
 {
     std::cout << "Not Implemented yet Grid Traverser <1, Real, Device::MIC>" << std::endl;
