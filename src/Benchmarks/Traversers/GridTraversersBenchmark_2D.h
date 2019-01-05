@@ -100,11 +100,12 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
             data[ j * _size + i ] += (Real) 1.0;
          };
          
-         ParallelFor2D< Device >::exec( ( Index ) 0,
-                                        ( Index ) 0,
-                                        this->size,
-                                        this->size,
-                                        f, v.getData() );
+         ParallelFor2D< Device, AsynchronousMode >::exec(
+            ( Index ) 0,
+            ( Index ) 0,
+            this->size,
+            this->size,
+            f, v.getData() );
       }
 
       void addOneUsingParallelForAndGridEntity()
@@ -119,11 +120,12 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
             data[ entity.getIndex() ] += (Real) 1.0;
          };
          
-         ParallelFor2D< Device >::exec( ( Index ) 0,
-                                        ( Index ) 0,
-                                        this->size,
-                                        this->size,
-                                        f, v.getData() );
+         ParallelFor2D< Device, AsynchronousMode >::exec(
+            ( Index ) 0,
+            ( Index ) 0,
+            this->size,
+            this->size,
+            f, v.getData() );
       }
 
       void addOneUsingParallelForAndMeshFunction()
@@ -139,11 +141,12 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
             ( *_u )( entity ) += (Real) 1.0;
          };
          
-         ParallelFor2D< Device >::exec( ( Index ) 0,
-                                        ( Index ) 0,
-                                        this->size,
-                                        this->size,
-                                        f, v.getData() );
+         ParallelFor2D< Device, AsynchronousMode >::exec(
+            ( Index ) 0,
+            ( Index ) 0,
+            this->size,
+            this->size,
+            f, v.getData() );
       }
 
 

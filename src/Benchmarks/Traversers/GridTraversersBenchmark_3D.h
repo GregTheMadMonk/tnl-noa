@@ -109,13 +109,14 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
             data[ ( k * _size + j ) * _size + i ] += (Real) 1.0;
          };
          
-         ParallelFor3D< Device >::exec( ( Index ) 0,
-                                        ( Index ) 0,
-                                        ( Index ) 0,
-                                        this->size,
-                                        this->size,
-                                        this->size,
-                                        f, v.getData() );
+         ParallelFor3D< Device, AsynchronousMode >::exec(
+            ( Index ) 0,
+            ( Index ) 0,
+            ( Index ) 0,
+            this->size,
+            this->size,
+            this->size,
+            f, v.getData() );
       }
 
       void addOneUsingParallelForAndGridEntity()
@@ -131,13 +132,14 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
             data[ entity.getIndex() ] += (Real) 1.0;
          };
 
-         ParallelFor3D< Device >::exec( ( Index ) 0,
-                                        ( Index ) 0,
-                                        ( Index ) 0,
-                                        this->size,
-                                        this->size,
-                                        this->size,
-                                        f, v.getData() );
+         ParallelFor3D< Device, AsynchronousMode >::exec(
+            ( Index ) 0,
+            ( Index ) 0,
+            ( Index ) 0,
+            this->size,
+            this->size,
+            this->size,
+            f, v.getData() );
       }
 
       void addOneUsingParallelForAndMeshFunction()
@@ -154,13 +156,14 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
             ( *_u )( entity ) += (Real) 1.0;
          };
 
-         ParallelFor3D< Device >::exec( ( Index ) 0,
-                                        ( Index ) 0,
-                                        ( Index ) 0,
-                                        this->size,
-                                        this->size,
-                                        this->size,
-                                        f, v.getData() );
+         ParallelFor3D< Device, AsynchronousMode >::exec(
+            ( Index ) 0,
+            ( Index ) 0,
+            ( Index ) 0,
+            this->size,
+            this->size,
+            this->size,
+            f, v.getData() );
       }
 
 
