@@ -43,6 +43,7 @@ processEntities(
    const CoordinatesType begin,
    const CoordinatesType end,
    UserData& userData,
+   GridTraverserMode mode,
    const int& stream,
    const GridEntityParameters&... gridEntityParameters )
 {
@@ -402,6 +403,7 @@ processEntities(
    const CoordinatesType& begin,
    const CoordinatesType& end,
    UserData& userData,
+   GridTraverserMode mode,
    const int& stream,
    const GridEntityParameters&... gridEntityParameters )
 {
@@ -534,13 +536,18 @@ processEntities(
                  gridEntityParameters... );
          }
 
-      // only launches into the stream 0 are synchronized
-      if( stream == 0 )
-      {
-         cudaStreamSynchronize( s );
-         TNL_CHECK_CUDA_DEVICE;
-      }
+#ifdef NDEBUG
+   if( mode == synchronousMode )
+   {
+      cudaStreamSynchronize( s );
+      TNL_CHECK_CUDA_DEVICE;
    }
+#else
+   cudaStreamSynchronize( s );
+   TNL_CHECK_CUDA_DEVICE;
+#endif
+   }
+
 #else
    throw Exceptions::CudaSupportMissing();
 #endif
@@ -567,6 +574,7 @@ processEntities(
    const CoordinatesType& begin,
    const CoordinatesType& end,
    UserData& userData,
+   GridTraverserMode mode,
    const int& stream,
    const GridEntityParameters&... gridEntityParameters )
 {
