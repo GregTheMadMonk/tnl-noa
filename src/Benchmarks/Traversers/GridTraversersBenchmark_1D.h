@@ -23,6 +23,7 @@
 #include <TNL/Pointers/SharedPointer.h>
 #include "cuda-kernels.h"
 #include "GridTraversersBenchmark.h"
+#include "SimpleCell.h"
 
 namespace TNL {
    namespace Benchmarks {
@@ -37,13 +38,14 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
    public:
 
       using Vector = Containers::Vector< Real, Device, Index >;
-      using Grid = Meshes::Grid< 1, Real, Device, Index >;
-      using GridPointer = Pointers::SharedPointer< Grid >;
-      using Coordinates = typename Grid::CoordinatesType;
-      using MeshFunction = Functions::MeshFunction< Grid >;
+      using GridType = Meshes::Grid< 1, Real, Device, Index >;
+      using GridPointer = Pointers::SharedPointer< GridType >;
+      using Coordinates = typename GridType::CoordinatesType;
+      using MeshFunction = Functions::MeshFunction< GridType >;
       using MeshFunctionPointer = Pointers::SharedPointer< MeshFunction >;
-      using Cell = typename Grid::template EntityType< 1, Meshes::GridEntityNoStencilStorage >;
-      using Traverser = Meshes::Traverser< Grid, Cell >;
+      using CellType = typename GridType::template EntityType< 1, Meshes::GridEntityNoStencilStorage >;
+      using SimpleCellType = SimpleCell< GridType >;
+      using Traverser = Meshes::Traverser< GridType, CellType >;
       using UserDataType = BenchmarkTraverserUserData< MeshFunction >;
       using AddOneEntitiesProcessorType = AddOneEntitiesProcessor< UserDataType >;
       
@@ -100,44 +102,48 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
          ParallelFor< Device, AsynchronousMode >::exec( ( Index ) 0, size, f, v.getData() );
       }
 
-      void addOneUsingParallelForAndGridEntity()
+      void addOneUsingSimpleCell()
       {
-         const Grid* currentGrid = &grid.template getData< Device >();
+         /*const GridType* currentGrid = &grid.template getData< Device >();
          auto f = [=] __cuda_callable__ ( Index i, Real* data )
          {
-            Cell entity( *currentGrid );
+            SimpleCellType entity( *currentGrid );
             entity.getCoordinates().x() = i;
             entity.refresh();
             data[ entity.getIndex() ] += (Real) 1.0;
          };
-         ParallelFor< Device, AsynchronousMode >::exec( ( Index ) 0, size, f, v.getData() );
+         ParallelFor< Device, AsynchronousMode >::exec( ( Index ) 0, size, f, v.getData() );*/
+         GridTraverserBenchmarkHelper< GridType >::simpleCellTest(
+            grid,
+            userData,
+            size );
       }
 
       void addOneUsingParallelForAndMeshFunction()
       {
-         const Grid* currentGrid = &grid.template getData< Device >();
+         const GridType* currentGrid = &grid.template getData< Device >();
          MeshFunction* _u = &u.template modifyData< Device >();
          auto f = [=] __cuda_callable__ ( Index i )
          {
-            Cell entity( *currentGrid );
+            SimpleCellType entity( *currentGrid );
             entity.getCoordinates().x() = i;
             entity.refresh();
-            ( *_u )( entity ) += (Real) 1.0;
-            //WriteOneEntitiesProcessorType::processEntity( *currentGrid, userData, entity );
+            _u->getData().getData()[ entity.getIndex() ] += (Real) 1.0;
+            // ( *_u )( entity ) += (Real) 1.0;
          };
          ParallelFor< Device, AsynchronousMode >::exec( ( Index ) 0, size, f );
       }
 
       void addOneUsingTraverser()
       {
-         using CoordinatesType = typename Grid::CoordinatesType;
-         //traverser.template processAllEntities< WriteOneTraverserUserDataType, WriteOneEntitiesProcessorType >
-         //   ( grid, userData );
+         using CoordinatesType = typename GridType::CoordinatesType;
+         traverser.template processAllEntities< UserDataType, AddOneEntitiesProcessorType >
+            ( grid, userData );
          
-         GridTraverserBenchmarkHelper< Grid >::noBCTraverserTest(
+         /*GridTraverserBenchmarkHelper< GridType >::noBCTraverserTest(
             grid,
             userData,
-            size );
+            size );*/
       }
 
       void traverseUsingPureC()

@@ -22,6 +22,7 @@
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Pointers/SharedPointer.h>
 #include "cuda-kernels.h"
+#include "SimpleCell.h"
 
 namespace TNL {
    namespace Benchmarks {
@@ -35,13 +36,14 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
    public:
       
       using Vector = Containers::Vector< Real, Device, Index >;
-      using Grid = Meshes::Grid< 2, Real, Device, Index >;
-      using GridPointer = Pointers::SharedPointer< Grid >;
-      using Coordinates = typename Grid::CoordinatesType;
-      using MeshFunction = Functions::MeshFunction< Grid >;
+      using GridType = Meshes::Grid< 2, Real, Device, Index >;
+      using GridPointer = Pointers::SharedPointer< GridType >;
+      using Coordinates = typename GridType::CoordinatesType;
+      using MeshFunction = Functions::MeshFunction< GridType >;
       using MeshFunctionPointer = Pointers::SharedPointer< MeshFunction >;
-      using Cell = typename Grid::template EntityType< 2, Meshes::GridEntityNoStencilStorage >;
-      using Traverser = Meshes::Traverser< Grid, Cell >;
+      using CellType = typename GridType::template EntityType< 2, Meshes::GridEntityNoStencilStorage >;
+      using SimpleCellType = SimpleCell< GridType >;
+      using Traverser = Meshes::Traverser< GridType, CellType >;
       using UserDataType = BenchmarkTraverserUserData< MeshFunction >;
       using AddOneEntitiesProcessorType = AddOneEntitiesProcessor< UserDataType >;
 
@@ -108,12 +110,12 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
             f, v.getData() );
       }
 
-      void addOneUsingParallelForAndGridEntity()
+      void addOneUsingSimpleCell()
       {
-         const Grid* currentGrid = &grid.template getData< Device >();
+         /*const GridType* currentGrid = &grid.template getData< Device >();
          auto f = [=] __cuda_callable__ ( Index i, Index j,  Real* data )
          {
-            Cell entity( *currentGrid );
+            SimpleCellType entity( *currentGrid );
             entity.getCoordinates().x() = i;
             entity.getCoordinates().y() = j;
             entity.refresh();
@@ -125,20 +127,26 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
             ( Index ) 0,
             this->size,
             this->size,
-            f, v.getData() );
+            f, v.getData() );*/
+         GridTraverserBenchmarkHelper< GridType >::simpleCellTest(
+            grid,
+            userData,
+            size );
+         
       }
 
       void addOneUsingParallelForAndMeshFunction()
       {
-         const Grid* currentGrid = &grid.template getData< Device >();
+         const GridType* currentGrid = &grid.template getData< Device >();
          MeshFunction* _u = &u.template modifyData< Device >();
          auto f = [=] __cuda_callable__ ( Index i, Index j,  Real* data )
          {
-            Cell entity( *currentGrid );
+            SimpleCellType entity( *currentGrid );
             entity.getCoordinates().x() = i;
             entity.getCoordinates().y() = j;
             entity.refresh();
-            ( *_u )( entity ) += (Real) 1.0;
+            //( *_u )( entity ) += (Real) 1.0;
+            _u->getData().getData()[ entity.getIndex() ] += (Real) 1.0;
          };
          
          ParallelFor2D< Device, AsynchronousMode >::exec(
@@ -152,7 +160,7 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
 
       void addOneUsingTraverser()
       {
-         using CoordinatesType = typename Grid::CoordinatesType;
+         using CoordinatesType = typename GridType::CoordinatesType;
          traverser.template processAllEntities< UserDataType, AddOneEntitiesProcessorType >
             ( grid, userData );
          
@@ -197,7 +205,7 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
          else // Device == Devices::Cuda
          {
 #ifdef HAVE_CUDA
-            dim3 blockSize( 256 ), blocksCount, gridsCount;
+            dim3 blockSize( 32, 8 ), blocksCount, gridsCount;
             Devices::Cuda::setupThreads(
                blockSize,
                blocksCount,
