@@ -25,6 +25,7 @@
 #include "cuda-kernels.h"
 #include "AddOneEntitiesProcessor.h"
 #include "BenchmarkTraverserUserData.h"
+#include "SimpleCell.h"
 
 namespace TNL {
    namespace Benchmarks {
@@ -38,13 +39,14 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
    public:
 
       using Vector = Containers::Vector< Real, Device, Index >;
-      using Grid = Meshes::Grid< 3, Real, Device, Index >;
-      using GridPointer = Pointers::SharedPointer< Grid >;
-      using Coordinates = typename Grid::CoordinatesType;
-      using MeshFunction = Functions::MeshFunction< Grid >;
+      using GridType = Meshes::Grid< 3, Real, Device, Index >;
+      using GridPointer = Pointers::SharedPointer< GridType >;
+      using Coordinates = typename GridType::CoordinatesType;
+      using MeshFunction = Functions::MeshFunction< GridType >;
       using MeshFunctionPointer = Pointers::SharedPointer< MeshFunction >;
-      using Cell = typename Grid::template EntityType< 3, Meshes::GridEntityNoStencilStorage >;
-      using Traverser = Meshes::Traverser< Grid, Cell >;
+      using CellType = typename GridType::template EntityType< 3, Meshes::GridEntityNoStencilStorage >;
+      using SimpleCellType = SimpleCell< GridType >;
+      using Traverser = Meshes::Traverser< GridType, CellType >;
       using UserDataType = BenchmarkTraverserUserData< MeshFunction >;
       using AddOneEntitiesProcessorType = AddOneEntitiesProcessor< UserDataType >;
 
@@ -119,12 +121,12 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
             f, v.getData() );
       }
 
-      void addOneUsingParallelForAndGridEntity()
+      void addOneUsingSimpleCell()
       {
-         const Grid* currentGrid = &grid.template getData< Device >();
+         /*const GridType* currentGrid = &grid.template getData< Device >();
          auto f = [=] __cuda_callable__ ( Index i, Index j, Index k, Real* data )
          {
-            Cell entity( *currentGrid );
+            SimpleCellType entity( *currentGrid );
             entity.getCoordinates().x() = i;
             entity.getCoordinates().y() = j;
             entity.getCoordinates().z() = k;
@@ -139,21 +141,27 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
             this->size,
             this->size,
             this->size,
-            f, v.getData() );
+            f, v.getData() );*/
+         GridTraverserBenchmarkHelper< GridType >::simpleCellTest(
+            grid,
+            userData,
+            size );
+
       }
 
       void addOneUsingParallelForAndMeshFunction()
       {
-         const Grid* currentGrid = &grid.template getData< Device >();
+         const GridType* currentGrid = &grid.template getData< Device >();
          MeshFunction* _u = &u.template modifyData< Device >();
          auto f = [=] __cuda_callable__ ( Index i, Index j, Index k, Real* data )
          {
-            Cell entity( *currentGrid );
+            SimpleCellType entity( *currentGrid );
             entity.getCoordinates().x() = i;
             entity.getCoordinates().y() = j;
             entity.getCoordinates().z() = k;
             entity.refresh();
-            ( *_u )( entity ) += (Real) 1.0;
+            //( *_u )( entity ) += (Real) 1.0;
+            _u->getData().getData()[ entity.getIndex() ] += (Real) 1.0;
          };
 
          ParallelFor3D< Device, AsynchronousMode >::exec(
@@ -205,7 +213,7 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
          else // Device == Devices::Cuda
          {
 #ifdef HAVE_CUDA
-            dim3 blockSize( 256 ), blocksCount, gridsCount;
+            dim3 blockSize( 32, 4, 2 ), blocksCount, gridsCount;
             Devices::Cuda::setupThreads(
                blockSize,
                blocksCount,

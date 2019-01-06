@@ -127,23 +127,23 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
       /****
        * Write one using parallel for with grid entity
        */
-      if( tests.containsValue( "all" ) || tests.containsValue( "add-one-parallel-for-and-grid-entity" ) )
+      if( tests.containsValue( "all" ) || tests.containsValue( "add-one-simple-cell" ) )
       {
-         auto hostWriteOneUsingParallelForAndGridEntity = [&] ()
+         auto hostAddOneUsingSimpleCell = [&] ()
          {
-            hostTraverserBenchmark.addOneUsingParallelForAndGridEntity();
+            hostTraverserBenchmark.addOneUsingSimpleCell();
          };
-         benchmark.setOperation( "par.for+grid ent.", 2 * pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
+         benchmark.setOperation( "simple cell", 2 * pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
          if( withHost )
-            benchmark.time< Devices::Host >( hostReset, "CPU", hostWriteOneUsingParallelForAndGridEntity );
+            benchmark.time< Devices::Host >( hostReset, "CPU", hostAddOneUsingSimpleCell );
 
 #ifdef HAVE_CUDA
-         auto cudaWriteOneUsingParallelForAndGridEntity = [&] ()
+         auto cudaAddOneUsingSimpleCell = [&] ()
          {
-            cudaTraverserBenchmark.addOneUsingParallelForAndGridEntity();
+            cudaTraverserBenchmark.addOneUsingSimpleCell();
          };
          if( withCuda )
-            benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaWriteOneUsingParallelForAndGridEntity );
+            benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaAddOneUsingSimpleCell );
 #endif
       }
 
@@ -152,21 +152,21 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
        */
       if( tests.containsValue( "all" ) || tests.containsValue( "add-one-parallel-for-and-mesh-function" ) )
       {
-         auto hostWriteOneUsingParallelForAndMeshFunction = [&] ()
+         auto hostAddOneUsingParallelForAndMeshFunction = [&] ()
          {
             hostTraverserBenchmark.addOneUsingParallelForAndMeshFunction();
          };
          benchmark.setOperation( "par.for+mesh fc.", 2 * pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
          if( withHost )
-            benchmark.time< Devices::Host >( hostReset, "CPU", hostWriteOneUsingParallelForAndMeshFunction );
+            benchmark.time< Devices::Host >( hostReset, "CPU", hostAddOneUsingParallelForAndMeshFunction );
 
 #ifdef HAVE_CUDA
-         auto cudaWriteOneUsingParallelForAndMeshFunction = [&] ()
+         auto cudaAddOneUsingParallelForAndMeshFunction = [&] ()
          {
             cudaTraverserBenchmark.addOneUsingParallelForAndMeshFunction();
          };
          if( withCuda )
-            benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaWriteOneUsingParallelForAndMeshFunction );
+            benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaAddOneUsingParallelForAndMeshFunction );
 #endif
 
       }
