@@ -77,7 +77,7 @@ class Vector
    Vector& operator -= ( const VectorT& vector );
 
    /**
-    * \brief This function adds \e vector from this vector and returns the resulting vector.
+    * \brief This function adds \e vector to this vector and returns the resulting vector.
     *
     * The addition is applied to all the vector elements separately.
     * \param vector Reference to another vector.
