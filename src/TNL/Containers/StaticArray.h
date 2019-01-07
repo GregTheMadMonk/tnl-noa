@@ -309,7 +309,7 @@ class StaticArray< 2, Value >
    inline StaticArray( const Value& v );
 
    /**
-    * \brief Constructor that sets the two array components to value \e v1 and \e v2.
+    * \brief Constructor that sets the two static array components to value \e v1 and \e v2.
     *
     * \param v1 Reference to the value of first array/vector component.
     * \param v2 Reference to the value of second array/vector component.
