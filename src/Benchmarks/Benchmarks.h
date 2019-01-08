@@ -332,7 +332,7 @@ public:
 
 protected:
    int loops = 1;
-   double minTime = 1;
+   double minTime = 0.0;
    double datasetSize = 0.0;
    double baseTime = 0.0;
    bool timing = true;
