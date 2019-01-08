@@ -22,17 +22,17 @@ namespace TNL {
    namespace Benchmarks {
 
 
-template< typename Device,
-          bool timing >
+template< typename Device >
 class FunctionTimer
 {
    public:
       using DeviceType = Device;
 
-      template< typename ComputeFunction,
+      template< bool timing,
+                typename ComputeFunction,
                 typename ResetFunction,
                 typename Monitor = TNL::Solvers::IterativeSolverMonitor< double, int > >
-      static double
+      double
       timeFunction( ComputeFunction compute,
                     ResetFunction reset,
                     int maxLoops,
@@ -52,7 +52,6 @@ class FunctionTimer
          reset();
          compute();
 
-         int loops;
          // If we do not perform reset function and don't need
          // the monitor, the timer is not interrupted after each loop.
          if( ! performReset && verbose < 2 )
@@ -67,7 +66,7 @@ class FunctionTimer
 
             for( loops = 0;
                  loops < maxLoops || ( timing && timer.getRealTime() < minTime );
-                 ++loops) 
+                 ++loops)
                compute();
             // Explicit synchronization of the CUDA device
 #ifdef HAVE_CUDA
@@ -85,7 +84,6 @@ class FunctionTimer
             {
                // abuse the monitor's "time" for loops
                monitor.setTime( loops + 1 );
-
                reset();
 
                // Explicit synchronization of the CUDA device
@@ -104,15 +102,17 @@ class FunctionTimer
                   timer.stop();
             }
          }
+         std::cerr << loops << std::endl;
          if( timing )
             return timer.getRealTime() / ( double ) loops;
          else
             return std::numeric_limits<double>::quiet_NaN();
       }
 
-      template< typename ComputeFunction,
+      template< bool timing,
+                typename ComputeFunction,
                 typename Monitor = TNL::Solvers::IterativeSolverMonitor< double, int > >
-      static double
+      double
       timeFunction( ComputeFunction compute,
                     int maxLoops,
                     const double& minTime,
@@ -120,8 +120,15 @@ class FunctionTimer
                     Monitor && monitor = Monitor() )
       {
          auto noReset = [] () {};
-         return timeFunction( compute, noReset, maxLoops, minTime, verbose, monitor, false );
+         return timeFunction< timing >( compute, noReset, maxLoops, minTime, verbose, monitor, false );
       }
+
+      int getPerformedLoops() const
+      {
+         return this->loops;
+      }
+      protected:
+         int loops;
 };
 
    } // namespace Benchmarks

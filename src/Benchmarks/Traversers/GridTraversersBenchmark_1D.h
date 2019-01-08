@@ -54,12 +54,12 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
        userData( this->u )
       {
          v_data = v.getData();
+         u->getData().bind( v );
       }
 
       void reset()
       {
          v.setValue( 0.0 );
-         u->getData().setValue( 0.0 );
       };
 
       void addOneUsingPureC()
@@ -144,6 +144,14 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
             grid,
             userData,
             size );*/
+      }
+
+      bool checkAddOne( int loops, bool reseting )
+      {
+         std::cout << loops << " -> " << v << std::endl;
+         if( reseting )
+            return v.containsOnlyValue( 1.0 );
+         return v.containsOnlyValue( ( Real ) loops );
       }
 
       void traverseUsingPureC()

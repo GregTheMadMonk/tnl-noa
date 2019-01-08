@@ -202,33 +202,35 @@ public:
          BenchmarkResult & result )
    {
       result.time = std::numeric_limits<double>::quiet_NaN();
+      FunctionTimer< Device > functionTimer;
       try {
          if( verbose > 1 ) {
             // run the monitor main loop
             Solvers::SolverMonitorThread monitor_thread( monitor );
             if( this->timing )
                if( this->reset )
-                  result.time = FunctionTimer< Device, true >::timeFunction( compute, reset, loops, minTime, verbose, monitor );
+                  result.time = functionTimer. template timeFunction< true >( compute, reset, loops, minTime, verbose, monitor );
                else
-                  result.time = FunctionTimer< Device, true >::timeFunction( compute, loops, minTime, verbose, monitor );
+                  result.time = functionTimer. template timeFunction< true >( compute, loops, minTime, verbose, monitor );
             else
                if( this->reset )
-                  result.time = FunctionTimer< Device, false >::timeFunction( compute, reset, loops, minTime, verbose, monitor );
+                  result.time = functionTimer. template timeFunction< false >( compute, reset, loops, minTime, verbose, monitor );
                else
-                  result.time = FunctionTimer< Device, false >::timeFunction( compute, loops, minTime, verbose, monitor );
+                  result.time = functionTimer. template timeFunction< false >( compute, loops, minTime, verbose, monitor );
          }
          else {
             if( this->timing )
                if( this->reset )
-                  result.time = FunctionTimer< Device, true >::timeFunction( compute, reset, loops, minTime, verbose, monitor );
+                  result.time = functionTimer. template timeFunction< true >( compute, reset, loops, minTime, verbose, monitor );
                else
-                  result.time = FunctionTimer< Device, true >::timeFunction( compute, loops, minTime, verbose, monitor );
+                  result.time = functionTimer. template timeFunction< true >( compute, loops, minTime, verbose, monitor );
             else
                if( this->reset )
-                  result.time = FunctionTimer< Device, false >::timeFunction( compute, reset, loops, minTime, verbose, monitor );
+                  result.time = functionTimer. template timeFunction< false >( compute, reset, loops, minTime, verbose, monitor );
                else
-                  result.time = FunctionTimer< Device, false >::timeFunction( compute, loops, minTime, verbose, monitor );
+                  result.time = functionTimer. template timeFunction< false >( compute, loops, minTime, verbose, monitor );
          }
+         this->performedLoops = functionTimer.getPerformedLoops();
       }
       catch ( const std::exception& e ) {
          std::cerr << "timeFunction failed due to a C++ exception with description: " << e.what() << std::endl;
@@ -269,24 +271,25 @@ public:
          BenchmarkResult & result )
    {
       result.time = std::numeric_limits<double>::quiet_NaN();
+      FunctionTimer< Device > functionTimer;
       try {
          if( verbose > 1 ) {
             // run the monitor main loop
             Solvers::SolverMonitorThread monitor_thread( monitor );
             if( this->timing )
-               result.time = FunctionTimer< Device, true >::timeFunction( compute, loops, minTime, verbose, monitor );
+               result.time = functionTimer. template timeFunction< true >( compute, loops, minTime, verbose, monitor );
             else
-               result.time = FunctionTimer< Device, false >::timeFunction( compute, loops, minTime, verbose, monitor );
+               result.time = functionTimer. template timeFunction< false >( compute, loops, minTime, verbose, monitor );
          }
          else {
             if( this->timing )
-               result.time = FunctionTimer< Device, true >::timeFunction( compute, loops, minTime, verbose, monitor );
+               result.time = functionTimer. template timeFunction< true >( compute, loops, minTime, verbose, monitor );
             else
-               result.time = FunctionTimer< Device, false >::timeFunction( compute, loops, minTime, verbose, monitor );
+               result.time = functionTimer. template timeFunction< false >( compute, loops, minTime, verbose, monitor );
          }
       }
       catch ( const std::exception& e ) {
-         std::cerr << "timeFunction failed due to a C++ exception with description: " << e.what() << std::endl;
+         std::cerr << "Function timer failed due to a C++ exception with description: " << e.what() << std::endl;
       }
 
       result.bandwidth = datasetSize / result.time;
@@ -320,6 +323,7 @@ public:
       // each computation has 3 subcolumns
       const int colspan = 3 * numberOfComputations;
       writeErrorMessage( msg, colspan );
+      std::cerr << msg << std::endl;
    }
 
    using Logging::save;
@@ -330,8 +334,18 @@ public:
       return monitor;
    }
 
+   int getPerformedLoops() const
+   {
+      return this->performedLoops;
+   }
+
+   bool isResetingOn() const
+   {
+      return reset;
+   }
+
 protected:
-   int loops = 1;
+   int loops = 1, performedLoops = 0;
    double minTime = 0.0;
    double datasetSize = 0.0;
    double baseTime = 0.0;
