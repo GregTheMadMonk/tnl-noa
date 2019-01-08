@@ -58,12 +58,12 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
         userData( u )
       {
          v_data = v.getData();
+         u->getData().bind( v );
       }
 
       void reset()
       {
          v.setValue( 0.0 );
-         u->getData().setValue( 0.0 );
       };
 
       void addOneUsingPureC()
@@ -78,7 +78,7 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
          else // Device == Devices::Cuda
          {
 #ifdef HAVE_CUDA
-            dim3 blockSize( 256 ), blocksCount, gridsCount;
+            dim3 blockSize( 32, 4, 2 ), blocksCount, gridsCount;
             Devices::Cuda::setupThreads(
                blockSize,
                blocksCount,
@@ -174,11 +174,17 @@ class GridTraversersBenchmark< 3, Device, Real, Index >
             f, v.getData() );
       }
 
-
       void addOneUsingTraverser()
       {
          traverser.template processAllEntities< UserDataType, AddOneEntitiesProcessorType >
             ( grid, userData );
+      }
+
+      bool checkAddOne( int loops, bool reseting )
+      {
+         if( reseting )
+            return v.containsOnlyValue( 1.0 );
+         return v.containsOnlyValue( ( Real ) loops );
       }
 
       void traverseUsingPureC()

@@ -48,6 +48,7 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
 #else
    const bool withCuda = false;
 #endif
+   const bool check = parameters.getParameter< bool >( "check" );
 
    /****
     * Full grid traversing with no boundary conditions
@@ -77,7 +78,7 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
             {  {"size", convertToString( size ) }, } ) );
 
       /****
-       * Write one using C for
+       * Add one using pure C code
        */
       if( tests.containsValue( "all" ) || tests.containsValue( "add-one-pure-c"  ) )
       {
@@ -88,7 +89,13 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
             hostTraverserBenchmark.addOneUsingPureC();
          };
          if( withHost )
+         {
             benchmark.time< Devices::Host >( hostReset, "CPU", hostWriteOneUsingPureC );
+            if( check && ! hostTraverserBenchmark.checkAddOne(
+                  benchmark.getPerformedLoops(),
+                  benchmark.isResetingOn() ) )
+               benchmark.addErrorMessage( "Test results are not correct." );
+         }
 
 #ifdef HAVE_CUDA
          auto cudaWriteOneUsingPureC = [&] ()
@@ -96,12 +103,18 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
             cudaTraverserBenchmark.addOneUsingPureC();
          };
          if( withCuda )
+         {
             benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaWriteOneUsingPureC );
+            if( check && ! cudaTraverserBenchmark.checkAddOne(
+                  benchmark.getPerformedLoops(),
+                  benchmark.isResetingOn() ) )
+               benchmark.addErrorMessage( "Test results are not correct." );
+         }
 #endif
       }
 
       /****
-       * Write one using parallel for
+       * Add one using parallel for
        */
       if( tests.containsValue( "all" ) || tests.containsValue( "add-one-parallel-for" ) )
       {
@@ -112,7 +125,13 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
             hostTraverserBenchmark.addOneUsingParallelFor();
          };
          if( withHost )
+         {
             benchmark.time< Devices::Host >( hostReset, "CPU", hostWriteOneUsingParallelFor );
+            if( check && ! hostTraverserBenchmark.checkAddOne( 
+                  benchmark.getPerformedLoops(),
+                  benchmark.isResetingOn() ) )
+               benchmark.addErrorMessage( "Test results are not correct." );
+         }
 
 #ifdef HAVE_CUDA
          auto cudaWriteOneUsingParallelFor = [&] ()
@@ -120,12 +139,19 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
             cudaTraverserBenchmark.addOneUsingParallelFor();
          };
          if( withCuda )
+         {
             benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaWriteOneUsingParallelFor );
+            if( check && ! cudaTraverserBenchmark.checkAddOne( 
+                  benchmark.getPerformedLoops(),
+                  benchmark.isResetingOn() ) )
+               benchmark.addErrorMessage( "Test results are not correct." );
+         }
+
 #endif
       }
 
       /****
-       * Write one using parallel for with grid entity
+       * Add one using parallel for with grid entity
        */
       if( tests.containsValue( "all" ) || tests.containsValue( "add-one-simple-cell" ) )
       {
@@ -135,7 +161,13 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
          };
          benchmark.setOperation( "simple cell", 2 * pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
          if( withHost )
+         {
             benchmark.time< Devices::Host >( hostReset, "CPU", hostAddOneUsingSimpleCell );
+            if( check && ! hostTraverserBenchmark.checkAddOne( 
+                  benchmark.getPerformedLoops(),
+                  benchmark.isResetingOn() ) )
+               benchmark.addErrorMessage( "Test results are not correct." );
+         }
 
 #ifdef HAVE_CUDA
          auto cudaAddOneUsingSimpleCell = [&] ()
@@ -143,12 +175,19 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
             cudaTraverserBenchmark.addOneUsingSimpleCell();
          };
          if( withCuda )
+         {
             benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaAddOneUsingSimpleCell );
+            if( check && ! cudaTraverserBenchmark.checkAddOne( 
+                  benchmark.getPerformedLoops(),
+                  benchmark.isResetingOn() ) )
+               benchmark.addErrorMessage( "Test results are not correct." );
+         }
+
 #endif
       }
 
       /****
-       * Write one using parallel for with mesh function
+       * Add one using parallel for with mesh function
        */
       if( tests.containsValue( "all" ) || tests.containsValue( "add-one-parallel-for-and-mesh-function" ) )
       {
@@ -158,7 +197,13 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
          };
          benchmark.setOperation( "par.for+mesh fc.", 2 * pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
          if( withHost )
+         {
             benchmark.time< Devices::Host >( hostReset, "CPU", hostAddOneUsingParallelForAndMeshFunction );
+            if( check && ! hostTraverserBenchmark.checkAddOne( 
+                  benchmark.getPerformedLoops(),
+                  benchmark.isResetingOn() ) )
+               benchmark.addErrorMessage( "Test results are not correct." );
+         }
 
 #ifdef HAVE_CUDA
          auto cudaAddOneUsingParallelForAndMeshFunction = [&] ()
@@ -166,13 +211,19 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
             cudaTraverserBenchmark.addOneUsingParallelForAndMeshFunction();
          };
          if( withCuda )
+         {
             benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaAddOneUsingParallelForAndMeshFunction );
+            if( check && ! cudaTraverserBenchmark.checkAddOne( 
+                  benchmark.getPerformedLoops(),
+                  benchmark.isResetingOn() ) )
+               benchmark.addErrorMessage( "Test results are not correct." );
+         }
 #endif
 
       }
 
       /****
-       * Write one using traverser
+       * Add one using traverser
        */
       if( tests.containsValue( "all" ) || tests.containsValue( "add-one-traverser" ) )
       {
@@ -182,7 +233,13 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
             hostTraverserBenchmark.addOneUsingTraverser();
          };
          if( withHost )
+         {
             benchmark.time< Devices::Host >( hostReset, "CPU", hostWriteOneUsingTraverser );
+            if( check && ! hostTraverserBenchmark.checkAddOne( 
+                  benchmark.getPerformedLoops(),
+                  benchmark.isResetingOn() ) )
+               benchmark.addErrorMessage( "Test results are not correct." );
+         }
 
 #ifdef HAVE_CUDA
          auto cudaWriteOneUsingTraverser = [&] ()
@@ -190,7 +247,13 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
             cudaTraverserBenchmark.addOneUsingTraverser();
          };
          if( withCuda )
+         {
             benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaWriteOneUsingTraverser );
+            if( check && ! cudaTraverserBenchmark.checkAddOne( 
+                  benchmark.getPerformedLoops(),
+                  benchmark.isResetingOn() ) )
+               benchmark.addErrorMessage( "Test results are not correct." );
+         }
 #endif
       }
       std::cout << "--------------------------------------------------------------------------------------------------------" << std::endl;
@@ -343,6 +406,7 @@ void setupConfig( Config::ConfigDescription& config )
 #else
    config.addEntry< bool >( "with-cuda", "Perform CUDA benchmarks.", false );
 #endif
+   config.addEntry< bool >( "check", "Checking correct results of benchmark tests.", false );
    config.addEntry< String >( "log-file", "Log file name.", "tnl-benchmark-traversers.log");
    config.addEntry< String >( "output-mode", "Mode for opening the log file.", "overwrite" );
    config.addEntryEnum( "append" );
