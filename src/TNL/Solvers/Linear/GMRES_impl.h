@@ -57,7 +57,7 @@ GMRES< Matrix >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   const String var = parameters.getParameter< String >( "gmres-variant" );
+   const String var = parameters.getParameter< String >( prefix + "gmres-variant" );
    if( var == "MGS" )
       variant = Variant::MGS;
    else if( var == "MGSR" )
@@ -67,10 +67,10 @@ setup( const Config::ParameterContainer& parameters,
    else
       return false;
 
-   restarting_min = parameters.getParameter< int >( "gmres-restarting-min" );
-   restarting_max = parameters.getParameter< int >( "gmres-restarting-max" );
-   restarting_step_min = parameters.getParameter< int >( "gmres-restarting-step-min" );
-   restarting_step_max = parameters.getParameter< int >( "gmres-restarting-step-max" );
+   restarting_min = parameters.getParameter< int >( prefix + "gmres-restarting-min" );
+   restarting_max = parameters.getParameter< int >( prefix + "gmres-restarting-max" );
+   restarting_step_min = parameters.getParameter< int >( prefix + "gmres-restarting-step-min" );
+   restarting_step_max = parameters.getParameter< int >( prefix + "gmres-restarting-step-max" );
 
    return LinearSolver< Matrix >::setup( parameters, prefix );
 }
