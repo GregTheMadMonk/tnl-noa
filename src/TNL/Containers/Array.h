@@ -55,7 +55,7 @@ class Array : public Object
       /**
        * \brief Constructor with data and size.
        *
-       * \param data
+       * \param data Pointer to data.
        * \param size Number of array elements.
        */
       Array( Value* data,
@@ -104,7 +104,7 @@ class Array : public Object
        *
        * Sets the same size as the size of existing \e array.
        * \tparam ArrayT Type of array.
-       * \param array Existing array.
+       * \param array Reference to an existing array.
        */
       template< typename ArrayT >
       void setLike( const ArrayT& array );
@@ -201,37 +201,58 @@ class Array : public Object
        */
       __cuda_callable__ inline const Value& operator[] ( const Index& i ) const;
 
-      /** Assigns \e array to the given array, replacing its current contents. */
+      /**
+       * \brief Assigns \e array to this array, replacing its current contents.
+       *
+       * \param array Reference to an array.
+       */
       Array& operator = ( const Array& array );
 
-      /** Assigns \e array to the given array, replacing its current contents. */
+      /**
+       * \brief Assigns \e array to this array, replacing its current contents.
+       *
+       * \tparam ArrayT Type of array.
+       * \param array Reference to an array.
+       */
       template< typename ArrayT >
       Array& operator = ( const ArrayT& array );
 
-      /** \brief This function checks whether the given array is equal to \e array. */
+      /**
+       * \brief This function checks whether this array is equal to \e array.
+       *
+       * \tparam ArrayT Type of array.
+       * \param array Reference to an array.
+       */
       template< typename ArrayT >
       bool operator == ( const ArrayT& array ) const;
 
-      /** \brief This function checks whether the given array is not equal to \e array. */
+      /**
+       * \brief This function checks whether this array is not equal to \e array.
+       *
+       * \tparam ArrayT Type of array.
+       * \param array Reference to an array.
+       */
       template< typename ArrayT >
       bool operator != ( const ArrayT& array ) const;
 
       /**
-       * \brief
+       * \brief Sets the array values.
+       *
+       * Sets all the array values to \e v.
        *
        * \param v Reference to a value.
        */
       void setValue( const Value& v );
 
       /**
-       * \brief Checks if there is an element with value \e v in given array.
+       * \brief Checks if there is an element with value \e v in this array.
        *
        * \param v Reference to a value.
        */
       bool containsValue( const Value& v ) const;
 
       /**
-       * \brief Checks if all elements in given array have the same value \e v.
+       * \brief Checks if all elements in this array have the same value \e v.
        *
        * \param v Reference to a value.
        */
@@ -300,8 +321,8 @@ class Array : public Object
       /**
        * \brief Counter of objects sharing this array or some parts of it.
        *
-       * The reference counter is allocated after first sharing of the data
-       * between more arrays. This is to avoid unnecessary dynamic memory allocation.
+       * The reference counter is allocated after first sharing of the data between
+       * more arrays. This is to avoid unnecessary dynamic memory allocation.
        */
       mutable int* referenceCounter;
 };
