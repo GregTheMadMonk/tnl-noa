@@ -19,7 +19,7 @@ namespace Containers {
  /**
  * \brief Vector with constant size.
  *
- * \param Size Size of static array. Number of its elements.
+ * \param Size Size of static vector. Number of its elements.
  * \param Real Type of the values in the static vector.
  */
 template< int Size, typename Real = double >
@@ -67,6 +67,12 @@ class StaticVector : public StaticArray< Size, Real >
    __cuda_callable__
    StaticVector( const StaticVector< Size, Real >& v );
 
+   /**
+    * \brief Sets up a new (vector) parameter which means it can have more elements.
+    *
+    * @param parameters Reference to a parameter container where the new parameter is saved.
+    * @param prefix Name of now parameter/prefix.
+    */
    bool setup( const Config::ParameterContainer& parameters,
                const String& prefix = "" );      
 
@@ -82,7 +88,7 @@ class StaticVector : public StaticArray< Size, Real >
     * The addition is applied to all the vector elements separately.
     * \param vector Reference to another vector.
     */
-   __cuda_callable__
+   __cuda_callable__Size of static array. Number of its elements.
    StaticVector& operator += ( const StaticVector& v );
 
    /**
@@ -108,11 +114,11 @@ class StaticVector : public StaticArray< Size, Real >
    /**
     * \brief Division by number
     *
-    * This function divides this static vector by \e c and returns the resulting static vector.
+    * This function divides this static veSize of static array. Number of its elements.ctor by \e c and returns the resulting static vector.
     * The division is applied to all the vector elements separately.
     * \param c Divisor.
     */
-   __cuda_callable__
+   __cuda_callable__Size of static array. Number of its elements.
    StaticVector& operator /= ( const Real& c );
    
    /**
@@ -191,6 +197,11 @@ class StaticVector : public StaticArray< Size, Real >
    __cuda_callable__
    bool operator >= ( const StaticVector& v ) const;
 
+   /**
+    * \brief Changes the type of static vector to \e OtherReal while the size remains the same.
+    *
+    * \tparam OtherReal Other type of the static vector values.
+    */
    template< typename OtherReal >
    __cuda_callable__
    operator StaticVector< Size, OtherReal >() const;

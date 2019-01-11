@@ -25,6 +25,9 @@ template< int, typename > class StaticArray;
  * \tparam Value Type of array values.
  * \tparam Device Device type.
  * \tparam Index Type of index.
+ *
+ * \par Example
+ * \include ArrayExample.cpp
  */
 template< typename Value,
           typename Device = Devices::Host,
