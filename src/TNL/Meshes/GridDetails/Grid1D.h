@@ -63,44 +63,95 @@ class Grid< 1, Real, Device, Index > : public Object
 
    virtual String getSerializationTypeVirtual() const;
 
+   /**
+    * \brief Sets the number of dimensions.
+    * \param xSize Number of dimensions.
+    */
    void setDimensions( const Index xSize );
 
+   /**
+    * \brief Sets the number of dimensions.
+    * \param xSize Number of dimensions.
+    */
    void setDimensions( const CoordinatesType& dimensions );
 
+   /**
+    * \brief Returns number of dimensions of entities in this grid.
+    */
    __cuda_callable__
    const CoordinatesType& getDimensions() const;
- 
+
+   /**
+    * \brief Sets the origin.
+    * \param origin Starting point of this grid.
+    */
    void setOrigin( const PointType& origin);
 
+   /**
+    * \brief Sets the origin and proportions of this grid.
+    * \param origin Point where this grid starts.
+    * \param proportions Total length of this grid.
+    */
    void setDomain( const PointType& origin,
                    const PointType& proportions );
 
-
+   /**
+    * \brief Gets the origin.
+    * \param origin Starting point of this grid.
+    */
    __cuda_callable__
    inline const PointType& getOrigin() const;
 
+   /**
+    * \brief Gets length of one entity of this grid.
+    */
    __cuda_callable__
    inline const PointType& getProportions() const;
- 
+
+   /**
+    * \brief Gets number of entities in this grid.
+    * \tparam EntityDimension Integer specifying dimension of the entity.
+    */
    template< int EntityDimension >
    __cuda_callable__
    IndexType getEntitiesCount() const;
 
+   /**
+    * \brief Gets number of entities in this grid.
+    * \tparam Entity Type of the entity.
+    */
    template< typename Entity >
    __cuda_callable__
    IndexType getEntitiesCount() const;
 
+   /**
+    * \brief Gets entity type using entity index.
+    * \param entityIndex Index of entity.
+    * \tparam Entity Type of the entity.
+    */
    template< typename Entity >
    __cuda_callable__
    inline Entity getEntity( const IndexType& entityIndex ) const;
 
+    /**
+    * \brief Gets entity index using entity type.
+    * \param entity Type of entity.
+    * \tparam Entity Type of the entity.
+    */
    template< typename Entity >
    __cuda_callable__
    inline Index getEntityIndex( const Entity& entity ) const;
 
+   /**
+    * \brief Gets length of one step.
+    */
    __cuda_callable__
    inline const PointType& getSpaceSteps() const;
 
+   /**
+    * \brief Sets the lenght of steps.
+    * \param steps Length of one step.
+    */
    inline void setSpaceSteps(const PointType& steps);
 
    template< int xPow >
@@ -110,6 +161,9 @@ class Grid< 1, Real, Device, Index > : public Object
    __cuda_callable__
    inline const RealType& getCellMeasure() const;
 
+   /**
+    * \brief Gets the smallest length of step out of all coordinates.
+    */
    __cuda_callable__
    inline RealType getSmallestSpaceStep() const;
 
