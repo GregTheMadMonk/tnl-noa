@@ -28,7 +28,7 @@ bool
 PGMImage< Index >::
 readHeader()
 {
-   char magicNumber[ 3 ];
+   std::string magicNumber;
    this->file >> magicNumber;
    if( this->file.fail() )
    {
@@ -36,11 +36,10 @@ readHeader()
       return false;
    }
 
-   if( strcmp( magicNumber, "P5" ) != 0 &&
-       strcmp( magicNumber, "P2" ) != 0 )
+   if( magicNumber != "P5" && magicNumber != "P2" )
       return false;
  
-   if( strcmp( magicNumber, "P5" ) == 0 )
+   if(  magicNumber == "P5" )
       this->binary = true;
 
    char character;
@@ -91,14 +90,14 @@ read( const RegionOfInterest< Index > roi,
    typedef Meshes::Grid< 2, Real, Device, Index > GridType;
    const GridType& grid = function.getMesh();
    typename GridType::Cell cell( grid );
- 
+
    Index i, j;
    for( i = 0; i < this->height; i ++ )
       for( j = 0; j < this->width; j ++ )
       {
          int col;
          unsigned char col_aux;
-              if( this->binary )
+         if( this->binary )
          {
            this->file >> col_aux;
            col = (int)col_aux;
@@ -109,8 +108,6 @@ read( const RegionOfInterest< Index > roi,
             cell.getCoordinates().x() = j - roi.getLeft();
             cell.getCoordinates().y() = roi.getBottom() - 1 - i;
             cell.refresh();
-            //Index cellIndex = grid.getCellIndex( CoordinatesType( j - roi.getLeft(),
-            //                                                      roi.getBottom() - 1 - i ) );
             function.getData().setElement( cell.getIndex(), ( Real ) col / ( Real ) this->maxColors );
          }
       }
