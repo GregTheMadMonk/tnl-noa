@@ -53,3 +53,6 @@ target_link_libraries( StringExampleSetSize tnl )
 
 ADD_EXECUTABLE( TimerExample TimerExample.cpp )
 target_link_libraries( TimerExample tnl )
+
+ADD_EXECUTABLE( VectorExample VectorExample.cpp )
+target_link_libraries( VectorExample tnl )

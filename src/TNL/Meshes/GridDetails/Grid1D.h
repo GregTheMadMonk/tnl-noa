@@ -149,7 +149,7 @@ class Grid< 1, Real, Device, Index > : public Object
    inline const PointType& getSpaceSteps() const;
 
    /**
-    * \brief Sets the lenght of steps.
+    * \brief Sets the length of steps.
     * \param steps Length of one step.
     */
    inline void setSpaceSteps(const PointType& steps);
@@ -186,13 +186,19 @@ class Grid< 1, Real, Device, Index > : public Object
     */
    bool save( File& file ) const;
 
-   /****
-    *  Method for restoring the object from a file
+   /**
+    * \brief Method for restoring the object from a file.
     */
    bool load( File& file );
 
+   /**
+    * \brief Method for saving the object to a file.
+    */
    bool save( const String& fileName ) const;
 
+   /**
+    * \brief Method for restoring the object from a file.
+    */
    bool load( const String& fileName );
 
    void writeProlog( Logger& logger ) const;
