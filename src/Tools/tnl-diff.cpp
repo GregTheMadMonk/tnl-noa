@@ -21,6 +21,7 @@ void setupConfig( Config::ConfigDescription& config )
       config.addEntryEnum< String >( "couples" );
       config.addEntryEnum< String >( "sequence" );
       config.addEntryEnum< String >( "halves" );
+   config.addEntry< bool >( "exact-match", "Check if the data are exactly the same.", false );
    config.addEntry< bool >( "write-difference", "Write difference grid function.", false );
    config.addEntry< bool >( "write-exact-curve", "Write exact curve with given radius.", false );
    config.addEntry< int >( "edges-skip", "Width of the edges that will be skipped - not included into the error norms.", 0 );

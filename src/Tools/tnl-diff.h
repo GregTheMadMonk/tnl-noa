@@ -29,6 +29,7 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const Con
    String outputFileName = parameters. getParameter< String >( "output-file" );
    double snapshotPeriod = parameters. getParameter< double >( "snapshot-period" );
    bool writeDifference = parameters. getParameter< bool >( "write-difference" );
+   bool exactMatch = parameters. getParameter< bool >( "exact-match" );
 
    std::fstream outputFile;
    outputFile.open( outputFileName.getString(), std::fstream::out );
@@ -54,6 +55,7 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const Con
    Real totalL1Diff( 0.0 ), totalL2Diff( 0.0 ), totalMaxDiff( 0.0 );
    for( int i = 0; i < inputFiles. getSize(); i ++ )
    {
+      String file1, file2;
       if( mode == "couples" )
       {
          if( i + 1 == inputFiles.getSize() )
@@ -72,6 +74,8 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const Con
             return false;
          }
          outputFile << std::setw( 6 ) << i/2 * snapshotPeriod << " ";
+         file1 = inputFiles[ i ];
+         file2 = inputFiles[ i + 1 ];
          i++;
       }
       if( mode == "sequence" )
@@ -86,6 +90,7 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const Con
                outputFile.close();
                return false;
             }
+            file1 = inputFiles[ 0 ];
          }
          if( verbose )
            std::cout << "Processing the files " << inputFiles[ 0 ] << " and " << inputFiles[ i ] << "...             \r" << std::flush;
@@ -96,6 +101,7 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const Con
             return false;
          }
          outputFile << std::setw( 6 ) << ( i - 1 ) * snapshotPeriod << " ";
+         file2 = inputFiles[ i ];
       }
       if( mode == "halves" )
       {
@@ -113,9 +119,20 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const Con
          }
          //if( snapshotPeriod != 0.0 )
          outputFile << std::setw( 6 ) << ( i - half ) * snapshotPeriod << " ";
+         file1 = inputFiles[ i - half ];
+         file2 = inputFiles[ i ];
       }
       diff = v1;
       diff -= v2;
+      if( exactMatch )
+      {
+         for( Index i = 0; i < diff.getData().getSize(); i++ )
+            if( diff[ i ] != 0 )
+            {
+               outputFile << file1 << " and " << file2 << "differs at position " << i << std::endl;
+            }
+      }
+
       Real l1Diff = diff.getLpNorm( 1.0 );
       Real l2Diff = diff.getLpNorm( 2.0 );
       Real maxDiff = diff.getMaxNorm();
