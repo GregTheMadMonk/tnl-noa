@@ -531,54 +531,59 @@ struct MPITypeResolver
     };
 };
 
-template<> struct MPITypeResolver<char>
+template<> struct MPITypeResolver< char >
 {
     static inline MPI_Datatype getType(){return MPI_CHAR;};
 };
 
-template<> struct MPITypeResolver<short int>
+template<> struct MPITypeResolver< short int >
 {
     static inline MPI_Datatype getType(){return MPI_SHORT;};
 };
 
-template<> struct MPITypeResolver<long int>
+template<> struct MPITypeResolver< long int >
 {
     static inline MPI_Datatype getType(){return MPI_LONG;};
 };
 
-template<> struct MPITypeResolver<unsigned char>
+template<> struct MPITypeResolver< unsigned char >
 {
     static inline MPI_Datatype getType(){return MPI_UNSIGNED_CHAR;};
 };
 
-template<> struct MPITypeResolver<unsigned short int>
+template<> struct MPITypeResolver< unsigned short int >
 {
     static inline MPI_Datatype getType(){return MPI_UNSIGNED_SHORT;};
 };
 
-template<> struct MPITypeResolver<unsigned int>
+template<> struct MPITypeResolver< unsigned int >
 {
     static inline MPI_Datatype getType(){return MPI_UNSIGNED;};
 };
 
-template<> struct MPITypeResolver<unsigned long int>
+template<> struct MPITypeResolver< unsigned long int >
 {
     static inline MPI_Datatype getType(){return MPI_UNSIGNED_LONG;};
 };
 
-template<> struct MPITypeResolver<float>
+template<> struct MPITypeResolver< float >
 {
     static inline MPI_Datatype getType(){return MPI_FLOAT;};
 };
 
-template<> struct MPITypeResolver<double>
+template<> struct MPITypeResolver< double >
 {
     static inline MPI_Datatype getType(){return MPI_DOUBLE;};
 };
 
-template<> struct MPITypeResolver<long double>
+template<> struct MPITypeResolver< long double >
 {
     static inline MPI_Datatype getType(){return MPI_LONG_DOUBLE;};
+};
+
+template<> struct MPITypeResolver< bool >
+{
+    static inline MPI_Datatype getType(){return MPI_C_BOOL;};
 };
 #endif
 

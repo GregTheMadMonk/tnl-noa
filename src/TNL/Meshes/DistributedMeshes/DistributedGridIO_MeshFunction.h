@@ -21,72 +21,78 @@ namespace DistributedMeshes {
  * This variant cerate copy of MeshFunction but smaller, reduced to local entities, without overlap. 
  * It is slow and has high RAM consumption
  */
-template<typename MeshType,
-         typename Device> 
-class DistributedGridIO<Functions::MeshFunction<MeshType>,LocalCopy,Device>
+template< typename MeshFunction,
+          int Dimension,
+          typename Real,
+          typename Device,
+          typename Index > 
+class DistributedGridIO< MeshFunction,
+                         LocalCopy,
+                         Meshes::Grid< Dimension, Real, Device, Index >,
+                         Device >
 {
+   public:
+      using MeshType = Meshes::Grid< Dimension, Real, Device, Index >;
+      using MeshFunctionType = MeshFunction;
+      using CoordinatesType = typename MeshFunctionType::MeshType::CoordinatesType;
+      using PointType = typename MeshFunctionType::MeshType::PointType;
+      using VectorType = typename MeshFunctionType::VectorType;
+      //typedef DistributedGrid< MeshType,MeshFunctionType::getMeshDimension()> DistributedGridType;
 
-    public:
-	typedef typename Functions::MeshFunction<MeshType> MeshFunctionType;
-    typedef typename MeshFunctionType::MeshType::CoordinatesType CoordinatesType;
-    typedef typename MeshFunctionType::MeshType::PointType PointType;
-    typedef typename MeshFunctionType::VectorType VectorType;
-    //typedef DistributedGrid< MeshType,MeshFunctionType::getMeshDimension()> DistributedGridType;
-    
-    static bool save(const String& fileName, MeshFunctionType &meshFunction)
-    {
-        auto *distrGrid=meshFunction.getMesh().getDistributedMesh();
-        
-        if(distrGrid==NULL) //not distributed
-        {
+      static bool save(const String& fileName, MeshFunctionType &meshFunction)
+      {
+         auto *distrGrid=meshFunction.getMesh().getDistributedMesh();
+
+         if(distrGrid==NULL) //not distributed
+         {
             return meshFunction.save(fileName);
-        }
+         }
 
-        MeshType mesh=meshFunction.getMesh();
-        
-        PointType spaceSteps=mesh.getSpaceSteps();
-        PointType origin=mesh.getOrigin();
-                
-        CoordinatesType localSize=distrGrid->getLocalSize();
-        CoordinatesType localBegin=distrGrid->getLocalBegin();
- 
-        Pointers::SharedPointer<MeshType> newMesh;
-        newMesh->setDimensions(localSize);
-        newMesh->setSpaceSteps(spaceSteps);
-        CoordinatesType newOrigin;
-        newMesh->setOrigin(origin+TNL::Containers::Scale(spaceSteps,localBegin));
-        
-        File meshFile;
-        if( ! meshFile.open( fileName+String("-mesh-")+distrGrid->printProcessCoords()+String(".tnl"),IOMode::write) )
-        {
+         MeshType mesh=meshFunction.getMesh();
+
+         PointType spaceSteps=mesh.getSpaceSteps();
+         PointType origin=mesh.getOrigin();
+
+         CoordinatesType localSize=distrGrid->getLocalSize();
+         CoordinatesType localBegin=distrGrid->getLocalBegin();
+
+         Pointers::SharedPointer<MeshType> newMesh;
+         newMesh->setDimensions(localSize);
+         newMesh->setSpaceSteps(spaceSteps);
+         CoordinatesType newOrigin;
+         newMesh->setOrigin(origin+TNL::Containers::Scale(spaceSteps,localBegin));
+
+         File meshFile;
+         if( ! meshFile.open( fileName+String("-mesh-")+distrGrid->printProcessCoords()+String(".tnl"),IOMode::write) )
+         {
             std::cerr << "Failed to open mesh file for writing." << std::endl;
             return false;
-        }
-        newMesh->save( meshFile );
-        meshFile.close();
+         }
+         newMesh->save( meshFile );
+         meshFile.close();
 
-        VectorType newDof(newMesh-> template getEntitiesCount< typename MeshType::Cell >());
+         VectorType newDof(newMesh-> template getEntitiesCount< typename MeshType::Cell >());
 
-        MeshFunctionType newMeshFunction;
-        newMeshFunction.bind(newMesh,newDof);        
+         MeshFunctionType newMeshFunction;
+         newMeshFunction.bind(newMesh,newDof);
 
-        CoordinatesType zeroCoord;
-        zeroCoord.setValue(0);
+         CoordinatesType zeroCoord;
+         zeroCoord.setValue(0);
 
-        CopyEntitiesHelper<MeshFunctionType>::Copy(meshFunction,newMeshFunction,localBegin,zeroCoord,localSize);
+         CopyEntitiesHelper<MeshFunctionType>::Copy(meshFunction,newMeshFunction,localBegin,zeroCoord,localSize);
 
-        File file;
-        if( ! file.open( fileName+String("-")+distrGrid->printProcessCoords()+String(".tnl"), IOMode::write ) )
-        {
+         File file;
+         if( ! file.open( fileName+String("-")+distrGrid->printProcessCoords()+String(".tnl"), IOMode::write ) )
+         {
             std::cerr << "Failed to open file for writing." << std::endl;
             return false;
-        }
-        bool ret=newMeshFunction.save(file);
-        file.close();
+         }
+         bool ret=newMeshFunction.save(file);
+         file.close();
 
-        return ret;
-        
-    };
+         return ret;
+
+      };
             
     static bool load(const String& fileName,MeshFunctionType &meshFunction) 
     {
@@ -424,34 +430,39 @@ class DistributedGridIO_MPIIOBase
 };
 #endif
 
-template<typename MeshType> 
-class DistributedGridIO<Functions::MeshFunction<MeshType>,MpiIO,TNL::Devices::Cuda>
+template< typename MeshFunction,
+          int Dimension,
+          typename Real,
+          typename Index > 
+class DistributedGridIO< MeshFunction,
+                         MpiIO,
+                         Meshes::Grid< Dimension, Real, Devices::Cuda, Index >,
+                         Devices::Cuda >
 {
-    public:
-	typedef typename Functions::MeshFunction<MeshType> MeshFunctionType;
+   public:
+   	using MeshFunctionType = MeshFunction;
 
-    static bool save(const String& fileName, MeshFunctionType &meshFunction)
-    {
+      static bool save(const String& fileName, MeshFunctionType &meshFunction)
+      {
 #ifdef HAVE_MPI
-        if(Communicators::MpiCommunicator::IsInitialized())//i.e. - isUsed
-        {
+         if(Communicators::MpiCommunicator::IsInitialized())//i.e. - isUsed
+         {
             using HostVectorType = Containers::Vector<typename MeshFunctionType::RealType, Devices::Host, typename MeshFunctionType::IndexType >; 
             HostVectorType hostVector;
             hostVector=meshFunction.getData();
             typename MeshFunctionType::RealType * data=hostVector.getData();  
             return DistributedGridIO_MPIIOBase<MeshFunctionType>::save(fileName,meshFunction,data);
-        }
+         }
 #endif
-        std::cout << "MPIIO can be used only with MPICommunicator." << std::endl;
-        return false;
-      
-    };
+         std::cout << "MPIIO can be used only with MPICommunicator." << std::endl;
+         return false;
+      };
 
-    static bool load(const String& fileName,MeshFunctionType &meshFunction) 
-    {
+      static bool load(const String& fileName,MeshFunctionType &meshFunction) 
+      {
 #ifdef HAVE_MPI
-        if(Communicators::MpiCommunicator::IsInitialized())//i.e. - isUsed
-        {
+         if(Communicators::MpiCommunicator::IsInitialized())//i.e. - isUsed
+         {
             using HostVectorType = Containers::Vector<typename MeshFunctionType::RealType, Devices::Host, typename MeshFunctionType::IndexType >; 
             HostVectorType hostVector;
             hostVector.setLike(meshFunction.getData());
@@ -459,51 +470,52 @@ class DistributedGridIO<Functions::MeshFunction<MeshType>,MpiIO,TNL::Devices::Cu
             DistributedGridIO_MPIIOBase<MeshFunctionType>::load(fileName,meshFunction,data);
             meshFunction.getData()=hostVector;
             return true;
-        }
+         }
 #endif
-        std::cout << "MPIIO can be used only with MPICommunicator." << std::endl;
-        return false;
+         std::cout << "MPIIO can be used only with MPICommunicator." << std::endl;
+         return false;
     };
-
 };
 
-template<typename MeshType> 
-class DistributedGridIO<Functions::MeshFunction<MeshType>,MpiIO,TNL::Devices::Host>
+template< typename MeshFunction,
+          int Dimension,
+          typename Real,
+          typename Index > 
+class DistributedGridIO< MeshFunction,
+                         MpiIO,
+                         Meshes::Grid< Dimension, Real, Devices::Host, Index >,
+                         Devices::Host >
 {
+   public:
+      using MeshFunctionType = MeshFunction;
 
-    public:
-	typedef typename Functions::MeshFunction<MeshType> MeshFunctionType;
-
-    static bool save(const String& fileName, MeshFunctionType &meshFunction)
-    {
+      static bool save(const String& fileName, MeshFunctionType &meshFunction)
+      {
 #ifdef HAVE_MPI
-        if(Communicators::MpiCommunicator::IsInitialized())//i.e. - isUsed
-        {
+         if(Communicators::MpiCommunicator::IsInitialized())//i.e. - isUsed
+         {
             typename MeshFunctionType::RealType * data=meshFunction.getData().getData();      
             return DistributedGridIO_MPIIOBase<MeshFunctionType>::save(fileName,meshFunction,data);
-        }
+         }
 #endif
-        std::cout << "MPIIO can be used only with MPICommunicator." << std::endl;
-        return false;
-
+         std::cout << "MPIIO can be used only with MPICommunicator." << std::endl;
+         return false;
     };
 
-    static bool load(const String& fileName,MeshFunctionType &meshFunction) 
-    {
+      static bool load(const String& fileName,MeshFunctionType &meshFunction) 
+      {
 #ifdef HAVE_MPI
-        if(Communicators::MpiCommunicator::IsInitialized())//i.e. - isUsed
-        {
-        double * data=meshFunction.getData().getData();      
-        return DistributedGridIO_MPIIOBase<MeshFunctionType>::load(fileName,meshFunction,data);
-        }
+         if(Communicators::MpiCommunicator::IsInitialized())//i.e. - isUsed
+         {
+            double * data=meshFunction.getData().getData();      
+            return DistributedGridIO_MPIIOBase<MeshFunctionType>::load(fileName,meshFunction,data);
+         }
 #endif
-        std::cout << "MPIIO can be used only with MPICommunicator." << std::endl;
-        return false;
+         std::cout << "MPIIO can be used only with MPICommunicator." << std::endl;
+         return false;
     };
-
 };
 
-}
-}
-}
-
+      } //namespace DistributedMeshes
+   } //namespace Meshes
+} //namespace TNL
