@@ -133,6 +133,13 @@ bool setMeshEntityType( const MeshPointer& meshPointer,
       return setMeshFunctionRealType< MeshPointer, EntityDimension, double, VectorFieldSize >( meshPointer, inputFileName, parsedObjectType, parameters );
    if( parsedObjectType[ 3 ] == "long double" )
       return setMeshFunctionRealType< MeshPointer, EntityDimension, long double, VectorFieldSize >( meshPointer, inputFileName, parsedObjectType, parameters );
+   if( parsedObjectType[ 3 ] == "int" )
+      return setMeshFunctionRealType< MeshPointer, EntityDimension, int, VectorFieldSize >( meshPointer, inputFileName, parsedObjectType, parameters );
+   if( parsedObjectType[ 3 ] == "long int" )
+      return setMeshFunctionRealType< MeshPointer, EntityDimension, long int, VectorFieldSize >( meshPointer, inputFileName, parsedObjectType, parameters );
+   if( parsedObjectType[ 3 ] == "bool" )
+      return setMeshFunctionRealType< MeshPointer, EntityDimension, bool, VectorFieldSize >( meshPointer, inputFileName, parsedObjectType, parameters );
+   
    std::cerr << "Unsupported arithmetics " << parsedObjectType[ 3 ] << " in mesh function " << inputFileName << std::endl;
    return false;
 }
