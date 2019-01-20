@@ -330,7 +330,7 @@ class DistributedGridIO_MPIIOBase
         return size;
     };
 
-	static bool load(const String& fileName,MeshFunctionType &meshFunction, double *data ) 
+	static bool load(const String& fileName,MeshFunctionType &meshFunction, RealType* data )
 	{
 		auto *distrGrid=meshFunction.getMesh().getDistributedMesh();
         if(distrGrid==NULL) //not distributed
@@ -357,7 +357,7 @@ class DistributedGridIO_MPIIOBase
 	}
             
     /* Funky bomb - no checks - only dirty load */
-    static int load(MPI_File &file,MeshFunctionType &meshFunction, double *data, int offset ) 
+    static int load(MPI_File &file,MeshFunctionType &meshFunction, RealType* data, int offset ) 
     {
        auto *distrGrid=meshFunction.getMesh().getDistributedMesh();
 
@@ -466,7 +466,7 @@ class DistributedGridIO< MeshFunction,
             using HostVectorType = Containers::Vector<typename MeshFunctionType::RealType, Devices::Host, typename MeshFunctionType::IndexType >; 
             HostVectorType hostVector;
             hostVector.setLike(meshFunction.getData());
-            double * data=hostVector.getData();
+            auto* data=hostVector.getData();
             DistributedGridIO_MPIIOBase<MeshFunctionType>::load(fileName,meshFunction,data);
             meshFunction.getData()=hostVector;
             return true;
@@ -494,7 +494,7 @@ class DistributedGridIO< MeshFunction,
 #ifdef HAVE_MPI
          if(Communicators::MpiCommunicator::IsInitialized())//i.e. - isUsed
          {
-            typename MeshFunctionType::RealType * data=meshFunction.getData().getData();      
+            typename MeshFunctionType::RealType* data=meshFunction.getData().getData();
             return DistributedGridIO_MPIIOBase<MeshFunctionType>::save(fileName,meshFunction,data);
          }
 #endif
@@ -507,7 +507,7 @@ class DistributedGridIO< MeshFunction,
 #ifdef HAVE_MPI
          if(Communicators::MpiCommunicator::IsInitialized())//i.e. - isUsed
          {
-            double * data=meshFunction.getData().getData();      
+            typename MeshFunctionType::RealType* data = meshFunction.getData().getData();
             return DistributedGridIO_MPIIOBase<MeshFunctionType>::load(fileName,meshFunction,data);
          }
 #endif
