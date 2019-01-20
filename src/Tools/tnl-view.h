@@ -393,13 +393,19 @@ bool setValueType( const MeshPointer& meshPointer,
        parsedObjectType[ 0 ] == "tnlVector" )                                  //
       elementType = parsedObjectType[ 1 ];
 
-
    if( elementType == "float" )
       return setIndexType< MeshPointer, float, float >( meshPointer, inputFileName, parsedObjectType, parameters );
    if( elementType == "double" )
       return setIndexType< MeshPointer, double, double >( meshPointer, inputFileName, parsedObjectType, parameters );
    if( elementType == "long double" )
       return setIndexType< MeshPointer, long double, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
+   if( elementType == "int" )
+      return setIndexType< MeshPointer, int, int >( meshPointer, inputFileName, parsedObjectType, parameters );
+   if( elementType == "long int" )
+      return setIndexType< MeshPointer, long int, long int >( meshPointer, inputFileName, parsedObjectType, parameters );
+   if( elementType == "bool" )
+      return setIndexType< MeshPointer, bool, bool >( meshPointer, inputFileName, parsedObjectType, parameters );
+
    const std::vector< String > parsedValueType = parseObjectType( elementType );
    if( ! parsedValueType.size() )
    {
