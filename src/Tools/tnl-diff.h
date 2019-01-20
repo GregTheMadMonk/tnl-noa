@@ -20,6 +20,163 @@
 
 using namespace TNL;
 
+template< typename MeshFunction,
+          typename Mesh = typename MeshFunction::MeshType,
+          int EntitiesDimension = MeshFunction::getEntitiesDimension() >
+class ExactMatchTest
+{
+   public:
+      static void run( const MeshFunction& f1,
+                       const MeshFunction& f2,
+                       const String& f1Name,
+                       const String& f2Name,
+                       std::fstream& outputFile,
+                       bool verbose = false)
+      {
+         TNL_ASSERT( false, "Not implemented yet." );
+      }
+};
+
+template< typename MeshFunction,
+          typename Real,
+          typename Device,
+          typename Index >
+class ExactMatchTest< MeshFunction, Meshes::Grid< 1, Real, Device, Index >, 1 >
+{
+   public:
+      static void run( const MeshFunction& f1,
+                       const MeshFunction& f2,
+                       const String& f1Name,
+                       const String& f2Name,
+                       std::fstream& outputFile,
+                       bool verbose = false )
+      {
+         const int Dimension = 1;
+         const int EntityDimension = 1;
+         using Grid = Meshes::Grid< Dimension, Real, Device, Index >;
+         using Entity = typename Grid::template EntityType< EntityDimension >;
+         if( f1.getMesh().getDimensions() != f2.getMesh().getDimensions() )
+         {
+            outputFile << f1Name << " and " << f2Name << " are defined on different meshes. "  << std::endl;
+            if( verbose )
+               std::cout << f1Name << " and " << f2Name << " are defined on different meshes. "  << std::endl;
+         }
+
+         Entity entity( f1.getMesh() );
+         for( entity.getCoordinates().x() = 0;
+              entity.getCoordinates().x() < f1.getMesh().getDimensions().x();
+              entity.getCoordinates().x()++ )
+         {
+            entity.refresh();
+            if( f1.getValue( entity ) != f2.getValue( entity ) )
+            {
+               outputFile << f1Name << " and " << f2Name << " differs at " << entity.getCoordinates()
+                          << " " << f1.getValue( entity ) << " != " << f2.getValue( entity ) <<std::endl;
+               if( verbose )
+                  std::cout << f1Name << " and " << f2Name << " differs at " << entity.getCoordinates() 
+                          << " " << f1.getValue( entity ) << " != " << f2.getValue( entity ) <<std::endl;
+            }
+         }
+      }
+};
+
+template< typename MeshFunction,
+          typename Real,
+          typename Device,
+          typename Index >
+class ExactMatchTest< MeshFunction, Meshes::Grid< 2, Real, Device, Index >, 2 >
+{
+   public:
+      static void run( const MeshFunction& f1,
+                       const MeshFunction& f2,
+                       const String& f1Name,
+                       const String& f2Name,
+                       std::fstream& outputFile,
+                       bool verbose = false )
+      {
+         const int Dimension = 2;
+         const int EntityDimension = 2;
+         using Grid = Meshes::Grid< Dimension, Real, Device, Index >;
+         using Entity = typename Grid::template EntityType< EntityDimension >;
+         if( f1.getMesh().getDimensions() != f2.getMesh().getDimensions() )
+         {
+            outputFile << f1Name << " and " << f2Name << " are defined on different meshes. "  << std::endl;
+            if( verbose )
+               std::cout << f1Name << " and " << f2Name << " are defined on different meshes. "  << std::endl;
+         }
+
+         Entity entity( f1.getMesh() );
+         for( entity.getCoordinates().y() = 0;
+              entity.getCoordinates().y() < f1.getMesh().getDimensions().y();
+              entity.getCoordinates().y()++ )
+            for( entity.getCoordinates().x() = 0;
+                 entity.getCoordinates().x() < f1.getMesh().getDimensions().x();
+                 entity.getCoordinates().x()++ )
+            {
+               entity.refresh();
+               if( f1.getValue( entity ) != f2.getValue( entity ) )
+               {
+                  outputFile << f1Name << " and " << f2Name << " differs at " << entity.getCoordinates()
+                             << " " << f1.getValue( entity ) << " != " << f2.getValue( entity ) <<std::endl;
+                  if( verbose )
+                     std::cout << f1Name << " and " << f2Name << " differs at " << entity.getCoordinates()
+                               << " " << f1.getValue( entity ) << " != " << f2.getValue( entity ) <<std::endl;
+               }
+            }
+      }
+};
+
+template< typename MeshFunction,
+          typename Real,
+          typename Device,
+          typename Index >
+class ExactMatchTest< MeshFunction, Meshes::Grid< 3, Real, Device, Index >, 3 >
+{
+   public:
+      static void run( const MeshFunction& f1,
+                       const MeshFunction& f2,
+                       const String& f1Name,
+                       const String& f2Name,
+                       std::fstream& outputFile,
+                       bool verbose = false )
+      {
+         const int Dimension = 3;
+         const int EntityDimension = 3;
+         using Grid = Meshes::Grid< Dimension, Real, Device, Index >;
+         using Entity = typename Grid::template EntityType< EntityDimension >;
+         if( f1.getMesh().getDimensions() != f2.getMesh().getDimensions() )
+         {
+            outputFile << f1Name << " and " << f2Name << " are defined on different meshes. "  << std::endl;
+            if( verbose )
+               std::cout << f1Name << " and " << f2Name << " are defined on different meshes. "  << std::endl;
+         }
+
+         Entity entity( f1.getMesh() );
+         for( entity.getCoordinates().z() = 0;
+              entity.getCoordinates().z() < f1.getMesh().getDimensions().z();
+              entity.getCoordinates().z()++ )
+            for( entity.getCoordinates().y() = 0;
+                 entity.getCoordinates().y() < f1.getMesh().getDimensions().y();
+                 entity.getCoordinates().y()++ )
+               for( entity.getCoordinates().x() = 0;
+                    entity.getCoordinates().x() < f1.getMesh().getDimensions().x();
+                    entity.getCoordinates().x()++ )
+               {
+                  entity.refresh();
+                  if( f1.getValue( entity ) != f2.getValue( entity ) )
+                  {
+                     outputFile << f1Name << " and " << f2Name << " differs at " << entity.getCoordinates() 
+                                << " " << f1.getValue( entity ) << " != " << f2.getValue( entity ) <<std::endl;
+                     if( verbose )
+                        std::cout << f1Name << " and " << f2Name << " differs at " << entity.getCoordinates() 
+                                << " " << f1.getValue( entity ) << " != " << f2.getValue( entity ) <<std::endl;
+                  }
+               }
+      }
+};
+
+
+
 template< typename MeshPointer, typename Value, typename Real, typename Index >
 bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const Config::ParameterContainer& parameters )
 {
@@ -38,20 +195,24 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const Con
       std::cerr << "Unable to open the file " << outputFileName << "." << std::endl;
       return false;
    }
-   outputFile << "#";
-   outputFile << std::setw( 6 ) << "Time";
-   outputFile << std::setw( 18 ) << "L1 diff."
-              << std::setw( 18 ) << "L2 diff."
-              << std::setw( 18 ) << "Max. diff."
-              << std::setw( 18 ) << "Total L1 diff."
-              << std::setw( 18 ) << "Total L2 diff."
-              << std::setw( 18 ) << "Total Max. diff."
-              << std::endl;
+   if( ! exactMatch )
+   {
+      outputFile << "#";
+      outputFile << std::setw( 6 ) << "Time";
+      outputFile << std::setw( 18 ) << "L1 diff."
+                 << std::setw( 18 ) << "L2 diff."
+                 << std::setw( 18 ) << "Max. diff."
+                 << std::setw( 18 ) << "Total L1 diff."
+                 << std::setw( 18 ) << "Total L2 diff."
+                 << std::setw( 18 ) << "Total Max. diff."
+                 << std::endl;
+   }
    if( verbose )
       std::cout << std::endl;
    
    typedef typename MeshPointer::ObjectType Mesh;
-   Functions::MeshFunction< Mesh, Mesh::getMeshDimension(), Real > v1( meshPointer ), v2( meshPointer ), diff( meshPointer );
+   using MeshFunctionType = Functions::MeshFunction< Mesh, Mesh::getMeshDimension(), Real >;
+   MeshFunctionType v1( meshPointer ), v2( meshPointer ), diff( meshPointer );
    Real totalL1Diff( 0.0 ), totalL2Diff( 0.0 ), totalMaxDiff( 0.0 );
    for( int i = 0; i < (int) inputFiles.size(); i ++ )
    {
@@ -73,7 +234,8 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const Con
             outputFile.close();
             return false;
          }
-         outputFile << std::setw( 6 ) << i/2 * snapshotPeriod << " ";
+         if( ! exactMatch )
+            outputFile << std::setw( 6 ) << i/2 * snapshotPeriod << " ";
          file1 = inputFiles[ i ];
          file2 = inputFiles[ i + 1 ];
          i++;
@@ -100,7 +262,8 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const Con
             outputFile.close();
             return false;
          }
-         outputFile << std::setw( 6 ) << ( i - 1 ) * snapshotPeriod << " ";
+         if( ! exactMatch )
+            outputFile << std::setw( 6 ) << ( i - 1 ) * snapshotPeriod << " ";
          file2 = inputFiles[ i ];
       }
       if( mode == "halves" )
@@ -118,52 +281,49 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const Con
             return false;
          }
          //if( snapshotPeriod != 0.0 )
-         outputFile << std::setw( 6 ) << ( i - half ) * snapshotPeriod << " ";
+         if( ! exactMatch )
+            outputFile << std::setw( 6 ) << ( i - half ) * snapshotPeriod << " ";
          file1 = inputFiles[ i - half ];
          file2 = inputFiles[ i ];
       }
       diff = v1;
       diff -= v2;
       if( exactMatch )
-      {
-         for( Index i = 0; i < diff.getData().getSize(); i++ )
-            if( diff[ i ] != 0 )
-            {
-               outputFile << file1 << " and " << file2 << "differs at position " << i << std::endl;
-            }
-      }
-
-      Real l1Diff = diff.getLpNorm( 1.0 );
-      Real l2Diff = diff.getLpNorm( 2.0 );
-      Real maxDiff = diff.getMaxNorm();
-      if( snapshotPeriod != 0.0 )
-      {
-         totalL1Diff += snapshotPeriod * l1Diff;
-         totalL2Diff += snapshotPeriod * l2Diff * l2Diff;
-      }
+         ExactMatchTest< MeshFunctionType >::run( v1, v2, file1, file2, outputFile, verbose );
       else
       {
-         totalL1Diff += l1Diff;
-         totalL2Diff += l2Diff * l2Diff;
-      }
-      totalMaxDiff = max( totalMaxDiff, maxDiff );
-      outputFile << std::setw( 18 ) << l1Diff
-                 << std::setw( 18 ) << l2Diff
-                 << std::setw( 18 ) << maxDiff
-                 << std::setw( 18 ) << totalL1Diff
-                 << std::setw( 18 ) << ::sqrt( totalL2Diff )
-                 << std::setw( 18 ) << totalMaxDiff << std::endl;
+         Real l1Diff = diff.getLpNorm( 1.0 );
+         Real l2Diff = diff.getLpNorm( 2.0 );
+         Real maxDiff = diff.getMaxNorm();
+         if( snapshotPeriod != 0.0 )
+         {
+            totalL1Diff += snapshotPeriod * l1Diff;
+            totalL2Diff += snapshotPeriod * l2Diff * l2Diff;
+         }
+         else
+         {
+            totalL1Diff += l1Diff;
+            totalL2Diff += l2Diff * l2Diff;
+         }
+         totalMaxDiff = max( totalMaxDiff, maxDiff );
+         outputFile << std::setw( 18 ) << l1Diff
+                    << std::setw( 18 ) << l2Diff
+                    << std::setw( 18 ) << maxDiff
+                    << std::setw( 18 ) << totalL1Diff
+                    << std::setw( 18 ) << ::sqrt( totalL2Diff )
+                    << std::setw( 18 ) << totalMaxDiff << std::endl;
 
-      if( writeDifference )
-      {
-         String differenceFileName;
-         differenceFileName = inputFiles[ i ];
-         removeFileExtension( differenceFileName );
-         differenceFileName += ".diff.tnl";
-         //diff.setLike( v1 );
-         diff = v1;
-         diff -= v2;
-         diff.save( differenceFileName );
+         if( writeDifference )
+         {
+            String differenceFileName;
+            differenceFileName = inputFiles[ i ];
+            removeFileExtension( differenceFileName );
+            differenceFileName += ".diff.tnl";
+            //diff.setLike( v1 );
+            diff = v1;
+            diff -= v2;
+            diff.save( differenceFileName );
+         }
       }
    }
    outputFile.close();
