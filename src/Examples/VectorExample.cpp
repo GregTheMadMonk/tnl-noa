@@ -23,5 +23,11 @@ int main()
 
     vector2.reset();
     cout << "Second vector after reset:" << vector2.getData() << endl;
+
+    Containers::Vector<int> vect([1, 2, -3], 3);
+    cout << "The smallest element is:" << vect.min() << endl;
+    cout << "The absolute biggest element is:" << vect.absMax() << endl;
+    cout << "Sum of all vector elements:" << vect.sum() << endl;
+    vect.scalarMultiplication(2);
 }
 

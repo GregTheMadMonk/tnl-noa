@@ -43,6 +43,9 @@ class Grid< 1, Real, Device, Index > : public Object
    // TODO: deprecated and to be removed (GlobalIndexType shall be used instead)
    typedef Index IndexType;
 
+   /**
+    * \brief Returns number of this mesh grid dimensions.
+    */
    static constexpr int getMeshDimension() { return 1; };
 
    template< int EntityDimension,
@@ -53,14 +56,29 @@ class Grid< 1, Real, Device, Index > : public Object
    typedef EntityType< 0 > Face;
    typedef EntityType< 0 > Vertex;
 
+   /**
+    * \brief Basic constructor.
+    */
    Grid();
 
+   /**
+    * \brief Returns type of grid Real (value), Device type and the type of Index.
+    */
    static String getType();
 
+   /**
+    * \brief Returns type of grid Real (value), Device type and the type of Index.
+    */
    String getTypeVirtual() const;
 
+   /**
+    * \brief Returns (host) type of grid Real (value), Device type and the type of Index.
+    */
    static String getSerializationType();
 
+   /**
+    * \brief Returns (host) type of grid Real (value), Device type and the type of Index.
+    */
    virtual String getSerializationTypeVirtual() const;
 
    /**
@@ -96,7 +114,7 @@ class Grid< 1, Real, Device, Index > : public Object
                    const PointType& proportions );
 
    /**
-    * \brief Gets the origin.
+    * \brief Returns the origin.
     * \param origin Starting point of this grid.
     */
    __cuda_callable__
@@ -143,7 +161,7 @@ class Grid< 1, Real, Device, Index > : public Object
    inline Index getEntityIndex( const Entity& entity ) const;
 
    /**
-    * \brief Gets length of one step.
+    * \brief Returns the length of one step.
     */
    __cuda_callable__
    inline const PointType& getSpaceSteps() const;
@@ -154,15 +172,22 @@ class Grid< 1, Real, Device, Index > : public Object
     */
    inline void setSpaceSteps(const PointType& steps);
 
+   /**
+    * \brief Returns product of space steps to the xPow.
+    * \tparam xPow Exponent.
+    */
    template< int xPow >
    __cuda_callable__
    const RealType& getSpaceStepsProducts() const;
 
+   /**
+    * \breif Returns the measure (length) of a cell in this grid.
+    */
    __cuda_callable__
    inline const RealType& getCellMeasure() const;
 
    /**
-    * \brief Gets the smallest length of step out of all coordinates.
+    * \brief Returns the smallest length of step out of all coordinates (axes).
     */
    __cuda_callable__
    inline RealType getSmallestSpaceStep() const;
