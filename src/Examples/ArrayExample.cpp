@@ -3,7 +3,7 @@
 
 using namespace TNL;
 using namespace std;
-       
+
 int main()
 {
     Containers::Array<int> array1;
@@ -21,7 +21,7 @@ int main()
     cout << "Second array:" << array2.getData() << endl;
 
     array2.reset();
-    cout << "2.array after reset:" << array2.getData() << endl;
+    cout << "Second array after reset:" << array2.getData() << endl;
 
     // bind
 }

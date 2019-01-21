@@ -17,6 +17,9 @@ namespace Containers {
 
 /**
  * \brief Class for storing vector elements and handling vector operations.
+ *
+ * \par Example
+ * \include VectorExample.cpp
  */
 template< typename Real = double,
           typename Device = Devices::Host,
