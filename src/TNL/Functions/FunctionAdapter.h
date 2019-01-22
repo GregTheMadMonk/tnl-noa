@@ -45,11 +45,11 @@ class FunctionAdapter
          return function.setup( meshPointer, parameters, prefix );
       }
       
-      template< typename EntityType, typename TimeReal = RealType >
+      template< typename EntityType >
       __cuda_callable__ inline
       static RealType getValue( const FunctionType& function,
                                 const EntityType& meshEntity,
-                                const TimeReal& time )
+                                const RealType& time )
       {
          return function( meshEntity, time );
       }
