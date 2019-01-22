@@ -82,20 +82,17 @@ class Grid< 1, Real, Device, Index > : public Object
    virtual String getSerializationTypeVirtual() const;
 
    /**
-    * \brief Sets the number of dimensions.
-    * \param xSize Number of dimensions.
+    * \brief Sets the size of dimensions.
+    * \param xSize Size of dimesion x.
     */
    void setDimensions( const Index xSize );
 
    /**
     * \brief Sets the number of dimensions.
-    * \param xSize Number of dimensions.
+    * \param dimensions Number of dimensions.
     */
    void setDimensions( const CoordinatesType& dimensions );
 
-   /**
-    * \brief Returns number of dimensions of entities in this grid.
-    */
    __cuda_callable__
    const CoordinatesType& getDimensions() const;
 
@@ -206,8 +203,8 @@ class Grid< 1, Real, Device, Index > : public Object
    
    DistributedMeshType * getDistributedMesh() const;
 
-   /****
-    *  Method for saving the object to a file as a binary data
+   /**
+    * \brief Method for saving the object to a file as a binary data
     */
    bool save( File& file ) const;
 
