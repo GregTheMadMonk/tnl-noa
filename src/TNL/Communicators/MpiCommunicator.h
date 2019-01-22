@@ -526,14 +526,29 @@ struct MPITypeResolver
 {
     static inline MPI_Datatype getType()
     {
-        TNL_ASSERT_TRUE(false, "Fatal Error - Unknown MPI Type");
-        return MPI_INT;
+      switch( sizeof( Type ) )
+      {
+         case sizeof( char ):
+            return MPI_CHAR;
+         case sizeof( int ):
+            return MPI_INT;
+         case sizeof( short int ):
+            return MPI_SHORT;
+         case sizeof( long int ):
+            return MPI_LONG;
+      }
+      TNL_ASSERT_TRUE(false, "Fatal Error - Unknown MPI Type");
     };
 };
 
 template<> struct MPITypeResolver< char >
 {
     static inline MPI_Datatype getType(){return MPI_CHAR;};
+};
+
+template<> struct MPITypeResolver< int >
+{
+    static inline MPI_Datatype getType(){return MPI_INT;};
 };
 
 template<> struct MPITypeResolver< short int >
