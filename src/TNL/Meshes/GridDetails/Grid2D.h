@@ -119,11 +119,18 @@ class Grid< 2, Real, Device, Index > : public Object
    __cuda_callable__
    inline const PointType& getProportions() const;
 
-
+   /**
+    * \brief Gets number of entities in this grid.
+    * \tparam EntityDimension Integer specifying dimension of the entity.
+    */
    template< int EntityDimension >
    __cuda_callable__
    IndexType getEntitiesCount() const;
 
+   /**
+    * \brief Gets number of entities in this grid.
+    * \tparam Entity Type of the entity.
+    */
    template< typename Entity >
    __cuda_callable__
    inline IndexType getEntitiesCount() const;
@@ -154,7 +161,9 @@ class Grid< 2, Real, Device, Index > : public Object
    inline void setSpaceSteps(const PointType& steps);
 
    /**
-    * \brief See Grid1D::getSpaceStepsProducts().
+    * \brief Returns product of space steps to the xPow.
+    * \tparam xPow Exponent for dimension x.
+    * \tparam yPow Exponent for dimension y.
     */
    template< int xPow, int yPow >
    __cuda_callable__

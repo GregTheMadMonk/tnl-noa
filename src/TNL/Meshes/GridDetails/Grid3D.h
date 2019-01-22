@@ -53,68 +53,137 @@ class Grid< 3, Real, Device, Index > : public Object
    typedef EntityType< 1 > Edge;
    typedef EntityType< 0 > Vertex;
 
+   /**
+    * \brief See Grid1D::Grid().
+    */
    Grid();
 
+   /**
+    * \brief See Grid1D::getType().
+    */
    static String getType();
 
+   /**
+    * \brief See Grid1D::getTypeVirtual().
+    */
    String getTypeVirtual() const;
 
+   /**
+    * \brief See Grid1D::getSerializationType().
+    */
    static String getSerializationType();
 
+   /**
+    * \brief See Grid1D::getSerializationTypeVirtual().
+    */
    virtual String getSerializationTypeVirtual() const;
 
+   /**
+    * \brief Sets the size of dimensions.
+    * \param xSize Size of dimesion x.
+    * \param ySize Size of dimesion y.
+    * \param zSize Size of dimesion z.
+    */
    void setDimensions( const Index xSize, const Index ySize, const Index zSize );
 
+   /**
+    * \brief See Grid1D::setDimensions( const CoordinatesType& dimensions ).
+    */
    void setDimensions( const CoordinatesType& );
 
+   /**
+    * \brief See Grid1D::getDimensions().
+    */
    __cuda_callable__
    const CoordinatesType& getDimensions() const;
 
+   /**
+    * \brief See Grid1D::setDomain().
+    */
    void setDomain( const PointType& origin,
                    const PointType& proportions );
-   
+
+   /**
+    * \brief See Grid1D::setOrigin()
+    */
    void setOrigin( const PointType& origin);
-   
+
+   /**
+    * \brief See Grid1D::getOrigin().
+    */
    __cuda_callable__
    inline const PointType& getOrigin() const;
 
+   /**
+    * \brief See Grid1D::getProportions().
+    */
    __cuda_callable__
    inline const PointType& getProportions() const;
 
-
+   /**
+    * \brief Gets number of entities in this grid.
+    * \tparam EntityDimension Integer specifying dimension of the entity.
+    */
    template< int EntityDimension >
    __cuda_callable__
    IndexType getEntitiesCount() const;
 
+   /**
+    * \brief Gets number of entities in this grid.
+    * \tparam Entity Type of the entity.
+    */
    template< typename Entity >
    __cuda_callable__
    IndexType getEntitiesCount() const;
 
+   /**
+    * \brief See Grid1D::getEntity().
+    */
    template< typename Entity >
    __cuda_callable__
    inline Entity getEntity( const IndexType& entityIndex ) const;
 
+   /**
+    * \brief See Grid1D::getEntityIndex().
+    */
    template< typename Entity >
    __cuda_callable__
    inline Index getEntityIndex( const Entity& entity ) const;
 
+   /**
+    * \brief See Grid1D::getSpaceSteps().
+    */
    __cuda_callable__
    inline const PointType& getSpaceSteps() const;
 
+   /**
+    * \brief See Grid1D::setSpaceSteps().
+    */
    inline void setSpaceSteps(const PointType& steps);
    
    void setDistMesh(DistributedMeshType * distGrid);
    
    DistributedMeshType * getDistributedMesh(void) const;
-   
+
+   /**
+    * \brief Returns product of space steps to the xPow.
+    * \tparam xPow Exponent for dimension x.
+    * \tparam yPow Exponent for dimension y.
+    * \tparam zPow Exponent for dimension z.
+    */
    template< int xPow, int yPow, int zPow >
    __cuda_callable__
    const RealType& getSpaceStepsProducts() const;
 
+   /**
+    * \breif Returns the measure (volume) of a cell in this grid.
+    */
    __cuda_callable__
    inline const RealType& getCellMeasure() const;
 
-
+   /**
+    * \brief See Grid1D::getSmallestSpaceStep().
+    */
    __cuda_callable__
    RealType getSmallestSpaceStep() const;
 
@@ -134,14 +203,24 @@ class Grid< 3, Real, Device, Index > : public Object
                                                         const GridFunction& f2,
                                                         const typename GridFunction::RealType& p ) const;
 
-   //! Method for saving the object to a file as a binary data
+   /**
+    * \brief See Grid1D::save( File& file ) const.
+    */
    bool save( File& file ) const;
 
-   //! Method for restoring the object from a file
+   /**
+    * \brief See Grid1D::load( File& file ).
+    */
    bool load( File& file );
 
+   /**
+    * \brief See Grid1D::save( const String& fileName ) const.
+    */
    bool save( const String& fileName ) const;
 
+   /**
+    * \brief See Grid1D::load( const String& fileName ).
+    */
    bool load( const String& fileName );
 
    void writeProlog( Logger& logger ) const;
