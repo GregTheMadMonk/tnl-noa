@@ -333,27 +333,27 @@ class DistributedGridIO_MPIIOBase
 	static bool load(const String& fileName,MeshFunctionType &meshFunction, RealType* data )
 	{
 		auto *distrGrid=meshFunction.getMesh().getDistributedMesh();
-        if(distrGrid==NULL) //not distributed
-        {
-            return meshFunction.boundLoad(fileName);
-        }
+      if(distrGrid==NULL) //not distributed
+      {
+         return meshFunction.boundLoad(fileName);
+      }
 
-        MPI_Comm group=*((MPI_Comm*)(distrGrid->getCommunicationGroup()));
+      MPI_Comm group=*((MPI_Comm*)(distrGrid->getCommunicationGroup()));
 
-        MPI_File file;
-        int ok=MPI_File_open( group,
-                      const_cast< char* >( fileName.getString() ),
-                      MPI_MODE_RDONLY,
-                      MPI_INFO_NULL,
-                      &file );
-        TNL_ASSERT_EQ(ok,0,"Open file falied");
+      MPI_File file;
+      if( MPI_File_open( group,
+            const_cast< char* >( fileName.getString() ),
+            MPI_MODE_RDONLY,
+            MPI_INFO_NULL,
+            &file ) != 0 )
+      {
+         std::cerr << "Unable to open file " << fileName.getString() << std::endl;
+         return false;
+      }
+		bool ret= load(file, meshFunction, data,0)>0;
 
-		  bool ret= load(file, meshFunction, data,0)>0;
-
-        MPI_File_close(&file);
-
+      MPI_File_close(&file);
 		return ret;
-
 	}
             
     /* Funky bomb - no checks - only dirty load */
