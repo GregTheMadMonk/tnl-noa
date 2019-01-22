@@ -427,7 +427,7 @@ operator += ( const Function& f )
 {
    Pointers::DevicePointer< ThisType > thisDevicePtr( *this );
    Pointers::DevicePointer< typename std::add_const< Function >::type > fDevicePtr( f );
-   MeshFunctionEvaluator< ThisType, Function >::evaluate( thisDevicePtr, fDevicePtr, 1.0, 1.0 );
+   MeshFunctionEvaluator< ThisType, Function >::evaluate( thisDevicePtr, fDevicePtr, ( RealType ) 1.0, ( RealType ) 1.0 );
    return *this;
 }
 
@@ -441,7 +441,7 @@ operator -= ( const Function& f )
 {
    Pointers::DevicePointer< ThisType > thisDevicePtr( *this );
    Pointers::DevicePointer< typename std::add_const< Function >::type > fDevicePtr( f );
-   MeshFunctionEvaluator< ThisType, Function >::evaluate( thisDevicePtr, fDevicePtr, 1.0, -1.0 );
+   MeshFunctionEvaluator< ThisType, Function >::evaluate( thisDevicePtr, fDevicePtr, ( RealType ) 1.0, ( RealType ) -1.0 );
    return *this;
 }
 
