@@ -43,6 +43,9 @@ class Grid< 1, Real, Device, Index > : public Object
    // TODO: deprecated and to be removed (GlobalIndexType shall be used instead)
    typedef Index IndexType;
 
+   /**
+    * \brief Returns number of this mesh grid dimensions.
+    */
    static constexpr int getMeshDimension() { return 1; };
 
    template< int EntityDimension,
@@ -53,63 +56,136 @@ class Grid< 1, Real, Device, Index > : public Object
    typedef EntityType< 0 > Face;
    typedef EntityType< 0 > Vertex;
 
+   /**
+    * \brief Basic constructor.
+    */
    Grid();
 
+   /**
+    * \brief Returns type of grid Real (value), Device type and the type of Index.
+    */
    static String getType();
 
+   /**
+    * \brief Returns type of grid Real (value), Device type and the type of Index.
+    */
    String getTypeVirtual() const;
 
+   /**
+    * \brief Returns (host) type of grid Real (value), Device type and the type of Index.
+    */
    static String getSerializationType();
 
+   /**
+    * \brief Returns (host) type of grid Real (value), Device type and the type of Index.
+    */
    virtual String getSerializationTypeVirtual() const;
 
+   /**
+    * \brief Sets the size of dimensions.
+    * \param xSize Size of dimesion x.
+    */
    void setDimensions( const Index xSize );
 
+   /**
+    * \brief Sets the number of dimensions.
+    * \param dimensions Number of dimensions.
+    */
    void setDimensions( const CoordinatesType& dimensions );
 
    __cuda_callable__
    const CoordinatesType& getDimensions() const;
- 
+
+   /**
+    * \brief Sets the origin.
+    * \param origin Starting point of this grid.
+    */
    void setOrigin( const PointType& origin);
 
+   /**
+    * \brief Sets the origin and proportions of this grid.
+    * \param origin Point where this grid starts.
+    * \param proportions Total length of this grid.
+    */
    void setDomain( const PointType& origin,
                    const PointType& proportions );
 
-
+   /**
+    * \brief Returns the origin.
+    * \param origin Starting point of this grid.
+    */
    __cuda_callable__
    inline const PointType& getOrigin() const;
 
+   /**
+    * \brief Gets length of one entity of this grid.
+    */
    __cuda_callable__
    inline const PointType& getProportions() const;
- 
+
+   /**
+    * \brief Gets number of entities in this grid.
+    * \tparam EntityDimension Integer specifying dimension of the entity.
+    */
    template< int EntityDimension >
    __cuda_callable__
    IndexType getEntitiesCount() const;
 
+   /**
+    * \brief Gets number of entities in this grid.
+    * \tparam Entity Type of the entity.
+    */
    template< typename Entity >
    __cuda_callable__
    IndexType getEntitiesCount() const;
 
+   /**
+    * \brief Gets entity type using entity index.
+    * \param entityIndex Index of entity.
+    * \tparam Entity Type of the entity.
+    */
    template< typename Entity >
    __cuda_callable__
    inline Entity getEntity( const IndexType& entityIndex ) const;
 
+    /**
+    * \brief Gets entity index using entity type.
+    * \param entity Type of entity.
+    * \tparam Entity Type of the entity.
+    */
    template< typename Entity >
    __cuda_callable__
    inline Index getEntityIndex( const Entity& entity ) const;
 
+   /**
+    * \brief Returns the length of one step.
+    */
    __cuda_callable__
    inline const PointType& getSpaceSteps() const;
 
+   /**
+    * \brief Sets the length of steps.
+    * \param steps Length of one step.
+    */
    inline void setSpaceSteps(const PointType& steps);
 
+   /**
+    * \brief Returns product of space steps to the xPow.
+    * \tparam xPow Exponent.
+    */
    template< int xPow >
    __cuda_callable__
    const RealType& getSpaceStepsProducts() const;
 
+   /**
+    * \breif Returns the measure (length) of a cell in this grid.
+    */
    __cuda_callable__
    inline const RealType& getCellMeasure() const;
 
+   /**
+    * \brief Returns the smallest length of step out of all coordinates (axes).
+    */
    __cuda_callable__
    inline RealType getSmallestSpaceStep() const;
 
@@ -127,18 +203,24 @@ class Grid< 1, Real, Device, Index > : public Object
    
    DistributedMeshType * getDistributedMesh() const;
 
-   /****
-    *  Method for saving the object to a file as a binary data
+   /**
+    * \brief Method for saving the object to a file as a binary data
     */
    bool save( File& file ) const;
 
-   /****
-    *  Method for restoring the object from a file
+   /**
+    * \brief Method for restoring the object from a file.
     */
    bool load( File& file );
 
+   /**
+    * \brief Method for saving the object to a file.
+    */
    bool save( const String& fileName ) const;
 
+   /**
+    * \brief Method for restoring the object from a file.
+    */
    bool load( const String& fileName );
 
    void writeProlog( Logger& logger ) const;

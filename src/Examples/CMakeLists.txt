@@ -18,6 +18,9 @@ add_subdirectory( flow-vl )
 #add_subdirectory( fast-sweeping-map )
 #add_subdirectory( narrow-band )
 
+ADD_EXECUTABLE( ArrayExample ArrayExample.cpp )
+target_link_libraries( ArrayExample tnl )
+
 ADD_EXECUTABLE( ConfigDescriptionExample ConfigDescriptionExample.cpp )
 target_link_libraries( ConfigDescriptionExample tnl )
 
@@ -33,6 +36,9 @@ target_link_libraries( LoggerExample tnl )
 ADD_EXECUTABLE( MathExample MathExample.cpp )
 target_link_libraries( MathExample tnl )
 
+ADD_EXECUTABLE( ParameterContainerExample ParameterContainerExample.cpp )
+target_link_libraries( ParameterContainerExample tnl )
+
 ADD_EXECUTABLE( StringExample StringExample.cpp )
 target_link_libraries( StringExample tnl )
 
@@ -47,3 +53,6 @@ target_link_libraries( StringExampleSetSize tnl )
 
 ADD_EXECUTABLE( TimerExample TimerExample.cpp )
 target_link_libraries( TimerExample tnl )
+
+ADD_EXECUTABLE( VectorExample VectorExample.cpp )
+target_link_libraries( VectorExample tnl )

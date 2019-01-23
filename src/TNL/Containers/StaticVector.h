@@ -16,6 +16,12 @@
 namespace TNL {
 namespace Containers {   
 
+ /**
+ * \brief Vector with constant size.
+ *
+ * \param Size Size of static vector. Number of its elements.
+ * \param Real Type of the values in the static vector.
+ */
 template< int Size, typename Real = double >
 class StaticVector : public StaticArray< Size, Real >
 {
@@ -24,79 +30,193 @@ class StaticVector : public StaticArray< Size, Real >
    typedef StaticVector< Size, Real > ThisType;
    enum { size = Size };
 
+   /**
+    * \brief Basic constructor.
+    *
+    * Constructs an empty static vector.
+    */
    __cuda_callable__
    StaticVector();
 
+   /**
+    * \brief Constructor that sets all vector components (with the number of \e Size) to value \e v.
+    *
+    * Once this static array is constructed, its size can not be changed.
+    * \tparam _unused
+    * \param v[Size]
+    */
    // Note: the template avoids ambiguity of overloaded functions with literal 0 and pointer
    // reference: https://stackoverflow.com/q/4610503
    template< typename _unused = void >
    __cuda_callable__
    StaticVector( const Real v[ Size ] );
 
-   //! This sets all vector components to v
+   /**
+    * \brief Constructor that sets all vector components to value \e v.
+    *
+    * \param v Reference to a value.
+    */
    __cuda_callable__
    StaticVector( const Real& v );
 
-   //! Copy constructor
+   /**
+    * \brief Copy constructor.
+    *
+    * Constructs a copy of another static vector \e v.
+    */
    __cuda_callable__
    StaticVector( const StaticVector< Size, Real >& v );
 
+   /**
+    * \brief Sets up a new (vector) parameter which means it can have more elements.
+    *
+    * @param parameters Reference to a parameter container where the new parameter is saved.
+    * @param prefix Name of now parameter/prefix.
+    */
    bool setup( const Config::ParameterContainer& parameters,
                const String& prefix = "" );      
 
+   /**
+    * \brief Gets type of this vector.
+    */
    static String getType();
 
-   //! Adding operator
+   /**
+    * \brief Adding operator.
+    *
+    * This function adds \e vector from this static vector and returns the resulting static vector.
+    * The addition is applied to all the vector elements separately.
+    * \param vector Reference to another vector.
+    */
    __cuda_callable__
    StaticVector& operator += ( const StaticVector& v );
 
-   //! Subtracting operator
+   /**
+    * \brief Subtracting operator.
+    *
+    * This function subtracts \e vector from this static vector and returns the resulting static vector.
+    * The subtraction is applied to all the vector elements separately.
+    * \param vector Reference to another vector.
+    */
    __cuda_callable__
    StaticVector& operator -= ( const StaticVector& v );
 
-   //! Multiplication with number
+   /**
+    * \brief Multiplication by number.
+    *
+    * This function multiplies this static vector by \e c and returns the resulting static vector.
+    * The multiplication is applied to all the vector elements separately.
+    * \param c Multiplicator.
+    */
    __cuda_callable__
    StaticVector& operator *= ( const Real& c );
    
-   //! Division by number
+   /**
+    * \brief Division by number
+    *
+    * This function divides this static veSize of static array. Number of its elements.ctor by \e c and returns the resulting static vector.
+    * The division is applied to all the vector elements separately.
+    * \param c Divisor.
+    */
    __cuda_callable__
    StaticVector& operator /= ( const Real& c );
    
-   //! Addition operator
+   /**
+    * \brief Addition operator.
+    *
+    * This function adds static vector \e u to this static vector and returns the resulting static vector.
+    * The addition is applied to all the vector elements separately.
+    * \param u Reference to another static vector.
+    */
    __cuda_callable__
    StaticVector operator + ( const StaticVector& u ) const;
 
-   //! Subtraction operator
+   /**
+    * \brief Subtraction operator.
+    *
+    * This function subtracts static vector \e u from this static vector and returns the resulting static vector.
+    * The subtraction is applied to all the vector elements separately.
+    * \param u Reference to another static vector.
+    */
    __cuda_callable__
    StaticVector operator - ( const StaticVector& u ) const;
 
-   //! Multiplication with number
+   /**
+    * \brief Multiplication by number.
+    *
+    * This function multipies this static vector by \e c and returns the resulting static vector.
+    * The addition is applied to all the vector elements separately.
+    * \param c Multiplicator.
+    */
    __cuda_callable__
    StaticVector operator * ( const Real& c ) const;
 
-   //! Scalar product
+   /**
+    * \brief Computes scalar (dot) product.
+    *
+    * An algebraic operation that takes two equal-length vectors and returns a single number.
+    *
+    * \param u Reference to another static vector of the same size as this static vector.
+    */
    __cuda_callable__
    Real operator * ( const StaticVector& u ) const;
 
+   /**
+    * \brief Compares this static vector with static vector \e v.
+    *
+    * Returns \e true if this static vector is smaller then static vector \e v.
+    * \param v Another static vector.
+    */
    __cuda_callable__
    bool operator < ( const StaticVector& v ) const;
 
+   /**
+    * \brief Compares this static vector with static vector \e v.
+    *
+    * Returns \e true if this static vector is smaller then or equal to static vector \e v.
+    * \param v Another static vector.
+    */
    __cuda_callable__
    bool operator <= ( const StaticVector& v ) const;
 
+   /**
+    * \brief Compares this static vector with static vector \e v.
+    *
+    * Returns \e true if this static vector is greater then static vector \e v.
+    * \param v Another static vector.
+    */
    __cuda_callable__
    bool operator > ( const StaticVector& v ) const;
 
+   /**
+    * \brief Compares this static vector with static vector \e v.
+    *
+    * Returns \e true if this static vector is greater then or equal to static vector \e v.
+    * \param v Another static vector.
+    */
    __cuda_callable__
    bool operator >= ( const StaticVector& v ) const;
 
+   /**
+    * \brief Changes the type of static vector to \e OtherReal while the size remains the same.
+    *
+    * \tparam OtherReal Other type of the static vector values.
+    */
    template< typename OtherReal >
    __cuda_callable__
    operator StaticVector< Size, OtherReal >() const;
 
+   /**
+    * \brief Returns static vector with all elements in absolute value.
+    */
    __cuda_callable__
    ThisType abs() const;
 
+   /**
+    * \brief Returns the length of this vector in p-dimensional vector space.
+    *
+    * \param p Number specifying the dimension of vector space.
+    */
    __cuda_callable__
    Real lpNorm( const Real& p ) const;
 
@@ -118,6 +238,9 @@ class StaticVector : public StaticArray< Size, Real >
 #endif
 };
 
+/**
+ * \brief Specific static vector with the size of 1. Works like the class StaticVector.
+ */
 template< typename Real >
 class StaticVector< 1, Real > : public StaticArray< 1, Real >
 {
@@ -126,79 +249,88 @@ class StaticVector< 1, Real > : public StaticArray< 1, Real >
    typedef StaticVector< 1, Real > ThisType;
    enum { size = 1 };
 
+   /** \brief See StaticVector::StaticVector().*/
    __cuda_callable__
    StaticVector();
 
+   /** \brief See StaticVector::StaticVector(const Real v[Size]).*/
    // Note: the template avoids ambiguity of overloaded functions with literal 0 and pointer
    // reference: https://stackoverflow.com/q/4610503
    template< typename _unused = void >
    __cuda_callable__
    StaticVector( const Real v[ 1 ] );
 
-   //! This sets all vector components to v
+   /** \brief See StaticVector::StaticVector( const Real& v ).*/
    __cuda_callable__
    StaticVector( const Real& v );
 
-   //! Copy constructor
+   /** \brief See StaticVector::StaticVector( const StaticVector< Size, Real >& v ).*/
    __cuda_callable__
    StaticVector( const StaticVector< 1, Real >& v );
    
    bool setup( const Config::ParameterContainer& parameters,
                const String& prefix = "" );      
 
+   /** \brief See StaticVector::getType().*/
    static String getType();
 
-   //! Addition operator
+   /** \brief See StaticVector::operator += ( const StaticVector& v ).*/
    __cuda_callable__
    StaticVector& operator += ( const StaticVector& v );
 
-   //! Subtraction operator
+   /** \brief See StaticVector::operator -= ( const StaticVector& v ).*/
    __cuda_callable__
    StaticVector& operator -= ( const StaticVector& v );
 
-   //! Multiplication with number
+   /** \brief See StaticVector::operator *= ( const Real& c ).*/
    __cuda_callable__
    StaticVector& operator *= ( const Real& c );
    
-   //! Division by number
+   /** \brief See StaticVector::operator /= ( const Real& c ).*/
    __cuda_callable__
    StaticVector& operator /= ( const Real& c );   
 
-   //! Addition operator
+   /** \brief See StaticVector::operator + ( const StaticVector& u ) const.*/
    __cuda_callable__
    StaticVector operator + ( const StaticVector& u ) const;
 
-   //! Subtraction operator
+   /** \brief See StaticVector::operator - ( const StaticVector& u ) const.*/
    __cuda_callable__
    StaticVector operator - ( const StaticVector& u ) const;
 
-   //! Multiplication with number
+   /** \brief See StaticVector::operator * ( const Real& c ) const.*/
    __cuda_callable__
    StaticVector operator * ( const Real& c ) const;
 
-   //! Scalar product
+   /** \brief See StaticVector::operator * ( const StaticVector& u ) const.*/
    __cuda_callable__
    Real operator * ( const StaticVector& u ) const;
 
+   /** \brief See StaticVector::operator <.*/
    __cuda_callable__
    bool operator < ( const StaticVector& v ) const;
 
+   /** \brief See StaticVector::operator <=.*/
    __cuda_callable__
    bool operator <= ( const StaticVector& v ) const;
 
+   /** \brief See StaticVector::operator <.*/
    __cuda_callable__
    bool operator > ( const StaticVector& v ) const;
 
+   /** \brief See StaticVector::operator <=.*/
    __cuda_callable__
    bool operator >= ( const StaticVector& v ) const;
 
    template< typename OtherReal >
    __cuda_callable__
    operator StaticVector< 1, OtherReal >() const;
- 
+
+   /** \brief See StaticVector::abs() const.*/
    __cuda_callable__
    ThisType abs() const;
 
+   /** \brief See StaticVector::lpNorm( const Real& p ) const.*/
    __cuda_callable__
    Real lpNorm( const Real& p ) const;   
 
@@ -220,6 +352,9 @@ class StaticVector< 1, Real > : public StaticArray< 1, Real >
 #endif
 };
 
+/**
+ * \brief Specific static vector with the size of 2. Works like the class StaticVector.
+ */
 template< typename Real >
 class StaticVector< 2, Real > : public StaticArray< 2, Real >
 {
@@ -228,82 +363,97 @@ class StaticVector< 2, Real > : public StaticArray< 2, Real >
    typedef StaticVector< 2, Real > ThisType;
    enum { size = 2 };
 
+   /** \brief See StaticVector::StaticVector().*/
    __cuda_callable__
    StaticVector();
 
+   /** \brief See StaticVector::StaticVector(const Real v[Size]).*/
    // Note: the template avoids ambiguity of overloaded functions with literal 0 and pointer
    // reference: https://stackoverflow.com/q/4610503
    template< typename _unused = void >
    __cuda_callable__
    StaticVector( const Real v[ 2 ] );
 
-   //! This sets all vector components to v
+   /** \brief See StaticVector::StaticVector( const Real& v ).*/
    __cuda_callable__
    StaticVector( const Real& v );
 
+   /**
+    * \brief Constructor that sets the two static vector components to value \e v1 and \e v2.
+    *
+    * \param v1 Reference to the value of first vector component.
+    * \param v2 Reference to the value of second vector component.
+    */
    __cuda_callable__
    StaticVector( const Real& v1, const Real& v2 );
 
-   //! Copy constructor
+   /** \brief See StaticVector::StaticVector( const StaticVector< Size, Real >& v ).*/
    __cuda_callable__
    StaticVector( const StaticVector< 2, Real >& v );
    
    bool setup( const Config::ParameterContainer& parameters,
                const String& prefix = "" );      
 
+   /** \brief See StaticVector::getType().*/
    static String getType();
 
-   //! Adding operator
+   /** \brief See StaticVector::operator += ( const StaticVector& v ).*/
    __cuda_callable__
    StaticVector& operator += ( const StaticVector& v );
 
-   //! Subtracting operator
+   /** \brief See StaticVector::operator -= ( const StaticVector& v ).*/
    __cuda_callable__
    StaticVector& operator -= ( const StaticVector& v );
 
-   //! Multiplication with number
+   /** \brief See StaticVector::operator *= ( const Real& c ).*/
    __cuda_callable__
    StaticVector& operator *= ( const Real& c );
 
-   //! Division by number
+   /** \brief See StaticVector::operator /= ( const Real& c ).*/
    __cuda_callable__
    StaticVector& operator /= ( const Real& c );   
 
-   //! Adding operator
+   /** \brief See StaticVector::operator + ( const StaticVector& u ) const.*/
    __cuda_callable__
    StaticVector operator + ( const StaticVector& u ) const;
 
-   //! Subtracting operator
+   /** \brief See StaticVector::operator - ( const StaticVector& u ) const.*/
    __cuda_callable__
    StaticVector operator - ( const StaticVector& u ) const;
 
-   //! Multiplication with number
+   /** \brief See StaticVector::operator * ( const Real& c ) const.*/
    __cuda_callable__
    StaticVector operator * ( const Real& c ) const;
 
-   //! Scalar product
+   /** \brief See StaticVector::operator * ( const StaticVector& u ) const.*/
    __cuda_callable__
    Real operator * ( const StaticVector& u ) const;
 
+   /** \brief See StaticVector::operator <.*/
    __cuda_callable__
    bool operator < ( const StaticVector& v ) const;
 
+   /** \brief See StaticVector::operator <=.*/
    __cuda_callable__
    bool operator <= ( const StaticVector& v ) const;
 
+   /** \brief See StaticVector::operator >.*/
    __cuda_callable__
    bool operator > ( const StaticVector& v ) const;
 
+   /** \brief See StaticVector::operator >=.*/
    __cuda_callable__
    bool operator >= ( const StaticVector& v ) const;
  
    template< typename OtherReal >
    __cuda_callable__
    operator StaticVector< 2, OtherReal >() const;
- 
+
+   /** \brief See StaticVector::abs() const.*/
    __cuda_callable__
    ThisType abs() const;
 
+   /** \brief See StaticVector::lpNorm( const Real& p ) const.*/
    __cuda_callable__
    Real lpNorm( const Real& p ) const;   
 
@@ -325,6 +475,9 @@ class StaticVector< 2, Real > : public StaticArray< 2, Real >
 #endif
 };
 
+/**
+ * \brief Specific static vector with the size of 3. Works like the class StaticVector.
+ */
 template< typename Real >
 class StaticVector< 3, Real > : public StaticArray< 3, Real >
 {
@@ -333,83 +486,98 @@ class StaticVector< 3, Real > : public StaticArray< 3, Real >
    typedef StaticVector< 3, Real > ThisType;
    enum { size = 3 };
 
+   /** \brief See StaticVector::StaticVector().*/
    __cuda_callable__
    StaticVector();
 
+   /** \brief See StaticVector::StaticVector(const Real v[Size]).*/
    // Note: the template avoids ambiguity of overloaded functions with literal 0 and pointer
    // reference: https://stackoverflow.com/q/4610503
    template< typename _unused = void >
    __cuda_callable__
    StaticVector( const Real v[ 3 ] );
 
-   //! This sets all vector components to v
+   /** \brief See StaticVector::StaticVector( const Real& v ).*/
    __cuda_callable__
    StaticVector( const Real& v );
 
+   /**
+    * \brief Constructor that sets the three static vector components to value \e v1 \e v2 and \e v3.
+    *
+    * \param v1 Reference to the value of first vector component.
+    * \param v2 Reference to the value of second vector component.
+    * \param v3 Reference to the value of third vector component.
+    */
    __cuda_callable__
    StaticVector( const Real& v1, const Real& v2, const Real& v3 );
 
-   //! Copy constructor
+   /** \brief See StaticVector::StaticVector( const StaticVector< Size, Real >& v ).*/
    __cuda_callable__
    StaticVector( const StaticVector< 3, Real >& v );
    
    bool setup( const Config::ParameterContainer& parameters,
                const String& prefix = "" );      
 
+   /** \brief See StaticVector::getType().*/
    static String getType();
 
-   //! Addition operator
+   /** \brief See StaticVector::operator += ( const StaticVector& v ).*/
    __cuda_callable__
    StaticVector& operator += ( const StaticVector& v );
 
-   //! Subtraction operator
+   /** \brief See StaticVector::operator -= ( const StaticVector& v ).*/
    __cuda_callable__
    StaticVector& operator -= ( const StaticVector& v );
 
-   //! Multiplication with number
+   /** \brief See StaticVector::operator *= ( const Real& c ).*/
    __cuda_callable__
    StaticVector& operator *= ( const Real& c );
    
-   //! Division by number
+   /** \brief See StaticVector::operator /= ( const Real& c ).*/
    __cuda_callable__
    StaticVector& operator /= ( const Real& c );
    
-
-   //! Addition operator
+   /** \brief See StaticVector::operator + ( const StaticVector& u ) const.*/
    __cuda_callable__
    StaticVector operator + ( const StaticVector& u ) const;
 
-   //! Subtraction operator
+   /** \brief See StaticVector::operator - ( const StaticVector& u ) const.*/
    __cuda_callable__
    StaticVector operator - ( const StaticVector& u ) const;
 
-   //! Multiplication with number
+   /** \brief See StaticVector::operator * ( const Real& c ) const.*/
    __cuda_callable__
    StaticVector operator * ( const Real& c ) const;
 
-   //! Scalar product
+   /** \brief See StaticVector::operator * ( const StaticVector& u ) const.*/
    __cuda_callable__
    Real operator * ( const StaticVector& u ) const;
 
+   /** \brief See StaticVector::operator <.*/
    __cuda_callable__
    bool operator < ( const StaticVector& v ) const;
 
+   /** \brief See StaticVector::operator <=.*/
    __cuda_callable__
    bool operator <= ( const StaticVector& v ) const;
 
+   /** \brief See StaticVector::operator >.*/
    __cuda_callable__
    bool operator > ( const StaticVector& v ) const;
 
+   /** \brief See StaticVector::operator >=.*/
    __cuda_callable__
    bool operator >= ( const StaticVector& v ) const;
 
    template< typename OtherReal >
    __cuda_callable__
    operator StaticVector< 3, OtherReal >() const;
- 
+
+   /** \brief See StaticVector::abs() const.*/
    __cuda_callable__
    ThisType abs() const;
 
+   /** \brief See StaticVector::lpNorm( const Real& p ) const.*/
    __cuda_callable__
    Real lpNorm( const Real& p ) const;   
 

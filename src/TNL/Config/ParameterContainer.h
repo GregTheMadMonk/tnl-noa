@@ -92,6 +92,9 @@ class ParameterContainer
     * \param name Name of parameter.
     * \param value Value of type T we want to check whether is assigned to the parameter.
     * \param verbose Boolean value defining whether to show error message (when true) or not (when false).
+    *
+    * \par Example
+    * \include ParameterContainerExample.cpp
     */
    template< class T > bool getParameter( const String& name,
                                           T& value,

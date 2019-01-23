@@ -20,11 +20,14 @@ namespace Containers {
 template< int, typename > class StaticArray;
 
 /**
- * Array handles memory allocation and sharing of the same data between more Arrays.
+ * \brief Array handles memory allocation and sharing of the same data between more Arrays.
  *
  * \tparam Value Type of array values.
  * \tparam Device Device type.
  * \tparam Index Type of index.
+ *
+ * \par Example
+ * \include ArrayExample.cpp
  */
 template< typename Value,
           typename Device = Devices::Host,
@@ -55,7 +58,7 @@ class Array : public Object
       /**
        * \brief Constructor with data and size.
        *
-       * \param data
+       * \param data Pointer to data.
        * \param size Number of array elements.
        */
       Array( Value* data,
@@ -73,16 +76,16 @@ class Array : public Object
              const IndexType& begin = 0,
              const IndexType& size = 0 );
 
-      /** \brief Returns type of array value, device type and the type of index. */
+      /** \brief Returns type of array Value, Device type and the type of Index. */
       static String getType();
 
-      /** \brief Returns type of array value, device type and the type of index. */
+      /** \brief Returns type of array Value, Device type and the type of Index. */
       virtual String getTypeVirtual() const;
 
-      /** \brief Returns (host) type of array value, device type and the type of index. */
+      /** \brief Returns (host) type of array Value, Device type and the type of Index. */
       static String getSerializationType();
 
-      /** \brief Returns (host) type of array value, device type and the type of index. */
+      /** \brief Returns (host) type of array Value, Device type and the type of Index. */
       virtual String getSerializationTypeVirtual() const;
 
       /**
@@ -104,19 +107,45 @@ class Array : public Object
        *
        * Sets the same size as the size of existing \e array.
        * \tparam ArrayT Type of array.
-       * \param array Existing array.
+       * \param array Reference to an existing array.
        */
       template< typename ArrayT >
       void setLike( const ArrayT& array );
 
+      /**
+       * \brief Binds \e _data with this array.
+       *
+       * Releases old data and binds this array with new \e _data. Also sets new
+       * \e _size of this array.
+       * @param _data Pointer to new data.
+       * @param _size Size of new _data. Number of elements.
+       */
       void bind( Value* _data,
                  const Index _size );
 
+      /**
+       * \brief Binds this array with another \e array.
+       *
+       * Releases old data and binds this array with new \e array starting at
+       * position \e begin. Also sets new \e size of this array.
+       * \tparam ArrayT Type of array.
+       * \param array Reference to a new array.
+       * \param begin Starting index position.
+       * \param size Size of new array. Number of elements.
+       */
       template< typename ArrayT >
       void bind( const ArrayT& array,
                  const IndexType& begin = 0,
                  const IndexType& size = 0 );
 
+      /**
+       * \brief Binds this array with a static array of size \e Size.
+       *
+       * Releases old data and binds this array with a static array of size \e
+       * Size.
+       * \tparam Size Size of array.
+       * \param array Reference to a static array.
+       */
       template< int Size >
       void bind( StaticArray< Size, Value >& array );
 
@@ -175,37 +204,58 @@ class Array : public Object
        */
       __cuda_callable__ inline const Value& operator[] ( const Index& i ) const;
 
-      /** Assigns \e array to the given array, replacing its current contents. */
+      /**
+       * \brief Assigns \e array to this array, replacing its current contents.
+       *
+       * \param array Reference to an array.
+       */
       Array& operator = ( const Array& array );
 
-      /** Assigns \e array to the given array, replacing its current contents. */
+      /**
+       * \brief Assigns \e array to this array, replacing its current contents.
+       *
+       * \tparam ArrayT Type of array.
+       * \param array Reference to an array.
+       */
       template< typename ArrayT >
       Array& operator = ( const ArrayT& array );
 
-      /** \brief This function checks whether the given array is equal to \e array. */
+      /**
+       * \brief This function checks whether this array is equal to \e array.
+       *
+       * \tparam ArrayT Type of array.
+       * \param array Reference to an array.
+       */
       template< typename ArrayT >
       bool operator == ( const ArrayT& array ) const;
 
-      /** \brief This function checks whether the given array is not equal to \e array. */
+      /**
+       * \brief This function checks whether this array is not equal to \e array.
+       *
+       * \tparam ArrayT Type of array.
+       * \param array Reference to an array.
+       */
       template< typename ArrayT >
       bool operator != ( const ArrayT& array ) const;
 
       /**
-       * \brief
+       * \brief Sets the array values.
+       *
+       * Sets all the array values to \e v.
        *
        * \param v Reference to a value.
        */
       void setValue( const Value& v );
 
       /**
-       * \brief Checks if there is an element with value \e v in given array.
+       * \brief Checks if there is an element with value \e v in this array.
        *
        * \param v Reference to a value.
        */
       bool containsValue( const Value& v ) const;
 
       /**
-       * \brief Checks if all elements in given array have the same value \e v.
+       * \brief Checks if all elements in this array have the same value \e v.
        *
        * \param v Reference to a value.
        */
@@ -274,8 +324,8 @@ class Array : public Object
       /**
        * \brief Counter of objects sharing this array or some parts of it.
        *
-       * The reference counter is allocated after first sharing of the data
-       * between more arrays. This is to avoid unnecessary dynamic memory allocation.
+       * The reference counter is allocated after first sharing of the data between
+       * more arrays. This is to avoid unnecessary dynamic memory allocation.
        */
       mutable int* referenceCounter;
 };
