@@ -88,7 +88,7 @@ class StaticVector : public StaticArray< Size, Real >
     * The addition is applied to all the vector elements separately.
     * \param vector Reference to another vector.
     */
-   __cuda_callable__Size of static array. Number of its elements.
+   __cuda_callable__
    StaticVector& operator += ( const StaticVector& v );
 
    /**
@@ -118,7 +118,7 @@ class StaticVector : public StaticArray< Size, Real >
     * The division is applied to all the vector elements separately.
     * \param c Divisor.
     */
-   __cuda_callable__Size of static array. Number of its elements.
+   __cuda_callable__
    StaticVector& operator /= ( const Real& c );
    
    /**

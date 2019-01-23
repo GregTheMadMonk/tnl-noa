@@ -36,7 +36,7 @@ target_link_libraries( LoggerExample tnl )
 ADD_EXECUTABLE( MathExample MathExample.cpp )
 target_link_libraries( MathExample tnl )
 
-ADD_EXECUTABLE( ParameterContainerExample CarameterContainerExample.cpp )
+ADD_EXECUTABLE( ParameterContainerExample ParameterContainerExample.cpp )
 target_link_libraries( ParameterContainerExample tnl )
 
 ADD_EXECUTABLE( StringExample StringExample.cpp )
