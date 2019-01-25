@@ -110,7 +110,7 @@ template< typename MeshPointer,
           int VectorFieldSize >
 bool setMeshFunctionRealType( const MeshPointer& meshPointer,
                               const String& inputFileName,
-                              const Containers::List< String >& parsedObjectType,
+                              const std::vector< String >& parsedObjectType,
                               const Config::ParameterContainer& parameters  )
 {
    if( VectorFieldSize == 0 )
@@ -124,7 +124,7 @@ template< typename MeshPointer,
           typename = typename std::enable_if< EntityDimension <= MeshPointer::ObjectType::getMeshDimension() >::type >
 bool setMeshEntityType( const MeshPointer& meshPointer,
                         const String& inputFileName,
-                        const Containers::List< String >& parsedObjectType,
+                        const std::vector< String >& parsedObjectType,
                         const Config::ParameterContainer& parameters )
 {
    if( parsedObjectType[ 3 ] == "float" )
@@ -144,7 +144,7 @@ template< typename MeshPointer,
           typename = void >
 bool setMeshEntityType( const MeshPointer& meshPointer,
                         const String& inputFileName,
-                        const Containers::List< String >& parsedObjectType,
+                        const std::vector< String >& parsedObjectType,
                         const Config::ParameterContainer& parameters )
 {
    std::cerr << "Unsupported mesh functions entity dimension: " << EntityDimension << "." << std::endl;
@@ -155,7 +155,7 @@ template< int VectorFieldSize,
           typename MeshPointer >
 bool setMeshEntityDimension( const MeshPointer& meshPointer,
                              const String& inputFileName,
-                             const Containers::List< String >& parsedObjectType,
+                             const std::vector< String >& parsedObjectType,
                              const Config::ParameterContainer& parameters )
 {
    int meshEntityDimension = atoi( parsedObjectType[ 2 ].getString() );
@@ -182,7 +182,7 @@ bool setMeshEntityDimension( const MeshPointer& meshPointer,
 template< typename MeshPointer, int VectorFieldSize = 0 >
 bool setMeshFunction( const MeshPointer& meshPointer,
                       const String& inputFileName,
-                      const Containers::List< String >& parsedObjectType,
+                      const std::vector< String >& parsedObjectType,
                       const Config::ParameterContainer& parameters )
 {
    std::cerr << parsedObjectType[ 1 ] << std::endl;
@@ -197,12 +197,12 @@ bool setMeshFunction( const MeshPointer& meshPointer,
 template< typename MeshPointer >
 bool setVectorFieldSize( const MeshPointer& meshPointer,
                          const String& inputFileName,
-                         Containers::List< String >& parsedObjectType,
+                         const std::vector< String >& parsedObjectType,
                          const Config::ParameterContainer& parameters )
 {
    int vectorFieldSize = atoi( parsedObjectType[ 1 ].getString() );
-   Containers::List< String > parsedMeshFunctionType;
-   if( ! parseObjectType( parsedObjectType[ 2 ], parsedMeshFunctionType ) )
+   const std::vector< String > parsedMeshFunctionType = parseObjectType( parsedObjectType[ 2 ] );
+   if( ! parsedMeshFunctionType.size() )
    {
       std::cerr << "Unable to parse mesh function type  " << parsedObjectType[ 2 ] << " in a vector field." << std::endl;
       return false;
@@ -223,7 +223,7 @@ bool setVectorFieldSize( const MeshPointer& meshPointer,
 template< typename MeshPointer, typename Value, typename Real, typename Index, int Dimension >
 bool convertObject( const MeshPointer& meshPointer,
                     const String& inputFileName,
-                    const Containers::List< String >& parsedObjectType,
+                    const std::vector< String >& parsedObjectType,
                     const Config::ParameterContainer& parameters )
 {
    int verbose = parameters. getParameter< int >( "verbose");
@@ -275,7 +275,7 @@ bool convertObject( const MeshPointer& meshPointer,
 template< typename MeshPointer, typename Value, typename Real, typename Index >
 bool setDimension( const MeshPointer& meshPointer,
                     const String& inputFileName,
-                    const Containers::List< String >& parsedObjectType,
+                    const std::vector< String >& parsedObjectType,
                     const Config::ParameterContainer& parameters )
 {
    int dimensions( 0 );
@@ -303,7 +303,7 @@ bool setDimension( const MeshPointer& meshPointer,
 template< typename MeshPointer, typename Value, typename Real >
 bool setIndexType( const MeshPointer& meshPointer,
                    const String& inputFileName,
-                   const Containers::List< String >& parsedObjectType,
+                   const std::vector< String >& parsedObjectType,
                    const Config::ParameterContainer& parameters )
 {
    String indexType;
@@ -327,8 +327,8 @@ bool setIndexType( const MeshPointer& meshPointer,
 template< typename MeshPointer >
 bool setTupleType( const MeshPointer& meshPointer,
                    const String& inputFileName,
-                   const Containers::List< String >& parsedObjectType,
-                   const Containers::List< String >& parsedValueType,
+                   const std::vector< String >& parsedObjectType,
+                   const std::vector< String >& parsedValueType,
                    const Config::ParameterContainer& parameters )
 {
    int dimensions = atoi( parsedValueType[ 1 ].getString() );
@@ -378,7 +378,7 @@ bool setTupleType( const MeshPointer& meshPointer,
 template< typename MeshPointer >
 bool setValueType( const MeshPointer& meshPointer,
                      const String& inputFileName,
-                     const Containers::List< String >& parsedObjectType,
+                     const std::vector< String >& parsedObjectType,
                      const Config::ParameterContainer& parameters )
 {
    String elementType;
@@ -400,8 +400,8 @@ bool setValueType( const MeshPointer& meshPointer,
       return setIndexType< MeshPointer, double, double >( meshPointer, inputFileName, parsedObjectType, parameters );
    if( elementType == "long double" )
       return setIndexType< MeshPointer, long double, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
-   Containers::List< String > parsedValueType;
-   if( ! parseObjectType( elementType, parsedValueType ) )
+   const std::vector< String > parsedValueType = parseObjectType( elementType );
+   if( ! parsedValueType.size() )
    {
       std::cerr << "Unable to parse object type " << elementType << "." << std::endl;
       return false;
@@ -433,12 +433,12 @@ struct FilesProcessor
       }
 
       bool checkOutputFile = parameters. getParameter< bool >( "check-output-file" );
-      Containers::List< String > inputFiles = parameters. getParameter< Containers::List< String > >( "input-files" );
+      std::vector< String > inputFiles = parameters. getParameter< std::vector< String > >( "input-files" );
       bool error( false );
    //#ifdef HAVE_OPENMP
    //#pragma omp parallel for
    //#endif
-      for( int i = 0; i < inputFiles. getSize(); i ++ )
+      for( int i = 0; i < (int) inputFiles.size(); i++ )
       {
          if( verbose )
            std::cout << "Processing file " << inputFiles[ i ] << " ... " << std::flush;
@@ -467,8 +467,8 @@ struct FilesProcessor
             if( verbose )
               std::cout << objectType << " detected ... ";
 
-            Containers::List< String > parsedObjectType;
-            if( ! parseObjectType( objectType, parsedObjectType ) )
+            const std::vector< String > parsedObjectType = parseObjectType( objectType );
+            if( ! parsedObjectType.size() )
             {
                std::cerr << "Unable to parse object type " << objectType << "." << std::endl;
                error = true;

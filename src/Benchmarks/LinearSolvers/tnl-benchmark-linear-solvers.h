@@ -546,8 +546,8 @@ main( int argc, char* argv[] )
 
    const String & logFileName = parameters.getParameter< String >( "log-file" );
    const String & outputMode = parameters.getParameter< String >( "output-mode" );
-   const unsigned loops = parameters.getParameter< unsigned >( "loops" );
-   const unsigned verbose = (rank == 0) ? parameters.getParameter< unsigned >( "verbose" ) : 0;
+   const int loops = parameters.getParameter< int >( "loops" );
+   const int verbose = (rank == 0) ? parameters.getParameter< int >( "verbose" ) : 0;
 
    // open log file
    auto mode = std::ios::out;

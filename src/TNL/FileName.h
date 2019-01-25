@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#pragma once 
+#pragma once
 
 #include <TNL/String.h>
 
@@ -70,13 +70,12 @@ class FileName
       /// Creates particular file name using \e fileNameBase, \e digitsCount,
       /// \e index and \e extension.
       String getFileName();
-      
+
    protected:
    
       String fileNameBase, extension, distributedSystemNodeId;
       
       int index, digitsCount;
-   
 };
 
 } // namespace TNL

@@ -1,14 +1,10 @@
 ADD_EXECUTABLE( MultimapTest MultimapTest.cpp )
 TARGET_COMPILE_OPTIONS( MultimapTest PRIVATE ${CXX_TESTS_FLAGS} )
-TARGET_LINK_LIBRARIES( MultimapTest
-                           ${GTEST_BOTH_LIBRARIES}
-                           tnl )
+TARGET_LINK_LIBRARIES( MultimapTest ${GTEST_BOTH_LIBRARIES} )
 
 ADD_EXECUTABLE( StaticMultimapTest StaticMultimapTest.cpp )
 TARGET_COMPILE_OPTIONS( StaticMultimapTest PRIVATE ${CXX_TESTS_FLAGS} )
-TARGET_LINK_LIBRARIES( StaticMultimapTest
-                           ${GTEST_BOTH_LIBRARIES}
-                           tnl )
+TARGET_LINK_LIBRARIES( StaticMultimapTest ${GTEST_BOTH_LIBRARIES} )
 
 ADD_TEST( MultimapTest ${EXECUTABLE_OUTPUT_PATH}/MultimapTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( StaticMultimapTest ${EXECUTABLE_OUTPUT_PATH}/MultimapTest${CMAKE_EXECUTABLE_SUFFIX} )

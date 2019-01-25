@@ -13,7 +13,6 @@
 #include <iostream>
 #include <memory>
 
-#include <TNL/tnlConfig.h>
 #include <TNL/Math.h>
 #include <TNL/Exceptions/CudaSupportMissing.h>
 #include <TNL/Exceptions/CudaBadAlloc.h>

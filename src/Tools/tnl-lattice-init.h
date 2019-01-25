@@ -227,8 +227,8 @@ bool resolveProfileReal( const Config::ParameterContainer& parameters )
       return EXIT_FAILURE;
    }
    //std::cout << meshFunctionType << " detected in " << profileFile << " file." << std::endl;
-   Containers::List< String > parsedMeshFunctionType;
-   if( ! parseObjectType( meshFunctionType, parsedMeshFunctionType ) )
+   const std::vector< String > parsedMeshFunctionType = parseObjectType( meshFunctionType );
+   if( ! parsedMeshFunctionType.size() )
    {
       std::cerr << "Unable to parse the mesh function type " << meshFunctionType << "." << std::endl;
       return EXIT_FAILURE;
@@ -259,7 +259,7 @@ bool resolveProfileReal( const Config::ParameterContainer& parameters )
 }
 
 template< typename ProfileMesh, typename Real, typename MeshReal >
-bool resolveMeshIndexType( const Containers::List< String >& parsedMeshType,
+bool resolveMeshIndexType( const std::vector< String >& parsedMeshType,
                            const Config::ParameterContainer& parameters )
 {
    if( parsedMeshType[ 4 ] == "int" )
@@ -283,8 +283,8 @@ bool resolveMesh( const Config::ParameterContainer& parameters )
       return EXIT_FAILURE;
    }
    std::cout << meshType << " detected in " << meshFile << " file." << std::endl;
-   Containers::List< String > parsedMeshType;
-   if( ! parseObjectType( meshType, parsedMeshType ) )
+   const std::vector< String > parsedMeshType = parseObjectType( meshType );
+   if( ! parsedMeshType.size() )
    {
       std::cerr << "Unable to parse the mesh type " << meshType << "." << std::endl;
       return EXIT_FAILURE;
@@ -325,7 +325,7 @@ bool resolveRealType( const Config::ParameterContainer& parameters )
 }
 
 template< typename RealType, typename IndexType >
-bool resolveProfileMesh( const Containers::List< String >& parsedMeshType,
+bool resolveProfileMesh( const std::vector< String >& parsedMeshType,
                   const Config::ParameterContainer& parameters )
 {
   std::cout << "+ -> Setting mesh type to " << parsedMeshType[ 0 ] << " ... " << std::endl;
@@ -339,7 +339,7 @@ bool resolveProfileMesh( const Containers::List< String >& parsedMeshType,
 }
 
 template< typename RealType >
-bool resolveProfileMeshIndexType( const Containers::List< String >& parsedMeshType,
+bool resolveProfileMeshIndexType( const std::vector< String >& parsedMeshType,
                                   const Config::ParameterContainer& parameters )
 {
   std::cout << "+ -> Setting index type to " << parsedMeshType[ 4 ] << " ... " << std::endl;
@@ -352,7 +352,7 @@ bool resolveProfileMeshIndexType( const Containers::List< String >& parsedMeshTy
    return false;
 }
 
-bool resolveProfileMeshRealType( const Containers::List< String >& parsedMeshType,
+bool resolveProfileMeshRealType( const std::vector< String >& parsedMeshType,
                                  const Config::ParameterContainer& parameters )
 {
    std::cout << "+ -> Setting real type to " << parsedMeshType[ 2 ] << " ... " << std::endl;
@@ -378,8 +378,8 @@ bool resolveProfileMeshType( const Config::ParameterContainer& parameters )
       return EXIT_FAILURE;
    }
    std::cout << meshType << " detected in " << meshFile << " file." << std::endl;
-   Containers::List< String > parsedMeshType;
-   if( ! parseObjectType( meshType, parsedMeshType ) )
+   const std::vector< String > parsedMeshType = parseObjectType( meshType );
+   if( ! parsedMeshType.size() )
    {
       std::cerr << "Unable to parse the mesh type " << meshType << "." << std::endl;
       return EXIT_FAILURE;

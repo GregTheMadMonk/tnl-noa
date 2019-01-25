@@ -15,9 +15,6 @@
 #include <TNL/String.h>
 
 namespace TNL {
-
-class Logger;
-
 namespace Devices {
 
 struct CacheSizes {
@@ -45,15 +42,16 @@ public:
    static CacheSizes getCPUCacheSizes( int cpu_id );
    static size_t getFreeMemory();
 
-   static void writeDeviceInfo( Logger& logger );
-
 protected:
-   static int numberOfProcessors;
-   static String CPUModelName;
-   static int CPUThreads;
-   static int CPUCores;
+   struct CPUInfo
+   {
+      int numberOfProcessors = 0;
+      String CPUModelName;
+      int CPUThreads = 0;
+      int CPUCores = 0;
+   };
 
-   static void parseCPUInfo();
+   static CPUInfo parseCPUInfo();
 
    template< typename ResultType >
    static ResultType
@@ -72,3 +70,5 @@ protected:
 
 } // namespace Devices
 } // namespace TNL
+
+#include <TNL/Devices/SystemInfo_impl.h>

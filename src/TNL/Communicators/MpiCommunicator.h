@@ -21,6 +21,8 @@
    #include <mpi-ext.h>
 #endif
 
+#include <unistd.h>  // getpid
+
 #ifdef HAVE_CUDA
     #include <TNL/Devices/Cuda.h>
 

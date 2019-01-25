@@ -32,7 +32,7 @@ runBlasBenchmarks( Benchmark & benchmark,
                    const std::size_t & minSize,
                    const std::size_t & maxSize,
                    const double & sizeStepFactor,
-                   const unsigned & elementsPerRow )
+                   const int & elementsPerRow )
 {
    const String precision = getType< Real >();
    metadata["precision"] = precision;
@@ -121,10 +121,10 @@ main( int argc, char* argv[] )
 //   const std::size_t maxSize = parameters.getParameter< std::size_t >( "max-size" );
    const std::size_t minSize = parameters.getParameter< int >( "min-size" );
    const std::size_t maxSize = parameters.getParameter< int >( "max-size" );
-   const unsigned sizeStepFactor = parameters.getParameter< unsigned >( "size-step-factor" );
-   const unsigned loops = parameters.getParameter< unsigned >( "loops" );
-   const unsigned elementsPerRow = parameters.getParameter< unsigned >( "elements-per-row" );
-   const unsigned verbose = parameters.getParameter< unsigned >( "verbose" );
+   const int sizeStepFactor = parameters.getParameter< int >( "size-step-factor" );
+   const int loops = parameters.getParameter< int >( "loops" );
+   const int elementsPerRow = parameters.getParameter< int >( "elements-per-row" );
+   const int verbose = parameters.getParameter< int >( "verbose" );
 
    if( sizeStepFactor <= 1 ) {
        std::cerr << "The value of --size-step-factor must be greater than 1." << std::endl;

@@ -10,7 +10,7 @@
 
 #include <TNL/File.h>
 
-#ifdef HAVE_GTEST 
+#ifdef HAVE_GTEST
 #include <gtest/gtest.h>
 
 using namespace TNL;
@@ -19,6 +19,12 @@ TEST( FileTest, CloseEmpty )
 {
    File file;
    ASSERT_TRUE( file.close() );
+}
+
+TEST( FileTest, OpenInvalid )
+{
+   File file;
+   EXPECT_THROW( file.open( "invalid-file.tnl", IOMode::read ), std::ios_base::failure );
 }
 
 TEST( FileTest, WriteAndRead )
@@ -81,7 +87,7 @@ TEST( FileTest, WriteAndReadCUDA )
 
    bool status = file.write< int, Devices::Cuda >( cudaIntData );
    ASSERT_TRUE( status );
-   status = file.write< float, Devices::Cuda, int >( cudaFloatData, 3 );
+   status = file.write< float, Devices::Cuda >( cudaFloatData, 3 );
    ASSERT_TRUE( status );
    status = file.write< const double, Devices::Cuda >( cudaConstDoubleData );
    ASSERT_TRUE( status );
@@ -99,7 +105,7 @@ TEST( FileTest, WriteAndReadCUDA )
    cudaMalloc( ( void** ) &newCudaDoubleData, sizeof( double ) );
    status = file.read< int, Devices::Cuda >( newCudaIntData, 1 );
    ASSERT_TRUE( status );
-   status = file.read< float, Devices::Cuda, int >( newCudaFloatData, 3 );
+   status = file.read< float, Devices::Cuda >( newCudaFloatData, 3 );
    ASSERT_TRUE( status );
    status = file.read< double, Devices::Cuda >( newCudaDoubleData, 1 );
    ASSERT_TRUE( status );

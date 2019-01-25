@@ -14,7 +14,6 @@
 #pragma once
 
 #include <TNL/String.h>
-#include <TNL/tnlConfig.h>
 
 #ifdef HAVE_DCMTK_H
 #define HAVE_CONFIG_H

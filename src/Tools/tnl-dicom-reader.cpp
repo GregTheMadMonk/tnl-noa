@@ -8,7 +8,6 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/tnlConfig.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Images//DicomSeries.h>
@@ -105,5 +104,6 @@ int main( int argc, char* argv[] )
    return EXIT_SUCCESS;
 #else
    std::cerr << "TNL was not compiled with DCMTK support." << std::endl;
+   return EXIT_FAILURE;
 #endif
 }

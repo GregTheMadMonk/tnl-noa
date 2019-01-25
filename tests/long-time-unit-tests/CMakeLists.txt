@@ -8,8 +8,6 @@ else()
    ADD_EXECUTABLE( tnl-test-matrix-formats ${headers} matrix-formats-test.cpp )
 endif()
 
-TARGET_LINK_LIBRARIES( tnl-test-matrix-formats tnl )
-
 
 INSTALL( TARGETS tnl-test-matrix-formats
          RUNTIME DESTINATION bin
@@ -26,7 +24,7 @@ IF( BUILD_CUDA )
     CUDA_ADD_EXECUTABLE( matrix-cpu-cuda-test${debugExt} matrix-cpu-cuda-test.cu
                          OPTIONS ${CUDA_ADD_EXECUTABLE_OPTIONS} )
     SET_TARGET_PROPERTIES( matrix-cpu-cuda-test${debugExt} PROPERTIES CUDA_COMPILE_FLAG "${CXX_OPTIMIZE_FLAGS}" )
-    TARGET_LINK_LIBRARIES( matrix-cpu-cuda-test${debugExt} tnl ${CUSPARSE_LIBRARY} )
+    TARGET_LINK_LIBRARIES( matrix-cpu-cuda-test${debugExt} ${CUSPARSE_LIBRARY} )
     INSTALL( TARGETS matrix-cpu-cuda-test${debugExt}
              RUNTIME DESTINATION bin )
 ENDIF()

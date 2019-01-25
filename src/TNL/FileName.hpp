@@ -8,9 +8,63 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+#pragma once
+
+#include <sstream>
+#include <iomanip>
+
 #include <TNL/FileName.h>
+#include <TNL/String.h>
+#include <TNL/Math.h>
 
 namespace TNL {
+
+inline FileName::FileName()
+: index( 0 ), digitsCount( 5 )
+{
+}
+
+inline FileName::FileName( const String& fileNameBase )
+: fileNameBase( fileNameBase ),
+  index( 0 ),
+  digitsCount( 5 )
+{
+}
+
+inline FileName::FileName( const String& fileNameBase,
+                           const String& extension )
+: fileNameBase( fileNameBase ),
+  extension( extension ),
+  index( 0 ),
+  digitsCount( 5 )
+{
+}
+
+inline void FileName::setFileNameBase( const String& fileNameBase )
+{
+   this->fileNameBase = fileNameBase;
+}
+
+inline void FileName::setExtension( const String& extension )
+{
+   this->extension = extension;
+}
+
+inline void FileName::setIndex( const int index )
+{
+   this->index = index;
+}
+
+inline void FileName::setDigitsCount( const int digitsCount )
+{
+   this->digitsCount = digitsCount;
+}
+
+inline void FileName::setDistributedSystemNodeId( int nodeId )
+{
+   this->distributedSystemNodeId = "-";
+   this->distributedSystemNodeId += convertToString( nodeId );
+}
 
 template< typename Coordinates >
 void
@@ -24,6 +78,34 @@ setDistributedSystemNodeId( const Coordinates& nodeId )
       this->distributedSystemNodeId += "-";
       this->distributedSystemNodeId += convertToString( nodeId[ i ] );
    }
+}
+
+inline String FileName::getFileName()
+{
+   std::stringstream stream;
+   stream << this->fileNameBase
+          << std::setw( this->digitsCount )
+          << std::setfill( '0' )
+          << this->index
+          << this->distributedSystemNodeId
+          << "." << this->extension;
+   return String( stream.str().data() );
+}
+
+inline String getFileExtension( const String fileName )
+{
+   const int size = fileName.getLength();
+   int i = 1;
+   while( fileName[ size - i ] != '.' && size > i ) i++;
+   return fileName.substr( size - i + 1 );
+}
+
+inline void removeFileExtension( String& fileName )
+{
+   const int size = fileName.getLength();
+   int i = 1;
+   while( fileName[ size - i ] != '.' && size > i ) i++;
+   fileName = fileName.substr( 0, size - i + 1 );
 }
 
 } // namespace TNL

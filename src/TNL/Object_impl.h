@@ -1,5 +1,5 @@
 /***************************************************************************
-                          Object.cpp  -  description
+                          Object_impl.h  -  description
                              -------------------
     begin                : 2005/10/15
     copyright            : (C) 2005 by Tomas Oberhuber
@@ -8,46 +8,47 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/Object.h>
-#include <TNL/Assert.h>
+#pragma once
+
 #include <iostream>
 #include <fstream>
 #include <cstring>
-#include <stdio.h>
+
+#include <TNL/Object.h>
 
 namespace TNL {
 
-const char magic_number[] = "TNLMN";
+static constexpr char magic_number[] = "TNLMN";
 
-String Object :: getType()
+inline String Object :: getType()
 {
    return String( "Object" );
 }
 
-String Object :: getTypeVirtual() const
+inline String Object :: getTypeVirtual() const
 {
    return this->getType();
 }
 
-String Object :: getSerializationType()
+inline String Object :: getSerializationType()
 {
    return String( "Object" );
 }
 
-String Object :: getSerializationTypeVirtual() const
+inline String Object :: getSerializationTypeVirtual() const
 {
    return this->getSerializationType();
 }
 
-bool Object :: save( File& file ) const
+inline bool Object :: save( File& file ) const
 {
-   if( ! file. write( magic_number, strlen( magic_number ) ) )
+   if( ! file.write( magic_number, strlen( magic_number ) ) )
       return false;
-   if( ! this->getSerializationTypeVirtual().save( file ) ) return false;
+   file << this->getSerializationTypeVirtual();
    return true;
 }
 
-bool Object :: load( File& file )
+inline bool Object :: load( File& file )
 {
    String objectType;
    if( ! getObjectType( file, objectType ) )
@@ -60,15 +61,15 @@ bool Object :: load( File& file )
    return true;
 }
 
-bool Object :: boundLoad( File& file )
+inline bool Object :: boundLoad( File& file )
 {
    return load( file );
 }
 
-bool Object :: save( const String& fileName ) const
+inline bool Object :: save( const String& fileName ) const
 {
    File file;
-   if( ! file. open( fileName, IOMode::write ) )
+   if( ! file.open( fileName, IOMode::write ) )
    {
       std::cerr << "I am not able to open the file " << fileName << " for writing." << std::endl;
       return false;
@@ -76,10 +77,10 @@ bool Object :: save( const String& fileName ) const
    return this->save( file );
 }
 
-bool Object :: load( const String& fileName )
+inline bool Object :: load( const String& fileName )
 {
    File file;
-   if( ! file. open( fileName, IOMode::read ) )
+   if( ! file.open( fileName, IOMode::read ) )
    {
       std::cerr << "I am not able to open the file " << fileName << " for reading." << std::endl;
       return false;
@@ -87,10 +88,10 @@ bool Object :: load( const String& fileName )
    return this->load( file );
 }
 
-bool Object :: boundLoad( const String& fileName )
+inline bool Object :: boundLoad( const String& fileName )
 {
    File file;
-   if( ! file. open( fileName, IOMode::read ) )
+   if( ! file.open( fileName, IOMode::read ) )
    {
       std::cerr << "I am not able to open the file " << fileName << " for reading." << std::endl;
       return false;
@@ -99,32 +100,27 @@ bool Object :: boundLoad( const String& fileName )
 }
 
 
-bool getObjectType( File& file, String& type )
+inline bool getObjectType( File& file, String& type )
 {
    char mn[ 10 ];
-   if( ! file. read( mn, strlen( magic_number ) ) )
+   if( ! file.read( mn, strlen( magic_number ) ) )
    {
-      std::cerr << "Unable to read file " << file. getFileName() << " ... " << std::endl;
+      std::cerr << "Unable to read file " << file.getFileName() << " ... " << std::endl;
       return false;
    }
-   if( strncmp( mn, magic_number, 5 ) != 0 &&
-       strncmp( mn, "SIM33", 5 ) != 0 )
+   if( strncmp( mn, magic_number, 5 ) != 0 )
    {
        std::cout << "Not a TNL file (wrong magic number)." << std::endl;
        return false;
    }
-   if( ! type. load( file ) )
-   {
-       std::cerr << "Cannot load the object type." << std::endl;
-       return false;
-   }
+   file >> type;
    return true;
 }
 
-bool getObjectType( const String& fileName, String& type )
+inline bool getObjectType( const String& fileName, String& type )
 {
    File binaryFile;
-   if( ! binaryFile. open( fileName, IOMode::read ) )
+   if( ! binaryFile.open( fileName, IOMode::read ) )
    {
       std::cerr << "I am not able to open the file " << fileName << " for detecting the object inside!" << std::endl;
       return false;
@@ -132,11 +128,11 @@ bool getObjectType( const String& fileName, String& type )
    return getObjectType( binaryFile, type );
 }
 
-bool parseObjectType( const String& objectType,
-                      Containers::List< String >& parsedObjectType )
+inline std::vector< String >
+parseObjectType( const String& objectType )
 {
-   parsedObjectType.reset();
-   int objectTypeLength = objectType. getLength();
+   std::vector< String > parsedObjectType;
+   const int objectTypeLength = objectType.getLength();
    int i = 0;
    /****
     * The object type consists of the following:
@@ -145,11 +141,10 @@ bool parseObjectType( const String& objectType,
     * character '<'.
     */
    while( i < objectTypeLength && objectType[ i ] != '<' )
-      i ++;
-   String objectName( objectType. getString(), 0, objectTypeLength - i );
-   if( ! parsedObjectType. Append( objectName ) )
-      return false;
-   i ++;
+      i++;
+   String objectName = objectType.substr( 0, i );
+   parsedObjectType.push_back( objectName );
+   i++;
 
    /****
     * Now, we will extract the parameters.
@@ -162,7 +157,7 @@ bool parseObjectType( const String& objectType,
    while( i < objectTypeLength )
    {
       if( objectType[ i ] == '<' )
-         templateBrackets ++;
+         templateBrackets++;
       if( ! templateBrackets )
       {
          if( objectType[ i ] == ',' ||
@@ -170,19 +165,19 @@ bool parseObjectType( const String& objectType,
          {
             if( buffer != "" )
             {
-               if( ! parsedObjectType. Append( buffer.strip( ' ' ) ) )
-                  return false;
-               buffer. setString( "" );
+               parsedObjectType.push_back( buffer.strip( ' ' ) );
+               buffer.clear();
             }
          }
          else buffer += objectType[ i ];
       }
       else buffer += objectType[ i ];
       if( objectType[ i ] == '>' )
-         templateBrackets --;
-      i ++;
+         templateBrackets--;
+      i++;
    }
-   return true;
+
+   return parsedObjectType;
 }
 
 } // namespace TNL

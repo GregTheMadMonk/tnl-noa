@@ -35,72 +35,44 @@ TEST( ObjectTest, SaveAndLoadTest )
 
 TEST( ObjectTest, parseObjectTypeTest )
 {
-   Containers::List< String > parsed;
-   Containers::List< String > expected;
+   std::vector< String > parsed;
+   std::vector< String > expected;
 
    // plain type
-   parsed.reset();
-   expected.reset();
-   ASSERT_TRUE( parseObjectType( "int", parsed ) );
-   expected.Append( "int" );
+   parsed = parseObjectType( "int" );
+   expected = {"int"};
    EXPECT_EQ( parsed, expected );
 
    // type with space
-   parsed.reset();
-   expected.reset();
-   ASSERT_TRUE( parseObjectType( "short int", parsed ) );
-   expected.Append( "short int" );
+   parsed = parseObjectType( "short int" );
+   expected = {"short int"};
    EXPECT_EQ( parsed, expected );
 
-   parsed.reset();
-   expected.reset();
-   ASSERT_TRUE( parseObjectType( "unsigned short int", parsed ) );
-   expected.Append( "unsigned short int" );
+   parsed = parseObjectType( "unsigned short int" );
+   expected = {"unsigned short int"};
    EXPECT_EQ( parsed, expected );
 
    // composed type
-   parsed.reset();
-   expected.reset();
-   ASSERT_TRUE( parseObjectType( "Containers::Vector< double, Devices::Host, int >", parsed ) );
-   expected.Append( "Containers::Vector" );
-   expected.Append( "double" );
-   expected.Append( "Devices::Host" );
-   expected.Append( "int" );
+   parsed = parseObjectType( "Containers::Vector< double, Devices::Host, int >" );
+   expected = { "Containers::Vector", "double", "Devices::Host", "int" };
    EXPECT_EQ( parsed, expected );
 
-   parsed.reset();
-   expected.reset();
-   ASSERT_TRUE( parseObjectType( "Containers::Vector< Containers::List< String >, Devices::Host, int >", parsed ) );
-   expected.Append( "Containers::Vector" );
-   expected.Append( "Containers::List< String >" );
-   expected.Append( "Devices::Host" );
-   expected.Append( "int" );
+   parsed = parseObjectType( "Containers::Vector< Containers::List< String >, Devices::Host, int >" );
+   expected = { "Containers::Vector", "Containers::List< String >", "Devices::Host", "int" };
    EXPECT_EQ( parsed, expected );
 
    // spaces in the template parameter
-   parsed.reset();
-   expected.reset();
-   ASSERT_TRUE( parseObjectType( "A< short int >", parsed ) );
-   expected.Append( "A" );
-   expected.Append( "short int" );
+   parsed = parseObjectType( "A< short int >" );
+   expected = { "A", "short int" };
    EXPECT_EQ( parsed, expected );
 
-   parsed.reset();
-   expected.reset();
-   ASSERT_TRUE( parseObjectType( "A< B< short int >, C >", parsed ) );
-   expected.Append( "A" );
-   expected.Append( "B< short int >" );
-   expected.Append( "C" );
+   parsed = parseObjectType( "A< B< short int >, C >" );
+   expected = { "A", "B< short int >", "C" };
    EXPECT_EQ( parsed, expected );
 
    // spaces at different places in the template parameter
-   parsed.reset();
-   expected.reset();
-   ASSERT_TRUE( parseObjectType( "A< b , c <E>  ,d>", parsed ) );
-   expected.Append( "A" );
-   expected.Append( "b" );
-   expected.Append( "c <E>" );
-   expected.Append( "d" );
+   parsed = parseObjectType( "A< b , c <E>  ,d>" );
+   expected = { "A", "b", "c <E>", "d" };
    EXPECT_EQ( parsed, expected );
 }
 #endif

@@ -14,7 +14,6 @@
 
 #include <iostream>
 
-#include <TNL/tnlConfig.h>
 #include <TNL/Math.h>
 #include <TNL/Exceptions/MICSupportMissing.h>
 #include <TNL/Exceptions/MICBadAlloc.h>

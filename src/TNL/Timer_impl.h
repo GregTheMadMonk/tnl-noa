@@ -1,5 +1,5 @@
 /***************************************************************************
-                          Timer.cpp  -  description
+                          Timer_impl.h  -  description
                              -------------------
     begin                : Mar 14, 2016
     copyright            : (C) 2016 by Tomas Oberhuber
@@ -8,40 +8,36 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+#pragma once
+
 #include <TNL/Timer.h>
 #include <TNL/Logger.h>
 
-#include <TNL/tnlConfig.h>
-#ifdef HAVE_SYS_RESOURCE_H
+// check if we are on a POSIX system or Windows,
+// see https://stackoverflow.com/a/4575466
+#if !defined(_WIN32) && !defined(_WIN64)
    #include <sys/resource.h>
-#endif
-#ifdef HAVE_SYS_TIME_H
-   #include <stddef.h>
-   #include <sys/time.h>
-   #define HAVE_TIME
 #endif
 
 namespace TNL {
 
-Timer defaultTimer;
-
-Timer::Timer()
+inline Timer::Timer()
 {
    reset();
 }
 
-void Timer::reset()
+inline void Timer::reset()
 {
    this->initialCPUTime = 0;
    this->totalCPUTime = 0.0;
-   this->initialRealTime = 0;
-   this->totalRealTime = 0.0;
+   this->initialRealTime = TimePoint();
+   this->totalRealTime = Duration();
    this->initialCPUCycles = 0;
    this->totalCPUCycles = 0;
    this->stopState = true;
 }
 
-void Timer::stop()
+inline void Timer::stop()
 {
 
    if( ! this->stopState )
@@ -53,7 +49,7 @@ void Timer::stop()
    }
 }
 
-void Timer::start()
+inline void Timer::start()
 {
    this->initialRealTime = this->readRealTime();
    this->initialCPUTime = this->readCPUTime();
@@ -61,41 +57,35 @@ void Timer::start()
    this->stopState = false;
 }
 
-double Timer::getRealTime() const
+inline double Timer::getRealTime() const
 {
    if( ! this->stopState )
-    return this->readRealTime() - this->initialRealTime;
-   return this->totalRealTime;
+      return durationToDouble( this->readRealTime() - this->initialRealTime );
+   return durationToDouble( this->totalRealTime );
 }
 
-double Timer::getCPUTime() const
+inline double Timer::getCPUTime() const
 {
    if( ! this->stopState )
-    return this->readCPUTime() - this->initialCPUTime;
+      return this->readCPUTime() - this->initialCPUTime;
    return this->totalCPUTime;
 }
 
-unsigned long long int Timer::getCPUCycles() const
+inline unsigned long long int Timer::getCPUCycles() const
 {
    if( ! this->stopState )
-    return this->readCPUCycles() - this->initialCPUCycles;
+      return this->readCPUCycles() - this->initialCPUCycles;
    return this->totalCPUCycles;
 }
 
-double Timer::readRealTime() const
+inline typename Timer::TimePoint Timer::readRealTime() const
 {
-#ifdef HAVE_TIME
-   struct timeval tp;
-   int rtn = gettimeofday( &tp, NULL );
-   return ( double ) tp. tv_sec + 1.0e-6 * ( double ) tp. tv_usec;
-#else
-   return -1;
-#endif
+   return std::chrono::high_resolution_clock::now();
 }
 
-double Timer::readCPUTime() const
+inline double Timer::readCPUTime() const
 {
-#ifdef HAVE_SYS_RESOURCE_H
+#if !defined(_WIN32) && !defined(_WIN64)
    rusage initUsage;
    getrusage( RUSAGE_SELF, &initUsage );
    return initUsage. ru_utime. tv_sec + 1.0e-6 * ( double ) initUsage. ru_utime. tv_usec;
@@ -104,13 +94,19 @@ double Timer::readCPUTime() const
 #endif
 }
 
-unsigned long long int Timer::readCPUCycles() const
+inline unsigned long long int Timer::readCPUCycles() const
 {
    return this->rdtsc();
 }
 
+inline double Timer::durationToDouble( const Duration& duration ) const
+{
+   std::chrono::duration< double > dur( duration );
+   return dur.count();
+}
 
-bool Timer::writeLog( Logger& logger, int logLevel ) const
+
+inline bool Timer::writeLog( Logger& logger, int logLevel ) const
 {
    logger.writeParameter< double                 >( "Real time:",  this->getRealTime(),  logLevel );
    logger.writeParameter< double                 >( "CPU time:",   this->getCPUTime(),   logLevel );

@@ -249,33 +249,20 @@ endif()
 
 find_package( DCMTK )
 if( DCMTK_FOUND )
-   set( HAVE_DCMTK_H "#define HAVE_DCMTK_H 1" )
+   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_DCMTK_H" )
    include_directories( ${DCMTK_INCLUDE_DIRS} )
-   set( HAVE_DCMTK TRUE)
-   set( DCMTK_LD_FLAGS "" )
-   foreach( arg ${DCMTK_LIBRARIES} )
-      set( DCMTK_LD_FLAGS "${DCMTK_LD_FLAGS} ${arg}" )
-   endforeach( arg ${DCMTK_LIBRARIES} )
-else()
-   set( HAVE_DCMTK_H "//#define HAVE_DCMTK_H 1" )
 endif()
 
 find_package( PNG )
-if( PNG_FOUND )      
-   set( HAVE_PNG_H "#define HAVE_PNG_H 1" )
+if( PNG_FOUND )
+   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_PNG_H" )
    include_directories( ${PNG_INCLUDE_DIRS} )
-else()
-   set( HAVE_PNG_H "//#define HAVE_PNG_H 1" )
-   set( PNG_LIBRARIES "" )
 endif()
 
 find_package( JPEG )
-if( JPEG_FOUND )      
-   set( HAVE_JPEG_H "#define HAVE_JPEG_H 1" )
+if( JPEG_FOUND )
+   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_JPEG_H" )
    include_directories( ${JPEG_INCLUDE_DIRS} )
-else()
-   set( HAVE_JPEG_H "//#define HAVE_JPEG_H 1" )
-   set( JPEG_LIBRARIES "" )
 endif()
 
 ####
@@ -307,45 +294,6 @@ if( ${WITH_GMP} )
       set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${GMP_LIBRARIES}" )
       mark_as_advanced(GMP_INCLUDES GMP_LIBRARIES)
    endif()
-endif()
-
-####
-# Check for some system header
-#
-find_path( SYS_TIME_INCLUDE_DIR sys/time.h  
-           /usr/include/x86_64-linux-gnu
-           /usr/include
-           DOC "System timer headers." )
-if( ${SYS_TIME_INCLUDE_DIR} STREQUAL "SYS_TIME_INCLUDE_DIR-NOTFOUND" )
-    message(  "Missing header file sys/time.h" )
-    set( HAVE_SYS_TIME_H "//#define HAVE_SYS_TIME_H 1" )
-else()
-    #include_directories( ${SYS_TIME_INCLUDE_DIR} )
-    set( HAVE_SYS_TIME_H "#define HAVE_SYS_TIME_H 1" )
-endif()
-
-find_path( SYS_RESOURCE_INCLUDE_DIR sys/resource.h
-           /usr/include/x86_64-linux-gnu
-           /usr/include  
-           DOC "System resources headers." )
-if( ${SYS_RESOURCE_INCLUDE_DIR} STREQUAL "SYS_RESOURCE_INCLUDE_DIR-NOTFOUND" )
-    message( "Missing header file sys/time.h" )
-    set( HAVE_SYS_RESOURCE_H "//#define HAVE_SYS_RESOURCE_H 1" )
-else()
-    #include_directories( ${SYS_RESOURCE_INCLUDE_DIR} )
-    set( HAVE_SYS_RESOURCE_H "#define HAVE_SYS_RESOURCE_H 1" )
-endif()
-
-find_path( SYS_IOCTL_INCLUDE_DIR sys/ioctl.h
-           /usr/include/x86_64-linux-gnu
-           /usr/include  
-           DOC "System ioctl headers." )
-if( ${SYS_IOCTL_INCLUDE_DIR} STREQUAL "SYS_IOCTL_INCLUDE_DIR-NOTFOUND" )
-    message( "Missing header file sys/time.h" )
-    set( HAVE_SYS_IOCTL_H "//#define HAVE_SYS_IOCTL_H 1" )
-else()
-    #include_directories( ${SYS_IOCTL_INCLUDE_DIR} )
-    set( HAVE_SYS_IOCTL_H "#define HAVE_SYS_IOCTL_H 1" )
 endif()
 
 if( ${WITH_TESTS} )
@@ -411,9 +359,6 @@ endif()
 #      AddCompilerFlag( "-DINSTANTIATE_LONG_DOUBLE " )
 #   endif()
 #endif()
-
-CONFIGURE_FILE( "tnlConfig.h.in" "${PROJECT_BUILD_PATH}/TNL/tnlConfig.h" )
-INSTALL( FILES ${PROJECT_BUILD_PATH}/TNL/tnlConfig.h DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY} )
 
 #Nastavime cesty k hlavickovym souborum a knihovnam
 INCLUDE_DIRECTORIES( src )

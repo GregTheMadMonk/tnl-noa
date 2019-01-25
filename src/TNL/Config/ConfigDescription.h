@@ -10,28 +10,27 @@
 
 #pragma once
 
+#include <iomanip>
+#include <string>
+#include <vector>
+#include <memory>
+#include "make_unique.h"
+
+#include <TNL/Assert.h>
 #include <TNL/String.h>
-#include <TNL/Containers/List.h>
 #include <TNL/param-types.h>
 #include <TNL/Config/ConfigEntryType.h>
 #include <TNL/Config/ConfigEntry.h>
 #include <TNL/Config/ConfigEntryList.h>
 #include <TNL/Config/ConfigDelimiter.h>
+#include <TNL/Config/ParameterContainer.h>
 
 namespace TNL {
 namespace Config {
 
-class ParameterContainer;
-
 class ConfigDescription
 {
-   public:
-
-   /**
-    * \brief Basic constructor.
-    */
-   ConfigDescription();
-
+public:
    /**
     * \brief Adds new entry to the configuration description.
     *
@@ -43,8 +42,8 @@ class ConfigDescription
    void addEntry( const String& name,
                   const String& description )
    {
-      currentEntry = new ConfigEntry< EntryType >( name, description, false );
-      entries.Append( currentEntry );
+      entries.push_back( std::make_unique< ConfigEntry< EntryType > >( name, description, false ) );
+      currentEntry = entries.back().get();
    }
 
    /**
@@ -58,8 +57,8 @@ class ConfigDescription
    void addRequiredEntry( const String& name,
                           const String& description )
    {
-      currentEntry = new ConfigEntry< EntryType >( name, description, true );
-      entries.Append( currentEntry );
+      entries.push_back( std::make_unique< ConfigEntry< EntryType > >( name, description, true ) );
+      currentEntry = entries.back().get();
    }
 
    /**
@@ -75,11 +74,8 @@ class ConfigDescription
                   const String& description,
                   const EntryType& defaultValue )
    {
-      currentEntry = new ConfigEntry< EntryType >( name,
-                                                   description,
-                                                   false,
-                                                   defaultValue );
-      entries. Append( currentEntry );
+      entries.push_back( std::make_unique< ConfigEntry< EntryType > >( name, description, false, defaultValue ) );
+      currentEntry = entries.back().get();
    }
 
    /**
@@ -93,8 +89,8 @@ class ConfigDescription
    void addList( const String& name,
                  const String& description )
    {
-      currentEntry = new ConfigEntryList< EntryType >( name, description, false );
-      entries.Append( currentEntry );
+      entries.push_back( std::make_unique< ConfigEntryList< EntryType > >( name, description, false ) );
+      currentEntry = entries.back().get();
    }
 
    /**
@@ -108,8 +104,8 @@ class ConfigDescription
    void addRequiredList( const String& name,
                          const String& description )
    {
-      currentEntry = new ConfigEntryList< EntryType >( name, description, true );
-      entries.Append( currentEntry );
+      entries.push_back( std::make_unique< ConfigEntryList< EntryType > >( name, description, true ) );
+      currentEntry = entries.back().get();
    }
 
    /**
@@ -125,11 +121,8 @@ class ConfigDescription
                  const String& description,
                  const EntryType& defaultValue )
    {
-      currentEntry = new ConfigEntryList< EntryType >( name,
-                                                          description,
-                                                          false,
-                                                          defaultValue );
-      entries. Append( currentEntry );
+      entries.push_back( std::make_unique< ConfigEntryList< EntryType > >( name, description, false, defaultValue ) );
+      currentEntry = entries.back().get();
    }
 
    /**
@@ -142,8 +135,9 @@ class ConfigDescription
    template< typename EntryType >
    void addEntryEnum( const EntryType& entryEnum )
    {
-      TNL_ASSERT( this->currentEntry,);
-      ( ( ConfigEntry< EntryType >* ) currentEntry )->getEnumValues().Append( entryEnum );
+      TNL_ASSERT_TRUE( this->currentEntry, "there is no current entry" );
+      ConfigEntry< EntryType >& entry = dynamic_cast< ConfigEntry< EntryType >& >( *currentEntry );
+      entry.getEnumValues().push_back( entryEnum );
    }
 
    /**
@@ -154,8 +148,9 @@ class ConfigDescription
     */
    void addEntryEnum( const char* entryEnum )
    {
-      TNL_ASSERT( this->currentEntry,);
-      ( ( ConfigEntry< String >* ) currentEntry )->getEnumValues().Append( String( entryEnum ) );
+      TNL_ASSERT_TRUE( this->currentEntry, "there is no current entry" );
+      ConfigEntry< String >& entry = dynamic_cast< ConfigEntry< String >& >( *currentEntry );
+      entry.getEnumValues().push_back( String( entryEnum ) );
    }
 
    /**
@@ -165,8 +160,8 @@ class ConfigDescription
     */
    void addDelimiter( const String& delimiter )
    {
-      entries.Append( new ConfigDelimiter( delimiter ) );
-      currentEntry = 0;
+      entries.push_back( std::make_unique< ConfigDelimiter >( delimiter ) );
+      currentEntry = nullptr;
    }
 
    /**
@@ -176,46 +171,61 @@ class ConfigDescription
     */
    const ConfigEntryBase* getEntry( const String& name ) const
    {
-      for( int i = 0; i < entries.getSize(); i++ )
+      // ConfigDelimiter has empty name
+      if( ! name )
+         return nullptr;
+
+      const int entries_num = entries.size();
+      for( int i = 0; i < entries_num; i++ )
          if( entries[ i ]->name == name )
-            return entries[ i ];
-      return NULL;
+            return entries[ i ].get();
+      return nullptr;
    }
 
- 
+
    //! Returns empty string if given entry does not exist
    //const String getEntryType( const char* name ) const;
 
    //! Returns zero pointer if there is no default value
-   template< class T > const T* getDefaultValue( const String& name ) const
+   template< class T >
+   const T* getDefaultValue( const String& name ) const
    {
-      int i;
-      const int entries_num = entries. getSize();
-      for( i = 0; i < entries_num; i ++ )
-         if( entries[ i ] -> name == name )
-         {
-            if( entries[ i ] -> hasDefaultValue )
-               return ( ( ConfigEntry< T > * ) entries[ i ] ) -> default_value;
-            else return NULL;
+      // ConfigDelimiter has empty name
+      if( ! name )
+         return nullptr;
+
+      const int entries_num = entries.size();
+      for( int i = 0; i < entries_num; i++ )
+         if( entries[ i ]->name == name ) {
+            if( entries[ i ]->hasDefaultValue ) {
+               const ConfigEntry< T >& entry = dynamic_cast< ConfigEntry< T >& >( *entries[ i ] );
+               return entry->default_value;
+            }
+            return nullptr;
          }
       std::cerr << "Asking for the default value of unknown parameter." << std::endl;
-      return NULL;
+      return nullptr;
    }
  
    //! Returns zero pointer if there is no default value
-   template< class T > T* getDefaultValue( const String& name )
+   template< class T >
+   T* getDefaultValue( const String& name )
    {
-      int i;
-      const int entries_num = entries. getSize();
-      for( i = 0; i < entries_num; i ++ )
-         if( entries[ i ] -> name == name )
-         {
-            if( entries[ i ] -> hasDefaultValue )
-               return ( ( ConfigEntry< T > * ) entries[ i ] ) -> default_value;
-            else return NULL;
+      // ConfigDelimiter has empty name
+      if( ! name )
+         return nullptr;
+
+      const int entries_num = entries.size();
+      for( int i = 0; i < entries_num; i++ )
+         if( entries[ i ] -> name == name ) {
+            if( entries[ i ] -> hasDefaultValue ) {
+               ConfigEntry< T >& entry = dynamic_cast< ConfigEntry< T >& >( *entries[ i ] );
+               return entry->default_value;
+            }
+            return nullptr;
          }
       std::cerr << "Asking for the default value of unknown parameter." << std::endl;
-      return NULL;
+      return nullptr;
    }
 
    /**
@@ -225,37 +235,139 @@ class ConfigDescription
     * If there is missing entry with defined default value in the Config::ParameterContainer it is going to be added.
     * \param parameter_container Name of the ParameterContainer object.
     */
-   void addMissingEntries( Config::ParameterContainer& parameter_container ) const;
+   void addMissingEntries( Config::ParameterContainer& parameter_container ) const
+   {
+      const int size = entries.size();
+      for( int i = 0; i < size; i++ )
+      {
+         const char* entry_name = entries[ i ]->name.getString();
+         if( entries[ i ]->hasDefaultValue &&
+             ! parameter_container.checkParameter( entry_name ) )
+         {
+            if( entries[ i ]->getEntryType() == "String" )
+            {
+               ConfigEntry< String >& entry = dynamic_cast< ConfigEntry< String >& >( *entries[ i ] );
+               parameter_container.addParameter< String >( entry_name, entry.defaultValue );
+               continue;
+            }
+            if( entries[ i ]->getEntryType() == "bool" )
+            {
+               ConfigEntry< bool >& entry = dynamic_cast< ConfigEntry< bool >& >( *entries[ i ] );
+               parameter_container.addParameter< bool >( entry_name, entry.defaultValue );
+               continue;
+            }
+            if( entries[ i ]->getEntryType() == "int" )
+            {
+               ConfigEntry< int >& entry = dynamic_cast< ConfigEntry< int >& >( *entries[ i ] );
+               parameter_container.addParameter< int >( entry_name, entry.defaultValue );
+               continue;
+            }
+            if( entries[ i ]->getEntryType() == "double" )
+            {
+               ConfigEntry< double >& entry = dynamic_cast< ConfigEntry< double >& >( *entries[ i ] );
+               parameter_container.addParameter< double >( entry_name, entry.defaultValue );
+               continue;
+            }
+         }
+      }
+   }
 
    //! Check for all entries with the flag 'required'.
    /*! Returns false if any parameter is missing.
     */
    bool checkMissingEntries( Config::ParameterContainer& parameter_container,
                              bool printUsage,
-                             const char* programName ) const;
+                             const char* programName ) const
+   {
+      const int size = entries.size();
+      std::vector< std::string > missingParameters;
+      for( int i = 0; i < size; i++ )
+      {
+         const char* entry_name = entries[ i ] -> name.getString();
+         if( entries[ i ] -> required &&
+             ! parameter_container.checkParameter( entry_name ) )
+            missingParameters.push_back( entry_name );
+      }
+      if( missingParameters.size() > 0 )
+      {
+         std::cerr << "Some mandatory parameters are misssing. They are listed at the end. " << std::endl;
+         if( printUsage )
+            this->printUsage( programName );
+         std::cerr << "Add the following missing parameters to the command line: " << std::endl << "   ";
+         for( int i = 0; i < (int) missingParameters.size(); i++ )
+            std::cerr << "--" << missingParameters[ i ] << " ... ";
+         std::cerr << std::endl;
+         return false;
+      }
+      return true;
+   }
 
    /**
     * \brief Prints configuration description with the \e program_name at the top.
     *
     * \param program_name Name of the program
     */
-   void printUsage( const char* program_name ) const;
+   void printUsage( const char* program_name ) const
+   {
+      std::cout << "Usage of: " << program_name << std::endl << std::endl;
+      const int entries_num = entries.size();
+      int max_name_length( 0 );
+      int max_type_length( 0 );
+      for( int j = 0; j < entries_num; j++ )
+         if( ! entries[ j ]->isDelimiter() )
+         {
+            max_name_length = std::max( max_name_length,
+                        entries[ j ] -> name. getLength() );
+            max_type_length = std::max( max_type_length,
+                        entries[ j ] -> getUIEntryType().getLength() );
+         }
+      max_name_length += 2; // this is for '--'
+
+      for( int j = 0; j < entries_num; j++ )
+      {
+         if( entries[ j ]->isDelimiter() )
+         {
+            std::cout << std::endl;
+            std::cout << entries[ j ]->description;
+            std::cout << std::endl << std::endl;
+         }
+         else
+         {
+            std::cout << std::setw( max_name_length + 3 ) << String( "--" ) + entries[ j ]->name
+                 << std::setw( max_type_length + 5 ) << entries[ j ] -> getUIEntryType()
+                 << "    " << entries[ j ]->description;
+            if( entries[ j ] -> required )
+               std::cout << " *** REQUIRED ***";
+            if( entries[ j ]->hasEnumValues() )
+            {
+               std::cout << std::endl
+                    << std::setw( max_name_length + 3 ) << ""
+                    << std::setw( max_type_length + 5 ) << ""
+                    << "    ";
+               entries[ j ]->printEnumValues();
+            }
+            if( entries[ j ]->hasDefaultValue )
+            {
+               std::cout << std::endl
+                    << std::setw( max_name_length + 3 ) << ""
+                    << std::setw( max_type_length + 5 ) << ""
+                    << "    ";
+               std::cout << "- Default value is: " << entries[ j ]->printDefaultValue();
+            }
+            std::cout << std::endl;
+         }
+      }
+      std::cout << std::endl;
+   }
 
    //bool parseConfigDescription( const char* file_name );
 
-   /**
-    * \brief Basic destructor.
-    */
-   ~ConfigDescription();
-
-   protected:
-
-   Containers::List< ConfigEntryBase* > entries;
-
-   ConfigEntryBase* currentEntry;
-
+protected:
+   std::vector< std::unique_ptr< ConfigEntryBase > > entries;
+   ConfigEntryBase* currentEntry = nullptr;
 };
 
 } //namespace Config
 } //namespace TNL
 
+#include <TNL/Config/parseCommandLine.h>

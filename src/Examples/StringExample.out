@@ -47,6 +47,3 @@ true
 
 // load
 strg: Header
-
-// get line
-str: Hello!

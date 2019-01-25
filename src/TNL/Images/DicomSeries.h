@@ -22,7 +22,6 @@
 #include <TNL/Images//DicomHeader.h>
 #include <TNL/Images//RegionOfInterest.h>
 #include <TNL/Meshes/Grid.h>
-#include <TNL/tnlConfig.h>
 
 #ifdef HAVE_DCMTK_H
 #define USING_STD_NAMESPACE

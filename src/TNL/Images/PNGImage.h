@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include <TNL/tnlConfig.h>
-
 #ifdef HAVE_PNG_H
 #include <png.h>
 #endif

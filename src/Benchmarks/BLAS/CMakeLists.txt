@@ -1,10 +1,8 @@
 if( BUILD_CUDA )
     CUDA_ADD_EXECUTABLE( tnl-benchmark-blas tnl-benchmark-blas.cu )
     CUDA_ADD_CUBLAS_TO_TARGET( tnl-benchmark-blas )
-    TARGET_LINK_LIBRARIES( tnl-benchmark-blas tnl )
 else()
     ADD_EXECUTABLE( tnl-benchmark-blas tnl-benchmark-blas.cpp )
-    TARGET_LINK_LIBRARIES( tnl-benchmark-blas tnl )
 endif()
 
 install( TARGETS tnl-benchmark-blas RUNTIME DESTINATION bin )

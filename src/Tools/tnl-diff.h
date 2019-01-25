@@ -24,7 +24,7 @@ template< typename MeshPointer, typename Value, typename Real, typename Index >
 bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const Config::ParameterContainer& parameters )
 {
    bool verbose = parameters. getParameter< bool >( "verbose" );
-   Containers::List< String > inputFiles = parameters. getParameter< Containers::List< String > >( "input-files" );
+   std::vector< String > inputFiles = parameters. getParameter< std::vector< String > >( "input-files" );
    String mode = parameters. getParameter< String >( "mode" );
    String outputFileName = parameters. getParameter< String >( "output-file" );
    double snapshotPeriod = parameters. getParameter< double >( "snapshot-period" );
@@ -53,12 +53,12 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const Con
    typedef typename MeshPointer::ObjectType Mesh;
    Functions::MeshFunction< Mesh, Mesh::getMeshDimension(), Real > v1( meshPointer ), v2( meshPointer ), diff( meshPointer );
    Real totalL1Diff( 0.0 ), totalL2Diff( 0.0 ), totalMaxDiff( 0.0 );
-   for( int i = 0; i < inputFiles. getSize(); i ++ )
+   for( int i = 0; i < (int) inputFiles.size(); i ++ )
    {
       String file1, file2;
       if( mode == "couples" )
       {
-         if( i + 1 == inputFiles.getSize() )
+         if( i + 1 == (int) inputFiles.size() )
          {
             std::cerr << std::endl << "Skipping the file " << inputFiles[ i ] << " since there is no file to couple it with." << std::endl;
             outputFile.close();
@@ -105,7 +105,7 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const Con
       }
       if( mode == "halves" )
       {
-         const int half = inputFiles. getSize() / 2;
+         const int half = inputFiles.size() / 2;
          if( i == 0 )
             i = half;
          if( verbose )
@@ -178,7 +178,7 @@ template< typename MeshPointer, typename Value, typename Real, typename Index >
 bool computeDifferenceOfVectors( const MeshPointer& meshPointer, const Config::ParameterContainer& parameters )
 {
    bool verbose = parameters. getParameter< bool >( "verbose" );
-   Containers::List< String > inputFiles = parameters. getParameter< Containers::List< String > >( "input-files" );
+   std::vector< String > inputFiles = parameters. getParameter< std::vector< String > >( "input-files" );
    String mode = parameters. getParameter< String >( "mode" );
    String outputFileName = parameters. getParameter< String >( "output-file" );
    double snapshotPeriod = parameters. getParameter< double >( "snapshot-period" );
@@ -205,11 +205,11 @@ bool computeDifferenceOfVectors( const MeshPointer& meshPointer, const Config::P
 
    Containers::Vector< Real, Devices::Host, Index > v1, v2;
    Real totalL1Diff( 0.0 ), totalL2Diff( 0.0 ), totalMaxDiff( 0.0 );
-   for( int i = 0; i < inputFiles. getSize(); i ++ )
+   for( int i = 0; i < (int) inputFiles.size(); i++ )
    {
       if( mode == "couples" )
       {
-         if( i + 1 == inputFiles.getSize() )
+         if( i + 1 == (int) inputFiles.size() )
          {
             std::cerr << std::endl << "Skipping the file " << inputFiles[ i ] << " since there is no file to couple it with." << std::endl;
             outputFile.close();
@@ -252,7 +252,7 @@ bool computeDifferenceOfVectors( const MeshPointer& meshPointer, const Config::P
       }
       if( mode == "halves" )
       {
-         const int half = inputFiles. getSize() / 2;
+         const int half = inputFiles.size() / 2;
          if( i == 0 )
             i = half;
          if( verbose )
@@ -325,7 +325,7 @@ bool computeDifference( const MeshPointer& meshPointer, const String& objectType
 template< typename MeshPointer, typename Value, typename Real >
 bool setIndexType( const MeshPointer& meshPointer,
                    const String& inputFileName,
-                   const Containers::List< String >& parsedObjectType,
+                   const std::vector< String >& parsedObjectType,
                    const Config::ParameterContainer& parameters )
 {
    String indexType;
@@ -353,8 +353,8 @@ bool setIndexType( const MeshPointer& meshPointer,
 template< typename MeshPointer >
 bool setTupleType( const MeshPointer& meshPointer,
                    const String& inputFileName,
-                   const Containers::List< String >& parsedObjectType,
-                   const Containers::List< String >& parsedValueType,
+                   const std::vector< String >& parsedObjectType,
+                   const std::vector< String >& parsedValueType,
                    const Config::ParameterContainer& parameters )
 {
    int dimensions = atoi( parsedValueType[ 1 ].getString() );
@@ -404,7 +404,7 @@ bool setTupleType( const MeshPointer& meshPointer,
 template< typename MeshPointer >
 bool setValueType( const MeshPointer& meshPointer,
                      const String& inputFileName,
-                     const Containers::List< String >& parsedObjectType,
+                     const std::vector< String >& parsedObjectType,
                      const Config::ParameterContainer& parameters )
 {
    String elementType;
@@ -428,8 +428,8 @@ bool setValueType( const MeshPointer& meshPointer,
       return setIndexType< MeshPointer, double, double >( meshPointer, inputFileName, parsedObjectType, parameters );
    if( elementType == "long double" )
       return setIndexType< MeshPointer, long double, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
-   Containers::List< String > parsedValueType;
-   if( ! parseObjectType( elementType, parsedValueType ) )
+   const std::vector< String > parsedValueType = parseObjectType( elementType );
+   if( ! parsedValueType.size() )
    {
       std::cerr << "Unable to parse object type " << elementType << "." << std::endl;
       return false;
@@ -445,8 +445,7 @@ template< typename Mesh >
 bool processFiles( const Config::ParameterContainer& parameters )
 {
    int verbose = parameters. getParameter< int >( "verbose");
-   Containers::List< String > inputFiles = parameters. getParameter< Containers::List< String > >( "input-files" );
-   String& inputFile = inputFiles[ 0 ];
+   std::vector< String > inputFiles = parameters. getParameter< std::vector< String > >( "input-files" );
 
    /****
     * Reading the mesh
@@ -472,8 +471,8 @@ bool processFiles( const Config::ParameterContainer& parameters )
    if( verbose )
      std::cout << objectType << " detected ... ";
 
-   Containers::List< String > parsedObjectType;
-   if( ! parseObjectType( objectType, parsedObjectType ) )
+   const std::vector< String > parsedObjectType = parseObjectType( objectType );
+   if( ! parsedObjectType.size() )
    {
       std::cerr << "Unable to parse object type " << objectType << "." << std::endl;
       return false;
@@ -483,7 +482,7 @@ bool processFiles( const Config::ParameterContainer& parameters )
 }
 
 template< int Dim, typename Real >
-bool resolveGridIndexType( const Containers::List< String >& parsedMeshType,
+bool resolveGridIndexType( const std::vector< String >& parsedMeshType,
                            const Config::ParameterContainer& parameters )
 {
    if( parsedMeshType[ 4 ] == "int" )
@@ -495,7 +494,7 @@ bool resolveGridIndexType( const Containers::List< String >& parsedMeshType,
 }
 
 template< int Dim >
-bool resolveGridRealType( const Containers::List< String >& parsedMeshType,
+bool resolveGridRealType( const std::vector< String >& parsedMeshType,
                           const Config::ParameterContainer& parameters )
 {
    if( parsedMeshType[ 2 ] == "float" )

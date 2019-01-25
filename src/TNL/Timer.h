@@ -8,8 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-
 #pragma once
+
+#include <chrono>
 
 namespace TNL {
 
@@ -88,13 +89,14 @@ class Timer
       /// \param logger Name of Logger object.
       /// \param logLevel A non-negative integer recording the log record indent.
       bool writeLog( Logger& logger, int logLevel = 0 ) const;
- 
+
    protected:
 
+      using TimePoint = typename std::chrono::high_resolution_clock::time_point;
+      using Duration = typename std::chrono::high_resolution_clock::duration;
+
       /// \brief Function for measuring the real time.
-      ///
-      /// Returns number of seconds since Epoch, 1970-01-01 00:00:00 UTC.
-      double readRealTime() const;
+      TimePoint readRealTime() const;
 
       /// \brief Function for measuring the CPU time.
       ///
@@ -104,11 +106,14 @@ class Timer
 
       /// \brief Function for counting the number of CPU cycles (machine cycles).
       unsigned long long int readCPUCycles() const;
-      
 
-   double initialRealTime, totalRealTime,
-          initialCPUTime, totalCPUTime;
- 
+      double durationToDouble( const Duration& duration ) const;
+
+   TimePoint initialRealTime;
+   Duration totalRealTime;
+
+   double initialCPUTime, totalCPUTime;
+
    unsigned long long int initialCPUCycles, totalCPUCycles;
 
    /// \brief Saves information about the state of given timer.
@@ -127,8 +132,6 @@ class Timer
    }
 };
 
-// !!! Odstranit ???!!!
-extern Timer defaultTimer;
-
 } // namespace TNL
 
+#include <TNL/Timer_impl.h>

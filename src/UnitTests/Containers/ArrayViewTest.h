@@ -65,6 +65,7 @@ protected:
 
 // types for which ArrayViewTest is instantiated
 using ViewTypes = ::testing::Types<
+#ifndef HAVE_CUDA
    ArrayView< int,    Devices::Host, short >,
    ArrayView< long,   Devices::Host, short >,
    ArrayView< float,  Devices::Host, short >,
@@ -79,9 +80,10 @@ using ViewTypes = ::testing::Types<
    ArrayView< long,   Devices::Host, long >,
    ArrayView< float,  Devices::Host, long >,
    ArrayView< double, Devices::Host, long >,
-   ArrayView< MyData, Devices::Host, long >,
+   ArrayView< MyData, Devices::Host, long >
    // FIXME: this segfaults in String::~String()
-//   , ArrayView< String, Devices::Host, long >,
+//   , ArrayView< String, Devices::Host, long >
+#endif
 #ifdef HAVE_CUDA
    ArrayView< int,    Devices::Cuda, short >,
    ArrayView< long,   Devices::Cuda, short >,
@@ -97,9 +99,10 @@ using ViewTypes = ::testing::Types<
    ArrayView< long,   Devices::Cuda, long >,
    ArrayView< float,  Devices::Cuda, long >,
    ArrayView< double, Devices::Cuda, long >,
-   ArrayView< MyData, Devices::Cuda, long >,
+   ArrayView< MyData, Devices::Cuda, long >
 #endif
 #ifdef HAVE_MIC
+   ,
    ArrayView< int,    Devices::MIC, short >,
    ArrayView< long,   Devices::MIC, short >,
    ArrayView< float,  Devices::MIC, short >,
@@ -122,8 +125,11 @@ using ViewTypes = ::testing::Types<
 
    // all ArrayView tests should also work with VectorView
    // (but we can't test all types because the argument list would be too long...)
+#ifndef HAVE_CUDA
+   ,
    VectorView< float,  Devices::Host, long >,
    VectorView< double, Devices::Host, long >
+#endif
 #ifdef HAVE_CUDA
    ,
    VectorView< float,  Devices::Cuda, long >,
