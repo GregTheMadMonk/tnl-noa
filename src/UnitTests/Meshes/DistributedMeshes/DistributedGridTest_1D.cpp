@@ -222,7 +222,6 @@ TEST_F(DistributedGridTest_1D, SynchronizerNeighborsTest )
       EXPECT_EQ((dof)[dof.getSize()-1],rank+1)<< "Right Overlap was filled by wrong process.";
 }
 
-
 TEST_F(DistributedGridTest_1D, EvaluateLinearFunction )
 {
    //fill mesh function with linear function (physical center of cell corresponds with its coordinates in grid) 
@@ -258,11 +257,13 @@ TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithoutMask )
    maskDofs.setValue( true );
    constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr, constFunctionPtr );
    meshFunctionPtr->template synchronize<CommunicatorType>( true );
+
    if( rank == 0 )
       EXPECT_EQ( dof[ 1 ], -nproc ) << "Left Overlap was filled by wrong process.";
    if( rank == nproc-1 )
       EXPECT_EQ( dof[ dof.getSize() - 2 ], -1 )<< "Right Overlap was filled by wrong process.";
 }
+
 
 TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithActiveMask )
 {

@@ -38,6 +38,7 @@ getOverlaps( const DistributedMeshType* distributedMesh,
    
    for( int i = 0; i < Dimension; i++ )
    {
+
       if( subdomainCoordinates[ i ] > 0 )
          lower[ i ] = subdomainOverlapSize;
       else

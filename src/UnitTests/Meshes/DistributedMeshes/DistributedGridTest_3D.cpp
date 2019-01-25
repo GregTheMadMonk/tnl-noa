@@ -642,12 +642,13 @@ class DistributedGirdTest_3D : public ::testing::Test
          globalGrid.setDimensions(size,size,size);
          globalGrid.setDomain(globalOrigin,globalProportions);
 
-         typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
          distributedGrid=new DistributedGridType();
          distributedGrid->setDomainDecomposition( typename DistributedGridType::CoordinatesType( 3, 3, 3 ) );
          distributedGrid->template setGlobalGrid<CommunicatorType>( globalGrid );
          distributedGrid->setupGrid(*gridptr);    
-         SubdomainOverlapsGetter< GridType, CommunicatorType >::getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1 );
+         typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
+         SubdomainOverlapsGetter< GridType, CommunicatorType >::
+            getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1 );
          distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
 
          distributedGrid->setupGrid(*gridptr);

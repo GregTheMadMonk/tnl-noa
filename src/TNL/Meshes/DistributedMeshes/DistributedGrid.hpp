@@ -170,7 +170,7 @@ template< int Dimension, typename Real, typename Device, typename Index >
 void
 DistributedMesh< Grid< Dimension, Real, Device, Index > >::
 setOverlaps( const SubdomainOverlapsType& lower,
-             const SubdomainOverlapsType& upper )
+             const SubdomainOverlapsType& upper)
 {
    this->lowerOverlap = lower;
    this->upperOverlap = upper;

@@ -370,7 +370,8 @@ class DistributedGridTest_2D : public ::testing::Test
          distributedGrid->setDomainDecomposition( typename DistributedGridType::CoordinatesType( 3, 3 ) );
          distributedGrid->template setGlobalGrid<CommunicatorType>( globalGrid );
          typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
-         SubdomainOverlapsGetter< GridType, CommunicatorType >::getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1 );
+         SubdomainOverlapsGetter< GridType, CommunicatorType >::
+            getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1 );
          distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
          distributedGrid->setupGrid(*gridPtr);
 
@@ -399,6 +400,7 @@ TEST_F(DistributedGridTest_2D, evaluateAllEntities)
    check_Overlap_2D(rank, *gridPtr, *dof, -1);
    check_Inner_2D(rank, *gridPtr, *dof, rank);
 }
+
 
 TEST_F(DistributedGridTest_2D, evaluateBoundaryEntities)
 {
@@ -686,7 +688,7 @@ TEST_F(DistributedGridTest_2D, SynchronizerNeighborPeriodicBoundariesWithInactiv
    //Expecting 9 processes
    setDof_2D(*dof, -rank-1 );
    maskDofs.setValue( true );
-   if( distributedGrid->getNeighbors()[ Left ] == -1 )
+   if( distributedGrid->getNeighbors()[ ZzYzXm ] == -1 )
    {
       for( IndexType i = 0; i < gridPtr->getDimensions().y(); i++ )
       {
@@ -770,7 +772,7 @@ TEST_F(DistributedGridTest_2D, SynchronizerNeighborPeriodicBoundariesWithInActiv
    //Expecting 9 processes
    setDof_2D(*dof, -rank-1 );
    maskDofs.setValue( true );
-   if( distributedGrid->getNeighbors()[ Right ] == -1 )
+   if( distributedGrid->getNeighbors()[ ZzYzXp ] == -1 )
    {
       for( IndexType i = 0; i < gridPtr->getDimensions().y(); i++ )
       {
@@ -854,7 +856,7 @@ TEST_F(DistributedGridTest_2D, SynchronizerNeighborPeriodicBoundariesWithInActiv
    //Expecting 9 processes
    setDof_2D(*dof, -rank-1 );
    maskDofs.setValue( true );
-   if( distributedGrid->getNeighbors()[ Up ] == -1 )
+   if( distributedGrid->getNeighbors()[ ZzYmXz ] == -1 )
    {
       for( IndexType i = 0; i < gridPtr->getDimensions().x(); i++ )
       {
@@ -938,7 +940,7 @@ TEST_F(DistributedGridTest_2D, SynchronizerNeighborPeriodicBoundariesWithInActiv
    //Expecting 9 processes
    setDof_2D(*dof, -rank-1 );
    maskDofs.setValue( true );
-   if( distributedGrid->getNeighbors()[ Down ] == -1 )
+   if( distributedGrid->getNeighbors()[ ZzYpXz ] == -1 )
    {
       for( IndexType i = 0; i < gridPtr->getDimensions().x(); i++ )
       {
