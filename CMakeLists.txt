@@ -6,11 +6,6 @@
 #    email               : tomas.oberhuber@fjfi.cvut.cz
 #
 ###############################################################################
-#
-# Authors:
-# Tomas Oberhuber
-# Vladimir Klement
-# Jakub Klinkovsky
 
 cmake_minimum_required( VERSION 3.5.1 )
 
