@@ -891,21 +891,11 @@ EXCLUDE_SYMLINKS       = NO
 # Note that the wildcards are matched against the file with absolute path, so to
 # exclude all test directories for example use the pattern */test/*
 
-EXCLUDE_PATTERNS       = */Communicators/* \
-                         */Config/* \
-                         */Debugging/* \
-                         */Devices/* \
-                         */DistributedContainers/* \
-                         */Exceptions/* \
+EXCLUDE_PATTERNS       = */Debugging/* \
                          */Experimental/* \
-                         */Functions/* \
-                         */Images/* \
-                         */Matrices/* \
-                         */Meshes/* \
-                         */Operators/* \
-                         */Pointers/* \
-                         */Problems/* \
-                         */Solvers/* 
+                         */Meshes/GridDetails/* \
+                         */Meshes/MeshDetails/* \
+                         */Problems/*
 
 
 # The EXCLUDE_SYMBOLS tag can be used to specify one or more symbol names
@@ -917,7 +907,8 @@ EXCLUDE_PATTERNS       = */Communicators/* \
 # Note that the wildcards are matched against the file with absolute path, so to
 # exclude all test directories use the pattern */test/*
 
-EXCLUDE_SYMBOLS        =
+EXCLUDE_SYMBOLS = *::__*impl  # internal namespaces
+EXCLUDE_SYMBOLS += TNL::Assert::*  # internal namespace
 
 # The EXAMPLE_PATH tag can be used to specify one or more files or directories
 # that contain example code fragments that are included (see the \include
