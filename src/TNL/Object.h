@@ -16,6 +16,9 @@
 #include <TNL/String.h>
 #include <TNL/File.h>
 
+/**
+ * \brief The main TNL namespace.
+ */
 namespace TNL {
 
 /**
