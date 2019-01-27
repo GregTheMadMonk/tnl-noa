@@ -1,6 +1,6 @@
 # Template Numerical Library
 
-![Image] (../../Documentation/tnl-logo.jpg)
+![Image](tnl-logo.jpg)
 
 ## Tutorials
 
