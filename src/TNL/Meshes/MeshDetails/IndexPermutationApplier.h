@@ -33,7 +33,7 @@ private:
       static void exec( Mesh& mesh, const GlobalIndexVector& perm )
       {
          auto& subentitiesStorage = mesh.template getSubentityStorageNetwork< Dimension, Subdimension >();
-         permuteMultimapKeys( subentitiesStorage, perm );
+         Containers::Multimaps::permuteMultimapKeys( subentitiesStorage, perm );
       }
    };
 
@@ -54,7 +54,7 @@ private:
       static void exec( Mesh& mesh, const GlobalIndexVector& perm )
       {
          auto& superentitiesStorage = mesh.template getSuperentityStorageNetwork< Dimension, Superdimension >();
-         permuteMultimapKeys( superentitiesStorage, perm );
+         Containers::Multimaps::permuteMultimapKeys( superentitiesStorage, perm );
       }
    };
 
@@ -75,7 +75,7 @@ private:
       static void exec( Mesh& mesh, const GlobalIndexVector& iperm )
       {
          auto& superentitiesStorage = mesh.template getSuperentityStorageNetwork< Subdimension, Dimension >();
-         permuteMultimapValues( superentitiesStorage, iperm );
+         Containers::Multimaps::permuteMultimapValues( superentitiesStorage, iperm );
       }
    };
 
@@ -96,7 +96,7 @@ private:
       static void exec( Mesh& mesh, const GlobalIndexVector& iperm )
       {
          auto& subentitiesStorage = mesh.template getSubentityStorageNetwork< Superdimension, Dimension >();
-         permuteMultimapValues( subentitiesStorage, iperm );
+         Containers::Multimaps::permuteMultimapValues( subentitiesStorage, iperm );
       }
    };
 

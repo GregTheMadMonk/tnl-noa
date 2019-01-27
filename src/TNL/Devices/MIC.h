@@ -156,12 +156,12 @@ class MIC
 
 #endif
 
-   static void insertSmartPointer( SmartPointer* pointer )
+   static void insertSmartPointer( Pointers::SmartPointer* pointer )
    {
       smartPointersRegister.insert( pointer, -1 );
    }
 
-   static void removeSmartPointer( SmartPointer* pointer )
+   static void removeSmartPointer( Pointers::SmartPointer* pointer )
    {
       smartPointersRegister.remove( pointer, -1 );
    }
@@ -179,10 +179,10 @@ class MIC
    static Timer smartPointersSynchronizationTimer;
 
 protected:
-   static SmartPointersRegister smartPointersRegister;
+   static Pointers::SmartPointersRegister smartPointersRegister;
 };
 
-SmartPointersRegister MIC::smartPointersRegister;
+Pointers::SmartPointersRegister MIC::smartPointersRegister;
 Timer MIC::smartPointersSynchronizationTimer;
 
 } // namespace <unnamed>

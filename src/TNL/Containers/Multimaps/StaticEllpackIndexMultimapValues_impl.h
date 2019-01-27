@@ -15,7 +15,9 @@
 #include <TNL/Assert.h>
 
 namespace TNL {
- 
+namespace Containers {
+namespace Multimaps {
+
 template< int ValuesCount,
           typename Index,
           typename Device,
@@ -278,5 +280,6 @@ std::ostream& operator << ( std::ostream& str, const StaticEllpackIndexMultimapV
    return str;
 }
 
+} // namespace Multimaps
+} // namespace Containers
 } // namespace TNL
-

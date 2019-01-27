@@ -15,6 +15,9 @@
 #include <TNL/Pointers/SmartPointer.h>
 #include <TNL/Assert.h>
 
+namespace TNL {
+namespace Pointers {
+
 class SmartPointersRegister
 {
 
@@ -57,3 +60,6 @@ class SmartPointersRegister
 
       std::unordered_map< int, SetType > pointersOnDevices;
 };
+
+} // namespace Pointers
+} // namespace TNL

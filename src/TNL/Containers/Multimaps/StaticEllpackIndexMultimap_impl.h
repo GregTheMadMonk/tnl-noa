@@ -13,6 +13,8 @@
 #include <TNL/Containers/Multimaps/StaticEllpackIndexMultimap.h>
 
 namespace TNL {
+namespace Containers {
+namespace Multimaps {
 
 template< int ValuesCount,
           typename Index,
@@ -270,5 +272,6 @@ std::ostream& operator << ( std::ostream& str, const StaticEllpackIndexMultimap<
    return str;
 }
 
+} // namespace Multimaps
+} // namespace Containers
 } // namespace TNL
-

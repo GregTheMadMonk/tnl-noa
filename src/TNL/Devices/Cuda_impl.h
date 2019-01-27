@@ -303,12 +303,12 @@ inline void Cuda::checkDevice( const char* file_name, int line, cudaError error 
 }
 #endif
 
-inline void Cuda::insertSmartPointer( SmartPointer* pointer )
+inline void Cuda::insertSmartPointer( Pointers::SmartPointer* pointer )
 {
    getSmartPointersRegister().insert( pointer, Devices::CudaDeviceInfo::getActiveDevice() );
 }
 
-inline void Cuda::removeSmartPointer( SmartPointer* pointer )
+inline void Cuda::removeSmartPointer( Pointers::SmartPointer* pointer )
 {
    getSmartPointersRegister().remove( pointer, Devices::CudaDeviceInfo::getActiveDevice() );
 }
@@ -333,9 +333,9 @@ inline Timer& Cuda::getSmartPointersSynchronizationTimer()
    return timer;
 }
 
-inline SmartPointersRegister& Cuda::getSmartPointersRegister()
+inline Pointers::SmartPointersRegister& Cuda::getSmartPointersRegister()
 {
-   static SmartPointersRegister reg;
+   static Pointers::SmartPointersRegister reg;
    return reg;
 }
 

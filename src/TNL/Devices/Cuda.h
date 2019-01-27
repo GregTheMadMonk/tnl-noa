@@ -159,9 +159,9 @@ class Cuda
    static inline void checkDevice() {}
 #endif
 
-   static inline void insertSmartPointer( SmartPointer* pointer );
+   static inline void insertSmartPointer( Pointers::SmartPointer* pointer );
 
-   static inline void removeSmartPointer( SmartPointer* pointer );
+   static inline void removeSmartPointer( Pointers::SmartPointer* pointer );
 
    // Negative deviceId means that CudaDeviceInfo::getActiveDevice will be
    // called to get the device ID.
@@ -171,7 +171,7 @@ class Cuda
 
    protected:
 
-   static inline SmartPointersRegister& getSmartPointersRegister();
+   static inline Pointers::SmartPointersRegister& getSmartPointersRegister();
 };
 
 #ifdef HAVE_CUDA

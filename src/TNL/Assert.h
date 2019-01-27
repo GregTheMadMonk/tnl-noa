@@ -116,6 +116,9 @@
 #include <TNL/Debugging/StackBacktrace.h>
 
 namespace TNL {
+/**
+ * \brief Internal namespace for helper classes used in the TNL_ASSERT_* macros.
+ */
 namespace Assert {
 
 #ifdef TNL_THROW_ASSERTION_ERROR

@@ -505,9 +505,10 @@ hauseholder_cwy( VectorViewType v,
    }
 
    // v = e_i - Y_i * aux
-   MatrixOperations< DeviceType >::gemv( size, i + 1,
-                                         -1.0, Y.getData(), ldSize, aux,
-                                         0.0, Traits::getLocalVectorView( v ).getData() );
+   Matrices::MatrixOperations< DeviceType >::
+      gemv( size, i + 1,
+            -1.0, Y.getData(), ldSize, aux,
+            0.0, Traits::getLocalVectorView( v ).getData() );
    if( localOffset == 0 )
       v.setElement( i, 1.0 + v.getElement( i ) );
 }
@@ -544,9 +545,10 @@ hauseholder_cwy_transposed( VectorViewType z,
 
    // z = w - Y_i * aux
    z = w;
-   MatrixOperations< DeviceType >::gemv( size, i + 1,
-                                         -1.0, Y.getData(), ldSize, aux,
-                                         1.0, Traits::getLocalVectorView( z ).getData() );
+   Matrices::MatrixOperations< DeviceType >::
+      gemv( size, i + 1,
+            -1.0, Y.getData(), ldSize, aux,
+            1.0, Traits::getLocalVectorView( z ).getData() );
 }
 
 template< typename Matrix >
@@ -585,9 +587,10 @@ update( const int k,
 
    if( variant != Variant::CWY ) {
       // x = V * y + x
-      MatrixOperations< DeviceType >::gemv( size, k + 1,
-                                            1.0, V.getData(), ldSize, y,
-                                            1.0, Traits::getLocalVectorView( x ).getData() );
+      Matrices::MatrixOperations< DeviceType >::
+         gemv( size, k + 1,
+               1.0, V.getData(), ldSize, y,
+               1.0, Traits::getLocalVectorView( x ).getData() );
    }
    else {
       // The vectors v_i are not stored, they can be reconstructed as P_0...P_j * e_j.
@@ -616,9 +619,10 @@ update( const int k,
       }
 
       // x -= Y_{k+1} * aux
-      MatrixOperations< DeviceType >::gemv( size, k + 1,
-                                            -1.0, Y.getData(), ldSize, aux,
-                                            1.0, Traits::getLocalVectorView( x ).getData() );
+      Matrices::MatrixOperations< DeviceType >::
+         gemv( size, k + 1,
+               -1.0, Y.getData(), ldSize, aux,
+               1.0, Traits::getLocalVectorView( x ).getData() );
 
       // x += y
       if( localOffset == 0 )

@@ -10,6 +10,9 @@
 
 #pragma once
 
+namespace TNL {
+namespace Pointers {
+
 class SmartPointer
 {
    public:
@@ -17,3 +20,6 @@ class SmartPointer
       virtual bool synchronize() = 0;
 
 };
+
+} // namespace Pointers
+} // namespace TNL
