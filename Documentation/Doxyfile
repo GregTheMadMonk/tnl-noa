@@ -58,7 +58,7 @@ PROJECT_LOGO           =
 # entered, it will be relative to the location where doxygen was started. If
 # left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       = Documentation
+OUTPUT_DIRECTORY       =
 
 # If the CREATE_SUBDIRS tag is set to YES then doxygen will create 4096 sub-
 # directories (in 2 levels) under the output directory of each output format and
@@ -790,9 +790,9 @@ WARN_LOGFILE           =
 # spaces. See also FILE_PATTERNS and EXTENSION_MAPPING
 # Note: If this tag is empty the current directory is searched.
 
-INPUT = Documentation/main-page.md
-INPUT += Documentation/Tutorials
-INPUT += src/TNL
+INPUT = main-page.md
+INPUT += Tutorials
+INPUT += ../src/TNL
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding. Doxygen uses
@@ -923,7 +923,7 @@ EXCLUDE_SYMBOLS        =
 # that contain example code fragments that are included (see the \include
 # command).
 
-EXAMPLE_PATH           = src/Examples
+EXAMPLE_PATH           = ../src/Examples
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp and
@@ -999,7 +999,7 @@ FILTER_SOURCE_PATTERNS =
 # (index.html). This can be useful if you have a project on for instance GitHub
 # and want to reuse the introduction page also for the doxygen output.
 
-USE_MDFILE_AS_MAINPAGE = Documentation/main-page.md
+USE_MDFILE_AS_MAINPAGE = main-page.md
 
 #---------------------------------------------------------------------------
 # Configuration options related to source browsing
@@ -1219,7 +1219,7 @@ HTML_EXTRA_STYLESHEET  =
 # files will be copied as-is; there are no commands or markers available.
 # This tag requires that the tag GENERATE_HTML is set to YES.
 
-HTML_EXTRA_FILES       = Documentation/tnl-logo.jpg
+HTML_EXTRA_FILES       = tnl-logo.jpg
 
 # The HTML_COLORSTYLE_HUE tag controls the color of the HTML output. Doxygen
 # will adjust the colors in the style sheet and background images according to
@@ -2156,7 +2156,7 @@ SKIP_FUNCTION_MACROS   = YES
 
 # archive for cppreference.com can be found here:
 # https://en.cppreference.com/w/Cppreference:Archives#Doxygen_tag_file
-TAGFILES = "Documentation/cppreference-doxygen-web.tag.xml=https://en.cppreference.com/w/"
+TAGFILES = "cppreference-doxygen-web.tag.xml=https://en.cppreference.com/w/"
 
 # When a file name is specified after GENERATE_TAGFILE, doxygen will create a
 # tag file that is based on the input files it reads. See section "Linking to
