@@ -35,52 +35,52 @@ inline bool DicomSeriesInfo::retrieveInfo()
 #ifdef HAVE_DCMTK_H
    OFString str;
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString( DCM_Modality, str );
-   this->modality.setString( str.data() );
+   this->modality = str.data();
  
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString( DCM_StudyInstanceUID, str );
-   this->studyInstanceUID.setString( str.data() );
+   this->studyInstanceUID = str.data();
  
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString( DCM_SeriesInstanceUID, str );
-   this->seriesInstanceUID.setString( str.data() );
+   this->seriesInstanceUID = str.data();
  
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString( DCM_SeriesNumber, str );
-   this->seriesNumber.setString( str.data() );
+   this->seriesNumber = str.data();
  
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString( DCM_SeriesDescription, str );
-   this->seriesDescription.setString( str.data() );
+   this->seriesDescription = str.data();
  
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString( DCM_SeriesDate, str );
-   this->seriesDate.setString( str.data() );
+   this->seriesDate = str.data();
  
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString( DCM_SeriesTime, str );
-   this->seriesTime.setString( str.data() );
+   this->seriesTime = str.data();
  
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString( DCM_PerformingPhysicianName, str );
-   this->performingPhysiciansName.setString( str.data() );
+   this->performingPhysiciansName = str.data();
  
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString( DCM_PerformingPhysicianIdentificationSequence, str );
-   this->performingPhysicianIdentificationSequence.setString( str.data() );
+   this->performingPhysicianIdentificationSequence = str.data();
  
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString( DCM_OperatorsName, str );
-   this->operatorsName.setString( str.data() );
+   this->operatorsName = str.data();
  
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString( DCM_OperatorIdentificationSequence, str );
-   this->operatorIdentificationSequence.setString( str.data());
+   this->operatorIdentificationSequence = str.data();
  
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString( DCM_FrameAcquisitionDuration, str );
-   this->frameTime.setString( str.data() );
+   this->frameTime = str.data();
  
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString( DCM_FrameAcquisitionDateTime, str );
-   this->faDateTime.setString( str.data() );
+   this->faDateTime = str.data();
  
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString( DCM_FrameReferenceTime, str );
-   this->faRefTime.setString( str.data() );
+   this->faRefTime = str.data();
  
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString( DCM_ActualFrameDuration, str );
-   this->AFD.setString( str.data() );
+   this->AFD = str.data();
  
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString( DCM_AcquisitionTime, str );
-   this->acquisitionTime.setString( str.data() );
+   this->acquisitionTime = str.data();
 
     //prostudovat delay time
     //OFString delayTime = "";
