@@ -366,9 +366,6 @@ INCLUDE_DIRECTORIES( ${PROJECT_BUILD_PATH} )
 LINK_DIRECTORIES( ${LIBRARY_OUTPUT_PATH} )
 
 # Add all subdirectories
-if( ${WITH_TESTS} )
-    add_subdirectory( tests )
-endif()
 add_subdirectory( src )
 add_subdirectory( share )
 
