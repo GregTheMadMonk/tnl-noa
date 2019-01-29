@@ -4,4 +4,4 @@
 
 ## Tutorials
 
-1. [Vectors](Tutorials/tutorial-1.md)
+1. [Vectors](Tutorials/main-page.md)
