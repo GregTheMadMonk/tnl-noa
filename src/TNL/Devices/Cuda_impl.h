@@ -315,6 +315,7 @@ inline void Cuda::removeSmartPointer( Pointers::SmartPointer* pointer )
 
 inline bool Cuda::synchronizeDevice( int deviceId )
 {
+#ifdef HAVE_CUDA
 #ifdef HAVE_CUDA_UNIFIED_MEMORY
    return true;
 #else
@@ -324,6 +325,7 @@ inline bool Cuda::synchronizeDevice( int deviceId )
    bool b = getSmartPointersRegister().synchronizeDevice( deviceId );
    getSmartPointersSynchronizationTimer().stop();
    return b;
+#endif
 #endif
 }
 
