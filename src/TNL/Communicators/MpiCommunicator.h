@@ -38,6 +38,7 @@
 #include <TNL/Communicators/MpiDefs.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Exceptions/MPISupportMissing.h>
+#include <TNL/Exceptions/MPIDimsCreateError.h>
 
 
 
@@ -240,16 +241,20 @@ class MpiCommunicator
 #endif
       }
 
-        //dim-number of dimesions, distr array of guess distr - 0 for computation
+        //dim-number of dimensions, distr array of guess distr - 0 for computation
         //distr array will be filled by computed distribution
         //more information in MPI documentation
         static void DimsCreate(int nproc, int dim, int *distr)
         {
 #ifdef HAVE_MPI
-            /***HACK for linear distribution***/
-           int sum=0;
-           for(int i=0;i<dim;i++)
-                sum+=distr[i];
+           int sum = 0, prod = 1;
+           for( int i = 0;i < dim; i++ )
+           {
+               sum += distr[ i ];
+               prod *= distr[ i ];
+           }
+           if( prod != 0 && prod != GetSize( AllGroup ) )
+              throw Exceptions::MPIDimsCreateError();
            if(sum==0)
            {
                for(int i=0;i<dim-1;i++)
@@ -258,7 +263,6 @@ class MpiCommunicator
                }
                distr[dim-1]=0;
             }
-            /***END OF HACK***/
 
             MPI_Dims_create(nproc, dim, distr);
 #else
