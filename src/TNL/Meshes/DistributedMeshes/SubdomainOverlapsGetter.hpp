@@ -35,18 +35,21 @@ getOverlaps( const DistributedMeshType* distributedMesh,
    TNL_ASSERT_TRUE( distributedMesh != NULL, "" );
    
    const CoordinatesType& subdomainCoordinates = distributedMesh->getSubdomainCoordinates();
+   int rank = CommunicatorType::GetRank( CommunicatorType::AllGroup );
    
    for( int i = 0; i < Dimension; i++ )
    {
-
+      CoordinatesType neighborDirection( 0 );
+      neighborDirection[ i ] = -1;
       if( subdomainCoordinates[ i ] > 0 )
          lower[ i ] = subdomainOverlapSize;
-      else
+      else if( distributedMesh->getPeriodicNeighbors()[ Directions::getDirection( neighborDirection ) ] != rank )
          lower[ i ] = periodicBoundariesOverlapSize[ i ];
       
+      neighborDirection[ i ] = 1;
       if( subdomainCoordinates[ i ] < distributedMesh->getDomainDecomposition()[ i ] - 1 )
          upper[ i ] = subdomainOverlapSize;
-      else
+      else if( distributedMesh->getPeriodicNeighbors()[ Directions::getDirection( neighborDirection ) ] != rank )
          upper[ i ] = periodicBoundariesOverlapSize[ i ];
    }
 }
