@@ -40,13 +40,13 @@ parseCommandLine( int argc, char* argv[],
       return true;
    };
 
-   auto matob = [iequals]( const char* value )
+   auto matob = [iequals]( const char* value ) -> int
    {
       if( iequals( value, "yes" ) || iequals( value, "true" ) )
          return true;
       if( iequals( value, "no" ) || iequals( value, "false" ) )
-         return true;
-      return false;
+         return false;
+      return -1;
    };
 
    int i;
@@ -103,12 +103,13 @@ parseCommandLine( int argc, char* argv[],
                }
                if( parsedEntryType[ 1 ] == "bool" )
                {
-                  if( ! matob( value ) )
+                  const int v = matob( value );
+                  if( v == -1 )
                   {
                      std::cerr << "Yes/true or no/false is required for the parameter " << option << "." << std::endl;
                      parse_error = true;
                   }
-                  else bool_list.push_back( true );
+                  else bool_list.push_back( v );
                }
                if( parsedEntryType[ 1 ] == "int" )
                {
@@ -141,12 +142,13 @@ parseCommandLine( int argc, char* argv[],
             }
             if( parsedEntryType[ 0 ] == "bool" )
             {
-               if( ! matob( value ) )
+               const int v = matob( value );
+               if( v == -1 )
                {
                   std::cerr << "Yes/true or no/false is required for the parameter " << option << "." << std::endl;
                   parse_error = true;
                }
-               else parameters.addParameter< bool >( option, true );
+               else parameters.addParameter< bool >( option, v );
                continue;
             }
             if( parsedEntryType[ 0 ] == "int" )
