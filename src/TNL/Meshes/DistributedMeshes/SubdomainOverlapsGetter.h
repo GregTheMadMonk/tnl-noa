@@ -75,7 +75,8 @@ class SubdomainOverlapsGetter< Grid< 1, Real, Device, Index >, Communicator >
                                SubdomainOverlapsType& lower,
                                SubdomainOverlapsType& upper,
                                IndexType subdomainOverlapSize,
-                               const SubdomainOverlapsType& periodicBoundariesOverlapSize = 0 );
+                               const SubdomainOverlapsType& lowerPeriodicBoundariesOverlapSize = 0,
+                               const SubdomainOverlapsType& upperPeriodicBoundariesOverlapSize = 0 );
    
 };
 
@@ -108,7 +109,8 @@ class SubdomainOverlapsGetter< Grid< 2, Real, Device, Index >, Communicator >
                                SubdomainOverlapsType& lower,
                                SubdomainOverlapsType& upper,
                                IndexType subdomainOverlapSize,
-                               const SubdomainOverlapsType& periodicBoundariesOverlapSize = 0 );
+                               const SubdomainOverlapsType& lowerPeriodicBoundariesOverlapSize = 0,
+                               const SubdomainOverlapsType& upperPeriodicBoundariesOverlapSize = 0 );
    
 };
 
@@ -142,7 +144,8 @@ class SubdomainOverlapsGetter< Grid< 3, Real, Device, Index >, Communicator >
                                SubdomainOverlapsType& lower,
                                SubdomainOverlapsType& upper,
                                IndexType subdomainOverlapSize,
-                               const SubdomainOverlapsType& periodicBoundariesOverlapSize = 0 );
+                               const SubdomainOverlapsType& lowerPeriodicBoundariesOverlapSize = 0,
+                               const SubdomainOverlapsType& upperPeriodicBoundariesOverlapSize = 0 );
    
 };
 

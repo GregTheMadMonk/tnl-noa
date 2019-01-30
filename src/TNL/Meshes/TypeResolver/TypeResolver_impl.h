@@ -257,7 +257,10 @@ decomposeMesh( const Config::ParameterContainer& parameters,
 
    if( CommunicatorType::isDistributed() )
    {
-      SubdomainOverlapsType lower, upper;
+      SubdomainOverlapsType lower( 0 ), upper( 0 );
+      distributedMesh.setOverlaps( lower, upper );
+      distributedMesh.setupGrid( mesh );
+      
       problem.getSubdomainOverlaps( parameters, prefix, mesh, lower, upper  );
       distributedMesh.setOverlaps( lower, upper );
       distributedMesh.setupGrid( mesh );
