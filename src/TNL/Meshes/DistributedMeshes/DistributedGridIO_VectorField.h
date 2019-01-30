@@ -11,20 +11,25 @@
 #pragma once
 
 #include <TNL/Functions/VectorField.h>
+#include <TNL/Meshes/Grid.h>
 
 namespace TNL {
 namespace Meshes {   
 namespace DistributedMeshes {
 
-//VCT field
-template<
-        int Size,
-        typename MeshFunctionType,
-        typename Device> 
-class DistributedGridIO<Functions::VectorField<Size,MeshFunctionType>,MpiIO,Device>
+template< int Size,
+      typename MeshFunction,
+      int Dimension,
+      typename Real,
+      typename Device,
+      typename Index > 
+class DistributedGridIO< Functions::VectorField< Size, MeshFunction >,
+      MpiIO,
+      Meshes::Grid< Dimension, Real, Device, Index >,
+      Device >
 {
     public:
-    static bool save(const String& fileName, Functions::VectorField<Size,MeshFunctionType> &vectorField)
+    static bool save(const String& fileName, Functions::VectorField<Size,MeshFunction > &vectorField)
     {
 #ifdef HAVE_MPI
         if(Communicators::MpiCommunicator::IsInitialized())//i.e. - isUsed
@@ -46,15 +51,15 @@ class DistributedGridIO<Functions::VectorField<Size,MeshFunctionType>,MpiIO,Devi
                           &file);
 
           
-           int offset=0; //global offset -> every meshfunctoion creates it's own datatypes we need manage global offset      
+           int offset=0; //global offset -> every mesh function creates it's own data types we need manage global offset      
            if(Communicators::MpiCommunicator::GetRank(group)==0)
                offset+=writeVectorFieldHeader(file,vectorField);
            MPI_Bcast(&offset, 1, MPI_INT,0, group);
            
            for( int i = 0; i < vectorField.getVectorDimension(); i++ )
            {
-               typename MeshFunctionType::RealType * data=vectorField[i]->getData().getData();  //here manage data transfer Device...
-               int size = DistributedGridIO_MPIIOBase<MeshFunctionType>::save(file,*(vectorField[i]),data,offset);
+               typename MeshFunction::RealType * data=vectorField[i]->getData().getData();  //here manage data transfer Device...
+               int size = DistributedGridIO_MPIIOBase<MeshFunction>::save(file,*(vectorField[i]),data,offset);
                offset+=size;
                if( size==0  )
                   return false;
@@ -71,7 +76,7 @@ class DistributedGridIO<Functions::VectorField<Size,MeshFunctionType>,MpiIO,Devi
 
 #ifdef HAVE_MPI
 	private:
-	  static unsigned int writeVectorFieldHeader(MPI_File &file,Functions::VectorField<Size,MeshFunctionType> &vectorField)
+	  static unsigned int writeVectorFieldHeader(MPI_File &file,Functions::VectorField<Size,MeshFunction> &vectorField)
 	  {
 			unsigned int size=0;
 		    int count;
@@ -95,7 +100,7 @@ class DistributedGridIO<Functions::VectorField<Size,MeshFunctionType>,MpiIO,Devi
 		    return size;
 	  }
 
-      static unsigned int readVectorFieldHeader(MPI_File &file,Functions::VectorField<Size,MeshFunctionType> &vectorField)
+      static unsigned int readVectorFieldHeader(MPI_File &file,Functions::VectorField<Size,MeshFunction> &vectorField)
       {
             MPI_Status rstatus;
             char buffer[255];
@@ -114,7 +119,7 @@ class DistributedGridIO<Functions::VectorField<Size,MeshFunctionType>,MpiIO,Devi
 #endif
 
     public:
-    static bool load(const String& fileName, Functions::VectorField<Size,MeshFunctionType> &vectorField)
+    static bool load(const String& fileName, Functions::VectorField<Size,MeshFunction> &vectorField)
     {
 #ifdef HAVE_MPI
         if(Communicators::MpiCommunicator::IsInitialized())//i.e. - isUsed
@@ -143,8 +148,8 @@ class DistributedGridIO<Functions::VectorField<Size,MeshFunctionType>,MpiIO,Devi
            
            for( int i = 0; i < vectorField.getVectorDimension(); i++ )
            {
-               typename MeshFunctionType::RealType * data=vectorField[i]->getData().getData();  //here manage data transfer Device...
-               int size = DistributedGridIO_MPIIOBase<MeshFunctionType>::load(file,*(vectorField[i]),data,offset);
+               typename MeshFunction::RealType * data=vectorField[i]->getData().getData();  //here manage data transfer Device...
+               int size = DistributedGridIO_MPIIOBase<MeshFunction>::load(file,*(vectorField[i]),data,offset);
                offset+=size;
                if( size==0  )
                   return false;
