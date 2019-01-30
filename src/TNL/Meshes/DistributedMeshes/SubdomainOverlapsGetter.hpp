@@ -17,13 +17,15 @@ namespace TNL {
    namespace Meshes {
       namespace DistributedMeshes {
 
-template< int Dimension,
-          typename Real,
+/*
+ * TODO: This could work when the MPI directions are rewritten
+         
+template< typename Real,
           typename Device,
           typename Index,
           typename Communicator >
 void
-SubdomainOverlapsGetter< Grid< Dimension, Real, Device, Index >, Communicator >::
+SubdomainOverlapsGetter< Grid< 1, Real, Device, Index >, Communicator >::
 getOverlaps( const DistributedMeshType* distributedMesh,
              SubdomainOverlapsType& lower,
              SubdomainOverlapsType& upper,
@@ -33,7 +35,7 @@ getOverlaps( const DistributedMeshType* distributedMesh,
    if( ! CommunicatorType::isDistributed() )
       return;
    TNL_ASSERT_TRUE( distributedMesh != NULL, "" );
-   
+
    const CoordinatesType& subdomainCoordinates = distributedMesh->getSubdomainCoordinates();
    int rank = CommunicatorType::GetRank( CommunicatorType::AllGroup );
    
@@ -52,6 +54,129 @@ getOverlaps( const DistributedMeshType* distributedMesh,
       else if( distributedMesh->getPeriodicNeighbors()[ Directions::getDirection( neighborDirection ) ] != rank )
          upper[ i ] = periodicBoundariesOverlapSize[ i ];
    }
+}
+ 
+*/
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Communicator >
+void
+SubdomainOverlapsGetter< Grid< 1, Real, Device, Index >, Communicator >::
+getOverlaps( const DistributedMeshType* distributedMesh,
+             SubdomainOverlapsType& lower,
+             SubdomainOverlapsType& upper,
+             IndexType subdomainOverlapSize,
+             const SubdomainOverlapsType& periodicBoundariesOverlapSize )
+{
+   if( ! CommunicatorType::isDistributed() )
+      return;
+   TNL_ASSERT_TRUE( distributedMesh != NULL, "" );
+
+   const CoordinatesType& subdomainCoordinates = distributedMesh->getSubdomainCoordinates();
+   int rank = CommunicatorType::GetRank( CommunicatorType::AllGroup );
+   
+   if( subdomainCoordinates[ 0 ] > 0 )
+      lower[ 0 ] = subdomainOverlapSize;
+   else if( distributedMesh->getPeriodicNeighbors()[ ZzYzXm ] != rank )
+      lower[ 0 ] = periodicBoundariesOverlapSize[ 0 ];
+
+   if( subdomainCoordinates[ 0 ] < distributedMesh->getDomainDecomposition()[ 0 ] - 1 )
+      upper[ 0 ] = subdomainOverlapSize;
+   else if( distributedMesh->getPeriodicNeighbors()[ ZzYzXp ] != rank )
+      upper[ 0 ] = periodicBoundariesOverlapSize[ 0 ];
+}
+
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Communicator >
+void
+SubdomainOverlapsGetter< Grid< 2, Real, Device, Index >, Communicator >::
+getOverlaps( const DistributedMeshType* distributedMesh,
+             SubdomainOverlapsType& lower,
+             SubdomainOverlapsType& upper,
+             IndexType subdomainOverlapSize,
+             const SubdomainOverlapsType& periodicBoundariesOverlapSize )
+{
+   if( ! CommunicatorType::isDistributed() )
+      return;
+   TNL_ASSERT_TRUE( distributedMesh != NULL, "" );
+
+   const CoordinatesType& subdomainCoordinates = distributedMesh->getSubdomainCoordinates();
+   int rank = CommunicatorType::GetRank( CommunicatorType::AllGroup );
+   
+   if( subdomainCoordinates[ 0 ] > 0 )
+      lower[ 0 ] = subdomainOverlapSize;
+   else if( distributedMesh->getPeriodicNeighbors()[ ZzYzXm ] != rank )
+      lower[ 0 ] = periodicBoundariesOverlapSize[ 0 ];
+
+   if( subdomainCoordinates[ 0 ] < distributedMesh->getDomainDecomposition()[ 0 ] - 1 )
+      upper[ 0 ] = subdomainOverlapSize;
+   else if( distributedMesh->getPeriodicNeighbors()[ ZzYzXp ] != rank )
+      upper[ 0 ] = periodicBoundariesOverlapSize[ 0 ];
+   
+   if( subdomainCoordinates[ 1 ] > 0 )
+      lower[ 1 ] = subdomainOverlapSize;
+   else if( distributedMesh->getPeriodicNeighbors()[ ZzYmXz ] != rank )
+      lower[ 1 ] = periodicBoundariesOverlapSize[ 1 ];
+
+   if( subdomainCoordinates[ 1 ] < distributedMesh->getDomainDecomposition()[ 1 ] - 1 )
+      upper[ 1 ] = subdomainOverlapSize;
+   else if( distributedMesh->getPeriodicNeighbors()[ ZzYpXz ] != rank )
+      upper[ 1 ] = periodicBoundariesOverlapSize[ 1 ];
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Communicator >
+void
+SubdomainOverlapsGetter< Grid< 3, Real, Device, Index >, Communicator >::
+getOverlaps( const DistributedMeshType* distributedMesh,
+             SubdomainOverlapsType& lower,
+             SubdomainOverlapsType& upper,
+             IndexType subdomainOverlapSize,
+             const SubdomainOverlapsType& periodicBoundariesOverlapSize )
+{
+   if( ! CommunicatorType::isDistributed() )
+      return;
+   TNL_ASSERT_TRUE( distributedMesh != NULL, "" );
+
+   const CoordinatesType& subdomainCoordinates = distributedMesh->getSubdomainCoordinates();
+   int rank = CommunicatorType::GetRank( CommunicatorType::AllGroup );
+   
+   if( subdomainCoordinates[ 0 ] > 0 )
+      lower[ 0 ] = subdomainOverlapSize;
+   else if( distributedMesh->getPeriodicNeighbors()[ ZzYzXm ] != rank )
+      lower[ 0 ] = periodicBoundariesOverlapSize[ 0 ];
+
+   if( subdomainCoordinates[ 0 ] < distributedMesh->getDomainDecomposition()[ 0 ] - 1 )
+      upper[ 0 ] = subdomainOverlapSize;
+   else if( distributedMesh->getPeriodicNeighbors()[ ZzYzXp ] != rank )
+      upper[ 0 ] = periodicBoundariesOverlapSize[ 0 ];
+   
+   if( subdomainCoordinates[ 1 ] > 0 )
+      lower[ 1 ] = subdomainOverlapSize;
+   else if( distributedMesh->getPeriodicNeighbors()[ ZzYmXz ] != rank )
+      lower[ 1 ] = periodicBoundariesOverlapSize[ 1 ];
+
+   if( subdomainCoordinates[ 1 ] < distributedMesh->getDomainDecomposition()[ 1 ] - 1 )
+      upper[ 1 ] = subdomainOverlapSize;
+   else if( distributedMesh->getPeriodicNeighbors()[ ZzYpXz ] != rank )
+      upper[ 1 ] = periodicBoundariesOverlapSize[ 1 ];
+   
+   if( subdomainCoordinates[ 2 ] > 0 )
+      lower[ 2 ] = subdomainOverlapSize;
+   else if( distributedMesh->getPeriodicNeighbors()[ ZmYzXz ] != rank )
+      lower[ 2 ] = periodicBoundariesOverlapSize[ 2 ];
+
+   if( subdomainCoordinates[ 2 ] < distributedMesh->getDomainDecomposition()[ 2 ] - 1 )
+      upper[ 2 ] = subdomainOverlapSize;
+   else if( distributedMesh->getPeriodicNeighbors()[ ZpYzXz ] != rank )
+      upper[ 2 ] = periodicBoundariesOverlapSize[ 2 ];
 }
 
       } // namespace DistributedMeshes
