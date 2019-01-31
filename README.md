@@ -11,36 +11,43 @@ and distributed systems, which can be managed via a unified interface.
 Similarly to the STL, features provided by the TNL can be grouped into
 several modules:
 
-> TODO: link relevant terms to the Doxygen documentation
-
 - _Core concepts_.
   The main concept used in the TNL is the `Device` type which is used in most of
   the other parts of the library. For data structures such as `Array` it
   specifies where the data should be allocated, whereas for algorithms such as
   `ParallelFor` it specifies how the algorithm should be executed.
-- _Containers_.
+- _[Containers][containers]_.
   TNL provides generic containers such as array, multidimensional array or array
   views, which abstract data management on different hardware architectures.
 - _Linear algebra._
   TNL provides generic data structures and algorithms for linear algebra, such
-  as vectors, sparse matrices, Krylov solvers and preconditioners.
+  as [vectors][vectors], [sparse matrices][matrices],
+  [Krylov solvers][linear solvers] and [preconditioners][preconditioners].
    - Sparse matrix formats: CSR, Ellpack, Sliced Ellpack, tridiagonal,
      multidiagonal
    - Krylov solvers: CG, BiCGstab, GMRES, CWYGMRES, TFQMR
-   - preconditioners: Jacobi, ILU(0) (CPU only), ILUT (CPU only)
-- _Meshes_.
+   - Preconditioners: Jacobi, ILU(0) (CPU only), ILUT (CPU only)
+- _[Meshes][meshes]_.
   TNL provides data structures for the representation of structured or
   unstructured numerical meshes.
 - _Solvers for differential equations._
   TNL provides a framework for the development of ODE or PDE solvers.
-- _Image processing_.
+- _[Image processing][image processing]_.
   TNL provides structures for the representation of image data. Imports and
   exports from several file formats are provided using external libraries, such
   as [DCMTK](http://dicom.offis.de/dcmtk.php.en) for DICOM files,
   [libpng](http://www.libpng.org/pub/png/libpng.html) for PNG files, or
   [libjpeg](http://libjpeg.sourceforge.net/) for JPEG files.
 
-For more information, see the [full documentation](#documentation).
+[containers]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/namespaceTNL_1_1Containers.html
+[vectors]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/classTNL_1_1Containers_1_1Vector.html
+[matrices]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/namespaceTNL_1_1Matrices.html
+[linear solvers]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/namespaceTNL_1_1Solvers_1_1Linear.html
+[preconditioners]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/namespaceTNL_1_1Solvers_1_1Linear_1_1Preconditioners.html
+[meshes]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/namespaceTNL_1_1Meshes.html
+[image processing]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/namespaceTNL_1_1Images.html
+
+For more information, see the [full documentation][full documentation].
 
 ## Installation
 
@@ -107,7 +114,10 @@ for details.
 
 ## Documentation
 
-> TODO: link to the Doxygen documentation
+See the [full documentation][full documentation] for the API reference manual,
+tutorials and other documented topics.
+
+[full documentation]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/
 
 ## Authors
 
