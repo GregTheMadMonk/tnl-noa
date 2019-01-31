@@ -11,18 +11,12 @@
 #pragma once
 
 #include <utility>
+#include <type_traits>
 
 #include <TNL/Devices/CudaCallable.h>
 
 namespace TNL {
-
-template< typename IndexType, IndexType val >
-struct StaticForIndexTag
-{
-   static constexpr IndexType value = val;
-   using Decrement = StaticForIndexTag<IndexType, val - 1>;
-};
-
+namespace detail {
 
 template< typename IndexType,
           typename Begin,
@@ -34,14 +28,16 @@ struct StaticForExecutor
    __cuda_callable__
    static void exec( Args&&... args )
    {
-      StaticForExecutor< IndexType, Begin, typename N::Decrement, LoopBody >::exec( std::forward< Args >( args )... );
+      using Decrement = std::integral_constant< IndexType, N::value - 1 >;
+      StaticForExecutor< IndexType, Begin, Decrement, LoopBody >::exec( std::forward< Args >( args )... );
       LoopBody< Begin::value + N::value - 1 >::exec( std::forward< Args >( args )... );
    }
 
    template< typename... Args >
    static void execHost( Args&&... args )
    {
-      StaticForExecutor< IndexType, Begin, typename N::Decrement, LoopBody >::execHost( std::forward< Args >( args )... );
+      using Decrement = std::integral_constant< IndexType, N::value - 1 >;
+      StaticForExecutor< IndexType, Begin, Decrement, LoopBody >::execHost( std::forward< Args >( args )... );
       LoopBody< Begin::value + N::value - 1 >::exec( std::forward< Args >( args )... );
    }
 };
@@ -51,7 +47,7 @@ template< typename IndexType,
           template< IndexType > class LoopBody >
 struct StaticForExecutor< IndexType,
                           Begin,
-                          StaticForIndexTag< IndexType, 0 >,
+                          std::integral_constant< IndexType, 0 >,
                           LoopBody >
 {
    template< typename... Args >
@@ -64,6 +60,8 @@ struct StaticForExecutor< IndexType,
    {}
 };
 
+} // namespace detail
+
 template< typename IndexType,
           IndexType begin,
           IndexType end,
@@ -74,20 +72,20 @@ struct StaticFor
    __cuda_callable__
    static void exec( Args&&... args )
    {
-      StaticForExecutor< IndexType,
-                         StaticForIndexTag< IndexType, begin >,
-                         StaticForIndexTag< IndexType, end - begin >,
-                         LoopBody >::exec( std::forward< Args >( args )... );
+      detail::StaticForExecutor< IndexType,
+                                 std::integral_constant< IndexType, begin >,
+                                 std::integral_constant< IndexType, end - begin >,
+                                 LoopBody >::exec( std::forward< Args >( args )... );
    }
 
    // nvcc would complain if we wonted to call a host-only function from the __cuda_callable__ exec above
    template< typename... Args >
    static void execHost( Args&&... args )
    {
-      StaticForExecutor< IndexType,
-                         StaticForIndexTag< IndexType, begin >,
-                         StaticForIndexTag< IndexType, end - begin >,
-                         LoopBody >::execHost( std::forward< Args >( args )... );
+      detail::StaticForExecutor< IndexType,
+                                 std::integral_constant< IndexType, begin >,
+                                 std::integral_constant< IndexType, end - begin >,
+                                 LoopBody >::execHost( std::forward< Args >( args )... );
    }
 };
 
