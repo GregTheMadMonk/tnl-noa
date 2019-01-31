@@ -906,7 +906,8 @@ EXCLUDE_PATTERNS       = */Debugging/* \
 # Note that the wildcards are matched against the file with absolute path, so to
 # exclude all test directories use the pattern */test/*
 
-EXCLUDE_SYMBOLS = *::__*impl  # internal namespaces
+EXCLUDE_SYMBOLS = detail::*,*::detail::*  # internal namespaces
+EXCLUDE_SYMBOLS += *::__*impl  # internal namespaces
 EXCLUDE_SYMBOLS += TNL::Assert::*  # internal namespace
 
 # The EXAMPLE_PATH tag can be used to specify one or more files or directories
