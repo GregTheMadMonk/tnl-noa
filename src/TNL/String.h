@@ -56,10 +56,10 @@ public:
    using std::string::operator=;
 
 
-   /// \brief Returns type of string - String.
+   /// \brief Returns type of string: \c "String".
    static String getType();
 
-   /// \brief Returns the number of characters in given string. Equivalent to getSize().
+   /// \brief Returns the number of characters in given string. Equivalent to \ref getSize.
    int getLength() const;
 
    /// \brief Returns the number of characters in given string.
@@ -100,7 +100,7 @@ public:
    /////
    /// \brief Operator for accessing particular chars of the string.
    ///
-   /// This function overloads operator[](). It returns a reference to
+   /// This function overloads \ref operator[]. It returns a reference to
    /// the character at position \e i in given string.
    /// The character can not be changed be user.
    const char& operator[]( int i ) const;
@@ -114,7 +114,7 @@ public:
    /////
    // Operators for single characters.
 
-   /// \brief This function overloads operator+=().
+   /// \brief This function overloads \ref operator+=.
    ///
    /// Appends character \e str to this string.
    String& operator+=( char str );
@@ -124,64 +124,62 @@ public:
    ///
    /// It returns \e true when the given string is equal to \e str. Otherwise returns \e false.
    bool operator==( char str ) const;
-   /// \brief This function overloads operator!=().
+   /// \brief This function overloads \ref operator!=.
    bool operator!=( char str ) const;
 
    /////
    // Operators for C strings.
 
-   /// \brief This function overloads operator+=().
+   /// \brief This function overloads \ref operator+=.
    ///
    /// It appends the C string \e str to this string.
    String& operator+=( const char* str );
    /// \brief This function concatenates C strings \e str and returns a newly
    /// constructed string object.
    String operator+( const char* str ) const;
-   /// \brief This function overloads operator==().
+   /// \brief This function overloads \ref operator==.
    bool operator==( const char* str ) const;
-   /// \brief This function overloads operator!=().
+   /// \brief This function overloads \ref operator!=.
    bool operator!=( const char* str ) const;
 
    /////
    // Operators for std::string.
 
-   /// \brief This function overloads operator+=().
+   /// \brief This function overloads \ref operator+=.
    ///
    /// It appends the C string \e str to this string.
    String& operator+=( const std::string& str );
    /// \brief This function concatenates C strings \e str and returns a newly
    /// constructed string object.
    String operator+( const std::string& str ) const;
-   /// \brief This function overloads operator==().
+   /// \brief This function overloads \ref operator==.
    bool operator==( const std::string& str ) const;
-   /// \brief This function overloads operator!=().
+   /// \brief This function overloads \ref operator!=.
    bool operator!=( const std::string& str ) const;
 
    /////
    // Operators for String.
 
-   /// \brief This function overloads operator+=().
+   /// \brief This function overloads \ref operator+=.
    ///
    /// It appends the C string \e str to this string.
    String& operator+=( const String& str );
    /// \brief This function concatenates C strings \e str and returns a newly
    /// constructed string object.
    String operator+( const String& str ) const;
-   /// \brief This function overloads operator==().
+   /// \brief This function overloads \ref operator==.
    bool operator==( const String& str ) const;
-   /// \brief This function overloads operator!=().
+   /// \brief This function overloads \ref operator!=.
    bool operator!=( const String& str ) const;
 
    /// \brief Cast to bool operator.
    ///
-   /// This function overloads operator bool(). It converts string to boolean
-   /// expression (true or false).
+   /// This operator converts string to boolean expression (true or false).
    operator bool() const;
 
    /// \brief Cast to bool with negation operator.
    ///
-   /// This function overloads operator!(). It converts string to boolean
-   /// expression (false or true).
+   /// This operator converts string to boolean expression (false or true).
    bool operator!() const;
 
    /////

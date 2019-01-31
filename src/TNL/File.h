@@ -20,6 +20,7 @@
 
 namespace TNL {
 
+/// \brief Supported modes for opening \ref TNL::File "files".
 enum class IOMode
 {
 //   undefined = 0,
@@ -57,7 +58,6 @@ public:
    /// Opens file with given \e fileName and returns true/false based on the success in opening the file.
    /// \param fileName String which indicates name of the file user wants to open.
    /// \param mode Indicates what user needs to do with opened file.
-   /// Modes to choose: IOMode::read, IOMode::write or IOMode::undefined.
    bool open( const String& fileName,
               const IOMode mode );
 
@@ -75,10 +75,10 @@ public:
    ///
    /// Returns \e true when the elements are successfully read from given file. Otherwise returns \e false.
    ///
-   /// Throws \e std::ios_base::failure on failure.
+   /// Throws \ref std::ios_base::failure on failure.
    ///
    /// \tparam Type Type of data.
-   /// \tparam Device Place where data are stored after reading from file. For example Devices::Host or Devices::Cuda.
+   /// \tparam Device Place where data are stored after reading from file. For example \ref Devices::Host or \ref Devices::Cuda.
    /// \tparam Index Type of index by which the elements are indexed.
    /// \param buffer Pointer in memory where the elements are loaded and stored after reading.
    /// \param elements Number of elements the user wants to get (read) from given file.
@@ -93,10 +93,10 @@ public:
    ///
    /// Returns \e true when the elements are successfully written into given file. Otherwise returns \e false.
    ///
-   /// Throws \e std::ios_base::failure on failure.
+   /// Throws \ref std::ios_base::failure on failure.
    ///
    /// \tparam Type Type of data.
-   /// \tparam Device Place from where the data are loaded before writing into file. For example Devices::Host or Devices::Cuda.
+   /// \tparam Device Place from where the data are loaded before writing into file. For example \ref Devices::Host or \ref Devices::Cuda.
    /// \tparam Index Type of index by which the elements are indexed.
    /// \param buffer Pointer in memory where the elements are loaded from before writing into file.
    /// \param elements Number of elements the user wants to write into the given file.

@@ -22,7 +22,7 @@
 namespace TNL {
 
 /**
- * \brief This is the basic class for all 'large' objects like matrices, meshes, grids, solvers, etc..
+ * \brief Basic class for all 'large' objects like matrices, meshes, grids, solvers, etc..
  *
  *  Objects like numerical grids, meshes, matrices large vectors etc.
  *  are inherited by this class. This class provides name for such objects. Giving
@@ -30,8 +30,9 @@ namespace TNL {
  *  possible errors in the code. This can help to identify an object where, for
  *  example, one tries to touch non-existing element. All objects of the TNL should
  *  have only constructor with name and then only setter methods and method init.
- *  Each object derived from the Object must be able to tell its type via the method getType and
- *  it must support methods for saving and loading the object from a file.
+ *  Each object derived from the Object must be able to tell its type via the method
+ *  \ref getType and it must support methods \ref save and \ref load for saving and
+ *  loading the object from a \ref File "file".
  */
 class Object
 {
@@ -41,7 +42,7 @@ class Object
        * \brief Type getter.
        *
        * Returns the type in C++ style - for example the returned value
-       * may look as follows: "Vector< double, Devices::Cuda >".
+       * may look as \c "Vector< double, Devices::Cuda >".
        */
       static String getType();      
 
@@ -50,8 +51,8 @@ class Object
       /**
        * \brief This is used for load and save methods.
        *
-       * Each object is saved as if it was stored on Devices::Host. So even Vector< double, Devices::Cuda >
-       * is saved as Vector< double, Devices::Host >.
+       * Each object is saved as if it was stored on \ref Devices::Host. So even
+       * \c Vector< double, Devices::Cuda > is saved as \c Vector< double, Devices::Host >.
        */
       static String getSerializationType();
 
