@@ -29,6 +29,9 @@
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 
 namespace TNL {
+/**
+ * \brief Namespace for numerical meshes and related objects.
+ */
 namespace Meshes {
 
 template< typename MeshConfig > class Initializer;

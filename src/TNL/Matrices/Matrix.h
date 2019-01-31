@@ -16,7 +16,10 @@
 #include <TNL/Containers/VectorView.h>
 
 namespace TNL {
-namespace Matrices {   
+/**
+ * \brief Namespace for matrix formats.
+ */
+namespace Matrices {
 
 template< typename Real = double,
           typename Device = Devices::Host,

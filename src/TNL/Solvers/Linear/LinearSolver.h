@@ -23,6 +23,9 @@
 
 namespace TNL {
 namespace Solvers {
+/**
+ * \brief Namespace for linear system solvers.
+ */
 namespace Linear {
 
 template< typename Matrix >
