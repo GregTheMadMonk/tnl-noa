@@ -399,7 +399,7 @@ hauseholder_generate( const int i,
 
    // norm of the TRUNCATED vector z
    const RealType normz = y_i.lpNorm( 2.0 );
-   RealType norm_yi = 0;
+   RealType norm_yi_squared = 0;
    if( localOffset == 0 ) {
       const RealType y_ii = y_i.getElement( i );
       if( y_ii > 0.0 )
@@ -408,17 +408,18 @@ hauseholder_generate( const int i,
          y_i.setElement( i, y_ii - normz );
 
       // compute the norm of the y_i vector; equivalent to this calculation by definition:
-      //       const RealType norm_yi = y_i.lpNorm( 2.0 );
-      norm_yi = std::sqrt( 2 * (normz * normz + std::fabs( y_ii ) * normz) );
+      //       norm_yi_squared = y_i.lpNorm( 2.0 );
+      //       norm_yi_squared = norm_yi_squared * norm_yi_squared
+      norm_yi_squared = 2 * (normz * normz + std::fabs( y_ii ) * normz);
    }
    // no-op if the problem is not distributed
-   CommunicatorType::Bcast( &norm_yi, 1, 0, Traits::getCommunicationGroup( *this->matrix ) );
+   CommunicatorType::Bcast( &norm_yi_squared, 1, 0, Traits::getCommunicationGroup( *this->matrix ) );
 
    // XXX: normalization is slower, but more stable
-//   y_i *= 1.0 / norm_yi;
+//   y_i *= 1.0 / std::sqrt( norm_yi_squared );
 //   const RealType t_i = 2.0;
    // assuming it's stable enough...
-   const RealType t_i = 2.0 / (norm_yi * norm_yi);
+   const RealType t_i = 2.0 / norm_yi_squared;
 
    T[ i + i * (restarting_max + 1) ] = t_i;
    if( i > 0 ) {
