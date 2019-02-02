@@ -169,11 +169,11 @@ struct CallPermutationHelper< Permutation, std::index_sequence< N... > >
    template< typename Func,
              typename... Args >
    __cuda_callable__
-   static auto apply( Func f, Args&&... args )
+   static auto apply( Func&& f, Args&&... args ) -> decltype(auto)
    {
-      return f( get_from_pack<
+      return std::forward< Func >( f )( get_from_pack<
                   get< N >( Permutation{} )
-                >( args... )... );
+                >( std::forward< Args >( args )... )... );
    }
 };
 
@@ -183,7 +183,13 @@ template< typename Permutation,
           typename Func,
           typename... Args >
 __cuda_callable__
-auto call_with_permuted_arguments( Func f, Args&&... args )
+// FIXME: does not compile with nvcc 10.0
+//auto call_with_permuted_arguments( Func&& f, Args&&... args ) -> decltype(auto)
+//{
+//   return CallPermutationHelper< Permutation, std::make_index_sequence< sizeof...( Args ) > >
+//          ::apply( std::forward< Func >( f ), std::forward< Args >( args )... );
+//}
+auto call_with_permuted_arguments( Func f, Args&&... args ) -> decltype(auto)
 {
    return CallPermutationHelper< Permutation, std::make_index_sequence< sizeof...( Args ) > >
           ::apply( f, std::forward< Args >( args )... );
