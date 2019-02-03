@@ -37,10 +37,21 @@ struct ParallelFor
    static void exec( Index start, Index end, Function f, FunctionArgs... args )
    {
 #ifdef HAVE_OPENMP
-      #pragma omp parallel for if( TNL::Devices::Host::isOMPEnabled() && end - start > 512 )
-#endif
+      // Benchmarks show that this is significantly faster compared
+      // to '#pragma omp parallel for if( TNL::Devices::Host::isOMPEnabled() && end - start > 512 )'
+      if( TNL::Devices::Host::isOMPEnabled() && end - start > 512 )
+      {
+         #pragma omp parallel for
+         for( Index i = start; i < end; i++ )
+            f( i, args... );
+      }
+      else
+         for( Index i = start; i < end; i++ )
+            f( i, args... );
+#else
       for( Index i = start; i < end; i++ )
          f( i, args... );
+#endif
    }
 };
 
@@ -53,11 +64,25 @@ struct ParallelFor2D
    static void exec( Index startX, Index startY, Index endX, Index endY, Function f, FunctionArgs... args )
    {
 #ifdef HAVE_OPENMP
-      #pragma omp parallel for if( TNL::Devices::Host::isOMPEnabled() )
-#endif
-      for( Index i = startX; i < endX; i++ )
+      // Benchmarks show that this is significantly faster compared
+      // to '#pragma omp parallel for if( TNL::Devices::Host::isOMPEnabled() )'
+      if( TNL::Devices::Host::isOMPEnabled() )
+      {
+         #pragma omp parallel for
+         for( Index j = startY; j < endY; j++ )
+         for( Index i = startX; i < endX; i++ )
+            f( i, j, args... );
+      }
+      else {
+         for( Index j = startY; j < endY; j++ )
+         for( Index i = startX; i < endX; i++ )
+            f( i, j, args... );
+      }
+#else
       for( Index j = startY; j < endY; j++ )
+      for( Index i = startX; i < endX; i++ )
          f( i, j, args... );
+#endif
    }
 };
 
@@ -70,12 +95,28 @@ struct ParallelFor3D
    static void exec( Index startX, Index startY, Index startZ, Index endX, Index endY, Index endZ, Function f, FunctionArgs... args )
    {
 #ifdef HAVE_OPENMP
-      #pragma omp parallel for collapse(2) if( TNL::Devices::Host::isOMPEnabled() )
-#endif
-      for( Index i = startX; i < endX; i++ )
-      for( Index j = startY; j < endY; j++ )
+      // Benchmarks show that this is significantly faster compared
+      // to '#pragma omp parallel for if( TNL::Devices::Host::isOMPEnabled() )'
+      if( TNL::Devices::Host::isOMPEnabled() )
+      {
+         #pragma omp parallel for collapse(2)
+         for( Index k = startZ; k < endZ; k++ )
+         for( Index j = startY; j < endY; j++ )
+         for( Index i = startX; i < endX; i++ )
+            f( i, j, k, args... );
+      }
+      else {
+         for( Index k = startZ; k < endZ; k++ )
+         for( Index j = startY; j < endY; j++ )
+         for( Index i = startX; i < endX; i++ )
+            f( i, j, k, args... );
+      }
+#else
       for( Index k = startZ; k < endZ; k++ )
+      for( Index j = startY; j < endY; j++ )
+      for( Index i = startX; i < endX; i++ )
          f( i, j, k, args... );
+#endif
    }
 };
 
