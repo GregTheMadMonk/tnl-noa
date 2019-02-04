@@ -536,17 +536,51 @@ bool MpiCommunicator::redirect = true;
 } // namespace Communicators
 } // namespace TNL
 
-#define TNL_MPI_PRINT( message )                                                                                              \
-for( int __tnl_mpi_print_j = 0;                                                                                               \
-     __tnl_mpi_print_j < TNL::Communicators::MpiCommunicator::GetSize( TNL::Communicators::MpiCommunicator::AllGroup );       \
-     __tnl_mpi_print_j++ )                                                                                                    \
-{                                                                                                                             \
-   if( __tnl_mpi_print_j == TNL::Communicators::MpiCommunicator::GetRank( TNL::Communicators::MpiCommunicator::AllGroup ) )   \
-   {                                                                                                                          \
-      std::cerr << "Node " << __tnl_mpi_print_j << " of "                                                                     \
-                << TNL::Communicators::MpiCommunicator::GetSize( TNL::Communicators::MpiCommunicator::AllGroup )              \
-                << " : " << message << std::endl;                                                                             \
-   }                                                                                                                          \
-   TNL::Communicators::MpiCommunicator::Barrier( TNL::Communicators::MpiCommunicator::AllGroup );                             \
-}
+#ifdef HAVE_MPI
+#define TNL_MPI_PRINT( message )                                                                                                 \
+if( ! TNL::Communicators::MpiCommunicator::IsInitialized() )                                                                     \
+   std::cerr << message << std::endl;                                                                                            \
+else                                                                                                                             \
+   for( int __tnl_mpi_print_j = 0;                                                                                               \
+        __tnl_mpi_print_j < TNL::Communicators::MpiCommunicator::GetSize( TNL::Communicators::MpiCommunicator::AllGroup );       \
+        __tnl_mpi_print_j++ )                                                                                                    \
+   {                                                                                                                             \
+      if( __tnl_mpi_print_j == TNL::Communicators::MpiCommunicator::GetRank( TNL::Communicators::MpiCommunicator::AllGroup ) )   \
+      {                                                                                                                          \
+         std::cerr << "Node " << __tnl_mpi_print_j << " of "                                                                     \
+                   << TNL::Communicators::MpiCommunicator::GetSize( TNL::Communicators::MpiCommunicator::AllGroup )              \
+                   << " : " << message << std::endl;                                                                             \
+      }                                                                                                                          \
+      TNL::Communicators::MpiCommunicator::Barrier( TNL::Communicators::MpiCommunicator::AllGroup );                             \
+   }
+#else
+#define TNL_MPI_PRINT( message )                                                                                                 \
+   std::cerr << message << std::endl;
+#endif
 
+#ifdef HAVE_MPI
+#define TNL_MPI_PRINT_COND( condition, message )                                                                                 \
+if( ! TNL::Communicators::MpiCommunicator::IsInitialized() )                                                                     \
+{                                                                                                                                \
+   if( condition ) std::cerr << message << std::endl;                                                                            \
+}                                                                                                                                \
+else                                                                                                                             \
+{                                                                                                                                \
+   for( int __tnl_mpi_print_j = 0;                                                                                               \
+        __tnl_mpi_print_j < TNL::Communicators::MpiCommunicator::GetSize( TNL::Communicators::MpiCommunicator::AllGroup );       \
+        __tnl_mpi_print_j++ )                                                                                                    \
+   {                                                                                                                             \
+      if( __tnl_mpi_print_j == TNL::Communicators::MpiCommunicator::GetRank( TNL::Communicators::MpiCommunicator::AllGroup ) )   \
+      {                                                                                                                          \
+         if( condition )                                                                                                         \
+            std::cerr << "Node " << __tnl_mpi_print_j << " of "                                                                  \
+                      << TNL::Communicators::MpiCommunicator::GetSize( TNL::Communicators::MpiCommunicator::AllGroup )           \
+                      << " : " << message << std::endl;                                                                          \
+      }                                                                                                                          \
+      TNL::Communicators::MpiCommunicator::Barrier( TNL::Communicators::MpiCommunicator::AllGroup );                             \
+   }                                                                                                                             \
+}
+#else
+#define TNL_MPI_PRINT_COND( condition, message )                                                                                 \
+   if( condition ) std::cerr << message << std::endl;
+#endif
