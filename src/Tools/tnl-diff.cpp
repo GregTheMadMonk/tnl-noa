@@ -28,7 +28,7 @@ void setupConfig( Config::ConfigDescription& config )
    config.addEntry< bool >( "write-graph", "Draws a graph in the Gnuplot format of the dependence of the error norm on t.", true );
    config.addEntry< bool >( "write-log-graph", "Draws a logarithmic graph in the Gnuplot format of the dependence of the error norm on t.", true );
    config.addEntry< double >( "snapshot-period", "The period between consecutive snapshots.", 0.0 );
-   config.addEntry< int >( "verbose", "Sets verbosity.", 1 );
+   config.addEntry< bool >( "verbose", "Sets verbosity.", true );
 }
 
 int main( int argc, char* argv[] )

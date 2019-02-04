@@ -604,7 +604,7 @@ bool setValueType( const MeshPointer& meshPointer,
 template< typename Mesh >
 bool processFiles( const Config::ParameterContainer& parameters )
 {
-   int verbose = parameters. getParameter< int >( "verbose");
+   int verbose = parameters. getParameter< bool >( "verbose");
    std::vector< String > inputFiles = parameters. getParameter< std::vector< String > >( "input-files" );
 
    /****
