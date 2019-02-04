@@ -623,9 +623,13 @@ bool processFiles( const Config::ParameterContainer& parameters )
       }
 
    String objectType;
-   if( ! getObjectType( inputFiles[ 0 ], objectType ) ) {
-       std::cerr << "unknown object ... SKIPPING!" << std::endl;
-       return false;
+   try
+   {
+      getObjectType( inputFiles[ 0 ], objectType );
+   }
+   catch( std::ios_base::failure exception )
+   {
+      std::cerr << "Cannot open file " << inputFiles[ 0 ] << std::endl;
    }
 
    if( verbose )
