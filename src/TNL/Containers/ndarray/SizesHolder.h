@@ -123,6 +123,26 @@ protected:
     }
 };
 
+template< std::size_t dimension >
+struct SizesHolderStaticSizePrinter
+{
+   template< typename SizesHolder >
+   static void exec( std::ostream& str, const SizesHolder& holder )
+   {
+      str << holder.template getStaticSize< dimension >() << ", ";
+   }
+};
+
+template< std::size_t dimension >
+struct SizesHolderSizePrinter
+{
+   template< typename SizesHolder >
+   static void exec( std::ostream& str, const SizesHolder& holder )
+   {
+      str << holder.template getSize< dimension >() << ", ";
+   }
+};
+
 } // namespace __ndarray_impl
 
 
@@ -181,36 +201,14 @@ public:
 };
 
 
-template< std::size_t dimension >
-struct SizesHolderStaticSizePrinter
-{
-   template< typename Index,
-             std::size_t... sizes >
-   static void exec( std::ostream& str, const SizesHolder< Index, sizes... >& holder )
-   {
-      str << holder.template getStaticSize< dimension >() << ", ";
-   }
-};
-
-template< std::size_t dimension >
-struct SizesHolderSizePrinter
-{
-   template< typename Index,
-             std::size_t... sizes >
-   static void exec( std::ostream& str, const SizesHolder< Index, sizes... >& holder )
-   {
-      str << holder.template getSize< dimension >() << ", ";
-   }
-};
-
 template< typename Index,
           std::size_t... sizes >
 std::ostream& operator<<( std::ostream& str, const SizesHolder< Index, sizes... >& holder )
 {
    str << "SizesHolder< ";
-   TemplateStaticFor< std::size_t, 0, sizeof...(sizes) - 1, SizesHolderStaticSizePrinter >::execHost( str, holder );
+   TemplateStaticFor< std::size_t, 0, sizeof...(sizes) - 1, __ndarray_impl::SizesHolderStaticSizePrinter >::execHost( str, holder );
    str << holder.template getStaticSize< sizeof...(sizes) - 1 >() << " >( ";
-   TemplateStaticFor< std::size_t, 0, sizeof...(sizes) - 1, SizesHolderSizePrinter >::execHost( str, holder );
+   TemplateStaticFor< std::size_t, 0, sizeof...(sizes) - 1, __ndarray_impl::SizesHolderSizePrinter >::execHost( str, holder );
    str << holder.template getSize< sizeof...(sizes) - 1 >() << " )";
    return str;
 }
