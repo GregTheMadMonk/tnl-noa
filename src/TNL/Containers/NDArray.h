@@ -176,8 +176,8 @@ public:
    template< typename Device2 = DeviceType, typename Func >
    void forAll( Func f ) const
    {
-      __ndarray_impl::ExecutorDispatcher< ConstViewType, Device2 > dispatch;
-      dispatch( getConstView(), f );
+      __ndarray_impl::ExecutorDispatcher< PermutationType, Device2 > dispatch;
+      dispatch( sizes, f );
    }
 
 

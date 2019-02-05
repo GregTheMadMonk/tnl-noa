@@ -230,8 +230,8 @@ public:
    template< typename Device2 = DeviceType, typename Func >
    void forAll( Func f ) const
    {
-      __ndarray_impl::ExecutorDispatcher< NDArrayView, Device2 > dispatch;
-      dispatch( *this, f );
+      __ndarray_impl::ExecutorDispatcher< PermutationType, Device2 > dispatch;
+      dispatch( sizes, f );
    }
 
 protected:

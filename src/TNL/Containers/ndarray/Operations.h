@@ -21,221 +21,227 @@ namespace Containers {
 
 namespace __ndarray_impl {
 
-template< typename Array,
+template< typename Permutation,
           typename LevelTag = IndexTag< 0 > >
 struct SequentialExecutor
 {
-   template< typename Func,
+   template< typename SizesHolder,
+             typename Func,
              typename... Indices >
    __cuda_callable__
-   void operator()( const Array& array, Func f, Indices&&... indices )
+   void operator()( const SizesHolder& sizes, Func f, Indices&&... indices )
    {
-      SequentialExecutor< Array, IndexTag< LevelTag::value + 1 > > exec;
-      const auto size = array.template getSize< get< LevelTag::value >( typename Array::PermutationType{} ) >();
-      for( typename Array::IndexType i = 0; i < size; i++ )
-         exec( array, f, std::forward< Indices >( indices )..., i );
+      SequentialExecutor< Permutation, IndexTag< LevelTag::value + 1 > > exec;
+      const auto size = sizes.template getSize< get< LevelTag::value >( Permutation{} ) >();
+      for( typename SizesHolder::IndexType i = 0; i < size; i++ )
+         exec( sizes, f, std::forward< Indices >( indices )..., i );
    }
 };
 
-template< typename Array >
-struct SequentialExecutor< Array, IndexTag< Array::getDimension() - 1 > >
+template< typename Permutation >
+struct SequentialExecutor< Permutation, IndexTag< Permutation::size() - 1 > >
 {
-   template< typename Func,
+   template< typename SizesHolder,
+             typename Func,
              typename... Indices >
    __cuda_callable__
-   void operator()( const Array& array, Func f, Indices&&... indices )
+   void operator()( const SizesHolder& sizes, Func f, Indices&&... indices )
    {
-      static_assert( sizeof...(indices) == Array::getDimension() - 1,
+      static_assert( sizeof...(indices) == SizesHolder::getDimension() - 1,
                      "invalid number of indices in the final step of the SequentialExecutor" );
 
-      const auto size = array.template getSize< get< Array::getDimension() - 1 >( typename Array::PermutationType{} ) >();
-      for( typename Array::IndexType i = 0; i < size; i++ )
-         call_with_permuted_arguments< typename Array::PermutationType >( f, std::forward< Indices >( indices )..., i );
+      const auto size = sizes.template getSize< get< SizesHolder::getDimension() - 1 >( Permutation{} ) >();
+      for( typename SizesHolder::IndexType i = 0; i < size; i++ )
+         call_with_permuted_arguments< Permutation >( f, std::forward< Indices >( indices )..., i );
    }
 };
 
 
-template< typename Array,
-          typename LevelTag = IndexTag< Array::getDimension() - 1 > >
+template< typename Permutation,
+          typename LevelTag = IndexTag< Permutation::size() - 1 > >
 struct SequentialExecutorRTL
 {
-   template< typename Func,
+   template< typename SizesHolder,
+             typename Func,
              typename... Indices >
    __cuda_callable__
-   void operator()( const Array& array, Func f, Indices&&... indices )
+   void operator()( const SizesHolder& sizes, Func f, Indices&&... indices )
    {
-      SequentialExecutorRTL< Array, IndexTag< LevelTag::value - 1 > > exec;
-      const auto size = array.template getSize< get< LevelTag::value >( typename Array::PermutationType{} ) >();
-      for( typename Array::IndexType i = 0; i < size; i++ )
-         exec( array, f, i, std::forward< Indices >( indices )... );
+      SequentialExecutorRTL< Permutation, IndexTag< LevelTag::value - 1 > > exec;
+      const auto size = sizes.template getSize< get< LevelTag::value >( Permutation{} ) >();
+      for( typename SizesHolder::IndexType i = 0; i < size; i++ )
+         exec( sizes, f, i, std::forward< Indices >( indices )... );
    }
 };
 
-template< typename Array >
-struct SequentialExecutorRTL< Array, IndexTag< 0 > >
+template< typename Permutation >
+struct SequentialExecutorRTL< Permutation, IndexTag< 0 > >
 {
-   template< typename Func,
+   template< typename SizesHolder,
+             typename Func,
              typename... Indices >
    __cuda_callable__
-   void operator()( const Array& array, Func f, Indices&&... indices )
+   void operator()( const SizesHolder& sizes, Func f, Indices&&... indices )
    {
-      static_assert( sizeof...(indices) == Array::getDimension() - 1,
+      static_assert( sizeof...(indices) == SizesHolder::getDimension() - 1,
                      "invalid number of indices in the final step of the SequentialExecutor" );
 
-      const auto size = array.template getSize< get< 0 >( typename Array::PermutationType{} ) >();
-      for( typename Array::IndexType i = 0; i < size; i++ )
-         call_with_permuted_arguments< typename Array::PermutationType >( f, i, std::forward< Indices >( indices )... );
+      const auto size = sizes.template getSize< get< 0 >( Permutation{} ) >();
+      for( typename SizesHolder::IndexType i = 0; i < size; i++ )
+         call_with_permuted_arguments< Permutation >( f, i, std::forward< Indices >( indices )... );
    }
 };
 
 
-template< typename Array,
-          typename Device = typename Array::DeviceType >
+template< typename Permutation,
+          typename Device >
 struct ParallelExecutorDeviceDispatch
 {
-   template< typename Func >
-   void operator()( const Array& array, Func f )
+   template< typename SizesHolder, typename Func >
+   void operator()( const SizesHolder& sizes, Func f )
    {
-      using Index = typename Array::IndexType;
+      using Index = typename SizesHolder::IndexType;
 
       auto kernel = [=] ( Index i2, Index i1, Index i0 )
       {
-         SequentialExecutor< Array, IndexTag< 3 > > exec;
-         exec( array, f, i0, i1, i2 );
+         SequentialExecutor< Permutation, IndexTag< 3 > > exec;
+         exec( sizes, f, i0, i1, i2 );
       };
 
-      const Index size0 = array.template getSize< get< 0 >( typename Array::PermutationType{} ) >();
-      const Index size1 = array.template getSize< get< 1 >( typename Array::PermutationType{} ) >();
-      const Index size2 = array.template getSize< get< 2 >( typename Array::PermutationType{} ) >();
+      const Index size0 = sizes.template getSize< get< 0 >( Permutation{} ) >();
+      const Index size1 = sizes.template getSize< get< 1 >( Permutation{} ) >();
+      const Index size2 = sizes.template getSize< get< 2 >( Permutation{} ) >();
       ParallelFor3D< Device >::exec( (Index) 0, (Index) 0, (Index) 0, size2, size1, size0, kernel );
    }
 };
 
-template< typename Array >
-struct ParallelExecutorDeviceDispatch< Array, Devices::Cuda >
+template< typename Permutation >
+struct ParallelExecutorDeviceDispatch< Permutation, Devices::Cuda >
 {
-   template< typename Func >
-   void operator()( const Array& array, Func f )
+   template< typename SizesHolder, typename Func >
+   void operator()( const SizesHolder& sizes, Func f )
    {
-      using Index = typename Array::IndexType;
+      using Index = typename SizesHolder::IndexType;
 
       auto kernel = [=] __cuda_callable__ ( Index i2, Index i1, Index i0 )
       {
-         SequentialExecutorRTL< Array, IndexTag< Array::getDimension() - 4 > > exec;
-         exec( array, f, i0, i1, i2 );
+         SequentialExecutorRTL< Permutation, IndexTag< SizesHolder::getDimension() - 4 > > exec;
+         exec( sizes, f, i0, i1, i2 );
       };
 
-      const Index size0 = array.template getSize< get< Array::getDimension() - 3 >( typename Array::PermutationType{} ) >();
-      const Index size1 = array.template getSize< get< Array::getDimension() - 2 >( typename Array::PermutationType{} ) >();
-      const Index size2 = array.template getSize< get< Array::getDimension() - 1 >( typename Array::PermutationType{} ) >();
+      const Index size0 = sizes.template getSize< get< SizesHolder::getDimension() - 3 >( Permutation{} ) >();
+      const Index size1 = sizes.template getSize< get< SizesHolder::getDimension() - 2 >( Permutation{} ) >();
+      const Index size2 = sizes.template getSize< get< SizesHolder::getDimension() - 1 >( Permutation{} ) >();
       ParallelFor3D< Devices::Cuda >::exec( (Index) 0, (Index) 0, (Index) 0, size2, size1, size0, kernel );
    }
 };
 
-template< typename Array,
-          typename DimTag = IndexTag< Array::getDimension() > >
+template< typename Permutation,
+          typename Device,
+          typename DimTag = IndexTag< Permutation::size() > >
 struct ParallelExecutor
 {
-   template< typename Func >
-   void operator()( const Array& array, Func f )
+   template< typename SizesHolder, typename Func >
+   void operator()( const SizesHolder& sizes, Func f )
    {
-      ParallelExecutorDeviceDispatch< Array > dispatch;
-      dispatch( array, f );
+      ParallelExecutorDeviceDispatch< Permutation, Device > dispatch;
+      dispatch( sizes, f );
    }
 };
 
-template< typename Array >
-struct ParallelExecutor< Array, IndexTag< 3 > >
+template< typename Permutation,
+          typename Device >
+struct ParallelExecutor< Permutation, Device, IndexTag< 3 > >
 {
-   template< typename Func >
-   void operator()( const Array& array, Func f )
+   template< typename SizesHolder, typename Func >
+   void operator()( const SizesHolder& sizes, Func f )
    {
-      using Device = typename Array::DeviceType;
-      using Index = typename Array::IndexType;
+      using Index = typename SizesHolder::IndexType;
 
       auto kernel = [=] __cuda_callable__ ( Index i2, Index i1, Index i0 )
       {
-         call_with_permuted_arguments< typename Array::PermutationType >( f, i0, i1, i2 );
+         call_with_permuted_arguments< Permutation >( f, i0, i1, i2 );
       };
 
-      const Index size0 = array.template getSize< get< 0 >( typename Array::PermutationType{} ) >();
-      const Index size1 = array.template getSize< get< 1 >( typename Array::PermutationType{} ) >();
-      const Index size2 = array.template getSize< get< 2 >( typename Array::PermutationType{} ) >();
+      const Index size0 = sizes.template getSize< get< 0 >( Permutation{} ) >();
+      const Index size1 = sizes.template getSize< get< 1 >( Permutation{} ) >();
+      const Index size2 = sizes.template getSize< get< 2 >( Permutation{} ) >();
       ParallelFor3D< Device >::exec( (Index) 0, (Index) 0, (Index) 0, size2, size1, size0, kernel );
    }
 };
 
-template< typename Array >
-struct ParallelExecutor< Array, IndexTag< 2 > >
+template< typename Permutation,
+          typename Device >
+struct ParallelExecutor< Permutation, Device, IndexTag< 2 > >
 {
-   template< typename Func >
-   void operator()( const Array& array, Func f )
+   template< typename SizesHolder, typename Func >
+   void operator()( const SizesHolder& sizes, Func f )
    {
-      using Device = typename Array::DeviceType;
-      using Index = typename Array::IndexType;
+      using Index = typename SizesHolder::IndexType;
 
       auto kernel = [=] __cuda_callable__ ( Index i1, Index i0 )
       {
-         call_with_permuted_arguments< typename Array::PermutationType >( f, i0, i1 );
+         call_with_permuted_arguments< Permutation >( f, i0, i1 );
       };
 
-      const Index size0 = array.template getSize< get< 0 >( typename Array::PermutationType{} ) >();
-      const Index size1 = array.template getSize< get< 1 >( typename Array::PermutationType{} ) >();
+      const Index size0 = sizes.template getSize< get< 0 >( Permutation{} ) >();
+      const Index size1 = sizes.template getSize< get< 1 >( Permutation{} ) >();
       ParallelFor2D< Device >::exec( (Index) 0, (Index) 0, size1, size0, kernel );
    }
 };
 
-template< typename Array >
-struct ParallelExecutor< Array, IndexTag< 1 > >
+template< typename Permutation,
+          typename Device >
+struct ParallelExecutor< Permutation, Device, IndexTag< 1 > >
 {
-   template< typename Func >
-   void operator()( const Array& array, Func f )
+   template< typename SizesHolder, typename Func >
+   void operator()( const SizesHolder& sizes, Func f )
    {
-      using Device = typename Array::DeviceType;
-      using Index = typename Array::IndexType;
+      using Index = typename SizesHolder::IndexType;
 
       auto kernel = [=] __cuda_callable__ ( Index i )
       {
-         call_with_permuted_arguments< typename Array::PermutationType >( f, i );
+         call_with_permuted_arguments< Permutation >( f, i );
       };
 
-      const Index size = array.template getSize< get< 0 >( typename Array::PermutationType{} ) >();
+      const Index size = sizes.template getSize< get< 0 >( Permutation{} ) >();
       ParallelFor< Device >::exec( (Index) 0, size, kernel );
    }
 };
 
 
 // Device may be void which stands for StaticNDArray
-template< typename Array, typename Device = typename Array::DeviceType >
+template< typename Permutation,
+          typename Device >
 struct ExecutorDispatcher
 {
-   template< typename Func >
-   void operator()( const Array& array, Func f )
+   template< typename SizesHolder, typename Func >
+   void operator()( const SizesHolder& sizes, Func f )
    {
-      SequentialExecutor< Array >()( array, f );
+      SequentialExecutor< Permutation >()( sizes, f );
    }
 };
 
-template< typename Array >
-struct ExecutorDispatcher< Array, Devices::Host >
+template< typename Permutation >
+struct ExecutorDispatcher< Permutation, Devices::Host >
 {
-   template< typename Func >
-   void operator()( const Array& array, Func f )
+   template< typename SizesHolder, typename Func >
+   void operator()( const SizesHolder& sizes, Func f )
    {
       if( Devices::Host::isOMPEnabled() && Devices::Host::getMaxThreadsCount() > 1 )
-         ParallelExecutor< Array >()( array, f );
+         ParallelExecutor< Permutation, Devices::Host >()( sizes, f );
       else
-         SequentialExecutor< Array >()( array, f );
+         SequentialExecutor< Permutation >()( sizes, f );
    }
 };
 
-template< typename Array >
-struct ExecutorDispatcher< Array, Devices::Cuda >
+template< typename Permutation >
+struct ExecutorDispatcher< Permutation, Devices::Cuda >
 {
-   template< typename Func >
-   void operator()( const Array& array, Func f )
+   template< typename SizesHolder, typename Func >
+   void operator()( const SizesHolder& sizes, Func f )
    {
-      ParallelExecutor< Array >()( array, f );
+      ParallelExecutor< Permutation, Devices::Cuda >()( sizes, f );
    }
 };
 
@@ -256,9 +262,8 @@ void nd_map_view( Output output, Func f, const Input... input )
       output( indices... ) = f( input( indices... )... );
    };
 
-   // From here on, the output array is used only for getting the sizes,
-   // the writing of the result is done inside the wrapper.
-   ExecutorDispatcher< Output >()( output, wrapper );
+   ExecutorDispatcher< typename Output::PermutationType, typename Output::DeviceType > dispatch;
+   dispatch( output.getSizes(), wrapper );
 }
 
 #else
@@ -356,10 +361,8 @@ template< typename Output,
 void nd_map_view( Output output, Func f )
 {
    nvcc_map_helper_0< Output, Func > wrapper( output, f );
-
-   // From here on, the output array is used only for getting the sizes,
-   // the writing of the result is done inside the wrapper.
-   ExecutorDispatcher< Output >()( output, wrapper );
+   ExecutorDispatcher< typename Output::PermutationType, typename Output::DeviceType > dispatch;
+   dispatch( output.getSizes(), wrapper );
 }
 
 template< typename Output,
@@ -371,10 +374,8 @@ void nd_map_view( Output output, Func f, const Input1 input1 )
                   "all arrays must be of the same dimension" );
 
    nvcc_map_helper_1< Output, Func, Input1 > wrapper( output, f, input1 );
-
-   // From here on, the output array is used only for getting the sizes,
-   // the writing of the result is done inside the wrapper.
-   ExecutorDispatcher< Output >()( output, wrapper );
+   ExecutorDispatcher< typename Output::PermutationType, typename Output::DeviceType > dispatch;
+   dispatch( output.getSizes(), wrapper );
 }
 
 template< typename Output,
@@ -387,10 +388,8 @@ void nd_map_view( Output output, Func f, const Input1 input1, const Input2 input
                   "all arrays must be of the same dimension" );
 
    nvcc_map_helper_2< Output, Func, Input1, Input2 > wrapper( output, f, input1, input2 );
-
-   // From here on, the output array is used only for getting the sizes,
-   // the writing of the result is done inside the wrapper.
-   ExecutorDispatcher< Output >()( output, wrapper );
+   ExecutorDispatcher< typename Output::PermutationType, typename Output::DeviceType > dispatch;
+   dispatch( output.getSizes(), wrapper );
 }
 
 template< typename Output,
@@ -404,10 +403,8 @@ void nd_map_view( Output output, Func f, const Input1 input1, const Input2 input
                   "all arrays must be of the same dimension" );
 
    nvcc_map_helper_3< Output, Func, Input1, Input2, Input3 > wrapper( output, f, input1, input2, input3 );
-
-   // From here on, the output array is used only for getting the sizes,
-   // the writing of the result is done inside the wrapper.
-   ExecutorDispatcher< Output >()( output, wrapper );
+   ExecutorDispatcher< typename Output::PermutationType, typename Output::DeviceType > dispatch;
+   dispatch( output.getSizes(), wrapper );
 }
 
 #endif
