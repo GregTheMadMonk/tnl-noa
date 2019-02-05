@@ -549,7 +549,7 @@ else                                                                            
       {                                                                                                                          \
          std::cerr << "Node " << __tnl_mpi_print_j << " of "                                                                     \
                    << TNL::Communicators::MpiCommunicator::GetSize( TNL::Communicators::MpiCommunicator::AllGroup )              \
-                   << " : " << message << std::endl;                                                                             \
+                   << " : " << message << std::endl << std::flush;                                                                    \
       }                                                                                                                          \
       TNL::Communicators::MpiCommunicator::Barrier( TNL::Communicators::MpiCommunicator::AllGroup );                             \
    }
@@ -575,7 +575,7 @@ else                                                                            
          if( condition )                                                                                                         \
             std::cerr << "Node " << __tnl_mpi_print_j << " of "                                                                  \
                       << TNL::Communicators::MpiCommunicator::GetSize( TNL::Communicators::MpiCommunicator::AllGroup )           \
-                      << " : " << message << std::endl;                                                                          \
+                      << " : " << message << std::endl << std::flush;                                                                          \
       }                                                                                                                          \
       TNL::Communicators::MpiCommunicator::Barrier( TNL::Communicators::MpiCommunicator::AllGroup );                             \
    }                                                                                                                             \
