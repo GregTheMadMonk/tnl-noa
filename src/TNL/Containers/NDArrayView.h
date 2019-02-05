@@ -15,6 +15,7 @@
 #include <TNL/Containers/ndarray/Indexing.h>
 #include <TNL/Containers/ndarray/SizesHolder.h>
 #include <TNL/Containers/ndarray/Subarrays.h>
+#include <TNL/Containers/ndarray/Operations.h>
 
 namespace TNL {
 namespace Containers {
@@ -224,6 +225,13 @@ public:
       static_assert( decltype(strides)::getDimension() == sizeof...(Dimensions), "Bug - wrong dimension of the strides." );
       using SubarrayView = NDArrayView< ValueType, Device, decltype(subarray_sizes), Subpermutation, Base, decltype(strides) >;
       return SubarrayView{ &begin, subarray_sizes, strides };
+   }
+
+   template< typename Device2 = DeviceType, typename Func >
+   void forAll( Func f ) const
+   {
+      __ndarray_impl::ExecutorDispatcher< NDArrayView, Device2 > dispatch;
+      dispatch( *this, f );
    }
 
 protected:

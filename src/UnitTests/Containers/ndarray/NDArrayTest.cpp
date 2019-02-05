@@ -180,6 +180,53 @@ TEST( NDArrayTest, SizesHolderPrinter )
    EXPECT_EQ( str.str(), "SizesHolder< 0, 1, 2 >( 3, 1, 2 )" );
 }
 
+TEST( NDArrayTest, forAll_dynamic )
+{
+    int I = 2, J = 2, K = 2, L = 2, M = 2, N = 2;
+    NDArray< int,
+             SizesHolder< int, 0, 0, 0, 0, 0, 0 >,
+             index_sequence< 5, 3, 4, 2, 0, 1 > > a;
+    a.setSizes( I, J, K, L, M, N );
+    a.setValue( 0 );
+
+    auto setter = [&] ( int i, int j, int k, int l, int m, int n )
+    {
+       a( i, j, k, l, m, n ) = 1;
+    };
+
+    a.forAll( setter );
+
+    for( int n = 0; n < N; n++ )
+    for( int l = 0; l < L; l++ )
+    for( int m = 0; m < M; m++ )
+    for( int k = 0; k < K; k++ )
+    for( int i = 0; i < I; i++ )
+    for( int j = 0; j < J; j++ )
+        EXPECT_EQ( a( i, j, k, l, m, n ), 1 );
+}
+
+TEST( NDArrayTest, forAll_static )
+{
+    constexpr int I = 3, J = 4;
+    NDArray< int, SizesHolder< int, I, J > > a;
+    a.setSizes( 0, 0 );
+
+    for( int i = 0; i < I; i++ )
+    for( int j = 0; j < J; j++ )
+        a( i, j ) = 0;
+
+    auto setter = [&] ( int i, int j )
+    {
+       a( i, j ) = 1;
+    };
+
+    a.forAll( setter );
+
+    for( int i = 0; i < I; i++ )
+    for( int j = 0; j < J; j++ )
+        EXPECT_EQ( a( i, j ), 1 );
+}
+
 //#include "GtestMissingError.h"
 int main( int argc, char* argv[] )
 {

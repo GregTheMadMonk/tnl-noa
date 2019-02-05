@@ -173,6 +173,14 @@ public:
       return ConstViewType( array.getData(), sizes );
    }
 
+   template< typename Device2 = DeviceType, typename Func >
+   void forAll( Func f ) const
+   {
+      __ndarray_impl::ExecutorDispatcher< ConstViewType, Device2 > dispatch;
+      dispatch( getConstView(), f );
+   }
+
+
    // extra methods
 
    // TODO: rename to setSizes and make sure that overloading with the following method works
