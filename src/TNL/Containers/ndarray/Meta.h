@@ -93,13 +93,15 @@ is_in_sequence( Index value, std::integer_sequence< Index, vals... > )
 
 // Get index of the first occurrence of value in a variadic pack.
 template< typename V >
-constexpr std::size_t index_in_pack( V&& value )
+constexpr std::size_t
+index_in_pack( V&& value )
 {
    return 0;
 }
 
 template< typename V, typename T, typename... Ts >
-constexpr std::size_t index_in_pack( V&& value, T&& arg, Ts&&... args )
+constexpr std::size_t
+index_in_pack( V&& value, T&& arg, Ts&&... args )
 {
    if( value == arg )
       return 0;
@@ -192,6 +194,45 @@ __cuda_callable__
 auto call_with_permuted_arguments( Func f, Args&&... args ) -> decltype(auto)
 {
    return CallPermutationHelper< Permutation, std::make_index_sequence< sizeof...( Args ) > >
+          ::apply( f, std::forward< Args >( args )... );
+}
+
+
+template< typename Permutation,
+          typename Sequence >
+struct CallInversePermutationHelper
+{};
+
+template< typename Permutation,
+          std::size_t... N >
+struct CallInversePermutationHelper< Permutation, std::index_sequence< N... > >
+{
+   template< typename Func,
+             typename... Args >
+   __cuda_callable__
+   static auto apply( Func&& f, Args&&... args ) -> decltype(auto)
+   {
+      return std::forward< Func >( f )( get_from_pack<
+                  index_in_sequence( N, Permutation{} )
+                >( std::forward< Args >( args )... )... );
+   }
+};
+
+// Call specified function with permuted arguments.
+// [used in ndarray_operations.h]
+template< typename Permutation,
+          typename Func,
+          typename... Args >
+__cuda_callable__
+// FIXME: does not compile with nvcc 10.0
+//auto call_with_unpermuted_arguments( Func&& f, Args&&... args ) -> decltype(auto)
+//{
+//   return CallInversePermutationHelper< Permutation, std::make_index_sequence< sizeof...( Args ) > >
+//          ::apply( std::forward< Func >( f ), std::forward< Args >( args )... );
+//}
+auto call_with_unpermuted_arguments( Func f, Args&&... args ) -> decltype(auto)
+{
+   return CallInversePermutationHelper< Permutation, std::make_index_sequence< sizeof...( Args ) > >
           ::apply( f, std::forward< Args >( args )... );
 }
 

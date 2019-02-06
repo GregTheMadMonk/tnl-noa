@@ -177,7 +177,29 @@ public:
    void forAll( Func f ) const
    {
       __ndarray_impl::ExecutorDispatcher< PermutationType, Device2 > dispatch;
-      dispatch( sizes, f );
+      using Begins = ConstStaticSizesHolder< IndexType, getDimension(), 0 >;
+      dispatch( Begins{}, sizes, f );
+   }
+
+   template< typename Device2 = DeviceType, typename Func >
+   void forInternal( Func f ) const
+   {
+      __ndarray_impl::ExecutorDispatcher< PermutationType, Device2 > dispatch;
+      using Begins = ConstStaticSizesHolder< IndexType, getDimension(), 1 >;
+      // subtract static sizes
+      using Ends = typename __ndarray_impl::SubtractedSizesHolder< SizesHolder, 1 >::type;
+      // subtract dynamic sizes
+      Ends ends;
+      __ndarray_impl::SetSizesSubtractHelper< 1, Ends, SizesHolder >::subtract( ends, sizes );
+      dispatch( Begins{}, ends, f );
+   }
+
+   template< typename Device2 = DeviceType, typename Func, typename Begins, typename Ends >
+   void forInternal( Func f, const Begins& begins, const Ends& ends ) const
+   {
+      // TODO: assert "begins <= sizes", "ends <= sizes"
+      __ndarray_impl::ExecutorDispatcher< PermutationType, Device2 > dispatch;
+      dispatch( begins, ends, f );
    }
 
 

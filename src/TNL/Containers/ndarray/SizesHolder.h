@@ -202,6 +202,49 @@ public:
 
 
 template< typename Index,
+          std::size_t dimension,
+          Index constSize >
+class ConstStaticSizesHolder
+{
+public:
+   using IndexType = Index;
+
+   static constexpr std::size_t getDimension()
+   {
+      return dimension;
+   }
+
+   template< std::size_t level >
+   static constexpr std::size_t getStaticSize()
+   {
+      static_assert( level < getDimension(), "Invalid level passed to getStaticSize()." );
+      return constSize;
+   }
+
+   template< std::size_t level >
+   __cuda_callable__
+   Index getSize() const
+   {
+      static_assert( level < getDimension(), "Invalid dimension passed to getSize()." );
+      return constSize;
+   }
+
+   // methods for convenience
+   __cuda_callable__
+   bool operator==( const ConstStaticSizesHolder& other ) const
+   {
+      return true;
+   }
+
+   __cuda_callable__
+   bool operator!=( const ConstStaticSizesHolder& other ) const
+   {
+      return false;
+   }
+};
+
+
+template< typename Index,
           std::size_t... sizes >
 std::ostream& operator<<( std::ostream& str, const SizesHolder< Index, sizes... >& holder )
 {
@@ -212,6 +255,26 @@ std::ostream& operator<<( std::ostream& str, const SizesHolder< Index, sizes... 
    str << holder.template getSize< sizeof...(sizes) - 1 >() << " )";
    return str;
 }
+
+
+// helper for the forInternal method
+namespace __ndarray_impl {
+
+template< typename SizesHolder,
+          std::size_t ConstValue >
+struct SubtractedSizesHolder
+{};
+
+template< typename Index,
+          std::size_t ConstValue,
+          std::size_t... sizes >
+struct SubtractedSizesHolder< SizesHolder< Index, sizes... >, ConstValue >
+{
+//   using type = SizesHolder< Index, std::max( (std::size_t) 0, sizes - ConstValue )... >;
+   using type = SizesHolder< Index, ( (sizes >= ConstValue) ? sizes - ConstValue : 0 )... >;
+};
+
+} // namespace __ndarray_impl
 
 } // namespace Containers
 } // namespace TNL

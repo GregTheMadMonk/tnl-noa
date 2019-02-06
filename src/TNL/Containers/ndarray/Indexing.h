@@ -111,6 +111,36 @@ void setSizesHelper( SizesHolder& holder,
 }
 
 
+// helper for the forInternal method
+template< std::size_t ConstValue,
+          typename TargetHolder,
+          typename SourceHolder,
+          std::size_t level = TargetHolder::getDimension() - 1 >
+struct SetSizesSubtractHelper
+{
+   static void subtract( TargetHolder& target,
+                         const SourceHolder& source )
+   {
+      if( source.template getStaticSize< level >() == 0 )
+         target.template setSize< level >( source.template getSize< level >() - ConstValue );
+      SetSizesSubtractHelper< ConstValue, TargetHolder, SourceHolder, level - 1 >::subtract( target, source );
+   }
+};
+
+template< std::size_t ConstValue,
+          typename TargetHolder,
+          typename SourceHolder >
+struct SetSizesSubtractHelper< ConstValue, TargetHolder, SourceHolder, 0 >
+{
+   static void subtract( TargetHolder& target,
+                         const SourceHolder& source )
+   {
+      if( source.template getStaticSize< 0 >() == 0 )
+         target.template setSize< 0 >( source.template getSize< 0 >() - ConstValue );
+   }
+};
+
+
 // A variadic bounds-checker for indices
 template< typename SizesHolder >
 __cuda_callable__
