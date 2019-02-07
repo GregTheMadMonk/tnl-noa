@@ -105,14 +105,19 @@ class MpiCommunicator
             redirect = parameters.getParameter< bool >( "redirect-mpi-output" );
             setupRedirection();
 #ifdef HAVE_CUDA
-   #if defined(MPIX_CUDA_AWARE_SUPPORT) && MPIX_CUDA_AWARE_SUPPORT
-            std::cout << "CUDA-aware MPI detected on this system ... " << std::endl;
-   #elif defined(MPIX_CUDA_AWARE_SUPPORT) && !MPIX_CUDA_AWARE_SUPPORT
-            std::cerr << "MPI is not CUDA-aware. Please install correct version of MPI." << std::endl;
-            return false;
+            int size;
+            MPI_Comm_size( MPI_COMM_WORLD, &size );
+            if( size > 1 )
+            {
+   #if defined( MPIX_CUDA_AWARE_SUPPORT ) && MPIX_CUDA_AWARE_SUPPORT
+               std::cout << "CUDA-aware MPI detected on this system ... " << std::endl;
+   #elif defined( MPIX_CUDA_AWARE_SUPPORT ) && !MPIX_CUDA_AWARE_SUPPORT
+               std::cerr << "MPI is not CUDA-aware. Please install correct version of MPI." << std::endl;
+               return false;
    #else
-            std::cerr << "WARNING: TNL cannot detect if you have CUDA-aware MPI. Some problems may occur." << std::endl;
+               std::cerr << "WARNING: TNL cannot detect if you have CUDA-aware MPI. Some problems may occur." << std::endl;
    #endif
+            }
 #endif // HAVE_CUDA
             bool gdbDebug = parameters.getParameter< bool >( "mpi-gdb-debug" );
             int processToAttach = parameters.getParameter< int >( "mpi-process-to-attach" );
