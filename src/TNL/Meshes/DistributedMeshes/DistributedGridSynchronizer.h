@@ -149,13 +149,13 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< MeshDimension,
             neighbors,
             periodicBoundaries,
             PeriodicBoundariesMaskPointer( nullptr ) ); // the mask is used only when receiving data );
-        
+
          //async send and receive
          typename CommunicatorType::Request requests[2*this->getNeighborCount()];
          typename CommunicatorType::CommunicationGroup group;
          group=*((typename CommunicatorType::CommunicationGroup *)(distributedGrid->getCommunicationGroup()));
          int requestsCount( 0 );
-		                
+
          //send everything, recieve everything 
          for( int i=0; i<this->getNeighborCount(); i++ )
             if( neighbors[ i ] != -1 )
@@ -173,19 +173,19 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< MeshDimension,
         CommunicatorType::WaitAll( requests, requestsCount );
 
         //copy data from receive buffers
-        copyBuffers(meshFunction, 
-            recieveBuffers,recieveBegin,sendDimensions  ,          
+        copyBuffers(meshFunction,
+            recieveBuffers,recieveBegin,sendDimensions  ,
             false,
             neighbors,
             periodicBoundaries,
             mask );
     }
-    
-   private:      
-      template< typename Real_, 
+
+   private:
+      template< typename Real_,
                 typename MeshFunctionType,
                 typename PeriodicBoundariesMaskPointer >
-      void copyBuffers( 
+      void copyBuffers(
          MeshFunctionType& meshFunction,
          Containers::Array<Real_, Device, Index>* buffers,
          CoordinatesType* begins,
@@ -199,29 +199,28 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< MeshDimension,
        
          for(int i=0;i<this->getNeighborCount();i++)
          {
-            bool isBoundary=( neighbor[ i ] == -1 );           
+            bool isBoundary=( neighbor[ i ] == -1 );
             if( ! isBoundary || periodicBoundaries )
             {
-                  Helper::BufferEntities( meshFunction, mask, buffers[ i ].getData(), isBoundary, begins[i], sizes[i], toBuffer );
-            }                  
-         }      
+               Helper::BufferEntities( meshFunction, mask, buffers[ i ].getData(), isBoundary, begins[i], sizes[i], toBuffer );
+            }
+         }
       }
-    
+
    private:
-   
+
       Containers::Array<RealType, Device, Index> sendBuffers[getNeighborCount()];
       Containers::Array<RealType, Device, Index> recieveBuffers[getNeighborCount()];
       Containers::StaticArray< getNeighborCount(), int > sendSizes;
-  
+
       CoordinatesType sendDimensions[getNeighborCount()];
       CoordinatesType recieveDimensions[getNeighborCount()];
       CoordinatesType sendBegin[getNeighborCount()];
       CoordinatesType recieveBegin[getNeighborCount()];
-      
+
       DistributedGridType *distributedGrid;
 
       bool isSet;
-    
 };
 
 
