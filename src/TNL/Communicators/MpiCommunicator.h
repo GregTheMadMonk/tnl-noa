@@ -220,7 +220,7 @@ class MpiCommunicator
 #endif
       }
 
-      static int GetRank(CommunicationGroup group)
+      static int GetRank(CommunicationGroup group = AllGroup )
       {
 #ifdef HAVE_MPI
         TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
@@ -233,7 +233,7 @@ class MpiCommunicator
 #endif
       }
 
-      static int GetSize(CommunicationGroup group)
+      static int GetSize(CommunicationGroup group = AllGroup )
       {
 #ifdef HAVE_MPI
          TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
@@ -309,13 +309,13 @@ class MpiCommunicator
         }
 
          template <typename T>
-         static Request IRecv( T* data, int count, int src, int tag, CommunicationGroup group)
+         static Request IRecv( T* data, int count, int src, int tag, CommunicationGroup group = AllGroup )
          {
 #ifdef HAVE_MPI
             TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
             TNL_ASSERT_NE(group, NullGroup, "IRecv cannot be called with NullGroup");
             Request req;
-            MPI_Irecv((void*) data, count, MPITypeResolver< T >::getType() , src, tag, group, &req);
+            MPI_Irecv( const_cast< void* >( ( const void* ) data ), count, MPITypeResolver< T >::getType() , src, tag, group, &req);
             return req;
 #else
             throw Exceptions::MPISupportMissing();
@@ -522,8 +522,6 @@ class MpiCommunicator
     #endif
 #endif
       }
-
-
 };
 
 #ifdef HAVE_MPI
