@@ -1,5 +1,6 @@
 SET( headers MpiCommunicator.h
              MpiDefs.h
+             MPIPrint.h
              MPITypeResolver.h
              NoDistrCommunicator.h
              ScopedInitializer.h

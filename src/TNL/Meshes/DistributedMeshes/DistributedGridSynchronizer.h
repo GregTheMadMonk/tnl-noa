@@ -14,6 +14,7 @@
 #include <TNL/Containers/Array.h>
 #include <TNL/Meshes/DistributedMeshes/BufferEntitiesHelper.h>
 #include <TNL/Meshes/DistributedMeshes/Directions.h>
+#include <TNL/Communicators/MPIPrint.h>
 
 namespace TNL {
 namespace Functions{
@@ -123,10 +124,9 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< MeshDimension,
                   recieveBegin[i]=tmp;
                }
             }
-
          }
      }
-        
+
       template< typename CommunicatorType,
                 typename MeshFunctionType,
                 typename PeriodicBoundariesMaskPointer = Pointers::SharedPointer< MeshFunctionType > >
