@@ -283,7 +283,7 @@ class MpiCommunicator
 #endif
         }
 
-         static void Barrier(CommunicationGroup group)
+         static void Barrier( CommunicationGroup group = AllGroup )
          {
 #ifdef HAVE_MPI
             TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
