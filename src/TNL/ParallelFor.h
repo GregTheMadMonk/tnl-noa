@@ -288,20 +288,36 @@ struct ParallelFor3D< Devices::Cuda >
          const Index sizeZ = endZ - startZ;
 
          dim3 blockSize;
-         if( sizeX >= sizeY * sizeZ ) {
+         if( sizeX >= sizeY * sizeY * sizeZ * sizeZ ) {
             blockSize.x = TNL::min( 256, sizeX );
             blockSize.y = 1;
             blockSize.z = 1;
          }
-         else if( sizeY >= sizeX * sizeZ ) {
+         else if( sizeY >= sizeX * sizeX * sizeZ * sizeZ ) {
             blockSize.x = 1;
             blockSize.y = TNL::min( 256, sizeY );
             blockSize.z = 1;
          }
-         else if( sizeZ >= sizeX * sizeY ) {
-            blockSize.x = 1;
+         else if( sizeZ >= sizeX * sizeX * sizeY * sizeY ) {
+            blockSize.x = TNL::min( 2, sizeX );
+            blockSize.y = TNL::min( 2, sizeY );
+            // CUDA allows max 64 for blockSize.z
+            blockSize.z = TNL::min( 64, sizeZ );
+         }
+         else if( sizeX >= sizeZ * sizeZ && sizeY >= sizeZ * sizeZ ) {
+            blockSize.x = TNL::min( 32, sizeX );
+            blockSize.y = TNL::min( 8, sizeY );
+            blockSize.z = 1;
+         }
+         else if( sizeX >= sizeY * sizeY && sizeZ >= sizeY * sizeY ) {
+            blockSize.x = TNL::min( 32, sizeX );
             blockSize.y = 1;
-            blockSize.z = TNL::min( 256, sizeZ );
+            blockSize.z = TNL::min( 8, sizeZ );
+         }
+         else if( sizeY >= sizeX * sizeX && sizeZ >= sizeX * sizeX ) {
+            blockSize.x = 1;
+            blockSize.y = TNL::min( 32, sizeY );
+            blockSize.z = TNL::min( 8, sizeZ );
          }
          else {
             blockSize.x = TNL::min( 16, sizeX );
