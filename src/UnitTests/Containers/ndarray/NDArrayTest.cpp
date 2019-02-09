@@ -810,6 +810,379 @@ TEST( NDArrayTest, forInternal_static_6D )
     }
 }
 
+TEST( NDArrayTest, forBoundary_dynamic_1D )
+{
+    int I = 3;
+    NDArray< int,
+             SizesHolder< int, 0 >,
+             index_sequence< 0 > > a;
+    a.setSizes( I );
+    a.setValue( 0 );
+
+    auto setter = [&] ( int i )
+    {
+       a( i ) += 1;
+    };
+
+    a.forBoundary( setter );
+
+    for( int i = 0; i < I; i++ )
+    {
+        if( i == 0 || i == I - 1 )
+            EXPECT_EQ( a( i ), 1 )
+               << "i = " << i;
+        else
+            EXPECT_EQ( a( i ), 0 )
+               << "i = " << i;
+    }
+}
+
+TEST( NDArrayTest, forBoundary_dynamic_2D )
+{
+    int I = 3, J = 4;
+    NDArray< int,
+             SizesHolder< int, 0, 0 >,
+             index_sequence< 1, 0 > > a;
+    a.setSizes( I, J );
+    a.setValue( 0 );
+
+    auto setter = [&] ( int i, int j )
+    {
+       a( i, j ) += 1;
+    };
+
+    a.forBoundary( setter );
+
+    for( int j = 0; j < J; j++ )
+    for( int i = 0; i < I; i++ )
+    {
+        if( i == 0 || i == I - 1 ||
+            j == 0 || j == J - 1 )
+            EXPECT_EQ( a( i, j ), 1 )
+               << "i = " << i << ", j = " << j;
+        else
+            EXPECT_EQ( a( i, j ), 0 )
+               << "i = " << i << ", j = " << j;
+    }
+}
+
+TEST( NDArrayTest, forBoundary_dynamic_3D )
+{
+    int I = 3, J = 4, K = 5;
+    NDArray< int,
+             SizesHolder< int, 0, 0, 0 >,
+             index_sequence< 2, 0, 1 > > a;
+    a.setSizes( I, J, K );
+    a.setValue( 0 );
+
+    auto setter = [&] ( int i, int j, int k )
+    {
+       a( i, j, k ) += 1;
+    };
+
+    a.forBoundary( setter );
+
+    for( int k = 0; k < K; k++ )
+    for( int i = 0; i < I; i++ )
+    for( int j = 0; j < J; j++ )
+    {
+        if( i == 0 || i == I - 1 ||
+            j == 0 || j == J - 1 ||
+            k == 0 || k == K - 1 )
+            EXPECT_EQ( a( i, j, k ), 1 )
+               << "i = " << i << ", j = " << j << ", k = " << k;
+        else
+            EXPECT_EQ( a( i, j, k ), 0 )
+               << "i = " << i << ", j = " << j << ", k = " << k;
+    }
+}
+
+// TODO: implement general ParallelBoundaryExecutor
+//TEST( NDArrayTest, forBoundary_dynamic_4D )
+//{
+//    int I = 3, J = 4, K = 5, L = 6;
+//    NDArray< int,
+//             SizesHolder< int, 0, 0, 0, 0 >,
+//             index_sequence< 3, 2, 0, 1 > > a;
+//    a.setSizes( I, J, K, L );
+//    a.setValue( 0 );
+//
+//    auto setter = [&] ( int i, int j, int k, int l )
+//    {
+//       a( i, j, k, l ) += 1;
+//    };
+//
+//    a.forBoundary( setter );
+//
+//    for( int l = 0; l < L; l++ )
+//    for( int k = 0; k < K; k++ )
+//    for( int i = 0; i < I; i++ )
+//    for( int j = 0; j < J; j++ )
+//    {
+//        if( i == 0 || i == I - 1 ||
+//            j == 0 || j == J - 1 ||
+//            k == 0 || k == K - 1 ||
+//            l == 0 || l == L - 1 )
+//            EXPECT_EQ( a( i, j, k, l ), 1 )
+//               << "i = " << i << ", j = " << j << ", k = " << k << ", l = " << l;
+//        else
+//            EXPECT_EQ( a( i, j, k, l ), 0 )
+//               << "i = " << i << ", j = " << j << ", k = " << k << ", l = " << l;
+//    }
+//}
+//
+//TEST( NDArrayTest, forBoundary_dynamic_5D )
+//{
+//    int I = 3, J = 4, K = 5, L = 6, M = 7;
+//    NDArray< int,
+//             SizesHolder< int, 0, 0, 0, 0, 0 >,
+//             index_sequence< 3, 4, 2, 0, 1 > > a;
+//    a.setSizes( I, J, K, L, M );
+//    a.setValue( 0 );
+//
+//    auto setter = [&] ( int i, int j, int k, int l, int m )
+//    {
+//       a( i, j, k, l, m ) += 1;
+//    };
+//
+//    a.forBoundary( setter );
+//
+//    for( int l = 0; l < L; l++ )
+//    for( int m = 0; m < M; m++ )
+//    for( int k = 0; k < K; k++ )
+//    for( int i = 0; i < I; i++ )
+//    for( int j = 0; j < J; j++ )
+//    {
+//        if( i == 0 || i == I - 1 ||
+//            j == 0 || j == J - 1 ||
+//            k == 0 || k == K - 1 ||
+//            l == 0 || l == L - 1 ||
+//            m == 0 || m == M - 1 )
+//            EXPECT_EQ( a( i, j, k, l, m ), 1 )
+//               << "i = " << i << ", j = " << j << ", k = " << k << ", l = " << l << ", m = " << m;
+//        else
+//            EXPECT_EQ( a( i, j, k, l, m ), 0 )
+//               << "i = " << i << ", j = " << j << ", k = " << k << ", l = " << l << ", m = " << m;
+//    }
+//}
+//
+//TEST( NDArrayTest, forBoundary_dynamic_6D )
+//{
+//    int I = 3, J = 4, K = 5, L = 6, M = 7, N = 8;
+//    NDArray< int,
+//             SizesHolder< int, 0, 0, 0, 0, 0, 0 >,
+//             index_sequence< 5, 3, 4, 2, 0, 1 > > a;
+//    a.setSizes( I, J, K, L, M, N );
+//    a.setValue( 0 );
+//
+//    auto setter = [&] ( int i, int j, int k, int l, int m, int n )
+//    {
+//       a( i, j, k, l, m, n ) += 1;
+//    };
+//
+//    a.forBoundary( setter );
+//
+//    for( int n = 0; n < N; n++ )
+//    for( int l = 0; l < L; l++ )
+//    for( int m = 0; m < M; m++ )
+//    for( int k = 0; k < K; k++ )
+//    for( int i = 0; i < I; i++ )
+//    for( int j = 0; j < J; j++ )
+//    {
+//        if( i == 0 || i == I - 1 ||
+//            j == 0 || j == J - 1 ||
+//            k == 0 || k == K - 1 ||
+//            l == 0 || l == L - 1 ||
+//            m == 0 || m == M - 1 ||
+//            n == 0 || n == N - 1 )
+//            EXPECT_EQ( a( i, j, k, l, m, n ), 1 )
+//               << "i = " << i << ", j = " << j << ", k = " << k << ", l = " << l << ", m = " << m << ", n = " << n;
+//        else
+//            EXPECT_EQ( a( i, j, k, l, m, n ), 0 )
+//               << "i = " << i << ", j = " << j << ", k = " << k << ", l = " << l << ", m = " << m << ", n = " << n;
+//    }
+//}
+
+TEST( NDArrayTest, forBoundary_static_1D )
+{
+    constexpr int I = 3;
+    StaticNDArray< int, SizesHolder< int, I > > a;
+//    a.setSizes( 0 );
+    a.setValue( 0 );
+
+    auto setter = [&] ( int i )
+    {
+       a( i ) += 1;
+    };
+
+    a.forBoundary( setter );
+
+    for( int i = 0; i < I; i++ )
+    {
+        if( i == 0 || i == I - 1 )
+            EXPECT_EQ( a( i ), 1 )
+               << "i = " << i;
+        else
+            EXPECT_EQ( a( i ), 0 )
+               << "i = " << i;
+    }
+}
+
+TEST( NDArrayTest, forBoundary_static_2D )
+{
+    constexpr int I = 3, J = 4;
+    StaticNDArray< int, SizesHolder< int, I, J > > a;
+//    a.setSizes( 0, 0 );
+    a.setValue( 0 );
+
+    auto setter = [&] ( int i, int j )
+    {
+       a( i, j ) += 1;
+    };
+
+    a.forBoundary( setter );
+
+    for( int j = 0; j < J; j++ )
+    for( int i = 0; i < I; i++ )
+    {
+        if( i == 0 || i == I - 1 ||
+            j == 0 || j == J - 1 )
+            EXPECT_EQ( a( i, j ), 1 )
+               << "i = " << i << ", j = " << j;
+        else
+            EXPECT_EQ( a( i, j ), 0 )
+               << "i = " << i << ", j = " << j;
+    }
+}
+
+TEST( NDArrayTest, forBoundary_static_3D )
+{
+    constexpr int I = 3, J = 4, K = 5;
+    StaticNDArray< int, SizesHolder< int, I, J, K > > a;
+//    a.setSizes( 0, 0, 0 );
+    a.setValue( 0 );
+
+    auto setter = [&] ( int i, int j, int k )
+    {
+       a( i, j, k ) += 1;
+    };
+
+    a.forBoundary( setter );
+
+    for( int k = 0; k < K; k++ )
+    for( int i = 0; i < I; i++ )
+    for( int j = 0; j < J; j++ )
+    {
+        if( i == 0 || i == I - 1 ||
+            j == 0 || j == J - 1 ||
+            k == 0 || k == K - 1 )
+            EXPECT_EQ( a( i, j, k ), 1 )
+               << "i = " << i << ", j = " << j << ", k = " << k;
+        else
+            EXPECT_EQ( a( i, j, k ), 0 )
+               << "i = " << i << ", j = " << j << ", k = " << k;
+    }
+}
+
+TEST( NDArrayTest, forBoundary_static_4D )
+{
+    constexpr int I = 3, J = 4, K = 5, L = 6;
+    StaticNDArray< int, SizesHolder< int, I, J, K, L > > a;
+//    a.setSizes( 0, 0, 0, 0 );
+    a.setValue( 0 );
+
+    auto setter = [&] ( int i, int j, int k, int l )
+    {
+       a( i, j, k, l ) += 1;
+    };
+
+    a.forBoundary( setter );
+
+    for( int l = 0; l < L; l++ )
+    for( int k = 0; k < K; k++ )
+    for( int i = 0; i < I; i++ )
+    for( int j = 0; j < J; j++ )
+    {
+        if( i == 0 || i == I - 1 ||
+            j == 0 || j == J - 1 ||
+            k == 0 || k == K - 1 ||
+            l == 0 || l == L - 1 )
+            EXPECT_EQ( a( i, j, k, l ), 1 )
+               << "i = " << i << ", j = " << j << ", k = " << k << ", l = " << l;
+        else
+            EXPECT_EQ( a( i, j, k, l ), 0 )
+               << "i = " << i << ", j = " << j << ", k = " << k << ", l = " << l;
+    }
+}
+
+TEST( NDArrayTest, forBoundary_static_5D )
+{
+    constexpr int I = 3, J = 4, K = 5, L = 6, M = 7;
+    StaticNDArray< int, SizesHolder< int, I, J, K, L, M > > a;
+//    a.setSizes( 0, 0, 0, 0, 0 );
+    a.setValue( 0 );
+
+    auto setter = [&] ( int i, int j, int k, int l, int m )
+    {
+       a( i, j, k, l, m ) += 1;
+    };
+
+    a.forBoundary( setter );
+
+    for( int l = 0; l < L; l++ )
+    for( int m = 0; m < M; m++ )
+    for( int k = 0; k < K; k++ )
+    for( int i = 0; i < I; i++ )
+    for( int j = 0; j < J; j++ )
+    {
+        if( i == 0 || i == I - 1 ||
+            j == 0 || j == J - 1 ||
+            k == 0 || k == K - 1 ||
+            l == 0 || l == L - 1 ||
+            m == 0 || m == M - 1 )
+            EXPECT_EQ( a( i, j, k, l, m ), 1 )
+               << "i = " << i << ", j = " << j << ", k = " << k << ", l = " << l << ", m = " << m;
+        else
+            EXPECT_EQ( a( i, j, k, l, m ), 0 )
+               << "i = " << i << ", j = " << j << ", k = " << k << ", l = " << l << ", m = " << m;
+    }
+}
+
+TEST( NDArrayTest, forBoundary_static_6D )
+{
+    constexpr int I = 3, J = 4, K = 5, L = 6, M = 7, N = 8;
+    StaticNDArray< int, SizesHolder< int, I, J, K, L, M, N > > a;
+//    a.setSizes( 0, 0, 0, 0, 0, 0 );
+    a.setValue( 0 );
+
+    auto setter = [&] ( int i, int j, int k, int l, int m, int n )
+    {
+       a( i, j, k, l, m, n ) += 1;
+    };
+
+    a.forBoundary( setter );
+
+    for( int n = 0; n < N; n++ )
+    for( int l = 0; l < L; l++ )
+    for( int m = 0; m < M; m++ )
+    for( int k = 0; k < K; k++ )
+    for( int i = 0; i < I; i++ )
+    for( int j = 0; j < J; j++ )
+    {
+        if( i == 0 || i == I - 1 ||
+            j == 0 || j == J - 1 ||
+            k == 0 || k == K - 1 ||
+            l == 0 || l == L - 1 ||
+            m == 0 || m == M - 1 ||
+            n == 0 || n == N - 1 )
+            EXPECT_EQ( a( i, j, k, l, m, n ), 1 )
+               << "i = " << i << ", j = " << j << ", k = " << k << ", l = " << l << ", m = " << m << ", n = " << n;
+        else
+            EXPECT_EQ( a( i, j, k, l, m, n ), 0 )
+               << "i = " << i << ", j = " << j << ", k = " << k << ", l = " << l << ", m = " << m << ", n = " << n;
+    }
+}
+
 //#include "GtestMissingError.h"
 int main( int argc, char* argv[] )
 {

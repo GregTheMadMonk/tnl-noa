@@ -202,6 +202,30 @@ public:
       dispatch( begins, ends, f );
    }
 
+   template< typename Device2 = DeviceType, typename Func >
+   void forBoundary( Func f ) const
+   {
+      using Begins = ConstStaticSizesHolder< IndexType, getDimension(), 0 >;
+      using SkipBegins = ConstStaticSizesHolder< IndexType, getDimension(), 1 >;
+      // subtract static sizes
+      using SkipEnds = typename __ndarray_impl::SubtractedSizesHolder< SizesHolder, 1 >::type;
+      // subtract dynamic sizes
+      SkipEnds skipEnds;
+      __ndarray_impl::SetSizesSubtractHelper< 1, SkipEnds, SizesHolder >::subtract( skipEnds, sizes );
+
+      __ndarray_impl::BoundaryExecutorDispatcher< PermutationType, Device2 > dispatch;
+      dispatch( Begins{}, SkipBegins{}, skipEnds, sizes, f );
+   }
+
+   template< typename Device2 = DeviceType, typename Func, typename SkipBegins, typename SkipEnds >
+   void forBoundary( Func f, const SkipBegins& skipBegins, const SkipEnds& skipEnds ) const
+   {
+      // TODO: assert "skipBegins <= sizes", "skipEnds <= sizes"
+      using Begins = ConstStaticSizesHolder< IndexType, getDimension(), 0 >;
+      __ndarray_impl::BoundaryExecutorDispatcher< PermutationType, Device2 > dispatch;
+      dispatch( Begins{}, skipBegins, skipEnds, sizes, f );
+   }
+
 
    // extra methods
 
