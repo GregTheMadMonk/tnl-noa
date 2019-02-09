@@ -48,7 +48,13 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< MeshDimension,
       typedef typename Grid< MeshDimension, GridReal, Device, Index >::DistributedMeshType DistributedGridType; 
       typedef typename DistributedGridType::CoordinatesType CoordinatesType;
       using SubdomainOverlapsType = typename DistributedGridType::SubdomainOverlapsType;
-          
+
+      enum PeriodicBoundariesCopyDirection
+      {
+         BoundaryToOverlap,
+         OverlapToBoundary
+      };
+
       DistributedMeshSynchronizer()
       {
          isSet = false;
@@ -108,22 +114,9 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< MeshDimension,
             sendBuffers[ i ].setSize( sendSize );
             recieveBuffers[ i ].setSize( sendSize);
 
-            //Periodic-BC copy from overlap into domain
-            //if Im on boundary, and i is direction of the boundary i will swap source and destination
-            //i do this only for basic 6 directions, 
-            //because this swap at conners and edges produces writing multiple values at sam place in localsubdomain
-            {
-               if(  (  i==ZzYzXm || i==ZzYzXp 
-                     ||i==ZzYmXz || i==ZzYpXz 
-                     ||i==ZmYzXz || i==ZpYzXz ) 
-                  && neighbors[ i ] == -1) 
-               {
-                  //swap begins
-                  CoordinatesType tmp = sendBegin[i];
-                  sendBegin[i]=recieveBegin[i];
-                  recieveBegin[i]=tmp;
-               }
-            }
+            if( this->periodicBoundariesCopyDirection == OverlapToBoundary &&
+               neighbors[ i ] == -1 )
+                  swap( sendBegin[i], recieveBegin[i] );
          }
      }
 
@@ -212,6 +205,8 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< MeshDimension,
       Containers::Array<RealType, Device, Index> sendBuffers[getNeighborCount()];
       Containers::Array<RealType, Device, Index> recieveBuffers[getNeighborCount()];
       Containers::StaticArray< getNeighborCount(), int > sendSizes;
+
+      PeriodicBoundariesCopyDirection periodicBoundariesCopyDirection = BoundaryToOverlap;
 
       CoordinatesType sendDimensions[getNeighborCount()];
       CoordinatesType recieveDimensions[getNeighborCount()];
