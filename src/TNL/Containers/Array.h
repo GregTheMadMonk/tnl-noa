@@ -15,6 +15,9 @@
 #include <TNL/Devices/Host.h>
 
 namespace TNL {
+/**
+ * \brief Namespace for TNL containers.
+ */
 namespace Containers {
 
 template< int, typename > class StaticArray;

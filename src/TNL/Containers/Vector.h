@@ -35,7 +35,7 @@ class Vector
    typedef Vector< Real, TNL::Devices::Host, Index > HostType;
    typedef Vector< Real, TNL::Devices::Cuda, Index > CudaType;
 
-   /** Constructors and assignment operators are inherited from the class Array. */
+   /** Constructors and assignment operators are inherited from the class \ref Array. */
    using Array< Real, Device, Index >::Array;
    using Array< Real, Device, Index >::operator=;
 
@@ -180,7 +180,7 @@ class Vector
    /**
     * \brief Returns difference between L^p norms of this vector and vector \e v.
     *
-    * See also lpNorm(const Real_ p).
+    * See also \ref lpNorm.
     *
     * \param v Reference to another vector.
     * \param p Number specifying the dimension of vector space.
@@ -246,7 +246,7 @@ class Vector
    /**
     * \brief Returns specific sums of elements of this vector.
     *
-    * Does the same as computePrefixSum(), but computes only sums for elements
+    * Does the same as \ref computePrefixSum, but computes only sums for elements
     * with the index in range from \e begin to \e end. The other elements of this
     * vector remain untouched - with the same value. Therefore this method returns
     * a new vector with the length of this vector.
@@ -268,7 +268,7 @@ class Vector
    /**
     * \brief Returns specific sums of elements of this vector.
     *
-    * Does the same as computeExclusivePrefixSum(), but computes only sums for elements
+    * Does the same as \ref computeExclusivePrefixSum, but computes only sums for elements
     * with the index in range from \e begin to \e end. The other elements of this
     * vector remain untouched - with the same value. Therefore this method returns
     * a new vector with the length of this vector.

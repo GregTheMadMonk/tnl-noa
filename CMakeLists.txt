@@ -6,11 +6,6 @@
 #    email               : tomas.oberhuber@fjfi.cvut.cz
 #
 ###############################################################################
-#
-# Authors:
-# Tomas Oberhuber
-# Vladimir Klement
-# Jakub Klinkovsky
 
 cmake_minimum_required( VERSION 3.5.1 )
 
@@ -31,6 +26,7 @@ option(WITH_EXAMPLES "Compile the 'examples' directory" ON)
 option(WITH_TOOLS "Compile the 'src/Tools' directory" ON)
 option(WITH_BENCHMARKS "Compile the 'src/Benchmarks' directory" ON)
 option(WITH_PYTHON "Compile the Python bindings" ON)
+option(WITH_DOC "Generate documentation" ON)
 option(WITH_TEMPLATES_INSTANTIATION "Enable explicit template instantiation" OFF)
 
 # install paths relative to the cmake's prefix
@@ -368,6 +364,18 @@ LINK_DIRECTORIES( ${LIBRARY_OUTPUT_PATH} )
 # Add all subdirectories
 add_subdirectory( src )
 add_subdirectory( share )
+
+#Check for Doxygen
+if( ${WITH_DOC} )
+    find_package(Doxygen)
+    if( DOXYGEN_FOUND )
+        if( CMAKE_BUILD_TYPE MATCHES "Release" )
+            add_subdirectory( Documentation )
+        endif( CMAKE_BUILD_TYPE MATCHES "Release" )
+    else( DOXYGEN_FOUND )
+        message("Doxygen need to be installed to generate the doxygen documentation")
+    endif( DOXYGEN_FOUND )
+endif( ${WITH_DOC} )
 
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Template Numerical Library")
 set(CPACK_PACKAGE_VENDOR "MMG")

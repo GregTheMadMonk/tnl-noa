@@ -1,6 +1,6 @@
-[![pipeline status](https://mmg-gitlab.fjfi.cvut.cz/gitlab/tnl/tnl-dev/badges/develop/pipeline.svg)](https://mmg-gitlab.fjfi.cvut.cz/gitlab/tnl/tnl-dev/commits/develop)
-
 # Template Numerical Library
+
+![TNL logo](tnl-logo.jpg)
 
 TNL is a collection of building blocks that facilitate the development of
 efficient numerical solvers. It is implemented in C++ using modern programming
@@ -11,43 +11,38 @@ and distributed systems, which can be managed via a unified interface.
 Similarly to the STL, features provided by the TNL can be grouped into
 several modules:
 
+> TODO: Each topic in this list should have a separate page or tutorial.
+
 - _Core concepts_.
   The main concept used in the TNL is the `Device` type which is used in most of
-  the other parts of the library. For data structures such as `Array` it
-  specifies where the data should be allocated, whereas for algorithms such as
-  `ParallelFor` it specifies how the algorithm should be executed.
-- _[Containers][containers]_.
+  the other parts of the library. For data structures such as
+  \ref TNL::Containers::Array "Array" it specifies where the data should be
+  allocated, whereas for algorithms such as \ref TNL::ParallelFor "ParallelFor"
+  it specifies how the algorithm should be executed.
+- \ref TNL::Containers "Containers".
   TNL provides generic containers such as array, multidimensional array or array
   views, which abstract data management on different hardware architectures.
 - _Linear algebra._
   TNL provides generic data structures and algorithms for linear algebra, such
-  as [vectors][vectors], [sparse matrices][matrices],
-  [Krylov solvers][linear solvers] and [preconditioners][preconditioners].
+  as \ref TNL::Containers::Vector "vectors",
+  \ref TNL::Matrices "sparse matrices",
+  \ref TNL::Solvers::Linear "Krylov solvers" and
+  \ref TNL::Solvers::Linear::Preconditioners "preconditioners".
    - Sparse matrix formats: CSR, Ellpack, Sliced Ellpack, tridiagonal,
      multidiagonal
    - Krylov solvers: CG, BiCGstab, GMRES, CWYGMRES, TFQMR
    - Preconditioners: Jacobi, ILU(0) (CPU only), ILUT (CPU only)
-- _[Meshes][meshes]_.
+- \ref TNL::Meshes "Meshes".
   TNL provides data structures for the representation of structured or
   unstructured numerical meshes.
 - _Solvers for differential equations._
   TNL provides a framework for the development of ODE or PDE solvers.
-- _[Image processing][image processing]_.
+- \ref TNL::Images "Image processing".
   TNL provides structures for the representation of image data. Imports and
   exports from several file formats are provided using external libraries, such
   as [DCMTK](http://dicom.offis.de/dcmtk.php.en) for DICOM files,
   [libpng](http://www.libpng.org/pub/png/libpng.html) for PNG files, or
   [libjpeg](http://libjpeg.sourceforge.net/) for JPEG files.
-
-[containers]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/namespaceTNL_1_1Containers.html
-[vectors]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/classTNL_1_1Containers_1_1Vector.html
-[matrices]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/namespaceTNL_1_1Matrices.html
-[linear solvers]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/namespaceTNL_1_1Solvers_1_1Linear.html
-[preconditioners]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/namespaceTNL_1_1Solvers_1_1Linear_1_1Preconditioners.html
-[meshes]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/namespaceTNL_1_1Meshes.html
-[image processing]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/namespaceTNL_1_1Images.html
-
-For more information, see the [full documentation][full documentation].
 
 ## Installation
 
@@ -112,42 +107,8 @@ Individual components can be disabled and the installation prefix can be changed
 by passing command-line arguments to the install script. Run `./install --help`
 for details.
 
-## Documentation
+## Tutorials
 
-See the [full documentation][full documentation] for the API reference manual,
-tutorials and other documented topics.
+> TODO
 
-[full documentation]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/
-
-## Authors
-
-Project leader: Tomáš Oberhuber
-
-Main developers:
-- Tomáš Oberhuber
-- Jakub Klinkovský
-
-Current developers:
-- Aleš Wodecki – adaptive grids
-- Jan Schafer – solvers for compressible Navier–Stokes equations
-- Matouš Fencl – solvers for the Hamilton–Jacobi equation
-- Lukáš Čejka – sparse matrix formats
-- Vojtěch Legler – expression templates
-
-Former developers:
-- Vít Hanousek – distributed numerical grids
-- Vítězslav Žabka – unstructured numerical meshes
-- Tomáš Sobotík – solvers for the Hamilton–Jacobi equation
-- Libor Bakajsa – sparse matrix formats
-- Ondřej Székely – solvers for parabolic problems
-- Vacata Jan – sparse matrix formats
-- Heller Martin – sparse matrix formats
-- Novotný Matěj – high precision arithmetics
-
-See also the [full list of authors and their contributions](
-https://mmg-gitlab.fjfi.cvut.cz/gitlab/tnl/tnl-dev/graphs/develop).
-
-## License
-
-Template Numerical Library is provided under the terms of the [MIT License](
-https://mmg-gitlab.fjfi.cvut.cz/gitlab/tnl/tnl-dev/blob/develop/LICENSE).
+1. [Vectors](Tutorials/main-page.md)

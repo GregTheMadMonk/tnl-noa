@@ -18,7 +18,7 @@ String getFileExtension( const String fileName );
 
 void removeFileExtension( String& file_name );
 
-/// \brief Class for creating the full name of a file.
+/// \brief Class for the construction of file names from multiple parts.
 ///
 /// Merges base name, index number and extention to create the full name of a file.
 class FileName
@@ -52,7 +52,7 @@ class FileName
       ///
       /// Sets \e index after the base name of given file.
       /// @param index Integer - number of maximum 5(default) digits.
-      /// (Number of digits can be changed with \c setDigitsCount).
+      /// (Number of digits can be changed with \ref setDigitsCount).
       void setIndex( const int index );
 
       /// \brief Sets number of digits for index of given file.

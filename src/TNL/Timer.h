@@ -18,7 +18,7 @@ class Logger;
 
 /// \brief Class for time measuring.
 ///
-/// Counts the elapsed time in seconds between the start() and stop() methods.
+/// Counts the elapsed time in seconds between the \ref start and \ref stop methods.
 /// \par Example
 /// \include TimerExample.cpp
 // \par Output
@@ -51,21 +51,21 @@ class Timer
       /// \brief Starts timer.
       ///
       /// Starts all time and cycle measurements such as real time, CPU time and
-      /// CPU cycles. Method start() can be used also after using stop() method.
+      /// CPU cycles. This method can be used also after using the \ref stop method.
       /// The timer then continues measuring the time without reseting.
       void start();
 
       /////
       /// \brief Returns the elapsed time on given timer.
       ///
-      /// It returns the elapsed time (in seconds) between calling the start() and stop() methods.
-      /// Starts counting the real time after the method start() is called and
-      /// pauses when the method stop() is called.
+      /// It returns the elapsed time (in seconds) between calling the \ref start and \ref stop methods.
+      /// Starts counting the real time after the method \ref start is called and
+      /// pauses when the method \ref stop is called.
       /// If the timer has been started more then once without resetting,
-      /// the real time is counted by adding all intervals (between start and stop
+      /// the real time is counted by adding all intervals (between \ref start and \ref stop
       /// methods) together.
       /// This function can be called while the timer is running, there is no
-      /// need to use stop() method first.
+      /// need to use \ref stop method first.
       double getRealTime() const;
 
       /////
@@ -74,13 +74,13 @@ class Timer
       /// The CPU time is measured in seconds.
       /// CPU time is the amount of time for which a central processing unit (CPU)
       /// was used for processing instructions of a computer program or operating system.
-      /// The CPU time is measured by adding the amount of CPU time between start() and stop()
+      /// The CPU time is measured by adding the amount of CPU time between \ref start and \ref stop
       /// methods together.
       double getCPUTime() const;
 
       /// \brief Returns the number of CPU cycles (machine cycles).
       ///
-      /// CPU cycles are counted by adding the number of CPU cycles between start() and stop()
+      /// CPU cycles are counted by adding the number of CPU cycles between \ref start and \ref stop
       /// methods together.
       unsigned long long int getCPUCycles() const;
 

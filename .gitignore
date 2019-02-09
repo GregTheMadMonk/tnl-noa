@@ -2,9 +2,8 @@
 /Debug
 /Release
 /Testing
-/Documentation
+/Documentation/html/
 /CMakeLists.txt.user
-/doc/_build
 /Build
 
 # Eclipse project stuff
