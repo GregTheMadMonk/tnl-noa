@@ -15,6 +15,7 @@
 #include <TNL/Containers/ndarray/Indexing.h>
 #include <TNL/Containers/ndarray/SizesHolder.h>
 #include <TNL/Containers/ndarray/Subarrays.h>
+#include <TNL/Containers/ndarray/Executors.h>
 #include <TNL/Containers/ndarray/Operations.h>
 
 namespace TNL {
