@@ -22,6 +22,8 @@
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Pointers/SharedPointer.h>
 
+#include "AddOneEntitiesProcessor.h"
+#include "AddTwoEntitiesProcessor.h"
 #include "GridTraverserBenchmarkHelper.h"
 #include "BenchmarkTraverserUserData.h"
 #include "cuda-kernels.h"

@@ -300,42 +300,43 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
       /****
        * Write one and two (as BC) using parallel for
        */
-      auto hostTraverseUsingParallelFor = [&] ()
-      {
-         hostTraverserBenchmark.addOneUsingParallelFor();
-      };
-
-      auto cudaTraverseUsingParallelFor = [&] ()
-      {
-         cudaTraverserBenchmark.addOneUsingParallelFor();
-      };
-
-      if( tests.containsValue( "all" ) || tests.containsValue( "bc-parallel-for" ) )
-      {
-         benchmark.setOperation( "parallel for", 2 * pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
-         if( withHost )
-            benchmark.time< Devices::Host >( "CPU", hostTraverseUsingParallelFor );
-         if( withCuda )
-            benchmark.time< Devices::Cuda >( "GPU", cudaTraverseUsingParallelFor );
-
-         benchmark.setOperation( "parallel for RST", 2 * pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
-         if( withHost )
-            benchmark.time< Devices::Host >( hostReset, "CPU", hostTraverseUsingParallelFor );
-         if( withCuda )
-            benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaTraverseUsingParallelFor );
-      }
+// TODO: implement the benchmark (addOneUsingParallelFor does not consider BC)
+//      auto hostTraverseUsingParallelFor = [&] ()
+//      {
+//         hostTraverserBenchmark.addOneUsingParallelFor();
+//      };
+//
+//      auto cudaTraverseUsingParallelFor = [&] ()
+//      {
+//         cudaTraverserBenchmark.addOneUsingParallelFor();
+//      };
+//
+//      if( tests.containsValue( "all" ) || tests.containsValue( "bc-parallel-for" ) )
+//      {
+//         benchmark.setOperation( "parallel for", 2 * pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
+//         if( withHost )
+//            benchmark.time< Devices::Host >( "CPU", hostTraverseUsingParallelFor );
+//         if( withCuda )
+//            benchmark.time< Devices::Cuda >( "GPU", cudaTraverseUsingParallelFor );
+//
+//         benchmark.setOperation( "parallel for RST", 2 * pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
+//         if( withHost )
+//            benchmark.time< Devices::Host >( hostReset, "CPU", hostTraverseUsingParallelFor );
+//         if( withCuda )
+//            benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaTraverseUsingParallelFor );
+//      }
 
       /****
        * Write one and two (as BC) using traverser
        */
       auto hostTraverseUsingTraverser = [&] ()
       {
-         hostTraverserBenchmark.addOneUsingTraverser();
+         hostTraverserBenchmark.traverseUsingTraverser();
       };
 
       auto cudaTraverseUsingTraverser = [&] ()
       {
-         cudaTraverserBenchmark.addOneUsingTraverser();
+         cudaTraverserBenchmark.traverseUsingTraverser();
       };
 
       if( tests.containsValue( "all" ) || tests.containsValue( "bc-traverser" ) )

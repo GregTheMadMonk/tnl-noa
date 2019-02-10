@@ -22,6 +22,7 @@
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Pointers/SharedPointer.h>
 #include "cuda-kernels.h"
+#include "GridTraversersBenchmark.h"
 #include "SimpleCell.h"
 
 namespace TNL {
@@ -46,6 +47,7 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
       using Traverser = Meshes::Traverser< GridType, CellType >;
       using UserDataType = BenchmarkTraverserUserData< MeshFunction >;
       using AddOneEntitiesProcessorType = AddOneEntitiesProcessor< UserDataType >;
+      using AddTwoEntitiesProcessorType = AddTwoEntitiesProcessor< UserDataType >;
 
       GridTraversersBenchmark( Index size )
       :size( size ), v( size * size ), grid( size, size ), u( grid ),
@@ -246,10 +248,11 @@ class GridTraversersBenchmark< 2, Device, Real, Index >
          }
       }
 
-      void traversingUsingTraverser()
+      void traverseUsingTraverser()
       {
-         // TODO !!!!!!!!!!!!!!!!!!!!!!
-         traverser.template processAllEntities< UserDataType, AddOneEntitiesProcessorType >
+         traverser.template processBoundaryEntities< UserDataType, AddTwoEntitiesProcessorType >
+            ( grid, userData );
+         traverser.template processInteriorEntities< UserDataType, AddOneEntitiesProcessorType >
             ( grid, userData );
       }
 
