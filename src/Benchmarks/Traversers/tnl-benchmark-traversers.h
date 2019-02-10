@@ -34,7 +34,10 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
                    Benchmark& benchmark,
                    Benchmark::MetadataMap& metadata )
 {
-   const Containers::List< String >& tests = parameters.getParameter< Containers::List< String > >( "tests" );
+   // FIXME: the --tests is just a string because list does not work with enums
+//   const Containers::List< String >& tests = parameters.getParameter< Containers::List< String > >( "tests" );
+   Containers::List< String > tests;
+   tests.Append( parameters.getParameter< String >( "tests" ) );
    // FIXME: getParameter< std::size_t >() does not work with parameters added with addEntry< int >(),
    // which have a default value. The workaround below works for int values, but it is not possible
    // to pass 64-bit integer values
@@ -258,7 +261,6 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
       }
       std::cout << "--------------------------------------------------------------------------------------------------------" << std::endl;
    }
-   return true;
 
 
    /****
@@ -391,7 +393,9 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
 
 void setupConfig( Config::ConfigDescription& config )
 {
-   config.addList< String >( "tests", "Tests to be performed.", "all" );
+   // FIXME: addList does not work with addEntryEnum - ConfigDescription::addEntryEnum throws std::bad_cast
+//   config.addList< String >( "tests", "Tests to be performed.", "all" );
+   config.addEntry< String >( "tests", "Tests to be performed.", "all" );
    config.addEntryEnum( "all" );
    config.addEntryEnum( "add-one-pure-c" );
    config.addEntryEnum( "add-one-parallel-for" );
@@ -433,7 +437,7 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
    const String & logFileName = parameters.getParameter< String >( "log-file" );
    const String & outputMode = parameters.getParameter< String >( "output-mode" );
    const String & precision = parameters.getParameter< String >( "precision" );
-   const unsigned sizeStepFactor = parameters.getParameter< unsigned >( "size-step-factor" );
+   const int sizeStepFactor = parameters.getParameter< int >( "size-step-factor" );
 
    Benchmark benchmark; //( loops, verbose );
    benchmark.setup( parameters );

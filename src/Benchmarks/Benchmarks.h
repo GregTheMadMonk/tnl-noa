@@ -81,11 +81,11 @@ public:
 
    void setup( const Config::ParameterContainer& parameters )
    {
-      this->loops = parameters.getParameter< unsigned >( "loops" );
+      this->loops = parameters.getParameter< int >( "loops" );
       this->reset = parameters.getParameter< bool >( "reset" );
       this->minTime = parameters.getParameter< double >( "min-time" );
       this->timing = parameters.getParameter< bool >( "timing" );
-      const int verbose = parameters.getParameter< unsigned >( "verbose" );
+      const int verbose = parameters.getParameter< int >( "verbose" );
       Logging::setVerbose( verbose );
    }
    // TODO: ensure that this is not called in the middle of the benchmark
