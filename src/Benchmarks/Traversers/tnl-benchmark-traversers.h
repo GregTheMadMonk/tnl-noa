@@ -415,14 +415,14 @@ void setupConfig( Config::ConfigDescription& config )
    config.addEntry< String >( "output-mode", "Mode for opening the log file.", "overwrite" );
    config.addEntryEnum( "append" );
    config.addEntryEnum( "overwrite" );
-   config.addEntry< String >( "precision", "Precision of the arithmetics.", "double" );
-   config.addEntryEnum( "float" );
-   config.addEntryEnum( "double" );
-   config.addEntryEnum( "all" );
+//   config.addEntry< String >( "precision", "Precision of the arithmetics.", "double" );
+//   config.addEntryEnum( "float" );
+//   config.addEntryEnum( "double" );
+//   config.addEntryEnum( "all" );
    config.addEntry< int >( "dimension", "Set the problem dimension. 0 means all dimensions 1,2 and 3.", 0 );
    config.addEntry< int >( "min-size", "Minimum size of arrays/vectors used in the benchmark.", 10 );
    config.addEntry< int >( "max-size", "Minimum size of arrays/vectors used in the benchmark.", 1000 );
-   config.addEntry< int >( "size-step-factor", "Factor determining the size of arrays/vectors used in the benchmark. First size is min-size and each following size is stepFactor*previousSize, up to max-size.", 2 );
+//   config.addEntry< int >( "size-step-factor", "Factor determining the size of arrays/vectors used in the benchmark. First size is min-size and each following size is stepFactor*previousSize, up to max-size.", 2 );
 
    Benchmark::configSetup( config );
 
@@ -436,8 +436,8 @@ bool setupBenchmark( const Config::ParameterContainer& parameters )
 {
    const String & logFileName = parameters.getParameter< String >( "log-file" );
    const String & outputMode = parameters.getParameter< String >( "output-mode" );
-   const String & precision = parameters.getParameter< String >( "precision" );
-   const int sizeStepFactor = parameters.getParameter< int >( "size-step-factor" );
+//   const String & precision = parameters.getParameter< String >( "precision" );
+//   const int sizeStepFactor = parameters.getParameter< int >( "size-step-factor" );
 
    Benchmark benchmark; //( loops, verbose );
    benchmark.setup( parameters );
