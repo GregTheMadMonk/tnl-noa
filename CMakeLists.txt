@@ -183,9 +183,9 @@ if( ${WITH_CUDA} )
         endif()
         set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ;-DHAVE_CUDA)
         # disable false compiler warnings
-        #   reference for the -Xcudafe flag: http://stackoverflow.com/questions/14831051/how-to-disable-compiler-warnings-with-nvcc/17095910#17095910
-        #   list of possible tokens: http://www.ssl.berkeley.edu/~jimm/grizzly_docs/SSL/opt/intel/cc/9.0/lib/locale/en_US/mcpcom.msg
-        set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; -Wno-deprecated-gpu-targets --expt-relaxed-constexpr --expt-extended-lambda -Xcudafe "\"--diag_suppress=code_is_unreachable --diag_suppress=implicit_return_from_non_void_function\"")
+        #   reference for the -Xcudafe --diag_suppress and --display_error_number flags: https://stackoverflow.com/a/54142937
+        #   incomplete list of tokens: http://www.ssl.berkeley.edu/~jimm/grizzly_docs/SSL/opt/intel/cc/9.0/lib/locale/en_US/mcpcom.msg
+        set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; -Wno-deprecated-gpu-targets --expt-relaxed-constexpr --expt-extended-lambda -Xcudafe "\"--diag_suppress=code_is_unreachable --diag_suppress=implicit_return_from_non_void_function --diag_suppress=2906 --display_error_number\"")
         set( ALL_CUDA_ARCHS -gencode arch=compute_20,code=sm_20
                             -gencode arch=compute_30,code=sm_30
                             -gencode arch=compute_32,code=sm_32 
