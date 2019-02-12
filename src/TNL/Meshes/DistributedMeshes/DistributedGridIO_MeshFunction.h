@@ -13,7 +13,7 @@
 #include <TNL/Functions/MeshFunction.h>
 
 namespace TNL {
-namespace Meshes {   
+namespace Meshes {
 namespace DistributedMeshes {
 
 
@@ -21,19 +21,21 @@ namespace DistributedMeshes {
  * This variant cerate copy of MeshFunction but smaller, reduced to local entities, without overlap. 
  * It is slow and has high RAM consumption
  */
-template< typename MeshFunction,
-          int Dimension,
-          typename Real,
+template< int Dimension,
+          int MeshEntityDimension,
+          typename MeshReal,
           typename Device,
-          typename Index > 
-class DistributedGridIO< MeshFunction,
-                         LocalCopy,
-                         Meshes::Grid< Dimension, Real, Device, Index >,
-                         Device >
+          typename Index,
+          typename Real >
+class DistributedGridIO<
+   Functions::MeshFunction< Meshes::Grid< Dimension, MeshReal, Device, Index >,
+      MeshEntityDimension,
+      Real >,
+   LocalCopy >
 {
    public:
       using MeshType = Meshes::Grid< Dimension, Real, Device, Index >;
-      using MeshFunctionType = MeshFunction;
+      using MeshFunctionType = Functions::MeshFunction< MeshType, MeshEntityDimension, Real >;
       using CoordinatesType = typename MeshFunctionType::MeshType::CoordinatesType;
       using PointType = typename MeshFunctionType::MeshType::PointType;
       using VectorType = typename MeshFunctionType::VectorType;
@@ -430,17 +432,20 @@ class DistributedGridIO_MPIIOBase
 };
 #endif
 
-template< typename MeshFunction,
-          int Dimension,
-          typename Real,
-          typename Index > 
-class DistributedGridIO< MeshFunction,
-                         MpiIO,
-                         Meshes::Grid< Dimension, Real, Devices::Cuda, Index >,
-                         Devices::Cuda >
+template< int Dimension,
+          int MeshEntityDimension,
+          typename MeshReal,
+          typename Index,
+          typename Real >
+class DistributedGridIO<
+   Functions::MeshFunction< Meshes::Grid< Dimension, MeshReal, Devices::Cuda, Index >,
+      MeshEntityDimension,
+      Real >,
+   MpiIO >
 {
    public:
-   	using MeshFunctionType = MeshFunction;
+      using MeshType = Meshes::Grid< Dimension, MeshReal, Devices::Cuda, Index >;
+      using MeshFunctionType = Functions::MeshFunction< MeshType, MeshEntityDimension, Real >;
 
       static bool save(const String& fileName, MeshFunctionType &meshFunction)
       {
@@ -477,17 +482,20 @@ class DistributedGridIO< MeshFunction,
     };
 };
 
-template< typename MeshFunction,
-          int Dimension,
-          typename Real,
-          typename Index > 
-class DistributedGridIO< MeshFunction,
-                         MpiIO,
-                         Meshes::Grid< Dimension, Real, Devices::Host, Index >,
-                         Devices::Host >
+template< int Dimension,
+          int MeshEntityDimension,
+          typename MeshReal,
+          typename Index,
+          typename Real >
+class DistributedGridIO<
+   Functions::MeshFunction< Meshes::Grid< Dimension, MeshReal, Devices::Host, Index >,
+      MeshEntityDimension,
+      Real >,
+   MpiIO >
 {
    public:
-      using MeshFunctionType = MeshFunction;
+      using MeshType = Meshes::Grid< Dimension, MeshReal, Devices::Host, Index >;
+      using MeshFunctionType = Functions::MeshFunction< MeshType, MeshEntityDimension, Real >;
 
       static bool save(const String& fileName, MeshFunctionType &meshFunction)
       {
