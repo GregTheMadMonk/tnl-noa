@@ -533,7 +533,7 @@ TEST_F(DistributedGridTest_2D, SynchronizerNeighborPeriodicBoundariesWithoutMask
    // of the periodic boundaries
    typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
    SubdomainOverlapsGetter< GridType, CommunicatorType >::
-      getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1 );
+      getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1, 1 );
    distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
    distributedGrid->setupGrid(*gridPtr);
    dof->setSize( gridPtr->template getEntitiesCount< Cell >() );
@@ -605,7 +605,7 @@ TEST_F(DistributedGridTest_2D, SynchronizerNeighborPeriodicBoundariesWithActiveM
    // of the periodic boundaries
    typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
    SubdomainOverlapsGetter< GridType, CommunicatorType >::
-      getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1 );
+      getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1, 1 );
    distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
    distributedGrid->setupGrid(*gridPtr);
    dof->setSize( gridPtr->template getEntitiesCount< Cell >() );
@@ -680,7 +680,7 @@ TEST_F(DistributedGridTest_2D, SynchronizerNeighborPeriodicBoundariesWithInactiv
    // of the periodic boundaries
    typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
    SubdomainOverlapsGetter< GridType, CommunicatorType >::
-      getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1 );
+      getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1, 1 );
    distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
    distributedGrid->setupGrid(*gridPtr);
    dof->setSize( gridPtr->template getEntitiesCount< Cell >() );
@@ -765,7 +765,7 @@ TEST_F(DistributedGridTest_2D, SynchronizerNeighborPeriodicBoundariesWithInActiv
    // of the periodic boundaries
    typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
    SubdomainOverlapsGetter< GridType, CommunicatorType >::
-      getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1 );
+      getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1, 1 );
    distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
    distributedGrid->setupGrid(*gridPtr);
    dof->setSize( gridPtr->template getEntitiesCount< Cell >() );
@@ -850,7 +850,7 @@ TEST_F(DistributedGridTest_2D, SynchronizerNeighborPeriodicBoundariesWithInActiv
    // of the periodic boundaries
    typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
    SubdomainOverlapsGetter< GridType, CommunicatorType >::
-      getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1 );
+      getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1, 1 );
    distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
    distributedGrid->setupGrid(*gridPtr);
    dof->setSize( gridPtr->template getEntitiesCount< Cell >() );
@@ -935,7 +935,7 @@ TEST_F(DistributedGridTest_2D, SynchronizerNeighborPeriodicBoundariesWithInActiv
    // of the periodic boundaries
    typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
    SubdomainOverlapsGetter< GridType, CommunicatorType >::
-      getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1 );
+      getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1, 1 );
    distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
    distributedGrid->setupGrid(*gridPtr);
    dof->setSize( gridPtr->template getEntitiesCount< Cell >() );

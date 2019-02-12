@@ -247,7 +247,7 @@ TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithoutMask )
    // TODO: I do not know how to do it better with GTEST
    typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
    SubdomainOverlapsGetter< GridType, CommunicatorType >::
-      getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1 );
+      getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1, 1 );
    distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
    distributedGrid->setupGrid(*gridptr);
    dof.setSize( gridptr->template getEntitiesCount< Cell >() );
@@ -259,14 +259,14 @@ TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithoutMask )
    maskDofs.setValue( true );
    //constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr, constFunctionPtr );
    meshFunctionPtr->getSynchronizer().setPeriodicBoundariesCopyDirection( Synchronizer::OverlapToBoundary );
-   TNL_MPI_PRINT( ">>>>>>>>>>>>>> " << dof[ 1 ] << " : "  << -rank - 1 );
+   //TNL_MPI_PRINT( ">>>>>>>>>>>>>> " << dof[ 1 ] << " : "  << -rank - 1 );
    meshFunctionPtr->template synchronize<CommunicatorType>( true );
 
-   TNL_MPI_PRINT( "#########" << dof[ 1 ] );
-   /*if( rank == 0 )
+   //TNL_MPI_PRINT( "#########" << dof[ 1 ] );
+   if( rank == 0 )
       EXPECT_EQ( dof[ 1 ], -nproc ) << "Left Overlap was filled by wrong process.";
    if( rank == nproc-1 )
-      EXPECT_EQ( dof[ dof.getSize() - 2 ], -1 )<< "Right Overlap was filled by wrong process.";*/
+      EXPECT_EQ( dof[ dof.getSize() - 2 ], -1 )<< "Right Overlap was filled by wrong process.";
 }
 
 #ifdef UNDEF
@@ -276,7 +276,7 @@ TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithActiveMask )
    // TODO: I do not know how to do it better with GTEST
    typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
    SubdomainOverlapsGetter< GridType, CommunicatorType >::
-      getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1 );
+      getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1, 1 );
    distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
    distributedGrid->setupGrid(*gridptr);
    dof.setSize( gridptr->template getEntitiesCount< Cell >() );
@@ -301,7 +301,7 @@ TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithInactiveMaskOnLef
    // TODO: I do not know how to do it better with GTEST
    typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
    SubdomainOverlapsGetter< GridType, CommunicatorType >::
-      getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1 );
+      getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1, 1 );
    distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
    distributedGrid->setupGrid(*gridptr);
    dof.setSize( gridptr->template getEntitiesCount< Cell >() );
@@ -328,7 +328,7 @@ TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithInactiveMask )
    // TODO: I do not know how to do it better with GTEST
    typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
    SubdomainOverlapsGetter< GridType, CommunicatorType >::
-      getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1 );
+      getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1, 1 );
    distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
    distributedGrid->setupGrid(*gridptr);
    dof.setSize( gridptr->template getEntitiesCount< Cell >() );
@@ -358,7 +358,7 @@ TEST_F(DistributedGridTest_1D, SynchronizePeriodicBoundariesLinearTest )
    // of the periodic boundaries
    typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
    SubdomainOverlapsGetter< GridType, CommunicatorType >::
-      getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1 );
+      getOverlaps( distributedGrid, lowerOverlap, upperOverlap, 1, 1, 1 );
    distributedGrid->setOverlaps( lowerOverlap, upperOverlap );
    distributedGrid->setupGrid(*gridptr);
    dof.setSize( gridptr->template getEntitiesCount< Cell >() );

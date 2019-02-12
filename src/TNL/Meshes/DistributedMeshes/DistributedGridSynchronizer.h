@@ -157,7 +157,9 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< MeshDimension,
          //send everything, recieve everything 
          for( int i=0; i<this->getNeighborCount(); i++ )
          {
-            TNL_MPI_PRINT( "Sending data... " << i << " sizes -> " << sendSizes[ i ]  );
+            TNL_MPI_PRINT( "Sending data... " << i << " sizes -> " 
+               << sendSizes[ i ] << "sendDimensions -> " <<  sendDimensions[ i ]
+               << " upperOverlap -> " << this->distributedGrid->getUpperOverlap() );
             if( neighbors[ i ] != -1 )
             {
                TNL_MPI_PRINT( "Sending data to node " << neighbors[ i ] );
