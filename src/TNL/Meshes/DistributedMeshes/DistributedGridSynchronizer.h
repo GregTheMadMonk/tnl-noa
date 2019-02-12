@@ -66,6 +66,11 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< MeshDimension,
          setDistributedGrid( distributedGrid );
       };
 
+      void setPeriodicBoundariesCopyDirection( const PeriodicBoundariesCopyDirection dir )
+      {
+         this->periodicBoundariesCopyDirection = dir;
+      }
+
       void setDistributedGrid( DistributedGridType *distributedGrid )
       {
          isSet = true;

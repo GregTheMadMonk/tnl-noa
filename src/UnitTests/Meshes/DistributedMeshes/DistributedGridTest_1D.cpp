@@ -256,6 +256,8 @@ TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithoutMask )
    setDof_1D( dof, -rank-1 );
    maskDofs.setValue( true );
    constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr, constFunctionPtr );
+   using Synchronizer = decltype( meshFunctionPtr->getSynchronizer() );
+   meshFunctionPtr->getSynchronizer().setPeriodicBoundariesCopyDirection( Synchronizer::OverlapToBoundary );
    meshFunctionPtr->template synchronize<CommunicatorType>( true );
 
    if( rank == 0 )
