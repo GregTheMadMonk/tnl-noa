@@ -323,6 +323,7 @@ typedef typename GridType::Cell Cell;
 typedef typename GridType::IndexType IndexType; 
 typedef typename GridType::PointType PointType; 
 typedef DistributedMesh<GridType> DistributedGridType;
+using Synchronizer = DistributedMeshSynchronizer< MeshFunctionType >;
 
 class DistributedGridTest_2D : public ::testing::Test
 {
@@ -541,6 +542,7 @@ TEST_F(DistributedGridTest_2D, SynchronizerNeighborPeriodicBoundariesWithoutMask
    //Expecting 9 processes
    setDof_2D(*dof, -rank-1 );
    constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr , constFunctionPtr );
+   meshFunctionPtr->getSynchronizer().setPeriodicBoundariesCopyDirection( Synchronizer::OverlapToBoundary );
    meshFunctionPtr->template synchronize<CommunicatorType>( true );
    
    if( rank == 0 )
@@ -615,6 +617,7 @@ TEST_F(DistributedGridTest_2D, SynchronizerNeighborPeriodicBoundariesWithActiveM
    setDof_2D(*dof, -rank-1 );
    maskDofs.setValue( true );
    constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr , constFunctionPtr );
+   meshFunctionPtr->getSynchronizer().setPeriodicBoundariesCopyDirection( Synchronizer::OverlapToBoundary );
    meshFunctionPtr->template synchronize<CommunicatorType>( true, maskPointer );
 
    if( rank == 0 )
@@ -699,6 +702,7 @@ TEST_F(DistributedGridTest_2D, SynchronizerNeighborPeriodicBoundariesWithInactiv
       }
    }
    constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr , constFunctionPtr );
+   meshFunctionPtr->getSynchronizer().setPeriodicBoundariesCopyDirection( Synchronizer::OverlapToBoundary );
    meshFunctionPtr->template synchronize<CommunicatorType>( true, maskPointer );
    
    if( rank == 0 )
@@ -783,6 +787,7 @@ TEST_F(DistributedGridTest_2D, SynchronizerNeighborPeriodicBoundariesWithInActiv
       }
    }
    constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr , constFunctionPtr );
+   meshFunctionPtr->getSynchronizer().setPeriodicBoundariesCopyDirection( Synchronizer::OverlapToBoundary );
    meshFunctionPtr->template synchronize<CommunicatorType>( true, maskPointer );
    
    if( rank == 0 )
@@ -867,6 +872,7 @@ TEST_F(DistributedGridTest_2D, SynchronizerNeighborPeriodicBoundariesWithInActiv
       }
    }
    constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr , constFunctionPtr );
+   meshFunctionPtr->getSynchronizer().setPeriodicBoundariesCopyDirection( Synchronizer::OverlapToBoundary );
    meshFunctionPtr->template synchronize<CommunicatorType>( true, maskPointer );
    
    if( rank == 0 )
@@ -951,6 +957,7 @@ TEST_F(DistributedGridTest_2D, SynchronizerNeighborPeriodicBoundariesWithInActiv
       }
    }
    constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr , constFunctionPtr );
+   meshFunctionPtr->getSynchronizer().setPeriodicBoundariesCopyDirection( Synchronizer::OverlapToBoundary );
    meshFunctionPtr->template synchronize<CommunicatorType>( true, maskPointer );
    
    if( rank == 0 )

@@ -156,20 +156,29 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< MeshDimension,
 
          //send everything, recieve everything 
          for( int i=0; i<this->getNeighborCount(); i++ )
+         {
+            TNL_MPI_PRINT( "Sending data... " << i << " sizes -> " << sendSizes[ i ]  );
             if( neighbors[ i ] != -1 )
             {
+               TNL_MPI_PRINT( "Sending data to node " << neighbors[ i ] );
                requests[ requestsCount++ ] = CommunicatorType::ISend( sendBuffers[ i ].getData(),  sendSizes[ i ], neighbors[ i ], 0, group );
+               TNL_MPI_PRINT( "Receiving data from node " << neighbors[ i ] );
                requests[ requestsCount++ ] = CommunicatorType::IRecv( recieveBuffers[ i ].getData(),  sendSizes[ i ], neighbors[ i ], 0, group );
             }
             else if( periodicBoundaries && sendSizes[ i ] !=0 )
       	   {
+               TNL_MPI_PRINT( "Sending data to node " << periodicNeighbors[ i ] );
                requests[ requestsCount++ ] = CommunicatorType::ISend( sendBuffers[ i ].getData(),  sendSizes[ i ], periodicNeighbors[ i ], 1, group );
+               TNL_MPI_PRINT( "Receiving data to node " << periodicNeighbors[ i ] );
                requests[ requestsCount++ ] = CommunicatorType::IRecv( recieveBuffers[ i ].getData(),  sendSizes[ i ], periodicNeighbors[ i ], 1, group );
             }
+         }
 
         //wait until send is done
+         TNL_MPI_PRINT( "Waiting for data ..." )
         CommunicatorType::WaitAll( requests, requestsCount );
 
+         TNL_MPI_PRINT( "Copying data ..." )
         //copy data from receive buffers
         copyBuffers(meshFunction,
             recieveBuffers,recieveBegin,sendDimensions  ,

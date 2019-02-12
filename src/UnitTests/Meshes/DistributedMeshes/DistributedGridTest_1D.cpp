@@ -97,6 +97,7 @@ typedef typename GridType::Cell Cell;
 typedef typename GridType::IndexType IndexType; 
 typedef typename GridType::PointType PointType; 
 typedef DistributedMesh<GridType> DistributedGridType;
+using Synchronizer = DistributedMeshSynchronizer< MeshFunctionType >;
      
 class DistributedGridTest_1D : public ::testing::Test
 {
@@ -170,6 +171,7 @@ class DistributedGridTest_1D : public ::testing::Test
       }
 };
 
+#ifdef UNDEF
 TEST_F( DistributedGridTest_1D, isBoundaryDomainTest )
 {
    if( rank == 0 || rank == nproc - 1 )
@@ -237,7 +239,7 @@ TEST_F(DistributedGridTest_1D, EvaluateLinearFunction )
    entity2.refresh();
    EXPECT_EQ(meshFunctionPtr->getValue(entity), (*linearFunctionPtr)(entity)) << "Linear function Overlap error on right Edge.";
 }
-
+#endif
 
 TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithoutMask )
 {
@@ -255,18 +257,19 @@ TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithoutMask )
    
    setDof_1D( dof, -rank-1 );
    maskDofs.setValue( true );
-   constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr, constFunctionPtr );
-   using Synchronizer = decltype( meshFunctionPtr->getSynchronizer() );
+   //constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr, constFunctionPtr );
    meshFunctionPtr->getSynchronizer().setPeriodicBoundariesCopyDirection( Synchronizer::OverlapToBoundary );
+   TNL_MPI_PRINT( ">>>>>>>>>>>>>> " << dof[ 1 ] << " : "  << -rank - 1 );
    meshFunctionPtr->template synchronize<CommunicatorType>( true );
 
-   if( rank == 0 )
+   TNL_MPI_PRINT( "#########" << dof[ 1 ] );
+   /*if( rank == 0 )
       EXPECT_EQ( dof[ 1 ], -nproc ) << "Left Overlap was filled by wrong process.";
    if( rank == nproc-1 )
-      EXPECT_EQ( dof[ dof.getSize() - 2 ], -1 )<< "Right Overlap was filled by wrong process.";
+      EXPECT_EQ( dof[ dof.getSize() - 2 ], -1 )<< "Right Overlap was filled by wrong process.";*/
 }
 
-
+#ifdef UNDEF
 TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithActiveMask )
 {
    // Setup periodic boundaries
@@ -284,6 +287,7 @@ TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithActiveMask )
    setDof_1D( dof, -rank-1 );
    maskDofs.setValue( true );
    constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr, constFunctionPtr );
+   meshFunctionPtr->getSynchronizer().setPeriodicBoundariesCopyDirection( Synchronizer::OverlapToBoundary );
    meshFunctionPtr->template synchronize<CommunicatorType>( true, maskPointer );
    if( rank == 0 )
       EXPECT_EQ( dof[ 1 ], -nproc ) << "Left Overlap was filled by wrong process.";
@@ -309,6 +313,7 @@ TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithInactiveMaskOnLef
    maskDofs.setValue( true );
    maskDofs.setElement( 1, false );
    constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr , constFunctionPtr );
+   meshFunctionPtr->getSynchronizer().setPeriodicBoundariesCopyDirection( Synchronizer::OverlapToBoundary );
    meshFunctionPtr->template synchronize<CommunicatorType>( true, maskPointer );
    
    if( rank == 0 )
@@ -336,6 +341,7 @@ TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithInactiveMask )
    maskDofs.setElement( 1, false );   
    maskDofs.setElement( dof.getSize() - 2, false );
    constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr , constFunctionPtr );
+   meshFunctionPtr->getSynchronizer().setPeriodicBoundariesCopyDirection( Synchronizer::OverlapToBoundary );
    meshFunctionPtr->template synchronize<CommunicatorType>( true, maskPointer );
    
    if( rank == 0 )
@@ -377,7 +383,7 @@ TEST_F(DistributedGridTest_1D, SynchronizePeriodicBoundariesLinearTest )
    if( rank == nproc - 1 )
       EXPECT_EQ( meshFunctionPtr->getValue(entity2), -1 ) << "Linear function Overlap error on right Edge.";
 }
-
+#endif
 
 
 #else
