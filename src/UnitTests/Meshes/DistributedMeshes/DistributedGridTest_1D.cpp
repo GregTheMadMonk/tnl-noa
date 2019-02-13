@@ -171,7 +171,6 @@ class DistributedGridTest_1D : public ::testing::Test
       }
 };
 
-#ifdef UNDEF
 TEST_F( DistributedGridTest_1D, isBoundaryDomainTest )
 {
    if( rank == 0 || rank == nproc - 1 )
@@ -239,7 +238,6 @@ TEST_F(DistributedGridTest_1D, EvaluateLinearFunction )
    entity2.refresh();
    EXPECT_EQ(meshFunctionPtr->getValue(entity), (*linearFunctionPtr)(entity)) << "Linear function Overlap error on right Edge.";
 }
-#endif
 
 TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithoutMask )
 {
@@ -257,19 +255,15 @@ TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithoutMask )
    
    setDof_1D( dof, -rank-1 );
    maskDofs.setValue( true );
-   //constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr, constFunctionPtr );
-   meshFunctionPtr->getSynchronizer().setPeriodicBoundariesCopyDirection( Synchronizer::OverlapToBoundary );
-   //TNL_MPI_PRINT( ">>>>>>>>>>>>>> " << dof[ 1 ] << " : "  << -rank - 1 );
+   //meshFunctionPtr->getSynchronizer().setPeriodicBoundariesCopyDirection( Synchronizer::OverlapToBoundary );
    meshFunctionPtr->template synchronize<CommunicatorType>( true );
 
-   //TNL_MPI_PRINT( "#########" << dof[ 1 ] );
    if( rank == 0 )
-      EXPECT_EQ( dof[ 1 ], -nproc ) << "Left Overlap was filled by wrong process.";
+      EXPECT_EQ( dof[ 0 ], -nproc ) << "Left Overlap was filled by wrong process.";
    if( rank == nproc-1 )
-      EXPECT_EQ( dof[ dof.getSize() - 2 ], -1 )<< "Right Overlap was filled by wrong process.";
+      EXPECT_EQ( dof[ dof.getSize() - 1 ], -1 )<< "Right Overlap was filled by wrong process.";
 }
 
-#ifdef UNDEF
 TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithActiveMask )
 {
    // Setup periodic boundaries
@@ -286,15 +280,17 @@ TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithActiveMask )
    
    setDof_1D( dof, -rank-1 );
    maskDofs.setValue( true );
-   constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr, constFunctionPtr );
-   meshFunctionPtr->getSynchronizer().setPeriodicBoundariesCopyDirection( Synchronizer::OverlapToBoundary );
+   //constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr, constFunctionPtr );
+   //meshFunctionPtr->getSynchronizer().setPeriodicBoundariesCopyDirection( Synchronizer::OverlapToBoundary );
    meshFunctionPtr->template synchronize<CommunicatorType>( true, maskPointer );
    if( rank == 0 )
-      EXPECT_EQ( dof[ 1 ], -nproc ) << "Left Overlap was filled by wrong process.";
+      EXPECT_EQ( dof[ 0 ], -nproc ) << "Left Overlap was filled by wrong process.";
    if( rank == nproc-1 )
-      EXPECT_EQ( dof[ dof.getSize() - 2 ], -1 )<< "Right Overlap was filled by wrong process.";
+      EXPECT_EQ( dof[ dof.getSize() - 1 ], -1 )<< "Right Overlap was filled by wrong process.";
 }
 
+// TODO: Fix tests with overlap-to-boundary direction and masks
+/*
 TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithInactiveMaskOnLeft )
 {
    // Setup periodic boundaries
@@ -312,14 +308,16 @@ TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithInactiveMaskOnLef
    setDof_1D( dof, -rank-1 );
    maskDofs.setValue( true );
    maskDofs.setElement( 1, false );
-   constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr , constFunctionPtr );
-   meshFunctionPtr->getSynchronizer().setPeriodicBoundariesCopyDirection( Synchronizer::OverlapToBoundary );
+   //constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr , constFunctionPtr );
+   //meshFunctionPtr->getSynchronizer().setPeriodicBoundariesCopyDirection( Synchronizer::OverlapToBoundary );
+   TNL_MPI_PRINT( "#### " << dof );
    meshFunctionPtr->template synchronize<CommunicatorType>( true, maskPointer );
+   TNL_MPI_PRINT( ">>> " << dof );
    
    if( rank == 0 )
-      EXPECT_EQ( dof[ 1 ], 0 ) << "Left Overlap was filled by wrong process.";
+      EXPECT_EQ( dof[ 0 ], 0 ) << "Left Overlap was filled by wrong process.";
    if( rank == nproc-1 )
-      EXPECT_EQ( dof[ dof.getSize() - 2 ], -1 )<< "Right Overlap was filled by wrong process.";
+      EXPECT_EQ( dof[ dof.getSize() - 1 ], -1 )<< "Right Overlap was filled by wrong process.";
 }
 
 TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithInactiveMask )
@@ -340,16 +338,17 @@ TEST_F(DistributedGridTest_1D, SynchronizePeriodicNeighborsWithInactiveMask )
    maskDofs.setValue( true );
    maskDofs.setElement( 1, false );   
    maskDofs.setElement( dof.getSize() - 2, false );
-   constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr , constFunctionPtr );
-   meshFunctionPtr->getSynchronizer().setPeriodicBoundariesCopyDirection( Synchronizer::OverlapToBoundary );
+   //constFunctionEvaluator.evaluateAllEntities( meshFunctionPtr , constFunctionPtr );
+   //meshFunctionPtr->getSynchronizer().setPeriodicBoundariesCopyDirection( Synchronizer::OverlapToBoundary );
    meshFunctionPtr->template synchronize<CommunicatorType>( true, maskPointer );
    
    if( rank == 0 )
-      EXPECT_EQ( dof[ 1 ], 0 ) << "Left Overlap was filled by wrong process.";
+      EXPECT_EQ( dof[ 0 ], 0 ) << "Left Overlap was filled by wrong process.";
    if( rank == nproc-1 )
-      EXPECT_EQ( dof[ dof.getSize() - 2 ], nproc - 1 )<< "Right Overlap was filled by wrong process.";   
+      EXPECT_EQ( dof[ dof.getSize() - 1 ], nproc - 1 )<< "Right Overlap was filled by wrong process.";   
    
 }
+*/
 
 TEST_F(DistributedGridTest_1D, SynchronizePeriodicBoundariesLinearTest )
 {
@@ -366,25 +365,19 @@ TEST_F(DistributedGridTest_1D, SynchronizePeriodicBoundariesLinearTest )
 
    setDof_1D(dof, -rank-1 );
    linearFunctionEvaluator.evaluateAllEntities( meshFunctionPtr , linearFunctionPtr );
-   
-   //TNL_MPI_PRINT( meshFunctionPtr->getData() );
-   
+
    meshFunctionPtr->template synchronize<CommunicatorType>( true );
-   
-   //TNL_MPI_PRINT( meshFunctionPtr->getData() );
-   
-   auto entity = gridptr->template getEntity< Cell >( 1 );
-   auto entity2= gridptr->template getEntity< Cell >( (dof).getSize() - 2 );
+
+   auto entity = gridptr->template getEntity< Cell >( 0 );
+   auto entity2= gridptr->template getEntity< Cell >( (dof).getSize() - 1 );
    entity.refresh();
-   entity2.refresh();   
+   entity2.refresh();
    
    if( rank == 0 )
-      EXPECT_EQ( meshFunctionPtr->getValue(entity), -nproc ) << "Linear function Overlap error on left Edge.";
+      EXPECT_EQ( meshFunctionPtr->getValue(entity), 9 ) << "Linear function Overlap error on left Edge.";
    if( rank == nproc - 1 )
-      EXPECT_EQ( meshFunctionPtr->getValue(entity2), -1 ) << "Linear function Overlap error on right Edge.";
+      EXPECT_EQ( meshFunctionPtr->getValue(entity2), 0 ) << "Linear function Overlap error on right Edge.";
 }
-#endif
-
 
 #else
 TEST(NoMPI, NoTest)

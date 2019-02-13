@@ -88,12 +88,12 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< MeshDimension,
 
          for( int i=0; i<this->getNeighborCount(); i++ )
          {
-            Index sendSize=1;//sended and recieve areas has same size
+            Index sendSize=1;//send and receive  areas have the same size
 
            // bool isBoundary=( neighbor[ i ] == -1 );
             auto directions=Directions::template getXYZ<getMeshDimension()>(i);
 
-            sendDimensions[i]=localSize;//send and recieve areas has same dimensions
+            sendDimensions[i]=localSize; //send and receive areas have the same dimensions
             sendBegin[i]=localBegin;
             recieveBegin[i]=localBegin;
 
@@ -157,31 +157,31 @@ class DistributedMeshSynchronizer< Functions::MeshFunction< Grid< MeshDimension,
          //send everything, recieve everything 
          for( int i=0; i<this->getNeighborCount(); i++ )
          {
-            TNL_MPI_PRINT( "Sending data... " << i << " sizes -> " 
+            /*TNL_MPI_PRINT( "Sending data... " << i << " sizes -> " 
                << sendSizes[ i ] << "sendDimensions -> " <<  sendDimensions[ i ]
-               << " upperOverlap -> " << this->distributedGrid->getUpperOverlap() );
+               << " upperOverlap -> " << this->distributedGrid->getUpperOverlap() );*/
             if( neighbors[ i ] != -1 )
             {
-               TNL_MPI_PRINT( "Sending data to node " << neighbors[ i ] );
+               //TNL_MPI_PRINT( "Sending data to node " << neighbors[ i ] );
                requests[ requestsCount++ ] = CommunicatorType::ISend( sendBuffers[ i ].getData(),  sendSizes[ i ], neighbors[ i ], 0, group );
-               TNL_MPI_PRINT( "Receiving data from node " << neighbors[ i ] );
+               //TNL_MPI_PRINT( "Receiving data from node " << neighbors[ i ] );
                requests[ requestsCount++ ] = CommunicatorType::IRecv( recieveBuffers[ i ].getData(),  sendSizes[ i ], neighbors[ i ], 0, group );
             }
             else if( periodicBoundaries && sendSizes[ i ] !=0 )
       	   {
-               TNL_MPI_PRINT( "Sending data to node " << periodicNeighbors[ i ] );
+               //TNL_MPI_PRINT( "Sending data to node " << periodicNeighbors[ i ] );
                requests[ requestsCount++ ] = CommunicatorType::ISend( sendBuffers[ i ].getData(),  sendSizes[ i ], periodicNeighbors[ i ], 1, group );
-               TNL_MPI_PRINT( "Receiving data to node " << periodicNeighbors[ i ] );
+               //TNL_MPI_PRINT( "Receiving data to node " << periodicNeighbors[ i ] );
                requests[ requestsCount++ ] = CommunicatorType::IRecv( recieveBuffers[ i ].getData(),  sendSizes[ i ], periodicNeighbors[ i ], 1, group );
             }
          }
 
         //wait until send is done
-         TNL_MPI_PRINT( "Waiting for data ..." )
+        //TNL_MPI_PRINT( "Waiting for data ..." )
         CommunicatorType::WaitAll( requests, requestsCount );
 
-         TNL_MPI_PRINT( "Copying data ..." )
         //copy data from receive buffers
+        //TNL_MPI_PRINT( "Copying data ..." )
         copyBuffers(meshFunction,
             recieveBuffers,recieveBegin,sendDimensions  ,
             false,
