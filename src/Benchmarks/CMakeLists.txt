@@ -3,9 +3,12 @@ add_subdirectory( BLAS )
 add_subdirectory( SpMV )
 add_subdirectory( DistSpMV )
 add_subdirectory( LinearSolvers )
+add_subdirectory( Traversers )
 
 set( headers
          Benchmarks.h
+         FunctionTimer.h
+         Logging.h
 )
 
 install( FILES ${headers} DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY}/Benchmarks )

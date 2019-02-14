@@ -35,6 +35,17 @@ Grid< 1, Real, Device, Index >::Grid()
 
 template< typename Real,
           typename Device,
+          typename Index >
+Grid< 1, Real, Device, Index >::Grid( const Index xSize )
+: numberOfCells( 0 ),
+  numberOfVertices( 0 ),
+        distGrid(nullptr)
+{
+   this->setDimensions( xSize );
+}
+
+template< typename Real,
+          typename Device,
           typename Index  >
 String Grid< 1, Real, Device, Index >::getType()
 {

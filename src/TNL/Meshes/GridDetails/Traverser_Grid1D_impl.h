@@ -43,7 +43,8 @@ processBoundaryEntities( const GridPointer& gridPointer,
            gridPointer,
            CoordinatesType( 0 ),
            gridPointer->getDimensions() - CoordinatesType( 1 ),
-           userData );
+           userData,
+           asynchronousMode );
    }
    else //Distributed
    {
@@ -54,7 +55,8 @@ processBoundaryEntities( const GridPointer& gridPointer,
               gridPointer,
               CoordinatesType( 0 ) + distributedGrid->getLowerOverlap(),
               CoordinatesType( 0 ) + distributedGrid->getLowerOverlap(),
-              userData );
+              userData,
+              asynchronousMode );
        }
        
        if( neighbors[ Meshes::DistributedMeshes::ZzYzXp ] == -1 )
@@ -63,7 +65,8 @@ processBoundaryEntities( const GridPointer& gridPointer,
               gridPointer,
               gridPointer->getDimensions() - CoordinatesType( 1 ) - distributedGrid->getUpperOverlap(),
               gridPointer->getDimensions() - CoordinatesType( 1 ) - distributedGrid->getUpperOverlap(),
-              userData );
+              userData,
+              asynchronousMode );
        }
    }
    
@@ -92,7 +95,8 @@ processInteriorEntities( const GridPointer& gridPointer,
            gridPointer,
            CoordinatesType( 1 ),
            gridPointer->getDimensions() - CoordinatesType( 2 ),
-           userData );   
+           userData,
+           asynchronousMode );
    }
    else //Distributed
    {
@@ -117,7 +121,8 @@ processInteriorEntities( const GridPointer& gridPointer,
           gridPointer,
           begin,
           end,
-          userData );
+          userData,
+          asynchronousMode );
    }
    
 }
@@ -146,7 +151,8 @@ processAllEntities(
            gridPointer,
            CoordinatesType( 0 ),
            gridPointer->getDimensions() - CoordinatesType( 1 ),
-           userData );  
+           userData,
+           asynchronousMode );
    }
    else //Distributed
    {
@@ -157,7 +163,8 @@ processAllEntities(
           gridPointer,
           begin,
           end,
-          userData );
+          userData,
+          asynchronousMode );
    }
 
 }
@@ -185,7 +192,8 @@ processBoundaryEntities( const GridPointer& gridPointer,
       gridPointer,
       CoordinatesType( 0 ),
       gridPointer->getDimensions(),
-      userData );
+      userData,
+      asynchronousMode );
 }
 
 template< typename Real,
@@ -208,7 +216,8 @@ processInteriorEntities( const GridPointer& gridPointer,
       gridPointer,
       CoordinatesType( 1 ),
       gridPointer->getDimensions() - CoordinatesType( 1 ),
-      userData );
+      userData,
+      asynchronousMode );
 }
 
 template< typename Real,
@@ -232,7 +241,8 @@ processAllEntities(
       gridPointer,
       CoordinatesType( 0 ),
       gridPointer->getDimensions(),
-      userData );
+      userData,
+      asynchronousMode );
 }
 
 } // namespace Meshes

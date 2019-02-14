@@ -73,7 +73,7 @@ benchmarkPreconditionerUpdate( Benchmark& benchmark,
       barrier( matrix );
    };
 
-   benchmark.time( reset, performer, compute );
+   benchmark.time< typename Matrix::DeviceType >( reset, performer, compute );
 }
 
 template< template<typename> class Solver, template<typename> class Preconditioner, typename Matrix, typename Vector >
@@ -166,7 +166,7 @@ benchmarkSolver( Benchmark& benchmark,
    };
    MyBenchmarkResult benchmarkResult( solver, matrix, x, b );
 
-   benchmark.time( reset, performer, compute, benchmarkResult );
+   benchmark.time< typename Matrix::DeviceType >( reset, performer, compute, benchmarkResult );
 }
 
 #ifdef HAVE_ARMADILLO

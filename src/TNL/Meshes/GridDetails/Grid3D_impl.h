@@ -46,6 +46,28 @@ Grid< 3, Real, Device, Index > :: Grid()
 template< typename Real,
           typename Device,
           typename Index >
+Grid< 3, Real, Device, Index >::Grid( const Index xSize, const Index ySize, const Index zSize )
+: numberOfCells( 0 ),
+  numberOfNxFaces( 0 ),
+  numberOfNyFaces( 0 ),
+  numberOfNzFaces( 0 ),
+  numberOfNxAndNyFaces( 0 ),
+  numberOfFaces( 0 ),
+  numberOfDxEdges( 0 ),
+  numberOfDyEdges( 0 ),
+  numberOfDzEdges( 0 ),
+  numberOfDxAndDyEdges( 0 ),
+  numberOfEdges( 0 ),
+  numberOfVertices( 0 ),
+  distGrid(nullptr)
+{
+   this->setDimensions( xSize, ySize, zSize );
+}
+
+
+template< typename Real,
+          typename Device,
+          typename Index >
 String Grid< 3, Real, Device, Index > :: getType()
 {
    return String( "Meshes::Grid< " ) +

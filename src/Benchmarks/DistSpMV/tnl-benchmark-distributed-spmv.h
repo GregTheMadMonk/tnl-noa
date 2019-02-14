@@ -62,7 +62,7 @@ benchmarkSpmv( Benchmark& benchmark,
       matrix.vectorProduct( x, y );
    };
 
-   benchmark.time( reset, performer, compute );
+   benchmark.time< typename Matrix::DeviceType >( reset, performer, compute );
 }
 
 template< typename Matrix, typename Vector >
@@ -114,7 +114,7 @@ benchmarkDistributedSpmv( Benchmark& benchmark,
       Matrix::CommunicatorType::Barrier( matrix.getCommunicationGroup() );
    };
 
-   benchmark.time( reset, performer, compute );
+   benchmark.time< typename Matrix::DeviceType >( reset, performer, compute );
 }
 
 template< typename Matrix, typename Vector >

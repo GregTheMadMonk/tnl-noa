@@ -42,6 +42,7 @@ processBoundaryEntities( const GridPointer& gridPointer,
        CoordinatesType( 0, 0 ),
        gridPointer->getDimensions() - CoordinatesType( 1, 1 ),
        userData,
+       asynchronousMode,
        0 );
    }
    else //Distributed
@@ -57,6 +58,7 @@ processBoundaryEntities( const GridPointer& gridPointer,
             begin,
             CoordinatesType( begin.x(), end.y() ),
             userData,
+            asynchronousMode,
             0 );
       }
        
@@ -67,6 +69,7 @@ processBoundaryEntities( const GridPointer& gridPointer,
             CoordinatesType( end.x(), begin.y() ),
             end,
             userData,
+            asynchronousMode,
             0 );
       }
        
@@ -77,6 +80,7 @@ processBoundaryEntities( const GridPointer& gridPointer,
             begin,
             CoordinatesType( end.x(), begin.y() ),
             userData,
+            asynchronousMode,
             0 );
       }
        
@@ -87,6 +91,7 @@ processBoundaryEntities( const GridPointer& gridPointer,
             CoordinatesType( begin.x(), end.y() ),
             end,
             userData,
+            asynchronousMode,
             0 );
       }
    }
@@ -116,6 +121,7 @@ processInteriorEntities( const GridPointer& gridPointer,
          CoordinatesType( 1, 1 ),
          gridPointer->getDimensions() - CoordinatesType( 2, 2 ),
          userData,
+         asynchronousMode,
          0 );
    }
    else // distributed
@@ -141,6 +147,7 @@ processInteriorEntities( const GridPointer& gridPointer,
          begin,
          end,
          userData,
+         asynchronousMode,
          0);
    }
 }
@@ -169,6 +176,7 @@ processAllEntities( const GridPointer& gridPointer,
          CoordinatesType( 0, 0 ),
          gridPointer->getDimensions() - CoordinatesType( 1, 1 ),
          userData,
+         asynchronousMode,
          0 );
    }
    else
@@ -182,6 +190,7 @@ processAllEntities( const GridPointer& gridPointer,
           begin,
           end,
           userData,
+          asynchronousMode,
           0);   
    }
 }
@@ -210,6 +219,7 @@ processBoundaryEntities( const GridPointer& gridPointer,
       CoordinatesType( 0, 0 ),
       gridPointer->getDimensions() - CoordinatesType( 0, 1 ),
       userData,
+      asynchronousMode,
       1,
       CoordinatesType( 1, 0 ),
       CoordinatesType( 0, 1 ) );
@@ -219,6 +229,7 @@ processBoundaryEntities( const GridPointer& gridPointer,
       CoordinatesType( 0, 0 ),
       gridPointer->getDimensions() - CoordinatesType( 1, 0 ),
       userData,
+      asynchronousMode,
       0,
       CoordinatesType( 0, 1 ),
       CoordinatesType( 1, 0 ) );
@@ -245,6 +256,7 @@ processInteriorEntities( const GridPointer& gridPointer,
       CoordinatesType( 1, 0 ),
       gridPointer->getDimensions() - CoordinatesType( 1, 1 ),
       userData,
+      asynchronousMode,
       1,
       CoordinatesType( 1, 0 ),
       CoordinatesType( 0, 1 ) );
@@ -254,6 +266,7 @@ processInteriorEntities( const GridPointer& gridPointer,
       CoordinatesType( 0, 1 ),
       gridPointer->getDimensions() - CoordinatesType( 1, 1 ),
       userData,
+      asynchronousMode,
       0,
       CoordinatesType( 0, 1 ),
       CoordinatesType( 1, 0 ) );
@@ -280,6 +293,7 @@ processAllEntities( const GridPointer& gridPointer,
       CoordinatesType( 0, 0 ),
       gridPointer->getDimensions() - CoordinatesType( 0, 1 ),
       userData,
+      asynchronousMode,
       1,
       CoordinatesType( 1, 0 ),
       CoordinatesType( 0, 1 ) );
@@ -289,6 +303,7 @@ processAllEntities( const GridPointer& gridPointer,
       CoordinatesType( 0, 0 ),
       gridPointer->getDimensions() - CoordinatesType( 1, 0 ),
       userData,
+      asynchronousMode,
       0,
       CoordinatesType( 0, 1 ),
       CoordinatesType( 1, 0 ) );
@@ -315,6 +330,7 @@ processBoundaryEntities( const GridPointer& gridPointer,
       CoordinatesType( 0, 0 ),
       gridPointer->getDimensions(),
       userData,
+      asynchronousMode,
       0 );
 }
 
@@ -339,6 +355,7 @@ processInteriorEntities( const GridPointer& gridPointer,
       CoordinatesType( 1, 1 ),
       gridPointer->getDimensions() - CoordinatesType( 1, 1 ),
       userData,
+      asynchronousMode,
       0 );
 }
  
@@ -363,6 +380,7 @@ processAllEntities( const GridPointer& gridPointer,
       CoordinatesType( 0, 0 ),
       gridPointer->getDimensions(),
       userData,
+      asynchronousMode,
       0 );
 }
 
