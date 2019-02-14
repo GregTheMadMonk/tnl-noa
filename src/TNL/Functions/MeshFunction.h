@@ -163,6 +163,16 @@ class MeshFunction :
 
       using Object::boundLoad;
 
+      DistributedMeshSynchronizerType& getSynchronizer()
+      {
+         return this->synchronizer;
+      }
+
+      const DistributedMeshSynchronizerType& getSynchronizer() const
+      {
+         return this->synchronizer;
+      }
+
       template< typename CommunicatorType,
                 typename PeriodicBoundariesMaskType = MeshFunction< Mesh, MeshEntityDimension, bool > >
       void synchronize( bool withPeriodicBoundaryConditions = false,
@@ -171,8 +181,9 @@ class MeshFunction :
 
    protected:
 
-      //DistributedMeshSynchronizerType synchronizer;
-      Meshes::DistributedMeshes::DistributedMeshSynchronizer< Functions::MeshFunction< MeshType, MeshEntityDimension, RealType > > synchronizer;
+      // TODO: synchronizer should not be part of the mesh function - the way of synchronization
+      // depends rather on algorithm/method/scheme in hand than on data
+      DistributedMeshSynchronizerType synchronizer;
 
       MeshPointer meshPointer;
 
@@ -182,7 +193,6 @@ class MeshFunction :
 
    private:
       void setupSynchronizer( DistributedMeshType *distributedMesh );
-   
 };
 
 template< typename Mesh,

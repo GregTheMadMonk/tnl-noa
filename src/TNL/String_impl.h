@@ -13,9 +13,9 @@
 #include <TNL/String.h>
 #include <TNL/Assert.h>
 #include <TNL/Math.h>
-//#ifdef USE_MPI
-//   #include <mpi.h>
-//#endif
+#ifdef HAVE_MPI
+   #include <mpi.h>
+#endif
 
 namespace TNL {
 
@@ -233,18 +233,32 @@ String::split( const char separator, bool skipEmpty ) const
    return parts;
 }
 
+#ifdef HAVE_MPI
+inline void String::send( int target, int tag, MPI_Comm mpi_comm )
+{
+   int size = this->getSize();
+   MPI_Send( &size, 1, MPI_INT, target, tag, mpi_comm );
+   MPI_Send( this->getString(), this->length(), MPI_CHAR, target, tag, mpi_comm );
+}
+
+inline void String::receive( int source, int tag, MPI_Comm mpi_comm )
+{
+   int size;
+   MPI_Status status;
+   MPI_Recv( &size, 1, MPI_INT, source, tag, mpi_comm, &status );
+   this->setSize( size );
+   MPI_Recv( const_cast< void* >( ( const void* ) this->data() ), size, MPI_CHAR, source, tag, mpi_comm,  &status );
+}
+
 /*
 inline void String :: MPIBcast( int root, MPI_Comm comm )
 {
 #ifdef USE_MPI
-   dbgFunctionName( "mString", "MPIBcast" );
    int iproc;
    MPI_Comm_rank( MPI_COMM_WORLD, &iproc );
    TNL_ASSERT( string, );
    int len = strlen( string );
    MPI_Bcast( &len, 1, MPI_INT, root, comm );
-   dbgExpr( iproc );
-   dbgExpr( len );
    if( iproc != root )
    {
       if( length < len )
@@ -256,11 +270,10 @@ inline void String :: MPIBcast( int root, MPI_Comm comm )
    }
  
    MPI_Bcast( string, len + 1, MPI_CHAR, root, comm );
-   dbgExpr( iproc );
-   dbgExpr( string );
 #endif
 }
 */
+#endif
 
 inline String operator+( char string1, const String& string2 )
 {

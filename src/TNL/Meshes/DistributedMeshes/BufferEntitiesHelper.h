@@ -14,6 +14,7 @@
 #include <TNL/Devices/Cuda.h>
 #include <TNL/ParallelFor.h>
 #include <TNL/Containers/StaticVector.h>
+#include <TNL/Communicators/MPIPrint.h>
 
 namespace TNL {
 namespace Meshes {

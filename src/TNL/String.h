@@ -15,6 +15,10 @@
 #include <vector>
 #include <string>
 
+#ifdef HAVE_MPI
+#include <mpi.h>
+#endif
+
 namespace TNL {
 
 class String;
@@ -210,8 +214,21 @@ public:
    /// @param separator Character, which separates substrings in given string.
    std::vector< String > split( const char separator = ' ', bool skipEmpty = false ) const;
 
+#ifdef HAVE_MPI
+
+   /****
+    * \brief Sends the string to the target MPI process.
+    */
+   void send( int target, int tag = 0, MPI_Comm mpi_comm = MPI_COMM_WORLD );
+
+   /****
+    * \brief Receives a string from the source MPI process.
+    */
+   void receive( int source, int tag = 0, MPI_Comm mpi_comm = MPI_COMM_WORLD );
+
    //! Broadcast to other nodes in MPI cluster
-//   void MPIBcast( int root, MPI_Comm mpi_comm = MPI_COMM_WORLD );
+   // void MPIBcast( int root, MPI_Comm mpi_comm = MPI_COMM_WORLD );
+#endif
 };
 
 /// \brief Returns concatenation of \e string1 and \e string2.

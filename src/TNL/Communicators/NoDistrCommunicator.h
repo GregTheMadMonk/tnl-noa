@@ -55,12 +55,12 @@ class NoDistrCommunicator
           return false;
       }
 
-      static int GetRank(CommunicationGroup group)
+      static int GetRank(CommunicationGroup group = AllGroup )
       {
           return 0;
       }
 
-      static int GetSize(CommunicationGroup group)
+      static int GetSize(CommunicationGroup group = AllGroup )
       {
           return 1;
       }

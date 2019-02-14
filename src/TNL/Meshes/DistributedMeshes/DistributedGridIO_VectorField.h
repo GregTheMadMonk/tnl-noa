@@ -11,21 +11,38 @@
 #pragma once
 
 #include <TNL/Functions/VectorField.h>
+#include <TNL/Meshes/Grid.h>
 
 namespace TNL {
-namespace Meshes {   
+namespace Meshes {
 namespace DistributedMeshes {
 
-//VCT field
 template<
-        int Size,
-        typename MeshFunctionType,
-        typename Device> 
-class DistributedGridIO<Functions::VectorField<Size,MeshFunctionType>,MpiIO,Device>
+   int Size,
+   int Dimension,
+   int MeshEntityDimension,
+   typename MeshReal,
+   typename Device,
+   typename Index,
+   typename Real >
+class DistributedGridIO<
+   Functions::VectorField<
+      Size,
+      Functions::MeshFunction< Meshes::Grid< Dimension, MeshReal, Device, Index >,
+         MeshEntityDimension,
+         Real > >,
+   MpiIO >
 {
-    public:
-    static bool save(const String& fileName, Functions::VectorField<Size,MeshFunctionType> &vectorField)
-    {
+   public:
+      using MeshType = Meshes::Grid< Dimension, Real, Device, Index >;
+      using MeshFunctionType = Functions::MeshFunction< MeshType, MeshEntityDimension, Real >;
+      using VectorFieldType = Functions::VectorField< Size, MeshFunctionType >;
+      using CoordinatesType = typename MeshFunctionType::MeshType::CoordinatesType;
+      using PointType = typename MeshFunctionType::MeshType::PointType;
+      using VectorType = typename MeshFunctionType::VectorType;
+
+   static bool save(const String& fileName, Functions::VectorField< Size, MeshFunctionType > &vectorField)
+   {
 #ifdef HAVE_MPI
         if(Communicators::MpiCommunicator::IsInitialized())//i.e. - isUsed
         {
@@ -46,7 +63,7 @@ class DistributedGridIO<Functions::VectorField<Size,MeshFunctionType>,MpiIO,Devi
                           &file);
 
           
-           int offset=0; //global offset -> every meshfunctoion creates it's own datatypes we need manage global offset      
+           int offset=0; //global offset -> every mesh function creates it's own data types we need manage global offset      
            if(Communicators::MpiCommunicator::GetRank(group)==0)
                offset+=writeVectorFieldHeader(file,vectorField);
            MPI_Bcast(&offset, 1, MPI_INT,0, group);
@@ -71,7 +88,7 @@ class DistributedGridIO<Functions::VectorField<Size,MeshFunctionType>,MpiIO,Devi
 
 #ifdef HAVE_MPI
 	private:
-	  static unsigned int writeVectorFieldHeader(MPI_File &file,Functions::VectorField<Size,MeshFunctionType> &vectorField)
+	  static unsigned int writeVectorFieldHeader(MPI_File &file,Functions::VectorField<Size,MeshFunctionType > &vectorField)
 	  {
 			unsigned int size=0;
 		    int count;

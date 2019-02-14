@@ -133,6 +133,13 @@ bool setMeshEntityType( const MeshPointer& meshPointer,
       return setMeshFunctionRealType< MeshPointer, EntityDimension, double, VectorFieldSize >( meshPointer, inputFileName, parsedObjectType, parameters );
    if( parsedObjectType[ 3 ] == "long double" )
       return setMeshFunctionRealType< MeshPointer, EntityDimension, long double, VectorFieldSize >( meshPointer, inputFileName, parsedObjectType, parameters );
+   if( parsedObjectType[ 3 ] == "int" )
+      return setMeshFunctionRealType< MeshPointer, EntityDimension, int, VectorFieldSize >( meshPointer, inputFileName, parsedObjectType, parameters );
+   if( parsedObjectType[ 3 ] == "long int" )
+      return setMeshFunctionRealType< MeshPointer, EntityDimension, long int, VectorFieldSize >( meshPointer, inputFileName, parsedObjectType, parameters );
+   if( parsedObjectType[ 3 ] == "bool" )
+      return setMeshFunctionRealType< MeshPointer, EntityDimension, bool, VectorFieldSize >( meshPointer, inputFileName, parsedObjectType, parameters );
+   
    std::cerr << "Unsupported arithmetics " << parsedObjectType[ 3 ] << " in mesh function " << inputFileName << std::endl;
    return false;
 }
@@ -393,13 +400,19 @@ bool setValueType( const MeshPointer& meshPointer,
        parsedObjectType[ 0 ] == "tnlVector" )                                  //
       elementType = parsedObjectType[ 1 ];
 
-
    if( elementType == "float" )
       return setIndexType< MeshPointer, float, float >( meshPointer, inputFileName, parsedObjectType, parameters );
    if( elementType == "double" )
       return setIndexType< MeshPointer, double, double >( meshPointer, inputFileName, parsedObjectType, parameters );
    if( elementType == "long double" )
       return setIndexType< MeshPointer, long double, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
+   if( elementType == "int" )
+      return setIndexType< MeshPointer, int, int >( meshPointer, inputFileName, parsedObjectType, parameters );
+   if( elementType == "long int" )
+      return setIndexType< MeshPointer, long int, long int >( meshPointer, inputFileName, parsedObjectType, parameters );
+   if( elementType == "bool" )
+      return setIndexType< MeshPointer, bool, bool >( meshPointer, inputFileName, parsedObjectType, parameters );
+
    const std::vector< String > parsedValueType = parseObjectType( elementType );
    if( ! parsedValueType.size() )
    {

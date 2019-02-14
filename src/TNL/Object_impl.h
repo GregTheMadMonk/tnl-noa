@@ -103,11 +103,7 @@ inline bool Object :: boundLoad( const String& fileName )
 inline bool getObjectType( File& file, String& type )
 {
    char mn[ 10 ];
-   if( ! file.read( mn, strlen( magic_number ) ) )
-   {
-      std::cerr << "Unable to read file " << file.getFileName() << " ... " << std::endl;
-      return false;
-   }
+   file.read( mn, strlen( magic_number ) );
    if( strncmp( mn, magic_number, 5 ) != 0 )
    {
        std::cout << "Not a TNL file (wrong magic number)." << std::endl;

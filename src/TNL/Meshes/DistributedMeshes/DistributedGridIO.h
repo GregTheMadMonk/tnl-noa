@@ -26,23 +26,23 @@ namespace DistributedMeshes {
 
 enum DistrGridIOTypes { Dummy = 0 , LocalCopy = 1, MpiIO=2 };
     
-template<typename MeshFunctionType,
-         DistrGridIOTypes type = LocalCopy,
-         typename Device=typename MeshFunctionType::DeviceType> 
+template< typename MeshFunction,
+          DistrGridIOTypes type = LocalCopy,
+          typename Mesh = typename MeshFunction::MeshType,
+          typename Device = typename MeshFunction::DeviceType >
 class DistributedGridIO
 {
 };
 
-template<typename MeshFunctionType,
-         typename Device> 
-class DistributedGridIO<MeshFunctionType,Dummy,Device>
+template< typename MeshFunctionType > 
+class DistributedGridIO< MeshFunctionType, Dummy >
 {
     bool save(const String& fileName, MeshFunctionType &meshFunction)
     {
         return true;
     };
-            
-    bool load(const String& fileName, MeshFunctionType &meshFunction) 
+
+    bool load(const String& fileName, MeshFunctionType &meshFunction)
     {
         return true;
     };

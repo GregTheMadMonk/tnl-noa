@@ -38,7 +38,8 @@
 #include <TNL/Communicators/MpiDefs.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Exceptions/MPISupportMissing.h>
-
+#include <TNL/Exceptions/MPIDimsCreateError.h>
+#include <TNL/Communicators/MPITypeResolver.h>
 
 
 namespace TNL {
@@ -50,7 +51,7 @@ class MpiCommunicator
 
    public: // TODO: this was private
 #ifdef HAVE_MPI
-      inline static MPI_Datatype MPIDataType( const signed char* ) { return MPI_CHAR; };
+      /*inline static MPI_Datatype MPIDataType( const signed char* ) { return MPI_CHAR; };
       inline static MPI_Datatype MPIDataType( const signed short int* ) { return MPI_SHORT; };
       inline static MPI_Datatype MPIDataType( const signed int* ) { return MPI_INT; };
       inline static MPI_Datatype MPIDataType( const signed long int* ) { return MPI_LONG; };
@@ -68,7 +69,7 @@ class MpiCommunicator
          // sizeof(bool) is implementation-defined: https://stackoverflow.com/a/4897859
          static_assert( sizeof(bool) == 1, "The programmer did not count with systems where sizeof(bool) != 1." );
          return MPI_CHAR;
-      };
+      };*/
 
       using Request = MPI_Request;
       using CommunicationGroup = MPI_Comm;
@@ -104,14 +105,19 @@ class MpiCommunicator
             redirect = parameters.getParameter< bool >( "redirect-mpi-output" );
             setupRedirection();
 #ifdef HAVE_CUDA
-   #if defined(MPIX_CUDA_AWARE_SUPPORT) && MPIX_CUDA_AWARE_SUPPORT
-            std::cout << "CUDA-aware MPI detected on this system ... " << std::endl;
-   #elif defined(MPIX_CUDA_AWARE_SUPPORT) && !MPIX_CUDA_AWARE_SUPPORT
-            std::cerr << "MPI is not CUDA-aware. Please install correct version of MPI." << std::endl;
-            return false;
+            int size;
+            MPI_Comm_size( MPI_COMM_WORLD, &size );
+            if( size > 1 )
+            {
+   #if defined( MPIX_CUDA_AWARE_SUPPORT ) && MPIX_CUDA_AWARE_SUPPORT
+               std::cout << "CUDA-aware MPI detected on this system ... " << std::endl;
+   #elif defined( MPIX_CUDA_AWARE_SUPPORT ) && !MPIX_CUDA_AWARE_SUPPORT
+               std::cerr << "MPI is not CUDA-aware. Please install correct version of MPI." << std::endl;
+               return false;
    #else
-            std::cerr << "WARNING: TNL cannot detect if you have CUDA-aware MPI. Some problems may occur." << std::endl;
+               std::cerr << "WARNING: TNL cannot detect if you have CUDA-aware MPI. Some problems may occur." << std::endl;
    #endif
+            }
 #endif // HAVE_CUDA
             bool gdbDebug = parameters.getParameter< bool >( "mpi-gdb-debug" );
             int processToAttach = parameters.getParameter< int >( "mpi-process-to-attach" );
@@ -214,7 +220,7 @@ class MpiCommunicator
 #endif
       }
 
-      static int GetRank(CommunicationGroup group)
+      static int GetRank(CommunicationGroup group = AllGroup )
       {
 #ifdef HAVE_MPI
         TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
@@ -227,7 +233,7 @@ class MpiCommunicator
 #endif
       }
 
-      static int GetSize(CommunicationGroup group)
+      static int GetSize(CommunicationGroup group = AllGroup )
       {
 #ifdef HAVE_MPI
          TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
@@ -240,16 +246,28 @@ class MpiCommunicator
 #endif
       }
 
-        //dim-number of dimesions, distr array of guess distr - 0 for computation
-        //distr array will be filled by computed distribution
-        //more information in MPI documentation
-        static void DimsCreate(int nproc, int dim, int *distr)
-        {
 #ifdef HAVE_MPI
-            /***HACK for linear distribution***/
-           int sum=0;
-           for(int i=0;i<dim;i++)
-                sum+=distr[i];
+      template< typename T >
+      static MPI_Datatype getDataType( const T& t )
+      { 
+         return MPITypeResolver< T >::getType();
+      }
+#endif
+      
+      //dim-number of dimensions, distr array of guess distr - 0 for computation
+      //distr array will be filled by computed distribution
+      //more information in MPI documentation
+      static void DimsCreate(int nproc, int dim, int *distr)
+      {
+#ifdef HAVE_MPI
+           int sum = 0, prod = 1;
+           for( int i = 0;i < dim; i++ )
+           {
+               sum += distr[ i ];
+               prod *= distr[ i ];
+           }
+           if( prod != 0 && prod != GetSize( AllGroup ) )
+              throw Exceptions::MPIDimsCreateError();
            if(sum==0)
            {
                for(int i=0;i<dim-1;i++)
@@ -258,7 +276,6 @@ class MpiCommunicator
                }
                distr[dim-1]=0;
             }
-            /***END OF HACK***/
 
             MPI_Dims_create(nproc, dim, distr);
 #else
@@ -266,7 +283,7 @@ class MpiCommunicator
 #endif
         }
 
-         static void Barrier(CommunicationGroup group)
+         static void Barrier( CommunicationGroup group = AllGroup )
          {
 #ifdef HAVE_MPI
             TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
@@ -278,13 +295,38 @@ class MpiCommunicator
         }
 
          template <typename T>
-         static Request ISend( const T* data, int count, int dest, int tag, CommunicationGroup group)
+         static void Send( const T* data, int count, int dest, int tag, CommunicationGroup group = AllGroup )
+         {
+#ifdef HAVE_MPI
+            TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
+            TNL_ASSERT_NE(group, NullGroup, "Send cannot be called with NullGroup");
+            MPI_Send( const_cast< void* >( ( const void* ) data ), count, MPITypeResolver< T >::getType(), dest, tag, group );
+#else
+            throw Exceptions::MPISupportMissing();
+#endif
+        }
+
+         template <typename T>
+         static void Recv( T* data, int count, int src, int tag, CommunicationGroup group = AllGroup )
+         {
+#ifdef HAVE_MPI
+            TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
+            TNL_ASSERT_NE(group, NullGroup, "Recv cannot be called with NullGroup");
+            MPI_Status status;
+            MPI_Recv( const_cast< void* >( ( const void* ) data ), count, MPITypeResolver< T >::getType() , src, tag, group, &status );
+#else
+            throw Exceptions::MPISupportMissing();
+#endif
+        }
+
+         template <typename T>
+         static Request ISend( const T* data, int count, int dest, int tag, CommunicationGroup group = AllGroup )
          {
 #ifdef HAVE_MPI
             TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
             TNL_ASSERT_NE(group, NullGroup, "ISend cannot be called with NullGroup");
             Request req;
-            MPI_Isend( const_cast< void* >( ( const void* ) data ), count, MPIDataType(data) , dest, tag, group, &req);
+            MPI_Isend( const_cast< void* >( ( const void* ) data ), count, MPITypeResolver< T >::getType(), dest, tag, group, &req);
             return req;
 #else
             throw Exceptions::MPISupportMissing();
@@ -292,13 +334,13 @@ class MpiCommunicator
         }
 
          template <typename T>
-         static Request IRecv( T* data, int count, int src, int tag, CommunicationGroup group)
+         static Request IRecv( T* data, int count, int src, int tag, CommunicationGroup group = AllGroup )
          {
 #ifdef HAVE_MPI
             TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
             TNL_ASSERT_NE(group, NullGroup, "IRecv cannot be called with NullGroup");
             Request req;
-            MPI_Irecv((void*) data, count, MPIDataType(data) , src, tag, group, &req);
+            MPI_Irecv( const_cast< void* >( ( const void* ) data ), count, MPITypeResolver< T >::getType() , src, tag, group, &req);
             return req;
 #else
             throw Exceptions::MPISupportMissing();
@@ -321,7 +363,7 @@ class MpiCommunicator
 #ifdef HAVE_MPI
            TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
            TNL_ASSERT_NE(group, NullGroup, "BCast cannot be called with NullGroup");
-           MPI_Bcast((void*) data, count, MPIDataType(data), root, group);
+           MPI_Bcast((void*) data, count, MPITypeResolver< T >::getType(), root, group);
 #else
            throw Exceptions::MPISupportMissing();
 #endif
@@ -336,7 +378,7 @@ class MpiCommunicator
         {
 #ifdef HAVE_MPI
             TNL_ASSERT_NE(group, NullGroup, "Allreduce cannot be called with NullGroup");
-            MPI_Allreduce( const_cast< void* >( ( void* ) data ), (void*) reduced_data,count,MPIDataType(data),op,group);
+            MPI_Allreduce( const_cast< void* >( ( void* ) data ), (void*) reduced_data,count,MPITypeResolver< T >::getType(),op,group);
 #else
             throw Exceptions::MPISupportMissing();
 #endif
@@ -351,7 +393,7 @@ class MpiCommunicator
         {
 #ifdef HAVE_MPI
             TNL_ASSERT_NE(group, NullGroup, "Allreduce cannot be called with NullGroup");
-            MPI_Allreduce( MPI_IN_PLACE, (void*) data,count,MPIDataType(data),op,group);
+            MPI_Allreduce( MPI_IN_PLACE, (void*) data,count,MPITypeResolver< T >::getType(),op,group);
 #else
             throw Exceptions::MPISupportMissing();
 #endif
@@ -368,7 +410,7 @@ class MpiCommunicator
          {
 #ifdef HAVE_MPI
             TNL_ASSERT_NE(group, NullGroup, "Reduce cannot be called with NullGroup");
-            MPI_Reduce( const_cast< void* >( ( void*) data ), (void*) reduced_data,count,MPIDataType(data),op,root,group);
+            MPI_Reduce( const_cast< void* >( ( void*) data ), (void*) reduced_data,count,MPITypeResolver< T >::getType(),op,root,group);
 #else
             throw Exceptions::MPISupportMissing();
 #endif
@@ -390,12 +432,12 @@ class MpiCommunicator
             MPI_Status status;
             MPI_Sendrecv( const_cast< void* >( ( void* ) sendData ),
                           sendCount,
-                          MPIDataType( sendData ),
+                          MPITypeResolver< T >::getType(),
                           destination,
                           sendTag,
                           ( void* ) receiveData,
                           receiveCount,
-                          MPIDataType( receiveData ),
+                          MPITypeResolver< T >::getType(),
                           source,
                           receiveTag,
                           group,
@@ -416,10 +458,10 @@ class MpiCommunicator
             TNL_ASSERT_NE(group, NullGroup, "SendReceive cannot be called with NullGroup");
             MPI_Alltoall( const_cast< void* >( ( void* ) sendData ),
                           sendCount,
-                          MPIDataType( sendData ),
+                          MPITypeResolver< T >::getType(),
                           ( void* ) receiveData,
                           receiveCount,
-                          MPIDataType( receiveData ),
+                          MPITypeResolver< T >::getType(),
                           group );
 #else
             throw Exceptions::MPISupportMissing();
@@ -505,8 +547,6 @@ class MpiCommunicator
     #endif
 #endif
       }
-
-
 };
 
 #ifdef HAVE_MPI
@@ -519,84 +559,8 @@ std::streambuf* MpiCommunicator::backup = nullptr;
 std::ofstream MpiCommunicator::filestr;
 bool MpiCommunicator::redirect = true;
 
-#ifdef HAVE_MPI
-// TODO: this duplicates MpiCommunicator::MPIDataType
-template<typename Type>
-struct MPITypeResolver
-{
-    static inline MPI_Datatype getType()
-    {
-        TNL_ASSERT_TRUE(false, "Fatal Error - Unknown MPI Type");
-        return MPI_INT;
-    };
-};
-
-template<> struct MPITypeResolver<char>
-{
-    static inline MPI_Datatype getType(){return MPI_CHAR;};
-};
-
-template<> struct MPITypeResolver<short int>
-{
-    static inline MPI_Datatype getType(){return MPI_SHORT;};
-};
-
-template<> struct MPITypeResolver<long int>
-{
-    static inline MPI_Datatype getType(){return MPI_LONG;};
-};
-
-template<> struct MPITypeResolver<unsigned char>
-{
-    static inline MPI_Datatype getType(){return MPI_UNSIGNED_CHAR;};
-};
-
-template<> struct MPITypeResolver<unsigned short int>
-{
-    static inline MPI_Datatype getType(){return MPI_UNSIGNED_SHORT;};
-};
-
-template<> struct MPITypeResolver<unsigned int>
-{
-    static inline MPI_Datatype getType(){return MPI_UNSIGNED;};
-};
-
-template<> struct MPITypeResolver<unsigned long int>
-{
-    static inline MPI_Datatype getType(){return MPI_UNSIGNED_LONG;};
-};
-
-template<> struct MPITypeResolver<float>
-{
-    static inline MPI_Datatype getType(){return MPI_FLOAT;};
-};
-
-template<> struct MPITypeResolver<double>
-{
-    static inline MPI_Datatype getType(){return MPI_DOUBLE;};
-};
-
-template<> struct MPITypeResolver<long double>
-{
-    static inline MPI_Datatype getType(){return MPI_LONG_DOUBLE;};
-};
-#endif
 
 } // namespace <unnamed>
 } // namespace Communicators
 } // namespace TNL
-
-#define TNL_MPI_PRINT( message )                                                                                              \
-for( int __tnl_mpi_print_j = 0;                                                                                               \
-     __tnl_mpi_print_j < TNL::Communicators::MpiCommunicator::GetSize( TNL::Communicators::MpiCommunicator::AllGroup );       \
-     __tnl_mpi_print_j++ )                                                                                                    \
-{                                                                                                                             \
-   if( __tnl_mpi_print_j == TNL::Communicators::MpiCommunicator::GetRank( TNL::Communicators::MpiCommunicator::AllGroup ) )   \
-   {                                                                                                                          \
-      std::cerr << "Node " << __tnl_mpi_print_j << " of "                                                                     \
-                << TNL::Communicators::MpiCommunicator::GetSize( TNL::Communicators::MpiCommunicator::AllGroup )              \
-                << " : " << message << std::endl;                                                                             \
-   }                                                                                                                          \
-   TNL::Communicators::MpiCommunicator::Barrier( TNL::Communicators::MpiCommunicator::AllGroup );                             \
-}
 
