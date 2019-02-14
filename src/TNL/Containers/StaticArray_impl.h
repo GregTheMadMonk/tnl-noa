@@ -160,7 +160,7 @@ inline void StaticArray< Size, Value >::setValue( const ValueType& val )
 template< int Size, typename Value >
 bool StaticArray< Size, Value >::save( File& file ) const
 {
-   if( ! file. write< Value, Devices::Host, int >( data, size ) )
+   if( ! file. write< Value, Devices::Host >( data, size ) )
    {
       std::cerr << "Unable to write " << getType() << "." << std::endl;
       return false;
@@ -171,7 +171,7 @@ bool StaticArray< Size, Value >::save( File& file ) const
 template< int Size, typename Value >
 bool StaticArray< Size, Value >::load( File& file)
 {
-   if( ! file.read< Value, Devices::Host, int >( data, size ) )
+   if( ! file.read< Value, Devices::Host >( data, size ) )
    {
       std::cerr << "Unable to read " << getType() << "." << std::endl;
       return false;

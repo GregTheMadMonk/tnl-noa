@@ -1,6 +1,7 @@
 #include <TNL/Containers/Multimaps/EllpackIndexMultimap.h>
 
 using namespace TNL;
+using namespace TNL::Containers::Multimaps;
 
 using IndexType = int;
 using Device = Devices::Host;
@@ -11,7 +12,7 @@ using LocalIndexType = short;
 
 TEST( MultimapTest, TestTypedefs )
 {
-   using MultimapType = TNL::EllpackIndexMultimap< IndexType, Device, LocalIndexType >;
+   using MultimapType = EllpackIndexMultimap< IndexType, Device, LocalIndexType >;
    const bool same_index = std::is_same< typename MultimapType::IndexType, IndexType >::value;
    ASSERT_TRUE( same_index );
    const bool same_device = std::is_same< typename MultimapType::DeviceType, Device >::value;
@@ -22,7 +23,7 @@ TEST( MultimapTest, TestTypedefs )
 
 TEST( MultimapTest, TestSettingSizes )
 {
-   using MultimapType = TNL::EllpackIndexMultimap< IndexType, Device, LocalIndexType >;
+   using MultimapType = EllpackIndexMultimap< IndexType, Device, LocalIndexType >;
 
    IndexType inputs = 10;
    LocalIndexType valuesGlobalMax = 3;
@@ -61,7 +62,7 @@ TEST( MultimapTest, TestSettingSizes )
 
 TEST( MultimapTest, TestSettingValues )
 {
-   using MultimapType = TNL::EllpackIndexMultimap< IndexType, Device, LocalIndexType >;
+   using MultimapType = EllpackIndexMultimap< IndexType, Device, LocalIndexType >;
 
    IndexType inputs = 10;
    LocalIndexType allocatedValues = 2;
@@ -105,7 +106,7 @@ TEST( MultimapTest, TestSettingValues )
 
 TEST( MultimapTest, TestSaveAndLoad )
 {
-   using MultimapType = TNL::EllpackIndexMultimap< IndexType, Device, LocalIndexType >;
+   using MultimapType = EllpackIndexMultimap< IndexType, Device, LocalIndexType >;
 
    IndexType inputs = 10;
    LocalIndexType allocatedValues = 2;

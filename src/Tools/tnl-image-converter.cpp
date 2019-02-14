@@ -43,7 +43,7 @@ void configSetup( Config::ConfigDescription& config )
 template< typename Real >
 bool processImages( const Config::ParameterContainer& parameters )
 {
-    const Containers::List< String >& inputImages = parameters.getParameter< Containers::List< String > >( "input-images" );
+    const std::vector< String >& inputImages = parameters.getParameter< std::vector< String > >( "input-images" );
     String meshFile = parameters.getParameter< String >( "mesh-file" );
     bool verbose = parameters.getParameter< bool >( "verbose" );
  
@@ -54,7 +54,7 @@ bool processImages( const Config::ParameterContainer& parameters )
     MeshFunctionType meshFunction;
 
     Images::RegionOfInterest< int > roi;
-    for( int i = 0; i < inputImages.getSize(); i++ )
+    for( int i = 0; i < (int) inputImages.size(); i++ )
     {
       const String& fileName = inputImages[ i ];
       std::cout << "Processing image file " << fileName << "... ";
@@ -145,10 +145,9 @@ bool processImages( const Config::ParameterContainer& parameters )
 
 bool processFiles( const Config::ParameterContainer& parameters )
 {
-   const Containers::List< String >& inputFiles = parameters.getParameter< Containers::List< String > >( "input-files" );
+   const std::vector< String >& inputFiles = parameters.getParameter< std::vector< String > >( "input-files" );
    const String& imageFormat = parameters.getParameter< String >( "image-format" );
    String meshFile = parameters.getParameter< String >( "mesh-file" );
-   bool verbose = parameters.getParameter< bool >( "verbose" );
  
    Meshes::Grid< 2, double, Devices::Host, int > grid;
    if( ! grid.load( meshFile ) )
@@ -157,7 +156,7 @@ bool processFiles( const Config::ParameterContainer& parameters )
       return false;
    }
    Containers::Vector< double, Devices::Host, int > vector;
-   for( int i = 0; i < inputFiles.getSize(); i++ )
+   for( int i = 0; i < (int) inputFiles.size(); i++ )
    {
       const String& fileName = inputFiles[ i ];
       std::cout << "Processing file " << fileName << "... ";

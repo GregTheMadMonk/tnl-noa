@@ -14,6 +14,8 @@
 #include <TNL/Containers/Multimaps/EllpackIndexMultimapValues.h>
 
 namespace TNL {
+namespace Containers {
+namespace Multimaps {
 
 template< typename Device >
 struct EllpackIndexMultimapSliceSizeGetter
@@ -40,7 +42,7 @@ class EllpackIndexMultimap
       using LocalIndexType             = LocalIndex;
       using ValuesAccessorType         = EllpackIndexMultimapValues< IndexType, DeviceType, LocalIndexType, SliceSize >;
       using ConstValuesAccessorType    = EllpackIndexMultimapValues< const IndexType, DeviceType, LocalIndexType, SliceSize >;
-      using ValuesAllocationVectorType = Containers::Vector< LocalIndexType, DeviceType, IndexType >;
+      using ValuesAllocationVectorType = Vector< LocalIndexType, DeviceType, IndexType >;
 
       EllpackIndexMultimap() = default;
 
@@ -85,7 +87,7 @@ class EllpackIndexMultimap
       void print( std::ostream& str ) const;
 
    protected:
-      Containers::Vector< IndexType, DeviceType, IndexType > values;
+      Vector< IndexType, DeviceType, IndexType > values;
       ValuesAllocationVectorType valuesCounts;
 
       IndexType keysRange = 0;
@@ -105,7 +107,8 @@ template< typename Index,
           int SliceSize >
 std::ostream& operator << ( std::ostream& str, const EllpackIndexMultimap< Index, Device, LocalIndex, SliceSize >& multimap );
 
+} // namespace Multimaps
+} // namespace Containers
 } // namespace TNL
 
 #include <TNL/Containers/Multimaps/EllpackIndexMultimap_impl.h>
-

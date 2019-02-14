@@ -10,50 +10,71 @@
 
 #pragma once
 
-#include <type_traits>
 #include <memory>
+#include <iostream>
 
 #include <TNL/File.h>
+#include <TNL/Assert.h>
 #include <TNL/Exceptions/CudaSupportMissing.h>
 #include <TNL/Exceptions/MICSupportMissing.h>
+#include <TNL/Exceptions/FileSerializationError.h>
+#include <TNL/Exceptions/FileDeserializationError.h>
 
 namespace TNL {
 
+inline bool File::open( const String& fileName, const IOMode mode )
+{
+   // enable exceptions
+   file.exceptions( std::fstream::failbit | std::fstream::badbit | std::fstream::eofbit );
+
+   close();
+
+   if( mode == IOMode::read )
+      file.open( fileName.getString(), std::ios::binary | std::ios::in );
+   else
+      file.open( fileName.getString(), std::ios::binary | std::ios::out );
+
+   this->fileName = fileName;
+   if( ! file.good() ) {
+      std::cerr << "I am not able to open the file " << fileName << ". ";
+      return false;
+   }
+   return true;
+}
+
+inline bool File::close()
+{
+   if( file.is_open() ) {
+      file.close();
+      if( ! file.good() ) {
+         std::cerr << "I was not able to close the file " << fileName << " properly!" << std::endl;
+         return false;
+      }
+   }
+   // reset all attributes
+   fileName = "";
+   return true;
+}
 
 template< typename Type, typename Device >
 bool File::read( Type* buffer )
 {
-   return read< Type, Device, int >( buffer, 1 );
+   return read< Type, Device >( buffer, 1 );
 }
 
 template< typename Type, typename Device >
 bool File::write( const Type* buffer )
 {
-   return write< Type, Device, int >( buffer, 1 );
+   return write< Type, Device >( buffer, 1 );
 }
 
-template< typename Type, typename Device, typename Index >
-bool File::read( Type* buffer,
-                 const Index& _elements )
+template< typename Type, typename Device >
+bool File::read( Type* buffer, std::streamsize elements )
 {
-   TNL_ASSERT_GE( _elements, (Index) 0, "Number of elements to read must be non-negative." );
-
-   // convert _elements from Index to std::size_t, which is *unsigned* type
-   // (expected by fread etc)
-   std::size_t elements = (std::size_t) _elements;
+   TNL_ASSERT_GE( elements, 0, "Number of elements to read must be non-negative." );
 
    if( ! elements )
       return true;
-   if( ! fileOK )
-   {
-      std::cerr << "File " << fileName << " was not properly opened. " << std::endl;
-      return false;
-   }
-   if( mode != IOMode::read )
-   {
-      std::cerr << "File " << fileName << " was not opened for reading. " << std::endl;
-      return false;
-   }
 
    return read_impl< Type, Device >( buffer, elements );
 }
@@ -62,20 +83,9 @@ bool File::read( Type* buffer,
 template< typename Type,
           typename Device,
           typename >
-bool File::read_impl( Type* buffer,
-                      const std::size_t& elements )
+bool File::read_impl( Type* buffer, std::streamsize elements )
 {
-   this->readElements = 0;
-   if( std::fread( buffer,
-                   sizeof( Type ),
-                   elements,
-                   file ) != elements )
-   {
-      std::cerr << "I am not able to read the data from the file " << fileName << "." << std::endl;
-      std::perror( "Fread ended with the error code" );
-      return false;
-   }
-   this->readElements = elements;
+   file.read( reinterpret_cast<char*>(buffer), sizeof(Type) * elements );
    return true;
 }
 
@@ -83,33 +93,24 @@ bool File::read_impl( Type* buffer,
 template< typename Type,
           typename Device,
           typename, typename >
-bool File::read_impl( Type* buffer,
-                      const std::size_t& elements )
+bool File::read_impl( Type* buffer, std::streamsize elements )
 {
 #ifdef HAVE_CUDA
-   this->readElements = 0;
-   const std::size_t host_buffer_size = std::min( FileGPUvsCPUTransferBufferSize / sizeof( Type ), elements );
+   const std::streamsize host_buffer_size = std::min( FileGPUvsCPUTransferBufferSize / (std::streamsize) sizeof(Type), elements );
    using BaseType = typename std::remove_cv< Type >::type;
    std::unique_ptr< BaseType[] > host_buffer{ new BaseType[ host_buffer_size ] };
 
+   std::streamsize readElements = 0;
    while( readElements < elements )
    {
-      std::size_t transfer = std::min( elements - readElements, host_buffer_size );
-      std::size_t transfered = std::fread( host_buffer.get(), sizeof( Type ), transfer, file );
-      if( transfered != transfer )
-      {
-         std::cerr << "I am not able to read the data from the file " << fileName << "." << std::endl;
-         std::cerr << transfered << " bytes were transfered. " << std::endl;
-         std::perror( "Fread ended with the error code" );
-         return false;
-      }
-
+      const std::streamsize transfer = std::min( elements - readElements, host_buffer_size );
+      file.read( reinterpret_cast<char*>(host_buffer.get()), sizeof(Type) * transfer );
       cudaMemcpy( (void*) &buffer[ readElements ],
                   (void*) host_buffer.get(),
                   transfer * sizeof( Type ),
                   cudaMemcpyHostToDevice );
       TNL_CHECK_CUDA_DEVICE;
-      this->readElements += transfer;
+      readElements += transfer;
    }
    return true;
 #else
@@ -121,32 +122,19 @@ bool File::read_impl( Type* buffer,
 template< typename Type,
           typename Device,
           typename, typename, typename >
-bool File::read_impl( Type* buffer,
-                      const std::size_t& elements )
+bool File::read_impl( Type* buffer, std::streamsize elements )
 {
 #ifdef HAVE_MIC
-   this->readElements = 0;
-   const std::size_t host_buffer_size = std::min( FileGPUvsCPUTransferBufferSize / sizeof( Type ), elements );
-   Type * host_buffer = (Type *)malloc( sizeof( Type ) * host_buffer_size );
-   readElements = 0;
-   if( ! host_buffer )
-   {
-      std::cerr << "I am sorry but I cannot allocate supporting buffer on the host for writing data from the GPU to the file "
-                << this->getFileName() << "." << std::endl;
-      return false;
-   }
+   const std::streamsize host_buffer_size = std::min( FileGPUvsCPUTransferBufferSize / (std::streamsize) sizeof(Type), elements );
+   using BaseType = typename std::remove_cv< Type >::type;
+   std::unique_ptr< BaseType[] > host_buffer{ new BaseType[ host_buffer_size ] };
 
+   std::streamsize readElements = 0;
    while( readElements < elements )
    {
-      int transfer = std::min(  elements - readElements , host_buffer_size );
-      size_t transfered = fread( host_buffer, sizeof( Type ), transfer, file );
-      if( transfered != transfer )
-      {
-         std::cerr << "I am not able to read the data from the file " << fileName << "." << std::endl;
-         std::cerr << transfered << " bytes were transfered. " << std::endl;
-         perror( "Fread ended with the error code" );
-         return false;
-      }
+      const std::streamsize transfer = std::min( elements - readElements, host_buffer_size );
+      file.read( reinterpret_cast<char*>(host_buffer.get()), sizeof(Type) * transfer );
+
       Devices::MICHider<Type> device_buff;
       device_buff.pointer=buffer;
       #pragma offload target(mic) in(device_buff,readElements) in(host_buffer:length(transfer))
@@ -155,7 +143,7 @@ bool File::read_impl( Type* buffer,
          for(int i=0;i<transfer;i++)
               device_buff.pointer[readElements+i]=host_buffer[i];
           */
-         memcpy(&(device_buff.pointer[readElements]),host_buffer, transfer*sizeof(Type) );
+         memcpy(&(device_buff.pointer[readElements]), host_buffer.get(), transfer*sizeof(Type) );
       }
 
       readElements += transfer;
@@ -167,28 +155,13 @@ bool File::read_impl( Type* buffer,
 #endif
 }
 
-template< class Type, typename Device, typename Index >
-bool File::write( const Type* buffer,
-                  const Index _elements )
+template< class Type, typename Device >
+bool File::write( const Type* buffer, std::streamsize elements )
 {
-   TNL_ASSERT_GE( _elements, (Index) 0, "Number of elements to write must be non-negative." );
-
-   // convert _elements from Index to std::size_t, which is *unsigned* type
-   // (expected by fread etc)
-   std::size_t elements = (std::size_t) _elements;
+   TNL_ASSERT_GE( elements, 0, "Number of elements to write must be non-negative." );
 
    if( ! elements )
       return true;
-   if( ! fileOK )
-   {
-      std::cerr << "File " << fileName << " was not properly opened. " << std::endl;
-      return false;
-   }
-   if( mode != IOMode::write )
-   {
-      std::cerr << "File " << fileName << " was not opened for writing. " << std::endl;
-      return false;
-   }
 
    return write_impl< Type, Device >( buffer, elements );
 }
@@ -197,20 +170,9 @@ bool File::write( const Type* buffer,
 template< typename Type,
           typename Device,
           typename >
-bool File::write_impl( const Type* buffer,
-                       const std::size_t& elements )
+bool File::write_impl( const Type* buffer, std::streamsize elements )
 {
-   this->writtenElements = 0;
-   if( std::fwrite( buffer,
-                    sizeof( Type ),
-                    elements,
-                    this->file ) != elements )
-   {
-      std::cerr << "I am not able to write the data to the file " << fileName << "." << std::endl;
-      std::perror( "Fwrite ended with the error code" );
-      return false;
-   }
-   this->writtenElements = elements;
+   file.write( reinterpret_cast<const char*>(buffer), sizeof(Type) * elements );
    return true;
 }
 
@@ -218,34 +180,24 @@ bool File::write_impl( const Type* buffer,
 template< typename Type,
           typename Device,
           typename, typename >
-bool File::write_impl( const Type* buffer,
-                       const std::size_t& elements )
+bool File::write_impl( const Type* buffer, std::streamsize elements )
 {
 #ifdef HAVE_CUDA
-   this->writtenElements = 0;
-   const std::size_t host_buffer_size = std::min( FileGPUvsCPUTransferBufferSize / sizeof( Type ),
-                                             elements );
+   const std::streamsize host_buffer_size = std::min( FileGPUvsCPUTransferBufferSize / (std::streamsize) sizeof(Type), elements );
    using BaseType = typename std::remove_cv< Type >::type;
    std::unique_ptr< BaseType[] > host_buffer{ new BaseType[ host_buffer_size ] };
 
-   while( this->writtenElements < elements )
+   std::streamsize writtenElements = 0;
+   while( writtenElements < elements )
    {
-      std::size_t transfer = std::min( elements - this->writtenElements, host_buffer_size );
+      const std::streamsize transfer = std::min( elements - writtenElements, host_buffer_size );
       cudaMemcpy( (void*) host_buffer.get(),
-                  (void*) &buffer[ this->writtenElements ],
-                  transfer * sizeof( Type ),
+                  (void*) &buffer[ writtenElements ],
+                  transfer * sizeof(Type),
                   cudaMemcpyDeviceToHost );
       TNL_CHECK_CUDA_DEVICE;
-      if( std::fwrite( host_buffer.get(),
-                       sizeof( Type ),
-                       transfer,
-                       this->file ) != transfer )
-      {
-         std::cerr << "I am not able to write the data to the file " << fileName << "." << std::endl;
-         std::perror( "Fwrite ended with the error code" );
-         return false;
-      }
-      this->writtenElements += transfer;
+      file.write( reinterpret_cast<const char*>(host_buffer.get()), sizeof(Type) * transfer );
+      writtenElements += transfer;
    }
    return true;
 #else
@@ -257,24 +209,17 @@ bool File::write_impl( const Type* buffer,
 template< typename Type,
           typename Device,
           typename, typename, typename >
-bool File::write_impl( const Type* buffer,
-                       const std::size_t& elements )
+bool File::write_impl( const Type* buffer, std::streamsize elements )
 {
 #ifdef HAVE_MIC
-   this->writtenElements = 0;
-   const std::size_t host_buffer_size = std::min( FileGPUvsCPUTransferBufferSize / sizeof( Type ),
-                                                  elements );
-   Type * host_buffer = (Type *)malloc( sizeof( Type ) * host_buffer_size );
-   if( ! host_buffer )
-   {
-      std::cerr << "I am sorry but I cannot allocate supporting buffer on the host for writing data from the GPU to the file "
-                << this->getFileName() << "." << std::endl;
-      return false;
-   }
+   const std::streamsize host_buffer_size = std::min( FileGPUvsCPUTransferBufferSize / (std::streamsize) sizeof(Type), elements );
+   using BaseType = typename std::remove_cv< Type >::type;
+   std::unique_ptr< BaseType[] > host_buffer{ new BaseType[ host_buffer_size ] };
 
+   std::streamsize writtenElements = 0;
    while( this->writtenElements < elements )
    {
-       std::size_t transfer = std::min( elements - this->writtenElements, host_buffer_size );
+      const std::streamsize transfer = std::min( elements - writtenElements, host_buffer_size );
 
       Devices::MICHider<const Type> device_buff;
       device_buff.pointer=buffer;
@@ -285,25 +230,48 @@ bool File::write_impl( const Type* buffer,
               host_buffer[i]=device_buff.pointer[writtenElements+i];
           */
 
-         memcpy(host_buffer,&(device_buff.pointer[writtenElements]), transfer*sizeof(Type) );
+         memcpy(host_buffer.get(), &(device_buff.pointer[writtenElements]), transfer*sizeof(Type) );
       }
 
-      if( fwrite( host_buffer,
-                  sizeof( Type ),
-                  transfer,
-                  this->file ) != transfer )
-      {
-         std::cerr << "I am not able to write the data to the file " << fileName << "." << std::endl;
-         perror( "Fwrite ended with the error code" );
-         return false;
-      }
-      this->writtenElements += transfer;
+      file.write( reinterpret_cast<const char*>(host_buffer.get()), sizeof(Type) * transfer );
+      writtenElements += transfer;
    }
-   free( host_buffer );
    return true;
 #else
    throw Exceptions::MICSupportMissing();
 #endif
+}
+
+inline bool fileExists( const String& fileName )
+{
+   std::fstream file;
+   file.open( fileName.getString(), std::ios::in );
+   return ! file.fail();
+}
+
+
+// serialization of strings
+inline File& operator<<( File& file, const std::string& str )
+{
+   const int len = str.size();
+   if( ! file.write( &len ) )
+      throw Exceptions::FileSerializationError( getType< int >(), file.getFileName() );
+   if( ! file.write( str.c_str(), len ) )
+      throw Exceptions::FileSerializationError( "String", file.getFileName() );
+   return file;
+}
+
+// deserialization of strings
+inline File& operator>>( File& file, std::string& str )
+{
+   int length;
+   if( ! file.read( &length ) )
+      throw Exceptions::FileDeserializationError( getType< int >(), file.getFileName() );
+   char buffer[ length ];
+   if( length && ! file.read( buffer, length ) )
+      throw Exceptions::FileDeserializationError( "String", file.getFileName() );
+   str.assign( buffer, length );
+   return file;
 }
 
 } // namespace TNL

@@ -14,6 +14,8 @@
 #include <TNL/ParallelFor.h>
 
 namespace TNL {
+namespace Containers {
+namespace Multimaps {
 
 template< typename Multimap,
           typename PermutationVector >
@@ -83,4 +85,6 @@ void permuteMultimapValues( Multimap& multimap, const PermutationVector& iperm )
                                     iperm.getData() );
 }
 
+} // namespace Multimaps
+} // namespace Containers
 } // namespace TNL

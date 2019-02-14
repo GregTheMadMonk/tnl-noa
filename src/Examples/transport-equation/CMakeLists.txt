@@ -11,15 +11,13 @@ set( tnl_transport_equation_HEADERS
                
 IF( BUILD_CUDA )
    CUDA_ADD_EXECUTABLE( tnl-transport-equation tnl-transport-equation.cu)   
-   target_link_libraries( tnl-transport-equation tnl  ${CUSPARSE_LIBRARY} )
+   target_link_libraries( tnl-transport-equation ${CUSPARSE_LIBRARY} )
    CUDA_ADD_EXECUTABLE( tnl-transport-equation-eoc tnl-transport-equation-eoc.cu)   
-   target_link_libraries( tnl-transport-equation-eoc tnl  ${CUSPARSE_LIBRARY} )
+   target_link_libraries( tnl-transport-equation-eoc ${CUSPARSE_LIBRARY} )
 
 ELSE(  BUILD_CUDA )               
    ADD_EXECUTABLE( tnl-transport-equation tnl-transport-equation.cpp)     
-   target_link_libraries( tnl-transport-equation tnl )
    ADD_EXECUTABLE( tnl-transport-equation-eoc tnl-transport-equation-eoc.cpp)     
-   target_link_libraries( tnl-transport-equation-eoc tnl )
 ENDIF( BUILD_CUDA )
 
 

@@ -15,6 +15,9 @@
 #include <stdexcept>
 
 namespace TNL {
+/**
+ * \brief Namespace for TNL exceptions.
+ */
 namespace Exceptions {
 
 struct CudaSupportMissing

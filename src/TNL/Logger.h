@@ -11,6 +11,7 @@
 #pragma once
 
 #include <ostream>
+
 #include <TNL/Config/ParameterContainer.h>
 
 namespace TNL {
@@ -18,15 +19,15 @@ namespace TNL {
 /// Creates calculations log in the form of a table.
 class Logger
 {
-   public:
-
+public:
    /////
    /// \brief Basic constructor.
    ///
    /// \param _width Integer that defines the width of the log.
    /// \param _stream Defines output stream where the log will be printed out.
-   Logger( int _width,
-              std::ostream& _stream );
+   Logger( int width, std::ostream& stream )
+   : width( width ), stream( stream )
+   {}
 
    /////
    /// \brief Creates header in given log.
@@ -76,8 +77,7 @@ class Logger
                         const ParameterType& value,
                         int parameterLevel = 0 );
 
-   protected:
-
+protected:
    /// \brief Integer defining the width of the log.
    int width;
 

@@ -51,7 +51,7 @@ processBoundaryEntities( const GridPointer& gridPointer,
       const CoordinatesType end = gridPointer->getDimensions() - distributedGrid->getUpperOverlap() -
                                   CoordinatesType( 1, 1 );
       const int* neighbors=distributedGrid->getNeighbors(); 
-      if( neighbors[ Meshes::DistributedMeshes::Left ] == -1 )
+      if( neighbors[ Meshes::DistributedMeshes::ZzYzXm ] == -1 )
       {
          GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
             gridPointer,
@@ -62,7 +62,7 @@ processBoundaryEntities( const GridPointer& gridPointer,
             0 );
       }
        
-      if(neighbors[Meshes::DistributedMeshes::Right]==-1)
+      if(neighbors[Meshes::DistributedMeshes::ZzYzXp]==-1)
       {
          GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
             gridPointer,
@@ -73,8 +73,7 @@ processBoundaryEntities( const GridPointer& gridPointer,
             0 );
       }
        
-      // TODO: Up and Down should by swapped, I think
-      if( neighbors[ Meshes::DistributedMeshes::Up ] == -1 )
+      if( neighbors[ Meshes::DistributedMeshes::ZzYmXz ] == -1 )
       {
          GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
             gridPointer,
@@ -85,7 +84,7 @@ processBoundaryEntities( const GridPointer& gridPointer,
             0 );
       }
        
-      if( neighbors[ Meshes::DistributedMeshes::Down ] == -1 )
+      if( neighbors[ Meshes::DistributedMeshes::ZzYpXz ] == -1 )
       {
          GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
             gridPointer,
@@ -130,16 +129,16 @@ processInteriorEntities( const GridPointer& gridPointer,
       const int* neighbors = distributedGrid->getNeighbors(); 
       CoordinatesType begin( distributedGrid->getLowerOverlap());
       CoordinatesType end( gridPointer->getDimensions() - distributedGrid->getUpperOverlap()- CoordinatesType(1,1) );
-      if( neighbors[ Meshes::DistributedMeshes::Left ] == -1 )
+      if( neighbors[ Meshes::DistributedMeshes::ZzYzXm ] == -1 )
          begin.x() += 1 ;
        
-      if( neighbors[ Meshes::DistributedMeshes::Right ] == -1 )
+      if( neighbors[ Meshes::DistributedMeshes::ZzYzXp ] == -1 )
          end.x() -= 1;
        
-      if( neighbors[ Meshes::DistributedMeshes::Up ] == -1 )
+      if( neighbors[ Meshes::DistributedMeshes::ZzYmXz ] == -1 )
          begin.y() += 1 ;
        
-      if( neighbors[ Meshes::DistributedMeshes::Down ] == -1 )
+      if( neighbors[ Meshes::DistributedMeshes::ZzYpXz ] == -1 )
          end.y() -= 1;
       
        

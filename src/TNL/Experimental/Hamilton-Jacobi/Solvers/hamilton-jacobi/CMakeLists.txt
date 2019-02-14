@@ -8,14 +8,11 @@ set( tnl_hamilton_jacobi_SOURCES
      tnl-direct-eikonal-solver.h )
                
 #ADD_EXECUTABLE(tnl-hamilton-jacobi main.cpp)
-#target_link_libraries (tnl-hamilton-jacobi tnl )
 
 IF( BUILD_CUDA )
     CUDA_ADD_EXECUTABLE(tnl-direct-eikonal-solver tnl-direct-eikonal-solver.cu )
-    target_link_libraries (tnl-direct-eikonal-solver tnl )
 ELSE(  BUILD_CUDA )               
     ADD_EXECUTABLE(tnl-direct-eikonal-solver tnl-direct-eikonal-solver.cpp )
-    target_link_libraries (tnl-direct-eikonal-solver tnl )
 ENDIF( BUILD_CUDA )
 
 

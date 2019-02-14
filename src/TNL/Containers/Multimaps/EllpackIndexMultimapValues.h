@@ -16,6 +16,8 @@
 #include <TNL/Devices/Cuda.h>
 
 namespace TNL {
+namespace Containers {
+namespace Multimaps {
 
 template< typename Index,
           typename Device,
@@ -112,7 +114,8 @@ template< typename Index,
           int step >
 std::ostream& operator << ( std::ostream& str, const EllpackIndexMultimapValues< Index, Device, LocalIndex, step >& ports );
 
+} // namespace Multimaps
+} // namespace Containers
 } // namespace TNL
 
 #include <TNL/Containers/Multimaps/EllpackIndexMultimapValues_impl.h>
-

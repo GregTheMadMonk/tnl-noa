@@ -35,6 +35,10 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
                    Benchmark::MetadataMap& metadata )
 {
    const Containers::List< String >& tests = parameters.getParameter< Containers::List< String > >( "tests" );
+   // FIXME: the --tests is just a string because list does not work with enums
+//   const Containers::List< String >& tests = parameters.getParameter< Containers::List< String > >( "tests" );
+   //Containers::List< String > tests;
+   //tests.Append( parameters.getParameter< String >( "tests" ) );
    // FIXME: getParameter< std::size_t >() does not work with parameters added with addEntry< int >(),
    // which have a default value. The workaround below works for int values, but it is not possible
    // to pass 64-bit integer values
@@ -72,7 +76,6 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
          cudaTraverserBenchmark.reset();
       };
 #endif
-
       benchmark.setMetadataColumns(
          Benchmark::MetadataColumns( 
             {  {"size", convertToString( size ) }, } ) );
@@ -96,7 +99,6 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
                   benchmark.isResetingOn() ) )
                benchmark.addErrorMessage( "Test results are not correct." );
          }
-
 #ifdef HAVE_CUDA
          auto cudaWriteOneUsingPureC = [&] ()
          {
@@ -146,7 +148,6 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
                   benchmark.isResetingOn() ) )
                benchmark.addErrorMessage( "Test results are not correct." );
          }
-
 #endif
       }
 
@@ -168,7 +169,6 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
                   benchmark.isResetingOn() ) )
                benchmark.addErrorMessage( "Test results are not correct." );
          }
-
 #ifdef HAVE_CUDA
          auto cudaAddOneUsingSimpleCell = [&] ()
          {
@@ -182,7 +182,6 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
                   benchmark.isResetingOn() ) )
                benchmark.addErrorMessage( "Test results are not correct." );
          }
-
 #endif
       }
 
@@ -204,7 +203,6 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
                   benchmark.isResetingOn() ) )
                benchmark.addErrorMessage( "Test results are not correct." );
          }
-
 #ifdef HAVE_CUDA
          auto cudaAddOneUsingParallelForAndMeshFunction = [&] ()
          {
@@ -219,7 +217,6 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
                benchmark.addErrorMessage( "Test results are not correct." );
          }
 #endif
-
       }
 
       /****
@@ -259,7 +256,9 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
       std::cout << "--------------------------------------------------------------------------------------------------------" << std::endl;
    }
    return true;
-
+      }
+      std::cout << "--------------------------------------------------------------------------------------------------------" << std::endl;
+   }
 
    /****
     * Full grid traversing including boundary conditions
@@ -306,14 +305,15 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
          benchmark.setOperation( "Pure C", 2 * pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
          if( withHost )
             benchmark.time< Devices::Host >( "CPU", hostTraverseUsingPureC );
+
 #ifdef HAVE_CUDA
          if( withCuda )
             benchmark.time< Devices::Cuda >( "GPU", cudaTraverseUsingPureC );
 #endif
-
          benchmark.setOperation( "Pure C RST", 2 * pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
          if( withHost )
             benchmark.time< Devices::Host >( hostReset, "CPU", hostTraverseUsingPureC );
+
 #ifdef HAVE_CUDA
          if( withCuda )
             benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaTraverseUsingPureC );
@@ -353,6 +353,31 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
             benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaTraverseUsingParallelFor );
 #endif
       }
+// TODO: implement the benchmark (addOneUsingParallelFor does not consider BC)
+//      auto hostTraverseUsingParallelFor = [&] ()
+//      {
+//         hostTraverserBenchmark.addOneUsingParallelFor();
+//      };
+//
+//      auto cudaTraverseUsingParallelFor = [&] ()
+//      {
+//         cudaTraverserBenchmark.addOneUsingParallelFor();
+//      };
+//
+//      if( tests.containsValue( "all" ) || tests.containsValue( "bc-parallel-for" ) )
+//      {
+//         benchmark.setOperation( "parallel for", 2 * pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
+//         if( withHost )
+//            benchmark.time< Devices::Host >( "CPU", hostTraverseUsingParallelFor );
+//         if( withCuda )
+//            benchmark.time< Devices::Cuda >( "GPU", cudaTraverseUsingParallelFor );
+//
+//         benchmark.setOperation( "parallel for RST", 2 * pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
+//         if( withHost )
+//            benchmark.time< Devices::Host >( hostReset, "CPU", hostTraverseUsingParallelFor );
+//         if( withCuda )
+//            benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaTraverseUsingParallelFor );
+//      }
 
       /****
        * Write one and two (as BC) using traverser
@@ -368,21 +393,25 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
          cudaTraverserBenchmark.addOneUsingTraverser();
       };
 #endif
-
+      
       if( tests.containsValue( "all" ) || tests.containsValue( "bc-traverser" ) )
       {
          benchmark.setOperation( "traverser", 2 * pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
          if( withHost )
             benchmark.time< Devices::Host >( "CPU", hostTraverseUsingTraverser );
+
 #ifdef HAVE_CUDA
-         benchmark.time< Devices::Cuda >( "GPU", cudaTraverseUsingTraverser );
+         if( withCuda )
+            benchmark.time< Devices::Cuda >( "GPU", cudaTraverseUsingTraverser );
 #endif
 
          benchmark.setOperation( "traverser RST", 2 * pow( ( double ) size, ( double ) Dimension ) * sizeof( Real ) / oneGB );
          if( withHost )
             benchmark.time< Devices::Host >( hostReset, "CPU", hostTraverseUsingTraverser );
+
 #ifdef HAVE_CUDA
-         benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaTraverseUsingTraverser );
+         if( withCuda )
+            benchmark.time< Devices::Cuda >( cudaReset, "GPU", cudaTraverseUsingTraverser );
 #endif
       }
    }
@@ -392,6 +421,8 @@ bool runBenchmark( const Config::ParameterContainer& parameters,
 void setupConfig( Config::ConfigDescription& config )
 {
    config.addList< String >( "tests", "Tests to be performed.", "all" );
+   // FIXME: addList does not work with addEntryEnum - ConfigDescription::addEntryEnum throws std::bad_cast
+   // config.addList< String >( "tests", "Tests to be performed.", "all" );
    config.addEntryEnum( "all" );
    config.addEntryEnum( "add-one-pure-c" );
    config.addEntryEnum( "add-one-parallel-for" );
@@ -411,6 +442,7 @@ void setupConfig( Config::ConfigDescription& config )
    config.addEntry< String >( "output-mode", "Mode for opening the log file.", "overwrite" );
    config.addEntryEnum( "append" );
    config.addEntryEnum( "overwrite" );
+
    config.addEntry< String >( "precision", "Precision of the arithmetics.", "double" );
    config.addEntryEnum( "float" );
    config.addEntryEnum( "double" );
@@ -419,7 +451,6 @@ void setupConfig( Config::ConfigDescription& config )
    config.addEntry< int >( "min-size", "Minimum size of arrays/vectors used in the benchmark.", 10 );
    config.addEntry< int >( "max-size", "Minimum size of arrays/vectors used in the benchmark.", 1000 );
    config.addEntry< int >( "size-step-factor", "Factor determining the size of arrays/vectors used in the benchmark. First size is min-size and each following size is stepFactor*previousSize, up to max-size.", 2 );
-
    Benchmark::configSetup( config );
 
    config.addDelimiter( "Device settings:" );

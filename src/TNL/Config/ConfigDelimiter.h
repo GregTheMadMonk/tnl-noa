@@ -8,7 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#pragma once 
+#pragma once
+
+#include <TNL/Config/ConfigEntryBase.h>
 
 namespace TNL {
 namespace Config {
@@ -17,16 +19,13 @@ struct ConfigDelimiter : public ConfigEntryBase
 {
    ConfigDelimiter( const String& delimiter )
    : ConfigEntryBase( "", delimiter, false )
-   {
-   };
+   {}
 
    bool isDelimiter() const { return true; };
 
    String getEntryType() const { return ""; };
 
    String getUIEntryType() const { return ""; };
-   
-   //~ConfigDelimiter(){};
 };
 
 } //namespace Config

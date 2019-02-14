@@ -6,11 +6,6 @@
 #    email               : tomas.oberhuber@fjfi.cvut.cz
 #
 ###############################################################################
-#
-# Authors:
-# Tomas Oberhuber
-# Vladimir Klement
-# Jakub Klinkovsky
 
 cmake_minimum_required( VERSION 3.5.1 )
 
@@ -32,6 +27,7 @@ option(WITH_EXAMPLES "Compile the 'examples' directory" ON)
 option(WITH_TOOLS "Compile the 'src/Tools' directory" ON)
 option(WITH_BENCHMARKS "Compile the 'src/Benchmarks' directory" ON)
 option(WITH_PYTHON "Compile the Python bindings" ON)
+option(WITH_DOC "Generate documentation" ON)
 option(WITH_TEMPLATES_INSTANTIATION "Enable explicit template instantiation" OFF)
 
 # install paths relative to the cmake's prefix
@@ -188,9 +184,9 @@ if( ${WITH_CUDA} )
         endif()
         set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ;-DHAVE_CUDA)
         # disable false compiler warnings
-        #   reference for the -Xcudafe flag: http://stackoverflow.com/questions/14831051/how-to-disable-compiler-warnings-with-nvcc/17095910#17095910
-        #   list of possible tokens: http://www.ssl.berkeley.edu/~jimm/grizzly_docs/SSL/opt/intel/cc/9.0/lib/locale/en_US/mcpcom.msg
-        set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; -Wno-deprecated-gpu-targets --expt-relaxed-constexpr --expt-extended-lambda -Xcudafe "\"--diag_suppress=code_is_unreachable --diag_suppress=implicit_return_from_non_void_function\"")
+        #   reference for the -Xcudafe --diag_suppress and --display_error_number flags: https://stackoverflow.com/a/54142937
+        #   incomplete list of tokens: http://www.ssl.berkeley.edu/~jimm/grizzly_docs/SSL/opt/intel/cc/9.0/lib/locale/en_US/mcpcom.msg
+        set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; -Wno-deprecated-gpu-targets --expt-relaxed-constexpr --expt-extended-lambda -Xcudafe "\"--diag_suppress=code_is_unreachable --diag_suppress=implicit_return_from_non_void_function --diag_suppress=2906 --display_error_number\"")
         set( ALL_CUDA_ARCHS -gencode arch=compute_20,code=sm_20
                             -gencode arch=compute_30,code=sm_30
                             -gencode arch=compute_32,code=sm_32 
@@ -255,33 +251,20 @@ endif()
 
 find_package( DCMTK )
 if( DCMTK_FOUND )
-   set( HAVE_DCMTK_H "#define HAVE_DCMTK_H 1" )
+   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_DCMTK_H" )
    include_directories( ${DCMTK_INCLUDE_DIRS} )
-   set( HAVE_DCMTK TRUE)
-   set( DCMTK_LD_FLAGS "" )
-   foreach( arg ${DCMTK_LIBRARIES} )
-      set( DCMTK_LD_FLAGS "${DCMTK_LD_FLAGS} ${arg}" )
-   endforeach( arg ${DCMTK_LIBRARIES} )
-else()
-   set( HAVE_DCMTK_H "//#define HAVE_DCMTK_H 1" )
 endif()
 
 find_package( PNG )
-if( PNG_FOUND )      
-   set( HAVE_PNG_H "#define HAVE_PNG_H 1" )
+if( PNG_FOUND )
+   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_PNG_H" )
    include_directories( ${PNG_INCLUDE_DIRS} )
-else()
-   set( HAVE_PNG_H "//#define HAVE_PNG_H 1" )
-   set( PNG_LIBRARIES "" )
 endif()
 
 find_package( JPEG )
-if( JPEG_FOUND )      
-   set( HAVE_JPEG_H "#define HAVE_JPEG_H 1" )
+if( JPEG_FOUND )
+   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_JPEG_H" )
    include_directories( ${JPEG_INCLUDE_DIRS} )
-else()
-   set( HAVE_JPEG_H "//#define HAVE_JPEG_H 1" )
-   set( JPEG_LIBRARIES "" )
 endif()
 
 ####
@@ -313,45 +296,6 @@ if( ${WITH_GMP} )
       set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${GMP_LIBRARIES}" )
       mark_as_advanced(GMP_INCLUDES GMP_LIBRARIES)
    endif()
-endif()
-
-####
-# Check for some system header
-#
-find_path( SYS_TIME_INCLUDE_DIR sys/time.h  
-           /usr/include/x86_64-linux-gnu
-           /usr/include
-           DOC "System timer headers." )
-if( ${SYS_TIME_INCLUDE_DIR} STREQUAL "SYS_TIME_INCLUDE_DIR-NOTFOUND" )
-    message(  "Missing header file sys/time.h" )
-    set( HAVE_SYS_TIME_H "//#define HAVE_SYS_TIME_H 1" )
-else()
-    #include_directories( ${SYS_TIME_INCLUDE_DIR} )
-    set( HAVE_SYS_TIME_H "#define HAVE_SYS_TIME_H 1" )
-endif()
-
-find_path( SYS_RESOURCE_INCLUDE_DIR sys/resource.h
-           /usr/include/x86_64-linux-gnu
-           /usr/include  
-           DOC "System resources headers." )
-if( ${SYS_RESOURCE_INCLUDE_DIR} STREQUAL "SYS_RESOURCE_INCLUDE_DIR-NOTFOUND" )
-    message( "Missing header file sys/time.h" )
-    set( HAVE_SYS_RESOURCE_H "//#define HAVE_SYS_RESOURCE_H 1" )
-else()
-    #include_directories( ${SYS_RESOURCE_INCLUDE_DIR} )
-    set( HAVE_SYS_RESOURCE_H "#define HAVE_SYS_RESOURCE_H 1" )
-endif()
-
-find_path( SYS_IOCTL_INCLUDE_DIR sys/ioctl.h
-           /usr/include/x86_64-linux-gnu
-           /usr/include  
-           DOC "System ioctl headers." )
-if( ${SYS_IOCTL_INCLUDE_DIR} STREQUAL "SYS_IOCTL_INCLUDE_DIR-NOTFOUND" )
-    message( "Missing header file sys/time.h" )
-    set( HAVE_SYS_IOCTL_H "//#define HAVE_SYS_IOCTL_H 1" )
-else()
-    #include_directories( ${SYS_IOCTL_INCLUDE_DIR} )
-    set( HAVE_SYS_IOCTL_H "#define HAVE_SYS_IOCTL_H 1" )
 endif()
 
 if( ${WITH_TESTS} )
@@ -418,20 +362,26 @@ endif()
 #   endif()
 #endif()
 
-CONFIGURE_FILE( "tnlConfig.h.in" "${PROJECT_BUILD_PATH}/TNL/tnlConfig.h" )
-INSTALL( FILES ${PROJECT_BUILD_PATH}/TNL/tnlConfig.h DESTINATION ${TNL_TARGET_INCLUDE_DIRECTORY} )
-
 #Nastavime cesty k hlavickovym souborum a knihovnam
 INCLUDE_DIRECTORIES( src )
 INCLUDE_DIRECTORIES( ${PROJECT_BUILD_PATH} )
 LINK_DIRECTORIES( ${LIBRARY_OUTPUT_PATH} )
 
 # Add all subdirectories
-if( ${WITH_TESTS} )
-    add_subdirectory( tests )
-endif()
 add_subdirectory( src )
 add_subdirectory( share )
+
+#Check for Doxygen
+if( ${WITH_DOC} )
+    find_package(Doxygen)
+    if( DOXYGEN_FOUND )
+        if( CMAKE_BUILD_TYPE MATCHES "Release" )
+            add_subdirectory( Documentation )
+        endif( CMAKE_BUILD_TYPE MATCHES "Release" )
+    else( DOXYGEN_FOUND )
+        message("Doxygen need to be installed to generate the doxygen documentation")
+    endif( DOXYGEN_FOUND )
+endif( ${WITH_DOC} )
 
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Template Numerical Library")
 set(CPACK_PACKAGE_VENDOR "MMG")

@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include <TNL/tnlConfig.h>
 #include <TNL/Exceptions/CudaSupportMissing.h>
 #include <TNL/Containers/Algorithms/VectorOperations.h>
 #include <TNL/Containers/Algorithms/cuda-prefix-sum.h>

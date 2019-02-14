@@ -10,11 +10,9 @@
 
 #pragma once
 
-#include <iostream>
 #include <fstream>
-#include <cstdio>
+#include <type_traits>
 
-#include <TNL/Assert.h>
 #include <TNL/String.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
@@ -22,9 +20,10 @@
 
 namespace TNL {
 
+/// \brief Supported modes for opening \ref TNL::File "files".
 enum class IOMode
 {
-   undefined = 0,
+//   undefined = 0,
    read = 1,
    write = 2
 };
@@ -34,7 +33,7 @@ enum class IOMode
  * http://wiki.accelereyes.com/wiki/index.php/GPU_Memory_Transfer
  * Similar constant is defined in tnlLonegVectorCUDA
  */
-const size_t FileGPUvsCPUTransferBufferSize = 5 * 2<<20;
+static constexpr std::streamsize FileGPUvsCPUTransferBufferSize = 5 * 2<<20;
 
 
 ///\brief Class file is aimed mainly for saving and loading binary data.
@@ -45,25 +44,12 @@ const size_t FileGPUvsCPUTransferBufferSize = 5 * 2<<20;
 // \include FileExample.out
 class File
 {
-   IOMode mode;
-
-   std::FILE* file;
-
-   bool fileOK;
-
+   std::fstream file;
    String fileName;
 
-   std::size_t writtenElements;
-
-   std::size_t readElements;
-
-   public:
-
+public:
    /// \brief Basic constructor.
-   File();
-
-   /// \brief Destructor.
-   ~File();
+   File() = default;
 
    /////
    /// \brief Attempts to open given file and returns \e true after the file is
@@ -72,9 +58,12 @@ class File
    /// Opens file with given \e fileName and returns true/false based on the success in opening the file.
    /// \param fileName String which indicates name of the file user wants to open.
    /// \param mode Indicates what user needs to do with opened file.
-   /// Modes to choose: IOMode::read, IOMode::write or IOMode::undefined.
    bool open( const String& fileName,
               const IOMode mode );
+
+   /// \brief Attempts to close given file and returns \e true when the file is
+   /// successfully closed. Otherwise returns \e false.
+   bool close();
 
    /// \brief Returns name of given file.
    const String& getFileName() const
@@ -82,30 +71,19 @@ class File
       return this->fileName;
    }
 
-   /// \brief Returns number of read elements.
-   long int getReadElements() const
-   {
-      return this->readElements;
-   }
-
-   /// \brief Returns number of written elements.
-   long int getWrittenElements() const
-   {
-      return this->writtenElements;
-   }
-
    /// \brief Method that can write particular data type from given file into GPU. (Function that gets particular elements from given file.)
    ///
    /// Returns \e true when the elements are successfully read from given file. Otherwise returns \e false.
    ///
+   /// Throws \ref std::ios_base::failure on failure.
+   ///
    /// \tparam Type Type of data.
-   /// \tparam Device Place where data are stored after reading from file. For example Devices::Host or Devices::Cuda.
+   /// \tparam Device Place where data are stored after reading from file. For example \ref Devices::Host or \ref Devices::Cuda.
    /// \tparam Index Type of index by which the elements are indexed.
    /// \param buffer Pointer in memory where the elements are loaded and stored after reading.
    /// \param elements Number of elements the user wants to get (read) from given file.
-   template< typename Type, typename Device = Devices::Host, typename Index = int >
-   bool read( Type* buffer,
-              const Index& elements );
+   template< typename Type, typename Device = Devices::Host >
+   bool read( Type* buffer, std::streamsize elements );
 
    // Toto je treba??
    template< typename Type, typename Device = Devices::Host >
@@ -115,65 +93,56 @@ class File
    ///
    /// Returns \e true when the elements are successfully written into given file. Otherwise returns \e false.
    ///
+   /// Throws \ref std::ios_base::failure on failure.
+   ///
    /// \tparam Type Type of data.
-   /// \tparam Device Place from where the data are loaded before writing into file. For example Devices::Host or Devices::Cuda.
+   /// \tparam Device Place from where the data are loaded before writing into file. For example \ref Devices::Host or \ref Devices::Cuda.
    /// \tparam Index Type of index by which the elements are indexed.
    /// \param buffer Pointer in memory where the elements are loaded from before writing into file.
    /// \param elements Number of elements the user wants to write into the given file.
-   template< typename Type, typename Device = Devices::Host, typename Index = int >
-   bool write( const Type* buffer,
-               const Index elements );
+   template< typename Type, typename Device = Devices::Host >
+   bool write( const Type* buffer, std::streamsize elements );
 
    // Toto je treba?
    template< typename Type, typename Device = Devices::Host >
    bool write( const Type* buffer );
 
-   /// \brief Attempts to close given file and returns \e true when the file is
-   /// successfully closed. Otherwise returns \e false.
-   bool close();
-
 protected:
    template< typename Type,
              typename Device,
              typename = typename std::enable_if< std::is_same< Device, Devices::Host >::value >::type >
-   bool read_impl( Type* buffer,
-                   const std::size_t& elements );
+   bool read_impl( Type* buffer, std::streamsize elements );
 
    template< typename Type,
              typename Device,
              typename = typename std::enable_if< std::is_same< Device, Devices::Cuda >::value >::type,
              typename = void >
-   bool read_impl( Type* buffer,
-                   const std::size_t& elements );
+   bool read_impl( Type* buffer, std::streamsize elements );
 
    template< typename Type,
              typename Device,
              typename = typename std::enable_if< std::is_same< Device, Devices::MIC >::value >::type,
              typename = void,
              typename = void >
-   bool read_impl( Type* buffer,
-                   const std::size_t& elements );
+   bool read_impl( Type* buffer, std::streamsize elements );
 
    template< typename Type,
              typename Device,
              typename = typename std::enable_if< std::is_same< Device, Devices::Host >::value >::type >
-   bool write_impl( const Type* buffer,
-                    const std::size_t& elements );
+   bool write_impl( const Type* buffer, std::streamsize elements );
 
    template< typename Type,
              typename Device,
              typename = typename std::enable_if< std::is_same< Device, Devices::Cuda >::value >::type,
              typename = void >
-   bool write_impl( const Type* buffer,
-                    const std::size_t& elements );
+   bool write_impl( const Type* buffer, std::streamsize elements );
 
    template< typename Type,
              typename Device,
              typename = typename std::enable_if< std::is_same< Device, Devices::MIC >::value >::type,
              typename = void,
              typename = void >
-   bool write_impl( const Type* buffer,
-                    const std::size_t& elements );
+   bool write_impl( const Type* buffer, std::streamsize elements );
 };
 
 /// Returns true if the file exists and false otherwise.
@@ -181,6 +150,12 @@ protected:
 /// Finds out if the file \e fileName exists.
 /// \param fileName Name of the file that user wants to find in the PC.
 bool fileExists( const String& fileName );
+
+// serialization of strings
+File& operator<<( File& file, const std::string& str );
+
+// deserialization of strings
+File& operator>>( File& file, std::string& str );
 
 } // namespace TNL
 

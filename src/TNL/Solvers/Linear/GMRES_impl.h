@@ -399,7 +399,7 @@ hauseholder_generate( const int i,
 
    // norm of the TRUNCATED vector z
    const RealType normz = y_i.lpNorm( 2.0 );
-   RealType norm_yi = 0;
+   RealType norm_yi_squared = 0;
    if( localOffset == 0 ) {
       const RealType y_ii = y_i.getElement( i );
       if( y_ii > 0.0 )
@@ -408,17 +408,18 @@ hauseholder_generate( const int i,
          y_i.setElement( i, y_ii - normz );
 
       // compute the norm of the y_i vector; equivalent to this calculation by definition:
-      //       const RealType norm_yi = y_i.lpNorm( 2.0 );
-      norm_yi = std::sqrt( 2 * (normz * normz + std::fabs( y_ii ) * normz) );
+      //       norm_yi_squared = y_i.lpNorm( 2.0 );
+      //       norm_yi_squared = norm_yi_squared * norm_yi_squared
+      norm_yi_squared = 2 * (normz * normz + std::fabs( y_ii ) * normz);
    }
    // no-op if the problem is not distributed
-   CommunicatorType::Bcast( &norm_yi, 1, 0, Traits::getCommunicationGroup( *this->matrix ) );
+   CommunicatorType::Bcast( &norm_yi_squared, 1, 0, Traits::getCommunicationGroup( *this->matrix ) );
 
    // XXX: normalization is slower, but more stable
-//   y_i *= 1.0 / norm_yi;
+//   y_i *= 1.0 / std::sqrt( norm_yi_squared );
 //   const RealType t_i = 2.0;
    // assuming it's stable enough...
-   const RealType t_i = 2.0 / (norm_yi * norm_yi);
+   const RealType t_i = 2.0 / norm_yi_squared;
 
    T[ i + i * (restarting_max + 1) ] = t_i;
    if( i > 0 ) {
@@ -505,9 +506,10 @@ hauseholder_cwy( VectorViewType v,
    }
 
    // v = e_i - Y_i * aux
-   MatrixOperations< DeviceType >::gemv( size, i + 1,
-                                         -1.0, Y.getData(), ldSize, aux,
-                                         0.0, Traits::getLocalVectorView( v ).getData() );
+   Matrices::MatrixOperations< DeviceType >::
+      gemv( size, i + 1,
+            -1.0, Y.getData(), ldSize, aux,
+            0.0, Traits::getLocalVectorView( v ).getData() );
    if( localOffset == 0 )
       v.setElement( i, 1.0 + v.getElement( i ) );
 }
@@ -544,9 +546,10 @@ hauseholder_cwy_transposed( VectorViewType z,
 
    // z = w - Y_i * aux
    z = w;
-   MatrixOperations< DeviceType >::gemv( size, i + 1,
-                                         -1.0, Y.getData(), ldSize, aux,
-                                         1.0, Traits::getLocalVectorView( z ).getData() );
+   Matrices::MatrixOperations< DeviceType >::
+      gemv( size, i + 1,
+            -1.0, Y.getData(), ldSize, aux,
+            1.0, Traits::getLocalVectorView( z ).getData() );
 }
 
 template< typename Matrix >
@@ -585,9 +588,10 @@ update( const int k,
 
    if( variant != Variant::CWY ) {
       // x = V * y + x
-      MatrixOperations< DeviceType >::gemv( size, k + 1,
-                                            1.0, V.getData(), ldSize, y,
-                                            1.0, Traits::getLocalVectorView( x ).getData() );
+      Matrices::MatrixOperations< DeviceType >::
+         gemv( size, k + 1,
+               1.0, V.getData(), ldSize, y,
+               1.0, Traits::getLocalVectorView( x ).getData() );
    }
    else {
       // The vectors v_i are not stored, they can be reconstructed as P_0...P_j * e_j.
@@ -616,9 +620,10 @@ update( const int k,
       }
 
       // x -= Y_{k+1} * aux
-      MatrixOperations< DeviceType >::gemv( size, k + 1,
-                                            -1.0, Y.getData(), ldSize, aux,
-                                            1.0, Traits::getLocalVectorView( x ).getData() );
+      Matrices::MatrixOperations< DeviceType >::
+         gemv( size, k + 1,
+               -1.0, Y.getData(), ldSize, aux,
+               1.0, Traits::getLocalVectorView( x ).getData() );
 
       // x += y
       if( localOffset == 0 )

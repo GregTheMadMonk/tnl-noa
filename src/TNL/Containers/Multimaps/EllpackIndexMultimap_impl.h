@@ -13,6 +13,8 @@
 #include <TNL/Containers/Multimaps/EllpackIndexMultimap.h>
 
 namespace TNL {
+namespace Containers {
+namespace Multimaps {
 
 template< typename Index,
           typename Device,
@@ -315,5 +317,6 @@ std::ostream& operator << ( std::ostream& str, const EllpackIndexMultimap< Index
    return str;
 }
 
+} // namespace Multimaps
+} // namespace Containers
 } // namespace TNL
-

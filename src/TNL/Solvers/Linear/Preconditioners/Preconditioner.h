@@ -20,6 +20,9 @@
 namespace TNL {
 namespace Solvers {
 namespace Linear {
+/**
+ * \brief Namespace for preconditioners for linear system solvers.
+ */
 namespace Preconditioners {
 
 template< typename Matrix >

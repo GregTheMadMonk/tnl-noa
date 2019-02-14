@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include <TNL/tnlConfig.h>
-
 #ifdef HAVE_JPEG_H
 #include <jpeglib.h>
 #endif

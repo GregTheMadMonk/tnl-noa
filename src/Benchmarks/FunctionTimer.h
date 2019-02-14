@@ -16,6 +16,7 @@
 #include <type_traits>
 
 #include <TNL/Timer.h>
+#include <TNL/Devices/Cuda.h>
 #include <TNL/Solvers/IterativeSolverMonitor.h>
 
 namespace TNL {
@@ -102,7 +103,6 @@ class FunctionTimer
                   timer.stop();
             }
          }
-         std::cerr << loops << std::endl;
          if( timing )
             return timer.getRealTime() / ( double ) loops;
          else

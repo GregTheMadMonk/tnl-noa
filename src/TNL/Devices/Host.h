@@ -11,55 +11,112 @@
 #pragma once
 
 #include <TNL/String.h>
+#include <TNL/Config/ConfigDescription.h>
+#include <TNL/Config/ParameterContainer.h>
+
+#ifdef HAVE_OPENMP
+#include <omp.h>
+#endif
 
 namespace TNL {
-
-namespace Config {
-   class ConfigDescription;
-   class ParameterContainer;
-}
-
 namespace Devices {
+namespace {
 
 class Host
 {
-   public:
+public:
+   static String getDeviceType()
+   {
+      return String( "Devices::Host" );
+   }
 
-      static String getDeviceType();
+   static void disableOMP()
+   {
+      ompEnabled = false;
+   }
 
-      static void disableOMP();
+   static void enableOMP()
+   {
+      ompEnabled = true;
+   }
 
-      static void enableOMP();
-
-      static inline bool isOMPEnabled()
-      {
-         // This MUST stay in the header since we are interested in whether the
-         // client was compiled with OpenMP support, not the libtnl.so file.
-         // Also, keeping it in the header makes it inline-able.
+   static inline bool isOMPEnabled()
+   {
 #ifdef HAVE_OPENMP
-         return ompEnabled;
+      return ompEnabled;
 #else
+      return false;
+#endif
+   }
+
+   static void setMaxThreadsCount( int maxThreadsCount_ )
+   {
+      maxThreadsCount = maxThreadsCount_;
+#ifdef HAVE_OPENMP
+      omp_set_num_threads( maxThreadsCount );
+#endif
+   }
+
+   static int getMaxThreadsCount()
+   {
+#ifdef HAVE_OPENMP
+      if( maxThreadsCount == -1 )
+         return omp_get_max_threads();
+      return maxThreadsCount;
+#else
+      return 0;
+#endif
+   }
+
+   static int getThreadIdx()
+   {
+#ifdef HAVE_OPENMP
+      return omp_get_thread_num();
+#else
+      return 0;
+#endif
+   }
+
+   static void configSetup( Config::ConfigDescription& config,
+                            const String& prefix = "" )
+   {
+#ifdef HAVE_OPENMP
+      config.addEntry< bool >( prefix + "openmp-enabled", "Enable support of OpenMP.", true );
+      config.addEntry<  int >( prefix + "openmp-max-threads", "Set maximum number of OpenMP threads.", omp_get_max_threads() );
+#else
+      config.addEntry< bool >( prefix + "openmp-enabled", "Enable support of OpenMP (not supported on this system).", false );
+      config.addEntry<  int >( prefix + "openmp-max-threads", "Set maximum number of OpenMP threads (not supported on this system).", 0 );
+#endif
+   }
+
+   static bool setup( const Config::ParameterContainer& parameters,
+                      const String& prefix = "" )
+   {
+      if( parameters.getParameter< bool >( prefix + "openmp-enabled" ) ) {
+#ifdef HAVE_OPENMP
+         enableOMP();
+#else
+         std::cerr << "OpenMP is not supported - please recompile the TNL library with OpenMP." << std::endl;
          return false;
 #endif
       }
+      else
+         disableOMP();
+      const int threadsCount = parameters.getParameter< int >( prefix + "openmp-max-threads" );
+      if( threadsCount > 1 && ! isOMPEnabled() )
+         std::cerr << "Warning: openmp-max-threads was set to " << threadsCount << ", but OpenMP is disabled." << std::endl;
+      setMaxThreadsCount( threadsCount );
+      return true;
+   }
 
-      static void setMaxThreadsCount( int maxThreadsCount );
-
-      static int getMaxThreadsCount();
-
-      static int getThreadIdx();
-
-      static void configSetup( Config::ConfigDescription& config, const String& prefix = "" );
-
-      static bool setup( const Config::ParameterContainer& parameters,
-                         const String& prefix = "" );
-
-   protected:
-
-      static bool ompEnabled;
-
-      static int maxThreadsCount;
+protected:
+   static bool ompEnabled;
+   static int maxThreadsCount;
 };
 
+bool Host::ompEnabled( true );
+int Host::maxThreadsCount( -1 );
+
+} // namespace <unnamed>
 } // namespace Devices
 } // namespace TNL

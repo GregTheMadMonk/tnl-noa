@@ -13,11 +13,11 @@
 #include <iomanip>
 #include <limits>
 
-// make sure to include the config before the check
-#include <TNL/tnlConfig.h>
-#ifdef HAVE_SYS_IOCTL_H
-#include <sys/ioctl.h>
-#include <unistd.h>
+// check if we are on a POSIX system or Windows,
+// see https://stackoverflow.com/a/4575466
+#if !defined(_WIN32) && !defined(_WIN64)
+   #include <sys/ioctl.h>
+   #include <unistd.h>
 #endif
 
 #include <TNL/Solvers/IterativeSolver.h>
@@ -190,7 +190,7 @@ void IterativeSolverMonitor< Real, Index > :: refresh()
 template< typename Real, typename Index>
 int IterativeSolverMonitor< Real, Index > :: getLineWidth()
 {
-#ifdef HAVE_SYS_IOCTL_H
+#if !defined(_WIN32) && !defined(_WIN64)
    struct winsize w;
    ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
    return w.ws_col;

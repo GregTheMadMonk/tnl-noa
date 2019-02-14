@@ -23,6 +23,7 @@
 #include <TNL/Math.h>
 
 namespace TNL {
+namespace Matrices {
 
 template< typename DeviceType = Devices::Host >
 class MatrixOperations
@@ -416,4 +417,5 @@ public:
    }
 };
 
+} // namespace Matrices
 } // namespace TNL

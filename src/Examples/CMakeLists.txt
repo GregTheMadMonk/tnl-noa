@@ -19,40 +19,19 @@ add_subdirectory( flow-vl )
 #add_subdirectory( narrow-band )
 
 ADD_EXECUTABLE( ArrayExample ArrayExample.cpp )
-target_link_libraries( ArrayExample tnl )
 
 ADD_EXECUTABLE( ConfigDescriptionExample ConfigDescriptionExample.cpp )
-target_link_libraries( ConfigDescriptionExample tnl )
-
 ADD_EXECUTABLE( FileExample FileExample.cpp )
-target_link_libraries( FileExample tnl )
-
 ADD_EXECUTABLE( ListExample ListExample.cpp )
-target_link_libraries( ListExample tnl )
-
 ADD_EXECUTABLE( LoggerExample LoggerExample.cpp )
-target_link_libraries( LoggerExample tnl )
-
 ADD_EXECUTABLE( MathExample MathExample.cpp )
-target_link_libraries( MathExample tnl )
 
 ADD_EXECUTABLE( ParameterContainerExample ParameterContainerExample.cpp )
-target_link_libraries( ParameterContainerExample tnl )
 
 ADD_EXECUTABLE( StringExample StringExample.cpp )
-target_link_libraries( StringExample tnl )
-
 ADD_EXECUTABLE( StringExampleGetAllocatedSize StringExampleGetAllocatedSize.cpp )
-target_link_libraries( StringExampleGetAllocatedSize tnl )
-
 ADD_EXECUTABLE( StringExampleGetSize StringExampleGetSize.cpp )
-target_link_libraries( StringExampleGetSize tnl )
-
 ADD_EXECUTABLE( StringExampleSetSize StringExampleSetSize.cpp )
-target_link_libraries( StringExampleSetSize tnl )
-
 ADD_EXECUTABLE( TimerExample TimerExample.cpp )
-target_link_libraries( TimerExample tnl )
 
 ADD_EXECUTABLE( VectorExample VectorExample.cpp )
-target_link_libraries( VectorExample tnl )

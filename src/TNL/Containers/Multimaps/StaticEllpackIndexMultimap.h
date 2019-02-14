@@ -14,6 +14,8 @@
 #include <TNL/Containers/Multimaps/StaticEllpackIndexMultimapValues.h>
 
 namespace TNL {
+namespace Containers {
+namespace Multimaps {
 
 template< typename Device >
 struct StaticEllpackIndexMultimapSliceSizeGetter
@@ -83,7 +85,7 @@ class StaticEllpackIndexMultimap
       void print( std::ostream& str ) const;
 
    protected:
-      Containers::Vector< IndexType, DeviceType, IndexType > values;
+      Vector< IndexType, DeviceType, IndexType > values;
 
       IndexType keysRange = 0;
 
@@ -102,7 +104,8 @@ template< int ValuesCount,
           int SliceSize >
 std::ostream& operator << ( std::ostream& str, const StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex, SliceSize >& multimap );
 
+} // namespace Multimaps
+} // namespace Containers
 } // namespace TNL
 
 #include <TNL/Containers/Multimaps/StaticEllpackIndexMultimap_impl.h>
-

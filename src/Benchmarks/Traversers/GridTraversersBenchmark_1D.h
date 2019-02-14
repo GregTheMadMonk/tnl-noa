@@ -48,7 +48,8 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
       using Traverser = Meshes::Traverser< GridType, CellType >;
       using UserDataType = BenchmarkTraverserUserData< MeshFunction >;
       using AddOneEntitiesProcessorType = AddOneEntitiesProcessor< UserDataType >;
-      
+      using AddTwoEntitiesProcessorType = AddTwoEntitiesProcessor< UserDataType >;
+
       GridTraversersBenchmark( Index size )
       :size( size ), v( size ), grid( size ), u( grid ),
        userData( this->u )
@@ -200,7 +201,11 @@ class GridTraversersBenchmark< 1, Device, Real, Index >
       void traverseUsingTraverser()
       {
          // TODO !!!!!!!!!!!!!!!!!!!!!!
-         traverser.template processAllEntities< UserDataType, AddOneEntitiesProcessorType >
+         //traverser.template processAllEntities< UserDataType, AddOneEntitiesProcessorType >
+
+         traverser.template processBoundaryEntities< UserDataType, AddTwoEntitiesProcessorType >
+            ( grid, userData );
+         traverser.template processInteriorEntities< UserDataType, AddOneEntitiesProcessorType >
             ( grid, userData );
       }
 

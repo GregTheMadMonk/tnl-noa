@@ -3,8 +3,6 @@
 #include <TNL/Assert.h>
 #include <TNL/Containers/StaticVector.h>
 
-using namespace std;
-
 namespace TNL {
 namespace Meshes { 
 namespace DistributedMeshes {
@@ -14,7 +12,7 @@ namespace DistributedMeshes {
 //  -> 0 - not used, 1 negative direction, 2 positive direction
 //finaly we subtrackt 1 because we dont need (0,0,0) aka 0 aka no direction
 
-enum Directions2D { Left = 0 , Right = 1 , Up = 2, UpLeft =3, UpRight=4, Down=5, DownLeft=6, DownRight=7 }; 
+//enum Directions2D { Left = 0 , Right = 1 , Up = 2, UpLeft =3, UpRight=4, Down=5, DownLeft=6, DownRight=7 }; 
 
 /*MEH - osa zed je zdola nahoru, asi---
 enum Directions3D { West = 0 , East = 1 , 
@@ -28,16 +26,33 @@ enum Directions3D { West = 0 , East = 1 ,
                     BottomSouth = 23, BottomSouthWest = 24, BottomSouthEast = 25,
                   };*/
 
-enum Directions3D { West = 0 , East = 1 , 
-                    North = 2, NorthWest = 3, NorthEast = 4,
-                    South = 5, SouthWest = 6, SouthEast = 7,
-                    Bottom = 8 ,BottomWest = 9 , BottomEast = 10 , 
-                    BottomNorth = 11, BottomNorthWest = 12, BottomNorthEast = 13,
-                    BottomSouth = 14, BottomSouthWest = 15, BottomSouthEast = 16,
-                    Top = 17, TopWest = 18, TopEast =19,
-                    TopNorth = 20, TopNorthWest = 21, TopNorthEast = 22,
-                    TopSouth = 23, TopSouthWest = 24,TopSouthEast = 25,
+/*
+with self
+enum Directions3D { 
+                    ZzYzXz =  0, ZzYzXm =  1, ZzYzXp =  2, 
+                    ZzYmXz =  3, ZzYmXm =  4, ZzYmXp =  5,
+                    ZzYpXz =  6, ZzYpXm =  7, ZzYpXp =  8,                    
+                    ZmYzXz =  9, ZmYzXm = 10, ZmYzXp = 11, 
+                    ZmYmXz = 12, ZmYmXm = 13, ZmYmXp = 14,
+                    ZmYpXz = 15, ZmYpXm = 16, ZmYpXp = 17,
+                    ZpYzXz = 18, ZpYzXm = 19, ZpYzXp = 20, 
+                    ZpYmXz = 21, ZpYmXm = 22, ZpYmXp = 23,
+                    ZpYpXz = 24, ZpYpXm = 25, ZpYpXp = 26
                   };
+*/
+
+enum Directions3D { 
+                    ZzYzXm =  0, ZzYzXp =  1, 
+                    ZzYmXz =  2, ZzYmXm =  3, ZzYmXp =  4,
+                    ZzYpXz =  5, ZzYpXm =  6, ZzYpXp =  7,                    
+                    ZmYzXz =  8, ZmYzXm =  9, ZmYzXp = 10, 
+                    ZmYmXz = 11, ZmYmXm = 12, ZmYmXp = 13,
+                    ZmYpXz = 14, ZmYpXm = 15, ZmYpXp = 16,
+                    ZpYzXz = 17, ZpYzXm = 18, ZpYzXp = 19, 
+                    ZpYmXz = 20, ZpYmXm = 21, ZpYmXp = 22,
+                    ZpYpXz = 23, ZpYpXm = 24, ZpYpXp = 25
+                  };
+
 
 class Directions {
 

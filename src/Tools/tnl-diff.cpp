@@ -15,7 +15,7 @@
 void setupConfig( Config::ConfigDescription& config )
 {
    config.addEntry< String >( "mesh", "Input mesh file.", "mesh.tnl" );
-   config.addRequiredEntry< Containers::List< String > >( "input-files", "The first set of the input files." );
+   config.addRequiredList< String >( "input-files", "The first set of the input files." );
    config.addEntry< String >( "output-file", "File for the output data.", "tnl-diff.log" );
    config.addEntry< String >( "mode", "Mode 'couples' compares two subsequent files. Mode 'sequence' compares the input files against the first one. 'halves' compares the files from the and the second half of the intput files.", "couples" );
       config.addEntryEnum< String >( "couples" );
@@ -42,7 +42,6 @@ int main( int argc, char* argv[] )
       return 1;
    }
 
-   int verbose = parameters.getParameter< int >( "verbose" );
    String meshFile = parameters.getParameter< String >( "mesh" );
    /*if( meshFile == "" )
    {
@@ -57,8 +56,8 @@ int main( int argc, char* argv[] )
       return EXIT_FAILURE;
    }
    std::cout << meshType << " detected in " << meshFile << " file." << std::endl;
-   Containers::List< String > parsedMeshType;
-   if( ! parseObjectType( meshType, parsedMeshType ) )
+   const std::vector< String > parsedMeshType = parseObjectType( meshType );
+   if( ! parsedMeshType.size() )
    {
       std::cerr << "Unable to parse the mesh type " << meshType << "." << std::endl;
       return EXIT_FAILURE;
@@ -66,7 +65,7 @@ int main( int argc, char* argv[] )
    if( parsedMeshType[ 0 ] == "Meshes::Grid" ||
        parsedMeshType[ 0 ] == "tnlGrid" )        // TODO: remove deprecated type name
    {
-      int dimensions = atoi( parsedMeshType[ 1 ].getString() );
+      const int dimensions = atoi( parsedMeshType[ 1 ].getString() );
       if( dimensions == 1 )
          if( ! resolveGridRealType< 1 >( parsedMeshType, parameters ) )
             return EXIT_FAILURE;

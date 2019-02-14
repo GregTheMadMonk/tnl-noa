@@ -11,7 +11,10 @@
 #pragma once
 
 namespace TNL {
-namespace Images {   
+/**
+ * \brief Namespace for image processing.
+ */
+namespace Images {
 
 template< typename Index = int >
 class Image

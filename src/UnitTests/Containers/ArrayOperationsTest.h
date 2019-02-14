@@ -12,7 +12,6 @@
 
 #ifdef HAVE_GTEST 
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
-#include <TNL/Devices/Cuda.h>
 
 #include "gtest/gtest.h"
 

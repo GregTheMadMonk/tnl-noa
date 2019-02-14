@@ -40,17 +40,17 @@ inline bool DicomPatientInfo::retrieveInfo()
 #ifdef HAVE_DCMTK_H
    OFString str;
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString(DCM_PatientName, str );
-   this->name.setString( str.data() );
+   this->name = str.data();
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString(DCM_PatientSex, str );
-   this->sex.setString( str.data() );
+   this->sex = str.data();
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString(DCM_PatientID, str );
-   this->ID.setString( str.data() );
+   this->ID = str.data();
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString(DCM_PatientWeight, str );
-   this->weight.setString( str.data() );
+   this->weight = str.data();
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString(DCM_PatientPosition, str );
-   this->patientPosition.setString( str.data() );
+   this->patientPosition = str.data();
    dicomHeader.getFileFormat().getDataset()->findAndGetOFString(DCM_PatientOrientation, str );
-   this->patientOrientation.setString( str.data() );
+   this->patientOrientation = str.data();
 
    isObjectRetrieved = true;
    return true;

@@ -16,6 +16,8 @@
 #include <TNL/Devices/Cuda.h>
 
 namespace TNL {
+namespace Containers {
+namespace Multimaps {
 
 template< int ValuesCount,
           typename Index,
@@ -99,7 +101,8 @@ template< int ValuesCount,
           int step >
 std::ostream& operator << ( std::ostream& str, const StaticEllpackIndexMultimapValues< ValuesCount, Index, Device, LocalIndex, step >& ports );
 
+} // namespace Multimaps
+} // namespace Containers
 } // namespace TNL
 
 #include <TNL/Containers/Multimaps/StaticEllpackIndexMultimapValues_impl.h>
-

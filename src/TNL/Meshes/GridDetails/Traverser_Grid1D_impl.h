@@ -49,7 +49,7 @@ processBoundaryEntities( const GridPointer& gridPointer,
    else //Distributed
    {
        const int* neighbors=distributedGrid->getNeighbors(); 
-       if( neighbors[ Meshes::DistributedMeshes::Left ] == -1 )
+       if( neighbors[ Meshes::DistributedMeshes::ZzYzXm ] == -1 )
        {
           GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
               gridPointer,
@@ -59,7 +59,7 @@ processBoundaryEntities( const GridPointer& gridPointer,
               asynchronousMode );
        }
        
-       if( neighbors[ Meshes::DistributedMeshes::Right ] == -1 )
+       if( neighbors[ Meshes::DistributedMeshes::ZzYzXp ] == -1 )
        {
           GridTraverser< GridType >::template processEntities< GridEntity, EntitiesProcessor, UserData, false >(
               gridPointer,
@@ -104,10 +104,10 @@ processInteriorEntities( const GridPointer& gridPointer,
       CoordinatesType end( gridPointer->getDimensions() - distributedGrid->getUpperOverlap() - CoordinatesType( 1 ) );
       
       const int* neighbors = distributedGrid->getNeighbors(); 
-      if( neighbors[ Meshes::DistributedMeshes::Left ] == -1 )
+      if( neighbors[ Meshes::DistributedMeshes::ZzYzXm ] == -1 )
          begin += CoordinatesType( 1 );
        
-      if( neighbors[ Meshes::DistributedMeshes::Right ] == -1 )
+      if( neighbors[ Meshes::DistributedMeshes::ZzYzXp ] == -1 )
          end -= CoordinatesType( 1 );
       
       /*

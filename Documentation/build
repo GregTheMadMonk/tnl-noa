@@ -1,0 +1,44 @@
+#!/bin/bash
+
+PREFIX="$HOME/.local"
+INSTALL="no"
+
+set -e
+
+# Run from this directory
+cd ${0%/*}
+
+# Check dependencies
+if [[ ! $(command -v doxygen) ]]; then
+   echo "Error: doxygen is not installed." >&2
+   exit 1
+fi
+if [[ ! $(command -v dot) ]]; then
+   echo "Error: graphviz is not installed." >&2
+   exit 1
+fi
+
+# Parse options
+for option in "$@"
+do
+   case $option in
+      --prefix=*                       ) PREFIX="${option#*=}" ;;
+      --install=*                      ) INSTALL="${option#*=}" ;;
+   esac
+done
+
+# Remove existing html/ directory which may contain old files
+rm -rf ./html/
+
+# Generate documentation
+doxygen
+
+# Install
+if [[ "$INSTALL" == "yes" ]]; then
+   mkdir -p "$PREFIX/share/doc/"
+   # Remove existing files under the prefix
+   if [[ -d "$PREFIX/share/doc/tnl" ]]; then
+      rm -rf "$PREFIX/share/doc/tnl"
+   fi
+   cp -r ./html/ "$PREFIX/share/doc/tnl"
+fi

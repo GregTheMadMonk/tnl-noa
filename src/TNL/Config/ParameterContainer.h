@@ -8,47 +8,47 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#pragma once 
+#pragma once
 
-#include <TNL/Containers/List.h>
-#include <TNL/Config/ConfigDescription.h>
+#include <vector>
+#include <memory>
+#include "make_unique.h"
+
 #include <TNL/param-types.h>
 //#include <TNL/Debugging/StackBacktrace.h>
 
 namespace TNL {
-namespace Config {   
+namespace Config {
 
-struct tnlParameterBase
+struct ParameterBase
 {
-   tnlParameterBase( const String& _name,
-                     const String& _type )
-   : name( _name ), type( _type ){};
- 
+   ParameterBase( const String& name,
+                  const String& type )
+   : name( name ), type( type )
+   {}
+
    String name, type;
 
+   // Virtual destructor is needed to avoid undefined behaviour when deleting the
+   // ParameterContainer::parameters vector, see https://stackoverflow.com/a/8752126
+   virtual ~ParameterBase() = default;
 };
 
-template< class T > struct tnlParameter : public tnlParameterBase
+template< class T >
+struct Parameter : public ParameterBase
 {
-   tnlParameter( const String& _name,
-                 const String& _type,
-                 const T& val )
-   : tnlParameterBase( _name, _type ), value( val ){};
+   Parameter( const String& name,
+              const String& type,
+              const T& value )
+   : ParameterBase( name, type ), value( value )
+   {}
 
    T value;
 };
 
-//template< class T > const char* getType( const T& val );
-
 class ParameterContainer
 {
-   public:
-
-   /**
-    * \brief Basic constructor.
-    */
-   ParameterContainer();
-
+public:
    /**
     * \brief Adds new parameter to the ParameterContainer.
     *
@@ -56,18 +56,27 @@ class ParameterContainer
     * \param name Name of the new parameter.
     * \param value Value assigned to the parameter.
     */
-   template< class T > bool addParameter( const String& name,
-                                          const T& value );
-
+   template< class T >
    bool addParameter( const String& name,
-                      const String& value );
+                      const T& value )
+   {
+      parameters.push_back( std::make_unique< Parameter< T > >( name, TNL::getType< T >(), value ) );
+      return true;
+   }
 
    /**
     * \brief Checks whether the parameter \e name already exists in ParameterContainer.
     *
     * \param name Name of the parameter.
     */
-   bool checkParameter( const String& name ) const;
+   bool checkParameter( const String& name ) const
+   {
+      const int size = parameters.size();
+      for( int i = 0; i < size; i++ )
+         if( parameters[ i ]->name == name )
+            return true;
+      return false;
+   }
 
    /**
     * \brief Assigns new \e value to the parameter \e name.
@@ -76,11 +85,27 @@ class ParameterContainer
     * \param name Name of parameter.
     * \param value Value of type T assigned to the parameter.
     */
-   template< class T > bool setParameter( const String& name,
-                                          const T& value );
-
+   template< class T >
    bool setParameter( const String& name,
-                      const String& value );
+                      const T& value )
+   {
+      for( int i = 0; i < (int) parameters.size(); i++ ) {
+         if( parameters[ i ]->name == name ) {
+            if( parameters[ i ]->type == TNL::getType< T >() ) {
+               Parameter< T >& parameter = dynamic_cast< Parameter< T >& >( *parameters[ i ] );
+               parameter.value = value;
+               return true;
+            }
+            else {
+               std::cerr << "Parameter " << name << " already exists with different type "
+                         << parameters[ i ]->type << " not "
+                         << TNL::getType< T >() << std::endl;
+               throw 0;
+            }
+         }
+      }
+      return addParameter< T >( name, value );
+   }
 
    /**
     * \brief Checks whether the parameter \e name is given the \e value.
@@ -96,22 +121,23 @@ class ParameterContainer
     * \par Example
     * \include ParameterContainerExample.cpp
     */
-   template< class T > bool getParameter( const String& name,
-                                          T& value,
-                                          bool verbose = true ) const
+   template< class T >
+   bool getParameter( const String& name,
+                      T& value,
+                      bool verbose = true ) const
    {
-      int i;
-      const int size = parameters. getSize();
-      for( i = 0; i < size; i ++ )
-         if( parameters[ i ] -> name == name )
+      for( int i = 0; i < (int) parameters.size(); i++ )
+         if( parameters[ i ]->name == name )
          {
-            value = ( ( tnlParameter< T >* ) parameters[ i ] ) -> value;
+            // dynamic_cast throws std::bad_cast if parameters[i] does not have the type Parameter<T>
+            const Parameter< T >& parameter = dynamic_cast< Parameter< T >& >( *parameters[ i ] );
+            value = parameter.value;
             return true;
          }
       if( verbose )
       {
          std::cerr << "Missing parameter '" << name << "'." << std::endl;
-         throw(0); //PrintStackBacktrace;
+         throw 0; //PrintStackBacktrace;
       }
       return false;
    }
@@ -121,72 +147,95 @@ class ParameterContainer
     *
     * \param name Name of parameter.
     */
-   template< class T > const T& getParameter( const String& name ) const
+   template< class T >
+   T getParameter( const String& name ) const
    {
-      int i;
-      const int size = parameters. getSize();
-      for( i = 0; i < size; i ++ )
-         if( parameters[ i ] -> name == name )
-            return ( ( tnlParameter< T >* ) parameters[ i ] ) -> value;
+      for( int i = 0; i < (int) parameters.size(); i++ )
+         if( parameters[ i ]->name == name )
+         {
+            // dynamic_cast throws std::bad_cast if parameters[i] does not have the type Parameter<T>
+            const Parameter< T >& parameter = dynamic_cast< Parameter< T >& >( *parameters[ i ] );
+            return parameter.value;
+         }
       std::cerr << "The program attempts to get unknown parameter " << name << std::endl;
       std::cerr << "Aborting the program." << std::endl;
-      abort();
+      throw 0;
    }
- 
+
+/*
    //! Broadcast to other nodes in MPI cluster
-  // void MPIBcast( int root, MPI_Comm mpi_comm = MPI_COMM_WORLD );
-
-   /**
-    * \brief Basic destructor.
-    */
-   ~ParameterContainer();
-
-   protected:
-
-   Containers::List< tnlParameterBase* > parameters;
-
-};
-
-bool parseCommandLine( int argc, char* argv[],
-                       const ConfigDescription& config_description,
-                       ParameterContainer& parameters,
-                       bool printUsage = true );
-
-template< class T >
-bool
-ParameterContainer::
-addParameter( const String& name, const T& value )
-{
-   return parameters. Append( new tnlParameter< T >( name, TNL::getType< T >().getString(), value ) );
-};
-
-template< class T >
-bool
-ParameterContainer::
-setParameter( const String& name,
-              const T& value )
-{
-   int i;
-   for( i = 0; i < parameters. getSize(); i ++ )
+   void MPIBcast( int root, MPI_Comm mpi_comm = MPI_COMM_WORLD )
    {
-      if( parameters[ i ] -> name == name )
+   #ifdef USE_MPI
+      int i;
+      int size = parameters. getSize();
+      :: MPIBcast( size, 1, root, mpi_comm );
+      for( i = 0; i < size; i ++ )
       {
-         if( parameters[ i ] -> type == TNL::getType< T >() )
+         if( MPIGetRank() == root )
          {
-            ( ( tnlParameter< T > * ) parameters[ i ] ) -> value = value;
-            return true;
+            tnlParameterBase* param = parameters[ i ];
+            param -> type. MPIBcast( root, MPI_COMM_WORLD );
+            param -> name. MPIBcast( root, MPI_COMM_WORLD );
+            if( param -> type == "String" )
+            {
+               ( ( tnlParameter< String >* ) param ) -> value. MPIBcast( root, mpi_comm );
+            }
+            if( param -> type == "bool" )
+            {
+               :: MPIBcast( ( ( tnlParameter< bool >* ) param ) -> value, 1, root, mpi_comm );
+            }
+            if( param -> type == "int" )
+            {
+               :: MPIBcast( ( ( tnlParameter< int >* ) param ) -> value, 1, root, mpi_comm );
+            }
+            if( param -> type == "double" )
+            {
+               :: MPIBcast( ( ( tnlParameter< double >* ) param ) -> value, 1, root, mpi_comm );
+            }
          }
          else
          {
-            std::cerr << "Parameter " << name << " already exists with different type "
-                 << parameters[ i ] -> type << " not "
-                 << TNL::getType< T >() << std::endl;
-            abort( );
-            return false;
+            String param_type, param_name;
+            param_type. MPIBcast( root, MPI_COMM_WORLD );
+            param_name. MPIBcast( root, MPI_COMM_WORLD );
+            if( param_type == "mString" )
+            {
+               String val;
+               val. MPIBcast( root, mpi_comm );
+               addParameter< String >( param_name. getString(),
+                                        val );
+            }
+            if( param_type == "bool" )
+            {
+               bool val;
+               :: MPIBcast( val, 1, root, mpi_comm );
+               addParameter< bool >( param_name. getString(),
+                                     val );
+            }
+            if( param_type == "int" )
+            {
+               int val;
+               :: MPIBcast( val, 1, root, mpi_comm );
+               addParameter< int >( param_name. getString(),
+                                    val );
+            }
+            if( param_type == "double" )
+            {
+               double val;
+               :: MPIBcast( val, 1, root, mpi_comm );
+               addParameter< double >( param_name. getString(),
+                                       val );
+            }
+
          }
       }
+   #endif
    }
-   return addParameter< T >( name, value );
+*/
+
+protected:
+   std::vector< std::unique_ptr< ParameterBase > > parameters;
 };
 
 } // namespace Config
