@@ -512,6 +512,7 @@ class DistributedGridIO<
 
       static bool load(const String& fileName,MeshFunctionType &meshFunction) 
       {
+#ifdef HAVE_MPI
          if(Communicators::MpiCommunicator::IsInitialized())//i.e. - isUsed
          {
             typename MeshFunctionType::RealType* data = meshFunction.getData().getData();

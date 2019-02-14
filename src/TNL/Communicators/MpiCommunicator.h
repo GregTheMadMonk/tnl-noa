@@ -251,7 +251,7 @@ class MpiCommunicator
       static MPI_Datatype getDataType( const T& t )
       { 
          return MPITypeResolver< T >::getType();
-      };
+      }
 #endif
       
       //dim-number of dimensions, distr array of guess distr - 0 for computation
