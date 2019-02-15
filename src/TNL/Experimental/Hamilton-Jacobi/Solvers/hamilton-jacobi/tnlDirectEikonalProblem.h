@@ -18,6 +18,8 @@
 #include <TNL/Pointers/SharedPointer.h>
 #include "tnlFastSweepingMethod.h"
 
+#include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
+
 template< typename Mesh,
           typename Communicator,
           typename Anisotropy,
@@ -45,6 +47,8 @@ class tnlDirectEikonalProblem
       using typename BaseType::DofVectorType;
       using MeshPointer = Pointers::SharedPointer< MeshType >;
       using DofVectorPointer = Pointers::SharedPointer< DofVectorType >;
+      
+      typedef Communicator CommunicatorType;
       
       static constexpr bool isTimeDependent() { return false; };
 
@@ -79,6 +83,8 @@ class tnlDirectEikonalProblem
          
          AnisotropyPointer anisotropy;
 
-};
+         Meshes::DistributedMeshes::DistrGridIOTypes distributedIOType;
+         
+   };
 
 #include "tnlDirectEikonalProblem_impl.h"

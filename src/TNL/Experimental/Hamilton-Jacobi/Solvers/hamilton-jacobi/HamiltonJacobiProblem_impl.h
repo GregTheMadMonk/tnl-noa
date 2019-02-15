@@ -121,14 +121,14 @@ setInitialCondition( const Config::ParameterContainer& parameters,
                      DofVectorType& dofs,
                      MeshDependentDataType& meshDependentData  )
 {
-   this->bindDofs( mesh, dofs );
-   const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
-   if( ! this->solution.boundLoad( initialConditionFile ) )
-   {
-     std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." <<std::endl;
-      return false;
-   }
-   return true;
+  this->bindDofs( mesh, dofs );
+  const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
+  if( ! this->solution.boundLoad( initialConditionFile ) )
+  {
+    std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." <<std::endl;
+    return false;
+  }
+  return true;
 }
 
 template< typename Mesh,

@@ -83,13 +83,34 @@ solve( const MeshPointer& mesh,
   MeshFunctionType aux = *auxPtr;
   
   
-//#ifdef HAVE_MPI
-  bool a = Communicators::MpiCommunicator::IsInitialized();
+#ifdef HAVE_MPI
+  int i = Communicators::MpiCommunicator::GetRank( Communicators::MpiCommunicator::AllGroup );
+  //printf( "Hello world from rank: %d ", i );
+  //Communicators::MpiCommunicator::Request r = Communicators::MpiCommunicator::ISend( auxPtr, 0, 0, Communicators::MpiCommunicator::AllGroup );
+  if( i == 1 )
+    /*for( int k = 0; k < 16*16; k++ )
+      aux[ k ] = 10;*/
+    printf( "1: mesh x: %d\n", mesh->getDimensions().x() );
+    printf( "1: mesh y: %d\n", mesh->getDimensions().y() );
+    //aux.save("aux_proc1.tnl");
+  if( i == 0 )
+    printf( "0: mesh x: %d\n", mesh->getDimensions().x() );
+    printf( "0: mesh y: %d\n", mesh->getDimensions().y() );
+    //aux.save("aux_proc0.tnl");
+    /*for( int k = 0; k < mesh->getDimensions().x()*mesh->getDimensions().y(); k++ )
+      aux[ k ] = 10;
+    for( int k = 0; k < mesh->getDimensions().x(); k++ ){
+      for( int l = 0; l < mesh->getDimensions().y(); l++ )
+        printf("%f.2\t",aux[ k * 16 + l ] );
+    printf("\n");
+    }*/
+    
+  /*bool a = Communicators::MpiCommunicator::IsInitialized();
   if( a )
     printf("Je Init\n");
   else
-    printf("Neni Init\n");
-//#endif
+    printf("Neni Init\n");*/
+#endif
   
   while( iteration < this->maxIterations )
   {

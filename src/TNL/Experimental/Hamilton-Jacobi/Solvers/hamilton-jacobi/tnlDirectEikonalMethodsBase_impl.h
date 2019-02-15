@@ -102,7 +102,7 @@ updateBlocks( InterfaceMapType interfaceMap,
         ArrayContainer BlockIterHost, int numThreadsPerBlock/*, Real **sArray*/ )
 {
 #pragma omp parallel for schedule( dynamic )
-  for( int i = 0; i < BlockIterHost.getSize(); i++ )
+  for( IndexType i = 0; i < BlockIterHost.getSize(); i++ )
   {
     if( BlockIterHost[ i ] )
     {
@@ -142,14 +142,14 @@ updateBlocks( InterfaceMapType interfaceMap,
       if( sArray == nullptr )
         std::cout << "Error while allocating memory for sArray." << std::endl;
       
-      for( int thri = 0; thri < sizeSArray; thri++ ){
-        for( int thrj = 0; thrj < sizeSArray; thrj++ )
+      for( IndexType thri = 0; thri < sizeSArray; thri++ ){
+        for( IndexType thrj = 0; thrj < sizeSArray; thrj++ )
           sArray[ thri * sizeSArray + thrj ] = std::numeric_limits< Real >::max();
       }
       
       
       //printf("numThreadsPerBlock = %d\n", numThreadsPerBlock);
-      for( int thrj = 0; thrj < numThreadsPerBlock + 1; thrj++ )
+      for( IndexType thrj = 0; thrj < numThreadsPerBlock + 1; thrj++ )
       {        
         if( dimX > (blIdx+1) * numThreadsPerBlock  && thrj+1 < ykolik )
           sArray[ ( thrj+1 )* sizeSArray +xkolik] = aux[ blIdy*numThreadsPerBlock*dimX - dimX + blIdx*numThreadsPerBlock - 1 + (thrj+1)*dimX + xkolik ];
@@ -165,14 +165,14 @@ updateBlocks( InterfaceMapType interfaceMap,
           sArray[thrj+1] = aux[ blIdy*numThreadsPerBlock*dimX - dimX + blIdx*numThreadsPerBlock - 1 + thrj+1 ];
       }
       
-      for( int k = 0; k < numThreadsPerBlock; k++ ){
-        for( int l = 0; l < numThreadsPerBlock; l++ )
+      for( IndexType k = 0; k < numThreadsPerBlock; k++ ){
+        for( IndexType l = 0; l < numThreadsPerBlock; l++ )
           if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX )
             sArray[(k+1) * sizeSArray + l+1] = aux[ blIdy * numThreadsPerBlock * dimX + numThreadsPerBlock * blIdx  + k*dimX + l ];
       }
       
-      for( int k = 0; k < numThreadsPerBlock; k++ ){ 
-        for( int l = 0; l < numThreadsPerBlock; l++ ){
+      for( IndexType k = 0; k < numThreadsPerBlock; k++ ){ 
+        for( IndexType l = 0; l < numThreadsPerBlock; l++ ){
           if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX ){
             //std::cout << "proslo i = " << k * numThreadsPerBlock + l << std::endl;
             if( ! interfaceMap[ blIdy * numThreadsPerBlock * dimX + numThreadsPerBlock * blIdx  + k*dimX + l ] )
@@ -191,8 +191,8 @@ updateBlocks( InterfaceMapType interfaceMap,
        std::cout << std::endl;
        }*/
       
-      for( int k = 0; k < numThreadsPerBlock; k++ ) 
-        for( int l = numThreadsPerBlock-1; l >-1; l-- ) { 
+      for( IndexType k = 0; k < numThreadsPerBlock; k++ ) 
+        for( IndexType l = numThreadsPerBlock-1; l >-1; l-- ) { 
           if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX )
           {
             if( ! interfaceMap[ blIdy * numThreadsPerBlock * dimX + numThreadsPerBlock * blIdx  + k*dimX + l ] )
@@ -209,8 +209,8 @@ updateBlocks( InterfaceMapType interfaceMap,
        std::cout << std::endl;
        }*/
       
-      for( int k = numThreadsPerBlock-1; k > -1; k-- ) 
-        for( int l = 0; l < numThreadsPerBlock; l++ ) {
+      for( IndexType k = numThreadsPerBlock-1; k > -1; k-- ) 
+        for( IndexType l = 0; l < numThreadsPerBlock; l++ ) {
           if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX )
           {
             if( ! interfaceMap[ blIdy * numThreadsPerBlock * dimX + numThreadsPerBlock * blIdx  + k*dimX + l ] )
@@ -227,8 +227,8 @@ updateBlocks( InterfaceMapType interfaceMap,
        std::cout << std::endl;
        }*/
       
-      for( int k = numThreadsPerBlock-1; k > -1; k-- ){
-        for( int l = numThreadsPerBlock-1; l >-1; l-- ) { 
+      for( IndexType k = numThreadsPerBlock-1; k > -1; k-- ){
+        for( IndexType l = numThreadsPerBlock-1; l >-1; l-- ) { 
           if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX )
           {
             if( ! interfaceMap[ blIdy * numThreadsPerBlock * dimX + numThreadsPerBlock * blIdx  + k*dimX + l ] )
@@ -252,8 +252,8 @@ updateBlocks( InterfaceMapType interfaceMap,
       }
       
       
-      for( int k = 0; k < numThreadsPerBlock; k++ ){ 
-        for( int l = 0; l < numThreadsPerBlock; l++ ) {
+      for( IndexType k = 0; k < numThreadsPerBlock; k++ ){ 
+        for( IndexType l = 0; l < numThreadsPerBlock; l++ ) {
           if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX )      
             helpFunc[ blIdy * numThreadsPerBlock * dimX + numThreadsPerBlock * blIdx  + k*dimX + l ] = sArray[ (k + 1)* sizeSArray + l + 1 ];
           //std::cout<< sArray[k+1][l+1];
@@ -276,7 +276,7 @@ updateBlocks( const InterfaceMapType interfaceMap,
         ArrayContainer BlockIterHost, int numThreadsPerBlock/*, Real **sArray*/ )
 {  
 //#pragma omp parallel for schedule( dynamic )
-  for( int i = 0; i < BlockIterHost.getSize(); i++ )
+  for( IndexType i = 0; i < BlockIterHost.getSize(); i++ )
   {
     if( BlockIterHost[ i ] )
     {
@@ -323,15 +323,15 @@ updateBlocks( const InterfaceMapType interfaceMap,
       if( sArray == nullptr )
         std::cout << "Error while allocating memory for sArray." << std::endl;
       
-      for( int k = 0; k < sizeSArray; k++ )
-        for( int l = 0; l < sizeSArray; l++ )
-          for( int m = 0; m < sizeSArray; m++ ){
+      for( IndexType k = 0; k < sizeSArray; k++ )
+        for( IndexType l = 0; l < sizeSArray; l++ )
+          for( IndexType m = 0; m < sizeSArray; m++ ){
             sArray[ m * sizeSArray * sizeSArray + k * sizeSArray + l ] = std::numeric_limits< Real >::max();
           }
       
       
-      for( int thrk = 0; thrk < numThreadsPerBlock; thrk++ )
-        for( int thrj = 0; thrj < numThreadsPerBlock; thrj++ )
+      for( IndexType thrk = 0; thrk < numThreadsPerBlock; thrk++ )
+        for( IndexType thrj = 0; thrj < numThreadsPerBlock; thrj++ )
         {
           if( blIdx != 0 && thrj+1 < ykolik && thrk+1 < zkolik )
             sArray[(thrk+1 )* sizeSArray * sizeSArray + (thrj+1)*sizeSArray + 0] = 
@@ -358,9 +358,9 @@ updateBlocks( const InterfaceMapType interfaceMap,
                     aux[ (blIdz+1)*numThreadsPerBlock * dimX * dimY + blIdy * numThreadsPerBlock*dimX + blIdx*numThreadsPerBlock + thrj * dimX + thrk ];
         }
       
-      for( int m = 0; m < numThreadsPerBlock; m++ ){
-        for( int k = 0; k < numThreadsPerBlock; k++ ){
-          for( int l = 0; l < numThreadsPerBlock; l++ ){
+      for( IndexType m = 0; m < numThreadsPerBlock; m++ ){
+        for( IndexType k = 0; k < numThreadsPerBlock; k++ ){
+          for( IndexType l = 0; l < numThreadsPerBlock; l++ ){
             if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX && blIdz * numThreadsPerBlock + m < dimZ )
               sArray[(m+1) * sizeSArray * sizeSArray + (k+1) *sizeSArray + l+1] = 
                       aux[ blIdz * numThreadsPerBlock * dimX * dimY + blIdy * numThreadsPerBlock * dimX + blIdx*numThreadsPerBlock + m*dimX*dimY + k*dimX + l ];
@@ -379,9 +379,9 @@ updateBlocks( const InterfaceMapType interfaceMap,
       s = "helpFunc-"+ std::to_string(numWhile) + ".tnl";
       helpFunc.save( s );*/
       
-      for( int m = 0; m < numThreadsPerBlock; m++ ){
-        for( int k = 0; k < numThreadsPerBlock; k++ ){ 
-          for( int l = 0; l < numThreadsPerBlock; l++ ){
+      for( IndexType m = 0; m < numThreadsPerBlock; m++ ){
+        for( IndexType k = 0; k < numThreadsPerBlock; k++ ){ 
+          for( IndexType l = 0; l < numThreadsPerBlock; l++ ){
             if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX && blIdz * numThreadsPerBlock + m < dimZ ){
               //std::cout << "proslo i = " << k * numThreadsPerBlock + l << std::endl;
               if( ! interfaceMap[ blIdz * numThreadsPerBlock * dimX * dimY + blIdy * numThreadsPerBlock * dimX + blIdx*numThreadsPerBlock + m*dimX*dimY + k*dimX + l  ] )
@@ -404,9 +404,9 @@ updateBlocks( const InterfaceMapType interfaceMap,
       s = "helpFunc-"+ std::to_string(numWhile) + ".tnl";
       helpFunc.save( s );*/
       
-      for( int m = numThreadsPerBlock-1; m >-1; m-- ){
-        for( int k = 0; k < numThreadsPerBlock; k++ ){
-          for( int l = 0; l <numThreadsPerBlock; l++ ){
+      for( IndexType m = numThreadsPerBlock-1; m >-1; m-- ){
+        for( IndexType k = 0; k < numThreadsPerBlock; k++ ){
+          for( IndexType l = 0; l <numThreadsPerBlock; l++ ){
             if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX && blIdz * numThreadsPerBlock + m < dimZ )
             {
               if( ! interfaceMap[ blIdz * numThreadsPerBlock * dimX * dimY + blIdy * numThreadsPerBlock * dimX + blIdx*numThreadsPerBlock + m*dimX*dimY + k*dimX + l  ] )
@@ -427,9 +427,9 @@ updateBlocks( const InterfaceMapType interfaceMap,
       s = "helpFunc-"+ std::to_string(numWhile) + ".tnl";
       helpFunc.save( s );*/
       
-      for( int m = 0; m < numThreadsPerBlock; m++ ){
-        for( int k = 0; k < numThreadsPerBlock; k++ ){
-          for( int l = numThreadsPerBlock-1; l >-1; l-- ){
+      for( IndexType m = 0; m < numThreadsPerBlock; m++ ){
+        for( IndexType k = 0; k < numThreadsPerBlock; k++ ){
+          for( IndexType l = numThreadsPerBlock-1; l >-1; l-- ){
             if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX && blIdz * numThreadsPerBlock + m < dimZ )
             {
               if( ! interfaceMap[ blIdz * numThreadsPerBlock * dimX * dimY + blIdy * numThreadsPerBlock * dimX + blIdx*numThreadsPerBlock + m*dimX*dimY + k*dimX + l  ] )
@@ -450,9 +450,9 @@ updateBlocks( const InterfaceMapType interfaceMap,
       s = "helpFunc-"+ std::to_string(numWhile) + ".tnl";
       helpFunc.save( s );
       */
-      for( int m = numThreadsPerBlock-1; m >-1; m-- ){
-        for( int k = 0; k < numThreadsPerBlock; k++ ){
-          for( int l = numThreadsPerBlock-1; l >-1; l-- ){
+      for( IndexType m = numThreadsPerBlock-1; m >-1; m-- ){
+        for( IndexType k = 0; k < numThreadsPerBlock; k++ ){
+          for( IndexType l = numThreadsPerBlock-1; l >-1; l-- ){
             if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX && blIdz * numThreadsPerBlock + m < dimZ )
             {
               if( ! interfaceMap[ blIdz * numThreadsPerBlock * dimX * dimY + blIdy * numThreadsPerBlock * dimX + blIdx*numThreadsPerBlock + m*dimX*dimY + k*dimX + l  ] )
@@ -473,9 +473,9 @@ updateBlocks( const InterfaceMapType interfaceMap,
       s = "helpFunc-"+ std::to_string(numWhile) + ".tnl";
       helpFunc.save( s );*/
       
-      for( int m = 0; m < numThreadsPerBlock; m++ ){
-        for( int k = numThreadsPerBlock-1; k > -1; k-- ){
-          for( int l = 0; l <numThreadsPerBlock; l++ ){
+      for( IndexType m = 0; m < numThreadsPerBlock; m++ ){
+        for( IndexType k = numThreadsPerBlock-1; k > -1; k-- ){
+          for( IndexType l = 0; l <numThreadsPerBlock; l++ ){
             if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX && blIdz * numThreadsPerBlock + m < dimZ )
             {
               if( ! interfaceMap[blIdz * numThreadsPerBlock * dimX * dimY + blIdy * numThreadsPerBlock * dimX + blIdx*numThreadsPerBlock + m*dimX*dimY + k*dimX + l  ] )
@@ -496,9 +496,9 @@ updateBlocks( const InterfaceMapType interfaceMap,
       s = "helpFunc-"+ std::to_string(numWhile) + ".tnl";
       helpFunc.save( s );*/
       
-      for( int m = numThreadsPerBlock-1; m >-1; m-- ){
-        for( int k = numThreadsPerBlock-1; k > -1; k-- ){
-          for( int l = 0; l <numThreadsPerBlock; l++ ){
+      for( IndexType m = numThreadsPerBlock-1; m >-1; m-- ){
+        for( IndexType k = numThreadsPerBlock-1; k > -1; k-- ){
+          for( IndexType l = 0; l <numThreadsPerBlock; l++ ){
             if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX && blIdz * numThreadsPerBlock + m < dimZ )
             {
               if( ! interfaceMap[ blIdz * numThreadsPerBlock * dimX * dimY + blIdy * numThreadsPerBlock * dimX + blIdx*numThreadsPerBlock + m*dimX*dimY + k*dimX + l  ] )
@@ -519,9 +519,9 @@ updateBlocks( const InterfaceMapType interfaceMap,
       s = "helpFunc-"+ std::to_string(numWhile) + ".tnl";
       helpFunc.save( s );*/
       
-      for( int m = 0; m < numThreadsPerBlock; m++ ){
-        for( int k = numThreadsPerBlock-1; k > -1; k-- ){
-          for( int l = numThreadsPerBlock-1; l >-1; l-- ){
+      for( IndexType m = 0; m < numThreadsPerBlock; m++ ){
+        for( IndexType k = numThreadsPerBlock-1; k > -1; k-- ){
+          for( IndexType l = numThreadsPerBlock-1; l >-1; l-- ){
             if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX && blIdz * numThreadsPerBlock + m < dimZ )
             {
               if( ! interfaceMap[ blIdz * numThreadsPerBlock * dimX * dimY + blIdy * numThreadsPerBlock * dimX + blIdx*numThreadsPerBlock + m*dimX*dimY + k*dimX + l  ] )
@@ -543,9 +543,9 @@ updateBlocks( const InterfaceMapType interfaceMap,
       helpFunc.save( s );*/
       
       
-      for( int m = numThreadsPerBlock-1; m >-1; m-- ){
-        for( int k = numThreadsPerBlock-1; k > -1; k-- ){
-          for( int l = numThreadsPerBlock-1; l >-1; l-- ){
+      for( IndexType m = numThreadsPerBlock-1; m >-1; m-- ){
+        for( IndexType k = numThreadsPerBlock-1; k > -1; k-- ){
+          for( IndexType l = numThreadsPerBlock-1; l >-1; l-- ){
             if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX && blIdz * numThreadsPerBlock + m < dimZ )
             {
               if( ! interfaceMap[ blIdz * numThreadsPerBlock * dimX * dimY + blIdy * numThreadsPerBlock * dimX + blIdx*numThreadsPerBlock + m*dimX*dimY + k*dimX + l  ] )
@@ -571,9 +571,9 @@ updateBlocks( const InterfaceMapType interfaceMap,
       }
       
       
-      for( int k = 0; k < numThreadsPerBlock; k++ ){ 
-        for( int l = 0; l < numThreadsPerBlock; l++ ) {
-          for( int m = 0; m < numThreadsPerBlock; m++ ){
+      for( IndexType k = 0; k < numThreadsPerBlock; k++ ){ 
+        for( IndexType l = 0; l < numThreadsPerBlock; l++ ) {
+          for( IndexType m = 0; m < numThreadsPerBlock; m++ ){
             if( blIdy * numThreadsPerBlock + k < dimY && blIdx * numThreadsPerBlock + l < dimX && blIdz * numThreadsPerBlock + m < dimZ ){      
               helpFunc[ blIdz * numThreadsPerBlock * dimX * dimY + blIdy * numThreadsPerBlock * dimX + blIdx*numThreadsPerBlock + m*dimX*dimY + k*dimX + l ] = 
                       sArray[ (m+1) * sizeSArray * sizeSArray + (k+1) *sizeSArray + l+1 ];
@@ -1224,26 +1224,6 @@ updateCell( MeshFunctionType& u,
   }
 }
 
-template < typename T1, typename T2 >
-T1 meet2DCondition( T1 a, T1 b, const T2 ha, const T2 hb, const T1 value, double v)
-{
-  T1 tmp;
-  if( fabs( a ) != std::numeric_limits< T1 >::max &&
-          fabs( b ) != std::numeric_limits< T1 >::max &&
-          fabs( a - b ) < ha/v )//TNL::sqrt( (ha * ha + hb * hb)/2 )/v )
-  {
-    tmp = ( ha * ha * b + hb * hb * a + 
-            TNL::sign( value ) * ha * hb * TNL::sqrt( ( ha * ha + hb * hb )/( v * v ) - 
-            ( a - b ) * ( a - b ) ) )/( ha * ha + hb * hb );
-  }
-  else
-  {
-    tmp = std::numeric_limits< T1 >::max;
-  }
-  
-  return tmp;
-}
-
 template < typename T1 >
 __cuda_callable__ void sortMinims( T1 pom[] )
 {
@@ -1274,7 +1254,7 @@ __cuda_callable__ void sortMinims( T1 pom[] )
     tmp[3] = pom[5]; tmp[4] = pom[4]; tmp[5] = pom[3];
   }
   
-  for( int i = 0; i < 6; i++ )
+  for( unsigned int i = 0; i < 6; i++ )
   {
     pom[ i ] = tmp[ i ];
   }   
