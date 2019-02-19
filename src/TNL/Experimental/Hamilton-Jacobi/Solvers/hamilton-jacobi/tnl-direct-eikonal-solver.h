@@ -36,6 +36,9 @@ class DirectEikonalSolverConfig
       {
          config.addDelimiter( "Direct eikonal equation solver settings:" );
          config.addRequiredEntry< String >( "input-file", "Input file." );
+         config.addEntry< String >( "distributed-grid-io-type", "Choose Distributed Grid IO Type", "LocalCopy");
+            config.addEntryEnum< String >( "LocalCopy" );
+            config.addEntryEnum< String >( "MpiIO" );
       };
 };
 

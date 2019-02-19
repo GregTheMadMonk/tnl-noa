@@ -17,6 +17,7 @@
 
 
 template< typename Mesh,
+        typename Communicator,
         typename Anisotropy = Functions::Analytic::Constant< Mesh::getMeshDimension(), typename Mesh::RealType > >
 class FastSweepingMethod
 {   
@@ -25,8 +26,9 @@ class FastSweepingMethod
 template< typename Real,
         typename Device,
         typename Index,
+        typename Communicator,
         typename Anisotropy >
-class FastSweepingMethod< Meshes::Grid< 1, Real, Device, Index >, Anisotropy >
+class FastSweepingMethod< Meshes::Grid< 1, Real, Device, Index >, Communicator, Anisotropy >
 : public tnlDirectEikonalMethodsBase< Meshes::Grid< 1, Real, Device, Index > >
 {
   //static_assert(  std::is_same< Device, TNL::Devices::Host >::value, "The fast sweeping method works only on CPU." );
@@ -47,7 +49,7 @@ class FastSweepingMethod< Meshes::Grid< 1, Real, Device, Index >, Anisotropy >
     using typename BaseType::MeshFunctionType;
     using typename BaseType::InterfaceMapPointer;
     using typename BaseType::MeshFunctionPointer;
-    
+   
     
     FastSweepingMethod();
     
@@ -56,6 +58,7 @@ class FastSweepingMethod< Meshes::Grid< 1, Real, Device, Index >, Anisotropy >
     void setMaxIterations( const IndexType& maxIterations );
     
     void solve( const MeshPointer& mesh,
+            MeshFunctionPointer& Aux,
             const AnisotropyPointer& anisotropy,
             MeshFunctionPointer& u );
     
@@ -68,8 +71,9 @@ class FastSweepingMethod< Meshes::Grid< 1, Real, Device, Index >, Anisotropy >
 template< typename Real,
         typename Device,
         typename Index,
+        typename Communicator,
         typename Anisotropy >
-class FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Anisotropy >
+class FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Communicator, Anisotropy >
 : public tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >
 {
   //static_assert(  std::is_same< Device, TNL::Devices::Host >::value, "The fast sweeping method works only on CPU." );
@@ -84,13 +88,14 @@ class FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Anisotropy >
     typedef tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > > BaseType;
     using MeshPointer = Pointers::SharedPointer<  MeshType >;
     using AnisotropyPointer = Pointers::SharedPointer< AnisotropyType, DeviceType >;
+    using MPI = Communicators::MpiCommunicator;
     
     using typename BaseType::InterfaceMapType;
     using typename BaseType::MeshFunctionType;
     using typename BaseType::InterfaceMapPointer;
     using typename BaseType::MeshFunctionPointer;
     using typename BaseType::ArrayContainer;
-    
+        
     FastSweepingMethod();
     
     const IndexType& getMaxIterations() const;
@@ -98,8 +103,9 @@ class FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Anisotropy >
     void setMaxIterations( const IndexType& maxIterations );
     
     void solve( const MeshPointer& mesh,
+            MeshFunctionPointer& Aux,
             const AnisotropyPointer& anisotropy,
-            MeshFunctionPointer& u );
+            const MeshFunctionPointer& u );
     
     protected:
       
@@ -109,8 +115,9 @@ class FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Anisotropy >
 template< typename Real,
         typename Device,
         typename Index,
+        typename Communicator,
         typename Anisotropy >
-class FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Anisotropy >
+class FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Communicator, Anisotropy >
 : public tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > >
 {
   //static_assert(  std::is_same< Device, TNL::Devices::Host >::value, "The fast sweeping method works only on CPU." );
@@ -140,6 +147,7 @@ class FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Anisotropy >
     void setMaxIterations( const IndexType& maxIterations );
     
     void solve( const MeshPointer& mesh,
+            MeshFunctionPointer& Aux,
             const AnisotropyPointer& anisotropy,
             MeshFunctionPointer& u );
     

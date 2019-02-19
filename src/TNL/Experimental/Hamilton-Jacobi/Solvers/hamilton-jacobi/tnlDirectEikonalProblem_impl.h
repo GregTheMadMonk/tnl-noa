@@ -12,6 +12,9 @@
  */
 
 #pragma once
+#include <TNL/FileName.h>
+
+#include "tnlDirectEikonalProblem.h"
 
 template< typename Mesh,
           typename Communicator,
@@ -76,6 +79,11 @@ tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
+  String param=parameters.getParameter< String >( "distributed-grid-io-type" );
+   if(param=="MpiIO")
+        distributedIOType=Meshes::DistributedMeshes::MpiIO;
+   if(param=="LocalCopy")
+        distributedIOType=Meshes::DistributedMeshes::LocalCopy;
    return true;
 }
 
@@ -117,14 +125,14 @@ setInitialCondition( const Config::ParameterContainer& parameters,
   String inputFile = parameters.getParameter< String >( "input-file" );
   this->initialData->setMesh( this->getMesh() );
   std::cout<<"setInitialCondition" <<std::endl; 
-  if(CommunicatorType::isDistributed())
+  if( CommunicatorType::isDistributed() )
   {
-    std::cout<<"Nodes Distribution: " << u->getMesh().getDistributedMesh()->printProcessDistr() << std::endl;
+    std::cout<<"Nodes Distribution: " << initialData->getMesh().getDistributedMesh()->printProcessDistr() << std::endl;
     if(distributedIOType==Meshes::DistributedMeshes::MpiIO)
-      Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::MpiIO> ::load(inputFile, *u );
+      Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::MpiIO> ::load(inputFile, *initialData );
     if(distributedIOType==Meshes::DistributedMeshes::LocalCopy)
-      Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::LocalCopy> ::load(inputFile, *u );
-    u->template synchronize<CommunicatorType>();
+      Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::LocalCopy> ::load(inputFile, *initialData );
+    initialData->template synchronize<CommunicatorType>();
   }
   else
   {
@@ -141,6 +149,38 @@ setInitialCondition( const Config::ParameterContainer& parameters,
   return true;
 }
 
+template< typename Mesh,
+          typename Communicator,
+          typename Anisotropy,
+          typename Real,
+          typename Index >
+bool
+tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
+makeSnapshot(  )
+{
+   std::cout << std::endl << "Writing output." << std::endl;
+
+   //this->bindDofs( dofs );
+
+   FileName fileName;
+   fileName.setFileNameBase( "u-" );
+   fileName.setExtension( "tnl" );
+
+   if(CommunicatorType::isDistributed())
+   {
+      if(distributedIOType==Meshes::DistributedMeshes::MpiIO)
+        Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::MpiIO> ::save(fileName.getFileName(), *u );
+      if(distributedIOType==Meshes::DistributedMeshes::LocalCopy)
+        Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::LocalCopy> ::save(fileName.getFileName(), *u );
+   }
+   else
+   {
+      if( ! this->u->save( fileName.getFileName() ) )
+         return false;
+   }
+   return true;
+}
+
 
 template< typename Mesh,
           typename Communicator,
@@ -151,7 +191,19 @@ bool
 tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
 solve( DofVectorPointer& dofs )
 {
-   FastSweepingMethod< MeshType, AnisotropyType > fsm;
-   fsm.solve( this->getMesh(), anisotropy, initialData );
+   FastSweepingMethod< MeshType, Communicator,AnisotropyType > fsm;
+   fsm.solve( this->getMesh(), u, anisotropy, initialData );
+   
+   /*int i = Communicators::MpiCommunicator::GetRank( Communicators::MpiCommunicator::AllGroup );
+   const MeshPointer msh = this->getMesh();
+   if( i == 0 &&  msh->getMeshDimension() == 2 )
+   {
+     for( int k = 0; k < 9; k++ ){
+       for( int l = 0; l < msh->getDimensions().x(); l++ )
+         printf("%.2f\t",(*initialData)[ k * msh->getDimensions().x() + l ] );
+       printf("\n");
+     }
+   }*/
+   makeSnapshot();
    return true;
 }

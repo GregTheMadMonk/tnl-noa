@@ -70,7 +70,7 @@ class tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >
             InterfaceMapPointer& interfaceMap );
     
     template< typename MeshEntity >
-    __cuda_callable__ void updateCell( MeshFunctionType& u,
+    __cuda_callable__ bool updateCell( MeshFunctionType& u,
             const MeshEntity& cell,
             const RealType velocity = 1.0 );
     
@@ -147,7 +147,12 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
         const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index >, 2, bool >& interfaceMap,
         const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& aux,
         Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& helpFunc,
-        TNL::Containers::ArrayView< int, Devices::Cuda, Index > BlockIterDevice, int oddEvenBlock =0);
+        TNL::Containers::Array< int, Devices::Cuda, Index > BlockIterDevice,
+        Containers::StaticVector< 2, Index > vLower, Containers::StaticVector< 2, Index > vUpper, int k,int oddEvenBlock =0);
+
+template< typename Real, typename Device, typename Index >
+__global__ void DeepCopy( const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& aux,
+        Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& helpFunc );
 
 template < typename Index >
 __global__ void CudaParallelReduc( TNL::Containers::ArrayView< int, Devices::Cuda, Index > BlockIterDevice,
@@ -160,7 +165,8 @@ __global__ void GetNeighbours( TNL::Containers::ArrayView< int, Devices::Cuda, I
 template < typename Real, typename Device, typename Index >
 __global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& input, 
         Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& output,
-        Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index >, 2, bool >& interfaceMap );
+        Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index >, 2, bool >& interfaceMap,
+        Containers::StaticVector< 2, Index > vLower, Containers::StaticVector< 2, Index > vUpper );
 
 template < typename Real, typename Device, typename Index >
 __global__ void CudaInitCaller3d( const Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index > >& input, 

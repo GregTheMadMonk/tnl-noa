@@ -71,6 +71,8 @@ class tnlDirectEikonalProblem
       
       bool setInitialCondition( const Config::ParameterContainer& parameters,
                                 DofVectorPointer& dofs );
+      
+      bool makeSnapshot( );
 
       bool solve( DofVectorPointer& dosf );
 
