@@ -70,10 +70,10 @@ class Array : public Object
       /**
        * \brief Copy constructor.
        *
-       * Copies \e size elements from existing \e array into a new array.
-       * \param array Existing array that is about to be copied.
-       * \param begin Index from which the array is copied.
-       * \param size Number of array elements that should be copied.
+       * The constructor does not make a deep copy, but binds to the supplied array.
+       * \param array Existing array that is to be bound.
+       * \param begin The first index which should be bound.
+       * \param size Number of array elements that should be bound.
        */
       Array( Array& array,
              const IndexType& begin = 0,
