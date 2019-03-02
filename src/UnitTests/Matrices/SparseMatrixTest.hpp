@@ -8,59 +8,6 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-// TODO
-/*
- * setDimensions()                      ::DONE
- * setCompressedRowLengths()            ::DONE
- * getRowLength()                   ::USED! In test_SetCompressedRowLengths() to verify the test itself.
- * getRowLengthFast()               ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
- * setLike()                            ::DONE
- * reset()                              ::DONE
- * setElementFast()                 ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
- * setElement()                         ::DONE
- * addElementFast()                 ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
- * addElement()                         ::DONE
- * setRowFast()                     ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
- * setRow()                             ::DONE
- *      MISTAKE!!! In SlicedEllpack: addElement(), line 263, "column <= this->rows" shouldn't it be: "column <= this->columns", otherwise test_SetRow causes the assertion to fail.
- * addRowFast()                     ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
- * addRow()                         ::NOT IMPLEMENTED! This calls addRowFast() which isn't implemented. Implement? Is it supposed to add an extra row to the matrix or add elements of a row to another row in the matrix?
- * getElementFast()                 ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
- * getElement()                     ::USED! In test_SetElement(), test_AddElement() and test_setRow() to verify the test itself.
- * getRowFast()                     ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
- * MatrixRow getRow()               ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
- * ConstMatrixRow getRow()          ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
- * rowVectorProduct()               ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
- * vectorProduct()                      ::DONE
- *      This used to throw illegal memory access, but instead of using ints for vectors, using Types, helped.
- * addMatrix()                      ::NOT IMPLEMENTED!
- * getTransposition()               ::NOT IMPLMENETED!
- * performSORIteration()            ::HOW? Throws segmentation fault CUDA.
- * operator=()                      ::HOW? What is this supposed to enable? Overloading operators?
- * save( File& file)                ::USED! In save( String& fileName )
- * load( File& file )               ::USED! In load( String& fileName )
- * save( String& fileName )             ::DONE
- * load( String& fileName )             ::DONE
- * print()                              ::DONE
- * setCudaKernelType()              ::NOT SUPPOSED TO TEST! via notes from 1.11.2018 supervisor meeting.
- * getCudaKernelType()              ::NOT SUPPOSED TO TEST! via notes from 1.11.2018 supervisor meeting.
- * setCudaWarpSize()                ::NOT SUPPOSED TO TEST! via notes from 1.11.2018 supervisor meeting.
- * getCudaWarpSize()                ::NOT SUPPOSED TO TEST! via notes from 1.11.2018 supervisor meeting.
- * setHybridModeSplit()             ::NOT SUPPOSED TO TEST! via notes from 1.11.2018 supervisor meeting.
- * getHybridModeSplit()             ::NOT SUPPOSED TO TEST! via notes from 1.11.2018 supervisor meeting.
- * spmvCudaVectorized()             ::TEST? How to test __device__?
- * vectorProductCuda()              ::TEST? How to test __device__?
- */
-
-// GENERAL TODO
-/*
- * For every function, EXPECT_EQ needs to be done, even for zeros in matrices.
- * Figure out __cuda_callable_. When trying to call __cuda_callable__ functions
- *      a segmentation fault (core dumped) is thrown.
- *  ==>__cuda_callable__ works only for CPU at the moment. (for loops vs thread kernel assignment).
- *                       If we want to use __cuda_callable__ on the GPU, we need to call it as a kernel.
- */
-
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/VectorView.h>
 #include <TNL/Math.h>
