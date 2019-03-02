@@ -217,13 +217,6 @@ void ChunkedEllpack< Real, Device, Index >::setCompressedRowLengths( ConstCompre
          this->setSlice( rowLengths, sliceIndex, elementsToAllocation );
       this->rowPointers.scan();
    }
-   
-//   std::cout << "\ngetRowLength after first if: " << std::endl;
-//   for( IndexType i = 0; i < rowLengths.getSize(); i++ )
-//   {
-//       std::cout << getRowLength( i ) << std::endl;
-//   }
-//   std::cout << "\n";
 
    if( std::is_same< Device, Devices::Cuda >::value )
    {
@@ -248,7 +241,6 @@ void ChunkedEllpack< Real, Device, Index >::setCompressedRowLengths( ConstCompre
       elementsToAllocation = hostMatrix.values.getSize();
    }
    this->maxRowLength = max( rowLengths );
-//   std::cout << "\nrowLengths.max() = " << rowLengths.max() << std::endl;
    Sparse< Real, Device, Index >::allocateMatrixElements( elementsToAllocation );
 }
 
