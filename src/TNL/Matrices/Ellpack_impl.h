@@ -75,7 +75,7 @@ void Ellpack< Real, Device, Index >::setDimensions( const IndexType rows,
    this->rows = rows;
    this->columns = columns;
    if( std::is_same< Device, Devices::Cuda >::value )
-      this->alignedRows = roundToMultiple( columns, Devices::Cuda::getWarpSize() );
+      this->alignedRows = roundToMultiple( rows, Devices::Cuda::getWarpSize() );
    else this->alignedRows = rows;
    if( this->rowLengths != 0 )
       allocateElements();
@@ -142,7 +142,9 @@ void Ellpack< Real, Device, Index >::setLike( const Ellpack< Real2, Device2, Ind
 {
    Sparse< Real, Device, Index >::setLike( matrix );
    this->rowLengths = matrix.rowLengths;
-   this->alignedRows = matrix.alignedRows;
+   if( std::is_same< Device, Devices::Cuda >::value )
+      this->alignedRows = roundToMultiple( this->getRows(), Devices::Cuda::getWarpSize() );
+   else this->alignedRows = this->getRows();
 }
 
 template< typename Real,
