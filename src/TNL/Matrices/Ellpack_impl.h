@@ -518,9 +518,10 @@ template< typename Real,
    template< typename InVector,
              typename OutVector >
 void Ellpack< Real, Device, Index >::vectorProduct( const InVector& inVector,
-                                                                   OutVector& outVector ) const
+                                                    OutVector& outVector,
+                                                    RealType multiplicator ) const
 {
-   DeviceDependentCode::vectorProduct( *this, inVector, outVector );
+   DeviceDependentCode::vectorProduct( *this, inVector, outVector, multiplicator );
 }
 
 template< typename Real,
@@ -815,13 +816,14 @@ class EllpackDeviceDependentCode< Devices::Host >
                 typename OutVector >
       static void vectorProduct( const Ellpack< Real, Device, Index >& matrix,
                                  const InVector& inVector,
-                                 OutVector& outVector )
+                                 OutVector& outVector,
+                                 Real multiplicator )
       {
 #ifdef HAVE_OPENMP
 #pragma omp parallel for if( Devices::Host::isOMPEnabled() )
 #endif
          for( Index row = 0; row < matrix.getRows(); row ++ )
-            outVector[ row ] = matrix.rowVectorProduct( row, inVector );
+            outVector[ row ] = matrix.rowVectorProduct( row, inVector ) * multiplicator;
          /*Index col;
          for( Index row = 0; row < matrix.getRows(); row ++ )
          {
@@ -848,6 +850,7 @@ __global__ void EllpackVectorProductCudaKernel(
    const Real* values,
    const Real* inVector,
    Real* outVector,
+   Real multiplicator,
    const Index gridIdx )
 {
    const Index rowIdx = ( gridIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
@@ -864,7 +867,7 @@ __global__ void EllpackVectorProductCudaKernel(
       result += values[ i ] * inVector[ columnIndex ];
       i += alignedRows;
    }
-   outVector[ rowIdx ] = result;
+   outVector[ rowIdx ] = result * multiplicator;
 }
 #endif
 
@@ -909,7 +912,8 @@ class EllpackDeviceDependentCode< Devices::Cuda >
                 typename OutVector >
       static void vectorProduct( const Ellpack< Real, Device, Index >& matrix,
                                  const InVector& inVector,
-                                 OutVector& outVector )
+                                 OutVector& outVector,
+                                 Real multiplicator )
       {
          //MatrixVectorProductCuda( matrix, inVector, outVector );
          #ifdef HAVE_CUDA
@@ -937,6 +941,7 @@ class EllpackDeviceDependentCode< Devices::Cuda >
                   matrix.values.getData(),
                   inVector.getData(),
                   outVector.getData(),
+                  multiplicator,
                   gridIdx );
                TNL_CHECK_CUDA_DEVICE;
             }
@@ -946,7 +951,6 @@ class EllpackDeviceDependentCode< Devices::Cuda >
             TNL_CHECK_CUDA_DEVICE;
             cudaDeviceSynchronize();
          #endif
- 
       }
 };
 
