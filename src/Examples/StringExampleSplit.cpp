@@ -12,7 +12,7 @@ int main()
 
    String cars("Subaru,Mazda,,Skoda," );
    vector< String > list3 = cars.split(',', String::SkipEmpty );
-   cout << "split with true:" << list3[0] << ", " << list3[1] << ", " << list3[2] << endl;
+   cout << "split with String::SkipEmpty = " << list3[0] << ", " << list3[1] << ", " << list3[2] << endl;
    std::vector<String> list5 = cars.split(',');
-   cout << "split with false:" << list5[0] << ", " << list5[1] << ", " << list5[2] << ", " << list5[3] << endl;
+   cout << "split without  String::SkipEmpty = " << list5[0] << ", " << list5[1] << ", " << list5[2] << ", " << list5[3] << endl;
 }

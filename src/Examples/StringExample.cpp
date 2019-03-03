@@ -30,7 +30,7 @@ int main( int argc, char* argv[] )
    cout << " 3rd letter of string1 =" << string1[ 2 ] << endl;
 
    cout << " string1 + string2 = " << string1 + string2 << endl;
-   cout << " string1 + \"another string\" = " << string1 + "another string" << endl;
+   cout << " string1 + \" another string\" = " << string1 + " another string" << endl;
    
    string2 += "another string";
    cout << " string2 = " << string2;
@@ -45,14 +45,4 @@ int main( int argc, char* argv[] )
       cout << "emptyString is empty" << endl;
    if( string1 )
       cout << "string1 is not empty" << endl;
-
-
-    // save
-    File myFile;
-    myFile << String("Header"); // saves "Header" into myFile
-
-    // load
-    String strg;
-    myFile >> strg;
-    cout << "strg:" << strg << endl;
 }

@@ -29,23 +29,30 @@ ADD_EXECUTABLE( MathExample MathExample.cpp )
 ADD_EXECUTABLE( ParameterContainerExample ParameterContainerExample.cpp )
 
 ADD_EXECUTABLE( StringExample StringExample.cpp )
-EXECUTE_PROCESS( COMMAND StringExample OUTPUT_FILE StringExample.out )
+ADD_CUSTOM_COMMAND( COMMAND StringExample > StringExample.out OUTPUT StringExample.out )
 
 ADD_EXECUTABLE( StringExampleGetAllocatedSize StringExampleGetAllocatedSize.cpp )
-EXECUTE_PROCESS( COMMAND StringExampleGetAllocatedSize OUTPUT_FILE StringExampleGetAllocatedSize.out )
+ADD_CUSTOM_COMMAND( COMMAND StringExampleGetAllocatedSize > StringExampleGetAllocatedSize.out OUTPUT StringExampleGetAllocatedSize.out )
 
 ADD_EXECUTABLE( StringExampleReplace StringExampleReplace.cpp )
-EXECUTE_PROCESS( COMMAND StringExampleReplace OUTPUT_FILE StringExampleReplace.out )
+ADD_CUSTOM_COMMAND( COMMAND StringExampleReplace > StringExampleReplace.out OUTPUT StringExampleReplace.out )
 
 ADD_EXECUTABLE( StringExampleSetSize StringExampleSetSize.cpp )
-EXECUTE_PROCESS( COMMAND StringExampleSetSize OUTPUT_FILE StringExampleSetSize.out )
+ADD_CUSTOM_COMMAND( COMMAND StringExampleSetSize > StringExampleSetSize.out OUTPUT StringExampleSetSize.out )
 
 ADD_EXECUTABLE( StringExampleSplit StringExampleSplit.cpp )
-EXECUTE_PROCESS( COMMAND StringExampleSpli OUTPUT_FILE StringExampleSplit.out )
+ADD_CUSTOM_COMMAND( COMMAND StringExampleSplit > StringExampleSplit.out OUTPUT StringExampleSplit.out )
 
 ADD_EXECUTABLE( StringExampleStrip StringExampleStrip.cpp )
-EXECUTE_PROCESS( COMMAND StringExampleStrip OUTPUT_FILE StringExampleStrip.out )
+ADD_CUSTOM_COMMAND( COMMAND StringExampleStrip > StringExampleStrip.out OUTPUT StringExampleStrip.out )
 
 ADD_EXECUTABLE( TimerExample TimerExample.cpp )
 
 ADD_EXECUTABLE( VectorExample VectorExample.cpp )
+
+ADD_CUSTOM_TARGET( run ALL DEPENDS
+   StringExample.out
+   StringExampleGetAllocatedSize.out
+   StringExampleReplace.out
+   StringExampleSplit.out
+   StringExampleStrip.out )

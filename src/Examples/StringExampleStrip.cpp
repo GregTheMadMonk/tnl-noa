@@ -8,6 +8,6 @@ int main()
 {
     String names(  "       Josh Martin   John  Marley Charles   " );
     String names2( ".......Josh Martin...John..Marley.Charles..." );
-    cout << "better_names:" << names.strip() << endl;
-    cout << "better_names:" << names.strip( '.' ) << endl;
+    cout << "names strip is: " << names.strip() << endl;
+    cout << "names2 strip is: " << names.strip( '.' ) << endl;
 }
