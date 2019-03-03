@@ -29,6 +29,9 @@ class Cuda
 
    static inline String getDeviceType();
 
+   // TODO: Remove getDeviceType();
+   static inline String getType() { return getDeviceType();};
+
    static inline void configSetup( Config::ConfigDescription& config, const String& prefix = "" );
 
    static inline bool setup( const Config::ParameterContainer& parameters,

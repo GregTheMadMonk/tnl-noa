@@ -26,6 +26,9 @@ ADD_EXECUTABLE( ListExample ListExample.cpp )
 ADD_EXECUTABLE( LoggerExample LoggerExample.cpp )
 ADD_EXECUTABLE( MathExample MathExample.cpp )
 
+ADD_EXECUTABLE( ObjectExample_getType ObjectExample_getType.cpp )
+ADD_CUSTOM_COMMAND( COMMAND ObjectExample_getType > ObjectExample_getType.out OUTPUT ObjectExample_getType.out )
+
 ADD_EXECUTABLE( ParameterContainerExample ParameterContainerExample.cpp )
 
 ADD_EXECUTABLE( StringExample StringExample.cpp )
@@ -55,6 +58,7 @@ ADD_CUSTOM_COMMAND( COMMAND TimerExampleLogger > TimerExampleLogger.out OUTPUT T
 ADD_EXECUTABLE( VectorExample VectorExample.cpp )
 
 ADD_CUSTOM_TARGET( run ALL DEPENDS
+   ObjectExample_getType.out
    StringExample.out
    StringExampleGetAllocatedSize.out
    StringExampleReplace.out

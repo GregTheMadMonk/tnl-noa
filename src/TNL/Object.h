@@ -22,40 +22,58 @@
 namespace TNL {
 
 /**
- * \brief Basic class for all 'large' objects like matrices, meshes, grids, solvers, etc..
+ * \brief Basic class for majority of TNL objects like matrices, meshes, grids, solvers, etc..
  *
- *  Objects like numerical grids, meshes, matrices large vectors etc.
- *  are inherited by this class. This class provides name for such objects. Giving
- *  a name to each bigger object is compulsory. The name can help to locate
- *  possible errors in the code. This can help to identify an object where, for
- *  example, one tries to touch non-existing element. All objects of the TNL should
- *  have only constructor with name and then only setter methods and method init.
- *  Each object derived from the Object must be able to tell its type via the method
- *  \ref getType and it must support methods \ref save and \ref load for saving and
- *  loading the object from a \ref File "file".
+ * Objects like numerical meshes, matrices large vectors etc. are inherited by 
+ * this class. This class introduces virtual method \ref getType which is 
+ * supposed to tell the object type in a C++ style.
  */
 class Object
 {
    public:
 
       /**
-       * \brief Type getter.
+       * \brief Static type getter.
        *
        * Returns the type in C++ style - for example the returned value
-       * may look as \c "Vector< double, Devices::Cuda >".
+       * may look as \c "Array< double, Devices::Cuda, int >".
+       * 
+       * \par Example
+       * \include ObjectExample_getType.cpp
+       * \par Output
+       * \include ObjectExample_getType.out
        */
-      static String getType();      
+      static String getType();
 
-      virtual String getTypeVirtual() const;   
+      /***
+       * \brief Virtual type getter.
+       * 
+       * Returns the type in C++ style - for example the returned value
+       * may look as \c "Array< double, Devices::Cuda, int >".
+       * See example at \ref Object::getType.
+       */
+      virtual String getTypeVirtual() const;
 
       /**
-       * \brief This is used for load and save methods.
+       * \brief Static serialization type getter.
        *
-       * Each object is saved as if it was stored on \ref Devices::Host. So even
-       * \c Vector< double, Devices::Cuda > is saved as \c Vector< double, Devices::Host >.
+       * Objects in TNL are saved as in a device independent manner. This method
+       * is supposed to return the object type but with the device type replaced 
+       * by Devices::Host. For example \c Array< double, Devices::Cuda > is
+       * saved as \c Array< double, Devices::Host >.
+       * See example at \ref Object::getType.
        */
       static String getSerializationType();
 
+      /***
+       * \brief Virtual serialization type getter.
+       * 
+       * Objects in TNL are saved as in a device independent manner. This method
+       * is supposed to return the object type but with the device type replaced 
+       * by Devices::Host. For example \c Array< double, Devices::Cuda > is
+       * saved as \c Array< double, Devices::Host >.
+       * See example at \ref Object::getType.
+       */
       virtual String getSerializationTypeVirtual() const;
 
       /**
