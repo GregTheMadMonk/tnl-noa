@@ -47,6 +47,10 @@ ADD_EXECUTABLE( StringExampleStrip StringExampleStrip.cpp )
 ADD_CUSTOM_COMMAND( COMMAND StringExampleStrip > StringExampleStrip.out OUTPUT StringExampleStrip.out )
 
 ADD_EXECUTABLE( TimerExample TimerExample.cpp )
+ADD_CUSTOM_COMMAND( COMMAND TimerExample > TimerExample.out OUTPUT TimerExample.out )
+
+ADD_EXECUTABLE( TimerExampleLogger TimerExampleLogger.cpp )
+ADD_CUSTOM_COMMAND( COMMAND TimerExampleLogger > TimerExampleLogger.out OUTPUT TimerExampleLogger.out )
 
 ADD_EXECUTABLE( VectorExample VectorExample.cpp )
 
@@ -55,4 +59,6 @@ ADD_CUSTOM_TARGET( run ALL DEPENDS
    StringExampleGetAllocatedSize.out
    StringExampleReplace.out
    StringExampleSplit.out
-   StringExampleStrip.out )
+   StringExampleStrip.out
+   TimerExample.out
+   TimerExampleLogger.out )

@@ -78,6 +78,14 @@ inline unsigned long long int Timer::getCPUCycles() const
    return this->totalCPUCycles;
 }
 
+inline bool Timer::writeLog( Logger& logger, int logLevel ) const
+{
+   logger.writeParameter< double                 >( "Real time:",  this->getRealTime(),  logLevel );
+   logger.writeParameter< double                 >( "CPU time:",   this->getCPUTime(),   logLevel );
+   logger.writeParameter< unsigned long long int >( "CPU Cycles:", this->getCPUCycles(), logLevel );
+   return true;
+}
+
 inline typename Timer::TimePoint Timer::readRealTime() const
 {
    return std::chrono::high_resolution_clock::now();
@@ -105,13 +113,11 @@ inline double Timer::durationToDouble( const Duration& duration ) const
    return dur.count();
 }
 
-
-inline bool Timer::writeLog( Logger& logger, int logLevel ) const
+inline unsigned long long Timer::rdtsc() const
 {
-   logger.writeParameter< double                 >( "Real time:",  this->getRealTime(),  logLevel );
-   logger.writeParameter< double                 >( "CPU time:",   this->getCPUTime(),   logLevel );
-   logger.writeParameter< unsigned long long int >( "CPU Cycles:", this->getCPUCycles(), logLevel );
-   return true;
+  unsigned hi, lo;
+  __asm__ __volatile__ ("rdtsc" : "=a"(lo), "=d"(hi));
+  return ( ( unsigned long long ) lo ) | ( ( ( unsigned long long ) hi ) << 32 );
 }
 
 } // namespace TNL
