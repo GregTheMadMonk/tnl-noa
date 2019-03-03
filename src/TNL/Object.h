@@ -118,4 +118,4 @@ parseObjectType( const String& objectType );
 
 } // namespace TNL
 
-#include <TNL/Object_impl.h>
+#include <TNL/Object.hpp>
