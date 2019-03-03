@@ -17,10 +17,11 @@ namespace TNL {
 class Logger;
 
 /**
- * \brief Class for time measuring.
+ * \brief Class for real time, CPU time and CPU cycles measuring.
  *
- * Counts the elapsed real time and CPU time in seconds together with CPU cycles
- * between the \ref start and \ref stop methods.
+ * It measures the elapsed real time, CPU time (in seconds) and CPU cycles
+ * elapsed on the timer. The timer can be paused by calling \ref stop and \ref
+ * start methods and reseted by calling \ref reset.
  *
  * \par Example
  * \include TimerExample.cpp
@@ -144,7 +145,6 @@ class Timer
       unsigned long long int initialCPUCycles, totalCPUCycles;
 
       bool stopState;
-
 };
 
 } // namespace TNL
