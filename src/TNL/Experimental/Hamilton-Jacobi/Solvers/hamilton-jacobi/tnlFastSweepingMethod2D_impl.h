@@ -664,19 +664,19 @@ solve( const MeshPointer& mesh,
         printf( "%d: Receved Calculated = %d.\n%d: Calculate = %d\n", i, calculated, i, calculate);
 #endif
         aux.template synchronize< Communicator >();
-      }
         
 #if ForDebug 
         if( i == 1 )
           printf("WhileCount = %d\n",WhileCount);
         //calculated = 0; // DEBUG;
 #endif
+        }
+#endif
       }
-      
       String s( "aux-" + std::to_string( i ) + ".tnl" );
       aux.save( s );   
       Aux=auxPtr;
-#endif
+      
       iteration++;
   }
   aux.save("aux-final.tnl");
