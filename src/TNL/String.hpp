@@ -228,48 +228,6 @@ String::split( const char separator, SplitSkipEmpty skipEmpty ) const
    return parts;
 }
 
-#ifdef HAVE_MPI
-inline void String::send( int target, int tag, MPI_Comm mpi_comm )
-{
-   int size = this->getSize();
-   MPI_Send( &size, 1, MPI_INT, target, tag, mpi_comm );
-   MPI_Send( this->getString(), this->length(), MPI_CHAR, target, tag, mpi_comm );
-}
-
-inline void String::receive( int source, int tag, MPI_Comm mpi_comm )
-{
-   int size;
-   MPI_Status status;
-   MPI_Recv( &size, 1, MPI_INT, source, tag, mpi_comm, &status );
-   this->setSize( size );
-   MPI_Recv( const_cast< void* >( ( const void* ) this->data() ), size, MPI_CHAR, source, tag, mpi_comm,  &status );
-}
-
-/*
-inline void String :: MPIBcast( int root, MPI_Comm comm )
-{
-#ifdef USE_MPI
-   int iproc;
-   MPI_Comm_rank( MPI_COMM_WORLD, &iproc );
-   TNL_ASSERT( string, );
-   int len = strlen( string );
-   MPI_Bcast( &len, 1, MPI_INT, root, comm );
-   if( iproc != root )
-   {
-      if( length < len )
-      {
-         delete[] string;
-         length = STRING_PAGE * ( len / STRING_PAGE + 1 );
-         string = new char[ length ];
-      }
-   }
- 
-   MPI_Bcast( string, len + 1, MPI_CHAR, root, comm );
-#endif
-}
-*/
-#endif
-
 inline String operator+( char string1, const String& string2 )
 {
    return convertToString( string1 ) + string2;
@@ -290,5 +248,46 @@ inline std::ostream& operator<<( std::ostream& stream, const String& str )
    stream << str.getString();
    return stream;
 }
+
+#ifdef HAVE_MPI
+inline void send( const String& str, int target, int tag, MPI_Comm mpi_comm )
+{
+   int size = str.getSize();
+   MPI_Send( &size, 1, MPI_INT, target, tag, mpi_comm );
+   MPI_Send( str.getString(), str.length(), MPI_CHAR, target, tag, mpi_comm );
+}
+
+inline void receive( String& str, int source, int tag, MPI_Comm mpi_comm )
+{
+   int size;
+   MPI_Status status;
+   MPI_Recv( &size, 1, MPI_INT, source, tag, mpi_comm, &status );
+   str.setSize( size );
+   MPI_Recv( const_cast< void* >( ( const void* ) str.data() ), size, MPI_CHAR, source, tag, mpi_comm,  &status );
+}
+
+/*
+inline void String :: MPIBcast( int root, MPI_Comm comm )
+{
+   int iproc;
+   MPI_Comm_rank( MPI_COMM_WORLD, &iproc );
+   TNL_ASSERT( string, );
+   int len = strlen( string );
+   MPI_Bcast( &len, 1, MPI_INT, root, comm );
+   if( iproc != root )
+   {
+      if( length < len )
+      {
+         delete[] string;
+         length = STRING_PAGE * ( len / STRING_PAGE + 1 );
+         string = new char[ length ];
+      }
+   }
+ 
+   MPI_Bcast( string, len + 1, MPI_CHAR, root, comm );
+}
+*/
+#endif
+
 
 } // namespace TNL

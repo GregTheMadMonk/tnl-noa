@@ -337,36 +337,33 @@ class String
        * \include StringExampleSplit.out   
        */
       std::vector< String > split( const char separator = ' ', SplitSkipEmpty skipEmpty = DoNotSkipEmpty ) const;
-
-   #ifdef HAVE_MPI
-
-      /**
-       * \brief Sends the string to the target MPI process.
-       */
-      void send( int target, int tag = 0, MPI_Comm mpi_comm = MPI_COMM_WORLD );
-
-      /**
-       * \brief Receives a string from the source MPI process.
-       */
-      void receive( int source, int tag = 0, MPI_Comm mpi_comm = MPI_COMM_WORLD );
-
-      //! Broadcast to other nodes in MPI cluster
-      // void MPIBcast( int root, MPI_Comm mpi_comm = MPI_COMM_WORLD );
-   #endif
 };
 
-/// \brief Returns concatenation of \e string1 and \e string2.
+/**
+ *  \brief Returns concatenation of \e string1 and \e string2.
+ */
 String operator+( char string1, const String& string2 );
 
-/// \brief Returns concatenation of \e string1 and \e string2.
+/**
+ *  \brief Returns concatenation of \e string1 and \e string2.
+ */
 String operator+( const char* string1, const String& string2 );
 
-/// \brief Returns concatenation of \e string1 and \e string2.
+/**
+ *  \brief Returns concatenation of \e string1 and \e string2.
+ */
 String operator+( const std::string& string1, const String& string2 );
 
-/// \brief Performs the string output to a stream
+/**
+ *  \brief Writes the string \e str to given \e stream
+ */
 std::ostream& operator<<( std::ostream& stream, const String& str );
 
+/**
+ * \brief Converts \e value of type \e T to a String.
+ * 
+ * \tparam T can be any type fir which operator << is defined. 
+ */
 template< typename T >
 String convertToString( const T& value )
 {
@@ -375,11 +372,47 @@ String convertToString( const T& value )
    return String( str.str().data() );
 }
 
+/**
+ * \brief Specialization of function \ref conertToString for boolean.
+ * 
+ * The boolean type is converted to 'true' ot 'false'.
+ */
 template<> inline String convertToString( const bool& b )
 {
    if( b ) return "true";
    return "false";
 }
+
+#ifdef HAVE_MPI
+
+/**
+ * \brief Sends the string to the target MPI process.
+ * 
+ * @param str string to be sent
+ * @param target target MPI process ID
+ * @param tag MPI tag
+ * @param mpi_comm MPI communication group
+ */
+void send( const String& str, int target, int tag = 0, MPI_Comm mpi_comm = MPI_COMM_WORLD );
+
+/**
+ * \brief Receives a string from the source MPI process.
+ */
+
+/**
+ * \brief Receives a string from the target MPI process.
+ * 
+ * @param str says where the received string is to be saved to
+ * @param source source MPI process ID
+ * @param tag MPI tag
+ * @param mpi_comm MPI communication group
+ */
+void receive( String& str, int source, int tag = 0, MPI_Comm mpi_comm = MPI_COMM_WORLD );
+
+//! Broadcast to other nodes in MPI cluster
+// void MPIBcast( String& str, int root, MPI_Comm mpi_comm = MPI_COMM_WORLD );
+
+#endif
 
 } // namespace TNL
 
