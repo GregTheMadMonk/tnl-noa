@@ -771,8 +771,8 @@ initInterface( const MeshFunctionPointer& _input,
       {
         cell.refresh();
         output[ cell.getIndex() ] =
-                input( cell ) >= 0 ? 10://std::numeric_limits< RealType >::max() :
-                  -10;//- std::numeric_limits< RealType >::max();
+                input( cell ) >= 0 ? std::numeric_limits< RealType >::max() :
+                  - std::numeric_limits< RealType >::max();
         interfaceMap[ cell.getIndex() ] = false;
       }
     
@@ -908,8 +908,8 @@ updateCell( MeshFunctionType& u,
     b = TNL::argAbsMin( u[ neighborEntities.template getEntityIndex< 0,  -1 >() ],
             u[ neighborEntities.template getEntityIndex< 0,   1 >() ] );
   }
-  if( fabs( a ) == 10&&//std::numeric_limits< RealType >::max() && 
-          fabs( b ) == 10)//std::numeric_limits< RealType >::max() )
+  if( fabs( a ) == std::numeric_limits< RealType >::max() && 
+          fabs( b ) == std::numeric_limits< RealType >::max() )
     return false;
   
   RealType pom[6] = { a, b, std::numeric_limits< RealType >::max(), (RealType)hx, (RealType)hy, 0.0 };
@@ -1021,81 +1021,46 @@ initInterface( const MeshFunctionPointer& _input,
             const IndexType e = neighbors.template getEntityIndex<  1,  0,  0 >();
             const IndexType n = neighbors.template getEntityIndex<  0,  1,  0 >();
             const IndexType t = neighbors.template getEntityIndex<  0,  0,  1 >();
-           
+            
+            
             if( c * input[ n ] <= 0 )
             {
-              if( c >= 0 )
-              {
-                pom = ( hy * c )/( c - input[ n ]);
-                if( output[ cell.getIndex() ] > pom ) 
-                  output[ cell.getIndex() ] = pom;
-                
-                if ( output[ n ] < pom - hy)
-                  output[ n ] = pom - hy; // ( hy * c )/( c - input[ n ]) - hy;
-                
-              }else
-              {
-                pom = - ( hy * c )/( c - input[ n ]);
-                if( output[ cell.getIndex() ] < pom )
-                  output[ cell.getIndex() ] = pom;
-                if( output[ n ] > hy + pom )
-                  output[ n ] = hy + pom; //hy - ( hy * c )/( c - input[ n ]);
-                
-              }
+              pom = TNL::sign( c )*( hy * c )/( c - input[ n ]);
+              if( TNL::abs( output[ cell.getIndex() ] ) > TNL::abs( pom ) ) 
+                output[ cell.getIndex() ] = pom;
+              pom = pom - TNL::sign( c )*hy;
+              if( TNL::abs( output[ n ] ) > TNL::abs( pom ) )
+                output[ n ] = pom; //( hy * c )/( c - input[ n ]) - hy;
+              
               interfaceMap[ cell.getIndex() ] = true;
               interfaceMap[ n ] = true;
             }
+            
             if( c * input[ e ] <= 0 )
             {
-              if( c >= 0 )
-              {
-                pom = ( hx * c )/( c - input[ e ]);
-                if( output[ cell.getIndex() ] > pom )
-                  output[ cell.getIndex() ] = pom;
-                
-                pom = pom - hx; //output[ e ] = (hx * c)/( c - input[ e ]) - hx;
-                if( output[ e ] < pom )
-                  output[ e ] = pom;      
-                
-              }else
-              {
-                pom = - (hx * c)/( c - input[ e ]);
-                if( output[ cell.getIndex() ] < pom )
-                  output[ cell.getIndex() ] = pom;
-                
-                pom = pom + hx; //output[ e ] = hx - (hx * c)/( c - input[ e ]);
-                if( output[ e ] > pom )
-                  output[ e ] = pom;
-              }
+              pom = TNL::sign( c )*( hx * c )/( c - input[ e ]);
+              if( TNL::abs( output[ cell.getIndex() ] ) > TNL::abs( pom ) ) 
+                output[ cell.getIndex() ] = pom;
+              pom = pom - TNL::sign( c )*hx;
+              if( TNL::abs( output[ e ] ) > TNL::abs( pom ) )
+                output[ e ] = pom; //( hy * c )/( c - input[ n ]) - hy;
+              
               interfaceMap[ cell.getIndex() ] = true;
               interfaceMap[ e ] = true;
             }
+            
             if( c * input[ t ] <= 0 )
             {
-              if( c >= 0 )
-              {
-                pom = ( hz * c )/( c - input[ t ]);
-                if( output[ cell.getIndex() ] > pom )
-                  output[ cell.getIndex() ] = pom;
-                
-                pom = pom - hz; //output[ e ] = (hx * c)/( c - input[ e ]) - hx;
-                if( output[ t ] < pom )
-                  output[ t ] = pom; 
-                
-              }else
-              {
-                pom = - (hz * c)/( c - input[ t ]);
-                if( output[ cell.getIndex() ] < pom )
-                  output[ cell.getIndex() ] = pom;
-                
-                pom = pom + hz; //output[ e ] = hx - (hx * c)/( c - input[ e ]);
-                if( output[ t ] > pom )
-                  output[ t ] = pom;
-                
-              }
+              pom = TNL::sign( c )*( hz * c )/( c - input[ t ]);
+              if( TNL::abs( output[ cell.getIndex() ] ) > TNL::abs( pom ) ) 
+                output[ cell.getIndex() ] = pom;
+              pom = pom - TNL::sign( c )*hz;
+              if( TNL::abs( output[ t ] ) > TNL::abs( pom ) )
+                output[ t ] = pom; //( hy * c )/( c - input[ n ]) - hy;
+              
               interfaceMap[ cell.getIndex() ] = true;
               interfaceMap[ t ] = true;
-            }    
+            }  
           }
           /*output[ cell.getIndex() ] =
            c > 0 ? TypeInfo< RealType >::getMaxValue() :
@@ -1240,8 +1205,8 @@ updateCell( volatile Real *sArray, int thri, int thrj, const Real hx, const Real
   a = TNL::argAbsMin( sArray[ thrj * sizeSArray + thri+1 ],
           sArray[ thrj * sizeSArray + thri-1 ] );
   
-  if( fabs( a ) == 10&&//std::numeric_limits< RealType >::max() && 
-          fabs( b ) == 10)//std::numeric_limits< RealType >::max() )
+  if( fabs( a ) == std::numeric_limits< RealType >::max() && 
+          fabs( b ) == std::numeric_limits< RealType >::max() )
     return false;
   
   RealType pom[6] = { a, b, std::numeric_limits< RealType >::max(), (RealType)hx, (RealType)hy, 0.0 };
@@ -1422,8 +1387,8 @@ __global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 2, 
     
     
     output[ cind ] =
-            input( cell ) >= 0 ? 10://std::numeric_limits< Real >::max() :
-              - 10;//- std::numeric_limits< Real >::max();
+            input( cell ) >= 0 ? std::numeric_limits< Real >::max() :
+              - std::numeric_limits< Real >::max();
     interfaceMap[ cind ] = false; 
     
     if( i < mesh.getDimensions().x() - vUpper[0] && j < mesh.getDimensions().y() - vUpper[1] && i>vLower[0] && j> vLower[0] )

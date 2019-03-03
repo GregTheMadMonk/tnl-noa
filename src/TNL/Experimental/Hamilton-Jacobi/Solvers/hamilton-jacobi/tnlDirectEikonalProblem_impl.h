@@ -191,6 +191,7 @@ bool
 tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
 solve( DofVectorPointer& dofs )
 {
+   std::cout << "We are in solve()." << std::endl;
    FastSweepingMethod< MeshType, Communicator,AnisotropyType > fsm;
    fsm.solve( this->getMesh(), u, anisotropy, initialData );
    

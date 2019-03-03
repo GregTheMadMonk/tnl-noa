@@ -86,6 +86,8 @@ class FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Communicator, 
     typedef Index IndexType;
     typedef Anisotropy AnisotropyType;
     typedef tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > > BaseType;
+    typedef Communicator CommunicatorType;
+    
     using MeshPointer = Pointers::SharedPointer<  MeshType >;
     using AnisotropyPointer = Pointers::SharedPointer< AnisotropyType, DeviceType >;
     using MPI = Communicators::MpiCommunicator;

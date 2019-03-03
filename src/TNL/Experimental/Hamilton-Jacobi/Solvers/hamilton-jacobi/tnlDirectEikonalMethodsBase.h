@@ -152,7 +152,7 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
 
 template< typename Real, typename Device, typename Index >
 __global__ void DeepCopy( const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& aux,
-        Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& helpFunc );
+        Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& helpFunc, int copy, int k );
 
 template < typename Index >
 __global__ void CudaParallelReduc( TNL::Containers::ArrayView< int, Devices::Cuda, Index > BlockIterDevice,
