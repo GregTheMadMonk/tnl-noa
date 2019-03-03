@@ -29,9 +29,15 @@ ADD_EXECUTABLE( MathExample MathExample.cpp )
 ADD_EXECUTABLE( ParameterContainerExample ParameterContainerExample.cpp )
 
 ADD_EXECUTABLE( StringExample StringExample.cpp )
+ADD_CUSTOM_COMMAND( OUTPUT StringExample.out
+                    COMMAND StringExample
+                    DEPENDS StringExample
+                    COMMENT Executing StringExample )
 ADD_EXECUTABLE( StringExampleGetAllocatedSize StringExampleGetAllocatedSize.cpp )
-ADD_EXECUTABLE( StringExampleGetSize StringExampleGetSize.cpp )
+ADD_EXECUTABLE( StringExampleReplace StringExampleReplace.cpp )
 ADD_EXECUTABLE( StringExampleSetSize StringExampleSetSize.cpp )
+ADD_EXECUTABLE( StringExampleSplit StringExampleSplit.cpp )
+ADD_EXECUTABLE( StringExampleStrip StringExampleStrip.cpp )
 ADD_EXECUTABLE( TimerExample TimerExample.cpp )
 
 ADD_EXECUTABLE( VectorExample VectorExample.cpp )

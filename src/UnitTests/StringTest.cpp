@@ -83,7 +83,7 @@ TEST( StringTest, SetSize )
 {
    String str;
    str.setSize( 42 );
-   EXPECT_GT( str.getAllocatedSize(), 0 );
+   EXPECT_EQ( str.getAllocatedSize(), 43 );
 }
 
 TEST( StringTest, GetString )

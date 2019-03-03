@@ -50,7 +50,6 @@ inline const char* String::getString() const
    return this->c_str();
 }
 
-
 inline const char& String::operator[]( int i ) const
 {
    TNL_ASSERT( i >= 0 && i < getLength(),
@@ -64,7 +63,6 @@ inline char& String::operator[]( int i )
                std::cerr << "Accessing char outside the string." );
    return std::string::operator[]( i );
 }
-
 
 /****
  * Operators for single characters
@@ -90,7 +88,6 @@ inline bool String::operator!=( char str ) const
    return ! operator==( str );
 }
 
-
 /****
  * Operators for C strings
  */
@@ -115,7 +112,6 @@ inline bool String::operator!=( const char* str ) const
    return ! operator==( str );
 }
 
-
 /****
  * Operators for std::string
  */
@@ -139,7 +135,6 @@ inline bool String::operator!=( const std::string& str ) const
 {
    return ! operator==( str );
 }
-
 
 /****
  * Operators for String
@@ -216,7 +211,7 @@ String::strip( char strip ) const
 }
 
 inline std::vector< String >
-String::split( const char separator, bool skipEmpty ) const
+String::split( const char separator, SplitSkipEmpty skipEmpty ) const
 {
    std::vector< String > parts;
    String s;
