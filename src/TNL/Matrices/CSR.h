@@ -84,7 +84,7 @@ public:
    IndexType getRowLengthFast( const IndexType row ) const;
 
    IndexType getNonZeroRowLength( const IndexType row ) const;
-
+   
    __cuda_callable__
    IndexType getNonZeroRowLengthFast( const IndexType row ) const;
 
