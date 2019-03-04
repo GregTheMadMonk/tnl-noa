@@ -56,17 +56,17 @@ inline bool File::close()
    return true;
 }
 
-template< typename Type, typename Device >
+/*template< typename Type, typename Device >
 bool File::read( Type* buffer )
 {
    return read< Type, Device >( buffer, 1 );
-}
+}*/
 
-template< typename Type, typename Device >
+/*template< typename Type, typename Device >
 bool File::write( const Type* buffer )
 {
    return write< Type, Device >( buffer, 1 );
-}
+}*/
 
 template< typename Type, typename Device >
 bool File::read( Type* buffer, std::streamsize elements )
