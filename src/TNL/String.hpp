@@ -250,14 +250,14 @@ inline std::ostream& operator<<( std::ostream& stream, const String& str )
 }
 
 #ifdef HAVE_MPI
-inline void send( const String& str, int target, int tag, MPI_Comm mpi_comm )
+inline void mpiSend( const String& str, int target, int tag, MPI_Comm mpi_comm )
 {
    int size = str.getSize();
    MPI_Send( &size, 1, MPI_INT, target, tag, mpi_comm );
    MPI_Send( str.getString(), str.length(), MPI_CHAR, target, tag, mpi_comm );
 }
 
-inline void receive( String& str, int source, int tag, MPI_Comm mpi_comm )
+inline void mpiReceive( String& str, int source, int tag, MPI_Comm mpi_comm )
 {
    int size;
    MPI_Status status;

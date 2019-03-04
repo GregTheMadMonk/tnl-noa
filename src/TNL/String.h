@@ -393,7 +393,7 @@ template<> inline String convertToString( const bool& b )
  * @param tag MPI tag
  * @param mpi_comm MPI communication group
  */
-void send( const String& str, int target, int tag = 0, MPI_Comm mpi_comm = MPI_COMM_WORLD );
+void mpiSend( const String& str, int target, int tag = 0, MPI_Comm mpi_comm = MPI_COMM_WORLD );
 
 /**
  * \brief Receives a string from the source MPI process.
@@ -407,7 +407,7 @@ void send( const String& str, int target, int tag = 0, MPI_Comm mpi_comm = MPI_C
  * @param tag MPI tag
  * @param mpi_comm MPI communication group
  */
-void receive( String& str, int source, int tag = 0, MPI_Comm mpi_comm = MPI_COMM_WORLD );
+void mpiReceive( String& str, int source, int tag = 0, MPI_Comm mpi_comm = MPI_COMM_WORLD );
 
 //! Broadcast to other nodes in MPI cluster
 // void MPIBcast( String& str, int root, MPI_Comm mpi_comm = MPI_COMM_WORLD );
