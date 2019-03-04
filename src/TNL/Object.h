@@ -30,6 +30,13 @@ namespace TNL {
  * 
  * Since the virtual destructor is not defined as \ref __cuda_callable__, 
  * objects inherited from Object should not be created in CUDA kernels.
+ * 
+ * In addition to methods of this class, see the following related functions:
+ * 
+ * \ref getObjectType
+ * 
+ * \ref parseObjectType
+ * 
  */
 class Object
 {
@@ -141,19 +148,24 @@ class Object
 String getObjectType( File& file );
 
 /**
- * \brief Does the same as \ref getObjectType but with \e fileName parameter instead of file.
+ * \brief Does the same as \ref getObjectType but with a \e fileName parameter instead of file.
  * 
- * @param fileName name of file where the object is stored
- * @param type string with the object type
+ * @param fileName name of a file where the object is stored
+ * @return string with the object type
  */
 String getObjectType( const String& fileName );
 
 /**
  * \brief Parses the object type
  * 
- * @param objectType is a string with the object type
- * @return list of strings where the first one is the object type and the next
- * strings are the template parameters
+ * @param objectType is a string with the object type to be parsed.
+ * @return vector of strings where the first one is the object type and the next
+ * strings are the template parameters.
+ *
+ * \par Example
+ * \include ParseObjectTypeExample.cpp
+ * \par Output
+ * \include ParseObjectTypeExample.out
  */
 std::vector< String >
 parseObjectType( const String& objectType );

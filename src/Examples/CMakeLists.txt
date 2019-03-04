@@ -31,6 +31,9 @@ ADD_CUSTOM_COMMAND( COMMAND ObjectExample_getType > ObjectExample_getType.out OU
 
 ADD_EXECUTABLE( ParameterContainerExample ParameterContainerExample.cpp )
 
+ADD_EXECUTABLE( ParseObjectTypeExample ParseObjectTypeExample.cpp )
+ADD_CUSTOM_COMMAND( COMMAND ParseObjectTypeExample > ParseObjectTypeExample.out OUTPUT ParseObjectTypeExample.out )
+
 ADD_EXECUTABLE( StringExample StringExample.cpp )
 ADD_CUSTOM_COMMAND( COMMAND StringExample > StringExample.out OUTPUT StringExample.out )
 
@@ -59,6 +62,7 @@ ADD_EXECUTABLE( VectorExample VectorExample.cpp )
 
 ADD_CUSTOM_TARGET( run ALL DEPENDS
    ObjectExample_getType.out
+   ParseObjectTypeExample.out
    StringExample.out
    StringExampleGetAllocatedSize.out
    StringExampleReplace.out
