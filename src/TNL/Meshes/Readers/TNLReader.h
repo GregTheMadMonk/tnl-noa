@@ -31,7 +31,7 @@ public:
       String objectType;
       try
       {
-         getObjectType( fileName, objectType );
+         objectType = getObjectType( fileName );
       }
       catch( ... )
       {

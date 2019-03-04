@@ -51,8 +51,7 @@ inline bool Object::save( File& file ) const
 
 inline bool Object::load( File& file )
 {
-   String objectType;
-   getObjectType( file, objectType );
+   String objectType = getObjectType( file );
    if( objectType != this->getSerializationTypeVirtual() )
    {
       std::cerr << "Given file contains instance of " << objectType << " but " << getSerializationTypeVirtual() << " is expected." << std::endl;
@@ -99,20 +98,22 @@ inline bool Object::boundLoad( const String& fileName )
    return this->boundLoad( file );
 }
 
-inline void getObjectType( File& file, String& type )
+inline String getObjectType( File& file )
 {
    char mn[ 10 ];
+   String type;
    file.read( mn, strlen( magic_number ) );
    if( strncmp( mn, magic_number, 5 ) != 0 )
       throw Exceptions::NotTNLFile();
    file >> type;
+   return type;
 }
 
-inline void getObjectType( const String& fileName, String& type )
+inline String getObjectType( const String& fileName )
 {
    File binaryFile;
    binaryFile.open( fileName, IOMode::read );
-   getObjectType( binaryFile, type );
+   return getObjectType( binaryFile );
 }
 
 inline std::vector< String >

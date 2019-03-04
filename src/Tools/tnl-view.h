@@ -475,7 +475,7 @@ struct FilesProcessor
          String objectType;
          try
          {
-            getObjectType( inputFiles[ i ], objectType );
+            objectType = getObjectType( inputFiles[ i ] );
          }
          catch(...)
          {

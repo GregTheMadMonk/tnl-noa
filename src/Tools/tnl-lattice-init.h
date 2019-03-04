@@ -224,7 +224,7 @@ bool resolveProfileReal( const Config::ParameterContainer& parameters )
    String meshFunctionType;
    try
    {
-      getObjectType( profileFile, meshFunctionType );
+      meshFunctionType = getObjectType( profileFile );
    }
    catch(...)
    {
@@ -283,7 +283,7 @@ bool resolveMesh( const Config::ParameterContainer& parameters )
    String meshType;
    try
    {
-      getObjectType( meshFile, meshType );
+      meshType = getObjectType( meshFile );
    }
    catch(...)
    {
@@ -381,7 +381,7 @@ bool resolveProfileMeshType( const Config::ParameterContainer& parameters )
    String meshType;
    try
    {
-      getObjectType( meshFile, meshType );
+      meshType = getObjectType( meshFile );
    }
    catch(...)
    {

@@ -135,14 +135,26 @@ class Object
 /**
  * \brief Extracts object type from a binary file.
  * 
- * @param file
- * @param type
- * @return 
+ * @param file is file where the object is stored
+ * @return string with the object type
  */
-void getObjectType( File& file, String& type );
+String getObjectType( File& file );
 
-void getObjectType( const String& file_name, String& type );
+/**
+ * \brief Does the same as \ref getObjectType but with \e fileName parameter instead of file.
+ * 
+ * @param fileName name of file where the object is stored
+ * @param type string with the object type
+ */
+String getObjectType( const String& fileName );
 
+/**
+ * \brief Parses the object type
+ * 
+ * @param objectType is a string with the object type
+ * @return list of strings where the first one is the object type and the next
+ * strings are the template parameters
+ */
 std::vector< String >
 parseObjectType( const String& objectType );
 

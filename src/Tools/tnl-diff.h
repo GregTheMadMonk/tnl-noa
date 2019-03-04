@@ -625,7 +625,7 @@ bool processFiles( const Config::ParameterContainer& parameters )
    String objectType;
    try
    {
-      getObjectType( inputFiles[ 0 ], objectType );
+      objectType = getObjectType( inputFiles[ 0 ] );
    }
    catch( std::ios_base::failure exception )
    {

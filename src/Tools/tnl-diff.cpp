@@ -53,7 +53,7 @@ int main( int argc, char* argv[] )
    String meshType;
    try
    {
-      getObjectType( meshFile, meshType );
+      meshType = getObjectType( meshFile );
    }
    catch(...)
    {
