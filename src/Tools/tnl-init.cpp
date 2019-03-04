@@ -64,7 +64,11 @@ int main( int argc, char* argv[] )
 
    String meshFile = parameters. getParameter< String >( "mesh" );
    String meshType;
-   if( ! getObjectType( meshFile, meshType ) )
+   try
+   {
+      getObjectType( meshFile, meshType );
+   }
+   catch(...)
    {
       std::cerr << "I am not able to detect the mesh type from the file " << meshFile << "." << std::endl;
       return EXIT_FAILURE;

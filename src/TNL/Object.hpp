@@ -15,32 +15,33 @@
 #include <cstring>
 
 #include <TNL/Object.h>
+#include <TNL/Exceptions/NotTNLFile.h>
 
 namespace TNL {
 
 static constexpr char magic_number[] = "TNLMN";
 
-inline String Object :: getType()
+inline String Object::getType()
 {
    return String( "Object" );
 }
 
-inline String Object :: getTypeVirtual() const
+inline String Object::getTypeVirtual() const
 {
    return this->getType();
 }
 
-inline String Object :: getSerializationType()
+inline String Object::getSerializationType()
 {
    return String( "Object" );
 }
 
-inline String Object :: getSerializationTypeVirtual() const
+inline String Object::getSerializationTypeVirtual() const
 {
    return this->getSerializationType();
 }
 
-inline bool Object :: save( File& file ) const
+inline bool Object::save( File& file ) const
 {
    if( ! file.write( magic_number, strlen( magic_number ) ) )
       return false;
@@ -48,11 +49,10 @@ inline bool Object :: save( File& file ) const
    return true;
 }
 
-inline bool Object :: load( File& file )
+inline bool Object::load( File& file )
 {
    String objectType;
-   if( ! getObjectType( file, objectType ) )
-      return false;
+   getObjectType( file, objectType );
    if( objectType != this->getSerializationTypeVirtual() )
    {
       std::cerr << "Given file contains instance of " << objectType << " but " << getSerializationTypeVirtual() << " is expected." << std::endl;
@@ -61,12 +61,12 @@ inline bool Object :: load( File& file )
    return true;
 }
 
-inline bool Object :: boundLoad( File& file )
+inline bool Object::boundLoad( File& file )
 {
    return load( file );
 }
 
-inline bool Object :: save( const String& fileName ) const
+inline bool Object::save( const String& fileName ) const
 {
    File file;
    if( ! file.open( fileName, IOMode::write ) )
@@ -77,7 +77,7 @@ inline bool Object :: save( const String& fileName ) const
    return this->save( file );
 }
 
-inline bool Object :: load( const String& fileName )
+inline bool Object::load( const String& fileName )
 {
    File file;
    if( ! file.open( fileName, IOMode::read ) )
@@ -88,7 +88,7 @@ inline bool Object :: load( const String& fileName )
    return this->load( file );
 }
 
-inline bool Object :: boundLoad( const String& fileName )
+inline bool Object::boundLoad( const String& fileName )
 {
    File file;
    if( ! file.open( fileName, IOMode::read ) )
@@ -99,29 +99,20 @@ inline bool Object :: boundLoad( const String& fileName )
    return this->boundLoad( file );
 }
 
-
-inline bool getObjectType( File& file, String& type )
+inline void getObjectType( File& file, String& type )
 {
    char mn[ 10 ];
    file.read( mn, strlen( magic_number ) );
    if( strncmp( mn, magic_number, 5 ) != 0 )
-   {
-       std::cout << "Not a TNL file (wrong magic number)." << std::endl;
-       return false;
-   }
+      throw Exceptions::NotTNLFile();
    file >> type;
-   return true;
 }
 
-inline bool getObjectType( const String& fileName, String& type )
+inline void getObjectType( const String& fileName, String& type )
 {
    File binaryFile;
-   if( ! binaryFile.open( fileName, IOMode::read ) )
-   {
-      std::cerr << "I am not able to open the file " << fileName << " for detecting the object inside!" << std::endl;
-      return false;
-   }
-   return getObjectType( binaryFile, type );
+   binaryFile.open( fileName, IOMode::read );
+   getObjectType( binaryFile, type );
 }
 
 inline std::vector< String >

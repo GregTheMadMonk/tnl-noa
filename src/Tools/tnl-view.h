@@ -473,35 +473,40 @@ struct FilesProcessor
          }
 
          String objectType;
-         if( ! getObjectType( inputFiles[ i ], objectType ) )
-             std::cerr << "unknown object ... SKIPPING!" << std::endl;
-         else
+         try
          {
-            if( verbose )
-              std::cout << objectType << " detected ... ";
-
-            const std::vector< String > parsedObjectType = parseObjectType( objectType );
-            if( ! parsedObjectType.size() )
-            {
-               std::cerr << "Unable to parse object type " << objectType << "." << std::endl;
-               error = true;
-               continue;
-            }
-            if( parsedObjectType[ 0 ] == "Containers::MultiVector" ||
-                parsedObjectType[ 0 ] == "Containers::Vector" ||
-                parsedObjectType[ 0 ] == "tnlMultiVector" ||                     // TODO: remove deprecated type names
-                parsedObjectType[ 0 ] == "tnlSharedMultiVector" ||               // 
-                parsedObjectType[ 0 ] == "tnlSharedVector" ||                    //
-                parsedObjectType[ 0 ] == "tnlVector" )                           //
-               setValueType< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );
-            if( parsedObjectType[ 0 ] == "Functions::MeshFunction" ||
-                parsedObjectType[ 0 ] == "tnlMeshFunction" )                     // TODO: remove deprecated type names
-               setMeshFunction< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );
-            if( parsedObjectType[ 0 ] == "Functions::VectorField" )
-               setVectorFieldSize< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );
-            if( verbose )
-               std::cout << "[ OK ].  " << std::endl;
+            getObjectType( inputFiles[ i ], objectType );
          }
+         catch(...)
+         {
+            std::cerr << "unknown object ... SKIPPING!" << std::endl;
+            continue;
+         }
+         
+         if( verbose )
+           std::cout << objectType << " detected ... ";
+
+         const std::vector< String > parsedObjectType = parseObjectType( objectType );
+         if( ! parsedObjectType.size() )
+         {
+            std::cerr << "Unable to parse object type " << objectType << "." << std::endl;
+            error = true;
+            continue;
+         }
+         if( parsedObjectType[ 0 ] == "Containers::MultiVector" ||
+             parsedObjectType[ 0 ] == "Containers::Vector" ||
+             parsedObjectType[ 0 ] == "tnlMultiVector" ||                     // TODO: remove deprecated type names
+             parsedObjectType[ 0 ] == "tnlSharedMultiVector" ||               // 
+             parsedObjectType[ 0 ] == "tnlSharedVector" ||                    //
+             parsedObjectType[ 0 ] == "tnlVector" )                           //
+            setValueType< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );
+         if( parsedObjectType[ 0 ] == "Functions::MeshFunction" ||
+             parsedObjectType[ 0 ] == "tnlMeshFunction" )                     // TODO: remove deprecated type names
+            setMeshFunction< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );
+         if( parsedObjectType[ 0 ] == "Functions::VectorField" )
+            setVectorFieldSize< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );
+         if( verbose )
+            std::cout << "[ OK ].  " << std::endl;
       }
       if( verbose )
         std::cout << std::endl;

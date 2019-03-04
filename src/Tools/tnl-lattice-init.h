@@ -12,6 +12,7 @@
 
 #include <TNL/Object.h>
 #include <TNL/Config/ParameterContainer.h>
+#include <TNL/Exceptions/ObjectTypeDetectionFailure.h>
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Meshes/GridEntity.h>
 #include <TNL/Functions/MeshFunction.h>
@@ -221,10 +222,13 @@ bool resolveProfileReal( const Config::ParameterContainer& parameters )
 {
    String profileFile = parameters. getParameter< String >( "profile-file" );
    String meshFunctionType;
-   if( ! getObjectType( profileFile, meshFunctionType ) )
+   try
    {
-      std::cerr << "I am not able to detect the mesh function type from the profile file " << profileFile << "." << std::endl;
-      return EXIT_FAILURE;
+      getObjectType( profileFile, meshFunctionType );
+   }
+   catch(...)
+   {
+      throw Exceptions::ObjectTypeDetectionFailure( profileFile, "mesh" );
    }
    //std::cout << meshFunctionType << " detected in " << profileFile << " file." << std::endl;
    const std::vector< String > parsedMeshFunctionType = parseObjectType( meshFunctionType );
@@ -277,10 +281,13 @@ bool resolveMesh( const Config::ParameterContainer& parameters )
 {
    String meshFile = parameters.getParameter< String >( "mesh" );
    String meshType;
-   if( ! getObjectType( meshFile, meshType ) )
+   try
    {
-      std::cerr << "I am not able to detect the mesh type from the file " << meshFile << "." << std::endl;
-      return EXIT_FAILURE;
+      getObjectType( meshFile, meshType );
+   }
+   catch(...)
+   {
+      throw Exceptions::ObjectTypeDetectionFailure( meshFile, "mesh" );
    }
    std::cout << meshType << " detected in " << meshFile << " file." << std::endl;
    const std::vector< String > parsedMeshType = parseObjectType( meshType );
@@ -372,10 +379,13 @@ bool resolveProfileMeshType( const Config::ParameterContainer& parameters )
 {
    String meshFile = parameters. getParameter< String >( "profile-mesh" );
    String meshType;
-   if( ! getObjectType( meshFile, meshType ) )
+   try
    {
-      std::cerr << "I am not able to detect the mesh type from the file " << meshFile << "." << std::endl;
-      return EXIT_FAILURE;
+      getObjectType( meshFile, meshType );
+   }
+   catch(...)
+   {
+      throw Exceptions::ObjectTypeDetectionFailure( meshFile, "mesh" );
    }
    std::cout << meshType << " detected in " << meshFile << " file." << std::endl;
    const std::vector< String > parsedMeshType = parseObjectType( meshType );

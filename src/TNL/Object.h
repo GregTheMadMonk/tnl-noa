@@ -27,6 +27,9 @@ namespace TNL {
  * Objects like numerical meshes, matrices large vectors etc. are inherited by 
  * this class. This class introduces virtual method \ref getType which is 
  * supposed to tell the object type in a C++ style.
+ * 
+ * Since the virtual destructor is not defined as \ref __cuda_callable__, 
+ * objects inherited from Object should not be created in CUDA kernels.
  */
 class Object
 {
@@ -118,15 +121,27 @@ class Object
        */
       bool boundLoad( const String& fileName );
       
-      /// Destructor.
+      /**
+       * \brief Destructor.
+       * 
+       * Since it is not defined as \ref __cuda_callable__, objects inherited
+       * from Object should not be created in CUDA kernels.
+       */
 #ifndef HAVE_MIC
       virtual ~Object(){};
 #endif
 };
 
-bool getObjectType( File& file, String& type );
+/**
+ * \brief Extracts object type from a binary file.
+ * 
+ * @param file
+ * @param type
+ * @return 
+ */
+void getObjectType( File& file, String& type );
 
-bool getObjectType( const String& file_name, String& type );
+void getObjectType( const String& file_name, String& type );
 
 std::vector< String >
 parseObjectType( const String& objectType );
