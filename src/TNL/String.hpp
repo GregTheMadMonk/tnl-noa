@@ -211,19 +211,19 @@ String::strip( char strip ) const
 }
 
 inline std::vector< String >
-String::split( const char separator, SplitSkipEmpty skipEmpty ) const
+String::split( const char separator, SplitSkip skip ) const
 {
    std::vector< String > parts;
    String s;
    for( int i = 0; i < this->getLength(); i++ ) {
       if( ( *this )[ i ] == separator ) {
-         if( ! skipEmpty || s != "" )
+         if( skip != SplitSkip::SkipEmpty || s != "" )
             parts.push_back( s );
          s = "";
       }
       else s += ( *this )[ i ];
    }
-   if( ! skipEmpty || s != "" )
+   if( skip != SplitSkip::SkipEmpty || s != "" )
       parts.push_back( s );
    return parts;
 }

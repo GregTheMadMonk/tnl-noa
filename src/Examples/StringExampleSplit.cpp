@@ -11,7 +11,7 @@ int main()
    cout << "list_dates = " << list[0] << ", " << list[1] << ", " << list[2] << endl;
 
    String cars("Subaru,Mazda,,Skoda," );
-   vector< String > list3 = cars.split(',', String::SkipEmpty );
+   vector< String > list3 = cars.split(',', String::SplitSkip::SkipEmpty );
    cout << "split with String::SkipEmpty = " << list3[0] << ", " << list3[1] << ", " << list3[2] << endl;
    std::vector<String> list5 = cars.split(',');
    cout << "split without  String::SkipEmpty = " << list5[0] << ", " << list5[1] << ", " << list5[2] << ", " << list5[3] << endl;

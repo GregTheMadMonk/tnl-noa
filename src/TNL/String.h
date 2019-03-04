@@ -26,10 +26,24 @@ class String;
 /**
  * \brief Class for managing strings.
  *
+ * The following example shows common use of String.
+ * 
  * \par Example
  * \include StringExample.cpp
  * \par Output
  * \include StringExample.out
+ * 
+ * In addition to methods of this class, check the following related functions:
+ * 
+ * \ref convertToString
+ * 
+ * \ref operator+
+ * 
+ * \ref operator<<
+ * 
+ * \ref mpiSend
+ * 
+ * \ref mpiReceive
  */
 class String
 : public std::string
@@ -39,10 +53,10 @@ class String
       /**
        * \brief This enum defines how the operation split of string is to be performed.
        */
-      enum SplitSkipEmpty
+      enum class SplitSkip
       {
-         DoNotSkipEmpty, ///< Do not skip empty characters
-         SkipEmpty       ///< Skip empty characters.
+         NoSkip,    ///< Do not skip empty characters
+         SkipEmpty  ///< Skip empty characters.
       };
       
       /**
@@ -336,26 +350,26 @@ class String
        * \par Output
        * \include StringExampleSplit.out   
        */
-      std::vector< String > split( const char separator = ' ', SplitSkipEmpty skipEmpty = DoNotSkipEmpty ) const;
+      std::vector< String > split( const char separator = ' ', SplitSkip skipEmpty = SplitSkip::NoSkip ) const;
 };
 
 /**
- *  \brief Returns concatenation of \e string1 and \e string2.
+ * \brief Returns concatenation of \e string1 and \e string2.
  */
 String operator+( char string1, const String& string2 );
 
 /**
- *  \brief Returns concatenation of \e string1 and \e string2.
+ * \brief Returns concatenation of \e string1 and \e string2.
  */
 String operator+( const char* string1, const String& string2 );
 
 /**
- *  \brief Returns concatenation of \e string1 and \e string2.
+ * \brief Returns concatenation of \e string1 and \e string2.
  */
 String operator+( const std::string& string1, const String& string2 );
 
 /**
- *  \brief Writes the string \e str to given \e stream
+ * \brief Writes the string \e str to given \e stream
  */
 std::ostream& operator<<( std::ostream& stream, const String& str );
 
@@ -373,7 +387,7 @@ String convertToString( const T& value )
 }
 
 /**
- * \brief Specialization of function \ref conertToString for boolean.
+ * \brief Specialization of function \ref convertToString for boolean.
  * 
  * The boolean type is converted to 'true' ot 'false'.
  */
@@ -394,10 +408,6 @@ template<> inline String convertToString( const bool& b )
  * @param mpi_comm MPI communication group
  */
 void mpiSend( const String& str, int target, int tag = 0, MPI_Comm mpi_comm = MPI_COMM_WORLD );
-
-/**
- * \brief Receives a string from the source MPI process.
- */
 
 /**
  * \brief Receives a string from the target MPI process.

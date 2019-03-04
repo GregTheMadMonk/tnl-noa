@@ -277,7 +277,7 @@ TEST( StringTest, split )
    EXPECT_EQ( parts[ 4 ], "br" );
    EXPECT_EQ( parts[ 5 ], "" );
 
-   parts = String( "abracadabra" ).split( 'a', String::SkipEmpty );
+   parts = String( "abracadabra" ).split( 'a', String::SplitSkip::SkipEmpty );
    ASSERT_EQ( (int) parts.size(), 4 );
    EXPECT_EQ( parts[ 0 ], "br" );
    EXPECT_EQ( parts[ 1 ], "c" );
