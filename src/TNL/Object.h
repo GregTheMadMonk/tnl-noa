@@ -119,9 +119,6 @@ class Object
       bool boundLoad( const String& fileName );
       
       /// Destructor.
-      // FIXME: __cuda_callable__ would have to be added to every overriding destructor,
-      // even if the object's constructor is not __cuda_callable__
-      //   __cuda_callable__
 #ifndef HAVE_MIC
       virtual ~Object(){};
 #endif
