@@ -83,7 +83,7 @@ TEST( StringTest, SetSize )
 {
    String str;
    str.setSize( 42 );
-   EXPECT_EQ( str.getAllocatedSize(), 43 );
+   EXPECT_EQ( str.getAllocatedSize(), 42 );
 }
 
 TEST( StringTest, GetString )
@@ -277,7 +277,7 @@ TEST( StringTest, split )
    EXPECT_EQ( parts[ 4 ], "br" );
    EXPECT_EQ( parts[ 5 ], "" );
 
-   parts = String( "abracadabra" ).split( 'a', true );
+   parts = String( "abracadabra" ).split( 'a', String::SkipEmpty );
    ASSERT_EQ( (int) parts.size(), 4 );
    EXPECT_EQ( parts[ 0 ], "br" );
    EXPECT_EQ( parts[ 1 ], "c" );
