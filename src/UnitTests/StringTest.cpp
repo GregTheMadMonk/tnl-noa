@@ -306,10 +306,10 @@ TEST( StringTest, SaveLoad )
 {
    String str1( "testing-string" );
    File file;
-   file.open( "test-file.tnl", IOMode::write );
+   file.open( "test-file.tnl", File::Mode::Out );
    ASSERT_NO_THROW( file << str1 );
    file.close();
-   file.open( "test-file.tnl", IOMode::read );
+   file.open( "test-file.tnl", File::Mode::In );
    String str2;
    ASSERT_NO_THROW( file >> str2 );
    EXPECT_EQ( str1, str2 );

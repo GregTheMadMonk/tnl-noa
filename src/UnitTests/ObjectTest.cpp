@@ -24,10 +24,10 @@ TEST( ObjectTest, SaveAndLoadTest )
 {
    Object testObject;
    File file;
-   file.open( "test-file.tnl", IOMode::write );
+   file.open( "test-file.tnl", File::Mode::Out );
    ASSERT_TRUE( testObject.save( file ) );
    file.close();
-   file.open( "test-file.tnl", IOMode::read );
+   file.open( "test-file.tnl", File::Mode::In );
    ASSERT_TRUE( testObject.load( file ) );
 
    EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );

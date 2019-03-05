@@ -80,7 +80,7 @@ class TestDistributedVectorFieldMPIIO{
         String FileName=String("/tmp/test-file.tnl");
         DistributedGridIO<VectorFieldType,MpiIO> ::save(FileName, vectorField );
         /*File file;
-        file.open( FileName, IOMode::write );
+        file.open( FileName, File::Mode::Out );
 		vectorField.save(file);
 		file.close();		*/
 
@@ -102,7 +102,7 @@ class TestDistributedVectorFieldMPIIO{
             loadDof.setValue(-1);
         
             File file;
-            file.open( FileName, IOMode::read );
+            file.open( FileName, File::Mode::In );
 			bool loaded=loadvct.boundLoad(file);
 			file.close();
             if(!loaded)
@@ -153,7 +153,7 @@ class TestDistributedVectorFieldMPIIO{
                 linearFunctionEvaluator.evaluateAllEntities(saveVectorField[i] , linearFunctionPtr);
       
             File file;
-            file.open( FileName, IOMode::write );        
+            file.open( FileName, File::Mode::Out );        
             saveVectorField.save(file);
             file.close();
         }

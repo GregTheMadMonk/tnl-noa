@@ -62,7 +62,7 @@ class TestSaveAndLoadMeshfunction
             linearFunctionEvaluator.evaluateAllEntities(localMeshFunctionptr , linearFunctionPtr);
 
             File file;
-            ASSERT_TRUE( file.open( String( FILENAME), IOMode::write ));        
+            ASSERT_TRUE( file.open( String( FILENAME), File::Mode::Out ));        
             ASSERT_TRUE( localMeshFunctionptr->save(file));        
             ASSERT_TRUE( file.close() );
 
@@ -80,7 +80,7 @@ class TestSaveAndLoadMeshfunction
                 loadDof[i]=-1;
             }
 
-            ASSERT_TRUE(  file.open( String( FILENAME ), IOMode::read ));
+            ASSERT_TRUE(  file.open( String( FILENAME ), File::Mode::In ));
             ASSERT_TRUE( loadMeshFunctionptr->boundLoad(file));
             ASSERT_TRUE( file.close());
 

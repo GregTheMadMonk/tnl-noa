@@ -22,17 +22,29 @@
 
 namespace TNL {
 
-inline bool File::open( const String& fileName, const IOMode mode )
+inline File::Mode operator|( File::Mode m1, File::Mode m2 );
+
+inline bool operator&( File::Mode m1, File::Mode m2 );
+
+inline bool File::open( const String& fileName, Mode mode )
 {
    // enable exceptions
    file.exceptions( std::fstream::failbit | std::fstream::badbit | std::fstream::eofbit );
 
    close();
 
-   if( mode == IOMode::read )
+   auto ios_mode = std::ios::binary;
+   if( mode & Mode::In ) ios_mode |= std::ios::in;
+   if( mode & Mode::Out ) ios_mode |= std::ios::out;
+   if( mode & Mode::Append ) ios_mode |= std::ios::app;
+   if( mode & Mode::AtEnd ) ios_mode |= std::ios::ate;
+   if( mode & Mode::Truncate ) ios_mode |= std::ios::trunc;
+   file.open( fileName.getString(), ios_mode );
+   
+   /*if( mode == Mode::In )
       file.open( fileName.getString(), std::ios::binary | std::ios::in );
    else
-      file.open( fileName.getString(), std::ios::binary | std::ios::out );
+      file.open( fileName.getString(), std::ios::binary | std::ios::out );*/
 
    this->fileName = fileName;
    if( ! file.good() ) {
@@ -55,18 +67,6 @@ inline bool File::close()
    fileName = "";
    return true;
 }
-
-/*template< typename Type, typename Device >
-bool File::read( Type* buffer )
-{
-   return read< Type, Device >( buffer, 1 );
-}*/
-
-/*template< typename Type, typename Device >
-bool File::write( const Type* buffer )
-{
-   return write< Type, Device >( buffer, 1 );
-}*/
 
 template< typename Type, typename Device >
 bool File::read( Type* buffer, std::streamsize elements )
@@ -272,6 +272,16 @@ inline File& operator>>( File& file, std::string& str )
       throw Exceptions::FileDeserializationError( "String", file.getFileName() );
    str.assign( buffer, length );
    return file;
+}
+
+inline File::Mode operator|( File::Mode m1, File::Mode m2 )
+{
+   return static_cast< File::Mode >( static_cast< int >( m1 ) | static_cast< int >( m2 ) );
+}
+
+inline bool operator&( File::Mode m1, File::Mode m2 )
+{
+   return static_cast< bool >( static_cast< int >( m1 ) & static_cast< int >( m2 ) );
 }
 
 } // namespace TNL

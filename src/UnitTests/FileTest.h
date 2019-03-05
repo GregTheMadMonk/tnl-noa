@@ -24,13 +24,13 @@ TEST( FileTest, CloseEmpty )
 TEST( FileTest, OpenInvalid )
 {
    File file;
-   EXPECT_THROW( file.open( "invalid-file.tnl", IOMode::read ), std::ios_base::failure );
+   EXPECT_THROW( file.open( "invalid-file.tnl", File::Mode::In ), std::ios_base::failure );
 }
 
 TEST( FileTest, WriteAndRead )
 {
    File file;
-   ASSERT_TRUE( file.open( String( "test-file.tnl" ), IOMode::write ) );
+   ASSERT_TRUE( file.open( String( "test-file.tnl" ), File::Mode::Out ) );
 
    int intData( 5 );
    double doubleData[ 3 ] = { 1.0, 2.0, 3.0 };
@@ -40,7 +40,7 @@ TEST( FileTest, WriteAndRead )
    ASSERT_TRUE( file.write( &constDoubleData ) );
    ASSERT_TRUE( file.close() );
 
-   ASSERT_TRUE( file.open( String( "test-file.tnl" ), IOMode::read ) );
+   ASSERT_TRUE( file.open( String( "test-file.tnl" ), File::Mode::In ) );
    int newIntData;
    double newDoubleData[ 3 ];
    double newConstDoubleData;
@@ -83,7 +83,7 @@ TEST( FileTest, WriteAndReadCUDA )
                cudaMemcpyHostToDevice );
 
    File file;
-   ASSERT_TRUE( file.open( String( "test-file.tnl" ), IOMode::write ) );
+   ASSERT_TRUE( file.open( String( "test-file.tnl" ), File::Mode::Out ) );
 
    bool status = file.write< int, Devices::Cuda >( cudaIntData );
    ASSERT_TRUE( status );
@@ -93,7 +93,7 @@ TEST( FileTest, WriteAndReadCUDA )
    ASSERT_TRUE( status );
    ASSERT_TRUE( file.close() );
 
-   ASSERT_TRUE( file.open( String( "test-file.tnl" ), IOMode::read ) );
+   ASSERT_TRUE( file.open( String( "test-file.tnl" ), File::Mode::In ) );
    int newIntData;
    float newFloatData[ 3 ];
    double newDoubleData;

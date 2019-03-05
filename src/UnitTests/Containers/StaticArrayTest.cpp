@@ -246,10 +246,10 @@ TYPED_TEST( StaticArrayTest, SaveAndLoad )
 
    ArrayType u1( 7 ), u2;
    File file;
-   file.open( "tnl-static-array-test.tnl", IOMode::write );
+   file.open( "tnl-static-array-test.tnl", File::Mode::Out );
    u1.save( file );
    file.close();
-   file.open( "tnl-static-array-test.tnl", IOMode::read );
+   file.open( "tnl-static-array-test.tnl", File::Mode::In );
    u2.load( file );
    file.close();
 

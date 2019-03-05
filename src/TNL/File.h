@@ -20,25 +20,15 @@
 
 namespace TNL {
 
-/// \brief Supported modes for opening \ref TNL::File "files".
-enum class IOMode
-{
-//   undefined = 0,
-   read = 1,
-   write = 2
-};
-
 /**
- * When we need to transfer data between the GPU and the CPU we use
- * 5 MB buffer. This size should ensure good performance -- see.
+ * When we transfer data between the GPU and the CPU we use 5 MB buffer. This
+ * size should ensure good performance -- see.
  * http://wiki.accelereyes.com/wiki/index.php/GPU_Memory_Transfer
- * Similar constant is defined in tnlLonegVectorCUDA
  */
 static constexpr std::streamsize FileGPUvsCPUTransferBufferSize = 5 * 2<<20;
 
-
 /**
- * \brief Class file is aimed mainly for saving and loading binary data.
+ * \brief This class serves for binary IO. It allows to do IO even for data allocated on GPU
  *
  * \par Example
  * \include FileExample.cpp
@@ -48,12 +38,17 @@ static constexpr std::streamsize FileGPUvsCPUTransferBufferSize = 5 * 2<<20;
 class File
 {
    public:
-      
+
+      /**
+       * This enum defines mode for opening files.
+       */
       enum class Mode
       {
-         In = 1,
-         Out = 2,
-         Append = 4
+         In = 1,       ///< Open for input.
+         Out = 2,      ///< Open for output.
+         Append = 4,   ///< Output operations are appended at the end of file.
+         AtEnd = 8,    ///< Set the initial position at the end.
+         Truncate = 16 ///< If the file is opened for ouptput, its previous content is deleted.
       };
       
       /**
@@ -62,7 +57,7 @@ class File
       File() = default;
 
       /**
-       * \brief Attempts to open given file and returns \e true after the file is
+       * \brief Open given file and returns \e true after the file is
        * successfully opened. Otherwise returns \e false.
        *
        * Opens file with given \e fileName and returns true/false based on the success in opening the file.
@@ -70,7 +65,7 @@ class File
        * \param mode Indicates what user needs to do with opened file.
        */
       bool open( const String& fileName,
-                 const IOMode mode );
+                 Mode mode = static_cast< Mode >( static_cast< int >( Mode::In ) | static_cast< int >( Mode::Out ) ) );
 
       /**
        * \brief Attempts to close given file and returns \e true when the file is
@@ -102,10 +97,6 @@ class File
       template< typename Type, typename Device = Devices::Host >
       bool read( Type* buffer, std::streamsize elements = 1 );
 
-      // Toto je treba??
-      //template< typename Type, typename Device = Devices::Host >
-      //bool read( Type* buffer );
-
       /**
        * \brief Method that can write particular data type from CPU into given file. (Function that writes particular elements into given file.)
        *
@@ -121,10 +112,6 @@ class File
        */
       template< typename Type, typename Device = Devices::Host >
       bool write( const Type* buffer, std::streamsize elements = 1 );
-
-      // Toto je treba?
-      //template< typename Type, typename Device = Devices::Host >
-      //bool write( const Type* buffer );
 
    protected:
       template< typename Type,
@@ -184,7 +171,6 @@ File& operator<<( File& file, const std::string& str );
  * \brief Deserialization of strings.
  */
 File& operator>>( File& file, std::string& str );
-
 } // namespace TNL
 
 #include <TNL/File.hpp>
