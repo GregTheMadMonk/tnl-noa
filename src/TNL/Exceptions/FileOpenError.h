@@ -1,7 +1,7 @@
 /***************************************************************************
-                          NotTNLFile.h  -  description
+                          FileOpenError.h  -  description
                              -------------------
-    begin                : Mar 4, 2019
+    begin                : Mar 5, 2019
     copyright            : (C) 2019 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -14,16 +14,17 @@
 
 #include <string>
 #include <stdexcept>
+#include <TNL/String.h>
 
 namespace TNL {
 namespace Exceptions {
 
-class NotTNLFile
+class FileOpenError
    : public std::runtime_error
 {
 public:
-   NotTNLFile()
-   : std::runtime_error( "Wrong magic number found in a binary file. It is not TNL compatible file." )
+   FileOpenError( const String& fileName )
+   : std::runtime_error( "Unable to open file " + fileName + "." )
    {}
 };
 

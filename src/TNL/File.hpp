@@ -19,6 +19,7 @@
 #include <TNL/Exceptions/MICSupportMissing.h>
 #include <TNL/Exceptions/FileSerializationError.h>
 #include <TNL/Exceptions/FileDeserializationError.h>
+#include <TNL/Exceptions/FileOpenError.h>
 
 namespace TNL {
 
@@ -39,18 +40,16 @@ inline bool File::open( const String& fileName, Mode mode )
    if( mode & Mode::Append ) ios_mode |= std::ios::app;
    if( mode & Mode::AtEnd ) ios_mode |= std::ios::ate;
    if( mode & Mode::Truncate ) ios_mode |= std::ios::trunc;
-   file.open( fileName.getString(), ios_mode );
-   
-   /*if( mode == Mode::In )
-      file.open( fileName.getString(), std::ios::binary | std::ios::in );
-   else
-      file.open( fileName.getString(), std::ios::binary | std::ios::out );*/
+   try
+   {
+      file.open( fileName.getString(), ios_mode );
+   }
+   catch(...)
+   {
+      throw Exceptions::FileOpenError( fileName );
+   }
 
    this->fileName = fileName;
-   if( ! file.good() ) {
-      std::cerr << "I am not able to open the file " << fileName << ". ";
-      return false;
-   }
    return true;
 }
 
