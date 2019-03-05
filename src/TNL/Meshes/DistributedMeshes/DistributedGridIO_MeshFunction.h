@@ -65,11 +65,7 @@ class DistributedGridIO<
          newMesh->setOrigin(origin+TNL::Containers::Scale(spaceSteps,localBegin));
 
          File meshFile;
-         if( ! meshFile.open( fileName+String("-mesh-")+distrGrid->printProcessCoords()+String(".tnl"),File::Mode::Out ) )
-         {
-            std::cerr << "Failed to open mesh file for writing." << std::endl;
-            return false;
-         }
+         meshFile.open( fileName+String("-mesh-")+distrGrid->printProcessCoords()+String(".tnl"),File::Mode::Out );
          newMesh->save( meshFile );
          meshFile.close();
 
@@ -84,11 +80,7 @@ class DistributedGridIO<
          CopyEntitiesHelper<MeshFunctionType>::Copy(meshFunction,newMeshFunction,localBegin,zeroCoord,localSize);
 
          File file;
-         if( ! file.open( fileName+String("-")+distrGrid->printProcessCoords()+String(".tnl"), File::Mode::Out ) )
-         {
-            std::cerr << "Failed to open file for writing." << std::endl;
-            return false;
-         }
+         file.open( fileName+String("-")+distrGrid->printProcessCoords()+String(".tnl"), File::Mode::Out );
          bool ret=newMeshFunction.save(file);
          file.close();
 
@@ -126,11 +118,7 @@ class DistributedGridIO<
         zeroCoord.setValue(0);        
 
         File file;
-        if( ! file.open( fileName+String("-")+distrGrid->printProcessCoords()+String(".tnl"), File::Mode::In ) )
-        {
-            std::cerr << "Failed to open file for reading." << std::endl;
-            return false;
-        }
+        file.open( fileName+String("-")+distrGrid->printProcessCoords()+String(".tnl"), File::Mode::In );
         bool result=newMeshFunction.boundLoad(file);
         file.close();
         CopyEntitiesHelper<MeshFunctionType>::Copy(newMeshFunction,meshFunction,zeroCoord,localBegin,localSize);

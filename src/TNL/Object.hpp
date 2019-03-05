@@ -68,33 +68,21 @@ inline bool Object::boundLoad( File& file )
 inline bool Object::save( const String& fileName ) const
 {
    File file;
-   if( ! file.open( fileName, File::Mode::Out ) )
-   {
-      std::cerr << "I am not able to open the file " << fileName << " for writing." << std::endl;
-      return false;
-   }
+   file.open( fileName, File::Mode::Out );
    return this->save( file );
 }
 
 inline bool Object::load( const String& fileName )
 {
    File file;
-   if( ! file.open( fileName, File::Mode::In ) )
-   {
-      std::cerr << "I am not able to open the file " << fileName << " for reading." << std::endl;
-      return false;
-   }
+   file.open( fileName, File::Mode::In );
    return this->load( file );
 }
 
 inline bool Object::boundLoad( const String& fileName )
 {
    File file;
-   if( ! file.open( fileName, File::Mode::In ) )
-   {
-      std::cerr << "I am not able to open the file " << fileName << " for reading." << std::endl;
-      return false;
-   }
+   file.open( fileName, File::Mode::In );
    return this->boundLoad( file );
 }
 

@@ -28,7 +28,7 @@ inline File::Mode operator|( File::Mode m1, File::Mode m2 );
 
 inline bool operator&( File::Mode m1, File::Mode m2 );
 
-inline bool File::open( const String& fileName, Mode mode )
+inline void File::open( const String& fileName, Mode mode )
 {
    // enable exceptions
    file.exceptions( std::fstream::failbit | std::fstream::badbit | std::fstream::eofbit );
@@ -51,10 +51,9 @@ inline bool File::open( const String& fileName, Mode mode )
    }
 
    this->fileName = fileName;
-   return true;
 }
 
-inline bool File::close()
+inline void File::close()
 {
    if( file.is_open() )
    {
@@ -69,7 +68,6 @@ inline bool File::close()
    }
    // reset file name
    fileName = "";
-   return true;
 }
 
 template< typename Type, typename Device >

@@ -62,9 +62,9 @@ class TestSaveAndLoadMeshfunction
             linearFunctionEvaluator.evaluateAllEntities(localMeshFunctionptr , linearFunctionPtr);
 
             File file;
-            ASSERT_TRUE( file.open( String( FILENAME), File::Mode::Out ));        
-            ASSERT_TRUE( localMeshFunctionptr->save(file));        
-            ASSERT_TRUE( file.close() );
+            file.open( String( FILENAME), File::Mode::Out );
+            localMeshFunctionptr->save(file);
+            file.close();
 
             //load other meshfunction on same localgrid from created file
             Pointers::SharedPointer<MeshType>  loadGridptr;
@@ -80,9 +80,9 @@ class TestSaveAndLoadMeshfunction
                 loadDof[i]=-1;
             }
 
-            ASSERT_TRUE(  file.open( String( FILENAME ), File::Mode::In ));
-            ASSERT_TRUE( loadMeshFunctionptr->boundLoad(file));
-            ASSERT_TRUE( file.close());
+            file.open( String( FILENAME ), File::Mode::In );
+            loadMeshFunctionptr->boundLoad(file);
+            file.close();
 
             for(int i=0;i<localDof.getSize();i++)
             {

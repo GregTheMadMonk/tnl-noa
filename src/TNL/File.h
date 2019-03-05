@@ -64,14 +64,14 @@ class File
        * \param fileName String which indicates name of the file user wants to open.
        * \param mode Indicates what user needs to do with opened file.
        */
-      bool open( const String& fileName,
+      void open( const String& fileName,
                  Mode mode = static_cast< Mode >( static_cast< int >( Mode::In ) | static_cast< int >( Mode::Out ) ) );
 
       /**
        * \brief Attempts to close given file and returns \e true when the file is
        * successfully closed. Otherwise returns \e false.
        */
-      bool close();
+      void close();
 
       /**
        * \brief Returns name of given file.
