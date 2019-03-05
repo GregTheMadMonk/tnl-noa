@@ -20,6 +20,7 @@
 #include <TNL/Exceptions/FileSerializationError.h>
 #include <TNL/Exceptions/FileDeserializationError.h>
 #include <TNL/Exceptions/FileOpenError.h>
+#include <TNL/Exceptions/FileCloseError.h>
 
 namespace TNL {
 
@@ -55,14 +56,18 @@ inline bool File::open( const String& fileName, Mode mode )
 
 inline bool File::close()
 {
-   if( file.is_open() ) {
-      file.close();
-      if( ! file.good() ) {
-         std::cerr << "I was not able to close the file " << fileName << " properly!" << std::endl;
-         return false;
+   if( file.is_open() )
+   {
+      try
+      {
+         file.close();
+      }
+      catch(...)
+      {
+         throw Exceptions::FileCloseError( fileName );
       }
    }
-   // reset all attributes
+   // reset file name
    fileName = "";
    return true;
 }
