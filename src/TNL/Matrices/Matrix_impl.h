@@ -75,13 +75,12 @@ template< typename Real,
           typename Index >
 Index Matrix< Real, Device, Index >::getNumberOfNonzeroMatrixElements() const
 {
-    IndexType elements( 0 );
-    for( IndexType row = 0; row < this->getRows(); row++ )
-      for( IndexType column = 0; column < this->getColumns(); column++ )
-         if( this->getElement( row, column ) != 0 )
-             elements++;
+    IndexType nonZeroElements( 0 );
+    for( IndexType i = 0; this->values.getSize(); i++ )
+        if( this->values.getElement( i ) != 0.0 )
+            nonZeroElements++;
       
-    return elements;
+    return nonZeroElements;
 }
 
 template< typename Real,
