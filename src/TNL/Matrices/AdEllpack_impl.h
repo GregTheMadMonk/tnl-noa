@@ -160,6 +160,28 @@ warpSize( 32 )
 template< typename Real,
           typename Device,
           typename Index >
+String AdEllpack< Real, Device, Index >::getTypeVirtual() const
+{
+    return this->getType();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+String AdEllpack< Real, Device, Index >::getType()
+{
+    return String( "Matrices::AdEllpack< ") +
+           String( TNL::getType< Real >() ) +
+           String( ", " ) +
+           String( Device::getDeviceType() ) +
+           String( ", " ) +
+           String( TNL::getType< Index >() ) +
+           String( " >" );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 void
 AdEllpack< Real, Device, Index >::
 setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths )

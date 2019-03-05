@@ -31,10 +31,10 @@ template< typename Real,
           typename Index >
 String Ellpack< Real, Device, Index >::getSerializationType()
 {
-   return String( "Matrices::Ellpack< ") +
-          getType< Real >() +
+   return String( "Matrices::Ellpack< " ) +
+          String( TNL::getType< Real >() ) +
           String( ", " ) +
-          getType< Device >() +
+          String( Device :: getDeviceType() ) +
           String( ", " ) +
           getType< Index >() +
           String( " >" );

@@ -27,6 +27,28 @@ Dense< Real, Device, Index >::Dense()
 template< typename Real,
           typename Device,
           typename Index >
+String Dense< Real, Device, Index >::getType()
+{
+   return String( "Matrices::Dense< " ) +
+          String( TNL::getType< Real >() ) +
+          String( ", " ) +
+          String( Device :: getDeviceType() ) +
+          String( ", " ) +
+          String( TNL::getType< Index >() ) +
+          String( " >" );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+String Dense< Real, Device, Index >::getTypeVirtual() const
+{
+   return this->getType();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 String Dense< Real, Device, Index >::getSerializationType()
 {
    return String( "Matrices::Dense< " ) +

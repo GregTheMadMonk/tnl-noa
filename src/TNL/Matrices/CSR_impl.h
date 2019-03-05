@@ -46,7 +46,9 @@ String CSR< Real, Device, Index >::getSerializationType()
    return String( "Matrices::CSR< ") +
           TNL::getType< Real>() +
           String( ", " ) +
-          getType< Devices::Host >() +
+          String( Device :: getDeviceType() ) +
+          String( ", " ) +
+          String( TNL::getType< Index >() ) +
           String( " >" );
 }
 

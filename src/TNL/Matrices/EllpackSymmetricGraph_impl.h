@@ -45,6 +45,28 @@ Index EllpackSymmetricGraph< Real, Device, Index >::getAlignedRows() const
 template< typename Real,
           typename Device,
           typename Index >
+String EllpackSymmetricGraph< Real, Device, Index > :: getType()
+{
+   return String( "Matrices::EllpackSymmetricGraph< ") +
+          String( TNL::getType< Real >() ) +
+          String( ", " ) +
+          String( Device::getDeviceType() ) +
+          String( ", " ) +
+          String( TNL::getType< Index >() ) +
+          String( " >" );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+String EllpackSymmetricGraph< Real, Device, Index >::getTypeVirtual() const
+{
+   return this->getType();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 void EllpackSymmetricGraph< Real, Device, Index >::setDimensions( const IndexType rows,
                                                                   const IndexType columns )
 {
