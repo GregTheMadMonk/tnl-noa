@@ -612,8 +612,7 @@ TEST(CutDistributedMeshFunction, 3D_2_Save)
        loadMeshFunctionptr.bind(globalCutGrid,loaddof);
 
         File file;
-        bool ok=file.open( FileName, File::Mode::In );
-        TNL_ASSERT_TRUE(ok,"Cannot open file");
+        file.open( FileName, File::Mode::In );
         loadMeshFunctionptr.boundLoad(file);
         file.close();
  
