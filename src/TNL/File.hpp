@@ -12,6 +12,8 @@
 
 #include <memory>
 #include <iostream>
+#include <ios>
+#include <sstream>
 
 #include <TNL/File.h>
 #include <TNL/Assert.h>
@@ -19,8 +21,6 @@
 #include <TNL/Exceptions/MICSupportMissing.h>
 #include <TNL/Exceptions/FileSerializationError.h>
 #include <TNL/Exceptions/FileDeserializationError.h>
-#include <TNL/Exceptions/FileOpenError.h>
-#include <TNL/Exceptions/FileCloseError.h>
 
 namespace TNL {
 
@@ -45,9 +45,16 @@ inline void File::open( const String& fileName, Mode mode )
    {
       file.open( fileName.getString(), ios_mode );
    }
-   catch(...)
+   catch( std::ios_base::failure )
    {
-      throw Exceptions::FileOpenError( fileName );
+      std::stringstream msg;
+      msg <<  "Unable to open file " << fileName << " ";
+      if( mode & Mode::In )
+         msg << " for reading.";
+      if( mode & Mode::Out )
+         msg << " for writting.";
+
+      throw std::ios_base::failure( msg.str() );
    }
 
    this->fileName = fileName;
@@ -61,9 +68,12 @@ inline void File::close()
       {
          file.close();
       }
-      catch(...)
+      catch( std::ios_base::failure )
       {
-         throw Exceptions::FileCloseError( fileName );
+         std::stringstream msg;
+         msg <<  "Unable to close file " << fileName << ".";
+
+         throw std::ios_base::failure( msg.str() );
       }
    }
    // reset file name
