@@ -80,7 +80,7 @@ inline void File::close()
    fileName = "";
 }
 
-template< typename Type, typename Device >
+template< typename Type, typename Device, typename SourceType >
 bool File::read( Type* buffer, std::streamsize elements )
 {
    TNL_ASSERT_GE( elements, 0, "Number of elements to read must be non-negative." );
@@ -94,35 +94,78 @@ bool File::read( Type* buffer, std::streamsize elements )
 // Host
 template< typename Type,
           typename Device,
+          typename SourceType,
           typename >
 bool File::read_impl( Type* buffer, std::streamsize elements )
 {
-   file.read( reinterpret_cast<char*>(buffer), sizeof(Type) * elements );
-   return true;
+   if( std::is_same< Type, SourceType >::value )
+   {
+      file.read( reinterpret_cast<char*>(buffer), sizeof(Type) * elements );
+      return true;
+   }
+   else
+   {
+      const std::streamsize cast_buffer_size = std::min( TransferBufferSize / (std::streamsize) sizeof(SourceType), elements );
+      using BaseType = typename std::remove_cv< SourceType >::type;
+      std::unique_ptr< BaseType[] > cast_buffer{ new BaseType[ cast_buffer_size ] };
+      std::streamsize readElements = 0;
+      while( readElements < elements )
+      {
+         const std::streamsize transfer = std::min( elements - readElements, cast_buffer_size );
+         file.read( reinterpret_cast<char*>(cast_buffer.get()), sizeof(SourceType) * transfer );
+         for( std::streamsize i = 0; i < transfer; i++ )
+            buffer[ readElements ++ ] = static_cast< Type >( cast_buffer[ i ] );
+         readElements += transfer;
+      }
+   }
 }
 
 // Cuda
 template< typename Type,
           typename Device,
+          typename SourceType,
           typename, typename >
 bool File::read_impl( Type* buffer, std::streamsize elements )
 {
 #ifdef HAVE_CUDA
-   const std::streamsize host_buffer_size = std::min( FileGPUvsCPUTransferBufferSize / (std::streamsize) sizeof(Type), elements );
+   const std::streamsize host_buffer_size = std::min( TransferBufferSize / (std::streamsize) sizeof(Type), elements );
    using BaseType = typename std::remove_cv< Type >::type;
    std::unique_ptr< BaseType[] > host_buffer{ new BaseType[ host_buffer_size ] };
 
    std::streamsize readElements = 0;
-   while( readElements < elements )
+   if( std::is_same< Type, SourceType >::value )
    {
-      const std::streamsize transfer = std::min( elements - readElements, host_buffer_size );
-      file.read( reinterpret_cast<char*>(host_buffer.get()), sizeof(Type) * transfer );
-      cudaMemcpy( (void*) &buffer[ readElements ],
-                  (void*) host_buffer.get(),
-                  transfer * sizeof( Type ),
-                  cudaMemcpyHostToDevice );
-      TNL_CHECK_CUDA_DEVICE;
-      readElements += transfer;
+      while( readElements < elements )
+      {
+         const std::streamsize transfer = std::min( elements - readElements, host_buffer_size );
+         file.read( reinterpret_cast<char*>(host_buffer.get()), sizeof(Type) * transfer );
+         cudaMemcpy( (void*) &buffer[ readElements ],
+                     (void*) host_buffer.get(),
+                     transfer * sizeof( Type ),
+                     cudaMemcpyHostToDevice );
+         TNL_CHECK_CUDA_DEVICE;
+         readElements += transfer;
+      }
+   }
+   else
+   {
+      const std::streamsize cast_buffer_size = std::min( TransferBufferSize / (std::streamsize) sizeof(SourceType), elements );
+      using BaseType = typename std::remove_cv< SorceType >::type;
+      std::unique_ptr< BaseType[] > cast_buffer{ new BaseType[ cast_buffer_size ] };
+
+      while( readElements < elements )
+      {
+         const std::streamsize transfer = std::min( elements - readElements, cast_buffer_size );
+         file.read( reinterpret_cast<char*>(cast_buffer.get()), sizeof(SourceType) * transfer );
+         for( std::streamsize i = 0; i < transfer; i++ )
+            host_buffer[ i ] = static_cast< Type >( cast_buffer[ i ] );
+         cudaMemcpy( (void*) &buffer[ readElements ],
+                     (void*) host_buffer.get(),
+                     transfer * sizeof( Type ),
+                     cudaMemcpyHostToDevice );
+         TNL_CHECK_CUDA_DEVICE;
+         readElements += transfer;
+      }
    }
    return true;
 #else
@@ -133,11 +176,12 @@ bool File::read_impl( Type* buffer, std::streamsize elements )
 // MIC
 template< typename Type,
           typename Device,
+          typename SourceType,
           typename, typename, typename >
 bool File::read_impl( Type* buffer, std::streamsize elements )
 {
 #ifdef HAVE_MIC
-   const std::streamsize host_buffer_size = std::min( FileGPUvsCPUTransferBufferSize / (std::streamsize) sizeof(Type), elements );
+   const std::streamsize host_buffer_size = std::min( TransferBufferSize / (std::streamsize) sizeof(Type), elements );
    using BaseType = typename std::remove_cv< Type >::type;
    std::unique_ptr< BaseType[] > host_buffer{ new BaseType[ host_buffer_size ] };
 
@@ -167,7 +211,7 @@ bool File::read_impl( Type* buffer, std::streamsize elements )
 #endif
 }
 
-template< class Type, typename Device >
+template< class Type, typename Device, typename TargeType >
 bool File::write( const Type* buffer, std::streamsize elements )
 {
    TNL_ASSERT_GE( elements, 0, "Number of elements to write must be non-negative." );
@@ -181,6 +225,7 @@ bool File::write( const Type* buffer, std::streamsize elements )
 // Host
 template< typename Type,
           typename Device,
+          typename TargetType,
           typename >
 bool File::write_impl( const Type* buffer, std::streamsize elements )
 {
@@ -191,11 +236,12 @@ bool File::write_impl( const Type* buffer, std::streamsize elements )
 // Cuda
 template< typename Type,
           typename Device,
+          typename TargetType,
           typename, typename >
 bool File::write_impl( const Type* buffer, std::streamsize elements )
 {
 #ifdef HAVE_CUDA
-   const std::streamsize host_buffer_size = std::min( FileGPUvsCPUTransferBufferSize / (std::streamsize) sizeof(Type), elements );
+   const std::streamsize host_buffer_size = std::min( TransferBufferSize / (std::streamsize) sizeof(Type), elements );
    using BaseType = typename std::remove_cv< Type >::type;
    std::unique_ptr< BaseType[] > host_buffer{ new BaseType[ host_buffer_size ] };
 
@@ -220,11 +266,12 @@ bool File::write_impl( const Type* buffer, std::streamsize elements )
 // MIC
 template< typename Type,
           typename Device,
+          typename TargetType,
           typename, typename, typename >
 bool File::write_impl( const Type* buffer, std::streamsize elements )
 {
 #ifdef HAVE_MIC
-   const std::streamsize host_buffer_size = std::min( FileGPUvsCPUTransferBufferSize / (std::streamsize) sizeof(Type), elements );
+   const std::streamsize host_buffer_size = std::min( TransferBufferSize / (std::streamsize) sizeof(Type), elements );
    using BaseType = typename std::remove_cv< Type >::type;
    std::unique_ptr< BaseType[] > host_buffer{ new BaseType[ host_buffer_size ] };
 
