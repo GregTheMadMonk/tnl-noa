@@ -144,10 +144,10 @@ template< typename Real,
           typename Index >
 bool Matrix< Real, Device, Index >::save( File& file ) const
 {
-   if( ! Object::save( file ) ||
-       ! file.save( &this->rows ) ||
-       ! file.save( &this->columns ) ||
-       ! this->values.save( file ) )
+   Object::save( file );
+   file.save( &this->rows );
+   file.save( &this->columns );
+   if( ! this->values.save( file ) )
       return false;
    return true;
 }
@@ -157,10 +157,10 @@ template< typename Real,
           typename Index >
 bool Matrix< Real, Device, Index >::load( File& file )
 {
-   if( ! Object::load( file ) ||
-       ! file.load( &this->rows ) ||
-       ! file.load( &this->columns ) ||
-       ! this->values.load( file ) )
+   Object::load( file );
+   file.load( &this->rows );
+   file.load( &this->columns );
+   if( ! this->values.load( file ) )
       return false;
    return true;
 }

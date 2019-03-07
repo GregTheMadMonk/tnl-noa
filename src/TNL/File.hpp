@@ -83,14 +83,14 @@ inline void File::close()
 template< typename Type,
           typename SourceType,
           typename Device >
-bool File::load( Type* buffer, std::streamsize elements )
+void File::load( Type* buffer, std::streamsize elements )
 {
-   TNL_ASSERT_GE( elements, 0, "Number of elements to read must be non-negative." );
+   TNL_ASSERT_GE( elements, 0, "Number of elements to load must be non-negative." );
 
    if( ! elements )
-      return true;
+      return;
 
-   return read_impl< Type, SourceType, Device >( buffer, elements );
+   load_impl< Type, SourceType, Device >( buffer, elements );
 }
 
 // Host
@@ -98,13 +98,10 @@ template< typename Type,
           typename SourceType,
           typename Device,
           typename >
-bool File::read_impl( Type* buffer, std::streamsize elements )
+void File::load_impl( Type* buffer, std::streamsize elements )
 {
    if( std::is_same< Type, SourceType >::value )
-   {
       file.read( reinterpret_cast<char*>(buffer), sizeof(Type) * elements );
-      return true;
-   }
    else
    {
       const std::streamsize cast_buffer_size = std::min( TransferBufferSize / (std::streamsize) sizeof(SourceType), elements );
@@ -127,7 +124,7 @@ template< typename Type,
           typename SourceType,
           typename Device,
           typename, typename >
-bool File::read_impl( Type* buffer, std::streamsize elements )
+void File::load_impl( Type* buffer, std::streamsize elements )
 {
 #ifdef HAVE_CUDA
    const std::streamsize host_buffer_size = std::min( TransferBufferSize / (std::streamsize) sizeof(Type), elements );
@@ -169,7 +166,6 @@ bool File::read_impl( Type* buffer, std::streamsize elements )
          readElements += transfer;
       }
    }
-   return true;
 #else
    throw Exceptions::CudaSupportMissing();
 #endif
@@ -180,7 +176,7 @@ template< typename Type,
           typename SourceType,
           typename Device,
           typename, typename, typename >
-bool File::read_impl( Type* buffer, std::streamsize elements )
+void File::load_impl( Type* buffer, std::streamsize elements )
 {
 #ifdef HAVE_MIC
    const std::streamsize host_buffer_size = std::min( TransferBufferSize / (std::streamsize) sizeof(Type), elements );
@@ -215,7 +211,6 @@ bool File::read_impl( Type* buffer, std::streamsize elements )
       std::cerr << "Type conversion during loading is not implemented for MIC." << std::endl;
       abort();
    }
-   return true;
 #else
    throw Exceptions::MICSupportMissing();
 #endif
@@ -224,14 +219,14 @@ bool File::read_impl( Type* buffer, std::streamsize elements )
 template< typename Type,
           typename TargetType,
           typename Device >
-bool File::save( const Type* buffer, std::streamsize elements )
+void File::save( const Type* buffer, std::streamsize elements )
 {
-   TNL_ASSERT_GE( elements, 0, "Number of elements to write must be non-negative." );
+   TNL_ASSERT_GE( elements, 0, "Number of elements to save must be non-negative." );
 
    if( ! elements )
-      return true;
+      return;
 
-   return write_impl< Type, TargetType, Device >( buffer, elements );
+   save_impl< Type, TargetType, Device >( buffer, elements );
 }
 
 // Host
@@ -239,7 +234,7 @@ template< typename Type,
           typename TargetType,
           typename Device,
           typename >
-bool File::write_impl( const Type* buffer, std::streamsize elements )
+void File::save_impl( const Type* buffer, std::streamsize elements )
 {
    if( std::is_same< Type, TargetType >::value )
       file.write( reinterpret_cast<const char*>(buffer), sizeof(Type) * elements );
@@ -259,7 +254,6 @@ bool File::write_impl( const Type* buffer, std::streamsize elements )
       }
 
    }
-   return true;
 }
 
 // Cuda
@@ -267,7 +261,7 @@ template< typename Type,
           typename TargetType,
           typename Device,
           typename, typename >
-bool File::write_impl( const Type* buffer, std::streamsize elements )
+void File::save_impl( const Type* buffer, std::streamsize elements )
 {
 #ifdef HAVE_CUDA
    const std::streamsize host_buffer_size = std::min( TransferBufferSize / (std::streamsize) sizeof(Type), elements );
@@ -310,7 +304,6 @@ bool File::write_impl( const Type* buffer, std::streamsize elements )
          writtenElements += transfer;
       }
    }
-   return true;
 #else
    throw Exceptions::CudaSupportMissing();
 #endif
@@ -321,7 +314,7 @@ template< typename Type,
           typename TargetType,
           typename Device,
           typename, typename, typename >
-bool File::write_impl( const Type* buffer, std::streamsize elements )
+void File::save_impl( const Type* buffer, std::streamsize elements )
 {
 #ifdef HAVE_MIC
    const std::streamsize host_buffer_size = std::min( TransferBufferSize / (std::streamsize) sizeof(Type), elements );
@@ -356,7 +349,6 @@ bool File::write_impl( const Type* buffer, std::streamsize elements )
       std::cerr << "Type conversion during saving is not implemented for MIC." << std::endl;
       abort();
    }
-   return true;
 #else
    throw Exceptions::MICSupportMissing();
 #endif
@@ -374,10 +366,22 @@ inline bool fileExists( const String& fileName )
 inline File& operator<<( File& file, const std::string& str )
 {
    const int len = str.size();
-   if( ! file.save( &len ) )
+   try
+   {
+       file.save( &len );
+   }
+   catch(...)
+   {
       throw Exceptions::FileSerializationError( getType< int >(), file.getFileName() );
-   if( ! file.save( str.c_str(), len ) )
+   }
+   try
+   {
+      file.save( str.c_str(), len );
+   }
+   catch(...)
+   {
       throw Exceptions::FileSerializationError( "String", file.getFileName() );
+   }
    return file;
 }
 
@@ -385,11 +389,26 @@ inline File& operator<<( File& file, const std::string& str )
 inline File& operator>>( File& file, std::string& str )
 {
    int length;
-   if( ! file.load( &length ) )
+   try
+   {
+      file.load( &length );
+   }
+   catch(...)
+   {
       throw Exceptions::FileDeserializationError( getType< int >(), file.getFileName() );
+   }
    char buffer[ length ];
-   if( length && ! file.load( buffer, length ) )
-      throw Exceptions::FileDeserializationError( "String", file.getFileName() );
+   if( length )
+   {
+      try
+      {
+         file.load( buffer, length );
+      }
+      catch(...)
+      {
+         throw Exceptions::FileDeserializationError( "String", file.getFileName() );
+      }
+   }
    str.assign( buffer, length );
    return file;
 }

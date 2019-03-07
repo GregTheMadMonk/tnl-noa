@@ -203,8 +203,7 @@ save( File& file ) const
 {
    if( ! Object::save( file ) )
       return false;
-   if( ! file.save( &this->keysRange ) )
-      return false;
+   file.save( &this->keysRange );
    if( ! this->values.save( file ) )
       return false;
    return true;
@@ -221,8 +220,7 @@ load( File& file )
 {
    if( ! Object::load( file ) )
       return false;
-   if( ! file.load( &this->keysRange ) )
-      return false;
+   file.load( &this->keysRange );
    if( ! this->values.load( file ) )
       return false;
    return true;

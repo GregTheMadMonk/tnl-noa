@@ -474,8 +474,7 @@ bool Array< Value, Device, Index >::save( File& file ) const
 {
    if( ! Object::save( file ) )
       return false;
-   if( ! file.save( &this->size ) )
-      return false;
+   file.save( &this->size );
    if( this->size != 0 && ! Algorithms::ArrayIO< Value, Device, Index >::save( file, this->data, this->size ) )
    {
       std::cerr << "I was not able to save " << this->getType()
@@ -495,11 +494,11 @@ load( File& file )
    if( ! Object::load( file ) )
       return false;
    Index _size;
-   if( ! file.load( &_size ) )
-   {
+   file.load( &_size );
+   /*{
       std::cerr << "Unable to read the array size." << std::endl;
       return false;
-   }
+   }*/
    if( _size < 0 )
    {
       std::cerr << "Error: The size " << _size << " of the file is not a positive number or zero." << std::endl;
@@ -528,8 +527,7 @@ boundLoad( File& file )
    if( ! Object::load( file ) )
       return false;
    Index _size;
-   if( ! file.load( &_size ) )
-      return false;
+   file.load( &_size );
    if( _size < 0 )
    {
       std::cerr << "Error: The size " << _size << " of the file is not a positive number or zero." << std::endl;

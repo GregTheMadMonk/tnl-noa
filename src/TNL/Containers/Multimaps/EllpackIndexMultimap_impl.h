@@ -244,10 +244,8 @@ save( File& file ) const
 {
    if( ! Object::save( file ) )
       return false;
-   if( ! file.save( &this->keysRange ) )
-      return false;
-   if( ! file.save( &this->maxValuesCount ) )
-      return false;
+   file.save( &this->keysRange );
+   file.save( &this->maxValuesCount );
    if( ! this->values.save( file ) )
       return false;
    if( ! this->valuesCounts.save( file ) )
@@ -265,10 +263,8 @@ load( File& file )
 {
    if( ! Object::load( file ) )
       return false;
-   if( ! file.load( &this->keysRange ) )
-      return false;
-   if( ! file.load( &this->maxValuesCount ) )
-      return false;
+   file.load( &this->keysRange );
+   file.load( &this->maxValuesCount );
    if( ! this->values.load( file ) )
       return false;
    if( ! this->valuesCounts.load( file ) )

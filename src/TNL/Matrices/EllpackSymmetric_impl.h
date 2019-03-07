@@ -540,7 +540,7 @@ template< typename Real,
 bool EllpackSymmetric< Real, Device, Index >::save( File& file ) const
 {
    if( ! Sparse< Real, Device, Index >::save( file) ) return false;
-   if( ! file.save( &this->rowLengths ) ) return false;
+   file.save( &this->rowLengths );
    return true;
 }
 
@@ -550,7 +550,7 @@ template< typename Real,
 bool EllpackSymmetric< Real, Device, Index >::load( File& file )
 {
    if( ! Sparse< Real, Device, Index >::load( file) ) return false;
-   if( ! file.load( &this->rowLengths ) ) return false;
+   file.load( &this->rowLengths );
    return true;
 }
 

@@ -43,8 +43,7 @@ inline String Object::getSerializationTypeVirtual() const
 
 inline bool Object::save( File& file ) const
 {
-   if( ! file.save( magic_number, strlen( magic_number ) ) )
-      return false;
+   file.save( magic_number, strlen( magic_number ) );
    file << this->getSerializationTypeVirtual();
    return true;
 }
