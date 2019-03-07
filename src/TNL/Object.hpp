@@ -43,7 +43,7 @@ inline String Object::getSerializationTypeVirtual() const
 
 inline bool Object::save( File& file ) const
 {
-   if( ! file.write( magic_number, strlen( magic_number ) ) )
+   if( ! file.save( magic_number, strlen( magic_number ) ) )
       return false;
    file << this->getSerializationTypeVirtual();
    return true;
@@ -90,7 +90,7 @@ inline String getObjectType( File& file )
 {
    char mn[ 10 ];
    String type;
-   file.read( mn, strlen( magic_number ) );
+   file.load( mn, strlen( magic_number ) );
    if( strncmp( mn, magic_number, 5 ) != 0 )
       throw Exceptions::NotTNLFile();
    file >> type;

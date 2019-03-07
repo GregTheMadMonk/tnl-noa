@@ -716,7 +716,7 @@ template< typename Real,
 bool Ellpack< Real, Device, Index >::save( File& file ) const
 {
    if( ! Sparse< Real, Device, Index >::save( file) ) return false;
-   if( ! file.write( &this->rowLengths ) ) return false;
+   if( ! file.save( &this->rowLengths ) ) return false;
    return true;
 }
 
@@ -726,7 +726,7 @@ template< typename Real,
 bool Ellpack< Real, Device, Index >::load( File& file )
 {
    if( ! Sparse< Real, Device, Index >::load( file) ) return false;
-   if( ! file.read( &this->rowLengths ) ) return false;
+   if( ! file.load( &this->rowLengths ) ) return false;
    return true;
 }
 

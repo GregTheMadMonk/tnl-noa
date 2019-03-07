@@ -80,21 +80,23 @@ inline void File::close()
    fileName = "";
 }
 
-template< typename Type, typename Device, typename SourceType >
-bool File::read( Type* buffer, std::streamsize elements )
+template< typename Type,
+          typename SourceType,
+          typename Device >
+bool File::load( Type* buffer, std::streamsize elements )
 {
    TNL_ASSERT_GE( elements, 0, "Number of elements to read must be non-negative." );
 
    if( ! elements )
       return true;
 
-   return read_impl< Type, Device, SourceType >( buffer, elements );
+   return read_impl< Type, SourceType, Device >( buffer, elements );
 }
 
 // Host
 template< typename Type,
-          typename Device,
           typename SourceType,
+          typename Device,
           typename >
 bool File::read_impl( Type* buffer, std::streamsize elements )
 {
@@ -122,8 +124,8 @@ bool File::read_impl( Type* buffer, std::streamsize elements )
 
 // Cuda
 template< typename Type,
-          typename Device,
           typename SourceType,
+          typename Device,
           typename, typename >
 bool File::read_impl( Type* buffer, std::streamsize elements )
 {
@@ -175,8 +177,8 @@ bool File::read_impl( Type* buffer, std::streamsize elements )
 
 // MIC
 template< typename Type,
-          typename Device,
           typename SourceType,
+          typename Device,
           typename, typename, typename >
 bool File::read_impl( Type* buffer, std::streamsize elements )
 {
@@ -219,21 +221,23 @@ bool File::read_impl( Type* buffer, std::streamsize elements )
 #endif
 }
 
-template< class Type, typename Device, typename TargetType >
-bool File::write( const Type* buffer, std::streamsize elements )
+template< typename Type,
+          typename TargetType,
+          typename Device >
+bool File::save( const Type* buffer, std::streamsize elements )
 {
    TNL_ASSERT_GE( elements, 0, "Number of elements to write must be non-negative." );
 
    if( ! elements )
       return true;
 
-   return write_impl< Type, Device, TargetType >( buffer, elements );
+   return write_impl< Type, TargetType, Device >( buffer, elements );
 }
 
 // Host
 template< typename Type,
-          typename Device,
           typename TargetType,
+          typename Device,
           typename >
 bool File::write_impl( const Type* buffer, std::streamsize elements )
 {
@@ -260,8 +264,8 @@ bool File::write_impl( const Type* buffer, std::streamsize elements )
 
 // Cuda
 template< typename Type,
-          typename Device,
           typename TargetType,
+          typename Device,
           typename, typename >
 bool File::write_impl( const Type* buffer, std::streamsize elements )
 {
@@ -314,8 +318,8 @@ bool File::write_impl( const Type* buffer, std::streamsize elements )
 
 // MIC
 template< typename Type,
-          typename Device,
           typename TargetType,
+          typename Device,
           typename, typename, typename >
 bool File::write_impl( const Type* buffer, std::streamsize elements )
 {
@@ -370,9 +374,9 @@ inline bool fileExists( const String& fileName )
 inline File& operator<<( File& file, const std::string& str )
 {
    const int len = str.size();
-   if( ! file.write( &len ) )
+   if( ! file.save( &len ) )
       throw Exceptions::FileSerializationError( getType< int >(), file.getFileName() );
-   if( ! file.write( str.c_str(), len ) )
+   if( ! file.save( str.c_str(), len ) )
       throw Exceptions::FileSerializationError( "String", file.getFileName() );
    return file;
 }
@@ -381,10 +385,10 @@ inline File& operator<<( File& file, const std::string& str )
 inline File& operator>>( File& file, std::string& str )
 {
    int length;
-   if( ! file.read( &length ) )
+   if( ! file.load( &length ) )
       throw Exceptions::FileDeserializationError( getType< int >(), file.getFileName() );
    char buffer[ length ];
-   if( length && ! file.read( buffer, length ) )
+   if( length && ! file.load( buffer, length ) )
       throw Exceptions::FileDeserializationError( "String", file.getFileName() );
    str.assign( buffer, length );
    return file;

@@ -71,14 +71,14 @@ class ArrayIO< Value, Device, Index, false >
                      const Value* data,
                      const Index elements )
    {
-      return file.write< Value, Device >( data, elements );
+      return file.save< Value, Value, Device >( data, elements );
    }
 
    static bool load( File& file,
                      Value* data,
                      const Index elements )
    {
-      return file.read< Value, Device >( data, elements );
+      return file.load< Value, Value, Device >( data, elements );
    }
 
 };

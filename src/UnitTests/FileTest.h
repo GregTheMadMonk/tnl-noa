@@ -29,18 +29,18 @@ TEST( FileTest, WriteAndRead )
    int intData( 5 );
    double doubleData[ 3 ] = { 1.0, 2.0, 3.0 };
    const double constDoubleData = 3.14;
-   ASSERT_TRUE( file.write( &intData ) );
-   ASSERT_TRUE( file.write( doubleData, 3 ) );
-   ASSERT_TRUE( file.write( &constDoubleData ) );
+   ASSERT_TRUE( file.save( &intData ) );
+   ASSERT_TRUE( file.save( doubleData, 3 ) );
+   ASSERT_TRUE( file.save( &constDoubleData ) );
    file.close();
 
    file.open( String( "test-file.tnl" ), File::Mode::In );
    int newIntData;
    double newDoubleData[ 3 ];
    double newConstDoubleData;
-   ASSERT_TRUE( file.read( &newIntData, 1 ) );
-   ASSERT_TRUE( file.read( newDoubleData, 3 ) );
-   ASSERT_TRUE( file.read( &newConstDoubleData, 1 ) );
+   ASSERT_TRUE( file.load( &newIntData, 1 ) );
+   ASSERT_TRUE( file.load( newDoubleData, 3 ) );
+   ASSERT_TRUE( file.load( &newConstDoubleData, 1 ) );
 
    EXPECT_EQ( newIntData, intData );
    for( int i = 0; i < 3; i ++ )
@@ -59,15 +59,15 @@ TEST( FileTest, WriteAndReadWithConversion )
    int intData[ 3 ];
    File file;
    file.open( "test-file.tnl", File::Mode::Out | File::Mode::Truncate );
-   file.write< double, Devices::Host, float >( doubleData, 3 );
+   file.save< double, float, Devices::Host >( doubleData, 3 );
    file.close();
 
    file.open( "test-file.tnl", File::Mode::In );
-   file.read< float, Devices::Host, float >( floatData, 3 );
+   file.load< float, float, Devices::Host >( floatData, 3 );
    file.close();
 
    file.open( "test-file.tnl", File::Mode::In );
-   file.read< int, Devices::Host, float >( intData, 3 );
+   file.load< int, float, Devices::Host >( intData, 3 );
    file.close();
 
    EXPECT_NEAR( floatData[ 0 ], 3.14159, 0.0001 );
@@ -110,11 +110,11 @@ TEST( FileTest, WriteAndReadCUDA )
    File file;
    file.open( String( "test-file.tnl" ), File::Mode::Out );
 
-   bool status = file.write< int, Devices::Cuda >( cudaIntData );
+   bool status = file.save< int, int, Devices::Cuda >( cudaIntData );
    ASSERT_TRUE( status );
-   status = file.write< float, Devices::Cuda >( cudaFloatData, 3 );
+   status = file.save< float, float, Devices::Cuda >( cudaFloatData, 3 );
    ASSERT_TRUE( status );
-   status = file.write< const double, Devices::Cuda >( cudaConstDoubleData );
+   status = file.save< const double, double, Devices::Cuda >( cudaConstDoubleData );
    ASSERT_TRUE( status );
    file.close();
 
@@ -128,11 +128,11 @@ TEST( FileTest, WriteAndReadCUDA )
    cudaMalloc( ( void** ) &newCudaIntData, sizeof( int ) );
    cudaMalloc( ( void** ) &newCudaFloatData, 3 * sizeof( float ) );
    cudaMalloc( ( void** ) &newCudaDoubleData, sizeof( double ) );
-   status = file.read< int, Devices::Cuda >( newCudaIntData, 1 );
+   status = file.load< int, int, Devices::Cuda >( newCudaIntData, 1 );
    ASSERT_TRUE( status );
-   status = file.read< float, Devices::Cuda >( newCudaFloatData, 3 );
+   status = file.load< float, float, Devices::Cuda >( newCudaFloatData, 3 );
    ASSERT_TRUE( status );
-   status = file.read< double, Devices::Cuda >( newCudaDoubleData, 1 );
+   status = file.load< double, double, Devices::Cuda >( newCudaDoubleData, 1 );
    ASSERT_TRUE( status );
    cudaMemcpy( &newIntData,
                newCudaIntData,
@@ -176,15 +176,15 @@ TEST( FileTest, WriteAndReadCUDAWithConversion )
 
    File file;
    file.open( String( "cuda-test-file.tnl" ), File::Mode::Out | File::Mode::Truncate );
-   file.write< double, Devices::Cuda, float >( cudaConstDoubleData, 3 );
+   file.save< double, float, Devices::Cuda >( cudaConstDoubleData, 3 );
    file.close();
 
    file.open( String( "cuda-test-file.tnl" ), File::Mode::In );
-   file.read< float, Devices::Cuda, float >( cudaFloatData, 3 );
+   file.load< float, float, Devices::Cuda >( cudaFloatData, 3 );
    file.close();
 
    file.open( String( "cuda-test-file.tnl" ), File::Mode::In );
-   file.read< int, Devices::Cuda, float >( cudaIntData, 3 );
+   file.load< int, float, Devices::Cuda >( cudaIntData, 3 );
    file.close();
 
    cudaMemcpy( floatData,

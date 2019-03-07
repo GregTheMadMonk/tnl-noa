@@ -145,8 +145,8 @@ template< typename Real,
 bool Matrix< Real, Device, Index >::save( File& file ) const
 {
    if( ! Object::save( file ) ||
-       ! file.write( &this->rows ) ||
-       ! file.write( &this->columns ) ||
+       ! file.save( &this->rows ) ||
+       ! file.save( &this->columns ) ||
        ! this->values.save( file ) )
       return false;
    return true;
@@ -158,8 +158,8 @@ template< typename Real,
 bool Matrix< Real, Device, Index >::load( File& file )
 {
    if( ! Object::load( file ) ||
-       ! file.read( &this->rows ) ||
-       ! file.read( &this->columns ) ||
+       ! file.load( &this->rows ) ||
+       ! file.load( &this->columns ) ||
        ! this->values.load( file ) )
       return false;
    return true;

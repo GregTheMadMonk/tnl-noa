@@ -91,8 +91,8 @@ class File
        * \param buffer Pointer in memory where the elements are loaded and stored after reading.
        * \param elements Number of elements the user wants to get (read) from given file.
        */
-      template< typename Type, typename Device = Devices::Host, typename SourceType = Type >
-      bool read( Type* buffer, std::streamsize elements = 1 );
+      template< typename Type, typename SourceType = Type, typename Device = Devices::Host >
+      bool load( Type* buffer, std::streamsize elements = 1 );
 
       /**
        * \brief Method that can write particular data type from CPU into given file. (Function that writes particular elements into given file.)
@@ -107,47 +107,47 @@ class File
        * \param buffer Pointer in memory where the elements are loaded from before writing into file.
        * \param elements Number of elements the user wants to write into the given file.
        */
-      template< typename Type, typename Device = Devices::Host, typename TargetType = Type >
-      bool write( const Type* buffer, std::streamsize elements = 1 );
+      template< typename Type, typename TargetType = Type, typename Device = Devices::Host >
+      bool save( const Type* buffer, std::streamsize elements = 1 );
 
    protected:
       template< typename Type,
-                typename Device,
                 typename SourceType,
+                typename Device,
                 typename = typename std::enable_if< std::is_same< Device, Devices::Host >::value >::type >
       bool read_impl( Type* buffer, std::streamsize elements );
 
       template< typename Type,
-                typename Device,
                 typename SourceType,
+                typename Device,
                 typename = typename std::enable_if< std::is_same< Device, Devices::Cuda >::value >::type,
                 typename = void >
       bool read_impl( Type* buffer, std::streamsize elements );
 
       template< typename Type,
-                typename Device,
                 typename SourceType,
+                typename Device,
                 typename = typename std::enable_if< std::is_same< Device, Devices::MIC >::value >::type,
                 typename = void,
                 typename = void >
       bool read_impl( Type* buffer, std::streamsize elements );
 
       template< typename Type,
-                typename Device,
                 typename TargetType,
+                typename Device,
                 typename = typename std::enable_if< std::is_same< Device, Devices::Host >::value >::type >
       bool write_impl( const Type* buffer, std::streamsize elements );
 
       template< typename Type,
-                typename Device,
                 typename TargetType,
+                typename Device,
                 typename = typename std::enable_if< std::is_same< Device, Devices::Cuda >::value >::type,
                 typename = void >
       bool write_impl( const Type* buffer, std::streamsize elements );
 
       template< typename Type,
-                typename Device,
                 typename TargetType,
+                typename Device,
                 typename = typename std::enable_if< std::is_same< Device, Devices::MIC >::value >::type,
                 typename = void,
                 typename = void >
