@@ -37,7 +37,7 @@ public:
 protected:
    void setSize( IndexType size );
 
-   Containers::Vector< RealType, DeviceType, IndexType >  r, new_r, p, Ap;
+   Containers::Vector< RealType, DeviceType, IndexType >  r, p, Ap, z;
 };
 
 } // namespace Linear
