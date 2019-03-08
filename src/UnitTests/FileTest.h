@@ -29,18 +29,18 @@ TEST( FileTest, WriteAndRead )
    int intData( 5 );
    double doubleData[ 3 ] = { 1.0, 2.0, 3.0 };
    const double constDoubleData = 3.14;
-   ASSERT_TRUE( file.save( &intData ) );
-   ASSERT_TRUE( file.save( doubleData, 3 ) );
-   ASSERT_TRUE( file.save( &constDoubleData ) );
+   file.save( &intData );
+   file.save( doubleData, 3 );
+   file.save( &constDoubleData );
    file.close();
 
    file.open( String( "test-file.tnl" ), File::Mode::In );
    int newIntData;
    double newDoubleData[ 3 ];
    double newConstDoubleData;
-   ASSERT_TRUE( file.load( &newIntData, 1 ) );
-   ASSERT_TRUE( file.load( newDoubleData, 3 ) );
-   ASSERT_TRUE( file.load( &newConstDoubleData, 1 ) );
+   file.load( &newIntData, 1 );
+   file.load( newDoubleData, 3 );
+   file.load( &newConstDoubleData, 1 );
 
    EXPECT_EQ( newIntData, intData );
    for( int i = 0; i < 3; i ++ )
@@ -110,12 +110,9 @@ TEST( FileTest, WriteAndReadCUDA )
    File file;
    file.open( String( "test-file.tnl" ), File::Mode::Out );
 
-   bool status = file.save< int, int, Devices::Cuda >( cudaIntData );
-   ASSERT_TRUE( status );
-   status = file.save< float, float, Devices::Cuda >( cudaFloatData, 3 );
-   ASSERT_TRUE( status );
-   status = file.save< const double, double, Devices::Cuda >( cudaConstDoubleData );
-   ASSERT_TRUE( status );
+   file.save< int, int, Devices::Cuda >( cudaIntData );
+   file.save< float, float, Devices::Cuda >( cudaFloatData, 3 );
+   file.save< const double, double, Devices::Cuda >( cudaConstDoubleData );
    file.close();
 
    file.open( String( "test-file.tnl" ), File::Mode::In );
@@ -128,12 +125,9 @@ TEST( FileTest, WriteAndReadCUDA )
    cudaMalloc( ( void** ) &newCudaIntData, sizeof( int ) );
    cudaMalloc( ( void** ) &newCudaFloatData, 3 * sizeof( float ) );
    cudaMalloc( ( void** ) &newCudaDoubleData, sizeof( double ) );
-   status = file.load< int, int, Devices::Cuda >( newCudaIntData, 1 );
-   ASSERT_TRUE( status );
-   status = file.load< float, float, Devices::Cuda >( newCudaFloatData, 3 );
-   ASSERT_TRUE( status );
-   status = file.load< double, double, Devices::Cuda >( newCudaDoubleData, 1 );
-   ASSERT_TRUE( status );
+   file.load< int, int, Devices::Cuda >( newCudaIntData, 1 );
+   file.load< float, float, Devices::Cuda >( newCudaFloatData, 3 );
+   file.load< double, double, Devices::Cuda >( newCudaDoubleData, 1 );
    cudaMemcpy( &newIntData,
                newCudaIntData,
                sizeof( int ),
