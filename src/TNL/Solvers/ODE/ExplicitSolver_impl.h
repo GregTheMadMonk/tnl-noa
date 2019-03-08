@@ -43,7 +43,7 @@ ExplicitSolver< Problem >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   this->setVerbose( parameters.getParameter< bool >( "verbose" ) );
+   this->setVerbose( parameters.getParameter< int >( "verbose" ) );
    return IterativeSolver< typename Problem::RealType, typename Problem::IndexType >::setup( parameters, prefix );
 }
 
