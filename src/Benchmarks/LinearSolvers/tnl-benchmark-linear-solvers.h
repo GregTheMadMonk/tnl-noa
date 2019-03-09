@@ -332,9 +332,9 @@ struct LinearSolversBenchmark
    {
       SharedPointer< MatrixType > matrixPointer;
       VectorType x0, b;
-      if( ! matrixPointer->load( parameters.getParameter< String >( "input-matrix" ) ) ||
-          ! x0.load( parameters.getParameter< String >( "input-dof" ) ) ||
-          ! b.load( parameters.getParameter< String >( "input-rhs" ) ) )
+      matrixPointer->load( parameters.getParameter< String >( "input-matrix" ) );
+      x0.load( parameters.getParameter< String >( "input-dof" ) );
+      b.load( parameters.getParameter< String >( "input-rhs" ) );
           return false;
 
       typename MatrixType::CompressedRowLengthsVector rowLengths;

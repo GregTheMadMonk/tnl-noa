@@ -47,7 +47,7 @@ class DistributedGridIO<
 
          if(distrGrid==NULL) //not distributed
          {
-            return meshFunction.save(fileName);
+            meshFunction.save(fileName);
          }
 
          MeshType mesh=meshFunction.getMesh();
@@ -81,10 +81,10 @@ class DistributedGridIO<
 
          File file;
          file.open( fileName+String("-")+distrGrid->printProcessCoords()+String(".tnl"), File::Mode::Out );
-         bool ret=newMeshFunction.save(file);
+         newMeshFunction.save(file);
          file.close();
 
-         return ret;
+         return true;
 
       };
             
@@ -93,7 +93,8 @@ class DistributedGridIO<
         auto *distrGrid=meshFunction.getMesh().getDistributedMesh();
         if(distrGrid==NULL) //not distributed
         {
-            return meshFunction.boundLoad(fileName);
+            meshFunction.boundLoad(fileName);
+            return true;
         }
 
         MeshType mesh=meshFunction.getMesh();
@@ -119,11 +120,11 @@ class DistributedGridIO<
 
         File file;
         file.open( fileName+String("-")+distrGrid->printProcessCoords()+String(".tnl"), File::Mode::In );
-        bool result=newMeshFunction.boundLoad(file);
+        newMeshFunction.boundLoad(file);
         file.close();
         CopyEntitiesHelper<MeshFunctionType>::Copy(newMeshFunction,meshFunction,zeroCoord,localBegin,localSize);
         
-        return result;
+        return true;
     };
     
 };
@@ -153,7 +154,7 @@ class DistributedGridIO_MPIIOBase
         
         if(distrGrid==NULL) //not distributed
         {
-            return meshFunction.save(fileName);
+            meshFunction.save(fileName);
         }
 
        MPI_Comm group=*((MPI_Comm*)(distrGrid->getCommunicationGroup()));
@@ -320,12 +321,13 @@ class DistributedGridIO_MPIIOBase
         return size;
     };
 
-	static bool load(const String& fileName,MeshFunctionType &meshFunction, RealType* data )
-	{
-		auto *distrGrid=meshFunction.getMesh().getDistributedMesh();
+   static bool load(const String& fileName,MeshFunctionType &meshFunction, RealType* data )
+   {
+      auto *distrGrid=meshFunction.getMesh().getDistributedMesh();
       if(distrGrid==NULL) //not distributed
       {
-         return meshFunction.boundLoad(fileName);
+         meshFunction.boundLoad(fileName);
+         return true;
       }
 
       MPI_Comm group=*((MPI_Comm*)(distrGrid->getCommunicationGroup()));
@@ -340,11 +342,11 @@ class DistributedGridIO_MPIIOBase
          std::cerr << "Unable to open file " << fileName.getString() << std::endl;
          return false;
       }
-		bool ret= load(file, meshFunction, data,0)>0;
+      bool ret= load(file, meshFunction, data,0)>0;
 
       MPI_File_close(&file);
-		return ret;
-	}
+      return ret;
+   }
             
     /* Funky bomb - no checks - only dirty load */
     static int load(MPI_File &file,MeshFunctionType &meshFunction, RealType* data, int offset ) 

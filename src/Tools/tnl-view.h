@@ -55,7 +55,11 @@ bool writeMeshFunction( const typename MeshFunction::MeshPointer& meshPointer,
 
    MeshFunction function( meshPointer );
    std::cout << "Mesh function: " << function.getType() << std::endl;
-   if( ! function.load( inputFileName ) )
+   try
+   {
+      function.load( inputFileName );
+   }
+   catch(...)
    {
       std::cerr << "Unable to load mesh function from a file " << inputFileName << "." << std::endl;
       return false;
@@ -83,7 +87,11 @@ bool writeVectorField( const typename VectorField::FunctionType::MeshPointer& me
 
    VectorField field( meshPointer );
    std::cout << "VectorField: " << field.getType() << std::endl;
-   if( ! field.load( inputFileName ) )
+   try
+   {
+      field.load( inputFileName );
+   }
+   catch(...)
    {
       std::cerr << "Unable to load vector field from a file " << inputFileName << "." << std::endl;
       return false;
@@ -252,12 +260,10 @@ bool convertObject( const MeshPointer& meshPointer,
       // FIXME: why is MeshType::GlobalIndexType not the same as Index?
 //      Containers::Vector< Value, Devices::Host, Index > vector;
       Containers::Vector< Value, Devices::Host, typename MeshType::GlobalIndexType > vector;
-      if( ! vector.load( inputFileName ) )
-         return false;
+      vector.load( inputFileName );
       Functions::MeshFunction< MeshType, MeshType::getMeshDimension(), Value > mf;
       mf.bind( meshPointer, vector );
-      if( ! mf.write( outputFileName, outputFormat ) )
-         return false;
+      mf.write( outputFileName, outputFormat );
    }
 
    if( parsedObjectType[ 0 ] == "Containers::MultiVector" ||
@@ -265,8 +271,7 @@ bool convertObject( const MeshPointer& meshPointer,
        parsedObjectType[ 0 ] == "tnlSharedMultiVector" ) //
    {
       Containers::MultiVector< Dimension, Value, Devices::Host, Index > multiVector;
-      if( ! multiVector. load( inputFileName ) )
-         return false;
+      multiVector. load( inputFileName );
       typedef Meshes::Grid< Dimension, Real, Devices::Host, Index > GridType;
       typedef typename GridType::PointType PointType;
       typedef typename GridType::CoordinatesType CoordinatesType;
@@ -274,7 +279,7 @@ bool convertObject( const MeshPointer& meshPointer,
 //      grid. setDomain( PointType( 0.0 ), PointType( 1.0 ) );
 //      grid. setDimensions( CoordinatesType( multiVector. getDimensions() ) );
 //      if( ! grid. write( multiVector, outputFileName, outputFormat ) )
-         return false;
+//         return false;
    }
    return true;
 }

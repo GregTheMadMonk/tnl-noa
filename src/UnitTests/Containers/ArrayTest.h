@@ -505,10 +505,10 @@ TYPED_TEST( ArrayTest, SaveAndLoad )
       v.setElement( i, 3.14147 );
    File file;
    file.open( "test-file.tnl", File::Mode::Out );
-   EXPECT_TRUE( v.save( file ) );
+   v.save( file );
    file.close();
    file.open( "test-file.tnl", File::Mode::In );
-   EXPECT_TRUE( u.load( file ) );
+   u.load( file );
    EXPECT_EQ( u, v );
 
    EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
@@ -524,23 +524,32 @@ TYPED_TEST( ArrayTest, boundLoad )
       v.setElement( i, 3.14147 );
    File file;
    file.open( "test-file.tnl", File::Mode::Out );
-   EXPECT_TRUE( v.save( file ) );
+   v.save( file );
    file.close();
 
    w.setSize( 100 );
    u.bind( w );
    file.open( "test-file.tnl", File::Mode::In );
-   EXPECT_TRUE( u.boundLoad( file ) );
+   u.boundLoad( file );
    EXPECT_EQ( u, v );
    EXPECT_EQ( u.getData(), w.getData() );
 
    u.setSize( 50 );
    file.open( "test-file.tnl", File::Mode::In );
-   EXPECT_FALSE( u.boundLoad( file ) );
+   bool catched( false );
+   try
+   {
+      u.boundLoad( file );
+   }
+   catch(...)
+   {
+      catched = true;
+   }
+   EXPECT_TRUE( catched  );
 
    u.reset();
    file.open( "test-file.tnl", File::Mode::In );
-   EXPECT_TRUE( u.boundLoad( file ) );
+   u.boundLoad( file );
 
    EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
 }

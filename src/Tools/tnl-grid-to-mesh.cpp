@@ -186,7 +186,12 @@ struct GridConverter
          return false;
       }
 
-      if( ! mesh.save( outputFileName ) ) {
+      try
+      {
+         mesh.save( outputFileName );
+      }
+      catch(...)
+      {
          std::cerr << "Failed to save the mesh to file '" << outputFileName << "'." << std::endl;
          return false;
       }

@@ -105,9 +105,9 @@ public:
    template< typename Matrix >
    bool operator != ( const Matrix& matrix ) const;
 
-   virtual bool save( File& file ) const;
+   virtual void save( File& file ) const;
 
-   virtual bool load( File& file );
+   virtual void load( File& file );
 
    virtual void print( std::ostream& str ) const;
 

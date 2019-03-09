@@ -77,8 +77,8 @@ TEST( MultimapTest, TestSaveAndLoad )
          values.setValue( o, i + o );
    }
 
-   ASSERT_TRUE( map.save( "multimap-test.tnl" ) );
-   ASSERT_TRUE( map2.load( "multimap-test.tnl" ) );
+   map.save( "multimap-test.tnl" );
+   map2.load( "multimap-test.tnl" );
 
    EXPECT_EQ( map, map2 );
    EXPECT_EQ( map.getKeysRange(), map2.getKeysRange() );

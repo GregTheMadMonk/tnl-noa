@@ -227,8 +227,12 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const Con
          }
          if( verbose )
            std::cout << "Processing files " << inputFiles[ i ] << " and " << inputFiles[ i + 1 ] << "...           \r" << std::flush;
-         if( ! v1.load( inputFiles[ i ] ) ||
-             ! v2.load( inputFiles[ i + 1 ] ) )
+         try
+         {
+            v1.load( inputFiles[ i ] );
+            v2.load( inputFiles[ i + 1 ] );
+         }
+         catch(...)
          {
             std::cerr << "Unable to read the files " << inputFiles[ i ] << " and " << inputFiles[ i + 1 ] << "." << std::endl;
             outputFile.close();
@@ -246,22 +250,12 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const Con
          {
             if( verbose )
               std::cout << "Reading the file " << inputFiles[ 0 ] << "...               \r" << std::flush;
-            if( ! v1.load( inputFiles[ 0 ] ) )
-            {
-               std::cerr << "Unable to read the file " << inputFiles[ 0 ] << std::endl;
-               outputFile.close();
-               return false;
-            }
+            v1.load( inputFiles[ 0 ] );
             file1 = inputFiles[ 0 ];
          }
          if( verbose )
            std::cout << "Processing the files " << inputFiles[ 0 ] << " and " << inputFiles[ i ] << "...             \r" << std::flush;
-         if( ! v2.load( inputFiles[ i ] ) )
-         {
-            std::cerr << "Unable to read the file " << inputFiles[ 1 ] << std::endl;
-            outputFile.close();
-            return false;
-         }
+         v2.load( inputFiles[ i ] );
          if( ! exactMatch )
             outputFile << std::setw( 6 ) << ( i - 1 ) * snapshotPeriod << " ";
          file2 = inputFiles[ i ];
@@ -273,13 +267,8 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const Con
             i = half;
          if( verbose )
            std::cout << "Processing files " << inputFiles[ i - half ] << " and " << inputFiles[ i ] << "...                 \r" << std::flush;
-         if( ! v1.load( inputFiles[ i - half ] ) ||
-             ! v2.load( inputFiles[ i ] ) )
-         {
-            std::cerr << "Unable to read the files " << inputFiles[ i - half ] << " and " << inputFiles[ i ] << "." << std::endl;
-            outputFile.close();
-            return false;
-         }
+         v1.load( inputFiles[ i - half ] );
+         v2.load( inputFiles[ i ] );
          //if( snapshotPeriod != 0.0 )
          if( ! exactMatch )
             outputFile << std::setw( 6 ) << ( i - half ) * snapshotPeriod << " ";
@@ -377,13 +366,8 @@ bool computeDifferenceOfVectors( const MeshPointer& meshPointer, const Config::P
          }
          if( verbose )
            std::cout << "Processing files " << inputFiles[ i ] << " and " << inputFiles[ i + 1 ] << "...           \r" << std::flush;
-         if( ! v1.load( inputFiles[ i ] ) ||
-             ! v2.load( inputFiles[ i + 1 ] ) )
-         {
-            std::cerr << "Unable to read the files " << inputFiles[ i ] << " and " << inputFiles[ i + 1 ] << "." << std::endl;
-            outputFile.close();
-            return false;
-         }
+         v1.load( inputFiles[ i ] );
+         v2.load( inputFiles[ i + 1 ] );
          outputFile << std::setw( 6 ) << i/2 * snapshotPeriod << " ";
          i++;
       }
@@ -393,21 +377,11 @@ bool computeDifferenceOfVectors( const MeshPointer& meshPointer, const Config::P
          {
             if( verbose )
               std::cout << "Reading the file " << inputFiles[ 0 ] << "...               \r" << std::flush;
-            if( ! v1.load( inputFiles[ 0 ] ) )
-            {
-               std::cerr << "Unable to read the file " << inputFiles[ 0 ] << std::endl;
-               outputFile.close();
-               return false;
-            }
+            v1.load( inputFiles[ 0 ] );
          }
          if( verbose )
            std::cout << "Processing the files " << inputFiles[ 0 ] << " and " << inputFiles[ i ] << "...             \r" << std::flush;
-         if( ! v2.load( inputFiles[ i ] ) )
-         {
-            std::cerr << "Unable to read the file " << inputFiles[ 1 ] << std::endl;
-            outputFile.close();
-            return false;
-         }
+         v2.load( inputFiles[ i ] );
          outputFile << std::setw( 6 ) << ( i - 1 ) * snapshotPeriod << " ";
       }
       if( mode == "halves" )
@@ -417,13 +391,8 @@ bool computeDifferenceOfVectors( const MeshPointer& meshPointer, const Config::P
             i = half;
          if( verbose )
            std::cout << "Processing files " << inputFiles[ i - half ] << " and " << inputFiles[ i ] << "...                 \r" << std::flush;
-         if( ! v1.load( inputFiles[ i - half ] ) ||
-             ! v2.load( inputFiles[ i ] ) )
-         {
-            std::cerr << "Unable to read the files " << inputFiles[ i - half ] << " and " << inputFiles[ i ] << "." << std::endl;
-            outputFile.close();
-            return false;
-         }
+         v1.load( inputFiles[ i - half ] );
+         v2.load( inputFiles[ i ] );
          //if( snapshotPeriod != 0.0 )
          outputFile << std::setw( 6 ) << ( i - half ) * snapshotPeriod << " ";
       }
@@ -616,11 +585,17 @@ bool processFiles( const Config::ParameterContainer& parameters )
 
    MeshPointer meshPointer;
    if( meshFile != "" )
-      if( ! meshPointer->load( meshFile ) )
+   {
+      try
+      {
+         meshPointer->load( meshFile );
+      }
+      catch(...)
       {
          std::cerr << "I am not able to load mesh from the file " << meshFile << "." << std::endl;
          return false;
       }
+   }
 
    String objectType;
    try

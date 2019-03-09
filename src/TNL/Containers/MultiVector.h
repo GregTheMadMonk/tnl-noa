@@ -89,14 +89,14 @@ class MultiVector< 1, Real, Device, Index > : public Vector< Real, Device, Index
    MultiVector< 1, Real, Device, Index >& operator = ( const MultiVectorT& Vector );
 
    //! Method for saving the object to a file as a binary data
-   bool save( File& file ) const;
+   void save( File& file ) const;
 
    //! Method for restoring the object from a file
-   bool load( File& file );
+   void load( File& file );
 
-   bool save( const String& fileName ) const;
+   void save( const String& fileName ) const;
 
-   bool load( const String& fileName );
+   void load( const String& fileName );
 
    protected:
 
@@ -170,14 +170,14 @@ class MultiVector< 2, Real, Device, Index > : public Vector< Real, Device, Index
    MultiVector< 2, Real, Device, Index >& operator = ( const MultiVectorT& Vector );
 
    //! Method for saving the object to a file as a binary data
-   bool save( File& file ) const;
+   void save( File& file ) const;
 
    //! Method for restoring the object from a file
-   bool load( File& file );
+   void load( File& file );
 
-   bool save( const String& fileName ) const;
+   void save( const String& fileName ) const;
 
-   bool load( const String& fileName );
+   void load( const String& fileName );
 
    protected:
 
@@ -252,14 +252,14 @@ class MultiVector< 3, Real, Device, Index > : public Vector< Real, Device, Index
    MultiVector< 3, Real, Device, Index >& operator = ( const MultiVectorT& Vector );
 
    //! Method for saving the object to a file as a binary data
-   bool save( File& file ) const;
+   void save( File& file ) const;
 
    //! Method for restoring the object from a file
-   bool load( File& file );
+   void load( File& file );
 
-   bool save( const String& fileName ) const;
+   void save( const String& fileName ) const;
 
-   bool load( const String& fileName );
+   void load( const String& fileName );
 
    protected:
 
@@ -334,14 +334,14 @@ class MultiVector< 4, Real, Device, Index > : public Vector< Real, Device, Index
    MultiVector< 4, Real, Device, Index >& operator = ( const MultiVectorT& Vector );
 
    //! Method for saving the object to a file as a binary data
-   bool save( File& file ) const;
+   void save( File& file ) const;
 
    //! Method for restoring the object from a file
-   bool load( File& file );
+   void load( File& file );
 
-   bool save( const String& fileName ) const;
+   void save( const String& fileName ) const;
 
-   bool load( const String& fileName );
+   void load( const String& fileName );
 
    protected:
 

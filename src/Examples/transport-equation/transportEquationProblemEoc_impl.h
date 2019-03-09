@@ -100,8 +100,7 @@ setup( const Config::ParameterContainer& parameters,
          fileName.setFileNameBase( "exact-u-" );
          fileName.setExtension( "tnl" );
          fileName.setIndex( step );
-         if( ! u->save( fileName.getFileName() ) )
-            return false;
+         u->save( fileName.getFileName() );
          while( time < finalTime )
          {
             time += snapshotPeriod;
@@ -112,8 +111,7 @@ setup( const Config::ParameterContainer& parameters,
             std::cerr << exactSolution->getOperator().getShift() << std::endl;
             evaluator.evaluate( u, exactSolution, time );
             fileName.setIndex( ++step );
-            if( ! u->save( fileName.getFileName() ) )
-               return false;
+            u->save( fileName.getFileName() );
          }
       }
       if( velocityFieldType == "rotation" )
@@ -141,7 +139,11 @@ setInitialCondition( const Config::ParameterContainer& parameters,
    fileName.setFileNameBase( "exact-u-" );
    fileName.setExtension( "tnl" );
    fileName.setIndex( 0 );   
-   if( ! this->uPointer->boundLoad( fileName.getFileName() ) )
+   try
+   {
+      this->uPointer->boundLoad( fileName.getFileName() );
+   }
+   catch(...)
    {
       std::cerr << "I am not able to load the initial condition from the file " << fileName.getFileName() << "." << std::endl;
       return false;

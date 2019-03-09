@@ -142,27 +142,23 @@ bool Matrix< Real, Device, Index >::operator != ( const MatrixT& matrix ) const
 template< typename Real,
           typename Device,
           typename Index >
-bool Matrix< Real, Device, Index >::save( File& file ) const
+void Matrix< Real, Device, Index >::save( File& file ) const
 {
    Object::save( file );
    file.save( &this->rows );
    file.save( &this->columns );
-   if( ! this->values.save( file ) )
-      return false;
-   return true;
+   this->values.save( file );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool Matrix< Real, Device, Index >::load( File& file )
+void Matrix< Real, Device, Index >::load( File& file )
 {
    Object::load( file );
    file.load( &this->rows );
    file.load( &this->columns );
-   if( ! this->values.load( file ) )
-      return false;
-   return true;
+   this->values.load( file );
 }
 
 template< typename Real,

@@ -47,8 +47,7 @@ bool renderFunction( const Config::ParameterContainer& parameters )
        //suppose global mesh loaded from single file
        String meshFile = parameters.getParameter< String >( "mesh" );
        std::cout << "+ -> Loading mesh from " << meshFile << " ... " << std::endl;
-       if( ! globalMesh.load( meshFile ) )
-          return false;
+       globalMesh.load( meshFile );
    
        // TODO: This should work with no overlaps
        distributedMesh.template setGlobalGrid<CommunicatorType>(globalMesh);
@@ -61,8 +60,7 @@ bool renderFunction( const Config::ParameterContainer& parameters )
     {
        String meshFile = parameters.getParameter< String >( "mesh" );
        std::cout << "+ -> Loading mesh from " << meshFile << " ... " << std::endl;
-       if( ! meshPointer->load( meshFile ) )
-            return false;
+       meshPointer->load( meshFile );
     }
 
    typedef Functions::TestFunction< MeshType::getMeshDimension(), RealType > FunctionType;
@@ -125,10 +123,7 @@ bool renderFunction( const Config::ParameterContainer& parameters )
             return false;
       }
       else
-      {
-        if( ! meshFunction->save( outputFile) )
-         return false;
-      }
+        meshFunction->save( outputFile);
 
       time += tau;
       step ++;

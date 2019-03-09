@@ -16,6 +16,7 @@
 
 #include <TNL/Object.h>
 #include <TNL/Exceptions/NotTNLFile.h>
+#include <TNL/Exceptions/ObjectTypeMismatch.h>
 
 namespace TNL {
 
@@ -41,48 +42,43 @@ inline String Object::getSerializationTypeVirtual() const
    return this->getSerializationType();
 }
 
-inline bool Object::save( File& file ) const
+inline void Object::save( File& file ) const
 {
    file.save( magic_number, strlen( magic_number ) );
    file << this->getSerializationTypeVirtual();
-   return true;
 }
 
-inline bool Object::load( File& file )
+inline void Object::load( File& file )
 {
    String objectType = getObjectType( file );
    if( objectType != this->getSerializationTypeVirtual() )
-   {
-      std::cerr << "Given file contains instance of " << objectType << " but " << getSerializationTypeVirtual() << " is expected." << std::endl;
-      return false;
-   }
-   return true;
+      throw Exceptions::ObjectTypeMismatch( this->getSerializationTypeVirtual(), objectType );
 }
 
-inline bool Object::boundLoad( File& file )
+inline void Object::boundLoad( File& file )
 {
-   return load( file );
+   this->load( file );
 }
 
-inline bool Object::save( const String& fileName ) const
+inline void Object::save( const String& fileName ) const
 {
    File file;
    file.open( fileName, File::Mode::Out );
-   return this->save( file );
+   this->save( file );
 }
 
-inline bool Object::load( const String& fileName )
+inline void Object::load( const String& fileName )
 {
    File file;
    file.open( fileName, File::Mode::In );
-   return this->load( file );
+   this->load( file );
 }
 
-inline bool Object::boundLoad( const String& fileName )
+inline void Object::boundLoad( const String& fileName )
 {
    File file;
    file.open( fileName, File::Mode::In );
-   return this->boundLoad( file );
+   this->boundLoad( file );
 }
 
 inline String getObjectType( File& file )

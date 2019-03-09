@@ -236,35 +236,25 @@ reorderEntities( const GlobalIndexVector& perm,
 
 
 template< typename MeshConfig, typename Device >
-bool
+void
 Mesh< MeshConfig, Device >::
 save( File& file ) const
 {
-   if( ! Object::save( file ) ||
-       ! StorageBaseType::save( file ) ||
-       ! BoundaryTagsLayerFamily::save( file ) )
-   {
-      std::cerr << "Mesh saving failed." << std::endl;
-      return false;
-   }
-   return true;
+   Object::save( file );
+   StorageBaseType::save( file );
+   BoundaryTagsLayerFamily::save( file );
 }
 
 template< typename MeshConfig, typename Device >
-bool
+void
 Mesh< MeshConfig, Device >::
 load( File& file )
 {
-   if( ! Object::load( file ) ||
-       ! StorageBaseType::load( file ) ||
-       ! BoundaryTagsLayerFamily::load( file ) )
-   {
-      std::cerr << "Mesh loading failed." << std::endl;
-      return false;
-   }
+   Object::load( file );
+   StorageBaseType::load( file );
+   BoundaryTagsLayerFamily::load( file );
    // update pointers from entities into the subentity and superentity storage networks
    EntityStorageRebinder< Mesh< MeshConfig, Device > >::exec( *this );
-   return true;
 }
 
 template< typename MeshConfig, typename Device >

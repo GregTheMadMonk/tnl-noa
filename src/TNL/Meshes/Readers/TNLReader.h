@@ -108,7 +108,8 @@ public:
    static bool
    readMesh( const String& fileName, MeshType& mesh )
    {
-      return mesh.load( fileName );
+      mesh.load( fileName );
+      return true;
    }
 
    String

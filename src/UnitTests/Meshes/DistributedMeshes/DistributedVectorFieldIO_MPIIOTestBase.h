@@ -103,16 +103,12 @@ class TestDistributedVectorFieldMPIIO{
         
             File file;
             file.open( FileName, File::Mode::In );
-			bool loaded=loadvct.boundLoad(file);
-			file.close();
-            if(!loaded)
-				EXPECT_TRUE(loaded)<< "Chyba načtení souboru" <<std::endl;
-            else
-		        for(int i=0;i<loadDof.getSize();i++)
-		        {
-		          EXPECT_EQ( globalEvaluatedDof.getElement(i), loadDof.getElement(i)) << "Compare Loaded and evaluated Dof Failed for: "<< i;
-		        }
-		    }
+	    loadvct.boundLoad(file);
+            for(int i=0;i<loadDof.getSize();i++)
+	    {
+		EXPECT_EQ( globalEvaluatedDof.getElement(i), loadDof.getElement(i)) << "Compare Loaded and evaluated Dof Failed for: "<< i;
+	    }
+       }
     };
     
     static void TestLoad()

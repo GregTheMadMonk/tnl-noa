@@ -238,38 +238,30 @@ template< typename Index,
           typename Device,
           typename LocalIndex,
           int SliceSize >
-bool
+void
 EllpackIndexMultimap< Index, Device, LocalIndex, SliceSize >::
 save( File& file ) const
 {
-   if( ! Object::save( file ) )
-      return false;
+   Object::save( file );
    file.save( &this->keysRange );
    file.save( &this->maxValuesCount );
-   if( ! this->values.save( file ) )
-      return false;
-   if( ! this->valuesCounts.save( file ) )
-      return false;
-   return true;
+   this->values.save( file );
+   this->valuesCounts.save( file );
 }
 
 template< typename Index,
           typename Device,
           typename LocalIndex,
           int SliceSize >
-bool
+void
 EllpackIndexMultimap< Index, Device, LocalIndex, SliceSize >::
 load( File& file )
 {
-   if( ! Object::load( file ) )
-      return false;
+   Object::load( file );
    file.load( &this->keysRange );
    file.load( &this->maxValuesCount );
-   if( ! this->values.load( file ) )
-      return false;
-   if( ! this->valuesCounts.load( file ) )
-      return false;
-   return true;
+   this->values.load( file );
+   this->valuesCounts.load( file );
 }
 
 template< typename Index,

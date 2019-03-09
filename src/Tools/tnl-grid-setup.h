@@ -36,7 +36,11 @@ bool setupGrid( const Config::ParameterContainer& parameters )
       grid.setDimensions( CoordinatesType( sizeX ) );
       std::cout << "Setting dimensions to  ... " << sizeX << std::endl;
       std::cout << "Writing the grid to the file " << outputFile << " .... ";      
-      if( ! grid.save( outputFile ) )
+      try
+      {
+         grid.save( outputFile );
+      }
+      catch(...)
       {
          std::cerr << "[ FAILED ] " << std::endl;
          return false;
@@ -70,7 +74,11 @@ bool setupGrid( const Config::ParameterContainer& parameters )
       std::cout << "Setting dimensions to  ... " << grid.getDimensions() << std::endl;
       std::cout << "Writing the grid to the file " << outputFile << " .... ";
 
-      if( ! grid.save( outputFile ) )
+      try
+      {
+         grid.save( outputFile );
+      }
+      catch(...)
       {
          std::cerr << "[ FAILED ] " << std::endl;
          return false;
@@ -108,7 +116,11 @@ bool setupGrid( const Config::ParameterContainer& parameters )
       std::cout << "Setting dimensions to  ... " << grid.getDimensions() << std::endl;
       std::cout << "Writing the grid to the file " << outputFile << " .... ";      
       
-      if( ! grid.save( outputFile ) )
+      try
+      {
+         grid.save( outputFile );
+      }
+      catch(...)
       {
          std::cerr << "[ FAILED ] " << std::endl;
          return false;

@@ -91,42 +91,42 @@ class Object
        *
        * \param file Name of file object.
        */
-      virtual bool save( File& file ) const;
+      virtual void save( File& file ) const;
 
       /**
        * \brief Method for restoring the object from a file.
        *
        * \param file Name of file object.
        */
-      virtual bool load( File& file );
+      virtual void load( File& file );
 
       /**
        * \brief Method for restoring the object from a file.
        *
        * \param file Name of file object.
        */
-      virtual bool boundLoad( File& file );
+      virtual void boundLoad( File& file );
 
       /**
        * \brief Method for saving the object to a file as a binary data.
        *
        * \param fileName String defining the name of a file.
        */
-      bool save( const String& fileName ) const;
+      void save( const String& fileName ) const;
 
       /**
        * \brief Method for restoring the object from a file.
        *
        * \param fileName String defining the name of a file.
        */
-      bool load( const String& fileName );
+      void load( const String& fileName );
 
        /**
        * \brief Method for restoring the object from a file.
        *
        * \param fileName String defining the name of a file.
        */
-      bool boundLoad( const String& fileName );
+      void boundLoad( const String& fileName );
       
       /**
        * \brief Destructor.

@@ -164,11 +164,7 @@ bool performExtrude( const Config::ParameterContainer& parameters,
             }
          }
    String outputFile = parameters.getParameter< String >( "output-file" );
-   if( ! f.save( outputFile ) )
-   {
-      std::cerr << "Unable to save output file " << outputFile << "." << std::endl;
-      return false;
-   }
+   f.save( outputFile );
    return true;
 }
 
@@ -180,14 +176,22 @@ readProfileMeshFunction( const Config::ParameterContainer& parameters )
    String profileMeshFile = parameters.getParameter< String >( "profile-mesh" );
    using ProfileMeshPointer = Pointers::SharedPointer< typename ProfileMeshFunction::MeshType >;
    ProfileMeshPointer profileMesh;
-   if( ! profileMesh->load( profileMeshFile ) )
+   try
+   {
+      profileMesh->load( profileMeshFile );
+   }
+   catch(...)
    {
       std::cerr << "Unable to load the profile mesh file." << profileMeshFile << "." << std::endl;
       return false;
    }
    String profileFile = parameters.getParameter< String >( "profile-file" );
    ProfileMeshFunction profileMeshFunction( profileMesh );
-   if( ! profileMeshFunction.load( profileFile ) )
+   try
+   {
+      profileMeshFunction.load( profileFile );
+   }
+   catch(...)
    {
       std::cerr << "Unable to load profile mesh function from the file " << profileFile << "." << std::endl;
       return false;
@@ -195,7 +199,11 @@ readProfileMeshFunction( const Config::ParameterContainer& parameters )
    String meshFile = parameters.getParameter< String >( "mesh" );
    using MeshPointer = Pointers::SharedPointer< Mesh >;
    MeshPointer mesh;
-   if( ! mesh->load( meshFile ) )
+   try
+   {
+      mesh->load( meshFile );
+   }
+   catch(...)
    {
       std::cerr << "Unable to load 3D mesh from the file " << meshFile << "." << std::endl;
       return false;
@@ -205,7 +213,11 @@ readProfileMeshFunction( const Config::ParameterContainer& parameters )
    if( parameters.checkParameter( "input-file" ) )
    {
       const String& inputFile = parameters.getParameter< String >( "input-file" ); 
-      if( ! meshFunction.load( inputFile ) )
+      try
+      {
+         meshFunction.load( inputFile );
+      }
+      catch(...)
       {
          std::cerr << "Unable to load " << inputFile << "." << std::endl;
          return false;

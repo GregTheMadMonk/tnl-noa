@@ -18,6 +18,7 @@
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Algorithms/ArrayIO.h>
 #include <TNL/Containers/Array.h>
+#include <TNL/Exceptions/ArrayWrongSize.h>
 
 namespace TNL {
 namespace Containers {
@@ -470,89 +471,48 @@ Array< Value, Device, Index >::operator bool() const
 template< typename Value,
           typename Device,
           typename Index >
-bool Array< Value, Device, Index >::save( File& file ) const
+void Array< Value, Device, Index >::save( File& file ) const
 {
-   if( ! Object::save( file ) )
-      return false;
+   Object::save( file );
    file.save( &this->size );
-   if( this->size != 0 && ! Algorithms::ArrayIO< Value, Device, Index >::save( file, this->data, this->size ) )
-   {
-      std::cerr << "I was not able to save " << this->getType()
-           << " with size " << this -> getSize() << std::endl;
-      return false;
-   }
-   return true;
+   if( this->size != 0 ) 
+      Algorithms::ArrayIO< Value, Device, Index >::save( file, this->data, this->size );
 }
 
 template< typename Value,
           typename Device,
           typename Index >
-bool
+void
 Array< Value, Device, Index >::
 load( File& file )
 {
-   if( ! Object::load( file ) )
-      return false;
+   Object::load( file );
    Index _size;
    file.load( &_size );
-   /*{
-      std::cerr << "Unable to read the array size." << std::endl;
-      return false;
-   }*/
    if( _size < 0 )
-   {
-      std::cerr << "Error: The size " << _size << " of the file is not a positive number or zero." << std::endl;
-      return false;
-   }
+      throw Exceptions::ArrayWrongSize( _size, "positive" );
    setSize( _size );
    if( _size )
-   {
-      if( ! Algorithms::ArrayIO< Value, Device, Index >::load( file, this->data, this->size ) )
-      {
-         std::cerr << "I was not able to load " << this->getType()
-                    << " with size " << this -> getSize() << std::endl;
-         return false;
-      }
-   }
-   return true;
+      Algorithms::ArrayIO< Value, Device, Index >::load( file, this->data, this->size );
 }
 
 template< typename Value,
           typename Device,
           typename Index >
-bool
+void
 Array< Value, Device, Index >::
 boundLoad( File& file )
 {
-   if( ! Object::load( file ) )
-      return false;
+   Object::load( file );
    Index _size;
    file.load( &_size );
    if( _size < 0 )
-   {
-      std::cerr << "Error: The size " << _size << " of the file is not a positive number or zero." << std::endl;
-      return false;
-   }
+      throw Exceptions::ArrayWrongSize( _size, "Positive is expected," );
    if( this->getSize() != 0 )
-   {
-      if( this->getSize() != _size )
-      {
-         std::cerr << "Error: The current array size is not zero (" << this->getSize() << ") and it is different from the size of "
-                   << "the array being loaded (" << _size << "). This is not possible. Call method reset() before." << std::endl;
-         return false;
-      }
-   }
+      throw Exceptions::ArrayWrongSize( _size, convertToString( this->getSize() ) + "is expected." );
    else setSize( _size );
    if( _size )
-   {
-      if( ! Algorithms::ArrayIO< Value, Device, Index >::load( file, this->data, this->size ) )
-      {
-         std::cerr << "I was not able to load " << this->getType()
-                   << " with size " << this -> getSize() << std::endl;
-         return false;
-      }
-   }
-   return true;
+      Algorithms::ArrayIO< Value, Device, Index >::load( file, this->data, this->size );
 }
 
 

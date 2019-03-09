@@ -144,7 +144,11 @@ setInitialCondition( const Config::ParameterContainer& parameters,
 {
    const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
    Functions::MeshFunction< Mesh > u( this->getMesh(), dofsPointer );
-   if( ! u.boundLoad( initialConditionFile ) )
+   try
+   {
+      u.boundLoad( initialConditionFile );
+   }
+   catch(...)
    {
       std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << std::endl;
       return false;
@@ -200,8 +204,7 @@ makeSnapshot( const RealType& time,
    fileName.setIndex( step );
 
    //FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
-   if( ! u.save( fileName.getFileName() ) )
-      return false;
+   u.save( fileName.getFileName() );
    return true;
 }
 

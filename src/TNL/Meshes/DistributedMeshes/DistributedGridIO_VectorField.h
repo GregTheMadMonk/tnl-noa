@@ -49,7 +49,8 @@ class DistributedGridIO<
             auto *distrGrid=vectorField.getMesh().getDistributedMesh();
 			if(distrGrid==NULL)
 			{
-				return vectorField.save(fileName);
+				vectorField.save(fileName);
+                                return true;
 			}
 
             MPI_Comm group=*((MPI_Comm*)(distrGrid->getCommunicationGroup()));
@@ -139,7 +140,8 @@ class DistributedGridIO<
             auto *distrGrid=vectorField.getMesh().getDistributedMesh();
 			if(distrGrid==NULL)
 			{
-				return vectorField.save(fileName);
+				vectorField.save(fileName);
+                                return true;
 			}
 
             MPI_Comm group=*((MPI_Comm*)(distrGrid->getCommunicationGroup()));

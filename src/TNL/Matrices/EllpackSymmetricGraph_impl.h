@@ -743,37 +743,35 @@ void EllpackSymmetricGraph< Real, Device, Index >::vectorProduct( const InVector
 template< typename Real,
           typename Device,
           typename Index >
-bool EllpackSymmetricGraph< Real, Device, Index >::save( File& file ) const
+void EllpackSymmetricGraph< Real, Device, Index >::save( File& file ) const
 {
-   if( ! Sparse< Real, Device, Index >::save( file) ) return false;
+   Sparse< Real, Device, Index >::save( file);
    file.save( &this->rowLengths );
-   return true;
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool EllpackSymmetricGraph< Real, Device, Index >::load( File& file )
+void EllpackSymmetricGraph< Real, Device, Index >::load( File& file )
 {
-   if( ! Sparse< Real, Device, Index >::load( file) ) return false;
+   Sparse< Real, Device, Index >::load( file);
    file.load( &this->rowLengths );
-   return true;
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool EllpackSymmetricGraph< Real, Device, Index >::save( const String& fileName ) const
+void EllpackSymmetricGraph< Real, Device, Index >::save( const String& fileName ) const
 {
-   return Object::save( fileName );
+   Object::save( fileName );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool EllpackSymmetricGraph< Real, Device, Index >::load( const String& fileName )
+void EllpackSymmetricGraph< Real, Device, Index >::load( const String& fileName )
 {
-   return Object::load( fileName );
+   Object::load( fileName );
 }
 
 template< typename Real,

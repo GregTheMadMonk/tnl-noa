@@ -650,39 +650,37 @@ Multidiagonal< Real, Device, Index >::operator=( const Multidiagonal< Real2, Dev
 template< typename Real,
           typename Device,
           typename Index >
-bool Multidiagonal< Real, Device, Index >::save( File& file ) const
+void Multidiagonal< Real, Device, Index >::save( File& file ) const
 {
-   if( ! Matrix< Real, Device, Index >::save( file ) ) return false;
-   if( ! this->values.save( file ) ) return false;
-   if( ! this->diagonalsShift.save( file ) ) return false;
-   return true;
+   Matrix< Real, Device, Index >::save( file );
+   this->values.save( file );
+   this->diagonalsShift.save( file );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool Multidiagonal< Real, Device, Index >::load( File& file )
+void Multidiagonal< Real, Device, Index >::load( File& file )
 {
-   if( ! Matrix< Real, Device, Index >::load( file ) ) return false;
-   if( ! this->values.load( file ) ) return false;
-   if( ! this->diagonalsShift.load( file ) ) return false;
-   return true;
+   Matrix< Real, Device, Index >::load( file );
+   this->values.load( file );
+   this->diagonalsShift.load( file );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool Multidiagonal< Real, Device, Index >::save( const String& fileName ) const
+void Multidiagonal< Real, Device, Index >::save( const String& fileName ) const
 {
-   return Object::save( fileName );
+   Object::save( fileName );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool Multidiagonal< Real, Device, Index >::load( const String& fileName )
+void Multidiagonal< Real, Device, Index >::load( const String& fileName )
 {
-   return Object::load( fileName );
+   Object::load( fileName );
 }
 
 template< typename Real,

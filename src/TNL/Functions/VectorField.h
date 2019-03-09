@@ -270,34 +270,25 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, Real > >
          return v;
       }
       
-      bool save( File& file ) const
+      void save( File& file ) const
       {
-         if( ! Object::save( file ) )
-            return false;
+         Object::save( file );
          for( int i = 0; i < Size; i++ )
-            if( ! vectorField[ i ]->save( file ) )
-               return false;
-         return true;
+            vectorField[ i ]->save( file );
       }
 
-      bool load( File& file )
+      void load( File& file )
       {
-         if( ! Object::load( file ) )
-            return false;
+         Object::load( file );
          for( int i = 0; i < Size; i++ )
-            if( ! vectorField[ i ]->load( file ) )
-               return false;
-         return true;
+            vectorField[ i ]->load( file );
       }
  
-      bool boundLoad( File& file )
+      void boundLoad( File& file )
       {
-         if( ! Object::load( file ) )
-            return false;
+         Object::load( file );
          for( int i = 0; i < Size; i++ )
-            if( ! vectorField[ i ]->boundLoad( file ) )
-               return false;
-         return true;         
+            vectorField[ i ]->boundLoad( file );
       }
       
       bool write( const String& fileName,

@@ -197,16 +197,13 @@ template< int ValuesCount,
           typename Device,
           typename LocalIndex,
           int SliceSize >
-bool
+void
 StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex, SliceSize >::
 save( File& file ) const
 {
-   if( ! Object::save( file ) )
-      return false;
+   Object::save( file );
    file.save( &this->keysRange );
-   if( ! this->values.save( file ) )
-      return false;
-   return true;
+   this->values.save( file );
 }
 
 template< int ValuesCount,
@@ -214,16 +211,13 @@ template< int ValuesCount,
           typename Device,
           typename LocalIndex,
           int SliceSize >
-bool
+void
 StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex, SliceSize >::
 load( File& file )
 {
-   if( ! Object::load( file ) )
-      return false;
+   Object::load( file );
    file.load( &this->keysRange );
-   if( ! this->values.load( file ) )
-      return false;
-   return true;
+   this->values.load( file );
 }
 
 template< int ValuesCount,

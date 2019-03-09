@@ -209,8 +209,7 @@ makeSnapshot( const RealType& time,
 //      return false;
    
    fileName.setFileNameBase( "velocity-" );
-   if( ! this->velocity->save( fileName.getFileName() ) )
-      return false;
+   this->velocity->save( fileName.getFileName() );
 
 //   fileName.setFileNameBase( "pressure-" );
 //   if( ! this->pressure->save( fileName.getFileName() ) )

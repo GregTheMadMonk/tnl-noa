@@ -274,14 +274,14 @@ class Array : public Object
        *
        * \param file Reference to a file.
        */
-      bool save( File& file ) const;
+      void save( File& file ) const;
 
       /**
        * Method for loading the object from a file as a binary data.
        *
        * \param file Reference to a file.
        */
-      bool load( File& file );
+      void load( File& file );
 
       /**
        * \brief This method loads data without reallocation.
@@ -291,7 +291,7 @@ class Array : public Object
        * performed. Otherwise, the array size must fit with
        * the size of array being loaded.
        */
-      bool boundLoad( File& file );
+      void boundLoad( File& file );
 
       using Object::save;
 

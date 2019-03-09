@@ -118,13 +118,13 @@ public:
 
 	void reset();
 
-	bool save( File& file ) const;
+	void save( File& file ) const;
 
-	bool load( File& file );
+	void load( File& file );
 
-	bool save( const String& fileName ) const;
+	void save( const String& fileName ) const;
 
-	bool load( const String& fileName );
+	void load( const String& fileName );
 
 	void print( std::ostream& str ) const;
 

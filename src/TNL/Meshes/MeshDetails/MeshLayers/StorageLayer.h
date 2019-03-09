@@ -141,10 +141,14 @@ public:
 
    bool save( File& file ) const
    {
-      if( ! SubentityStorageBaseType::save( file ) ||
-          ! SuperentityStorageBaseType::save( file ) ||
-          ! this->entities.save( file ) ||
-          ! BaseType::save( file ) )
+      try
+      {
+         SubentityStorageBaseType::save( file );
+         SuperentityStorageBaseType::save( file );
+         this->entities.save( file );
+         BaseType::save( file );
+      }
+      catch(...)
       {
          std::cerr << "Saving of the mesh entities with dimension " << DimensionTag::value << " failed." << std::endl;
          return false;
@@ -154,10 +158,14 @@ public:
 
    bool load( File& file )
    {
-      if( ! SubentityStorageBaseType::load( file ) ||
-          ! SuperentityStorageBaseType::load( file ) ||
-          ! this->entities.load( file ) ||
-          ! BaseType::load( file ) )
+      try
+      {
+         SubentityStorageBaseType::load( file );
+         SuperentityStorageBaseType::load( file );
+         this->entities.load( file );
+         BaseType::load( file );
+      }
+      catch(...)
       {
          std::cerr << "Loading of the mesh entities with dimension " << DimensionTag::value << " failed." << std::endl;
          return false;

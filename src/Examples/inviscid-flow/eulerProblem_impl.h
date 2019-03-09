@@ -190,20 +190,16 @@ makeSnapshot( const RealType& time,
    fileName.setExtension( "tnl" );
    fileName.setIndex( step );
    fileName.setFileNameBase( "density-" );
-   if( ! this->conservativeVariables->getDensity()->save( fileName.getFileName() ) )
-      return false;
+   this->conservativeVariables->getDensity()->save( fileName.getFileName() );
    
    fileName.setFileNameBase( "velocity-" );
-   if( ! this->velocity->save( fileName.getFileName() ) )
-      return false;
+   this->velocity->save( fileName.getFileName() );
 
    fileName.setFileNameBase( "pressure-" );
-   if( ! this->pressure->save( fileName.getFileName() ) )
-      return false;
+   this->pressure->save( fileName.getFileName() );
 
    fileName.setFileNameBase( "energy-" );
-   if( ! this->conservativeVariables->getEnergy()->save( fileName.getFileName() ) )
-      return false;
+   this->conservativeVariables->getEnergy()->save( fileName.getFileName() );
    
    return true;
 }

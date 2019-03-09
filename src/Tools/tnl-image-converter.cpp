@@ -150,7 +150,11 @@ bool processFiles( const Config::ParameterContainer& parameters )
    String meshFile = parameters.getParameter< String >( "mesh-file" );
  
    Meshes::Grid< 2, double, Devices::Host, int > grid;
-   if( ! grid.load( meshFile ) )
+   try
+   {
+      grid.load( meshFile );
+   }
+   catch(...)
    {
       std::cerr << "I am not able to load the mesh file " << meshFile << "." << std::endl;
       return false;
@@ -160,7 +164,11 @@ bool processFiles( const Config::ParameterContainer& parameters )
    {
       const String& fileName = inputFiles[ i ];
       std::cout << "Processing file " << fileName << "... ";
-      if( ! vector.load( fileName ) )
+      try
+      {
+         vector.load( fileName );
+      }
+      catch(...)
       {
          std::cerr << "I am not able to load data from a file " << fileName << "." << std::endl;
          return false;

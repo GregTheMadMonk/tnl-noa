@@ -609,45 +609,41 @@ void AdEllpack< Real, Device, Index >::vectorProduct( const InVector& inVector,
 template< typename Real,
           typename Device,
           typename Index >
-bool AdEllpack< Real, Device, Index >::save( File& file ) const
+void AdEllpack< Real, Device, Index >::save( File& file ) const
 {
-    if( Sparse< Real, Device, Index >::save( file ) ||
-        this->offset.save( file ) ||
-        this->rowOffset.save( file ) ||
-        this->localLoad.save( file ) ||
-        this->reduceMap.save( file ) )
-        return false;
-    return true;
+    Sparse< Real, Device, Index >::save( file );
+    this->offset.save( file );
+    this->rowOffset.save( file );
+    this->localLoad.save( file );
+    this->reduceMap.save( file );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool AdEllpack< Real, Device, Index >::load( File& file )
+void AdEllpack< Real, Device, Index >::load( File& file )
 {
-    if( Sparse< Real, Device, Index >::load( file ) ||
-        this->offset.load( file ) ||
-        this->rowOffset.load( file ) ||
-        this->localLoad.load( file ) ||
-        this->reduceMap.load( file ) )
-        return false;
-    return true;
+    Sparse< Real, Device, Index >::load( file );
+    this->offset.load( file );
+    this->rowOffset.load( file );
+    this->localLoad.load( file );
+    this->reduceMap.load( file );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool AdEllpack< Real, Device, Index >::save( const String& fileName ) const
+void AdEllpack< Real, Device, Index >::save( const String& fileName ) const
 {
-    return Object::save( fileName );
+    Object::save( fileName );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool AdEllpack< Real, Device, Index >::load( const String& fileName )
+void AdEllpack< Real, Device, Index >::load( const String& fileName )
 {
-    return Object::load( fileName );
+    Object::load( fileName );
 }
 
 template< typename Real,

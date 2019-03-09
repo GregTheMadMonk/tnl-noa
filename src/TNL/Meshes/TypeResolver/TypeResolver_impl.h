@@ -130,7 +130,7 @@ loadMesh( const String& fileName,
    bool status = true;
 
    if( ends_with( fileName_, ".tnl" ) )
-      status = mesh.load( fileName );
+      mesh.load( fileName );
    else if( ends_with( fileName_, ".ng" ) ) {
       Readers::NetgenReader reader;
       status = reader.readMesh( fileName, mesh );
@@ -210,7 +210,11 @@ loadMesh( const String& fileName,
    {
       std::cout << "Loading a global mesh from the file " << fileName << "...";
       Grid< Dimension, Real, Device, Index > globalGrid;
-      if( ! globalGrid.load( fileName ) )
+      try
+      {
+         globalGrid.load( fileName );
+      }
+      catch(...)
       {
          std::cerr << std::endl;
          std::cerr << "I am not able to load the global mesh from the file " << fileName << "." << std::endl;
@@ -226,7 +230,11 @@ loadMesh( const String& fileName,
    else
    {
       std::cout << "Loading a mesh from the file " << fileName << "...";
-      if( ! mesh.load( fileName ) )
+      try
+      {
+         mesh.load( fileName );
+      }
+      catch(...)
       {
          std::cerr << std::endl;
          std::cerr << "I am not able to load the mesh from the file " << fileName << "." << std::endl;

@@ -201,35 +201,17 @@ MultiVector< 3, Real, Device, Index >&
 }
 
 template< typename Real, typename Device, typename Index >
-bool MultiVector< 3, Real, Device, Index > :: save( File& file ) const
+void MultiVector< 3, Real, Device, Index > :: save( File& file ) const
 {
-   if( ! Vector< Real, Device, Index > :: save( file ) )
-   {
-      std::cerr << "I was not able to write the Vector of MultiVector." << std::endl;
-      return false;
-   }
-   if( ! dimensions. save( file ) )
-   {
-      std::cerr << "I was not able to write the dimensions of MultiVector." << std::endl;
-      return false;
-   }
-   return true;
+   Vector< Real, Device, Index > :: save( file );
+   dimensions. save( file );
 }
 
 template< typename Real, typename Device, typename Index >
-bool MultiVector< 3, Real, Device, Index > :: load( File& file )
+void MultiVector< 3, Real, Device, Index > :: load( File& file )
 {
-   if( ! Vector< Real, Device, Index > :: load( file ) )
-   {
-      std::cerr << "I was not able to read the Vector of MultiVector." << std::endl;
-      return false;
-   }
-   if( ! dimensions. load( file ) )
-   {
-      std::cerr << "I was not able to read the dimensions of MultiVector." << std::endl;
-      return false;
-   }
-   return true;
+   Vector< Real, Device, Index > :: load( file );
+   dimensions. load( file );
 }
 
 template< typename Real, typename Device, typename Index >
@@ -251,15 +233,15 @@ std::ostream& operator << ( std::ostream& str, const MultiVector< 3, Real, Devic
 }
 
 template< typename Real, typename Device, typename Index >
-bool MultiVector< 3, Real, Device, Index > :: save( const String& fileName ) const
+void MultiVector< 3, Real, Device, Index > :: save( const String& fileName ) const
 {
-   return Object :: save( fileName );
+   Object::save( fileName );
 }
 
 template< typename Real, typename Device, typename Index >
-bool MultiVector< 3, Real, Device, Index > :: load( const String& fileName )
+void MultiVector< 3, Real, Device, Index > :: load( const String& fileName )
 {
-   return Object :: load( fileName );
+   Object::load( fileName );
 }
 
 } // namespace Containers

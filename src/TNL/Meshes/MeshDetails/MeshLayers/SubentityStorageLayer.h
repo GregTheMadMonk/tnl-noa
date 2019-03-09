@@ -107,8 +107,12 @@ protected:
 
    bool save( File& file ) const
    {
-      if( ! BaseType::save( file ) ||
-          ! this->storageNetwork.save( file ) )
+      try
+      {
+         BaseType::save( file );
+         this->storageNetwork.save( file );
+      }
+      catch(...)
       {
          std::cerr << "Saving of the entity subentities layer with " << SubdimensionTag::value << " dimension failed." << std::endl;
          return false;
@@ -118,8 +122,12 @@ protected:
 
    bool load( File& file )
    {
-      if( ! BaseType::load( file ) ||
-          ! this->storageNetwork.load( file ) )
+      try
+      {
+         BaseType::load( file );
+         this->storageNetwork.load( file );
+      }
+      catch(...)
       {
          std::cerr << "Loading of the entity subentities layer with " << SubdimensionTag::value << " dimension failed." << std::endl;
          return false;
