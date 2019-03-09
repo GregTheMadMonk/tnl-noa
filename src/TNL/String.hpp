@@ -254,7 +254,7 @@ inline void mpiSend( const String& str, int target, int tag, MPI_Comm mpi_comm )
 {
    int size = str.getSize();
    MPI_Send( &size, 1, MPI_INT, target, tag, mpi_comm );
-   MPI_Send( str.getString(), str.length(), MPI_CHAR, target, tag, mpi_comm );
+   MPI_Send( const_cast< void* >( ( const void* ) str.getString() ), str.length(), MPI_CHAR, target, tag, mpi_comm );
 }
 
 inline void mpiReceive( String& str, int source, int tag, MPI_Comm mpi_comm )

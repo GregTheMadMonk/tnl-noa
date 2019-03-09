@@ -296,7 +296,7 @@ class DistributedGridIO_MPIIOBase
         MPI_File_write(file,&meshFunctionSerializationTypeLength,1,MPI_INT,&wstatus);
         MPI_Get_count(&wstatus,MPI_INT,&count);
         size+=count*sizeof(int);
-        MPI_File_write(file,meshFunctionSerializationType.getString(),meshFunctionSerializationType.getLength(),MPI_CHAR,&wstatus);
+        MPI_File_write(file,const_cast< void* >( ( const void* ) meshFunctionSerializationType.getString() ),meshFunctionSerializationType.getLength(),MPI_CHAR,&wstatus);
         MPI_Get_count(&wstatus,MPI_CHAR,&count);
         size+=count*sizeof(char);
 
@@ -310,7 +310,7 @@ class DistributedGridIO_MPIIOBase
         MPI_File_write(file,&dataSerializationTypeLength,1,MPI_INT,&wstatus);
         MPI_Get_count(&wstatus,MPI_INT,&count);
         size+=count*sizeof(int);
-        MPI_File_write(file,dataSerializationType.getString(),dataSerializationType.getLength(),MPI_CHAR,&wstatus);
+        MPI_File_write( file, const_cast< void* >( ( const void* ) dataSerializationType.getString() ), dataSerializationType.getLength(), MPI_CHAR, &wstatus );
         MPI_Get_count(&wstatus,MPI_CHAR,&count);
         size+=count*sizeof(char);
         //Data count
