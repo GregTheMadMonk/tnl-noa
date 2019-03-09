@@ -509,7 +509,10 @@ boundLoad( File& file )
    if( _size < 0 )
       throw Exceptions::ArrayWrongSize( _size, "Positive is expected," );
    if( this->getSize() != 0 )
-      throw Exceptions::ArrayWrongSize( _size, convertToString( this->getSize() ) + "is expected." );
+   {
+      if( this->getSize() != _size )
+         throw Exceptions::ArrayWrongSize( _size, convertToString( this->getSize() ) + " is expected." );
+   }
    else setSize( _size );
    if( _size )
       Algorithms::ArrayIO< Value, Device, Index >::load( file, this->data, this->size );
