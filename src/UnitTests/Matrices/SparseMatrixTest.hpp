@@ -34,8 +34,8 @@ void cuda_test_GetType()
     MatrixCudaInt mtrxCudaInt;
     
 
-    EXPECT_EQ( mtrxCudaFloat.getType(), TNL::String( "Matrices::CSR< float, Cuda >" ) );    // This is mistakenly labeled in /src/TNL/Devices/Cuda.cpp
-    EXPECT_EQ( mtrxCudaInt.getType(), TNL::String( "Matrices::CSR< int, Cuda >" ) );        // Should be Devices::Cuda
+    EXPECT_EQ( mtrxCudaFloat.getType(), TNL::String( "Matrices::CSR< float, Cuda >" ) );
+    EXPECT_EQ( mtrxCudaInt.getType(), TNL::String( "Matrices::CSR< int, Cuda >" ) );        
 }
 
 template< typename Matrix >

@@ -114,8 +114,8 @@ void cuda_test_GetType()
     MatrixCudaFloat mtrxCudaFloat;
     MatrixCudaInt mtrxCudaInt;
 
-    EXPECT_EQ( mtrxCudaFloat.getType(), TNL::String( "Matrices::Dense< float, Cuda, int >" ) );    // This is mistakenly labeled in /src/TNL/Devices/Cuda.cpp
-    EXPECT_EQ( mtrxCudaInt.getType(), TNL::String( "Matrices::Dense< int, Cuda, int >" ) );        // Should be Devices::Cuda
+    EXPECT_EQ( mtrxCudaFloat.getType(), TNL::String( "Matrices::Dense< float, Devices::Cuda, int >" ) );    // This is mistakenly labeled in /src/TNL/Devices/Cuda.cpp
+    EXPECT_EQ( mtrxCudaInt.getType(), TNL::String( "Matrices::Dense< int, Devices::Cuda, int >" ) );        // Should be Devices::Cuda
 }
 
 template< typename Matrix >
