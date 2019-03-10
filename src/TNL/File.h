@@ -21,7 +21,7 @@
 namespace TNL {
 
 /**
- * \brief This class serves for binary IO. It allows to do IO even for data allocated on GPU
+ * \brief This class serves for binary IO. It allows to do IO even for data allocated on GPU together with on-the-fly data type conversion.
  *
  * \par Example
  * \include FileExample.cpp
@@ -57,7 +57,7 @@ class File
        * Throws \ref std::ios_base::failure on failure.
        * 
        * \param fileName String which indicates file name.
-       * \param mode Indicates in what mode the will be opened - see. \ref File::Mode.
+       * \param mode Indicates in what mode the file will be opened - see. \ref File::Mode.
        */
       void open( const String& fileName,
                  Mode mode = static_cast< Mode >( static_cast< int >( Mode::In ) | static_cast< int >( Mode::Out ) ) );
@@ -78,34 +78,43 @@ class File
       }
 
       /**
-       * \brief Method for reading data with given \e Type from the file.
+       * \brief Method for loading data from the file.
        *
        * The data will be stored in \e buffer allocated on device given by the
-       * \e Device parameter.
+       * \e Device parameter. The data type of the buffer is given by the
+       * template parameter \e Type. The second template parameter 
+       * \e SourceType defines the type of data in the source file. If both
+       * types are different, on-the-fly conversion takes place during the
+       * data loading.
        *
        * Throws \ref std::ios_base::failure on failure.
        *
-       * \tparam Type Type of data.
-       * \tparam Device Device where the data are stored after reading. For example \ref Devices::Host or \ref Devices::Cuda.
-       * \tparam SourceType Type of index by which the elements are indexed.
+       * \tparam Type type of data to be loaded to the \e buffer.
+       * \tparam SourceType type of data stored on the file,
+       * \tparam Device device where the data are stored after reading. For example \ref Devices::Host or \ref Devices::Cuda.
        * \param buffer Pointer in memory where the elements are loaded and stored after reading.
-       * \param elements Number of elements the user wants to get (read) from given file.
+       * \param elements number of elements to be loaded from the file.
        */
       template< typename Type, typename SourceType = Type, typename Device = Devices::Host >
       void load( Type* buffer, std::streamsize elements = 1 );
 
       /**
-       * \brief Method that can write particular data type from CPU into given file. (Function that writes particular elements into given file.)
+       * \brief Method for saving data to the file.
        *
-       * Returns \e true when the elements are successfully written into given file. Otherwise returns \e false.
+       * The data from the \e buffer (with type \e Type) allocated on the device
+       * \e Device will be saved into the file. \e TargetType defines as what
+       * data type the buffer shall be saved. If the type is different from the
+       * data type, on-the-fly data type conversion takes place during the data
+       * saving.
        *
        * Throws \ref std::ios_base::failure on failure.
        *
-       * \tparam Type Type of data.
-       * \tparam Device Place from where the data are loaded before writing into file. For example \ref Devices::Host or \ref Devices::Cuda.
-       * \tparam Index Type of index by which the elements are indexed.
-       * \param buffer Pointer in memory where the elements are loaded from before writing into file.
-       * \param elements Number of elements the user wants to write into the given file.
+       * \tparam Type type of data in the \e buffer.
+       * \tparam TargetType tells as what type data the buffer shall be saved.
+       * \tparam Device device from where the data are loaded before writing into file. For example \ref Devices::Host or \ref Devices::Cuda.
+       * \tparam Index type of index by which the elements are indexed.
+       * \param buffer buffer that is going to be saved to the file.
+       * \param elements number of elements saved to the file.
        */
       template< typename Type, typename TargetType = Type, typename Device = Devices::Host >
       void save( const Type* buffer, std::streamsize elements = 1 );
@@ -156,12 +165,12 @@ class File
       std::fstream file;
       String fileName;
       
-      /**
-       * When we transfer data between the GPU and the CPU we use 5 MB buffer. This
-       * size should ensure good performance -- see.
-       * http://wiki.accelereyes.com/wiki/index.php/GPU_Memory_Transfer .
-       * We use the same buffer size even for retyping data during IO operations.
-       */
+      ////
+      // When we transfer data between the GPU and the CPU we use 5 MB buffer. This
+      // size should ensure good performance -- see.
+      // http://wiki.accelereyes.com/wiki/index.php/GPU_Memory_Transfer .
+      // We use the same buffer size even for retyping data during IO operations.
+      //
       static constexpr std::streamsize TransferBufferSize = 5 * 2<<20;
 };
 
