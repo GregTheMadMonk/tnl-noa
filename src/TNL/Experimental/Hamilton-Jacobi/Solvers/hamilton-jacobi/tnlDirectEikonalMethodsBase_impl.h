@@ -715,17 +715,14 @@ void
 tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >::
 initInterface( const MeshFunctionPointer& _input,
         MeshFunctionPointer& _output,
-        InterfaceMapPointer& _interfaceMap )
+        InterfaceMapPointer& _interfaceMap, 
+        StaticVector vLower, StaticVector vUpper )
 {
   
   if( std::is_same< Device, Devices::Cuda >::value )
   {
 #ifdef HAVE_CUDA
     const MeshType& mesh = _input->getMesh();
-    Meshes::DistributedMeshes::DistributedMesh< MeshType >* meshPom = mesh.getDistributedMesh();
-    
-    Containers::StaticVector< 2, Index > vLower = meshPom->getLowerOverlap();
-    Containers::StaticVector< 2, Index > vUpper = meshPom->getUpperOverlap();
     
     const int cudaBlockSize( 16 );
     int numBlocksX = Devices::Cuda::getNumberOfBlocks( mesh.getDimensions().x(), cudaBlockSize );
@@ -748,7 +745,7 @@ initInterface( const MeshFunctionPointer& _input,
     InterfaceMapType& interfaceMap = _interfaceMap.modifyData();
     const MeshType& mesh = input.getMesh();
 /*#ifdef HAVE_MPI
-    int i = Communicators::MpiCommunicator::GetRank( Communicators::MpiCommunicator::AllGroup );
+    int i>s::>::GetRan>s::>::AllGroup );
     if( i == 0 )
     {
       printf( "0: mesh x: %d\n", mesh.getDimensions().x() );
@@ -778,11 +775,11 @@ initInterface( const MeshFunctionPointer& _input,
     
     const RealType& hx = mesh.getSpaceSteps().x();
     const RealType& hy = mesh.getSpaceSteps().y();     
-    for( cell.getCoordinates().y() = 0;
-            cell.getCoordinates().y() < mesh.getDimensions().y();
+    for( cell.getCoordinates().y() = 0 + vLower[1];
+            cell.getCoordinates().y() < mesh.getDimensions().y() - vUpper[1];
             cell.getCoordinates().y() ++ )
-      for( cell.getCoordinates().x() = 0;
-              cell.getCoordinates().x() < mesh.getDimensions().x();
+      for( cell.getCoordinates().x() = 0 + vLower[0];
+              cell.getCoordinates().x() < mesh.getDimensions().x() - vUpper[0];
               cell.getCoordinates().x() ++ )
       {
         cell.refresh();
@@ -856,7 +853,7 @@ initInterface( const MeshFunctionPointer& _input,
         }
       }
 #ifdef HAVE_MPI
-    //int i = Communicators::MpiCommunicator::GetRank( Communicators::MpiCommunicator::AllGroup );
+    //int i>s::>::GetRan>s::>::AllGroup );
     /*if( i == 0 )
     {
       printf( "0: mesh x: %d\n", mesh.getDimensions().x() );
@@ -951,13 +948,14 @@ void
 tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > >::
 initInterface( const MeshFunctionPointer& _input,
         MeshFunctionPointer& _output,
-        InterfaceMapPointer& _interfaceMap  )
+        InterfaceMapPointer& _interfaceMap, 
+        StaticVector vLower, StaticVector vUpper )
 {
   if( std::is_same< Device, Devices::Cuda >::value )
   {
 #ifdef HAVE_CUDA
     const MeshType& mesh = _input->getMesh();
-    
+   
     const int cudaBlockSize( 8 );
     int numBlocksX = Devices::Cuda::getNumberOfBlocks( mesh.getDimensions().x(), cudaBlockSize );
     int numBlocksY = Devices::Cuda::getNumberOfBlocks( mesh.getDimensions().y(), cudaBlockSize );
@@ -969,7 +967,7 @@ initInterface( const MeshFunctionPointer& _input,
     Devices::Cuda::synchronizeDevice();
     CudaInitCaller3d<<< gridSize, blockSize >>>( _input.template getData< Device >(),
             _output.template modifyData< Device >(),
-            _interfaceMap.template modifyData< Device >() );
+            _interfaceMap.template modifyData< Device >(), vLower, vUpper );
     cudaDeviceSynchronize();
     TNL_CHECK_CUDA_DEVICE;
 #endif
@@ -979,8 +977,10 @@ initInterface( const MeshFunctionPointer& _input,
     const MeshFunctionType& input =  _input.getData();
     MeshFunctionType& output =  _output.modifyData();
     InterfaceMapType& interfaceMap =  _interfaceMap.modifyData();
+    
     const MeshType& mesh = input.getMesh();
     typedef typename MeshType::Cell Cell;
+    
     Cell cell( mesh );
     for( cell.getCoordinates().z() = 0;
             cell.getCoordinates().z() < mesh.getDimensions().z();
@@ -1002,14 +1002,14 @@ initInterface( const MeshFunctionPointer& _input,
     const RealType& hx = mesh.getSpaceSteps().x();
     const RealType& hy = mesh.getSpaceSteps().y();
     const RealType& hz = mesh.getSpaceSteps().z();
-    for( cell.getCoordinates().z() = 0;
-            cell.getCoordinates().z() < mesh.getDimensions().z();
+    for( cell.getCoordinates().z() = 0 + vLower[2];
+            cell.getCoordinates().z() < mesh.getDimensions().z() - vUpper[2];
             cell.getCoordinates().z() ++ )   
-      for( cell.getCoordinates().y() = 0;
-              cell.getCoordinates().y() < mesh.getDimensions().y();
+      for( cell.getCoordinates().y() = 0 + vLower[1];
+              cell.getCoordinates().y() < mesh.getDimensions().y() - vUpper[1];
               cell.getCoordinates().y() ++ )
-        for( cell.getCoordinates().x() = 0;
-                cell.getCoordinates().x() < mesh.getDimensions().x();
+        for( cell.getCoordinates().x() = 0 + vLower[0];
+                cell.getCoordinates().x() < mesh.getDimensions().x() - vUpper[0];
                 cell.getCoordinates().x() ++ )
         {
           cell.refresh();
@@ -1062,10 +1062,6 @@ initInterface( const MeshFunctionPointer& _input,
               interfaceMap[ t ] = true;
             }  
           }
-          /*output[ cell.getIndex() ] =
-           c > 0 ? TypeInfo< RealType >::getMaxValue() :
-           -TypeInfo< RealType >::getMaxValue();
-           interfaceMap[ cell.getIndex() ] = false;*/ //is on line 245
         }
   }
 }
@@ -1075,7 +1071,7 @@ template< typename Real,
         typename Index >
 template< typename MeshEntity >
 __cuda_callable__
-void
+bool
 tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > >::
 updateCell( MeshFunctionType& u,
         const MeshEntity& cell, 
@@ -1101,6 +1097,7 @@ updateCell( MeshFunctionType& u,
     a = TNL::argAbsMin( u[ neighborEntities.template getEntityIndex< -1, 0, 0 >() ],
             u[ neighborEntities.template getEntityIndex< 1, 0, 0 >() ] );
   }
+  
   if( cell.getCoordinates().y() == 0 )
     b = u[ neighborEntities.template getEntityIndex< 0, 1, 0 >() ];
   else if( cell.getCoordinates().y() == mesh.getDimensions().y() - 1 )
@@ -1109,7 +1106,9 @@ updateCell( MeshFunctionType& u,
   {
     b = TNL::argAbsMin( u[ neighborEntities.template getEntityIndex< 0, -1, 0 >() ],
             u[ neighborEntities.template getEntityIndex< 0, 1, 0 >() ] );
-  }if( cell.getCoordinates().z() == 0 )
+  }
+  
+  if( cell.getCoordinates().z() == 0 )
     c = u[ neighborEntities.template getEntityIndex< 0, 0, 1 >() ];
   else if( cell.getCoordinates().z() == mesh.getDimensions().z() - 1 )
     c = u[ neighborEntities.template getEntityIndex< 0, 0, -1 >() ];
@@ -1118,17 +1117,25 @@ updateCell( MeshFunctionType& u,
     c = TNL::argAbsMin( u[ neighborEntities.template getEntityIndex< 0, 0, -1 >() ],
             u[ neighborEntities.template getEntityIndex< 0, 0, 1 >() ] );
   }
+  
   if( fabs( a ) == std::numeric_limits< RealType >::max() && 
           fabs( b ) == std::numeric_limits< RealType >::max() &&
           fabs( c ) == std::numeric_limits< RealType >::max() )
-    return;
+    return false;
   
   RealType pom[6] = { a, b, c, (RealType)hx, (RealType)hy, (RealType)hz};
   sortMinims( pom );   
   tmp = pom[ 0 ] + TNL::sign( value ) * pom[ 3 ];
+  
   if( fabs( tmp ) < fabs( pom[ 1 ] ) )
   {
-    u[ cell.getIndex() ] = argAbsMin( value, tmp ); 
+    u[ cell.getIndex() ] = argAbsMin( value, tmp );
+    tmp = value - u[ cell.getIndex() ];
+    if ( fabs( tmp ) > 0.001*hx ){
+      return true;
+    }else{
+      return false;
+    }
   }
   else
   {
@@ -1138,6 +1145,12 @@ updateCell( MeshFunctionType& u,
     if( fabs( tmp ) < fabs( pom[ 2 ]) ) 
     {
       u[ cell.getIndex() ] = argAbsMin( value, tmp );
+      tmp = value - u[ cell.getIndex() ];
+      if ( fabs( tmp ) > 0.001*hx ){
+        return true;
+      }else{
+        return false;
+      }
     }
     else
     {
@@ -1146,6 +1159,12 @@ updateCell( MeshFunctionType& u,
               hz * hz * ( a - b ) * ( a - b ) - hy * hy * ( a - c ) * ( a - c ) -
               hx * hx * ( b - c ) * ( b - c ) ) )/( hx * hx * hy * hy + hy * hy * hz * hz + hz * hz * hx *hx );
       u[ cell.getIndex() ] = argAbsMin( value, tmp );
+      tmp = value - u[ cell.getIndex() ];
+      if ( fabs( tmp ) > 0.001*hx ){
+        return true;
+      }else{
+        return false;
+      }
     }
   }
 }
@@ -1391,7 +1410,7 @@ __global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 2, 
               - std::numeric_limits< Real >::max();
     interfaceMap[ cind ] = false; 
     
-    if( i < mesh.getDimensions().x() - vUpper[0] && j < mesh.getDimensions().y() - vUpper[1] && i>vLower[0] && j> vLower[0] )
+    if( i < mesh.getDimensions().x() - vUpper[0] && j < mesh.getDimensions().y() - vUpper[1] && i>vLower[0] -1 && j> vLower[0]-1 )
     {
       const Real& hx = mesh.getSpaceSteps().x();
       const Real& hy = mesh.getSpaceSteps().y();
@@ -1446,7 +1465,8 @@ __global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 2, 
 template < typename Real, typename Device, typename Index >
 __global__ void CudaInitCaller3d( const Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index > >& input, 
         Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index > >& output,
-        Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index >, 3, bool >& interfaceMap )
+        Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index >, 3, bool >& interfaceMap,
+        Containers::StaticVector< 3, Index > vLower, Containers::StaticVector< 3, Index > vUpper )
 {
   int i = threadIdx.x + blockDim.x*blockIdx.x;
   int j = blockDim.y*blockIdx.y + threadIdx.y;
@@ -1468,74 +1488,76 @@ __global__ void CudaInitCaller3d( const Functions::MeshFunction< Meshes::Grid< 3
     interfaceMap[ cind ] = false; 
     cell.refresh();
     
-    const Real& hx = mesh.getSpaceSteps().x();
-    const Real& hy = mesh.getSpaceSteps().y();
-    const Real& hz = mesh.getSpaceSteps().z();
-    const Real& c = input( cell );
-    if( ! cell.isBoundaryEntity()  )
+    if( i < mesh.getDimensions().x() - vUpper[0] && j < mesh.getDimensions().y() - vUpper[1] &&
+            k < mesh.getDimensions().y() - vUpper[2] && i>vLower[0]-1 && j> vLower[1]-1 && k>vLower[2]-1 )
     {
-      auto neighbors = cell.getNeighborEntities();
-      Real pom = 0;
-      const Index e = neighbors.template getEntityIndex<  1, 0, 0 >();
-      const Index w = neighbors.template getEntityIndex<  -1, 0, 0 >();
-      const Index n = neighbors.template getEntityIndex<  0, 1, 0 >();
-      const Index s = neighbors.template getEntityIndex<  0, -1, 0 >();
-      const Index t = neighbors.template getEntityIndex<  0, 0, 1 >();
-      const Index b = neighbors.template getEntityIndex<  0, 0, -1 >();
-      
-      if( c * input[ n ] <= 0 )
+      const Real& hx = mesh.getSpaceSteps().x();
+      const Real& hy = mesh.getSpaceSteps().y();
+      const Real& hz = mesh.getSpaceSteps().z();
+      const Real& c = input( cell );
+      if( ! cell.isBoundaryEntity()  )
       {
-        pom = TNL::sign( c )*( hy * c )/( c - input[ n ]);
-        if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) ) 
-          output[ cind ] = pom;
+        auto neighbors = cell.getNeighborEntities();
+        Real pom = 0;
+        const Index e = neighbors.template getEntityIndex<  1, 0, 0 >();
+        const Index w = neighbors.template getEntityIndex<  -1, 0, 0 >();
+        const Index n = neighbors.template getEntityIndex<  0, 1, 0 >();
+        const Index s = neighbors.template getEntityIndex<  0, -1, 0 >();
+        const Index t = neighbors.template getEntityIndex<  0, 0, 1 >();
+        const Index b = neighbors.template getEntityIndex<  0, 0, -1 >();
         
-        interfaceMap[ cind ] = true;
-      }
-      if( c * input[ e ] <= 0 )
-      {
-        pom = TNL::sign( c )*( hx * c )/( c - input[ e ]);
-        if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) )
-          output[ cind ] = pom;                       
-        
-        interfaceMap[ cind ] = true;
-      }
-      if( c * input[ w ] <= 0 )
-      {
-        pom = TNL::sign( c )*( hx * c )/( c - input[ w ]);
-        if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) ) 
-          output[ cind ] = pom;
-        
-        interfaceMap[ cind ] = true;
-      }
-      if( c * input[ s ] <= 0 )
-      {
-        pom = TNL::sign( c )*( hy * c )/( c - input[ s ]);
-        if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) ) 
-          output[ cind ] = pom;
-        
-        interfaceMap[ cind ] = true;
-      }
-      if( c * input[ b ] <= 0 )
-      {
-        pom = TNL::sign( c )*( hz * c )/( c - input[ b ]);
-        if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) ) 
-          output[ cind ] = pom;
-        
-        interfaceMap[ cind ] = true;
-      }
-      if( c * input[ t ] <= 0 )
-      {
-        pom = TNL::sign( c )*( hz * c )/( c - input[ t ]);
-        if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) ) 
-          output[ cind ] = pom;
-        
-        interfaceMap[ cind ] = true;
+        if( c * input[ n ] <= 0 )
+        {
+          pom = TNL::sign( c )*( hy * c )/( c - input[ n ]);
+          if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) ) 
+            output[ cind ] = pom;
+          
+          interfaceMap[ cind ] = true;
+        }
+        if( c * input[ e ] <= 0 )
+        {
+          pom = TNL::sign( c )*( hx * c )/( c - input[ e ]);
+          if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) )
+            output[ cind ] = pom;                       
+          
+          interfaceMap[ cind ] = true;
+        }
+        if( c * input[ w ] <= 0 )
+        {
+          pom = TNL::sign( c )*( hx * c )/( c - input[ w ]);
+          if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) ) 
+            output[ cind ] = pom;
+          
+          interfaceMap[ cind ] = true;
+        }
+        if( c * input[ s ] <= 0 )
+        {
+          pom = TNL::sign( c )*( hy * c )/( c - input[ s ]);
+          if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) ) 
+            output[ cind ] = pom;
+          
+          interfaceMap[ cind ] = true;
+        }
+        if( c * input[ b ] <= 0 )
+        {
+          pom = TNL::sign( c )*( hz * c )/( c - input[ b ]);
+          if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) ) 
+            output[ cind ] = pom;
+          
+          interfaceMap[ cind ] = true;
+        }
+        if( c * input[ t ] <= 0 )
+        {
+          pom = TNL::sign( c )*( hz * c )/( c - input[ t ]);
+          if( TNL::abs( output[ cind ] ) > TNL::abs( pom ) ) 
+            output[ cind ] = pom;
+          
+          interfaceMap[ cind ] = true;
+        }
       }
     }
   }
 }
-
-
 
 
 template< typename Real,

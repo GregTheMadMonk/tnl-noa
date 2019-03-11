@@ -14,6 +14,7 @@
 #include <TNL/Functions/Analytic/Constant.h>
 #include <TNL/Pointers/SharedPointer.h>
 #include "tnlDirectEikonalMethodsBase.h"
+#define ForDebug false // false <=> off
 
 
 template< typename Mesh,
@@ -132,8 +133,11 @@ class FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Communicator, 
     typedef Index IndexType;
     typedef Anisotropy AnisotropyType;
     typedef tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > > BaseType;
+    typedef Communicator CommunicatorType;
+    
     using MeshPointer = Pointers::SharedPointer<  MeshType >;
     using AnisotropyPointer = Pointers::SharedPointer< AnisotropyType, DeviceType >;
+    using MPI = Communicators::MpiCommunicator;
     
     using typename BaseType::InterfaceMapType;
     using typename BaseType::MeshFunctionType;

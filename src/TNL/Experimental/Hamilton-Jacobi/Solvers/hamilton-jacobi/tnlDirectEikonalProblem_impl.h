@@ -123,8 +123,7 @@ setInitialCondition( const Config::ParameterContainer& parameters,
 {
   this->bindDofs( dofs );
   String inputFile = parameters.getParameter< String >( "input-file" );
-  this->initialData->setMesh( this->getMesh() );
-  std::cout<<"setInitialCondition" <<std::endl; 
+  this->initialData->setMesh( this->getMesh() ); 
   if( CommunicatorType::isDistributed() )
   {
     std::cout<<"Nodes Distribution: " << initialData->getMesh().getDistributedMesh()->printProcessDistr() << std::endl;
@@ -191,20 +190,9 @@ bool
 tnlDirectEikonalProblem< Mesh, Communicator, Anisotropy, Real, Index >::
 solve( DofVectorPointer& dofs )
 {
-   std::cout << "We are in solve()." << std::endl;
    FastSweepingMethod< MeshType, Communicator,AnisotropyType > fsm;
    fsm.solve( this->getMesh(), u, anisotropy, initialData );
    
-   /*int i = Communicators::MpiCommunicator::GetRank( Communicators::MpiCommunicator::AllGroup );
-   const MeshPointer msh = this->getMesh();
-   if( i == 0 &&  msh->getMeshDimension() == 2 )
-   {
-     for( int k = 0; k < 9; k++ ){
-       for( int l = 0; l < msh->getDimensions().x(); l++ )
-         printf("%.2f\t",(*initialData)[ k * msh->getDimensions().x() + l ] );
-       printf("\n");
-     }
-   }*/
    makeSnapshot();
    return true;
 }

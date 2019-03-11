@@ -62,12 +62,15 @@ class tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >
     typedef Functions::MeshFunction< MeshType > MeshFunctionType;
     typedef Functions::MeshFunction< MeshType, 2, bool > InterfaceMapType;
     typedef TNL::Containers::Array< int, Device, IndexType > ArrayContainer;
+    typedef Containers::StaticVector< 2, Index > StaticVector;
     using MeshFunctionPointer = Pointers::SharedPointer< MeshFunctionType >;
     using InterfaceMapPointer = Pointers::SharedPointer< InterfaceMapType >;
     
+    
     void initInterface( const MeshFunctionPointer& input,
             MeshFunctionPointer& output,
-            InterfaceMapPointer& interfaceMap );
+            InterfaceMapPointer& interfaceMap,
+            StaticVector vLower, StaticVector vUpper );
     
     template< typename MeshEntity >
     __cuda_callable__ bool updateCell( MeshFunctionType& u,
@@ -101,15 +104,17 @@ class tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > >
     typedef Functions::MeshFunction< MeshType > MeshFunctionType;
     typedef Functions::MeshFunction< MeshType, 3, bool > InterfaceMapType;
     typedef TNL::Containers::Array< int, Device, IndexType > ArrayContainer;
+    typedef Containers::StaticVector< 3, Index > StaticVector;
     using MeshFunctionPointer = Pointers::SharedPointer< MeshFunctionType >;
     using InterfaceMapPointer = Pointers::SharedPointer< InterfaceMapType >;      
     
     void initInterface( const MeshFunctionPointer& input,
             MeshFunctionPointer& output,
-            InterfaceMapPointer& interfaceMap );
+            InterfaceMapPointer& interfaceMap,
+            StaticVector vLower, StaticVector vUpper );
     
     template< typename MeshEntity >
-    __cuda_callable__ void updateCell( MeshFunctionType& u,
+    __cuda_callable__ bool updateCell( MeshFunctionType& u,
             const MeshEntity& cell,
             const RealType velocity = 1.0);
     
@@ -154,6 +159,10 @@ template< typename Real, typename Device, typename Index >
 __global__ void DeepCopy( const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& aux,
         Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& helpFunc, int copy, int k );
 
+template< typename Real, typename Device, typename Index >
+__global__ void DeepCopy( const Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index > >& aux,
+        Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index > >& helpFunc, int copy, int k );
+
 template < typename Index >
 __global__ void CudaParallelReduc( TNL::Containers::ArrayView< int, Devices::Cuda, Index > BlockIterDevice,
         TNL::Containers::ArrayView< int, Devices::Cuda, Index > dBlock, int nBlocks );
@@ -171,7 +180,8 @@ __global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 2, 
 template < typename Real, typename Device, typename Index >
 __global__ void CudaInitCaller3d( const Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index > >& input, 
         Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index > >& output,
-        Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index >, 3, bool >& interfaceMap );
+        Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index >, 3, bool >& interfaceMap,
+        Containers::StaticVector< 3, Index > vLower, Containers::StaticVector< 3, Index > vUpper );
 
 template < int sizeSArray, typename Real, typename Device, typename Index >
 __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > > ptr,

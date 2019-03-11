@@ -109,7 +109,7 @@ solve( const MeshPointer& mesh,
           dim3 blockSize( cudaBlockSize );
           dim3 gridSize( numBlocksX );
           
-          tnlDirectEikonalMethodsBase< Meshes::Grid< 1, Real, Device, Index > > ptr;
+          BaseType ptr;
           
           
           
