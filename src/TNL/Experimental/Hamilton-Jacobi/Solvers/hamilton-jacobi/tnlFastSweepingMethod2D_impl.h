@@ -465,17 +465,31 @@ solve( const MeshPointer& mesh,
         
         // Helping meshFunction that switches with AuxPtr in every calculation of CudaUpdateCellCaller<<<>>>()
         MeshFunctionPointer helpFunc( mesh );
+        helpFunc.template modifyData() = auxPtr.template getData();
+        Devices::Cuda::synchronizeDevice(); 
         //MeshFunctionPointer helpFunc1( mesh );
         
         // Setting number of threads and blocks in grid for DeepCopy of meshFunction
-        int numBlocksXWithoutOverlaps = Devices::Cuda::getNumberOfBlocks( mesh->getDimensions().x(), cudaBlockSize );
+        /*int numBlocksXWithoutOverlaps = Devices::Cuda::getNumberOfBlocks( mesh->getDimensions().x(), cudaBlockSize );
         int numBlocksYWithoutOverlaps = Devices::Cuda::getNumberOfBlocks( mesh->getDimensions().y(), cudaBlockSize );
         dim3 gridSizeWithoutOverlaps( numBlocksXWithoutOverlaps, numBlocksYWithoutOverlaps );
-                
+        
+        
+          Devices::Cuda::synchronizeDevice();
         DeepCopy<<< gridSizeWithoutOverlaps, blockSize >>>( auxPtr.template getData< Device>(),
                 helpFunc.template modifyData< Device>(), 1, i );
+          cudaDeviceSynchronize();
+          TNL_CHECK_CUDA_DEVICE;
+          Devices::Cuda::synchronizeDevice();
+        DeepCopy<<< gridSizeWithoutOverlaps, blockSize >>>( auxPtr.template getData< Device>(),
+                helpFunc.template modifyData< Device>(), 0, i );
+          cudaDeviceSynchronize();
+          TNL_CHECK_CUDA_DEVICE;*/
         
 #if ForDebug
+        /*int numBlocksXWithoutOverlaps = Devices::Cuda::getNumberOfBlocks( mesh->getDimensions().x(), cudaBlockSize );
+        int numBlocksYWithoutOverlaps = Devices::Cuda::getNumberOfBlocks( mesh->getDimensions().y(), cudaBlockSize );
+        dim3 gridSizeWithoutOverlaps( numBlocksXWithoutOverlaps, numBlocksYWithoutOverlaps );*/
         DeepCopy<<< gridSizeWithoutOverlaps, blockSize >>>( auxPtr.template getData< Device>(),
                 helpFunc.template modifyData< Device>(), 0, i );
 #endif
@@ -536,7 +550,7 @@ solve( const MeshPointer& mesh,
           Devices::Cuda::synchronizeDevice();
           CudaUpdateCellCaller<18><<< gridSize, blockSize >>>( ptr,
                   interfaceMapPtr.template getData< Device >(),
-                  auxPtr.template modifyData< Device>(),
+                  auxPtr.template getData< Device>(),
                   helpFunc.template modifyData< Device>(),
                   BlockIterDevice, vLower, vUpper, i );
           cudaDeviceSynchronize();
@@ -701,7 +715,7 @@ __global__ void DeepCopy( const Functions::MeshFunction< Meshes::Grid< 2, Real, 
   const Meshes::Grid< 2, Real, Device, Index >& mesh = aux.template getMesh< Devices::Cuda >();
   if( copy ){
     if( i < mesh.getDimensions().x() && j < mesh.getDimensions().y() )
-      helpFunc[ j * mesh.getDimensions().x() + i ] = aux[ j * mesh.getDimensions().x() + i ];
+      helpFunc[ j * mesh.getDimensions().x() + i ] = 1;//aux[ j * mesh.getDimensions().x() + i ];
   }
   else
   {
