@@ -45,14 +45,14 @@ inline void File::open( const String& fileName, Mode mode )
    {
       file.open( fileName.getString(), ios_mode );
    }
-   catch( std::ios_base::failure )
+   catch( std::ios_base::failure& )
    {
       std::stringstream msg;
       msg <<  "Unable to open file " << fileName << " ";
       if( mode & Mode::In )
          msg << " for reading.";
       if( mode & Mode::Out )
-         msg << " for writting.";
+         msg << " for writing.";
 
       throw std::ios_base::failure( msg.str() );
    }
@@ -68,7 +68,7 @@ inline void File::close()
       {
          file.close();
       }
-      catch( std::ios_base::failure )
+      catch( std::ios_base::failure& )
       {
          std::stringstream msg;
          msg <<  "Unable to close file " << fileName << ".";
