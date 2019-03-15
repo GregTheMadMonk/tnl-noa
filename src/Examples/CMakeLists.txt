@@ -21,7 +21,19 @@ add_subdirectory( flow-vl )
 ADD_EXECUTABLE( ArrayExample ArrayExample.cpp )
 
 ADD_EXECUTABLE( ConfigDescriptionExample ConfigDescriptionExample.cpp )
+
 ADD_EXECUTABLE( FileExample FileExample.cpp )
+ADD_CUSTOM_COMMAND( COMMAND FileExample > FileExample.out OUTPUT FileExample.out )
+
+IF( BUILD_CUDA )
+   CUDA_ADD_EXECUTABLE(FileExampleCuda FileExampleCuda.cu)
+   ADD_CUSTOM_COMMAND( COMMAND FileExampleCuda > FileExampleCuda.out OUTPUT FileExampleCuda.out )
+ENDIF()
+
+ADD_EXECUTABLE( FileExampleSaveAndLoad FileExampleSaveAndLoad.cpp )
+ADD_CUSTOM_COMMAND( COMMAND FileExampleSaveAndLoad > FileExampleSaveAndLoad.out OUTPUT FileExampleSaveAndLoad.out )
+
+
 ADD_EXECUTABLE( ListExample ListExample.cpp )
 ADD_EXECUTABLE( LoggerExample LoggerExample.cpp )
 ADD_EXECUTABLE( MathExample MathExample.cpp )
@@ -61,6 +73,8 @@ ADD_CUSTOM_COMMAND( COMMAND TimerExampleLogger > TimerExampleLogger.out OUTPUT T
 ADD_EXECUTABLE( VectorExample VectorExample.cpp )
 
 ADD_CUSTOM_TARGET( run ALL DEPENDS
+   FileExample.out
+   FileExampleSaveAndLoad.out
    ObjectExample_getType.out
    ParseObjectTypeExample.out
    StringExample.out
@@ -70,3 +84,8 @@ ADD_CUSTOM_TARGET( run ALL DEPENDS
    StringExampleStrip.out
    TimerExample.out
    TimerExampleLogger.out )
+
+if( BUILD_CUDA )
+   ADD_CUSTOM_TARGET( run-cuda ALL DEPENDS
+      FileExampleCuda.out )
+ENDIF()

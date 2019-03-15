@@ -46,12 +46,12 @@ int main( int argc, char* argv[] )
    if( string1 )
       cout << "string1 is not empty" << endl;
 
-   /*File myFile;
-   myFile.open( "string_save.out", File::out );
+   File myFile;
+   myFile.open( "string_save.out", File::Mode::Out );
    myFile << string1;
    myFile.close();
 
-   myFile.open( "string_save.out", File::in );
+   myFile.open( "string_save.out", File::Mode::In );
    myFile >> string3;
-   cout << "string 3 after loading = " << string3 << endl;*/
+   cout << "string 3 after loading = " << string3 << endl;
 }

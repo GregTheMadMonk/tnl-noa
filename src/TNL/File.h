@@ -94,6 +94,19 @@ class File
        * \tparam Device device where the data are stored after reading. For example \ref Devices::Host or \ref Devices::Cuda.
        * \param buffer Pointer in memory where the elements are loaded and stored after reading.
        * \param elements number of elements to be loaded from the file.
+       * 
+       * The following example shows how to load data directly to GPU.
+       * 
+       * \par Example
+       * \include FileExampleCuda.cpp
+       * \par Output
+       * \include FileExampleCuda.out
+       * The following example shows how to do on-the-fly data conversion.
+       * 
+       * \par Example
+       * \include FileExampleSaveAndLoad.cpp
+       * \par Output
+       * \include FileExampleSaveAndLoad.out
        */
       template< typename Type, typename SourceType = Type, typename Device = Devices::Host >
       void load( Type* buffer, std::streamsize elements = 1 );
@@ -115,6 +128,8 @@ class File
        * \tparam Index type of index by which the elements are indexed.
        * \param buffer buffer that is going to be saved to the file.
        * \param elements number of elements saved to the file.
+       * 
+       * See \ref File::load for examples.
        */
       template< typename Type, typename TargetType = Type, typename Device = Devices::Host >
       void save( const Type* buffer, std::streamsize elements = 1 );
@@ -179,6 +194,7 @@ class File
  *
  * Finds out if the file \e fileName exists.
  * \param fileName Name of the file to check.
+ * \return returns true if the file exists and false othervise
  */
 bool fileExists( const String& fileName );
 
