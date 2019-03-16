@@ -14,74 +14,117 @@
 
 namespace TNL {
 
-String getFileExtension( const String fileName );
-
-void removeFileExtension( String& file_name );
-
-/***
- * \brief Class for the construction of file names from multiple parts.
+/**
+ * \brief Helper class for the construction of file names based on name, index and extension.
  *
- * Merges base name, index number and extension to create the full name of a file.
+ * Optionally, the file name can also handle node ID for distributed systems.
+ * 
+ * The following example demonstrates the use of FileName.
+ * 
+ * \par Example
+ * \include FileNameExample.cpp
+ * \par Output
+ * \include FileNameExample.out
  */
 class FileName
 {
    public:
 
-      /***
+      /**
        * \brief Basic constructor.
        *
-       * Constructs an empty filename object.
+       * Sets no file name base, index to zero and index digits count to five;
        */
       FileName();
 
+      /**
+       * \brief Constructor with file name base parameter.
+       * 
+       * The index is set to zero and index digits count to five.
+       * 
+       * @param fileNameBase File name base.
+       */
       FileName( const String& fileNameBase );
 
-      FileName( const String& fileNameBase, 
+      /**
+       * \brief Constructor with file name base and file name extension.
+       * 
+       * The index is set to zero and index digits count to five.
+       * 
+       * @param fileNameBase File name base.
+       * @param extension File name extension.
+       */
+      FileName( const String& fileNameBase,
                 const String& extension );
 
-      /***
-       * \brief Sets the base name of given file.
+      /**
+       * \brief Sets the file name base.
        *
-       * Sets \e fileNameBase as the base name of given file.
-       * @param fileNameBase String that specifies new name of file.
+       * @param fileNameBase String that specifies the new file name base.
        */
       void setFileNameBase( const String& fileNameBase );
 
-      /***
-       *  \brief Sets the extension of given file.
+      /**
+       *  \brief Sets the file name extension.
        *
-       * Sets \e extension as suffix of a file name.
-       * @param extension A String that specifies extension of file (without dot).
-       * Suffix of a file name. E.g. doc, xls, tnl.
+       * @param extension A String that specifies the new extension of file without dot.
        */
       void setExtension( const String& extension );
 
-      /***
-       * \brief Sets index for given file.
+      /**
+       * \brief Sets index of the file name.
        *
-       * Sets \e index after the base name of given file.
-       * @param index Integer - number of maximum 5(default) digits.
-       * (Number of digits can be changed with \ref setDigitsCount).
+       * @param index Index of the file name.
        */
-      void setIndex( const int index );
+      void setIndex( const size_t index );
 
-      /***
-       * \brief Sets number of digits for index of given file.
+      /**
+       * \brief Sets number of digits for index of the file name.
        *
-       * @param digitsCount Integer - number of digits.
+       * @param digitsCount Number of digits. It is 5 by default.
        */
-      void setDigitsCount( const int digitsCount );
+      void setDigitsCount( const size_t digitsCount );
 
-      void setDistributedSystemNodeId( int nodeId );
+      /**
+       * \brief Sets the distributed system node ID as integer, for example MPI process ID.
+       * 
+       * @param nodeId Node ID.
+       * 
+       * See the following example:
+       * 
+       * \par Example
+       * \include FileNameExampleDistributedSystemNodeId.cpp
+       * \par Output
+       * \include FileNameExampleDistributedSystemNodeId.out
+       */
+      void setDistributedSystemNodeId( size_t nodeId );
 
+      /**
+       * \brief Sets the distributed system node ID in a form of Cartesian coordinates.
+       * 
+       * @tparam Coordinates Type of Cartesian coordinates. It is Containers::StaticVector usually.
+       * @param nodeId Node ID in a form of Cartesian coordinates.
+       * 
+       * See the following example:
+       * 
+       * \par Example
+       * \include FileNameExampleDistributedSystemNodeCoordinates.cpp
+       * \par Output
+       * \include FileNameExampleDistributedSystemNodeCoordinates.out
+       * 
+       */
       template< typename Coordinates >
-      void setDistributedSystemNodeId( const Coordinates& nodeId );
+      void setDistributedSystemNodeCoordinates( const Coordinates& nodeId );
 
-      /***
-       * \brief Creates appropriate name for given file.
+      /**
+       * \brief Resets the distributed system node ID.
+       */
+      void resetDistributedSystemNodeId();
+
+      /**
+       * \brief Returns complete file name.
        *
-       * Creates particular file name using \e fileNameBase, \e digitsCount,
-       * \e index and \e extension.
+       * @return String with the complete file name.
        */
       String getFileName();
 
@@ -89,8 +132,25 @@ class FileName
 
       String fileNameBase, extension, distributedSystemNodeId;
 
-      int index, digitsCount;
+      size_t index, digitsCount;
 };
+
+/**
+ * \brief Returns extension of given file name, i.e. part after the last dot.
+ * 
+ * @param fileName Input file name.
+ * 
+ * @return Extension of the given file name.
+ */
+String getFileExtension( const String fileName );
+
+/**
+ * \brief Cuts off the file extension.
+ * 
+ * @param file_name Input file name.
+ * @return String with the file name without extension.
+ */
+String removeFileNameExtension( String fileName );
 
 } // namespace TNL
 

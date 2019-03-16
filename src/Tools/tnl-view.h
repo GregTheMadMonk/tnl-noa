@@ -30,8 +30,7 @@ bool getOutputFileName( const String& inputFileName,
                         const String& outputFormat,
                         String& outputFileName )
 {
-   outputFileName = inputFileName;
-   removeFileExtension( outputFileName );
+   outputFileName = removeFileNameExtension( inputFileName );
    if( outputFormat == "gnuplot" )
    {
       outputFileName += ".gplt";

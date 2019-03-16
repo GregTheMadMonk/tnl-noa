@@ -105,7 +105,7 @@ bool renderFunction( const Config::ParameterContainer& parameters )
       if( finalTime > 0.0 )
       {
          String extension = getFileExtension( outputFile );
-         removeFileExtension( outputFile );
+         outputFile = removeFileNameExtension( outputFile );
          outputFile += "-";
          FileName outputFileName;
          outputFileName.setFileNameBase( outputFile.getString() );

@@ -33,6 +33,15 @@ ENDIF()
 ADD_EXECUTABLE( FileExampleSaveAndLoad FileExampleSaveAndLoad.cpp )
 ADD_CUSTOM_COMMAND( COMMAND FileExampleSaveAndLoad > FileExampleSaveAndLoad.out OUTPUT FileExampleSaveAndLoad.out )
 
+ADD_EXECUTABLE( FileNameExample FileNameExample.cpp )
+ADD_CUSTOM_COMMAND( COMMAND FileNameExample > FileNameExample.out OUTPUT FileNameExample.out )
+
+ADD_EXECUTABLE( FileNameExampleDistributedSystemNodeCoordinates FileNameExampleDistributedSystemNodeCoordinates.cpp )
+ADD_CUSTOM_COMMAND( COMMAND FileNameExampleDistributedSystemNodeCoordinates > FileNameExampleDistributedSystemNodeCoordinates.out OUTPUT FileNameExampleDistributedSystemNodeCoordinates.out )
+
+
+ADD_EXECUTABLE( FileNameExampleDistributedSystemNodeId FileNameExampleDistributedSystemNodeId.cpp )
+ADD_CUSTOM_COMMAND( COMMAND FileNameExampleDistributedSystemNodeId > FileNameExampleDistributedSystemNodeId.out OUTPUT FileNameExampleDistributedSystemNodeId.out )
 
 ADD_EXECUTABLE( ListExample ListExample.cpp )
 ADD_EXECUTABLE( LoggerExample LoggerExample.cpp )
@@ -75,6 +84,9 @@ ADD_EXECUTABLE( VectorExample VectorExample.cpp )
 ADD_CUSTOM_TARGET( run ALL DEPENDS
    FileExample.out
    FileExampleSaveAndLoad.out
+   FileNameExample.out
+   FileNameExampleDistributedSystemNodeCoordinates.out
+   FileNameExampleDistributedSystemNodeId.out
    ObjectExample_getType.out
    ParseObjectTypeExample.out
    StringExample.out

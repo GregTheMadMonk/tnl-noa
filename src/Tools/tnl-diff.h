@@ -304,10 +304,7 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const Con
 
          if( writeDifference )
          {
-            String differenceFileName;
-            differenceFileName = inputFiles[ i ];
-            removeFileExtension( differenceFileName );
-            differenceFileName += ".diff.tnl";
+            String differenceFileName = removeFileNameExtension( inputFiles[ i ] ) + ".diff.tnl";
             //diff.setLike( v1 );
             diff = v1;
             diff -= v2;
@@ -419,10 +416,7 @@ bool computeDifferenceOfVectors( const MeshPointer& meshPointer, const Config::P
 
       if( writeDifference )
       {
-         String differenceFileName;
-         differenceFileName = inputFiles[ i ];
-         removeFileExtension( differenceFileName );
-         differenceFileName += ".diff.tnl";
+         String differenceFileName = removeFileNameExtension( inputFiles[ i ] ) + ".diff.tnl";
          Containers::Vector< Real, Devices::Host, Index > diff;
          diff.setLike( v1 );
          diff = v1;

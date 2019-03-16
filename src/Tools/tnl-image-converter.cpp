@@ -77,9 +77,7 @@ bool processImages( const Config::ParameterContainer& parameters )
          meshFunction.setMesh( grid );
          if( ! pgmImage.read( roi, meshFunction ) )
             return false;
-         String outputFileName( fileName );
-         removeFileExtension( outputFileName );
-         outputFileName += ".tnl";
+         String outputFileName = removeFileNameExtension( fileName ) + ".tnl";
          std::cout << "Writing image data to " << outputFileName << std::endl;
          meshFunction.save( outputFileName );
          pgmImage.close();
@@ -104,9 +102,7 @@ bool processImages( const Config::ParameterContainer& parameters )
          meshFunction.setMesh( grid );
          if( ! pngImage.read( roi, meshFunction ) )
             return false;
-         String outputFileName( fileName );
-         removeFileExtension( outputFileName );
-         outputFileName += ".tnl";
+         String outputFileName = removeFileNameExtension( fileName ) + ".tnl";
          std::cout << "Writing image data to " << outputFileName << std::endl;
          meshFunction.save( outputFileName );
          pgmImage.close();
@@ -131,9 +127,7 @@ bool processImages( const Config::ParameterContainer& parameters )
          meshFunction.setMesh( grid );
          if( ! jpegImage.read( roi, meshFunction ) )
             return false;
-         String outputFileName( fileName );
-         removeFileExtension( outputFileName );
-         outputFileName += ".tnl";
+         String outputFileName = removeFileNameExtension( fileName ) + ".tnl";
          std::cout << "Writing image data to " << outputFileName << std::endl;
          meshFunction.save( outputFileName );
          pgmImage.close();
@@ -176,9 +170,7 @@ bool processFiles( const Config::ParameterContainer& parameters )
       if( imageFormat == "pgm" || imageFormat == "pgm-binary" || imageFormat == "pgm-ascii" )
       {
          Images::PGMImage< int > image;
-         String outputFileName( fileName );
-         removeFileExtension( outputFileName );
-         outputFileName += ".pgm";
+         String outputFileName = removeFileNameExtension( fileName ) + ".pgm";
 	 if ( imageFormat == "pgm" || imageFormat == "pgm-binary")
          	image.openForWrite( outputFileName, grid, true );
 	 if ( imageFormat == "pgm-ascii" )
@@ -190,9 +182,7 @@ bool processFiles( const Config::ParameterContainer& parameters )
       if( imageFormat == "png" )
       {
          Images::PNGImage< int > image;
-         String outputFileName( fileName );
-         removeFileExtension( outputFileName );
-         outputFileName += ".png";
+         String outputFileName = removeFileNameExtension( fileName ) + ".png";
          image.openForWrite( outputFileName, grid );
          image.write( grid, vector );
          image.close();
@@ -200,9 +190,7 @@ bool processFiles( const Config::ParameterContainer& parameters )
       if( imageFormat == "jpg" )
       {
          Images::JPEGImage< int > image;
-         String outputFileName( fileName );
-         removeFileExtension( outputFileName );
-         outputFileName += ".jpg";
+         String outputFileName = removeFileNameExtension( fileName ) + ".jpg";
          image.openForWrite( outputFileName, grid );
          image.write( grid, vector );
          image.close();
