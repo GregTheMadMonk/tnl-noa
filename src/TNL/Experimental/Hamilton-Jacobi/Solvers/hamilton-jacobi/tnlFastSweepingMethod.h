@@ -10,11 +10,10 @@
 
 #pragma once
 
-#include <TNL/Meshes/Grid.h>
-#include <TNL/Functions/Analytic/Constant.h>
-#include <TNL/Pointers/SharedPointer.h>
+//#include <TNL/Meshes/Grid.h>
+//#include <TNL/Functions/Analytic/Constant.h>
+//#include <TNL/Pointers/SharedPointer.h>
 #include "tnlDirectEikonalMethodsBase.h"
-#define ForDebug false // false <=> off
 
 
 template< typename Mesh,
@@ -88,6 +87,7 @@ class FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Communicator, 
     typedef Anisotropy AnisotropyType;
     typedef tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > > BaseType;
     typedef Communicator CommunicatorType;
+    typedef Containers::StaticVector< 2, Index > StaticVector;
     
     using MeshPointer = Pointers::SharedPointer<  MeshType >;
     using AnisotropyPointer = Pointers::SharedPointer< AnisotropyType, DeviceType >;
@@ -113,6 +113,15 @@ class FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Communicator, 
     protected:
       
       const IndexType maxIterations;
+    
+      void setOverlaps( StaticVector& vecLowerOverlaps, StaticVector& vecUpperOverlaps,
+              const MeshPointer& mesh);
+      
+      bool goThroughSweep( const StaticVector boundsFrom, const StaticVector boundsTo, 
+              MeshFunctionType& aux, const InterfaceMapType& interfaceMap,
+              const AnisotropyPointer& anisotropy );
+      
+      void getInfoFromNeighbours( int& calculated, int& calculateAgain, const MeshPointer& mesh );
 };
 
 template< typename Real,
@@ -134,6 +143,7 @@ class FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Communicator, 
     typedef Anisotropy AnisotropyType;
     typedef tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > > BaseType;
     typedef Communicator CommunicatorType;
+    typedef Containers::StaticVector< 3, Index > StaticVector;
     
     using MeshPointer = Pointers::SharedPointer<  MeshType >;
     using AnisotropyPointer = Pointers::SharedPointer< AnisotropyType, DeviceType >;
@@ -161,6 +171,15 @@ class FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Communicator, 
     protected:
       
       const IndexType maxIterations;
+      
+      void setOverlaps( StaticVector& vecLowerOverlaps, StaticVector& vecUpperOverlaps,
+              const MeshPointer& mesh);
+      
+      bool goThroughSweep( const StaticVector boundsFrom, const StaticVector boundsTo, 
+              MeshFunctionType& aux, const InterfaceMapType& interfaceMap,
+              const AnisotropyPointer& anisotropy );
+      
+      void getInfoFromNeighbours( int& calculated, int& calculateAgain, const MeshPointer& mesh );
 };
 
 
