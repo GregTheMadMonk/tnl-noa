@@ -14,6 +14,7 @@
 #include <TNL/Assert.h>
 #include <TNL/File.h>
 #include <TNL/Math.h>
+#include <TNL/ParallelFor.h>
 #include <TNL/param-types.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Algorithms/ArrayIO.h>
@@ -91,6 +92,45 @@ Array( Array< Value, Device, Index >& array,
          this->referenceCounter = array.referenceCounter = new int( 2 );
       }
    }
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+Array< Value, Device, Index >::
+Array( const std::initializer_list< Value >& list )
+: size( 0 ),
+  data( 0 ),
+  allocationPointer( 0 ),
+  referenceCounter( 0 )
+{
+   this->setSize( list.size() );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+Array< Value, Device, Index >::
+Array( const std::list< Value >& list )
+: size( 0 ),
+  data( 0 ),
+  allocationPointer( 0 ),
+  referenceCounter( 0 )
+{
+   this->setSize( list.size() );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+Array< Value, Device, Index >::
+Array( const std::vector< Value >& vector )
+: size( 0 ),
+  data( 0 ),
+  allocationPointer( 0 ),
+  referenceCounter( 0 )
+{
+   this->setSize( vector.size() );
 }
 
 template< typename Value,
@@ -433,10 +473,29 @@ bool Array< Value, Device, Index >::operator != ( const ArrayT& array ) const
 template< typename Value,
           typename Device,
           typename Index >
-void Array< Value, Device, Index >::setValue( const Value& e )
+void Array< Value, Device, Index >::setValue( const Value& e,
+                                              const Index begin,
+                                              const Index end )
 {
    TNL_ASSERT_TRUE( this->getData(), "Attempted to set a value of an empty array." );
-   Algorithms::ArrayOperations< Device >::setMemory( this->getData(), e, this->getSize() );
+   Algorithms::ArrayOperations< Device >::setMemory( &this->getData()[ begin ], e, end - begin );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+   template< typename Function >
+void Array< Value, Device, Index >::setValues( Function& f,
+                                               const Index begin,
+                                               const Index end )
+{
+   TNL_ASSERT_TRUE( this->getData(), "Attempted to set a value of an empty array." );
+   auto evaluate = [=] __cuda_callable__ ( Index i )
+   {
+      this->data[ i ] = f( i );
+   }
+
+   ParallelFor< DeviceType >( begin, end, evaluate );
 }
 
 template< typename Value,
@@ -444,9 +503,11 @@ template< typename Value,
           typename Index >
 bool
 Array< Value, Device, Index >::
-containsValue( const Value& v ) const
+containsValue( const Value& v,
+               const Index begin,
+               const Index end ) const
 {
-   return Algorithms::ArrayOperations< Device >::containsValue( this->data, this->size, v );
+   return Algorithms::ArrayOperations< Device >::containsValue( &this->getData()[ begin ], end - begin, v );
 }
 
 template< typename Value,
@@ -454,9 +515,11 @@ template< typename Value,
           typename Index >
 bool
 Array< Value, Device, Index >::
-containsOnlyValue( const Value& v ) const
+containsOnlyValue( const Value& v,
+                   const Index begin,
+                   const Index end ) const
 {
-   return Algorithms::ArrayOperations< Device >::containsOnlyValue( this->data, this->size, v );
+   return Algorithms::ArrayOperations< Device >::containsOnlyValue( &this->getData()[ begin ], end - begin, v );
 }
 
 template< typename Value,

@@ -79,6 +79,24 @@ class Array : public Object
              const IndexType& begin = 0,
              const IndexType& size = 0 );
 
+      /**
+       * 
+       * @param list
+       */
+      Array( const std::initializer_list< Value >& list );
+
+      /**
+       * 
+       * @param list
+       */
+      Array( const std::list< Value >& list );
+
+      /**
+       * 
+       * @param vector
+       */
+      Array( const std::vector< Value >& vector );
+
       /** \brief Returns type of array Value, Device type and the type of Index. */
       static String getType();
 
@@ -242,27 +260,45 @@ class Array : public Object
       bool operator != ( const ArrayT& array ) const;
 
       /**
-       * \brief Sets the array values.
+       * \brief Sets the array elements to given value.
        *
        * Sets all the array values to \e v.
        *
        * \param v Reference to a value.
        */
-      void setValue( const Value& v );
+      void setValue( const Value& v,
+                     const Index begin = 0,
+                     const Index end = this->getSize() );
+
+      /**
+       * \brief Sets the array elements using given lambda function.
+       *
+       * Sets all the array values to \e v.
+       *
+       * \param v Reference to a value.
+       */
+      template< typename Fuction >
+      void setValues( Functions& f,
+                      const Index begin = 0,
+                      const Index end = this->getSize() );
 
       /**
        * \brief Checks if there is an element with value \e v in this array.
        *
        * \param v Reference to a value.
        */
-      bool containsValue( const Value& v ) const;
+      bool containsValue( const Value& v,
+                          const Index begin = 0,
+                          const Index end = this->getSize() ) const;
 
       /**
        * \brief Checks if all elements in this array have the same value \e v.
        *
        * \param v Reference to a value.
        */
-      bool containsOnlyValue( const Value& v ) const;
+      bool containsOnlyValue( const Value& v,
+                              const Index begin = 0,
+                              const Index end = this->getSize() ) const;
 
       /**
        * \brief Returns true if non-zero size is set.
@@ -308,10 +344,10 @@ class Array : public Object
       void releaseData() const;
 
       /** \brief Number of elements in array. */
-      mutable Index size;
+      mutable Index size = 0;
 
       /** \brief Pointer to data. */
-      mutable Value* data;
+      mutable Value* data = nullptr;
 
       /**
        * \brief Pointer to the originally allocated data.
@@ -322,7 +358,7 @@ class Array : public Object
        * by TNL) are bind then this pointer is zero since no deallocation is
        * necessary.
        */
-      mutable Value* allocationPointer;
+      mutable Value* allocationPointer = nullptr;
 
       /**
        * \brief Counter of objects sharing this array or some parts of it.
@@ -330,7 +366,7 @@ class Array : public Object
        * The reference counter is allocated after first sharing of the data between
        * more arrays. This is to avoid unnecessary dynamic memory allocation.
        */
-      mutable int* referenceCounter;
+      mutable int* referenceCounter = nullptr;
 };
 
 template< typename Value, typename Device, typename Index >
