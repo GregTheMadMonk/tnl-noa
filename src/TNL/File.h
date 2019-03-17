@@ -179,7 +179,7 @@ class File
 
       std::fstream file;
       String fileName;
-      
+
       ////
       // When we transfer data between the GPU and the CPU we use 5 MB buffer. This
       // size should ensure good performance -- see.

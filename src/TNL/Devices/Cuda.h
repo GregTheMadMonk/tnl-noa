@@ -172,6 +172,15 @@ class Cuda
 
    static inline Timer& getSmartPointersSynchronizationTimer();
 
+   ////
+   // When we transfer data between the GPU and the CPU we use 5 MB buffer. This
+   // size should ensure good performance -- see.
+   // http://wiki.accelereyes.com/wiki/index.php/GPU_Memory_Transfer .
+   // We use the same buffer size even for retyping data during IO operations.
+   //
+   static constexpr std::streamsize TransferBufferSize = 5 * 2<<20;
+
+
    protected:
 
    static inline Pointers::SmartPointersRegister& getSmartPointersRegister();

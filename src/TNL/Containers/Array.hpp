@@ -97,40 +97,50 @@ Array( Array< Value, Device, Index >& array,
 template< typename Value,
           typename Device,
           typename Index >
+   template< typename InValue >
 Array< Value, Device, Index >::
-Array( const std::initializer_list< Value >& list )
+Array( const std::initializer_list< InValue >& list )
 : size( 0 ),
   data( 0 ),
   allocationPointer( 0 ),
   referenceCounter( 0 )
 {
    this->setSize( list.size() );
+   ////
+   // Here we assume that the underlying array for initializer_list is const T[N]
+   // as noted here:
+   // https://en.cppreference.com/w/cpp/utility/initializer_list
+   Algorithms::ArrayOperations< Device >::copyMemory( this->getData(), &( *list.begin() ), list.size() );
 }
 
 template< typename Value,
           typename Device,
           typename Index >
+   template< typename InValue >
 Array< Value, Device, Index >::
-Array( const std::list< Value >& list )
+Array( const std::list< InValue >& list )
 : size( 0 ),
   data( 0 ),
   allocationPointer( 0 ),
   referenceCounter( 0 )
 {
    this->setSize( list.size() );
+   Algorithms::ArrayOperations< Device >::copySTLList( this->getData(), list );
 }
 
 template< typename Value,
           typename Device,
           typename Index >
+   template< typename InValue >
 Array< Value, Device, Index >::
-Array( const std::vector< Value >& vector )
+Array( const std::vector< InValue >& vector )
 : size( 0 ),
   data( 0 ),
   allocationPointer( 0 ),
   referenceCounter( 0 )
 {
    this->setSize( vector.size() );
+   Algorithms::ArrayOperations< Device >::copyMemory( this->getData(), vector.data(), vector.size() );
 }
 
 template< typename Value,

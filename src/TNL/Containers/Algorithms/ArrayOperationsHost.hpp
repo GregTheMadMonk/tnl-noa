@@ -101,6 +101,18 @@ copyMemory( DestinationElement* destination,
 }
 
 template< typename DestinationElement,
+          typename SourceElement >
+ArrayOperations< Devices::Host >::
+void copySTLList( DestinationElement* destination,
+                  const std::list< SourceElement >& source )
+{
+   size_t i = 0;
+   for( SourceElement& e : source )
+      destination[ i ++ ] = static_cast< DesitnationElement >( e );
+}
+
+
+template< typename DestinationElement,
           typename SourceElement,
           typename Index >
 bool

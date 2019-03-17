@@ -80,33 +80,47 @@ class Array : public Object
              const IndexType& size = 0 );
 
       /**
+       * \brief Initialize the array from initializer list, i.e. { ... }
        * 
-       * @param list
+       * @param list Initializer list.
        */
-      Array( const std::initializer_list< Value >& list );
+      template< typename InValue >
+      Array( const std::initializer_list< InValue >& list );
 
       /**
+       * \brief Initialize the array from std::list.
        * 
-       * @param list
+       * @param list Input STL list.
        */
-      Array( const std::list< Value >& list );
+      template< typename InValue >
+      Array( const std::list< InValue >& list );
 
       /**
+       * \brief Initialize the array from std::vector.
        * 
-       * @param vector
+       * @param vector Input STL vector.
        */
-      Array( const std::vector< Value >& vector );
+      template< typename InValue >
+      Array( const std::vector< InValue >& vector );
 
-      /** \brief Returns type of array Value, Device type and the type of Index. */
+      /**
+       *  \brief Returns type of array Value, Device type and the type of Index. 
+       */
       static String getType();
 
-      /** \brief Returns type of array Value, Device type and the type of Index. */
+      /**
+       * \brief Returns type of array Value, Device type and the type of Index. 
+       */
       virtual String getTypeVirtual() const;
 
-      /** \brief Returns (host) type of array Value, Device type and the type of Index. */
+      /**
+       *  \brief Returns (host) type of array Value, Device type and the type of Index. 
+       */
       static String getSerializationType();
 
-      /** \brief Returns (host) type of array Value, Device type and the type of Index. */
+      /**
+       *  \brief Returns (host) type of array Value, Device type and the type of Index.
+       */
       virtual String getSerializationTypeVirtual() const;
 
       /**
@@ -375,4 +389,4 @@ std::ostream& operator << ( std::ostream& str, const Array< Value, Device, Index
 } // namespace Containers
 } // namespace TNL
 
-#include <TNL/Containers/Array_impl.h>
+#include <TNL/Containers/Array.hpp>
