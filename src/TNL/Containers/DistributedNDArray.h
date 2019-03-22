@@ -184,6 +184,14 @@ public:
       return ! (*this == other);
    }
 
+   // iterate over all local elements
+   template< typename Device2 = DeviceType, typename Func >
+   void forAll( Func f ) const
+   {
+      __ndarray_impl::ExecutorDispatcher< PermutationType, Device2 > dispatch;
+      dispatch( localBegins, localEnds, f );
+   }
+
 
    // extra methods
 
