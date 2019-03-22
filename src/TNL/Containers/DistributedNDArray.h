@@ -192,6 +192,53 @@ public:
       dispatch( localBegins, localEnds, f );
    }
 
+   // iterate over local elements which are not neighbours of *global* boundaries
+   template< typename Device2 = DeviceType, typename Func >
+   void forInternal( Func f ) const
+   {
+      // add static sizes
+      using Begins = __ndarray_impl::LocalBeginsHolder< SizesHolderType, 1 >;
+      // add dynamic sizes
+      Begins begins;
+      __ndarray_impl::SetSizesAddHelper< 1, Begins, SizesHolderType, Overlaps >::add( begins, SizesHolderType{} );
+      __ndarray_impl::SetSizesMaxHelper< Begins, LocalBeginsType >::max( begins, localBegins );
+
+      // subtract static sizes
+      using Ends = typename __ndarray_impl::SubtractedSizesHolder< SizesHolderType, 1 >::type;
+      // subtract dynamic sizes
+      Ends ends;
+      __ndarray_impl::SetSizesSubtractHelper< 1, Ends, SizesHolderType, Overlaps >::subtract( ends, globalSizes );
+      __ndarray_impl::SetSizesMinHelper< Ends, SizesHolderType >::min( ends, localEnds );
+
+      __ndarray_impl::ExecutorDispatcher< PermutationType, Device2 > dispatch;
+      dispatch( begins, ends, f );
+   }
+
+   // iterate over local elements inside the given [begins, ends) range specified by global indices
+   template< typename Device2 = DeviceType, typename Func, typename Begins, typename Ends >
+   void forInternal( Func f, const Begins& begins, const Ends& ends ) const
+   {
+      // TODO: assert "localBegins <= begins <= localEnds", "localBegins <= ends <= localEnds"
+      __ndarray_impl::ExecutorDispatcher< PermutationType, Device2 > dispatch;
+      dispatch( begins, ends, f );
+   }
+
+   // iterate over local elements which are not neighbours of overlaps (if all overlaps are 0, it is equivalent to forAll)
+   template< typename Device2 = DeviceType, typename Func >
+   void forLocalInternal( Func f ) const
+   {
+      // add dynamic sizes
+      LocalBeginsType begins;
+      __ndarray_impl::SetSizesAddHelper< 1, LocalBeginsType, SizesHolderType, Overlaps >::add( begins, localBegins, false );
+
+      // subtract dynamic sizes
+      SizesHolderType ends;
+      __ndarray_impl::SetSizesSubtractHelper< 1, SizesHolderType, SizesHolderType, Overlaps >::subtract( ends, localEnds, false );
+
+      __ndarray_impl::ExecutorDispatcher< PermutationType, Device2 > dispatch;
+      dispatch( begins, ends, f );
+   }
+
 
    // extra methods
 

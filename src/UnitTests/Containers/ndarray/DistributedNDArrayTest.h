@@ -292,6 +292,90 @@ TYPED_TEST( DistributedNDArrayTest, forAll )
    test_helper_forAll( this->distributedNDArray );
 }
 
+// separate function because nvcc does not allow __cuda_callable__ lambdas inside
+// private or protected methods (which are created by TYPED_TEST macro)
+template< typename DistributedArray >
+void test_helper_forInternal( DistributedArray& a )
+{
+   using IndexType = typename DistributedArray::IndexType;
+
+   const auto localRange = a.template getLocalRange< 0 >();
+   auto a_view = a.getView();
+
+   auto setter = [=] __cuda_callable__ ( IndexType i ) mutable
+   {
+      a_view( i ) += 1;
+   };
+
+   a.setValue( 0 );
+   a.forInternal( setter );
+
+   for( int gi = localRange.getBegin(); gi < localRange.getEnd(); gi++ )
+   {
+      if( gi == 0 || gi == a.template getSize< 0 >() - 1 )
+         EXPECT_EQ( a.getElement( gi ), 0 )
+            << "gi = " << gi;
+      else
+         EXPECT_EQ( a.getElement( gi ), 1 )
+            << "gi = " << gi;
+   }
+
+   a.setValue( 0 );
+   a_view.forInternal( setter );
+
+   for( int gi = localRange.getBegin(); gi < localRange.getEnd(); gi++ )
+   {
+      if( gi == 0 || gi == a.template getSize< 0 >() - 1 )
+         EXPECT_EQ( a.getElement( gi ), 0 )
+            << "gi = " << gi;
+      else
+         EXPECT_EQ( a.getElement( gi ), 1 )
+            << "gi = " << gi;
+   }
+}
+
+TYPED_TEST( DistributedNDArrayTest, forInternal )
+{
+   test_helper_forInternal( this->distributedNDArray );
+}
+
+// separate function because nvcc does not allow __cuda_callable__ lambdas inside
+// private or protected methods (which are created by TYPED_TEST macro)
+template< typename DistributedArray >
+void test_helper_forLocalInternal( DistributedArray& a )
+{
+   using IndexType = typename DistributedArray::IndexType;
+
+   const auto localRange = a.template getLocalRange< 0 >();
+   auto a_view = a.getView();
+
+   auto setter = [=] __cuda_callable__ ( IndexType i ) mutable
+   {
+      a_view( i ) += 1;
+   };
+
+   a.setValue( 0 );
+   // equivalent to forAll because all overlaps are 0
+   a.forLocalInternal( setter );
+
+   for( int gi = localRange.getBegin(); gi < localRange.getEnd(); gi++ )
+      EXPECT_EQ( a.getElement( gi ), 1 )
+            << "gi = " << gi;
+
+   a.setValue( 0 );
+   // equivalent to forAll because all overlaps are 0
+   a_view.forLocalInternal( setter );
+
+   for( int gi = localRange.getBegin(); gi < localRange.getEnd(); gi++ )
+      EXPECT_EQ( a.getElement( gi ), 1 )
+            << "gi = " << gi;
+}
+
+TYPED_TEST( DistributedNDArrayTest, forLocalInternal )
+{
+   test_helper_forLocalInternal( this->distributedNDArray );
+}
+
 #endif  // HAVE_GTEST
 
 

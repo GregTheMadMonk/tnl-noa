@@ -276,14 +276,16 @@ struct SubtractedSizesHolder< SizesHolder< Index, sizes... >, ConstValue >
 
 
 // wrapper for localBegins in DistributedNDArray (static sizes cannot be distributed, begins are always 0)
-template< typename SizesHolder >
+template< typename SizesHolder,
+          // overridable value is useful in the forInternal method
+          std::size_t ConstValue = 0 >
 struct LocalBeginsHolder : public SizesHolder
 {
    template< std::size_t dimension >
    static constexpr std::size_t getStaticSize()
    {
       static_assert( dimension < SizesHolder::getDimension(), "Invalid dimension passed to getStaticSize()." );
-      return 0;
+      return ConstValue;
    }
 
    template< std::size_t level >
@@ -291,18 +293,20 @@ struct LocalBeginsHolder : public SizesHolder
    typename SizesHolder::IndexType getSize() const
    {
       if( SizesHolder::template getStaticSize< level >() != 0 )
-         return 0;
+         return ConstValue;
       return SizesHolder::template getSize< level >();
    }
 };
 
 template< typename Index,
-          std::size_t... sizes >
-std::ostream& operator<<( std::ostream& str, const __ndarray_impl::LocalBeginsHolder< SizesHolder< Index, sizes... > >& holder )
+          std::size_t... sizes,
+          std::size_t ConstValue >
+std::ostream& operator<<( std::ostream& str, const __ndarray_impl::LocalBeginsHolder< SizesHolder< Index, sizes... >, ConstValue >& holder )
 {
    str << "LocalBeginsHolder< SizesHolder< ";
    TemplateStaticFor< std::size_t, 0, sizeof...(sizes) - 1, __ndarray_impl::SizesHolderStaticSizePrinter >::execHost( str, (SizesHolder< Index, sizes... >) holder );
-   str << holder.template getStaticSize< sizeof...(sizes) - 1 >() << " > >( ";
+   str << holder.template getStaticSize< sizeof...(sizes) - 1 >() << " >, ";
+   str << ConstValue << " >( ";
    TemplateStaticFor< std::size_t, 0, sizeof...(sizes) - 1, __ndarray_impl::SizesHolderSizePrinter >::execHost( str, holder );
    str << holder.template getSize< sizeof...(sizes) - 1 >() << " )";
    return str;

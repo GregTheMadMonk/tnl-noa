@@ -118,28 +118,138 @@ void setSizesHelper( SizesHolder& holder,
 template< std::size_t ConstValue,
           typename TargetHolder,
           typename SourceHolder,
+          typename Overlaps = make_constant_index_sequence< TargetHolder::getDimension(), 0 >,
           std::size_t level = TargetHolder::getDimension() - 1 >
 struct SetSizesSubtractHelper
 {
    static void subtract( TargetHolder& target,
-                         const SourceHolder& source )
+                         const SourceHolder& source,
+                         bool negateOverlaps = true )
    {
-      if( source.template getStaticSize< level >() == 0 )
-         target.template setSize< level >( source.template getSize< level >() - ConstValue );
-      SetSizesSubtractHelper< ConstValue, TargetHolder, SourceHolder, level - 1 >::subtract( target, source );
+      if( source.template getStaticSize< level >() == 0 ) {
+         if( negateOverlaps )
+            target.template setSize< level >( source.template getSize< level >() - ConstValue * ! get< level >( Overlaps{} ) );
+         else
+            target.template setSize< level >( source.template getSize< level >() - ConstValue * !! get< level >( Overlaps{} ) );
+      }
+      SetSizesSubtractHelper< ConstValue, TargetHolder, SourceHolder, Overlaps, level - 1 >::subtract( target, source );
    }
 };
 
 template< std::size_t ConstValue,
           typename TargetHolder,
-          typename SourceHolder >
-struct SetSizesSubtractHelper< ConstValue, TargetHolder, SourceHolder, 0 >
+          typename SourceHolder,
+          typename Overlaps >
+struct SetSizesSubtractHelper< ConstValue, TargetHolder, SourceHolder, Overlaps, 0 >
 {
    static void subtract( TargetHolder& target,
-                         const SourceHolder& source )
+                         const SourceHolder& source,
+                         bool negateOverlaps = true )
+   {
+      if( source.template getStaticSize< 0 >() == 0 ) {
+         if( negateOverlaps )
+            target.template setSize< 0 >( source.template getSize< 0 >() - ConstValue * ! get< 0 >( Overlaps{} ) );
+         else
+            target.template setSize< 0 >( source.template getSize< 0 >() - ConstValue * !! get< 0 >( Overlaps{} ) );
+      }
+   }
+};
+
+
+// helper for the forInternal method (DistributedNDArray)
+template< std::size_t ConstValue,
+          typename TargetHolder,
+          typename SourceHolder,
+          typename Overlaps = make_constant_index_sequence< TargetHolder::getDimension(), 0 >,
+          std::size_t level = TargetHolder::getDimension() - 1 >
+struct SetSizesAddHelper
+{
+   static void add( TargetHolder& target,
+                    const SourceHolder& source,
+                    bool negateOverlaps = true )
+   {
+      if( source.template getStaticSize< level >() == 0 ) {
+         if( negateOverlaps )
+            target.template setSize< level >( source.template getSize< level >() + ConstValue * ! get< level >( Overlaps{} ) );
+         else
+            target.template setSize< level >( source.template getSize< level >() + ConstValue * !! get< level >( Overlaps{} ) );
+      }
+      SetSizesAddHelper< ConstValue, TargetHolder, SourceHolder, Overlaps, level - 1 >::add( target, source );
+   }
+};
+
+template< std::size_t ConstValue,
+          typename TargetHolder,
+          typename SourceHolder,
+          typename Overlaps >
+struct SetSizesAddHelper< ConstValue, TargetHolder, SourceHolder, Overlaps, 0 >
+{
+   static void add( TargetHolder& target,
+                    const SourceHolder& source,
+                    bool negateOverlaps = true )
+   {
+      if( source.template getStaticSize< 0 >() == 0 ) {
+         if( negateOverlaps )
+            target.template setSize< 0 >( source.template getSize< 0 >() + ConstValue * ! get< 0 >( Overlaps{} ) );
+         else
+            target.template setSize< 0 >( source.template getSize< 0 >() + ConstValue * !! get< 0 >( Overlaps{} ) );
+      }
+   }
+};
+
+
+// helper for the forInternal method (DistributedNDArray)
+template< typename TargetHolder,
+          typename SourceHolder,
+          std::size_t level = TargetHolder::getDimension() - 1 >
+struct SetSizesMaxHelper
+{
+   static void max( TargetHolder& target,
+                    const SourceHolder& source )
+   {
+      if( source.template getStaticSize< level >() == 0 )
+         target.template setSize< level >( std::max( target.template getSize< level >(), source.template getSize< level >() ) );
+      SetSizesMaxHelper< TargetHolder, SourceHolder, level - 1 >::max( target, source );
+   }
+};
+
+template< typename TargetHolder,
+          typename SourceHolder >
+struct SetSizesMaxHelper< TargetHolder, SourceHolder, 0 >
+{
+   static void max( TargetHolder& target,
+                    const SourceHolder& source )
    {
       if( source.template getStaticSize< 0 >() == 0 )
-         target.template setSize< 0 >( source.template getSize< 0 >() - ConstValue );
+         target.template setSize< 0 >( std::max( target.template getSize< 0 >(), source.template getSize< 0 >() ) );
+   }
+};
+
+
+// helper for the forInternal method (DistributedNDArray)
+template< typename TargetHolder,
+          typename SourceHolder,
+          std::size_t level = TargetHolder::getDimension() - 1 >
+struct SetSizesMinHelper
+{
+   static void min( TargetHolder& target,
+                    const SourceHolder& source )
+   {
+      if( source.template getStaticSize< level >() == 0 )
+         target.template setSize< level >( std::min( target.template getSize< level >(), source.template getSize< level >() ) );
+      SetSizesMinHelper< TargetHolder, SourceHolder, level - 1 >::min( target, source );
+   }
+};
+
+template< typename TargetHolder,
+          typename SourceHolder >
+struct SetSizesMinHelper< TargetHolder, SourceHolder, 0 >
+{
+   static void min( TargetHolder& target,
+                    const SourceHolder& source )
+   {
+      if( source.template getStaticSize< 0 >() == 0 )
+         target.template setSize< 0 >( std::min( target.template getSize< 0 >(), source.template getSize< 0 >() ) );
    }
 };
 
