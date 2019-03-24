@@ -29,9 +29,9 @@ template< int, typename > class StaticArray;
  * \brief Array is responsible for memory management, basic elements 
  * manipulation and I/O operations. 
  *
- * \tparam Value Type of array values.
- * \tparam Device Device type - some of \ref Devices::Host and \ref Devices::Cuda.
- * \tparam Index Type for indexing.
+ * \tparam Value is type of array elements.
+ * \tparam Device is device where the array is going to be allocated - some of \ref Devices::Host and \ref Devices::Cuda.
+ * \tparam Index is indexing type.
  *
  * In the \e Device type, the Array remembers where the memory is allocated. 
  * This ensures the compile-time checks of correct pointers manipulation.
@@ -55,6 +55,8 @@ template< int, typename > class StaticArray;
  * 
  * \par Example
  * \include ArrayExample.cpp
+ * 
+ * See also \ref Containers::ArravView, \ref Containers::Vector, \ref Containers::VectorView.
  */
 template< typename Value,
           typename Device = Devices::Host,
@@ -72,20 +74,26 @@ class Array : public Object
 
       /** \brief Basic constructor.
        *
-       * Constructs an empty array with the size of zero.
+       * Constructs an empty array with zero size.
        */
       Array();
 
       /**
-       * \brief Constructor with size.
+       * \brief Constructor with array size.
        *
-       * \param size Number of array elements. / Size of allocated memory.
+       * \param size is number of array elements.
        */
       Array( const IndexType& size );
 
       /**
-       * \brief Constructor with data and size.
+       * \brief Constructor with data pointer and size.
        *
+       * In this case, the Array just encapsulates the pointer \e data. No 
+       * deallocation is done in destructor.
+       *
+       * This behavior of the Array is obsolete and \ref ArrayView should be used
+       * instead.
+       * 
        * \param data Pointer to data.
        * \param size Number of array elements.
        */
@@ -93,25 +101,33 @@ class Array : public Object
              const IndexType& size );
 
       /**
-       * 
-       * @param 
-       */
-      // Deep copy does not work because of EllpackIndexMultiMap - TODO: Fix it
-      //Array( const Array& );
-
-      /**
        * \brief Copy constructor.
        *
+       * \param array is an array to be copied.
+       */
+      // Deep copy does not work because of EllpackIndexMultiMap - TODO: Fix it
+      //Array( const Array& array );
+
+      /**
+       * \brief Bind constructor .
+       *
        * The constructor does not make a deep copy, but binds to the supplied array.
-       * \param array Existing array that is to be bound.
-       * \param begin The first index which should be bound.
-       * \param size Number of array elements that should be bound.
+       * This is also obsolete, \ref ArraView should be used instead.
+       * 
+       * \param array is an array that is to be bound.
+       * \param begin is the first index which should be bound.
+       * \param size is number of array elements that should be bound.
        */
       Array( Array& array,
              const IndexType& begin = 0,
              const IndexType& size = 0 );
 
-      Array( Array&& );
+      /**
+       * \brief Move constructor.
+       * 
+       * @param array is an array to be moved
+       */
+      Array( Array&& array );
 
       /**
        * \brief Initialize the array from initializer list, i.e. { ... }
@@ -138,45 +154,51 @@ class Array : public Object
       Array( const std::vector< InValue >& vector );
 
       /**
-       *  \brief Returns type of array Value, Device type and the type of Index. 
+       *  \brief Returns type of array in C++ style.
        */
       static String getType();
 
       /**
-       * \brief Returns type of array Value, Device type and the type of Index. 
+       * \brief Returns type of array in C++ style.
        */
       virtual String getTypeVirtual() const;
 
       /**
-       *  \brief Returns (host) type of array Value, Device type and the type of Index. 
+       *  \brief Returns type of array in C++ style where device is always \ref Devices::Host.
        */
       static String getSerializationType();
 
       /**
-       *  \brief Returns (host) type of array Value, Device type and the type of Index.
+       *  \brief Returns type of array in C++ style where device is always \ref Devices::Host.
        */
       virtual String getSerializationTypeVirtual() const;
 
       /**
-       * \brief Method for setting the size of an array.
+       * \brief Method for setting the array size.
        *
        * If the array shares data with other arrays these data are released.
        * If the current data are not shared and the current size is the same
        * as the new one, nothing happens.
        *
-       * \param size Number of array elements.
+       * \param size is number of array elements.
        */
       void setSize( Index size );
 
-      /** \brief Method for getting the size of an array. */
+      /**
+       * \brief Method for getting the size of an array.
+       *
+       * This method can be called from device kernels.
+       *  
+       */
       __cuda_callable__ Index getSize() const;
 
       /**
        * \brief Assigns features of the existing \e array to the given array.
        *
        * Sets the same size as the size of existing \e array.
-       * \tparam ArrayT Type of array.
-       * \param array Reference to an existing array.
+       * 
+       * \tparam ArrayT is any array type having method \ref getSize().
+       * \param array is reference to the source array.
        */
       template< typename ArrayT >
       void setLike( const ArrayT& array );
@@ -186,6 +208,9 @@ class Array : public Object
        *
        * Releases old data and binds this array with new \e _data. Also sets new
        * \e _size of this array.
+       * 
+       * This method is obsolete, use \ref ArrayView instead.
+       * 
        * @param _data Pointer to new data.
        * @param _size Size of new _data. Number of elements.
        */
@@ -197,6 +222,9 @@ class Array : public Object
        *
        * Releases old data and binds this array with new \e array starting at
        * position \e begin. Also sets new \e size of this array.
+       * 
+       * This method is obsolete, use \ref ArrayView instead.
+       * 
        * \tparam ArrayT Type of array.
        * \param array Reference to a new array.
        * \param begin Starting index position.
@@ -212,6 +240,9 @@ class Array : public Object
        *
        * Releases old data and binds this array with a static array of size \e
        * Size.
+       * 
+       * This method is obsolete, use \ref ArrayView instead.
+       * 
        * \tparam Size Size of array.
        * \param array Reference to a static array.
        */
@@ -219,38 +250,45 @@ class Array : public Object
       void bind( StaticArray< Size, Value >& array );
 
       /**
-       * \brief Swaps all features of given array with existing \e array.
+       * \brief Swaps this array with another.
        *
-       * Swaps sizes, all values (data), allocated memory and references of given
-       * array with existing array.
-       * \param array Existing array, which features are swaped with given array.
+       * The swap is done by swaping the meta-data, i.e. pointers and sizes.
+       * 
+       * \param array is the array to be swapped with this array.
        */
       void swap( Array& array );
 
       /**
-       * \brief Resets the given array.
+       * \brief Resets the array.
        *
-       * Releases all data from array.
+       * Releases the array to empty state.
        */
       void reset();
 
       /**
-       * \brief Method for getting the data from given array with constant poiner.
+       * \brief Data pointer getter for constant instances.
+       * 
+       * This method can be called from device kernels.
        */
       __cuda_callable__ const Value* getData() const;
 
       /**
-       * \brief Method for getting the data from given array.
+       * \brief Data pointer getter.
+       * 
+       * This method can be called from device kernels.
        */
       __cuda_callable__ Value* getData();
 
       /**
-       * \brief Assignes the value \e x to the array element at position \e i.
+       * \brief Assignes the value \e v to the array element at position \e i.
        *
-       * \param i Index position.
-       * \param x New value of an element.
+       * This method can be called only from the host system (CPU) but even for
+       * arrays allocated on device (GPU).
+       * 
+       * \param i is element index.
+       * \param x is the new value of the element.
        */
-      void setElement( const Index& i, const Value& x );
+      void setElement( const Index& i, const Value& v );
 
       /**
        * \brief Accesses specified element at the position \e i and returns its value.
