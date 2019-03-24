@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
                 
-DEBUG="no"
+DEBUG="yes"
 STOP_TIME="1"
 export CUDA_PROFILE=0
 
@@ -30,9 +30,9 @@ do
       export CUDA_PROFILE_LOG=$unzipped_matrix.float.log
       if test x$DEBUG = xyes;
       then
-         gdb --args ${BENCHMARK_DBG} --test mtx --input-file $unzipped_matrix --log-file sparse-matrix-benchmark.log --stop-time $STOP_TIME --verbose 1
+         gdb --args ${BENCHMARK_DBG} --input-file $unzipped_matrix --log-file sparse-matrix-benchmark.log --verbose 1
       else
-         $BENCHMARK --test mtx --input-file $unzipped_matrix --pdf-file $unzipped_matrix.pdf --log-file sparse-matrix-benchmark.log --stop-time $STOP_TIME --verbose 1
+         $BENCHMARK --input-file $unzipped_matrix --log-file sparse-matrix-benchmark.log --verbose 1
       fi
       #perl $PROCESS_CUDA_PROFILE $unzipped_matrix.float.log sparse-matrix-profiling-float.log          
    fi
@@ -59,9 +59,9 @@ do
          echo "Benchmarking with the matrix $file ..."
          if test x$DEBUG = xyes;
          then
-            gdb --args $BENCHMARK --test mtx --input-file $file --pdf-file $file.pdf --log-file sparse-matrix-benchmark.log --stop-time $STOP_TIME --verbose 1
+            gdb --args $BENCHMARK --input-file $file --log-file sparse-matrix-benchmark.log --verbose 1
          else
-            $BENCHMARK --test mtx --input-file $file --pdf-file $file.pdf --log-file sparse-matrix-benchmark.log --stop-time $STOP_TIME --verbose 1                        
+            $BENCHMARK --input-file $file --log-file sparse-matrix-benchmark.log --verbose 1                        
          fi
      done
    fi
