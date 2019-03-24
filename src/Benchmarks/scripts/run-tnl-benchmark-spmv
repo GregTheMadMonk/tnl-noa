@@ -58,11 +58,13 @@ do
      do        
          echo "======================================================================================================"
          echo "Benchmarking with the matrix $file ..."
+	 mtx_file_name=`basename $file`
+	 mtx_file_name=${mtx_file_name%.mtx}	 
          if test x$DEBUG = xyes;
          then
-            gdb --args $BENCHMARK --input-file $file --log-file log-files/sparse-matrix-benchmark::$SUBDIRNAME.log --verbose 1
+            gdb --args $BENCHMARK --input-file $file --log-file log-files/sparse-matrix-benchmark::$mtx_file_name.log --verbose 1
          else
-            $BENCHMARK --input-file $file --log-file log-files/sparse-matrix-benchmark::$SUBDIRNAME.log --verbose 1                        
+            $BENCHMARK --input-file $file --log-file log-files/sparse-matrix-benchmark::$mtx_file_name.log --verbose 1                        
          fi
      done
    fi
