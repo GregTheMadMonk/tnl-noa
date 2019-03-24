@@ -173,13 +173,14 @@ copyMemory( DestinationElement* destination,
 
 template< typename DestinationElement,
           typename SourceElement >
+void
 ArrayOperations< Devices::Cuda >::
-void copySTLList( DestinationElement* destination,
-                  const std::list< SourceElement >& source )
+copySTLList( DestinationElement* destination,
+             const std::list< SourceElement >& source )
 {
    const auto size = source.size();
-   const std::streamsize copy_buffer_size = std::min( Devices::Cuda::TransferBufferSize / (std::streamsize) sizeof(SourceType), size );
-   using BaseType = typename std::remove_cv< SourceType >::type;
+   const std::size_t copy_buffer_size = std::min( Devices::Cuda::TransferBufferSize / (std::size_t) sizeof( DestinationElement ), ( std::size_t ) size );
+   using BaseType = typename std::remove_cv< DestinationElement >::type;
    std::unique_ptr< BaseType[] > copy_buffer{ new BaseType[ copy_buffer_size ] };
    size_t copiedElements = 0;
    auto it = source.begin();

@@ -62,6 +62,21 @@ Array( Value* data,
 {
 }
 
+/*template< typename Value,
+          typename Device,
+          typename Index >
+Array< Value, Device, Index >::
+Array( const Array< Value, Device, Index >& array )
+: size( 0 ),
+  data( nullptr ),
+  allocationPointer( nullptr ),
+  referenceCounter( 0 )
+{
+   // Deep copy does not work because of EllpackIndexMultiMap - TODO: Fix it
+   this->setSize( array.getSize() );
+   Algorithms::ArrayOperations< Device >::copyMemory( this->getData(), array.getData(), array.getSize() );
+}*/
+
 template< typename Value,
           typename Device,
           typename Index >
@@ -92,6 +107,23 @@ Array( Array< Value, Device, Index >& array,
          this->referenceCounter = array.referenceCounter = new int( 2 );
       }
    }
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+Array< Value, Device, Index >::
+Array( Array< Value, Device, Index >&& array )
+{
+   this->size = array.size;
+   this->data = array.data;
+   this->allocationPointer = array.allocationPointer;
+   this->referenceCounter = array.referenceCounter;
+
+   array.size = 0;
+   array.data = nullptr;
+   array.allocationPointer = nullptr;
+   array.referenceCounter = nullptr;
 }
 
 template< typename Value,
@@ -437,20 +469,58 @@ operator = ( const Array< Value, Device, Index >& array )
 template< typename Value,
           typename Device,
           typename Index >
-   template< typename ArrayT >
 Array< Value, Device, Index >&
 Array< Value, Device, Index >::
-operator = ( const ArrayT& array )
+operator = ( Array< Value, Device, Index >&& array )
 {
-   //TNL_ASSERT_EQ( array.getSize(), this->getSize(), "Array sizes must be the same." );
-   if( this->getSize() != array.getSize() )
-      this->setLike( array );
-   if( this->getSize() > 0 )
-      Algorithms::ArrayOperations< Device, typename ArrayT::DeviceType >::
-         copyMemory( this->getData(),
-                     array.getData(),
-                     array.getSize() );
+   this->size = array.size;
+   this->data = array.data;
+   this->allocationPointer = array.allocationPointer;
+   this->referenceCounter = array.referenceCounter;
+
+   array.size = 0;
+   array.data = nullptr;
+   array.allocationPointer = nullptr;
+   array.referenceCounter = nullptr;
+}
+
+
+template< typename Value,
+          typename Device,
+          typename Index >
+   template< typename T >
+Array< Value, Device, Index >&
+Array< Value, Device, Index >::
+operator = ( const T& data )
+{
+   ArrayAssignment< ThisType, T >::assign( *this, data );
    return ( *this );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+   template< typename InValue >
+Array< Value, Device, Index >&
+Array< Value, Device, Index >::
+operator = ( const std::list< InValue >& list )
+{
+   if( this->getSize() != list.size() )
+      this->setSize( list.size() );
+   Algorithms::ArrayOperations< Device >::copySTLList( this->getData(), list );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+   template< typename InValue >
+Array< Value, Device, Index >&
+Array< Value, Device, Index >::
+operator = ( const std::vector< InValue >& vector )
+{
+   if( this->getSize() != vector.size() )
+      this->setSize( vector.size() );
+   Algorithms::ArrayOperations< Device >::copyMemory( this->getData(), vector.data(), vector.size() );
 }
 
 template< typename Value,
@@ -483,11 +553,13 @@ bool Array< Value, Device, Index >::operator != ( const ArrayT& array ) const
 template< typename Value,
           typename Device,
           typename Index >
-void Array< Value, Device, Index >::setValue( const Value& e,
+void Array< Value, Device, Index >::setValue( const ValueType& e,
                                               const Index begin,
-                                              const Index end )
+                                              Index end )
 {
    TNL_ASSERT_TRUE( this->getData(), "Attempted to set a value of an empty array." );
+   if( end == -1 )
+      end = this->getSize();
    Algorithms::ArrayOperations< Device >::setMemory( &this->getData()[ begin ], e, end - begin );
 }
 
@@ -495,17 +567,22 @@ template< typename Value,
           typename Device,
           typename Index >
    template< typename Function >
-void Array< Value, Device, Index >::setValues( Function& f,
-                                               const Index begin,
-                                               const Index end )
+void Array< Value, Device, Index >::evaluate( Function& f,
+                                              const Index begin,
+                                              Index end )
 {
    TNL_ASSERT_TRUE( this->getData(), "Attempted to set a value of an empty array." );
-   auto evaluate = [=] __cuda_callable__ ( Index i )
-   {
-      this->data[ i ] = f( i );
-   }
 
-   ParallelFor< DeviceType >( begin, end, evaluate );
+   ValueType* d = this->data;
+   auto eval = [=] __cuda_callable__ ( Index i )
+   {
+      d[ i ] = f( i );
+   };
+   
+   if( end == -1 )
+      end = this->getSize();
+
+   ParallelFor< DeviceType >::exec( begin, end, eval );
 }
 
 template< typename Value,
@@ -515,8 +592,12 @@ bool
 Array< Value, Device, Index >::
 containsValue( const Value& v,
                const Index begin,
-               const Index end ) const
+               Index end ) const
 {
+   TNL_ASSERT_TRUE( this->getData(), "Attempted to check a value of an empty array." );
+   if( end == -1 )
+      end = this->getSize();
+
    return Algorithms::ArrayOperations< Device >::containsValue( &this->getData()[ begin ], end - begin, v );
 }
 
@@ -527,8 +608,12 @@ bool
 Array< Value, Device, Index >::
 containsOnlyValue( const Value& v,
                    const Index begin,
-                   const Index end ) const
+                   Index end ) const
 {
+   TNL_ASSERT_TRUE( this->getData(), "Attempted to check a value of an empty array." );
+   if( end == -1 )
+      end = this->getSize();
+
    return Algorithms::ArrayOperations< Device >::containsOnlyValue( &this->getData()[ begin ], end - begin, v );
 }
 
@@ -591,7 +676,6 @@ boundLoad( File& file )
       Algorithms::ArrayIO< Value, Device, Index >::load( file, this->data, this->size );
 }
 
-
 template< typename Value,
           typename Device,
           typename Index >
@@ -614,6 +698,31 @@ std::ostream& operator << ( std::ostream& str, const Array< Value, Device, Index
    str << " ]";
    return str;
 }
+
+template< typename Array,
+          typename Data >
+void
+ArrayAssignment< Array, Data, true >::
+assign( Array& array, const Data& data )
+{
+   if( array.getSize() != data.getSize() )
+      array.setLike( data );
+   if( array.getSize() > 0 )
+      Algorithms::ArrayOperations< typename Array::DeviceType, typename Data::DeviceType >::
+         copyMemory( array.getData(),
+                     data.getData(),
+                     data.getSize() );
+};
+
+template< typename Array,
+          typename Data >
+void
+ArrayAssignment< Array, Data, false >::
+assign( Array& array, const Data& data )
+{
+   array.setValue( data );
+};
+
 
 } // namespace Containers
 } // namespace TNL

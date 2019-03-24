@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include <TNL/TypeTraits.h>
 #include <TNL/Containers/DistributedArrayView.h>
 #include <TNL/Containers/VectorView.h>
 
@@ -136,6 +137,15 @@ public:
 };
 
 } // namespace Containers
+
+template< typename Value,
+          typename Device,
+          typename Index >
+struct isArray< Containers::DistributedVectorView< Value, Device, Index > >
+{
+   static constexpr bool value = true;
+};
+
 } // namespace TNL
 
 #include "DistributedVectorView_impl.h"

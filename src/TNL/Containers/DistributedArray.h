@@ -14,6 +14,7 @@
 
 #include <type_traits>  // std::add_const
 
+#include <TNL/TypeTraits.h>
 #include <TNL/Containers/Array.h>
 #include <TNL/Containers/ArrayView.h>
 #include <TNL/Communicators/MpiCommunicator.h>
@@ -137,6 +138,15 @@ private:
 };
 
 } // namespace Containers
+
+template< typename Value,
+          typename Device,
+          typename Index >
+struct isArray< Containers::DistributedArray< Value, Device, Index > >
+{
+   static constexpr bool value = true;
+};
+
 } // namespace TNL
 
 #include "DistributedArray_impl.h"

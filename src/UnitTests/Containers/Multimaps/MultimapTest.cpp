@@ -46,16 +46,19 @@ TEST( MultimapTest, TestSettingSizes )
 
       // uninitialized should be equal to the value from the allocation vector
       ASSERT_EQ( values.getSize(), allocationRanges[ i ] );
+      // This does not work with Array deep copy constructor
       ASSERT_EQ( constValues.getSize(), allocationRanges[ i ] );
 
       // setting lower sizes
       values.setSize( valuesLocalMax );
       ASSERT_EQ( values.getSize(), valuesLocalMax );
+      // This does not work with Array deep copy constructor
       ASSERT_EQ( constValues.getSize(), valuesLocalMax );
 
       // setting global max
       values.setSize( valuesGlobalMax );
       ASSERT_EQ( values.getSize(), valuesGlobalMax );
+      // This does not work with Array deep copy constructor
       ASSERT_EQ( constValues.getSize(), valuesGlobalMax );
    }
 }

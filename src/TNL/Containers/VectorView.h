@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include <TNL/TypeTraits.h>
 #include <TNL/Containers/ArrayView.h>
 
 namespace TNL {
@@ -149,6 +150,15 @@ public:
 };
 
 } // namespace Containers
+
+template< typename Value,
+          typename Device,
+          typename Index >
+struct isArray< Containers::VectorView< Value, Device, Index > >
+{
+   static constexpr bool value = true;
+};
+
 } // namespace TNL
 
 #include <TNL/Containers/VectorView_impl.h>

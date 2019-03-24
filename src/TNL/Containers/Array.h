@@ -10,8 +10,11 @@
 
 #pragma once
 
+#include <list>
+#include <vector>
 #include <TNL/Object.h>
 #include <TNL/File.h>
+#include <TNL/TypeTraits.h>
 #include <TNL/Devices/Host.h>
 
 namespace TNL {
@@ -23,12 +26,33 @@ namespace Containers {
 template< int, typename > class StaticArray;
 
 /**
- * \brief Array handles memory allocation and sharing of the same data between more Arrays.
+ * \brief Array is responsible for memory management, basic elements 
+ * manipulation and I/O operations. 
  *
  * \tparam Value Type of array values.
- * \tparam Device Device type.
- * \tparam Index Type of index.
+ * \tparam Device Device type - some of \ref Devices::Host and \ref Devices::Cuda.
+ * \tparam Index Type for indexing.
  *
+ * In the \e Device type, the Array remembers where the memory is allocated. 
+ * This ensures the compile-time checks of correct pointers manipulation.
+ * Methods defined as \ref __cuda_callable__ can be called even from kernels
+ * running on device. Array elements can be changed either using the \ref operator[]
+ * which is more efficient but it can be called from CPU only for arrays
+ * allocated on host (CPU) and when the array is allocated on GPU, the operator[]
+ * can be called only from kernels running on the device (GPU). On the other
+ * hand, methods \ref setElement and \ref getElement, can be called only from the
+ * host (CPU) does not matter if the array is allocated on the host or the device.
+ * In the latter case, explicit data transfer between host and device (via PCI
+ * express or NVlink in more lucky systems) is invoked and so it can be very
+ * slow. In not time critical parts of code, this is not an issue, however. 
+ * Another way to change data stored in the array is \ref evaluate which evaluates
+ * given lambda function. This is performed at the same place where the array is
+ * allocated i.e. it is efficient even on GPU. For simple checking of the array
+ * contents, one may use methods \ref containValue and \ref containsValue and
+ * \ref containsOnlyValue.
+ * Array also offers data sharing using methods \ref bind. This is, however, obsolete
+ * and will be soon replaced with proxy object \ref ArrayView.
+ * 
  * \par Example
  * \include ArrayExample.cpp
  */
@@ -39,11 +63,12 @@ class Array : public Object
 {
    public:
 
-      typedef Value ValueType;
-      typedef Device DeviceType;
-      typedef Index IndexType;
-      typedef Containers::Array< Value, Devices::Host, Index > HostType;
-      typedef Containers::Array< Value, Devices::Cuda, Index > CudaType;
+      using ValueType = Value;
+      using DeviceType = Device;
+      using IndexType = Index;
+      using ThisType = Containers::Array< ValueType, DeviceType, IndexType >;
+      using HostType = Containers::Array< Value, Devices::Host, Index >;
+      using CudaType = Containers::Array< Value, Devices::Cuda, Index >;
 
       /** \brief Basic constructor.
        *
@@ -68,6 +93,13 @@ class Array : public Object
              const IndexType& size );
 
       /**
+       * 
+       * @param 
+       */
+      // Deep copy does not work because of EllpackIndexMultiMap - TODO: Fix it
+      //Array( const Array& );
+
+      /**
        * \brief Copy constructor.
        *
        * The constructor does not make a deep copy, but binds to the supplied array.
@@ -78,6 +110,8 @@ class Array : public Object
       Array( Array& array,
              const IndexType& begin = 0,
              const IndexType& size = 0 );
+
+      Array( Array&& );
 
       /**
        * \brief Initialize the array from initializer list, i.e. { ... }
@@ -249,11 +283,34 @@ class Array : public Object
       /**
        * \brief Assigns \e array to this array, replacing its current contents.
        *
+       * \param array Reference to an array.
+       */
+      Array& operator = ( Array&& array );
+
+      /**
+       * \brief Assigns \e array to this array, replacing its current contents.
+       *
        * \tparam ArrayT Type of array.
        * \param array Reference to an array.
        */
       template< typename ArrayT >
       Array& operator = ( const ArrayT& array );
+
+      /**
+       * 
+       * @param list
+       * @return 
+       */
+      template< typename InValue >
+      Array& operator = ( const std::list< InValue >& list );
+
+      /**
+       * 
+       * @param vector
+       * @return 
+       */
+      template< typename InValue >
+      Array& operator = ( const std::vector< InValue >& vector );
 
       /**
        * \brief This function checks whether this array is equal to \e array.
@@ -282,7 +339,7 @@ class Array : public Object
        */
       void setValue( const Value& v,
                      const Index begin = 0,
-                     const Index end = this->getSize() );
+                     Index end = -1 );
 
       /**
        * \brief Sets the array elements using given lambda function.
@@ -291,10 +348,10 @@ class Array : public Object
        *
        * \param v Reference to a value.
        */
-      template< typename Fuction >
-      void setValues( Functions& f,
-                      const Index begin = 0,
-                      const Index end = this->getSize() );
+      template< typename Function >
+      void evaluate( Function& f,
+                     const Index begin = 0,
+                     Index end = -1 );
 
       /**
        * \brief Checks if there is an element with value \e v in this array.
@@ -303,7 +360,7 @@ class Array : public Object
        */
       bool containsValue( const Value& v,
                           const Index begin = 0,
-                          const Index end = this->getSize() ) const;
+                          Index end = -1 ) const;
 
       /**
        * \brief Checks if all elements in this array have the same value \e v.
@@ -312,7 +369,7 @@ class Array : public Object
        */
       bool containsOnlyValue( const Value& v,
                               const Index begin = 0,
-                              const Index end = this->getSize() ) const;
+                              Index end = -1 ) const;
 
       /**
        * \brief Returns true if non-zero size is set.
@@ -383,10 +440,38 @@ class Array : public Object
       mutable int* referenceCounter = nullptr;
 };
 
+template< typename Array,
+          typename Data,
+          bool isArray = TNL::isArray< Data >::value >
+struct ArrayAssignment {};
+
+template< typename Array,
+          typename Data >
+struct ArrayAssignment< Array, Data, true >
+{
+   static void assign( Array& a, const Data& d );
+};
+
+template< typename Array,
+          typename Data >
+struct ArrayAssignment< Array, Data, false >
+{
+   static void assign( Array& a, const Data& d );
+};
+
 template< typename Value, typename Device, typename Index >
 std::ostream& operator << ( std::ostream& str, const Array< Value, Device, Index >& v );
 
 } // namespace Containers
+
+template< typename Value,
+          typename Device,
+          typename Index >
+struct isArray< Containers::Array< Value, Device, Index > >
+{
+   static constexpr bool value = true;
+};
+
 } // namespace TNL
 
 #include <TNL/Containers/Array.hpp>

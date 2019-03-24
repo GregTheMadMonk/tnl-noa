@@ -178,7 +178,7 @@ class Cuda
    // http://wiki.accelereyes.com/wiki/index.php/GPU_Memory_Transfer .
    // We use the same buffer size even for retyping data during IO operations.
    //
-   static constexpr std::streamsize TransferBufferSize = 5 * 2<<20;
+   static constexpr std::size_t TransferBufferSize = 5 * 2<<20;
 
 
    protected:

@@ -1,3 +1,5 @@
+ADD_SUBDIRECTORY( Containers )
+
 add_subdirectory( simple-examples )
 add_subdirectory( heat-equation )
 add_subdirectory( transport-equation )
@@ -10,15 +12,6 @@ add_subdirectory( flow )
 add_subdirectory( flow-sw )
 add_subdirectory( flow-vl )
 
-#add_subdirectory( mean-curvature-flow )
-#add_subdirectory( hamilton-jacobi )
-#add_subdirectory( hamilton-jacobi-parallel )
-#add_subdirectory( fast-sweeping )
-#add_subdirectory( hamilton-jacobi-parallel-map )
-#add_subdirectory( fast-sweeping-map )
-#add_subdirectory( narrow-band )
-
-ADD_EXECUTABLE( ArrayExample ArrayExample.cpp )
 
 ADD_EXECUTABLE( ConfigDescriptionExample ConfigDescriptionExample.cpp )
 
@@ -81,7 +74,7 @@ ADD_CUSTOM_COMMAND( COMMAND TimerExampleLogger > TimerExampleLogger.out OUTPUT T
 
 ADD_EXECUTABLE( VectorExample VectorExample.cpp )
 
-ADD_CUSTOM_TARGET( run ALL DEPENDS
+ADD_CUSTOM_TARGET( RunExamples ALL DEPENDS
    FileExample.out
    FileExampleSaveAndLoad.out
    FileNameExample.out
@@ -98,6 +91,6 @@ ADD_CUSTOM_TARGET( run ALL DEPENDS
    TimerExampleLogger.out )
 
 if( BUILD_CUDA )
-   ADD_CUSTOM_TARGET( run-cuda ALL DEPENDS
+   ADD_CUSTOM_TARGET( RunExamples-cuda ALL DEPENDS
       FileExampleCuda.out )
 ENDIF()

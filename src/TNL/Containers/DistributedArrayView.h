@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include <TNL/TypeTraits.h>
 #include <TNL/Containers/DistributedArray.h>
 
 namespace TNL {
@@ -147,6 +148,15 @@ protected:
 };
 
 } // namespace Containers
+
+template< typename Value,
+          typename Device,
+          typename Index >
+struct isArray< Containers::DistributedArrayView< Value, Device, Index > >
+{
+   static constexpr bool value = true;
+};
+
 } // namespace TNL
 
 #include "DistributedArrayView_impl.h"

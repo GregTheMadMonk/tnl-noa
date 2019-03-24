@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <list>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Devices/MIC.h>
@@ -109,6 +110,11 @@ class ArrayOperations< Devices::Cuda >
                               const SourceElement* source,
                               const Index size );
 
+      template< typename DestinationElement,
+                typename SourceElement >
+      static void copySTLList( DestinationElement* destination,
+                               const std::list< SourceElement >& source );
+
       template< typename Element1,
                 typename Element2,
                 typename Index >
@@ -200,6 +206,11 @@ class ArrayOperations< Devices::MIC >
       static void copyMemory( DestinationElement* destination,
                               const SourceElement* source,
                               const Index size );
+
+      template< typename DestinationElement,
+                typename SourceElement >
+      static void copySTLList( DestinationElement* destination,
+                               const std::list< SourceElement >& source );
 
       template< typename Element1,
                 typename Element2,
