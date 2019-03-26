@@ -19,23 +19,31 @@
 template< typename MatrixHostFloat, typename MatrixHostInt >
 void host_test_GetType()
 {
-    MatrixHostFloat mtrxHostFloat;
-    MatrixHostInt mtrxHostInt;
+    bool testRan = false;
+    EXPECT_TRUE( testRan );
+    std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
+    std::cerr << "This test has not been implemented properly yet.\n" << std::endl;
     
-    
-    EXPECT_EQ( mtrxHostFloat.getType(), TNL::String( "Matrices::CSR< float, Devices::Host >" ) );
-    EXPECT_EQ( mtrxHostInt.getType(), TNL::String( "Matrices::CSR< int, Devices::Host >" ) ); 
+//    MatrixHostFloat mtrxHostFloat;
+//    MatrixHostInt mtrxHostInt;
+//    
+//    EXPECT_EQ( mtrxHostFloat.getType(), TNL::String( "Matrices::CSR< float, Devices::Host >" ) );
+//    EXPECT_EQ( mtrxHostInt.getType(), TNL::String( "Matrices::CSR< int, Devices::Host >" ) ); 
 }
 
 template< typename MatrixCudaFloat, typename MatrixCudaInt >
 void cuda_test_GetType()
 {
-    MatrixCudaFloat mtrxCudaFloat;
-    MatrixCudaInt mtrxCudaInt;
+    bool testRan = false;
+    EXPECT_TRUE( testRan );
+    std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
+    std::cerr << "This test has not been implemented properly yet.\n" << std::endl;
     
-
-    EXPECT_EQ( mtrxCudaFloat.getType(), TNL::String( "Matrices::CSR< float, Cuda >" ) );
-    EXPECT_EQ( mtrxCudaInt.getType(), TNL::String( "Matrices::CSR< int, Cuda >" ) );        
+//    MatrixCudaFloat mtrxCudaFloat;
+//    MatrixCudaInt mtrxCudaInt;
+//    
+//    EXPECT_EQ( mtrxCudaFloat.getType(), TNL::String( "Matrices::CSR< float, Devices::Cuda >" ) );
+//    EXPECT_EQ( mtrxCudaInt.getType(), TNL::String( "Matrices::CSR< int, Devices::Cuda >" ) );        
 }
 
 template< typename Matrix >
