@@ -214,15 +214,11 @@ template< typename Real,
 	template< typename Real2,
 			  typename Device2,
 			  typename Index2 >
-bool BiEllpack< Real, Device, Index, StripSize >::setLike( const BiEllpack< Real2, Device2, Index2, StripSize >& matrix )
-{
-	std::cout << "setLike" << std::endl;
-	std::cout << "settingLike" << std::endl;
-	if( ! Sparse< Real, Device, Index >::setLike( matrix ) ||
-		! this->rowPermArray.setLike( matrix.rowPermArray ) ||
-		! this->groupPointers.setLike( matrix.groupPointers ) )
-		return false;
-	return true;
+void BiEllpack< Real, Device, Index, StripSize >::setLike( const BiEllpack< Real2, Device2, Index2, StripSize >& matrix )
+{        
+	Sparse< Real, Device, Index >::setLike( matrix );
+	this->rowPermArray.setLike( matrix.rowPermArray );
+	this->groupPointers.setLike( matrix.groupPointers );
 }
 
 template< typename Real,

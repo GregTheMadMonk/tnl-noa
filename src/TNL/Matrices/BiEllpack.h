@@ -57,7 +57,7 @@ public:
 	template< typename Real2,
 			  typename Device2,
 			  typename Index2 >
-	bool setLike( const BiEllpack< Real2, Device2, Index2, StripSize >& matrix );
+	void setLike( const BiEllpack< Real2, Device2, Index2, StripSize >& matrix );
 
 	void getRowLengths( CompressedRowLengthsVector& rowLengths ) const;
 
