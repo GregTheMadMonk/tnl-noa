@@ -16,7 +16,6 @@
 #ifdef HAVE_GTEST 
 #include <gtest/gtest.h>
 
-#ifdef NOT_WORKING
 // test fixture for typed tests
 template< typename Matrix >
 class BiEllpackMatrixTest : public ::testing::Test
@@ -39,25 +38,26 @@ using BiEllpackMatrixTypes = ::testing::Types
     TNL::Matrices::BiEllpack< int,    TNL::Devices::Host, long >,
     TNL::Matrices::BiEllpack< long,   TNL::Devices::Host, long >,
     TNL::Matrices::BiEllpack< float,  TNL::Devices::Host, long >,
-    TNL::Matrices::BiEllpack< double, TNL::Devices::Host, long >//,
-//#ifdef HAVE_CUDA
-//    TNL::Matrices::BiEllpack< int,    TNL::Devices::Cuda, short >,
-//    TNL::Matrices::BiEllpack< long,   TNL::Devices::Cuda, short >,
-//    TNL::Matrices::BiEllpack< float,  TNL::Devices::Cuda, short >,
-//    TNL::Matrices::BiEllpack< double, TNL::Devices::Cuda, short >,
-//    TNL::Matrices::BiEllpack< int,    TNL::Devices::Cuda, int >,
-//    TNL::Matrices::BiEllpack< long,   TNL::Devices::Cuda, int >,
-//    TNL::Matrices::BiEllpack< float,  TNL::Devices::Cuda, int >,
-//    TNL::Matrices::BiEllpack< double, TNL::Devices::Cuda, int >,
-//    TNL::Matrices::BiEllpack< int,    TNL::Devices::Cuda, long >,
-//    TNL::Matrices::BiEllpack< long,   TNL::Devices::Cuda, long >,
-//    TNL::Matrices::BiEllpack< float,  TNL::Devices::Cuda, long >,
-//    TNL::Matrices::BiEllpack< double, TNL::Devices::Cuda, long >
-//#endif
+    TNL::Matrices::BiEllpack< double, TNL::Devices::Host, long >,
+#ifdef HAVE_CUDA
+    TNL::Matrices::BiEllpack< int,    TNL::Devices::Cuda, short >,
+    TNL::Matrices::BiEllpack< long,   TNL::Devices::Cuda, short >,
+    TNL::Matrices::BiEllpack< float,  TNL::Devices::Cuda, short >,
+    TNL::Matrices::BiEllpack< double, TNL::Devices::Cuda, short >,
+    TNL::Matrices::BiEllpack< int,    TNL::Devices::Cuda, int >,
+    TNL::Matrices::BiEllpack< long,   TNL::Devices::Cuda, int >,
+    TNL::Matrices::BiEllpack< float,  TNL::Devices::Cuda, int >,
+    TNL::Matrices::BiEllpack< double, TNL::Devices::Cuda, int >,
+    TNL::Matrices::BiEllpack< int,    TNL::Devices::Cuda, long >,
+    TNL::Matrices::BiEllpack< long,   TNL::Devices::Cuda, long >,
+    TNL::Matrices::BiEllpack< float,  TNL::Devices::Cuda, long >,
+    TNL::Matrices::BiEllpack< double, TNL::Devices::Cuda, long >
+#endif
 >;
 
 TYPED_TEST_SUITE( BiEllpackMatrixTest, BiEllpackMatrixTypes);
 
+// WORKING
 TYPED_TEST( BiEllpackMatrixTest, setDimensionsTest )
 {
     using BiEllpackMatrixType = typename TestFixture::BiEllpackMatrixType;
@@ -65,20 +65,21 @@ TYPED_TEST( BiEllpackMatrixTest, setDimensionsTest )
     test_SetDimensions< BiEllpackMatrixType >();
 }
 
-TYPED_TEST( BiEllpackMatrixTest, setCompressedRowLengthsTest )
-{
-//    using BiEllpackMatrixType = typename TestFixture::BiEllpackMatrixType;
-    
-//    test_SetCompressedRowLengths< BiEllpackMatrixType >();
-    
-    bool testRan = false;
-    EXPECT_TRUE( testRan );
-    std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
-    std::cout << "      This test is dependent on the input format. \n";
-    std::cout << "      Almost every format allocates elements per row differently.\n\n";
-    std::cout << "\n    TODO: Finish implementation of getNonZeroRowLength (Only non-zero elements, not the number of allocated elements.)\n\n";
-}
+//TYPED_TEST( BiEllpackMatrixTest, setCompressedRowLengthsTest )
+//{
+////    using BiEllpackMatrixType = typename TestFixture::BiEllpackMatrixType;
+//    
+////    test_SetCompressedRowLengths< BiEllpackMatrixType >();
+//    
+//    bool testRan = false;
+//    EXPECT_TRUE( testRan );
+//    std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
+//    std::cout << "      This test is dependent on the input format. \n";
+//    std::cout << "      Almost every format allocates elements per row differently.\n\n";
+//    std::cout << "\n    TODO: Finish implementation of getNonZeroRowLength (Only non-zero elements, not the number of allocated elements.)\n\n";
+//}
 
+// WORKING
 TYPED_TEST( BiEllpackMatrixTest, setLikeTest )
 {
     using BiEllpackMatrixType = typename TestFixture::BiEllpackMatrixType;
@@ -86,6 +87,7 @@ TYPED_TEST( BiEllpackMatrixTest, setLikeTest )
     test_SetLike< BiEllpackMatrixType, BiEllpackMatrixType >();
 }
 
+// WORKING
 TYPED_TEST( BiEllpackMatrixTest, resetTest )
 {
     using BiEllpackMatrixType = typename TestFixture::BiEllpackMatrixType;
@@ -93,8 +95,12 @@ TYPED_TEST( BiEllpackMatrixTest, resetTest )
     test_Reset< BiEllpackMatrixType >();
 }
 
+#ifdef NOT_WORKING
+
 TYPED_TEST( BiEllpackMatrixTest, setElementTest )
 {
+    // This test will segfault in the first test where Device is Cuda.
+    // This test doesn't return the correct values.
     using BiEllpackMatrixType = typename TestFixture::BiEllpackMatrixType;
     
     test_SetElement< BiEllpackMatrixType >();
