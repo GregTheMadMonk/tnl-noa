@@ -299,7 +299,7 @@ void test_SetElement()
     typename Matrix::CompressedRowLengthsVector rowLengths;
     rowLengths.setSize( rows );
     rowLengths.setValue( 1 );
-    m.setCompressedRowLengths( rowLengths );    
+    m.setCompressedRowLengths( rowLengths );
     
     RealType value = 1;
     for( IndexType i = 0; i < rows; i++ )
