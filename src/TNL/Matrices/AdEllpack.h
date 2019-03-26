@@ -102,7 +102,7 @@ public:
     IndexType getRowLength( const IndexType row ) const;
 
     template< typename Real2, typename Device2, typename Index2 >
-    bool setLike( const AdEllpack< Real2, Device2, Index2 >& matrix );
+    void setLike( const AdEllpack< Real2, Device2, Index2 >& matrix );
 
     void reset();
 

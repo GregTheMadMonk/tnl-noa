@@ -379,15 +379,13 @@ template< typename Real,
 template< typename Real2,
           typename Device2,
           typename Index2 >
-bool AdEllpack< Real, Device, Index >::setLike( const AdEllpack< Real2, Device2, Index2 >& matrix )
+void AdEllpack< Real, Device, Index >::setLike( const AdEllpack< Real2, Device2, Index2 >& matrix )
 {
-    if( !Sparse< Real, Device, Index >::setLike( matrix ) ||
-        !this->offset.setLike( matrix.offset ) ||
-        !this->rowOffset.setLike( matrix.rowOffset ) ||
-        !this->localLoad.setLike( matrix.localLoad ) ||
-        !this->reduceMap.setLike( matrix.reduceMap ) )
-        return false;
-    return true;
+    Sparse< Real, Device, Index >::setLike( matrix );
+    this->offset.setLike( matrix.offset );
+    this->rowOffset.setLike( matrix.rowOffset );
+    this->localLoad.setLike( matrix.localLoad );
+    this->reduceMap.setLike( matrix.reduceMap );
 }
 
 template< typename Real,
@@ -724,7 +722,7 @@ bool AdEllpack< Real, Device, Index >::balanceLoad( const RealType average,
                 for( IndexType i = numberOfThreads + 1; i < this->warpSize; i++ )
                     reduceMap[ i ] = 0;
 
-                if( !list->addWarp( offset, rowOffset, localLoad, reduceMap ) )
+                if( !list->addWarp( offset, rowOffset, localLoad, (int *)reduceMap ) )
                     return false;
 
                 offset += this->warpSize * localLoad;
@@ -754,7 +752,7 @@ bool AdEllpack< Real, Device, Index >::balanceLoad( const RealType average,
                     reduceMap[ i ] = 0;
 
                 // count new offsets, add new warp and reset variables
-                if( !list->addWarp( offset, rowOffset, localLoad, reduceMap ) )
+                if( !list->addWarp( offset, rowOffset, localLoad, (int *)reduceMap ) )
                     return false;
                 offset += this->warpSize * localLoad;
                 rowOffset = row;
@@ -793,7 +791,7 @@ bool AdEllpack< Real, Device, Index >::balanceLoad( const RealType average,
         if( ( ( row == this->getRows() - 1 ) && !addedWarp ) ||
             ( ( row == this->getRows() - 1 ) && ( threadsPerRow == numberOfThreads ) && ( numberOfThreads > 0 ) ) )
         {
-            list->addWarp( offset, rowOffset, localLoad, reduceMap );
+            list->addWarp( offset, rowOffset, localLoad, (int *)reduceMap );
         }
     }
     return true;
