@@ -52,6 +52,10 @@ do
      cd $DIRNAME
      tar zxvf $FILENAME
      cd $IWD
+     if [ ! -d "log-files" ];
+	 then
+	     mkdir log-files
+	 fi
      SUBDIRNAME=`echo $FILENAME | sed 's/.tar.gz//'`
      rm -f $DIRNAME/$SUBDIRNAME/*_b.mtx # these are usualy in array format
      for file in $DIRNAME/$SUBDIRNAME/*.mtx;
@@ -62,9 +66,9 @@ do
 	 mtx_file_name=${mtx_file_name%.mtx}	 
          if test x$DEBUG = xyes;
          then
-            gdb --args $BENCHMARK --input-file $file --log-file log-files/sparse-matrix-benchmark::$mtx_file_name.log --verbose 1
+            gdb --args $BENCHMARK --input-file $file --log-file log-files/sparse-matrix-benchmark::$mtx_file_name.log --verbose 1 --verbose-MReader 1
          else
-            $BENCHMARK --input-file $file --log-file log-files/sparse-matrix-benchmark::$mtx_file_name.log --verbose 1                        
+            $BENCHMARK --input-file $file --log-file log-files/sparse-matrix-benchmark::$mtx_file_name.log --verbose 1 --verbose-MReader 1
          fi
      done
    fi
