@@ -154,22 +154,30 @@ class Array : public Object
       Array( const std::vector< InValue >& vector );
 
       /**
-       *  \brief Returns type of array in C++ style.
+       * \brief Returns type of array in C++ style.
+       * 
+       * \return String with array type.
        */
       static String getType();
 
       /**
        * \brief Returns type of array in C++ style.
+       * 
+       * \return String with array type.
        */
       virtual String getTypeVirtual() const;
 
       /**
        *  \brief Returns type of array in C++ style where device is always \ref Devices::Host.
+       * 
+       * \return String with serialization array type.
        */
       static String getSerializationType();
 
       /**
        *  \brief Returns type of array in C++ style where device is always \ref Devices::Host.
+       * 
+       * \return String with serialization array type.
        */
       virtual String getSerializationTypeVirtual() const;
 
@@ -188,7 +196,8 @@ class Array : public Object
        * \brief Method for getting the size of an array.
        *
        * This method can be called from device kernels.
-       *  
+       * 
+       * \return Array size.
        */
       __cuda_callable__ Index getSize() const;
 
@@ -211,8 +220,8 @@ class Array : public Object
        * 
        * This method is obsolete, use \ref ArrayView instead.
        * 
-       * @param _data Pointer to new data.
-       * @param _size Size of new _data. Number of elements.
+       * \param _data Pointer to new data.
+       * \param _size Size of new _data. Number of elements.
        */
       void bind( Value* _data,
                  const Index _size );
@@ -269,6 +278,8 @@ class Array : public Object
        * \brief Data pointer getter for constant instances.
        * 
        * This method can be called from device kernels.
+       * 
+       * \return Pointer to array data.
        */
       __cuda_callable__ const Value* getData() const;
 
@@ -276,76 +287,108 @@ class Array : public Object
        * \brief Data pointer getter.
        * 
        * This method can be called from device kernels.
+       * 
+       * \return Pointer to array data.
        */
       __cuda_callable__ Value* getData();
 
       /**
-       * \brief Assignes the value \e v to the array element at position \e i.
+       * \brief Array elements setter - change value of an element at position \e i.
        *
        * This method can be called only from the host system (CPU) but even for
        * arrays allocated on device (GPU).
        * 
        * \param i is element index.
-       * \param x is the new value of the element.
+       * \param v is the new value of the element.
        */
       void setElement( const Index& i, const Value& v );
 
       /**
-       * \brief Accesses specified element at the position \e i and returns its value.
+       * \brief Array elements getter - returns value of an element at position \e i.
        *
        * \param i Index position of an element.
+       * 
+       * \return Copy of i-th element.
        */
       Value getElement( const Index& i ) const;
 
       /**
-       * \brief Accesses specified element at the position \e i and returns a reference to its value.
+       * \brief Accesses specified element at the position \e i.
        *
-       * \param i Index position of an element.
+       * This method can be called from device (GPU) kernels if the array is allocated
+       * on the device. In this case, it cannot be called from host (CPU.)
+       * 
+       * \param i is position of the element.
+       * 
+       * \return Reference to i-th element.
        */
       __cuda_callable__ inline Value& operator[] ( const Index& i );
 
       /**
-       * \brief Accesses specified element at the position \e i and returns a (constant?) reference to its value.
+       * \brief Accesses specified element at the position \e i.
        *
-       * \param i Index position of an element.
+       * This method can be called from device (GPU) kernels if the array is allocated
+       * on the device. In this case, it cannot be called from host (CPU.)
+       * 
+       * \param i is position of the element.
+       * 
+       * \return Constant reference to i-th pointer.
        */
       __cuda_callable__ inline const Value& operator[] ( const Index& i ) const;
 
       /**
        * \brief Assigns \e array to this array, replacing its current contents.
        *
-       * \param array Reference to an array.
+       * \param array is reference to the array.
+       * 
+       * \return Reference to this array.
        */
       Array& operator = ( const Array& array );
 
       /**
-       * \brief Assigns \e array to this array, replacing its current contents.
+       * \brief Move contents of \e array to this array.
        *
-       * \param array Reference to an array.
+       * \param array is reference to the array.
+       * 
+       * \return Reference to this array.
        */
       Array& operator = ( Array&& array );
 
       /**
-       * \brief Assigns \e array to this array, replacing its current contents.
+       * \brief Assigns either TNL array or single value.
        *
-       * \tparam ArrayT Type of array.
-       * \param array Reference to an array.
+       * If \e T is array type i.e. \ref Array, \ref ArrayView, \ref StaticArray,
+       * \ref Vector, \ref VectorView, \ref StaticVector, \ref DistributedArray,
+       * \ref DistributedArrayView, \ref DistributedVector or 
+       * \ref DistributedVectorView, its elements are copied into this array. If
+       * it is other type convertibly to Array::ValueType, all array elements are 
+       * set to the value \e data.
+       * 
+       * \tparam T is type of array or value type.
+       * 
+       * \param data is a reference to array or value.
+       * 
+       * \return Reference to this array.
        */
-      template< typename ArrayT >
-      Array& operator = ( const ArrayT& array );
+      template< typename T >
+      Array& operator = ( const T& data );
 
       /**
+       * \brief Assigns STL list to this array.
        * 
-       * @param list
-       * @return 
+       * \param list is STL list
+       *
+       * \return Reference to this array.
        */
       template< typename InValue >
       Array& operator = ( const std::list< InValue >& list );
 
       /**
+       * \brief Assigns STL vector to this array.
        * 
-       * @param vector
-       * @return 
+       * \param vector is STL vector
+       * 
+       * \return Reference to this array.
        */
       template< typename InValue >
       Array& operator = ( const std::vector< InValue >& vector );
@@ -353,8 +396,10 @@ class Array : public Object
       /**
        * \brief This function checks whether this array is equal to \e array.
        *
-       * \tparam ArrayT Type of array.
-       * \param array Reference to an array.
+       * \tparam ArrayT is type of array.
+       * \param array is reference to an array.
+       * 
+       * \return True if arrays are equal and false otherwise.
        */
       template< typename ArrayT >
       bool operator == ( const ArrayT& array ) const;
@@ -364,6 +409,8 @@ class Array : public Object
        *
        * \tparam ArrayT Type of array.
        * \param array Reference to an array.
+       * 
+       * \return True if arrays are not equal and false otherwise.
        */
       template< typename ArrayT >
       bool operator != ( const ArrayT& array ) const;
@@ -394,7 +441,15 @@ class Array : public Object
       /**
        * \brief Checks if there is an element with value \e v in this array.
        *
-       * \param v Reference to a value.
+       * By default, the methods checks all array elements. By setting indexes
+       * \e begin and \e end, only elements in given interval are checked.
+       * 
+       * \param v is reference to the value.
+       * \param begin is the first element to be checked
+       * \param end is the last element to be checked. If \e end equals -1, its
+       * value is replaces by the array size.
+       * 
+       * \return True if array contains only given value in given interval.
        */
       bool containsValue( const Value& v,
                           const Index begin = 0,
@@ -505,7 +560,7 @@ std::ostream& operator << ( std::ostream& str, const Array< Value, Device, Index
 template< typename Value,
           typename Device,
           typename Index >
-struct isArray< Containers::Array< Value, Device, Index > >
+struct IsArray< Containers::Array< Value, Device, Index > >
 {
    static constexpr bool value = true;
 };

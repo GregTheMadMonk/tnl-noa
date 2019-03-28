@@ -13,7 +13,7 @@
 namespace TNL {
 
    template< typename T >
-   struct isArray
+   struct IsArray
    {
       static constexpr bool value = false;
    };

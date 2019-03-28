@@ -1,4 +1,6 @@
 #include <iostream>
+#include <list>
+#include <vector>
 #include <TNL/Containers/Array.h>
 
 using namespace TNL;
@@ -22,10 +24,18 @@ void arrayExample()
       a1.setElement( i, i );
 
    /***
-    * You may also assign value to all array elements
+    * You may also assign value to all array elements ...
     */
    a2 = 0;
 
+   /***
+    * ... or assign STL list and vector.
+    */
+   std::list< float > l = { 1.0, 2.0, 3.0 };
+   std::vector< float > v = { 5.0, 6.0, 7.0 };
+   a1 = v;
+   a1 = l;
+   
    /***
     * Simple array values checks can be done as follows ...
     */
