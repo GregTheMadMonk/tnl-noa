@@ -414,8 +414,6 @@ addVector( Vector1& y,
 #ifdef HAVE_CUDA
    typedef typename Vector1::IndexType Index;
 
-   dim3 blockSize( 0 ), gridSize( 0 );
-
    const Index& size = x.getSize();
    dim3 cudaBlockSize( 256 );
    dim3 cudaBlocks;
@@ -481,7 +479,6 @@ addVectors( Vector1& v,
 
 #ifdef HAVE_CUDA
    typedef typename Vector1::IndexType Index;
-   dim3 blockSize( 0 ), gridSize( 0 );
 
    const Index& size = v.getSize();
    dim3 cudaBlockSize( 256 );
