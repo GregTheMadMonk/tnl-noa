@@ -32,7 +32,7 @@ protected:
 // types for which ArrayTest is instantiated
 using ValueTypes = ::testing::Types< short int, int, long, float, double >;
 
-TYPED_TEST_CASE( ArrayOperationsTest, ValueTypes );
+TYPED_TEST_SUITE( ArrayOperationsTest, ValueTypes );
 
 TYPED_TEST( ArrayOperationsTest, allocateMemory_host )
 {

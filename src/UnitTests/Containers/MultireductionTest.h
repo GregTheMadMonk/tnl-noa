@@ -92,7 +92,7 @@ using VectorTypes = ::testing::Types<
 #endif
 >;
 
-TYPED_TEST_CASE( MultireductionTest, VectorTypes );
+TYPED_TEST_SUITE( MultireductionTest, VectorTypes );
 
 TYPED_TEST( MultireductionTest, scalarProduct )
 {

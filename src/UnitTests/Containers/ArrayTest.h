@@ -139,7 +139,7 @@ using ArrayTypes = ::testing::Types<
 #endif
 >;
 
-TYPED_TEST_CASE( ArrayTest, ArrayTypes );
+TYPED_TEST_SUITE( ArrayTest, ArrayTypes );
 
 
 TYPED_TEST( ArrayTest, constructors )

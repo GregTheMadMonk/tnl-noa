@@ -142,7 +142,7 @@ using ViewTypes = ::testing::Types<
 #endif
 >;
 
-TYPED_TEST_CASE( ArrayViewTest, ViewTypes );
+TYPED_TEST_SUITE( ArrayViewTest, ViewTypes );
 
 
 TYPED_TEST( ArrayViewTest, constructors )

@@ -112,7 +112,7 @@ using DistributedVectorTypes = ::testing::Types<
 #endif
 >;
 
-TYPED_TEST_CASE( DistributedVectorTest, DistributedVectorTypes );
+TYPED_TEST_SUITE( DistributedVectorTest, DistributedVectorTypes );
 
 TYPED_TEST( DistributedVectorTest, max )
 {

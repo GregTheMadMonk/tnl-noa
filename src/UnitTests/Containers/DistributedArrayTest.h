@@ -69,7 +69,7 @@ using DistributedArrayTypes = ::testing::Types<
 #endif
 >;
 
-TYPED_TEST_CASE( DistributedArrayTest, DistributedArrayTypes );
+TYPED_TEST_SUITE( DistributedArrayTest, DistributedArrayTypes );
 
 TYPED_TEST( DistributedArrayTest, checkSumOfLocalSizes )
 {

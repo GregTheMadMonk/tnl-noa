@@ -143,7 +143,7 @@ using VectorTypes = ::testing::Types<
 #endif
 >;
 
-TYPED_TEST_CASE( VectorTest, VectorTypes );
+TYPED_TEST_SUITE( VectorTest, VectorTypes );
 
 
 TYPED_TEST( VectorTest, max )
