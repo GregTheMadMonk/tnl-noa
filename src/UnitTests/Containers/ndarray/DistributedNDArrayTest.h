@@ -376,6 +376,90 @@ TYPED_TEST( DistributedNDArrayTest, forLocalInternal )
    test_helper_forLocalInternal( this->distributedNDArray );
 }
 
+// separate function because nvcc does not allow __cuda_callable__ lambdas inside
+// private or protected methods (which are created by TYPED_TEST macro)
+template< typename DistributedArray >
+void test_helper_forBoundary( DistributedArray& a )
+{
+   using IndexType = typename DistributedArray::IndexType;
+
+   const auto localRange = a.template getLocalRange< 0 >();
+   auto a_view = a.getView();
+
+   auto setter = [=] __cuda_callable__ ( IndexType i ) mutable
+   {
+      a_view( i ) += 1;
+   };
+
+   a.setValue( 0 );
+   a.forBoundary( setter );
+
+   for( int gi = localRange.getBegin(); gi < localRange.getEnd(); gi++ )
+   {
+      if( gi == 0 || gi == a.template getSize< 0 >() - 1 )
+         EXPECT_EQ( a.getElement( gi ), 1 )
+            << "gi = " << gi;
+      else
+         EXPECT_EQ( a.getElement( gi ), 0 )
+            << "gi = " << gi;
+   }
+
+   a.setValue( 0 );
+   a_view.forBoundary( setter );
+
+   for( int gi = localRange.getBegin(); gi < localRange.getEnd(); gi++ )
+   {
+      if( gi == 0 || gi == a.template getSize< 0 >() - 1 )
+         EXPECT_EQ( a.getElement( gi ), 1 )
+            << "gi = " << gi;
+      else
+         EXPECT_EQ( a.getElement( gi ), 0 )
+            << "gi = " << gi;
+   }
+}
+
+TYPED_TEST( DistributedNDArrayTest, forBoundary )
+{
+   test_helper_forBoundary( this->distributedNDArray );
+}
+
+// separate function because nvcc does not allow __cuda_callable__ lambdas inside
+// private or protected methods (which are created by TYPED_TEST macro)
+template< typename DistributedArray >
+void test_helper_forLocalBoundary( DistributedArray& a )
+{
+   using IndexType = typename DistributedArray::IndexType;
+
+   const auto localRange = a.template getLocalRange< 0 >();
+   auto a_view = a.getView();
+
+   auto setter = [=] __cuda_callable__ ( IndexType i ) mutable
+   {
+      a_view( i ) += 1;
+   };
+
+   a.setValue( 0 );
+   // empty set because all overlaps are 0
+   a.forLocalBoundary( setter );
+
+   for( int gi = localRange.getBegin(); gi < localRange.getEnd(); gi++ )
+      EXPECT_EQ( a.getElement( gi ), 0 )
+            << "gi = " << gi;
+
+   a.setValue( 0 );
+   // empty set because all overlaps are 0
+   a_view.forLocalBoundary( setter );
+
+   for( int gi = localRange.getBegin(); gi < localRange.getEnd(); gi++ )
+      EXPECT_EQ( a.getElement( gi ), 0 )
+            << "gi = " << gi;
+}
+
+TYPED_TEST( DistributedNDArrayTest, forLocalBoundary )
+{
+   test_helper_forLocalBoundary( this->distributedNDArray );
+}
+
 #endif  // HAVE_GTEST
 
 

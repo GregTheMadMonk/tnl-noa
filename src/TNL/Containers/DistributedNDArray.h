@@ -223,6 +223,37 @@ public:
       dispatch( begins, ends, f );
    }
 
+   // iterate over local elements which are neighbours of *global* boundaries
+   template< typename Device2 = DeviceType, typename Func >
+   void forBoundary( Func f ) const
+   {
+      // add static sizes
+      using SkipBegins = __ndarray_impl::LocalBeginsHolder< SizesHolderType, 1 >;
+      // add dynamic sizes
+      SkipBegins skipBegins;
+      __ndarray_impl::SetSizesAddHelper< 1, SkipBegins, SizesHolderType, Overlaps >::add( skipBegins, SizesHolderType{} );
+      __ndarray_impl::SetSizesMaxHelper< SkipBegins, LocalBeginsType >::max( skipBegins, localBegins );
+
+      // subtract static sizes
+      using SkipEnds = typename __ndarray_impl::SubtractedSizesHolder< SizesHolderType, 1 >::type;
+      // subtract dynamic sizes
+      SkipEnds skipEnds;
+      __ndarray_impl::SetSizesSubtractHelper< 1, SkipEnds, SizesHolderType, Overlaps >::subtract( skipEnds, globalSizes );
+      __ndarray_impl::SetSizesMinHelper< SkipEnds, SizesHolderType >::min( skipEnds, localEnds );
+
+      __ndarray_impl::BoundaryExecutorDispatcher< PermutationType, Device2 > dispatch;
+      dispatch( localBegins, skipBegins, skipEnds, localEnds, f );
+   }
+
+   // iterate over local elements outside the given [skipBegins, skipEnds) range specified by global indices
+   template< typename Device2 = DeviceType, typename Func, typename SkipBegins, typename SkipEnds >
+   void forBoundary( Func f, const SkipBegins& skipBegins, const SkipEnds& skipEnds ) const
+   {
+      // TODO: assert "localBegins <= skipBegins <= localEnds", "localBegins <= skipEnds <= localEnds"
+      __ndarray_impl::BoundaryExecutorDispatcher< PermutationType, Device2 > dispatch;
+      dispatch( localBegins, skipBegins, skipEnds, localEnds, f );
+   }
+
    // iterate over local elements which are not neighbours of overlaps (if all overlaps are 0, it is equivalent to forAll)
    template< typename Device2 = DeviceType, typename Func >
    void forLocalInternal( Func f ) const
@@ -237,6 +268,22 @@ public:
 
       __ndarray_impl::ExecutorDispatcher< PermutationType, Device2 > dispatch;
       dispatch( begins, ends, f );
+   }
+
+   // iterate over local elements which are neighbours of overlaps (if all overlaps are 0, it has no effect)
+   template< typename Device2 = DeviceType, typename Func >
+   void forLocalBoundary( Func f ) const
+   {
+      // add dynamic sizes
+      LocalBeginsType skipBegins;
+      __ndarray_impl::SetSizesAddHelper< 1, LocalBeginsType, SizesHolderType, Overlaps >::add( skipBegins, localBegins, false );
+
+      // subtract dynamic sizes
+      SizesHolderType skipEnds;
+      __ndarray_impl::SetSizesSubtractHelper< 1, SizesHolderType, SizesHolderType, Overlaps >::subtract( skipEnds, localEnds, false );
+
+      __ndarray_impl::BoundaryExecutorDispatcher< PermutationType, Device2 > dispatch;
+      dispatch( localBegins, skipBegins, skipEnds, localEnds, f );
    }
 
 
