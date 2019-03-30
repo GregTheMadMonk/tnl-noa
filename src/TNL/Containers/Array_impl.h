@@ -167,7 +167,7 @@ void
 Array< Value, Device, Index >::
 setSize( const Index size )
 {
-   TNL_ASSERT_GE( size, 0, "Array size must be non-negative." );
+   TNL_ASSERT_GE( size, (Index) 0, "Array size must be non-negative." );
 
    if( this->size == size && allocationPointer && ! referenceCounter )
       return;
@@ -322,7 +322,7 @@ void
 Array< Value, Device, Index >::
 setElement( const Index& i, const Value& x )
 {
-   TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
+   TNL_ASSERT_GE( i, (Index) 0, "Element index must be non-negative." );
    TNL_ASSERT_LT( i, this->getSize(), "Element index is out of bounds." );
    return Algorithms::ArrayOperations< Device >::setMemoryElement( &( this->data[ i ] ), x );
 }
@@ -334,7 +334,7 @@ Value
 Array< Value, Device, Index >::
 getElement( const Index& i ) const
 {
-   TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
+   TNL_ASSERT_GE( i, (Index) 0, "Element index must be non-negative." );
    TNL_ASSERT_LT( i, this->getSize(), "Element index is out of bounds." );
    return Algorithms::ArrayOperations< Device >::getMemoryElement( & ( this->data[ i ] ) );
 }
@@ -347,7 +347,7 @@ inline Value&
 Array< Value, Device, Index >::
 operator[] ( const Index& i )
 {
-   TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
+   TNL_ASSERT_GE( i, (Index) 0, "Element index must be non-negative." );
    TNL_ASSERT_LT( i, this->getSize(), "Element index is out of bounds." );
    return this->data[ i ];
 }
@@ -360,7 +360,7 @@ inline const Value&
 Array< Value, Device, Index >::
 operator[] ( const Index& i ) const
 {
-   TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
+   TNL_ASSERT_GE( i, (Index) 0, "Element index must be non-negative." );
    TNL_ASSERT_LT( i, this->getSize(), "Element index is out of bounds." );
    return this->data[ i ];
 }
