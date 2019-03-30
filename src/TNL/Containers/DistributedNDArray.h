@@ -258,13 +258,13 @@ public:
    template< typename Device2 = DeviceType, typename Func >
    void forLocalInternal( Func f ) const
    {
-      // add dynamic sizes
+      // add overlaps to dynamic sizes
       LocalBeginsType begins;
-      __ndarray_impl::SetSizesAddHelper< 1, LocalBeginsType, SizesHolderType, Overlaps >::add( begins, localBegins, false );
+      __ndarray_impl::SetSizesAddOverlapsHelper< LocalBeginsType, SizesHolderType, Overlaps >::add( begins, localBegins );
 
-      // subtract dynamic sizes
+      // subtract overlaps from dynamic sizes
       SizesHolderType ends;
-      __ndarray_impl::SetSizesSubtractHelper< 1, SizesHolderType, SizesHolderType, Overlaps >::subtract( ends, localEnds, false );
+      __ndarray_impl::SetSizesSubtractOverlapsHelper< SizesHolderType, SizesHolderType, Overlaps >::subtract( ends, localEnds );
 
       __ndarray_impl::ExecutorDispatcher< PermutationType, Device2 > dispatch;
       dispatch( begins, ends, f );
@@ -274,16 +274,32 @@ public:
    template< typename Device2 = DeviceType, typename Func >
    void forLocalBoundary( Func f ) const
    {
-      // add dynamic sizes
+      // add overlaps to dynamic sizes
       LocalBeginsType skipBegins;
-      __ndarray_impl::SetSizesAddHelper< 1, LocalBeginsType, SizesHolderType, Overlaps >::add( skipBegins, localBegins, false );
+      __ndarray_impl::SetSizesAddOverlapsHelper< LocalBeginsType, SizesHolderType, Overlaps >::add( skipBegins, localBegins );
 
-      // subtract dynamic sizes
+      // subtract overlaps from dynamic sizes
       SizesHolderType skipEnds;
-      __ndarray_impl::SetSizesSubtractHelper< 1, SizesHolderType, SizesHolderType, Overlaps >::subtract( skipEnds, localEnds, false );
+      __ndarray_impl::SetSizesSubtractOverlapsHelper< SizesHolderType, SizesHolderType, Overlaps >::subtract( skipEnds, localEnds );
 
       __ndarray_impl::BoundaryExecutorDispatcher< PermutationType, Device2 > dispatch;
       dispatch( localBegins, skipBegins, skipEnds, localEnds, f );
+   }
+
+   // iterate over elements of overlaps (if all overlaps are 0, it has no effect)
+   template< typename Device2 = DeviceType, typename Func >
+   void forOverlaps( Func f ) const
+   {
+      // subtract overlaps from dynamic sizes
+      LocalBeginsType begins;
+      __ndarray_impl::SetSizesSubtractOverlapsHelper< LocalBeginsType, SizesHolderType, Overlaps >::subtract( begins, localBegins );
+
+      // add overlaps to dynamic sizes
+      SizesHolderType ends;
+      __ndarray_impl::SetSizesAddOverlapsHelper< SizesHolderType, SizesHolderType, Overlaps >::add( ends, localEnds );
+
+      __ndarray_impl::BoundaryExecutorDispatcher< PermutationType, Device2 > dispatch;
+      dispatch( begins, localBegins, localEnds, ends, f );
    }
 
 

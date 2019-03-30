@@ -460,6 +460,43 @@ TYPED_TEST( DistributedNDArrayTest, forLocalBoundary )
    test_helper_forLocalBoundary( this->distributedNDArray );
 }
 
+// separate function because nvcc does not allow __cuda_callable__ lambdas inside
+// private or protected methods (which are created by TYPED_TEST macro)
+template< typename DistributedArray >
+void test_helper_forOverlaps( DistributedArray& a )
+{
+   using IndexType = typename DistributedArray::IndexType;
+
+   const auto localRange = a.template getLocalRange< 0 >();
+   auto a_view = a.getView();
+
+   auto setter = [=] __cuda_callable__ ( IndexType i ) mutable
+   {
+      a_view( i ) += 1;
+   };
+
+   a.setValue( 0 );
+   // empty set because all overlaps are 0
+   a.forOverlaps( setter );
+
+   for( int gi = localRange.getBegin(); gi < localRange.getEnd(); gi++ )
+      EXPECT_EQ( a.getElement( gi ), 0 )
+            << "gi = " << gi;
+
+   a.setValue( 0 );
+   // empty set because all overlaps are 0
+   a_view.forOverlaps( setter );
+
+   for( int gi = localRange.getBegin(); gi < localRange.getEnd(); gi++ )
+      EXPECT_EQ( a.getElement( gi ), 0 )
+            << "gi = " << gi;
+}
+
+TYPED_TEST( DistributedNDArrayTest, forOverlaps )
+{
+   test_helper_forOverlaps( this->distributedNDArray );
+}
+
 #endif  // HAVE_GTEST
 
 

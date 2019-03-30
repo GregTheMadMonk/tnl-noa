@@ -37,7 +37,7 @@ public:
 
    void setSize( LevelTag, Index newSize )
    {
-      TNL_ASSERT( newSize == 0, );
+      TNL_ASSERT_EQ( newSize, 0, "Dynamic size for a static dimension must be 0." );
    }
 
    __cuda_callable__
@@ -60,7 +60,6 @@ public:
 
    void setSize( LevelTag, Index size )
    {
-      TNL_ASSERT( size >= 0, );
       this->size = size;
    }
 

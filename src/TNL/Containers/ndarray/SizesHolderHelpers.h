@@ -128,7 +128,7 @@ void assertIndicesInBounds( const SizesHolder& sizes, Index&& i, IndexTypes&&...
    // shouldn't be declared when compiling without assertions
    constexpr std::size_t level = SizesHolder::getDimension() - sizeof...(indices) - 1;
    const auto size = sizes.template getSize< level >();
-   TNL_ASSERT_LT( i, size, "Input error - some index is out of bounds." );
+   TNL_ASSERT_LT( i, (Index) size, "Input error - some index is out of bounds." );
 #endif
    assertIndicesInBounds( sizes, std::forward< IndexTypes >( indices )... );
 }
@@ -156,14 +156,14 @@ void assertIndicesInRange( const SizesHolder1& begins, const SizesHolder2& ends,
    constexpr std::size_t level = SizesHolder1::getDimension() - sizeof...(indices) - 1;
    const auto begin = begins.template getSize< level >();
    const auto end = ends.template getSize< level >();
-   TNL_ASSERT_LE( begin - get<level>( overlaps ), i, "Input error - some index is below the lower bound." );
-   TNL_ASSERT_LT( i, end + get<level>( overlaps ), "Input error - some index is above the upper bound." );
+   TNL_ASSERT_LE( begin - (decltype(begin)) get<level>( overlaps ), i, "Input error - some index is below the lower bound." );
+   TNL_ASSERT_LT( i, end + (decltype(end)) get<level>( overlaps ), "Input error - some index is above the upper bound." );
 #endif
    assertIndicesInRange( begins, ends, overlaps, std::forward< IndexTypes >( indices )... );
 }
 
 
-// helper for the forInternal method
+// helper for the forInternal and forBoundary methods (NDArray and DistributedNDArray)
 template< std::size_t ConstValue,
           typename TargetHolder,
           typename SourceHolder,
@@ -172,15 +172,10 @@ template< std::size_t ConstValue,
 struct SetSizesSubtractHelper
 {
    static void subtract( TargetHolder& target,
-                         const SourceHolder& source,
-                         bool negateOverlaps = true )
+                         const SourceHolder& source )
    {
-      if( source.template getStaticSize< level >() == 0 ) {
-         if( negateOverlaps )
-            target.template setSize< level >( source.template getSize< level >() - ConstValue * ! get< level >( Overlaps{} ) );
-         else
-            target.template setSize< level >( source.template getSize< level >() - ConstValue * !! get< level >( Overlaps{} ) );
-      }
+      if( source.template getStaticSize< level >() == 0 )
+         target.template setSize< level >( source.template getSize< level >() - ConstValue * ! get< level >( Overlaps{} ) );
       SetSizesSubtractHelper< ConstValue, TargetHolder, SourceHolder, Overlaps, level - 1 >::subtract( target, source );
    }
 };
@@ -192,20 +187,15 @@ template< std::size_t ConstValue,
 struct SetSizesSubtractHelper< ConstValue, TargetHolder, SourceHolder, Overlaps, 0 >
 {
    static void subtract( TargetHolder& target,
-                         const SourceHolder& source,
-                         bool negateOverlaps = true )
+                         const SourceHolder& source )
    {
-      if( source.template getStaticSize< 0 >() == 0 ) {
-         if( negateOverlaps )
-            target.template setSize< 0 >( source.template getSize< 0 >() - ConstValue * ! get< 0 >( Overlaps{} ) );
-         else
-            target.template setSize< 0 >( source.template getSize< 0 >() - ConstValue * !! get< 0 >( Overlaps{} ) );
-      }
+      if( source.template getStaticSize< 0 >() == 0 )
+         target.template setSize< 0 >( source.template getSize< 0 >() - ConstValue * ! get< 0 >( Overlaps{} ) );
    }
 };
 
 
-// helper for the forInternal method (DistributedNDArray)
+// helper for the forInternal and forBoundary methods (DistributedNDArray)
 template< std::size_t ConstValue,
           typename TargetHolder,
           typename SourceHolder,
@@ -214,15 +204,10 @@ template< std::size_t ConstValue,
 struct SetSizesAddHelper
 {
    static void add( TargetHolder& target,
-                    const SourceHolder& source,
-                    bool negateOverlaps = true )
+                    const SourceHolder& source )
    {
-      if( source.template getStaticSize< level >() == 0 ) {
-         if( negateOverlaps )
-            target.template setSize< level >( source.template getSize< level >() + ConstValue * ! get< level >( Overlaps{} ) );
-         else
-            target.template setSize< level >( source.template getSize< level >() + ConstValue * !! get< level >( Overlaps{} ) );
-      }
+      if( source.template getStaticSize< level >() == 0 )
+         target.template setSize< level >( source.template getSize< level >() + ConstValue * ! get< level >( Overlaps{} ) );
       SetSizesAddHelper< ConstValue, TargetHolder, SourceHolder, Overlaps, level - 1 >::add( target, source );
    }
 };
@@ -234,15 +219,70 @@ template< std::size_t ConstValue,
 struct SetSizesAddHelper< ConstValue, TargetHolder, SourceHolder, Overlaps, 0 >
 {
    static void add( TargetHolder& target,
-                    const SourceHolder& source,
-                    bool negateOverlaps = true )
+                    const SourceHolder& source )
    {
-      if( source.template getStaticSize< 0 >() == 0 ) {
-         if( negateOverlaps )
-            target.template setSize< 0 >( source.template getSize< 0 >() + ConstValue * ! get< 0 >( Overlaps{} ) );
-         else
-            target.template setSize< 0 >( source.template getSize< 0 >() + ConstValue * !! get< 0 >( Overlaps{} ) );
-      }
+      if( source.template getStaticSize< 0 >() == 0 )
+         target.template setSize< 0 >( source.template getSize< 0 >() + ConstValue * ! get< 0 >( Overlaps{} ) );
+   }
+};
+
+
+// helper for the forLocalInternal, forLocalBoundary and forOverlaps methods (DistributedNDArray)
+template< typename TargetHolder,
+          typename SourceHolder,
+          typename Overlaps = make_constant_index_sequence< TargetHolder::getDimension(), 0 >,
+          std::size_t level = TargetHolder::getDimension() - 1 >
+struct SetSizesSubtractOverlapsHelper
+{
+   static void subtract( TargetHolder& target,
+                         const SourceHolder& source )
+   {
+      if( source.template getStaticSize< level >() == 0 )
+         target.template setSize< level >( source.template getSize< level >() - get< level >( Overlaps{} ) );
+      SetSizesSubtractOverlapsHelper< TargetHolder, SourceHolder, Overlaps, level - 1 >::subtract( target, source );
+   }
+};
+
+template< typename TargetHolder,
+          typename SourceHolder,
+          typename Overlaps >
+struct SetSizesSubtractOverlapsHelper< TargetHolder, SourceHolder, Overlaps, 0 >
+{
+   static void subtract( TargetHolder& target,
+                         const SourceHolder& source )
+   {
+      if( source.template getStaticSize< 0 >() == 0 )
+         target.template setSize< 0 >( source.template getSize< 0 >() - get< 0 >( Overlaps{} ) );
+   }
+};
+
+
+// helper for the forLocalInternal, forLocalBoundary and forOverlaps methods (DistributedNDArray)
+template< typename TargetHolder,
+          typename SourceHolder,
+          typename Overlaps = make_constant_index_sequence< TargetHolder::getDimension(), 0 >,
+          std::size_t level = TargetHolder::getDimension() - 1 >
+struct SetSizesAddOverlapsHelper
+{
+   static void add( TargetHolder& target,
+                    const SourceHolder& source )
+   {
+      if( source.template getStaticSize< level >() == 0 )
+         target.template setSize< level >( source.template getSize< level >() + get< level >( Overlaps{} ) );
+      SetSizesAddOverlapsHelper< TargetHolder, SourceHolder, Overlaps, level - 1 >::add( target, source );
+   }
+};
+
+template< typename TargetHolder,
+          typename SourceHolder,
+          typename Overlaps >
+struct SetSizesAddOverlapsHelper< TargetHolder, SourceHolder, Overlaps, 0 >
+{
+   static void add( TargetHolder& target,
+                    const SourceHolder& source )
+   {
+      if( source.template getStaticSize< 0 >() == 0 )
+         target.template setSize< 0 >( source.template getSize< 0 >() + get< 0 >( Overlaps{} ) );
    }
 };
 
