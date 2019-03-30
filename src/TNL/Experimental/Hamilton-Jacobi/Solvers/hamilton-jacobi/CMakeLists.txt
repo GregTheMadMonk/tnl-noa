@@ -1,17 +1,8 @@
-set( tnl_hamilton_jacobi_SOURCES
-     hamiltonJacobiProblemSetter.h
-     hamiltonJacobiProblemSetter_impl.h
-     hamiltonJacobiProblemSolver.h
-     hamiltonJacobiProblemSolver_impl.h
-     main.cpp
-     hamiltonJacobiProblemConfig.h
-     tnl-direct-eikonal-solver.h )
-               
 #ADD_EXECUTABLE(tnl-hamilton-jacobi main.cpp)
 
 IF( BUILD_CUDA )
     CUDA_ADD_EXECUTABLE(tnl-direct-eikonal-solver tnl-direct-eikonal-solver.cu )
-ELSE(  BUILD_CUDA )               
+ELSE(  BUILD_CUDA )
     ADD_EXECUTABLE(tnl-direct-eikonal-solver tnl-direct-eikonal-solver.cpp )
 ENDIF( BUILD_CUDA )
 
@@ -20,4 +11,3 @@ INSTALL( TARGETS #tnl-hamilton-jacobi
                  tnl-direct-eikonal-solver
          RUNTIME DESTINATION bin
          PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE )
-        
