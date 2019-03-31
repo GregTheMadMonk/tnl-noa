@@ -1,3 +1,1 @@
-ADD_SUBDIRECTORY( Operators )
 ADD_SUBDIRECTORY( Solvers )
-
