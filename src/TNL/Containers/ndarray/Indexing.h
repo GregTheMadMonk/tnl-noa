@@ -18,6 +18,51 @@ namespace TNL {
 namespace Containers {
 namespace __ndarray_impl {
 
+template< typename OffsetsHolder,
+          typename Sequence >
+struct IndexShiftHelper
+{};
+
+template< typename OffsetsHolder,
+          std::size_t... N >
+struct IndexShiftHelper< OffsetsHolder, std::index_sequence< N... > >
+{
+   template< typename Func,
+             typename... Indices >
+   __cuda_callable__
+   static auto apply( const OffsetsHolder& offsets, Func&& f, Indices&&... indices ) -> decltype(auto)
+   {
+      return f( ( std::forward< Indices >( indices ) + offsets.template getSize< N >() )... );
+   }
+
+   template< typename Func,
+             typename... Indices >
+   static auto apply_host( const OffsetsHolder& offsets, Func&& f, Indices&&... indices ) -> decltype(auto)
+   {
+      return f( ( std::forward< Indices >( indices ) + offsets.template getSize< N >() )... );
+   }
+};
+
+template< typename OffsetsHolder,
+          typename Func,
+          typename... Indices >
+__cuda_callable__
+auto call_with_shifted_indices( const OffsetsHolder& offsets, Func&& f, Indices&&... indices ) -> decltype(auto)
+{
+   return IndexShiftHelper< OffsetsHolder, std::make_index_sequence< sizeof...( Indices ) > >
+          ::apply( offsets, std::forward< Func >( f ), std::forward< Indices >( indices )... );
+}
+
+template< typename OffsetsHolder,
+          typename Func,
+          typename... Indices >
+auto host_call_with_unshifted_indices( const OffsetsHolder& offsets, Func&& f, Indices&&... indices ) -> decltype(auto)
+{
+   return IndexShiftHelper< OffsetsHolder, std::make_index_sequence< sizeof...( Indices ) > >
+          ::apply_host( offsets, std::forward< Func >( f ), std::forward< Indices >( indices )... );
+}
+
+
 template< typename SizesHolder,
           typename Overlaps,
           typename Sequence >

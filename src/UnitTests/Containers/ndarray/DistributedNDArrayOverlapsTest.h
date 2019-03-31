@@ -14,6 +14,7 @@
 #include <TNL/Communicators/ScopedInitializer.h>
 #include <TNL/Containers/DistributedNDArray.h>
 #include <TNL/Containers/DistributedNDArrayView.h>
+#include <TNL/Containers/DistributedNDArraySynchronizer.h>
 #include <TNL/Containers/ArrayView.h>
 #include <TNL/Containers/Partitioner.h>
 
@@ -73,14 +74,15 @@ using DistributedNDArrayTypes = ::testing::Types<
                                 std::index_sequence< 0 >,
                                 Devices::Host >,
                        Communicators::MpiCommunicator,
-                       std::index_sequence< 2 > >,
-   DistributedNDArray< NDArray< double,
-                                SizesHolder< int, 0 >,
-                                std::index_sequence< 0 >,
-                                std::index_sequence< 0 >,
-                                Devices::Host >,
-                       Communicators::NoDistrCommunicator,
                        std::index_sequence< 2 > >
+// TODO: does it make sense for NoDistrCommunicator?
+//   DistributedNDArray< NDArray< double,
+//                                SizesHolder< int, 0 >,
+//                                std::index_sequence< 0 >,
+//                                std::index_sequence< 0 >,
+//                                Devices::Host >,
+//                       Communicators::NoDistrCommunicator,
+//                       std::index_sequence< 2 > >
 #ifdef HAVE_CUDA
    ,
    DistributedNDArray< NDArray< double,
@@ -89,14 +91,15 @@ using DistributedNDArrayTypes = ::testing::Types<
                                 std::index_sequence< 0 >,
                                 Devices::Cuda >,
                        Communicators::MpiCommunicator,
-                       std::index_sequence< 2 > >,
-   DistributedNDArray< NDArray< double,
-                                SizesHolder< int, 0 >,
-                                std::index_sequence< 0 >,
-                                std::index_sequence< 0 >,
-                                Devices::Cuda >,
-                       Communicators::NoDistrCommunicator,
                        std::index_sequence< 2 > >
+// TODO: does it make sense for NoDistrCommunicator?
+//   DistributedNDArray< NDArray< double,
+//                                SizesHolder< int, 0 >,
+//                                std::index_sequence< 0 >,
+//                                std::index_sequence< 0 >,
+//                                Devices::Cuda >,
+//                       Communicators::NoDistrCommunicator,
+//                       std::index_sequence< 2 > >
 #endif
 >;
 
@@ -258,6 +261,58 @@ void test_helper_forOverlaps( DistributedArray& a )
 TYPED_TEST( DistributedNDArrayOverlapsTest, forOverlaps )
 {
    test_helper_forOverlaps( this->distributedNDArray );
+}
+
+// separate function because nvcc does not allow __cuda_callable__ lambdas inside
+// private or protected methods (which are created by TYPED_TEST macro)
+template< typename DistributedArray >
+void test_helper_synchronize( DistributedArray& a, const int rank, const int nproc )
+{
+   using IndexType = typename DistributedArray::IndexType;
+
+   const int overlaps = __ndarray_impl::get< 0 >( typename DistributedArray::OverlapsType{} );
+   const auto localRange = a.template getLocalRange< 0 >();
+   auto a_view = a.getView();
+
+   auto setter = [=] __cuda_callable__ ( IndexType i ) mutable
+   {
+      a_view( i ) = rank;
+   };
+
+   a.setValue( -1 );
+   a.forAll( setter );
+   DistributedNDArraySynchronizer< DistributedArray > s1;
+   s1.synchronize( a );
+
+   for( int gi = localRange.getBegin() - overlaps; gi < localRange.getBegin(); gi++ )
+      EXPECT_EQ( a.getElement( gi ), (rank + nproc - 1) % nproc )
+            << "gi = " << gi;
+   for( int gi = localRange.getBegin(); gi < localRange.getEnd(); gi++ )
+      EXPECT_EQ( a.getElement( gi ), rank )
+            << "gi = " << gi;
+   for( int gi = localRange.getEnd(); gi < localRange.getEnd() + overlaps; gi++ )
+      EXPECT_EQ( a.getElement( gi ), (rank + 1) % nproc )
+            << "gi = " << gi;
+
+   a.setValue( -1 );
+   a_view.forAll( setter );
+   DistributedNDArraySynchronizer< decltype(a_view) > s2;
+   s2.synchronize( a_view );
+
+   for( int gi = localRange.getBegin() - overlaps; gi < localRange.getBegin(); gi++ )
+      EXPECT_EQ( a.getElement( gi ), (rank + nproc - 1) % nproc )
+            << "gi = " << gi;
+   for( int gi = localRange.getBegin(); gi < localRange.getEnd(); gi++ )
+      EXPECT_EQ( a.getElement( gi ), rank )
+            << "gi = " << gi;
+   for( int gi = localRange.getEnd(); gi < localRange.getEnd() + overlaps; gi++ )
+      EXPECT_EQ( a.getElement( gi ), (rank + 1) % nproc )
+            << "gi = " << gi;
+}
+
+TYPED_TEST( DistributedNDArrayOverlapsTest, synchronize )
+{
+   test_helper_synchronize( this->distributedNDArray, this->rank, this->nproc );
 }
 
 #endif  // HAVE_GTEST
