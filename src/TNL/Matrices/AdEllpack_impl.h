@@ -21,10 +21,11 @@ namespace Matrices {
 /*
  * Auxiliary list implementation
  */
-warpList::warpList()
+template< typename MatrixType >
+warpList< MatrixType >::warpList()
 {
-    this->head = new warpInfo;
-    this->tail = new warpInfo;
+    this->head = new warpInfo< MatrixType >;
+    this->tail = new warpInfo< MatrixType >;
     this->head->previous = NULL;
     this->head->next = this->tail;
     this->tail->previous = this->head;
@@ -33,12 +34,13 @@ warpList::warpList()
     this->numberOfWarps = 0;
 }
 
-bool warpList::addWarp( const int offset,
-                        const int rowOffset,
-                        const int localLoad,
-                        const int* reduceMap )
+template< typename MatrixType >
+bool warpList< MatrixType >::addWarp( const IndexType offset,
+                                      const IndexType rowOffset,
+                                      const IndexType localLoad,
+                                      const IndexType* reduceMap )
 {
-    warpInfo* temp = new warpInfo();
+    warpInfo< MatrixType >* temp = new warpInfo< MatrixType >();
     if( !temp )
         return false;
     temp->offset = offset;
@@ -56,13 +58,15 @@ bool warpList::addWarp( const int offset,
     return true;
 }
 
-warpInfo* warpList::splitInHalf( warpInfo* warp )
+template< typename MatrixType >
+warpInfo< MatrixType >* warpList< MatrixType >::splitInHalf( warpInfo< MatrixType >* warp )
 {
-    warpInfo* firstHalf = new warpInfo();
-    warpInfo* secondHalf = new warpInfo();
-    int localLoad = ( warp->localLoad / 2 ) + ( warp->localLoad % 2 == 0 ? 0 : 1 );
+    warpInfo< MatrixType >* firstHalf = new warpInfo< MatrixType >();
+    warpInfo< MatrixType >* secondHalf = new warpInfo< MatrixType >();
+    
+    IndexType localLoad = ( warp->localLoad / 2 ) + ( warp->localLoad % 2 == 0 ? 0 : 1 );
 
-    int rowOffset = warp->rowOffset;
+    IndexType rowOffset = warp->rowOffset;
 
     // first half split
     firstHalf->localLoad = localLoad;
@@ -132,11 +136,12 @@ warpInfo* warpList::splitInHalf( warpInfo* warp )
     return firstHalf;
 }
 
-warpList::~warpList()
+template< typename MatrixType >
+warpList< MatrixType >::~warpList()
 {
     while( this->head->next != NULL )
     {
-        warpInfo* temp = new warpInfo;
+        warpInfo< MatrixType >* temp = new warpInfo< MatrixType >;
         temp = this->head->next;
         this->head->next = temp->next;
         delete temp;
@@ -186,30 +191,48 @@ void
 AdEllpack< Real, Device, Index >::
 setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths )
 {
+    std::cout << "\tCompressedRowLengths:" << std::endl;
+    
     TNL_ASSERT( this->getRows() > 0, );
     TNL_ASSERT( this->getColumns() > 0, );
+    
+    std::cout << "\t\tAssert rows and columns > 0." << std::endl;
+    
     if( std::is_same< DeviceType, Devices::Host >::value )
     {
-         RealType average = 0.0;
-         for( IndexType row = 0; row < this->getRows(); row++ )
-            average += rowLengths.getElement( row );
-         average /= ( RealType ) this->getRows();
-         this->totalLoad = average;
+        RealType average = 0.0;
+        for( IndexType row = 0; row < this->getRows(); row++ )
+           average += rowLengths.getElement( row );
+        average /= ( RealType ) this->getRows();
+        this->totalLoad = average;
+        
+        // TEST
+        std::cout << "\t\tAverage assigned to totalLoad." << std::endl;
 
-        warpList* list = new warpList();
+        warpList< ThisType >* list = new warpList< ThisType >();
+        
+        // TEST
+        std::cout << "\t\tNew warpList created." << std::endl;
 
         if( !this->balanceLoad( average, rowLengths, list ) )
             throw 0; // TODO: Make better exception
+        
+        // TEST
+        std::cout << "\t\tbalanceLoad exception was not thrown." << std::endl;
 
         IndexType SMs = 15;
         IndexType threadsPerSM = 2048;
 
         this->computeWarps( SMs, threadsPerSM, list );
+        
+        // TEST
+        std::cout << "\t\tWarps computed." << std::endl;
 
         if( !this->createArrays( list ) )
             throw 0; // TODO: Make better excpetion
-
-
+        
+        // TEST
+        std::cout << "\t\tArrays created." << std::endl;
 
         //this->performRowTest();
         //cout << "========================" << std::endl;
@@ -217,7 +240,10 @@ setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths )
         //cout << "========================" << std::endl;
         //this->performRowLengthsTest( rowLengths );
     }
-
+    
+    // TEST
+    std::cout << "\tCompleted host setup." << std::endl;
+    
     if( std::is_same< DeviceType, Devices::Cuda >::value )
     {
         AdEllpack< RealType, Devices::Host, IndexType > hostMatrix;
@@ -235,10 +261,13 @@ setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths )
         this->localLoad = hostMatrix.localLoad;
         this->reduceMap.setLike( hostMatrix.reduceMap );
         this->reduceMap = hostMatrix.reduceMap;
-         this->totalLoad = hostMatrix.getTotalLoad();
+        this->totalLoad = hostMatrix.getTotalLoad();
 
         this->allocateMatrixElements( this->offset.getElement( this->offset.getSize() - 1 ) );
     }
+    
+    // TEST
+    std::cout << "\tCompleted device setup." << std::endl;
 }
 
 template< typename Real,
@@ -686,7 +715,7 @@ template< typename Real,
           typename Index >
 bool AdEllpack< Real, Device, Index >::balanceLoad( const RealType average,
                                                     ConstCompressedRowLengthsVectorView rowLengths,
-                                                    warpList* list )
+                                                    warpList< ThisType >* list )
 {
     IndexType offset, rowOffset, localLoad, reduceMap[ 32 ];
 
@@ -722,7 +751,7 @@ bool AdEllpack< Real, Device, Index >::balanceLoad( const RealType average,
                 for( IndexType i = numberOfThreads + 1; i < this->warpSize; i++ )
                     reduceMap[ i ] = 0;
 
-                if( !list->addWarp( offset, rowOffset, localLoad, (int *)reduceMap ) )
+                if( !list->addWarp( offset, rowOffset, localLoad, reduceMap ) )
                     return false;
 
                 offset += this->warpSize * localLoad;
@@ -752,7 +781,7 @@ bool AdEllpack< Real, Device, Index >::balanceLoad( const RealType average,
                     reduceMap[ i ] = 0;
 
                 // count new offsets, add new warp and reset variables
-                if( !list->addWarp( offset, rowOffset, localLoad, (int *)reduceMap ) )
+                if( !list->addWarp( offset, rowOffset, localLoad, reduceMap ) )
                     return false;
                 offset += this->warpSize * localLoad;
                 rowOffset = row;
@@ -791,7 +820,7 @@ bool AdEllpack< Real, Device, Index >::balanceLoad( const RealType average,
         if( ( ( row == this->getRows() - 1 ) && !addedWarp ) ||
             ( ( row == this->getRows() - 1 ) && ( threadsPerRow == numberOfThreads ) && ( numberOfThreads > 0 ) ) )
         {
-            list->addWarp( offset, rowOffset, localLoad, (int *)reduceMap );
+            list->addWarp( offset, rowOffset, localLoad, reduceMap );
         }
     }
     return true;
@@ -801,44 +830,125 @@ template< typename Real,
           typename Device,
           typename Index >
 void AdEllpack< Real, Device, Index >::computeWarps( const IndexType SMs,
-                                                              const IndexType threadsPerSM,
-                                                              warpList* list )
+                                                     const IndexType threadsPerSM,
+                                                     warpList< ThisType >* list )
 {
+// Included for 'system("pause")'. Where pause is "read -p 'Press Enter to continue...' var" in linux-based systems.
+#include <iostream>
+    std::cout << "\t\tComputeWarps:" << std::endl;
+    
     IndexType averageLoad = 0;
-    warpInfo* temp = list->getHead()->next;
-    while( temp->next != list->getTail() )
+    warpInfo< ThisType >* temp = list->getHead()->next;
+    
+    //TEST
+    list->printList();
+    
+    // MISTAKE? If list looks like this:
+    //
+    //      Head:	i->localLoad = 0	i->offset = 0	i->rowOffset = 0
+    //                  i->localLoad = 1	i->offset = 0	i->rowOffset = 0
+    //      Tail:	i->localLoad = 0	i->offset = 0	i->rowOffset = 0
+    //      
+    //      Then temp will start out as 'Head->next', but 'temp->next' will EQUAL 'list->getTail()'.
+    //      SO, the following while loop to set averageLoad will never happen.
+    while( temp/*->next*/ != list->getTail() )
     {
         averageLoad += temp->localLoad;
         temp = temp->next;
     }
-    averageLoad /= list->getNumberOfWarps();
+    
+    // MISTAKE? If averageLoad is 1, and number of warpInfos in the warpList is more than 1,
+    //              integer division will occur, setting the averageLoad to 0. Consequently causing an
+    //              infinite loop out of the inner while loop (where splitInHalf( temp ) happens). 
+    /*averageLoad /= list->getNumberOfWarps();*/
+    
+    // TEST
+    std::cout << "\t\t\tBefore roundUpDivision:" << std::endl;
+    std::cout << "\t\t\t\taverageLoad = " << averageLoad << "\tlist->getNumberOfWarps() = " << list->getNumberOfWarps() << std::endl;
+    
+    // TEST
+    averageLoad = roundUpDivision( averageLoad, list->getNumberOfWarps() );
+    
+    // TEST
+    std::cout << "\t\t\tAverage load calculated. = " << averageLoad << std::endl;
 
     IndexType totalWarps = SMs * ( threadsPerSM / this->warpSize );
     IndexType remainingThreads = list->getNumberOfWarps();
     bool warpsToSplit = true;
+    
+    // TEST
+    std::cout << "\t\t\tTotal warps, remaining threads, warpsToSplit set." << std::endl;
 
     while( remainingThreads < ( totalWarps / 2 ) && warpsToSplit )
     {
+        // TEST
+        std::cout << "\t\t\tBeginning of outer while." << std::endl;
+        
         warpsToSplit = false;
         temp = list->getHead()->next;
+        
+        // TEST - PRINT
+        std::cout << "\t\t\t\t[ list PRINT ]: " << std::endl;
+        list->printList();
+        
+        // FIXME: This can be an INFINITE LOOP.
+        //        It will cause the process to be killed by bash.
         while( temp != list->getTail() )
         {
+            // TEST
+            std::cout << "\n\t\t\t\tBeginning of inner while." << std::endl;
+            std::cout << "\t\t\t\ttemp->localLoad = " << temp->localLoad << "\ttemp->offset = " << temp->offset << "\ttemp->rowOffset = " << temp->rowOffset << std::endl;
+            
+            // FIXME: localLoad of newly created secondHalf from splitInHalf is always at least 1.
+            //          If averageLoad is 0, then this will create new warpInfos until the system memory is depleted.
             if( temp->localLoad > averageLoad )
             {
                 temp = list->splitInHalf( temp );
                 warpsToSplit = true;
-		
+                
+                // TEST - PRINT after splitInHalf
+                std::cout << "\t\t\t\t[ list PRINT - after splitInHalf ]: " << std::endl;
+                list->printList();
+                
+                // TEST
+                std::cout << "\n\t\t\t\t\ttemp after splitInHalf:" << std::endl;
+                std::cout << "\t\t\t\t\ttemp->localLoad = " << temp->localLoad << "\ttemp->offset = " << temp->offset << "\ttemp->rowOffset = " << temp->rowOffset << std::endl;
+                
+                // TEST
+                if( temp == list->getHead()->next )
+                    std::cout << "\n\t\t\t\t\ttemp == list->getHead()->next" << std::endl;
+                
             }
+            
+            // TEST
+            if( temp->next == list->getHead()->next->next )
+                std::cout << "\n\t\t\t\t\ttemp->next == list->getHead()->next->next" << std::endl;
+            
+            // TEST
+            if( list->getHead()->next->next == list->getTail() )
+                std::cout << "\n\t\t\t\t\tlist->getHead()->next->next == list->getTail()" << std::endl;
+            
             temp = temp->next;
+            
+            // TEST
+            std::cout << "\t\t\t\t\ttemp after temp->next:" << std::endl;
+            std::cout << "\t\t\t\t\ttemp->localLoad = " << temp->localLoad << "\ttemp->offset = " << temp->offset << "\ttemp->rowOffset = " << temp->rowOffset << std::endl;
+            
+            // TEST
+            system("read -p 'Press Enter to continue...' var");
         }
 	remainingThreads = list->getNumberOfWarps();
+        
+        // TEST
+        std::cout << "\t\t\tRemaining threads set." << std::endl;
+        
     }
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool AdEllpack< Real, Device, Index >::createArrays( warpList* list )
+bool AdEllpack< Real, Device, Index >::createArrays( warpList< ThisType >* list )
 {
     IndexType length = list->getNumberOfWarps();
 
@@ -848,7 +958,7 @@ bool AdEllpack< Real, Device, Index >::createArrays( warpList* list )
     this->reduceMap.setSize( length * this->warpSize );
 
     IndexType iteration = 0;
-    warpInfo* warp = list->getHead()->next;
+    warpInfo< ThisType >* warp = list->getHead()->next;
     while( warp != list->getTail() )
     {
         this->offset.setElement( iteration, warp->offset );
