@@ -95,6 +95,7 @@ TYPED_TEST( AdEllpackMatrixTest, resetTest )
     test_Reset< AdEllpackMatrixType >();
 }
 
+// SUPPOSEDLY WORKING - localLoad, offset and rowOffset are seemingly random numbers in the head and tail of WarpList.
 TYPED_TEST( AdEllpackMatrixTest, setElementTest )
 {
     // This test fails on m.setCompressedRowLengths( rowLengths ) in SparseMatrixTest.hpp
@@ -104,8 +105,7 @@ TYPED_TEST( AdEllpackMatrixTest, setElementTest )
     test_SetElement< AdEllpackMatrixType >();
 }
 
-#ifdef NOT_WORKING
-
+// SUPPOSEDLY WORKING - localLoad, offset and rowOffset are seemingly random numbers in the head and tail of WarpList.
 TYPED_TEST( AdEllpackMatrixTest, addElementTest )
 {
     using AdEllpackMatrixType = typename TestFixture::AdEllpackMatrixType;
@@ -113,6 +113,7 @@ TYPED_TEST( AdEllpackMatrixTest, addElementTest )
     test_AddElement< AdEllpackMatrixType >();
 }
 
+// SUPPOSEDLY WORKING - Tests take longer than expected. setElement takes 13ms, compared to SlicedEllpack's 2ms.
 TYPED_TEST( AdEllpackMatrixTest, setRowTest )
 {
     using AdEllpackMatrixType = typename TestFixture::AdEllpackMatrixType;
@@ -120,6 +121,7 @@ TYPED_TEST( AdEllpackMatrixTest, setRowTest )
     test_SetRow< AdEllpackMatrixType >();
 }
 
+// SUPPOSEDLY WORKING
 TYPED_TEST( AdEllpackMatrixTest, vectorProductTest )
 {
     using AdEllpackMatrixType = typename TestFixture::AdEllpackMatrixType;
@@ -127,6 +129,7 @@ TYPED_TEST( AdEllpackMatrixTest, vectorProductTest )
     test_VectorProduct< AdEllpackMatrixType >();
 }
 
+// SUPPOSEDLY WORKING
 TYPED_TEST( AdEllpackMatrixTest, saveAndLoadTest )
 {
     using AdEllpackMatrixType = typename TestFixture::AdEllpackMatrixType;
@@ -134,12 +137,15 @@ TYPED_TEST( AdEllpackMatrixTest, saveAndLoadTest )
     test_SaveAndLoad< AdEllpackMatrixType >( "test_SparseMatrixTest_AdEllpack" );
 }
 
+// SUPPOSEDLY WORKING
 TYPED_TEST( AdEllpackMatrixTest, printTest )
 {
     using AdEllpackMatrixType = typename TestFixture::AdEllpackMatrixType;
     
     test_Print< AdEllpackMatrixType >();
 }
+
+#ifdef NOT_WORKING
 #endif
 
 #endif
