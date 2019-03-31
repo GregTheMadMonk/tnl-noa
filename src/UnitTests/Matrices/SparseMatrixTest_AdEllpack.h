@@ -95,8 +95,6 @@ TYPED_TEST( AdEllpackMatrixTest, resetTest )
     test_Reset< AdEllpackMatrixType >();
 }
 
-#ifdef NOT_WORKING
-
 TYPED_TEST( AdEllpackMatrixTest, setElementTest )
 {
     // This test fails on m.setCompressedRowLengths( rowLengths ) in SparseMatrixTest.hpp
@@ -105,6 +103,8 @@ TYPED_TEST( AdEllpackMatrixTest, setElementTest )
     
     test_SetElement< AdEllpackMatrixType >();
 }
+
+#ifdef NOT_WORKING
 
 TYPED_TEST( AdEllpackMatrixTest, addElementTest )
 {
