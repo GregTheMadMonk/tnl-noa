@@ -147,6 +147,10 @@ warpList< MatrixType >::~warpList()
         delete temp;
     }
     delete this->head;
+    
+    // TEST
+    std::cout << "List destructor." << std::endl;
+    this->printList();
 }
 
 
@@ -200,6 +204,10 @@ setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths )
     
     if( std::is_same< DeviceType, Devices::Host >::value )
     {
+        
+        // TEST
+        std::cout << "\tStarting host setup." << std::endl;
+        
         RealType average = 0.0;
         for( IndexType row = 0; row < this->getRows(); row++ )
            average += rowLengths.getElement( row );
@@ -210,6 +218,9 @@ setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths )
         std::cout << "\t\tAverage assigned to totalLoad." << std::endl;
 
         warpList< ThisType >* list = new warpList< ThisType >();
+        
+        // TEST
+        list->printList();
         
         // TEST
         std::cout << "\t\tNew warpList created." << std::endl;
@@ -239,13 +250,17 @@ setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths )
         //cout << "Testing row lengths" << std::endl;
         //cout << "========================" << std::endl;
         //this->performRowLengthsTest( rowLengths );
-    }
+        
+        // TEST
+        std::cout << "\tCompleted host setup." << std::endl;
     
-    // TEST
-    std::cout << "\tCompleted host setup." << std::endl;
+    }
     
     if( std::is_same< DeviceType, Devices::Cuda >::value )
     {
+        // TEST
+        std::cout << "\tStarting device setup." << std::endl;
+        
         AdEllpack< RealType, Devices::Host, IndexType > hostMatrix;
         hostMatrix.setDimensions( this->getRows(), this->getColumns() );
         Containers::Vector< IndexType, Devices::Host, IndexType > hostRowLengths;
@@ -264,10 +279,10 @@ setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths )
         this->totalLoad = hostMatrix.getTotalLoad();
 
         this->allocateMatrixElements( this->offset.getElement( this->offset.getSize() - 1 ) );
+        
+        // TEST
+        std::cout << "\tCompleted device setup." << std::endl;
     }
-    
-    // TEST
-    std::cout << "\tCompleted device setup." << std::endl;
 }
 
 template< typename Real,
@@ -676,7 +691,7 @@ void AdEllpack< Real, Device, Index >::print( std::ostream& str ) const
 {
     for( IndexType row = 0; row < this->getRows(); row++ )
     {
-        str  << "Row: " << row << " -> \t";
+        str  << "Row: " << row << " -> ";
 
         IndexType warp = this->getWarp( row );
         IndexType inWarpOffset = this->getInWarpOffset( row, warp );
@@ -691,8 +706,8 @@ void AdEllpack< Real, Device, Index >::print( std::ostream& str ) const
             for( IndexType i = 0; i < this->localLoad.getElement( warp ); i++ )
             {
                 if( this->columnIndexes.getElement( elementPtr ) != this->getPaddingIndex() )
-                    str << " column: " << this->columnIndexes.getElement( elementPtr ) << " -> "
-                        << " value: " << this->values.getElement( elementPtr ) << std::endl;
+                    str << " Col:" << this->columnIndexes.getElement( elementPtr ) << "->"
+                        << this->values.getElement( elementPtr ) << "\t";
                 elementPtr += this->warpSize;
             }
             if( ( inWarpOffset < this->warpSize - 1 ) &&
@@ -707,6 +722,7 @@ void AdEllpack< Real, Device, Index >::print( std::ostream& str ) const
             else
                 found = true;
         }
+        str << std::endl;
     }
 }
 
@@ -931,11 +947,11 @@ void AdEllpack< Real, Device, Index >::computeWarps( const IndexType SMs,
             temp = temp->next;
             
             // TEST
-            std::cout << "\t\t\t\t\ttemp after temp->next:" << std::endl;
-            std::cout << "\t\t\t\t\ttemp->localLoad = " << temp->localLoad << "\ttemp->offset = " << temp->offset << "\ttemp->rowOffset = " << temp->rowOffset << std::endl;
+//            std::cout << "\t\t\t\t\ttemp after temp->next:" << std::endl;
+//            std::cout << "\t\t\t\t\ttemp->localLoad = " << temp->localLoad << "\ttemp->offset = " << temp->offset << "\ttemp->rowOffset = " << temp->rowOffset << std::endl;
             
             // TEST
-            system("read -p 'Press Enter to continue...' var");
+//            system("read -p 'Press Enter to continue...' var");
         }
 	remainingThreads = list->getNumberOfWarps();
         
