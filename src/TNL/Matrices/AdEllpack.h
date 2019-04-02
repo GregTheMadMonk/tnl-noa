@@ -84,10 +84,10 @@ public:
             // TEST
             for( warpInfo< MatrixType >* i = this->getHead(); i != this->getTail()->next; i = i->next )
             {
-                if( i == this->getHead() )
-                    std::cout << "Head:" << "\ti->localLoad = " << i->localLoad << "\ti->offset = " << i->offset << "\ti->rowOffset = " << i->rowOffset << std::endl;
-                else if( i == this->getTail() )
-                    std::cout << "Tail:" << "\ti->localLoad = " << i->localLoad << "\ti->offset = " << i->offset << "\ti->rowOffset = " << i->rowOffset << std::endl;
+                if( i == this->getHead() );
+//                    std::cout << "Head:" << "\ti->localLoad = " << i->localLoad << "\ti->offset = " << i->offset << "\ti->rowOffset = " << i->rowOffset << std::endl;
+                else if( i == this->getTail() );
+//                    std::cout << "Tail:" << "\ti->localLoad = " << i->localLoad << "\ti->offset = " << i->offset << "\ti->rowOffset = " << i->rowOffset << std::endl;
                 else
                     std::cout << "\ti->localLoad = " << i->localLoad << "\ti->offset = " << i->offset << "\ti->rowOffset = " << i->rowOffset << std::endl;
             }
