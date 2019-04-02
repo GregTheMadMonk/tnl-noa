@@ -707,12 +707,12 @@ void test_VectorProduct()
     using VectorType = TNL::Containers::Vector< RealType, DeviceType, IndexType >;
     
     VectorType inVector;
-    inVector.setSize( 4 );
+    inVector.setSize( m_cols );
     for( IndexType i = 0; i < inVector.getSize(); i++ )        
         inVector.setElement( i, 2 );
 
     VectorType outVector;  
-    outVector.setSize( 5 );
+    outVector.setSize( m_rows );
     for( IndexType j = 0; j < outVector.getSize(); j++ )
         outVector.setElement( j, 0 );
  
