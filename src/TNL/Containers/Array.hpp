@@ -18,6 +18,7 @@
 #include <TNL/param-types.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Algorithms/ArrayIO.h>
+#include <TNL/Containers/Algorithms/ArrayAssignment.h>
 #include <TNL/Containers/Array.h>
 #include <TNL/Exceptions/ArrayWrongSize.h>
 
@@ -493,7 +494,7 @@ Array< Value, Device, Index >&
 Array< Value, Device, Index >::
 operator = ( const T& data )
 {
-   ArrayAssignment< ThisType, T >::assign( *this, data );
+   Algorithms::ArrayAssignment< ThisType, T >::assign( *this, data );
    return ( *this );
 }
 
@@ -698,30 +699,6 @@ std::ostream& operator << ( std::ostream& str, const Array< Value, Device, Index
    str << " ]";
    return str;
 }
-
-template< typename Array,
-          typename Data >
-void
-ArrayAssignment< Array, Data, true >::
-assign( Array& array, const Data& data )
-{
-   if( array.getSize() != data.getSize() )
-      array.setLike( data );
-   if( array.getSize() > 0 )
-      Algorithms::ArrayOperations< typename Array::DeviceType, typename Data::DeviceType >::
-         copyMemory( array.getData(),
-                     data.getData(),
-                     data.getSize() );
-};
-
-template< typename Array,
-          typename Data >
-void
-ArrayAssignment< Array, Data, false >::
-assign( Array& array, const Data& data )
-{
-   array.setValue( data );
-};
 
 
 } // namespace Containers

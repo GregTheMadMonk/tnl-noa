@@ -10,50 +10,48 @@
 
 #pragma once
 
-#include <TNL/Containers/ArrayOperations.h>
+#include <TNL/Containers/Algorithms/ArrayOperations.h>
 
 namespace TNL {
 namespace Containers {
 namespace Algorithms {
 
-
-template< typename Array,
-   typename T,
-   bool isArray = TNL::IsArray< T > >
-struct ArraysAsignment
-{};
-
 /**
  * \brief Specialization for array-array assignment
  */
 template< typename Array,
-   typename T >
-struct ArraysAsignment< Array, T, true >
+          typename T >
+struct ArrayAssignment
 {
-   void assign( Array& a, T& t )
+   static void assign( Array& a, const T& t, const typename T::ValueType* )
    {
-      a.setSize( t.getSize() );
-      ArrayOperations< typename Array::DeviceType, typename T::DeviceType >::
+      /*a.setSize( t.getSize() );
+      ArrayOperations< typename Array::DeviceType, typename T::DeviceType >::template
          copyMemory< typename Array::ValueType, typename T::ValueType, typename T::IndexType >
-         ( a.getData(), t.getData(), t.getSize() );
+         ( a.getData(), t.getData(), t.getSize() );*/
+   };
+   
+   static void assign( Array& a, const T& t, const void* )
+   {
+      
    };
 };
 
 /**
  * \brief Specialization for array-value assignment
  */
-template< typename Array,
-   typename T >
-struct ArraysAsignment< Array, T, false >
+/*template< typename Array,
+          typename T >
+struct ArrayAssignment< Array, T, void >
 {
-   void assign( Array& a, T& t )
+   static void assign( Array& a, const T& t )
    {
-      ArrayOperations< typename Array::DeviceType >::
+      ArrayOperations< typename Array::DeviceType >::template
          setMemory< typename Array::ValueType, typename Array::IndexType >
          ( a.getData(), ( typename Array::ValueType ) t, t.getSize() );
    };
 
-};
+};*/
 
 
 } // namespace Algorithms

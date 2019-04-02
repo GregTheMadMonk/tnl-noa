@@ -138,15 +138,6 @@ private:
 };
 
 } // namespace Containers
-
-template< typename Value,
-          typename Device,
-          typename Index >
-struct isArray< Containers::DistributedArray< Value, Device, Index > >
-{
-   static constexpr bool value = true;
-};
-
 } // namespace TNL
 
 #include "DistributedArray_impl.h"

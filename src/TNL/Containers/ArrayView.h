@@ -155,16 +155,6 @@ template< typename Value, typename Device, typename Index >
 std::ostream& operator<<( std::ostream& str, const ArrayView< Value, Device, Index >& v );
 
 } // namespace Containers
-
-template< typename Value,
-          typename Device,
-          typename Index >
-struct isArray< Containers::ArrayView< Value, Device, Index > >
-{
-   static constexpr bool value = true;
-};
-
-
 } // namespace TNL
 
 #include <TNL/Containers/ArrayView_impl.h>

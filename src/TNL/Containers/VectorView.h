@@ -150,15 +150,6 @@ public:
 };
 
 } // namespace Containers
-
-template< typename Value,
-          typename Device,
-          typename Index >
-struct isArray< Containers::VectorView< Value, Device, Index > >
-{
-   static constexpr bool value = true;
-};
-
 } // namespace TNL
 
 #include <TNL/Containers/VectorView_impl.h>

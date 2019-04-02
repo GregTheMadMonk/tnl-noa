@@ -139,15 +139,6 @@ public:
 };
 
 } // namespace Containers
-
-template< typename Value,
-          typename Device,
-          typename Index >
-struct isArray< Containers::DistributedVector< Value, Device, Index > >
-{
-   static constexpr bool value = true;
-};
-
 } // namespace TNL
 
 #include "DistributedVector_impl.h"

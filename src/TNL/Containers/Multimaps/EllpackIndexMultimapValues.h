@@ -117,16 +117,6 @@ std::ostream& operator << ( std::ostream& str, const EllpackIndexMultimapValues<
 
 } // namespace Multimaps
 } // namespace Containers
-
-template< typename Index,
-          typename Device,
-          typename LocalIndex,
-          int step >
-struct isArray< Containers::Multimaps::EllpackIndexMultimapValues< Index, Device, LocalIndex, step > >
-{
-   static constexpr bool value = true;
-};
-
 } // namespace TNL
 
 #include <TNL/Containers/Multimaps/EllpackIndexMultimapValues_impl.h>

@@ -106,7 +106,7 @@ class Array : public Object
        * \param array is an array to be copied.
        */
       // Deep copy does not work because of EllpackIndexMultiMap - TODO: Fix it
-      //Array( const Array& array );
+      explicit Array( const Array& array );
 
       /**
        * \brief Bind constructor .
@@ -533,37 +533,10 @@ class Array : public Object
       mutable int* referenceCounter = nullptr;
 };
 
-template< typename Array,
-          typename Data,
-          bool isArray = TNL::isArray< Data >::value >
-struct ArrayAssignment {};
-
-template< typename Array,
-          typename Data >
-struct ArrayAssignment< Array, Data, true >
-{
-   static void assign( Array& a, const Data& d );
-};
-
-template< typename Array,
-          typename Data >
-struct ArrayAssignment< Array, Data, false >
-{
-   static void assign( Array& a, const Data& d );
-};
-
 template< typename Value, typename Device, typename Index >
 std::ostream& operator << ( std::ostream& str, const Array< Value, Device, Index >& v );
 
 } // namespace Containers
-
-template< typename Value,
-          typename Device,
-          typename Index >
-struct IsArray< Containers::Array< Value, Device, Index > >
-{
-   static constexpr bool value = true;
-};
 
 } // namespace TNL
 

@@ -26,7 +26,7 @@ void arrayExample()
    /***
     * You may also assign value to all array elements ...
     */
-   a2 = 0;
+   a2 = 0.0;
 
    /***
     * ... or assign STL list and vector.
