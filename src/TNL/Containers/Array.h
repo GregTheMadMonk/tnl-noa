@@ -293,6 +293,31 @@ class Array : public Object
       __cuda_callable__ Value* getData();
 
       /**
+       * \brief Data pointer getter for constant instances.
+       * 
+       * Use this method in algorithms where you want to emphasize that
+       * C-style array pointer is required. 
+       * 
+       * This method can be called from device kernels.
+       * 
+       * \return Pointer to array data.
+       */
+      __cuda_callable__ const Value* getArrayData() const;
+
+      /**
+       * \brief Data pointer getter.
+       * 
+       * Use this method in algorithms where you want to emphasize that
+       * C-style array pointer is required. 
+       *  
+       * This method can be called from device kernels.
+       * 
+       * \return Pointer to array data.
+       */
+      __cuda_callable__ Value* getArrayData();
+      
+
+      /**
        * \brief Array elements setter - change value of an element at position \e i.
        *
        * This method can be called only from the host system (CPU) but even for

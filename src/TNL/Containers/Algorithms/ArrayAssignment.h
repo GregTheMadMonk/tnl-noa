@@ -16,42 +16,63 @@ namespace TNL {
 namespace Containers {
 namespace Algorithms {
 
+namespace Details {
 /**
- * \brief Specialization for array-array assignment
+ * SFINAE for checking if T has getArrayData method
+ */
+template< typename T >
+class HasGetArrayData
+{
+private:
+    typedef char YesType[1];
+    typedef char NoType[2];
+
+    template< typename C > static YesType& test( decltype(&C::getArrayData) ) ;
+    template< typename C > static NoType& test(...);
+
+public:
+    enum { value = sizeof( test< T >(0) ) == sizeof( YesType ) };
+};
+} // namespace Details
+
+template< typename Array,
+          typename T,
+          bool hasGetArrayData = Details::HasGetArrayData< T >::value >
+struct ArrayAssignment{};
+
+/**
+ * \brief Specialization for array-array assignment with containers implementing
+ * getArrayData method.
  */
 template< typename Array,
           typename T >
-struct ArrayAssignment
+struct ArrayAssignment< Array, T, true >
 {
-   static void assign( Array& a, const T& t, const typename T::ValueType* )
+   static void assign( Array& a, const T& t )
    {
-      /*a.setSize( t.getSize() );
       ArrayOperations< typename Array::DeviceType, typename T::DeviceType >::template
-         copyMemory< typename Array::ValueType, typename T::ValueType, typename T::IndexType >
-         ( a.getData(), t.getData(), t.getSize() );*/
-   };
-   
-   static void assign( Array& a, const T& t, const void* )
-   {
-      
+         copyMemory< typename Array::ValueType, typename T::ValueType, typename Array::IndexType >
+         ( a.getArrayData(), t.getArrayData(), t.getSize() );
    };
 };
 
 /**
- * \brief Specialization for array-value assignment
+ * \brief Specialization for array-value assignment for other types. We assume
+ * thet T is convertible to Array::ValueType.
  */
-/*template< typename Array,
+template< typename Array,
           typename T >
-struct ArrayAssignment< Array, T, void >
+struct ArrayAssignment< Array, T, false >
 {
    static void assign( Array& a, const T& t )
    {
       ArrayOperations< typename Array::DeviceType >::template
          setMemory< typename Array::ValueType, typename Array::IndexType >
-         ( a.getData(), ( typename Array::ValueType ) t, t.getSize() );
+         ( a.getArrayData(), ( typename Array::ValueType ) t, a.getSize() );
    };
 
-};*/
+};
+
 
 
 } // namespace Algorithms

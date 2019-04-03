@@ -200,6 +200,28 @@ template< typename Value,
           typename Device,
           typename Index >
 __cuda_callable__
+const
+Value* ArrayView< Value, Device, Index >::
+getArrayData() const
+{
+   return data;
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+__cuda_callable__
+Value*
+ArrayView< Value, Device, Index >::
+getArrayData()
+{
+   return data;
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+__cuda_callable__
 Index
 ArrayView< Value, Device, Index >::
 getSize() const

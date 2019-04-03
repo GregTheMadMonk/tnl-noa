@@ -402,6 +402,24 @@ Value* Array< Value, Device, Index >::getData()
 template< typename Value,
           typename Device,
           typename Index >
+__cuda_callable__
+const Value* Array< Value, Device, Index >::getArrayData() const
+{
+   return this->data;
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+__cuda_callable__
+Value* Array< Value, Device, Index >::getArrayData()
+{
+   return this->data;
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
 void
 Array< Value, Device, Index >::
 setElement( const Index& i, const Value& x )

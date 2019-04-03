@@ -97,9 +97,7 @@ public:
    template< typename Array >
    ArrayView& operator=( const Array& array );
 
-
    static String getType();
-
 
    __cuda_callable__
    void swap( ArrayView& view );
@@ -112,6 +110,12 @@ public:
 
    __cuda_callable__
    Value* getData();
+
+   __cuda_callable__
+   const Value* getArrayData() const;
+
+   __cuda_callable__
+   Value* getArrayData();
 
    __cuda_callable__
    Index getSize() const;
