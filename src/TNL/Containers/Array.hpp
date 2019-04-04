@@ -63,7 +63,7 @@ Array( Value* data,
 {
 }
 
-/*template< typename Value,
+template< typename Value,
           typename Device,
           typename Index >
 Array< Value, Device, Index >::
@@ -76,7 +76,7 @@ Array( const Array< Value, Device, Index >& array )
    // Deep copy does not work because of EllpackIndexMultiMap - TODO: Fix it
    this->setSize( array.getSize() );
    Algorithms::ArrayOperations< Device >::copyMemory( this->getData(), array.getData(), array.getSize() );
-}*/
+}
 
 template< typename Value,
           typename Device,
@@ -636,13 +636,13 @@ containsOnlyValue( const Value& v,
    return Algorithms::ArrayOperations< Device >::containsOnlyValue( &this->getData()[ begin ], end - begin, v );
 }
 
-template< typename Value,
+/*template< typename Value,
           typename Device,
           typename Index >
 Array< Value, Device, Index >::operator bool() const
 {
    return data != 0;
-}
+}*/
 
 
 template< typename Value,

@@ -492,7 +492,7 @@ class Array : public Object
       /**
        * \brief Returns true if non-zero size is set.
        */
-      operator bool() const;
+      //operator bool() const;
 
       /**
        * \brief Method for saving the object to a \e file as a binary data.

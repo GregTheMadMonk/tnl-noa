@@ -216,11 +216,11 @@ TYPED_TEST( ArrayTest, setSize )
    EXPECT_NE( v.getData(), u.getData() );
 
    // cast to bool returns true iff size > 0
-   EXPECT_TRUE( (bool) u );
+   /*EXPECT_TRUE( (bool) u );
    EXPECT_FALSE( ! u );
    u.setSize( 0 );
    EXPECT_FALSE( (bool) u );
-   EXPECT_TRUE( ! u );
+   EXPECT_TRUE( ! u );*/
 }
 
 TYPED_TEST( ArrayTest, setLike )
@@ -462,7 +462,9 @@ TYPED_TEST( ArrayTest, assignmentOperator )
       u_host.setElement( i, i );
    }
 
-   v.setValue( 0 );
+   v = 72; //.setValue( 0 );
+   for( int i = 0; i < 10; i++ )
+      EXPECT_EQ( v[ i ], 72 );
    v = u;
    EXPECT_EQ( u, v );
 

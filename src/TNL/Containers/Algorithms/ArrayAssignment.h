@@ -27,11 +27,11 @@ private:
     typedef char YesType[1];
     typedef char NoType[2];
 
-    template< typename C > static YesType& test( decltype(&C::getArrayData) ) ;
-    template< typename C > static NoType& test(...);
+    template< typename C > static YesType& test( decltype(&C::getArrayData) );
+    //template< typename C > static NoType& test(...);
 
 public:
-    enum { value = sizeof( test< T >(0) ) == sizeof( YesType ) };
+    static constexpr bool value = ( sizeof( test< T >(0) ) == sizeof( YesType ) );
 };
 } // namespace Details
 
@@ -58,7 +58,7 @@ struct ArrayAssignment< Array, T, true >
 
 /**
  * \brief Specialization for array-value assignment for other types. We assume
- * thet T is convertible to Array::ValueType.
+ * that T is convertible to Array::ValueType.
  */
 template< typename Array,
           typename T >
