@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include<type_traits>
+#include<utility>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
 
 namespace TNL {
@@ -27,8 +29,8 @@ private:
     typedef char YesType[1];
     typedef char NoType[2];
 
-    template< typename C > static YesType& test( decltype(&C::getArrayData) );
-    //template< typename C > static NoType& test(...);
+    template< typename C > static YesType& test( decltype(std::declval< C >().getArrayData()) );
+    template< typename C > static NoType& test(...);
 
 public:
     static constexpr bool value = ( sizeof( test< T >(0) ) == sizeof( YesType ) );
