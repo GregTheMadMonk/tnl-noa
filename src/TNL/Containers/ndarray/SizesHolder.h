@@ -295,6 +295,15 @@ struct LocalBeginsHolder : public SizesHolder
          return ConstValue;
       return SizesHolder::template getSize< level >();
    }
+
+   template< std::size_t level >
+   void setSize( typename SizesHolder::IndexType newSize )
+   {
+      if( SizesHolder::template getStaticSize< level >() == 0 )
+         SizesHolder::template setSize< level >( newSize );
+      else
+         TNL_ASSERT_EQ( newSize, ConstValue, "Dynamic size for a static dimension must be equal to the specified ConstValue." );
+   }
 };
 
 template< typename Index,
