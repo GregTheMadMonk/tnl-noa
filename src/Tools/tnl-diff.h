@@ -452,10 +452,6 @@ bool setIndexType( const MeshPointer& meshPointer,
                    const Config::ParameterContainer& parameters )
 {
    String indexType;
-   if( parsedObjectType[ 0 ] == "Containers::MultiVector" ||
-       parsedObjectType[ 0 ] == "tnlMultiVector" ||                       // TODO: remove deprecated type names
-       parsedObjectType[ 0 ] == "tnlSharedMultiVector"   )                //
-      indexType = parsedObjectType[ 4 ];
    if( parsedObjectType[ 0 ] == "Containers::Vector" ||
        parsedObjectType[ 0 ] == "tnlSharedVector" ||                     // TODO: remove deprecated type names
        parsedObjectType[ 0 ] == "tnlVector" )                            //
@@ -532,10 +528,6 @@ bool setValueType( const MeshPointer& meshPointer,
 {
    String elementType;
 
-   if( parsedObjectType[ 0 ] == "Containers::MultiVector" ||
-       parsedObjectType[ 0 ] == "tnlMultiVector" ||                         // TODO: remove deprecated type names
-       parsedObjectType[ 0 ] == "tnlSharedMultiVector" )                    //
-      elementType = parsedObjectType[ 2 ];
    if( parsedObjectType[ 0 ] == "Functions::MeshFunction" ||
        parsedObjectType[ 0 ] == "tnlMeshFunction" )                         // TODO: remove deprecated type names
       elementType = parsedObjectType[ 3 ];
