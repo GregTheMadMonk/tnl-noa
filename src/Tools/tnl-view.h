@@ -250,9 +250,7 @@ bool convertObject( const MeshPointer& meshPointer,
      std::cout << " writing to " << outputFileName << " ... " << std::flush;
 
 
-   if( parsedObjectType[ 0 ] == "Containers::Vector" ||
-       parsedObjectType[ 0 ] == "tnlSharedVector" ||   // TODO: remove deprecated type names
-       parsedObjectType[ 0 ] == "tnlVector" )          //
+   if( parsedObjectType[ 0 ] == "Containers::Vector" )
    {
       using MeshType = typename MeshPointer::ObjectType;
       // FIXME: why is MeshType::GlobalIndexType not the same as Index?
@@ -273,9 +271,7 @@ bool setDimension( const MeshPointer& meshPointer,
                     const Config::ParameterContainer& parameters )
 {
    int dimensions( 0 );
-   if( parsedObjectType[ 0 ] == "Containers::Vector" ||
-       parsedObjectType[ 0 ] == "tnlVector" ||                          // TODO: remove deprecated type names
-       parsedObjectType[ 0 ] == "tnlSharedVector" )                     //
+   if( parsedObjectType[ 0 ] == "Containers::Vector" )
       dimensions = 1;
    switch( dimensions )
    {
@@ -297,9 +293,7 @@ bool setIndexType( const MeshPointer& meshPointer,
                    const Config::ParameterContainer& parameters )
 {
    String indexType;
-   if( parsedObjectType[ 0 ] == "Containers::Vector" || 
-       parsedObjectType[ 0 ] == "tnlSharedVector" ||                       // TODO: remove deprecated type names
-       parsedObjectType[ 0 ] == "tnlVector" )                              //
+   if( parsedObjectType[ 0 ] == "Containers::Vector" )
       indexType = parsedObjectType[ 3 ];
 
    if( indexType == "int" )
@@ -370,9 +364,7 @@ bool setValueType( const MeshPointer& meshPointer,
    String elementType;
 
    // TODO: Fix this even for arrays
-   if( parsedObjectType[ 0 ] == "Containers::Vector" ||
-       parsedObjectType[ 0 ] == "tnlSharedVector" ||                           // TODO: remove deprecated type names
-       parsedObjectType[ 0 ] == "tnlVector" )                                  //
+   if( parsedObjectType[ 0 ] == "Containers::Vector" )
       elementType = parsedObjectType[ 1 ];
 
    if( elementType == "float" )
@@ -394,8 +386,7 @@ bool setValueType( const MeshPointer& meshPointer,
       std::cerr << "Unable to parse object type " << elementType << "." << std::endl;
       return false;
    }
-   if( parsedValueType[ 0 ] == "Containers::StaticVector" ||
-       parsedValueType[ 0 ] == "Containers::StaticVector" )               // TODO: remove deprecated type names
+   if( parsedValueType[ 0 ] == "Containers::StaticVector" )
       return setTupleType< MeshPointer >( meshPointer, inputFileName, parsedObjectType, parsedValueType, parameters );
 
    std::cerr << "Unknown element type " << elementType << "." << std::endl;
@@ -468,12 +459,9 @@ struct FilesProcessor
             error = true;
             continue;
          }
-         if( parsedObjectType[ 0 ] == "Containers::Vector" ||
-             parsedObjectType[ 0 ] == "tnlSharedVector" ||                    // TODO: remove deprecated type names
-             parsedObjectType[ 0 ] == "tnlVector" )                           //
+         if( parsedObjectType[ 0 ] == "Containers::Vector" )
             setValueType< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );
-         if( parsedObjectType[ 0 ] == "Functions::MeshFunction" ||
-             parsedObjectType[ 0 ] == "tnlMeshFunction" )                     // TODO: remove deprecated type names
+         if( parsedObjectType[ 0 ] == "Functions::MeshFunction" )
             setMeshFunction< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );
          if( parsedObjectType[ 0 ] == "Functions::VectorField" )
             setVectorFieldSize< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );
