@@ -27,26 +27,48 @@ endif()
 
 if( ${BUILD_MPI} )
    if( BUILD_CUDA )
-      CUDA_ADD_EXECUTABLE( DistributedNDArrayTest DistributedNDArrayTest.cu
+      CUDA_ADD_EXECUTABLE( DistributedNDArray_1D_test DistributedNDArray_1D_test.cu
                            OPTIONS ${CXX_TESTS_FLAGS} )
-      TARGET_LINK_LIBRARIES( DistributedNDArrayTest ${GTEST_BOTH_LIBRARIES} )
+      TARGET_LINK_LIBRARIES( DistributedNDArray_1D_test ${GTEST_BOTH_LIBRARIES} )
 
-      CUDA_ADD_EXECUTABLE( DistributedNDArrayOverlapsTest DistributedNDArrayOverlapsTest.cu
+      CUDA_ADD_EXECUTABLE( DistributedNDArray_semi1D_test DistributedNDArray_semi1D_test.cu
                            OPTIONS ${CXX_TESTS_FLAGS} )
-      TARGET_LINK_LIBRARIES( DistributedNDArrayOverlapsTest ${GTEST_BOTH_LIBRARIES} )
+      TARGET_LINK_LIBRARIES( DistributedNDArray_semi1D_test ${GTEST_BOTH_LIBRARIES} )
+
+      CUDA_ADD_EXECUTABLE( DistributedNDArrayOverlaps_1D_test DistributedNDArrayOverlaps_1D_test.cu
+                           OPTIONS ${CXX_TESTS_FLAGS} )
+      TARGET_LINK_LIBRARIES( DistributedNDArrayOverlaps_1D_test ${GTEST_BOTH_LIBRARIES} )
+
+      CUDA_ADD_EXECUTABLE( DistributedNDArrayOverlaps_semi1D_test DistributedNDArrayOverlaps_semi1D_test.cu
+                           OPTIONS ${CXX_TESTS_FLAGS} )
+      TARGET_LINK_LIBRARIES( DistributedNDArrayOverlaps_semi1D_test ${GTEST_BOTH_LIBRARIES} )
    else()
-      ADD_EXECUTABLE( DistributedNDArrayTest DistributedNDArrayTest.cpp )
-      TARGET_COMPILE_OPTIONS( DistributedNDArrayTest PRIVATE ${CXX_TESTS_FLAGS} )
-      TARGET_LINK_LIBRARIES( DistributedNDArrayTest ${GTEST_BOTH_LIBRARIES} )
+      ADD_EXECUTABLE( DistributedNDArray_1D_test DistributedNDArray_1D_test.cpp )
+      TARGET_COMPILE_OPTIONS( DistributedNDArray_1D_test PRIVATE ${CXX_TESTS_FLAGS} )
+      TARGET_LINK_LIBRARIES( DistributedNDArray_1D_test ${GTEST_BOTH_LIBRARIES} )
 
-      ADD_EXECUTABLE( DistributedNDArrayOverlapsTest DistributedNDArrayOverlapsTest.cpp )
-      TARGET_COMPILE_OPTIONS( DistributedNDArrayOverlapsTest PRIVATE ${CXX_TESTS_FLAGS} )
-      TARGET_LINK_LIBRARIES( DistributedNDArrayOverlapsTest ${GTEST_BOTH_LIBRARIES} )
+      ADD_EXECUTABLE( DistributedNDArray_semi1D_test DistributedNDArray_semi1D_test.cpp )
+      TARGET_COMPILE_OPTIONS( DistributedNDArray_semi1D_test PRIVATE ${CXX_TESTS_FLAGS} )
+      TARGET_LINK_LIBRARIES( DistributedNDArray_semi1D_test ${GTEST_BOTH_LIBRARIES} )
+
+      ADD_EXECUTABLE( DistributedNDArrayOverlaps_1D_test DistributedNDArrayOverlaps_1D_test.cpp )
+      TARGET_COMPILE_OPTIONS( DistributedNDArrayOverlaps_1D_test PRIVATE ${CXX_TESTS_FLAGS} )
+      TARGET_LINK_LIBRARIES( DistributedNDArrayOverlaps_1D_test ${GTEST_BOTH_LIBRARIES} )
+
+      ADD_EXECUTABLE( DistributedNDArrayOverlaps_semi1D_test DistributedNDArrayOverlaps_semi1D_test.cpp )
+      TARGET_COMPILE_OPTIONS( DistributedNDArrayOverlaps_semi1D_test PRIVATE ${CXX_TESTS_FLAGS} )
+      TARGET_LINK_LIBRARIES( DistributedNDArrayOverlaps_semi1D_test ${GTEST_BOTH_LIBRARIES} )
    endif()
 
-   SET( mpi_test_parameters -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedNDArrayTest${CMAKE_EXECUTABLE_SUFFIX}" )
-   ADD_TEST( NAME DistributedNDArrayTest COMMAND "mpirun" ${mpi_test_parameters})
+   SET( mpi_test_parameters -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedNDArray_1D_test${CMAKE_EXECUTABLE_SUFFIX}" )
+   ADD_TEST( NAME DistributedNDArray_1D_test COMMAND "mpirun" ${mpi_test_parameters})
 
-   SET( mpi_test_parameters -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedNDArrayOverlapsTest${CMAKE_EXECUTABLE_SUFFIX}" )
-   ADD_TEST( NAME DistributedNDArrayOverlapsTest COMMAND "mpirun" ${mpi_test_parameters})
+   SET( mpi_test_parameters -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedNDArray_semi1D_test${CMAKE_EXECUTABLE_SUFFIX}" )
+   ADD_TEST( NAME DistributedNDArray_semi1D_test COMMAND "mpirun" ${mpi_test_parameters})
+
+   SET( mpi_test_parameters -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedNDArrayOverlaps_1D_test${CMAKE_EXECUTABLE_SUFFIX}" )
+   ADD_TEST( NAME DistributedNDArrayOverlaps_1D_test COMMAND "mpirun" ${mpi_test_parameters})
+
+   SET( mpi_test_parameters -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedNDArrayOverlaps_semi1D_test${CMAKE_EXECUTABLE_SUFFIX}" )
+   ADD_TEST( NAME DistributedNDArrayOverlaps_semi1D_test COMMAND "mpirun" ${mpi_test_parameters})
 endif()
