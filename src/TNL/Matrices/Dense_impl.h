@@ -158,9 +158,11 @@ __cuda_callable__
 Real& Dense< Real, Device, Index >::operator()( const IndexType row,
                                                 const IndexType column )
 {
-   TNL_ASSERT( row >= 0 && row < this->getRows() &&
-              column >= 0 && column < this->getColumns(),
-              printf( " row = %d, column = %d, this->getRows = %d, this->getColumns() = %d \n", row, column, this->getRows(), this->getColumns() ) );
+   TNL_ASSERT_GE( row, 0, "Row index must be non-negative." );
+   TNL_ASSERT_LT( row, this->getRows(), "Row index is out of bounds." );
+   TNL_ASSERT_GE( column, 0, "Column index must be non-negative." );
+   TNL_ASSERT_LT( column, this->getColumns(), "Column index is out of bounds." );
+
    return this->values.operator[]( this->getElementIndex( row, column ) );
 }
 
@@ -171,9 +173,11 @@ __cuda_callable__
 const Real& Dense< Real, Device, Index >::operator()( const IndexType row,
                                                       const IndexType column ) const
 {
-   TNL_ASSERT( row >= 0 && row < this->getRows() &&
-              column >= 0 && column < this->getColumns(),
-              printf( " row = %d, column = %d, this->getRows = %d, this->getColumns() = %d \n", row, column, this->getRows(), this->getColumns() ) );
+   TNL_ASSERT_GE( row, 0, "Row index must be non-negative." );
+   TNL_ASSERT_LT( row, this->getRows(), "Row index is out of bounds." );
+   TNL_ASSERT_GE( column, 0, "Column index must be non-negative." );
+   TNL_ASSERT_LT( column, this->getColumns(), "Column index is out of bounds." );
+
    return this->values.operator[]( this->getElementIndex( row, column ) );
 }
 
@@ -186,10 +190,11 @@ bool Dense< Real, Device, Index >::setElementFast( const IndexType row,
                                                             const IndexType column,
                                                             const RealType& value )
 {
-   TNL_ASSERT( row >= 0 && row < this->getRows() &&
-              column >= 0 && column < this->getColumns(),
-              std::cerr << " row = " << row << " column = " << column << " this->getRows() = " << this->getRows()
-                   << " this->getColumns() = " << this->getColumns() );
+   TNL_ASSERT_GE( row, 0, "Row index must be non-negative." );
+   TNL_ASSERT_LT( row, this->getRows(), "Row index is out of bounds." );
+   TNL_ASSERT_GE( column, 0, "Column index must be non-negative." );
+   TNL_ASSERT_LT( column, this->getColumns(), "Column index is out of bounds." );
+
    this->values.operator[]( this->getElementIndex( row, column ) ) = value;
    return true;
 }
@@ -215,9 +220,11 @@ bool Dense< Real, Device, Index >::addElementFast( const IndexType row,
                                                    const RealType& value,
                                                    const RealType& thisElementMultiplicator )
 {
-   TNL_ASSERT( row >= 0 && row < this->getRows() &&
-              column >= 0 && column < this->getColumns(),
-              printf( " row = %d, column = %d, this->getRows = %d, this->getColumns() = %d \n", row, column, this->getRows(), this->getColumns() ) );
+   TNL_ASSERT_GE( row, 0, "Row index must be non-negative." );
+   TNL_ASSERT_LT( row, this->getRows(), "Row index is out of bounds." );
+   TNL_ASSERT_GE( column, 0, "Column index must be non-negative." );
+   TNL_ASSERT_LT( column, this->getColumns(), "Column index is out of bounds." );
+
    const IndexType elementIndex = this->getElementIndex( row, column );
    if( thisElementMultiplicator == 1.0 )
       this->values.operator[]( elementIndex ) += value;
@@ -324,9 +331,11 @@ __cuda_callable__
 const Real& Dense< Real, Device, Index >::getElementFast( const IndexType row,
                                                           const IndexType column ) const
 {
-   TNL_ASSERT( row >= 0 && row < this->getRows() &&
-              column >= 0 && column < this->getColumns(),
-              printf( " row = %d, column = %d, this->getRows = %d, this->getColumns() = %d \n", row, column, this->getRows(), this->getColumns() ) );
+   TNL_ASSERT_GE( row, 0, "Row index must be non-negative." );
+   TNL_ASSERT_LT( row, this->getRows(), "Row index is out of bounds." );
+   TNL_ASSERT_GE( column, 0, "Column index must be non-negative." );
+   TNL_ASSERT_LT( column, this->getColumns(), "Column index is out of bounds." );
+
    return this->values.operator[]( this->getElementIndex( row, column ) );
 }
 
