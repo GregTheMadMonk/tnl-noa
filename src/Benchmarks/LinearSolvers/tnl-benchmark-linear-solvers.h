@@ -335,7 +335,6 @@ struct LinearSolversBenchmark
       matrixPointer->load( parameters.getParameter< String >( "input-matrix" ) );
       x0.load( parameters.getParameter< String >( "input-dof" ) );
       b.load( parameters.getParameter< String >( "input-rhs" ) );
-          return false;
 
       typename MatrixType::CompressedRowLengthsVector rowLengths;
       matrixPointer->getCompressedRowLengths( rowLengths );
