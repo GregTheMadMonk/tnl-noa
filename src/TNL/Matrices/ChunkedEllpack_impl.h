@@ -1235,10 +1235,166 @@ ChunkedEllpack< Real, Device, Index >::operator=( const ChunkedEllpack< Real2, D
                   "unknown device" );
    static_assert( std::is_same< Device2, Devices::Host >::value || std::is_same< Device2, Devices::Cuda >::value,
                   "unknown device" );
-
+   
+   // There are always 256 chunks in a slice.
+   
+//   matrix.values;            // ARRAY - stored in row-major order
+   
+//   matrix.columnIndexes;     // ARRAY - stored in row-major order
+   
+//   matrix.chunksInSlice;          // not-array-type
+   
+//   matrix.desiredChunkSize;       // not-array-type
+   
+//   matrix.rowToChunkMapping; // ARRAY
+   // - input is row ID.
+   // - output is ID of the first chunk mapped to the next row
+   // - to get ID of the first chunk mapped to this row (ID of first chunk in slice is done differently **):
+   //       rowToChunkMapping[ rowID - 1 ]
+   //                    last chunk mapped to this row:
+   //       rowToChunkMapping[ rowID ] - 1
+   //   ** IndexType chunkIndex( 0 );
+   //      if( row != slices.getElement( sliceIndex ).firstRow )
+   //          chunkIndex = rowToChunkMapping.getElement( row - 1 );
+   
+//   matrix.rowToSliceMapping; // ARRAY
+   // - Tells us to which slice does a row belong via the row ID.
+   //       e.g. row 0 belongs to slice 0.
+   //       e.g. row 1 belongs to slice 1.
+   
+//   matrix.rowPointers;       // ARRAY
+   // - Gives us the index of the first element of a row in values/columnIndexes via the row ID.
+   //       e.g. row 0 starts at index 0 in values/columnIndexes.
+   //       e.g. row 1 starts at index 50 in values/columnIndexes.
+   
+//   matrix.slices;            // ARRAY
+   // - struct of slice info.
+   // - Contains:
+   //       - chunkSize := size of chunks in the slice.
+   //       - firstRow := index of the first row of the slice in rowPointers.
+   //       - pointer := index of the first element of the slice in values/columnIndexes
+   //       - size := number of rows in the slice
+   
+//   matrix.numberOfSlices;         // not-array-type
+   
    this->setLike( matrix );
+   this->chunksInSlice = matrix.chunksInSlice;
+   this->desiredChunkSize = matrix.desiredChunkSize;
+   this->rowToChunkMapping = matrix.rowToChunkMapping;
+   this->rowToSliceMapping = matrix.rowToSliceMapping;
+   this->rowPointers = matrix.rowPointers;
+   this->slices = matrix.slices;
+   this->numberOfSlices = matrix.numberOfSlices;
+   
+//   std::cout << "\n====Pre host->cuda copy assignment\n" << std::endl;
+//   std::cout << "chunksInSlice = " << matrix.chunksInSlice << std::endl;
+//   std::cout << "desiredChunkSize = " << matrix.desiredChunkSize << std::endl;
+//   std::cout << "numberOfSlices = " << matrix.numberOfSlices << std::endl;
+   
+//   for( Index i = 0; i < matrix.values.getSize(); i++ ) {
+//       // Random values are stored with the column index of getColumns(). e.g. a matrix has 4 columns, values are at column indexes 0, 1, 2, 3 and junk data at index 4.
+//       if( matrix.columnIndexes.getElement( i ) != matrix.getColumns() )
+//           std::cout << "values.getElement( " << i << " ) = " << matrix.values.getElement( i ) 
+//            << "\tcolumnIndexes.getElement( " << i << " ) = " << matrix.columnIndexes.getElement( i ) << std::endl;
+//   }
+//   
+//   std::cout << std::endl;
+   
+//   for( Index i = 0; i < matrix.rowToChunkMapping.getSize(); i++ )
+//       std::cout << "rowToChunkMapping.getElement( " << i << " ) = " << matrix.rowToChunkMapping.getElement( i ) << std::endl;
+   
+//   std::cout << std::endl;
+   
+//   for( Index i = 0; i < matrix.rowToSliceMapping.getSize(); i++ )
+//       std::cout << "rowToSliceMapping.getElement( " << i << " ) = " << matrix.rowToSliceMapping.getElement( i ) << std::endl;
+   
+//   std::cout << std::endl;
+   
+//   for( Index i = 0; i < matrix.rowPointers.getSize(); i++ )
+//       std::cout << "rowPointers.getElement( " << i << " ) = " << matrix.rowPointers.getElement( i ) << std::endl;
+   
+//   std::cout << std::endl;
+   
+//   for( Index i = 0; i < matrix.slices.getSize(); i++ ) {
+//       std::cout << "slices.getElement( " << i << " ):" 
+//               << "\n\tchunkSize = " << matrix.slices.getElement( i ).chunkSize 
+//               << "\n\tfirstRow = " << matrix.slices.getElement( i ).firstRow 
+//               << "\n\tpointer = " << matrix.slices.getElement( i ).pointer 
+//               << "\n\tsize = " << matrix.slices.getElement( i ).size 
+//               << std::endl;
+//   }
+   
+   // host -> cuda
+   if( std::is_same< Device, Devices::Cuda >::value ) {
+//       std::cout << "\n====host->cuda====" << std::endl;
+       typename ValuesVector::HostType tmpValues;
+       typename ColumnIndexesVector::HostType tmpColumnIndexes;
+       tmpValues.setLike( matrix.values );
+       tmpColumnIndexes.setLike( matrix.columnIndexes );
+       
+#ifdef HAVE_OPENMP
+#pragma omp parallel for if( Devices::Host::isOMPEnabled() )
+#endif
+       
+       // For every slice
+       for( Index sliceIdx = 0; sliceIdx < matrix.numberOfSlices; sliceIdx++ ) {
+           // Get the chunk size of every chunk
+           const Index chunkSize = matrix.slices.getElement( sliceIdx ).chunkSize;
+           
+           // Get the first element of the slice.
+           const Index offset = matrix.slices.getElement( sliceIdx ).pointer;
+           
+           for( Index j = 0; j < chunkSize; j++ )
+               for( Index i = 0; i < matrix.chunksInSlice; i++ ) {
+                   tmpValues[ offset + j * matrix.chunksInSlice + i ] = matrix.values[ offset + i * chunkSize + j ];
+                   tmpColumnIndexes[ offset + j * matrix.chunksInSlice + i ] = matrix.columnIndexes[ offset + i * chunkSize + j ];
+               }
+       }
+       
+       this->values = tmpValues;
+       this->columnIndexes = tmpColumnIndexes;
+   }
+   
+//   std::cout << "\n====Post host->cuda copy assignment\n" << std::endl;
+//   for( Index i = 0; i < this->values.getSize(); i++ ) {
+//       // Random values are stored with the column index of getColumns(). e.g. a matrix has 4 columns, values are at column indexes 0, 1, 2, 3 and junk data at index 4.
+//       if( this->columnIndexes.getElement( i ) != this->getColumns() )
+//           std::cout << "values.getElement( " << i << " ) = " << this->values.getElement( i ) 
+//            << "\tcolumnIndexes.getElement( " << i << " ) = " << this->columnIndexes.getElement( i ) << std::endl;
+//   }
+//   
+   // cuda -> host
+   if( std::is_same< Device, Devices::Host >::value ) {
+       ValuesVector tmpValues;
+       ColumnIndexesVector tmpColumnIndexes;
+       tmpValues.setLike( matrix.values );
+       tmpColumnIndexes.setLike( matrix.columnIndexes );
+       tmpValues = matrix.values;
+       tmpColumnIndexes = matrix.columnIndexes;
+       
+#ifdef HAVE_OPENMP
+#pragma omp parallel for if( Devices::Host::isOMPEnabled() )
+#endif
+       for( Index sliceIdx = 0; sliceIdx < matrix.numberOfSlices; sliceIdx++ ) {
+           // Get the chunk size of every chunk
+           const Index chunkSize = matrix.slices.getElement( sliceIdx ).chunkSize;
+           
+           // Get the first element of the slice.
+           const Index offset = matrix.slices.getElement( sliceIdx ).pointer;
+           
+           for( Index j = 0; j < chunkSize; j++ )
+               for( Index i = 0; i < matrix.chunksInSlice; i++ ) {
+                   this->values[ offset + i * chunkSize + j ] = tmpValues[ offset + j * matrix.chunksInSlice + i ];
+                   this->columnIndexes[ offset + i * chunkSize + j ] = tmpColumnIndexes[ offset + j * matrix.chunksInSlice + i ];
+               }
+       }
+   }
 
-   throw Exceptions::NotImplementedError("Cross-device assignment for the ChunkedEllpack format is not implemented yet.");
+   if( std::is_same< Device, Devices::MIC >::value ) {
+      throw std::runtime_error("Not Implemented yet for MIC");
+   }
+   
+   return *this;
 }
 
 
