@@ -293,6 +293,24 @@ operator==( const ArrayView< Value_, Device_, Index_ >& view ) const
    return Algorithms::ArrayOperations< Device, Device_ >::compareMemory( getData(), view.getData(), getSize() );
 }
 
+template< typename Value_,
+          typename Device_,
+          typename Index_ >
+   template< typename ArrayT >
+bool
+ArrayView< Value_, Device_, Index_ >::
+operator == ( const ArrayT& array ) const
+{
+   if( array.getSize() != this->getSize() )
+      return false;
+   if( this->getSize() == 0 )
+      return true;
+   return Algorithms::ArrayOperations< DeviceType, typename ArrayT::DeviceType >::
+            compareMemory( this->getData(),
+                           array.getData(),
+                           array.getSize() );
+}
+
 template< typename Value,
           typename Device,
           typename Index >
@@ -302,6 +320,17 @@ ArrayView< Value, Device, Index >::
 operator!=( const ArrayView< Value_, Device_, Index_ >& view ) const
 {
    return ! ( *this == view );
+}
+
+template< typename Value_,
+          typename Device_,
+          typename Index_ >
+   template< typename ArrayT >
+bool
+ArrayView< Value_, Device_, Index_ >::
+operator != ( const ArrayT& array ) const
+{
+   return ! ( *this == array );
 }
 
 template< typename Value,

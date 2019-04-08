@@ -212,8 +212,8 @@ reorderEntities( const GlobalIndexVector& perm,
    // basic sanity check
    if( perm.getSize() != entitiesCount || iperm.getSize() != entitiesCount ) {
       throw std::logic_error( "Wrong size of permutation vectors: "
-                              "perm = " + std::to_string( perm ) + ", "
-                              "iperm = " + std::to_string( iperm ) );
+                              "perm size = " + std::to_string( perm.getSize() ) + ", "
+                              "iperm size = " + std::to_string( iperm.getSize() ) );
    }
    TNL_ASSERT( perm.min() == 0 && perm.max() == entitiesCount - 1,
                std::cerr << "Given array is not a permutation: min = " << perm.min()

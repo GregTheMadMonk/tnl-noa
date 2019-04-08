@@ -188,8 +188,9 @@ copySTLList( DestinationElement* destination,
    {
       const auto copySize = std::min( size - copiedElements, copy_buffer_size );
       for( size_t i = 0; i < copySize; i++ )
-         copy_buffer[ copiedElements ++ ] = static_cast< DestinationElement >( * it ++ );
-      ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory( destination, copy_buffer, copySize );
+         copy_buffer[ i ] = static_cast< DestinationElement >( * it ++ );
+      ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory( &destination[ copiedElements ], &copy_buffer[ 0 ], copySize );
+      copiedElements += copySize;
    }
 }
 
@@ -267,7 +268,8 @@ copyMemory( DestinationElement* destination,
    }
    else
    {
-      std::unique_ptr< SourceElement[] > buffer{ new SourceElement[ Devices::Cuda::getGPUTransferBufferSize() ] };
+      using BaseType = typename std::remove_cv< SourceElement >::type;
+      std::unique_ptr< BaseType[] > buffer{ new BaseType[ Devices::Cuda::getGPUTransferBufferSize() ] };
       Index i( 0 );
       while( i < size )
       {

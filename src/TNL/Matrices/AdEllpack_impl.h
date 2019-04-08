@@ -868,8 +868,9 @@ bool AdEllpack< Real, Device, Index >::createArrays( warpList* list )
 		row++;
             this->reduceMap.setElement( i, row );
 	}
-	if( localLoad > this->totalLoad )
-	    std::cout << "Error localLoad!!" << std::endl;
+   // TODO: Fix, operator > is not defined for vectors
+	//if( localLoad > this->totalLoad )
+	//    std::cout << "Error localLoad!!" << std::endl;
         iteration++;
         warp = warp->next;
     }

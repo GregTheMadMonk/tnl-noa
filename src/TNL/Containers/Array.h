@@ -52,7 +52,7 @@ template< int, typename > class StaticArray;
  * \ref containsOnlyValue.
  * Array also offers data sharing using methods \ref bind. This is, however, obsolete
  * and will be soon replaced with proxy object \ref ArrayView.
- * 
+ *
  * \par Example
  * \include ArrayExample.cpp
  * 
@@ -72,7 +72,8 @@ class Array : public Object
       using HostType = Containers::Array< Value, Devices::Host, Index >;
       using CudaType = Containers::Array< Value, Devices::Cuda, Index >;
 
-      /** \brief Basic constructor.
+      /**
+       * \brief Basic constructor.
        *
        * Constructs an empty array with zero size.
        */
@@ -105,7 +106,6 @@ class Array : public Object
        *
        * \param array is an array to be copied.
        */
-      // Deep copy does not work because of EllpackIndexMultiMap - TODO: Fix it
       explicit Array( const Array& array );
 
       /**

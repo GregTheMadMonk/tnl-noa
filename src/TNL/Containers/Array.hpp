@@ -73,7 +73,6 @@ Array( const Array< Value, Device, Index >& array )
   allocationPointer( nullptr ),
   referenceCounter( 0 )
 {
-   // Deep copy does not work because of EllpackIndexMultiMap - TODO: Fix it
    this->setSize( array.getSize() );
    Algorithms::ArrayOperations< Device >::copyMemory( this->getData(), array.getData(), array.getSize() );
 }
@@ -524,8 +523,7 @@ Array< Value, Device, Index >&
 Array< Value, Device, Index >::
 operator = ( const std::list< InValue >& list )
 {
-   if( this->getSize() != list.size() )
-      this->setSize( list.size() );
+   this->setSize( list.size() );
    Algorithms::ArrayOperations< Device >::copySTLList( this->getData(), list );
 }
 
@@ -539,7 +537,7 @@ operator = ( const std::vector< InValue >& vector )
 {
    if( this->getSize() != vector.size() )
       this->setSize( vector.size() );
-   Algorithms::ArrayOperations< Device >::copyMemory( this->getData(), vector.data(), vector.size() );
+   Algorithms::ArrayOperations< Device, Devices::Host >::copyMemory( this->getData(), vector.data(), vector.size() );
 }
 
 template< typename Value,
