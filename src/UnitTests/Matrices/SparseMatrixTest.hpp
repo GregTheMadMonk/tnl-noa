@@ -13,6 +13,9 @@
 #include <TNL/Math.h>
 #include <iostream>
 
+// Temporary, until test_OperatorEquals doesn't work for all formats.
+#include <TNL/Matrices/ChunkedEllpack.h>
+
 #ifdef HAVE_GTEST 
 #include <gtest/gtest.h>
 
@@ -717,7 +720,7 @@ void test_VectorProduct()
         outVector.setElement( j, 0 );
  
     
-    m.vectorProduct( inVector, outVector);
+    m.vectorProduct( inVector, outVector );
     
    
     EXPECT_EQ( outVector.getElement( 0 ), 12 );
@@ -805,6 +808,129 @@ void test_PerformSORIteration()
     EXPECT_EQ( xVector[ 1 ], 0.0 );
     EXPECT_EQ( xVector[ 2 ], 0.0 );
     EXPECT_EQ( xVector[ 3 ], 0.25 );
+}
+
+// This test is only for Chunked Ellpack
+template< typename Matrix >
+void test_OperatorEquals()
+{
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
+   
+   if( std::is_same< DeviceType, TNL::Devices::Cuda >::value )
+       return;
+   else
+   {
+       using CHELL_host = TNL::Matrices::ChunkedEllpack< RealType, TNL::Devices::Host, IndexType >;
+       using CHELL_cuda = TNL::Matrices::ChunkedEllpack< RealType, TNL::Devices::Cuda, IndexType >;
+
+        /*
+         * Sets up the following 4x4 sparse matrix:
+         *
+         *    /  1  2  3  0 \
+         *    |  0  4  0  5 |
+         *    |  6  7  8  0 |
+         *    \  0  9 10 11 /
+         */
+
+        const IndexType m_rows = 4;
+        const IndexType m_cols = 4;
+
+        CHELL_host m_host;
+
+        m_host.reset();
+        m_host.setDimensions( m_rows, m_cols );
+        typename CHELL_host::CompressedRowLengthsVector rowLengths;
+        rowLengths.setSize( m_rows );
+        rowLengths.setValue( 3 );
+        m_host.setCompressedRowLengths( rowLengths );
+
+        RealType value = 1;
+        for( IndexType i = 0; i < m_cols - 1; i++ )   // 0th row
+            m_host.setElement( 0, i, value++ );
+
+        m_host.setElement( 1, 1, value++ );
+        m_host.setElement( 1, 3, value++ );           // 1st row
+
+        for( IndexType i = 0; i < m_cols - 1; i++ )   // 2nd row
+            m_host.setElement( 2, i, value++ );
+
+        for( IndexType i = 1; i < m_cols; i++ )       // 3rd row
+            m_host.setElement( 3, i, value++ );
+
+        EXPECT_EQ( m_host.getElement( 0, 0 ),  1 );
+        EXPECT_EQ( m_host.getElement( 0, 1 ),  2 );
+        EXPECT_EQ( m_host.getElement( 0, 2 ),  3 );
+        EXPECT_EQ( m_host.getElement( 0, 3 ),  0 );
+
+        EXPECT_EQ( m_host.getElement( 1, 0 ),  0 );
+        EXPECT_EQ( m_host.getElement( 1, 1 ),  4 );
+        EXPECT_EQ( m_host.getElement( 1, 2 ),  0 );
+        EXPECT_EQ( m_host.getElement( 1, 3 ),  5 );
+
+        EXPECT_EQ( m_host.getElement( 2, 0 ),  6 );
+        EXPECT_EQ( m_host.getElement( 2, 1 ),  7 );
+        EXPECT_EQ( m_host.getElement( 2, 2 ),  8 );
+        EXPECT_EQ( m_host.getElement( 2, 3 ),  0 );
+
+        EXPECT_EQ( m_host.getElement( 3, 0 ),  0 );
+        EXPECT_EQ( m_host.getElement( 3, 1 ),  9 );
+        EXPECT_EQ( m_host.getElement( 3, 2 ), 10 );
+        EXPECT_EQ( m_host.getElement( 3, 3 ), 11 );
+
+        CHELL_cuda m_cuda;
+
+        // Copy the host matrix into the cuda matrix
+        m_cuda = m_host;
+
+        // Reset the host matrix
+        m_host.reset();
+
+        // Copy the cuda matrix back into the host matrix
+        m_host = m_cuda;
+
+        // Check the newly created double-copy host matrix
+        EXPECT_EQ( m_host.getElement( 0, 0 ),  1 );
+        EXPECT_EQ( m_host.getElement( 0, 1 ),  2 );
+        EXPECT_EQ( m_host.getElement( 0, 2 ),  3 );
+        EXPECT_EQ( m_host.getElement( 0, 3 ),  0 );
+
+        EXPECT_EQ( m_host.getElement( 1, 0 ),  0 );
+        EXPECT_EQ( m_host.getElement( 1, 1 ),  4 );
+        EXPECT_EQ( m_host.getElement( 1, 2 ),  0 );
+        EXPECT_EQ( m_host.getElement( 1, 3 ),  5 );
+
+        EXPECT_EQ( m_host.getElement( 2, 0 ),  6 );
+        EXPECT_EQ( m_host.getElement( 2, 1 ),  7 );
+        EXPECT_EQ( m_host.getElement( 2, 2 ),  8 );
+        EXPECT_EQ( m_host.getElement( 2, 3 ),  0 );
+
+        EXPECT_EQ( m_host.getElement( 3, 0 ),  0 );
+        EXPECT_EQ( m_host.getElement( 3, 1 ),  9 );
+        EXPECT_EQ( m_host.getElement( 3, 2 ), 10 );
+        EXPECT_EQ( m_host.getElement( 3, 3 ), 11 );
+        
+        // Try vectorProduct with copied cuda matrix to see if it works correctly.
+        using VectorType = TNL::Containers::Vector< RealType, TNL::Devices::Cuda, IndexType >;
+    
+        VectorType inVector;
+        inVector.setSize( m_cols );
+        for( IndexType i = 0; i < inVector.getSize(); i++ )        
+            inVector.setElement( i, 2 );
+
+        VectorType outVector;  
+        outVector.setSize( m_rows );
+        for( IndexType j = 0; j < outVector.getSize(); j++ )
+            outVector.setElement( j, 0 );
+        
+        m_cuda.vectorProduct( inVector, outVector );
+        
+        EXPECT_EQ( outVector.getElement( 0 ), 12 );
+        EXPECT_EQ( outVector.getElement( 1 ), 18 );
+        EXPECT_EQ( outVector.getElement( 2 ), 42 );
+        EXPECT_EQ( outVector.getElement( 3 ), 60 );
+   }
 }
 
 template< typename Matrix >
