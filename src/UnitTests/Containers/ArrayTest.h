@@ -466,7 +466,7 @@ TYPED_TEST( ArrayTest, assignmentOperator )
 
    v = 72; //.setValue( 0 );
    for( int i = 0; i < 10; i++ )
-      EXPECT_EQ( v[ i ], 72 );
+      EXPECT_EQ( v.getElement( i ), 72 );
    v = u;
    EXPECT_EQ( u, v );
 
