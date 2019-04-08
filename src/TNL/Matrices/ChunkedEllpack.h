@@ -75,6 +75,11 @@ public:
    typedef tnlChunkedEllpackSliceInfo< IndexType > ChunkedEllpackSliceInfo;
    typedef typename Sparse< RealType, DeviceType, IndexType >:: CompressedRowLengthsVector CompressedRowLengthsVector;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
+   typedef typename Sparse< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
+   typedef typename Sparse< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
+   typedef ChunkedEllpack< Real, Device, Index > ThisType;
+   typedef ChunkedEllpack< Real, Devices::Host, Index > HostType;
+   typedef ChunkedEllpack< Real, Devices::Cuda, Index > CudaType;
    typedef Sparse< Real, Device, Index > BaseType;
    typedef typename BaseType::MatrixRow MatrixRow;
    typedef SparseRow< const RealType, const IndexType > ConstMatrixRow;
