@@ -117,6 +117,8 @@ setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths )
    // FIXME: cannot sort a const vector!
 	//DeviceDependentCode::performRowBubbleSort( *this, rowLengths );
 	//DeviceDependentCode::computeColumnSizes( *this, rowLengths );
+        
+   // FIXME: Create a local copy of the const vector to work if. Check if it (rowLengths) is used somewhere else.
 
 	this->groupPointers.template scan< Algorithms::ScanType::Exclusive >();
 
