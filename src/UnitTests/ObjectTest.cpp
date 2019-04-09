@@ -75,6 +75,24 @@ TEST( ObjectTest, parseObjectTypeTest )
    expected = { "A", "b", "c <E>", "d" };
    EXPECT_EQ( parsed, expected );
 }
+
+TEST( HeaderTest, SaveAndLoadTest )
+{
+   Object testObject;
+   File file;
+   file.open( "test-file.tnl", File::Mode::Out );
+   saveHeader( file, "TYPE" );
+   file.close();
+   file.open( "test-file.tnl", File::Mode::In );
+   String type;
+   loadHeader( file, type );
+   
+   EXPECT_EQ( type, "TYPE" );
+
+   EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
+}
+
+
 #endif
 
 

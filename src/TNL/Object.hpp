@@ -151,4 +151,21 @@ parseObjectType( const String& objectType )
    return parsedObjectType;
 }
 
+inline void saveHeader( File& file, const String& type )
+{
+   file.save( magic_number, strlen( magic_number ) );
+   file << type;
+}
+
+inline void loadHeader( File& file, String& type )
+{
+   char mn[ 10 ];
+   file.load( mn, strlen( magic_number ) );
+   if( strncmp( mn, magic_number, 5 ) != 0 )
+      throw Exceptions::NotTNLFile();
+   file >> type;
+}
+
+
+
 } // namespace TNL

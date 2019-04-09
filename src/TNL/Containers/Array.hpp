@@ -482,7 +482,7 @@ operator = ( const Array< Value, Device, Index >& array )
          copyMemory( this->getData(),
                      array.getData(),
                      array.getSize() );
-   return ( *this );
+   return *this;
 }
 
 template< typename Value,
@@ -501,6 +501,7 @@ operator = ( Array< Value, Device, Index >&& array )
    array.data = nullptr;
    array.allocationPointer = nullptr;
    array.referenceCounter = nullptr;
+   return *this;
 }
 
 
@@ -512,8 +513,9 @@ Array< Value, Device, Index >&
 Array< Value, Device, Index >::
 operator = ( const T& data )
 {
+   Algorithms::ArrayAssignment< ThisType, T >::resize( *this, data );
    Algorithms::ArrayAssignment< ThisType, T >::assign( *this, data );
-   return ( *this );
+   return *this;
 }
 
 template< typename Value,
@@ -526,6 +528,7 @@ operator = ( const std::list< InValue >& list )
 {
    this->setSize( list.size() );
    Algorithms::ArrayOperations< Device >::copySTLList( this->getData(), list );
+   return *this;
 }
 
 template< typename Value,
@@ -539,6 +542,7 @@ operator = ( const std::vector< InValue >& vector )
    if( this->getSize() != vector.size() )
       this->setSize( vector.size() );
    Algorithms::ArrayOperations< Device, Devices::Host >::copyMemory( this->getData(), vector.data(), vector.size() );
+   return *this;
 }
 
 template< typename Value,

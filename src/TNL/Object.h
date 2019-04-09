@@ -170,6 +170,10 @@ String getObjectType( const String& fileName );
 std::vector< String >
 parseObjectType( const String& objectType );
 
+inline void saveHeader( File& file, const String& type );
+
+inline void loadHeader( File& file, String& type );
+
 } // namespace TNL
 
 #include <TNL/Object.hpp>

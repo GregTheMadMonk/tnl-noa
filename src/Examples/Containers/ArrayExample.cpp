@@ -47,20 +47,9 @@ void arrayExample()
       std::cout << "a2 contains only value 0." << std::endl;
 
    /***
-    * More efficient way of array elements manipulation is with the lambda functions
-    */
-   ArrayType a3( size );
-   auto f1 = [] __cuda_callable__ ( IndexType i ) -> int { return 2 * i;};
-   a3.evaluate( f1 );
-
-   for( int i = 0; i < size; i++ )
-      if( a3.getElement( i ) != 2 * i )
-         std::cerr << "Something is wrong!!!" << std::endl;
-
-   /***
     * You may swap array data with the swap method.
     */
-   a1.swap( a3 );
+   a1.swap( a2 );
 
    /***
     * Of course, you may save it to file and load again

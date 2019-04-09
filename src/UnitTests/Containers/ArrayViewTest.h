@@ -309,10 +309,13 @@ TYPED_TEST( ArrayViewTest, elementwiseAccess )
 TYPED_TEST( ArrayViewTest, evaluate )
 {
    using ArrayType = typename TestFixture::ArrayType;
+   using ValueType = typename ArrayType::ValueType;
+   using DeviceType = typename ArrayType::DeviceType;
    using IndexType = typename ArrayType::IndexType;
-   using ViewType = ArrayView< Value, Devices::Cuda, Index >;
+   using ViewType = ArrayView< ValueType, DeviceType, IndexType >;
    ArrayType u( 10 );
    ViewType v( u );
+   
    auto f = [] __cuda_callable__ ( IndexType i )
    {
       return 3 * i % 4;
