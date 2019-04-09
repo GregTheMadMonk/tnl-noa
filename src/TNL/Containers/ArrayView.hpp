@@ -13,7 +13,11 @@
 #include <iostream>
 
 #include <TNL/param-types.h>
+#include <TNL/ParallelFor.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
+#include <TNL/Containers/Algorithms/ArrayIO.h>
+#include <TNL/Containers/Algorithms/ArrayAssignment.h>
+#include <TNL/Exceptions/ArrayWrongSize.h>
 
 #include "ArrayView.h"
 

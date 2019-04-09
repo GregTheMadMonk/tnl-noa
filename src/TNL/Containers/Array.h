@@ -12,9 +12,11 @@
 
 #include <list>
 #include <vector>
+
 #include <TNL/Object.h>
 #include <TNL/File.h>
 #include <TNL/Devices/Host.h>
+#include <TNL/Devices/Cuda.h>
 
 namespace TNL {
 /**

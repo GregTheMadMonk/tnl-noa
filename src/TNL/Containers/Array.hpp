@@ -11,16 +11,16 @@
 #pragma once
 
 #include <iostream>
+
 #include <TNL/Assert.h>
-#include <TNL/File.h>
 #include <TNL/Math.h>
-#include <TNL/ParallelFor.h>
 #include <TNL/param-types.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Algorithms/ArrayIO.h>
 #include <TNL/Containers/Algorithms/ArrayAssignment.h>
-#include <TNL/Containers/Array.h>
 #include <TNL/Exceptions/ArrayWrongSize.h>
+
+#include "Array.h"
 
 namespace TNL {
 namespace Containers {
