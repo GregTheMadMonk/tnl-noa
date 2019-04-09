@@ -306,6 +306,25 @@ TYPED_TEST( ArrayViewTest, elementwiseAccess )
    testArrayViewElementwiseAccess( ArrayType() );
 }
 
+TYPED_TEST( ArrayViewTest, evaluate )
+{
+   using ArrayType = typename TestFixture::ArrayType;
+   using IndexType = typename ArrayType::IndexType;
+   using ViewType = ArrayView< Value, Devices::Cuda, Index >;
+   ArrayType u( 10 );
+   ViewType v( u );
+   auto f = [] __cuda_callable__ ( IndexType i )
+   {
+      return 3 * i % 4;
+   };
+   v.evaluate( f );
+   for( int i = 0; i < 10; i++ )
+   {
+      EXPECT_EQ( u.getElement( i ), 3 * i % 4 );
+      EXPECT_EQ( v.getElement( i ), 3 * i % 4 );
+   }
+}
+
 TYPED_TEST( ArrayViewTest, containsValue )
 {
    using ArrayType = typename TestFixture::ArrayType;

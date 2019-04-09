@@ -261,7 +261,7 @@ class Array : public Object
       /**
        * \brief Swaps this array with another.
        *
-       * The swap is done by swaping the meta-data, i.e. pointers and sizes.
+       * The swap is done in a shallow way, i.e. swapping only pointers and sizes.
        * 
        * \param array is the array to be swapped with this array.
        */
@@ -331,6 +331,9 @@ class Array : public Object
       /**
        * \brief Array elements getter - returns value of an element at position \e i.
        *
+       * This method can be called only from the host system (CPU) but even for
+       * arrays allocated on device (GPU).
+       * 
        * \param i Index position of an element.
        * 
        * \return Copy of i-th element.
@@ -380,7 +383,7 @@ class Array : public Object
       Array& operator = ( Array&& array );
 
       /**
-       * \brief Assigns either TNL array or single value.
+       * \brief Assigns either array-like container or single value.
        *
        * If \e T is array type i.e. \ref Array, \ref ArrayView, \ref StaticArray,
        * \ref Vector, \ref VectorView, \ref StaticVector, \ref DistributedArray,
@@ -419,12 +422,12 @@ class Array : public Object
       Array& operator = ( const std::vector< InValue >& vector );
 
       /**
-       * \brief This function checks whether this array is equal to \e array.
+       * \brief Comparison operator with another array-like container.
        *
-       * \tparam ArrayT is type of array.
+       * \tparam ArrayT is type of an array-like container, i.e Array, ArrayView, Vector, VectorView, DistributedArray, DistributedVector etc.
        * \param array is reference to an array.
        * 
-       * \return True if arrays are equal and false otherwise.
+       * \return True if both arrays are equal element-wise and false otherwise.
        */
       template< typename ArrayT >
       bool operator == ( const ArrayT& array ) const;
@@ -435,7 +438,7 @@ class Array : public Object
        * \tparam ArrayT Type of array.
        * \param array Reference to an array.
        * 
-       * \return True if arrays are not equal and false otherwise.
+       * \return True if both arrays are not equal element-wise and false otherwise.
        */
       template< typename ArrayT >
       bool operator != ( const ArrayT& array ) const;
@@ -452,21 +455,9 @@ class Array : public Object
                      Index end = -1 );
 
       /**
-       * \brief Sets the array elements using given lambda function.
+       * \brief Checks if there is an element with value \e v.
        *
-       * Sets all the array values to \e v.
-       *
-       * \param v Reference to a value.
-       */
-      template< typename Function >
-      void evaluate( Function& f,
-                     const Index begin = 0,
-                     Index end = -1 );
-
-      /**
-       * \brief Checks if there is an element with value \e v in this array.
-       *
-       * By default, the methods checks all array elements. By setting indexes
+       * By default, the method checks all array elements. By setting indexes
        * \e begin and \e end, only elements in given interval are checked.
        * 
        * \param v is reference to the value.
@@ -474,16 +465,24 @@ class Array : public Object
        * \param end is the last element to be checked. If \e end equals -1, its
        * value is replaces by the array size.
        * 
-       * \return True if array contains only given value in given interval.
+       * \return True if there is **at least one** array element in interval [\e begin, \e end ) having value \e v.
        */
       bool containsValue( const Value& v,
                           const Index begin = 0,
                           Index end = -1 ) const;
 
       /**
-       * \brief Checks if all elements in this array have the same value \e v.
+       * \brief Checks if all elements have the same value \e v.
        *
+       * By default, the method checks all array elements. By setting indexes
+       * \e begin and \e end, only elements in given interval are checked.
+       * 
        * \param v Reference to a value.
+       * \param begin is the first element to be checked
+       * \param end is the last element to be checked. If \e end equals -1, its
+       * value is replaces by the array size.
+       * 
+       * \return True if there **all** array elements in interval [\e begin, \e end ) have value \e v.
        */
       bool containsOnlyValue( const Value& v,
                               const Index begin = 0,
@@ -491,9 +490,14 @@ class Array : public Object
 
       /**
        * \brief Returns true if non-zero size is set.
+       * 
+       * This method can be called from device kernels.
+       * 
+       * \return Returns \e true if array view size is zero, \e false otherwise.
        */
-      //operator bool() const;
-
+      __cuda_callable__
+      bool empty() const;
+      
       /**
        * \brief Method for saving the object to a \e file as a binary data.
        *

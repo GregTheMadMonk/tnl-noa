@@ -73,6 +73,13 @@ public:
    using CudaType = ArrayView< Value, Devices::Cuda, Index >;
 
    /**
+    * \brief Returns type of array view in C++ style.
+    * 
+    * \return String with array view type.
+    */
+   static String getType();   
+   
+   /**
     * \brief Basic constructor for empty ArrayView.
     * 
     * This method can be called from device kernels.
@@ -141,93 +148,339 @@ public:
    __cuda_callable__
    ArrayView( Array< Value_, Device, Index >& array );
 
-   template< int Size, typename Value_ >  // template catches both const and non-const qualified Value
+   /**
+    * \brief Constructor for initialization with static array.
+    * 
+    * This method can be called from device kernels.
+    * 
+    * \tparam Size is size of the static array.
+    * \tparam Value_ can be both const and non-const qualified Value.
+    * 
+    * \param array is a static array the array view is initialized with.
+    */
+   template< int Size, typename Value_ >
    __cuda_callable__
    ArrayView( StaticArray< Size, Value_ >& array );
 
-   // these constructors will be used only when Value is const-qualified
-   // (const views are initializable by const references)
-   template< typename Value_ >  // template catches both const and non-const qualified Value
+   /**
+    * \brief Copy constructor from constant Array.
+    * 
+    * This constructor will be used only when Value is const-qualified
+    * (const views are initializable by const references).
+    * 
+    * This method can be called from device kernels.
+    * 
+    * \tparam Value_ can be both const and non-const qualified Value
+    * \param array is an array the array view is initialized with.
+    */
+   template< typename Value_ >
    __cuda_callable__
    ArrayView( const Array< Value_, Device, Index >& array );
 
+   /**
+    * \brief Constructor for initialization with static array.
+    * 
+    * This method can be called from device kernels.
+    * 
+    * \tparam Size is size of the static array.
+    * \tparam Value_ can be both const and non-const qualified Value.
+    * 
+    * \param array is a static array the array view is initialized with.
+    */
    template< int Size, typename Value_ >  // template catches both const and non-const qualified Value
    __cuda_callable__
    ArrayView( const StaticArray< Size, Value_ >& array );
 
-
-   // methods for rebinding (reinitialization)
+   /**
+    * \brief Method for rebinding (reinitialization).
+    * 
+    * This method can be called from device kernels.
+    * 
+    * \param data is pointer to data to be bound to the array view.
+    * \param size is the number of elements to be managed by the array view.
+    */
    __cuda_callable__
    void bind( Value* data, const Index size );
 
-   // Note that you can also bind directly to Array and other types implicitly
-   // convertible to ArrayView.
+   /**
+    * \brief Method for rebinding (reinitialization) with another ArrayView.
+    * 
+    * Note that you can also bind directly to Array and other types implicitly
+    * convertible to ArrayView.
+    * 
+    * This method can be called from device kernels.
+    * 
+    * \param view is array view to be bound.
+    */   
    __cuda_callable__
    void bind( ArrayView view );
 
-
-   // Copy-assignment does deep copy, just like regular array, but the sizes
-   // must match (i.e. copy-assignment cannot resize).
+   /**
+    * \brief Assignment operator.
+    * 
+    * Copy-assignment does deep copy, just like regular array, but the sizes
+    * must match (i.e. copy-assignment cannot resize).
+    * 
+    * \param view is array view to be copied
+    */
    ArrayView& operator=( const ArrayView& view );
 
-   template< typename Array >
-   ArrayView& operator=( const Array& array );
+   /**
+    * \brief Assignment operator for array-like containers or single value.
+    *
+    * If \e T is array type i.e. \ref Array, \ref ArrayView, \ref StaticArray,
+    * \ref Vector, \ref VectorView, \ref StaticVector, \ref DistributedArray,
+    * \ref DistributedArrayView, \ref DistributedVector or 
+    * \ref DistributedVectorView, its elements are copied into this array. If
+    * it is other type convertibly to ArrayView::ValueType, all array elements are 
+    * set to the value \e data.
+    * 
+    * \tparam T is type of array or value type.
+    * 
+    * \param data is a reference to array or value.
+    * 
+    * \return Reference to this array.
+    */
+   template< typename T >
+   ArrayView& operator=( const T& array );
 
-   static String getType();
-
+   /**
+    * \brief Swaps this array view content with another.
+    *
+    * The swap is done in a shallow way, i.e. swapping only  pointers and sizes.
+    * 
+    * This method can be called from device kernels.
+    * 
+    * \param view is the array view to be swapped with this array view.
+    */   
    __cuda_callable__
    void swap( ArrayView& view );
 
+   /***
+    * \brief Resets the array view.
+    * 
+    * The array view behaves like being empty after calling this method.
+    * 
+    * This method can be called from device kernels.
+    */
    __cuda_callable__
    void reset();
 
+   /**
+    * \brief Returns constant pointer to data managed by the array view.
+    * 
+    * This method can be called from device kernels.
+    * 
+    * \return Pointer to array data.
+    */
    __cuda_callable__
    const Value* getData() const;
 
+   /**
+    * \brief Returns pointer to data managed by the array view.
+    * 
+    * This method can be called from device kernels.
+    * 
+    * \return Pointer to array data.
+    */
    __cuda_callable__
    Value* getData();
 
+   /**
+    * \brief Returns constant pointer to data managed by the array view.
+    * 
+    * Use this method in algorithms where you want to emphasize that
+    * C-style array pointer is required. 
+    * 
+    * This method can be called from device kernels.
+    * 
+    * \return Pointer to array data.
+    */   
    __cuda_callable__
    const Value* getArrayData() const;
 
+   /**
+    * \brief Returns pointer to data managed by the array view.
+    * 
+    * Use this method in algorithms where you want to emphasize that
+    * C-style array pointer is required. 
+    * 
+    * This method can be called from device kernels.
+    * 
+    * \return Pointer to array data.
+    */   
    __cuda_callable__
    Value* getArrayData();
 
+   /**
+    * \brief Returns the array view size, i.e. number of elements being managed by the array view.
+    * 
+    * This method can be called from device kernels.
+    * 
+    * \return The array view size.
+    */
    __cuda_callable__
    Index getSize() const;
 
+   /**
+    * \brief Array view elements setter - change value of an element at position \e i.
+    *
+    * This method can be called only from the host system (CPU) but even for
+    * array views managing data allocated on device (GPU).
+    * 
+    * \param i is element index.
+    * \param v is the new value of the element.
+    */   
    void setElement( Index i, Value value );
 
+   /**
+    * \brief Array view elements getter - returns value of an element at position \e i.
+    *
+    * This method can be called only from the host system (CPU) but even for
+    * array views managing data allocated on device (GPU).
+    *
+    * \param i Index position of an element.
+    * 
+    * \return Copy of i-th element.
+    */
    Value getElement( Index i ) const;
 
+   /**
+    * \brief Accesses specified element at the position \e i.
+    *
+    * This method can be called from device (GPU) kernels if the array view
+    * manages data allocated on the device. In this case, it cannot be called
+    * from the host (CPU.)
+    * 
+    * \param i is position of the element.
+    * 
+    * \return Reference to i-th element.
+    */   
    __cuda_callable__
    Value& operator[]( Index i );
 
+   /**
+    * \brief Returns constant reference to an element at a position \e i.
+    *
+    * This method can be called from device (GPU) kernels if the array view
+    * manages data allocated on the device. In this case, it cannot be called
+    * from the host (CPU.)
+    * 
+    * \param i is position of the element.
+    * 
+    * \return Reference to i-th element.
+    */   
    __cuda_callable__
    const Value& operator[]( Index i ) const;
 
+   /**
+    * \brief Comparison operator with another array view \e view.
+    *
+    * \tparam Value_ is the value type of the right-hand-side array view.
+    * \tparam Device_ is the device type of the right-hand-side array view.
+    * \tparam Index_ is the index type of the right-hand-side array view.
+    * \param  view is reference to the right-hand-side array view.
+    * 
+    * \return True if both array views are equal element-wise and false otherwise.
+    */   
    template< typename Value_, typename Device_, typename Index_ >
    bool operator==( const ArrayView< Value_, Device_, Index_ >& view ) const;
 
+   /**
+    * \brief Comparison operator with another array-like container \e array.
+    *
+    * \tparam ArrayT is type of an array-like container, i.e Array, ArrayView, Vector, VectorView, DistributedArray, DistributedVector etc.
+    * \param array is reference to an array.
+    * 
+    * \return True if both array views are equal element-wise and false otherwise.
+    */   
    template< typename ArrayT >
    bool operator == ( const ArrayT& array ) const;   
 
+   /**
+    * \brief Comparison negation operator with another array view \e view.
+    *
+    * \tparam Value_ is the value type of the right-hand-side array view.
+    * \tparam Device_ is the device type of the right-hand-side array view.
+    * \tparam Index_ is the index type of the right-hand-side array view.
+    * \param  view is reference to the right-hand-side array view.
+    * 
+    * \return True if both array views are not equal element-wise and false otherwise.
+    */
    template< typename Value_, typename Device_, typename Index_ >
    bool operator!=( const ArrayView< Value_, Device_, Index_ >& view ) const;
-   
+
+   /**
+    * \brief Comparison negation operator with another array-like container \e array.
+    *
+    * \tparam ArrayT is type of an array-like container, i.e Array, ArrayView, Vector, VectorView, DistributedArray, DistributedVector etc.
+    * \param array is reference to an array.
+    * 
+    * \return True if both array views are not equal element-wise and false otherwise.
+    */      
    template< typename ArrayT >
    bool operator != ( const ArrayT& array ) const;
 
+   /**
+    * \brief Sets the array view elements to given value.
+    *
+    * Sets all the array values to \e v.
+    *
+    * \param v Reference to a value.
+    */
    void setValue( Value value );
+   
+   /**
+    * \brief Sets the array elements using given lambda function.
+    *
+    * Sets all the array values to \e v.
+    *
+    * \param v Reference to a value.
+    */
+   template< typename Function >
+   void evaluate( Function& f,
+                  const Index begin = 0,
+                  Index end = -1 );   
 
-   // Checks if there is an element with given value in this array
+   /**
+    * \brief Checks if there is an element with value \e v.
+    *
+    * By default, the method checks all array view elements. By setting indexes
+    * \e begin and \e end, only elements in given interval are checked.
+    * 
+    * \param v is reference to the value.
+    * \param begin is the first element to be checked
+    * \param end is the last element to be checked. If \e end equals -1, its
+    * value is replaces by the array size.
+    * 
+    * \return True if there is **at least one** array element in interval [\e begin, \e end ) having value \e v.
+    */   
    bool containsValue( Value value ) const;
 
-   // Checks if all elements in this array have the same given value
+   /**
+    * \brief Checks if all elements have the same value \e v.
+    *
+    * By default, the method checks all array view elements. By setting indexes
+    * \e begin and \e end, only elements in given interval are checked.
+    * 
+    * \param v Reference to a value.
+    * \param begin is the first element to be checked
+    * \param end is the last element to be checked. If \e end equals -1, its
+    * value is replaces by the array size.
+    * 
+    * \return True if there **all** array elements in interval [\e begin, \e end ) have value \e v.
+    */
    bool containsOnlyValue( Value value ) const;
 
-   //! Returns true if non-zero size is set.
-   operator bool() const;
+   /**
+    * \brief Returns true if non-zero size is set.
+    * 
+    * This method can be called from device kernels.
+    * 
+    * \return Returns \e true if array view size is zero, \e false otherwise.
+    */
+   __cuda_callable__
+   bool empty() const;
 
 protected:
    //! Pointer to allocated data
@@ -243,4 +496,4 @@ std::ostream& operator<<( std::ostream& str, const ArrayView< Value, Device, Ind
 } // namespace Containers
 } // namespace TNL
 
-#include <TNL/Containers/ArrayView_impl.h>
+#include <TNL/Containers/ArrayView.hpp>

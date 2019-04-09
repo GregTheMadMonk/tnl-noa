@@ -73,6 +73,7 @@ Array( const Array< Value, Device, Index >& array )
   allocationPointer( nullptr ),
   referenceCounter( 0 )
 {
+   //this->bind( array );
    this->setSize( array.getSize() );
    Algorithms::ArrayOperations< Device >::copyMemory( this->getData(), array.getData(), array.getSize() );
 }
@@ -583,28 +584,6 @@ void Array< Value, Device, Index >::setValue( const ValueType& e,
 template< typename Value,
           typename Device,
           typename Index >
-   template< typename Function >
-void Array< Value, Device, Index >::evaluate( Function& f,
-                                              const Index begin,
-                                              Index end )
-{
-   TNL_ASSERT_TRUE( this->getData(), "Attempted to set a value of an empty array." );
-
-   ValueType* d = this->data;
-   auto eval = [=] __cuda_callable__ ( Index i )
-   {
-      d[ i ] = f( i );
-   };
-   
-   if( end == -1 )
-      end = this->getSize();
-
-   ParallelFor< DeviceType >::exec( begin, end, eval );
-}
-
-template< typename Value,
-          typename Device,
-          typename Index >
 bool
 Array< Value, Device, Index >::
 containsValue( const Value& v,
@@ -634,14 +613,15 @@ containsOnlyValue( const Value& v,
    return Algorithms::ArrayOperations< Device >::containsOnlyValue( &this->getData()[ begin ], end - begin, v );
 }
 
-/*template< typename Value,
+template< typename Value,
           typename Device,
           typename Index >
-Array< Value, Device, Index >::operator bool() const
+bool
+Array< Value, Device, Index >::
+empty() const
 {
-   return data != 0;
-}*/
-
+   return data;
+}
 
 template< typename Value,
           typename Device,

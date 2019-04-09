@@ -528,23 +528,6 @@ TYPED_TEST( ArrayTest, assignmentOperatorWithDifferentType )
    testArrayAssignmentWithDifferentType< ArrayType >();
 }
 
-TYPED_TEST( ArrayTest, evaluate )
-{
-   using ArrayType = typename TestFixture::ArrayType;
-   using IndexType = typename ArrayType::IndexType;
-   ArrayType u( 10 );
-   
-
-   // TODO: Move to ArrayView
-   /*auto f = [] __cuda_callable__ ( IndexType i )
-   {
-      return 3 * i % 4;
-   };
-   u.evaluate( f );
-   for( int i = 0; i < 10; i++ )
-      EXPECT_EQ( u.getElement( i ), 3 * i % 4 );*/
-}
-
 TYPED_TEST( ArrayTest, SaveAndLoad )
 {
    using ArrayType = typename TestFixture::ArrayType;
