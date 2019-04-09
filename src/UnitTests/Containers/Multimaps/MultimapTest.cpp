@@ -42,7 +42,7 @@ TEST( MultimapTest, TestSettingSizes )
 
    for( IndexType i = 0; i < inputs; i++ ) {
       auto values = map.getValues( i );
-      const auto constValues = ( (const MultimapType) map ).getValues( i );
+      const auto constValues = ( (const MultimapType&) map ).getValues( i );
 
       // uninitialized should be equal to the value from the allocation vector
       ASSERT_EQ( values.getSize(), allocationRanges[ i ] );
@@ -81,7 +81,7 @@ TEST( MultimapTest, TestSettingValues )
 
    for( IndexType i = 0; i < inputs; i++ ) {
       auto values = map.getValues( i );
-      const auto constValues = ( (const MultimapType) map ).getValues( i );
+      const auto constValues = ( (const MultimapType&) map ).getValues( i );
 
       values.setSize( allocatedValues );
 
