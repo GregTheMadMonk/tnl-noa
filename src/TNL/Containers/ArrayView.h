@@ -65,13 +65,13 @@ template< typename Value,
           typename Index = int >
 class ArrayView
 {
+   using SerializationType = Array< Value, Devices::Host, Index >;
 public:
    using ValueType = Value;
    using DeviceType = Device;
    using IndexType = Index;
    using HostType = ArrayView< Value, Devices::Host, Index >;
    using CudaType = ArrayView< Value, Devices::Cuda, Index >;
-   using SerializationType = Array< Value, Devices::Host, Index >;
 
    /**
     * \brief Returns type of array view in C++ style.
