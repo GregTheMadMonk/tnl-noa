@@ -375,19 +375,6 @@ public:
    const Value& operator[]( Index i ) const;
 
    /**
-    * \brief Comparison operator with another array view \e view.
-    *
-    * \tparam Value_ is the value type of the right-hand-side array view.
-    * \tparam Device_ is the device type of the right-hand-side array view.
-    * \tparam Index_ is the index type of the right-hand-side array view.
-    * \param  view is reference to the right-hand-side array view.
-    *
-    * \return True if both array views are equal element-wise and false otherwise.
-    */
-   template< typename Value_, typename Device_, typename Index_ >
-   bool operator==( const ArrayView< Value_, Device_, Index_ >& view ) const;
-
-   /**
     * \brief Comparison operator with another array-like container \e array.
     *
     * \tparam ArrayT is type of an array-like container, i.e Array, ArrayView, Vector, VectorView, DistributedArray, DistributedVector etc.
@@ -397,19 +384,6 @@ public:
     */
    template< typename ArrayT >
    bool operator==( const ArrayT& array ) const;
-
-   /**
-    * \brief Comparison negation operator with another array view \e view.
-    *
-    * \tparam Value_ is the value type of the right-hand-side array view.
-    * \tparam Device_ is the device type of the right-hand-side array view.
-    * \tparam Index_ is the index type of the right-hand-side array view.
-    * \param  view is reference to the right-hand-side array view.
-    *
-    * \return True if both array views are not equal element-wise and false otherwise.
-    */
-   template< typename Value_, typename Device_, typename Index_ >
-   bool operator!=( const ArrayView< Value_, Device_, Index_ >& view ) const;
 
    /**
     * \brief Comparison negation operator with another array-like container \e array.

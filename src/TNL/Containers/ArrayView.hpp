@@ -279,24 +279,9 @@ operator[]( Index i ) const
 template< typename Value,
           typename Device,
           typename Index >
-   template< typename Value_, typename Device_, typename Index_ >
-bool
-ArrayView< Value, Device, Index >::
-operator==( const ArrayView< Value_, Device_, Index_ >& view ) const
-{
-   if( view.getSize() != getSize() )
-      return false;
-   if( getSize() == 0 )
-      return true;
-   return Algorithms::ArrayOperations< Device, Device_ >::compareMemory( getData(), view.getData(), getSize() );
-}
-
-template< typename Value_,
-          typename Device_,
-          typename Index_ >
    template< typename ArrayT >
 bool
-ArrayView< Value_, Device_, Index_ >::
+ArrayView< Value, Device, Index >::
 operator==( const ArrayT& array ) const
 {
    if( array.getSize() != this->getSize() )
@@ -312,20 +297,9 @@ operator==( const ArrayT& array ) const
 template< typename Value,
           typename Device,
           typename Index >
-   template< typename Value_, typename Device_, typename Index_ >
-bool
-ArrayView< Value, Device, Index >::
-operator!=( const ArrayView< Value_, Device_, Index_ >& view ) const
-{
-   return ! ( *this == view );
-}
-
-template< typename Value_,
-          typename Device_,
-          typename Index_ >
    template< typename ArrayT >
 bool
-ArrayView< Value_, Device_, Index_ >::
+ArrayView< Value, Device, Index >::
 operator!=( const ArrayT& array ) const
 {
    return ! ( *this == array );
