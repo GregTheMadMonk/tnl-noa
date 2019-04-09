@@ -396,7 +396,7 @@ public:
     * \return True if both array views are equal element-wise and false otherwise.
     */
    template< typename ArrayT >
-   bool operator == ( const ArrayT& array ) const;
+   bool operator==( const ArrayT& array ) const;
 
    /**
     * \brief Comparison negation operator with another array view \e view.
@@ -420,7 +420,7 @@ public:
     * \return True if both array views are not equal element-wise and false otherwise.
     */
    template< typename ArrayT >
-   bool operator != ( const ArrayT& array ) const;
+   bool operator!=( const ArrayT& array ) const;
 
    /**
     * \brief Sets the array view elements to given value.

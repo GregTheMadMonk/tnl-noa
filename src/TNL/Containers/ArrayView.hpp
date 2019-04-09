@@ -297,7 +297,7 @@ template< typename Value_,
    template< typename ArrayT >
 bool
 ArrayView< Value_, Device_, Index_ >::
-operator == ( const ArrayT& array ) const
+operator==( const ArrayT& array ) const
 {
    if( array.getSize() != this->getSize() )
       return false;
@@ -326,7 +326,7 @@ template< typename Value_,
    template< typename ArrayT >
 bool
 ArrayView< Value_, Device_, Index_ >::
-operator != ( const ArrayT& array ) const
+operator!=( const ArrayT& array ) const
 {
    return ! ( *this == array );
 }

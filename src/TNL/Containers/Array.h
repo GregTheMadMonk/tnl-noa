@@ -350,7 +350,7 @@ class Array : public Object
        *
        * \return Reference to i-th element.
        */
-      __cuda_callable__ inline Value& operator[] ( const Index& i );
+      __cuda_callable__ inline Value& operator[]( const Index& i );
 
       /**
        * \brief Accesses specified element at the position \e i.
@@ -362,7 +362,7 @@ class Array : public Object
        *
        * \return Constant reference to i-th pointer.
        */
-      __cuda_callable__ inline const Value& operator[] ( const Index& i ) const;
+      __cuda_callable__ inline const Value& operator[]( const Index& i ) const;
 
       /**
        * \brief Assigns \e array to this array, replacing its current contents.
@@ -371,7 +371,7 @@ class Array : public Object
        *
        * \return Reference to this array.
        */
-      Array& operator = ( const Array& array );
+      Array& operator=( const Array& array );
 
       /**
        * \brief Move contents of \e array to this array.
@@ -380,7 +380,7 @@ class Array : public Object
        *
        * \return Reference to this array.
        */
-      Array& operator = ( Array&& array );
+      Array& operator=( Array&& array );
 
       /**
        * \brief Assigns either array-like container or single value.
@@ -399,7 +399,7 @@ class Array : public Object
        * \return Reference to this array.
        */
       template< typename T >
-      Array& operator = ( const T& data );
+      Array& operator=( const T& data );
 
       /**
        * \brief Assigns STL list to this array.
@@ -409,7 +409,7 @@ class Array : public Object
        * \return Reference to this array.
        */
       template< typename InValue >
-      Array& operator = ( const std::list< InValue >& list );
+      Array& operator=( const std::list< InValue >& list );
 
       /**
        * \brief Assigns STL vector to this array.
@@ -419,7 +419,7 @@ class Array : public Object
        * \return Reference to this array.
        */
       template< typename InValue >
-      Array& operator = ( const std::vector< InValue >& vector );
+      Array& operator=( const std::vector< InValue >& vector );
 
       /**
        * \brief Comparison operator with another array-like container.
@@ -430,7 +430,7 @@ class Array : public Object
        * \return True if both arrays are equal element-wise and false otherwise.
        */
       template< typename ArrayT >
-      bool operator == ( const ArrayT& array ) const;
+      bool operator==( const ArrayT& array ) const;
 
       /**
        * \brief This function checks whether this array is not equal to \e array.
@@ -441,7 +441,7 @@ class Array : public Object
        * \return True if both arrays are not equal element-wise and false otherwise.
        */
       template< typename ArrayT >
-      bool operator != ( const ArrayT& array ) const;
+      bool operator!=( const ArrayT& array ) const;
 
       /**
        * \brief Sets the array elements to given value.
@@ -565,10 +565,9 @@ class Array : public Object
 };
 
 template< typename Value, typename Device, typename Index >
-std::ostream& operator << ( std::ostream& str, const Array< Value, Device, Index >& v );
+std::ostream& operator<<( std::ostream& str, const Array< Value, Device, Index >& v );
 
 } // namespace Containers
-
 } // namespace TNL
 
 #include <TNL/Containers/Array.hpp>

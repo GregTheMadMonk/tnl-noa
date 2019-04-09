@@ -73,7 +73,6 @@ Array( const Array< Value, Device, Index >& array )
   allocationPointer( nullptr ),
   referenceCounter( 0 )
 {
-   //this->bind( array );
    this->setSize( array.getSize() );
    Algorithms::ArrayOperations< Device >::copyMemory( this->getData(), array.getData(), array.getSize() );
 }
@@ -276,7 +275,7 @@ Index
 Array< Value, Device, Index >::
 getSize() const
 {
-   return this -> size;
+   return this->size;
 }
 
 template< typename Value,
@@ -447,7 +446,7 @@ template< typename Value,
 __cuda_callable__
 inline Value&
 Array< Value, Device, Index >::
-operator[] ( const Index& i )
+operator[]( const Index& i )
 {
    TNL_ASSERT_GE( i, (Index) 0, "Element index must be non-negative." );
    TNL_ASSERT_LT( i, this->getSize(), "Element index is out of bounds." );
@@ -460,7 +459,7 @@ template< typename Value,
 __cuda_callable__
 inline const Value&
 Array< Value, Device, Index >::
-operator[] ( const Index& i ) const
+operator[]( const Index& i ) const
 {
    TNL_ASSERT_GE( i, (Index) 0, "Element index must be non-negative." );
    TNL_ASSERT_LT( i, this->getSize(), "Element index is out of bounds." );
@@ -472,7 +471,7 @@ template< typename Value,
           typename Index >
 Array< Value, Device, Index >&
 Array< Value, Device, Index >::
-operator = ( const Array< Value, Device, Index >& array )
+operator=( const Array< Value, Device, Index >& array )
 {
    //TNL_ASSERT_EQ( array.getSize(), this->getSize(), "Array sizes must be the same." );
    if( this->getSize() != array.getSize() )
@@ -490,7 +489,7 @@ template< typename Value,
           typename Index >
 Array< Value, Device, Index >&
 Array< Value, Device, Index >::
-operator = ( Array< Value, Device, Index >&& array )
+operator=( Array< Value, Device, Index >&& array )
 {
    this->size = array.size;
    this->data = array.data;
@@ -511,7 +510,7 @@ template< typename Value,
    template< typename T >
 Array< Value, Device, Index >&
 Array< Value, Device, Index >::
-operator = ( const T& data )
+operator=( const T& data )
 {
    Algorithms::ArrayAssignment< Array, T >::resize( *this, data );
    Algorithms::ArrayAssignment< Array, T >::assign( *this, data );
@@ -524,7 +523,7 @@ template< typename Value,
    template< typename InValue >
 Array< Value, Device, Index >&
 Array< Value, Device, Index >::
-operator = ( const std::list< InValue >& list )
+operator=( const std::list< InValue >& list )
 {
    this->setSize( list.size() );
    Algorithms::ArrayOperations< Device >::copySTLList( this->getData(), list );
@@ -537,7 +536,7 @@ template< typename Value,
    template< typename InValue >
 Array< Value, Device, Index >&
 Array< Value, Device, Index >::
-operator = ( const std::vector< InValue >& vector )
+operator=( const std::vector< InValue >& vector )
 {
    if( this->getSize() != vector.size() )
       this->setSize( vector.size() );
@@ -551,7 +550,7 @@ template< typename Value,
    template< typename ArrayT >
 bool
 Array< Value, Device, Index >::
-operator == ( const ArrayT& array ) const
+operator==( const ArrayT& array ) const
 {
    if( array.getSize() != this->getSize() )
       return false;
@@ -567,9 +566,11 @@ template< typename Value,
           typename Device,
           typename Index >
    template< typename ArrayT >
-bool Array< Value, Device, Index >::operator != ( const ArrayT& array ) const
+bool
+Array< Value, Device, Index >::
+operator!=( const ArrayT& array ) const
 {
-   return ! ( ( *this ) == array );
+   return ! ( *this == array );
 }
 
 template< typename Value,
@@ -687,7 +688,7 @@ Array< Value, Device, Index >::
 }
 
 template< typename Value, typename Device, typename Index >
-std::ostream& operator << ( std::ostream& str, const Array< Value, Device, Index >& v )
+std::ostream& operator<<( std::ostream& str, const Array< Value, Device, Index >& v )
 {
    str << "[ ";
    if( v.getSize() > 0 )
@@ -699,7 +700,6 @@ std::ostream& operator << ( std::ostream& str, const Array< Value, Device, Index
    str << " ]";
    return str;
 }
-
 
 } // namespace Containers
 } // namespace TNL
