@@ -140,7 +140,7 @@ ArrayView< Value, Device, Index >&
 ArrayView< Value, Device, Index >::
 operator = ( const T& data )
 {
-   Algorithms::ArrayAssignment< ThisType, T >::assign( *this, data );
+   Algorithms::ArrayAssignment< ArrayView, T >::assign( *this, data );
    return *this;
 }
 

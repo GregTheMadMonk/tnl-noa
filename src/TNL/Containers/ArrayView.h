@@ -71,7 +71,6 @@ public:
    using IndexType = Index;
    using HostType = ArrayView< Value, Devices::Host, Index >;
    using CudaType = ArrayView< Value, Devices::Cuda, Index >;
-   using ThisType = ArrayView< Value, Device, Index >;
    using SerializationType = Array< Value, Devices::Host, Index >;
 
    /**

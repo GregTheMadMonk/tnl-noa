@@ -68,7 +68,6 @@ class Array : public Object
       using ValueType = Value;
       using DeviceType = Device;
       using IndexType = Index;
-      using ThisType = Containers::Array< ValueType, DeviceType, IndexType >;
       using HostType = Containers::Array< Value, Devices::Host, Index >;
       using CudaType = Containers::Array< Value, Devices::Cuda, Index >;
 
