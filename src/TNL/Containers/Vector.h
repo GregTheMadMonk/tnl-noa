@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include <TNL/TypeTraits.h>
 #include <TNL/Containers/Array.h>
 
 namespace TNL {

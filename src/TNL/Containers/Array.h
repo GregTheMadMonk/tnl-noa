@@ -14,7 +14,6 @@
 #include <vector>
 #include <TNL/Object.h>
 #include <TNL/File.h>
-#include <TNL/TypeTraits.h>
 #include <TNL/Devices/Host.h>
 
 namespace TNL {

@@ -12,7 +12,6 @@
 
 #pragma once
 
-#include <TNL/TypeTraits.h>
 #include <TNL/Containers/DistributedArray.h>
 
 namespace TNL {

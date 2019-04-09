@@ -12,7 +12,6 @@
 
 #pragma once
 
-#include <TNL/TypeTraits.h>
 #include <TNL/Containers/DistributedArray.h>
 #include <TNL/Containers/VectorView.h>
 

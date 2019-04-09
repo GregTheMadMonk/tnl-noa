@@ -14,7 +14,6 @@
 
 #include <type_traits>  // std::add_const
 
-#include <TNL/TypeTraits.h>
 #include <TNL/Containers/Array.h>
 #include <TNL/Containers/ArrayView.h>
 #include <TNL/Communicators/MpiCommunicator.h>

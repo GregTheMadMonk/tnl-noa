@@ -13,7 +13,6 @@
 #include <type_traits>
 #include <ostream>
 
-#include <TNL/TypeTraits.h>
 #include <TNL/Devices/Cuda.h>
 
 namespace TNL {

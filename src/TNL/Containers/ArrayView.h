@@ -12,7 +12,6 @@
 
 #pragma once
 
-#include <TNL/TypeTraits.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 
