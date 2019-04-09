@@ -22,6 +22,42 @@ template< typename DestinationDevice,
           typename SourceDevice = DestinationDevice >
 struct ArrayOperations;
 
+// TODO: establish the concept of a "void device" for static computations in the whole TNL
+template<>
+struct ArrayOperations< void >
+{
+   template< typename Element >
+   __cuda_callable__
+   static void setElement( Element* data,
+                           const Element& value );
+
+   template< typename Element >
+   __cuda_callable__
+   static Element getElement( const Element* data );
+
+   template< typename Element, typename Index >
+   __cuda_callable__
+   static void set( Element* data,
+                    const Element& value,
+                    const Index size );
+
+   template< typename DestinationElement,
+             typename SourceElement,
+             typename Index >
+   __cuda_callable__
+   static void copy( DestinationElement* destination,
+                     const SourceElement* source,
+                     const Index size );
+
+   template< typename Element1,
+             typename Element2,
+             typename Index >
+   __cuda_callable__
+   static bool compare( const Element1* destination,
+                        const Element2* source,
+                        const Index size );
+};
+
 template<>
 struct ArrayOperations< Devices::Host >
 {
@@ -251,6 +287,7 @@ struct ArrayOperations< Devices::Host, Devices::MIC >
 } // namespace Containers
 } // namespace TNL
 
+#include <TNL/Containers/Algorithms/ArrayOperationsStatic.hpp>
 #include <TNL/Containers/Algorithms/ArrayOperationsHost.hpp>
 #include <TNL/Containers/Algorithms/ArrayOperationsCuda.hpp>
 #include <TNL/Containers/Algorithms/ArrayOperationsMIC.hpp>

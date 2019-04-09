@@ -35,6 +35,7 @@ public:
       return size;
    }
 
+   __cuda_callable__
    void setSize( LevelTag, Index newSize )
    {
       TNL_ASSERT_EQ( newSize, 0, "Dynamic size for a static dimension must be 0." );
@@ -58,6 +59,7 @@ public:
       return size;
    }
 
+   __cuda_callable__
    void setSize( LevelTag, Index size )
    {
       this->size = size;
@@ -179,6 +181,7 @@ public:
    }
 
    template< std::size_t level >
+   __cuda_callable__
    void setSize( Index size )
    {
       static_assert( level < sizeof...(sizes), "Invalid level passed to setSize()." );
@@ -297,6 +300,7 @@ struct LocalBeginsHolder : public SizesHolder
    }
 
    template< std::size_t level >
+   __cuda_callable__
    void setSize( typename SizesHolder::IndexType newSize )
    {
       if( SizesHolder::template getStaticSize< level >() == 0 )

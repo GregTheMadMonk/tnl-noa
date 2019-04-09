@@ -18,6 +18,7 @@
 #include <TNL/Containers/ndarray/Executors.h>
 #include <TNL/Containers/ndarray/BoundaryExecutors.h>
 #include <TNL/Containers/ndarray/Operations.h>
+#include <TNL/Containers/Algorithms/ArrayOperations.h>
 
 namespace TNL {
 namespace Containers {
@@ -71,7 +72,24 @@ public:
    {
       TNL_ASSERT_EQ( sizes, other.sizes, "The sizes of the array views must be equal, views are not resizable." );
       if( getStorageSize() > 0 )
-         ArrayOpsHelper< Device >::copy( array, other.array, getStorageSize() );
+         Algorithms::ArrayOperations< DeviceType >::copy( array, other.array, getStorageSize() );
+      return *this;
+   }
+
+   // Templated copy-assignment
+   template< typename OtherView >
+   NDArrayView& operator=( const OtherView& other )
+   {
+      static_assert( std::is_same< PermutationType, typename OtherView::PermutationType >::value,
+                     "Arrays must have the same permutation of indices." );
+      static_assert( NDArrayView::isContiguous() && OtherView::isContiguous(),
+                     "Non-contiguous array views cannot be assigned." );
+      TNL_ASSERT_TRUE( __ndarray_impl::sizesWeakCompare( getSizes(), other.getSizes() ),
+                       "The sizes of the array views must be equal, views are not resizable." );
+      if( getStorageSize() > 0 ) {
+         TNL_ASSERT_TRUE( array, "Attempted to assign to an empty view." );
+         Algorithms::ArrayOperations< DeviceType, typename OtherView::DeviceType >::copy( array, other.getData(), getStorageSize() );
+      }
       return *this;
    }
 
@@ -101,7 +119,7 @@ public:
       if( sizes != other.sizes )
          return false;
       // FIXME: uninitialized data due to alignment in NDArray and padding in SlicedNDArray
-      return ArrayOpsHelper< Device, Device >::compare( array, other.array, getStorageSize() );
+      return Algorithms::ArrayOperations< Device, Device >::compare( array, other.array, getStorageSize() );
    }
 
    __cuda_callable__
@@ -110,12 +128,20 @@ public:
       if( sizes != other.sizes )
          return true;
       // FIXME: uninitialized data due to alignment in NDArray and padding in SlicedNDArray
-      return ! ArrayOpsHelper< Device, Device >::compare( array, other.array, getStorageSize() );
+      return ! Algorithms::ArrayOperations< Device, Device >::compare( array, other.array, getStorageSize() );
    }
 
    static constexpr std::size_t getDimension()
    {
       return SizesHolder::getDimension();
+   }
+
+   // accessor to the underlying data
+   // (should not be used for accessing the elements, intended only for the implementation
+   // of operator= and functions like cudaHostRegister)
+   std::add_const_t< ValueType >* getData() const
+   {
+      return array;
    }
 
    const SizesHolderType& getSizes() const
@@ -285,62 +311,6 @@ public:
 protected:
    Value* array = nullptr;
    SizesHolder sizes;
-
-   // TODO: establish the concept of a "void device" for static computations in the whole TNL
-
-   template< typename DestinationDevice, typename SourceDevice = DestinationDevice, typename _unused = void >
-   struct ArrayOpsHelper
-   {
-      template< typename DestinationValue,
-                typename SourceValue,
-                typename Index >
-      static void copy( DestinationValue* destination,
-                        const SourceValue* source,
-                        const Index size )
-      {
-         Algorithms::ArrayOperations< DestinationDevice, SourceDevice >::copy( destination, source, size );
-      }
-
-      template< typename Value1,
-                typename Value2,
-                typename Index >
-      static bool compare( const Value1* destination,
-                           const Value2* source,
-                           const Index size )
-      {
-         return Algorithms::ArrayOperations< DestinationDevice, SourceDevice >::compare( destination, source, size );
-      }
-   };
-
-   template< typename _unused >
-   struct ArrayOpsHelper< void, void, _unused >
-   {
-      template< typename DestinationValue,
-                typename SourceValue,
-                typename Index >
-      __cuda_callable__
-      static void copy( DestinationValue* destination,
-                        const SourceValue* source,
-                        const Index size )
-      {
-         for( Index i = 0; i < size; i ++ )
-            destination[ i ] = source[ i ];
-      }
-
-      template< typename Value1,
-                typename Value2,
-                typename Index >
-      __cuda_callable__
-      static bool compare( const Value1* destination,
-                           const Value2* source,
-                           const Index size )
-      {
-         for( Index i = 0; i < size; i++ )
-            if( ! ( destination[ i ] == source[ i ] ) )
-               return false;
-         return true;
-      }
-   };
 };
 
 } // namespace Containers

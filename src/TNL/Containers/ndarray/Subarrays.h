@@ -74,6 +74,7 @@ private:
    {
       template< typename NewSizes,
                 typename OldSizes >
+      __cuda_callable__
       static void setSizes( NewSizes& newSizes,
                             const OldSizes& oldSizes )
       {
@@ -88,6 +89,7 @@ private:
    {
       template< typename NewSizes,
                 typename OldSizes >
+      __cuda_callable__
       static void setSizes( NewSizes& newSizes,
                             const OldSizes& oldSizes )
       {
@@ -129,6 +131,7 @@ public:
          );
 
    template< typename... IndexTypes >
+   __cuda_callable__
    static Sizes filterSizes( const SizesHolder< Index, sizes... >& oldSizes, IndexTypes&&... indices )
    {
       Sizes newSizes;
@@ -153,7 +156,13 @@ public:
 template< typename Index, std::size_t Dimension >
 struct DummyStrideBase
 {
+   static constexpr bool isContiguous()
+   {
+      return true;
+   }
+
    template< std::size_t level >
+   __cuda_callable__
    constexpr Index getStride( Index i = 0 ) const
    {
       return 1;
@@ -170,6 +179,12 @@ class StridesHolder
 public:
    using BaseType::getDimension;
 
+   static constexpr bool isContiguous()
+   {
+      // a priori not contiguous (otherwise DummyStrideBase would be used)
+      return false;
+   }
+
    template< std::size_t level >
    static constexpr std::size_t getStaticStride( Index i = 0 )
    {
@@ -184,6 +199,7 @@ public:
    }
 
    template< std::size_t level >
+   __cuda_callable__
    void setStride( Index size )
    {
       BaseType::template setSize< level >( size );
@@ -276,6 +292,7 @@ class SubarrayGetter< NDArrayBase< SliceInfo >, Permutation, Dimensions... >
    struct StrideSetterHelper
    {
       template< typename StridesHolder, typename SizesHolder >
+      __cuda_callable__
       static void setStrides( StridesHolder& strides, const SizesHolder& sizes )
       {
          static constexpr std::size_t dim = get_from_pack< level >( Dimensions... );
@@ -289,6 +306,7 @@ class SubarrayGetter< NDArrayBase< SliceInfo >, Permutation, Dimensions... >
    struct StrideSetterHelper< sizeof...(Dimensions) - 1, _unused >
    {
       template< typename StridesHolder, typename SizesHolder >
+      __cuda_callable__
       static void setStrides( StridesHolder& strides, const SizesHolder& sizes )
       {
          static constexpr std::size_t level = sizeof...(Dimensions) - 1;
@@ -302,6 +320,7 @@ public:
    using Subpermutation = typename SubpermutationGetter< std::index_sequence< Dimensions... >, Permutation >::Subpermutation;
 
    template< typename SizesHolder, typename... IndexTypes >
+   __cuda_callable__
    static auto filterSizes( const SizesHolder& sizes, IndexTypes&&... indices )
    {
       using Filter = SizesFilter< std::index_sequence< Dimensions... >, SizesHolder >;
@@ -309,6 +328,7 @@ public:
    }
 
    template< typename SizesHolder, typename... IndexTypes >
+   __cuda_callable__
    static auto getStrides( const SizesHolder& sizes, IndexTypes&&... indices )
    {
       using Strides = StridesHolder< typename SizesHolder::IndexType,

@@ -53,6 +53,12 @@ public:
 
    static_assert( Permutation::size() == SizesHolder::getDimension(), "invalid permutation" );
 
+   // for compatibility with NDArrayView (which inherits from StrideBase)
+   static constexpr bool isContiguous()
+   {
+      return true;
+   }
+
    // all methods from NDArrayView
 
    NDArrayStorage() = default;
@@ -70,6 +76,21 @@ public:
    NDArrayStorage( NDArrayStorage&& ) = default;
    NDArrayStorage& operator=( NDArrayStorage&& ) = default;
 
+   // Templated copy-assignment
+   template< typename OtherArray >
+   NDArrayStorage& operator=( const OtherArray& other )
+   {
+      static_assert( std::is_same< PermutationType, typename OtherArray::PermutationType >::value,
+                     "Arrays must have the same permutation of indices." );
+      // update sizes
+      __ndarray_impl::SetSizesCopyHelper< SizesHolderType, typename OtherArray::SizesHolderType >::copy( sizes, other.getSizes() );
+      // (re)allocate storage if necessary
+      array.setSize( getStorageSize() );
+      // copy data
+      getView() = other.getConstView();
+      return *this;
+   }
+
    bool operator==( const NDArrayStorage& other ) const
    {
       // FIXME: uninitialized data due to alignment in NDArray and padding in SlicedNDArray
@@ -80,6 +101,14 @@ public:
    {
       // FIXME: uninitialized data due to alignment in NDArray and padding in SlicedNDArray
       return sizes != other.sizes || array != other.array;
+   }
+
+   // accessor to the underlying data
+   // (should not be used for accessing the elements, intended only for the implementation
+   // of operator= and functions like cudaHostRegister)
+   std::add_const_t< ValueType >* getData() const
+   {
+      return array.getData();
    }
 
    static constexpr std::size_t getDimension()
@@ -330,7 +359,18 @@ class NDArray
                                                     PermutationHost,
                                                     PermutationCuda >::type,
                          __ndarray_impl::NDArrayBase< SliceInfo< 0, 0 > > >
-{};
+{
+   using Base = NDArrayStorage< Array< Value, Device, Index >,
+                         SizesHolder,
+                         typename std::conditional< std::is_same< Device, Devices::Host >::value,
+                                                    PermutationHost,
+                                                    PermutationCuda >::type,
+                         __ndarray_impl::NDArrayBase< SliceInfo< 0, 0 > > >;
+
+public:
+   // inherit all assignment operators
+   using Base::operator=;
+};
 
 template< typename Value,
           typename SizesHolder,
@@ -343,8 +383,17 @@ class StaticNDArray
                          __ndarray_impl::NDArrayBase< SliceInfo< 0, 0 > >,
                          void >
 {
+   using Base = NDArrayStorage< StaticArray< __ndarray_impl::StaticStorageSizeGetter< SizesHolder >::get(), Value >,
+                         SizesHolder,
+                         Permutation,
+                         __ndarray_impl::NDArrayBase< SliceInfo< 0, 0 > >,
+                         void >;
    static_assert( __ndarray_impl::StaticStorageSizeGetter< SizesHolder >::get() > 0,
                   "All dimensions of a static array must to be positive." );
+
+public:
+   // inherit all assignment operators
+   using Base::operator=;
 };
 
 template< typename Value,
@@ -356,7 +405,14 @@ class StaticMatrix
                         SizesHolder< std::size_t, Rows, Columns >,
                         Permutation >
 {
+   using Base = StaticNDArray< Value,
+                        SizesHolder< std::size_t, Rows, Columns >,
+                        Permutation >;
+
 public:
+   // inherit all assignment operators
+   using Base::operator=;
+
    static constexpr std::size_t getRows()
    {
       return Rows;
@@ -388,7 +444,22 @@ class SlicedNDArray
                                                        SliceInfoHost,
                                                        SliceInfoCuda >::type >
                         >
-{};
+{
+   using Base = NDArrayStorage< Array< Value, Device, Index >,
+                         SizesHolder,
+                         typename std::conditional< std::is_same< Device, Devices::Host >::value,
+                                                    PermutationHost,
+                                                    PermutationCuda >::type,
+                         __ndarray_impl::SlicedNDArrayBase<
+                            typename std::conditional< std::is_same< Device, Devices::Host >::value,
+                                                       SliceInfoHost,
+                                                       SliceInfoCuda >::type >
+                        >;
+
+public:
+   // inherit all assignment operators
+   using Base::operator=;
+};
 
 } // namespace Containers
 } // namespace TNL

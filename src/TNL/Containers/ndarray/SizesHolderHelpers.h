@@ -15,6 +15,7 @@
 #include <algorithm>
 
 #include <TNL/Assert.h>
+#include <TNL/TemplateStaticFor.h>
 #include <TNL/Containers/ndarray/Meta.h>
 
 namespace TNL {
@@ -160,6 +161,65 @@ void assertIndicesInRange( const SizesHolder1& begins, const SizesHolder2& ends,
    TNL_ASSERT_LT( i, end + (decltype(end)) get<level>( overlaps ), "Input error - some index is above the upper bound." );
 #endif
    assertIndicesInRange( begins, ends, overlaps, std::forward< IndexTypes >( indices )... );
+}
+
+
+// helper for the assignment operator in NDArray
+template< typename TargetHolder,
+          typename SourceHolder,
+          std::size_t level = TargetHolder::getDimension() - 1 >
+struct SetSizesCopyHelper
+{
+   static void copy( TargetHolder& target,
+                     const SourceHolder& source )
+   {
+      if( target.template getStaticSize< level >() == 0 ) {
+         target.template setSize< level >( source.template getSize< level >() );
+         SetSizesCopyHelper< TargetHolder, SourceHolder, level - 1 >::copy( target, source );
+      }
+      else if( target.template getStaticSize< level >() != source.template getSize< level >() )
+         throw std::logic_error( "Cannot copy sizes due to inconsistent underlying types (static sizes don't match)." );
+   }
+};
+
+template< typename TargetHolder,
+          typename SourceHolder >
+struct SetSizesCopyHelper< TargetHolder, SourceHolder, 0 >
+{
+   static void copy( TargetHolder& target,
+                     const SourceHolder& source )
+   {
+      if( target.template getStaticSize< 0 >() == 0 )
+         target.template setSize< 0 >( source.template getSize< 0 >() );
+      else if( target.template getStaticSize< 0 >() != source.template getSize< 0 >() )
+         throw std::logic_error( "Cannot copy sizes due to inconsistent underlying types (static sizes don't match)." );
+   }
+};
+
+
+template< std::size_t level >
+struct WeakCompareHelper
+{
+   template< typename SizesHolder1,
+             typename SizesHolder2 >
+   __cuda_callable__
+   static void exec( const SizesHolder1& sizes1, const SizesHolder2& sizes2, bool& result )
+   {
+      result &= sizes1.template getSize< level >() == sizes2.template getSize< level >();
+   }
+};
+
+// helper for the assignment operator in NDArrayView
+template< typename SizesHolder1,
+          typename SizesHolder2 >
+__cuda_callable__
+bool sizesWeakCompare( const SizesHolder1& sizes1, const SizesHolder2& sizes2 )
+{
+   static_assert( SizesHolder1::getDimension() == SizesHolder2::getDimension(),
+                  "Cannot compare sizes of different dimensions." );
+   bool result = true;
+   TemplateStaticFor< std::size_t, 0, SizesHolder1::getDimension(), WeakCompareHelper >::exec( sizes1, sizes2, result );
+   return result;
 }
 
 

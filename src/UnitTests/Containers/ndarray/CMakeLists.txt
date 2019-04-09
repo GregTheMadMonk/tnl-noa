@@ -1,7 +1,14 @@
-add_executable( NDArrayTest NDArrayTest.cpp )
-target_compile_options( NDArrayTest PRIVATE ${CXX_TESTS_FLAGS} )
-target_link_libraries( NDArrayTest ${GTEST_BOTH_LIBRARIES} )
-add_test( NDArrayTest ${EXECUTABLE_OUTPUT_PATH}/NDArrayTest${CMAKE_EXECUTABLE_SUFFIX} )
+if( BUILD_CUDA )
+   cuda_add_executable( NDArrayTest NDArrayTest.cu
+                        OPTIONS ${CXX_TESTS_FLAGS} )
+   target_link_libraries( NDArrayTest ${GTEST_BOTH_LIBRARIES} )
+   add_test( NDArrayTest ${EXECUTABLE_OUTPUT_PATH}/NDArrayTest${CMAKE_EXECUTABLE_SUFFIX} )
+else()
+   add_executable( NDArrayTest NDArrayTest.cpp )
+   target_compile_options( NDArrayTest PRIVATE ${CXX_TESTS_FLAGS} )
+   target_link_libraries( NDArrayTest ${GTEST_BOTH_LIBRARIES} )
+   add_test( NDArrayTest ${EXECUTABLE_OUTPUT_PATH}/NDArrayTest${CMAKE_EXECUTABLE_SUFFIX} )
+endif()
 
 add_executable( NDSubarrayTest NDSubarrayTest.cpp )
 target_compile_options( NDSubarrayTest PRIVATE ${CXX_TESTS_FLAGS} )
