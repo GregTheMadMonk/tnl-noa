@@ -43,7 +43,7 @@ template< typename Real,
 void Matrix< Real, Device, Index >::getCompressedRowLengths( CompressedRowLengthsVector& rowLengths ) const
 {
    rowLengths.setSize( this->getRows() );
-   getCompressedRowLengths( CompressedRowLengthsVectorView( rowLengths ) );
+   getCompressedRowLengths( rowLengths.getView() );
 }
 
 template< typename Real,

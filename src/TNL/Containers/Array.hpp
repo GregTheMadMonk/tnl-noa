@@ -356,6 +356,43 @@ bind( StaticArray< Size, Value >& array )
    this->data = array.getData();
 }
 
+template< typename Value,
+          typename Device,
+          typename Index >
+typename Array< Value, Device, Index >::ViewType
+Array< Value, Device, Index >::
+getView()
+{
+   return ViewType( getData(), getSize() );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+typename Array< Value, Device, Index >::ConstViewType
+Array< Value, Device, Index >::
+getConstView() const
+{
+   return ConstViewType( getData(), getSize() );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+Array< Value, Device, Index >::
+operator ViewType()
+{
+   return getView();
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+Array< Value, Device, Index >::
+operator ConstViewType() const
+{
+   return getConstView();
+}
 
 template< typename Value,
           typename Device,

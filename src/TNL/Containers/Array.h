@@ -14,9 +14,7 @@
 #include <vector>
 
 #include <TNL/Object.h>
-#include <TNL/File.h>
-#include <TNL/Devices/Host.h>
-#include <TNL/Devices/Cuda.h>
+#include <TNL/Containers/ArrayView.h>
 
 namespace TNL {
 /**
@@ -71,6 +69,8 @@ class Array : public Object
       using IndexType = Index;
       using HostType = Containers::Array< Value, Devices::Host, Index >;
       using CudaType = Containers::Array< Value, Devices::Cuda, Index >;
+      using ViewType = ArrayView< Value, Device, Index >;
+      using ConstViewType = ArrayView< typename std::add_const< Value >::type, Device, Index >;
 
       /**
        * \brief Basic constructor.
@@ -257,6 +257,26 @@ class Array : public Object
        */
       template< int Size >
       void bind( StaticArray< Size, Value >& array );
+
+      /**
+       * \brief Returns a modifiable view of the array.
+       */
+      ViewType getView();
+
+      /**
+       * \brief Returns a non-modifiable view of the array.
+       */
+      ConstViewType getConstView() const;
+
+      /**
+       * \brief Conversion operator to a modifiable view of the array.
+       */
+      operator ViewType();
+
+      /**
+       * \brief Conversion operator to a non-modifiable view of the array.
+       */
+      operator ConstViewType() const;
 
       /**
        * \brief Swaps this array with another.

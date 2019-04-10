@@ -12,7 +12,9 @@
 
 #pragma once
 
-#include <TNL/Containers/DistributedArray.h>
+#include <TNL/Containers/ArrayView.h>
+#include <TNL/Communicators/MpiCommunicator.h>
+#include <TNL/Containers/Subrange.h>
 
 namespace TNL {
 namespace Containers {
@@ -34,6 +36,14 @@ public:
    using ConstLocalArrayViewType = Containers::ArrayView< typename std::add_const< Value >::type, Device, Index >;
    using HostType = DistributedArrayView< Value, Devices::Host, Index, Communicator >;
    using CudaType = DistributedArrayView< Value, Devices::Cuda, Index, Communicator >;
+   using ViewType = DistributedArrayView< Value, Device, Index, Communicator >;
+   using ConstViewType = DistributedArrayView< typename std::add_const< Value >::type, Device, Index, Communicator >;
+
+   // Initialization by raw data
+   __cuda_callable__
+   DistributedArrayView( const LocalRangeType& localRange, IndexType globalSize, CommunicationGroup group, LocalArrayViewType localData )
+   : localRange(localRange), globalSize(globalSize), group(group), localData(localData)
+   {}
 
    __cuda_callable__
    DistributedArrayView() = default;
@@ -53,15 +63,6 @@ public:
    __cuda_callable__
    DistributedArrayView( DistributedArrayView&& ) = default;
 
-   // initialization from distributed array
-   template< typename Value_ >
-   DistributedArrayView( DistributedArray< Value_, Device, Index, Communicator >& array );
-
-   // this constructor will be used only when Value is const-qualified
-   // (const views are initializable by const references)
-   template< typename Value_ >
-   DistributedArrayView( const DistributedArray< Value_, Device, Index, Communicator >& array );
-
    // method for rebinding (reinitialization)
    // Note that you can also bind directly to Array and other types implicitly
    // convertible to ArrayView.
@@ -72,6 +73,18 @@ public:
    // (local range, global size and communication group are preserved)
    template< typename Value_ >
    void bind( Value_* data, IndexType localSize );
+
+   /**
+    * \brief Returns a modifiable view of the array view.
+    */
+   __cuda_callable__
+   ViewType getView();
+
+   /**
+    * \brief Returns a non-modifiable view of the array view.
+    */
+   __cuda_callable__
+   ConstViewType getConstView() const;
 
 
    // Copy-assignment does deep copy, just like regular array, but the sizes

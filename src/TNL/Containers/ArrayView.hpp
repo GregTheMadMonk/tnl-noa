@@ -50,51 +50,6 @@ ArrayView( Value* data, Index size ) : data(data), size(size)
                     "ArrayView was initialized with a positive address and zero size or zero address and positive size." );
 }
 
-// initialization from other array containers (using shallow copy)
-template< typename Value,
-          typename Device,
-          typename Index >
-   template< typename Value_ >
-__cuda_callable__
-ArrayView< Value, Device, Index >::
-ArrayView( Array< Value_, Device, Index >& array )
-{
-   this->bind( array.getData(), array.getSize() );
-}
-
-template< typename Value,
-          typename Device,
-          typename Index >
-   template< int Size, typename Value_ >
-__cuda_callable__
-ArrayView< Value, Device, Index >::
-ArrayView( StaticArray< Size, Value_ >& array )
-{
-   this->bind( array.getData(), Size );
-}
-
-template< typename Value,
-          typename Device,
-          typename Index >
-   template< typename Value_ >
-__cuda_callable__
-ArrayView< Value, Device, Index >::
-ArrayView( const Array< Value_, Device, Index >& array )
-{
-   this->bind( array.getData(), array.getSize() );
-}
-
-template< typename Value,
-          typename Device,
-          typename Index >
-   template< int Size, typename Value_ >
-__cuda_callable__
-ArrayView< Value, Device, Index >::
-ArrayView( const StaticArray< Size, Value_ >& array )
-{
-   this->bind( array.getData(), Size );
-}
-
 // methods for rebinding (reinitialization)
 template< typename Value,
           typename Device,
@@ -119,6 +74,26 @@ __cuda_callable__
 void ArrayView< Value, Device, Index >::bind( ArrayView view )
 {
    bind( view.getData(), view.getSize() );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+typename ArrayView< Value, Device, Index >::ViewType
+ArrayView< Value, Device, Index >::
+getView()
+{
+   return *this;
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+typename ArrayView< Value, Device, Index >::ConstViewType
+ArrayView< Value, Device, Index >::
+getConstView() const
+{
+   return *this;
 }
 
 // Copy-assignment does deep copy, just like regular array, but the sizes

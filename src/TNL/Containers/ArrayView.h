@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <type_traits>  // std::add_const
+
 #include <TNL/File.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
@@ -21,9 +23,6 @@ namespace Containers {
 
 template< typename Value, typename Device, typename Index >
 class Array;
-
-template< int Size, typename Value >
-class StaticArray;
 
 /**
  * \brief ArrayView serves for managing array of data allocated by TNL::Array or
@@ -72,6 +71,8 @@ public:
    using IndexType = Index;
    using HostType = ArrayView< Value, Devices::Host, Index >;
    using CudaType = ArrayView< Value, Devices::Cuda, Index >;
+   using ViewType = ArrayView< Value, Device, Index >;
+   using ConstViewType = ArrayView< typename std::add_const< Value >::type, Device, Index >;
 
    /**
     * \brief Returns type of array view in C++ style.
@@ -137,62 +138,6 @@ public:
    ArrayView( ArrayView&& view ) = default;
 
    /**
-    * \brief Constructor for initialization from other array containers.
-    *
-    * It makes shallow copy only.
-    *
-    * This method can be called from device kernels.
-    *
-    * \tparam Value_ can be both const and non-const qualified Value.
-    */
-   template< typename Value_ >
-   __cuda_callable__
-   ArrayView( Array< Value_, Device, Index >& array );
-
-   /**
-    * \brief Constructor for initialization with static array.
-    *
-    * This method can be called from device kernels.
-    *
-    * \tparam Size is size of the static array.
-    * \tparam Value_ can be both const and non-const qualified Value.
-    *
-    * \param array is a static array the array view is initialized with.
-    */
-   template< int Size, typename Value_ >
-   __cuda_callable__
-   ArrayView( StaticArray< Size, Value_ >& array );
-
-   /**
-    * \brief Copy constructor from constant Array.
-    *
-    * This constructor will be used only when Value is const-qualified
-    * (const views are initializable by const references).
-    *
-    * This method can be called from device kernels.
-    *
-    * \tparam Value_ can be both const and non-const qualified Value
-    * \param array is an array the array view is initialized with.
-    */
-   template< typename Value_ >
-   __cuda_callable__
-   ArrayView( const Array< Value_, Device, Index >& array );
-
-   /**
-    * \brief Constructor for initialization with static array.
-    *
-    * This method can be called from device kernels.
-    *
-    * \tparam Size is size of the static array.
-    * \tparam Value_ can be both const and non-const qualified Value.
-    *
-    * \param array is a static array the array view is initialized with.
-    */
-   template< int Size, typename Value_ >  // template catches both const and non-const qualified Value
-   __cuda_callable__
-   ArrayView( const StaticArray< Size, Value_ >& array );
-
-   /**
     * \brief Method for rebinding (reinitialization).
     *
     * This method can be called from device kernels.
@@ -215,6 +160,18 @@ public:
     */
    __cuda_callable__
    void bind( ArrayView view );
+
+   /**
+    * \brief Returns a modifiable view of the array view.
+    */
+   __cuda_callable__
+   ViewType getView();
+
+   /**
+    * \brief Returns a non-modifiable view of the array view.
+    */
+   __cuda_callable__
+   ConstViewType getConstView() const;
 
    /**
     * \brief Assignment operator.

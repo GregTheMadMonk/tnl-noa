@@ -37,6 +37,8 @@ public:
    using ConstLocalVectorViewType = Containers::VectorView< typename std::add_const< Real >::type, Device, Index >;
    using HostType = DistributedVectorView< Real, Devices::Host, Index, Communicator >;
    using CudaType = DistributedVectorView< Real, Devices::Cuda, Index, Communicator >;
+   using ViewType = DistributedVectorView< Real, Device, Index >;
+   using ConstViewType = DistributedVectorView< typename std::add_const< Real >::type, Device, Index >;
 
    // inherit all constructors and assignment operators from ArrayView
    using BaseType::DistributedArrayView;
@@ -45,6 +47,18 @@ public:
    LocalVectorViewType getLocalVectorView();
 
    ConstLocalVectorViewType getLocalVectorView() const;
+
+   /**
+    * \brief Returns a modifiable view of the array view.
+    */
+   __cuda_callable__
+   ViewType getView();
+
+   /**
+    * \brief Returns a non-modifiable view of the array view.
+    */
+   __cuda_callable__
+   ConstViewType getConstView() const;
 
 
    static String getType();

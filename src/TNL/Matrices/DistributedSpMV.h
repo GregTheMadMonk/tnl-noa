@@ -199,8 +199,7 @@ public:
       else {
          auto outVectorView = outVector.getLocalVectorView();
          const Pointers::DevicePointer< const MatrixType > localMatrixPointer( localMatrix );
-         using InView = Containers::DistributedVectorView< const typename InVector::RealType, typename InVector::DeviceType, typename InVector::IndexType, typename InVector::CommunicatorType >;
-         const InView inView( inVector );
+         const auto inView = inVector.getConstView();
 
          // matrix-vector multiplication using local-only rows
          auto kernel1 = [=] __cuda_callable__ ( IndexType i, const MatrixType* localMatrix ) mutable

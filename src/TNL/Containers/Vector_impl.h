@@ -62,6 +62,44 @@ getSerializationTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
+typename Vector< Real, Device, Index >::ViewType
+Vector< Real, Device, Index >::
+getView()
+{
+   return ViewType( this->getData(), this->getSize() );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+typename Vector< Real, Device, Index >::ConstViewType
+Vector< Real, Device, Index >::
+getConstView() const
+{
+   return ConstViewType( this->getData(), this->getSize() );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+Vector< Value, Device, Index >::
+operator ViewType()
+{
+   return getView();
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+Vector< Value, Device, Index >::
+operator ConstViewType() const
+{
+   return getConstView();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 void
 Vector< Real, Device, Index >::
 addElement( const IndexType i,

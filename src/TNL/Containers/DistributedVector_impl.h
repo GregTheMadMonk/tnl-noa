@@ -42,6 +42,48 @@ getLocalVectorView() const
    return this->getLocalArrayView();
 }
 
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
+typename DistributedVector< Value, Device, Index, Communicator >::ViewType
+DistributedVector< Value, Device, Index, Communicator >::
+getView()
+{
+   return ViewType( this->getLocalRange(), this->getSize(), this->getCommunicationGroup(), this->getLocalVectorView() );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
+typename DistributedVector< Value, Device, Index, Communicator >::ConstViewType
+DistributedVector< Value, Device, Index, Communicator >::
+getConstView() const
+{
+   return ConstViewType( this->getLocalRange(), this->getSize(), this->getCommunicationGroup(), this->getLocalVectorView() );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
+DistributedVector< Value, Device, Index, Communicator >::
+operator ViewType()
+{
+   return getView();
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
+DistributedVector< Value, Device, Index, Communicator >::
+operator ConstViewType() const
+{
+   return getConstView();
+}
+
 
 template< typename Real,
           typename Device,
