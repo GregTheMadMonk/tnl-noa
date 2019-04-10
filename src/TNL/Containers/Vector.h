@@ -17,7 +17,11 @@ namespace TNL {
 namespace Containers {
 
 /**
- * \brief Class for storing vector elements and handling vector operations.
+ * \brief This class extends TNL::Array with algebraic operations.
+ *
+ * \tparam Real is numeric type usually float or double.
+ * \tparam Device is device where the array is going to be allocated - some of \ref Devices::Host and \ref Devices::Cuda.
+ * \tparam Index is indexing type.
  *
  * \par Example
  * \include VectorExample.cpp
@@ -300,6 +304,155 @@ public:
     */
    void computeExclusivePrefixSum( const IndexType begin, const IndexType end );
 };
+
+/**
+ * \brief Returns the maximum value out of all vector elements.
+ *
+ */
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename ResultType = Real >
+ResultType max( const Vector< Real, Device, Index>& v );
+
+/**
+ * \brief Returns the minimum value out of all vector elements.
+ *
+ */
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename ResultType = Real >
+ResultType min( const Vector< Real, Device, Index>& v );
+
+/**
+ * \brief Returns the maximum absolute value out of all vector elements.
+ *
+ */
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename ResultType = Real >
+ResultType absMax( const Vector< Real, Device, Index>& v );
+
+/**
+ * \brief Returns the minimum absolute value out of all vector elements.
+ *
+ */
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename ResultType = Real >
+ResultType absMin( const Vector< Real, Device, Index>& v );
+
+/**
+ * \brief Returns the length of this vector in p-dimensional vector space.
+ *
+ * \tparam
+ * \param p Number specifying the dimension of vector space.
+ *
+ */
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Scalar,
+          typename ResultType = Real >
+ResultType lpNorm( const Vector< Real, Device, Index>& v, const Scalar p );
+
+/**
+ * \brief Returns sum of all vector elements.
+ *
+ */
+template< typename Real,
+          typename Device,
+          typename Index,
+template< typename ResultType = RealType >
+ResultType sum( const Vector< Real, Device, Index>& v );
+
+/**
+ * \brief Returns maximal difference between elements of this vector and vector \e v.
+ *
+ * \tparam Vector Type of vector.
+ * \param v Reference to another vector of the same size as this vector.
+ *
+ */
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Vector_,
+          typename ResultType = Real>
+ResultType differenceMax( const Vector< Real, Device, Index>& v, const Vector_& v2 );
+
+/**
+ * \brief Returns minimal difference between elements of this vector and vector \e v.
+ *
+ * \tparam Vector Type of vector.
+ * \param v Reference to another vector of the same size as this vector.
+ *
+ */
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Vector_,
+          typename ResultType = Real >
+ResultType differenceMin( const Vector< Real, Device, Index>& v, const Vector& v2 );
+
+/**
+ * \brief Returns maximal absolute difference between elements of this vector and vector \e v.
+ *
+ * \tparam Vector Type of vector.
+ * \param v Reference to another vector of the same size as this vector.
+ *
+ */
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Vector_,
+          typename ResultType = Real >
+ResultType differenceAbsMax( const Vector< Real, Device, Index>& v, const Vector& v2 );
+
+/**
+ * \brief Returns minimal absolute difference between elements of this vector and vector \e v.
+ *
+ * \tparam Vector Type of vector.
+ * \param v Reference to another vector of the same size as this vector.
+ *
+ */
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Vector_ >
+Real differenceAbsMin( const Vector< Real, Device, Index>& v, const Vector& v2 );
+
+/**
+ * \brief Returns difference between L^p norms of this vector and vector \e v.
+ *
+ * See also \ref lpNorm.
+ *
+ * \param v Reference to another vector.
+ * \param p Number specifying the dimension of vector space.
+ *
+ */
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Vector_,
+          typename Scalar,
+          typename ResultType = RealType >
+ResultType differenceLpNorm( const Vector< Real, Device, Index>& v, const Vector& v2, const Scalar p );
+
+/**
+ * \brief Returns difference between sums of elements of this vector and vector \e v.
+ *
+ * \param v Reference to another vector.
+ *
+ */
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Vector_,
+          typename ResultType = RealType >
+ResultType differenceSum( const Vector< Real, Device, Index>& v, const Vector& v2 );
 
 } // namespace Containers
 } // namespace TNL

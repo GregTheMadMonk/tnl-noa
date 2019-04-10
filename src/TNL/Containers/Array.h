@@ -154,28 +154,28 @@ class Array : public Object
       Array( const std::vector< InValue >& vector );
 
       /**
-       * \brief Returns type of array in C++ style.
+       * \brief Returns array type in C++ style.
        *
        * \return String with array type.
        */
       static String getType();
 
       /**
-       * \brief Returns type of array in C++ style.
+       * \brief Returns array type in C++ style.
        *
        * \return String with array type.
        */
       virtual String getTypeVirtual() const;
 
       /**
-       *  \brief Returns type of array in C++ style where device is always \ref Devices::Host.
+       *  \brief Returns array type in C++ style where device is always \ref Devices::Host.
        *
        * \return String with serialization array type.
        */
       static String getSerializationType();
 
       /**
-       *  \brief Returns type of array in C++ style where device is always \ref Devices::Host.
+       *  \brief Returns array type in C++ style where device is always \ref Devices::Host.
        *
        * \return String with serialization array type.
        */
