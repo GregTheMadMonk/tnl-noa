@@ -50,9 +50,14 @@ template< typename Array,
           typename T >
 struct ArrayAssignment< Array, T, true >
 {
-   static void assign( Array& a, const T& t )
+   static void resize( Array& a, const T& t )
    {
       a.setSize( t.getSize() );
+   }
+
+   static void assign( Array& a, const T& t )
+   {
+      TNL_ASSERT_EQ( a.getSize(), t.getSize(), "The sizes of the arrays must be equal." );
       if( t.getSize() > 0 ) // we allow even assignment of empty arrays
          ArrayOperations< typename Array::DeviceType, typename T::DeviceType >::template
             copyMemory< typename Array::ValueType, typename T::ValueType, typename Array::IndexType >
@@ -68,6 +73,9 @@ template< typename Array,
           typename T >
 struct ArrayAssignment< Array, T, false >
 {
+   static void resize( Array& a, const T& t )
+   {
+   };
    static void assign( Array& a, const T& t )
    {
       TNL_ASSERT_FALSE( a.empty(), "Cannot assign value to empty array." );
