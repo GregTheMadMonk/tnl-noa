@@ -54,7 +54,7 @@ struct ArrayAssignment< Array, T, true >
    {
       a.setSize( t.getSize() );
    }
-   
+
    static void assign( Array& a, const T& t )
    {
       TNL_ASSERT_EQ( a.getSize(), t.getSize(), "The sizes of the arrays must be equal." );
@@ -74,10 +74,10 @@ struct ArrayAssignment< Array, T, false >
 {
    static void resize( Array& a, const T& t )
    {
-      TNL_ASSERT_TRUE( !a.empty(), "Cannot assign value to empty array." );
    };
    static void assign( Array& a, const T& t )
    {
+      TNL_ASSERT_FALSE( a.empty(), "Cannot assign value to empty array." );
       ArrayOperations< typename Array::DeviceType >::template
          setMemory< typename Array::ValueType, typename Array::IndexType >
          ( a.getArrayData(), ( typename Array::ValueType ) t, a.getSize() );

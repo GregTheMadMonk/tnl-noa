@@ -142,7 +142,7 @@ Array( const std::initializer_list< InValue >& list )
    // Here we assume that the underlying array for initializer_list is const T[N]
    // as noted here:
    // https://en.cppreference.com/w/cpp/utility/initializer_list
-   Algorithms::ArrayOperations< Device >::copyMemory( this->getData(), &( *list.begin() ), list.size() );
+   Algorithms::ArrayOperations< Device, Devices::Host >::copyMemory( this->getData(), &( *list.begin() ), list.size() );
 }
 
 template< typename Value,
@@ -172,7 +172,7 @@ Array( const std::vector< InValue >& vector )
   referenceCounter( 0 )
 {
    this->setSize( vector.size() );
-   Algorithms::ArrayOperations< Device >::copyMemory( this->getData(), vector.data(), vector.size() );
+   Algorithms::ArrayOperations< Device, Devices::Host >::copyMemory( this->getData(), vector.data(), vector.size() );
 }
 
 template< typename Value,
@@ -622,10 +622,11 @@ template< typename Value,
           typename Device,
           typename Index >
 bool
+__cuda_callable__
 Array< Value, Device, Index >::
 empty() const
 {
-   return data;
+   return ( data == nullptr );
 }
 
 template< typename Value,
@@ -635,7 +636,7 @@ void Array< Value, Device, Index >::save( File& file ) const
 {
    Object::save( file );
    file.save( &this->size );
-   if( this->size != 0 ) 
+   if( this->size != 0 )
       Algorithms::ArrayIO< Value, Device, Index >::save( file, this->data, this->size );
 }
 

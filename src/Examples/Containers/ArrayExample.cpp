@@ -22,20 +22,24 @@ void arrayExample()
     */
    for( int i = 0; i< size; i++ )
       a1.setElement( i, i );
+   std::cout << "a1 = " << a1 << std::endl;
 
    /***
     * You may also assign value to all array elements ...
     */
    a2 = 0.0;
+   std::cout << "a2 = " << a2 << std::endl;
 
    /***
     * ... or assign STL list and vector.
     */
    std::list< float > l = { 1.0, 2.0, 3.0 };
    std::vector< float > v = { 5.0, 6.0, 7.0 };
-   a1 = v;
    a1 = l;
-   
+   std::cout << "a1 = " << a1 << std::endl;
+   a1 = v;
+   std::cout << "a1 = " << a1 << std::endl;
+
    /***
     * Simple array values checks can be done as follows ...
     */

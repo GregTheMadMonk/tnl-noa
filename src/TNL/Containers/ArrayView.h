@@ -26,7 +26,7 @@ template< int Size, typename Value >
 class StaticArray;
 
 /**
- * \brief ArrayView serves for accessing array of data allocated by TNL::Array or
+ * \brief ArrayView serves for managing array of data allocated by TNL::Array or
  * another way. It makes no data deallocation at the end of its life cycle. Compared
  * to TNL Array, it is lighter data structure and therefore it is more efficient
  * especially when it is being passed on GPU. The ArrayView can also be created
@@ -39,17 +39,17 @@ class StaticArray;
  * In the \e Device type, the Array remembers where the memory is allocated.
  * This ensures the compile-time checks of correct pointers manipulation.
  * Methods defined as \ref __cuda_callable__ can be called even from kernels
- * running on device. Array elements can be changed either using the \ref operator[]
- * which is more efficient but it can be called from CPU only for arrays
- * allocated on host (CPU). If the array is allocated on GPU, the operator[]
- * can be called only from kernels running on the device (GPU). On the other
- * hand, methods \ref setElement and \ref getElement, can be called only from the
- * host (CPU) does not matter if the array resides on the host or the device.
- * In the latter case, explicit data transfer between host and device (via PCI
- * express or NVlink in more lucky systems) is invoked and so it can be very
- * slow. In not time critical parts of code, this is not an issue, however.
- * Another way to change data being accessed by the ArrayView is \ref evaluate which evaluates
- * given lambda function. This is performed at the same place where the array is
+ * running on device. Array elements can be changed either using the \ref operator[].
+ * This can be called from CPU only for arrays allocated on host (CPU). If the
+ * array is allocated on GPU, the operator[] can be called only from kernels
+ * running on the device (GPU). On the other hand, methods \ref setElement and
+ * \ref getElement, can be called only from the host (CPU) does not matter if
+ * the array resides on the host or the device. In the latter case, explicit data
+ * transfer between host and device (via PCI express or NVlink in more lucky
+ * systems) is invoked and so it can be very slow. In not time critical parts
+ * of code, this is not an issue, however. Another way to change data being
+ * accessed by the ArrayView is \ref evaluate which evaluates given lambda
+ * function. This is performed at the same place where the array is
  * allocated i.e. it is efficient even on GPU. For simple checking of the array
  * contents, one may use methods \ref containValue and \ref containsValue and
  * \ref containsOnlyValue.

@@ -364,7 +364,7 @@ bool
 ArrayView< Value, Device, Index >::
 empty() const
 {
-   return data;
+   return ( data == nullptr );
 }
 
 template< typename Value,

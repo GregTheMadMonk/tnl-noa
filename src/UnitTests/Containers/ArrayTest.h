@@ -10,7 +10,7 @@
 
 #pragma once
 
-#ifdef HAVE_GTEST 
+#ifdef HAVE_GTEST
 #include <type_traits>
 
 #include <TNL/Containers/Array.h>
@@ -146,7 +146,7 @@ TYPED_TEST( ArrayTest, constructors )
 {
    using ArrayType = typename TestFixture::ArrayType;
 
-  /* ArrayType u;
+   ArrayType u;
    EXPECT_EQ( u.getSize(), 0 );
 
    ArrayType v( 10 );
@@ -177,7 +177,7 @@ TYPED_TEST( ArrayTest, constructors )
    v.reset();
    EXPECT_EQ( w.getSize(), 10 );
 
-   ArrayType a1 = { 1, 2, 3 };
+   ArrayType a1 { 1, 2, 3 };
    EXPECT_EQ( a1.getElement( 0 ), 1 );
    EXPECT_EQ( a1.getElement( 1 ), 2 );
    EXPECT_EQ( a1.getElement( 2 ), 3 );
@@ -194,8 +194,6 @@ TYPED_TEST( ArrayTest, constructors )
    EXPECT_EQ( a3.getElement( 0 ), 7 );
    EXPECT_EQ( a3.getElement( 1 ), 8 );
    EXPECT_EQ( a3.getElement( 2 ), 9 );
-   
-   */ 
 }
 
 TYPED_TEST( ArrayTest, setSize )
@@ -217,12 +215,16 @@ TYPED_TEST( ArrayTest, setSize )
    EXPECT_EQ( v.getSize(), 11 );
    EXPECT_NE( v.getData(), u.getData() );
 
-   // cast to bool returns true iff size > 0
-   /*EXPECT_TRUE( (bool) u );
-   EXPECT_FALSE( ! u );
-   u.setSize( 0 );
-   EXPECT_FALSE( (bool) u );
-   EXPECT_TRUE( ! u );*/
+}
+
+TYPED_TEST( ArrayTest, empty )
+{
+   using ArrayType = typename TestFixture::ArrayType;
+   ArrayType u( 10 );
+
+   EXPECT_FALSE( u.empty() );
+   u.reset();
+   EXPECT_TRUE( u.empty() );
 }
 
 TYPED_TEST( ArrayTest, setLike )
@@ -300,15 +302,19 @@ TYPED_TEST( ArrayTest, reset )
    ArrayType u;
    u.setSize( 100 );
    EXPECT_EQ( u.getSize(), 100 );
+   EXPECT_FALSE( u.empty() );
    EXPECT_NE( u.getData(), nullptr );
    u.reset();
    EXPECT_EQ( u.getSize(), 0 );
+   EXPECT_TRUE( u.empty() );
    EXPECT_EQ( u.getData(), nullptr );
    u.setSize( 100 );
    EXPECT_EQ( u.getSize(), 100 );
+   EXPECT_FALSE( u.empty() );
    EXPECT_NE( u.getData(), nullptr );
    u.reset();
    EXPECT_EQ( u.getSize(), 0 );
+   EXPECT_TRUE( u.empty() );
    EXPECT_EQ( u.getData(), nullptr );
 }
 
