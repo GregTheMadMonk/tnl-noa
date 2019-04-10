@@ -212,7 +212,6 @@ ResultType Vector< Real, Device, Index >::lpNorm( const Scalar p ) const
    return Algorithms::VectorOperations< Device >::template getVectorLpNorm< Vector, ResultType >( *this, p );
 }
 
-
 template< typename Real,
           typename Device,
           typename Index >
@@ -222,7 +221,6 @@ ResultType Vector< Real, Device, Index >::sum() const
    return Algorithms::VectorOperations< Device >::template getVectorSum< Vector, ResultType >( *this );
 }
 
-
 template< typename Real,
           typename Device,
           typename Index >
@@ -231,7 +229,6 @@ Real Vector< Real, Device, Index >::differenceMax( const VectorT& v ) const
 {
    return Algorithms::VectorOperations< Device >::getVectorDifferenceMax( *this, v );
 }
-
 
 template< typename Real,
           typename Device,
