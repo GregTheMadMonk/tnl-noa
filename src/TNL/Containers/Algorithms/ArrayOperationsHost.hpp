@@ -18,8 +18,10 @@
 #include <TNL/Containers/Algorithms/ReductionOperations.h>
 
 namespace TNL {
-namespace Containers {   
+namespace Containers {
 namespace Algorithms {
+
+static constexpr int OpenMPArrayOperationsThreshold = 512; // TODO: check this threshold
 
 template< typename Element, typename Index >
 void
@@ -67,7 +69,10 @@ setMemory( Element* data,
            const Element& value,
            const Index size )
 {
-   for( Index i = 0; i < size; i ++ )
+   #ifdef HAVE_OPENMP
+   #pragma omp parallel for if( Devices::Host::isOMPEnabled() && size > OpenMPArrayOperationsThreshold )
+   #endif
+   for( Index i = 0; i < size; i++ )
       data[ i ] = value;
 }
 
@@ -86,7 +91,7 @@ copyMemory( DestinationElement* destination,
    {
       // GCC 8.1 complains that we bypass a non-trivial copy-constructor
       // (in C++17 we could use constexpr if to avoid compiling this branch in that case)
-      #if defined(__GNUC__) && ( __GNUC__ > 8 || ( __GNUC__ == 8 && __GNUC_MINOR__ > 0 ) ) && !defined(__clang__) && !defined(__NVCC__)
+      #if defined(__GNUC__) && ( __GNUC__ > 8 || ( __GNUC__ == 8 && __GNUC_MINOR__ > 0 ) ) && !defined(__clang__)
          #pragma GCC diagnostic push
          #pragma GCC diagnostic ignored "-Wclass-memaccess"
       #endif
@@ -96,8 +101,11 @@ copyMemory( DestinationElement* destination,
       #endif
    }
    else
-      for( Index i = 0; i < size; i ++ )
-         destination[ i ] = ( DestinationElement ) source[ i ];
+      #ifdef HAVE_OPENMP
+      #pragma omp parallel for if( Devices::Host::isOMPEnabled() && size > OpenMPArrayOperationsThreshold )
+      #endif
+      for( Index i = 0; i < size; i++ )
+         destination[ i ] = source[ i ];
 }
 
 template< typename DestinationElement,
@@ -107,9 +115,9 @@ ArrayOperations< Devices::Host >::
 copySTLList( DestinationElement* destination,
              const std::list< SourceElement >& source )
 {
-   size_t i = 0;
+   std::size_t i = 0;
    for( const SourceElement& e : source )
-      destination[ i ++ ] = static_cast< DestinationElement >( e );
+      destination[ i++ ] = e;
 }
 
 
@@ -132,7 +140,7 @@ compareMemory( const DestinationElement* destination,
          return false;
    }
    else
-      for( Index i = 0; i < size; i ++ )
+      for( Index i = 0; i < size; i++ )
          if( ! ( destination[ i ] == source[ i ] ) )
             return false;
    return true;
@@ -149,7 +157,7 @@ containsValue( const Element* data,
    TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
    TNL_ASSERT_GE( size, 0, "" );
 
-   for( Index i = 0; i < size; i ++ )
+   for( Index i = 0; i < size; i++ )
       if( data[ i ] == value )
          return true;
    return false;
@@ -168,7 +176,7 @@ containsOnlyValue( const Element* data,
 
    if( size == 0 ) return false;
 
-   for( Index i = 0; i < size; i ++ )
+   for( Index i = 0; i < size; i++ )
       if( ! ( data[ i ] == value ) )
          return false;
    return true;
