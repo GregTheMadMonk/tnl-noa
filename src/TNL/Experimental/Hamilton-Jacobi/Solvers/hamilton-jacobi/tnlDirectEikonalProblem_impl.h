@@ -173,10 +173,7 @@ makeSnapshot(  )
         Meshes::DistributedMeshes::DistributedGridIO<MeshFunctionType,Meshes::DistributedMeshes::LocalCopy> ::save(fileName.getFileName(), *u );
    }
    else
-   {
-      if( ! this->u->save( fileName.getFileName() ) )
-         return false;
-   }
+      this->u->save( fileName.getFileName() );
    return true;
 }
 
