@@ -170,7 +170,11 @@ public:
 
    bool save( File& file ) const
    {
-      if( ! boundaryTags.save( file ) )
+      try
+      {
+         boundaryTags.save( file );
+      }
+      catch(...)
       {
          std::cerr << "Failed to save the boundary tags of the entities with dimension " << DimensionTag::value << "." << std::endl;
          return false;
@@ -180,7 +184,11 @@ public:
 
    bool load( File& file )
    {
-      if( ! boundaryTags.load( file ) )
+      try
+      {
+         boundaryTags.load( file );
+      }
+      catch(...)
       {
          std::cerr << "Failed to load the boundary tags of the entities with dimension " << DimensionTag::value << "." << std::endl;
          return false;

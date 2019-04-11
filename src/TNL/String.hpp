@@ -50,7 +50,6 @@ inline const char* String::getString() const
    return this->c_str();
 }
 
-
 inline const char& String::operator[]( int i ) const
 {
    TNL_ASSERT( i >= 0 && i < getLength(),
@@ -64,7 +63,6 @@ inline char& String::operator[]( int i )
                std::cerr << "Accessing char outside the string." );
    return std::string::operator[]( i );
 }
-
 
 /****
  * Operators for single characters
@@ -90,7 +88,6 @@ inline bool String::operator!=( char str ) const
    return ! operator==( str );
 }
 
-
 /****
  * Operators for C strings
  */
@@ -115,7 +112,6 @@ inline bool String::operator!=( const char* str ) const
    return ! operator==( str );
 }
 
-
 /****
  * Operators for std::string
  */
@@ -139,7 +135,6 @@ inline bool String::operator!=( const std::string& str ) const
 {
    return ! operator==( str );
 }
-
 
 /****
  * Operators for String
@@ -216,64 +211,22 @@ String::strip( char strip ) const
 }
 
 inline std::vector< String >
-String::split( const char separator, bool skipEmpty ) const
+String::split( const char separator, SplitSkip skip ) const
 {
    std::vector< String > parts;
    String s;
    for( int i = 0; i < this->getLength(); i++ ) {
       if( ( *this )[ i ] == separator ) {
-         if( ! skipEmpty || s != "" )
+         if( skip != SplitSkip::SkipEmpty || s != "" )
             parts.push_back( s );
          s = "";
       }
       else s += ( *this )[ i ];
    }
-   if( ! skipEmpty || s != "" )
+   if( skip != SplitSkip::SkipEmpty || s != "" )
       parts.push_back( s );
    return parts;
 }
-
-#ifdef HAVE_MPI
-inline void String::send( int target, int tag, MPI_Comm mpi_comm )
-{
-   int size = this->getSize();
-   MPI_Send( &size, 1, MPI_INT, target, tag, mpi_comm );
-   MPI_Send( this->getString(), this->length(), MPI_CHAR, target, tag, mpi_comm );
-}
-
-inline void String::receive( int source, int tag, MPI_Comm mpi_comm )
-{
-   int size;
-   MPI_Status status;
-   MPI_Recv( &size, 1, MPI_INT, source, tag, mpi_comm, &status );
-   this->setSize( size );
-   MPI_Recv( const_cast< void* >( ( const void* ) this->data() ), size, MPI_CHAR, source, tag, mpi_comm,  &status );
-}
-
-/*
-inline void String :: MPIBcast( int root, MPI_Comm comm )
-{
-#ifdef USE_MPI
-   int iproc;
-   MPI_Comm_rank( MPI_COMM_WORLD, &iproc );
-   TNL_ASSERT( string, );
-   int len = strlen( string );
-   MPI_Bcast( &len, 1, MPI_INT, root, comm );
-   if( iproc != root )
-   {
-      if( length < len )
-      {
-         delete[] string;
-         length = STRING_PAGE * ( len / STRING_PAGE + 1 );
-         string = new char[ length ];
-      }
-   }
- 
-   MPI_Bcast( string, len + 1, MPI_CHAR, root, comm );
-#endif
-}
-*/
-#endif
 
 inline String operator+( char string1, const String& string2 )
 {
@@ -295,5 +248,46 @@ inline std::ostream& operator<<( std::ostream& stream, const String& str )
    stream << str.getString();
    return stream;
 }
+
+#ifdef HAVE_MPI
+inline void mpiSend( const String& str, int target, int tag, MPI_Comm mpi_comm )
+{
+   int size = str.getSize();
+   MPI_Send( &size, 1, MPI_INT, target, tag, mpi_comm );
+   MPI_Send( const_cast< void* >( ( const void* ) str.getString() ), str.length(), MPI_CHAR, target, tag, mpi_comm );
+}
+
+inline void mpiReceive( String& str, int source, int tag, MPI_Comm mpi_comm )
+{
+   int size;
+   MPI_Status status;
+   MPI_Recv( &size, 1, MPI_INT, source, tag, mpi_comm, &status );
+   str.setSize( size );
+   MPI_Recv( const_cast< void* >( ( const void* ) str.data() ), size, MPI_CHAR, source, tag, mpi_comm,  &status );
+}
+
+/*
+inline void String :: MPIBcast( int root, MPI_Comm comm )
+{
+   int iproc;
+   MPI_Comm_rank( MPI_COMM_WORLD, &iproc );
+   TNL_ASSERT( string, );
+   int len = strlen( string );
+   MPI_Bcast( &len, 1, MPI_INT, root, comm );
+   if( iproc != root )
+   {
+      if( length < len )
+      {
+         delete[] string;
+         length = STRING_PAGE * ( len / STRING_PAGE + 1 );
+         string = new char[ length ];
+      }
+   }
+ 
+   MPI_Bcast( string, len + 1, MPI_CHAR, root, comm );
+}
+*/
+#endif
+
 
 } // namespace TNL

@@ -69,11 +69,14 @@ class MIC
 {
    public:
 
-        static String getDeviceType()
-        {
-            return String( "Devices::MIC" );
-        };
+      static String getDeviceType()
+      {
+         return String( "Devices::MIC" );
+      };
 
+      // TODO: Remove getDeviceType();
+      static inline String getType() { return getDeviceType(); };
+        
 #ifdef HAVE_MIC
 
        //useful debuging -- but produce warning

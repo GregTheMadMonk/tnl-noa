@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <list>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Devices/MIC.h>
@@ -52,6 +53,11 @@ class ArrayOperations< Devices::Host >
       static void copyMemory( DestinationElement* destination,
                               const SourceElement* source,
                               const Index size );
+
+      template< typename DestinationElement,
+                typename SourceElement >
+      static void copySTLList( DestinationElement* destination,
+                               const std::list< SourceElement >& source );
 
       template< typename Element1,
                 typename Element2,
@@ -103,6 +109,11 @@ class ArrayOperations< Devices::Cuda >
       static void copyMemory( DestinationElement* destination,
                               const SourceElement* source,
                               const Index size );
+
+      template< typename DestinationElement,
+                typename SourceElement >
+      static void copySTLList( DestinationElement* destination,
+                               const std::list< SourceElement >& source );
 
       template< typename Element1,
                 typename Element2,
@@ -196,6 +207,11 @@ class ArrayOperations< Devices::MIC >
                               const SourceElement* source,
                               const Index size );
 
+      template< typename DestinationElement,
+                typename SourceElement >
+      static void copySTLList( DestinationElement* destination,
+                               const std::list< SourceElement >& source );
+
       template< typename Element1,
                 typename Element2,
                 typename Index >
@@ -260,6 +276,6 @@ class ArrayOperations< Devices::Host, Devices::MIC >
 } // namespace Containers
 } // namespace TNL
 
-#include <TNL/Containers/Algorithms/ArrayOperationsHost_impl.h>
-#include <TNL/Containers/Algorithms/ArrayOperationsCuda_impl.h>
-#include <TNL/Containers/Algorithms/ArrayOperationsMIC_impl.h>
+#include <TNL/Containers/Algorithms/ArrayOperationsHost.hpp>
+#include <TNL/Containers/Algorithms/ArrayOperationsCuda.hpp>
+#include <TNL/Containers/Algorithms/ArrayOperationsMIC.hpp>

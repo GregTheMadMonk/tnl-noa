@@ -207,22 +207,22 @@ class Grid< 2, Real, Device, Index > : public Object
    /**
     * \brief See Grid1D::save( File& file ) const.
     */
-   bool save( File& file ) const;
+   void save( File& file ) const;
 
    /**
     * \brief See Grid1D::load( File& file ).
     */
-   bool load( File& file );
+   void load( File& file );
 
    /**
     * \brief See Grid1D::save( const String& fileName ) const.
     */
-   bool save( const String& fileName ) const;
+   void save( const String& fileName ) const;
 
    /**
     * \brief See Grid1D::load( const String& fileName ).
     */
-   bool load( const String& fileName );
+   void load( const String& fileName );
 
    void writeProlog( Logger& logger ) const;
 

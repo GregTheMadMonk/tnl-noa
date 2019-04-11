@@ -74,9 +74,9 @@ class StaticEllpackIndexMultimap
 
       bool operator==( const StaticEllpackIndexMultimap& other ) const;
 
-      bool save( File& file ) const;
+      void save( File& file ) const;
 
-      bool load( File& file );
+      void load( File& file );
 
       using Object::load;
 

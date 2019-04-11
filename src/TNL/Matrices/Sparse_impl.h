@@ -88,25 +88,21 @@ void Sparse< Real, Device, Index >::reset()
 template< typename Real,
           typename Device,
           typename Index >
-bool Sparse< Real, Device, Index >::save( File& file ) const
+void Sparse< Real, Device, Index >::save( File& file ) const
 {
-   if( ! Matrix< Real, Device, Index >::save( file ) ||
-       ! this->values.save( file ) ||
-       ! this->columnIndexes.save( file ) )
-      return false;
-   return true;
+   Matrix< Real, Device, Index >::save( file );
+   this->values.save( file );
+   this->columnIndexes.save( file );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool Sparse< Real, Device, Index >::load( File& file )
+void Sparse< Real, Device, Index >::load( File& file )
 {
-   if( ! Matrix< Real, Device, Index >::load( file ) ||
-       ! this->values.load( file ) ||
-       ! this->columnIndexes.load( file ) )
-      return false;
-   return true;
+   Matrix< Real, Device, Index >::load( file );
+   this->values.load( file );
+   this->columnIndexes.load( file );
 }
 
 template< typename Real,

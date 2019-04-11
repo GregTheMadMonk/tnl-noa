@@ -11,13 +11,16 @@
 #pragma once
 
 #include <iostream>
+
 #include <TNL/Assert.h>
-#include <TNL/File.h>
 #include <TNL/Math.h>
 #include <TNL/param-types.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Algorithms/ArrayIO.h>
-#include <TNL/Containers/Array.h>
+#include <TNL/Containers/Algorithms/ArrayAssignment.h>
+#include <TNL/Exceptions/ArrayWrongSize.h>
+
+#include "Array.h"
 
 namespace TNL {
 namespace Containers {
@@ -64,6 +67,20 @@ template< typename Value,
           typename Device,
           typename Index >
 Array< Value, Device, Index >::
+Array( const Array< Value, Device, Index >& array )
+: size( 0 ),
+  data( nullptr ),
+  allocationPointer( nullptr ),
+  referenceCounter( 0 )
+{
+   this->setSize( array.getSize() );
+   Algorithms::ArrayOperations< Device >::copyMemory( this->getData(), array.getData(), array.getSize() );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+Array< Value, Device, Index >::
 Array( Array< Value, Device, Index >& array,
        const IndexType& begin,
        const IndexType& size )
@@ -90,6 +107,72 @@ Array( Array< Value, Device, Index >& array,
          this->referenceCounter = array.referenceCounter = new int( 2 );
       }
    }
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+Array< Value, Device, Index >::
+Array( Array< Value, Device, Index >&& array )
+{
+   this->size = array.size;
+   this->data = array.data;
+   this->allocationPointer = array.allocationPointer;
+   this->referenceCounter = array.referenceCounter;
+
+   array.size = 0;
+   array.data = nullptr;
+   array.allocationPointer = nullptr;
+   array.referenceCounter = nullptr;
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+   template< typename InValue >
+Array< Value, Device, Index >::
+Array( const std::initializer_list< InValue >& list )
+: size( 0 ),
+  data( 0 ),
+  allocationPointer( 0 ),
+  referenceCounter( 0 )
+{
+   this->setSize( list.size() );
+   ////
+   // Here we assume that the underlying array for initializer_list is const T[N]
+   // as noted here:
+   // https://en.cppreference.com/w/cpp/utility/initializer_list
+   Algorithms::ArrayOperations< Device, Devices::Host >::copyMemory( this->getData(), &( *list.begin() ), list.size() );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+   template< typename InValue >
+Array< Value, Device, Index >::
+Array( const std::list< InValue >& list )
+: size( 0 ),
+  data( 0 ),
+  allocationPointer( 0 ),
+  referenceCounter( 0 )
+{
+   this->setSize( list.size() );
+   Algorithms::ArrayOperations< Device >::copySTLList( this->getData(), list );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+   template< typename InValue >
+Array< Value, Device, Index >::
+Array( const std::vector< InValue >& vector )
+: size( 0 ),
+  data( 0 ),
+  allocationPointer( 0 ),
+  referenceCounter( 0 )
+{
+   this->setSize( vector.size() );
+   Algorithms::ArrayOperations< Device, Devices::Host >::copyMemory( this->getData(), vector.data(), vector.size() );
 }
 
 template< typename Value,
@@ -192,7 +275,7 @@ Index
 Array< Value, Device, Index >::
 getSize() const
 {
-   return this -> size;
+   return this->size;
 }
 
 template< typename Value,
@@ -273,6 +356,43 @@ bind( StaticArray< Size, Value >& array )
    this->data = array.getData();
 }
 
+template< typename Value,
+          typename Device,
+          typename Index >
+typename Array< Value, Device, Index >::ViewType
+Array< Value, Device, Index >::
+getView()
+{
+   return ViewType( getData(), getSize() );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+typename Array< Value, Device, Index >::ConstViewType
+Array< Value, Device, Index >::
+getConstView() const
+{
+   return ConstViewType( getData(), getSize() );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+Array< Value, Device, Index >::
+operator ViewType()
+{
+   return getView();
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+Array< Value, Device, Index >::
+operator ConstViewType() const
+{
+   return getConstView();
+}
 
 template< typename Value,
           typename Device,
@@ -318,6 +438,24 @@ Value* Array< Value, Device, Index >::getData()
 template< typename Value,
           typename Device,
           typename Index >
+__cuda_callable__
+const Value* Array< Value, Device, Index >::getArrayData() const
+{
+   return this->data;
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+__cuda_callable__
+Value* Array< Value, Device, Index >::getArrayData()
+{
+   return this->data;
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
 void
 Array< Value, Device, Index >::
 setElement( const Index& i, const Value& x )
@@ -345,7 +483,7 @@ template< typename Value,
 __cuda_callable__
 inline Value&
 Array< Value, Device, Index >::
-operator[] ( const Index& i )
+operator[]( const Index& i )
 {
    TNL_ASSERT_GE( i, (Index) 0, "Element index must be non-negative." );
    TNL_ASSERT_LT( i, this->getSize(), "Element index is out of bounds." );
@@ -358,7 +496,7 @@ template< typename Value,
 __cuda_callable__
 inline const Value&
 Array< Value, Device, Index >::
-operator[] ( const Index& i ) const
+operator[]( const Index& i ) const
 {
    TNL_ASSERT_GE( i, (Index) 0, "Element index must be non-negative." );
    TNL_ASSERT_LT( i, this->getSize(), "Element index is out of bounds." );
@@ -370,7 +508,7 @@ template< typename Value,
           typename Index >
 Array< Value, Device, Index >&
 Array< Value, Device, Index >::
-operator = ( const Array< Value, Device, Index >& array )
+operator=( const Array< Value, Device, Index >& array )
 {
    //TNL_ASSERT_EQ( array.getSize(), this->getSize(), "Array sizes must be the same." );
    if( this->getSize() != array.getSize() )
@@ -380,26 +518,66 @@ operator = ( const Array< Value, Device, Index >& array )
          copyMemory( this->getData(),
                      array.getData(),
                      array.getSize() );
-   return ( *this );
+   return *this;
 }
 
 template< typename Value,
           typename Device,
           typename Index >
-   template< typename ArrayT >
 Array< Value, Device, Index >&
 Array< Value, Device, Index >::
-operator = ( const ArrayT& array )
+operator=( Array< Value, Device, Index >&& array )
 {
-   //TNL_ASSERT_EQ( array.getSize(), this->getSize(), "Array sizes must be the same." );
-   if( this->getSize() != array.getSize() )
-      this->setLike( array );
-   if( this->getSize() > 0 )
-      Algorithms::ArrayOperations< Device, typename ArrayT::DeviceType >::
-         copyMemory( this->getData(),
-                     array.getData(),
-                     array.getSize() );
-   return ( *this );
+   this->size = array.size;
+   this->data = array.data;
+   this->allocationPointer = array.allocationPointer;
+   this->referenceCounter = array.referenceCounter;
+
+   array.size = 0;
+   array.data = nullptr;
+   array.allocationPointer = nullptr;
+   array.referenceCounter = nullptr;
+   return *this;
+}
+
+
+template< typename Value,
+          typename Device,
+          typename Index >
+   template< typename T >
+Array< Value, Device, Index >&
+Array< Value, Device, Index >::
+operator=( const T& data )
+{
+   Algorithms::ArrayAssignment< Array, T >::assign( *this, data );
+   return *this;
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+   template< typename InValue >
+Array< Value, Device, Index >&
+Array< Value, Device, Index >::
+operator=( const std::list< InValue >& list )
+{
+   this->setSize( list.size() );
+   Algorithms::ArrayOperations< Device >::copySTLList( this->getData(), list );
+   return *this;
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+   template< typename InValue >
+Array< Value, Device, Index >&
+Array< Value, Device, Index >::
+operator=( const std::vector< InValue >& vector )
+{
+   if( this->getSize() != vector.size() )
+      this->setSize( vector.size() );
+   Algorithms::ArrayOperations< Device, Devices::Host >::copyMemory( this->getData(), vector.data(), vector.size() );
+   return *this;
 }
 
 template< typename Value,
@@ -408,7 +586,7 @@ template< typename Value,
    template< typename ArrayT >
 bool
 Array< Value, Device, Index >::
-operator == ( const ArrayT& array ) const
+operator==( const ArrayT& array ) const
 {
    if( array.getSize() != this->getSize() )
       return false;
@@ -424,18 +602,24 @@ template< typename Value,
           typename Device,
           typename Index >
    template< typename ArrayT >
-bool Array< Value, Device, Index >::operator != ( const ArrayT& array ) const
+bool
+Array< Value, Device, Index >::
+operator!=( const ArrayT& array ) const
 {
-   return ! ( ( *this ) == array );
+   return ! ( *this == array );
 }
 
 template< typename Value,
           typename Device,
           typename Index >
-void Array< Value, Device, Index >::setValue( const Value& e )
+void Array< Value, Device, Index >::setValue( const ValueType& e,
+                                              const Index begin,
+                                              Index end )
 {
    TNL_ASSERT_TRUE( this->getData(), "Attempted to set a value of an empty array." );
-   Algorithms::ArrayOperations< Device >::setMemory( this->getData(), e, this->getSize() );
+   if( end == -1 )
+      end = this->getSize();
+   Algorithms::ArrayOperations< Device >::setMemory( &this->getData()[ begin ], e, end - begin );
 }
 
 template< typename Value,
@@ -443,9 +627,15 @@ template< typename Value,
           typename Index >
 bool
 Array< Value, Device, Index >::
-containsValue( const Value& v ) const
+containsValue( const Value& v,
+               const Index begin,
+               Index end ) const
 {
-   return Algorithms::ArrayOperations< Device >::containsValue( this->data, this->size, v );
+   TNL_ASSERT_TRUE( this->getData(), "Attempted to check a value of an empty array." );
+   if( end == -1 )
+      end = this->getSize();
+
+   return Algorithms::ArrayOperations< Device >::containsValue( &this->getData()[ begin ], end - begin, v );
 }
 
 template< typename Value,
@@ -453,110 +643,77 @@ template< typename Value,
           typename Index >
 bool
 Array< Value, Device, Index >::
-containsOnlyValue( const Value& v ) const
+containsOnlyValue( const Value& v,
+                   const Index begin,
+                   Index end ) const
 {
-   return Algorithms::ArrayOperations< Device >::containsOnlyValue( this->data, this->size, v );
-}
+   TNL_ASSERT_TRUE( this->getData(), "Attempted to check a value of an empty array." );
+   if( end == -1 )
+      end = this->getSize();
 
-template< typename Value,
-          typename Device,
-          typename Index >
-Array< Value, Device, Index >::operator bool() const
-{
-   return data != 0;
-}
-
-
-template< typename Value,
-          typename Device,
-          typename Index >
-bool Array< Value, Device, Index >::save( File& file ) const
-{
-   if( ! Object::save( file ) )
-      return false;
-   if( ! file.write( &this->size ) )
-      return false;
-   if( this->size != 0 && ! Algorithms::ArrayIO< Value, Device, Index >::save( file, this->data, this->size ) )
-   {
-      std::cerr << "I was not able to save " << this->getType()
-           << " with size " << this -> getSize() << std::endl;
-      return false;
-   }
-   return true;
+   return Algorithms::ArrayOperations< Device >::containsOnlyValue( &this->getData()[ begin ], end - begin, v );
 }
 
 template< typename Value,
           typename Device,
           typename Index >
 bool
+__cuda_callable__
+Array< Value, Device, Index >::
+empty() const
+{
+   return ( data == nullptr );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+void Array< Value, Device, Index >::save( File& file ) const
+{
+   Object::save( file );
+   file.save( &this->size );
+   if( this->size != 0 )
+      Algorithms::ArrayIO< Value, Device, Index >::save( file, this->data, this->size );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+void
 Array< Value, Device, Index >::
 load( File& file )
 {
-   if( ! Object::load( file ) )
-      return false;
+   Object::load( file );
    Index _size;
-   if( ! file.read( &_size ) )
-   {
-      std::cerr << "Unable to read the array size." << std::endl;
-      return false;
-   }
+   file.load( &_size );
    if( _size < 0 )
-   {
-      std::cerr << "Error: The size " << _size << " of the file is not a positive number or zero." << std::endl;
-      return false;
-   }
+      throw Exceptions::ArrayWrongSize( _size, "positive" );
    setSize( _size );
    if( _size )
-   {
-      if( ! Algorithms::ArrayIO< Value, Device, Index >::load( file, this->data, this->size ) )
-      {
-         std::cerr << "I was not able to load " << this->getType()
-                    << " with size " << this -> getSize() << std::endl;
-         return false;
-      }
-   }
-   return true;
+      Algorithms::ArrayIO< Value, Device, Index >::load( file, this->data, this->size );
 }
 
 template< typename Value,
           typename Device,
           typename Index >
-bool
+void
 Array< Value, Device, Index >::
 boundLoad( File& file )
 {
-   if( ! Object::load( file ) )
-      return false;
+   Object::load( file );
    Index _size;
-   if( ! file.read( &_size ) )
-      return false;
+   file.load( &_size );
    if( _size < 0 )
-   {
-      std::cerr << "Error: The size " << _size << " of the file is not a positive number or zero." << std::endl;
-      return false;
-   }
+      throw Exceptions::ArrayWrongSize( _size, "Positive is expected," );
    if( this->getSize() != 0 )
    {
       if( this->getSize() != _size )
-      {
-         std::cerr << "Error: The current array size is not zero (" << this->getSize() << ") and it is different from the size of "
-                   << "the array being loaded (" << _size << "). This is not possible. Call method reset() before." << std::endl;
-         return false;
-      }
+         throw Exceptions::ArrayWrongSize( _size, convertToString( this->getSize() ) + " is expected." );
    }
    else setSize( _size );
    if( _size )
-   {
-      if( ! Algorithms::ArrayIO< Value, Device, Index >::load( file, this->data, this->size ) )
-      {
-         std::cerr << "I was not able to load " << this->getType()
-                   << " with size " << this -> getSize() << std::endl;
-         return false;
-      }
-   }
-   return true;
+      Algorithms::ArrayIO< Value, Device, Index >::load( file, this->data, this->size );
 }
-
 
 template< typename Value,
           typename Device,
@@ -568,7 +725,7 @@ Array< Value, Device, Index >::
 }
 
 template< typename Value, typename Device, typename Index >
-std::ostream& operator << ( std::ostream& str, const Array< Value, Device, Index >& v )
+std::ostream& operator<<( std::ostream& str, const Array< Value, Device, Index >& v )
 {
    str << "[ ";
    if( v.getSize() > 0 )

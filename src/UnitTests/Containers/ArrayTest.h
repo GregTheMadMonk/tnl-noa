@@ -10,7 +10,7 @@
 
 #pragma once
 
-#ifdef HAVE_GTEST 
+#ifdef HAVE_GTEST
 #include <type_traits>
 
 #include <TNL/Containers/Array.h>
@@ -158,7 +158,7 @@ TYPED_TEST( ArrayTest, constructors )
       EXPECT_EQ( w.getData(), data );
 
       ArrayType z1( w );
-      EXPECT_EQ( z1.getData(), data );
+      //EXPECT_EQ( z1.getData(), data );
       EXPECT_EQ( z1.getSize(), 10 );
 
       ArrayType z2( w, 1 );
@@ -169,6 +169,31 @@ TYPED_TEST( ArrayTest, constructors )
       EXPECT_EQ( z3.getData(), data + 2 );
       EXPECT_EQ( z3.getSize(), 3 );
    }
+
+   ArrayType w( v );
+   EXPECT_EQ( w.getSize(), v.getSize() );
+   for( int i = 0; i < 10; i++ )
+      EXPECT_EQ( v.getElement( i ), w.getElement( i ) );
+   v.reset();
+   EXPECT_EQ( w.getSize(), 10 );
+
+   ArrayType a1 { 1, 2, 3 };
+   EXPECT_EQ( a1.getElement( 0 ), 1 );
+   EXPECT_EQ( a1.getElement( 1 ), 2 );
+   EXPECT_EQ( a1.getElement( 2 ), 3 );
+
+   std::list< int > l = { 4, 5, 6 };
+   ArrayType a2( l );
+   EXPECT_EQ( a2.getElement( 0 ), 4 );
+   EXPECT_EQ( a2.getElement( 1 ), 5 );
+   EXPECT_EQ( a2.getElement( 2 ), 6 );
+
+   std::vector< int > q = { 7, 8, 9 };
+
+   ArrayType a3( q );
+   EXPECT_EQ( a3.getElement( 0 ), 7 );
+   EXPECT_EQ( a3.getElement( 1 ), 8 );
+   EXPECT_EQ( a3.getElement( 2 ), 9 );
 }
 
 TYPED_TEST( ArrayTest, setSize )
@@ -184,18 +209,22 @@ TYPED_TEST( ArrayTest, setSize )
 
    ArrayType v( u );
    EXPECT_EQ( v.getSize(), 10 );
-   EXPECT_EQ( v.getData(), u.getData() );
+   //EXPECT_EQ( v.getData(), u.getData() );
    v.setSize( 11 );
    EXPECT_EQ( u.getSize(), 10 );
    EXPECT_EQ( v.getSize(), 11 );
    EXPECT_NE( v.getData(), u.getData() );
 
-   // cast to bool returns true iff size > 0
-   EXPECT_TRUE( (bool) u );
-   EXPECT_FALSE( ! u );
-   u.setSize( 0 );
-   EXPECT_FALSE( (bool) u );
-   EXPECT_TRUE( ! u );
+}
+
+TYPED_TEST( ArrayTest, empty )
+{
+   using ArrayType = typename TestFixture::ArrayType;
+   ArrayType u( 10 );
+
+   EXPECT_FALSE( u.empty() );
+   u.reset();
+   EXPECT_TRUE( u.empty() );
 }
 
 TYPED_TEST( ArrayTest, setLike )
@@ -273,15 +302,19 @@ TYPED_TEST( ArrayTest, reset )
    ArrayType u;
    u.setSize( 100 );
    EXPECT_EQ( u.getSize(), 100 );
+   EXPECT_FALSE( u.empty() );
    EXPECT_NE( u.getData(), nullptr );
    u.reset();
    EXPECT_EQ( u.getSize(), 0 );
+   EXPECT_TRUE( u.empty() );
    EXPECT_EQ( u.getData(), nullptr );
    u.setSize( 100 );
    EXPECT_EQ( u.getSize(), 100 );
+   EXPECT_FALSE( u.empty() );
    EXPECT_NE( u.getData(), nullptr );
    u.reset();
    EXPECT_EQ( u.getSize(), 0 );
+   EXPECT_TRUE( u.empty() );
    EXPECT_EQ( u.getData(), nullptr );
 }
 
@@ -437,7 +470,9 @@ TYPED_TEST( ArrayTest, assignmentOperator )
       u_host.setElement( i, i );
    }
 
-   v.setValue( 0 );
+   v = 72; //.setValue( 0 );
+   for( int i = 0; i < 10; i++ )
+      EXPECT_EQ( v.getElement( i ), 72 );
    v = u;
    EXPECT_EQ( u, v );
 
@@ -450,6 +485,10 @@ TYPED_TEST( ArrayTest, assignmentOperator )
    u_host.setValue( 0 );
    u_host = u;
    EXPECT_EQ( u_host, u );
+
+   u = 5;
+   for( int i = 0; i < 10; i++ )
+      EXPECT_EQ( u.getElement( i ), 5 );
 }
 
 // test works only for arithmetic types
@@ -504,11 +543,11 @@ TYPED_TEST( ArrayTest, SaveAndLoad )
    for( int i = 0; i < 100; i ++ )
       v.setElement( i, 3.14147 );
    File file;
-   file.open( "test-file.tnl", IOMode::write );
-   EXPECT_TRUE( v.save( file ) );
+   file.open( "test-file.tnl", File::Mode::Out );
+   v.save( file );
    file.close();
-   file.open( "test-file.tnl", IOMode::read );
-   EXPECT_TRUE( u.load( file ) );
+   file.open( "test-file.tnl", File::Mode::In );
+   u.load( file );
    EXPECT_EQ( u, v );
 
    EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
@@ -523,24 +562,33 @@ TYPED_TEST( ArrayTest, boundLoad )
    for( int i = 0; i < 100; i ++ )
       v.setElement( i, 3.14147 );
    File file;
-   file.open( "test-file.tnl", IOMode::write );
-   EXPECT_TRUE( v.save( file ) );
+   file.open( "test-file.tnl", File::Mode::Out );
+   v.save( file );
    file.close();
 
    w.setSize( 100 );
    u.bind( w );
-   file.open( "test-file.tnl", IOMode::read );
-   EXPECT_TRUE( u.boundLoad( file ) );
+   file.open( "test-file.tnl", File::Mode::In );
+   u.boundLoad( file );
    EXPECT_EQ( u, v );
    EXPECT_EQ( u.getData(), w.getData() );
 
    u.setSize( 50 );
-   file.open( "test-file.tnl", IOMode::read );
-   EXPECT_FALSE( u.boundLoad( file ) );
+   file.open( "test-file.tnl", File::Mode::In );
+   bool catched( false );
+   try
+   {
+      u.boundLoad( file );
+   }
+   catch(...)
+   {
+      catched = true;
+   }
+   EXPECT_TRUE( catched  );
 
    u.reset();
-   file.open( "test-file.tnl", IOMode::read );
-   EXPECT_TRUE( u.boundLoad( file ) );
+   file.open( "test-file.tnl", File::Mode::In );
+   u.boundLoad( file );
 
    EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
 }
@@ -553,8 +601,8 @@ TYPED_TEST( ArrayTest, referenceCountingConstructors )
    ArrayType u( 10 );
    ArrayType v( u );
    ArrayType w( v );
-   EXPECT_EQ( v.getData(), u.getData() );
-   EXPECT_EQ( w.getData(), u.getData() );
+   //EXPECT_EQ( v.getData(), u.getData() );
+   //EXPECT_EQ( w.getData(), u.getData() );
 
    // copies of a static array
    if( std::is_same< typename ArrayType::DeviceType, Devices::Host >::value ) {
@@ -563,8 +611,8 @@ TYPED_TEST( ArrayTest, referenceCountingConstructors )
       ArrayType v( u );
       ArrayType w( v );
       EXPECT_EQ( u.getData(), data );
-      EXPECT_EQ( v.getData(), data );
-      EXPECT_EQ( w.getData(), data );
+      //EXPECT_EQ( v.getData(), data );
+      //EXPECT_EQ( w.getData(), data );
    }
 }
 

@@ -149,12 +149,12 @@ TYPED_TEST( ArrayViewTest, constructors )
 {
    using ArrayType = typename TestFixture::ArrayType;
    using ViewType = typename TestFixture::ViewType;
-   using ConstViewType = VectorView< const typename ArrayType::ValueType, typename ArrayType::DeviceType, typename ArrayType::IndexType >;
+   using ConstViewType = typename ViewType::ConstViewType;
 
    ArrayType a( 10 );
    EXPECT_EQ( a.getSize(), 10 );
 
-   ViewType v( a );
+   ViewType v = a.getView();
    EXPECT_EQ( v.getSize(), 10 );
    EXPECT_EQ( v.getData(), a.getData() );
 
@@ -170,10 +170,10 @@ TYPED_TEST( ArrayViewTest, constructors )
 
    // test initialization by const reference
    const ArrayType& b = a;
-   ConstViewType b_view( b );
-   ConstViewType const_a_view( a );
+   ConstViewType b_view = b.getConstView();
+   ConstViewType const_a_view = a.getConstView();
 
-   // test initialization of cons view by non-const view
+   // test initialization of const view by non-const view
    ConstViewType const_b_view( b_view );
 }
 
@@ -221,7 +221,8 @@ TYPED_TEST( ArrayViewTest, swap )
    a.setValue( 0 );
    b.setValue( 1 );
 
-   ViewType u( a ), v( b );
+   ViewType u = a.getView();
+   ViewType v = b.getView();
    u.swap( v );
    EXPECT_EQ( u.getSize(), 20 );
    EXPECT_EQ( v.getSize(), 10 );
@@ -238,7 +239,7 @@ TYPED_TEST( ArrayViewTest, reset )
 
    ArrayType a;
    a.setSize( 100 );
-   ViewType u( a );
+   ViewType u = a.getView();
    EXPECT_EQ( u.getSize(), 100 );
    EXPECT_NE( u.getData(), nullptr );
    u.reset();
@@ -306,6 +307,35 @@ TYPED_TEST( ArrayViewTest, elementwiseAccess )
    testArrayViewElementwiseAccess( ArrayType() );
 }
 
+template< typename ArrayType >
+void ArrayViewEvaluateTest( ArrayType& u )
+{
+   using ValueType = typename ArrayType::ValueType;
+   using DeviceType = typename ArrayType::DeviceType;
+   using IndexType = typename ArrayType::IndexType;
+   using ViewType = ArrayView< ValueType, DeviceType, IndexType >;
+   ViewType v( u );
+
+   auto f = [] __cuda_callable__ ( IndexType i )
+   {
+      return 3 * i % 4;
+   };
+   
+   v.evaluate( f );
+   for( int i = 0; i < 10; i++ )
+   {
+      EXPECT_EQ( u.getElement( i ), 3 * i % 4 );
+      EXPECT_EQ( v.getElement( i ), 3 * i % 4 );
+   }
+}
+
+TYPED_TEST( ArrayViewTest, evaluate )
+{
+   using ArrayType = typename TestFixture::ArrayType;
+   ArrayType u( 10 );
+   ArrayViewEvaluateTest( u );
+}
+
 TYPED_TEST( ArrayViewTest, containsValue )
 {
    using ArrayType = typename TestFixture::ArrayType;
@@ -313,7 +343,7 @@ TYPED_TEST( ArrayViewTest, containsValue )
 
    ArrayType a;
    a.setSize( 1024 );
-   ViewType v( a );
+   ViewType v = a.getView();
 
    for( int i = 0; i < v.getSize(); i++ )
       v.setElement( i, i % 10 );
@@ -332,7 +362,7 @@ TYPED_TEST( ArrayViewTest, containsOnlyValue )
 
    ArrayType a;
    a.setSize( 1024 );
-   ViewType v( a );
+   ViewType v = a.getView();
 
    for( int i = 0; i < v.getSize(); i++ )
       v.setElement( i, i % 10 );
@@ -357,7 +387,9 @@ TYPED_TEST( ArrayViewTest, comparisonOperator )
       b.setElement( i, 2 * i );
    }
 
-   ViewType u( a ), v( a ), w( b );
+   ViewType u = a.getView();
+   ViewType v = a.getView();
+   ViewType w = b.getView();
 
    EXPECT_TRUE( u == u );
    EXPECT_TRUE( u == v );
@@ -406,8 +438,8 @@ TYPED_TEST( ArrayViewTest, comparisonOperatorWithDifferentType )
       b.setElement( i, i );
    }
 
-   ViewType1 u( a );
-   ViewType2 v( b );
+   ViewType1 u = a.getView();
+   ViewType2 v = b.getView();
 
    EXPECT_TRUE( u == v );
    EXPECT_FALSE( u != v );
@@ -431,8 +463,9 @@ TYPED_TEST( ArrayViewTest, assignmentOperator )
       a_host.setElement( i, i );
    }
 
-   ViewType u( a ), v( b );
-   typename ViewType::HostType u_host( a_host );
+   ViewType u = a.getView();
+   ViewType v = b.getView();
+   typename ViewType::HostType u_host = a_host.getView();
 
    v.setValue( 0 );
    v = u;
@@ -472,7 +505,7 @@ void testArrayAssignmentWithDifferentType()
    }
 
    using ViewType = ArrayView< typename ArrayType::ValueType, typename ArrayType::DeviceType, typename ArrayType::IndexType >;
-   ViewType u( a );
+   ViewType u = a.getView();
    typename ViewType::HostType u_host( a_host );
    using ShortViewType = ArrayView< short, typename ArrayType::DeviceType, short >;
    ShortViewType v( b );

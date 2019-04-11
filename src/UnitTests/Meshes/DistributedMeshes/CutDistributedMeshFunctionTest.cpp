@@ -592,7 +592,7 @@ TEST(CutDistributedMeshFunction, 3D_2_Save)
         if(CommunicatorType::GetRank(*group)==0)
         {
             File meshFile;
-            meshFile.open( FileName+String("-mesh.tnl"),IOMode::write);
+            meshFile.open( FileName+String("-mesh.tnl"),File::Mode::Out);
             cutDistributedGrid.getGlobalGrid().save( meshFile );
             meshFile.close();
         }
@@ -612,8 +612,7 @@ TEST(CutDistributedMeshFunction, 3D_2_Save)
        loadMeshFunctionptr.bind(globalCutGrid,loaddof);
 
         File file;
-        bool ok=file.open( FileName, IOMode::read );
-        TNL_ASSERT_TRUE(ok,"Cannot open file");
+        file.open( FileName, File::Mode::In );
         loadMeshFunctionptr.boundLoad(file);
         file.close();
  

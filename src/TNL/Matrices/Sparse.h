@@ -48,9 +48,9 @@ class Sparse : public Matrix< Real, Device, Index >
 
    void reset();
 
-   bool save( File& file ) const;
+   void save( File& file ) const;
 
-   bool load( File& file );
+   void load( File& file );
 
    void printStructure( std::ostream& str ) const;
 

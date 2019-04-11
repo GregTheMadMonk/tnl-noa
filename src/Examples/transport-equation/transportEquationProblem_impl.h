@@ -117,7 +117,11 @@ setInitialCondition( const Config::ParameterContainer& parameters,
 {
    this->bindDofs( dofs );
    const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
-   if( ! this->uPointer->boundLoad( initialConditionFile ) )
+   try
+   {
+      this->uPointer->boundLoad( initialConditionFile );
+   }
+   catch(...)
    {
       std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << std::endl;
       return false;
@@ -169,8 +173,7 @@ makeSnapshot( const RealType& time,
    fileName.setFileNameBase( "u-" );
    fileName.setExtension( "tnl" );
    fileName.setIndex( step );
-   if( ! printDofs.save( fileName.getFileName() ) )
-      return false;
+   printDofs.save( fileName.getFileName() );
    return true;
 }
 

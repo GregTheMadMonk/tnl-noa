@@ -15,9 +15,7 @@
 #include <type_traits>  // std::add_const
 
 #include <TNL/Containers/Array.h>
-#include <TNL/Containers/ArrayView.h>
-#include <TNL/Communicators/MpiCommunicator.h>
-#include <TNL/Containers/Subrange.h>
+#include <TNL/Containers/DistributedArrayView.h>
 
 namespace TNL {
 namespace Containers {
@@ -41,6 +39,8 @@ public:
    using ConstLocalArrayViewType = Containers::ArrayView< typename std::add_const< Value >::type, Device, Index >;
    using HostType = DistributedArray< Value, Devices::Host, Index, Communicator >;
    using CudaType = DistributedArray< Value, Devices::Cuda, Index, Communicator >;
+   using ViewType = DistributedArrayView< Value, Device, Index, Communicator >;
+   using ConstViewType = DistributedArrayView< typename std::add_const< Value >::type, Device, Index, Communicator >;
 
    DistributedArray() = default;
 
@@ -69,9 +69,28 @@ public:
    // TODO: no getSerializationType method until there is support for serialization
 
 
-   /*
-    * Usual Array methods follow below.
+   // Usual Array methods follow below.
+
+   /**
+    * \brief Returns a modifiable view of the array.
     */
+   ViewType getView();
+
+   /**
+    * \brief Returns a non-modifiable view of the array.
+    */
+   ConstViewType getConstView() const;
+
+   /**
+    * \brief Conversion operator to a modifiable view of the array.
+    */
+   operator ViewType();
+
+   /**
+    * \brief Conversion operator to a non-modifiable view of the array.
+    */
+   operator ConstViewType() const;
+
    template< typename Array >
    void setLike( const Array& array );
 

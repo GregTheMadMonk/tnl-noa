@@ -88,11 +88,15 @@ TYPED_TEST( DistributedArrayTest, copyFromGlobal )
    using ArrayType = typename TestFixture::ArrayType;
 
    this->distributedArray.setValue( 0.0 );
-   ArrayViewType localArrayView = this->distributedArray.getLocalArrayView();
    ArrayType globalArray( this->globalSize );
    globalArray.setValue( 1.0 );
    this->distributedArray.copyFromGlobal( globalArray );
-   EXPECT_EQ( localArrayView, globalArray );
+
+   ArrayViewType localArrayView = this->distributedArray.getLocalArrayView();
+   auto globalView = globalArray.getConstView();
+   const auto localRange = this->distributedArray.getLocalRange();
+   globalView.bind( &globalArray[ localRange.getBegin() ], localRange.getEnd() - localRange.getBegin() );
+   EXPECT_EQ( localArrayView, globalView );
 }
 
 TYPED_TEST( DistributedArrayTest, setLike )
@@ -188,7 +192,7 @@ TYPED_TEST( DistributedArrayTest, copyConstructor )
    this->distributedArray.setValue( 1 );
    DistributedArrayType copy( this->distributedArray );
    // Array has "binding" copy-constructor
-   EXPECT_EQ( copy.getLocalArrayView().getData(), this->distributedArray.getLocalArrayView().getData() );
+   //EXPECT_EQ( copy.getLocalArrayView().getData(), this->distributedArray.getLocalArrayView().getData() );
 }
 
 TYPED_TEST( DistributedArrayTest, copyAssignment )

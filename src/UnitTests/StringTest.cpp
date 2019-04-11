@@ -83,7 +83,7 @@ TEST( StringTest, SetSize )
 {
    String str;
    str.setSize( 42 );
-   EXPECT_GT( str.getAllocatedSize(), 0 );
+   EXPECT_EQ( str.getAllocatedSize(), 42 );
 }
 
 TEST( StringTest, GetString )
@@ -277,7 +277,7 @@ TEST( StringTest, split )
    EXPECT_EQ( parts[ 4 ], "br" );
    EXPECT_EQ( parts[ 5 ], "" );
 
-   parts = String( "abracadabra" ).split( 'a', true );
+   parts = String( "abracadabra" ).split( 'a', String::SplitSkip::SkipEmpty );
    ASSERT_EQ( (int) parts.size(), 4 );
    EXPECT_EQ( parts[ 0 ], "br" );
    EXPECT_EQ( parts[ 1 ], "c" );
@@ -306,10 +306,10 @@ TEST( StringTest, SaveLoad )
 {
    String str1( "testing-string" );
    File file;
-   file.open( "test-file.tnl", IOMode::write );
+   file.open( "test-file.tnl", File::Mode::Out );
    ASSERT_NO_THROW( file << str1 );
    file.close();
-   file.open( "test-file.tnl", IOMode::read );
+   file.open( "test-file.tnl", File::Mode::In );
    String str2;
    ASSERT_NO_THROW( file >> str2 );
    EXPECT_EQ( str1, str2 );

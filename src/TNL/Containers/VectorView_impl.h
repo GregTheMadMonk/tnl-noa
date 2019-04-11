@@ -16,6 +16,26 @@
 namespace TNL {
 namespace Containers {
 
+template< typename Value,
+          typename Device,
+          typename Index >
+typename VectorView< Value, Device, Index >::ViewType
+VectorView< Value, Device, Index >::
+getView()
+{
+   return *this;
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+typename VectorView< Value, Device, Index >::ConstViewType
+VectorView< Value, Device, Index >::
+getConstView() const
+{
+   return *this;
+}
+
 template< typename Real,
           typename Device,
           typename Index >

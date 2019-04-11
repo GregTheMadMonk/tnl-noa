@@ -107,13 +107,13 @@ void testMeshOnCuda( const Mesh& mesh )
    EXPECT_EQ( mesh2, mesh );
 
    // test load from file to CUDA
-   ASSERT_TRUE( mesh.save( "mesh.tnl" ) );
-   ASSERT_TRUE( dmesh1.load( "mesh.tnl" ) );
+   mesh.save( "mesh.tnl" );
+   dmesh1.load( "mesh.tnl" );
    EXPECT_EQ( dmesh1, mesh );
 
    // test save into file from CUDA
-   ASSERT_TRUE( dmesh1.save( "mesh.tnl" ) );
-   ASSERT_TRUE( mesh2.load( "mesh.tnl" ) );
+   dmesh1.save( "mesh.tnl" );
+   mesh2.load( "mesh.tnl" );
    EXPECT_EQ( mesh2, mesh );
 
    EXPECT_EQ( std::remove( "mesh.tnl" ), 0 );
@@ -154,8 +154,8 @@ template< typename Mesh >
 void testFinishedMesh( const Mesh& mesh )
 {
    Mesh mesh2;
-   ASSERT_TRUE( mesh.save( "mesh.tnl" ) );
-   ASSERT_TRUE( mesh2.load( "mesh.tnl" ) );
+   mesh.save( "mesh.tnl" );
+   mesh2.load( "mesh.tnl" );
    EXPECT_EQ( std::remove( "mesh.tnl" ), 0 );
    ASSERT_EQ( mesh, mesh2 );
    compareStringRepresentation( mesh, mesh2 );

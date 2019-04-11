@@ -76,7 +76,7 @@ typename DistributedArray< Value, Device, Index, Communicator >::LocalArrayViewT
 DistributedArray< Value, Device, Index, Communicator >::
 getLocalArrayView()
 {
-   return localData;
+   return localData.getView();
 }
 
 template< typename Value,
@@ -87,7 +87,7 @@ typename DistributedArray< Value, Device, Index, Communicator >::ConstLocalArray
 DistributedArray< Value, Device, Index, Communicator >::
 getLocalArrayView() const
 {
-   return localData;
+   return localData.getConstView();
 }
 
 template< typename Value,
@@ -116,6 +116,48 @@ copyFromGlobal( ConstLocalArrayViewType globalArray )
 /*
  * Usual Array methods follow below.
  */
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
+typename DistributedArray< Value, Device, Index, Communicator >::ViewType
+DistributedArray< Value, Device, Index, Communicator >::
+getView()
+{
+   return ViewType( getLocalRange(), getSize(), getCommunicationGroup(), getLocalArrayView() );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
+typename DistributedArray< Value, Device, Index, Communicator >::ConstViewType
+DistributedArray< Value, Device, Index, Communicator >::
+getConstView() const
+{
+   return ConstViewType( getLocalRange(), getSize(), getCommunicationGroup(), getLocalArrayView() );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
+DistributedArray< Value, Device, Index, Communicator >::
+operator ViewType()
+{
+   return getView();
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
+DistributedArray< Value, Device, Index, Communicator >::
+operator ConstViewType() const
+{
+   return getConstView();
+}
 
 template< typename Value,
           typename Device,

@@ -15,6 +15,7 @@
 #include <TNL/Functions/MeshFunctionNormGetter.h>
 #include <TNL/Functions/MeshFunctionGnuplotWriter.h>
 #include <TNL/Functions/MeshFunctionVTKWriter.h>
+#include <TNL/Exceptions/MeshFunctionDataMismatch.h>
 
 #pragma once
 
@@ -164,8 +165,7 @@ setup( const MeshPointer& meshPointer,
    if( parameters.checkParameter( prefix + "file" ) )
    {
       String fileName = parameters.getParameter< String >( prefix + "file" );
-      if( ! this->load( fileName ) )
-         return false;
+      this->load( fileName );
    }
    else
    {
@@ -468,47 +468,39 @@ getMaxNorm() const
 template< typename Mesh,
           int MeshEntityDimension,
           typename Real >
-bool
+void
 MeshFunction< Mesh, MeshEntityDimension, Real >::
 save( File& file ) const
 {
    TNL_ASSERT_EQ( this->data.getSize(), this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(),
                   "Size of the mesh function data does not match the mesh." );
-   if( ! Object::save( file ) )
-      return false;
-   return this->data.save( file );
+   Object::save( file );
+   this->data.save( file );
 }
 
 template< typename Mesh,
           int MeshEntityDimension,
           typename Real >
-bool
+void
 MeshFunction< Mesh, MeshEntityDimension, Real >::
 load( File& file )
 {
-   if( ! Object::load( file ) )
-      return false;
-   if( ! this->data.load( file ) )
-      return false;
+   Object::load( file );
+   this->data.load( file );
    const IndexType meshSize = this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >();
    if( this->data.getSize() != meshSize )
-   {
-      std::cerr << "Size of the data loaded to the mesh function (" << this->data.getSize() << ") does not fit with the mesh size (" << meshSize << ")." << std::endl;
-      return false;
-   }
-   return true;
+      throw Exceptions::MeshFunctionDataMismatch( this->data.getSize(), " Does not fit with mesh size " + convertToString( meshSize ) + "." );
 }
 
 template< typename Mesh,
           int MeshEntityDimension,
           typename Real >
-bool
+void
 MeshFunction< Mesh, MeshEntityDimension, Real >::
 boundLoad( File& file )
 {
-   if( ! Object::load( file ) )
-      return false;
-   return this->data.boundLoad( file );
+   Object::load( file );
+   this->data.boundLoad( file );
 }
 
 template< typename Mesh,

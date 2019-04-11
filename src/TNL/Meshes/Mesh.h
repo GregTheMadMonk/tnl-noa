@@ -160,9 +160,9 @@ class Mesh
                             const GlobalIndexVector& iperm );
 
 
-      bool save( File& file ) const;
+      void save( File& file ) const;
 
-      bool load( File& file );
+      void load( File& file );
 
       using Object::load;
       using Object::save;

@@ -208,22 +208,22 @@ class Grid< 1, Real, Device, Index > : public Object
    /**
     * \brief Method for saving the object to a file as a binary data
     */
-   bool save( File& file ) const;
+   void save( File& file ) const;
 
    /**
     * \brief Method for restoring the object from a file.
     */
-   bool load( File& file );
+   void load( File& file );
 
    /**
     * \brief Method for saving the object to a file.
     */
-   bool save( const String& fileName ) const;
+   void save( const String& fileName ) const;
 
    /**
     * \brief Method for restoring the object from a file.
     */
-   bool load( const String& fileName );
+   void load( const String& fileName );
 
    void writeProlog( Logger& logger ) const;
 

@@ -77,9 +77,7 @@ bool processImages( const Config::ParameterContainer& parameters )
          meshFunction.setMesh( grid );
          if( ! pgmImage.read( roi, meshFunction ) )
             return false;
-         String outputFileName( fileName );
-         removeFileExtension( outputFileName );
-         outputFileName += ".tnl";
+         String outputFileName = removeFileNameExtension( fileName ) + ".tnl";
          std::cout << "Writing image data to " << outputFileName << std::endl;
          meshFunction.save( outputFileName );
          pgmImage.close();
@@ -104,9 +102,7 @@ bool processImages( const Config::ParameterContainer& parameters )
          meshFunction.setMesh( grid );
          if( ! pngImage.read( roi, meshFunction ) )
             return false;
-         String outputFileName( fileName );
-         removeFileExtension( outputFileName );
-         outputFileName += ".tnl";
+         String outputFileName = removeFileNameExtension( fileName ) + ".tnl";
          std::cout << "Writing image data to " << outputFileName << std::endl;
          meshFunction.save( outputFileName );
          pgmImage.close();
@@ -131,9 +127,7 @@ bool processImages( const Config::ParameterContainer& parameters )
          meshFunction.setMesh( grid );
          if( ! jpegImage.read( roi, meshFunction ) )
             return false;
-         String outputFileName( fileName );
-         removeFileExtension( outputFileName );
-         outputFileName += ".tnl";
+         String outputFileName = removeFileNameExtension( fileName ) + ".tnl";
          std::cout << "Writing image data to " << outputFileName << std::endl;
          meshFunction.save( outputFileName );
          pgmImage.close();
@@ -150,7 +144,11 @@ bool processFiles( const Config::ParameterContainer& parameters )
    String meshFile = parameters.getParameter< String >( "mesh-file" );
  
    Meshes::Grid< 2, double, Devices::Host, int > grid;
-   if( ! grid.load( meshFile ) )
+   try
+   {
+      grid.load( meshFile );
+   }
+   catch(...)
    {
       std::cerr << "I am not able to load the mesh file " << meshFile << "." << std::endl;
       return false;
@@ -160,7 +158,11 @@ bool processFiles( const Config::ParameterContainer& parameters )
    {
       const String& fileName = inputFiles[ i ];
       std::cout << "Processing file " << fileName << "... ";
-      if( ! vector.load( fileName ) )
+      try
+      {
+         vector.load( fileName );
+      }
+      catch(...)
       {
          std::cerr << "I am not able to load data from a file " << fileName << "." << std::endl;
          return false;
@@ -168,9 +170,7 @@ bool processFiles( const Config::ParameterContainer& parameters )
       if( imageFormat == "pgm" || imageFormat == "pgm-binary" || imageFormat == "pgm-ascii" )
       {
          Images::PGMImage< int > image;
-         String outputFileName( fileName );
-         removeFileExtension( outputFileName );
-         outputFileName += ".pgm";
+         String outputFileName = removeFileNameExtension( fileName ) + ".pgm";
 	 if ( imageFormat == "pgm" || imageFormat == "pgm-binary")
          	image.openForWrite( outputFileName, grid, true );
 	 if ( imageFormat == "pgm-ascii" )
@@ -182,9 +182,7 @@ bool processFiles( const Config::ParameterContainer& parameters )
       if( imageFormat == "png" )
       {
          Images::PNGImage< int > image;
-         String outputFileName( fileName );
-         removeFileExtension( outputFileName );
-         outputFileName += ".png";
+         String outputFileName = removeFileNameExtension( fileName ) + ".png";
          image.openForWrite( outputFileName, grid );
          image.write( grid, vector );
          image.close();
@@ -192,9 +190,7 @@ bool processFiles( const Config::ParameterContainer& parameters )
       if( imageFormat == "jpg" )
       {
          Images::JPEGImage< int > image;
-         String outputFileName( fileName );
-         removeFileExtension( outputFileName );
-         outputFileName += ".jpg";
+         String outputFileName = removeFileNameExtension( fileName ) + ".jpg";
          image.openForWrite( outputFileName, grid );
          image.write( grid, vector );
          image.close();

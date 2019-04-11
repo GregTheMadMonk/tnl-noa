@@ -171,6 +171,29 @@ copyMemory( DestinationElement* destination,
 #endif
 }
 
+template< typename DestinationElement,
+          typename SourceElement >
+void
+ArrayOperations< Devices::Cuda >::
+copySTLList( DestinationElement* destination,
+             const std::list< SourceElement >& source )
+{
+   const auto size = source.size();
+   const std::size_t copy_buffer_size = std::min( Devices::Cuda::TransferBufferSize / (std::size_t) sizeof( DestinationElement ), ( std::size_t ) size );
+   using BaseType = typename std::remove_cv< DestinationElement >::type;
+   std::unique_ptr< BaseType[] > copy_buffer{ new BaseType[ copy_buffer_size ] };
+   size_t copiedElements = 0;
+   auto it = source.begin();
+   while( copiedElements < size )
+   {
+      const auto copySize = std::min( size - copiedElements, copy_buffer_size );
+      for( size_t i = 0; i < copySize; i++ )
+         copy_buffer[ i ] = static_cast< DestinationElement >( * it ++ );
+      ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory( &destination[ copiedElements ], &copy_buffer[ 0 ], copySize );
+      copiedElements += copySize;
+   }
+}
+
 template< typename Element1,
           typename Element2,
           typename Index >
@@ -245,7 +268,8 @@ copyMemory( DestinationElement* destination,
    }
    else
    {
-      std::unique_ptr< SourceElement[] > buffer{ new SourceElement[ Devices::Cuda::getGPUTransferBufferSize() ] };
+      using BaseType = typename std::remove_cv< SourceElement >::type;
+      std::unique_ptr< BaseType[] > buffer{ new BaseType[ Devices::Cuda::getGPUTransferBufferSize() ] };
       Index i( 0 );
       while( i < size )
       {

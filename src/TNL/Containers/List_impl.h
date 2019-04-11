@@ -282,9 +282,9 @@ void List< T >::DeepEraseAll()
 template< typename T >
 bool List< T >::Save( File& file ) const
 {
-   file.write( &size );
+   file.save( &size );
    for( int i = 0; i < size; i ++ )
-      if( ! file. write( &operator[]( i ), 1 ) )
+      if( ! file. save( &operator[]( i ), 1 ) )
          return false;
    return true;
 }
@@ -292,7 +292,7 @@ bool List< T >::Save( File& file ) const
 template< typename T >
 bool List< T >::DeepSave( File& file ) const
 {
-   file. write( &size );
+   file.save( &size );
    for( int i = 0; i < size; i ++ )
       if( ! operator[]( i ). save( file ) ) return false;
    return true;
@@ -303,7 +303,7 @@ bool List< T >::Load( File& file )
 {
    reset();
    int _size;
-   file. read( &_size, 1 );
+   file.load( &_size, 1 );
    if( _size < 0 )
    {
       std::cerr << "The curve size is negative." << std::endl;
@@ -312,7 +312,7 @@ bool List< T >::Load( File& file )
    T t;
    for( int i = 0; i < _size; i ++ )
    {
-      if( ! file. read( &t, 1 ) )
+      if( ! file.load( &t, 1 ) )
          return false;
       Append( t );
    }
@@ -324,7 +324,7 @@ bool List< T >::DeepLoad( File& file )
 {
    reset();
    int _size;
-   file. read( &_size );
+   file.load( &_size );
    if( _size < 0 )
    {
       std::cerr << "The list size is negative." << std::endl;

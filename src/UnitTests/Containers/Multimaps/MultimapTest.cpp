@@ -42,20 +42,23 @@ TEST( MultimapTest, TestSettingSizes )
 
    for( IndexType i = 0; i < inputs; i++ ) {
       auto values = map.getValues( i );
-      const auto constValues = ( (const MultimapType) map ).getValues( i );
+      const auto constValues = ( (const MultimapType&) map ).getValues( i );
 
       // uninitialized should be equal to the value from the allocation vector
       ASSERT_EQ( values.getSize(), allocationRanges[ i ] );
+      // This does not work with Array deep copy constructor
       ASSERT_EQ( constValues.getSize(), allocationRanges[ i ] );
 
       // setting lower sizes
       values.setSize( valuesLocalMax );
       ASSERT_EQ( values.getSize(), valuesLocalMax );
+      // This does not work with Array deep copy constructor
       ASSERT_EQ( constValues.getSize(), valuesLocalMax );
 
       // setting global max
       values.setSize( valuesGlobalMax );
       ASSERT_EQ( values.getSize(), valuesGlobalMax );
+      // This does not work with Array deep copy constructor
       ASSERT_EQ( constValues.getSize(), valuesGlobalMax );
    }
 }
@@ -78,7 +81,7 @@ TEST( MultimapTest, TestSettingValues )
 
    for( IndexType i = 0; i < inputs; i++ ) {
       auto values = map.getValues( i );
-      const auto constValues = ( (const MultimapType) map ).getValues( i );
+      const auto constValues = ( (const MultimapType&) map ).getValues( i );
 
       values.setSize( allocatedValues );
 
@@ -126,8 +129,8 @@ TEST( MultimapTest, TestSaveAndLoad )
          values.setValue( o, i + o );
    }
 
-   ASSERT_TRUE( map.save( "multimap-test.tnl" ) );
-   ASSERT_TRUE( map2.load( "multimap-test.tnl" ) );
+   map.save( "multimap-test.tnl" );
+   map2.load( "multimap-test.tnl" );
 
    EXPECT_EQ( map, map2 );
    EXPECT_EQ( map.getKeysRange(), map2.getKeysRange() );

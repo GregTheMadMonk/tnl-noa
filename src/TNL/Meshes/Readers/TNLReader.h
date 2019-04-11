@@ -12,6 +12,7 @@
 
 #include <TNL/String.h>
 #include <TNL/Object.h>
+#include <TNL/Exceptions/ObjectTypeDetectionFailure.h>
 #include <TNL/Meshes/Readers/EntityShape.h>
 
 namespace TNL {
@@ -28,9 +29,13 @@ public:
       this->fileName = fileName;
 
       String objectType;
-      if( ! getObjectType( fileName, objectType ) ) {
-         std::cerr << "Failed to detect the mesh type from the file " << fileName << "." << std::endl;
-         return EXIT_FAILURE;
+      try
+      {
+         objectType = getObjectType( fileName );
+      }
+      catch( ... )
+      {
+         throw Exceptions::ObjectTypeDetectionFailure( fileName, "mesh" );
       }
 
       const std::vector< String > parsedMeshType = parseObjectType( objectType );
@@ -103,7 +108,8 @@ public:
    static bool
    readMesh( const String& fileName, MeshType& mesh )
    {
-      return mesh.load( fileName );
+      mesh.load( fileName );
+      return true;
    }
 
    String

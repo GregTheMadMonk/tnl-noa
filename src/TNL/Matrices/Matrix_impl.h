@@ -43,7 +43,7 @@ template< typename Real,
 void Matrix< Real, Device, Index >::getCompressedRowLengths( CompressedRowLengthsVector& rowLengths ) const
 {
    rowLengths.setSize( this->getRows() );
-   getCompressedRowLengths( CompressedRowLengthsVectorView( rowLengths ) );
+   getCompressedRowLengths( rowLengths.getView() );
 }
 
 template< typename Real,
@@ -142,27 +142,23 @@ bool Matrix< Real, Device, Index >::operator != ( const MatrixT& matrix ) const
 template< typename Real,
           typename Device,
           typename Index >
-bool Matrix< Real, Device, Index >::save( File& file ) const
+void Matrix< Real, Device, Index >::save( File& file ) const
 {
-   if( ! Object::save( file ) ||
-       ! file.write( &this->rows ) ||
-       ! file.write( &this->columns ) ||
-       ! this->values.save( file ) )
-      return false;
-   return true;
+   Object::save( file );
+   file.save( &this->rows );
+   file.save( &this->columns );
+   this->values.save( file );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool Matrix< Real, Device, Index >::load( File& file )
+void Matrix< Real, Device, Index >::load( File& file )
 {
-   if( ! Object::load( file ) ||
-       ! file.read( &this->rows ) ||
-       ! file.read( &this->columns ) ||
-       ! this->values.load( file ) )
-      return false;
-   return true;
+   Object::load( file );
+   file.load( &this->rows );
+   file.load( &this->columns );
+   this->values.load( file );
 }
 
 template< typename Real,

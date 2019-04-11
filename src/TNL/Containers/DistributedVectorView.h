@@ -37,14 +37,40 @@ public:
    using ConstLocalVectorViewType = Containers::VectorView< typename std::add_const< Real >::type, Device, Index >;
    using HostType = DistributedVectorView< Real, Devices::Host, Index, Communicator >;
    using CudaType = DistributedVectorView< Real, Devices::Cuda, Index, Communicator >;
+   using ViewType = DistributedVectorView< Real, Device, Index, Communicator >;
+   using ConstViewType = DistributedVectorView< typename std::add_const< Real >::type, Device, Index, Communicator >;
 
    // inherit all constructors and assignment operators from ArrayView
    using BaseType::DistributedArrayView;
    using BaseType::operator=;
 
+   // In C++14, default constructors cannot be inherited, although Clang
+   // and GCC since version 7.0 inherit them.
+   // https://stackoverflow.com/a/51854172
+   __cuda_callable__
+   DistributedVectorView() = default;
+
+   // initialization by base class is not a copy constructor so it has to be explicit
+   template< typename Real_ >  // template catches both const and non-const qualified Element
+   __cuda_callable__
+   DistributedVectorView( const DistributedArrayView< Real_, Device, Index, Communicator >& view )
+   : BaseType::DistributedArrayView( view ) {}
+
    LocalVectorViewType getLocalVectorView();
 
    ConstLocalVectorViewType getLocalVectorView() const;
+
+   /**
+    * \brief Returns a modifiable view of the array view.
+    */
+   __cuda_callable__
+   ViewType getView();
+
+   /**
+    * \brief Returns a non-modifiable view of the array view.
+    */
+   __cuda_callable__
+   ConstViewType getConstView() const;
 
 
    static String getType();

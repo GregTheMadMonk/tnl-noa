@@ -49,7 +49,8 @@ class DistributedGridIO<
             auto *distrGrid=vectorField.getMesh().getDistributedMesh();
 			if(distrGrid==NULL)
 			{
-				return vectorField.save(fileName);
+				vectorField.save(fileName);
+                                return true;
 			}
 
             MPI_Comm group=*((MPI_Comm*)(distrGrid->getCommunicationGroup()));
@@ -105,7 +106,7 @@ class DistributedGridIO<
 		    MPI_File_write(file,&vectorFieldSerializationTypeLength,1,MPI_INT,&wstatus);
 		    MPI_Get_count(&wstatus,MPI_INT,&count);
 		    size+=count*sizeof(int);
-		    MPI_File_write(file,vectorFieldSerializationType.getString(),vectorFieldSerializationType.getLength(),MPI_CHAR,&wstatus);
+		    MPI_File_write(file,const_cast< void* >( ( const void* ) vectorFieldSerializationType.getString() ),vectorFieldSerializationType.getLength(),MPI_CHAR,&wstatus);
 		    MPI_Get_count(&wstatus,MPI_CHAR,&count);
 		    size+=count*sizeof(char);
 
@@ -139,7 +140,8 @@ class DistributedGridIO<
             auto *distrGrid=vectorField.getMesh().getDistributedMesh();
 			if(distrGrid==NULL)
 			{
-				return vectorField.save(fileName);
+				vectorField.save(fileName);
+                                return true;
 			}
 
             MPI_Comm group=*((MPI_Comm*)(distrGrid->getCommunicationGroup()));

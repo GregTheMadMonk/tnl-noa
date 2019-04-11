@@ -147,11 +147,11 @@ class MeshFunction :
 
       RealType getMaxNorm() const;
 
-      bool save( File& file ) const;
+      void save( File& file ) const;
 
-      bool load( File& file );
+      void load( File& file );
 
-      bool boundLoad( File& file );
+      void boundLoad( File& file );
 
       bool write( const String& fileName,
                   const String& format = "vtk",

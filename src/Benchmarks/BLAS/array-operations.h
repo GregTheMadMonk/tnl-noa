@@ -66,10 +66,10 @@ benchmarkArrayOperations( Benchmark & benchmark,
 
 
    auto compareHost = [&]() {
-      resultHost = (int) hostArray == hostArray2;
+      resultHost = (int) ( hostArray == hostArray2 );
    };
    auto compareCuda = [&]() {
-      resultDevice = (int) deviceArray == deviceArray2;
+      resultDevice = (int) ( deviceArray == deviceArray2 );
    };
    benchmark.setOperation( "comparison (operator==)", 2 * datasetSize );
    benchmark.time< Devices::Host >( reset1, "CPU", compareHost );

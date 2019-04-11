@@ -12,6 +12,7 @@
 
 #include <TNL/Object.h>
 #include <TNL/Config/ParameterContainer.h>
+#include <TNL/Exceptions/ObjectTypeDetectionFailure.h>
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Meshes/GridEntity.h>
 #include <TNL/Functions/MeshFunction.h>
@@ -163,11 +164,7 @@ bool performExtrude( const Config::ParameterContainer& parameters,
             }
          }
    String outputFile = parameters.getParameter< String >( "output-file" );
-   if( ! f.save( outputFile ) )
-   {
-      std::cerr << "Unable to save output file " << outputFile << "." << std::endl;
-      return false;
-   }
+   f.save( outputFile );
    return true;
 }
 
@@ -179,14 +176,22 @@ readProfileMeshFunction( const Config::ParameterContainer& parameters )
    String profileMeshFile = parameters.getParameter< String >( "profile-mesh" );
    using ProfileMeshPointer = Pointers::SharedPointer< typename ProfileMeshFunction::MeshType >;
    ProfileMeshPointer profileMesh;
-   if( ! profileMesh->load( profileMeshFile ) )
+   try
+   {
+      profileMesh->load( profileMeshFile );
+   }
+   catch(...)
    {
       std::cerr << "Unable to load the profile mesh file." << profileMeshFile << "." << std::endl;
       return false;
    }
    String profileFile = parameters.getParameter< String >( "profile-file" );
    ProfileMeshFunction profileMeshFunction( profileMesh );
-   if( ! profileMeshFunction.load( profileFile ) )
+   try
+   {
+      profileMeshFunction.load( profileFile );
+   }
+   catch(...)
    {
       std::cerr << "Unable to load profile mesh function from the file " << profileFile << "." << std::endl;
       return false;
@@ -194,7 +199,11 @@ readProfileMeshFunction( const Config::ParameterContainer& parameters )
    String meshFile = parameters.getParameter< String >( "mesh" );
    using MeshPointer = Pointers::SharedPointer< Mesh >;
    MeshPointer mesh;
-   if( ! mesh->load( meshFile ) )
+   try
+   {
+      mesh->load( meshFile );
+   }
+   catch(...)
    {
       std::cerr << "Unable to load 3D mesh from the file " << meshFile << "." << std::endl;
       return false;
@@ -204,7 +213,11 @@ readProfileMeshFunction( const Config::ParameterContainer& parameters )
    if( parameters.checkParameter( "input-file" ) )
    {
       const String& inputFile = parameters.getParameter< String >( "input-file" ); 
-      if( ! meshFunction.load( inputFile ) )
+      try
+      {
+         meshFunction.load( inputFile );
+      }
+      catch(...)
       {
          std::cerr << "Unable to load " << inputFile << "." << std::endl;
          return false;
@@ -221,10 +234,13 @@ bool resolveProfileReal( const Config::ParameterContainer& parameters )
 {
    String profileFile = parameters. getParameter< String >( "profile-file" );
    String meshFunctionType;
-   if( ! getObjectType( profileFile, meshFunctionType ) )
+   try
    {
-      std::cerr << "I am not able to detect the mesh function type from the profile file " << profileFile << "." << std::endl;
-      return EXIT_FAILURE;
+      meshFunctionType = getObjectType( profileFile );
+   }
+   catch(...)
+   {
+      throw Exceptions::ObjectTypeDetectionFailure( profileFile, "mesh" );
    }
    //std::cout << meshFunctionType << " detected in " << profileFile << " file." << std::endl;
    const std::vector< String > parsedMeshFunctionType = parseObjectType( meshFunctionType );
@@ -277,10 +293,13 @@ bool resolveMesh( const Config::ParameterContainer& parameters )
 {
    String meshFile = parameters.getParameter< String >( "mesh" );
    String meshType;
-   if( ! getObjectType( meshFile, meshType ) )
+   try
    {
-      std::cerr << "I am not able to detect the mesh type from the file " << meshFile << "." << std::endl;
-      return EXIT_FAILURE;
+      meshType = getObjectType( meshFile );
+   }
+   catch(...)
+   {
+      throw Exceptions::ObjectTypeDetectionFailure( meshFile, "mesh" );
    }
    std::cout << meshType << " detected in " << meshFile << " file." << std::endl;
    const std::vector< String > parsedMeshType = parseObjectType( meshType );
@@ -372,10 +391,13 @@ bool resolveProfileMeshType( const Config::ParameterContainer& parameters )
 {
    String meshFile = parameters. getParameter< String >( "profile-mesh" );
    String meshType;
-   if( ! getObjectType( meshFile, meshType ) )
+   try
    {
-      std::cerr << "I am not able to detect the mesh type from the file " << meshFile << "." << std::endl;
-      return EXIT_FAILURE;
+      meshType = getObjectType( meshFile );
+   }
+   catch(...)
+   {
+      throw Exceptions::ObjectTypeDetectionFailure( meshFile, "mesh" );
    }
    std::cout << meshType << " detected in " << meshFile << " file." << std::endl;
    const std::vector< String > parsedMeshType = parseObjectType( meshType );

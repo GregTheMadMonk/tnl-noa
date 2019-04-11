@@ -704,44 +704,40 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-bool SlicedEllpack< Real, Device, Index, SliceSize >::save( File& file ) const
+void SlicedEllpack< Real, Device, Index, SliceSize >::save( File& file ) const
 {
-   if( ! Sparse< Real, Device, Index >::save( file ) ||
-       ! this->slicePointers.save( file ) ||
-       ! this->sliceCompressedRowLengths.save( file ) )
-      return false;
-   return true;
+   Sparse< Real, Device, Index >::save( file );
+   this->slicePointers.save( file );
+   this->sliceCompressedRowLengths.save( file );
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-bool SlicedEllpack< Real, Device, Index, SliceSize >::load( File& file )
+void SlicedEllpack< Real, Device, Index, SliceSize >::load( File& file )
 {
-   if( ! Sparse< Real, Device, Index >::load( file ) ||
-       ! this->slicePointers.load( file ) ||
-       ! this->sliceCompressedRowLengths.load( file ) )
-      return false;
-   return true;
+   Sparse< Real, Device, Index >::load( file );
+   this->slicePointers.load( file );
+   this->sliceCompressedRowLengths.load( file );
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-bool SlicedEllpack< Real, Device, Index, SliceSize >::save( const String& fileName ) const
+void SlicedEllpack< Real, Device, Index, SliceSize >::save( const String& fileName ) const
 {
-   return Object::save( fileName );
+   Object::save( fileName );
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-bool SlicedEllpack< Real, Device, Index, SliceSize >::load( const String& fileName )
+void SlicedEllpack< Real, Device, Index, SliceSize >::load( const String& fileName )
 {
-   return Object::load( fileName );
+   Object::load( fileName );
 }
 
 template< typename Real,

@@ -16,7 +16,6 @@
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/String.h>
 #include <TNL/Containers/Vector.h>
-#include <TNL/Containers/MultiVector.h>
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Functions/VectorField.h>
@@ -30,8 +29,7 @@ bool getOutputFileName( const String& inputFileName,
                         const String& outputFormat,
                         String& outputFileName )
 {
-   outputFileName = inputFileName;
-   removeFileExtension( outputFileName );
+   outputFileName = removeFileNameExtension( inputFileName );
    if( outputFormat == "gnuplot" )
    {
       outputFileName += ".gplt";
@@ -55,7 +53,11 @@ bool writeMeshFunction( const typename MeshFunction::MeshPointer& meshPointer,
 
    MeshFunction function( meshPointer );
    std::cout << "Mesh function: " << function.getType() << std::endl;
-   if( ! function.load( inputFileName ) )
+   try
+   {
+      function.load( inputFileName );
+   }
+   catch(...)
    {
       std::cerr << "Unable to load mesh function from a file " << inputFileName << "." << std::endl;
       return false;
@@ -83,7 +85,11 @@ bool writeVectorField( const typename VectorField::FunctionType::MeshPointer& me
 
    VectorField field( meshPointer );
    std::cout << "VectorField: " << field.getType() << std::endl;
-   if( ! field.load( inputFileName ) )
+   try
+   {
+      field.load( inputFileName );
+   }
+   catch(...)
    {
       std::cerr << "Unable to load vector field from a file " << inputFileName << "." << std::endl;
       return false;
@@ -244,37 +250,16 @@ bool convertObject( const MeshPointer& meshPointer,
      std::cout << " writing to " << outputFileName << " ... " << std::flush;
 
 
-   if( parsedObjectType[ 0 ] == "Containers::Vector" ||
-       parsedObjectType[ 0 ] == "tnlSharedVector" ||   // TODO: remove deprecated type names
-       parsedObjectType[ 0 ] == "tnlVector" )          //
+   if( parsedObjectType[ 0 ] == "Containers::Vector" )
    {
       using MeshType = typename MeshPointer::ObjectType;
       // FIXME: why is MeshType::GlobalIndexType not the same as Index?
 //      Containers::Vector< Value, Devices::Host, Index > vector;
       Containers::Vector< Value, Devices::Host, typename MeshType::GlobalIndexType > vector;
-      if( ! vector.load( inputFileName ) )
-         return false;
+      vector.load( inputFileName );
       Functions::MeshFunction< MeshType, MeshType::getMeshDimension(), Value > mf;
       mf.bind( meshPointer, vector );
-      if( ! mf.write( outputFileName, outputFormat ) )
-         return false;
-   }
-
-   if( parsedObjectType[ 0 ] == "Containers::MultiVector" ||
-       parsedObjectType[ 0 ] == "tnlMultiVector" ||      // TODO: remove deprecated type names  
-       parsedObjectType[ 0 ] == "tnlSharedMultiVector" ) //
-   {
-      Containers::MultiVector< Dimension, Value, Devices::Host, Index > multiVector;
-      if( ! multiVector. load( inputFileName ) )
-         return false;
-      typedef Meshes::Grid< Dimension, Real, Devices::Host, Index > GridType;
-      typedef typename GridType::PointType PointType;
-      typedef typename GridType::CoordinatesType CoordinatesType;
-//      GridType grid;
-//      grid. setDomain( PointType( 0.0 ), PointType( 1.0 ) );
-//      grid. setDimensions( CoordinatesType( multiVector. getDimensions() ) );
-//      if( ! grid. write( multiVector, outputFileName, outputFormat ) )
-         return false;
+      mf.write( outputFileName, outputFormat );
    }
    return true;
 }
@@ -286,13 +271,7 @@ bool setDimension( const MeshPointer& meshPointer,
                     const Config::ParameterContainer& parameters )
 {
    int dimensions( 0 );
-   if( parsedObjectType[ 0 ] == "Containers::MultiVector" ||
-       parsedObjectType[ 0 ] == "tnlMultiVector" ||                     // TODO: remove deprecated type names
-       parsedObjectType[ 0 ] == "tnlSharedMultiVector" )                //
-      dimensions = atoi( parsedObjectType[ 1 ]. getString() );
-   if( parsedObjectType[ 0 ] == "Containers::Vector" ||
-       parsedObjectType[ 0 ] == "tnlVector" ||                          // TODO: remove deprecated type names
-       parsedObjectType[ 0 ] == "tnlSharedVector" )                     //
+   if( parsedObjectType[ 0 ] == "Containers::Vector" )
       dimensions = 1;
    switch( dimensions )
    {
@@ -314,13 +293,7 @@ bool setIndexType( const MeshPointer& meshPointer,
                    const Config::ParameterContainer& parameters )
 {
    String indexType;
-   if( parsedObjectType[ 0 ] == "Containers::MultiVector" ||
-       parsedObjectType[ 0 ] == "tnlMultiVector" ||                        // TODO: remove deprecated type names
-       parsedObjectType[ 0 ] == "tnlSharedMultiVector" )                   //
-      indexType = parsedObjectType[ 4 ];
-   if( parsedObjectType[ 0 ] == "Containers::Vector" || 
-       parsedObjectType[ 0 ] == "tnlSharedVector" ||                       // TODO: remove deprecated type names
-       parsedObjectType[ 0 ] == "tnlVector" )                              //
+   if( parsedObjectType[ 0 ] == "Containers::Vector" )
       indexType = parsedObjectType[ 3 ];
 
    if( indexType == "int" )
@@ -391,13 +364,7 @@ bool setValueType( const MeshPointer& meshPointer,
    String elementType;
 
    // TODO: Fix this even for arrays
-   if( parsedObjectType[ 0 ] == "Containers::MultiVector" ||
-       parsedObjectType[ 0 ] == "tnlMultiVector" ||                            // TODO: remove deprecated type names
-       parsedObjectType[ 0 ] == "tnlSharedMultiVector" )                       //
-      elementType = parsedObjectType[ 2 ];
-   if( parsedObjectType[ 0 ] == "Containers::Vector" ||
-       parsedObjectType[ 0 ] == "tnlSharedVector" ||                           // TODO: remove deprecated type names
-       parsedObjectType[ 0 ] == "tnlVector" )                                  //
+   if( parsedObjectType[ 0 ] == "Containers::Vector" )
       elementType = parsedObjectType[ 1 ];
 
    if( elementType == "float" )
@@ -419,8 +386,7 @@ bool setValueType( const MeshPointer& meshPointer,
       std::cerr << "Unable to parse object type " << elementType << "." << std::endl;
       return false;
    }
-   if( parsedValueType[ 0 ] == "Containers::StaticVector" ||
-       parsedValueType[ 0 ] == "Containers::StaticVector" )               // TODO: remove deprecated type names
+   if( parsedValueType[ 0 ] == "Containers::StaticVector" )
       return setTupleType< MeshPointer >( meshPointer, inputFileName, parsedObjectType, parsedValueType, parameters );
 
    std::cerr << "Unknown element type " << elementType << "." << std::endl;
@@ -473,35 +439,34 @@ struct FilesProcessor
          }
 
          String objectType;
-         if( ! getObjectType( inputFiles[ i ], objectType ) )
-             std::cerr << "unknown object ... SKIPPING!" << std::endl;
-         else
+         try
          {
-            if( verbose )
-              std::cout << objectType << " detected ... ";
-
-            const std::vector< String > parsedObjectType = parseObjectType( objectType );
-            if( ! parsedObjectType.size() )
-            {
-               std::cerr << "Unable to parse object type " << objectType << "." << std::endl;
-               error = true;
-               continue;
-            }
-            if( parsedObjectType[ 0 ] == "Containers::MultiVector" ||
-                parsedObjectType[ 0 ] == "Containers::Vector" ||
-                parsedObjectType[ 0 ] == "tnlMultiVector" ||                     // TODO: remove deprecated type names
-                parsedObjectType[ 0 ] == "tnlSharedMultiVector" ||               // 
-                parsedObjectType[ 0 ] == "tnlSharedVector" ||                    //
-                parsedObjectType[ 0 ] == "tnlVector" )                           //
-               setValueType< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );
-            if( parsedObjectType[ 0 ] == "Functions::MeshFunction" ||
-                parsedObjectType[ 0 ] == "tnlMeshFunction" )                     // TODO: remove deprecated type names
-               setMeshFunction< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );
-            if( parsedObjectType[ 0 ] == "Functions::VectorField" )
-               setVectorFieldSize< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );
-            if( verbose )
-               std::cout << "[ OK ].  " << std::endl;
+            objectType = getObjectType( inputFiles[ i ] );
          }
+         catch(...)
+         {
+            std::cerr << "unknown object ... SKIPPING!" << std::endl;
+            continue;
+         }
+         
+         if( verbose )
+           std::cout << objectType << " detected ... ";
+
+         const std::vector< String > parsedObjectType = parseObjectType( objectType );
+         if( ! parsedObjectType.size() )
+         {
+            std::cerr << "Unable to parse object type " << objectType << "." << std::endl;
+            error = true;
+            continue;
+         }
+         if( parsedObjectType[ 0 ] == "Containers::Vector" )
+            setValueType< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );
+         if( parsedObjectType[ 0 ] == "Functions::MeshFunction" )
+            setMeshFunction< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );
+         if( parsedObjectType[ 0 ] == "Functions::VectorField" )
+            setVectorFieldSize< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );
+         if( verbose )
+            std::cout << "[ OK ].  " << std::endl;
       }
       if( verbose )
         std::cout << std::endl;

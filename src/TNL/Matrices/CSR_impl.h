@@ -615,39 +615,35 @@ CSR< Real, Device, Index >::operator=( const CSR< Real2, Device2, Index2 >& matr
 template< typename Real,
           typename Device,
           typename Index >
-bool CSR< Real, Device, Index >::save( File& file ) const
+void CSR< Real, Device, Index >::save( File& file ) const
 {
-   if( ! Sparse< Real, Device, Index >::save( file ) ||
-       ! this->rowPointers.save( file ) )
-      return false;
-   return true;
+   Sparse< Real, Device, Index >::save( file );
+   this->rowPointers.save( file );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool CSR< Real, Device, Index >::load( File& file )
+void CSR< Real, Device, Index >::load( File& file )
 {
-   if( ! Sparse< Real, Device, Index >::load( file ) ||
-       ! this->rowPointers.load( file ) )
-      return false;
-   return true;
+   Sparse< Real, Device, Index >::load( file );
+   this->rowPointers.load( file );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool CSR< Real, Device, Index >::save( const String& fileName ) const
+void CSR< Real, Device, Index >::save( const String& fileName ) const
 {
-   return Object::save( fileName );
+   Object::save( fileName );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool CSR< Real, Device, Index >::load( const String& fileName )
+void CSR< Real, Device, Index >::load( const String& fileName )
 {
-   return Object::load( fileName );
+   Object::load( fileName );
 }
 
 template< typename Real,

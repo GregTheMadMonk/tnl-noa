@@ -163,9 +163,8 @@ struct SpmvBenchmark
    {
       MatrixType matrix;
       VectorType vector;
-      if( ! matrix.load( parameters.getParameter< String >( "input-matrix" ) ) ||
-          ! vector.load( parameters.getParameter< String >( "input-vector" ) ) )
-          return false;
+      matrix.load( parameters.getParameter< String >( "input-matrix" ) );
+      vector.load( parameters.getParameter< String >( "input-vector" ) );
 
       typename MatrixType::CompressedRowLengthsVector rowLengths;
       matrix.getCompressedRowLengths( rowLengths );

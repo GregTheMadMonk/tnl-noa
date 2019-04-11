@@ -537,37 +537,35 @@ bool EllpackSymmetric< Real, Device, Index > :: performSORIteration( const Vecto
 template< typename Real,
           typename Device,
           typename Index >
-bool EllpackSymmetric< Real, Device, Index >::save( File& file ) const
+void EllpackSymmetric< Real, Device, Index >::save( File& file ) const
 {
-   if( ! Sparse< Real, Device, Index >::save( file) ) return false;
-   if( ! file.write( &this->rowLengths ) ) return false;
-   return true;
+   Sparse< Real, Device, Index >::save( file);
+   file.save( &this->rowLengths );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool EllpackSymmetric< Real, Device, Index >::load( File& file )
+void EllpackSymmetric< Real, Device, Index >::load( File& file )
 {
-   if( ! Sparse< Real, Device, Index >::load( file) ) return false;
-   if( ! file.read( &this->rowLengths ) ) return false;
-   return true;
+   Sparse< Real, Device, Index >::load( file);
+   file.load( &this->rowLengths );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool EllpackSymmetric< Real, Device, Index >::save( const String& fileName ) const
+void EllpackSymmetric< Real, Device, Index >::save( const String& fileName ) const
 {
-   return Object::save( fileName );
+   Object::save( fileName );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool EllpackSymmetric< Real, Device, Index >::load( const String& fileName )
+void EllpackSymmetric< Real, Device, Index >::load( const String& fileName )
 {
-   return Object::load( fileName );
+   Object::load( fileName );
 }
 
 template< typename Real,

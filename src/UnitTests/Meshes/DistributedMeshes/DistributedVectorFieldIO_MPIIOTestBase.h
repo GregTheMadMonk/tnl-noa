@@ -80,7 +80,7 @@ class TestDistributedVectorFieldMPIIO{
         String FileName=String("/tmp/test-file.tnl");
         DistributedGridIO<VectorFieldType,MpiIO> ::save(FileName, vectorField );
         /*File file;
-        file.open( FileName, IOMode::write );
+        file.open( FileName, File::Mode::Out );
 		vectorField.save(file);
 		file.close();		*/
 
@@ -102,17 +102,13 @@ class TestDistributedVectorFieldMPIIO{
             loadDof.setValue(-1);
         
             File file;
-            file.open( FileName, IOMode::read );
-			bool loaded=loadvct.boundLoad(file);
-			file.close();
-            if(!loaded)
-				EXPECT_TRUE(loaded)<< "Chyba načtení souboru" <<std::endl;
-            else
-		        for(int i=0;i<loadDof.getSize();i++)
-		        {
-		          EXPECT_EQ( globalEvaluatedDof.getElement(i), loadDof.getElement(i)) << "Compare Loaded and evaluated Dof Failed for: "<< i;
-		        }
-		    }
+            file.open( FileName, File::Mode::In );
+	    loadvct.boundLoad(file);
+            for(int i=0;i<loadDof.getSize();i++)
+	    {
+		EXPECT_EQ( globalEvaluatedDof.getElement(i), loadDof.getElement(i)) << "Compare Loaded and evaluated Dof Failed for: "<< i;
+	    }
+       }
     };
     
     static void TestLoad()
@@ -153,7 +149,7 @@ class TestDistributedVectorFieldMPIIO{
                 linearFunctionEvaluator.evaluateAllEntities(saveVectorField[i] , linearFunctionPtr);
       
             File file;
-            file.open( FileName, IOMode::write );        
+            file.open( FileName, File::Mode::Out );        
             saveVectorField.save(file);
             file.close();
         }

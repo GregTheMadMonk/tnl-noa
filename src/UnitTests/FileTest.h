@@ -15,38 +15,32 @@
 
 using namespace TNL;
 
-TEST( FileTest, CloseEmpty )
-{
-   File file;
-   ASSERT_TRUE( file.close() );
-}
-
 TEST( FileTest, OpenInvalid )
 {
    File file;
-   EXPECT_THROW( file.open( "invalid-file.tnl", IOMode::read ), std::ios_base::failure );
+   EXPECT_THROW( file.open( "invalid-file.tnl", File::Mode::In ), std::ios_base::failure );
 }
 
 TEST( FileTest, WriteAndRead )
 {
    File file;
-   ASSERT_TRUE( file.open( String( "test-file.tnl" ), IOMode::write ) );
+   file.open( String( "test-file.tnl" ), File::Mode::Out );
 
    int intData( 5 );
    double doubleData[ 3 ] = { 1.0, 2.0, 3.0 };
    const double constDoubleData = 3.14;
-   ASSERT_TRUE( file.write( &intData ) );
-   ASSERT_TRUE( file.write( doubleData, 3 ) );
-   ASSERT_TRUE( file.write( &constDoubleData ) );
-   ASSERT_TRUE( file.close() );
+   file.save( &intData );
+   file.save( doubleData, 3 );
+   file.save( &constDoubleData );
+   file.close();
 
-   ASSERT_TRUE( file.open( String( "test-file.tnl" ), IOMode::read ) );
+   file.open( String( "test-file.tnl" ), File::Mode::In );
    int newIntData;
    double newDoubleData[ 3 ];
    double newConstDoubleData;
-   ASSERT_TRUE( file.read( &newIntData, 1 ) );
-   ASSERT_TRUE( file.read( newDoubleData, 3 ) );
-   ASSERT_TRUE( file.read( &newConstDoubleData, 1 ) );
+   file.load( &newIntData, 1 );
+   file.load( newDoubleData, 3 );
+   file.load( &newConstDoubleData, 1 );
 
    EXPECT_EQ( newIntData, intData );
    for( int i = 0; i < 3; i ++ )
@@ -55,6 +49,37 @@ TEST( FileTest, WriteAndRead )
 
    EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
 };
+
+TEST( FileTest, WriteAndReadWithConversion )
+{
+   double doubleData[ 3 ] = {  3.1415926535897932384626433,
+                               2.7182818284590452353602874,
+                               1.6180339887498948482045868 };
+   float floatData[ 3 ];
+   int intData[ 3 ];
+   File file;
+   file.open( "test-file.tnl", File::Mode::Out | File::Mode::Truncate );
+   file.save< double, float, Devices::Host >( doubleData, 3 );
+   file.close();
+
+   file.open( "test-file.tnl", File::Mode::In );
+   file.load< float, float, Devices::Host >( floatData, 3 );
+   file.close();
+
+   file.open( "test-file.tnl", File::Mode::In );
+   file.load< int, float, Devices::Host >( intData, 3 );
+   file.close();
+
+   EXPECT_NEAR( floatData[ 0 ], 3.14159, 0.0001 );
+   EXPECT_NEAR( floatData[ 1 ], 2.71828, 0.0001 );
+   EXPECT_NEAR( floatData[ 2 ], 1.61803, 0.0001 );
+
+   EXPECT_EQ( intData[ 0 ], 3 );
+   EXPECT_EQ( intData[ 1 ], 2 );
+   EXPECT_EQ( intData[ 2 ], 1 );
+
+   EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
+}
 
 #ifdef HAVE_CUDA
 TEST( FileTest, WriteAndReadCUDA )
@@ -83,17 +108,14 @@ TEST( FileTest, WriteAndReadCUDA )
                cudaMemcpyHostToDevice );
 
    File file;
-   ASSERT_TRUE( file.open( String( "test-file.tnl" ), IOMode::write ) );
+   file.open( String( "test-file.tnl" ), File::Mode::Out );
 
-   bool status = file.write< int, Devices::Cuda >( cudaIntData );
-   ASSERT_TRUE( status );
-   status = file.write< float, Devices::Cuda >( cudaFloatData, 3 );
-   ASSERT_TRUE( status );
-   status = file.write< const double, Devices::Cuda >( cudaConstDoubleData );
-   ASSERT_TRUE( status );
-   ASSERT_TRUE( file.close() );
+   file.save< int, int, Devices::Cuda >( cudaIntData );
+   file.save< float, float, Devices::Cuda >( cudaFloatData, 3 );
+   file.save< const double, double, Devices::Cuda >( cudaConstDoubleData );
+   file.close();
 
-   ASSERT_TRUE( file.open( String( "test-file.tnl" ), IOMode::read ) );
+   file.open( String( "test-file.tnl" ), File::Mode::In );
    int newIntData;
    float newFloatData[ 3 ];
    double newDoubleData;
@@ -103,12 +125,9 @@ TEST( FileTest, WriteAndReadCUDA )
    cudaMalloc( ( void** ) &newCudaIntData, sizeof( int ) );
    cudaMalloc( ( void** ) &newCudaFloatData, 3 * sizeof( float ) );
    cudaMalloc( ( void** ) &newCudaDoubleData, sizeof( double ) );
-   status = file.read< int, Devices::Cuda >( newCudaIntData, 1 );
-   ASSERT_TRUE( status );
-   status = file.read< float, Devices::Cuda >( newCudaFloatData, 3 );
-   ASSERT_TRUE( status );
-   status = file.read< double, Devices::Cuda >( newCudaDoubleData, 1 );
-   ASSERT_TRUE( status );
+   file.load< int, int, Devices::Cuda >( newCudaIntData, 1 );
+   file.load< float, float, Devices::Cuda >( newCudaFloatData, 3 );
+   file.load< double, double, Devices::Cuda >( newCudaDoubleData, 1 );
    cudaMemcpy( &newIntData,
                newCudaIntData,
                sizeof( int ),
@@ -129,6 +148,60 @@ TEST( FileTest, WriteAndReadCUDA )
 
    EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
 };
+
+TEST( FileTest, WriteAndReadCUDAWithConversion )
+{
+   const double constDoubleData[ 3 ] = {  3.1415926535897932384626433,
+                                          2.7182818284590452353602874,
+                                          1.6180339887498948482045868 };
+   float floatData[ 3 ];
+   int intData[ 3 ];
+
+   int* cudaIntData;
+   float* cudaFloatData;
+   const double* cudaConstDoubleData;
+   cudaMalloc( ( void** ) &cudaIntData, 3 * sizeof( int ) );
+   cudaMalloc( ( void** ) &cudaFloatData, 3 * sizeof( float ) );
+   cudaMalloc( ( void** ) &cudaConstDoubleData, 3 * sizeof( double ) );
+   cudaMemcpy( (void*) cudaConstDoubleData,
+               &constDoubleData,
+               3 * sizeof( double ),
+               cudaMemcpyHostToDevice );
+
+   File file;
+   file.open( String( "cuda-test-file.tnl" ), File::Mode::Out | File::Mode::Truncate );
+   file.save< double, float, Devices::Cuda >( cudaConstDoubleData, 3 );
+   file.close();
+
+   file.open( String( "cuda-test-file.tnl" ), File::Mode::In );
+   file.load< float, float, Devices::Cuda >( cudaFloatData, 3 );
+   file.close();
+
+   file.open( String( "cuda-test-file.tnl" ), File::Mode::In );
+   file.load< int, float, Devices::Cuda >( cudaIntData, 3 );
+   file.close();
+
+   cudaMemcpy( floatData,
+               cudaFloatData,
+               3 * sizeof( float ),
+               cudaMemcpyDeviceToHost );
+   cudaMemcpy( &intData,
+               cudaIntData,
+               3* sizeof( int ),
+               cudaMemcpyDeviceToHost );
+
+
+   EXPECT_NEAR( floatData[ 0 ], 3.14159, 0.0001 );
+   EXPECT_NEAR( floatData[ 1 ], 2.71828, 0.0001 );
+   EXPECT_NEAR( floatData[ 2 ], 1.61803, 0.0001 );
+
+   EXPECT_EQ( intData[ 0 ], 3 );
+   EXPECT_EQ( intData[ 1 ], 2 );
+   EXPECT_EQ( intData[ 2 ], 1 );
+
+   EXPECT_EQ( std::remove( "cuda-test-file.tnl" ), 0 );
+};
+
 #endif
 #endif
 

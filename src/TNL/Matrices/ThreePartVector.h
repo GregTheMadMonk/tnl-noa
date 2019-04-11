@@ -118,7 +118,7 @@ public:
 
    ThreePartVectorView< ConstReal, Device, Index > getConstView()
    {
-      return {left, middle, right};
+      return {left.getConstView(), middle, right.getConstView()};
    }
 
 //   __cuda_callable__

@@ -1284,45 +1284,41 @@ ChunkedEllpack< Real, Device, Index >::operator=( const ChunkedEllpack< Real2, D
 template< typename Real,
           typename Device,
           typename Index >
-bool ChunkedEllpack< Real, Device, Index >::save( File& file ) const
+void ChunkedEllpack< Real, Device, Index >::save( File& file ) const
 {
-   if( ! Sparse< Real, Device, Index >::save( file ) ||
-       ! this->rowToChunkMapping.save( file ) ||
-       ! this->rowToSliceMapping.save( file ) ||
-       ! this->rowPointers.save( file ) ||
-       ! this->slices.save( file ) )
-      return false;
-   return true;
+   Sparse< Real, Device, Index >::save( file );
+   this->rowToChunkMapping.save( file );
+   this->rowToSliceMapping.save( file );
+   this->rowPointers.save( file );
+   this->slices.save( file );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool ChunkedEllpack< Real, Device, Index >::load( File& file )
+void ChunkedEllpack< Real, Device, Index >::load( File& file )
 {
-   if( ! Sparse< Real, Device, Index >::load( file ) ||
-       ! this->rowToChunkMapping.load( file ) ||
-       ! this->rowToSliceMapping.load( file ) ||
-       ! this->rowPointers.load( file ) ||
-       ! this->slices.load( file ) )
-      return false;
-   return true;
+   Sparse< Real, Device, Index >::load( file );
+   this->rowToChunkMapping.load( file );
+   this->rowToSliceMapping.load( file );
+   this->rowPointers.load( file );
+   this->slices.load( file );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool ChunkedEllpack< Real, Device, Index >::save( const String& fileName ) const
+void ChunkedEllpack< Real, Device, Index >::save( const String& fileName ) const
 {
-   return Object::save( fileName );
+   Object::save( fileName );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool ChunkedEllpack< Real, Device, Index >::load( const String& fileName )
+void ChunkedEllpack< Real, Device, Index >::load( const String& fileName )
 {
-   return Object::load( fileName );
+   Object::load( fileName );
 }
 
 template< typename Real,

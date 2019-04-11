@@ -139,6 +139,16 @@ copyMemory( DestinationElement* destination,
    #endif
 }
 
+template< typename DestinationElement,
+          typename SourceElement >
+void
+ArrayOperations< Devices::MIC >::
+copySTLList( DestinationElement* destination,
+                  const std::list< SourceElement >& source )
+{
+   TNL_ASSERT( false, std::cerr << "TODO" );
+}
+
 template< typename Element1,
           typename Element2,
           typename Index >

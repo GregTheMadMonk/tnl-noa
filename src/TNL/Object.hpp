@@ -15,113 +15,88 @@
 #include <cstring>
 
 #include <TNL/Object.h>
+#include <TNL/Exceptions/NotTNLFile.h>
+#include <TNL/Exceptions/ObjectTypeMismatch.h>
 
 namespace TNL {
 
 static constexpr char magic_number[] = "TNLMN";
 
-inline String Object :: getType()
+inline String Object::getType()
 {
    return String( "Object" );
 }
 
-inline String Object :: getTypeVirtual() const
+inline String Object::getTypeVirtual() const
 {
    return this->getType();
 }
 
-inline String Object :: getSerializationType()
+inline String Object::getSerializationType()
 {
    return String( "Object" );
 }
 
-inline String Object :: getSerializationTypeVirtual() const
+inline String Object::getSerializationTypeVirtual() const
 {
    return this->getSerializationType();
 }
 
-inline bool Object :: save( File& file ) const
+inline void Object::save( File& file ) const
 {
-   if( ! file.write( magic_number, strlen( magic_number ) ) )
-      return false;
+   file.save( magic_number, strlen( magic_number ) );
    file << this->getSerializationTypeVirtual();
-   return true;
 }
 
-inline bool Object :: load( File& file )
+inline void Object::load( File& file )
 {
-   String objectType;
-   if( ! getObjectType( file, objectType ) )
-      return false;
+   String objectType = getObjectType( file );
    if( objectType != this->getSerializationTypeVirtual() )
-   {
-      std::cerr << "Given file contains instance of " << objectType << " but " << getSerializationTypeVirtual() << " is expected." << std::endl;
-      return false;
-   }
-   return true;
+      throw Exceptions::ObjectTypeMismatch( this->getSerializationTypeVirtual(), objectType );
 }
 
-inline bool Object :: boundLoad( File& file )
+inline void Object::boundLoad( File& file )
 {
-   return load( file );
+   this->load( file );
 }
 
-inline bool Object :: save( const String& fileName ) const
+inline void Object::save( const String& fileName ) const
 {
    File file;
-   if( ! file.open( fileName, IOMode::write ) )
-   {
-      std::cerr << "I am not able to open the file " << fileName << " for writing." << std::endl;
-      return false;
-   }
-   return this->save( file );
+   file.open( fileName, File::Mode::Out );
+   this->save( file );
 }
 
-inline bool Object :: load( const String& fileName )
+inline void Object::load( const String& fileName )
 {
    File file;
-   if( ! file.open( fileName, IOMode::read ) )
-   {
-      std::cerr << "I am not able to open the file " << fileName << " for reading." << std::endl;
-      return false;
-   }
-   return this->load( file );
+   file.open( fileName, File::Mode::In );
+   this->load( file );
 }
 
-inline bool Object :: boundLoad( const String& fileName )
+inline void Object::boundLoad( const String& fileName )
 {
    File file;
-   if( ! file.open( fileName, IOMode::read ) )
-   {
-      std::cerr << "I am not able to open the file " << fileName << " for reading." << std::endl;
-      return false;
-   }
-   return this->boundLoad( file );
+   file.open( fileName, File::Mode::In );
+   this->boundLoad( file );
 }
 
-
-inline bool getObjectType( File& file, String& type )
+inline String getObjectType( File& file )
 {
    char mn[ 10 ];
-   file.read( mn, strlen( magic_number ) );
+   String type;
+   file.load( mn, strlen( magic_number ) );
    if( strncmp( mn, magic_number, 5 ) != 0 )
-   {
-       std::cout << "Not a TNL file (wrong magic number)." << std::endl;
-       return false;
-   }
+      throw Exceptions::NotTNLFile();
    file >> type;
-   return true;
+   return type;
 }
 
-inline bool getObjectType( const String& fileName, String& type )
+inline String getObjectType( const String& fileName )
 {
    File binaryFile;
-   if( ! binaryFile.open( fileName, IOMode::read ) )
-   {
-      std::cerr << "I am not able to open the file " << fileName << " for detecting the object inside!" << std::endl;
-      return false;
-   }
-   return getObjectType( binaryFile, type );
+   binaryFile.open( fileName, File::Mode::In );
+   return getObjectType( binaryFile );
 }
 
 inline std::vector< String >
@@ -175,5 +150,22 @@ parseObjectType( const String& objectType )
 
    return parsedObjectType;
 }
+
+inline void saveHeader( File& file, const String& type )
+{
+   file.save( magic_number, strlen( magic_number ) );
+   file << type;
+}
+
+inline void loadHeader( File& file, String& type )
+{
+   char mn[ 10 ];
+   file.load( mn, strlen( magic_number ) );
+   if( strncmp( mn, magic_number, 5 ) != 0 )
+      throw Exceptions::NotTNLFile();
+   file >> type;
+}
+
+
 
 } // namespace TNL

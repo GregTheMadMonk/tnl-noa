@@ -37,6 +37,8 @@ public:
    using IndexType = Index;
    using HostType = VectorView< Real, Devices::Host, Index >;
    using CudaType = VectorView< Real, Devices::Cuda, Index >;
+   using ViewType = VectorView< Real, Device, Index >;
+   using ConstViewType = VectorView< typename std::add_const< Real >::type, Device, Index >;
 
    // inherit all ArrayView's constructors
 #ifndef __NVCC__
@@ -61,6 +63,18 @@ public:
    __cuda_callable__
    VectorView( const ArrayView< Real_, Device, Index >& view )
    : BaseType::ArrayView( view ) {}
+
+   /**
+    * \brief Returns a modifiable view of the array view.
+    */
+   __cuda_callable__
+   ViewType getView();
+
+   /**
+    * \brief Returns a non-modifiable view of the array view.
+    */
+   __cuda_callable__
+   ConstViewType getConstView() const;
 
 
    static String getType();
