@@ -35,7 +35,6 @@ public:
 	typedef Index IndexType;
 	typedef typename Sparse< RealType, DeviceType, IndexType >:: CompressedRowLengthsVector CompressedRowLengthsVector;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
-	typedef COOMatrix< Real, Device, Index > ThisType;
 	typedef COOMatrix< Real, Devices::Host, Index > HostType;
 	typedef COOMatrix< Real, Devices::Cuda, Index > CudaType;
 

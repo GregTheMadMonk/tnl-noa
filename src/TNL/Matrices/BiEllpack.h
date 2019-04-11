@@ -39,7 +39,6 @@ public:
    typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
 	typedef typename Sparse< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
 	typedef typename Sparse< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
-	typedef BiEllpack< Real, Device, Index > ThisType;
 	typedef BiEllpack< Real, Devices::Host, Index > HostType;
 	typedef BiEllpack< Real, Devices::Cuda, Index > CudaType;
 

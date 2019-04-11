@@ -231,7 +231,7 @@ getEntity( const IndexType& entityIndex ) const
    static_assert( Entity::getEntityDimension() <= 1 &&
                   Entity::getEntityDimension() >= 0, "Wrong grid entity dimensions." );
 
-   return GridEntityGetter< ThisType, Entity >::getEntity( *this, entityIndex );
+   return GridEntityGetter< Grid, Entity >::getEntity( *this, entityIndex );
 }
 
 template< typename Real,
@@ -246,7 +246,7 @@ getEntityIndex( const Entity& entity ) const
    static_assert( Entity::getEntityDimension() <= 1 &&
                   Entity::getEntityDimension() >= 0, "Wrong grid entity dimensions." );
 
-   return GridEntityGetter< ThisType, Entity >::getEntityIndex( *this, entity );
+   return GridEntityGetter< Grid, Entity >::getEntityIndex( *this, entity );
 }
 
 template< typename Real,

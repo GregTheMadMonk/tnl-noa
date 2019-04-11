@@ -47,7 +47,7 @@ template< typename Mesh,
           int MeshEntityDimension,
           typename Real >
 MeshFunction< Mesh, MeshEntityDimension, Real >::
-MeshFunction( const ThisType& meshFunction )
+MeshFunction( const MeshFunction& meshFunction )
 {
     setupSynchronizer(meshFunction.meshPointer->getDistributedMesh());
 
@@ -181,7 +181,7 @@ template< typename Mesh,
           typename Real >
 void
 MeshFunction< Mesh, MeshEntityDimension, Real >::
-bind( ThisType& meshFunction )
+bind( MeshFunction& meshFunction )
 {
 
     setupSynchronizer(meshFunction.meshPointer->getDistributedMesh());
@@ -411,9 +411,9 @@ MeshFunction< Mesh, MeshEntityDimension, Real >&
 MeshFunction< Mesh, MeshEntityDimension, Real >::
 operator = ( const Function& f )
 {
-   Pointers::DevicePointer< ThisType > thisDevicePtr( *this );
+   Pointers::DevicePointer< MeshFunction > thisDevicePtr( *this );
    Pointers::DevicePointer< typename std::add_const< Function >::type > fDevicePtr( f );
-   MeshFunctionEvaluator< ThisType, Function >::evaluate( thisDevicePtr, fDevicePtr );
+   MeshFunctionEvaluator< MeshFunction, Function >::evaluate( thisDevicePtr, fDevicePtr );
    return *this;
 }
 
@@ -425,9 +425,9 @@ MeshFunction< Mesh, MeshEntityDimension, Real >&
 MeshFunction< Mesh, MeshEntityDimension, Real >::
 operator += ( const Function& f )
 {
-   Pointers::DevicePointer< ThisType > thisDevicePtr( *this );
+   Pointers::DevicePointer< MeshFunction > thisDevicePtr( *this );
    Pointers::DevicePointer< typename std::add_const< Function >::type > fDevicePtr( f );
-   MeshFunctionEvaluator< ThisType, Function >::evaluate( thisDevicePtr, fDevicePtr, ( RealType ) 1.0, ( RealType ) 1.0 );
+   MeshFunctionEvaluator< MeshFunction, Function >::evaluate( thisDevicePtr, fDevicePtr, ( RealType ) 1.0, ( RealType ) 1.0 );
    return *this;
 }
 
@@ -439,9 +439,9 @@ MeshFunction< Mesh, MeshEntityDimension, Real >&
 MeshFunction< Mesh, MeshEntityDimension, Real >::
 operator -= ( const Function& f )
 {
-   Pointers::DevicePointer< ThisType > thisDevicePtr( *this );
+   Pointers::DevicePointer< MeshFunction > thisDevicePtr( *this );
    Pointers::DevicePointer< typename std::add_const< Function >::type > fDevicePtr( f );
-   MeshFunctionEvaluator< ThisType, Function >::evaluate( thisDevicePtr, fDevicePtr, ( RealType ) 1.0, ( RealType ) -1.0 );
+   MeshFunctionEvaluator< MeshFunction, Function >::evaluate( thisDevicePtr, fDevicePtr, ( RealType ) 1.0, ( RealType ) -1.0 );
    return *this;
 }
 
@@ -452,7 +452,7 @@ Real
 MeshFunction< Mesh, MeshEntityDimension, Real >::
 getLpNorm( const RealType& p ) const
 {
-   return MeshFunctionNormGetter< ThisType >::getNorm( *this, p );
+   return MeshFunctionNormGetter< MeshFunction >::getNorm( *this, p );
 }
 
 template< typename Mesh,
@@ -520,9 +520,9 @@ write( const String& fileName,
       return false;
    }
    if( format == "vtk" )
-      return MeshFunctionVTKWriter< ThisType >::write( *this, file, scale );
+      return MeshFunctionVTKWriter< MeshFunction >::write( *this, file, scale );
    else if( format == "gnuplot" )
-      return MeshFunctionGnuplotWriter< ThisType >::write( *this, file, scale );
+      return MeshFunctionGnuplotWriter< MeshFunction >::write( *this, file, scale );
    else {
       std::cerr << "Unknown output format: " << format << std::endl;
       return false;

@@ -45,7 +45,6 @@ class SharedPointer< Object, Devices::MIC > : public SmartPointer
 
       using ObjectType = Object;
       using DeviceType = Devices::MIC; 
-      using ThisType = SharedPointer<  Object, Devices::MIC >;
 
       SharedPointer( std::nullptr_t )
       : pd( nullptr ),
@@ -61,7 +60,7 @@ class SharedPointer< Object, Devices::MIC > : public SmartPointer
       }
 
       // this is needed only to avoid the default compiler-generated constructor
-      SharedPointer( const ThisType& pointer )
+      SharedPointer( const SharedPointer& pointer )
       : pd( (PointerData*) pointer.pd ),
         mic_pointer( pointer.mic_pointer )
       {
@@ -79,7 +78,7 @@ class SharedPointer< Object, Devices::MIC > : public SmartPointer
       }
 
       // this is needed only to avoid the default compiler-generated constructor
-      SharedPointer( ThisType&& pointer )
+      SharedPointer( SharedPointer&& pointer )
       : pd( (PointerData*) pointer.pd ),
         mic_pointer( pointer.mic_pointer )
       {
@@ -188,7 +187,7 @@ class SharedPointer< Object, Devices::MIC > : public SmartPointer
       }
 
       // this is needed only to avoid the default compiler-generated operator
-      const ThisType& operator=( const ThisType& ptr )
+      const SharedPointer& operator=( const SharedPointer& ptr )
       {
          this->free();
          this->pd = (PointerData*) ptr.pd;
@@ -204,7 +203,7 @@ class SharedPointer< Object, Devices::MIC > : public SmartPointer
       // conditional operator for non-const -> const data
       template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      const ThisType& operator=( const SharedPointer< Object_, DeviceType >& ptr )
+      const SharedPointer& operator=( const SharedPointer< Object_, DeviceType >& ptr )
       {
          this->free();
          this->pd = (PointerData*) ptr.pd;
@@ -218,7 +217,7 @@ class SharedPointer< Object, Devices::MIC > : public SmartPointer
       }
 
       // this is needed only to avoid the default compiler-generated operator
-      const ThisType& operator=( ThisType&& ptr )
+      const SharedPointer& operator=( SharedPointer&& ptr )
       {
          this->free();
          this->pd = (PointerData*) ptr.pd;
@@ -234,7 +233,7 @@ class SharedPointer< Object, Devices::MIC > : public SmartPointer
       // conditional operator for non-const -> const data
       template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      const ThisType& operator=( SharedPointer< Object_, DeviceType >&& ptr )
+      const SharedPointer& operator=( SharedPointer< Object_, DeviceType >&& ptr )
       {
          this->free();
          this->pd = (PointerData*) ptr.pd;
@@ -272,7 +271,7 @@ class SharedPointer< Object, Devices::MIC > : public SmartPointer
          this->free();
       }
 
-      void swap( ThisType& ptr2 )
+      void swap( SharedPointer& ptr2 )
       {
          std::swap( this->pd, ptr2.pd );
          std::swap( this->mic_pointer, ptr2.mic_pointer );

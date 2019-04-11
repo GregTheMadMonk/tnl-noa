@@ -56,7 +56,6 @@ class DevicePointer< Object, Devices::Host > : public SmartPointer
 
       typedef Object ObjectType;
       typedef Devices::Host DeviceType;
-      typedef DevicePointer< Object, Devices::Host > ThisType;
 
       explicit  DevicePointer( ObjectType& obj )
       : pointer( nullptr )
@@ -65,7 +64,7 @@ class DevicePointer< Object, Devices::Host > : public SmartPointer
       }
 
       // this is needed only to avoid the default compiler-generated constructor
-      DevicePointer( const ThisType& pointer )
+      DevicePointer( const DevicePointer& pointer )
       : pointer( pointer.pointer )
       {
       }
@@ -79,7 +78,7 @@ class DevicePointer< Object, Devices::Host > : public SmartPointer
       }
 
       // this is needed only to avoid the default compiler-generated constructor
-      DevicePointer( ThisType&& pointer )
+      DevicePointer( DevicePointer&& pointer )
       : pointer( pointer.pointer )
       {
          pointer.pointer = nullptr;
@@ -141,7 +140,7 @@ class DevicePointer< Object, Devices::Host > : public SmartPointer
       }
 
       // this is needed only to avoid the default compiler-generated operator
-      const ThisType& operator=( const ThisType& ptr )
+      const DevicePointer& operator=( const DevicePointer& ptr )
       {
          this->pointer = ptr.pointer;
          return *this;
@@ -150,14 +149,14 @@ class DevicePointer< Object, Devices::Host > : public SmartPointer
       // conditional operator for non-const -> const data
       template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      const ThisType& operator=( const DevicePointer< Object_, DeviceType >& ptr )
+      const DevicePointer& operator=( const DevicePointer< Object_, DeviceType >& ptr )
       {
          this->pointer = ptr.pointer;
          return *this;
       }
 
       // this is needed only to avoid the default compiler-generated operator
-      const ThisType& operator=( ThisType&& ptr )
+      const DevicePointer& operator=( DevicePointer&& ptr )
       {
          this->pointer = ptr.pointer;
          ptr.pointer = nullptr;
@@ -167,7 +166,7 @@ class DevicePointer< Object, Devices::Host > : public SmartPointer
       // conditional operator for non-const -> const data
       template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      const ThisType& operator=( DevicePointer< Object_, DeviceType >&& ptr )
+      const DevicePointer& operator=( DevicePointer< Object_, DeviceType >&& ptr )
       {
          this->pointer = ptr.pointer;
          ptr.pointer = nullptr;
@@ -212,7 +211,6 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
 
       typedef Object ObjectType;
       typedef Devices::Cuda DeviceType;
-      typedef DevicePointer< Object, Devices::Cuda > ThisType;
 
       explicit  DevicePointer( ObjectType& obj )
       : pointer( nullptr ),
@@ -223,7 +221,7 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
       }
 
       // this is needed only to avoid the default compiler-generated constructor
-      DevicePointer( const ThisType& pointer )
+      DevicePointer( const DevicePointer& pointer )
       : pointer( pointer.pointer ),
         pd( (PointerData*) pointer.pd ),
         cuda_pointer( pointer.cuda_pointer )
@@ -243,7 +241,7 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
       }
 
       // this is needed only to avoid the default compiler-generated constructor
-      DevicePointer( ThisType&& pointer )
+      DevicePointer( DevicePointer&& pointer )
       : pointer( pointer.pointer ),
         pd( (PointerData*) pointer.pd ),
         cuda_pointer( pointer.cuda_pointer )
@@ -332,7 +330,7 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
       }
 
       // this is needed only to avoid the default compiler-generated operator
-      const ThisType& operator=( const ThisType& ptr )
+      const DevicePointer& operator=( const DevicePointer& ptr )
       {
          this->free();
          this->pointer = ptr.pointer;
@@ -345,7 +343,7 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
       // conditional operator for non-const -> const data
       template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      const ThisType& operator=( const DevicePointer< Object_, DeviceType >& ptr )
+      const DevicePointer& operator=( const DevicePointer< Object_, DeviceType >& ptr )
       {
          this->free();
          this->pointer = ptr.pointer;
@@ -356,7 +354,7 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
       }
 
       // this is needed only to avoid the default compiler-generated operator
-      const ThisType& operator=( ThisType&& ptr )
+      const DevicePointer& operator=( DevicePointer&& ptr )
       {
          this->free();
          this->pointer = ptr.pointer;
@@ -371,7 +369,7 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
       // conditional operator for non-const -> const data
       template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      const ThisType& operator=( DevicePointer< Object_, DeviceType >&& ptr )
+      const DevicePointer& operator=( DevicePointer< Object_, DeviceType >&& ptr )
       {
          this->free();
          this->pointer = ptr.pointer;
@@ -496,7 +494,6 @@ class DevicePointer< Object, Devices::MIC > : public SmartPointer
 
       typedef Object ObjectType;
       typedef Devices::MIC DeviceType;
-      typedef DevicePointer< Object, Devices::MIC > ThisType;
 
       explicit  DevicePointer( ObjectType& obj )
       : pointer( nullptr ),
@@ -507,7 +504,7 @@ class DevicePointer< Object, Devices::MIC > : public SmartPointer
       }
 
       // this is needed only to avoid the default compiler-generated constructor
-      DevicePointer( const ThisType& pointer )
+      DevicePointer( const DevicePointer& pointer )
       : pointer( pointer.pointer ),
         pd( (PointerData*) pointer.pd ),
         mic_pointer( pointer.mic_pointer )
@@ -527,7 +524,7 @@ class DevicePointer< Object, Devices::MIC > : public SmartPointer
       }
 
       // this is needed only to avoid the default compiler-generated constructor
-      DevicePointer( ThisType&& pointer )
+      DevicePointer( DevicePointer&& pointer )
       : pointer( pointer.pointer ),
         pd( (PointerData*) pointer.pd ),
         mic_pointer( pointer.mic_pointer )
@@ -609,7 +606,7 @@ class DevicePointer< Object, Devices::MIC > : public SmartPointer
       }
 
       // this is needed only to avoid the default compiler-generated operator
-      const ThisType& operator=( const ThisType& ptr )
+      const DevicePointer& operator=( const DevicePointer& ptr )
       {
          this->free();
          this->pointer = ptr.pointer;
@@ -622,7 +619,7 @@ class DevicePointer< Object, Devices::MIC > : public SmartPointer
       // conditional operator for non-const -> const data
       template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      const ThisType& operator=( const DevicePointer< Object_, DeviceType >& ptr )
+      const DevicePointer& operator=( const DevicePointer< Object_, DeviceType >& ptr )
       {
          this->free();
          this->pointer = ptr.pointer;
@@ -633,7 +630,7 @@ class DevicePointer< Object, Devices::MIC > : public SmartPointer
       }
 
       // this is needed only to avoid the default compiler-generated operator
-      const ThisType& operator=( ThisType&& ptr )
+      const DevicePointer& operator=( DevicePointer&& ptr )
       {
          this->free();
          this->pointer = ptr.pointer;
@@ -648,7 +645,7 @@ class DevicePointer< Object, Devices::MIC > : public SmartPointer
       // conditional operator for non-const -> const data
       template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      const ThisType& operator=( DevicePointer< Object_, DeviceType >&& ptr )
+      const DevicePointer& operator=( DevicePointer< Object_, DeviceType >&& ptr )
       {
          this->free();
          this->pointer = ptr.pointer;

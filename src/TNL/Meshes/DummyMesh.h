@@ -26,7 +26,6 @@ public:
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef DummyMesh< Real, Device, Index > ThisType;
  
    constexpr static int getMeshDimension() { return 1; }
  

@@ -120,8 +120,6 @@ class NeighborGridEntityGetter<
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef GridEntityGetter< GridType, NeighborGridEntityType > GridEntityGetterType;
       typedef GridEntityStencilStorageTag< GridEntityCrossStencil > StencilStorage;
-      typedef NeighborGridEntityGetter< GridEntityType, 2, StencilStorage > ThisType;
- 
  
       static constexpr int stencilSize = Config::getStencilSize();
 
@@ -177,7 +175,7 @@ class NeighborGridEntityGetter<
          public:
  
             __cuda_callable__
-            static void exec( ThisType& neighborEntityGetter, const IndexType& entityIndex )
+            static void exec( NeighborGridEntityGetter& neighborEntityGetter, const IndexType& entityIndex )
             {
                neighborEntityGetter.stencilX[ index + stencilSize ] = entityIndex + index;
             }
@@ -189,7 +187,7 @@ class NeighborGridEntityGetter<
          public:
  
             __cuda_callable__
-            static void exec( ThisType& neighborEntityGetter, const IndexType& entityIndex )
+            static void exec( NeighborGridEntityGetter& neighborEntityGetter, const IndexType& entityIndex )
             {
                neighborEntityGetter.stencilY[ index + stencilSize ] =
                   entityIndex + index * neighborEntityGetter.entity.getMesh().getDimensions().x();

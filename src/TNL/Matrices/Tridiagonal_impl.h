@@ -509,7 +509,7 @@ void Tridiagonal< Real, Device, Index >::getTransposition( const Tridiagonal< Re
    if( std::is_same< Device, Devices::Cuda >::value )
    {
 #ifdef HAVE_CUDA
-      ThisType* kernel_this = Devices::Cuda::passToDevice( *this );
+      Tridiagonal* kernel_this = Devices::Cuda::passToDevice( *this );
       typedef  Tridiagonal< Real2, Device, Index2 > InMatrixType;
       InMatrixType* kernel_inMatrix = Devices::Cuda::passToDevice( matrix );
       dim3 cudaBlockSize( 256 ), cudaGridSize( Devices::Cuda::getMaxGridSize() );
