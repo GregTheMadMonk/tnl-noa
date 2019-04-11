@@ -266,9 +266,8 @@ struct SpmvBenchmark
       distributedMatrix.vectorProduct( distributedVector, distributedY );
       const int rank = CommunicatorType::GetRank( distributedMatrix.getCommunicationGroup() );
       const int nproc = CommunicatorType::GetSize( distributedMatrix.getCommunicationGroup() );
-      VectorType subY( y,
-                       Partitioner::getOffset( matrix.getRows(), rank, nproc ),
-                       Partitioner::getSizeForRank( matrix.getRows(), rank, nproc ) );
+      typename VectorType::ViewType subY( &y[ Partitioner::getOffset( matrix.getRows(), rank, nproc ) ],
+                                          Partitioner::getSizeForRank( matrix.getRows(), rank, nproc ) );
       TNL_ASSERT_EQ( distributedY.getLocalVectorView(), subY, "WRONG RESULT !!!" );
 #endif
    }

@@ -98,6 +98,7 @@ class Array : public Object
        * \param data Pointer to data.
        * \param size Number of array elements.
        */
+      [[deprecated("Binding functionality of Array is deprecated, ArrayView should be used instead.")]]
       Array( Value* data,
              const IndexType& size );
 
@@ -118,6 +119,7 @@ class Array : public Object
        * \param begin is the first index which should be bound.
        * \param size is number of array elements that should be bound.
        */
+      [[deprecated("Binding functionality of Array is deprecated, ArrayView should be used instead.")]]
       Array( Array& array,
              const IndexType& begin = 0,
              const IndexType& size = 0 );
@@ -223,6 +225,7 @@ class Array : public Object
        * \param _data Pointer to new data.
        * \param _size Size of new _data. Number of elements.
        */
+      [[deprecated("Binding functionality of Array is deprecated, ArrayView should be used instead.")]]
       void bind( Value* _data,
                  const Index _size );
 
@@ -240,6 +243,7 @@ class Array : public Object
        * \param size Size of new array. Number of elements.
        */
       template< typename ArrayT >
+      [[deprecated("Binding functionality of Array is deprecated, ArrayView should be used instead.")]]
       void bind( const ArrayT& array,
                  const IndexType& begin = 0,
                  const IndexType& size = 0 );
@@ -256,6 +260,7 @@ class Array : public Object
        * \param array Reference to a static array.
        */
       template< int Size >
+      [[deprecated("Binding functionality of Array is deprecated, ArrayView should be used instead.")]]
       void bind( StaticArray< Size, Value >& array );
 
       /**
