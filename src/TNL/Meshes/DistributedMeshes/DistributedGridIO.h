@@ -40,21 +40,17 @@ class DistributedGridIO< MeshFunctionType, Dummy >
     bool save(const String& fileName, MeshFunctionType &meshFunction)
     {
         return true;
-    };
+    }
 
     bool load(const String& fileName, MeshFunctionType &meshFunction)
     {
         return true;
-    };
+    }
 };
 
-
-
-
-
-}
-}
-}
+} // namespace DistributedMeshes
+} // namespace Meshes
+} // namespace TNL
 
 //not clean logic of includes...
 #include <TNL/Meshes/DistributedMeshes/DistributedGridIO_MeshFunction.h>

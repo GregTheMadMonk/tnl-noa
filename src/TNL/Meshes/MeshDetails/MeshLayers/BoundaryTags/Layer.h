@@ -168,33 +168,15 @@ public:
       return interiorIndices[ i ];
    }
 
-   bool save( File& file ) const
+   void save( File& file ) const
    {
-      try
-      {
-         boundaryTags.save( file );
-      }
-      catch(...)
-      {
-         std::cerr << "Failed to save the boundary tags of the entities with dimension " << DimensionTag::value << "." << std::endl;
-         return false;
-      }
-      return true;
+      boundaryTags.save( file );
    }
 
-   bool load( File& file )
+   void load( File& file )
    {
-      try
-      {
-         boundaryTags.load( file );
-      }
-      catch(...)
-      {
-         std::cerr << "Failed to load the boundary tags of the entities with dimension " << DimensionTag::value << "." << std::endl;
-         return false;
-      }
+      boundaryTags.load( file );
       updateBoundaryIndices( DimensionTag() );
-      return true;
    }
 
    void print( std::ostream& str ) const
@@ -257,16 +239,9 @@ protected:
    void getInteriorEntitiesCount( DimensionTag ) const {}
    void getInteriorEntityIndex( DimensionTag, const GlobalIndexType& i ) const {}
 
-   bool save( File& file ) const
-   {
-      return true;
-   }
+   void save( File& file ) const {}
+   void load( File& file ) {}
 
-   bool load( File& file )
-   {
-      return true;
-   }
- 
    void print( std::ostream& str ) const {}
 
    bool operator==( const Layer& layer ) const

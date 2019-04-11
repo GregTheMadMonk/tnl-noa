@@ -100,23 +100,21 @@ getTypeVirtual() const
 template< typename MeshConfig,
           typename Device,
           typename EntityTopology >
-bool
+void
 MeshEntity< MeshConfig, Device, EntityTopology >::
 save( File& file ) const
 {
    // no I/O for subentities and superentities - not loaded anyway
-   return true;
 }
 
 template< typename MeshConfig,
           typename Device,
           typename EntityTopology >
-bool
+void
 MeshEntity< MeshConfig, Device, EntityTopology >::
 load( File& file )
 {
    // no I/O for subentities and superentities - Mesh::load has to rebind pointers
-   return true;
 }
 
 template< typename MeshConfig,
@@ -258,25 +256,21 @@ getTypeVirtual() const
 }
 
 template< typename MeshConfig, typename Device >
-bool
+void
 MeshEntity< MeshConfig, Device, Topologies::Vertex >::
 save( File& file ) const
 {
    // no I/O for superentities - not loaded anyway
-   if( ! point.save( file ) )
-      return false;
-   return true;
+   point.save( file );
 }
 
 template< typename MeshConfig, typename Device >
-bool
+void
 MeshEntity< MeshConfig, Device, Topologies::Vertex >::
 load( File& file )
 {
    // no I/O for superentities - Mesh::load has to rebind pointers
-   if( ! point.load( file ) )
-      return false;
-   return true;
+   point.load( file );
 }
 
 template< typename MeshConfig, typename Device >

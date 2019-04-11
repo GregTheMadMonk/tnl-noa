@@ -11,6 +11,7 @@
 #pragma once
 
 #include <TNL/String.h>
+#include <TNL/File.h>
 #include <TNL/Devices/Host.h>
 
 namespace TNL {
@@ -42,14 +43,13 @@ public:
                                                         const GridFunction& f2,
                                                         const typename GridFunction::RealType& p ) const { return 0.0; }
 
-   bool save( File& file ) const { return true; }
+   void save( File& file ) const {}
 
-   //! Method for restoring the object from a file
-   bool load( File& file ) { return true; }
+   void load( File& file ) {}
 
-   bool save( const String& fileName ) const { return true; }
+   void save( const String& fileName ) const {}
 
-   bool load( const String& fileName ) { return true; }
+   void load( const String& fileName ) {}
 
    bool writeMesh( const String& fileName,
                    const String& format ) const { return true; }
