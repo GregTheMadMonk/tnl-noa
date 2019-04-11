@@ -280,22 +280,6 @@ TYPED_TEST( StaticArrayTest, streamOperator )
    std::stringstream testStream;
    testStream << u;
 }
-
-TYPED_TEST( StaticArrayTest, BindToArray )
-{
-   using ArrayType = typename TestFixture::ArrayType;
-   using ValueType = typename TestFixture::ValueType;
-   constexpr int Size = ArrayType::size;
-
-   ArrayType a;
-   for( int i = 0; i < Size; i++ )
-      a[ i ] = i+1;
-
-   Array< ValueType, Devices::Host > sharedArray;
-   sharedArray.bind( a );
-   for( int i = 0; i < Size; i++ )
-      EXPECT_EQ( a[ i ], sharedArray[ i ] );
-}
 #endif // HAVE_GTEST
 
 
