@@ -583,7 +583,7 @@ bool processFiles( const Config::ParameterContainer& parameters )
    {
       objectType = getObjectType( inputFiles[ 0 ] );
    }
-   catch( std::ios_base::failure exception )
+   catch( const std::ios_base::failure& exception )
    {
       std::cerr << "Cannot open file " << inputFiles[ 0 ] << std::endl;
    }
