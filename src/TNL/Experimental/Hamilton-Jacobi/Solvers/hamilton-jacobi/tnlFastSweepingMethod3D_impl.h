@@ -383,20 +383,20 @@ solve( const MeshPointer& mesh,
                 interfaceMapPtr.template getData< Device >(),
                 auxPtr.template getData< Device>(),
                 helpFunc.template modifyData< Device>(),
-                BlockIterDevice );
+                BlockIterDevice.getView() );
         cudaDeviceSynchronize();
         TNL_CHECK_CUDA_DEVICE;
         
-        GetNeighbours3D<<< nBlocksNeigh, 1024 >>>( BlockIterDevice, BlockIterPom, numBlocksX, numBlocksY, numBlocksZ );
+        GetNeighbours3D<<< nBlocksNeigh, 1024 >>>( BlockIterDevice.getView(), BlockIterPom.getView(), numBlocksX, numBlocksY, numBlocksZ );
         cudaDeviceSynchronize();
         TNL_CHECK_CUDA_DEVICE;
         BlockIterDevice = BlockIterPom;
         
-        CudaParallelReduc<<< nBlocks , 512 >>>( BlockIterDevice, dBlock, ( numBlocksX * numBlocksY * numBlocksZ ) );
+        CudaParallelReduc<<< nBlocks , 512 >>>( BlockIterDevice.getView(), dBlock.getView(), ( numBlocksX * numBlocksY * numBlocksZ ) );
         cudaDeviceSynchronize();
         TNL_CHECK_CUDA_DEVICE;
         
-        CudaParallelReduc<<< 1, nBlocks >>>( dBlock, dBlock, nBlocks );
+        CudaParallelReduc<<< 1, nBlocks >>>( dBlock.getView(), dBlock.getView(), nBlocks );
         cudaDeviceSynchronize();
         TNL_CHECK_CUDA_DEVICE;
         cudaMemcpy(&BlockIterD, &dBlock[0], sizeof( int ), cudaMemcpyDeviceToHost);
@@ -426,8 +426,8 @@ solve( const MeshPointer& mesh,
 
 #ifdef HAVE_CUDA
 template < typename Index >
-__global__ void GetNeighbours3D( TNL::Containers::Array< int, Devices::Cuda, Index > BlockIterDevice,
-        TNL::Containers::Array< int, Devices::Cuda, Index > BlockIterPom,
+__global__ void GetNeighbours3D( TNL::Containers::ArrayView< int, Devices::Cuda, Index > BlockIterDevice,
+        TNL::Containers::ArrayView< int, Devices::Cuda, Index > BlockIterPom,
         int numBlockX, int numBlockY, int numBlockZ )
 {
   int i = blockIdx.x * 1024 + threadIdx.x;
@@ -462,7 +462,7 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
         const Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index >, 3, bool >& interfaceMap,
         const Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index > >& aux,
         Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index > >& helpFunc,
-        TNL::Containers::Array< int, Devices::Cuda, Index > BlockIterDevice )
+        TNL::Containers::ArrayView< int, Devices::Cuda, Index > BlockIterDevice )
 {
   int thri = threadIdx.x; int thrj = threadIdx.y; int thrk = threadIdx.z;
   int blIdx = blockIdx.x; int blIdy = blockIdx.y; int blIdz = blockIdx.z;
