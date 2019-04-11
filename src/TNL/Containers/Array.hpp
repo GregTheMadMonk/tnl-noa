@@ -549,6 +549,7 @@ Array< Value, Device, Index >&
 Array< Value, Device, Index >::
 operator=( const T& data )
 {
+   Algorithms::ArrayAssignment< Array, T >::resize( *this, data );
    Algorithms::ArrayAssignment< Array, T >::assign( *this, data );
    return *this;
 }
