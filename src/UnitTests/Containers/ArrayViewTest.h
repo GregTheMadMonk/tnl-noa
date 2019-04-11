@@ -171,10 +171,13 @@ TYPED_TEST( ArrayViewTest, constructors )
    // test initialization by const reference
    const ArrayType& b = a;
    ConstViewType b_view = b.getConstView();
+   EXPECT_EQ( b_view.getData(), b.getData() );
    ConstViewType const_a_view = a.getConstView();
+   EXPECT_EQ( const_a_view.getData(), a.getData() );
 
    // test initialization of const view by non-const view
    ConstViewType const_b_view( b_view );
+   EXPECT_EQ( const_b_view.getData(), b_view.getData() );
 }
 
 TYPED_TEST( ArrayViewTest, bind )
