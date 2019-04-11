@@ -121,7 +121,7 @@ class Array : public Object
        */
       [[deprecated("Binding functionality of Array is deprecated, ArrayView should be used instead.")]]
       Array( Array& array,
-             const IndexType& begin = 0,
+             const IndexType& begin,
              const IndexType& size = 0 );
 
       /**
