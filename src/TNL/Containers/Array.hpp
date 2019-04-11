@@ -112,23 +112,6 @@ Array( Array< Value, Device, Index >& array,
 template< typename Value,
           typename Device,
           typename Index >
-Array< Value, Device, Index >::
-Array( Array< Value, Device, Index >&& array )
-{
-   this->size = array.size;
-   this->data = array.data;
-   this->allocationPointer = array.allocationPointer;
-   this->referenceCounter = array.referenceCounter;
-
-   array.size = 0;
-   array.data = nullptr;
-   array.allocationPointer = nullptr;
-   array.referenceCounter = nullptr;
-}
-
-template< typename Value,
-          typename Device,
-          typename Index >
    template< typename InValue >
 Array< Value, Device, Index >::
 Array( const std::initializer_list< InValue >& list )
@@ -528,6 +511,8 @@ Array< Value, Device, Index >&
 Array< Value, Device, Index >::
 operator=( Array< Value, Device, Index >&& array )
 {
+   reset();
+
    this->size = array.size;
    this->data = array.data;
    this->allocationPointer = array.allocationPointer;

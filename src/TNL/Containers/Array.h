@@ -129,7 +129,7 @@ class Array : public Object
        *
        * @param array is an array to be moved
        */
-      Array( Array&& array );
+      Array( Array&& array ) = default;
 
       /**
        * \brief Initialize the array from initializer list, i.e. { ... }
