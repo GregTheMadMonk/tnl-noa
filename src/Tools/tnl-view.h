@@ -250,7 +250,8 @@ bool convertObject( const MeshPointer& meshPointer,
      std::cout << " writing to " << outputFileName << " ... " << std::flush;
 
 
-   if( parsedObjectType[ 0 ] == "Containers::Vector" )
+   if( parsedObjectType[ 0 ] == "Containers::Array" ||
+       parsedObjectType[ 0 ] == "Containers::Vector" )  // TODO: remove deprecated names (Vector is saved as Array)
    {
       using MeshType = typename MeshPointer::ObjectType;
       // FIXME: why is MeshType::GlobalIndexType not the same as Index?
@@ -271,7 +272,8 @@ bool setDimension( const MeshPointer& meshPointer,
                     const Config::ParameterContainer& parameters )
 {
    int dimensions( 0 );
-   if( parsedObjectType[ 0 ] == "Containers::Vector" )
+   if( parsedObjectType[ 0 ] == "Containers::Array" ||
+       parsedObjectType[ 0 ] == "Containers::Vector" )  // TODO: remove deprecated names (Vector is saved as Array)
       dimensions = 1;
    switch( dimensions )
    {
@@ -293,7 +295,8 @@ bool setIndexType( const MeshPointer& meshPointer,
                    const Config::ParameterContainer& parameters )
 {
    String indexType;
-   if( parsedObjectType[ 0 ] == "Containers::Vector" )
+   if( parsedObjectType[ 0 ] == "Containers::Array" ||
+       parsedObjectType[ 0 ] == "Containers::Vector" )  // TODO: remove deprecated names (Vector is saved as Array)
       indexType = parsedObjectType[ 3 ];
 
    if( indexType == "int" )
@@ -363,8 +366,8 @@ bool setValueType( const MeshPointer& meshPointer,
 {
    String elementType;
 
-   // TODO: Fix this even for arrays
-   if( parsedObjectType[ 0 ] == "Containers::Vector" )
+   if( parsedObjectType[ 0 ] == "Containers::Array" ||
+       parsedObjectType[ 0 ] == "Containers::Vector" )  // TODO: remove deprecated names (Vector is saved as Array)
       elementType = parsedObjectType[ 1 ];
 
    if( elementType == "float" )
@@ -459,7 +462,8 @@ struct FilesProcessor
             error = true;
             continue;
          }
-         if( parsedObjectType[ 0 ] == "Containers::Vector" )
+         if( parsedObjectType[ 0 ] == "Containers::Array" ||
+             parsedObjectType[ 0 ] == "Containers::Vector" )  // TODO: remove deprecated names (Vector is saved as Array)
             setValueType< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );
          if( parsedObjectType[ 0 ] == "Functions::MeshFunction" )
             setMeshFunction< MeshPointer >( meshPointer, inputFiles[ i ], parsedObjectType, parameters );

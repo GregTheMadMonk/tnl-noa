@@ -17,12 +17,6 @@
 namespace TNL {
 namespace Containers {
 
-template< typename Real, typename Device, typename Index >
-class Vector;
-
-template< int Size, typename Real >
-class StaticVector;
-
 template< typename Real = double,
           typename Device = Devices::Host,
           typename Index = int >

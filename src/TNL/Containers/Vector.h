@@ -51,12 +51,6 @@ public:
    /** \brief Returns type of vector Real value, Device type and the type of Index. */
    virtual String getTypeVirtual() const;
 
-   /** \brief Returns (host) type of vector Real value, Device type and the type of Index. */
-   static String getSerializationType();
-
-   /** \brief Returns (host) type of vector Real value, Device type and the type of Index. */
-   virtual String getSerializationTypeVirtual() const;
-
    /**
     * \brief Returns a modifiable view of the vector.
     */
