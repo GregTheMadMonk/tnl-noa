@@ -598,12 +598,14 @@ getExplicitUpdate( const RealType& time,
             userData.real_u = uDofs->getData();
             userData.real_fu = fuDofs->getData();
 #endif                        
+            /*
             const IndexType gridXSize = mesh->getDimensions().x();
             const IndexType gridYSize = mesh->getDimensions().y();
             dim3 cudaBlockSize( 16, 16 );
             dim3 cudaGridSize( gridXSize / 16 + ( gridXSize % 16 != 0 ),
                                gridYSize / 16 + ( gridYSize % 16 != 0 ) );
-            
+            */
+
             TNL::Devices::Cuda::synchronizeDevice();
             int cudaErr;
             Meshes::Traverser< MeshType, Cell > meshTraverser;
