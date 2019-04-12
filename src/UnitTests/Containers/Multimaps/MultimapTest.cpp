@@ -7,7 +7,7 @@ using IndexType = int;
 using Device = Devices::Host;
 using LocalIndexType = short;
 
-#ifdef HAVE_GTEST 
+#ifdef HAVE_GTEST
 #include <gtest/gtest.h>
 
 TEST( MultimapTest, TestTypedefs )
@@ -147,12 +147,4 @@ TEST( MultimapTest, TestSaveAndLoad )
 }
 #endif
 
-int main( int argc, char* argv[] )
-{
-#ifdef HAVE_GTEST
-   ::testing::InitGoogleTest( &argc, argv );
-   return RUN_ALL_TESTS();
-#else
-   return EXIT_FAILURE;
-#endif
-}
+#include "../../main.h"
