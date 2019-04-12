@@ -220,9 +220,10 @@ containsValue( const Element* data,
    TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
    TNL_ASSERT_GE( size, 0, "" );
    if( size == 0 ) return false;
-   Algorithms::ParallelReductionContainsValue< Element > reductionContainsValue;
-   reductionContainsValue.setValue( value );
-   return Reduction< Devices::Cuda >::reduce( reductionContainsValue, size, data, nullptr );
+   //Algorithms::ParallelReductionContainsValue< Element > reductionContainsValue;
+   //reductionContainsValue.setValue( value );
+   auto fetch = [=] __cuda_callable__ ( Index i ) { return ( data[ i ] == value ); };
+   return Reduction< Devices::Cuda >::reduce( size, TNL::sum, fetch, 0.0  );
 }
 
 template< typename Element,

@@ -46,15 +46,21 @@ ResultType
 VectorOperations< Devices::Host >::
 getVectorMax( const Vector& v )
 {
-   typedef typename Vector::RealType RealType;
+   using RealType = typename Vector::RealType;
+   using IndexType = typename Vector::IndexType;
 
    TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
 
-   Algorithms::ParallelReductionMax< RealType, ResultType > operation;
+   /*Algorithms::ParallelReductionMax< RealType, ResultType > operation;
    return Reduction< Devices::Host >::reduce( operation,
                                               v.getSize(),
                                               v.getData(),
-                                              ( RealType* ) 0 );
+                                              ( RealType* ) 0 );*/
+   const RealType* data = v.getData();
+   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return data[ i ]; };
+   auto reduction = [=] __cuda_callable__ ( const RealType& a, const RealType& b ) { return TNL::max( a, b ); };
+   return Reduction< Devices::Host >::reduce( v.getSize(), reduction, fetch, 0.0 );
+
 }
 
 template< typename Vector, typename ResultType >
@@ -78,15 +84,21 @@ ResultType
 VectorOperations< Devices::Host >::
 getVectorAbsMax( const Vector& v )
 {
-   typedef typename Vector::RealType RealType;
+   using RealType = typename Vector::RealType;
+   using IndexType = typename Vector::IndexType;
 
    TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
 
-   Algorithms::ParallelReductionAbsMax< RealType, ResultType > operation;
+   /*Algorithms::ParallelReductionAbsMax< RealType, ResultType > operation;
    return Reduction< Devices::Host >::reduce( operation,
                                               v.getSize(),
                                               v.getData(),
-                                              ( RealType* ) 0 );
+                                              ( RealType* ) 0 );*/
+
+   const RealType* data = v.getData();
+   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return TNL::abs( data[ i ] ); };
+   auto max = [=] __cuda_callable__ ( const RealType& a, const RealType& b ) { return TNL::max( a, b ); };
+   return Reduction< Devices::Host >::reduce( v.getSize(), max, fetch, 0.0 );
 }
 
 
