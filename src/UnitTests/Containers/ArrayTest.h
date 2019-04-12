@@ -489,7 +489,7 @@ TYPED_TEST( ArrayTest, SaveAndLoad )
    EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
 }
 
-TYPED_TEST( ArrayTest, boundLoad )
+TYPED_TEST( ArrayTest, LoadViaView )
 {
    using ArrayType = typename TestFixture::ArrayType;
 
@@ -511,11 +511,7 @@ TYPED_TEST( ArrayTest, boundLoad )
 
    ArrayType z( 50 );
    ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::in ) );
-   EXPECT_ANY_THROW( z.boundLoad( file ) );
-
-   v.reset();
-   ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::in ) );
-   EXPECT_NO_THROW( v.boundLoad( file ) );
+   EXPECT_ANY_THROW( z.getView().load( file ) );
 
    EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
 }

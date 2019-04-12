@@ -138,7 +138,7 @@ public:
    // Returns true iff non-zero size is set
    operator bool() const;
 
-   // TODO: serialization (save, load, boundLoad)
+   // TODO: serialization (save, load)
 
 protected:
    LocalRangeType localRange;
@@ -150,7 +150,6 @@ private:
    // TODO: disabled until they are implemented
    using Object::save;
    using Object::load;
-   using Object::boundLoad;
 };
 
 } // namespace Containers

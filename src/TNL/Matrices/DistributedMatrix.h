@@ -177,7 +177,6 @@ private:
    // TODO: disabled until they are implemented
    using Object::save;
    using Object::load;
-   using Object::boundLoad;
 };
 
 } // namespace Matrices

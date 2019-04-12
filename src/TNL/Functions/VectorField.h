@@ -282,14 +282,21 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, Real > >
          for( int i = 0; i < Size; i++ )
             vectorField[ i ]->load( file );
       }
- 
+
       void boundLoad( File& file )
       {
          Object::load( file );
          for( int i = 0; i < Size; i++ )
             vectorField[ i ]->boundLoad( file );
       }
-      
+
+      void boundLoad( const String& fileName )
+      {
+         File file;
+         file.open( fileName, std::ios_base::in );
+         this->boundLoad( file );
+      }
+
       bool write( const String& fileName,
                   const String& format = "vtk",
                   const double& scale = 1.0 ) const
@@ -316,8 +323,6 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, Real > >
  
       using Object::load;
  
-      using Object::boundLoad;      
-
    protected:
       
       Containers::StaticArray< Size, FunctionPointer > vectorField;

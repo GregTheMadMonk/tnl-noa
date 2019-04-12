@@ -105,15 +105,6 @@ class Object
       virtual void load( File& file );
 
       /**
-       * \brief Method for restoring the object from a file.
-       *
-       * Throws \ref Exceptions::FileDeserializationError if the object cannot be loaded.
-       *
-       * \param file Name of file object.
-       */
-      virtual void boundLoad( File& file );
-
-      /**
        * \brief Method for saving the object to a file as a binary data.
        *
        * Throws \ref Exceptions::FileSerializationError if the object cannot be saved.
@@ -130,15 +121,6 @@ class Object
        * \param fileName String defining the name of a file.
        */
       void load( const String& fileName );
-
-       /**
-       * \brief Method for restoring the object from a file.
-       *
-       * Throws \ref Exceptions::FileDeserializationError if the object cannot be loaded.
-       *
-       * \param fileName String defining the name of a file.
-       */
-      void boundLoad( const String& fileName );
 
       /**
        * \brief Destructor.

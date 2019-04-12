@@ -497,7 +497,19 @@ MeshFunction< Mesh, MeshEntityDimension, Real >::
 boundLoad( File& file )
 {
    Object::load( file );
-   this->data.boundLoad( file );
+   this->data.getView().load( file );
+}
+
+template< typename Mesh,
+          int MeshEntityDimension,
+          typename Real >
+void
+MeshFunction< Mesh, MeshEntityDimension, Real >::
+boundLoad( const String& fileName )
+{
+   File file;
+   file.open( fileName, std::ios_base::in );
+   this->boundLoad( file );
 }
 
 template< typename Mesh,

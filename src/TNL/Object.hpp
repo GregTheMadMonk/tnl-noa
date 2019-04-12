@@ -53,11 +53,6 @@ inline void Object::load( File& file )
       throw Exceptions::FileDeserializationError( file.getFileName(), "object type does not match (expected " + this->getSerializationTypeVirtual() + ", found " + objectType + ")." );
 }
 
-inline void Object::boundLoad( File& file )
-{
-   this->load( file );
-}
-
 inline void Object::save( const String& fileName ) const
 {
    File file;
@@ -70,13 +65,6 @@ inline void Object::load( const String& fileName )
    File file;
    file.open( fileName, std::ios_base::in );
    this->load( file );
-}
-
-inline void Object::boundLoad( const String& fileName )
-{
-   File file;
-   file.open( fileName, std::ios_base::in );
-   this->boundLoad( file );
 }
 
 inline String getObjectType( File& file )

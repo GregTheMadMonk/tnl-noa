@@ -537,23 +537,9 @@ class Array : public Object
        */
       void load( File& file );
 
-      /**
-       * \brief This method loads data without reallocation.
-       *
-       * This is useful for loading data into shared arrays.
-       * If the array was not initialize yet, common load is
-       * performed. Otherwise, the array size must fit with
-       * the size of array being loaded.
-       *
-       * This method is deprecated - use ArrayView instead.
-       */
-      void boundLoad( File& file );
-
       using Object::save;
 
       using Object::load;
-
-      using Object::boundLoad;
 
       /** \brief Basic destructor. */
       ~Array();

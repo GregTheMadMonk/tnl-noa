@@ -152,6 +152,8 @@ class MeshFunction :
 
       void boundLoad( File& file );
 
+      void boundLoad( const String& fileName );
+
       bool write( const String& fileName,
                   const String& format = "vtk",
                   const double& scale = 1.0 ) const;
@@ -159,8 +161,6 @@ class MeshFunction :
       using Object::save;
 
       using Object::load;
-
-      using Object::boundLoad;
 
       DistributedMeshSynchronizerType& getSynchronizer()
       {

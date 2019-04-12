@@ -680,27 +680,6 @@ load( File& file )
 template< typename Value,
           typename Device,
           typename Index >
-void
-Array< Value, Device, Index >::
-boundLoad( File& file )
-{
-   Object::load( file );
-   Index _size;
-   file.load( &_size );
-   if( _size < 0 )
-      throw Exceptions::FileDeserializationError( file.getFileName(), "invalid array size: " + std::to_string(_size) );
-   if( this->getSize() != 0 )
-   {
-      if( this->getSize() != _size )
-         throw Exceptions::FileDeserializationError( file.getFileName(), "invalid array size: " + std::to_string(_size) + " (expected " + std::to_string( this->getSize() ) + ")." );
-   }
-   else setSize( _size );
-   Algorithms::ArrayIO< Value, Device, Index >::load( file, this->data, this->size );
-}
-
-template< typename Value,
-          typename Device,
-          typename Index >
 Array< Value, Device, Index >::
 ~Array()
 {
