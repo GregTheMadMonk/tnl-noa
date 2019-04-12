@@ -11,13 +11,13 @@
 #pragma once
 
 #include <iostream>
+#include <stdexcept>
 
 #include <TNL/param-types.h>
 #include <TNL/ParallelFor.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Algorithms/ArrayIO.h>
 #include <TNL/Containers/Algorithms/ArrayAssignment.h>
-#include <TNL/Exceptions/ArrayWrongSize.h>
 
 #include "ArrayView.h"
 
@@ -363,11 +363,11 @@ load( File& file )
    String type;
    loadHeader( file, type );
    if( type != SerializationType::getType() )
-      throw Exceptions::ObjectTypeMismatch( SerializationType::getType(), type );
+      throw Exceptions::FileDeserializationError( file.getFileName(), "invalid object type: " + type + " (expected " + SerializationType::getType() + ")." );
    Index _size;
    file.load( &_size );
    if( _size != this->getSize() )
-      throw Exceptions::ArrayWrongSize( _size, convertToString( this->getSize() ) );
+      throw Exceptions::FileDeserializationError( file.getFileName(), "invalid array size: " + std::to_string(_size) + " (expected " + std::to_string( this->getSize() ) + ")." );
    Algorithms::ArrayIO< Value, Device, Index >::load( file, this->data, this->size );
 }
 

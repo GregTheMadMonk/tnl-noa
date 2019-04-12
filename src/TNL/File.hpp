@@ -358,7 +358,7 @@ inline File& operator<<( File& file, const std::string& str )
    }
    catch(...)
    {
-      throw Exceptions::FileSerializationError( getType< int >(), file.getFileName() );
+      throw Exceptions::FileSerializationError( file.getFileName(), "unable to write string length." );
    }
    try
    {
@@ -366,7 +366,7 @@ inline File& operator<<( File& file, const std::string& str )
    }
    catch(...)
    {
-      throw Exceptions::FileSerializationError( "String", file.getFileName() );
+      throw Exceptions::FileSerializationError( file.getFileName(), "unable to write a C-string." );
    }
    return file;
 }
@@ -381,7 +381,7 @@ inline File& operator>>( File& file, std::string& str )
    }
    catch(...)
    {
-      throw Exceptions::FileDeserializationError( getType< int >(), file.getFileName() );
+      throw Exceptions::FileDeserializationError( file.getFileName(), "unable to read string length." );
    }
    char buffer[ length ];
    if( length )
@@ -392,7 +392,7 @@ inline File& operator>>( File& file, std::string& str )
       }
       catch(...)
       {
-         throw Exceptions::FileDeserializationError( "String", file.getFileName() );
+         throw Exceptions::FileDeserializationError( file.getFileName(), "unable to read a C-string." );
       }
    }
    str.assign( buffer, length );

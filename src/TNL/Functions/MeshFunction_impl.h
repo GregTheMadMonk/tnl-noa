@@ -15,7 +15,6 @@
 #include <TNL/Functions/MeshFunctionNormGetter.h>
 #include <TNL/Functions/MeshFunctionGnuplotWriter.h>
 #include <TNL/Functions/MeshFunctionVTKWriter.h>
-#include <TNL/Exceptions/MeshFunctionDataMismatch.h>
 
 #pragma once
 
@@ -169,9 +168,7 @@ setup( const MeshPointer& meshPointer,
    }
    else
    {
-      std::cerr << "Missing parameter " << prefix << "file." << std::endl;
-      throw(0);
-      return false;
+      throw std::runtime_error( "Missing parameter " + prefix + "file." );
    }
    return true;
 }
@@ -489,7 +486,7 @@ load( File& file )
    this->data.load( file );
    const IndexType meshSize = this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >();
    if( this->data.getSize() != meshSize )
-      throw Exceptions::MeshFunctionDataMismatch( this->data.getSize(), " Does not fit with mesh size " + convertToString( meshSize ) + "." );
+      throw Exceptions::FileDeserializationError( file.getFileName(), "mesh function data size does not match the mesh size (expected " + std::to_string(meshSize) + ", got " + std::to_string(this->data.getSize()) + ")." );
 }
 
 template< typename Mesh,
