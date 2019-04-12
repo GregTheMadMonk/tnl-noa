@@ -479,10 +479,10 @@ TYPED_TEST( ArrayTest, SaveAndLoad )
    for( int i = 0; i < 100; i ++ )
       v.setElement( i, 3.14147 );
    File file;
-   ASSERT_NO_THROW( file.open( "test-file.tnl", File::Mode::Out ) );
+   ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::out ) );
    ASSERT_NO_THROW( v.save( file ) );
    ASSERT_NO_THROW( file.close() );
-   ASSERT_NO_THROW( file.open( "test-file.tnl", File::Mode::In ) );
+   ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::in ) );
    ASSERT_NO_THROW( u.load( file ) );
    EXPECT_EQ( u, v );
 
@@ -498,23 +498,23 @@ TYPED_TEST( ArrayTest, boundLoad )
    for( int i = 0; i < 100; i ++ )
       v.setElement( i, 3.14147 );
    File file;
-   ASSERT_NO_THROW( file.open( "test-file.tnl", File::Mode::Out ) );
+   ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::out ) );
    ASSERT_NO_THROW( v.save( file ) );
    ASSERT_NO_THROW( file.close() );
 
    w.setSize( 100 );
    auto u = w.getView();
-   ASSERT_NO_THROW( file.open( "test-file.tnl", File::Mode::In ) );
+   ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::in ) );
    ASSERT_NO_THROW( u.load( file ) );
    EXPECT_EQ( u, v );
    EXPECT_EQ( u.getData(), w.getData() );
 
    ArrayType z( 50 );
-   ASSERT_NO_THROW( file.open( "test-file.tnl", File::Mode::In ) );
+   ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::in ) );
    EXPECT_ANY_THROW( z.boundLoad( file ) );
 
    v.reset();
-   ASSERT_NO_THROW( file.open( "test-file.tnl", File::Mode::In ) );
+   ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::in ) );
    EXPECT_NO_THROW( v.boundLoad( file ) );
 
    EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );

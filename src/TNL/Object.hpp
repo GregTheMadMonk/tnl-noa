@@ -63,21 +63,21 @@ inline void Object::boundLoad( File& file )
 inline void Object::save( const String& fileName ) const
 {
    File file;
-   file.open( fileName, File::Mode::Out );
+   file.open( fileName, std::ios_base::out );
    this->save( file );
 }
 
 inline void Object::load( const String& fileName )
 {
    File file;
-   file.open( fileName, File::Mode::In );
+   file.open( fileName, std::ios_base::in );
    this->load( file );
 }
 
 inline void Object::boundLoad( const String& fileName )
 {
    File file;
-   file.open( fileName, File::Mode::In );
+   file.open( fileName, std::ios_base::in );
    this->boundLoad( file );
 }
 
@@ -95,7 +95,7 @@ inline String getObjectType( File& file )
 inline String getObjectType( const String& fileName )
 {
    File binaryFile;
-   binaryFile.open( fileName, File::Mode::In );
+   binaryFile.open( fileName, std::ios_base::in );
    return getObjectType( binaryFile );
 }
 

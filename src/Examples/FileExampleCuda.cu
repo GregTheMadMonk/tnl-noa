@@ -16,7 +16,7 @@ int main()
     * Save array to file.
     */
    File file;
-   file.open( "test-file.tnl", File::Mode::Out | File::Mode::Truncate );
+   file.open( "test-file.tnl", std::ios_base::out | std::ios_base::trunc );
    file.save< double, double, Devices::Host >( doubleArray, size );
    file.close();
 
@@ -30,7 +30,7 @@ int main()
    /***
     * Read array from the file to device
     */
-   file.open( "test-file.tnl", File::Mode::In );
+   file.open( "test-file.tnl", std::ios_base::in );
    file.load< double, double, Devices::Cuda >( deviceArray, size );
    file.close();
 

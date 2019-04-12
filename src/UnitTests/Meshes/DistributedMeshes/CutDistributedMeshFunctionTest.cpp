@@ -591,7 +591,7 @@ TEST(CutDistributedMeshFunction, 3D_2_Save)
         if(CommunicatorType::GetRank(*group)==0)
         {
             File meshFile;
-            meshFile.open( FileName+String("-mesh.tnl"),File::Mode::Out);
+            meshFile.open( FileName+String("-mesh.tnl"),std::ios_base::out);
             cutDistributedGrid.getGlobalGrid().save( meshFile );
             meshFile.close();
         }
@@ -611,7 +611,7 @@ TEST(CutDistributedMeshFunction, 3D_2_Save)
        loadMeshFunctionptr.bind(globalCutGrid,loaddof);
 
         File file;
-        file.open( FileName, File::Mode::In );
+        file.open( FileName, std::ios_base::in );
         loadMeshFunctionptr.boundLoad(file);
         file.close();
  

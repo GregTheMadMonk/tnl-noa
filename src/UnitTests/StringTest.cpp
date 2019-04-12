@@ -306,10 +306,10 @@ TEST( StringTest, SaveLoad )
 {
    String str1( "testing-string" );
    File file;
-   ASSERT_NO_THROW( file.open( "test-file.tnl", File::Mode::Out ) );
+   ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::out ) );
    ASSERT_NO_THROW( file << str1 );
    ASSERT_NO_THROW( file.close() );
-   ASSERT_NO_THROW( file.open( "test-file.tnl", File::Mode::In ) );
+   ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::in ) );
    String str2;
    ASSERT_NO_THROW( file >> str2 );
    EXPECT_EQ( str1, str2 );

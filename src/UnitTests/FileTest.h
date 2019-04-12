@@ -18,13 +18,13 @@ using namespace TNL;
 TEST( FileTest, OpenInvalid )
 {
    File file;
-   EXPECT_THROW( file.open( "invalid-file.tnl", File::Mode::In ), std::ios_base::failure );
+   EXPECT_THROW( file.open( "invalid-file.tnl", std::ios_base::in ), std::ios_base::failure );
 }
 
 TEST( FileTest, WriteAndRead )
 {
    File file;
-   ASSERT_NO_THROW( file.open( String( "test-file.tnl" ), File::Mode::Out ) );
+   ASSERT_NO_THROW( file.open( String( "test-file.tnl" ), std::ios_base::out ) );
 
    int intData( 5 );
    double doubleData[ 3 ] = { 1.0, 2.0, 3.0 };
@@ -34,7 +34,7 @@ TEST( FileTest, WriteAndRead )
    ASSERT_NO_THROW( file.save( &constDoubleData ) );
    ASSERT_NO_THROW( file.close() );
 
-   ASSERT_NO_THROW( file.open( String( "test-file.tnl" ), File::Mode::In ) );
+   ASSERT_NO_THROW( file.open( String( "test-file.tnl" ), std::ios_base::in ) );
    int newIntData;
    double newDoubleData[ 3 ];
    double newConstDoubleData;
@@ -58,15 +58,15 @@ TEST( FileTest, WriteAndReadWithConversion )
    float floatData[ 3 ];
    int intData[ 3 ];
    File file;
-   ASSERT_NO_THROW( file.open( "test-file.tnl", File::Mode::Out | File::Mode::Truncate ) );
+   ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::out | std::ios_base::trunc ) );
    file.save< double, float, Devices::Host >( doubleData, 3 );
    ASSERT_NO_THROW( file.close() );
 
-   ASSERT_NO_THROW( file.open( "test-file.tnl", File::Mode::In ) );
+   ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::in ) );
    file.load< float, float, Devices::Host >( floatData, 3 );
    ASSERT_NO_THROW( file.close() );
 
-   ASSERT_NO_THROW( file.open( "test-file.tnl", File::Mode::In ) );
+   ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::in ) );
    file.load< int, float, Devices::Host >( intData, 3 );
    ASSERT_NO_THROW( file.close() );
 
@@ -108,14 +108,14 @@ TEST( FileTest, WriteAndReadCUDA )
                cudaMemcpyHostToDevice );
 
    File file;
-   ASSERT_NO_THROW( file.open( String( "test-file.tnl" ), File::Mode::Out ) );
+   ASSERT_NO_THROW( file.open( String( "test-file.tnl" ), std::ios_base::out ) );
 
    file.save< int, int, Devices::Cuda >( cudaIntData );
    file.save< float, float, Devices::Cuda >( cudaFloatData, 3 );
    file.save< const double, double, Devices::Cuda >( cudaConstDoubleData );
    ASSERT_NO_THROW( file.close() );
 
-   ASSERT_NO_THROW( file.open( String( "test-file.tnl" ), File::Mode::In ) );
+   ASSERT_NO_THROW( file.open( String( "test-file.tnl" ), std::ios_base::in ) );
    int newIntData;
    float newFloatData[ 3 ];
    double newDoubleData;
@@ -169,15 +169,15 @@ TEST( FileTest, WriteAndReadCUDAWithConversion )
                cudaMemcpyHostToDevice );
 
    File file;
-   ASSERT_NO_THROW( file.open( String( "cuda-test-file.tnl" ), File::Mode::Out | File::Mode::Truncate ) );
+   ASSERT_NO_THROW( file.open( String( "cuda-test-file.tnl" ), std::ios_base::out | std::ios_base::trunc ) );
    file.save< double, float, Devices::Cuda >( cudaConstDoubleData, 3 );
    ASSERT_NO_THROW( file.close() );
 
-   ASSERT_NO_THROW( file.open( String( "cuda-test-file.tnl" ), File::Mode::In ) );
+   ASSERT_NO_THROW( file.open( String( "cuda-test-file.tnl" ), std::ios_base::in ) );
    file.load< float, float, Devices::Cuda >( cudaFloatData, 3 );
    ASSERT_NO_THROW( file.close() );
 
-   ASSERT_NO_THROW( file.open( String( "cuda-test-file.tnl" ), File::Mode::In ) );
+   ASSERT_NO_THROW( file.open( String( "cuda-test-file.tnl" ), std::ios_base::in ) );
    file.load< int, float, Devices::Cuda >( cudaIntData, 3 );
    ASSERT_NO_THROW( file.close() );
 

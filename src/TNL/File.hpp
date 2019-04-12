@@ -25,34 +25,25 @@
 
 namespace TNL {
 
-inline File::Mode operator|( File::Mode m1, File::Mode m2 );
-
-inline bool operator&( File::Mode m1, File::Mode m2 );
-
-inline void File::open( const String& fileName, Mode mode )
+inline void File::open( const String& fileName, std::ios_base::openmode mode )
 {
    // enable exceptions
    file.exceptions( std::fstream::failbit | std::fstream::badbit | std::fstream::eofbit );
 
    close();
 
-   auto ios_mode = std::ios::binary;
-   if( mode & Mode::In ) ios_mode |= std::ios::in;
-   if( mode & Mode::Out ) ios_mode |= std::ios::out;
-   if( mode & Mode::Append ) ios_mode |= std::ios::app;
-   if( mode & Mode::AtEnd ) ios_mode |= std::ios::ate;
-   if( mode & Mode::Truncate ) ios_mode |= std::ios::trunc;
+   mode |= std::ios::binary;
    try
    {
-      file.open( fileName.getString(), ios_mode );
+      file.open( fileName.getString(), mode );
    }
    catch( std::ios_base::failure& )
    {
       std::stringstream msg;
       msg <<  "Unable to open file " << fileName << " ";
-      if( mode & Mode::In )
+      if( mode & std::ios_base::in )
          msg << " for reading.";
-      if( mode & Mode::Out )
+      if( mode & std::ios_base::out )
          msg << " for writing.";
 
       throw std::ios_base::failure( msg.str() );
@@ -406,16 +397,6 @@ inline File& operator>>( File& file, std::string& str )
    }
    str.assign( buffer, length );
    return file;
-}
-
-inline File::Mode operator|( File::Mode m1, File::Mode m2 )
-{
-   return static_cast< File::Mode >( static_cast< int >( m1 ) | static_cast< int >( m2 ) );
-}
-
-inline bool operator&( File::Mode m1, File::Mode m2 )
-{
-   return static_cast< bool >( static_cast< int >( m1 ) & static_cast< int >( m2 ) );
 }
 
 } // namespace TNL

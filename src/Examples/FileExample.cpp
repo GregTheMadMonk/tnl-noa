@@ -9,16 +9,15 @@ int main()
 {
     File file;
 
-    file.open( String("new-file.tnl"), File::Mode::Out );
+    file.open( String("new-file.tnl"), std::ios_base::out );
     String title("'string to file'");
     file << title;
     file.close();
 
-    file.open( String("new-file.tnl"), File::Mode::In );
+    file.open( String("new-file.tnl"), std::ios_base::in );
     String restoredString;
     file >> restoredString;
     file.close();
 
     cout << "restored string = " << restoredString <<endl;
 }
-

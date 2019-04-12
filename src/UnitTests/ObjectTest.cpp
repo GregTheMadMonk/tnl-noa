@@ -24,10 +24,10 @@ TEST( ObjectTest, SaveAndLoadTest )
 {
    Object testObject;
    File file;
-   ASSERT_NO_THROW( file.open( "test-file.tnl", File::Mode::Out ) );
+   ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::out ) );
    ASSERT_NO_THROW( testObject.save( file ) );
    ASSERT_NO_THROW( file.close() );
-   ASSERT_NO_THROW( file.open( "test-file.tnl", File::Mode::In ) );
+   ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::in ) );
    ASSERT_NO_THROW( testObject.load( file ) );
 
    EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
@@ -80,10 +80,10 @@ TEST( HeaderTest, SaveAndLoadTest )
 {
    Object testObject;
    File file;
-   ASSERT_NO_THROW( file.open( "test-file.tnl", File::Mode::Out ) );
+   ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::out ) );
    ASSERT_NO_THROW( saveHeader( file, "TYPE" ) );
    ASSERT_NO_THROW( file.close() );
-   ASSERT_NO_THROW( file.open( "test-file.tnl", File::Mode::In ) );
+   ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::in ) );
    String type;
    ASSERT_NO_THROW( loadHeader( file, type ) );
 

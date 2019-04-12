@@ -379,7 +379,7 @@ ArrayView< Value, Device, Index >::
 save( const String& fileName ) const
 {
    File file;
-   file.open( fileName, File::Mode::Out );
+   file.open( fileName, std::ios_base::out );
    this->save( file );
 }
 
@@ -391,7 +391,7 @@ ArrayView< Value, Device, Index >::
 load( const String& fileName )
 {
    File file;
-   file.open( fileName, File::Mode::In );
+   file.open( fileName, std::ios_base::in );
    this->load( file );
 }
 

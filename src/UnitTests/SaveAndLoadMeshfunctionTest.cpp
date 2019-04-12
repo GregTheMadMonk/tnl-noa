@@ -62,7 +62,7 @@ class TestSaveAndLoadMeshfunction
             linearFunctionEvaluator.evaluateAllEntities(localMeshFunctionptr , linearFunctionPtr);
 
             File file;
-            ASSERT_NO_THROW( file.open( String( FILENAME), File::Mode::Out ) );
+            ASSERT_NO_THROW( file.open( String( FILENAME), std::ios_base::out ) );
             ASSERT_NO_THROW( localMeshFunctionptr->save(file) );
             ASSERT_NO_THROW( file.close() );
 
@@ -80,7 +80,7 @@ class TestSaveAndLoadMeshfunction
                 loadDof[i]=-1;
             }
 
-            ASSERT_NO_THROW( file.open( String( FILENAME ), File::Mode::In ) );
+            ASSERT_NO_THROW( file.open( String( FILENAME ), std::ios_base::in ) );
             ASSERT_NO_THROW( loadMeshFunctionptr->boundLoad(file) );
             ASSERT_NO_THROW( file.close() );
 

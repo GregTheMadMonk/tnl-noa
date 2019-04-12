@@ -246,10 +246,10 @@ TYPED_TEST( StaticArrayTest, SaveAndLoad )
 
    ArrayType u1( 7 ), u2;
    File file;
-   ASSERT_NO_THROW( file.open( "tnl-static-array-test.tnl", File::Mode::Out ) );
+   ASSERT_NO_THROW( file.open( "tnl-static-array-test.tnl", std::ios_base::out ) );
    ASSERT_NO_THROW( u1.save( file ) );
    ASSERT_NO_THROW( file.close() );
-   ASSERT_NO_THROW( file.open( "tnl-static-array-test.tnl", File::Mode::In ) );
+   ASSERT_NO_THROW( file.open( "tnl-static-array-test.tnl", std::ios_base::in ) );
    ASSERT_NO_THROW( u2.load( file ) );
    ASSERT_NO_THROW( file.close() );
 
