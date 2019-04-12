@@ -33,11 +33,11 @@ public:
    using IndexType = Index;
    using LocalRangeType = Subrange< Index >;
    using LocalArrayViewType = Containers::ArrayView< Value, Device, Index >;
-   using ConstLocalArrayViewType = Containers::ArrayView< typename std::add_const< Value >::type, Device, Index >;
+   using ConstLocalArrayViewType = Containers::ArrayView< std::add_const_t< Value >, Device, Index >;
    using HostType = DistributedArrayView< Value, Devices::Host, Index, Communicator >;
    using CudaType = DistributedArrayView< Value, Devices::Cuda, Index, Communicator >;
    using ViewType = DistributedArrayView< Value, Device, Index, Communicator >;
-   using ConstViewType = DistributedArrayView< typename std::add_const< Value >::type, Device, Index, Communicator >;
+   using ConstViewType = DistributedArrayView< std::add_const_t< Value >, Device, Index, Communicator >;
 
    // Initialization by raw data
    __cuda_callable__

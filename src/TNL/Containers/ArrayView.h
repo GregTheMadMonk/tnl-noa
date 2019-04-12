@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <type_traits>  // std::add_const
+#include <type_traits>  // std::add_const_t
 
 #include <TNL/File.h>
 #include <TNL/Devices/Host.h>
@@ -72,7 +72,7 @@ public:
    using HostType = ArrayView< Value, Devices::Host, Index >;
    using CudaType = ArrayView< Value, Devices::Cuda, Index >;
    using ViewType = ArrayView< Value, Device, Index >;
-   using ConstViewType = ArrayView< typename std::add_const< Value >::type, Device, Index >;
+   using ConstViewType = ArrayView< std::add_const_t< Value >, Device, Index >;
 
    /**
     * \brief Returns type of array view in C++ style.

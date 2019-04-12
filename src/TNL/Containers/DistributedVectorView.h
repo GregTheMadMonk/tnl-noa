@@ -34,11 +34,11 @@ public:
    using CommunicatorType = Communicator;
    using IndexType = Index;
    using LocalVectorViewType = Containers::VectorView< Real, Device, Index >;
-   using ConstLocalVectorViewType = Containers::VectorView< typename std::add_const< Real >::type, Device, Index >;
+   using ConstLocalVectorViewType = Containers::VectorView< std::add_const_t< Real >, Device, Index >;
    using HostType = DistributedVectorView< Real, Devices::Host, Index, Communicator >;
    using CudaType = DistributedVectorView< Real, Devices::Cuda, Index, Communicator >;
    using ViewType = DistributedVectorView< Real, Device, Index, Communicator >;
-   using ConstViewType = DistributedVectorView< typename std::add_const< Real >::type, Device, Index, Communicator >;
+   using ConstViewType = DistributedVectorView< std::add_const_t< Real >, Device, Index, Communicator >;
 
    // inherit all constructors and assignment operators from ArrayView
    using BaseType::DistributedArrayView;

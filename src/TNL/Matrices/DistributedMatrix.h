@@ -61,7 +61,7 @@ public:
    using CompressedRowLengthsVector = Containers::DistributedVector< IndexType, DeviceType, IndexType, CommunicatorType >;
 
    using MatrixRow = Matrices::SparseRow< RealType, IndexType >;
-   using ConstMatrixRow = Matrices::SparseRow< typename std::add_const< RealType >::type, typename std::add_const< IndexType >::type >;
+   using ConstMatrixRow = Matrices::SparseRow< std::add_const_t< RealType >, std::add_const_t< IndexType > >;
 
    DistributedMatrix() = default;
 

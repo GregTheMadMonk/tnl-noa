@@ -12,8 +12,6 @@
 
 #pragma once
 
-#include <type_traits>  // std::add_const
-
 #include <TNL/Containers/Array.h>
 #include <TNL/Containers/DistributedArrayView.h>
 
@@ -36,11 +34,11 @@ public:
    using LocalRangeType = Subrange< Index >;
    using LocalArrayType = Containers::Array< Value, Device, Index >;
    using LocalArrayViewType = Containers::ArrayView< Value, Device, Index >;
-   using ConstLocalArrayViewType = Containers::ArrayView< typename std::add_const< Value >::type, Device, Index >;
+   using ConstLocalArrayViewType = Containers::ArrayView< std::add_const_t< Value >, Device, Index >;
    using HostType = DistributedArray< Value, Devices::Host, Index, Communicator >;
    using CudaType = DistributedArray< Value, Devices::Cuda, Index, Communicator >;
    using ViewType = DistributedArrayView< Value, Device, Index, Communicator >;
-   using ConstViewType = DistributedArrayView< typename std::add_const< Value >::type, Device, Index, Communicator >;
+   using ConstViewType = DistributedArrayView< std::add_const_t< Value >, Device, Index, Communicator >;
 
    DistributedArray() = default;
 

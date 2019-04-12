@@ -70,7 +70,7 @@ class Array : public Object
       using HostType = Containers::Array< Value, Devices::Host, Index >;
       using CudaType = Containers::Array< Value, Devices::Cuda, Index >;
       using ViewType = ArrayView< Value, Device, Index >;
-      using ConstViewType = ArrayView< typename std::add_const< Value >::type, Device, Index >;
+      using ConstViewType = ArrayView< std::add_const_t< Value >, Device, Index >;
 
       /**
        * \brief Basic constructor.

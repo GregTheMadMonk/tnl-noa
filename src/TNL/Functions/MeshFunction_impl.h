@@ -412,7 +412,7 @@ MeshFunction< Mesh, MeshEntityDimension, Real >::
 operator = ( const Function& f )
 {
    Pointers::DevicePointer< MeshFunction > thisDevicePtr( *this );
-   Pointers::DevicePointer< typename std::add_const< Function >::type > fDevicePtr( f );
+   Pointers::DevicePointer< std::add_const_t< Function > > fDevicePtr( f );
    MeshFunctionEvaluator< MeshFunction, Function >::evaluate( thisDevicePtr, fDevicePtr );
    return *this;
 }
@@ -426,7 +426,7 @@ MeshFunction< Mesh, MeshEntityDimension, Real >::
 operator += ( const Function& f )
 {
    Pointers::DevicePointer< MeshFunction > thisDevicePtr( *this );
-   Pointers::DevicePointer< typename std::add_const< Function >::type > fDevicePtr( f );
+   Pointers::DevicePointer< std::add_const_t< Function > > fDevicePtr( f );
    MeshFunctionEvaluator< MeshFunction, Function >::evaluate( thisDevicePtr, fDevicePtr, ( RealType ) 1.0, ( RealType ) 1.0 );
    return *this;
 }
@@ -440,7 +440,7 @@ MeshFunction< Mesh, MeshEntityDimension, Real >::
 operator -= ( const Function& f )
 {
    Pointers::DevicePointer< MeshFunction > thisDevicePtr( *this );
-   Pointers::DevicePointer< typename std::add_const< Function >::type > fDevicePtr( f );
+   Pointers::DevicePointer< std::add_const_t< Function > > fDevicePtr( f );
    MeshFunctionEvaluator< MeshFunction, Function >::evaluate( thisDevicePtr, fDevicePtr, ( RealType ) 1.0, ( RealType ) -1.0 );
    return *this;
 }

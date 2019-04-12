@@ -32,7 +32,7 @@ public:
    using HostType = VectorView< Real, Devices::Host, Index >;
    using CudaType = VectorView< Real, Devices::Cuda, Index >;
    using ViewType = VectorView< Real, Device, Index >;
-   using ConstViewType = VectorView< typename std::add_const< Real >::type, Device, Index >;
+   using ConstViewType = VectorView< std::add_const_t< Real >, Device, Index >;
 
    // inherit all ArrayView's constructors
 #ifndef __NVCC__

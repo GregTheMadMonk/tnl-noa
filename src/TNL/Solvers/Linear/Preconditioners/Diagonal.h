@@ -61,7 +61,7 @@ public:
    using typename Preconditioner< MatrixType >::MatrixPointer;
    using VectorType = Containers::Vector< RealType, DeviceType, IndexType >;
    using LocalVectorViewType = Containers::VectorView< RealType, DeviceType, IndexType >;
-   using ConstLocalVectorViewType = Containers::VectorView< typename std::add_const< RealType >::type, DeviceType, IndexType >;
+   using ConstLocalVectorViewType = Containers::VectorView< std::add_const_t< RealType >, DeviceType, IndexType >;
 
    virtual void update( const MatrixPointer& matrixPointer ) override;
 
