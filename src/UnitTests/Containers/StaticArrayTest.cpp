@@ -246,12 +246,12 @@ TYPED_TEST( StaticArrayTest, SaveAndLoad )
 
    ArrayType u1( 7 ), u2;
    File file;
-   file.open( "tnl-static-array-test.tnl", File::Mode::Out );
-   u1.save( file );
-   file.close();
-   file.open( "tnl-static-array-test.tnl", File::Mode::In );
-   u2.load( file );
-   file.close();
+   ASSERT_NO_THROW( file.open( "tnl-static-array-test.tnl", File::Mode::Out ) );
+   ASSERT_NO_THROW( u1.save( file ) );
+   ASSERT_NO_THROW( file.close() );
+   ASSERT_NO_THROW( file.open( "tnl-static-array-test.tnl", File::Mode::In ) );
+   ASSERT_NO_THROW( u2.load( file ) );
+   ASSERT_NO_THROW( file.close() );
 
    EXPECT_EQ( u1, u2 );
 

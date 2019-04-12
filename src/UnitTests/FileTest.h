@@ -24,23 +24,23 @@ TEST( FileTest, OpenInvalid )
 TEST( FileTest, WriteAndRead )
 {
    File file;
-   file.open( String( "test-file.tnl" ), File::Mode::Out );
+   ASSERT_NO_THROW( file.open( String( "test-file.tnl" ), File::Mode::Out ) );
 
    int intData( 5 );
    double doubleData[ 3 ] = { 1.0, 2.0, 3.0 };
    const double constDoubleData = 3.14;
-   file.save( &intData );
-   file.save( doubleData, 3 );
-   file.save( &constDoubleData );
-   file.close();
+   ASSERT_NO_THROW( file.save( &intData ) );
+   ASSERT_NO_THROW( file.save( doubleData, 3 ) );
+   ASSERT_NO_THROW( file.save( &constDoubleData ) );
+   ASSERT_NO_THROW( file.close() );
 
-   file.open( String( "test-file.tnl" ), File::Mode::In );
+   ASSERT_NO_THROW( file.open( String( "test-file.tnl" ), File::Mode::In ) );
    int newIntData;
    double newDoubleData[ 3 ];
    double newConstDoubleData;
-   file.load( &newIntData, 1 );
-   file.load( newDoubleData, 3 );
-   file.load( &newConstDoubleData, 1 );
+   ASSERT_NO_THROW( file.load( &newIntData, 1 ) );
+   ASSERT_NO_THROW( file.load( newDoubleData, 3 ) );
+   ASSERT_NO_THROW( file.load( &newConstDoubleData, 1 ) );
 
    EXPECT_EQ( newIntData, intData );
    for( int i = 0; i < 3; i ++ )
@@ -58,17 +58,17 @@ TEST( FileTest, WriteAndReadWithConversion )
    float floatData[ 3 ];
    int intData[ 3 ];
    File file;
-   file.open( "test-file.tnl", File::Mode::Out | File::Mode::Truncate );
+   ASSERT_NO_THROW( file.open( "test-file.tnl", File::Mode::Out | File::Mode::Truncate ) );
    file.save< double, float, Devices::Host >( doubleData, 3 );
-   file.close();
+   ASSERT_NO_THROW( file.close() );
 
-   file.open( "test-file.tnl", File::Mode::In );
+   ASSERT_NO_THROW( file.open( "test-file.tnl", File::Mode::In ) );
    file.load< float, float, Devices::Host >( floatData, 3 );
-   file.close();
+   ASSERT_NO_THROW( file.close() );
 
-   file.open( "test-file.tnl", File::Mode::In );
+   ASSERT_NO_THROW( file.open( "test-file.tnl", File::Mode::In ) );
    file.load< int, float, Devices::Host >( intData, 3 );
-   file.close();
+   ASSERT_NO_THROW( file.close() );
 
    EXPECT_NEAR( floatData[ 0 ], 3.14159, 0.0001 );
    EXPECT_NEAR( floatData[ 1 ], 2.71828, 0.0001 );
@@ -108,14 +108,14 @@ TEST( FileTest, WriteAndReadCUDA )
                cudaMemcpyHostToDevice );
 
    File file;
-   file.open( String( "test-file.tnl" ), File::Mode::Out );
+   ASSERT_NO_THROW( file.open( String( "test-file.tnl" ), File::Mode::Out ) );
 
    file.save< int, int, Devices::Cuda >( cudaIntData );
    file.save< float, float, Devices::Cuda >( cudaFloatData, 3 );
    file.save< const double, double, Devices::Cuda >( cudaConstDoubleData );
-   file.close();
+   ASSERT_NO_THROW( file.close() );
 
-   file.open( String( "test-file.tnl" ), File::Mode::In );
+   ASSERT_NO_THROW( file.open( String( "test-file.tnl" ), File::Mode::In ) );
    int newIntData;
    float newFloatData[ 3 ];
    double newDoubleData;
@@ -147,7 +147,7 @@ TEST( FileTest, WriteAndReadCUDA )
    EXPECT_EQ( newDoubleData, constDoubleData );
 
    EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
-};
+}
 
 TEST( FileTest, WriteAndReadCUDAWithConversion )
 {
@@ -169,17 +169,17 @@ TEST( FileTest, WriteAndReadCUDAWithConversion )
                cudaMemcpyHostToDevice );
 
    File file;
-   file.open( String( "cuda-test-file.tnl" ), File::Mode::Out | File::Mode::Truncate );
+   ASSERT_NO_THROW( file.open( String( "cuda-test-file.tnl" ), File::Mode::Out | File::Mode::Truncate ) );
    file.save< double, float, Devices::Cuda >( cudaConstDoubleData, 3 );
-   file.close();
+   ASSERT_NO_THROW( file.close() );
 
-   file.open( String( "cuda-test-file.tnl" ), File::Mode::In );
+   ASSERT_NO_THROW( file.open( String( "cuda-test-file.tnl" ), File::Mode::In ) );
    file.load< float, float, Devices::Cuda >( cudaFloatData, 3 );
-   file.close();
+   ASSERT_NO_THROW( file.close() );
 
-   file.open( String( "cuda-test-file.tnl" ), File::Mode::In );
+   ASSERT_NO_THROW( file.open( String( "cuda-test-file.tnl" ), File::Mode::In ) );
    file.load< int, float, Devices::Cuda >( cudaIntData, 3 );
-   file.close();
+   ASSERT_NO_THROW( file.close() );
 
    cudaMemcpy( floatData,
                cudaFloatData,
@@ -200,7 +200,7 @@ TEST( FileTest, WriteAndReadCUDAWithConversion )
    EXPECT_EQ( intData[ 2 ], 1 );
 
    EXPECT_EQ( std::remove( "cuda-test-file.tnl" ), 0 );
-};
+}
 
 #endif
 #endif

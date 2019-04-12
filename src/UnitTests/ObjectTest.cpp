@@ -24,11 +24,11 @@ TEST( ObjectTest, SaveAndLoadTest )
 {
    Object testObject;
    File file;
-   file.open( "test-file.tnl", File::Mode::Out );
-   testObject.save( file );
-   file.close();
-   file.open( "test-file.tnl", File::Mode::In );
-   testObject.load( file );
+   ASSERT_NO_THROW( file.open( "test-file.tnl", File::Mode::Out ) );
+   ASSERT_NO_THROW( testObject.save( file ) );
+   ASSERT_NO_THROW( file.close() );
+   ASSERT_NO_THROW( file.open( "test-file.tnl", File::Mode::In ) );
+   ASSERT_NO_THROW( testObject.load( file ) );
 
    EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
 }
@@ -80,13 +80,13 @@ TEST( HeaderTest, SaveAndLoadTest )
 {
    Object testObject;
    File file;
-   file.open( "test-file.tnl", File::Mode::Out );
-   saveHeader( file, "TYPE" );
-   file.close();
-   file.open( "test-file.tnl", File::Mode::In );
+   ASSERT_NO_THROW( file.open( "test-file.tnl", File::Mode::Out ) );
+   ASSERT_NO_THROW( saveHeader( file, "TYPE" ) );
+   ASSERT_NO_THROW( file.close() );
+   ASSERT_NO_THROW( file.open( "test-file.tnl", File::Mode::In ) );
    String type;
-   loadHeader( file, type );
-   
+   ASSERT_NO_THROW( loadHeader( file, type ) );
+
    EXPECT_EQ( type, "TYPE" );
 
    EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );

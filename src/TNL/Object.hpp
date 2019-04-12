@@ -166,6 +166,4 @@ inline void loadHeader( File& file, String& type )
    file >> type;
 }
 
-
-
 } // namespace TNL

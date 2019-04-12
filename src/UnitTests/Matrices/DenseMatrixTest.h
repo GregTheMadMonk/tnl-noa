@@ -1281,13 +1281,13 @@ void test_SaveAndLoad()
         for( IndexType j = 0; j < cols; j++ )
             savedMatrix.setElement( i, j, value++ );
         
-    savedMatrix.save( "denseMatrixFile" );
+    ASSERT_NO_THROW( savedMatrix.save( "denseMatrixFile" ) );
     
     Matrix loadedMatrix;
     loadedMatrix.reset();
     loadedMatrix.setDimensions( rows, cols );
     
-    loadedMatrix.load( "denseMatrixFile" );
+    ASSERT_NO_THROW( loadedMatrix.load( "denseMatrixFile" ) );
     
     EXPECT_EQ( savedMatrix.getElement( 0, 0 ), loadedMatrix.getElement( 0, 0 ) );
     EXPECT_EQ( savedMatrix.getElement( 0, 1 ), loadedMatrix.getElement( 0, 1 ) );

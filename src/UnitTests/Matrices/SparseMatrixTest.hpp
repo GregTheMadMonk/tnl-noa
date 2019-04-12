@@ -799,7 +799,7 @@ void test_SaveAndLoad()
     for( IndexType i = 1; i < m_cols; i++ )       // 3rd row
         savedMatrix.setElement( 3, i, value++ );
         
-    savedMatrix.save( "sparseMatrixFile" );
+    ASSERT_NO_THROW( savedMatrix.save( "sparseMatrixFile" ) );
     
     Matrix loadedMatrix;
     loadedMatrix.reset();
@@ -810,7 +810,7 @@ void test_SaveAndLoad()
     loadedMatrix.setCompressedRowLengths( rowLengths2 );
     
     
-    loadedMatrix.load( "sparseMatrixFile" );
+    ASSERT_NO_THROW( loadedMatrix.load( "sparseMatrixFile" ) );
     
     
     EXPECT_EQ( savedMatrix.getElement( 0, 0 ), loadedMatrix.getElement( 0, 0 ) );

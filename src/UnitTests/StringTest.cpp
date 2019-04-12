@@ -10,7 +10,7 @@
 
 // Implemented by Nina Dzugasova
 
-#ifdef HAVE_GTEST 
+#ifdef HAVE_GTEST
 #include <gtest/gtest.h>
 #endif
 
@@ -19,7 +19,7 @@
 
 using namespace TNL;
 
-#ifdef HAVE_GTEST 
+#ifdef HAVE_GTEST
 TEST( StringTest, BasicConstructor )
 {
    String str;
@@ -306,10 +306,10 @@ TEST( StringTest, SaveLoad )
 {
    String str1( "testing-string" );
    File file;
-   file.open( "test-file.tnl", File::Mode::Out );
+   ASSERT_NO_THROW( file.open( "test-file.tnl", File::Mode::Out ) );
    ASSERT_NO_THROW( file << str1 );
-   file.close();
-   file.open( "test-file.tnl", File::Mode::In );
+   ASSERT_NO_THROW( file.close() );
+   ASSERT_NO_THROW( file.open( "test-file.tnl", File::Mode::In ) );
    String str2;
    ASSERT_NO_THROW( file >> str2 );
    EXPECT_EQ( str1, str2 );
