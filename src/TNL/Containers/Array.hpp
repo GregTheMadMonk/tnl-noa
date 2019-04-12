@@ -658,8 +658,7 @@ void Array< Value, Device, Index >::save( File& file ) const
 {
    Object::save( file );
    file.save( &this->size );
-   if( this->size != 0 )
-      Algorithms::ArrayIO< Value, Device, Index >::save( file, this->data, this->size );
+   Algorithms::ArrayIO< Value, Device, Index >::save( file, this->data, this->size );
 }
 
 template< typename Value,
@@ -675,8 +674,7 @@ load( File& file )
    if( _size < 0 )
       throw Exceptions::FileDeserializationError( file.getFileName(), "invalid array size: " + std::to_string(_size) );
    setSize( _size );
-   if( _size )
-      Algorithms::ArrayIO< Value, Device, Index >::load( file, this->data, this->size );
+   Algorithms::ArrayIO< Value, Device, Index >::load( file, this->data, this->size );
 }
 
 template< typename Value,
@@ -697,8 +695,7 @@ boundLoad( File& file )
          throw Exceptions::FileDeserializationError( file.getFileName(), "invalid array size: " + std::to_string(_size) + " (expected " + std::to_string( this->getSize() ) + ")." );
    }
    else setSize( _size );
-   if( _size )
-      Algorithms::ArrayIO< Value, Device, Index >::load( file, this->data, this->size );
+   Algorithms::ArrayIO< Value, Device, Index >::load( file, this->data, this->size );
 }
 
 template< typename Value,

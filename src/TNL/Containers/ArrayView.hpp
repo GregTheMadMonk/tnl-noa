@@ -349,8 +349,7 @@ void ArrayView< Value, Device, Index >::save( File& file ) const
 {
    saveHeader( file, SerializationType::getType() );
    file.save( &this->size );
-   if( this->size != 0 )
-      Algorithms::ArrayIO< Value, Device, Index >::save( file, this->data, this->size );
+   Algorithms::ArrayIO< Value, Device, Index >::save( file, this->data, this->size );
 }
 
 template< typename Value,
