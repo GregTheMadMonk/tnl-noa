@@ -21,6 +21,7 @@
 #include <TNL/Exceptions/MICSupportMissing.h>
 #include <TNL/Exceptions/FileSerializationError.h>
 #include <TNL/Exceptions/FileDeserializationError.h>
+#include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
 
@@ -207,10 +208,7 @@ void File::load_impl( Type* buffer, std::streamsize elements )
       free( host_buffer );
    }
    else
-   {
-      std::cerr << "Type conversion during loading is not implemented for MIC." << std::endl;
-      abort();
-   }
+      throw Exceptions::NotImplementedError("Type conversion during loading is not implemented for MIC.");
 #else
    throw Exceptions::MICSupportMissing();
 #endif
@@ -345,10 +343,7 @@ void File::save_impl( const Type* buffer, std::streamsize elements )
       }
    }
    else
-   {
-      std::cerr << "Type conversion during saving is not implemented for MIC." << std::endl;
-      abort();
-   }
+      throw Exceptions::NotImplementedError("Type conversion during saving is not implemented for MIC.");
 #else
    throw Exceptions::MICSupportMissing();
 #endif

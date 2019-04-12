@@ -13,6 +13,7 @@
 #include <TNL/Matrices/Ellpack.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Math.h>
+#include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
 namespace Matrices {   
@@ -533,7 +534,7 @@ void Ellpack< Real, Device, Index > :: addMatrix( const Ellpack< Real2, Device, 
                                                                  const RealType& matrixMultiplicator,
                                                                  const RealType& thisMatrixMultiplicator )
 {
-   TNL_ASSERT( false, std::cerr << "TODO: implement" );
+   throw Exceptions::NotImplementedError( "Ellpack::addMatrix is not implemented." );
    // TODO: implement
 }
 
@@ -545,7 +546,7 @@ template< typename Real,
 void Ellpack< Real, Device, Index >::getTransposition( const Ellpack< Real2, Device, Index2 >& matrix,
                                                                       const RealType& matrixMultiplicator )
 {
-   TNL_ASSERT( false, std::cerr << "TODO: implement" );
+   throw Exceptions::NotImplementedError( "Ellpack::getTransposition is not implemented." );
    // TODO: implement
 }
 

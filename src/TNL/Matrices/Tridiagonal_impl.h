@@ -12,6 +12,7 @@
 
 #include <TNL/Assert.h>
 #include <TNL/Matrices/Tridiagonal.h>
+#include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
 namespace Matrices {   
@@ -402,7 +403,7 @@ const typename Tridiagonal< Real, Device, Index >::MatrixRow
 Tridiagonal< Real, Device, Index >::
 getRow( const IndexType rowIndex ) const
 {
-   TNL_ASSERT( false, );
+   throw Exceptions::NotImplementedError();
 }
 
 
@@ -578,8 +579,7 @@ Tridiagonal< Real, Device, Index >::operator=( const Tridiagonal< Real2, Device2
 
    this->setLike( matrix );
 
-   std::cerr << "Cross-device assignment for the Tridiagonal format is not implemented yet." << std::endl;
-   throw 1;
+   throw Exceptions::NotImplementedError("Cross-device assignment for the Tridiagonal format is not implemented yet.");
 }
 
 

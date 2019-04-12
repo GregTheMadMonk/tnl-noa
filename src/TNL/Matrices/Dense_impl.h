@@ -12,6 +12,7 @@
 
 #include <TNL/Assert.h>
 #include <TNL/Matrices/Dense.h>
+#include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
 namespace Matrices {   
@@ -928,8 +929,7 @@ Dense< Real, Device, Index >::operator=( const Dense< Real2, Device2, Index2 >& 
 
    this->setLike( matrix );
 
-   std::cerr << "Cross-device assignment for the Dense format is not implemented yet." << std::endl;
-   throw 1;
+   throw Exceptions::NotImplementedError("Cross-device assignment for the Dense format is not implemented yet.");
 }
 
 

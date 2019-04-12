@@ -12,6 +12,7 @@
 
 #include <TNL/Matrices/SparseRow.h>
 #include <TNL/ParallelFor.h>
+#include <TNL/Exceptions/NotImplementedError.h>
 
 // Following includes are here to enable usage of std::vector and std::cout. To avoid having to include Device type (HOW would this be done anyway)
 #include <iostream>
@@ -118,7 +119,7 @@ __global__
 void getNonZeroRowLengthCudaKernel( const MatrixRow row, Index* result )
 {
 //    TODO: Fix/Implement
-    TNL_ASSERT( false, std::cerr << "TODO: Fix/Implement" );
+    throw Exceptions::NotImplementedError( "TODO: Fix/Implement" );
 //    int threadId = blockIdx.x * blockDim.x + threadIdx.x;
 //    if( threadId == 0 )
 //    {
@@ -134,8 +135,7 @@ SparseRow< Real, Index >::
 getNonZeroElementsCount() const
 {
 //    TODO: Fix/Implement
-    TNL_ASSERT( false, std::cerr << "TODO: Fix/Implement" );
-    return 0;
+    throw Exceptions::NotImplementedError( "TODO: Fix/Implement" );
 //    using NonConstIndex = typename std::remove_const< Index >::type;
 //    
 //    NonConstIndex elementCount ( 0 );

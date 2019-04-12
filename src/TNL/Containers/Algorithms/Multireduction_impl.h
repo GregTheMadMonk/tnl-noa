@@ -18,6 +18,7 @@
 
 #include <TNL/Assert.h>
 #include <TNL/Exceptions/CudaSupportMissing.h>
+#include <TNL/Exceptions/NotImplementedError.h>
 #include <TNL/Containers/Algorithms/ReductionOperations.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Algorithms/CudaMultireductionKernel.h>
@@ -318,10 +319,7 @@ reduce( Operation& operation,
         const typename Operation::DataType2* input2,
         typename Operation::ResultType* result )
 {
-   TNL_ASSERT( n > 0, );
-   TNL_ASSERT( size <= ldInput1, );
-
-   throw std::runtime_error("Not Implemented yet Multireduction< Devices::MIC >::reduce");
+   throw Exceptions::NotImplementedError("Multireduction is not implemented for MIC.");
 }
 
 } // namespace Algorithms

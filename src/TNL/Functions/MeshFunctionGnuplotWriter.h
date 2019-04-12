@@ -11,6 +11,7 @@
 #pragma once
 
 #include <TNL/Meshes/Grid.h>
+#include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
 
@@ -47,7 +48,7 @@ class MeshFunctionGnuplotWriterBase
       {
          static int get( const TNL::Meshes::MeshEntity< MeshConfig, Device, Topology >& entity )
          {
-            throw "not implemented";
+            throw Exceptions::NotImplementedError();
          }
       };
 
@@ -56,7 +57,7 @@ class MeshFunctionGnuplotWriterBase
       {
          static int get( const TNL::Meshes::MeshEntity< MeshConfig, Device, Topology >& entity )
          {
-            throw "not implemented";
+            throw Exceptions::NotImplementedError();
          }
       };
 };

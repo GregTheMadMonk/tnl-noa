@@ -11,6 +11,7 @@
 #pragma once
 
 #include "Sparse.h"
+#include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
 namespace Matrices {
@@ -126,7 +127,7 @@ template< typename Real,
           typename Index >
 void Sparse< Real, Device, Index >::printStructure( std::ostream& str ) const
 {
-   TNL_ASSERT_TRUE( false, "Not implemented yet." );
+   throw Exceptions::NotImplementedError("Sparse::printStructure is not implemented yet.");
 }
 
 } // namespace Matrices

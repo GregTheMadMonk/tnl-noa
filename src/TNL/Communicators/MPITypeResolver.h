@@ -19,6 +19,11 @@ struct MPITypeResolver
 {
    static inline MPI_Datatype getType()
    {
+      static_assert( sizeof(Type) == sizeof(char) ||
+                     sizeof(Type) == sizeof(int) ||
+                     sizeof(Type) == sizeof(short int) ||
+                     sizeof(Type) == sizeof(long int),
+                     "Fatal Error - Unknown MPI Type");
       switch( sizeof( Type ) )
       {
          case sizeof( char ):
@@ -30,7 +35,6 @@ struct MPITypeResolver
          case sizeof( long int ):
             return MPI_LONG;
       }
-      TNL_ASSERT_TRUE(false, "Fatal Error - Unknown MPI Type");
    };
 };
 

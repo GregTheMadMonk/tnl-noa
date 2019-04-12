@@ -52,7 +52,7 @@ public:
 
    virtual void solve( ConstVectorViewType b, VectorViewType x ) const
    {
-      TNL_ASSERT_TRUE( false, "The solve() method of a dummy preconditioner should not be called." );
+      throw std::logic_error("The solve() method of a dummy preconditioner should not be called.");
    }
 
    String getType() const

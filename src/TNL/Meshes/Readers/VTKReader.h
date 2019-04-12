@@ -17,6 +17,7 @@
 
 #include <TNL/Meshes/MeshBuilder.h>
 #include <TNL/Meshes/Readers/EntityShape.h>
+#include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
 namespace Meshes {
@@ -46,8 +47,7 @@ public:
 
       // TODO: implement binary parsing
       if( dataType == "BINARY" ) {
-         std::cerr << "VTKReader: parsing of BINARY data is not implemented yet." << std::endl;
-         return false;
+         throw Exceptions::NotImplementedError("VTKReader: parsing of BINARY data is not implemented yet.");
       }
 
       std::string line, aux;
@@ -176,8 +176,7 @@ public:
 
       // TODO: implement binary parsing
       if( dataType == "BINARY" ) {
-         std::cerr << "VTKReader: parsing of BINARY data is not implemented yet." << std::endl;
-         return false;
+         throw Exceptions::NotImplementedError("VTKReader: parsing of BINARY data is not implemented yet.");
       }
 
       std::string line, aux;
