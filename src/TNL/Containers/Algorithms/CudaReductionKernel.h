@@ -72,7 +72,7 @@ CudaReductionKernel( const Result zero,
     * Read data into the shared memory. We start with the
     * sequential reduction.
     */
-   /*while( gid + 4 * gridSize < size )
+   while( gid + 4 * gridSize < size )
    {
       sdata[ tid ] = reduction( sdata[ tid ], dataFetcher( gid ) );
       sdata[ tid ] = reduction( sdata[ tid ], dataFetcher( gid + gridSize ) );
@@ -85,14 +85,14 @@ CudaReductionKernel( const Result zero,
       sdata[ tid ] = reduction( sdata[ tid ], dataFetcher( gid ) );
       sdata[ tid ] = reduction( sdata[ tid ], dataFetcher( gid + gridSize ) );
       gid += 2 * gridSize;
-   }*/
+   }
    while( gid < size )
    {
-      sdata[ tid ] = dataFetcher( gid ); //reduction( sdata[ tid ], dataFetcher( gid ) );
+      sdata[ tid ] = reduction( sdata[ tid ], dataFetcher( gid ) );
       gid += gridSize;
    }
    __syncthreads();
-   return;
+
    //printf( "1: tid %d data %f \n", tid, sdata[ tid ] );
 
    //return;

@@ -110,9 +110,9 @@ Reduction< Devices::Cuda >::
        * Transfer the reduced data from device to host.
        */
       //ResultType* resultArray[ reducedSize ];
-      //std::unique_ptr< ResultType[] > resultArray{ new ResultType[ reducedSize ] };
-      ResultType* resultArray = new ResultType[ reducedSize ];
-      ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( resultArray, deviceAux1, reducedSize );
+      std::unique_ptr< ResultType[] > resultArray{ new ResultType[ reducedSize ] };
+      //ResultType* resultArray = new ResultType[ reducedSize ];
+      ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( resultArray.get(), deviceAux1, reducedSize );
 
       #ifdef CUDA_REDUCTION_PROFILING
          timer.stop();
@@ -132,7 +132,7 @@ Reduction< Devices::Cuda >::
          std::cout << "   Reduction of small data set on CPU took " << timer.getRealTime() << " sec. " << std::endl;
       #endif
       
-      delete[] resultArray;
+      //delete[] resultArray;
       return result;
    }
    else {

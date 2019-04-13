@@ -193,7 +193,6 @@ copySTLList( DestinationElement* destination,
       copiedElements += copySize;
    }
 }
-
 template< typename Element1,
           typename Element2,
           typename Index >
@@ -206,9 +205,7 @@ compareMemory( const Element1* destination,
    TNL_ASSERT_TRUE( destination, "Attempted to compare data through a nullptr." );
    TNL_ASSERT_TRUE( source, "Attempted to compare data through a nullptr." );
 
-   Element1* d;
-   cudaMalloc( ( void** ) &d, size * sizeof( Element1 ) );
-   auto fetch = [=] __cuda_callable__ ( Index i ) { return  d[ 0 ]; }; //( destination[ i ] == source[ i ] ); };
+   auto fetch = [=] __cuda_callable__ ( Index i ) { return  ( destination[ i ] == source[ i ] ); };
    auto reduction = [=] __cuda_callable__ ( const bool a, const bool b ) { return a && b; };
    return Reduction< Devices::Cuda >::reduce(
       size,
