@@ -143,7 +143,7 @@ public:
    {
       SubentityStorageBaseType::save( file );
       SuperentityStorageBaseType::save( file );
-      this->entities.save( file );
+      file << this->entities;
       BaseType::save( file );
    }
 
@@ -151,7 +151,7 @@ public:
    {
       SubentityStorageBaseType::load( file );
       SuperentityStorageBaseType::load( file );
-      this->entities.load( file );
+      file >> this->entities;
       BaseType::load( file );
    }
 

@@ -170,12 +170,12 @@ public:
 
    void save( File& file ) const
    {
-      boundaryTags.save( file );
+      file << boundaryTags;
    }
 
    void load( File& file )
    {
-      boundaryTags.load( file );
+      file >> boundaryTags;
       updateBoundaryIndices( DimensionTag() );
    }
 

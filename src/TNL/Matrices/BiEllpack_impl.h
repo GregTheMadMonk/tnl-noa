@@ -684,8 +684,7 @@ template< typename Real,
 void BiEllpack< Real, Device, Index, StripSize >::save( File& file ) const
 {
    Sparse< Real, Device, Index >::save( file );
-   this->groupPointers.save( file );
-   this->rowPermArray.save( file );
+   file << this->groupPointers << this->rowPermArray;
 }
 
 template< typename Real,
@@ -695,8 +694,7 @@ template< typename Real,
 void BiEllpack< Real, Device, Index, StripSize >::load( File& file )
 {
    Sparse< Real, Device, Index >::load( file );
-   this->groupPointers.load( file );
-   this->rowPermArray.load( file );
+   file >> this->groupPointers >> this->rowPermArray;
 }
 
 template< typename Real,

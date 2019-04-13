@@ -25,6 +25,11 @@
 
 namespace TNL {
 
+inline File::File( const String& fileName, std::ios_base::openmode mode )
+{
+   open( fileName, mode );
+}
+
 inline void File::open( const String& fileName, std::ios_base::openmode mode )
 {
    // enable exceptions

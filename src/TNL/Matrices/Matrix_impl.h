@@ -147,7 +147,7 @@ void Matrix< Real, Device, Index >::save( File& file ) const
    Object::save( file );
    file.save( &this->rows );
    file.save( &this->columns );
-   this->values.save( file );
+   file << this->values;
 }
 
 template< typename Real,
@@ -158,7 +158,7 @@ void Matrix< Real, Device, Index >::load( File& file )
    Object::load( file );
    file.load( &this->rows );
    file.load( &this->columns );
-   this->values.load( file );
+   file >> this->values;
 }
 
 template< typename Real,

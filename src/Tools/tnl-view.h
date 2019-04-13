@@ -257,7 +257,7 @@ bool convertObject( const MeshPointer& meshPointer,
       // FIXME: why is MeshType::GlobalIndexType not the same as Index?
 //      Containers::Vector< Value, Devices::Host, Index > vector;
       Containers::Vector< Value, Devices::Host, typename MeshType::GlobalIndexType > vector;
-      vector.load( inputFileName );
+      File( inputFileName, std::ios_base::in ) >> vector;
       Functions::MeshFunction< MeshType, MeshType::getMeshDimension(), Value > mf;
       mf.bind( meshPointer, vector );
       mf.write( outputFileName, outputFormat );

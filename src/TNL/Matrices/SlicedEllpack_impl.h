@@ -708,8 +708,7 @@ template< typename Real,
 void SlicedEllpack< Real, Device, Index, SliceSize >::save( File& file ) const
 {
    Sparse< Real, Device, Index >::save( file );
-   this->slicePointers.save( file );
-   this->sliceCompressedRowLengths.save( file );
+   file << this->slicePointers << this->sliceCompressedRowLengths;
 }
 
 template< typename Real,
@@ -719,8 +718,7 @@ template< typename Real,
 void SlicedEllpack< Real, Device, Index, SliceSize >::load( File& file )
 {
    Sparse< Real, Device, Index >::load( file );
-   this->slicePointers.load( file );
-   this->sliceCompressedRowLengths.load( file );
+   file >> this->slicePointers >> this->sliceCompressedRowLengths;
 }
 
 template< typename Real,

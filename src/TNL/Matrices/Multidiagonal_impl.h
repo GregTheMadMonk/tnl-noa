@@ -653,8 +653,7 @@ template< typename Real,
 void Multidiagonal< Real, Device, Index >::save( File& file ) const
 {
    Matrix< Real, Device, Index >::save( file );
-   this->values.save( file );
-   this->diagonalsShift.save( file );
+   file << this->values << this->diagonalsShift;
 }
 
 template< typename Real,
@@ -663,8 +662,7 @@ template< typename Real,
 void Multidiagonal< Real, Device, Index >::load( File& file )
 {
    Matrix< Real, Device, Index >::load( file );
-   this->values.load( file );
-   this->diagonalsShift.load( file );
+   file >> this->values >> this->diagonalsShift;
 }
 
 template< typename Real,

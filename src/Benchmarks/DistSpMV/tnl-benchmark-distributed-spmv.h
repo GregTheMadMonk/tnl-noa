@@ -164,7 +164,7 @@ struct SpmvBenchmark
       MatrixType matrix;
       VectorType vector;
       matrix.load( parameters.getParameter< String >( "input-matrix" ) );
-      vector.load( parameters.getParameter< String >( "input-vector" ) );
+      File( parameters.getParameter< String >( "input-vector" ), std::ios_base::in ) >> vector;
 
       typename MatrixType::CompressedRowLengthsVector rowLengths;
       matrix.getCompressedRowLengths( rowLengths );

@@ -19,7 +19,7 @@
 #pragma once
 
 namespace TNL {
-   namespace Functions {
+namespace Functions {
 
 template< typename Mesh,
           int MeshEntityDimension,
@@ -472,7 +472,7 @@ save( File& file ) const
    TNL_ASSERT_EQ( this->data.getSize(), this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(),
                   "Size of the mesh function data does not match the mesh." );
    Object::save( file );
-   this->data.save( file );
+   file << this->data;
 }
 
 template< typename Mesh,
@@ -483,7 +483,7 @@ MeshFunction< Mesh, MeshEntityDimension, Real >::
 load( File& file )
 {
    Object::load( file );
-   this->data.load( file );
+   file >> this->data;
    const IndexType meshSize = this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >();
    if( this->data.getSize() != meshSize )
       throw Exceptions::FileDeserializationError( file.getFileName(), "mesh function data size does not match the mesh size (expected " + std::to_string(meshSize) + ", got " + std::to_string(this->data.getSize()) + ")." );
@@ -497,7 +497,7 @@ MeshFunction< Mesh, MeshEntityDimension, Real >::
 boundLoad( File& file )
 {
    Object::load( file );
-   this->data.getView().load( file );
+   file >> this->data.getView();
 }
 
 template< typename Mesh,
@@ -577,6 +577,5 @@ operator << ( std::ostream& str, const MeshFunction< Mesh, MeshEntityDimension, 
    return str;
 }
 
-   } // namespace Functions
+} // namespace Functions
 } // namespace TNL
-

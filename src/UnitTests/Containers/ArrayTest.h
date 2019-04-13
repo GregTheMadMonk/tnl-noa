@@ -478,12 +478,8 @@ TYPED_TEST( ArrayTest, SaveAndLoad )
    v.setSize( 100 );
    for( int i = 0; i < 100; i ++ )
       v.setElement( i, 3.14147 );
-   File file;
-   ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::out ) );
-   ASSERT_NO_THROW( v.save( file ) );
-   ASSERT_NO_THROW( file.close() );
-   ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::in ) );
-   ASSERT_NO_THROW( u.load( file ) );
+   ASSERT_NO_THROW( File( "test-file.tnl", std::ios_base::out ) << v );
+   ASSERT_NO_THROW( File( "test-file.tnl", std::ios_base::in ) >> u );
    EXPECT_EQ( u, v );
 
    EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
@@ -497,21 +493,18 @@ TYPED_TEST( ArrayTest, LoadViaView )
    v.setSize( 100 );
    for( int i = 0; i < 100; i ++ )
       v.setElement( i, 3.14147 );
-   File file;
-   ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::out ) );
-   ASSERT_NO_THROW( v.save( file ) );
-   ASSERT_NO_THROW( file.close() );
+   ASSERT_NO_THROW( File( "test-file.tnl", std::ios_base::out ) << v );
 
    w.setSize( 100 );
    auto u = w.getView();
-   ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::in ) );
-   ASSERT_NO_THROW( u.load( file ) );
+   ASSERT_NO_THROW( File( "test-file.tnl", std::ios_base::in ) >> u );
    EXPECT_EQ( u, v );
    EXPECT_EQ( u.getData(), w.getData() );
 
    ArrayType z( 50 );
+   File file;
    ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::in ) );
-   EXPECT_ANY_THROW( z.getView().load( file ) );
+   EXPECT_THROW( file >> z.getView(), Exceptions::FileDeserializationError );
 
    EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
 }

@@ -13,13 +13,13 @@
 #include <TNL/File.h>
 #include <TNL/Containers/Array.h>
 
-#ifdef HAVE_GTEST 
+#ifdef HAVE_GTEST
 #include <gtest/gtest.h>
 #endif
 
 using namespace TNL;
 
-#ifdef HAVE_GTEST 
+#ifdef HAVE_GTEST
 TEST( ObjectTest, SaveAndLoadTest )
 {
    Object testObject;
@@ -81,12 +81,11 @@ TEST( HeaderTest, SaveAndLoadTest )
    Object testObject;
    File file;
    ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::out ) );
-   ASSERT_NO_THROW( saveHeader( file, "TYPE" ) );
+   ASSERT_NO_THROW( saveObjectType( file, "TYPE" ) );
    ASSERT_NO_THROW( file.close() );
    ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::in ) );
    String type;
-   ASSERT_NO_THROW( loadHeader( file, type ) );
-
+   ASSERT_NO_THROW( type = getObjectType( file ) );
    EXPECT_EQ( type, "TYPE" );
 
    EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );

@@ -13,7 +13,7 @@
 #include <list>
 #include <vector>
 
-#include <TNL/Object.h>
+#include <TNL/File.h>
 #include <TNL/Containers/ArrayView.h>
 
 namespace TNL {
@@ -60,7 +60,7 @@ template< int, typename > class StaticArray;
 template< typename Value,
           typename Device = Devices::Host,
           typename Index = int >
-class Array : public Object
+class Array
 {
    public:
 
@@ -523,24 +523,6 @@ class Array : public Object
       __cuda_callable__
       bool empty() const;
 
-      /**
-       * \brief Method for saving the object to a \e file as a binary data.
-       *
-       * \param file Reference to a file.
-       */
-      void save( File& file ) const;
-
-      /**
-       * Method for loading the object from a file as a binary data.
-       *
-       * \param file Reference to a file.
-       */
-      void load( File& file );
-
-      using Object::save;
-
-      using Object::load;
-
       /** \brief Basic destructor. */
       ~Array();
 
@@ -576,7 +558,25 @@ class Array : public Object
 };
 
 template< typename Value, typename Device, typename Index >
-std::ostream& operator<<( std::ostream& str, const Array< Value, Device, Index >& v );
+std::ostream& operator<<( std::ostream& str, const Array< Value, Device, Index >& array );
+
+/**
+ * \brief Serialization of arrays into binary files.
+ */
+template< typename Value, typename Device, typename Index >
+File& operator<<( File& file, const Array< Value, Device, Index >& array );
+
+template< typename Value, typename Device, typename Index >
+File& operator<<( File&& file, const Array< Value, Device, Index >& array );
+
+/**
+ * \brief Deserialization of arrays from binary files.
+ */
+template< typename Value, typename Device, typename Index >
+File& operator>>( File& file, Array< Value, Device, Index >& array );
+
+template< typename Value, typename Device, typename Index >
+File& operator>>( File&& file, Array< Value, Device, Index >& array );
 
 } // namespace Containers
 } // namespace TNL

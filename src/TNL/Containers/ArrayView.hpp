@@ -37,6 +37,16 @@ getType()
                   TNL::getType< Index >() + " >";
 }
 
+template< typename Value,
+          typename Device,
+          typename Index >
+String
+ArrayView< Value, Device, Index >::
+getSerializationType()
+{
+   return SerializationType::getSerializationType();
+}
+
 // explicit initialization by raw data pointer and size
 template< typename Value,
           typename Device,
@@ -342,70 +352,58 @@ empty() const
    return ( data == nullptr );
 }
 
-template< typename Value,
-          typename Device,
-          typename Index >
-void ArrayView< Value, Device, Index >::save( File& file ) const
-{
-   saveHeader( file, SerializationType::getType() );
-   file.save( &this->size );
-   Algorithms::ArrayIO< Value, Device, Index >::save( file, this->data, this->size );
-}
-
-template< typename Value,
-          typename Device,
-          typename Index >
-void
-ArrayView< Value, Device, Index >::
-load( File& file )
-{
-   String type;
-   loadHeader( file, type );
-   if( type != SerializationType::getType() )
-      throw Exceptions::FileDeserializationError( file.getFileName(), "invalid object type: " + type + " (expected " + SerializationType::getType() + ")." );
-   Index _size;
-   file.load( &_size );
-   if( _size != this->getSize() )
-      throw Exceptions::FileDeserializationError( file.getFileName(), "invalid array size: " + std::to_string(_size) + " (expected " + std::to_string( this->getSize() ) + ")." );
-   Algorithms::ArrayIO< Value, Device, Index >::load( file, this->data, this->size );
-}
-
-template< typename Value,
-          typename Device,
-          typename Index >
-void
-ArrayView< Value, Device, Index >::
-save( const String& fileName ) const
-{
-   File file;
-   file.open( fileName, std::ios_base::out );
-   this->save( file );
-}
-
-template< typename Value,
-          typename Device,
-          typename Index >
-void
-ArrayView< Value, Device, Index >::
-load( const String& fileName )
-{
-   File file;
-   file.open( fileName, std::ios_base::in );
-   this->load( file );
-}
-
 template< typename Value, typename Device, typename Index >
-std::ostream& operator<<( std::ostream& str, const ArrayView< Value, Device, Index >& v )
+std::ostream& operator<<( std::ostream& str, const ArrayView< Value, Device, Index >& view )
 {
    str << "[ ";
-   if( v.getSize() > 0 )
+   if( view.getSize() > 0 )
    {
-      str << v.getElement( 0 );
-      for( Index i = 1; i < v.getSize(); i++ )
-         str << ", " << v.getElement( i );
+      str << view.getElement( 0 );
+      for( Index i = 1; i < view.getSize(); i++ )
+         str << ", " << view.getElement( i );
    }
    str << " ]";
    return str;
+}
+
+// Serialization of array views into binary files.
+template< typename Value, typename Device, typename Index >
+File& operator<<( File& file, const ArrayView< Value, Device, Index > view )
+{
+   saveObjectType( file, view.getSerializationType() );
+   const Index size = view.getSize();
+   file.save( &size );
+   Algorithms::ArrayIO< Value, Device, Index >::save( file, view.getData(), view.getSize() );
+   return file;
+}
+
+template< typename Value, typename Device, typename Index >
+File& operator<<( File&& file, const ArrayView< Value, Device, Index > view )
+{
+   File& f = file;
+   return f << view;
+}
+
+// Deserialization of array views from binary files.
+template< typename Value, typename Device, typename Index >
+File& operator>>( File& file, ArrayView< Value, Device, Index > view )
+{
+   const String type = getObjectType( file );
+   if( type != view.getSerializationType() )
+      throw Exceptions::FileDeserializationError( file.getFileName(), "object type does not match (expected " + view.getSerializationType() + ", found " + type + ")." );
+   Index _size;
+   file.load( &_size );
+   if( _size != view.getSize() )
+      throw Exceptions::FileDeserializationError( file.getFileName(), "invalid array size: " + std::to_string(_size) + " (expected " + std::to_string( view.getSize() ) + ")." );
+   Algorithms::ArrayIO< Value, Device, Index >::load( file, view.getData(), view.getSize() );
+   return file;
+}
+
+template< typename Value, typename Device, typename Index >
+File& operator>>( File&& file, ArrayView< Value, Device, Index > view )
+{
+   File& f = file;
+   return f >> view;
 }
 
 } // namespace Containers

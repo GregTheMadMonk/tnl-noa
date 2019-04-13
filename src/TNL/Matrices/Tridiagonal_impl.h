@@ -586,45 +586,35 @@ Tridiagonal< Real, Device, Index >::operator=( const Tridiagonal< Real2, Device2
 template< typename Real,
           typename Device,
           typename Index >
-bool Tridiagonal< Real, Device, Index >::save( File& file ) const
+void Tridiagonal< Real, Device, Index >::save( File& file ) const
 {
-   if( ! Matrix< Real, Device, Index >::save( file ) ||
-       ! this->values.save( file ) )
-   {
-      std::cerr << "Unable to save a tridiagonal matrix." << std::endl;
-      return false;
-   }
-   return true;
+   Matrix< Real, Device, Index >::save( file );
+   file << this->values;
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool Tridiagonal< Real, Device, Index >::load( File& file )
+void Tridiagonal< Real, Device, Index >::load( File& file )
 {
-   if( ! Matrix< Real, Device, Index >::load( file ) ||
-       ! this->values.load( file ) )
-   {
-      std::cerr << "Unable to save a tridiagonal matrix." << std::endl;
-      return false;
-   }
-   return true;
+   Matrix< Real, Device, Index >::load( file );
+   file >> this->values;
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool Tridiagonal< Real, Device, Index >::save( const String& fileName ) const
+void Tridiagonal< Real, Device, Index >::save( const String& fileName ) const
 {
-   return Object::save( fileName );
+   Object::save( fileName );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool Tridiagonal< Real, Device, Index >::load( const String& fileName )
+void Tridiagonal< Real, Device, Index >::load( const String& fileName )
 {
-   return Object::load( fileName );
+   Object::load( fileName );
 }
 
 template< typename Real,

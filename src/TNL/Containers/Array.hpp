@@ -654,32 +654,6 @@ empty() const
 template< typename Value,
           typename Device,
           typename Index >
-void Array< Value, Device, Index >::save( File& file ) const
-{
-   Object::save( file );
-   file.save( &this->size );
-   Algorithms::ArrayIO< Value, Device, Index >::save( file, this->data, this->size );
-}
-
-template< typename Value,
-          typename Device,
-          typename Index >
-void
-Array< Value, Device, Index >::
-load( File& file )
-{
-   Object::load( file );
-   Index _size;
-   file.load( &_size );
-   if( _size < 0 )
-      throw Exceptions::FileDeserializationError( file.getFileName(), "invalid array size: " + std::to_string(_size) );
-   setSize( _size );
-   Algorithms::ArrayIO< Value, Device, Index >::load( file, this->data, this->size );
-}
-
-template< typename Value,
-          typename Device,
-          typename Index >
 Array< Value, Device, Index >::
 ~Array()
 {
@@ -687,17 +661,58 @@ Array< Value, Device, Index >::
 }
 
 template< typename Value, typename Device, typename Index >
-std::ostream& operator<<( std::ostream& str, const Array< Value, Device, Index >& v )
+std::ostream& operator<<( std::ostream& str, const Array< Value, Device, Index >& array )
 {
    str << "[ ";
-   if( v.getSize() > 0 )
+   if( array.getSize() > 0 )
    {
-      str << v.getElement( 0 );
-      for( Index i = 1; i < v.getSize(); i++ )
-         str << ", " << v.getElement( i );
+      str << array.getElement( 0 );
+      for( Index i = 1; i < array.getSize(); i++ )
+         str << ", " << array.getElement( i );
    }
    str << " ]";
    return str;
+}
+
+// Serialization of arrays into binary files.
+template< typename Value, typename Device, typename Index >
+File& operator<<( File& file, const Array< Value, Device, Index >& array )
+{
+   saveObjectType( file, array.getSerializationType() );
+   const Index size = array.getSize();
+   file.save( &size );
+   Algorithms::ArrayIO< Value, Device, Index >::save( file, array.getData(), array.getSize() );
+   return file;
+}
+
+template< typename Value, typename Device, typename Index >
+File& operator<<( File&& file, const Array< Value, Device, Index >& array )
+{
+   File& f = file;
+   return f << array;
+}
+
+// Deserialization of arrays from binary files.
+template< typename Value, typename Device, typename Index >
+File& operator>>( File& file, Array< Value, Device, Index >& array )
+{
+   const String type = getObjectType( file );
+   if( type != array.getSerializationType() )
+      throw Exceptions::FileDeserializationError( file.getFileName(), "object type does not match (expected " + array.getSerializationType() + ", found " + type + ")." );
+   Index _size;
+   file.load( &_size );
+   if( _size < 0 )
+      throw Exceptions::FileDeserializationError( file.getFileName(), "invalid array size: " + std::to_string(_size) );
+   array.setSize( _size );
+   Algorithms::ArrayIO< Value, Device, Index >::load( file, array.getData(), array.getSize() );
+   return file;
+}
+
+template< typename Value, typename Device, typename Index >
+File& operator>>( File&& file, Array< Value, Device, Index >& array )
+{
+   File& f = file;
+   return f >> array;
 }
 
 } // namespace Containers

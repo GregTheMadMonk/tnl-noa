@@ -168,9 +168,15 @@ String getObjectType( const String& fileName );
 std::vector< String >
 parseObjectType( const String& objectType );
 
-inline void saveHeader( File& file, const String& type );
-
-inline void loadHeader( File& file, String& type );
+/**
+ * \brief Saves object type into a binary file.
+ *
+ * Throws \ref Exceptions::FileDeserializationError if the object type cannot be detected.
+ *
+ * @param file is the file where the object will be saved
+ * @param type is the object type to be saved
+ */
+void saveObjectType( File& file, const String& type );
 
 } // namespace TNL
 

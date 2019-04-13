@@ -1287,10 +1287,7 @@ template< typename Real,
 void ChunkedEllpack< Real, Device, Index >::save( File& file ) const
 {
    Sparse< Real, Device, Index >::save( file );
-   this->rowToChunkMapping.save( file );
-   this->rowToSliceMapping.save( file );
-   this->rowPointers.save( file );
-   this->slices.save( file );
+   file << this->rowToChunkMapping << this->rowToSliceMapping << this->rowPointers << this->slices;
 }
 
 template< typename Real,
@@ -1299,10 +1296,7 @@ template< typename Real,
 void ChunkedEllpack< Real, Device, Index >::load( File& file )
 {
    Sparse< Real, Device, Index >::load( file );
-   this->rowToChunkMapping.load( file );
-   this->rowToSliceMapping.load( file );
-   this->rowPointers.load( file );
-   this->slices.load( file );
+   file >> this->rowToChunkMapping >> this->rowToSliceMapping >> this->rowPointers >> this->slices;
 }
 
 template< typename Real,

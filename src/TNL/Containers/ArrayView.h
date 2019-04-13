@@ -82,6 +82,13 @@ public:
    static String getType();
 
    /**
+    *  \brief Returns type of array view for serialization.
+    *
+    * \return String with serialization array type.
+    */
+   static String getSerializationType();
+
+   /**
     * \brief Basic constructor for empty ArrayView.
     *
     * This method can be called from device kernels.
@@ -414,35 +421,6 @@ public:
    __cuda_callable__
    bool empty() const;
 
-   /**
-    * \brief Method for saving the object to a \e file as a binary data.
-    *
-    * \param file Reference to a file.
-    */
-   void save( File& file ) const;
-
-   /**
-    * Method for loading the object from a file as a binary data.
-    *
-    * \param file Reference to a file.
-    */
-   void load( File& file );
-
-   /**
-    * \brief Method for saving the array view to a file as a binary data.
-    *
-    * \param fileName String defining the name of a file.
-    */
-   void save( const String& fileName ) const;
-
-   /**
-    * \brief Method for restoring the array view from a file.
-    *
-    * \param fileName String defining the name of a file.
-    */
-   void load( const String& fileName );
-
-
 protected:
    //! Pointer to allocated data
    Value* data = nullptr;
@@ -452,7 +430,25 @@ protected:
 };
 
 template< typename Value, typename Device, typename Index >
-std::ostream& operator<<( std::ostream& str, const ArrayView< Value, Device, Index >& v );
+std::ostream& operator<<( std::ostream& str, const ArrayView< Value, Device, Index >& view );
+
+/**
+ * \brief Serialization of array views into binary files.
+ */
+template< typename Value, typename Device, typename Index >
+File& operator<<( File& file, const ArrayView< Value, Device, Index > view );
+
+template< typename Value, typename Device, typename Index >
+File& operator<<( File&& file, const ArrayView< Value, Device, Index > view );
+
+/**
+ * \brief Deserialization of array views from binary files.
+ */
+template< typename Value, typename Device, typename Index >
+File& operator>>( File& file, ArrayView< Value, Device, Index > view );
+
+template< typename Value, typename Device, typename Index >
+File& operator>>( File&& file, ArrayView< Value, Device, Index > view );
 
 } // namespace Containers
 } // namespace TNL

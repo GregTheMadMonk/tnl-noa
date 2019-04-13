@@ -618,7 +618,7 @@ template< typename Real,
 void CSR< Real, Device, Index >::save( File& file ) const
 {
    Sparse< Real, Device, Index >::save( file );
-   this->rowPointers.save( file );
+   file << this->rowPointers;
 }
 
 template< typename Real,
@@ -627,7 +627,7 @@ template< typename Real,
 void CSR< Real, Device, Index >::load( File& file )
 {
    Sparse< Real, Device, Index >::load( file );
-   this->rowPointers.load( file );
+   file >> this->rowPointers;
 }
 
 template< typename Real,

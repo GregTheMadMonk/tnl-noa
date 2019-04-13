@@ -363,8 +363,8 @@ bool computeDifferenceOfVectors( const MeshPointer& meshPointer, const Config::P
          }
          if( verbose )
            std::cout << "Processing files " << inputFiles[ i ] << " and " << inputFiles[ i + 1 ] << "...           \r" << std::flush;
-         v1.load( inputFiles[ i ] );
-         v2.load( inputFiles[ i + 1 ] );
+         File( inputFiles[ i ], std::ios_base::in ) >> v1;
+         File( inputFiles[ i + 1 ], std::ios_base::in ) >> v2;
          outputFile << std::setw( 6 ) << i/2 * snapshotPeriod << " ";
          i++;
       }
@@ -374,11 +374,11 @@ bool computeDifferenceOfVectors( const MeshPointer& meshPointer, const Config::P
          {
             if( verbose )
               std::cout << "Reading the file " << inputFiles[ 0 ] << "...               \r" << std::flush;
-            v1.load( inputFiles[ 0 ] );
+            File( inputFiles[ 0 ], std::ios_base::in ) >> v1;
          }
          if( verbose )
            std::cout << "Processing the files " << inputFiles[ 0 ] << " and " << inputFiles[ i ] << "...             \r" << std::flush;
-         v2.load( inputFiles[ i ] );
+         File( inputFiles[ i ], std::ios_base::in ) >> v2;
          outputFile << std::setw( 6 ) << ( i - 1 ) * snapshotPeriod << " ";
       }
       if( mode == "halves" )
@@ -388,8 +388,8 @@ bool computeDifferenceOfVectors( const MeshPointer& meshPointer, const Config::P
             i = half;
          if( verbose )
            std::cout << "Processing files " << inputFiles[ i - half ] << " and " << inputFiles[ i ] << "...                 \r" << std::flush;
-         v1.load( inputFiles[ i - half ] );
-         v2.load( inputFiles[ i ] );
+         File( inputFiles[ i - half ], std::ios_base::in ) >> v1;
+         File( inputFiles[ i ], std::ios_base::in ) >> v2;
          //if( snapshotPeriod != 0.0 )
          outputFile << std::setw( 6 ) << ( i - half ) * snapshotPeriod << " ";
       }
@@ -421,7 +421,7 @@ bool computeDifferenceOfVectors( const MeshPointer& meshPointer, const Config::P
          diff.setLike( v1 );
          diff = v1;
          diff -= v2;
-         diff.save( differenceFileName );
+         File( differenceFileName, std::ios_base::out ) << diff;
       }
    }
    outputFile.close();

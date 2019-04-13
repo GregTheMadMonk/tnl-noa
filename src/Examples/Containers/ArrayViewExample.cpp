@@ -57,10 +57,11 @@ void arrayViewExample()
    a1.swap( a3 );
 
    /***
-    * Of course, you may save it to file and load again
+    * You may save it to file and load again
     */
-   a1.save( "a1.tnl" );
-   a2.load( "a1.tnl" );
+   File( "a1.tnl", std::ios_base::out ) << a1;
+   File( "a1.tnl", std::ios_base::in ) >> a2;
+
    std::remove( "a1.tnl" );
 
    if( a2 != a1 )

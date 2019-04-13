@@ -245,8 +245,7 @@ save( File& file ) const
    Object::save( file );
    file.save( &this->keysRange );
    file.save( &this->maxValuesCount );
-   this->values.save( file );
-   this->valuesCounts.save( file );
+   file << this->values << this->valuesCounts;
 }
 
 template< typename Index,
@@ -260,8 +259,7 @@ load( File& file )
    Object::load( file );
    file.load( &this->keysRange );
    file.load( &this->maxValuesCount );
-   this->values.load( file );
-   this->valuesCounts.load( file );
+   file >> this->values >> this->valuesCounts;
 }
 
 template< typename Index,

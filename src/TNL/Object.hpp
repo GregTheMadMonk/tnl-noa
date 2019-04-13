@@ -48,7 +48,7 @@ inline void Object::save( File& file ) const
 
 inline void Object::load( File& file )
 {
-   String objectType = getObjectType( file );
+   const String objectType = getObjectType( file );
    if( objectType != this->getSerializationTypeVirtual() )
       throw Exceptions::FileDeserializationError( file.getFileName(), "object type does not match (expected " + this->getSerializationTypeVirtual() + ", found " + objectType + ")." );
 }
@@ -137,19 +137,10 @@ parseObjectType( const String& objectType )
    return parsedObjectType;
 }
 
-inline void saveHeader( File& file, const String& type )
+inline void saveObjectType( File& file, const String& type )
 {
    file.save( magic_number, strlen( magic_number ) );
    file << type;
-}
-
-inline void loadHeader( File& file, String& type )
-{
-   char mn[ 10 ];
-   file.load( mn, strlen( magic_number ) );
-   if( strncmp( mn, magic_number, 5 ) != 0 )
-      throw Exceptions::FileDeserializationError( file.getFileName(), "wrong magic number - file is not in a TNL-compatible format." );
-   file >> type;
 }
 
 } // namespace TNL
