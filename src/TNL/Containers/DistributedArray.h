@@ -23,7 +23,6 @@ template< typename Value,
           typename Index = int,
           typename Communicator = Communicators::MpiCommunicator >
 class DistributedArray
-: public Object
 {
    using CommunicationGroup = typename Communicator::CommunicationGroup;
 public:
@@ -145,11 +144,6 @@ protected:
    IndexType globalSize = 0;
    CommunicationGroup group = Communicator::NullGroup;
    LocalArrayType localData;
-
-private:
-   // TODO: disabled until they are implemented
-   using Object::save;
-   using Object::load;
 };
 
 } // namespace Containers

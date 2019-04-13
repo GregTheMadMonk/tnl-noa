@@ -44,7 +44,6 @@ struct has_communicator< T, typename enable_if_type< typename T::CommunicatorTyp
 template< typename Matrix,
           typename Communicator = Communicators::MpiCommunicator >
 class DistributedMatrix
-: public Object
 {
    using CommunicationGroup = typename Communicator::CommunicationGroup;
 public:
@@ -172,11 +171,6 @@ protected:
    Matrix localMatrix;
 
    DistributedSpMV< Matrix, Communicator > spmv;
-
-private:
-   // TODO: disabled until they are implemented
-   using Object::save;
-   using Object::load;
 };
 
 } // namespace Matrices
