@@ -30,9 +30,9 @@ class Reduction< Devices::Cuda >
 {
 public:
    template< typename Index,
+             typename Result,
              typename ReductionOperation,
-             typename DataFetcher,
-             typename Result = decltype( DataFetcher::operator() ) >
+             typename DataFetcher >
    static Result
    reduce( const Index size,
            ReductionOperation& reduction,
@@ -45,9 +45,9 @@ class Reduction< Devices::Host >
 {
 public:
    template< typename Index,
+             typename Result,
              typename ReductionOperation,
-             typename DataFetcher,
-             typename Result = decltype( DataFetcher::operator() ) >
+             typename DataFetcher >
    static Result
    reduce( const Index size,
            ReductionOperation& reduction,
@@ -60,9 +60,9 @@ class Reduction< Devices::MIC >
 {
 public:
    template< typename Index,
+             typename Result,
              typename ReductionOperation,
-             typename DataFetcher,
-             typename Result = decltype( DataFetcher::operator() ) >
+             typename DataFetcher >
    static Result
    reduce( const Index size,
            ReductionOperation& reduction,

@@ -303,9 +303,10 @@ TYPED_TEST( ArrayOperationsTest, copyMemoryWithConversions_cuda )
    ArrayOperations< Devices::Cuda >::freeMemory( deviceData2 );
 }
 
-TYPED_TEST( ArrayOperationsTest, compareMemory_cuda )
+//TYPED_TEST( ArrayOperationsTest, compareMemory_cuda )
+void Test()
 {
-   using ValueType = typename TestFixture::ValueType;
+   using ValueType = double;//typename TestFixture::ValueType;
    const int size = ARRAY_TEST_SIZE;
 
    ValueType *hostData, *deviceData, *deviceData2;
@@ -445,6 +446,7 @@ TYPED_TEST( ArrayOperationsTest, containsOnlyValue_cuda )
 #include "../GtestMissingError.h"
 int main( int argc, char* argv[] )
 {
+   Test();
 #ifdef HAVE_GTEST
    ::testing::InitGoogleTest( &argc, argv );
    return RUN_ALL_TESTS();

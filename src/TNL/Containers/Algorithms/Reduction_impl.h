@@ -40,9 +40,9 @@ static constexpr int Reduction_minGpuDataSize = 256;//65536; //16384;//1024;//25
 
 
 template< typename Index,
+          typename Result,
           typename ReductionOperation,
-          typename DataFetcher,
-          typename Result >
+          typename DataFetcher >
 Result
 Reduction< Devices::Cuda >::
    reduce( const Index size,
@@ -109,7 +109,9 @@ Reduction< Devices::Cuda >::
       /***
        * Transfer the reduced data from device to host.
        */
-      ResultType resultArray[ reducedSize ];
+      //ResultType* resultArray[ reducedSize ];
+      //std::unique_ptr< ResultType[] > resultArray{ new ResultType[ reducedSize ] };
+      ResultType* resultArray = new ResultType[ reducedSize ];
       ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( resultArray, deviceAux1, reducedSize );
 
       #ifdef CUDA_REDUCTION_PROFILING
@@ -122,14 +124,15 @@ Reduction< Devices::Cuda >::
       /***
        * Reduce the data on the host system.
        */
-      auto copyFetch = [=] ( IndexType i ) { return resultArray[ i ]; };
-      const ResultType result = Reduction< Devices::Host >::reduce( reducedSize, reduction, copyFetch, zero );
+      auto fetch = [&] ( IndexType i ) { return resultArray[ i ]; };
+      const ResultType result = Reduction< Devices::Host >::reduce( reducedSize, reduction, fetch, zero );
 
       #ifdef CUDA_REDUCTION_PROFILING
          timer.stop();
          std::cout << "   Reduction of small data set on CPU took " << timer.getRealTime() << " sec. " << std::endl;
       #endif
-
+      
+      delete[] resultArray;
       return result;
    }
    else {
@@ -170,9 +173,9 @@ Reduction< Devices::Cuda >::
 };
 
 template< typename Index,
+          typename Result,
           typename ReductionOperation,
-          typename DataFetcher,
-          typename Result >
+          typename DataFetcher >
 Result
 Reduction< Devices::Host >::
    reduce( const Index size,
