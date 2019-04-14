@@ -40,6 +40,7 @@ template< typename Array,
           typename Base,
           typename Device = typename Array::DeviceType >
 class NDArrayStorage
+    : public NDArrayIndexer< SizesHolder, Permutation, Base >
 {
 public:
    using StorageArray = Array;
@@ -48,16 +49,11 @@ public:
    using IndexType = typename Array::IndexType;
    using SizesHolderType = SizesHolder;
    using PermutationType = Permutation;
+   using IndexerType = NDArrayIndexer< SizesHolder, Permutation, Base >;
    using ViewType = NDArrayView< ValueType, DeviceType, SizesHolder, Permutation, Base >;
    using ConstViewType = NDArrayView< std::add_const_t< ValueType >, DeviceType, SizesHolder, Permutation, Base >;
 
    static_assert( Permutation::size() == SizesHolder::getDimension(), "invalid permutation" );
-
-   // for compatibility with NDArrayView (which inherits from StrideBase)
-   static constexpr bool isContiguous()
-   {
-      return true;
-   }
 
    // all methods from NDArrayView
 
@@ -83,7 +79,7 @@ public:
       static_assert( std::is_same< PermutationType, typename OtherArray::PermutationType >::value,
                      "Arrays must have the same permutation of indices." );
       // update sizes
-      __ndarray_impl::SetSizesCopyHelper< SizesHolderType, typename OtherArray::SizesHolderType >::copy( sizes, other.getSizes() );
+      __ndarray_impl::SetSizesCopyHelper< SizesHolderType, typename OtherArray::SizesHolderType >::copy( getSizes(), other.getSizes() );
       // (re)allocate storage if necessary
       array.setSize( getStorageSize() );
       // copy data
@@ -94,112 +90,51 @@ public:
    bool operator==( const NDArrayStorage& other ) const
    {
       // FIXME: uninitialized data due to alignment in NDArray and padding in SlicedNDArray
-      return sizes == other.sizes && array == other.array;
+      return getSizes() == other.getSizes() && array == other.array;
    }
 
    bool operator!=( const NDArrayStorage& other ) const
    {
       // FIXME: uninitialized data due to alignment in NDArray and padding in SlicedNDArray
-      return sizes != other.sizes || array != other.array;
+      return getSizes() != other.getSizes() || array != other.array;
    }
 
-   // accessor to the underlying data
-   // (should not be used for accessing the elements, intended only for the implementation
-   // of operator= and functions like cudaHostRegister)
+   __cuda_callable__
+   ValueType* getData()
+   {
+      return array.getData();
+   }
+
+   __cuda_callable__
    std::add_const_t< ValueType >* getData() const
    {
       return array.getData();
    }
 
-   static constexpr std::size_t getDimension()
-   {
-      return SizesHolder::getDimension();
-   }
-
-   const SizesHolderType& getSizes() const
-   {
-      return sizes;
-   }
-
-   template< std::size_t level >
-   __cuda_callable__
-   IndexType getSize() const
-   {
-      return sizes.template getSize< level >();
-   }
-
-   // returns the product of the aligned sizes
-   __cuda_callable__
-   IndexType getStorageSize() const
-   {
-      using Alignment = typename Base::template Alignment< Permutation >;
-      return __ndarray_impl::StorageSizeGetter< SizesHolder, Alignment >::get( sizes );
-   }
-
-   template< typename... IndexTypes >
-   __cuda_callable__
-   IndexType
-   getStorageIndex( IndexTypes&&... indices ) const
-   {
-      static_assert( sizeof...( indices ) == getDimension(), "got wrong number of indices" );
-      return Base::template getStorageIndex< Permutation >( sizes,
-                                                            StrideBase{},
-                                                            std::forward< IndexTypes >( indices )... );
-   }
-
-   template< typename... IndexTypes >
-   __cuda_callable__
-   ValueType&
-   operator()( IndexTypes&&... indices )
-   {
-      static_assert( sizeof...( indices ) == getDimension(), "got wrong number of indices" );
-      __ndarray_impl::assertIndicesInBounds( sizes, std::forward< IndexTypes >( indices )... );
-      TNL_ASSERT_LT( getStorageIndex( std::forward< IndexTypes >( indices )... ), getStorageSize(),
-                     "storage index out of bounds - either input error or a bug in the indexer" );
-      return array[ getStorageIndex( std::forward< IndexTypes >( indices )... ) ];
-   }
-
-   template< typename... IndexTypes >
-   __cuda_callable__
-   const ValueType&
-   operator()( IndexTypes&&... indices ) const
-   {
-      static_assert( sizeof...( indices ) == getDimension(), "got wrong number of indices" );
-      __ndarray_impl::assertIndicesInBounds( sizes, std::forward< IndexTypes >( indices )... );
-      TNL_ASSERT_LT( getStorageIndex( std::forward< IndexTypes >( indices )... ), getStorageSize(),
-                     "storage index out of bounds - either input error or a bug in the indexer" );
-      return array[ getStorageIndex( std::forward< IndexTypes >( indices )... ) ];
-   }
-
-   // bracket operator for 1D arrays
-   __cuda_callable__
-   ValueType&
-   operator[]( IndexType index )
-   {
-      static_assert( getDimension() == 1, "the access via operator[] is provided only for 1D arrays" );
-      __ndarray_impl::assertIndicesInBounds( sizes, std::forward< IndexType >( index ) );
-      return array[ index ];
-   }
+   // methods from the base class
+   using IndexerType::getDimension;
+   using IndexerType::getSizes;
+   using IndexerType::getSize;
+   using IndexerType::getStride;
+   using IndexerType::getStorageSize;
+   using IndexerType::getStorageIndex;
 
    __cuda_callable__
-   const ValueType&
-   operator[]( IndexType index ) const
+   const IndexerType& getIndexer() const
    {
-      static_assert( getDimension() == 1, "the access via operator[] is provided only for 1D arrays" );
-      __ndarray_impl::assertIndicesInBounds( sizes, std::forward< IndexType >( index ) );
-      return array[ index ];
+      return *this;
    }
 
    __cuda_callable__
    ViewType getView()
    {
-      return ViewType( array.getData(), sizes );
+      return ViewType( array.getData(), getSizes() );
    }
 
    __cuda_callable__
    ConstViewType getConstView() const
    {
-      return ConstViewType( array.getData(), sizes );
+      return ConstViewType( array.getData(), getSizes() );
    }
 
    template< std::size_t... Dimensions, typename... IndexTypes >
@@ -219,8 +154,8 @@ public:
       using Getter = __ndarray_impl::SubarrayGetter< Base, Permutation, Dimensions... >;
       using Subpermutation = typename Getter::Subpermutation;
       auto& begin = operator()( std::forward< IndexTypes >( indices )... );
-      auto subarray_sizes = Getter::filterSizes( sizes, std::forward< IndexTypes >( indices )... );
-      auto strides = Getter::getStrides( sizes, std::forward< IndexTypes >( indices )... );
+      auto subarray_sizes = Getter::filterSizes( getSizes(), std::forward< IndexTypes >( indices )... );
+      auto strides = Getter::getStrides( getSizes(), std::forward< IndexTypes >( indices )... );
       static_assert( Subpermutation::size() == sizeof...(Dimensions), "Bug - wrong subpermutation length." );
       static_assert( decltype(subarray_sizes)::getDimension() == sizeof...(Dimensions), "Bug - wrong dimension of the new sizes." );
       static_assert( decltype(strides)::getDimension() == sizeof...(Dimensions), "Bug - wrong dimension of the strides." );
@@ -228,12 +163,55 @@ public:
       return SubarrayView{ &begin, subarray_sizes, strides };
    }
 
+   template< typename... IndexTypes >
+   __cuda_callable__
+   ValueType&
+   operator()( IndexTypes&&... indices )
+   {
+      static_assert( sizeof...( indices ) == getDimension(), "got wrong number of indices" );
+      __ndarray_impl::assertIndicesInBounds( getSizes(), std::forward< IndexTypes >( indices )... );
+      TNL_ASSERT_LT( getStorageIndex( std::forward< IndexTypes >( indices )... ), getStorageSize(),
+                     "storage index out of bounds - either input error or a bug in the indexer" );
+      return array[ getStorageIndex( std::forward< IndexTypes >( indices )... ) ];
+   }
+
+   template< typename... IndexTypes >
+   __cuda_callable__
+   const ValueType&
+   operator()( IndexTypes&&... indices ) const
+   {
+      static_assert( sizeof...( indices ) == getDimension(), "got wrong number of indices" );
+      __ndarray_impl::assertIndicesInBounds( getSizes(), std::forward< IndexTypes >( indices )... );
+      TNL_ASSERT_LT( getStorageIndex( std::forward< IndexTypes >( indices )... ), getStorageSize(),
+                     "storage index out of bounds - either input error or a bug in the indexer" );
+      return array[ getStorageIndex( std::forward< IndexTypes >( indices )... ) ];
+   }
+
+   // bracket operator for 1D arrays
+   __cuda_callable__
+   ValueType&
+   operator[]( IndexType index )
+   {
+      static_assert( getDimension() == 1, "the access via operator[] is provided only for 1D arrays" );
+      __ndarray_impl::assertIndicesInBounds( getSizes(), std::forward< IndexType >( index ) );
+      return array[ index ];
+   }
+
+   __cuda_callable__
+   const ValueType&
+   operator[]( IndexType index ) const
+   {
+      static_assert( getDimension() == 1, "the access via operator[] is provided only for 1D arrays" );
+      __ndarray_impl::assertIndicesInBounds( getSizes(), std::forward< IndexType >( index ) );
+      return array[ index ];
+   }
+
    template< typename Device2 = DeviceType, typename Func >
    void forAll( Func f ) const
    {
       __ndarray_impl::ExecutorDispatcher< PermutationType, Device2 > dispatch;
       using Begins = ConstStaticSizesHolder< IndexType, getDimension(), 0 >;
-      dispatch( Begins{}, sizes, f );
+      dispatch( Begins{}, getSizes(), f );
    }
 
    template< typename Device2 = DeviceType, typename Func >
@@ -245,7 +223,7 @@ public:
       using Ends = typename __ndarray_impl::SubtractedSizesHolder< SizesHolder, 1 >::type;
       // subtract dynamic sizes
       Ends ends;
-      __ndarray_impl::SetSizesSubtractHelper< 1, Ends, SizesHolder >::subtract( ends, sizes );
+      __ndarray_impl::SetSizesSubtractHelper< 1, Ends, SizesHolder >::subtract( ends, getSizes() );
       dispatch( Begins{}, ends, f );
    }
 
@@ -266,10 +244,10 @@ public:
       using SkipEnds = typename __ndarray_impl::SubtractedSizesHolder< SizesHolder, 1 >::type;
       // subtract dynamic sizes
       SkipEnds skipEnds;
-      __ndarray_impl::SetSizesSubtractHelper< 1, SkipEnds, SizesHolder >::subtract( skipEnds, sizes );
+      __ndarray_impl::SetSizesSubtractHelper< 1, SkipEnds, SizesHolder >::subtract( skipEnds, getSizes() );
 
       __ndarray_impl::BoundaryExecutorDispatcher< PermutationType, Device2 > dispatch;
-      dispatch( Begins{}, SkipBegins{}, skipEnds, sizes, f );
+      dispatch( Begins{}, SkipBegins{}, skipEnds, getSizes(), f );
    }
 
    template< typename Device2 = DeviceType, typename Func, typename SkipBegins, typename SkipEnds >
@@ -278,7 +256,7 @@ public:
       // TODO: assert "skipBegins <= sizes", "skipEnds <= sizes"
       using Begins = ConstStaticSizesHolder< IndexType, getDimension(), 0 >;
       __ndarray_impl::BoundaryExecutorDispatcher< PermutationType, Device2 > dispatch;
-      dispatch( Begins{}, skipBegins, skipEnds, sizes, f );
+      dispatch( Begins{}, skipBegins, skipEnds, getSizes(), f );
    }
 
 
@@ -287,7 +265,7 @@ public:
    // TODO: rename to setSizes and make sure that overloading with the following method works
    void setSize( const SizesHolderType& sizes )
    {
-      this->sizes = sizes;
+      getSizes() = sizes;
       array.setSize( getStorageSize() );
    }
 
@@ -295,19 +273,19 @@ public:
    void setSizes( IndexTypes&&... sizes )
    {
       static_assert( sizeof...( sizes ) == getDimension(), "got wrong number of sizes" );
-      __ndarray_impl::setSizesHelper( this->sizes, std::forward< IndexTypes >( sizes )... );
+      __ndarray_impl::setSizesHelper( getSizes(), std::forward< IndexTypes >( sizes )... );
       array.setSize( getStorageSize() );
    }
 
    void setLike( const NDArrayStorage& other )
    {
-      this->sizes = other.getSizes();
+      getSizes() = other.getSizes();
       array.setSize( getStorageSize() );
    }
 
    void reset()
    {
-      this->sizes = SizesHolder{};
+      getSizes() = SizesHolder{};
       TNL_ASSERT_EQ( getStorageSize(), 0, "Failed to reset the sizes." );
       array.reset();
    }
@@ -318,7 +296,7 @@ public:
    getElement( IndexTypes&&... indices ) const
    {
       static_assert( sizeof...( indices ) == getDimension(), "got wrong number of indices" );
-      __ndarray_impl::assertIndicesInBounds( sizes, std::forward< IndexTypes >( indices )... );
+      __ndarray_impl::assertIndicesInBounds( getSizes(), std::forward< IndexTypes >( indices )... );
       TNL_ASSERT_LT( getStorageIndex( std::forward< IndexTypes >( indices )... ), getStorageSize(),
                      "storage index out of bounds - either input error or a bug in the indexer" );
       return array.getElement( getStorageIndex( std::forward< IndexTypes >( indices )... ) );
@@ -341,9 +319,7 @@ public:
 
 protected:
    StorageArray array;
-   SizesHolder sizes;
-
-   using StrideBase = __ndarray_impl::DummyStrideBase< typename SizesHolder::IndexType, SizesHolder::getDimension() >;
+   IndexerType indexer;
 };
 
 template< typename Value,
