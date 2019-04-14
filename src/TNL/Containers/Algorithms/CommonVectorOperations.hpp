@@ -32,7 +32,7 @@ getVectorMax( const Vector& v )
    auto fetch = [=] __cuda_callable__ ( IndexType i ) -> ResultType { return data[ i ]; };
    auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a = TNL::max( a, b ); };
    auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a = TNL::max( a, b ); };
-   return Reduction< DeviceType >::reduce( v.getSize(), reduction, volatileReduction, fetch, -std::numeric_limits< ResultType >::max() );
+   return Reduction< DeviceType >::reduce( v.getSize(), reduction, volatileReduction, fetch, std::numeric_limits< ResultType >::lowest() );
 }
 
 template< typename Device >
@@ -68,7 +68,7 @@ getVectorAbsMax( const Vector& v )
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return TNL::abs( data[ i ] ); };
    auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a = TNL::max( a, b ); };
    auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a = TNL::max( a, b ); };
-   return Reduction< DeviceType >::reduce( v.getSize(), reduction, volatileReduction, fetch, -std::numeric_limits< ResultType >::max() );
+   return Reduction< DeviceType >::reduce( v.getSize(), reduction, volatileReduction, fetch, std::numeric_limits< ResultType >::lowest() );
 }
 
 template< typename Device >
@@ -189,7 +189,7 @@ getVectorDifferenceMax( const Vector1& v1,
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return  data1[ i ] - data2[ i ]; };
    auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a = TNL::max( a, b ); };
    auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a = TNL::max( a, b ); };
-   return Reduction< DeviceType >::reduce( v1.getSize(), reduction, volatileReduction, fetch, -std::numeric_limits< ResultType >::max() );
+   return Reduction< DeviceType >::reduce( v1.getSize(), reduction, volatileReduction, fetch, std::numeric_limits< ResultType >::lowest() );
 }
 
 template< typename Device >
@@ -231,7 +231,7 @@ getVectorDifferenceAbsMax( const Vector1& v1,
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return  TNL::abs( data1[ i ] - data2[ i ] ); };
    auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a = TNL::max( a, b ); };
    auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a = TNL::max( a, b ); };
-   return Reduction< DeviceType >::reduce( v1.getSize(), reduction, volatileReduction, fetch, -std::numeric_limits< ResultType >::max() );
+   return Reduction< DeviceType >::reduce( v1.getSize(), reduction, volatileReduction, fetch, std::numeric_limits< ResultType >::lowest() );
 }
 
 template< typename Device >
