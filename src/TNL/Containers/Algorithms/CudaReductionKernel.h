@@ -47,8 +47,8 @@ template< int blockSize,
 __global__ void
 __launch_bounds__( Reduction_maxThreadsPerBlock, Reduction_minBlocksPerMultiprocessor )
 CudaReductionKernel( const Result zero,
-                     const DataFetcher& dataFetcher,
-                     const Reduction& reduction,
+                     const DataFetcher dataFetcher,
+                     const Reduction reduction,
                      const Index size,
                      Result* output )
 {
@@ -94,8 +94,6 @@ CudaReductionKernel( const Result zero,
    __syncthreads();
 
    //printf( "1: tid %d data %f \n", tid, sdata[ tid ] );
-
-   //return;
    /***
     *  Perform the parallel reduction.
     */
@@ -126,7 +124,6 @@ CudaReductionKernel( const Result zero,
       __syncthreads();
       //printf( "3: tid %d data %f \n", tid, sdata[ tid ] );
    }
-
 
    /***
     * This runs in one warp so it is synchronized implicitly.

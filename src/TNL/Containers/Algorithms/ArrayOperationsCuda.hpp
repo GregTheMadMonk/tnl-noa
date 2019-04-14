@@ -207,11 +207,7 @@ compareMemory( const Element1* destination,
 
    auto fetch = [=] __cuda_callable__ ( Index i ) { return  ( destination[ i ] == source[ i ] ); };
    auto reduction = [=] __cuda_callable__ ( const bool a, const bool b ) { return a && b; };
-   return Reduction< Devices::Cuda >::reduce(
-      size,
-      reduction, //[=] __cuda_callable__ ( const bool a, const bool b ) { return a && b; },
-      fetch, //[=] __cuda_callable__ ( Index i ) { return  destination[ i ]; },
-      true );
+   return Reduction< Devices::Cuda >::reduce( size, reduction, fetch, true );
 
    /*Algorithms::ParallelReductionEqualities< Element1, Element2 > reductionEqualities;
    return Reduction< Devices::Cuda >::reduce( reductionEqualities, size, destination, source );*/
