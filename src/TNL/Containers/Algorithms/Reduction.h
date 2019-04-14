@@ -32,10 +32,12 @@ public:
    template< typename Index,
              typename Result,
              typename ReductionOperation,
+             typename VolatileReductionOperation,
              typename DataFetcher >
    static Result
    reduce( const Index size,
            ReductionOperation& reduction,
+           VolatileReductionOperation& volatileReduction,
            DataFetcher& dataFetcher,
            const Result& zero );
 };
@@ -47,10 +49,12 @@ public:
    template< typename Index,
              typename Result,
              typename ReductionOperation,
+             typename VolatileReductionOperation,
              typename DataFetcher >
    static Result
    reduce( const Index size,
            ReductionOperation& reduction,
+           VolatileReductionOperation& volatileReduction,
            DataFetcher& dataFetcher,
            const Result& zero );
 };
@@ -62,10 +66,12 @@ public:
    template< typename Index,
              typename Result,
              typename ReductionOperation,
+             typename VolatileReductionOperation,
              typename DataFetcher >
    static Result
    reduce( const Index size,
            ReductionOperation& reduction,
+           VolatileReductionOperation& volatileReduction,
            DataFetcher& dataFetcher,
            const Result& zero );
 };
@@ -74,4 +80,4 @@ public:
 } // namespace Containers
 } // namespace TNL
 
-#include "Reduction_impl.h"
+#include "Reduction.hpp"

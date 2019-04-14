@@ -42,11 +42,13 @@ static constexpr int Reduction_minGpuDataSize = 256;//65536; //16384;//1024;//25
 template< typename Index,
           typename Result,
           typename ReductionOperation,
+          typename VolatileReductionOperation,
           typename DataFetcher >
 Result
 Reduction< Devices::Cuda >::
    reduce( const Index size,
            ReductionOperation& reduction,
+           VolatileReductionOperation& volatileReduction,
            DataFetcher& dataFetcher,
            const Result& zero )
 {
@@ -94,10 +96,11 @@ Reduction< Devices::Cuda >::
     */
    ResultType* deviceAux1( 0 );
    IndexType reducedSize = CudaReductionKernelLauncher( size,
-                                                        reduction,
-                                                        dataFetcher,
-                                                        zero,
-                                                        deviceAux1 );
+      reduction,
+      volatileReduction,
+      dataFetcher,
+      zero,
+      deviceAux1 );
    #ifdef CUDA_REDUCTION_PROFILING
       timer.stop();
       std::cout << "   Reduction on GPU to size " << reducedSize << " took " << timer.getRealTime() << " sec. " << std::endl;
@@ -111,7 +114,6 @@ Reduction< Devices::Cuda >::
        */
       //ResultType* resultArray[ reducedSize ];
       std::unique_ptr< ResultType[] > resultArray{ new ResultType[ reducedSize ] };
-      //ResultType* resultArray = new ResultType[ reducedSize ];
       ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( resultArray.get(), deviceAux1, reducedSize );
 
       #ifdef CUDA_REDUCTION_PROFILING
@@ -125,28 +127,26 @@ Reduction< Devices::Cuda >::
        * Reduce the data on the host system.
        */
       auto fetch = [&] ( IndexType i ) { return resultArray[ i ]; };
-      const ResultType result = Reduction< Devices::Host >::reduce( reducedSize, reduction, fetch, zero );
+      const ResultType result = Reduction< Devices::Host >::reduce( reducedSize, reduction, volatileReduction, fetch, zero );
 
       #ifdef CUDA_REDUCTION_PROFILING
          timer.stop();
          std::cout << "   Reduction of small data set on CPU took " << timer.getRealTime() << " sec. " << std::endl;
       #endif
-      
-      //delete[] resultArray;
       return result;
    }
    else {
       /***
        * Data can't be safely reduced on host, so continue with the reduction on the CUDA device.
        */
-      //LaterReductionOperation laterReductionOperation;
       auto copyFetch = [=] __cuda_callable__ ( IndexType i ) { return deviceAux1[ i ]; };
       while( reducedSize > 1 ) {
          reducedSize = CudaReductionKernelLauncher( reducedSize,
-                                                    reduction,
-                                                    copyFetch,
-                                                    zero,
-                                                    deviceAux1 );
+            reduction,
+            volatileReduction,
+            copyFetch,
+            zero,
+            deviceAux1 );
       }
 
       #ifdef CUDA_REDUCTION_PROFILING
@@ -175,11 +175,13 @@ Reduction< Devices::Cuda >::
 template< typename Index,
           typename Result,
           typename ReductionOperation,
+          typename VolatileReductionOperation,
           typename DataFetcher >
 Result
 Reduction< Devices::Host >::
    reduce( const Index size,
            ReductionOperation& reduction,
+           VolatileReductionOperation& volatileReduction,
            DataFetcher& dataFetcher,
            const Result& zero )
 {
@@ -202,14 +204,10 @@ Reduction< Devices::Host >::
          for( int b = 0; b < blocks; b++ ) {
             const IndexType offset = b * block_size;
             for( int i = 0; i < block_size; i += 4 ) {
-               r[ 0 ] = reduction( r[ 0 ], dataFetcher( offset + i ) );
-               r[ 1 ] = reduction( r[ 1 ], dataFetcher( offset + i + 1 ) );
-               r[ 2 ] = reduction( r[ 2 ], dataFetcher( offset + i + 2 ) );
-               r[ 3 ] = reduction( r[ 3 ], dataFetcher( offset + i + 3 ) );
-               /*operation.dataFetcher( r[ 0 ], offset + i, input1, input2 );
-               operation.dataFetcher( r[ 1 ], offset + i + 1, input1, input2 );
-               operation.dataFetcher( r[ 2 ], offset + i + 2, input1, input2 );
-               operation.dataFetcher( r[ 3 ], offset + i + 3, input1, input2 );*/
+               reduction( r[ 0 ], dataFetcher( offset + i ) );
+               reduction( r[ 1 ], dataFetcher( offset + i + 1 ) );
+               reduction( r[ 2 ], dataFetcher( offset + i + 2 ) );
+               reduction( r[ 3 ], dataFetcher( offset + i + 3 ) );
             }
          }
 
@@ -217,19 +215,18 @@ Reduction< Devices::Host >::
          #pragma omp single nowait
          {
             for( IndexType i = blocks * block_size; i < size; i++ )
-               r[ 0 ] = reduction( r[ 0 ], dataFetcher( i ) );
-               //operation.dataFetcher( r[ 0 ], i, input1, input2 );
+               reduction( r[ 0 ], dataFetcher( i ) );
          }
 
          // local reduction of unrolled results
-         r[ 0 ] = reduction( r[ 0 ], r[ 2 ] );
-         r[ 1 ] = reduction( r[ 1 ], r[ 3 ] );
-         r[ 0 ] = reduction( r[ 0 ], r[ 1 ] );
+         reduction( r[ 0 ], r[ 2 ] );
+         reduction( r[ 1 ], r[ 3 ] );
+         reduction( r[ 0 ], r[ 1 ] );
 
          // inter-thread reduction of local results
          #pragma omp critical
          {
-            result = reduction( result, r[ 0 ] );
+            reduction( result, r[ 0 ] );
          }
       }
       return result;
@@ -244,37 +241,28 @@ Reduction< Devices::Host >::
          for( int b = 0; b < blocks; b++ ) {
             const IndexType offset = b * block_size;
             for( int i = 0; i < block_size; i += 4 ) {
-               r[ 0 ] = reduction( r[ 0 ], dataFetcher( offset + i ) );
-               r[ 1 ] = reduction( r[ 1 ], dataFetcher( offset + i + 1 ) );
-               r[ 2 ] = reduction( r[ 2 ], dataFetcher( offset + i + 2 ) );
-               r[ 3 ] = reduction( r[ 3 ], dataFetcher( offset + i + 3 ) );
-               /*operation.dataFetcher( r[ 0 ], offset + i,     input1, input2 );
-               operation.dataFetcher( r[ 1 ], offset + i + 1, input1, input2 );
-               operation.dataFetcher( r[ 2 ], offset + i + 2, input1, input2 );
-               operation.dataFetcher( r[ 3 ], offset + i + 3, input1, input2 );*/
+               reduction( r[ 0 ], dataFetcher( offset + i ) );
+               reduction( r[ 1 ], dataFetcher( offset + i + 1 ) );
+               reduction( r[ 2 ], dataFetcher( offset + i + 2 ) );
+               reduction( r[ 3 ], dataFetcher( offset + i + 3 ) );
             }
          }
 
          // reduction of the last, incomplete block (not unrolled)
          for( IndexType i = blocks * block_size; i < size; i++ )
-            r[ 0 ] = reduction( r[ 0 ], dataFetcher( i ) );
+            reduction( r[ 0 ], dataFetcher( i ) );
             //operation.dataFetcher( r[ 0 ], i, input1, input2 );
 
          // reduction of unrolled results
-         r[ 0 ] = reduction( r[ 0 ], r[ 2 ] );
-         r[ 1 ] = reduction( r[ 1 ], r[ 3 ] );
-         r[ 0 ] = reduction( r[ 0 ], r[ 1 ] );
-
-         /*operation.reduction( r[ 0 ], r[ 2 ] );
-         operation.reduction( r[ 1 ], r[ 3 ] );
-         operation.reduction( r[ 0 ], r[ 1 ] );*/
-
+         reduction( r[ 0 ], r[ 2 ] );
+         reduction( r[ 1 ], r[ 3 ] );
+         reduction( r[ 0 ], r[ 1 ] );
          return r[ 0 ];
       }
       else {
          ResultType result = zero;
          for( IndexType i = 0; i < size; i++ )
-            result = reduction( result, dataFetcher( i ) );
+            reduction( result, dataFetcher( i ) );
          return result;
       }
 #ifdef HAVE_OPENMP
