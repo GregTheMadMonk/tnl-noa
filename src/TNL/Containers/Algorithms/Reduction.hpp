@@ -91,11 +91,13 @@ Reduction< Devices::Cuda >::
       timer.start();
    #endif
 
+   CudaReductionKernelLauncher< IndexType, ResultType > reductionLauncher( size );
+
    /****
     * Reduce the data on the CUDA device.
     */
    ResultType* deviceAux1( 0 );
-   IndexType reducedSize = CudaReductionKernelLauncher( size,
+   IndexType reducedSize = reductionLauncher.start( 
       reduction,
       volatileReduction,
       dataFetcher,
@@ -112,7 +114,6 @@ Reduction< Devices::Cuda >::
       /***
        * Transfer the reduced data from device to host.
        */
-      //ResultType* resultArray[ reducedSize ];
       std::unique_ptr< ResultType[] > resultArray{ new ResultType[ reducedSize ] };
       ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( resultArray.get(), deviceAux1, reducedSize );
 
@@ -139,15 +140,7 @@ Reduction< Devices::Cuda >::
       /***
        * Data can't be safely reduced on host, so continue with the reduction on the CUDA device.
        */
-      auto copyFetch = [=] __cuda_callable__ ( IndexType i ) { return deviceAux1[ i ]; };
-      while( reducedSize > 1 ) {
-         reducedSize = CudaReductionKernelLauncher( reducedSize,
-            reduction,
-            volatileReduction,
-            copyFetch,
-            zero,
-            deviceAux1 );
-      }
+      auto result = reductionLauncher.finish( reduction, volatileReduction, zero );
 
       #ifdef CUDA_REDUCTION_PROFILING
          timer.stop();
@@ -156,14 +149,14 @@ Reduction< Devices::Cuda >::
          timer.start();
       #endif
 
-      ResultType resultArray[ 1 ];
-      ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( resultArray, deviceAux1, reducedSize );
-      const ResultType result = resultArray[ 0 ];
+      //ResultType resultArray[ 1 ];
+      //ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( resultArray, deviceAux1, reducedSize );
+      //const ResultType result = resultArray[ 0 ];
 
-      #ifdef CUDA_REDUCTION_PROFILING
+      /*#ifdef CUDA_REDUCTION_PROFILING
          timer.stop();
          std::cout << "   Transferring the result to CPU took " << timer.getRealTime() << " sec. " << std::endl;
-      #endif
+      #endif*/
 
       return result;
    }

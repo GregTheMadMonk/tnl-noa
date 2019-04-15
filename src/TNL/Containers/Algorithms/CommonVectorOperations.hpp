@@ -24,7 +24,7 @@ CommonVectorOperations< Device >::
 getVectorMax( const Vector& v )
 {
    TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
-   
+
    using RealType = typename Vector::RealType;
    using IndexType = typename Vector::IndexType;
 
@@ -42,7 +42,7 @@ CommonVectorOperations< Device >::
 getVectorMin( const Vector& v )
 {
    TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
-   
+
    using RealType = typename Vector::RealType;
    using IndexType = typename Vector::IndexType;
 
