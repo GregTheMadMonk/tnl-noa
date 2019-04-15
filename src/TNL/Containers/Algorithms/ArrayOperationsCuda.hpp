@@ -208,7 +208,7 @@ compareMemory( const Element1* destination,
    auto fetch = [=] __cuda_callable__ ( Index i ) -> bool { return  ( destination[ i ] == source[ i ] ); };
    auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
    auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
-   //return Reduction< Devices::Cuda >::reduce( size, reduction, volatileReduction, fetch, true );
+   return Reduction< Devices::Cuda >::reduce( size, reduction, volatileReduction, fetch, true );
 }
 
 template< typename Element,
@@ -226,7 +226,7 @@ containsValue( const Element* data,
    auto fetch = [=] __cuda_callable__ ( Index i ) -> bool { return  ( data[ i ] == value ); };
    auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a |= b; };
    auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a |= b; };
-   //return Reduction< Devices::Cuda >::reduce( size, reduction, volatileReduction, fetch, false );
+   return Reduction< Devices::Cuda >::reduce( size, reduction, volatileReduction, fetch, false );
 }
 
 template< typename Element,
@@ -245,7 +245,7 @@ containsOnlyValue( const Element* data,
    auto fetch = [=] __cuda_callable__ ( Index i ) -> bool { return  ( data[ i ] == value ); };
    auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
    auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
-   //return Reduction< Devices::Cuda >::reduce( size, reduction, volatileReduction, fetch, true );
+   return Reduction< Devices::Cuda >::reduce( size, reduction, volatileReduction, fetch, true );
 }
 
 
