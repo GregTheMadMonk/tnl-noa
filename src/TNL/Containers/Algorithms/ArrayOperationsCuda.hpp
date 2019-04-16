@@ -193,7 +193,6 @@ copySTLList( DestinationElement* destination,
       copiedElements += copySize;
    }
 }
-
 template< typename Element1,
           typename Element2,
           typename Index >
@@ -205,8 +204,11 @@ compareMemory( const Element1* destination,
 {
    TNL_ASSERT_TRUE( destination, "Attempted to compare data through a nullptr." );
    TNL_ASSERT_TRUE( source, "Attempted to compare data through a nullptr." );
-   Algorithms::ParallelReductionEqualities< Element1, Element2 > reductionEqualities;
-   return Reduction< Devices::Cuda >::reduce( reductionEqualities, size, destination, source );
+
+   auto fetch = [=] __cuda_callable__ ( Index i ) -> bool { return  ( destination[ i ] == source[ i ] ); };
+   auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
+   auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
+   return Reduction< Devices::Cuda >::reduce( size, reduction, volatileReduction, fetch, true );
 }
 
 template< typename Element,
@@ -219,10 +221,12 @@ containsValue( const Element* data,
 {
    TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
    TNL_ASSERT_GE( size, 0, "" );
+
    if( size == 0 ) return false;
-   Algorithms::ParallelReductionContainsValue< Element > reductionContainsValue;
-   reductionContainsValue.setValue( value );
-   return Reduction< Devices::Cuda >::reduce( reductionContainsValue, size, data, nullptr );
+   auto fetch = [=] __cuda_callable__ ( Index i ) -> bool { return  ( data[ i ] == value ); };
+   auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a |= b; };
+   auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a |= b; };
+   return Reduction< Devices::Cuda >::reduce( size, reduction, volatileReduction, fetch, false );
 }
 
 template< typename Element,
@@ -236,9 +240,12 @@ containsOnlyValue( const Element* data,
    TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
    TNL_ASSERT_GE( size, 0, "" );
    if( size == 0 ) return false;
-   Algorithms::ParallelReductionContainsOnlyValue< Element > reductionContainsOnlyValue;
-   reductionContainsOnlyValue.setValue( value );
-   return Reduction< Devices::Cuda >::reduce( reductionContainsOnlyValue, size, data, nullptr );
+
+   if( size == 0 ) return false;
+   auto fetch = [=] __cuda_callable__ ( Index i ) -> bool { return  ( data[ i ] == value ); };
+   auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
+   auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
+   return Reduction< Devices::Cuda >::reduce( size, reduction, volatileReduction, fetch, true );
 }
 
 

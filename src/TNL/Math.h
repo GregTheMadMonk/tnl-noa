@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#pragma once 
+#pragma once
 
 #include <cmath>
 #include <type_traits>
@@ -17,6 +17,13 @@
 #include <TNL/Devices/CudaCallable.h>
 
 namespace TNL {
+
+template< typename T1, typename T2, typename ResultType = typename std::common_type< T1, T2 >::type >
+__cuda_callable__ inline
+ResultType sum( const T1& a, const T2& b )
+{
+   return a + b;
+}
 
 /**
  * \brief This function returns minimum of two numbers.
@@ -105,7 +112,7 @@ template< typename T1, typename T2, typename ResultType = typename std::common_t
 __cuda_callable__
 ResultType argMax( const T1& a, const T2& b )
 {
-   return ( a > b ) ?  a : b;   
+   return ( a > b ) ?  a : b;
 }
 
 /***
@@ -125,7 +132,7 @@ template< typename T1, typename T2, typename ResultType = typename std::common_t
 __cuda_callable__
 ResultType argAbsMax( const T1& a, const T2& b )
 {
-   return ( TNL::abs( a ) > TNL::abs( b ) ) ?  a : b;   
+   return ( TNL::abs( a ) > TNL::abs( b ) ) ?  a : b;
 }
 
 /**

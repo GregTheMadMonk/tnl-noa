@@ -86,8 +86,6 @@ struct ArrayAssignment< Array, T, false >
 
 };
 
-
-
 } // namespace Algorithms
 } // namespace Containers
 } // namespace TNL

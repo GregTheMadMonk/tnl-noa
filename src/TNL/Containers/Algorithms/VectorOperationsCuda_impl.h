@@ -39,7 +39,7 @@ addElement( Vector& v,
    v[ i ] = thisElementMultiplicator * v[ i ] + value;
 }
 
-template< typename Vector, typename ResultType >
+/*template< typename Vector, typename ResultType >
 ResultType
 VectorOperations< Devices::Cuda >::
 getVectorMax( const Vector& v )
@@ -314,7 +314,7 @@ getVectorDifferenceSum( const Vector1& v1,
                                               v1.getSize(),
                                               v1.getData(),
                                               v2.getData() );
-}
+}*/
 
 #ifdef HAVE_CUDA
 template< typename Real, typename Index, typename Scalar >
@@ -358,7 +358,7 @@ vectorScalarMultiplication( Vector& v,
 }
 
 
-template< typename Vector1, typename Vector2, typename ResultType >
+/*template< typename Vector1, typename Vector2, typename ResultType >
 ResultType
 VectorOperations< Devices::Cuda >::
 getScalarProduct( const Vector1& v1,
@@ -372,7 +372,7 @@ getScalarProduct( const Vector1& v1,
                                               v1.getSize(),
                                               v1.getData(),
                                               v2.getData() );
-}
+}*/
 
 #ifdef HAVE_CUDA
 template< typename Real1, typename Real2, typename Index, typename Scalar1, typename Scalar2 >
