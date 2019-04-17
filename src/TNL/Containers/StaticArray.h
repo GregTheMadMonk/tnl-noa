@@ -8,13 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#pragma once 
+#pragma once
 
 #include <TNL/String.h>
 #include <TNL/File.h>
 
 namespace TNL {
-namespace Containers {   
+namespace Containers {
 
 /**
  * \brief Array with constant size.
@@ -29,6 +29,12 @@ class StaticArray
    typedef Value ValueType;
    typedef int     IndexType;
    enum { size = Size };
+
+   /**
+    * \brief Gets size of this array.
+    */
+   __cuda_callable__
+   static constexpr int getSize();
 
    /**
     * \brief Basic constructor.
@@ -72,11 +78,6 @@ class StaticArray
     */
    static String getType();
 
-   /**
-    * \brief Gets size of this array.
-    */
-   __cuda_callable__
-   inline int getSize() const;
 
    /**
     * \brief Gets all data of this static array.
@@ -136,7 +137,7 @@ class StaticArray
    template< typename Array >
    __cuda_callable__
    inline bool operator != ( const Array& array ) const;
- 
+
    template< typename OtherValue >
    __cuda_callable__
    operator StaticArray< Size, OtherValue >() const;
@@ -163,7 +164,7 @@ class StaticArray
     * \brief Sorts the elements in this static array into ascending order.
     */
    void sort();
- 
+
    /**
     * \brief Writes the array values into stream \e str with specified \e separator.
     *
@@ -188,6 +189,12 @@ class StaticArray< 1, Value >
    typedef int     IndexType;
    enum { size = 1 };
 
+   /**
+    * \brief Gets size of this array.
+    */
+   __cuda_callable__
+   static constexpr int getSize();
+
    /** \brief See StaticArray::StaticArray().*/
    __cuda_callable__
    inline StaticArray();
@@ -209,10 +216,6 @@ class StaticArray< 1, Value >
 
    /** \brief See StaticArray::getType().*/
    static String getType();
-
-   /** \brief See StaticArray::getSize().*/
-   __cuda_callable__
-   inline int getSize() const;
 
    /** \brief See StaticArray::getData().*/
    __cuda_callable__
@@ -256,7 +259,7 @@ class StaticArray< 1, Value >
    template< typename Array >
    __cuda_callable__
    inline bool operator != ( const Array& array ) const;
- 
+
    template< typename OtherValue >
    __cuda_callable__
    operator StaticArray< 1, OtherValue >() const;
@@ -274,7 +277,7 @@ class StaticArray< 1, Value >
 
    /** \brief See StaticArray::sort().*/
    void sort();
- 
+
    /** \brief See StaticArray::write().*/
    std::ostream& write( std::ostream& str, const char* separator = " " ) const;
 
@@ -292,6 +295,12 @@ class StaticArray< 2, Value >
    typedef Value ValueType;
    typedef int     IndexType;
    enum { size = 2 };
+
+   /**
+    * \brief Gets size of this array.
+    */
+   __cuda_callable__
+   static constexpr int getSize();
 
    /** \brief See StaticArray::StaticArray().*/
    __cuda_callable__
@@ -323,10 +332,6 @@ class StaticArray< 2, Value >
 
    /** \brief See StaticArray::getType().*/
    static String getType();
-
-   /** \brief See StaticArray::getSize().*/
-   __cuda_callable__
-   inline int getSize() const;
 
    /** \brief See StaticArray::getData().*/
    __cuda_callable__
@@ -378,11 +383,11 @@ class StaticArray< 2, Value >
    template< typename Array >
    __cuda_callable__
    inline bool operator != ( const Array& array ) const;
- 
+
    template< typename OtherValue >
    __cuda_callable__
    operator StaticArray< 2, OtherValue >() const;
- 
+
    /** \brief See StaticArray::setValue().*/
    __cuda_callable__
    inline void setValue( const ValueType& val );
@@ -413,6 +418,12 @@ class StaticArray< 3, Value >
    typedef Value ValueType;
    typedef int     IndexType;
    enum { size = 3 };
+
+   /**
+    * \brief Gets size of this array.
+    */
+   __cuda_callable__
+   static constexpr int getSize();
 
    /** \brief See StaticArray::StaticArray().*/
    __cuda_callable__
@@ -445,10 +456,6 @@ class StaticArray< 3, Value >
 
    /** \brief See StaticArray::getType().*/
    static String getType();
-
-   /** \brief See StaticArray::getSize().*/
-   __cuda_callable__
-   inline int getSize() const;
 
    /** \brief See StaticArray::getData().*/
    __cuda_callable__
@@ -508,7 +515,7 @@ class StaticArray< 3, Value >
    template< typename Array >
    __cuda_callable__
    inline bool operator != ( const Array& array ) const;
- 
+
    template< typename OtherValue >
    __cuda_callable__
    operator StaticArray< 3, OtherValue >() const;

@@ -11,9 +11,11 @@
 #pragma once
 
 #include <TNL/Containers/StaticVector.h>
+#include <TNL/Experimental/ExpressionTemplates/StaticVectorExpressions.h>
+#include <TNL/Containers/Algorithms/VectorAssignment.h>
 
 namespace TNL {
-namespace Containers {   
+namespace Containers {
 
 template< int Size, typename Real >
 __cuda_callable__
@@ -62,6 +64,14 @@ String StaticVector< Size, Real >::getType()
           String( ", " ) +
           TNL::getType< Real >() +
           String( " >" );
+}
+
+template< int Size, typename Real >
+   template< typename StaticVector_ >
+StaticVector< Size, Real >&
+StaticVector< Size, Real >::operator =( const StaticVector_& v )
+{
+   Algorithms::VectorAssignment< StaticVector< Size, Real >, StaticVector_ >::assign( *this, v );
 }
 
 template< int Size, typename Real >

@@ -8,12 +8,14 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#pragma once 
+#pragma once
 
 #include <TNL/Containers/StaticVector.h>
+#include <TNL/Experimental/ExpressionTemplates/StaticVectorExpressions.h>
+#include <TNL/Containers/Algorithms/VectorAssignment.h>
 
 namespace TNL {
-namespace Containers {   
+namespace Containers {
 
 template< typename Real >
 __cuda_callable__
@@ -60,6 +62,14 @@ String StaticVector< 1, Real >::getType()
           String( ", " ) +
           TNL::getType< Real >() +
           String( " >" );
+}
+
+template< typename Real >
+   template< typename StaticVector_ >
+StaticVector< 1, Real >&
+StaticVector< 1, Real >::operator =( const StaticVector_& v )
+{
+   Algorithms::VectorAssignment< StaticVector< 1, Real >, StaticVector_ >::assign( *this, v );
 }
 
 template< typename Real >

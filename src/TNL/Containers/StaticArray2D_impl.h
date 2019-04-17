@@ -15,7 +15,14 @@
 #include <TNL/Containers/StaticArray.h>
 
 namespace TNL {
-namespace Containers {   
+namespace Containers {
+
+template< typename Value >
+__cuda_callable__
+constexpr int StaticArray< 2, Value >::getSize()
+{
+   return size;
+}
 
 template< typename Value >
 __cuda_callable__
@@ -64,13 +71,6 @@ String StaticArray< 2, Value >::getType()
           String( ", " ) +
           TNL::getType< Value >() +
           String( " >" );
-}
-
-template< typename Value >
-__cuda_callable__
-inline int StaticArray< 2, Value >::getSize() const
-{
-   return size;
 }
 
 template< typename Value >

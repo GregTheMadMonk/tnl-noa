@@ -11,9 +11,10 @@
 #pragma once
 
 #include <TNL/Containers/StaticVector.h>
+#include <TNL/Experimental/ExpressionTemplates/StaticVectorExpressions.h>
 
 namespace TNL {
-namespace Containers {   
+namespace Containers {
 
 template< typename Real >
 __cuda_callable__
@@ -69,6 +70,14 @@ String StaticVector< 3, Real >::getType()
           String( ", " ) +
           TNL::getType< Real >() +
           String( " >" );
+}
+
+template< typename Real >
+   template< typename StaticVector_ >
+StaticVector< 3, Real >&
+StaticVector< 3, Real >::operator =(const StaticVector_& v)
+{
+   Algorithms::VectorAssignment< StaticVector< 3, Real >, StaticVector_ >::assign( *this, v );
 }
 
 template< typename Real >
@@ -219,16 +228,16 @@ Real
 StaticVector< 3, Real >::lpNorm( const Real& p ) const
 {
    if( p == 1.0 )
-      return TNL::abs( this->data[ 0 ] ) + 
-             TNL::abs( this->data[ 1 ] ) + 
+      return TNL::abs( this->data[ 0 ] ) +
+             TNL::abs( this->data[ 1 ] ) +
              TNL::abs( this->data[ 2 ] );
    if( p == 2.0 )
-      return TNL::sqrt( this->data[ 0 ] * this->data[ 0 ] + 
+      return TNL::sqrt( this->data[ 0 ] * this->data[ 0 ] +
                         this->data[ 1 ] * this->data[ 1 ] +
                         this->data[ 2 ] * this->data[ 2 ] );
    return TNL::pow( TNL::pow( TNL::abs( this->data[ 0 ] ), p ) +
                     TNL::pow( TNL::abs( this->data[ 1 ] ), p ) +
-                    TNL::pow( TNL::abs( this->data[ 2 ] ), p ), 1.0 / p ); 
+                    TNL::pow( TNL::abs( this->data[ 2 ] ), p ), 1.0 / p );
 }
 
 } // namespace Containers
