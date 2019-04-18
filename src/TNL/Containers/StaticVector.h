@@ -12,6 +12,7 @@
 
 #include <TNL/Containers/StaticArray.h>
 #include <TNL/Config/ParameterContainer.h>
+#include <TNL/Experimental/ExpressionTemplates/BinaryExpressionTemplate.h>
 
 namespace TNL {
 namespace Containers {
