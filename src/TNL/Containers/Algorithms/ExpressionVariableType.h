@@ -13,6 +13,8 @@
 #include <type_traits>
 
 namespace TNL {
+   namespace Containers {
+      namespace Algorithms {
 
 enum ExpressionVariableType { ArithmeticVariable, VectorVariable, OtherVariable };
 
@@ -67,4 +69,6 @@ struct ExpressionVariableTypeGetter< T, false, true >
    static constexpr ExpressionVariableType value = VectorVariable;
 };
 
+      } //namespace Algorithms
+   } //namespace Containers
 } //namespace TNL

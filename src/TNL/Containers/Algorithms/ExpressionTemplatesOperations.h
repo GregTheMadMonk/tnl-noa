@@ -11,7 +11,8 @@
 #pragma once
 
 namespace TNL {
-   namespace ExpressionTemplates {
+   namespace Containers {
+      namespace Algorithms {
 
 template< typename T1, typename T2 >
 struct Addition
@@ -49,6 +50,6 @@ struct Division
    }
 };
 
-
-   } // ExpressionTemplates
+      } //namespace Algorithms
+   } // namespace Containers
 } // namespace TNL

@@ -10,11 +10,12 @@
 
 #pragma once
 
-#include <TNL/Experimental/ExpressionTemplates/ExpressionTemplatesOperations.h>
-#include <TNL/Experimental/ExpressionTemplates/ExpressionVariableType.h>
+#include <TNL/Containers/Algorithms/ExpressionTemplatesOperations.h>
+#include <TNL/Containers/Algorithms/ExpressionVariableType.h>
 
 namespace TNL {
-   namespace ExpressionTemplates {
+   namespace Containers {
+      namespace Algorithms {
 
 template< typename T1,
           typename T2,
@@ -124,6 +125,7 @@ struct BinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorVa
 
 };
 
+/*
 template< typename T1, typename T2 >
 BinaryExpressionTemplate< T1, T2, ExpressionTemplates::Addition > operator+( const T1 &a, const T2 &b )
 {
@@ -147,6 +149,7 @@ BinaryExpressionTemplate< T1, T2, ExpressionTemplates::Division > operator/( con
 {
     return BinaryExpressionTemplate< T1, T2, ExpressionTemplates::Division >( a, b );
 }
-
-   } //namespace ExpressionTemplates
+ */
+      } //namespace Algorithms
+   } //namespace Containers
 } // namespace TNL
