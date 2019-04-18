@@ -46,6 +46,12 @@ StaticVector< 1, Real >::StaticVector( const StaticVector< 1, Real >& v )
 }
 
 template< typename Real >
+StaticVector< 1, Real >::StaticVector( const std::initializer_list< Real > &elems )
+: StaticArray< 1, Real >( elems )
+{
+}
+
+template< typename Real >
 bool
 StaticVector< 1, Real >::setup( const Config::ParameterContainer& parameters,
                                 const String& prefix )
@@ -70,6 +76,7 @@ StaticVector< 1, Real >&
 StaticVector< 1, Real >::operator =( const StaticVector_& v )
 {
    Algorithms::VectorAssignment< StaticVector< 1, Real >, StaticVector_ >::assign( *this, v );
+   return *this;
 }
 
 template< typename Real >
@@ -104,6 +111,7 @@ StaticVector< 1, Real >& StaticVector< 1, Real >::operator /= ( const Real& c )
    return *this;
 }
 
+#ifdef UNDEF
 template< typename Real >
 __cuda_callable__
 StaticVector< 1, Real > StaticVector< 1, Real >::operator + ( const StaticVector& u ) const
@@ -137,6 +145,7 @@ Real StaticVector< 1, Real >::operator * ( const StaticVector& u ) const
 {
    return this->data[ 0 ] * u[ 0 ];
 }
+#endif
 
 template< typename Real >
 __cuda_callable__

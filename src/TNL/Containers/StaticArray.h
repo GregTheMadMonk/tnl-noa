@@ -73,6 +73,8 @@ class StaticArray
    __cuda_callable__
    inline StaticArray( const StaticArray< Size, Value >& v );
 
+   inline StaticArray( const std::initializer_list< Value > &elems );
+
    /**
     * \brief Gets type of this array.
     */
@@ -214,6 +216,8 @@ class StaticArray< 1, Value >
    __cuda_callable__
    inline StaticArray( const StaticArray< size, Value >& v );
 
+   inline StaticArray( const std::initializer_list< Value > &elems );
+
    /** \brief See StaticArray::getType().*/
    static String getType();
 
@@ -329,6 +333,8 @@ class StaticArray< 2, Value >
    /** \brief See StaticArray::StaticArray( const StaticArray< Size, Value >& v ).*/
    __cuda_callable__
    inline StaticArray( const StaticArray< size, Value >& v );
+
+   inline StaticArray( const std::initializer_list< Value > &elems );
 
    /** \brief See StaticArray::getType().*/
    static String getType();
@@ -453,6 +459,8 @@ class StaticArray< 3, Value >
    /** \brief See StaticArray::StaticArray( const StaticArray< Size, Value >& v ).*/
    __cuda_callable__
    inline StaticArray( const StaticArray< size, Value >& v );
+
+   StaticArray( const std::initializer_list< Value > &elems );
 
    /** \brief See StaticArray::getType().*/
    static String getType();

@@ -68,6 +68,8 @@ class StaticVector : public StaticArray< Size, Real >
    __cuda_callable__
    StaticVector( const StaticVector< Size, Real >& v );
 
+   StaticVector( const std::initializer_list< Real > &elems );
+
    /**
     * \brief Sets up a new (vector) parameter which means it can have more elements.
     *
@@ -125,6 +127,7 @@ class StaticVector : public StaticArray< Size, Real >
    __cuda_callable__
    StaticVector& operator /= ( const Real& c );
 
+#ifdef UNDEF
    /**
     * \brief Addition operator.
     *
@@ -164,6 +167,7 @@ class StaticVector : public StaticArray< Size, Real >
     */
    __cuda_callable__
    Real operator * ( const StaticVector& u ) const;
+#endif
 
    /**
     * \brief Compares this static vector with static vector \e v.
@@ -273,6 +277,8 @@ class StaticVector< 1, Real > : public StaticArray< 1, Real >
    __cuda_callable__
    StaticVector( const StaticVector< 1, Real >& v );
 
+   StaticVector( const std::initializer_list< Real > &elems );
+
    bool setup( const Config::ParameterContainer& parameters,
                const String& prefix = "" );
 
@@ -298,6 +304,7 @@ class StaticVector< 1, Real > : public StaticArray< 1, Real >
    __cuda_callable__
    StaticVector& operator /= ( const Real& c );
 
+#ifdef UNDEF
    /** \brief See StaticVector::operator + ( const StaticVector& u ) const.*/
    __cuda_callable__
    StaticVector operator + ( const StaticVector& u ) const;
@@ -313,6 +320,7 @@ class StaticVector< 1, Real > : public StaticArray< 1, Real >
    /** \brief See StaticVector::operator * ( const StaticVector& u ) const.*/
    __cuda_callable__
    Real operator * ( const StaticVector& u ) const;
+#endif
 
    /** \brief See StaticVector::operator <.*/
    __cuda_callable__
@@ -400,6 +408,8 @@ class StaticVector< 2, Real > : public StaticArray< 2, Real >
    __cuda_callable__
    StaticVector( const StaticVector< 2, Real >& v );
 
+   StaticVector( const std::initializer_list< Real > &elems );
+
    bool setup( const Config::ParameterContainer& parameters,
                const String& prefix = "" );
 
@@ -425,6 +435,7 @@ class StaticVector< 2, Real > : public StaticArray< 2, Real >
    __cuda_callable__
    StaticVector& operator /= ( const Real& c );
 
+#ifdef UNDEF
    /** \brief See StaticVector::operator + ( const StaticVector& u ) const.*/
    __cuda_callable__
    StaticVector operator + ( const StaticVector& u ) const;
@@ -440,6 +451,7 @@ class StaticVector< 2, Real > : public StaticArray< 2, Real >
    /** \brief See StaticVector::operator * ( const StaticVector& u ) const.*/
    __cuda_callable__
    Real operator * ( const StaticVector& u ) const;
+#endif
 
    /** \brief See StaticVector::operator <.*/
    __cuda_callable__
@@ -528,6 +540,8 @@ class StaticVector< 3, Real > : public StaticArray< 3, Real >
    __cuda_callable__
    StaticVector( const StaticVector< 3, Real >& v );
 
+   StaticVector( const std::initializer_list< Real > &elems );
+
    bool setup( const Config::ParameterContainer& parameters,
                const String& prefix = "" );
 
@@ -553,6 +567,7 @@ class StaticVector< 3, Real > : public StaticArray< 3, Real >
    __cuda_callable__
    StaticVector& operator /= ( const Real& c );
 
+#ifdef UNDEF
    /** \brief See StaticVector::operator + ( const StaticVector& u ) const.*/
    __cuda_callable__
    StaticVector operator + ( const StaticVector& u ) const;
@@ -568,6 +583,7 @@ class StaticVector< 3, Real > : public StaticArray< 3, Real >
    /** \brief See StaticVector::operator * ( const StaticVector& u ) const.*/
    __cuda_callable__
    Real operator * ( const StaticVector& u ) const;
+#endif
 
    /** \brief See StaticVector::operator <.*/
    __cuda_callable__
@@ -614,10 +630,11 @@ class StaticVector< 3, Real > : public StaticArray< 3, Real >
    }
 #endif
 };
-
+/*
 template< int Size, typename Real, typename Scalar >
 __cuda_callable__
 StaticVector< Size, Real > operator * ( const Scalar& c, const StaticVector< Size, Real >& u );
+ */
 
 template< int Size, typename Real >
 __cuda_callable__

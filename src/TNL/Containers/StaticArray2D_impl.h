@@ -64,6 +64,14 @@ inline StaticArray< 2, Value >::StaticArray( const StaticArray< size, Value >& v
 }
 
 template< typename Value >
+StaticArray< 2, Value >::StaticArray( const std::initializer_list< Value > &elems)
+{
+   auto it = elems.begin();
+   for( int i = 0; i < getSize(); i++ )
+      data[ i ] = *it++;
+}
+
+template< typename Value >
 String StaticArray< 2, Value >::getType()
 {
    return String( "Containers::StaticArray< " ) +

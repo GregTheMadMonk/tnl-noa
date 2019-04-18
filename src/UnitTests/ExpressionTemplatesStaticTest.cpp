@@ -26,14 +26,20 @@ TEST( ExpressionTemplatesStaticTest, Addition )
    StaticVector< 6, double > sv2{ 1.5, 1.5, 50, 30.4, 8, 600 };
    StaticVector< 6, double > svr1{};
    svr1 = sv1 + sv2 + sv2 + sv1;
-   double temp;
    for( int i = 0; i < 6; i++){
-   	temp = sv1[ i ] + sv2[ i ] + sv2[ i ] + sv1[ i ];
-   	EXPECT_EQ( svr1[ i ], temp );
+   	EXPECT_EQ( svr1[ i ], sv1[ i ] + sv2[ i ] + sv2[ i ] + sv1[ i ] );
+   }
+   svr1 = sv1 + 2;
+   for( int i = 0; i < 6; i++){
+   	EXPECT_EQ( svr1[ i ], sv1[ i ] + 2 );
+   }
+   svr1 = 2 + sv1;
+   for( int i = 0; i < 6; i++){
+   	EXPECT_EQ( svr1[ i ], sv1[ i ] + 2 );
    }
 }
 
-/*TEST( ExpressionTemplatesStaticTest, Subtraction )
+TEST( ExpressionTemplatesStaticTest, Subtraction )
 {
    StaticVector< 6, double > sv1{ 1, 1.5, 9, 54, 300.4, 6 };
    StaticVector< 6, double > sv2{ 1.5, 1.5, 50, 30.4, 8, 600 };
@@ -44,21 +50,36 @@ TEST( ExpressionTemplatesStaticTest, Addition )
    	temp = sv2[ i ] - sv1[ i ] - sv1[ i ];
    	EXPECT_EQ( svr1[ i ], temp );
    }
-}
-
-
-TEST( ExpressionTemplatesStaticTest, MultiplicationLeftSide )
-{
-   StaticVector< 6, double > sv1{ 1, 1.5, 9, 54, 300.4, 6 };
-   StaticVector< 6, double > svr1{};
-   svr1 = 5 * sv1;
-   double temp;
+   svr1 = sv1 - 2;
    for( int i = 0; i < 6; i++){
-   	temp = 5 * sv1[ i ];
-   	EXPECT_EQ( svr1[ i ], temp );
+   	EXPECT_EQ( svr1[ i ], sv1[ i ] - 2 );
+   }
+   svr1 = 2 - sv1;
+   for( int i = 0; i < 6; i++){
+   	EXPECT_EQ( svr1[ i ], 2 - sv1[ i ] );
    }
 }
 
+TEST( ExpressionTemplatesStaticTest, Multiplication )
+{
+   StaticVector< 6, double > sv1{ 1, 1.5, 9, 54, 300.4, 6 };
+   StaticVector< 6, double > sv2{ 1.5, 1.5, 50, 30.4, 8, 600 };
+   StaticVector< 6, double > svr1{};
+   svr1 = sv1 * sv2;
+   for( int i = 0; i < 6; i++){
+   	EXPECT_EQ( svr1[ i ], sv1[ i ] * sv2[ i ] );
+   }
+   svr1 = sv1 * 2;
+   for( int i = 0; i < 6; i++){
+   	EXPECT_EQ( svr1[ i ], sv1[ i ] * 2 );
+   }
+   svr1 = 2 * sv1;
+   for( int i = 0; i < 6; i++){
+   	EXPECT_EQ( svr1[ i ], 2 * sv1[ i ] );
+   }
+}
+
+/*
 TEST( ExpressionTemplatesStaticTest, AbsoluteValue )
 {
    StaticVector< 6, double > sv1{ 1, 1.5, 9, 54, -300.4, 6 };
