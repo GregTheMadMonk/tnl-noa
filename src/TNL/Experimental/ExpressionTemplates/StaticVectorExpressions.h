@@ -13,8 +13,8 @@
 
 #pragma once
 #include <TNL/Containers/StaticVector.h>
-#include <TNL/Experimental/ExpressionTemplates/ExpressionTemplatesOperations.h>
-#include <TNL/Experimental/ExpressionTemplates/ExpressionVariableType.h>
+#include <TNL/Containers/Algorithms/ExpressionTemplatesOperations.h>
+#include <TNL/Containers/Algorithms/ExpressionVariableType.h>
 
 namespace TNL {
 

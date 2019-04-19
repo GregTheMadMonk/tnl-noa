@@ -379,7 +379,7 @@ setupNeighbors()
    for( int i = 0; i < getNeighborsCount(); i++ )
    {
       auto direction = Directions::template getXYZ< Dimension >( i );
-      auto coordinates = this->subdomainCoordinates+direction;
+      CoordinatesType coordinates = this->subdomainCoordinates+direction;
       if( this->isThereNeighbor( direction ) )
          this->neighbors[ i ] = this->getRankOfProcCoord( coordinates );
       else

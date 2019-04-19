@@ -12,9 +12,12 @@
 
 #include <TNL/Containers/StaticArray.h>
 #include <TNL/Config/ParameterContainer.h>
+#include <TNL/Containers/Expressions/BinaryExpressionTemplate.h>
 
 namespace TNL {
 namespace Containers {
+
+   
 
  /**
  * \brief Vector with constant size.
@@ -69,6 +72,11 @@ class StaticVector : public StaticArray< Size, Real >
    StaticVector( const StaticVector< Size, Real >& v );
 
    StaticVector( const std::initializer_list< Real > &elems );
+
+   template< typename T1,
+             typename T2,
+             template< typename, typename > class Operation >
+   StaticVector( const Expressions::BinaryExpressionTemplate< T1, T2, Operation >& op );
 
    /**
     * \brief Sets up a new (vector) parameter which means it can have more elements.
@@ -279,6 +287,11 @@ class StaticVector< 1, Real > : public StaticArray< 1, Real >
 
    StaticVector( const std::initializer_list< Real > &elems );
 
+   template< typename T1,
+             typename T2,
+             template< typename, typename > class Operation >
+   StaticVector( const Expressions::BinaryExpressionTemplate< T1, T2, Operation >& op );
+
    bool setup( const Config::ParameterContainer& parameters,
                const String& prefix = "" );
 
@@ -409,6 +422,11 @@ class StaticVector< 2, Real > : public StaticArray< 2, Real >
    StaticVector( const StaticVector< 2, Real >& v );
 
    StaticVector( const std::initializer_list< Real > &elems );
+
+   template< typename T1,
+             typename T2,
+             template< typename, typename > class Operation >
+   StaticVector( const Expressions::BinaryExpressionTemplate< T1, T2, Operation >& op );
 
    bool setup( const Config::ParameterContainer& parameters,
                const String& prefix = "" );
@@ -542,6 +560,12 @@ class StaticVector< 3, Real > : public StaticArray< 3, Real >
 
    StaticVector( const std::initializer_list< Real > &elems );
 
+   template< typename T1,
+             typename T2,
+             template< typename, typename > class Operation >
+   StaticVector( const Expressions::BinaryExpressionTemplate< T1, T2, Operation >& op );
+
+
    bool setup( const Config::ParameterContainer& parameters,
                const String& prefix = "" );
 
@@ -635,66 +659,6 @@ template< int Size, typename Real, typename Scalar >
 __cuda_callable__
 StaticVector< Size, Real > operator * ( const Scalar& c, const StaticVector< Size, Real >& u );
  */
-
-#include <TNL/Experimental/ExpressionTemplates/BinaryExpressionTemplate.h>
-
-template< int Size, typename Real, typename ET >
-BinaryExpressionTemplate< StaticVector< Size, Real >, ET, ExpressionTemplates::Addition >
-operator+( const StaticVector< Size, Real >& a, const ET& b )
-{
-   return BinaryExpressionTemplate< StaticVector< Size, Real >, ET, ExpressionTemplates::Addition >( a, b );
-}
-
-template< typename ET, int Size, typename Real >
-BinaryExpressionTemplate< ET, StaticVector< Size, Real >, ExpressionTemplates::Addition >
-operator+( const ET& a, const StaticVector< Size, Real >& b )
-{
-   return BinaryExpressionTemplate< ET, StaticVector< Size, Real >, ExpressionTemplates::Addition >( a, b );
-}
-
-template< int Size, typename Real, typename ET >
-BinaryExpressionTemplate< StaticVector< Size, Real >, ET, ExpressionTemplates::Subtraction >
-operator-( const StaticVector< Size, Real >& a, const ET& b )
-{
-   return BinaryExpressionTemplate< StaticVector< Size, Real >, ET, ExpressionTemplates::Subtraction >( a, b );
-}
-
-template< typename ET, int Size, typename Real >
-BinaryExpressionTemplate< ET, StaticVector< Size, Real >, ExpressionTemplates::Subtraction >
-operator-( const ET& a, const StaticVector< Size, Real >& b )
-{
-   return BinaryExpressionTemplate< ET, StaticVector< Size, Real >, ExpressionTemplates::Subtraction >( a, b );
-}
-
-template< int Size, typename Real, typename ET >
-BinaryExpressionTemplate< StaticVector< Size, Real >, ET, ExpressionTemplates::Multiplication >
-operator*( const StaticVector< Size, Real >& a, const ET& b )
-{
-   return BinaryExpressionTemplate< StaticVector< Size, Real >, ET, ExpressionTemplates::Multiplication >( a, b );
-}
-
-template< typename ET, int Size, typename Real >
-BinaryExpressionTemplate< ET, StaticVector< Size, Real >, ExpressionTemplates::Multiplication >
-operator*( const ET& a, const StaticVector< Size, Real >& b )
-{
-   return BinaryExpressionTemplate< ET, StaticVector< Size, Real >, ExpressionTemplates::Multiplication >( a, b );
-}
-
-template< int Size, typename Real, typename ET >
-BinaryExpressionTemplate< StaticVector< Size, Real >, ET, ExpressionTemplates::Division >
-operator/( const StaticVector< Size, Real >& a, const ET& b )
-{
-   return BinaryExpressionTemplate< StaticVector< Size, Real >, ET, ExpressionTemplates::Division >( a, b );
-}
-
-template< typename ET, int Size, typename Real >
-BinaryExpressionTemplate< ET, StaticVector< Size, Real >, ExpressionTemplates::Division >
-operator/( const ET& a, const StaticVector< Size, Real >& b )
-{
-   return BinaryExpressionTemplate< ET, StaticVector< Size, Real >, ExpressionTemplates::Division >( a, b );
-}
-
-
 
 template< int Size, typename Real >
 __cuda_callable__

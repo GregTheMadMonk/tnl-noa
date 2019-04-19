@@ -41,9 +41,89 @@ public:
    using ViewType = VectorView< Real, Device, Index >;
    using ConstViewType = VectorView< std::add_const_t< Real >, Device, Index >;
 
-   /** Constructors and assignment operators are inherited from the class \ref Array. */
-   using Array< Real, Device, Index >::Array;
+   /** Assignment operators are inherited from the class \ref Array. */
    using Array< Real, Device, Index >::operator=;
+
+   /**
+    * \brief Basic constructor.
+    *
+    * Constructs an empty vector with zero size.
+    */
+   Vector();
+
+   /**
+    * \brief Constructor with vector size.
+    *
+    * \param size is number of vector elements.
+    */
+   Vector( const IndexType& size );
+
+   /**
+    * \brief Constructor with data pointer and size.
+    *
+    * In this case, the Vector just encapsulates the pointer \e data. No
+    * deallocation is done in destructor.
+    *
+    * This behavior of the Vector is deprecated and \ref VectorView should be used
+    * instead.
+    *
+    * \param data Pointer to data.
+    * \param size Number of vector elements.
+    */
+   Vector( Real* data,
+          const IndexType& size );
+
+   /**
+    * \brief Copy constructor.
+    *
+    * \param vector is an vector to be copied.
+    */
+   explicit Vector( const Vector& vector );
+
+   /**
+    * \brief Bind constructor .
+    *
+    * The constructor does not make a deep copy, but binds to the supplied vector.
+    * This is also deprecated, \ref VectorView should be used instead.
+    *
+    * \param vector is an vector that is to be bound.
+    * \param begin is the first index which should be bound.
+    * \param size is number of array elements that should be bound.
+    */
+   Vector( Vector& vector,
+           const IndexType& begin = 0,
+           const IndexType& size = 0 );
+
+   /**
+    * \brief Move constructor.
+    *
+    * @param vector is an vector to be moved
+    */
+   Vector( Vector&& vector );
+
+   /**
+    * \brief Initialize the vector from initializer list, i.e. { ... }
+    *
+    * @param list Initializer list.
+    */
+   template< typename InReal >
+   Vector( const std::initializer_list< InReal >& list );
+
+   /**
+    * \brief Initialize the vector from std::list.
+    *
+    * @param list Input STL list.
+    */
+   template< typename InReal >
+   Vector( const std::list< InReal >& list );
+
+   /**
+    * \brief Initialize the vector from std::vector.
+    *
+    * @param vector Input STL vector.
+    */
+   template< typename InReal >
+   Vector( const std::vector< InReal >& vector );
 
    /** \brief Returns type of vector Real value, Device type and the type of Index. */
    static String getType();

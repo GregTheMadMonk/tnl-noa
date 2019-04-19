@@ -12,7 +12,7 @@
 
 namespace TNL {
    namespace Containers {
-      namespace Algorithms {
+      namespace Expressions {
 
 template< typename T1, typename T2 >
 struct Addition
@@ -49,7 +49,6 @@ struct Division
       return a / b;
    }
 };
-
-      } //namespace Algorithms
+      } //namespace Expressions
    } // namespace Containers
 } // namespace TNL

@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Containers/StaticVector.h>
-#include <TNL/Experimental/ExpressionTemplates/StaticVectorExpressions.h>
+#include <TNL/Containers/StaticVectorExpressions.h>
 #include <TNL/Containers/Algorithms/VectorAssignment.h>
 
 namespace TNL {
@@ -52,6 +52,15 @@ StaticVector< Size, Real >::StaticVector( const std::initializer_list< Real > &e
 }
 
 template< int Size, typename Real >
+   template< typename T1,
+             typename T2,
+             template< typename, typename > class Operation >
+StaticVector< Size, Real >::StaticVector( const Expressions::BinaryExpressionTemplate< T1, T2, Operation >& op )
+{
+   Algorithms::VectorAssignment< StaticVector< Size, Real >, Expressions::BinaryExpressionTemplate< T1, T2, Operation > >::assign( *this, op );
+};
+
+template< int Size, typename Real >
 bool
 StaticVector< Size, Real >::setup( const Config::ParameterContainer& parameters,
                                    const String& prefix )
@@ -73,11 +82,11 @@ String StaticVector< Size, Real >::getType()
 }
 
 template< int Size, typename Real >
-   template< typename StaticVector_ >
+   template< typename RHS >
 StaticVector< Size, Real >&
-StaticVector< Size, Real >::operator =( const StaticVector_& v )
+StaticVector< Size, Real >::operator =( const RHS& rhs )
 {
-   Algorithms::VectorAssignment< StaticVector< Size, Real >, StaticVector_ >::assign( *this, v );
+   Algorithms::VectorAssignment< StaticVector< Size, Real >, RHS >::assign( *this, rhs );
    return *this;
 }
 

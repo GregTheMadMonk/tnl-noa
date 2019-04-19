@@ -145,6 +145,59 @@ using VectorTypes = ::testing::Types<
 
 TYPED_TEST_SUITE( VectorTest, VectorTypes );
 
+TYPED_TEST( VectorTest, constructors )
+{
+   using VectorType = typename TestFixture::VectorType;
+
+   VectorType u;
+   EXPECT_EQ( u.getSize(), 0 );
+
+   VectorType v( 10 );
+   EXPECT_EQ( v.getSize(), 10 );
+
+   if( std::is_same< typename VectorType::DeviceType, Devices::Host >::value ) {
+      typename VectorType::ValueType data[ 10 ];
+      VectorType w( data, 10 );
+      EXPECT_EQ( w.getData(), data );
+
+      VectorType z1( w );
+      //EXPECT_EQ( z1.getData(), data );
+      EXPECT_EQ( z1.getSize(), 10 );
+
+      VectorType z2( w, 1 );
+      EXPECT_EQ( z2.getData(), data + 1 );
+      EXPECT_EQ( z2.getSize(), 9 );
+
+      VectorType z3( w, 2, 3 );
+      EXPECT_EQ( z3.getData(), data + 2 );
+      EXPECT_EQ( z3.getSize(), 3 );
+   }
+
+   VectorType w( v );
+   EXPECT_EQ( w.getSize(), v.getSize() );
+   for( int i = 0; i < 10; i++ )
+      EXPECT_EQ( v.getElement( i ), w.getElement( i ) );
+   v.reset();
+   EXPECT_EQ( w.getSize(), 10 );
+
+   VectorType a1 { 1, 2, 3 };
+   EXPECT_EQ( a1.getElement( 0 ), 1 );
+   EXPECT_EQ( a1.getElement( 1 ), 2 );
+   EXPECT_EQ( a1.getElement( 2 ), 3 );
+
+   std::list< int > l = { 4, 5, 6 };
+   VectorType a2( l );
+   EXPECT_EQ( a2.getElement( 0 ), 4 );
+   EXPECT_EQ( a2.getElement( 1 ), 5 );
+   EXPECT_EQ( a2.getElement( 2 ), 6 );
+
+   std::vector< int > q = { 7, 8, 9 };
+
+   VectorType a3( q );
+   EXPECT_EQ( a3.getElement( 0 ), 7 );
+   EXPECT_EQ( a3.getElement( 1 ), 8 );
+   EXPECT_EQ( a3.getElement( 2 ), 9 );
+}
 
 TYPED_TEST( VectorTest, max )
 {

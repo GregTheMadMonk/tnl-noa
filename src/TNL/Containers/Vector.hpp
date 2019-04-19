@@ -19,6 +19,92 @@ namespace Containers {
 template< typename Real,
           typename Device,
           typename Index >
+Vector< Real, Device, Index >::
+Vector()
+{
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+Vector< Real, Device, Index >::
+Vector( const IndexType& size )
+:  Array< Real, Device, Index >( size )
+{
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+Vector< Real, Device, Index >::
+Vector( Real* data,
+       const IndexType& size )
+:  Array< Real, Device, Index >( data, size )
+{
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+Vector< Real, Device, Index >::
+Vector( const Vector< Real, Device, Index >& vector )
+:  Array< Real, Device, Index >( vector )
+{
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+Vector< Real, Device, Index >::
+Vector( Vector< Real, Device, Index >& vector,
+        const IndexType& begin,
+        const IndexType& size )
+: Array< Real, Device, Index >( vector, begin, size )
+{
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+Vector< Real, Device, Index >::
+Vector( Vector< Real, Device, Index >&& vector )
+:  Array< Real, Device, Index >( std::move( vector ) )
+{
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename InReal >
+Vector< Real, Device, Index >::
+Vector( const std::initializer_list< InReal >& list )
+:  Array< Real, Device, Index >( list )
+{
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename InReal >
+Vector< Real, Device, Index >::
+Vector( const std::list< InReal >& list )
+:  Array< Real, Device, Index >( list )
+{
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename InReal >
+Vector< Real, Device, Index >::
+Vector( const std::vector< InReal >& vector )
+:   Array< Real, Device, Index >( vector )
+{
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 String
 Vector< Real, Device, Index >::
 getType()
@@ -59,19 +145,19 @@ getConstView() const
    return ConstViewType( this->getData(), this->getSize() );
 }
 
-template< typename Value,
+template< typename Real,
           typename Device,
           typename Index >
-Vector< Value, Device, Index >::
+Vector< Real, Device, Index >::
 operator ViewType()
 {
    return getView();
 }
 
-template< typename Value,
+template< typename Real,
           typename Device,
           typename Index >
-Vector< Value, Device, Index >::
+Vector< Real, Device, Index >::
 operator ConstViewType() const
 {
    return getConstView();

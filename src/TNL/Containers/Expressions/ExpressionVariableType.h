@@ -14,9 +14,14 @@
 
 namespace TNL {
    namespace Containers {
-      namespace Algorithms {
+
+template< int Size, typename Real >
+class StaticVector;
+
+      namespace Expressions {
 
 enum ExpressionVariableType { ArithmeticVariable, VectorVariable, OtherVariable };
+
 
 /**
  * SFINAE for checking if T has getSize method
@@ -32,7 +37,7 @@ private:
     template< typename C > static NoType& test(...);
 
 public:
-    static constexpr bool value = ( sizeof( test< T >(0) ) == sizeof( YesType ) );
+    static constexpr bool value = ( sizeof( test< typename std::remove_reference< T >::type >(0) ) == sizeof( YesType ) );
 };
 
 
@@ -44,7 +49,7 @@ struct IsVectorType
 
 template< int Size,
           typename Real >
-struct IsVectorType< Containers::StaticVector< Size, Real > >
+struct IsVectorType< StaticVector< Size, Real > >
 {
    static constexpr bool value = true;
 };
@@ -69,6 +74,6 @@ struct ExpressionVariableTypeGetter< T, false, true >
    static constexpr ExpressionVariableType value = VectorVariable;
 };
 
-      } //namespace Algorithms
+      } //namespace Expressions
    } //namespace Containers
 } //namespace TNL

@@ -20,16 +20,33 @@ using namespace TNL;
 using namespace TNL::Containers;
 
 #ifdef HAVE_GTEST
+TEST( ExpressionTemplatesStaticTest, TypeTraitsTest )
+{
+   using VectorType = StaticVector< 6, double >;
+   VectorType sv1{ 1, 1.5, 9, 54, 300.4, 6 };
+   VectorType sv2{ 1.5, 1.5, 50, 30.4, 8, 600 };
+   VectorType svr1;
+
+   using Type1 = decltype( sv1 + 1 );
+   using Type2 = decltype( sv1 + sv2 );
+   static_assert( Expressions::ExpressionVariableTypeGetter< int >::value == Expressions::ArithmeticVariable );
+   static_assert( Expressions::ExpressionVariableTypeGetter< VectorType >::value == Expressions::VectorVariable );
+   static_assert( Expressions::IsExpressionTemplate< Type1 >::value == true );
+   static_assert( Expressions::IsExpressionTemplate< Type2 >::value == true );
+}
+
 TEST( ExpressionTemplatesStaticTest, Addition )
 {
-   StaticVector< 6, double > sv1{ 1, 1.5, 9, 54, 300.4, 6 };
-   StaticVector< 6, double > sv2{ 1.5, 1.5, 50, 30.4, 8, 600 };
-   StaticVector< 6, double > svr1{};
+   using VectorType = StaticVector< 6, double >;
+   VectorType sv1{ 1, 1.5, 9, 54, 300.4, 6 };
+   VectorType sv2{ 1.5, 1.5, 50, 30.4, 8, 600 };
+   VectorType svr1;
+
    svr1 = sv1 + sv2 + sv2 + sv1;
    for( int i = 0; i < 6; i++){
    	EXPECT_EQ( svr1[ i ], sv1[ i ] + sv2[ i ] + sv2[ i ] + sv1[ i ] );
    }
-   svr1 = sv1 + 2;
+   svr1 = sv1 + ( double ) 2;
    for( int i = 0; i < 6; i++){
    	EXPECT_EQ( svr1[ i ], sv1[ i ] + 2 );
    }
@@ -37,6 +54,9 @@ TEST( ExpressionTemplatesStaticTest, Addition )
    for( int i = 0; i < 6; i++){
    	EXPECT_EQ( svr1[ i ], sv1[ i ] + 2 );
    }
+
+   svr1 = sv1 + sv2 + ( double ) 1;
+   svr1 = sv1 + sv2 - ( double ) 1;
 }
 
 TEST( ExpressionTemplatesStaticTest, Subtraction )
@@ -193,6 +213,7 @@ TEST( ExpressionTemplatesStaticTest, ArcTangent )
 #include "GtestMissingError.h"
 int main( int argc, char* argv[] )
 {
+   //Test();
 #ifdef HAVE_GTEST
    ::testing::InitGoogleTest( &argc, argv );
    return RUN_ALL_TESTS();
