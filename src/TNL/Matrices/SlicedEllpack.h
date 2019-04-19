@@ -178,7 +178,8 @@ public:
    template< typename InVector,
              typename OutVector >
    void vectorProduct( const InVector& inVector,
-                       OutVector& outVector ) const;
+                       OutVector& outVector,
+                       RealType multiplicator = 1.0 ) const;
 
    template< typename Real2, typename Index2 >
    void addMatrix( const SlicedEllpack< Real2, Device, Index2 >& matrix,

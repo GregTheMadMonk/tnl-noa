@@ -537,9 +537,10 @@ template< typename Real,
    template< typename InVector,
              typename OutVector >
 void SlicedEllpack< Real, Device, Index, SliceSize >::vectorProduct( const InVector& inVector,
-                                                                              OutVector& outVector ) const
+                                                                     OutVector& outVector,
+                                                                     RealType multiplicator ) const
 {
-   DeviceDependentCode::vectorProduct( *this, inVector, outVector );
+   DeviceDependentCode::vectorProduct( *this, inVector, outVector, multiplicator );
 }
 
 template< typename Real,
@@ -877,13 +878,14 @@ class SlicedEllpackDeviceDependentCode< Devices::Host >
                 int SliceSize >
       static void vectorProduct( const SlicedEllpack< Real, Device, Index, SliceSize >& matrix,
                                  const InVector& inVector,
-                                 OutVector& outVector )
+                                 OutVector& outVector,
+                                 Real multiplicator )
       {
 #ifdef HAVE_OPENMP
 #pragma omp parallel for if( Devices::Host::isOMPEnabled() )
 #endif
          for( Index row = 0; row < matrix.getRows(); row ++ )
-            outVector[ row ] = matrix.rowVectorProduct( row, inVector );
+            outVector[ row ] = matrix.rowVectorProduct( row, inVector ) * multiplicator;
       }
 
 };
@@ -916,6 +918,7 @@ __global__ void SlicedEllpackVectorProductCudaKernel(
    const Real* values,
    const Real* inVector,
    Real* outVector,
+   Real multiplicator,
    const Index gridIdx )
 {
    const Index rowIdx = ( gridIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
@@ -935,7 +938,7 @@ __global__ void SlicedEllpackVectorProductCudaKernel(
       result += values[ i ] * inVector[ columnIndex ];
       i += SliceSize;
    }
-   outVector[ rowIdx ] = result;
+   outVector[ rowIdx ] = result * multiplicator;
 }
 #endif
 
@@ -1021,7 +1024,8 @@ class SlicedEllpackDeviceDependentCode< Devices::Cuda >
                 int SliceSize >
       static void vectorProduct( const SlicedEllpack< Real, Device, Index, SliceSize >& matrix,
                                  const InVector& inVector,
-                                 OutVector& outVector )
+                                 OutVector& outVector,
+                                 Real multiplicator )
       {
          //MatrixVectorProductCuda( matrix, inVector, outVector );
          #ifdef HAVE_CUDA
@@ -1049,6 +1053,7 @@ class SlicedEllpackDeviceDependentCode< Devices::Cuda >
                   matrix.values.getData(),
                   inVector.getData(),
                   outVector.getData(),
+                  multiplicator,
                   gridIdx );
                TNL_CHECK_CUDA_DEVICE;
             }
