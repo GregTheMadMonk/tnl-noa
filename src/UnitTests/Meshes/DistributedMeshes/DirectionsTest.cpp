@@ -120,15 +120,4 @@ TEST(XYZ, 3D )
 
 #endif
 
-#include "../../GtestMissingError.h"
-int main( int argc, char* argv[] )
-{
-#ifdef HAVE_GTEST
-   ::testing::InitGoogleTest( &argc, argv );
-       int result= RUN_ALL_TESTS();
-       return result;
-#else
-   
-   throw GtestMissingError();
-#endif
-}
+#include "../../main.h"

@@ -139,38 +139,20 @@ public:
       return *this;
    }
 
-   bool save( File& file ) const
+   void save( File& file ) const
    {
-      try
-      {
-         SubentityStorageBaseType::save( file );
-         SuperentityStorageBaseType::save( file );
-         this->entities.save( file );
-         BaseType::save( file );
-      }
-      catch(...)
-      {
-         std::cerr << "Saving of the mesh entities with dimension " << DimensionTag::value << " failed." << std::endl;
-         return false;
-      }
-      return true;
+      SubentityStorageBaseType::save( file );
+      SuperentityStorageBaseType::save( file );
+      file << this->entities;
+      BaseType::save( file );
    }
 
-   bool load( File& file )
+   void load( File& file )
    {
-      try
-      {
-         SubentityStorageBaseType::load( file );
-         SuperentityStorageBaseType::load( file );
-         this->entities.load( file );
-         BaseType::load( file );
-      }
-      catch(...)
-      {
-         std::cerr << "Loading of the mesh entities with dimension " << DimensionTag::value << " failed." << std::endl;
-         return false;
-      }
-      return true;
+      SubentityStorageBaseType::load( file );
+      SuperentityStorageBaseType::load( file );
+      file >> this->entities;
+      BaseType::load( file );
    }
 
    void print( std::ostream& str ) const
@@ -276,15 +258,8 @@ protected:
    void getEntitiesCount() const {}
    void getEntity() const {}
 
-   bool save( File& file ) const
-   {
-      return true;
-   }
-
-   bool load( File& file )
-   {
-      return true;
-   }
+   void save( File& file ) const {}
+   void load( File& file ) {}
 
    void print( std::ostream& str ) const {}
 

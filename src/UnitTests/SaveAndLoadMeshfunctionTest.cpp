@@ -8,7 +8,7 @@
 
 #include <TNL/Functions/MeshFunction.h>
 
-#ifdef HAVE_GTEST 
+#ifdef HAVE_GTEST
 #include <gtest/gtest.h>
 
 #include "Functions/Functions.h"
@@ -36,21 +36,21 @@ class TestSaveAndLoadMeshfunction
             typedef MeshFunction<MeshType> MeshFunctionType;
             typedef Vector<double,Host,int> DofType;
             typedef typename MeshType::Cell Cell;
-            typedef typename MeshType::IndexType IndexType; 
-            typedef typename MeshType::PointType PointType; 
-        
+            typedef typename MeshType::IndexType IndexType;
+            typedef typename MeshType::PointType PointType;
+
             typedef typename MeshType::CoordinatesType CoordinatesType;
             typedef LinearFunction<double,dim> LinearFunctionType;
 
             Pointers::SharedPointer< LinearFunctionType, Host > linearFunctionPtr;
-            MeshFunctionEvaluator< MeshFunctionType, LinearFunctionType > linearFunctionEvaluator;    
+            MeshFunctionEvaluator< MeshFunctionType, LinearFunctionType > linearFunctionEvaluator;
 
 
             PointType localOrigin;
             localOrigin.setValue(-0.5);
             PointType localProportions;
             localProportions.setValue(10);
-            
+
             Pointers::SharedPointer<MeshType>  localGridptr;
             localGridptr->setDimensions(localProportions);
             localGridptr->setDomain(localOrigin,localProportions);
@@ -62,9 +62,9 @@ class TestSaveAndLoadMeshfunction
             linearFunctionEvaluator.evaluateAllEntities(localMeshFunctionptr , linearFunctionPtr);
 
             File file;
-            file.open( String( FILENAME), File::Mode::Out );
-            localMeshFunctionptr->save(file);
-            file.close();
+            ASSERT_NO_THROW( file.open( String( FILENAME), std::ios_base::out ) );
+            ASSERT_NO_THROW( localMeshFunctionptr->save(file) );
+            ASSERT_NO_THROW( file.close() );
 
             //load other meshfunction on same localgrid from created file
             Pointers::SharedPointer<MeshType>  loadGridptr;
@@ -80,9 +80,9 @@ class TestSaveAndLoadMeshfunction
                 loadDof[i]=-1;
             }
 
-            file.open( String( FILENAME ), File::Mode::In );
-            loadMeshFunctionptr->boundLoad(file);
-            file.close();
+            ASSERT_NO_THROW( file.open( String( FILENAME ), std::ios_base::in ) );
+            ASSERT_NO_THROW( loadMeshFunctionptr->boundLoad(file) );
+            ASSERT_NO_THROW( file.close() );
 
             for(int i=0;i<localDof.getSize();i++)
             {
@@ -108,18 +108,6 @@ TEST( CopyEntitiesTest, 3D )
 {
     TestSaveAndLoadMeshfunction<3>::Test();
 }
-
-
 #endif
 
-#include "GtestMissingError.h"
-int main( int argc, char* argv[] )
-{
-#ifdef HAVE_GTEST
-   ::testing::InitGoogleTest( &argc, argv );
-   return RUN_ALL_TESTS();
-#else
-   throw GtestMissingError();
-#endif
-}
-
+#include "main.h"

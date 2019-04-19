@@ -203,7 +203,7 @@ save( File& file ) const
 {
    Object::save( file );
    file.save( &this->keysRange );
-   this->values.save( file );
+   file << this->values;
 }
 
 template< int ValuesCount,
@@ -217,7 +217,7 @@ load( File& file )
 {
    Object::load( file );
    file.load( &this->keysRange );
-   this->values.load( file );
+   file >> this->values;
 }
 
 template< int ValuesCount,

@@ -72,7 +72,7 @@ bool processDicomSeries( const Config::ParameterContainer& parameters )
          fileName.setExtension( "tnl" );
          fileName.setIndex( imageIdx );
          std::cout << "Writing file " << fileName.getFileName() << " ... " << std::endl;
-         vector.save( fileName.getFileName() );
+         File( fileName.getFileName(), std::ios_base::out ) << vector;
       }
    }
    return true;

@@ -11,6 +11,7 @@
 #pragma once
 
 #include "Sparse.h"
+#include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
 namespace Matrices {
@@ -91,8 +92,7 @@ template< typename Real,
 void Sparse< Real, Device, Index >::save( File& file ) const
 {
    Matrix< Real, Device, Index >::save( file );
-   this->values.save( file );
-   this->columnIndexes.save( file );
+   file << this->values << this->columnIndexes;
 }
 
 template< typename Real,
@@ -101,8 +101,7 @@ template< typename Real,
 void Sparse< Real, Device, Index >::load( File& file )
 {
    Matrix< Real, Device, Index >::load( file );
-   this->values.load( file );
-   this->columnIndexes.load( file );
+   file >> this->values >> this->columnIndexes;
 }
 
 template< typename Real,
@@ -126,7 +125,7 @@ template< typename Real,
           typename Index >
 void Sparse< Real, Device, Index >::printStructure( std::ostream& str ) const
 {
-   TNL_ASSERT_TRUE( false, "Not implemented yet." );
+   throw Exceptions::NotImplementedError("Sparse::printStructure is not implemented yet.");
 }
 
 } // namespace Matrices

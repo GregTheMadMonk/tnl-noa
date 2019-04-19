@@ -9,7 +9,6 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include "tnl-diff.h"
-#include <TNL/Exceptions/ObjectTypeDetectionFailure.h>
 #include <TNL/Meshes/DummyMesh.h>
 #include <TNL/Meshes/Grid.h>
 
@@ -50,15 +49,7 @@ int main( int argc, char* argv[] )
          return EXIT_FAILURE;
       return EXIT_SUCCESS;
    }*/
-   String meshType;
-   try
-   {
-      meshType = getObjectType( meshFile );
-   }
-   catch(...)
-   {
-      throw Exceptions::ObjectTypeDetectionFailure( meshFile, "mesh" );
-   }
+   const String meshType = getObjectType( meshFile );
    std::cout << meshType << " detected in " << meshFile << " file." << std::endl;
    const std::vector< String > parsedMeshType = parseObjectType( meshType );
    if( ! parsedMeshType.size() )

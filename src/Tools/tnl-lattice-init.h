@@ -12,7 +12,6 @@
 
 #include <TNL/Object.h>
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/Exceptions/ObjectTypeDetectionFailure.h>
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Meshes/GridEntity.h>
 #include <TNL/Functions/MeshFunction.h>
@@ -233,15 +232,7 @@ template< typename ProfileMesh, typename Real, typename Mesh >
 bool resolveProfileReal( const Config::ParameterContainer& parameters )
 {
    String profileFile = parameters. getParameter< String >( "profile-file" );
-   String meshFunctionType;
-   try
-   {
-      meshFunctionType = getObjectType( profileFile );
-   }
-   catch(...)
-   {
-      throw Exceptions::ObjectTypeDetectionFailure( profileFile, "mesh" );
-   }
+   const String meshFunctionType = getObjectType( profileFile );
    //std::cout << meshFunctionType << " detected in " << profileFile << " file." << std::endl;
    const std::vector< String > parsedMeshFunctionType = parseObjectType( meshFunctionType );
    if( ! parsedMeshFunctionType.size() )
@@ -292,15 +283,7 @@ template< typename ProfileMesh, typename Real >
 bool resolveMesh( const Config::ParameterContainer& parameters )
 {
    String meshFile = parameters.getParameter< String >( "mesh" );
-   String meshType;
-   try
-   {
-      meshType = getObjectType( meshFile );
-   }
-   catch(...)
-   {
-      throw Exceptions::ObjectTypeDetectionFailure( meshFile, "mesh" );
-   }
+   const String meshType = getObjectType( meshFile );
    std::cout << meshType << " detected in " << meshFile << " file." << std::endl;
    const std::vector< String > parsedMeshType = parseObjectType( meshType );
    if( ! parsedMeshType.size() )
@@ -390,15 +373,7 @@ bool resolveProfileMeshRealType( const std::vector< String >& parsedMeshType,
 bool resolveProfileMeshType( const Config::ParameterContainer& parameters )
 {
    String meshFile = parameters. getParameter< String >( "profile-mesh" );
-   String meshType;
-   try
-   {
-      meshType = getObjectType( meshFile );
-   }
-   catch(...)
-   {
-      throw Exceptions::ObjectTypeDetectionFailure( meshFile, "mesh" );
-   }
+   const String meshType = getObjectType( meshFile );
    std::cout << meshType << " detected in " << meshFile << " file." << std::endl;
    const std::vector< String > parsedMeshType = parseObjectType( meshType );
    if( ! parsedMeshType.size() )
@@ -406,7 +381,7 @@ bool resolveProfileMeshType( const Config::ParameterContainer& parameters )
       std::cerr << "Unable to parse the mesh type " << meshType << "." << std::endl;
       return EXIT_FAILURE;
    }
-   
+
    int dimensions = atoi( parsedMeshType[ 1 ].getString() );
    if( dimensions != 2 )
    {

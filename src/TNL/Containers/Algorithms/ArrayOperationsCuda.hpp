@@ -33,7 +33,7 @@ allocateMemory( Element*& data,
 #ifdef HAVE_CUDA
    TNL_CHECK_CUDA_DEVICE;
    if( cudaMalloc( ( void** ) &data,
-                   ( size_t ) size * sizeof( Element ) ) != cudaSuccess )
+                   ( std::size_t ) size * sizeof( Element ) ) != cudaSuccess )
    {
       data = 0;
       throw Exceptions::CudaBadAlloc();
@@ -182,12 +182,12 @@ copySTLList( DestinationElement* destination,
    const std::size_t copy_buffer_size = std::min( Devices::Cuda::TransferBufferSize / (std::size_t) sizeof( DestinationElement ), ( std::size_t ) size );
    using BaseType = typename std::remove_cv< DestinationElement >::type;
    std::unique_ptr< BaseType[] > copy_buffer{ new BaseType[ copy_buffer_size ] };
-   size_t copiedElements = 0;
+   std::size_t copiedElements = 0;
    auto it = source.begin();
    while( copiedElements < size )
    {
       const auto copySize = std::min( size - copiedElements, copy_buffer_size );
-      for( size_t i = 0; i < copySize; i++ )
+      for( std::size_t i = 0; i < copySize; i++ )
          copy_buffer[ i ] = static_cast< DestinationElement >( * it ++ );
       ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory( &destination[ copiedElements ], &copy_buffer[ 0 ], copySize );
       copiedElements += copySize;
@@ -220,7 +220,7 @@ containsValue( const Element* data,
                const Element& value )
 {
    TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
-   TNL_ASSERT_GE( size, 0, "" );
+   TNL_ASSERT_GE( size, (Index) 0, "" );
 
    if( size == 0 ) return false;
    auto fetch = [=] __cuda_callable__ ( Index i ) -> bool { return  ( data[ i ] == value ); };
@@ -315,7 +315,7 @@ compareMemory( const Element1* destination,
     */
    TNL_ASSERT_TRUE( destination, "Attempted to compare data through a nullptr." );
    TNL_ASSERT_TRUE( source, "Attempted to compare data through a nullptr." );
-   TNL_ASSERT_GE( size, 0, "Array size must be non-negative." );
+   TNL_ASSERT_GE( size, (Index) 0, "Array size must be non-negative." );
 #ifdef HAVE_CUDA
    std::unique_ptr< Element2[] > host_buffer{ new Element2[ Devices::Cuda::getGPUTransferBufferSize() ] };
    Index compared( 0 );
@@ -352,7 +352,7 @@ copyMemory( DestinationElement* destination,
 {
    TNL_ASSERT_TRUE( destination, "Attempted to copy data to a nullptr." );
    TNL_ASSERT_TRUE( source, "Attempted to copy data from a nullptr." );
-   TNL_ASSERT_GE( size, 0, "Array size must be non-negative." );
+   TNL_ASSERT_GE( size, (Index) 0, "Array size must be non-negative." );
 #ifdef HAVE_CUDA
    if( std::is_same< DestinationElement, SourceElement >::value )
    {
@@ -400,7 +400,7 @@ compareMemory( const Element1* hostData,
 {
    TNL_ASSERT_TRUE( hostData, "Attempted to compare data through a nullptr." );
    TNL_ASSERT_TRUE( deviceData, "Attempted to compare data through a nullptr." );
-   TNL_ASSERT_GE( size, 0, "Array size must be non-negative." );
+   TNL_ASSERT_GE( size, (Index) 0, "Array size must be non-negative." );
    return ArrayOperations< Devices::Host, Devices::Cuda >::compareMemory( deviceData, hostData, size );
 }
 

@@ -12,10 +12,9 @@
 
 #pragma once
 
-#include <stdexcept>  // std::runtime_error
-
 #include "DistributedVectorView.h"
 #include <TNL/Containers/Algorithms/ReductionOperations.h>
+#include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
 namespace Containers {
@@ -543,7 +542,7 @@ void
 DistributedVectorView< Real, Device, Index, Communicator >::
 computePrefixSum()
 {
-   throw std::runtime_error("Distributed prefix sum is not implemented yet.");
+   throw Exceptions::NotImplementedError("Distributed prefix sum is not implemented yet.");
 }
 
 template< typename Real,
@@ -554,7 +553,7 @@ void
 DistributedVectorView< Real, Device, Index, Communicator >::
 computePrefixSum( IndexType begin, IndexType end )
 {
-   throw std::runtime_error("Distributed prefix sum is not implemented yet.");
+   throw Exceptions::NotImplementedError("Distributed prefix sum is not implemented yet.");
 }
 
 template< typename Real,
@@ -565,7 +564,7 @@ void
 DistributedVectorView< Real, Device, Index, Communicator >::
 computeExclusivePrefixSum()
 {
-   throw std::runtime_error("Distributed prefix sum is not implemented yet.");
+   throw Exceptions::NotImplementedError("Distributed prefix sum is not implemented yet.");
 }
 
 template< typename Real,
@@ -576,7 +575,7 @@ void
 DistributedVectorView< Real, Device, Index, Communicator >::
 computeExclusivePrefixSum( IndexType begin, IndexType end )
 {
-   throw std::runtime_error("Distributed prefix sum is not implemented yet.");
+   throw Exceptions::NotImplementedError("Distributed prefix sum is not implemented yet.");
 }
 
 } // namespace Containers

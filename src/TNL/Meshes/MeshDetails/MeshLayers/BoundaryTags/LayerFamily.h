@@ -77,16 +77,16 @@ protected:
    }
 
 
-   bool save( File& file ) const
+   void save( File& file ) const
    {
-      return LayerType::save( file ) &&
-             BaseType::save( file );
+      LayerType::save( file );
+      BaseType::save( file );
    }
 
-   bool load( File& file )
+   void load( File& file )
    {
-      return LayerType::load( file ) &&
-             BaseType::load( file );
+      LayerType::load( file );
+      BaseType::load( file );
    }
 
    void print( std::ostream& str ) const
@@ -124,16 +124,9 @@ protected:
    template< typename Device_ >
    LayerInheritor& operator=( const LayerInheritor< MeshConfig, Device_, DimensionTag< MeshConfig::meshDimension + 1 > >& other ) { return *this; }
 
-   bool save( File& file ) const
-   {
-      return true;
-   }
+   void save( File& file ) const {}
+   void load( File& file ) {}
 
-   bool load( File& file )
-   {
-      return true;
-   }
- 
    void print( std::ostream& str ) const {}
 
    bool operator==( const LayerInheritor& layer ) const

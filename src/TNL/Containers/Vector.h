@@ -39,7 +39,7 @@ public:
    using HostType = Vector< Real, TNL::Devices::Host, Index >;
    using CudaType = Vector< Real, TNL::Devices::Cuda, Index >;
    using ViewType = VectorView< Real, Device, Index >;
-   using ConstViewType = VectorView< typename std::add_const< Real >::type, Device, Index >;
+   using ConstViewType = VectorView< std::add_const_t< Real >, Device, Index >;
 
    /** Constructors and assignment operators are inherited from the class \ref Array. */
    using Array< Real, Device, Index >::Array;
@@ -50,12 +50,6 @@ public:
 
    /** \brief Returns type of vector Real value, Device type and the type of Index. */
    virtual String getTypeVirtual() const;
-
-   /** \brief Returns (host) type of vector Real value, Device type and the type of Index. */
-   static String getSerializationType();
-
-   /** \brief Returns (host) type of vector Real value, Device type and the type of Index. */
-   virtual String getSerializationTypeVirtual() const;
 
    /**
     * \brief Returns a modifiable view of the vector.

@@ -100,7 +100,7 @@ class TestDistributedGridMPIIO{
             loadDof.setValue(-1);
         
             File file;
-            file.open( FileName, File::Mode::In );
+            file.open( FileName, std::ios_base::in );
             loadMeshFunctionptr->boundLoad(file);
             file.close();
 
@@ -148,7 +148,7 @@ class TestDistributedGridMPIIO{
             linearFunctionEvaluator.evaluateAllEntities(saveMeshFunctionptr , linearFunctionPtr);
       
             File file;
-            file.open( FileName, File::Mode::Out );        
+            file.open( FileName, std::ios_base::out );        
             saveMeshFunctionptr->save(file);
             file.close();
         }

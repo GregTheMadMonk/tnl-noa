@@ -89,7 +89,6 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, Real > >
       typedef Pointers::SharedPointer<  FunctionType > FunctionPointer;
       typedef typename MeshType::DeviceType DeviceType;
       typedef typename MeshType::GlobalIndexType IndexType;
-      typedef VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, RealType > > ThisType;
       typedef Containers::StaticVector< Size, RealType > VectorType;
       
       static constexpr int getEntitiesDimension() { return FunctionType::getEntitiesDimension(); }
@@ -177,7 +176,7 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, Real > >
          return Size * FunctionType::getDofs( meshPointer );
       }
       
-      void bind( ThisType& vectorField )
+      void bind( VectorField& vectorField )
       {
          for( int i = 0; i < Size; i ++ )
          {
@@ -283,14 +282,21 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, Real > >
          for( int i = 0; i < Size; i++ )
             vectorField[ i ]->load( file );
       }
- 
+
       void boundLoad( File& file )
       {
          Object::load( file );
          for( int i = 0; i < Size; i++ )
             vectorField[ i ]->boundLoad( file );
       }
-      
+
+      void boundLoad( const String& fileName )
+      {
+         File file;
+         file.open( fileName, std::ios_base::in );
+         this->boundLoad( file );
+      }
+
       bool write( const String& fileName,
                   const String& format = "vtk",
                   const double& scale = 1.0 ) const
@@ -303,9 +309,9 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, Real > >
             return false;
          }
          if( format == "vtk" )
-            return VectorFieldVTKWriter< ThisType >::write( *this, file, scale );
+            return VectorFieldVTKWriter< VectorField >::write( *this, file, scale );
          else if( format == "gnuplot" )
-            return VectorFieldGnuplotWriter< ThisType >::write( *this, file, scale );
+            return VectorFieldGnuplotWriter< VectorField >::write( *this, file, scale );
          else {
             std::cerr << "Unknown output format: " << format << std::endl;
             return false;
@@ -317,8 +323,6 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, Real > >
  
       using Object::load;
  
-      using Object::boundLoad;      
-
    protected:
       
       Containers::StaticArray< Size, FunctionPointer > vectorField;

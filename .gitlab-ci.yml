@@ -21,6 +21,7 @@ stages:
     WITH_MPI: "no"
     WITH_TESTS: "yes"
     WITH_COVERAGE: "no"
+    WITH_DOC: "no"
     # these are built only in the "full" config
     WITH_BENCHMARKS: "no"
     WITH_EXAMPLES: "no"
@@ -55,6 +56,7 @@ stages:
                 -DWITH_CUDA_ARCH=${WITH_CUDA_ARCH}
                 -DWITH_MIC=${WITH_MIC}
                 -DWITH_TESTS=${WITH_TESTS}
+                -DWITH_DOC=${WITH_DOC}
                 -DWITH_COVERAGE=${WITH_COVERAGE}
                 -DWITH_BENCHMARKS=${WITH_BENCHMARKS}
                 -DWITH_EXAMPLES=${WITH_EXAMPLES}

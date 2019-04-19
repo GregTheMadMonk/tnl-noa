@@ -35,7 +35,6 @@ public:
 	typedef Index IndexType;
 	typedef typename Sparse< RealType, DeviceType, IndexType >:: CompressedRowLengthsVector CompressedRowLengthsVector;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
-	typedef COOMatrix< Real, Device, Index > ThisType;
 	typedef COOMatrix< Real, Devices::Host, Index > HostType;
 	typedef COOMatrix< Real, Devices::Cuda, Index > CudaType;
 
@@ -103,13 +102,13 @@ public:
 	typename Vector::RealType rowVectorProduct(const IndexType row,
 											   const Vector& inVector) const;
 
-	bool save(File& file) const;
+	void save(File& file) const;
 
-	bool load(File& file);
+	void load(File& file);
 
-	bool save(const String& fileName) const;
+	void save(const String& fileName) const;
 
-	bool load(const String& fileName);
+	void load(const String& fileName);
 
 	// TODO: nejsem si jisty jestli dela to co ma
 	void print(std::ostream& str) const;

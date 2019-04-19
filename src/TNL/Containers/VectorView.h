@@ -17,12 +17,6 @@
 namespace TNL {
 namespace Containers {
 
-template< typename Real, typename Device, typename Index >
-class Vector;
-
-template< int Size, typename Real >
-class StaticVector;
-
 template< typename Real = double,
           typename Device = Devices::Host,
           typename Index = int >
@@ -38,7 +32,7 @@ public:
    using HostType = VectorView< Real, Devices::Host, Index >;
    using CudaType = VectorView< Real, Devices::Cuda, Index >;
    using ViewType = VectorView< Real, Device, Index >;
-   using ConstViewType = VectorView< typename std::add_const< Real >::type, Device, Index >;
+   using ConstViewType = VectorView< std::add_const_t< Real >, Device, Index >;
 
    // inherit all ArrayView's constructors
 #ifndef __NVCC__

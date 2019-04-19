@@ -31,9 +31,7 @@ class FunctionInverseOperator
       typedef OperatorT OperatorType;
       typedef typename OperatorType::RealType RealType;
       typedef typename OperatorType::IndexType IndexType;
-      typedef FunctionInverseOperator< OperatorT > ThisType;
-      typedef ThisType ExactOperatorType;
- 
+      typedef FunctionInverseOperator ExactOperatorType;
  
       FunctionInverseOperator( const OperatorType& operator_ )
       : operator_( operator_ ) {};

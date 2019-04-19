@@ -84,7 +84,6 @@ public:
     typedef Index IndexType;
     typedef typename Sparse< RealType, DeviceType, IndexType >::CompressedRowLengthsVector CompressedRowLengthsVector;
     typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
-    typedef AdEllpack< Real, Device, Index > ThisType;
     typedef AdEllpack< Real, Devices::Host, Index > HostType;
     typedef AdEllpack< Real, Devices::Cuda, Index > CudaType;
 

@@ -13,6 +13,7 @@
 #include <TNL/Matrices/SlicedEllpack.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Math.h>
+#include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
 namespace Matrices {   
@@ -551,7 +552,7 @@ void SlicedEllpack< Real, Device, Index, SliceSize >::addMatrix( const SlicedEll
                                                                           const RealType& matrixMultiplicator,
                                                                           const RealType& thisMatrixMultiplicator )
 {
-   TNL_ASSERT( false, std::cerr << "TODO: implement" );
+   throw Exceptions::NotImplementedError( "SlicedEllpack::addMatrix is not implemented." );
    // TODO: implement
 }
 
@@ -564,7 +565,7 @@ template< typename Real,
 void SlicedEllpack< Real, Device, Index, SliceSize >::getTransposition( const SlicedEllpack< Real2, Device, Index2 >& matrix,
                                                                       const RealType& matrixMultiplicator )
 {
-   TNL_ASSERT( false, std::cerr << "TODO: implement" );
+   throw Exceptions::NotImplementedError( "SlicedEllpack::getTransposition is not implemented." );
    // TODO: implement
 }
 
@@ -693,7 +694,7 @@ SlicedEllpack< Real, Device, Index, SliceSize >::operator=( const SlicedEllpack<
    }
    
    if( std::is_same< Device, Devices::MIC >::value ) {
-      throw std::runtime_error("Not Implemented yet for MIC");
+      throw Exceptions::NotImplementedError("Cross-device assignment for the SlicedEllpack format is not implemented for MIC.");
    }
 
    return *this;
@@ -707,8 +708,7 @@ template< typename Real,
 void SlicedEllpack< Real, Device, Index, SliceSize >::save( File& file ) const
 {
    Sparse< Real, Device, Index >::save( file );
-   this->slicePointers.save( file );
-   this->sliceCompressedRowLengths.save( file );
+   file << this->slicePointers << this->sliceCompressedRowLengths;
 }
 
 template< typename Real,
@@ -718,8 +718,7 @@ template< typename Real,
 void SlicedEllpack< Real, Device, Index, SliceSize >::load( File& file )
 {
    Sparse< Real, Device, Index >::load( file );
-   this->slicePointers.load( file );
-   this->sliceCompressedRowLengths.load( file );
+   file >> this->slicePointers >> this->sliceCompressedRowLengths;
 }
 
 template< typename Real,
@@ -1079,7 +1078,7 @@ class SlicedEllpackDeviceDependentCode< Devices::MIC >
                                    Index& rowEnd,
                                    Index& step )
       {
-         throw std::runtime_error("Not Implemented yet SlicedEllpackDeviceDependentCode< Devices::MIC >::initRowTraverse");
+         throw Exceptions::NotImplementedError("Not Implemented yet SlicedEllpackDeviceDependentCode< Devices::MIC >::initRowTraverse");
       }
 
       template< typename Real,
@@ -1092,7 +1091,7 @@ class SlicedEllpackDeviceDependentCode< Devices::MIC >
                                        Index& rowEnd,
                                        Index& step )
       {
-         throw std::runtime_error("Not Implemented yet SlicedEllpackDeviceDependentCode< Devices::MIC >::initRowTraverseFast");
+         throw Exceptions::NotImplementedError("Not Implemented yet SlicedEllpackDeviceDependentCode< Devices::MIC >::initRowTraverseFast");
       }
 
       template< typename Real,
@@ -1101,7 +1100,7 @@ class SlicedEllpackDeviceDependentCode< Devices::MIC >
       static bool computeMaximalRowLengthInSlices( SlicedEllpack< Real, Device, Index, SliceSize >& matrix,
                                                    typename SlicedEllpack< Real, Device, Index >::ConstCompressedRowLengthsVectorView rowLengths )
       {
-         throw std::runtime_error("Not Implemented yet SlicedEllpackDeviceDependentCode< Devices::MIC >::computeMaximalRowLengthInSlices");
+         throw Exceptions::NotImplementedError("Not Implemented yet SlicedEllpackDeviceDependentCode< Devices::MIC >::computeMaximalRowLengthInSlices");
       }
 
       template< typename Real,
@@ -1113,7 +1112,7 @@ class SlicedEllpackDeviceDependentCode< Devices::MIC >
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
-         throw std::runtime_error("Not Implemented yet SlicedEllpackDeviceDependentCode< Devices::MIC >::vectorProduct");
+         throw Exceptions::NotImplementedError("Not Implemented yet SlicedEllpackDeviceDependentCode< Devices::MIC >::vectorProduct");
       }
 };
 

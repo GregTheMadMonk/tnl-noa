@@ -193,8 +193,8 @@ saveFailedLinearSystem( const Matrix& matrix,
                         const DofVectorType& rhs ) const
 {
     matrix.save( "failed-matrix.tnl" );
-    dofs.save( "failed-dof.vec.tnl" );
-    rhs.save( "failed-rhs.vec.tnl" );
+    File( "failed-dof.vec.tnl", std::ios_base::out ) << dofs;
+    File( "failed-rhs.vec.tnl", std::ios_base::out ) << rhs;
     std::cerr << "The linear system has been saved to failed-{matrix,dof.vec,rhs.vec}.tnl" << std::endl;
 }
 

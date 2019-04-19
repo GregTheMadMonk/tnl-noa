@@ -10,17 +10,15 @@
 
 #pragma once
 
-#include <TNL/Object.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Solvers/BuildConfigTags.h>
 
 namespace TNL {
-namespace Solvers {   
+namespace Solvers {
 
 template< template< typename Real, typename Device, typename Index, typename MeshType, typename ConfigTag, typename SolverStarter , typename CommunicatorType  > class ProblemSetter,
           typename ConfigTag >
-
-class SolverInitiator : public Object
+class SolverInitiator
 {
    public:
 

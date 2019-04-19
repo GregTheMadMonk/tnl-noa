@@ -13,6 +13,7 @@
 #include <TNL/Matrices/ChunkedEllpack.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Math.h>
+#include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
 namespace Matrices {   
@@ -1185,7 +1186,7 @@ void ChunkedEllpack< Real, Device, Index >::addMatrix( const ChunkedEllpack< Rea
                                                                           const RealType& matrixMultiplicator,
                                                                           const RealType& thisMatrixMultiplicator )
 {
-   TNL_ASSERT( false, std::cerr << "TODO: implement" );
+   throw Exceptions::NotImplementedError( "ChunkedEllpack::addMatrix is not implemented." );
    // TODO: implement
 }
 
@@ -1197,7 +1198,7 @@ template< typename Real,
 void ChunkedEllpack< Real, Device, Index >::getTransposition( const ChunkedEllpack< Real2, Device, Index2 >& matrix,
                                                                        const RealType& matrixMultiplicator )
 {
-   TNL_ASSERT( false, std::cerr << "TODO: implement" );
+   throw Exceptions::NotImplementedError( "ChunkedEllpack::getTransposition is not implemented." );
    // TODO: implement
 }
 
@@ -1276,8 +1277,7 @@ ChunkedEllpack< Real, Device, Index >::operator=( const ChunkedEllpack< Real2, D
 
    this->setLike( matrix );
 
-   std::cerr << "Cross-device assignment for the ChunkedEllpack format is not implemented yet." << std::endl;
-   throw 1;
+   throw Exceptions::NotImplementedError("Cross-device assignment for the ChunkedEllpack format is not implemented yet.");
 }
 
 
@@ -1287,10 +1287,7 @@ template< typename Real,
 void ChunkedEllpack< Real, Device, Index >::save( File& file ) const
 {
    Sparse< Real, Device, Index >::save( file );
-   this->rowToChunkMapping.save( file );
-   this->rowToSliceMapping.save( file );
-   this->rowPointers.save( file );
-   this->slices.save( file );
+   file << this->rowToChunkMapping << this->rowToSliceMapping << this->rowPointers << this->slices;
 }
 
 template< typename Real,
@@ -1299,10 +1296,7 @@ template< typename Real,
 void ChunkedEllpack< Real, Device, Index >::load( File& file )
 {
    Sparse< Real, Device, Index >::load( file );
-   this->rowToChunkMapping.load( file );
-   this->rowToSliceMapping.load( file );
-   this->rowPointers.load( file );
-   this->slices.load( file );
+   file >> this->rowToChunkMapping >> this->rowToSliceMapping >> this->rowPointers >> this->slices;
 }
 
 template< typename Real,

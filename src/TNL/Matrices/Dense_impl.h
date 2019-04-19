@@ -12,6 +12,7 @@
 
 #include <TNL/Assert.h>
 #include <TNL/Matrices/Dense.h>
+#include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
 namespace Matrices {   
@@ -612,7 +613,7 @@ void Dense< Real, Device, Index >::getMatrixProduct( const Matrix1& matrix1,
                cudaGridSize.x = columnTiles % Devices::Cuda::getMaxGridSize();
             if( gridIdx_y == rowGrids - 1 )
                cudaGridSize.y = rowTiles % Devices::Cuda::getMaxGridSize();
-            ThisType* this_kernel = Devices::Cuda::passToDevice( *this );
+            Dense* this_kernel = Devices::Cuda::passToDevice( *this );
             Matrix1* matrix1_kernel = Devices::Cuda::passToDevice( matrix1 );
             Matrix2* matrix2_kernel = Devices::Cuda::passToDevice( matrix2 );
             DenseMatrixProductKernel< Real,
@@ -828,7 +829,7 @@ void Dense< Real, Device, Index >::getTransposition( const Matrix& matrix,
       const IndexType columnGrids = roundUpDivision( columnTiles, Devices::Cuda::getMaxGridSize() );
       const IndexType sharedMemorySize = tileDim*tileDim + tileDim*tileDim/Devices::Cuda::getNumberOfSharedMemoryBanks();
 
-      ThisType* this_device = Devices::Cuda::passToDevice( *this );
+      Dense* this_device = Devices::Cuda::passToDevice( *this );
       Matrix* matrix_device = Devices::Cuda::passToDevice( matrix );
 
       for( IndexType gridIdx_x = 0; gridIdx_x < columnGrids; gridIdx_x++ )
@@ -928,8 +929,7 @@ Dense< Real, Device, Index >::operator=( const Dense< Real2, Device2, Index2 >& 
 
    this->setLike( matrix );
 
-   std::cerr << "Cross-device assignment for the Dense format is not implemented yet." << std::endl;
-   throw 1;
+   throw Exceptions::NotImplementedError("Cross-device assignment for the Dense format is not implemented yet.");
 }
 
 

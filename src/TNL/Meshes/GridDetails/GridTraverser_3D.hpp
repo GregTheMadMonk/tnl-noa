@@ -16,6 +16,7 @@
 #include <TNL/CudaStreamPool.h>
 #include <TNL/Exceptions/CudaSupportMissing.h>
 #include <TNL/Meshes/GridDetails/GridTraverser.h>
+#include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
 namespace Meshes {
@@ -512,7 +513,7 @@ processEntities(
    const int& stream,
    const GridEntityParameters&... gridEntityParameters )
 {
-    std::cout << "Not Implemented yet Grid Traverser <3, Real, Device::MIC>" << std::endl;
+    throw Exceptions::NotImplementedError("Not Implemented yet Grid Traverser <3, Real, Device::MIC>");
     
 /* HAVE_CUDA   
    dim3 cudaBlockSize( 8, 8, 8 );

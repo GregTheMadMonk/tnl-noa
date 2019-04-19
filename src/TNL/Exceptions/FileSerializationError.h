@@ -22,8 +22,8 @@ class FileSerializationError
    : public std::runtime_error
 {
 public:
-   FileSerializationError( const std::string& objectType, const std::string& fileName )
-   : std::runtime_error( "Failed to serialize object of type '" + objectType + "' into file '" + fileName + "'." )
+   FileSerializationError( const std::string& fileName, const std::string& details )
+   : std::runtime_error( "Failed to serialize an object into the file '" + fileName + "': " + details )
    {}
 };
 

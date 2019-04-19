@@ -17,21 +17,21 @@ int main()
     * Save the array of doubles as floats.
     */
    File file;
-   file.open( "test-file.tnl", File::Mode::Out | File::Mode::Truncate );
+   file.open( "test-file.tnl", std::ios_base::out | std::ios_base::trunc );
    file.save< double, float, Devices::Host >( doubleArray, size );
    file.close();
 
    /***
     * Load the array of floats from the file.
     */
-   file.open( "test-file.tnl", File::Mode::In );
+   file.open( "test-file.tnl", std::ios_base::in );
    file.load< float, float, Devices::Host >( floatArray, size );
    file.close();
 
    /***
     * Load the array of floats from the file and convert them to integers.
     */
-   file.open( "test-file.tnl", File::Mode::In );
+   file.open( "test-file.tnl", std::ios_base::in );
    file.load< int, float, Devices::Host >( intArray, size );
    file.close();
 
@@ -44,5 +44,3 @@ int main()
                 << floatArray[ i ] << " -- "
                 << intArray[ i ] << std::endl;
 }
-
-

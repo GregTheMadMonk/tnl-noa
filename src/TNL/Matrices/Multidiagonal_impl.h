@@ -13,6 +13,7 @@
 #include <TNL/Matrices/Multidiagonal.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Math.h>
+#include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
 namespace Matrices {   
@@ -545,7 +546,7 @@ void Multidiagonal< Real, Device, Index > :: addMatrix( const Multidiagonal< Rea
                                                                  const RealType& matrixMultiplicator,
                                                                  const RealType& thisMatrixMultiplicator )
 {
-   TNL_ASSERT( false, std::cerr << "TODO: implement" );
+   throw Exceptions::NotImplementedError( "Multidiagonal::addMatrix is not implemented." );
 }
 
 template< typename Real,
@@ -642,8 +643,7 @@ Multidiagonal< Real, Device, Index >::operator=( const Multidiagonal< Real2, Dev
 
    this->setLike( matrix );
 
-   std::cerr << "Cross-device assignment for the Multidiagonal format is not implemented yet." << std::endl;
-   throw 1;
+   throw Exceptions::NotImplementedError("Cross-device assignment for the Multidiagonal format is not implemented yet.");
 }
 
 
@@ -653,8 +653,7 @@ template< typename Real,
 void Multidiagonal< Real, Device, Index >::save( File& file ) const
 {
    Matrix< Real, Device, Index >::save( file );
-   this->values.save( file );
-   this->diagonalsShift.save( file );
+   file << this->values << this->diagonalsShift;
 }
 
 template< typename Real,
@@ -663,8 +662,7 @@ template< typename Real,
 void Multidiagonal< Real, Device, Index >::load( File& file )
 {
    Matrix< Real, Device, Index >::load( file );
-   this->values.load( file );
-   this->diagonalsShift.load( file );
+   file >> this->values >> this->diagonalsShift;
 }
 
 template< typename Real,

@@ -38,7 +38,6 @@ public:
    typedef Index IndexType;
    typedef typename Matrix< Real, Device, Index >::CompressedRowLengthsVector CompressedRowLengthsVector;
    typedef typename Matrix< Real, Device, Index >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
-   typedef Multidiagonal< Real, Device, Index > ThisType;
    typedef Multidiagonal< Real, Devices::Host, Index > HostType;
    typedef Multidiagonal< Real, Devices::Cuda, Index > CudaType;
    typedef Matrix< Real, Device, Index > BaseType;

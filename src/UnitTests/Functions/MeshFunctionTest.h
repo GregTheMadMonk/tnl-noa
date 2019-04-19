@@ -10,9 +10,7 @@
 
 #pragma once
 
-#include "../GtestMissingError.h"
-
-#ifdef HAVE_GTEST 
+#ifdef HAVE_GTEST
 #include <gtest/gtest.h>
 #include <sstream>
 #include <TNL/Functions/MeshFunction.h>
@@ -35,7 +33,7 @@ TEST( MeshFunctionTest, OstreamOperatorTest )
    grid->setDimensions( CoordinatesType( 3, 3 ) );
    MeshFunctionType meshFunction( grid );
    meshFunction.getData().setValue( 1.0 );
-   
+
    const char* str = "[ 1, 1, 1, 1, 1, 1, 1, 1, 1 ]";
    std::stringstream string_stream1, string_stream2( str );
    string_stream1 << meshFunction;
@@ -46,12 +44,4 @@ TEST( MeshFunctionTest, OstreamOperatorTest )
 #endif
 
 
-int main( int argc, char* argv[] )
-{
-#ifdef HAVE_GTEST
-   ::testing::InitGoogleTest( &argc, argv );
-   return RUN_ALL_TESTS();
-#else
-   throw GtestMissingError();
-#endif
-}
+#include "../main.h"

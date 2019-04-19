@@ -31,7 +31,6 @@ class EllpackSymmetricGraph : public Sparse< Real, Device, Index >
    typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
-   typedef EllpackSymmetricGraph< Real, Device, Index > ThisType;
    typedef EllpackSymmetricGraph< Real, Devices::Host, Index > HostType;
    typedef EllpackSymmetricGraph< Real, Devices::Cuda, Index > CudaType;
 

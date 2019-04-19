@@ -33,34 +33,40 @@ class File
    public:
 
       /**
-       * This enum defines mode for opening files.
-       */
-      enum class Mode
-      {
-         In = 1,       ///< Open for input.
-         Out = 2,      ///< Open for output.
-         Append = 4,   ///< Output operations are appended at the end of file.
-         AtEnd = 8,    ///< Set the initial position at the end.
-         Truncate = 16 ///< If the file is opened for ouptput, its previous content is deleted.
-      };
-      
-      /**
        * \brief Basic constructor.
        */
       File() = default;
 
+      File( const File& ) = delete;
+
+      File( File&& ) = default;
+
+      File& operator=( const File& ) = delete;
+
+      File& operator=( File&& ) = default;
+
+      /**
+       * \brief Constructor which opens given file.
+       *
+       * All parameters are passed to the \ref open method.
+       */
+      File( const String& fileName,
+            std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out );
+
       /**
        * \brief Open given file.
        *
-       * Opens file with given \e fileName in some \e mode from \ref File::Mode.
+       * Opens file with given \e fileName in some \e mode from \ref std::ios_base::openmode.
+       * Note that the file is always opened in binary mode, i.e. \ref std::ios_base::binary
+       * is always added to \e mode.
        * 
        * Throws \ref std::ios_base::failure on failure.
        * 
        * \param fileName String which indicates file name.
-       * \param mode Indicates in what mode the file will be opened - see. \ref File::Mode.
+       * \param mode Indicates in what mode the file will be opened - see \ref std::ios_base::openmode.
        */
       void open( const String& fileName,
-                 Mode mode = static_cast< Mode >( static_cast< int >( Mode::In ) | static_cast< int >( Mode::Out ) ) );
+                 std::ios_base::openmode mode = std::ios_base::in | std::ios_base::out );
 
       /**
        * \brief Closes the file.
@@ -207,6 +213,7 @@ File& operator<<( File& file, const std::string& str );
  * \brief Deserialization of strings.
  */
 File& operator>>( File& file, std::string& str );
+
 } // namespace TNL
 
 #include <TNL/File.hpp>

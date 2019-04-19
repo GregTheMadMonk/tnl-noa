@@ -42,26 +42,6 @@ getTypeVirtual() const
 template< typename Real,
           typename Device,
           typename Index >
-String
-Vector< Real, Device, Index >::
-getSerializationType()
-{
-   return HostType::getType();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-String
-Vector< Real, Device, Index >::
-getSerializationTypeVirtual() const
-{
-   return this->getSerializationType();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
 typename Vector< Real, Device, Index >::ViewType
 Vector< Real, Device, Index >::
 getView()

@@ -47,11 +47,11 @@ int main( int argc, char* argv[] )
       cout << "string1 is not empty" << endl;
 
    File myFile;
-   myFile.open( "string_save.out", File::Mode::Out );
+   myFile.open( "string_save.out", std::ios_base::out );
    myFile << string1;
    myFile.close();
 
-   myFile.open( "string_save.out", File::Mode::In );
+   myFile.open( "string_save.out", std::ios_base::in );
    myFile >> string3;
    cout << "string 3 after loading = " << string3 << endl;
 }

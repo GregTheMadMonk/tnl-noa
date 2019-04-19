@@ -363,8 +363,8 @@ bool computeDifferenceOfVectors( const MeshPointer& meshPointer, const Config::P
          }
          if( verbose )
            std::cout << "Processing files " << inputFiles[ i ] << " and " << inputFiles[ i + 1 ] << "...           \r" << std::flush;
-         v1.load( inputFiles[ i ] );
-         v2.load( inputFiles[ i + 1 ] );
+         File( inputFiles[ i ], std::ios_base::in ) >> v1;
+         File( inputFiles[ i + 1 ], std::ios_base::in ) >> v2;
          outputFile << std::setw( 6 ) << i/2 * snapshotPeriod << " ";
          i++;
       }
@@ -374,11 +374,11 @@ bool computeDifferenceOfVectors( const MeshPointer& meshPointer, const Config::P
          {
             if( verbose )
               std::cout << "Reading the file " << inputFiles[ 0 ] << "...               \r" << std::flush;
-            v1.load( inputFiles[ 0 ] );
+            File( inputFiles[ 0 ], std::ios_base::in ) >> v1;
          }
          if( verbose )
            std::cout << "Processing the files " << inputFiles[ 0 ] << " and " << inputFiles[ i ] << "...             \r" << std::flush;
-         v2.load( inputFiles[ i ] );
+         File( inputFiles[ i ], std::ios_base::in ) >> v2;
          outputFile << std::setw( 6 ) << ( i - 1 ) * snapshotPeriod << " ";
       }
       if( mode == "halves" )
@@ -388,8 +388,8 @@ bool computeDifferenceOfVectors( const MeshPointer& meshPointer, const Config::P
             i = half;
          if( verbose )
            std::cout << "Processing files " << inputFiles[ i - half ] << " and " << inputFiles[ i ] << "...                 \r" << std::flush;
-         v1.load( inputFiles[ i - half ] );
-         v2.load( inputFiles[ i ] );
+         File( inputFiles[ i - half ], std::ios_base::in ) >> v1;
+         File( inputFiles[ i ], std::ios_base::in ) >> v2;
          //if( snapshotPeriod != 0.0 )
          outputFile << std::setw( 6 ) << ( i - half ) * snapshotPeriod << " ";
       }
@@ -421,7 +421,7 @@ bool computeDifferenceOfVectors( const MeshPointer& meshPointer, const Config::P
          diff.setLike( v1 );
          diff = v1;
          diff -= v2;
-         diff.save( differenceFileName );
+         File( differenceFileName, std::ios_base::out ) << diff;
       }
    }
    outputFile.close();
@@ -436,7 +436,8 @@ bool computeDifference( const MeshPointer& meshPointer, const String& objectType
 {
    if( objectType == "Functions::MeshFunction" )
       return computeDifferenceOfMeshFunctions< MeshPointer, Value, Real, Index >( meshPointer, parameters );
-   if( objectType == "Containers::Vector" )
+   if( objectType == "Containers::Array" ||
+       objectType == "Containers::Vector" )  // TODO: remove deprecated names (Vector is saved as Array)
       return computeDifferenceOfVectors< MeshPointer, Value, Real, Index >( meshPointer, parameters );
    std::cerr << "Unknown object type " << objectType << "." << std::endl;
    return false;
@@ -450,7 +451,8 @@ bool setIndexType( const MeshPointer& meshPointer,
                    const Config::ParameterContainer& parameters )
 {
    String indexType;
-   if( parsedObjectType[ 0 ] == "Containers::Vector" )
+   if( parsedObjectType[ 0 ] == "Containers::Array" ||
+       parsedObjectType[ 0 ] == "Containers::Vector" )  // TODO: remove deprecated names (Vector is saved as Array)
       indexType = parsedObjectType[ 3 ];
 
    if( parsedObjectType[ 0 ] == "Functions::MeshFunction" )
@@ -525,7 +527,8 @@ bool setValueType( const MeshPointer& meshPointer,
 
    if( parsedObjectType[ 0 ] == "Functions::MeshFunction" )
       elementType = parsedObjectType[ 3 ];
-   if( parsedObjectType[ 0 ] == "Containers::Vector" )
+   if( parsedObjectType[ 0 ] == "Containers::Array" ||
+       parsedObjectType[ 0 ] == "Containers::Vector" )  // TODO: remove deprecated names (Vector is saved as Array)
       elementType = parsedObjectType[ 1 ];
 
 
@@ -580,7 +583,7 @@ bool processFiles( const Config::ParameterContainer& parameters )
    {
       objectType = getObjectType( inputFiles[ 0 ] );
    }
-   catch( std::ios_base::failure exception )
+   catch( const std::ios_base::failure& exception )
    {
       std::cerr << "Cannot open file " << inputFiles[ 0 ] << std::endl;
    }

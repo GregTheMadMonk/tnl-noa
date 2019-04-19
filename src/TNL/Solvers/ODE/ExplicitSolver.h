@@ -12,7 +12,6 @@
 
 #include <iomanip>
 #include <TNL/Experimental/Arithmetics/FlopsCounter.h>
-#include <TNL/Object.h>
 #include <TNL/Solvers/IterativeSolverMonitor.h>
 #include <TNL/Solvers/IterativeSolver.h>
 #include <TNL/Config/ConfigDescription.h>

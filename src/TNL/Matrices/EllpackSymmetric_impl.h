@@ -13,6 +13,7 @@
 #include <TNL/Matrices/EllpackSymmetric.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Math.h>
+#include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
 namespace Matrices {
@@ -480,7 +481,7 @@ void EllpackSymmetric< Real, Device, Index > :: addMatrix( const EllpackSymmetri
                                                                  const RealType& matrixMultiplicator,
                                                                  const RealType& thisMatrixMultiplicator )
 {
-   TNL_ASSERT( false,std::cerr << "TODO: implement" );
+   throw Exceptions::NotImplementedError( "EllpackSymmetric::addMatrix is not implemented." );
    // TODO: implement
 }
 
@@ -492,7 +493,7 @@ template< typename Real,
 void EllpackSymmetric< Real, Device, Index >::getTransposition( const EllpackSymmetric< Real2, Device, Index2 >& matrix,
                                                                       const RealType& matrixMultiplicator )
 {
-   TNL_ASSERT( false,std::cerr << "TODO: implement" );
+   throw Exceptions::NotImplementedError( "EllpackSymmetric::getTransposition is not implemented." );
    // TODO: implement
 }
 

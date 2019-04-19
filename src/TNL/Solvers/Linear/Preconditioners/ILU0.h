@@ -17,6 +17,7 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Matrices/CSR.h>
 #include <TNL/Pointers/UniquePointer.h>
+#include <TNL/Exceptions/NotImplementedError.h>
 
 #if defined(HAVE_CUDA) && defined(HAVE_CUSPARSE)
 #include <cusparse.h>
@@ -189,12 +190,12 @@ public:
 
    virtual void update( const MatrixPointer& matrixPointer ) override
    {
-      throw std::runtime_error("ILU0 is not implemented yet for CUDA and distributed matrices.");
+      throw Exceptions::NotImplementedError("ILU0 is not implemented yet for CUDA and distributed matrices.");
    }
 
    virtual void solve( ConstVectorViewType b, VectorViewType x ) const override
    {
-      throw std::runtime_error("ILU0 is not implemented yet for CUDA and distributed matrices.");
+      throw Exceptions::NotImplementedError("ILU0 is not implemented yet for CUDA and distributed matrices.");
    }
 };
 
@@ -212,12 +213,12 @@ public:
 
    virtual void update( const MatrixPointer& matrixPointer ) override
    {
-      throw std::runtime_error("Not Iplemented yet for MIC");
+      throw Exceptions::NotImplementedError("Not Iplemented yet for MIC");
    }
 
    virtual void solve( ConstVectorViewType b, VectorViewType x ) const override
    {
-      throw std::runtime_error("Not Iplemented yet for MIC");
+      throw Exceptions::NotImplementedError("Not Iplemented yet for MIC");
    }
 };
 

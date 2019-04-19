@@ -35,9 +35,8 @@ class Grid< 3, Real, Device, Index > : public Object
    typedef Containers::StaticVector< 3, Index > CoordinatesType;
    typedef Grid< 3, Real, Devices::Host, Index > HostType;
    typedef Grid< 3, Real, Devices::Cuda, Index > CudaType;
-   typedef Grid< 3, Real, Device, Index > ThisType;
 
-   typedef DistributedMeshes::DistributedMesh <ThisType> DistributedMeshType;
+   typedef DistributedMeshes::DistributedMesh <Grid> DistributedMeshType;
  
    // TODO: deprecated and to be removed (GlobalIndexType shall be used instead)
    typedef Index IndexType;
@@ -46,7 +45,7 @@ class Grid< 3, Real, Device, Index > : public Object
 
    template< int EntityDimension,
              typename Config = GridEntityCrossStencilStorage< 1 > >
-   using EntityType = GridEntity< ThisType, EntityDimension, Config >;
+   using EntityType = GridEntity< Grid, EntityDimension, Config >;
 
    typedef EntityType< getMeshDimension(), GridEntityCrossStencilStorage< 1 > > Cell;
    typedef EntityType< getMeshDimension() - 1 > Face;

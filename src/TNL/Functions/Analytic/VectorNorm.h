@@ -285,9 +285,3 @@ std::ostream& operator << ( std::ostream& str, const VectorNorm< Dimensions, Rea
 } // namespace Analytic
 } // namespace Functions
 } // namespace TNL
-
-
-
-
-
-

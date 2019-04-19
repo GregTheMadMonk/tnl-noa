@@ -187,7 +187,8 @@ class ExplicitUpdater
                typedef Functions::FunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
                ( *userData.fu )( entity )  = 
                   ( *userData.differentialOperator )( *userData.u, entity, userData.time );
-                   + FunctionAdapter::getValue( *userData.rightHandSide, entity, userData.time );
+               // TODO: fix the right hand side here !!!
+//                   + FunctionAdapter::getValue( *userData.rightHandSide, entity, userData.time );
                
             }
 
@@ -200,6 +201,7 @@ class ExplicitUpdater
                typedef Functions::FunctionAdapter< MeshType, RightHandSide > FunctionAdapter;
                userData.real_fu[ entityIndex ] = 
                        ( *userData.differentialOperator )( mesh, userData.real_u, entityIndex, coordinates, userData.time );
+               // TODO: fix the right hand side here !!!
                     //   + 0.0;
             }
             

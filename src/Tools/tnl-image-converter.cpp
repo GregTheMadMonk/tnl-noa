@@ -160,7 +160,7 @@ bool processFiles( const Config::ParameterContainer& parameters )
       std::cout << "Processing file " << fileName << "... ";
       try
       {
-         vector.load( fileName );
+         File( fileName, std::ios_base::in ) >> vector;
       }
       catch(...)
       {

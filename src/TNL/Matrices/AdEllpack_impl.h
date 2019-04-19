@@ -612,10 +612,7 @@ template< typename Real,
 void AdEllpack< Real, Device, Index >::save( File& file ) const
 {
     Sparse< Real, Device, Index >::save( file );
-    this->offset.save( file );
-    this->rowOffset.save( file );
-    this->localLoad.save( file );
-    this->reduceMap.save( file );
+    file << this->offset << this->rowOffset << this->localLoad << this->reduceMap;
 }
 
 template< typename Real,
@@ -624,10 +621,7 @@ template< typename Real,
 void AdEllpack< Real, Device, Index >::load( File& file )
 {
     Sparse< Real, Device, Index >::load( file );
-    this->offset.load( file );
-    this->rowOffset.load( file );
-    this->localLoad.load( file );
-    this->reduceMap.load( file );
+    file >> this->offset >> this->rowOffset >> this->localLoad >> this->reduceMap;
 }
 
 template< typename Real,

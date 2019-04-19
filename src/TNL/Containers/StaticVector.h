@@ -27,7 +27,6 @@ class StaticVector : public StaticArray< Size, Real >
 {
    public:
    typedef Real RealType;
-   typedef StaticVector< Size, Real > ThisType;
    enum { size = Size };
 
    /**
@@ -210,7 +209,7 @@ class StaticVector : public StaticArray< Size, Real >
     * \brief Returns static vector with all elements in absolute value.
     */
    __cuda_callable__
-   ThisType abs() const;
+   StaticVector abs() const;
 
    /**
     * \brief Returns the length of this vector in p-dimensional vector space.
@@ -246,7 +245,6 @@ class StaticVector< 1, Real > : public StaticArray< 1, Real >
 {
    public:
    typedef Real RealType;
-   typedef StaticVector< 1, Real > ThisType;
    enum { size = 1 };
 
    /** \brief See StaticVector::StaticVector().*/
@@ -328,7 +326,7 @@ class StaticVector< 1, Real > : public StaticArray< 1, Real >
 
    /** \brief See StaticVector::abs() const.*/
    __cuda_callable__
-   ThisType abs() const;
+   StaticVector abs() const;
 
    /** \brief See StaticVector::lpNorm( const Real& p ) const.*/
    __cuda_callable__
@@ -360,7 +358,6 @@ class StaticVector< 2, Real > : public StaticArray< 2, Real >
 {
    public:
    typedef Real RealType;
-   typedef StaticVector< 2, Real > ThisType;
    enum { size = 2 };
 
    /** \brief See StaticVector::StaticVector().*/
@@ -451,7 +448,7 @@ class StaticVector< 2, Real > : public StaticArray< 2, Real >
 
    /** \brief See StaticVector::abs() const.*/
    __cuda_callable__
-   ThisType abs() const;
+   StaticVector abs() const;
 
    /** \brief See StaticVector::lpNorm( const Real& p ) const.*/
    __cuda_callable__
@@ -483,7 +480,6 @@ class StaticVector< 3, Real > : public StaticArray< 3, Real >
 {
    public:
    typedef Real RealType;
-   typedef StaticVector< 3, Real > ThisType;
    enum { size = 3 };
 
    /** \brief See StaticVector::StaticVector().*/
@@ -575,7 +571,7 @@ class StaticVector< 3, Real > : public StaticArray< 3, Real >
 
    /** \brief See StaticVector::abs() const.*/
    __cuda_callable__
-   ThisType abs() const;
+   StaticVector abs() const;
 
    /** \brief See StaticVector::lpNorm( const Real& p ) const.*/
    __cuda_callable__

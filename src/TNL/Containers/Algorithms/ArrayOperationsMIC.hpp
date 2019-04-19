@@ -20,6 +20,7 @@
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Algorithms/Reduction.h>
 #include <TNL/Containers/Algorithms/ReductionOperations.h>
+#include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
 namespace Containers {
@@ -146,7 +147,7 @@ ArrayOperations< Devices::MIC >::
 copySTLList( DestinationElement* destination,
                   const std::list< SourceElement >& source )
 {
-   TNL_ASSERT( false, std::cerr << "TODO" );
+   throw Exceptions::NotImplementedError();
 }
 
 template< typename Element1,
@@ -212,8 +213,7 @@ containsValue( const Element* data,
    TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
    TNL_ASSERT_GE( size, 0, "" );
 #ifdef HAVE_MIC
-   TNL_ASSERT( false, );
-   return false;
+   throw Exceptions::NotImplementedError();
 #else
    throw Exceptions::MICSupportMissing();
 #endif
@@ -230,8 +230,7 @@ containsOnlyValue( const Element* data,
    TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
    TNL_ASSERT_GE( size, 0, "" );
 #ifdef HAVE_MIC
-   TNL_ASSERT( false, );
-   return false;
+   throw Exceptions::NotImplementedError();
 #else
    throw Exceptions::MICSupportMissing();
 #endif

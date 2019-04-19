@@ -171,10 +171,13 @@ TYPED_TEST( ArrayViewTest, constructors )
    // test initialization by const reference
    const ArrayType& b = a;
    ConstViewType b_view = b.getConstView();
+   EXPECT_EQ( b_view.getData(), b.getData() );
    ConstViewType const_a_view = a.getConstView();
+   EXPECT_EQ( const_a_view.getData(), a.getData() );
 
    // test initialization of const view by non-const view
    ConstViewType const_b_view( b_view );
+   EXPECT_EQ( const_b_view.getData(), b_view.getData() );
 }
 
 TYPED_TEST( ArrayViewTest, bind )
@@ -197,19 +200,13 @@ TYPED_TEST( ArrayViewTest, bind )
    EXPECT_EQ( a.getSize(), 0 );
    EXPECT_EQ( v.getSize(), 10 );
 
-   if( std::is_same< typename ArrayType::DeviceType, Devices::Host >::value ) {
-      typename ArrayType::ValueType data[ 10 ] = { 1, 2, 3, 4, 5, 6, 7, 8, 10 };
-      a.bind( data, 10 );
-      EXPECT_EQ( a.getData(), data );
-      EXPECT_EQ( a.getSize(), 10 );
-      EXPECT_EQ( a.getElement( 1 ), 2 );
-      v.bind( a );
-      EXPECT_EQ( v.getElement( 1 ), 2 );
-      a.reset();
-      v.setElement( 1, 3 );
-      v.reset();
-      EXPECT_EQ( data[ 1 ], 3 );
-   }
+   ArrayType b = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+   EXPECT_EQ( b.getSize(), 10 );
+   EXPECT_EQ( b.getElement( 1 ), 2 );
+   v.bind( b );
+   EXPECT_EQ( v.getElement( 1 ), 2 );
+   v.setElement( 1, 3 );
+   EXPECT_EQ( b.getElement( 1 ), 3 );
 }
 
 TYPED_TEST( ArrayViewTest, swap )
@@ -548,13 +545,4 @@ TYPED_TEST( ArrayViewTest, assignmentOperatorWithDifferentType )
 #endif // HAVE_GTEST
 
 
-#include "../GtestMissingError.h"
-int main( int argc, char* argv[] )
-{
-#ifdef HAVE_GTEST
-   ::testing::InitGoogleTest( &argc, argv );
-   return RUN_ALL_TESTS();
-#else
-   throw GtestMissingError();
-#endif
-}
+#include "../main.h"

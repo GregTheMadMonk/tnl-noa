@@ -49,7 +49,6 @@ class SlicedEllpackSymmetric : public Sparse< Real, Device, Index >
    typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
-   typedef SlicedEllpackSymmetric< Real, Device, Index > ThisType;
    typedef SlicedEllpackSymmetric< Real, Devices::Host, Index > HostType;
    typedef SlicedEllpackSymmetric< Real, Devices::Cuda, Index > CudaType;
 

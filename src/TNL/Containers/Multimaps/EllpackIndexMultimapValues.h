@@ -89,7 +89,7 @@ class EllpackIndexMultimapValues
 
    protected:
       using ValuesCountType = typename std::conditional< std::is_const< IndexType >::value,
-                                                         typename std::add_const< LocalIndexType >::type,
+                                                         std::add_const_t< LocalIndexType >,
                                                          LocalIndexType >::type;
 
       __cuda_callable__

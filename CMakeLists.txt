@@ -7,7 +7,9 @@
 #
 ###############################################################################
 
-cmake_minimum_required( VERSION 3.5.1 )
+# cmake 3.12.2 is required due to compatibility with CUDA 10
+# (see the issue reported here: https://github.com/clab/dynet/issues/1457 )
+cmake_minimum_required( VERSION 3.12.2 )
 
 project( tnl )
 
@@ -62,8 +64,8 @@ endif()
 
 # check if the compiler is good enough
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-   # GCC 5.0 is the first release with full C++11 support (due to libstdc++)
-   # https://gcc.gnu.org/gcc-5/changes.html
+   # GCC 5.0 is the first release with full C++11 support (due to libstdc++) as
+   # well as full C++14 support: https://gcc.gnu.org/gcc-5/changes.html
    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "5.0")
       message(FATAL_ERROR "Insufficient GCC version")
    endif()
@@ -74,8 +76,13 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
    endif()
 endif()
 
+# set C++ standard
+set( CMAKE_CXX_STANDARD 14 )
+set( CMAKE_CXX_STANDARD_REQUIRED ON )
+set( CMAKE_CXX_EXTENSIONS OFF )
+
 # set Debug/Release options
-set( CMAKE_CXX_FLAGS "-std=c++11 -pthread -Wall -Wno-unused-local-typedefs -Wno-unused-variable" )
+set( CMAKE_CXX_FLAGS "-pthread -Wall -Wno-unused-local-typedefs -Wno-unused-variable" )
 set( CMAKE_CXX_FLAGS_DEBUG "-g" )
 set( CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -mtune=native -DNDEBUG" )
 #set( CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -mtune=native -DNDEBUG -ftree-vectorizer-verbose=1 -ftree-vectorize -fopt-info-vec-missed -funroll-loops" )
@@ -147,7 +154,7 @@ endif()
 # Check for CUDA
 #
 if( ${WITH_CUDA} )
-    find_package( CUDA )
+    find_package( CUDA 9.0 )
     if( CUDA_FOUND )
         set( BUILD_CUDA TRUE)
         set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF)

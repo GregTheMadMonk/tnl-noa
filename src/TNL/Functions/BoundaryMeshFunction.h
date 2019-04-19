@@ -30,7 +30,6 @@ class BoundaryMeshFunction :
    public:
       
       using BaseType = MeshFunction< Mesh, MeshEntityDimension, Real >;
-      using ThisType = BoundaryMeshFunction< Mesh, MeshEntityDimension, Real >;
       using typename BaseType::MeshType;
       using typename BaseType::DeviceType;
       using typename BaseType::IndexType;

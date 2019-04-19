@@ -13,7 +13,7 @@
 #include <list>
 #include <vector>
 
-#include <TNL/Object.h>
+#include <TNL/File.h>
 #include <TNL/Containers/ArrayView.h>
 
 namespace TNL {
@@ -60,7 +60,7 @@ template< int, typename > class StaticArray;
 template< typename Value,
           typename Device = Devices::Host,
           typename Index = int >
-class Array : public Object
+class Array
 {
    public:
 
@@ -70,7 +70,7 @@ class Array : public Object
       using HostType = Containers::Array< Value, Devices::Host, Index >;
       using CudaType = Containers::Array< Value, Devices::Cuda, Index >;
       using ViewType = ArrayView< Value, Device, Index >;
-      using ConstViewType = ArrayView< typename std::add_const< Value >::type, Device, Index >;
+      using ConstViewType = ArrayView< std::add_const_t< Value >, Device, Index >;
 
       /**
        * \brief Basic constructor.
@@ -98,6 +98,7 @@ class Array : public Object
        * \param data Pointer to data.
        * \param size Number of array elements.
        */
+      [[deprecated("Binding functionality of Array is deprecated, ArrayView should be used instead.")]]
       Array( Value* data,
              const IndexType& size );
 
@@ -118,8 +119,9 @@ class Array : public Object
        * \param begin is the first index which should be bound.
        * \param size is number of array elements that should be bound.
        */
+      [[deprecated("Binding functionality of Array is deprecated, ArrayView should be used instead.")]]
       Array( Array& array,
-             const IndexType& begin = 0,
+             const IndexType& begin,
              const IndexType& size = 0 );
 
       /**
@@ -127,7 +129,7 @@ class Array : public Object
        *
        * @param array is an array to be moved
        */
-      Array( Array&& array );
+      Array( Array&& array ) = default;
 
       /**
        * \brief Initialize the array from initializer list, i.e. { ... }
@@ -223,6 +225,7 @@ class Array : public Object
        * \param _data Pointer to new data.
        * \param _size Size of new _data. Number of elements.
        */
+      [[deprecated("Binding functionality of Array is deprecated, ArrayView should be used instead.")]]
       void bind( Value* _data,
                  const Index _size );
 
@@ -240,6 +243,7 @@ class Array : public Object
        * \param size Size of new array. Number of elements.
        */
       template< typename ArrayT >
+      [[deprecated("Binding functionality of Array is deprecated, ArrayView should be used instead.")]]
       void bind( const ArrayT& array,
                  const IndexType& begin = 0,
                  const IndexType& size = 0 );
@@ -256,6 +260,7 @@ class Array : public Object
        * \param array Reference to a static array.
        */
       template< int Size >
+      [[deprecated("Binding functionality of Array is deprecated, ArrayView should be used instead.")]]
       void bind( StaticArray< Size, Value >& array );
 
       /**
@@ -518,38 +523,6 @@ class Array : public Object
       __cuda_callable__
       bool empty() const;
 
-      /**
-       * \brief Method for saving the object to a \e file as a binary data.
-       *
-       * \param file Reference to a file.
-       */
-      void save( File& file ) const;
-
-      /**
-       * Method for loading the object from a file as a binary data.
-       *
-       * \param file Reference to a file.
-       */
-      void load( File& file );
-
-      /**
-       * \brief This method loads data without reallocation.
-       *
-       * This is useful for loading data into shared arrays.
-       * If the array was not initialize yet, common load is
-       * performed. Otherwise, the array size must fit with
-       * the size of array being loaded.
-       *
-       * This method is deprecated - use ArrayView instead.
-       */
-      void boundLoad( File& file );
-
-      using Object::save;
-
-      using Object::load;
-
-      using Object::boundLoad;
-
       /** \brief Basic destructor. */
       ~Array();
 
@@ -585,7 +558,25 @@ class Array : public Object
 };
 
 template< typename Value, typename Device, typename Index >
-std::ostream& operator<<( std::ostream& str, const Array< Value, Device, Index >& v );
+std::ostream& operator<<( std::ostream& str, const Array< Value, Device, Index >& array );
+
+/**
+ * \brief Serialization of arrays into binary files.
+ */
+template< typename Value, typename Device, typename Index >
+File& operator<<( File& file, const Array< Value, Device, Index >& array );
+
+template< typename Value, typename Device, typename Index >
+File& operator<<( File&& file, const Array< Value, Device, Index >& array );
+
+/**
+ * \brief Deserialization of arrays from binary files.
+ */
+template< typename Value, typename Device, typename Index >
+File& operator>>( File& file, Array< Value, Device, Index >& array );
+
+template< typename Value, typename Device, typename Index >
+File& operator>>( File&& file, Array< Value, Device, Index >& array );
 
 } // namespace Containers
 } // namespace TNL

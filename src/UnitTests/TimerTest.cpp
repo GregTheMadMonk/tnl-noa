@@ -10,7 +10,7 @@
 
 // Implemented by Nina Dzugasova
 
-#ifdef HAVE_GTEST 
+#ifdef HAVE_GTEST
 #include <gtest/gtest.h>
 #endif
 
@@ -18,7 +18,7 @@
 
 using namespace TNL;
 
-#ifdef HAVE_GTEST 
+#ifdef HAVE_GTEST
 TEST( TimerTest, Constructor )
 {
     Timer time;
@@ -34,16 +34,4 @@ TEST( TimerTest, Constructor )
 }
 #endif
 
-
-#include "GtestMissingError.h"
-int main( int argc, char* argv[] )
-{
-#ifdef HAVE_GTEST
-   ::testing::InitGoogleTest( &argc, argv );
-   return RUN_ALL_TESTS();
-#else
-   throw GtestMissingError();
-#endif
-}
-
-
+#include "main.h"
