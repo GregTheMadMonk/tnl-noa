@@ -324,23 +324,18 @@ protected:
 
 template< typename Value,
           typename SizesHolder,
-          typename PermutationHost = std::make_index_sequence< SizesHolder::getDimension() >,  // identity by default
-          typename PermutationCuda = std::make_index_sequence< SizesHolder::getDimension() >,  // identity by default
+          typename Permutation = std::make_index_sequence< SizesHolder::getDimension() >,  // identity by default
           typename Device = Devices::Host,
           typename Index = typename SizesHolder::IndexType >
 class NDArray
 : public NDArrayStorage< Array< Value, Device, Index >,
                          SizesHolder,
-                         typename std::conditional< std::is_same< Device, Devices::Host >::value,
-                                                    PermutationHost,
-                                                    PermutationCuda >::type,
+                         Permutation,
                          __ndarray_impl::NDArrayBase< SliceInfo< 0, 0 > > >
 {
    using Base = NDArrayStorage< Array< Value, Device, Index >,
                          SizesHolder,
-                         typename std::conditional< std::is_same< Device, Devices::Host >::value,
-                                                    PermutationHost,
-                                                    PermutationCuda >::type,
+                         Permutation,
                          __ndarray_impl::NDArrayBase< SliceInfo< 0, 0 > > >;
 
 public:
@@ -403,34 +398,20 @@ public:
 
 template< typename Value,
           typename SizesHolder,
-          typename PermutationHost = std::make_index_sequence< SizesHolder::getDimension() >,  // identity by default
-          typename SliceInfoHost = SliceInfo<>,  // no slicing by default
-          typename PermutationCuda = std::make_index_sequence< SizesHolder::getDimension() >,  // identity by default
-          typename SliceInfoCuda = SliceInfo<>,  // no slicing by default
+          typename Permutation = std::make_index_sequence< SizesHolder::getDimension() >,  // identity by default
+          typename SliceInfo = SliceInfo<>,  // no slicing by default
           typename Device = Devices::Host,
           typename Index = typename SizesHolder::IndexType >
 class SlicedNDArray
 : public NDArrayStorage< Array< Value, Device, Index >,
                          SizesHolder,
-                         typename std::conditional< std::is_same< Device, Devices::Host >::value,
-                                                    PermutationHost,
-                                                    PermutationCuda >::type,
-                         __ndarray_impl::SlicedNDArrayBase<
-                            typename std::conditional< std::is_same< Device, Devices::Host >::value,
-                                                       SliceInfoHost,
-                                                       SliceInfoCuda >::type >
-                        >
+                         Permutation,
+                         __ndarray_impl::SlicedNDArrayBase< SliceInfo > >
 {
    using Base = NDArrayStorage< Array< Value, Device, Index >,
                          SizesHolder,
-                         typename std::conditional< std::is_same< Device, Devices::Host >::value,
-                                                    PermutationHost,
-                                                    PermutationCuda >::type,
-                         __ndarray_impl::SlicedNDArrayBase<
-                            typename std::conditional< std::is_same< Device, Devices::Host >::value,
-                                                       SliceInfoHost,
-                                                       SliceInfoCuda >::type >
-                        >;
+                         Permutation,
+                         __ndarray_impl::SlicedNDArrayBase< SliceInfo > >;
 
 public:
    // inherit all assignment operators

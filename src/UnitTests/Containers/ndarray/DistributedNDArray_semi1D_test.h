@@ -69,14 +69,12 @@ using DistributedNDArrayTypes = ::testing::Types<
    DistributedNDArray< NDArray< double,
                                 SizesHolder< int, 9, 0, 0 >,  // Q, X, Y, Z
                                 std::index_sequence< 0, 1, 2 >,  // permutation - should not matter
-                                std::index_sequence< 0, 1, 2 >,  // permutation - should not matter
                                 Devices::Host >,
                        Communicators::MpiCommunicator >
 #ifdef HAVE_CUDA
    ,
    DistributedNDArray< NDArray< double,
                                 SizesHolder< int, 9, 0, 0 >,  // Q, X, Y, Z
-                                std::index_sequence< 0, 1, 2 >,  // permutation - should not matter
                                 std::index_sequence< 0, 1, 2 >,  // permutation - should not matter
                                 Devices::Cuda >,
                        Communicators::NoDistrCommunicator >

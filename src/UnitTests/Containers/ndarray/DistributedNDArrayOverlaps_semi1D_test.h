@@ -71,7 +71,6 @@ using DistributedNDArrayTypes = ::testing::Types<
    DistributedNDArray< NDArray< double,
                                 SizesHolder< int, 9, 0, 0 >,  // Q, X, Y
                                 std::index_sequence< 0, 1, 2 >,  // permutation - should not matter
-                                std::index_sequence< 0, 1, 2 >,  // permutation - should not matter
                                 Devices::Host >,
                        Communicators::MpiCommunicator,
                        std::index_sequence< 0, 2, 0 > >
@@ -79,7 +78,6 @@ using DistributedNDArrayTypes = ::testing::Types<
    ,
    DistributedNDArray< NDArray< double,
                                 SizesHolder< int, 9, 0, 0 >,  // Q, X, Y
-                                std::index_sequence< 0, 1, 2 >,  // permutation - should not matter
                                 std::index_sequence< 0, 1, 2 >,  // permutation - should not matter
                                 Devices::Cuda >,
                        Communicators::MpiCommunicator,

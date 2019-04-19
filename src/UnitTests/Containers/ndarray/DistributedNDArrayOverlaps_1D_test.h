@@ -71,14 +71,12 @@ using DistributedNDArrayTypes = ::testing::Types<
    DistributedNDArray< NDArray< double,
                                 SizesHolder< int, 0 >,
                                 std::index_sequence< 0 >,
-                                std::index_sequence< 0 >,
                                 Devices::Host >,
                        Communicators::MpiCommunicator,
                        std::index_sequence< 2 > >
 // TODO: does it make sense for NoDistrCommunicator?
 //   DistributedNDArray< NDArray< double,
 //                                SizesHolder< int, 0 >,
-//                                std::index_sequence< 0 >,
 //                                std::index_sequence< 0 >,
 //                                Devices::Host >,
 //                       Communicators::NoDistrCommunicator,
@@ -88,14 +86,12 @@ using DistributedNDArrayTypes = ::testing::Types<
    DistributedNDArray< NDArray< double,
                                 SizesHolder< int, 0 >,
                                 std::index_sequence< 0 >,
-                                std::index_sequence< 0 >,
                                 Devices::Cuda >,
                        Communicators::MpiCommunicator,
                        std::index_sequence< 2 > >
 // TODO: does it make sense for NoDistrCommunicator?
 //   DistributedNDArray< NDArray< double,
 //                                SizesHolder< int, 0 >,
-//                                std::index_sequence< 0 >,
 //                                std::index_sequence< 0 >,
 //                                Devices::Cuda >,
 //                       Communicators::NoDistrCommunicator,

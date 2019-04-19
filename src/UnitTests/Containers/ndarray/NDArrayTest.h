@@ -226,7 +226,6 @@ TEST( NDArrayTest, CopySemanticsCrossDevice )
     NDArray< int, SizesHolder< int, 0, 0 > > a;
     NDArray< int, SizesHolder< int, 0, 0 >,
              std::index_sequence< 0, 1 >,
-             std::index_sequence< 0, 1 >,
              TNL::Devices::Cuda > da;
     a.setSizes( I, J );
     da.setSizes( I, J );

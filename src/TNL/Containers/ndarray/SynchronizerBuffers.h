@@ -29,7 +29,6 @@ struct SynchronizerBuffersLayer
    using NDArrayType = NDArray< typename DistributedNDArray::ValueType,
                                 typename DistributedNDArray::SizesHolderType,
                                 typename DistributedNDArray::PermutationType,
-                                typename DistributedNDArray::PermutationType,
                                 typename DistributedNDArray::DeviceType >;
    NDArrayType left_send_buffer, left_recv_buffer, right_send_buffer, right_recv_buffer;
    typename DistributedNDArray::LocalBeginsType left_send_offsets, left_recv_offsets, right_send_offsets, right_recv_offsets;
