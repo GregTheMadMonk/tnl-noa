@@ -106,8 +106,7 @@ public:
     *
     * @param list Initializer list.
     */
-   template< typename InReal >
-   Vector( const std::initializer_list< InReal >& list );
+   Vector( const std::initializer_list< Real >& list );
 
    /**
     * \brief Initialize the vector from std::list.
@@ -169,6 +168,8 @@ public:
    void addElement( const IndexType i,
                     const RealType& value,
                     const Scalar thisElementMultiplicator );
+
+   Vector& operator=( const Vector& v );
 
    /**
     * \brief This function subtracts \e vector from this vector and returns the resulting vector.

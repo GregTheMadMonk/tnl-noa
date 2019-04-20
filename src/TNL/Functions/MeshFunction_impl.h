@@ -403,6 +403,18 @@ operator[]( const IndexType& meshEntityIndex ) const
 template< typename Mesh,
           int MeshEntityDimension,
           typename Real >
+MeshFunction< Mesh, MeshEntityDimension, Real >&
+MeshFunction< Mesh, MeshEntityDimension, Real >::
+operator = ( const ThisType& f )
+{
+   this->setMesh( f.getMeshPointer() );
+   this->getData() = f.getData();
+   return *this;
+}
+
+template< typename Mesh,
+          int MeshEntityDimension,
+          typename Real >
    template< typename Function >
 MeshFunction< Mesh, MeshEntityDimension, Real >&
 MeshFunction< Mesh, MeshEntityDimension, Real >::

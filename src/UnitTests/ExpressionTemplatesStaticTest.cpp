@@ -29,10 +29,10 @@ TEST( ExpressionTemplatesStaticTest, TypeTraitsTest )
 
    using Type1 = decltype( sv1 + 1 );
    using Type2 = decltype( sv1 + sv2 );
-   static_assert( Expressions::ExpressionVariableTypeGetter< int >::value == Expressions::ArithmeticVariable );
-   static_assert( Expressions::ExpressionVariableTypeGetter< VectorType >::value == Expressions::VectorVariable );
-   static_assert( Expressions::IsExpressionTemplate< Type1 >::value == true );
-   static_assert( Expressions::IsExpressionTemplate< Type2 >::value == true );
+   static_assert( Expressions::ExpressionVariableTypeGetter< int >::value == Expressions::ArithmeticVariable, "" );
+   static_assert( Expressions::ExpressionVariableTypeGetter< VectorType >::value == Expressions::VectorVariable, "" );
+   static_assert( Expressions::IsExpressionTemplate< Type1 >::value == true, "" );
+   static_assert( Expressions::IsExpressionTemplate< Type2 >::value == true, "" );
 }
 
 TEST( ExpressionTemplatesStaticTest, Addition )

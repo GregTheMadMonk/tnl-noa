@@ -75,9 +75,8 @@ Vector( Vector< Real, Device, Index >&& vector )
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename InReal >
 Vector< Real, Device, Index >::
-Vector( const std::initializer_list< InReal >& list )
+Vector( const std::initializer_list< Real >& list )
 :  Array< Real, Device, Index >( list )
 {
 }
@@ -185,6 +184,16 @@ addElement( const IndexType i,
             const Scalar thisElementMultiplicator )
 {
    Algorithms::VectorOperations< Device >::addElement( *this, i, value, thisElementMultiplicator );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+Vector< Real, Device, Index >&
+Vector< Real, Device, Index >::operator=( const Vector< Real, Device, Index >& v )
+{
+   Array< Real, Device, Index >::operator = ( v );
+   return *this;
 }
 
 template< typename Real,

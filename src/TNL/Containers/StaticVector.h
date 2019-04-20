@@ -677,6 +677,39 @@ namespace TNL {
 namespace Containers {
 // TODO: move to some other source file
 
+template< int Size, typename Real1, typename Real2 >
+struct StaticScalarProductGetter
+{
+   static auto compute( const Real1* u, const Real2* v ) -> decltype( u[ 0 ] * v[ 0 ] )
+   {
+      return u[ 0 ] * v[ 0 ] + StaticScalarProductGetter< Size - 1, Real1, Real2 >::compute( &u[ 1 ], &v[ 1 ] );
+   }
+};
+
+template< typename Real1, typename Real2 >
+struct StaticScalarProductGetter< 0, Real1, Real2 >
+{
+   static auto compute( const Real1* u, const Real2* v ) -> decltype( u[ 0 ] * v[ 0 ] )
+   {
+      return u[ 0 ] * v[ 0 ];
+   }
+};
+
+template< int Size, typename Real1, typename Real2 >
+auto ScalarProduct( const StaticVector< Size, Real1 >& u,
+                    const StaticVector< Size, Real2 >& v ) -> decltype( u[ 0 ] * v[ 0 ] )
+{
+   return StaticScalarProductGetter< Size, Real1, Real2 >::compute( u.getData(), v.getData() );
+}
+
+template< int Size, typename Real1, typename Real2 >
+auto operator,( const StaticVector< Size, Real1 >& u,
+                    const StaticVector< Size, Real2 >& v ) -> decltype( u[ 0 ] * v[ 0 ] )
+{
+   return StaticScalarProductGetter< Size, Real1, Real2 >::compute( u.getData(), v.getData() );
+}
+
+
 template< typename Real >
 StaticVector< 3, Real > VectorProduct( const StaticVector< 3, Real >& u,
                                        const StaticVector< 3, Real >& v )
@@ -687,6 +720,14 @@ StaticVector< 3, Real > VectorProduct( const StaticVector< 3, Real >& u,
    p[ 2 ] = u[ 0 ] * v[ 1 ] - u[ 1 ] * v[ 0 ];
    return p;
 }
+
+/*template< typename Real >
+Real ScalarProduct( const StaticVector< 1, Real >& u,
+                    const StaticVector< 1, Real >& v )
+{
+   return u[ 0 ] * v[ 0 ];
+}
+
 
 template< typename Real >
 Real ScalarProduct( const StaticVector< 2, Real >& u,
@@ -700,7 +741,7 @@ Real ScalarProduct( const StaticVector< 3, Real >& u,
                     const StaticVector< 3, Real >& v )
 {
    return u[ 0 ] * v[ 0 ] + u[ 1 ] * v[ 1 ] + u[ 2 ] * v[ 2 ];
-}
+}*/
 
 template< typename T1,
           typename T2>
