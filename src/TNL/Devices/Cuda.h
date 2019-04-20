@@ -29,6 +29,9 @@ class Cuda
 
    static inline String getDeviceType();
 
+   // TODO: Remove getDeviceType();
+   static inline String getType() { return getDeviceType();};
+
    static inline void configSetup( Config::ConfigDescription& config, const String& prefix = "" );
 
    static inline bool setup( const Config::ParameterContainer& parameters,
@@ -168,6 +171,15 @@ class Cuda
    static inline bool synchronizeDevice( int deviceId = -1 );
 
    static inline Timer& getSmartPointersSynchronizationTimer();
+
+   ////
+   // When we transfer data between the GPU and the CPU we use 5 MB buffer. This
+   // size should ensure good performance -- see.
+   // http://wiki.accelereyes.com/wiki/index.php/GPU_Memory_Transfer .
+   // We use the same buffer size even for retyping data during IO operations.
+   //
+   static constexpr std::size_t TransferBufferSize = 5 * 2<<20;
+
 
    protected:
 

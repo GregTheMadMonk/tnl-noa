@@ -246,12 +246,12 @@ TYPED_TEST( StaticArrayTest, SaveAndLoad )
 
    ArrayType u1( 7 ), u2;
    File file;
-   file.open( "tnl-static-array-test.tnl", IOMode::write );
-   u1.save( file );
-   file.close();
-   file.open( "tnl-static-array-test.tnl", IOMode::read );
-   u2.load( file );
-   file.close();
+   ASSERT_NO_THROW( file.open( "tnl-static-array-test.tnl", std::ios_base::out ) );
+   ASSERT_NO_THROW( u1.save( file ) );
+   ASSERT_NO_THROW( file.close() );
+   ASSERT_NO_THROW( file.open( "tnl-static-array-test.tnl", std::ios_base::in ) );
+   ASSERT_NO_THROW( u2.load( file ) );
+   ASSERT_NO_THROW( file.close() );
 
    EXPECT_EQ( u1, u2 );
 
@@ -280,32 +280,7 @@ TYPED_TEST( StaticArrayTest, streamOperator )
    std::stringstream testStream;
    testStream << u;
 }
-
-TYPED_TEST( StaticArrayTest, BindToArray )
-{
-   using ArrayType = typename TestFixture::ArrayType;
-   using ValueType = typename TestFixture::ValueType;
-   constexpr int Size = ArrayType::size;
-
-   ArrayType a;
-   for( int i = 0; i < Size; i++ )
-      a[ i ] = i+1;
-
-   Array< ValueType, Devices::Host > sharedArray;
-   sharedArray.bind( a );
-   for( int i = 0; i < Size; i++ )
-      EXPECT_EQ( a[ i ], sharedArray[ i ] );
-}
 #endif // HAVE_GTEST
 
 
-#include "../GtestMissingError.h"
-int main( int argc, char* argv[] )
-{
-#ifdef HAVE_GTEST
-   ::testing::InitGoogleTest( &argc, argv );
-   return RUN_ALL_TESTS();
-#else
-   throw GtestMissingError();
-#endif
-}
+#include "../main.h"

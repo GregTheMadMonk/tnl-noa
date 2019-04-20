@@ -37,7 +37,7 @@ struct Traits
            typename Matrix::DeviceType,
            typename Matrix::IndexType >;
    using ConstVectorViewType = Containers::VectorView
-         < typename std::add_const< typename Matrix::RealType >::type,
+         < std::add_const_t< typename Matrix::RealType >,
            typename Matrix::DeviceType,
            typename Matrix::IndexType >;
 
@@ -70,7 +70,7 @@ struct Traits< Matrices::DistributedMatrix< Matrix, Communicator > >
            typename Matrix::IndexType,
            Communicator >;
    using ConstVectorViewType = Containers::DistributedVectorView
-         < typename std::add_const< typename Matrix::RealType >::type,
+         < std::add_const_t< typename Matrix::RealType >,
            typename Matrix::DeviceType,
            typename Matrix::IndexType,
            Communicator >;
@@ -84,7 +84,7 @@ struct Traits< Matrices::DistributedMatrix< Matrix, Communicator > >
            typename Matrix::DeviceType,
            typename Matrix::IndexType >;
    using ConstLocalVectorViewType = Containers::VectorView
-         < typename std::add_const< typename Matrix::RealType >::type,
+         < std::add_const_t< typename Matrix::RealType >,
            typename Matrix::DeviceType,
            typename Matrix::IndexType >;
 

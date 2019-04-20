@@ -80,12 +80,12 @@ class tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >
             const Real velocity = 1.0 );
     
     template< int sizeSArray >
-    void updateBlocks( InterfaceMapType interfaceMap,
-            MeshFunctionType aux,
-            MeshFunctionType helpFunc,
-            ArrayContainer BlockIterHost, int numThreadsPerBlock/*, Real **sArray*/ );
+    void updateBlocks( const InterfaceMapType& interfaceMap,
+            MeshFunctionType& aux,
+            MeshFunctionType& helpFunc,
+            ArrayContainer& BlockIterHost, int numThreadsPerBlock/*, Real **sArray*/ );
     
-    void getNeighbours( ArrayContainer BlockIterHost, int numBlockX, int numBlockY  );
+    void getNeighbours( ArrayContainer& BlockIterHost, int numBlockX, int numBlockY  );
 };
 
 template< typename Real,
@@ -114,12 +114,12 @@ class tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > >
             const RealType velocity = 1.0);
     
     template< int sizeSArray >
-    void updateBlocks( const InterfaceMapType interfaceMap,
-            const MeshFunctionType aux,
+    void updateBlocks( const InterfaceMapType& interfaceMap,
+            const MeshFunctionType& aux,
             MeshFunctionType& helpFunc,
-            ArrayContainer BlockIterHost, int numThreadsPerBlock/*, Real **sArray*/ );
+            ArrayContainer& BlockIterHost, int numThreadsPerBlock/*, Real **sArray*/ );
     
-    void getNeighbours( ArrayContainer BlockIterHost, int numBlockX, int numBlockY, int numBlockZ );
+    void getNeighbours( ArrayContainer& BlockIterHost, int numBlockX, int numBlockY, int numBlockZ );
     
     template< int sizeSArray >
     __cuda_callable__ bool updateCell3D( volatile Real *sArray,
@@ -147,15 +147,15 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
         const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index >, 2, bool >& interfaceMap,
         const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& aux,
         Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& helpFunc,
-        TNL::Containers::Array< int, Devices::Cuda, Index > BlockIterDevice, int oddEvenBlock =0);
+        TNL::Containers::ArrayView< int, Devices::Cuda, Index > BlockIterDevice, int oddEvenBlock =0);
 
 template < typename Index >
-__global__ void CudaParallelReduc( TNL::Containers::Array< int, Devices::Cuda, Index > BlockIterDevice,
-        TNL::Containers::Array< int, Devices::Cuda, Index > dBlock, int nBlocks );
+__global__ void CudaParallelReduc( TNL::Containers::ArrayView< int, Devices::Cuda, Index > BlockIterDevice,
+        TNL::Containers::ArrayView< int, Devices::Cuda, Index > dBlock, int nBlocks );
 
 template < typename Index >
-__global__ void GetNeighbours( TNL::Containers::Array< int, Devices::Cuda, Index > BlockIterDevice,
-        TNL::Containers::Array< int, Devices::Cuda, Index > BlockIterPom, int numBlockX, int numBlockY );
+__global__ void GetNeighbours( TNL::Containers::ArrayView< int, Devices::Cuda, Index > BlockIterDevice,
+        TNL::Containers::ArrayView< int, Devices::Cuda, Index > BlockIterPom, int numBlockX, int numBlockY );
 
 template < typename Real, typename Device, typename Index >
 __global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& input, 
@@ -172,11 +172,11 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
         const Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index >, 3, bool >& interfaceMap,
         const Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index > >& aux,
         Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index > >& helpFunc,
-        TNL::Containers::Array< int, Devices::Cuda, Index > BlockIterDevice );
+        TNL::Containers::ArrayView< int, Devices::Cuda, Index > BlockIterDevice );
 
 template < typename Index >
-__global__ void GetNeighbours3D( TNL::Containers::Array< int, Devices::Cuda, Index > BlockIterDevice,
-        TNL::Containers::Array< int, Devices::Cuda, Index > BlockIterPom,
+__global__ void GetNeighbours3D( TNL::Containers::ArrayView< int, Devices::Cuda, Index > BlockIterDevice,
+        TNL::Containers::ArrayView< int, Devices::Cuda, Index > BlockIterPom,
         int numBlockX, int numBlockY, int numBlockZ );
 #endif
 

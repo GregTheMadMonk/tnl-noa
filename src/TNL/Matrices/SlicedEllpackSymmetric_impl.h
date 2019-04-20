@@ -13,6 +13,7 @@
 #include <TNL/Matrices/SlicedEllpackSymmetric.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Math.h>
+#include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
 namespace Matrices {
@@ -559,7 +560,7 @@ void SlicedEllpackSymmetric< Real, Device, Index, SliceSize >::addMatrix( const 
                                                                              const RealType& matrixMultiplicator,
                                                                              const RealType& thisMatrixMultiplicator )
 {
-   TNL_ASSERT( false,std::cerr << "TODO: implement" );
+   throw Exceptions::NotImplementedError( "SlicedEllpackSymmetric::addMatrix is not implemented." );
    // TODO: implement
 }
 
@@ -572,7 +573,7 @@ template< typename Real,
 void SlicedEllpackSymmetric< Real, Device, Index, SliceSize >::getTransposition( const SlicedEllpackSymmetric< Real2, Device, Index2 >& matrix,
                                                                                     const RealType& matrixMultiplicator )
 {
-   TNL_ASSERT( false,std::cerr << "TODO: implement" );
+   throw Exceptions::NotImplementedError( "SlicedEllpackSymmetric::getTransposition is not implemented." );
    // TODO: implement
 }
 
@@ -622,44 +623,38 @@ template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-bool SlicedEllpackSymmetric< Real, Device, Index, SliceSize >::save( File& file ) const
+void SlicedEllpackSymmetric< Real, Device, Index, SliceSize >::save( File& file ) const
 {
-   if( ! Sparse< Real, Device, Index >::save( file ) ||
-       ! this->slicePointers.save( file ) ||
-       ! this->sliceRowLengths.save( file ) )
-      return false;
-   return true;
+   Sparse< Real, Device, Index >::save( file );
+   file << this->slicePointers << this->sliceRowLengths;
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-bool SlicedEllpackSymmetric< Real, Device, Index, SliceSize >::load( File& file )
+void SlicedEllpackSymmetric< Real, Device, Index, SliceSize >::load( File& file )
 {
-   if( ! Sparse< Real, Device, Index >::load( file ) ||
-       ! this->slicePointers.load( file ) ||
-       ! this->sliceRowLengths.load( file ) )
-      return false;
-   return true;
+   Sparse< Real, Device, Index >::load( file );
+   file >> this->slicePointers >> this->sliceRowLengths;
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-bool SlicedEllpackSymmetric< Real, Device, Index, SliceSize >::save( const String& fileName ) const
+void SlicedEllpackSymmetric< Real, Device, Index, SliceSize >::save( const String& fileName ) const
 {
-   return Object::save( fileName );
+   Object::save( fileName );
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           int SliceSize >
-bool SlicedEllpackSymmetric< Real, Device, Index, SliceSize >::load( const String& fileName )
+void SlicedEllpackSymmetric< Real, Device, Index, SliceSize >::load( const String& fileName )
 {
-   return Object::load( fileName );
+   Object::load( fileName );
 }
 
 template< typename Real,

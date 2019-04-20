@@ -44,7 +44,6 @@ struct has_communicator< T, typename enable_if_type< typename T::CommunicatorTyp
 template< typename Matrix,
           typename Communicator = Communicators::MpiCommunicator >
 class DistributedMatrix
-: public Object
 {
    using CommunicationGroup = typename Communicator::CommunicationGroup;
 public:
@@ -61,7 +60,7 @@ public:
    using CompressedRowLengthsVector = Containers::DistributedVector< IndexType, DeviceType, IndexType, CommunicatorType >;
 
    using MatrixRow = Matrices::SparseRow< RealType, IndexType >;
-   using ConstMatrixRow = Matrices::SparseRow< typename std::add_const< RealType >::type, typename std::add_const< IndexType >::type >;
+   using ConstMatrixRow = Matrices::SparseRow< std::add_const_t< RealType >, std::add_const_t< IndexType > >;
 
    DistributedMatrix() = default;
 
@@ -172,12 +171,6 @@ protected:
    Matrix localMatrix;
 
    DistributedSpMV< Matrix, Communicator > spmv;
-
-private:
-   // TODO: disabled until they are implemented
-   using Object::save;
-   using Object::load;
-   using Object::boundLoad;
 };
 
 } // namespace Matrices

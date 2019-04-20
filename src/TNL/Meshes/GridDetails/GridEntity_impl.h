@@ -231,7 +231,7 @@ bool
 GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, EntityDimension, Config >::
 isBoundaryEntity() const
 {
-   return BoundaryGridEntityChecker< ThisType >::isBoundaryEntity( *this );
+   return BoundaryGridEntityChecker< GridEntity >::isBoundaryEntity( *this );
 }
 
 template< int Dimension,
@@ -245,7 +245,7 @@ typename Meshes::Grid< Dimension, Real, Device, Index >::PointType
 GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, EntityDimension, Config >::
 getCenter() const
 {
-   return GridEntityCenterGetter< ThisType >::getEntityCenter( *this );
+   return GridEntityCenterGetter< GridEntity >::getEntityCenter( *this );
 }
 
 template< int Dimension,
@@ -443,7 +443,7 @@ bool
 GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, Dimension, Config >::
 isBoundaryEntity() const
 {
-   return BoundaryGridEntityChecker< ThisType >::isBoundaryEntity( *this );
+   return BoundaryGridEntityChecker< GridEntity >::isBoundaryEntity( *this );
 }
 
 template< int Dimension,
@@ -456,7 +456,7 @@ typename Meshes::Grid< Dimension, Real, Device, Index >::PointType
 GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, Dimension, Config >::
 getCenter() const
 {
-   return GridEntityCenterGetter< ThisType >::getEntityCenter( *this );
+   return GridEntityCenterGetter< GridEntity >::getEntityCenter( *this );
 }
 
 template< int Dimension,
@@ -659,7 +659,7 @@ bool
 GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, 0, Config >::
 isBoundaryEntity() const
 {
-   return BoundaryGridEntityChecker< ThisType >::isBoundaryEntity( *this );
+   return BoundaryGridEntityChecker< GridEntity >::isBoundaryEntity( *this );
 }
 
 template< int Dimension,
@@ -672,7 +672,7 @@ typename Meshes::Grid< Dimension, Real, Device, Index >::PointType
 GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, 0, Config >::
 getCenter() const
 {
-   return GridEntityCenterGetter< ThisType >::getEntityCenter( *this );
+   return GridEntityCenterGetter< GridEntity >::getEntityCenter( *this );
 }
 
 template< int Dimension,

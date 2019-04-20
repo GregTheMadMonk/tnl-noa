@@ -13,6 +13,7 @@
 #include <TNL/Matrices/CSR.h>
 #include <TNL/Containers/VectorView.h>
 #include <TNL/Math.h>
+#include <TNL/Exceptions/NotImplementedError.h>
 
 #ifdef HAVE_CUSPARSE
 #include <cusparse.h>
@@ -137,8 +138,7 @@ template< typename Real,
 Index CSR< Real, Device, Index >::getNonZeroRowLength( const IndexType row ) const
 {
     // TODO: Fix/Implement
-    TNL_ASSERT( false, std::cerr << "TODO: Fix/Implement" );
-    return 0;
+    throw Exceptions::NotImplementedError( "CSR::getNonZeroRowLength is not implemented." );
 //    if( std::is_same< DeviceType, Devices::Host >::value )
 //    {
 //       ConstMatrixRow matrixRow = this->getRow( row );
@@ -529,7 +529,7 @@ void CSR< Real, Device, Index >::addMatrix( const CSR< Real2, Device, Index2 >& 
                                             const RealType& matrixMultiplicator,
                                             const RealType& thisMatrixMultiplicator )
 {
-   TNL_ASSERT( false, std::cerr << "TODO: implement" );
+   throw Exceptions::NotImplementedError( "CSR::addMatrix is not implemented." );
    // TODO: implement
 }
 
@@ -541,7 +541,7 @@ template< typename Real,
 void CSR< Real, Device, Index >::getTransposition( const CSR< Real2, Device, Index2 >& matrix,
                                                                       const RealType& matrixMultiplicator )
 {
-   TNL_ASSERT( false, std::cerr << "TODO: implement" );
+   throw Exceptions::NotImplementedError( "CSR::getTransposition is not implemented." );
    // TODO: implement
 }
 
@@ -615,39 +615,35 @@ CSR< Real, Device, Index >::operator=( const CSR< Real2, Device2, Index2 >& matr
 template< typename Real,
           typename Device,
           typename Index >
-bool CSR< Real, Device, Index >::save( File& file ) const
+void CSR< Real, Device, Index >::save( File& file ) const
 {
-   if( ! Sparse< Real, Device, Index >::save( file ) ||
-       ! this->rowPointers.save( file ) )
-      return false;
-   return true;
+   Sparse< Real, Device, Index >::save( file );
+   file << this->rowPointers;
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool CSR< Real, Device, Index >::load( File& file )
+void CSR< Real, Device, Index >::load( File& file )
 {
-   if( ! Sparse< Real, Device, Index >::load( file ) ||
-       ! this->rowPointers.load( file ) )
-      return false;
-   return true;
+   Sparse< Real, Device, Index >::load( file );
+   file >> this->rowPointers;
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool CSR< Real, Device, Index >::save( const String& fileName ) const
+void CSR< Real, Device, Index >::save( const String& fileName ) const
 {
-   return Object::save( fileName );
+   Object::save( fileName );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool CSR< Real, Device, Index >::load( const String& fileName )
+void CSR< Real, Device, Index >::load( const String& fileName )
 {
-   return Object::load( fileName );
+   Object::load( fileName );
 }
 
 template< typename Real,
@@ -851,8 +847,8 @@ class CSRDeviceDependentCode< Devices::MIC >
                                  const InVector& inVector,
                                  OutVector& outVector )
       {
-         std::cout <<"Not Implemented YET tnlCSRMatrixDeviceDependentCode for MIC" <<endl;
-      };
+         throw Exceptions::NotImplementedError("CSRDeviceDependentCode is not implemented for MIC.");
+      }
   /*       const Index rows = matrix.getRows();
          const tnlCSRMatrix< Real, Device, Index >* matrixPtr = &matrix;
          const InVector* inVectorPtr = &inVector;

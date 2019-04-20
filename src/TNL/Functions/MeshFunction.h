@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/Object.h>
+#include <TNL/File.h>
 #include <TNL/Functions/Domain.h>
 #include <TNL/Functions/MeshFunctionGnuplotWriter.h>
 #include <TNL/Functions/MeshFunctionVTKWriter.h>
@@ -39,9 +39,8 @@ class MeshFunction :
       using MeshPointer = Pointers::SharedPointer< MeshType >;
       using RealType = Real;
       using VectorType = Containers::Vector< RealType, DeviceType, IndexType >;
-      using ThisType = Functions::MeshFunction< MeshType, MeshEntityDimension, RealType >;
       using DistributedMeshType = Meshes::DistributedMeshes::DistributedMesh<MeshType>;
-      using DistributedMeshSynchronizerType = Meshes::DistributedMeshes::DistributedMeshSynchronizer<ThisType>;
+      using DistributedMeshSynchronizerType = Meshes::DistributedMeshes::DistributedMeshSynchronizer<MeshFunction>;
 
       static constexpr int getEntitiesDimension() { return MeshEntityDimension; }
 
@@ -51,7 +50,7 @@ class MeshFunction :
 
       MeshFunction( const MeshPointer& meshPointer );
 
-      MeshFunction( const ThisType& meshFunction );
+      MeshFunction( const MeshFunction& meshFunction );
 
       template< typename Vector >
       MeshFunction( const MeshPointer& meshPointer,
@@ -78,7 +77,7 @@ class MeshFunction :
                   const Config::ParameterContainer& parameters,
                   const String& prefix = "" );
 
-      void bind( ThisType& meshFunction );
+      void bind( MeshFunction& meshFunction );
 
       template< typename Vector >
       void bind( const Vector& data,
@@ -135,23 +134,25 @@ class MeshFunction :
       const RealType& operator[]( const IndexType& meshEntityIndex ) const;
 
       template< typename Function >
-      ThisType& operator = ( const Function& f );
+      MeshFunction& operator = ( const Function& f );
 
       template< typename Function >
-      ThisType& operator -= ( const Function& f );
+      MeshFunction& operator -= ( const Function& f );
 
       template< typename Function >
-      ThisType& operator += ( const Function& f );
+      MeshFunction& operator += ( const Function& f );
 
       RealType getLpNorm( const RealType& p ) const;
 
       RealType getMaxNorm() const;
 
-      bool save( File& file ) const;
+      void save( File& file ) const;
 
-      bool load( File& file );
+      void load( File& file );
 
-      bool boundLoad( File& file );
+      void boundLoad( File& file );
+
+      void boundLoad( const String& fileName );
 
       bool write( const String& fileName,
                   const String& format = "vtk",
@@ -160,8 +161,6 @@ class MeshFunction :
       using Object::save;
 
       using Object::load;
-
-      using Object::boundLoad;
 
       DistributedMeshSynchronizerType& getSynchronizer()
       {

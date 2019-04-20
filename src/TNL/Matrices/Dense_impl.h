@@ -12,6 +12,7 @@
 
 #include <TNL/Assert.h>
 #include <TNL/Matrices/Dense.h>
+#include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
 namespace Matrices {   
@@ -158,9 +159,11 @@ __cuda_callable__
 Real& Dense< Real, Device, Index >::operator()( const IndexType row,
                                                 const IndexType column )
 {
-   TNL_ASSERT( row >= 0 && row < this->getRows() &&
-              column >= 0 && column < this->getColumns(),
-              printf( " row = %d, column = %d, this->getRows = %d, this->getColumns() = %d \n", row, column, this->getRows(), this->getColumns() ) );
+   TNL_ASSERT_GE( row, 0, "Row index must be non-negative." );
+   TNL_ASSERT_LT( row, this->getRows(), "Row index is out of bounds." );
+   TNL_ASSERT_GE( column, 0, "Column index must be non-negative." );
+   TNL_ASSERT_LT( column, this->getColumns(), "Column index is out of bounds." );
+
    return this->values.operator[]( this->getElementIndex( row, column ) );
 }
 
@@ -171,9 +174,11 @@ __cuda_callable__
 const Real& Dense< Real, Device, Index >::operator()( const IndexType row,
                                                       const IndexType column ) const
 {
-   TNL_ASSERT( row >= 0 && row < this->getRows() &&
-              column >= 0 && column < this->getColumns(),
-              printf( " row = %d, column = %d, this->getRows = %d, this->getColumns() = %d \n", row, column, this->getRows(), this->getColumns() ) );
+   TNL_ASSERT_GE( row, 0, "Row index must be non-negative." );
+   TNL_ASSERT_LT( row, this->getRows(), "Row index is out of bounds." );
+   TNL_ASSERT_GE( column, 0, "Column index must be non-negative." );
+   TNL_ASSERT_LT( column, this->getColumns(), "Column index is out of bounds." );
+
    return this->values.operator[]( this->getElementIndex( row, column ) );
 }
 
@@ -186,10 +191,11 @@ bool Dense< Real, Device, Index >::setElementFast( const IndexType row,
                                                             const IndexType column,
                                                             const RealType& value )
 {
-   TNL_ASSERT( row >= 0 && row < this->getRows() &&
-              column >= 0 && column < this->getColumns(),
-              std::cerr << " row = " << row << " column = " << column << " this->getRows() = " << this->getRows()
-                   << " this->getColumns() = " << this->getColumns() );
+   TNL_ASSERT_GE( row, 0, "Row index must be non-negative." );
+   TNL_ASSERT_LT( row, this->getRows(), "Row index is out of bounds." );
+   TNL_ASSERT_GE( column, 0, "Column index must be non-negative." );
+   TNL_ASSERT_LT( column, this->getColumns(), "Column index is out of bounds." );
+
    this->values.operator[]( this->getElementIndex( row, column ) ) = value;
    return true;
 }
@@ -215,9 +221,11 @@ bool Dense< Real, Device, Index >::addElementFast( const IndexType row,
                                                    const RealType& value,
                                                    const RealType& thisElementMultiplicator )
 {
-   TNL_ASSERT( row >= 0 && row < this->getRows() &&
-              column >= 0 && column < this->getColumns(),
-              printf( " row = %d, column = %d, this->getRows = %d, this->getColumns() = %d \n", row, column, this->getRows(), this->getColumns() ) );
+   TNL_ASSERT_GE( row, 0, "Row index must be non-negative." );
+   TNL_ASSERT_LT( row, this->getRows(), "Row index is out of bounds." );
+   TNL_ASSERT_GE( column, 0, "Column index must be non-negative." );
+   TNL_ASSERT_LT( column, this->getColumns(), "Column index is out of bounds." );
+
    const IndexType elementIndex = this->getElementIndex( row, column );
    if( thisElementMultiplicator == 1.0 )
       this->values.operator[]( elementIndex ) += value;
@@ -324,9 +332,11 @@ __cuda_callable__
 const Real& Dense< Real, Device, Index >::getElementFast( const IndexType row,
                                                           const IndexType column ) const
 {
-   TNL_ASSERT( row >= 0 && row < this->getRows() &&
-              column >= 0 && column < this->getColumns(),
-              printf( " row = %d, column = %d, this->getRows = %d, this->getColumns() = %d \n", row, column, this->getRows(), this->getColumns() ) );
+   TNL_ASSERT_GE( row, 0, "Row index must be non-negative." );
+   TNL_ASSERT_LT( row, this->getRows(), "Row index is out of bounds." );
+   TNL_ASSERT_GE( column, 0, "Column index must be non-negative." );
+   TNL_ASSERT_LT( column, this->getColumns(), "Column index is out of bounds." );
+
    return this->values.operator[]( this->getElementIndex( row, column ) );
 }
 
@@ -603,7 +613,7 @@ void Dense< Real, Device, Index >::getMatrixProduct( const Matrix1& matrix1,
                cudaGridSize.x = columnTiles % Devices::Cuda::getMaxGridSize();
             if( gridIdx_y == rowGrids - 1 )
                cudaGridSize.y = rowTiles % Devices::Cuda::getMaxGridSize();
-            ThisType* this_kernel = Devices::Cuda::passToDevice( *this );
+            Dense* this_kernel = Devices::Cuda::passToDevice( *this );
             Matrix1* matrix1_kernel = Devices::Cuda::passToDevice( matrix1 );
             Matrix2* matrix2_kernel = Devices::Cuda::passToDevice( matrix2 );
             DenseMatrixProductKernel< Real,
@@ -819,7 +829,7 @@ void Dense< Real, Device, Index >::getTransposition( const Matrix& matrix,
       const IndexType columnGrids = roundUpDivision( columnTiles, Devices::Cuda::getMaxGridSize() );
       const IndexType sharedMemorySize = tileDim*tileDim + tileDim*tileDim/Devices::Cuda::getNumberOfSharedMemoryBanks();
 
-      ThisType* this_device = Devices::Cuda::passToDevice( *this );
+      Dense* this_device = Devices::Cuda::passToDevice( *this );
       Matrix* matrix_device = Devices::Cuda::passToDevice( matrix );
 
       for( IndexType gridIdx_x = 0; gridIdx_x < columnGrids; gridIdx_x++ )
@@ -919,45 +929,40 @@ Dense< Real, Device, Index >::operator=( const Dense< Real2, Device2, Index2 >& 
 
    this->setLike( matrix );
 
-   std::cerr << "Cross-device assignment for the Dense format is not implemented yet." << std::endl;
-   throw 1;
+   throw Exceptions::NotImplementedError("Cross-device assignment for the Dense format is not implemented yet.");
 }
 
 
 template< typename Real,
           typename Device,
           typename Index >
-bool Dense< Real, Device, Index >::save( const String& fileName ) const
+void Dense< Real, Device, Index >::save( const String& fileName ) const
 {
-   return Object::save( fileName );
+   Object::save( fileName );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool Dense< Real, Device, Index >::load( const String& fileName )
+void Dense< Real, Device, Index >::load( const String& fileName )
 {
-   return Object::load( fileName );
+   Object::load( fileName );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool Dense< Real, Device, Index >::save( File& file ) const
+void Dense< Real, Device, Index >::save( File& file ) const
 {
-   if( ! Matrix< Real, Device, Index >::save( file )  )
-      return false;
-   return true;
+   Matrix< Real, Device, Index >::save( file );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool Dense< Real, Device, Index >::load( File& file )
+void Dense< Real, Device, Index >::load( File& file )
 {
-   if( ! Matrix< Real, Device, Index >::load( file ) )
-      return false;
-   return true;
+   Matrix< Real, Device, Index >::load( file );
 }
 
 template< typename Real,

@@ -128,9 +128,15 @@ setInitialCondition( const Config::ParameterContainer& parameters,
   }
   else
   {
-    if( !this->initialData->boundLoad( inputFile ) )
-      std::cerr << "I am not able to load the initial condition from the file " << inputFile << "." << std::endl;
-    return false;
+      try
+      {
+          this->initialData->boundLoad( inputFile );
+      }
+      catch(...)
+      {
+         std::cerr << "I am not able to load the initial condition from the file " << inputFile << "." << std::endl;
+         return false;
+      }
   }
   return true;
 }

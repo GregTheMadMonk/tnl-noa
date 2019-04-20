@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <type_traits>  // std::add_const
+#include <type_traits>  // std::add_const_t
 
 #include <TNL/Containers/VectorView.h>
 #include <TNL/Pointers/SharedPointer.h>
@@ -35,7 +35,7 @@ public:
    using VectorViewType = typename Traits< Matrix >::VectorViewType;
    using ConstVectorViewType = typename Traits< Matrix >::ConstVectorViewType;
    using MatrixType = Matrix;
-   using MatrixPointer = Pointers::SharedPointer< typename std::add_const< MatrixType >::type >;
+   using MatrixPointer = Pointers::SharedPointer< std::add_const_t< MatrixType > >;
 
    static void configSetup( Config::ConfigDescription& config,
                             const String& prefix = "" )
@@ -52,7 +52,7 @@ public:
 
    virtual void solve( ConstVectorViewType b, VectorViewType x ) const
    {
-      TNL_ASSERT_TRUE( false, "The solve() method of a dummy preconditioner should not be called." );
+      throw std::logic_error("The solve() method of a dummy preconditioner should not be called.");
    }
 
    String getType() const

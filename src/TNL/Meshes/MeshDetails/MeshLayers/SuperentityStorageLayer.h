@@ -107,26 +107,16 @@ protected:
    }
 
 
-   bool save( File& file ) const
+   void save( File& file ) const
    {
-      if( ! BaseType::save( file ) ||
-          ! this->storageNetwork.save( file ) )
-      {
-         std::cerr << "Saving of the entity superentities layer with " << SuperdimensionTag::value << " dimension failed." << std::endl;
-         return false;
-      }
-      return true;
+      BaseType::save( file );
+      this->storageNetwork.save( file );
    }
 
-   bool load( File& file )
+   void load( File& file )
    {
-      if( ! BaseType::load( file ) ||
-          ! this->storageNetwork.load( file ) )
-      {
-         std::cerr << "Loading of the entity superentities layer with " << SuperdimensionTag::value << " dimension failed." << std::endl;
-         return false;
-      }
-      return true;
+      BaseType::load( file );
+      this->storageNetwork.load( file );
    }
 
    void print( std::ostream& str ) const
@@ -204,16 +194,9 @@ protected:
       return true;
    }
 
-   bool save( File& file ) const
-   {
-      return true;
-   }
+   void save( File& file ) const {}
+   void load( File& file ) {}
 
-   bool load( File& file )
-   {
-      return true;
-   }
- 
    void getSuperentityStorageNetwork( SuperdimensionTag ) {}
 };
 

@@ -49,12 +49,7 @@ int main( int argc, char* argv[] )
          return EXIT_FAILURE;
       return EXIT_SUCCESS;
    }*/
-   String meshType;
-   if( ! getObjectType( meshFile, meshType ) )
-   {
-      std::cerr << "I am not able to detect the mesh type from the file " << meshFile << "." << std::endl;
-      return EXIT_FAILURE;
-   }
+   const String meshType = getObjectType( meshFile );
    std::cout << meshType << " detected in " << meshFile << " file." << std::endl;
    const std::vector< String > parsedMeshType = parseObjectType( meshType );
    if( ! parsedMeshType.size() )

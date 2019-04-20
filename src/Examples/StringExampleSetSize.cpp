@@ -3,11 +3,11 @@
 
 using namespace TNL;
 using namespace std;
-       
+
 int main()
 {
-    String memory;
-    memory.setSize( 256 );
-    int memorysize = memory.getSize();
-    cout << "memory:" << memorysize << endl;
+    String string;
+    string.setSize( 1024 );
+    cout << "String size = " << string.getSize() << endl;
+    cout << "Allocated size = " << string.getAllocatedSize() << endl;
 }

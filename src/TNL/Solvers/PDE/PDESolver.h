@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include <TNL/Object.h>
 #include <TNL/Timer.h>
 #include <TNL/Logger.h>
 #include <TNL/Config/ConfigDescription.h>
@@ -23,7 +22,7 @@ namespace PDE {
    
 template< typename Real,
           typename Index >
-class PDESolver : public Object
+class PDESolver
 {
    public:
       using RealType = Real;

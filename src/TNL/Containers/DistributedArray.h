@@ -12,12 +12,8 @@
 
 #pragma once
 
-#include <type_traits>  // std::add_const
-
 #include <TNL/Containers/Array.h>
-#include <TNL/Containers/ArrayView.h>
-#include <TNL/Communicators/MpiCommunicator.h>
-#include <TNL/Containers/Subrange.h>
+#include <TNL/Containers/DistributedArrayView.h>
 
 namespace TNL {
 namespace Containers {
@@ -27,7 +23,6 @@ template< typename Value,
           typename Index = int,
           typename Communicator = Communicators::MpiCommunicator >
 class DistributedArray
-: public Object
 {
    using CommunicationGroup = typename Communicator::CommunicationGroup;
 public:
@@ -38,9 +33,11 @@ public:
    using LocalRangeType = Subrange< Index >;
    using LocalArrayType = Containers::Array< Value, Device, Index >;
    using LocalArrayViewType = Containers::ArrayView< Value, Device, Index >;
-   using ConstLocalArrayViewType = Containers::ArrayView< typename std::add_const< Value >::type, Device, Index >;
+   using ConstLocalArrayViewType = Containers::ArrayView< std::add_const_t< Value >, Device, Index >;
    using HostType = DistributedArray< Value, Devices::Host, Index, Communicator >;
    using CudaType = DistributedArray< Value, Devices::Cuda, Index, Communicator >;
+   using ViewType = DistributedArrayView< Value, Device, Index, Communicator >;
+   using ConstViewType = DistributedArrayView< std::add_const_t< Value >, Device, Index, Communicator >;
 
    DistributedArray() = default;
 
@@ -69,9 +66,28 @@ public:
    // TODO: no getSerializationType method until there is support for serialization
 
 
-   /*
-    * Usual Array methods follow below.
+   // Usual Array methods follow below.
+
+   /**
+    * \brief Returns a modifiable view of the array.
     */
+   ViewType getView();
+
+   /**
+    * \brief Returns a non-modifiable view of the array.
+    */
+   ConstViewType getConstView() const;
+
+   /**
+    * \brief Conversion operator to a modifiable view of the array.
+    */
+   operator ViewType();
+
+   /**
+    * \brief Conversion operator to a non-modifiable view of the array.
+    */
+   operator ConstViewType() const;
+
    template< typename Array >
    void setLike( const Array& array );
 
@@ -121,19 +137,13 @@ public:
    // Returns true iff non-zero size is set
    operator bool() const;
 
-   // TODO: serialization (save, load, boundLoad)
+   // TODO: serialization (save, load)
 
 protected:
    LocalRangeType localRange;
    IndexType globalSize = 0;
    CommunicationGroup group = Communicator::NullGroup;
    LocalArrayType localData;
-
-private:
-   // TODO: disabled until they are implemented
-   using Object::save;
-   using Object::load;
-   using Object::boundLoad;
 };
 
 } // namespace Containers

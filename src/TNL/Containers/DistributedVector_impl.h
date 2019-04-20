@@ -12,10 +12,9 @@
 
 #pragma once
 
-#include <stdexcept>  // std::runtime_error
-
 #include "DistributedVector.h"
 #include <TNL/Containers/Algorithms/ReductionOperations.h>
+#include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
 namespace Containers {
@@ -40,6 +39,48 @@ DistributedVector< Real, Device, Index, Communicator >::
 getLocalVectorView() const
 {
    return this->getLocalArrayView();
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
+typename DistributedVector< Value, Device, Index, Communicator >::ViewType
+DistributedVector< Value, Device, Index, Communicator >::
+getView()
+{
+   return ViewType( this->getLocalRange(), this->getSize(), this->getCommunicationGroup(), this->getLocalVectorView() );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
+typename DistributedVector< Value, Device, Index, Communicator >::ConstViewType
+DistributedVector< Value, Device, Index, Communicator >::
+getConstView() const
+{
+   return ConstViewType( this->getLocalRange(), this->getSize(), this->getCommunicationGroup(), this->getLocalVectorView() );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
+DistributedVector< Value, Device, Index, Communicator >::
+operator ViewType()
+{
+   return getView();
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
+DistributedVector< Value, Device, Index, Communicator >::
+operator ConstViewType() const
+{
+   return getConstView();
 }
 
 
@@ -530,7 +571,7 @@ void
 DistributedVector< Real, Device, Index, Communicator >::
 computePrefixSum()
 {
-   throw std::runtime_error("Distributed prefix sum is not implemented yet.");
+   throw Exceptions::NotImplementedError("Distributed prefix sum is not implemented yet.");
 }
 
 template< typename Real,
@@ -541,7 +582,7 @@ void
 DistributedVector< Real, Device, Index, Communicator >::
 computePrefixSum( IndexType begin, IndexType end )
 {
-   throw std::runtime_error("Distributed prefix sum is not implemented yet.");
+   throw Exceptions::NotImplementedError("Distributed prefix sum is not implemented yet.");
 }
 
 template< typename Real,
@@ -552,7 +593,7 @@ void
 DistributedVector< Real, Device, Index, Communicator >::
 computeExclusivePrefixSum()
 {
-   throw std::runtime_error("Distributed prefix sum is not implemented yet.");
+   throw Exceptions::NotImplementedError("Distributed prefix sum is not implemented yet.");
 }
 
 template< typename Real,
@@ -563,7 +604,7 @@ void
 DistributedVector< Real, Device, Index, Communicator >::
 computeExclusivePrefixSum( IndexType begin, IndexType end )
 {
-   throw std::runtime_error("Distributed prefix sum is not implemented yet.");
+   throw Exceptions::NotImplementedError("Distributed prefix sum is not implemented yet.");
 }
 
 } // namespace Containers

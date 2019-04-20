@@ -96,10 +96,10 @@ template< typename Real,
 template< int sizeSArray >
 void
 tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >::
-updateBlocks( InterfaceMapType interfaceMap,
-        MeshFunctionType aux,
-        MeshFunctionType helpFunc,
-        ArrayContainer BlockIterHost, int numThreadsPerBlock/*, Real **sArray*/ )
+updateBlocks( const InterfaceMapType& interfaceMap,
+        MeshFunctionType& aux,
+        MeshFunctionType& helpFunc,
+        ArrayContainer& BlockIterHost, int numThreadsPerBlock/*, Real **sArray*/ )
 {
 #pragma omp parallel for schedule( dynamic )
   for( IndexType i = 0; i < BlockIterHost.getSize(); i++ )
@@ -270,10 +270,10 @@ template< typename Real,
 template< int sizeSArray >
 void
 tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > >::
-updateBlocks( const InterfaceMapType interfaceMap,
-        const MeshFunctionType aux,
+updateBlocks( const InterfaceMapType& interfaceMap,
+        const MeshFunctionType& aux,
         MeshFunctionType& helpFunc,
-        ArrayContainer BlockIterHost, int numThreadsPerBlock/*, Real **sArray*/ )
+        ArrayContainer& BlockIterHost, int numThreadsPerBlock/*, Real **sArray*/ )
 {  
 //#pragma omp parallel for schedule( dynamic )
   for( IndexType i = 0; i < BlockIterHost.getSize(); i++ )
@@ -594,7 +594,7 @@ template< typename Real,
         typename Index >
 void 
 tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > >::
-getNeighbours( ArrayContainer BlockIterHost, int numBlockX, int numBlockY, int numBlockZ )
+getNeighbours( ArrayContainer& BlockIterHost, int numBlockX, int numBlockY, int numBlockZ )
 {
   int* BlockIterPom; 
   BlockIterPom = new int [ numBlockX * numBlockY * numBlockZ ];
@@ -634,7 +634,7 @@ template< typename Real,
         typename Index >
 void 
 tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >::
-getNeighbours( ArrayContainer BlockIterHost, int numBlockX, int numBlockY )
+getNeighbours( ArrayContainer& BlockIterHost, int numBlockX, int numBlockY )
 {
   int* BlockIterPom; 
   BlockIterPom = new int [numBlockX * numBlockY];

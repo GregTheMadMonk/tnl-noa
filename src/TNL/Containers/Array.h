@@ -10,9 +10,11 @@
 
 #pragma once
 
-#include <TNL/Object.h>
+#include <list>
+#include <vector>
+
 #include <TNL/File.h>
-#include <TNL/Devices/Host.h>
+#include <TNL/Containers/ArrayView.h>
 
 namespace TNL {
 /**
@@ -23,94 +25,191 @@ namespace Containers {
 template< int, typename > class StaticArray;
 
 /**
- * \brief Array handles memory allocation and sharing of the same data between more Arrays.
+ * \brief Array is responsible for memory management, basic elements
+ * manipulation and I/O operations.
  *
- * \tparam Value Type of array values.
- * \tparam Device Device type.
- * \tparam Index Type of index.
+ * \tparam Value is type of array elements.
+ * \tparam Device is device where the array is going to be allocated - some of \ref Devices::Host and \ref Devices::Cuda.
+ * \tparam Index is indexing type.
+ *
+ * In the \e Device type, the Array remembers where the memory is allocated.
+ * This ensures the compile-time checks of correct pointers manipulation.
+ * Methods defined as \ref __cuda_callable__ can be called even from kernels
+ * running on device. Array elements can be changed either using the \ref operator[]
+ * which is more efficient but it can be called from CPU only for arrays
+ * allocated on host (CPU) and when the array is allocated on GPU, the operator[]
+ * can be called only from kernels running on the device (GPU). On the other
+ * hand, methods \ref setElement and \ref getElement, can be called only from the
+ * host (CPU) does not matter if the array is allocated on the host or the device.
+ * In the latter case, explicit data transfer between host and device (via PCI
+ * express or NVlink in more lucky systems) is invoked and so it can be very
+ * slow. In not time critical parts of code, this is not an issue, however.
+ * Another way to change data stored in the array is \ref evaluate which evaluates
+ * given lambda function. This is performed at the same place where the array is
+ * allocated i.e. it is efficient even on GPU. For simple checking of the array
+ * contents, one may use methods \ref containValue and \ref containsValue and
+ * \ref containsOnlyValue.
+ * Array also offers data sharing using methods \ref bind. This is, however, obsolete
+ * and will be soon replaced with proxy object \ref ArrayView.
  *
  * \par Example
  * \include ArrayExample.cpp
+ *
+ * See also \ref Containers::ArravView, \ref Containers::Vector, \ref Containers::VectorView.
  */
 template< typename Value,
           typename Device = Devices::Host,
           typename Index = int >
-class Array : public Object
+class Array
 {
    public:
 
-      typedef Value ValueType;
-      typedef Device DeviceType;
-      typedef Index IndexType;
-      typedef Containers::Array< Value, Devices::Host, Index > HostType;
-      typedef Containers::Array< Value, Devices::Cuda, Index > CudaType;
+      using ValueType = Value;
+      using DeviceType = Device;
+      using IndexType = Index;
+      using HostType = Containers::Array< Value, Devices::Host, Index >;
+      using CudaType = Containers::Array< Value, Devices::Cuda, Index >;
+      using ViewType = ArrayView< Value, Device, Index >;
+      using ConstViewType = ArrayView< std::add_const_t< Value >, Device, Index >;
 
-      /** \brief Basic constructor.
+      /**
+       * \brief Basic constructor.
        *
-       * Constructs an empty array with the size of zero.
+       * Constructs an empty array with zero size.
        */
       Array();
 
       /**
-       * \brief Constructor with size.
+       * \brief Constructor with array size.
        *
-       * \param size Number of array elements. / Size of allocated memory.
+       * \param size is number of array elements.
        */
       Array( const IndexType& size );
 
       /**
-       * \brief Constructor with data and size.
+       * \brief Constructor with data pointer and size.
+       *
+       * In this case, the Array just encapsulates the pointer \e data. No
+       * deallocation is done in destructor.
+       *
+       * This behavior of the Array is obsolete and \ref ArrayView should be used
+       * instead.
        *
        * \param data Pointer to data.
        * \param size Number of array elements.
        */
+      [[deprecated("Binding functionality of Array is deprecated, ArrayView should be used instead.")]]
       Array( Value* data,
              const IndexType& size );
 
       /**
        * \brief Copy constructor.
        *
-       * The constructor does not make a deep copy, but binds to the supplied array.
-       * \param array Existing array that is to be bound.
-       * \param begin The first index which should be bound.
-       * \param size Number of array elements that should be bound.
+       * \param array is an array to be copied.
        */
+      explicit Array( const Array& array );
+
+      /**
+       * \brief Bind constructor .
+       *
+       * The constructor does not make a deep copy, but binds to the supplied array.
+       * This is also obsolete, \ref ArraView should be used instead.
+       *
+       * \param array is an array that is to be bound.
+       * \param begin is the first index which should be bound.
+       * \param size is number of array elements that should be bound.
+       */
+      [[deprecated("Binding functionality of Array is deprecated, ArrayView should be used instead.")]]
       Array( Array& array,
-             const IndexType& begin = 0,
+             const IndexType& begin,
              const IndexType& size = 0 );
 
-      /** \brief Returns type of array Value, Device type and the type of Index. */
+      /**
+       * \brief Move constructor.
+       *
+       * @param array is an array to be moved
+       */
+      Array( Array&& array ) = default;
+
+      /**
+       * \brief Initialize the array from initializer list, i.e. { ... }
+       *
+       * @param list Initializer list.
+       */
+      template< typename InValue >
+      Array( const std::initializer_list< InValue >& list );
+
+      /**
+       * \brief Initialize the array from std::list.
+       *
+       * @param list Input STL list.
+       */
+      template< typename InValue >
+      Array( const std::list< InValue >& list );
+
+      /**
+       * \brief Initialize the array from std::vector.
+       *
+       * @param vector Input STL vector.
+       */
+      template< typename InValue >
+      Array( const std::vector< InValue >& vector );
+
+      /**
+       * \brief Returns array type in C++ style.
+       *
+       * \return String with array type.
+       */
       static String getType();
 
-      /** \brief Returns type of array Value, Device type and the type of Index. */
+      /**
+       * \brief Returns array type in C++ style.
+       *
+       * \return String with array type.
+       */
       virtual String getTypeVirtual() const;
 
-      /** \brief Returns (host) type of array Value, Device type and the type of Index. */
+      /**
+       *  \brief Returns array type in C++ style where device is always \ref Devices::Host.
+       *
+       * \return String with serialization array type.
+       */
       static String getSerializationType();
 
-      /** \brief Returns (host) type of array Value, Device type and the type of Index. */
+      /**
+       *  \brief Returns array type in C++ style where device is always \ref Devices::Host.
+       *
+       * \return String with serialization array type.
+       */
       virtual String getSerializationTypeVirtual() const;
 
       /**
-       * \brief Method for setting the size of an array.
+       * \brief Method for setting the array size.
        *
        * If the array shares data with other arrays these data are released.
        * If the current data are not shared and the current size is the same
        * as the new one, nothing happens.
        *
-       * \param size Number of array elements.
+       * \param size is number of array elements.
        */
       void setSize( Index size );
 
-      /** \brief Method for getting the size of an array. */
+      /**
+       * \brief Method for getting the size of an array.
+       *
+       * This method can be called from device kernels.
+       *
+       * \return Array size.
+       */
       __cuda_callable__ Index getSize() const;
 
       /**
        * \brief Assigns features of the existing \e array to the given array.
        *
        * Sets the same size as the size of existing \e array.
-       * \tparam ArrayT Type of array.
-       * \param array Reference to an existing array.
+       *
+       * \tparam ArrayT is any array type having method \ref getSize().
+       * \param array is reference to the source array.
        */
       template< typename ArrayT >
       void setLike( const ArrayT& array );
@@ -120,9 +219,13 @@ class Array : public Object
        *
        * Releases old data and binds this array with new \e _data. Also sets new
        * \e _size of this array.
-       * @param _data Pointer to new data.
-       * @param _size Size of new _data. Number of elements.
+       *
+       * This method is obsolete, use \ref ArrayView instead.
+       *
+       * \param _data Pointer to new data.
+       * \param _size Size of new _data. Number of elements.
        */
+      [[deprecated("Binding functionality of Array is deprecated, ArrayView should be used instead.")]]
       void bind( Value* _data,
                  const Index _size );
 
@@ -131,12 +234,16 @@ class Array : public Object
        *
        * Releases old data and binds this array with new \e array starting at
        * position \e begin. Also sets new \e size of this array.
+       *
+       * This method is obsolete, use \ref ArrayView instead.
+       *
        * \tparam ArrayT Type of array.
        * \param array Reference to a new array.
        * \param begin Starting index position.
        * \param size Size of new array. Number of elements.
        */
       template< typename ArrayT >
+      [[deprecated("Binding functionality of Array is deprecated, ArrayView should be used instead.")]]
       void bind( const ArrayT& array,
                  const IndexType& begin = 0,
                  const IndexType& size = 0 );
@@ -146,158 +253,275 @@ class Array : public Object
        *
        * Releases old data and binds this array with a static array of size \e
        * Size.
+       *
+       * This method is obsolete, use \ref ArrayView instead.
+       *
        * \tparam Size Size of array.
        * \param array Reference to a static array.
        */
       template< int Size >
+      [[deprecated("Binding functionality of Array is deprecated, ArrayView should be used instead.")]]
       void bind( StaticArray< Size, Value >& array );
 
       /**
-       * \brief Swaps all features of given array with existing \e array.
+       * \brief Returns a modifiable view of the array.
+       */
+      ViewType getView();
+
+      /**
+       * \brief Returns a non-modifiable view of the array.
+       */
+      ConstViewType getConstView() const;
+
+      /**
+       * \brief Conversion operator to a modifiable view of the array.
+       */
+      operator ViewType();
+
+      /**
+       * \brief Conversion operator to a non-modifiable view of the array.
+       */
+      operator ConstViewType() const;
+
+      /**
+       * \brief Swaps this array with another.
        *
-       * Swaps sizes, all values (data), allocated memory and references of given
-       * array with existing array.
-       * \param array Existing array, which features are swaped with given array.
+       * The swap is done in a shallow way, i.e. swapping only pointers and sizes.
+       *
+       * \param array is the array to be swapped with this array.
        */
       void swap( Array& array );
 
       /**
-       * \brief Resets the given array.
+       * \brief Resets the array.
        *
-       * Releases all data from array.
+       * Releases the array to empty state.
        */
       void reset();
 
       /**
-       * \brief Method for getting the data from given array with constant poiner.
+       * \brief Data pointer getter for constant instances.
+       *
+       * This method can be called from device kernels.
+       *
+       * \return Pointer to array data.
        */
       __cuda_callable__ const Value* getData() const;
 
       /**
-       * \brief Method for getting the data from given array.
+       * \brief Data pointer getter.
+       *
+       * This method can be called from device kernels.
+       *
+       * \return Pointer to array data.
        */
       __cuda_callable__ Value* getData();
 
       /**
-       * \brief Assignes the value \e x to the array element at position \e i.
+       * \brief Data pointer getter for constant instances.
        *
-       * \param i Index position.
-       * \param x New value of an element.
+       * Use this method in algorithms where you want to emphasize that
+       * C-style array pointer is required.
+       *
+       * This method can be called from device kernels.
+       *
+       * \return Pointer to array data.
        */
-      void setElement( const Index& i, const Value& x );
+      __cuda_callable__ const Value* getArrayData() const;
 
       /**
-       * \brief Accesses specified element at the position \e i and returns its value.
+       * \brief Data pointer getter.
+       *
+       * Use this method in algorithms where you want to emphasize that
+       * C-style array pointer is required.
+       *
+       * This method can be called from device kernels.
+       *
+       * \return Pointer to array data.
+       */
+      __cuda_callable__ Value* getArrayData();
+
+
+      /**
+       * \brief Array elements setter - change value of an element at position \e i.
+       *
+       * This method can be called only from the host system (CPU) but even for
+       * arrays allocated on device (GPU).
+       *
+       * \param i is element index.
+       * \param v is the new value of the element.
+       */
+      void setElement( const Index& i, const Value& v );
+
+      /**
+       * \brief Array elements getter - returns value of an element at position \e i.
+       *
+       * This method can be called only from the host system (CPU) but even for
+       * arrays allocated on device (GPU).
        *
        * \param i Index position of an element.
+       *
+       * \return Copy of i-th element.
        */
       Value getElement( const Index& i ) const;
 
       /**
-       * \brief Accesses specified element at the position \e i and returns a reference to its value.
+       * \brief Accesses specified element at the position \e i.
        *
-       * \param i Index position of an element.
+       * This method can be called from device (GPU) kernels if the array is allocated
+       * on the device. In this case, it cannot be called from host (CPU.)
+       *
+       * \param i is position of the element.
+       *
+       * \return Reference to i-th element.
        */
-      __cuda_callable__ inline Value& operator[] ( const Index& i );
+      __cuda_callable__ inline Value& operator[]( const Index& i );
 
       /**
-       * \brief Accesses specified element at the position \e i and returns a (constant?) reference to its value.
+       * \brief Accesses specified element at the position \e i.
        *
-       * \param i Index position of an element.
+       * This method can be called from device (GPU) kernels if the array is allocated
+       * on the device. In this case, it cannot be called from host (CPU.)
+       *
+       * \param i is position of the element.
+       *
+       * \return Constant reference to i-th pointer.
        */
-      __cuda_callable__ inline const Value& operator[] ( const Index& i ) const;
+      __cuda_callable__ inline const Value& operator[]( const Index& i ) const;
 
       /**
        * \brief Assigns \e array to this array, replacing its current contents.
        *
-       * \param array Reference to an array.
+       * \param array is reference to the array.
+       *
+       * \return Reference to this array.
        */
-      Array& operator = ( const Array& array );
+      Array& operator=( const Array& array );
 
       /**
-       * \brief Assigns \e array to this array, replacing its current contents.
+       * \brief Move contents of \e array to this array.
        *
-       * \tparam ArrayT Type of array.
-       * \param array Reference to an array.
+       * \param array is reference to the array.
+       *
+       * \return Reference to this array.
        */
-      template< typename ArrayT >
-      Array& operator = ( const ArrayT& array );
+      Array& operator=( Array&& array );
 
       /**
-       * \brief This function checks whether this array is equal to \e array.
+       * \brief Assigns either array-like container or single value.
        *
-       * \tparam ArrayT Type of array.
-       * \param array Reference to an array.
+       * If \e T is array type i.e. \ref Array, \ref ArrayView, \ref StaticArray,
+       * \ref Vector, \ref VectorView, \ref StaticVector, \ref DistributedArray,
+       * \ref DistributedArrayView, \ref DistributedVector or
+       * \ref DistributedVectorView, its elements are copied into this array. If
+       * it is other type convertibly to Array::ValueType, all array elements are
+       * set to the value \e data.
+       *
+       * \tparam T is type of array or value type.
+       *
+       * \param data is a reference to array or value.
+       *
+       * \return Reference to this array.
+       */
+      template< typename T >
+      Array& operator=( const T& data );
+
+      /**
+       * \brief Assigns STL list to this array.
+       *
+       * \param list is STL list
+       *
+       * \return Reference to this array.
+       */
+      template< typename InValue >
+      Array& operator=( const std::list< InValue >& list );
+
+      /**
+       * \brief Assigns STL vector to this array.
+       *
+       * \param vector is STL vector
+       *
+       * \return Reference to this array.
+       */
+      template< typename InValue >
+      Array& operator=( const std::vector< InValue >& vector );
+
+      /**
+       * \brief Comparison operator with another array-like container.
+       *
+       * \tparam ArrayT is type of an array-like container, i.e Array, ArrayView, Vector, VectorView, DistributedArray, DistributedVector etc.
+       * \param array is reference to an array.
+       *
+       * \return True if both arrays are equal element-wise and false otherwise.
        */
       template< typename ArrayT >
-      bool operator == ( const ArrayT& array ) const;
+      bool operator==( const ArrayT& array ) const;
 
       /**
        * \brief This function checks whether this array is not equal to \e array.
        *
        * \tparam ArrayT Type of array.
        * \param array Reference to an array.
+       *
+       * \return True if both arrays are not equal element-wise and false otherwise.
        */
       template< typename ArrayT >
-      bool operator != ( const ArrayT& array ) const;
+      bool operator!=( const ArrayT& array ) const;
 
       /**
-       * \brief Sets the array values.
+       * \brief Sets the array elements to given value.
        *
        * Sets all the array values to \e v.
        *
        * \param v Reference to a value.
        */
-      void setValue( const Value& v );
+      void setValue( const Value& v,
+                     const Index begin = 0,
+                     Index end = -1 );
 
       /**
-       * \brief Checks if there is an element with value \e v in this array.
+       * \brief Checks if there is an element with value \e v.
        *
-       * \param v Reference to a value.
+       * By default, the method checks all array elements. By setting indexes
+       * \e begin and \e end, only elements in given interval are checked.
+       *
+       * \param v is reference to the value.
+       * \param begin is the first element to be checked
+       * \param end is the last element to be checked. If \e end equals -1, its
+       * value is replaces by the array size.
+       *
+       * \return True if there is **at least one** array element in interval [\e begin, \e end ) having value \e v.
        */
-      bool containsValue( const Value& v ) const;
+      bool containsValue( const Value& v,
+                          const Index begin = 0,
+                          Index end = -1 ) const;
 
       /**
-       * \brief Checks if all elements in this array have the same value \e v.
+       * \brief Checks if all elements have the same value \e v.
+       *
+       * By default, the method checks all array elements. By setting indexes
+       * \e begin and \e end, only elements in given interval are checked.
        *
        * \param v Reference to a value.
+       * \param begin is the first element to be checked
+       * \param end is the last element to be checked. If \e end equals -1, its
+       * value is replaces by the array size.
+       *
+       * \return True if there **all** array elements in interval [\e begin, \e end ) have value \e v.
        */
-      bool containsOnlyValue( const Value& v ) const;
+      bool containsOnlyValue( const Value& v,
+                              const Index begin = 0,
+                              Index end = -1 ) const;
 
       /**
        * \brief Returns true if non-zero size is set.
-       */
-      operator bool() const;
-
-      /**
-       * \brief Method for saving the object to a \e file as a binary data.
        *
-       * \param file Reference to a file.
-       */
-      bool save( File& file ) const;
-
-      /**
-       * Method for loading the object from a file as a binary data.
+       * This method can be called from device kernels.
        *
-       * \param file Reference to a file.
+       * \return Returns \e true if array view size is zero, \e false otherwise.
        */
-      bool load( File& file );
-
-      /**
-       * \brief This method loads data without reallocation.
-       *
-       * This is useful for loading data into shared arrays.
-       * If the array was not initialize yet, common load is
-       * performed. Otherwise, the array size must fit with
-       * the size of array being loaded.
-       */
-      bool boundLoad( File& file );
-
-      using Object::save;
-
-      using Object::load;
-
-      using Object::boundLoad;
+      __cuda_callable__
+      bool empty() const;
 
       /** \brief Basic destructor. */
       ~Array();
@@ -308,10 +532,10 @@ class Array : public Object
       void releaseData() const;
 
       /** \brief Number of elements in array. */
-      mutable Index size;
+      mutable Index size = 0;
 
       /** \brief Pointer to data. */
-      mutable Value* data;
+      mutable Value* data = nullptr;
 
       /**
        * \brief Pointer to the originally allocated data.
@@ -322,7 +546,7 @@ class Array : public Object
        * by TNL) are bind then this pointer is zero since no deallocation is
        * necessary.
        */
-      mutable Value* allocationPointer;
+      mutable Value* allocationPointer = nullptr;
 
       /**
        * \brief Counter of objects sharing this array or some parts of it.
@@ -330,13 +554,31 @@ class Array : public Object
        * The reference counter is allocated after first sharing of the data between
        * more arrays. This is to avoid unnecessary dynamic memory allocation.
        */
-      mutable int* referenceCounter;
+      mutable int* referenceCounter = nullptr;
 };
 
 template< typename Value, typename Device, typename Index >
-std::ostream& operator << ( std::ostream& str, const Array< Value, Device, Index >& v );
+std::ostream& operator<<( std::ostream& str, const Array< Value, Device, Index >& array );
+
+/**
+ * \brief Serialization of arrays into binary files.
+ */
+template< typename Value, typename Device, typename Index >
+File& operator<<( File& file, const Array< Value, Device, Index >& array );
+
+template< typename Value, typename Device, typename Index >
+File& operator<<( File&& file, const Array< Value, Device, Index >& array );
+
+/**
+ * \brief Deserialization of arrays from binary files.
+ */
+template< typename Value, typename Device, typename Index >
+File& operator>>( File& file, Array< Value, Device, Index >& array );
+
+template< typename Value, typename Device, typename Index >
+File& operator>>( File&& file, Array< Value, Device, Index >& array );
 
 } // namespace Containers
 } // namespace TNL
 
-#include <TNL/Containers/Array_impl.h>
+#include <TNL/Containers/Array.hpp>

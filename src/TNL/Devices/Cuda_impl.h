@@ -23,7 +23,7 @@ namespace Devices {
 
 inline String Cuda::getDeviceType()
 {
-   return String( "Cuda" );
+   return String( "Devices::Cuda" );
 }
 
 inline void

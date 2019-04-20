@@ -10,7 +10,7 @@
 
 // Implemented by Nina Dzugasova
 
-#ifdef HAVE_GTEST 
+#ifdef HAVE_GTEST
 #include <gtest/gtest.h>
 #endif
 
@@ -19,7 +19,7 @@
 
 using namespace TNL;
 
-#ifdef HAVE_GTEST 
+#ifdef HAVE_GTEST
 TEST( StringTest, BasicConstructor )
 {
    String str;
@@ -83,7 +83,7 @@ TEST( StringTest, SetSize )
 {
    String str;
    str.setSize( 42 );
-   EXPECT_GT( str.getAllocatedSize(), 0 );
+   EXPECT_EQ( str.getAllocatedSize(), 42 );
 }
 
 TEST( StringTest, GetString )
@@ -277,7 +277,7 @@ TEST( StringTest, split )
    EXPECT_EQ( parts[ 4 ], "br" );
    EXPECT_EQ( parts[ 5 ], "" );
 
-   parts = String( "abracadabra" ).split( 'a', true );
+   parts = String( "abracadabra" ).split( 'a', String::SplitSkip::SkipEmpty );
    ASSERT_EQ( (int) parts.size(), 4 );
    EXPECT_EQ( parts[ 0 ], "br" );
    EXPECT_EQ( parts[ 1 ], "c" );
@@ -306,27 +306,16 @@ TEST( StringTest, SaveLoad )
 {
    String str1( "testing-string" );
    File file;
-   file.open( "test-file.tnl", IOMode::write );
+   ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::out ) );
    ASSERT_NO_THROW( file << str1 );
-   file.close();
-   file.open( "test-file.tnl", IOMode::read );
+   ASSERT_NO_THROW( file.close() );
+   ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::in ) );
    String str2;
    ASSERT_NO_THROW( file >> str2 );
    EXPECT_EQ( str1, str2 );
 
    EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
 };
-
 #endif
 
-#include "GtestMissingError.h"
-int main( int argc, char* argv[] )
-{
-#ifdef HAVE_GTEST
-   ::testing::InitGoogleTest( &argc, argv );
-   return RUN_ALL_TESTS();
-#else
-   throw GtestMissingError();
-#endif
-}
-
+#include "main.h"

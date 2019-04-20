@@ -35,32 +35,6 @@ template< typename Value,
           typename Device,
           typename Index,
           typename Communicator >
-   template< typename Value_ >
-DistributedArrayView< Value, Device, Index, Communicator >::
-DistributedArrayView( DistributedArray< Value_, Device, Index, Communicator >& array )
-: localRange( array.getLocalRange() ),
-  globalSize( array.getSize() ),
-  group( array.getCommunicationGroup() ),
-  localData( array.getLocalArrayView() )
-{}
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Communicator >
-   template< typename Value_ >
-DistributedArrayView< Value, Device, Index, Communicator >::
-DistributedArrayView( const DistributedArray< Value_, Device, Index, Communicator >& array )
-: localRange( array.getLocalRange() ),
-  globalSize( array.getSize() ),
-  group( array.getCommunicationGroup() ),
-  localData( array.getLocalArrayView() )
-{}
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Communicator >
 __cuda_callable__
 void
 DistributedArrayView< Value, Device, Index, Communicator >::
@@ -84,6 +58,30 @@ bind( Value_* data, IndexType localSize )
    TNL_ASSERT_EQ( localSize, localRange.getSize(),
                   "The local array size does not match the local range of the distributed array." );
    localData.bind( data, localSize );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
+__cuda_callable__
+typename DistributedArrayView< Value, Device, Index, Communicator >::ViewType
+DistributedArrayView< Value, Device, Index, Communicator >::
+getView()
+{
+   return *this;
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
+__cuda_callable__
+typename DistributedArrayView< Value, Device, Index, Communicator >::ConstViewType
+DistributedArrayView< Value, Device, Index, Communicator >::
+getConstView() const
+{
+   return *this;
 }
 
 

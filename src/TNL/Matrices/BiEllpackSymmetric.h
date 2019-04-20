@@ -30,7 +30,6 @@ public:
    typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
 	typedef typename Sparse< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
 	typedef typename Sparse< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
-	typedef BiEllpackSymmetric< Real, Device, Index > ThisType;
 	typedef BiEllpackSymmetric< Real, Devices::Host, Index > HostType;
 	typedef BiEllpackSymmetric< Real, Devices::Cuda, Index > CudaType;
 
@@ -118,13 +117,13 @@ public:
 
 	void reset();
 
-	bool save( File& file ) const;
+	void save( File& file ) const;
 
-	bool load( File& file );
+	void load( File& file );
 
-	bool save( const String& fileName ) const;
+	void save( const String& fileName ) const;
 
-	bool load( const String& fileName );
+	void load( const String& fileName );
 
 	void print( std::ostream& str ) const;
 

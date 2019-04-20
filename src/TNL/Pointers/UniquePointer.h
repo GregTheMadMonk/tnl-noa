@@ -35,7 +35,6 @@ class UniquePointer< Object, Devices::Host > : public SmartPointer
 
       typedef Object ObjectType;
       typedef Devices::Host DeviceType;
-      typedef UniquePointer< Object, Devices::Host > ThisType;
 
       UniquePointer( std::nullptr_t )
       : pointer( nullptr )
@@ -97,7 +96,7 @@ class UniquePointer< Object, Devices::Host > : public SmartPointer
          return *( this->pointer );
       }
 
-      const ThisType& operator=( ThisType& ptr )
+      const UniquePointer& operator=( UniquePointer& ptr )
       {
          if( this->pointer )
             delete this->pointer;
@@ -106,7 +105,7 @@ class UniquePointer< Object, Devices::Host > : public SmartPointer
          return *this;
       }
 
-      const ThisType& operator=( ThisType&& ptr )
+      const UniquePointer& operator=( UniquePointer&& ptr )
       {
          return this->operator=( ptr );
       }
@@ -135,7 +134,6 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
 
       typedef Object ObjectType;
       typedef Devices::Cuda DeviceType;
-      typedef UniquePointer< Object, Devices::Cuda > ThisType;
 
       UniquePointer( std::nullptr_t )
       : pd( nullptr ),
@@ -215,7 +213,7 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
             return *( this->cuda_pointer );
       }
 
-      const ThisType& operator=( ThisType& ptr )
+      const UniquePointer& operator=( UniquePointer& ptr )
       {
          this->free();
          this->pd = ptr.pd;
@@ -225,7 +223,7 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
          return *this;
       }
 
-      const ThisType& operator=( ThisType&& ptr )
+      const UniquePointer& operator=( UniquePointer&& ptr )
       {
          return this->operator=( ptr );
       }
@@ -320,7 +318,6 @@ class UniquePointer< Object, Devices::MIC > : public SmartPointer
 
       typedef Object ObjectType;
       typedef Devices::MIC DeviceType;
-      typedef UniquePointer< Object, Devices::MIC > ThisType;
 
       UniquePointer( std::nullptr_t )
       : pd( nullptr ),
@@ -393,7 +390,7 @@ class UniquePointer< Object, Devices::MIC > : public SmartPointer
             return *( this->mic_pointer );
       }
 
-      const ThisType& operator=( ThisType& ptr )
+      const UniquePointer& operator=( UniquePointer& ptr )
       {
          this->free();
          this->pd = ptr.pd;
@@ -403,7 +400,7 @@ class UniquePointer< Object, Devices::MIC > : public SmartPointer
          return *this;
       }
 
-      const ThisType& operator=( ThisType&& ptr )
+      const UniquePointer& operator=( UniquePointer&& ptr )
       {
          return this->operator=( ptr );
       }

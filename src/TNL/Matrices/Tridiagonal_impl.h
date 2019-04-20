@@ -12,6 +12,7 @@
 
 #include <TNL/Assert.h>
 #include <TNL/Matrices/Tridiagonal.h>
+#include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
 namespace Matrices {   
@@ -402,7 +403,7 @@ const typename Tridiagonal< Real, Device, Index >::MatrixRow
 Tridiagonal< Real, Device, Index >::
 getRow( const IndexType rowIndex ) const
 {
-   TNL_ASSERT( false, );
+   throw Exceptions::NotImplementedError();
 }
 
 
@@ -509,7 +510,7 @@ void Tridiagonal< Real, Device, Index >::getTransposition( const Tridiagonal< Re
    if( std::is_same< Device, Devices::Cuda >::value )
    {
 #ifdef HAVE_CUDA
-      ThisType* kernel_this = Devices::Cuda::passToDevice( *this );
+      Tridiagonal* kernel_this = Devices::Cuda::passToDevice( *this );
       typedef  Tridiagonal< Real2, Device, Index2 > InMatrixType;
       InMatrixType* kernel_inMatrix = Devices::Cuda::passToDevice( matrix );
       dim3 cudaBlockSize( 256 ), cudaGridSize( Devices::Cuda::getMaxGridSize() );
@@ -578,53 +579,42 @@ Tridiagonal< Real, Device, Index >::operator=( const Tridiagonal< Real2, Device2
 
    this->setLike( matrix );
 
-   std::cerr << "Cross-device assignment for the Tridiagonal format is not implemented yet." << std::endl;
-   throw 1;
+   throw Exceptions::NotImplementedError("Cross-device assignment for the Tridiagonal format is not implemented yet.");
 }
 
 
 template< typename Real,
           typename Device,
           typename Index >
-bool Tridiagonal< Real, Device, Index >::save( File& file ) const
+void Tridiagonal< Real, Device, Index >::save( File& file ) const
 {
-   if( ! Matrix< Real, Device, Index >::save( file ) ||
-       ! this->values.save( file ) )
-   {
-      std::cerr << "Unable to save a tridiagonal matrix." << std::endl;
-      return false;
-   }
-   return true;
+   Matrix< Real, Device, Index >::save( file );
+   file << this->values;
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool Tridiagonal< Real, Device, Index >::load( File& file )
+void Tridiagonal< Real, Device, Index >::load( File& file )
 {
-   if( ! Matrix< Real, Device, Index >::load( file ) ||
-       ! this->values.load( file ) )
-   {
-      std::cerr << "Unable to save a tridiagonal matrix." << std::endl;
-      return false;
-   }
-   return true;
+   Matrix< Real, Device, Index >::load( file );
+   file >> this->values;
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool Tridiagonal< Real, Device, Index >::save( const String& fileName ) const
+void Tridiagonal< Real, Device, Index >::save( const String& fileName ) const
 {
-   return Object::save( fileName );
+   Object::save( fileName );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool Tridiagonal< Real, Device, Index >::load( const String& fileName )
+void Tridiagonal< Real, Device, Index >::load( const String& fileName )
 {
-   return Object::load( fileName );
+   Object::load( fileName );
 }
 
 template< typename Real,

@@ -68,7 +68,6 @@ public:
    typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
-   typedef SlicedEllpack< Real, Device, Index, SliceSize > ThisType;
    typedef SlicedEllpack< Real, Devices::Host, Index, SliceSize > HostType;
    typedef SlicedEllpack< Real, Devices::Cuda, Index, SliceSize > CudaType;
    typedef Sparse< Real, Device, Index > BaseType;
@@ -179,7 +178,8 @@ public:
    template< typename InVector,
              typename OutVector >
    void vectorProduct( const InVector& inVector,
-                       OutVector& outVector ) const;
+                       OutVector& outVector,
+                       RealType multiplicator = 1.0 ) const;
 
    template< typename Real2, typename Index2 >
    void addMatrix( const SlicedEllpack< Real2, Device, Index2 >& matrix,
@@ -204,13 +204,13 @@ public:
              typename = typename Enabler< Device2 >::type >
    SlicedEllpack& operator=( const SlicedEllpack< Real2, Device2, Index2, SliceSize >& matrix );
 
-   bool save( File& file ) const;
+   void save( File& file ) const;
 
-   bool load( File& file );
+   void load( File& file );
 
-   bool save( const String& fileName ) const;
+   void save( const String& fileName ) const;
 
-   bool load( const String& fileName );
+   void load( const String& fileName );
 
    void print( std::ostream& str ) const;
 

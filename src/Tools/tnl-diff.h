@@ -227,8 +227,12 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const Con
          }
          if( verbose )
            std::cout << "Processing files " << inputFiles[ i ] << " and " << inputFiles[ i + 1 ] << "...           \r" << std::flush;
-         if( ! v1.load( inputFiles[ i ] ) ||
-             ! v2.load( inputFiles[ i + 1 ] ) )
+         try
+         {
+            v1.load( inputFiles[ i ] );
+            v2.load( inputFiles[ i + 1 ] );
+         }
+         catch(...)
          {
             std::cerr << "Unable to read the files " << inputFiles[ i ] << " and " << inputFiles[ i + 1 ] << "." << std::endl;
             outputFile.close();
@@ -246,22 +250,12 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const Con
          {
             if( verbose )
               std::cout << "Reading the file " << inputFiles[ 0 ] << "...               \r" << std::flush;
-            if( ! v1.load( inputFiles[ 0 ] ) )
-            {
-               std::cerr << "Unable to read the file " << inputFiles[ 0 ] << std::endl;
-               outputFile.close();
-               return false;
-            }
+            v1.load( inputFiles[ 0 ] );
             file1 = inputFiles[ 0 ];
          }
          if( verbose )
            std::cout << "Processing the files " << inputFiles[ 0 ] << " and " << inputFiles[ i ] << "...             \r" << std::flush;
-         if( ! v2.load( inputFiles[ i ] ) )
-         {
-            std::cerr << "Unable to read the file " << inputFiles[ 1 ] << std::endl;
-            outputFile.close();
-            return false;
-         }
+         v2.load( inputFiles[ i ] );
          if( ! exactMatch )
             outputFile << std::setw( 6 ) << ( i - 1 ) * snapshotPeriod << " ";
          file2 = inputFiles[ i ];
@@ -273,13 +267,8 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const Con
             i = half;
          if( verbose )
            std::cout << "Processing files " << inputFiles[ i - half ] << " and " << inputFiles[ i ] << "...                 \r" << std::flush;
-         if( ! v1.load( inputFiles[ i - half ] ) ||
-             ! v2.load( inputFiles[ i ] ) )
-         {
-            std::cerr << "Unable to read the files " << inputFiles[ i - half ] << " and " << inputFiles[ i ] << "." << std::endl;
-            outputFile.close();
-            return false;
-         }
+         v1.load( inputFiles[ i - half ] );
+         v2.load( inputFiles[ i ] );
          //if( snapshotPeriod != 0.0 )
          if( ! exactMatch )
             outputFile << std::setw( 6 ) << ( i - half ) * snapshotPeriod << " ";
@@ -315,10 +304,7 @@ bool computeDifferenceOfMeshFunctions( const MeshPointer& meshPointer, const Con
 
          if( writeDifference )
          {
-            String differenceFileName;
-            differenceFileName = inputFiles[ i ];
-            removeFileExtension( differenceFileName );
-            differenceFileName += ".diff.tnl";
+            String differenceFileName = removeFileNameExtension( inputFiles[ i ] ) + ".diff.tnl";
             //diff.setLike( v1 );
             diff = v1;
             diff -= v2;
@@ -377,13 +363,8 @@ bool computeDifferenceOfVectors( const MeshPointer& meshPointer, const Config::P
          }
          if( verbose )
            std::cout << "Processing files " << inputFiles[ i ] << " and " << inputFiles[ i + 1 ] << "...           \r" << std::flush;
-         if( ! v1.load( inputFiles[ i ] ) ||
-             ! v2.load( inputFiles[ i + 1 ] ) )
-         {
-            std::cerr << "Unable to read the files " << inputFiles[ i ] << " and " << inputFiles[ i + 1 ] << "." << std::endl;
-            outputFile.close();
-            return false;
-         }
+         File( inputFiles[ i ], std::ios_base::in ) >> v1;
+         File( inputFiles[ i + 1 ], std::ios_base::in ) >> v2;
          outputFile << std::setw( 6 ) << i/2 * snapshotPeriod << " ";
          i++;
       }
@@ -393,21 +374,11 @@ bool computeDifferenceOfVectors( const MeshPointer& meshPointer, const Config::P
          {
             if( verbose )
               std::cout << "Reading the file " << inputFiles[ 0 ] << "...               \r" << std::flush;
-            if( ! v1.load( inputFiles[ 0 ] ) )
-            {
-               std::cerr << "Unable to read the file " << inputFiles[ 0 ] << std::endl;
-               outputFile.close();
-               return false;
-            }
+            File( inputFiles[ 0 ], std::ios_base::in ) >> v1;
          }
          if( verbose )
            std::cout << "Processing the files " << inputFiles[ 0 ] << " and " << inputFiles[ i ] << "...             \r" << std::flush;
-         if( ! v2.load( inputFiles[ i ] ) )
-         {
-            std::cerr << "Unable to read the file " << inputFiles[ 1 ] << std::endl;
-            outputFile.close();
-            return false;
-         }
+         File( inputFiles[ i ], std::ios_base::in ) >> v2;
          outputFile << std::setw( 6 ) << ( i - 1 ) * snapshotPeriod << " ";
       }
       if( mode == "halves" )
@@ -417,13 +388,8 @@ bool computeDifferenceOfVectors( const MeshPointer& meshPointer, const Config::P
             i = half;
          if( verbose )
            std::cout << "Processing files " << inputFiles[ i - half ] << " and " << inputFiles[ i ] << "...                 \r" << std::flush;
-         if( ! v1.load( inputFiles[ i - half ] ) ||
-             ! v2.load( inputFiles[ i ] ) )
-         {
-            std::cerr << "Unable to read the files " << inputFiles[ i - half ] << " and " << inputFiles[ i ] << "." << std::endl;
-            outputFile.close();
-            return false;
-         }
+         File( inputFiles[ i - half ], std::ios_base::in ) >> v1;
+         File( inputFiles[ i ], std::ios_base::in ) >> v2;
          //if( snapshotPeriod != 0.0 )
          outputFile << std::setw( 6 ) << ( i - half ) * snapshotPeriod << " ";
       }
@@ -450,15 +416,12 @@ bool computeDifferenceOfVectors( const MeshPointer& meshPointer, const Config::P
 
       if( writeDifference )
       {
-         String differenceFileName;
-         differenceFileName = inputFiles[ i ];
-         removeFileExtension( differenceFileName );
-         differenceFileName += ".diff.tnl";
+         String differenceFileName = removeFileNameExtension( inputFiles[ i ] ) + ".diff.tnl";
          Containers::Vector< Real, Devices::Host, Index > diff;
          diff.setLike( v1 );
          diff = v1;
          diff -= v2;
-         diff.save( differenceFileName );
+         File( differenceFileName, std::ios_base::out ) << diff;
       }
    }
    outputFile.close();
@@ -471,11 +434,10 @@ bool computeDifferenceOfVectors( const MeshPointer& meshPointer, const Config::P
 template< typename MeshPointer, typename Value, typename Real, typename Index >
 bool computeDifference( const MeshPointer& meshPointer, const String& objectType, const Config::ParameterContainer& parameters )
 {
-   if( objectType == "Functions::MeshFunction" ||
-       objectType == "tnlMeshFunction" )  // TODO: remove deprecated type name
+   if( objectType == "Functions::MeshFunction" )
       return computeDifferenceOfMeshFunctions< MeshPointer, Value, Real, Index >( meshPointer, parameters );
-   if( objectType == "Containers::Vector" ||
-       objectType == "tnlVector" || objectType == "tnlSharedVector" )   // TODO: remove deprecated type name
+   if( objectType == "Containers::Array" ||
+       objectType == "Containers::Vector" )  // TODO: remove deprecated names (Vector is saved as Array)
       return computeDifferenceOfVectors< MeshPointer, Value, Real, Index >( meshPointer, parameters );
    std::cerr << "Unknown object type " << objectType << "." << std::endl;
    return false;
@@ -489,19 +451,13 @@ bool setIndexType( const MeshPointer& meshPointer,
                    const Config::ParameterContainer& parameters )
 {
    String indexType;
-   if( parsedObjectType[ 0 ] == "Containers::MultiVector" ||
-       parsedObjectType[ 0 ] == "tnlMultiVector" ||                       // TODO: remove deprecated type names
-       parsedObjectType[ 0 ] == "tnlSharedMultiVector"   )                //
-      indexType = parsedObjectType[ 4 ];
-   if( parsedObjectType[ 0 ] == "Containers::Vector" ||
-       parsedObjectType[ 0 ] == "tnlSharedVector" ||                     // TODO: remove deprecated type names
-       parsedObjectType[ 0 ] == "tnlVector" )                            //
+   if( parsedObjectType[ 0 ] == "Containers::Array" ||
+       parsedObjectType[ 0 ] == "Containers::Vector" )  // TODO: remove deprecated names (Vector is saved as Array)
       indexType = parsedObjectType[ 3 ];
 
-   if( parsedObjectType[ 0 ] == "Functions::MeshFunction" ||
-       parsedObjectType[ 0 ] == "tnlMeshFunction" )                      // TODO: remove deprecated type names
+   if( parsedObjectType[ 0 ] == "Functions::MeshFunction" )
       return computeDifference< MeshPointer, Value, Real, typename MeshPointer::ObjectType::IndexType >( meshPointer, parsedObjectType[ 0 ], parameters );
-   
+
    if( indexType == "int" )
       return computeDifference< MeshPointer, Value, Real, int >( meshPointer, parsedObjectType[ 0 ], parameters );
    if( indexType == "long-int" )
@@ -569,16 +525,10 @@ bool setValueType( const MeshPointer& meshPointer,
 {
    String elementType;
 
-   if( parsedObjectType[ 0 ] == "Containers::MultiVector" ||
-       parsedObjectType[ 0 ] == "tnlMultiVector" ||                         // TODO: remove deprecated type names
-       parsedObjectType[ 0 ] == "tnlSharedMultiVector" )                    //
-      elementType = parsedObjectType[ 2 ];
-   if( parsedObjectType[ 0 ] == "Functions::MeshFunction" ||
-       parsedObjectType[ 0 ] == "tnlMeshFunction" )                         // TODO: remove deprecated type names
+   if( parsedObjectType[ 0 ] == "Functions::MeshFunction" )
       elementType = parsedObjectType[ 3 ];
-   if( parsedObjectType[ 0 ] == "Containers::Vector" ||
-       parsedObjectType[ 0 ] == "tnlSharedVector" ||                        // TODO: remove deprecated type names
-       parsedObjectType[ 0 ] == "tnlVector" )                               //
+   if( parsedObjectType[ 0 ] == "Containers::Array" ||
+       parsedObjectType[ 0 ] == "Containers::Vector" )  // TODO: remove deprecated names (Vector is saved as Array)
       elementType = parsedObjectType[ 1 ];
 
 
@@ -616,18 +566,24 @@ bool processFiles( const Config::ParameterContainer& parameters )
 
    MeshPointer meshPointer;
    if( meshFile != "" )
-      if( ! meshPointer->load( meshFile ) )
+   {
+      try
+      {
+         meshPointer->load( meshFile );
+      }
+      catch(...)
       {
          std::cerr << "I am not able to load mesh from the file " << meshFile << "." << std::endl;
          return false;
       }
+   }
 
    String objectType;
    try
    {
-      getObjectType( inputFiles[ 0 ], objectType );
+      objectType = getObjectType( inputFiles[ 0 ] );
    }
-   catch( std::ios_base::failure exception )
+   catch( const std::ios_base::failure& exception )
    {
       std::cerr << "Cannot open file " << inputFiles[ 0 ] << std::endl;
    }

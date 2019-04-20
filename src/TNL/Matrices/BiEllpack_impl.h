@@ -681,44 +681,38 @@ template< typename Real,
 		  typename Device,
 		  typename Index,
 		  int StripSize >
-bool BiEllpack< Real, Device, Index, StripSize >::save( File& file ) const
+void BiEllpack< Real, Device, Index, StripSize >::save( File& file ) const
 {
-	if( ! Sparse< Real, Device, Index >::save( file ) ||
-		! this->groupPointers.save( file ) ||
-		! this->rowPermArray.save( file ) )
-		return false;
-	return true;
+   Sparse< Real, Device, Index >::save( file );
+   file << this->groupPointers << this->rowPermArray;
 }
 
 template< typename Real,
 		  typename Device,
 		  typename Index,
 		  int StripSize >
-bool BiEllpack< Real, Device, Index, StripSize >::load( File& file )
+void BiEllpack< Real, Device, Index, StripSize >::load( File& file )
 {
-	if( ! Sparse< Real, Device, Index >::load( file ) ||
-		! this->groupPointers.load( file ) ||
-		! this->rowPermArray.load( file ) )
-		return false;
-	return true;
+   Sparse< Real, Device, Index >::load( file );
+   file >> this->groupPointers >> this->rowPermArray;
 }
 
 template< typename Real,
 		  typename Device,
 		  typename Index,
 		  int StripSize >
-bool BiEllpack< Real, Device, Index, StripSize >::save( const String& fileName ) const
+void BiEllpack< Real, Device, Index, StripSize >::save( const String& fileName ) const
 {
-	return Object::save( fileName );
+   Object::save( fileName );
 }
 
 template< typename Real,
 		  typename Device,
 		  typename Index,
 		  int StripSize >
-bool BiEllpack< Real, Device, Index, StripSize >::load( const String& fileName )
+void BiEllpack< Real, Device, Index, StripSize >::load( const String& fileName )
 {
-	return Object::load( fileName );
+   Object::load( fileName );
 }
 
 template< typename Real,

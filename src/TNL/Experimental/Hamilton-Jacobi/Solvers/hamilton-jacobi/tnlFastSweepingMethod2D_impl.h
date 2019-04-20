@@ -378,7 +378,7 @@ solve( const MeshPointer& mesh,
          auxPtr.template getData< Device>(),
          helpFunc.template modifyData< Device>(),
          BlockIterDevice,
-         oddEvenBlock );
+         oddEvenBlock.getView() );
          cudaDeviceSynchronize();
          TNL_CHECK_CUDA_DEVICE;
          auxPtr = helpFunc;
@@ -390,17 +390,17 @@ solve( const MeshPointer& mesh,
          auxPtr.template getData< Device>(),
          helpFunc.template modifyData< Device>(),
          BlockIterDevice,
-         oddEvenBlock );
+         oddEvenBlock.getView() );
          cudaDeviceSynchronize();
          TNL_CHECK_CUDA_DEVICE;
          auxPtr = helpFunc;
          
          oddEvenBlock= (oddEvenBlock == 0) ? 1: 0;
          
-         CudaParallelReduc<<< nBlocks , 1024 >>>( BlockIterDevice, dBlock, ( numBlocksX * numBlocksY ) );
+         CudaParallelReduc<<< nBlocks , 1024 >>>( BlockIterDevice.getView(), dBlock.getView(), ( numBlocksX * numBlocksY ) );
          cudaDeviceSynchronize();
          TNL_CHECK_CUDA_DEVICE;
-         CudaParallelReduc<<< 1, nBlocks >>>( dBlock, dBlock, nBlocks );
+         CudaParallelReduc<<< 1, nBlocks >>>( dBlock.getView(), dBlock.getView(), nBlocks );
          cudaDeviceSynchronize();
          TNL_CHECK_CUDA_DEVICE;
          
@@ -422,7 +422,7 @@ solve( const MeshPointer& mesh,
                 interfaceMapPtr.template getData< Device >(),
                 auxPtr.template modifyData< Device>(),
                 helpFunc.template modifyData< Device>(),
-                BlockIterDevice );
+                BlockIterDevice.getView() );
         cudaDeviceSynchronize();
         TNL_CHECK_CUDA_DEVICE;
         
@@ -437,7 +437,7 @@ solve( const MeshPointer& mesh,
         //}
         //std::cout << std::endl;
         
-        GetNeighbours<<< nBlocksNeigh, 1024 >>>( BlockIterDevice, BlockIterPom, numBlocksX, numBlocksY );
+        GetNeighbours<<< nBlocksNeigh, 1024 >>>( BlockIterDevice.getView(), BlockIterPom.getView(), numBlocksX, numBlocksY );
         cudaDeviceSynchronize();
         TNL_CHECK_CUDA_DEVICE;
         BlockIterDevice = BlockIterPom;
@@ -447,10 +447,10 @@ solve( const MeshPointer& mesh,
         //TNL::swap( auxPtr, helpFunc );
         
         
-        CudaParallelReduc<<< nBlocks , 1024 >>>( BlockIterDevice, dBlock, ( numBlocksX * numBlocksY ) );
+        CudaParallelReduc<<< nBlocks , 1024 >>>( BlockIterDevice.getView(), dBlock.getView(), ( numBlocksX * numBlocksY ) );
         TNL_CHECK_CUDA_DEVICE;
         
-        CudaParallelReduc<<< 1, nBlocks >>>( dBlock, dBlock, nBlocks );
+        CudaParallelReduc<<< 1, nBlocks >>>( dBlock.getView(), dBlock.getView(), nBlocks );
         TNL_CHECK_CUDA_DEVICE;
         
         
@@ -489,8 +489,8 @@ solve( const MeshPointer& mesh,
 
 
 template < typename Index >
-__global__ void GetNeighbours( TNL::Containers::Array< int, Devices::Cuda, Index > BlockIterDevice,
-        TNL::Containers::Array< int, Devices::Cuda, Index > BlockIterPom, int numBlockX, int numBlockY )
+__global__ void GetNeighbours( TNL::Containers::ArrayView< int, Devices::Cuda, Index > BlockIterDevice,
+        TNL::Containers::ArrayView< int, Devices::Cuda, Index > BlockIterPom, int numBlockX, int numBlockY )
 {
   int i = blockIdx.x * 1024 + threadIdx.x;
   
@@ -515,8 +515,8 @@ __global__ void GetNeighbours( TNL::Containers::Array< int, Devices::Cuda, Index
 }
 
 template < typename Index >
-__global__ void CudaParallelReduc( TNL::Containers::Array< int, Devices::Cuda, Index > BlockIterDevice,
-        TNL::Containers::Array< int, Devices::Cuda, Index > dBlock, int nBlocks )
+__global__ void CudaParallelReduc( TNL::Containers::ArrayView< int, Devices::Cuda, Index > BlockIterDevice,
+        TNL::Containers::ArrayView< int, Devices::Cuda, Index > dBlock, int nBlocks )
 {
   int i = threadIdx.x;
   int blId = blockIdx.x;
@@ -588,7 +588,7 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
         const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index >, 2, bool >& interfaceMap,
         const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& aux,
         Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& helpFunc,
-        TNL::Containers::Array< int, Devices::Cuda, Index > BlockIterDevice, int oddEvenBlock )
+        TNL::Containers::ArrayView< int, Devices::Cuda, Index > BlockIterDevice, int oddEvenBlock )
 {
   int thri = threadIdx.x; int thrj = threadIdx.y;
   int i = threadIdx.x + blockDim.x*blockIdx.x;

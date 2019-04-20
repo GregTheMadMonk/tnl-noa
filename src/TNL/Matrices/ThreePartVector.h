@@ -90,7 +90,7 @@ template< typename Real,
           typename Index = int >
 class ThreePartVector
 {
-   using ConstReal = typename std::add_const< Real >::type;
+   using ConstReal = std::add_const_t< Real >;
 public:
    using RealType = Real;
    using DeviceType = Device;
@@ -118,7 +118,7 @@ public:
 
    ThreePartVectorView< ConstReal, Device, Index > getConstView()
    {
-      return {left, middle, right};
+      return {left.getConstView(), middle, right.getConstView()};
    }
 
 //   __cuda_callable__

@@ -11,6 +11,7 @@
 #pragma once
 
 #include <TNL/Containers/Algorithms/Reduction.h>
+#include <TNL/Containers/Algorithms/CommonVectorOperations.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 
@@ -22,7 +23,7 @@ template< typename Device >
 class VectorOperations{};
 
 template<>
-class VectorOperations< Devices::Host >
+class VectorOperations< Devices::Host > : public CommonVectorOperations< Devices::Host >
 {
 public:
    template< typename Vector >
@@ -36,7 +37,7 @@ public:
                            const typename Vector::RealType& value,
                            const Scalar thisElementMultiplicator );
 
-   template< typename Vector, typename ResultType = typename Vector::RealType >
+   /*template< typename Vector, typename ResultType = typename Vector::RealType >
    static ResultType getVectorMax( const Vector& v );
 
    template< typename Vector, typename ResultType = typename Vector::RealType >
@@ -83,12 +84,13 @@ public:
 
    template< typename Vector1, typename Vector2, typename ResultType = typename Vector1::RealType >
    static ResultType getVectorDifferenceSum( const Vector1& v1, const Vector2& v2 );
+    */
 
    template< typename Vector, typename Scalar >
    static void vectorScalarMultiplication( Vector& v, Scalar alpha );
 
-   template< typename Vector1, typename Vector2, typename ResultType = typename Vector1::RealType >
-   static ResultType getScalarProduct( const Vector1& v1, const Vector2& v2 );
+   /*template< typename Vector1, typename Vector2, typename ResultType = typename Vector1::RealType >
+   static ResultType getScalarProduct( const Vector1& v1, const Vector2& v2 );*/
 
    template< typename Vector1, typename Vector2, typename Scalar1, typename Scalar2 >
    static void addVector( Vector1& y,
@@ -116,7 +118,7 @@ public:
 };
 
 template<>
-class VectorOperations< Devices::Cuda >
+class VectorOperations< Devices::Cuda > : public CommonVectorOperations< Devices::Cuda >
 {
 public:
    template< typename Vector >
@@ -130,7 +132,7 @@ public:
                            const typename Vector::RealType& value,
                            const Scalar thisElementMultiplicator );
 
-   template< typename Vector, typename ResultType = typename Vector::RealType >
+   /*template< typename Vector, typename ResultType = typename Vector::RealType >
    static ResultType getVectorMax( const Vector& v );
 
    template< typename Vector, typename ResultType = typename Vector::RealType >
@@ -177,12 +179,13 @@ public:
 
    template< typename Vector1, typename Vector2, typename ResultType = typename Vector1::RealType >
    static ResultType getVectorDifferenceSum( const Vector1& v1, const Vector2& v2 );
+    */
 
    template< typename Vector, typename Scalar >
    static void vectorScalarMultiplication( Vector& v, const Scalar alpha );
 
-   template< typename Vector1, typename Vector2, typename ResultType = typename Vector1::RealType >
-   static ResultType getScalarProduct( const Vector1& v1, const Vector2& v2 );
+   /*template< typename Vector1, typename Vector2, typename ResultType = typename Vector1::RealType >
+   static ResultType getScalarProduct( const Vector1& v1, const Vector2& v2 );*/
 
    template< typename Vector1, typename Vector2, typename Scalar1, typename Scalar2 >
    static void addVector( Vector1& y,

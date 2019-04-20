@@ -12,8 +12,8 @@
 
 #pragma once
 
-#include "DistributedArray.h"
-#include <TNL/Containers/VectorView.h>
+#include <TNL/Containers/DistributedArray.h>
+#include <TNL/Containers/DistributedVectorView.h>
 
 namespace TNL {
 namespace Containers {
@@ -33,9 +33,11 @@ public:
    using CommunicatorType = Communicator;
    using IndexType = Index;
    using LocalVectorViewType = Containers::VectorView< Real, Device, Index >;
-   using ConstLocalVectorViewType = Containers::VectorView< typename std::add_const< Real >::type, Device, Index >;
+   using ConstLocalVectorViewType = Containers::VectorView< std::add_const_t< Real >, Device, Index >;
    using HostType = DistributedVector< Real, Devices::Host, Index, Communicator >;
    using CudaType = DistributedVector< Real, Devices::Cuda, Index, Communicator >;
+   using ViewType = DistributedVectorView< Real, Device, Index, Communicator >;
+   using ConstViewType = DistributedVectorView< std::add_const_t< Real >, Device, Index, Communicator >;
 
    // inherit all constructors and assignment operators from Array
    using BaseType::DistributedArray;
@@ -45,6 +47,26 @@ public:
    LocalVectorViewType getLocalVectorView();
 
    ConstLocalVectorViewType getLocalVectorView() const;
+
+   /**
+    * \brief Returns a modifiable view of the vector.
+    */
+   ViewType getView();
+
+   /**
+    * \brief Returns a non-modifiable view of the vector.
+    */
+   ConstViewType getConstView() const;
+
+   /**
+    * \brief Conversion operator to a modifiable view of the vector.
+    */
+   operator ViewType();
+
+   /**
+    * \brief Conversion operator to a non-modifiable view of the vector.
+    */
+   operator ConstViewType() const;
 
 
    static String getType();

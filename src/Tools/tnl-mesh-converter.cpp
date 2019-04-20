@@ -78,8 +78,14 @@ struct MeshConverter
          return false;
       }
 
-      if( outputFormat == "tnl" ) {
-         if( ! mesh.save( outputFileName ) ) {
+      if( outputFormat == "tnl" )
+      {
+         try
+         {
+            mesh.save( outputFileName );
+         }
+         catch(...)
+         {
             std::cerr << "Failed to save the mesh to file '" << outputFileName << "'." << std::endl;
             return false;
          }

@@ -57,10 +57,9 @@ class GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, EntityDimensio
  
       typedef Containers::StaticVector< getMeshDimension(), IndexType > EntityOrientationType;
       typedef Containers::StaticVector< getMeshDimension(), IndexType > EntityBasisType;
-      typedef GridEntity< GridType, EntityDimension, Config > ThisType;
       typedef typename GridType::PointType PointType;
  
-      typedef NeighborGridEntitiesStorage< ThisType, Config > NeighborGridEntitiesStorageType;
+      typedef NeighborGridEntitiesStorage< GridEntity, Config > NeighborGridEntitiesStorageType;
  
       template< int NeighborEntityDimension = getEntityDimension() >
       using NeighborEntities =
@@ -146,9 +145,9 @@ class GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, EntityDimensio
       //__cuda_callable__ inline
       //GridEntity();
  
-      friend class BoundaryGridEntityChecker< ThisType >;
+      friend class BoundaryGridEntityChecker< GridEntity >;
  
-      friend class GridEntityCenterGetter< ThisType >;
+      friend class GridEntityCenterGetter< GridEntity >;
 };
 
 /****
@@ -178,8 +177,7 @@ class GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, Dimension, Con
  
       typedef Containers::StaticVector< getMeshDimension(), IndexType > EntityOrientationType;
       typedef Containers::StaticVector< getMeshDimension(), IndexType > EntityBasisType;
-      typedef GridEntity< GridType, Dimension, Config > ThisType;
-      typedef NeighborGridEntitiesStorage< ThisType, Config > NeighborGridEntitiesStorageType;
+      typedef NeighborGridEntitiesStorage< GridEntity, Config > NeighborGridEntitiesStorageType;
  
       template< int NeighborEntityDimension = getEntityDimension() >
       using NeighborEntities =
@@ -265,9 +263,9 @@ class GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, Dimension, Con
       //__cuda_callable__ inline
       //GridEntity();
  
-      friend class BoundaryGridEntityChecker< ThisType >;
+      friend class BoundaryGridEntityChecker< GridEntity >;
  
-      friend class GridEntityCenterGetter< ThisType >;
+      friend class GridEntityCenterGetter< GridEntity >;
 };
 
 /****
@@ -296,8 +294,7 @@ class GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, 0, Config >
  
       typedef Containers::StaticVector< getMeshDimension(), IndexType > EntityOrientationType;
       typedef Containers::StaticVector< getMeshDimension(), IndexType > EntityBasisType;
-      typedef GridEntity< GridType, 0, Config > ThisType;
-      typedef NeighborGridEntitiesStorage< ThisType, Config > NeighborGridEntitiesStorageType;
+      typedef NeighborGridEntitiesStorage< GridEntity, Config > NeighborGridEntitiesStorageType;
  
       template< int NeighborEntityDimension = getEntityDimension() >
       using NeighborEntities =
@@ -385,9 +382,9 @@ class GridEntity< Meshes::Grid< Dimension, Real, Device, Index >, 0, Config >
  
       NeighborGridEntitiesStorageType neighborEntitiesStorage;
  
-      friend class BoundaryGridEntityChecker< ThisType >;
+      friend class BoundaryGridEntityChecker< GridEntity >;
  
-      friend class GridEntityCenterGetter< ThisType >;
+      friend class GridEntityCenterGetter< GridEntity >;
 };
 
 } // namespace Meshes

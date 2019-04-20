@@ -332,10 +332,9 @@ struct LinearSolversBenchmark
    {
       SharedPointer< MatrixType > matrixPointer;
       VectorType x0, b;
-      if( ! matrixPointer->load( parameters.getParameter< String >( "input-matrix" ) ) ||
-          ! x0.load( parameters.getParameter< String >( "input-dof" ) ) ||
-          ! b.load( parameters.getParameter< String >( "input-rhs" ) ) )
-          return false;
+      matrixPointer->load( parameters.getParameter< String >( "input-matrix" ) );
+      File( parameters.getParameter< String >( "input-dof" ), std::ios_base::in ) >> x0;
+      File( parameters.getParameter< String >( "input-rhs" ), std::ios_base::in ) >> b;
 
       typename MatrixType::CompressedRowLengthsVector rowLengths;
       matrixPointer->getCompressedRowLengths( rowLengths );

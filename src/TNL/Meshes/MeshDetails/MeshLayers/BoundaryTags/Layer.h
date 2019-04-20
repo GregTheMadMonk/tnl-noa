@@ -12,7 +12,7 @@
 
 #include <TNL/File.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
-#include <TNL/Containers/Vector.h>
+#include <TNL/Containers/VectorView.h>
 
 #include "Traits.h"
 
@@ -97,7 +97,7 @@ public:
    void updateBoundaryIndices( DimensionTag )
    {
       // Array does not have sum(), Vector of bools does not fit due to arithmetics
-      Containers::Vector< typename BoundaryTagsArray::ValueType, typename BoundaryTagsArray::DeviceType, typename BoundaryTagsArray::IndexType > _boundaryTagsVector;
+      Containers::VectorView< typename BoundaryTagsArray::ValueType, typename BoundaryTagsArray::DeviceType, typename BoundaryTagsArray::IndexType > _boundaryTagsVector;
       _boundaryTagsVector.bind( boundaryTags.getData(), boundaryTags.getSize() );
       const GlobalIndexType boundaryEntities = _boundaryTagsVector.template sum< GlobalIndexType >();
       boundaryIndices.setSize( boundaryEntities );
@@ -168,25 +168,15 @@ public:
       return interiorIndices[ i ];
    }
 
-   bool save( File& file ) const
+   void save( File& file ) const
    {
-      if( ! boundaryTags.save( file ) )
-      {
-         std::cerr << "Failed to save the boundary tags of the entities with dimension " << DimensionTag::value << "." << std::endl;
-         return false;
-      }
-      return true;
+      file << boundaryTags;
    }
 
-   bool load( File& file )
+   void load( File& file )
    {
-      if( ! boundaryTags.load( file ) )
-      {
-         std::cerr << "Failed to load the boundary tags of the entities with dimension " << DimensionTag::value << "." << std::endl;
-         return false;
-      }
+      file >> boundaryTags;
       updateBoundaryIndices( DimensionTag() );
-      return true;
    }
 
    void print( std::ostream& str ) const
@@ -249,16 +239,9 @@ protected:
    void getInteriorEntitiesCount( DimensionTag ) const {}
    void getInteriorEntityIndex( DimensionTag, const GlobalIndexType& i ) const {}
 
-   bool save( File& file ) const
-   {
-      return true;
-   }
+   void save( File& file ) const {}
+   void load( File& file ) {}
 
-   bool load( File& file )
-   {
-      return true;
-   }
- 
    void print( std::ostream& str ) const {}
 
    bool operator==( const Layer& layer ) const

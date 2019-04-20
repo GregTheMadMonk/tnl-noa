@@ -10,7 +10,7 @@
 
 #pragma once
 
-#ifdef HAVE_GTEST 
+#ifdef HAVE_GTEST
 #include <type_traits>
 
 #include <TNL/Containers/Array.h>
@@ -139,7 +139,7 @@ using ArrayTypes = ::testing::Types<
 #endif
 >;
 
-TYPED_TEST_CASE( ArrayTest, ArrayTypes );
+TYPED_TEST_SUITE( ArrayTest, ArrayTypes );
 
 
 TYPED_TEST( ArrayTest, constructors )
@@ -152,23 +152,32 @@ TYPED_TEST( ArrayTest, constructors )
    ArrayType v( 10 );
    EXPECT_EQ( v.getSize(), 10 );
 
-   if( std::is_same< typename ArrayType::DeviceType, Devices::Host >::value ) {
-      typename ArrayType::ValueType data[ 10 ];
-      ArrayType w( data, 10 );
-      EXPECT_EQ( w.getData(), data );
+   // deep copy
+   ArrayType w( v );
+   EXPECT_NE( w.getData(), v.getData() );
+   EXPECT_EQ( w.getSize(), v.getSize() );
+   for( int i = 0; i < 10; i++ )
+      EXPECT_EQ( v.getElement( i ), w.getElement( i ) );
+   v.reset();
+   EXPECT_EQ( w.getSize(), 10 );
 
-      ArrayType z1( w );
-      EXPECT_EQ( z1.getData(), data );
-      EXPECT_EQ( z1.getSize(), 10 );
+   ArrayType a1 { 1, 2, 3 };
+   EXPECT_EQ( a1.getElement( 0 ), 1 );
+   EXPECT_EQ( a1.getElement( 1 ), 2 );
+   EXPECT_EQ( a1.getElement( 2 ), 3 );
 
-      ArrayType z2( w, 1 );
-      EXPECT_EQ( z2.getData(), data + 1 );
-      EXPECT_EQ( z2.getSize(), 9 );
+   std::list< int > l = { 4, 5, 6 };
+   ArrayType a2( l );
+   EXPECT_EQ( a2.getElement( 0 ), 4 );
+   EXPECT_EQ( a2.getElement( 1 ), 5 );
+   EXPECT_EQ( a2.getElement( 2 ), 6 );
 
-      ArrayType z3( w, 2, 3 );
-      EXPECT_EQ( z3.getData(), data + 2 );
-      EXPECT_EQ( z3.getSize(), 3 );
-   }
+   std::vector< int > q = { 7, 8, 9 };
+
+   ArrayType a3( q );
+   EXPECT_EQ( a3.getElement( 0 ), 7 );
+   EXPECT_EQ( a3.getElement( 1 ), 8 );
+   EXPECT_EQ( a3.getElement( 2 ), 9 );
 }
 
 TYPED_TEST( ArrayTest, setSize )
@@ -181,21 +190,16 @@ TYPED_TEST( ArrayTest, setSize )
       u.setSize( i );
       EXPECT_EQ( u.getSize(), i );
    }
+}
 
-   ArrayType v( u );
-   EXPECT_EQ( v.getSize(), 10 );
-   EXPECT_EQ( v.getData(), u.getData() );
-   v.setSize( 11 );
-   EXPECT_EQ( u.getSize(), 10 );
-   EXPECT_EQ( v.getSize(), 11 );
-   EXPECT_NE( v.getData(), u.getData() );
+TYPED_TEST( ArrayTest, empty )
+{
+   using ArrayType = typename TestFixture::ArrayType;
+   ArrayType u( 10 );
 
-   // cast to bool returns true iff size > 0
-   EXPECT_TRUE( (bool) u );
-   EXPECT_FALSE( ! u );
-   u.setSize( 0 );
-   EXPECT_FALSE( (bool) u );
-   EXPECT_TRUE( ! u );
+   EXPECT_FALSE( u.empty() );
+   u.reset();
+   EXPECT_TRUE( u.empty() );
 }
 
 TYPED_TEST( ArrayTest, setLike )
@@ -209,45 +213,6 @@ TYPED_TEST( ArrayTest, setLike )
    v.setLike( u );
    EXPECT_EQ( v.getSize(), u.getSize() );
    EXPECT_NE( v.getData(), u.getData() );
-}
-
-TYPED_TEST( ArrayTest, bind )
-{
-   using ArrayType = typename TestFixture::ArrayType;
-
-   ArrayType u( 10 ), v;
-   v.bind( u );
-   EXPECT_EQ( v.getSize(), u.getSize() );
-   EXPECT_EQ( v.getData(), u.getData() );
-
-   // bind array with offset and size
-   ArrayType w;
-   w.bind( u, 2, 3 );
-   EXPECT_EQ( w.getSize(), 3 );
-   EXPECT_EQ( w.getData(), u.getData() + 2 );
-
-   // setting values
-   u.setValue( 27 );
-   EXPECT_EQ( u.getElement( 0 ), 27 );
-   v.setValue( 50 );
-   EXPECT_EQ( u.getElement( 0 ), 50 );
-   u.reset();
-   EXPECT_EQ( u.getSize(), 0 );
-   EXPECT_EQ( v.getElement( 0 ), 50 );
-
-   if( std::is_same< typename ArrayType::DeviceType, Devices::Host >::value ) {
-      typename ArrayType::ValueType data[ 10 ] = { 1, 2, 3, 4, 5, 6, 7, 8, 10 };
-      u.bind( data, 10 );
-      EXPECT_EQ( u.getData(), data );
-      EXPECT_EQ( u.getSize(), 10 );
-      EXPECT_EQ( u.getElement( 1 ), 2 );
-      v.bind( u );
-      EXPECT_EQ( v.getElement( 1 ), 2 );
-      u.reset();
-      v.setElement( 1, 3 );
-      v.reset();
-      EXPECT_EQ( data[ 1 ], 3 );
-   }
 }
 
 TYPED_TEST( ArrayTest, swap )
@@ -273,15 +238,19 @@ TYPED_TEST( ArrayTest, reset )
    ArrayType u;
    u.setSize( 100 );
    EXPECT_EQ( u.getSize(), 100 );
+   EXPECT_FALSE( u.empty() );
    EXPECT_NE( u.getData(), nullptr );
    u.reset();
    EXPECT_EQ( u.getSize(), 0 );
+   EXPECT_TRUE( u.empty() );
    EXPECT_EQ( u.getData(), nullptr );
    u.setSize( 100 );
    EXPECT_EQ( u.getSize(), 100 );
+   EXPECT_FALSE( u.empty() );
    EXPECT_NE( u.getData(), nullptr );
    u.reset();
    EXPECT_EQ( u.getSize(), 0 );
+   EXPECT_TRUE( u.empty() );
    EXPECT_EQ( u.getData(), nullptr );
 }
 
@@ -437,7 +406,9 @@ TYPED_TEST( ArrayTest, assignmentOperator )
       u_host.setElement( i, i );
    }
 
-   v.setValue( 0 );
+   v = 42;
+   for( int i = 0; i < 10; i++ )
+      EXPECT_EQ( v.getElement( i ), 42 );
    v = u;
    EXPECT_EQ( u, v );
 
@@ -450,6 +421,10 @@ TYPED_TEST( ArrayTest, assignmentOperator )
    u_host.setValue( 0 );
    u_host = u;
    EXPECT_EQ( u_host, u );
+
+   u = 5;
+   for( int i = 0; i < 10; i++ )
+      EXPECT_EQ( u.getElement( i ), 5 );
 }
 
 // test works only for arithmetic types
@@ -503,96 +478,35 @@ TYPED_TEST( ArrayTest, SaveAndLoad )
    v.setSize( 100 );
    for( int i = 0; i < 100; i ++ )
       v.setElement( i, 3.14147 );
-   File file;
-   file.open( "test-file.tnl", IOMode::write );
-   EXPECT_TRUE( v.save( file ) );
-   file.close();
-   file.open( "test-file.tnl", IOMode::read );
-   EXPECT_TRUE( u.load( file ) );
+   ASSERT_NO_THROW( File( "test-file.tnl", std::ios_base::out ) << v );
+   ASSERT_NO_THROW( File( "test-file.tnl", std::ios_base::in ) >> u );
    EXPECT_EQ( u, v );
 
    EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
 }
 
-TYPED_TEST( ArrayTest, boundLoad )
+TYPED_TEST( ArrayTest, LoadViaView )
 {
    using ArrayType = typename TestFixture::ArrayType;
 
-   ArrayType u, v, w;
+   ArrayType v, w;
    v.setSize( 100 );
    for( int i = 0; i < 100; i ++ )
       v.setElement( i, 3.14147 );
-   File file;
-   file.open( "test-file.tnl", IOMode::write );
-   EXPECT_TRUE( v.save( file ) );
-   file.close();
+   ASSERT_NO_THROW( File( "test-file.tnl", std::ios_base::out ) << v );
 
    w.setSize( 100 );
-   u.bind( w );
-   file.open( "test-file.tnl", IOMode::read );
-   EXPECT_TRUE( u.boundLoad( file ) );
+   auto u = w.getView();
+   ASSERT_NO_THROW( File( "test-file.tnl", std::ios_base::in ) >> u );
    EXPECT_EQ( u, v );
    EXPECT_EQ( u.getData(), w.getData() );
 
-   u.setSize( 50 );
-   file.open( "test-file.tnl", IOMode::read );
-   EXPECT_FALSE( u.boundLoad( file ) );
-
-   u.reset();
-   file.open( "test-file.tnl", IOMode::read );
-   EXPECT_TRUE( u.boundLoad( file ) );
+   ArrayType z( 50 );
+   File file;
+   ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::in ) );
+   EXPECT_THROW( file >> z.getView(), Exceptions::FileDeserializationError );
 
    EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
-}
-
-TYPED_TEST( ArrayTest, referenceCountingConstructors )
-{
-   using ArrayType = typename TestFixture::ArrayType;
-
-   // copies of a dynamic array
-   ArrayType u( 10 );
-   ArrayType v( u );
-   ArrayType w( v );
-   EXPECT_EQ( v.getData(), u.getData() );
-   EXPECT_EQ( w.getData(), u.getData() );
-
-   // copies of a static array
-   if( std::is_same< typename ArrayType::DeviceType, Devices::Host >::value ) {
-      typename ArrayType::ValueType data[ 10 ] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-      ArrayType u( data, 10 );
-      ArrayType v( u );
-      ArrayType w( v );
-      EXPECT_EQ( u.getData(), data );
-      EXPECT_EQ( v.getData(), data );
-      EXPECT_EQ( w.getData(), data );
-   }
-}
-
-TYPED_TEST( ArrayTest, referenceCountingBind )
-{
-   using ArrayType = typename TestFixture::ArrayType;
-
-   // copies of a dynamic array
-   ArrayType u( 10 );
-   ArrayType v;
-   v.bind( u );
-   ArrayType w;
-   w.bind( v );
-   EXPECT_EQ( v.getData(), u.getData() );
-   EXPECT_EQ( w.getData(), u.getData() );
-
-   // copies of a static array
-   if( std::is_same< typename ArrayType::DeviceType, Devices::Host >::value ) {
-      typename ArrayType::ValueType data[ 10 ] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-      ArrayType u( data, 10 );
-      ArrayType v;
-      v.bind( u );
-      ArrayType w;
-      w.bind( v );
-      EXPECT_EQ( u.getData(), data );
-      EXPECT_EQ( v.getData(), data );
-      EXPECT_EQ( w.getData(), data );
-   }
 }
 
 // TODO: test all __cuda_callable__ methods from a CUDA kernel
@@ -600,13 +514,4 @@ TYPED_TEST( ArrayTest, referenceCountingBind )
 #endif // HAVE_GTEST
 
 
-#include "../GtestMissingError.h"
-int main( int argc, char* argv[] )
-{
-#ifdef HAVE_GTEST
-   ::testing::InitGoogleTest( &argc, argv );
-   return RUN_ALL_TESTS();
-#else
-   throw GtestMissingError();
-#endif
-}
+#include "../main.h"

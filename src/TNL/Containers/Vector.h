@@ -11,12 +11,17 @@
 #pragma once
 
 #include <TNL/Containers/Array.h>
+#include <TNL/Containers/VectorView.h>
 
 namespace TNL {
 namespace Containers {
 
 /**
- * \brief Class for storing vector elements and handling vector operations.
+ * \brief This class extends TNL::Array with algebraic operations.
+ *
+ * \tparam Real is numeric type usually float or double.
+ * \tparam Device is device where the array is going to be allocated - some of \ref Devices::Host and \ref Devices::Cuda.
+ * \tparam Index is indexing type.
  *
  * \par Example
  * \include VectorExample.cpp
@@ -27,13 +32,14 @@ template< typename Real = double,
 class Vector
 : public Array< Real, Device, Index >
 {
-   public:
-
-   typedef Real RealType;
-   typedef Device DeviceType;
-   typedef Index IndexType;
-   typedef Vector< Real, TNL::Devices::Host, Index > HostType;
-   typedef Vector< Real, TNL::Devices::Cuda, Index > CudaType;
+public:
+   using RealType = Real;
+   using DeviceType = Device;
+   using IndexType = Index;
+   using HostType = Vector< Real, TNL::Devices::Host, Index >;
+   using CudaType = Vector< Real, TNL::Devices::Cuda, Index >;
+   using ViewType = VectorView< Real, Device, Index >;
+   using ConstViewType = VectorView< std::add_const_t< Real >, Device, Index >;
 
    /** Constructors and assignment operators are inherited from the class \ref Array. */
    using Array< Real, Device, Index >::Array;
@@ -45,11 +51,25 @@ class Vector
    /** \brief Returns type of vector Real value, Device type and the type of Index. */
    virtual String getTypeVirtual() const;
 
-   /** \brief Returns (host) type of vector Real value, Device type and the type of Index. */
-   static String getSerializationType();
+   /**
+    * \brief Returns a modifiable view of the vector.
+    */
+   ViewType getView();
 
-   /** \brief Returns (host) type of vector Real value, Device type and the type of Index. */
-   virtual String getSerializationTypeVirtual() const;
+   /**
+    * \brief Returns a non-modifiable view of the vector.
+    */
+   ConstViewType getConstView() const;
+
+   /**
+    * \brief Conversion operator to a modifiable view of the vector.
+    */
+   operator ViewType();
+
+   /**
+    * \brief Conversion operator to a non-modifiable view of the vector.
+    */
+   operator ConstViewType() const;
 
    /**
     * \brief Adds another element to this vector.
@@ -282,4 +302,4 @@ class Vector
 } // namespace Containers
 } // namespace TNL
 
-#include <TNL/Containers/Vector_impl.h>
+#include <TNL/Containers/Vector.hpp>

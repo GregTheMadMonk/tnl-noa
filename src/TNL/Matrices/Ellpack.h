@@ -39,7 +39,6 @@ public:
    typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
-   typedef Ellpack< Real, Device, Index > ThisType;
    typedef Ellpack< Real, Devices::Host, Index > HostType;
    typedef Ellpack< Real, Devices::Cuda, Index > CudaType;
    typedef Sparse< Real, Device, Index > BaseType;
@@ -186,13 +185,13 @@ public:
              typename = typename Enabler< Device2 >::type >
    Ellpack& operator=( const Ellpack< Real2, Device2, Index2 >& matrix );
 
-   bool save( File& file ) const;
+   void save( File& file ) const;
 
-   bool load( File& file );
+   void load( File& file );
 
-   bool save( const String& fileName ) const;
+   void save( const String& fileName ) const;
 
-   bool load( const String& fileName );
+   void load( const String& fileName );
 
    void print( std::ostream& str ) const;
 

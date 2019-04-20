@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <TNL/Exceptions/NotImplementedError.h>
+
 namespace TNL {
 namespace Functions {   
 
@@ -134,7 +136,7 @@ class MeshFunctionNormGetter< MeshFunction< Meshes::Grid< Dimension, MeshReal, D
          }
          if( EntityDimension > 0 )
          {
-            TNL_ASSERT_TRUE( false, "Not implemented yet." );
+            throw Exceptions::NotImplementedError("Not implemented yet.");
          }
  
          if( p == 1.0 )

@@ -76,9 +76,9 @@ class MeshEntity
 
       String getTypeVirtual() const;
 
-      bool save( File& file ) const;
+      void save( File& file ) const;
 
-      bool load( File& file );
+      void load( File& file );
 
       void print( std::ostream& str ) const;
 
@@ -170,9 +170,9 @@ class MeshEntity< MeshConfig, Device, Topologies::Vertex >
 
       String getTypeVirtual() const;
 
-      bool save( File& file ) const;
+      void save( File& file ) const;
 
-      bool load( File& file );
+      void load( File& file );
 
       void print( std::ostream& str ) const;
 

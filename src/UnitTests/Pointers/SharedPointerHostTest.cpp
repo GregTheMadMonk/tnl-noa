@@ -13,13 +13,13 @@
 #include <TNL/Pointers/SharedPointer.h>
 #include <TNL/Containers/StaticArray.h>
 
-#ifdef HAVE_GTEST 
+#ifdef HAVE_GTEST
 #include <gtest/gtest.h>
 #endif
 
 using namespace TNL;
 
-#ifdef HAVE_GTEST 
+#ifdef HAVE_GTEST
 TEST( SharedPointerHostTest, ConstructorTest )
 {
    typedef TNL::Containers::StaticArray< 2, int  > TestType;
@@ -43,10 +43,10 @@ TEST( SharedPointerCudaTest, nullptrAssignement )
 {
    using TestType = Pointers::SharedPointer< double, Devices::Host >;
    TestType p1( 5 ), p2( nullptr );
-   
+
    // This should not crash
    p1 = p2;
-   
+
    ASSERT_FALSE( p1 );
    ASSERT_FALSE( p2 );
 }
@@ -55,22 +55,12 @@ TEST( SharedPointerCudaTest, swap )
 {
    using TestType = Pointers::SharedPointer< double, Devices::Host >;
    TestType p1( 1 ), p2( 2 );
-   
+
    p1.swap( p2 );
-   
+
    ASSERT_EQ( *p1, 2 );
    ASSERT_EQ( *p2, 1 );
 }
-
 #endif
 
-#include "../GtestMissingError.h"
-int main( int argc, char* argv[] )
-{
-#ifdef HAVE_GTEST
-   ::testing::InitGoogleTest( &argc, argv );
-   return RUN_ALL_TESTS();
-#else
-   throw GtestMissingError();
-#endif
-}
+#include "../main.h"

@@ -162,12 +162,16 @@ setInitialCondition( const Config::ParameterContainer& parameters,
     }
     else
     {
-       if( ! this->uPointer->boundLoad( initialConditionFile ) )
-       {
-          std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << std::endl;
-          return false;
-       }
-    }
+      try
+      {
+         this->uPointer->boundLoad( initialConditionFile );
+      }
+      catch(...)
+      {
+         std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << std::endl;
+         return false;
+      }
+   }
    return true;
 }
 
@@ -226,8 +230,7 @@ makeSnapshot( const RealType& time,
    }
    else
    {
-      if( ! this->uPointer->save( fileName.getFileName() ) )
-         return false;
+      this->uPointer->save( fileName.getFileName() );
    }
    return true;
 }

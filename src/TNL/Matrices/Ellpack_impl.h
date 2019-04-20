@@ -13,6 +13,7 @@
 #include <TNL/Matrices/Ellpack.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Math.h>
+#include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
 namespace Matrices {   
@@ -533,7 +534,7 @@ void Ellpack< Real, Device, Index > :: addMatrix( const Ellpack< Real2, Device, 
                                                                  const RealType& matrixMultiplicator,
                                                                  const RealType& thisMatrixMultiplicator )
 {
-   TNL_ASSERT( false, std::cerr << "TODO: implement" );
+   throw Exceptions::NotImplementedError( "Ellpack::addMatrix is not implemented." );
    // TODO: implement
 }
 
@@ -545,7 +546,7 @@ template< typename Real,
 void Ellpack< Real, Device, Index >::getTransposition( const Ellpack< Real2, Device, Index2 >& matrix,
                                                                       const RealType& matrixMultiplicator )
 {
-   TNL_ASSERT( false, std::cerr << "TODO: implement" );
+   throw Exceptions::NotImplementedError( "Ellpack::getTransposition is not implemented." );
    // TODO: implement
 }
 
@@ -713,37 +714,35 @@ Ellpack< Real, Device, Index >::operator=( const Ellpack< Real2, Device2, Index2
 template< typename Real,
           typename Device,
           typename Index >
-bool Ellpack< Real, Device, Index >::save( File& file ) const
+void Ellpack< Real, Device, Index >::save( File& file ) const
 {
-   if( ! Sparse< Real, Device, Index >::save( file) ) return false;
-   if( ! file.write( &this->rowLengths ) ) return false;
-   return true;
+   Sparse< Real, Device, Index >::save( file);
+   file.save( &this->rowLengths );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool Ellpack< Real, Device, Index >::load( File& file )
+void Ellpack< Real, Device, Index >::load( File& file )
 {
-   if( ! Sparse< Real, Device, Index >::load( file) ) return false;
-   if( ! file.read( &this->rowLengths ) ) return false;
-   return true;
+   Sparse< Real, Device, Index >::load( file);
+   file.load( &this->rowLengths );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool Ellpack< Real, Device, Index >::save( const String& fileName ) const
+void Ellpack< Real, Device, Index >::save( const String& fileName ) const
 {
-   return Object::save( fileName );
+   Object::save( fileName );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool Ellpack< Real, Device, Index >::load( const String& fileName )
+void Ellpack< Real, Device, Index >::load( const String& fileName )
 {
-   return Object::load( fileName );
+   Object::load( fileName );
 }
 
 template< typename Real,

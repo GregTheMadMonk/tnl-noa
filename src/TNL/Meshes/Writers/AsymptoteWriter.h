@@ -11,6 +11,7 @@
 #pragma once
 
 #include <TNL/Meshes/Grid.h>
+#include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
 namespace Meshes {
@@ -24,13 +25,13 @@ class AsymptoteWriter
 public:
    static void writeAllEntities( const Mesh& mesh, std::ostream& str )
    {
-      throw "not implemented";
+      throw Exceptions::NotImplementedError();
    }
 
    template< int EntityDimension = Mesh::getMeshDimension() >
    static void writeEntities( const Mesh& mesh, std::ostream& str )
    {
-      throw "not implemented";
+      throw Exceptions::NotImplementedError();
    }
 };
 
@@ -154,7 +155,7 @@ public:
    template< int EntityDimension = Mesh::getMeshDimension() >
    static void writeEntities( const Mesh& mesh, std::ostream& str )
    {
-      throw "not implemented";
+      throw Exceptions::NotImplementedError();
    }
 };
 

@@ -23,64 +23,85 @@ template< typename Value,
           typename Device,
           typename Index,
           bool Elementwise = std::is_base_of< Object, Value >::value >
-class ArrayIO
+struct ArrayIO
 {};
 
 template< typename Value,
           typename Device,
           typename Index >
-class ArrayIO< Value, Device, Index, true >
+struct ArrayIO< Value, Device, Index, true >
 {
    public:
 
-   static bool save( File& file,
+   static void save( File& file,
                      const Value* data,
                      const Index elements )
    {
-      for( Index i = 0; i < elements; i++ )
-         if( ! data[ i ].save( file ) )
-         {
-            std::cerr << "I was not able to save " << i << "-th of " << elements << " elements." << std::endl;
-            return false;
-         }
-      return true;
+      Index i;
+      try
+      {
+         for( i = 0; i < elements; i++ )
+            data[ i ].save( file );
+      }
+      catch(...)
+      {
+         throw Exceptions::FileSerializationError( file.getFileName(), "unable to write the " + std::to_string(i) + "-th array element of " + std::to_string(elements) + " into the file." );
+      }
    }
 
-   static bool load( File& file,
+   static void load( File& file,
                      Value* data,
                      const Index elements )
    {
-      for( Index i = 0; i < elements; i++ )
-         if( ! data[ i ].load( file ) )
-         {
-            std::cerr << "I was not able to load " << i << "-th of " << elements << " elements." << std::endl;
-            return false;
-         }
-      return true;
+      Index i = 0;
+      try
+      {
+         for( i = 0; i < elements; i++ )
+            data[ i ].load( file );
+      }
+      catch(...)
+      {
+         throw Exceptions::FileDeserializationError( file.getFileName(), "unable to read the " + std::to_string(i) + "-th array element of " + std::to_string(elements) + " from the file." );
+      }
    }
 };
 
 template< typename Value,
           typename Device,
           typename Index >
-class ArrayIO< Value, Device, Index, false >
+struct ArrayIO< Value, Device, Index, false >
 {
-   public:
-
-   static bool save( File& file,
+   static void save( File& file,
                      const Value* data,
                      const Index elements )
    {
-      return file.write< Value, Device >( data, elements );
+      if( elements == 0 )
+         return;
+      try
+      {
+         file.save< Value, Value, Device >( data, elements );
+      }
+      catch(...)
+      {
+         throw Exceptions::FileSerializationError( file.getFileName(), "unable to write " + std::to_string(elements) + " array elements into the file." );
+      }
    }
 
-   static bool load( File& file,
+   static void load( File& file,
                      Value* data,
                      const Index elements )
    {
-      return file.read< Value, Device >( data, elements );
+      if( elements == 0 )
+         return;
+      try
+      {
+         file.load< Value, Value, Device >( data, elements );
+      }
+      catch(...)
+      {
+         throw Exceptions::FileDeserializationError( file.getFileName(), "unable to read " + std::to_string(elements) + " array elements from the file." );
+      }
    }
-
 };
 
 } // namespace Algorithms

@@ -38,7 +38,6 @@ public:
    typedef Index IndexType;
    typedef typename Matrix< Real, Device, Index >::CompressedRowLengthsVector CompressedRowLengthsVector;
    typedef typename Matrix< Real, Device, Index >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
-   typedef Multidiagonal< Real, Device, Index > ThisType;
    typedef Multidiagonal< Real, Devices::Host, Index > HostType;
    typedef Multidiagonal< Real, Devices::Cuda, Index > CudaType;
    typedef Matrix< Real, Device, Index > BaseType;
@@ -192,13 +191,13 @@ public:
              typename = typename Enabler< Device2 >::type >
    Multidiagonal& operator=( const Multidiagonal< Real2, Device2, Index2 >& matrix );
 
-   bool save( File& file ) const;
+   void save( File& file ) const;
 
-   bool load( File& file );
+   void load( File& file );
 
-   bool save( const String& fileName ) const;
+   void save( const String& fileName ) const;
 
-   bool load( const String& fileName );
+   void load( const String& fileName );
 
    void print( std::ostream& str ) const;
 

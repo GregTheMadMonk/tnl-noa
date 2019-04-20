@@ -489,12 +489,12 @@ template< typename Problem >
 void Merson< Problem >::writeGrids( const DofVectorPointer& u )
 {
    std::cout << "Writing Merson solver grids ...";
-   u->save( "Merson-u.tnl" );
-   k1->save( "Merson-k1.tnl" );
-   k2->save( "Merson-k2.tnl" );
-   k3->save( "Merson-k3.tnl" );
-   k4->save( "Merson-k4.tnl" );
-   k5->save( "Merson-k5.tnl" );
+   File( "Merson-u.tnl", std::ios_base::out ) << *u;
+   File( "Merson-k1.tnl", std::ios_base::out ) << *k1;
+   File( "Merson-k2.tnl", std::ios_base::out ) << *k2;
+   File( "Merson-k3.tnl", std::ios_base::out ) << *k3;
+   File( "Merson-k4.tnl", std::ios_base::out ) << *k4;
+   File( "Merson-k5.tnl", std::ios_base::out ) << *k5;
    std::cout << " done. PRESS A KEY." << std::endl;
    getchar();
 }

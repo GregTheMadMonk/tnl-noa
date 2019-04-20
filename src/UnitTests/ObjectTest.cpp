@@ -13,22 +13,22 @@
 #include <TNL/File.h>
 #include <TNL/Containers/Array.h>
 
-#ifdef HAVE_GTEST 
+#ifdef HAVE_GTEST
 #include <gtest/gtest.h>
 #endif
 
 using namespace TNL;
 
-#ifdef HAVE_GTEST 
+#ifdef HAVE_GTEST
 TEST( ObjectTest, SaveAndLoadTest )
 {
    Object testObject;
    File file;
-   file.open( "test-file.tnl", IOMode::write );
-   ASSERT_TRUE( testObject.save( file ) );
-   file.close();
-   file.open( "test-file.tnl", IOMode::read );
-   ASSERT_TRUE( testObject.load( file ) );
+   ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::out ) );
+   ASSERT_NO_THROW( testObject.save( file ) );
+   ASSERT_NO_THROW( file.close() );
+   ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::in ) );
+   ASSERT_NO_THROW( testObject.load( file ) );
 
    EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
 }
@@ -75,16 +75,21 @@ TEST( ObjectTest, parseObjectTypeTest )
    expected = { "A", "b", "c <E>", "d" };
    EXPECT_EQ( parsed, expected );
 }
-#endif
 
-
-#include "GtestMissingError.h"
-int main( int argc, char* argv[] )
+TEST( HeaderTest, SaveAndLoadTest )
 {
-#ifdef HAVE_GTEST
-   ::testing::InitGoogleTest( &argc, argv );
-   return RUN_ALL_TESTS();
-#else
-   throw GtestMissingError();
-#endif
+   Object testObject;
+   File file;
+   ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::out ) );
+   ASSERT_NO_THROW( saveObjectType( file, "TYPE" ) );
+   ASSERT_NO_THROW( file.close() );
+   ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::in ) );
+   String type;
+   ASSERT_NO_THROW( type = getObjectType( file ) );
+   EXPECT_EQ( type, "TYPE" );
+
+   EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
 }
+#endif
+
+#include "main.h"

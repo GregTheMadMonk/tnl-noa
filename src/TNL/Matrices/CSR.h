@@ -49,7 +49,6 @@ public:
    using IndexType = Index;
    typedef typename Sparse< RealType, DeviceType, IndexType >:: CompressedRowLengthsVector CompressedRowLengthsVector;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
-   typedef CSR< Real, Device, Index > ThisType;
    typedef CSR< Real, Devices::Host, Index > HostType;
    typedef CSR< Real, Devices::Cuda, Index > CudaType;
    typedef Sparse< Real, Device, Index > BaseType;
@@ -84,7 +83,7 @@ public:
    IndexType getRowLengthFast( const IndexType row ) const;
 
    IndexType getNonZeroRowLength( const IndexType row ) const;
-
+   
    __cuda_callable__
    IndexType getNonZeroRowLengthFast( const IndexType row ) const;
 
@@ -191,13 +190,13 @@ public:
              typename = typename Enabler< Device2 >::type >
    CSR& operator=( const CSR< Real2, Device2, Index2 >& matrix );
 
-   bool save( File& file ) const;
+   void save( File& file ) const;
 
-   bool load( File& file );
+   void load( File& file );
 
-   bool save( const String& fileName ) const;
+   void save( const String& fileName ) const;
 
-   bool load( const String& fileName );
+   void load( const String& fileName );
 
    void print( std::ostream& str ) const;
 

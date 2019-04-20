@@ -84,7 +84,6 @@ public:
     typedef Index IndexType;
     typedef typename Sparse< RealType, DeviceType, IndexType >::CompressedRowLengthsVector CompressedRowLengthsVector;
     typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
-    typedef AdEllpack< Real, Device, Index > ThisType;
     typedef AdEllpack< Real, Devices::Host, Index > HostType;
     typedef AdEllpack< Real, Devices::Cuda, Index > CudaType;
 
@@ -145,13 +144,13 @@ public:
     void vectorProduct( const InVector& inVector,
                         OutVector& outVector ) const;
 
-    bool save( File& file ) const;
+    void save( File& file ) const;
 
-    bool load( File& file );
+    void load( File& file );
 
-    bool save( const String& fileName ) const;
+    void save( const String& fileName ) const;
 
-    bool load( const String& fileName );
+    void load( const String& fileName );
 
     void print( std::ostream& str ) const;
 

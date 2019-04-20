@@ -32,7 +32,7 @@ protected:
 // types for which ArrayTest is instantiated
 using ValueTypes = ::testing::Types< short int, int, long, float, double >;
 
-TYPED_TEST_CASE( ArrayOperationsTest, ValueTypes );
+TYPED_TEST_SUITE( ArrayOperationsTest, ValueTypes );
 
 TYPED_TEST( ArrayOperationsTest, allocateMemory_host )
 {
@@ -442,13 +442,4 @@ TYPED_TEST( ArrayOperationsTest, containsOnlyValue_cuda )
 #endif // HAVE_GTEST
 
 
-#include "../GtestMissingError.h"
-int main( int argc, char* argv[] )
-{
-#ifdef HAVE_GTEST
-   ::testing::InitGoogleTest( &argc, argv );
-   return RUN_ALL_TESTS();
-#else
-   throw GtestMissingError();
-#endif
-}
+#include "../main.h"

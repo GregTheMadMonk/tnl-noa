@@ -30,6 +30,9 @@ public:
       return String( "Devices::Host" );
    }
 
+   // TODO: Remove getDeviceType();
+   static inline String getType() { return getDeviceType();};
+
    static void disableOMP()
    {
       ompEnabled = false;

@@ -35,9 +35,8 @@ class Grid< 3, Real, Device, Index > : public Object
    typedef Containers::StaticVector< 3, Index > CoordinatesType;
    typedef Grid< 3, Real, Devices::Host, Index > HostType;
    typedef Grid< 3, Real, Devices::Cuda, Index > CudaType;
-   typedef Grid< 3, Real, Device, Index > ThisType;
 
-   typedef DistributedMeshes::DistributedMesh <ThisType> DistributedMeshType;
+   typedef DistributedMeshes::DistributedMesh <Grid> DistributedMeshType;
  
    // TODO: deprecated and to be removed (GlobalIndexType shall be used instead)
    typedef Index IndexType;
@@ -46,7 +45,7 @@ class Grid< 3, Real, Device, Index > : public Object
 
    template< int EntityDimension,
              typename Config = GridEntityCrossStencilStorage< 1 > >
-   using EntityType = GridEntity< ThisType, EntityDimension, Config >;
+   using EntityType = GridEntity< Grid, EntityDimension, Config >;
 
    typedef EntityType< getMeshDimension(), GridEntityCrossStencilStorage< 1 > > Cell;
    typedef EntityType< getMeshDimension() - 1 > Face;
@@ -208,22 +207,22 @@ class Grid< 3, Real, Device, Index > : public Object
    /**
     * \brief See Grid1D::save( File& file ) const.
     */
-   bool save( File& file ) const;
+   void save( File& file ) const;
 
    /**
     * \brief See Grid1D::load( File& file ).
     */
-   bool load( File& file );
+   void load( File& file );
 
    /**
     * \brief See Grid1D::save( const String& fileName ) const.
     */
-   bool save( const String& fileName ) const;
+   void save( const String& fileName ) const;
 
    /**
     * \brief See Grid1D::load( const String& fileName ).
     */
-   bool load( const String& fileName );
+   void load( const String& fileName );
 
    void writeProlog( Logger& logger ) const;
 

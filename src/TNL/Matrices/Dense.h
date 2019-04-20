@@ -41,7 +41,6 @@ public:
    typedef Index IndexType;
    typedef typename Matrix< Real, Device, Index >::CompressedRowLengthsVector CompressedRowLengthsVector;
    typedef typename Matrix< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
-   typedef Dense< Real, Device, Index > ThisType;
    typedef Dense< Real, Devices::Host, Index > HostType;
    typedef Dense< Real, Devices::Cuda, Index > CudaType;
    typedef Matrix< Real, Device, Index > BaseType;
@@ -200,13 +199,13 @@ public:
              typename = typename Enabler< Device2 >::type >
    Dense& operator=( const Dense< Real2, Device2, Index2 >& matrix );
 
-   bool save( const String& fileName ) const;
+   void save( const String& fileName ) const;
 
-   bool load( const String& fileName );
+   void load( const String& fileName );
 
-   bool save( File& file ) const;
+   void save( File& file ) const;
 
-   bool load( File& file );
+   void load( File& file );
 
    void print( std::ostream& str ) const;
 

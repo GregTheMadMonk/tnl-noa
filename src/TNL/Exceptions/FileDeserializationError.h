@@ -22,8 +22,8 @@ class FileDeserializationError
    : public std::runtime_error
 {
 public:
-   FileDeserializationError( const std::string& objectType, const std::string& fileName )
-   : std::runtime_error( "Failed to deserialize object of type '" + objectType + "' from file '" + fileName + "'." )
+   FileDeserializationError( const std::string& fileName, const std::string& details )
+   : std::runtime_error( "Failed to deserialize an object from the file '" + fileName + "': " + details )
    {}
 };
 

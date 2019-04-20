@@ -78,7 +78,6 @@ public:
    typedef tnlChunkedEllpackSliceInfo< IndexType > ChunkedEllpackSliceInfo;
    typedef typename Sparse< RealType, DeviceType, IndexType >:: CompressedRowLengthsVector CompressedRowLengthsVector;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
-   typedef ChunkedEllpack< Real, Device, Index > ThisType;
    typedef ChunkedEllpack< Real, Devices::Host, Index > HostType;
    typedef ChunkedEllpack< Real, Devices::Cuda, Index > CudaType;
    typedef Sparse< Real, Device, Index > BaseType;
@@ -241,13 +240,13 @@ public:
              typename = typename Enabler< Device2 >::type >
    ChunkedEllpack& operator=( const ChunkedEllpack< Real2, Device2, Index2 >& matrix );
 
-   bool save( File& file ) const;
+   void save( File& file ) const;
 
-   bool load( File& file );
+   void load( File& file );
 
-   bool save( const String& fileName ) const;
+   void save( const String& fileName ) const;
 
-   bool load( const String& fileName );
+   void load( const String& fileName );
 
    void print( std::ostream& str ) const;
 

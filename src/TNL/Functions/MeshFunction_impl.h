@@ -19,7 +19,7 @@
 #pragma once
 
 namespace TNL {
-   namespace Functions {
+namespace Functions {
 
 template< typename Mesh,
           int MeshEntityDimension,
@@ -46,7 +46,7 @@ template< typename Mesh,
           int MeshEntityDimension,
           typename Real >
 MeshFunction< Mesh, MeshEntityDimension, Real >::
-MeshFunction( const ThisType& meshFunction )
+MeshFunction( const MeshFunction& meshFunction )
 {
     setupSynchronizer(meshFunction.meshPointer->getDistributedMesh());
 
@@ -164,14 +164,11 @@ setup( const MeshPointer& meshPointer,
    if( parameters.checkParameter( prefix + "file" ) )
    {
       String fileName = parameters.getParameter< String >( prefix + "file" );
-      if( ! this->load( fileName ) )
-         return false;
+      this->load( fileName );
    }
    else
    {
-      std::cerr << "Missing parameter " << prefix << "file." << std::endl;
-      throw(0);
-      return false;
+      throw std::runtime_error( "Missing parameter " + prefix + "file." );
    }
    return true;
 }
@@ -181,7 +178,7 @@ template< typename Mesh,
           typename Real >
 void
 MeshFunction< Mesh, MeshEntityDimension, Real >::
-bind( ThisType& meshFunction )
+bind( MeshFunction& meshFunction )
 {
 
     setupSynchronizer(meshFunction.meshPointer->getDistributedMesh());
@@ -411,9 +408,9 @@ MeshFunction< Mesh, MeshEntityDimension, Real >&
 MeshFunction< Mesh, MeshEntityDimension, Real >::
 operator = ( const Function& f )
 {
-   Pointers::DevicePointer< ThisType > thisDevicePtr( *this );
-   Pointers::DevicePointer< typename std::add_const< Function >::type > fDevicePtr( f );
-   MeshFunctionEvaluator< ThisType, Function >::evaluate( thisDevicePtr, fDevicePtr );
+   Pointers::DevicePointer< MeshFunction > thisDevicePtr( *this );
+   Pointers::DevicePointer< std::add_const_t< Function > > fDevicePtr( f );
+   MeshFunctionEvaluator< MeshFunction, Function >::evaluate( thisDevicePtr, fDevicePtr );
    return *this;
 }
 
@@ -425,9 +422,9 @@ MeshFunction< Mesh, MeshEntityDimension, Real >&
 MeshFunction< Mesh, MeshEntityDimension, Real >::
 operator += ( const Function& f )
 {
-   Pointers::DevicePointer< ThisType > thisDevicePtr( *this );
-   Pointers::DevicePointer< typename std::add_const< Function >::type > fDevicePtr( f );
-   MeshFunctionEvaluator< ThisType, Function >::evaluate( thisDevicePtr, fDevicePtr, ( RealType ) 1.0, ( RealType ) 1.0 );
+   Pointers::DevicePointer< MeshFunction > thisDevicePtr( *this );
+   Pointers::DevicePointer< std::add_const_t< Function > > fDevicePtr( f );
+   MeshFunctionEvaluator< MeshFunction, Function >::evaluate( thisDevicePtr, fDevicePtr, ( RealType ) 1.0, ( RealType ) 1.0 );
    return *this;
 }
 
@@ -439,9 +436,9 @@ MeshFunction< Mesh, MeshEntityDimension, Real >&
 MeshFunction< Mesh, MeshEntityDimension, Real >::
 operator -= ( const Function& f )
 {
-   Pointers::DevicePointer< ThisType > thisDevicePtr( *this );
-   Pointers::DevicePointer< typename std::add_const< Function >::type > fDevicePtr( f );
-   MeshFunctionEvaluator< ThisType, Function >::evaluate( thisDevicePtr, fDevicePtr, ( RealType ) 1.0, ( RealType ) -1.0 );
+   Pointers::DevicePointer< MeshFunction > thisDevicePtr( *this );
+   Pointers::DevicePointer< std::add_const_t< Function > > fDevicePtr( f );
+   MeshFunctionEvaluator< MeshFunction, Function >::evaluate( thisDevicePtr, fDevicePtr, ( RealType ) 1.0, ( RealType ) -1.0 );
    return *this;
 }
 
@@ -452,7 +449,7 @@ Real
 MeshFunction< Mesh, MeshEntityDimension, Real >::
 getLpNorm( const RealType& p ) const
 {
-   return MeshFunctionNormGetter< ThisType >::getNorm( *this, p );
+   return MeshFunctionNormGetter< MeshFunction >::getNorm( *this, p );
 }
 
 template< typename Mesh,
@@ -468,47 +465,51 @@ getMaxNorm() const
 template< typename Mesh,
           int MeshEntityDimension,
           typename Real >
-bool
+void
 MeshFunction< Mesh, MeshEntityDimension, Real >::
 save( File& file ) const
 {
    TNL_ASSERT_EQ( this->data.getSize(), this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(),
                   "Size of the mesh function data does not match the mesh." );
-   if( ! Object::save( file ) )
-      return false;
-   return this->data.save( file );
+   Object::save( file );
+   file << this->data;
 }
 
 template< typename Mesh,
           int MeshEntityDimension,
           typename Real >
-bool
+void
 MeshFunction< Mesh, MeshEntityDimension, Real >::
 load( File& file )
 {
-   if( ! Object::load( file ) )
-      return false;
-   if( ! this->data.load( file ) )
-      return false;
+   Object::load( file );
+   file >> this->data;
    const IndexType meshSize = this->getMesh().template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >();
    if( this->data.getSize() != meshSize )
-   {
-      std::cerr << "Size of the data loaded to the mesh function (" << this->data.getSize() << ") does not fit with the mesh size (" << meshSize << ")." << std::endl;
-      return false;
-   }
-   return true;
+      throw Exceptions::FileDeserializationError( file.getFileName(), "mesh function data size does not match the mesh size (expected " + std::to_string(meshSize) + ", got " + std::to_string(this->data.getSize()) + ")." );
 }
 
 template< typename Mesh,
           int MeshEntityDimension,
           typename Real >
-bool
+void
 MeshFunction< Mesh, MeshEntityDimension, Real >::
 boundLoad( File& file )
 {
-   if( ! Object::load( file ) )
-      return false;
-   return this->data.boundLoad( file );
+   Object::load( file );
+   file >> this->data.getView();
+}
+
+template< typename Mesh,
+          int MeshEntityDimension,
+          typename Real >
+void
+MeshFunction< Mesh, MeshEntityDimension, Real >::
+boundLoad( const String& fileName )
+{
+   File file;
+   file.open( fileName, std::ios_base::in );
+   this->boundLoad( file );
 }
 
 template< typename Mesh,
@@ -528,9 +529,9 @@ write( const String& fileName,
       return false;
    }
    if( format == "vtk" )
-      return MeshFunctionVTKWriter< ThisType >::write( *this, file, scale );
+      return MeshFunctionVTKWriter< MeshFunction >::write( *this, file, scale );
    else if( format == "gnuplot" )
-      return MeshFunctionGnuplotWriter< ThisType >::write( *this, file, scale );
+      return MeshFunctionGnuplotWriter< MeshFunction >::write( *this, file, scale );
    else {
       std::cerr << "Unknown output format: " << format << std::endl;
       return false;
@@ -576,6 +577,5 @@ operator << ( std::ostream& str, const MeshFunction< Mesh, MeshEntityDimension, 
    return str;
 }
 
-   } // namespace Functions
+} // namespace Functions
 } // namespace TNL
-

@@ -17,12 +17,6 @@
 namespace TNL {
 namespace Containers {
 
-template< typename Real, typename Device, typename Index >
-class Vector;
-
-template< int Size, typename Real >
-class StaticVector;
-
 template< typename Real = double,
           typename Device = Devices::Host,
           typename Index = int >
@@ -37,6 +31,8 @@ public:
    using IndexType = Index;
    using HostType = VectorView< Real, Devices::Host, Index >;
    using CudaType = VectorView< Real, Devices::Cuda, Index >;
+   using ViewType = VectorView< Real, Device, Index >;
+   using ConstViewType = VectorView< std::add_const_t< Real >, Device, Index >;
 
    // inherit all ArrayView's constructors
 #ifndef __NVCC__
@@ -61,6 +57,18 @@ public:
    __cuda_callable__
    VectorView( const ArrayView< Real_, Device, Index >& view )
    : BaseType::ArrayView( view ) {}
+
+   /**
+    * \brief Returns a modifiable view of the array view.
+    */
+   __cuda_callable__
+   ViewType getView();
+
+   /**
+    * \brief Returns a non-modifiable view of the array view.
+    */
+   __cuda_callable__
+   ConstViewType getConstView() const;
 
 
    static String getType();

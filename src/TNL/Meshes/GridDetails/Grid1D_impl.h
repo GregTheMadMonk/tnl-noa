@@ -231,7 +231,7 @@ getEntity( const IndexType& entityIndex ) const
    static_assert( Entity::getEntityDimension() <= 1 &&
                   Entity::getEntityDimension() >= 0, "Wrong grid entity dimensions." );
 
-   return GridEntityGetter< ThisType, Entity >::getEntity( *this, entityIndex );
+   return GridEntityGetter< Grid, Entity >::getEntity( *this, entityIndex );
 }
 
 template< typename Real,
@@ -246,7 +246,7 @@ getEntityIndex( const Entity& entity ) const
    static_assert( Entity::getEntityDimension() <= 1 &&
                   Entity::getEntityDimension() >= 0, "Wrong grid entity dimensions." );
 
-   return GridEntityGetter< ThisType, Entity >::getEntityIndex( *this, entity );
+   return GridEntityGetter< Grid, Entity >::getEntityIndex( *this, entity );
 }
 
 template< typename Real,
@@ -371,53 +371,41 @@ Grid< 1, Real, Device, Index >:: getDistributedMesh(void) const
 template< typename Real,
           typename Device,
           typename Index >
-bool Grid< 1, Real, Device, Index >::save( File& file ) const
+void Grid< 1, Real, Device, Index >::save( File& file ) const
 {
-   if( ! Object::save( file ) )
-      return false;
-   if( ! this->origin.save( file ) ||
-       ! this->proportions.save( file ) ||
-       ! this->dimensions.save( file ) )
-   {
-      std::cerr << "I was not able to save the domain description of a Grid." << std::endl;
-      return false;
-   }
-   return true;
+   Object::save( file );
+   this->origin.save( file );
+   this->proportions.save( file );
+   this->dimensions.save( file );
 };
 
 template< typename Real,
           typename Device,
           typename Index >
-bool Grid< 1, Real, Device, Index >::load( File& file )
+void Grid< 1, Real, Device, Index >::load( File& file )
 {
-   if( ! Object::load( file ) )
-      return false;
+   Object::load( file );
    CoordinatesType dimensions;
-   if( ! this->origin.load( file ) ||
-       ! this->proportions.load( file ) ||
-       ! dimensions.load( file ) )
-   {
-      std::cerr << "I was not able to load the domain description of a Grid." << std::endl;
-      return false;
-   }
+   this->origin.load( file );
+   this->proportions.load( file );
+   dimensions.load( file );
    this->setDimensions( dimensions );
-   return true;
 };
 
 template< typename Real,
           typename Device,
           typename Index >
-bool Grid< 1, Real, Device, Index >::save( const String& fileName ) const
+void Grid< 1, Real, Device, Index >::save( const String& fileName ) const
 {
-   return Object::save( fileName );
+   Object::save( fileName );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-bool Grid< 1, Real, Device, Index >::load( const String& fileName )
+void Grid< 1, Real, Device, Index >::load( const String& fileName )
 {
-   return Object::load( fileName );
+   Object::load( fileName );
 }
 
 template< typename Real,

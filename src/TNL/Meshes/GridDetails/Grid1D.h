@@ -36,9 +36,8 @@ class Grid< 1, Real, Device, Index > : public Object
    typedef Containers::StaticVector< 1, Index > CoordinatesType;
    typedef Grid< 1, Real, Devices::Host, Index > HostType;
    typedef Grid< 1, Real, Devices::Cuda, Index > CudaType;
-   typedef Grid< 1, Real, Device, Index > ThisType;
 
-   typedef DistributedMeshes::DistributedMesh <ThisType> DistributedMeshType;
+   typedef DistributedMeshes::DistributedMesh <Grid> DistributedMeshType;
 
    // TODO: deprecated and to be removed (GlobalIndexType shall be used instead)
    typedef Index IndexType;
@@ -50,7 +49,7 @@ class Grid< 1, Real, Device, Index > : public Object
 
    template< int EntityDimension,
              typename Config = GridEntityCrossStencilStorage< 1 > >
-   using EntityType = GridEntity< ThisType, EntityDimension, Config >;
+   using EntityType = GridEntity< Grid, EntityDimension, Config >;
 
    typedef EntityType< getMeshDimension(), GridEntityCrossStencilStorage< 1 > > Cell;
    typedef EntityType< 0 > Face;
@@ -208,22 +207,22 @@ class Grid< 1, Real, Device, Index > : public Object
    /**
     * \brief Method for saving the object to a file as a binary data
     */
-   bool save( File& file ) const;
+   void save( File& file ) const;
 
    /**
     * \brief Method for restoring the object from a file.
     */
-   bool load( File& file );
+   void load( File& file );
 
    /**
     * \brief Method for saving the object to a file.
     */
-   bool save( const String& fileName ) const;
+   void save( const String& fileName ) const;
 
    /**
     * \brief Method for restoring the object from a file.
     */
-   bool load( const String& fileName );
+   void load( const String& fileName );
 
    void writeProlog( Logger& logger ) const;
 

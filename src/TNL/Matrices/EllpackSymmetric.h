@@ -31,7 +31,6 @@ class EllpackSymmetric : public Sparse< Real, Device, Index >
    typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
-   typedef EllpackSymmetric< Real, Device, Index > ThisType;
    typedef EllpackSymmetric< Real, Devices::Host, Index > HostType;
    typedef EllpackSymmetric< Real, Devices::Cuda, Index > CudaType;
 
@@ -158,13 +157,13 @@ class EllpackSymmetric : public Sparse< Real, Device, Index >
                              Vector& x,
                              const RealType& omega = 1.0 ) const;
 
-   bool save( File& file ) const;
+   void save( File& file ) const;
 
-   bool load( File& file );
+   void load( File& file );
 
-   bool save( const String& fileName ) const;
+   void save( const String& fileName ) const;
 
-   bool load( const String& fileName );
+   void load( const String& fileName );
 
    void print( std::ostream& str ) const;
 

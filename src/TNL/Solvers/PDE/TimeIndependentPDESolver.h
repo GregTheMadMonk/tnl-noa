@@ -17,13 +17,12 @@
 
 #pragma once
 
-#include <TNL/Object.h>
 #include <TNL/Logger.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Solvers/PDE/PDESolver.h>
 #include <TNL/Problems/CommonData.h>
-
+#include <TNL/Pointers/SharedPointer.h>
 
 namespace TNL {
 namespace Solvers {
@@ -78,10 +77,8 @@ class TimeIndependentPDESolver : public PDESolver< typename Problem::RealType,
       ProblemType* problem;
 };
 
-
 } // namespace PDE
 } // namespace Solvers
 } // namespace TNL
 
 #include <TNL/Solvers/PDE/TimeIndependentPDESolver_impl.h>
-

@@ -150,7 +150,10 @@ public:
    {
       // CUDA does not have a native atomic load:
       // https://stackoverflow.com/questions/32341081/how-to-have-atomic-load-in-cuda
-      return const_cast<Atomic*>(this)->fetch_add( 0 );
+
+      // const-cast on pointer fails in CUDA 10.1.105
+//      return const_cast<Atomic*>(this)->fetch_add( 0 );
+      return const_cast<Atomic&>(*this).fetch_add( 0 );
    }
 
    __cuda_callable__

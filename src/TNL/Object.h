@@ -22,100 +22,162 @@
 namespace TNL {
 
 /**
- * \brief Basic class for all 'large' objects like matrices, meshes, grids, solvers, etc..
+ * \brief Basic class for majority of TNL objects like matrices, meshes, grids, solvers, etc..
  *
- *  Objects like numerical grids, meshes, matrices large vectors etc.
- *  are inherited by this class. This class provides name for such objects. Giving
- *  a name to each bigger object is compulsory. The name can help to locate
- *  possible errors in the code. This can help to identify an object where, for
- *  example, one tries to touch non-existing element. All objects of the TNL should
- *  have only constructor with name and then only setter methods and method init.
- *  Each object derived from the Object must be able to tell its type via the method
- *  \ref getType and it must support methods \ref save and \ref load for saving and
- *  loading the object from a \ref File "file".
+ * Objects like numerical meshes, matrices large vectors etc. are inherited by
+ * this class. This class introduces virtual method \ref getType which is
+ * supposed to tell the object type in a C++ style.
+ *
+ * Since the virtual destructor is not defined as \ref __cuda_callable__,
+ * objects inherited from Object should not be created in CUDA kernels.
+ *
+ * In addition to methods of this class, see the following related functions:
+ *
+ * \ref getObjectType
+ *
+ * \ref parseObjectType
+ *
  */
 class Object
 {
    public:
 
       /**
-       * \brief Type getter.
+       * \brief Static type getter.
        *
        * Returns the type in C++ style - for example the returned value
-       * may look as \c "Vector< double, Devices::Cuda >".
+       * may look as \c "Array< double, Devices::Cuda, int >".
+       *
+       * \par Example
+       * \include ObjectExample_getType.cpp
+       * \par Output
+       * \include ObjectExample_getType.out
        */
-      static String getType();      
+      static String getType();
 
-      virtual String getTypeVirtual() const;   
+      /***
+       * \brief Virtual type getter.
+       *
+       * Returns the type in C++ style - for example the returned value
+       * may look as \c "Array< double, Devices::Cuda, int >".
+       * See example at \ref Object::getType.
+       */
+      virtual String getTypeVirtual() const;
 
       /**
-       * \brief This is used for load and save methods.
+       * \brief Static serialization type getter.
        *
-       * Each object is saved as if it was stored on \ref Devices::Host. So even
-       * \c Vector< double, Devices::Cuda > is saved as \c Vector< double, Devices::Host >.
+       * Objects in TNL are saved as in a device independent manner. This method
+       * is supposed to return the object type but with the device type replaced
+       * by Devices::Host. For example \c Array< double, Devices::Cuda > is
+       * saved as \c Array< double, Devices::Host >.
+       * See example at \ref Object::getType.
        */
       static String getSerializationType();
 
+      /***
+       * \brief Virtual serialization type getter.
+       *
+       * Objects in TNL are saved as in a device independent manner. This method
+       * is supposed to return the object type but with the device type replaced
+       * by Devices::Host. For example \c Array< double, Devices::Cuda > is
+       * saved as \c Array< double, Devices::Host >.
+       * See example at \ref Object::getType.
+       */
       virtual String getSerializationTypeVirtual() const;
 
       /**
        * \brief Method for saving the object to a file as a binary data.
        *
+       * Throws \ref Exceptions::FileSerializationError if the object cannot be saved.
+       *
        * \param file Name of file object.
        */
-      virtual bool save( File& file ) const;
+      virtual void save( File& file ) const;
 
       /**
        * \brief Method for restoring the object from a file.
        *
-       * \param file Name of file object.
-       */
-      virtual bool load( File& file );
-
-      /**
-       * \brief Method for restoring the object from a file.
+       * Throws \ref Exceptions::FileDeserializationError if the object cannot be loaded.
        *
        * \param file Name of file object.
        */
-      virtual bool boundLoad( File& file );
+      virtual void load( File& file );
 
       /**
        * \brief Method for saving the object to a file as a binary data.
        *
+       * Throws \ref Exceptions::FileSerializationError if the object cannot be saved.
+       *
        * \param fileName String defining the name of a file.
        */
-      bool save( const String& fileName ) const;
+      void save( const String& fileName ) const;
 
       /**
        * \brief Method for restoring the object from a file.
        *
-       * \param fileName String defining the name of a file.
-       */
-      bool load( const String& fileName );
-
-       /**
-       * \brief Method for restoring the object from a file.
+       * Throws \ref Exceptions::FileDeserializationError if the object cannot be loaded.
        *
        * \param fileName String defining the name of a file.
        */
-      bool boundLoad( const String& fileName );
-      
-      /// Destructor.
-      // FIXME: __cuda_callable__ would have to be added to every overriding destructor,
-      // even if the object's constructor is not __cuda_callable__
-      //   __cuda_callable__
+      void load( const String& fileName );
+
+      /**
+       * \brief Destructor.
+       *
+       * Since it is not defined as \ref __cuda_callable__, objects inherited
+       * from Object should not be created in CUDA kernels.
+       */
 #ifndef HAVE_MIC
       virtual ~Object(){};
 #endif
 };
 
-bool getObjectType( File& file, String& type );
+/**
+ * \brief Extracts object type from a binary file.
+ *
+ * Throws \ref Exceptions::FileDeserializationError if the object type cannot be detected.
+ *
+ * @param file is file where the object is stored
+ * @return string with the object type
+ */
+String getObjectType( File& file );
 
-bool getObjectType( const String& file_name, String& type );
+/**
+ * \brief Does the same as \ref getObjectType but with a \e fileName parameter instead of file.
+ *
+ * Throws \ref Exceptions::FileDeserializationError if the object type cannot be detected.
+ *
+ * @param fileName name of a file where the object is stored
+ * @return string with the object type
+ */
+String getObjectType( const String& fileName );
 
+/**
+ * \brief Parses the object type
+ *
+ * @param objectType is a string with the object type to be parsed.
+ * @return vector of strings where the first one is the object type and the next
+ * strings are the template parameters.
+ *
+ * \par Example
+ * \include ParseObjectTypeExample.cpp
+ * \par Output
+ * \include ParseObjectTypeExample.out
+ */
 std::vector< String >
 parseObjectType( const String& objectType );
 
+/**
+ * \brief Saves object type into a binary file.
+ *
+ * Throws \ref Exceptions::FileDeserializationError if the object type cannot be detected.
+ *
+ * @param file is the file where the object will be saved
+ * @param type is the object type to be saved
+ */
+void saveObjectType( File& file, const String& type );
+
 } // namespace TNL
 
-#include <TNL/Object_impl.h>
+#include <TNL/Object.hpp>

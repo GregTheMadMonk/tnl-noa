@@ -10,7 +10,7 @@
 
 // Implemented by: Tomas Oberhuber, Jakub Klinkovsky
 
-#pragma once 
+#pragma once
 
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
@@ -18,7 +18,7 @@
 
 namespace TNL {
 namespace Containers {
-namespace Algorithms {   
+namespace Algorithms {
 
 template< typename Device >
 class Reduction
@@ -29,40 +29,55 @@ template<>
 class Reduction< Devices::Cuda >
 {
 public:
-   template< typename Operation, typename Index >
-   static typename Operation::ResultType
-   reduce( Operation& operation,
-           const Index size,
-           const typename Operation::DataType1* deviceInput1,
-           const typename Operation::DataType2* deviceInput2 );
+   template< typename Index,
+             typename Result,
+             typename ReductionOperation,
+             typename VolatileReductionOperation,
+             typename DataFetcher >
+   static Result
+   reduce( const Index size,
+           ReductionOperation& reduction,
+           VolatileReductionOperation& volatileReduction,
+           DataFetcher& dataFetcher,
+           const Result& zero );
 };
 
 template<>
 class Reduction< Devices::Host >
 {
 public:
-   template< typename Operation, typename Index >
-   static typename Operation::ResultType
-   reduce( Operation& operation,
-           const Index size,
-           const typename Operation::DataType1* deviceInput1,
-           const typename Operation::DataType2* deviceInput2 );
+   template< typename Index,
+             typename Result,
+             typename ReductionOperation,
+             typename VolatileReductionOperation,
+             typename DataFetcher >
+   static Result
+   reduce( const Index size,
+           ReductionOperation& reduction,
+           VolatileReductionOperation& volatileReduction,
+           DataFetcher& dataFetcher,
+           const Result& zero );
 };
 
 template<>
 class Reduction< Devices::MIC >
 {
 public:
-   template< typename Operation, typename Index >
-   static typename Operation::ResultType
-   reduce( Operation& operation,
-           const Index size,
-           const typename Operation::DataType1* deviceInput1,
-           const typename Operation::DataType2* deviceInput2 );
+   template< typename Index,
+             typename Result,
+             typename ReductionOperation,
+             typename VolatileReductionOperation,
+             typename DataFetcher >
+   static Result
+   reduce( const Index size,
+           ReductionOperation& reduction,
+           VolatileReductionOperation& volatileReduction,
+           DataFetcher& dataFetcher,
+           const Result& zero );
 };
 
 } // namespace Algorithms
 } // namespace Containers
 } // namespace TNL
 
-#include "Reduction_impl.h"
+#include "Reduction.hpp"

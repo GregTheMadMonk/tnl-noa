@@ -27,12 +27,7 @@ public:
       this->reset();
       this->fileName = fileName;
 
-      String objectType;
-      if( ! getObjectType( fileName, objectType ) ) {
-         std::cerr << "Failed to detect the mesh type from the file " << fileName << "." << std::endl;
-         return EXIT_FAILURE;
-      }
-
+      const String objectType = getObjectType( fileName );
       const std::vector< String > parsedMeshType = parseObjectType( objectType );
       if( ! parsedMeshType.size() ) {
          std::cerr << "Unable to parse the mesh type " << meshType << "." << std::endl;
@@ -103,7 +98,8 @@ public:
    static bool
    readMesh( const String& fileName, MeshType& mesh )
    {
-      return mesh.load( fileName );
+      mesh.load( fileName );
+      return true;
    }
 
    String

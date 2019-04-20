@@ -302,9 +302,9 @@ CudaMultireductionKernelLauncher( Operation& operation,
          <<< gridSize, blockSize, shmem >>>( operation, n, size, input1, ldInput1, input2, output);
          break;
       case   1:
-         TNL_ASSERT( false, std::cerr << "blockSize should not be 1." << std::endl );
+         throw std::logic_error( "blockSize should not be 1." );
       default:
-         TNL_ASSERT( false, std::cerr << "Block size is " << blockSize.x << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." << std::endl );
+         throw std::logic_error( "Block size is " + std::to_string(blockSize.x) + " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." );
    }
    TNL_CHECK_CUDA_DEVICE;
 

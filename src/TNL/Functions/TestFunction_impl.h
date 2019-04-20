@@ -37,6 +37,8 @@
 #include <TNL/Operators/Analytic/Heaviside.h>
 #include <TNL/Operators/Analytic/SmoothHeaviside.h>
 
+#include <TNL/Exceptions/NotImplementedError.h>
+
 #include "TestFunction.h"
 
 namespace TNL {
@@ -406,7 +408,7 @@ operator = ( const TestFunction& function )
          this->copyFunction< SinWaveSDF< FunctionDimension, Real > >( function.function );
          break;
       default:
-         TNL_ASSERT( false, );
+         throw std::invalid_argument( "Unknown function type." );
          break;
    }
 }
@@ -890,8 +892,7 @@ copyFunction( const void* function )
    }
    if( std::is_same< Device, Devices::Cuda >::value )
    {
-      TNL_ASSERT( false, );
-      abort();
+      throw Exceptions::NotImplementedError( "Assignment operator is not implemented for CUDA." );
    }
 }
 

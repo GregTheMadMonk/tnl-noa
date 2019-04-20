@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <type_traits>  // std::add_const
+#include <type_traits>  // std::add_const_t
 #include <memory>  // std::shared_ptr
 
 #include <TNL/Solvers/IterativeSolver.h>
@@ -39,9 +39,9 @@ public:
    using VectorViewType = typename Traits< Matrix >::VectorViewType;
    using ConstVectorViewType = typename Traits< Matrix >::ConstVectorViewType;
    using MatrixType = Matrix;
-   using MatrixPointer = Pointers::SharedPointer< typename std::add_const< MatrixType >::type >;
+   using MatrixPointer = Pointers::SharedPointer< std::add_const_t< MatrixType > >;
    using PreconditionerType = Preconditioners::Preconditioner< MatrixType >;
-   using PreconditionerPointer = std::shared_ptr< typename std::add_const< PreconditionerType >::type >;
+   using PreconditionerPointer = std::shared_ptr< std::add_const_t< PreconditionerType > >;
 
    static void configSetup( Config::ConfigDescription& config,
                             const String& prefix = "" )

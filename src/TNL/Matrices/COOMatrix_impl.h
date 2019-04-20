@@ -321,39 +321,35 @@ typename Vector::RealType COOMatrix< Real, Device, Index >::rowVectorProduct(con
 template< typename Real,
 	  	  typename Device,
 	  	  typename Index >
-bool COOMatrix< Real, Device, Index >::save(File& file) const
+void COOMatrix< Real, Device, Index >::save(File& file) const
 {
-	if (!Sparse< Real, Device, Index >::save(file) ||
-	    !this->rowIndexes.save(file))
-		return false;
-	return true;
+	Sparse< Real, Device, Index >::save(file);
+	file << this->rowIndexes;
 }
 
 template< typename Real,
 		  typename Device,
 		  typename Index >
-bool COOMatrix< Real, Device, Index >::load(File& file)
+void COOMatrix< Real, Device, Index >::load(File& file)
 {
-	if (!Sparse< Real, Device, Index >::load(file) ||
-	    !this->rowIndexes.load(file))
-		return false;
-	return true;
+	Sparse< Real, Device, Index >::load(file);
+	file >> this->rowIndexes;
 }
 
 template< typename Real,
 		  typename Device,
 		  typename Index >
-bool COOMatrix< Real, Device, Index >::save(const String& fileName) const
+void COOMatrix< Real, Device, Index >::save(const String& fileName) const
 {
-	return Object::save(fileName);
+	Object::save(fileName);
 }
 
 template< typename Real,
 	  	  typename Device,
 	  	  typename Index >
-bool COOMatrix< Real, Device, Index >::load(const String& fileName)
+void COOMatrix< Real, Device, Index >::load(const String& fileName)
 {
-	return Object::load(fileName);
+	Object::load(fileName);
 }
 
 template< typename Real,

@@ -144,7 +144,11 @@ setInitialCondition( const Config::ParameterContainer& parameters,
 {
    const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
    Functions::MeshFunction< Mesh > u( this->getMesh(), dofsPointer );
-   if( ! u.boundLoad( initialConditionFile ) )
+   try
+   {
+      u.boundLoad( initialConditionFile );
+   }
+   catch(...)
    {
       std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << std::endl;
       return false;
@@ -200,8 +204,7 @@ makeSnapshot( const RealType& time,
    fileName.setIndex( step );
 
    //FileNameBaseNumberEnding( "u-", step, 5, ".tnl", fileName );
-   if( ! u.save( fileName.getFileName() ) )
-      return false;
+   u.save( fileName.getFileName() );
    return true;
 }
 
@@ -595,12 +598,14 @@ getExplicitUpdate( const RealType& time,
             userData.real_u = uDofs->getData();
             userData.real_fu = fuDofs->getData();
 #endif                        
+            /*
             const IndexType gridXSize = mesh->getDimensions().x();
             const IndexType gridYSize = mesh->getDimensions().y();
             dim3 cudaBlockSize( 16, 16 );
             dim3 cudaGridSize( gridXSize / 16 + ( gridXSize % 16 != 0 ),
                                gridYSize / 16 + ( gridYSize % 16 != 0 ) );
-            
+            */
+
             TNL::Devices::Cuda::synchronizeDevice();
             int cudaErr;
             Meshes::Traverser< MeshType, Cell > meshTraverser;
