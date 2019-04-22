@@ -687,7 +687,7 @@ struct StaticScalarProductGetter
 };
 
 template< typename Real1, typename Real2 >
-struct StaticScalarProductGetter< 0, Real1, Real2 >
+struct StaticScalarProductGetter< 1, Real1, Real2 >
 {
    static auto compute( const Real1* u, const Real2* v ) -> decltype( u[ 0 ] * v[ 0 ] )
    {
