@@ -18,6 +18,7 @@ namespace TNL {
 
 template< typename T1,
           typename T2 >
+__cuda_callable__
 bool StaticComparisonEQ( const T1& a, const T2& b )
 {
    TNL_ASSERT_EQ( a.getSize(), b.getSize(), "Sizes of expressions to be compared do not fit." );
@@ -29,6 +30,7 @@ bool StaticComparisonEQ( const T1& a, const T2& b )
 
 template< typename T1,
           typename T2 >
+__cuda_callable__
 bool StaticComparisonNE( const T1& a, const T2& b )
 {
    return ! StaticComparisonEQ( a, b );
@@ -36,6 +38,7 @@ bool StaticComparisonNE( const T1& a, const T2& b )
 
 template< typename T1,
           typename T2 >
+__cuda_callable__
 bool StaticComparisonGT( const T1& a, const T2& b )
 {
    TNL_ASSERT_EQ( a.getSize(), b.getSize(), "Sizes of expressions to be compared do not fit." );
@@ -47,6 +50,7 @@ bool StaticComparisonGT( const T1& a, const T2& b )
 
 template< typename T1,
           typename T2 >
+__cuda_callable__
 bool StaticComparisonLE( const T1& a, const T2& b )
 {
    return ! StaticComparisonGT( a, b );
@@ -54,6 +58,7 @@ bool StaticComparisonLE( const T1& a, const T2& b )
 
 template< typename T1,
           typename T2 >
+__cuda_callable__
 bool StaticComparisonLT( const T1& a, const T2& b )
 {
    TNL_ASSERT_EQ( a.getSize(), b.getSize(), "Sizes of expressions to be compared do not fit." );
@@ -65,6 +70,7 @@ bool StaticComparisonLT( const T1& a, const T2& b )
 
 template< typename T1,
           typename T2 >
+__cuda_callable__
 bool StaticComparisonGE( const T1& a, const T2& b )
 {
    return ! StaticComparisonLT( a, b );

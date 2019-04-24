@@ -26,12 +26,6 @@ template< typename T1,
           ExpressionVariableType T2Type = ExpressionVariableTypeGetter< T2 >::value >
 struct BinaryExpressionTemplate
 {
-   /*BinaryExpressionTemplate( const T1& a, const T2& b ){};
-
-   static T1 evaluate( const T1& a, const T2& b )
-   {
-      return Operation< T1, T2 >::evaluate( a, b );
-   }*/
 };
 
 template< typename T1,
@@ -42,18 +36,22 @@ struct BinaryExpressionTemplate< T1, T2, Operation, VectorVariable, VectorVariab
    using RealType = typename T1::RealType;
    using IsExpressionTemplate = bool;
 
+   __cuda_callable__
    BinaryExpressionTemplate( const T1& a, const T2& b ): op1( a ), op2( b ){}
 
+   __cuda_callable__
    static BinaryExpressionTemplate evaluate( const T1& a, const T2& b )
    {
       return BinaryExpressionTemplate( a, b );
    }
 
+   __cuda_callable__
    RealType operator[]( const int i ) const
    {
        return Operation< typename T1::RealType, typename T2::RealType >::evaluate( op1[ i ], op2[ i ] );
    }
 
+   __cuda_callable__
    int getSize() const
    {
        return op1.getSize();
@@ -73,18 +71,22 @@ struct BinaryExpressionTemplate< T1, T2, Operation, VectorVariable, ArithmeticVa
    using RealType = typename T1::RealType;
    using IsExpressionTemplate = bool;
 
+   __cuda_callable__
    BinaryExpressionTemplate( const T1& a, const T2& b ): op1( a ), op2( b ){}
 
+   __cuda_callable__
    BinaryExpressionTemplate evaluate( const T1& a, const T2& b )
    {
       return BinaryExpressionTemplate( a, b );
    }
 
+   __cuda_callable__
    RealType operator[]( const int i ) const
    {
        return Operation< typename T1::RealType, T2 >::evaluate( op1[ i ], op2 );
    }
 
+   __cuda_callable__
    int getSize() const
    {
        return op1.getSize();
@@ -104,18 +106,22 @@ struct BinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorVa
    using RealType = typename T2::RealType;
    using IsExpressionTemplate = bool;
 
+   __cuda_callable__
    BinaryExpressionTemplate( const T1& a, const T2& b ): op1( a ), op2( b ){}
 
+   __cuda_callable__
    BinaryExpressionTemplate evaluate( const T1& a, const T2& b )
    {
       return BinaryExpressionTemplate( a, b );
    }
 
+   __cuda_callable__
    RealType operator[]( const int i ) const
    {
        return Operation< T1, typename T2::RealType >::evaluate( op1, op2[ i ] );
    }
 
+   __cuda_callable__
    int getSize() const
    {
        return op2.getSize();
@@ -134,6 +140,7 @@ template< typename L1,
           typename R1,
           typename R2,
           template< typename, typename > class ROperation >
+__cuda_callable__
 const Expressions::BinaryExpressionTemplate<
    Expressions::BinaryExpressionTemplate< L1, L2, LOperation >,
    Expressions::BinaryExpressionTemplate< R1, R2, ROperation >,
@@ -150,6 +157,7 @@ operator + ( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& 
 template< typename T1,
           typename T2,
           template< typename, typename > class Operation >
+__cuda_callable__
 const Expressions::BinaryExpressionTemplate<
    Expressions::BinaryExpressionTemplate< T1, T2, Operation >,
    typename Expressions::BinaryExpressionTemplate< T1, T2, Operation >::RealType,
@@ -171,6 +179,7 @@ template< typename L1,
           typename R1,
           typename R2,
           template< typename, typename > class ROperation >
+__cuda_callable__
 const Expressions::BinaryExpressionTemplate<
    Expressions::BinaryExpressionTemplate< L1, L2, LOperation >,
    Expressions::BinaryExpressionTemplate< R1, R2, ROperation >,
@@ -187,6 +196,7 @@ operator - ( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& 
 template< typename T1,
           typename T2,
           template< typename, typename > class Operation >
+__cuda_callable__
 const Expressions::BinaryExpressionTemplate<
    Expressions::BinaryExpressionTemplate< T1, T2, Operation >,
    typename Expressions::BinaryExpressionTemplate< T1, T2, Operation >::RealType,
@@ -208,6 +218,7 @@ template< typename L1,
           typename R1,
           typename R2,
           template< typename, typename > class ROperation >
+__cuda_callable__
 const Expressions::BinaryExpressionTemplate<
    Expressions::BinaryExpressionTemplate< L1, L2, LOperation >,
    Expressions::BinaryExpressionTemplate< R1, R2, ROperation >,
@@ -224,6 +235,7 @@ operator * ( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& 
 template< typename T1,
           typename T2,
           template< typename, typename > class Operation >
+__cuda_callable__
 const Expressions::BinaryExpressionTemplate<
    Expressions::BinaryExpressionTemplate< T1, T2, Operation >,
    typename Expressions::BinaryExpressionTemplate< T1, T2, Operation >::RealType,
@@ -245,6 +257,7 @@ template< typename L1,
           typename R1,
           typename R2,
           template< typename, typename > class ROperation >
+__cuda_callable__
 const Expressions::BinaryExpressionTemplate<
    Expressions::BinaryExpressionTemplate< L1, L2, LOperation >,
    Expressions::BinaryExpressionTemplate< R1, R2, ROperation >,
@@ -261,6 +274,7 @@ operator / ( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& 
 template< typename T1,
           typename T2,
           template< typename, typename > class Operation >
+__cuda_callable__
 const Expressions::BinaryExpressionTemplate<
    Expressions::BinaryExpressionTemplate< T1, T2, Operation >,
    typename Expressions::BinaryExpressionTemplate< T1, T2, Operation >::RealType,
@@ -282,6 +296,7 @@ template< typename L1,
           typename R1,
           typename R2,
           template< typename, typename > class ROperation >
+__cuda_callable__
 bool
 operator == ( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a,
              const Expressions::BinaryExpressionTemplate< R1, R2, ROperation >& b )
@@ -292,6 +307,7 @@ operator == ( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >&
 template< typename T1,
           typename T2,
           template< typename, typename > class Operation >
+__cuda_callable__
 bool
 operator == ( const Expressions::BinaryExpressionTemplate< T1, T2, Operation >& a,
               const typename Expressions::BinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
@@ -307,6 +323,7 @@ template< typename L1,
           typename R1,
           typename R2,
           template< typename, typename > class ROperation >
+__cuda_callable__
 bool
 operator != ( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a,
              const Expressions::BinaryExpressionTemplate< R1, R2, ROperation >& b )
@@ -317,6 +334,7 @@ operator != ( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >&
 template< typename T1,
           typename T2,
           template< typename, typename > class Operation >
+__cuda_callable__
 bool
 operator != ( const Expressions::BinaryExpressionTemplate< T1, T2, Operation >& a,
               const typename Expressions::BinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
@@ -332,6 +350,7 @@ template< typename L1,
           typename R1,
           typename R2,
           template< typename, typename > class ROperation >
+__cuda_callable__
 bool
 operator < ( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a,
              const Expressions::BinaryExpressionTemplate< R1, R2, ROperation >& b )
@@ -342,6 +361,7 @@ operator < ( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& 
 template< typename T1,
           typename T2,
           template< typename, typename > class Operation >
+__cuda_callable__
 bool
 operator < ( const Expressions::BinaryExpressionTemplate< T1, T2, Operation >& a,
              const typename Expressions::BinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
@@ -357,6 +377,7 @@ template< typename L1,
           typename R1,
           typename R2,
           template< typename, typename > class ROperation >
+__cuda_callable__
 bool
 operator <= ( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a,
              const Expressions::BinaryExpressionTemplate< R1, R2, ROperation >& b )
@@ -367,6 +388,7 @@ operator <= ( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >&
 template< typename T1,
           typename T2,
           template< typename, typename > class Operation >
+__cuda_callable__
 bool
 operator <= ( const Expressions::BinaryExpressionTemplate< T1, T2, Operation >& a,
              const typename Expressions::BinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
@@ -382,6 +404,7 @@ template< typename L1,
           typename R1,
           typename R2,
           template< typename, typename > class ROperation >
+__cuda_callable__
 bool
 operator > ( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a,
              const Expressions::BinaryExpressionTemplate< R1, R2, ROperation >& b )
@@ -392,6 +415,7 @@ operator > ( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& 
 template< typename T1,
           typename T2,
           template< typename, typename > class Operation >
+__cuda_callable__
 bool
 operator > ( const Expressions::BinaryExpressionTemplate< T1, T2, Operation >& a,
              const typename Expressions::BinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
@@ -407,6 +431,7 @@ template< typename L1,
           typename R1,
           typename R2,
           template< typename, typename > class ROperation >
+__cuda_callable__
 bool
 operator >= ( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a,
               const Expressions::BinaryExpressionTemplate< R1, R2, ROperation >& b )
@@ -417,6 +442,7 @@ operator >= ( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >&
 template< typename T1,
           typename T2,
           template< typename, typename > class Operation >
+__cuda_callable__
 bool
 operator >= ( const Expressions::BinaryExpressionTemplate< T1, T2, Operation >& a,
               const typename Expressions::BinaryExpressionTemplate< T1, T2, Operation >::RealType& b )

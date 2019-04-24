@@ -76,6 +76,7 @@ class StaticVector : public StaticArray< Size, Real >
    template< typename T1,
              typename T2,
              template< typename, typename > class Operation >
+   __cuda_callable__
    StaticVector( const Expressions::BinaryExpressionTemplate< T1, T2, Operation >& op );
 
    /**
@@ -290,6 +291,7 @@ class StaticVector< 1, Real > : public StaticArray< 1, Real >
    template< typename T1,
              typename T2,
              template< typename, typename > class Operation >
+   __cuda_callable__
    StaticVector( const Expressions::BinaryExpressionTemplate< T1, T2, Operation >& op );
 
    bool setup( const Config::ParameterContainer& parameters,
@@ -426,6 +428,7 @@ class StaticVector< 2, Real > : public StaticArray< 2, Real >
    template< typename T1,
              typename T2,
              template< typename, typename > class Operation >
+   __cuda_callable__
    StaticVector( const Expressions::BinaryExpressionTemplate< T1, T2, Operation >& op );
 
    bool setup( const Config::ParameterContainer& parameters,
@@ -563,8 +566,8 @@ class StaticVector< 3, Real > : public StaticArray< 3, Real >
    template< typename T1,
              typename T2,
              template< typename, typename > class Operation >
+   __cuda_callable__
    StaticVector( const Expressions::BinaryExpressionTemplate< T1, T2, Operation >& op );
-
 
    bool setup( const Config::ParameterContainer& parameters,
                const String& prefix = "" );
@@ -680,6 +683,7 @@ namespace Containers {
 template< int Size, typename Real1, typename Real2 >
 struct StaticScalarProductGetter
 {
+   __cuda_callable__
    static auto compute( const Real1* u, const Real2* v ) -> decltype( u[ 0 ] * v[ 0 ] )
    {
       return u[ 0 ] * v[ 0 ] + StaticScalarProductGetter< Size - 1, Real1, Real2 >::compute( &u[ 1 ], &v[ 1 ] );
@@ -689,6 +693,7 @@ struct StaticScalarProductGetter
 template< typename Real1, typename Real2 >
 struct StaticScalarProductGetter< 1, Real1, Real2 >
 {
+   __cuda_callable__
    static auto compute( const Real1* u, const Real2* v ) -> decltype( u[ 0 ] * v[ 0 ] )
    {
       return u[ 0 ] * v[ 0 ];
@@ -696,6 +701,7 @@ struct StaticScalarProductGetter< 1, Real1, Real2 >
 };
 
 template< int Size, typename Real1, typename Real2 >
+__cuda_callable__
 auto ScalarProduct( const StaticVector< Size, Real1 >& u,
                     const StaticVector< Size, Real2 >& v ) -> decltype( u[ 0 ] * v[ 0 ] )
 {
@@ -703,6 +709,7 @@ auto ScalarProduct( const StaticVector< Size, Real1 >& u,
 }
 
 template< int Size, typename Real1, typename Real2 >
+__cuda_callable__
 auto operator,( const StaticVector< Size, Real1 >& u,
                     const StaticVector< Size, Real2 >& v ) -> decltype( u[ 0 ] * v[ 0 ] )
 {

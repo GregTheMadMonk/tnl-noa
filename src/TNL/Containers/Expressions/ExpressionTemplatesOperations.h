@@ -17,6 +17,7 @@ namespace TNL {
 template< typename T1, typename T2 >
 struct Addition
 {
+   __cuda_callable__
    static auto evaluate( const T1& a, const T2& b ) -> decltype( a + b )
    {
       return a + b;
@@ -26,6 +27,7 @@ struct Addition
 template< typename T1, typename T2 >
 struct Subtraction
 {
+   __cuda_callable__
    static auto evaluate( const T1& a, const T2& b ) -> decltype( a - b )
    {
       return a - b;
@@ -35,6 +37,7 @@ struct Subtraction
 template< typename T1, typename T2 >
 struct Multiplication
 {
+   __cuda_callable__
    static auto evaluate( const T1& a, const T2& b ) -> decltype( a * b )
    {
       return a * b;
@@ -44,6 +47,7 @@ struct Multiplication
 template< typename T1, typename T2 >
 struct Division
 {
+   __cuda_callable__
    static auto evaluate( const T1& a, const T2& b ) -> decltype( a / b )
    {
       return a / b;
