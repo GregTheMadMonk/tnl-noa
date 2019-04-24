@@ -17,7 +17,7 @@
 namespace TNL {
 namespace Containers {
 
-   
+
 
  /**
  * \brief Vector with constant size.
@@ -29,10 +29,15 @@ template< int Size, typename Real = double >
 class StaticVector : public StaticArray< Size, Real >
 {
    public:
-   typedef Real RealType;
-   enum { size = Size };
+   using RealType = Real;
+   using IndexType = int;
+   using ThisType = StaticVector< Size, Real >;
+
+   constexpr static int size = Size;
 
    using StaticArray< Size, Real >::getSize;
+   using StaticArray< Size, Real >::operator ==;
+   using StaticArray< Size, Real >::operator !=;
 
    /**
     * \brief Basic constructor.
@@ -262,10 +267,17 @@ template< typename Real >
 class StaticVector< 1, Real > : public StaticArray< 1, Real >
 {
    public:
-   typedef Real RealType;
-   enum { size = 1 };
+   using RealType = Real;
+   using IndexType = int;
+   using ThisType = StaticVector< 1, Real >;
+
+   constexpr static int size = 1;
 
    using StaticArray< 1, Real >::getSize;
+   using StaticArray< 1, Real >::operator ==;
+   using StaticArray< 1, Real >::operator !=;
+
+
 
    /** \brief See StaticVector::StaticVector().*/
    __cuda_callable__
@@ -390,10 +402,16 @@ template< typename Real >
 class StaticVector< 2, Real > : public StaticArray< 2, Real >
 {
    public:
-   typedef Real RealType;
-   enum { size = 2 };
+   using RealType = Real;
+   using IndexType = int;
+   using ThisType = StaticVector< 2, Real >;
+
+   constexpr static int size = 2;
 
    using StaticArray< 2, Real >::getSize;
+   using StaticArray< 2, Real >::operator ==;
+   using StaticArray< 2, Real >::operator !=;
+
 
    /** \brief See StaticVector::StaticVector().*/
    __cuda_callable__
@@ -527,10 +545,16 @@ template< typename Real >
 class StaticVector< 3, Real > : public StaticArray< 3, Real >
 {
    public:
-   typedef Real RealType;
-   enum { size = 3 };
+   using RealType = Real;
+   using IndexType = int;
+   using ThisType = StaticVector< 3, Real >;
+
+   constexpr static int size = 3;
 
    using StaticArray< 3, Real >::getSize;
+   using StaticArray< 3, Real >::operator ==;
+   using StaticArray< 3, Real >::operator !=;
+
 
    /** \brief See StaticVector::StaticVector().*/
    __cuda_callable__

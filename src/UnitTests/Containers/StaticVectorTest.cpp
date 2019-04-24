@@ -140,6 +140,8 @@ TYPED_TEST( StaticVectorTest, comparisons )
    EXPECT_TRUE( u3 >= u1 );
    EXPECT_TRUE( u2 > u1 );
    EXPECT_TRUE( u2 >= u1 );
+   EXPECT_TRUE( u1 != u4 );
+   EXPECT_FALSE( u1 == u2 );
 
    if( size > 2 ) {
       EXPECT_FALSE( u1 < u4 );

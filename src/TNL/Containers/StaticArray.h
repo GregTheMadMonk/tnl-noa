@@ -26,8 +26,8 @@ template< int Size, typename Value >
 class StaticArray
 {
    public:
-   typedef Value ValueType;
-   typedef int     IndexType;
+   using ValueType = Value;
+   using IndexType = int;
    enum { size = Size };
 
    /**
