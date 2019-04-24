@@ -133,47 +133,6 @@ StaticVector< 2, Real >& StaticVector< 2, Real >::operator /= ( const Real& c )
    return *this;
 }
 
-#ifdef UNDEF
-template< typename Real >
-__cuda_callable__
-StaticVector< 2, Real > StaticVector< 2, Real >::operator + ( const StaticVector& u ) const
-{
-   StaticVector< 2, Real > res;
-   res[ 0 ] = this->data[ 0 ] + u[ 0 ];
-   res[ 1 ] = this->data[ 1 ] + u[ 1 ];
-   return res;
-}
-
-template< typename Real >
-__cuda_callable__
-StaticVector< 2, Real > StaticVector< 2, Real >::operator - ( const StaticVector& u ) const
-{
-   StaticVector< 2, Real > res;
-   res[ 0 ] = this->data[ 0 ] - u[ 0 ];
-   res[ 1 ] = this->data[ 1 ] - u[ 1 ];
-   return res;
-}
-
-template< typename Real >
-__cuda_callable__
-StaticVector< 2, Real > StaticVector< 2, Real >::operator * ( const Real& c ) const
-{
-   StaticVector< 2, Real > res;
-   res[ 0 ] = c * this->data[ 0 ];
-   res[ 1 ] = c * this->data[ 1 ];
-   return res;
-}
-
-template< typename Real >
-__cuda_callable__
-Real StaticVector< 2, Real >::operator * ( const StaticVector& u ) const
-{
-   return this->data[ 0 ] * u[ 0 ] +
-          this->data[ 1 ] * u[ 1 ];
-}
-#endif
-
-
 template< typename Real >
 __cuda_callable__
 bool StaticVector< 2, Real >::operator < ( const StaticVector& v ) const

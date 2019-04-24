@@ -141,48 +141,6 @@ class StaticVector : public StaticArray< Size, Real >
    __cuda_callable__
    StaticVector& operator /= ( const Real& c );
 
-#ifdef UNDEF
-   /**
-    * \brief Addition operator.
-    *
-    * This function adds static vector \e u to this static vector and returns the resulting static vector.
-    * The addition is applied to all the vector elements separately.
-    * \param u Reference to another static vector.
-    */
-   __cuda_callable__
-   StaticVector operator + ( const StaticVector& u ) const;
-
-   /**
-    * \brief Subtraction operator.
-    *
-    * This function subtracts static vector \e u from this static vector and returns the resulting static vector.
-    * The subtraction is applied to all the vector elements separately.
-    * \param u Reference to another static vector.
-    */
-   __cuda_callable__
-   StaticVector operator - ( const StaticVector& u ) const;
-
-   /**
-    * \brief Multiplication by number.
-    *
-    * This function multiplies this static vector by \e c and returns the resulting static vector.
-    * The addition is applied to all the vector elements separately.
-    * \param c Multiplicator.
-    */
-   __cuda_callable__
-   StaticVector operator * ( const Real& c ) const;
-
-   /**
-    * \brief Computes scalar (dot) product.
-    *
-    * An algebraic operation that takes two equal-length vectors and returns a single number.
-    *
-    * \param u Reference to another static vector of the same size as this static vector.
-    */
-   __cuda_callable__
-   Real operator * ( const StaticVector& u ) const;
-#endif
-
    /**
     * \brief Compares this static vector with static vector \e v.
     *
@@ -331,24 +289,6 @@ class StaticVector< 1, Real > : public StaticArray< 1, Real >
    __cuda_callable__
    StaticVector& operator /= ( const Real& c );
 
-#ifdef UNDEF
-   /** \brief See StaticVector::operator + ( const StaticVector& u ) const.*/
-   __cuda_callable__
-   StaticVector operator + ( const StaticVector& u ) const;
-
-   /** \brief See StaticVector::operator - ( const StaticVector& u ) const.*/
-   __cuda_callable__
-   StaticVector operator - ( const StaticVector& u ) const;
-
-   /** \brief See StaticVector::operator * ( const Real& c ) const.*/
-   __cuda_callable__
-   StaticVector operator * ( const Real& c ) const;
-
-   /** \brief See StaticVector::operator * ( const StaticVector& u ) const.*/
-   __cuda_callable__
-   Real operator * ( const StaticVector& u ) const;
-#endif
-
    /** \brief See StaticVector::operator <.*/
    __cuda_callable__
    bool operator < ( const StaticVector& v ) const;
@@ -473,24 +413,6 @@ class StaticVector< 2, Real > : public StaticArray< 2, Real >
    /** \brief See StaticVector::operator /= ( const Real& c ).*/
    __cuda_callable__
    StaticVector& operator /= ( const Real& c );
-
-#ifdef UNDEF
-   /** \brief See StaticVector::operator + ( const StaticVector& u ) const.*/
-   __cuda_callable__
-   StaticVector operator + ( const StaticVector& u ) const;
-
-   /** \brief See StaticVector::operator - ( const StaticVector& u ) const.*/
-   __cuda_callable__
-   StaticVector operator - ( const StaticVector& u ) const;
-
-   /** \brief See StaticVector::operator * ( const Real& c ) const.*/
-   __cuda_callable__
-   StaticVector operator * ( const Real& c ) const;
-
-   /** \brief See StaticVector::operator * ( const StaticVector& u ) const.*/
-   __cuda_callable__
-   Real operator * ( const StaticVector& u ) const;
-#endif
 
    /** \brief See StaticVector::operator <.*/
    __cuda_callable__
@@ -618,24 +540,6 @@ class StaticVector< 3, Real > : public StaticArray< 3, Real >
    __cuda_callable__
    StaticVector& operator /= ( const Real& c );
 
-#ifdef UNDEF
-   /** \brief See StaticVector::operator + ( const StaticVector& u ) const.*/
-   __cuda_callable__
-   StaticVector operator + ( const StaticVector& u ) const;
-
-   /** \brief See StaticVector::operator - ( const StaticVector& u ) const.*/
-   __cuda_callable__
-   StaticVector operator - ( const StaticVector& u ) const;
-
-   /** \brief See StaticVector::operator * ( const Real& c ) const.*/
-   __cuda_callable__
-   StaticVector operator * ( const Real& c ) const;
-
-   /** \brief See StaticVector::operator * ( const StaticVector& u ) const.*/
-   __cuda_callable__
-   Real operator * ( const StaticVector& u ) const;
-#endif
-
    /** \brief See StaticVector::operator <.*/
    __cuda_callable__
    bool operator < ( const StaticVector& v ) const;
@@ -751,28 +655,6 @@ StaticVector< 3, Real > VectorProduct( const StaticVector< 3, Real >& u,
    p[ 2 ] = u[ 0 ] * v[ 1 ] - u[ 1 ] * v[ 0 ];
    return p;
 }
-
-/*template< typename Real >
-Real ScalarProduct( const StaticVector< 1, Real >& u,
-                    const StaticVector< 1, Real >& v )
-{
-   return u[ 0 ] * v[ 0 ];
-}
-
-
-template< typename Real >
-Real ScalarProduct( const StaticVector< 2, Real >& u,
-                    const StaticVector< 2, Real >& v )
-{
-   return u[ 0 ] * v[ 0 ] + u[ 1 ] * v[ 1 ];
-}
-
-template< typename Real >
-Real ScalarProduct( const StaticVector< 3, Real >& u,
-                    const StaticVector< 3, Real >& v )
-{
-   return u[ 0 ] * v[ 0 ] + u[ 1 ] * v[ 1 ] + u[ 2 ] * v[ 2 ];
-}*/
 
 template< typename T1,
           typename T2>
