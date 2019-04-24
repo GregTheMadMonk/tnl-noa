@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <TNL/Math.h>
+
 namespace TNL {
    namespace Containers {
       namespace Expressions {
@@ -53,6 +55,27 @@ struct Division
       return a / b;
    }
 };
+
+template< typename T1, typename T2 >
+struct Min
+{
+   __cuda_callable__
+   static auto evaluate( const T1& a, const T2& b ) -> decltype( TNL::min( a , b ) )
+   {
+      return TNL::min( a, b );
+   }
+};
+
+template< typename T1, typename T2 >
+struct Max
+{
+   __cuda_callable__
+   static auto evaluate( const T1& a, const T2& b ) -> decltype( TNL::max( a, b ) )
+   {
+      return TNL::max( a, b );
+   }
+};
+
       } //namespace Expressions
    } // namespace Containers
 } // namespace TNL

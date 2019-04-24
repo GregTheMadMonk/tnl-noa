@@ -124,6 +124,58 @@ operator/( const StaticVector< Size, Real1 >& a, const StaticVector< Size, Real2
 }
 
 ////
+// Min
+template< int Size, typename Real, typename ET >
+__cuda_callable__
+const Expressions::BinaryExpressionTemplate< StaticVector< Size, Real >, ET, Expressions::Min >
+min( const StaticVector< Size, Real >& a, const ET& b )
+{
+   return Expressions::BinaryExpressionTemplate< StaticVector< Size, Real >, ET, Expressions::Min >( a, b );
+}
+
+template< typename ET, int Size, typename Real >
+__cuda_callable__
+const Expressions::BinaryExpressionTemplate< ET, StaticVector< Size, Real >, Expressions::Min >
+min( const ET& a, const StaticVector< Size, Real >& b )
+{
+   return Expressions::BinaryExpressionTemplate< ET, StaticVector< Size, Real >, Expressions::Min >( a, b );
+}
+
+template< int Size, typename Real1, typename Real2 >
+__cuda_callable__
+const Expressions::BinaryExpressionTemplate< StaticVector< Size, Real1 >, StaticVector< Size, Real2 >, Expressions::Min >
+min( const StaticVector< Size, Real1 >& a, const StaticVector< Size, Real2 >& b )
+{
+   return Expressions::BinaryExpressionTemplate< StaticVector< Size, Real1 >, StaticVector< Size, Real2 >, Expressions::Min >( a, b );
+}
+
+////
+// Max
+template< int Size, typename Real, typename ET >
+__cuda_callable__
+const Expressions::BinaryExpressionTemplate< StaticVector< Size, Real >, ET, Expressions::Max >
+max( const StaticVector< Size, Real >& a, const ET& b )
+{
+   return Expressions::BinaryExpressionTemplate< StaticVector< Size, Real >, ET, Expressions::Max >( a, b );
+}
+
+template< typename ET, int Size, typename Real >
+__cuda_callable__
+const Expressions::BinaryExpressionTemplate< ET, StaticVector< Size, Real >, Expressions::Max >
+max( const ET& a, const StaticVector< Size, Real >& b )
+{
+   return Expressions::BinaryExpressionTemplate< ET, StaticVector< Size, Real >, Expressions::Max >( a, b );
+}
+
+template< int Size, typename Real1, typename Real2 >
+__cuda_callable__
+const Expressions::BinaryExpressionTemplate< StaticVector< Size, Real1 >, StaticVector< Size, Real2 >, Expressions::Max >
+max( const StaticVector< Size, Real1 >& a, const StaticVector< Size, Real2 >& b )
+{
+   return Expressions::BinaryExpressionTemplate< StaticVector< Size, Real1 >, StaticVector< Size, Real2 >, Expressions::Max >( a, b );
+}
+
+////
 // Comparison operations - operator ==
 template< int Size, typename Real, typename ET >
 __cuda_callable__

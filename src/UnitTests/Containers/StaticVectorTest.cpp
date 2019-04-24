@@ -123,6 +123,25 @@ TYPED_TEST( StaticVectorTest, operators )
    EXPECT_EQ( ScalarProduct( u1, u2 ), 4 * size );
 }
 
+TYPED_TEST( StaticVectorTest, MinMax )
+{
+   using VectorType = typename TestFixture::VectorType;
+   constexpr int size = VectorType::size;
+
+   VectorType u1( 1 ), u2( 2 ), u3( 3 ), u4, u_min, u_max;
+   for( int i = 0; i < size; i++ )
+   {
+      u4[ i ] = i;
+      u_min[ i ] = TNL::min( i, 3 );
+      u_max[ i ] = TNL::max( i, 3 );
+   }
+
+   EXPECT_TRUE( min( u1, u2 ) ==  u1 );
+   EXPECT_TRUE( max( u1, u2 ) ==  u2 );
+   EXPECT_TRUE( min( u3, u4 ) == u_min );
+   EXPECT_TRUE( max( u3, u4 ) == u_max );
+}
+
 TYPED_TEST( StaticVectorTest, comparisons )
 {
    using VectorType = typename TestFixture::VectorType;
