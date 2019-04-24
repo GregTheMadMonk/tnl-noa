@@ -190,7 +190,7 @@ TYPED_TEST( StaticVectorTest, abs )
 
    // TODO: implement unary minus operator
    VectorType v = - 1 * u;
-   EXPECT_EQ( v.abs(), u );
+   EXPECT_EQ( abs( v ), u );
 }
 
 TYPED_TEST( StaticVectorTest, lpNorm )

@@ -76,6 +76,17 @@ struct Max
    }
 };
 
+template< typename T1 >
+struct Abs
+{
+   __cuda_callable__
+   static auto evaluate( const T1& a ) -> decltype( TNL::abs( a ) )
+   {
+      return TNL::abs( a );
+   }
+};
+
+
       } //namespace Expressions
    } // namespace Containers
 } // namespace TNL

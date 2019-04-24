@@ -591,9 +591,9 @@ __cuda_callable__
 StaticVector< Size, Real > operator * ( const Scalar& c, const StaticVector< Size, Real >& u );
  */
 
-template< int Size, typename Real >
+/*template< int Size, typename Real >
 __cuda_callable__
-StaticVector< Size, Real > abs( const StaticVector< Size, Real >& u ) { return u.abs(); };
+StaticVector< Size, Real > abs( const StaticVector< Size, Real >& u ) { return u.abs(); };*/
 
 } // namespace Containers
 } // namespace TNL

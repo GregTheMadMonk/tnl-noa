@@ -11,6 +11,7 @@
 #pragma once
 
 #include <TNL/Containers/Expressions/BinaryExpressionTemplate.h>
+#include <TNL/Containers/Expressions/UnaryExpressionTemplate.h>
 #include <TNL/Containers/Expressions/ExpressionTemplatesOperations.h>
 #include <TNL/Containers/Expressions/StaticComparison.h>
 
