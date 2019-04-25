@@ -10,8 +10,7 @@
 
 #pragma once
 
-#include <TNL/Containers/Expressions/BinaryExpressionTemplate.h>
-#include <TNL/Containers/Expressions/UnaryExpressionTemplate.h>
+#include <TNL/Containers/Expressions/StaticExpressionTemplates.h>
 #include <TNL/Containers/Expressions/ExpressionTemplatesOperations.h>
 #include <TNL/Containers/Expressions/StaticComparison.h>
 
@@ -313,6 +312,52 @@ bool operator>=( const StaticVector< Size, Real1 >& a, const StaticVector< Size,
 {
    return Expressions::StaticComparisonGE( a, b );
 }
+
+////
+// Minus
+template< int Size, typename Real >
+__cuda_callable__
+const Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Minus >
+operator -( const StaticVector< Size, Real >& a )
+{
+   return Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Minus >( a );
+}
+
+////
+// Abs
+template< int Size, typename Real >
+__cuda_callable__
+const Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Abs >
+abs( const StaticVector< Size, Real >& a )
+{
+   return Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Abs >( a );
+}
+
+
+////
+// sin
+// cos
+// tan
+// sqrt
+// cbrt
+// pow
+// floor
+// ceil
+// acos
+// asin
+// atan
+// cosh
+// tanh
+// log
+// log10
+// log2
+// exp
+// sign
+
+
+
+
+
 
 ////
 // TODO: Replace this with multiplication when its safe

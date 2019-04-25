@@ -188,10 +188,29 @@ TYPED_TEST( StaticVectorTest, abs )
    for( int i = 0; i < size; i++ )
       u[ i ] = i;
 
-   // TODO: implement unary minus operator
-   VectorType v = - 1 * u;
+   VectorType v = -u;
    EXPECT_EQ( abs( v ), u );
 }
+
+////
+// sin
+// cos
+// tan
+// sqrt
+// cbrt
+// pow
+// floor
+// ceil
+// acos
+// asin
+// atan
+// cosh
+// tanh
+// log
+// log10
+// log2
+// exp
+// sign
 
 TYPED_TEST( StaticVectorTest, lpNorm )
 {

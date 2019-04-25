@@ -67,6 +67,15 @@ StaticVector< 3, Real >::StaticVector( const Expressions::BinaryExpressionTempla
    Algorithms::VectorAssignment< StaticVector< 3, Real >, Expressions::BinaryExpressionTemplate< T1, T2, Operation > >::assign( *this, op );
 };
 
+template< typename Real >
+   template< typename T,
+             template< typename > class Operation >
+__cuda_callable__
+StaticVector< 3, Real >::StaticVector( const Expressions::UnaryExpressionTemplate< T, Operation >& op )
+{
+   Algorithms::VectorAssignment< StaticVector< 3, Real >, Expressions::UnaryExpressionTemplate< T, Operation > >::assign( *this, op );
+};
+
 
 template< typename Real >
 bool
