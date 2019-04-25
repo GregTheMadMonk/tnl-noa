@@ -199,7 +199,7 @@ CudaMultireductionKernelLauncher( Operation& operation,
    dim3 blockSize, gridSize;
    
    // version A: max 16 rows of threads
-   blockSize.y = min( n, 16 );
+   blockSize.y = TNL::min( n, 16 );
 
    // version B: up to 16 rows of threads, then "minimize" number of inactive rows
 //   if( n <= 16 )
@@ -221,7 +221,7 @@ CudaMultireductionKernelLauncher( Operation& operation,
    while( blockSize.x * blockSize.y > Multireduction_maxThreadsPerBlock )
       blockSize.x /= 2;
 
-   gridSize.x = min( Devices::Cuda::getNumberOfBlocks( size, blockSize.x ), desGridSizeX );
+   gridSize.x = TNL::min( Devices::Cuda::getNumberOfBlocks( size, blockSize.x ), desGridSizeX );
    gridSize.y = Devices::Cuda::getNumberOfBlocks( n, blockSize.y );
 
    if( gridSize.y > (unsigned) Devices::Cuda::getMaxGridSize() ) {

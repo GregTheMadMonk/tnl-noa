@@ -333,30 +333,185 @@ abs( const StaticVector< Size, Real >& a )
    return Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Abs >( a );
 }
 
+////
+// Sine
+template< int Size, typename Real >
+__cuda_callable__
+const Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Sin >
+sin( const StaticVector< Size, Real >& a )
+{
+   return Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Sin >( a );
+}
 
 ////
-// sin
-// cos
-// tan
-// sqrt
-// cbrt
-// pow
-// floor
-// ceil
-// acos
-// asin
-// atan
-// cosh
-// tanh
-// log
-// log10
-// log2
-// exp
-// sign
+// Cosine
+template< int Size, typename Real >
+__cuda_callable__
+const Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Cos >
+cos( const StaticVector< Size, Real >& a )
+{
+   return Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Cos >( a );
+}
 
+////
+// Tangent
+template< int Size, typename Real >
+__cuda_callable__
+const Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Tan >
+tan( const StaticVector< Size, Real >& a )
+{
+   return Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Tan >( a );
+}
 
+////
+// Sqrt
+template< int Size, typename Real >
+__cuda_callable__
+const Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Sqrt >
+sqrt( const StaticVector< Size, Real >& a )
+{
+   return Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Sqrt >( a );
+}
 
+////
+// Cbrt
+template< int Size, typename Real >
+__cuda_callable__
+const Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Cbrt >
+cbrt( const StaticVector< Size, Real >& a )
+{
+   return Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Cbrt >( a );
+}
 
+////
+// Power
+template< int Size, typename Real, typename ExpType >
+__cuda_callable__
+const Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Pow, ExpType >
+pow( const StaticVector< Size, Real >& a, const ExpType& exp )
+{
+   return Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Pow, ExpType >( a, exp );
+}
+
+////
+// Floor
+template< int Size, typename Real >
+__cuda_callable__
+const Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Floor >
+floor( const StaticVector< Size, Real >& a )
+{
+   return Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Floor >( a );
+}
+
+////
+// Ceil
+template< int Size, typename Real >
+__cuda_callable__
+const Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Ceil >
+ceil( const StaticVector< Size, Real >& a )
+{
+   return Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Ceil >( a );
+}
+
+////
+// Acos
+template< int Size, typename Real >
+__cuda_callable__
+const Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Acos >
+acos( const StaticVector< Size, Real >& a )
+{
+   return Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Acos >( a );
+}
+
+////
+// Asin
+template< int Size, typename Real >
+__cuda_callable__
+const Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Asin >
+asin( const StaticVector< Size, Real >& a )
+{
+   return Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Asin >( a );
+}
+
+////
+// Atan
+template< int Size, typename Real >
+__cuda_callable__
+const Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Atan >
+atan( const StaticVector< Size, Real >& a )
+{
+   return Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Atan >( a );
+}
+
+////
+// Cosh
+template< int Size, typename Real >
+__cuda_callable__
+const Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Cosh >
+cosh( const StaticVector< Size, Real >& a )
+{
+   return Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Cosh >( a );
+}
+
+////
+// Tanh
+template< int Size, typename Real >
+__cuda_callable__
+const Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Tanh >
+tanh( const StaticVector< Size, Real >& a )
+{
+   return Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Tanh >( a );
+}
+
+////
+// Log
+template< int Size, typename Real >
+__cuda_callable__
+const Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Log >
+log( const StaticVector< Size, Real >& a )
+{
+   return Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Log >( a );
+}
+
+////
+// Log10
+template< int Size, typename Real >
+__cuda_callable__
+const Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Log10 >
+log10( const StaticVector< Size, Real >& a )
+{
+   return Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Log10 >( a );
+}
+
+////
+// Log2
+template< int Size, typename Real >
+__cuda_callable__
+const Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Log2 >
+log2( const StaticVector< Size, Real >& a )
+{
+   return Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Log2 >( a );
+}
+
+////
+// Exp
+template< int Size, typename Real >
+__cuda_callable__
+const Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Exp >
+exp( const StaticVector< Size, Real >& a )
+{
+   return Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Exp >( a );
+}
+
+////
+// Sign
+template< int Size, typename Real >
+__cuda_callable__
+const Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Sign >
+sign( const StaticVector< Size, Real >& a )
+{
+   return Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Sign >( a );
+}
 
 
 ////

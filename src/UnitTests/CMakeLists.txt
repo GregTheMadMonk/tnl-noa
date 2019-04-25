@@ -17,9 +17,9 @@ ADD_EXECUTABLE( ExpressionTemplatesStaticTest ExpressionTemplatesStaticTest.cpp 
 TARGET_COMPILE_OPTIONS( ExpressionTemplatesStaticTest PRIVATE ${CXX_TESTS_FLAGS} )
 TARGET_LINK_LIBRARIES( ExpressionTemplatesStaticTest ${GTEST_BOTH_LIBRARIES} )
 
-ADD_EXECUTABLE( ExpressionTemplatesDynamicTest ExpressionTemplatesDynamicTest.cpp )
-TARGET_COMPILE_OPTIONS( ExpressionTemplatesDynamicTest PRIVATE ${CXX_TESTS_FLAGS} )
-TARGET_LINK_LIBRARIES( ExpressionTemplatesDynamicTest ${GTEST_BOTH_LIBRARIES} )
+#ADD_EXECUTABLE( ExpressionTemplatesDynamicTest ExpressionTemplatesDynamicTest.cpp )
+#TARGET_COMPILE_OPTIONS( ExpressionTemplatesDynamicTest PRIVATE ${CXX_TESTS_FLAGS} )
+#TARGET_LINK_LIBRARIES( ExpressionTemplatesDynamicTest ${GTEST_BOTH_LIBRARIES} )
 
 if( BUILD_CUDA )
    CUDA_ADD_EXECUTABLE( FileTest FileTest.cu OPTIONS ${CXX_TESTS_FLAGS} )

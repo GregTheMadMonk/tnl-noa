@@ -74,7 +74,7 @@ TEST( ExpressionTemplatesDynamicTest, ExponentialFunction )
    Vector< double, Devices::Host, int > dr1( 6 );
    VectorView< double, Devices::Host, int > dv1( d1 );
    VectorView< double, Devices::Host, int > dvr1( dr1 );
-   dvr1.evaluate( exp(dv1) );
+   dvr1.evaluate( TNL::exp(dv1) );
    double temp;
    for( int i = 0; i < 6; i++){
    	temp = std::exp( dv1[ i ] );
@@ -88,7 +88,7 @@ TEST( ExpressionTemplatesDynamicTest, NaturalLogarithm )
    Vector< double, Devices::Host, int > dr1( 6 );
    VectorView< double, Devices::Host, int > dv1( d1 );
    VectorView< double, Devices::Host, int > dvr1( dr1 );
-   dvr1.evaluate( log(dv1) );
+   dvr1.evaluate( TNL::log(dv1) );
    double temp;
    for( int i = 0; i < 6; i++){
    	temp = std::log( dv1[ i ] );

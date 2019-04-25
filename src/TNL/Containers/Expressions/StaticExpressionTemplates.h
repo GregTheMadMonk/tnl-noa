@@ -21,6 +21,7 @@ namespace TNL {
 
 template< typename T1,
           template< typename > class Operation,
+          typename Parameter = void,
           ExpressionVariableType T1Type = ExpressionVariableTypeGetter< T1 >::value >
 struct UnaryExpressionTemplate
 {
@@ -140,12 +141,55 @@ struct BinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorVa
       const T2& op2;
 };
 
-
 ////
 // Unary expression template
+//
+// Parameter type serves mainly for pow( base, exp ). Here exp is parameter we need
+// to pass to pow.
+template< typename T1,
+          template< typename > class Operation,
+          typename Parameter >
+struct UnaryExpressionTemplate< T1, Operation, Parameter, VectorVariable >
+{
+   using RealType = typename T1::RealType;
+   using IsExpressionTemplate = bool;
+
+   __cuda_callable__
+   UnaryExpressionTemplate( const T1& a, const Parameter& p )
+   : operand( a ), parameter( p ) {}
+
+   __cuda_callable__
+   static UnaryExpressionTemplate evaluate( const T1& a )
+   {
+      return UnaryExpressionTemplate( a );
+   }
+
+   __cuda_callable__
+   RealType operator[]( const int i ) const
+   {
+       return Operation< typename T1::RealType >::evaluate( operand[ i ], parameter );
+   }
+
+   __cuda_callable__
+   int getSize() const
+   {
+       return operand.getSize();
+   }
+
+   void set( const Parameter& p ) { parameter = p; }
+
+   const Parameter& get() { return parameter; }
+
+   protected:
+      const T1& operand;
+      Parameter parameter;
+};
+
+////
+// Unary expression template with no parameter
 template< typename T1,
           template< typename > class Operation >
-struct UnaryExpressionTemplate< T1, Operation, VectorVariable >
+struct UnaryExpressionTemplate< T1, Operation, void, VectorVariable >
 {
    using RealType = typename T1::RealType;
    using IsExpressionTemplate = bool;
@@ -172,8 +216,9 @@ struct UnaryExpressionTemplate< T1, Operation, VectorVariable >
    }
 
    protected:
-      const T1 &operand;
+      const T1& operand;
 };
+
 
 ////
 // Binary expressions addition
@@ -1088,7 +1133,7 @@ tan( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
    return Expressions::UnaryExpressionTemplate<
       Expressions::BinaryExpressionTemplate< L1, L2, LOperation >,
-      Expressions::Din >( a );
+      Expressions::Tan >( a );
 }
 
 template< typename L1,
@@ -1174,9 +1219,11 @@ const Expressions::UnaryExpressionTemplate<
    Expressions::Pow >
 pow( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a, const Real& exp )
 {
-   return Expressions::UnaryExpressionTemplate<
+   auto e = Expressions::UnaryExpressionTemplate<
       Expressions::BinaryExpressionTemplate< L1, L2, LOperation >,
-      Expressions::Pow >( a, exp );
+      Expressions::Pow >( a );
+   e.parameter.set( exp );
+   return e;
 }
 
 template< typename L1,
@@ -1188,9 +1235,11 @@ const Expressions::UnaryExpressionTemplate<
    Expressions::Pow >
 pow( const Expressions::UnaryExpressionTemplate< L1, LOperation >& a, const Real& exp )
 {
-   return Expressions::UnaryExpressionTemplate<
+   auto e = Expressions::UnaryExpressionTemplate<
       Expressions::UnaryExpressionTemplate< L1, LOperation >,
-      Expressions::Pow >( a, exp );
+      Expressions::Pow >( a );
+   e.parameter.set( exp );
+   return e;
 }
 
 ////
@@ -1380,7 +1429,7 @@ cosh( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
    return Expressions::UnaryExpressionTemplate<
       Expressions::BinaryExpressionTemplate< L1, L2, LOperation >,
-      Expressions::cosh >( a );
+      Expressions::Cosh >( a );
 }
 
 template< typename L1,
@@ -1396,25 +1445,150 @@ cosh( const Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
       Expressions::Cosh >( a );
 }
 
+////
+// Tanh
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+__cuda_callable__
+const Expressions::UnaryExpressionTemplate<
+   Expressions::BinaryExpressionTemplate< L1, L2, LOperation >,
+   Expressions::Tanh >
+cosh( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return Expressions::UnaryExpressionTemplate<
+      Expressions::BinaryExpressionTemplate< L1, L2, LOperation >,
+      Expressions::Tanh >( a );
+}
+
+template< typename L1,
+          template< typename > class LOperation >
+__cuda_callable__
+const Expressions::UnaryExpressionTemplate<
+   Expressions::UnaryExpressionTemplate< L1, LOperation >,
+   Expressions::Tanh >
+tanh( const Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
+{
+   return Expressions::UnaryExpressionTemplate<
+      Expressions::UnaryExpressionTemplate< L1, LOperation >,
+      Expressions::Tanh >( a );
+}
 
 ////
-// tanh
-// log
-// log10
-// log2
-// exp
+// Log
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+__cuda_callable__
+const Expressions::UnaryExpressionTemplate<
+   Expressions::BinaryExpressionTemplate< L1, L2, LOperation >,
+   Expressions::Log >
+log( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return Expressions::UnaryExpressionTemplate<
+      Expressions::BinaryExpressionTemplate< L1, L2, LOperation >,
+      Expressions::Log >( a );
+}
 
+template< typename L1,
+          template< typename > class LOperation >
+__cuda_callable__
+const Expressions::UnaryExpressionTemplate<
+   Expressions::UnaryExpressionTemplate< L1, LOperation >,
+   Expressions::Log >
+log( const Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
+{
+   return Expressions::UnaryExpressionTemplate<
+      Expressions::UnaryExpressionTemplate< L1, LOperation >,
+      Expressions::Log >( a );
+}
 
+////
+// Log10
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+__cuda_callable__
+const Expressions::UnaryExpressionTemplate<
+   Expressions::BinaryExpressionTemplate< L1, L2, LOperation >,
+   Expressions::Log10 >
+log10( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return Expressions::UnaryExpressionTemplate<
+      Expressions::BinaryExpressionTemplate< L1, L2, LOperation >,
+      Expressions::Log10 >( a );
+}
 
+template< typename L1,
+          template< typename > class LOperation >
+__cuda_callable__
+const Expressions::UnaryExpressionTemplate<
+   Expressions::UnaryExpressionTemplate< L1, LOperation >,
+   Expressions::Log10 >
+log10( const Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
+{
+   return Expressions::UnaryExpressionTemplate<
+      Expressions::UnaryExpressionTemplate< L1, LOperation >,
+      Expressions::Log10 >( a );
+}
 
+////
+// Log2
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+__cuda_callable__
+const Expressions::UnaryExpressionTemplate<
+   Expressions::BinaryExpressionTemplate< L1, L2, LOperation >,
+   Expressions::Log2 >
+log2( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return Expressions::UnaryExpressionTemplate<
+      Expressions::BinaryExpressionTemplate< L1, L2, LOperation >,
+      Expressions::Log2 >( a );
+}
 
+template< typename L1,
+          template< typename > class LOperation >
+__cuda_callable__
+const Expressions::UnaryExpressionTemplate<
+   Expressions::UnaryExpressionTemplate< L1, LOperation >,
+   Expressions::Log2 >
+log2( const Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
+{
+   return Expressions::UnaryExpressionTemplate<
+      Expressions::UnaryExpressionTemplate< L1, LOperation >,
+      Expressions::Log2 >( a );
+}
 
+////
+// Exp
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+__cuda_callable__
+const Expressions::UnaryExpressionTemplate<
+   Expressions::BinaryExpressionTemplate< L1, L2, LOperation >,
+   Expressions::Exp >
+exp( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return Expressions::UnaryExpressionTemplate<
+      Expressions::BinaryExpressionTemplate< L1, L2, LOperation >,
+      Expressions::Exp >( a );
+}
 
-
-
-
-
-
+template< typename L1,
+          template< typename > class LOperation >
+__cuda_callable__
+const Expressions::UnaryExpressionTemplate<
+   Expressions::UnaryExpressionTemplate< L1, LOperation >,
+   Expressions::Exp >
+exp( const Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
+{
+   return Expressions::UnaryExpressionTemplate<
+      Expressions::UnaryExpressionTemplate< L1, LOperation >,
+      Expressions::Exp >( a );
+}
 
 ////
 // Output stream

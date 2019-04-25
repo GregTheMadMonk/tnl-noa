@@ -192,25 +192,278 @@ TYPED_TEST( StaticVectorTest, abs )
    EXPECT_EQ( abs( v ), u );
 }
 
-////
-// sin
-// cos
-// tan
-// sqrt
-// cbrt
-// pow
-// floor
-// ceil
-// acos
-// asin
-// atan
-// cosh
-// tanh
-// log
-// log10
-// log2
-// exp
-// sign
+TYPED_TEST( StaticVectorTest, sin )
+{
+   using VectorType = typename TestFixture::VectorType;
+   constexpr int size = VectorType::size;
+
+   VectorType u, v;
+   for( int i = 0; i < size; i++ )
+   {
+      u[ i ] = i - size / 2;
+      v[ i ] = sin( u[ i ] );
+   }
+
+   EXPECT_EQ( sin( u ), v );
+}
+
+TYPED_TEST( StaticVectorTest, cos )
+{
+   using VectorType = typename TestFixture::VectorType;
+   constexpr int size = VectorType::size;
+
+   VectorType u, v;
+   for( int i = 0; i < size; i++ )
+   {
+      u[ i ] = i - size / 2;
+      v[ i ] = cos( u[ i ] );
+   }
+
+   EXPECT_EQ( cos( u ), v );
+}
+
+TYPED_TEST( StaticVectorTest, tan )
+{
+   using VectorType = typename TestFixture::VectorType;
+   constexpr int size = VectorType::size;
+
+   VectorType u, v;
+   for( int i = 0; i < size; i++ )
+   {
+      u[ i ] = i - size / 2;
+      v[ i ] = tan( u[ i ] );
+   }
+
+   EXPECT_EQ( tan( u ), v );
+}
+
+TYPED_TEST( StaticVectorTest, sqrt )
+{
+   using VectorType = typename TestFixture::VectorType;
+   constexpr int size = VectorType::size;
+
+   VectorType u, v;
+   for( int i = 0; i < size; i++ )
+   {
+      u[ i ] = i;
+      v[ i ] = sqrt( u[ i ] );
+   }
+
+   EXPECT_EQ( sqrt( u ), v );
+}
+
+TYPED_TEST( StaticVectorTest, cbrt )
+{
+   using VectorType = typename TestFixture::VectorType;
+   constexpr int size = VectorType::size;
+
+   VectorType u, v;
+   for( int i = 0; i < size; i++ )
+   {
+      u[ i ] = i;
+      v[ i ] = cbrt( u[ i ] );
+   }
+
+   EXPECT_EQ( cbrt( u ), v );
+}
+
+TYPED_TEST( StaticVectorTest, pow )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using RealType = typename VectorType::RealType;
+   constexpr int size = VectorType::size;
+
+   VectorType u, v, w;
+   for( int i = 0; i < size; i++ )
+   {
+      u[ i ] = i - size / 2;
+      v[ i ] = pow( u[ i ], 2.0 );
+      w[ i ] = pow( u[ i ], 3.0 );
+   }
+
+   EXPECT_EQ( pow( u, 2.0 ), v );
+   EXPECT_EQ( pow( u, 3.0 ), w );
+}
+
+TYPED_TEST( StaticVectorTest, floor )
+{
+   using VectorType = typename TestFixture::VectorType;
+   constexpr int size = VectorType::size;
+
+   VectorType u, v;
+   for( int i = 0; i < size; i++ )
+   {
+      u[ i ] = i - size / 2;
+      v[ i ] = floor( u[ i ] );
+   }
+
+   EXPECT_EQ( floor( u ), v );
+}
+
+TYPED_TEST( StaticVectorTest, ceil )
+{
+   using VectorType = typename TestFixture::VectorType;
+   constexpr int size = VectorType::size;
+
+   VectorType u, v;
+   for( int i = 0; i < size; i++ )
+   {
+      u[ i ] = i - size / 2;
+      v[ i ] = ceil( u[ i ] );
+   }
+
+   EXPECT_EQ( ceil( u ), v );
+}
+
+TYPED_TEST( StaticVectorTest, acos )
+{
+   using VectorType = typename TestFixture::VectorType;
+   constexpr int size = VectorType::size;
+
+   VectorType u, v;
+   for( int i = 0; i < size; i++ )
+   {
+      u[ i ] = ( double )( i - size / 2 ) / ( double ) size;
+      v[ i ] = acos( u[ i ] );
+   }
+
+   EXPECT_EQ( acos( u ), v );
+}
+
+TYPED_TEST( StaticVectorTest, asin )
+{
+   using VectorType = typename TestFixture::VectorType;
+   constexpr int size = VectorType::size;
+
+   VectorType u, v;
+   for( int i = 0; i < size; i++ )
+   {
+      u[ i ] = ( double ) ( i - size / 2 ) / ( double ) size;
+      v[ i ] = asin( u[ i ] );
+   }
+
+   EXPECT_EQ( asin( u ), v );
+}
+
+TYPED_TEST( StaticVectorTest, atan )
+{
+   using VectorType = typename TestFixture::VectorType;
+   constexpr int size = VectorType::size;
+
+   VectorType u, v;
+   for( int i = 0; i < size; i++ )
+   {
+      u[ i ] = i - size / 2;
+      v[ i ] = atan( u[ i ] );
+   }
+
+   EXPECT_EQ( atan( u ), v );
+}
+
+TYPED_TEST( StaticVectorTest, cosh )
+{
+   using VectorType = typename TestFixture::VectorType;
+   constexpr int size = VectorType::size;
+
+   VectorType u, v;
+   for( int i = 0; i < size; i++ )
+   {
+      u[ i ] = i - size / 2;
+      v[ i ] = cosh( u[ i ] );
+   }
+
+   EXPECT_EQ( cosh( u ), v );
+}
+
+TYPED_TEST( StaticVectorTest, tanh )
+{
+   using VectorType = typename TestFixture::VectorType;
+   constexpr int size = VectorType::size;
+
+   VectorType u, v;
+   for( int i = 0; i < size; i++ )
+   {
+      u[ i ] = i - size / 2;
+      v[ i ] = tanh( u[ i ] );
+   }
+
+   EXPECT_EQ( tanh( u ), v );
+}
+
+TYPED_TEST( StaticVectorTest, log )
+{
+   using VectorType = typename TestFixture::VectorType;
+   constexpr int size = VectorType::size;
+
+   VectorType u, v;
+   for( int i = 0; i < size; i++ )
+   {
+      u[ i ] = i + 1;
+      v[ i ] = log( u[ i ] );
+   }
+
+   EXPECT_EQ( log( u ), v );
+}
+
+TYPED_TEST( StaticVectorTest, log10 )
+{
+   using VectorType = typename TestFixture::VectorType;
+   constexpr int size = VectorType::size;
+
+   VectorType u, v;
+   for( int i = 0; i < size; i++ )
+   {
+      u[ i ] = i + 1;
+      v[ i ] = log10( u[ i ] );
+   }
+
+   EXPECT_EQ( log10( u ), v );
+}
+
+TYPED_TEST( StaticVectorTest, log2 )
+{
+   using VectorType = typename TestFixture::VectorType;
+   constexpr int size = VectorType::size;
+
+   VectorType u, v;
+   for( int i = 0; i < size; i++ )
+   {
+      u[ i ] = i + 1;
+      v[ i ] = log2( u[ i ] );
+   }
+
+   EXPECT_EQ( log2( u ), v );
+}
+
+TYPED_TEST( StaticVectorTest, exp )
+{
+   using VectorType = typename TestFixture::VectorType;
+   constexpr int size = VectorType::size;
+
+   VectorType u, v;
+   for( int i = 0; i < size; i++ )
+   {
+      u[ i ] = i - size / 2;
+      v[ i ] = exp( u[ i ] );
+   }
+
+   EXPECT_EQ( exp( u ), v );
+}
+
+TYPED_TEST( StaticVectorTest, sign )
+{
+   using VectorType = typename TestFixture::VectorType;
+   constexpr int size = VectorType::size;
+
+   VectorType u, v;
+   for( int i = 0; i < size; i++ )
+   {
+      u[ i ] = i - size / 2;
+      v[ i ] = sign( u[ i ] );
+   }
+
+   EXPECT_EQ( sign( u ), v );
+}
 
 TYPED_TEST( StaticVectorTest, lpNorm )
 {

@@ -346,7 +346,7 @@ vectorScalarMultiplication( Vector& v,
    dim3 blockSize( 0 ), gridSize( 0 );
    const Index& size = v.getSize();
    blockSize.x = 256;
-   Index blocksNumber = ceil( ( double ) size / ( double ) blockSize.x );
+   Index blocksNumber = TNL::ceil( ( double ) size / ( double ) blockSize.x );
    gridSize.x = min( blocksNumber, Devices::Cuda::getMaxGridSize() );
    vectorScalarMultiplicationCudaKernel<<< gridSize, blockSize >>>( v.getData(),
                                                                     size,
@@ -417,7 +417,7 @@ addVector( Vector1& y,
    const Index& size = x.getSize();
    dim3 cudaBlockSize( 256 );
    dim3 cudaBlocks;
-   cudaBlocks.x = min( Devices::Cuda::getMaxGridSize(), Devices::Cuda::getNumberOfBlocks( size, cudaBlockSize.x ) );
+   cudaBlocks.x = TNL::min( Devices::Cuda::getMaxGridSize(), Devices::Cuda::getNumberOfBlocks( size, cudaBlockSize.x ) );
 
    vectorAddVectorCudaKernel<<< cudaBlocks, cudaBlockSize >>>( y.getData(),
                                                                x.getData(),
@@ -483,7 +483,7 @@ addVectors( Vector1& v,
    const Index& size = v.getSize();
    dim3 cudaBlockSize( 256 );
    dim3 cudaBlocks;
-   cudaBlocks.x = min( Devices::Cuda::getMaxGridSize(), Devices::Cuda::getNumberOfBlocks( size, cudaBlockSize.x ) );
+   cudaBlocks.x = TNL::min( Devices::Cuda::getMaxGridSize(), Devices::Cuda::getNumberOfBlocks( size, cudaBlockSize.x ) );
 
    vectorAddVectorsCudaKernel<<< cudaBlocks, cudaBlockSize >>>( v.getData(),
                                                                 v1.getData(),

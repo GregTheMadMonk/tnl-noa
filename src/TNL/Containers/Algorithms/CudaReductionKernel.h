@@ -264,7 +264,7 @@ struct CudaReductionKernelLauncher
       {
          dim3 blockSize, gridSize;
          blockSize.x = Reduction_maxThreadsPerBlock;
-         gridSize.x = min( Devices::Cuda::getNumberOfBlocks( size, blockSize.x ), desGridSize );
+         gridSize.x = TNL::min( Devices::Cuda::getNumberOfBlocks( size, blockSize.x ), desGridSize );
 
          ////
          // when there is only one warp per blockSize.x, we need to allocate two warps

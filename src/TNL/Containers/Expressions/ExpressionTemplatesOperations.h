@@ -146,9 +146,10 @@ struct Cbrt
    }
 };
 
-template< typename T1, typename Real = T1 >
+template< typename T1 >
 struct Pow
 {
+   template< typename Real >
    __cuda_callable__
    static auto evaluate( const T1& a, const Real& exp ) -> decltype( TNL::pow( a, exp ) )
    {
@@ -203,6 +204,16 @@ struct Atan
    static auto evaluate( const T1& a ) -> decltype( TNL::atan( a ) )
    {
       return TNL::atan( a );
+   }
+};
+
+template< typename T1 >
+struct Sinh
+{
+   __cuda_callable__
+   static auto evaluate( const T1& a ) -> decltype( TNL::sinh( a ) )
+   {
+      return TNL::sinh( a );
    }
 };
 
@@ -275,7 +286,6 @@ struct Sign
       return TNL::sign( a );
    }
 };
-
 
       } //namespace Expressions
    } // namespace Containers
