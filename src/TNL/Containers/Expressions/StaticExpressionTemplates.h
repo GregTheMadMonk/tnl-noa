@@ -1599,18 +1599,19 @@ std::ostream& operator << ( std::ostream& str, const BinaryExpressionTemplate< T
 {
    str << "[ ";
    for( int i = 0; i < expression.getSize() - 1; i++ )
-      str << expression[ i ] << " ";
+      str << expression[ i ] << ", ";
    str << expression[ expression.getSize() - 1 ] << " ]";
    return str;
 }
 
 template< typename T,
-          template< typename > class Operation >
-std::ostream& operator << ( std::ostream& str, const UnaryExpressionTemplate< T, Operation >& expression )
+          template< typename > class Operation,
+          typename Parameter >
+std::ostream& operator << ( std::ostream& str, const UnaryExpressionTemplate< T, Operation, Parameter >& expression )
 {
    str << "[ ";
    for( int i = 0; i < expression.getSize() - 1; i++ )
-      str << expression[ i ] << " ";
+      str << expression[ i ] << ", ";
    str << expression[ expression.getSize() - 1 ] << " ]";
    return str;
 }

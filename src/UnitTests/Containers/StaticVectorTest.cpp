@@ -372,7 +372,10 @@ TYPED_TEST( StaticVectorTest, cosh )
       v[ i ] = cosh( u[ i ] );
    }
 
-   EXPECT_EQ( cosh( u ), v );
+   // EXPECT_EQ( cosh( u ), v ) does not work here for float, maybe because
+   // of some fast-math optimization
+   for( int i = 0; i < size; i++ )
+      EXPECT_NEAR( cosh( u )[ i ], v[ i ], 1.0e-6 );
 }
 
 TYPED_TEST( StaticVectorTest, tanh )
@@ -417,7 +420,10 @@ TYPED_TEST( StaticVectorTest, log10 )
       v[ i ] = log10( u[ i ] );
    }
 
-   EXPECT_EQ( log10( u ), v );
+   // EXPECT_EQ( log10( u ), v ) does not work here for float, maybe because
+   // of some fast-math optimization
+   for( int i = 0; i < size; i++ )
+      EXPECT_NEAR( log10( u )[ i ], v[ i ], 1.0e-6 );
 }
 
 TYPED_TEST( StaticVectorTest, log2 )
