@@ -54,12 +54,29 @@ struct VectorAssignment< Vector, T, true >
       v.setSize( t.getSize() );
    }
 
-   static void assign( Vector& v, const T& t )
+   __cuda_callable__
+   static void assignStatic( Vector& v, const T& t )
    {
       TNL_ASSERT_EQ( v.getSize(), t.getSize(), "The sizes of the vectors must be equal." );
       for( decltype( v.getSize() ) i = 0; i < v.getSize(); i ++ )
          v[ i ] = t[ i ];
    };
+
+   static void assign( Vector& v, const T& t )
+   {
+      TNL_ASSERT_EQ( v.getSize(), t.getSize(), "The sizes of the vectors must be equal." );
+      using RealType = typename Vector::RealType;
+      using DeviceType = typename Vector::DeviceType;
+      using IndexType = typename Vector::IndexType;
+     
+      RealType* data = v.getData();
+      auto ass = [=] __cuda_callable__ ( IndexType i )
+      {
+         data[ i ] = t[ i ];
+      };
+      ParallelFor< DeviceType >::exec( 0, v.getSize(), ass );
+   };
+
 };
 
 /**
@@ -74,12 +91,29 @@ struct VectorAssignment< Vector, T, false >
    {
    };
 
-   static void assign( Vector& v, const T& t )
+   __cuda_callable__
+   static void assignStatic( Vector& v, const T& t )
    {
       TNL_ASSERT_GT( v.getSize(), 0, "Cannot assign value to empty vector." );
       for( decltype( v.getSize() ) i = 0; i < v.getSize(); i ++ )
          v[ i ] = t;
    };
+   
+   static void assign( Vector& v, const T& t )
+   {
+      TNL_ASSERT_EQ( v.getSize(), t.getSize(), "The sizes of the vectors must be equal." );
+      using RealType = typename Vector::RealType;
+      using DeviceType = typename Vector::DeviceType;
+      using IndexType = typename Vector::IndexType;
+
+      RealType* data = v.getData();
+      auto ass = [=] __cuda_callable__ ( IndexType i )
+      {
+         data[ i ] = t;
+      };
+      ParallelFor< DeviceType >::exec( 0, v.getSize(), ass );
+   }
+
 };
 
 } // namespace Algorithms

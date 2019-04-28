@@ -13,6 +13,7 @@
 #pragma once
 
 #include <TNL/Containers/ArrayView.h>
+#include <TNL/Containers/Expressions/ExpressionTemplates.h>
 
 namespace TNL {
 namespace Containers {
@@ -43,8 +44,8 @@ public:
    using ArrayView< Real, Device, Index >::ArrayView;
 #endif
 
-   // inherit all ArrayView's assignment operators
-   using BaseType::operator=;
+   /** Subscript operator is inherited from the class \ref Array. */
+   using ArrayView< Real, Device, Index >::operator[];
 
    // In C++14, default constructors cannot be inherited, although Clang
    // and GCC since version 7.0 inherit them.
@@ -57,6 +58,16 @@ public:
    __cuda_callable__
    VectorView( const ArrayView< Real_, Device, Index >& view )
    : BaseType::ArrayView( view ) {}
+
+   template< typename T1,
+             typename T2,
+             template< typename, typename > class Operation >
+   VectorView( const Expressions::BinaryExpressionTemplate< T1, T2, Operation >& expression );
+
+   template< typename T,
+             template< typename > class Operation >
+   VectorView( const Expressions::UnaryExpressionTemplate< T, Operation >& expression );
+
 
    /**
     * \brief Returns a modifiable view of the array view.
@@ -86,6 +97,9 @@ public:
    void addElement( IndexType i,
                     RealType value,
                     Scalar thisElementMultiplicator );
+
+   template< typename VectorExpression >
+   VectorView& operator = ( const VectorExpression& expression );
 
    template< typename Vector >
    VectorView& operator-=( const Vector& vector );

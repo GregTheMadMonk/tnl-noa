@@ -12,25 +12,49 @@
 
 #include <TNL/Containers/VectorView.h>
 #include <TNL/Containers/Algorithms/VectorOperations.h>
+#include <TNL/Containers/VectorViewExpressions.h>
+#include <TNL/Containers/Algorithms/VectorAssignment.h>
 
 namespace TNL {
 namespace Containers {
 
-template< typename Value,
+template< typename Real,
           typename Device,
           typename Index >
-typename VectorView< Value, Device, Index >::ViewType
-VectorView< Value, Device, Index >::
+   template< typename T1,
+             typename T2,
+             template< typename, typename > class Operation >
+VectorView< Real, Device, Index >::VectorView( const Expressions::BinaryExpressionTemplate< T1, T2, Operation >& expression )
+{
+   Algorithms::VectorAssignment< VectorView< Real, Device, Index >, Expressions::BinaryExpressionTemplate< T1, T2, Operation > >::assign( *this, expression );
+};
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename T,
+             template< typename > class Operation >
+__cuda_callable__
+VectorView< Real, Device, Index >::VectorView( const Expressions::UnaryExpressionTemplate< T, Operation >& expression )
+{
+   Algorithms::VectorAssignment< VectorView< Real, Device, Index >, Expressions::UnaryExpressionTemplate< T, Operation > >::assign( *this, expression );
+};
+
+template< typename Real,
+          typename Device,
+          typename Index >
+typename VectorView< Real, Device, Index >::ViewType
+VectorView< Real, Device, Index >::
 getView()
 {
    return *this;
 }
 
-template< typename Value,
+template< typename Real,
           typename Device,
           typename Index >
-typename VectorView< Value, Device, Index >::ConstViewType
-VectorView< Value, Device, Index >::
+typename VectorView< Real, Device, Index >::ConstViewType
+VectorView< Real, Device, Index >::
 getConstView() const
 {
    return *this;
@@ -124,6 +148,16 @@ VectorView< Real, Device, Index >::
 addElement( IndexType i, RealType value, Scalar thisElementMultiplicator )
 {
    Algorithms::VectorOperations< Device >::addElement( *this, i, value, thisElementMultiplicator );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename VectorExpression >
+VectorView< Real, Device, Index >&
+VectorView< Real, Device, Index >::operator = ( const VectorExpression& expression )
+{
+   Algorithms::VectorAssignment< VectorView< Real, Device, Index >, VectorExpression >::assign( *this, expression );
 }
 
 template< typename Real,

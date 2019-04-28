@@ -18,6 +18,9 @@ namespace TNL {
 template< int Size, typename Real >
 class StaticVector;
 
+template< typename Real, typename Device, typename Index >
+class VectorView;
+
       namespace Expressions {
 
 enum ExpressionVariableType { ArithmeticVariable, VectorVariable, OtherVariable };
@@ -40,7 +43,6 @@ public:
     static constexpr bool value = ( sizeof( test< typename std::remove_reference< T >::type >(0) ) == sizeof( YesType ) );
 };
 
-
 template< typename T >
 struct IsVectorType
 {
@@ -50,6 +52,14 @@ struct IsVectorType
 template< int Size,
           typename Real >
 struct IsVectorType< StaticVector< Size, Real > >
+{
+   static constexpr bool value = true;
+};
+
+template< typename Real,
+          typename Device,
+          typename Index >
+struct IsVectorType< VectorView< Real, Device, Index > >
 {
    static constexpr bool value = true;
 };
@@ -72,6 +82,22 @@ template< typename T >
 struct ExpressionVariableTypeGetter< T, false, true >
 {
    static constexpr ExpressionVariableType value = VectorVariable;
+};
+
+////
+// Non-static expression templates might be passed on GPU, for example. In this
+// case, we cannot store ET operands using references but we nee to make copies.
+template< typename T,
+          typename Device >
+struct OperandType
+{
+   using type = typename std::add_const< typename std::remove_reference< T >::type >::type;
+};
+
+template< typename T >
+struct OperandType< T, Devices::Host >
+{
+   using type = typename std::add_const< typename std::add_lvalue_reference< T >::type >::type;
 };
 
       } //namespace Expressions

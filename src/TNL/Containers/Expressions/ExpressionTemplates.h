@@ -1,5 +1,5 @@
 /***************************************************************************
-                          StaticExpressionTemplates.h  -  description
+                          ExpressionTemplates.h  -  description
                              -------------------
     begin                : Apr 18, 2019
     copyright            : (C) 2019 by Tomas Oberhuber
@@ -19,10 +19,17 @@ namespace TNL {
    namespace Containers {
       namespace Expressions {
 
+template< typename T >
+struct IsStaticType
+{
+   static constexpr bool value = false;
+};
+
 template< typename T1,
           template< typename > class Operation,
           typename Parameter = void,
-          ExpressionVariableType T1Type = ExpressionVariableTypeGetter< T1 >::value >
+          ExpressionVariableType T1Type = ExpressionVariableTypeGetter< T1 >::value,
+          bool StaticET = IsStaticType< T1 >::value >
 struct UnaryExpressionTemplate
 {
 };
@@ -31,20 +38,47 @@ template< typename T1,
           typename T2,
           template< typename, typename > class Operation,
           ExpressionVariableType T1Type = ExpressionVariableTypeGetter< T1 >::value,
-          ExpressionVariableType T2Type = ExpressionVariableTypeGetter< T2 >::value >
+          ExpressionVariableType T2Type = ExpressionVariableTypeGetter< T2 >::value,
+          bool StaticET = IsStaticType< T1 >::value || IsStaticType< T2 >::value >
 struct BinaryExpressionTemplate
 {
 };
 
-////
-// Binary expression template
+template< int Size,
+          typename Real >
+struct IsStaticType< StaticVector< Size, Real > >
+{
+   static constexpr bool value = true;
+};
+
+template< typename T1,
+          template< typename > class Operation,
+          typename Parameter >
+struct IsStaticType< UnaryExpressionTemplate< T1, Operation, Parameter > >
+{
+   static constexpr bool value = UnaryExpressionTemplate< T1, Operation, Parameter >::isStatic();
+};
+
 template< typename T1,
           typename T2,
           template< typename, typename > class Operation >
-struct BinaryExpressionTemplate< T1, T2, Operation, VectorVariable, VectorVariable >
+struct IsStaticType< BinaryExpressionTemplate< T1, T2, Operation > >
+{
+   static constexpr bool value = BinaryExpressionTemplate< T1, T2, Operation >::isStatic();
+};
+
+
+////
+// Static binary expression template
+template< typename T1,
+          typename T2,
+          template< typename, typename > class Operation >
+struct BinaryExpressionTemplate< T1, T2, Operation, VectorVariable, VectorVariable, true >
 {
    using RealType = typename T1::RealType;
    using IsExpressionTemplate = bool;
+   static_assert( IsStaticType< T1 >::value == IsStaticType< T2 >::value, "Attempt to mix static and non-static operands in binary expression templates" );
+   static constexpr bool isStatic() { return true; }
 
    __cuda_callable__
    BinaryExpressionTemplate( const T1& a, const T2& b ): op1( a ), op2( b ){}
@@ -75,10 +109,11 @@ struct BinaryExpressionTemplate< T1, T2, Operation, VectorVariable, VectorVariab
 template< typename T1,
           typename T2,
           template< typename, typename > class Operation >
-struct BinaryExpressionTemplate< T1, T2, Operation, VectorVariable, ArithmeticVariable  >
+struct BinaryExpressionTemplate< T1, T2, Operation, VectorVariable, ArithmeticVariable, true  >
 {
    using RealType = typename T1::RealType;
    using IsExpressionTemplate = bool;
+   static constexpr bool isStatic() { return true; }
 
    __cuda_callable__
    BinaryExpressionTemplate( const T1& a, const T2& b ): op1( a ), op2( b ){}
@@ -110,10 +145,11 @@ struct BinaryExpressionTemplate< T1, T2, Operation, VectorVariable, ArithmeticVa
 template< typename T1,
           typename T2,
           template< typename, typename > class Operation >
-struct BinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorVariable  >
+struct BinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorVariable, true  >
 {
    using RealType = typename T2::RealType;
    using IsExpressionTemplate = bool;
+   static constexpr bool isStatic() { return true; }
 
    __cuda_callable__
    BinaryExpressionTemplate( const T1& a, const T2& b ): op1( a ), op2( b ){}
@@ -142,17 +178,132 @@ struct BinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorVa
 };
 
 ////
-// Unary expression template
+// Non-static binary expression template
+template< typename T1,
+          typename T2,
+          template< typename, typename > class Operation >
+struct BinaryExpressionTemplate< T1, T2, Operation, VectorVariable, VectorVariable, false >
+{
+   using RealType = typename T1::RealType;
+   using DeviceType = typename T1::DeviceType;
+   using IndexType = typename T1::IndexType;
+   using IsExpressionTemplate = bool;
+   
+   static_assert( std::is_same< typename T1::DeviceType, typename T2::DeviceType >::value, "Attempt to mix operands allocated on different device types." );
+   static_assert( IsStaticType< T1 >::value == IsStaticType< T2 >::value, "Attempt to mix static and non-static operands in binary expression templates." );
+   static constexpr bool isStatic() { return false; }
+
+   BinaryExpressionTemplate( const T1& a, const T2& b ): op1( a ), op2( b ){}
+
+   static BinaryExpressionTemplate evaluate( const T1& a, const T2& b )
+   {
+      return BinaryExpressionTemplate( a, b );
+   }
+
+   __cuda_callable__
+   RealType operator[]( const int i ) const
+   {
+       return Operation< typename T1::RealType, typename T2::RealType >::evaluate( op1[ i ], op2[ i ] );
+   }
+
+   __cuda_callable__
+   int getSize() const
+   {
+       return op1.getSize();
+   }
+
+   protected:
+      typename OperandType< T1, DeviceType >::type op1;
+      typename OperandType< T2, DeviceType >::type op2;
+};
+
+template< typename T1,
+          typename T2,
+          template< typename, typename > class Operation >
+struct BinaryExpressionTemplate< T1, T2, Operation, VectorVariable, ArithmeticVariable, false >
+{
+   using RealType = typename T1::RealType;
+   using DeviceType = typename T1::DeviceType;
+   using IndexType = typename T1::IndexType;
+
+   using IsExpressionTemplate = bool;
+   static constexpr bool isStatic() { return false; }
+
+   BinaryExpressionTemplate( const T1& a, const T2& b ): op1( a ), op2( b ){}
+
+   BinaryExpressionTemplate evaluate( const T1& a, const T2& b )
+   {
+      return BinaryExpressionTemplate( a, b );
+   }
+
+   __cuda_callable__
+   RealType operator[]( const int i ) const
+   {
+       return Operation< typename T1::RealType, T2 >::evaluate( op1[ i ], op2 );
+   }
+
+   __cuda_callable__
+   int getSize() const
+   {
+       return op1.getSize();
+   }
+
+   protected:
+      typename OperandType< T1, DeviceType >::type op1;
+      typename OperandType< T2, DeviceType >::type op2;
+};
+
+template< typename T1,
+          typename T2,
+          template< typename, typename > class Operation >
+struct BinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorVariable, false >
+{
+   using RealType = typename T2::RealType;
+   using DeviceType = typename T2::DeviceType;
+   using IndexType = typename T2::IndexType;
+
+   using IsExpressionTemplate = bool;
+   static constexpr bool isStatic() { return false; }
+
+   BinaryExpressionTemplate( const T1& a, const T2& b ): op1( a ), op2( b ){}
+
+   BinaryExpressionTemplate evaluate( const T1& a, const T2& b )
+   {
+      return BinaryExpressionTemplate( a, b );
+   }
+
+   __cuda_callable__
+   RealType operator[]( const int i ) const
+   {
+       return Operation< T1, typename T2::RealType >::evaluate( op1, op2[ i ] );
+   }
+
+   __cuda_callable__
+   int getSize() const
+   {
+       return op2.getSize();
+   }
+
+   protected:
+      const T1 op1;
+      const T2 op2;
+      //typename OperandType< T1, DeviceType >::type op1;
+      //typename OperandType< T2, DeviceType >::type op2;
+};
+
+////
+// Static unary expression template
 //
 // Parameter type serves mainly for pow( base, exp ). Here exp is parameter we need
 // to pass to pow.
 template< typename T1,
           template< typename > class Operation,
           typename Parameter >
-struct UnaryExpressionTemplate< T1, Operation, Parameter, VectorVariable >
+struct UnaryExpressionTemplate< T1, Operation, Parameter, VectorVariable, true >
 {
    using RealType = typename T1::RealType;
    using IsExpressionTemplate = bool;
+   static constexpr bool isStatic() { return true; }
 
    __cuda_callable__
    UnaryExpressionTemplate( const T1& a, const Parameter& p )
@@ -186,13 +337,14 @@ struct UnaryExpressionTemplate< T1, Operation, Parameter, VectorVariable >
 };
 
 ////
-// Unary expression template with no parameter
+// Static unary expression template with no parameter
 template< typename T1,
           template< typename > class Operation >
-struct UnaryExpressionTemplate< T1, Operation, void, VectorVariable >
+struct UnaryExpressionTemplate< T1, Operation, void, VectorVariable, true >
 {
    using RealType = typename T1::RealType;
    using IsExpressionTemplate = bool;
+   static constexpr bool isStatic() { return true; }
 
    __cuda_callable__
    UnaryExpressionTemplate( const T1& a ): operand( a ){}
@@ -219,6 +371,87 @@ struct UnaryExpressionTemplate< T1, Operation, void, VectorVariable >
       const T1& operand;
 };
 
+////
+// Non-static unary expression template
+//
+// Parameter type serves mainly for pow( base, exp ). Here exp is parameter we need
+// to pass to pow.
+template< typename T1,
+          template< typename > class Operation,
+          typename Parameter >
+struct UnaryExpressionTemplate< T1, Operation, Parameter, VectorVariable, false >
+{
+   using RealType = typename T1::RealType;
+   using DeviceType = typename T1::DeviceType;
+   using IndexType = typename T1::IndexType;
+   using IsExpressionTemplate = bool;
+   static constexpr bool isStatic() { return false; }
+
+   UnaryExpressionTemplate( const T1& a, const Parameter& p )
+   : operand( a ), parameter( p ) {}
+
+   static UnaryExpressionTemplate evaluate( const T1& a )
+   {
+      return UnaryExpressionTemplate( a );
+   }
+
+   __cuda_callable__
+   RealType operator[]( const int i ) const
+   {
+       return Operation< typename T1::RealType >::evaluate( operand[ i ], parameter );
+   }
+
+   __cuda_callable__
+   int getSize() const
+   {
+       return operand.getSize();
+   }
+
+   void set( const Parameter& p ) { parameter = p; }
+
+   const Parameter& get() { return parameter; }
+
+   protected:
+      const T1 operand;
+      //typename OperandType< T1, DeviceType >::type operand;
+      Parameter parameter;
+};
+
+////
+// Non-static unary expression template with no parameter
+template< typename T1,
+          template< typename > class Operation >
+struct UnaryExpressionTemplate< T1, Operation, void, VectorVariable, false >
+{
+   using RealType = typename T1::RealType;
+   using DeviceType = typename T1::DeviceType;
+   using IndexType = typename T1::IndexType;
+   using IsExpressionTemplate = bool;
+   static constexpr bool isStatic() { return false; }
+
+   UnaryExpressionTemplate( const T1& a ): operand( a ){}
+
+   static UnaryExpressionTemplate evaluate( const T1& a )
+   {
+      return UnaryExpressionTemplate( a );
+   }
+
+   __cuda_callable__
+   RealType operator[]( const int i ) const
+   {
+       return Operation< typename T1::RealType >::evaluate( operand[ i ] );
+   }
+
+   __cuda_callable__
+   int getSize() const
+   {
+       return operand.getSize();
+   }
+
+   protected:
+      const T1 operand; // TODO: fix
+      //typename std::add_const< typename OperandType< T1, DeviceType >::type >::type operand;
+};
 
 ////
 // Binary expressions addition

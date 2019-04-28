@@ -41,8 +41,8 @@ public:
    using ViewType = VectorView< Real, Device, Index >;
    using ConstViewType = VectorView< std::add_const_t< Real >, Device, Index >;
 
-   /** Assignment operators are inherited from the class \ref Array. */
-   using Array< Real, Device, Index >::operator=;
+   /** Subscript operator is inherited from the class \ref Array. */
+   using Array< Real, Device, Index >::operator[];
 
    /**
     * \brief Basic constructor.
@@ -168,8 +168,13 @@ public:
    void addElement( const IndexType i,
                     const RealType& value,
                     const Scalar thisElementMultiplicator );
+   
+   __cuda_callable__ Real& operator[]( const Index& i );
 
-   Vector& operator=( const Vector& v );
+   __cuda_callable__ const Real& operator[]( const Index& i ) const;
+
+   template< typename VectorExpression >
+   Vector& operator = ( const VectorExpression& expression );
 
    /**
     * \brief This function subtracts \e vector from this vector and returns the resulting vector.

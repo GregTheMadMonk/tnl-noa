@@ -12,7 +12,7 @@
 
 #include <TNL/Containers/StaticArray.h>
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/Containers/Expressions/StaticExpressionTemplates.h>
+#include <TNL/Containers/Expressions/ExpressionTemplates.h>
 
 namespace TNL {
 namespace Containers {

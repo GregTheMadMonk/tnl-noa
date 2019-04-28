@@ -189,12 +189,35 @@ addElement( const IndexType i,
 template< typename Real,
           typename Device,
           typename Index >
-Vector< Real, Device, Index >&
-Vector< Real, Device, Index >::operator=( const Vector< Real, Device, Index >& v )
+__cuda_callable__
+inline Real&
+Vector< Real, Device, Index >::
+operator[]( const Index& i )
 {
-   Array< Real, Device, Index >::operator = ( v );
-   return *this;
+   return this->operator[]( i );
 }
+
+template< typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__
+inline const Real&
+Vector< Real, Device, Index >::
+operator[]( const Index& i ) const
+{
+   return this->operator[]( i );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename VectorExpression >
+Vector< Real, Device, Index >&
+Vector< Real, Device, Index >::operator = ( const VectorExpression& expression )
+{
+   Algorithms::VectorAssignment< Vector< Real, Device, Index >, VectorExpression >::assign( *this, expression );
+}
+
 
 template< typename Real,
           typename Device,

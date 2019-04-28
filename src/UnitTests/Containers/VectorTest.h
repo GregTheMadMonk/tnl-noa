@@ -148,8 +148,9 @@ TYPED_TEST_SUITE( VectorTest, VectorTypes );
 TYPED_TEST( VectorTest, constructors )
 {
    using VectorType = typename TestFixture::VectorType;
+   const int size = VECTOR_TEST_SIZE;
 
-   VectorType u;
+   VectorType u( size );
    EXPECT_EQ( u.getSize(), 0 );
 
    VectorType v( 10 );
@@ -335,9 +336,7 @@ TYPED_TEST( VectorTest, differenceMax )
    using ViewType = typename TestFixture::ViewType;
    const int size = VECTOR_TEST_SIZE;
 
-   VectorType u, v;
-   u.setSize( size );
-   v.setSize( size );
+   VectorType u( size ), v( size );
    ViewType u_view( u ), v_view( v );
    setLinearSequence( u );
    setConstantSequence( v, size / 2 );
@@ -354,9 +353,7 @@ TYPED_TEST( VectorTest, differenceMin )
    using ViewType = typename TestFixture::ViewType;
    const int size = VECTOR_TEST_SIZE;
 
-   VectorType u, v;
-   u.setSize( size );
-   v.setSize( size );
+   VectorType u( size ), v( size );
    ViewType u_view( u ), v_view( v );
    setLinearSequence( u );
    setConstantSequence( v, size / 2 );
@@ -377,9 +374,7 @@ TYPED_TEST( VectorTest, differenceAbsMax )
    // this test expects an odd size
    const int size = VECTOR_TEST_SIZE % 2 ? VECTOR_TEST_SIZE : VECTOR_TEST_SIZE - 1;
 
-   VectorType u, v;
-   u.setSize( size );
-   v.setSize( size );
+   VectorType u( size ), v( size );
    ViewType u_view( u ), v_view( v );
    setNegativeLinearSequence( u );
    setConstantSequence( v, - size / 2 );
@@ -396,9 +391,7 @@ TYPED_TEST( VectorTest, differenceAbsMin )
    using ViewType = typename TestFixture::ViewType;
    const int size = VECTOR_TEST_SIZE;
 
-   VectorType u, v;
-   u.setSize( size );
-   v.setSize( size );
+   VectorType u( size ), v( size );
    ViewType u_view( u ), v_view( v );
    setNegativeLinearSequence( u );
    setConstantSequence( v, - size / 2 );
@@ -420,9 +413,7 @@ TYPED_TEST( VectorTest, differenceLpNorm )
    const int size = VECTOR_TEST_SIZE;
    const RealType epsilon = 64 * std::numeric_limits< RealType >::epsilon();
 
-   VectorType u, v;
-   u.setSize( size );
-   v.setSize( size );
+   VectorType u( size ), v( size );
    ViewType u_view( u ), v_view( v );
    u.setValue( 3.0 );
    v.setValue( 1.0 );
@@ -449,9 +440,7 @@ TYPED_TEST( VectorTest, differenceSum )
    // this test expect an even size
    const int size = VECTOR_TEST_SIZE % 2 ? VECTOR_TEST_SIZE - 1 : VECTOR_TEST_SIZE;
 
-   VectorType u, v;
-   u.setSize( size );
-   v.setSize( size );
+   VectorType u( size ), v( size );
    ViewType u_view( u ), v_view( v );
    v.setValue( 1.0 );
 
@@ -483,8 +472,7 @@ TYPED_TEST( VectorTest, scalarMultiplication )
    using ViewType = typename TestFixture::ViewType;
    const int size = VECTOR_TEST_SIZE;
 
-   VectorType u;
-   u.setSize( size );
+   VectorType u( size );
    ViewType u_view( u );
 
    typename VectorType::HostType expected;
@@ -521,9 +509,7 @@ TYPED_TEST( VectorTest, scalarProduct )
    // this test expects an odd size
    const int size = VECTOR_TEST_SIZE % 2 ? VECTOR_TEST_SIZE : VECTOR_TEST_SIZE - 1;
 
-   VectorType u, v;
-   u.setSize( size );
-   v.setSize( size );
+   VectorType u( size ), v( size );
    ViewType u_view( u ), v_view( v );
    setOscilatingSequence( u, 1.0 );
    setConstantSequence( v, 1 );
@@ -708,6 +694,336 @@ TYPED_TEST( VectorTest, exclusivePrefixSum )
       EXPECT_EQ( v.getElement( i ) - v.getElement( i - 1 ), i - 1 );
 }
 
+TYPED_TEST( VectorTest, abs )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   const int size = VECTOR_TEST_SIZE;
+
+   VectorType _u( size ), _v( size );
+   ViewType u( _u ), v( _v );
+   for( int i = 0; i < size; i++ )
+      u[ i ] = i;
+
+   v = -u;
+   EXPECT_EQ( abs( v ), u );
+}
+
+TYPED_TEST( VectorTest, sin )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   const int size = VECTOR_TEST_SIZE;
+
+   VectorType _u( size ), _v( size );
+   ViewType u( _u ), v( _v );
+   for( int i = 0; i < size; i++ )
+   {
+      u[ i ] = i - size / 2;
+      v[ i ] = sin( u[ i ] );
+   }
+
+   EXPECT_EQ( sin( u ), v );
+}
+
+TYPED_TEST( VectorTest, cos )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   const int size = VECTOR_TEST_SIZE;
+
+   VectorType _u( size ), _v( size );
+   ViewType u( _u ), v( _v );
+   for( int i = 0; i < size; i++ )
+   {
+      u[ i ] = i - size / 2;
+      v[ i ] = cos( u[ i ] );
+   }
+
+   EXPECT_EQ( cos( u ), v );
+}
+
+TYPED_TEST( VectorTest, tan )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   const int size = VECTOR_TEST_SIZE;
+
+   VectorType _u( size ), _v( size );
+   ViewType u( _u ), v( _v );
+   for( int i = 0; i < size; i++ )
+   {
+      u[ i ] = i - size / 2;
+      v[ i ] = tan( u[ i ] );
+   }
+
+   EXPECT_EQ( tan( u ), v );
+}
+
+TYPED_TEST( VectorTest, sqrt )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   const int size = VECTOR_TEST_SIZE;
+
+   VectorType _u( size ), _v( size );
+   ViewType u( _u ), v( _v );
+   for( int i = 0; i < size; i++ )
+   {
+      u[ i ] = i;
+      v[ i ] = sqrt( u[ i ] );
+   }
+
+   EXPECT_EQ( sqrt( u ), v );
+}
+
+TYPED_TEST( VectorTest, cbrt )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   const int size = VECTOR_TEST_SIZE;
+
+   VectorType _u( size ), _v( size );
+   ViewType u( _u ), v( _v );
+   for( int i = 0; i < size; i++ )
+   {
+      u[ i ] = i;
+      v[ i ] = cbrt( u[ i ] );
+   }
+
+   EXPECT_EQ( cbrt( u ), v );
+}
+
+TYPED_TEST( VectorTest, pow )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   using RealType = typename VectorType::RealType;
+   const int size = VECTOR_TEST_SIZE;
+
+   VectorType _u( size ), _v( size ), _w( size );
+   ViewType u( _u ), v( _v ), w( _w );
+   for( int i = 0; i < size; i++ )
+   {
+      u[ i ] = i - size / 2;
+      v[ i ] = pow( u[ i ], 2.0 );
+      w[ i ] = pow( u[ i ], 3.0 );
+   }
+
+   EXPECT_EQ( pow( u, 2.0 ), v );
+   EXPECT_EQ( pow( u, 3.0 ), w );
+}
+
+TYPED_TEST( VectorTest, floor )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   const int size = VECTOR_TEST_SIZE;
+
+   VectorType _u( size ), _v( size );
+   ViewType u( _u ), v( _v );
+   for( int i = 0; i < size; i++ )
+   {
+      u[ i ] = i - size / 2;
+      v[ i ] = floor( u[ i ] );
+   }
+
+   EXPECT_EQ( floor( u ), v );
+}
+
+TYPED_TEST( VectorTest, ceil )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   const int size = VECTOR_TEST_SIZE;
+
+   VectorType _u( size ), _v( size );
+   ViewType u( _u ), v( _v );
+   for( int i = 0; i < size; i++ )
+   {
+      u[ i ] = i - size / 2;
+      v[ i ] = ceil( u[ i ] );
+   }
+
+   EXPECT_EQ( ceil( u ), v );
+}
+
+TYPED_TEST( VectorTest, acos )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   const int size = VECTOR_TEST_SIZE;
+
+   VectorType _u( size ), _v( size );
+   ViewType u( _u ), v( _v );
+   for( int i = 0; i < size; i++ )
+   {
+      u[ i ] = ( double )( i - size / 2 ) / ( double ) size;
+      v[ i ] = acos( u[ i ] );
+   }
+
+   EXPECT_EQ( acos( u ), v );
+}
+
+TYPED_TEST( VectorTest, asin )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   const int size = VECTOR_TEST_SIZE;
+
+   VectorType _u( size ), _v( size );
+   ViewType u( _u ), v( _v );
+   for( int i = 0; i < size; i++ )
+   {
+      u[ i ] = ( double ) ( i - size / 2 ) / ( double ) size;
+      v[ i ] = asin( u[ i ] );
+   }
+
+   EXPECT_EQ( asin( u ), v );
+}
+
+TYPED_TEST( VectorTest, atan )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   const int size = VECTOR_TEST_SIZE;
+
+   VectorType _u( size ), _v( size );
+   ViewType u( _u ), v( _v );
+   for( int i = 0; i < size; i++ )
+   {
+      u[ i ] = i - size / 2;
+      v[ i ] = atan( u[ i ] );
+   }
+
+   EXPECT_EQ( atan( u ), v );
+}
+
+TYPED_TEST( VectorTest, cosh )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   const int size = VECTOR_TEST_SIZE;
+
+   VectorType _u( size ), _v( size );
+   ViewType u( _u ), v( _v );
+   for( int i = 0; i < size; i++ )
+   {
+      u[ i ] = i - size / 2;
+      v[ i ] = cosh( u[ i ] );
+   }
+
+   // EXPECT_EQ( cosh( u ), v ) does not work here for float, maybe because
+   // of some fast-math optimization
+   for( int i = 0; i < size; i++ )
+      EXPECT_NEAR( cosh( u )[ i ], v[ i ], 1.0e-6 );
+}
+
+TYPED_TEST( VectorTest, tanh )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   const int size = VECTOR_TEST_SIZE;
+
+   VectorType _u( size ), _v( size );
+   ViewType u( _u ), v( _v );
+   for( int i = 0; i < size; i++ )
+   {
+      u[ i ] = i - size / 2;
+      v[ i ] = tanh( u[ i ] );
+   }
+
+   EXPECT_EQ( tanh( u ), v );
+}
+
+TYPED_TEST( VectorTest, log )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   const int size = VECTOR_TEST_SIZE;
+
+   VectorType _u( size ), _v( size );
+   ViewType u( _u ), v( _v );
+   for( int i = 0; i < size; i++ )
+   {
+      u[ i ] = i + 1;
+      v[ i ] = log( u[ i ] );
+   }
+
+   EXPECT_EQ( log( u ), v );
+}
+
+TYPED_TEST( VectorTest, log10 )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   const int size = VECTOR_TEST_SIZE;
+
+   VectorType _u( size ), _v( size );
+   ViewType u( _u ), v( _v );
+   for( int i = 0; i < size; i++ )
+   {
+      u[ i ] = i + 1;
+      v[ i ] = log10( u[ i ] );
+   }
+
+   // EXPECT_EQ( log10( u ), v ) does not work here for float, maybe because
+   // of some fast-math optimization
+   for( int i = 0; i < size; i++ )
+      EXPECT_NEAR( log10( u )[ i ], v[ i ], 1.0e-6 );
+}
+
+TYPED_TEST( VectorTest, log2 )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   const int size = VECTOR_TEST_SIZE;
+
+   VectorType _u( size ), _v( size );
+   ViewType u( _u ), v( _v );
+   for( int i = 0; i < size; i++ )
+   {
+      u[ i ] = i + 1;
+      v[ i ] = log2( u[ i ] );
+   }
+
+   EXPECT_EQ( log2( u ), v );
+}
+
+TYPED_TEST( VectorTest, exp )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   const int size = VECTOR_TEST_SIZE;
+
+   VectorType _u( size ), _v( size );
+   ViewType u( _u ), v( _v );
+   for( int i = 0; i < size; i++ )
+   {
+      u[ i ] = i - size / 2;
+      v[ i ] = exp( u[ i ] );
+   }
+
+   EXPECT_EQ( exp( u ), v );
+}
+
+TYPED_TEST( VectorTest, sign )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   const int size = VECTOR_TEST_SIZE;
+
+   VectorType _u( size ), _v( size );
+   ViewType u( _u ), v( _v );
+   for( int i = 0; i < size; i++ )
+   {
+      u[ i ] = i - size / 2;
+      v[ i ] = sign( u[ i ] );
+   }
+
+   EXPECT_EQ( sign( u ), v );
+}
+
 // TODO: test prefix sum with custom begin and end parameters
 
 TEST( VectorSpecialCasesTest, sumOfBoolVector )
@@ -763,6 +1079,15 @@ TEST( VectorSpecialCasesTest, assignmentThroughView )
 {
    using VectorType = Containers::Vector< int, Devices::Host >;
    using ViewType = VectorView< int, Devices::Host >;
+
+   using T = decltype(std::declval< VectorType >()[0]);
+   //<F3><F3>:T t( 0 );
+
+   static_assert( Algorithms::Details::HasGetArrayData< Array< int, Devices::Host> >::value == true, "Subscript operator detection by SFINAE does not work for Vector." );
+   static_assert( Algorithms::Details::HasSubscriptOperator< StaticVector< 3, double> >::value, "Subscript operator detection by SFINAE does not work for Vector." );
+   static_assert( Algorithms::Details::HasSubscriptOperator< Array< int, Devices::Host> >::value == true, "Subscript operator detection by SFINAE does not work for Vector." );
+   static_assert( Algorithms::Details::HasSubscriptOperator< VectorType >::value, "Subscript operator detection by SFINAE does not work for Vector." );
+   static_assert( Algorithms::Details::HasSubscriptOperator< ViewType >::value, "Subscript operator detection by SFINAE does not work for VectorView." );
 
    VectorType u( 100 ), v( 100 );
    ViewType u_view( u ), v_view( v );
@@ -840,6 +1165,10 @@ TEST( VectorSpecialCasesTest, defaultConstructors )
    v_view.bind( a );
    EXPECT_EQ( v_view.getData(), a_view.getData() );
 }
+
+
+
+
 
 #endif // HAVE_GTEST
 

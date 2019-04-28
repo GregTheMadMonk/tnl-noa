@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/Containers/Expressions/StaticExpressionTemplates.h>
+#include <TNL/Containers/Expressions/ExpressionTemplates.h>
 #include <TNL/Containers/Expressions/ExpressionTemplatesOperations.h>
 #include <TNL/Containers/Expressions/StaticComparison.h>
 
@@ -318,7 +318,7 @@ bool operator>=( const StaticVector< Size, Real1 >& a, const StaticVector< Size,
 template< int Size, typename Real >
 __cuda_callable__
 const Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Minus >
-operator -( const StaticVector< Size, Real >& a )
+operator-( const StaticVector< Size, Real >& a )
 {
    return Expressions::UnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Minus >( a );
 }
