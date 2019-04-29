@@ -158,6 +158,7 @@ VectorView< Real, Device, Index >&
 VectorView< Real, Device, Index >::operator = ( const VectorExpression& expression )
 {
    Algorithms::VectorAssignment< VectorView< Real, Device, Index >, VectorExpression >::assign( *this, expression );
+   return *this;
 }
 
 template< typename Real,

@@ -21,6 +21,7 @@ namespace Algorithms {
 namespace Details {
 /**
  * SFINAE for checking if T has getSize method
+ * TODO: We should better test operator[] but we need to know the indexing type.
  */
 template< typename T >
 class HasSubscriptOperator
@@ -29,7 +30,7 @@ private:
     typedef char YesType[1];
     typedef char NoType[2];
 
-    template< typename C > static YesType& test( decltype(std::declval< C >()[0]) );
+    template< typename C > static YesType& test(  decltype(std::declval< C >().getSize() ) );
     template< typename C > static NoType& test(...);
 
 public:
@@ -68,13 +69,13 @@ struct VectorAssignment< Vector, T, true >
       using RealType = typename Vector::RealType;
       using DeviceType = typename Vector::DeviceType;
       using IndexType = typename Vector::IndexType;
-     
+
       RealType* data = v.getData();
       auto ass = [=] __cuda_callable__ ( IndexType i )
       {
          data[ i ] = t[ i ];
       };
-      ParallelFor< DeviceType >::exec( 0, v.getSize(), ass );
+      ParallelFor< DeviceType >::exec( ( IndexType  ) 0, v.getSize(), ass );
    };
 
 };
@@ -98,7 +99,7 @@ struct VectorAssignment< Vector, T, false >
       for( decltype( v.getSize() ) i = 0; i < v.getSize(); i ++ )
          v[ i ] = t;
    };
-   
+
    static void assign( Vector& v, const T& t )
    {
       TNL_ASSERT_EQ( v.getSize(), t.getSize(), "The sizes of the vectors must be equal." );

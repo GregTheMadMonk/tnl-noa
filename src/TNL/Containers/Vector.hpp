@@ -211,13 +211,23 @@ operator[]( const Index& i ) const
 template< typename Real,
           typename Device,
           typename Index >
+Vector< Real, Device, Index >&
+Vector< Real, Device, Index >::operator = ( const Vector& vector )
+{
+   Array< Real, Device, Index >::operator=( vector );
+   return *this;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
    template< typename VectorExpression >
 Vector< Real, Device, Index >&
 Vector< Real, Device, Index >::operator = ( const VectorExpression& expression )
 {
    Algorithms::VectorAssignment< Vector< Real, Device, Index >, VectorExpression >::assign( *this, expression );
+   return *this;
 }
-
 
 template< typename Real,
           typename Device,

@@ -150,8 +150,14 @@ TYPED_TEST( VectorTest, constructors )
    using VectorType = typename TestFixture::VectorType;
    const int size = VECTOR_TEST_SIZE;
 
+   // TODO: Does not work yet.
+   /*VectorType empty_u;
+   VectorType empty_v( empty_u );
+   EXPECT_EQ( empty_u.getSize(), 0 );
+   EXPECT_EQ( empty_v.getSize(), 0 );*/
+
    VectorType u( size );
-   EXPECT_EQ( u.getSize(), 0 );
+   EXPECT_EQ( u.getSize(), size );
 
    VectorType v( 10 );
    EXPECT_EQ( v.getSize(), 10 );
@@ -1080,12 +1086,6 @@ TEST( VectorSpecialCasesTest, assignmentThroughView )
    using VectorType = Containers::Vector< int, Devices::Host >;
    using ViewType = VectorView< int, Devices::Host >;
 
-   using T = decltype(std::declval< VectorType >()[0]);
-   //<F3><F3>:T t( 0 );
-
-   static_assert( Algorithms::Details::HasGetArrayData< Array< int, Devices::Host> >::value == true, "Subscript operator detection by SFINAE does not work for Vector." );
-   static_assert( Algorithms::Details::HasSubscriptOperator< StaticVector< 3, double> >::value, "Subscript operator detection by SFINAE does not work for Vector." );
-   static_assert( Algorithms::Details::HasSubscriptOperator< Array< int, Devices::Host> >::value == true, "Subscript operator detection by SFINAE does not work for Vector." );
    static_assert( Algorithms::Details::HasSubscriptOperator< VectorType >::value, "Subscript operator detection by SFINAE does not work for Vector." );
    static_assert( Algorithms::Details::HasSubscriptOperator< ViewType >::value, "Subscript operator detection by SFINAE does not work for VectorView." );
 

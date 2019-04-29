@@ -168,10 +168,12 @@ public:
    void addElement( const IndexType i,
                     const RealType& value,
                     const Scalar thisElementMultiplicator );
-   
+
    __cuda_callable__ Real& operator[]( const Index& i );
 
    __cuda_callable__ const Real& operator[]( const Index& i ) const;
+
+   Vector& operator = ( const Vector& v );
 
    template< typename VectorExpression >
    Vector& operator = ( const VectorExpression& expression );
