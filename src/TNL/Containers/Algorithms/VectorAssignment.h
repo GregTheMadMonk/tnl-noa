@@ -63,7 +63,7 @@ struct VectorAssignment< Vector, T, true >
          v[ i ] = t[ i ];
    };
 
-   static void assign( Vector& v, const T& t )
+   static void assign( Vector& v, const T t )
    {
       TNL_ASSERT_EQ( v.getSize(), t.getSize(), "The sizes of the vectors must be equal." );
       using RealType = typename Vector::RealType;

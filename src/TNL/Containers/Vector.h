@@ -174,6 +174,9 @@ public:
    __cuda_callable__ const Real& operator[]( const Index& i ) const;
 
    Vector& operator = ( const Vector& v );
+   
+   template< typename Real_, typename Device_, typename Index_ >
+   Vector& operator = ( const Vector< Real_, Device_, Index_ >& v );
 
    template< typename VectorExpression >
    Vector& operator = ( const VectorExpression& expression );
