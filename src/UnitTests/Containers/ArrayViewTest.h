@@ -10,7 +10,7 @@
 
 #pragma once
 
-#ifdef HAVE_GTEST 
+#ifdef HAVE_GTEST
 #include <type_traits>
 
 #include <TNL/Containers/Array.h>
@@ -174,10 +174,12 @@ TYPED_TEST( ArrayViewTest, constructors )
    EXPECT_EQ( b_view.getData(), b.getData() );
    ConstViewType const_a_view = a.getConstView();
    EXPECT_EQ( const_a_view.getData(), a.getData() );
+   EXPECT_EQ( const_a_view.getSize(), a.getSize() );
 
    // test initialization of const view by non-const view
    ConstViewType const_b_view( b_view );
-   EXPECT_EQ( const_b_view.getData(), b_view.getData() );
+   EXPECT_EQ( const_b_view.getData(), b.getData() );
+   EXPECT_EQ( const_b_view.getSize(), b.getSize() );
 }
 
 TYPED_TEST( ArrayViewTest, bind )
@@ -317,7 +319,7 @@ void ArrayViewEvaluateTest( ArrayType& u )
    {
       return 3 * i % 4;
    };
-   
+
    v.evaluate( f );
    for( int i = 0; i < 10; i++ )
    {
@@ -373,8 +375,8 @@ TYPED_TEST( ArrayViewTest, containsOnlyValue )
 
 TYPED_TEST( ArrayViewTest, comparisonOperator )
 {
-   using ArrayType = typename TestFixture::ArrayType;
-   using ViewType = typename TestFixture::ViewType;
+   using ArrayType = Vector< double >; //typename TestFixture::ArrayType;
+   using ViewType = VectorView< double >; //typename TestFixture::ViewType;
 
    ArrayType a( 10 ), b( 10 );
    typename ArrayType::HostType a_host( 10 );

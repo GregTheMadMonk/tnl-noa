@@ -909,13 +909,15 @@ TYPED_TEST( VectorTest, cosh )
 {
    using VectorType = typename TestFixture::VectorType;
    using ViewType = typename TestFixture::ViewType;
+   using RealType = typename VectorType::RealType;
    const int size = VECTOR_TEST_SIZE;
 
+   RealType h = 2.0 / ( RealType ) size;
    VectorType _u( size ), _v( size );
    ViewType u( _u ), v( _v );
    for( int i = 0; i < size; i++ )
    {
-      u[ i ] = i - size / 2;
+      u[ i ] = i * h - ( RealType ) 1.0;
       v[ i ] = cosh( u[ i ] );
    }
 
@@ -1173,4 +1175,15 @@ TEST( VectorSpecialCasesTest, defaultConstructors )
 #endif // HAVE_GTEST
 
 
-#include "../main.h"
+#include "../GtestMissingError.h"
+int main( int argc, char* argv[] )
+{
+   //Test();
+   //return 0;
+#ifdef HAVE_GTEST
+   ::testing::InitGoogleTest( &argc, argv );
+   return RUN_ALL_TESTS();
+#else
+   throw GtestMissingError();
+#endif
+}

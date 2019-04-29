@@ -73,62 +73,6 @@ getType()
                   TNL::getType< Index >() + " >";
 }
 
-
-template< typename Real,
-          typename Device,
-          typename Index >
-template< typename VectorOperationType >
-void
-VectorView< Real, Device, Index >::
-evaluate( const VectorOperationType& vo )
-{
-   Real* dt = this->data;
-   auto assign = [=] __cuda_callable__ ( Index i )
-   {
-      dt[ i ] = vo[ i ];
-   };
-   ParallelFor< DeviceType >::exec( 0, this->getSize(), assign );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-template< typename VectorOperationType >
-void
-VectorView< Real, Device, Index >::
-evaluateFor( const VectorOperationType& vo )
-{
-   if( std::is_same< DeviceType, Devices::Host >::value )
-   {
-      for( int i = 0; i < this->getSize(); i++ )
-      {
-         this->data[ i ] = vo[ i ];
-      }
-   }
-   /*
-   if( std::is_same< DeviceType, Devices::Cuda >::value )
-   {
-      Real* dt;
-      VectorOperationType* expression;
-
-      cudaMallocManaged(&dt, this->getSize * sizeof(Real));
-      cudaMallocManaged(&expression, this->getSize * sizeof(Real));
-
-      dt = this->data;
-      expression = vo;
-
-      expressionTemplatesKernel<<<(this->getSize()+255)/256, 256>>>( dt, this->getSize(), expression );
-      TNL_CHECK_CUDA_DEVICE;
-      //cudaDeviceSynchronize();
-
-      //error check
-
-      cudaFree(dt);
-      cudaFree(expression);
-   }
-   */
-}
-
 template< typename Real,
           typename Device,
           typename Index >

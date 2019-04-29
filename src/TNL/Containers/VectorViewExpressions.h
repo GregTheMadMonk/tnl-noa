@@ -12,7 +12,7 @@
 
 #include <TNL/Containers/Expressions/ExpressionTemplates.h>
 #include <TNL/Containers/Expressions/ExpressionTemplatesOperations.h>
-#include <TNL/Containers/Expressions/StaticComparison.h>
+#include <TNL/Containers/Expressions/Comparison.h>
 
 namespace TNL {
    namespace Containers {
@@ -179,21 +179,21 @@ template< typename Real, typename Device, typename Index, typename ET >
 __cuda_callable__
 bool operator==( const VectorView< Real, Device, Index >& a, const ET& b )
 {
-   return Expressions::StaticComparisonEQ( a, b );
+   return Expressions::ComparisonEQ( a, b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index >
 __cuda_callable__
 bool operator==( const ET& a, const VectorView< Real, Device, Index >& b )
 {
-   return Expressions::StaticComparisonEQ( a, b );
+   return Expressions::ComparisonEQ( a, b );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index >
 __cuda_callable__
 bool operator==( const VectorView< Real1, Device, Index >& a, const VectorView< Real2, Device, Index >& b )
 {
-   return Expressions::StaticComparisonEQ( a, b );
+   return Expressions::ComparisonEQ( a, b );
 }
 
 ////
@@ -202,21 +202,21 @@ template< typename Real, typename Device, typename Index, typename ET >
 __cuda_callable__
 bool operator!=( const VectorView< Real, Device, Index >& a, const ET& b )
 {
-   return Expressions::StaticComparisonNE( a, b );
+   return Expressions::ComparisonNE( a, b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index >
 __cuda_callable__
 bool operator!=( const ET& a, const VectorView< Real, Device, Index >& b )
 {
-   return Expressions::StaticComparisonNE( a, b );
+   return Expressions::ComparisonNE( a, b );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index >
 __cuda_callable__
 bool operator!=( const VectorView< Real1, Device, Index >& a, const VectorView< Real2, Device, Index >& b )
 {
-   return Expressions::StaticComparisonNE( a, b );
+   return Expressions::ComparisonNE( a, b );
 }
 
 ////
@@ -225,21 +225,21 @@ template< typename Real, typename Device, typename Index, typename ET >
 __cuda_callable__
 bool operator<( const VectorView< Real, Device, Index >& a, const ET& b )
 {
-   return Expressions::StaticComparisonLT( a, b );
+   return Expressions::ComparisonLT( a, b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index >
 __cuda_callable__
 bool operator<( const ET& a, const VectorView< Real, Device, Index >& b )
 {
-   return Expressions::StaticComparisonLT( a, b );
+   return Expressions::ComparisonLT( a, b );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index >
 __cuda_callable__
 bool operator<( const VectorView< Real1, Device, Index >& a, const VectorView< Real2, Device, Index >& b )
 {
-   return Expressions::StaticComparisonLT( a, b );
+   return Expressions::ComparisonLT( a, b );
 }
 
 ////
@@ -248,21 +248,21 @@ template< typename Real, typename Device, typename Index, typename ET >
 __cuda_callable__
 bool operator<=( const VectorView< Real, Device, Index >& a, const ET& b )
 {
-   return Expressions::StaticComparisonLE( a, b );
+   return Expressions::ComparisonLE( a, b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index >
 __cuda_callable__
 bool operator<=( const ET& a, const VectorView< Real, Device, Index >& b )
 {
-   return Expressions::StaticComparisonLE( a, b );
+   return Expressions::ComparisonLE( a, b );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index >
 __cuda_callable__
 bool operator<=( const VectorView< Real1, Device, Index >& a, const VectorView< Real2, Device, Index >& b )
 {
-   return Expressions::StaticComparisonLE( a, b );
+   return Expressions::ComparisonLE( a, b );
 }
 
 ////
@@ -271,21 +271,21 @@ template< typename Real, typename Device, typename Index, typename ET >
 __cuda_callable__
 bool operator>( const VectorView< Real, Device, Index >& a, const ET& b )
 {
-   return Expressions::StaticComparisonGT( a, b );
+   return Expressions::ComparisonGT( a, b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index >
 __cuda_callable__
 bool operator>( const ET& a, const VectorView< Real, Device, Index >& b )
 {
-   return Expressions::StaticComparisonGT( a, b );
+   return Expressions::ComparisonGT( a, b );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index >
 __cuda_callable__
 bool operator>( const VectorView< Real1, Device, Index >& a, const VectorView< Real2, Device, Index >& b )
 {
-   return Expressions::StaticComparisonGT( a, b );
+   return Expressions::ComparisonGT( a, b );
 }
 
 ////
@@ -294,21 +294,21 @@ template< typename Real, typename Device, typename Index, typename ET >
 __cuda_callable__
 bool operator>=( const VectorView< Real, Device, Index >& a, const ET& b )
 {
-   return Expressions::StaticComparisonGE( a, b );
+   return Expressions::ComparisonGE( a, b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index >
 __cuda_callable__
 bool operator>=( const ET& a, const VectorView< Real, Device, Index >& b )
 {
-   return Expressions::StaticComparisonGE( a, b );
+   return Expressions::ComparisonGE( a, b );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index >
 __cuda_callable__
 bool operator>=( const VectorView< Real1, Device, Index >& a, const VectorView< Real2, Device, Index >& b )
 {
-   return Expressions::StaticComparisonGE( a, b );
+   return Expressions::ComparisonGE( a, b );
 }
 
 ////

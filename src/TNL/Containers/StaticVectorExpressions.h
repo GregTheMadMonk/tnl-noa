@@ -12,9 +12,7 @@
 
 #include <TNL/Containers/Expressions/ExpressionTemplates.h>
 #include <TNL/Containers/Expressions/ExpressionTemplatesOperations.h>
-#include <TNL/Containers/Expressions/StaticComparison.h>
-
-#include "Expressions/StaticComparison.h"
+#include <TNL/Containers/Expressions/Comparison.h>
 
 namespace TNL {
    namespace Containers {

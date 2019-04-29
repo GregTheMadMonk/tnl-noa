@@ -127,7 +127,7 @@ template< typename Value,
    template< typename T >
 ArrayView< Value, Device, Index >&
 ArrayView< Value, Device, Index >::
-operator = ( const T& data )
+operator=( const T& data )
 {
    Algorithms::ArrayAssignment< ArrayView, T >::assign( *this, data );
    return *this;

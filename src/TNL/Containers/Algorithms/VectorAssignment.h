@@ -102,7 +102,6 @@ struct VectorAssignment< Vector, T, false >
 
    static void assign( Vector& v, const T& t )
    {
-      TNL_ASSERT_EQ( v.getSize(), t.getSize(), "The sizes of the vectors must be equal." );
       using RealType = typename Vector::RealType;
       using DeviceType = typename Vector::DeviceType;
       using IndexType = typename Vector::IndexType;
@@ -112,7 +111,7 @@ struct VectorAssignment< Vector, T, false >
       {
          data[ i ] = t;
       };
-      ParallelFor< DeviceType >::exec( 0, v.getSize(), ass );
+      ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), ass );
    }
 
 };

@@ -31,8 +31,8 @@ public:
       if( group != Communicator::NullGroup ) {
          const int rank = Communicator::GetRank( group );
          const int partitions = Communicator::GetSize( group );
-         const Index begin = min( globalSize, rank * globalSize / partitions );
-         const Index end = min( globalSize, (rank + 1) * globalSize / partitions );
+         const Index begin = TNL::min( globalSize, rank * globalSize / partitions );
+         const Index end = TNL::min( globalSize, (rank + 1) * globalSize / partitions );
          return SubrangeType( begin, end );
       }
       else

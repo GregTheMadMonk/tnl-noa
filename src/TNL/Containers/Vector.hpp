@@ -194,7 +194,7 @@ inline Real&
 Vector< Real, Device, Index >::
 operator[]( const Index& i )
 {
-   return this->operator[]( i );
+   return Array< Real, Device, Index >::operator[]( i );
 }
 
 template< typename Real,
@@ -205,7 +205,7 @@ inline const Real&
 Vector< Real, Device, Index >::
 operator[]( const Index& i ) const
 {
-   return this->operator[]( i );
+   return Array< Real, Device, Index >::operator[]( i );
 }
 
 template< typename Real,
