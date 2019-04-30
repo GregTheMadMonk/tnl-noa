@@ -80,6 +80,9 @@ public:
     */
    explicit Vector( const Vector& vector );
 
+   template< typename Real_, typename Device_, typename Index_ >
+   Vector( const Vector< Real_, Device_, Index_ >& vector );
+
    /**
     * \brief Bind constructor .
     *

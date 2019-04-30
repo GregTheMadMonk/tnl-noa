@@ -55,6 +55,17 @@ Vector( const Vector< Real, Device, Index >& vector )
 template< typename Real,
           typename Device,
           typename Index >
+   template< typename Real_, typename Device_, typename Index_ >
+Vector< Real, Device, Index >::
+Vector( const Vector< Real_, Device_, Index_ >& vector )
+:  Array< Real, Device, Index >( vector )
+{
+}
+
+
+template< typename Real,
+          typename Device,
+          typename Index >
 Vector< Real, Device, Index >::
 Vector( Vector< Real, Device, Index >& vector,
         const IndexType& begin,
