@@ -726,12 +726,16 @@ TYPED_TEST( VectorTest, sin )
    for( int i = 0; i < size; i++ )
    {
       u[ i ] = i - size / 2;
-      v[ i ] = sin( u[ i ] );
+      v[ i ] = TNL::sin( u[ i ] );
    }
 
    EXPECT_EQ( sin( u ), v );
 }
 
+////
+// Performing all test leads to extremely long compilation time with nvcc
+// TODO: Try to fix it somehow
+/*
 TYPED_TEST( VectorTest, cos )
 {
    using VectorType = typename TestFixture::VectorType;
@@ -743,7 +747,7 @@ TYPED_TEST( VectorTest, cos )
    for( int i = 0; i < size; i++ )
    {
       u[ i ] = i - size / 2;
-      v[ i ] = cos( u[ i ] );
+      v[ i ] = TNL::cos( u[ i ] );
    }
 
    EXPECT_EQ( cos( u ), v );
@@ -760,7 +764,7 @@ TYPED_TEST( VectorTest, tan )
    for( int i = 0; i < size; i++ )
    {
       u[ i ] = i - size / 2;
-      v[ i ] = tan( u[ i ] );
+      v[ i ] = TNL::tan( u[ i ] );
    }
 
    EXPECT_EQ( tan( u ), v );
@@ -777,7 +781,7 @@ TYPED_TEST( VectorTest, sqrt )
    for( int i = 0; i < size; i++ )
    {
       u[ i ] = i;
-      v[ i ] = sqrt( u[ i ] );
+      v[ i ] = TNL::sqrt( u[ i ] );
    }
 
    EXPECT_EQ( sqrt( u ), v );
@@ -794,7 +798,7 @@ TYPED_TEST( VectorTest, cbrt )
    for( int i = 0; i < size; i++ )
    {
       u[ i ] = i;
-      v[ i ] = cbrt( u[ i ] );
+      v[ i ] = TNL::cbrt( u[ i ] );
    }
 
    EXPECT_EQ( cbrt( u ), v );
@@ -812,8 +816,8 @@ TYPED_TEST( VectorTest, pow )
    for( int i = 0; i < size; i++ )
    {
       u[ i ] = i - size / 2;
-      v[ i ] = pow( u[ i ], 2.0 );
-      w[ i ] = pow( u[ i ], 3.0 );
+      v[ i ] = TNL::pow( u[ i ], 2.0 );
+      w[ i ] = TNL::pow( u[ i ], 3.0 );
    }
 
    EXPECT_EQ( pow( u, 2.0 ), v );
@@ -831,7 +835,7 @@ TYPED_TEST( VectorTest, floor )
    for( int i = 0; i < size; i++ )
    {
       u[ i ] = i - size / 2;
-      v[ i ] = floor( u[ i ] );
+      v[ i ] = TNL::floor( u[ i ] );
    }
 
    EXPECT_EQ( floor( u ), v );
@@ -848,7 +852,7 @@ TYPED_TEST( VectorTest, ceil )
    for( int i = 0; i < size; i++ )
    {
       u[ i ] = i - size / 2;
-      v[ i ] = ceil( u[ i ] );
+      v[ i ] = TNL::ceil( u[ i ] );
    }
 
    EXPECT_EQ( ceil( u ), v );
@@ -865,7 +869,7 @@ TYPED_TEST( VectorTest, acos )
    for( int i = 0; i < size; i++ )
    {
       u[ i ] = ( double )( i - size / 2 ) / ( double ) size;
-      v[ i ] = acos( u[ i ] );
+      v[ i ] = TNL::acos( u[ i ] );
    }
 
    EXPECT_EQ( acos( u ), v );
@@ -882,7 +886,7 @@ TYPED_TEST( VectorTest, asin )
    for( int i = 0; i < size; i++ )
    {
       u[ i ] = ( double ) ( i - size / 2 ) / ( double ) size;
-      v[ i ] = asin( u[ i ] );
+      v[ i ] = TNL::asin( u[ i ] );
    }
 
    EXPECT_EQ( asin( u ), v );
@@ -899,7 +903,7 @@ TYPED_TEST( VectorTest, atan )
    for( int i = 0; i < size; i++ )
    {
       u[ i ] = i - size / 2;
-      v[ i ] = atan( u[ i ] );
+      v[ i ] = TNL::atan( u[ i ] );
    }
 
    EXPECT_EQ( atan( u ), v );
@@ -918,7 +922,7 @@ TYPED_TEST( VectorTest, cosh )
    for( int i = 0; i < size; i++ )
    {
       u[ i ] = i * h - ( RealType ) 1.0;
-      v[ i ] = cosh( u[ i ] );
+      v[ i ] = TNL::cosh( u[ i ] );
    }
 
    // EXPECT_EQ( cosh( u ), v ) does not work here for float, maybe because
@@ -938,7 +942,7 @@ TYPED_TEST( VectorTest, tanh )
    for( int i = 0; i < size; i++ )
    {
       u[ i ] = i - size / 2;
-      v[ i ] = tanh( u[ i ] );
+      v[ i ] = TNL::tanh( u[ i ] );
    }
 
    EXPECT_EQ( tanh( u ), v );
@@ -955,7 +959,7 @@ TYPED_TEST( VectorTest, log )
    for( int i = 0; i < size; i++ )
    {
       u[ i ] = i + 1;
-      v[ i ] = log( u[ i ] );
+      v[ i ] = TNL::log( u[ i ] );
    }
 
    EXPECT_EQ( log( u ), v );
@@ -972,7 +976,7 @@ TYPED_TEST( VectorTest, log10 )
    for( int i = 0; i < size; i++ )
    {
       u[ i ] = i + 1;
-      v[ i ] = log10( u[ i ] );
+      v[ i ] = TNL::log10( u[ i ] );
    }
 
    // EXPECT_EQ( log10( u ), v ) does not work here for float, maybe because
@@ -992,7 +996,7 @@ TYPED_TEST( VectorTest, log2 )
    for( int i = 0; i < size; i++ )
    {
       u[ i ] = i + 1;
-      v[ i ] = log2( u[ i ] );
+      v[ i ] = TNL::log2( u[ i ] );
    }
 
    EXPECT_EQ( log2( u ), v );
@@ -1009,7 +1013,7 @@ TYPED_TEST( VectorTest, exp )
    for( int i = 0; i < size; i++ )
    {
       u[ i ] = i - size / 2;
-      v[ i ] = exp( u[ i ] );
+      v[ i ] = TNL::exp( u[ i ] );
    }
 
    EXPECT_EQ( exp( u ), v );
@@ -1026,11 +1030,12 @@ TYPED_TEST( VectorTest, sign )
    for( int i = 0; i < size; i++ )
    {
       u[ i ] = i - size / 2;
-      v[ i ] = sign( u[ i ] );
+      v[ i ] = TNL::sign( u[ i ] );
    }
 
    EXPECT_EQ( sign( u ), v );
 }
+*/
 
 // TODO: test prefix sum with custom begin and end parameters
 

@@ -113,6 +113,12 @@ public:
    template< typename Scalar >
    VectorView& operator/=( Scalar c );
 
+   template< typename Real_, typename Device_, typename Index_ >
+   bool operator==( const VectorView< Real_, Device_, Index_ >& v );
+
+   template< typename Real_, typename Device_, typename Index_ >
+   bool operator!=( const VectorView< Real_, Device_, Index_ >& v );
+
    NonConstReal max() const;
 
    NonConstReal min() const;
