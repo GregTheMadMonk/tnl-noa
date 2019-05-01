@@ -14,190 +14,37 @@
 #include <TNL/Containers/Expressions/ExpressionTemplatesOperations.h>
 #include <TNL/Containers/Expressions/ExpressionVariableType.h>
 #include <TNL/Containers/Expressions/Comparison.h>
+#include <TNL/Containers/Expressions/IsStatic.h>
 
 namespace TNL {
    namespace Containers {
       namespace Expressions {
 
-template< typename T >
-struct IsStaticType
-{
-   static constexpr bool value = false;
-};
-
+////
+// Non-static unary expression template
 template< typename T1,
           template< typename > class Operation,
           typename Parameter = void,
-          ExpressionVariableType T1Type = ExpressionVariableTypeGetter< T1 >::value,
-          bool StaticET = IsStaticType< T1 >::value >
+          ExpressionVariableType T1Type = ExpressionVariableTypeGetter< T1 >::value >
 struct UnaryExpressionTemplate
 {
-};
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation,
-          ExpressionVariableType T1Type = ExpressionVariableTypeGetter< T1 >::value,
-          ExpressionVariableType T2Type = ExpressionVariableTypeGetter< T2 >::value,
-          bool StaticET = IsStaticType< T1 >::value || IsStaticType< T2 >::value >
-struct BinaryExpressionTemplate
-{
-};
-
-template< int Size,
-          typename Real >
-struct IsStaticType< StaticVector< Size, Real > >
-{
-   static constexpr bool value = true;
-};
-
-template< typename T1,
-          template< typename > class Operation,
-          typename Parameter >
-struct IsStaticType< UnaryExpressionTemplate< T1, Operation, Parameter > >
-{
-   static constexpr bool value = UnaryExpressionTemplate< T1, Operation, Parameter >::isStatic();
-};
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-struct IsStaticType< BinaryExpressionTemplate< T1, T2, Operation > >
-{
-   static constexpr bool value = BinaryExpressionTemplate< T1, T2, Operation >::isStatic();
-};
-
-
-////
-// Static binary expression template
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-struct BinaryExpressionTemplate< T1, T2, Operation, VectorVariable, VectorVariable, true >
-{
-   using RealType = typename T1::RealType;
-   using IsExpressionTemplate = bool;
-   static_assert( IsStaticType< T1 >::value == IsStaticType< T2 >::value, "Attempt to mix static and non-static operands in binary expression templates" );
-   static constexpr bool isStatic() { return true; }
-
-   __cuda_callable__
-   BinaryExpressionTemplate( const T1& a, const T2& b ): op1( a ), op2( b ){}
-
-   __cuda_callable__
-   static BinaryExpressionTemplate evaluate( const T1& a, const T2& b )
-   {
-      return BinaryExpressionTemplate( a, b );
-   }
-
-   RealType getElement( const int i ) const
-   {
-       return Operation< typename T1::RealType, typename T2::RealType >::evaluate( op1[ i ], op2[ i ] );
-   }
-
-   __cuda_callable__
-   RealType operator[]( const int i ) const
-   {
-       return Operation< typename T1::RealType, typename T2::RealType >::evaluate( op1[ i ], op2[ i ] );
-   }
-
-   __cuda_callable__
-   int getSize() const
-   {
-       return op1.getSize();
-   }
-
-   protected:
-      const T1 &op1;
-      const T2 &op2;
-};
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-struct BinaryExpressionTemplate< T1, T2, Operation, VectorVariable, ArithmeticVariable, true  >
-{
-   using RealType = typename T1::RealType;
-   using IsExpressionTemplate = bool;
-   static constexpr bool isStatic() { return true; }
-
-   __cuda_callable__
-   BinaryExpressionTemplate( const T1& a, const T2& b ): op1( a ), op2( b ){}
-
-   __cuda_callable__
-   BinaryExpressionTemplate evaluate( const T1& a, const T2& b )
-   {
-      return BinaryExpressionTemplate( a, b );
-   }
-
-   RealType getElement( const int i ) const
-   {
-       return Operation< typename T1::RealType, T2 >::evaluate( op1[ i ], op2 );
-   }
-
-   __cuda_callable__
-   RealType operator[]( const int i ) const
-   {
-       return Operation< typename T1::RealType, T2 >::evaluate( op1[ i ], op2 );
-   }
-
-   __cuda_callable__
-   int getSize() const
-   {
-       return op1.getSize();
-   }
-
-   protected:
-      const T1 &op1;
-      const T2 &op2;
-
-};
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-struct BinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorVariable, true  >
-{
-   using RealType = typename T2::RealType;
-   using IsExpressionTemplate = bool;
-   static constexpr bool isStatic() { return true; }
-
-   __cuda_callable__
-   BinaryExpressionTemplate( const T1& a, const T2& b ): op1( a ), op2( b ){}
-
-   __cuda_callable__
-   BinaryExpressionTemplate evaluate( const T1& a, const T2& b )
-   {
-      return BinaryExpressionTemplate( a, b );
-   }
-
-   RealType getElement( const int i ) const
-   {
-       return Operation< T1, typename T2::RealType >::evaluate( op1, op2[ i ] );
-   }
-
-   __cuda_callable__
-   RealType operator[]( const int i ) const
-   {
-       return Operation< T1, typename T2::RealType >::evaluate( op1, op2[ i ] );
-   }
-
-   __cuda_callable__
-   int getSize() const
-   {
-       return op2.getSize();
-   }
-
-   protected:
-      const T1& op1;
-      const T2& op2;
 };
 
 ////
 // Non-static binary expression template
 template< typename T1,
           typename T2,
+          template< typename, typename > class Operation,
+          ExpressionVariableType T1Type = ExpressionVariableTypeGetter< T1 >::value,
+          ExpressionVariableType T2Type = ExpressionVariableTypeGetter< T2 >::value >
+struct BinaryExpressionTemplate
+{
+};
+
+template< typename T1,
+          typename T2,
           template< typename, typename > class Operation >
-struct BinaryExpressionTemplate< T1, T2, Operation, VectorVariable, VectorVariable, false >
+struct BinaryExpressionTemplate< T1, T2, Operation, VectorVariable, VectorVariable >
 {
    using RealType = typename T1::RealType;
    using DeviceType = typename T1::DeviceType;
@@ -240,7 +87,7 @@ struct BinaryExpressionTemplate< T1, T2, Operation, VectorVariable, VectorVariab
 template< typename T1,
           typename T2,
           template< typename, typename > class Operation >
-struct BinaryExpressionTemplate< T1, T2, Operation, VectorVariable, ArithmeticVariable, false >
+struct BinaryExpressionTemplate< T1, T2, Operation, VectorVariable, ArithmeticVariable >
 {
    using RealType = typename T1::RealType;
    using DeviceType = typename T1::DeviceType;
@@ -274,14 +121,16 @@ struct BinaryExpressionTemplate< T1, T2, Operation, VectorVariable, ArithmeticVa
    }
 
    protected:
-      typename OperandType< T1, DeviceType >::type op1;
-      typename OperandType< T2, DeviceType >::type op2;
+      const T1 op1;
+      const T2 op2;
+      //typename OperandType< T1, DeviceType >::type op1;
+      //typename OperandType< T2, DeviceType >::type op2;
 };
 
 template< typename T1,
           typename T2,
           template< typename, typename > class Operation >
-struct BinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorVariable, false >
+struct BinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorVariable >
 {
    using RealType = typename T2::RealType;
    using DeviceType = typename T2::DeviceType;
@@ -322,96 +171,6 @@ struct BinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorVa
 };
 
 ////
-// Static unary expression template
-//
-// Parameter type serves mainly for pow( base, exp ). Here exp is parameter we need
-// to pass to pow.
-template< typename T1,
-          template< typename > class Operation,
-          typename Parameter >
-struct UnaryExpressionTemplate< T1, Operation, Parameter, VectorVariable, true >
-{
-   using RealType = typename T1::RealType;
-   using IsExpressionTemplate = bool;
-   static constexpr bool isStatic() { return true; }
-
-   __cuda_callable__
-   UnaryExpressionTemplate( const T1& a, const Parameter& p )
-   : operand( a ), parameter( p ) {}
-
-   __cuda_callable__
-   static UnaryExpressionTemplate evaluate( const T1& a )
-   {
-      return UnaryExpressionTemplate( a );
-   }
-
-   RealType getElement( const int i ) const
-   {
-       return Operation< typename T1::RealType >::evaluate( operand[ i ], parameter );
-   }
-
-   __cuda_callable__
-   RealType operator[]( const int i ) const
-   {
-       return Operation< typename T1::RealType >::evaluate( operand[ i ], parameter );
-   }
-
-   __cuda_callable__
-   int getSize() const
-   {
-       return operand.getSize();
-   }
-
-   void set( const Parameter& p ) { parameter = p; }
-
-   const Parameter& get() { return parameter; }
-
-   protected:
-      const T1& operand;
-      Parameter parameter;
-};
-
-////
-// Static unary expression template with no parameter
-template< typename T1,
-          template< typename > class Operation >
-struct UnaryExpressionTemplate< T1, Operation, void, VectorVariable, true >
-{
-   using RealType = typename T1::RealType;
-   using IsExpressionTemplate = bool;
-   static constexpr bool isStatic() { return true; }
-
-   __cuda_callable__
-   UnaryExpressionTemplate( const T1& a ): operand( a ){}
-
-   __cuda_callable__
-   static UnaryExpressionTemplate evaluate( const T1& a )
-   {
-      return UnaryExpressionTemplate( a );
-   }
-
-   RealType getElement( const int i ) const
-   {
-       return Operation< typename T1::RealType >::evaluate( operand[ i ] );
-   }
-
-   __cuda_callable__
-   RealType operator[]( const int i ) const
-   {
-       return Operation< typename T1::RealType >::evaluate( operand[ i ] );
-   }
-
-   __cuda_callable__
-   int getSize() const
-   {
-       return operand.getSize();
-   }
-
-   protected:
-      const T1& operand;
-};
-
-////
 // Non-static unary expression template
 //
 // Parameter type serves mainly for pow( base, exp ). Here exp is parameter we need
@@ -419,7 +178,7 @@ struct UnaryExpressionTemplate< T1, Operation, void, VectorVariable, true >
 template< typename T1,
           template< typename > class Operation,
           typename Parameter >
-struct UnaryExpressionTemplate< T1, Operation, Parameter, VectorVariable, false >
+struct UnaryExpressionTemplate< T1, Operation, Parameter, VectorVariable >
 {
    using RealType = typename T1::RealType;
    using DeviceType = typename T1::DeviceType;
@@ -466,7 +225,7 @@ struct UnaryExpressionTemplate< T1, Operation, Parameter, VectorVariable, false 
 // Non-static unary expression template with no parameter
 template< typename T1,
           template< typename > class Operation >
-struct UnaryExpressionTemplate< T1, Operation, void, VectorVariable, false >
+struct UnaryExpressionTemplate< T1, Operation, void, VectorVariable >
 {
    using RealType = typename T1::RealType;
    using DeviceType = typename T1::DeviceType;
@@ -978,7 +737,7 @@ bool
 operator == ( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a,
              const Expressions::BinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return Expressions::StaticComparisonEQ( a, b );
+   return Expressions::ComparisonEQ( a, b );
 }
 
 template< typename T1,
@@ -989,7 +748,7 @@ bool
 operator == ( const Expressions::BinaryExpressionTemplate< T1, T2, Operation >& a,
               const typename Expressions::BinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
 {
-   return Expressions::StaticComparisonEQ( a, b );
+   return Expressions::ComparisonEQ( a, b );
 }
 
 template< typename L1,
@@ -1002,7 +761,7 @@ bool
 operator == ( const Expressions::UnaryExpressionTemplate< L1, LOperation >& a,
               const typename Expressions::BinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return Expressions::StaticComparisonEQ( a, b );
+   return Expressions::ComparisonEQ( a, b );
 }
 
 template< typename L1,
@@ -1015,7 +774,7 @@ bool
 operator == ( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a,
              const typename Expressions::UnaryExpressionTemplate< R1,ROperation >& b )
 {
-   return Expressions::StaticComparisonEQ( a, b );
+   return Expressions::ComparisonEQ( a, b );
 }
 
 ////
@@ -1031,7 +790,7 @@ bool
 operator != ( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a,
              const Expressions::BinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return Expressions::StaticComparisonNE( a, b );
+   return Expressions::ComparisonNE( a, b );
 }
 
 template< typename T1,
@@ -1042,7 +801,7 @@ bool
 operator != ( const Expressions::BinaryExpressionTemplate< T1, T2, Operation >& a,
               const typename Expressions::BinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
 {
-   return Expressions::StaticComparisonNE( a, b );
+   return Expressions::ComparisonNE( a, b );
 }
 
 template< typename L1,
@@ -1055,7 +814,7 @@ bool
 operator != ( const Expressions::UnaryExpressionTemplate< L1, LOperation >& a,
               const typename Expressions::BinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return Expressions::StaticComparisonNE( a, b );
+   return Expressions::ComparisonNE( a, b );
 }
 
 template< typename L1,
@@ -1068,7 +827,7 @@ bool
 operator != ( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a,
               const typename Expressions::UnaryExpressionTemplate< R1, ROperation >& b )
 {
-   return Expressions::StaticComparisonNE( a, b );
+   return Expressions::ComparisonNE( a, b );
 }
 
 ////
@@ -1084,7 +843,7 @@ bool
 operator < ( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a,
              const Expressions::BinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return Expressions::StaticComparisonLT( a, b );
+   return Expressions::ComparisonLT( a, b );
 }
 
 template< typename T1,
@@ -1095,7 +854,7 @@ bool
 operator < ( const Expressions::BinaryExpressionTemplate< T1, T2, Operation >& a,
              const typename Expressions::BinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
 {
-   return Expressions::StaticComparisonLT( a, b );
+   return Expressions::ComparisonLT( a, b );
 }
 
 template< typename L1,
@@ -1108,7 +867,7 @@ bool
 operator < ( const Expressions::UnaryExpressionTemplate< L1, LOperation >& a,
               const typename Expressions::BinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return Expressions::StaticComparisonLT( a, b );
+   return Expressions::ComparisonLT( a, b );
 }
 
 template< typename L1,
@@ -1121,7 +880,7 @@ bool
 operator < ( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a,
               const typename Expressions::UnaryExpressionTemplate< R1, ROperation >& b )
 {
-   return Expressions::StaticComparisonLT( a, b );
+   return Expressions::ComparisonLT( a, b );
 }
 
 ////
@@ -1137,7 +896,7 @@ bool
 operator <= ( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a,
              const Expressions::BinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return Expressions::StaticComparisonLE( a, b );
+   return Expressions::ComparisonLE( a, b );
 }
 
 template< typename T1,
@@ -1148,7 +907,7 @@ bool
 operator <= ( const Expressions::BinaryExpressionTemplate< T1, T2, Operation >& a,
              const typename Expressions::BinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
 {
-   return Expressions::StaticComparisonLE( a, b );
+   return Expressions::ComparisonLE( a, b );
 }
 
 template< typename L1,
@@ -1161,7 +920,7 @@ bool
 operator <= ( const Expressions::UnaryExpressionTemplate< L1, LOperation >& a,
               const typename Expressions::BinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return Expressions::StaticComparisonLE( a, b );
+   return Expressions::ComparisonLE( a, b );
 }
 
 template< typename L1,
@@ -1174,7 +933,7 @@ bool
 operator <= ( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a,
               const typename Expressions::UnaryExpressionTemplate< R1, ROperation >& b )
 {
-   return Expressions::StaticComparisonLE( a, b );
+   return Expressions::ComparisonLE( a, b );
 }
 
 ////
@@ -1190,7 +949,7 @@ bool
 operator > ( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a,
              const Expressions::BinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return Expressions::StaticComparisonGT( a, b );
+   return Expressions::ComparisonGT( a, b );
 }
 
 template< typename T1,
@@ -1201,7 +960,7 @@ bool
 operator > ( const Expressions::BinaryExpressionTemplate< T1, T2, Operation >& a,
              const typename Expressions::BinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
 {
-   return Expressions::StaticComparisonGT( a, b );
+   return Expressions::ComparisonGT( a, b );
 }
 
 template< typename L1,
@@ -1214,7 +973,7 @@ bool
 operator > ( const Expressions::UnaryExpressionTemplate< L1, LOperation >& a,
              const typename Expressions::BinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return Expressions::StaticComparisonGT( a, b );
+   return Expressions::ComparisonGT( a, b );
 }
 
 template< typename L1,
@@ -1227,7 +986,7 @@ bool
 operator > ( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a,
              const typename Expressions::UnaryExpressionTemplate< R1, ROperation >& b )
 {
-   return Expressions::StaticComparisonGT( a, b );
+   return Expressions::ComparisonGT( a, b );
 }
 
 ////
@@ -1243,7 +1002,7 @@ bool
 operator >= ( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a,
               const Expressions::BinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return Expressions::StaticComparisonGE( a, b );
+   return Expressions::ComparisonGE( a, b );
 }
 
 template< typename T1,
@@ -1254,7 +1013,7 @@ bool
 operator >= ( const Expressions::BinaryExpressionTemplate< T1, T2, Operation >& a,
               const typename Expressions::BinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
 {
-   return Expressions::StaticComparisonGE( a, b );
+   return Expressions::ComparisonGE( a, b );
 }
 
 template< typename L1,
@@ -1267,7 +1026,7 @@ bool
 operator >= ( const Expressions::UnaryExpressionTemplate< L1, LOperation >& a,
               const typename Expressions::BinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return Expressions::StaticComparisonGE( a, b );
+   return Expressions::ComparisonGE( a, b );
 }
 
 template< typename L1,
@@ -1280,7 +1039,7 @@ bool
 operator >= ( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a,
               const typename Expressions::UnaryExpressionTemplate< R1, ROperation >& b )
 {
-   return Expressions::StaticComparisonGE( a, b );
+   return Expressions::ComparisonGE( a, b );
 }
 
 ////
@@ -1872,6 +1631,25 @@ exp( const Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
       Expressions::UnaryExpressionTemplate< L1, LOperation >,
       Expressions::Exp >( a );
 }
+
+////
+// Vertical operations - min
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+typename Expressions::BinaryExpressionTemplate< L1, L2, LOperation >::RealType
+min( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+/*   using ExpressionType = Expressions::BinaryExpressionTemplate< L1, L2, LOperation >;
+   using RealType = typename ExpressionType::RealType;
+   using IndexType = typename ExpressionType::IndexType;
+
+   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return  a[ i ]; };
+   auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a = TNL::min( a, b ); };
+   auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a = TNL::min( a, b ); };
+   return Reduction< DeviceType >::reduce( v1.getSize(), reduction, volatileReduction, fetch, std::numeric_limits< ResultType >::max() );*/
+}
+
 
 ////
 // Output stream

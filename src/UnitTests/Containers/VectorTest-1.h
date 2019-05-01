@@ -161,6 +161,22 @@ TYPED_TEST( VectorTest, absMin )
    EXPECT_EQ( VectorOperations::getVectorAbsMin( v ), 0 );
 }
 
+TYPED_TEST( VectorTest, comparison )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using VectorOperations = typename TestFixture::VectorOperations;
+   using ViewType = typename TestFixture::ViewType;
+   const int size = VECTOR_TEST_SIZE;
+
+   VectorType _v( size ), _w( size );
+   ViewType v( _v ), w( _w );
+   v = 1.0;
+   w = 2.0;
+
+   EXPECT_TRUE( v < w );
+   EXPECT_TRUE( w > v );
+   EXPECT_TRUE( w + 1.0 < v + 4.0 );
+}
 
 
 #endif // HAVE_GTEST

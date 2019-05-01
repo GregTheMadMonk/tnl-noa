@@ -1,5 +1,5 @@
 /***************************************************************************
-                          StaticComparison.h  -  description
+                          Comparison.h  -  description
                              -------------------
     begin                : Apr 19, 2019
     copyright            : (C) 2019 by Tomas Oberhuber

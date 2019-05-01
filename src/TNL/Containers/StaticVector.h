@@ -12,7 +12,7 @@
 
 #include <TNL/Containers/StaticArray.h>
 #include <TNL/Config/ParameterContainer.h>
-#include <TNL/Containers/Expressions/ExpressionTemplates.h>
+#include <TNL/Containers/Expressions/StaticExpressionTemplates.h>
 
 namespace TNL {
 namespace Containers {
@@ -82,12 +82,12 @@ class StaticVector : public StaticArray< Size, Real >
              typename T2,
              template< typename, typename > class Operation >
    __cuda_callable__
-   StaticVector( const Expressions::BinaryExpressionTemplate< T1, T2, Operation >& op );
+   StaticVector( const Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& op );
 
    template< typename T,
              template< typename > class Operation >
    __cuda_callable__
-   StaticVector( const Expressions::UnaryExpressionTemplate< T, Operation >& op );
+   StaticVector( const Expressions::StaticUnaryExpressionTemplate< T, Operation >& op );
 
    /**
     * \brief Sets up a new (vector) parameter which means it can have more elements.
@@ -267,12 +267,12 @@ class StaticVector< 1, Real > : public StaticArray< 1, Real >
              typename T2,
              template< typename, typename > class Operation >
    __cuda_callable__
-   StaticVector( const Expressions::BinaryExpressionTemplate< T1, T2, Operation >& op );
+   StaticVector( const Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& op );
 
    template< typename T,
              template< typename > class Operation >
    __cuda_callable__
-   StaticVector( const Expressions::UnaryExpressionTemplate< T, Operation >& op );
+   StaticVector( const Expressions::StaticUnaryExpressionTemplate< T, Operation >& op );
 
    bool setup( const Config::ParameterContainer& parameters,
                const String& prefix = "" );
@@ -397,12 +397,12 @@ class StaticVector< 2, Real > : public StaticArray< 2, Real >
              typename T2,
              template< typename, typename > class Operation >
    __cuda_callable__
-   StaticVector( const Expressions::BinaryExpressionTemplate< T1, T2, Operation >& op );
+   StaticVector( const Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& op );
 
    template< typename T,
              template< typename > class Operation >
    __cuda_callable__
-   StaticVector( const Expressions::UnaryExpressionTemplate< T, Operation >& op );
+   StaticVector( const Expressions::StaticUnaryExpressionTemplate< T, Operation >& op );
 
    bool setup( const Config::ParameterContainer& parameters,
                const String& prefix = "" );
@@ -528,12 +528,12 @@ class StaticVector< 3, Real > : public StaticArray< 3, Real >
              typename T2,
              template< typename, typename > class Operation >
    __cuda_callable__
-   StaticVector( const Expressions::BinaryExpressionTemplate< T1, T2, Operation >& op );
+   StaticVector( const Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& op );
 
    template< typename T,
              template< typename > class Operation >
    __cuda_callable__
-   StaticVector( const Expressions::UnaryExpressionTemplate< T, Operation >& op );
+   StaticVector( const Expressions::StaticUnaryExpressionTemplate< T, Operation >& op );
 
    bool setup( const Config::ParameterContainer& parameters,
                const String& prefix = "" );

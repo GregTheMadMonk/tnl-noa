@@ -56,20 +56,18 @@ template< typename Real >
              typename T2,
              template< typename, typename > class Operation >
 __cuda_callable__
-StaticVector< 1, Real >::StaticVector( const Expressions::BinaryExpressionTemplate< T1, T2, Operation >& op )
+StaticVector< 1, Real >::StaticVector( const Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& op )
 {
-   static_assert( Expressions::BinaryExpressionTemplate< T1, T2, Operation >::isStatic(), "Attempt to assign non-static expression to static vector." );
-   Algorithms::VectorAssignment< StaticVector< 1, Real >, Expressions::BinaryExpressionTemplate< T1, T2, Operation > >::assignStatic( *this, op );
+   Algorithms::VectorAssignment< StaticVector< 1, Real >, Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation > >::assignStatic( *this, op );
 };
 
 template< typename Real >
    template< typename T,
              template< typename > class Operation >
 __cuda_callable__
-StaticVector< 1, Real >::StaticVector( const Expressions::UnaryExpressionTemplate< T, Operation >& op )
+StaticVector< 1, Real >::StaticVector( const Expressions::StaticUnaryExpressionTemplate< T, Operation >& op )
 {
-   static_assert( Expressions::UnaryExpressionTemplate< T, Operation >::isStatic(), "Attempt to assign non-static expression to static vector." );
-   Algorithms::VectorAssignment< StaticVector< 1, Real >, Expressions::UnaryExpressionTemplate< T, Operation > >::assignStatic( *this, op );
+   Algorithms::VectorAssignment< StaticVector< 1, Real >, Expressions::StaticUnaryExpressionTemplate< T, Operation > >::assignStatic( *this, op );
 };
 
 template< typename Real >

@@ -62,10 +62,12 @@ public:
    template< typename T1,
              typename T2,
              template< typename, typename > class Operation >
+   __cuda_callable__
    VectorView( const Expressions::BinaryExpressionTemplate< T1, T2, Operation >& expression );
 
    template< typename T,
              template< typename > class Operation >
+   __cuda_callable__
    VectorView( const Expressions::UnaryExpressionTemplate< T, Operation >& expression );
 
 
