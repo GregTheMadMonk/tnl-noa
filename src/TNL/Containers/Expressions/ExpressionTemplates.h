@@ -89,6 +89,11 @@ struct BinaryExpressionTemplate< T1, T2, Operation, VectorVariable, VectorVariab
       return BinaryExpressionTemplate( a, b );
    }
 
+   RealType getElement( const int i ) const
+   {
+       return Operation< typename T1::RealType, typename T2::RealType >::evaluate( op1[ i ], op2[ i ] );
+   }
+
    __cuda_callable__
    RealType operator[]( const int i ) const
    {
@@ -122,6 +127,11 @@ struct BinaryExpressionTemplate< T1, T2, Operation, VectorVariable, ArithmeticVa
    BinaryExpressionTemplate evaluate( const T1& a, const T2& b )
    {
       return BinaryExpressionTemplate( a, b );
+   }
+
+   RealType getElement( const int i ) const
+   {
+       return Operation< typename T1::RealType, T2 >::evaluate( op1[ i ], op2 );
    }
 
    __cuda_callable__
@@ -158,6 +168,11 @@ struct BinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorVa
    BinaryExpressionTemplate evaluate( const T1& a, const T2& b )
    {
       return BinaryExpressionTemplate( a, b );
+   }
+
+   RealType getElement( const int i ) const
+   {
+       return Operation< T1, typename T2::RealType >::evaluate( op1, op2[ i ] );
    }
 
    __cuda_callable__
@@ -200,6 +215,11 @@ struct BinaryExpressionTemplate< T1, T2, Operation, VectorVariable, VectorVariab
       return BinaryExpressionTemplate( a, b );
    }
 
+   RealType getElement( const int i ) const
+   {
+       return Operation< typename T1::RealType, typename T2::RealType >::evaluate( op1.getElement( i ), op2.getElement( i ) );
+   }
+
    __cuda_callable__
    RealType operator[]( const int i ) const
    {
@@ -236,6 +256,11 @@ struct BinaryExpressionTemplate< T1, T2, Operation, VectorVariable, ArithmeticVa
       return BinaryExpressionTemplate( a, b );
    }
 
+   RealType getElement( const int i ) const
+   {
+       return Operation< typename T1::RealType, typename T2::RealType >::evaluate( op1.getElement( i ), op2 );
+   }
+
    __cuda_callable__
    RealType operator[]( const int i ) const
    {
@@ -270,6 +295,11 @@ struct BinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorVa
    BinaryExpressionTemplate evaluate( const T1& a, const T2& b )
    {
       return BinaryExpressionTemplate( a, b );
+   }
+
+   RealType getElement( const int i ) const
+   {
+       return Operation< typename T1::RealType, typename T2::RealType >::evaluate( op1, op2.getElement( i ) );
    }
 
    __cuda_callable__
@@ -315,6 +345,11 @@ struct UnaryExpressionTemplate< T1, Operation, Parameter, VectorVariable, true >
       return UnaryExpressionTemplate( a );
    }
 
+   RealType getElement( const int i ) const
+   {
+       return Operation< typename T1::RealType >::evaluate( operand[ i ], parameter );
+   }
+
    __cuda_callable__
    RealType operator[]( const int i ) const
    {
@@ -353,6 +388,11 @@ struct UnaryExpressionTemplate< T1, Operation, void, VectorVariable, true >
    static UnaryExpressionTemplate evaluate( const T1& a )
    {
       return UnaryExpressionTemplate( a );
+   }
+
+   RealType getElement( const int i ) const
+   {
+       return Operation< typename T1::RealType >::evaluate( operand[ i ] );
    }
 
    __cuda_callable__
@@ -395,6 +435,11 @@ struct UnaryExpressionTemplate< T1, Operation, Parameter, VectorVariable, false 
       return UnaryExpressionTemplate( a );
    }
 
+   RealType getElement( const int i ) const
+   {
+       return Operation< typename T1::RealType >::evaluate( operand.getElement( i ), parameter );
+   }
+
    __cuda_callable__
    RealType operator[]( const int i ) const
    {
@@ -434,6 +479,11 @@ struct UnaryExpressionTemplate< T1, Operation, void, VectorVariable, false >
    static UnaryExpressionTemplate evaluate( const T1& a )
    {
       return UnaryExpressionTemplate( a );
+   }
+
+   RealType getElement( const int i ) const
+   {
+       return Operation< typename T1::RealType >::evaluate( operand.getElement( i ) );
    }
 
    __cuda_callable__
@@ -1832,8 +1882,8 @@ std::ostream& operator << ( std::ostream& str, const BinaryExpressionTemplate< T
 {
    str << "[ ";
    for( int i = 0; i < expression.getSize() - 1; i++ )
-      str << expression[ i ] << ", ";
-   str << expression[ expression.getSize() - 1 ] << " ]";
+      str << expression.getElement( i ) << ", ";
+   str << expression.getElement( expression.getSize() - 1 ) << " ]";
    return str;
 }
 
@@ -1844,8 +1894,8 @@ std::ostream& operator << ( std::ostream& str, const UnaryExpressionTemplate< T,
 {
    str << "[ ";
    for( int i = 0; i < expression.getSize() - 1; i++ )
-      str << expression[ i ] << ", ";
-   str << expression[ expression.getSize() - 1 ] << " ]";
+      str << expression.getElement( i ) << ", ";
+   str << expression.getElement( expression.getSize() - 1 ) << " ]";
    return str;
 }
       } //namespace Expressions

@@ -12,6 +12,7 @@
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/Algorithms/VectorOperations.h>
+#include <TNL/Containers/VectorView.h>
 
 namespace TNL {
 namespace Containers {
@@ -258,6 +259,17 @@ template< typename Real,
    template< typename Real_, typename Device_, typename Index_ >
 Vector< Real, Device, Index >&
 Vector< Real, Device, Index >::operator = ( const Vector< Real_, Device_, Index_ >& vector )
+{
+   Array< Real, Device, Index >::operator=( vector );
+   return *this;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename Real_, typename Device_, typename Index_ >
+Vector< Real, Device, Index >&
+Vector< Real, Device, Index >::operator = ( const VectorView< Real_, Device_, Index_ >& vector )
 {
    Array< Real, Device, Index >::operator=( vector );
    return *this;

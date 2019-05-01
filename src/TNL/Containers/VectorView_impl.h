@@ -97,9 +97,31 @@ addElement( IndexType i, RealType value, Scalar thisElementMultiplicator )
 template< typename Real,
           typename Device,
           typename Index >
+   template< typename Real_, typename Device_, typename Index_ >
+VectorView< Real, Device, Index >&
+VectorView< Real, Device, Index >::operator=( const VectorView< Real_, Device_, Index_ >& v )
+{
+   ArrayView< Real, Device, Index >::operator=( v );
+   return *this;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+  template< typename Real_, typename Device_, typename Index_ >
+VectorView< Real, Device, Index >&
+VectorView< Real, Device, Index >::operator=( const Vector< Real_, Device_, Index_ >& v )
+{
+   ArrayView< Real, Device, Index >::operator=( v );
+   return *this;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
    template< typename VectorExpression >
 VectorView< Real, Device, Index >&
-VectorView< Real, Device, Index >::operator = ( const VectorExpression& expression )
+VectorView< Real, Device, Index >::operator=( const VectorExpression& expression )
 {
    Algorithms::VectorAssignment< VectorView< Real, Device, Index >, VectorExpression >::assign( *this, expression );
    return *this;

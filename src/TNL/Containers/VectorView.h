@@ -98,8 +98,14 @@ public:
                     RealType value,
                     Scalar thisElementMultiplicator );
 
+   template< typename Real_, typename Device_, typename Index_ >
+   VectorView& operator=( const VectorView< Real_, Device_, Index_ >& v );
+
+   template< typename Real_, typename Device_, typename Index_ >
+   VectorView& operator=( const Vector< Real_, Device_, Index_ >& v );
+
    template< typename VectorExpression >
-   VectorView& operator = ( const VectorExpression& expression );
+   VectorView& operator=( const VectorExpression& expression );
 
    template< typename Vector >
    VectorView& operator-=( const Vector& vector );

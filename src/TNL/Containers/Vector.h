@@ -16,6 +16,9 @@
 namespace TNL {
 namespace Containers {
 
+template< typename Real, typename Device, typename Index >
+class VectorView;
+   
 /**
  * \brief This class extends TNL::Array with algebraic operations.
  *
@@ -181,6 +184,9 @@ public:
    template< typename Real_, typename Device_, typename Index_ >
    Vector& operator = ( const Vector< Real_, Device_, Index_ >& v );
 
+   template< typename Real_, typename Device_, typename Index_ >
+   Vector& operator = ( const VectorView< Real_, Device_, Index_ >& v );
+   
    template< typename VectorExpression >
    Vector& operator = ( const VectorExpression& expression );
 
