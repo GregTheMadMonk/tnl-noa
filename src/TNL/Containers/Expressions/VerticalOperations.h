@@ -178,7 +178,7 @@ bool ExpressionLogicalOr( const Expression& a )
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return  a[ i ]; };
    auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a = a || b; };
    auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a = a || b; };
-   return Algorithms::Reduction< typename Expression::DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch,  );
+   return Algorithms::Reduction< typename Expression::DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, ( ResultType ) 0  );
 }
 
 template< typename Expression >
@@ -205,7 +205,6 @@ auto ExpressionBinaryOr( const Expression& a ) -> decltype( a[ 0 ] )
    auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a = a | b; };
    auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a = a | b; };
    return Algorithms::Reduction< typename Expression::DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, ( ResultType ) 0 );
-
 }
 
       } //namespace Expressions
