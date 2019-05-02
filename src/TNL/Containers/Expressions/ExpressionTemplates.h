@@ -50,7 +50,7 @@ struct BinaryExpressionTemplate< T1, T2, Operation, VectorVariable, VectorVariab
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
    using IsExpressionTemplate = bool;
-   
+
    static_assert( std::is_same< typename T1::DeviceType, typename T2::DeviceType >::value, "Attempt to mix operands allocated on different device types." );
    static_assert( IsStaticType< T1 >::value == IsStaticType< T2 >::value, "Attempt to mix static and non-static operands in binary expression templates." );
    static constexpr bool isStatic() { return false; }
@@ -1637,19 +1637,122 @@ exp( const Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation >
+__cuda_callable__
 typename Expressions::BinaryExpressionTemplate< L1, L2, LOperation >::RealType
 min( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-/*   using ExpressionType = Expressions::BinaryExpressionTemplate< L1, L2, LOperation >;
-   using RealType = typename ExpressionType::RealType;
-   using IndexType = typename ExpressionType::IndexType;
-
-   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return  a[ i ]; };
-   auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a = TNL::min( a, b ); };
-   auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a = TNL::min( a, b ); };
-   return Reduction< DeviceType >::reduce( v1.getSize(), reduction, volatileReduction, fetch, std::numeric_limits< ResultType >::max() );*/
+   return ExpressionMin( a );
 }
 
+template< typename L1,
+          template< typename > class LOperation,
+          typename Parameter >
+__cuda_callable__
+typename Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >::RealType
+min( const Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >& a )
+{
+   return ExpressionMin( a );
+}
+
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+__cuda_callable__
+typename Expressions::BinaryExpressionTemplate< L1, L2, LOperation >::RealType
+max( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return ExpressionMax( a );
+}
+
+template< typename L1,
+          template< typename > class LOperation,
+          typename Parameter >
+__cuda_callable__
+typename Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >::RealType
+max( const Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >& a )
+{
+   return ExpressionMax( a );
+}
+
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+__cuda_callable__
+typename Expressions::BinaryExpressionTemplate< L1, L2, LOperation >::RealType
+sum( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return ExpressionSum( a );
+}
+
+template< typename L1,
+          template< typename > class LOperation,
+          typename Parameter >
+__cuda_callable__
+typename Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >::RealType
+sum( const Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >& a )
+{
+   return ExpressionSum( a );
+}
+
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+__cuda_callable__
+typename Expressions::BinaryExpressionTemplate< L1, L2, LOperation >::RealType
+product( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return ExpressionProduct( a );
+}
+
+template< typename L1,
+          template< typename > class LOperation,
+          typename Parameter >
+__cuda_callable__
+typename Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >::RealType
+product( const Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >& a )
+{
+   return ExpressionProduct( a );
+}
+
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+__cuda_callable__
+typename Expressions::BinaryExpressionTemplate< L1, L2, LOperation >::RealType
+logicalOr( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return ExpressionLogicalOr( a );
+}
+
+template< typename L1,
+          template< typename > class LOperation,
+          typename Parameter >
+__cuda_callable__
+typename Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >::RealType
+logicalOr( const Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >& a )
+{
+   return ExpressionLogicalOr( a );
+}
+
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+__cuda_callable__
+typename Expressions::BinaryExpressionTemplate< L1, L2, LOperation >::RealType
+binaryOr( const Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return ExpressionBinaryOr( a );
+}
+
+template< typename L1,
+          template< typename > class LOperation,
+          typename Parameter >
+__cuda_callable__
+typename Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >::RealType
+binaryOr( const Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >& a )
+{
+   return ExpressionBinaryOr( a );
+}
 
 ////
 // Output stream

@@ -15,6 +15,7 @@
 #include <TNL/Containers/Expressions/ExpressionVariableType.h>
 #include <TNL/Containers/Expressions/Comparison.h>
 #include <TNL/Containers/Expressions/IsStatic.h>
+#include <TNL/Containers/Expressions/VerticalOperations.h>
 
 namespace TNL {
    namespace Containers {
@@ -1653,19 +1654,122 @@ exp( const Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation >
+__cuda_callable__
 typename Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >::RealType
 min( const Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-/*   using ExpressionType = Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >;
-   using RealType = typename ExpressionType::RealType;
-   using IndexType = typename ExpressionType::IndexType;
-
-   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return  a[ i ]; };
-   auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a = TNL::min( a, b ); };
-   auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a = TNL::min( a, b ); };
-   return Reduction< DeviceType >::reduce( v1.getSize(), reduction, volatileReduction, fetch, std::numeric_limits< ResultType >::max() );*/
+   return StaticExpressionMin( a );
 }
 
+template< typename L1,
+          template< typename > class LOperation,
+          typename Parameter >
+__cuda_callable__
+typename Expressions::StaticUnaryExpressionTemplate< L1, LOperation, Parameter >::RealType
+min( const Expressions::StaticUnaryExpressionTemplate< L1, LOperation, Parameter >& a )
+{
+   return StaticExpressionMin( a );
+}
+
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+__cuda_callable__
+typename Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >::RealType
+max( const Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return StaticExpressionMax( a );
+}
+
+template< typename L1,
+          template< typename > class LOperation,
+          typename Parameter >
+__cuda_callable__
+typename Expressions::StaticUnaryExpressionTemplate< L1, LOperation, Parameter >::RealType
+max( const Expressions::StaticUnaryExpressionTemplate< L1, LOperation, Parameter >& a )
+{
+   return StaticExpressionMax( a );
+}
+
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+__cuda_callable__
+typename Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >::RealType
+sum( const Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return StaticExpressionSum( a );
+}
+
+template< typename L1,
+          template< typename > class LOperation,
+          typename Parameter >
+__cuda_callable__
+typename Expressions::StaticUnaryExpressionTemplate< L1, LOperation, Parameter >::RealType
+sum( const Expressions::StaticUnaryExpressionTemplate< L1, LOperation, Parameter >& a )
+{
+   return StaticExpressionSum( a );
+}
+
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+__cuda_callable__
+typename Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >::RealType
+product( const Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return StaticExpressionProduct( a );
+}
+
+template< typename L1,
+          template< typename > class LOperation,
+          typename Parameter >
+__cuda_callable__
+typename Expressions::StaticUnaryExpressionTemplate< L1, LOperation, Parameter >::RealType
+product( const Expressions::StaticUnaryExpressionTemplate< L1, LOperation, Parameter >& a )
+{
+   return StaticExpressionProduct( a );
+}
+
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+__cuda_callable__
+typename Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >::RealType
+logicalOr( const Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return StaticExpressionLogicalOr( a );
+}
+
+template< typename L1,
+          template< typename > class LOperation,
+          typename Parameter >
+__cuda_callable__
+typename Expressions::StaticUnaryExpressionTemplate< L1, LOperation, Parameter >::RealType
+logicalOr( const Expressions::StaticUnaryExpressionTemplate< L1, LOperation, Parameter >& a )
+{
+   return StaticExpressionLogicalOr( a );
+}
+
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+__cuda_callable__
+typename Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >::RealType
+binaryOr( const Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return StaticExpressionBinaryOr( a );
+}
+
+template< typename L1,
+          template< typename > class LOperation,
+          typename Parameter >
+__cuda_callable__
+typename Expressions::StaticUnaryExpressionTemplate< L1, LOperation, Parameter >::RealType
+binaryOr( const Expressions::StaticUnaryExpressionTemplate< L1, LOperation, Parameter >& a )
+{
+   return StaticExpressionBinaryOr( a );
+}
 
 ////
 // Output stream

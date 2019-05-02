@@ -266,7 +266,8 @@ TYPED_TEST( StaticVectorTest, cbrt )
       v[ i ] = cbrt( u[ i ] );
    }
 
-   EXPECT_EQ( cbrt( u ), v );
+   for( int i = 0; i < size; i++ )
+      EXPECT_NEAR( cbrt( u )[ i ], v[ i ], 1.0e-6 );
 }
 
 TYPED_TEST( StaticVectorTest, pow )
