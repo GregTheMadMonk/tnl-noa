@@ -218,7 +218,7 @@ TYPED_TEST( VectorTest, abs )
       u.setElement( i, i );
 
    v = -u;
-   EXPECT_EQ( abs( v ), u );
+   EXPECT_TRUE( abs( v ) == u );
 }
 
 #endif // HAVE_GTEST

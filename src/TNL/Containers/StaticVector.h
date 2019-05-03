@@ -17,8 +17,6 @@
 namespace TNL {
 namespace Containers {
 
-
-
  /**
  * \brief Vector with constant size.
  *

@@ -175,7 +175,7 @@ setOverlaps( const SubdomainOverlapsType& lower,
 
 
    this->localOrigin = this->globalGrid.getOrigin() +
-         Containers::Scale( this->globalGrid.getSpaceSteps(),
+         Scale( this->globalGrid.getSpaceSteps(),
             ( this->globalBegin - this->lowerOverlap ) );
 
    this->localBegin = this->lowerOverlap;

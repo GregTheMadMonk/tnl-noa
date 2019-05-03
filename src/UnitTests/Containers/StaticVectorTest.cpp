@@ -191,7 +191,9 @@ TYPED_TEST( StaticVectorTest, abs )
       u[ i ] = i;
 
    VectorType v = -u;
-   EXPECT_EQ( abs( v ), u );
+   // TODO: replace with EXPECT_EQ when nvcc accepts it
+   //EXPECT_EQ( abs( v ), u );
+   EXPECT_TRUE( abs( v ) == u );
 }
 
 TYPED_TEST( StaticVectorTest, sin )
@@ -206,7 +208,9 @@ TYPED_TEST( StaticVectorTest, sin )
       v[ i ] = sin( u[ i ] );
    }
 
-   EXPECT_EQ( sin( u ), v );
+   // TODO: replace with EXPECT_EQ when nvcc accepts it
+   //EXPECT_EQ( sin( u ), v );
+   EXPECT_TRUE( sin( u ) == v );
 }
 
 TYPED_TEST( StaticVectorTest, cos )
@@ -221,7 +225,9 @@ TYPED_TEST( StaticVectorTest, cos )
       v[ i ] = cos( u[ i ] );
    }
 
-   EXPECT_EQ( cos( u ), v );
+   // TODO: replace with EXPECT_EQ when nvcc accepts it
+   //EXPECT_EQ( cos( u ), v );
+   EXPECT_TRUE( cos( u ) == v );
 }
 
 TYPED_TEST( StaticVectorTest, tan )
@@ -236,7 +242,9 @@ TYPED_TEST( StaticVectorTest, tan )
       v[ i ] = tan( u[ i ] );
    }
 
-   EXPECT_EQ( tan( u ), v );
+   // TODO: replace with EXPECT_EQ when nvcc accepts it
+   //EXPECT_EQ( tan( u ), v );
+   EXPECT_TRUE( tan( u ) == v );
 }
 
 TYPED_TEST( StaticVectorTest, sqrt )
@@ -251,7 +259,9 @@ TYPED_TEST( StaticVectorTest, sqrt )
       v[ i ] = sqrt( u[ i ] );
    }
 
-   EXPECT_EQ( sqrt( u ), v );
+   // TODO: replace with EXPECT_EQ when nvcc accepts it
+   //EXPECT_EQ( sqrt( u ), v );
+   EXPECT_TRUE( sqrt( u ) == v );
 }
 
 TYPED_TEST( StaticVectorTest, cbrt )
@@ -284,8 +294,11 @@ TYPED_TEST( StaticVectorTest, pow )
       w[ i ] = pow( u[ i ], 3.0 );
    }
 
-   EXPECT_EQ( pow( u, 2.0 ), v );
-   EXPECT_EQ( pow( u, 3.0 ), w );
+   // TODO: replace with EXPECT_EQ when nvcc accepts it
+   //EXPECT_EQ( pow( u, 2.0 ), v );
+   //EXPECT_EQ( pow( u, 3.0 ), w );
+   EXPECT_TRUE( pow( u, 2.0 ) == v );
+   EXPECT_TRUE( pow( u, 3.0 ) == w );
 }
 
 TYPED_TEST( StaticVectorTest, floor )
@@ -300,7 +313,9 @@ TYPED_TEST( StaticVectorTest, floor )
       v[ i ] = floor( u[ i ] );
    }
 
-   EXPECT_EQ( floor( u ), v );
+   // TODO: replace with EXPECT_EQ when nvcc accepts it
+   //EXPECT_EQ( floor( u ), v );
+   EXPECT_TRUE( floor( u ) == v );
 }
 
 TYPED_TEST( StaticVectorTest, ceil )
@@ -315,7 +330,9 @@ TYPED_TEST( StaticVectorTest, ceil )
       v[ i ] = ceil( u[ i ] );
    }
 
-   EXPECT_EQ( ceil( u ), v );
+   // TODO: replace with EXPECT_EQ when nvcc accepts it
+   //EXPECT_EQ( ceil( u ), v );
+   EXPECT_TRUE( ceil( u ) == v );
 }
 
 TYPED_TEST( StaticVectorTest, acos )
@@ -330,7 +347,9 @@ TYPED_TEST( StaticVectorTest, acos )
       v[ i ] = acos( u[ i ] );
    }
 
-   EXPECT_EQ( acos( u ), v );
+   // TODO: replace with EXPECT_EQ when nvcc accepts it
+   //EXPECT_EQ( acos( u ), v );
+   EXPECT_TRUE( acos( u ) == v );
 }
 
 TYPED_TEST( StaticVectorTest, asin )
@@ -345,7 +364,9 @@ TYPED_TEST( StaticVectorTest, asin )
       v[ i ] = asin( u[ i ] );
    }
 
-   EXPECT_EQ( asin( u ), v );
+   // TODO: replace with EXPECT_EQ when nvcc accepts it
+   //EXPECT_EQ( asin( u ), v );
+   EXPECT_TRUE( asin( u ) == v );
 }
 
 TYPED_TEST( StaticVectorTest, atan )
@@ -360,7 +381,9 @@ TYPED_TEST( StaticVectorTest, atan )
       v[ i ] = atan( u[ i ] );
    }
 
-   EXPECT_EQ( atan( u ), v );
+   // TODO: replace with EXPECT_EQ when nvcc accepts it
+   //EXPECT_EQ( atan( u ), v );
+   EXPECT_TRUE( atan( u ) == v );
 }
 
 TYPED_TEST( StaticVectorTest, cosh )
@@ -393,7 +416,9 @@ TYPED_TEST( StaticVectorTest, tanh )
       v[ i ] = tanh( u[ i ] );
    }
 
-   EXPECT_EQ( tanh( u ), v );
+   // TODO: replace with EXPECT_EQ when nvcc accepts it
+   //EXPECT_EQ( tanh( u ), v );
+   EXPECT_TRUE( tanh( u ) == v );
 }
 
 TYPED_TEST( StaticVectorTest, log )
@@ -408,7 +433,9 @@ TYPED_TEST( StaticVectorTest, log )
       v[ i ] = log( u[ i ] );
    }
 
-   EXPECT_EQ( log( u ), v );
+   // TODO: replace with EXPECT_EQ when nvcc accepts it
+   //EXPECT_EQ( log( u ), v );
+   EXPECT_TRUE( log( u ) == v );
 }
 
 TYPED_TEST( StaticVectorTest, log10 )
@@ -441,7 +468,9 @@ TYPED_TEST( StaticVectorTest, log2 )
       v[ i ] = log2( u[ i ] );
    }
 
-   EXPECT_EQ( log2( u ), v );
+   // TODO: replace with EXPECT_EQ when nvcc accepts it
+   //EXPECT_EQ( log2( u ), v );
+   EXPECT_TRUE( log2( u ) == v );
 }
 
 TYPED_TEST( StaticVectorTest, exp )
@@ -456,7 +485,9 @@ TYPED_TEST( StaticVectorTest, exp )
       v[ i ] = exp( u[ i ] );
    }
 
-   EXPECT_EQ( exp( u ), v );
+   // TODO: replace with EXPECT_EQ when nvcc accepts it
+   //EXPECT_EQ( exp( u ), v );
+   EXPECT_TRUE( exp( u ) == v );
 }
 
 TYPED_TEST( StaticVectorTest, sign )
@@ -471,7 +502,8 @@ TYPED_TEST( StaticVectorTest, sign )
       v[ i ] = sign( u[ i ] );
    }
 
-   EXPECT_EQ( sign( u ), v );
+   // TODO: replace with EXPECT_EQ when nvcc accepts it
+   EXPECT_TRUE( sign( u ) == v );
 }
 
 TYPED_TEST( StaticVectorTest, lpNorm )
@@ -490,6 +522,52 @@ TYPED_TEST( StaticVectorTest, lpNorm )
    EXPECT_EQ( v.lpNorm( 2.0 ), expectedL2norm );
    EXPECT_NEAR( v.lpNorm( 3.0 ), expectedL3norm, epsilon );
 }
+
+TYPED_TEST( StaticVectorTest, verticalOperations )
+{
+   using VectorType = typename TestFixture::VectorType;
+
+   using RealType = typename VectorType::RealType;
+   constexpr int size = VectorType::size;
+
+   VectorType u, v;
+   RealType sum_( 0.0 ), absSum( 0.0 ), diffSum( 0.0 ), diffAbsSum( 0.0 ),
+   absMin( size + 10.0 ), absMax( -size - 10.0 ),
+   diffMin( 2 * size + 10.0 ), diffMax( - 2.0 * size - 10.0 ),
+   l2Norm( 0.0 ), l2NormDiff( 0.0 );
+   for( int i = 0; i < size; i++ )
+   {
+      const RealType aux = ( RealType )( i - size / 2 ) / ( RealType ) size;
+      u[ i, aux ];
+      v[ i, -aux ];
+      absMin = TNL::min( absMin, TNL::abs( aux ) );
+      absMax = TNL::max( absMax, TNL::abs( aux ) );
+      diffMin = TNL::min( diffMin, 2 * aux );
+      diffMax = TNL::max( diffMax, 2 * aux );
+      sum_ += aux;
+      absSum += TNL::abs( aux );
+      diffSum += 2.0 * aux;
+      diffAbsSum += TNL::abs( 2.0* aux );
+      l2Norm += aux * aux;
+      l2NormDiff += 4.0 * aux * aux;
+   }
+   l2Norm = TNL::sqrt( l2Norm );
+   l2NormDiff = TNL::sqrt( l2NormDiff );
+
+
+   EXPECT_EQ( min( u ), u[ 0 ] );
+   EXPECT_EQ( max( u ), u[ size - 1 ] );
+   EXPECT_NEAR( sum( u ), sum_, 2.0e-5 );
+   EXPECT_EQ( min( abs( u ) ), absMin );
+   EXPECT_EQ( max( abs( u ) ), absMax );
+   EXPECT_EQ( min( u - v ), diffMin );
+   EXPECT_EQ( max( u - v ), diffMax );
+   EXPECT_NEAR( sum( u - v ), diffSum, 2.0e-5 );
+   EXPECT_NEAR( sum( abs( u - v ) ), diffAbsSum, 2.0e-5 );
+   EXPECT_NEAR( lpNorm( u, 2.0 ), l2Norm, 2.0e-5 );
+   EXPECT_NEAR( lpNorm( u - v, 2.0 ), l2NormDiff, 2.0e-5 );
+}
+
 #endif
 
 

@@ -468,14 +468,15 @@ TYPED_TEST( ArrayViewTest, assignmentOperator )
 
    v.setValue( 0 );
    v = u;
-   EXPECT_EQ( u, v );
+   EXPECT_TRUE( u == v );
    EXPECT_EQ( v.getData(), b.getData() );
 
    // assignment from host to device
    //v.setValue( 0 );
    v = 0;
    v = u_host;
-   EXPECT_EQ( u, v );
+   // TODO: Replace with EXPECT_EQ when nvcc accepts it
+   EXPECT_TRUE( u == v );
    EXPECT_EQ( v.getData(), b.getData() );
 
    // assignment from device to host

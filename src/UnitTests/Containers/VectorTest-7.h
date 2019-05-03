@@ -31,25 +31,50 @@ using namespace TNL::Arithmetics;
 // and large enough to require multiple CUDA blocks for reduction
 constexpr int VECTOR_TEST_SIZE = 500;
 
-TYPED_TEST( VectorTest, min )
+TYPED_TEST( VectorTest, verticalOperations )
 {
    using VectorType = typename TestFixture::VectorType;
    using ViewType = typename TestFixture::ViewType;
    using RealType = typename VectorType::RealType;
    const int size = VECTOR_TEST_SIZE;
 
-   VectorType _u( size );
-   ViewType u( _u );
+   VectorType _u( size ), _v( size );
+   ViewType u( _u ), v( _v );
+   RealType sum_( 0.0 ), absSum( 0.0 ), diffSum( 0.0 ), diffAbsSum( 0.0 ),
+   absMin( size + 10.0 ), absMax( -size - 10.0 ),
+   diffMin( 2 * size + 10.0 ), diffMax( - 2.0 * size - 10.0 ),
+   l2Norm( 0.0 ), l2NormDiff( 0.0 );
    for( int i = 0; i < size; i++ )
    {
-      u.setElement( i, ( RealType )( i - size / 2 ) / ( RealType ) size );
+      const RealType aux = ( RealType )( i - size / 2 ) / ( RealType ) size;
+      u.setElement( i, aux );
+      v.setElement( i, -aux );
+      absMin = TNL::min( absMin, TNL::abs( aux ) );
+      absMax = TNL::max( absMax, TNL::abs( aux ) );
+      diffMin = TNL::min( diffMin, 2 * aux );
+      diffMax = TNL::max( diffMax, 2 * aux );
+      sum_ += aux;
+      absSum += TNL::abs( aux );
+      diffSum += 2.0 * aux;
+      diffAbsSum += TNL::abs( 2.0* aux );
+      l2Norm += aux * aux;
+      l2NormDiff += 4.0 * aux * aux;
    }
+   l2Norm = TNL::sqrt( l2Norm );
+   l2NormDiff = TNL::sqrt( l2NormDiff );
 
    EXPECT_EQ( min( u ), u.getElement( 0 ) );
-   //for( int i = 0; i < size; i++ )
-   //   EXPECT_NEAR( acos( u ).getElement( i ), v.getElement( i ), 1.0e-6 );
+   EXPECT_EQ( max( u ), u.getElement( size - 1 ) );
+   EXPECT_NEAR( sum( u ), sum_, 2.0e-5 );
+   EXPECT_EQ( min( abs( u ) ), absMin );
+   EXPECT_EQ( max( abs( u ) ), absMax );
+   EXPECT_EQ( min( u - v ), diffMin );
+   EXPECT_EQ( max( u - v ), diffMax );
+   EXPECT_NEAR( sum( u - v ), diffSum, 2.0e-5 );
+   EXPECT_NEAR( sum( abs( u - v ) ), diffAbsSum, 2.0e-5 );
+   EXPECT_NEAR( lpNorm( u, 2.0 ), l2Norm, 2.0e-5 );
+   EXPECT_NEAR( lpNorm( u - v, 2.0 ), l2NormDiff, 2.0e-5 );
 }
-
 
 #endif // HAVE_GTEST
 
