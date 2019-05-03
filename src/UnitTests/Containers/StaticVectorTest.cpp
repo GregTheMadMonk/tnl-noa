@@ -538,8 +538,8 @@ TYPED_TEST( StaticVectorTest, verticalOperations )
    for( int i = 0; i < size; i++ )
    {
       const RealType aux = ( RealType )( i - size / 2 ) / ( RealType ) size;
-      u[ i, aux ];
-      v[ i, -aux ];
+      u[ i ] = aux;
+      v[ i ] = -aux;
       absMin = TNL::min( absMin, TNL::abs( aux ) );
       absMax = TNL::max( absMax, TNL::abs( aux ) );
       diffMin = TNL::min( diffMin, 2 * aux );
