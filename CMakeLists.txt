@@ -317,6 +317,11 @@ if( ${WITH_TESTS} )
    endif()
 endif()
 
+FindBLAS()
+if( BLAS_FOUND )
+   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_BLAS" )
+   include_directories( ${JPEG_INCLUDE_DIRS} )
+endif()
 #if( BUILD_MPI )
 #   FIND_PATH( PETSC_INCLUDE_DIR petsc.h
 #     /usr/include/petsc
