@@ -18,6 +18,8 @@
 
 #include <TNL/Containers/Vector.h>
 
+#include "blasWrappers.h"
+
 #ifdef HAVE_CUDA
 #include "cublasWrappers.h"
 #endif
