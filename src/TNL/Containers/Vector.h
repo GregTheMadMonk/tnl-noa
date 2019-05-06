@@ -18,7 +18,7 @@ namespace Containers {
 
 template< typename Real, typename Device, typename Index >
 class VectorView;
-   
+
 /**
  * \brief This class extends TNL::Array with algebraic operations.
  *
@@ -180,13 +180,13 @@ public:
    __cuda_callable__ const Real& operator[]( const Index& i ) const;
 
    Vector& operator = ( const Vector& v );
-   
+
    template< typename Real_, typename Device_, typename Index_ >
    Vector& operator = ( const Vector< Real_, Device_, Index_ >& v );
 
    template< typename Real_, typename Device_, typename Index_ >
    Vector& operator = ( const VectorView< Real_, Device_, Index_ >& v );
-   
+
    template< typename VectorExpression >
    Vector& operator = ( const VectorExpression& expression );
 
@@ -225,6 +225,14 @@ public:
     */
    template< typename Scalar >
    Vector& operator /= ( const Scalar c );
+
+   /**
+    * \brief Scalar product
+    * @param v
+    * @return
+    */
+   template< typename Vector_ >
+   Real operator, ( const Vector_& v ) const;
 
    /**
     * \brief Returns the maximum value out of all vector elements.

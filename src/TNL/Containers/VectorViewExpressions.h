@@ -515,36 +515,6 @@ sign( const Containers::VectorView< Real, Device, Index >& a )
    return Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Sign >( a );
 }
 
-
-////
-// TODO: Replace this with multiplication when its safe
-template< typename Real, typename Device, typename Index, typename ET >
-__cuda_callable__
-Containers::VectorView< Real, Device, Index >
-Scale( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
-{
-   Containers::VectorView< Real, Device, Index > result = Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, ET, Containers::Expressions::Multiplication >( a, b );
-   return result;
-}
-
-template< typename ET, typename Real, typename Device, typename Index >
-__cuda_callable__
-Containers::Expressions::BinaryExpressionTemplate< ET, Containers::VectorView< Real, Device, Index >, Containers::Expressions::Multiplication >
-Scale( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
-{
-   Containers::VectorView< Real, Device, Index > result =  Containers::Expressions::BinaryExpressionTemplate< ET, Containers::VectorView< Real, Device, Index >, Containers::Expressions::Multiplication >( a, b );
-   return result;
-}
-
-template< typename Real1, typename Real2, typename Device, typename Index >
-__cuda_callable__
-Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real1, Device, Index >, Containers::VectorView< Real2, Device, Index >, Containers::Expressions::Multiplication >
-Scale( const Containers::VectorView< Real1, Device, Index >& a, const Containers::VectorView< Real2, Device, Index >& b )
-{
-   Containers::VectorView< Real1, Device, Index > result =  Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real1, Device, Index >, Containers::VectorView< Real2, Device, Index >, Containers::Expressions::Multiplication >( a, b );
-   return result;
-}
-
 ////
 // Vertical operations - min
 template< typename Real,
@@ -627,6 +597,59 @@ typename Containers::VectorView< Real, Device, Index >::RealType
 binaryAnd( const Containers::VectorView< Real, Device, Index >& a )
 {
    return Containers::Expressions::ExpressionBinaryAnd( a );
+}
+
+////
+// Scalar product
+template< typename Real, typename Device, typename Index, typename ET >
+__cuda_callable__
+Real operator,( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
+{
+   return TNL::sum( a * b );
+}
+
+template< typename ET, typename Real, typename Device, typename Index >
+__cuda_callable__
+Real operator,( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
+{
+   return TNL::sum( a * b );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index >
+__cuda_callable__
+auto operator,( const Containers::VectorView< Real1, Device, Index >& a, const Containers::VectorView< Real2, Device, Index >& b )
+->decltype( TNL::sum( a * b ) )
+{
+   return TNL::sum( a * b );
+}
+
+////
+// TODO: Replace this with multiplication when its safe
+template< typename Real, typename Device, typename Index, typename ET >
+__cuda_callable__
+Containers::VectorView< Real, Device, Index >
+Scale( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
+{
+   Containers::VectorView< Real, Device, Index > result = Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, ET, Containers::Expressions::Multiplication >( a, b );
+   return result;
+}
+
+template< typename ET, typename Real, typename Device, typename Index >
+__cuda_callable__
+Containers::Expressions::BinaryExpressionTemplate< ET, Containers::VectorView< Real, Device, Index >, Containers::Expressions::Multiplication >
+Scale( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
+{
+   Containers::VectorView< Real, Device, Index > result =  Containers::Expressions::BinaryExpressionTemplate< ET, Containers::VectorView< Real, Device, Index >, Containers::Expressions::Multiplication >( a, b );
+   return result;
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index >
+__cuda_callable__
+Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real1, Device, Index >, Containers::VectorView< Real2, Device, Index >, Containers::Expressions::Multiplication >
+Scale( const Containers::VectorView< Real1, Device, Index >& a, const Containers::VectorView< Real2, Device, Index >& b )
+{
+   Containers::VectorView< Real1, Device, Index > result =  Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real1, Device, Index >, Containers::VectorView< Real2, Device, Index >, Containers::Expressions::Multiplication >( a, b );
+   return result;
 }
 
 } // namespace TNL

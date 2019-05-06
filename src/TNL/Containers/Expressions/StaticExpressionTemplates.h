@@ -1824,4 +1824,61 @@ binaryOr( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOpe
    return StaticExpressionBinaryOr( a );
 }
 
+////
+// Scalar product
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation,
+          typename R1,
+          typename R2,
+          template< typename, typename > class ROperation >
+__cuda_callable__
+auto
+operator,( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
+           const Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
+-> decltype( TNL::sum( a * b ) )
+{
+   return TNL::sum( a * b );
+}
+
+template< typename T1,
+          typename T2,
+          template< typename, typename > class Operation >
+__cuda_callable__
+auto
+operator,( const Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& a,
+           const typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
+-> decltype( TNL::sum( a * b ) )
+{
+   return TNL::sum( a * b );
+}
+
+template< typename L1,
+          template< typename > class LOperation,
+          typename R1,
+          typename R2,
+          template< typename, typename > class ROperation >
+__cuda_callable__
+auto
+operator,( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a,
+           const typename Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
+-> decltype( TNL::sum( a * b ) )
+{
+   return TNL::sum( a * b );
+}
+
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation,
+          typename R1,
+          template< typename > class ROperation >
+__cuda_callable__
+auto
+operator,( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
+           const typename Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation >& b )
+-> decltype( TNL::sum( a * b ) )
+{
+   return TNL::sum( a * b );
+}
+
 } // namespace TNL

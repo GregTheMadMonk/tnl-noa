@@ -197,6 +197,18 @@ operator!=( const VectorView< Real_, Device_, Index_ >& v )
    return !ArrayView< Real, Device, Index >::operator ==( v );
 }
 
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename Vector_ >
+typename VectorView< Real, Device, Index >::NonConstReal
+VectorView< Real, Device, Index >::
+operator,( const Vector_& v ) const
+{
+   static_assert( std::is_same< DeviceType, typename Vector_::DeviceType >::value, "Cannot compute product of vectors allocated on different devices." );
+   return Algorithms::VectorOperations< Device >::getScalarProduct( *this, v );
+}
+
 
 template< typename Real,
           typename Device,

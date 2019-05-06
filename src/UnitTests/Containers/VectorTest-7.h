@@ -76,6 +76,27 @@ TYPED_TEST( VectorTest, verticalOperations )
    EXPECT_NEAR( lpNorm( u - v, 2.0 ), l2NormDiff, 2.0e-5 );
 }
 
+TYPED_TEST( VectorTest, scalarProduct )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   using RealType = typename VectorType::RealType;
+   const int size = VECTOR_TEST_SIZE;
+
+   VectorType _u( size ), _v( size );
+   ViewType u( _u ), v( _v );
+   RealType aux( 0.0 );
+   for( int i = 0; i < size; i++ )
+   {
+      const RealType x = i;
+      const RealType y = size / 2 - i;
+      u.setElement( i, x );
+      v.setElement( i, y );
+      aux += x * y;
+   }
+   EXPECT_NEAR( ( u, v ), aux, 1.0e-5 );
+}
+
 #endif // HAVE_GTEST
 
 

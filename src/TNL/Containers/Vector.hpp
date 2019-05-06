@@ -332,6 +332,17 @@ Real Vector< Real, Device, Index >::min() const
 template< typename Real,
           typename Device,
           typename Index >
+   template< typename Vector_ >
+Real Vector< Real, Device, Index >::
+operator,( const Vector_& v ) const
+{
+   static_assert( std::is_same< DeviceType, typename Vector_::DeviceType >::value, "Cannot compute product of vectors allocated on different devices." );
+   return Algorithms::VectorOperations< Device >::getScalarProduct( *this, v );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 Real Vector< Real, Device, Index >::absMax() const
 {
    return Algorithms::VectorOperations< Device >::getVectorAbsMax( *this );

@@ -589,6 +589,32 @@ binaryAnd( const Containers::StaticVector< Size, Real >& a )
 }
 
 ////
+// Scalar product
+template< int Size, typename Real, typename ET >
+__cuda_callable__
+auto operator,( const Containers::StaticVector< Size, Real >& a, const ET& b )
+->decltype( TNL::sum( a * b ) )
+{
+   return TNL::sum( a * b );
+}
+
+template< typename ET, int Size, typename Real >
+__cuda_callable__
+auto operator,( const ET& a, const Containers::StaticVector< Size, Real >& b )
+->decltype( TNL::sum( a * b ) )
+{
+   return TNL::sum( a * b );
+}
+
+template< typename Real1, int Size, typename Real2 >
+__cuda_callable__
+auto operator,( const Containers::StaticVector< Size, Real1 >& a, const Containers::StaticVector< Size, Real2 >& b )
+->decltype( TNL::sum( a * b ) )
+{
+   return TNL::sum( a * b );
+}
+
+////
 // TODO: Replace this with multiplication when its safe
 template< int Size, typename Real, typename ET >
 __cuda_callable__
