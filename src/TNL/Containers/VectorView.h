@@ -193,3 +193,4 @@ public:
 } // namespace TNL
 
 #include <TNL/Containers/VectorView_impl.h>
+#include <TNL/Containers/VectorViewExpressions.h>

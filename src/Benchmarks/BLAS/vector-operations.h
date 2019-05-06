@@ -31,8 +31,11 @@ bool
 benchmarkVectorOperations( Benchmark & benchmark,
                            const long & size )
 {
-   typedef Containers::Vector< Real, Devices::Host, Index > HostVector;
-   typedef Containers::Vector< Real, Devices::Cuda, Index > CudaVector;
+   using HostVector = Containers::Vector< Real, Devices::Host, Index >;
+   using CudaVector =  Containers::Vector< Real, Devices::Cuda, Index >;
+   using HostView = Containers::VectorView< Real, Devices::Host, Index >;
+   using CudaView =  Containers::VectorView< Real, Devices::Cuda, Index >;
+
    using namespace std;
 
    double datasetSize = (double) size * sizeof( Real ) / oneGB;
@@ -45,6 +48,9 @@ benchmarkVectorOperations( Benchmark & benchmark,
    deviceVector.setSize( size );
    deviceVector2.setSize( size );
 #endif
+
+   HostView hostView( hostVector ), hostView2( hostVector2 );
+   CudaView deviceView( deviceVector ), deviceView2( deviceVector2 );
 
    Real resultHost, resultDevice;
 
@@ -89,10 +95,19 @@ benchmarkVectorOperations( Benchmark & benchmark,
    auto maxCuda = [&]() {
       resultDevice = deviceVector.max();
    };
+   auto maxHostET = [&]() {
+      resultHost = max( hostView );
+   };
+   auto maxCudaET = [&]() {
+      resultDevice = max( deviceView );
+   };
+
    benchmark.setOperation( "max", datasetSize );
    benchmark.time< Devices::Host >( reset1, "CPU", maxHost );
+   benchmark.time< Devices::Host >( reset1, "CPU ET", maxHostET );
 #ifdef HAVE_CUDA
    benchmark.time< Devices::Cuda >( reset1, "GPU", maxCuda );
+   benchmark.time< Devices::Cuda >( reset1, "GPU ET", maxCudaET );
 #endif
 
 
@@ -115,6 +130,13 @@ benchmarkVectorOperations( Benchmark & benchmark,
    auto absMaxCuda = [&]() {
       resultDevice = deviceVector.absMax();
    };
+   auto absMaxHostET = [&]() {
+      resultHost = max( abs( hostView ) );
+   };
+   auto absMaxCudaET = [&]() {
+      resultDevice = max( abs( deviceView ) );
+   };
+   
 #ifdef HAVE_CUDA
    auto absMaxCublas = [&]() {
       int index = 0;
@@ -126,8 +148,10 @@ benchmarkVectorOperations( Benchmark & benchmark,
 #endif
    benchmark.setOperation( "absMax", datasetSize );
    benchmark.time< Devices::Host >( reset1, "CPU", absMaxHost );
+   benchmark.time< Devices::Host >( reset1, "CPU ET", absMaxHostET );
 #ifdef HAVE_CUDA
    benchmark.time< Devices::Cuda >( reset1, "GPU", absMaxCuda );
+   benchmark.time< Devices::Cuda >( reset1, "GPU ET", absMaxCudaET );
    benchmark.time< Devices::Cuda >( reset1, "cuBLAS", absMaxCublas );
 #endif
 
