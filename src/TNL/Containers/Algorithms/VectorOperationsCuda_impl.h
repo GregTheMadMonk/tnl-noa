@@ -403,18 +403,27 @@ vectorAddVectorCudaKernel( Real1* y,
 template< typename Vector1, typename Vector2, typename Scalar1, typename Scalar2 >
 void
 VectorOperations< Devices::Cuda >::
-addVector( Vector1& y,
+addVector( Vector1& _y,
            const Vector2& x,
            const Scalar1 alpha,
            const Scalar2 thisMultiplicator )
 {
    TNL_ASSERT_GT( x.getSize(), 0, "Vector size must be positive." );
-   TNL_ASSERT_EQ( x.getSize(), y.getSize(), "The vector sizes must be the same." );
+   TNL_ASSERT_EQ( x.getSize(), _y.getSize(), "The vector sizes must be the same." );
 
 #ifdef HAVE_CUDA
-   typedef typename Vector1::IndexType Index;
+   using IndexType = typename Vector1::IndexType;
+   using RealType = typename Vector1::RealType;
 
-   const Index& size = x.getSize();
+   RealType* y = _y.getData();
+   auto add1 = [=] __cuda_callable__ ( IndexType i ) { y[ i ] += alpha * x[ i ]; };
+   auto add2 = [=] __cuda_callable__ ( IndexType i ) { y[ i ] = thisMultiplicator * y[ i ] + alpha * x[ i ]; };
+
+   if( thisMultiplicator == 1.0 )
+      ParallelFor< Devices::Cuda >::exec( ( IndexType ) 0, _y.getSize(), add1 );
+   else
+      ParallelFor< Devices::Cuda >::exec( ( IndexType ) 0, _y.getSize(), add2 );
+   /*const Index& size = x.getSize();
    dim3 cudaBlockSize( 256 );
    dim3 cudaBlocks;
    cudaBlocks.x = TNL::min( Devices::Cuda::getMaxGridSize(), Devices::Cuda::getNumberOfBlocks( size, cudaBlockSize.x ) );
@@ -423,7 +432,7 @@ addVector( Vector1& y,
                                                                x.getData(),
                                                                size,
                                                                alpha,
-                                                               thisMultiplicator);
+                                                               thisMultiplicator);*/
    TNL_CHECK_CUDA_DEVICE;
 #else
    throw Exceptions::CudaSupportMissing();

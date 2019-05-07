@@ -44,17 +44,17 @@ benchmarkVectorOperations( Benchmark & benchmark,
 
    double datasetSize = (double) size * sizeof( Real ) / oneGB;
 
-   HostVector hostVector, hostVector2;
-   CudaVector deviceVector, deviceVector2;
-   hostVector.setSize( size );
-   hostVector2.setSize( size );
+   HostVector hostVector( size ), hostVector2( size ), hostVector3( size ), hostVector4( size );
+   CudaVector deviceVector, deviceVector2, deviceVector3, deviceVector4;
 #ifdef HAVE_CUDA
    deviceVector.setSize( size );
    deviceVector2.setSize( size );
+   deviceVector3.setSize( size );
+   deviceVector4.setSize( size );
 #endif
 
-   HostView hostView( hostVector ), hostView2( hostVector2 );
-   CudaView deviceView( deviceVector ), deviceView2( deviceVector2 );
+   HostView hostView( hostVector ), hostView2( hostVector2 ), hostView3( hostVector3 ), hostView4( hostVector4 );
+   CudaView deviceView( deviceVector ), deviceView2( deviceVector2 ), deviceView3( deviceVector3 ), deviceView4( deviceVector4 );
 
    Real resultHost, resultDevice;
 
@@ -84,12 +84,28 @@ benchmarkVectorOperations( Benchmark & benchmark,
       deviceVector2.setValue( 1.0 );
 #endif
    };
-   auto reset12 = [&]() {
-      reset1();
-      reset2();
+   auto reset3 = [&]() {
+      hostVector3.setValue( 1.0 );
+#ifdef HAVE_CUDA
+      deviceVector3.setValue( 1.0 );
+#endif
+   };
+   auto reset4 = [&]() {
+      hostVector4.setValue( 1.0 );
+#ifdef HAVE_CUDA
+      deviceVector4.setValue( 1.0 );
+#endif
    };
 
-   reset12();
+
+   auto resetAll = [&]() {
+      reset1();
+      reset2();
+      reset3();
+      reset4();
+   };
+
+   resetAll();
 
    ////
    // Max
@@ -168,7 +184,9 @@ benchmarkVectorOperations( Benchmark & benchmark,
    benchmark.setOperation( "absMax", datasetSize );
    benchmark.time< Devices::Host >( reset1, "CPU", absMaxHost );
    benchmark.time< Devices::Host >( reset1, "CPU ET", absMaxHostET );
+#ifdef HAVE_BLAS
    benchmark.time< Devices::Host >( reset1, "CPU BLAS", absMaxBlas );
+#endif
 #ifdef HAVE_CUDA
    benchmark.time< Devices::Cuda >( reset1, "GPU", absMaxCuda );
    benchmark.time< Devices::Cuda >( reset1, "GPU ET", absMaxCudaET );
@@ -250,6 +268,11 @@ benchmarkVectorOperations( Benchmark & benchmark,
    auto l1normCudaET = [&]() {
       resultDevice = lpNorm( deviceView, 1.0 );
    };
+#ifdef HAVE_BLAS
+   auto l1normBlas = [&]() {
+      resultHost = blasGasum( size, hostVector.getData(), 1 );
+   };
+#endif
 #ifdef HAVE_CUDA
    auto l1normCublas = [&]() {
       cublasGasum( cublasHandle, size,
@@ -260,6 +283,9 @@ benchmarkVectorOperations( Benchmark & benchmark,
    benchmark.setOperation( "l1 norm", datasetSize );
    benchmark.time< Devices::Host >( reset1, "CPU", l1normHost );
    benchmark.time< Devices::Host >( reset1, "CPU ET", l1normHostET );
+#ifdef HAVE_BLAS
+   benchmark.time< Devices::Host >( reset1, "CPU BLAS", l1normBlas );
+#endif
 #ifdef HAVE_CUDA
    benchmark.time< Devices::Cuda >( reset1, "GPU", l1normCuda );
    benchmark.time< Devices::Cuda >( reset1, "GPU ET", l1normCudaET );
@@ -295,7 +321,9 @@ benchmarkVectorOperations( Benchmark & benchmark,
    benchmark.setOperation( "l2 norm", datasetSize );
    benchmark.time< Devices::Host >( reset1, "CPU", l2normHost );
    benchmark.time< Devices::Host >( reset1, "CPU ET", l2normHostET );
+#ifdef HAVE_BLAS
    benchmark.time< Devices::Host >( reset1, "CPU BLAS", l2normBlas );
+#endif
 #ifdef HAVE_CUDA
    benchmark.time< Devices::Cuda >( reset1, "GPU", l2normCuda );
    benchmark.time< Devices::Cuda >( reset1, "GPU ET", l2normCudaET );
@@ -356,7 +384,9 @@ benchmarkVectorOperations( Benchmark & benchmark,
    benchmark.setOperation( "scalar product", 2 * datasetSize );
    benchmark.time< Devices::Host >( reset1, "CPU", scalarProductHost );
    benchmark.time< Devices::Host >( reset1, "CPU ET", scalarProductHostET );
+#ifdef HAVE_BLAS
    benchmark.time< Devices::Host >( reset1, "CPU BLAS", scalarProductBlas );
+#endif
 #ifdef HAVE_CUDA
    benchmark.time< Devices::Cuda >( reset1, "GPU", scalarProductCuda );
    benchmark.time< Devices::Cuda >( reset1, "GPU ET", scalarProductCudaET );
@@ -450,15 +480,129 @@ benchmarkVectorOperations( Benchmark & benchmark,
    };
 #endif
    benchmark.setOperation( "vector addition", 3 * datasetSize );
-   benchmark.time< Devices::Host >( reset1, "CPU", addVectorHost );
-   benchmark.time< Devices::Host >( reset1, "CPU ET", addVectorHostET );
-   benchmark.time< Devices::Host >( reset1, "CPU BLAS", addVectorBlas );
+   benchmark.time< Devices::Host >( resetAll, "CPU", addVectorHost );
+   benchmark.time< Devices::Host >( resetAll, "CPU ET", addVectorHostET );
+#ifdef HAVE_BLAS
+   benchmark.time< Devices::Host >( resetAll, "CPU BLAS", addVectorBlas );
+#endif
 #ifdef HAVE_CUDA
-   benchmark.time< Devices::Cuda >( reset1, "GPU", addVectorCuda );
-   benchmark.time< Devices::Cuda >( reset1, "GPU ET", addVectorCudaET );
-   benchmark.time< Devices::Cuda >( reset1, "cuBLAS", addVectorCublas );
+   benchmark.time< Devices::Cuda >( resetAll, "GPU", addVectorCuda );
+   benchmark.time< Devices::Cuda >( resetAll, "GPU ET", addVectorCudaET );
+   benchmark.time< Devices::Cuda >( resetAll, "cuBLAS", addVectorCublas );
 #endif
 
+   ////
+   // Two vectors addition
+   auto addTwoVectorsHost = [&]() {
+      hostVector.addVector( hostVector2 );
+      hostVector.addVector( hostVector3 );
+   };
+   auto addTwoVectorsCuda = [&]() {
+      deviceVector.addVector( deviceVector2 );
+      deviceVector.addVector( deviceVector3 );
+   };
+   auto addTwoVectorsHostET = [&]() {
+      hostView += hostView2 + hostView3;
+   };
+   auto addTwoVectorsCudaET = [&]() {
+      deviceView += deviceView2 + deviceView3;
+   };
+#ifdef HAVE_BLAS
+   auto addTwoVectorsBlas = [&]() {
+      const Real alpha = 1.0;
+      blasGaxpy( size, alpha,
+                 hostVector2.getData(), 1,
+                 hostVector.getData(), 1 );
+      blasGaxpy( size, alpha,
+                 hostVector3.getData(), 1,
+                 hostVector.getData(), 1 );
+   };
+#endif
+#ifdef HAVE_CUDA
+   auto addTwoVectorsCublas = [&]() {
+      const Real alpha = 1.0;
+      cublasGaxpy( cublasHandle, size,
+                   &alpha,
+                   deviceVector2.getData(), 1,
+                   deviceVector.getData(), 1 );
+      cublasGaxpy( cublasHandle, size,
+                   &alpha,
+                   deviceVector3.getData(), 1,
+                   deviceVector.getData(), 1 );
+   };
+#endif
+   benchmark.setOperation( "two vectors addition", 4 * datasetSize );
+   benchmark.time< Devices::Host >( resetAll, "CPU", addTwoVectorsHost );
+   benchmark.time< Devices::Host >( resetAll, "CPU ET", addTwoVectorsHostET );
+#ifdef HAVE_BLAS
+   benchmark.time< Devices::Host >( resetAll, "CPU BLAS", addTwoVectorsBlas );
+#endif
+#ifdef HAVE_CUDA
+   benchmark.time< Devices::Cuda >( resetAll, "GPU", addTwoVectorsCuda );
+   benchmark.time< Devices::Cuda >( resetAll, "GPU ET", addTwoVectorsCudaET );
+   benchmark.time< Devices::Cuda >( resetAll, "cuBLAS", addTwoVectorsCublas );
+#endif
+
+   ////
+   // Three vectors addition
+   auto addThreeVectorsHost = [&]() {
+      hostVector.addVector( hostVector2 );
+      hostVector.addVector( hostVector3 );
+      hostVector.addVector( hostVector4 );
+   };
+   auto addThreeVectorsCuda = [&]() {
+      deviceVector.addVector( deviceVector2 );
+      deviceVector.addVector( deviceVector3 );
+      deviceVector.addVector( deviceVector4 );
+   };
+   auto addThreeVectorsHostET = [&]() {
+      hostView += hostView2 + hostView3 + hostView4;
+   };
+   auto addThreeVectorsCudaET = [&]() {
+      deviceView += deviceView2 + deviceView3 + deviceView4;
+   };
+#ifdef HAVE_BLAS
+   auto addThreeVectorsBlas = [&]() {
+      const Real alpha = 1.0;
+      blasGaxpy( size, alpha,
+                 hostVector2.getData(), 1,
+                 hostVector.getData(), 1 );
+      blasGaxpy( size, alpha,
+                 hostVector3.getData(), 1,
+                 hostVector.getData(), 1 );
+       blasGaxpy( size, alpha,
+                 hostVector4.getData(), 1,
+                 hostVector.getData(), 1 );
+   };
+#endif
+#ifdef HAVE_CUDA
+   auto addThreeVectorsCublas = [&]() {
+      const Real alpha = 1.0;
+      cublasGaxpy( cublasHandle, size,
+                   &alpha,
+                   deviceVector2.getData(), 1,
+                   deviceVector.getData(), 1 );
+      cublasGaxpy( cublasHandle, size,
+                   &alpha,
+                   deviceVector3.getData(), 1,
+                   deviceVector.getData(), 1 );
+      cublasGaxpy( cublasHandle, size,
+                   &alpha,
+                   deviceVector4.getData(), 1,
+                   deviceVector.getData(), 1 );
+   };
+#endif
+   benchmark.setOperation( "three vectors addition", 5 * datasetSize );
+   benchmark.time< Devices::Host >( resetAll, "CPU", addThreeVectorsHost );
+   benchmark.time< Devices::Host >( resetAll, "CPU ET", addThreeVectorsHostET );
+#ifdef HAVE_BLAS
+   benchmark.time< Devices::Host >( resetAll, "CPU BLAS", addThreeVectorsBlas );
+#endif
+#ifdef HAVE_CUDA
+   benchmark.time< Devices::Cuda >( resetAll, "GPU", addThreeVectorsCuda );
+   benchmark.time< Devices::Cuda >( resetAll, "GPU ET", addThreeVectorsCudaET );
+   benchmark.time< Devices::Cuda >( resetAll, "cuBLAS", addThreeVectorsCublas );
+#endif
 
 #ifdef HAVE_CUDA
    cublasDestroy( cublasHandle );
