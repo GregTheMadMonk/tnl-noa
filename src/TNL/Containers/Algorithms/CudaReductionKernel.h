@@ -195,11 +195,16 @@ struct CudaReductionKernelLauncher
    // where blocksPerMultiprocessor is determined according to the number of
    // available registers on the multiprocessor.
    // On Tesla K40c, desGridSize = 8 * 15 = 120.
+   //
+   // Update:
+   // It seems to be better to map only one CUDA block per one multiprocessor or maybe
+   // just slightly more. Therefore we omit blocksdPerMultiprocessor in the following.
    CudaReductionKernelLauncher( const Index size )
    : activeDevice( Devices::CudaDeviceInfo::getActiveDevice() ),
      blocksdPerMultiprocessor( Devices::CudaDeviceInfo::getRegistersPerMultiprocessor( activeDevice )
                                / ( Reduction_maxThreadsPerBlock * Reduction_registersPerThread ) ),
-     desGridSize( blocksdPerMultiprocessor * Devices::CudaDeviceInfo::getCudaMultiprocessors( activeDevice ) ),
+     //desGridSize( blocksdPerMultiprocessor * Devices::CudaDeviceInfo::getCudaMultiprocessors( activeDevice ) ),
+     desGridSize( Devices::CudaDeviceInfo::getCudaMultiprocessors( activeDevice ) ),
      originalSize( size )
    {
    }
