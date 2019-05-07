@@ -24,7 +24,6 @@ namespace TNL {
 ////
 // Addition
 template< typename Real, typename Device, typename Index, typename ET >
-__cuda_callable__
 const Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, ET, Containers::Expressions::Addition >
 operator+( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
 {
@@ -32,7 +31,6 @@ operator+( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
 }
 
 template< typename ET, typename Real, typename Device, typename Index >
-__cuda_callable__
 const Containers::Expressions::BinaryExpressionTemplate< ET, Containers::VectorView< Real, Device, Index >, Containers::Expressions::Addition >
 operator+( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
 {
@@ -40,7 +38,6 @@ operator+( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index >
-__cuda_callable__
 const Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real1, Device, Index >, Containers::VectorView< Real2, Device, Index >, Containers::Expressions::Addition >
 operator+( const Containers::VectorView< Real1, Device, Index >& a, const Containers::VectorView< Real2, Device, Index >& b )
 {
@@ -50,7 +47,6 @@ operator+( const Containers::VectorView< Real1, Device, Index >& a, const Contai
 ////
 // Subtraction
 template< typename Real, typename Device, typename Index, typename ET >
-__cuda_callable__
 const Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, ET, Containers::Expressions::Subtraction >
 operator-( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
 {
@@ -58,7 +54,6 @@ operator-( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
 }
 
 template< typename ET, typename Real, typename Device, typename Index >
-__cuda_callable__
 const Containers::Expressions::BinaryExpressionTemplate< ET, Containers::VectorView< Real, Device, Index >, Containers::Expressions::Subtraction >
 operator-( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
 {
@@ -66,7 +61,6 @@ operator-( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index >
-__cuda_callable__
 const Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real1, Device, Index >, Containers::VectorView< Real2, Device, Index >, Containers::Expressions::Subtraction >
 operator-( const Containers::VectorView< Real1, Device, Index >& a, const Containers::VectorView< Real2, Device, Index >& b )
 {
@@ -76,7 +70,6 @@ operator-( const Containers::VectorView< Real1, Device, Index >& a, const Contai
 ////
 // Multiplication
 template< typename Real, typename Device, typename Index, typename ET >
-__cuda_callable__
 const Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, ET, Containers::Expressions::Multiplication >
 operator*( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
 {
@@ -84,7 +77,6 @@ operator*( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
 }
 
 template< typename ET, typename Real, typename Device, typename Index >
-__cuda_callable__
 const Containers::Expressions::BinaryExpressionTemplate< ET, Containers::VectorView< Real, Device, Index >, Containers::Expressions::Multiplication >
 operator*( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
 {
@@ -92,7 +84,6 @@ operator*( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index >
-__cuda_callable__
 const Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real1, Device, Index >, Containers::VectorView< Real2, Device, Index >, Containers::Expressions::Multiplication >
 operator*( const Containers::VectorView< Real1, Device, Index >& a, const Containers::VectorView< Real2, Device, Index >& b )
 {
@@ -102,7 +93,6 @@ operator*( const Containers::VectorView< Real1, Device, Index >& a, const Contai
 ////
 // Division
 template< typename Real, typename Device, typename Index, typename ET >
-__cuda_callable__
 const Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, ET, Containers::Expressions::Division >
 operator/( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
 {
@@ -110,7 +100,6 @@ operator/( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
 }
 
 template< typename ET, typename Real, typename Device, typename Index >
-__cuda_callable__
 const Containers::Expressions::BinaryExpressionTemplate< ET, Containers::VectorView< Real, Device, Index >, Containers::Expressions::Division >
 operator/( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
 {
@@ -118,7 +107,6 @@ operator/( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index >
-__cuda_callable__
 const Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real1, Device, Index >, Containers::VectorView< Real2, Device, Index >, Containers::Expressions::Division >
 operator/( const Containers::VectorView< Real1, Device, Index >& a, const Containers::VectorView< Real2, Device, Index >& b )
 {
@@ -128,7 +116,6 @@ operator/( const Containers::VectorView< Real1, Device, Index >& a, const Contai
 ////
 // Min
 template< typename Real, typename Device, typename Index, typename ET >
-__cuda_callable__
 const Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, ET, Containers::Expressions::Min >
 min( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
 {
@@ -136,7 +123,6 @@ min( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
 }
 
 template< typename ET, typename Real, typename Device, typename Index >
-__cuda_callable__
 const Containers::Expressions::BinaryExpressionTemplate< ET, Containers::VectorView< Real, Device, Index >, Containers::Expressions::Min >
 min( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
 {
@@ -144,7 +130,6 @@ min( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index >
-__cuda_callable__
 const Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real1, Device, Index >, Containers::VectorView< Real2, Device, Index >, Containers::Expressions::Min >
 min( const Containers::VectorView< Real1, Device, Index >& a, const Containers::VectorView< Real2, Device, Index >& b )
 {
@@ -154,7 +139,6 @@ min( const Containers::VectorView< Real1, Device, Index >& a, const Containers::
 ////
 // Max
 template< typename Real, typename Device, typename Index, typename ET >
-__cuda_callable__
 const Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, ET, Containers::Expressions::Max >
 max( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
 {
@@ -162,7 +146,6 @@ max( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
 }
 
 template< typename ET, typename Real, typename Device, typename Index >
-__cuda_callable__
 const Containers::Expressions::BinaryExpressionTemplate< ET, Containers::VectorView< Real, Device, Index >, Containers::Expressions::Max >
 max( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
 {
@@ -170,7 +153,6 @@ max( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index >
-__cuda_callable__
 const Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real1, Device, Index >, Containers::VectorView< Real2, Device, Index >, Containers::Expressions::Max >
 max( const Containers::VectorView< Real1, Device, Index >& a, const Containers::VectorView< Real2, Device, Index >& b )
 {
@@ -180,21 +162,18 @@ max( const Containers::VectorView< Real1, Device, Index >& a, const Containers::
 ////
 // Comparison operations - operator ==
 template< typename Real, typename Device, typename Index, typename ET >
-__cuda_callable__
 bool operator==( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
 {
    return Containers::Expressions::ComparisonEQ( a, b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index >
-__cuda_callable__
 bool operator==( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
 {
    return Containers::Expressions::ComparisonEQ( a, b );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index >
-__cuda_callable__
 bool operator==( const Containers::VectorView< Real1, Device, Index >& a, const Containers::VectorView< Real2, Device, Index >& b )
 {
    return Containers::Expressions::ComparisonEQ( a, b );
@@ -203,21 +182,18 @@ bool operator==( const Containers::VectorView< Real1, Device, Index >& a, const 
 ////
 // Comparison operations - operator !=
 template< typename Real, typename Device, typename Index, typename ET >
-__cuda_callable__
 bool operator!=( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
 {
    return Containers::Expressions::ComparisonNE( a, b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index >
-__cuda_callable__
 bool operator!=( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
 {
    return Containers::Expressions::ComparisonNE( a, b );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index >
-__cuda_callable__
 bool operator!=( const Containers::VectorView< Real1, Device, Index >& a, const Containers::VectorView< Real2, Device, Index >& b )
 {
    return Containers::Expressions::ComparisonNE( a, b );
@@ -226,21 +202,18 @@ bool operator!=( const Containers::VectorView< Real1, Device, Index >& a, const 
 ////
 // Comparison operations - operator <
 template< typename Real, typename Device, typename Index, typename ET >
-__cuda_callable__
 bool operator<( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
 {
    return Containers::Expressions::ComparisonLT( a, b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index >
-__cuda_callable__
 bool operator<( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
 {
    return Containers::Expressions::ComparisonLT( a, b );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index >
-__cuda_callable__
 bool operator<( const Containers::VectorView< Real1, Device, Index >& a, const Containers::VectorView< Real2, Device, Index >& b )
 {
    return Containers::Expressions::ComparisonLT( a, b );
@@ -249,21 +222,18 @@ bool operator<( const Containers::VectorView< Real1, Device, Index >& a, const C
 ////
 // Comparison operations - operator <=
 template< typename Real, typename Device, typename Index, typename ET >
-__cuda_callable__
 bool operator<=( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
 {
    return Containers::Expressions::ComparisonLE( a, b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index >
-__cuda_callable__
 bool operator<=( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
 {
    return Containers::Expressions::ComparisonLE( a, b );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index >
-__cuda_callable__
 bool operator<=( const Containers::VectorView< Real1, Device, Index >& a, const Containers::VectorView< Real2, Device, Index >& b )
 {
    return Containers::Expressions::ComparisonLE( a, b );
@@ -272,21 +242,18 @@ bool operator<=( const Containers::VectorView< Real1, Device, Index >& a, const 
 ////
 // Comparison operations - operator >
 template< typename Real, typename Device, typename Index, typename ET >
-__cuda_callable__
 bool operator>( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
 {
    return Containers::Expressions::ComparisonGT( a, b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index >
-__cuda_callable__
 bool operator>( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
 {
    return Containers::Expressions::ComparisonGT( a, b );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index >
-__cuda_callable__
 bool operator>( const Containers::VectorView< Real1, Device, Index >& a, const Containers::VectorView< Real2, Device, Index >& b )
 {
    return Containers::Expressions::ComparisonGT( a, b );
@@ -295,21 +262,18 @@ bool operator>( const Containers::VectorView< Real1, Device, Index >& a, const C
 ////
 // Comparison operations - operator >=
 template< typename Real, typename Device, typename Index, typename ET >
-__cuda_callable__
 bool operator>=( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
 {
    return Containers::Expressions::ComparisonGE( a, b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index >
-__cuda_callable__
 bool operator>=( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
 {
    return Containers::Expressions::ComparisonGE( a, b );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index >
-__cuda_callable__
 bool operator>=( const Containers::VectorView< Real1, Device, Index >& a, const Containers::VectorView< Real2, Device, Index >& b )
 {
    return Containers::Expressions::ComparisonGE( a, b );
@@ -318,7 +282,6 @@ bool operator>=( const Containers::VectorView< Real1, Device, Index >& a, const 
 ////
 // Minus
 template< typename Real, typename Device, typename Index >
-__cuda_callable__
 const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Minus >
 operator-( const Containers::VectorView< Real, Device, Index >& a )
 {
@@ -328,7 +291,6 @@ operator-( const Containers::VectorView< Real, Device, Index >& a )
 ////
 // Abs
 template< typename Real, typename Device, typename Index >
-__cuda_callable__
 const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Abs >
 abs( const Containers::VectorView< Real, Device, Index >& a )
 {
@@ -338,7 +300,6 @@ abs( const Containers::VectorView< Real, Device, Index >& a )
 ////
 // Sine
 template< typename Real, typename Device, typename Index >
-__cuda_callable__
 const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Sin >
 sin( const Containers::VectorView< Real, Device, Index >& a )
 {
@@ -348,7 +309,6 @@ sin( const Containers::VectorView< Real, Device, Index >& a )
 ////
 // Cosine
 template< typename Real, typename Device, typename Index >
-__cuda_callable__
 const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Cos >
 cos( const Containers::VectorView< Real, Device, Index >& a )
 {
@@ -358,7 +318,6 @@ cos( const Containers::VectorView< Real, Device, Index >& a )
 ////
 // Tangent
 template< typename Real, typename Device, typename Index >
-__cuda_callable__
 const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Tan >
 tan( const Containers::VectorView< Real, Device, Index >& a )
 {
@@ -368,7 +327,6 @@ tan( const Containers::VectorView< Real, Device, Index >& a )
 ////
 // Sqrt
 template< typename Real, typename Device, typename Index >
-__cuda_callable__
 const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Sqrt >
 sqrt( const Containers::VectorView< Real, Device, Index >& a )
 {
@@ -378,7 +336,6 @@ sqrt( const Containers::VectorView< Real, Device, Index >& a )
 ////
 // Cbrt
 template< typename Real, typename Device, typename Index >
-__cuda_callable__
 const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Cbrt >
 cbrt( const Containers::VectorView< Real, Device, Index >& a )
 {
@@ -388,7 +345,6 @@ cbrt( const Containers::VectorView< Real, Device, Index >& a )
 ////
 // Power
 template< typename Real, typename Device, typename Index, typename ExpType >
-__cuda_callable__
 const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Pow, ExpType >
 pow( const Containers::VectorView< Real, Device, Index >& a, const ExpType& exp )
 {
@@ -398,7 +354,6 @@ pow( const Containers::VectorView< Real, Device, Index >& a, const ExpType& exp 
 ////
 // Floor
 template< typename Real, typename Device, typename Index >
-__cuda_callable__
 const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Floor >
 floor( const Containers::VectorView< Real, Device, Index >& a )
 {
@@ -408,7 +363,6 @@ floor( const Containers::VectorView< Real, Device, Index >& a )
 ////
 // Ceil
 template< typename Real, typename Device, typename Index >
-__cuda_callable__
 const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Ceil >
 ceil( const Containers::VectorView< Real, Device, Index >& a )
 {
@@ -418,7 +372,6 @@ ceil( const Containers::VectorView< Real, Device, Index >& a )
 ////
 // Acos
 template< typename Real, typename Device, typename Index >
-__cuda_callable__
 const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Acos >
 acos( const Containers::VectorView< Real, Device, Index >& a )
 {
@@ -428,7 +381,6 @@ acos( const Containers::VectorView< Real, Device, Index >& a )
 ////
 // Asin
 template< typename Real, typename Device, typename Index >
-__cuda_callable__
 const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Asin >
 asin( const Containers::VectorView< Real, Device, Index >& a )
 {
@@ -438,7 +390,6 @@ asin( const Containers::VectorView< Real, Device, Index >& a )
 ////
 // Atan
 template< typename Real, typename Device, typename Index >
-__cuda_callable__
 const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Atan >
 atan( const Containers::VectorView< Real, Device, Index >& a )
 {
@@ -448,7 +399,6 @@ atan( const Containers::VectorView< Real, Device, Index >& a )
 ////
 // Cosh
 template< typename Real, typename Device, typename Index >
-__cuda_callable__
 const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Cosh >
 cosh( const Containers::VectorView< Real, Device, Index >& a )
 {
@@ -458,7 +408,6 @@ cosh( const Containers::VectorView< Real, Device, Index >& a )
 ////
 // Tanh
 template< typename Real, typename Device, typename Index >
-__cuda_callable__
 const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Tanh >
 tanh( const Containers::VectorView< Real, Device, Index >& a )
 {
@@ -468,7 +417,6 @@ tanh( const Containers::VectorView< Real, Device, Index >& a )
 ////
 // Log
 template< typename Real, typename Device, typename Index >
-__cuda_callable__
 const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Log >
 log( const Containers::VectorView< Real, Device, Index >& a )
 {
@@ -478,7 +426,6 @@ log( const Containers::VectorView< Real, Device, Index >& a )
 ////
 // Log10
 template< typename Real, typename Device, typename Index >
-__cuda_callable__
 const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Log10 >
 log10( const Containers::VectorView< Real, Device, Index >& a )
 {
@@ -488,7 +435,6 @@ log10( const Containers::VectorView< Real, Device, Index >& a )
 ////
 // Log2
 template< typename Real, typename Device, typename Index >
-__cuda_callable__
 const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Log2 >
 log2( const Containers::VectorView< Real, Device, Index >& a )
 {
@@ -498,7 +444,6 @@ log2( const Containers::VectorView< Real, Device, Index >& a )
 ////
 // Exp
 template< typename Real, typename Device, typename Index >
-__cuda_callable__
 const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Exp >
 exp( const Containers::VectorView< Real, Device, Index >& a )
 {
@@ -508,7 +453,6 @@ exp( const Containers::VectorView< Real, Device, Index >& a )
 ////
 // Sign
 template< typename Real, typename Device, typename Index >
-__cuda_callable__
 const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Sign >
 sign( const Containers::VectorView< Real, Device, Index >& a )
 {
@@ -602,21 +546,18 @@ binaryAnd( const Containers::VectorView< Real, Device, Index >& a )
 ////
 // Scalar product
 template< typename Real, typename Device, typename Index, typename ET >
-__cuda_callable__
 Real operator,( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
 {
    return TNL::sum( a * b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index >
-__cuda_callable__
 Real operator,( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
 {
    return TNL::sum( a * b );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index >
-__cuda_callable__
 auto operator,( const Containers::VectorView< Real1, Device, Index >& a, const Containers::VectorView< Real2, Device, Index >& b )
 ->decltype( TNL::sum( a * b ) )
 {
@@ -626,7 +567,6 @@ auto operator,( const Containers::VectorView< Real1, Device, Index >& a, const C
 ////
 // TODO: Replace this with multiplication when its safe
 template< typename Real, typename Device, typename Index, typename ET >
-__cuda_callable__
 Containers::VectorView< Real, Device, Index >
 Scale( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
 {
@@ -635,7 +575,6 @@ Scale( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
 }
 
 template< typename ET, typename Real, typename Device, typename Index >
-__cuda_callable__
 Containers::Expressions::BinaryExpressionTemplate< ET, Containers::VectorView< Real, Device, Index >, Containers::Expressions::Multiplication >
 Scale( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
 {
@@ -644,7 +583,6 @@ Scale( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index >
-__cuda_callable__
 Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real1, Device, Index >, Containers::VectorView< Real2, Device, Index >, Containers::Expressions::Multiplication >
 Scale( const Containers::VectorView< Real1, Device, Index >& a, const Containers::VectorView< Real2, Device, Index >& b )
 {

@@ -18,7 +18,9 @@
 
 #include <TNL/Containers/Vector.h>
 
+#ifdef HAVE_BLAS
 #include "blasWrappers.h"
+#endif
 
 #ifdef HAVE_CUDA
 #include "cublasWrappers.h"
@@ -87,10 +89,10 @@ benchmarkVectorOperations( Benchmark & benchmark,
       reset2();
    };
 
-
    reset12();
 
-
+   ////
+   // Max
    auto maxHost = [&]() {
       resultHost = hostVector.max();
    };
@@ -112,7 +114,8 @@ benchmarkVectorOperations( Benchmark & benchmark,
    benchmark.time< Devices::Cuda >( reset1, "GPU ET", maxCudaET );
 #endif
 
-
+   ////
+   // Min
    auto minHost = [&]() {
       resultHost = hostVector.min();
    };
@@ -133,7 +136,8 @@ benchmarkVectorOperations( Benchmark & benchmark,
    benchmark.time< Devices::Cuda >( reset1, "GPU", minCudaET );
 #endif
 
-
+   ////
+   // Absmax
    auto absMaxHost = [&]() {
       resultHost = hostVector.absMax();
    };
@@ -146,6 +150,12 @@ benchmarkVectorOperations( Benchmark & benchmark,
    auto absMaxCudaET = [&]() {
       resultDevice = max( abs( deviceView ) );
    };
+#ifdef HAVE_BLAS
+   auto absMaxBlas = [&]() {
+      int index = blasIgamax( size, hostVector.getData(), 1 );
+      resultHost = hostVector.getElement( index );
+   };
+#endif
 #ifdef HAVE_CUDA
    auto absMaxCublas = [&]() {
       int index = 0;
@@ -158,13 +168,15 @@ benchmarkVectorOperations( Benchmark & benchmark,
    benchmark.setOperation( "absMax", datasetSize );
    benchmark.time< Devices::Host >( reset1, "CPU", absMaxHost );
    benchmark.time< Devices::Host >( reset1, "CPU ET", absMaxHostET );
+   benchmark.time< Devices::Host >( reset1, "BLAS", absMaxBlas );
 #ifdef HAVE_CUDA
    benchmark.time< Devices::Cuda >( reset1, "GPU", absMaxCuda );
    benchmark.time< Devices::Cuda >( reset1, "GPU ET", absMaxCudaET );
    benchmark.time< Devices::Cuda >( reset1, "cuBLAS", absMaxCublas );
 #endif
 
-
+   ////
+   // Absmin
    auto absMinHost = [&]() {
       resultHost = hostVector.absMin();
    };
@@ -177,6 +189,12 @@ benchmarkVectorOperations( Benchmark & benchmark,
    auto absMinCudaET = [&]() {
       resultDevice = min( abs( deviceView ) );
    };
+/*#ifdef HAVE_BLAS
+   auto absMinBlas = [&]() {
+      int index = blasIgamin( size, hostVector.getData(), 1 );
+      resultHost = hostVector.getElement( index );
+   };
+#endif*/
 #ifdef HAVE_CUDA
    auto absMinCublas = [&]() {
       int index = 0;
@@ -188,14 +206,16 @@ benchmarkVectorOperations( Benchmark & benchmark,
 #endif
    benchmark.setOperation( "absMin", datasetSize );
    benchmark.time< Devices::Host >( reset1, "CPU", absMinHost );
-   benchmark.time< Devices::Host >( reset1, "CPU", absMinHostET );
+   benchmark.time< Devices::Host >( reset1, "CPU ET", absMinHostET );
+   //benchmark.time< Devices::Host >( reset1, "BLAS", absMinBlas );
 #ifdef HAVE_CUDA
    benchmark.time< Devices::Cuda >( reset1, "GPU", absMinCuda );
    benchmark.time< Devices::Cuda >( reset1, "GPU", absMinCudaET );
    benchmark.time< Devices::Cuda >( reset1, "cuBLAS", absMinCublas );
 #endif
 
-
+   ////
+   // Sum
    auto sumHost = [&]() {
       resultHost = hostVector.sum();
    };
@@ -216,7 +236,8 @@ benchmarkVectorOperations( Benchmark & benchmark,
    benchmark.time< Devices::Cuda >( reset1, "GPU", sumCudaET );
 #endif
 
-
+   ////
+   // L1 norm
    auto l1normHost = [&]() {
       resultHost = hostVector.lpNorm( 1.0 );
    };
@@ -245,7 +266,8 @@ benchmarkVectorOperations( Benchmark & benchmark,
    benchmark.time< Devices::Cuda >( reset1, "cuBLAS", l1normCublas );
 #endif
 
-
+   ////
+   // L2 norm
    auto l2normHost = [&]() {
       resultHost = hostVector.lpNorm( 2.0 );
    };
@@ -258,6 +280,11 @@ benchmarkVectorOperations( Benchmark & benchmark,
    auto l2normCudaET = [&]() {
       resultDevice = lpNorm( deviceView, 2.0 );
    };
+#ifdef HAVE_BLAS
+   auto l2normBlas = [&]() {
+      resultHost = blasGnrm2( size, hostVector.getData(), 1 );
+   };
+#endif
 #ifdef HAVE_CUDA
    auto l2normCublas = [&]() {
       cublasGnrm2( cublasHandle, size,
@@ -268,13 +295,15 @@ benchmarkVectorOperations( Benchmark & benchmark,
    benchmark.setOperation( "l2 norm", datasetSize );
    benchmark.time< Devices::Host >( reset1, "CPU", l2normHost );
    benchmark.time< Devices::Host >( reset1, "CPU", l2normHostET );
+   benchmark.time< Devices::Host >( reset1, "BLAS", l2normBlas );
 #ifdef HAVE_CUDA
    benchmark.time< Devices::Cuda >( reset1, "GPU", l2normCuda );
    benchmark.time< Devices::Cuda >( reset1, "GPU", l2normCudaET );
    benchmark.time< Devices::Cuda >( reset1, "cuBLAS", l2normCublas );
 #endif
 
-
+   ////
+   // L3 norm
    auto l3normHost = [&]() {
       resultHost = hostVector.lpNorm( 3.0 );
    };
@@ -296,13 +325,26 @@ benchmarkVectorOperations( Benchmark & benchmark,
    benchmark.time< Devices::Cuda >( reset1, "GPU", l3normCudaET );
 #endif
 
-
+   ////
+   // Scalar product
    auto scalarProductHost = [&]() {
       resultHost = hostVector.scalarProduct( hostVector2 );
    };
    auto scalarProductCuda = [&]() {
       resultDevice = deviceVector.scalarProduct( deviceVector2 );
    };
+   auto scalarProductHostET = [&]() {
+      resultHost = ( hostView, hostView2 );
+   };
+   auto scalarProductCudaET = [&]() {
+      resultDevice = ( deviceView, deviceView2 );
+   };
+
+#ifdef HAVE_BLAS
+   auto scalarProductBlas = [&]() {
+      resultHost = blasGdot( size, hostVector.getData(), 1, hostVector2.getData(), 1 );
+   };
+#endif
 #ifdef HAVE_CUDA
    auto scalarProductCublas = [&]() {
       cublasGdot( cublasHandle, size,
@@ -313,11 +355,16 @@ benchmarkVectorOperations( Benchmark & benchmark,
 #endif
    benchmark.setOperation( "scalar product", 2 * datasetSize );
    benchmark.time< Devices::Host >( reset1, "CPU", scalarProductHost );
+   benchmark.time< Devices::Host >( reset1, "CPU ET", scalarProductHostET );
+   benchmark.time< Devices::Host >( reset1, "BLAS", scalarProductBlas );
 #ifdef HAVE_CUDA
    benchmark.time< Devices::Cuda >( reset1, "GPU", scalarProductCuda );
+   benchmark.time< Devices::Cuda >( reset1, "GPU ET", scalarProductCudaET );
    benchmark.time< Devices::Cuda >( reset1, "cuBLAS", scalarProductCublas );
 #endif
 
+   ////
+   // Prefix sum
    /*
    std::cout << "Benchmarking prefix-sum:" << std::endl;
    timer.reset();
@@ -348,6 +395,8 @@ benchmarkVectorOperations( Benchmark & benchmark,
    */
 
 
+   ////
+   // Scalar multiplication
    auto multiplyHost = [&]() {
       hostVector *= 0.5;
    };
@@ -369,13 +418,28 @@ benchmarkVectorOperations( Benchmark & benchmark,
    benchmark.time< Devices::Cuda >( reset1, "cuBLAS", multiplyCublas );
 #endif
 
-
+   ////
+   // Vector addition
    auto addVectorHost = [&]() {
       hostVector.addVector( hostVector2 );
    };
    auto addVectorCuda = [&]() {
       deviceVector.addVector( deviceVector2 );
    };
+   auto addVectorHostET = [&]() {
+      hostView += hostView2;
+   };
+   auto addVectorCudaET = [&]() {
+      deviceView += deviceView2;
+   };
+#ifdef HAVE_CUDA
+   auto addVectorBlas = [&]() {
+      const Real alpha = 1.0;
+      blasGaxpy( size, alpha,
+                 deviceVector2.getData(), 1,
+                  deviceVector.getData(), 1 );
+   };
+#endif
 #ifdef HAVE_CUDA
    auto addVectorCublas = [&]() {
       const Real alpha = 1.0;
@@ -387,8 +451,11 @@ benchmarkVectorOperations( Benchmark & benchmark,
 #endif
    benchmark.setOperation( "vector addition", 3 * datasetSize );
    benchmark.time< Devices::Host >( reset1, "CPU", addVectorHost );
+   benchmark.time< Devices::Host >( reset1, "CPU ET", addVectorHostET );
+   benchmark.time< Devices::Host >( reset1, "BLAS", addVectorBlas );
 #ifdef HAVE_CUDA
    benchmark.time< Devices::Cuda >( reset1, "GPU", addVectorCuda );
+   benchmark.time< Devices::Cuda >( reset1, "GPU ET", addVectorCudaET );
    benchmark.time< Devices::Cuda >( reset1, "cuBLAS", addVectorCublas );
 #endif
 
