@@ -28,6 +28,7 @@ WITH_EXAMPLES="yes"
 WITH_PYTHON="yes"
 WITH_TOOLS="yes"
 WITH_BENCHMARKS="yes"
+WITH_BLAS="yes"
 
 WITH_TEMPLATE_INSTANTIATION="no"
 INSTANTIATE_LONG_INT="no"
@@ -63,6 +64,7 @@ do
         --with-examples=*                ) WITH_EXAMPLES="${option#*=}" ;;
         --with-tools=*                   ) WITH_TOOLS="${option#*=}" ;;
         --with-benchmarks=*              ) WITH_BENCHMARKS="${option#*=}" ;;
+        --with-blas=*                    ) WITH_BLAS="${option#*=}" ;;
         --with-python=*                  ) WITH_PYTHON="${option#*=}" ;;
         --with-templates-instantiation=* ) WITH_TEMPLATE_INSTANTIATION="${option#*=}" ;;
         --instantiate-long-int=*         ) INSTANTIATE_LONG_INT="${option#*=}" ;;
@@ -102,6 +104,8 @@ if [[ ${HELP} == "yes" ]]; then
     echo "   --with-examples=yes/no                Compile the 'examples' directory. 'yes' by default."
     echo "   --with-tools=yes/no                   Compile the 'src/Tools' directory. 'yes' by default."
     echo "   --with-python=yes/no                  Compile the Python bindings. 'yes' by default."
+    echo "   --with-benchmarks=yes/no              Compile the 'src/Benchmarks' directory. 'yes' by default."
+    echo "   --with-blas=yes/no                    Compile the BLAS support - for benchmark purposes only. 'yes' by default."
     echo "   --with-templates-instantiation=yes/no Precompiles some TNL templates during the build. 'no' by default."
     echo "   --cmake=CMAKE                         Path to cmake. 'cmake' by default."
     echo "   --verbose                             It enables verbose build."
@@ -172,8 +176,9 @@ cmake_command=(
          -DWITH_COVERAGE=${WITH_COVERAGE}
          -DWITH_EXAMPLES=${WITH_EXAMPLES}
          -DWITH_TOOLS=${WITH_TOOLS}
-         -DWITH_BENCHMARKS=${WITH_BENCHMARKS}
          -DWITH_PYTHON=${WITH_PYTHON}
+         -DWITH_BENCHMARKS=${WITH_BENCHMARKS}
+         -DWITH_BLAS=${WITH_BLAS}
          -DDCMTK_DIR=${DCMTK_DIR}
          -DWITH_TEMPLATE_INSTANTIATION=${WITH_TEMPLATE_INSTANTIATION}
          -DINSTANTIATE_FLOAT=${INSTANTIATE_FLOAT}
