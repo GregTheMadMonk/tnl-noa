@@ -130,10 +130,10 @@ benchmarkVectorOperations( Benchmark & benchmark,
    };
    benchmark.setOperation( "min", datasetSize );
    benchmark.time< Devices::Host >( reset1, "CPU", minHost );
-   benchmark.time< Devices::Host >( reset1, "CPU", minHostET );
+   benchmark.time< Devices::Host >( reset1, "CPU ET", minHostET );
 #ifdef HAVE_CUDA
    benchmark.time< Devices::Cuda >( reset1, "GPU", minCuda );
-   benchmark.time< Devices::Cuda >( reset1, "GPU", minCudaET );
+   benchmark.time< Devices::Cuda >( reset1, "GPU ET", minCudaET );
 #endif
 
    ////
@@ -168,7 +168,7 @@ benchmarkVectorOperations( Benchmark & benchmark,
    benchmark.setOperation( "absMax", datasetSize );
    benchmark.time< Devices::Host >( reset1, "CPU", absMaxHost );
    benchmark.time< Devices::Host >( reset1, "CPU ET", absMaxHostET );
-   benchmark.time< Devices::Host >( reset1, "BLAS", absMaxBlas );
+   benchmark.time< Devices::Host >( reset1, "CPU BLAS", absMaxBlas );
 #ifdef HAVE_CUDA
    benchmark.time< Devices::Cuda >( reset1, "GPU", absMaxCuda );
    benchmark.time< Devices::Cuda >( reset1, "GPU ET", absMaxCudaET );
@@ -207,10 +207,10 @@ benchmarkVectorOperations( Benchmark & benchmark,
    benchmark.setOperation( "absMin", datasetSize );
    benchmark.time< Devices::Host >( reset1, "CPU", absMinHost );
    benchmark.time< Devices::Host >( reset1, "CPU ET", absMinHostET );
-   //benchmark.time< Devices::Host >( reset1, "BLAS", absMinBlas );
+   //benchmark.time< Devices::Host >( reset1, "CPU BLAS", absMinBlas );
 #ifdef HAVE_CUDA
    benchmark.time< Devices::Cuda >( reset1, "GPU", absMinCuda );
-   benchmark.time< Devices::Cuda >( reset1, "GPU", absMinCudaET );
+   benchmark.time< Devices::Cuda >( reset1, "GPU ET", absMinCudaET );
    benchmark.time< Devices::Cuda >( reset1, "cuBLAS", absMinCublas );
 #endif
 
@@ -230,10 +230,10 @@ benchmarkVectorOperations( Benchmark & benchmark,
    };
    benchmark.setOperation( "sum", datasetSize );
    benchmark.time< Devices::Host >( reset1, "CPU", sumHost );
-   benchmark.time< Devices::Host >( reset1, "CPU", sumHostET );
+   benchmark.time< Devices::Host >( reset1, "CPU ET", sumHostET );
 #ifdef HAVE_CUDA
    benchmark.time< Devices::Cuda >( reset1, "GPU", sumCuda );
-   benchmark.time< Devices::Cuda >( reset1, "GPU", sumCudaET );
+   benchmark.time< Devices::Cuda >( reset1, "GPU ET", sumCudaET );
 #endif
 
    ////
@@ -259,10 +259,10 @@ benchmarkVectorOperations( Benchmark & benchmark,
 #endif
    benchmark.setOperation( "l1 norm", datasetSize );
    benchmark.time< Devices::Host >( reset1, "CPU", l1normHost );
-   benchmark.time< Devices::Host >( reset1, "CPU", l1normHostET );
+   benchmark.time< Devices::Host >( reset1, "CPU ET", l1normHostET );
 #ifdef HAVE_CUDA
    benchmark.time< Devices::Cuda >( reset1, "GPU", l1normCuda );
-   benchmark.time< Devices::Cuda >( reset1, "GPU", l1normCudaET );
+   benchmark.time< Devices::Cuda >( reset1, "GPU ET", l1normCudaET );
    benchmark.time< Devices::Cuda >( reset1, "cuBLAS", l1normCublas );
 #endif
 
@@ -294,11 +294,11 @@ benchmarkVectorOperations( Benchmark & benchmark,
 #endif
    benchmark.setOperation( "l2 norm", datasetSize );
    benchmark.time< Devices::Host >( reset1, "CPU", l2normHost );
-   benchmark.time< Devices::Host >( reset1, "CPU", l2normHostET );
-   benchmark.time< Devices::Host >( reset1, "BLAS", l2normBlas );
+   benchmark.time< Devices::Host >( reset1, "CPU ET", l2normHostET );
+   benchmark.time< Devices::Host >( reset1, "CPU BLAS", l2normBlas );
 #ifdef HAVE_CUDA
    benchmark.time< Devices::Cuda >( reset1, "GPU", l2normCuda );
-   benchmark.time< Devices::Cuda >( reset1, "GPU", l2normCudaET );
+   benchmark.time< Devices::Cuda >( reset1, "GPU ET", l2normCudaET );
    benchmark.time< Devices::Cuda >( reset1, "cuBLAS", l2normCublas );
 #endif
 
@@ -319,10 +319,10 @@ benchmarkVectorOperations( Benchmark & benchmark,
 
    benchmark.setOperation( "l3 norm", datasetSize );
    benchmark.time< Devices::Host >( reset1, "CPU", l3normHost );
-   benchmark.time< Devices::Host >( reset1, "CPU", l3normHostET );
+   benchmark.time< Devices::Host >( reset1, "CPU ET", l3normHostET );
 #ifdef HAVE_CUDA
    benchmark.time< Devices::Cuda >( reset1, "GPU", l3normCuda );
-   benchmark.time< Devices::Cuda >( reset1, "GPU", l3normCudaET );
+   benchmark.time< Devices::Cuda >( reset1, "GPU ET", l3normCudaET );
 #endif
 
    ////
@@ -356,7 +356,7 @@ benchmarkVectorOperations( Benchmark & benchmark,
    benchmark.setOperation( "scalar product", 2 * datasetSize );
    benchmark.time< Devices::Host >( reset1, "CPU", scalarProductHost );
    benchmark.time< Devices::Host >( reset1, "CPU ET", scalarProductHostET );
-   benchmark.time< Devices::Host >( reset1, "BLAS", scalarProductBlas );
+   benchmark.time< Devices::Host >( reset1, "CPU BLAS", scalarProductBlas );
 #ifdef HAVE_CUDA
    benchmark.time< Devices::Cuda >( reset1, "GPU", scalarProductCuda );
    benchmark.time< Devices::Cuda >( reset1, "GPU ET", scalarProductCudaET );
@@ -432,12 +432,12 @@ benchmarkVectorOperations( Benchmark & benchmark,
    auto addVectorCudaET = [&]() {
       deviceView += deviceView2;
    };
-#ifdef HAVE_CUDA
+#ifdef HAVE_BLAS
    auto addVectorBlas = [&]() {
       const Real alpha = 1.0;
       blasGaxpy( size, alpha,
-                 deviceVector2.getData(), 1,
-                  deviceVector.getData(), 1 );
+                 hostVector2.getData(), 1,
+                 hostVector.getData(), 1 );
    };
 #endif
 #ifdef HAVE_CUDA
@@ -452,7 +452,7 @@ benchmarkVectorOperations( Benchmark & benchmark,
    benchmark.setOperation( "vector addition", 3 * datasetSize );
    benchmark.time< Devices::Host >( reset1, "CPU", addVectorHost );
    benchmark.time< Devices::Host >( reset1, "CPU ET", addVectorHostET );
-   benchmark.time< Devices::Host >( reset1, "BLAS", addVectorBlas );
+   benchmark.time< Devices::Host >( reset1, "CPU BLAS", addVectorBlas );
 #ifdef HAVE_CUDA
    benchmark.time< Devices::Cuda >( reset1, "GPU", addVectorCuda );
    benchmark.time< Devices::Cuda >( reset1, "GPU ET", addVectorCudaET );
