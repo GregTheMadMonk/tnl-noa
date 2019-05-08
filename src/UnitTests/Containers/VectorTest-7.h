@@ -36,19 +36,23 @@ TYPED_TEST( VectorTest, verticalOperations )
    using VectorType = typename TestFixture::VectorType;
    using ViewType = typename TestFixture::ViewType;
    using RealType = typename VectorType::RealType;
+   using IndexType = typename VectorType::IndexType;
    const int size = VECTOR_TEST_SIZE;
 
-   VectorType _u( size ), _v( size );
-   ViewType u( _u ), v( _v );
+   VectorType _u( size ), _v( size ), _w( size );
+   ViewType u( _u ), v( _v ), w( _w );
    RealType sum_( 0.0 ), absSum( 0.0 ), diffSum( 0.0 ), diffAbsSum( 0.0 ),
    absMin( size + 10.0 ), absMax( -size - 10.0 ),
    diffMin( 2 * size + 10.0 ), diffMax( - 2.0 * size - 10.0 ),
-   l2Norm( 0.0 ), l2NormDiff( 0.0 );
+   l2Norm( 0.0 ), l2NormDiff( 0.0 ), argMinValue( size * size ), argMaxValue( -size * size );
+   IndexType argMin( 0 ), argMax( 0 );
    for( int i = 0; i < size; i++ )
    {
       const RealType aux = ( RealType )( i - size / 2 ) / ( RealType ) size;
+      const RealType w_value = aux * aux - 5.0;
       u.setElement( i, aux );
       v.setElement( i, -aux );
+      w.setElement( i, w_value );
       absMin = TNL::min( absMin, TNL::abs( aux ) );
       absMax = TNL::max( absMax, TNL::abs( aux ) );
       diffMin = TNL::min( diffMin, 2 * aux );
@@ -59,6 +63,14 @@ TYPED_TEST( VectorTest, verticalOperations )
       diffAbsSum += TNL::abs( 2.0* aux );
       l2Norm += aux * aux;
       l2NormDiff += 4.0 * aux * aux;
+      if( w_value < argMinValue ) {
+         argMinValue = w_value;
+         argMin = i;
+      }
+      if( w_value > argMaxValue ) {
+         argMaxValue = w_value;
+         argMax = i;
+      }
    }
    l2Norm = TNL::sqrt( l2Norm );
    l2NormDiff = TNL::sqrt( l2NormDiff );
@@ -74,6 +86,10 @@ TYPED_TEST( VectorTest, verticalOperations )
    EXPECT_NEAR( sum( abs( u - v ) ), diffAbsSum, 2.0e-5 );
    EXPECT_NEAR( lpNorm( u, 2.0 ), l2Norm, 2.0e-5 );
    EXPECT_NEAR( lpNorm( u - v, 2.0 ), l2NormDiff, 2.0e-5 );
+   IndexType wArgMin, wArgMax;
+   EXPECT_NEAR( TNL::argMin( w, wArgMin ), argMinValue, 2.0e-5 );
+   EXPECT_NEAR( TNL::argMax( w, wArgMax ), argMaxValue, 2.0e-5 );
+   EXPECT_EQ( argMax, wArgMax );
 }
 
 TYPED_TEST( VectorTest, scalarProduct )

@@ -474,9 +474,27 @@ template< typename Real,
           typename Device,
           typename Index >
 typename Containers::VectorView< Real, Device, Index >::RealType
+argMin( const Containers::VectorView< Real, Device, Index >& a, Index& arg )
+{
+   return Containers::Expressions::ExpressionArgMin( a, arg );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+typename Containers::VectorView< Real, Device, Index >::RealType
 max( const Containers::VectorView< Real, Device, Index >& a )
 {
    return Containers::Expressions::ExpressionMax( a );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+typename Containers::VectorView< Real, Device, Index >::RealType
+argMax( const Containers::VectorView< Real, Device, Index >& a, Index& arg )
+{
+   return Containers::Expressions::ExpressionArgMax( a, arg );
 }
 
 template< typename Real,

@@ -28,52 +28,92 @@ class Reduction
 template<>
 class Reduction< Devices::Cuda >
 {
-public:
-   template< typename Index,
-             typename Result,
-             typename ReductionOperation,
-             typename VolatileReductionOperation,
-             typename DataFetcher >
-   static Result
-   reduce( const Index size,
-           ReductionOperation& reduction,
-           VolatileReductionOperation& volatileReduction,
-           DataFetcher& dataFetcher,
-           const Result& zero );
+   public:
+      template< typename Index,
+                typename Result,
+                typename ReductionOperation,
+                typename VolatileReductionOperation,
+                typename DataFetcher >
+      static Result
+      reduce( const Index size,
+              ReductionOperation& reduction,
+              VolatileReductionOperation& volatileReduction,
+              DataFetcher& dataFetcher,
+              const Result& zero );
+
+      template< typename Index,
+                typename Result,
+                typename ReductionOperation,
+                typename VolatileReductionOperation,
+                typename DataFetcher >
+      static Result
+      reduceWithArgument( const Index size,
+                          Index& argument,
+                          ReductionOperation& reduction,
+                          VolatileReductionOperation& volatileReduction,
+                          DataFetcher& dataFetcher,
+                          const Result& zero );
 };
 
 template<>
 class Reduction< Devices::Host >
 {
-public:
-   template< typename Index,
-             typename Result,
-             typename ReductionOperation,
-             typename VolatileReductionOperation,
-             typename DataFetcher >
-   static Result
-   reduce( const Index size,
-           ReductionOperation& reduction,
-           VolatileReductionOperation& volatileReduction,
-           DataFetcher& dataFetcher,
-           const Result& zero );
+   public:
+      template< typename Index,
+                typename Result,
+                typename ReductionOperation,
+                typename VolatileReductionOperation,
+                typename DataFetcher >
+      static Result
+      reduce( const Index size,
+              ReductionOperation& reduction,
+              VolatileReductionOperation& volatileReduction,
+              DataFetcher& dataFetcher,
+              const Result& zero );
+
+      template< typename Index,
+                typename Result,
+                typename ReductionOperation,
+                typename VolatileReductionOperation,
+                typename DataFetcher >
+      static Result
+      reduceWithArgument( const Index size,
+                          Index& argument,
+                          ReductionOperation& reduction,
+                          VolatileReductionOperation& volatileReduction,
+                          DataFetcher& dataFetcher,
+                          const Result& zero );
 };
 
 template<>
 class Reduction< Devices::MIC >
 {
-public:
-   template< typename Index,
-             typename Result,
-             typename ReductionOperation,
-             typename VolatileReductionOperation,
-             typename DataFetcher >
-   static Result
-   reduce( const Index size,
-           ReductionOperation& reduction,
-           VolatileReductionOperation& volatileReduction,
-           DataFetcher& dataFetcher,
-           const Result& zero );
+   public:
+      template< typename Index,
+                typename Result,
+                typename ReductionOperation,
+                typename VolatileReductionOperation,
+                typename DataFetcher >
+      static Result
+      reduce( const Index size,
+              ReductionOperation& reduction,
+              VolatileReductionOperation& volatileReduction,
+              DataFetcher& dataFetcher,
+              const Result& zero );
+
+     template< typename Index,
+                typename Result,
+                typename ReductionOperation,
+                typename VolatileReductionOperation,
+                typename DataFetcher >
+      static Result
+      reduceWithArgument( const Index size,
+                          Index& argument,
+                          ReductionOperation& reduction,
+                          VolatileReductionOperation& volatileReduction,
+                          DataFetcher& dataFetcher,
+                          const Result& zero );
+
 };
 
 } // namespace Algorithms

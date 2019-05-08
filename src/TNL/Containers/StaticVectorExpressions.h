@@ -527,9 +527,25 @@ min( const Containers::StaticVector< Size, Real >& a )
 template< int Size, typename Real >
 __cuda_callable__
 typename Containers::StaticVector< Size, Real >::RealType
+argMin( const Containers::StaticVector< Size, Real >& a, int& arg )
+{
+   return Containers::Expressions::StaticExpressionArgMin( a, arg );
+}
+
+template< int Size, typename Real >
+__cuda_callable__
+typename Containers::StaticVector< Size, Real >::RealType
 max( const Containers::StaticVector< Size, Real >& a )
 {
    return Containers::Expressions::StaticExpressionMax( a );
+}
+
+template< int Size, typename Real >
+__cuda_callable__
+typename Containers::StaticVector< Size, Real >::RealType
+argMax( const Containers::StaticVector< Size, Real >& a, int& arg )
+{
+   return Containers::Expressions::StaticExpressionArgMax( a, arg );
 }
 
 template< int Size, typename Real >

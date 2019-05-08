@@ -31,6 +31,23 @@ auto StaticExpressionMin( const Expression& expression ) -> typename std::remove
    return aux;
 }
 
+template< typename Expression, typename Real >
+__cuda_callable__
+auto StaticExpressionArgMin( const Expression& expression, int& arg ) -> typename std::remove_reference< decltype( expression[ 0 ] ) >::type
+{
+   auto value = expression[ 0 ];
+   arg = 0;
+   for( int i = 1; i < expression.getSize(); i++ )
+   {
+      if( expression[ i ] < value )
+      {
+         value = expression[ i ];
+         arg = i;
+      }
+   }
+   return value;
+}
+
 template< typename Expression >
 __cuda_callable__
 auto StaticExpressionMax( const Expression& expression ) -> typename std::remove_reference< decltype( expression[ 0 ] ) >::type
@@ -39,6 +56,23 @@ auto StaticExpressionMax( const Expression& expression ) -> typename std::remove
    for( int i = 1; i < expression.getSize(); i++ )
       aux = TNL::max( aux, expression[ i ] );
    return aux;
+}
+
+template< typename Expression, typename Real >
+__cuda_callable__
+auto StaticExpressionArgMax( const Expression& expression, int& arg ) -> typename std::remove_reference< decltype( expression[ 0 ] ) >::type
+{
+   auto value = expression[ 0 ];
+   arg = 0;
+   for( int i = 1; i < expression.getSize(); i++ )
+   {
+      if( expression[ i ] > value )
+      {
+         value = expression[ i ];
+         arg = i;
+      }
+   }
+   return value;
 }
 
 template< typename Expression >
@@ -141,6 +175,28 @@ auto ExpressionMin( const Expression& expression ) -> typename std::remove_refer
 }
 
 template< typename Expression >
+auto ExpressionArgMin( const Expression& expression, typename Expression::IndexType& arg ) -> typename std::remove_reference< decltype( expression[ 0 ] ) >::type
+{
+   using ResultType = typename std::remove_cv< typename std::remove_reference< decltype( expression[ 0 ] ) >::type >::type;
+   using IndexType = typename Expression::IndexType;
+
+   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return  expression[ i ]; };
+   auto reduction = [=] __cuda_callable__ ( IndexType& aIdx, const IndexType& bIdx, ResultType& a, const ResultType& b ) {
+      if( a < b ) {
+         a = b;
+         aIdx = bIdx;
+      }
+   };
+   auto volatileReduction = [=] __cuda_callable__ ( volatile IndexType& aIdx, volatile IndexType& bIdx, volatile ResultType& a, volatile ResultType& b ) { 
+      if( a < b ) {
+         a = b;
+         aIdx = bIdx;
+      }
+   };
+   return Algorithms::Reduction< typename Expression::DeviceType >::reduceWithArgument( expression.getSize(), arg, reduction, volatileReduction, fetch, std::numeric_limits< ResultType >::max() );
+}
+
+template< typename Expression >
 auto ExpressionMax( const Expression& expression ) -> typename std::remove_reference< decltype( expression[ 0 ] ) >::type
 {
    using ResultType = typename std::remove_cv< typename std::remove_reference< decltype( expression[ 0 ] ) >::type >::type;
@@ -150,6 +206,32 @@ auto ExpressionMax( const Expression& expression ) -> typename std::remove_refer
    auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a = a > b ? a : b; };
    auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a = a > b ? a : b; };
    return Algorithms::Reduction< typename Expression::DeviceType >::reduce( expression.getSize(), reduction, volatileReduction, fetch, std::numeric_limits< ResultType >::min() );
+}
+
+template< typename Expression >
+auto ExpressionArgMax( const Expression& expression, typename Expression::IndexType& arg ) -> typename std::remove_reference< decltype( expression[ 0 ] ) >::type
+{
+   using ResultType = typename std::remove_cv< typename std::remove_reference< decltype( expression[ 0 ] ) >::type >::type;
+   using IndexType = typename Expression::IndexType;
+
+   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return  expression[ i ]; };
+   auto reduction = [=] __cuda_callable__ ( IndexType& aIdx, const IndexType& bIdx, ResultType& a, const ResultType& b ) {
+      if( a > b ) {
+         a = b;
+         aIdx = bIdx;
+      }
+      else if( a == b && bIdx < aIdx )
+         aIdx = bIdx;
+   };
+   auto volatileReduction = [=] __cuda_callable__ ( volatile IndexType& aIdx, volatile IndexType& bIdx, volatile ResultType& a, volatile ResultType& b ) { 
+      if( a > b ) {
+         a = b;
+         aIdx = bIdx;
+      }
+      else if( a == b && bIdx < aIdx )
+         aIdx = bIdx;
+   };
+   return Algorithms::Reduction< typename Expression::DeviceType >::reduceWithArgument( expression.getSize(), arg, reduction, volatileReduction, fetch, std::numeric_limits< ResultType >::min() );
 }
 
 template< typename Expression >
