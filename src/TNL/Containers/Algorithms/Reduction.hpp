@@ -77,7 +77,7 @@ Reduction< Devices::Cuda >::
     * Reduce the data on the CUDA device.
     */
    ResultType* deviceAux1( 0 );
-   IndexType reducedSize = reductionLauncher.start( 
+   IndexType reducedSize = reductionLauncher.start(
       reduction,
       volatileReduction,
       dataFetcher,
@@ -176,7 +176,7 @@ reduceWithArgument( const Index size,
     */
    ResultType* deviceAux1( nullptr );
    IndexType* deviceIndexes( nullptr );
-   IndexType reducedSize = reductionLauncher.startWithArgument( 
+   IndexType reducedSize = reductionLauncher.startWithArgument(
       reduction,
       volatileReduction,
       dataFetcher,
@@ -195,7 +195,9 @@ reduceWithArgument( const Index size,
        * Transfer the reduced data from device to host.
        */
       std::unique_ptr< ResultType[] > resultArray{ new ResultType[ reducedSize ] };
+      std::unique_ptr< IndexType[] > indexArray{ new IndexType[ reducedSize ] };
       ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( resultArray.get(), deviceAux1, reducedSize );
+      ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( indexArray.get(), deviceIndexes, reducedSize );
 
       #ifdef CUDA_REDUCTION_PROFILING
          timer.stop();
@@ -207,14 +209,17 @@ reduceWithArgument( const Index size,
       /***
        * Reduce the data on the host system.
        */
-      auto fetch = [&] ( IndexType i ) { return resultArray[ i ]; };
-      const ResultType result = Reduction< Devices::Host >::reduceWithArgument( reducedSize, reduction, volatileReduction, fetch, zero );
+      //auto fetch = [&] ( IndexType i ) { return resultArray[ i ]; };
+      //const ResultType result = Reduction< Devices::Host >::reduceWithArgument( reducedSize, argument, reduction, volatileReduction, fetch, zero );
+      for( IndexType i = 1; i < reducedSize; i++ )
+         reduction( indexArray[ 0 ], indexArray[ i ], resultArray[ 0 ], resultArray[ i ] );
 
       #ifdef CUDA_REDUCTION_PROFILING
          timer.stop();
          std::cout << "   Reduction of small data set on CPU took " << timer.getRealTime() << " sec. " << std::endl;
       #endif
-      return result;
+      argument = indexArray[ 0 ];
+      return resultArray[ 0 ];
    }
    else {
       /***

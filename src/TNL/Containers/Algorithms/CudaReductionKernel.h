@@ -188,9 +188,13 @@ CudaReductionWithArgumentKernel( const Result zero,
     * sequential reduction.
     */
    if( idxInput ) {
-      sdata[ tid ] = dataFetcher( gid );
-      sidx[ tid ] = idxInput[ gid ];
-      gid += gridSize;
+      if( gid < size ) {
+         sdata[ tid ] = dataFetcher( gid );
+         sidx[ tid ] = idxInput[ gid ];
+         gid += gridSize;
+      } else {
+         sdata[ tid ] = zero;
+      }
       while( gid + 4 * gridSize < size ) {
          reduction( sidx[ tid ], idxInput[ gid ], sdata[ tid ], dataFetcher( gid ) );
          reduction( sidx[ tid ], idxInput[ gid + gridSize ], sdata[ tid ], dataFetcher( gid + gridSize ) );
@@ -209,9 +213,13 @@ CudaReductionWithArgumentKernel( const Result zero,
       }
    }
    else {
-      sdata[ tid ] = dataFetcher( gid );
-      sidx[ tid ] = gid;
-      gid += gridSize;
+      if( gid < size ) {
+         sdata[ tid ] = dataFetcher( gid );
+         sidx[ tid ] = gid;
+         gid += gridSize;
+      } else {
+         sdata[ tid ] = zero;
+      }
       while( gid + 4 * gridSize < size ) {
          reduction( sidx[ tid ], gid, sdata[ tid ], dataFetcher( gid ) );
          reduction( sidx[ tid ], gid + gridSize, sdata[ tid ], dataFetcher( gid + gridSize ) );
@@ -407,7 +415,7 @@ struct CudaReductionKernelLauncher
       CudaReductionBuffer& cudaReductionBuffer = CudaReductionBuffer::getInstance();
       ResultType* input = cudaReductionBuffer.template getData< ResultType >();
       ResultType* output = &input[ desGridSize ];
-      IndexType* idxInput = static_cast< IndexType* >( &output[ desGridSize ] );
+      IndexType* idxInput = static_cast< IndexType* >( static_cast< void* >( &output[ desGridSize ] ) );
       IndexType* idxOutput = &idxInput[ desGridSize ];
 
       auto copyFetch = [=] __cuda_callable__ ( IndexType i ) { return input[ i ]; };

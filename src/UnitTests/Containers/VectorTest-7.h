@@ -88,6 +88,7 @@ TYPED_TEST( VectorTest, verticalOperations )
    EXPECT_NEAR( lpNorm( u - v, 2.0 ), l2NormDiff, 2.0e-5 );
    IndexType wArgMin, wArgMax;
    EXPECT_NEAR( TNL::argMin( w, wArgMin ), argMinValue, 2.0e-5 );
+   EXPECT_EQ( argMin, wArgMin );
    EXPECT_NEAR( TNL::argMax( w, wArgMax ), argMaxValue, 2.0e-5 );
    EXPECT_EQ( argMax, wArgMax );
 }

@@ -182,16 +182,22 @@ auto ExpressionArgMin( const Expression& expression, typename Expression::IndexT
 
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return  expression[ i ]; };
    auto reduction = [=] __cuda_callable__ ( IndexType& aIdx, const IndexType& bIdx, ResultType& a, const ResultType& b ) {
-      if( a < b ) {
+      if( a > b ) {
          a = b;
          aIdx = bIdx;
       }
+      else if( a == b && bIdx < aIdx )
+         aIdx = bIdx;
+
    };
-   auto volatileReduction = [=] __cuda_callable__ ( volatile IndexType& aIdx, volatile IndexType& bIdx, volatile ResultType& a, volatile ResultType& b ) { 
-      if( a < b ) {
+   auto volatileReduction = [=] __cuda_callable__ ( volatile IndexType& aIdx, volatile IndexType& bIdx, volatile ResultType& a, volatile ResultType& b ) {
+      if( a > b ) {
          a = b;
          aIdx = bIdx;
       }
+      else if( a == b && bIdx < aIdx )
+         aIdx = bIdx;
+
    };
    return Algorithms::Reduction< typename Expression::DeviceType >::reduceWithArgument( expression.getSize(), arg, reduction, volatileReduction, fetch, std::numeric_limits< ResultType >::max() );
 }
@@ -205,7 +211,7 @@ auto ExpressionMax( const Expression& expression ) -> typename std::remove_refer
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return  expression[ i ]; };
    auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a = a > b ? a : b; };
    auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a = a > b ? a : b; };
-   return Algorithms::Reduction< typename Expression::DeviceType >::reduce( expression.getSize(), reduction, volatileReduction, fetch, std::numeric_limits< ResultType >::min() );
+   return Algorithms::Reduction< typename Expression::DeviceType >::reduce( expression.getSize(), reduction, volatileReduction, fetch, std::numeric_limits< ResultType >::lowest() );
 }
 
 template< typename Expression >
@@ -216,22 +222,22 @@ auto ExpressionArgMax( const Expression& expression, typename Expression::IndexT
 
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return  expression[ i ]; };
    auto reduction = [=] __cuda_callable__ ( IndexType& aIdx, const IndexType& bIdx, ResultType& a, const ResultType& b ) {
-      if( a > b ) {
+      if( a < b ) {
          a = b;
          aIdx = bIdx;
       }
       else if( a == b && bIdx < aIdx )
          aIdx = bIdx;
    };
-   auto volatileReduction = [=] __cuda_callable__ ( volatile IndexType& aIdx, volatile IndexType& bIdx, volatile ResultType& a, volatile ResultType& b ) { 
-      if( a > b ) {
+   auto volatileReduction = [=] __cuda_callable__ ( volatile IndexType& aIdx, volatile IndexType& bIdx, volatile ResultType& a, volatile ResultType& b ) {
+      if( a < b ) {
          a = b;
          aIdx = bIdx;
       }
       else if( a == b && bIdx < aIdx )
          aIdx = bIdx;
    };
-   return Algorithms::Reduction< typename Expression::DeviceType >::reduceWithArgument( expression.getSize(), arg, reduction, volatileReduction, fetch, std::numeric_limits< ResultType >::min() );
+   return Algorithms::Reduction< typename Expression::DeviceType >::reduceWithArgument( expression.getSize(), arg, reduction, volatileReduction, fetch, std::numeric_limits< ResultType >::lowest() );
 }
 
 template< typename Expression >
