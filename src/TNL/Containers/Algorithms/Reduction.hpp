@@ -1,5 +1,5 @@
 /***************************************************************************
-                          Reduction_impl.h  -  description
+                          Reduction.hpp  -  description
                              -------------------
     begin                : Mar 24, 2013
     copyright            : (C) 2013 by Tomas Oberhuber et al.
@@ -12,12 +12,12 @@
 
 #pragma once
 
-#include "Reduction.h"
 
 //#define CUDA_REDUCTION_PROFILING
 
 #include <TNL/Assert.h>
 #include <TNL/Exceptions/CudaSupportMissing.h>
+#include <TNL/Containers/Algorithms/Reduction.h>
 #include <TNL/Containers/Algorithms/ReductionOperations.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Algorithms/CudaReductionKernel.h>
@@ -37,209 +37,6 @@ namespace Algorithms {
  * than maximal CUDA grid size.
  */
 static constexpr int Reduction_minGpuDataSize = 256;//65536; //16384;//1024;//256;
-
-
-template< typename Index,
-          typename Result,
-          typename ReductionOperation,
-          typename VolatileReductionOperation,
-          typename DataFetcher >
-Result
-Reduction< Devices::Cuda >::
-   reduce( const Index size,
-           ReductionOperation& reduction,
-           VolatileReductionOperation& volatileReduction,
-           DataFetcher& dataFetcher,
-           const Result& zero )
-{
-#ifdef HAVE_CUDA
-
-   using IndexType = Index;
-   using ResultType = Result;
-
-   /***
-    * Only fundamental and pointer types can be safely reduced on host. Complex
-    * objects stored on the device might contain pointers into the device memory,
-    * in which case reduction on host might fail.
-    */
-   //constexpr bool can_reduce_all_on_host = std::is_fundamental< DataType1 >::value || std::is_fundamental< DataType2 >::value || std::is_pointer< DataType1 >::value || std::is_pointer< DataType2 >::value;
-   constexpr bool can_reduce_later_on_host = std::is_fundamental< ResultType >::value || std::is_pointer< ResultType >::value;
-
-   #ifdef CUDA_REDUCTION_PROFILING
-      Timer timer;
-      timer.reset();
-      timer.start();
-   #endif
-
-   CudaReductionKernelLauncher< IndexType, ResultType > reductionLauncher( size );
-
-   /****
-    * Reduce the data on the CUDA device.
-    */
-   ResultType* deviceAux1( 0 );
-   IndexType reducedSize = reductionLauncher.start(
-      reduction,
-      volatileReduction,
-      dataFetcher,
-      zero,
-      deviceAux1 );
-   #ifdef CUDA_REDUCTION_PROFILING
-      timer.stop();
-      std::cout << "   Reduction on GPU to size " << reducedSize << " took " << timer.getRealTime() << " sec. " << std::endl;
-      timer.reset();
-      timer.start();
-   #endif
-
-   if( can_reduce_later_on_host ) {
-      /***
-       * Transfer the reduced data from device to host.
-       */
-      std::unique_ptr< ResultType[] > resultArray{ new ResultType[ reducedSize ] };
-      ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( resultArray.get(), deviceAux1, reducedSize );
-
-      #ifdef CUDA_REDUCTION_PROFILING
-         timer.stop();
-         std::cout << "   Transferring data to CPU took " << timer.getRealTime() << " sec. " << std::endl;
-         timer.reset();
-         timer.start();
-      #endif
-
-      /***
-       * Reduce the data on the host system.
-       */
-      auto fetch = [&] ( IndexType i ) { return resultArray[ i ]; };
-      const ResultType result = Reduction< Devices::Host >::reduce( reducedSize, reduction, volatileReduction, fetch, zero );
-
-      #ifdef CUDA_REDUCTION_PROFILING
-         timer.stop();
-         std::cout << "   Reduction of small data set on CPU took " << timer.getRealTime() << " sec. " << std::endl;
-      #endif
-      return result;
-   }
-   else {
-      /***
-       * Data can't be safely reduced on host, so continue with the reduction on the CUDA device.
-       */
-      auto result = reductionLauncher.finish( reduction, volatileReduction, zero );
-
-      #ifdef CUDA_REDUCTION_PROFILING
-         timer.stop();
-         std::cout << "   Reduction of small data set on GPU took " << timer.getRealTime() << " sec. " << std::endl;
-         timer.reset();
-         timer.start();
-      #endif
-
-      return result;
-   }
-#else
-   throw Exceptions::CudaSupportMissing();
-#endif
-};
-
-template< typename Index,
-          typename Result,
-          typename ReductionOperation,
-          typename VolatileReductionOperation,
-          typename DataFetcher >
-Result
-Reduction< Devices::Cuda >::
-reduceWithArgument( const Index size,
-                    Index& argument,
-                    ReductionOperation& reduction,
-                    VolatileReductionOperation& volatileReduction,
-                    DataFetcher& dataFetcher,
-                    const Result& zero )
-{
-   #ifdef HAVE_CUDA
-
-   using IndexType = Index;
-   using ResultType = Result;
-
-   /***
-    * Only fundamental and pointer types can be safely reduced on host. Complex
-    * objects stored on the device might contain pointers into the device memory,
-    * in which case reduction on host might fail.
-    */
-   //constexpr bool can_reduce_all_on_host = std::is_fundamental< DataType1 >::value || std::is_fundamental< DataType2 >::value || std::is_pointer< DataType1 >::value || std::is_pointer< DataType2 >::value;
-   constexpr bool can_reduce_later_on_host = std::is_fundamental< ResultType >::value || std::is_pointer< ResultType >::value;
-
-   #ifdef CUDA_REDUCTION_PROFILING
-      Timer timer;
-      timer.reset();
-      timer.start();
-   #endif
-
-   CudaReductionKernelLauncher< IndexType, ResultType > reductionLauncher( size );
-
-   /****
-    * Reduce the data on the CUDA device.
-    */
-   ResultType* deviceAux1( nullptr );
-   IndexType* deviceIndexes( nullptr );
-   IndexType reducedSize = reductionLauncher.startWithArgument(
-      reduction,
-      volatileReduction,
-      dataFetcher,
-      zero,
-      deviceAux1,
-      deviceIndexes );
-   #ifdef CUDA_REDUCTION_PROFILING
-      timer.stop();
-      std::cout << "   Reduction on GPU to size " << reducedSize << " took " << timer.getRealTime() << " sec. " << std::endl;
-      timer.reset();
-      timer.start();
-   #endif
-
-   if( can_reduce_later_on_host ) {
-      /***
-       * Transfer the reduced data from device to host.
-       */
-      std::unique_ptr< ResultType[] > resultArray{ new ResultType[ reducedSize ] };
-      std::unique_ptr< IndexType[] > indexArray{ new IndexType[ reducedSize ] };
-      ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( resultArray.get(), deviceAux1, reducedSize );
-      ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( indexArray.get(), deviceIndexes, reducedSize );
-
-      #ifdef CUDA_REDUCTION_PROFILING
-         timer.stop();
-         std::cout << "   Transferring data to CPU took " << timer.getRealTime() << " sec. " << std::endl;
-         timer.reset();
-         timer.start();
-      #endif
-
-      /***
-       * Reduce the data on the host system.
-       */
-      //auto fetch = [&] ( IndexType i ) { return resultArray[ i ]; };
-      //const ResultType result = Reduction< Devices::Host >::reduceWithArgument( reducedSize, argument, reduction, volatileReduction, fetch, zero );
-      for( IndexType i = 1; i < reducedSize; i++ )
-         reduction( indexArray[ 0 ], indexArray[ i ], resultArray[ 0 ], resultArray[ i ] );
-
-      #ifdef CUDA_REDUCTION_PROFILING
-         timer.stop();
-         std::cout << "   Reduction of small data set on CPU took " << timer.getRealTime() << " sec. " << std::endl;
-      #endif
-      argument = indexArray[ 0 ];
-      return resultArray[ 0 ];
-   }
-   else {
-      /***
-       * Data can't be safely reduced on host, so continue with the reduction on the CUDA device.
-       */
-      auto result = reductionLauncher.finishWithArgument( argument, reduction, volatileReduction, zero );
-
-      #ifdef CUDA_REDUCTION_PROFILING
-         timer.stop();
-         std::cout << "   Reduction of small data set on GPU took " << timer.getRealTime() << " sec. " << std::endl;
-         timer.reset();
-         timer.start();
-      #endif
-
-      return result;
-   }
-#else
-   throw Exceptions::CudaSupportMissing();
-#endif
-}
 
 ////
 // Reduction on host
@@ -473,6 +270,207 @@ reduceWithArgument( const Index size,
 #endif
 }
 
+template< typename Index,
+          typename Result,
+          typename ReductionOperation,
+          typename VolatileReductionOperation,
+          typename DataFetcher >
+Result
+Reduction< Devices::Cuda >::
+   reduce( const Index size,
+           ReductionOperation& reduction,
+           VolatileReductionOperation& volatileReduction,
+           DataFetcher& dataFetcher,
+           const Result& zero )
+{
+#ifdef HAVE_CUDA
+
+   using IndexType = Index;
+   using ResultType = Result;
+
+   /***
+    * Only fundamental and pointer types can be safely reduced on host. Complex
+    * objects stored on the device might contain pointers into the device memory,
+    * in which case reduction on host might fail.
+    */
+   //constexpr bool can_reduce_all_on_host = std::is_fundamental< DataType1 >::value || std::is_fundamental< DataType2 >::value || std::is_pointer< DataType1 >::value || std::is_pointer< DataType2 >::value;
+   constexpr bool can_reduce_later_on_host = std::is_fundamental< ResultType >::value || std::is_pointer< ResultType >::value;
+
+   #ifdef CUDA_REDUCTION_PROFILING
+      Timer timer;
+      timer.reset();
+      timer.start();
+   #endif
+
+   CudaReductionKernelLauncher< IndexType, ResultType > reductionLauncher( size );
+
+   /****
+    * Reduce the data on the CUDA device.
+    */
+   ResultType* deviceAux1( 0 );
+   IndexType reducedSize = reductionLauncher.start(
+      reduction,
+      volatileReduction,
+      dataFetcher,
+      zero,
+      deviceAux1 );
+   #ifdef CUDA_REDUCTION_PROFILING
+      timer.stop();
+      std::cout << "   Reduction on GPU to size " << reducedSize << " took " << timer.getRealTime() << " sec. " << std::endl;
+      timer.reset();
+      timer.start();
+   #endif
+
+   if( can_reduce_later_on_host ) {
+      /***
+       * Transfer the reduced data from device to host.
+       */
+      std::unique_ptr< ResultType[] > resultArray{ new ResultType[ reducedSize ] };
+      ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( resultArray.get(), deviceAux1, reducedSize );
+
+      #ifdef CUDA_REDUCTION_PROFILING
+         timer.stop();
+         std::cout << "   Transferring data to CPU took " << timer.getRealTime() << " sec. " << std::endl;
+         timer.reset();
+         timer.start();
+      #endif
+
+      /***
+       * Reduce the data on the host system.
+       */
+      auto fetch = [&] ( IndexType i ) { return resultArray[ i ]; };
+      const ResultType result = Reduction< Devices::Host >::reduce( reducedSize, reduction, volatileReduction, fetch, zero );
+
+      #ifdef CUDA_REDUCTION_PROFILING
+         timer.stop();
+         std::cout << "   Reduction of small data set on CPU took " << timer.getRealTime() << " sec. " << std::endl;
+      #endif
+      return result;
+   }
+   else {
+      /***
+       * Data can't be safely reduced on host, so continue with the reduction on the CUDA device.
+       */
+      auto result = reductionLauncher.finish( reduction, volatileReduction, zero );
+
+      #ifdef CUDA_REDUCTION_PROFILING
+         timer.stop();
+         std::cout << "   Reduction of small data set on GPU took " << timer.getRealTime() << " sec. " << std::endl;
+         timer.reset();
+         timer.start();
+      #endif
+
+      return result;
+   }
+#else
+   throw Exceptions::CudaSupportMissing();
+#endif
+};
+
+template< typename Index,
+          typename Result,
+          typename ReductionOperation,
+          typename VolatileReductionOperation,
+          typename DataFetcher >
+Result
+Reduction< Devices::Cuda >::
+reduceWithArgument( const Index size,
+                    Index& argument,
+                    ReductionOperation& reduction,
+                    VolatileReductionOperation& volatileReduction,
+                    DataFetcher& dataFetcher,
+                    const Result& zero )
+{
+   #ifdef HAVE_CUDA
+
+   using IndexType = Index;
+   using ResultType = Result;
+
+   /***
+    * Only fundamental and pointer types can be safely reduced on host. Complex
+    * objects stored on the device might contain pointers into the device memory,
+    * in which case reduction on host might fail.
+    */
+   //constexpr bool can_reduce_all_on_host = std::is_fundamental< DataType1 >::value || std::is_fundamental< DataType2 >::value || std::is_pointer< DataType1 >::value || std::is_pointer< DataType2 >::value;
+   constexpr bool can_reduce_later_on_host = std::is_fundamental< ResultType >::value || std::is_pointer< ResultType >::value;
+
+   #ifdef CUDA_REDUCTION_PROFILING
+      Timer timer;
+      timer.reset();
+      timer.start();
+   #endif
+
+   CudaReductionKernelLauncher< IndexType, ResultType > reductionLauncher( size );
+
+   /****
+    * Reduce the data on the CUDA device.
+    */
+   ResultType* deviceAux1( nullptr );
+   IndexType* deviceIndexes( nullptr );
+   IndexType reducedSize = reductionLauncher.startWithArgument(
+      reduction,
+      volatileReduction,
+      dataFetcher,
+      zero,
+      deviceAux1,
+      deviceIndexes );
+   #ifdef CUDA_REDUCTION_PROFILING
+      timer.stop();
+      std::cout << "   Reduction on GPU to size " << reducedSize << " took " << timer.getRealTime() << " sec. " << std::endl;
+      timer.reset();
+      timer.start();
+   #endif
+
+   if( can_reduce_later_on_host ) {
+      /***
+       * Transfer the reduced data from device to host.
+       */
+      std::unique_ptr< ResultType[] > resultArray{ new ResultType[ reducedSize ] };
+      std::unique_ptr< IndexType[] > indexArray{ new IndexType[ reducedSize ] };
+      ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( resultArray.get(), deviceAux1, reducedSize );
+      ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( indexArray.get(), deviceIndexes, reducedSize );
+
+      #ifdef CUDA_REDUCTION_PROFILING
+         timer.stop();
+         std::cout << "   Transferring data to CPU took " << timer.getRealTime() << " sec. " << std::endl;
+         timer.reset();
+         timer.start();
+      #endif
+
+      /***
+       * Reduce the data on the host system.
+       */
+      //auto fetch = [&] ( IndexType i ) { return resultArray[ i ]; };
+      //const ResultType result = Reduction< Devices::Host >::reduceWithArgument( reducedSize, argument, reduction, volatileReduction, fetch, zero );
+      for( IndexType i = 1; i < reducedSize; i++ )
+         reduction( indexArray[ 0 ], indexArray[ i ], resultArray[ 0 ], resultArray[ i ] );
+
+      #ifdef CUDA_REDUCTION_PROFILING
+         timer.stop();
+         std::cout << "   Reduction of small data set on CPU took " << timer.getRealTime() << " sec. " << std::endl;
+      #endif
+      argument = indexArray[ 0 ];
+      return resultArray[ 0 ];
+   }
+   else {
+      /***
+       * Data can't be safely reduced on host, so continue with the reduction on the CUDA device.
+       */
+      auto result = reductionLauncher.finishWithArgument( argument, reduction, volatileReduction, zero );
+
+      #ifdef CUDA_REDUCTION_PROFILING
+         timer.stop();
+         std::cout << "   Reduction of small data set on GPU took " << timer.getRealTime() << " sec. " << std::endl;
+         timer.reset();
+         timer.start();
+      #endif
+
+      return result;
+   }
+#else
+   throw Exceptions::CudaSupportMissing();
+#endif
+}
 
 } // namespace Algorithms
 } // namespace Containers

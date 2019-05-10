@@ -26,7 +26,7 @@ class Reduction
 };
 
 template<>
-class Reduction< Devices::Cuda >
+class Reduction< Devices::Host >
 {
    public:
       template< typename Index,
@@ -56,7 +56,7 @@ class Reduction< Devices::Cuda >
 };
 
 template<>
-class Reduction< Devices::Host >
+class Reduction< Devices::Cuda >
 {
    public:
       template< typename Index,
@@ -120,4 +120,4 @@ class Reduction< Devices::MIC >
 } // namespace Containers
 } // namespace TNL
 
-#include "Reduction.hpp"
+#include <TNL/Conatainers/Algorithms/Reduction.hpp>
