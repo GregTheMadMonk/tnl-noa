@@ -120,4 +120,4 @@ class Reduction< Devices::MIC >
 } // namespace Containers
 } // namespace TNL
 
-#include <TNL/Conatainers/Algorithms/Reduction.hpp>
+#include <TNL/Containers/Algorithms/Reduction.hpp>

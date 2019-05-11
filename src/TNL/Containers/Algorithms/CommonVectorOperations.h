@@ -70,6 +70,15 @@ struct CommonVectorOperations
    template< typename Vector1, typename Vector2, typename ResultType = typename Vector1::RealType >
    static ResultType getScalarProduct( const Vector1& v1, const Vector2& v2 );
 
+   template< typename Vector >
+   static void computePrefixSum( Vector& v,
+                                 const typename Vector::IndexType begin,
+                                 const typename Vector::IndexType end );
+
+   template< typename Vector >
+   static void computeExclusivePrefixSum( Vector& v,
+                                          const typename Vector::IndexType begin,
+                                          const typename Vector::IndexType end );
 };
 
 } // namespace Algorithms

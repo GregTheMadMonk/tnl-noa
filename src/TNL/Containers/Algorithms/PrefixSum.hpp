@@ -18,9 +18,8 @@
 
 #include <TNL/Assert.h>
 #include <TNL/Exceptions/CudaSupportMissing.h>
-#include <TNL/Containers/Algorithms/PrefixSumOperations.h>
+#include <TNL/Containers/Algorithms/ReductionOperations.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
-#include <TNL/Containers/Algorithms/CudaPrefixSumKernel.h>
 
 #ifdef CUDA_REDUCTION_PROFILING
 #include <iostream>
@@ -40,135 +39,177 @@ static constexpr int PrefixSum_minGpuDataSize = 256;//65536; //16384;//1024;//25
 
 ////
 // PrefixSum on host
-template< typename Index,
-          typename Result,
+template< typename Vector,
           typename PrefixSumOperation,
           typename VolatilePrefixSumOperation >
-Result
+static typename Vector::RealType
 PrefixSum< Devices::Host >::
-inclusive( const Index size,
+inclusive( Vector& v,
+           const typename Vector::IndexType begin,
+           const typename Vector::IndexType end,
            PrefixSumOperation& reduction,
            VolatilePrefixSumOperation& volatilePrefixSum,
-           const Result& zero )
+           const typename Vector::RealType& zero )
 {
-   using IndexType = Index;
-   using ResultType = Result;
+   using IndexType = typename Vector::IndexType;
+
+   // TODO: parallelize with OpenMP
+   for( IndexType i = begin + 1; i < end; i++ )
+      reduction( v[ i ], v[ i - 1 ] );
+}
+
+template< typename Vector,
+          typename PrefixSumOperation,
+          typename VolatilePrefixSumOperation >
+static typename Vector::RealType
+PrefixSum< Devices::Host >::
+exclusive( Vector& v,
+           const typename Vector::IndexType begin,
+           const typename Vector::IndexType end,
+           PrefixSumOperation& reduction,
+           VolatilePrefixSumOperation& volatilePrefixSum,
+           const typename Vector::RealType& zero  )
+{
+   using IndexType = typename Vector::IndexType;
+   using RealType = typename Vector::RealType;
+
+   // TODO: parallelize with OpenMP
+   RealType aux( v[ begin ] );
+   v[ begin ] = zero;
+   for( IndexType i = begin + 1; i < end; i++ )
+   {
+      RealType x = v[ i ];
+      v[ i ] = aux;
+      reduction( aux, x );
+   }
+}
+
+template< typename Vector,
+          typename FlagsArray,
+          typename PrefixSumOperation,
+          typename VolatilePrefixSumOperation >
+static typename Vector::RealType
+PrefixSum< Devices::Host >::
+inclusiveSegmented( Vector& v,
+                    FlagsArray& f,
+                    const typename Vector::IndexType begin,
+                    const typename Vector::IndexType end,
+                    PrefixSumOperation& reduction,
+                    VolatilePrefixSumOperation& volatilePrefixSum,
+                    const typename Vector::RealType& zero )
+{
+   using IndexType = typename Vector::IndexType;
+
+   // TODO: parallelize with OpenMP
+   for( IndexType i = begin + 1; i < end; i++ )
+      if( f[ i ] )
+         v[ i ] = zero;
+      else
+         reduction( v[ i ], v[ i - 1 ] );
 
 }
 
-template< typename Index,
-          typename Result,
+template< typename Vector,
+          typename FlagsArray,
           typename PrefixSumOperation,
           typename VolatilePrefixSumOperation >
-Result
+static typename Vector::RealType
 PrefixSum< Devices::Host >::
-exclusive( const Index size,
-           PrefixSumOperation& reduction,
-           VolatilePrefixSumOperation& volatilePrefixSum,
-           const Result& zero )
+exclusiveSegmented( Vector& v,
+                    FlagsArray& f,
+                    const typename Vector::IndexType begin,
+                    const typename Vector::IndexType end,
+                    PrefixSumOperation& reduction,
+                    VolatilePrefixSumOperation& volatilePrefixSum,
+                    const typename Vector::RealType& zero )
 {
-   using IndexType = Index;
-   using ResultType = Result;
+   using IndexType = typename Vector::IndexType;
+   using RealType = typename Vector::RealType;
 
+   // TODO: parallelize with OpenMP
+   RealType aux( v[ begin ] );
+   v[ begin ] = zero;
+   for( IndexType i = begin + 1; i < end; i++ )
+   {
+      RealType x = v[ i ];
+      if( f[ i ] )
+         aux = zero;
+      v[ i ] = aux;
+      reduction( aux, x );
+   }
 }
 
-
-
-
-template< typename Index,
-          typename Result,
+////
+// PrefixSum on CUDA device
+template< typename Vector,
           typename PrefixSumOperation,
           typename VolatilePrefixSumOperation >
-Result
+static typename Vector::RealType
 PrefixSum< Devices::Cuda >::
-   reduce( const Index size,
+inclusive( Vector& v,
+           const typename Vector::IndexType begin,
+           const typename Vector::IndexType end,
            PrefixSumOperation& reduction,
            VolatilePrefixSumOperation& volatilePrefixSum,
-           const Result& zero )
+           const typename Vector::RealType& zero )
 {
-#ifdef HAVE_CUDA
+   using IndexType = typename Vector::IndexType;
 
-   using IndexType = Index;
-   using ResultType = Result;
+}
 
-   /***
-    * Only fundamental and pointer types can be safely reduced on host. Complex
-    * objects stored on the device might contain pointers into the device memory,
-    * in which case reduction on host might fail.
-    */
-   //constexpr bool can_reduce_all_on_host = std::is_fundamental< DataType1 >::value || std::is_fundamental< DataType2 >::value || std::is_pointer< DataType1 >::value || std::is_pointer< DataType2 >::value;
-   constexpr bool can_reduce_later_on_host = std::is_fundamental< ResultType >::value || std::is_pointer< ResultType >::value;
+template< typename Vector,
+          typename PrefixSumOperation,
+          typename VolatilePrefixSumOperation >
+static typename Vector::RealType
+PrefixSum< Devices::Cuda >::
+exclusive( Vector& v,
+           const typename Vector::IndexType begin,
+           const typename Vector::IndexType end,
+           PrefixSumOperation& reduction,
+           VolatilePrefixSumOperation& volatilePrefixSum,
+           const typename Vector::RealType& zero  )
+{
+   using IndexType = typename Vector::IndexType;
+   using RealType = typename Vector::RealType;
 
-   #ifdef CUDA_REDUCTION_PROFILING
-      Timer timer;
-      timer.reset();
-      timer.start();
-   #endif
+}
 
-   CudaPrefixSumKernelLauncher< IndexType, ResultType > reductionLauncher( size );
+template< typename Vector,
+          typename FlagsArray,
+          typename PrefixSumOperation,
+          typename VolatilePrefixSumOperation >
+static typename Vector::RealType
+PrefixSum< Devices::Cuda >::
+inclusiveSegmented( Vector& v,
+                    FlagsArray& f,
+                    const typename Vector::IndexType begin,
+                    const typename Vector::IndexType end,
+                    PrefixSumOperation& reduction,
+                    VolatilePrefixSumOperation& volatilePrefixSum,
+                    const typename Vector::RealType& zero )
+{
+   using IndexType = typename Vector::IndexType;
 
-   /****
-    * Reduce the data on the CUDA device.
-    */
-   ResultType* deviceAux1( 0 );
-   IndexType reducedSize = reductionLauncher.start(
-      reduction,
-      volatilePrefixSum,
-      dataFetcher,
-      zero,
-      deviceAux1 );
-   #ifdef CUDA_REDUCTION_PROFILING
-      timer.stop();
-      std::cout << "   PrefixSum on GPU to size " << reducedSize << " took " << timer.getRealTime() << " sec. " << std::endl;
-      timer.reset();
-      timer.start();
-   #endif
+}
 
-   if( can_reduce_later_on_host ) {
-      /***
-       * Transfer the reduced data from device to host.
-       */
-      std::unique_ptr< ResultType[] > resultArray{ new ResultType[ reducedSize ] };
-      ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( resultArray.get(), deviceAux1, reducedSize );
+template< typename Vector,
+          typename FlagsArray,
+          typename PrefixSumOperation,
+          typename VolatilePrefixSumOperation >
+static typename Vector::RealType
+PrefixSum< Devices::Cuda >::
+exclusiveSegmented( Vector& v,
+                    FlagsArray& f,
+                    const typename Vector::IndexType begin,
+                    const typename Vector::IndexType end,
+                    PrefixSumOperation& reduction,
+                    VolatilePrefixSumOperation& volatilePrefixSum,
+                    const typename Vector::RealType& zero )
+{
+   using IndexType = typename Vector::IndexType;
+   using RealType = typename Vector::RealType;
 
-      #ifdef CUDA_REDUCTION_PROFILING
-         timer.stop();
-         std::cout << "   Transferring data to CPU took " << timer.getRealTime() << " sec. " << std::endl;
-         timer.reset();
-         timer.start();
-      #endif
-
-      /***
-       * Reduce the data on the host system.
-       */
-      auto fetch = [&] ( IndexType i ) { return resultArray[ i ]; };
-      const ResultType result = PrefixSum< Devices::Host >::reduce( reducedSize, reduction, volatilePrefixSum, fetch, zero );
-
-      #ifdef CUDA_REDUCTION_PROFILING
-         timer.stop();
-         std::cout << "   PrefixSum of small data set on CPU took " << timer.getRealTime() << " sec. " << std::endl;
-      #endif
-      return result;
-   }
-   else {
-      /***
-       * Data can't be safely reduced on host, so continue with the reduction on the CUDA device.
-       */
-      auto result = reductionLauncher.finish( reduction, volatilePrefixSum, zero );
-
-      #ifdef CUDA_REDUCTION_PROFILING
-         timer.stop();
-         std::cout << "   PrefixSum of small data set on GPU took " << timer.getRealTime() << " sec. " << std::endl;
-         timer.reset();
-         timer.start();
-      #endif
-
-      return result;
-   }
-#else
-   throw Exceptions::CudaSupportMissing();
-#endif
-};
+}
 
 } // namespace Algorithms
 } // namespace Containers

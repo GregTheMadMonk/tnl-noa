@@ -139,40 +139,6 @@ addVectors( Vector1& v,
          v[ i ] = thisMultiplicator * v[ i ] + multiplicator1 * v1[ i ] + multiplicator2 * v2[ i ];
 }
 
-template< typename Vector >
-void
-VectorOperations< Devices::Host >::
-computePrefixSum( Vector& v,
-                  typename Vector::IndexType begin,
-                  typename Vector::IndexType end )
-{
-   typedef typename Vector::IndexType Index;
-
-   // TODO: parallelize with OpenMP
-   for( Index i = begin + 1; i < end; i++ )
-      v[ i ] += v[ i - 1 ];
-}
-
-template< typename Vector >
-void
-VectorOperations< Devices::Host >::
-computeExclusivePrefixSum( Vector& v,
-                           typename Vector::IndexType begin,
-                           typename Vector::IndexType end )
-{
-   typedef typename Vector::IndexType Index;
-   typedef typename Vector::RealType Real;
-
-   // TODO: parallelize with OpenMP
-   Real aux( v[ begin ] );
-   v[ begin ] = 0.0;
-   for( Index i = begin + 1; i < end; i++ )
-   {
-      Real x = v[ i ];
-      v[ i ] = aux;
-      aux += x;
-   }
-}
 
 } // namespace Algorithms
 } // namespace Containers
