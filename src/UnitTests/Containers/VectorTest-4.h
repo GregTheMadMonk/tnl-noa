@@ -127,11 +127,19 @@ TYPED_TEST( VectorTest, prefixSum )
    using VectorType = typename TestFixture::VectorType;
    using VectorOperations = typename TestFixture::VectorOperations;
    using ViewType = typename TestFixture::ViewType;
+   using RealType = typename VectorType::RealType;
+   using DeviceType = typename VectorType::DeviceType;
+   using IndexType = typename VectorType::IndexType;
+   using FlagsArrayType = Array< bool, DeviceType, IndexType >;
+   using FlagsViewType = ArrayView< bool, DeviceType, IndexType >;
    const int size = VECTOR_TEST_SIZE;
 
-   VectorType v;
-   v.setSize( size );
+   VectorType v( size );
    ViewType v_view( v );
+
+   FlagsArrayType flags( size );
+   FlagsViewType flags_view( flags );
+   flags_view.evaluate( [] __cuda_callable__ ( IndexType i ) { return ( i % 5 ) == 0; } );
 
    setConstantSequence( v, 1 );
    v.computePrefixSum();

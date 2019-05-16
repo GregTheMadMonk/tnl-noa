@@ -79,6 +79,19 @@ struct CommonVectorOperations
    static void computeExclusivePrefixSum( Vector& v,
                                           const typename Vector::IndexType begin,
                                           const typename Vector::IndexType end );
+
+   template< typename Vector, typename Flags >
+   static void computeSegmentedPrefixSum( Vector& v,
+                                          Flags& f,
+                                          const typename Vector::IndexType begin,
+                                          const typename Vector::IndexType end );
+
+   template< typename Vector, typename Flags >
+   static void computeExclusiveSegmentedPrefixSum( Vector& v,
+                                                   Flags& f,
+                                                   const typename Vector::IndexType begin,
+                                                   const typename Vector::IndexType end );
+
 };
 
 } // namespace Algorithms

@@ -42,7 +42,7 @@ static constexpr int PrefixSum_minGpuDataSize = 256;//65536; //16384;//1024;//25
 template< typename Vector,
           typename PrefixSumOperation,
           typename VolatilePrefixSumOperation >
-static typename Vector::RealType
+void
 PrefixSum< Devices::Host >::
 inclusive( Vector& v,
            const typename Vector::IndexType begin,
@@ -61,7 +61,7 @@ inclusive( Vector& v,
 template< typename Vector,
           typename PrefixSumOperation,
           typename VolatilePrefixSumOperation >
-static typename Vector::RealType
+void
 PrefixSum< Devices::Host >::
 exclusive( Vector& v,
            const typename Vector::IndexType begin,
@@ -88,7 +88,7 @@ template< typename Vector,
           typename FlagsArray,
           typename PrefixSumOperation,
           typename VolatilePrefixSumOperation >
-static typename Vector::RealType
+void
 PrefixSum< Devices::Host >::
 inclusiveSegmented( Vector& v,
                     FlagsArray& f,
@@ -113,7 +113,7 @@ template< typename Vector,
           typename FlagsArray,
           typename PrefixSumOperation,
           typename VolatilePrefixSumOperation >
-static typename Vector::RealType
+void
 PrefixSum< Devices::Host >::
 exclusiveSegmented( Vector& v,
                     FlagsArray& f,
@@ -144,7 +144,7 @@ exclusiveSegmented( Vector& v,
 template< typename Vector,
           typename PrefixSumOperation,
           typename VolatilePrefixSumOperation >
-static typename Vector::RealType
+void
 PrefixSum< Devices::Cuda >::
 inclusive( Vector& v,
            const typename Vector::IndexType begin,
@@ -160,7 +160,7 @@ inclusive( Vector& v,
 template< typename Vector,
           typename PrefixSumOperation,
           typename VolatilePrefixSumOperation >
-static typename Vector::RealType
+void
 PrefixSum< Devices::Cuda >::
 exclusive( Vector& v,
            const typename Vector::IndexType begin,
@@ -178,7 +178,7 @@ template< typename Vector,
           typename FlagsArray,
           typename PrefixSumOperation,
           typename VolatilePrefixSumOperation >
-static typename Vector::RealType
+void
 PrefixSum< Devices::Cuda >::
 inclusiveSegmented( Vector& v,
                     FlagsArray& f,
@@ -196,7 +196,7 @@ template< typename Vector,
           typename FlagsArray,
           typename PrefixSumOperation,
           typename VolatilePrefixSumOperation >
-static typename Vector::RealType
+void
 PrefixSum< Devices::Cuda >::
 exclusiveSegmented( Vector& v,
                     FlagsArray& f,

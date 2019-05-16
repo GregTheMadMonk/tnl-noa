@@ -306,7 +306,7 @@ template< typename Value,
           typename Index >
    template< typename Function >
 void ArrayView< Value, Device, Index >::
-evaluate( Function& f, const Index begin, Index end )
+evaluate( const Function& f, const Index begin, Index end )
 {
    TNL_ASSERT_TRUE( this->getData(), "Attempted to set a value of an empty array view." );
 

@@ -377,7 +377,7 @@ public:
     * \param v Reference to a value.
     */
    template< typename Function >
-   void evaluate( Function& f,
+   void evaluate( const Function& f,
                   const Index begin = 0,
                   Index end = -1 );
 
