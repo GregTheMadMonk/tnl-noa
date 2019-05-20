@@ -404,7 +404,19 @@ public:
     * \param begin Index of the element in this vector which to begin with.
     * \param end Index of the element in this vector which to end with.
     */
-   void computeExclusivePrefixSum( const IndexType begin, const IndexType end );
+   void computeSegmentedExclusivePrefixSum( const IndexType begin, const IndexType end );
+
+   template< typename FlagsArray >
+   void computeSegmentedPrefixSum( FlagsArray& flags );
+
+   template< typename FlagsArray >
+   void computeSegmentedPrefixSum( FlagsArray& flags, const IndexType begin, const IndexType end );
+
+   template< typename FlagsArray >
+   void computeSegmentedExclusivePrefixSum( FlagsArray& flags );
+
+   template< typename FlagsArray >
+   void computeSegmentedExclusivePrefixSum( FlagsArray& flags, const IndexType begin, const IndexType end );
 };
 
 } // namespace Containers

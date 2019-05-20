@@ -195,6 +195,18 @@ public:
    void computeExclusivePrefixSum();
 
    void computeExclusivePrefixSum( IndexType begin, IndexType end );
+
+   template< typename FlagsArray >
+   void computeSegmentedPrefixSum( FlagsArray& flags );
+
+   template< typename FlagsArray >
+   void computeSegmentedPrefixSum( FlagsArray& flags, const IndexType begin, const IndexType end );
+
+   template< typename FlagsArray >
+   void computeSegmentedExclusivePrefixSum( FlagsArray& flags );
+
+   template< typename FlagsArray >
+   void computeSegmentedExclusivePrefixSum( FlagsArray& flags, const IndexType begin, const IndexType end );
 };
 
 } // namespace Containers

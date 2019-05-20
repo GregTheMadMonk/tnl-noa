@@ -516,5 +516,53 @@ computeExclusivePrefixSum( const IndexType begin,
    Algorithms::VectorOperations< Device >::computeExclusivePrefixSum( *this, begin, end );
 }
 
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename FlagsArray >
+void
+Vector< Real, Device, Index >::
+computeSegmentedPrefixSum( FlagsArray& flags )
+{
+   Algorithms::VectorOperations< Device >::computePrefixSum( *this, flags, 0, this->getSize() );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename FlagsArray >
+void
+Vector< Real, Device, Index >::
+computeSegmentedPrefixSum( FlagsArray& flags,
+   const IndexType begin,
+   const IndexType end )
+{
+   Algorithms::VectorOperations< Device >::computePrefixSum( *this, flags, begin, end );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename FlagsArray >
+void
+Vector< Real, Device, Index >::
+computeSegmentedExclusivePrefixSum( FlagsArray& flags )
+{
+   Algorithms::VectorOperations< Device >::computeExclusivePrefixSum( *this, flags, 0, this->getSize() );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename FlagsArray >
+void
+Vector< Real, Device, Index >::
+computeSegmentedExclusivePrefixSum(  FlagsArray& flags,
+   const IndexType begin,
+   const IndexType end )
+{
+   Algorithms::VectorOperations< Device >::computeExclusivePrefixSum( *this, flags, begin, end );
+}
+
 } // namespace Containers
 } // namespace TNL
