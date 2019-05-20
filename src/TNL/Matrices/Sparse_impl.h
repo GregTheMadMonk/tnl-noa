@@ -52,7 +52,7 @@ Index Sparse< Real, Device, Index >::getNumberOfNonzeroMatrixElements() const
    IndexType nonzeroElements( 0 );
    for( IndexType i = 0; i < this->values.getSize(); i++ )
       if( this->columnIndexes.getElement( i ) != this-> columns &&
-          this->values.getElement( i ) != 0.0 )
+          this->values.getElement( i ) != RealType( 0 ) )
          nonzeroElements++;
    return nonzeroElements;
 }

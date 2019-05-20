@@ -404,7 +404,7 @@ public:
     * \param begin Index of the element in this vector which to begin with.
     * \param end Index of the element in this vector which to end with.
     */
-   void computeSegmentedExclusivePrefixSum( const IndexType begin, const IndexType end );
+   void computeExclusivePrefixSum( const IndexType begin, const IndexType end );
 
    template< typename FlagsArray >
    void computeSegmentedPrefixSum( FlagsArray& flags );
