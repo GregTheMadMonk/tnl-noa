@@ -437,7 +437,7 @@ void
 VectorView< Real, Device, Index >::
 computeSegmentedPrefixSum( FlagsArray& flags )
 {
-   Algorithms::VectorOperations< Device >::computePrefixSum( *this, flags, 0, this->getSize() );
+   Algorithms::VectorOperations< Device >::computeSegmentedPrefixSum( *this, flags, 0, this->getSize() );
 }
 
 template< typename Real,
@@ -450,7 +450,7 @@ computeSegmentedPrefixSum( FlagsArray& flags,
    const IndexType begin,
    const IndexType end )
 {
-   Algorithms::VectorOperations< Device >::computePrefixSum( *this, flags, begin, end );
+   Algorithms::VectorOperations< Device >::computeSegmentedPrefixSum( *this, flags, begin, end );
 }
 
 template< typename Real,
@@ -461,7 +461,7 @@ void
 VectorView< Real, Device, Index >::
 computeSegmentedExclusivePrefixSum( FlagsArray& flags )
 {
-   Algorithms::VectorOperations< Device >::computeExclusivePrefixSum( *this, flags, 0, this->getSize() );
+   Algorithms::VectorOperations< Device >::computeSegmentedExclusivePrefixSum( *this, flags, 0, this->getSize() );
 }
 
 template< typename Real,
@@ -474,7 +474,7 @@ computeSegmentedExclusivePrefixSum(  FlagsArray& flags,
    const IndexType begin,
    const IndexType end )
 {
-   Algorithms::VectorOperations< Device >::computeExclusivePrefixSum( *this, flags, begin, end );
+   Algorithms::VectorOperations< Device >::computeSegmentedExclusivePrefixSum( *this, flags, begin, end );
 }
 
 } // namespace Containers

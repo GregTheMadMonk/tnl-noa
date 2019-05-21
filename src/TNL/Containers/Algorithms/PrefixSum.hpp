@@ -99,14 +99,11 @@ inclusiveSegmented( Vector& v,
                     const typename Vector::RealType& zero )
 {
    using IndexType = typename Vector::IndexType;
-
+   
    // TODO: parallelize with OpenMP
    for( IndexType i = begin + 1; i < end; i++ )
-      if( f[ i ] )
-         v[ i ] = zero;
-      else
+      if( ! f[ i ] )
          reduction( v[ i ], v[ i - 1 ] );
-
 }
 
 template< typename Vector,

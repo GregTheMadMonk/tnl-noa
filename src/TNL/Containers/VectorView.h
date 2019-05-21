@@ -86,8 +86,8 @@ public:
 
    static String getType();
 
-      template< typename VectorOperationType >
-   void evaluate( const VectorOperationType& vo );
+   //template< typename VectorOperationType >
+   //void evaluate( const VectorOperationType& vo );
 
    template< typename VectorOperationType >
    void evaluateFor( const VectorOperationType& vo );

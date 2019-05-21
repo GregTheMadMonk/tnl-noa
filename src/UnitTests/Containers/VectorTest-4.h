@@ -206,7 +206,6 @@ TYPED_TEST( VectorTest, exclusivePrefixSum )
 TYPED_TEST( VectorTest, segmentedPrefixSum )
 {
    using VectorType = typename TestFixture::VectorType;
-   using VectorOperations = typename TestFixture::VectorOperations;
    using ViewType = typename TestFixture::ViewType;
    using RealType = typename VectorType::RealType;
    using DeviceType = typename VectorType::DeviceType;
@@ -218,41 +217,55 @@ TYPED_TEST( VectorTest, segmentedPrefixSum )
    VectorType v( size );
    ViewType v_view( v );
 
-   /*FlagsArrayType flags( size ), flags_copy( size );
+   FlagsArrayType flags( size ), flags_copy( size );
    FlagsViewType flags_view( flags );
    flags_view.evaluate( [] __cuda_callable__ ( IndexType i ) { return ( i % 5 ) == 0; } );
    flags_copy = flags_view;
 
+   v = 0;
+   v.computeSegmentedPrefixSum( flags_view );
+   for( int i = 0; i < size; i++ )
+      EXPECT_EQ( v.getElement( i ), 0 );
+   flags_view = flags_copy;
+   
    v = 1;
-   v.computeSegmentedPrefixSum();
+   v.computeSegmentedPrefixSum( flags_view );
    for( int i = 0; i < size; i++ )
-      EXPECT_EQ( v.getElement( i ), 0 );
-*/
-
-   v.setValue( 0 );
-   v.computePrefixSum();
-   for( int i = 0; i < size; i++ )
-      EXPECT_EQ( v.getElement( i ), 0 );
+         EXPECT_EQ( v.getElement( i ), ( i % 5 ) + 1 );
+   flags_view = flags_copy;
 
    setLinearSequence( v );
-   v.computePrefixSum();
+   v.computeSegmentedPrefixSum( flags_view );
    for( int i = 1; i < size; i++ )
-      EXPECT_EQ( v.getElement( i ) - v.getElement( i - 1 ), i );
-
-   setConstantSequence( v, 1 );
-   v_view.computePrefixSum();
+   {
+      if( flags.getElement( i ) )
+         EXPECT_EQ( v.getElement( i ), i );
+      else
+         EXPECT_EQ( v.getElement( i ) - v.getElement( i - 1 ), i );
+   }
+   flags_view = flags_copy;
+   
+   v_view = 0;
+   v_view.computeSegmentedPrefixSum( flags_view );
    for( int i = 0; i < size; i++ )
-      EXPECT_EQ( v.getElement( i ), i + 1 );
-
-   v.setValue( 0 );
-   v_view.computePrefixSum();
+      EXPECT_EQ( v_view.getElement( i ), 0 );
+   flags_view = flags_copy;
+   
+   v_view = 1;
+   v_view.computeSegmentedPrefixSum( flags_view );
    for( int i = 0; i < size; i++ )
-      EXPECT_EQ( v.getElement( i ), 0 );
+         EXPECT_EQ( v_view.getElement( i ), ( i % 5 ) + 1 );
+   flags_view = flags_copy;
 
-   setLinearSequence( v );
-   v_view.computePrefixSum();
+   v_view.evaluate( [] __cuda_callable__ ( IndexType i ) { return i; } );
+   v_view.computeSegmentedPrefixSum( flags_view );
    for( int i = 1; i < size; i++ )
-      EXPECT_EQ( v.getElement( i ) - v.getElement( i - 1 ), i );
+   {
+      if( flags.getElement( i ) )
+         EXPECT_EQ( v_view.getElement( i ), i );
+      else
+         EXPECT_EQ( v_view.getElement( i ) - v_view.getElement( i - 1 ), i );
+   }
 }
 
 
