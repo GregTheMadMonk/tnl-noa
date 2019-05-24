@@ -216,7 +216,7 @@ struct ParallelFor< Devices::Cuda, Mode >
 
          if( Mode == SynchronousMode )
          {
-            cudaDeviceSynchronize();
+            cudaStreamSynchronize(0);
             TNL_CHECK_CUDA_DEVICE;
          }
       }
@@ -275,7 +275,7 @@ struct ParallelFor2D< Devices::Cuda, Mode >
 
          if( Mode == SynchronousMode )
          {
-            cudaDeviceSynchronize();
+            cudaStreamSynchronize(0);
             TNL_CHECK_CUDA_DEVICE;
          }
       }
@@ -373,7 +373,7 @@ struct ParallelFor3D< Devices::Cuda, Mode >
 
          if( Mode == SynchronousMode )
          {
-            cudaDeviceSynchronize();
+            cudaStreamSynchronize(0);
             TNL_CHECK_CUDA_DEVICE;
          }
       }
