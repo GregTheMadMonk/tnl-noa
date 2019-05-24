@@ -203,6 +203,9 @@ TYPED_TEST( VectorTest, exclusivePrefixSum )
       EXPECT_EQ( v.getElement( i ) - v.getElement( i - 1 ), i - 1 );
 }
 
+template< typename IndexType >
+auto f1 = [=] __cuda_callable__ ( IndexType i ) { return ( i % 5 ) == 0; };
+
 TYPED_TEST( VectorTest, segmentedPrefixSum )
 {
    using VectorType = typename TestFixture::VectorType;
@@ -219,7 +222,7 @@ TYPED_TEST( VectorTest, segmentedPrefixSum )
 
    FlagsArrayType flags( size ), flags_copy( size );
    FlagsViewType flags_view( flags );
-   flags_view.evaluate( [] __cuda_callable__ ( IndexType i ) { return ( i % 5 ) == 0; } );
+   flags_view.evaluate( f1 );
    flags_copy = flags_view;
 
    v = 0;
