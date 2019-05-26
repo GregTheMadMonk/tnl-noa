@@ -203,8 +203,13 @@ TYPED_TEST( VectorTest, exclusivePrefixSum )
       EXPECT_EQ( v.getElement( i ) - v.getElement( i - 1 ), i - 1 );
 }
 
-template< typename IndexType >
-auto f1 = [=] __cuda_callable__ ( IndexType i ) { return ( i % 5 ) == 0; };
+
+template< typename FlagsView >
+void setupFlags( FlagsView& f )
+{
+   auto f1 = [] __cuda_callable__ ( typename FlagsView::IndexType i ) { return ( i % 5 ) == 0; };
+   f.evaluate( f1 );
+}
 
 TYPED_TEST( VectorTest, segmentedPrefixSum )
 {
@@ -222,7 +227,9 @@ TYPED_TEST( VectorTest, segmentedPrefixSum )
 
    FlagsArrayType flags( size ), flags_copy( size );
    FlagsViewType flags_view( flags );
-   flags_view.evaluate( f1 );
+   //auto f1 = [] __cuda_callable__ ( IndexType i ) { return ( i % 5 ) == 0; };
+   //flags_view.evaluate( f1 );
+   setupFlags( flags_view );
    flags_copy = flags_view;
 
    v = 0;
@@ -260,7 +267,8 @@ TYPED_TEST( VectorTest, segmentedPrefixSum )
          EXPECT_EQ( v_view.getElement( i ), ( i % 5 ) + 1 );
    flags_view = flags_copy;
 
-   v_view.evaluate( [] __cuda_callable__ ( IndexType i ) { return i; } );
+   //v_view.evaluate( [] __cuda_callable__ ( IndexType i ) { return i; } );
+   setLinearSequence( v );
    v_view.computeSegmentedPrefixSum( flags_view );
    for( int i = 1; i < size; i++ )
    {
