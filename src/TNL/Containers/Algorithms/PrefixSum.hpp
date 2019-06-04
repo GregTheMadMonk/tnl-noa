@@ -20,6 +20,7 @@
 #include <TNL/Exceptions/CudaSupportMissing.h>
 #include <TNL/Containers/Algorithms/ReductionOperations.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
+#include <TNL/Containers/Algorithms/cuda-prefix-sum.h>
 
 #ifdef CUDA_REDUCTION_PROFILING
 #include <iostream>
@@ -99,7 +100,7 @@ inclusiveSegmented( Vector& v,
                     const typename Vector::RealType& zero )
 {
    using IndexType = typename Vector::IndexType;
-   
+
    // TODO: parallelize with OpenMP
    for( IndexType i = begin + 1; i < end; i++ )
       if( ! f[ i ] )
@@ -147,11 +148,20 @@ inclusive( Vector& v,
            const typename Vector::IndexType begin,
            const typename Vector::IndexType end,
            PrefixSumOperation& reduction,
-           VolatilePrefixSumOperation& volatilePrefixSum,
+           VolatilePrefixSumOperation& volatileReduction,
            const typename Vector::RealType& zero )
 {
+   using RealType = typename Vector::RealType;
    using IndexType = typename Vector::IndexType;
-
+   using IndexType = typename Vector::IndexType;
+   cudaPrefixSum( ( IndexType ) ( end - begin ),
+                  ( IndexType ) 256,
+                  &v[ begin ],
+                  &v[ begin ],
+                  reduction,
+                  volatileReduction,
+                  zero,
+                  Algorithms::PrefixSumType::inclusive );
 }
 
 template< typename Vector,
@@ -163,11 +173,22 @@ exclusive( Vector& v,
            const typename Vector::IndexType begin,
            const typename Vector::IndexType end,
            PrefixSumOperation& reduction,
-           VolatilePrefixSumOperation& volatilePrefixSum,
+           VolatilePrefixSumOperation& volatileReduction,
            const typename Vector::RealType& zero  )
 {
    using IndexType = typename Vector::IndexType;
    using RealType = typename Vector::RealType;
+   using RealType = typename Vector::RealType;
+   using IndexType = typename Vector::IndexType;
+   using IndexType = typename Vector::IndexType;
+   cudaPrefixSum( ( IndexType ) ( end - begin ),
+                  ( IndexType ) 256,
+                  &v[ begin ],
+                  &v[ begin ],
+                  reduction,
+                  volatileReduction,
+                  zero,
+                  Algorithms::PrefixSumType::exclusive );
 
 }
 

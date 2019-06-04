@@ -213,7 +213,7 @@ addVectors( Vector1& v,
 #endif
 }
 
-template< typename Vector >
+/*template< typename Vector >
 void
 VectorOperations< Devices::Cuda >::
 computePrefixSum( Vector& v,
@@ -232,6 +232,7 @@ computePrefixSum( Vector& v,
                                    &v.getData()[ begin ],
                                    &v.getData()[ begin ],
                                    operation,
+                                   operation.initialValue(),
                                    Algorithms::PrefixSumType::inclusive );
 #else
    throw Exceptions::CudaSupportMissing();
@@ -257,9 +258,10 @@ computeExclusivePrefixSum( Vector& v,
                                    &v.getData()[ begin ],
                                    &v.getData()[ begin ],
                                    operation,
+                                   operation.initialValue(),
                                    Algorithms::PrefixSumType::exclusive );
 #endif
-}
+}*/
 
 } // namespace Algorithms
 } // namespace Containers

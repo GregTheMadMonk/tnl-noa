@@ -22,28 +22,17 @@
 
 namespace TNL {
 namespace Containers {
-namespace Algorithms {   
-
-/*
-template< typename Vector,
-          typename PrefixSumOperation,
-          typename VolatilePrefixSumOperation >
-void
-PrefixSum< Devices::Host >::
-inclusive( Vector& v,
-           const typename Vector::IndexType begin,
-           const typename Vector::IndexType end,
-           PrefixSumOperation& reduction,
-           VolatilePrefixSumOperation& volatilePrefixSum,
-           const typename Vector::RealType& zero )
-*/
+namespace Algorithms {
 
 template< typename DataType,
           typename Operation,
+          typename VolatileOperation,
           typename Index >
 __global__ void
 cudaFirstPhaseBlockPrefixSum( const PrefixSumType prefixSumType,
                               Operation operation,
+                              VolatileOperation volatileOperation,
+                              const DataType zero,
                               const Index size,
                               const Index elementsInBlock,
                               const DataType* input,
@@ -65,7 +54,7 @@ cudaFirstPhaseBlockPrefixSum( const PrefixSumType prefixSumType,
    if( prefixSumType == PrefixSumType::exclusive )
    {
       if( idx == 0 )
-         sharedData[ 0 ] = operation.initialValue();
+         sharedData[ 0 ] = zero; //operation.initialValue();
       while( idx < elementsInBlock && blockOffset + idx < size )
       {
          sharedData[ Devices::Cuda::getInterleaving( idx + 1 ) ] = input[ blockOffset + idx ];
@@ -97,8 +86,8 @@ cudaFirstPhaseBlockPrefixSum( const PrefixSumType prefixSumType,
    while( chunkPointer < chunkSize &&
           chunkOffset + chunkPointer < lastElementInBlock )
    {
-      operation.commonReduction( sharedData[ Devices::Cuda::getInterleaving( chunkOffset + chunkPointer ) ],
-                                 sharedData[ Devices::Cuda::getInterleaving( chunkOffset + chunkPointer - 1 ) ] );
+      operation( sharedData[ Devices::Cuda::getInterleaving( chunkOffset + chunkPointer ) ],
+                 sharedData[ Devices::Cuda::getInterleaving( chunkOffset + chunkPointer - 1 ) ] );
       auxData[ threadIdx.x ] =
          sharedData[ Devices::Cuda::getInterleaving( chunkOffset + chunkPointer  ) ];
       chunkPointer++;
@@ -111,7 +100,7 @@ cudaFirstPhaseBlockPrefixSum( const PrefixSumType prefixSumType,
    const int warpIdx = threadIdx.x / Devices::Cuda::getWarpSize();
    for( int stride = 1; stride < Devices::Cuda::getWarpSize(); stride *= 2 )
       if( threadInWarpIdx >= stride && threadIdx.x < numberOfChunks )
-         operation.commonReduction( auxData[ threadIdx.x ], auxData[ threadIdx.x - stride ] );
+         volatileOperation( auxData[ threadIdx.x ], auxData[ threadIdx.x - stride ] );
 
    if( threadInWarpIdx == Devices::Cuda::getWarpSize() - 1 )
       warpSums[ warpIdx ] = auxData[ threadIdx.x ];
@@ -123,14 +112,14 @@ cudaFirstPhaseBlockPrefixSum( const PrefixSumType prefixSumType,
    if( warpIdx == 0 )
       for( int stride = 1; stride < Devices::Cuda::getWarpSize(); stride *= 2 )
          if( threadInWarpIdx >= stride )
-            operation.commonReduction( warpSums[ threadIdx.x ], warpSums[ threadIdx.x - stride ] );
+            volatileOperation( warpSums[ threadIdx.x ], warpSums[ threadIdx.x - stride ] );
    __syncthreads();
 
    /****
     * Shift the warp prefix-sums.
     */
    if( warpIdx > 0 )
-      operation.commonReduction( auxData[ threadIdx.x ], warpSums[ warpIdx - 1 ] );
+      volatileOperation( auxData[ threadIdx.x ], warpSums[ warpIdx - 1 ] );
 
    /***
     *  Store the result back in global memory.
@@ -140,10 +129,10 @@ cudaFirstPhaseBlockPrefixSum( const PrefixSumType prefixSumType,
    while( idx < elementsInBlock && blockOffset + idx < size )
    {
       const Index chunkIdx = idx / chunkSize;
-      DataType chunkShift( operation.initialValue() );
+      DataType chunkShift( zero ); //operation.initialValue() );
       if( chunkIdx > 0 )
          chunkShift = auxData[ chunkIdx - 1 ];
-      operation.commonReduction( sharedData[ Devices::Cuda::getInterleaving( idx ) ], chunkShift );
+      operation( sharedData[ Devices::Cuda::getInterleaving( idx ) ], chunkShift );
       output[ blockOffset + idx ] = sharedData[ Devices::Cuda::getInterleaving( idx ) ];
       idx += blockDim.x;
    }
@@ -156,9 +145,9 @@ cudaFirstPhaseBlockPrefixSum( const PrefixSumType prefixSumType,
          /*auxArray[ blockIdx.x ] = operation.commonReduction( Devices::Cuda::getInterleaving( lastElementInBlock - 1 ),
                                                                Devices::Cuda::getInterleaving( lastElementInBlock ),
                                                                sharedData );*/
-         DataType aux = operation.initialValue();
-         operation.commonReduction( aux, sharedData[ Devices::Cuda::getInterleaving( lastElementInBlock - 1 ) ] );
-         operation.commonReduction( aux, sharedData[ Devices::Cuda::getInterleaving( lastElementInBlock ) ] );
+         DataType aux = zero; //operation.initialValue();
+         operation( aux, sharedData[ Devices::Cuda::getInterleaving( lastElementInBlock - 1 ) ] );
+         operation( aux, sharedData[ Devices::Cuda::getInterleaving( lastElementInBlock ) ] );
          auxArray[ blockIdx.x ] = aux;
       }
       else
@@ -179,13 +168,13 @@ cudaSecondPhaseBlockPrefixSum( Operation operation,
 {
    if( blockIdx.x > 0 )
    {
-      operation.commonReduction( gridShift, auxArray[ blockIdx.x - 1 ] );
+      operation( gridShift, auxArray[ blockIdx.x - 1 ] );
 
       const Index readOffset = blockIdx.x * elementsInBlock;
       Index readIdx = threadIdx.x;
       while( readIdx < elementsInBlock && readOffset + readIdx < size )
       {
-         operation.commonReduction( data[ readIdx + readOffset ], gridShift );
+         operation( data[ readIdx + readOffset ], gridShift );
          readIdx += blockDim.x;
       }
    }
@@ -194,10 +183,13 @@ cudaSecondPhaseBlockPrefixSum( Operation operation,
 
 template< typename DataType,
           typename Operation,
+          typename VolatileOperation,
           typename Index >
 void
 cudaRecursivePrefixSum( const PrefixSumType prefixSumType,
                         Operation& operation,
+                        VolatileOperation& volatileOperation,
+                        const DataType& zero,
                         const Index size,
                         const Index blockSize,
                         const Index elementsInBlock,
@@ -228,6 +220,8 @@ cudaRecursivePrefixSum( const PrefixSumType prefixSumType,
    cudaFirstPhaseBlockPrefixSum<<< cudaGridSize, cudaBlockSize, sharedMemory >>>
       ( prefixSumType,
         operation,
+        volatileOperation,
+        zero,
         size,
         elementsInBlock,
         input,
@@ -243,10 +237,12 @@ cudaRecursivePrefixSum( const PrefixSumType prefixSumType,
    if( numberOfBlocks > 1 )
        cudaRecursivePrefixSum( PrefixSumType::inclusive,
                                operation,
+                               volatileOperation,
+                               zero,
                                numberOfBlocks,
                                blockSize,
                                elementsInBlock,
-                               operation.initialValue(),
+                               gridShift,
                                auxArray1.getData(),
                                auxArray2.getData() );
 
@@ -261,13 +257,15 @@ cudaRecursivePrefixSum( const PrefixSumType prefixSumType,
 }
 
 
-
 template< typename DataType,
           typename Operation,
+          typename VolatileOperation,
           typename Index >
 void
 cudaGridPrefixSum( PrefixSumType prefixSumType,
                    Operation& operation,
+                   VolatileOperation& volatileOperation,
+                   const DataType& zero,
                    const Index size,
                    const Index blockSize,
                    const Index elementsInBlock,
@@ -277,6 +275,8 @@ cudaGridPrefixSum( PrefixSumType prefixSumType,
 {
    cudaRecursivePrefixSum( prefixSumType,
                            operation,
+                           volatileOperation,
+                           zero,
                            size,
                            blockSize,
                            elementsInBlock,
@@ -291,8 +291,11 @@ cudaGridPrefixSum( PrefixSumType prefixSumType,
    TNL_CHECK_CUDA_DEVICE;
 }
 
+/////
+// deviceInput and deviceOutput can be the same
 template< typename DataType,
           typename Operation,
+          typename VolatileOperation,
           typename Index >
 void
 cudaPrefixSum( const Index size,
@@ -300,6 +303,8 @@ cudaPrefixSum( const Index size,
                const DataType *deviceInput,
                DataType* deviceOutput,
                Operation& operation,
+               VolatileOperation& volatileOperation,
+               const DataType& zero,
                const PrefixSumType prefixSumType )
 {
    /****
@@ -313,7 +318,7 @@ cudaPrefixSum( const Index size,
    /****
     * Loop over all grids.
     */
-   DataType gridShift = operation.initialValue();
+   DataType gridShift = zero; //operation.initialValue();
    for( Index gridIdx = 0; gridIdx < numberOfGrids; gridIdx++ )
    {
       /****
@@ -326,6 +331,8 @@ cudaPrefixSum( const Index size,
 
       cudaGridPrefixSum( prefixSumType,
                          operation,
+                         volatileOperation,
+                         zero,
                          currentSize,
                          blockSize,
                          elementsInBlock,

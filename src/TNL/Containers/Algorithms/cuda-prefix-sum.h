@@ -13,7 +13,7 @@
 namespace TNL {
 namespace Containers {
 namespace Algorithms {
-   
+
 enum class PrefixSumType
 {
    exclusive,
@@ -22,12 +22,15 @@ enum class PrefixSumType
 
 template< typename DataType,
           typename Operation,
+          typename VolatileOperation,
           typename Index >
-bool cudaPrefixSum( const Index size,
+void cudaPrefixSum( const Index size,
                     const Index blockSize,
                     const DataType *deviceInput,
                     DataType* deviceOutput,
-                    const Operation& operation,
+                    Operation& operation,
+                    VolatileOperation& volatileOperation,
+                    const DataType& zero,
                     const PrefixSumType prefixSumType = PrefixSumType::inclusive );
 
 } // namespace Algorithms
