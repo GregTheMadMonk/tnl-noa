@@ -186,7 +186,7 @@ public:
                            const Scalar2 multiplicator2,
                            const Scalar3 thisMultiplicator = 1.0 );
 
-   template< typename Vector >
+   /*template< typename Vector >
    static void computePrefixSum( Vector& v,
                                  const typename Vector::IndexType begin,
                                  const typename Vector::IndexType end );
@@ -194,7 +194,7 @@ public:
    template< typename Vector >
    static void computeExclusivePrefixSum( Vector& v,
                                           const typename Vector::IndexType begin,
-                                          const typename Vector::IndexType end );
+                                          const typename Vector::IndexType end );*/
 };
 #endif
 

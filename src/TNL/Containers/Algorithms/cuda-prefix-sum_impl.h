@@ -24,6 +24,20 @@ namespace TNL {
 namespace Containers {
 namespace Algorithms {   
 
+/*
+template< typename Vector,
+          typename PrefixSumOperation,
+          typename VolatilePrefixSumOperation >
+void
+PrefixSum< Devices::Host >::
+inclusive( Vector& v,
+           const typename Vector::IndexType begin,
+           const typename Vector::IndexType end,
+           PrefixSumOperation& reduction,
+           VolatilePrefixSumOperation& volatilePrefixSum,
+           const typename Vector::RealType& zero )
+*/
+
 template< typename DataType,
           typename Operation,
           typename Index >
