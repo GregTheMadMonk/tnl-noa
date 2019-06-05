@@ -154,6 +154,7 @@ inclusive( Vector& v,
    using RealType = typename Vector::RealType;
    using IndexType = typename Vector::IndexType;
    using IndexType = typename Vector::IndexType;
+#ifdef HAVE_CUDA
    cudaPrefixSum( ( IndexType ) ( end - begin ),
                   ( IndexType ) 256,
                   &v[ begin ],
@@ -162,6 +163,7 @@ inclusive( Vector& v,
                   volatileReduction,
                   zero,
                   Algorithms::PrefixSumType::inclusive );
+#endif
 }
 
 template< typename Vector,
@@ -181,6 +183,7 @@ exclusive( Vector& v,
    using RealType = typename Vector::RealType;
    using IndexType = typename Vector::IndexType;
    using IndexType = typename Vector::IndexType;
+#ifdef HAVE_CUDA
    cudaPrefixSum( ( IndexType ) ( end - begin ),
                   ( IndexType ) 256,
                   &v[ begin ],
@@ -189,7 +192,7 @@ exclusive( Vector& v,
                   volatileReduction,
                   zero,
                   Algorithms::PrefixSumType::exclusive );
-
+#endif
 }
 
 template< typename Vector,

@@ -44,6 +44,27 @@ void setConstantSequence( Vector& deviceVector,
 }
 
 template< typename Vector >
+void setOscilatingLinearSequence( Vector& deviceVector )
+{
+   typename Vector::HostType a;
+   a.setLike( deviceVector );
+   for( int i = 0; i < a.getSize(); i++ )
+      a[ i ] = i % 30 - 15;
+   deviceVector = a;
+}
+
+template< typename Vector >
+void setOscilatingConstantSequence( Vector& deviceVector,
+                                    typename Vector::RealType v )
+{
+   typename Vector::HostType a;
+   a.setLike( deviceVector );
+   for( int i = 0; i < a.getSize(); i++ )
+      a[ i ] = TNL::sign( i % 30 - 15 );
+   deviceVector = a;
+}
+
+template< typename Vector >
 void setNegativeLinearSequence( Vector& deviceVector )
 {
    typename Vector::HostType a;

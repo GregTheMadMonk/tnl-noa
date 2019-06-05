@@ -130,48 +130,52 @@ VectorView< Real, Device, Index >::operator=( const VectorExpression& expression
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename Vector >
+   template< typename VectorExpression >
 VectorView< Real, Device, Index >&
 VectorView< Real, Device, Index >::
-operator-=( const Vector& vector )
+operator-=( const VectorExpression& expression )
 {
-   addVector( vector, -1.0 );
+   //addVector( vector, -1.0 );
+   Algorithms::VectorSubtraction< VectorView< Real, Device, Index >, VectorExpression >::subtraction( *this, expression );
    return *this;
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename Vector >
+   template< typename VectorExpression >
 VectorView< Real, Device, Index >&
 VectorView< Real, Device, Index >::
-operator+=( const Vector& vector )
+operator+=( const VectorExpression& expression )
 {
-   addVector( vector );
+   //addVector( vector );
+   Algorithms::VectorAddition< VectorView< Real, Device, Index >, VectorExpression >::addition( *this, expression );
    return *this;
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename Scalar >
+   template< typename VectorExpression >
 VectorView< Real, Device, Index >&
 VectorView< Real, Device, Index >::
-operator*=( Scalar c )
+operator*=( const VectorExpression& expression )
 {
-   Algorithms::VectorOperations< Device >::vectorScalarMultiplication( *this, c );
+   //Algorithms::VectorOperations< Device >::vectorScalarMultiplication( *this, c );
+   Algorithms::VectorMultiplication< VectorView< Real, Device, Index >, VectorExpression >::multiplication( *this, expression );
    return *this;
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename Scalar >
+   template< typename VectorExpression >
 VectorView< Real, Device, Index >&
 VectorView< Real, Device, Index >::
-operator/=( Scalar c )
+operator/=( const VectorExpression& expression )
 {
-   Algorithms::VectorOperations< Device >::vectorScalarMultiplication( *this, 1.0 / c );
+   //Algorithms::VectorOperations< Device >::vectorScalarMultiplication( *this, 1.0 / c );
+   Algorithms::VectorDivision< VectorView< Real, Device, Index >, VectorExpression >::division( *this, expression );
    return *this;
 }
 

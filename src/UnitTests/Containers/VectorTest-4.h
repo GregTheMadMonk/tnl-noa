@@ -161,6 +161,62 @@ TYPED_TEST( VectorTest, prefixSum )
       EXPECT_EQ( v.getElement( i ) - v.getElement( i - 1 ), i );
 }
 
+/***
+ * The following test tekaes too long - 6 min approx.
+ */
+/*TYPED_TEST( VectorTest, longPrefixSum )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using VectorOperations = typename TestFixture::VectorOperations;
+   using ViewType = typename TestFixture::ViewType;
+   using RealType = typename VectorType::RealType;
+   using DeviceType = typename VectorType::DeviceType;
+   using IndexType = typename VectorType::IndexType;
+   using HostVectorType = Vector< RealType, Devices::Host, IndexType >;
+   using HostViewType = VectorView< RealType, Devices::Host, IndexType >;
+
+   /////
+   // This is test of prefix sum on long vectors to check of the correction
+   // across multiple CUDA grids is correct
+   if( std::is_same< DeviceType, Devices::Cuda >::value &&
+       ! std::is_same< IndexType, short >::value &&
+       ! std::is_same< RealType, float >::value )
+   {
+      const IndexType size = 134217728+100;
+
+      VectorType v( size );
+      ViewType v_view( v );
+
+      HostVectorType host_v( size ), host_copy( size );
+      HostViewType host_v_view( host_v );
+
+      v = 0;
+      host_v = 0;
+      v.computePrefixSum();
+      host_v.computePrefixSum();
+      host_copy = v;
+      for( IndexType i = 0; i < size; i ++ )
+         EXPECT_EQ( host_copy[ i ], host_v[ i ] );
+
+      setOscilatingLinearSequence( v );
+      setOscilatingLinearSequence( host_v );
+      v.computePrefixSum();
+      host_v.computePrefixSum();
+      host_copy = v;
+      for( IndexType i = 0; i < size; i ++ )
+         EXPECT_EQ( host_copy[ i ], host_v[ i ] );
+
+
+      setOscilatingConstantSequence( v, 1 );
+      setOscilatingConstantSequence( host_v, 1 );
+      v_view.computePrefixSum();
+      host_v_view.computePrefixSum();
+      host_copy = v;
+      for( IndexType i = 0; i < size; i ++ )
+         EXPECT_EQ( host_copy[ i ], host_v[ i ] );
+   }
+}*/
+
 TYPED_TEST( VectorTest, exclusivePrefixSum )
 {
    using VectorType = typename TestFixture::VectorType;
@@ -211,6 +267,7 @@ void setupFlags( FlagsView& f )
    f.evaluate( f1 );
 }
 
+/*
 TYPED_TEST( VectorTest, segmentedPrefixSum )
 {
    using VectorType = typename TestFixture::VectorType;
@@ -237,7 +294,7 @@ TYPED_TEST( VectorTest, segmentedPrefixSum )
    for( int i = 0; i < size; i++ )
       EXPECT_EQ( v.getElement( i ), 0 );
    flags_view = flags_copy;
-   
+
    v = 1;
    v.computeSegmentedPrefixSum( flags_view );
    for( int i = 0; i < size; i++ )
@@ -254,13 +311,13 @@ TYPED_TEST( VectorTest, segmentedPrefixSum )
          EXPECT_EQ( v.getElement( i ) - v.getElement( i - 1 ), i );
    }
    flags_view = flags_copy;
-   
+
    v_view = 0;
    v_view.computeSegmentedPrefixSum( flags_view );
    for( int i = 0; i < size; i++ )
       EXPECT_EQ( v_view.getElement( i ), 0 );
    flags_view = flags_copy;
-   
+
    v_view = 1;
    v_view.computeSegmentedPrefixSum( flags_view );
    for( int i = 0; i < size; i++ )
@@ -278,7 +335,7 @@ TYPED_TEST( VectorTest, segmentedPrefixSum )
          EXPECT_EQ( v_view.getElement( i ) - v_view.getElement( i - 1 ), i );
    }
 }
-
+*/
 
 TYPED_TEST( VectorTest, abs )
 {
