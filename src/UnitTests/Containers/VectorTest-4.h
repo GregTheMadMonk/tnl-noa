@@ -31,6 +31,7 @@ using namespace TNL::Arithmetics;
 // and large enough to require multiple CUDA blocks for reduction
 constexpr int VECTOR_TEST_SIZE = 5000;
 
+/*
 TYPED_TEST( VectorTest, addVector )
 {
    using VectorType = typename TestFixture::VectorType;
@@ -161,14 +162,22 @@ TYPED_TEST( VectorTest, prefixSum )
       EXPECT_EQ( v.getElement( i ) - v.getElement( i - 1 ), i );
 }
 
+ */
+
 /***
  * The following test tekaes too long - 6 min approx.
  */
-/*TYPED_TEST( VectorTest, longPrefixSum )
+//TYPED_TEST( VectorTest, longPrefixSum )
+void Test()
 {
-   using VectorType = typename TestFixture::VectorType;
-   using VectorOperations = typename TestFixture::VectorOperations;
-   using ViewType = typename TestFixture::ViewType;
+   using VectorType = Containers::Vector< double, Devices::Cuda, int >;
+   using VectorOperations = Algorithms::VectorOperations< typename VectorType::DeviceType >;
+   using ViewType = Containers::VectorView< double, Devices::Cuda, int >;
+
+
+   //using VectorType = typename TestFixture::VectorType;
+   //using VectorOperations = typename TestFixture::VectorOperations;
+   //using ViewType = typename TestFixture::ViewType;
    using RealType = typename VectorType::RealType;
    using DeviceType = typename VectorType::DeviceType;
    using IndexType = typename VectorType::IndexType;
@@ -182,7 +191,7 @@ TYPED_TEST( VectorTest, prefixSum )
        ! std::is_same< IndexType, short >::value &&
        ! std::is_same< RealType, float >::value )
    {
-      const IndexType size = 134217728+100;
+      const IndexType size = 15500; //134217728+100;
 
       VectorType v( size );
       ViewType v_view( v );
@@ -190,8 +199,8 @@ TYPED_TEST( VectorTest, prefixSum )
       HostVectorType host_v( size ), host_copy( size );
       HostViewType host_v_view( host_v );
 
-      v = 0;
-      host_v = 0;
+      v = 1;
+      host_v = 1;
       v.computePrefixSum();
       host_v.computePrefixSum();
       host_copy = v;
@@ -206,6 +215,13 @@ TYPED_TEST( VectorTest, prefixSum )
       for( IndexType i = 0; i < size; i ++ )
          EXPECT_EQ( host_copy[ i ], host_v[ i ] );
 
+      setOscilatingLinearSequence( v );
+      setOscilatingLinearSequence( host_v );
+      v.computeExclusivePrefixSum();
+      host_v.computeExclusivePrefixSum();
+      host_copy = v;
+      for( IndexType i = 0; i < size; i ++ )
+         EXPECT_EQ( host_copy[ i ], host_v[ i ] );
 
       setOscilatingConstantSequence( v, 1 );
       setOscilatingConstantSequence( host_v, 1 );
@@ -214,8 +230,17 @@ TYPED_TEST( VectorTest, prefixSum )
       host_copy = v;
       for( IndexType i = 0; i < size; i ++ )
          EXPECT_EQ( host_copy[ i ], host_v[ i ] );
+
+      /*setOscilatingConstantSequence( v, 1 );
+      setOscilatingConstantSequence( host_v, 1 );
+      v_view.computeExclusivePrefixSum();
+      host_v_view.computeExclusivePrefixSum();
+      host_copy = v;
+      for( IndexType i = 0; i < size; i ++ )
+         EXPECT_EQ( host_copy[ i ], host_v[ i ] );
+       * */
    }
-}*/
+}
 
 TYPED_TEST( VectorTest, exclusivePrefixSum )
 {
@@ -358,8 +383,8 @@ TYPED_TEST( VectorTest, abs )
 #include "../GtestMissingError.h"
 int main( int argc, char* argv[] )
 {
-   //Test();
-   //return 0;
+   Test();
+   return 0;
 #ifdef HAVE_GTEST
    ::testing::InitGoogleTest( &argc, argv );
    return RUN_ALL_TESTS();

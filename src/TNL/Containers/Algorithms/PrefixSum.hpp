@@ -20,7 +20,7 @@
 #include <TNL/Exceptions/CudaSupportMissing.h>
 #include <TNL/Containers/Algorithms/ReductionOperations.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
-#include <TNL/Containers/Algorithms/cuda-prefix-sum.h>
+#include <TNL/Containers/Algorithms/CudaPrefixSumKernel.h>
 
 #ifdef CUDA_REDUCTION_PROFILING
 #include <iostream>
@@ -155,14 +155,14 @@ inclusive( Vector& v,
    using IndexType = typename Vector::IndexType;
    using IndexType = typename Vector::IndexType;
 #ifdef HAVE_CUDA
-   cudaPrefixSum( ( IndexType ) ( end - begin ),
-                  ( IndexType ) 256,
-                  &v[ begin ],
-                  &v[ begin ],
-                  reduction,
-                  volatileReduction,
-                  zero,
-                  Algorithms::PrefixSumType::inclusive );
+   CudaPrefixSumKernelLauncher< PrefixSumType::inclusive, PrefixSumSegmentation::nonsegmented, RealType, IndexType >::start(
+      ( IndexType ) ( end - begin ),
+      ( IndexType ) 256,
+      &v[ begin ],
+      &v[ begin ],
+      reduction,
+      volatileReduction,
+      zero );
 #endif
 }
 
@@ -184,14 +184,14 @@ exclusive( Vector& v,
    using IndexType = typename Vector::IndexType;
    using IndexType = typename Vector::IndexType;
 #ifdef HAVE_CUDA
-   cudaPrefixSum( ( IndexType ) ( end - begin ),
-                  ( IndexType ) 256,
-                  &v[ begin ],
-                  &v[ begin ],
-                  reduction,
-                  volatileReduction,
-                  zero,
-                  Algorithms::PrefixSumType::exclusive );
+   CudaPrefixSumKernelLauncher< PrefixSumType::exclusive, PrefixSumSegmentation::nonsegmented, RealType, IndexType>::start(
+      ( IndexType ) ( end - begin ),
+      ( IndexType ) 256,
+      &v[ begin ],
+      &v[ begin ],
+      reduction,
+      volatileReduction,
+      zero );
 #endif
 }
 

@@ -12,7 +12,7 @@
 
 #include <TNL/Exceptions/CudaSupportMissing.h>
 #include <TNL/Containers/Algorithms/VectorOperations.h>
-#include <TNL/Containers/Algorithms/cuda-prefix-sum.h>
+#include <TNL/Containers/Algorithms/CudaPrefixSumKernel.h>
 
 namespace TNL {
 namespace Containers {
