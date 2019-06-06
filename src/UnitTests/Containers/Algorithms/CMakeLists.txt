@@ -1,0 +1,6 @@
+IF( BUILD_CUDA )
+   CUDA_ADD_EXECUTABLE( CudaPrefixSumTest CudaPrefixSumTest.cu
+                        OPTIONS ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( CudaPrefixSumTest ${GTEST_BOTH_LIBRARIES} )
+   ADD_TEST( CudaPrefixSumTest ${EXECUTABLE_OUTPUT_PATH}/CudaPrefixSumTest${CMAKE_EXECUTABLE_SUFFIX} )
+ENDIF()

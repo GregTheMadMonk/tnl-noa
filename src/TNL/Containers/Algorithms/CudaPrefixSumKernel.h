@@ -274,7 +274,7 @@ struct CudaPrefixSumKernelLauncher
    /****
     * \brief Starts prefix sum in CUDA.
     *
-    * \tparam Operation operation to be peformed on particular elements - addition usually
+    * \tparam Operation operation to be performed on particular elements - addition usually
     * \tparam VolatileOperation - volatile version of Operation
     * \param size is number of elements to be scanned
     * \param blockSize is CUDA block size
@@ -282,7 +282,7 @@ struct CudaPrefixSumKernelLauncher
     * \param deviceOutput is pointer to resulting array, can be the same as input
     * \param operation is instance of Operation
     * \param volatileOperation is instance of VolatileOperation
-    * \param zero is neutral element for fiven Operation
+    * \param zero is neutral element for given Operation
     */
    template< typename Operation,
              typename VolatileOperation >
