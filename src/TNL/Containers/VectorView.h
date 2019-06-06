@@ -14,6 +14,7 @@
 
 #include <TNL/Containers/ArrayView.h>
 #include <TNL/Containers/Expressions/ExpressionTemplates.h>
+#include <TNL/Containers/Algorithms/PrefixSumType.h>
 
 namespace TNL {
 namespace Containers {
@@ -188,25 +189,21 @@ public:
                     Scalar2 multiplicator2,
                     Scalar3 thisMultiplicator = 1.0 );
 
-   void computePrefixSum();
+   template< Algorithms::PrefixSumType Type = Algorithms::PrefixSumType::Inclusive >
+   void prefixSum( const IndexType begin = - 1, const IndexType end = -1 );
 
-   void computePrefixSum( IndexType begin, IndexType end );
+   template< Algorithms::PrefixSumType Type = Algorithms::PrefixSumType::Inclusive,
+             typename FlagsArray >
+   void segmentedPrefixSum( FlagsArray& flags, const IndexType begin = -1, const IndexType end = -1 );
 
-   void computeExclusivePrefixSum();
+   template< Algorithms::PrefixSumType Type = Algorithms::PrefixSumType::Inclusive,
+             typename VectorExpression >
+   void prefixSum( const VectorExpression& expression, const IndexType begin = - 1, const IndexType end = -1 );
 
-   void computeExclusivePrefixSum( IndexType begin, IndexType end );
-
-   template< typename FlagsArray >
-   void computeSegmentedPrefixSum( FlagsArray& flags );
-
-   template< typename FlagsArray >
-   void computeSegmentedPrefixSum( FlagsArray& flags, const IndexType begin, const IndexType end );
-
-   template< typename FlagsArray >
-   void computeSegmentedExclusivePrefixSum( FlagsArray& flags );
-
-   template< typename FlagsArray >
-   void computeSegmentedExclusivePrefixSum( FlagsArray& flags, const IndexType begin, const IndexType end );
+   template< Algorithms::PrefixSumType Type = Algorithms::PrefixSumType::Inclusive,
+             typename VectorExpression,
+             typename FlagsArray >
+   void segmentedPrefixSum( const VectorExpression& expression, FlagsArray& flags, const IndexType begin = -1, const IndexType end = -1 );
 };
 
 } // namespace Containers

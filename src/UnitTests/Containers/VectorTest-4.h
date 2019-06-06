@@ -201,40 +201,40 @@ void Test()
 
       v = 1;
       host_v = 1;
-      v.computePrefixSum();
-      host_v.computePrefixSum();
+      v.prefixSum();
+      host_v.prefixSum();
       host_copy = v;
       for( IndexType i = 0; i < size; i ++ )
          EXPECT_EQ( host_copy[ i ], host_v[ i ] );
 
       setOscilatingLinearSequence( v );
       setOscilatingLinearSequence( host_v );
-      v.computePrefixSum();
-      host_v.computePrefixSum();
+      v.prefixSum();
+      host_v.prefixSum();
       host_copy = v;
       for( IndexType i = 0; i < size; i ++ )
          EXPECT_EQ( host_copy[ i ], host_v[ i ] );
 
       setOscilatingLinearSequence( v );
       setOscilatingLinearSequence( host_v );
-      v.computeExclusivePrefixSum();
-      host_v.computeExclusivePrefixSum();
+      v.prefixSum< Algorithms::PrefixSumType::Exclusive >();
+      host_v.prefixSum< Algorithms::PrefixSumType::Exclusive >();
       host_copy = v;
       for( IndexType i = 0; i < size; i ++ )
          EXPECT_EQ( host_copy[ i ], host_v[ i ] );
 
       setOscilatingConstantSequence( v, 1 );
       setOscilatingConstantSequence( host_v, 1 );
-      v_view.computePrefixSum();
-      host_v_view.computePrefixSum();
+      v_view.prefixSum< Algorithms::PrefixSumType::Inclusive >();
+      host_v_view.prefixSum< Algorithms::PrefixSumType::Inclusive >();
       host_copy = v;
       for( IndexType i = 0; i < size; i ++ )
          EXPECT_EQ( host_copy[ i ], host_v[ i ] );
 
       /*setOscilatingConstantSequence( v, 1 );
       setOscilatingConstantSequence( host_v, 1 );
-      v_view.computeExclusivePrefixSum();
-      host_v_view.computeExclusivePrefixSum();
+      v_view.prefixSum< Algorithms::PrefixSumType::Exclusive >();
+      host_v_view.prefixSum< Algorithms::PrefixSumType::Exclusive >();
       host_copy = v;
       for( IndexType i = 0; i < size; i ++ )
          EXPECT_EQ( host_copy[ i ], host_v[ i ] );
@@ -254,32 +254,32 @@ TYPED_TEST( VectorTest, exclusivePrefixSum )
    ViewType v_view( v );
 
    setConstantSequence( v, 1 );
-   v.computeExclusivePrefixSum();
+   v.template prefixSum< Algorithms::PrefixSumType::Exclusive >();
    for( int i = 0; i < size; i++ )
       EXPECT_EQ( v.getElement( i ), i );
 
    v.setValue( 0 );
-   v.computeExclusivePrefixSum();
+   v.template prefixSum< Algorithms::PrefixSumType::Exclusive >();
    for( int i = 0; i < size; i++ )
       EXPECT_EQ( v.getElement( i ), 0 );
 
    setLinearSequence( v );
-   v.computeExclusivePrefixSum();
+   v.template prefixSum< Algorithms::PrefixSumType::Exclusive >();
    for( int i = 1; i < size; i++ )
       EXPECT_EQ( v.getElement( i ) - v.getElement( i - 1 ), i - 1 );
 
    setConstantSequence( v, 1 );
-   v_view.computeExclusivePrefixSum();
+   v_view.template prefixSum< Algorithms::PrefixSumType::Exclusive >();
    for( int i = 0; i < size; i++ )
       EXPECT_EQ( v.getElement( i ), i );
 
    v.setValue( 0 );
-   v_view.computeExclusivePrefixSum();
+   v_view.template prefixSum< Algorithms::PrefixSumType::Exclusive >();
    for( int i = 0; i < size; i++ )
       EXPECT_EQ( v.getElement( i ), 0 );
 
    setLinearSequence( v );
-   v_view.computeExclusivePrefixSum();
+   v_view.template prefixSum< Algorithms::PrefixSumType::Exclusive >();
    for( int i = 1; i < size; i++ )
       EXPECT_EQ( v.getElement( i ) - v.getElement( i - 1 ), i - 1 );
 }

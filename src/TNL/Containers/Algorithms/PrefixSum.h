@@ -15,146 +15,90 @@
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Devices/MIC.h>
+#include <TNL/Containers/Algorithms/PrefixSumType.h>
 
 namespace TNL {
 namespace Containers {
 namespace Algorithms {
 
-template< typename Device >
-class PrefixSum
-{
-};
+template< typename Device,
+           PrefixSumType Type = PrefixSumType::Inclusive >
+class PrefixSum {};
 
-template<>
-class PrefixSum< Devices::Host >
-{
-   public:
-      template< typename Vector,
-                typename PrefixSumOperation,
-                typename VolatilePrefixSumOperation >
-      static void
-      inclusive( Vector& v,
-                 const typename Vector::IndexType begin,
-                 const typename Vector::IndexType end,
-                 PrefixSumOperation& reduction,
-                 VolatilePrefixSumOperation& volatilePrefixSum,
-                 const typename Vector::RealType& zero );
+template< typename Device,
+           PrefixSumType Type = PrefixSumType::Inclusive >
+class SegmentedPrefixSum {};
 
-      template< typename Vector,
-                typename PrefixSumOperation,
-                typename VolatilePrefixSumOperation >
-      static void
-      exclusive( Vector& v,
-                 const typename Vector::IndexType begin,
-                 const typename Vector::IndexType end,
-                 PrefixSumOperation& reduction,
-                 VolatilePrefixSumOperation& volatilePrefixSum,
-                 const typename Vector::RealType& zero );
 
-      template< typename Vector,
-                typename FlagsArray,
-                typename PrefixSumOperation,
-                typename VolatilePrefixSumOperation >
-      static void
-      inclusiveSegmented( Vector& v,
-                          FlagsArray& f,
-                          const typename Vector::IndexType begin,
-                          const typename Vector::IndexType end,
-                          PrefixSumOperation& reduction,
-                          VolatilePrefixSumOperation& volatilePrefixSum,
-                          const typename Vector::RealType& zero );
-
-      template< typename Vector,
-                typename FlagsArray,
-                typename PrefixSumOperation,
-                typename VolatilePrefixSumOperation >
-      static void
-      exclusiveSegmented( Vector& v,
-                          FlagsArray& f,
-                          const typename Vector::IndexType begin,
-                          const typename Vector::IndexType end,
-                          PrefixSumOperation& reduction,
-                          VolatilePrefixSumOperation& volatilePrefixSum,
-                          const typename Vector::RealType& zero );
-};
-
-template<>
-class PrefixSum< Devices::Cuda >
+template< PrefixSumType Type >
+class PrefixSum< Devices::Host, Type >
 {
    public:
       template< typename Vector,
                 typename PrefixSumOperation,
                 typename VolatilePrefixSumOperation >
       static void
-      inclusive( Vector& v,
-                 const typename Vector::IndexType begin,
-                 const typename Vector::IndexType end,
-                 PrefixSumOperation& reduction,
-                 VolatilePrefixSumOperation& volatilePrefixSum,
-                 const typename Vector::RealType& zero );
-
-      template< typename Vector,
-                typename PrefixSumOperation,
-                typename VolatilePrefixSumOperation >
-      static void
-      exclusive( Vector& v,
-                 const typename Vector::IndexType begin,
-                 const typename Vector::IndexType end,
-                 PrefixSumOperation& reduction,
-                 VolatilePrefixSumOperation& volatilePrefixSum,
-                 const typename Vector::RealType& zero );
-
-      template< typename Vector,
-                typename FlagsArray,
-                typename PrefixSumOperation,
-                typename VolatilePrefixSumOperation >
-      static void
-      inclusiveSegmented( Vector& v,
-                          FlagsArray& f,
-                          const typename Vector::IndexType begin,
-                          const typename Vector::IndexType end,
-                          PrefixSumOperation& reduction,
-                          VolatilePrefixSumOperation& volatilePrefixSum,
-                          const typename Vector::RealType& zero );
-
-      template< typename Vector,
-                typename FlagsArray,
-                typename PrefixSumOperation,
-                typename VolatilePrefixSumOperation >
-      static void
-      exclusiveSegmented( Vector& v,
-                          FlagsArray& f,
-                          const typename Vector::IndexType begin,
-                          const typename Vector::IndexType end,
-                          PrefixSumOperation& reduction,
-                          VolatilePrefixSumOperation& volatilePrefixSum,
-                          const typename Vector::RealType& zero );
+      perform( Vector& v,
+               const typename Vector::IndexType begin,
+               const typename Vector::IndexType end,
+               PrefixSumOperation& reduction,
+               VolatilePrefixSumOperation& volatilePrefixSum,
+               const typename Vector::RealType& zero );
 };
 
-template<>
-class PrefixSum< Devices::MIC >
+template< PrefixSumType Type >
+class PrefixSum< Devices::Cuda, Type >
 {
    public:
-      template< typename Index,
-                typename Result,
+      template< typename Vector,
                 typename PrefixSumOperation,
                 typename VolatilePrefixSumOperation >
-      static Result
-      inclusive( const Index size,
-                 PrefixSumOperation& reduction,
-                 VolatilePrefixSumOperation& volatilePrefixSum,
-                 const Result& zero );
-
-      template< typename Index,
-                typename Result,
-                typename PrefixSumOperation,
-                typename VolatilePrefixSumOperation >
-      static Result
-      exclusive( const Index size,
-                 PrefixSumOperation& reduction,
-                 VolatilePrefixSumOperation& volatilePrefixSum,
-                 const Result& zero );
+      static void
+      perform( Vector& v,
+               const typename Vector::IndexType begin,
+               const typename Vector::IndexType end,
+               PrefixSumOperation& reduction,
+               VolatilePrefixSumOperation& volatilePrefixSum,
+               const typename Vector::RealType& zero );
 };
+
+template< PrefixSumType Type >
+class SegmentedPrefixSum< Devices::Host, Type >
+{
+   public:
+      template< typename Vector,
+                typename PrefixSumOperation,
+                typename VolatilePrefixSumOperation,
+                typename Flags >
+      static void
+      perform( Vector& v,
+               Flags& flags,
+               const typename Vector::IndexType begin,
+               const typename Vector::IndexType end,
+               PrefixSumOperation& reduction,
+               VolatilePrefixSumOperation& volatilePrefixSum,
+               const typename Vector::RealType& zero );
+};
+
+template< PrefixSumType Type >
+class SegmentedPrefixSum< Devices::Cuda, Type >
+{
+   public:
+      template< typename Vector,
+                typename PrefixSumOperation,
+                typename VolatilePrefixSumOperation,
+                typename Flags >
+      static void
+      perform( Vector& v,
+               Flags& flags,
+               const typename Vector::IndexType begin,
+               const typename Vector::IndexType end,
+               PrefixSumOperation& reduction,
+               VolatilePrefixSumOperation& volatilePrefixSum,
+               const typename Vector::RealType& zero );
+};
+
+
 
 } // namespace Algorithms
 } // namespace Containers

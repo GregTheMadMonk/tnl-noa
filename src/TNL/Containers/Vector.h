@@ -12,6 +12,7 @@
 
 #include <TNL/Containers/Array.h>
 #include <TNL/Containers/VectorView.h>
+#include <TNL/Containers/Algorithms/PrefixSumType.h>
 
 namespace TNL {
 namespace Containers {
@@ -365,15 +366,6 @@ public:
    /**
     * \brief Returns specific sums of elements of this vector.
     *
-    * Goes in order from the first element to the last one and for every element
-    * in this vector computes sum of all previous elements including the element.
-    * Therefore this method returns a new vector with the length of this vector.
-    */
-   void computePrefixSum();
-
-   /**
-    * \brief Returns specific sums of elements of this vector.
-    *
     * Does the same as \ref computePrefixSum, but computes only sums for elements
     * with the index in range from \e begin to \e end. The other elements of this
     * vector remain untouched - with the same value. Therefore this method returns
@@ -382,41 +374,21 @@ public:
     * \param begin Index of the element in this vector which to begin with.
     * \param end Index of the element in this vector which to end with.
     */
-   void computePrefixSum( const IndexType begin, const IndexType end );
+   template< Algorithms::PrefixSumType Type = Algorithms::PrefixSumType::Inclusive >
+   void prefixSum( const IndexType begin = - 1, const IndexType end = -1 );
 
-   /**
-    * \brief Returns specific sums of elements of this vector.
-    *
-    * Goes in order from the first element to the last one and for every element
-    * in this vector computes sum of all previous elements excluding the element.
-    * Therefore returns a new vector with the length of this vector.
-    */
-   void computeExclusivePrefixSum();
+   template< Algorithms::PrefixSumType Type = Algorithms::PrefixSumType::Inclusive,
+             typename FlagsArray >
+   void segmentedPrefixSum( FlagsArray& flags, const IndexType begin = -1, const IndexType end = -1 );
 
-   /**
-    * \brief Returns specific sums of elements of this vector.
-    *
-    * Does the same as \ref computeExclusivePrefixSum, but computes only sums for elements
-    * with the index in range from \e begin to \e end. The other elements of this
-    * vector remain untouched - with the same value. Therefore this method returns
-    * a new vector with the length of this vector.
-    *
-    * \param begin Index of the element in this vector which to begin with.
-    * \param end Index of the element in this vector which to end with.
-    */
-   void computeExclusivePrefixSum( const IndexType begin, const IndexType end );
+   template< Algorithms::PrefixSumType Type = Algorithms::PrefixSumType::Inclusive,
+             typename VectorExpression >
+   void prefixSum( const VectorExpression& expression, const IndexType begin = - 1, const IndexType end = -1 );
 
-   template< typename FlagsArray >
-   void computeSegmentedPrefixSum( FlagsArray& flags );
-
-   template< typename FlagsArray >
-   void computeSegmentedPrefixSum( FlagsArray& flags, const IndexType begin, const IndexType end );
-
-   template< typename FlagsArray >
-   void computeSegmentedExclusivePrefixSum( FlagsArray& flags );
-
-   template< typename FlagsArray >
-   void computeSegmentedExclusivePrefixSum( FlagsArray& flags, const IndexType begin, const IndexType end );
+   template< Algorithms::PrefixSumType Type = Algorithms::PrefixSumType::Inclusive,
+             typename VectorExpression,
+             typename FlagsArray >
+   void segmentedPrefixSum( const VectorExpression& expression, FlagsArray& flags, const IndexType begin = -1, const IndexType end = -1 );
 };
 
 } // namespace Containers

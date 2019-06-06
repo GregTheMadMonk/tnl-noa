@@ -1,5 +1,5 @@
 /***************************************************************************
-                          cuda-prefix-sum.h  -  description
+                          CudaPrefixSumKernel.h  -  description
                              -------------------
     begin                : Jan 18, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -21,16 +21,6 @@
 namespace TNL {
 namespace Containers {
 namespace Algorithms {
-
-enum class PrefixSumType {
-   exclusive,
-   inclusive
-};
-
-enum class PrefixSumSegmentation {
-   nonsegmented,
-   segmented
-};
 
 #ifdef HAVE_CUDA
 
@@ -62,7 +52,7 @@ cudaFirstPhaseBlockPrefixSum( const PrefixSumType prefixSumType,
     */
    const Index blockOffset = blockIdx.x * elementsInBlock;
    Index idx = threadIdx.x;
-   if( prefixSumType == PrefixSumType::exclusive )
+   if( prefixSumType == PrefixSumType::Exclusive )
    {
       if( idx == 0 )
          sharedData[ 0 ] = zero;
@@ -155,7 +145,7 @@ cudaFirstPhaseBlockPrefixSum( const PrefixSumType prefixSumType,
 
    if( threadIdx.x == 0 )
    {
-      if( prefixSumType == PrefixSumType::exclusive )
+      if( prefixSumType == PrefixSumType::Exclusive )
       {
          Real aux = zero;
          operation( aux, sharedData[ Devices::Cuda::getInterleaving( lastElementInBlock - 1 ) ] );
@@ -181,8 +171,6 @@ cudaSecondPhaseBlockPrefixSum( Operation operation,
    if( blockIdx.x > 0 )
    {
       const Real shift = auxArray[ blockIdx.x - 1 ];
-      //operation( gridShift, shift ); //auxArray[ blockIdx.x - 1 ] );
-
       const Index readOffset = blockIdx.x * elementsInBlock;
       Index readIdx = threadIdx.x;
       while( readIdx < elementsInBlock && readOffset + readIdx < size )
@@ -194,7 +182,6 @@ cudaSecondPhaseBlockPrefixSum( Operation operation,
 }
 
 template< PrefixSumType prefixSumType,
-          PrefixSumSegmentation segmentation,
           typename Real,
           typename Index >
 struct CudaPrefixSumKernelLauncher
@@ -255,7 +242,7 @@ struct CudaPrefixSumKernelLauncher
        */
       Real gridShift2 = zero;
       if( numberOfBlocks > 1 )
-         cudaRecursivePrefixSum( PrefixSumType::inclusive,
+         cudaRecursivePrefixSum( PrefixSumType::Inclusive,
             operation,
             volatileOperation,
             zero,

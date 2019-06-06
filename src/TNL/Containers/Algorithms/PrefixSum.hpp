@@ -40,122 +40,59 @@ static constexpr int PrefixSum_minGpuDataSize = 256;//65536; //16384;//1024;//25
 
 ////
 // PrefixSum on host
+template< PrefixSumType Type >
 template< typename Vector,
           typename PrefixSumOperation,
           typename VolatilePrefixSumOperation >
 void
-PrefixSum< Devices::Host >::
-inclusive( Vector& v,
-           const typename Vector::IndexType begin,
-           const typename Vector::IndexType end,
-           PrefixSumOperation& reduction,
-           VolatilePrefixSumOperation& volatilePrefixSum,
-           const typename Vector::RealType& zero )
+PrefixSum< Devices::Host, Type >::
+perform( Vector& v,
+         const typename Vector::IndexType begin,
+         const typename Vector::IndexType end,
+         PrefixSumOperation& reduction,
+         VolatilePrefixSumOperation& volatilePrefixSum,
+         const typename Vector::RealType& zero )
 {
-   using IndexType = typename Vector::IndexType;
-
-   // TODO: parallelize with OpenMP
-   for( IndexType i = begin + 1; i < end; i++ )
-      reduction( v[ i ], v[ i - 1 ] );
-}
-
-template< typename Vector,
-          typename PrefixSumOperation,
-          typename VolatilePrefixSumOperation >
-void
-PrefixSum< Devices::Host >::
-exclusive( Vector& v,
-           const typename Vector::IndexType begin,
-           const typename Vector::IndexType end,
-           PrefixSumOperation& reduction,
-           VolatilePrefixSumOperation& volatilePrefixSum,
-           const typename Vector::RealType& zero  )
-{
-   using IndexType = typename Vector::IndexType;
    using RealType = typename Vector::RealType;
-
-   // TODO: parallelize with OpenMP
-   RealType aux( v[ begin ] );
-   v[ begin ] = zero;
-   for( IndexType i = begin + 1; i < end; i++ )
-   {
-      RealType x = v[ i ];
-      v[ i ] = aux;
-      reduction( aux, x );
-   }
-}
-
-template< typename Vector,
-          typename FlagsArray,
-          typename PrefixSumOperation,
-          typename VolatilePrefixSumOperation >
-void
-PrefixSum< Devices::Host >::
-inclusiveSegmented( Vector& v,
-                    FlagsArray& f,
-                    const typename Vector::IndexType begin,
-                    const typename Vector::IndexType end,
-                    PrefixSumOperation& reduction,
-                    VolatilePrefixSumOperation& volatilePrefixSum,
-                    const typename Vector::RealType& zero )
-{
    using IndexType = typename Vector::IndexType;
 
    // TODO: parallelize with OpenMP
-   for( IndexType i = begin + 1; i < end; i++ )
-      if( ! f[ i ] )
+   if( Type == PrefixSumType::Inclusive )
+      for( IndexType i = begin + 1; i < end; i++ )
          reduction( v[ i ], v[ i - 1 ] );
-}
-
-template< typename Vector,
-          typename FlagsArray,
-          typename PrefixSumOperation,
-          typename VolatilePrefixSumOperation >
-void
-PrefixSum< Devices::Host >::
-exclusiveSegmented( Vector& v,
-                    FlagsArray& f,
-                    const typename Vector::IndexType begin,
-                    const typename Vector::IndexType end,
-                    PrefixSumOperation& reduction,
-                    VolatilePrefixSumOperation& volatilePrefixSum,
-                    const typename Vector::RealType& zero )
-{
-   using IndexType = typename Vector::IndexType;
-   using RealType = typename Vector::RealType;
-
-   // TODO: parallelize with OpenMP
-   RealType aux( v[ begin ] );
-   v[ begin ] = zero;
-   for( IndexType i = begin + 1; i < end; i++ )
+   else // Exclusive prefix sum
    {
-      RealType x = v[ i ];
-      if( f[ i ] )
-         aux = zero;
-      v[ i ] = aux;
-      reduction( aux, x );
+      RealType aux( v[ begin ] );
+      v[ begin ] = zero;
+      for( IndexType i = begin + 1; i < end; i++ )
+      {
+         RealType x = v[ i ];
+         v[ i ] = aux;
+         reduction( aux, x );
+      }
    }
 }
 
 ////
 // PrefixSum on CUDA device
+template< PrefixSumType Type >
 template< typename Vector,
           typename PrefixSumOperation,
           typename VolatilePrefixSumOperation >
 void
-PrefixSum< Devices::Cuda >::
-inclusive( Vector& v,
-           const typename Vector::IndexType begin,
-           const typename Vector::IndexType end,
-           PrefixSumOperation& reduction,
-           VolatilePrefixSumOperation& volatileReduction,
-           const typename Vector::RealType& zero )
+PrefixSum< Devices::Cuda, Type >::
+perform( Vector& v,
+         const typename Vector::IndexType begin,
+         const typename Vector::IndexType end,
+         PrefixSumOperation& reduction,
+         VolatilePrefixSumOperation& volatileReduction,
+         const typename Vector::RealType& zero )
 {
    using RealType = typename Vector::RealType;
    using IndexType = typename Vector::IndexType;
    using IndexType = typename Vector::IndexType;
 #ifdef HAVE_CUDA
-   CudaPrefixSumKernelLauncher< PrefixSumType::inclusive, PrefixSumSegmentation::nonsegmented, RealType, IndexType >::start(
+   CudaPrefixSumKernelLauncher< Type, RealType, IndexType >::start(
       ( IndexType ) ( end - begin ),
       ( IndexType ) 256,
       &v[ begin ],
@@ -166,71 +103,83 @@ inclusive( Vector& v,
 #endif
 }
 
-template< typename Vector,
-          typename PrefixSumOperation,
-          typename VolatilePrefixSumOperation >
+
+////
+// PrefixSum on host
+template< PrefixSumType Type >
+   template< typename Vector,
+             typename PrefixSumOperation,
+             typename VolatilePrefixSumOperation,
+             typename Flags >
 void
-PrefixSum< Devices::Cuda >::
-exclusive( Vector& v,
-           const typename Vector::IndexType begin,
-           const typename Vector::IndexType end,
-           PrefixSumOperation& reduction,
-           VolatilePrefixSumOperation& volatileReduction,
-           const typename Vector::RealType& zero  )
+SegmentedPrefixSum< Devices::Host, Type >::
+perform( Vector& v,
+         Flags& flags,
+         const typename Vector::IndexType begin,
+         const typename Vector::IndexType end,
+         PrefixSumOperation& reduction,
+         VolatilePrefixSumOperation& volatilePrefixSum,
+         const typename Vector::RealType& zero )
 {
-   using IndexType = typename Vector::IndexType;
    using RealType = typename Vector::RealType;
+   using IndexType = typename Vector::IndexType;
+
+   // TODO: parallelize with OpenMP
+   if( Type == PrefixSumType::Inclusive )
+   {
+      for( IndexType i = begin + 1; i < end; i++ )
+         if( ! flags[ i ] )
+            reduction( v[ i ], v[ i - 1 ] );
+   }
+   else // Exclusive prefix sum
+   {
+       RealType aux( v[ begin ] );
+      v[ begin ] = zero;
+      for( IndexType i = begin + 1; i < end; i++ )
+      {
+         RealType x = v[ i ];
+         if( flags[ i ] )
+            aux = zero;
+         v[ i ] = aux;
+         reduction( aux, x );
+      }
+   }
+}
+
+////
+// PrefixSum on CUDA device
+template< PrefixSumType Type >
+   template< typename Vector,
+             typename PrefixSumOperation,
+             typename VolatilePrefixSumOperation,
+             typename Flags >
+void
+SegmentedPrefixSum< Devices::Cuda, Type >::
+perform( Vector& v,
+         Flags& flags,
+         const typename Vector::IndexType begin,
+         const typename Vector::IndexType end,
+         PrefixSumOperation& reduction,
+         VolatilePrefixSumOperation& volatileReduction,
+         const typename Vector::RealType& zero )
+{
    using RealType = typename Vector::RealType;
    using IndexType = typename Vector::IndexType;
    using IndexType = typename Vector::IndexType;
 #ifdef HAVE_CUDA
-   CudaPrefixSumKernelLauncher< PrefixSumType::exclusive, PrefixSumSegmentation::nonsegmented, RealType, IndexType>::start(
+   throw 0; // NOT IMPLEMENTED YET
+   /*CudaPrefixSumKernelLauncher< Type, RealType, IndexType >::start(
       ( IndexType ) ( end - begin ),
       ( IndexType ) 256,
       &v[ begin ],
       &v[ begin ],
       reduction,
       volatileReduction,
-      zero );
+      zero );*/
 #endif
 }
 
-template< typename Vector,
-          typename FlagsArray,
-          typename PrefixSumOperation,
-          typename VolatilePrefixSumOperation >
-void
-PrefixSum< Devices::Cuda >::
-inclusiveSegmented( Vector& v,
-                    FlagsArray& f,
-                    const typename Vector::IndexType begin,
-                    const typename Vector::IndexType end,
-                    PrefixSumOperation& reduction,
-                    VolatilePrefixSumOperation& volatilePrefixSum,
-                    const typename Vector::RealType& zero )
-{
-   using IndexType = typename Vector::IndexType;
 
-}
-
-template< typename Vector,
-          typename FlagsArray,
-          typename PrefixSumOperation,
-          typename VolatilePrefixSumOperation >
-void
-PrefixSum< Devices::Cuda >::
-exclusiveSegmented( Vector& v,
-                    FlagsArray& f,
-                    const typename Vector::IndexType begin,
-                    const typename Vector::IndexType end,
-                    PrefixSumOperation& reduction,
-                    VolatilePrefixSumOperation& volatilePrefixSum,
-                    const typename Vector::RealType& zero )
-{
-   using IndexType = typename Vector::IndexType;
-   using RealType = typename Vector::RealType;
-
-}
 
 } // namespace Algorithms
 } // namespace Containers

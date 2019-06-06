@@ -481,87 +481,56 @@ addVectors( const Vector1& v1,
 template< typename Real,
           typename Device,
           typename Index >
-void Vector< Real, Device, Index >::computePrefixSum()
-{
-   Algorithms::VectorOperations< Device >::computePrefixSum( *this, 0, this->getSize() );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
+   template< Algorithms::PrefixSumType Type >
 void
 Vector< Real, Device, Index >::
-computePrefixSum( const IndexType begin,
-                  const IndexType end )
+prefixSum( const IndexType begin, const IndexType end )
 {
-   Algorithms::VectorOperations< Device >::computePrefixSum( *this, begin, end );
+   if( begin == -1 && end == -1 )
+      Algorithms::VectorOperations< Device >::template prefixSum< Type >( *this, 0, this->getSize() );
+   else
+      Algorithms::VectorOperations< Device >::template prefixSum< Type >( *this, begin, end );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-void Vector< Real, Device, Index >::computeExclusivePrefixSum()
-{
-   Algorithms::VectorOperations< Device >::computeExclusivePrefixSum( *this, 0, this->getSize() );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
+   template< Algorithms::PrefixSumType Type,
+             typename FlagsArray >
 void
 Vector< Real, Device, Index >::
-computeExclusivePrefixSum( const IndexType begin,
-                           const IndexType end )
+segmentedPrefixSum( FlagsArray& flags, const IndexType begin, const IndexType end )
 {
-   Algorithms::VectorOperations< Device >::computeExclusivePrefixSum( *this, begin, end );
+   if( begin == -1 && end == -1 )
+      Algorithms::VectorOperations< Device >::template segmentedPrefixSum< Type >( *this, flags, 0, this->getSize() );
+   else
+      Algorithms::VectorOperations< Device >::template SegmentedPrefixSum< Type >( *this, flags, begin, end );
+
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename FlagsArray >
+   template< Algorithms::PrefixSumType Type,
+             typename VectorExpression >
 void
 Vector< Real, Device, Index >::
-computeSegmentedPrefixSum( FlagsArray& flags )
+prefixSum( const VectorExpression& expression, const IndexType begin, const IndexType end )
 {
-   Algorithms::VectorOperations< Device >::computeSegmentedPrefixSum( *this, flags, 0, this->getSize() );
+
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename FlagsArray >
+   template< Algorithms::PrefixSumType Type,
+             typename VectorExpression,
+             typename FlagsArray >
 void
 Vector< Real, Device, Index >::
-computeSegmentedPrefixSum( FlagsArray& flags,
-   const IndexType begin,
-   const IndexType end )
+segmentedPrefixSum( const VectorExpression& expression, FlagsArray& flags, const IndexType begin, const IndexType end )
 {
-   Algorithms::VectorOperations< Device >::computeSegmentedPrefixSum( *this, flags, begin, end );
-}
 
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename FlagsArray >
-void
-Vector< Real, Device, Index >::
-computeSegmentedExclusivePrefixSum( FlagsArray& flags )
-{
-   Algorithms::VectorOperations< Device >::computeSegmentedExclusivePrefixSum( *this, flags, 0, this->getSize() );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename FlagsArray >
-void
-Vector< Real, Device, Index >::
-computeSegmentedExclusivePrefixSum(  FlagsArray& flags,
-   const IndexType begin,
-   const IndexType end )
-{
-   Algorithms::VectorOperations< Device >::computeSegmentedExclusivePrefixSum( *this, flags, begin, end );
 }
 
 } // namespace Containers
