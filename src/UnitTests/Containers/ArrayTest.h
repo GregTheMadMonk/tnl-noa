@@ -151,6 +151,7 @@ TYPED_TEST( ArrayTest, constructors )
 
    ArrayType v( 10 );
    EXPECT_EQ( v.getSize(), 10 );
+   v = 0;
 
    // deep copy
    ArrayType w( v );
