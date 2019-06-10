@@ -109,6 +109,4 @@ for details.
 
 ## Tutorials
 
-> TODO
-
-1. [Vectors](Tutorials/main-page.md)
+1. [Arrays](Tutorials/Arrays/index.html)
