@@ -50,4 +50,45 @@ The result is:
 
 ## Array views
 
-Because of the data sharing, TNL Array is relatively complicated structure. In many situations, we prefer lightweight structure which only encapsulates the data pointer and keeps information about the data size. Passing array structure to GPU kernel can be one example. For this purpose there is ```ArrayView``` in TNL. It templated structure having the same template parameters as ```Array``` (it means ```Value```, ```Device``` and ```Index```). In fact, it is recommended to use ```Array``` only for the data allocation and to use ```ArrayView``` for most of the operations with the data since array view offer better functionality (for example ```ArrayView``` can be captured by lambda functions in CUDA while ```Array``` cannot).
+Because of the data sharing, TNL Array is relatively complicated structure. In many situations, we prefer lightweight structure which only encapsulates the data pointer and keeps information about the data size. Passing array structure to GPU kernel can be one example. For this purpose there is ```ArrayView``` in TNL. It templated structure having the same template parameters as ```Array``` (it means ```Value```, ```Device``` and ```Index```). In fact, it is recommended to use ```Array``` only for the data allocation and to use ```ArrayView``` for most of the operations with the data since array view offer better functionality (for example ```ArrayView``` can be captured by lambda functions in CUDA while ```Array``` cannot). The following code snippet shows how to create an array view.
+
+\include ArrayView-1.cpp
+
+Its output is:
+
+\include ArrayView-1.out
+
+Of course, one may bind his own data into array view:
+
+\include ArrayView-2.cpp
+
+Output:
+
+\include ArrayView-2.out
+
+Array view never deallocate the memory managed by it.
+
+## Accessing the array elements
+
+There are two ways how to work with the array (or array view) elements - using the indexing operator (```operator[]```) which is more efficient or methods ```setElement``` and ```getElement``` which is more flexible.
+
+### Accessing the array elements with ```operator[]```
+
+Indexing operator ```operator[]``` is implemented in both ```Array``` and ```ArrayView``` and it is defined as ```__cuda_callable__```. It means that it can be called even in CUDA kernels if the data is allocated on GPU, i.e. the ```Device``` parameter is ```Devicess::Cuda```. This operator returns a reference to given array element and so it is very efficient. However, calling this operator from host for data allocated in device (or vice versa) leads to segmentation fault (on the host system) or broken state of the device. It means:
+
+* You may call the ```operator[]``` on the **host** only for data allocated on the **host** (with device ```Devices::Host```).
+* You may call the ```operator[]``` on the **device** only for data allocated on the **device** (with device ```Devices::Cuda```).
+
+The following example shows use of ```operator[]```.
+
+\include ElementsAccessing-1.cpp
+
+Output:
+
+\include ElementsAccessing-1.out
+
+In general in TNL, each method defined as ```__cuda_callable__``` can be called from the CUDA kernels. The method ```ArrayView::getSize``` is another example. We also would like to point the reader to better ways of arrays initiation for example with method ```ArrayView::evaluate``` or with ```ParalleFor```.
+
+### Accessing the array element with ```setElement``` and ```getElement```
+
+

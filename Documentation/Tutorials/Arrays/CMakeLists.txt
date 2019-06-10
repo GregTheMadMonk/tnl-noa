@@ -7,6 +7,13 @@ IF( BUILD_CUDA )
    ADD_CUSTOM_COMMAND( COMMAND ArrayBinding-2 > ArrayBinding-2.out OUTPUT ArrayBinding-2.out )
    CUDA_ADD_EXECUTABLE( ArrayBinding-3 ArrayBinding-3.cu )
    ADD_CUSTOM_COMMAND( COMMAND ArrayBinding-3 > ArrayBinding-3.out OUTPUT ArrayBinding-3.out )
+   CUDA_ADD_EXECUTABLE( ArrayView-1 ArrayView-1.cu )
+   ADD_CUSTOM_COMMAND( COMMAND ArrayView-1 > ArrayView-1.out OUTPUT ArrayView-1.out )
+   CUDA_ADD_EXECUTABLE( ArrayView-2 ArrayView-2.cu )
+   ADD_CUSTOM_COMMAND( COMMAND ArrayView-2 > ArrayView-2.out OUTPUT ArrayView-2.out )
+   CUDA_ADD_EXECUTABLE( ElementsAccessing-1 ElementsAccessing-1.cu )
+   ADD_CUSTOM_COMMAND( COMMAND ElementsAccessing-1 > ElementsAccessing-1.out OUTPUT ElementsAccessing-1.out )
+
 ENDIF()
 
 IF( BUILD_CUDA )
@@ -14,7 +21,10 @@ ADD_CUSTOM_TARGET( TutorialsArrays-cuda ALL DEPENDS
    ArrayAllocation.out
    ArrayBinding-1.out
    ArrayBinding-2.out
-   ArrayBinding-3.out )
+   ArrayBinding-3.out
+   ArrayView-1.out
+   ArrayView-2.out
+   ElementsAccessing-1.out )
 ENDIF()
 
 # set input and output files
