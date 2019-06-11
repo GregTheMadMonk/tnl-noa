@@ -394,7 +394,9 @@ public:
     *
     * \return True if there is **at least one** array element in interval [\e begin, \e end ) having value \e v.
     */
-   bool containsValue( Value value ) const;
+   bool containsValue( Value value,
+                       const Index begin = 0,
+                       Index end = -1  ) const;
 
    /**
     * \brief Checks if all elements have the same value \e v.
@@ -409,7 +411,9 @@ public:
     *
     * \return True if there **all** array elements in interval [\e begin, \e end ) have value \e v.
     */
-   bool containsOnlyValue( Value value ) const;
+   bool containsOnlyValue( Value value,
+                           const Index begin = 0,
+                           Index end = -1  ) const;
 
    /**
     * \brief Returns true if non-zero size is set.

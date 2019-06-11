@@ -39,6 +39,6 @@ int main( int argc, char* argv[] )
    /****
     * Print the initialized array
     */
-   std::cout << "a data in initArray function is " << a.getData() << std::endl;
+   std::cout << "a data in main function is " << a.getData() << std::endl;
    std::cout << "a in main function is " << a << std::endl;
 }

@@ -11,9 +11,14 @@ IF( BUILD_CUDA )
    ADD_CUSTOM_COMMAND( COMMAND ArrayView-1 > ArrayView-1.out OUTPUT ArrayView-1.out )
    CUDA_ADD_EXECUTABLE( ArrayView-2 ArrayView-2.cu )
    ADD_CUSTOM_COMMAND( COMMAND ArrayView-2 > ArrayView-2.out OUTPUT ArrayView-2.out )
+   CUDA_ADD_EXECUTABLE( ArrayViewEvaluate ArrayViewEvaluate.cu )
+   ADD_CUSTOM_COMMAND( COMMAND ArrayViewEvaluate > ArrayViewEvaluate.out OUTPUT ArrayViewEvaluate.out )
+   CUDA_ADD_EXECUTABLE( ContainsValue ContainsValue.cu )
+   ADD_CUSTOM_COMMAND( COMMAND ContainsValue > ContainsValue.out OUTPUT ContainsValue.out )
    CUDA_ADD_EXECUTABLE( ElementsAccessing-1 ElementsAccessing-1.cu )
    ADD_CUSTOM_COMMAND( COMMAND ElementsAccessing-1 > ElementsAccessing-1.out OUTPUT ElementsAccessing-1.out )
-
+   CUDA_ADD_EXECUTABLE( ElementsAccessing-2 ElementsAccessing-2.cu )
+   ADD_CUSTOM_COMMAND( COMMAND ElementsAccessing-2 > ElementsAccessing-2.out OUTPUT ElementsAccessing-2.out )
 ENDIF()
 
 IF( BUILD_CUDA )
@@ -24,7 +29,10 @@ ADD_CUSTOM_TARGET( TutorialsArrays-cuda ALL DEPENDS
    ArrayBinding-3.out
    ArrayView-1.out
    ArrayView-2.out
-   ElementsAccessing-1.out )
+   ContainsValue.out
+   ElementsAccessing-1.out
+   ElementsAccessing-2.out
+   ArrayViewEvaluate.out )
 ENDIF()
 
 # set input and output files
@@ -35,7 +43,7 @@ set(DOXYGEN_OUT ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
 configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
 
 # note the option ALL which allows to build the docs together with the application
-add_custom_target( doc_doxygen_tutorial_1 ALL
+add_custom_target( doc_doxygen_tutorial_arrays ALL
     COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMENT "Generating API documentation with Doxygen"

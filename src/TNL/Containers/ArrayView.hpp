@@ -327,9 +327,11 @@ template< typename Value,
           typename Index >
 bool
 ArrayView< Value, Device, Index >::
-containsValue( Value value ) const
+containsValue( Value value,
+               const Index begin,
+               Index end ) const
 {
-   return Algorithms::ArrayOperations< Device >::containsValue( data, size, value );
+   return Algorithms::ArrayOperations< Device >::containsValue( &this->getData()[ begin ], end - begin, value );
 }
 
 template< typename Value,
@@ -337,9 +339,11 @@ template< typename Value,
           typename Index >
 bool
 ArrayView< Value, Device, Index >::
-containsOnlyValue( Value value ) const
+containsOnlyValue( Value value,
+                   const Index begin,
+                   Index end  ) const
 {
-   return Algorithms::ArrayOperations< Device >::containsOnlyValue( data, size, value );
+   return Algorithms::ArrayOperations< Device >::containsOnlyValue( &this->getData()[ begin ], end - begin, value );
 }
 
 template< typename Value,
