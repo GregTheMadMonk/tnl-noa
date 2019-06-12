@@ -23,4 +23,4 @@ add_custom_target( doc_doxygen_tutorial_vectors ALL
     COMMENT "Generating API documentation with Doxygen"
     VERBATIM )
 
-INSTALL( DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html/ DESTINATION ${CMAKE_INSTALL_PREFIX}/share/doc/tnl/html/Tutorials/Vectors )
+INSTALL( DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html DESTINATION ${CMAKE_INSTALL_PREFIX}/share/doc/tnl/html/Tutorials/Vectors )
