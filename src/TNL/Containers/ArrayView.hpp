@@ -91,8 +91,10 @@ template< typename Value,
           typename Index >
 typename ArrayView< Value, Device, Index >::ViewType
 ArrayView< Value, Device, Index >::
-getView()
+getView( const IndexType begin, IndexType end )
 {
+   if( end == -1 )
+      end = this->getSize();
    return *this;
 }
 
@@ -101,8 +103,10 @@ template< typename Value,
           typename Index >
 typename ArrayView< Value, Device, Index >::ConstViewType
 ArrayView< Value, Device, Index >::
-getConstView() const
+getConstView( const IndexType begin, IndexType end ) const
 {
+   if( end == -1 )
+      end = this->getSize();
    return *this;
 }
 
@@ -331,6 +335,8 @@ containsValue( Value value,
                const Index begin,
                Index end ) const
 {
+   if( end == -1 )
+      end = this->getSize();
    return Algorithms::ArrayOperations< Device >::containsValue( &this->getData()[ begin ], end - begin, value );
 }
 
@@ -343,6 +349,8 @@ containsOnlyValue( Value value,
                    const Index begin,
                    Index end  ) const
 {
+   if( end == -1 )
+      end = this->getSize();
    return Algorithms::ArrayOperations< Device >::containsOnlyValue( &this->getData()[ begin ], end - begin, value );
 }
 

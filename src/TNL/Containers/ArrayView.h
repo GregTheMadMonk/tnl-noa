@@ -172,13 +172,13 @@ public:
     * \brief Returns a modifiable view of the array view.
     */
    __cuda_callable__
-   ViewType getView();
+   ViewType getView( const IndexType begin = 0, IndexType end = -1 );
 
    /**
     * \brief Returns a non-modifiable view of the array view.
     */
    __cuda_callable__
-   ConstViewType getConstView() const;
+   ConstViewType getConstView( const IndexType begin = 0, IndexType end = -1 ) const;
 
    /**
     * \brief Assignment operator.

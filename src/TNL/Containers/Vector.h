@@ -140,12 +140,12 @@ public:
    /**
     * \brief Returns a modifiable view of the vector.
     */
-   ViewType getView();
+   ViewType getView( IndexType begin = 0, IndexType end = -1 );
 
    /**
     * \brief Returns a non-modifiable view of the vector.
     */
-   ConstViewType getConstView() const;
+   ConstViewType getConstView( IndexType begin = 0, IndexType end = -1 ) const;
 
    /**
     * \brief Conversion operator to a modifiable view of the vector.
@@ -197,8 +197,8 @@ public:
     * The subtraction is applied to all the vector elements separately.
     * \param vector Reference to another vector.
     */
-   template< typename VectorT >
-   Vector& operator -= ( const VectorT& vector );
+   template< typename VectorExpression >
+   Vector& operator -= ( const VectorExpression& expression );
 
    /**
     * \brief This function adds \e vector to this vector and returns the resulting vector.
@@ -206,8 +206,8 @@ public:
     * The addition is applied to all the vector elements separately.
     * \param vector Reference to another vector.
     */
-   template< typename VectorT >
-   Vector& operator += ( const VectorT& vector );
+   template< typename VectorExpression >
+   Vector& operator += ( const VectorExpression& expression );
 
    /**
     * \brief This function multiplies this vector by \e c and returns the resulting vector.
@@ -215,8 +215,8 @@ public:
     * The multiplication is applied to all the vector elements separately.
     * \param c Multiplicator.
     */
-   template< typename Scalar >
-   Vector& operator *= ( const Scalar c );
+   template< typename VectorExpression >
+   Vector& operator *= ( const VectorExpression& expression );
 
    /**
     * \brief This function divides this vector by \e c and returns the resulting vector.
@@ -224,8 +224,8 @@ public:
     * The division is applied to all the vector elements separately.
     * \param c Divisor.
     */
-   template< typename Scalar >
-   Vector& operator /= ( const Scalar c );
+   template< typename VectorExpression >
+   Vector& operator /= ( const VectorExpression& expression );
 
    /**
     * \brief Scalar product

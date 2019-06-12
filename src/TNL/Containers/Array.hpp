@@ -358,6 +358,8 @@ typename Array< Value, Device, Index >::ConstViewType
 Array< Value, Device, Index >::
 getConstView( IndexType begin, IndexType end ) const
 {
+   if( end == -1 )
+      end = getSize();
    return ConstViewType( &getData()[ begin ], end - begin );
 }
 
