@@ -31,6 +31,28 @@ using namespace TNL::Arithmetics;
 // and large enough to require multiple CUDA blocks for reduction
 constexpr int VECTOR_TEST_SIZE = 500;
 
+TYPED_TEST( VectorTest, horizontalOperations )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   using RealType = typename VectorType::RealType;
+   using IndexType = typename VectorType::IndexType;
+   const int size = VECTOR_TEST_SIZE;
+
+   VectorType _u( size ), _v( size ), _w( size );
+   ViewType u( _u ), v( _v ), w( _w );
+   EXPECT_EQ( u.getSize(), size );
+   u = 0;
+   v = 1;
+   w = 2;
+
+   u = u + 4 * TNL::max( v, 0 );
+   EXPECT_TRUE( u.containsOnlyValue( 4.0 ) );
+
+   u = u + 3 * w + 4 * TNL::max( v, 0 );
+   EXPECT_TRUE( u.containsOnlyValue( 14.0 ) );
+}
+
 TYPED_TEST( VectorTest, verticalOperations )
 {
    using VectorType = typename TestFixture::VectorType;
