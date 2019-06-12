@@ -45,9 +45,11 @@ template< typename Real,
           typename Index >
 typename VectorView< Real, Device, Index >::ViewType
 VectorView< Real, Device, Index >::
-getView()
+getView( const IndexType begin, IndexType end )
 {
-   return *this;
+   if( end == -1 )
+      end = this->getSize();
+   return ViewType( &getData()[ begin ], end - begin );;
 }
 
 template< typename Real,
@@ -55,9 +57,11 @@ template< typename Real,
           typename Index >
 typename VectorView< Real, Device, Index >::ConstViewType
 VectorView< Real, Device, Index >::
-getConstView() const
+getConstView( const IndexType begin, IndexType end ) const
 {
-   return *this;
+   if( end == -1 )
+      end = this->getSize();
+   return ConstViewType( &getData()[ begin ], end - begin );;
 }
 
 template< typename Real,

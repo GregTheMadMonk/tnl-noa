@@ -95,7 +95,7 @@ getView( const IndexType begin, IndexType end )
 {
    if( end == -1 )
       end = this->getSize();
-   return *this;
+   return ViewType( &getData()[ begin ], end - begin );;
 }
 
 template< typename Value,
@@ -107,7 +107,7 @@ getConstView( const IndexType begin, IndexType end ) const
 {
    if( end == -1 )
       end = this->getSize();
-   return *this;
+   return ConstViewType( &getData()[ begin ], end - begin );
 }
 
 // Copy-assignment does deep copy, just like regular array, but the sizes

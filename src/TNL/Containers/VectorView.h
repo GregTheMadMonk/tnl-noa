@@ -44,7 +44,8 @@ public:
    // (works fine in nvcc 9.0)
    using ArrayView< Real, Device, Index >::ArrayView;
 #endif
-
+   using ArrayView< Real, Device, Index >::getData;
+   
    /** Subscript operator is inherited from the class \ref Array. */
    using ArrayView< Real, Device, Index >::operator[];
 
@@ -71,18 +72,17 @@ public:
    __cuda_callable__
    VectorView( const Expressions::UnaryExpressionTemplate< T, Operation >& expression );
 
-
    /**
     * \brief Returns a modifiable view of the array view.
     */
    __cuda_callable__
-   ViewType getView();
+   ViewType getView( const IndexType begin = 0, IndexType end = -1 );
 
    /**
     * \brief Returns a non-modifiable view of the array view.
     */
    __cuda_callable__
-   ConstViewType getConstView() const;
+   ConstViewType getConstView( const IndexType begin = 0, IndexType end = -1 ) const;
 
 
    static String getType();
