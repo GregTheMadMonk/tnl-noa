@@ -1,12 +1,13 @@
-#IF( BUILD_CUDA )
-#   CUDA_ADD_EXECUTABLE( ArrayAllocation ArrayAllocation.cu )
-#   ADD_CUSTOM_COMMAND( COMMAND ArrayAllocation > ArrayAllocation.out OUTPUT ArrayAllocation.out )
-#ENDIF()
+IF( BUILD_CUDA )
+   #ADD_EXECUTABLE( Expressions Expressions.cpp )
+   CUDA_ADD_EXECUTABLE( Expressions Expressions.cu )
+   ADD_CUSTOM_COMMAND( COMMAND Expressions > Expressions.out OUTPUT Expressions.out )
+ENDIF()
 
-#IF( BUILD_CUDA )
-#ADD_CUSTOM_TARGET( TutorialsVectors-cuda ALL DEPENDS
-#   ArrayViewEvaluate.out )
-#ENDIF()
+IF( BUILD_CUDA )
+ADD_CUSTOM_TARGET( TutorialsVectors-cuda ALL DEPENDS
+   Expressions.out )
+ENDIF()
 
 # set input and output files
 set(DOXYGEN_IN ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in)
@@ -22,4 +23,4 @@ add_custom_target( doc_doxygen_tutorial_vectors ALL
     COMMENT "Generating API documentation with Doxygen"
     VERBATIM )
 
-INSTALL( DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html/ DESTINATION ${CMAKE_INSTALL_PREFIX}/share/doc/tnl/html/Tutorials/Arrays )
+INSTALL( DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html/ DESTINATION ${CMAKE_INSTALL_PREFIX}/share/doc/tnl/html/Tutorials/Vectors )
