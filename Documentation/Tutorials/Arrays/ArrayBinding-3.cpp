@@ -15,8 +15,8 @@ int main( int argc, char* argv[] )
    /***
     * Partition the data into density and velocity components
     */
-   Array< float > rho( a, 0, size );
-   Array< float > v_1( a, size, size );
+   Array< float > rho( a,        0, size );
+   Array< float > v_1( a,     size, size );
    Array< float > v_2( a, 2 * size, size );
 
    rho = 10.0;

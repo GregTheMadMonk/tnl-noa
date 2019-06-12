@@ -15,7 +15,7 @@ int main( int argc, char* argv[] )
    Array< int, Devices::Cuda > device_array;
 
    /***
-    * Initiate the host array with number three and assign it to the device one.
+    * Initiate the host array with number three and assign it to the device array.
     * NOTE: Of course, you may do directly 'device_array = 3' as well.
     */
    host_array = 3;
@@ -29,7 +29,7 @@ int main( int argc, char* argv[] )
    std::cout << std::endl;
 
    /****
-    * And few other ways how to initialize arrays...
+    * There are few other ways how to initialize arrays...
     */
    std::list< int > list { 1, 2, 3, 4, 5 };
    std::vector< int > vector { 6, 7, 8, 9, 10 };

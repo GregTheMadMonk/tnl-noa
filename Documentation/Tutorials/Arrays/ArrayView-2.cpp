@@ -22,5 +22,10 @@ int main( int argc, char* argv[] )
    std::cout << " a_view = " << a_view << std::endl;
    for( int i = 0; i < size; i++ )
       std::cout << a[ i ] << " ";
+
+   /****
+    * Free the allocated memory
+    */
+   delete[] a;
 }
 

@@ -16,7 +16,7 @@ int main( int argc, char* argv[] )
    b.getView().evaluate( [=] __cuda_callable__ ( int i ) -> float { return i; } );
 
    /****
-    * Test the values store in the arrays
+    * Test the values stored in the arrays
     */
    if( a.containsValue( 0.0 ) )
       std::cout << "a contains 0" << std::endl;

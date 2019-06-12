@@ -27,6 +27,11 @@ int main( int argc, char* argv[] )
     * Check the data
     */
    for( int i = 0; i < size; i++ )
-      std::cout << i << " ";
+      std::cout << ai[ i ] << " ";
    std::cout << std::endl;
+
+   /****
+    * Free the allocated data
+    */
+   delete[] ai;
 }

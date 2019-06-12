@@ -30,7 +30,7 @@ int main( int argc, char* argv[] )
    /****
     * Prepare array view for the device array - we will pass it to a CUDA kernel.
     * NOTE: Better way is to use ArrayView::evaluate or ParallelFor, this is just
-    * example.
+    * an example.
     */
    auto device_view = device_array.getView();
 
