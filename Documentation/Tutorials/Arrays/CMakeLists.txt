@@ -7,6 +7,8 @@ IF( BUILD_CUDA )
    ADD_CUSTOM_COMMAND( COMMAND ArrayBinding-2 > ArrayBinding-2.out OUTPUT ArrayBinding-2.out )
    CUDA_ADD_EXECUTABLE( ArrayBinding-3 ArrayBinding-3.cu )
    ADD_CUSTOM_COMMAND( COMMAND ArrayBinding-3 > ArrayBinding-3.out OUTPUT ArrayBinding-3.out )
+   CUDA_ADD_EXECUTABLE( ArrayIO ArrayIO.cu )
+   ADD_CUSTOM_COMMAND( COMMAND ArrayIO > ArrayIO.out OUTPUT ArrayIO.out )
    CUDA_ADD_EXECUTABLE( ArrayView-1 ArrayView-1.cu )
    ADD_CUSTOM_COMMAND( COMMAND ArrayView-1 > ArrayView-1.out OUTPUT ArrayView-1.out )
    CUDA_ADD_EXECUTABLE( ArrayView-2 ArrayView-2.cu )
@@ -27,6 +29,7 @@ ADD_CUSTOM_TARGET( TutorialsArrays-cuda ALL DEPENDS
    ArrayBinding-1.out
    ArrayBinding-2.out
    ArrayBinding-3.out
+   ArrayIO.out
    ArrayView-1.out
    ArrayView-2.out
    ContainsValue.out

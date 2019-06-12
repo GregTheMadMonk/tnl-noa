@@ -110,3 +110,4 @@ for details.
 ## Tutorials
 
 1. [Arrays](Tutorials/Arrays/index.html)
+2. [Vectors](Tutorials/Vectors/index.html)

@@ -344,9 +344,11 @@ template< typename Value,
           typename Index >
 typename Array< Value, Device, Index >::ViewType
 Array< Value, Device, Index >::
-getView()
+getView( IndexType begin, IndexType end )
 {
-   return ViewType( getData(), getSize() );
+   if( end == -1 )
+      end = getSize();
+   return ViewType( &getData()[ begin ], end - begin );
 }
 
 template< typename Value,
@@ -354,9 +356,9 @@ template< typename Value,
           typename Index >
 typename Array< Value, Device, Index >::ConstViewType
 Array< Value, Device, Index >::
-getConstView() const
+getConstView( IndexType begin, IndexType end ) const
 {
-   return ConstViewType( getData(), getSize() );
+   return ConstViewType( &getData()[ begin ], end - begin );
 }
 
 template< typename Value,

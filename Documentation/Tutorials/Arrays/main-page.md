@@ -127,4 +127,12 @@ Output:
 
 ## IO operations with Arrays
 
+Methods ```save``` and ```load``` serve for storing/restoring the array to/from a file in binary form. In case of ```Array```, loading of an array from a file causes data reallocation. ```ArrayView``` cannot do reallocatation, therefore the data loaded from a file is copied to the memory managed by the ```ArrayView```. The number of elements managed by the array view and those loaded from the file must be equal. See the following example.
+
+\include ArrayIO.cpp
+
+Output:
+
+\include ArrayIO.out
+
 

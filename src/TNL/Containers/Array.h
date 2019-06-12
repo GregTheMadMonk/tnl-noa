@@ -266,12 +266,12 @@ class Array
       /**
        * \brief Returns a modifiable view of the array.
        */
-      ViewType getView();
+      ViewType getView( IndexType begin = 0, IndexType end = -1 );
 
       /**
        * \brief Returns a non-modifiable view of the array.
        */
-      ConstViewType getConstView() const;
+      ConstViewType getConstView( IndexType begin = 0, IndexType end = -1 ) const;
 
       /**
        * \brief Conversion operator to a modifiable view of the array.
