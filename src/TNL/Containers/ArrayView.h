@@ -367,7 +367,9 @@ public:
     *
     * \param v Reference to a value.
     */
-   void setValue( Value value );
+   void setValue( Value value,
+                  const Index begin = 0,
+                  Index end = -1 );
 
    /**
     * \brief Sets the array elements using given lambda function.

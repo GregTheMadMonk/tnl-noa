@@ -480,6 +480,18 @@ class Array
                      Index end = -1 );
 
       /**
+       * \brief Sets the array elements using given lambda function.
+       *
+       * Sets all the array values to \e v.
+       *
+       * \param v Reference to a value.
+       */
+      template< typename Function >
+      void evaluate( const Function& f,
+                     const Index begin = 0,
+                     Index end = -1 );
+
+      /**
        * \brief Checks if there is an element with value \e v.
        *
        * By default, the method checks all array elements. By setting indexes

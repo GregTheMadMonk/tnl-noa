@@ -299,10 +299,12 @@ template< typename Value,
           typename Index >
 void
 ArrayView< Value, Device, Index >::
-setValue( Value value )
+setValue( Value value, const Index begin, Index end )
 {
    TNL_ASSERT_GT( size, 0, "Attempted to set value to an empty array view." );
-   Algorithms::ArrayOperations< Device >::setMemory( getData(), value, getSize() );
+   if( end == -1 )
+      end = this->getSize();
+   Algorithms::ArrayOperations< Device >::setMemory( &getData()[ begin ], value, end - begin );
 }
 
 template< typename Value,

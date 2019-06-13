@@ -615,6 +615,18 @@ void Array< Value, Device, Index >::setValue( const ValueType& e,
 template< typename Value,
           typename Device,
           typename Index >
+   template< typename Function >
+void Array< Value, Device, Index >::evaluate( const Function& f,
+                                              const Index begin,
+                                              Index end )
+{
+   TNL_ASSERT_TRUE( this->getData(), "Attempted to set a value of an empty array." );
+   this->getView().evaluate( f, begin, end );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
 bool
 Array< Value, Device, Index >::
 containsValue( const Value& v,
