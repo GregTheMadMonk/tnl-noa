@@ -1,11 +1,18 @@
 if( BUILD_CUDA )
-    CUDA_ADD_EXECUTABLE( tnl-benchmark-blas tnl-benchmark-blas.cu )
-    CUDA_ADD_CUBLAS_TO_TARGET( tnl-benchmark-blas )
+    cuda_add_executable( tnl-benchmark-blas tnl-benchmark-blas.cu )
+    cuda_add_cublas_to_target( tnl-benchmark-blas )
 else()
-    ADD_EXECUTABLE( tnl-benchmark-blas tnl-benchmark-blas.cpp )
+    add_executable( tnl-benchmark-blas tnl-benchmark-blas.cpp )
 endif()
-if( HAVE_BLAS )
-   target_link_libraries( tnl-benchmark-blas ${BLAS_LIBRARIES} )
+
+find_library( CBLAS_LIBRARY NAMES cblas
+              PATHS /usr/lib
+                    /usr/lib64
+                    /usr/local/lib
+                    /usr/local/lib64 )
+if( CBLAS_LIBRARY )
+   target_compile_options( tnl-benchmark-blas PUBLIC "-DHAVE_BLAS" )
+   target_link_libraries( tnl-benchmark-blas ${CBLAS_LIBRARY} )
 endif()
 
 install( TARGETS tnl-benchmark-blas RUNTIME DESTINATION bin )

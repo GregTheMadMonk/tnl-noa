@@ -317,13 +317,6 @@ if( ${WITH_TESTS} )
    endif()
 endif()
 
-if( ${WITH_BLAS} )
-   find_package( BLAS )
-   if( BLAS_FOUND )
-      set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_BLAS" )
-      set( HAVE_BLAS TRUE)
-   endif()
-endif()
 #if( BUILD_MPI )
 #   FIND_PATH( PETSC_INCLUDE_DIR petsc.h
 #     /usr/include/petsc
@@ -457,4 +450,3 @@ message( "   CMAKE_SHARED_LINKER_FLAGS_DEBUG = ${CMAKE_SHARED_LINKER_FLAGS_DEBUG
 message( "   CMAKE_SHARED_LINKER_FLAGS_RELEASE = ${CMAKE_SHARED_LINKER_FLAGS_RELEASE}" )
 message( "   CUDA_NVCC_FLAGS = ${CUDA_NVCC_FLAGS}" )
 message( "   GMP_LIBRARIES = ${GMP_LIBRARIES}" )
-message( "   BLAS_libraries = ${BLAS_LIBRARIES}" )
