@@ -583,6 +583,27 @@ auto operator,( const Containers::VectorView< Real1, Device, Index >& a, const C
 }
 
 ////
+// Dot product - the same as scalar product, just for convenience
+template< typename Real, typename Device, typename Index, typename ET >
+Real dot( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
+{
+   return TNL::sum( a * b );
+}
+
+template< typename ET, typename Real, typename Device, typename Index >
+Real dot( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
+{
+   return TNL::sum( a * b );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index >
+auto dot( const Containers::VectorView< Real1, Device, Index >& a, const Containers::VectorView< Real2, Device, Index >& b )
+->decltype( TNL::sum( a * b ) )
+{
+   return TNL::sum( a * b );
+}
+
+////
 // TODO: Replace this with multiplication when its safe
 template< typename Real, typename Device, typename Index, typename ET >
 Containers::VectorView< Real, Device, Index >
