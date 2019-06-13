@@ -318,7 +318,6 @@ template< typename L1,
           typename R1,
           typename R2,
           template< typename, typename > class ROperation >
-__cuda_callable__
 const Containers::Expressions::StaticBinaryExpressionTemplate<
    Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
    Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
@@ -327,15 +326,14 @@ operator + ( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, 
              const Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
    return Containers::Expressions::StaticBinaryExpressionTemplate<
-      Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
       Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
+      Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
       Containers::Expressions::Addition >( a, b );
 }
 
 template< typename T1,
           typename T2,
           template< typename, typename > class Operation >
-__cuda_callable__
 const Containers::Expressions::StaticBinaryExpressionTemplate<
    Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >,
    typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType,
@@ -349,22 +347,37 @@ operator + ( const Containers::Expressions::StaticBinaryExpressionTemplate< T1, 
       Containers::Expressions::Addition >( a, b );
 }
 
+template< typename T1,
+          typename T2,
+          template< typename, typename > class Operation >
+const Containers::Expressions::StaticBinaryExpressionTemplate<
+   typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType,
+   Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >,
+   Containers::Expressions::Addition >
+operator + ( const typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
+             const Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& b )
+{
+   return Containers::Expressions::StaticBinaryExpressionTemplate<
+      typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType,
+      Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >,
+      Containers::Expressions::Addition >( a, b );
+}
+
 template< typename L1,
           template< typename > class LOperation,
           typename R1,
           typename R2,
           template< typename, typename > class ROperation >
-__cuda_callable__
 const Containers::Expressions::StaticBinaryExpressionTemplate<
    Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
-   typename Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
+   Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
    Containers::Expressions::Addition >
 operator + ( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a,
              const typename Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
    return Containers::Expressions::StaticBinaryExpressionTemplate<
       Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
-      typename Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
+      Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
       Containers::Expressions::Addition >( a, b );
 }
 
@@ -373,17 +386,33 @@ template< typename L1,
           template< typename, typename > class LOperation,
           typename R1,
           template< typename > class ROperation >
-__cuda_callable__
 const Containers::Expressions::StaticBinaryExpressionTemplate<
    Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-   typename Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
+   Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
    Containers::Expressions::Addition >
 operator + ( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-             const typename Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation >& b )
+             const Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation >& b )
 {
    return Containers::Expressions::StaticBinaryExpressionTemplate<
       Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      typename Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
+      Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
+      Containers::Expressions::Addition >( a, b );
+}
+
+template< typename L1,
+          template< typename > class LOperation,
+          typename R1,
+          template< typename > class ROperation >
+const Containers::Expressions::StaticBinaryExpressionTemplate<
+   Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
+   Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
+   Containers::Expressions::Addition >
+operator + ( const Containers::Expressions::StaticUnaryExpressionTemplate< L1,LOperation >& a,
+             const Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation >& b )
+{
+   return Containers::Expressions::StaticBinaryExpressionTemplate<
+      Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
+      Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
       Containers::Expressions::Addition >( a, b );
 }
 
@@ -395,7 +424,6 @@ template< typename L1,
           typename R1,
           typename R2,
           template< typename, typename > class ROperation >
-__cuda_callable__
 const Containers::Expressions::StaticBinaryExpressionTemplate<
    Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
    Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
@@ -404,15 +432,14 @@ operator - ( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, 
              const Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
    return Containers::Expressions::StaticBinaryExpressionTemplate<
-      Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
       Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
+      Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
       Containers::Expressions::Subtraction >( a, b );
 }
 
 template< typename T1,
           typename T2,
           template< typename, typename > class Operation >
-__cuda_callable__
 const Containers::Expressions::StaticBinaryExpressionTemplate<
    Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >,
    typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType,
@@ -426,22 +453,37 @@ operator - ( const Containers::Expressions::StaticBinaryExpressionTemplate< T1, 
       Containers::Expressions::Subtraction >( a, b );
 }
 
+template< typename T1,
+          typename T2,
+          template< typename, typename > class Operation >
+const Containers::Expressions::StaticBinaryExpressionTemplate<
+   typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType,
+   Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >,
+   Containers::Expressions::Subtraction >
+operator - ( const typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
+             const Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& b )
+{
+   return Containers::Expressions::StaticBinaryExpressionTemplate<
+      typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType,
+      Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >,
+      Containers::Expressions::Subtraction >( a, b );
+}
+
 template< typename L1,
           template< typename > class LOperation,
           typename R1,
           typename R2,
           template< typename, typename > class ROperation >
-__cuda_callable__
 const Containers::Expressions::StaticBinaryExpressionTemplate<
    Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
-   typename Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
+   Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
    Containers::Expressions::Subtraction >
 operator - ( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a,
              const typename Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
    return Containers::Expressions::StaticBinaryExpressionTemplate<
       Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
-      typename Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
+      Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
       Containers::Expressions::Subtraction >( a, b );
 }
 
@@ -450,17 +492,33 @@ template< typename L1,
           template< typename, typename > class LOperation,
           typename R1,
           template< typename > class ROperation >
-__cuda_callable__
 const Containers::Expressions::StaticBinaryExpressionTemplate<
    Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-   typename Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
+   Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
    Containers::Expressions::Subtraction >
 operator - ( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
              const typename Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation >& b )
 {
    return Containers::Expressions::StaticBinaryExpressionTemplate<
       Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      typename Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
+      Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
+      Containers::Expressions::Subtraction >( a, b );
+}
+
+template< typename L1,
+          template< typename > class LOperation,
+          typename R1,
+          template< typename > class ROperation >
+const Containers::Expressions::StaticBinaryExpressionTemplate<
+   Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
+   Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
+   Containers::Expressions::Subtraction >
+operator - ( const Containers::Expressions::StaticUnaryExpressionTemplate< L1,LOperation >& a,
+             const Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation >& b )
+{
+   return Containers::Expressions::StaticBinaryExpressionTemplate<
+      Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
+      Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
       Containers::Expressions::Subtraction >( a, b );
 }
 
@@ -472,7 +530,6 @@ template< typename L1,
           typename R1,
           typename R2,
           template< typename, typename > class ROperation >
-__cuda_callable__
 const Containers::Expressions::StaticBinaryExpressionTemplate<
    Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
    Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
@@ -481,15 +538,14 @@ operator * ( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, 
              const Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
    return Containers::Expressions::StaticBinaryExpressionTemplate<
-      Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
       Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
+      Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
       Containers::Expressions::Multiplication >( a, b );
 }
 
 template< typename T1,
           typename T2,
           template< typename, typename > class Operation >
-__cuda_callable__
 const Containers::Expressions::StaticBinaryExpressionTemplate<
    Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >,
    typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType,
@@ -503,22 +559,37 @@ operator * ( const Containers::Expressions::StaticBinaryExpressionTemplate< T1, 
       Containers::Expressions::Multiplication >( a, b );
 }
 
+template< typename T1,
+          typename T2,
+          template< typename, typename > class Operation >
+const Containers::Expressions::StaticBinaryExpressionTemplate<
+   typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType,
+   Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >,
+   Containers::Expressions::Multiplication >
+operator * ( const typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
+             const Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& b )
+{
+   return Containers::Expressions::StaticBinaryExpressionTemplate<
+      typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType,
+      Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >,
+      Containers::Expressions::Multiplication >( a, b );
+}
+
 template< typename L1,
           template< typename > class LOperation,
           typename R1,
           typename R2,
           template< typename, typename > class ROperation >
-__cuda_callable__
 const Containers::Expressions::StaticBinaryExpressionTemplate<
    Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
-   typename Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
+   Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
    Containers::Expressions::Multiplication >
 operator * ( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a,
              const typename Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
    return Containers::Expressions::StaticBinaryExpressionTemplate<
       Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
-      typename Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
+      Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
       Containers::Expressions::Multiplication >( a, b );
 }
 
@@ -527,17 +598,33 @@ template< typename L1,
           template< typename, typename > class LOperation,
           typename R1,
           template< typename > class ROperation >
-__cuda_callable__
 const Containers::Expressions::StaticBinaryExpressionTemplate<
    Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-   typename Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
+   Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
    Containers::Expressions::Multiplication >
 operator * ( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-             const typename Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >& b )
+             const Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >& b )
 {
    return Containers::Expressions::StaticBinaryExpressionTemplate<
       Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      typename Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
+      Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
+      Containers::Expressions::Multiplication >( a, b );
+}
+
+template< typename L1,
+          template< typename > class LOperation,
+          typename R1,
+          template< typename > class ROperation >
+const Containers::Expressions::StaticBinaryExpressionTemplate<
+   Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
+   Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
+   Containers::Expressions::Multiplication >
+operator * ( const Containers::Expressions::StaticUnaryExpressionTemplate< L1,LOperation >& a,
+             const Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation >& b )
+{
+   return Containers::Expressions::StaticBinaryExpressionTemplate<
+      Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
+      Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
       Containers::Expressions::Multiplication >( a, b );
 }
 
@@ -549,7 +636,6 @@ template< typename L1,
           typename R1,
           typename R2,
           template< typename, typename > class ROperation >
-__cuda_callable__
 const Containers::Expressions::StaticBinaryExpressionTemplate<
    Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
    Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
@@ -558,15 +644,14 @@ operator / ( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, 
              const Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
    return Containers::Expressions::StaticBinaryExpressionTemplate<
-      Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
       Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
+      Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
       Containers::Expressions::Division >( a, b );
 }
 
 template< typename T1,
           typename T2,
           template< typename, typename > class Operation >
-__cuda_callable__
 const Containers::Expressions::StaticBinaryExpressionTemplate<
    Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >,
    typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType,
@@ -580,22 +665,37 @@ operator / ( const Containers::Expressions::StaticBinaryExpressionTemplate< T1, 
       Containers::Expressions::Division >( a, b );
 }
 
+template< typename T1,
+          typename T2,
+          template< typename, typename > class Operation >
+const Containers::Expressions::StaticBinaryExpressionTemplate<
+   typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType,
+   Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >,
+   Containers::Expressions::Division >
+operator + ( const typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
+             const Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& b )
+{
+   return Containers::Expressions::StaticBinaryExpressionTemplate<
+      typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType,
+      Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >,
+      Containers::Expressions::Division >( a, b );
+}
+
 template< typename L1,
           template< typename > class LOperation,
           typename R1,
           typename R2,
           template< typename, typename > class ROperation >
-__cuda_callable__
 const Containers::Expressions::StaticBinaryExpressionTemplate<
    Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
-   typename Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
+   Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
    Containers::Expressions::Division >
 operator / ( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a,
-             const typename Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
+             const Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
    return Containers::Expressions::StaticBinaryExpressionTemplate<
       Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
-      typename Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
+      Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
       Containers::Expressions::Division >( a, b );
 }
 
@@ -604,19 +704,36 @@ template< typename L1,
           template< typename, typename > class LOperation,
           typename R1,
           template< typename > class ROperation >
-__cuda_callable__
 const Containers::Expressions::StaticBinaryExpressionTemplate<
    Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-   typename Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
+   Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
    Containers::Expressions::Division >
 operator / ( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-             const typename Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation >& b )
+             const Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation >& b )
 {
    return Containers::Expressions::StaticBinaryExpressionTemplate<
       Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      typename Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
+      Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
       Containers::Expressions::Division >( a, b );
 }
+
+template< typename L1,
+          template< typename > class LOperation,
+          typename R1,
+          template< typename > class ROperation >
+const Containers::Expressions::StaticBinaryExpressionTemplate<
+   Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
+   Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
+   Containers::Expressions::Division >
+operator / ( const Containers::Expressions::StaticUnaryExpressionTemplate< L1,LOperation >& a,
+             const Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation >& b )
+{
+   return Containers::Expressions::StaticBinaryExpressionTemplate<
+      Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
+      Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
+      Containers::Expressions::Division >( a, b );
+}
+
 
 ////
 // Binary expression min
@@ -626,7 +743,6 @@ template< typename L1,
           typename R1,
           typename R2,
           template< typename, typename > class ROperation >
-__cuda_callable__
 const Containers::Expressions::StaticBinaryExpressionTemplate<
    Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
    Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
@@ -635,15 +751,14 @@ min ( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOp
       const Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
    return Containers::Expressions::StaticBinaryExpressionTemplate<
-      Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
       Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
+      Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
       Containers::Expressions::Min >( a, b );
 }
 
 template< typename T1,
           typename T2,
           template< typename, typename > class Operation >
-__cuda_callable__
 const Containers::Expressions::StaticBinaryExpressionTemplate<
    Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >,
    typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType,
@@ -657,22 +772,37 @@ min( const Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Oper
       Containers::Expressions::Min >( a, b );
 }
 
+template< typename T1,
+          typename T2,
+          template< typename, typename > class Operation >
+const Containers::Expressions::StaticBinaryExpressionTemplate<
+   typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType,
+   Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >,
+   Containers::Expressions::Min >
+operator + ( const typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
+             const Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& b )
+{
+   return Containers::Expressions::StaticBinaryExpressionTemplate<
+      typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType,
+      Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >,
+      Containers::Expressions::Min >( a, b );
+}
+
 template< typename L1,
           template< typename > class LOperation,
           typename R1,
           typename R2,
           template< typename, typename > class ROperation >
-__cuda_callable__
 const Containers::Expressions::StaticBinaryExpressionTemplate<
    Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
-   typename Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
+   Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
    Containers::Expressions::Min >
 min( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a,
      const typename Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
    return Containers::Expressions::StaticBinaryExpressionTemplate<
       Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
-      typename Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
+      Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
       Containers::Expressions::Min >( a, b );
 }
 
@@ -681,17 +811,33 @@ template< typename L1,
           template< typename, typename > class LOperation,
           typename R1,
           template< typename > class ROperation >
-__cuda_callable__
 const Containers::Expressions::StaticBinaryExpressionTemplate<
    Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
    typename Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
    Containers::Expressions::Min >
 min( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-     const typename Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation >& b )
+     const Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation >& b )
 {
    return Containers::Expressions::StaticBinaryExpressionTemplate<
       Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      typename Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
+      Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
+      Containers::Expressions::Min >( a, b );
+}
+
+template< typename L1,
+          template< typename > class LOperation,
+          typename R1,
+          template< typename > class ROperation >
+const Containers::Expressions::StaticBinaryExpressionTemplate<
+   Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
+   Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
+   Containers::Expressions::Min >
+min( const Containers::Expressions::StaticUnaryExpressionTemplate< L1,LOperation >& a,
+     const Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation >& b )
+{
+   return Containers::Expressions::StaticBinaryExpressionTemplate<
+      Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
+      Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
       Containers::Expressions::Min >( a, b );
 }
 
@@ -703,7 +849,6 @@ template< typename L1,
           typename R1,
           typename R2,
           template< typename, typename > class ROperation >
-__cuda_callable__
 const Containers::Expressions::StaticBinaryExpressionTemplate<
    Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
    Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
@@ -712,15 +857,14 @@ max( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOpe
      const Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
    return Containers::Expressions::StaticBinaryExpressionTemplate<
-      Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
       Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
+      Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
       Containers::Expressions::Max >( a, b );
 }
 
 template< typename T1,
           typename T2,
           template< typename, typename > class Operation >
-__cuda_callable__
 const Containers::Expressions::StaticBinaryExpressionTemplate<
    Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >,
    typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType,
@@ -734,22 +878,37 @@ max( const Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Oper
       Containers::Expressions::Max >( a, b );
 }
 
+template< typename T1,
+          typename T2,
+          template< typename, typename > class Operation >
+const Containers::Expressions::StaticBinaryExpressionTemplate<
+   typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType,
+   Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >,
+   Containers::Expressions::Max >
+operator + ( const typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
+             const Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& b )
+{
+   return Containers::Expressions::StaticBinaryExpressionTemplate<
+      typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType,
+      Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >,
+      Containers::Expressions::Max >( a, b );
+}
+
 template< typename L1,
           template< typename > class LOperation,
           typename R1,
           typename R2,
           template< typename, typename > class ROperation >
-__cuda_callable__
 const Containers::Expressions::StaticBinaryExpressionTemplate<
    Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
-   typename Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
+   Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
    Containers::Expressions::Max >
 max( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a,
-     const typename Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
+     const Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
    return Containers::Expressions::StaticBinaryExpressionTemplate<
       Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
-      typename Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
+      Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
       Containers::Expressions::Max >( a, b );
 }
 
@@ -758,17 +917,33 @@ template< typename L1,
           template< typename, typename > class LOperation,
           typename R1,
           template< typename > class ROperation >
-__cuda_callable__
 const Containers::Expressions::StaticBinaryExpressionTemplate<
    Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-   typename Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
+   Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
    Containers::Expressions::Max >
 max( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-     const typename Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation >& b )
+     const Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation >& b )
 {
    return Containers::Expressions::StaticBinaryExpressionTemplate<
       Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      typename Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
+      Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
+      Containers::Expressions::Max >( a, b );
+}
+
+template< typename L1,
+          template< typename > class LOperation,
+          typename R1,
+          template< typename > class ROperation >
+const Containers::Expressions::StaticBinaryExpressionTemplate<
+   Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
+   Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
+   Containers::Expressions::Max >
+max( const Containers::Expressions::StaticUnaryExpressionTemplate< L1,LOperation >& a,
+     const Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation >& b )
+{
+   return Containers::Expressions::StaticBinaryExpressionTemplate<
+      Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
+      Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
       Containers::Expressions::Max >( a, b );
 }
 
