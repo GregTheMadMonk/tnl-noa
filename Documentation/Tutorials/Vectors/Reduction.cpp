@@ -28,10 +28,10 @@ void expressions()
    std::cout << "a = " << a << std::endl;
    std::cout << "b = " << b << std::endl;
    std::cout << "c = " << c << std::endl;
-   std::cout << "min( a )  = " << argMin( a, arg ) << " at " << arg << std::endl;
-   std::cout << "max( a )  = " << argMax( a, arg ) << " at " << arg << std::endl;
-   std::cout << "min( b )  = " << argMin( b, arg ) << " at " << arg << std::endl;
-   std::cout << "max( b )  = " << argMax( b, arg ) << " at " << arg << std::endl;
+   std::cout << "min( a ) = " << argMin( a, arg ) << " at " << arg << std::endl;
+   std::cout << "max( a ) = " << argMax( a, arg ) << " at " << arg << std::endl;
+   std::cout << "min( b ) = " << argMin( b, arg ) << " at " << arg << std::endl;
+   std::cout << "max( b ) = " << argMax( b, arg ) << " at " << arg << std::endl;
    std::cout << "min( abs( b ) ) = " << min( abs( b ) ) << std::endl;
    std::cout << "sum( b ) = " << sum( b ) << std::endl;
    std::cout << "sum( abs( b ) ) = " << sum( abs( b ) ) << std::endl;
@@ -52,6 +52,7 @@ int main( int argc, char* argv[] )
    /****
     * Perform test on GPU
     */
+   std::cout << std::endl;
    std::cout << "Expressions on GPU ..." << std::endl;
    expressions< Devices::Cuda >();
 }

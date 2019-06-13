@@ -915,7 +915,7 @@ EXCLUDE_SYMBOLS += TNL::Assert::*  # internal namespace
 # command).
 
 EXAMPLE_PATH           = @PROJECT_SOURCE_DIR@/src/Examples \
-                         @CMAKE_CURRENT_BINARY_DIR@/src/Examples
+                         @CMAKE_BINARY_DIR@/src/Examples
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp and

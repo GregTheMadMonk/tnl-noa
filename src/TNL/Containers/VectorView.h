@@ -45,7 +45,7 @@ public:
    using ArrayView< Real, Device, Index >::ArrayView;
 #endif
    using ArrayView< Real, Device, Index >::getData;
-   
+
    /** Subscript operator is inherited from the class \ref Array. */
    using ArrayView< Real, Device, Index >::operator[];
 
@@ -209,5 +209,5 @@ public:
 } // namespace Containers
 } // namespace TNL
 
-#include <TNL/Containers/VectorView_impl.h>
+#include <TNL/Containers/VectorView.hpp>
 #include <TNL/Containers/VectorViewExpressions.h>

@@ -170,12 +170,20 @@ public:
 
    /**
     * \brief Returns a modifiable view of the array view.
+    *
+    * \param begin is the index of the first element of the ArrayView
+    * \param end is the index of the element after the last one in the ArrayView.
+    * By default it is -1 which means that whole array will be covered by the ArrayView.
     */
    __cuda_callable__
    ViewType getView( const IndexType begin = 0, IndexType end = -1 );
 
    /**
     * \brief Returns a non-modifiable view of the array view.
+    *
+    * \param begin is the index of the first element of the ArrayView
+    * \param end is the index of the element after the last one in the ArrayView.
+    * By default it is -1 which means that whole array will be covered by the ArrayView.
     */
    __cuda_callable__
    ConstViewType getConstView( const IndexType begin = 0, IndexType end = -1 ) const;
@@ -366,6 +374,9 @@ public:
     * Sets all the array values to \e v.
     *
     * \param v Reference to a value.
+    * \param begin is the index of the first element to be changed
+    * \param end is the index of the element after the last one to be changed.
+    * By default it is -1 which means that whole array is considered.
     */
    void setValue( Value value,
                   const Index begin = 0,
@@ -377,6 +388,9 @@ public:
     * Sets all the array values to \e v.
     *
     * \param v Reference to a value.
+    * \param begin is the index of the first element to be changed
+    * \param end is the index of the element after the last one to be changed.
+    * By default it is -1 which means that whole array is considered.
     */
    template< typename Function >
    void evaluate( const Function& f,
@@ -423,6 +437,9 @@ public:
     * This method can be called from device kernels.
     *
     * \return Returns \e true if array view size is zero, \e false otherwise.
+    * \param begin is the index of the first element to be changed
+    * \param end is the index of the element after the last one to be changed.
+    * By default it is -1 which means that whole array is considered.
     */
    __cuda_callable__
    bool empty() const;

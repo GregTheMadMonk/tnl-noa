@@ -34,7 +34,7 @@ template< int, typename > class StaticArray;
  *
  * In the \e Device type, the Array remembers where the memory is allocated.
  * This ensures the compile-time checks of correct pointers manipulation.
- * Methods defined as \ref __cuda_callable__ can be called even from kernels
+ * Methods defined as \ref \_\_cuda_callable\_\_ can be called even from kernels
  * running on device. Array elements can be changed either using the \ref operator[]
  * which is more efficient but it can be called from CPU only for arrays
  * allocated on host (CPU) and when the array is allocated on GPU, the operator[]
@@ -49,11 +49,12 @@ template< int, typename > class StaticArray;
  * allocated i.e. it is efficient even on GPU. For simple checking of the array
  * contents, one may use methods \ref containValue and \ref containsValue and
  * \ref containsOnlyValue.
- * Array also offers data sharing using methods \ref bind. This is, however, obsolete
- * and will be soon replaced with proxy object \ref ArrayView.
+ * Array also offers data sharing using methods \ref bind.
  *
  * \par Example
  * \include ArrayExample.cpp
+ * \par Output
+ * \include ArrayExample.out
  *
  * See also \ref Containers::ArravView, \ref Containers::Vector, \ref Containers::VectorView.
  */
@@ -265,11 +266,20 @@ class Array
 
       /**
        * \brief Returns a modifiable view of the array.
+       *
+       * \param begin is the index of the first element of the ArrayView
+       * \param end is the index of the element after the last one in the ArrayView.
+       * By default it is -1 which means that whole array will be covered by the ArrayView.
        */
       ViewType getView( IndexType begin = 0, IndexType end = -1 );
 
       /**
        * \brief Returns a non-modifiable view of the array.
+       *
+       * \param begin is the index of the first element of the ArrayView
+       * \param end is the index of the element after the last one in the ArrayView.
+       * By default it is -1 which means that whole array will be covered by the ArrayView.
+
        */
       ConstViewType getConstView( IndexType begin = 0, IndexType end = -1 ) const;
 
@@ -471,9 +481,12 @@ class Array
       /**
        * \brief Sets the array elements to given value.
        *
-       * Sets all the array values to \e v.
+       * Sets whole array values or just a subinterval to \e v.
        *
        * \param v Reference to a value.
+       * \param begin is the index of the first element to be changed
+       * \param end is the index of the element after the last one to be changed.
+       * By default it is -1 which means that whole array is considered.
        */
       void setValue( const Value& v,
                      const Index begin = 0,
@@ -485,6 +498,9 @@ class Array
        * Sets all the array values to \e v.
        *
        * \param v Reference to a value.
+       * \param begin is the index of the first element to be changed
+       * \param end is the index of the element after the last one to be changed.
+       * By default it is -1 which means that whole array is considered.
        */
       template< typename Function >
       void evaluate( const Function& f,
