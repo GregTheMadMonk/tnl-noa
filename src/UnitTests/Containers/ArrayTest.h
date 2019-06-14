@@ -145,13 +145,17 @@ TYPED_TEST_SUITE( ArrayTest, ArrayTypes );
 TYPED_TEST( ArrayTest, constructors )
 {
    using ArrayType = typename TestFixture::ArrayType;
+   //using ArrayType = Array< float, Devices::Host, long >;
 
    ArrayType u;
    EXPECT_EQ( u.getSize(), 0 );
+   u.setSize( 10 );
+   EXPECT_EQ( u.getSize(), 10 );
 
    ArrayType v( 10 );
    EXPECT_EQ( v.getSize(), 10 );
    v = 0;
+   EXPECT_EQ( v.getSize(), 10 );
 
    // deep copy
    ArrayType w( v );

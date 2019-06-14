@@ -444,6 +444,20 @@ public:
    __cuda_callable__
    bool empty() const;
 
+   /**
+    * \brief Method for saving the object to a file \e fileName as a binary data.
+    *
+    * \param fileName file name.
+    */
+   void save( const String& fileName ) const;
+
+   /**
+    * Method for loading the object from a file \e fileName as a binary data.
+    *
+    * \param fileName file name
+    */
+   void load( const String& fileName );
+
 protected:
    //! Pointer to allocated data
    Value* data = nullptr;

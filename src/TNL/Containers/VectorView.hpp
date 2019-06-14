@@ -139,7 +139,6 @@ VectorView< Real, Device, Index >&
 VectorView< Real, Device, Index >::
 operator-=( const VectorExpression& expression )
 {
-   //addVector( vector, -1.0 );
    Algorithms::VectorSubtraction< VectorView< Real, Device, Index >, VectorExpression >::subtraction( *this, expression );
    return *this;
 }
@@ -152,7 +151,6 @@ VectorView< Real, Device, Index >&
 VectorView< Real, Device, Index >::
 operator+=( const VectorExpression& expression )
 {
-   //addVector( vector );
    Algorithms::VectorAddition< VectorView< Real, Device, Index >, VectorExpression >::addition( *this, expression );
    return *this;
 }
@@ -165,7 +163,6 @@ VectorView< Real, Device, Index >&
 VectorView< Real, Device, Index >::
 operator*=( const VectorExpression& expression )
 {
-   //Algorithms::VectorOperations< Device >::vectorScalarMultiplication( *this, c );
    Algorithms::VectorMultiplication< VectorView< Real, Device, Index >, VectorExpression >::multiplication( *this, expression );
    return *this;
 }
@@ -178,20 +175,8 @@ VectorView< Real, Device, Index >&
 VectorView< Real, Device, Index >::
 operator/=( const VectorExpression& expression )
 {
-   //Algorithms::VectorOperations< Device >::vectorScalarMultiplication( *this, 1.0 / c );
    Algorithms::VectorDivision< VectorView< Real, Device, Index >, VectorExpression >::division( *this, expression );
    return *this;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename Real_, typename Device_, typename Index_ >
-bool
-VectorView< Real, Device, Index >::
-operator==( const VectorView< Real_, Device_, Index_ >& v )
-{
-   return ArrayView< Real, Device, Index >::operator ==( v );
 }
 
 template< typename Real,

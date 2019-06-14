@@ -56,11 +56,13 @@ template< typename Value,
 Array< Value, Device, Index >::
 Array( Value* data,
        const IndexType& size )
-: size( size ),
-  data( data ),
-  allocationPointer( 0 ),
+: size( 0 ),
+  data( nullptr ),
+  allocationPointer( nullptr ),
   referenceCounter( 0 )
 {
+   this->setSize( size );
+   Algorithms::ArrayOperations< Device >::copyMemory( this->getData(), data, size );
 }
 
 template< typename Value,
@@ -73,6 +75,7 @@ Array( const Array< Value, Device, Index >& array )
   allocationPointer( nullptr ),
   referenceCounter( 0 )
 {
+   std::cerr << "==================" << std::endl;
    this->setSize( array.getSize() );
    Algorithms::ArrayOperations< Device >::copyMemory( this->getData(), array.getData(), array.getSize() );
 }
@@ -83,30 +86,19 @@ template< typename Value,
 Array< Value, Device, Index >::
 Array( Array< Value, Device, Index >& array,
        const IndexType& begin,
-       const IndexType& size )
+       IndexType size )
 : size( size ),
-  data( &array.getData()[ begin ] ),
-  allocationPointer( array.allocationPointer ),
+  data( nullptr ),
+  allocationPointer( nullptr ),
   referenceCounter( 0 )
 {
-   TNL_ASSERT_TRUE( array.getData(), "Empty arrays cannot be bound." );
+   if( size == -1 )
+      size = array.getSize() - begin;
    TNL_ASSERT_LT( begin, array.getSize(), "Begin of array is out of bounds." );
    TNL_ASSERT_LE( begin + size, array.getSize(), "End of array is out of bounds." );
 
-   if( ! this->size )
-      this->size = array.getSize() - begin;
-   if( array.allocationPointer )
-   {
-      if( array.referenceCounter )
-      {
-         this->referenceCounter = array.referenceCounter;
-         *this->referenceCounter += 1;
-      }
-      else
-      {
-         this->referenceCounter = array.referenceCounter = new int( 2 );
-      }
-   }
+   this->setSize( size );
+   Algorithms::ArrayOperations< Device >::copyMemory( this->getData(), &array.getData()[ begin ], size );
 }
 
 template< typename Value,
@@ -665,6 +657,28 @@ Array< Value, Device, Index >::
 empty() const
 {
    return ( data == nullptr );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+void Array< Value, Device, Index >::save( const String& fileName ) const
+{
+   File file;
+   file.open( fileName, std::ios_base::out );
+   file << *this;
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+void
+Array< Value, Device, Index >::
+load( const String& fileName )
+{
+   File file;
+   file.open( fileName, std::ios_base::in );
+   file >> *this;
 }
 
 template< typename Value,

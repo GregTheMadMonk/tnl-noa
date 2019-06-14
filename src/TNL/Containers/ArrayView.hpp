@@ -380,6 +380,28 @@ std::ostream& operator<<( std::ostream& str, const ArrayView< Value, Device, Ind
    return str;
 }
 
+template< typename Value,
+          typename Device,
+          typename Index >
+void ArrayView< Value, Device, Index >::save( const String& fileName ) const
+{
+   File file;
+   file.open( fileName, std::ios_base::out );
+   file << *this;
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+void
+ArrayView< Value, Device, Index >::
+load( const String& fileName )
+{
+   File file;
+   file.open( fileName, std::ios_base::in );
+   file >> *this;
+}
+
 // Serialization of array views into binary files.
 template< typename Value, typename Device, typename Index >
 File& operator<<( File& file, const ArrayView< Value, Device, Index > view )

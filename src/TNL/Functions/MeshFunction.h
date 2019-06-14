@@ -133,7 +133,7 @@ class MeshFunction :
       __cuda_callable__
       const RealType& operator[]( const IndexType& meshEntityIndex ) const;
 
-      ThisType& operator = ( const ThisType& f );
+      MeshFunction& operator = ( const MeshFunction& f );
 
       template< typename Function >
       MeshFunction& operator = ( const Function& f );

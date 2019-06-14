@@ -90,16 +90,9 @@ class Array
       /**
        * \brief Constructor with data pointer and size.
        *
-       * In this case, the Array just encapsulates the pointer \e data. No
-       * deallocation is done in destructor.
-       *
-       * This behavior of the Array is obsolete and \ref ArrayView should be used
-       * instead.
-       *
        * \param data Pointer to data.
-       * \param size Number of array elements.
+       * \param size Number of array elements to be copied to the array.
        */
-      [[deprecated("Binding functionality of Array is deprecated, ArrayView should be used instead.")]]
       Array( Value* data,
              const IndexType& size );
 
@@ -111,19 +104,15 @@ class Array
       explicit Array( const Array& array );
 
       /**
-       * \brief Bind constructor .
+       * \brief Copy constructor .
        *
-       * The constructor does not make a deep copy, but binds to the supplied array.
-       * This is also obsolete, \ref ArraView should be used instead.
-       *
-       * \param array is an array that is to be bound.
-       * \param begin is the first index which should be bound.
-       * \param size is number of array elements that should be bound.
+       * \param array is an array that is to be copied.
+       * \param begin is the first index which should be copied.
+       * \param size is number of array elements that should be copied.
        */
-      [[deprecated("Binding functionality of Array is deprecated, ArrayView should be used instead.")]]
       Array( Array& array,
              const IndexType& begin,
-             const IndexType& size = 0 );
+             IndexType size = -1 );
 
       /**
        * \brief Move constructor.
@@ -550,6 +539,19 @@ class Array
        */
       __cuda_callable__
       bool empty() const;
+
+      /**
+       * \brief Method for saving the object to a file \e fileName as a binary data.
+       *
+       * \param fileName file name.
+       */
+      void save( const String& fileName ) const;
+      /**
+       * Method for loading the object from a file \e fileName as a binary data.
+       *
+       * \param fileName file name
+       */
+      void load( const String& fileName );
 
       /** \brief Basic destructor. */
       ~Array();

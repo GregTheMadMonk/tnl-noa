@@ -19,6 +19,12 @@
 namespace TNL {
 namespace Containers {
 
+template< typename Real, typename Device, typename Index >
+class Vector;
+
+template< int Size, typename Real >
+class StaticVector;
+
 template< typename Real = double,
           typename Device = Devices::Host,
           typename Index = int >
@@ -121,9 +127,6 @@ public:
 
    template< typename VectorExpression >
    VectorView& operator/=( const VectorExpression& expression );
-
-   template< typename Real_, typename Device_, typename Index_ >
-   bool operator==( const VectorView< Real_, Device_, Index_ >& v );
 
    template< typename Real_, typename Device_, typename Index_ >
    bool operator!=( const VectorView< Real_, Device_, Index_ >& v );

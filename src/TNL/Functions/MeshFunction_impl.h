@@ -405,7 +405,7 @@ template< typename Mesh,
           typename Real >
 MeshFunction< Mesh, MeshEntityDimension, Real >&
 MeshFunction< Mesh, MeshEntityDimension, Real >::
-operator = ( const ThisType& f )
+operator = ( const MeshFunction& f )
 {
    this->setMesh( f.getMeshPointer() );
    this->getData() = f.getData();

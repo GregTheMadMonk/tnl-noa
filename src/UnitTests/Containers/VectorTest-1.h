@@ -51,18 +51,16 @@ TYPED_TEST( VectorTest, constructors )
    if( std::is_same< typename VectorType::DeviceType, Devices::Host >::value ) {
       typename VectorType::ValueType data[ 10 ];
       VectorType w( data, 10 );
-      EXPECT_EQ( w.getData(), data );
+      EXPECT_NE( w.getData(), data );
 
       VectorType z1( w );
-      //EXPECT_EQ( z1.getData(), data );
+      EXPECT_NE( z1.getData(), data );
       EXPECT_EQ( z1.getSize(), 10 );
 
       VectorType z2( w, 1 );
-      EXPECT_EQ( z2.getData(), data + 1 );
       EXPECT_EQ( z2.getSize(), 9 );
 
       VectorType z3( w, 2, 3 );
-      EXPECT_EQ( z3.getData(), data + 2 );
       EXPECT_EQ( z3.getSize(), 3 );
    }
 

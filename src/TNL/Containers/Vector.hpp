@@ -248,12 +248,11 @@ Vector< Real, Device, Index >::operator = ( const VectorExpression& expression )
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename VectorT >
+   template< typename Real_, typename Device_, typename Index_ >
 Vector< Real, Device, Index >&
-Vector< Real, Device, Index >::
-operator -= ( const VectorT& vector )
+Vector< Real, Device, Index >::operator = ( const Vector< Real_, Device_, Index_ >& vector )
 {
-   this->addVector( vector, -1.0 );
+   Array< Real, Device, Index >::operator=( vector );
    return *this;
 }
 
@@ -262,9 +261,9 @@ template< typename Real,
           typename Index >
    template< typename Real_, typename Device_, typename Index_ >
 Vector< Real, Device, Index >&
-Vector< Real, Device, Index >::operator = ( const Vector< Real_, Device_, Index_ >& vector )
+Vector< Real, Device, Index >::operator = ( const VectorView< Real_, Device_, Index_ >& view )
 {
-   Array< Real, Device, Index >::operator=( vector );
+   Array< Real, Device, Index >::operator=( view );
    return *this;
 }
 

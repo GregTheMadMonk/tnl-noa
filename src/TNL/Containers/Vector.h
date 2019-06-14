@@ -99,7 +99,7 @@ public:
     */
    Vector( Vector& vector,
            const IndexType& begin = 0,
-           const IndexType& size = 0 );
+           const IndexType& size = -1 );
 
    /**
     * \brief Move constructor.
