@@ -11,7 +11,6 @@
 #pragma once
 
 #include <TNL/Containers/Array.h>
-#include <TNL/Containers/VectorView.h>
 #include <TNL/Containers/Algorithms/PrefixSumType.h>
 
 namespace TNL {
