@@ -82,7 +82,7 @@ set( CMAKE_CXX_STANDARD_REQUIRED ON )
 set( CMAKE_CXX_EXTENSIONS OFF )
 
 # set Debug/Release options
-set( CMAKE_CXX_FLAGS "-std=c++14 -pthread -Wall -Wno-unused-local-typedefs -Wno-unused-variable" )
+set( CMAKE_CXX_FLAGS "-pthread -Wall -Wno-unused-local-typedefs -Wno-unused-variable" )
 set( CMAKE_CXX_FLAGS_DEBUG "-g" )
 set( CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -mtune=native -DNDEBUG" )
 #set( CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -mtune=native -DNDEBUG -ftree-vectorizer-verbose=1 -ftree-vectorize -fopt-info-vec-missed -funroll-loops" )
