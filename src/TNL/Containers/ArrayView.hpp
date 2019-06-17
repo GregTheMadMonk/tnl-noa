@@ -93,7 +93,7 @@ typename ArrayView< Value, Device, Index >::ViewType
 ArrayView< Value, Device, Index >::
 getView( const IndexType begin, IndexType end )
 {
-   if( end == -1 )
+   if( end == 0 )
       end = this->getSize();
    return ViewType( &getData()[ begin ], end - begin );;
 }
@@ -105,7 +105,7 @@ typename ArrayView< Value, Device, Index >::ConstViewType
 ArrayView< Value, Device, Index >::
 getConstView( const IndexType begin, IndexType end ) const
 {
-   if( end == -1 )
+   if( end == 0 )
       end = this->getSize();
    return ConstViewType( &getData()[ begin ], end - begin );
 }
@@ -302,7 +302,7 @@ ArrayView< Value, Device, Index >::
 setValue( Value value, const Index begin, Index end )
 {
    TNL_ASSERT_GT( size, 0, "Attempted to set value to an empty array view." );
-   if( end == -1 )
+   if( end == 0 )
       end = this->getSize();
    Algorithms::ArrayOperations< Device >::setMemory( &getData()[ begin ], value, end - begin );
 }
@@ -322,7 +322,7 @@ evaluate( const Function& f, const Index begin, Index end )
       d[ i ] = f( i );
    };
 
-   if( end == -1 )
+   if( end == 0 )
       end = this->getSize();
 
    ParallelFor< DeviceType >::exec( begin, end, eval );
@@ -337,7 +337,7 @@ containsValue( Value value,
                const Index begin,
                Index end ) const
 {
-   if( end == -1 )
+   if( end == 0 )
       end = this->getSize();
    return Algorithms::ArrayOperations< Device >::containsValue( &this->getData()[ begin ], end - begin, value );
 }
@@ -351,7 +351,7 @@ containsOnlyValue( Value value,
                    const Index begin,
                    Index end  ) const
 {
-   if( end == -1 )
+   if( end == 0 )
       end = this->getSize();
    return Algorithms::ArrayOperations< Device >::containsOnlyValue( &this->getData()[ begin ], end - begin, value );
 }

@@ -143,7 +143,7 @@ typename Vector< Real, Device, Index >::ViewType
 Vector< Real, Device, Index >::
 getView( IndexType begin, IndexType end )
 {
-   if( end == -1 )
+   if( end == 0 )
       end = this->getSize();
    return ViewType( &this->getData()[ begin ], end - begin );
 }
@@ -155,7 +155,7 @@ typename Vector< Real, Device, Index >::ConstViewType
 Vector< Real, Device, Index >::
 getConstView( IndexType begin, IndexType end ) const
 {
-   if( end == -1 )
+   if( end == 0 )
       end = this->getSize();
    return ConstViewType( &this->getData()[ begin ], end - begin );
 }
@@ -493,7 +493,7 @@ void
 Vector< Real, Device, Index >::
 prefixSum( const IndexType begin, const IndexType end )
 {
-   if( begin == -1 && end == -1 )
+   if( begin == 0 && end == 0 )
       Algorithms::VectorOperations< Device >::template prefixSum< Type >( *this, 0, this->getSize() );
    else
       Algorithms::VectorOperations< Device >::template prefixSum< Type >( *this, begin, end );
@@ -508,7 +508,7 @@ void
 Vector< Real, Device, Index >::
 segmentedPrefixSum( FlagsArray& flags, const IndexType begin, const IndexType end )
 {
-   if( begin == -1 && end == -1 )
+   if( begin == 0 && end == 0 )
       Algorithms::VectorOperations< Device >::template segmentedPrefixSum< Type >( *this, flags, 0, this->getSize() );
    else
       Algorithms::VectorOperations< Device >::template SegmentedPrefixSum< Type >( *this, flags, begin, end );

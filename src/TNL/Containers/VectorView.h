@@ -79,16 +79,30 @@ public:
    VectorView( const Expressions::UnaryExpressionTemplate< T, Operation >& expression );
 
    /**
-    * \brief Returns a modifiable view of the array view.
+    * \brief Returns a modifiable view of the vector view.
+    *
+    * If \e begin and \e end is set, view for sub-interval [ \e begin, \e end )
+    * is returned.
+    *
+    * \param begin is the beginning of the VectorView sub-interval, 0 by default.
+    * \param end is the end of the VectorView sub-interval. Default value is 0 which is,
+    * however, replaced with the VectorView size.
     */
    __cuda_callable__
-   ViewType getView( const IndexType begin = 0, IndexType end = -1 );
+   ViewType getView( const IndexType begin = 0, IndexType end = 0 );
 
    /**
-    * \brief Returns a non-modifiable view of the array view.
+    * \brief Returns a non-modifiable view of the vector view.
+    *
+    * If \e begin and \e end is set, view for sub-interval [ \e begin, \e end )
+    * is returned.
+    *
+    * \param begin is the beginning of the sub-interval, 0 by default.
+    * \param end is the end of the sub-interval. Default value is 0 which is,
+    * however, replaced with the VectorView size.
     */
    __cuda_callable__
-   ConstViewType getConstView( const IndexType begin = 0, IndexType end = -1 ) const;
+   ConstViewType getConstView( const IndexType begin = 0, IndexType end = 0 ) const;
 
 
    static String getType();
@@ -193,20 +207,20 @@ public:
                     Scalar3 thisMultiplicator = 1.0 );
 
    template< Algorithms::PrefixSumType Type = Algorithms::PrefixSumType::Inclusive >
-   void prefixSum( const IndexType begin = - 1, const IndexType end = -1 );
+   void prefixSum( const IndexType begin = 0, const IndexType end = 0 );
 
    template< Algorithms::PrefixSumType Type = Algorithms::PrefixSumType::Inclusive,
              typename FlagsArray >
-   void segmentedPrefixSum( FlagsArray& flags, const IndexType begin = -1, const IndexType end = -1 );
+   void segmentedPrefixSum( FlagsArray& flags, const IndexType begin = 0, const IndexType end = 0 );
 
    template< Algorithms::PrefixSumType Type = Algorithms::PrefixSumType::Inclusive,
              typename VectorExpression >
-   void prefixSum( const VectorExpression& expression, const IndexType begin = - 1, const IndexType end = -1 );
+   void prefixSum( const VectorExpression& expression, const IndexType begin = 0, const IndexType end = 0 );
 
    template< Algorithms::PrefixSumType Type = Algorithms::PrefixSumType::Inclusive,
              typename VectorExpression,
              typename FlagsArray >
-   void segmentedPrefixSum( const VectorExpression& expression, FlagsArray& flags, const IndexType begin = -1, const IndexType end = -1 );
+   void segmentedPrefixSum( const VectorExpression& expression, FlagsArray& flags, const IndexType begin = 0, const IndexType end = 0 );
 };
 
 } // namespace Containers

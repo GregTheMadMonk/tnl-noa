@@ -337,7 +337,7 @@ typename Array< Value, Device, Index >::ViewType
 Array< Value, Device, Index >::
 getView( IndexType begin, IndexType end )
 {
-   if( end == -1 )
+   if( end == 0 )
       end = getSize();
    return ViewType( &getData()[ begin ], end - begin );
 }
@@ -349,7 +349,7 @@ typename Array< Value, Device, Index >::ConstViewType
 Array< Value, Device, Index >::
 getConstView( IndexType begin, IndexType end ) const
 {
-   if( end == -1 )
+   if( end == 0 )
       end = getSize();
    return ConstViewType( &getData()[ begin ], end - begin );
 }
@@ -598,7 +598,7 @@ void Array< Value, Device, Index >::setValue( const ValueType& e,
                                               Index end )
 {
    TNL_ASSERT_TRUE( this->getData(), "Attempted to set a value of an empty array." );
-   if( end == -1 )
+   if( end == 0 )
       end = this->getSize();
    Algorithms::ArrayOperations< Device >::setMemory( &this->getData()[ begin ], e, end - begin );
 }
@@ -625,7 +625,7 @@ containsValue( const Value& v,
                Index end ) const
 {
    TNL_ASSERT_TRUE( this->getData(), "Attempted to check a value of an empty array." );
-   if( end == -1 )
+   if( end == 0 )
       end = this->getSize();
 
    return Algorithms::ArrayOperations< Device >::containsValue( &this->getData()[ begin ], end - begin, v );
@@ -641,7 +641,7 @@ containsOnlyValue( const Value& v,
                    Index end ) const
 {
    TNL_ASSERT_TRUE( this->getData(), "Attempted to check a value of an empty array." );
-   if( end == -1 )
+   if( end == 0 )
       end = this->getSize();
 
    return Algorithms::ArrayOperations< Device >::containsOnlyValue( &this->getData()[ begin ], end - begin, v );
