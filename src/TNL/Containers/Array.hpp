@@ -75,7 +75,6 @@ Array( const Array< Value, Device, Index >& array )
   allocationPointer( nullptr ),
   referenceCounter( 0 )
 {
-   std::cerr << "==================" << std::endl;
    this->setSize( array.getSize() );
    Algorithms::ArrayOperations< Device >::copyMemory( this->getData(), array.getData(), array.getSize() );
 }
