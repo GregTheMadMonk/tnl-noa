@@ -28,7 +28,6 @@ class StaticArray
    public:
    using ValueType = Value;
    using IndexType = int;
-   enum { size = Size };
 
    /**
     * \brief Gets size of this array.
@@ -187,9 +186,9 @@ template< typename Value >
 class StaticArray< 1, Value >
 {
    public:
-   typedef Value ValueType;
-   typedef int     IndexType;
-   enum { size = 1 };
+   using ValueType = Value;
+   using IndexType = int;
+   enum { Size = 1 };
 
    /**
     * \brief Gets size of this array.
@@ -206,7 +205,7 @@ class StaticArray< 1, Value >
    // reference: https://stackoverflow.com/q/4610503
    template< typename _unused = void >
    __cuda_callable__
-   inline StaticArray( const Value v[ size ] );
+   inline StaticArray( const Value v[ Size ] );
 
    /** \brief See StaticArray::StaticArray(const Value& v).*/
    __cuda_callable__
@@ -214,7 +213,7 @@ class StaticArray< 1, Value >
 
    /** \brief See StaticArray::StaticArray( const StaticArray< Size, Value >& v ).*/
    __cuda_callable__
-   inline StaticArray( const StaticArray< size, Value >& v );
+   inline StaticArray( const StaticArray< Size, Value >& v );
 
    inline StaticArray( const std::initializer_list< Value > &elems );
 
@@ -286,7 +285,7 @@ class StaticArray< 1, Value >
    std::ostream& write( std::ostream& str, const char* separator = " " ) const;
 
    protected:
-   Value data[ size ];
+   Value data[ Size ];
 };
 
 /**
@@ -296,9 +295,9 @@ template< typename Value >
 class StaticArray< 2, Value >
 {
    public:
-   typedef Value ValueType;
-   typedef int     IndexType;
-   enum { size = 2 };
+   using ValueType = Value;
+   using IndexType = int;
+   enum { Size = 2 };
 
    /**
     * \brief Gets size of this array.
@@ -315,7 +314,7 @@ class StaticArray< 2, Value >
    // reference: https://stackoverflow.com/q/4610503
    template< typename _unused = void >
    __cuda_callable__
-   inline StaticArray( const Value v[ size ] );
+   inline StaticArray( const Value v[ Size ] );
 
    /** \brief See StaticArray::StaticArray(const Value& v).*/
    __cuda_callable__
@@ -332,7 +331,7 @@ class StaticArray< 2, Value >
 
    /** \brief See StaticArray::StaticArray( const StaticArray< Size, Value >& v ).*/
    __cuda_callable__
-   inline StaticArray( const StaticArray< size, Value >& v );
+   inline StaticArray( const StaticArray< Size, Value >& v );
 
    inline StaticArray( const std::initializer_list< Value > &elems );
 
@@ -411,7 +410,7 @@ class StaticArray< 2, Value >
    std::ostream& write( std::ostream& str, const char* separator = " " ) const;
 
    protected:
-   Value data[ size ];
+   Value data[ Size ];
 };
 
 /**
@@ -421,9 +420,9 @@ template< typename Value >
 class StaticArray< 3, Value >
 {
    public:
-   typedef Value ValueType;
-   typedef int     IndexType;
-   enum { size = 3 };
+   using ValueType = Value;
+   using IndexType = int;
+   enum { Size = 3 };
 
    /**
     * \brief Gets size of this array.
@@ -440,7 +439,7 @@ class StaticArray< 3, Value >
    // reference: https://stackoverflow.com/q/4610503
    template< typename _unused = void >
    __cuda_callable__
-   inline StaticArray( const Value v[ size ] );
+   inline StaticArray( const Value v[ Size ] );
 
    /** \brief See StaticArray::StaticArray(const Value& v).*/
    __cuda_callable__
@@ -458,7 +457,7 @@ class StaticArray< 3, Value >
 
    /** \brief See StaticArray::StaticArray( const StaticArray< Size, Value >& v ).*/
    __cuda_callable__
-   inline StaticArray( const StaticArray< size, Value >& v );
+   inline StaticArray( const StaticArray< Size, Value >& v );
 
    StaticArray( const std::initializer_list< Value > &elems );
 
@@ -545,7 +544,7 @@ class StaticArray< 3, Value >
    std::ostream& write( std::ostream& str, const char* separator = " " ) const;
 
    protected:
-   Value data[ size ];
+   Value data[ Size ];
 };
 
 template< int Size, typename Value >

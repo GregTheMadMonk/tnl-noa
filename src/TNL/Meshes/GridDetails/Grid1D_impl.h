@@ -29,7 +29,7 @@ template< typename Real,
 Grid< 1, Real, Device, Index >::Grid()
 : numberOfCells( 0 ),
   numberOfVertices( 0 ),
-        distGrid(nullptr)
+  distGrid(nullptr)
 {
 }
 

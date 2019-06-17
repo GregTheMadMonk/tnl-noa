@@ -21,7 +21,7 @@ template< typename Value >
 __cuda_callable__
 constexpr int StaticArray< 3, Value >::getSize()
 {
-   return size;
+   return Size;
 }
 
 template< typename Value >
@@ -33,7 +33,7 @@ inline StaticArray< 3, Value >::StaticArray()
 template< typename Value >
    template< typename _unused >
 __cuda_callable__
-inline StaticArray< 3, Value >::StaticArray( const Value v[ size ] )
+inline StaticArray< 3, Value >::StaticArray( const Value v[ Size ] )
 {
    data[ 0 ] = v[ 0 ];
    data[ 1 ] = v[ 1 ];
@@ -60,7 +60,7 @@ inline StaticArray< 3, Value >::StaticArray( const Value& v1, const Value& v2, c
 
 template< typename Value >
 __cuda_callable__
-inline StaticArray< 3, Value >::StaticArray( const StaticArray< size, Value >& v )
+inline StaticArray< 3, Value >::StaticArray( const StaticArray< Size, Value >& v )
 {
    data[ 0 ] = v[ 0 ];
    data[ 1 ] = v[ 1 ];
@@ -79,7 +79,7 @@ template< typename Value >
 String StaticArray< 3, Value >::getType()
 {
    return String( "Containers::StaticArray< " ) +
-          convertToString( size ) +
+          convertToString( Size ) +
           String( ", " ) +
           TNL::getType< Value >() +
           String( " >" );
@@ -104,7 +104,7 @@ __cuda_callable__
 inline const Value& StaticArray< 3, Value >::operator[]( int i ) const
 {
    TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
-   TNL_ASSERT_LT( i, size, "Element index is out of bounds." );
+   TNL_ASSERT_LT( i, Size, "Element index is out of bounds." );
    return data[ i ];
 }
 
@@ -113,7 +113,7 @@ __cuda_callable__
 inline Value& StaticArray< 3, Value >::operator[]( int i )
 {
    TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
-   TNL_ASSERT_LT( i, size, "Element index is out of bounds." );
+   TNL_ASSERT_LT( i, Size, "Element index is out of bounds." );
    return data[ i ];
 }
 
@@ -184,7 +184,7 @@ template< typename Value >
 __cuda_callable__
 bool StaticArray< 3, Value >::operator == ( const Array& array ) const
 {
-   return( ( int ) size == ( int ) Array::size &&
+   return( ( int ) Size == ( int ) Array::getSize() &&
            data[ 0 ] == array[ 0 ] &&
            data[ 1 ] == array[ 1 ] &&
            data[ 2 ] == array[ 2 ] );
@@ -221,14 +221,14 @@ void StaticArray< 3, Value >::setValue( const ValueType& val )
 template< typename Value >
 bool StaticArray< 3, Value >::save( File& file ) const
 {
-   file.save< Value, Value, Devices::Host >( data, size );
+   file.save< Value, Value, Devices::Host >( data, Size );
    return true;
 }
 
 template< typename Value >
 bool StaticArray< 3, Value >::load( File& file)
 {
-   file.load< Value, Value, Devices::Host >( data, size );
+   file.load< Value, Value, Devices::Host >( data, Size );
    return true;
 }
 
