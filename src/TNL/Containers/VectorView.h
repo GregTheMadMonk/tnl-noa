@@ -142,9 +142,6 @@ public:
    template< typename VectorExpression >
    VectorView& operator/=( const VectorExpression& expression );
 
-   template< typename Real_, typename Device_, typename Index_ >
-   bool operator!=( const VectorView< Real_, Device_, Index_ >& v );
-
    /**
     * \brief Scalar product
     * @param v

@@ -375,8 +375,8 @@ TYPED_TEST( ArrayViewTest, containsOnlyValue )
 
 TYPED_TEST( ArrayViewTest, comparisonOperator )
 {
-   using ArrayType = typename TestFixture::ArrayType;
-   using ViewType = typename TestFixture::ViewType;
+   using ArrayType = Array< double >;//typename TestFixture::ArrayType;
+   using ViewType = ArrayView< double >;//typename TestFixture::ViewType;
 
    ArrayType a( 10 ), b( 10 );
    typename ArrayType::HostType a_host( 10 );

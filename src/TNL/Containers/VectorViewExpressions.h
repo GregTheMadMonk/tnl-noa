@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Expressions/ExpressionTemplates.h>
 #include <TNL/Containers/Expressions/ExpressionTemplatesOperations.h>
 #include <TNL/Containers/Expressions/Comparison.h>
@@ -173,10 +174,17 @@ bool operator==( const ET& a, const Containers::VectorView< Real, Device, Index 
    return Containers::Expressions::ComparisonEQ( a, b );
 }
 
-template< typename Real1, typename Real2, typename Device, typename Index >
-bool operator==( const Containers::VectorView< Real1, Device, Index >& a, const Containers::VectorView< Real2, Device, Index >& b )
+template< typename Real1, typename Real2, typename Device1, typename Device2, typename Index >
+bool operator==( const Containers::VectorView< Real1, Device1, Index >& a, const Containers::VectorView< Real2, Device2, Index >& b )
 {
-   return Containers::Expressions::ComparisonEQ( a, b );
+   if( a.getSize() != b.getSize() )
+      return false;
+   if( a.getSize() == 0 )
+      return true;
+   return Containers::Algorithms::ArrayOperations< Device1, Device2 >::
+            compareMemory( a.getData(),
+                           b.getData(),
+                           a.getSize() );
 }
 
 ////
@@ -193,10 +201,17 @@ bool operator!=( const ET& a, const Containers::VectorView< Real, Device, Index 
    return Containers::Expressions::ComparisonNE( a, b );
 }
 
-template< typename Real1, typename Real2, typename Device, typename Index >
-bool operator!=( const Containers::VectorView< Real1, Device, Index >& a, const Containers::VectorView< Real2, Device, Index >& b )
+template< typename Real1, typename Real2, typename Device1, typename Device2, typename Index >
+bool operator!=( const Containers::VectorView< Real1, Device1, Index >& a, const Containers::VectorView< Real2, Device2, Index >& b )
 {
-   return Containers::Expressions::ComparisonNE( a, b );
+   if( a.getSize() != b.getSize() )
+      return false;
+   if( a.getSize() == 0 )
+      return true;
+   return !Containers::Algorithms::ArrayOperations< Device1, Device2 >::
+            compareMemory( a.getData(),
+                           b.getData(),
+                           a.getSize() );
 }
 
 ////

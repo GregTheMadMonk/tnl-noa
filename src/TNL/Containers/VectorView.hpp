@@ -179,16 +179,27 @@ operator/=( const VectorExpression& expression )
    return *this;
 }
 
+/*template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename Real_, typename Device_, typename Index_ >
+bool
+VectorView< Real, Device, Index >::
+operator==( const VectorView< Real_, Device_, Index_ >& v ) const
+{
+   return ArrayView< Real, Device, Index >::operator ==( v );
+}
+
 template< typename Real,
           typename Device,
           typename Index >
    template< typename Real_, typename Device_, typename Index_ >
 bool
 VectorView< Real, Device, Index >::
-operator!=( const VectorView< Real_, Device_, Index_ >& v )
+operator!=( const VectorView< Real_, Device_, Index_ >& v ) const
 {
    return !ArrayView< Real, Device, Index >::operator ==( v );
-}
+}*/
 
 template< typename Real,
           typename Device,
