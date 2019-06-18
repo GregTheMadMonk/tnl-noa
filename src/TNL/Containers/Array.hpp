@@ -91,7 +91,7 @@ Array( Array< Value, Device, Index >& array,
   allocationPointer( nullptr ),
   referenceCounter( 0 )
 {
-   if( size == -1 )
+   if( size == 0 )
       size = array.getSize() - begin;
    TNL_ASSERT_LT( begin, array.getSize(), "Begin of array is out of bounds." );
    TNL_ASSERT_LE( begin + size, array.getSize(), "End of array is out of bounds." );
