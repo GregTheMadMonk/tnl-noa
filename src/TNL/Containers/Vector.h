@@ -62,10 +62,7 @@ public:
    Vector( const IndexType& size );
 
    /**
-    * \brief Constructor with data pointer and size.
-    *
-    * In this case, the Vector just encapsulates the pointer \e data. No
-    * deallocation is done in destructor.
+    * \brief Deep copy constructor with data pointer and size.
     *
     * This behavior of the Vector is deprecated and \ref VectorView should be used
     * instead.
@@ -74,7 +71,7 @@ public:
     * \param size Number of vector elements.
     */
    Vector( Real* data,
-          const IndexType& size );
+           const IndexType& size );
 
    /**
     * \brief Copy constructor.
@@ -87,10 +84,7 @@ public:
    Vector( const Vector< Real_, Device_, Index_ >& vector );
 
    /**
-    * \brief Bind constructor .
-    *
-    * The constructor does not make a deep copy, but binds to the supplied vector.
-    * This is also deprecated, \ref VectorView should be used instead.
+    * \brief Deep copy constructor with other vector.
     *
     * \param vector is an vector that is to be bound.
     * \param begin is the first index which should be bound.
@@ -188,10 +182,6 @@ public:
    void addElement( const IndexType i,
                     const RealType& value,
                     const Scalar thisElementMultiplicator );
-
-   __cuda_callable__ Real& operator[]( const Index& i );
-
-   __cuda_callable__ const Real& operator[]( const Index& i ) const;
 
    Vector& operator = ( const Vector& v );
 

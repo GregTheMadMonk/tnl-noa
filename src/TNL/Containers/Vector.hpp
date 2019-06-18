@@ -205,28 +205,6 @@ addElement( const IndexType i,
 template< typename Real,
           typename Device,
           typename Index >
-__cuda_callable__
-inline Real&
-Vector< Real, Device, Index >::
-operator[]( const Index& i )
-{
-   return Array< Real, Device, Index >::operator[]( i );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-__cuda_callable__
-inline const Real&
-Vector< Real, Device, Index >::
-operator[]( const Index& i ) const
-{
-   return Array< Real, Device, Index >::operator[]( i );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
 Vector< Real, Device, Index >&
 Vector< Real, Device, Index >::operator = ( const Vector& vector )
 {
