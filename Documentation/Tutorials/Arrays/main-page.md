@@ -62,7 +62,7 @@ The result is:
 
 ### Array views <a name="array_views"></a>
 
-Because of the data sharing, TNL Array is relatively complicated structure. In many situations, we prefer lightweight structure which only encapsulates the data pointer and keeps information about the data size. Passing array structure to GPU kernel can be one example. For this purpose there is `ArrayView` in TNL. It is templated structure having the same template parameters as `Array` (it means `Value`, `Device` and `Index`). In fact, it is recommended to use `Array` only for the data allocation and to use `ArrayView` for most of the operations with the data since array view offer better functionality (for example `ArrayView` can be captured by lambda functions in CUDA while `Array` cannot). The following code snippet shows how to create an array view.
+Because of the data sharing, TNL Array is relatively complicated structure. In many situations, we prefer lightweight structure which only encapsulates the data pointer and keeps information about the data size. Passing array structure to GPU kernel can be one example. For this purpose there is `ArrayView` in TNL. It is templated structure having the same template parameters as `Array` (it means `Value`, `Device` and `Index`). The following code snippet shows how to create an array view.
 
 \include ArrayView-1.cpp
 
