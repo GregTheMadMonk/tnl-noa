@@ -210,7 +210,7 @@ class Array
        * Releases old data and binds this array with new \e _data. Also sets new
        * \e _size of this array.
        *
-       * This method is obsolete, use \ref ArrayView instead.
+       * This method is deprecated, use \ref ArrayView instead.
        *
        * \param _data Pointer to new data.
        * \param _size Size of new _data. Number of elements.
@@ -225,7 +225,7 @@ class Array
        * Releases old data and binds this array with new \e array starting at
        * position \e begin. Also sets new \e size of this array.
        *
-       * This method is obsolete, use \ref ArrayView instead.
+       * This method is deprecated, use \ref ArrayView instead.
        *
        * \tparam ArrayT Type of array.
        * \param array Reference to a new array.
@@ -244,7 +244,7 @@ class Array
        * Releases old data and binds this array with a static array of size \e
        * Size.
        *
-       * This method is obsolete, use \ref ArrayView instead.
+       * This method is deprecated, use \ref ArrayView instead.
        *
        * \tparam Size Size of array.
        * \param array Reference to a static array.
@@ -273,7 +273,7 @@ class Array
        *
        * \param begin is the beginning of the sub-interval, 0 by default.
        * \param end is the end of the sub-interval. Default value is 0 which is,
-       * however, replaced with the ArrayView size.
+       * however, replaced with the Array size.
        */
       ConstViewType getConstView( IndexType begin = 0, IndexType end = 0 ) const;
 
@@ -504,7 +504,7 @@ class Array
       /**
        * \brief Checks if there is an element with value \e v.
        *
-       * Checks, if there is an element with value \e value in the ArrayView or in
+       * Checks, if there is an element with value \e value in the Array or in
        * its sub-interval [\e begin, \e end ).
        *
        * \param v is reference to the value.
@@ -521,13 +521,13 @@ class Array
       /**
        * \brief Checks if all elements have the same value \e v.
        *
-       * Checks, if all elements in the ArrayView or in its sub-interval [\e begin, \e end )
+       * Checks, if all elements in the Array or in its sub-interval [\e begin, \e end )
        * have the same value \e value.
        *
        * \param v Reference to a value.
        * \param begin is the beginning of the sub-interval, 0 by default.
        * \param end is the end of the sub-interval. Default value is 0 which is,
-       * however, replaced with the ArrayView size.
+       * however, replaced with the Array size.
        *
        * \return True if **all** all array elements  or elements in sub-interval [\e begin, \e end ) have value \e v.
        */
