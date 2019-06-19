@@ -185,10 +185,12 @@ class StaticArray
 template< typename Value >
 class StaticArray< 1, Value >
 {
+   protected:
+      enum { Size = 1 };
+
    public:
    using ValueType = Value;
    using IndexType = int;
-   enum { Size = 1 };
 
    /**
     * \brief Gets size of this array.
@@ -294,10 +296,12 @@ class StaticArray< 1, Value >
 template< typename Value >
 class StaticArray< 2, Value >
 {
+   protected:
+   enum { Size = 2 };
+
    public:
    using ValueType = Value;
    using IndexType = int;
-   enum { Size = 2 };
 
    /**
     * \brief Gets size of this array.
@@ -419,10 +423,11 @@ class StaticArray< 2, Value >
 template< typename Value >
 class StaticArray< 3, Value >
 {
+   protected:
+      enum { Size = 3 };
    public:
    using ValueType = Value;
    using IndexType = int;
-   enum { Size = 3 };
 
    /**
     * \brief Gets size of this array.
