@@ -69,7 +69,11 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorVariable, Vector
    using RealType = typename T1::RealType;
    using IsExpressionTemplate = bool;
    static_assert( IsStaticType< T1 >::value == IsStaticType< T2 >::value, "Attempt to mix static and non-static operands in binary expression templates" );
+   static_assert( T1::getSize() == T2::getSize(), "Attempt to mix static operands with different sizes." );
+
    static constexpr bool isStatic() { return true; }
+
+   static constexpr int getSize() { return T1::getSize(); };
 
    __cuda_callable__
    StaticBinaryExpressionTemplate( const T1& a, const T2& b ): op1( a ), op2( b ){}
@@ -82,19 +86,33 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorVariable, Vector
 
    RealType getElement( const int i ) const
    {
-       return Operation< typename T1::RealType, typename T2::RealType >::evaluate( op1[ i ], op2[ i ] );
+      TNL_ASSERT_LT( i, this->getSize(), "Asking for element with index larger than expression size." );
+      return Operation< typename T1::RealType, typename T2::RealType >::evaluate( op1[ i ], op2[ i ] );
    }
 
    __cuda_callable__
    RealType operator[]( const int i ) const
    {
-       return Operation< typename T1::RealType, typename T2::RealType >::evaluate( op1[ i ], op2[ i ] );
+      TNL_ASSERT_LT( i, this->getSize(), "Asking for element with index larger than expression size." );
+      return Operation< typename T1::RealType, typename T2::RealType >::evaluate( op1[ i ], op2[ i ] );
    }
 
    __cuda_callable__
-   int getSize() const
+   RealType x() const
    {
-       return op1.getSize();
+      return (*this)[ 0 ];
+   }
+
+   __cuda_callable__
+   RealType y() const
+   {
+      return (*this)[ 1 ];
+   }
+
+   __cuda_callable__
+   RealType z() const
+   {
+      return (*this)[ 2 ];
    }
 
    protected:
@@ -111,7 +129,11 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorVariable, Arithm
 
    using RealType = typename T1::RealType;
    using IsExpressionTemplate = bool;
+
    static constexpr bool isStatic() { return true; }
+
+   static constexpr int getSize() { return T1::getSize(); };
+
 
    __cuda_callable__
    StaticBinaryExpressionTemplate( const T1& a, const T2& b ): op1( a ), op2( b ){}
@@ -124,19 +146,33 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorVariable, Arithm
 
    RealType getElement( const int i ) const
    {
-       return Operation< typename T1::RealType, T2 >::evaluate( op1[ i ], op2 );
+      TNL_ASSERT_LT( i, this->getSize(), "Asking for element with index larger than expression size." );
+      return Operation< typename T1::RealType, T2 >::evaluate( op1[ i ], op2 );
    }
 
    __cuda_callable__
    RealType operator[]( const int i ) const
    {
-       return Operation< typename T1::RealType, T2 >::evaluate( op1[ i ], op2 );
+      TNL_ASSERT_LT( i, this->getSize(), "Asking for element with index larger than expression size." );
+      return Operation< typename T1::RealType, T2 >::evaluate( op1[ i ], op2 );
    }
 
    __cuda_callable__
-   int getSize() const
+   RealType x() const
    {
-       return op1.getSize();
+      return (*this)[ 0 ];
+   }
+
+   __cuda_callable__
+   RealType y() const
+   {
+      return (*this)[ 1 ];
+   }
+
+   __cuda_callable__
+   RealType z() const
+   {
+      return (*this)[ 2 ];
    }
 
    protected:
@@ -154,7 +190,11 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, Ve
 
    using RealType = typename T2::RealType;
    using IsExpressionTemplate = bool;
+
    static constexpr bool isStatic() { return true; }
+
+   static constexpr int getSize() { return T2::getSize(); };
+
 
    __cuda_callable__
    StaticBinaryExpressionTemplate( const T1& a, const T2& b ): op1( a ), op2( b ){}
@@ -167,19 +207,33 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, Ve
 
    RealType getElement( const int i ) const
    {
-       return Operation< T1, typename T2::RealType >::evaluate( op1, op2[ i ] );
+      TNL_ASSERT_LT( i, this->getSize(), "Asking for element with index larger than expression size." );
+      return Operation< T1, typename T2::RealType >::evaluate( op1, op2[ i ] );
    }
 
    __cuda_callable__
    RealType operator[]( const int i ) const
    {
-       return Operation< T1, typename T2::RealType >::evaluate( op1, op2[ i ] );
+      TNL_ASSERT_LT( i, this->getSize(), "Asking for element with index larger than expression size." );
+      return Operation< T1, typename T2::RealType >::evaluate( op1, op2[ i ] );
    }
 
    __cuda_callable__
-   int getSize() const
+   RealType x() const
    {
-       return op2.getSize();
+      return (*this)[ 0 ];
+   }
+
+   __cuda_callable__
+   RealType y() const
+   {
+      return (*this)[ 1 ];
+   }
+
+   __cuda_callable__
+   RealType z() const
+   {
+      return (*this)[ 2 ];
    }
 
    protected:
@@ -201,7 +255,10 @@ struct StaticUnaryExpressionTemplate< T1, Operation, Parameter, VectorVariable >
 
    using RealType = typename T1::RealType;
    using IsExpressionTemplate = bool;
+
    static constexpr bool isStatic() { return true; }
+
+   static constexpr int getSize() { return T1::getSize(); };
 
    __cuda_callable__
    StaticUnaryExpressionTemplate( const T1& a, const Parameter& p )
@@ -215,19 +272,33 @@ struct StaticUnaryExpressionTemplate< T1, Operation, Parameter, VectorVariable >
 
    RealType getElement( const int i ) const
    {
-       return Operation< typename T1::RealType >::evaluate( operand[ i ], parameter );
+      TNL_ASSERT_LT( i, this->getSize(), "Asking for element with index larger than expression size." );
+      return Operation< typename T1::RealType >::evaluate( operand[ i ], parameter );
    }
 
    __cuda_callable__
    RealType operator[]( const int i ) const
    {
-       return Operation< typename T1::RealType >::evaluate( operand[ i ], parameter );
+      TNL_ASSERT_LT( i, this->getSize(), "Asking for element with index larger than expression size." );
+      return Operation< typename T1::RealType >::evaluate( operand[ i ], parameter );
    }
 
    __cuda_callable__
-   int getSize() const
+   RealType x() const
    {
-       return operand.getSize();
+      return (*this)[ 0 ];
+   }
+
+   __cuda_callable__
+   RealType y() const
+   {
+      return (*this)[ 1 ];
+   }
+
+   __cuda_callable__
+   RealType z() const
+   {
+      return (*this)[ 2 ];
    }
 
    void set( const Parameter& p ) { parameter = p; }
@@ -247,7 +318,10 @@ struct StaticUnaryExpressionTemplate< T1, Operation, void, VectorVariable >
 {
    using RealType = typename T1::RealType;
    using IsExpressionTemplate = bool;
+
    static constexpr bool isStatic() { return true; }
+
+   static constexpr int getSize() { return T1::getSize(); };
 
    __cuda_callable__
    StaticUnaryExpressionTemplate( const T1& a ): operand( a ){}
@@ -260,19 +334,33 @@ struct StaticUnaryExpressionTemplate< T1, Operation, void, VectorVariable >
 
    RealType getElement( const int i ) const
    {
-       return Operation< typename T1::RealType >::evaluate( operand[ i ] );
+      TNL_ASSERT_LT( i, this->getSize(), "Asking for element with index larger than expression size." );
+      return Operation< typename T1::RealType >::evaluate( operand[ i ] );
    }
 
    __cuda_callable__
    RealType operator[]( const int i ) const
    {
-       return Operation< typename T1::RealType >::evaluate( operand[ i ] );
+      TNL_ASSERT_LT( i, this->getSize(), "Asking for element with index larger than expression size." );
+      return Operation< typename T1::RealType >::evaluate( operand[ i ] );
    }
 
    __cuda_callable__
-   int getSize() const
+   RealType x() const
    {
-       return operand.getSize();
+      return (*this)[ 0 ];
+   }
+
+   __cuda_callable__
+   RealType y() const
+   {
+      return (*this)[ 1 ];
+   }
+
+   __cuda_callable__
+   RealType z() const
+   {
+      return (*this)[ 2 ];
    }
 
    protected:
@@ -2181,6 +2269,7 @@ binaryOr( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOpe
 
 ////
 // Scalar product
+// TODO: Declaration with decltype does not work with g++ 8.3.0 though I think that it should
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
@@ -2188,10 +2277,11 @@ template< typename L1,
           typename R2,
           template< typename, typename > class ROperation >
 __cuda_callable__
-auto
+//auto
+typename Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >::RealType
 operator,( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
            const Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
--> decltype( TNL::sum( a * b ) )
+//-> decltype( TNL::sum( a * b ) )
 {
    return TNL::sum( a * b );
 }
@@ -2200,10 +2290,11 @@ template< typename T1,
           typename T2,
           template< typename, typename > class Operation >
 __cuda_callable__
-auto
+//auto
+typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType
 operator,( const Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& a,
            const typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
--> decltype( TNL::sum( a * b ) )
+//-> decltype( TNL::sum( a * b ) )
 {
    return TNL::sum( a * b );
 }
@@ -2214,10 +2305,11 @@ template< typename L1,
           typename R2,
           template< typename, typename > class ROperation >
 __cuda_callable__
-auto
+//auto
+typename Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >::RealType
 operator,( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a,
            const typename Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
--> decltype( TNL::sum( a * b ) )
+//-> decltype( TNL::sum( a * b ) )
 {
    return TNL::sum( a * b );
 }
@@ -2228,12 +2320,73 @@ template< typename L1,
           typename R1,
           template< typename > class ROperation >
 __cuda_callable__
-auto
+//auto
+typename Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >::RealType
 operator,( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
            const typename Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation >& b )
--> decltype( TNL::sum( a * b ) )
+//-> decltype( TNL::sum( a * b ) )
 {
    return TNL::sum( a * b );
 }
+
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation,
+          typename R1,
+          typename R2,
+          template< typename, typename > class ROperation >
+__cuda_callable__
+//auto
+typename Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >::RealType
+dot( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
+     const Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
+//-> decltype( TNL::sum( a * b ) )
+{
+   return TNL::sum( a * b );
+}
+
+template< typename T1,
+          typename T2,
+          template< typename, typename > class Operation >
+__cuda_callable__
+//auto
+typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType
+dot( const Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& a,
+     const typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
+//-> decltype( TNL::sum( a * b ) )
+{
+   return TNL::sum( a * b );
+}
+
+template< typename L1,
+          template< typename > class LOperation,
+          typename R1,
+          typename R2,
+          template< typename, typename > class ROperation >
+__cuda_callable__
+//auto
+typename Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >::RealType
+dot( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a,
+     const typename Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
+//-> decltype( TNL::sum( a * b ) )
+{
+   return TNL::sum( a * b );
+}
+
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation,
+          typename R1,
+          template< typename > class ROperation >
+__cuda_callable__
+//auto
+typename Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >::RealType
+dot( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
+     const typename Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation >& b )
+//-> decltype( TNL::sum( a * b ) )
+{
+   return TNL::sum( a * b );
+}
+
 
 } // namespace TNL
