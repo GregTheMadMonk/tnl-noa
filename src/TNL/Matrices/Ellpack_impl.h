@@ -59,9 +59,42 @@ void Ellpack< Real, Device, Index >::setDimensions( const IndexType rows,
                    << " columns = " << columns << std::endl );
    this->rows = rows;
    this->columns = columns;
+      
+   std::cout << "INSIDE setDimensions (BEFORE roundToMultiple): this->alignedRows = " << this->alignedRows << std::endl;
+   std::cout << "INSIDE setDimensions (BEFORE roundToMultiple): rows = " << rows << std::endl;
+   
+   // ERROR? RoundToMultiple can in very rare cases return a multiple, that is lower than the number of rows?
+   //          e.g. with sls.mtx, the number of rows is 1748122, but when on CUDA, roundToMultiple gives 62752.
    if( std::is_same< Device, Devices::Cuda >::value )
-      this->alignedRows = roundToMultiple( rows, Cuda::getWarpSize() );
+   {
+       std::cout << "columns = " << columns << "\tWarpSize() = " << Devices::Cuda::getWarpSize() << std::endl;
+       this->alignedRows = roundToMultiple( columns, Devices::Cuda::getWarpSize() );
+
+       // If the number of alignedRows is smaller than the number of rows, we find the 
+       //   missing number of "rows" and round it up so that is a multiple of getWarpSize()
+       //   Then add it to alignedRows and repeat until alignedRows is no longer larger than rows.
+       if( this->rows - this->alignedRows > 0 )
+       {
+           IndexType missingRows = this->rows - this->alignedRows;
+           
+           std::cout << "  this->rows = " << this->rows << "\tthis->alignedRows = " << this->alignedRows << std::endl;
+           std::cout << "  IF missingRows (pre-round) = " << missingRows << std::endl;
+           
+           missingRows = roundToMultiple( missingRows, Devices::Cuda::getWarpSize() );
+           
+           std::cout << "  IF missingRows (after-round) = " << missingRows << std::endl;
+           std::cout << "  PRE this->alignedRows = " << this->alignedRows << std::endl;
+           
+           this->alignedRows +=  missingRows;
+           
+//           this->alignedRows += roundToMultiple( this->rows - this->alignedRows, Devices::Cuda::getWarpSize() );
+       }
+       std::cout << "AFTER setDimensions: this->alignedRows = " << this->alignedRows << std::endl;
+   }
    else this->alignedRows = rows;
+   
+   std::cout << "INSIDE setDimensions: this->alignedRows = " << this->alignedRows << std::endl;
+   
    if( this->rowLengths != 0 )
       allocateElements();
 }
