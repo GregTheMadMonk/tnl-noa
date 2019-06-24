@@ -599,6 +599,11 @@ template< typename Real,
           typename Index >
 void EllpackSymmetric< Real, Device, Index >::allocateElements()
 {
+   IndexType numberOfMatrixElements = this->alignedRows * this->rowLengths;
+   
+   TNL_ASSERT_TRUE( this->alignedRows != 0 && numberOfMatrixElements / this->alignedRows == this->rowLengths, 
+           "Ellpack cannot store this matrix. The number of matrix elements has overflown the value that IndexType is capable of storing" );
+   
    Sparse< Real, Device, Index >::allocateMatrixElements( this->alignedRows * this->rowLengths );
 }
 
