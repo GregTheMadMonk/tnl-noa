@@ -20,7 +20,6 @@
 
 namespace TNL {
 namespace Devices {
-namespace {
 
 class Host
 {
@@ -35,18 +34,18 @@ public:
 
    static void disableOMP()
    {
-      ompEnabled = false;
+      ompEnabled() = false;
    }
 
    static void enableOMP()
    {
-      ompEnabled = true;
+      ompEnabled() = true;
    }
 
    static inline bool isOMPEnabled()
    {
 #ifdef HAVE_OPENMP
-      return ompEnabled;
+      return ompEnabled();
 #else
       return false;
 #endif
@@ -54,18 +53,18 @@ public:
 
    static void setMaxThreadsCount( int maxThreadsCount_ )
    {
-      maxThreadsCount = maxThreadsCount_;
+      maxThreadsCount() = maxThreadsCount_;
 #ifdef HAVE_OPENMP
-      omp_set_num_threads( maxThreadsCount );
+      omp_set_num_threads( maxThreadsCount() );
 #endif
    }
 
    static int getMaxThreadsCount()
    {
 #ifdef HAVE_OPENMP
-      if( maxThreadsCount == -1 )
+      if( maxThreadsCount() == -1 )
          return omp_get_max_threads();
-      return maxThreadsCount;
+      return maxThreadsCount();
 #else
       return 0;
 #endif
@@ -112,14 +111,21 @@ public:
       return true;
    }
 
-protected:
-   static bool ompEnabled;
-   static int maxThreadsCount;
+   protected:
+      static bool& ompEnabled() {
+#ifdef HAVE_OPENMP
+         static bool ompEnabled( true );
+#else
+         static bool ompEnabled( false );
+#endif
+         return ompEnabled;
+      }
+
+      static int& maxThreadsCount() {
+         static int maxThreadsCount( -1 );
+         return maxThreadsCount;
+      }
 };
 
-bool Host::ompEnabled( true );
-int Host::maxThreadsCount( -1 );
-
-} // namespace <unnamed>
 } // namespace Devices
 } // namespace TNL
