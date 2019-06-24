@@ -34,7 +34,7 @@ template< int, typename > class StaticArray;
  *
  * In the \e Device type, the Array remembers where the memory is allocated.
  * This ensures the compile-time checks of correct pointers manipulation.
- * Methods defined as \ref __cuda_callable__ can be called even from kernels
+ * Methods defined as \ref \_\_cuda_callable\_\_ can be called even from kernels
  * running on device. Array elements can be changed either using the \ref operator[]
  * which is more efficient but it can be called from CPU only for arrays
  * allocated on host (CPU) and when the array is allocated on GPU, the operator[]
@@ -49,11 +49,12 @@ template< int, typename > class StaticArray;
  * allocated i.e. it is efficient even on GPU. For simple checking of the array
  * contents, one may use methods \ref containValue and \ref containsValue and
  * \ref containsOnlyValue.
- * Array also offers data sharing using methods \ref bind. This is, however, obsolete
- * and will be soon replaced with proxy object \ref ArrayView.
+ * Array also offers data sharing using methods \ref bind.
  *
  * \par Example
  * \include ArrayExample.cpp
+ * \par Output
+ * \include ArrayExample.out
  *
  * See also \ref Containers::ArravView, \ref Containers::Vector, \ref Containers::VectorView.
  */
@@ -89,16 +90,9 @@ class Array
       /**
        * \brief Constructor with data pointer and size.
        *
-       * In this case, the Array just encapsulates the pointer \e data. No
-       * deallocation is done in destructor.
-       *
-       * This behavior of the Array is obsolete and \ref ArrayView should be used
-       * instead.
-       *
        * \param data Pointer to data.
-       * \param size Number of array elements.
+       * \param size Number of array elements to be copied to the array.
        */
-      [[deprecated("Binding functionality of Array is deprecated, ArrayView should be used instead.")]]
       Array( Value* data,
              const IndexType& size );
 
@@ -110,19 +104,15 @@ class Array
       explicit Array( const Array& array );
 
       /**
-       * \brief Bind constructor .
+       * \brief Copy constructor .
        *
-       * The constructor does not make a deep copy, but binds to the supplied array.
-       * This is also obsolete, \ref ArraView should be used instead.
-       *
-       * \param array is an array that is to be bound.
-       * \param begin is the first index which should be bound.
-       * \param size is number of array elements that should be bound.
+       * \param array is an array that is to be copied.
+       * \param begin is the first index which should be copied.
+       * \param size is number of array elements that should be copied.
        */
-      [[deprecated("Binding functionality of Array is deprecated, ArrayView should be used instead.")]]
       Array( Array& array,
              const IndexType& begin,
-             const IndexType& size = 0 );
+             IndexType size = -1 );
 
       /**
        * \brief Move constructor.
@@ -220,7 +210,7 @@ class Array
        * Releases old data and binds this array with new \e _data. Also sets new
        * \e _size of this array.
        *
-       * This method is obsolete, use \ref ArrayView instead.
+       * This method is deprecated, use \ref ArrayView instead.
        *
        * \param _data Pointer to new data.
        * \param _size Size of new _data. Number of elements.
@@ -235,7 +225,7 @@ class Array
        * Releases old data and binds this array with new \e array starting at
        * position \e begin. Also sets new \e size of this array.
        *
-       * This method is obsolete, use \ref ArrayView instead.
+       * This method is deprecated, use \ref ArrayView instead.
        *
        * \tparam ArrayT Type of array.
        * \param array Reference to a new array.
@@ -254,7 +244,7 @@ class Array
        * Releases old data and binds this array with a static array of size \e
        * Size.
        *
-       * This method is obsolete, use \ref ArrayView instead.
+       * This method is deprecated, use \ref ArrayView instead.
        *
        * \tparam Size Size of array.
        * \param array Reference to a static array.
@@ -265,13 +255,27 @@ class Array
 
       /**
        * \brief Returns a modifiable view of the array.
+       *
+       * If \e begin and \e end is set, view for sub-interval [ \e begin, \e end )
+       * is returned.
+       *
+       * \param begin is the beginning of the Array sub-interval, 0 by default.
+       * \param end is the end of the Array sub-interval. Default value is 0 which is,
+       * however, replaced with the Array size.
        */
-      ViewType getView();
+      ViewType getView( IndexType begin = 0, IndexType end = 0 );
 
       /**
        * \brief Returns a non-modifiable view of the array.
+       *
+       * If \e begin and \e end is set, view for sub-interval [ \e begin, \e end )
+       * is returned.
+       *
+       * \param begin is the beginning of the sub-interval, 0 by default.
+       * \param end is the end of the sub-interval. Default value is 0 which is,
+       * however, replaced with the Array size.
        */
-      ConstViewType getConstView() const;
+      ConstViewType getConstView( IndexType begin = 0, IndexType end = 0 ) const;
 
       /**
        * \brief Conversion operator to a modifiable view of the array.
@@ -471,47 +475,65 @@ class Array
       /**
        * \brief Sets the array elements to given value.
        *
-       * Sets all the array values to \e v.
+       * Sets whole array or just its sub-interval [ \e begin, end ) to value \e v.
        *
        * \param v Reference to a value.
+       * \param begin is the index of the first element to be changed
+       * \param end is the index of the element after the last one to be changed.
+       * By default it is 0 which means that whole array is considered.
        */
       void setValue( const Value& v,
                      const Index begin = 0,
-                     Index end = -1 );
+                     Index end = 0 );
+
+      /**
+       * \brief Sets the array elements using given lambda function.
+       *
+       * Evaluates a lambda function \e f on whole array or just on its sub-interval [ \e begin, end ).
+       *
+       * \param v Reference to a value.
+       * \param begin is
+       * \param end is the index of the element after the last one to be changed.
+       * By default it is 0 which means that whole array is considered.
+       */
+      template< typename Function >
+      void evaluate( const Function& f,
+                     const Index begin = 0,
+                     Index end = 0 );
 
       /**
        * \brief Checks if there is an element with value \e v.
        *
-       * By default, the method checks all array elements. By setting indexes
-       * \e begin and \e end, only elements in given interval are checked.
+       * Checks, if there is an element with value \e value in the Array or in
+       * its sub-interval [\e begin, \e end ).
        *
        * \param v is reference to the value.
-       * \param begin is the first element to be checked
-       * \param end is the last element to be checked. If \e end equals -1, its
-       * value is replaces by the array size.
+       * \param begin is the beginning of the sub-interval, 0 by default.
+       * \param end is the end of the sub-interval. Default value is 0 which is,
+       * however, replaced with the Array size.
        *
-       * \return True if there is **at least one** array element in interval [\e begin, \e end ) having value \e v.
+       * \return True if there is **at least one** array element in sub-interval [\e begin, \e end) having value \e v.
        */
       bool containsValue( const Value& v,
                           const Index begin = 0,
-                          Index end = -1 ) const;
+                          Index end = 0 ) const;
 
       /**
        * \brief Checks if all elements have the same value \e v.
        *
-       * By default, the method checks all array elements. By setting indexes
-       * \e begin and \e end, only elements in given interval are checked.
+       * Checks, if all elements in the Array or in its sub-interval [\e begin, \e end )
+       * have the same value \e value.
        *
        * \param v Reference to a value.
-       * \param begin is the first element to be checked
-       * \param end is the last element to be checked. If \e end equals -1, its
-       * value is replaces by the array size.
+       * \param begin is the beginning of the sub-interval, 0 by default.
+       * \param end is the end of the sub-interval. Default value is 0 which is,
+       * however, replaced with the Array size.
        *
-       * \return True if there **all** array elements in interval [\e begin, \e end ) have value \e v.
+       * \return True if **all** all array elements  or elements in sub-interval [\e begin, \e end ) have value \e v.
        */
       bool containsOnlyValue( const Value& v,
                               const Index begin = 0,
-                              Index end = -1 ) const;
+                              Index end = 0 ) const;
 
       /**
        * \brief Returns true if non-zero size is set.
@@ -522,6 +544,19 @@ class Array
        */
       __cuda_callable__
       bool empty() const;
+
+      /**
+       * \brief Method for saving the object to a file \e fileName as a binary data.
+       *
+       * \param fileName file name.
+       */
+      void save( const String& fileName ) const;
+      /**
+       * Method for loading the object from a file \e fileName as a binary data.
+       *
+       * \param fileName file name
+       */
+      void load( const String& fileName );
 
       /** \brief Basic destructor. */
       ~Array();

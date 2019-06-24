@@ -170,15 +170,29 @@ public:
 
    /**
     * \brief Returns a modifiable view of the array view.
+    *
+    * If \e begin and \e end is set, view for sub-interval [ \e begin, \e end )
+    * is returned.
+    *
+    * \param begin is the beginning of the ArrayView sub-interval, 0 by default.
+    * \param end is the end of the ArrayView sub-interval. Default value is 0 which is,
+    * however, replaced with the ArrayView size.
     */
    __cuda_callable__
-   ViewType getView();
+   ViewType getView( const IndexType begin = 0, IndexType end = 0 );
 
    /**
     * \brief Returns a non-modifiable view of the array view.
+    *
+    * If \e begin and \e end is set, view for sub-interval [ \e begin, \e end )
+    * is returned.
+    *
+    * \param begin is the beginning of the sub-interval, 0 by default.
+    * \param end is the end of the sub-interval. Default value is 0 which is,
+    * however, replaced with the ArrayView size.
     */
    __cuda_callable__
-   ConstViewType getConstView() const;
+   ConstViewType getConstView( const IndexType begin = 0, IndexType end = 0 ) const;
 
    /**
     * \brief Assignment operator.
@@ -363,53 +377,65 @@ public:
    /**
     * \brief Sets the array view elements to given value.
     *
-    * Sets all the array values to \e v.
+    * Sets whole array values or just its sub-interval [ \e begin, end ) to value \e v.
     *
     * \param v Reference to a value.
+    * \param begin is the beginning of the sub-interval, 0 by default.
+    * \param end is the end of the sub-interval. Default value is 0 which is,
+    * however, replaced with the ArrayView size.
     */
-   void setValue( Value value );
+   void setValue( Value value,
+                  const Index begin = 0,
+                  Index end = 0 );
 
    /**
     * \brief Sets the array elements using given lambda function.
     *
-    * Sets all the array values to \e v.
+    * Evaluates a lambda function \e f on whole array or just on its sub-interval [\e begin, \e end).
     *
     * \param v Reference to a value.
+    * \param begin is the beginning of the sub-interval, 0 by default.
+    * \param end is the end of the sub-interval. Default value is 0 which is,
+    * however, replaced with the ArrayView size.
     */
    template< typename Function >
-   void evaluate( Function& f,
+   void evaluate( const Function& f,
                   const Index begin = 0,
-                  Index end = -1 );
+                  Index end = 0 );
 
    /**
     * \brief Checks if there is an element with value \e v.
     *
-    * By default, the method checks all array view elements. By setting indexes
-    * \e begin and \e end, only elements in given interval are checked.
+    * Checks, if there is an element with value \e value in the ArrayView or in
+    * its sub-interval [\e begin, \e end ).
     *
     * \param v is reference to the value.
-    * \param begin is the first element to be checked
-    * \param end is the last element to be checked. If \e end equals -1, its
-    * value is replaces by the array size.
+    * \param begin is the beginning of the sub-interval, 0 by default.
+    * \param end is the end of the sub-interval. Default value is 0 which is,
+    * however, replaced with the ArrayView size.
     *
-    * \return True if there is **at least one** array element in interval [\e begin, \e end ) having value \e v.
+    * \return True if there is **at least one** array element in sub-interval [\e begin, \e end) having value \e v.
     */
-   bool containsValue( Value value ) const;
+   bool containsValue( Value value,
+                       const Index begin = 0,
+                       Index end = 0  ) const;
 
    /**
     * \brief Checks if all elements have the same value \e v.
     *
-    * By default, the method checks all array view elements. By setting indexes
-    * \e begin and \e end, only elements in given interval are checked.
+    * Checks, if all elements in the ArrayView or in its sub-interval [\e begin, \e end )
+    * have the same value \e value.
     *
     * \param v Reference to a value.
-    * \param begin is the first element to be checked
-    * \param end is the last element to be checked. If \e end equals -1, its
-    * value is replaces by the array size.
+    * \param begin is the beginning of the sub-interval, 0 by default.
+    * \param end is the end of the sub-interval. Default value is 0 which is,
+    * however, replaced with the ArrayView size.
     *
-    * \return True if there **all** array elements in interval [\e begin, \e end ) have value \e v.
+    * \return True if **all** all array elements  or elements in sub-interval [\e begin, \e end ) have value \e v.
     */
-   bool containsOnlyValue( Value value ) const;
+   bool containsOnlyValue( Value value,
+                           const Index begin = 0,
+                           Index end = 0  ) const;
 
    /**
     * \brief Returns true if non-zero size is set.
@@ -420,6 +446,20 @@ public:
     */
    __cuda_callable__
    bool empty() const;
+
+   /**
+    * \brief Method for saving the object to a file \e fileName as a binary data.
+    *
+    * \param fileName file name.
+    */
+   void save( const String& fileName ) const;
+
+   /**
+    * Method for loading the object from a file \e fileName as a binary data.
+    *
+    * \param fileName file name
+    */
+   void load( const String& fileName );
 
 protected:
    //! Pointer to allocated data

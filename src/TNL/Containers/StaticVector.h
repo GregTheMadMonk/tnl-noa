@@ -12,9 +12,10 @@
 
 #include <TNL/Containers/StaticArray.h>
 #include <TNL/Config/ParameterContainer.h>
+#include <TNL/Containers/Expressions/StaticExpressionTemplates.h>
 
 namespace TNL {
-namespace Containers {   
+namespace Containers {
 
  /**
  * \brief Vector with constant size.
@@ -26,8 +27,15 @@ template< int Size, typename Real = double >
 class StaticVector : public StaticArray< Size, Real >
 {
    public:
-   typedef Real RealType;
-   enum { size = Size };
+   using RealType = Real;
+   using IndexType = int;
+   using ThisType = StaticVector< Size, Real >;
+
+   constexpr static int size = Size;
+
+   using StaticArray< Size, Real >::getSize;
+   using StaticArray< Size, Real >::operator ==;
+   using StaticArray< Size, Real >::operator !=;
 
    /**
     * \brief Basic constructor.
@@ -66,6 +74,19 @@ class StaticVector : public StaticArray< Size, Real >
    __cuda_callable__
    StaticVector( const StaticVector< Size, Real >& v );
 
+   StaticVector( const std::initializer_list< Real > &elems );
+
+   template< typename T1,
+             typename T2,
+             template< typename, typename > class Operation >
+   __cuda_callable__
+   StaticVector( const Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& op );
+
+   template< typename T,
+             template< typename > class Operation >
+   __cuda_callable__
+   StaticVector( const Expressions::StaticUnaryExpressionTemplate< T, Operation >& op );
+
    /**
     * \brief Sets up a new (vector) parameter which means it can have more elements.
     *
@@ -73,12 +94,15 @@ class StaticVector : public StaticArray< Size, Real >
     * @param prefix Name of now parameter/prefix.
     */
    bool setup( const Config::ParameterContainer& parameters,
-               const String& prefix = "" );      
+               const String& prefix = "" );
 
    /**
     * \brief Gets type of this vector.
     */
    static String getType();
+
+   template< typename StaticVectorOperationType >
+   StaticVector& operator = ( const StaticVectorOperationType& vo );
 
    /**
     * \brief Adding operator.
@@ -109,7 +133,7 @@ class StaticVector : public StaticArray< Size, Real >
     */
    __cuda_callable__
    StaticVector& operator *= ( const Real& c );
-   
+
    /**
     * \brief Division by number
     *
@@ -119,46 +143,6 @@ class StaticVector : public StaticArray< Size, Real >
     */
    __cuda_callable__
    StaticVector& operator /= ( const Real& c );
-   
-   /**
-    * \brief Addition operator.
-    *
-    * This function adds static vector \e u to this static vector and returns the resulting static vector.
-    * The addition is applied to all the vector elements separately.
-    * \param u Reference to another static vector.
-    */
-   __cuda_callable__
-   StaticVector operator + ( const StaticVector& u ) const;
-
-   /**
-    * \brief Subtraction operator.
-    *
-    * This function subtracts static vector \e u from this static vector and returns the resulting static vector.
-    * The subtraction is applied to all the vector elements separately.
-    * \param u Reference to another static vector.
-    */
-   __cuda_callable__
-   StaticVector operator - ( const StaticVector& u ) const;
-
-   /**
-    * \brief Multiplication by number.
-    *
-    * This function multipies this static vector by \e c and returns the resulting static vector.
-    * The addition is applied to all the vector elements separately.
-    * \param c Multiplicator.
-    */
-   __cuda_callable__
-   StaticVector operator * ( const Real& c ) const;
-
-   /**
-    * \brief Computes scalar (dot) product.
-    *
-    * An algebraic operation that takes two equal-length vectors and returns a single number.
-    *
-    * \param u Reference to another static vector of the same size as this static vector.
-    */
-   __cuda_callable__
-   Real operator * ( const StaticVector& u ) const;
 
    /**
     * \brief Compares this static vector with static vector \e v.
@@ -244,8 +228,17 @@ template< typename Real >
 class StaticVector< 1, Real > : public StaticArray< 1, Real >
 {
    public:
-   typedef Real RealType;
-   enum { size = 1 };
+   using RealType = Real;
+   using IndexType = int;
+   using ThisType = StaticVector< 1, Real >;
+
+   constexpr static int size = 1;
+
+   using StaticArray< 1, Real >::getSize;
+   using StaticArray< 1, Real >::operator ==;
+   using StaticArray< 1, Real >::operator !=;
+
+
 
    /** \brief See StaticVector::StaticVector().*/
    __cuda_callable__
@@ -265,12 +258,28 @@ class StaticVector< 1, Real > : public StaticArray< 1, Real >
    /** \brief See StaticVector::StaticVector( const StaticVector< Size, Real >& v ).*/
    __cuda_callable__
    StaticVector( const StaticVector< 1, Real >& v );
-   
+
+   StaticVector( const std::initializer_list< Real > &elems );
+
+   template< typename T1,
+             typename T2,
+             template< typename, typename > class Operation >
+   __cuda_callable__
+   StaticVector( const Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& op );
+
+   template< typename T,
+             template< typename > class Operation >
+   __cuda_callable__
+   StaticVector( const Expressions::StaticUnaryExpressionTemplate< T, Operation >& op );
+
    bool setup( const Config::ParameterContainer& parameters,
-               const String& prefix = "" );      
+               const String& prefix = "" );
 
    /** \brief See StaticVector::getType().*/
    static String getType();
+
+   template< typename StaticVectorOperationType >
+   StaticVector& operator = ( const StaticVectorOperationType& vo );
 
    /** \brief See StaticVector::operator += ( const StaticVector& v ).*/
    __cuda_callable__
@@ -283,26 +292,10 @@ class StaticVector< 1, Real > : public StaticArray< 1, Real >
    /** \brief See StaticVector::operator *= ( const Real& c ).*/
    __cuda_callable__
    StaticVector& operator *= ( const Real& c );
-   
+
    /** \brief See StaticVector::operator /= ( const Real& c ).*/
    __cuda_callable__
-   StaticVector& operator /= ( const Real& c );   
-
-   /** \brief See StaticVector::operator + ( const StaticVector& u ) const.*/
-   __cuda_callable__
-   StaticVector operator + ( const StaticVector& u ) const;
-
-   /** \brief See StaticVector::operator - ( const StaticVector& u ) const.*/
-   __cuda_callable__
-   StaticVector operator - ( const StaticVector& u ) const;
-
-   /** \brief See StaticVector::operator * ( const Real& c ) const.*/
-   __cuda_callable__
-   StaticVector operator * ( const Real& c ) const;
-
-   /** \brief See StaticVector::operator * ( const StaticVector& u ) const.*/
-   __cuda_callable__
-   Real operator * ( const StaticVector& u ) const;
+   StaticVector& operator /= ( const Real& c );
 
    /** \brief See StaticVector::operator <.*/
    __cuda_callable__
@@ -330,7 +323,7 @@ class StaticVector< 1, Real > : public StaticArray< 1, Real >
 
    /** \brief See StaticVector::lpNorm( const Real& p ) const.*/
    __cuda_callable__
-   Real lpNorm( const Real& p ) const;   
+   Real lpNorm( const Real& p ) const;
 
 #ifdef HAVE_MIC
    __cuda_callable__
@@ -357,8 +350,16 @@ template< typename Real >
 class StaticVector< 2, Real > : public StaticArray< 2, Real >
 {
    public:
-   typedef Real RealType;
-   enum { size = 2 };
+   using RealType = Real;
+   using IndexType = int;
+   using ThisType = StaticVector< 2, Real >;
+
+   constexpr static int size = 2;
+
+   using StaticArray< 2, Real >::getSize;
+   using StaticArray< 2, Real >::operator ==;
+   using StaticArray< 2, Real >::operator !=;
+
 
    /** \brief See StaticVector::StaticVector().*/
    __cuda_callable__
@@ -387,12 +388,28 @@ class StaticVector< 2, Real > : public StaticArray< 2, Real >
    /** \brief See StaticVector::StaticVector( const StaticVector< Size, Real >& v ).*/
    __cuda_callable__
    StaticVector( const StaticVector< 2, Real >& v );
-   
+
+   StaticVector( const std::initializer_list< Real > &elems );
+
+   template< typename T1,
+             typename T2,
+             template< typename, typename > class Operation >
+   __cuda_callable__
+   StaticVector( const Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& op );
+
+   template< typename T,
+             template< typename > class Operation >
+   __cuda_callable__
+   StaticVector( const Expressions::StaticUnaryExpressionTemplate< T, Operation >& op );
+
    bool setup( const Config::ParameterContainer& parameters,
-               const String& prefix = "" );      
+               const String& prefix = "" );
 
    /** \brief See StaticVector::getType().*/
    static String getType();
+
+   template< typename StaticVectorOperationType >
+   StaticVector& operator = ( const StaticVectorOperationType& vo );
 
    /** \brief See StaticVector::operator += ( const StaticVector& v ).*/
    __cuda_callable__
@@ -408,23 +425,7 @@ class StaticVector< 2, Real > : public StaticArray< 2, Real >
 
    /** \brief See StaticVector::operator /= ( const Real& c ).*/
    __cuda_callable__
-   StaticVector& operator /= ( const Real& c );   
-
-   /** \brief See StaticVector::operator + ( const StaticVector& u ) const.*/
-   __cuda_callable__
-   StaticVector operator + ( const StaticVector& u ) const;
-
-   /** \brief See StaticVector::operator - ( const StaticVector& u ) const.*/
-   __cuda_callable__
-   StaticVector operator - ( const StaticVector& u ) const;
-
-   /** \brief See StaticVector::operator * ( const Real& c ) const.*/
-   __cuda_callable__
-   StaticVector operator * ( const Real& c ) const;
-
-   /** \brief See StaticVector::operator * ( const StaticVector& u ) const.*/
-   __cuda_callable__
-   Real operator * ( const StaticVector& u ) const;
+   StaticVector& operator /= ( const Real& c );
 
    /** \brief See StaticVector::operator <.*/
    __cuda_callable__
@@ -441,7 +442,7 @@ class StaticVector< 2, Real > : public StaticArray< 2, Real >
    /** \brief See StaticVector::operator >=.*/
    __cuda_callable__
    bool operator >= ( const StaticVector& v ) const;
- 
+
    template< typename OtherReal >
    __cuda_callable__
    operator StaticVector< 2, OtherReal >() const;
@@ -452,7 +453,7 @@ class StaticVector< 2, Real > : public StaticArray< 2, Real >
 
    /** \brief See StaticVector::lpNorm( const Real& p ) const.*/
    __cuda_callable__
-   Real lpNorm( const Real& p ) const;   
+   Real lpNorm( const Real& p ) const;
 
 #ifdef HAVE_MIC
    __cuda_callable__
@@ -479,8 +480,16 @@ template< typename Real >
 class StaticVector< 3, Real > : public StaticArray< 3, Real >
 {
    public:
-   typedef Real RealType;
-   enum { size = 3 };
+   using RealType = Real;
+   using IndexType = int;
+   using ThisType = StaticVector< 3, Real >;
+
+   constexpr static int size = 3;
+
+   using StaticArray< 3, Real >::getSize;
+   using StaticArray< 3, Real >::operator ==;
+   using StaticArray< 3, Real >::operator !=;
+
 
    /** \brief See StaticVector::StaticVector().*/
    __cuda_callable__
@@ -510,12 +519,28 @@ class StaticVector< 3, Real > : public StaticArray< 3, Real >
    /** \brief See StaticVector::StaticVector( const StaticVector< Size, Real >& v ).*/
    __cuda_callable__
    StaticVector( const StaticVector< 3, Real >& v );
-   
+
+   StaticVector( const std::initializer_list< Real > &elems );
+
+   template< typename T1,
+             typename T2,
+             template< typename, typename > class Operation >
+   __cuda_callable__
+   StaticVector( const Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& op );
+
+   template< typename T,
+             template< typename > class Operation >
+   __cuda_callable__
+   StaticVector( const Expressions::StaticUnaryExpressionTemplate< T, Operation >& op );
+
    bool setup( const Config::ParameterContainer& parameters,
-               const String& prefix = "" );      
+               const String& prefix = "" );
 
    /** \brief See StaticVector::getType().*/
    static String getType();
+
+   template< typename StaticVectorOperationType >
+   StaticVector& operator = ( const StaticVectorOperationType& vo );
 
    /** \brief See StaticVector::operator += ( const StaticVector& v ).*/
    __cuda_callable__
@@ -528,26 +553,10 @@ class StaticVector< 3, Real > : public StaticArray< 3, Real >
    /** \brief See StaticVector::operator *= ( const Real& c ).*/
    __cuda_callable__
    StaticVector& operator *= ( const Real& c );
-   
+
    /** \brief See StaticVector::operator /= ( const Real& c ).*/
    __cuda_callable__
    StaticVector& operator /= ( const Real& c );
-   
-   /** \brief See StaticVector::operator + ( const StaticVector& u ) const.*/
-   __cuda_callable__
-   StaticVector operator + ( const StaticVector& u ) const;
-
-   /** \brief See StaticVector::operator - ( const StaticVector& u ) const.*/
-   __cuda_callable__
-   StaticVector operator - ( const StaticVector& u ) const;
-
-   /** \brief See StaticVector::operator * ( const Real& c ) const.*/
-   __cuda_callable__
-   StaticVector operator * ( const Real& c ) const;
-
-   /** \brief See StaticVector::operator * ( const StaticVector& u ) const.*/
-   __cuda_callable__
-   Real operator * ( const StaticVector& u ) const;
 
    /** \brief See StaticVector::operator <.*/
    __cuda_callable__
@@ -575,7 +584,7 @@ class StaticVector< 3, Real > : public StaticArray< 3, Real >
 
    /** \brief See StaticVector::lpNorm( const Real& p ) const.*/
    __cuda_callable__
-   Real lpNorm( const Real& p ) const;   
+   Real lpNorm( const Real& p ) const;
 
 #ifdef HAVE_MIC
    __cuda_callable__
@@ -594,14 +603,15 @@ class StaticVector< 3, Real > : public StaticArray< 3, Real >
    }
 #endif
 };
-
+/*
 template< int Size, typename Real, typename Scalar >
 __cuda_callable__
 StaticVector< Size, Real > operator * ( const Scalar& c, const StaticVector< Size, Real >& u );
+ */
 
-template< int Size, typename Real >
+/*template< int Size, typename Real >
 __cuda_callable__
-StaticVector< Size, Real > abs( const StaticVector< Size, Real >& u ) { return u.abs(); };
+StaticVector< Size, Real > abs( const StaticVector< Size, Real >& u ) { return u.abs(); };*/
 
 } // namespace Containers
 } // namespace TNL
@@ -613,8 +623,45 @@ StaticVector< Size, Real > abs( const StaticVector< Size, Real >& u ) { return u
 
 
 namespace TNL {
-namespace Containers {   
+namespace Containers {
 // TODO: move to some other source file
+
+template< int Size, typename Real1, typename Real2 >
+struct StaticScalarProductGetter
+{
+   __cuda_callable__
+   static auto compute( const Real1* u, const Real2* v ) -> decltype( u[ 0 ] * v[ 0 ] )
+   {
+      return u[ 0 ] * v[ 0 ] + StaticScalarProductGetter< Size - 1, Real1, Real2 >::compute( &u[ 1 ], &v[ 1 ] );
+   }
+};
+
+template< typename Real1, typename Real2 >
+struct StaticScalarProductGetter< 1, Real1, Real2 >
+{
+   __cuda_callable__
+   static auto compute( const Real1* u, const Real2* v ) -> decltype( u[ 0 ] * v[ 0 ] )
+   {
+      return u[ 0 ] * v[ 0 ];
+   }
+};
+
+template< int Size, typename Real1, typename Real2 >
+__cuda_callable__
+auto ScalarProduct( const StaticVector< Size, Real1 >& u,
+                    const StaticVector< Size, Real2 >& v ) -> decltype( u[ 0 ] * v[ 0 ] )
+{
+   return StaticScalarProductGetter< Size, Real1, Real2 >::compute( u.getData(), v.getData() );
+}
+
+template< int Size, typename Real1, typename Real2 >
+__cuda_callable__
+auto operator,( const StaticVector< Size, Real1 >& u,
+                    const StaticVector< Size, Real2 >& v ) -> decltype( u[ 0 ] * v[ 0 ] )
+{
+   return StaticScalarProductGetter< Size, Real1, Real2 >::compute( u.getData(), v.getData() );
+}
+
 
 template< typename Real >
 StaticVector< 3, Real > VectorProduct( const StaticVector< 3, Real >& u,
@@ -625,20 +672,6 @@ StaticVector< 3, Real > VectorProduct( const StaticVector< 3, Real >& u,
    p[ 1 ] = u[ 2 ] * v[ 0 ] - u[ 0 ] * v[ 2 ];
    p[ 2 ] = u[ 0 ] * v[ 1 ] - u[ 1 ] * v[ 0 ];
    return p;
-}
-
-template< typename Real >
-Real ScalarProduct( const StaticVector< 2, Real >& u,
-                    const StaticVector< 2, Real >& v )
-{
-   return u[ 0 ] * v[ 0 ] + u[ 1 ] * v[ 1 ];
-}
-
-template< typename Real >
-Real ScalarProduct( const StaticVector< 3, Real >& u,
-                    const StaticVector< 3, Real >& v )
-{
-   return u[ 0 ] * v[ 0 ] + u[ 1 ] * v[ 1 ] + u[ 2 ] * v[ 2 ];
 }
 
 template< typename T1,

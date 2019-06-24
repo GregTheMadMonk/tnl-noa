@@ -8,13 +8,13 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#pragma once 
+#pragma once
 
 #include <TNL/String.h>
 #include <TNL/File.h>
 
 namespace TNL {
-namespace Containers {   
+namespace Containers {
 
 /**
  * \brief Array with constant size.
@@ -26,9 +26,14 @@ template< int Size, typename Value >
 class StaticArray
 {
    public:
-   typedef Value ValueType;
-   typedef int     IndexType;
-   enum { size = Size };
+   using ValueType = Value;
+   using IndexType = int;
+
+   /**
+    * \brief Gets size of this array.
+    */
+   __cuda_callable__
+   static constexpr int getSize();
 
    /**
     * \brief Basic constructor.
@@ -67,16 +72,13 @@ class StaticArray
    __cuda_callable__
    inline StaticArray( const StaticArray< Size, Value >& v );
 
+   inline StaticArray( const std::initializer_list< Value > &elems );
+
    /**
     * \brief Gets type of this array.
     */
    static String getType();
 
-   /**
-    * \brief Gets size of this array.
-    */
-   __cuda_callable__
-   inline int getSize() const;
 
    /**
     * \brief Gets all data of this static array.
@@ -136,7 +138,7 @@ class StaticArray
    template< typename Array >
    __cuda_callable__
    inline bool operator != ( const Array& array ) const;
- 
+
    template< typename OtherValue >
    __cuda_callable__
    operator StaticArray< Size, OtherValue >() const;
@@ -163,7 +165,7 @@ class StaticArray
     * \brief Sorts the elements in this static array into ascending order.
     */
    void sort();
- 
+
    /**
     * \brief Writes the array values into stream \e str with specified \e separator.
     *
@@ -183,10 +185,18 @@ class StaticArray
 template< typename Value >
 class StaticArray< 1, Value >
 {
+   protected:
+      enum { Size = 1 };
+
    public:
-   typedef Value ValueType;
-   typedef int     IndexType;
-   enum { size = 1 };
+   using ValueType = Value;
+   using IndexType = int;
+
+   /**
+    * \brief Gets size of this array.
+    */
+   __cuda_callable__
+   static constexpr int getSize();
 
    /** \brief See StaticArray::StaticArray().*/
    __cuda_callable__
@@ -197,7 +207,7 @@ class StaticArray< 1, Value >
    // reference: https://stackoverflow.com/q/4610503
    template< typename _unused = void >
    __cuda_callable__
-   inline StaticArray( const Value v[ size ] );
+   inline StaticArray( const Value v[ Size ] );
 
    /** \brief See StaticArray::StaticArray(const Value& v).*/
    __cuda_callable__
@@ -205,14 +215,12 @@ class StaticArray< 1, Value >
 
    /** \brief See StaticArray::StaticArray( const StaticArray< Size, Value >& v ).*/
    __cuda_callable__
-   inline StaticArray( const StaticArray< size, Value >& v );
+   inline StaticArray( const StaticArray< Size, Value >& v );
+
+   inline StaticArray( const std::initializer_list< Value > &elems );
 
    /** \brief See StaticArray::getType().*/
    static String getType();
-
-   /** \brief See StaticArray::getSize().*/
-   __cuda_callable__
-   inline int getSize() const;
 
    /** \brief See StaticArray::getData().*/
    __cuda_callable__
@@ -256,7 +264,7 @@ class StaticArray< 1, Value >
    template< typename Array >
    __cuda_callable__
    inline bool operator != ( const Array& array ) const;
- 
+
    template< typename OtherValue >
    __cuda_callable__
    operator StaticArray< 1, OtherValue >() const;
@@ -274,12 +282,12 @@ class StaticArray< 1, Value >
 
    /** \brief See StaticArray::sort().*/
    void sort();
- 
+
    /** \brief See StaticArray::write().*/
    std::ostream& write( std::ostream& str, const char* separator = " " ) const;
 
    protected:
-   Value data[ size ];
+   Value data[ Size ];
 };
 
 /**
@@ -288,10 +296,18 @@ class StaticArray< 1, Value >
 template< typename Value >
 class StaticArray< 2, Value >
 {
+   protected:
+   enum { Size = 2 };
+
    public:
-   typedef Value ValueType;
-   typedef int     IndexType;
-   enum { size = 2 };
+   using ValueType = Value;
+   using IndexType = int;
+
+   /**
+    * \brief Gets size of this array.
+    */
+   __cuda_callable__
+   static constexpr int getSize();
 
    /** \brief See StaticArray::StaticArray().*/
    __cuda_callable__
@@ -302,7 +318,7 @@ class StaticArray< 2, Value >
    // reference: https://stackoverflow.com/q/4610503
    template< typename _unused = void >
    __cuda_callable__
-   inline StaticArray( const Value v[ size ] );
+   inline StaticArray( const Value v[ Size ] );
 
    /** \brief See StaticArray::StaticArray(const Value& v).*/
    __cuda_callable__
@@ -319,14 +335,12 @@ class StaticArray< 2, Value >
 
    /** \brief See StaticArray::StaticArray( const StaticArray< Size, Value >& v ).*/
    __cuda_callable__
-   inline StaticArray( const StaticArray< size, Value >& v );
+   inline StaticArray( const StaticArray< Size, Value >& v );
+
+   inline StaticArray( const std::initializer_list< Value > &elems );
 
    /** \brief See StaticArray::getType().*/
    static String getType();
-
-   /** \brief See StaticArray::getSize().*/
-   __cuda_callable__
-   inline int getSize() const;
 
    /** \brief See StaticArray::getData().*/
    __cuda_callable__
@@ -378,11 +392,11 @@ class StaticArray< 2, Value >
    template< typename Array >
    __cuda_callable__
    inline bool operator != ( const Array& array ) const;
- 
+
    template< typename OtherValue >
    __cuda_callable__
    operator StaticArray< 2, OtherValue >() const;
- 
+
    /** \brief See StaticArray::setValue().*/
    __cuda_callable__
    inline void setValue( const ValueType& val );
@@ -400,7 +414,7 @@ class StaticArray< 2, Value >
    std::ostream& write( std::ostream& str, const char* separator = " " ) const;
 
    protected:
-   Value data[ size ];
+   Value data[ Size ];
 };
 
 /**
@@ -409,10 +423,17 @@ class StaticArray< 2, Value >
 template< typename Value >
 class StaticArray< 3, Value >
 {
+   protected:
+      enum { Size = 3 };
    public:
-   typedef Value ValueType;
-   typedef int     IndexType;
-   enum { size = 3 };
+   using ValueType = Value;
+   using IndexType = int;
+
+   /**
+    * \brief Gets size of this array.
+    */
+   __cuda_callable__
+   static constexpr int getSize();
 
    /** \brief See StaticArray::StaticArray().*/
    __cuda_callable__
@@ -423,7 +444,7 @@ class StaticArray< 3, Value >
    // reference: https://stackoverflow.com/q/4610503
    template< typename _unused = void >
    __cuda_callable__
-   inline StaticArray( const Value v[ size ] );
+   inline StaticArray( const Value v[ Size ] );
 
    /** \brief See StaticArray::StaticArray(const Value& v).*/
    __cuda_callable__
@@ -441,14 +462,12 @@ class StaticArray< 3, Value >
 
    /** \brief See StaticArray::StaticArray( const StaticArray< Size, Value >& v ).*/
    __cuda_callable__
-   inline StaticArray( const StaticArray< size, Value >& v );
+   inline StaticArray( const StaticArray< Size, Value >& v );
+
+   StaticArray( const std::initializer_list< Value > &elems );
 
    /** \brief See StaticArray::getType().*/
    static String getType();
-
-   /** \brief See StaticArray::getSize().*/
-   __cuda_callable__
-   inline int getSize() const;
 
    /** \brief See StaticArray::getData().*/
    __cuda_callable__
@@ -508,7 +527,7 @@ class StaticArray< 3, Value >
    template< typename Array >
    __cuda_callable__
    inline bool operator != ( const Array& array ) const;
- 
+
    template< typename OtherValue >
    __cuda_callable__
    operator StaticArray< 3, OtherValue >() const;
@@ -530,7 +549,7 @@ class StaticArray< 3, Value >
    std::ostream& write( std::ostream& str, const char* separator = " " ) const;
 
    protected:
-   Value data[ size ];
+   Value data[ Size ];
 };
 
 template< int Size, typename Value >

@@ -12,6 +12,7 @@
 
 #include <TNL/Containers/Algorithms/CommonVectorOperations.h>
 #include <TNL/Containers/Algorithms/Reduction.h>
+#include <TNL/Containers/Algorithms/PrefixSum.h>
 
 namespace TNL {
 namespace Containers {
@@ -369,6 +370,43 @@ getScalarProduct( const Vector1& v1,
    auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a += b; };
    return Reduction< DeviceType >::reduce( v1.getSize(), reduction, volatileReduction, fetch, ( ResultType ) 0 );
 }
+
+template< typename Device >
+template< Algorithms::PrefixSumType Type,
+          typename Vector >
+void
+CommonVectorOperations< Device >::
+prefixSum( Vector& v,
+           typename Vector::IndexType begin,
+           typename Vector::IndexType end )
+{
+   using RealType = typename Vector::RealType;
+   using IndexType = typename Vector::IndexType;
+
+   auto reduction = [=] __cuda_callable__ ( RealType& a, const RealType& b ) { a += b; };
+   auto volatileReduction = [=] __cuda_callable__ ( volatile RealType& a, volatile RealType& b ) { a += b; };
+
+   PrefixSum< Device, Type >::perform( v, begin, end, reduction, volatileReduction, ( RealType ) 0.0 );
+}
+
+template< typename Device >
+   template< Algorithms::PrefixSumType Type, typename Vector, typename Flags >
+void
+CommonVectorOperations< Device >::
+segmentedPrefixSum( Vector& v,
+                    Flags& f,
+                    typename Vector::IndexType begin,
+                    typename Vector::IndexType end )
+{
+   using RealType = typename Vector::RealType;
+   using IndexType = typename Vector::IndexType;
+
+   auto reduction = [=] __cuda_callable__ ( RealType& a, const RealType& b ) { a += b; };
+   auto volatileReduction = [=] __cuda_callable__ ( volatile RealType& a, volatile RealType& b ) { a += b; };
+
+   SegmentedPrefixSum< Device, Type >::perform( v, f, begin, end, reduction, volatileReduction, ( RealType ) 0.0 );
+}
+
 
 } // namespace Algorithms
 } // namespace Containers

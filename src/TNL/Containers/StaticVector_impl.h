@@ -11,9 +11,11 @@
 #pragma once
 
 #include <TNL/Containers/StaticVector.h>
+#include <TNL/Containers/StaticVectorExpressions.h>
+#include <TNL/Containers/Algorithms/VectorAssignment.h>
 
 namespace TNL {
-namespace Containers {   
+namespace Containers {
 
 template< int Size, typename Real >
 __cuda_callable__
@@ -44,6 +46,31 @@ StaticVector< Size, Real >::StaticVector( const StaticVector< Size, Real >& v )
 }
 
 template< int Size, typename Real >
+StaticVector< Size, Real >::StaticVector( const std::initializer_list< Real > &elems )
+: StaticArray< Size, Real >( elems )
+{
+}
+
+template< int Size, typename Real >
+   template< typename T1,
+             typename T2,
+             template< typename, typename > class Operation >
+StaticVector< Size, Real >::StaticVector( const Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& op )
+{
+   Algorithms::VectorAssignment< StaticVector< Size, Real >, Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation > >::assignStatic( *this, op );
+};
+
+template< int Size,
+          typename Real >
+   template< typename T,
+             template< typename > class Operation >
+__cuda_callable__
+StaticVector< Size, Real >::StaticVector( const Expressions::StaticUnaryExpressionTemplate< T, Operation >& op )
+{
+   Algorithms::VectorAssignment< StaticVector< Size, Real >, Expressions::StaticUnaryExpressionTemplate< T, Operation > >::assignStatic( *this, op );
+};
+
+template< int Size, typename Real >
 bool
 StaticVector< Size, Real >::setup( const Config::ParameterContainer& parameters,
                                    const String& prefix )
@@ -62,6 +89,15 @@ String StaticVector< Size, Real >::getType()
           String( ", " ) +
           TNL::getType< Real >() +
           String( " >" );
+}
+
+template< int Size, typename Real >
+   template< typename RHS >
+StaticVector< Size, Real >&
+StaticVector< Size, Real >::operator =( const RHS& rhs )
+{
+   Algorithms::VectorAssignment< StaticVector< Size, Real >, RHS >::assignStatic( *this, rhs );
+   return *this;
 }
 
 template< int Size, typename Real >
@@ -101,6 +137,7 @@ StaticVector< Size, Real >& StaticVector< Size, Real >::operator /= ( const Real
    return *this;
 }
 
+#ifdef UNDEF
 template< int Size, typename Real >
 __cuda_callable__
 StaticVector< Size, Real > StaticVector< Size, Real >::operator + ( const StaticVector& u ) const
@@ -140,6 +177,7 @@ Real StaticVector< Size, Real >::operator * ( const StaticVector& u ) const
       res += this->data[ i ] * u[ i ];
    return res;
 }
+#endif
 
 template< int Size, typename Real >
 __cuda_callable__
@@ -229,12 +267,13 @@ StaticVector< Size, Real >::lpNorm( const Real& p ) const
    return TNL::pow( aux, 1.0 / p );
 }
 
+/*
 template< int Size, typename Real, typename Scalar >
 __cuda_callable__
 StaticVector< Size, Real > operator * ( const Scalar& c, const StaticVector< Size, Real >& u )
 {
    return u * c;
-}
+}*/
 
 } // namespace Containers
 } // namespace TNL

@@ -11,9 +11,10 @@
 #pragma once
 
 #include <TNL/Containers/StaticVector.h>
+#include <TNL/Containers/StaticVectorExpressions.h>
 
 namespace TNL {
-namespace Containers {   
+namespace Containers {
 
 template< typename Real >
 __cuda_callable__
@@ -51,6 +52,32 @@ StaticVector< 3, Real >::StaticVector( const StaticVector< 3, Real >& v )
 }
 
 template< typename Real >
+StaticVector< 3, Real >::StaticVector( const std::initializer_list< Real > &elems )
+: StaticArray< 3, Real >( elems )
+{
+}
+
+template< typename Real >
+   template< typename T1,
+             typename T2,
+             template< typename, typename > class Operation >
+__cuda_callable__
+StaticVector< 3, Real >::StaticVector( const Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& op )
+{
+   Algorithms::VectorAssignment< StaticVector< 3, Real >, Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation > >::assignStatic( *this, op );
+};
+
+template< typename Real >
+   template< typename T,
+             template< typename > class Operation >
+__cuda_callable__
+StaticVector< 3, Real >::StaticVector( const Expressions::StaticUnaryExpressionTemplate< T, Operation >& op )
+{
+   Algorithms::VectorAssignment< StaticVector< 3, Real >, Expressions::StaticUnaryExpressionTemplate< T, Operation > >::assignStatic( *this, op );
+};
+
+
+template< typename Real >
 bool
 StaticVector< 3, Real >::setup( const Config::ParameterContainer& parameters,
                                 const String& prefix )
@@ -69,6 +96,15 @@ String StaticVector< 3, Real >::getType()
           String( ", " ) +
           TNL::getType< Real >() +
           String( " >" );
+}
+
+template< typename Real >
+   template< typename RHS >
+StaticVector< 3, Real >&
+StaticVector< 3, Real >::operator =( const RHS& rhs )
+{
+   Algorithms::VectorAssignment< StaticVector< 3, Real >, RHS >::assignStatic( *this, rhs );
+   return *this;
 }
 
 template< typename Real >
@@ -110,48 +146,6 @@ StaticVector< 3, Real >& StaticVector< 3, Real >::operator /= ( const Real& c )
    this->data[ 1 ] *= d;
    this->data[ 2 ] *= d;
    return *this;
-}
-
-template< typename Real >
-__cuda_callable__
-StaticVector< 3, Real > StaticVector< 3, Real >::operator + ( const StaticVector& u ) const
-{
-   StaticVector< 3, Real > res;
-   res[ 0 ] = this->data[ 0 ] + u[ 0 ];
-   res[ 1 ] = this->data[ 1 ] + u[ 1 ];
-   res[ 2 ] = this->data[ 2 ] + u[ 2 ];
-   return res;
-}
-
-template< typename Real >
-__cuda_callable__
-StaticVector< 3, Real > StaticVector< 3, Real >::operator - ( const StaticVector& u ) const
-{
-   StaticVector< 3, Real > res;
-   res[ 0 ] = this->data[ 0 ] - u[ 0 ];
-   res[ 1 ] = this->data[ 1 ] - u[ 1 ];
-   res[ 2 ] = this->data[ 2 ] - u[ 2 ];
-   return res;
-}
-
-template< typename Real >
-__cuda_callable__
-StaticVector< 3, Real > StaticVector< 3, Real >::operator * ( const Real& c ) const
-{
-   StaticVector< 3, Real > res;
-   res[ 0 ] = c * this->data[ 0 ];
-   res[ 1 ] = c * this->data[ 1 ];
-   res[ 2 ] = c * this->data[ 2 ];
-   return res;
-}
-
-template< typename Real >
-__cuda_callable__
-Real StaticVector< 3, Real >::operator * ( const StaticVector& u ) const
-{
-   return this->data[ 0 ] * u[ 0 ] +
-          this->data[ 1 ] * u[ 1 ] +
-          this->data[ 2 ] * u[ 2 ];
 }
 
 template< typename Real >
@@ -219,16 +213,16 @@ Real
 StaticVector< 3, Real >::lpNorm( const Real& p ) const
 {
    if( p == 1.0 )
-      return TNL::abs( this->data[ 0 ] ) + 
-             TNL::abs( this->data[ 1 ] ) + 
+      return TNL::abs( this->data[ 0 ] ) +
+             TNL::abs( this->data[ 1 ] ) +
              TNL::abs( this->data[ 2 ] );
    if( p == 2.0 )
-      return TNL::sqrt( this->data[ 0 ] * this->data[ 0 ] + 
+      return TNL::sqrt( this->data[ 0 ] * this->data[ 0 ] +
                         this->data[ 1 ] * this->data[ 1 ] +
                         this->data[ 2 ] * this->data[ 2 ] );
    return TNL::pow( TNL::pow( TNL::abs( this->data[ 0 ] ), p ) +
                     TNL::pow( TNL::abs( this->data[ 1 ] ), p ) +
-                    TNL::pow( TNL::abs( this->data[ 2 ] ), p ), 1.0 / p ); 
+                    TNL::pow( TNL::abs( this->data[ 2 ] ), p ), 1.0 / p );
 }
 
 } // namespace Containers

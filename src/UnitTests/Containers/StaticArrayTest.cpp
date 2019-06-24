@@ -62,7 +62,7 @@ TYPED_TEST( StaticArrayTest, constructors )
 {
    using ArrayType = typename TestFixture::ArrayType;
    using ValueType = typename TestFixture::ValueType;
-   constexpr int Size = ArrayType::size;
+   constexpr int Size = ArrayType::getSize();
 
    ValueType data[ Size ];
    for( int i = 0; i < Size; i++ )
@@ -93,7 +93,7 @@ TYPED_TEST( StaticArrayTest, constructors )
 TYPED_TEST( StaticArrayTest, getSize )
 {
    using ArrayType = typename TestFixture::ArrayType;
-   constexpr int Size = ArrayType::size;
+   constexpr int Size = ArrayType::getSize();
 
    ArrayType u;
    EXPECT_EQ( u.getSize(), Size );
@@ -151,7 +151,7 @@ void checkCoordinates( StaticArray< _Size, Value >& u )
 TYPED_TEST( StaticArrayTest, CoordinatesGetter )
 {
    using ArrayType = typename TestFixture::ArrayType;
-   constexpr int Size = ArrayType::size;
+   constexpr int Size = ArrayType::getSize();
 
    ArrayType u;
    for( int i = 0; i < Size; i++ )
@@ -163,7 +163,7 @@ TYPED_TEST( StaticArrayTest, CoordinatesGetter )
 TYPED_TEST( StaticArrayTest, ComparisonOperator )
 {
    using ArrayType = typename TestFixture::ArrayType;
-   constexpr int Size = ArrayType::size;
+   constexpr int Size = ArrayType::getSize();
 
    ArrayType u1, u2, u3;
 
@@ -193,7 +193,7 @@ TYPED_TEST( StaticArrayTest, ComparisonOperator )
 TYPED_TEST( StaticArrayTest, AssignmentOperator )
 {
    using ArrayType = typename TestFixture::ArrayType;
-   constexpr int Size = ArrayType::size;
+   constexpr int Size = ArrayType::getSize();
 
    ArrayType u1, u2, u3;
 
@@ -220,7 +220,7 @@ TYPED_TEST( StaticArrayTest, AssignmentOperator )
 TYPED_TEST( StaticArrayTest, setValue )
 {
    using ArrayType = typename TestFixture::ArrayType;
-   constexpr int Size = ArrayType::size;
+   constexpr int Size = ArrayType::getSize();
 
    ArrayType u;
    u.setValue( 42 );
@@ -231,7 +231,7 @@ TYPED_TEST( StaticArrayTest, setValue )
 TYPED_TEST( StaticArrayTest, CastToDifferentStaticArray )
 {
    using ArrayType = typename TestFixture::ArrayType;
-   constexpr int Size = ArrayType::size;
+   constexpr int Size = ArrayType::getSize();
    using OtherArray = StaticArray< Size, char >;
 
    ArrayType u1( 1 );
@@ -261,7 +261,7 @@ TYPED_TEST( StaticArrayTest, SaveAndLoad )
 TYPED_TEST( StaticArrayTest, sort )
 {
    using ArrayType = typename TestFixture::ArrayType;
-   constexpr int Size = ArrayType::size;
+   constexpr int Size = ArrayType::getSize();
 
    ArrayType u;
    for( int i = 0; i < Size; i++ )

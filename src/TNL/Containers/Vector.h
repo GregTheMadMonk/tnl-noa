@@ -11,10 +11,13 @@
 #pragma once
 
 #include <TNL/Containers/Array.h>
-#include <TNL/Containers/VectorView.h>
+#include <TNL/Containers/Algorithms/PrefixSumType.h>
 
 namespace TNL {
 namespace Containers {
+
+template< typename Real, typename Device, typename Index >
+class VectorView;
 
 /**
  * \brief This class extends TNL::Array with algebraic operations.
@@ -41,9 +44,85 @@ public:
    using ViewType = VectorView< Real, Device, Index >;
    using ConstViewType = VectorView< std::add_const_t< Real >, Device, Index >;
 
-   /** Constructors and assignment operators are inherited from the class \ref Array. */
-   using Array< Real, Device, Index >::Array;
-   using Array< Real, Device, Index >::operator=;
+   /** Subscript operator is inherited from the class \ref Array. */
+   using Array< Real, Device, Index >::operator[];
+
+   /**
+    * \brief Basic constructor.
+    *
+    * Constructs an empty vector with zero size.
+    */
+   Vector();
+
+   /**
+    * \brief Constructor with vector size.
+    *
+    * \param size is number of vector elements.
+    */
+   Vector( const IndexType& size );
+
+   /**
+    * \brief Deep copy constructor with data pointer and size.
+    *
+    * This behavior of the Vector is deprecated and \ref VectorView should be used
+    * instead.
+    *
+    * \param data Pointer to data.
+    * \param size Number of vector elements.
+    */
+   Vector( Real* data,
+           const IndexType& size );
+
+   /**
+    * \brief Copy constructor.
+    *
+    * \param vector is an vector to be copied.
+    */
+   explicit Vector( const Vector& vector );
+
+   template< typename Real_, typename Device_, typename Index_ >
+   Vector( const Vector< Real_, Device_, Index_ >& vector );
+
+   /**
+    * \brief Deep copy constructor with other vector.
+    *
+    * \param vector is an vector that is to be bound.
+    * \param begin is the first index which should be bound.
+    * \param size is number of array elements that should be bound.
+    */
+   Vector( Vector& vector,
+           const IndexType& begin = 0,
+           const IndexType& size = 0 );
+
+   /**
+    * \brief Move constructor.
+    *
+    * @param vector is an vector to be moved
+    */
+   Vector( Vector&& vector );
+
+   /**
+    * \brief Initialize the vector from initializer list, i.e. { ... }
+    *
+    * @param list Initializer list.
+    */
+   Vector( const std::initializer_list< Real >& list );
+
+   /**
+    * \brief Initialize the vector from std::list.
+    *
+    * @param list Input STL list.
+    */
+   template< typename InReal >
+   Vector( const std::list< InReal >& list );
+
+   /**
+    * \brief Initialize the vector from std::vector.
+    *
+    * @param vector Input STL vector.
+    */
+   template< typename InReal >
+   Vector( const std::vector< InReal >& vector );
 
    /** \brief Returns type of vector Real value, Device type and the type of Index. */
    static String getType();
@@ -53,13 +132,27 @@ public:
 
    /**
     * \brief Returns a modifiable view of the vector.
+    *
+    * If \e begin and \e end is set, view for sub-interval [ \e begin, \e end )
+    * is returned.
+    *
+    * \param begin is the beginning of the Vector sub-interval, 0 by default.
+    * \param end is the end of the Vector sub-interval. Default value is 0 which is,
+    * however, replaced with the Vector size.
     */
-   ViewType getView();
+   ViewType getView( IndexType begin = 0, IndexType end = 0 );
 
    /**
     * \brief Returns a non-modifiable view of the vector.
+    *
+    * If \e begin and \e end is set, view for sub-interval [ \e begin, \e end )
+    * is returned.
+    *
+    * \param begin is the beginning of the sub-interval, 0 by default.
+    * \param end is the end of the sub-interval. Default value is 0 which is,
+    * however, replaced with the Vector size.
     */
-   ConstViewType getConstView() const;
+   ConstViewType getConstView( IndexType begin = 0, IndexType end = 0 ) const;
 
    /**
     * \brief Conversion operator to a modifiable view of the vector.
@@ -90,14 +183,25 @@ public:
                     const RealType& value,
                     const Scalar thisElementMultiplicator );
 
+   Vector& operator = ( const Vector& v );
+
+   template< typename Real_, typename Device_, typename Index_ >
+   Vector& operator = ( const Vector< Real_, Device_, Index_ >& v );
+
+   template< typename Real_, typename Device_, typename Index_ >
+   Vector& operator = ( const VectorView< Real_, Device_, Index_ >& v );
+
+   template< typename VectorExpression >
+   Vector& operator = ( const VectorExpression& expression );
+
    /**
     * \brief This function subtracts \e vector from this vector and returns the resulting vector.
     *
     * The subtraction is applied to all the vector elements separately.
     * \param vector Reference to another vector.
     */
-   template< typename VectorT >
-   Vector& operator -= ( const VectorT& vector );
+   template< typename VectorExpression >
+   Vector& operator -= ( const VectorExpression& expression );
 
    /**
     * \brief This function adds \e vector to this vector and returns the resulting vector.
@@ -105,8 +209,8 @@ public:
     * The addition is applied to all the vector elements separately.
     * \param vector Reference to another vector.
     */
-   template< typename VectorT >
-   Vector& operator += ( const VectorT& vector );
+   template< typename VectorExpression >
+   Vector& operator += ( const VectorExpression& expression );
 
    /**
     * \brief This function multiplies this vector by \e c and returns the resulting vector.
@@ -114,8 +218,8 @@ public:
     * The multiplication is applied to all the vector elements separately.
     * \param c Multiplicator.
     */
-   template< typename Scalar >
-   Vector& operator *= ( const Scalar c );
+   template< typename VectorExpression >
+   Vector& operator *= ( const VectorExpression& expression );
 
    /**
     * \brief This function divides this vector by \e c and returns the resulting vector.
@@ -123,8 +227,16 @@ public:
     * The division is applied to all the vector elements separately.
     * \param c Divisor.
     */
-   template< typename Scalar >
-   Vector& operator /= ( const Scalar c );
+   template< typename VectorExpression >
+   Vector& operator /= ( const VectorExpression& expression );
+
+   /**
+    * \brief Scalar product
+    * @param v
+    * @return
+    */
+   template< typename Vector_ >
+   Real operator, ( const Vector_& v ) const;
 
    /**
     * \brief Returns the maximum value out of all vector elements.
@@ -257,15 +369,6 @@ public:
    /**
     * \brief Returns specific sums of elements of this vector.
     *
-    * Goes in order from the first element to the last one and for every element
-    * in this vector computes sum of all previous elements including the element.
-    * Therefore this method returns a new vector with the length of this vector.
-    */
-   void computePrefixSum();
-
-   /**
-    * \brief Returns specific sums of elements of this vector.
-    *
     * Does the same as \ref computePrefixSum, but computes only sums for elements
     * with the index in range from \e begin to \e end. The other elements of this
     * vector remain untouched - with the same value. Therefore this method returns
@@ -274,29 +377,21 @@ public:
     * \param begin Index of the element in this vector which to begin with.
     * \param end Index of the element in this vector which to end with.
     */
-   void computePrefixSum( const IndexType begin, const IndexType end );
+   template< Algorithms::PrefixSumType Type = Algorithms::PrefixSumType::Inclusive >
+   void prefixSum( const IndexType begin = 0, const IndexType end = 0 );
 
-   /**
-    * \brief Returns specific sums of elements of this vector.
-    *
-    * Goes in order from the first element to the last one and for every element
-    * in this vector computes sum of all previous elements excluding the element.
-    * Therefore returns a new vector with the length of this vector.
-    */
-   void computeExclusivePrefixSum();
+   template< Algorithms::PrefixSumType Type = Algorithms::PrefixSumType::Inclusive,
+             typename FlagsArray >
+   void segmentedPrefixSum( FlagsArray& flags, const IndexType begin = 0, const IndexType end = 0 );
 
-   /**
-    * \brief Returns specific sums of elements of this vector.
-    *
-    * Does the same as \ref computeExclusivePrefixSum, but computes only sums for elements
-    * with the index in range from \e begin to \e end. The other elements of this
-    * vector remain untouched - with the same value. Therefore this method returns
-    * a new vector with the length of this vector.
-    *
-    * \param begin Index of the element in this vector which to begin with.
-    * \param end Index of the element in this vector which to end with.
-    */
-   void computeExclusivePrefixSum( const IndexType begin, const IndexType end );
+   template< Algorithms::PrefixSumType Type = Algorithms::PrefixSumType::Inclusive,
+             typename VectorExpression >
+   void prefixSum( const VectorExpression& expression, const IndexType begin = 0, const IndexType end = 0 );
+
+   template< Algorithms::PrefixSumType Type = Algorithms::PrefixSumType::Inclusive,
+             typename VectorExpression,
+             typename FlagsArray >
+   void segmentedPrefixSum( const VectorExpression& expression, FlagsArray& flags, const IndexType begin = 0, const IndexType end = 0 );
 };
 
 } // namespace Containers

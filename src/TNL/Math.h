@@ -164,6 +164,230 @@ T sqrt( const T& value )
 }
 
 /**
+ * \brief This function returns cubic root of the given \e value.
+ */
+template< typename T >
+__cuda_callable__ inline
+T cbrt( const T& value )
+{
+#if defined(__CUDA_ARCH__) || defined(__MIC__)
+   return ::cbrt( value );
+#else
+   return std::cbrt( value );
+#endif
+}
+
+/**
+ * \brief This function returns sine of the given \e value.
+ */
+template< typename T >
+__cuda_callable__ inline
+T sin( const T& value )
+{
+#if defined(__CUDA_ARCH__) || defined(__MIC__)
+   return ::sin( value );
+#else
+   return std::sin( value );
+#endif
+}
+
+/**
+ * \brief This function returns cosine of the given \e value.
+ */
+template< typename T >
+__cuda_callable__ inline
+T cos( const T& value )
+{
+#if defined(__CUDA_ARCH__) || defined(__MIC__)
+   return ::cos( value );
+#else
+   return std::cos( value );
+#endif
+}
+
+/**
+ * \brief This function returns tangent of the given \e value.
+ */
+template< typename T >
+__cuda_callable__ inline
+T tan( const T& value )
+{
+#if defined(__CUDA_ARCH__) || defined(__MIC__)
+   return ::tan( value );
+#else
+   return std::tan( value );
+#endif
+}
+
+/**
+ * \brief This function returns largest integer value not greater than the given \e value.
+ */
+template< typename T >
+__cuda_callable__ inline
+T floor( const T& value )
+{
+#if defined(__CUDA_ARCH__) || defined(__MIC__)
+   return ::floor( value );
+#else
+   return std::floor( value );
+#endif
+}
+
+/**
+ * \brief This function returns the smallest integer value not less than the given \e value.
+ */
+template< typename T >
+__cuda_callable__ inline
+T ceil( const T& value )
+{
+#if defined(__CUDA_ARCH__) || defined(__MIC__)
+   return ::ceil( value );
+#else
+   return std::ceil( value );
+#endif
+}
+
+/**
+ * \brief This function returns the arc cosine of the given \e value.
+ */
+template< typename T >
+__cuda_callable__ inline
+T acos( const T& value )
+{
+#if defined(__CUDA_ARCH__) || defined(__MIC__)
+   return ::acos( value );
+#else
+   return std::acos( value );
+#endif
+}
+
+/**
+ * \brief This function returns the arc sine of the given \e value.
+ */
+template< typename T >
+__cuda_callable__ inline
+T asin( const T& value )
+{
+#if defined(__CUDA_ARCH__) || defined(__MIC__)
+   return ::asin( value );
+#else
+   return std::asin( value );
+#endif
+}
+
+/**
+ * \brief This function returns the arc tangent of the given \e value.
+ */
+template< typename T >
+__cuda_callable__ inline
+T atan( const T& value )
+{
+#if defined(__CUDA_ARCH__) || defined(__MIC__)
+   return ::atan( value );
+#else
+   return std::atan( value );
+#endif
+}
+
+/**
+ * \brief This function returns the hyperbolic sine of the given \e value.
+ */
+template< typename T >
+__cuda_callable__ inline
+T sinh( const T& value )
+{
+#if defined(__CUDA_ARCH__) || defined(__MIC__)
+   return ::sinh( value );
+#else
+   return std::sinh( value );
+#endif
+}
+
+/**
+ * \brief This function returns the hyperbolic cosine of the given \e value.
+ */
+template< typename T >
+__cuda_callable__ inline
+T cosh( const T& value )
+{
+#if defined(__CUDA_ARCH__) || defined(__MIC__)
+   return ::cosh( value );
+#else
+   return std::cosh( value );
+#endif
+}
+
+/**
+ * \brief This function returns the hyperbolic tangent of the given \e value.
+ */
+template< typename T >
+__cuda_callable__ inline
+T tanh( const T& value )
+{
+#if defined(__CUDA_ARCH__) || defined(__MIC__)
+   return ::tanh( value );
+#else
+   return std::tanh( value );
+#endif
+}
+
+/**
+ * \brief This function returns the natural logarithm of the given \e value.
+ */
+template< typename T >
+__cuda_callable__ inline
+T log( const T& value )
+{
+#if defined(__CUDA_ARCH__) || defined(__MIC__)
+   return ::log( value );
+#else
+   return std::log( value );
+#endif
+}
+
+/**
+ * \brief This function returns the common logarithm of the given \e value.
+ */
+template< typename T >
+__cuda_callable__ inline
+T log10( const T& value )
+{
+#if defined(__CUDA_ARCH__) || defined(__MIC__)
+   return ::log10( value );
+#else
+   return std::log10( value );
+#endif
+}
+
+/**
+ * \brief This function returns the binary logarithm of the given \e value.
+ */
+template< typename T >
+__cuda_callable__ inline
+T log2( const T& value )
+{
+#if defined(__CUDA_ARCH__) || defined(__MIC__)
+   return ::log2( value );
+#else
+   return std::log2( value );
+#endif
+}
+
+/**
+ * \brief This function returns the base-e exponential of the given \e value.
+ */
+template< typename T >
+__cuda_callable__ inline
+T exp( const T& value )
+{
+#if defined(__CUDA_ARCH__) || defined(__MIC__)
+   return ::exp( value );
+#else
+   return std::exp( value );
+#endif
+}
+
+/**
  * \brief This function swaps values of two parameters.
  *
  * It assigns the value of \e a to the parameter \e b and vice versa.

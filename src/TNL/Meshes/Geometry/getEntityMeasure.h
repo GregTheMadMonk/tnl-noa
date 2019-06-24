@@ -59,12 +59,12 @@ getVectorLength( const TNL::Containers::StaticVector< 1, Real > & vector )
     return TNL::abs( vector[ 0 ] );
 }
 
-template< int Size, typename Real >
+template< typename VectorExpression >
 __cuda_callable__
-Real
-getVectorLength( const TNL::Containers::StaticVector< Size, Real > & vector )
+typename VectorExpression::RealType
+getVectorLength( const VectorExpression& expr )
 {
-    return TNL::sqrt( vector * vector );
+    return TNL::sqrt( TNL::dot( expr, expr ) );
 }
 
 // Edge
@@ -115,7 +115,10 @@ getEntityMeasure( const Mesh< MeshConfig, Device > & mesh,
     const auto& v0 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 0 ) );
     const auto& v1 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 1 ) );
     const auto& v2 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 2 ) );
-    return getTriangleArea( v2.getPoint() - v0.getPoint(), v1.getPoint() - v0.getPoint() );
+    using Point = decltype( v0.getPoint() );
+    Point p1 = v2.getPoint() - v0.getPoint();
+    Point p2 = v1.getPoint() - v0.getPoint();
+    return getTriangleArea( p1, p2 );
 }
 
 // Quadrilateral
@@ -134,13 +137,14 @@ getEntityMeasure( const Mesh< MeshConfig, Device > & mesh,
     return getTriangleArea( v2.getPoint() - v0.getPoint(), v3.getPoint() - v1.getPoint() );
 }
 
-template< typename Real >
+template< typename VectorExpression >
 __cuda_callable__
-Real
-getTetrahedronVolume( const TNL::Containers::StaticVector< 3, Real > & v1,
-                      const TNL::Containers::StaticVector< 3, Real > & v2,
-                      const TNL::Containers::StaticVector< 3, Real > & v3 )
+typename VectorExpression::RealType
+getTetrahedronVolume( const VectorExpression& v1,
+                      const VectorExpression& v2,
+                      const VectorExpression& v3 )
 {
+    using Real = typename VectorExpression::RealType;
     // V = (1/6) * det(v1, v2, v3)
     const Real det = v1.x() * v2.y() * v3.z() +
                      v1.y() * v2.z() * v3.x() +

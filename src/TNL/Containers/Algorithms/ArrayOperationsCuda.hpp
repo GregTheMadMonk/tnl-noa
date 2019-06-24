@@ -109,8 +109,8 @@ setMemory( Element* data,
 #ifdef HAVE_CUDA
    dim3 blockSize( 0 ), gridSize( 0 );
    blockSize. x = 256;
-   Index blocksNumber = ceil( ( double ) size / ( double ) blockSize. x );
-   gridSize. x = min( blocksNumber, Devices::Cuda::getMaxGridSize() );
+   Index blocksNumber = TNL::ceil( ( double ) size / ( double ) blockSize. x );
+   gridSize. x = TNL::min( blocksNumber, Devices::Cuda::getMaxGridSize() );
    setArrayValueCudaKernel<<< gridSize, blockSize >>>( data, size, value );
    TNL_CHECK_CUDA_DEVICE;
 #else
@@ -161,7 +161,7 @@ copyMemory( DestinationElement* destination,
    {
       dim3 blockSize( 0 ), gridSize( 0 );
       blockSize. x = 256;
-      Index blocksNumber = ceil( ( double ) size / ( double ) blockSize. x );
+      Index blocksNumber = TNL::ceil( ( double ) size / ( double ) blockSize. x );
       gridSize. x = min( blocksNumber, Devices::Cuda::getMaxGridSize() );
       copyMemoryCudaToCudaKernel<<< gridSize, blockSize >>>( destination, source, size );
       TNL_CHECK_CUDA_DEVICE;
@@ -282,7 +282,7 @@ copyMemory( DestinationElement* destination,
       {
          if( cudaMemcpy( (void*) buffer.get(),
                          (void*) &source[ i ],
-                         min( size - i, Devices::Cuda::getGPUTransferBufferSize() ) * sizeof( SourceElement ),
+                         TNL::min( size - i, Devices::Cuda::getGPUTransferBufferSize() ) * sizeof( SourceElement ),
                          cudaMemcpyDeviceToHost ) != cudaSuccess )
             std::cerr << "Transfer of data from CUDA device to host failed." << std::endl;
          TNL_CHECK_CUDA_DEVICE;

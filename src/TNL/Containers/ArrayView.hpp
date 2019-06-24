@@ -91,9 +91,11 @@ template< typename Value,
           typename Index >
 typename ArrayView< Value, Device, Index >::ViewType
 ArrayView< Value, Device, Index >::
-getView()
+getView( const IndexType begin, IndexType end )
 {
-   return *this;
+   if( end == 0 )
+      end = this->getSize();
+   return ViewType( &getData()[ begin ], end - begin );;
 }
 
 template< typename Value,
@@ -101,9 +103,11 @@ template< typename Value,
           typename Index >
 typename ArrayView< Value, Device, Index >::ConstViewType
 ArrayView< Value, Device, Index >::
-getConstView() const
+getConstView( const IndexType begin, IndexType end ) const
 {
-   return *this;
+   if( end == 0 )
+      end = this->getSize();
+   return ConstViewType( &getData()[ begin ], end - begin );
 }
 
 // Copy-assignment does deep copy, just like regular array, but the sizes
@@ -127,7 +131,7 @@ template< typename Value,
    template< typename T >
 ArrayView< Value, Device, Index >&
 ArrayView< Value, Device, Index >::
-operator = ( const T& data )
+operator=( const T& data )
 {
    Algorithms::ArrayAssignment< ArrayView, T >::assign( *this, data );
    return *this;
@@ -295,10 +299,12 @@ template< typename Value,
           typename Index >
 void
 ArrayView< Value, Device, Index >::
-setValue( Value value )
+setValue( Value value, const Index begin, Index end )
 {
    TNL_ASSERT_GT( size, 0, "Attempted to set value to an empty array view." );
-   Algorithms::ArrayOperations< Device >::setMemory( getData(), value, getSize() );
+   if( end == 0 )
+      end = this->getSize();
+   Algorithms::ArrayOperations< Device >::setMemory( &getData()[ begin ], value, end - begin );
 }
 
 template< typename Value,
@@ -306,7 +312,7 @@ template< typename Value,
           typename Index >
    template< typename Function >
 void ArrayView< Value, Device, Index >::
-evaluate( Function& f, const Index begin, Index end )
+evaluate( const Function& f, const Index begin, Index end )
 {
    TNL_ASSERT_TRUE( this->getData(), "Attempted to set a value of an empty array view." );
 
@@ -316,7 +322,7 @@ evaluate( Function& f, const Index begin, Index end )
       d[ i ] = f( i );
    };
 
-   if( end == -1 )
+   if( end == 0 )
       end = this->getSize();
 
    ParallelFor< DeviceType >::exec( begin, end, eval );
@@ -327,9 +333,13 @@ template< typename Value,
           typename Index >
 bool
 ArrayView< Value, Device, Index >::
-containsValue( Value value ) const
+containsValue( Value value,
+               const Index begin,
+               Index end ) const
 {
-   return Algorithms::ArrayOperations< Device >::containsValue( data, size, value );
+   if( end == 0 )
+      end = this->getSize();
+   return Algorithms::ArrayOperations< Device >::containsValue( &this->getData()[ begin ], end - begin, value );
 }
 
 template< typename Value,
@@ -337,9 +347,13 @@ template< typename Value,
           typename Index >
 bool
 ArrayView< Value, Device, Index >::
-containsOnlyValue( Value value ) const
+containsOnlyValue( Value value,
+                   const Index begin,
+                   Index end  ) const
 {
-   return Algorithms::ArrayOperations< Device >::containsOnlyValue( data, size, value );
+   if( end == 0 )
+      end = this->getSize();
+   return Algorithms::ArrayOperations< Device >::containsOnlyValue( &this->getData()[ begin ], end - begin, value );
 }
 
 template< typename Value,
@@ -364,6 +378,28 @@ std::ostream& operator<<( std::ostream& str, const ArrayView< Value, Device, Ind
    }
    str << " ]";
    return str;
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+void ArrayView< Value, Device, Index >::save( const String& fileName ) const
+{
+   File file;
+   file.open( fileName, std::ios_base::out );
+   file << *this;
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+void
+ArrayView< Value, Device, Index >::
+load( const String& fileName )
+{
+   File file;
+   file.open( fileName, std::ios_base::in );
+   file >> *this;
 }
 
 // Serialization of array views into binary files.

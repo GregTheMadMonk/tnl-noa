@@ -56,11 +56,13 @@ template< typename Value,
 Array< Value, Device, Index >::
 Array( Value* data,
        const IndexType& size )
-: size( size ),
-  data( data ),
-  allocationPointer( 0 ),
+: size( 0 ),
+  data( nullptr ),
+  allocationPointer( nullptr ),
   referenceCounter( 0 )
 {
+   this->setSize( size );
+   Algorithms::ArrayOperations< Device >::copyMemory( this->getData(), data, size );
 }
 
 template< typename Value,
@@ -83,30 +85,19 @@ template< typename Value,
 Array< Value, Device, Index >::
 Array( Array< Value, Device, Index >& array,
        const IndexType& begin,
-       const IndexType& size )
+       IndexType size )
 : size( size ),
-  data( &array.getData()[ begin ] ),
-  allocationPointer( array.allocationPointer ),
+  data( nullptr ),
+  allocationPointer( nullptr ),
   referenceCounter( 0 )
 {
-   TNL_ASSERT_TRUE( array.getData(), "Empty arrays cannot be bound." );
+   if( size == 0 )
+      size = array.getSize() - begin;
    TNL_ASSERT_LT( begin, array.getSize(), "Begin of array is out of bounds." );
    TNL_ASSERT_LE( begin + size, array.getSize(), "End of array is out of bounds." );
 
-   if( ! this->size )
-      this->size = array.getSize() - begin;
-   if( array.allocationPointer )
-   {
-      if( array.referenceCounter )
-      {
-         this->referenceCounter = array.referenceCounter;
-         *this->referenceCounter += 1;
-      }
-      else
-      {
-         this->referenceCounter = array.referenceCounter = new int( 2 );
-      }
-   }
+   this->setSize( size );
+   Algorithms::ArrayOperations< Device >::copyMemory( this->getData(), &array.getData()[ begin ], size );
 }
 
 template< typename Value,
@@ -344,9 +335,11 @@ template< typename Value,
           typename Index >
 typename Array< Value, Device, Index >::ViewType
 Array< Value, Device, Index >::
-getView()
+getView( IndexType begin, IndexType end )
 {
-   return ViewType( getData(), getSize() );
+   if( end == 0 )
+      end = getSize();
+   return ViewType( &getData()[ begin ], end - begin );
 }
 
 template< typename Value,
@@ -354,9 +347,11 @@ template< typename Value,
           typename Index >
 typename Array< Value, Device, Index >::ConstViewType
 Array< Value, Device, Index >::
-getConstView() const
+getConstView( IndexType begin, IndexType end ) const
 {
-   return ConstViewType( getData(), getSize() );
+   if( end == 0 )
+      end = getSize();
+   return ConstViewType( &getData()[ begin ], end - begin );
 }
 
 template< typename Value,
@@ -603,9 +598,21 @@ void Array< Value, Device, Index >::setValue( const ValueType& e,
                                               Index end )
 {
    TNL_ASSERT_TRUE( this->getData(), "Attempted to set a value of an empty array." );
-   if( end == -1 )
+   if( end == 0 )
       end = this->getSize();
    Algorithms::ArrayOperations< Device >::setMemory( &this->getData()[ begin ], e, end - begin );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+   template< typename Function >
+void Array< Value, Device, Index >::evaluate( const Function& f,
+                                              const Index begin,
+                                              Index end )
+{
+   TNL_ASSERT_TRUE( this->getData(), "Attempted to set a value of an empty array." );
+   this->getView().evaluate( f, begin, end );
 }
 
 template< typename Value,
@@ -618,7 +625,7 @@ containsValue( const Value& v,
                Index end ) const
 {
    TNL_ASSERT_TRUE( this->getData(), "Attempted to check a value of an empty array." );
-   if( end == -1 )
+   if( end == 0 )
       end = this->getSize();
 
    return Algorithms::ArrayOperations< Device >::containsValue( &this->getData()[ begin ], end - begin, v );
@@ -634,7 +641,7 @@ containsOnlyValue( const Value& v,
                    Index end ) const
 {
    TNL_ASSERT_TRUE( this->getData(), "Attempted to check a value of an empty array." );
-   if( end == -1 )
+   if( end == 0 )
       end = this->getSize();
 
    return Algorithms::ArrayOperations< Device >::containsOnlyValue( &this->getData()[ begin ], end - begin, v );
@@ -649,6 +656,28 @@ Array< Value, Device, Index >::
 empty() const
 {
    return ( data == nullptr );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+void Array< Value, Device, Index >::save( const String& fileName ) const
+{
+   File file;
+   file.open( fileName, std::ios_base::out );
+   file << *this;
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+void
+Array< Value, Device, Index >::
+load( const String& fileName )
+{
+   File file;
+   file.open( fileName, std::ios_base::in );
+   file >> *this;
 }
 
 template< typename Value,

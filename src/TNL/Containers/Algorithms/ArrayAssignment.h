@@ -1,8 +1,8 @@
 /***************************************************************************
-                          ArrayOperations.h  -  description
+                          ArrayAssignment.h  -  description
                              -------------------
-    begin                : Jul 15, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    begin                : Apr 4, 2019
+    copyright            : (C) 2019 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 

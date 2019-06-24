@@ -175,7 +175,7 @@ setOverlaps( const SubdomainOverlapsType& lower,
 
 
    this->localOrigin = this->globalGrid.getOrigin() +
-         Containers::Scale( this->globalGrid.getSpaceSteps(),
+         Scale( this->globalGrid.getSpaceSteps(),
             ( this->globalBegin - this->lowerOverlap ) );
 
    this->localBegin = this->lowerOverlap;
@@ -379,7 +379,7 @@ setupNeighbors()
    for( int i = 0; i < getNeighborsCount(); i++ )
    {
       auto direction = Directions::template getXYZ< Dimension >( i );
-      auto coordinates = this->subdomainCoordinates+direction;
+      CoordinatesType coordinates = this->subdomainCoordinates+direction;
       if( this->isThereNeighbor( direction ) )
          this->neighbors[ i ] = this->getRankOfProcCoord( coordinates );
       else

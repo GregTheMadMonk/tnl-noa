@@ -74,22 +74,19 @@ CudaReductionKernel( const Result zero,
     * Read data into the shared memory. We start with the
     * sequential reduction.
     */
-   while( gid + 4 * gridSize < size )
-   {
+   while( gid + 4 * gridSize < size ) {
       reduction( sdata[ tid ], dataFetcher( gid ) );
       reduction( sdata[ tid ], dataFetcher( gid + gridSize ) );
       reduction( sdata[ tid ], dataFetcher( gid + 2 * gridSize ) );
       reduction( sdata[ tid ], dataFetcher( gid + 3 * gridSize ) );
       gid += 4 * gridSize;
    }
-   while( gid + 2 * gridSize < size )
-   {
+   while( gid + 2 * gridSize < size ) {
       reduction( sdata[ tid ], dataFetcher( gid ) );
       reduction( sdata[ tid ], dataFetcher( gid + gridSize ) );
       gid += 2 * gridSize;
    }
-   while( gid < size )
-   {
+   while( gid < size ) {
       reduction( sdata[ tid ], dataFetcher( gid ) );
       gid += gridSize;
    }
@@ -99,71 +96,51 @@ CudaReductionKernel( const Result zero,
    /***
     *  Perform the parallel reduction.
     */
-   if( blockSize >= 1024 )
-   {
+   if( blockSize >= 1024 ) {
       if( tid < 512 )
          reduction( sdata[ tid ], sdata[ tid + 512 ] );
       __syncthreads();
    }
-   if( blockSize >= 512 )
-   {
+   if( blockSize >= 512 ) {
       if( tid < 256 )
          reduction( sdata[ tid ], sdata[ tid + 256 ] );
       __syncthreads();
    }
-   if( blockSize >= 256 )
-   {
+   if( blockSize >= 256 ) {
       if( tid < 128 )
          reduction( sdata[ tid ], sdata[ tid + 128 ] );
       __syncthreads();
-      //printf( "2: tid %d data %f \n", tid, sdata[ tid ] );
    }
-
-   if( blockSize >= 128 )
-   {
+   if( blockSize >= 128 ) {
       if( tid <  64 )
          reduction( sdata[ tid ], sdata[ tid + 64 ] );
       __syncthreads();
-      //printf( "3: tid %d data %f \n", tid, sdata[ tid ] );
    }
 
    /***
     * This runs in one warp so it is synchronized implicitly.
     */
-   if( tid < 32 )
-   {
+   if( tid < 32 ) {
       volatile ResultType* vsdata = sdata;
-      if( blockSize >= 64 )
-      {
+      if( blockSize >= 64 ) {
          volatileReduction( vsdata[ tid ], vsdata[ tid + 32 ] );
-         //printf( "4: tid %d data %f \n", tid, sdata[ tid ] );
       }
       // TODO: If blocksize == 32, the following does not work
       // We do not check if tid < 16. Fix it!!!
-      if( blockSize >= 32 )
-      {
+      if( blockSize >= 32 ) {
          volatileReduction( vsdata[ tid ], vsdata[ tid + 16 ] );
-         //printf( "5: tid %d data %f \n", tid, sdata[ tid ] );
       }
-      if( blockSize >= 16 )
-      {
+      if( blockSize >= 16 ) {
          volatileReduction( vsdata[ tid ], vsdata[ tid + 8 ] );
-         //printf( "6: tid %d data %f \n", tid, sdata[ tid ] );
       }
-      if( blockSize >=  8 )
-      {
+      if( blockSize >=  8 ) {
          volatileReduction( vsdata[ tid ], vsdata[ tid + 4 ] );
-         //printf( "7: tid %d data %f \n", tid, sdata[ tid ] );
       }
-      if( blockSize >=  4 )
-      {
+      if( blockSize >=  4 ) {
          volatileReduction( vsdata[ tid ], vsdata[ tid + 2 ] );
-         //printf( "8: tid %d data %f \n", tid, sdata[ tid ] );
       }
-      if( blockSize >=  2 )
-      {
+      if( blockSize >=  2 ) {
          volatileReduction( vsdata[ tid ], vsdata[ tid + 1 ] );
-         //printf( "9: tid %d data %f \n", tid, sdata[ tid ] );
       }
    }
 
@@ -171,12 +148,159 @@ CudaReductionKernel( const Result zero,
     * Store the result back in the global memory.
     */
    if( tid == 0 )
-   {
-      //printf( "Block %d result = %f \n", blockIdx.x, sdata[ 0 ] );
       output[ blockIdx.x ] = sdata[ 0 ];
+}
+
+template< int blockSize,
+   typename Result,
+   typename DataFetcher,
+   typename Reduction,
+   typename VolatileReduction,
+   typename Index >
+__global__ void
+__launch_bounds__( Reduction_maxThreadsPerBlock, Reduction_minBlocksPerMultiprocessor )
+CudaReductionWithArgumentKernel( const Result zero,
+                                 const DataFetcher dataFetcher,
+                                 const Reduction reduction,
+                                 const VolatileReduction volatileReduction,
+                                 const Index size,
+                                 Result* output,
+                                 Index* idxOutput,
+                                 const Index* idxInput = nullptr )
+{
+   using IndexType = Index;
+   using ResultType = Result;
+
+   ResultType* sdata = Devices::Cuda::getSharedMemory< ResultType >();
+   IndexType* sidx = static_cast< IndexType* >( static_cast< void* >( &sdata[ blockDim.x ] ) );
+
+   /***
+    * Get thread id (tid) and global thread id (gid).
+    * gridSize is the number of element processed by all blocks at the
+    * same time.
+    */
+   const IndexType tid = threadIdx.x;
+         IndexType gid = blockIdx.x * blockDim. x + threadIdx.x;
+   const IndexType gridSize = blockDim.x * gridDim.x;
+
+   /***
+    * Read data into the shared memory. We start with the
+    * sequential reduction.
+    */
+   if( idxInput ) {
+      if( gid < size ) {
+         sdata[ tid ] = dataFetcher( gid );
+         sidx[ tid ] = idxInput[ gid ];
+         gid += gridSize;
+      } else {
+         sdata[ tid ] = zero;
+      }
+      while( gid + 4 * gridSize < size ) {
+         reduction( sidx[ tid ], idxInput[ gid ], sdata[ tid ], dataFetcher( gid ) );
+         reduction( sidx[ tid ], idxInput[ gid + gridSize ], sdata[ tid ], dataFetcher( gid + gridSize ) );
+         reduction( sidx[ tid ], idxInput[ gid + 2 * gridSize ], sdata[ tid ], dataFetcher( gid + 2 * gridSize ) );
+         reduction( sidx[ tid ], idxInput[ gid + 3 * gridSize ], sdata[ tid ], dataFetcher( gid + 3 * gridSize ) );
+         gid += 4 * gridSize;
+      }
+      while( gid + 2 * gridSize < size ) {
+         reduction( sidx[ tid ], idxInput[ gid ], sdata[ tid ], dataFetcher( gid ) );
+         reduction( sidx[ tid ], idxInput[ gid + gridSize ], sdata[ tid ], dataFetcher( gid + gridSize ) );
+         gid += 2 * gridSize;
+      }
+      while( gid < size ) {
+         reduction( sidx[ tid ], idxInput[ gid ], sdata[ tid ], dataFetcher( gid ) );
+         gid += gridSize;
+      }
+   }
+   else {
+      if( gid < size ) {
+         sdata[ tid ] = dataFetcher( gid );
+         sidx[ tid ] = gid;
+         gid += gridSize;
+      } else {
+         sdata[ tid ] = zero;
+      }
+      while( gid + 4 * gridSize < size ) {
+         reduction( sidx[ tid ], gid, sdata[ tid ], dataFetcher( gid ) );
+         reduction( sidx[ tid ], gid + gridSize, sdata[ tid ], dataFetcher( gid + gridSize ) );
+         reduction( sidx[ tid ], gid + 2 * gridSize, sdata[ tid ], dataFetcher( gid + 2 * gridSize ) );
+         reduction( sidx[ tid ], gid + 3 * gridSize, sdata[ tid ], dataFetcher( gid + 3 * gridSize ) );
+         gid += 4 * gridSize;
+      }
+      while( gid + 2 * gridSize < size ) {
+         reduction( sidx[ tid ], gid, sdata[ tid ], dataFetcher( gid ) );
+         reduction( sidx[ tid ], gid + gridSize, sdata[ tid ], dataFetcher( gid + gridSize ) );
+         gid += 2 * gridSize;
+      }
+      while( gid < size ) {
+         reduction( sidx[ tid ], gid, sdata[ tid ], dataFetcher( gid ) );
+         gid += gridSize;
+      }
+   }
+   __syncthreads();
+
+   //printf( "1: tid %d data %f \n", tid, sdata[ tid ] );
+   /***
+    *  Perform the parallel reduction.
+    */
+   if( blockSize >= 1024 ) {
+      if( tid < 512 )
+         reduction( sidx[ tid ], sidx[ tid + 512 ], sdata[ tid ], sdata[ tid + 512 ] );
+      __syncthreads();
+   }
+   if( blockSize >= 512 ) {
+      if( tid < 256 )
+         reduction( sidx[ tid ], sidx[ tid + 256 ], sdata[ tid ], sdata[ tid + 256 ] );
+      __syncthreads();
+   }
+   if( blockSize >= 256 ) {
+      if( tid < 128 )
+         reduction( sidx[ tid ], sidx[ tid + 128 ], sdata[ tid ], sdata[ tid + 128 ] );
+      __syncthreads();
+   }
+   if( blockSize >= 128 ) {
+      if( tid <  64 )
+         reduction( sidx[ tid ], sidx[ tid + 64 ], sdata[ tid ], sdata[ tid + 64 ] );
+      __syncthreads();
    }
 
+   /***
+    * This runs in one warp so it is synchronized implicitly.
+    */
+   if( tid < 32 ) {
+      volatile ResultType* vsdata = sdata;
+      volatile IndexType* vsidx = sidx;
+      if( blockSize >= 64 ) {
+         volatileReduction( vsidx[ tid ], vsidx[ tid + 32 ], vsdata[ tid ], vsdata[ tid + 32 ] );
+      }
+      // TODO: If blocksize == 32, the following does not work
+      // We do not check if tid < 16. Fix it!!!
+      if( blockSize >= 32 ) {
+         volatileReduction( vsidx[ tid ], vsidx[ tid + 16 ], vsdata[ tid ], vsdata[ tid + 16 ] );
+      }
+      if( blockSize >= 16 ) {
+         volatileReduction( vsidx[ tid ], vsidx[ tid + 8 ], vsdata[ tid ], vsdata[ tid + 8 ] );
+      }
+      if( blockSize >=  8 ) {
+         volatileReduction( vsidx[ tid ], vsidx[ tid + 4 ], vsdata[ tid ], vsdata[ tid + 4 ] );
+      }
+      if( blockSize >=  4 ) {
+         volatileReduction( vsidx[ tid ], vsidx[ tid + 2 ], vsdata[ tid ], vsdata[ tid + 2 ] );
+      }
+      if( blockSize >=  2 ) {
+         volatileReduction( vsidx[ tid ], vsidx[ tid + 1 ], vsdata[ tid ], vsdata[ tid + 1 ] );
+      }
+   }
+
+   /***
+    * Store the result back in the global memory.
+    */
+   if( tid == 0 ) {
+      output[ blockIdx.x ] = sdata[ 0 ];
+      idxOutput[ blockIdx.x ] = sidx[ 0 ];
+   }
 }
+
 
 template< typename Index,
           typename Result >
@@ -195,11 +319,16 @@ struct CudaReductionKernelLauncher
    // where blocksPerMultiprocessor is determined according to the number of
    // available registers on the multiprocessor.
    // On Tesla K40c, desGridSize = 8 * 15 = 120.
+   //
+   // Update:
+   // It seems to be better to map only one CUDA block per one multiprocessor or maybe
+   // just slightly more. Therefore we omit blocksdPerMultiprocessor in the following.
    CudaReductionKernelLauncher( const Index size )
    : activeDevice( Devices::CudaDeviceInfo::getActiveDevice() ),
      blocksdPerMultiprocessor( Devices::CudaDeviceInfo::getRegistersPerMultiprocessor( activeDevice )
                                / ( Reduction_maxThreadsPerBlock * Reduction_registersPerThread ) ),
-     desGridSize( blocksdPerMultiprocessor * Devices::CudaDeviceInfo::getCudaMultiprocessors( activeDevice ) ),
+     //desGridSize( blocksdPerMultiprocessor * Devices::CudaDeviceInfo::getCudaMultiprocessors( activeDevice ) ),
+     desGridSize( Devices::CudaDeviceInfo::getCudaMultiprocessors( activeDevice ) ),
      originalSize( size )
    {
    }
@@ -221,6 +350,28 @@ struct CudaReductionKernelLauncher
       output = cudaReductionBuffer.template getData< ResultType >();
 
       this-> reducedSize = this->launch( originalSize, reduction, volatileReduction, dataFetcher, zero, output );
+      return this->reducedSize;
+   }
+
+   template< typename DataFetcher,
+             typename Reduction,
+             typename VolatileReduction >
+   int startWithArgument( const Reduction& reduction,
+                          const VolatileReduction& volatileReduction,
+                          const DataFetcher& dataFetcher,
+                          const Result& zero,
+                          ResultType*& output,
+                          IndexType*& idxOutput )
+   {
+      ////
+      // create reference to the reduction buffer singleton and set size
+      const size_t buf_size = 2 * desGridSize * ( sizeof( ResultType ) + sizeof( IndexType ) );
+      CudaReductionBuffer& cudaReductionBuffer = CudaReductionBuffer::getInstance();
+      cudaReductionBuffer.setSize( buf_size );
+      output = cudaReductionBuffer.template getData< ResultType >();
+      idxOutput = static_cast< IndexType* >( static_cast< void* >( &output[ 2 * desGridSize ] ) );
+
+      this-> reducedSize = this->launchWithArgument( originalSize, reduction, volatileReduction, dataFetcher, zero, output, idxOutput, nullptr );
       return this->reducedSize;
    }
 
@@ -251,6 +402,38 @@ struct CudaReductionKernelLauncher
       return result;
    }
 
+   template< typename Reduction,
+             typename VolatileReduction >
+   Result finishWithArgument( IndexType& argument,
+                              const Reduction& reduction,
+                              const VolatileReduction& volatileReduction,
+                              const Result& zero )
+   {
+      ////
+      // Input is the first half of the buffer, output is the second half
+      //const size_t buf_size = desGridSize * sizeof( ResultType );
+      CudaReductionBuffer& cudaReductionBuffer = CudaReductionBuffer::getInstance();
+      ResultType* input = cudaReductionBuffer.template getData< ResultType >();
+      ResultType* output = &input[ desGridSize ];
+      IndexType* idxInput = static_cast< IndexType* >( static_cast< void* >( &output[ desGridSize ] ) );
+      IndexType* idxOutput = &idxInput[ desGridSize ];
+
+      auto copyFetch = [=] __cuda_callable__ ( IndexType i ) { return input[ i ]; };
+      while( this->reducedSize > 1 )
+      {
+         this-> reducedSize = this->launchWithArgument( this->reducedSize, reduction, volatileReduction, copyFetch, zero, output, idxOutput, idxInput );
+         std::swap( input, output );
+      }
+
+      ////
+      // Copy result on CPU
+      ResultType result;
+      ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( &result, output, 1 );
+      ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( &argument, idxOutput, 1 );
+      return result;
+   }
+
+
    protected:
       template< typename DataFetcher,
                 typename Reduction,
@@ -264,7 +447,7 @@ struct CudaReductionKernelLauncher
       {
          dim3 blockSize, gridSize;
          blockSize.x = Reduction_maxThreadsPerBlock;
-         gridSize.x = min( Devices::Cuda::getNumberOfBlocks( size, blockSize.x ), desGridSize );
+         gridSize.x = TNL::min( Devices::Cuda::getNumberOfBlocks( size, blockSize.x ), desGridSize );
 
          ////
          // when there is only one warp per blockSize.x, we need to allocate two warps
@@ -273,74 +456,166 @@ struct CudaReductionKernelLauncher
                   ? 2 * blockSize.x * sizeof( ResultType )
                   : blockSize.x * sizeof( ResultType );
 
-         /***
-          * Depending on the blockSize we generate appropriate template instance.
-          */
-         switch( blockSize.x )
-         {
-            case 512:
-               CudaReductionKernel< 512 >
-               <<< gridSize, blockSize, shmem >>>( zero, dataFetcher, reduction, volatileReduction, size, output);
-               break;
-            case 256:
-               cudaFuncSetCacheConfig(CudaReductionKernel< 256, Result, DataFetcher, Reduction, VolatileReduction, Index >, cudaFuncCachePreferShared);
+        /////
+        // Depending on the blockSize we generate appropriate template instance.
+        switch( blockSize.x )
+        {
+           case 512:
+              CudaReductionKernel< 512 >
+              <<< gridSize, blockSize, shmem >>>( zero, dataFetcher, reduction, volatileReduction, size, output);
+              break;
+           case 256:
+              cudaFuncSetCacheConfig(CudaReductionKernel< 256, Result, DataFetcher, Reduction, VolatileReduction, Index >, cudaFuncCachePreferShared);
 
-               CudaReductionKernel< 256 >
-               <<< gridSize, blockSize, shmem >>>( zero, dataFetcher, reduction, volatileReduction, size, output);
-               break;
-            case 128:
-               cudaFuncSetCacheConfig(CudaReductionKernel< 128, Result, DataFetcher, Reduction, VolatileReduction, Index >, cudaFuncCachePreferShared);
+              CudaReductionKernel< 256 >
+              <<< gridSize, blockSize, shmem >>>( zero, dataFetcher, reduction, volatileReduction, size, output);
+              break;
+           case 128:
+              cudaFuncSetCacheConfig(CudaReductionKernel< 128, Result, DataFetcher, Reduction, VolatileReduction, Index >, cudaFuncCachePreferShared);
 
-               CudaReductionKernel< 128 >
-               <<< gridSize, blockSize, shmem >>>( zero, dataFetcher, reduction, volatileReduction, size, output);
-               break;
-            case  64:
-               cudaFuncSetCacheConfig(CudaReductionKernel<  64, Result, DataFetcher, Reduction, VolatileReduction, Index >, cudaFuncCachePreferShared);
+              CudaReductionKernel< 128 >
+              <<< gridSize, blockSize, shmem >>>( zero, dataFetcher, reduction, volatileReduction, size, output);
+              break;
+           case  64:
+              cudaFuncSetCacheConfig(CudaReductionKernel<  64, Result, DataFetcher, Reduction, VolatileReduction, Index >, cudaFuncCachePreferShared);
 
-               CudaReductionKernel<  64 >
-               <<< gridSize, blockSize, shmem >>>( zero, dataFetcher, reduction, volatileReduction, size, output);
-               break;
-            case  32:
-               cudaFuncSetCacheConfig(CudaReductionKernel<  32, Result, DataFetcher, Reduction, VolatileReduction, Index >, cudaFuncCachePreferShared);
+              CudaReductionKernel<  64 >
+              <<< gridSize, blockSize, shmem >>>( zero, dataFetcher, reduction, volatileReduction, size, output);
+              break;
+           case  32:
+              cudaFuncSetCacheConfig(CudaReductionKernel<  32, Result, DataFetcher, Reduction, VolatileReduction, Index >, cudaFuncCachePreferShared);
 
-               CudaReductionKernel<  32 >
-               <<< gridSize, blockSize, shmem >>>( zero, dataFetcher, reduction, volatileReduction, size, output);
-               break;
-            case  16:
-               cudaFuncSetCacheConfig(CudaReductionKernel<  16, Result, DataFetcher, Reduction, VolatileReduction, Index >, cudaFuncCachePreferShared);
+              CudaReductionKernel<  32 >
+              <<< gridSize, blockSize, shmem >>>( zero, dataFetcher, reduction, volatileReduction, size, output);
+              break;
+           case  16:
+              cudaFuncSetCacheConfig(CudaReductionKernel<  16, Result, DataFetcher, Reduction, VolatileReduction, Index >, cudaFuncCachePreferShared);
 
-               CudaReductionKernel<  16 >
-               <<< gridSize, blockSize, shmem >>>( zero, dataFetcher, reduction, volatileReduction, size, output);
-               break;
-            case   8:
-               cudaFuncSetCacheConfig(CudaReductionKernel<   8, Result, DataFetcher, Reduction, VolatileReduction, Index >, cudaFuncCachePreferShared);
+              CudaReductionKernel<  16 >
+              <<< gridSize, blockSize, shmem >>>( zero, dataFetcher, reduction, volatileReduction, size, output);
+              break;
+          case   8:
+              cudaFuncSetCacheConfig(CudaReductionKernel<   8, Result, DataFetcher, Reduction, VolatileReduction, Index >, cudaFuncCachePreferShared);
 
-               CudaReductionKernel<   8 >
-               <<< gridSize, blockSize, shmem >>>( zero, dataFetcher, reduction, volatileReduction, size, output);
-               break;
-            case   4:
-               cudaFuncSetCacheConfig(CudaReductionKernel<   4, Result, DataFetcher, Reduction, VolatileReduction, Index >, cudaFuncCachePreferShared);
+              CudaReductionKernel<   8 >
+              <<< gridSize, blockSize, shmem >>>( zero, dataFetcher, reduction, volatileReduction, size, output);
+              break;
+           case   4:
+              cudaFuncSetCacheConfig(CudaReductionKernel<   4, Result, DataFetcher, Reduction, VolatileReduction, Index >, cudaFuncCachePreferShared);
 
-               CudaReductionKernel<   4 >
-               <<< gridSize, blockSize, shmem >>>( zero, dataFetcher, reduction, volatileReduction, size, output);
-               break;
-            case   2:
-               cudaFuncSetCacheConfig(CudaReductionKernel<   2, Result, DataFetcher, Reduction, VolatileReduction, Index >, cudaFuncCachePreferShared);
+              CudaReductionKernel<   4 >
+              <<< gridSize, blockSize, shmem >>>( zero, dataFetcher, reduction, volatileReduction, size, output);
+              break;
+           case   2:
+              cudaFuncSetCacheConfig(CudaReductionKernel<   2, Result, DataFetcher, Reduction, VolatileReduction, Index >, cudaFuncCachePreferShared);
 
-               CudaReductionKernel<   2 >
-               <<< gridSize, blockSize, shmem >>>( zero, dataFetcher, reduction, volatileReduction, size, output);
-               break;
-            case   1:
-               throw std::logic_error( "blockSize should not be 1." );
-            default:
-               throw std::logic_error( "Block size is " + std::to_string(blockSize.x) + " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." );
-         }
-         TNL_CHECK_CUDA_DEVICE;
+              CudaReductionKernel<   2 >
+              <<< gridSize, blockSize, shmem >>>( zero, dataFetcher, reduction, volatileReduction, size, output);
+              break;
+           case   1:
+              TNL_ASSERT( false, std::cerr << "blockSize should not be 1." << std::endl );
+           default:
+              TNL_ASSERT( false, std::cerr << "Block size is " << blockSize. x << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." );
+        }
+        TNL_CHECK_CUDA_DEVICE;
+
+        ////
+        // Return the size of the output array on the CUDA device
+        return gridSize.x;
+      }
+
+      template< typename DataFetcher,
+                typename Reduction,
+                typename VolatileReduction >
+      int launchWithArgument( const Index size,
+                              const Reduction& reduction,
+                              const VolatileReduction& volatileReduction,
+                              const DataFetcher& dataFetcher,
+                              const Result& zero,
+                              Result* output,
+                              Index* idxOutput,
+                              const Index* idxInput )
+      {
+         dim3 blockSize, gridSize;
+         blockSize.x = Reduction_maxThreadsPerBlock;
+         gridSize.x = TNL::min( Devices::Cuda::getNumberOfBlocks( size, blockSize.x ), desGridSize );
 
          ////
-         // return the size of the output array on the CUDA device
-         return gridSize.x;
+         // when there is only one warp per blockSize.x, we need to allocate two warps
+         // worth of shared memory so that we don't index shared memory out of bounds
+         const IndexType shmem = (blockSize.x <= 32)
+                  ? 2 * blockSize.x * ( sizeof( ResultType ) + sizeof( Index ) )
+                  : blockSize.x * ( sizeof( ResultType ) + sizeof( Index ) );
+
+        /***
+         * Depending on the blockSize we generate appropriate template instance.
+         */
+        switch( blockSize.x )
+        {
+           case 512:
+              CudaReductionWithArgumentKernel< 512 >
+              <<< gridSize, blockSize, shmem >>>( zero, dataFetcher, reduction, volatileReduction, size, output, idxOutput, idxInput );
+              break;
+           case 256:
+              cudaFuncSetCacheConfig(CudaReductionWithArgumentKernel< 256, Result, DataFetcher, Reduction, VolatileReduction, Index >, cudaFuncCachePreferShared);
+
+              CudaReductionWithArgumentKernel< 256 >
+              <<< gridSize, blockSize, shmem >>>( zero, dataFetcher, reduction, volatileReduction, size, output, idxOutput, idxInput );
+              break;
+           case 128:
+              cudaFuncSetCacheConfig(CudaReductionWithArgumentKernel< 128, Result, DataFetcher, Reduction, VolatileReduction, Index >, cudaFuncCachePreferShared);
+
+              CudaReductionWithArgumentKernel< 128 >
+              <<< gridSize, blockSize, shmem >>>( zero, dataFetcher, reduction, volatileReduction, size, output, idxOutput, idxInput );
+              break;
+           case  64:
+              cudaFuncSetCacheConfig(CudaReductionWithArgumentKernel<  64, Result, DataFetcher, Reduction, VolatileReduction, Index >, cudaFuncCachePreferShared);
+
+              CudaReductionWithArgumentKernel<  64 >
+              <<< gridSize, blockSize, shmem >>>( zero, dataFetcher, reduction, volatileReduction, size, output, idxOutput, idxInput );
+              break;
+           case  32:
+              cudaFuncSetCacheConfig(CudaReductionWithArgumentKernel<  32, Result, DataFetcher, Reduction, VolatileReduction, Index >, cudaFuncCachePreferShared);
+
+              CudaReductionWithArgumentKernel<  32 >
+              <<< gridSize, blockSize, shmem >>>( zero, dataFetcher, reduction, volatileReduction, size, output, idxOutput, idxInput );
+              break;
+           case  16:
+              cudaFuncSetCacheConfig(CudaReductionWithArgumentKernel<  16, Result, DataFetcher, Reduction, VolatileReduction, Index >, cudaFuncCachePreferShared);
+
+              CudaReductionWithArgumentKernel<  16 >
+              <<< gridSize, blockSize, shmem >>>( zero, dataFetcher, reduction, volatileReduction, size, output, idxOutput, idxInput );
+              break;
+          case   8:
+              cudaFuncSetCacheConfig(CudaReductionWithArgumentKernel<   8, Result, DataFetcher, Reduction, VolatileReduction, Index >, cudaFuncCachePreferShared);
+
+              CudaReductionWithArgumentKernel<   8 >
+              <<< gridSize, blockSize, shmem >>>( zero, dataFetcher, reduction, volatileReduction, size, output, idxOutput, idxInput );
+              break;
+           case   4:
+              cudaFuncSetCacheConfig(CudaReductionWithArgumentKernel<   4, Result, DataFetcher, Reduction, VolatileReduction, Index >, cudaFuncCachePreferShared);
+
+              CudaReductionWithArgumentKernel<   4 >
+              <<< gridSize, blockSize, shmem >>>( zero, dataFetcher, reduction, volatileReduction, size, output, idxOutput, idxInput );
+              break;
+           case   2:
+              cudaFuncSetCacheConfig(CudaReductionWithArgumentKernel<   2, Result, DataFetcher, Reduction, VolatileReduction, Index >, cudaFuncCachePreferShared);
+
+              CudaReductionWithArgumentKernel<   2 >
+              <<< gridSize, blockSize, shmem >>>( zero, dataFetcher, reduction, volatileReduction, size, output, idxOutput, idxInput );
+              break;
+           case   1:
+              TNL_ASSERT( false, std::cerr << "blockSize should not be 1." << std::endl );
+           default:
+              TNL_ASSERT( false, std::cerr << "Block size is " << blockSize. x << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." );
+        }
+        TNL_CHECK_CUDA_DEVICE;
+
+        ////
+        // return the size of the output array on the CUDA device
+        return gridSize.x;
       }
+
 
       const int activeDevice;
       const int blocksdPerMultiprocessor;

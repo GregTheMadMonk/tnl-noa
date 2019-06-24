@@ -13,9 +13,17 @@
 #pragma once
 
 #include <TNL/Containers/ArrayView.h>
+#include <TNL/Containers/Expressions/ExpressionTemplates.h>
+#include <TNL/Containers/Algorithms/PrefixSumType.h>
 
 namespace TNL {
 namespace Containers {
+
+template< typename Real, typename Device, typename Index >
+class Vector;
+
+template< int Size, typename Real >
+class StaticVector;
 
 template< typename Real = double,
           typename Device = Devices::Host,
@@ -42,9 +50,10 @@ public:
    // (works fine in nvcc 9.0)
    using ArrayView< Real, Device, Index >::ArrayView;
 #endif
+   using ArrayView< Real, Device, Index >::getData;
 
-   // inherit all ArrayView's assignment operators
-   using BaseType::operator=;
+   /** Subscript operator is inherited from the class \ref Array. */
+   using ArrayView< Real, Device, Index >::operator[];
 
    // In C++14, default constructors cannot be inherited, although Clang
    // and GCC since version 7.0 inherit them.
@@ -58,21 +67,51 @@ public:
    VectorView( const ArrayView< Real_, Device, Index >& view )
    : BaseType::ArrayView( view ) {}
 
-   /**
-    * \brief Returns a modifiable view of the array view.
-    */
+   template< typename T1,
+             typename T2,
+             template< typename, typename > class Operation >
    __cuda_callable__
-   ViewType getView();
+   VectorView( const Expressions::BinaryExpressionTemplate< T1, T2, Operation >& expression );
+
+   template< typename T,
+             template< typename > class Operation >
+   __cuda_callable__
+   VectorView( const Expressions::UnaryExpressionTemplate< T, Operation >& expression );
 
    /**
-    * \brief Returns a non-modifiable view of the array view.
+    * \brief Returns a modifiable view of the vector view.
+    *
+    * If \e begin and \e end is set, view for sub-interval [ \e begin, \e end )
+    * is returned.
+    *
+    * \param begin is the beginning of the VectorView sub-interval, 0 by default.
+    * \param end is the end of the VectorView sub-interval. Default value is 0 which is,
+    * however, replaced with the VectorView size.
     */
    __cuda_callable__
-   ConstViewType getConstView() const;
+   ViewType getView( const IndexType begin = 0, IndexType end = 0 );
+
+   /**
+    * \brief Returns a non-modifiable view of the vector view.
+    *
+    * If \e begin and \e end is set, view for sub-interval [ \e begin, \e end )
+    * is returned.
+    *
+    * \param begin is the beginning of the sub-interval, 0 by default.
+    * \param end is the end of the sub-interval. Default value is 0 which is,
+    * however, replaced with the VectorView size.
+    */
+   __cuda_callable__
+   ConstViewType getConstView( const IndexType begin = 0, IndexType end = 0 ) const;
 
 
    static String getType();
 
+   //template< typename VectorOperationType >
+   //void evaluate( const VectorOperationType& vo );
+
+   template< typename VectorOperationType >
+   void evaluateFor( const VectorOperationType& vo );
 
    // All other Vector methods follow...
    void addElement( IndexType i, RealType value );
@@ -82,17 +121,34 @@ public:
                     RealType value,
                     Scalar thisElementMultiplicator );
 
-   template< typename Vector >
-   VectorView& operator-=( const Vector& vector );
+   template< typename Real_, typename Device_, typename Index_ >
+   VectorView& operator=( const VectorView< Real_, Device_, Index_ >& v );
 
-   template< typename Vector >
-   VectorView& operator+=( const Vector& vector );
+   template< typename Real_, typename Device_, typename Index_ >
+   VectorView& operator=( const Vector< Real_, Device_, Index_ >& v );
 
-   template< typename Scalar >
-   VectorView& operator*=( Scalar c );
+   template< typename VectorExpression >
+   VectorView& operator=( const VectorExpression& expression );
 
-   template< typename Scalar >
-   VectorView& operator/=( Scalar c );
+   template< typename VectorExpression >
+   VectorView& operator-=( const VectorExpression& expression );
+
+   template< typename VectorExpression >
+   VectorView& operator+=( const VectorExpression& expression );
+
+   template< typename VectorExpression >
+   VectorView& operator*=( const VectorExpression& expression );
+
+   template< typename VectorExpression >
+   VectorView& operator/=( const VectorExpression& expression );
+
+   /**
+    * \brief Scalar product
+    * @param v
+    * @return
+    */
+   template< typename Vector_ >
+   NonConstReal operator, ( const Vector_& v ) const;
 
    NonConstReal max() const;
 
@@ -147,16 +203,25 @@ public:
                     Scalar2 multiplicator2,
                     Scalar3 thisMultiplicator = 1.0 );
 
-   void computePrefixSum();
+   template< Algorithms::PrefixSumType Type = Algorithms::PrefixSumType::Inclusive >
+   void prefixSum( const IndexType begin = 0, const IndexType end = 0 );
 
-   void computePrefixSum( IndexType begin, IndexType end );
+   template< Algorithms::PrefixSumType Type = Algorithms::PrefixSumType::Inclusive,
+             typename FlagsArray >
+   void segmentedPrefixSum( FlagsArray& flags, const IndexType begin = 0, const IndexType end = 0 );
 
-   void computeExclusivePrefixSum();
+   template< Algorithms::PrefixSumType Type = Algorithms::PrefixSumType::Inclusive,
+             typename VectorExpression >
+   void prefixSum( const VectorExpression& expression, const IndexType begin = 0, const IndexType end = 0 );
 
-   void computeExclusivePrefixSum( IndexType begin, IndexType end );
+   template< Algorithms::PrefixSumType Type = Algorithms::PrefixSumType::Inclusive,
+             typename VectorExpression,
+             typename FlagsArray >
+   void segmentedPrefixSum( const VectorExpression& expression, FlagsArray& flags, const IndexType begin = 0, const IndexType end = 0 );
 };
 
 } // namespace Containers
 } // namespace TNL
 
-#include <TNL/Containers/VectorView_impl.h>
+#include <TNL/Containers/VectorView.hpp>
+#include <TNL/Containers/VectorViewExpressions.h>
