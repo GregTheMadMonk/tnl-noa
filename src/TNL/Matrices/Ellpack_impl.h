@@ -60,14 +60,14 @@ void Ellpack< Real, Device, Index >::setDimensions( const IndexType rows,
    this->rows = rows;
    this->columns = columns;
       
-   std::cout << "INSIDE setDimensions (BEFORE roundToMultiple): this->alignedRows = " << this->alignedRows << std::endl;
-   std::cout << "INSIDE setDimensions (BEFORE roundToMultiple): rows = " << rows << std::endl;
+//   std::cout << "INSIDE setDimensions (BEFORE roundToMultiple): this->alignedRows = " << this->alignedRows << std::endl;
+//   std::cout << "INSIDE setDimensions (BEFORE roundToMultiple): rows = " << rows << std::endl;
    
    // ERROR? RoundToMultiple can in very rare cases return a multiple, that is lower than the number of rows?
    //          e.g. with sls.mtx, the number of rows is 1748122, but when on CUDA, roundToMultiple gives 62752.
    if( std::is_same< Device, Devices::Cuda >::value )
    {
-       std::cout << "columns = " << columns << "\tWarpSize() = " << Devices::Cuda::getWarpSize() << std::endl;
+//       std::cout << "columns = " << columns << "\tWarpSize() = " << Devices::Cuda::getWarpSize() << std::endl;
        this->alignedRows = roundToMultiple( columns, Devices::Cuda::getWarpSize() );
 
        // If the number of alignedRows is smaller than the number of rows, we find the 
@@ -77,23 +77,23 @@ void Ellpack< Real, Device, Index >::setDimensions( const IndexType rows,
        {
            IndexType missingRows = this->rows - this->alignedRows;
            
-           std::cout << "  this->rows = " << this->rows << "\tthis->alignedRows = " << this->alignedRows << std::endl;
-           std::cout << "  IF missingRows (pre-round) = " << missingRows << std::endl;
+//           std::cout << "  this->rows = " << this->rows << "\tthis->alignedRows = " << this->alignedRows << std::endl;
+//           std::cout << "  IF missingRows (pre-round) = " << missingRows << std::endl;
            
            missingRows = roundToMultiple( missingRows, Devices::Cuda::getWarpSize() );
            
-           std::cout << "  IF missingRows (after-round) = " << missingRows << std::endl;
-           std::cout << "  PRE this->alignedRows = " << this->alignedRows << std::endl;
+//           std::cout << "  IF missingRows (after-round) = " << missingRows << std::endl;
+//           std::cout << "  PRE this->alignedRows = " << this->alignedRows << std::endl;
            
            this->alignedRows +=  missingRows;
            
 //           this->alignedRows += roundToMultiple( this->rows - this->alignedRows, Devices::Cuda::getWarpSize() );
        }
-       std::cout << "AFTER setDimensions: this->alignedRows = " << this->alignedRows << std::endl;
+//       std::cout << "AFTER setDimensions: this->alignedRows = " << this->alignedRows << std::endl;
    }
    else this->alignedRows = rows;
    
-   std::cout << "INSIDE setDimensions: this->alignedRows = " << this->alignedRows << std::endl;
+//   std::cout << "INSIDE setDimensions: this->alignedRows = " << this->alignedRows << std::endl;
    
    if( this->rowLengths != 0 )
       allocateElements();
@@ -110,7 +110,7 @@ void Ellpack< Real, Device, Index >::setCompressedRowLengths( ConstCompressedRow
 
    this->rowLengths = this->maxRowLength = rowLengths.max();
    
-   std::cout << "  this->rowLengths = " << this->rowLengths << std::endl;
+//   std::cout << "  this->rowLengths = " << this->rowLengths << std::endl;
    
    allocateElements();
 }
@@ -679,7 +679,7 @@ Ellpack< Real, Device, Index >::operator=( const Ellpack< Real2, Device2, Index2
    this->rowLengths = matrix.rowLengths;
    this->setDimensions( matrix.getRows(), matrix.getColumns() );
    
-   std::cout << "DIMENSIONS set; after setDimensions in operator= cross-device" << std::endl;
+//   std::cout << "DIMENSIONS set; after setDimensions in operator= cross-device" << std::endl;
 
    const int blockSize = 32;
    const int blocks = roundUpDivision( this->getRows(), blockSize );
@@ -797,7 +797,7 @@ void Ellpack< Real, Device, Index >::allocateElements()
 {
     // The allocation process isn't limited by RAM with ELL, but rather the size of the values and indexes arrays. Bcs ELL will store rows*maxRowLength elements in one array.
     // The PROBLEM arises when we try to store the entire matrix into one array, which is what ELL essentially does in this case.
-   std::cout << "  this->alignedRows = " << this->alignedRows << "\t this->rowLengths = " << this->rowLengths << std::endl;
+//   std::cout << "  this->alignedRows = " << this->alignedRows << "\t this->rowLengths = " << this->rowLengths << std::endl;
    
    // HOW? Will we have to do this with every format? How to make this global?
    IndexType numMtxElmnts = this->alignedRows * this->rowLengths;
