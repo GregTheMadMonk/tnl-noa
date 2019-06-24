@@ -57,13 +57,27 @@ void EllpackSymmetric< Real, Device, Index >::setDimensions( const IndexType row
    TNL_ASSERT( rows > 0 && columns > 0,
              std::cerr << "rows = " << rows
                    << " columns = " << columns <<std::endl );
+      
    this->rows = rows;
-   this->columns = columns;   
+   this->columns = columns;
+   
    if( std::is_same< DeviceType, Devices::Cuda >::value )
-      this->alignedRows = roundToMultiple( columns, Cuda::getWarpSize() );
+   {
+       this->alignedRows = roundToMultiple( columns, Devices::Cuda::getWarpSize() );
+       
+       if( this->rows - this->alignedRows > 0 )
+       {
+           IndexType missingRows = this->rows - this->alignedRows;
+           missingRows = roundToMultiple( missingRows, Devices::Cuda::getWarpSize() );
+           this->alignedRows +=  missingRows;
+           
+//           this->alignedRows += roundToMultiple( this->rows - this->alignedRows, Devices::Cuda::getWarpSize() );
+       }
+   }
    else this->alignedRows = rows;
+   
    if( this->rowLengths != 0 )
-      allocateElements();
+       allocateElements();
 }
 
 template< typename Real,
