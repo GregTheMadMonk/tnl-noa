@@ -803,8 +803,12 @@ void Ellpack< Real, Device, Index >::allocateElements()
    IndexType numMtxElmnts = this->alignedRows * this->rowLengths;
    
    // CORRECT? Can the overflown value pass this assert?
-   TNL_ASSERT_TRUE( this->alignedRows != 0 && numMtxElmnts / this->alignedRows == this->rowLengths, "Ellpack cannot store this matrix. The number of matrix elements has overflown the value that IndexType is capable of storing" );
-
+   if( this->alignedRows != 0 )
+   {
+       TNL_ASSERT_EQ( numMtxElmnts / this->alignedRows, this->rowLengths, 
+                      "Ellpack cannot store this matrix. The number of matrix elements has overflown the value that IndexType is capable of storing" );
+//       TNL_ASSERT_TRUE( this->alignedRows != 0 && numMtxElmnts / this->alignedRows == this->rowLengths, "Ellpack cannot store this matrix. The number of matrix elements has overflown the value that IndexType is capable of storing" );
+   }
    // ORIGINAL from: https://stackoverflow.com/questions/1815367/catch-and-compute-overflow-during-multiplication-of-two-large-integers
 //   if (this->alignedRows != 0 && numMtxElmnts / this->alignedRows != this->rowLengths) {
 //       TNL_ASSERT_FALSE( this->alignedRows != 0 && numMtxElmnts / this->alignedRows != this->rowLengths, "Ellpack cannot store this matrix. The number of matrix elements has overflown the value that IndexType is capable of storing" );
