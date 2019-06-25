@@ -15,7 +15,7 @@
 #include <TNL/Solvers/IterativeSolverMonitor.h>
 
 namespace TNL {
-namespace Solvers {   
+namespace Solvers {
 
 template< typename Real, typename Index >
 class IterativeSolver

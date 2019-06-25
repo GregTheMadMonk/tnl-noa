@@ -48,7 +48,7 @@ getVectorMin( const Vector& v )
    using IndexType = typename Vector::IndexType;
 
    const auto* data = v.getData();
-   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return data[ i ]; };
+   auto fetch = [=] __cuda_callable__ ( IndexType i ) -> RealType { return data[ i ]; };
    auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a =  TNL::min( a, b ); };
    auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a =  TNL::min( a, b ); };
    return Reduction< DeviceType >::reduce( v.getSize(), reduction, volatileReduction, fetch, std::numeric_limits< ResultType >::max() );

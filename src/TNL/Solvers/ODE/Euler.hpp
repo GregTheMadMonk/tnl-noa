@@ -72,14 +72,16 @@ const typename Problem :: RealType& Euler< Problem > :: getCFLCondition() const
 }
 
 template< typename Problem >
-bool Euler< Problem > :: solve( DofVectorPointer& u )
+bool Euler< Problem > :: solve( DofVectorPointer& _u )
 {
    /****
     * First setup the supporting meshes k1...k5 and k_tmp.
     */
    //timer.start();
-   k1->setLike( *u );
-   k1->setValue( 0.0 );
+   _k1->setLike( *_u );
+   DofVectorView k1 = _k1->getView();
+   DofVectorView u = _u->getView();
+   k1 = 0.0;
 
 
    /****
@@ -103,14 +105,14 @@ bool Euler< Problem > :: solve( DofVectorPointer& u )
        * Compute the RHS
        */
       //timer.stop();
-      this->problem->getExplicitUpdate( time, currentTau, u, k1 );
+      this->problem->getExplicitUpdate( time, currentTau, _u, _k1 );
       //timer.start();
 
       RealType lastResidue = this->getResidue();
       RealType maxResidue( 0.0 );
       if( this -> cflCondition != 0.0 )
       {
-         maxResidue = k1->absMax();
+         maxResidue = max( abs( k1 ) ); //k1->absMax();
          if( currentTau * maxResidue > this->cflCondition )
          {
             currentTau *= 0.9;
@@ -118,7 +120,15 @@ bool Euler< Problem > :: solve( DofVectorPointer& u )
          }
       }
       RealType newResidue( 0.0 );
-      computeNewTimeLevel( u, currentTau, newResidue );
+      //computeNewTimeLevel( u, currentTau, newResidue );
+     /* auto fetch = [ currentTau, k1, u ] __cuda_callable__ ( IndexType i ) -> RealType {
+         const RealType add = currentTau * k1[ i ];
+         u[ i ] += add;
+         return TNL::abs( add ); };
+      auto reduction = [=] __cuda_callable__ ( RealType& a , const RealType& b ) { a += b; };
+      auto volatileReduction = [=] __cuda_callable__ ( volatile RealType& a , const volatile RealType& b ) { a += b; };
+      return Containers::Algorithms::Reduction< DeviceType >::reduce( u.getSize(), reduction, volatileReduction, fetch, 0.0 );*/
+      
       this->setResidue( newResidue );
 
       /****
@@ -127,7 +137,7 @@ bool Euler< Problem > :: solve( DofVectorPointer& u )
        */
       if( currentTau + time == this -> stopTime ) this->setResidue( lastResidue );
       time += currentTau;
-      this->problem->applyBoundaryConditions( time, u );
+      this->problem->applyBoundaryConditions( time, _u );
 
       if( ! this->nextIteration() )
          return this->checkConvergence();
@@ -159,7 +169,7 @@ bool Euler< Problem > :: solve( DofVectorPointer& u )
    }
 };
 
-template< typename Problem >
+/*template< typename Problem >
 void Euler< Problem > :: computeNewTimeLevel( DofVectorPointer& u,
                                               RealType tau,
                                               RealType& currentResidue )
@@ -262,6 +272,7 @@ __global__ void updateUEuler( const Index size,
                         n );
 }
 #endif
+*/
 
 } // namespace ODE
 } // namespace Solvers

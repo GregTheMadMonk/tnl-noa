@@ -25,13 +25,13 @@ class Euler : public ExplicitSolver< Problem >
 {
    public:
 
-   typedef Problem  ProblemType;
-   typedef typename Problem :: DofVectorType DofVectorType;
-   typedef typename Problem :: RealType RealType;
-   typedef typename Problem :: DeviceType DeviceType;
-   typedef typename Problem :: IndexType IndexType;
-   typedef Pointers::SharedPointer<  DofVectorType, DeviceType > DofVectorPointer;
-
+   using ProblemType = Problem;
+   using DofVectorType = typename ProblemType::DofVectorType;
+   using RealType = typename ProblemType::RealType;
+   using DeviceType = typename ProblemType::DeviceType;
+   using IndexType  = typename ProblemType::IndexType;
+   using DofVectorView = typename ViewTypeGetter< DofVectorType >::Type;
+   using DofVectorPointer = Pointers::SharedPointer<  DofVectorType, DeviceType >;
 
    Euler();
 
@@ -54,16 +54,13 @@ class Euler : public ExplicitSolver< Problem >
                              RealType tau,
                              RealType& currentResidue );
 
-   
-   DofVectorPointer k1;
+   DofVectorPointer _k1;
 
    RealType cflCondition;
- 
-   //Timer timer, updateTimer;
 };
 
 } // namespace ODE
 } // namespace Solvers
 } // namespace TNL
 
-#include <TNL/Solvers/ODE/Euler_impl.h>
+#include <TNL/Solvers/ODE/Euler.hpp>
