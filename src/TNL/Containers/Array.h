@@ -14,6 +14,7 @@
 #include <vector>
 
 #include <TNL/File.h>
+#include <TNL/TypeTraits.h>
 #include <TNL/Containers/ArrayView.h>
 
 namespace TNL {
@@ -619,6 +620,19 @@ template< typename Value, typename Device, typename Index >
 File& operator>>( File&& file, Array< Value, Device, Index >& array );
 
 } // namespace Containers
+
+template< typename Value, typename Device, typename Index >
+struct ViewTypeGetter< Containers::Array< Value, Device, Index > >
+{
+   using Type = Containers::ArrayView< Value, Device, Index >;
+};
+
+template< typename Value_, typename Device, typename Index >
+struct IsStatic< Containers::Array< Value_, Device, Index > >
+{
+   static constexpr bool Value = false;
+};
+
 } // namespace TNL
 
 #include <TNL/Containers/Array.hpp>

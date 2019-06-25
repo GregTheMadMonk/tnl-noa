@@ -473,6 +473,14 @@ template< typename Value, typename Device, typename Index >
 File& operator>>( File&& file, ArrayView< Value, Device, Index > view );
 
 } // namespace Containers
+
+template< typename Value_, typename Device, typename Index >
+struct IsStatic< Containers::ArrayView< Value_, Device, Index > >
+{
+   static constexpr bool Value = false;
+};
+
+
 } // namespace TNL
 
 #include <TNL/Containers/ArrayView.hpp>

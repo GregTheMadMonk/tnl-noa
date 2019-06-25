@@ -12,6 +12,7 @@
 
 #include <TNL/String.h>
 #include <TNL/File.h>
+#include <TNL/TypeTraits.h>
 
 namespace TNL {
 namespace Containers {
@@ -556,6 +557,13 @@ template< int Size, typename Value >
 std::ostream& operator << ( std::ostream& str, const StaticArray< Size, Value >& a );
 
 } // namespace Containers
+
+template< int Size, typename Value_ >
+struct IsStatic< Containers::StaticArray< Size, Value_ > >
+{
+   static constexpr bool Value = true;
+};
+
 } // namespace TNL
 
 #include <TNL/Containers/StaticArray_impl.h>

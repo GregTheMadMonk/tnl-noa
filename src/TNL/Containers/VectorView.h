@@ -214,6 +214,13 @@ public:
 };
 
 } // namespace Containers
+
+template< typename Real, typename Device, typename Index >
+struct IsStatic< Containers::VectorView< Real, Device, Index > >
+{
+   static constexpr bool Value = false;
+};
+
 } // namespace TNL
 
 #include <TNL/Containers/VectorView.hpp>
