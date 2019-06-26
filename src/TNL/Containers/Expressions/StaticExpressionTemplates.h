@@ -2429,4 +2429,52 @@ Result evaluateAndReduce( Vector& lhs,
    return result;
 }
 
+////
+// Addition with reduction
+template< typename Vector,
+   typename T1,
+   typename T2,
+   template< typename, typename > class Operation,
+   typename Reduction,
+   typename VolatileReduction,
+   typename Result >
+__cuda_callable__
+Result addAndReduce( Vector& lhs,
+   const Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& expression,
+   Reduction& reduction,
+   VolatileReduction& volatileReduction,
+   const Result& zero )
+{
+   Result result( zero );
+   for( int i = 0; i < Vector::getSize(); i++ ) {
+      const Result aux = expression[ i ];
+      lhs[ i ] += aux;
+      reduction( result, aux );
+   }
+   return result;
+}
+
+template< typename Vector,
+   typename T1,
+   template< typename > class Operation,
+   typename Reduction,
+   typename VolatileReduction,
+   typename Result >
+__cuda_callable__
+Result addAndReduce( Vector& lhs,
+   const Containers::Expressions::StaticUnaryExpressionTemplate< T1, Operation >& expression,
+   Reduction& reduction,
+   VolatileReduction& volatileReduction,
+   const Result& zero )
+{
+   Result result( zero );
+   for( int i = 0; i < Vector::getSize(); i++ ) {
+      const Result aux = expression[ i ];
+      lhs[ i ] += aux;
+      reduction( result, aux );
+   }
+   return result;
+}
+
+
 } // namespace TNL

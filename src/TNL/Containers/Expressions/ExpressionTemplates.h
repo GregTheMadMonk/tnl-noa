@@ -2200,6 +2200,60 @@ Result evaluateAndReduce( Vector& lhs,
 }
 
 ////
+// Addition and reduction
+template< typename Vector,
+   typename T1,
+   typename T2,
+   template< typename, typename > class Operation,
+   typename Reduction,
+   typename VolatileReduction,
+   typename Result >
+Result addAndReduce( Vector& lhs,
+   const Containers::Expressions::BinaryExpressionTemplate< T1, T2, Operation >& expression,
+   Reduction& reduction,
+   VolatileReduction& volatileReduction,
+   const Result& zero )
+{
+   using RealType = typename Vector::RealType;
+   using IndexType = typename Vector::IndexType;
+   using DeviceType = typename Vector::DeviceType;
+
+   RealType* lhs_data = lhs.getData();
+   auto fetch = [=] __cuda_callable__ ( IndexType i ) -> RealType {
+      const RealType aux = expression[ i ];
+      lhs_data[ i ] += aux;
+      return aux;
+   };
+   return Containers::Algorithms::Reduction< DeviceType >::reduce( lhs.getSize(), reduction, volatileReduction, fetch, zero );
+}
+
+template< typename Vector,
+   typename T1,
+   template< typename > class Operation,
+   typename Reduction,
+   typename VolatileReduction,
+   typename Result >
+Result addAndReduce( Vector& lhs,
+   const Containers::Expressions::UnaryExpressionTemplate< T1, Operation >& expression,
+   Reduction& reduction,
+   VolatileReduction& volatileReduction,
+   const Result& zero )
+{
+   using RealType = typename Vector::RealType;
+   using IndexType = typename Vector::IndexType;
+   using DeviceType = typename Vector::DeviceType;
+
+   RealType* lhs_data = lhs.getData();
+   auto fetch = [=] __cuda_callable__ ( IndexType i ) -> RealType {
+      const RealType aux = expression[ i ];
+      lhs_data[ i ] += aux;
+      return aux;
+   };
+   return Containers::Algorithms::Reduction< DeviceType >::reduce( lhs.getSize(), reduction, volatileReduction, fetch, zero );
+}
+
+
+////
 // Output stream
 template< typename T1,
           typename T2,
