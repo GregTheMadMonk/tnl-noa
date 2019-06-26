@@ -119,17 +119,9 @@ bool Euler< Problem > :: solve( DofVectorPointer& _u )
             continue;
          }
       }
-      RealType newResidue( 0.0 );
-      //computeNewTimeLevel( u, currentTau, newResidue );
-     /* auto fetch = [ currentTau, k1, u ] __cuda_callable__ ( IndexType i ) -> RealType {
-         const RealType add = currentTau * k1[ i ];
-         u[ i ] += add;
-         return TNL::abs( add ); };
-      auto reduction = [=] __cuda_callable__ ( RealType& a , const RealType& b ) { a += b; };
-      auto volatileReduction = [=] __cuda_callable__ ( volatile RealType& a , const volatile RealType& b ) { a += b; };
-      return Containers::Algorithms::Reduction< DeviceType >::reduce( u.getSize(), reduction, volatileReduction, fetch, 0.0 );*/
-      
-      this->setResidue( newResidue );
+      auto reduction = [] __cuda_callable__ ( RealType& a , const RealType& b ) { a += b; };
+      auto volatileReduction = [] __cuda_callable__ ( volatile RealType& a , const volatile RealType& b ) { a += b; };
+      this->setResidue( addAndReduceAbs( u, currentTau * k1, reduction, volatileReduction, ( RealType ) 0.0 ) / ( currentTau * ( RealType ) u.getSize() ) );
 
       /****
        * When time is close to stopTime the new residue
@@ -168,111 +160,6 @@ bool Euler< Problem > :: solve( DofVectorPointer& _u )
       }
    }
 };
-
-/*template< typename Problem >
-void Euler< Problem > :: computeNewTimeLevel( DofVectorPointer& u,
-                                              RealType tau,
-                                              RealType& currentResidue )
-{
-   RealType localResidue = RealType( 0.0 );
-   const IndexType size = k1->getSize();
-   RealType* _u = u->getData();
-   RealType* _k1 = k1->getData();
-
-   if( std::is_same< DeviceType, Devices::Host >::value )
-   {
-#ifdef HAVE_OPENMP
-#pragma omp parallel for reduction(+:localResidue) firstprivate( _u, _k1, tau ) if( Devices::Host::isOMPEnabled() )
-#endif
-      for( IndexType i = 0; i < size; i ++ )
-      {
-         const RealType add = tau * _k1[ i ];
-         _u[ i ] += add;
-         localResidue += std::fabs( add );
-      }
-   }
-   if( std::is_same< DeviceType, Devices::Cuda >::value )
-   {
-#ifdef HAVE_CUDA
-      dim3 cudaBlockSize( 512 );
-      const IndexType cudaBlocks = Devices::Cuda::getNumberOfBlocks( size, cudaBlockSize.x );
-      const IndexType cudaGrids = Devices::Cuda::getNumberOfGrids( cudaBlocks );
-      this->cudaBlockResidue.setSize( min( cudaBlocks, Devices::Cuda::getMaxGridSize() ) );
-      const IndexType threadsPerGrid = Devices::Cuda::getMaxGridSize() * cudaBlockSize.x;
-
-      localResidue = 0.0;
-      for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx ++ )
-      {
-         const IndexType sharedMemory = cudaBlockSize.x * sizeof( RealType );
-         const IndexType gridOffset = gridIdx * threadsPerGrid;
-         const IndexType currentSize = min( size - gridOffset, threadsPerGrid );
-         const IndexType currentGridSize = Devices::Cuda::getNumberOfBlocks( currentSize, cudaBlockSize.x );
-
-         updateUEuler<<< currentGridSize, cudaBlockSize, sharedMemory >>>( currentSize,
-                                                                      tau,
-                                                                      &_k1[ gridOffset ],
-                                                                      &_u[ gridOffset ],
-                                                                      this->cudaBlockResidue.getData() );
-         localResidue += this->cudaBlockResidue.sum();
-         cudaDeviceSynchronize();
-         TNL_CHECK_CUDA_DEVICE;
-      }
-#endif
-   }
-   
-   //MIC
-   if( std::is_same< DeviceType, Devices::MIC >::value )
-   {
-
-#ifdef HAVE_MIC
-      Devices::MICHider<RealType> mu;
-      mu.pointer=_u;
-      Devices::MICHider<RealType> mk1;
-      mk1.pointer=_k1;
-    #pragma offload target(mic) in(mu,mk1,size) inout(localResidue)
-    {
-      #pragma omp parallel for reduction(+:localResidue) firstprivate( mu, mk1 )  
-      for( IndexType i = 0; i < size; i ++ )
-      {
-         const RealType add = tau * mk1.pointer[ i ];
-         mu.pointer[ i ] += add;
-         localResidue += std::fabs( add );
-      }
-    }
-#endif
-   }
-   localResidue /= tau * ( RealType ) size;
-   Problem::CommunicatorType::Allreduce( &localResidue, &currentResidue, 1, MPI_SUM, Problem::CommunicatorType::AllGroup );
-   //std::cerr << "Local residue = " << localResidue << " - globalResidue = " << currentResidue << std::endl;
-}
-
-#ifdef HAVE_CUDA
-template< typename RealType, typename Index >
-__global__ void updateUEuler( const Index size,
-                              const RealType tau,
-                              const RealType* k1,
-                              RealType* u,
-                              RealType* cudaBlockResidue )
-{
-   extern __shared__ RealType du[];
-   const Index blockOffset = blockIdx. x * blockDim.x;
-   const Index i = blockOffset  + threadIdx. x;
-   if( i < size )
-      u[ i ] += du[ threadIdx.x ] = tau * k1[ i ];
-   else
-      du[ threadIdx.x ] = 0.0;
-   du[ threadIdx.x ] = abs( du[ threadIdx.x ] );
-   __syncthreads();
-
-   const Index rest = size - blockOffset;
-   Index n =  rest < blockDim.x ? rest : blockDim.x;
-
-   computeBlockResidue( du,
-                        cudaBlockResidue,
-                        n );
-}
-#endif
-*/
 
 } // namespace ODE
 } // namespace Solvers

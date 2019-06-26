@@ -72,7 +72,7 @@ TYPED_TEST( VectorTest, evaluateAndReduce )
 // error #3049-D: The enclosing parent function ("TestBody") for an extended __host__ __device__ lambda cannot have private or protected access within its class
 template< typename VectorView >
 typename VectorView::RealType
-performAddAndReduce( VectorView& u, VectorView& v, VectorView& w )
+performAddAndReduce1( VectorView& u, VectorView& v, VectorView& w )
 {
    using RealType = typename VectorView::RealType;
 
@@ -80,6 +80,18 @@ performAddAndReduce( VectorView& u, VectorView& v, VectorView& w )
    auto volatileReduction = [] __cuda_callable__ ( volatile RealType& a, volatile RealType& b ) { a += b; };
    return addAndReduce( w, u * v, reduction, volatileReduction, ( RealType ) 0.0 );
 }
+
+template< typename VectorView >
+typename VectorView::RealType
+performAddAndReduce2( VectorView& v, VectorView& w )
+{
+   using RealType = typename VectorView::RealType;
+
+   auto reduction = [] __cuda_callable__ ( RealType& a, const RealType& b ) { a += b; };
+   auto volatileReduction = [] __cuda_callable__ ( volatile RealType& a, volatile RealType& b ) { a += b; };
+   return addAndReduce( w, 5.0 * v, reduction, volatileReduction, ( RealType ) 0.0 );
+}
+
 
 TYPED_TEST( VectorTest, addAndReduce )
 {
@@ -101,9 +113,24 @@ TYPED_TEST( VectorTest, addAndReduce )
       w.setElement( i, x );
       aux += x * y;
    }
-   auto r = performAddAndReduce( u, v, w );
+   auto r = performAddAndReduce1( u, v, w );
    EXPECT_TRUE( w == u * v + u );
    EXPECT_NEAR( aux, r, 1.0e-5 );
+
+   aux = 0.0;
+   for( int i = 0; i < size; i++ )
+   {
+      const RealType x = i;
+      const RealType y = size / 2 - i;
+      u.setElement( i, x );
+      v.setElement( i, y );
+      w.setElement( i, x );
+      aux += 5.0 * y;
+   }
+   r = performAddAndReduce2( v, w );
+   EXPECT_TRUE( w == 5.0 * v + u );
+   EXPECT_NEAR( aux, r, 1.0e-5 );
+
 }
 
 #endif // HAVE_GTEST

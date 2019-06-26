@@ -95,7 +95,7 @@ class HeatEquationProblem : public PDEProblem< Mesh,
                               DofVectorPointer& _fu );
       
       void applyBoundaryConditions( const RealType& time,
-                                    DofVectorPointer& dofs );      
+                                    DofVectorPointer& dofs );
 
       template< typename MatrixPointer >
       void assemblyLinearSystem( const RealType& time,
@@ -104,31 +104,32 @@ class HeatEquationProblem : public PDEProblem< Mesh,
                                  MatrixPointer& matrixPointer,
                                  DofVectorPointer& rightHandSidePointer );
 
-      protected:
-         
-         MeshFunctionPointer uPointer;
-         MeshFunctionPointer fuPointer;
-      
-         DifferentialOperatorPointer differentialOperatorPointer;
+   protected:
 
-         BoundaryConditionPointer boundaryConditionPointer;
+      MeshFunctionPointer uPointer;
+      MeshFunctionPointer fuPointer;
 
-         RightHandSidePointer rightHandSidePointer;
-         
-         Timer gpuTransferTimer;
-         
-         Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
-         
-         Solvers::PDE::LinearSystemAssembler< Mesh, 
-                                              MeshFunctionType,
-                                              DifferentialOperator,
-                                              BoundaryCondition,
-                                              RightHandSide,
-                                              Solvers::PDE::BackwardTimeDiscretisation,
-                                              DofVectorType > systemAssembler;
+      DifferentialOperatorPointer differentialOperatorPointer;
 
-        Meshes::DistributedMeshes::DistrGridIOTypes distributedIOType;
+      BoundaryConditionPointer boundaryConditionPointer;
 
+      RightHandSidePointer rightHandSidePointer;
+
+      Timer gpuTransferTimer;
+
+      Solvers::PDE::ExplicitUpdater< Mesh, MeshFunctionType, DifferentialOperator, BoundaryCondition, RightHandSide > explicitUpdater;
+
+      Solvers::PDE::LinearSystemAssembler< Mesh,
+                                           MeshFunctionType,
+                                           DifferentialOperator,
+                                           BoundaryCondition,
+                                           RightHandSide,
+                                           Solvers::PDE::BackwardTimeDiscretisation,
+                                           DofVectorType > systemAssembler;
+
+     Meshes::DistributedMeshes::DistrGridIOTypes distributedIOType;
+
+     bool catchExceptions = true;
 };
 
 } // namespace Problems

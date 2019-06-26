@@ -25,38 +25,34 @@ class Euler : public ExplicitSolver< Problem >
 {
    public:
 
-   using ProblemType = Problem;
-   using DofVectorType = typename ProblemType::DofVectorType;
-   using RealType = typename ProblemType::RealType;
-   using DeviceType = typename ProblemType::DeviceType;
-   using IndexType  = typename ProblemType::IndexType;
-   using DofVectorView = typename ViewTypeGetter< DofVectorType >::Type;
-   using DofVectorPointer = Pointers::SharedPointer<  DofVectorType, DeviceType >;
+      using ProblemType = Problem;
+      using DofVectorType = typename ProblemType::DofVectorType;
+      using RealType = typename ProblemType::RealType;
+      using DeviceType = typename ProblemType::DeviceType;
+      using IndexType  = typename ProblemType::IndexType;
+      using DofVectorView = typename ViewTypeGetter< DofVectorType >::Type;
+      using DofVectorPointer = Pointers::SharedPointer<  DofVectorType, DeviceType >;
 
-   Euler();
+      Euler();
 
-   static String getType();
+      static String getType();
 
-   static void configSetup( Config::ConfigDescription& config,
-                            const String& prefix = "" );
+      static void configSetup( Config::ConfigDescription& config,
+                               const String& prefix = "" );
 
-   bool setup( const Config::ParameterContainer& parameters,
-              const String& prefix = "" );
+      bool setup( const Config::ParameterContainer& parameters,
+                 const String& prefix = "" );
 
-   void setCFLCondition( const RealType& cfl );
+      void setCFLCondition( const RealType& cfl );
 
-   const RealType& getCFLCondition() const;
+      const RealType& getCFLCondition() const;
 
-   bool solve( DofVectorPointer& u );
+      bool solve( DofVectorPointer& u );
 
    protected:
-   void computeNewTimeLevel( DofVectorPointer& u,
-                             RealType tau,
-                             RealType& currentResidue );
+      DofVectorPointer _k1;
 
-   DofVectorPointer _k1;
-
-   RealType cflCondition;
+      RealType cflCondition;
 };
 
 } // namespace ODE
