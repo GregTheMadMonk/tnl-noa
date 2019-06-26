@@ -1,5 +1,5 @@
 /***************************************************************************
-                          VectorTest-6.h  -  description
+                          VectorTest-7.h  -  description
                              -------------------
     begin                : Oct 25, 2010
     copyright            : (C) 2010 by Tomas Oberhuber
@@ -398,44 +398,6 @@ TYPED_TEST( VectorTest, sign )
    for( int i = 0; i < size; i++ )
       EXPECT_NEAR( sign( u ).getElement( i ), v.getElement( i ), 1.0e-6 );
 }
-
-// NOTE: The following lambdas cannot be inside the test because of nvcc ( v. 10.1.105 )
-// error #3049-D: The enclosing parent function ("TestBody") for an extended __host__ __device__ lambda cannot have private or protected access within its class
-template< typename VectorView >
-typename VectorView::RealType
-performEvaluateAndReduce( VectorView& u, VectorView& v, VectorView& w )
-{
-   using RealType = typename VectorView::RealType;
-
-   auto reduction = [] __cuda_callable__ ( RealType& a, const RealType& b ) { a += b; };
-   auto volatileReduction = [] __cuda_callable__ ( volatile RealType& a, volatile RealType& b ) { a += b; };
-   return evaluateAndReduce( w, u * v, reduction, volatileReduction, ( RealType ) 0.0 );
-}
-
-TYPED_TEST( VectorTest, evaluateAndReduce )
-{
-   using VectorType = typename TestFixture::VectorType;
-   using ViewType = typename TestFixture::ViewType;
-   using RealType = typename VectorType::RealType;
-   using IndexType = typename VectorType::IndexType;
-   const int size = VECTOR_TEST_SIZE;
-
-   VectorType _u( size ), _v( size ), _w( size );
-   ViewType u( _u ), v( _v ), w( _w );
-   RealType aux( 0.0 );
-   for( int i = 0; i < size; i++ )
-   {
-      const RealType x = i;
-      const RealType y = size / 2 - i;
-      u.setElement( i, x );
-      v.setElement( i, y );
-      aux += x * y;
-   }
-   auto r = performEvaluateAndReduce( u, v, w );
-   EXPECT_TRUE( w == u * v );
-   EXPECT_NEAR( aux, r, 1.0e-5 );
-}
-
 
 #endif // HAVE_GTEST
 
