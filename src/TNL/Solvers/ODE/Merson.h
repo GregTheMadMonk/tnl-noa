@@ -65,7 +65,7 @@ class Merson : public ExplicitSolver< Problem >
 
    void writeGrids( const DofVectorPointer& u );
 
-   DofVectorPointer k1, k2, k3, k4, k5, kAux;
+   DofVectorPointer _k1, _k2, _k3, _k4, _k5, _kAux;
 
    /****
     * This controls the accuracy of the solver
