@@ -1,5 +1,5 @@
 /***************************************************************************
-                          Containers::VectorViewExpressions.h  -  description
+                          VectorViewExpressions.h  -  description
                              -------------------
     begin                : Apr 27, 2019
     copyright            : (C) 2019 by Tomas Oberhuber

@@ -53,6 +53,8 @@ public:
     */
    ViewType getView();
 
+   ConstViewType getView() const;
+
    /**
     * \brief Returns a non-modifiable view of the vector.
     */

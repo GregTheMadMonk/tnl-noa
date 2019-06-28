@@ -56,6 +56,18 @@ template< typename Real,
           typename Index >
 typename Vector< Real, Device, Index >::ConstViewType
 Vector< Real, Device, Index >::
+getView( IndexType begin, IndexType end ) const
+{
+   if( end == 0 )
+      end = this->getSize();
+   return ConstViewType( &this->getData()[ begin ], end - begin );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+typename Vector< Real, Device, Index >::ConstViewType
+Vector< Real, Device, Index >::
 getConstView( IndexType begin, IndexType end ) const
 {
    if( end == 0 )
@@ -193,6 +205,17 @@ operator/=( const VectorExpression& expression )
 template< typename Real,
           typename Device,
           typename Index >
+   template< typename Vector_ >
+Real Vector< Real, Device, Index >::
+operator,( const Vector_& v ) const
+{
+   static_assert( std::is_same< DeviceType, typename Vector_::DeviceType >::value, "Cannot compute product of vectors allocated on different devices." );
+   return Algorithms::VectorOperations< Device >::getScalarProduct( *this, v );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 Real Vector< Real, Device, Index >::max() const
 {
    return Algorithms::VectorOperations< Device >::getVectorMax( *this );
@@ -206,17 +229,6 @@ Real Vector< Real, Device, Index >::min() const
    return Algorithms::VectorOperations< Device >::getVectorMin( *this );
 }
 
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename Vector_ >
-Real Vector< Real, Device, Index >::
-operator,( const Vector_& v ) const
-{
-   static_assert( std::is_same< DeviceType, typename Vector_::DeviceType >::value, "Cannot compute product of vectors allocated on different devices." );
-   return Algorithms::VectorOperations< Device >::getScalarProduct( *this, v );
-}
 
 template< typename Real,
           typename Device,

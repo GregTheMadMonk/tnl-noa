@@ -35,7 +35,7 @@ bool TFQMR< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
 
    if( this->preconditioner ) {
       this->preconditioner->solve( b, M_tmp );
-      b_norm = M_tmp. lpNorm( ( RealType ) 2.0 );
+      b_norm = lpNorm( M_tmp.getView(), ( RealType ) 2.0 );
 
       this->matrix->vectorProduct( x, M_tmp );
       M_tmp.addVector( b, 1.0, -1.0 );
@@ -56,7 +56,7 @@ bool TFQMR< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
    }
    v = Au;
    d.setValue( 0.0 );
-   tau = r.lpNorm( 2.0 );
+   tau = lpNorm( r.getView(), 2.0 );
    theta = eta = 0.0;
    r_ast = r;
    rho = r_ast.scalarProduct( r );
@@ -89,7 +89,7 @@ bool TFQMR< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
       }
       w.addVector( Au, -alpha );
       d.addVector( u, 1.0, theta * theta * eta / alpha );
-      w_norm = w. lpNorm( 2.0 );
+      w_norm = lpNorm( w.getView(), 2.0 );
       theta = w_norm / tau;
       const RealType c = 1.0 / std::sqrt( 1.0 + theta * theta );
       tau = tau * theta * c;

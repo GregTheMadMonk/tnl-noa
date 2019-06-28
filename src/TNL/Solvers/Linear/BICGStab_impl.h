@@ -54,14 +54,14 @@ bool BICGStab< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
 
    if( this->preconditioner ) {
       this->preconditioner->solve( b, M_tmp );
-      b_norm = M_tmp.lpNorm( ( RealType ) 2.0 );
+      b_norm = lpNorm( M_tmp.getView(), ( RealType ) 2.0 );
 
       this->matrix->vectorProduct( x, M_tmp );
       M_tmp.addVector( b, 1.0, -1.0 );
       this->preconditioner->solve( M_tmp, r );
    }
    else {
-      b_norm = b.lpNorm( 2.0 );
+      b_norm = lpNorm( b.getView(), 2.0 );
       this->matrix->vectorProduct( x, r );
       r.addVector( b, 1.0, -1.0 );
    }
@@ -106,7 +106,7 @@ bool BICGStab< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
       else {
          this->matrix->vectorProduct( s, As );
       }
-      aux = As.lpNorm( 2.0 );
+      aux = lpNorm( As.getView(), 2.0 );
       omega = As.scalarProduct( s ) / ( aux * aux );
 
       /****
@@ -144,14 +144,14 @@ bool BICGStab< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
             this->matrix->vectorProduct( x, s );
             s.addVector( b, 1.0, -1.0 );
          }
-         const RealType residue = s.lpNorm( 2.0 );
+         const RealType residue = lpNorm( s.getView(), 2.0 );
          this->setResidue( residue / b_norm );
       }
       else {
          /****
           * Use the "orthogonal residue vector" for stopping.
           */
-         const RealType residue = r.lpNorm( 2.0 );
+         const RealType residue = lpNorm( r.getView(), 2.0 );
          this->setResidue( residue / b_norm );
       }
    }

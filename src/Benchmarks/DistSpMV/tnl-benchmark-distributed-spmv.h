@@ -168,7 +168,7 @@ struct SpmvBenchmark
 
       typename MatrixType::CompressedRowLengthsVector rowLengths;
       matrix.getCompressedRowLengths( rowLengths );
-      const IndexType maxRowLength = rowLengths.max();
+      const IndexType maxRowLength = max( rowLengths );
 
       const String name = String( (CommunicatorType::isDistributed()) ? "DistSpMV" : "SpMV" )
                           + " (" + parameters.getParameter< String >( "name" ) + "): ";

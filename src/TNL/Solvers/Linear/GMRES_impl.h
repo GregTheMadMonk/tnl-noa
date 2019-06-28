@@ -97,16 +97,16 @@ solve( ConstVectorViewType b, VectorViewType x )
    RealType normb;
    if( this->preconditioner ) {
       this->preconditioner->solve( b, _M_tmp );
-      normb = _M_tmp.lpNorm( 2.0 );
+      normb = lpNorm( _M_tmp.getView(), 2.0 );
    }
    else
-      normb = b.lpNorm( 2.0 );
+      normb = lpNorm( b, 2.0 );
    if( normb == 0.0 )
       normb = 1.0;
 
    // r = M.solve(b - A * x);
    compute_residue( r, x, b );
-   RealType beta = r.lpNorm( 2.0 );
+   RealType beta = lpNorm( r.getView(), 2.0 );
 
    // initialize stopping criterion
    this->resetIterations();
@@ -166,7 +166,7 @@ solve( ConstVectorViewType b, VectorViewType x )
       // compute the new residual vector
       compute_residue( r, x, b );
       const RealType beta_old = beta;
-      beta = r.lpNorm( 2.0 );
+      beta = lpNorm( r.getView(), 2.0 );
       this->setResidue( beta / normb );
 
       // update parameters for the adaptivity of the restarting parameter
@@ -228,7 +228,7 @@ orthogonalize_MGS( const int m, const RealType normb, const RealType beta )
       /***
        * H_{i+1,i} = |w|
        */
-      RealType normw = w.lpNorm( ( RealType ) 2.0 );
+      RealType normw = lpNorm( w.getView(), ( RealType ) 2.0 );
       H[ i + 1 + i * ( m + 1 ) ] = normw;
 
       /***
@@ -578,7 +578,7 @@ update( const int k,
 //                std::cout << H[ _i + _j * (m+1) ] << "  ";
 //            std::cout << std::endl;
 //         }
-         std::cerr << "H.norm = " << H.lpNorm( 2.0 ) << std::endl;
+         std::cerr << "H.norm = " << lpNorm( H, 2.0 ) << std::endl;
          std::cerr << "s = " << s << std::endl;
          std::cerr << "k = " << k << ", m = " << m << std::endl;
          throw 1;

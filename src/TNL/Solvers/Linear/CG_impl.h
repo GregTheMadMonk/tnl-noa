@@ -38,10 +38,10 @@ solve( ConstVectorViewType b, VectorViewType x )
    RealType normb;
    if( this->preconditioner ) {
       this->preconditioner->solve( b, r );
-      normb = r.lpNorm( 2.0 );
+      normb = lpNorm( r, 2.0 );
    }
    else
-      normb = b.lpNorm( 2.0 );
+      normb = lpNorm( b, 2.0 );
    if( normb == 0.0 )
       normb = 1.0;
 

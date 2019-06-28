@@ -74,6 +74,8 @@ public:
     * however, replaced with the Vector size.
     */
    ViewType getView( IndexType begin = 0, IndexType end = 0 );
+   
+   ConstViewType getView( IndexType begin = 0, IndexType end = 0 ) const;
 
    /**
     * \brief Returns a non-modifiable view of the vector.
@@ -345,3 +347,4 @@ struct IsStatic< Containers::Vector< Real, Device, Index > >
 } // namespace TNL
 
 #include <TNL/Containers/Vector.hpp>
+#include <TNL/Containers/VectorExpressions.h>

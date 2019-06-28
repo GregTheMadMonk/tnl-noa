@@ -58,6 +58,17 @@ template< typename Value,
           typename Communicator >
 typename DistributedVector< Value, Device, Index, Communicator >::ConstViewType
 DistributedVector< Value, Device, Index, Communicator >::
+getView() const
+{
+   return ConstViewType( this->getLocalRange(), this->getSize(), this->getCommunicationGroup(), this->getLocalVectorView() );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
+typename DistributedVector< Value, Device, Index, Communicator >::ConstViewType
+DistributedVector< Value, Device, Index, Communicator >::
 getConstView() const
 {
    return ConstViewType( this->getLocalRange(), this->getSize(), this->getCommunicationGroup(), this->getLocalVectorView() );
