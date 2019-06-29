@@ -67,6 +67,13 @@ public:
    ViewType getView();
 
    /**
+    * \brief Returns a modifiable view of the array view.
+    */
+   __cuda_callable__
+   ConstViewType getView() const;
+
+
+   /**
     * \brief Returns a non-modifiable view of the array view.
     */
    __cuda_callable__

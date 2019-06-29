@@ -60,11 +60,22 @@ template< typename Value,
 __cuda_callable__
 typename DistributedVectorView< Value, Device, Index, Communicator >::ConstViewType
 DistributedVectorView< Value, Device, Index, Communicator >::
-getConstView() const
+getView() const
 {
    return *this;
 }
 
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
+__cuda_callable__
+typename DistributedVectorView< Value, Device, Index, Communicator >::ConstViewType
+DistributedVectorView< Value, Device, Index, Communicator >::
+getConstView() const
+{
+   return *this;
+}
 
 template< typename Real,
           typename Device,
