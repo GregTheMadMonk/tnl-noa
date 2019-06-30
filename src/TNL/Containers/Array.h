@@ -280,6 +280,18 @@ class Array
        * \param end The end of the array sub-interval. The default value is 0
        *            which is, however, replaced with the array size.
        */
+      ConstViewType getView( IndexType begin = 0, IndexType end = 0 ) const;
+
+      /**
+       * \brief Returns a non-modifiable view of the array.
+       *
+       * If \e begin and \e end is set, view for sub-interval [ \e begin, \e end )
+       * is returned.
+       *
+       * \param begin is the beginning of the sub-interval, 0 by default.
+       * \param end is the end of the sub-interval. Default value is 0 which is,
+       * however, replaced with the Array size.
+       */
       ConstViewType getConstView( IndexType begin = 0, IndexType end = 0 ) const;
 
       /**

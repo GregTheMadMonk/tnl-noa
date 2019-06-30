@@ -311,14 +311,14 @@ ResultType Vector< Real, Device, Index >::differenceLpNorm( const VectorT& v, co
 }
 
 
-template< typename Real,
+/*template< typename Real,
           typename Device,
           typename Index >
    template< typename ResultType, typename VectorT >
 ResultType Vector< Real, Device, Index >::differenceSum( const VectorT& v ) const
 {
    return Algorithms::VectorOperations< Device >::template getVectorDifferenceSum< Vector, VectorT, ResultType >( *this, v );
-}
+}*/ 
 
 
 template< typename Real,

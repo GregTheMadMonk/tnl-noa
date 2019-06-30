@@ -58,16 +58,42 @@ TYPED_TEST( VectorTest, absMax )
    using VectorType = typename TestFixture::VectorType;
    using VectorOperations = typename TestFixture::VectorOperations;
    using ViewType = typename TestFixture::ViewType;
-   const int size = VECTOR_TEST_SIZE;
 
-   VectorType v;
-   v.setSize( size );
+   // this test expect an even size
+   const int size = VECTOR_TEST_SIZE % 2 ? VECTOR_TEST_SIZE - 1 : VECTOR_TEST_SIZE;
+
+   VectorType v( size );
    ViewType v_view( v );
    setNegativeLinearSequence( v );
 
-   EXPECT_EQ( v.absMax(), size - 1 );
-   EXPECT_EQ( v_view.absMax(), size - 1 );
+   EXPECT_EQ( max( abs( v ) ), size - 1 );
+   EXPECT_EQ( max( abs( v_view ) ),, size - 1 );
    EXPECT_EQ( VectorOperations::getVectorAbsMax( v ), size - 1 );
+
+   VectorType u( size ), v( size );
+   ViewType u_view( u ), v_view( v );
+   
+   v.setValue( 1.0 );
+
+   setConstantSequence( u, 2 );
+   EXPECT_EQ( sum( u - v ), size );
+   EXPECT_EQ( sum( u_view - v_view ), size );
+   EXPECT_EQ( VectorOperations::getVectorDifferenceSum( u, v ), size );
+
+   setLinearSequence( u );
+   EXPECT_EQ( sum( u - v ), 0.5 * size * ( size - 1 ) - size );
+   EXPECT_EQ( sum( u_view - v_view ), 0.5 * size * ( size - 1 ) - size );
+   EXPECT_EQ( VectorOperations::getVectorDifferenceSum( u, v ), 0.5 * size * ( size - 1 ) - size );
+
+   setNegativeLinearSequence( u );
+   EXPECT_EQ( sum( u - v ), - 0.5 * size * ( size - 1 ) - size );
+   EXPECT_EQ( sum( u_view - v_view ), - 0.5 * size * ( size - 1 ) - size );
+   EXPECT_EQ( VectorOperations::getVectorDifferenceSum( u, v ), - 0.5 * size * ( size - 1 ) - size );
+
+   setOscilatingSequence( u, 1.0 );
+   EXPECT_EQ( sum( u - v ), - size );
+   EXPECT_EQ( sum( u_view - v_view ), - size );
+   EXPECT_EQ( VectorOperations::getVectorDifferenceSum( u, v ), - size );
 }
 
 TYPED_TEST( VectorTest, absMin )

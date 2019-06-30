@@ -60,7 +60,19 @@ template< typename Real,
 __cuda_callable__
 typename VectorView< Real, Device, Index >::ConstViewType
 VectorView< Real, Device, Index >::
-getConstView( IndexType begin, IndexType end ) const
+getView( IndexType begin, IndexType end ) const
+{
+   if( end == 0 )
+      end = this->getSize();
+   return ConstViewType( &getData()[ begin ], end - begin );;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+typename VectorView< Real, Device, Index >::ConstViewType
+VectorView< Real, Device, Index >::
+getConstView( const IndexType begin, IndexType end ) const
 {
    if( end == 0 )
       end = this->getSize();

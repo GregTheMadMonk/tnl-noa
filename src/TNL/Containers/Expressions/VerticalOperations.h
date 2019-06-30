@@ -241,10 +241,16 @@ auto ExpressionArgMax( const Expression& expression, typename Expression::IndexT
 }
 
 template< typename Expression >
-auto ExpressionSum( const Expression& expression ) -> typename std::remove_reference< decltype( expression[ 0 ] ) >::type
+auto ExpressionSum( const Expression& expression ) -> 
+   typename std::conditional<
+      std::is_same< typename std::remove_cv< typename std::remove_reference< decltype( expression[ 0 ] ) >::type >::type, bool >::value,
+      typename Expression::IndexType,
+      typename std::remove_reference< decltype( expression[ 0 ] ) >::type
+   >::type
 {
-   using ResultType = typename std::remove_cv< typename std::remove_reference< decltype( expression[ 0 ] ) >::type >::type;
+   using ResultTypeBase = typename std::remove_cv< typename std::remove_reference< decltype( expression[ 0 ] ) >::type >::type;
    using IndexType = typename Expression::IndexType;
+   using ResultType = typename std::conditional< std::is_same< ResultTypeBase, bool >::value, IndexType, ResultTypeBase >::type;
 
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return  expression[ i ]; };
    auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a += b; };
