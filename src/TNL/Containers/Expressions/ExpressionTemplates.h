@@ -1937,8 +1937,9 @@ exp( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation >
-typename Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >::RealType
-min( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
+//typename Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >::RealType
+auto
+min( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a ) -> decltype( ExpressionMin( a ) )
 {
    return ExpressionMin( a );
 }
@@ -1946,8 +1947,9 @@ min( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation
 template< typename L1,
           template< typename > class LOperation,
           typename Parameter >
-typename Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >::RealType
-min( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >& a )
+//typename Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >::RealType
+auto
+min( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >& a ) -> decltype( ExpressionMin( a ) )
 {
    return ExpressionMin( a );
 }
@@ -1955,7 +1957,8 @@ min( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Par
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation >
-typename Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >::RealType
+//typename Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >::RealType
+auto
 max( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
    return ExpressionMax( a );
@@ -1964,7 +1967,8 @@ max( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation
 template< typename L1,
           template< typename > class LOperation,
           typename Parameter >
-typename Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >::RealType
+//typename Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >::RealType
+auto
 max( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >& a )
 {
    return ExpressionMax( a );
@@ -1973,8 +1977,9 @@ max( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Par
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation >
-typename Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >::RealType
-sum( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
+//typename Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >::RealType
+auto
+sum( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a ) -> decltype( ExpressionSum( a ) )
 {
    return ExpressionSum( a );
 }
@@ -1982,8 +1987,9 @@ sum( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation
 template< typename L1,
           template< typename > class LOperation,
           typename Parameter >
-typename Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >::RealType
-sum( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >& a )
+//typename Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >::RealType
+auto
+sum( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >& a ) -> decltype( ExpressionSum( a ) )
 {
    return ExpressionSum( a );
 }
@@ -1992,8 +1998,9 @@ template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
           typename Real >
-typename Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >::RealType
-lpNorm( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a, const Real& p )
+//typename Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >::RealType
+auto
+lpNorm( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a, const Real& p ) -> decltype( ExpressionLpNorm( a, p ) )
 {
    return ExpressionLpNorm( a, p );
 }
@@ -2002,8 +2009,9 @@ template< typename L1,
           template< typename > class LOperation,
           typename Parameter,
           typename Real >
-typename Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >::RealType
-lpNorm( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >& a, const Real& p )
+//typename Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >::RealType
+auto
+lpNorm( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >& a, const Real& p ) -> decltype( ExpressionLpNorm( a, p ) )
 {
    return ExpressionLpNorm( a, p );
 }
@@ -2011,8 +2019,9 @@ lpNorm( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, 
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation >
-typename Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >::RealType
-product( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
+//typename Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >::RealType
+auto
+product( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a ) -> decltype( ExpressionProduct( a ) )
 {
    return ExpressionProduct( a );
 }
@@ -2020,8 +2029,9 @@ product( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOpera
 template< typename L1,
           template< typename > class LOperation,
           typename Parameter >
-typename Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >::RealType
-product( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >& a )
+//typename Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >::RealType
+auto
+product( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >& a ) -> decltype( ExpressionProduct( a ) )
 {
    return ExpressionProduct( a );
 }
@@ -2047,8 +2057,9 @@ logicalAnd( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperati
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation >
-typename Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >::RealType
-binaryOr( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
+//typename Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >::RealType
+auto
+binaryOr( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a ) -> decltype( ExpressionBinaryOr( a ) )
 {
    return ExpressionBinaryOr( a );
 }
@@ -2056,8 +2067,9 @@ binaryOr( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOper
 template< typename L1,
           template< typename > class LOperation,
           typename Parameter >
-typename Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >::RealType
-binaryAnd( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >& a )
+//typename Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >::RealType
+auto
+binaryAnd( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >& a ) -> decltype( ExpressionBinaryAnd( a ) )
 {
    return ExpressionBinaryAnd( a );
 }

@@ -79,6 +79,146 @@ TYPED_TEST( VectorTest, verticalOperations )
    EXPECT_EQ( argMin, wArgMin );
    EXPECT_NEAR( TNL::argMax( w, wArgMax ), argMaxValue, 2.0e-5 );
    EXPECT_EQ( argMax, wArgMax );
+
+   //EXPECT_EQ( sign( u ), v );
+   for( int i = 0; i < size; i++ )
+      EXPECT_NEAR( sign( u ).getElement( i ), v.getElement( i ), 1.0e-6 );
+}
+
+// TODO: test prefix sum with custom begin and end parameters
+
+TEST( VectorSpecialCasesTest, sumOfBoolVector )
+{
+   using VectorType = Containers::Vector< bool, Devices::Host >;
+   using ViewType = VectorView< bool, Devices::Host >;
+   const float epsilon = 64 * std::numeric_limits< float >::epsilon();
+
+   VectorType v( 512 ), w( 512 );
+   ViewType v_view( v ), w_view( w );
+   v.setValue( true );
+   w.setValue( false );
+
+   const int sum = TNL::sum( v );
+   const int l1norm = v.lpNorm< int >( 1.0 );
+   const float l2norm = v.lpNorm< float >( 2.0 );
+   const float l3norm = v.lpNorm< float >( 3.0 );
+   EXPECT_EQ( sum, 512 );
+   EXPECT_EQ( l1norm, 512 );
+   EXPECT_NEAR( l2norm, std::sqrt( 512 ), epsilon );
+   EXPECT_NEAR( l3norm, std::cbrt( 512 ), epsilon );
+   
+   const int diff_sum = TNL::sum( v - w ); //v.differenceSum< int >( w );
+   const int diff_l1norm = v.differenceLpNorm< int >( w, 1.0 );
+   const float diff_l2norm = v.differenceLpNorm< float >( w, 2.0 );
+   const float diff_l3norm = v.differenceLpNorm< float >( w, 3.0 );
+   EXPECT_EQ( diff_sum, 512 );
+   EXPECT_EQ( diff_l1norm, 512 );
+   EXPECT_NEAR( diff_l2norm, std::sqrt( 512 ), epsilon );
+   EXPECT_NEAR( diff_l3norm, std::cbrt( 512 ), epsilon );
+
+   // test views
+   const int sum_view = v_view.sum< int >();
+   const int l1norm_view = v_view.lpNorm< int >( 1.0 );
+   const float l2norm_view = v_view.lpNorm< float >( 2.0 );
+   const float l3norm_view = v_view.lpNorm< float >( 3.0 );
+   EXPECT_EQ( sum_view, 512 );
+   EXPECT_EQ( l1norm_view, 512 );
+   EXPECT_NEAR( l2norm_view, std::sqrt( 512 ), epsilon );
+   EXPECT_NEAR( l3norm_view, std::cbrt( 512 ), epsilon );
+
+   const int diff_sum_view = v_view.differenceSum< int >( w_view );
+   const int diff_l1norm_view = v_view.differenceLpNorm< int >( w_view, 1.0 );
+   const float diff_l2norm_view = v_view.differenceLpNorm< float >( w_view, 2.0 );
+   const float diff_l3norm_view = v_view.differenceLpNorm< float >( w_view, 3.0 );
+   EXPECT_EQ( diff_sum_view, 512 );
+   EXPECT_EQ( diff_l1norm_view, 512 );
+   EXPECT_NEAR( diff_l2norm_view, std::sqrt( 512 ), epsilon );
+   EXPECT_NEAR( diff_l3norm_view, std::cbrt( 512 ), epsilon );
+}
+
+TEST( VectorSpecialCasesTest, assignmentThroughView )
+{
+   using VectorType = Containers::Vector< int, Devices::Host >;
+   using ViewType = VectorView< int, Devices::Host >;
+
+   static_assert( Algorithms::Details::HasSubscriptOperator< VectorType >::value, "Subscript operator detection by SFINAE does not work for Vector." );
+   static_assert( Algorithms::Details::HasSubscriptOperator< ViewType >::value, "Subscript operator detection by SFINAE does not work for VectorView." );
+
+   VectorType u( 100 ), v( 100 );
+   ViewType u_view( u ), v_view( v );
+
+   u.setValue( 42 );
+   v.setValue( 0 );
+   v_view = u_view;
+   EXPECT_EQ( u_view.getData(), u.getData() );
+   EXPECT_EQ( v_view.getData(), v.getData() );
+   for( int i = 0; i < 100; i++ )
+      EXPECT_EQ( v_view[ i ], 42 );
+
+   u.setValue( 42 );
+   v.setValue( 0 );
+   v_view = u;
+   EXPECT_EQ( u_view.getData(), u.getData() );
+   EXPECT_EQ( v_view.getData(), v.getData() );
+   for( int i = 0; i < 100; i++ )
+      EXPECT_EQ( v_view[ i ], 42 );
+}
+
+TEST( VectorSpecialCasesTest, operationsOnConstView )
+{
+   using VectorType = Containers::Vector< int, Devices::Host >;
+   using ViewType = VectorView< const int, Devices::Host >;
+
+   VectorType u( 100 ), v( 100 );
+   ViewType u_view( u ), v_view( v );
+
+   u.setValue( 1 );
+   v.setValue( 1 );
+
+   EXPECT_EQ( u_view.max(), 1 );
+   EXPECT_EQ( u_view.min(), 1 );
+   EXPECT_EQ( u_view.absMax(), 1 );
+   EXPECT_EQ( u_view.absMin(), 1 );
+   EXPECT_EQ( u_view.lpNorm( 1 ), 100 );
+   EXPECT_EQ( u_view.differenceMax( v_view ), 0 );
+   EXPECT_EQ( u_view.differenceMin( v_view ), 0 );
+   EXPECT_EQ( u_view.differenceAbsMax( v_view ), 0 );
+   EXPECT_EQ( u_view.differenceAbsMin( v_view ), 0 );
+   EXPECT_EQ( u_view.differenceLpNorm( v_view, 1 ), 0 );
+   EXPECT_EQ( u_view.differenceSum( v_view ), 0 );
+   EXPECT_EQ( u_view.scalarProduct( v_view ), 100 );
+}
+
+TEST( VectorSpecialCasesTest, initializationOfVectorViewByArrayView )
+{
+   using ArrayType = Containers::Array< int, Devices::Host >;
+   using VectorViewType = VectorView< const int, Devices::Host >;
+   using ArrayViewType = ArrayView< int, Devices::Host >;
+
+   ArrayType a( 100 );
+   a.setValue( 0 );
+   ArrayViewType a_view( a );
+
+   VectorViewType v_view( a_view );
+   EXPECT_EQ( v_view.getData(), a_view.getData() );
+   EXPECT_EQ( v_view.sum(), 0 );
+}
+
+TEST( VectorSpecialCasesTest, defaultConstructors )
+{
+   using ArrayType = Containers::Array< int, Devices::Host >;
+   using VectorViewType = VectorView< int, Devices::Host >;
+   using ArrayViewType = ArrayView< int, Devices::Host >;
+
+   ArrayType a( 100 );
+   a.setValue( 0 );
+
+   ArrayViewType a_view;
+   a_view.bind( a );
+
+   VectorViewType v_view;
+   v_view.bind( a );
+   EXPECT_EQ( v_view.getData(), a_view.getData() );
 }
 
 #endif // HAVE_GTEST

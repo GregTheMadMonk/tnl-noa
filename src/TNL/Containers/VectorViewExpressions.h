@@ -515,8 +515,9 @@ argMax( const Containers::VectorView< Real, Device, Index >& a, Index& arg )
 template< typename Real,
           typename Device,
           typename Index >
-typename Containers::VectorView< Real, Device, Index >::RealType
-sum( const Containers::VectorView< Real, Device, Index >& a )
+//typename Containers::VectorView< Real, Device, Index >::RealType
+auto
+sum( const Containers::VectorView< Real, Device, Index >& a ) -> decltype( Containers::Expressions::ExpressionSum( a ) )
 {
    return Containers::Expressions::ExpressionSum( a );
 }
@@ -525,8 +526,9 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Real2 >
-typename Containers::VectorView< Real, Device, Index >::RealType
-lpNorm( const Containers::VectorView< Real, Device, Index >& a, const Real2& p )
+//typename Containers::VectorView< Real, Device, Index >::RealType
+auto
+lpNorm( const Containers::VectorView< Real, Device, Index >& a, const Real2& p ) -> decltype( Containers::Expressions::ExpressionLpNorm( a, p ) )
 {
    return Containers::Expressions::ExpressionLpNorm( a, p );
 }
@@ -534,8 +536,9 @@ lpNorm( const Containers::VectorView< Real, Device, Index >& a, const Real2& p )
 template< typename Real,
           typename Device,
           typename Index >
-typename Containers::VectorView< Real, Device, Index >::RealType
-product( const Containers::VectorView< Real, Device, Index >& a )
+//typename Containers::VectorView< Real, Device, Index >::RealType
+auto
+product( const Containers::VectorView< Real, Device, Index >& a ) -> decltype( Containers::Expressions::ExpressionProduct( a ) )
 {
    return Containers::Expressions::ExpressionProduct( a );
 }
@@ -552,8 +555,9 @@ logicalOr( const Containers::VectorView< Real, Device, Index >& a )
 template< typename Real,
           typename Device,
           typename Index >
-typename Containers::VectorView< Real, Device, Index >::RealType
-binaryOr( const Containers::VectorView< Real, Device, Index >& a )
+//typename Containers::VectorView< Real, Device, Index >::RealType
+auto
+binaryOr( const Containers::VectorView< Real, Device, Index >& a ) -> decltype( Containers::Expressions::ExpressionBinaryOr( a ) )
 {
    return Containers::Expressions::ExpressionBinaryOr( a );
 }
@@ -570,8 +574,9 @@ logicalAnd( const Containers::VectorView< Real, Device, Index >& a )
 template< typename Real,
           typename Device,
           typename Index >
-typename Containers::VectorView< Real, Device, Index >::RealType
-binaryAnd( const Containers::VectorView< Real, Device, Index >& a )
+//typename Containers::VectorView< Real, Device, Index >::RealType
+auto
+binaryAnd( const Containers::VectorView< Real, Device, Index >& a ) -> decltype( Containers::Expressions::ExpressionBinaryAnd( a ) )
 {
    return Containers::Expressions::ExpressionBinaryAnd( a );
 }
@@ -579,13 +584,17 @@ binaryAnd( const Containers::VectorView< Real, Device, Index >& a )
 ////
 // Scalar product
 template< typename Real, typename Device, typename Index, typename ET >
-Real operator,( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
+//Real 
+auto
+operator,( const Containers::VectorView< Real, Device, Index >& a, const ET& b )->decltype( TNL::sum( a * b ) )
 {
    return TNL::sum( a * b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index >
-Real operator,( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
+//Real
+auto
+operator,( const ET& a, const Containers::VectorView< Real, Device, Index >& b )->decltype( TNL::sum( a * b ) )
 {
    return TNL::sum( a * b );
 }
@@ -600,13 +609,17 @@ auto operator,( const Containers::VectorView< Real1, Device, Index >& a, const C
 ////
 // Dot product - the same as scalar product, just for convenience
 template< typename Real, typename Device, typename Index, typename ET >
-Real dot( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
+//Real 
+auto
+dot( const Containers::VectorView< Real, Device, Index >& a, const ET& b )->decltype( TNL::sum( a * b ) )
 {
    return TNL::sum( a * b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index >
-Real dot( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
+//Real
+auto
+dot( const ET& a, const Containers::VectorView< Real, Device, Index >& b )->decltype( TNL::sum( a * b ) )
 {
    return TNL::sum( a * b );
 }
