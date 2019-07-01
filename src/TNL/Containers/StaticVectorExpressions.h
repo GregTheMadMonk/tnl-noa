@@ -546,56 +546,63 @@ sign( const Containers::StaticVector< Size, Real >& a )
 // Vertical operations - min
 template< int Size, typename Real >
 __cuda_callable__
-typename Containers::StaticVector< Size, Real >::RealType
+auto
 min( const Containers::StaticVector< Size, Real >& a )
+-> decltype( Containers::Expressions::StaticExpressionMin( a ) )
 {
    return Containers::Expressions::StaticExpressionMin( a );
 }
 
 template< int Size, typename Real >
 __cuda_callable__
-typename Containers::StaticVector< Size, Real >::RealType
+auto
 argMin( const Containers::StaticVector< Size, Real >& a, int& arg )
+-> decltype( Containers::Expressions::StaticExpressionArgMin( a, arg ) )
 {
    return Containers::Expressions::StaticExpressionArgMin( a, arg );
 }
 
 template< int Size, typename Real >
 __cuda_callable__
-typename Containers::StaticVector< Size, Real >::RealType
+auto
 max( const Containers::StaticVector< Size, Real >& a )
+-> decltype( Containers::Expressions::StaticExpressionMax( a ) )
 {
    return Containers::Expressions::StaticExpressionMax( a );
 }
 
 template< int Size, typename Real >
 __cuda_callable__
-typename Containers::StaticVector< Size, Real >::RealType
+auto
 argMax( const Containers::StaticVector< Size, Real >& a, int& arg )
+-> decltype( Containers::Expressions::StaticExpressionArgMax( a, arg ) )
 {
    return Containers::Expressions::StaticExpressionArgMax( a, arg );
 }
 
 template< int Size, typename Real >
 __cuda_callable__
-typename Containers::StaticVector< Size, Real >::RealType
+auto
 sum( const Containers::StaticVector< Size, Real >& a )
+-> decltype( Containers::Expressions::StaticExpressionSum( a ) )
 {
    return Containers::Expressions::StaticExpressionSum( a );
 }
 
 template< int Size, typename Real, typename Real2 >
 __cuda_callable__
-typename Containers::StaticVector< Size, Real >::RealType
+auto
 lpNorm( const Containers::StaticVector< Size, Real >& a, const Real2& p )
+-> decltype( Containers::Expressions::StaticExpressionLpNorm( a, p ) )
 {
    return Containers::Expressions::StaticExpressionLpNorm( a, p );
 }
 
 template< int Size, typename Real >
 __cuda_callable__
-typename Containers::StaticVector< Size, Real >::RealType
+auto
 product( const Containers::StaticVector< Size, Real >& a )
+-> decltype( Containers::Expressions::StaticExpressionProduct( a ) )
 {
    return Containers::Expressions::StaticExpressionProduct( a );
 }
@@ -610,8 +617,9 @@ logicalOr( const Containers::StaticVector< Size, Real >& a )
 
 template< int Size, typename Real >
 __cuda_callable__
-typename Containers::StaticVector< Size, Real >::RealType
+auto
 binaryOr( const Containers::StaticVector< Size, Real >& a )
+-> decltype( Containers::Expressions::StaticExpressionBinaryOr( a ) )
 {
    return Containers::Expressions::StaticExpressionBinaryOr( a );
 }
@@ -626,8 +634,9 @@ logicalAnd( const Containers::StaticVector< Size, Real >& a )
 
 template< int Size, typename Real >
 __cuda_callable__
-typename Containers::StaticVector< Size, Real >::RealType
+auto
 binaryAnd( const Containers::StaticVector< Size, Real >& a )
+-> decltype( Containers::Expressions::StaticExpressionBinaryAnd( a ) )
 {
    return Containers::Expressions::StaticExpressionBinaryAnd( a );
 }

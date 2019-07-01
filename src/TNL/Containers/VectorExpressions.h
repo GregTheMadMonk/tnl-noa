@@ -573,7 +573,6 @@ argMax( const Containers::Vector< Real, Device, Index >& a, Index& arg )
 template< typename Real,
           typename Device,
           typename Index >
-//typename Containers::VectorView< Real, Device, Index >::RealType
 auto
 sum( const Containers::Vector< Real, Device, Index >& a ) -> decltype( Containers::Expressions::ExpressionSum( a.getView() ) )
 {
@@ -584,7 +583,6 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Real2 >
-//typename Containers::VectorView< Real, Device, Index >::RealType
 auto
 lpNorm( const Containers::Vector< Real, Device, Index >& a, const Real2& p ) -> decltype( Containers::Expressions::ExpressionLpNorm( a.getView(), p ) )
 {
@@ -594,7 +592,6 @@ lpNorm( const Containers::Vector< Real, Device, Index >& a, const Real2& p ) -> 
 template< typename Real,
           typename Device,
           typename Index >
-//typename Containers::VectorView< Real, Device, Index >::RealType
 auto
 product( const Containers::Vector< Real, Device, Index >& a ) -> decltype( Containers::Expressions::ExpressionProduct( a.getView() ) )
 {
@@ -613,7 +610,6 @@ logicalOr( const Containers::Vector< Real, Device, Index >& a )
 template< typename Real,
           typename Device,
           typename Index >
-//typename Containers::VectorView< Real, Device, Index >::RealType
 auto
 binaryOr( const Containers::Vector< Real, Device, Index >& a ) -> decltype( Containers::Expressions::ExpressionBinaryOr( a.getView() ) )
 {
@@ -632,7 +628,6 @@ logicalAnd( const Containers::Vector< Real, Device, Index >& a )
 template< typename Real,
           typename Device,
           typename Index >
-//typename Containers::VectorView< Real, Device, Index >::RealType
 auto
 binaryAnd( const Containers::Vector< Real, Device, Index >& a ) -> decltype( Containers::Expressions::ExpressionBinaryAnd( a.getView() ) )
 {
