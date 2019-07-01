@@ -1,18 +1,16 @@
 #!/bin/bash
 
-#OUTPUTDIR=./html
-OUTPUTDIR=${HOME}/.local/share/doc/tnl/html
+OUTPUTDIR=./html
 SSH_USER=tnl-doc
 SSH_HOST=mmg-gitlab.fjfi.cvut.cz
 SSH_PORT=22
 SSH_TARGET_DIR=/srv/http/doc/tnl
 
 set -e
-rsync -e "ssh -p $SSH_PORT" -P -rvzc --cvs-exclude --delete "$OUTPUTDIR/" "$SSH_USER@$SSH_HOST:$SSH_TARGET_DIR"
 
 # Run from this directory
-#cd ${0%/*}
+cd ${0%/*}
 
-#[[ ! -d "$OUTPUTDIR" ]] && ./build
+[[ ! -d "$OUTPUTDIR" ]] && ./build
 
-#rsync -e "ssh -p $SSH_PORT" -P -rvzc --cvs-exclude --delete "$OUTPUTDIR/" "$SSH_USER@$SSH_HOST:$SSH_TARGET_DIR"
+rsync -e "ssh -p $SSH_PORT" -P -rvzc --cvs-exclude --delete "$OUTPUTDIR/" "$SSH_USER@$SSH_HOST:$SSH_TARGET_DIR"
