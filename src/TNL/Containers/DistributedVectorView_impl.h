@@ -311,7 +311,7 @@ sum() const
    return result;
 }
 
-template< typename Real,
+/*template< typename Real,
           typename Device,
           typename Index,
           typename Communicator >
@@ -453,7 +453,7 @@ differenceSum( const Vector& v ) const
       CommunicatorType::Allreduce( &localResult, &result, 1, MPI_SUM, group );
    }
    return result;
-}
+}*/
 
 template< typename Real,
           typename Device,

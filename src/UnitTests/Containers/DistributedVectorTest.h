@@ -188,7 +188,7 @@ TYPED_TEST( DistributedVectorTest, sum )
 
 TYPED_TEST( DistributedVectorTest, differenceMax )
 {
-   EXPECT_EQ( this->x.differenceMax( this->y ), 1 );
+   EXPECT_TRUE( TNL::max( this->x, this->y ) == 1 );
    EXPECT_EQ( this->y.differenceMax( this->x ), this->globalSize - 2 );
 
    EXPECT_EQ( this->x_view.differenceMax( this->y_view ), 1 );

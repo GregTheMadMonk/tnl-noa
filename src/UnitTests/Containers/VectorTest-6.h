@@ -108,9 +108,9 @@ TEST( VectorSpecialCasesTest, sumOfBoolVector )
    EXPECT_NEAR( l3norm, std::cbrt( 512 ), epsilon );
    
    const int diff_sum = TNL::sum( v - w ); //v.differenceSum< int >( w );
-   const int diff_l1norm = v.differenceLpNorm< int >( w, 1.0 );
-   const float diff_l2norm = v.differenceLpNorm< float >( w, 2.0 );
-   const float diff_l3norm = v.differenceLpNorm< float >( w, 3.0 );
+   const int diff_l1norm = lpNorm( v - w, 1.0 );//v.differenceLpNorm< int >( w, 1.0 );
+   const float diff_l2norm = lpNorm( v - w, 2.0 );//v.differenceLpNorm< float >( w, 2.0 );
+   const float diff_l3norm = lpNorm( v - w, 3.0 );//v.differenceLpNorm< float >( w, 3.0 );
    EXPECT_EQ( diff_sum, 512 );
    EXPECT_EQ( diff_l1norm, 512 );
    EXPECT_NEAR( diff_l2norm, std::sqrt( 512 ), epsilon );
@@ -126,10 +126,10 @@ TEST( VectorSpecialCasesTest, sumOfBoolVector )
    EXPECT_NEAR( l2norm_view, std::sqrt( 512 ), epsilon );
    EXPECT_NEAR( l3norm_view, std::cbrt( 512 ), epsilon );
 
-   const int diff_sum_view = v_view.differenceSum< int >( w_view );
-   const int diff_l1norm_view = v_view.differenceLpNorm< int >( w_view, 1.0 );
-   const float diff_l2norm_view = v_view.differenceLpNorm< float >( w_view, 2.0 );
-   const float diff_l3norm_view = v_view.differenceLpNorm< float >( w_view, 3.0 );
+   const int diff_sum_view = TNL::sum( v_view - w_view );
+   const int diff_l1norm_view = lpNorm( v_view - w_view, 1.0 );
+   const float diff_l2norm_view = lpNorm( v_view - w_view, 2.0 );
+   const float diff_l3norm_view = lpNorm( v_view - w_view, 3.0 );
    EXPECT_EQ( diff_sum_view, 512 );
    EXPECT_EQ( diff_l1norm_view, 512 );
    EXPECT_NEAR( diff_l2norm_view, std::sqrt( 512 ), epsilon );
@@ -180,12 +180,12 @@ TEST( VectorSpecialCasesTest, operationsOnConstView )
    EXPECT_EQ( u_view.absMax(), 1 );
    EXPECT_EQ( u_view.absMin(), 1 );
    EXPECT_EQ( u_view.lpNorm( 1 ), 100 );
-   EXPECT_EQ( u_view.differenceMax( v_view ), 0 );
-   EXPECT_EQ( u_view.differenceMin( v_view ), 0 );
-   EXPECT_EQ( u_view.differenceAbsMax( v_view ), 0 );
-   EXPECT_EQ( u_view.differenceAbsMin( v_view ), 0 );
-   EXPECT_EQ( u_view.differenceLpNorm( v_view, 1 ), 0 );
-   EXPECT_EQ( u_view.differenceSum( v_view ), 0 );
+   EXPECT_EQ( max( u_view - v_view ), 0 );
+   EXPECT_EQ( min( u_view - v_view ), 0 );
+   EXPECT_EQ( max( abs( u_view - v_view ) ), 0 );
+   EXPECT_EQ( min( abs( u_view - v_view ) ), 0 );
+   EXPECT_EQ( lpNorm( u_view - v_view, 1.0 ), 0 );
+   EXPECT_EQ( sum( u_view - v_view ), 0 );
    EXPECT_EQ( u_view.scalarProduct( v_view ), 100 );
 }
 

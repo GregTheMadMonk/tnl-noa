@@ -74,9 +74,9 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, VectorVariable, V
    }
 
    __cuda_callable__
-   int getLocalSize() const
+   int getSize() const
    {
-       return op1.getLocalSize();
+       return op1.getSize();
    }
 
    protected:
@@ -117,9 +117,9 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, VectorVariable, A
    }
 
    __cuda_callable__
-   int getLocalSize() const
+   int getSize() const
    {
-       return op1.getLocalSize();
+       return op1.getSize();
    }
 
    protected:
@@ -160,9 +160,9 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariabl
    }
 
    __cuda_callable__
-   int getLocalSize() const
+   int getSize() const
    {
-       return op2.getLocalSize();
+       return op2.getSize();
    }
 
    protected:
@@ -208,9 +208,9 @@ struct DistributedUnaryExpressionTemplate< T1, Operation, Parameter, VectorVaria
    }
 
    __cuda_callable__
-   int getLocalSize() const
+   int getSize() const
    {
-       return operand.getLocalSize();
+       return operand.getSize();
    }
 
    void set( const Parameter& p ) { parameter = p; }
@@ -254,9 +254,9 @@ struct DistributedUnaryExpressionTemplate< T1, Operation, void, VectorVariable >
    }
 
    __cuda_callable__
-   int getLocalSize() const
+   int getSize() const
    {
-       return operand.getLocalSize();
+       return operand.getSize();
    }
 
    protected:

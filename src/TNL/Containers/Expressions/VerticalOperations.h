@@ -259,10 +259,16 @@ auto ExpressionSum( const Expression& expression ) ->
 }
 
 template< typename Expression, typename Real >
-auto ExpressionLpNorm( const Expression& expression, const Real& p ) -> typename std::remove_reference< decltype( expression[ 0 ] ) >::type
+auto ExpressionLpNorm( const Expression& expression, const Real& p ) -> 
+   typename std::conditional<
+      std::is_same< typename std::remove_cv< typename std::remove_reference< decltype( expression[ 0 ] ) >::type >::type, bool >::value,
+      double, // TODO: Solve this some better way
+      typename std::remove_reference< decltype( expression[ 0 ] ) >::type
+   >::type
 {
-   using ResultType = typename std::remove_cv< typename std::remove_reference< decltype( expression[ 0 ] ) >::type >::type;
+   using ResultTypeBase = typename std::remove_cv< typename std::remove_reference< decltype( expression[ 0 ] ) >::type >::type;
    using IndexType = typename Expression::IndexType;
+   using ResultType = typename std::conditional< std::is_same< ResultTypeBase, bool >::value, double, ResultTypeBase >::type;
 
    if( p == ( Real ) 1.0 )
    {
@@ -283,7 +289,6 @@ auto ExpressionLpNorm( const Expression& expression, const Real& p ) -> typename
    auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a += b; };
    return TNL::pow( Algorithms::Reduction< typename Expression::DeviceType >::reduce( expression.getSize(), reduction, volatileReduction, fetch, ( ResultType ) 0.0 ), ( Real ) 1.0 / p );
 }
-
 
 template< typename Expression >
 auto ExpressionProduct( const Expression& expression ) -> typename std::remove_reference< decltype( expression[ 0 ] ) >::type

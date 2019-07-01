@@ -113,7 +113,7 @@ public:
    template< typename ResultType = RealType >
    ResultType sum() const;
 
-   template< typename Vector >
+   /*template< typename Vector >
    Real differenceMax( const Vector& v ) const;
 
    template< typename Vector >
@@ -129,7 +129,7 @@ public:
    ResultType differenceLpNorm( const Vector& v, const Scalar p ) const;
 
    template< typename ResultType = RealType, typename Vector >
-   ResultType differenceSum( const Vector& v ) const;
+   ResultType differenceSum( const Vector& v ) const;*/
 
    template< typename Scalar >
    void scalarMultiplication( Scalar alpha );
@@ -164,4 +164,5 @@ public:
 } // namespace Containers
 } // namespace TNL
 
-#include "DistributedVector_impl.h"
+#include <TNL/Containers/DistributedVector_impl.h>
+#include <TNL/Containers/DistributedVectorExpressions.h>

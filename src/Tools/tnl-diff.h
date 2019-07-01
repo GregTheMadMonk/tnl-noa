@@ -395,7 +395,7 @@ bool computeDifferenceOfVectors( const MeshPointer& meshPointer, const Config::P
       }
       Real l1Diff = meshPointer->getDifferenceLpNorm( v1, v2, 1.0 );
       Real l2Diff = meshPointer->getDifferenceLpNorm( v1, v2, 2.0 );
-      Real maxDiff = meshPointer->getDifferenceAbsMax( v1, v2 );
+      Real maxDiff = max( abs( v1 - v2 ) );
       if( snapshotPeriod != 0.0 )
       {
          totalL1Diff += snapshotPeriod * l1Diff;

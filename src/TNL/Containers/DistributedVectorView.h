@@ -120,7 +120,7 @@ public:
    template< typename ResultType = NonConstReal >
    ResultType sum() const;
 
-   template< typename Vector >
+   /*template< typename Vector >
    NonConstReal differenceMax( const Vector& v ) const;
 
    template< typename Vector >
@@ -136,7 +136,7 @@ public:
    ResultType differenceLpNorm( const Vector& v, Scalar p ) const;
 
    template< typename ResultType = NonConstReal, typename Vector >
-   ResultType differenceSum( const Vector& v ) const;
+   ResultType differenceSum( const Vector& v ) const;*/
 
    template< typename Scalar >
    void scalarMultiplication( Scalar alpha );

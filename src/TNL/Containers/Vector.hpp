@@ -267,63 +267,6 @@ ResultType Vector< Real, Device, Index >::sum() const
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename VectorT >
-Real Vector< Real, Device, Index >::differenceMax( const VectorT& v ) const
-{
-   return Algorithms::VectorOperations< Device >::getVectorDifferenceMax( *this, v );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename VectorT >
-Real Vector< Real, Device, Index >::differenceMin( const VectorT& v ) const
-{
-   return Algorithms::VectorOperations< Device >::getVectorDifferenceMin( *this, v );
-}
-
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename VectorT >
-Real Vector< Real, Device, Index >::differenceAbsMax( const VectorT& v ) const
-{
-   return Algorithms::VectorOperations< Device >::getVectorDifferenceAbsMax( *this, v );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename VectorT >
-Real Vector< Real, Device, Index >::differenceAbsMin( const VectorT& v ) const
-{
-   return Algorithms::VectorOperations< Device >::getVectorDifferenceAbsMin( *this, v );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename ResultType, typename VectorT, typename Scalar >
-ResultType Vector< Real, Device, Index >::differenceLpNorm( const VectorT& v, const Scalar p ) const
-{
-   return Algorithms::VectorOperations< Device >::template getVectorDifferenceLpNorm< Vector, VectorT, ResultType >( *this, v, p );
-}
-
-
-/*template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename ResultType, typename VectorT >
-ResultType Vector< Real, Device, Index >::differenceSum( const VectorT& v ) const
-{
-   return Algorithms::VectorOperations< Device >::template getVectorDifferenceSum< Vector, VectorT, ResultType >( *this, v );
-}*/ 
-
-
-template< typename Real,
-          typename Device,
-          typename Index >
    template< typename Scalar >
 void Vector< Real, Device, Index >::scalarMultiplication( const Scalar alpha )
 {

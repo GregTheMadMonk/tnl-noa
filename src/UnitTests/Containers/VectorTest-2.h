@@ -250,6 +250,9 @@ void setupFlags( FlagsView& f )
 {
    auto f1 = [] __cuda_callable__ ( typename FlagsView::IndexType i ) { return ( i % 5 ) == 0; };
    f.evaluate( f1 );
+   EXPECT_EQ( max( u - v ), size - 1 - size / 2 );
+   EXPECT_EQ( max( u_view - v_view ), size - 1 - size / 2 );
+   EXPECT_EQ( VectorOperations::getVectorDifferenceMax( u, v ), size - 1 - size / 2 );
 }
 
 /*
