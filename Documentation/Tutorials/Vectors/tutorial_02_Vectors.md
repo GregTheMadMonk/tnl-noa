@@ -1,10 +1,10 @@
-# Vectors tutorial
+\page tutorial_02_vectors  Vectors tutorial
 
 ## Introduction
 
 This tutorial introduces vectors in TNL. `Vector`, in addition to `Array`, offers also basic operations from linear algebra. The reader will mainly learn how to do Blas level 1 operations in TNL. Thanks to the design of TNL, it is easier to implement, hardware architecture transparent and in some cases even faster then [Blas](https://en.wikipedia.org/wiki/Basic_Linear_Algebra_Subprograms) or [cuBlas](https://developer.nvidia.com/cublas) implementation.
 
-# Table of Contents
+## Table of Contents
 1. [Vectors](#vectors)
    1. [Horizontal operations] (#horizontal_operations)
    2. [Vertical operations] (#vertical_operations)

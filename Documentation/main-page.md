@@ -106,8 +106,3 @@ directory:
 Individual components can be disabled and the installation prefix can be changed
 by passing command-line arguments to the install script. Run `./install --help`
 for details.
-
-## Tutorials
-
-1. [Arrays](../Tutorials/Arrays/html/index.html)
-2. [Vectors](../Tutorials/Vectors/html/index.html)

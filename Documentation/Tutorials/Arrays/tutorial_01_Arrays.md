@@ -1,4 +1,4 @@
-# Arrays tutorial
+\page tutorial_01_arrays  Arrays tutorial
 
 ## Introduction
 
