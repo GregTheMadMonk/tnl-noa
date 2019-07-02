@@ -112,9 +112,8 @@ Array( const std::initializer_list< InValue >& list )
   referenceCounter( 0 )
 {
    this->setSize( list.size() );
-   ////
-   // Here we assume that the underlying array for initializer_list is const T[N]
-   // as noted here:
+   // Here we assume that the underlying array for std::initializer_list is
+   // const T[N] as noted here:
    // https://en.cppreference.com/w/cpp/utility/initializer_list
    Algorithms::ArrayOperations< Device, Devices::Host >::copyMemory( this->getData(), &( *list.begin() ), list.size() );
 }
