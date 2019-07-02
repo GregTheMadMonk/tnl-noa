@@ -130,21 +130,21 @@ template< int Size, typename Real, typename ET >
 __cuda_callable__
 bool operator==( const StaticVector< Size, Real >& a, const ET& b )
 {
-   return Expressions::StaticComparisonEQ( a, b );
+   return Expressions::StaticComparison< StaticVector< Size, Real >, ET >::EQ( a, b );
 }
 
 template< typename ET, int Size, typename Real >
 __cuda_callable__
 bool operator==( const ET& a, const StaticVector< Size, Real >& b )
 {
-   return Expressions::StaticComparisonEQ( a, b );
+   return Expressions::StaticComparison< ET, StaticVector< Size, Real > >::EQ( a, b );
 }
 
 template< int Size, typename Real1, typename Real2 >
 __cuda_callable__
 bool operator==( const StaticVector< Size, Real1 >& a, const StaticVector< Size, Real2 >& b )
 {
-   return Expressions::StaticComparisonEQ( a, b );
+   return Expressions::StaticComparison< StaticVector< Size, Real1 >, StaticVector< Size, Real2 > >::EQ( a, b );
 }
 
 ////
@@ -153,21 +153,21 @@ template< int Size, typename Real, typename ET >
 __cuda_callable__
 bool operator!=( const StaticVector< Size, Real >& a, const ET& b )
 {
-   return Expressions::StaticComparisonNE( a, b );
+   return Expressions::StaticComparison< StaticVector< Size, Real >, ET >::NE( a, b );
 }
 
 template< typename ET, int Size, typename Real >
 __cuda_callable__
 bool operator!=( const ET& a, const StaticVector< Size, Real >& b )
 {
-   return Expressions::StaticComparisonNE( a, b );
+   return Expressions::StaticComparison< ET, StaticVector< Size, Real > >::NE( a, b );
 }
 
 template< int Size, typename Real1, typename Real2 >
 __cuda_callable__
 bool operator!=( const StaticVector< Size, Real1 >& a, const StaticVector< Size, Real2 >& b )
 {
-   return Expressions::StaticComparisonNE( a, b );
+   return Expressions::StaticComparison< StaticVector< Size, Real1 >, StaticVector< Size, Real2 > >::NE( a, b );
 }
 
 ////
@@ -176,21 +176,21 @@ template< int Size, typename Real, typename ET >
 __cuda_callable__
 bool operator<( const StaticVector< Size, Real >& a, const ET& b )
 {
-   return Expressions::StaticComparisonLT( a, b );
+   return Expressions::StaticComparison< StaticVector< Size, Real >, ET >::LT( a, b );
 }
 
 template< typename ET, int Size, typename Real >
 __cuda_callable__
 bool operator<( const ET& a, const StaticVector< Size, Real >& b )
 {
-   return Expressions::StaticComparisonLT( a, b );
+   return Expressions::StaticComparison< ET, StaticVector< Size, Real > >::LT( a, b );
 }
 
 template< int Size, typename Real1, typename Real2 >
 __cuda_callable__
 bool operator<( const StaticVector< Size, Real1 >& a, const StaticVector< Size, Real2 >& b )
 {
-   return Expressions::StaticComparisonLT( a, b );
+   return Expressions::StaticComparison< StaticVector< Size, Real1 >, StaticVector< Size, Real2 > >::LT( a, b );
 }
 
 ////
@@ -199,21 +199,21 @@ template< int Size, typename Real, typename ET >
 __cuda_callable__
 bool operator<=( const StaticVector< Size, Real >& a, const ET& b )
 {
-   return Expressions::StaticComparisonLE( a, b );
+   return Expressions::StaticComparison< StaticVector< Size, Real >, ET >::LE( a, b );
 }
 
 template< typename ET, int Size, typename Real >
 __cuda_callable__
 bool operator<=( const ET& a, const StaticVector< Size, Real >& b )
 {
-   return Expressions::StaticComparisonLE( a, b );
+   return Expressions::StaticComparison< ET, StaticVector< Size, Real > >::LE( a, b );
 }
 
 template< int Size, typename Real1, typename Real2 >
 __cuda_callable__
 bool operator<=( const StaticVector< Size, Real1 >& a, const StaticVector< Size, Real2 >& b )
 {
-   return Expressions::StaticComparisonLE( a, b );
+   return Expressions::StaticComparison< StaticVector< Size, Real1 >, StaticVector< Size, Real2 > >::LE( a, b );
 }
 
 ////
@@ -222,21 +222,21 @@ template< int Size, typename Real, typename ET >
 __cuda_callable__
 bool operator>( const StaticVector< Size, Real >& a, const ET& b )
 {
-   return Expressions::StaticComparisonGT( a, b );
+   return Expressions::StaticComparison< StaticVector< Size, Real >, ET >::GT( a, b );
 }
 
 template< typename ET, int Size, typename Real >
 __cuda_callable__
 bool operator>( const ET& a, const StaticVector< Size, Real >& b )
 {
-   return Expressions::StaticComparisonGT( a, b );
+   return Expressions::StaticComparison< ET, StaticVector< Size, Real > >::GT( a, b );
 }
 
 template< int Size, typename Real1, typename Real2 >
 __cuda_callable__
 bool operator>( const StaticVector< Size, Real1 >& a, const StaticVector< Size, Real2 >& b )
 {
-   return Expressions::StaticComparisonGT( a, b );
+   return Expressions::StaticComparison< StaticVector< Size, Real1 >, StaticVector< Size, Real2 > >::GT( a, b );
 }
 
 ////
@@ -245,21 +245,21 @@ template< int Size, typename Real, typename ET >
 __cuda_callable__
 bool operator>=( const StaticVector< Size, Real >& a, const ET& b )
 {
-   return Expressions::StaticComparisonGE( a, b );
+   return Expressions::StaticComparison< StaticVector< Size, Real >, ET >::GE( a, b );
 }
 
 template< typename ET, int Size, typename Real >
 __cuda_callable__
 bool operator>=( const ET& a, const StaticVector< Size, Real >& b )
 {
-   return Expressions::StaticComparisonGE( a, b );
+   return Expressions::StaticComparison< ET, StaticVector< Size, Real > >::GE( a, b );
 }
 
 template< int Size, typename Real1, typename Real2 >
 __cuda_callable__
 bool operator>=( const StaticVector< Size, Real1 >& a, const StaticVector< Size, Real2 >& b )
 {
-   return Expressions::StaticComparisonGE( a, b );
+   return Expressions::StaticComparison< StaticVector< Size, Real1 >, StaticVector< Size, Real2 > >::GE( a, b );
 }
 
 ////

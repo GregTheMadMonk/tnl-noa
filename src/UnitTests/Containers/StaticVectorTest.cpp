@@ -568,6 +568,59 @@ TYPED_TEST( StaticVectorTest, verticalOperations )
    EXPECT_NEAR( lpNorm( u - v, 2.0 ), l2NormDiff, 2.0e-5 );
 }
 
+TYPED_TEST( StaticVectorTest, comparisonOperators )
+{
+   using VectorType = typename TestFixture::VectorType;
+
+   using RealType = typename VectorType::RealType;
+   constexpr int size = VectorType::size;
+
+   VectorType u, v, w;
+   u = 1.0;
+   v = 2.0;
+   w = 4.0;
+
+   EXPECT_EQ( u, u );
+   EXPECT_EQ( u, 1.0 );
+   EXPECT_EQ( 1.0, u );
+   EXPECT_EQ( w, u + v );
+   EXPECT_EQ( u + v, w );
+   EXPECT_EQ( abs( w ), u + v );
+   EXPECT_EQ( u + v, abs( w ) );
+
+   EXPECT_NE( u, v );
+   EXPECT_NE( u, 2.0 );
+   EXPECT_NE( 2.0, u );
+   EXPECT_NE( u, w + w );
+   EXPECT_NE( w + v, u );
+   EXPECT_NE( abs( u ), w + w );
+   EXPECT_NE( w + v, abs( u ) );
+
+   EXPECT_LT( u, v );
+   EXPECT_LT( u, 2.0 );
+   EXPECT_LT( 0.0, u );
+   EXPECT_LT( u, v + w );
+   EXPECT_LT( u + v, w );
+   EXPECT_LT( abs( u ), v + w );
+   EXPECT_LT( u + v, abs( w ) );
+
+   EXPECT_LE( u, v );
+   EXPECT_LE( u, 2.0 );
+   EXPECT_LE( 0.0, u );
+   EXPECT_LE( u, v + w );
+   EXPECT_LE( u + v, w );
+   EXPECT_LE( abs( u ), v + w );
+   EXPECT_LE( u + v, abs( w ) );
+
+   EXPECT_GT( v, u );
+   EXPECT_GT( v, 1.0 );
+   EXPECT_GT( 3.0, v );
+   EXPECT_GT( w, u + v );
+   EXPECT_GT( v + w, u );
+   EXPECT_GT( abs( w ), u + v );
+   EXPECT_GT( v + w, abs( u ) );
+}
+
 #endif
 
 
