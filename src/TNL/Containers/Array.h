@@ -25,8 +25,8 @@ namespace Containers {
 template< int, typename > class StaticArray;
 
 /**
- * \brief Array is responsible for memory management, access to array elements,
- * and general array operations.
+ * \brief \e Array is responsible for memory management, access to array
+ * elements, and general array operations.
  *
  * \tparam Value  The type of array elements.
  * \tparam Device The device where the array is to be allocated. This ensures
@@ -54,8 +54,7 @@ template< int, typename > class StaticArray;
  * \ref setValue, \ref containsValue, \ref containsOnlyValue, and \ref evaluate,
  * provide various operations on whole arrays.
  *
- * See also \ref Containers::ArrayView, \ref Containers::Vector,
- * \ref Containers::VectorView.
+ * See also \ref ArrayView, \ref Vector, \ref VectorView.
  *
  * \par Example
  * \include ArrayExample.cpp
@@ -120,7 +119,7 @@ class Array
       /**
        * \brief Move constructor for initialization from \e rvalues.
        *
-       * \param array The array to be moved
+       * \param array The array to be moved.
        */
       Array( Array&& array ) = default;
 
@@ -188,11 +187,9 @@ class Array
       void setSize( Index size );
 
       /**
-       * \brief Method for getting the size of an array.
+       * \brief Returns the current array size.
        *
        * This method can be called from device kernels.
-       *
-       * \return The current array size.
        */
       __cuda_callable__ Index getSize() const;
 
@@ -313,21 +310,21 @@ class Array
       void reset();
 
       /**
-       * \brief Returns a \e const-qualified raw pointer to the array data.
+       * \brief Returns a \e const-qualified raw pointer to the data.
        *
        * This method can be called from device kernels.
        */
       __cuda_callable__ const Value* getData() const;
 
       /**
-       * \brief Returns a raw pointer to the array data.
+       * \brief Returns a raw pointer to the data.
        *
        * This method can be called from device kernels.
        */
       __cuda_callable__ Value* getData();
 
       /**
-       * \brief Returns a \e const-qualified raw pointer to the array data.
+       * \brief Returns a \e const-qualified raw pointer to the data.
        *
        * Use this method in algorithms where you want to emphasize that
        * C-style array pointer is required.
@@ -337,7 +334,7 @@ class Array
       __cuda_callable__ const Value* getArrayData() const;
 
       /**
-       * \brief Returns a raw pointer to the array data.
+       * \brief Returns a raw pointer to the data.
        *
        * Use this method in algorithms where you want to emphasize that
        * C-style array pointer is required.
@@ -553,14 +550,14 @@ class Array
       bool empty() const;
 
       /**
-       * \brief Method for saving the object to a binary file \e fileName.
+       * \brief Method for saving the array to a binary file \e fileName.
        *
        * \param fileName The output file name.
        */
       void save( const String& fileName ) const;
 
       /**
-       * \brief Method for loading the object from a file \e fileName.
+       * \brief Method for loading the array from a binary file \e fileName.
        *
        * \param fileName The input file name.
        */

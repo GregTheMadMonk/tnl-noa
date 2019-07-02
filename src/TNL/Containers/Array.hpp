@@ -662,9 +662,7 @@ template< typename Value,
           typename Index >
 void Array< Value, Device, Index >::save( const String& fileName ) const
 {
-   File file;
-   file.open( fileName, std::ios_base::out );
-   file << *this;
+   File( fileName, std::ios_base::out ) << *this;
 }
 
 template< typename Value,
@@ -674,9 +672,7 @@ void
 Array< Value, Device, Index >::
 load( const String& fileName )
 {
-   File file;
-   file.open( fileName, std::ios_base::in );
-   file >> *this;
+   File( fileName, std::ios_base::in ) >> *this;
 }
 
 template< typename Value,

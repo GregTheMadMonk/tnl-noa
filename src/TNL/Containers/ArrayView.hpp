@@ -385,9 +385,7 @@ template< typename Value,
           typename Index >
 void ArrayView< Value, Device, Index >::save( const String& fileName ) const
 {
-   File file;
-   file.open( fileName, std::ios_base::out );
-   file << *this;
+   File( fileName, std::ios_base::out ) << *this;
 }
 
 template< typename Value,
@@ -397,9 +395,7 @@ void
 ArrayView< Value, Device, Index >::
 load( const String& fileName )
 {
-   File file;
-   file.open( fileName, std::ios_base::in );
-   file >> *this;
+   File( fileName, std::ios_base::in ) >> *this;
 }
 
 // Serialization of array views into binary files.

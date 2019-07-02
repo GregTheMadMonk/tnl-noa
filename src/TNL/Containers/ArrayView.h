@@ -25,39 +25,39 @@ template< typename Value, typename Device, typename Index >
 class Array;
 
 /**
- * \brief ArrayView serves for managing array of data allocated by TNL::Array or
- * another way. It makes no data deallocation at the end of its life cycle. Compared
- * to TNL Array, it is lighter data structure and therefore it is more efficient
- * especially when it is being passed on GPU. The ArrayView can also be created
- * in CUDA kernels which is not the case of Array.
+ * \brief \e ArrayView is a simple data structure which provides a non-owning
+ * encapsulation of array data. That is, \e ArrayView is like \ref Array without
+ * memory management.
  *
- * \tparam Value is type of array elements.
- * \tparam Device is device where the array is going to be allocated - some of \ref Devices::Host and \ref Devices::Cuda.
- * \tparam Index is indexing type.
+ * The meaning of the template parameters is the same as in \ref Array.
  *
- * In the \e Device type, the Array remembers where the memory is allocated.
- * This ensures the compile-time checks of correct pointers manipulation.
- * Methods defined as \ref __cuda_callable__ can be called even from kernels
- * running on device. Array elements can be changed either using the \ref operator[].
- * This can be called from CPU only for arrays allocated on host (CPU). If the
- * array is allocated on GPU, the operator[] can be called only from kernels
- * running on the device (GPU). On the other hand, methods \ref setElement and
- * \ref getElement, can be called only from the host (CPU) does not matter if
- * the array resides on the host or the device. In the latter case, explicit data
- * transfer between host and device (via PCI express or NVlink in more lucky
- * systems) is invoked and so it can be very slow. In not time critical parts
- * of code, this is not an issue, however. Another way to change data being
- * accessed by the ArrayView is \ref evaluate which evaluates given lambda
- * function. This is performed at the same place where the array is
- * allocated i.e. it is efficient even on GPU. For simple checking of the array
- * contents, one may use methods \ref containValue and \ref containsValue and
- * \ref containsOnlyValue.
+ * \tparam Value  The type of array elements.
+ * \tparam Device The device where the array is allocated. This ensures the
+ *                compile-time checks of correct pointers manipulation. It can
+ *                be either \ref Devices::Host or \ref Devices::Cuda.
+ * \tparam Index  The indexing type.
+ *
+ * \e ArrayView provides access to array elements and general array operations
+ * same as \ref Array, but it does not manage memory. The construction of an
+ * \e ArrayView does not make a memory allocation, but it can be _bound_ to an
+ * existing portion of memory specified by a raw pointer, another \e ArrayView,
+ * or an \e Array. Similarly, \e ArrayView is not resizable, so there is no
+ * \e setSize method. Note that \e ArrayView does not _own_ its data, so it does
+ * not deallocate it in the destructor.
+ *
+ * Another important difference between \e ArrayView and \ref Array is in the
+ * copy semantics. While the copy-constructor of \e Array makes a deep copy of
+ * the data, \e ArrayView makes only a shallow copy in the copy-constructor,
+ * i.e. it changes only its pointer and size. As a result, array views can be
+ * efficiently _passed by value_ (even to device kernels) or _captured by value_
+ * in lambda functions (even in device lambda functions). Note that
+ * \ref operator= in both \e ArrayView and \e Array still makes a deep copy of
+ * the data.
+ *
+ * See also \ref Array, \ref Vector, \ref VectorView.
  *
  * \par Example
  * \include ArrayViewExample.cpp
- *
- * See also \ref Containers::Arrav, \ref Containers::Vector, \ref Containers::VectorView,
- * Containers::StaticArray, Containers::StaticVector.
  */
 template< typename Value,
           typename Device = Devices::Host,
@@ -75,21 +75,17 @@ public:
    using ConstViewType = ArrayView< std::add_const_t< Value >, Device, Index >;
 
    /**
-    * \brief Returns type of array view in C++ style.
-    *
-    * \return String with array view type.
+    * \brief Returns a \ref String representation of the array view type.
     */
    static String getType();
 
    /**
-    *  \brief Returns type of array view for serialization.
-    *
-    * \return String with serialization array type.
+    * \brief Returns a \ref String representation of the serialization type.
     */
    static String getSerializationType();
 
    /**
-    * \brief Basic constructor for empty ArrayView.
+    * \brief Constructs an empty array view.
     *
     * This method can be called from device kernels.
     */
@@ -97,73 +93,72 @@ public:
    ArrayView() = default;
 
    /**
-    * \brief Constructor with explicit initialization by raw data pointer and size.
+    * \brief Constructs an array view by binding to the given data pointer
+    * and size.
     *
     * This method can be called from device kernels.
     *
-    * \param data is data pointer
-    * \param size is number of elements to be managed by the array view
+    * \param data The data pointer to be bound.
+    * \param size The number of elements in the array view.
     */
    __cuda_callable__
    ArrayView( Value* data, Index size );
 
    /**
-    * \brief Copy constructor.
-    * Copy-constructor does shallow copy, so views can be passed-by-value into
-    * CUDA kernels and they can be captured-by-value in __cuda_callable__
-    * lambda functions.
+    * \brief Shallow copy constructor.
     *
     * This method can be called from device kernels.
     *
-    * \param view is ArrayView to be copied.
+    * \param view The array view to be copied.
     */
    __cuda_callable__
    ArrayView( const ArrayView& view ) = default;
 
    /**
-    * \brief "Templated copy-constructor".
-    *
-    * It makes shallow copy only.
+    * \brief "Templated" shallow copy constructor.
     *
     * This method can be called from device kernels.
     *
-    * \tparam Value is any cv-qualified ValueType.
+    * \tparam Value_ The template parameter can be any cv-qualified variant of
+    *                \e ValueType.
+    * \param view The array view to be copied.
     */
    template< typename Value_ >
    __cuda_callable__
-   ArrayView( const ArrayView< Value_, Device, Index >& array )
-   : data(array.getData()), size(array.getSize()) {}
+   ArrayView( const ArrayView< Value_, Device, Index >& view )
+   : data(view.getData()), size(view.getSize()) {}
 
    /**
-    * \brief Default move-constructor.
+    * \brief Move constructor for initialization from \e rvalues.
     *
     * This method can be called from device kernels.
     *
-    * \param view is ArrayView to be moved to this ArrayView.
+    * \param view The array view to be moved.
     */
    __cuda_callable__
    ArrayView( ArrayView&& view ) = default;
 
    /**
-    * \brief Method for rebinding (reinitialization).
+    * \brief Method for rebinding (reinitialization) using a raw pointer and
+    * size.
     *
     * This method can be called from device kernels.
     *
-    * \param data is pointer to data to be bound to the array view.
-    * \param size is the number of elements to be managed by the array view.
+    * \param data The data pointer to be bound to the array view.
+    * \param size The number of elements in the array view.
     */
    __cuda_callable__
    void bind( Value* data, const Index size );
 
    /**
-    * \brief Method for rebinding (reinitialization) with another ArrayView.
+    * \brief Method for rebinding (reinitialization) using another array view.
     *
-    * Note that you can also bind directly to Array and other types implicitly
-    * convertible to ArrayView.
+    * Note that you can also bind directly to an \e Array instance and other
+    * objects whose type is implicitly convertible to \e ArrayView.
     *
     * This method can be called from device kernels.
     *
-    * \param view is array view to be bound.
+    * \param view The array view to be bound.
     */
    __cuda_callable__
    void bind( ArrayView view );
@@ -171,12 +166,13 @@ public:
    /**
     * \brief Returns a modifiable view of the array view.
     *
-    * If \e begin and \e end is set, view for sub-interval [ \e begin, \e end )
-    * is returned.
+    * If \e begin or \e end is set to a non-zero value, a view for the
+    * sub-interval `[begin, end)` is returned.
     *
-    * \param begin is the beginning of the ArrayView sub-interval, 0 by default.
-    * \param end is the end of the ArrayView sub-interval. Default value is 0 which is,
-    * however, replaced with the ArrayView size.
+    * \param begin The beginning of the array view sub-interval. It is 0 by
+    *              default.
+    * \param end The end of the array view sub-interval. The default value is 0
+    *            which is, however, replaced with the array size.
     */
    __cuda_callable__
    ViewType getView( const IndexType begin = 0, IndexType end = 0 );
@@ -184,61 +180,55 @@ public:
    /**
     * \brief Returns a non-modifiable view of the array view.
     *
-    * If \e begin and \e end is set, view for sub-interval [ \e begin, \e end )
-    * is returned.
+    * If \e begin or \e end is set to a non-zero value, a view for the
+    * sub-interval `[begin, end)` is returned.
     *
-    * \param begin is the beginning of the sub-interval, 0 by default.
-    * \param end is the end of the sub-interval. Default value is 0 which is,
-    * however, replaced with the ArrayView size.
+    * \param begin The beginning of the array view sub-interval. It is 0 by
+    *              default.
+    * \param end The end of the array view sub-interval. The default value is 0
+    *            which is, however, replaced with the array size.
     */
    __cuda_callable__
    ConstViewType getConstView( const IndexType begin = 0, IndexType end = 0 ) const;
 
    /**
-    * \brief Assignment operator.
+    * \brief Deep copy assignment operator for copying data from another array
+    * view.
     *
-    * Copy-assignment does deep copy, just like regular array, but the sizes
-    * must match (i.e. copy-assignment cannot resize).
-    *
-    * \param view is array view to be copied
+    * \param view Reference to the source array view.
+    * \return Reference to this array view.
     */
    ArrayView& operator=( const ArrayView& view );
 
    /**
-    * \brief Assignment operator for array-like containers or single value.
+    * \brief Assigns either array-like container or a single value.
     *
-    * If \e T is array type i.e. \ref Array, \ref ArrayView, \ref StaticArray,
-    * \ref Vector, \ref VectorView, \ref StaticVector, \ref DistributedArray,
-    * \ref DistributedArrayView, \ref DistributedVector or
-    * \ref DistributedVectorView, its elements are copied into this array. If
-    * it is other type convertibly to ArrayView::ValueType, all array elements are
-    * set to the value \e data.
+    * If \e T is an array type, e.g. \ref Array, \ref ArrayView,
+    * \ref StaticArray, \ref Vector, \ref VectorView, or \ref StaticVector,
+    * the elements from \e data are copied into this array view. Otherwise, if
+    * it is a type convertible to \ref ValueType, all array elements are set to
+    * the value \e data.
     *
-    * \tparam T is type of array or value type.
-    *
-    * \param data is a reference to array or value.
-    *
-    * \return Reference to this array.
+    * \tparam T The type of the source array or value.
+    * \param data Reference to the source array or value.
+    * \return Reference to this array view.
     */
    template< typename T >
    ArrayView& operator=( const T& array );
 
    /**
-    * \brief Swaps this array view content with another.
+    * \brief Swaps this array view with another.
     *
-    * The swap is done in a shallow way, i.e. swapping only  pointers and sizes.
+    * Swapping is done in a shallow way, i.e. only pointers and sizes are
+    * swapped.
     *
-    * This method can be called from device kernels.
-    *
-    * \param view is the array view to be swapped with this array view.
+    * \param view The array view to be swapped with this array view.
     */
    __cuda_callable__
    void swap( ArrayView& view );
 
    /***
-    * \brief Resets the array view.
-    *
-    * The array view behaves like being empty after calling this method.
+    * \brief Resets the array view to the empty state.
     *
     * This method can be called from device kernels.
     */
@@ -246,157 +236,156 @@ public:
    void reset();
 
    /**
-    * \brief Returns constant pointer to data managed by the array view.
+    * \brief Returns a \e const-qualified raw pointer to the data.
     *
     * This method can be called from device kernels.
-    *
-    * \return Pointer to array data.
     */
    __cuda_callable__
    const Value* getData() const;
 
    /**
-    * \brief Returns pointer to data managed by the array view.
+    * \brief Returns a raw pointer to the data.
     *
     * This method can be called from device kernels.
-    *
-    * \return Pointer to array data.
     */
    __cuda_callable__
    Value* getData();
 
    /**
-    * \brief Returns constant pointer to data managed by the array view.
+    * \brief Returns a \e const-qualified raw pointer to the data.
     *
     * Use this method in algorithms where you want to emphasize that
     * C-style array pointer is required.
     *
     * This method can be called from device kernels.
-    *
-    * \return Pointer to array data.
     */
    __cuda_callable__
    const Value* getArrayData() const;
 
    /**
-    * \brief Returns pointer to data managed by the array view.
+    * \brief Returns a raw pointer to the data.
     *
     * Use this method in algorithms where you want to emphasize that
     * C-style array pointer is required.
     *
     * This method can be called from device kernels.
-    *
-    * \return Pointer to array data.
     */
    __cuda_callable__
    Value* getArrayData();
 
    /**
-    * \brief Returns the array view size, i.e. number of elements being managed by the array view.
+    * \brief Returns the current size of the array view.
     *
     * This method can be called from device kernels.
-    *
-    * \return The array view size.
     */
    __cuda_callable__
    Index getSize() const;
 
    /**
-    * \brief Array view elements setter - change value of an element at position \e i.
+    * \brief Sets the value of the \e i-th element to \e v.
     *
-    * This method can be called only from the host system (CPU) but even for
-    * array views managing data allocated on device (GPU).
+    * This method can be called only from the host, but even for array views
+    * allocated in a different memory space (e.g. GPU global memory).
     *
-    * \param i is element index.
-    * \param v is the new value of the element.
+    * \param i The index of the element to be set.
+    * \param v The new value of the element.
     */
    void setElement( Index i, Value value );
 
    /**
-    * \brief Array view elements getter - returns value of an element at position \e i.
+    * \brief Returns the value of the \e i-th element.
     *
-    * This method can be called only from the host system (CPU) but even for
-    * array views managing data allocated on device (GPU).
+    * This method can be called only from the host, but even for array views
+    * allocated in a different memory space (e.g. GPU global memory).
     *
-    * \param i Index position of an element.
-    *
-    * \return Copy of i-th element.
+    * \param i The index of the element to be returned.
     */
    Value getElement( Index i ) const;
 
    /**
-    * \brief Accesses specified element at the position \e i.
+    * \brief Accesses the \e i-th element of the array view.
     *
-    * This method can be called from device (GPU) kernels if the array view
-    * manages data allocated on the device. In this case, it cannot be called
-    * from the host (CPU.)
+    * This method can be called only from the device which has direct access
+    * to the memory space where the data was allocated. For example, if the
+    * data was allocated in the host memory, it can be called only from
+    * host, and if the data was allocated in the device memory, it can be
+    * called only from device kernels.
     *
-    * \param i is position of the element.
-    *
-    * \return Reference to i-th element.
+    * \param i The index of the element to be accessed.
+    * \return Reference to the \e i-th element.
     */
    __cuda_callable__
    Value& operator[]( Index i );
 
    /**
-    * \brief Returns constant reference to an element at a position \e i.
+    * \brief Accesses the \e i-th element of the array view.
     *
-    * This method can be called from device (GPU) kernels if the array view
-    * manages data allocated on the device. In this case, it cannot be called
-    * from the host (CPU.)
+    * This method can be called only from the device which has direct access
+    * to the memory space where the data was allocated. For example, if the
+    * data was allocated in the host memory, it can be called only from
+    * host, and if the data was allocated in the device memory, it can be
+    * called only from device kernels.
     *
-    * \param i is position of the element.
-    *
-    * \return Reference to i-th element.
+    * \param i The index of the element to be accessed.
+    * \return Constant reference to the \e i-th element.
     */
    __cuda_callable__
    const Value& operator[]( Index i ) const;
 
    /**
-    * \brief Comparison operator with another array-like container \e array.
+    * \brief Compares the array view with another array-like container.
     *
-    * \tparam ArrayT is type of an array-like container, i.e Array, ArrayView, Vector, VectorView, DistributedArray, DistributedVector etc.
-    * \param array is reference to an array.
-    *
-    * \return True if both array views are equal element-wise and false otherwise.
+    * \tparam ArrayT The type of the parameter can be any array-like
+    *         container, e.g. \ref Array, \ref ArrayView, \ref Vector,
+    *         \ref VectorView, etc.
+    * \param array Reference to the array-like container.
+    * \return \ref True if the array view is element-wise equal to the
+    *         array-like container and \ref false otherwise.
     */
    template< typename ArrayT >
    bool operator==( const ArrayT& array ) const;
 
    /**
-    * \brief Comparison negation operator with another array-like container \e array.
+    * \brief Compares the array view with another array-like container.
     *
-    * \tparam ArrayT is type of an array-like container, i.e Array, ArrayView, Vector, VectorView, DistributedArray, DistributedVector etc.
-    * \param array is reference to an array.
-    *
-    * \return True if both array views are not equal element-wise and false otherwise.
+    * \tparam ArrayT The type of the parameter can be any array-like
+    *         container, e.g. \ref Array, \ref ArrayView, \ref Vector,
+    *         \ref VectorView, etc.
+    * \param array Reference to the array-like container.
+    * \return The negated result of \ref operator==.
     */
    template< typename ArrayT >
    bool operator!=( const ArrayT& array ) const;
 
    /**
-    * \brief Sets the array view elements to given value.
+    * \brief Sets elements of the array view to given value.
     *
-    * Sets whole array values or just its sub-interval [ \e begin, end ) to value \e v.
+    * By default, all array view elements are set to the given value. If
+    * \e begin or \e end is set to a non-zero value, only elements in the
+    * sub-interval `[begin, end)` are set.
     *
-    * \param v Reference to a value.
-    * \param begin is the beginning of the sub-interval, 0 by default.
-    * \param end is the end of the sub-interval. Default value is 0 which is,
-    * however, replaced with the ArrayView size.
+    * \param v The new value for the array view elements.
+    * \param begin The beginning of the array view sub-interval. It is 0 by
+    *              default.
+    * \param end The end of the array view sub-interval. The default value is 0
+    *            which is, however, replaced with the array view size.
     */
    void setValue( Value value,
                   const Index begin = 0,
                   Index end = 0 );
 
    /**
-    * \brief Sets the array elements using given lambda function.
+    * \brief Sets the array view elements using given lambda function.
     *
-    * Evaluates a lambda function \e f on whole array or just on its sub-interval [\e begin, \e end).
+    * Evaluates a lambda function \e f on whole array view or just on its
+    * sub-interval `[begin, end)`. This is performed at the same place
+    * where the data is allocated, i.e. it is efficient even on GPU.
     *
-    * \param v Reference to a value.
-    * \param begin is the beginning of the sub-interval, 0 by default.
-    * \param end is the end of the sub-interval. Default value is 0 which is,
-    * however, replaced with the ArrayView size.
+    * \param f The lambda function to be evaluated.
+    * \param begin The beginning of the array view sub-interval. It is 0 by
+    *              default.
+    * \param end The end of the array view sub-interval. The default value is 0
+    *            which is, however, replaced with the array view size.
     */
    template< typename Function >
    void evaluate( const Function& f,
@@ -406,15 +395,17 @@ public:
    /**
     * \brief Checks if there is an element with value \e v.
     *
-    * Checks, if there is an element with value \e value in the ArrayView or in
-    * its sub-interval [\e begin, \e end ).
+    * By default, all elements of the array view are checked. If \e begin or
+    * \e end is set to a non-zero value, only elements in the sub-interval
+    * `[begin, end)` are checked.
     *
-    * \param v is reference to the value.
-    * \param begin is the beginning of the sub-interval, 0 by default.
-    * \param end is the end of the sub-interval. Default value is 0 which is,
-    * however, replaced with the ArrayView size.
-    *
-    * \return True if there is **at least one** array element in sub-interval [\e begin, \e end) having value \e v.
+    * \param v The value to be checked.
+    * \param begin The beginning of the array view sub-interval. It is 0 by
+    *              default.
+    * \param end The end of the array view sub-interval. The default value is 0
+    *            which is, however, replaced with the array view size.
+    * \return True if there is _at least one_ element in the sub-interval
+    *         `[begin, end)` which has the value \e v.
     */
    bool containsValue( Value value,
                        const Index begin = 0,
@@ -423,49 +414,49 @@ public:
    /**
     * \brief Checks if all elements have the same value \e v.
     *
-    * Checks, if all elements in the ArrayView or in its sub-interval [\e begin, \e end )
-    * have the same value \e value.
+    * By default, all elements of the array view are checked. If \e begin or
+    * \e end is set to a non-zero value, only elements in the sub-interval
+    * `[begin, end)` are checked.
     *
-    * \param v Reference to a value.
-    * \param begin is the beginning of the sub-interval, 0 by default.
-    * \param end is the end of the sub-interval. Default value is 0 which is,
-    * however, replaced with the ArrayView size.
-    *
-    * \return True if **all** all array elements  or elements in sub-interval [\e begin, \e end ) have value \e v.
+    * \param v The value to be checked.
+    * \param begin The beginning of the array view sub-interval. It is 0 by
+    *              default.
+    * \param end The end of the array view sub-interval. The default value is 0
+    *            which is, however, replaced with the array view size.
+    * \return True if there is _all_ elements in the sub-interval
+    *         `[begin, end)` have the same value \e v.
     */
    bool containsOnlyValue( Value value,
                            const Index begin = 0,
                            Index end = 0  ) const;
 
    /**
-    * \brief Returns true if non-zero size is set.
+    * \brief Returns \e true if the current array view size is zero.
     *
     * This method can be called from device kernels.
-    *
-    * \return Returns \e true if array view size is zero, \e false otherwise.
     */
    __cuda_callable__
    bool empty() const;
 
    /**
-    * \brief Method for saving the object to a file \e fileName as a binary data.
+    * \brief Method for saving the data to a binary file \e fileName.
     *
-    * \param fileName file name.
+    * \param fileName The output file name.
     */
    void save( const String& fileName ) const;
 
    /**
-    * Method for loading the object from a file \e fileName as a binary data.
+    * \brief Method for loading the data from a binary file \e fileName.
     *
-    * \param fileName file name
+    * \param fileName The input file name.
     */
    void load( const String& fileName );
 
 protected:
-   //! Pointer to allocated data
+   //! Pointer to the data
    Value* data = nullptr;
 
-   //! Number of allocated elements
+   //! Array view size
    Index size = 0;
 };
 
