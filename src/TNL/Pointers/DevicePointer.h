@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include <TNL/Allocators/Default.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Devices/MIC.h>
@@ -695,7 +696,7 @@ class DevicePointer< Object, Devices::MIC > : public SmartPointer
          if( ! this->pd )
             return false;
          // pass to device
-         this->mic_pointer = (ObjectType*)Devices::MIC::AllocMIC(sizeof(ObjectType));
+         this->mic_pointer = Allocators:::MIC< ObjectType >().allocate(1);
          if( ! this->mic_pointer )
             return false;
          Devices::MIC::CopyToMIC((void*)this->mic_pointer,(void*)this->pointer,sizeof(ObjectType));
@@ -733,7 +734,7 @@ class DevicePointer< Object, Devices::MIC > : public SmartPointer
                delete this->pd;
                this->pd = nullptr;
                if( this->mic_pointer )
-                  Devices::MIC::FreeMIC( (void*) this->mic_pointer );
+                  Allocators:::MIC< ObjectType >().deallocate(this->mic_pointer, 1);
             }
          }
       }
