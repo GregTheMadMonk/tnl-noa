@@ -22,28 +22,6 @@ namespace TNL {
 namespace Containers {
 namespace Algorithms {
 
-template< typename Element, typename Index >
-void
-ArrayOperations< Devices::Host >::
-allocateMemory( Element*& data,
-                const Index size )
-{
-   data = new Element[ size ];
-   // According to the standard, new either throws, or returns non-nullptr.
-   // Some (old) compilers don't comply:
-   // https://stackoverflow.com/questions/550451/will-new-return-null-in-any-case
-   TNL_ASSERT_TRUE( data, "Operator 'new' returned a nullptr. This should never happen - there is "
-                          "either a bug or the compiler does not comply to the standard." );
-}
-
-template< typename Element >
-void
-ArrayOperations< Devices::Host >::
-freeMemory( Element* data )
-{
-   delete[] data;
-}
-
 template< typename Element >
 void
 ArrayOperations< Devices::Host >::

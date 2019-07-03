@@ -28,13 +28,6 @@ class ArrayOperations< Devices::Host >
 {
    public:
 
-      template< typename Element, typename Index >
-      static void allocateMemory( Element*& data,
-                                  const Index size );
-
-      template< typename Element >
-      static void freeMemory( Element* data );
-
       template< typename Element >
       static void setMemoryElement( Element* data,
                                     const Element& value );
@@ -83,13 +76,6 @@ template<>
 class ArrayOperations< Devices::Cuda >
 {
    public:
-
-      template< typename Element, typename Index >
-      static void allocateMemory( Element*& data,
-                                  const Index size );
-
-      template< typename Element >
-      static void freeMemory( Element* data );
 
       template< typename Element >
       static void setMemoryElement( Element* data,
@@ -180,13 +166,6 @@ template<>
 class ArrayOperations< Devices::MIC >
 {
    public:
-
-      template< typename Element, typename Index >
-      static void allocateMemory( Element*& data,
-                                  const Index size );
-
-      template< typename Element >
-      static void freeMemory( Element* data );
 
       template< typename Element >
       static void setMemoryElement( Element* data,

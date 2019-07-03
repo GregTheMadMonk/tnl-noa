@@ -16,7 +16,6 @@
 #include <TNL/Math.h>
 #include <TNL/ParallelFor.h>
 #include <TNL/Exceptions/CudaSupportMissing.h>
-#include <TNL/Exceptions/CudaBadAlloc.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Algorithms/Reduction.h>
 #include <TNL/Containers/Algorithms/ReductionOperations.h>
@@ -24,41 +23,6 @@
 namespace TNL {
 namespace Containers {
 namespace Algorithms {
-
-template< typename Element, typename Index >
-void
-ArrayOperations< Devices::Cuda >::
-allocateMemory( Element*& data,
-                const Index size )
-{
-#ifdef HAVE_CUDA
-   TNL_CHECK_CUDA_DEVICE;
-   if( cudaMalloc( ( void** ) &data,
-                   ( std::size_t ) size * sizeof( Element ) ) != cudaSuccess )
-   {
-      data = 0;
-      throw Exceptions::CudaBadAlloc();
-   }
-   TNL_CHECK_CUDA_DEVICE;
-#else
-   throw Exceptions::CudaSupportMissing();
-#endif
-}
-
-template< typename Element >
-void
-ArrayOperations< Devices::Cuda >::
-freeMemory( Element* data )
-{
-   TNL_ASSERT_TRUE( data, "Attempted to free a nullptr." );
-#ifdef HAVE_CUDA
-   TNL_CHECK_CUDA_DEVICE;
-   cudaFree( data );
-   TNL_CHECK_CUDA_DEVICE;
-#else
-   throw Exceptions::CudaSupportMissing();
-#endif
-}
 
 template< typename Element >
 void

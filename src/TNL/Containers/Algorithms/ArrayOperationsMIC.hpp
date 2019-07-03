@@ -16,7 +16,6 @@
 
 #include <TNL/Math.h>
 #include <TNL/Exceptions/MICSupportMissing.h>
-#include <TNL/Exceptions/MICBadAlloc.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Algorithms/Reduction.h>
 #include <TNL/Containers/Algorithms/ReductionOperations.h>
@@ -27,34 +26,6 @@ namespace Containers {
 namespace Algorithms {
 
 static constexpr std::size_t MIC_STACK_VAR_LIM = 5*1024*1024;
-
-template< typename Element, typename Index >
-void
-ArrayOperations< Devices::MIC >::
-allocateMemory( Element*& data,
-                const Index size )
-{
-#ifdef HAVE_MIC
-   data = (Element*) Devices::MIC::AllocMIC( size * sizeof(Element) );
-   if( ! data )
-      throw Exceptions::MICBadAlloc();
-#else
-   throw Exceptions::MICSupportMissing();
-#endif
-}
-
-template< typename Element >
-void
-ArrayOperations< Devices::MIC >::
-freeMemory( Element* data )
-{
-   TNL_ASSERT( data, );
-#ifdef HAVE_MIC
-   Devices::MIC::FreeMIC( data );
-#else
-   throw Exceptions::MICSupportMissing();
-#endif
-}
 
 template< typename Element >
 void

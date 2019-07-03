@@ -27,39 +27,34 @@ namespace Containers {
 
 template< typename Value,
           typename Device,
-          typename Index >
-Array< Value, Device, Index >::
-Array()
-: size( 0 ),
-  data( 0 ),
-  allocationPointer( 0 ),
-  referenceCounter( 0 )
+          typename Index,
+          typename Allocator >
+Array< Value, Device, Index, Allocator >::
+Array( const Allocator& allocator )
+: allocator( allocator )
 {
 }
 
 template< typename Value,
           typename Device,
-          typename Index >
-Array< Value, Device, Index >::
-Array( const IndexType& size )
-: size( 0 ),
-  data( 0 ),
-  allocationPointer( 0 ),
-  referenceCounter( 0 )
+          typename Index,
+          typename Allocator >
+Array< Value, Device, Index, Allocator >::
+Array( const IndexType& size, const AllocatorType& allocator )
+: allocator( allocator )
 {
    this->setSize( size );
 }
 
 template< typename Value,
           typename Device,
-          typename Index >
-Array< Value, Device, Index >::
+          typename Index,
+          typename Allocator >
+Array< Value, Device, Index, Allocator >::
 Array( Value* data,
-       const IndexType& size )
-: size( 0 ),
-  data( nullptr ),
-  allocationPointer( nullptr ),
-  referenceCounter( 0 )
+       const IndexType& size,
+       const AllocatorType& allocator )
+: allocator( allocator )
 {
    this->setSize( size );
    Algorithms::ArrayOperations< Device >::copyMemory( this->getData(), data, size );
@@ -67,13 +62,10 @@ Array( Value* data,
 
 template< typename Value,
           typename Device,
-          typename Index >
-Array< Value, Device, Index >::
-Array( const Array< Value, Device, Index >& array )
-: size( 0 ),
-  data( nullptr ),
-  allocationPointer( nullptr ),
-  referenceCounter( 0 )
+          typename Index,
+          typename Allocator >
+Array< Value, Device, Index, Allocator >::
+Array( const Array< Value, Device, Index, Allocator >& array )
 {
    this->setSize( array.getSize() );
    Algorithms::ArrayOperations< Device >::copyMemory( this->getData(), array.getData(), array.getSize() );
@@ -81,15 +73,27 @@ Array( const Array< Value, Device, Index >& array )
 
 template< typename Value,
           typename Device,
-          typename Index >
-Array< Value, Device, Index >::
-Array( const Array< Value, Device, Index >& array,
+          typename Index,
+          typename Allocator >
+Array< Value, Device, Index, Allocator >::
+Array( const Array< Value, Device, Index, Allocator >& array,
+       const AllocatorType& allocator )
+: allocator( allocator )
+{
+   this->setSize( array.getSize() );
+   Algorithms::ArrayOperations< Device >::copyMemory( this->getData(), array.getData(), array.getSize() );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Allocator >
+Array< Value, Device, Index, Allocator >::
+Array( const Array< Value, Device, Index, Allocator >& array,
        IndexType begin,
-       IndexType size )
-: size( size ),
-  data( nullptr ),
-  allocationPointer( nullptr ),
-  referenceCounter( 0 )
+       IndexType size,
+       const AllocatorType& allocator )
+: allocator( allocator )
 {
    if( size == 0 )
       size = array.getSize() - begin;
@@ -102,14 +106,13 @@ Array( const Array< Value, Device, Index >& array,
 
 template< typename Value,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
    template< typename InValue >
-Array< Value, Device, Index >::
-Array( const std::initializer_list< InValue >& list )
-: size( 0 ),
-  data( 0 ),
-  allocationPointer( 0 ),
-  referenceCounter( 0 )
+Array< Value, Device, Index, Allocator >::
+Array( const std::initializer_list< InValue >& list,
+       const AllocatorType& allocator )
+: allocator( allocator )
 {
    this->setSize( list.size() );
    // Here we assume that the underlying array for std::initializer_list is
@@ -120,14 +123,13 @@ Array( const std::initializer_list< InValue >& list )
 
 template< typename Value,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
    template< typename InValue >
-Array< Value, Device, Index >::
-Array( const std::list< InValue >& list )
-: size( 0 ),
-  data( 0 ),
-  allocationPointer( 0 ),
-  referenceCounter( 0 )
+Array< Value, Device, Index, Allocator >::
+Array( const std::list< InValue >& list,
+       const AllocatorType& allocator )
+: allocator( allocator )
 {
    this->setSize( list.size() );
    Algorithms::ArrayOperations< Device >::copySTLList( this->getData(), list );
@@ -135,14 +137,13 @@ Array( const std::list< InValue >& list )
 
 template< typename Value,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
    template< typename InValue >
-Array< Value, Device, Index >::
-Array( const std::vector< InValue >& vector )
-: size( 0 ),
-  data( 0 ),
-  allocationPointer( 0 ),
-  referenceCounter( 0 )
+Array< Value, Device, Index, Allocator >::
+Array( const std::vector< InValue >& vector,
+       const AllocatorType& allocator )
+: allocator( allocator )
 {
    this->setSize( vector.size() );
    Algorithms::ArrayOperations< Device, Devices::Host >::copyMemory( this->getData(), vector.data(), vector.size() );
@@ -150,9 +151,21 @@ Array( const std::vector< InValue >& vector )
 
 template< typename Value,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
+Allocator
+Array< Value, Device, Index, Allocator >::
+getAllocator() const
+{
+   return allocator;
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Allocator >
 String
-Array< Value, Device, Index >::
+Array< Value, Device, Index, Allocator >::
 getType()
 {
    return String( "Containers::Array< " ) +
@@ -163,9 +176,10 @@ getType()
 
 template< typename Value,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
 String
-Array< Value, Device, Index >::
+Array< Value, Device, Index, Allocator >::
 getTypeVirtual() const
 {
    return this->getType();
@@ -173,9 +187,10 @@ getTypeVirtual() const
 
 template< typename Value,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
 String
-Array< Value, Device, Index >::
+Array< Value, Device, Index, Allocator >::
 getSerializationType()
 {
    return Algorithms::ArrayIO< Value, Device, Index >::getSerializationType();
@@ -183,9 +198,10 @@ getSerializationType()
 
 template< typename Value,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
 String
-Array< Value, Device, Index >::
+Array< Value, Device, Index, Allocator >::
 getSerializationTypeVirtual() const
 {
    return this->getSerializationType();
@@ -193,23 +209,24 @@ getSerializationTypeVirtual() const
 
 template< typename Value,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
 void
-Array< Value, Device, Index >::
-releaseData() const
+Array< Value, Device, Index, Allocator >::
+releaseData()
 {
    if( this->referenceCounter )
    {
       if( --*this->referenceCounter == 0 )
       {
-         Algorithms::ArrayOperations< Device >::freeMemory( this->allocationPointer );
+         allocator.deallocate( this->allocationPointer, this->size );
          delete this->referenceCounter;
          //std::cerr << "Deallocating reference counter " << this->referenceCounter << std::endl;
       }
    }
    else
       if( allocationPointer )
-         Algorithms::ArrayOperations< Device >::freeMemory( this->allocationPointer );
+         allocator.deallocate( this->allocationPointer, this->size );
    this->allocationPointer = 0;
    this->data = 0;
    this->size = 0;
@@ -218,9 +235,10 @@ releaseData() const
 
 template< typename Value,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
 void
-Array< Value, Device, Index >::
+Array< Value, Device, Index, Allocator >::
 setSize( Index size )
 {
    TNL_ASSERT_GE( size, (Index) 0, "Array size must be non-negative." );
@@ -232,7 +250,7 @@ setSize( Index size )
    // Allocating zero bytes is useless. Moreover, the allocators don't behave the same way:
    // "operator new" returns some non-zero address, the latter returns a null pointer.
    if( size > 0 ) {
-      Algorithms::ArrayOperations< Device >::allocateMemory( this->allocationPointer, size );
+      this->allocationPointer = allocator.allocate( size );
       this->data = this->allocationPointer;
       this->size = size;
       TNL_ASSERT_TRUE( this->allocationPointer,
@@ -242,10 +260,11 @@ setSize( Index size )
 
 template< typename Value,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
 __cuda_callable__
 Index
-Array< Value, Device, Index >::
+Array< Value, Device, Index, Allocator >::
 getSize() const
 {
    return this->size;
@@ -253,10 +272,11 @@ getSize() const
 
 template< typename Value,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
    template< typename ArrayT >
 void
-Array< Value, Device, Index >::
+Array< Value, Device, Index, Allocator >::
 setLike( const ArrayT& array )
 {
    setSize( array.getSize() );
@@ -264,9 +284,10 @@ setLike( const ArrayT& array )
 
 template< typename Value,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
 void
-Array< Value, Device, Index >::
+Array< Value, Device, Index, Allocator >::
 bind( Value* data,
       const Index size )
 {
@@ -278,10 +299,11 @@ bind( Value* data,
 
 template< typename Value,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
    template< typename ArrayT >
 void
-Array< Value, Device, Index >::
+Array< Value, Device, Index, Allocator >::
 bind( const ArrayT& array,
       const IndexType& begin,
       const IndexType& size )
@@ -318,10 +340,11 @@ bind( const ArrayT& array,
 
 template< typename Value,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
    template< int Size >
 void
-Array< Value, Device, Index >::
+Array< Value, Device, Index, Allocator >::
 bind( StaticArray< Size, Value >& array )
 {
    this->releaseData();
@@ -331,9 +354,10 @@ bind( StaticArray< Size, Value >& array )
 
 template< typename Value,
           typename Device,
-          typename Index >
-typename Array< Value, Device, Index >::ViewType
-Array< Value, Device, Index >::
+          typename Index,
+          typename Allocator >
+typename Array< Value, Device, Index, Allocator >::ViewType
+Array< Value, Device, Index, Allocator >::
 getView( IndexType begin, IndexType end )
 {
    if( end == 0 )
@@ -343,9 +367,10 @@ getView( IndexType begin, IndexType end )
 
 template< typename Value,
           typename Device,
-          typename Index >
-typename Array< Value, Device, Index >::ConstViewType
-Array< Value, Device, Index >::
+          typename Index,
+          typename Allocator >
+typename Array< Value, Device, Index, Allocator >::ConstViewType
+Array< Value, Device, Index, Allocator >::
 getView( IndexType begin, IndexType end ) const
 {
    if( end == 0 )
@@ -355,9 +380,10 @@ getView( IndexType begin, IndexType end ) const
 
 template< typename Value,
           typename Device,
-          typename Index >
-typename Array< Value, Device, Index >::ConstViewType
-Array< Value, Device, Index >::
+          typename Index,
+          typename Allocator >
+typename Array< Value, Device, Index, Allocator >::ConstViewType
+Array< Value, Device, Index, Allocator >::
 getConstView( IndexType begin, IndexType end ) const
 {
    if( end == 0 )
@@ -367,8 +393,9 @@ getConstView( IndexType begin, IndexType end ) const
 
 template< typename Value,
           typename Device,
-          typename Index >
-Array< Value, Device, Index >::
+          typename Index,
+          typename Allocator >
+Array< Value, Device, Index, Allocator >::
 operator ViewType()
 {
    return getView();
@@ -376,8 +403,9 @@ operator ViewType()
 
 template< typename Value,
           typename Device,
-          typename Index >
-Array< Value, Device, Index >::
+          typename Index,
+          typename Allocator >
+Array< Value, Device, Index, Allocator >::
 operator ConstViewType() const
 {
    return getConstView();
@@ -385,10 +413,11 @@ operator ConstViewType() const
 
 template< typename Value,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
 void
-Array< Value, Device, Index >::
-swap( Array< Value, Device, Index >& array )
+Array< Value, Device, Index, Allocator >::
+swap( Array< Value, Device, Index, Allocator >& array )
 {
    TNL::swap( this->size, array.size );
    TNL::swap( this->data, array.data );
@@ -398,9 +427,10 @@ swap( Array< Value, Device, Index >& array )
 
 template< typename Value,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
 void
-Array< Value, Device, Index >::
+Array< Value, Device, Index, Allocator >::
 reset()
 {
    this->releaseData();
@@ -408,10 +438,11 @@ reset()
 
 template< typename Value,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
 __cuda_callable__
 const Value*
-Array< Value, Device, Index >::
+Array< Value, Device, Index, Allocator >::
 getData() const
 {
    return this->data;
@@ -419,10 +450,11 @@ getData() const
 
 template< typename Value,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
 __cuda_callable__
 Value*
-Array< Value, Device, Index >::
+Array< Value, Device, Index, Allocator >::
 getData()
 {
    return this->data;
@@ -430,10 +462,11 @@ getData()
 
 template< typename Value,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
 __cuda_callable__
 const Value*
-Array< Value, Device, Index >::
+Array< Value, Device, Index, Allocator >::
 getArrayData() const
 {
    return this->data;
@@ -441,10 +474,11 @@ getArrayData() const
 
 template< typename Value,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
 __cuda_callable__
 Value*
-Array< Value, Device, Index >::
+Array< Value, Device, Index, Allocator >::
 getArrayData()
 {
    return this->data;
@@ -452,9 +486,10 @@ getArrayData()
 
 template< typename Value,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
 void
-Array< Value, Device, Index >::
+Array< Value, Device, Index, Allocator >::
 setElement( const Index& i, const Value& x )
 {
    TNL_ASSERT_GE( i, (Index) 0, "Element index must be non-negative." );
@@ -464,9 +499,10 @@ setElement( const Index& i, const Value& x )
 
 template< typename Value,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
 Value
-Array< Value, Device, Index >::
+Array< Value, Device, Index, Allocator >::
 getElement( const Index& i ) const
 {
    TNL_ASSERT_GE( i, (Index) 0, "Element index must be non-negative." );
@@ -476,10 +512,11 @@ getElement( const Index& i ) const
 
 template< typename Value,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
 __cuda_callable__
 inline Value&
-Array< Value, Device, Index >::
+Array< Value, Device, Index, Allocator >::
 operator[]( const Index& i )
 {
    TNL_ASSERT_GE( i, (Index) 0, "Element index must be non-negative." );
@@ -489,10 +526,11 @@ operator[]( const Index& i )
 
 template< typename Value,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
 __cuda_callable__
 inline const Value&
-Array< Value, Device, Index >::
+Array< Value, Device, Index, Allocator >::
 operator[]( const Index& i ) const
 {
    TNL_ASSERT_GE( i, (Index) 0, "Element index must be non-negative." );
@@ -502,10 +540,11 @@ operator[]( const Index& i ) const
 
 template< typename Value,
           typename Device,
-          typename Index >
-Array< Value, Device, Index >&
-Array< Value, Device, Index >::
-operator=( const Array< Value, Device, Index >& array )
+          typename Index,
+          typename Allocator >
+Array< Value, Device, Index, Allocator >&
+Array< Value, Device, Index, Allocator >::
+operator=( const Array< Value, Device, Index, Allocator >& array )
 {
    //TNL_ASSERT_EQ( array.getSize(), this->getSize(), "Array sizes must be the same." );
    if( this->getSize() != array.getSize() )
@@ -520,10 +559,11 @@ operator=( const Array< Value, Device, Index >& array )
 
 template< typename Value,
           typename Device,
-          typename Index >
-Array< Value, Device, Index >&
-Array< Value, Device, Index >::
-operator=( Array< Value, Device, Index >&& array )
+          typename Index,
+          typename Allocator >
+Array< Value, Device, Index, Allocator >&
+Array< Value, Device, Index, Allocator >::
+operator=( Array< Value, Device, Index, Allocator >&& array )
 {
    reset();
 
@@ -542,10 +582,11 @@ operator=( Array< Value, Device, Index >&& array )
 
 template< typename Value,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
    template< typename T >
-Array< Value, Device, Index >&
-Array< Value, Device, Index >::
+Array< Value, Device, Index, Allocator >&
+Array< Value, Device, Index, Allocator >::
 operator=( const T& data )
 {
    Algorithms::ArrayAssignment< Array, T >::resize( *this, data );
@@ -555,10 +596,11 @@ operator=( const T& data )
 
 template< typename Value,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
    template< typename InValue >
-Array< Value, Device, Index >&
-Array< Value, Device, Index >::
+Array< Value, Device, Index, Allocator >&
+Array< Value, Device, Index, Allocator >::
 operator=( const std::list< InValue >& list )
 {
    this->setSize( list.size() );
@@ -568,10 +610,11 @@ operator=( const std::list< InValue >& list )
 
 template< typename Value,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
    template< typename InValue >
-Array< Value, Device, Index >&
-Array< Value, Device, Index >::
+Array< Value, Device, Index, Allocator >&
+Array< Value, Device, Index, Allocator >::
 operator=( const std::vector< InValue >& vector )
 {
    if( this->getSize() != vector.size() )
@@ -582,10 +625,11 @@ operator=( const std::vector< InValue >& vector )
 
 template< typename Value,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
    template< typename ArrayT >
 bool
-Array< Value, Device, Index >::
+Array< Value, Device, Index, Allocator >::
 operator==( const ArrayT& array ) const
 {
    if( array.getSize() != this->getSize() )
@@ -600,10 +644,11 @@ operator==( const ArrayT& array ) const
 
 template< typename Value,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
    template< typename ArrayT >
 bool
-Array< Value, Device, Index >::
+Array< Value, Device, Index, Allocator >::
 operator!=( const ArrayT& array ) const
 {
    return ! ( *this == array );
@@ -611,9 +656,10 @@ operator!=( const ArrayT& array ) const
 
 template< typename Value,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
 void
-Array< Value, Device, Index >::
+Array< Value, Device, Index, Allocator >::
 setValue( const ValueType& v,
           IndexType begin,
           IndexType end )
@@ -626,10 +672,11 @@ setValue( const ValueType& v,
 
 template< typename Value,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
    template< typename Function >
 void
-Array< Value, Device, Index >::
+Array< Value, Device, Index, Allocator >::
 evaluate( const Function& f,
           IndexType begin,
           IndexType end )
@@ -640,9 +687,10 @@ evaluate( const Function& f,
 
 template< typename Value,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
 bool
-Array< Value, Device, Index >::
+Array< Value, Device, Index, Allocator >::
 containsValue( const ValueType& v,
                IndexType begin,
                IndexType end ) const
@@ -656,9 +704,10 @@ containsValue( const ValueType& v,
 
 template< typename Value,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
 bool
-Array< Value, Device, Index >::
+Array< Value, Device, Index, Allocator >::
 containsOnlyValue( const ValueType& v,
                    IndexType begin,
                    IndexType end ) const
@@ -672,10 +721,11 @@ containsOnlyValue( const ValueType& v,
 
 template< typename Value,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
 bool
 __cuda_callable__
-Array< Value, Device, Index >::
+Array< Value, Device, Index, Allocator >::
 empty() const
 {
    return ( data == nullptr );
@@ -683,9 +733,10 @@ empty() const
 
 template< typename Value,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
 void
-Array< Value, Device, Index >::
+Array< Value, Device, Index, Allocator >::
 save( const String& fileName ) const
 {
    File( fileName, std::ios_base::out ) << *this;
@@ -693,9 +744,10 @@ save( const String& fileName ) const
 
 template< typename Value,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
 void
-Array< Value, Device, Index >::
+Array< Value, Device, Index, Allocator >::
 load( const String& fileName )
 {
    File( fileName, std::ios_base::in ) >> *this;
@@ -703,15 +755,16 @@ load( const String& fileName )
 
 template< typename Value,
           typename Device,
-          typename Index >
-Array< Value, Device, Index >::
+          typename Index,
+          typename Allocator >
+Array< Value, Device, Index, Allocator >::
 ~Array()
 {
    this->releaseData();
 }
 
-template< typename Value, typename Device, typename Index >
-std::ostream& operator<<( std::ostream& str, const Array< Value, Device, Index >& array )
+template< typename Value, typename Device, typename Index, typename Allocator >
+std::ostream& operator<<( std::ostream& str, const Array< Value, Device, Index, Allocator >& array )
 {
    str << "[ ";
    if( array.getSize() > 0 )
@@ -725,8 +778,8 @@ std::ostream& operator<<( std::ostream& str, const Array< Value, Device, Index >
 }
 
 // Serialization of arrays into binary files.
-template< typename Value, typename Device, typename Index >
-File& operator<<( File& file, const Array< Value, Device, Index >& array )
+template< typename Value, typename Device, typename Index, typename Allocator >
+File& operator<<( File& file, const Array< Value, Device, Index, Allocator >& array )
 {
    using IO = Algorithms::ArrayIO< Value, Device, Index >;
    saveObjectType( file, IO::getSerializationType() );
@@ -736,16 +789,16 @@ File& operator<<( File& file, const Array< Value, Device, Index >& array )
    return file;
 }
 
-template< typename Value, typename Device, typename Index >
-File& operator<<( File&& file, const Array< Value, Device, Index >& array )
+template< typename Value, typename Device, typename Index, typename Allocator >
+File& operator<<( File&& file, const Array< Value, Device, Index, Allocator >& array )
 {
    File& f = file;
    return f << array;
 }
 
 // Deserialization of arrays from binary files.
-template< typename Value, typename Device, typename Index >
-File& operator>>( File& file, Array< Value, Device, Index >& array )
+template< typename Value, typename Device, typename Index, typename Allocator >
+File& operator>>( File& file, Array< Value, Device, Index, Allocator >& array )
 {
    using IO = Algorithms::ArrayIO< Value, Device, Index >;
    const String type = getObjectType( file );
@@ -760,8 +813,8 @@ File& operator>>( File& file, Array< Value, Device, Index >& array )
    return file;
 }
 
-template< typename Value, typename Device, typename Index >
-File& operator>>( File&& file, Array< Value, Device, Index >& array )
+template< typename Value, typename Device, typename Index, typename Allocator >
+File& operator>>( File&& file, Array< Value, Device, Index, Allocator >& array )
 {
    File& f = file;
    return f >> array;
