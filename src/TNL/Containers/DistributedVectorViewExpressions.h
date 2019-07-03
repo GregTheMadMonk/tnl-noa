@@ -679,7 +679,7 @@ lpNorm( const Containers::DistributedVectorView< Real, Device, Index, Communicat
    using CommunicatorType = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::CommunicatorType;
    Real result = ( Real ) 0.0;
    if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      const Real localResult = TNL::pow( Containers::Expressions::ExpressionLpNorm( a.getLocalVectorView(), p ), p );
+      const Real localResult = Containers::Expressions::ExpressionLpNorm( a.getLocalVectorView(), p );
       CommunicatorType::template Allreduce< Real >( &localResult, &result, 1, MPI_SUM, a.getCommunicationGroup() );
    }
    return TNL::pow( result, 1.0 / p );

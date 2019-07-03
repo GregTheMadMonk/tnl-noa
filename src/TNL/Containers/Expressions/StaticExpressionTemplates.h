@@ -13,7 +13,7 @@
 #include <iostream>
 #include <TNL/Containers/Expressions/ExpressionTemplatesOperations.h>
 #include <TNL/Containers/Expressions/ExpressionVariableType.h>
-#include <TNL/Containers/Expressions/Comparison.h>
+#include <TNL/Containers/Expressions/StaticComparison.h>
 #include <TNL/Containers/Expressions/IsStatic.h>
 #include <TNL/Containers/Expressions/VerticalOperations.h>
 
@@ -2462,7 +2462,11 @@ __cuda_callable__
 typename Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >::RealType
 lpNorm( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a, const Real& p )
 {
-   return StaticExpressionLpNorm( a, p );
+   if( p == 1.0 )
+      return StaticExpressionLpNorm( a, p );
+   if( p == 2.0 )
+      return TNL::sqrt( StaticExpressionLpNorm( a, p ) );
+   return TNL::pow( StaticExpressionLpNorm( a, p ), 1.0 / p );
 }
 
 template< typename L1,
@@ -2473,7 +2477,11 @@ __cuda_callable__
 typename Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation, Parameter >::RealType
 lpNorm( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation, Parameter >& a, const Real& p )
 {
-   return StaticExpressionLpNorm( a, p );
+   if( p == 1.0 )
+      return StaticExpressionLpNorm( a, p );
+   if( p == 2.0 )
+      return TNL::sqrt( StaticExpressionLpNorm( a, p ) );
+   return TNL::pow( StaticExpressionLpNorm( a, p ), 1.0 / p );
 }
 
 template< typename L1,
