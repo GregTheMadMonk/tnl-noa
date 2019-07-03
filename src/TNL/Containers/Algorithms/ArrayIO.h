@@ -31,7 +31,13 @@ template< typename Value,
           typename Index >
 struct ArrayIO< Value, Device, Index, true >
 {
-   public:
+   static String getSerializationType()
+   {
+      return String( "Containers::Array< " ) +
+             TNL::getType< Value >() + ", " +
+             Devices::Host::getDeviceType() + ", " +
+             TNL::getType< Index >() + " >";
+   }
 
    static void save( File& file,
                      const Value* data,
@@ -71,6 +77,14 @@ template< typename Value,
           typename Index >
 struct ArrayIO< Value, Device, Index, false >
 {
+   static String getSerializationType()
+   {
+      return String( "Containers::Array< " ) +
+             TNL::getType< Value >() + ", " +
+             Devices::Host::getDeviceType() + ", " +
+             TNL::getType< Index >() + " >";
+   }
+
    static void save( File& file,
                      const Value* data,
                      const Index elements )

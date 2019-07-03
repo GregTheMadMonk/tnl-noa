@@ -21,9 +21,6 @@
 namespace TNL {
 namespace Containers {
 
-template< typename Value, typename Device, typename Index >
-class Array;
-
 /**
  * \brief \e ArrayView is a simple data structure which provides a non-owning
  * encapsulation of array data. That is, \e ArrayView is like \ref Array without
@@ -64,7 +61,6 @@ template< typename Value,
           typename Index = int >
 class ArrayView
 {
-   using SerializationType = Array< Value, Devices::Host, Index >;
 public:
    using ValueType = Value;
    using DeviceType = Device;
@@ -78,11 +74,6 @@ public:
     * \brief Returns a \ref String representation of the array view type.
     */
    static String getType();
-
-   /**
-    * \brief Returns a \ref String representation of the serialization type.
-    */
-   static String getSerializationType();
 
    /**
     * \brief Constructs an empty array view.

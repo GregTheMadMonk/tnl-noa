@@ -178,7 +178,7 @@ String
 Array< Value, Device, Index >::
 getSerializationType()
 {
-   return HostType::getType();
+   return Algorithms::ArrayIO< Value, Device, Index >::getSerializationType();
 }
 
 template< typename Value,
@@ -716,7 +716,8 @@ std::ostream& operator<<( std::ostream& str, const Array< Value, Device, Index >
 template< typename Value, typename Device, typename Index >
 File& operator<<( File& file, const Array< Value, Device, Index >& array )
 {
-   saveObjectType( file, array.getSerializationType() );
+   using IO = Algorithms::ArrayIO< Value, Device, Index >;
+   saveObjectType( file, IO::getSerializationType() );
    const Index size = array.getSize();
    file.save( &size );
    Algorithms::ArrayIO< Value, Device, Index >::save( file, array.getData(), array.getSize() );
@@ -734,9 +735,10 @@ File& operator<<( File&& file, const Array< Value, Device, Index >& array )
 template< typename Value, typename Device, typename Index >
 File& operator>>( File& file, Array< Value, Device, Index >& array )
 {
+   using IO = Algorithms::ArrayIO< Value, Device, Index >;
    const String type = getObjectType( file );
-   if( type != array.getSerializationType() )
-      throw Exceptions::FileDeserializationError( file.getFileName(), "object type does not match (expected " + array.getSerializationType() + ", found " + type + ")." );
+   if( type != IO::getSerializationType() )
+      throw Exceptions::FileDeserializationError( file.getFileName(), "object type does not match (expected " + IO::getSerializationType() + ", found " + type + ")." );
    Index _size;
    file.load( &_size );
    if( _size < 0 )

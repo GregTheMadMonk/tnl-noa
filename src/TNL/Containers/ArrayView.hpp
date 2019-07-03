@@ -37,16 +37,6 @@ getType()
                   TNL::getType< Index >() + " >";
 }
 
-template< typename Value,
-          typename Device,
-          typename Index >
-String
-ArrayView< Value, Device, Index >::
-getSerializationType()
-{
-   return SerializationType::getSerializationType();
-}
-
 // explicit initialization by raw data pointer and size
 template< typename Value,
           typename Device,
@@ -405,10 +395,11 @@ load( const String& fileName )
 template< typename Value, typename Device, typename Index >
 File& operator<<( File& file, const ArrayView< Value, Device, Index > view )
 {
-   saveObjectType( file, view.getSerializationType() );
+   using IO = Algorithms::ArrayIO< Value, Device, Index >;
+   saveObjectType( file, IO::getSerializationType() );
    const Index size = view.getSize();
    file.save( &size );
-   Algorithms::ArrayIO< Value, Device, Index >::save( file, view.getData(), view.getSize() );
+   IO::save( file, view.getData(), view.getSize() );
    return file;
 }
 
@@ -423,14 +414,15 @@ File& operator<<( File&& file, const ArrayView< Value, Device, Index > view )
 template< typename Value, typename Device, typename Index >
 File& operator>>( File& file, ArrayView< Value, Device, Index > view )
 {
+   using IO = Algorithms::ArrayIO< Value, Device, Index >;
    const String type = getObjectType( file );
-   if( type != view.getSerializationType() )
-      throw Exceptions::FileDeserializationError( file.getFileName(), "object type does not match (expected " + view.getSerializationType() + ", found " + type + ")." );
+   if( type != IO::getSerializationType() )
+      throw Exceptions::FileDeserializationError( file.getFileName(), "object type does not match (expected " + IO::getSerializationType() + ", found " + type + ")." );
    Index _size;
    file.load( &_size );
    if( _size != view.getSize() )
       throw Exceptions::FileDeserializationError( file.getFileName(), "invalid array size: " + std::to_string(_size) + " (expected " + std::to_string( view.getSize() ) + ")." );
-   Algorithms::ArrayIO< Value, Device, Index >::load( file, view.getData(), view.getSize() );
+   IO::load( file, view.getData(), view.getSize() );
    return file;
 }
 
