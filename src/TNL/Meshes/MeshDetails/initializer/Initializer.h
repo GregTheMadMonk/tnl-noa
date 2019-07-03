@@ -366,7 +366,7 @@ class InitializerLayer< MeshConfig,
          //std::cout << " Initiating entities with dimension " << DimensionTag::value << " ... " << std::endl;
          const GlobalIndexType numberOfEntities = getEntitiesCount( initializer, mesh );
          initializer.template setEntitiesCount< DimensionTag::value >( numberOfEntities );
-         this->referenceOrientations.setSize( numberOfEntities );
+         this->referenceOrientations.resize( numberOfEntities );
 
          using SubentitySeedsCreator = SubentitySeedsCreator< MeshConfig, Meshes::DimensionTag< MeshType::getMeshDimension() >, DimensionTag >;
          for( GlobalIndexType i = 0; i < mesh.template getEntitiesCount< MeshType::getMeshDimension() >(); i++ )
@@ -387,7 +387,7 @@ class InitializerLayer< MeshConfig,
 
          EntityInitializerType::initSuperentities( initializer, mesh );
          this->seedsIndexedSet.clear();
-         this->referenceOrientations.reset();
+         this->referenceOrientations.clear();
 
          BaseType::initEntities( initializer, points, mesh );
       }
