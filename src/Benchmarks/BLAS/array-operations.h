@@ -20,14 +20,15 @@ namespace TNL {
 namespace Benchmarks {
 
 template< typename Real = double,
-          typename Index = int >
+          typename Index = int,
+          template<typename> class HostAllocator = Allocators::Default< Devices::Host >::Allocator,
+          template<typename> class CudaAllocator = Allocators::Default< Devices::Cuda >::Allocator >
 bool
 benchmarkArrayOperations( Benchmark & benchmark,
                           const long & size )
 {
-   typedef Containers::Array< Real, Devices::Host, Index > HostArray;
-   typedef Containers::Array< Real, Devices::Cuda, Index > CudaArray;
-   using namespace std;
+   using HostArray = Containers::Array< Real, Devices::Host, Index, HostAllocator< Real > >;
+   using CudaArray = Containers::Array< Real, Devices::Cuda, Index, CudaAllocator< Real > >;
 
    double datasetSize = (double) size * sizeof( Real ) / oneGB;
 
