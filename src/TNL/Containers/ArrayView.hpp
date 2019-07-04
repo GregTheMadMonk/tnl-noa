@@ -89,6 +89,7 @@ void ArrayView< Value, Device, Index >::bind( ArrayView view )
 template< typename Value,
           typename Device,
           typename Index >
+__cuda_callable__
 typename ArrayView< Value, Device, Index >::ViewType
 ArrayView< Value, Device, Index >::
 getView( const IndexType begin, IndexType end )
@@ -101,6 +102,7 @@ getView( const IndexType begin, IndexType end )
 template< typename Value,
           typename Device,
           typename Index >
+__cuda_callable__
 typename ArrayView< Value, Device, Index >::ConstViewType
 ArrayView< Value, Device, Index >::
 getConstView( const IndexType begin, IndexType end ) const
@@ -359,6 +361,7 @@ containsOnlyValue( Value value,
 template< typename Value,
           typename Device,
           typename Index >
+__cuda_callable__
 bool
 ArrayView< Value, Device, Index >::
 empty() const
