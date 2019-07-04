@@ -108,10 +108,11 @@ setMemory( Element* data,
    TNL_ASSERT_TRUE( data, "Attempted to set data through a nullptr." );
 #ifdef HAVE_CUDA
    dim3 blockSize( 0 ), gridSize( 0 );
-   blockSize. x = 256;
-   Index blocksNumber = TNL::ceil( ( double ) size / ( double ) blockSize. x );
-   gridSize. x = TNL::min( blocksNumber, Devices::Cuda::getMaxGridSize() );
+   blockSize.x = 256;
+   Index blocksNumber = TNL::ceil( ( double ) size / ( double ) blockSize.x );
+   gridSize.x = TNL::min( blocksNumber, Devices::Cuda::getMaxGridSize() );
    setArrayValueCudaKernel<<< gridSize, blockSize >>>( data, size, value );
+   cudaStreamSynchronize(0);
    TNL_CHECK_CUDA_DEVICE;
 #else
    throw Exceptions::CudaSupportMissing();
@@ -160,10 +161,11 @@ copyMemory( DestinationElement* destination,
    else
    {
       dim3 blockSize( 0 ), gridSize( 0 );
-      blockSize. x = 256;
-      Index blocksNumber = TNL::ceil( ( double ) size / ( double ) blockSize. x );
-      gridSize. x = min( blocksNumber, Devices::Cuda::getMaxGridSize() );
+      blockSize.x = 256;
+      Index blocksNumber = TNL::ceil( ( double ) size / ( double ) blockSize.x );
+      gridSize.x = min( blocksNumber, Devices::Cuda::getMaxGridSize() );
       copyMemoryCudaToCudaKernel<<< gridSize, blockSize >>>( destination, source, size );
+      cudaStreamSynchronize(0);
       TNL_CHECK_CUDA_DEVICE;
    }
 #else
