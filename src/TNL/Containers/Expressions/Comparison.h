@@ -35,7 +35,7 @@ struct Comparison< T1, T2, VectorVariable, VectorVariable >
 {
 
 
-   bool EQ( const T1& a, const T2& b )
+   static bool EQ( const T1& a, const T2& b )
    {
       if( a.getSize() != b.getSize() )
          return false;
@@ -51,12 +51,12 @@ struct Comparison< T1, T2, VectorVariable, VectorVariable >
       return Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
    }
 
-   bool NE( const T1& a, const T2& b )
+   static bool NE( const T1& a, const T2& b )
    {
       return ! EQ( a, b );
    }
 
-   bool GT( const T1& a, const T2& b )
+   static bool GT( const T1& a, const T2& b )
    {
       TNL_ASSERT_EQ( a.getSize(), b.getSize(), "Sizes of expressions to be compared do not fit." );
 
@@ -69,12 +69,12 @@ struct Comparison< T1, T2, VectorVariable, VectorVariable >
       return Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
    }
 
-   bool LE( const T1& a, const T2& b )
+   static bool LE( const T1& a, const T2& b )
    {
       return ! GT( a, b );
    }
 
-   bool LT( const T1& a, const T2& b )
+   static bool LT( const T1& a, const T2& b )
    {
       TNL_ASSERT_EQ( a.getSize(), b.getSize(), "Sizes of expressions to be compared do not fit." );
 
@@ -87,7 +87,7 @@ struct Comparison< T1, T2, VectorVariable, VectorVariable >
       return Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
    }
 
-   bool GE( const T1& a, const T2& b )
+   static bool GE( const T1& a, const T2& b )
    {
       return ! LT( a, b );
    }
@@ -101,7 +101,7 @@ struct Comparison< T1, T2, ArithmeticVariable, VectorVariable >
 {
 
 
-   bool EQ( const T1& a, const T2& b )
+   static bool EQ( const T1& a, const T2& b )
    {
       using DeviceType = typename T1::DeviceType;
       using IndexType = typename T1::IndexType;
@@ -112,12 +112,12 @@ struct Comparison< T1, T2, ArithmeticVariable, VectorVariable >
       return Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
    }
 
-   bool NE( const T1& a, const T2& b )
+   static bool NE( const T1& a, const T2& b )
    {
       return ! EQ( a, b );
    }
 
-   bool GT( const T1& a, const T2& b )
+   static bool GT( const T1& a, const T2& b )
    {
       using DeviceType = typename T1::DeviceType;
       using IndexType = typename T1::IndexType;
@@ -128,12 +128,12 @@ struct Comparison< T1, T2, ArithmeticVariable, VectorVariable >
       return Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
    }
 
-   bool LE( const T1& a, const T2& b )
+   static bool LE( const T1& a, const T2& b )
    {
       return ! GT( a, b );
    }
 
-   bool LT( const T1& a, const T2& b )
+   static bool LT( const T1& a, const T2& b )
    {
       using DeviceType = typename T1::DeviceType;
       using IndexType = typename T1::IndexType;
@@ -144,7 +144,7 @@ struct Comparison< T1, T2, ArithmeticVariable, VectorVariable >
       return Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
    }
 
-   bool GE( const T1& a, const T2& b )
+   static bool GE( const T1& a, const T2& b )
    {
       return ! LT( a, b );
    }
@@ -158,7 +158,7 @@ struct Comparison< T1, T2, VectorVariable, ArithmeticVariable >
 {
 
 
-   bool EQ( const T1& a, const T2& b )
+   static bool EQ( const T1& a, const T2& b )
    {
       using DeviceType = typename T1::DeviceType;
       using IndexType = typename T1::IndexType;
@@ -169,12 +169,12 @@ struct Comparison< T1, T2, VectorVariable, ArithmeticVariable >
       return Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
    }
 
-   bool NE( const T1& a, const T2& b )
+   static bool NE( const T1& a, const T2& b )
    {
       return ! EQ( a, b );
    }
 
-   bool GT( const T1& a, const T2& b )
+   static bool GT( const T1& a, const T2& b )
    {
       using DeviceType = typename T1::DeviceType;
       using IndexType = typename T1::IndexType;
@@ -185,12 +185,12 @@ struct Comparison< T1, T2, VectorVariable, ArithmeticVariable >
       return Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
    }
 
-   bool LE( const T1& a, const T2& b )
+   static bool LE( const T1& a, const T2& b )
    {
       return ! GT( a, b );
    }
 
-   bool LT( const T1& a, const T2& b )
+   static bool LT( const T1& a, const T2& b )
    {
       using DeviceType = typename T1::DeviceType;
       using IndexType = typename T1::IndexType;
@@ -201,7 +201,7 @@ struct Comparison< T1, T2, VectorVariable, ArithmeticVariable >
       return Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
    }
 
-   bool GE( const T1& a, const T2& b )
+   static bool GE( const T1& a, const T2& b )
    {
       return ! LT( a, b );
    }

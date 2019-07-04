@@ -34,8 +34,8 @@ class StaticVector : public StaticArray< Size, Real >
    constexpr static int size = Size;
 
    using StaticArray< Size, Real >::getSize;
-   using StaticArray< Size, Real >::operator ==;
-   using StaticArray< Size, Real >::operator !=;
+   //using StaticArray< Size, Real >::operator ==;
+   //using StaticArray< Size, Real >::operator !=;
 
    /**
     * \brief Basic constructor.
@@ -235,8 +235,8 @@ class StaticVector< 1, Real > : public StaticArray< 1, Real >
    constexpr static int size = 1;
 
    using StaticArray< 1, Real >::getSize;
-   using StaticArray< 1, Real >::operator ==;
-   using StaticArray< 1, Real >::operator !=;
+   //using StaticArray< 1, Real >::operator ==;
+   //using StaticArray< 1, Real >::operator !=;
 
 
 
@@ -357,8 +357,8 @@ class StaticVector< 2, Real > : public StaticArray< 2, Real >
    constexpr static int size = 2;
 
    using StaticArray< 2, Real >::getSize;
-   using StaticArray< 2, Real >::operator ==;
-   using StaticArray< 2, Real >::operator !=;
+   //using StaticArray< 2, Real >::operator ==;
+   //using StaticArray< 2, Real >::operator !=;
 
 
    /** \brief See StaticVector::StaticVector().*/
@@ -487,8 +487,8 @@ class StaticVector< 3, Real > : public StaticArray< 3, Real >
    constexpr static int size = 3;
 
    using StaticArray< 3, Real >::getSize;
-   using StaticArray< 3, Real >::operator ==;
-   using StaticArray< 3, Real >::operator !=;
+   //using StaticArray< 3, Real >::operator ==;
+   //using StaticArray< 3, Real >::operator !=;
 
 
    /** \brief See StaticVector::StaticVector().*/
@@ -750,3 +750,6 @@ struct IsStatic< Containers::StaticVector< Size, Real > >
 };
 
 } // namespace TNL
+
+#include <TNL/Containers/StaticVectorExpressions.h>
+#include <TNL/Containers/Expressions/StaticExpressionTemplates.h>

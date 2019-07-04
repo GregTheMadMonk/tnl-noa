@@ -2380,7 +2380,7 @@ logicalOr( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOpe
 }
 
 template< typename L1,
-          template< typename, typename > class LOperation,
+          template< typename > class LOperation,
           typename Parameter >
 bool
 logicalOr( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >& a )
@@ -2428,7 +2428,7 @@ template< typename L1,
           typename L2,
           template< typename, typename > class LOperation >
 auto
-binaryAnd( const Containers::Expressions::BiaryExpressionTemplate< L1, L2, LOperation >& a ) -> decltype( ExpressionBinaryAnd( a ) )
+binaryAnd( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a ) -> decltype( ExpressionBinaryAnd( a ) )
 {
    return ExpressionBinaryAnd( a );
 }

@@ -247,26 +247,38 @@ max( const Containers::DistributedVectorView< Real1, Device, Index, Communicator
 template< typename Real, typename Device, typename Index, typename Communicator, typename ET >
 bool operator==( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
 {
-   return Containers::Expressions::ComparisonEQ( a.getLocalVectorView(), b );
+   using Left = Containers::DistributedVectorView< Real, Device, Index, Communicator >;
+   using Right = ET;
+   return Containers::Expressions::DistributedComparison< Left, Right >::template EQ< Communicator >( a.getLocalVectorView(), b, a.getCommunicatorGroup() );
 }
 
 template< typename ET, typename Real, typename Device, typename Index, typename Communicator >
 bool operator==( const ET& a, const Containers::DistributedVectorView< Real, Device, Index, Communicator >& b )
 {
-   return Containers::Expressions::ComparisonEQ( a, b.getLocalVectorView() );
+   using Left = ET;
+   using Right = Containers::DistributedVectorView< Real, Device, Index, Communicator >;
+   return Containers::Expressions::DistributedComparison< Left, Right >::template EQ< Communicator >( a, b.getLocalVectorView() );
 }
 
 template< typename Real1, typename Real2, typename Device1, typename Device2, typename Index, typename Communicator >
 bool operator==( const Containers::DistributedVectorView< Real1, Device1, Index >& a, const Containers::DistributedVectorView< Real2, Device2, Index >& b )
 {
+   bool localResult;
    if( a.getSize() != b.getSize() )
-      return false;
-   if( a.getSize() == 0 )
-      return true;
-   return Containers::Algorithms::ArrayOperations< Device1, Device2 >::
-            compareMemory( a.getData(),
-                           b.getData(),
-                           a.getSize() );
+      localResult = false;
+   else if( a.getSize() == 0 )
+      localResult = true;
+   else localResult = Containers::Algorithms::ArrayOperations< Device1, Device2 >::
+      compareMemory( a.getData(),
+                     b.getData(),
+                     a.getSize() );
+
+   TNL_ASSERT_EQ( a.getCommunicationGroup(), b.getCommunicationGroup(), "Cannot compare two distributed vectors with different communication groups." );
+   bool result = localResult;
+   if( a.getCommunicationGroup() != Communicator::NullGroup ) {
+      Communicator::Allreduce( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
+   }
+   return result;
 }
 
 ////
@@ -274,26 +286,23 @@ bool operator==( const Containers::DistributedVectorView< Real1, Device1, Index 
 template< typename Real, typename Device, typename Index, typename Communicator, typename ET >
 bool operator!=( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
 {
-   return Containers::Expressions::ComparisonNE( a.getLocalVectorView(), b );
+   using Left = Containers::DistributedVectorView< Real, Device, Index, Communicator >;
+   using Right = ET;
+   return Containers::Expressions::DistributedComparison< Left, Right >::template NE< Communicator >( a.getLocalVectorView(), b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index, typename Communicator >
 bool operator!=( const ET& a, const Containers::DistributedVectorView< Real, Device, Index, Communicator >& b )
 {
-   return Containers::Expressions::ComparisonNE( a, b.getLocalVectorView() );
+   using Left = ET;
+   using Right = Containers::DistributedVectorView< Real, Device, Index, Communicator >;
+   return Containers::Expressions::DistributedComparison< Left, Right >::template NE< Communicator >( a, b.getLocalVectorView() );
 }
 
 template< typename Real1, typename Real2, typename Device1, typename Device2, typename Index, typename Communicator >
 bool operator!=( const Containers::DistributedVectorView< Real1, Device1, Index >& a, const Containers::DistributedVectorView< Real2, Device2, Index >& b )
 {
-   if( a.getSize() != b.getSize() )
-      return false;
-   if( a.getSize() == 0 )
-      return true;
-   return !Containers::Algorithms::ArrayOperations< Device1, Device2 >::
-            compareMemory( a.getData(),
-                           b.getData(),
-                           a.getSize() );
+   return ! operator==( a, b );
 }
 
 ////
@@ -301,19 +310,25 @@ bool operator!=( const Containers::DistributedVectorView< Real1, Device1, Index 
 template< typename Real, typename Device, typename Index, typename Communicator, typename ET >
 bool operator<( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
 {
-   return Containers::Expressions::ComparisonLT( a.getLocalVectorView(), b );
+   using Left = Containers::DistributedVectorView< Real, Device, Index, Communicator >;
+   using Right = ET;
+   return Containers::Expressions::DistributedComparison< Left, Right >::template LT< Communicator >( a.getLocalVectorView(), b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index, typename Communicator >
 bool operator<( const ET& a, const Containers::DistributedVectorView< Real, Device, Index, Communicator >& b )
 {
-   return Containers::Expressions::ComparisonLT( a, b.getLocalVectorView() );
+   using Left = ET;
+   using Right = Containers::DistributedVectorView< Real, Device, Index, Communicator >;
+   return Containers::Expressions::DistributedComparison< Left, Right >::template LT< Communicator >( a, b.getLocalVectorView() );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
 bool operator<( const Containers::DistributedVectorView< Real1, Device, Index, Communicator >& a, const Containers::DistributedVectorView< Real2, Device, Index, Communicator >& b )
 {
-   return Containers::Expressions::ComparisonLT( a.getLocalVectorView(), b.getLocalVectorView() );
+   using Left = Containers::DistributedVectorView< Real1, Device, Index, Communicator >;
+   using Right = Containers::DistributedVectorView< Real2, Device, Index, Communicator >;
+   return Containers::Expressions::DistributedComparison< Left, Right >::template LT< Communicator >( a.getLocalVectorView(), b.getLocalVectorView() );
 }
 
 ////
@@ -321,19 +336,25 @@ bool operator<( const Containers::DistributedVectorView< Real1, Device, Index, C
 template< typename Real, typename Device, typename Index, typename Communicator, typename ET >
 bool operator<=( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
 {
-   return Containers::Expressions::ComparisonLE( a.getLocalVectorView(), b );
+   using Left = Containers::DistributedVectorView< Real, Device, Index, Communicator >;
+   using Right = ET;
+   return Containers::Expressions::DistributedComparison< Left, Right >::template LE< Communicator >( a.getLocalVectorView(), b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index, typename Communicator >
 bool operator<=( const ET& a, const Containers::DistributedVectorView< Real, Device, Index, Communicator >& b )
 {
-   return Containers::Expressions::ComparisonLE( a, b.getLocalVectorView() );
+   using Left = ET;
+   using Right = Containers::DistributedVectorView< Real, Device, Index, Communicator >;
+   return Containers::Expressions::DistributedComparison< Left, Right >::template LE< Communicator >( a, b.getLocalVectorView() );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
 bool operator<=( const Containers::DistributedVectorView< Real1, Device, Index, Communicator >& a, const Containers::DistributedVectorView< Real2, Device, Index, Communicator >& b )
 {
-   return Containers::Expressions::ComparisonLE( a.getLocalVectorView(), b.getLocalVectorView() );
+   using Left = Containers::DistributedVectorView< Real1, Device, Index, Communicator >;
+   using Right = Containers::DistributedVectorView< Real2, Device, Index, Communicator >;
+   return Containers::Expressions::DistributedComparison< Left, Right >::template LE< Communicator >( a.getLocalVectorView(), b.getLocalVectorView() );
 }
 
 ////
@@ -341,19 +362,25 @@ bool operator<=( const Containers::DistributedVectorView< Real1, Device, Index, 
 template< typename Real, typename Device, typename Index, typename Communicator, typename ET >
 bool operator>( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
 {
-   return Containers::Expressions::ComparisonGT( a.getLocalVectorView(), b );
+   using Left = Containers::DistributedVectorView< Real, Device, Index, Communicator >;
+   using Right = ET;
+   return Containers::Expressions::DistributedComparison< Left, Right >::template GT< Communicator >( a.getLocalVectorView(), b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index, typename Communicator >
 bool operator>( const ET& a, const Containers::DistributedVectorView< Real, Device, Index, Communicator >& b )
 {
-   return Containers::Expressions::ComparisonGT( a, b.getLocalVectorView() );
+   using Left = ET;
+   using Right = Containers::DistributedVectorView< Real, Device, Index, Communicator >;
+   return Containers::Expressions::DistributedComparison< Left, Right >::template GT< Communicator >( a, b.getLocalVectorView() );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
 bool operator>( const Containers::DistributedVectorView< Real1, Device, Index, Communicator >& a, const Containers::DistributedVectorView< Real2, Device, Index, Communicator >& b )
 {
-   return Containers::Expressions::ComparisonGT( a.getLocalVectorView(), b.getLocalVectorView() );
+   using Left = Containers::DistributedVectorView< Real1, Device, Index, Communicator >;
+   using Right = Containers::DistributedVectorView< Real2, Device, Index, Communicator >;
+   return Containers::Expressions::DistributedComparison< Left, Right >::template GT< Communicator >( a.getLocalVectorView(), b.getLocalVectorView() );
 }
 
 ////
@@ -361,19 +388,25 @@ bool operator>( const Containers::DistributedVectorView< Real1, Device, Index, C
 template< typename Real, typename Device, typename Index, typename Communicator, typename ET >
 bool operator>=( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
 {
-   return Containers::Expressions::ComparisonGE( a.getLocalVectorView(), b );
+   using Left = Containers::DistributedVectorView< Real, Device, Index, Communicator >;
+   using Right = ET;
+   return Containers::Expressions::DistributedComparison< Left, Right >::template GE< Communicator >( a.getLocalVectorView(), b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index, typename Communicator >
 bool operator>=( const ET& a, const Containers::DistributedVectorView< Real, Device, Index, Communicator >& b )
 {
-   return Containers::Expressions::ComparisonGE( a, b.getLocalVectorView() );
+   using Left = ET;
+   using Right = Containers::DistributedVectorView< Real, Device, Index, Communicator >;
+   return Containers::Expressions::DistributedComparison< Left, Right >::template GE< Communicator >( a, b.getLocalVectorView() );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
 bool operator>=( const Containers::DistributedVectorView< Real1, Device, Index, Communicator >& a, const Containers::DistributedVectorView< Real2, Device, Index, Communicator >& b )
 {
-   return Containers::Expressions::ComparisonGE( a.getLocalVectorView(), b.getLocalVectorView() );
+   using Left = Containers::DistributedVectorView< Real1, Device, Index, Communicator >;
+   using Right = Containers::DistributedVectorView< Real2, Device, Index, Communicator >;
+   return Containers::Expressions::DistributedComparison< Left, Right >::template GE< Communicator >( a.getLocalVectorView(), b.getLocalVectorView() );
 }
 
 ////

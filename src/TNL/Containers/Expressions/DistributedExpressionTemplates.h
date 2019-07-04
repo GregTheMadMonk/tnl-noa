@@ -25,6 +25,7 @@ namespace TNL {
 template< typename T1,
           template< typename > class Operation,
           typename Parameter = void,
+          typename Communicator = Communicators::MpiCommunicator,
           ExpressionVariableType T1Type = ExpressionVariableTypeGetter< T1 >::value >
 struct DistributedUnaryExpressionTemplate
 {
@@ -35,6 +36,7 @@ struct DistributedUnaryExpressionTemplate
 template< typename T1,
           typename T2,
           template< typename, typename > class Operation,
+          typename Communicator = Communicators::MpiCommunicator,
           ExpressionVariableType T1Type = ExpressionVariableTypeGetter< T1 >::value,
           ExpressionVariableType T2Type = ExpressionVariableTypeGetter< T2 >::value >
 struct DistributedBinaryExpressionTemplate
@@ -43,18 +45,18 @@ struct DistributedBinaryExpressionTemplate
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
-struct DistributedBinaryExpressionTemplate< T1, T2, Operation, VectorVariable, VectorVariable >
+          template< typename, typename > class Operation,
+          typename Communicator >
+struct DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator, VectorVariable, VectorVariable >
 {
    using RealType = typename T1::RealType;
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
    using IsExpressionTemplate = bool;
-   using CommunicatorType = typename T1::CommunicatorType;
-   using CommunicationGroup = typename T1::CommunicationGroup;
+   using CommunicatorType = Communicator;
+   using CommunicationGroup = typename CommunicatorType::CommunicationGroup;
 
    static_assert( std::is_same< typename T1::DeviceType, typename T2::DeviceType >::value, "Attempt to mix operands allocated on different device types." );
-   static_assert( std::is_same< typename T1::CommunicatorType, typename T2::CommunicatorType >::value, "Attempt to mix operands using different communicators." );
    static_assert( IsStaticType< T1 >::value == IsStaticType< T2 >::value, "Attempt to mix static and non-static operands in binary expression templates." );
    static constexpr bool isStatic() { return false; }
 
@@ -97,14 +99,15 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, VectorVariable, V
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
-struct DistributedBinaryExpressionTemplate< T1, T2, Operation, VectorVariable, ArithmeticVariable >
+          template< typename, typename > class Operation,
+          typename Communicator >
+struct DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator, VectorVariable, ArithmeticVariable >
 {
    using RealType = typename T1::RealType;
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
-   using CommunicatorType = typename T1::CommunicatorType;
-   using CommunicationGroup = typename T1::CommunicationGroup;
+   using CommunicatorType = Communicator;
+   using CommunicationGroup = typename CommunicatorType::CommunicationGroup;
 
    using IsExpressionTemplate = bool;
    static constexpr bool isStatic() { return false; }
@@ -147,14 +150,15 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, VectorVariable, A
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
-struct DistributedBinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorVariable >
+          template< typename, typename > class Operation,
+          typename Communicator >
+struct DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator, ArithmeticVariable, VectorVariable >
 {
    using RealType = typename T2::RealType;
    using DeviceType = typename T2::DeviceType;
    using IndexType = typename T2::IndexType;
-   using CommunicatorType = typename T2::CommunicatorType;
-   using CommunicationGroup = typename T2::CommunicationGroup;
+   using CommunicatorType = Communicator;
+   using CommunicationGroup = typename CommunicatorType::CommunicationGroup;
 
    using IsExpressionTemplate = bool;
    static constexpr bool isStatic() { return false; }
@@ -202,15 +206,16 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariabl
 // to pass to pow.
 template< typename T1,
           template< typename > class Operation,
-          typename Parameter >
-struct DistributedUnaryExpressionTemplate< T1, Operation, Parameter, VectorVariable >
+          typename Parameter,
+          typename Communicator >
+struct DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator, VectorVariable >
 {
    using RealType = typename T1::RealType;
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
    using IsExpressionTemplate = bool;
-   using CommunicatorType = typename T1::CommunicatorType;
-   using CommunicationGroup = typename T1::CommunicationGroup;
+   using CommunicatorType = Communicator;
+   using CommunicationGroup = typename CommunicatorType::CommunicationGroup;
    static constexpr bool isStatic() { return false; }
 
    DistributedUnaryExpressionTemplate( const T1& a, const Parameter& p )
@@ -256,15 +261,16 @@ struct DistributedUnaryExpressionTemplate< T1, Operation, Parameter, VectorVaria
 ////
 // Distributed unary expression template with no parameter
 template< typename T1,
-          template< typename > class Operation >
-struct DistributedUnaryExpressionTemplate< T1, Operation, void, VectorVariable >
+          template< typename > class Operation,
+          typename Communicator >
+struct DistributedUnaryExpressionTemplate< T1, Operation, void, Communicator, VectorVariable >
 {
    using RealType = typename T1::RealType;
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
    using IsExpressionTemplate = bool;
-   using CommunicatorType = typename T1::CommunicatorType;
-   using CommunicationGroup = typename T1::CommunicationGroup;
+   using CommunicatorType = Communicator;
+   using CommunicationGroup = typename CommunicatorType::CommunicationGroup;
    static constexpr bool isStatic() { return false; }
 
    DistributedUnaryExpressionTemplate( const T1& a ): operand( a ){}
@@ -314,79 +320,84 @@ template< typename L1,
           template< typename, typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation >
+          template< typename, typename > class ROperation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
-   Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
    Containers::Expressions::Addition >
-operator + ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
-             const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
+operator + ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
+             const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
-      Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
       Containers::Expressions::Addition >( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
+          template< typename, typename > class Operation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >,
-   typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
+   typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
    Containers::Expressions::Addition >
-operator + ( const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& a,
-             const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
+operator + ( const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& a,
+             const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >,
-      typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
+      typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
       Containers::Expressions::Addition >( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
+          template< typename, typename > class Operation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType,
-   Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >,
+   typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
    Containers::Expressions::Addition >
-operator + ( const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
-             const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& b )
+operator + ( const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& a,
+             const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType,
-      Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >,
+      typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
       Containers::Expressions::Addition >( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation >
+          template< typename > class Operation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >,
-   typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >,
+   typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType,
    Containers::Expressions::Addition >
-operator + ( const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& a,
-             const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType& b )
+operator + ( const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >& a,
+             const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >,
-      typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >,
+      typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType,
       Containers::Expressions::Addition >( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation >
+          template< typename > class Operation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType,
-   Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >,
+   typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >,
    Containers::Expressions::Addition >
-operator + ( const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType& a,
-             const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& b )
+operator + ( const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType& a,
+             const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType,
-      Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >,
+      typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >,
       Containers::Expressions::Addition >( a, b );
 }
 
@@ -394,17 +405,18 @@ template< typename L1,
           template< typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation >
+          template< typename, typename > class ROperation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
-   Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
    Containers::Expressions::Addition >
-operator + ( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a,
-             const typename Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
+operator + ( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >& a,
+             const typename Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
-      Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
       Containers::Expressions::Addition >( a, b );
 }
 
@@ -412,34 +424,36 @@ template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
           typename R1,
-          template< typename > class ROperation >
+          template< typename > class ROperation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
-   Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation, Communicator >,
    Containers::Expressions::Addition >
-operator + ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
-             const Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation >& b )
+operator + ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
+             const Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation, Communicator >& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
-      Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation, Communicator >,
       Containers::Expressions::Addition >( a, b );
 }
 
 template< typename L1,
           template< typename > class LOperation,
           typename R1,
-          template< typename > class ROperation >
+          template< typename > class ROperation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
-   Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation, Communicator >,
    Containers::Expressions::Addition >
-operator + ( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1,LOperation >& a,
-             const Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation >& b )
+operator + ( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1,LOperation, Communicator >& a,
+             const Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation, Communicator >& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
-      Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation, Communicator >,
       Containers::Expressions::Addition >( a, b );
 }
 
@@ -450,79 +464,84 @@ template< typename L1,
           template< typename, typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation >
+          template< typename, typename > class ROperation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
-   Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
    Containers::Expressions::Subtraction >
-operator - ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
-             const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
+operator - ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
+             const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
-      Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
       Containers::Expressions::Subtraction >( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
+          template< typename, typename > class Operation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >,
-   typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
+   typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
    Containers::Expressions::Subtraction >
-operator - ( const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& a,
-             const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
+operator - ( const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& a,
+             const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >,
-      typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
+      typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
       Containers::Expressions::Subtraction >( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
+          template< typename, typename > class Operation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType,
-   Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >,
+   typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
    Containers::Expressions::Subtraction >
-operator - ( const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
-             const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& b )
+operator - ( const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& a,
+             const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType,
-      Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >,
+      typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
       Containers::Expressions::Subtraction >( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation >
+          template< typename > class Operation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >,
-   typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >,
+   typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType,
    Containers::Expressions::Subtraction >
-operator - ( const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& a,
-             const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType& b )
+operator - ( const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >& a,
+             const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >,
-      typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >,
+      typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType,
       Containers::Expressions::Subtraction >( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation >
+          template< typename > class Operation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType,
-   Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >,
+   typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >,
    Containers::Expressions::Subtraction >
-operator - ( const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType& a,
-             const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& b )
+operator - ( const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType& a,
+             const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType,
-      Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >,
+      typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >,
       Containers::Expressions::Subtraction >( a, b );
 }
 
@@ -530,17 +549,18 @@ template< typename L1,
           template< typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation >
+          template< typename, typename > class ROperation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
-   Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
    Containers::Expressions::Subtraction >
-operator - ( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a,
-             const typename Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
+operator - ( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >& a,
+             const typename Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
-      Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
       Containers::Expressions::Subtraction >( a, b );
 }
 
@@ -548,34 +568,36 @@ template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
           typename R1,
-          template< typename > class ROperation >
+          template< typename > class ROperation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
-   Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation, Communicator >,
    Containers::Expressions::Subtraction >
-operator - ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
-             const typename Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation >& b )
+operator - ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
+             const typename Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation, Communicator >& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
-      Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation, Communicator >,
       Containers::Expressions::Subtraction >( a, b );
 }
 
 template< typename L1,
           template< typename > class LOperation,
           typename R1,
-          template< typename > class ROperation >
+          template< typename > class ROperation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
-   Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation, Communicator >,
    Containers::Expressions::Subtraction >
-operator - ( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1,LOperation >& a,
-             const Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation >& b )
+operator - ( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1,LOperation, Communicator >& a,
+             const Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation, Communicator >& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
-      Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation, Communicator >,
       Containers::Expressions::Subtraction >( a, b );
 }
 
@@ -586,79 +608,84 @@ template< typename L1,
           template< typename, typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation >
+          template< typename, typename > class ROperation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
-   Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
    Containers::Expressions::Multiplication >
-operator * ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
-             const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
+operator * ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
+             const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
-      Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
       Containers::Expressions::Multiplication >( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
+          template< typename, typename > class Operation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >,
-   typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
+   typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
    Containers::Expressions::Multiplication >
-operator * ( const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& a,
-             const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
+operator * ( const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& a,
+             const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >,
-      typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
+      typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
       Containers::Expressions::Multiplication >( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
+          template< typename, typename > class Operation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType,
-   Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >,
+   typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
    Containers::Expressions::Multiplication >
-operator * ( const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
-             const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& b )
+operator * ( const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& a,
+             const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType,
-      Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >,
+      typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
       Containers::Expressions::Multiplication >( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation >
+          template< typename > class Operation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >,
-   typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >,
+   typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType,
    Containers::Expressions::Multiplication >
-operator * ( const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& a,
-             const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType& b )
+operator * ( const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >& a,
+             const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >,
-      typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >,
+      typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType,
       Containers::Expressions::Multiplication >( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation >
+          template< typename > class Operation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType,
-   Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >,
+   typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >,
    Containers::Expressions::Multiplication >
-operator * ( const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType& a,
-             const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& b )
+operator * ( const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType& a,
+             const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType,
-      Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >,
+      typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >,
       Containers::Expressions::Multiplication >( a, b );
 }
 
@@ -666,17 +693,18 @@ template< typename L1,
           template< typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation >
+          template< typename, typename > class ROperation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
-   Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
    Containers::Expressions::Multiplication >
-operator * ( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a,
-             const typename Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
+operator * ( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >& a,
+             const typename Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
-      Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
       Containers::Expressions::Multiplication >( a, b );
 }
 
@@ -684,34 +712,36 @@ template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
           typename R1,
-          template< typename > class ROperation >
+          template< typename > class ROperation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
-   Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation, Communicator >,
    Containers::Expressions::Multiplication >
-operator * ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
-             const Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation >& b )
+operator * ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
+             const Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation, Communicator >& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
-      Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation, Communicator >,
       Containers::Expressions::Multiplication >( a, b );
 }
 
 template< typename L1,
           template< typename > class LOperation,
           typename R1,
-          template< typename > class ROperation >
+          template< typename > class ROperation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
-   Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation, Communicator >,
    Containers::Expressions::Multiplication >
-operator * ( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1,LOperation >& a,
-             const Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation >& b )
+operator * ( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1,LOperation, Communicator >& a,
+             const Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation, Communicator >& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
-      Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation, Communicator >,
       Containers::Expressions::Multiplication >( a, b );
 }
 
@@ -722,79 +752,84 @@ template< typename L1,
           template< typename, typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation >
+          template< typename, typename > class ROperation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
-   Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
    Containers::Expressions::Division >
-operator / ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
-             const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
+operator / ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
+             const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
-      Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
       Containers::Expressions::Division >( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
+          template< typename, typename > class Operation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >,
-   typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
+   typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
    Containers::Expressions::Division >
-operator / ( const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& a,
-             const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
+operator / ( const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& a,
+             const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >,
-      typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
+      typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
       Containers::Expressions::Division >( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
+          template< typename, typename > class Operation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType,
-   Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >,
+   typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
    Containers::Expressions::Division >
-operator + ( const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
-             const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& b )
+operator + ( const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& a,
+             const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType,
-      Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >,
+      typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
       Containers::Expressions::Division >( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation >
+          template< typename > class Operation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >,
-   typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >,
+   typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType,
    Containers::Expressions::Division >
-operator / ( const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& a,
-             const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType& b )
+operator / ( const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >& a,
+             const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >,
-      typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >,
+      typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType,
       Containers::Expressions::Division >( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation >
+          template< typename > class Operation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType,
-   Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >,
+   typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >,
    Containers::Expressions::Division >
-operator / ( const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType& a,
-             const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& b )
+operator / ( const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType& a,
+             const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType,
-      Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >,
+      typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >,
       Containers::Expressions::Division >( a, b );
 }
 
@@ -802,17 +837,18 @@ template< typename L1,
           template< typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation >
+          template< typename, typename > class ROperation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
-   Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
    Containers::Expressions::Division >
-operator / ( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a,
-             const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
+operator / ( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >& a,
+             const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
-      Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
       Containers::Expressions::Division >( a, b );
 }
 
@@ -820,34 +856,36 @@ template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
           typename R1,
-          template< typename > class ROperation >
+          template< typename > class ROperation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
-   Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation, Communicator >,
    Containers::Expressions::Division >
-operator / ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
-             const Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation >& b )
+operator / ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
+             const Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation, Communicator >& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
-      Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation, Communicator >,
       Containers::Expressions::Division >( a, b );
 }
 
 template< typename L1,
           template< typename > class LOperation,
           typename R1,
-          template< typename > class ROperation >
+          template< typename > class ROperation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
-   Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation, Communicator >,
    Containers::Expressions::Division >
-operator / ( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1,LOperation >& a,
-             const Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation >& b )
+operator / ( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1,LOperation, Communicator >& a,
+             const Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation, Communicator >& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
-      Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation, Communicator >,
       Containers::Expressions::Division >( a, b );
 }
 
@@ -859,79 +897,84 @@ template< typename L1,
           template< typename, typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation >
+          template< typename, typename > class ROperation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
-   Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
    Containers::Expressions::Min >
-min ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
-      const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
+min ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
+      const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
-      Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
       Containers::Expressions::Min >( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
+          template< typename, typename > class Operation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >,
-   typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
+   typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
    Containers::Expressions::Min >
-min( const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& a,
-     const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
+min( const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& a,
+     const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >,
-      typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
+      typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
       Containers::Expressions::Min >( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
+          template< typename, typename > class Operation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType,
-   Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >,
+   typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
    Containers::Expressions::Min >
-min( const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
-     const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& b )
+min( const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& a,
+     const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType,
-      Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >,
+      typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
       Containers::Expressions::Min >( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation >
+          template< typename > class Operation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >,
-   typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >,
+   typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType,
    Containers::Expressions::Min >
-min( const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& a,
-     const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType& b )
+min( const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >& a,
+     const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >,
-      typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >,
+      typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType,
       Containers::Expressions::Min >( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation >
+          template< typename > class Operation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType,
-   Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >,
+   typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >,
    Containers::Expressions::Min >
-min( const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType& a,
-     const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& b )
+min( const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType& a,
+     const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType,
-      Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >,
+      typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >,
       Containers::Expressions::Min >( a, b );
 }
 
@@ -939,17 +982,18 @@ template< typename L1,
           template< typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation >
+          template< typename, typename > class ROperation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
-   Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
    Containers::Expressions::Min >
-min( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a,
-     const typename Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
+min( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >& a,
+     const typename Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
-      Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
       Containers::Expressions::Min >( a, b );
 }
 
@@ -957,34 +1001,36 @@ template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
           typename R1,
-          template< typename > class ROperation >
+          template< typename > class ROperation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
-   typename Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
+   typename Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation, Communicator >,
    Containers::Expressions::Min >
-min( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
-     const Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation >& b )
+min( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
+     const Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation, Communicator >& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
-      Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation, Communicator >,
       Containers::Expressions::Min >( a, b );
 }
 
 template< typename L1,
           template< typename > class LOperation,
           typename R1,
-          template< typename > class ROperation >
+          template< typename > class ROperation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
-   Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation, Communicator >,
    Containers::Expressions::Min >
-min( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1,LOperation >& a,
-     const Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation >& b )
+min( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1,LOperation, Communicator >& a,
+     const Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation, Communicator >& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
-      Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation, Communicator >,
       Containers::Expressions::Min >( a, b );
 }
 
@@ -995,79 +1041,84 @@ template< typename L1,
           template< typename, typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation >
+          template< typename, typename > class ROperation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
-   Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
    Containers::Expressions::Max >
-max( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
-     const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
+max( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
+     const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
-      Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
       Containers::Expressions::Max >( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
+          template< typename, typename > class Operation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >,
-   typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
+   typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
    Containers::Expressions::Max >
-max( const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& a,
-     const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
+max( const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& a,
+     const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >,
-      typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
+      typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
       Containers::Expressions::Max >( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
+          template< typename, typename > class Operation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType,
-   Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >,
+   typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
    Containers::Expressions::Max >
-operator + ( const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
-             const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& b )
+operator + ( const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& a,
+             const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType,
-      Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >,
+      typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
       Containers::Expressions::Max >( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation >
+          template< typename > class Operation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >,
-   typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >,
+   typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType,
    Containers::Expressions::Max >
-max( const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& a,
-     const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType& b )
+max( const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >& a,
+     const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >,
-      typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >,
+      typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType,
       Containers::Expressions::Max >( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation >
+          template< typename > class Operation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType,
-   Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >,
+   typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >,
    Containers::Expressions::Max >
-max( const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType& a,
-     const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& b )
+max( const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType& a,
+     const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType,
-      Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >,
+      typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >,
       Containers::Expressions::Max >( a, b );
 }
 
@@ -1075,17 +1126,18 @@ template< typename L1,
           template< typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation >
+          template< typename, typename > class ROperation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
-   Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
    Containers::Expressions::Max >
-max( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a,
-     const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
+max( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >& a,
+     const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
-      Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
       Containers::Expressions::Max >( a, b );
 }
 
@@ -1093,34 +1145,36 @@ template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
           typename R1,
-          template< typename > class ROperation >
+          template< typename > class ROperation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
-   Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation, Communicator >,
    Containers::Expressions::Max >
-max( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
-     const Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation >& b )
+max( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
+     const Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation, Communicator >& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
-      Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation, Communicator >,
       Containers::Expressions::Max >( a, b );
 }
 
 template< typename L1,
           template< typename > class LOperation,
           typename R1,
-          template< typename > class ROperation >
+          template< typename > class ROperation,
+          typename Communicator >
 const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
-   Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation, Communicator >,
    Containers::Expressions::Max >
-max( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1,LOperation >& a,
-     const Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation >& b )
+max( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1,LOperation, Communicator >& a,
+     const Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation, Communicator >& b )
 {
    return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
-      Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation, Communicator >,
       Containers::Expressions::Max >( a, b );
 }
 
@@ -1132,64 +1186,64 @@ template< typename L1,
           template< typename, typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation >
-__cuda_callable__
+          template< typename, typename > class ROperation,
+          typename Communicator >
 bool
-operator == ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
-             const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
+operator == ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
+             const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
 {
-   using Left = Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >;
-   using Right = Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >;
+   using Left = Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >;
+   using Right = Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >;
    return Containers::Expressions::DistributedComparison< Left, Right >::EQ( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
-__cuda_callable__
+          template< typename, typename > class Operation,
+          typename Communicator >
 bool
-operator == ( const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& a,
-              const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
+operator == ( const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& a,
+              const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& b )
 {
-   using Left = Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >;
-   using Right = typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType;
-   return Containers::Expressions::DistributedComparison< Left, Right >::EQ( a, b );
+   using Left = Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >;
+   using Right = typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType;
+   return Containers::Expressions::DistributedComparison< Left, Right >::template EQ< Communicator >( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation >
-__cuda_callable__
+          template< typename > class Operation,
+          typename Communicator >
 bool
-operator == ( const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& a,
-              const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType& b )
+operator == ( const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >& a,
+              const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType& b )
 {
-   using Left = Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >;
-   using Right = typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType;
+   using Left = Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >;
+   using Right = typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType;
    return Containers::Expressions::DistributedComparison< Left, Right >::EQ( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
-__cuda_callable__
+          template< typename, typename > class Operation,
+          typename Communicator >
 bool
-operator == ( const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
-              const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& b )
+operator == ( const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& a,
+              const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& b )
 {
-   using Left = typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType;
-   using Right = Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >;
+   using Left = typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType;
+   using Right = Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >;
    return Containers::Expressions::DistributedComparison< Left, Right >::EQ( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation >
-__cuda_callable__
+          template< typename > class Operation,
+          typename Communicator >
 bool
-operator == ( const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType& a,
-              const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& b )
+operator == ( const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType& a,
+              const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >& b )
 {
-   using Left = typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType;
-   using Right = Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >;
+   using Left = typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType;
+   using Right = Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >;
    return Containers::Expressions::DistributedComparison< Left, Right >::EQ( a, b );
 }
 
@@ -1197,14 +1251,14 @@ template< typename L1,
           template< typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation >
-__cuda_callable__
+          template< typename, typename > class ROperation,
+          typename Communicator >
 bool
-operator == ( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a,
-              const typename Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
+operator == ( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >& a,
+              const typename Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
 {
-   using Left = Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >;
-   using Right = Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >;
+   using Left = Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >;
+   using Right = Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >;
    return Containers::Expressions::DistributedComparison< Left, Right >::EQ( a, b );
 }
 
@@ -1212,14 +1266,14 @@ template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
           typename R1,
-          template< typename > class ROperation >
-__cuda_callable__
+          template< typename > class ROperation,
+          typename Communicator >
 bool
-operator == ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
-             const typename Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation >& b )
+operator == ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
+             const typename Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation, Communicator >& b )
 {
-   using Left = Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >;
-   using Right = Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation >;
+   using Left = Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >;
+   using Right = Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation, Communicator >;
    return Containers::Expressions::DistributedComparison< Left, Right >::EQ( a, b );
 }
 
@@ -1230,64 +1284,64 @@ template< typename L1,
           template< typename, typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation >
-__cuda_callable__
+          template< typename, typename > class ROperation,
+          typename Communicator >
 bool
-operator != ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
-             const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
+operator != ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
+             const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
 {
-   using Left = Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >;
-   using Right = Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >;
+   using Left = Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >;
+   using Right = Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >;
    return Containers::Expressions::DistributedComparison< Left, Right >::NE( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
-__cuda_callable__
+          template< typename, typename > class Operation,
+          typename Communicator >
 bool
-operator != ( const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& a,
-              const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
+operator != ( const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& a,
+              const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& b )
 {
-   using Left = Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >;
-   using Right = typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType;
+   using Left = Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >;
+   using Right = typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType;
    return Containers::Expressions::DistributedComparison< Left, Right >::NE( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation >
-__cuda_callable__
+          template< typename > class Operation,
+          typename Communicator >
 bool
-operator != ( const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& a,
-              const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType& b )
+operator != ( const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >& a,
+              const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType& b )
 {
-   using Left = Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >;
-   using Right = typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType;
+   using Left = Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >;
+   using Right = typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType;
    return Containers::Expressions::DistributedComparison< Left, Right >::NE( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
-__cuda_callable__
+          template< typename, typename > class Operation,
+          typename Communicator >
 bool
-operator != ( const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
-              const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& b )
+operator != ( const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& a,
+              const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& b )
 {
-   using Left = typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType;
-   using Right = Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >;
+   using Left = typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType;
+   using Right = Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >;
    return Containers::Expressions::DistributedComparison< Left, Right >::NE( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation >
-__cuda_callable__
+          template< typename > class Operation,
+          typename Communicator >
 bool
-operator != ( const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType& a,
-              const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& b )
+operator != ( const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType& a,
+              const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >& b )
 {
-   using Left = typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType;
-   using Right = Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >;
+   using Left = typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType;
+   using Right = Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >;
    return Containers::Expressions::DistributedComparison< Left, Right >::NE( a, b );
 }
 
@@ -1295,14 +1349,14 @@ template< typename L1,
           template< typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation >
-__cuda_callable__
+          template< typename, typename > class ROperation,
+          typename Communicator >
 bool
-operator != ( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a,
-              const typename Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
+operator != ( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >& a,
+              const typename Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
 {
-   using Left = Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >;
-   using Right = Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >;
+   using Left = Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >;
+   using Right = Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >;
    return Containers::Expressions::DistributedComparison< Left, Right >::NE( a, b );
 }
 
@@ -1310,14 +1364,14 @@ template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
           typename R1,
-          template< typename > class ROperation >
-__cuda_callable__
+          template< typename > class ROperation,
+          typename Communicator >
 bool
-operator != ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
-             const typename Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation >& b )
+operator != ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
+             const typename Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation, Communicator >& b )
 {
-   using Left = Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >;
-   using Right = Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation >;
+   using Left = Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >;
+   using Right = Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation, Communicator >;
    return Containers::Expressions::DistributedComparison< Left, Right >::NE( a, b );
 }
 
@@ -1328,64 +1382,64 @@ template< typename L1,
           template< typename, typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation >
-__cuda_callable__
+          template< typename, typename > class ROperation,
+          typename Communicator >
 bool
-operator < ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
-             const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
+operator < ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
+             const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
 {
-   using Left = Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >;
-   using Right = Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >;
+   using Left = Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >;
+   using Right = Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >;
    return Containers::Expressions::DistributedComparison< Left, Right >::LT( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
-__cuda_callable__
+          template< typename, typename > class Operation,
+          typename Communicator >
 bool
-operator < ( const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& a,
-             const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
+operator < ( const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& a,
+             const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& b )
 {
-   using Left = Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >;
-   using Right = typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType;
+   using Left = Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >;
+   using Right = typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType;
    return Containers::Expressions::DistributedComparison< Left, Right >::LT( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation >
-__cuda_callable__
+          template< typename > class Operation,
+          typename Communicator >
 bool
-operator < ( const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& a,
-             const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType& b )
+operator < ( const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >& a,
+             const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType& b )
 {
-   using Left = Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >;
-   using Right = typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType;
+   using Left = Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >;
+   using Right = typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType;
    return Containers::Expressions::DistributedComparison< Left, Right >::LT( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
-__cuda_callable__
+          template< typename, typename > class Operation,
+          typename Communicator >
 bool
-operator < ( const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
-             const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& b )
+operator < ( const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& a,
+             const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& b )
 {
-   using Left = typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType;
-   using Right = Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >;
+   using Left = typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType;
+   using Right = Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >;
    return Containers::Expressions::DistributedComparison< Left, Right >::LT( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation >
-__cuda_callable__
+          template< typename > class Operation,
+          typename Communicator >
 bool
-operator < ( const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType& a,
-             const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& b )
+operator < ( const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType& a,
+             const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >& b )
 {
-   using Left = typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType;
-   using Right = Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >;
+   using Left = typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType;
+   using Right = Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >;
    return Containers::Expressions::DistributedComparison< Left, Right >::LT( a, b );
 }
 
@@ -1393,14 +1447,14 @@ template< typename L1,
           template< typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation >
-__cuda_callable__
+          template< typename, typename > class ROperation,
+          typename Communicator >
 bool
-operator < ( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a,
-             const typename Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
+operator < ( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >& a,
+             const typename Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
 {
-   using Left = Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >;
-   using Right = Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >;
+   using Left = Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >;
+   using Right = Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >;
    return Containers::Expressions::DistributedComparison< Left, Right >::LT( a, b );
 }
 
@@ -1408,14 +1462,14 @@ template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
           typename R1,
-          template< typename > class ROperation >
-__cuda_callable__
+          template< typename > class ROperation,
+          typename Communicator >
 bool
-operator < ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
-             const typename Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation >& b )
+operator < ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
+             const typename Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation, Communicator >& b )
 {
-   using Left = Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >;
-   using Right = Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation >;
+   using Left = Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >;
+   using Right = Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation, Communicator >;
    return Containers::Expressions::DistributedComparison< Left, Right >::LT( a, b );
 }
 
@@ -1426,64 +1480,64 @@ template< typename L1,
           template< typename, typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation >
-__cuda_callable__
+          template< typename, typename > class ROperation,
+          typename Communicator >
 bool
-operator <= ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
-              const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
+operator <= ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
+              const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
 {
-   using Left = Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >;
-   using Right = Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >;
+   using Left = Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >;
+   using Right = Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >;
    return Containers::Expressions::DistributedComparison< Left, Right >::LE( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
-__cuda_callable__
+          template< typename, typename > class Operation,
+          typename Communicator >
 bool
-operator <= ( const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& a,
-              const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
+operator <= ( const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& a,
+              const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& b )
 {
-   using Left = Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >;
-   using Right = typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType;
+   using Left = Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >;
+   using Right = typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType;
    return Containers::Expressions::DistributedComparison< Left, Right >::LE( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation >
-__cuda_callable__
+          template< typename > class Operation,
+          typename Communicator >
 bool
-operator <= ( const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& a,
-              const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType& b )
+operator <= ( const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >& a,
+              const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType& b )
 {
-   using Left = Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >;
-   using Right = typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType;
+   using Left = Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >;
+   using Right = typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType;
    return Containers::Expressions::DistributedComparison< Left, Right >::LE( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
-__cuda_callable__
+          template< typename, typename > class Operation,
+          typename Communicator >
 bool
-operator <= ( const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
-              const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& b )
+operator <= ( const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& a,
+              const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& b )
 {
-   using Left = typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType;
-   using Right = Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >;
+   using Left = typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType;
+   using Right = Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >;
    return Containers::Expressions::DistributedComparison< Left, Right >::LE( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation >
-__cuda_callable__
+          template< typename > class Operation,
+          typename Communicator >
 bool
-operator <= ( const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType& a,
-              const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& b )
+operator <= ( const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType& a,
+              const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >& b )
 {
-   using Left = typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType;
-   using Right = Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >;
+   using Left = typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType;
+   using Right = Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >;
    return Containers::Expressions::DistributedComparison< Left, Right >::LE( a, b );
 }
 
@@ -1491,14 +1545,14 @@ template< typename L1,
           template< typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation >
-__cuda_callable__
+          template< typename, typename > class ROperation,
+          typename Communicator >
 bool
-operator <= ( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a,
-              const typename Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
+operator <= ( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >& a,
+              const typename Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
 {
-   using Left = Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >;
-   using Right = Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >;
+   using Left = Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >;
+   using Right = Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >;
    return Containers::Expressions::DistributedComparison< Left, Right >::LE( a, b );
 }
 
@@ -1506,14 +1560,14 @@ template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
           typename R1,
-          template< typename > class ROperation >
-__cuda_callable__
+          template< typename > class ROperation,
+          typename Communicator >
 bool
-operator <= ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
-             const typename Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation >& b )
+operator <= ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
+             const typename Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation, Communicator >& b )
 {
-   using Left = Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >;
-   using Right = Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation >;
+   using Left = Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >;
+   using Right = Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation, Communicator >;
    return Containers::Expressions::DistributedComparison< Left, Right >::LE( a, b );
 }
 
@@ -1524,64 +1578,64 @@ template< typename L1,
           template< typename, typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation >
-__cuda_callable__
+          template< typename, typename > class ROperation,
+          typename Communicator >
 bool
-operator > ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
-             const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
+operator > ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
+             const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
 {
-   using Left = Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >;
-   using Right = Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >;
+   using Left = Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >;
+   using Right = Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >;
    return Containers::Expressions::DistributedComparison< Left, Right >::GT( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
-__cuda_callable__
+          template< typename, typename > class Operation,
+          typename Communicator >
 bool
-operator > ( const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& a,
-             const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
+operator > ( const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& a,
+             const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& b )
 {
-   using Left = Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >;
-   using Right = typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType;
+   using Left = Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >;
+   using Right = typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType;
    return Containers::Expressions::DistributedComparison< Left, Right >::GT( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation >
-__cuda_callable__
+          template< typename > class Operation,
+          typename Communicator >
 bool
-operator > ( const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& a,
-             const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType& b )
+operator > ( const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >& a,
+             const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType& b )
 {
-   using Left = Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >;
-   using Right = typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType;
+   using Left = Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >;
+   using Right = typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType;
    return Containers::Expressions::DistributedComparison< Left, Right >::GT( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
-__cuda_callable__
+          template< typename, typename > class Operation,
+          typename Communicator >
 bool
-operator > ( const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
-             const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& b )
+operator > ( const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& a,
+             const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& b )
 {
-   using Left = typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType;
-   using Right = Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >;
+   using Left = typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType;
+   using Right = Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >;
    return Containers::Expressions::DistributedComparison< Left, Right >::GT( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation >
-__cuda_callable__
+          template< typename > class Operation,
+          typename Communicator >
 bool
-operator > ( const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType& a,
-             const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& b )
+operator > ( const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType& a,
+             const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >& b )
 {
-   using Left = typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType;
-   using Right = Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >;
+   using Left = typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType;
+   using Right = Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >;
    return Containers::Expressions::DistributedComparison< Left, Right >::GT( a, b );
 }
 
@@ -1589,14 +1643,14 @@ template< typename L1,
           template< typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation >
-__cuda_callable__
+          template< typename, typename > class ROperation,
+          typename Communicator >
 bool
-operator > ( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a,
-             const typename Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
+operator > ( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >& a,
+             const typename Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
 {
-   using Left = Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >;
-   using Right = Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >;
+   using Left = Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >;
+   using Right = Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >;
    return Containers::Expressions::DistributedComparison< Left, Right >::GT( a, b );
 }
 
@@ -1604,14 +1658,14 @@ template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
           typename R1,
-          template< typename > class ROperation >
-__cuda_callable__
+          template< typename > class ROperation,
+          typename Communicator >
 bool
-operator > ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
-             const typename Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation >& b )
+operator > ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
+             const typename Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation, Communicator >& b )
 {
-   using Left = Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >;
-   using Right = Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation >;
+   using Left = Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >;
+   using Right = Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation, Communicator >;
    return Containers::Expressions::DistributedComparison< Left, Right >::GT( a, b );
 }
 
@@ -1622,64 +1676,64 @@ template< typename L1,
           template< typename, typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation >
-__cuda_callable__
+          template< typename, typename > class ROperation,
+          typename Communicator >
 bool
-operator >= ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
-              const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
+operator >= ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
+              const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
 {
-   using Left = Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >;
-   using Right = Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >;
+   using Left = Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >;
+   using Right = Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >;
    return Containers::Expressions::DistributedComparison< Left, Right >::GE( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
-__cuda_callable__
+          template< typename, typename > class Operation,
+          typename Communicator >
 bool
-operator >= ( const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& a,
-              const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
+operator >= ( const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& a,
+              const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& b )
 {
-   using Left = Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >;
-   using Right = typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType;
+   using Left = Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >;
+   using Right = typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType;
    return Containers::Expressions::DistributedComparison< Left, Right >::GE( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation >
-__cuda_callable__
+          template< typename > class Operation,
+          typename Communicator >
 bool
-operator >= ( const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& a,
-              const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType& b )
+operator >= ( const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >& a,
+              const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType& b )
 {
-   using Left = Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >;
-   using Right = typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType;
+   using Left = Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >;
+   using Right = typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType;
    return Containers::Expressions::DistributedComparison< Left, Right >::GE( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
-__cuda_callable__
+          template< typename, typename > class Operation,
+          typename Communicator >
 bool
-operator >= ( const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
-              const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& b )
+operator >= ( const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& a,
+              const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& b )
 {
-   using Left = typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType;
-   using Right = Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >;
+   using Left = typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType;
+   using Right = Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >;
    return Containers::Expressions::DistributedComparison< Left, Right >::GE( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation >
-__cuda_callable__
+          template< typename > class Operation,
+          typename Communicator >
 bool
-operator >= ( const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType& a,
-              const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& b )
+operator >= ( const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType& a,
+              const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >& b )
 {
-   using Left = typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType;
-   using Right = Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >;
+   using Left = typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >::RealType;
+   using Right = Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >;
    return Containers::Expressions::DistributedComparison< Left, Right >::GE( a, b );
 }
 
@@ -1687,14 +1741,14 @@ template< typename L1,
           template< typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation >
-__cuda_callable__
+          template< typename, typename > class ROperation,
+          typename Communicator >
 bool
-operator >= ( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a,
-              const typename Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
+operator >= ( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >& a,
+              const typename Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
 {
-   using Left = Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >;
-   using Right = Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >;
+   using Left = Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >;
+   using Right = Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >;
    return Containers::Expressions::DistributedComparison< Left, Right >::GE( a, b );
 }
 
@@ -1702,45 +1756,46 @@ template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
           typename R1,
-          template< typename > class ROperation >
-__cuda_callable__
+          template< typename > class ROperation,
+          typename Communicator >
 bool
-operator >= ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
-             const typename Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation >& b )
+operator >= ( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
+             const typename Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation, Communicator >& b )
 {
-   using Left = Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >;
-   using Right = Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation >;
+   using Left = Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >;
+   using Right = Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation, Communicator >;
    return Containers::Expressions::DistributedComparison< Left, Right >::GE( a, b );
 }
 
 ////
 // Unary operations
 
-
 ////
 // Minus
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation >
+          template< typename, typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
    Containers::Expressions::Minus >
-operator -( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+operator -( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
       Containers::Expressions::Minus >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation >
+          template< typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
    Containers::Expressions::Abs >
-operator -( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
+operator -( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
       Containers::Expressions::Minus >( a );
 }
 
@@ -1748,26 +1803,28 @@ operator -( const Containers::Expressions::DistributedUnaryExpressionTemplate< L
 // Abs
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation >
+          template< typename, typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
    Containers::Expressions::Abs >
-abs( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+abs( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
       Containers::Expressions::Abs >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation >
+          template< typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
    Containers::Expressions::Abs >
-abs( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
+abs( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
       Containers::Expressions::Abs >( a );
 }
 
@@ -1775,26 +1832,28 @@ abs( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOpe
 // Sin
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation >
+          template< typename, typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
    Containers::Expressions::Sin >
-sin( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+sin( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
       Containers::Expressions::Sin >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation >
+          template< typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
    Containers::Expressions::Sin >
-sin( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
+sin( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
       Containers::Expressions::Sin >( a );
 }
 
@@ -1802,26 +1861,28 @@ sin( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOpe
 // Cos
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation >
+          template< typename, typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
    Containers::Expressions::Cos >
-cos( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+cos( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
       Containers::Expressions::Cos >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation >
+          template< typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
    Containers::Expressions::Cos >
-cos( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
+cos( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
       Containers::Expressions::Cos >( a );
 }
 
@@ -1829,26 +1890,28 @@ cos( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOpe
 // Tan
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation >
+          template< typename, typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
    Containers::Expressions::Tan >
-tan( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+tan( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
       Containers::Expressions::Tan >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation >
+          template< typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
    Containers::Expressions::Tan >
-tan( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
+tan( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
       Containers::Expressions::Tan >( a );
 }
 
@@ -1856,26 +1919,28 @@ tan( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOpe
 // Sqrt
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation >
+          template< typename, typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
    Containers::Expressions::Sqrt >
-sqrt( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+sqrt( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
       Containers::Expressions::Sqrt >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation >
+          template< typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
    Containers::Expressions::Sqrt >
-sqrt( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
+sqrt( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
       Containers::Expressions::Sqrt >( a );
 }
 
@@ -1883,26 +1948,28 @@ sqrt( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOp
 // Cbrt
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation >
+          template< typename, typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
    Containers::Expressions::Cbrt >
-cbrt( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+cbrt( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
       Containers::Expressions::Cbrt >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation >
+          template< typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
    Containers::Expressions::Cbrt >
-cbrt( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
+cbrt( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
       Containers::Expressions::Cbrt >( a );
 }
 
@@ -1911,14 +1978,15 @@ cbrt( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOp
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
+          typename Communicator,
           typename Real >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
    Containers::Expressions::Pow >
-pow( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a, const Real& exp )
+pow( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a, const Real& exp )
 {
    auto e = Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
       Containers::Expressions::Pow >( a );
    e.parameter.set( exp );
    return e;
@@ -1926,14 +1994,15 @@ pow( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2,
 
 template< typename L1,
           template< typename > class LOperation,
+          typename Communicator,
           typename Real >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
    Containers::Expressions::Pow >
-pow( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a, const Real& exp )
+pow( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >& a, const Real& exp )
 {
    auto e = Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
       Containers::Expressions::Pow >( a );
    e.parameter.set( exp );
    return e;
@@ -1943,26 +2012,28 @@ pow( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOpe
 // Floor
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation >
+          template< typename, typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
    Containers::Expressions::Sin >
-floor( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+floor( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
       Containers::Expressions::Floor >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation >
+          template< typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
    Containers::Expressions::Floor >
-floor( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
+floor( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
       Containers::Expressions::Floor >( a );
 }
 
@@ -1970,26 +2041,28 @@ floor( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LO
 // Ceil
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation >
+          template< typename, typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
    Containers::Expressions::Ceil >
-ceil( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+ceil( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
       Containers::Expressions::Ceil >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation >
+          template< typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
    Containers::Expressions::Ceil >
-sin( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
+sin( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
       Containers::Expressions::Ceil >( a );
 }
 
@@ -1997,26 +2070,28 @@ sin( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOpe
 // Asin
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation >
+          template< typename, typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
    Containers::Expressions::Asin >
-asin( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+asin( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
       Containers::Expressions::Asin >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation >
+          template< typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
    Containers::Expressions::Asin >
-asin( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
+asin( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
       Containers::Expressions::Asin >( a );
 }
 
@@ -2024,26 +2099,28 @@ asin( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOp
 // Acos
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation >
+          template< typename, typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
    Containers::Expressions::Acos >
-cos( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+cos( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
       Containers::Expressions::Acos >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation >
+          template< typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
    Containers::Expressions::Acos >
-acos( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
+acos( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
       Containers::Expressions::Cos >( a );
 }
 
@@ -2051,26 +2128,28 @@ acos( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOp
 // Atan
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation >
+          template< typename, typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
    Containers::Expressions::Atan >
-tan( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+tan( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
       Containers::Expressions::Atan >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation >
+          template< typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
    Containers::Expressions::Atan >
-atan( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
+atan( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
       Containers::Expressions::Atan >( a );
 }
 
@@ -2078,26 +2157,28 @@ atan( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOp
 // Sinh
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation >
+          template< typename, typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
    Containers::Expressions::Sinh >
-sinh( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+sinh( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
       Containers::Expressions::Sinh >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation >
+          template< typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
    Containers::Expressions::Sinh >
-sinh( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
+sinh( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
       Containers::Expressions::Sinh >( a );
 }
 
@@ -2105,26 +2186,28 @@ sinh( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOp
 // Cosh
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation >
+          template< typename, typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
    Containers::Expressions::Cosh >
-cosh( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+cosh( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
       Containers::Expressions::Cosh >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation >
+          template< typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
    Containers::Expressions::Cosh >
-cosh( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
+cosh( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
       Containers::Expressions::Cosh >( a );
 }
 
@@ -2132,26 +2215,28 @@ cosh( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOp
 // Tanh
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation >
+          template< typename, typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
    Containers::Expressions::Tanh >
-cosh( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+cosh( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
       Containers::Expressions::Tanh >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation >
+          template< typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
    Containers::Expressions::Tanh >
-tanh( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
+tanh( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
       Containers::Expressions::Tanh >( a );
 }
 
@@ -2159,26 +2244,28 @@ tanh( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOp
 // Log
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation >
+          template< typename, typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
    Containers::Expressions::Log >
-log( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+log( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
       Containers::Expressions::Log >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation >
+          template< typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
    Containers::Expressions::Log >
-log( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
+log( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
       Containers::Expressions::Log >( a );
 }
 
@@ -2186,26 +2273,28 @@ log( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOpe
 // Log10
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation >
+          template< typename, typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
    Containers::Expressions::Log10 >
-log10( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+log10( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
       Containers::Expressions::Log10 >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation >
+          template< typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
    Containers::Expressions::Log10 >
-log10( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
+log10( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
       Containers::Expressions::Log10 >( a );
 }
 
@@ -2213,26 +2302,28 @@ log10( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LO
 // Log2
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation >
+          template< typename, typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
    Containers::Expressions::Log2 >
-log2( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+log2( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
       Containers::Expressions::Log2 >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation >
+          template< typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
    Containers::Expressions::Log2 >
-log2( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
+log2( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
       Containers::Expressions::Log2 >( a );
 }
 
@@ -2240,26 +2331,28 @@ log2( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOp
 // Exp
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation >
+          template< typename, typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+   Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
    Containers::Expressions::Exp >
-exp( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+exp( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >,
+      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
       Containers::Expressions::Exp >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation >
+          template< typename > class LOperation,
+          typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate<
-   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+   Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
    Containers::Expressions::Exp >
-exp( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
+exp( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >,
+      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >,
       Containers::Expressions::Exp >( a );
 }
 
@@ -2267,11 +2360,13 @@ exp( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOpe
 // Vertical operations - min
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation >
-typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >::RealType
-min( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+          template< typename, typename > class LOperation,
+          typename Communicator >
+typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::RealType
+min( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
 {
-   using CommunicatorType = Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >::CommunicatorType;
+   using CommunicatorType = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::CommunicatorType;
+   using Real = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::RealType;
    Real result = std::numeric_limits< Real >::max();
    if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
       const Real localResult = Containers::Expressions::ExpressionMin( a );
@@ -2282,11 +2377,13 @@ min( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2,
 
 template< typename L1,
           template< typename > class LOperation,
-          typename Parameter >
+          typename Parameter,
+          typename Communicator >
 typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter >::RealType
 min( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter >& a )
 {
-   using CommunicatorType = Containers::Expressions::DistributedUnaryExpressionTemplate< L1, L2, LOperation >::CommunicatorType;
+   using CommunicatorType = typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter >::CommunicatorType;
+   using Real = typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter >::RealType;
    Real result = std::numeric_limits< Real >::max();
    if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
       const Real localResult = Containers::Expressions::ExpressionMin( a );
@@ -2298,9 +2395,10 @@ min( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOpe
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
+          typename Communicator,
           typename Index >
 auto
-argMin( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a, Index& arg ) -> decltype( ExpressionArgMin( a, arg ) )
+argMin( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a, Index& arg ) -> decltype( ExpressionArgMin( a, arg ) )
 {
    throw Exceptions::NotImplementedError( "agrMin for distributed vector view is not implemented yet." );
    return ExpressionArgMin( a, arg );
@@ -2309,6 +2407,7 @@ argMin( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, 
 template< typename L1,
           template< typename > class LOperation,
           typename Parameter,
+          typename Communicator,
           typename Index >
 auto
 argMin( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter >& a, Index& arg ) -> decltype( ExpressionMin( a, arg ) )
@@ -2319,11 +2418,13 @@ argMin( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, L
 
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation >
-typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >::RealType
-max( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+          template< typename, typename > class LOperation,
+          typename Communicator >
+typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::RealType
+max( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
 {
-   using CommunicatorType = Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >::CommunicatorType;
+   using Real = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::RealType;
+   using CommunicatorType = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::CommunicatorType;
    Real result = std::numeric_limits< Real >::min();
    if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
       const Real localResult = Containers::Expressions::ExpressionMax( a );
@@ -2334,11 +2435,13 @@ max( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2,
 
 template< typename L1,
           template< typename > class LOperation,
-          typename Parameter >
+          typename Parameter,
+          typename Communicator >
 typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter >::RealType
 max( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter >& a )
 {
-   using CommunicatorType = Containers::Expressions::DistributedUnaryExpressionTemplate< L1, L2, LOperation >::CommunicatorType;
+   using Real = typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter >::RealType;
+   using CommunicatorType = typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter >::CommunicatorType;
    Real result = std::numeric_limits< Real >::min();
    if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
       const Real localResult = Containers::Expressions::ExpressionMax( a );
@@ -2350,9 +2453,10 @@ max( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOpe
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
+          typename Communicator,
           typename Index >
 auto
-argMax( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a, Index& arg ) -> decltype( ExpressionArgMax( a, arg ) )
+argMax( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a, Index& arg ) -> decltype( ExpressionArgMax( a, arg ) )
 {
    throw Exceptions::NotImplementedError( "agrMax for distributed vector view is not implemented yet." );
    return ExpressionArgMax( a, arg );
@@ -2361,6 +2465,7 @@ argMax( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, 
 template< typename L1,
           template< typename > class LOperation,
           typename Parameter,
+          typename Communicator,
           typename Index >
 auto
 argMax( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter >& a, Index& arg ) -> decltype( ExpressionMax( a, arg ) )
@@ -2371,11 +2476,13 @@ argMax( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, L
 
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation >
-typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >::RealType
-sum( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+          template< typename, typename > class LOperation,
+          typename Communicator >
+typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::RealType
+sum( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
 {
-   using CommunicatorType = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >::CommunicatorType;
+   using Real = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::RealType;
+   using CommunicatorType = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::CommunicatorType;
    Real result = 0.0;
    if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
       const Real localResult = Containers::Expressions::ExpressionSum( a );
@@ -2386,11 +2493,13 @@ sum( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2,
 
 template< typename L1,
           template< typename > class LOperation,
-          typename Parameter >
+          typename Parameter,
+          typename Communicator >
 typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter >::RealType
 sum( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter >& a )
 {
-   using CommunicatorType = typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, L2, LOperation >::CommunicatorType;
+   using Real = typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter >::RealType;
+   using CommunicatorType = typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter >::CommunicatorType;
    Real result = 0.0;
    if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
       const Real localResult = Containers::Expressions::ExpressionSum( a );
@@ -2402,11 +2511,12 @@ sum( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOpe
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
+          typename Communicator,
           typename Real >
-typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >::RealType
-lpNorm( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a, const Real& p )
+typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::RealType
+lpNorm( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a, const Real& p )
 {
-   using CommunicatorType = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >::CommunicatorType;
+   using CommunicatorType = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::CommunicatorType;
    Real result = ( Real ) 0.0;
    if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
       const Real localResult = TNL::pow( Containers::Expressions::ExpressionLpNorm( a, p ), p );
@@ -2418,11 +2528,12 @@ lpNorm( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, 
 template< typename L1,
           template< typename > class LOperation,
           typename Parameter,
+          typename Communicator,
           typename Real >
 typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter >::RealType
 lpNorm( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter >& a, const Real& p )
 {
-   using CommunicatorType = typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, L2, LOperation >::CommunicatorType;
+   using CommunicatorType = typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter >::CommunicatorType;
    Real result = ( Real ) 0.0;
    if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
       const Real localResult = TNL::pow( Containers::Expressions::ExpressionLpNorm( a, p ), p );
@@ -2433,11 +2544,13 @@ lpNorm( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, L
 
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation >
-typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >::RealType
-product( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+          template< typename, typename > class LOperation,
+          typename Communicator >
+typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::RealType
+product( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
 {
-   using CommunicatorType = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >::CommunicatorType;
+   using Real = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::RealType;
+   using CommunicatorType = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::CommunicatorType;
    Real result = ( Real ) 1.0;
    if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
       const Real localResult = Containers::Expressions::ExpressionProduct( a );
@@ -2448,11 +2561,13 @@ product( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1,
 
 template< typename L1,
           template< typename > class LOperation,
-          typename Parameter >
+          typename Parameter,
+          typename Communicator >
 typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter >::RealType
 product( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter >& a )
 {
-   using CommunicatorType = typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, L2, LOperation >::CommunicatorType;
+   using Real = typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter >::RealType;
+   using CommunicatorType = typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter >::CommunicatorType;
    Real result = ( Real ) 1.0;
    if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
       const Real localResult = Containers::Expressions::ExpressionProduct( a );
@@ -2463,12 +2578,14 @@ product( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, 
 
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation >
+          template< typename, typename > class LOperation,
+          typename Communicator >
 bool
-logicalOr( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+logicalOr( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
 {
-   using CommunicatorType = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >::CommunicatorType;
-   bool result = false;
+   using Real = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::RealType;
+   using CommunicatorType = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::CommunicatorType;
+   Real result = 0.0;
    if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
       const Real localResult = Containers::Expressions::ExpressionLogicalOr( a );
       CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LOR, a.getCommunicationGroup() );
@@ -2478,10 +2595,12 @@ logicalOr( const Containers::Expressions::DistributedBinaryExpressionTemplate< L
 
 template< typename L1,
           template< typename > class LOperation,
-          typename Parameter >
+          typename Parameter,
+          typename Communicator >
 bool
 logicalOr( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter >& a )
 {
+   using Real = typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter >::RealType;
    using CommunicatorType = typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter >::CommunicatorType;
    bool result = false;
    if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
@@ -2494,14 +2613,15 @@ logicalOr( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1
 
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation >
+          template< typename, typename > class LOperation,
+          typename Communicator >
 bool
-logicalAnd( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+logicalAnd( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
 {
-   using CommunicatorType = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >::CommunicatorType;
-   Real result = std::numeric_limits< Real >::max();
+   using CommunicatorType = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::CommunicatorType;
+   bool result = false;
    if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      const Real localResult = Containers::Expressions::ExpressionLogicalAnd( a );
+      const bool localResult = Containers::Expressions::ExpressionLogicalAnd( a );
       CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
    }
    return result;
@@ -2509,14 +2629,15 @@ logicalAnd( const Containers::Expressions::DistributedBinaryExpressionTemplate< 
 
 template< typename L1,
           template< typename > class LOperation,
-          typename Parameter >
+          typename Parameter,
+          typename Communicator >
 bool
 logicalAnd( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter >& a )
 {
    using CommunicatorType = typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter >::CommunicatorType;
-   Real result = std::numeric_limits< Real >::max();
+   bool result = false;
    if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      const Real localResult = Containers::Expressions::ExpressionLogicalAnd( a );
+      const bool localResult = Containers::Expressions::ExpressionLogicalAnd( a );
       CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
    }
    return result;
@@ -2524,11 +2645,13 @@ logicalAnd( const Containers::Expressions::DistributedUnaryExpressionTemplate< L
 
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation >
-typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >::RealType
-binaryOr( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+          template< typename, typename > class LOperation,
+          typename Communicator >
+typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::RealType
+binaryOr( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
 {
-   using CommunicatorType = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >::CommunicatorType;
+   using Real = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::RealType;
+   using CommunicatorType = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::CommunicatorType;
    Real result = ( Real ) 0.0;
    if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
       const Real localResult = Containers::Expressions::ExpressionBinaryOr( a );
@@ -2539,10 +2662,12 @@ binaryOr( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1
 
 template< typename L1,
           template< typename > class LOperation,
-          typename Parameter >
+          typename Parameter,
+          typename Communicator >
 typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter >::RealType
 binaryOr( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter >& a )
 {
+   using Real = typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter >::RealType;
    using CommunicatorType = typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter >::CommunicatorType;
    Real result = ( Real ) 0.0;
    if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
@@ -2554,12 +2679,14 @@ binaryOr( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1,
 
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation >
-typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >::RealType
-binaryAnd( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+          template< typename, typename > class LOperation,
+          typename Communicator >
+typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::RealType
+binaryAnd( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
 {
-   using CommunicatorType = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >::CommunicatorType;
-   bool result = true;
+   using Real = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::RealType;
+   using CommunicatorType = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::CommunicatorType;
+   Real result = std::numeric_limits< Real >::max;
    if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
       const Real localResult = Containers::Expressions::ExpressionBinaryAnd( a );
       CommunicatorType::Allreduce( &localResult, &result, 1, MPI_BAND, a.getCommunicationGroup() );
@@ -2569,12 +2696,14 @@ binaryAnd( const Containers::Expressions::DistributedBinaryExpressionTemplate< L
 
 template< typename L1,
           template< typename > class LOperation,
-          typename Parameter >
+          typename Parameter,
+          typename Communicator >
 typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter >::RealType
 binaryAnd( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter >& a )
 {
+   using Real = typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter >::RealType;
    using CommunicatorType = typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter >::CommunicatorType;
-   bool result = true;
+   Real result = std::numeric_limits< Real >::max;
    if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
       const Real localResult = Containers::Expressions::ExpressionBinaryAnd( a );
       CommunicatorType::Allreduce( &localResult, &result, 1, MPI_BAND, a.getCommunicationGroup() );
@@ -2589,10 +2718,11 @@ template< typename L1,
           template< typename, typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation >
+          template< typename, typename > class ROperation,
+          typename Communicator >
 auto
-operator,( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
-           const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
+operator,( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
+           const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
 -> decltype( TNL::sum( a * b ) )
 {
    return TNL::sum( a * b );
@@ -2600,10 +2730,11 @@ operator,( const Containers::Expressions::DistributedBinaryExpressionTemplate< L
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
+          template< typename, typename > class Operation,
+          typename Communicator >
 auto
-operator,( const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& a,
-           const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
+operator,( const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& a,
+           const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& b )
 -> decltype( TNL::sum( a * b ) )
 {
    return TNL::sum( a * b );
@@ -2613,10 +2744,11 @@ template< typename L1,
           template< typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation >
+          template< typename, typename > class ROperation,
+          typename Communicator >
 auto
-operator,( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a,
-           const typename Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
+operator,( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >& a,
+           const typename Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
 -> decltype( TNL::sum( a * b ) )
 {
    return TNL::sum( a * b );
@@ -2626,10 +2758,11 @@ template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
           typename R1,
-          template< typename > class ROperation >
+          template< typename > class ROperation,
+          typename Communicator >
 auto
-operator,( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
-           const typename Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation >& b )
+operator,( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
+           const typename Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation, Communicator >& b )
 -> decltype( TNL::sum( a * b ) )
 {
    return TNL::sum( a * b );
@@ -2637,10 +2770,11 @@ operator,( const Containers::Expressions::DistributedBinaryExpressionTemplate< L
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
+          template< typename, typename > class Operation,
+          typename Communicator >
 auto
-dot( const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& a,
-     const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
+dot( const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& a,
+     const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& b )
 -> decltype( TNL::sum( a * b ) )
 {
    return TNL::sum( a * b );
@@ -2650,10 +2784,11 @@ template< typename L1,
           template< typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation >
+          template< typename, typename > class ROperation,
+          typename Communicator >
 auto
-dot( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a,
-     const typename Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
+dot( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Communicator >& a,
+     const typename Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
 -> decltype( TNL::sum( a * b ) )
 {
    return TNL::sum( a * b );
@@ -2663,10 +2798,11 @@ template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
           typename R1,
-          template< typename > class ROperation >
+          template< typename > class ROperation,
+          typename Communicator >
 auto
-dot( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
-     const typename Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation >& b )
+dot( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
+     const typename Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation, Communicator >& b )
 -> decltype( TNL::sum( a * b ) )
 {
    return TNL::sum( a * b );
@@ -2679,11 +2815,12 @@ template< typename Vector,
    typename T1,
    typename T2,
    template< typename, typename > class Operation,
+   typename Communicator,
    typename Reduction,
    typename VolatileReduction,
    typename Result >
 Result evaluateAndReduce( Vector& lhs,
-   const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& expression,
+   const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& expression,
    Reduction& reduction,
    VolatileReduction& volatileReduction,
    const Result& zero )
@@ -2700,11 +2837,12 @@ Result evaluateAndReduce( Vector& lhs,
 template< typename Vector,
    typename T1,
    template< typename > class Operation,
+   typename Communicator,
    typename Reduction,
    typename VolatileReduction,
    typename Result >
 Result evaluateAndReduce( Vector& lhs,
-   const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& expression,
+   const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >& expression,
    Reduction& reduction,
    VolatileReduction& volatileReduction,
    const Result& zero )
@@ -2724,11 +2862,12 @@ template< typename Vector,
    typename T1,
    typename T2,
    template< typename, typename > class Operation,
+   typename Communicator,
    typename Reduction,
    typename VolatileReduction,
    typename Result >
 Result addAndReduce( Vector& lhs,
-   const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& expression,
+   const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& expression,
    Reduction& reduction,
    VolatileReduction& volatileReduction,
    const Result& zero )
@@ -2749,11 +2888,12 @@ Result addAndReduce( Vector& lhs,
 template< typename Vector,
    typename T1,
    template< typename > class Operation,
+   typename Communicator,
    typename Reduction,
    typename VolatileReduction,
    typename Result >
 Result addAndReduce( Vector& lhs,
-   const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& expression,
+   const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >& expression,
    Reduction& reduction,
    VolatileReduction& volatileReduction,
    const Result& zero )
@@ -2777,11 +2917,12 @@ template< typename Vector,
    typename T1,
    typename T2,
    template< typename, typename > class Operation,
+   typename Communicator,
    typename Reduction,
    typename VolatileReduction,
    typename Result >
 Result addAndReduceAbs( Vector& lhs,
-   const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& expression,
+   const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& expression,
    Reduction& reduction,
    VolatileReduction& volatileReduction,
    const Result& zero )
@@ -2802,11 +2943,12 @@ Result addAndReduceAbs( Vector& lhs,
 template< typename Vector,
    typename T1,
    template< typename > class Operation,
+   typename Communicator,
    typename Reduction,
    typename VolatileReduction,
    typename Result >
 Result addAndReduceAbs( Vector& lhs,
-   const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& expression,
+   const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Communicator >& expression,
    Reduction& reduction,
    VolatileReduction& volatileReduction,
    const Result& zero )
@@ -2828,8 +2970,9 @@ Result addAndReduceAbs( Vector& lhs,
 // Output stream
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
-std::ostream& operator << ( std::ostream& str, const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& expression )
+          template< typename, typename > class Operation,
+          typename Communicator >
+std::ostream& operator << ( std::ostream& str, const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& expression )
 {
    str << "[ ";
    for( int i = 0; i < expression.getLocalSize() - 1; i++ )
@@ -2840,7 +2983,8 @@ std::ostream& operator << ( std::ostream& str, const Containers::Expressions::Di
 
 template< typename T,
           template< typename > class Operation,
-          typename Parameter >
+          typename Parameter,
+          typename Communicator >
 std::ostream& operator << ( std::ostream& str, const Containers::Expressions::DistributedUnaryExpressionTemplate< T, Operation, Parameter >& expression )
 {
    str << "[ ";
