@@ -8,11 +8,12 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#pragma once 
+#pragma once
 
 #include <type_traits>
 #include <string.h>
 
+#include <TNL/ParallelFor.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Algorithms/Reduction.h>
 #include <TNL/Containers/Algorithms/ReductionOperations.h>
@@ -20,8 +21,6 @@
 namespace TNL {
 namespace Containers {
 namespace Algorithms {
-
-static constexpr int OpenMPArrayOperationsThreshold = 512; // TODO: check this threshold
 
 template< typename Element, typename Index >
 void
@@ -51,6 +50,7 @@ ArrayOperations< Devices::Host >::
 setMemoryElement( Element* data,
                   const Element& value )
 {
+   TNL_ASSERT_TRUE( data, "Attempted to set data through a nullptr." );
    *data = value;
 }
 
@@ -59,6 +59,7 @@ Element
 ArrayOperations< Devices::Host >::
 getMemoryElement( const Element* data )
 {
+   TNL_ASSERT_TRUE( data, "Attempted to get data through a nullptr." );
    return *data;
 }
 
@@ -69,11 +70,12 @@ setMemory( Element* data,
            const Element& value,
            const Index size )
 {
-   #ifdef HAVE_OPENMP
-   #pragma omp parallel for if( Devices::Host::isOMPEnabled() && size > OpenMPArrayOperationsThreshold )
-   #endif
-   for( Index i = 0; i < size; i++ )
+   TNL_ASSERT_TRUE( data, "Attempted to set data through a nullptr." );
+   auto kernel = [data, value]( Index i )
+   {
       data[ i ] = value;
+   };
+   ParallelFor< Devices::Host >::exec( (Index) 0, size, kernel );
 }
 
 template< typename DestinationElement,
@@ -101,11 +103,13 @@ copyMemory( DestinationElement* destination,
       #endif
    }
    else
-      #ifdef HAVE_OPENMP
-      #pragma omp parallel for if( Devices::Host::isOMPEnabled() && size > OpenMPArrayOperationsThreshold )
-      #endif
-      for( Index i = 0; i < size; i++ )
+   {
+      auto kernel = [destination, source]( Index i )
+      {
          destination[ i ] = source[ i ];
+      };
+      ParallelFor< Devices::Host >::exec( (Index) 0, size, kernel );
+   }
 }
 
 template< typename DestinationElement,

@@ -14,6 +14,7 @@
 #include <memory>
 
 #include <TNL/Math.h>
+#include <TNL/ParallelFor.h>
 #include <TNL/Exceptions/CudaSupportMissing.h>
 #include <TNL/Exceptions/CudaBadAlloc.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
@@ -80,24 +81,6 @@ getMemoryElement( const Element* data )
    return result;
 }
 
-
-#ifdef HAVE_CUDA
-template< typename Element, typename Index >
-__global__ void
-setArrayValueCudaKernel( Element* data,
-                         const Index size,
-                         const Element value )
-{
-   Index elementIdx = blockDim. x * blockIdx. x + threadIdx. x;
-   const Index maxGridSize = blockDim. x * gridDim. x;
-   while( elementIdx < size )
-   {
-      data[ elementIdx ] = value;
-      elementIdx += maxGridSize;
-   }
-}
-#endif
-
 template< typename Element, typename Index >
 void
 ArrayOperations< Devices::Cuda >::
@@ -106,37 +89,12 @@ setMemory( Element* data,
            const Index size )
 {
    TNL_ASSERT_TRUE( data, "Attempted to set data through a nullptr." );
-#ifdef HAVE_CUDA
-   dim3 blockSize( 0 ), gridSize( 0 );
-   blockSize.x = 256;
-   Index blocksNumber = TNL::ceil( ( double ) size / ( double ) blockSize.x );
-   gridSize.x = TNL::min( blocksNumber, Devices::Cuda::getMaxGridSize() );
-   setArrayValueCudaKernel<<< gridSize, blockSize >>>( data, size, value );
-   cudaStreamSynchronize(0);
-   TNL_CHECK_CUDA_DEVICE;
-#else
-   throw Exceptions::CudaSupportMissing();
-#endif
-}
-
-#ifdef HAVE_CUDA
-template< typename DestinationElement,
-          typename SourceElement,
-          typename Index >
-__global__ void
-copyMemoryCudaToCudaKernel( DestinationElement* destination,
-                            const SourceElement* source,
-                            const Index size )
-{
-   Index elementIdx = blockDim. x * blockIdx. x + threadIdx. x;
-   const Index maxGridSize = blockDim. x * gridDim. x;
-   while( elementIdx < size )
+   auto kernel = [data, value] __cuda_callable__ ( Index i )
    {
-      destination[ elementIdx ] = source[ elementIdx ];
-      elementIdx += maxGridSize;
-   }
+      data[ i ] = value;
+   };
+   ParallelFor< Devices::Cuda >::exec( (Index) 0, size, kernel );
 }
-#endif
 
 template< typename DestinationElement,
           typename SourceElement,
@@ -149,28 +107,26 @@ copyMemory( DestinationElement* destination,
 {
    TNL_ASSERT_TRUE( destination, "Attempted to copy data to a nullptr." );
    TNL_ASSERT_TRUE( source, "Attempted to copy data from a nullptr." );
-#ifdef HAVE_CUDA
    if( std::is_same< DestinationElement, SourceElement >::value )
    {
+#ifdef HAVE_CUDA
       cudaMemcpy( destination,
                   source,
                   size * sizeof( DestinationElement ),
                   cudaMemcpyDeviceToDevice );
       TNL_CHECK_CUDA_DEVICE;
+#else
+      throw Exceptions::CudaSupportMissing();
+#endif
    }
    else
    {
-      dim3 blockSize( 0 ), gridSize( 0 );
-      blockSize.x = 256;
-      Index blocksNumber = TNL::ceil( ( double ) size / ( double ) blockSize.x );
-      gridSize.x = min( blocksNumber, Devices::Cuda::getMaxGridSize() );
-      copyMemoryCudaToCudaKernel<<< gridSize, blockSize >>>( destination, source, size );
-      cudaStreamSynchronize(0);
-      TNL_CHECK_CUDA_DEVICE;
+      auto kernel = [destination, source] __cuda_callable__ ( Index i )
+      {
+         destination[ i ] = source[ i ];
+      };
+      ParallelFor< Devices::Cuda >::exec( (Index) 0, size, kernel );
    }
-#else
-   throw Exceptions::CudaSupportMissing();
-#endif
 }
 
 template< typename DestinationElement,
