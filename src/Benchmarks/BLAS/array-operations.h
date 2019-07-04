@@ -23,7 +23,7 @@ template< typename Real = double,
           typename Index = int,
           template<typename> class HostAllocator = Allocators::Default< Devices::Host >::Allocator,
           template<typename> class CudaAllocator = Allocators::Default< Devices::Cuda >::Allocator >
-bool
+void
 benchmarkArrayOperations( Benchmark & benchmark,
                           const long & size )
 {
@@ -156,8 +156,6 @@ benchmarkArrayOperations( Benchmark & benchmark,
 #ifdef HAVE_CUDA
    benchmark.time< Devices::Cuda >( setSize1, "GPU", resetSizeCuda );
 #endif
-
-   return true;
 }
 
 } // namespace Benchmarks

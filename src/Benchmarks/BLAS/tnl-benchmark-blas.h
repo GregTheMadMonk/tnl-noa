@@ -21,6 +21,7 @@
 
 #include "array-operations.h"
 #include "vector-operations.h"
+#include "triad.h"
 #include "spmv.h"
 
 using namespace TNL;
@@ -76,6 +77,18 @@ runBlasBenchmarks( Benchmark & benchmark,
       } ));
       benchmarkVectorOperations< Real >( benchmark, size );
    }
+
+   // Triad benchmark: copy from host, compute, copy to host
+#ifdef HAVE_CUDA
+   benchmark.newBenchmark( String("Triad benchmark (") + precision + ")",
+                           metadata );
+   for( std::size_t size = minSize; size <= maxSize; size *= 2 ) {
+      benchmark.setMetadataColumns( Benchmark::MetadataColumns({
+         { "size", convertToString( size ) },
+      } ));
+      benchmarkTriad< Real >( benchmark, size );
+   }
+#endif
 
    // Sparse matrix-vector multiplication
    benchmark.newBenchmark( String("Sparse matrix-vector multiplication (") + precision + ")",

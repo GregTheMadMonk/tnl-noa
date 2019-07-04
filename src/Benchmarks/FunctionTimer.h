@@ -20,8 +20,7 @@
 #include <TNL/Solvers/IterativeSolverMonitor.h>
 
 namespace TNL {
-   namespace Benchmarks {
-
+namespace Benchmarks {
 
 template< typename Device >
 class FunctionTimer
@@ -88,7 +87,7 @@ class FunctionTimer
                reset();
 
                // Explicit synchronization of the CUDA device
-#ifdef HAVE_CUDA      
+#ifdef HAVE_CUDA
                if( std::is_same< Device, Devices::Cuda >::value )
                   cudaDeviceSynchronize();
 #endif
@@ -127,9 +126,10 @@ class FunctionTimer
       {
          return this->loops;
       }
-      protected:
-         int loops;
+
+   protected:
+      int loops;
 };
 
-   } // namespace Benchmarks
+} // namespace Benchmarks
 } // namespace TNL
