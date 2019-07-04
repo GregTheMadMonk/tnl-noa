@@ -73,9 +73,9 @@ class NoDistrCommunicator
           }
       }
 
-      static void Barrier(CommunicationGroup group)
+      static void Barrier(CommunicationGroup group = AllGroup)
       {
-      };
+      }
 
       template <typename T>
       static Request ISend( const T *data, int count, int dest, int tag, CommunicationGroup group)
