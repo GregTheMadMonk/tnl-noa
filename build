@@ -206,18 +206,22 @@ if [[ ${CMAKE_ONLY} == "yes" ]]; then
    exit 0
 fi
 
+# get the number of physical cores present on the system, even with multiple NUMA nodes
+# see https://unix.stackexchange.com/a/279354
+SYSTEM_CORES=$(lscpu --all --parse=CORE,SOCKET | grep -Ev "^#" | sort -u | wc -l)
+
 if [[ "$make" == "make" ]]; then
    if [[ -n ${BUILD_JOBS} ]]; then
       # override $MAKEFLAGS from parent environment
       export MAKEFLAGS=-j${BUILD_JOBS}
    elif [[ -z ${MAKEFLAGS} ]]; then
       # $BUILD_JOBS and $MAKEFLAGS are not set => set default value
-      BUILD_JOBS=$(grep "core id" /proc/cpuinfo | sort -u | wc -l)
+      BUILD_JOBS=$SYSTEM_CORES
       export MAKEFLAGS=-j${BUILD_JOBS}
    fi
 else
    if [[ -z ${BUILD_JOBS} ]]; then
-      BUILD_JOBS=$(grep "core id" /proc/cpuinfo | sort -u | wc -l)
+      BUILD_JOBS=$SYSTEM_CORES
    fi
    make="$make -j$BUILD_JOBS"
 fi
