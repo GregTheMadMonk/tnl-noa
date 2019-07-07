@@ -456,6 +456,9 @@ struct CudaReductionKernelLauncher
                   ? 2 * blockSize.x * sizeof( ResultType )
                   : blockSize.x * sizeof( ResultType );
 
+        // This is "general", but this method always sets blockSize.x to a specific value,
+        // so runtime switch is not necessary - it only prolongs the compilation time.
+/*
         /////
         // Depending on the blockSize we generate appropriate template instance.
         switch( blockSize.x )
@@ -518,6 +521,18 @@ struct CudaReductionKernelLauncher
               TNL_ASSERT( false, std::cerr << "Block size is " << blockSize. x << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." );
         }
         TNL_CHECK_CUDA_DEVICE;
+*/
+
+        // Check just to future-proof the code setting blockSize.x
+        if( blockSize.x == Reduction_maxThreadsPerBlock ) {
+           cudaFuncSetCacheConfig(CudaReductionKernel< Reduction_maxThreadsPerBlock, Result, DataFetcher, Reduction, VolatileReduction, Index >, cudaFuncCachePreferShared);
+
+           CudaReductionKernel< Reduction_maxThreadsPerBlock >
+           <<< gridSize, blockSize, shmem >>>( zero, dataFetcher, reduction, volatileReduction, size, output);
+        }
+        else {
+           TNL_ASSERT( false, std::cerr << "Block size was expected to be " << Reduction_maxThreadsPerBlock << ", but " << blockSize.x << " was specified." << std::endl; );
+        }
 
         ////
         // Return the size of the output array on the CUDA device
@@ -547,9 +562,11 @@ struct CudaReductionKernelLauncher
                   ? 2 * blockSize.x * ( sizeof( ResultType ) + sizeof( Index ) )
                   : blockSize.x * ( sizeof( ResultType ) + sizeof( Index ) );
 
-        /***
-         * Depending on the blockSize we generate appropriate template instance.
-         */
+        // This is "general", but this method always sets blockSize.x to a specific value,
+        // so runtime switch is not necessary - it only prolongs the compilation time.
+/*
+        /////
+        // Depending on the blockSize we generate appropriate template instance.
         switch( blockSize.x )
         {
            case 512:
@@ -610,6 +627,18 @@ struct CudaReductionKernelLauncher
               TNL_ASSERT( false, std::cerr << "Block size is " << blockSize. x << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." );
         }
         TNL_CHECK_CUDA_DEVICE;
+*/
+
+        // Check just to future-proof the code setting blockSize.x
+        if( blockSize.x == Reduction_maxThreadsPerBlock ) {
+           cudaFuncSetCacheConfig(CudaReductionWithArgumentKernel< Reduction_maxThreadsPerBlock, Result, DataFetcher, Reduction, VolatileReduction, Index >, cudaFuncCachePreferShared);
+
+           CudaReductionWithArgumentKernel< Reduction_maxThreadsPerBlock >
+           <<< gridSize, blockSize, shmem >>>( zero, dataFetcher, reduction, volatileReduction, size, output, idxOutput, idxInput );
+        }
+        else {
+           TNL_ASSERT( false, std::cerr << "Block size was expected to be " << Reduction_maxThreadsPerBlock << ", but " << blockSize.x << " was specified." << std::endl; );
+        }
 
         ////
         // return the size of the output array on the CUDA device
