@@ -37,7 +37,7 @@ void setDof_2D( DofType &dof, typename DofType::RealType value )
 }
 
 template<typename DofType,typename GridType>
-void checkLeftEdge( GridType &grid, DofType &dof, bool with_first, bool with_last, typename DofType::RealType expectedValue )
+void checkLeftEdge( const GridType &grid, const DofType &dof, bool with_first, bool with_last, typename DofType::RealType expectedValue )
 {
     int maxx = grid.getDimensions().x();
     int maxy = grid.getDimensions().y();
@@ -51,7 +51,7 @@ void checkLeftEdge( GridType &grid, DofType &dof, bool with_first, bool with_las
 }
 
 template<typename DofType,typename GridType>
-void checkRightEdge(GridType &grid, DofType &dof, bool with_first, bool with_last, typename DofType::RealType expectedValue)
+void checkRightEdge(const GridType &grid, const DofType &dof, bool with_first, bool with_last, typename DofType::RealType expectedValue)
 {
     int maxx = grid.getDimensions().x();
     int maxy = grid.getDimensions().y();
@@ -65,7 +65,7 @@ void checkRightEdge(GridType &grid, DofType &dof, bool with_first, bool with_las
 }
 
 template<typename DofType,typename GridType>
-void checkUpEdge( GridType &grid, DofType &dof, bool with_first, bool with_last, typename DofType::RealType expectedValue )
+void checkUpEdge( const GridType &grid, const DofType &dof, bool with_first, bool with_last, typename DofType::RealType expectedValue )
 {
     int maxx = grid.getDimensions().x();
     int maxy = grid.getDimensions().y();
@@ -79,7 +79,7 @@ void checkUpEdge( GridType &grid, DofType &dof, bool with_first, bool with_last,
 }
 
 template<typename DofType,typename GridType>
-void checkDownEdge( GridType &grid, DofType &dof, bool with_first, bool with_last, typename DofType::RealType expectedValue )
+void checkDownEdge( const GridType &grid, const DofType &dof, bool with_first, bool with_last, typename DofType::RealType expectedValue )
 {
     int maxx = grid.getDimensions().x();
     int maxy = grid.getDimensions().y();
@@ -93,7 +93,7 @@ void checkDownEdge( GridType &grid, DofType &dof, bool with_first, bool with_las
 }
 
 template<typename DofType,typename GridType>
-void checkLeftBoundary( GridType &grid, DofType &dof, bool with_first, bool with_last, typename DofType::RealType expectedValue )
+void checkLeftBoundary( const GridType &grid, const DofType &dof, bool with_first, bool with_last, typename DofType::RealType expectedValue )
 {
    int maxx = grid.getDimensions().x();
    int maxy = grid.getDimensions().y();
@@ -107,7 +107,7 @@ void checkLeftBoundary( GridType &grid, DofType &dof, bool with_first, bool with
 }
 
 template<typename DofType,typename GridType>
-void checkRightBoundary(GridType &grid, DofType &dof, bool with_first, bool with_last, typename DofType::RealType expectedValue)
+void checkRightBoundary(const GridType &grid, const DofType &dof, bool with_first, bool with_last, typename DofType::RealType expectedValue)
 {
    int maxx = grid.getDimensions().x();
    int maxy = grid.getDimensions().y();
@@ -121,7 +121,7 @@ void checkRightBoundary(GridType &grid, DofType &dof, bool with_first, bool with
 }
 
 template<typename DofType,typename GridType>
-void checkUpBoundary( GridType &grid, DofType &dof, bool with_first, bool with_last, typename DofType::RealType expectedValue )
+void checkUpBoundary( const GridType &grid, const DofType &dof, bool with_first, bool with_last, typename DofType::RealType expectedValue )
 {
    int maxx = grid.getDimensions().x();
    int maxy = grid.getDimensions().y();
@@ -135,7 +135,7 @@ void checkUpBoundary( GridType &grid, DofType &dof, bool with_first, bool with_l
 }
 
 template<typename DofType,typename GridType>
-void checkDownBoundary( GridType &grid, DofType &dof, bool with_first, bool with_last, typename DofType::RealType expectedValue )
+void checkDownBoundary( const GridType &grid, const DofType &dof, bool with_first, bool with_last, typename DofType::RealType expectedValue )
 {
    int maxx = grid.getDimensions().x();
    int maxy = grid.getDimensions().y();
@@ -149,7 +149,7 @@ void checkDownBoundary( GridType &grid, DofType &dof, bool with_first, bool with
 }
 
 template<typename DofType,typename GridType>
-void checkCorner(GridType &grid, DofType &dof, bool up, bool left, typename DofType::RealType expectedValue )
+void checkCorner(const GridType &grid, const DofType &dof, bool up, bool left, typename DofType::RealType expectedValue )
 {
     int maxx=grid.getDimensions().x();
     int maxy=grid.getDimensions().y();
@@ -174,7 +174,7 @@ void checkCorner(GridType &grid, DofType &dof, bool up, bool left, typename DofT
 
 /*expecting 9 processes*/
 template<typename DofType,typename GridType>
-void check_Boundary_2D(int rank, GridType &grid, DofType &dof, typename DofType::RealType expectedValue)
+void check_Boundary_2D(int rank, const GridType &grid, const DofType &dof, typename DofType::RealType expectedValue)
 {    
 
     if(rank==0)//Up Left
@@ -233,7 +233,7 @@ void check_Boundary_2D(int rank, GridType &grid, DofType &dof, typename DofType:
  * so boundary overlap is not checked (it is filled incorectly by boundary condition).
  */
 template<typename DofType,typename GridType>
-void check_Overlap_2D(int rank, GridType &grid, DofType &dof, typename DofType::RealType expectedValue)
+void check_Overlap_2D(int rank, const GridType &grid, const DofType &dof, typename DofType::RealType expectedValue)
 {
     if(rank==0)//Up Left
     {
@@ -299,7 +299,7 @@ void check_Overlap_2D(int rank, GridType &grid, DofType &dof, typename DofType::
 
 
 template<typename DofType,typename GridType>
-void check_Inner_2D(int rank, GridType grid, DofType dof, typename DofType::RealType expectedValue)
+void check_Inner_2D(int rank, const GridType& grid, const DofType& dof, typename DofType::RealType expectedValue)
 {
     int maxx=grid.getDimensions().x();
     int maxy=grid.getDimensions().y();

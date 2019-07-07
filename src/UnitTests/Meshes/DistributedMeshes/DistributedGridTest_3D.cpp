@@ -44,7 +44,7 @@ int getAdd(GridType &grid,bool bottom, bool north, bool west )
 }
 
 template<typename DofType,typename GridType>
-void checkConner(GridType &grid, DofType &dof,bool bottom, bool north, bool west, typename DofType::RealType expectedValue )
+void checkConner(const GridType &grid, const DofType &dof,bool bottom, bool north, bool west, typename DofType::RealType expectedValue )
 {
     int i=getAdd(grid,bottom,north,west);
     EXPECT_EQ( dof[i], expectedValue) << "Conner test failed";
@@ -52,7 +52,7 @@ void checkConner(GridType &grid, DofType &dof,bool bottom, bool north, bool west
 }
 
 template<typename DofType,typename GridType>
-void checkXDirectionEdge(GridType &grid, DofType &dof, bool bottom, bool north, typename DofType::RealType expectedValue)
+void checkXDirectionEdge(const GridType &grid, const DofType &dof, bool bottom, bool north, typename DofType::RealType expectedValue)
 {
     int add=getAdd(grid,bottom,north,true);        
     for(int i=1;i<grid.getDimensions().x()-1;i++) 
@@ -61,7 +61,7 @@ void checkXDirectionEdge(GridType &grid, DofType &dof, bool bottom, bool north, 
 
 
 template<typename DofType,typename GridType>
-void checkYDirectionEdge(GridType &grid, DofType &dof, bool bottom, bool west, typename DofType::RealType expectedValue)
+void checkYDirectionEdge(const GridType &grid, const DofType &dof, bool bottom, bool west, typename DofType::RealType expectedValue)
 {
     int add=getAdd(grid,bottom,true,west);
     for(int i=1;i<grid.getDimensions().y()-1;i++) 
@@ -69,7 +69,7 @@ void checkYDirectionEdge(GridType &grid, DofType &dof, bool bottom, bool west, t
 }
 
 template<typename DofType,typename GridType>
-void checkZDirectionEdge(GridType &grid, DofType &dof, bool north, bool west, typename DofType::RealType expectedValue)
+void checkZDirectionEdge(const GridType &grid, const DofType &dof, bool north, bool west, typename DofType::RealType expectedValue)
 {
     int add=getAdd(grid,true,north,west);
     for(int i=1;i<grid.getDimensions().z()-1;i++) 
@@ -77,7 +77,7 @@ void checkZDirectionEdge(GridType &grid, DofType &dof, bool north, bool west, ty
 }
 
 template<typename DofType,typename GridType>
-void checkZFace(GridType &grid, DofType &dof, bool bottom, typename DofType::RealType expectedValue)
+void checkZFace(const GridType &grid, const DofType &dof, bool bottom, typename DofType::RealType expectedValue)
 {
     int add=getAdd(grid,bottom,true,true);
     for(int i=1;i<grid.getDimensions().y()-1;i++)
@@ -88,7 +88,7 @@ void checkZFace(GridType &grid, DofType &dof, bool bottom, typename DofType::Rea
 }
 
 template<typename DofType,typename GridType>
-void checkYFace(GridType &grid, DofType &dof, bool north, typename DofType::RealType expectedValue)
+void checkYFace(const GridType &grid, const DofType &dof, bool north, typename DofType::RealType expectedValue)
 {
     int add=getAdd(grid,true,north,true);
     for(int i=1;i<grid.getDimensions().z()-1;i++)
@@ -99,7 +99,7 @@ void checkYFace(GridType &grid, DofType &dof, bool north, typename DofType::Real
 }
 
 template<typename DofType,typename GridType>
-void checkXFace(GridType &grid, DofType &dof, bool west, typename DofType::RealType expectedValue)
+void checkXFace(const GridType &grid, const DofType &dof, bool west, typename DofType::RealType expectedValue)
 {
     int add=getAdd(grid,true,true,west);
     for(int i=1;i<grid.getDimensions().z()-1;i++)
@@ -113,7 +113,7 @@ void checkXFace(GridType &grid, DofType &dof, bool west, typename DofType::RealT
 Expected 27 processes
 */
 template<typename DofType,typename GridType>
-void check_Boundary_3D(int rank, GridType &grid, DofType &dof, typename DofType::RealType expectedValue)
+void check_Boundary_3D(int rank, const GridType &grid, const DofType &dof, typename DofType::RealType expectedValue)
 {
     if(rank==0)//Bottom North West
     {
@@ -328,7 +328,7 @@ void check_Boundary_3D(int rank, GridType &grid, DofType &dof, typename DofType:
 }
 
 template<typename DofType,typename GridType>
-void CheckConnerNode_Overlap(GridType &grid, DofType &dof,bool bottom, bool north, bool west, typename DofType::RealType expectedValue)
+void CheckConnerNode_Overlap(const GridType &grid, const DofType &dof,bool bottom, bool north, bool west, typename DofType::RealType expectedValue)
 {
    checkConner(grid,dof,!bottom, !north, !west, expectedValue );
    checkXDirectionEdge(grid,dof,!bottom,!north,expectedValue);
@@ -340,7 +340,7 @@ void CheckConnerNode_Overlap(GridType &grid, DofType &dof,bool bottom, bool nort
 }
 
 template<typename DofType,typename GridType>
-void CheckXEdgeNode_Overlap(GridType &grid, DofType &dof,bool bottom, bool north, typename DofType::RealType expectedValue)
+void CheckXEdgeNode_Overlap(const GridType &grid, const DofType &dof,bool bottom, bool north, typename DofType::RealType expectedValue)
 {
    checkConner(grid,dof,!bottom, !north, false, expectedValue );
    checkConner(grid,dof,!bottom, !north, true, expectedValue );
@@ -356,7 +356,7 @@ void CheckXEdgeNode_Overlap(GridType &grid, DofType &dof,bool bottom, bool north
 }
 
 template<typename DofType,typename GridType>
-void CheckYEdgeNode_Overlap(GridType &grid, DofType &dof,bool bottom, bool west, typename DofType::RealType expectedValue)
+void CheckYEdgeNode_Overlap(const GridType &grid, const DofType &dof,bool bottom, bool west, typename DofType::RealType expectedValue)
 {
    checkConner(grid,dof,!bottom, false, !west, expectedValue );
    checkConner(grid,dof,!bottom, true, !west, expectedValue );
@@ -372,7 +372,7 @@ void CheckYEdgeNode_Overlap(GridType &grid, DofType &dof,bool bottom, bool west,
 }
 
 template<typename DofType,typename GridType>
-void CheckZEdgeNode_Overlap(GridType &grid, DofType &dof,bool north, bool west, typename DofType::RealType expectedValue)
+void CheckZEdgeNode_Overlap(const GridType &grid, const DofType &dof,bool north, bool west, typename DofType::RealType expectedValue)
 {
    checkConner(grid,dof,false, !north, !west, expectedValue );
    checkConner(grid,dof,true, !north, !west, expectedValue );
@@ -388,7 +388,7 @@ void CheckZEdgeNode_Overlap(GridType &grid, DofType &dof,bool north, bool west, 
 }
 
 template<typename DofType,typename GridType>
-void CheckXFaceNode_Overlap(GridType &grid, DofType &dof,bool west, typename DofType::RealType expectedValue)
+void CheckXFaceNode_Overlap(const GridType &grid, const DofType &dof,bool west, typename DofType::RealType expectedValue)
 {
    checkConner(grid,dof,false, false, !west, expectedValue );
    checkConner(grid,dof,false, true, !west, expectedValue );
@@ -410,7 +410,7 @@ void CheckXFaceNode_Overlap(GridType &grid, DofType &dof,bool west, typename Dof
 }
 
 template<typename DofType,typename GridType>
-void CheckYFaceNode_Overlap(GridType &grid, DofType &dof,bool north, typename DofType::RealType expectedValue)
+void CheckYFaceNode_Overlap(const GridType &grid, const DofType &dof,bool north, typename DofType::RealType expectedValue)
 {
    checkConner(grid,dof, false,!north, false, expectedValue );
    checkConner(grid,dof, false,!north, true, expectedValue );
@@ -432,7 +432,7 @@ void CheckYFaceNode_Overlap(GridType &grid, DofType &dof,bool north, typename Do
 }
 
 template<typename DofType,typename GridType>
-void CheckZFaceNode_Overlap(GridType &grid, DofType &dof,bool bottom, typename DofType::RealType expectedValue)
+void CheckZFaceNode_Overlap(const GridType &grid, const DofType &dof,bool bottom, typename DofType::RealType expectedValue)
 {
    checkConner(grid,dof,!bottom, false, false, expectedValue );
    checkConner(grid,dof,!bottom, false, true, expectedValue );
@@ -454,7 +454,7 @@ void CheckZFaceNode_Overlap(GridType &grid, DofType &dof,bool bottom, typename D
 }
 
 template<typename DofType,typename GridType>
-void CheckCentralNode_Overlap(GridType &grid, DofType &dof,typename DofType::RealType expectedValue)
+void CheckCentralNode_Overlap(const GridType &grid, const DofType &dof,typename DofType::RealType expectedValue)
 {
    checkConner(grid,dof,false, false, false, expectedValue );
    checkConner(grid,dof,false, false, true, expectedValue );
@@ -490,7 +490,7 @@ void CheckCentralNode_Overlap(GridType &grid, DofType &dof,typename DofType::Rea
 * Expected 27 processes. 
 */
 template<typename DofType,typename GridType>
-void check_Overlap_3D(int rank, GridType &grid, DofType &dof, typename DofType::RealType expectedValue)
+void check_Overlap_3D(int rank, const GridType &grid, const DofType &dof, typename DofType::RealType expectedValue)
 {
    if(rank==0)
        CheckConnerNode_Overlap(grid,dof,true,true,true,expectedValue);
@@ -576,7 +576,7 @@ void check_Overlap_3D(int rank, GridType &grid, DofType &dof, typename DofType::
 }
 
 template<typename DofType,typename GridType>
-void check_Inner_3D(int rank, GridType grid, DofType dof, typename DofType::RealType expectedValue)
+void check_Inner_3D(int rank, const GridType& grid, const DofType& dof, typename DofType::RealType expectedValue)
 {
    int maxx=grid.getDimensions().x();
    int maxy=grid.getDimensions().y();
