@@ -13,109 +13,13 @@
 #pragma once
 
 #ifdef HAVE_GTEST
-#include <limits>
-
-#include <TNL/Experimental/Arithmetics/Quad.h>
-#include <TNL/Containers/Vector.h>
-#include <TNL/Containers/VectorView.h>
 #include "VectorTestSetup.h"
-
-#include "gtest/gtest.h"
-
-using namespace TNL;
-using namespace TNL::Containers;
-using namespace TNL::Containers::Algorithms;
-using namespace TNL::Arithmetics;
 
 // should be small enough to have fast tests, but larger than minGPUReductionDataSize
 // and large enough to require multiple CUDA blocks for reduction
-constexpr int VECTOR_TEST_SIZE = 500;
+constexpr int VECTOR_TEST_SIZE = 100;
 
-TYPED_TEST( VectorTest, horizontalOperations )
-{
-   using VectorType = typename TestFixture::VectorType;
-   using ViewType = typename TestFixture::ViewType;
-   using RealType = typename VectorType::RealType;
-   using IndexType = typename VectorType::IndexType;
-   const int size = VECTOR_TEST_SIZE;
-
-   VectorType _u( size ), _v( size ), _w( size );
-   ViewType u( _u ), v( _v ), w( _w );
-   EXPECT_EQ( u.getSize(), size );
-   u = 0;
-   v = 1;
-   w = 2;
-
-   u = u + 4 * TNL::max( v, 0 );
-   EXPECT_TRUE( u.containsOnlyValue( 4.0 ) );
-
-   u = u + 3 * w + 4 * TNL::max( v, 0 );
-   EXPECT_TRUE( u.containsOnlyValue( 14.0 ) );
-}
-
-TYPED_TEST( VectorTest, verticalOperations )
-{
-   using VectorType = typename TestFixture::VectorType;
-   using ViewType = typename TestFixture::ViewType;
-   using RealType = typename VectorType::RealType;
-   using IndexType = typename VectorType::IndexType;
-   const int size = VECTOR_TEST_SIZE;
-
-   VectorType _u( size ), _v( size ), _w( size );
-   ViewType u( _u ), v( _v ), w( _w );
-   RealType sum_( 0.0 ), absSum( 0.0 ), diffSum( 0.0 ), diffAbsSum( 0.0 ),
-   absMin( size + 10.0 ), absMax( -size - 10.0 ),
-   diffMin( 2 * size + 10.0 ), diffMax( - 2.0 * size - 10.0 ),
-   l2Norm( 0.0 ), l2NormDiff( 0.0 ), argMinValue( size * size ), argMaxValue( -size * size );
-   IndexType argMin( 0 ), argMax( 0 );
-   for( int i = 0; i < size; i++ )
-   {
-      const RealType aux = ( RealType )( i - size / 2 ) / ( RealType ) size;
-      const RealType w_value = aux * aux - 5.0;
-      u.setElement( i, aux );
-      v.setElement( i, -aux );
-      w.setElement( i, w_value );
-      absMin = TNL::min( absMin, TNL::abs( aux ) );
-      absMax = TNL::max( absMax, TNL::abs( aux ) );
-      diffMin = TNL::min( diffMin, 2 * aux );
-      diffMax = TNL::max( diffMax, 2 * aux );
-      sum_ += aux;
-      absSum += TNL::abs( aux );
-      diffSum += 2.0 * aux;
-      diffAbsSum += TNL::abs( 2.0* aux );
-      l2Norm += aux * aux;
-      l2NormDiff += 4.0 * aux * aux;
-      if( w_value < argMinValue ) {
-         argMinValue = w_value;
-         argMin = i;
-      }
-      if( w_value > argMaxValue ) {
-         argMaxValue = w_value;
-         argMax = i;
-      }
-   }
-   l2Norm = TNL::sqrt( l2Norm );
-   l2NormDiff = TNL::sqrt( l2NormDiff );
-
-   EXPECT_EQ( min( u ), u.getElement( 0 ) );
-   EXPECT_EQ( max( u ), u.getElement( size - 1 ) );
-   EXPECT_NEAR( sum( u ), sum_, 2.0e-5 );
-   EXPECT_EQ( min( abs( u ) ), absMin );
-   EXPECT_EQ( max( abs( u ) ), absMax );
-   EXPECT_EQ( min( u - v ), diffMin );
-   EXPECT_EQ( max( u - v ), diffMax );
-   EXPECT_NEAR( sum( u - v ), diffSum, 2.0e-5 );
-   EXPECT_NEAR( sum( abs( u - v ) ), diffAbsSum, 2.0e-5 );
-   EXPECT_NEAR( lpNorm( u, 2.0 ), l2Norm, 2.0e-5 );
-   EXPECT_NEAR( lpNorm( u - v, 2.0 ), l2NormDiff, 2.0e-5 );
-   IndexType wArgMin, wArgMax;
-   EXPECT_NEAR( TNL::argMin( w, wArgMin ), argMinValue, 2.0e-5 );
-   EXPECT_EQ( argMin, wArgMin );
-   EXPECT_NEAR( TNL::argMax( w, wArgMax ), argMaxValue, 2.0e-5 );
-   EXPECT_EQ( argMax, wArgMax );
-}
-
-TYPED_TEST( VectorTest, scalarProduct )
+TYPED_TEST( VectorTest, sin )
 {
    using VectorType = typename TestFixture::VectorType;
    using ViewType = typename TestFixture::ViewType;
@@ -124,16 +28,375 @@ TYPED_TEST( VectorTest, scalarProduct )
 
    VectorType _u( size ), _v( size );
    ViewType u( _u ), v( _v );
-   RealType aux( 0.0 );
    for( int i = 0; i < size; i++ )
    {
-      const RealType x = i;
-      const RealType y = size / 2 - i;
-      u.setElement( i, x );
-      v.setElement( i, y );
-      aux += x * y;
+      u.setElement( i, ( RealType ) i - ( RealType ) size / 2 );
+      v.setElement( i, TNL::sin( ( RealType ) i - ( RealType ) size / 2 ) );
    }
-   EXPECT_NEAR( ( u, v ), aux, 1.0e-5 );
+
+   //EXPECT_EQ( sin( u ), v );
+   for( int i = 0; i < size; i++ )
+      EXPECT_NEAR( sin( u ).getElement( i ), v.getElement( i ), 1.0e-6 );
+}
+
+TYPED_TEST( VectorTest, cos )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   using RealType = typename VectorType::RealType;
+   const int size = VECTOR_TEST_SIZE;
+
+   VectorType _u( size ), _v( size );
+   ViewType u( _u ), v( _v );
+   for( int i = 0; i < size; i++ )
+   {
+      u.setElement( i, ( RealType ) i - ( RealType ) size / 2 );
+      v.setElement( i, TNL::cos( ( RealType ) i - ( RealType ) size / 2 ) );
+   }
+
+   //EXPECT_EQ( cos( u ), v );
+   for( int i = 0; i < size; i++ )
+      EXPECT_NEAR( cos( u ).getElement( i ), v.getElement( i ), 1.0e-6 );
+}
+
+TYPED_TEST( VectorTest, tan )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   using RealType = typename VectorType::RealType;
+   const int size = VECTOR_TEST_SIZE;
+   const double h = 10.0 / size;
+
+   VectorType _u( size ), _v( size );
+   ViewType u( _u ), v( _v );
+   for( int i = 0; i < size; i++ )
+   {
+      const RealType x = -5.0 + i * h;
+      u.setElement( i, x );
+      v.setElement( i, TNL::tan( x ) );
+   }
+
+   //EXPECT_EQ( tan( u ), v );
+   for( int i = 0; i < size; i++ )
+      EXPECT_NEAR( tan( u ).getElement( i ), v.getElement( i ), 1.0e-6 );
+
+}
+
+TYPED_TEST( VectorTest, sqrt )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   using RealType = typename VectorType::RealType;
+   const int size = VECTOR_TEST_SIZE;
+
+   VectorType _u( size ), _v( size );
+   ViewType u( _u ), v( _v );
+   for( int i = 0; i < size; i++ )
+   {
+      u.setElement( i, ( RealType ) i );
+      v.setElement( i, TNL::sqrt( ( RealType ) i ) );
+   }
+
+   //EXPECT_EQ( sqrt( u ), v );
+   for( int i = 0; i < size; i++ )
+      EXPECT_NEAR( sqrt( u ).getElement( i ), v.getElement( i ), 1.0e-6 );
+
+}
+
+TYPED_TEST( VectorTest, cbrt )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   using RealType = typename VectorType::RealType;
+   const int size = VECTOR_TEST_SIZE;
+
+   VectorType _u( size ), _v( size );
+   ViewType u( _u ), v( _v );
+   for( int i = 0; i < size; i++ )
+   {
+      u.setElement( i, ( RealType ) i );
+      v.setElement( i, TNL::cbrt( ( RealType ) i ) );
+   }
+
+   //EXPECT_EQ( cbrt( u ), v );
+   for( int i = 0; i < size; i++ )
+      EXPECT_NEAR( cbrt( u ).getElement( i ), v.getElement( i ), 1.0e-6 );
+
+}
+
+TYPED_TEST( VectorTest, pow )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   using RealType = typename VectorType::RealType;
+   const int size = VECTOR_TEST_SIZE;
+
+   VectorType _u( size ), _v( size ), _w( size );
+   ViewType u( _u ), v( _v ), w( _w );
+   for( int i = 0; i < size; i++ )
+   {
+      u.setElement( i, ( RealType ) i - ( RealType ) size / 2 );
+      v.setElement( i, TNL::pow( ( RealType ) i - ( RealType ) size / 2, 2.0 ) );
+      w.setElement( i, TNL::pow( ( RealType ) i - ( RealType ) size / 2, 3.0 ) );
+   }
+
+   //EXPECT_EQ( pow( u, 2.0 ), v );
+   //EXPECT_EQ( pow( u, 3.0 ), w );
+   for( int i = 0; i < size; i++ )
+      EXPECT_NEAR( pow( u, 2.0 ).getElement( i ), v.getElement( i ), 1.0e-6 );
+   for( int i = 0; i < size; i++ )
+      EXPECT_NEAR( pow( u, 3.0 ).getElement( i ), w.getElement( i ), 1.0e-6 );
+
+
+}
+
+TYPED_TEST( VectorTest, floor )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   using RealType = typename VectorType::RealType;
+   const int size = VECTOR_TEST_SIZE;
+
+   VectorType _u( size ), _v( size );
+   ViewType u( _u ), v( _v );
+   for( int i = 0; i < size; i++ )
+   {
+      u.setElement( i, ( RealType ) i - ( RealType ) size / 2 );
+      v.setElement( i, TNL::floor( ( RealType ) i - ( RealType ) size / 2 ) );
+   }
+
+   //EXPECT_EQ( floor( u ), v );
+   for( int i = 0; i < size; i++ )
+      EXPECT_NEAR( floor( u ).getElement( i ), v.getElement( i ), 1.0e-6 );
+
+}
+
+TYPED_TEST( VectorTest, ceil )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   using RealType = typename VectorType::RealType;
+   const int size = VECTOR_TEST_SIZE;
+
+   VectorType _u( size ), _v( size );
+   ViewType u( _u ), v( _v );
+   for( int i = 0; i < size; i++ )
+   {
+      u.setElement( i, ( RealType ) i - ( RealType ) size / 2 );
+      v.setElement( i, TNL::ceil( ( RealType ) i - ( RealType ) size / 2 ) );
+   }
+
+   //EXPECT_EQ( ceil( u ), v );
+   for( int i = 0; i < size; i++ )
+      EXPECT_NEAR( ceil( u ).getElement( i ), v.getElement( i ), 1.0e-6 );
+
+}
+
+TYPED_TEST( VectorTest, acos )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   using RealType = typename VectorType::RealType;
+   const int size = VECTOR_TEST_SIZE;
+
+   VectorType _u( size ), _v( size );
+   ViewType u( _u ), v( _v );
+   for( int i = 0; i < size; i++ )
+   {
+      u.setElement( i, ( RealType )( i - size / 2 ) / ( RealType ) size );
+      v.setElement( i, TNL::acos( ( RealType )( i - size / 2 ) / ( RealType ) size ) );
+   }
+
+   //EXPECT_EQ( acos( u ), v );
+   for( int i = 0; i < size; i++ )
+      EXPECT_NEAR( acos( u ).getElement( i ), v.getElement( i ), 1.0e-6 );
+}
+
+TYPED_TEST( VectorTest, asin )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   using RealType = typename VectorType::RealType;
+   const int size = VECTOR_TEST_SIZE;
+
+   VectorType _u( size ), _v( size );
+   ViewType u( _u ), v( _v );
+   for( int i = 0; i < size; i++ )
+   {
+      u.setElement( i, ( RealType ) ( i - size / 2 ) / ( RealType ) size );
+      v.setElement( i, TNL::asin( ( RealType )( i - size / 2 ) / ( RealType ) size ) );
+   }
+
+   //EXPECT_EQ( asin( u ), v );
+   for( int i = 0; i < size; i++ )
+      EXPECT_NEAR( asin( u ).getElement( i ), v.getElement( i ), 1.0e-6 );
+}
+
+TYPED_TEST( VectorTest, atan )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   using RealType = typename VectorType::RealType;
+   const int size = VECTOR_TEST_SIZE;
+
+   VectorType _u( size ), _v( size );
+   ViewType u( _u ), v( _v );
+   for( int i = 0; i < size; i++ )
+   {
+      u.setElement( i, ( RealType ) i - ( RealType ) size / 2 );
+      v.setElement( i, TNL::atan( ( RealType ) i - ( RealType ) size / 2 ) );
+   }
+
+   //EXPECT_EQ( atan( u ), v );
+   for( int i = 0; i < size; i++ )
+      EXPECT_NEAR( atan( u ).getElement( i ), v.getElement( i ), 1.0e-6 );
+}
+
+TYPED_TEST( VectorTest, cosh )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   using RealType = typename VectorType::RealType;
+   const int size = VECTOR_TEST_SIZE;
+
+   RealType h = 2.0 / ( RealType ) size;
+   VectorType _u( size ), _v( size );
+   ViewType u( _u ), v( _v );
+   for( int i = 0; i < size; i++ )
+   {
+      u.setElement( i, i * h - ( RealType ) 1.0 );
+      v.setElement( i, TNL::cosh( i * h - ( RealType ) 1.0 ) );
+   }
+
+   // EXPECT_EQ( cosh( u ), v ) does not work here for float, maybe because
+   // of some fast-math optimization
+   for( int i = 0; i < size; i++ )
+      EXPECT_NEAR( cosh( u ).getElement( i ), v.getElement( i ), 1.0e-6 );
+}
+
+TYPED_TEST( VectorTest, tanh )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   using RealType = typename VectorType::RealType;
+   const int size = VECTOR_TEST_SIZE;
+
+   VectorType _u( size ), _v( size );
+   ViewType u( _u ), v( _v );
+   for( int i = 0; i < size; i++ )
+   {
+      u.setElement( i, ( RealType ) i - ( RealType ) size / 2 );
+      v.setElement( i, TNL::tanh( ( RealType ) i - ( RealType ) size / 2 ) );
+   }
+
+   //EXPECT_EQ( tanh( u ), v );
+   for( int i = 0; i < size; i++ )
+      EXPECT_NEAR( tanh( u ).getElement( i ), v.getElement( i ), 1.0e-6 );
+}
+
+TYPED_TEST( VectorTest, log )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   using RealType = typename VectorType::RealType;
+   const int size = VECTOR_TEST_SIZE;
+
+   VectorType _u( size ), _v( size );
+   ViewType u( _u ), v( _v );
+   for( int i = 0; i < size; i++ )
+   {
+      u.setElement( i, ( RealType ) i + 1 );
+      v.setElement( i, TNL::log( ( RealType ) i + 1 ) );
+   }
+
+   //EXPECT_EQ( log( u ), v );
+   for( int i = 0; i < size; i++ )
+      EXPECT_NEAR( log( u ).getElement( i ), v.getElement( i ), 1.0e-6 );
+
+}
+
+TYPED_TEST( VectorTest, log10 )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   using RealType = typename VectorType::RealType;
+   const int size = VECTOR_TEST_SIZE;
+
+   VectorType _u( size ), _v( size );
+   ViewType u( _u ), v( _v );
+   for( int i = 0; i < size; i++ )
+   {
+      u.setElement( i, ( RealType ) i + 1 );
+      v.setElement( i, TNL::log10( ( RealType ) i + 1 ) );
+   }
+
+   // EXPECT_EQ( log10( u ), v ) does not work here for float, maybe because
+   // of some fast-math optimization
+   for( int i = 0; i < size; i++ )
+      EXPECT_NEAR( log10( u ).getElement( i ), v.getElement( i ), 1.0e-6 );
+}
+
+TYPED_TEST( VectorTest, log2 )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   using RealType = typename VectorType::RealType;
+   const int size = VECTOR_TEST_SIZE;
+
+   VectorType _u( size ), _v( size );
+   ViewType u( _u ), v( _v );
+   for( int i = 0; i < size; i++ )
+   {
+      u.setElement( i, ( RealType ) i + 1 );
+      v.setElement( i, TNL::log2( ( RealType ) i + 1 ) );
+   }
+
+   //EXPECT_EQ( log2( u ), v );
+   for( int i = 0; i < size; i++ )
+      EXPECT_NEAR( log2( u ).getElement( i ), v.getElement( i ), 1.0e-6 );
+
+}
+
+TYPED_TEST( VectorTest, exp )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   using RealType = typename VectorType::RealType;
+   const int size = VECTOR_TEST_SIZE;
+   const double h = 10.0 / size;
+
+   VectorType _u( size ), _v( size );
+   ViewType u( _u ), v( _v );
+   for( int i = 0; i < size; i++ )
+   {
+      const RealType x = -5.0 + i * h;
+      u.setElement( i, x  );
+      v.setElement( i, TNL::exp( x ) );
+   }
+
+   //EXPECT_EQ( exp( u ), v );
+   for( int i = 0; i < size; i++ )
+      EXPECT_NEAR( exp( u ).getElement( i ), v.getElement( i ), 1.0e-6 );
+}
+
+TYPED_TEST( VectorTest, sign )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using ViewType = typename TestFixture::ViewType;
+   using RealType = typename VectorType::RealType;
+   const int size = VECTOR_TEST_SIZE;
+
+   VectorType _u( size ), _v( size );
+   ViewType u( _u ), v( _v );
+   for( int i = 0; i < size; i++ )
+   {
+      u.setElement( i, ( RealType ) i - ( RealType ) size / 2 );
+      v.setElement( i, TNL::sign( ( RealType ) i - ( RealType ) size / 2 ) );
+   }
+
+   //EXPECT_EQ( sign( u ), v );
+   for( int i = 0; i < size; i++ )
+      EXPECT_NEAR( sign( u ).getElement( i ), v.getElement( i ), 1.0e-6 );
 }
 
 #endif // HAVE_GTEST

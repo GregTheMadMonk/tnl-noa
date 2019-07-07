@@ -13,195 +13,85 @@
 #pragma once
 
 #ifdef HAVE_GTEST
-#include <limits>
-
-#include <TNL/Experimental/Arithmetics/Quad.h>
-#include <TNL/Containers/Vector.h>
-#include <TNL/Containers/VectorView.h>
 #include "VectorTestSetup.h"
-
-#include "gtest/gtest.h"
-
-using namespace TNL;
-using namespace TNL::Containers;
-using namespace TNL::Containers::Algorithms;
-using namespace TNL::Arithmetics;
 
 // should be small enough to have fast tests, but larger than minGPUReductionDataSize
 // and large enough to require multiple CUDA blocks for reduction
 constexpr int VECTOR_TEST_SIZE = 5000;
 
-TYPED_TEST( VectorTest, sin )
+TYPED_TEST( VectorTest, differenceMax )
 {
    using VectorType = typename TestFixture::VectorType;
+   using VectorOperations = typename TestFixture::VectorOperations;
    using ViewType = typename TestFixture::ViewType;
-   using RealType = typename VectorType::RealType;
    const int size = VECTOR_TEST_SIZE;
 
-   VectorType _u( size ), _v( size );
-   ViewType u( _u ), v( _v );
-   for( int i = 0; i < size; i++ )
-   {
-      u.setElement( i, ( RealType ) i - ( RealType ) size / 2 );
-      v.setElement( i, TNL::sin( ( RealType ) i - ( RealType ) size / 2 ) );
-   }
+   VectorType u( size ), v( size );
+   ViewType u_view( u ), v_view( v );
+   setLinearSequence( u );
+   setConstantSequence( v, size / 2 );
 
-   //EXPECT_EQ( sin( u ), v );
-   for( int i = 0; i < size; i++ )
-      EXPECT_NEAR( sin( u ).getElement( i ), v.getElement( i ), 1.0e-6 );
+   EXPECT_EQ( u.differenceMax( v ), size - 1 - size / 2 );
+   EXPECT_EQ( u_view.differenceMax( v_view ), size - 1 - size / 2 );
+   EXPECT_EQ( VectorOperations::getVectorDifferenceMax( u, v ), size - 1 - size / 2 );
 }
 
-TYPED_TEST( VectorTest, cos )
+TYPED_TEST( VectorTest, differenceMin )
 {
    using VectorType = typename TestFixture::VectorType;
+   using VectorOperations = typename TestFixture::VectorOperations;
    using ViewType = typename TestFixture::ViewType;
-   using RealType = typename VectorType::RealType;
    const int size = VECTOR_TEST_SIZE;
 
-   VectorType _u( size ), _v( size );
-   ViewType u( _u ), v( _v );
-   for( int i = 0; i < size; i++ )
-   {
-      u.setElement( i, ( RealType ) i - ( RealType ) size / 2 );
-      v.setElement( i, TNL::cos( ( RealType ) i - ( RealType ) size / 2 ) );
-   }
+   VectorType u( size ), v( size );
+   ViewType u_view( u ), v_view( v );
+   setLinearSequence( u );
+   setConstantSequence( v, size / 2 );
 
-   //EXPECT_EQ( cos( u ), v );
-   for( int i = 0; i < size; i++ )
-      EXPECT_NEAR( cos( u ).getElement( i ), v.getElement( i ), 1.0e-6 );
+   EXPECT_EQ( u.differenceMin( v ), - size / 2 );
+   EXPECT_EQ( u_view.differenceMin( v_view ), - size / 2 );
+   EXPECT_EQ( VectorOperations::getVectorDifferenceMin( u, v ), - size / 2 );
+   EXPECT_EQ( v.differenceMin( u ), size / 2 - size + 1 );
+   EXPECT_EQ( v_view.differenceMin( u_view ), size / 2 - size + 1 );
+   EXPECT_EQ( VectorOperations::getVectorDifferenceMin( v, u ), size / 2 - size + 1 );
 }
 
-TYPED_TEST( VectorTest, tan )
+TYPED_TEST( VectorTest, differenceAbsMax )
 {
    using VectorType = typename TestFixture::VectorType;
+   using VectorOperations = typename TestFixture::VectorOperations;
    using ViewType = typename TestFixture::ViewType;
-   using RealType = typename VectorType::RealType;
-   const int size = VECTOR_TEST_SIZE;
-   const double h = 10.0 / size;
+   // this test expects an odd size
+   const int size = VECTOR_TEST_SIZE % 2 ? VECTOR_TEST_SIZE : VECTOR_TEST_SIZE - 1;
 
-   VectorType _u( size ), _v( size );
-   ViewType u( _u ), v( _v );
-   for( int i = 0; i < size; i++ )
-   {
-      const RealType x = -5.0 + i * h;
-      u.setElement( i, x );
-      v.setElement( i, TNL::tan( x ) );
-   }
+   VectorType u( size ), v( size );
+   ViewType u_view( u ), v_view( v );
+   setNegativeLinearSequence( u );
+   setConstantSequence( v, - size / 2 );
 
-   //EXPECT_EQ( tan( u ), v );
-   for( int i = 0; i < size; i++ )
-      EXPECT_NEAR( tan( u ).getElement( i ), v.getElement( i ), 1.0e-6 );
-
+   EXPECT_EQ( u.differenceAbsMax( v ), size - 1 - size / 2 );
+   EXPECT_EQ( u_view.differenceAbsMax( v_view ), size - 1 - size / 2 );
+   EXPECT_EQ( VectorOperations::getVectorDifferenceAbsMax( u, v ), size - 1 - size / 2 );
 }
 
-TYPED_TEST( VectorTest, sqrt )
+TYPED_TEST( VectorTest, differenceAbsMin )
 {
    using VectorType = typename TestFixture::VectorType;
+   using VectorOperations = typename TestFixture::VectorOperations;
    using ViewType = typename TestFixture::ViewType;
-   using RealType = typename VectorType::RealType;
    const int size = VECTOR_TEST_SIZE;
 
-   VectorType _u( size ), _v( size );
-   ViewType u( _u ), v( _v );
-   for( int i = 0; i < size; i++ )
-   {
-      u.setElement( i, ( RealType ) i );
-      v.setElement( i, TNL::sqrt( ( RealType ) i ) );
-   }
+   VectorType u( size ), v( size );
+   ViewType u_view( u ), v_view( v );
+   setNegativeLinearSequence( u );
+   setConstantSequence( v, - size / 2 );
 
-   //EXPECT_EQ( sqrt( u ), v );
-   for( int i = 0; i < size; i++ )
-      EXPECT_NEAR( sqrt( u ).getElement( i ), v.getElement( i ), 1.0e-6 );
-
-}
-
-TYPED_TEST( VectorTest, cbrt )
-{
-   using VectorType = typename TestFixture::VectorType;
-   using ViewType = typename TestFixture::ViewType;
-   using RealType = typename VectorType::RealType;
-   const int size = VECTOR_TEST_SIZE;
-
-   VectorType _u( size ), _v( size );
-   ViewType u( _u ), v( _v );
-   for( int i = 0; i < size; i++ )
-   {
-      u.setElement( i, ( RealType ) i );
-      v.setElement( i, TNL::cbrt( ( RealType ) i ) );
-   }
-
-   //EXPECT_EQ( cbrt( u ), v );
-   for( int i = 0; i < size; i++ )
-      EXPECT_NEAR( cbrt( u ).getElement( i ), v.getElement( i ), 1.0e-6 );
-
-}
-
-TYPED_TEST( VectorTest, pow )
-{
-   using VectorType = typename TestFixture::VectorType;
-   using ViewType = typename TestFixture::ViewType;
-   using RealType = typename VectorType::RealType;
-   const int size = VECTOR_TEST_SIZE;
-
-   VectorType _u( size ), _v( size ), _w( size );
-   ViewType u( _u ), v( _v ), w( _w );
-   for( int i = 0; i < size; i++ )
-   {
-      u.setElement( i, ( RealType ) i - ( RealType ) size / 2 );
-      v.setElement( i, TNL::pow( ( RealType ) i - ( RealType ) size / 2, 2.0 ) );
-      w.setElement( i, TNL::pow( ( RealType ) i - ( RealType ) size / 2, 3.0 ) );
-   }
-
-   //EXPECT_EQ( pow( u, 2.0 ), v );
-   //EXPECT_EQ( pow( u, 3.0 ), w );
-   for( int i = 0; i < size; i++ )
-      EXPECT_NEAR( pow( u, 2.0 ).getElement( i ), v.getElement( i ), 1.0e-6 );
-   for( int i = 0; i < size; i++ )
-      EXPECT_NEAR( pow( u, 3.0 ).getElement( i ), w.getElement( i ), 1.0e-6 );
-
-
-}
-
-TYPED_TEST( VectorTest, floor )
-{
-   using VectorType = typename TestFixture::VectorType;
-   using ViewType = typename TestFixture::ViewType;
-   using RealType = typename VectorType::RealType;
-   const int size = VECTOR_TEST_SIZE;
-
-   VectorType _u( size ), _v( size );
-   ViewType u( _u ), v( _v );
-   for( int i = 0; i < size; i++ )
-   {
-      u.setElement( i, ( RealType ) i - ( RealType ) size / 2 );
-      v.setElement( i, TNL::floor( ( RealType ) i - ( RealType ) size / 2 ) );
-   }
-
-   //EXPECT_EQ( floor( u ), v );
-   for( int i = 0; i < size; i++ )
-      EXPECT_NEAR( floor( u ).getElement( i ), v.getElement( i ), 1.0e-6 );
-
-}
-
-TYPED_TEST( VectorTest, ceil )
-{
-   using VectorType = typename TestFixture::VectorType;
-   using ViewType = typename TestFixture::ViewType;
-   using RealType = typename VectorType::RealType;
-   const int size = VECTOR_TEST_SIZE;
-
-   VectorType _u( size ), _v( size );
-   ViewType u( _u ), v( _v );
-   for( int i = 0; i < size; i++ )
-   {
-      u.setElement( i, ( RealType ) i - ( RealType ) size / 2 );
-      v.setElement( i, TNL::ceil( ( RealType ) i - ( RealType ) size / 2 ) );
-   }
-
-   //EXPECT_EQ( ceil( u ), v );
-   for( int i = 0; i < size; i++ )
-      EXPECT_NEAR( ceil( u ).getElement( i ), v.getElement( i ), 1.0e-6 );
-
+   EXPECT_EQ( u.differenceAbsMin( v ), 0 );
+   EXPECT_EQ( u_view.differenceAbsMin( v_view ), 0 );
+   EXPECT_EQ( VectorOperations::getVectorDifferenceAbsMin( u, v ), 0 );
+   EXPECT_EQ( v.differenceAbsMin( u ), 0 );
+   EXPECT_EQ( v_view.differenceAbsMin( u_view ), 0 );
+   EXPECT_EQ( VectorOperations::getVectorDifferenceAbsMin( v, u ), 0 );
 }
 
 #endif // HAVE_GTEST

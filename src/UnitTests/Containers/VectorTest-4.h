@@ -13,383 +13,173 @@
 #pragma once
 
 #ifdef HAVE_GTEST
-#include <limits>
-
-#include <TNL/Experimental/Arithmetics/Quad.h>
-#include <TNL/Containers/Vector.h>
-#include <TNL/Containers/VectorView.h>
 #include "VectorTestSetup.h"
-
-#include "gtest/gtest.h"
-
-using namespace TNL;
-using namespace TNL::Containers;
-using namespace TNL::Containers::Algorithms;
-using namespace TNL::Arithmetics;
 
 // Should be small enough to have fast tests, but larger than minGPUReductionDataSize
 // and large enough to require multiple CUDA blocks for reduction.
-constexpr int VECTOR_TEST_SIZE = 10000;
+constexpr int VECTOR_TEST_SIZE = 5000;
 
-TYPED_TEST( VectorTest, addVector )
+TYPED_TEST( VectorTest, sum )
 {
    using VectorType = typename TestFixture::VectorType;
    using VectorOperations = typename TestFixture::VectorOperations;
    using ViewType = typename TestFixture::ViewType;
-   const int size = VECTOR_TEST_SIZE;
-
-   VectorType x, y;
-   x.setSize( size );
-   y.setSize( size );
-   ViewType x_view( x ), y_view( y );
-
-   typename VectorType::HostType expected1, expected2;
-   expected1.setSize( size );
-   expected2.setSize( size );
-   for( int i = 0; i < size; i++ ) {
-      expected1[ i ] = 2.0 + 3.0 * i;
-      expected2[ i ] = 1.0 + 3.0 * i;
-   }
-
-   setConstantSequence( x, 1 );
-   setLinearSequence( y );
-   VectorOperations::addVector( x, y, 3.0, 2.0 );
-   EXPECT_EQ( x, expected1 );
-
-   setConstantSequence( x, 1 );
-   setLinearSequence( y );
-   x.addVector( y, 3.0, 1.0 );
-   EXPECT_EQ( x, expected2 );
-
-   setConstantSequence( x, 1 );
-   setLinearSequence( y );
-   x_view.addVector( y_view, 3.0, 1.0 );
-   EXPECT_EQ( x, expected2 );
-
-   // multiplication by floating-point scalars which produces integer values
-   setConstantSequence( x, 2 );
-   setConstantSequence( y, 4 );
-   x.addVector( y, 2.5, -1.5 );
-   EXPECT_EQ( x.min(), 7 );
-   EXPECT_EQ( x.max(), 7 );
-}
-
-TYPED_TEST( VectorTest, addVectors )
-{
-   using VectorType = typename TestFixture::VectorType;
-   using VectorOperations = typename TestFixture::VectorOperations;
-   using ViewType = typename TestFixture::ViewType;
-   const int size = VECTOR_TEST_SIZE;
-
-   VectorType x, y, z;
-   x.setSize( size );
-   y.setSize( size );
-   z.setSize( size );
-   ViewType x_view( x ), y_view( y ), z_view( z );
-
-   typename VectorType::HostType expected1, expected2;
-   expected1.setSize( size );
-   expected2.setSize( size );
-   for( int i = 0; i < size; i++ ) {
-      expected1[ i ] = 1.0 + 3.0 * i + 2.0;
-      expected2[ i ] = 2.0 + 3.0 * i + 2.0;
-   }
-
-   setConstantSequence( x, 1 );
-   setLinearSequence( y );
-   setConstantSequence( z, 2 );
-   VectorOperations::addVectors( x, y, 3.0, z, 1.0, 1.0 );
-   EXPECT_EQ( x, expected1 );
-
-   setConstantSequence( x, 1 );
-   setLinearSequence( y );
-   setConstantSequence( z, 2 );
-   x.addVectors( y, 3.0, z, 1.0, 2.0 );
-   EXPECT_EQ( x, expected2 );
-
-   setConstantSequence( x, 1 );
-   setLinearSequence( y );
-   setConstantSequence( z, 2 );
-   x_view.addVectors( y_view, 3.0, z_view, 1.0, 2.0 );
-   EXPECT_EQ( x, expected2 );
-
-   // multiplication by floating-point scalars which produces integer values
-   setConstantSequence( x, 2 );
-   setConstantSequence( y, 4 );
-   setConstantSequence( z, 6 );
-   x.addVectors( y, 2.5, z, -1.5, -1.5 );
-   EXPECT_EQ( x.min(), -2 );
-   EXPECT_EQ( x.max(), -2 );
-}
-
-TYPED_TEST( VectorTest, prefixSum )
-{
-   using VectorType = typename TestFixture::VectorType;
-   using VectorOperations = typename TestFixture::VectorOperations;
-   using ViewType = typename TestFixture::ViewType;
-   using RealType = typename VectorType::RealType;
-   using DeviceType = typename VectorType::DeviceType;
-   using IndexType = typename VectorType::IndexType;
-   const int size = VECTOR_TEST_SIZE;
-
-   if( std::is_same< RealType, float >::value ||
-       std::is_same< IndexType, short >::value )
-   return;
-
-   VectorType v( size );
-   ViewType v_view( v );
-
-   v = 0;
-   v.prefixSum();
-   for( int i = 0; i < size; i++ )
-      EXPECT_EQ( v.getElement( i ), 0 );
-
-   setLinearSequence( v );
-   v.prefixSum();
-   for( int i = 1; i < size; i++ )
-      EXPECT_EQ( v.getElement( i ) - v.getElement( i - 1 ), i );
-
-   setConstantSequence( v, 1 );
-   v_view.prefixSum();
-   for( int i = 0; i < size; i++ )
-      EXPECT_EQ( v.getElement( i ), i + 1 );
-
-   v = 0;
-   v_view.prefixSum();
-   for( int i = 0; i < size; i++ )
-      EXPECT_EQ( v.getElement( i ), 0 );
-
-   setLinearSequence( v );
-   v_view.prefixSum();
-   for( int i = 1; i < size; i++ )
-      EXPECT_EQ( v.getElement( i ) - v.getElement( i - 1 ), i );
-
-   ////
-   // With CUDA, perform tests with multiple CUDA grids.
-   if( std::is_same< DeviceType, Devices::Cuda >::value )
-   {
-#ifdef HAVE_CUDA
-      Algorithms::CudaPrefixSumKernelLauncher< Algorithms::PrefixSumType::Inclusive, RealType, IndexType >::setMaxGridSize( 3 );
-      v = 0;
-      v.prefixSum();
-      EXPECT_GT( ( CudaPrefixSumKernelLauncher< Algorithms::PrefixSumType::Inclusive, RealType, IndexType >::gridsCount ), 1  );
-      for( int i = 0; i < size; i++ )
-         EXPECT_EQ( v.getElement( i ), 0 );
-
-      setLinearSequence( v );
-      v.prefixSum();
-      EXPECT_GT( ( CudaPrefixSumKernelLauncher< Algorithms::PrefixSumType::Inclusive, RealType, IndexType >::gridsCount ), 1  );
-      for( int i = 1; i < size; i++ )
-         EXPECT_EQ( v.getElement( i ) - v.getElement( i - 1 ), i );
-
-      setConstantSequence( v, 1 );
-      v_view.prefixSum();
-      EXPECT_GT( ( CudaPrefixSumKernelLauncher< Algorithms::PrefixSumType::Inclusive, RealType, IndexType >::gridsCount ), 1  );
-      for( int i = 0; i < size; i++ )
-         EXPECT_EQ( v.getElement( i ), i + 1 );
-
-      v = 0;
-      v_view.prefixSum();
-      EXPECT_GT( ( CudaPrefixSumKernelLauncher< Algorithms::PrefixSumType::Inclusive, RealType, IndexType >::gridsCount ), 1  );
-      for( int i = 0; i < size; i++ )
-         EXPECT_EQ( v.getElement( i ), 0 );
-
-      setLinearSequence( v );
-      v_view.prefixSum();
-      EXPECT_GT( ( CudaPrefixSumKernelLauncher< Algorithms::PrefixSumType::Inclusive, RealType, IndexType >::gridsCount ), 1  );
-      for( int i = 1; i < size; i++ )
-         EXPECT_EQ( v.getElement( i ) - v.getElement( i - 1 ), i );
-      CudaPrefixSumKernelLauncher< Algorithms::PrefixSumType::Inclusive, RealType, IndexType >::resetMaxGridSize();
-#endif
-   }
-}
-
-TYPED_TEST( VectorTest, exclusivePrefixSum )
-{
-   using VectorType = typename TestFixture::VectorType;
-   using VectorOperations = typename TestFixture::VectorOperations;
-   using ViewType = typename TestFixture::ViewType;
-   using RealType = typename VectorType::RealType;
-   using DeviceType = typename VectorType::DeviceType;
-   using IndexType = typename VectorType::IndexType;
-   const int size = VECTOR_TEST_SIZE;
-
-   if( std::is_same< RealType, float >::value ||
-       std::is_same< IndexType, short >::value )
-      return;
+   // this test expect an even size
+   const int size = VECTOR_TEST_SIZE % 2 ? VECTOR_TEST_SIZE - 1 : VECTOR_TEST_SIZE;
 
    VectorType v;
    v.setSize( size );
    ViewType v_view( v );
 
    setConstantSequence( v, 1 );
-   v.template prefixSum< Algorithms::PrefixSumType::Exclusive >();
-   for( int i = 0; i < size; i++ )
-      EXPECT_EQ( v.getElement( i ), i );
-
-   v.setValue( 0 );
-   v.template prefixSum< Algorithms::PrefixSumType::Exclusive >();
-   for( int i = 0; i < size; i++ )
-      EXPECT_EQ( v.getElement( i ), 0 );
+   EXPECT_EQ( v.sum(), size );
+   EXPECT_EQ( v_view.sum(), size );
+   EXPECT_EQ( VectorOperations::getVectorSum( v ), size );
 
    setLinearSequence( v );
-   v.template prefixSum< Algorithms::PrefixSumType::Exclusive >();
-   for( int i = 1; i < size; i++ )
-      EXPECT_EQ( v.getElement( i ) - v.getElement( i - 1 ), i - 1 );
+   EXPECT_EQ( v.sum(), 0.5 * size * ( size - 1 ) );
+   EXPECT_EQ( v_view.sum(), 0.5 * size * ( size - 1 ) );
+   EXPECT_EQ( VectorOperations::getVectorSum( v ), 0.5 * size * ( size - 1 ) );
 
+   setNegativeLinearSequence( v );
+   EXPECT_EQ( v.sum(), - 0.5 * size * ( size - 1 ) );
+   EXPECT_EQ( v_view.sum(), - 0.5 * size * ( size - 1 ) );
+   EXPECT_EQ( VectorOperations::getVectorSum( v ), - 0.5 * size * ( size - 1 ) );
+
+   setOscilatingSequence( v, 1.0 );
+   EXPECT_EQ( v.sum(), 0 );
+   EXPECT_EQ( v_view.sum(), 0 );
+   EXPECT_EQ( VectorOperations::getVectorSum( v ), 0 );
+}
+
+TEST( VectorSpecialCasesTest, sumOfBoolVector )
+{
+   using VectorType = Containers::Vector< bool, Devices::Host >;
+   using ViewType = VectorView< bool, Devices::Host >;
+   const float epsilon = 64 * std::numeric_limits< float >::epsilon();
+
+   VectorType v( 512 ), w( 512 );
+   ViewType v_view( v ), w_view( w );
+   v.setValue( true );
+   w.setValue( false );
+
+   const int sum = v.sum< int >();
+   const int l1norm = v.lpNorm< int >( 1.0 );
+   const float l2norm = v.lpNorm< float >( 2.0 );
+   const float l3norm = v.lpNorm< float >( 3.0 );
+   EXPECT_EQ( sum, 512 );
+   EXPECT_EQ( l1norm, 512 );
+   EXPECT_NEAR( l2norm, std::sqrt( 512 ), epsilon );
+   EXPECT_NEAR( l3norm, std::cbrt( 512 ), epsilon );
+
+   const int diff_sum = v.differenceSum< int >( w );
+   const int diff_l1norm = v.differenceLpNorm< int >( w, 1.0 );
+   const float diff_l2norm = v.differenceLpNorm< float >( w, 2.0 );
+   const float diff_l3norm = v.differenceLpNorm< float >( w, 3.0 );
+   EXPECT_EQ( diff_sum, 512 );
+   EXPECT_EQ( diff_l1norm, 512 );
+   EXPECT_NEAR( diff_l2norm, std::sqrt( 512 ), epsilon );
+   EXPECT_NEAR( diff_l3norm, std::cbrt( 512 ), epsilon );
+
+   // test views
+   const int sum_view = v_view.sum< int >();
+   const int l1norm_view = v_view.lpNorm< int >( 1.0 );
+   const float l2norm_view = v_view.lpNorm< float >( 2.0 );
+   const float l3norm_view = v_view.lpNorm< float >( 3.0 );
+   EXPECT_EQ( sum_view, 512 );
+   EXPECT_EQ( l1norm_view, 512 );
+   EXPECT_NEAR( l2norm_view, std::sqrt( 512 ), epsilon );
+   EXPECT_NEAR( l3norm_view, std::cbrt( 512 ), epsilon );
+
+   const int diff_sum_view = v_view.differenceSum< int >( w_view );
+   const int diff_l1norm_view = v_view.differenceLpNorm< int >( w_view, 1.0 );
+   const float diff_l2norm_view = v_view.differenceLpNorm< float >( w_view, 2.0 );
+   const float diff_l3norm_view = v_view.differenceLpNorm< float >( w_view, 3.0 );
+   EXPECT_EQ( diff_sum_view, 512 );
+   EXPECT_EQ( diff_l1norm_view, 512 );
+   EXPECT_NEAR( diff_l2norm_view, std::sqrt( 512 ), epsilon );
+   EXPECT_NEAR( diff_l3norm_view, std::cbrt( 512 ), epsilon );
+}
+
+TYPED_TEST( VectorTest, scalarProduct )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using VectorOperations = typename TestFixture::VectorOperations;
+   using ViewType = typename TestFixture::ViewType;
+   // this test expects an odd size
+   const int size = VECTOR_TEST_SIZE % 2 ? VECTOR_TEST_SIZE : VECTOR_TEST_SIZE - 1;
+
+   VectorType u( size ), v( size );
+   ViewType u_view( u ), v_view( v );
+   setOscilatingSequence( u, 1.0 );
    setConstantSequence( v, 1 );
-   v_view.template prefixSum< Algorithms::PrefixSumType::Exclusive >();
-   for( int i = 0; i < size; i++ )
-      EXPECT_EQ( v.getElement( i ), i );
 
-   v.setValue( 0 );
-   v_view.template prefixSum< Algorithms::PrefixSumType::Exclusive >();
-   for( int i = 0; i < size; i++ )
-      EXPECT_EQ( v.getElement( i ), 0 );
-
-   setLinearSequence( v );
-   v_view.template prefixSum< Algorithms::PrefixSumType::Exclusive >();
-   for( int i = 1; i < size; i++ )
-      EXPECT_EQ( v.getElement( i ) - v.getElement( i - 1 ), i - 1 );
-
-   ////
-   // With CUDA, perform tests with multiple CUDA grids.
-   if( std::is_same< DeviceType, Devices::Cuda >::value )
-   {
-#ifdef HAVE_CUDA
-      CudaPrefixSumKernelLauncher< Algorithms::PrefixSumType::Exclusive, RealType, IndexType >::setMaxGridSize( 3 );
-
-      setConstantSequence( v, 1 );
-      v.template prefixSum< Algorithms::PrefixSumType::Exclusive >();
-      EXPECT_GT( ( CudaPrefixSumKernelLauncher< Algorithms::PrefixSumType::Exclusive, RealType, IndexType >::gridsCount ), 1  );
-      for( int i = 0; i < size; i++ )
-         EXPECT_EQ( v.getElement( i ), i );
-
-      v.setValue( 0 );
-      v.template prefixSum< Algorithms::PrefixSumType::Exclusive >();
-      EXPECT_GT( ( CudaPrefixSumKernelLauncher< Algorithms::PrefixSumType::Exclusive, RealType, IndexType >::gridsCount ), 1  );
-      for( int i = 0; i < size; i++ )
-         EXPECT_EQ( v.getElement( i ), 0 );
-
-      setLinearSequence( v );
-      v.template prefixSum< Algorithms::PrefixSumType::Exclusive >();
-      EXPECT_GT( ( CudaPrefixSumKernelLauncher< Algorithms::PrefixSumType::Exclusive, RealType, IndexType >::gridsCount ), 1  );
-      for( int i = 1; i < size; i++ )
-         EXPECT_EQ( v.getElement( i ) - v.getElement( i - 1 ), i - 1 );
-
-      setConstantSequence( v, 1 );
-      v_view.template prefixSum< Algorithms::PrefixSumType::Exclusive >();
-      EXPECT_GT( ( CudaPrefixSumKernelLauncher< Algorithms::PrefixSumType::Exclusive, RealType, IndexType >::gridsCount ), 1  );
-      for( int i = 0; i < size; i++ )
-         EXPECT_EQ( v.getElement( i ), i );
-
-      v.setValue( 0 );
-      v_view.template prefixSum< Algorithms::PrefixSumType::Exclusive >();
-      EXPECT_GT( ( CudaPrefixSumKernelLauncher< Algorithms::PrefixSumType::Exclusive, RealType, IndexType >::gridsCount ), 1  );
-      for( int i = 0; i < size; i++ )
-         EXPECT_EQ( v.getElement( i ), 0 );
-
-      setLinearSequence( v );
-      v_view.template prefixSum< Algorithms::PrefixSumType::Exclusive >();
-      EXPECT_GT( ( CudaPrefixSumKernelLauncher< Algorithms::PrefixSumType::Exclusive, RealType, IndexType >::gridsCount ), 1  );
-      for( int i = 1; i < size; i++ )
-         EXPECT_EQ( v.getElement( i ) - v.getElement( i - 1 ), i - 1 );
-      CudaPrefixSumKernelLauncher< Algorithms::PrefixSumType::Exclusive, RealType, IndexType >::resetMaxGridSize();
-#endif
-   }
+   EXPECT_EQ( u.scalarProduct( v ), 1.0 );
+   EXPECT_EQ( u_view.scalarProduct( v_view ), 1.0 );
+   EXPECT_EQ( VectorOperations::getScalarProduct( u, v ), 1.0 );
+   EXPECT_EQ( (u, v), 1.0 );
+   EXPECT_EQ( (u_view, v_view), 1.0 );
 }
 
-
-template< typename FlagsView >
-void setupFlags( FlagsView& f )
-{
-   auto f1 = [] __cuda_callable__ ( typename FlagsView::IndexType i ) { return ( i % 5 ) == 0; };
-   f.evaluate( f1 );
-}
-
-/*
-TYPED_TEST( VectorTest, segmentedPrefixSum )
+TYPED_TEST( VectorTest, differenceLpNorm )
 {
    using VectorType = typename TestFixture::VectorType;
-   using ViewType = typename TestFixture::ViewType;
    using RealType = typename VectorType::RealType;
-   using DeviceType = typename VectorType::DeviceType;
-   using IndexType = typename VectorType::IndexType;
-   using FlagsArrayType = Array< bool, DeviceType, IndexType >;
-   using FlagsViewType = ArrayView< bool, DeviceType, IndexType >;
-   const int size = VECTOR_TEST_SIZE;
-
-   VectorType v( size );
-   ViewType v_view( v );
-
-   FlagsArrayType flags( size ), flags_copy( size );
-   FlagsViewType flags_view( flags );
-   //auto f1 = [] __cuda_callable__ ( IndexType i ) { return ( i % 5 ) == 0; };
-   //flags_view.evaluate( f1 );
-   setupFlags( flags_view );
-   flags_copy = flags_view;
-
-   v = 0;
-   v.computeSegmentedPrefixSum( flags_view );
-   for( int i = 0; i < size; i++ )
-      EXPECT_EQ( v.getElement( i ), 0 );
-   flags_view = flags_copy;
-
-   v = 1;
-   v.computeSegmentedPrefixSum( flags_view );
-   for( int i = 0; i < size; i++ )
-         EXPECT_EQ( v.getElement( i ), ( i % 5 ) + 1 );
-   flags_view = flags_copy;
-
-   setLinearSequence( v );
-   v.computeSegmentedPrefixSum( flags_view );
-   for( int i = 1; i < size; i++ )
-   {
-      if( flags.getElement( i ) )
-         EXPECT_EQ( v.getElement( i ), i );
-      else
-         EXPECT_EQ( v.getElement( i ) - v.getElement( i - 1 ), i );
-   }
-   flags_view = flags_copy;
-
-   v_view = 0;
-   v_view.computeSegmentedPrefixSum( flags_view );
-   for( int i = 0; i < size; i++ )
-      EXPECT_EQ( v_view.getElement( i ), 0 );
-   flags_view = flags_copy;
-
-   v_view = 1;
-   v_view.computeSegmentedPrefixSum( flags_view );
-   for( int i = 0; i < size; i++ )
-         EXPECT_EQ( v_view.getElement( i ), ( i % 5 ) + 1 );
-   flags_view = flags_copy;
-
-   //v_view.evaluate( [] __cuda_callable__ ( IndexType i ) { return i; } );
-   setLinearSequence( v );
-   v_view.computeSegmentedPrefixSum( flags_view );
-   for( int i = 1; i < size; i++ )
-   {
-      if( flags.getElement( i ) )
-         EXPECT_EQ( v_view.getElement( i ), i );
-      else
-         EXPECT_EQ( v_view.getElement( i ) - v_view.getElement( i - 1 ), i );
-   }
-}
-*/
-
-TYPED_TEST( VectorTest, abs )
-{
-   using VectorType = typename TestFixture::VectorType;
+   using VectorOperations = typename TestFixture::VectorOperations;
    using ViewType = typename TestFixture::ViewType;
    const int size = VECTOR_TEST_SIZE;
+   const RealType epsilon = 64 * std::numeric_limits< RealType >::epsilon();
 
-   VectorType _u( size ), _v( size );
-   ViewType u( _u ), v( _v );
-   for( int i = 0; i < size; i++ )
-      u.setElement( i, i );
+   VectorType u( size ), v( size );
+   ViewType u_view( u ), v_view( v );
+   u.setValue( 3.0 );
+   v.setValue( 1.0 );
 
-   v = -u;
-   EXPECT_TRUE( abs( v ) == u );
+   const RealType expectedL1norm = 2.0 * size;
+   const RealType expectedL2norm = std::sqrt( 4.0 * size );
+   const RealType expectedL3norm = std::cbrt( 8.0 * size );
+   EXPECT_EQ( u.differenceLpNorm( v, 1.0 ), expectedL1norm );
+   EXPECT_EQ( u.differenceLpNorm( v, 2.0 ), expectedL2norm );
+   EXPECT_NEAR( u.differenceLpNorm( v, 3.0 ), expectedL3norm, epsilon );
+   EXPECT_EQ( u_view.differenceLpNorm( v_view, 1.0 ), expectedL1norm );
+   EXPECT_EQ( u_view.differenceLpNorm( v_view, 2.0 ), expectedL2norm );
+   EXPECT_NEAR( u_view.differenceLpNorm( v_view, 3.0 ), expectedL3norm, epsilon );
+   EXPECT_EQ( VectorOperations::getVectorDifferenceLpNorm( u, v, 1.0 ), expectedL1norm );
+   EXPECT_EQ( VectorOperations::getVectorDifferenceLpNorm( u, v, 2.0 ), expectedL2norm );
+   EXPECT_NEAR( VectorOperations::getVectorDifferenceLpNorm( u, v, 3.0 ), expectedL3norm, epsilon );
+}
+
+TYPED_TEST( VectorTest, differenceSum )
+{
+   using VectorType = typename TestFixture::VectorType;
+   using VectorOperations = typename TestFixture::VectorOperations;
+   using ViewType = typename TestFixture::ViewType;
+   // this test expect an even size
+   const int size = VECTOR_TEST_SIZE % 2 ? VECTOR_TEST_SIZE - 1 : VECTOR_TEST_SIZE;
+
+   VectorType u( size ), v( size );
+   ViewType u_view( u ), v_view( v );
+   v.setValue( 1.0 );
+
+   setConstantSequence( u, 2 );
+   EXPECT_EQ( u.differenceSum( v ), size );
+   EXPECT_EQ( u_view.differenceSum( v_view ), size );
+   EXPECT_EQ( VectorOperations::getVectorDifferenceSum( u, v ), size );
+
+   setLinearSequence( u );
+   EXPECT_EQ( u.differenceSum( v ), 0.5 * size * ( size - 1 ) - size );
+   EXPECT_EQ( u_view.differenceSum( v_view ), 0.5 * size * ( size - 1 ) - size );
+   EXPECT_EQ( VectorOperations::getVectorDifferenceSum( u, v ), 0.5 * size * ( size - 1 ) - size );
+
+   setNegativeLinearSequence( u );
+   EXPECT_EQ( u.differenceSum( v ), - 0.5 * size * ( size - 1 ) - size );
+   EXPECT_EQ( u_view.differenceSum( v_view ), - 0.5 * size * ( size - 1 ) - size );
+   EXPECT_EQ( VectorOperations::getVectorDifferenceSum( u, v ), - 0.5 * size * ( size - 1 ) - size );
+
+   setOscilatingSequence( u, 1.0 );
+   EXPECT_EQ( u.differenceSum( v ), - size );
+   EXPECT_EQ( u_view.differenceSum( v_view ), - size );
+   EXPECT_EQ( VectorOperations::getVectorDifferenceSum( u, v ), - size );
 }
 
 #endif // HAVE_GTEST
