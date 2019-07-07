@@ -338,7 +338,7 @@ getView( IndexType begin, IndexType end )
 {
    if( end == 0 )
       end = getSize();
-   return ViewType( &getData()[ begin ], end - begin );
+   return ViewType( getData() + begin, end - begin );
 }
 
 template< typename Value,
@@ -350,7 +350,7 @@ getConstView( IndexType begin, IndexType end ) const
 {
    if( end == 0 )
       end = getSize();
-   return ConstViewType( &getData()[ begin ], end - begin );
+   return ConstViewType( getData() + begin, end - begin );
 }
 
 template< typename Value,

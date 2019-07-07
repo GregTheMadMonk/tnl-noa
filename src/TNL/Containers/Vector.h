@@ -44,85 +44,20 @@ public:
    using ViewType = VectorView< Real, Device, Index >;
    using ConstViewType = VectorView< std::add_const_t< Real >, Device, Index >;
 
-   /** Subscript operator is inherited from the class \ref Array. */
-   using Array< Real, Device, Index >::operator[];
+   //! \brief Default constructor.
+   Vector() = default;
+   //! \brief Default copy constructor.
+   explicit Vector( const Vector& ) = default;
+   //! \brief Default move constructor.
+   Vector( Vector&& ) = default;
+   //! \brief Default copy-assignment operator.
+   Vector& operator=( const Vector& ) = default;
+   //! \brief Default move-assignment operator.
+   Vector& operator=( Vector&& ) = default;
 
-   /**
-    * \brief Basic constructor.
-    *
-    * Constructs an empty vector with zero size.
-    */
-   Vector();
-
-   /**
-    * \brief Constructor with vector size.
-    *
-    * \param size is number of vector elements.
-    */
-   Vector( const IndexType& size );
-
-   /**
-    * \brief Deep copy constructor with data pointer and size.
-    *
-    * This behavior of the Vector is deprecated and \ref VectorView should be used
-    * instead.
-    *
-    * \param data Pointer to data.
-    * \param size Number of vector elements.
-    */
-   Vector( Real* data,
-           const IndexType& size );
-
-   /**
-    * \brief Copy constructor.
-    *
-    * \param vector is an vector to be copied.
-    */
-   explicit Vector( const Vector& vector );
-
-   template< typename Real_, typename Device_, typename Index_ >
-   Vector( const Vector< Real_, Device_, Index_ >& vector );
-
-   /**
-    * \brief Deep copy constructor with other vector.
-    *
-    * \param vector is an vector that is to be bound.
-    * \param begin is the first index which should be bound.
-    * \param size is number of array elements that should be bound.
-    */
-   Vector( Vector& vector,
-           const IndexType& begin = 0,
-           const IndexType& size = 0 );
-
-   /**
-    * \brief Move constructor.
-    *
-    * @param vector is an vector to be moved
-    */
-   Vector( Vector&& vector );
-
-   /**
-    * \brief Initialize the vector from initializer list, i.e. { ... }
-    *
-    * @param list Initializer list.
-    */
-   Vector( const std::initializer_list< Real >& list );
-
-   /**
-    * \brief Initialize the vector from std::list.
-    *
-    * @param list Input STL list.
-    */
-   template< typename InReal >
-   Vector( const std::list< InReal >& list );
-
-   /**
-    * \brief Initialize the vector from std::vector.
-    *
-    * @param vector Input STL vector.
-    */
-   template< typename InReal >
-   Vector( const std::vector< InReal >& vector );
+   //! Constructors and assignment operators are inherited from the class \ref Array.
+   using Array< Real, Device, Index >::Array;
+   using Array< Real, Device, Index >::operator=;
 
    /** \brief Returns type of vector Real value, Device type and the type of Index. */
    static String getType();
@@ -182,8 +117,6 @@ public:
    void addElement( const IndexType i,
                     const RealType& value,
                     const Scalar thisElementMultiplicator );
-
-   Vector& operator = ( const Vector& v );
 
    template< typename Real_, typename Device_, typename Index_ >
    Vector& operator = ( const Vector< Real_, Device_, Index_ >& v );

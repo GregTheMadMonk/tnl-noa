@@ -43,25 +43,27 @@ VectorView< Real, Device, Index >::VectorView( const Expressions::UnaryExpressio
 template< typename Real,
           typename Device,
           typename Index >
+__cuda_callable__
 typename VectorView< Real, Device, Index >::ViewType
 VectorView< Real, Device, Index >::
 getView( const IndexType begin, IndexType end )
 {
    if( end == 0 )
       end = this->getSize();
-   return ViewType( &getData()[ begin ], end - begin );;
+   return ViewType( this->getData() + begin, end - begin );;
 }
 
 template< typename Real,
           typename Device,
           typename Index >
+__cuda_callable__
 typename VectorView< Real, Device, Index >::ConstViewType
 VectorView< Real, Device, Index >::
 getConstView( const IndexType begin, IndexType end ) const
 {
    if( end == 0 )
       end = this->getSize();
-   return ConstViewType( &getData()[ begin ], end - begin );;
+   return ConstViewType( this->getData() + begin, end - begin );;
 }
 
 template< typename Real,

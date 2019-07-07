@@ -42,18 +42,9 @@ public:
    using ViewType = VectorView< Real, Device, Index >;
    using ConstViewType = VectorView< std::add_const_t< Real >, Device, Index >;
 
-   // inherit all ArrayView's constructors
-#ifndef __NVCC__
-   using BaseType::ArrayView;
-#else
-   // workaround for nvcc 8.0, otherwise the templated constructor below fails
-   // (works fine in nvcc 9.0)
+   //! Constructors and assignment operators are inherited from the class \ref Array.
    using ArrayView< Real, Device, Index >::ArrayView;
-#endif
-   using ArrayView< Real, Device, Index >::getData;
-
-   /** Subscript operator is inherited from the class \ref Array. */
-   using ArrayView< Real, Device, Index >::operator[];
+   using ArrayView< Real, Device, Index >::operator=;
 
    // In C++14, default constructors cannot be inherited, although Clang
    // and GCC since version 7.0 inherit them.

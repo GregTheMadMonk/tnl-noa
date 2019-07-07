@@ -20,102 +20,6 @@ namespace Containers {
 template< typename Real,
           typename Device,
           typename Index >
-Vector< Real, Device, Index >::
-Vector()
-{
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-Vector< Real, Device, Index >::
-Vector( const IndexType& size )
-:  Array< Real, Device, Index >( size )
-{
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-Vector< Real, Device, Index >::
-Vector( Real* data,
-       const IndexType& size )
-:  Array< Real, Device, Index >( data, size )
-{
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-Vector< Real, Device, Index >::
-Vector( const Vector< Real, Device, Index >& vector )
-:  Array< Real, Device, Index >( vector )
-{
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename Real_, typename Device_, typename Index_ >
-Vector< Real, Device, Index >::
-Vector( const Vector< Real_, Device_, Index_ >& vector )
-:  Array< Real, Device, Index >( vector )
-{
-}
-
-
-template< typename Real,
-          typename Device,
-          typename Index >
-Vector< Real, Device, Index >::
-Vector( Vector< Real, Device, Index >& vector,
-        const IndexType& begin,
-        const IndexType& size )
-: Array< Real, Device, Index >( vector, begin, size )
-{
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-Vector< Real, Device, Index >::
-Vector( Vector< Real, Device, Index >&& vector )
-:  Array< Real, Device, Index >( std::move( vector ) )
-{
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-Vector< Real, Device, Index >::
-Vector( const std::initializer_list< Real >& list )
-:  Array< Real, Device, Index >( list )
-{
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename InReal >
-Vector< Real, Device, Index >::
-Vector( const std::list< InReal >& list )
-:  Array< Real, Device, Index >( list )
-{
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename InReal >
-Vector< Real, Device, Index >::
-Vector( const std::vector< InReal >& vector )
-:   Array< Real, Device, Index >( vector )
-{
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
 String
 Vector< Real, Device, Index >::
 getType()
@@ -145,7 +49,7 @@ getView( IndexType begin, IndexType end )
 {
    if( end == 0 )
       end = this->getSize();
-   return ViewType( &this->getData()[ begin ], end - begin );
+   return ViewType( this->getData() + begin, end - begin );
 }
 
 template< typename Real,
@@ -157,7 +61,7 @@ getConstView( IndexType begin, IndexType end ) const
 {
    if( end == 0 )
       end = this->getSize();
-   return ConstViewType( &this->getData()[ begin ], end - begin );
+   return ConstViewType( this->getData() + begin, end - begin );
 }
 
 template< typename Real,
@@ -200,16 +104,6 @@ addElement( const IndexType i,
             const Scalar thisElementMultiplicator )
 {
    Algorithms::VectorOperations< Device >::addElement( *this, i, value, thisElementMultiplicator );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-Vector< Real, Device, Index >&
-Vector< Real, Device, Index >::operator = ( const Vector& vector )
-{
-   Array< Real, Device, Index >::operator=( vector );
-   return *this;
 }
 
 template< typename Real,
