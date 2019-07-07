@@ -80,6 +80,7 @@ vectorScalarMultiplication( Vector& v,
 #endif
 }
 
+/*
 #ifdef HAVE_CUDA
 template< typename Real1, typename Real2, typename Index, typename Scalar1, typename Scalar2 >
 __global__ void
@@ -105,23 +106,25 @@ vectorAddVectorCudaKernel( Real1* y,
       }
 }
 #endif
+*/
 
 template< typename Vector1, typename Vector2, typename Scalar1, typename Scalar2 >
 void
 VectorOperations< Devices::Cuda >::
 addVector( Vector1& _y,
-           const Vector2& x,
+           const Vector2& _x,
            const Scalar1 alpha,
            const Scalar2 thisMultiplicator )
 {
-   TNL_ASSERT_GT( x.getSize(), 0, "Vector size must be positive." );
-   TNL_ASSERT_EQ( x.getSize(), _y.getSize(), "The vector sizes must be the same." );
+   TNL_ASSERT_GT( _x.getSize(), 0, "Vector size must be positive." );
+   TNL_ASSERT_EQ( _x.getSize(), _y.getSize(), "The vector sizes must be the same." );
 
 #ifdef HAVE_CUDA
    using IndexType = typename Vector1::IndexType;
    using RealType = typename Vector1::RealType;
 
    RealType* y = _y.getData();
+   const RealType* x = _x.getData();
    auto add1 = [=] __cuda_callable__ ( IndexType i ) { y[ i ] += alpha * x[ i ]; };
    auto add2 = [=] __cuda_callable__ ( IndexType i ) { y[ i ] = thisMultiplicator * y[ i ] + alpha * x[ i ]; };
 
