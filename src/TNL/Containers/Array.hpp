@@ -83,8 +83,8 @@ template< typename Value,
           typename Device,
           typename Index >
 Array< Value, Device, Index >::
-Array( Array< Value, Device, Index >& array,
-       const IndexType& begin,
+Array( const Array< Value, Device, Index >& array,
+       IndexType begin,
        IndexType size )
 : size( size ),
   data( nullptr ),
@@ -221,7 +221,7 @@ template< typename Value,
           typename Index >
 void
 Array< Value, Device, Index >::
-setSize( const Index size )
+setSize( Index size )
 {
    TNL_ASSERT_GE( size, (Index) 0, "Array size must be non-negative." );
 
@@ -398,7 +398,9 @@ template< typename Value,
           typename Device,
           typename Index >
 __cuda_callable__
-const Value* Array< Value, Device, Index >::getData() const
+const Value*
+Array< Value, Device, Index >::
+getData() const
 {
    return this->data;
 }
@@ -407,7 +409,9 @@ template< typename Value,
           typename Device,
           typename Index >
 __cuda_callable__
-Value* Array< Value, Device, Index >::getData()
+Value*
+Array< Value, Device, Index >::
+getData()
 {
    return this->data;
 }
@@ -416,7 +420,9 @@ template< typename Value,
           typename Device,
           typename Index >
 __cuda_callable__
-const Value* Array< Value, Device, Index >::getArrayData() const
+const Value*
+Array< Value, Device, Index >::
+getArrayData() const
 {
    return this->data;
 }
@@ -425,7 +431,9 @@ template< typename Value,
           typename Device,
           typename Index >
 __cuda_callable__
-Value* Array< Value, Device, Index >::getArrayData()
+Value*
+Array< Value, Device, Index >::
+getArrayData()
 {
    return this->data;
 }
@@ -592,23 +600,27 @@ operator!=( const ArrayT& array ) const
 template< typename Value,
           typename Device,
           typename Index >
-void Array< Value, Device, Index >::setValue( const ValueType& e,
-                                              const Index begin,
-                                              Index end )
+void
+Array< Value, Device, Index >::
+setValue( const ValueType& v,
+          IndexType begin,
+          IndexType end )
 {
    TNL_ASSERT_TRUE( this->getData(), "Attempted to set a value of an empty array." );
    if( end == 0 )
       end = this->getSize();
-   Algorithms::ArrayOperations< Device >::setMemory( &this->getData()[ begin ], e, end - begin );
+   Algorithms::ArrayOperations< Device >::setMemory( &this->getData()[ begin ], v, end - begin );
 }
 
 template< typename Value,
           typename Device,
           typename Index >
    template< typename Function >
-void Array< Value, Device, Index >::evaluate( const Function& f,
-                                              const Index begin,
-                                              Index end )
+void
+Array< Value, Device, Index >::
+evaluate( const Function& f,
+          IndexType begin,
+          IndexType end )
 {
    TNL_ASSERT_TRUE( this->getData(), "Attempted to set a value of an empty array." );
    this->getView().evaluate( f, begin, end );
@@ -619,9 +631,9 @@ template< typename Value,
           typename Index >
 bool
 Array< Value, Device, Index >::
-containsValue( const Value& v,
-               const Index begin,
-               Index end ) const
+containsValue( const ValueType& v,
+               IndexType begin,
+               IndexType end ) const
 {
    TNL_ASSERT_TRUE( this->getData(), "Attempted to check a value of an empty array." );
    if( end == 0 )
@@ -635,9 +647,9 @@ template< typename Value,
           typename Index >
 bool
 Array< Value, Device, Index >::
-containsOnlyValue( const Value& v,
-                   const Index begin,
-                   Index end ) const
+containsOnlyValue( const ValueType& v,
+                   IndexType begin,
+                   IndexType end ) const
 {
    TNL_ASSERT_TRUE( this->getData(), "Attempted to check a value of an empty array." );
    if( end == 0 )
@@ -660,7 +672,9 @@ empty() const
 template< typename Value,
           typename Device,
           typename Index >
-void Array< Value, Device, Index >::save( const String& fileName ) const
+void
+Array< Value, Device, Index >::
+save( const String& fileName ) const
 {
    File( fileName, std::ios_base::out ) << *this;
 }

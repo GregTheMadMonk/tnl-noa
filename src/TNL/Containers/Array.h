@@ -112,9 +112,9 @@ class Array
        * \param begin The first index which should be copied.
        * \param size The number of elements that should be copied.
        */
-      Array( Array& array,
-             const IndexType& begin,
-             IndexType size = -1 );
+      Array( const Array& array,
+             IndexType begin,
+             IndexType size = 0 );
 
       /**
        * \brief Move constructor for initialization from \e rvalues.
@@ -481,9 +481,9 @@ class Array
        * \param end The end of the array sub-interval. The default value is 0
        *            which is, however, replaced with the array size.
        */
-      void setValue( const Value& v,
-                     const Index begin = 0,
-                     Index end = 0 );
+      void setValue( const ValueType& v,
+                     IndexType begin = 0,
+                     IndexType end = 0 );
 
       /**
        * \brief Sets the array elements using given lambda function.
@@ -500,8 +500,8 @@ class Array
        */
       template< typename Function >
       void evaluate( const Function& f,
-                     const Index begin = 0,
-                     Index end = 0 );
+                     IndexType begin = 0,
+                     IndexType end = 0 );
 
       /**
        * \brief Checks if there is an element with value \e v.
@@ -518,9 +518,9 @@ class Array
        * \return True if there is _at least one_ element in the sub-interval
        *         `[begin, end)` which has the value \e v.
        */
-      bool containsValue( const Value& v,
-                          const Index begin = 0,
-                          Index end = 0 ) const;
+      bool containsValue( const ValueType& v,
+                          IndexType begin = 0,
+                          IndexType end = 0 ) const;
 
       /**
        * \brief Checks if all elements have the same value \e v.
@@ -537,9 +537,9 @@ class Array
        * \return True if there is _all_ elements in the sub-interval
        *         `[begin, end)` have the same value \e v.
        */
-      bool containsOnlyValue( const Value& v,
-                              const Index begin = 0,
-                              Index end = 0 ) const;
+      bool containsOnlyValue( const ValueType& v,
+                              IndexType begin = 0,
+                              IndexType end = 0 ) const;
 
       /**
        * \brief Returns \e true if the current array size is zero.
