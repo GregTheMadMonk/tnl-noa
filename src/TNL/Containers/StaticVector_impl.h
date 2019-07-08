@@ -179,45 +179,67 @@ Real StaticVector< Size, Real >::operator * ( const StaticVector& u ) const
 }
 #endif
 
+#ifdef UNDEF
 template< int Size, typename Real >
+   template< typename StaticVectorExpression >
 __cuda_callable__
-bool StaticVector< Size, Real >::operator < ( const StaticVector& v ) const
+bool StaticVector< Size, Real >::operator == ( const StaticVectorExpression& v ) const
 {
-   for( int i = 0; i < Size; i++ )
-      if( this->data[ i ] >= v[ i ] )
-         return false;
-   return true;
+   using Left = StaticVector< Size, Real >;
+   using Right = StaticVectorExpression;
+   return Containers::Expressions::StaticComparison< Left, Right >::EQ( *this, v );
 }
 
 template< int Size, typename Real >
+   template< typename StaticVectorExpression >
 __cuda_callable__
-bool StaticVector< Size, Real >::operator <= ( const StaticVector& v ) const
+bool StaticVector< Size, Real >::operator != ( const StaticVectorExpression& v ) const
 {
-   for( int i = 0; i < Size; i++ )
-      if( this->data[ i ] > v[ i ] )
-         return false;
-   return true;
+   using Left = StaticVector< Size, Real >;
+   using Right = StaticVectorExpression;
+   return Containers::Expressions::StaticComparison< Left, Right >::NE( *this, v );
 }
 
 template< int Size, typename Real >
+   template< typename StaticVectorExpression >
 __cuda_callable__
-bool StaticVector< Size, Real >::operator > ( const StaticVector& v ) const
+bool StaticVector< Size, Real >::operator < ( const StaticVectorExpression& v ) const
 {
-   for( int i = 0; i < Size; i++ )
-      if( this->data[ i ] <= v[ i ] )
-         return false;
-   return true;
+   using Left = StaticVector< Size, Real >;
+   using Right = StaticVectorExpression;
+   return Containers::Expressions::StaticComparison< Left, Right >::LT( *this, v );
 }
 
 template< int Size, typename Real >
+   template< typename StaticVectorExpression >
 __cuda_callable__
-bool StaticVector< Size, Real >::operator >= ( const StaticVector& v ) const
+bool StaticVector< Size, Real >::operator <= ( const StaticVectorExpression& v ) const
 {
-   for( int i = 0; i < Size; i++ )
-      if( this->data[ i ] < v[ i ] )
-         return false;
-   return true;
+   using Left = StaticVector< Size, Real >;
+   using Right = StaticVectorExpression;
+   return Containers::Expressions::StaticComparison< Left, Right >::LE( *this, v );
 }
+
+template< int Size, typename Real >
+   template< typename StaticVectorExpression >
+__cuda_callable__
+bool StaticVector< Size, Real >::operator > ( const StaticVectorExpression& v ) const
+{
+   using Left = StaticVector< Size, Real >;
+   using Right = StaticVectorExpression;
+   return Containers::Expressions::StaticComparison< Left, Right >::GT( *this, v );
+}
+
+template< int Size, typename Real >
+   template< typename StaticVectorExpression >
+__cuda_callable__
+bool StaticVector< Size, Real >::operator >= ( const StaticVectorExpression& v ) const
+{
+   using Left = StaticVector< Size, Real >;
+   using Right = StaticVectorExpression;
+   return Containers::Expressions::StaticComparison< Left, Right >::GE( *this, v );
+}
+#endif
 
 template< int Size, typename Real >
    template< typename OtherReal >

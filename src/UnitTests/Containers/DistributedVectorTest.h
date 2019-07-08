@@ -115,46 +115,47 @@ TYPED_TEST_SUITE( DistributedVectorTest, DistributedVectorTypes );
 
 TYPED_TEST( DistributedVectorTest, max )
 {
-   EXPECT_EQ( this->x.max(), 1 );
-   EXPECT_EQ( this->y.max(), this->globalSize - 1 );
-   EXPECT_EQ( this->z.max(), 0 );
+   EXPECT_EQ( max( this->x ), 1 );
+   EXPECT_EQ( max( this->y ), this->globalSize - 1 );
+   EXPECT_EQ( max( this->z ), 0 );
 
-   EXPECT_EQ( this->x_view.max(), 1 );
-   EXPECT_EQ( this->y_view.max(), this->globalSize - 1 );
-   EXPECT_EQ( this->z_view.max(), 0 );
+   EXPECT_EQ( max( this->x_view ), 1 );
+   EXPECT_EQ( max( this->y_view ), this->globalSize - 1 );
+   EXPECT_EQ( max( this->z_view ), 0 );
 }
 
 TYPED_TEST( DistributedVectorTest, min )
 {
-   EXPECT_EQ( this->x.min(), 1 );
-   EXPECT_EQ( this->y.min(), 0 );
-   EXPECT_EQ( this->z.min(), 1 - this->globalSize );
+   EXPECT_EQ( min( this->x ), 1 );
+   EXPECT_EQ( min( this->y ), 0 );
+   EXPECT_EQ( min( this->z ), 1 - this->globalSize );
 
-   EXPECT_EQ( this->x_view.min(), 1 );
-   EXPECT_EQ( this->y_view.min(), 0 );
-   EXPECT_EQ( this->z_view.min(), 1 - this->globalSize );
+   EXPECT_EQ( min( this->x_view ), 1 );
+   EXPECT_EQ( min( this->y_view ), 0 );
+   EXPECT_EQ( min( this->z_view ), 1 - this->globalSize );
 }
 
 TYPED_TEST( DistributedVectorTest, absMax )
 {
-   EXPECT_EQ( this->x.absMax(), 1 );
-   EXPECT_EQ( this->y.absMax(), this->globalSize - 1 );
-   EXPECT_EQ( this->z.absMax(), this->globalSize - 1 );
+   TNL::min( abs( this->x ) );
+   /*EXPECT_EQ( TNL::max( abs( this->x ) ), 1 );
+   EXPECT_EQ( max( abs( this->y ) ), this->globalSize - 1 );
+   EXPECT_EQ( max( abs( this->z ) ), this->globalSize - 1 );
 
-   EXPECT_EQ( this->x_view.absMax(), 1 );
-   EXPECT_EQ( this->y_view.absMax(), this->globalSize - 1 );
-   EXPECT_EQ( this->z_view.absMax(), this->globalSize - 1 );
+   EXPECT_EQ( max( abs( this->x_view ) ), 1 );
+   EXPECT_EQ( max( abs( this->y_view ) ), this->globalSize - 1 );
+   EXPECT_EQ( max( abs( this->z_view ) ), this->globalSize - 1 );*/
 }
 
 TYPED_TEST( DistributedVectorTest, absMin )
 {
-   EXPECT_EQ( this->x.absMin(), 1 );
-   EXPECT_EQ( this->y.absMin(), 0 );
-   EXPECT_EQ( this->z.absMin(), 0 );
+   EXPECT_EQ( min( abs( this->x ) ), 1 );
+   EXPECT_EQ( min( abs( this->y ) ), 0 );
+   EXPECT_EQ( min( abs( this->z ) ), 0 );
 
-   EXPECT_EQ( this->x_view.absMin(), 1 );
-   EXPECT_EQ( this->y_view.absMin(), 0 );
-   EXPECT_EQ( this->z_view.absMin(), 0 );
+   EXPECT_EQ( min( abs( this->x_view ) ), 1 );
+   EXPECT_EQ( min( abs( this->y_view ) ), 0 );
+   EXPECT_EQ( min( abs( this->z_view ) ), 0 );
 }
 
 TYPED_TEST( DistributedVectorTest, lpNorm )
@@ -166,60 +167,60 @@ TYPED_TEST( DistributedVectorTest, lpNorm )
    const RealType expectedL2norm = std::sqrt( this->globalSize );
    const RealType expectedL3norm = std::cbrt( this->globalSize );
 
-   EXPECT_EQ( this->x.lpNorm( 1.0 ), expectedL1norm );
-   EXPECT_EQ( this->x.lpNorm( 2.0 ), expectedL2norm );
-   EXPECT_NEAR( this->x.lpNorm( 3.0 ), expectedL3norm, epsilon );
+   EXPECT_EQ( lpNorm( this->x , 1.0 ), expectedL1norm );
+   EXPECT_EQ( lpNorm( this->x,  2.0 ), expectedL2norm );
+   EXPECT_NEAR( lpNorm( this->x,  3.0 ), expectedL3norm, epsilon );
 
-   EXPECT_EQ( this->x_view.lpNorm( 1.0 ), expectedL1norm );
-   EXPECT_EQ( this->x_view.lpNorm( 2.0 ), expectedL2norm );
-   EXPECT_NEAR( this->x_view.lpNorm( 3.0 ), expectedL3norm, epsilon );
+   EXPECT_EQ( lpNorm( this->x_view, 1.0 ), expectedL1norm );
+   EXPECT_EQ( lpNorm( this->x_view, 2.0 ), expectedL2norm );
+   EXPECT_NEAR( lpNorm( this->x_view, 3.0 ), expectedL3norm, epsilon );
 }
 
 TYPED_TEST( DistributedVectorTest, sum )
 {
-   EXPECT_EQ( this->x.sum(), this->globalSize );
-   EXPECT_EQ( this->y.sum(), 0.5 * this->globalSize * ( this->globalSize - 1 ) );
-   EXPECT_EQ( this->z.sum(), - 0.5 * this->globalSize * ( this->globalSize - 1 ) );
+   EXPECT_EQ( sum( this->x ), this->globalSize );
+   EXPECT_EQ( sum( this->y ), 0.5 * this->globalSize * ( this->globalSize - 1 ) );
+   EXPECT_EQ( sum( this->z ), - 0.5 * this->globalSize * ( this->globalSize - 1 ) );
 
-   EXPECT_EQ( this->x_view.sum(), this->globalSize );
-   EXPECT_EQ( this->y_view.sum(), 0.5 * this->globalSize * ( this->globalSize - 1 ) );
-   EXPECT_EQ( this->z_view.sum(), - 0.5 * this->globalSize * ( this->globalSize - 1 ) );
+   EXPECT_EQ( sum( this->x_view ), this->globalSize );
+   EXPECT_EQ( sum( this->y_view ), 0.5 * this->globalSize * ( this->globalSize - 1 ) );
+   EXPECT_EQ( sum( this->z_view ), - 0.5 * this->globalSize * ( this->globalSize - 1 ) );
 }
 
 TYPED_TEST( DistributedVectorTest, differenceMax )
 {
-   EXPECT_TRUE( TNL::max( this->x, this->y ) == 1 );
-   EXPECT_EQ( this->y.differenceMax( this->x ), this->globalSize - 2 );
+   EXPECT_TRUE( max( this->x, this->y ) == 1 );
+   EXPECT_TRUE( max( this->y - this->x ) == this->globalSize - 2 );
 
-   EXPECT_EQ( this->x_view.differenceMax( this->y_view ), 1 );
-   EXPECT_EQ( this->y_view.differenceMax( this->x_view ), this->globalSize - 2 );
+   EXPECT_EQ( max( this->x_view - this->y_view ), 1 );
+   EXPECT_EQ( max( this->y_view - this->x_view ), this->globalSize - 2 );
 }
 
 TYPED_TEST( DistributedVectorTest, differenceMin )
 {
-   EXPECT_EQ( this->x.differenceMin( this->y ), 2 - this->globalSize );
-   EXPECT_EQ( this->y.differenceMin( this->x ), -1 );
+   EXPECT_EQ( min( this->x - this->y ), 2 - this->globalSize );
+   EXPECT_EQ( min( this->y - this->x ), -1 );
 
-   EXPECT_EQ( this->x_view.differenceMin( this->y_view ), 2 - this->globalSize );
-   EXPECT_EQ( this->y_view.differenceMin( this->x_view ), -1 );
+   EXPECT_EQ( min( this->x_view - this->y_view ), 2 - this->globalSize );
+   EXPECT_EQ( min( this->y_view - this->x_view ), -1 );
 }
 
 TYPED_TEST( DistributedVectorTest, differenceAbsMax )
 {
-   EXPECT_EQ( this->x.differenceAbsMax( this->y ), this->globalSize - 2 );
-   EXPECT_EQ( this->y.differenceAbsMax( this->x ), this->globalSize - 2 );
+   EXPECT_EQ( max( abs( this->x - this->y ) ), this->globalSize - 2 );
+   EXPECT_EQ( max( abs( this->y - this->x ) ), this->globalSize - 2 );
 
-   EXPECT_EQ( this->x_view.differenceAbsMax( this->y_view ), this->globalSize - 2 );
-   EXPECT_EQ( this->y_view.differenceAbsMax( this->x_view ), this->globalSize - 2 );
+   EXPECT_EQ( max( abs( this->x_view - this->y_view ) ), this->globalSize - 2 );
+   EXPECT_EQ( max( abs( this->y_view - this->x_view ) ), this->globalSize - 2 );
 }
 
 TYPED_TEST( DistributedVectorTest, differenceAbsMin )
 {
-   EXPECT_EQ( this->x.differenceAbsMin( this->y ), 0 );
-   EXPECT_EQ( this->y.differenceAbsMin( this->x ), 0 );
+   EXPECT_EQ( min( abs( this->x - this->y ) ), 0 );
+   EXPECT_EQ( min( abs( this->y - this->x ) ), 0 );
 
-   EXPECT_EQ( this->x_view.differenceAbsMin( this->y_view ), 0 );
-   EXPECT_EQ( this->y_view.differenceAbsMin( this->x_view ), 0 );
+   EXPECT_EQ( min( abs( this->x_view - this->y_view ) ), 0 );
+   EXPECT_EQ( min( abs( this->y_view - this->x_view ) ), 0 );
 }
 
 TYPED_TEST( DistributedVectorTest, differenceLpNorm )
@@ -233,24 +234,24 @@ TYPED_TEST( DistributedVectorTest, differenceLpNorm )
    const RealType expectedL2norm = std::sqrt( this->globalSize );
    const RealType expectedL3norm = std::cbrt( this->globalSize );
 
-   EXPECT_EQ( this->x.differenceLpNorm( this->y, 1.0 ), expectedL1norm );
-   EXPECT_EQ( this->x.differenceLpNorm( this->y, 2.0 ), expectedL2norm );
-   EXPECT_NEAR( this->x.differenceLpNorm( this->y, 3.0 ), expectedL3norm, epsilon );
+   EXPECT_EQ( lpNorm( this->x - this->y, 1.0 ), expectedL1norm );
+   EXPECT_EQ( lpNorm( this->x -  this->y, 2.0 ), expectedL2norm );
+   EXPECT_NEAR( lpNorm( this->x - this->y, 3.0 ), expectedL3norm, epsilon );
 
-   EXPECT_EQ( this->x_view.differenceLpNorm( this->y_view, 1.0 ), expectedL1norm );
-   EXPECT_EQ( this->x_view.differenceLpNorm( this->y_view, 2.0 ), expectedL2norm );
-   EXPECT_NEAR( this->x_view.differenceLpNorm( this->y_view, 3.0 ), expectedL3norm, epsilon );
+   EXPECT_EQ( lpNorm( this->x_view - this->y_view, 1.0 ), expectedL1norm );
+   EXPECT_EQ( lpNorm( this->x_view - this->y_view, 2.0 ), expectedL2norm );
+   EXPECT_NEAR( lpNorm( this->x_view - this->y_view, 3.0 ), expectedL3norm, epsilon );
 }
 
 TYPED_TEST( DistributedVectorTest, differenceSum )
 {
-   EXPECT_EQ( this->x.differenceSum( this->x ), 0 );
-   EXPECT_EQ( this->y.differenceSum( this->x ), 0.5 * this->globalSize * ( this->globalSize - 1 ) - this->globalSize );
-   EXPECT_EQ( this->y.differenceSum( this->y ), 0 );
+   EXPECT_EQ( TNL::sum( this->x - this->x ), 0 );
+   EXPECT_EQ( TNL::sum( this->y - this->x ), 0.5 * this->globalSize * ( this->globalSize - 1 ) - this->globalSize );
+   EXPECT_EQ( TNL::sum( this->y - this->y ), 0 );
 
-   EXPECT_EQ( this->x_view.differenceSum( this->x_view ), 0 );
-   EXPECT_EQ( this->y_view.differenceSum( this->x_view ), 0.5 * this->globalSize * ( this->globalSize - 1 ) - this->globalSize );
-   EXPECT_EQ( this->y_view.differenceSum( this->y_view ), 0 );
+   EXPECT_EQ( TNL::sum( this->x_view - this->x_view ), 0 );
+   EXPECT_EQ( TNL::sum( this->y_view - this->x_view ), 0.5 * this->globalSize * ( this->globalSize - 1 ) - this->globalSize );
+   EXPECT_EQ( TNL::sum( this->y_view - this->y_view ), 0 );
 }
 
 TYPED_TEST( DistributedVectorTest, scalarMultiplication )

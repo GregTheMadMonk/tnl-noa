@@ -570,6 +570,7 @@ TYPED_TEST( StaticVectorTest, verticalOperations )
 
 TYPED_TEST( StaticVectorTest, comparisonOperators )
 {
+   using namespace TNL::Containers::Expressions;
    using VectorType = typename TestFixture::VectorType;
 
    using RealType = typename VectorType::RealType;
@@ -585,30 +586,35 @@ TYPED_TEST( StaticVectorTest, comparisonOperators )
    EXPECT_EQ( 1.0, u );
    EXPECT_EQ( w, u + v );
    EXPECT_EQ( u + v, w );
-   EXPECT_EQ( abs( w ), u + v );
-   EXPECT_EQ( u + v, abs( w ) );
+   EXPECT_TRUE( abs( w ) == u + v );
+   EXPECT_TRUE( u + v == abs( w ) );
 
    EXPECT_NE( u, v );
    EXPECT_NE( u, 2.0 );
    EXPECT_NE( 2.0, u );
    EXPECT_NE( u, w + w );
    EXPECT_NE( w + v, u );
-   EXPECT_NE( abs( u ), w + w );
-   EXPECT_NE( w + v, abs( u ) );
+   EXPECT_TRUE( abs( w ) != abs( u ) );
+   EXPECT_TRUE( ( w + v ) != ( u + v ) );
+   EXPECT_TRUE( ( abs( u ) ) != ( w + v ) );
+   EXPECT_TRUE( ( w + v ) != ( abs( u ) ) );
 
    EXPECT_LT( u, v );
    EXPECT_LT( u, 2.0 );
    EXPECT_LT( 0.0, u );
    EXPECT_LT( u, v + w );
    EXPECT_LT( u + v, w );
+   EXPECT_LT( abs( u ), abs( w ) );
    EXPECT_LT( abs( u ), v + w );
    EXPECT_LT( u + v, abs( w ) );
+   EXPECT_LT( u + v, u + w );
 
    EXPECT_LE( u, v );
    EXPECT_LE( u, 2.0 );
    EXPECT_LE( 0.0, u );
    EXPECT_LE( u, v + w );
    EXPECT_LE( u + v, w );
+   EXPECT_LE( abs( u ), abs( w ) );
    EXPECT_LE( abs( u ), v + w );
    EXPECT_LE( u + v, abs( w ) );
 

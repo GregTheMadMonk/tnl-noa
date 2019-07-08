@@ -150,6 +150,13 @@ bool operator==( const StaticVector< Size, Real1 >& a, const StaticVector< Size,
 
 ////
 // Comparison operations - operator !=
+template< int Size, typename Real, typename ET >
+__cuda_callable__
+bool operator!=( const StaticVector< Size, Real >& a, const ET& b )
+{
+   return Expressions::StaticComparison< StaticVector< Size, Real >, ET >::NE( a, b );
+}
+
 template< typename ET, int Size, typename Real >
 __cuda_callable__
 bool operator!=( const ET& a, const StaticVector< Size, Real >& b )

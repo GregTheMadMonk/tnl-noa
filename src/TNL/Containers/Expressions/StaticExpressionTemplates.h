@@ -1346,7 +1346,7 @@ template< typename L1,
 __cuda_callable__
 bool
 operator == ( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-             const typename Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation >& b )
+             const typename Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation, RParameter >& b )
 {
    using Left = Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >;
    using Right = Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation, RParameter >;
@@ -1364,7 +1364,7 @@ template< typename L1,
 __cuda_callable__
 bool
 operator != ( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-             const Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
+              const Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
    using Left = Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >;
    using Right = Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >;
@@ -1381,6 +1381,22 @@ operator != ( const Containers::Expressions::StaticBinaryExpressionTemplate< T1,
 {
    using Left = Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >;
    using Right = typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType;
+   return Containers::Expressions::StaticComparison< Left, Right >::NE( a, b );
+}
+
+template< typename L1,
+          template< typename > class LOperation,
+          typename LParameter,
+          typename R1,
+          template< typename > class ROperation,
+          typename RParameter >
+__cuda_callable__
+bool
+operator != ( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation, LParameter >& a,
+              const Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation, RParameter >& b )
+{
+   using Left = Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation, LParameter >;
+   using Right = Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation, RParameter >;
    return Containers::Expressions::StaticComparison< Left, Right >::NE( a, b );
 }
 
@@ -1448,7 +1464,7 @@ template< typename L1,
 __cuda_callable__
 bool
 operator != ( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-             const typename Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation >& b )
+              const Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation, RParameter >& b )
 {
    using Left = Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >;
    using Right = Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation, RParameter >;
@@ -1483,6 +1499,22 @@ operator < ( const Containers::Expressions::StaticBinaryExpressionTemplate< T1, 
 {
    using Left = Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >;
    using Right = typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType;
+   return Containers::Expressions::StaticComparison< Left, Right >::LT( a, b );
+}
+
+template< typename L1,
+          template< typename > class LOperation,
+          typename LParameter,
+          typename R1,
+          template< typename > class ROperation,
+          typename RParameter >
+__cuda_callable__
+bool
+operator < ( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation, LParameter >& a,
+              const Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation, RParameter >& b )
+{
+   using Left = Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation, LParameter >;
+   using Right = Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation, RParameter >;
    return Containers::Expressions::StaticComparison< Left, Right >::LT( a, b );
 }
 
@@ -1550,7 +1582,7 @@ template< typename L1,
 __cuda_callable__
 bool
 operator < ( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-             const typename Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation >& b )
+             const typename Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation, RParameter >& b )
 {
    using Left = Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >;
    using Right = Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation, RParameter >;
@@ -1585,6 +1617,22 @@ operator <= ( const Containers::Expressions::StaticBinaryExpressionTemplate< T1,
 {
    using Left = Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >;
    using Right = typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType;
+   return Containers::Expressions::StaticComparison< Left, Right >::LE( a, b );
+}
+
+template< typename L1,
+          template< typename > class LOperation,
+          typename LParameter,
+          typename R1,
+          template< typename > class ROperation,
+          typename RParameter >
+__cuda_callable__
+bool
+operator <= ( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation, LParameter >& a,
+              const Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation, RParameter >& b )
+{
+   using Left = Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation, LParameter >;
+   using Right = Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation, RParameter >;
    return Containers::Expressions::StaticComparison< Left, Right >::LE( a, b );
 }
 
@@ -1652,7 +1700,7 @@ template< typename L1,
 __cuda_callable__
 bool
 operator <= ( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-             const typename Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation >& b )
+             const typename Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation, RParameter >& b )
 {
    using Left = Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >;
    using Right = Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation, RParameter >;
@@ -1754,7 +1802,7 @@ template< typename L1,
 __cuda_callable__
 bool
 operator > ( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-             const typename Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation >& b )
+             const typename Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation, RParameter >& b )
 {
    using Left = Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >;
    using Right = Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation, RParameter >;
@@ -1856,7 +1904,7 @@ template< typename L1,
 __cuda_callable__
 bool
 operator >= ( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-             const typename Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation >& b )
+             const typename Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation, RParameter >& b )
 {
    using Left = Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >;
    using Right = Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation, RParameter >;

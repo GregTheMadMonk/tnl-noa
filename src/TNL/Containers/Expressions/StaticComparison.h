@@ -91,7 +91,7 @@ struct StaticComparison< T1, T2, ArithmeticVariable, VectorVariable >
    __cuda_callable__
    static bool EQ( const T1& a, const T2& b )
    {
-      for( int i = 0; i < a.getSize(); i++ )
+      for( int i = 0; i < b.getSize(); i++ )
          if( a != b[ i ] )
             return false;
       return true;
@@ -106,7 +106,7 @@ struct StaticComparison< T1, T2, ArithmeticVariable, VectorVariable >
    __cuda_callable__
    static bool GT( const T1& a, const T2& b )
    {
-      for( int i = 0; i < a.getSize(); i++ )
+      for( int i = 0; i < b.getSize(); i++ )
          if( a <= b[ i ] )
             return false;
       return true;
@@ -121,7 +121,7 @@ struct StaticComparison< T1, T2, ArithmeticVariable, VectorVariable >
    __cuda_callable__
    static bool LT( const T1& a, const T2& b )
    {
-      for( int i = 0; i < a.getSize(); i++ )
+      for( int i = 0; i < b.getSize(); i++ )
          if( a >= b[ i ] )
             return false;
       return true;
