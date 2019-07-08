@@ -11,13 +11,10 @@
 #pragma once
 
 #include <TNL/Containers/Array.h>
-#include <TNL/Containers/Algorithms/PrefixSumType.h>
+#include <TNL/Containers/VectorView.h>
 
 namespace TNL {
 namespace Containers {
-
-template< typename Real, typename Device, typename Index >
-class VectorView;
 
 /**
  * \brief This class extends TNL::Array with algebraic operations.
@@ -119,13 +116,13 @@ public:
                     const Scalar thisElementMultiplicator );
 
    template< typename Real_, typename Device_, typename Index_ >
-   Vector& operator = ( const Vector< Real_, Device_, Index_ >& v );
+   Vector& operator=( const Vector< Real_, Device_, Index_ >& v );
 
    template< typename Real_, typename Device_, typename Index_ >
-   Vector& operator = ( const VectorView< Real_, Device_, Index_ >& v );
+   Vector& operator=( const VectorView< Real_, Device_, Index_ >& v );
 
    template< typename VectorExpression >
-   Vector& operator = ( const VectorExpression& expression );
+   Vector& operator=( const VectorExpression& expression );
 
    /**
     * \brief This function subtracts \e vector from this vector and returns the resulting vector.
@@ -134,7 +131,7 @@ public:
     * \param vector Reference to another vector.
     */
    template< typename VectorExpression >
-   Vector& operator -= ( const VectorExpression& expression );
+   Vector& operator-=( const VectorExpression& expression );
 
    /**
     * \brief This function adds \e vector to this vector and returns the resulting vector.
@@ -143,7 +140,7 @@ public:
     * \param vector Reference to another vector.
     */
    template< typename VectorExpression >
-   Vector& operator += ( const VectorExpression& expression );
+   Vector& operator+=( const VectorExpression& expression );
 
    /**
     * \brief This function multiplies this vector by \e c and returns the resulting vector.
@@ -152,7 +149,7 @@ public:
     * \param c Multiplicator.
     */
    template< typename VectorExpression >
-   Vector& operator *= ( const VectorExpression& expression );
+   Vector& operator*=( const VectorExpression& expression );
 
    /**
     * \brief This function divides this vector by \e c and returns the resulting vector.
@@ -161,7 +158,7 @@ public:
     * \param c Divisor.
     */
    template< typename VectorExpression >
-   Vector& operator /= ( const VectorExpression& expression );
+   Vector& operator/=( const VectorExpression& expression );
 
    /**
     * \brief Scalar product
@@ -169,7 +166,7 @@ public:
     * @return
     */
    template< typename Vector_ >
-   Real operator, ( const Vector_& v ) const;
+   Real operator,( const Vector_& v ) const;
 
    /**
     * \brief Returns the maximum value out of all vector elements.

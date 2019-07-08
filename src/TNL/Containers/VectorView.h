@@ -139,7 +139,7 @@ public:
     * @return
     */
    template< typename Vector_ >
-   NonConstReal operator, ( const Vector_& v ) const;
+   NonConstReal operator,( const Vector_& v ) const;
 
    NonConstReal max() const;
 

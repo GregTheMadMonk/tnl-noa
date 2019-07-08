@@ -11,8 +11,6 @@
 #pragma once
 
 #include <TNL/Containers/Vector.h>
-#include <TNL/Containers/Algorithms/VectorOperations.h>
-#include <TNL/Containers/VectorView.h>
 
 namespace TNL {
 namespace Containers {
@@ -111,9 +109,9 @@ template< typename Real,
           typename Index >
    template< typename VectorExpression >
 Vector< Real, Device, Index >&
-Vector< Real, Device, Index >::operator = ( const VectorExpression& expression )
+Vector< Real, Device, Index >::operator=( const VectorExpression& expression )
 {
-   Algorithms::VectorAssignment< Vector< Real, Device, Index >, VectorExpression >::assign( *this, expression );
+   Algorithms::VectorAssignment< Vector, VectorExpression >::assign( *this, expression );
    return *this;
 }
 
@@ -122,7 +120,7 @@ template< typename Real,
           typename Index >
    template< typename Real_, typename Device_, typename Index_ >
 Vector< Real, Device, Index >&
-Vector< Real, Device, Index >::operator = ( const Vector< Real_, Device_, Index_ >& vector )
+Vector< Real, Device, Index >::operator=( const Vector< Real_, Device_, Index_ >& vector )
 {
    Array< Real, Device, Index >::operator=( vector );
    return *this;
@@ -133,7 +131,7 @@ template< typename Real,
           typename Index >
    template< typename Real_, typename Device_, typename Index_ >
 Vector< Real, Device, Index >&
-Vector< Real, Device, Index >::operator = ( const VectorView< Real_, Device_, Index_ >& view )
+Vector< Real, Device, Index >::operator=( const VectorView< Real_, Device_, Index_ >& view )
 {
    Array< Real, Device, Index >::operator=( view );
    return *this;
@@ -148,7 +146,7 @@ Vector< Real, Device, Index >::
 operator-=( const VectorExpression& expression )
 {
    //addVector( vector, -1.0 );
-   Algorithms::VectorSubtraction< Vector< Real, Device, Index >, VectorExpression >::subtraction( *this, expression );
+   Algorithms::VectorSubtraction< Vector, VectorExpression >::subtraction( *this, expression );
    return *this;
 }
 
@@ -161,7 +159,7 @@ Vector< Real, Device, Index >::
 operator+=( const VectorExpression& expression )
 {
    //addVector( vector );
-   Algorithms::VectorAddition< Vector< Real, Device, Index >, VectorExpression >::addition( *this, expression );
+   Algorithms::VectorAddition< Vector, VectorExpression >::addition( *this, expression );
    return *this;
 }
 
@@ -174,7 +172,7 @@ Vector< Real, Device, Index >::
 operator*=( const VectorExpression& expression )
 {
    //Algorithms::VectorOperations< Device >::vectorScalarMultiplication( *this, c );
-   Algorithms::VectorMultiplication< Vector< Real, Device, Index >, VectorExpression >::multiplication( *this, expression );
+   Algorithms::VectorMultiplication< Vector, VectorExpression >::multiplication( *this, expression );
    return *this;
 }
 
@@ -187,7 +185,7 @@ Vector< Real, Device, Index >::
 operator/=( const VectorExpression& expression )
 {
    //Algorithms::VectorOperations< Device >::vectorScalarMultiplication( *this, 1.0 / c );
-   Algorithms::VectorDivision< Vector< Real, Device, Index >, VectorExpression >::division( *this, expression );
+   Algorithms::VectorDivision< Vector, VectorExpression >::division( *this, expression );
    return *this;
 }
 

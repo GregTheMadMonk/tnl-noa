@@ -94,7 +94,7 @@ TYPED_TEST( StaticVectorTest, operators )
    using VectorType = typename TestFixture::VectorType;
    constexpr int size = VectorType::size;
 
-   static_assert( Algorithms::Details::HasSubscriptOperator< VectorType >::value, "Subscript operator detection by SFINAE does not work for StaticVector." );
+   static_assert( Algorithms::detail::HasSubscriptOperator< VectorType >::value, "Subscript operator detection by SFINAE does not work for StaticVector." );
 
    VectorType u1( 1 ), u2( 2 ), u3( 3 );
 

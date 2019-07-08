@@ -10,15 +10,15 @@
 
 #pragma once
 
-#include<type_traits>
-#include<utility>
+#include <type_traits>
+#include <utility>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
 
 namespace TNL {
 namespace Containers {
 namespace Algorithms {
 
-namespace Details {
+namespace detail {
 /**
  * SFINAE for checking if T has getArrayData method
  */
@@ -35,11 +35,11 @@ private:
 public:
     static constexpr bool value = ( sizeof( test< T >(0) ) == sizeof( YesType ) );
 };
-} // namespace Details
+} // namespace detail
 
 template< typename Array,
           typename T,
-          bool hasGetArrayData = Details::HasGetArrayData< T >::value >
+          bool hasGetArrayData = detail::HasGetArrayData< T >::value >
 struct ArrayAssignment{};
 
 /**
@@ -62,7 +62,7 @@ struct ArrayAssignment< Array, T, true >
          ArrayOperations< typename Array::DeviceType, typename T::DeviceType >::template
             copyMemory< typename Array::ValueType, typename T::ValueType, typename Array::IndexType >
             ( a.getArrayData(), t.getArrayData(), t.getSize() );
-   };
+   }
 };
 
 /**
@@ -75,15 +75,15 @@ struct ArrayAssignment< Array, T, false >
 {
    static void resize( Array& a, const T& t )
    {
-   };
+   }
+
    static void assign( Array& a, const T& t )
    {
       TNL_ASSERT_FALSE( a.empty(), "Cannot assign value to empty array." );
       ArrayOperations< typename Array::DeviceType >::template
          setMemory< typename Array::ValueType, typename Array::IndexType >
          ( a.getArrayData(), ( typename Array::ValueType ) t, a.getSize() );
-   };
-
+   }
 };
 
 } // namespace Algorithms
