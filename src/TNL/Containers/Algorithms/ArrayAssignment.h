@@ -60,7 +60,7 @@ struct ArrayAssignment< Array, T, true >
       TNL_ASSERT_EQ( a.getSize(), t.getSize(), "The sizes of the arrays must be equal." );
       if( t.getSize() > 0 ) // we allow even assignment of empty arrays
          ArrayOperations< typename Array::DeviceType, typename T::DeviceType >::template
-            copyMemory< typename Array::ValueType, typename T::ValueType, typename Array::IndexType >
+            copy< typename Array::ValueType, typename T::ValueType, typename Array::IndexType >
             ( a.getArrayData(), t.getArrayData(), t.getSize() );
    }
 };
@@ -81,7 +81,7 @@ struct ArrayAssignment< Array, T, false >
    {
       TNL_ASSERT_FALSE( a.empty(), "Cannot assign value to empty array." );
       ArrayOperations< typename Array::DeviceType >::template
-         setMemory< typename Array::ValueType, typename Array::IndexType >
+         set< typename Array::ValueType, typename Array::IndexType >
          ( a.getArrayData(), ( typename Array::ValueType ) t, a.getSize() );
    }
 };

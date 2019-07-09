@@ -136,9 +136,9 @@ bool operator==( const Containers::VectorView< Real1, Device1, Index >& a, const
    if( a.getSize() == 0 )
       return true;
    return Containers::Algorithms::ArrayOperations< Device1, Device2 >::
-            compareMemory( a.getData(),
-                           b.getData(),
-                           a.getSize() );
+            compare( a.getData(),
+                     b.getData(),
+                     a.getSize() );
 }
 
 ////
@@ -163,9 +163,9 @@ bool operator!=( const Containers::VectorView< Real1, Device1, Index >& a, const
    if( a.getSize() == 0 )
       return true;
    return !Containers::Algorithms::ArrayOperations< Device1, Device2 >::
-            compareMemory( a.getData(),
-                           b.getData(),
-                           a.getSize() );
+            compare( a.getData(),
+                     b.getData(),
+                     a.getSize() );
 }
 
 ////

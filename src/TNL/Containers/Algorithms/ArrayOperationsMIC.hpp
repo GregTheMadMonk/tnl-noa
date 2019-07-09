@@ -30,30 +30,30 @@ static constexpr std::size_t MIC_STACK_VAR_LIM = 5*1024*1024;
 template< typename Element >
 void
 ArrayOperations< Devices::MIC >::
-setMemoryElement( Element* data,
-                  const Element& value )
+setElement( Element* data,
+            const Element& value )
 {
    TNL_ASSERT( data, );
-   ArrayOperations< Devices::MIC >::setMemory( data, value, 1 );
+   ArrayOperations< Devices::MIC >::set( data, value, 1 );
 }
 
 template< typename Element >
 Element
 ArrayOperations< Devices::MIC >::
-getMemoryElement( const Element* data )
+getElement( const Element* data )
 {
    TNL_ASSERT( data, );
    Element result;
-   ArrayOperations< Devices::Host, Devices::MIC >::copyMemory< Element, Element, int >( &result, data, 1 );
+   ArrayOperations< Devices::Host, Devices::MIC >::copy< Element, Element, int >( &result, data, 1 );
    return result;
 }
 
 template< typename Element, typename Index >
 void
 ArrayOperations< Devices::MIC >::
-setMemory( Element* data,
-           const Element& value,
-           const Index size )
+set( Element* data,
+     const Element& value,
+     const Index size )
 {
    TNL_ASSERT( data, );
 #ifdef HAVE_MIC
@@ -76,9 +76,9 @@ template< typename DestinationElement,
           typename Index >
 void
 ArrayOperations< Devices::MIC >::
-copyMemory( DestinationElement* destination,
-            const SourceElement* source,
-            const Index size )
+copy( DestinationElement* destination,
+      const SourceElement* source,
+      const Index size )
 {
    TNL_ASSERT( destination, );
    TNL_ASSERT( source, );
@@ -116,7 +116,7 @@ template< typename DestinationElement,
 void
 ArrayOperations< Devices::MIC >::
 copySTLList( DestinationElement* destination,
-                  const std::list< SourceElement >& source )
+             const std::list< SourceElement >& source )
 {
    throw Exceptions::NotImplementedError();
 }
@@ -126,9 +126,9 @@ template< typename Element1,
           typename Index >
 bool
 ArrayOperations< Devices::MIC >::
-compareMemory( const Element1* destination,
-               const Element2* source,
-               const Index size )
+compare( const Element1* destination,
+         const Element2* source,
+         const Index size )
 {
    TNL_ASSERT( destination, );
    TNL_ASSERT( source, );
@@ -218,9 +218,9 @@ template< typename DestinationElement,
           typename Index >
 void
 ArrayOperations< Devices::Host, Devices::MIC >::
-copyMemory( DestinationElement* destination,
-            const SourceElement* source,
-            const Index size )
+copy( DestinationElement* destination,
+      const SourceElement* source,
+      const Index size )
 {
    TNL_ASSERT( destination, );
    TNL_ASSERT( source, );
@@ -293,9 +293,9 @@ template< typename Element1,
           typename Index >
 bool
 ArrayOperations< Devices::Host, Devices::MIC >::
-compareMemory( const Element1* destination,
-               const Element2* source,
-               const Index size )
+compare( const Element1* destination,
+         const Element2* source,
+         const Index size )
 {
    /***
     * Here, destination is on host and source is on MIC device.
@@ -319,7 +319,7 @@ compareMemory( const Element1* destination,
      {
          memcpy((void*)&host_buffer,(void*)src_ptr.pointer,transfer*sizeof(Element2));
      }
-     if( ! ArrayOperations< Devices::Host >::compareMemory( &destination[ compared ], (Element2*)&host_buffer, transfer ) )
+     if( ! ArrayOperations< Devices::Host >::compare( &destination[ compared ], (Element2*)&host_buffer, transfer ) )
      {
         return false;
      }
@@ -339,9 +339,9 @@ template< typename DestinationElement,
           typename Index >
 void
 ArrayOperations< Devices::MIC, Devices::Host >::
-copyMemory( DestinationElement* destination,
-            const SourceElement* source,
-            const Index size )
+copy( DestinationElement* destination,
+      const SourceElement* source,
+      const Index size )
 {
    TNL_ASSERT( destination, );
    TNL_ASSERT( source, );
@@ -412,14 +412,14 @@ template< typename Element1,
           typename Index >
 bool
 ArrayOperations< Devices::MIC, Devices::Host >::
-compareMemory( const Element1* hostData,
-               const Element2* deviceData,
-               const Index size )
+compare( const Element1* hostData,
+         const Element2* deviceData,
+         const Index size )
 {
    TNL_ASSERT( hostData, );
    TNL_ASSERT( deviceData, );
    TNL_ASSERT( size >= 0, std::cerr << "size = " << size );
-   return ArrayOperations< Devices::Host, Devices::MIC >::compareMemory( deviceData, hostData, size );
+   return ArrayOperations< Devices::Host, Devices::MIC >::compare( deviceData, hostData, size );
 }
 
 } // namespace Algorithms

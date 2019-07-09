@@ -125,7 +125,7 @@ operator=( const ArrayView& view )
 {
    TNL_ASSERT_EQ( getSize(), view.getSize(), "The sizes of the array views must be equal, views are not resizable." );
    if( getSize() > 0 )
-      Algorithms::ArrayOperations< Device >::copyMemory( getData(), view.getData(), getSize() );
+      Algorithms::ArrayOperations< Device >::copy( getData(), view.getData(), getSize() );
    return *this;
 }
 
@@ -229,7 +229,7 @@ setElement( Index i, Value value )
 {
    TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
    TNL_ASSERT_LT( i, this->getSize(), "Element index is out of bounds." );
-   return Algorithms::ArrayOperations< Device >::setMemoryElement( &data[ i ], value );
+   return Algorithms::ArrayOperations< Device >::setElement( &data[ i ], value );
 }
 
 template< typename Value,
@@ -241,7 +241,7 @@ getElement( Index i ) const
 {
    TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
    TNL_ASSERT_LT( i, this->getSize(), "Element index is out of bounds." );
-   return Algorithms::ArrayOperations< Device >::getMemoryElement( &data[ i ] );
+   return Algorithms::ArrayOperations< Device >::getElement( &data[ i ] );
 }
 
 template< typename Value,
@@ -282,7 +282,7 @@ operator==( const ArrayT& array ) const
    if( this->getSize() == 0 )
       return true;
    return Algorithms::ArrayOperations< DeviceType, typename ArrayT::DeviceType >::
-            compareMemory( this->getData(),
+            compare( this->getData(),
                            array.getData(),
                            array.getSize() );
 }
@@ -308,7 +308,7 @@ setValue( Value value, const Index begin, Index end )
    TNL_ASSERT_GT( size, 0, "Attempted to set value to an empty array view." );
    if( end == 0 )
       end = this->getSize();
-   Algorithms::ArrayOperations< Device >::setMemory( &getData()[ begin ], value, end - begin );
+   Algorithms::ArrayOperations< Device >::set( &getData()[ begin ], value, end - begin );
 }
 
 template< typename Value,

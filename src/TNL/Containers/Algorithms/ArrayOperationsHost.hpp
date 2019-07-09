@@ -25,8 +25,8 @@ namespace Algorithms {
 template< typename Element >
 void
 ArrayOperations< Devices::Host >::
-setMemoryElement( Element* data,
-                  const Element& value )
+setElement( Element* data,
+            const Element& value )
 {
    TNL_ASSERT_TRUE( data, "Attempted to set data through a nullptr." );
    *data = value;
@@ -35,7 +35,7 @@ setMemoryElement( Element* data,
 template< typename Element >
 Element
 ArrayOperations< Devices::Host >::
-getMemoryElement( const Element* data )
+getElement( const Element* data )
 {
    TNL_ASSERT_TRUE( data, "Attempted to get data through a nullptr." );
    return *data;
@@ -44,9 +44,9 @@ getMemoryElement( const Element* data )
 template< typename Element, typename Index >
 void
 ArrayOperations< Devices::Host >::
-setMemory( Element* data,
-           const Element& value,
-           const Index size )
+set( Element* data,
+     const Element& value,
+     const Index size )
 {
    TNL_ASSERT_TRUE( data, "Attempted to set data through a nullptr." );
    auto kernel = [data, value]( Index i )
@@ -61,9 +61,9 @@ template< typename DestinationElement,
           typename Index >
 void
 ArrayOperations< Devices::Host >::
-copyMemory( DestinationElement* destination,
-            const SourceElement* source,
-            const Index size )
+copy( DestinationElement* destination,
+      const SourceElement* source,
+      const Index size )
 {
    if( std::is_same< DestinationElement, SourceElement >::value &&
        ( std::is_fundamental< DestinationElement >::value ||
@@ -108,9 +108,9 @@ template< typename DestinationElement,
           typename Index >
 bool
 ArrayOperations< Devices::Host >::
-compareMemory( const DestinationElement* destination,
-               const SourceElement* source,
-               const Index size )
+compare( const DestinationElement* destination,
+         const SourceElement* source,
+         const Index size )
 {
    TNL_ASSERT_TRUE( destination, "Attempted to compare data through a nullptr." );
    TNL_ASSERT_TRUE( source, "Attempted to compare data through a nullptr." );

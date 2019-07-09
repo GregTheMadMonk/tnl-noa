@@ -21,234 +21,222 @@ namespace Algorithms {
 
 template< typename DestinationDevice,
           typename SourceDevice = DestinationDevice >
-class ArrayOperations{};
+struct ArrayOperations;
 
 template<>
-class ArrayOperations< Devices::Host >
+struct ArrayOperations< Devices::Host >
 {
-   public:
+   template< typename Element >
+   static void setElement( Element* data,
+                           const Element& value );
 
-      template< typename Element >
-      static void setMemoryElement( Element* data,
-                                    const Element& value );
+   template< typename Element >
+   static Element getElement( const Element* data );
 
-      template< typename Element >
-      static Element getMemoryElement( const Element* data );
+   template< typename Element, typename Index >
+   static void set( Element* data,
+                    const Element& value,
+                    const Index size );
 
-      template< typename Element, typename Index >
-      static void setMemory( Element* data,
-                             const Element& value,
-                             const Index size );
+   template< typename DestinationElement,
+             typename SourceElement,
+             typename Index >
+   static void copy( DestinationElement* destination,
+                     const SourceElement* source,
+                     const Index size );
 
-      template< typename DestinationElement,
-                typename SourceElement,
-                typename Index >
-      static void copyMemory( DestinationElement* destination,
-                              const SourceElement* source,
-                              const Index size );
+   template< typename DestinationElement,
+             typename SourceElement >
+   static void copySTLList( DestinationElement* destination,
+                            const std::list< SourceElement >& source );
 
-      template< typename DestinationElement,
-                typename SourceElement >
-      static void copySTLList( DestinationElement* destination,
-                               const std::list< SourceElement >& source );
+   template< typename Element1,
+             typename Element2,
+             typename Index >
+   static bool compare( const Element1* destination,
+                        const Element2* source,
+                        const Index size );
 
-      template< typename Element1,
-                typename Element2,
-                typename Index >
-      static bool compareMemory( const Element1* destination,
-                                 const Element2* source,
-                                 const Index size );
+   template< typename Element,
+             typename Index >
+   static bool containsValue( const Element* data,
+                              const Index size,
+                              const Element& value );
 
-      template< typename Element,
-                typename Index >
-      static bool containsValue( const Element* data,
-                                 const Index size,
-                                 const Element& value );
-
-      template< typename Element,
-                typename Index >
-      static bool containsOnlyValue( const Element* data,
-                                     const Index size,
-                                     const Element& value );
+   template< typename Element,
+             typename Index >
+   static bool containsOnlyValue( const Element* data,
+                                  const Index size,
+                                  const Element& value );
 };
 
 template<>
-class ArrayOperations< Devices::Cuda >
+struct ArrayOperations< Devices::Cuda >
 {
-   public:
+   template< typename Element >
+   static void setElement( Element* data,
+                           const Element& value );
 
-      template< typename Element >
-      static void setMemoryElement( Element* data,
-                                    const Element& value );
+   template< typename Element >
+   static Element getElement( const Element* data );
 
-      template< typename Element >
-      static Element getMemoryElement( const Element* data );
+   template< typename Element, typename Index >
+   static void set( Element* data,
+                    const Element& value,
+                    const Index size );
 
-      template< typename Element, typename Index >
-      static void setMemory( Element* data,
-                             const Element& value,
-                             const Index size );
+   template< typename DestinationElement,
+             typename SourceElement,
+             typename Index >
+   static void copy( DestinationElement* destination,
+                     const SourceElement* source,
+                     const Index size );
 
-      template< typename DestinationElement,
-                typename SourceElement,
-                typename Index >
-      static void copyMemory( DestinationElement* destination,
-                              const SourceElement* source,
-                              const Index size );
+   template< typename DestinationElement,
+             typename SourceElement >
+   static void copySTLList( DestinationElement* destination,
+                            const std::list< SourceElement >& source );
 
-      template< typename DestinationElement,
-                typename SourceElement >
-      static void copySTLList( DestinationElement* destination,
-                               const std::list< SourceElement >& source );
+   template< typename Element1,
+             typename Element2,
+             typename Index >
+   static bool compare( const Element1* destination,
+                        const Element2* source,
+                        const Index size );
 
-      template< typename Element1,
-                typename Element2,
-                typename Index >
-      static bool compareMemory( const Element1* destination,
-                                 const Element2* source,
-                                 const Index size );
+   template< typename Element,
+             typename Index >
+   static bool containsValue( const Element* data,
+                              const Index size,
+                              const Element& value );
 
-      template< typename Element,
-                typename Index >
-      static bool containsValue( const Element* data,
-                                 const Index size,
-                                 const Element& value );
-
-      template< typename Element,
-                typename Index >
-      static bool containsOnlyValue( const Element* data,
-                                     const Index size,
-                                     const Element& value );
+   template< typename Element,
+             typename Index >
+   static bool containsOnlyValue( const Element* data,
+                                  const Index size,
+                                  const Element& value );
 };
 
 template<>
-class ArrayOperations< Devices::Cuda, Devices::Host >
+struct ArrayOperations< Devices::Cuda, Devices::Host >
 {
-   public:
+   template< typename DestinationElement,
+             typename SourceElement,
+             typename Index >
+   static void copy( DestinationElement* destination,
+                     const SourceElement* source,
+                     const Index size );
 
-      template< typename DestinationElement,
-                typename SourceElement,
-                typename Index >
-      static void copyMemory( DestinationElement* destination,
-                              const SourceElement* source,
-                              const Index size );
-
-      template< typename DestinationElement,
-                typename SourceElement,
-                typename Index >
-      static bool compareMemory( const DestinationElement* destination,
-                                 const SourceElement* source,
-                                 const Index size );
+   template< typename DestinationElement,
+             typename SourceElement,
+             typename Index >
+   static bool compare( const DestinationElement* destination,
+                        const SourceElement* source,
+                        const Index size );
 };
 
 template<>
-class ArrayOperations< Devices::Host, Devices::Cuda >
+struct ArrayOperations< Devices::Host, Devices::Cuda >
 {
-   public:
+   template< typename DestinationElement,
+             typename SourceElement,
+             typename Index >
+   static void copy( DestinationElement* destination,
+                     const SourceElement* source,
+                     const Index size );
 
-      template< typename DestinationElement,
-                typename SourceElement,
-                typename Index >
-      static void copyMemory( DestinationElement* destination,
-                              const SourceElement* source,
-                              const Index size );
-
-      template< typename Element1,
-                typename Element2,
-                typename Index >
-      static bool compareMemory( const Element1* destination,
-                                 const Element2* source,
-                                 const Index size );
+   template< typename Element1,
+             typename Element2,
+             typename Index >
+   static bool compare( const Element1* destination,
+                        const Element2* source,
+                        const Index size );
 };
 
 
 template<>
-class ArrayOperations< Devices::MIC >
+struct ArrayOperations< Devices::MIC >
 {
-   public:
+   template< typename Element >
+   static void setElement( Element* data,
+                           const Element& value );
 
-      template< typename Element >
-      static void setMemoryElement( Element* data,
-                                    const Element& value );
+   template< typename Element >
+   static Element getElement( const Element* data );
 
-      template< typename Element >
-      static Element getMemoryElement( const Element* data );
+   template< typename Element, typename Index >
+   static void set( Element* data,
+                    const Element& value,
+                    const Index size );
 
-      template< typename Element, typename Index >
-      static void setMemory( Element* data,
-                             const Element& value,
-                             const Index size );
+   template< typename DestinationElement,
+             typename SourceElement,
+             typename Index >
+   static void copy( DestinationElement* destination,
+                     const SourceElement* source,
+                     const Index size );
 
-      template< typename DestinationElement,
-                typename SourceElement,
-                typename Index >
-      static void copyMemory( DestinationElement* destination,
-                              const SourceElement* source,
-                              const Index size );
+   template< typename DestinationElement,
+             typename SourceElement >
+   static void copySTLList( DestinationElement* destination,
+                            const std::list< SourceElement >& source );
 
-      template< typename DestinationElement,
-                typename SourceElement >
-      static void copySTLList( DestinationElement* destination,
-                               const std::list< SourceElement >& source );
+   template< typename Element1,
+             typename Element2,
+             typename Index >
+   static bool compare( const Element1* destination,
+                        const Element2* source,
+                        const Index size );
 
-      template< typename Element1,
-                typename Element2,
-                typename Index >
-      static bool compareMemory( const Element1* destination,
-                                 const Element2* source,
-                                 const Index size );
+   template< typename Element,
+             typename Index >
+   static bool containsValue( const Element* data,
+                              const Index size,
+                              const Element& value );
 
-      template< typename Element,
-                typename Index >
-      static bool containsValue( const Element* data,
-                                 const Index size,
-                                 const Element& value );
-
-      template< typename Element,
-                typename Index >
-      static bool containsOnlyValue( const Element* data,
-                                     const Index size,
-                                     const Element& value );
+   template< typename Element,
+             typename Index >
+   static bool containsOnlyValue( const Element* data,
+                                  const Index size,
+                                  const Element& value );
 };
 
 template<>
-class ArrayOperations< Devices::MIC, Devices::Host >
+struct ArrayOperations< Devices::MIC, Devices::Host >
 {
    public:
 
       template< typename DestinationElement,
                 typename SourceElement,
                 typename Index >
-      static void copyMemory( DestinationElement* destination,
-                              const SourceElement* source,
-                              const Index size );
+      static void copy( DestinationElement* destination,
+                        const SourceElement* source,
+                        const Index size );
 
       template< typename DestinationElement,
                 typename SourceElement,
                 typename Index >
-      static bool compareMemory( const DestinationElement* destination,
-                                 const SourceElement* source,
-                                 const Index size );
+      static bool compare( const DestinationElement* destination,
+                           const SourceElement* source,
+                           const Index size );
 };
 
 template<>
-class ArrayOperations< Devices::Host, Devices::MIC >
+struct ArrayOperations< Devices::Host, Devices::MIC >
 {
-   public:
+   template< typename DestinationElement,
+             typename SourceElement,
+             typename Index >
+   static void copy( DestinationElement* destination,
+                     const SourceElement* source,
+                     const Index size );
 
-      template< typename DestinationElement,
-                typename SourceElement,
-                typename Index >
-      static void copyMemory( DestinationElement* destination,
-                              const SourceElement* source,
-                              const Index size );
-
-      template< typename DestinationElement,
-                typename SourceElement,
-                typename Index >
-      static bool compareMemory( const DestinationElement* destination,
-                                 const SourceElement* source,
-                                 const Index size );
+   template< typename DestinationElement,
+             typename SourceElement,
+             typename Index >
+   static bool compare( const DestinationElement* destination,
+                        const SourceElement* source,
+                        const Index size );
 };
 
 } // namespace Algorithms

@@ -48,7 +48,7 @@ TYPED_TEST( ArrayOperationsTest, allocateMemory_host )
    allocator.deallocate( data, ARRAY_TEST_SIZE );
 }
 
-TYPED_TEST( ArrayOperationsTest, setMemoryElement_host )
+TYPED_TEST( ArrayOperationsTest, setElement_host )
 {
    using ValueType = typename TestFixture::ValueType;
    using Allocator = Allocators::Host< ValueType >;
@@ -56,27 +56,27 @@ TYPED_TEST( ArrayOperationsTest, setMemoryElement_host )
    Allocator allocator;
    ValueType* data = allocator.allocate( ARRAY_TEST_SIZE );
    for( int i = 0; i < ARRAY_TEST_SIZE; i++ ) {
-      ArrayOperations< Devices::Host >::setMemoryElement( data + i, (ValueType) i );
+      ArrayOperations< Devices::Host >::setElement( data + i, (ValueType) i );
       EXPECT_EQ( data[ i ], i );
-      EXPECT_EQ( ArrayOperations< Devices::Host >::getMemoryElement( data + i ), i );
+      EXPECT_EQ( ArrayOperations< Devices::Host >::getElement( data + i ), i );
    }
    allocator.deallocate( data, ARRAY_TEST_SIZE );
 }
 
-TYPED_TEST( ArrayOperationsTest, setMemory_host )
+TYPED_TEST( ArrayOperationsTest, set_host )
 {
    using ValueType = typename TestFixture::ValueType;
    using Allocator = Allocators::Host< ValueType >;
 
    Allocator allocator;
    ValueType* data = allocator.allocate( ARRAY_TEST_SIZE );
-   ArrayOperations< Devices::Host >::setMemory( data, (ValueType) 13, ARRAY_TEST_SIZE );
+   ArrayOperations< Devices::Host >::set( data, (ValueType) 13, ARRAY_TEST_SIZE );
    for( int i = 0; i < ARRAY_TEST_SIZE; i ++ )
       EXPECT_EQ( data[ i ], 13 );
    allocator.deallocate( data, ARRAY_TEST_SIZE );
 }
 
-TYPED_TEST( ArrayOperationsTest, copyMemory_host )
+TYPED_TEST( ArrayOperationsTest, copy_host )
 {
    using ValueType = typename TestFixture::ValueType;
    using Allocator = Allocators::Host< ValueType >;
@@ -84,15 +84,15 @@ TYPED_TEST( ArrayOperationsTest, copyMemory_host )
    Allocator allocator;
    ValueType* data1 = allocator.allocate( ARRAY_TEST_SIZE );
    ValueType* data2 = allocator.allocate( ARRAY_TEST_SIZE );
-   ArrayOperations< Devices::Host >::setMemory( data1, (ValueType) 13, ARRAY_TEST_SIZE );
-   ArrayOperations< Devices::Host >::copyMemory< ValueType, ValueType >( data2, data1, ARRAY_TEST_SIZE );
+   ArrayOperations< Devices::Host >::set( data1, (ValueType) 13, ARRAY_TEST_SIZE );
+   ArrayOperations< Devices::Host >::copy< ValueType, ValueType >( data2, data1, ARRAY_TEST_SIZE );
    for( int i = 0; i < ARRAY_TEST_SIZE; i ++ )
       EXPECT_EQ( data1[ i ], data2[ i ]);
    allocator.deallocate( data1, ARRAY_TEST_SIZE );
    allocator.deallocate( data2, ARRAY_TEST_SIZE );
 }
 
-TYPED_TEST( ArrayOperationsTest, copyMemoryWithConversion_host )
+TYPED_TEST( ArrayOperationsTest, copyWithConversion_host )
 {
    using Allocator1 = Allocators::Host< int >;
    using Allocator2 = Allocators::Host< float >;
@@ -101,15 +101,15 @@ TYPED_TEST( ArrayOperationsTest, copyMemoryWithConversion_host )
    Allocator2 allocator2;
    int* data1 = allocator1.allocate( ARRAY_TEST_SIZE );
    float* data2 = allocator2.allocate( ARRAY_TEST_SIZE );
-   ArrayOperations< Devices::Host >::setMemory( data1, 13, ARRAY_TEST_SIZE );
-   ArrayOperations< Devices::Host >::copyMemory< float, int >( data2, data1, ARRAY_TEST_SIZE );
+   ArrayOperations< Devices::Host >::set( data1, 13, ARRAY_TEST_SIZE );
+   ArrayOperations< Devices::Host >::copy< float, int >( data2, data1, ARRAY_TEST_SIZE );
    for( int i = 0; i < ARRAY_TEST_SIZE; i ++ )
       EXPECT_EQ( data1[ i ], data2[ i ] );
    allocator1.deallocate( data1, ARRAY_TEST_SIZE );
    allocator2.deallocate( data2, ARRAY_TEST_SIZE );
 }
 
-TYPED_TEST( ArrayOperationsTest, compareMemory_host )
+TYPED_TEST( ArrayOperationsTest, compare_host )
 {
    using ValueType = typename TestFixture::ValueType;
    using Allocator = Allocators::Host< ValueType >;
@@ -117,16 +117,16 @@ TYPED_TEST( ArrayOperationsTest, compareMemory_host )
    Allocator allocator;
    ValueType* data1 = allocator.allocate( ARRAY_TEST_SIZE );
    ValueType* data2 = allocator.allocate( ARRAY_TEST_SIZE );
-   ArrayOperations< Devices::Host >::setMemory( data1, (ValueType) 7, ARRAY_TEST_SIZE );
-   ArrayOperations< Devices::Host >::setMemory( data2, (ValueType) 0, ARRAY_TEST_SIZE );
-   EXPECT_FALSE( ( ArrayOperations< Devices::Host >::compareMemory< ValueType, ValueType >( data1, data2, ARRAY_TEST_SIZE ) ) );
-   ArrayOperations< Devices::Host >::setMemory( data2, (ValueType) 7, ARRAY_TEST_SIZE );
-   EXPECT_TRUE( ( ArrayOperations< Devices::Host >::compareMemory< ValueType, ValueType >( data1, data2, ARRAY_TEST_SIZE ) ) );
+   ArrayOperations< Devices::Host >::set( data1, (ValueType) 7, ARRAY_TEST_SIZE );
+   ArrayOperations< Devices::Host >::set( data2, (ValueType) 0, ARRAY_TEST_SIZE );
+   EXPECT_FALSE( ( ArrayOperations< Devices::Host >::compare< ValueType, ValueType >( data1, data2, ARRAY_TEST_SIZE ) ) );
+   ArrayOperations< Devices::Host >::set( data2, (ValueType) 7, ARRAY_TEST_SIZE );
+   EXPECT_TRUE( ( ArrayOperations< Devices::Host >::compare< ValueType, ValueType >( data1, data2, ARRAY_TEST_SIZE ) ) );
    allocator.deallocate( data1, ARRAY_TEST_SIZE );
    allocator.deallocate( data2, ARRAY_TEST_SIZE );
 }
 
-TYPED_TEST( ArrayOperationsTest, compareMemoryWithConversion_host )
+TYPED_TEST( ArrayOperationsTest, compareWithConversion_host )
 {
    using Allocator1 = Allocators::Host< int >;
    using Allocator2 = Allocators::Host< float >;
@@ -135,11 +135,11 @@ TYPED_TEST( ArrayOperationsTest, compareMemoryWithConversion_host )
    Allocator2 allocator2;
    int* data1 = allocator1.allocate( ARRAY_TEST_SIZE );
    float* data2 = allocator2.allocate( ARRAY_TEST_SIZE );
-   ArrayOperations< Devices::Host >::setMemory( data1, 7, ARRAY_TEST_SIZE );
-   ArrayOperations< Devices::Host >::setMemory( data2, (float) 0.0, ARRAY_TEST_SIZE );
-   EXPECT_FALSE( ( ArrayOperations< Devices::Host >::compareMemory< int, float >( data1, data2, ARRAY_TEST_SIZE ) ) );
-   ArrayOperations< Devices::Host >::setMemory( data2, (float) 7.0, ARRAY_TEST_SIZE );
-   EXPECT_TRUE( ( ArrayOperations< Devices::Host >::compareMemory< int, float >( data1, data2, ARRAY_TEST_SIZE ) ) );
+   ArrayOperations< Devices::Host >::set( data1, 7, ARRAY_TEST_SIZE );
+   ArrayOperations< Devices::Host >::set( data2, (float) 0.0, ARRAY_TEST_SIZE );
+   EXPECT_FALSE( ( ArrayOperations< Devices::Host >::compare< int, float >( data1, data2, ARRAY_TEST_SIZE ) ) );
+   ArrayOperations< Devices::Host >::set( data2, (float) 7.0, ARRAY_TEST_SIZE );
+   EXPECT_TRUE( ( ArrayOperations< Devices::Host >::compare< int, float >( data1, data2, ARRAY_TEST_SIZE ) ) );
    allocator1.deallocate( data1, ARRAY_TEST_SIZE );
    allocator2.deallocate( data2, ARRAY_TEST_SIZE );
 }
@@ -198,7 +198,7 @@ TYPED_TEST( ArrayOperationsTest, allocateMemory_cuda )
    ASSERT_NO_THROW( TNL_CHECK_CUDA_DEVICE );
 }
 
-TYPED_TEST( ArrayOperationsTest, setMemoryElement_cuda )
+TYPED_TEST( ArrayOperationsTest, setElement_cuda )
 {
    using ValueType = typename TestFixture::ValueType;
    using Allocator = Allocators::Cuda< ValueType >;
@@ -208,21 +208,21 @@ TYPED_TEST( ArrayOperationsTest, setMemoryElement_cuda )
    ASSERT_NO_THROW( TNL_CHECK_CUDA_DEVICE );
 
    for( int i = 0; i < ARRAY_TEST_SIZE; i++ )
-      ArrayOperations< Devices::Cuda >::setMemoryElement( &data[ i ], (ValueType) i );
+      ArrayOperations< Devices::Cuda >::setElement( &data[ i ], (ValueType) i );
 
    for( int i = 0; i < ARRAY_TEST_SIZE; i++ )
    {
       ValueType d;
       ASSERT_EQ( cudaMemcpy( &d, &data[ i ], sizeof( ValueType ), cudaMemcpyDeviceToHost ), cudaSuccess );
       EXPECT_EQ( d, i );
-      EXPECT_EQ( ArrayOperations< Devices::Cuda >::getMemoryElement( &data[ i ] ), i );
+      EXPECT_EQ( ArrayOperations< Devices::Cuda >::getElement( &data[ i ] ), i );
    }
 
    allocator.deallocate( data, ARRAY_TEST_SIZE );
    ASSERT_NO_THROW( TNL_CHECK_CUDA_DEVICE );
 }
 
-TYPED_TEST( ArrayOperationsTest, setMemory_cuda )
+TYPED_TEST( ArrayOperationsTest, set_cuda )
 {
    using ValueType = typename TestFixture::ValueType;
    using HostAllocator = Allocators::Host< ValueType >;
@@ -232,10 +232,10 @@ TYPED_TEST( ArrayOperationsTest, setMemory_cuda )
    CudaAllocator cudaAllocator;
    ValueType* hostData = hostAllocator.allocate( ARRAY_TEST_SIZE );
    ValueType* deviceData = cudaAllocator.allocate( ARRAY_TEST_SIZE );
-   ArrayOperations< Devices::Host >::setMemory( hostData, (ValueType) 0, ARRAY_TEST_SIZE );
-   ArrayOperations< Devices::Cuda >::setMemory( deviceData, (ValueType) 13, ARRAY_TEST_SIZE );
+   ArrayOperations< Devices::Host >::set( hostData, (ValueType) 0, ARRAY_TEST_SIZE );
+   ArrayOperations< Devices::Cuda >::set( deviceData, (ValueType) 13, ARRAY_TEST_SIZE );
    ASSERT_NO_THROW( TNL_CHECK_CUDA_DEVICE );
-   ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< ValueType, ValueType >( hostData, deviceData, ARRAY_TEST_SIZE );
+   ArrayOperations< Devices::Host, Devices::Cuda >::copy< ValueType, ValueType >( hostData, deviceData, ARRAY_TEST_SIZE );
    ASSERT_NO_THROW( TNL_CHECK_CUDA_DEVICE );
    for( int i = 0; i < ARRAY_TEST_SIZE; i++ )
       EXPECT_EQ( hostData[ i ], 13 );
@@ -243,7 +243,7 @@ TYPED_TEST( ArrayOperationsTest, setMemory_cuda )
    cudaAllocator.deallocate( deviceData, ARRAY_TEST_SIZE );
 }
 
-TYPED_TEST( ArrayOperationsTest, copyMemory_cuda )
+TYPED_TEST( ArrayOperationsTest, copy_cuda )
 {
    using ValueType = typename TestFixture::ValueType;
    using HostAllocator = Allocators::Host< ValueType >;
@@ -255,18 +255,18 @@ TYPED_TEST( ArrayOperationsTest, copyMemory_cuda )
    ValueType* hostData2 = hostAllocator.allocate( ARRAY_TEST_SIZE );
    ValueType* deviceData = cudaAllocator.allocate( ARRAY_TEST_SIZE );
    ValueType* deviceData2 = cudaAllocator.allocate( ARRAY_TEST_SIZE );
-   ArrayOperations< Devices::Host >::setMemory( hostData, (ValueType) 13, ARRAY_TEST_SIZE );
-   ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory< ValueType >( deviceData, hostData, ARRAY_TEST_SIZE );
-   ArrayOperations< Devices::Cuda >::copyMemory< ValueType, ValueType >( deviceData2, deviceData, ARRAY_TEST_SIZE );
-   ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< ValueType, ValueType >( hostData2, deviceData2, ARRAY_TEST_SIZE );
-   EXPECT_TRUE( ( ArrayOperations< Devices::Host >::compareMemory< ValueType, ValueType >( hostData, hostData2, ARRAY_TEST_SIZE) ) );
+   ArrayOperations< Devices::Host >::set( hostData, (ValueType) 13, ARRAY_TEST_SIZE );
+   ArrayOperations< Devices::Cuda, Devices::Host >::copy< ValueType >( deviceData, hostData, ARRAY_TEST_SIZE );
+   ArrayOperations< Devices::Cuda >::copy< ValueType, ValueType >( deviceData2, deviceData, ARRAY_TEST_SIZE );
+   ArrayOperations< Devices::Host, Devices::Cuda >::copy< ValueType, ValueType >( hostData2, deviceData2, ARRAY_TEST_SIZE );
+   EXPECT_TRUE( ( ArrayOperations< Devices::Host >::compare< ValueType, ValueType >( hostData, hostData2, ARRAY_TEST_SIZE) ) );
    hostAllocator.deallocate( hostData, ARRAY_TEST_SIZE );
    hostAllocator.deallocate( hostData2, ARRAY_TEST_SIZE );
    cudaAllocator.deallocate( deviceData, ARRAY_TEST_SIZE );
    cudaAllocator.deallocate( deviceData2, ARRAY_TEST_SIZE );
 }
 
-TYPED_TEST( ArrayOperationsTest, copyMemoryWithConversions_cuda )
+TYPED_TEST( ArrayOperationsTest, copyWithConversions_cuda )
 {
    using HostAllocator1 = Allocators::Host< int >;
    using HostAllocator2 = Allocators::Host< double >;
@@ -281,10 +281,10 @@ TYPED_TEST( ArrayOperationsTest, copyMemoryWithConversions_cuda )
    double* hostData2 = hostAllocator2.allocate( ARRAY_TEST_SIZE );
    long* deviceData = cudaAllocator1.allocate( ARRAY_TEST_SIZE );
    float* deviceData2 = cudaAllocator2.allocate( ARRAY_TEST_SIZE );
-   ArrayOperations< Devices::Host >::setMemory( hostData, 13, ARRAY_TEST_SIZE );
-   ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory< long, int >( deviceData, hostData, ARRAY_TEST_SIZE );
-   ArrayOperations< Devices::Cuda >::copyMemory< float, long >( deviceData2, deviceData, ARRAY_TEST_SIZE );
-   ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< double, float >( hostData2, deviceData2, ARRAY_TEST_SIZE );
+   ArrayOperations< Devices::Host >::set( hostData, 13, ARRAY_TEST_SIZE );
+   ArrayOperations< Devices::Cuda, Devices::Host >::copy< long, int >( deviceData, hostData, ARRAY_TEST_SIZE );
+   ArrayOperations< Devices::Cuda >::copy< float, long >( deviceData2, deviceData, ARRAY_TEST_SIZE );
+   ArrayOperations< Devices::Host, Devices::Cuda >::copy< double, float >( hostData2, deviceData2, ARRAY_TEST_SIZE );
    for( int i = 0; i < ARRAY_TEST_SIZE; i ++ )
       EXPECT_EQ( hostData[ i ], hostData2[ i ] );
    hostAllocator1.deallocate( hostData, ARRAY_TEST_SIZE );
@@ -293,7 +293,7 @@ TYPED_TEST( ArrayOperationsTest, copyMemoryWithConversions_cuda )
    cudaAllocator2.deallocate( deviceData2, ARRAY_TEST_SIZE );
 }
 
-TYPED_TEST( ArrayOperationsTest, compareMemory_cuda )
+TYPED_TEST( ArrayOperationsTest, compare_cuda )
 {
    using ValueType = typename TestFixture::ValueType;
    using HostAllocator = Allocators::Host< ValueType >;
@@ -305,25 +305,25 @@ TYPED_TEST( ArrayOperationsTest, compareMemory_cuda )
    ValueType* deviceData = cudaAllocator.allocate( ARRAY_TEST_SIZE );
    ValueType* deviceData2 = cudaAllocator.allocate( ARRAY_TEST_SIZE );
 
-   ArrayOperations< Devices::Host >::setMemory( hostData, (ValueType) 7, ARRAY_TEST_SIZE );
-   ArrayOperations< Devices::Cuda >::setMemory( deviceData, (ValueType) 8, ARRAY_TEST_SIZE );
-   ArrayOperations< Devices::Cuda >::setMemory( deviceData2, (ValueType) 9, ARRAY_TEST_SIZE );
-   EXPECT_FALSE(( ArrayOperations< Devices::Host, Devices::Cuda >::compareMemory< ValueType, ValueType >( hostData, deviceData, ARRAY_TEST_SIZE ) ));
-   EXPECT_FALSE(( ArrayOperations< Devices::Cuda, Devices::Host >::compareMemory< ValueType, ValueType >( deviceData, hostData, ARRAY_TEST_SIZE ) ));
-   EXPECT_FALSE(( ArrayOperations< Devices::Cuda >::compareMemory< ValueType, ValueType >( deviceData, deviceData2, ARRAY_TEST_SIZE ) ));
+   ArrayOperations< Devices::Host >::set( hostData, (ValueType) 7, ARRAY_TEST_SIZE );
+   ArrayOperations< Devices::Cuda >::set( deviceData, (ValueType) 8, ARRAY_TEST_SIZE );
+   ArrayOperations< Devices::Cuda >::set( deviceData2, (ValueType) 9, ARRAY_TEST_SIZE );
+   EXPECT_FALSE(( ArrayOperations< Devices::Host, Devices::Cuda >::compare< ValueType, ValueType >( hostData, deviceData, ARRAY_TEST_SIZE ) ));
+   EXPECT_FALSE(( ArrayOperations< Devices::Cuda, Devices::Host >::compare< ValueType, ValueType >( deviceData, hostData, ARRAY_TEST_SIZE ) ));
+   EXPECT_FALSE(( ArrayOperations< Devices::Cuda >::compare< ValueType, ValueType >( deviceData, deviceData2, ARRAY_TEST_SIZE ) ));
 
-   ArrayOperations< Devices::Cuda >::setMemory( deviceData, (ValueType) 7, ARRAY_TEST_SIZE );
-   ArrayOperations< Devices::Cuda >::setMemory( deviceData2, (ValueType) 7, ARRAY_TEST_SIZE );
-   EXPECT_TRUE(( ArrayOperations< Devices::Host, Devices::Cuda >::compareMemory< ValueType, ValueType >( hostData, deviceData, ARRAY_TEST_SIZE ) ));
-   EXPECT_TRUE(( ArrayOperations< Devices::Cuda, Devices::Host >::compareMemory< ValueType, ValueType >( deviceData, hostData, ARRAY_TEST_SIZE ) ));
-   EXPECT_TRUE(( ArrayOperations< Devices::Cuda >::compareMemory< ValueType, ValueType >( deviceData, deviceData2, ARRAY_TEST_SIZE ) ));
+   ArrayOperations< Devices::Cuda >::set( deviceData, (ValueType) 7, ARRAY_TEST_SIZE );
+   ArrayOperations< Devices::Cuda >::set( deviceData2, (ValueType) 7, ARRAY_TEST_SIZE );
+   EXPECT_TRUE(( ArrayOperations< Devices::Host, Devices::Cuda >::compare< ValueType, ValueType >( hostData, deviceData, ARRAY_TEST_SIZE ) ));
+   EXPECT_TRUE(( ArrayOperations< Devices::Cuda, Devices::Host >::compare< ValueType, ValueType >( deviceData, hostData, ARRAY_TEST_SIZE ) ));
+   EXPECT_TRUE(( ArrayOperations< Devices::Cuda >::compare< ValueType, ValueType >( deviceData, deviceData2, ARRAY_TEST_SIZE ) ));
 
    hostAllocator.deallocate( hostData, ARRAY_TEST_SIZE );
    cudaAllocator.deallocate( deviceData, ARRAY_TEST_SIZE );
    cudaAllocator.deallocate( deviceData2, ARRAY_TEST_SIZE );
 }
 
-TYPED_TEST( ArrayOperationsTest, compareMemoryWithConversions_cuda )
+TYPED_TEST( ArrayOperationsTest, compareWithConversions_cuda )
 {
    using HostAllocator = Allocators::Host< int >;
    using CudaAllocator1 = Allocators::Cuda< float >;
@@ -336,18 +336,18 @@ TYPED_TEST( ArrayOperationsTest, compareMemoryWithConversions_cuda )
    float* deviceData = cudaAllocator1.allocate( ARRAY_TEST_SIZE );
    double* deviceData2 = cudaAllocator2.allocate( ARRAY_TEST_SIZE );
 
-   ArrayOperations< Devices::Host >::setMemory( hostData, 7, ARRAY_TEST_SIZE );
-   ArrayOperations< Devices::Cuda >::setMemory( deviceData, (float) 8, ARRAY_TEST_SIZE );
-   ArrayOperations< Devices::Cuda >::setMemory( deviceData2, (double) 9, ARRAY_TEST_SIZE );
-   EXPECT_FALSE(( ArrayOperations< Devices::Host, Devices::Cuda >::compareMemory< int, float >( hostData, deviceData, ARRAY_TEST_SIZE ) ));
-   EXPECT_FALSE(( ArrayOperations< Devices::Cuda, Devices::Host >::compareMemory< float, int >( deviceData, hostData, ARRAY_TEST_SIZE ) ));
-   EXPECT_FALSE(( ArrayOperations< Devices::Cuda >::compareMemory< float, double >( deviceData, deviceData2, ARRAY_TEST_SIZE ) ));
+   ArrayOperations< Devices::Host >::set( hostData, 7, ARRAY_TEST_SIZE );
+   ArrayOperations< Devices::Cuda >::set( deviceData, (float) 8, ARRAY_TEST_SIZE );
+   ArrayOperations< Devices::Cuda >::set( deviceData2, (double) 9, ARRAY_TEST_SIZE );
+   EXPECT_FALSE(( ArrayOperations< Devices::Host, Devices::Cuda >::compare< int, float >( hostData, deviceData, ARRAY_TEST_SIZE ) ));
+   EXPECT_FALSE(( ArrayOperations< Devices::Cuda, Devices::Host >::compare< float, int >( deviceData, hostData, ARRAY_TEST_SIZE ) ));
+   EXPECT_FALSE(( ArrayOperations< Devices::Cuda >::compare< float, double >( deviceData, deviceData2, ARRAY_TEST_SIZE ) ));
 
-   ArrayOperations< Devices::Cuda >::setMemory( deviceData, (float) 7, ARRAY_TEST_SIZE );
-   ArrayOperations< Devices::Cuda >::setMemory( deviceData2, (double) 7, ARRAY_TEST_SIZE );
-   EXPECT_TRUE(( ArrayOperations< Devices::Host, Devices::Cuda >::compareMemory< int, float >( hostData, deviceData, ARRAY_TEST_SIZE ) ));
-   EXPECT_TRUE(( ArrayOperations< Devices::Cuda, Devices::Host >::compareMemory< float, int >( deviceData, hostData, ARRAY_TEST_SIZE ) ));
-   EXPECT_TRUE(( ArrayOperations< Devices::Cuda >::compareMemory< float, double >( deviceData, deviceData2, ARRAY_TEST_SIZE ) ));
+   ArrayOperations< Devices::Cuda >::set( deviceData, (float) 7, ARRAY_TEST_SIZE );
+   ArrayOperations< Devices::Cuda >::set( deviceData2, (double) 7, ARRAY_TEST_SIZE );
+   EXPECT_TRUE(( ArrayOperations< Devices::Host, Devices::Cuda >::compare< int, float >( hostData, deviceData, ARRAY_TEST_SIZE ) ));
+   EXPECT_TRUE(( ArrayOperations< Devices::Cuda, Devices::Host >::compare< float, int >( deviceData, hostData, ARRAY_TEST_SIZE ) ));
+   EXPECT_TRUE(( ArrayOperations< Devices::Cuda >::compare< float, double >( deviceData, deviceData2, ARRAY_TEST_SIZE ) ));
 
    hostAllocator.deallocate( hostData, ARRAY_TEST_SIZE );
    cudaAllocator1.deallocate( deviceData, ARRAY_TEST_SIZE );
@@ -367,7 +367,7 @@ TYPED_TEST( ArrayOperationsTest, containsValue_cuda )
 
    for( int i = 0; i < ARRAY_TEST_SIZE; i++ )
       hostData[ i ] = i % 10;
-   ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory( deviceData, hostData, ARRAY_TEST_SIZE );
+   ArrayOperations< Devices::Cuda, Devices::Host >::copy( deviceData, hostData, ARRAY_TEST_SIZE );
 
    for( int i = 0; i < 10; i++ )
       EXPECT_TRUE( ( ArrayOperations< Devices::Cuda >::containsValue( deviceData, ARRAY_TEST_SIZE, (ValueType) i ) ) );
@@ -391,14 +391,14 @@ TYPED_TEST( ArrayOperationsTest, containsOnlyValue_cuda )
 
    for( int i = 0; i < ARRAY_TEST_SIZE; i++ )
       hostData[ i ] = i % 10;
-   ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory( deviceData, hostData, ARRAY_TEST_SIZE );
+   ArrayOperations< Devices::Cuda, Devices::Host >::copy( deviceData, hostData, ARRAY_TEST_SIZE );
 
    for( int i = 0; i < 20; i++ )
       EXPECT_FALSE( ( ArrayOperations< Devices::Cuda >::containsOnlyValue( deviceData, ARRAY_TEST_SIZE, (ValueType) i ) ) );
 
    for( int i = 0; i < ARRAY_TEST_SIZE; i++ )
       hostData[ i ] = 10;
-   ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory( deviceData, hostData, ARRAY_TEST_SIZE );
+   ArrayOperations< Devices::Cuda, Devices::Host >::copy( deviceData, hostData, ARRAY_TEST_SIZE );
 
    EXPECT_TRUE( ( ArrayOperations< Devices::Cuda >::containsOnlyValue( deviceData, ARRAY_TEST_SIZE, (ValueType) 10 ) ) );
 
