@@ -90,8 +90,7 @@ void setCudaTestMatrix( Matrix& matrix,
 
 // TODO: rename as benchmark_SpMV_synthetic and move to spmv-synthetic.h
 template< typename Real,
-          template< typename, typename, typename > class Matrix,
-          template< typename, typename, typename > class Vector = Containers::Vector >
+          template< typename, typename, typename > class Matrix >
 void
 benchmarkSpMV( Benchmark & benchmark,
                const int & size,

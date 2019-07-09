@@ -18,25 +18,33 @@ namespace TNL {
 namespace Containers {
 
 /**
- * \brief This class extends TNL::Array with algebraic operations.
+ * \brief \e Vector extends \ref Array with algebraic operations.
  *
- * \tparam Real is numeric type usually float or double.
- * \tparam Device is device where the array is going to be allocated - some of \ref Devices::Host and \ref Devices::Cuda.
- * \tparam Index is indexing type.
+ * The template parameters have the same meaning as in \ref Array, with \e Real
+ * corresponding to \e Array's \e Value parameter.
+ *
+ * \tparam Real   A numeric type for the vector values, e.g. \ref float or
+ *                \ref double.
+ * \tparam Device The device where the vector is to be allocated.
+ * \tparam Index  The indexing type.
+ * \tparam Allocator The type of the allocator used for the allocation and
+ *                   deallocation of memory used by the array.
  *
  * \par Example
  * \include VectorExample.cpp
  */
 template< typename Real = double,
           typename Device = Devices::Host,
-          typename Index = int >
+          typename Index = int,
+          typename Allocator = typename Allocators::Default< Device >::template Allocator< Real > >
 class Vector
-: public Array< Real, Device, Index >
+: public Array< Real, Device, Index, Allocator >
 {
 public:
    using RealType = Real;
    using DeviceType = Device;
    using IndexType = Index;
+   using AllocatorType = Allocator;
    using HostType = Vector< Real, TNL::Devices::Host, Index >;
    using CudaType = Vector< Real, TNL::Devices::Cuda, Index >;
    using ViewType = VectorView< Real, Device, Index >;
@@ -46,6 +54,8 @@ public:
    Vector() = default;
    //! \brief Default copy constructor.
    explicit Vector( const Vector& ) = default;
+   //! \brief Copy constructor with a specific allocator.
+   explicit Vector( const Vector& vector, const AllocatorType& allocator );
    //! \brief Default move constructor.
    Vector( Vector&& ) = default;
    //! \brief Default copy-assignment operator.
@@ -54,8 +64,8 @@ public:
    Vector& operator=( Vector&& ) = default;
 
    //! Constructors and assignment operators are inherited from the class \ref Array.
-   using Array< Real, Device, Index >::Array;
-   using Array< Real, Device, Index >::operator=;
+   using Array< Real, Device, Index, Allocator >::Array;
+   using Array< Real, Device, Index, Allocator >::operator=;
 
    /** \brief Returns type of vector Real value, Device type and the type of Index. */
    static String getType();
@@ -134,8 +144,8 @@ public:
                     const RealType& value,
                     const Scalar thisElementMultiplicator );
 
-   template< typename Real_, typename Device_, typename Index_ >
-   Vector& operator=( const Vector< Real_, Device_, Index_ >& v );
+   template< typename Real_, typename Device_, typename Index_, typename Allocator_ >
+   Vector& operator=( const Vector< Real_, Device_, Index_, Allocator_ >& v );
 
    template< typename Real_, typename Device_, typename Index_ >
    Vector& operator=( const VectorView< Real_, Device_, Index_ >& v );

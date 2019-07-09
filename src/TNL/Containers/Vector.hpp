@@ -18,9 +18,21 @@ namespace Containers {
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
+Vector< Real, Device, Index, Allocator >::
+Vector( const Vector& vector,
+        const AllocatorType& allocator )
+: Array< Real, Device, Index, Allocator >( vector, allocator )
+{
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Allocator >
 String
-Vector< Real, Device, Index >::
+Vector< Real, Device, Index, Allocator >::
 getType()
 {
    return String( "Containers::Vector< " ) +
@@ -31,9 +43,10 @@ getType()
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
 String
-Vector< Real, Device, Index >::
+Vector< Real, Device, Index, Allocator >::
 getTypeVirtual() const
 {
    return this->getType();
@@ -41,9 +54,10 @@ getTypeVirtual() const
 
 template< typename Real,
           typename Device,
-          typename Index >
-typename Vector< Real, Device, Index >::ViewType
-Vector< Real, Device, Index >::
+          typename Index,
+          typename Allocator >
+typename Vector< Real, Device, Index, Allocator >::ViewType
+Vector< Real, Device, Index, Allocator >::
 getView( IndexType begin, IndexType end )
 {
    if( end == 0 )
@@ -53,9 +67,10 @@ getView( IndexType begin, IndexType end )
 
 template< typename Real,
           typename Device,
-          typename Index >
-typename Vector< Real, Device, Index >::ConstViewType
-Vector< Real, Device, Index >::
+          typename Index,
+          typename Allocator >
+typename Vector< Real, Device, Index, Allocator >::ConstViewType
+Vector< Real, Device, Index, Allocator >::
 getView( IndexType begin, IndexType end ) const
 {
    if( end == 0 )
@@ -65,9 +80,10 @@ getView( IndexType begin, IndexType end ) const
 
 template< typename Real,
           typename Device,
-          typename Index >
-typename Vector< Real, Device, Index >::ConstViewType
-Vector< Real, Device, Index >::
+          typename Index,
+          typename Allocator >
+typename Vector< Real, Device, Index, Allocator >::ConstViewType
+Vector< Real, Device, Index, Allocator >::
 getConstView( IndexType begin, IndexType end ) const
 {
    if( end == 0 )
@@ -77,8 +93,9 @@ getConstView( IndexType begin, IndexType end ) const
 
 template< typename Real,
           typename Device,
-          typename Index >
-Vector< Real, Device, Index >::
+          typename Index,
+          typename Allocator >
+Vector< Real, Device, Index, Allocator >::
 operator ViewType()
 {
    return getView();
@@ -86,8 +103,9 @@ operator ViewType()
 
 template< typename Real,
           typename Device,
-          typename Index >
-Vector< Real, Device, Index >::
+          typename Index,
+          typename Allocator >
+Vector< Real, Device, Index, Allocator >::
 operator ConstViewType() const
 {
    return getConstView();
@@ -95,9 +113,10 @@ operator ConstViewType() const
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
 void
-Vector< Real, Device, Index >::
+Vector< Real, Device, Index, Allocator >::
 addElement( const IndexType i,
             const RealType& value )
 {
@@ -106,10 +125,11 @@ addElement( const IndexType i,
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
    template< typename Scalar >
 void
-Vector< Real, Device, Index >::
+Vector< Real, Device, Index, Allocator >::
 addElement( const IndexType i,
             const RealType& value,
             const Scalar thisElementMultiplicator )
@@ -119,10 +139,12 @@ addElement( const IndexType i,
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
    template< typename VectorExpression >
-Vector< Real, Device, Index >&
-Vector< Real, Device, Index >::operator=( const VectorExpression& expression )
+Vector< Real, Device, Index, Allocator >&
+Vector< Real, Device, Index, Allocator >::
+operator=( const VectorExpression& expression )
 {
    Algorithms::VectorAssignment< Vector, VectorExpression >::assign( *this, expression );
    return *this;
@@ -130,32 +152,37 @@ Vector< Real, Device, Index >::operator=( const VectorExpression& expression )
 
 template< typename Real,
           typename Device,
-          typename Index >
-   template< typename Real_, typename Device_, typename Index_ >
-Vector< Real, Device, Index >&
-Vector< Real, Device, Index >::operator=( const Vector< Real_, Device_, Index_ >& vector )
+          typename Index,
+          typename Allocator >
+   template< typename Real_, typename Device_, typename Index_, typename Allocator_ >
+Vector< Real, Device, Index, Allocator >&
+Vector< Real, Device, Index, Allocator >::
+operator=( const Vector< Real_, Device_, Index_, Allocator_ >& vector )
 {
-   Array< Real, Device, Index >::operator=( vector );
+   Array< Real, Device, Index, Allocator >::operator=( vector );
    return *this;
 }
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
    template< typename Real_, typename Device_, typename Index_ >
-Vector< Real, Device, Index >&
-Vector< Real, Device, Index >::operator=( const VectorView< Real_, Device_, Index_ >& view )
+Vector< Real, Device, Index, Allocator >&
+Vector< Real, Device, Index, Allocator >::
+operator=( const VectorView< Real_, Device_, Index_ >& view )
 {
-   Array< Real, Device, Index >::operator=( view );
+   Array< Real, Device, Index, Allocator >::operator=( view );
    return *this;
 }
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
    template< typename VectorExpression >
-Vector< Real, Device, Index >&
-Vector< Real, Device, Index >::
+Vector< Real, Device, Index, Allocator >&
+Vector< Real, Device, Index, Allocator >::
 operator-=( const VectorExpression& expression )
 {
    Algorithms::VectorSubtraction< Vector, VectorExpression >::subtraction( *this, expression );
@@ -164,10 +191,11 @@ operator-=( const VectorExpression& expression )
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
    template< typename VectorExpression >
-Vector< Real, Device, Index >&
-Vector< Real, Device, Index >::
+Vector< Real, Device, Index, Allocator >&
+Vector< Real, Device, Index, Allocator >::
 operator+=( const VectorExpression& expression )
 {
    Algorithms::VectorAddition< Vector, VectorExpression >::addition( *this, expression );
@@ -176,10 +204,11 @@ operator+=( const VectorExpression& expression )
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
    template< typename VectorExpression >
-Vector< Real, Device, Index >&
-Vector< Real, Device, Index >::
+Vector< Real, Device, Index, Allocator >&
+Vector< Real, Device, Index, Allocator >::
 operator*=( const VectorExpression& expression )
 {
    Algorithms::VectorMultiplication< Vector, VectorExpression >::multiplication( *this, expression );
@@ -188,10 +217,11 @@ operator*=( const VectorExpression& expression )
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
    template< typename VectorExpression >
-Vector< Real, Device, Index >&
-Vector< Real, Device, Index >::
+Vector< Real, Device, Index, Allocator >&
+Vector< Real, Device, Index, Allocator >::
 operator/=( const VectorExpression& expression )
 {
    Algorithms::VectorDivision< Vector, VectorExpression >::division( *this, expression );
@@ -200,28 +230,31 @@ operator/=( const VectorExpression& expression )
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
    template< typename ResultType >
-ResultType Vector< Real, Device, Index >::sum() const
+ResultType Vector< Real, Device, Index, Allocator >::sum() const
 {
    return Algorithms::VectorOperations< Device >::template getVectorSum< Vector, ResultType >( *this );
 }
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
    template< typename VectorT >
-Real Vector< Real, Device, Index >::scalarProduct( const VectorT& v ) const
+Real Vector< Real, Device, Index, Allocator >::scalarProduct( const VectorT& v ) const
 {
    return dot( this->getView(), v.getView() );
 }
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
    template< typename VectorT, typename Scalar1, typename Scalar2 >
 void
-Vector< Real, Device, Index >::
+Vector< Real, Device, Index, Allocator >::
 addVector( const VectorT& x,
            const Scalar1 multiplicator,
            const Scalar2 thisMultiplicator )
@@ -231,10 +264,11 @@ addVector( const VectorT& x,
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
    template< typename Vector1, typename Vector2, typename Scalar1, typename Scalar2, typename Scalar3 >
 void
-Vector< Real, Device, Index >::
+Vector< Real, Device, Index, Allocator >::
 addVectors( const Vector1& v1,
             const Scalar1 multiplicator1,
             const Vector2& v2,
@@ -246,10 +280,11 @@ addVectors( const Vector1& v1,
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
    template< Algorithms::PrefixSumType Type >
 void
-Vector< Real, Device, Index >::
+Vector< Real, Device, Index, Allocator >::
 prefixSum( IndexType begin, IndexType end )
 {
    if( end == 0 )
@@ -259,11 +294,12 @@ prefixSum( IndexType begin, IndexType end )
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
    template< Algorithms::PrefixSumType Type,
              typename FlagsArray >
 void
-Vector< Real, Device, Index >::
+Vector< Real, Device, Index, Allocator >::
 segmentedPrefixSum( FlagsArray& flags, IndexType begin, IndexType end )
 {
    if( end == 0 )
@@ -273,11 +309,12 @@ segmentedPrefixSum( FlagsArray& flags, IndexType begin, IndexType end )
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
    template< Algorithms::PrefixSumType Type,
              typename VectorExpression >
 void
-Vector< Real, Device, Index >::
+Vector< Real, Device, Index, Allocator >::
 prefixSum( const VectorExpression& expression, IndexType begin, IndexType end )
 {
    throw Exceptions::NotImplementedError( "Prefix sum with vector expressions is not implemented." );
@@ -285,12 +322,13 @@ prefixSum( const VectorExpression& expression, IndexType begin, IndexType end )
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          typename Allocator >
    template< Algorithms::PrefixSumType Type,
              typename VectorExpression,
              typename FlagsArray >
 void
-Vector< Real, Device, Index >::
+Vector< Real, Device, Index, Allocator >::
 segmentedPrefixSum( const VectorExpression& expression, FlagsArray& flags, IndexType begin, IndexType end )
 {
    throw Exceptions::NotImplementedError( "Prefix sum with vector expressions is not implemented." );
