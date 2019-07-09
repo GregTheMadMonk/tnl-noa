@@ -11,6 +11,7 @@
 #pragma once
 
 #include <type_traits>
+#include <stdexcept>
 #include <string.h>
 
 #include <TNL/ParallelFor.h>
@@ -91,15 +92,20 @@ copy( DestinationElement* destination,
 }
 
 template< typename DestinationElement,
-          typename SourceElement >
+          typename Index,
+          typename SourceIterator >
 void
 ArrayOperations< Devices::Host >::
-copySTLList( DestinationElement* destination,
-             const std::list< SourceElement >& source )
+copyFromIterator( DestinationElement* destination,
+                  Index destinationSize,
+                  SourceIterator first,
+                  SourceIterator last )
 {
-   std::size_t i = 0;
-   for( const SourceElement& e : source )
-      destination[ i++ ] = e;
+   Index i = 0;
+   while( i < destinationSize && first != last )
+      destination[ i++ ] = *first++;
+   if( first != last )
+      throw std::length_error( "Source iterator is larger than the destination array." );
 }
 
 

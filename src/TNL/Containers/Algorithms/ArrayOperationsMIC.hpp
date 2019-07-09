@@ -112,11 +112,14 @@ copy( DestinationElement* destination,
 }
 
 template< typename DestinationElement,
-          typename SourceElement >
+          typename Index,
+          typename SourceIterator >
 void
 ArrayOperations< Devices::MIC >::
-copySTLList( DestinationElement* destination,
-             const std::list< SourceElement >& source )
+copyFromIterator( DestinationElement* destination,
+                  Index destinationSize,
+                  SourceIterator first,
+                  SourceIterator last )
 {
    throw Exceptions::NotImplementedError();
 }

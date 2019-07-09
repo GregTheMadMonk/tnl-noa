@@ -40,7 +40,7 @@ public:
 template< typename Array,
           typename T,
           bool hasGetArrayData = detail::HasGetArrayData< T >::value >
-struct ArrayAssignment{};
+struct ArrayAssignment;
 
 /**
  * \brief Specialization for array-array assignment with containers implementing

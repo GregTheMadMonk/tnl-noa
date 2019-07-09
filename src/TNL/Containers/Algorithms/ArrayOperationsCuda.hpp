@@ -12,6 +12,7 @@
 
 #include <iostream>
 #include <memory>
+#include <stdexcept>
 
 #include <TNL/Math.h>
 #include <TNL/ParallelFor.h>
@@ -94,27 +95,29 @@ copy( DestinationElement* destination,
 }
 
 template< typename DestinationElement,
-          typename SourceElement >
+          typename Index,
+          typename SourceIterator >
 void
 ArrayOperations< Devices::Cuda >::
-copySTLList( DestinationElement* destination,
-             const std::list< SourceElement >& source )
+copyFromIterator( DestinationElement* destination,
+                  Index destinationSize,
+                  SourceIterator first,
+                  SourceIterator last )
 {
-   const auto size = source.size();
-   const std::size_t copy_buffer_size = std::min( Devices::Cuda::TransferBufferSize / (std::size_t) sizeof( DestinationElement ), ( std::size_t ) size );
    using BaseType = typename std::remove_cv< DestinationElement >::type;
-   std::unique_ptr< BaseType[] > copy_buffer{ new BaseType[ copy_buffer_size ] };
-   std::size_t copiedElements = 0;
-   auto it = source.begin();
-   while( copiedElements < size )
-   {
-      const auto copySize = std::min( size - copiedElements, copy_buffer_size );
-      for( std::size_t i = 0; i < copySize; i++ )
-         copy_buffer[ i ] = static_cast< DestinationElement >( * it ++ );
-      ArrayOperations< Devices::Cuda, Devices::Host >::copy( &destination[ copiedElements ], &copy_buffer[ 0 ], copySize );
-      copiedElements += copySize;
+   std::unique_ptr< BaseType[] > buffer{ new BaseType[ Devices::Cuda::getGPUTransferBufferSize() ] };
+   Index copiedElements = 0;
+   while( copiedElements < destinationSize && first != last ) {
+      Index i = 0;
+      while( i < Devices::Cuda::getGPUTransferBufferSize() && first != last )
+         buffer[ i++ ] = *first++;
+      ArrayOperations< Devices::Cuda, Devices::Host >::copy( &destination[ copiedElements ], buffer.get(), i );
+      copiedElements += i;
    }
+   if( first != last )
+      throw std::length_error( "Source iterator is larger than the destination array." );
 }
+
 template< typename Element1,
           typename Element2,
           typename Index >

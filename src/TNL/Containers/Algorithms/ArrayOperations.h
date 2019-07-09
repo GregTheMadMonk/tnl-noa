@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include <list>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Devices/MIC.h>
@@ -46,9 +45,12 @@ struct ArrayOperations< Devices::Host >
                      const Index size );
 
    template< typename DestinationElement,
-             typename SourceElement >
-   static void copySTLList( DestinationElement* destination,
-                            const std::list< SourceElement >& source );
+             typename Index,
+             typename SourceIterator >
+   static void copyFromIterator( DestinationElement* destination,
+                                 Index destinationSize,
+                                 SourceIterator first,
+                                 SourceIterator last );
 
    template< typename Element1,
              typename Element2,
@@ -93,9 +95,12 @@ struct ArrayOperations< Devices::Cuda >
                      const Index size );
 
    template< typename DestinationElement,
-             typename SourceElement >
-   static void copySTLList( DestinationElement* destination,
-                            const std::list< SourceElement >& source );
+             typename Index,
+             typename SourceIterator >
+   static void copyFromIterator( DestinationElement* destination,
+                                 Index destinationSize,
+                                 SourceIterator first,
+                                 SourceIterator last );
 
    template< typename Element1,
              typename Element2,
@@ -177,9 +182,12 @@ struct ArrayOperations< Devices::MIC >
                      const Index size );
 
    template< typename DestinationElement,
-             typename SourceElement >
-   static void copySTLList( DestinationElement* destination,
-                            const std::list< SourceElement >& source );
+             typename Index,
+             typename SourceIterator >
+   static void copyFromIterator( DestinationElement* destination,
+                                 Index destinationSize,
+                                 SourceIterator first,
+                                 SourceIterator last );
 
    template< typename Element1,
              typename Element2,
