@@ -31,12 +31,13 @@ template< int, typename > class StaticArray;
  * elements, and general array operations.
  *
  * \tparam Value  The type of array elements.
- * \tparam Device The device where the array is to be allocated. This ensures
- *                the compile-time checks of correct pointers manipulation. It
- *                can be either \ref Devices::Host or \ref Devices::Cuda.
+ * \tparam Device The device to be used for the execution of array operations.
+ *                It can be either \ref Devices::Host or \ref Devices::Cuda.
  * \tparam Index  The indexing type.
  * \tparam Allocator The type of the allocator used for the allocation and
- *                   deallocation of memory used by the array.
+ *                   deallocation of memory used by the array. By default,
+ *                   an appropriate allocator for the specified \e Device
+ *                   is selected with \ref Allocators::Default.
  *
  * Memory management handled by constructors and destructors according to the
  * [RAII](https://en.wikipedia.org/wiki/RAII) principle and by methods

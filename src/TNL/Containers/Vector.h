@@ -25,10 +25,12 @@ namespace Containers {
  *
  * \tparam Real   A numeric type for the vector values, e.g. \ref float or
  *                \ref double.
- * \tparam Device The device where the vector is to be allocated.
+ * \tparam Device The device to be used for the execution of vector operations.
  * \tparam Index  The indexing type.
  * \tparam Allocator The type of the allocator used for the allocation and
- *                   deallocation of memory used by the array.
+ *                   deallocation of memory used by the array. By default,
+ *                   an appropriate allocator for the specified \e Device
+ *                   is selected with \ref Allocators::Default.
  *
  * \par Example
  * \include VectorExample.cpp
