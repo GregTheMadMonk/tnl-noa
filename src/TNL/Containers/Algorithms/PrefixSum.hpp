@@ -21,6 +21,7 @@
 #include <TNL/Containers/Algorithms/ReductionOperations.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Algorithms/CudaPrefixSumKernel.h>
+#include <TNL/Exceptions/NotImplementedError.h>
 
 #ifdef CUDA_REDUCTION_PROFILING
 #include <iostream>
@@ -167,7 +168,7 @@ perform( Vector& v,
    using IndexType = typename Vector::IndexType;
    using IndexType = typename Vector::IndexType;
 #ifdef HAVE_CUDA
-   throw 0; // NOT IMPLEMENTED YET
+   throw Exceptions::NotImplementedError( "Segmented prefix sum is not implemented for CUDA." ); // NOT IMPLEMENTED YET
    /*CudaPrefixSumKernelLauncher< Type, RealType, IndexType >::start(
       ( IndexType ) ( end - begin ),
       ( IndexType ) 256,
@@ -178,8 +179,6 @@ perform( Vector& v,
       zero );*/
 #endif
 }
-
-
 
 } // namespace Algorithms
 } // namespace Containers

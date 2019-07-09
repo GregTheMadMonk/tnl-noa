@@ -11,6 +11,7 @@
 #pragma once
 
 #include <TNL/Containers/Vector.h>
+#include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
 namespace Containers {
@@ -394,7 +395,7 @@ void
 Vector< Real, Device, Index >::
 prefixSum( const VectorExpression& expression, const IndexType begin, const IndexType end )
 {
-
+   throw Exceptions::NotImplementedError( "Prefix sum with vector expressions is not implemented." );
 }
 
 template< typename Real,
@@ -407,7 +408,7 @@ void
 Vector< Real, Device, Index >::
 segmentedPrefixSum( const VectorExpression& expression, FlagsArray& flags, const IndexType begin, const IndexType end )
 {
-
+   throw Exceptions::NotImplementedError( "Prefix sum with vector expressions is not implemented." );
 }
 
 } // namespace Containers

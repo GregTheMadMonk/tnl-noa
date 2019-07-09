@@ -14,6 +14,7 @@
 #include <TNL/Containers/Algorithms/VectorOperations.h>
 #include <TNL/Containers/VectorViewExpressions.h>
 #include <TNL/Containers/Algorithms/VectorAssignment.h>
+#include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
 namespace Containers {
@@ -411,7 +412,7 @@ void
 VectorView< Real, Device, Index >::
 prefixSum( const VectorExpression& expression, const IndexType begin, const IndexType end )
 {
-
+   throw Exceptions::NotImplementedError( "Prefix sum with vector expressions is not implemented." );
 }
 
 template< typename Real,
@@ -424,7 +425,7 @@ void
 VectorView< Real, Device, Index >::
 segmentedPrefixSum( const VectorExpression& expression, FlagsArray& flags, const IndexType begin, const IndexType end )
 {
-
+   throw Exceptions::NotImplementedError( "Prefix sum with vector expressions is not implemented." );
 }
 
 } // namespace Containers
