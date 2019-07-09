@@ -22,11 +22,9 @@ several modules:
   as well as from the GPU. On the other hand, algorithms can be executed using
   either the host CPU or an accelerator (GPU), and for each there are many ways
   to manage parallel execution. The usage of memory spaces is abstracted with
-  \ref TNL::Allocators "allocators" which are fully compatible with the
-  [standard C++ concept](https://en.cppreference.com/w/cpp/named_req/Allocator)
-  of the same name. The execution model is represented by
-  \ref TNL::Devices "devices" which can be substituted for the `Device` template
-  parameter of various data structures and algorithms in TNL.
+  \ref TNL::Allocators "allocators" and the execution model is represented by
+  \ref TNL::Devices "devices". See the \ref core_concepts "Core concepts" page
+  for details.
 - \ref TNL::Containers "Containers".
   TNL provides generic containers such as array, multidimensional array or array
   views, which abstract data management and execution of common operations on
