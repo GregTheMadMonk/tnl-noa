@@ -80,7 +80,7 @@ public:
     * however, replaced with the VectorView size.
     */
    __cuda_callable__
-   ViewType getView( const IndexType begin = 0, IndexType end = 0 );
+   ViewType getView( IndexType begin = 0, IndexType end = 0 );
 
    /**
     * \brief Returns a non-modifiable view of the vector view.
@@ -93,7 +93,7 @@ public:
     * however, replaced with the VectorView size.
     */
    __cuda_callable__
-   ConstViewType getConstView( const IndexType begin = 0, IndexType end = 0 ) const;
+   ConstViewType getConstView( IndexType begin = 0, IndexType end = 0 ) const;
 
 
    static String getType();
@@ -197,20 +197,20 @@ public:
                     Scalar3 thisMultiplicator = 1.0 );
 
    template< Algorithms::PrefixSumType Type = Algorithms::PrefixSumType::Inclusive >
-   void prefixSum( const IndexType begin = 0, const IndexType end = 0 );
+   void prefixSum( IndexType begin = 0, IndexType end = 0 );
 
    template< Algorithms::PrefixSumType Type = Algorithms::PrefixSumType::Inclusive,
              typename FlagsArray >
-   void segmentedPrefixSum( FlagsArray& flags, const IndexType begin = 0, const IndexType end = 0 );
+   void segmentedPrefixSum( FlagsArray& flags, IndexType begin = 0, IndexType end = 0 );
 
    template< Algorithms::PrefixSumType Type = Algorithms::PrefixSumType::Inclusive,
              typename VectorExpression >
-   void prefixSum( const VectorExpression& expression, const IndexType begin = 0, const IndexType end = 0 );
+   void prefixSum( const VectorExpression& expression, IndexType begin = 0, IndexType end = 0 );
 
    template< Algorithms::PrefixSumType Type = Algorithms::PrefixSumType::Inclusive,
              typename VectorExpression,
              typename FlagsArray >
-   void segmentedPrefixSum( const VectorExpression& expression, FlagsArray& flags, const IndexType begin = 0, const IndexType end = 0 );
+   void segmentedPrefixSum( const VectorExpression& expression, FlagsArray& flags, IndexType begin = 0, IndexType end = 0 );
 };
 
 } // namespace Containers

@@ -362,12 +362,11 @@ template< typename Real,
    template< Algorithms::PrefixSumType Type >
 void
 Vector< Real, Device, Index >::
-prefixSum( const IndexType begin, const IndexType end )
+prefixSum( IndexType begin, IndexType end )
 {
-   if( begin == 0 && end == 0 )
-      Algorithms::VectorOperations< Device >::template prefixSum< Type >( *this, 0, this->getSize() );
-   else
-      Algorithms::VectorOperations< Device >::template prefixSum< Type >( *this, begin, end );
+   if( end == 0 )
+      end = this->getSize();
+   Algorithms::VectorOperations< Device >::template prefixSum< Type >( *this, begin, end );
 }
 
 template< typename Real,
@@ -377,13 +376,11 @@ template< typename Real,
              typename FlagsArray >
 void
 Vector< Real, Device, Index >::
-segmentedPrefixSum( FlagsArray& flags, const IndexType begin, const IndexType end )
+segmentedPrefixSum( FlagsArray& flags, IndexType begin, IndexType end )
 {
-   if( begin == 0 && end == 0 )
-      Algorithms::VectorOperations< Device >::template segmentedPrefixSum< Type >( *this, flags, 0, this->getSize() );
-   else
-      Algorithms::VectorOperations< Device >::template SegmentedPrefixSum< Type >( *this, flags, begin, end );
-
+   if( end == 0 )
+      end = this->getSize();
+   Algorithms::VectorOperations< Device >::template segmentedPrefixSum< Type >( *this, flags, begin, end );
 }
 
 template< typename Real,
@@ -393,7 +390,7 @@ template< typename Real,
              typename VectorExpression >
 void
 Vector< Real, Device, Index >::
-prefixSum( const VectorExpression& expression, const IndexType begin, const IndexType end )
+prefixSum( const VectorExpression& expression, IndexType begin, IndexType end )
 {
    throw Exceptions::NotImplementedError( "Prefix sum with vector expressions is not implemented." );
 }
@@ -406,7 +403,7 @@ template< typename Real,
              typename FlagsArray >
 void
 Vector< Real, Device, Index >::
-segmentedPrefixSum( const VectorExpression& expression, FlagsArray& flags, const IndexType begin, const IndexType end )
+segmentedPrefixSum( const VectorExpression& expression, FlagsArray& flags, IndexType begin, IndexType end )
 {
    throw Exceptions::NotImplementedError( "Prefix sum with vector expressions is not implemented." );
 }

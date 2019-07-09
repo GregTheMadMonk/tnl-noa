@@ -606,6 +606,7 @@ addVectors( Vector1& v,
    }
 }
 
+/*
 template< typename Vector >
 void
 VectorOperations< Devices::MIC >::
@@ -661,6 +662,7 @@ computeExclusivePrefixSum( Vector& v,
       }
    }
 }
+*/
 
 } // namespace Algorithms
 } // namespace Containers
