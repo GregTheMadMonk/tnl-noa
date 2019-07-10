@@ -21,6 +21,15 @@ class StaticVector;
 template< typename Real, typename Device, typename Index >
 class VectorView;
 
+template< typename Real, typename Device, typename Index >
+class Vector;
+
+template< typename Real, typename Device, typename Index, typename Communicator >
+class DistributedVectorView;
+
+template< typename Real, typename Device, typename Index, typename Communicator >
+class DistributedVector;
+
       namespace Expressions {
 
 enum ExpressionVariableType { ArithmeticVariable, VectorVariable, OtherVariable };
@@ -63,6 +72,33 @@ struct IsVectorType< VectorView< Real, Device, Index > >
 {
    static constexpr bool value = true;
 };
+
+template< typename Real,
+          typename Device,
+          typename Index >
+struct IsVectorType< Vector< Real, Device, Index > >
+{
+   static constexpr bool value = true;
+};
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Communicator >
+struct IsVectorType< DistributedVectorView< Real, Device, Index, Communicator > >
+{
+   static constexpr bool value = true;
+};
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Communicator >
+struct IsVectorType< DistributedVector< Real, Device, Index, Communicator > >
+{
+   static constexpr bool value = true;
+};
+
 
 template< typename T,
           bool IsArithmetic = std::is_arithmetic< T >::value,

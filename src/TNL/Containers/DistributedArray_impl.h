@@ -94,6 +94,18 @@ template< typename Value,
           typename Device,
           typename Index,
           typename Communicator >
+typename DistributedArray< Value, Device, Index, Communicator >::ConstLocalArrayViewType
+DistributedArray< Value, Device, Index, Communicator >::
+getConstLocalArrayView() const
+{
+   return localData.getConstView();
+}
+
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
 void
 DistributedArray< Value, Device, Index, Communicator >::
 copyFromGlobal( ConstLocalArrayViewType globalArray )

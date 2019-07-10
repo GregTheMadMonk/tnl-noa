@@ -47,6 +47,8 @@ public:
    LocalVectorViewType getLocalVectorView();
 
    ConstLocalVectorViewType getLocalVectorView() const;
+   
+   ConstLocalVectorViewType getConstLocalVectorView() const;
 
    /**
     * \brief Returns a modifiable view of the vector.

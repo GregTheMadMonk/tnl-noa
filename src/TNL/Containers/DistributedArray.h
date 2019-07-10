@@ -55,6 +55,8 @@ public:
    LocalArrayViewType getLocalArrayView();
 
    ConstLocalArrayViewType getLocalArrayView() const;
+   
+   ConstLocalArrayViewType getConstLocalArrayView() const;
 
    void copyFromGlobal( ConstLocalArrayViewType globalArray );
 

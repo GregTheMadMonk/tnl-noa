@@ -596,7 +596,11 @@ auto
 lpNorm( const Containers::StaticVector< Size, Real >& a, const Real2& p )
 -> decltype( Containers::Expressions::StaticExpressionLpNorm( a, p ) )
 {
-   return Containers::Expressions::StaticExpressionLpNorm( a, p );
+   if( p == 1.0 )
+      return Containers::Expressions::StaticExpressionLpNorm( a, p );
+   if( p == 2.0 )
+      return TNL::sqrt( Containers::Expressions::StaticExpressionLpNorm( a, p ) );
+   return TNL::pow( Containers::Expressions::StaticExpressionLpNorm( a, p ), 1.0 / p );
 }
 
 template< int Size, typename Real >

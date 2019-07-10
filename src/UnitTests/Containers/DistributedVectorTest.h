@@ -137,14 +137,14 @@ TYPED_TEST( DistributedVectorTest, min )
 
 TYPED_TEST( DistributedVectorTest, absMax )
 {
-   TNL::min( abs( this->x ) );
-   /*EXPECT_EQ( TNL::max( abs( this->x ) ), 1 );
+   
+   EXPECT_EQ( max( abs( this->x ) ), 1 );
    EXPECT_EQ( max( abs( this->y ) ), this->globalSize - 1 );
    EXPECT_EQ( max( abs( this->z ) ), this->globalSize - 1 );
 
    EXPECT_EQ( max( abs( this->x_view ) ), 1 );
    EXPECT_EQ( max( abs( this->y_view ) ), this->globalSize - 1 );
-   EXPECT_EQ( max( abs( this->z_view ) ), this->globalSize - 1 );*/
+   EXPECT_EQ( max( abs( this->z_view ) ), this->globalSize - 1 );
 }
 
 TYPED_TEST( DistributedVectorTest, absMin )
@@ -189,7 +189,7 @@ TYPED_TEST( DistributedVectorTest, sum )
 
 TYPED_TEST( DistributedVectorTest, differenceMax )
 {
-   EXPECT_TRUE( max( this->x, this->y ) == 1 );
+   EXPECT_TRUE( max( this->x - this->y ) == 1 );
    EXPECT_TRUE( max( this->y - this->x ) == this->globalSize - 2 );
 
    EXPECT_EQ( max( this->x_view - this->y_view ), 1 );
@@ -235,7 +235,7 @@ TYPED_TEST( DistributedVectorTest, differenceLpNorm )
    const RealType expectedL3norm = std::cbrt( this->globalSize );
 
    EXPECT_EQ( lpNorm( this->x - this->y, 1.0 ), expectedL1norm );
-   EXPECT_EQ( lpNorm( this->x -  this->y, 2.0 ), expectedL2norm );
+   EXPECT_EQ( lpNorm( this->x - this->y, 2.0 ), expectedL2norm );
    EXPECT_NEAR( lpNorm( this->x - this->y, 3.0 ), expectedL3norm, epsilon );
 
    EXPECT_EQ( lpNorm( this->x_view - this->y_view, 1.0 ), expectedL1norm );

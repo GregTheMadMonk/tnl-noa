@@ -41,6 +41,17 @@ getLocalVectorView() const
    return this->getLocalArrayView();
 }
 
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Communicator >
+typename DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType
+DistributedVectorView< Real, Device, Index, Communicator >::
+getConstLocalVectorView() const
+{
+   return this->getLocalArrayView();
+}
+
 template< typename Value,
           typename Device,
           typename Index,

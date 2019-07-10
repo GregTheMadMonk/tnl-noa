@@ -59,9 +59,13 @@ struct StaticComparison< T1, T2, VectorVariable, VectorVariable >
    }
 
    __cuda_callable__
-   static bool LE( const T1& a, const T2& b )
+   static bool GE( const T1& a, const T2& b )
    {
-      return ! GT( a, b );
+      TNL_ASSERT_EQ( a.getSize(), b.getSize(), "Sizes of expressions to be compared do not fit." );
+      for( int i = 0; i < a.getSize(); i++ )
+         if( a[ i ] < b[ i ] )
+            return false;
+      return true;
    }
 
    __cuda_callable__
@@ -75,9 +79,13 @@ struct StaticComparison< T1, T2, VectorVariable, VectorVariable >
    }
 
    __cuda_callable__
-   static bool GE( const T1& a, const T2& b )
+   static bool LE( const T1& a, const T2& b )
    {
-      return ! LT( a, b );
+      TNL_ASSERT_EQ( a.getSize(), b.getSize(), "Sizes of expressions to be compared do not fit." );
+      for( int i = 0; i < a.getSize(); i++ )
+         if( a[ i ] > b[ i ] )
+            return false;
+      return true;
    }
 };
 
@@ -113,9 +121,12 @@ struct StaticComparison< T1, T2, ArithmeticVariable, VectorVariable >
    }
 
    __cuda_callable__
-   static bool LE( const T1& a, const T2& b )
+   static bool GE( const T1& a, const T2& b )
    {
-      return ! GT( a, b );
+      for( int i = 0; i < b.getSize(); i++ )
+         if( a < b[ i ] )
+            return false;
+      return true;
    }
 
    __cuda_callable__
@@ -128,9 +139,12 @@ struct StaticComparison< T1, T2, ArithmeticVariable, VectorVariable >
    }
 
    __cuda_callable__
-   static bool GE( const T1& a, const T2& b )
+   static bool LE( const T1& a, const T2& b )
    {
-      return ! LT( a, b );
+      for( int i = 0; i < b.getSize(); i++ )
+         if( a > b[ i ] )
+            return false;
+      return true;
    }
 };
 
@@ -166,9 +180,12 @@ struct StaticComparison< T1, T2, VectorVariable, ArithmeticVariable >
    }
 
    __cuda_callable__
-   static bool LE( const T1& a, const T2& b )
+   static bool GE( const T1& a, const T2& b )
    {
-      return ! GT( a, b );
+      for( int i = 0; i < a.getSize(); i++ )
+         if( a[ i ] < b )
+            return false;
+      return true;
    }
 
    __cuda_callable__
@@ -181,9 +198,12 @@ struct StaticComparison< T1, T2, VectorVariable, ArithmeticVariable >
    }
 
    __cuda_callable__
-   static bool GE( const T1& a, const T2& b )
+   static bool LE( const T1& a, const T2& b )
    {
-      return ! LT( a, b );
+      for( int i = 0; i < a.getSize(); i++ )
+         if( a[ i ] > b )
+            return false;
+      return true;
    }
 };
 
