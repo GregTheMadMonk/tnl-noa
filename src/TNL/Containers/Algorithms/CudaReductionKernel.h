@@ -172,7 +172,7 @@ CudaReductionWithArgumentKernel( const Result zero,
    using ResultType = Result;
 
    ResultType* sdata = Devices::Cuda::getSharedMemory< ResultType >();
-   IndexType* sidx = static_cast< IndexType* >( static_cast< void* >( &sdata[ blockDim.x ] ) );
+   IndexType* sidx = reinterpret_cast< IndexType* >( &sdata[ blockDim.x ] );
 
    /***
     * Get thread id (tid) and global thread id (gid).
@@ -344,12 +344,12 @@ struct CudaReductionKernelLauncher
    {
       ////
       // create reference to the reduction buffer singleton and set size
-      const size_t buf_size = 2 * desGridSize * sizeof( ResultType );
+      const std::size_t buf_size = 2 * desGridSize * sizeof( ResultType );
       CudaReductionBuffer& cudaReductionBuffer = CudaReductionBuffer::getInstance();
       cudaReductionBuffer.setSize( buf_size );
       output = cudaReductionBuffer.template getData< ResultType >();
 
-      this-> reducedSize = this->launch( originalSize, reduction, volatileReduction, dataFetcher, zero, output );
+      this->reducedSize = this->launch( originalSize, reduction, volatileReduction, dataFetcher, zero, output );
       return this->reducedSize;
    }
 
@@ -365,13 +365,13 @@ struct CudaReductionKernelLauncher
    {
       ////
       // create reference to the reduction buffer singleton and set size
-      const size_t buf_size = 2 * desGridSize * ( sizeof( ResultType ) + sizeof( IndexType ) );
+      const std::size_t buf_size = 2 * desGridSize * ( sizeof( ResultType ) + sizeof( IndexType ) );
       CudaReductionBuffer& cudaReductionBuffer = CudaReductionBuffer::getInstance();
       cudaReductionBuffer.setSize( buf_size );
       output = cudaReductionBuffer.template getData< ResultType >();
-      idxOutput = static_cast< IndexType* >( static_cast< void* >( &output[ 2 * desGridSize ] ) );
+      idxOutput = reinterpret_cast< IndexType* >( &output[ 2 * desGridSize ] );
 
-      this-> reducedSize = this->launchWithArgument( originalSize, reduction, volatileReduction, dataFetcher, zero, output, idxOutput, nullptr );
+      this->reducedSize = this->launchWithArgument( originalSize, reduction, volatileReduction, dataFetcher, zero, output, idxOutput, nullptr );
       return this->reducedSize;
    }
 
@@ -383,17 +383,21 @@ struct CudaReductionKernelLauncher
    {
       ////
       // Input is the first half of the buffer, output is the second half
-      const size_t buf_size = desGridSize * sizeof( ResultType );
       CudaReductionBuffer& cudaReductionBuffer = CudaReductionBuffer::getInstance();
       ResultType* input = cudaReductionBuffer.template getData< ResultType >();
-      ResultType* output = &input[ buf_size ];
+      ResultType* output = &input[ desGridSize ];
 
-      auto copyFetch = [=] __cuda_callable__ ( IndexType i ) { return input[ i ]; };
       while( this->reducedSize > 1 )
       {
-         this-> reducedSize = this->launch( this->reducedSize, reduction, volatileReduction, copyFetch, zero, output );
+         // this lambda has to be defined inside the loop, because the captured variable changes
+         auto copyFetch = [input] __cuda_callable__ ( IndexType i ) { return input[ i ]; };
+         this->reducedSize = this->launch( this->reducedSize, reduction, volatileReduction, copyFetch, zero, output );
          std::swap( input, output );
       }
+
+      // swap again to revert the swap from the last iteration
+      // AND to solve the case when this->reducedSize was 1 since the beginning
+      std::swap( input, output );
 
       ////
       // Copy result on CPU
@@ -411,19 +415,25 @@ struct CudaReductionKernelLauncher
    {
       ////
       // Input is the first half of the buffer, output is the second half
-      //const size_t buf_size = desGridSize * sizeof( ResultType );
       CudaReductionBuffer& cudaReductionBuffer = CudaReductionBuffer::getInstance();
       ResultType* input = cudaReductionBuffer.template getData< ResultType >();
       ResultType* output = &input[ desGridSize ];
-      IndexType* idxInput = static_cast< IndexType* >( static_cast< void* >( &output[ desGridSize ] ) );
+      IndexType* idxInput = reinterpret_cast< IndexType* >( &output[ desGridSize ] );
       IndexType* idxOutput = &idxInput[ desGridSize ];
 
-      auto copyFetch = [=] __cuda_callable__ ( IndexType i ) { return input[ i ]; };
       while( this->reducedSize > 1 )
       {
-         this-> reducedSize = this->launchWithArgument( this->reducedSize, reduction, volatileReduction, copyFetch, zero, output, idxOutput, idxInput );
+         // this lambda has to be defined inside the loop, because the captured variable changes
+         auto copyFetch = [input] __cuda_callable__ ( IndexType i ) { return input[ i ]; };
+         this->reducedSize = this->launchWithArgument( this->reducedSize, reduction, volatileReduction, copyFetch, zero, output, idxOutput, idxInput );
          std::swap( input, output );
+         std::swap( idxInput, idxOutput );
       }
+
+      // swap again to revert the swap from the last iteration
+      // AND to solve the case when this->reducedSize was 1 since the beginning
+      std::swap( input, output );
+      std::swap( idxInput, idxOutput );
 
       ////
       // Copy result on CPU
