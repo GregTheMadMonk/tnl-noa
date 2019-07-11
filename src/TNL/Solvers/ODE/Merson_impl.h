@@ -171,7 +171,6 @@ bool Merson< Problem >::solve( DofVectorPointer& _u )
       if( adaptivity == 0.0 || error < adaptivity )
       {
          RealType lastResidue = this->getResidue();
-         RealType newResidue( 0.0 );
          time += currentTau;
 
          auto reduction = [] __cuda_callable__ ( RealType& a , const RealType& b ) { a += b; };

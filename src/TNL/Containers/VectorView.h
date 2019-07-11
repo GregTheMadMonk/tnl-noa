@@ -153,13 +153,13 @@ public:
    template< typename Vector_ >
    NonConstReal operator,( const Vector_& v ) const;
 
-   NonConstReal max() const;
+   /*NonConstReal max() const;
 
    NonConstReal min() const;
 
    NonConstReal absMax() const;
 
-   NonConstReal absMin() const;
+   NonConstReal absMin() const;*/
 
    template< typename ResultType = NonConstReal, typename Scalar >
    ResultType lpNorm( Scalar p ) const;

@@ -471,7 +471,7 @@ Real
 MeshFunction< Mesh, MeshEntityDimension, Real >::
 getMaxNorm() const
 {
-   return this->data.absMax();
+   return max( abs( this->data ) );
 }
 
 template< typename Mesh,

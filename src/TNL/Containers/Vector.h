@@ -182,26 +182,6 @@ public:
    Real operator,( const Vector_& v ) const;
 
    /**
-    * \brief Returns the maximum value out of all vector elements.
-    */
-   Real max() const;
-
-   /**
-    * \brief Returns the minimum value out of all vector elements.
-    */
-   Real min() const;
-
-   /**
-    * \brief Returns the maximum absolute value out of all vector elements.
-    */
-   Real absMax() const;
-
-   /**
-    * \brief Returns the minimum absolute value out of all vector elements.
-    */
-   Real absMin() const;
-
-   /**
     * \brief Returns the length of this vector in p-dimensional vector space.
     *
     * \tparam

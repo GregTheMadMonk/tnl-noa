@@ -73,7 +73,7 @@ void EllpackSymmetric< Real, Device, Index >::setCompressedRowLengths( ConstComp
    TNL_ASSERT( this->getColumns() > 0, );
    //TNL_ASSERT( this->rowLengths > 0,
    //          std::cerr << "this->rowLengths = " << this->rowLengths );
-   this->rowLengths = this->maxRowLength = rowLengths.max();
+   this->rowLengths = this->maxRowLength = max( rowLengths );
    allocateElements();
 }
 

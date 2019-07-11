@@ -108,37 +108,11 @@ public:
    template< typename Scalar >
    DistributedVectorView& operator/=( Scalar c );
 
-   NonConstReal max() const;
-
-   NonConstReal min() const;
-
-   NonConstReal absMax() const;
-
-   NonConstReal absMin() const;
-
    template< typename ResultType = NonConstReal, typename Scalar >
    ResultType lpNorm( Scalar p ) const;
 
    template< typename ResultType = NonConstReal >
    ResultType sum() const;
-
-   /*template< typename Vector >
-   NonConstReal differenceMax( const Vector& v ) const;
-
-   template< typename Vector >
-   NonConstReal differenceMin( const Vector& v ) const;
-
-   template< typename Vector >
-   NonConstReal differenceAbsMax( const Vector& v ) const;
-
-   template< typename Vector >
-   NonConstReal differenceAbsMin( const Vector& v ) const;
-
-   template< typename ResultType = NonConstReal, typename Vector, typename Scalar >
-   ResultType differenceLpNorm( const Vector& v, Scalar p ) const;
-
-   template< typename ResultType = NonConstReal, typename Vector >
-   ResultType differenceSum( const Vector& v ) const;*/
 
    template< typename Scalar >
    void scalarMultiplication( Scalar alpha );

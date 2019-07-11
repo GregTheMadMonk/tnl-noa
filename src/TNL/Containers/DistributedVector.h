@@ -101,37 +101,11 @@ public:
    template< typename Scalar >
    DistributedVector& operator/=( Scalar c );
 
-   Real max() const;
-
-   Real min() const;
-
-   Real absMax() const;
-
-   Real absMin() const;
-
    template< typename ResultType = RealType, typename Scalar >
    ResultType lpNorm( const Scalar p ) const;
 
    template< typename ResultType = RealType >
    ResultType sum() const;
-
-   /*template< typename Vector >
-   Real differenceMax( const Vector& v ) const;
-
-   template< typename Vector >
-   Real differenceMin( const Vector& v ) const;
-
-   template< typename Vector >
-   Real differenceAbsMax( const Vector& v ) const;
-
-   template< typename Vector >
-   Real differenceAbsMin( const Vector& v ) const;
-
-   template< typename ResultType = RealType, typename Vector, typename Scalar >
-   ResultType differenceLpNorm( const Vector& v, const Scalar p ) const;
-
-   template< typename ResultType = RealType, typename Vector >
-   ResultType differenceSum( const Vector& v ) const;*/
 
    template< typename Scalar >
    void scalarMultiplication( Scalar alpha );

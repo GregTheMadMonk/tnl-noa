@@ -207,7 +207,7 @@ operator,( const Vector_& v ) const
 }
 
 
-template< typename Real,
+/*template< typename Real,
           typename Device,
           typename Index >
 typename VectorView< Real, Device, Index >::NonConstReal
@@ -246,7 +246,7 @@ VectorView< Real, Device, Index >::
 absMin() const
 {
    return Algorithms::VectorOperations< Device >::template getVectorAbsMin< VectorView, NonConstReal >( *this );
-}
+}*/
 
 template< typename Real,
           typename Device,

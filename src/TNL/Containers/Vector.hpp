@@ -216,39 +216,6 @@ operator,( const Vector_& v ) const
 template< typename Real,
           typename Device,
           typename Index >
-Real Vector< Real, Device, Index >::max() const
-{
-   return Algorithms::VectorOperations< Device >::getVectorMax( *this );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-Real Vector< Real, Device, Index >::min() const
-{
-   return Algorithms::VectorOperations< Device >::getVectorMin( *this );
-}
-
-
-template< typename Real,
-          typename Device,
-          typename Index >
-Real Vector< Real, Device, Index >::absMax() const
-{
-   return Algorithms::VectorOperations< Device >::getVectorAbsMax( *this );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-Real Vector< Real, Device, Index >::absMin() const
-{
-   return Algorithms::VectorOperations< Device >::getVectorAbsMin( *this );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
    template< typename ResultType, typename Scalar >
 ResultType Vector< Real, Device, Index >::lpNorm( const Scalar p ) const
 {
