@@ -64,7 +64,7 @@ getView( IndexType begin, IndexType end ) const
 {
    if( end == 0 )
       end = this->getSize();
-   return ConstViewType( &getData()[ begin ], end - begin );;
+   return ConstViewType( this->getData()[ begin ], end - begin );;
 }
 
 template< typename Real,

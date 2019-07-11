@@ -32,23 +32,23 @@ TYPED_TEST( VectorTest, sum )
    ViewType v_view( v );
 
    setConstantSequence( v, 1 );
-   EXPECT_EQ( v.sum(), size );
-   EXPECT_EQ( v_view.sum(), size );
+   EXPECT_EQ( sum( v ), size );
+   EXPECT_EQ( sum( v_view ), size );
    EXPECT_EQ( VectorOperations::getVectorSum( v ), size );
 
    setLinearSequence( v );
-   EXPECT_EQ( v.sum(), 0.5 * size * ( size - 1 ) );
-   EXPECT_EQ( v_view.sum(), 0.5 * size * ( size - 1 ) );
+   EXPECT_EQ( sum( v ), 0.5 * size * ( size - 1 ) );
+   EXPECT_EQ( sum( v_view ), 0.5 * size * ( size - 1 ) );
    EXPECT_EQ( VectorOperations::getVectorSum( v ), 0.5 * size * ( size - 1 ) );
 
    setNegativeLinearSequence( v );
-   EXPECT_EQ( v.sum(), - 0.5 * size * ( size - 1 ) );
-   EXPECT_EQ( v_view.sum(), - 0.5 * size * ( size - 1 ) );
+   EXPECT_EQ( sum( v ), - 0.5 * size * ( size - 1 ) );
+   EXPECT_EQ( sum( v_view ), - 0.5 * size * ( size - 1 ) );
    EXPECT_EQ( VectorOperations::getVectorSum( v ), - 0.5 * size * ( size - 1 ) );
 
    setOscilatingSequence( v, 1.0 );
-   EXPECT_EQ( v.sum(), 0 );
-   EXPECT_EQ( v_view.sum(), 0 );
+   EXPECT_EQ( sum( v ), 0 );
+   EXPECT_EQ( sum( v_view ), 0 );
    EXPECT_EQ( VectorOperations::getVectorSum( v ), 0 );
 }
 
@@ -63,38 +63,38 @@ TEST( VectorSpecialCasesTest, sumOfBoolVector )
    v.setValue( true );
    w.setValue( false );
 
-   const int sum = v.sum< int >();
-   const int l1norm = v.lpNorm< int >( 1.0 );
-   const float l2norm = v.lpNorm< float >( 2.0 );
-   const float l3norm = v.lpNorm< float >( 3.0 );
+   const int sum = TNL::sum( v );
+   const int l1norm = lpNorm( v, 1.0 );
+   const float l2norm = lpNorm( v, 2.0 );
+   const float l3norm = lpNorm( v, 3.0 );
    EXPECT_EQ( sum, 512 );
    EXPECT_EQ( l1norm, 512 );
    EXPECT_NEAR( l2norm, std::sqrt( 512 ), epsilon );
    EXPECT_NEAR( l3norm, std::cbrt( 512 ), epsilon );
 
-   const int diff_sum = v.differenceSum< int >( w );
-   const int diff_l1norm = v.differenceLpNorm< int >( w, 1.0 );
-   const float diff_l2norm = v.differenceLpNorm< float >( w, 2.0 );
-   const float diff_l3norm = v.differenceLpNorm< float >( w, 3.0 );
+   const int diff_sum = TNL::sum( v - w );
+   const int diff_l1norm = lpNorm( v - w, 1.0 );
+   const float diff_l2norm = lpNorm( v - w, 2.0 );
+   const float diff_l3norm = lpNorm( v - w, 3.0 );
    EXPECT_EQ( diff_sum, 512 );
    EXPECT_EQ( diff_l1norm, 512 );
    EXPECT_NEAR( diff_l2norm, std::sqrt( 512 ), epsilon );
    EXPECT_NEAR( diff_l3norm, std::cbrt( 512 ), epsilon );
 
    // test views
-   const int sum_view = v_view.sum< int >();
-   const int l1norm_view = v_view.lpNorm< int >( 1.0 );
-   const float l2norm_view = v_view.lpNorm< float >( 2.0 );
-   const float l3norm_view = v_view.lpNorm< float >( 3.0 );
+   const int sum_view = TNL::sum( v_view );
+   const int l1norm_view = lpNorm( v_view, 1.0 );
+   const float l2norm_view = lpNorm( v_view, 2.0 );
+   const float l3norm_view = lpNorm( v_view, 3.0 );
    EXPECT_EQ( sum_view, 512 );
    EXPECT_EQ( l1norm_view, 512 );
    EXPECT_NEAR( l2norm_view, std::sqrt( 512 ), epsilon );
    EXPECT_NEAR( l3norm_view, std::cbrt( 512 ), epsilon );
 
-   const int diff_sum_view = v_view.differenceSum< int >( w_view );
-   const int diff_l1norm_view = v_view.differenceLpNorm< int >( w_view, 1.0 );
-   const float diff_l2norm_view = v_view.differenceLpNorm< float >( w_view, 2.0 );
-   const float diff_l3norm_view = v_view.differenceLpNorm< float >( w_view, 3.0 );
+   const int diff_sum_view = TNL::sum( v_view - w_view );
+   const int diff_l1norm_view = lpNorm( v_view -w_view, 1.0 );
+   const float diff_l2norm_view = lpNorm( v_view - w_view, 2.0 );
+   const float diff_l3norm_view = lpNorm( v_view - w_view, 3.0 );
    EXPECT_EQ( diff_sum_view, 512 );
    EXPECT_EQ( diff_l1norm_view, 512 );
    EXPECT_NEAR( diff_l2norm_view, std::sqrt( 512 ), epsilon );
@@ -114,11 +114,11 @@ TYPED_TEST( VectorTest, scalarProduct )
    setOscilatingSequence( u, 1.0 );
    setConstantSequence( v, 1 );
 
-   EXPECT_EQ( u.scalarProduct( v ), 1.0 );
-   EXPECT_EQ( u_view.scalarProduct( v_view ), 1.0 );
+   EXPECT_EQ( dot( u, v ), 1.0 );
+   EXPECT_EQ( dot( u_view, v_view ), 1.0 );
    EXPECT_EQ( VectorOperations::getScalarProduct( u, v ), 1.0 );
-   EXPECT_EQ( (u, v), 1.0 );
-   EXPECT_EQ( (u_view, v_view), 1.0 );
+   EXPECT_EQ( ( u, v ), 1.0 );
+   EXPECT_EQ( ( u_view, v_view ), 1.0 );
 }
 
 TYPED_TEST( VectorTest, differenceLpNorm )
@@ -138,12 +138,12 @@ TYPED_TEST( VectorTest, differenceLpNorm )
    const RealType expectedL1norm = 2.0 * size;
    const RealType expectedL2norm = std::sqrt( 4.0 * size );
    const RealType expectedL3norm = std::cbrt( 8.0 * size );
-   EXPECT_EQ( u.differenceLpNorm( v, 1.0 ), expectedL1norm );
-   EXPECT_EQ( u.differenceLpNorm( v, 2.0 ), expectedL2norm );
-   EXPECT_NEAR( u.differenceLpNorm( v, 3.0 ), expectedL3norm, epsilon );
-   EXPECT_EQ( u_view.differenceLpNorm( v_view, 1.0 ), expectedL1norm );
-   EXPECT_EQ( u_view.differenceLpNorm( v_view, 2.0 ), expectedL2norm );
-   EXPECT_NEAR( u_view.differenceLpNorm( v_view, 3.0 ), expectedL3norm, epsilon );
+   EXPECT_EQ( lpNorm( u - v, 1.0 ), expectedL1norm );
+   EXPECT_EQ( lpNorm( u - v, 2.0 ), expectedL2norm );
+   EXPECT_NEAR( lpNorm( u - v, 3.0 ), expectedL3norm, epsilon );
+   EXPECT_EQ( lpNorm( u_view - v_view, 1.0 ), expectedL1norm );
+   EXPECT_EQ( lpNorm( u_view - v_view, 2.0 ), expectedL2norm );
+   EXPECT_NEAR( lpNorm( u_view - v_view, 3.0 ), expectedL3norm, epsilon );
    EXPECT_EQ( VectorOperations::getVectorDifferenceLpNorm( u, v, 1.0 ), expectedL1norm );
    EXPECT_EQ( VectorOperations::getVectorDifferenceLpNorm( u, v, 2.0 ), expectedL2norm );
    EXPECT_NEAR( VectorOperations::getVectorDifferenceLpNorm( u, v, 3.0 ), expectedL3norm, epsilon );
@@ -162,23 +162,23 @@ TYPED_TEST( VectorTest, differenceSum )
    v.setValue( 1.0 );
 
    setConstantSequence( u, 2 );
-   EXPECT_EQ( u.differenceSum( v ), size );
-   EXPECT_EQ( u_view.differenceSum( v_view ), size );
+   EXPECT_EQ( sum( u - v ), size );
+   EXPECT_EQ( sum( u_view - v_view ), size );
    EXPECT_EQ( VectorOperations::getVectorDifferenceSum( u, v ), size );
 
    setLinearSequence( u );
-   EXPECT_EQ( u.differenceSum( v ), 0.5 * size * ( size - 1 ) - size );
-   EXPECT_EQ( u_view.differenceSum( v_view ), 0.5 * size * ( size - 1 ) - size );
+   EXPECT_EQ( sum( u - v ), 0.5 * size * ( size - 1 ) - size );
+   EXPECT_EQ( sum( u_view - v_view ), 0.5 * size * ( size - 1 ) - size );
    EXPECT_EQ( VectorOperations::getVectorDifferenceSum( u, v ), 0.5 * size * ( size - 1 ) - size );
 
    setNegativeLinearSequence( u );
-   EXPECT_EQ( u.differenceSum( v ), - 0.5 * size * ( size - 1 ) - size );
-   EXPECT_EQ( u_view.differenceSum( v_view ), - 0.5 * size * ( size - 1 ) - size );
+   EXPECT_EQ( sum( u - v ), - 0.5 * size * ( size - 1 ) - size );
+   EXPECT_EQ( sum( u_view - v_view ), - 0.5 * size * ( size - 1 ) - size );
    EXPECT_EQ( VectorOperations::getVectorDifferenceSum( u, v ), - 0.5 * size * ( size - 1 ) - size );
 
    setOscilatingSequence( u, 1.0 );
-   EXPECT_EQ( u.differenceSum( v ), - size );
-   EXPECT_EQ( u_view.differenceSum( v_view ), - size );
+   EXPECT_EQ( sum( u - v ), - size );
+   EXPECT_EQ( sum( u_view - v_view ), - size );
    EXPECT_EQ( VectorOperations::getVectorDifferenceSum( u, v ), - size );
 }
 

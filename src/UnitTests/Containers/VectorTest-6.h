@@ -141,8 +141,8 @@ TEST( VectorSpecialCasesTest, assignmentThroughView )
    using VectorType = Containers::Vector< int, Devices::Host >;
    using ViewType = VectorView< int, Devices::Host >;
 
-   static_assert( Algorithms::Details::HasSubscriptOperator< VectorType >::value, "Subscript operator detection by SFINAE does not work for Vector." );
-   static_assert( Algorithms::Details::HasSubscriptOperator< ViewType >::value, "Subscript operator detection by SFINAE does not work for VectorView." );
+   static_assert( Containers::Algorithms::detail::HasSubscriptOperator< VectorType >::value, "Subscript operator detection by SFINAE does not work for Vector." );
+   static_assert( Containers::Algorithms::detail::HasSubscriptOperator< ViewType >::value, "Subscript operator detection by SFINAE does not work for VectorView." );
 
    VectorType u( 100 ), v( 100 );
    ViewType u_view( u ), v_view( v );
@@ -175,18 +175,18 @@ TEST( VectorSpecialCasesTest, operationsOnConstView )
    u.setValue( 1 );
    v.setValue( 1 );
 
-   EXPECT_EQ( u_view.max(), 1 );
-   EXPECT_EQ( u_view.min(), 1 );
-   EXPECT_EQ( u_view.absMax(), 1 );
-   EXPECT_EQ( u_view.absMin(), 1 );
-   EXPECT_EQ( u_view.lpNorm( 1 ), 100 );
+   EXPECT_EQ( max( u_view ), 1 );
+   EXPECT_EQ( min( u_view ), 1 );
+   EXPECT_EQ( max( abs( u_view ) ), 1 );
+   EXPECT_EQ( min( abs( u_view ) ), 1 );
+   EXPECT_EQ( lpNorm( u_view, 1 ), 100 );
    EXPECT_EQ( max( u_view - v_view ), 0 );
    EXPECT_EQ( min( u_view - v_view ), 0 );
    EXPECT_EQ( max( abs( u_view - v_view ) ), 0 );
    EXPECT_EQ( min( abs( u_view - v_view ) ), 0 );
    EXPECT_EQ( lpNorm( u_view - v_view, 1.0 ), 0 );
    EXPECT_EQ( sum( u_view - v_view ), 0 );
-   EXPECT_EQ( u_view.scalarProduct( v_view ), 100 );
+   EXPECT_EQ( dot( u_view, v_view ), 100 );
 }
 
 TEST( VectorSpecialCasesTest, initializationOfVectorViewByArrayView )

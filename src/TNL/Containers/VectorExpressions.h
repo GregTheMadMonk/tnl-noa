@@ -17,6 +17,7 @@
 #include <TNL/Containers/Expressions/VerticalOperations.h>
 
 #include "VectorView.h"
+#include "Vector.h"
 
 namespace TNL {
 
@@ -50,7 +51,7 @@ operator+( const ET& a, const Containers::Vector< Real, Device, Index >& b )
 
 template< typename Real1, typename Real2, typename Device, typename Index >
 const Containers::Expressions::BinaryExpressionTemplate< 
-   typename Containers::VectorView< Real1, Device, Index >::ConstViewType,
+   typename Containers::Vector< Real1, Device, Index >::ConstViewType,
    typename Containers::VectorView< Real2, Device, Index >::ConstViewType,
    Containers::Expressions::Addition >
 operator+( const Containers::Vector< Real1, Device, Index >& a, const Containers::Vector< Real2, Device, Index >& b )
@@ -63,7 +64,7 @@ operator+( const Containers::Vector< Real1, Device, Index >& a, const Containers
 ////
 // Subtraction
 template< typename Real, typename Device, typename Index, typename ET >
-const Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, ET, Containers::Expressions::Subtraction >
+const Containers::Expressions::BinaryExpressionTemplate< typename Containers::Vector< Real, Device, Index >::ConstViewType, ET, Containers::Expressions::Subtraction >
 operator-( const Containers::Vector< Real, Device, Index >& a, const ET& b )
 {
    using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
@@ -71,7 +72,7 @@ operator-( const Containers::Vector< Real, Device, Index >& a, const ET& b )
 }
 
 template< typename ET, typename Real, typename Device, typename Index >
-const Containers::Expressions::BinaryExpressionTemplate< ET, Containers::VectorView< Real, Device, Index >, Containers::Expressions::Subtraction >
+const Containers::Expressions::BinaryExpressionTemplate< ET, typename Containers::Vector< Real, Device, Index >::ConstViewType, Containers::Expressions::Subtraction >
 operator-( const ET& a, const Containers::Vector< Real, Device, Index >& b )
 {
    using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
@@ -80,7 +81,7 @@ operator-( const ET& a, const Containers::Vector< Real, Device, Index >& b )
 
 template< typename Real1, typename Real2, typename Device, typename Index >
 const Containers::Expressions::BinaryExpressionTemplate< 
-   typename Containers::VectorView< Real1, Device, Index >::ConstViewType,
+   typename Containers::Vector< Real1, Device, Index >::ConstViewType,
    typename Containers::VectorView< Real2, Device, Index >::ConstViewType,
    Containers::Expressions::Subtraction >
 operator-( const Containers::Vector< Real1, Device, Index >& a, const Containers::Vector< Real2, Device, Index >& b )
@@ -93,7 +94,7 @@ operator-( const Containers::Vector< Real1, Device, Index >& a, const Containers
 ////
 // Multiplication
 template< typename Real, typename Device, typename Index, typename ET >
-const Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, ET, Containers::Expressions::Multiplication >
+const Containers::Expressions::BinaryExpressionTemplate< typename Containers::Vector< Real, Device, Index >::ConstViewType, ET, Containers::Expressions::Multiplication >
 operator*( const Containers::Vector< Real, Device, Index >& a, const ET& b )
 {
    using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
@@ -101,7 +102,7 @@ operator*( const Containers::Vector< Real, Device, Index >& a, const ET& b )
 }
 
 template< typename ET, typename Real, typename Device, typename Index >
-const Containers::Expressions::BinaryExpressionTemplate< ET, Containers::VectorView< Real, Device, Index >, Containers::Expressions::Multiplication >
+const Containers::Expressions::BinaryExpressionTemplate< ET, typename Containers::Vector< Real, Device, Index >::ConstViewType, Containers::Expressions::Multiplication >
 operator*( const ET& a, const Containers::Vector< Real, Device, Index >& b )
 {
    using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
@@ -109,7 +110,7 @@ operator*( const ET& a, const Containers::Vector< Real, Device, Index >& b )
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index >
-const Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real1, Device, Index >, Containers::VectorView< Real2, Device, Index >, Containers::Expressions::Multiplication >
+const Containers::Expressions::BinaryExpressionTemplate< typename Containers::Vector< Real1, Device, Index >::ConstViewType, typename Containers::Vector< Real2, Device, Index >::ConstViewType, Containers::Expressions::Multiplication >
 operator*( const Containers::Vector< Real1, Device, Index >& a, const Containers::Vector< Real2, Device, Index >& b )
 {
    using ConstView1 = typename Containers::Vector< Real1, Device, Index >::ConstViewType;
@@ -120,7 +121,7 @@ operator*( const Containers::Vector< Real1, Device, Index >& a, const Containers
 ////
 // Division
 template< typename Real, typename Device, typename Index, typename ET >
-const Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, ET, Containers::Expressions::Division >
+const Containers::Expressions::BinaryExpressionTemplate< typename Containers::Vector< Real, Device, Index >::ConstViewType, ET, Containers::Expressions::Division >
 operator/( const Containers::Vector< Real, Device, Index >& a, const ET& b )
 {
    using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
@@ -128,7 +129,7 @@ operator/( const Containers::Vector< Real, Device, Index >& a, const ET& b )
 }
 
 template< typename ET, typename Real, typename Device, typename Index >
-const Containers::Expressions::BinaryExpressionTemplate< ET, Containers::VectorView< Real, Device, Index >, Containers::Expressions::Division >
+const Containers::Expressions::BinaryExpressionTemplate< ET, typename Containers::Vector< Real, Device, Index >::ConstViewType, Containers::Expressions::Division >
 operator/( const ET& a, const Containers::Vector< Real, Device, Index >& b )
 {
    using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
@@ -136,7 +137,7 @@ operator/( const ET& a, const Containers::Vector< Real, Device, Index >& b )
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index >
-const Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real1, Device, Index >, Containers::VectorView< Real2, Device, Index >, Containers::Expressions::Division >
+const Containers::Expressions::BinaryExpressionTemplate< typename Containers::Vector< Real1, Device, Index >::ConstViewType, typename Containers::Vector< Real2, Device, Index >::ConstViewType, Containers::Expressions::Division >
 operator/( const Containers::Vector< Real1, Device, Index >& a, const Containers::Vector< Real2, Device, Index >& b )
 {
    using ConstView1 = typename Containers::Vector< Real1, Device, Index >::ConstViewType;
@@ -147,7 +148,7 @@ operator/( const Containers::Vector< Real1, Device, Index >& a, const Containers
 ////
 // Min
 template< typename Real, typename Device, typename Index, typename ET >
-const Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, ET, Containers::Expressions::Min >
+const Containers::Expressions::BinaryExpressionTemplate< typename Containers::Vector< Real, Device, Index >::ConstViewType, ET, Containers::Expressions::Min >
 min( const Containers::Vector< Real, Device, Index >& a, const ET& b )
 {
    using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
@@ -155,7 +156,7 @@ min( const Containers::Vector< Real, Device, Index >& a, const ET& b )
 }
 
 template< typename ET, typename Real, typename Device, typename Index >
-const Containers::Expressions::BinaryExpressionTemplate< ET, Containers::VectorView< Real, Device, Index >, Containers::Expressions::Min >
+const Containers::Expressions::BinaryExpressionTemplate< ET, typename Containers::Vector< Real, Device, Index >::ConstViewType, Containers::Expressions::Min >
 min( const ET& a, const Containers::Vector< Real, Device, Index >& b )
 {
    using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
@@ -163,7 +164,7 @@ min( const ET& a, const Containers::Vector< Real, Device, Index >& b )
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index >
-const Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real1, Device, Index >, Containers::VectorView< Real2, Device, Index >, Containers::Expressions::Min >
+const Containers::Expressions::BinaryExpressionTemplate< typename Containers::Vector< Real1, Device, Index >::ConstViewType, typename Containers::Vector< Real2, Device, Index >::ConstViewType, Containers::Expressions::Min >
 min( const Containers::Vector< Real1, Device, Index >& a, const Containers::Vector< Real2, Device, Index >& b )
 {
    using ConstView1 = typename Containers::Vector< Real1, Device, Index >::ConstViewType;
@@ -174,7 +175,7 @@ min( const Containers::Vector< Real1, Device, Index >& a, const Containers::Vect
 ////
 // Max
 template< typename Real, typename Device, typename Index, typename ET >
-const Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, ET, Containers::Expressions::Max >
+const Containers::Expressions::BinaryExpressionTemplate< typename Containers::Vector< Real, Device, Index >::ConstViewType, ET, Containers::Expressions::Max >
 max( const Containers::Vector< Real, Device, Index >& a, const ET& b )
 {
    using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
@@ -182,7 +183,7 @@ max( const Containers::Vector< Real, Device, Index >& a, const ET& b )
 }
 
 template< typename ET, typename Real, typename Device, typename Index >
-const Containers::Expressions::BinaryExpressionTemplate< ET, Containers::VectorView< Real, Device, Index >, Containers::Expressions::Max >
+const Containers::Expressions::BinaryExpressionTemplate< ET, typename Containers::Vector< Real, Device, Index >::ConstViewType, Containers::Expressions::Max >
 max( const ET& a, const Containers::Vector< Real, Device, Index >& b )
 {
    using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
@@ -190,7 +191,7 @@ max( const ET& a, const Containers::Vector< Real, Device, Index >& b )
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index >
-const Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real1, Device, Index >, Containers::VectorView< Real2, Device, Index >, Containers::Expressions::Max >
+const Containers::Expressions::BinaryExpressionTemplate< typename Containers::Vector< Real1, Device, Index >::ConstViewType, typename Containers::Vector< Real2, Device, Index >::ConstViewType, Containers::Expressions::Max >
 max( const Containers::Vector< Real1, Device, Index >& a, const Containers::Vector< Real2, Device, Index >& b )
 {
    using ConstView1 = typename Containers::Vector< Real1, Device, Index >::ConstViewType;
@@ -275,7 +276,7 @@ bool operator<( const ET& a, const Containers::Vector< Real, Device, Index >& b 
 template< typename Real1, typename Real2, typename Device, typename Index >
 bool operator<( const Containers::Vector< Real1, Device, Index >& a, const Containers::Vector< Real2, Device, Index >& b )
 {
-   using ConstView1 = typename Containers::VectorView< Real1, Device, Index >::ConstViewType;
+   using ConstView1 = typename Containers::Vector< Real1, Device, Index >::ConstViewType;
    using ConstView2 = typename Containers::VectorView< Real2, Device, Index >::ConstViewType;
    return Containers::Expressions::Comparison< ConstView1, ConstView2 >::LT( a.getView(), b.getView() );
 }
@@ -299,7 +300,7 @@ bool operator<=( const ET& a, const Containers::Vector< Real, Device, Index >& b
 template< typename Real1, typename Real2, typename Device, typename Index >
 bool operator<=( const Containers::Vector< Real1, Device, Index >& a, const Containers::Vector< Real2, Device, Index >& b )
 {
-   using ConstView1 = typename Containers::VectorView< Real1, Device, Index >::ConstViewType;
+   using ConstView1 = typename Containers::Vector< Real1, Device, Index >::ConstViewType;
    using ConstView2 = typename Containers::VectorView< Real2, Device, Index >::ConstViewType;
    return Containers::Expressions::Comparison< ConstView1, ConstView2 >::LE( a.getView(), b.getView() );
 }
@@ -323,7 +324,7 @@ bool operator>( const ET& a, const Containers::Vector< Real, Device, Index >& b 
 template< typename Real1, typename Real2, typename Device, typename Index >
 bool operator>( const Containers::Vector< Real1, Device, Index >& a, const Containers::Vector< Real2, Device, Index >& b )
 {
-   using ConstView1 = typename Containers::VectorView< Real1, Device, Index >::ConstViewType;
+   using ConstView1 = typename Containers::Vector< Real1, Device, Index >::ConstViewType;
    using ConstView2 = typename Containers::VectorView< Real2, Device, Index >::ConstViewType;
    return Containers::Expressions::Comparison< ConstView1, ConstView2 >::GT( a.getView(), b.getView() );
 }
@@ -347,7 +348,7 @@ bool operator>=( const ET& a, const Containers::Vector< Real, Device, Index >& b
 template< typename Real1, typename Real2, typename Device, typename Index >
 bool operator>=( const Containers::Vector< Real1, Device, Index >& a, const Containers::Vector< Real2, Device, Index >& b )
 {
-   using ConstView1 = typename Containers::VectorView< Real1, Device, Index >::ConstViewType;
+   using ConstView1 = typename Containers::Vector< Real1, Device, Index >::ConstViewType;
    using ConstView2 = typename Containers::VectorView< Real2, Device, Index >::ConstViewType;
    return Containers::Expressions::Comparison< ConstView1, ConstView2 >::GE( a.getView(), b.getView() );
 }
@@ -355,7 +356,7 @@ bool operator>=( const Containers::Vector< Real1, Device, Index >& a, const Cont
 ////
 // Minus
 template< typename Real, typename Device, typename Index >
-const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Minus >
+const Containers::Expressions::UnaryExpressionTemplate< typename Containers::Vector< Real, Device, Index >::ConstViewType, Containers::Expressions::Minus >
 operator-( const Containers::Vector< Real, Device, Index >& a )
 {
    using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
@@ -365,7 +366,7 @@ operator-( const Containers::Vector< Real, Device, Index >& a )
 ////
 // Abs
 template< typename Real, typename Device, typename Index >
-const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Abs >
+const Containers::Expressions::UnaryExpressionTemplate< typename Containers::Vector< Real, Device, Index >::ConstViewType, Containers::Expressions::Abs >
 abs( const Containers::Vector< Real, Device, Index >& a )
 {
    using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
@@ -375,7 +376,7 @@ abs( const Containers::Vector< Real, Device, Index >& a )
 ////
 // Sine
 template< typename Real, typename Device, typename Index >
-const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Sin >
+const Containers::Expressions::UnaryExpressionTemplate< typename Containers::Vector< Real, Device, Index >::ConstViewType, Containers::Expressions::Sin >
 sin( const Containers::Vector< Real, Device, Index >& a )
 {
    using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
@@ -385,7 +386,7 @@ sin( const Containers::Vector< Real, Device, Index >& a )
 ////
 // Cosine
 template< typename Real, typename Device, typename Index >
-const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Cos >
+const Containers::Expressions::UnaryExpressionTemplate< typename Containers::Vector< Real, Device, Index >::ConstViewType, Containers::Expressions::Cos >
 cos( const Containers::Vector< Real, Device, Index >& a )
 {
    using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
@@ -395,7 +396,7 @@ cos( const Containers::Vector< Real, Device, Index >& a )
 ////
 // Tangent
 template< typename Real, typename Device, typename Index >
-const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Tan >
+const Containers::Expressions::UnaryExpressionTemplate< typename Containers::Vector< Real, Device, Index >::ConstViewType, Containers::Expressions::Tan >
 tan( const Containers::Vector< Real, Device, Index >& a )
 {
    using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
@@ -405,7 +406,7 @@ tan( const Containers::Vector< Real, Device, Index >& a )
 ////
 // Sqrt
 template< typename Real, typename Device, typename Index >
-const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Sqrt >
+const Containers::Expressions::UnaryExpressionTemplate< typename Containers::Vector< Real, Device, Index >::ConstViewType, Containers::Expressions::Sqrt >
 sqrt( const Containers::Vector< Real, Device, Index >& a )
 {
    using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
@@ -415,7 +416,7 @@ sqrt( const Containers::Vector< Real, Device, Index >& a )
 ////
 // Cbrt
 template< typename Real, typename Device, typename Index >
-const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Cbrt >
+const Containers::Expressions::UnaryExpressionTemplate< typename Containers::Vector< Real, Device, Index >::ConstViewType, Containers::Expressions::Cbrt >
 cbrt( const Containers::Vector< Real, Device, Index >& a )
 {
    using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
@@ -425,7 +426,7 @@ cbrt( const Containers::Vector< Real, Device, Index >& a )
 ////
 // Power
 template< typename Real, typename Device, typename Index, typename ExpType >
-const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Pow, ExpType >
+const Containers::Expressions::UnaryExpressionTemplate< typename Containers::Vector< Real, Device, Index >::ConstViewType, Containers::Expressions::Pow, ExpType >
 pow( const Containers::Vector< Real, Device, Index >& a, const ExpType& exp )
 {
    using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
@@ -435,7 +436,7 @@ pow( const Containers::Vector< Real, Device, Index >& a, const ExpType& exp )
 ////
 // Floor
 template< typename Real, typename Device, typename Index >
-const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Floor >
+const Containers::Expressions::UnaryExpressionTemplate< typename Containers::Vector< Real, Device, Index >::ConstViewType, Containers::Expressions::Floor >
 floor( const Containers::Vector< Real, Device, Index >& a )
 {
    using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
@@ -445,7 +446,7 @@ floor( const Containers::Vector< Real, Device, Index >& a )
 ////
 // Ceil
 template< typename Real, typename Device, typename Index >
-const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Ceil >
+const Containers::Expressions::UnaryExpressionTemplate< typename Containers::Vector< Real, Device, Index >::ConstViewType, Containers::Expressions::Ceil >
 ceil( const Containers::Vector< Real, Device, Index >& a )
 {
    using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
@@ -455,7 +456,7 @@ ceil( const Containers::Vector< Real, Device, Index >& a )
 ////
 // Acos
 template< typename Real, typename Device, typename Index >
-const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Acos >
+const Containers::Expressions::UnaryExpressionTemplate< typename Containers::Vector< Real, Device, Index >::ConstViewType, Containers::Expressions::Acos >
 acos( const Containers::Vector< Real, Device, Index >& a )
 {
    using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
@@ -465,7 +466,7 @@ acos( const Containers::Vector< Real, Device, Index >& a )
 ////
 // Asin
 template< typename Real, typename Device, typename Index >
-const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Asin >
+const Containers::Expressions::UnaryExpressionTemplate< typename Containers::Vector< Real, Device, Index >::ConstViewType, Containers::Expressions::Asin >
 asin( const Containers::Vector< Real, Device, Index >& a )
 {
    using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
@@ -475,7 +476,7 @@ asin( const Containers::Vector< Real, Device, Index >& a )
 ////
 // Atan
 template< typename Real, typename Device, typename Index >
-const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Atan >
+const Containers::Expressions::UnaryExpressionTemplate< typename Containers::Vector< Real, Device, Index >::ConstViewType, Containers::Expressions::Atan >
 atan( const Containers::Vector< Real, Device, Index >& a )
 {
    using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
@@ -485,7 +486,7 @@ atan( const Containers::Vector< Real, Device, Index >& a )
 ////
 // Cosh
 template< typename Real, typename Device, typename Index >
-const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Cosh >
+const Containers::Expressions::UnaryExpressionTemplate< typename Containers::Vector< Real, Device, Index >::ConstViewType, Containers::Expressions::Cosh >
 cosh( const Containers::Vector< Real, Device, Index >& a )
 {
    using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
@@ -495,7 +496,7 @@ cosh( const Containers::Vector< Real, Device, Index >& a )
 ////
 // Tanh
 template< typename Real, typename Device, typename Index >
-const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Tanh >
+const Containers::Expressions::UnaryExpressionTemplate< typename Containers::Vector< Real, Device, Index >::ConstViewType, Containers::Expressions::Tanh >
 tanh( const Containers::Vector< Real, Device, Index >& a )
 {
    using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
@@ -505,7 +506,7 @@ tanh( const Containers::Vector< Real, Device, Index >& a )
 ////
 // Log
 template< typename Real, typename Device, typename Index >
-const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Log >
+const Containers::Expressions::UnaryExpressionTemplate< typename Containers::Vector< Real, Device, Index >::ConstViewType, Containers::Expressions::Log >
 log( const Containers::Vector< Real, Device, Index >& a )
 {
    using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
@@ -515,7 +516,7 @@ log( const Containers::Vector< Real, Device, Index >& a )
 ////
 // Log10
 template< typename Real, typename Device, typename Index >
-const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Log10 >
+const Containers::Expressions::UnaryExpressionTemplate< typename Containers::Vector< Real, Device, Index >::ConstViewType, Containers::Expressions::Log10 >
 log10( const Containers::Vector< Real, Device, Index >& a )
 {
    using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
@@ -525,7 +526,7 @@ log10( const Containers::Vector< Real, Device, Index >& a )
 ////
 // Log2
 template< typename Real, typename Device, typename Index >
-const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Log2 >
+const Containers::Expressions::UnaryExpressionTemplate< typename Containers::Vector< Real, Device, Index >::ConstViewType, Containers::Expressions::Log2 >
 log2( const Containers::Vector< Real, Device, Index >& a )
 {
    using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
@@ -535,7 +536,7 @@ log2( const Containers::Vector< Real, Device, Index >& a )
 ////
 // Exp
 template< typename Real, typename Device, typename Index >
-const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Exp >
+const Containers::Expressions::UnaryExpressionTemplate< typename Containers::Vector< Real, Device, Index >::ConstViewType, Containers::Expressions::Exp >
 exp( const Containers::Vector< Real, Device, Index >& a )
 {
    using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
@@ -545,7 +546,7 @@ exp( const Containers::Vector< Real, Device, Index >& a )
 ////
 // Sign
 template< typename Real, typename Device, typename Index >
-const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Sign >
+const Containers::Expressions::UnaryExpressionTemplate< typename Containers::Vector< Real, Device, Index >::ConstViewType, Containers::Expressions::Sign >
 sign( const Containers::Vector< Real, Device, Index >& a )
 {
    using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
@@ -706,23 +707,23 @@ template< typename Real, typename Device, typename Index, typename ET >
 Containers::VectorView< Real, Device, Index >
 Scale( const Containers::Vector< Real, Device, Index >& a, const ET& b )
 {
-   Containers::VectorView< Real, Device, Index > result = Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, ET, Containers::Expressions::Multiplication >( a.getView(), b );
+   Containers::VectorView< Real, Device, Index > result = Containers::Expressions::BinaryExpressionTemplate< typename Containers::Vector< Real, Device, Index >::ConstViewType, ET, Containers::Expressions::Multiplication >( a.getView(), b );
    return result;
 }
 
 template< typename ET, typename Real, typename Device, typename Index >
-Containers::Expressions::BinaryExpressionTemplate< ET, Containers::VectorView< Real, Device, Index >, Containers::Expressions::Multiplication >
+Containers::Expressions::BinaryExpressionTemplate< ET, typename Containers::Vector< Real, Device, Index >::ConstViewType, Containers::Expressions::Multiplication >
 Scale( const ET& a, const Containers::Vector< Real, Device, Index >& b )
 {
-   Containers::VectorView< Real, Device, Index > result =  Containers::Expressions::BinaryExpressionTemplate< ET, Containers::VectorView< Real, Device, Index >, Containers::Expressions::Multiplication >( a, b.getView() );
+   Containers::VectorView< Real, Device, Index > result =  Containers::Expressions::BinaryExpressionTemplate< ET, typename Containers::Vector< Real, Device, Index >::ConstViewType, Containers::Expressions::Multiplication >( a, b.getView() );
    return result;
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index >
-Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real1, Device, Index >, Containers::VectorView< Real2, Device, Index >, Containers::Expressions::Multiplication >
+Containers::Expressions::BinaryExpressionTemplate< typename Containers::Vector< Real1, Device, Index >::ConstViewType, typename Containers::Vector< Real2, Device, Index >::ConstViewType, Containers::Expressions::Multiplication >
 Scale( const Containers::Vector< Real1, Device, Index >& a, const Containers::Vector< Real2, Device, Index >& b )
 {
-   Containers::VectorView< Real1, Device, Index > result =  Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real1, Device, Index >, Containers::VectorView< Real2, Device, Index >, Containers::Expressions::Multiplication >( a.getView(), b.getView() );
+   Containers::VectorView< Real1, Device, Index > result =  Containers::Expressions::BinaryExpressionTemplate< typename Containers::Vector< Real1, Device, Index >::ConstViewType, typename Containers::Vector< Real2, Device, Index >::ConstViewType, Containers::Expressions::Multiplication >( a.getView(), b.getView() );
    return result;
 }
 

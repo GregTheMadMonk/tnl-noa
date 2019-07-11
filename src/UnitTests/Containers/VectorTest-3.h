@@ -31,8 +31,8 @@ TYPED_TEST( VectorTest, max )
    ViewType v_view( v );
    setLinearSequence( v );
 
-   EXPECT_EQ( v.max(), size - 1 );
-   EXPECT_EQ( v_view.max(), size - 1 );
+   EXPECT_EQ( max( v ), size - 1 );
+   EXPECT_EQ( max( v_view ), size - 1 );
    EXPECT_EQ( VectorOperations::getVectorMax( v ), size - 1 );
 }
 
@@ -48,8 +48,8 @@ TYPED_TEST( VectorTest, min )
    ViewType v_view( v );
    setLinearSequence( v );
 
-   EXPECT_EQ( v.min(), 0 );
-   EXPECT_EQ( v_view.min(), 0 );
+   EXPECT_EQ( min( v ), 0 );
+   EXPECT_EQ( min( v_view ), 0 );
    EXPECT_EQ( VectorOperations::getVectorMin( v ), 0 );
 }
 
@@ -62,19 +62,15 @@ TYPED_TEST( VectorTest, absMax )
    // this test expect an even size
    const int size = VECTOR_TEST_SIZE % 2 ? VECTOR_TEST_SIZE - 1 : VECTOR_TEST_SIZE;
 
-   VectorType v( size );
-   ViewType v_view( v );
+   VectorType u( size ), v( size );
+   ViewType u_view( u ), v_view( v );
    setNegativeLinearSequence( v );
 
    EXPECT_EQ( max( abs( v ) ), size - 1 );
-   EXPECT_EQ( max( abs( v_view ) ),, size - 1 );
+   EXPECT_EQ( max( abs( v_view ) ), size - 1 );
    EXPECT_EQ( VectorOperations::getVectorAbsMax( v ), size - 1 );
 
-   VectorType u( size ), v( size );
-   ViewType u_view( u ), v_view( v );
-   
    v.setValue( 1.0 );
-
    setConstantSequence( u, 2 );
    EXPECT_EQ( sum( u - v ), size );
    EXPECT_EQ( sum( u_view - v_view ), size );
@@ -108,8 +104,8 @@ TYPED_TEST( VectorTest, absMin )
    ViewType v_view( v );
    setNegativeLinearSequence( v );
 
-   EXPECT_EQ( v.absMin(), 0 );
-   EXPECT_EQ( v_view.absMin(), 0 );
+   EXPECT_EQ( min( abs( v ) ), 0 );
+   EXPECT_EQ( min( abs( v_view ) ), 0 );
    EXPECT_EQ( VectorOperations::getVectorAbsMin( v ), 0 );
 }
 
@@ -130,12 +126,12 @@ TYPED_TEST( VectorTest, lpNorm )
    const RealType expectedL1norm = size;
    const RealType expectedL2norm = std::sqrt( size );
    const RealType expectedL3norm = std::cbrt( size );
-   EXPECT_EQ( v.lpNorm( 1.0 ), expectedL1norm );
-   EXPECT_EQ( v.lpNorm( 2.0 ), expectedL2norm );
-   EXPECT_NEAR( v.lpNorm( 3.0 ), expectedL3norm, epsilon );
-   EXPECT_EQ( v_view.lpNorm( 1.0 ), expectedL1norm );
-   EXPECT_EQ( v_view.lpNorm( 2.0 ), expectedL2norm );
-   EXPECT_NEAR( v_view.lpNorm( 3.0 ), expectedL3norm, epsilon );
+   EXPECT_EQ( lpNorm( v, 1.0 ), expectedL1norm );
+   EXPECT_EQ( lpNorm( v, 2.0 ), expectedL2norm );
+   EXPECT_NEAR( lpNorm( v, 3.0 ), expectedL3norm, epsilon );
+   EXPECT_EQ( lpNorm( v_view, 1.0 ), expectedL1norm );
+   EXPECT_EQ( lpNorm( v_view, 2.0 ), expectedL2norm );
+   EXPECT_NEAR( lpNorm( v_view, 3.0 ), expectedL3norm, epsilon );
    EXPECT_EQ( VectorOperations::getVectorLpNorm( v, 1.0 ), expectedL1norm );
    EXPECT_EQ( VectorOperations::getVectorLpNorm( v, 2.0 ), expectedL2norm );
    EXPECT_NEAR( VectorOperations::getVectorLpNorm( v, 3.0 ), expectedL3norm, epsilon );

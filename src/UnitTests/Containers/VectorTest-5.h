@@ -31,8 +31,8 @@ TYPED_TEST( VectorTest, differenceMax )
    setLinearSequence( u );
    setConstantSequence( v, size / 2 );
 
-   EXPECT_EQ( u.differenceMax( v ), size - 1 - size / 2 );
-   EXPECT_EQ( u_view.differenceMax( v_view ), size - 1 - size / 2 );
+   EXPECT_EQ( max( u - v ), size - 1 - size / 2 );
+   EXPECT_EQ( max( u_view - v_view ), size - 1 - size / 2 );
    EXPECT_EQ( VectorOperations::getVectorDifferenceMax( u, v ), size - 1 - size / 2 );
 }
 
@@ -48,11 +48,11 @@ TYPED_TEST( VectorTest, differenceMin )
    setLinearSequence( u );
    setConstantSequence( v, size / 2 );
 
-   EXPECT_EQ( u.differenceMin( v ), - size / 2 );
-   EXPECT_EQ( u_view.differenceMin( v_view ), - size / 2 );
+   EXPECT_EQ( min( u - v ), - size / 2 );
+   EXPECT_EQ( min( u_view - v_view ), - size / 2 );
    EXPECT_EQ( VectorOperations::getVectorDifferenceMin( u, v ), - size / 2 );
-   EXPECT_EQ( v.differenceMin( u ), size / 2 - size + 1 );
-   EXPECT_EQ( v_view.differenceMin( u_view ), size / 2 - size + 1 );
+   EXPECT_TRUE( min( v, u ) == size / 2 - size + 1 );
+   EXPECT_TRUE( min( v_view, u_view ) == size / 2 - size + 1 );
    EXPECT_EQ( VectorOperations::getVectorDifferenceMin( v, u ), size / 2 - size + 1 );
 }
 
@@ -69,8 +69,8 @@ TYPED_TEST( VectorTest, differenceAbsMax )
    setNegativeLinearSequence( u );
    setConstantSequence( v, - size / 2 );
 
-   EXPECT_EQ( u.differenceAbsMax( v ), size - 1 - size / 2 );
-   EXPECT_EQ( u_view.differenceAbsMax( v_view ), size - 1 - size / 2 );
+   EXPECT_EQ( max( abs( u - v ) ), size - 1 - size / 2 );
+   EXPECT_EQ( max( abs( u_view - v_view ) ), size - 1 - size / 2 );
    EXPECT_EQ( VectorOperations::getVectorDifferenceAbsMax( u, v ), size - 1 - size / 2 );
 }
 
@@ -86,11 +86,11 @@ TYPED_TEST( VectorTest, differenceAbsMin )
    setNegativeLinearSequence( u );
    setConstantSequence( v, - size / 2 );
 
-   EXPECT_EQ( u.differenceAbsMin( v ), 0 );
-   EXPECT_EQ( u_view.differenceAbsMin( v_view ), 0 );
+   EXPECT_EQ( min( abs( u - v ) ), 0 );
+   EXPECT_EQ( min( abs( u_view - v_view ) ), 0 );
    EXPECT_EQ( VectorOperations::getVectorDifferenceAbsMin( u, v ), 0 );
-   EXPECT_EQ( v.differenceAbsMin( u ), 0 );
-   EXPECT_EQ( v_view.differenceAbsMin( u_view ), 0 );
+   EXPECT_EQ( min( abs( v - u ) ), 0 );
+   EXPECT_EQ( min( abs( v_view - u_view ) ), 0 );
    EXPECT_EQ( VectorOperations::getVectorDifferenceAbsMin( v, u ), 0 );
 }
 
