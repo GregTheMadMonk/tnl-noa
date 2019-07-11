@@ -144,57 +144,6 @@ class StaticVector : public StaticArray< Size, Real >
    __cuda_callable__
    StaticVector& operator /= ( const Real& c );
 
-#ifdef UNDEF
-   template< typename StaticVectorExpression >
-   __cuda_callable__
-   bool operator == ( const StaticVectorExpression& v ) const;
-
-   template< typename StaticVectorExpression >
-   __cuda_callable__
-   bool operator != ( const StaticVectorExpression& v ) const;
-
-   
-   /**
-    * \brief Compares this static vector with static vector \e v.
-    *
-    * Returns \e true if this static vector is smaller then static vector \e v.
-    * \param v Another static vector.
-    */
-   template< typename StaticVectorExpression >
-   __cuda_callable__
-   bool operator < ( const StaticVectorExpression& v ) const;
-
-   /**
-    * \brief Compares this static vector with static vector \e v.
-    *
-    * Returns \e true if this static vector is smaller then or equal to static vector \e v.
-    * \param v Another static vector.
-    */
-   template< typename StaticVectorExpression >
-   __cuda_callable__
-   bool operator <= ( const StaticVectorExpression& v ) const;
-
-   /**
-    * \brief Compares this static vector with static vector \e v.
-    *
-    * Returns \e true if this static vector is greater then static vector \e v.
-    * \param v Another static vector.
-    */
-   template< typename StaticVectorExpression >
-   __cuda_callable__
-   bool operator > ( const StaticVectorExpression& v ) const;
-
-   /**
-    * \brief Compares this static vector with static vector \e v.
-    *
-    * Returns \e true if this static vector is greater then or equal to static vector \e v.
-    * \param v Another static vector.
-    */
-   template< typename StaticVectorExpression >
-   __cuda_callable__
-   bool operator >= ( const StaticVectorExpression& v ) const;
-#endif
-
    /**
     * \brief Changes the type of static vector to \e OtherReal while the size remains the same.
     *
@@ -217,23 +166,6 @@ class StaticVector : public StaticArray< Size, Real >
     */
    __cuda_callable__
    Real lpNorm( const Real& p ) const;
-
-#ifdef HAVE_MIC
-   __cuda_callable__
-   inline StaticVector< Size, Real >& operator=( const StaticVector< Size, Real >& vector )
-   {
-      StaticArray< Size, Real >::operator=( vector );
-      return *this;
-   }
-
-   template< typename Vector >
-   __cuda_callable__
-   inline StaticVector< Size, Real >& operator=( const Vector& vector )
-   {
-      StaticArray< Size, Real >::operator=( vector );
-      return *this;
-   }
-#endif
 };
 
 /**
@@ -312,36 +244,6 @@ class StaticVector< 1, Real > : public StaticArray< 1, Real >
    __cuda_callable__
    StaticVector& operator /= ( const Real& c );
 
-#ifdef UNDEF
-   template< typename StaticVectorExpression >
-   __cuda_callable__
-   bool operator == ( const StaticVectorExpression& v ) const;
-
-   template< typename StaticVectorExpression >
-   __cuda_callable__
-   bool operator != ( const StaticVectorExpression& v ) const;
-
-   /** \brief See StaticVector::operator <.*/
-   template< typename StaticVectorExpression >
-   __cuda_callable__
-   bool operator < ( const StaticVectorExpression& v ) const;
-
-   /** \brief See StaticVector::operator <=.*/
-   template< typename StaticVectorExpression >
-   __cuda_callable__
-   bool operator <= ( const StaticVectorExpression& v ) const;
-
-   /** \brief See StaticVector::operator <.*/
-   template< typename StaticVectorExpression >
-   __cuda_callable__
-   bool operator > ( const StaticVectorExpression& v ) const;
-
-   /** \brief See StaticVector::operator <=.*/
-   template< typename StaticVectorExpression >
-   __cuda_callable__
-   bool operator >= ( const StaticVectorExpression& v ) const;
-#endif
-
    template< typename OtherReal >
    __cuda_callable__
    operator StaticVector< 1, OtherReal >() const;
@@ -353,23 +255,6 @@ class StaticVector< 1, Real > : public StaticArray< 1, Real >
    /** \brief See StaticVector::lpNorm( const Real& p ) const.*/
    __cuda_callable__
    Real lpNorm( const Real& p ) const;
-
-#ifdef HAVE_MIC
-   __cuda_callable__
-   inline StaticVector< 1, Real >& operator=( const StaticVector< 1, Real >& vector )
-   {
-      StaticArray< 1, Real >::operator=( vector );
-      return *this;
-   }
-
-   template< typename Vector >
-   __cuda_callable__
-   inline StaticVector< 1, Real >& operator=( const Vector& vector )
-   {
-      StaticArray< 1, Real >::operator=( vector );
-      return *this;
-   }
-#endif
 };
 
 /**
@@ -456,36 +341,6 @@ class StaticVector< 2, Real > : public StaticArray< 2, Real >
    __cuda_callable__
    StaticVector& operator /= ( const Real& c );
 
-#ifdef UNDEF
-   template< typename StaticVectorExpression >
-   __cuda_callable__
-   bool operator == ( const StaticVectorExpression& v ) const;
-
-   template< typename StaticVectorExpression >
-   __cuda_callable__
-   bool operator != ( const StaticVectorExpression& v ) const;
-   
-   /** \brief See StaticVector::operator <.*/
-   template< typename StaticVectorExpression >
-   __cuda_callable__
-   bool operator < ( const StaticVectorExpression& v ) const;
-
-   /** \brief See StaticVector::operator <=.*/
-   template< typename StaticVectorExpression >
-   __cuda_callable__
-   bool operator <= ( const StaticVectorExpression& v ) const;
-
-   /** \brief See StaticVector::operator >.*/
-   template< typename StaticVectorExpression >
-   __cuda_callable__
-   bool operator > ( const StaticVectorExpression& v ) const;
-
-   /** \brief See StaticVector::operator >=.*/
-   template< typename StaticVectorExpression >
-   __cuda_callable__
-   bool operator >= ( const StaticVectorExpression& v ) const;
-#endif
-
    template< typename OtherReal >
    __cuda_callable__
    operator StaticVector< 2, OtherReal >() const;
@@ -497,23 +352,6 @@ class StaticVector< 2, Real > : public StaticArray< 2, Real >
    /** \brief See StaticVector::lpNorm( const Real& p ) const.*/
    __cuda_callable__
    Real lpNorm( const Real& p ) const;
-
-#ifdef HAVE_MIC
-   __cuda_callable__
-   inline StaticVector< 2, Real >& operator=( const StaticVector< 2, Real >& vector )
-   {
-      StaticArray< 2, Real >::operator=( vector );
-      return *this;
-   }
-
-   template< typename Vector >
-   __cuda_callable__
-   inline StaticVector< 2, Real >& operator=( const Vector& vector )
-   {
-      StaticArray< 2, Real >::operator=( vector );
-      return *this;
-   }
-#endif
 };
 
 /**
@@ -601,37 +439,6 @@ class StaticVector< 3, Real > : public StaticArray< 3, Real >
    __cuda_callable__
    StaticVector& operator /= ( const Real& c );
 
-#ifdef UNDEF
-   template< typename StaticVectorExpression >
-   __cuda_callable__
-   bool operator == ( const StaticVectorExpression& v ) const;
-
-   template< typename StaticVectorExpression >
-   __cuda_callable__
-   bool operator != ( const StaticVectorExpression& v ) const;
-
-
-   /** \brief See StaticVector::operator <.*/
-   template< typename StaticVectorExpression >
-   __cuda_callable__
-   bool operator < ( const StaticVectorExpression& v ) const;
-
-   /** \brief See StaticVector::operator <=.*/
-   template< typename StaticVectorExpression >
-   __cuda_callable__
-   bool operator <= ( const StaticVectorExpression& v ) const;
-
-   /** \brief See StaticVector::operator >.*/
-   template< typename StaticVectorExpression >
-   __cuda_callable__
-   bool operator > ( const StaticVectorExpression& v ) const;
-
-   /** \brief See StaticVector::operator >=.*/
-   template< typename StaticVectorExpression >
-   __cuda_callable__
-   bool operator >= ( const StaticVectorExpression& v ) const;
-#endif
-   
    template< typename OtherReal >
    __cuda_callable__
    operator StaticVector< 3, OtherReal >() const;
@@ -644,32 +451,7 @@ class StaticVector< 3, Real > : public StaticArray< 3, Real >
    __cuda_callable__
    Real lpNorm( const Real& p ) const;
 
-#ifdef HAVE_MIC
-   __cuda_callable__
-   inline StaticVector< 3, Real >& operator=( const StaticVector< 3, Real >& vector )
-   {
-      StaticArray< 3, Real >::operator=( vector );
-      return *this;
-   }
-
-   template< typename Vector >
-   __cuda_callable__
-   inline StaticVector< 3, Real >& operator=( const Vector& vector )
-   {
-      StaticArray< 3, Real >::operator=( vector );
-      return *this;
-   }
-#endif
 };
-/*
-template< int Size, typename Real, typename Scalar >
-__cuda_callable__
-StaticVector< Size, Real > operator * ( const Scalar& c, const StaticVector< Size, Real >& u );
- */
-
-/*template< int Size, typename Real >
-__cuda_callable__
-StaticVector< Size, Real > abs( const StaticVector< Size, Real >& u ) { return u.abs(); };*/
 
 } // namespace Containers
 } // namespace TNL

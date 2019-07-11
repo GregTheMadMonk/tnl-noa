@@ -142,68 +142,6 @@ StaticVector< 2, Real >& StaticVector< 2, Real >::operator /= ( const Real& c )
    return *this;
 }
 
-#ifdef UNDEF
-template< typename Real >
-   template< typename StaticVectorExpression >
-__cuda_callable__
-bool StaticVector< 2, Real >::operator == ( const StaticVectorExpression& v ) const
-{
-   using Left = StaticVector< 2, Real >;
-   using Right = StaticVectorExpression;
-   return Containers::Expressions::StaticComparison< Left, Right >::EQ( *this, v );
-}
-
-template< typename Real >
-   template< typename StaticVectorExpression >
-__cuda_callable__
-bool StaticVector< 2, Real >::operator != ( const StaticVectorExpression& v ) const
-{
-   using Left = StaticVector< 2, Real >;
-   using Right = StaticVectorExpression;
-   return Containers::Expressions::StaticComparison< Left, Right >::NE( *this, v );
-}
-
-template< typename Real >
-   template< typename StaticVectorExpression >
-__cuda_callable__
-bool StaticVector< 2, Real >::operator < ( const StaticVectorExpression& v ) const
-{
-   using Left = StaticVector< 2, Real >;
-   using Right = StaticVectorExpression;
-   return Containers::Expressions::StaticComparison< Left, Right >::LT( *this, v );
-}
-
-template< typename Real >
-   template< typename StaticVectorExpression >
-__cuda_callable__
-bool StaticVector< 2, Real >::operator <= ( const StaticVectorExpression& v ) const
-{
-   using Left = StaticVector< 2, Real >;
-   using Right = StaticVectorExpression;
-   return Containers::Expressions::StaticComparison< Left, Right >::LE( *this, v );
-}
-
-template< typename Real >
-   template< typename StaticVectorExpression >
-__cuda_callable__
-bool StaticVector< 2, Real >::operator > ( const StaticVectorExpression& v ) const
-{
-   using Left = StaticVector< 2, Real >;
-   using Right = StaticVectorExpression;
-   return Containers::Expressions::StaticComparison< Left, Right >::GT( *this, v );
-}
-
-template< typename Real >
-   template< typename StaticVectorExpression >
-__cuda_callable__
-bool StaticVector< 2, Real >::operator >= ( const StaticVectorExpression& v ) const
-{
-   using Left = StaticVector< 2, Real >;
-   using Right = StaticVectorExpression;
-   return Containers::Expressions::StaticComparison< Left, Right >::GE( *this, v );
-}
-#endif
-
 template< typename Real >
    template< typename OtherReal >
 __cuda_callable__
