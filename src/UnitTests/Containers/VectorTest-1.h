@@ -260,8 +260,8 @@ TYPED_TEST( VectorTest, addVectors )
 
    VectorType expected1( size ), expected2( size );
    for( int i = 0; i < size; i++ ) {
-      expected1.setElement( i, 1.0 + 3.0 * i + 2.0;
-      expected2.setElement( i, 2.0 + 3.0 * i + 2.0;
+      expected1.setElement( i, 1.0 + 3.0 * i + 2.0 );
+      expected2.setElement( i, 2.0 + 3.0 * i + 2.0 );
    }
 
    setConstantSequence( x, 1 );

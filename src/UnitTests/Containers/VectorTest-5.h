@@ -51,8 +51,8 @@ TYPED_TEST( VectorTest, differenceMin )
    EXPECT_EQ( min( u - v ), - size / 2 );
    EXPECT_EQ( min( u_view - v_view ), - size / 2 );
    EXPECT_EQ( VectorOperations::getVectorDifferenceMin( u, v ), - size / 2 );
-   EXPECT_TRUE( min( v, u ) == size / 2 - size + 1 );
-   EXPECT_TRUE( min( v_view, u_view ) == size / 2 - size + 1 );
+   EXPECT_TRUE( min( v - u ) == size / 2 - size + 1 );
+   EXPECT_TRUE( min( v_view - u_view ) == size / 2 - size + 1 );
    EXPECT_EQ( VectorOperations::getVectorDifferenceMin( v, u ), size / 2 - size + 1 );
 }
 

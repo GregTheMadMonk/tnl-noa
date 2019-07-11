@@ -82,7 +82,7 @@ TYPED_TEST( VectorTest, verticalOperations )
 
    //EXPECT_EQ( sign( u ), v );
    for( int i = 0; i < size; i++ )
-      EXPECT_NEAR( sign( u ).getElement( i ), v.getElement( i ), 1.0e-6 );
+      EXPECT_NEAR( sign( u ).getElement( i ), sign( u.getElement( i ) ), 1.0e-6 );
 }
 
 // TODO: test prefix sum with custom begin and end parameters
