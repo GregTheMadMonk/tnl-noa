@@ -68,7 +68,7 @@ bool SOR< Matrix > :: solve( ConstVectorViewType b, VectorViewType x )
    this->resetIterations();
    this->setResidue( this->getConvergenceResidue() + 1.0 );
 
-   RealType bNorm = b.lpNorm( ( RealType ) 2.0 );
+   RealType bNorm = lpNorm( b, 2.0 );
 
    while( this->nextIteration() )
    {

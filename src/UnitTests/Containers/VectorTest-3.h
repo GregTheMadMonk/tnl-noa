@@ -33,7 +33,6 @@ TYPED_TEST( VectorTest, max )
 
    EXPECT_EQ( max( v ), size - 1 );
    EXPECT_EQ( max( v_view ), size - 1 );
-   EXPECT_EQ( VectorOperations::getVectorMax( v ), size - 1 );
 }
 
 TYPED_TEST( VectorTest, min )
@@ -50,7 +49,6 @@ TYPED_TEST( VectorTest, min )
 
    EXPECT_EQ( min( v ), 0 );
    EXPECT_EQ( min( v_view ), 0 );
-   EXPECT_EQ( VectorOperations::getVectorMin( v ), 0 );
 }
 
 TYPED_TEST( VectorTest, absMax )
@@ -68,28 +66,23 @@ TYPED_TEST( VectorTest, absMax )
 
    EXPECT_EQ( max( abs( v ) ), size - 1 );
    EXPECT_EQ( max( abs( v_view ) ), size - 1 );
-   EXPECT_EQ( VectorOperations::getVectorAbsMax( v ), size - 1 );
 
    v.setValue( 1.0 );
    setConstantSequence( u, 2 );
    EXPECT_EQ( sum( u - v ), size );
    EXPECT_EQ( sum( u_view - v_view ), size );
-   EXPECT_EQ( VectorOperations::getVectorDifferenceSum( u, v ), size );
 
    setLinearSequence( u );
    EXPECT_EQ( sum( u - v ), 0.5 * size * ( size - 1 ) - size );
    EXPECT_EQ( sum( u_view - v_view ), 0.5 * size * ( size - 1 ) - size );
-   EXPECT_EQ( VectorOperations::getVectorDifferenceSum( u, v ), 0.5 * size * ( size - 1 ) - size );
 
    setNegativeLinearSequence( u );
    EXPECT_EQ( sum( u - v ), - 0.5 * size * ( size - 1 ) - size );
    EXPECT_EQ( sum( u_view - v_view ), - 0.5 * size * ( size - 1 ) - size );
-   EXPECT_EQ( VectorOperations::getVectorDifferenceSum( u, v ), - 0.5 * size * ( size - 1 ) - size );
 
    setOscilatingSequence( u, 1.0 );
    EXPECT_EQ( sum( u - v ), - size );
    EXPECT_EQ( sum( u_view - v_view ), - size );
-   EXPECT_EQ( VectorOperations::getVectorDifferenceSum( u, v ), - size );
 }
 
 TYPED_TEST( VectorTest, absMin )
@@ -106,7 +99,6 @@ TYPED_TEST( VectorTest, absMin )
 
    EXPECT_EQ( min( abs( v ) ), 0 );
    EXPECT_EQ( min( abs( v_view ) ), 0 );
-   EXPECT_EQ( VectorOperations::getVectorAbsMin( v ), 0 );
 }
 
 TYPED_TEST( VectorTest, lpNorm )
@@ -132,9 +124,6 @@ TYPED_TEST( VectorTest, lpNorm )
    EXPECT_EQ( lpNorm( v_view, 1.0 ), expectedL1norm );
    EXPECT_EQ( lpNorm( v_view, 2.0 ), expectedL2norm );
    EXPECT_NEAR( lpNorm( v_view, 3.0 ), expectedL3norm, epsilon );
-   EXPECT_EQ( VectorOperations::getVectorLpNorm( v, 1.0 ), expectedL1norm );
-   EXPECT_EQ( VectorOperations::getVectorLpNorm( v, 2.0 ), expectedL2norm );
-   EXPECT_NEAR( VectorOperations::getVectorLpNorm( v, 3.0 ), expectedL3norm, epsilon );
 }
 
 #endif // HAVE_GTEST

@@ -108,8 +108,8 @@ public:
    template< typename Scalar >
    DistributedVectorView& operator/=( Scalar c );
 
-   template< typename ResultType = NonConstReal, typename Scalar >
-   ResultType lpNorm( Scalar p ) const;
+   /*template< typename ResultType = NonConstReal, typename Scalar >
+   ResultType lpNorm( Scalar p ) const;*/
 
    template< typename ResultType = NonConstReal >
    ResultType sum() const;

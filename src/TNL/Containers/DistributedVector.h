@@ -101,8 +101,8 @@ public:
    template< typename Scalar >
    DistributedVector& operator/=( Scalar c );
 
-   template< typename ResultType = RealType, typename Scalar >
-   ResultType lpNorm( const Scalar p ) const;
+   /*template< typename ResultType = RealType, typename Scalar >
+   ResultType lpNorm( const Scalar p ) const;*/
 
    template< typename ResultType = RealType >
    ResultType sum() const;

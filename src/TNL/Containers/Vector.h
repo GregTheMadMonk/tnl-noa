@@ -187,8 +187,8 @@ public:
     * \tparam
     * \param p Number specifying the dimension of vector space.
     */
-   template< typename ResultType = RealType, typename Scalar >
-   ResultType lpNorm( const Scalar p ) const;
+   //template< typename ResultType = RealType, typename Scalar >
+   //ResultType lpNorm( const Scalar p ) const;
 
    /**
     * \brief Returns sum of all vector elements.

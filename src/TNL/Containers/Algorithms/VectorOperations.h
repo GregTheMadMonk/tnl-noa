@@ -10,8 +10,8 @@
 
 #pragma once
 
+#include <TNL/Containers/Algorithms/PrefixSum.h>
 #include <TNL/Containers/Algorithms/Reduction.h>
-#include <TNL/Containers/Algorithms/CommonVectorOperations.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 
@@ -23,7 +23,7 @@ template< typename Device >
 class VectorOperations{};
 
 template<>
-class VectorOperations< Devices::Host > : public CommonVectorOperations< Devices::Host >
+class VectorOperations< Devices::Host >
 {
 public:
    template< typename Vector >
@@ -40,9 +40,6 @@ public:
    template< typename Vector, typename Scalar >
    static void vectorScalarMultiplication( Vector& v, Scalar alpha );
 
-   /*template< typename Vector1, typename Vector2, typename ResultType = typename Vector1::RealType >
-   static ResultType getScalarProduct( const Vector1& v1, const Vector2& v2 );*/
-
    template< typename Vector1, typename Vector2, typename Scalar1, typename Scalar2 >
    static void addVector( Vector1& y,
                           const Vector2& x,
@@ -57,10 +54,24 @@ public:
                            const Scalar2 multiplicator2,
                            const Scalar3 thisMultiplicator = 1.0 );
 
+   template< typename Vector, typename ResultType = typename Vector::RealType >
+   static ResultType getVectorSum( const Vector& v );
+
+   template< Algorithms::PrefixSumType Type,
+             typename Vector >
+   static void prefixSum( Vector& v,
+                          const typename Vector::IndexType begin,
+                          const typename Vector::IndexType end );
+
+   template< Algorithms::PrefixSumType Type, typename Vector, typename Flags >
+   static void segmentedPrefixSum( Vector& v,
+                                   Flags& f,
+                                   const typename Vector::IndexType begin,
+                                   const typename Vector::IndexType end );
 };
 
 template<>
-class VectorOperations< Devices::Cuda > : public CommonVectorOperations< Devices::Cuda >
+class VectorOperations< Devices::Cuda >
 {
 public:
    template< typename Vector >
@@ -90,6 +101,21 @@ public:
                            const Vector3& v2,
                            const Scalar2 multiplicator2,
                            const Scalar3 thisMultiplicator = 1.0 );
+
+   template< typename Vector, typename ResultType = typename Vector::RealType >
+   static ResultType getVectorSum( const Vector& v );
+
+   template< Algorithms::PrefixSumType Type,
+             typename Vector >
+   static void prefixSum( Vector& v,
+                          const typename Vector::IndexType begin,
+                          const typename Vector::IndexType end );
+
+   template< Algorithms::PrefixSumType Type, typename Vector, typename Flags >
+   static void segmentedPrefixSum( Vector& v,
+                                   Flags& f,
+                                   const typename Vector::IndexType begin,
+                                   const typename Vector::IndexType end );
 };
 
 } // namespace Algorithms

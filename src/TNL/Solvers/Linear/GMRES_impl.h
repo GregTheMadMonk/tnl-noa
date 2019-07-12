@@ -400,7 +400,7 @@ hauseholder_generate( const int i,
    }
 
    // norm of the TRUNCATED vector z
-   const RealType normz = y_i.lpNorm( 2.0 );
+   const RealType normz = lpNorm( y_i, 2.0 );
    RealType norm_yi_squared = 0;
    if( localOffset == 0 ) {
       const RealType y_ii = y_i.getElement( i );

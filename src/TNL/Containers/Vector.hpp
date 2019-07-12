@@ -213,14 +213,14 @@ operator,( const Vector_& v ) const
    return Algorithms::VectorOperations< Device >::getScalarProduct( *this, v );
 }
 
-template< typename Real,
+/*template< typename Real,
           typename Device,
           typename Index >
    template< typename ResultType, typename Scalar >
 ResultType Vector< Real, Device, Index >::lpNorm( const Scalar p ) const
 {
    return Algorithms::VectorOperations< Device >::template getVectorLpNorm< Vector, ResultType >( *this, p );
-}
+}*/
 
 template< typename Real,
           typename Device,
@@ -247,7 +247,7 @@ template< typename Real,
    template< typename VectorT >
 Real Vector< Real, Device, Index >::scalarProduct( const VectorT& v ) const
 {
-   return Algorithms::VectorOperations< Device >::getScalarProduct( *this, v );
+   return dot( this->getView(), v.getView() );//Algorithms::VectorOperations< Device >::getScalarProduct( *this, v );
 }
 
 template< typename Real,

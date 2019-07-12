@@ -99,9 +99,9 @@ TEST( VectorSpecialCasesTest, sumOfBoolVector )
    w.setValue( false );
 
    const int sum = TNL::sum( v );
-   const int l1norm = v.lpNorm< int >( 1.0 );
-   const float l2norm = v.lpNorm< float >( 2.0 );
-   const float l3norm = v.lpNorm< float >( 3.0 );
+   const int l1norm = lpNorm( v, 1.0 );
+   const float l2norm = lpNorm( v, 2.0 );
+   const float l3norm = lpNorm( v, 3.0 );
    EXPECT_EQ( sum, 512 );
    EXPECT_EQ( l1norm, 512 );
    EXPECT_NEAR( l2norm, std::sqrt( 512 ), epsilon );
@@ -118,9 +118,9 @@ TEST( VectorSpecialCasesTest, sumOfBoolVector )
 
    // test views
    const int sum_view = v_view.sum< int >();
-   const int l1norm_view = v_view.lpNorm< int >( 1.0 );
-   const float l2norm_view = v_view.lpNorm< float >( 2.0 );
-   const float l3norm_view = v_view.lpNorm< float >( 3.0 );
+   const int l1norm_view = lpNorm( v_view, 1.0 );
+   const float l2norm_view = lpNorm( v_view, 2.0 );
+   const float l3norm_view = lpNorm( v_view, 3.0 );
    EXPECT_EQ( sum_view, 512 );
    EXPECT_EQ( l1norm_view, 512 );
    EXPECT_NEAR( l2norm_view, std::sqrt( 512 ), epsilon );

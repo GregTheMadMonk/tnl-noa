@@ -34,22 +34,18 @@ TYPED_TEST( VectorTest, sum )
    setConstantSequence( v, 1 );
    EXPECT_EQ( sum( v ), size );
    EXPECT_EQ( sum( v_view ), size );
-   EXPECT_EQ( VectorOperations::getVectorSum( v ), size );
 
    setLinearSequence( v );
    EXPECT_EQ( sum( v ), 0.5 * size * ( size - 1 ) );
    EXPECT_EQ( sum( v_view ), 0.5 * size * ( size - 1 ) );
-   EXPECT_EQ( VectorOperations::getVectorSum( v ), 0.5 * size * ( size - 1 ) );
 
    setNegativeLinearSequence( v );
    EXPECT_EQ( sum( v ), - 0.5 * size * ( size - 1 ) );
    EXPECT_EQ( sum( v_view ), - 0.5 * size * ( size - 1 ) );
-   EXPECT_EQ( VectorOperations::getVectorSum( v ), - 0.5 * size * ( size - 1 ) );
 
    setOscilatingSequence( v, 1.0 );
    EXPECT_EQ( sum( v ), 0 );
    EXPECT_EQ( sum( v_view ), 0 );
-   EXPECT_EQ( VectorOperations::getVectorSum( v ), 0 );
 }
 
 TEST( VectorSpecialCasesTest, sumOfBoolVector )
@@ -116,7 +112,6 @@ TYPED_TEST( VectorTest, scalarProduct )
 
    EXPECT_EQ( dot( u, v ), 1.0 );
    EXPECT_EQ( dot( u_view, v_view ), 1.0 );
-   EXPECT_EQ( VectorOperations::getScalarProduct( u, v ), 1.0 );
    EXPECT_EQ( ( u, v ), 1.0 );
    EXPECT_EQ( ( u_view, v_view ), 1.0 );
 }
@@ -144,9 +139,6 @@ TYPED_TEST( VectorTest, differenceLpNorm )
    EXPECT_EQ( lpNorm( u_view - v_view, 1.0 ), expectedL1norm );
    EXPECT_EQ( lpNorm( u_view - v_view, 2.0 ), expectedL2norm );
    EXPECT_NEAR( lpNorm( u_view - v_view, 3.0 ), expectedL3norm, epsilon );
-   EXPECT_EQ( VectorOperations::getVectorDifferenceLpNorm( u, v, 1.0 ), expectedL1norm );
-   EXPECT_EQ( VectorOperations::getVectorDifferenceLpNorm( u, v, 2.0 ), expectedL2norm );
-   EXPECT_NEAR( VectorOperations::getVectorDifferenceLpNorm( u, v, 3.0 ), expectedL3norm, epsilon );
 }
 
 TYPED_TEST( VectorTest, differenceSum )
@@ -164,22 +156,18 @@ TYPED_TEST( VectorTest, differenceSum )
    setConstantSequence( u, 2 );
    EXPECT_EQ( sum( u - v ), size );
    EXPECT_EQ( sum( u_view - v_view ), size );
-   EXPECT_EQ( VectorOperations::getVectorDifferenceSum( u, v ), size );
 
    setLinearSequence( u );
    EXPECT_EQ( sum( u - v ), 0.5 * size * ( size - 1 ) - size );
    EXPECT_EQ( sum( u_view - v_view ), 0.5 * size * ( size - 1 ) - size );
-   EXPECT_EQ( VectorOperations::getVectorDifferenceSum( u, v ), 0.5 * size * ( size - 1 ) - size );
 
    setNegativeLinearSequence( u );
    EXPECT_EQ( sum( u - v ), - 0.5 * size * ( size - 1 ) - size );
    EXPECT_EQ( sum( u_view - v_view ), - 0.5 * size * ( size - 1 ) - size );
-   EXPECT_EQ( VectorOperations::getVectorDifferenceSum( u, v ), - 0.5 * size * ( size - 1 ) - size );
 
    setOscilatingSequence( u, 1.0 );
    EXPECT_EQ( sum( u - v ), - size );
    EXPECT_EQ( sum( u_view - v_view ), - size );
-   EXPECT_EQ( VectorOperations::getVectorDifferenceSum( u, v ), - size );
 }
 
 #endif // HAVE_GTEST

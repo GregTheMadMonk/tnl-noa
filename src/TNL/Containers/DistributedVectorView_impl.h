@@ -217,7 +217,7 @@ operator/=( Scalar c )
    return *this;
 }
 
-template< typename Real,
+/*template< typename Real,
           typename Device,
           typename Index,
           typename Communicator >
@@ -234,7 +234,7 @@ lpNorm( const Scalar p ) const
       result = std::pow( result, 1.0 / p );
    }
    return result;
-}
+}*/
 
 template< typename Real,
           typename Device,
@@ -253,150 +253,6 @@ sum() const
    }
    return result;
 }
-
-/*template< typename Real,
-          typename Device,
-          typename Index,
-          typename Communicator >
-   template< typename Vector >
-typename DistributedVectorView< Real, Device, Index, Communicator >::NonConstReal
-DistributedVectorView< Real, Device, Index, Communicator >::
-differenceMax( const Vector& v ) const
-{
-   TNL_ASSERT_EQ( this->getSize(), v.getSize(),
-                  "Vector sizes must be equal." );
-   TNL_ASSERT_EQ( this->getLocalRange(), v.getLocalRange(),
-                  "Multiary operations are supported only on vectors which are distributed the same way." );
-   TNL_ASSERT_EQ( this->getCommunicationGroup(), v.getCommunicationGroup(),
-                  "Multiary operations are supported only on vectors within the same communication group." );
-
-   const auto group = this->getCommunicationGroup();
-   NonConstReal result = Containers::Algorithms::ParallelReductionDiffMax< Real, typename Vector::RealType >::initialValue();
-   if( group != CommunicatorType::NullGroup ) {
-      const Real localResult = getLocalVectorView().differenceMax( v.getLocalVectorView() );
-      CommunicatorType::Allreduce( &localResult, &result, 1, MPI_MAX, group );
-   }
-   return result;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Communicator >
-   template< typename Vector >
-typename DistributedVectorView< Real, Device, Index, Communicator >::NonConstReal
-DistributedVectorView< Real, Device, Index, Communicator >::
-differenceMin( const Vector& v ) const
-{
-   TNL_ASSERT_EQ( this->getSize(), v.getSize(),
-                  "Vector sizes must be equal." );
-   TNL_ASSERT_EQ( this->getLocalRange(), v.getLocalRange(),
-                  "Multiary operations are supported only on vectors which are distributed the same way." );
-   TNL_ASSERT_EQ( this->getCommunicationGroup(), v.getCommunicationGroup(),
-                  "Multiary operations are supported only on vectors within the same communication group." );
-
-   const auto group = this->getCommunicationGroup();
-   NonConstReal result = Containers::Algorithms::ParallelReductionDiffMin< Real, typename Vector::RealType >::initialValue();
-   if( group != CommunicatorType::NullGroup ) {
-      const Real localResult = getLocalVectorView().differenceMin( v.getLocalVectorView() );
-      CommunicatorType::Allreduce( &localResult, &result, 1, MPI_MIN, group );
-   }
-   return result;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Communicator >
-   template< typename Vector >
-typename DistributedVectorView< Real, Device, Index, Communicator >::NonConstReal
-DistributedVectorView< Real, Device, Index, Communicator >::
-differenceAbsMax( const Vector& v ) const
-{
-   TNL_ASSERT_EQ( this->getSize(), v.getSize(),
-                  "Vector sizes must be equal." );
-   TNL_ASSERT_EQ( this->getLocalRange(), v.getLocalRange(),
-                  "Multiary operations are supported only on vectors which are distributed the same way." );
-   TNL_ASSERT_EQ( this->getCommunicationGroup(), v.getCommunicationGroup(),
-                  "Multiary operations are supported only on vectors within the same communication group." );
-
-   const auto group = this->getCommunicationGroup();
-   NonConstReal result = Containers::Algorithms::ParallelReductionDiffAbsMax< Real, typename Vector::RealType >::initialValue();
-   if( group != CommunicatorType::NullGroup ) {
-      const Real localResult = getLocalVectorView().differenceAbsMax( v.getLocalVectorView() );
-      CommunicatorType::Allreduce( &localResult, &result, 1, MPI_MAX, group );
-   }
-   return result;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Communicator >
-   template< typename Vector >
-typename DistributedVectorView< Real, Device, Index, Communicator >::NonConstReal
-DistributedVectorView< Real, Device, Index, Communicator >::
-differenceAbsMin( const Vector& v ) const
-{
-   TNL_ASSERT_EQ( this->getSize(), v.getSize(),
-                  "Vector sizes must be equal." );
-   TNL_ASSERT_EQ( this->getLocalRange(), v.getLocalRange(),
-                  "Multiary operations are supported only on vectors which are distributed the same way." );
-   TNL_ASSERT_EQ( this->getCommunicationGroup(), v.getCommunicationGroup(),
-                  "Multiary operations are supported only on vectors within the same communication group." );
-
-   const auto group = this->getCommunicationGroup();
-   NonConstReal result = Containers::Algorithms::ParallelReductionDiffAbsMin< Real, typename Vector::RealType >::initialValue();
-   if( group != CommunicatorType::NullGroup ) {
-      const Real localResult = getLocalVectorView().differenceAbsMin( v.getLocalVectorView() );
-      CommunicatorType::Allreduce( &localResult, &result, 1, MPI_MIN, group );
-   }
-   return result;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Communicator >
-   template< typename ResultType, typename Vector, typename Scalar >
-ResultType
-DistributedVectorView< Real, Device, Index, Communicator >::
-differenceLpNorm( const Vector& v, const Scalar p ) const
-{
-   const auto group = this->getCommunicationGroup();
-   ResultType result = Containers::Algorithms::ParallelReductionDiffLpNorm< Real, typename Vector::RealType, ResultType, Scalar >::initialValue();
-   if( group != CommunicatorType::NullGroup ) {
-      const ResultType localResult = std::pow( getLocalVectorView().differenceLpNorm( v.getLocalVectorView(), p ), p );
-      CommunicatorType::Allreduce( &localResult, &result, 1, MPI_SUM, group );
-      result = std::pow( result, 1.0 / p );
-   }
-   return result;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Communicator >
-   template< typename ResultType, typename Vector >
-ResultType
-DistributedVectorView< Real, Device, Index, Communicator >::
-differenceSum( const Vector& v ) const
-{
-   TNL_ASSERT_EQ( this->getSize(), v.getSize(),
-                  "Vector sizes must be equal." );
-   TNL_ASSERT_EQ( this->getLocalRange(), v.getLocalRange(),
-                  "Multiary operations are supported only on vectors which are distributed the same way." );
-   TNL_ASSERT_EQ( this->getCommunicationGroup(), v.getCommunicationGroup(),
-                  "Multiary operations are supported only on vectors within the same communication group." );
-
-   const auto group = this->getCommunicationGroup();
-   ResultType result = Containers::Algorithms::ParallelReductionDiffSum< Real, typename Vector::RealType, ResultType >::initialValue();
-   if( group != CommunicatorType::NullGroup ) {
-      const ResultType localResult = getLocalVectorView().differenceSum( v.getLocalVectorView() );
-      CommunicatorType::Allreduce( &localResult, &result, 1, MPI_SUM, group );
-   }
-   return result;
-}*/
 
 template< typename Real,
           typename Device,

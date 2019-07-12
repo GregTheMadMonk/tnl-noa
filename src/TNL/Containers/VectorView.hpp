@@ -64,7 +64,7 @@ getView( IndexType begin, IndexType end ) const
 {
    if( end == 0 )
       end = this->getSize();
-   return ConstViewType( this->getData()[ begin ], end - begin );;
+   return ConstViewType( &this->getData()[ begin ], end - begin );;
 }
 
 template< typename Real,
@@ -206,49 +206,7 @@ operator,( const Vector_& v ) const
    return Algorithms::VectorOperations< Device >::getScalarProduct( *this, v );
 }
 
-
 /*template< typename Real,
-          typename Device,
-          typename Index >
-typename VectorView< Real, Device, Index >::NonConstReal
-VectorView< Real, Device, Index >::
-max() const
-{
-   return Algorithms::VectorOperations< Device >::template getVectorMax< VectorView, NonConstReal >( *this );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-typename VectorView< Real, Device, Index >::NonConstReal
-VectorView< Real, Device, Index >::
-min() const
-{
-   return Algorithms::VectorOperations< Device >::template getVectorMin< VectorView, NonConstReal >( *this );
-}
-
-
-template< typename Real,
-          typename Device,
-          typename Index >
-typename VectorView< Real, Device, Index >::NonConstReal
-VectorView< Real, Device, Index >::
-absMax() const
-{
-   return Algorithms::VectorOperations< Device >::template getVectorAbsMax< VectorView, NonConstReal >( *this );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-typename VectorView< Real, Device, Index >::NonConstReal
-VectorView< Real, Device, Index >::
-absMin() const
-{
-   return Algorithms::VectorOperations< Device >::template getVectorAbsMin< VectorView, NonConstReal >( *this );
-}*/
-
-template< typename Real,
           typename Device,
           typename Index >
    template< typename ResultType, typename Scalar >
@@ -257,7 +215,7 @@ VectorView< Real, Device, Index >::
 lpNorm( const Scalar p ) const
 {
    return Algorithms::VectorOperations< Device >::template getVectorLpNorm< VectorView, ResultType >( *this, p );
-}
+}*/
 
 template< typename Real,
           typename Device,
@@ -290,7 +248,7 @@ typename VectorView< Real, Device, Index >::NonConstReal
 VectorView< Real, Device, Index >::
 scalarProduct( const Vector& v ) const
 {
-   return Algorithms::VectorOperations< Device >::template getScalarProduct< VectorView, Vector, NonConstReal >( *this, v );
+   return dot( this->getView(), v.getView() );//Algorithms::VectorOperations< Device >::template getScalarProduct< VectorView, Vector, NonConstReal >( *this, v );
 }
 
 template< typename Real,
