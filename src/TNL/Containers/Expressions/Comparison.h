@@ -103,13 +103,13 @@ struct Comparison< T1, T2, ArithmeticVariable, VectorVariable >
 
    static bool EQ( const T1& a, const T2& b )
    {
-      using DeviceType = typename T1::DeviceType;
-      using IndexType = typename T1::IndexType;
+      using DeviceType = typename T2::DeviceType;
+      using IndexType = typename T2::IndexType;
 
       auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return  ( a == b[ i ] ); };
       auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
       auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
-      return Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
+      return Algorithms::Reduction< DeviceType >::reduce( b.getSize(), reduction, volatileReduction, fetch, true );
    }
 
    static bool NE( const T1& a, const T2& b )

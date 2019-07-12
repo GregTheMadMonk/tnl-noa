@@ -318,14 +318,104 @@ TYPED_TEST( VectorTest, comparison )
    using ViewType = typename TestFixture::ViewType;
    const int size = VECTOR_TEST_SIZE;
 
-   VectorType _v( size ), _w( size );
-   ViewType v( _v ), w( _w );
-   v = 1.0;
-   w = 2.0;
+   VectorType _u( size ), _v( size ), _w( size );
+   ViewType u( _u ), v( _v ), w( _w );
 
-   EXPECT_TRUE( v < w );
-   EXPECT_TRUE( w > v );
-   EXPECT_TRUE( w + 1.0 < v + 4.0 );
+   u = 1.0;
+   v = 2.0;
+   w = 4.0;
+
+   // Test with Vectors
+   EXPECT_EQ( _u, _u );
+   EXPECT_EQ( _u, 1.0 );
+   EXPECT_TRUE( 1.0 == _u );
+   EXPECT_EQ( _w, _v + _v );
+   EXPECT_TRUE( _v + _v == _w );
+   EXPECT_TRUE( abs( _w ) == _v + _v );
+   EXPECT_TRUE( _v + _v == abs( _w ) );
+
+   EXPECT_NE( _u, _v );
+   EXPECT_NE( _u, 2.0 );
+   EXPECT_TRUE( 2.0 != _u );
+   EXPECT_NE( _u, _w + _w );
+   EXPECT_TRUE( _w + _v != _u );
+   EXPECT_TRUE( abs( _w ) != abs( _u ) );
+   EXPECT_TRUE( ( _w + _v ) != ( _u + _v ) );
+   EXPECT_TRUE( ( abs( _u ) ) != ( _w + _v ) );
+   EXPECT_TRUE( ( _w + _v ) != ( abs( _u ) ) );
+
+   EXPECT_LT( _u, _v );
+   EXPECT_LT( _u, 2.0 );
+   EXPECT_LT( 0.0, _u );
+   EXPECT_LT( _u, _v + _w );
+   EXPECT_LT( _u + _v, _w );
+   EXPECT_LT( abs( _u ), abs( _w ) );
+   EXPECT_LT( abs( _u ), _v + _w );
+   EXPECT_LT( _u + _v, abs( _w ) );
+   EXPECT_LT( _u + _v, _u + _w );
+
+   EXPECT_LE( _u, _v );
+   EXPECT_LE( _u, 2.0 );
+   EXPECT_LE( 0.0, _u );
+   EXPECT_LE( _u, _v + _w );
+   EXPECT_LE( _u + _v, _w );
+   EXPECT_LE( abs( _u ), abs( _w ) );
+   EXPECT_LE( abs( _u ), _v + _w );
+   EXPECT_LE( _u + _v, abs( _w ) );
+
+   EXPECT_GT( _v, _u );
+   EXPECT_GT( _v, 1.0 );
+   EXPECT_GT( 3.0, _v );
+   EXPECT_GT( _w, _u + _v );
+   EXPECT_GT( _v + _w, _u );
+   EXPECT_GT( abs( _w ), _u + _v );
+   EXPECT_GT( _v + _w, abs( _u ) );
+
+   // Test with VectorViews
+   EXPECT_EQ( u, u );
+   EXPECT_EQ( u, 1.0 );
+   EXPECT_TRUE( 1.0 == u );
+   EXPECT_EQ( w, v + v );
+   EXPECT_EQ( v + v, w );
+   EXPECT_TRUE( abs( w ) == v + v );
+   EXPECT_TRUE( v + v == abs( w ) );
+
+   EXPECT_NE( u, v );
+   EXPECT_NE( u, 2.0 );
+   EXPECT_TRUE( 2.0 != u );
+   EXPECT_NE( u, w + w );
+   EXPECT_TRUE( w + v != u );
+   EXPECT_TRUE( abs( w ) != abs( u ) );
+   EXPECT_TRUE( ( w + v ) != ( u + v ) );
+   EXPECT_TRUE( ( abs( u ) ) != ( w + v ) );
+   EXPECT_TRUE( ( w + v ) != ( abs( u ) ) );
+
+   EXPECT_LT( u, v );
+   EXPECT_LT( u, 2.0 );
+   EXPECT_LT( 0.0, u );
+   EXPECT_LT( u, v + w );
+   EXPECT_LT( u + v, w );
+   EXPECT_LT( abs( u ), abs( w ) );
+   EXPECT_LT( abs( u ), v + w );
+   EXPECT_LT( u + v, abs( w ) );
+   EXPECT_LT( u + v, u + w );
+
+   EXPECT_LE( u, v );
+   EXPECT_LE( u, 2.0 );
+   EXPECT_LE( 0.0, u );
+   EXPECT_LE( u, v + w );
+   EXPECT_LE( u + v, w );
+   EXPECT_LE( abs( u ), abs( w ) );
+   EXPECT_LE( abs( u ), v + w );
+   EXPECT_LE( u + v, abs( w ) );
+
+   EXPECT_GT( v, u );
+   EXPECT_GT( v, 1.0 );
+   EXPECT_GT( 3.0, v );
+   EXPECT_GT( w, u + v );
+   EXPECT_GT( v + w, u );
+   EXPECT_GT( abs( w ), u + v );
+   EXPECT_GT( v + w, abs( u ) );
 }
 
 TYPED_TEST( VectorTest, horizontalOperations )
