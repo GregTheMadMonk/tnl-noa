@@ -69,9 +69,17 @@ struct Comparison< T1, T2, VectorVariable, VectorVariable >
       return Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
    }
 
-   static bool LE( const T1& a, const T2& b )
+   static bool GE( const T1& a, const T2& b )
    {
-      return ! GT( a, b );
+      TNL_ASSERT_EQ( a.getSize(), b.getSize(), "Sizes of expressions to be compared do not fit." );
+
+      using DeviceType = typename T1::DeviceType;
+      using IndexType = typename T1::IndexType;
+
+      auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return  ( a[ i ] >= b[ i ] ); };
+      auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
+      auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
+      return Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
    }
 
    static bool LT( const T1& a, const T2& b )
@@ -87,9 +95,17 @@ struct Comparison< T1, T2, VectorVariable, VectorVariable >
       return Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
    }
 
-   static bool GE( const T1& a, const T2& b )
+   static bool LE( const T1& a, const T2& b )
    {
-      return ! LT( a, b );
+      TNL_ASSERT_EQ( a.getSize(), b.getSize(), "Sizes of expressions to be compared do not fit." );
+
+      using DeviceType = typename T1::DeviceType;
+      using IndexType = typename T1::IndexType;
+
+      auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return  ( a[ i ] <= b[ i ] ); };
+      auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
+      auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
+      return Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
    }
 };
 
@@ -119,34 +135,46 @@ struct Comparison< T1, T2, ArithmeticVariable, VectorVariable >
 
    static bool GT( const T1& a, const T2& b )
    {
-      using DeviceType = typename T1::DeviceType;
-      using IndexType = typename T1::IndexType;
+      using DeviceType = typename T2::DeviceType;
+      using IndexType = typename T2::IndexType;
 
       auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return  ( a > b[ i ] ); };
       auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
       auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
-      return Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
-   }
-
-   static bool LE( const T1& a, const T2& b )
-   {
-      return ! GT( a, b );
-   }
-
-   static bool LT( const T1& a, const T2& b )
-   {
-      using DeviceType = typename T1::DeviceType;
-      using IndexType = typename T1::IndexType;
-
-      auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return  ( a < b[ i ] ); };
-      auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
-      auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
-      return Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
+      return Algorithms::Reduction< DeviceType >::reduce( b.getSize(), reduction, volatileReduction, fetch, true );
    }
 
    static bool GE( const T1& a, const T2& b )
    {
-      return ! LT( a, b );
+      using DeviceType = typename T2::DeviceType;
+      using IndexType = typename T2::IndexType;
+
+      auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return  ( a >= b[ i ] ); };
+      auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
+      auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
+      return Algorithms::Reduction< DeviceType >::reduce( b.getSize(), reduction, volatileReduction, fetch, true );
+   }
+
+   static bool LT( const T1& a, const T2& b )
+   {
+      using DeviceType = typename T2::DeviceType;
+      using IndexType = typename T2::IndexType;
+
+      auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return  ( a < b[ i ] ); };
+      auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
+      auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
+      return Algorithms::Reduction< DeviceType >::reduce( b.getSize(), reduction, volatileReduction, fetch, true );
+   }
+
+   static bool LE( const T1& a, const T2& b )
+   {
+      using DeviceType = typename T2::DeviceType;
+      using IndexType = typename T2::IndexType;
+
+      auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return  ( a <= b[ i ] ); };
+      auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
+      auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
+      return Algorithms::Reduction< DeviceType >::reduce( b.getSize(), reduction, volatileReduction, fetch, true );
    }
 };
 
@@ -185,9 +213,15 @@ struct Comparison< T1, T2, VectorVariable, ArithmeticVariable >
       return Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
    }
 
-   static bool LE( const T1& a, const T2& b )
+   static bool GE( const T1& a, const T2& b )
    {
-      return ! GT( a, b );
+      using DeviceType = typename T1::DeviceType;
+      using IndexType = typename T1::IndexType;
+
+      auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return  ( a[ i ] >= b ); };
+      auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
+      auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
+      return Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
    }
 
    static bool LT( const T1& a, const T2& b )
@@ -201,9 +235,15 @@ struct Comparison< T1, T2, VectorVariable, ArithmeticVariable >
       return Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
    }
 
-   static bool GE( const T1& a, const T2& b )
+   static bool LE( const T1& a, const T2& b )
    {
-      return ! LT( a, b );
+      using DeviceType = typename T1::DeviceType;
+      using IndexType = typename T1::IndexType;
+
+      auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return  ( a[ i ] <= b ); };
+      auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
+      auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
+      return Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
    }
 };
 

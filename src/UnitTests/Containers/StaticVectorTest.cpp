@@ -581,18 +581,18 @@ TYPED_TEST( StaticVectorTest, comparisonOperators )
    v = 2.0;
    w = 4.0;
 
-   EXPECT_EQ( u, u );
-   EXPECT_EQ( u, 1.0 );
+   EXPECT_TRUE( u == u );
+   EXPECT_TRUE( u == 1.0 );
    EXPECT_TRUE( 1.0 == u );
-   EXPECT_EQ( w, v + v );
-   EXPECT_EQ( v + v, w );
+   EXPECT_TRUE( w == v + v );
+   EXPECT_TRUE( v + v == w );
    EXPECT_TRUE( abs( w ) == v + v );
    EXPECT_TRUE( v + v == abs( w ) );
 
-   EXPECT_NE( u, v );
-   EXPECT_NE( u, 2.0 );
+   EXPECT_TRUE( u != v );
+   EXPECT_TRUE( u != 2.0 );
    EXPECT_TRUE( 2.0 != u );
-   EXPECT_NE( u, w + w );
+   EXPECT_TRUE( u != w + w );
    EXPECT_TRUE( w + v != u );
    EXPECT_TRUE( abs( w ) != abs( u ) );
    EXPECT_TRUE( ( w + v ) != ( u + v ) );
