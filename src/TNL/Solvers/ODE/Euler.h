@@ -13,6 +13,7 @@
 #include <math.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Solvers/ODE/ExplicitSolver.h>
+#include <TNL/Solvers/DummyProblem.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Timer.h>
 
@@ -20,7 +21,7 @@ namespace TNL {
 namespace Solvers {
 namespace ODE {
 
-template< typename Problem >
+template< typename Problem = DummyProblem<> >
 class Euler : public ExplicitSolver< Problem >
 {
    public:

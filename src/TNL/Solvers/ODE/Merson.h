@@ -11,6 +11,7 @@
 #pragma once
 
 #include <math.h>
+#include <TNL/Solvers/DummyProblem.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Solvers/ODE/ExplicitSolver.h>
 
@@ -18,7 +19,7 @@ namespace TNL {
 namespace Solvers {
 namespace ODE {   
 
-template< class Problem >
+template< class Problem = DummyProblem<> >
 class Merson : public ExplicitSolver< Problem >
 {
    public:
