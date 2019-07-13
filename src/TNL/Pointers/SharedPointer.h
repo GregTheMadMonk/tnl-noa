@@ -13,6 +13,7 @@
 #pragma once
 
 #include <cstring>
+#include <type_traits>
 #include <TNL/Assert.h>
 
 //#define TNL_DEBUG_SHARED_POINTERS
