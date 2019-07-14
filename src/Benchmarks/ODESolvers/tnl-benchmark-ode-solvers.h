@@ -33,7 +33,8 @@
 #include "../Benchmarks.h"
 #include "benchmarks.h"
 #include "SimpleProblem.h"
-
+#include "Euler.h"
+#include "Merson.h"
 
 #include <TNL/Matrices/SlicedEllpack.h>
 
@@ -75,9 +76,16 @@ benchmarkODESolvers( Benchmark& benchmark,
          using HostSolver = Solvers::ODE::Euler< HostProblem, SolverMonitorType >;
          benchmark.setOperation("Euler");
          benchmarkSolver< HostSolver >( benchmark, parameters, host_u );
+         using HostSolverNonET = Benchmarks::Euler< HostProblem, SolverMonitorType >;
+         benchmark.setOperation("Euler non-ET");
+         benchmarkSolver< HostSolverNonET >( benchmark, parameters, host_u );
 #ifdef HAVE_CUDA
          using CudaSolver = Solvers::ODE::Euler< CudaProblem, SolverMonitorType >;
+         benchmark.setOperation( "Euler" );
          benchmarkSolver< CudaSolver >( benchmark, parameters, cuda_u );
+         using CudaSolverNonET = Benchmarks::Euler< CudaProblem, SolverMonitorType >;
+         benchmark.setOperation("Euler non-ET");
+         benchmarkSolver< CudaSolverNonET >( benchmark, parameters, cuda_u );
 #endif
       }
 
@@ -85,9 +93,16 @@ benchmarkODESolvers( Benchmark& benchmark,
          using HostSolver = Solvers::ODE::Merson< HostProblem, SolverMonitorType >;
          benchmark.setOperation("Merson");
          benchmarkSolver< HostSolver >( benchmark, parameters, host_u );
+         using HostSolverNonET = Benchmarks::Merson< HostProblem, SolverMonitorType >;
+         benchmark.setOperation("Merson non-ET");
+         benchmarkSolver< HostSolverNonET >( benchmark, parameters, host_u );
 #ifdef HAVE_CUDA
          using CudaSolver = Solvers::ODE::Merson< CudaProblem, SolverMonitorType >;
+         benchmark.setOperation("Merson");
          benchmarkSolver< CudaSolver >( benchmark, parameters, cuda_u );
+         using CudaSolverNonET = Benchmarks::Merson< CudaProblem, SolverMonitorType >;
+         benchmark.setOperation("Merson non-ET");
+         benchmarkSolver< CudaSolverNonET >( benchmark, parameters, cuda_u );
 #endif
       }
    }
@@ -109,7 +124,7 @@ struct ODESolversBenchmark
       const String name = String( (CommunicatorType::isDistributed()) ? "Distributed ODE solvers" : "ODE solvers" );
                           //+ " (" + parameters.getParameter< String >( "name" ) + "): ";
       benchmark.newBenchmark( name, metadata );
-      for( size_t dofs = 25; dofs <= 100000; dofs *= 2 ) {
+      for( size_t dofs = 25; dofs <= 10000000; dofs *= 2 ) {
          benchmark.setMetadataColumns( Benchmark::MetadataColumns({
             // TODO: strip the device
             { "DOFs", convertToString( dofs ) },
@@ -191,7 +206,8 @@ configSetup( Config::ConfigDescription& config )
    config.addEntry< String >( "index-type", "Run benchmarks with given index type.", "int" );
    config.addEntryEnum< String >( "int" );
    config.addEntryEnum< String >( "long int" );
-
+   config.addEntry< double >( "final-time", "Final time of the benchmark test.", 1.0 );
+   config.addEntry< double >( "time-step", "Time step of the benchmark test.", 1.0e-2 );
 
    config.addDelimiter( "Device settings:" );
    Devices::Host::configSetup( config );

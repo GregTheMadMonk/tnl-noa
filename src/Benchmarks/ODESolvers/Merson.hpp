@@ -19,8 +19,7 @@
 #include "Merson.h"
 
 namespace TNL {
-namespace Solvers {
-namespace ODE {   
+namespace Benchmarks {
 
 /****
  * In this code we do not use constants and references as we would like to.
@@ -85,8 +84,8 @@ __global__ void updateUMerson( const Index size,
 
 
 
-template< typename Problem >
-Merson< Problem > :: Merson()
+template< typename Problem, typename SolverMonitor >
+Merson< Problem, SolverMonitor >::Merson()
 : adaptivity( 0.00001 )
 {
    if( std::is_same< DeviceType, Devices::Host >::value )
@@ -95,40 +94,40 @@ Merson< Problem > :: Merson()
    }
 };
 
-template< typename Problem >
-String Merson< Problem > :: getType()
+template< typename Problem, typename SolverMonitor >
+String Merson< Problem, SolverMonitor >::getType()
 {
    return String( "Merson< " ) +
           Problem::getType() +
           String( " >" );
 };
 
-template< typename Problem >
-void Merson< Problem > :: configSetup( Config::ConfigDescription& config,
+template< typename Problem, typename SolverMonitor >
+void Merson< Problem, SolverMonitor >::configSetup( Config::ConfigDescription& config,
                                                 const String& prefix )
 {
    //ExplicitSolver< Problem >::configSetup( config, prefix );
    config.addEntry< double >( prefix + "merson-adaptivity", "Time step adaptivity controlling coefficient (the smaller the more precise the computation is, zero means no adaptivity).", 1.0e-4 );
 };
 
-template< typename Problem >
-bool Merson< Problem > :: setup( const Config::ParameterContainer& parameters,
+template< typename Problem, typename SolverMonitor >
+bool Merson< Problem, SolverMonitor >::setup( const Config::ParameterContainer& parameters,
                                          const String& prefix )
 {
-   ExplicitSolver< Problem >::setup( parameters, prefix );
+   Solvers::ODE::ExplicitSolver< Problem, SolverMonitor >::setup( parameters, prefix );
    if( parameters.checkParameter( prefix + "merson-adaptivity" ) )
       this->setAdaptivity( parameters.getParameter< double >( prefix + "merson-adaptivity" ) );
    return true;
 }
 
-template< typename Problem >
-void Merson< Problem > :: setAdaptivity( const RealType& a )
+template< typename Problem, typename SolverMonitor >
+void Merson< Problem, SolverMonitor >::setAdaptivity( const RealType& a )
 {
    this->adaptivity = a;
 };
 
-template< typename Problem >
-bool Merson< Problem > :: solve( DofVectorPointer& u )
+template< typename Problem, typename SolverMonitor >
+bool Merson< Problem, SolverMonitor >::solve( DofVectorPointer& u )
 {
    if( ! this->problem )
    {
@@ -242,10 +241,10 @@ bool Merson< Problem > :: solve( DofVectorPointer& u )
 
 };
 
-template< typename Problem >
-void Merson< Problem >::computeKFunctions( DofVectorPointer& u,
-                                             const RealType& time,
-                                             RealType tau )
+template< typename Problem, typename SolverMonitor >
+void Merson< Problem, SolverMonitor >::computeKFunctions( DofVectorPointer& u,
+                                                          const RealType& time,
+                                                          RealType tau )
 {
    IndexType size = u->getSize();
 
@@ -354,8 +353,8 @@ void Merson< Problem >::computeKFunctions( DofVectorPointer& u,
    }
 }
 
-template< typename Problem >
-typename Problem :: RealType Merson< Problem > :: computeError( const RealType tau )
+template< typename Problem, typename SolverMonitor >
+typename Problem :: RealType Merson< Problem, SolverMonitor >::computeError( const RealType tau )
 {
    const IndexType size = k1->getSize();
    const RealType* _k1 = k1->getData();
@@ -387,7 +386,7 @@ typename Problem :: RealType Merson< Problem > :: computeError( const RealType t
          }
          this->openMPErrorEstimateBuffer[ Devices::Host::getThreadIdx() ] = localEps;
       }
-      eps = this->openMPErrorEstimateBuffer.max();
+      eps = VectorOperations::getVectorMax( this->openMPErrorEstimateBuffer );
    }
    if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
@@ -410,7 +409,7 @@ typename Problem :: RealType Merson< Problem > :: computeError( const RealType t
                                                               &_k5[ gridOffset ],
                                                               &_kAux[ gridOffset ] );
          cudaDeviceSynchronize();
-         eps = std::max( eps, kAux->max() );
+         eps = std::max( eps, VectorOperations::getVectorMax( *kAux ) );
       }
 #endif
    }
@@ -418,8 +417,8 @@ typename Problem :: RealType Merson< Problem > :: computeError( const RealType t
    return maxEps;
 }
 
-template< typename Problem >
-void Merson< Problem >::computeNewTimeLevel( const RealType time,
+template< typename Problem, typename SolverMonitor >
+void Merson< Problem, SolverMonitor >::computeNewTimeLevel( const RealType time,
                                              const RealType tau,
                                              DofVectorPointer& u,
                                              RealType& currentResidue )
@@ -485,8 +484,8 @@ void Merson< Problem >::computeNewTimeLevel( const RealType time,
 
 }
 
-template< typename Problem >
-void Merson< Problem >::writeGrids( const DofVectorPointer& u )
+template< typename Problem, typename SolverMonitor >
+void Merson< Problem, SolverMonitor >::writeGrids( const DofVectorPointer& u )
 {
    std::cout << "Writing Merson solver grids ...";
    File( "Merson-u.tnl", std::ios_base::out ) << *u;
@@ -579,7 +578,8 @@ __global__ void updateUMerson( const Index size,
                                RealType* u,
                                RealType* cudaBlockResidue )
 {
-   extern __shared__ RealType du[];
+   extern __shared__ void* d_u[];
+   RealType* du = ( RealType* ) d_u;
    const Index blockOffset = blockIdx. x * blockDim. x;
    const Index i = blockOffset  + threadIdx. x;
    if( i < size )
@@ -599,6 +599,5 @@ __global__ void updateUMerson( const Index size,
 
 #endif
 
-} // namespace ODE
-} // namespace Solvers
+} // namespace Benchmarks
 } // namespace TNL

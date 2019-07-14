@@ -14,12 +14,14 @@
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Solvers/ODE/ExplicitSolver.h>
 
-namespace TNL {
-namespace Solvers {
-namespace ODE {   
+#include "../BLAS/CommonVectorOperations.h"
 
-template< class Problem >
-class Merson : public ExplicitSolver< Problem >
+namespace TNL {
+namespace Benchmarks {
+
+template< class Problem,
+          typename SolverMonitor = Solvers::IterativeSolverMonitor< typename Problem::RealType, typename Problem::IndexType > >
+class Merson : public Solvers::ODE::ExplicitSolver< Problem, SolverMonitor >
 {
    public:
 
@@ -29,7 +31,8 @@ class Merson : public ExplicitSolver< Problem >
    typedef typename Problem :: DeviceType DeviceType;
    typedef typename Problem :: IndexType IndexType;
    typedef Pointers::SharedPointer<  DofVectorType, DeviceType > DofVectorPointer;
-
+   using VectorOperations = CommonVectorOperations< DeviceType >;
+   
    Merson();
 
    static String getType();
@@ -75,8 +78,7 @@ class Merson : public ExplicitSolver< Problem >
    Containers::Vector< RealType, DeviceType, IndexType > openMPErrorEstimateBuffer;
 };
 
-} // namespace ODE
-} // namespace Solvers
+} // namespace Benchmarks
 } // namespace TNL
 
-#include <TNL/Solvers/ODE/Merson_impl.h>
+#include "Merson.hpp"

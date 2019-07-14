@@ -78,6 +78,8 @@ benchmarkSolver( Benchmark& benchmark,
    solver.setup( parameters );
    solver.setProblem( problem );
    solver.setSolverMonitor( benchmark.getMonitor() );
+   solver.setStopTime( parameters.getParameter< double >( "final-time" ) );
+   solver.setTau( parameters.getParameter< double >( "time-step" ) );
 
    // reset function
    auto reset = [&]() {

@@ -16,21 +16,24 @@
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Timer.h>
 
-namespace TNL {
-namespace Solvers {
-namespace ODE {
+#include "../BLAS/CommonVectorOperations.h"
 
-template< typename Problem >
-class Euler : public ExplicitSolver< Problem >
+namespace TNL {
+namespace Benchmarks {
+
+template< typename Problem,
+          typename SolverMonitor = Solvers::IterativeSolverMonitor< typename Problem::RealType, typename Problem::IndexType > >
+class Euler : public Solvers::ODE::ExplicitSolver< Problem, SolverMonitor >
 {
    public:
 
    typedef Problem  ProblemType;
-   typedef typename Problem :: DofVectorType DofVectorType;
-   typedef typename Problem :: RealType RealType;
-   typedef typename Problem :: DeviceType DeviceType;
-   typedef typename Problem :: IndexType IndexType;
+   typedef typename Problem::DofVectorType DofVectorType;
+   typedef typename Problem::RealType RealType;
+   typedef typename Problem::DeviceType DeviceType;
+   typedef typename Problem::IndexType IndexType;
    typedef Pointers::SharedPointer<  DofVectorType, DeviceType > DofVectorPointer;
+   using VectorOperations = CommonVectorOperations< DeviceType >;
 
 
    Euler();
@@ -62,8 +65,7 @@ class Euler : public ExplicitSolver< Problem >
    //Timer timer, updateTimer;
 };
 
-} // namespace ODE
-} // namespace Solvers
+} // namespace Benchmarks
 } // namespace TNL
 
-#include <TNL/Solvers/ODE/Euler_impl.h>
+#include "Euler.hpp"
