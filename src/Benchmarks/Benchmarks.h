@@ -64,6 +64,7 @@ public:
    using Logging::MetadataElement;
    using Logging::MetadataMap;
    using Logging::MetadataColumns;
+   using SolverMonitorType = Solvers::IterativeSolverMonitor< double, int >;
    
    Benchmark( int loops = 10,
               bool verbose = true )
@@ -318,8 +319,7 @@ public:
    // "time" method could not be called (e.g. due to failed allocation).
    void
    addErrorMessage( const char* msg,
-                    int numberOfComputations = 1 )
-   {
+                    int numberOfComputations = 1 ) {
       // each computation has 3 subcolumns
       const int colspan = 3 * numberOfComputations;
       writeErrorMessage( msg, colspan );
@@ -328,19 +328,15 @@ public:
 
    using Logging::save;
 
-   Solvers::IterativeSolverMonitor< double, int >&
-   getMonitor()
-   {
+   SolverMonitorType& getMonitor() {
       return monitor;
    }
 
-   int getPerformedLoops() const
-   {
+   int getPerformedLoops() const {
       return this->performedLoops;
    }
 
-   bool isResetingOn() const
-   {
+   bool isResetingOn() const {
       return reset;
    }
 
@@ -351,7 +347,7 @@ protected:
    double baseTime = 0.0;
    bool timing = true;
    bool reset = true;
-   Solvers::IterativeSolverMonitor< double, int > monitor;
+   SolverMonitorType monitor;
 };
 
 

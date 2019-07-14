@@ -16,6 +16,7 @@
 #include <TNL/Config/ParameterContainer.h>
 
 #include "../Benchmarks.h"
+#include "SimpleProblem.h"
 
 
 #include <stdexcept>  // std::runtime_error
@@ -59,27 +60,24 @@ bool checkDevice( const Config::ParameterContainer& parameters )
 }
 
 
-template< typename Solver, typename Problem, typename VectorPointer >
+template< typename Solver, typename VectorPointer >
 void
 benchmarkSolver( Benchmark& benchmark,
                  const Config::ParameterContainer& parameters,
-                 Problem& problem,
                  VectorPointer& u )
 {
-   using DeviceType = typename Problem::DeviceType;
-   // skip benchmarks on devices which the user did not select
-   if( ! checkDevice< DeviceType >( parameters ) )
-      return;
-
-   const char* performer = getPerformer< DeviceType >();
+   using VectorType = typename VectorPointer::ObjectType;
+   using RealType = typename VectorType::RealType;
+   using DeviceType = typename VectorType::DeviceType;
+   using IndexType = typename VectorType::IndexType;
+   using ProblemType = typename Solver::ProblemType;
 
    // setup
+   ProblemType problem;
    Solver solver;
    solver.setup( parameters );
    solver.setProblem( problem );
-   
-   // FIXME: getMonitor returns solver monitor specialized for double and int
-   //solver.setSolverMonitor( benchmark.getMonitor() );
+   solver.setSolverMonitor( benchmark.getMonitor() );
 
    // reset function
    auto reset = [&]() {
@@ -88,12 +86,9 @@ benchmarkSolver( Benchmark& benchmark,
 
    // benchmark function
    auto compute = [&]() {
-      bool converged = solver.solve( u );
-      //barrier( matrix );
-      if( ! converged )
-         throw std::runtime_error("solver did not converge");
+      solver.solve( u );
    };
-
+   
    // subclass BenchmarkResult to add extra columns to the benchmark
    // (iterations, preconditioned residue, true residue)
    /*struct MyBenchmarkResult : public BenchmarkResult
@@ -136,6 +131,6 @@ benchmarkSolver( Benchmark& benchmark,
    };
    MyBenchmarkResult benchmarkResult( solver, matrix, x, b );*/
 
-   benchmark.time< DeviceType >( reset, performer, compute ); //, benchmarkResult );
+   benchmark.time< Devices::Host >( reset, getPerformer< DeviceType >(), compute ); //, benchmarkResult );
 }
 

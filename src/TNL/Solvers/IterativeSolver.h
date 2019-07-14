@@ -17,11 +17,15 @@
 namespace TNL {
 namespace Solvers {
 
-template< typename Real, typename Index >
+template< typename Real,
+          typename Index,
+          typename SolverMonitor = IterativeSolverMonitor< Real, Index > >
 class IterativeSolver
 {
    public:
 
+      using SolverMonitorType = SolverMonitor;
+      
    IterativeSolver();
 
    static void configSetup( Config::ConfigDescription& config,
@@ -54,7 +58,7 @@ class IterativeSolver
 
    void setRefreshRate( const Index& refreshRate );
 
-   void setSolverMonitor( IterativeSolverMonitor< Real, Index >& solverMonitor );
+   void setSolverMonitor( SolverMonitorType& solverMonitor );
 
    void resetIterations();
 
@@ -84,7 +88,7 @@ class IterativeSolver
 
    Real currentResidue;
 
-   IterativeSolverMonitor< Real, Index >* solverMonitor;
+   SolverMonitor* solverMonitor;
 
    Index refreshRate;
 };

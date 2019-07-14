@@ -21,8 +21,9 @@ namespace TNL {
 namespace Solvers {
 namespace ODE {
 
-template< typename Problem = DummyProblem<> >
-class Euler : public ExplicitSolver< Problem >
+template< typename Problem = DummyProblem<>,
+          typename SolverMonitor = IterativeSolverMonitor< typename Problem::RealType, typename Problem::IndexType > >
+class Euler : public ExplicitSolver< Problem, SolverMonitor >
 {
    public:
 
@@ -33,6 +34,7 @@ class Euler : public ExplicitSolver< Problem >
       using IndexType  = typename ProblemType::IndexType;
       using DofVectorView = typename ViewTypeGetter< DofVectorType >::Type;
       using DofVectorPointer = Pointers::SharedPointer<  DofVectorType, DeviceType >;
+      using SolverMonitorType = SolverMonitor;
 
       Euler();
 

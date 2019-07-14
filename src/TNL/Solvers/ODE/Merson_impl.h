@@ -30,8 +30,8 @@ namespace ODE {
  *
  */
 
-template< typename Problem >
-Merson< Problem > :: Merson()
+template< typename Problem, typename SolverMonitor >
+Merson< Problem, SolverMonitor >::Merson()
 : adaptivity( 0.00001 )
 {
    if( std::is_same< DeviceType, Devices::Host >::value )
@@ -40,40 +40,40 @@ Merson< Problem > :: Merson()
    }
 };
 
-template< typename Problem >
-String Merson< Problem > :: getType()
+template< typename Problem, typename SolverMonitor >
+String Merson< Problem, SolverMonitor >::getType()
 {
    return String( "Merson< " ) +
           Problem::getType() +
           String( " >" );
 };
 
-template< typename Problem >
-void Merson< Problem > :: configSetup( Config::ConfigDescription& config,
+template< typename Problem, typename SolverMonitor >
+void Merson< Problem, SolverMonitor >::configSetup( Config::ConfigDescription& config,
                                                 const String& prefix )
 {
    //ExplicitSolver< Problem >::configSetup( config, prefix );
    config.addEntry< double >( prefix + "merson-adaptivity", "Time step adaptivity controlling coefficient (the smaller the more precise the computation is, zero means no adaptivity).", 1.0e-4 );
 };
 
-template< typename Problem >
-bool Merson< Problem > :: setup( const Config::ParameterContainer& parameters,
+template< typename Problem, typename SolverMonitor >
+bool Merson< Problem, SolverMonitor >::setup( const Config::ParameterContainer& parameters,
                                          const String& prefix )
 {
-   ExplicitSolver< Problem >::setup( parameters, prefix );
+   ExplicitSolver< Problem, SolverMonitor >::setup( parameters, prefix );
    if( parameters.checkParameter( prefix + "merson-adaptivity" ) )
       this->setAdaptivity( parameters.getParameter< double >( prefix + "merson-adaptivity" ) );
    return true;
 }
 
-template< typename Problem >
-void Merson< Problem > :: setAdaptivity( const RealType& a )
+template< typename Problem, typename SolverMonitor >
+void Merson< Problem, SolverMonitor >::setAdaptivity( const RealType& a )
 {
    this->adaptivity = a;
 };
 
-template< typename Problem >
-bool Merson< Problem >::solve( DofVectorPointer& _u )
+template< typename Problem, typename SolverMonitor >
+bool Merson< Problem, SolverMonitor >::solve( DofVectorPointer& _u )
 {
    if( ! this->problem )
    {
@@ -217,8 +217,8 @@ bool Merson< Problem >::solve( DofVectorPointer& _u )
 
 };
 
-template< typename Problem >
-void Merson< Problem >::writeGrids( const DofVectorPointer& u )
+template< typename Problem, typename SolverMonitor >
+void Merson< Problem, SolverMonitor >::writeGrids( const DofVectorPointer& u )
 {
    std::cout << "Writing Merson solver grids ...";
    File( "Merson-u.tnl", std::ios_base::out ) << *u;

@@ -27,52 +27,52 @@ __global__ void updateUEuler( const Index size,
                               RealType* cudaBlockResidue );
 #endif
 
-template< typename Problem >
-Euler< Problem > :: Euler()
+template< typename Problem, typename SolverMonitor >
+Euler< Problem, SolverMonitor > :: Euler()
 : cflCondition( 0.0 )
 {
 };
 
-template< typename Problem >
-String Euler< Problem > :: getType()
+template< typename Problem, typename SolverMonitor >
+String Euler< Problem, SolverMonitor > :: getType()
 {
    return String( "Euler< " ) +
           Problem :: getType() +
           String( " >" );
 };
 
-template< typename Problem >
-void Euler< Problem > :: configSetup( Config::ConfigDescription& config,
+template< typename Problem, typename SolverMonitor >
+void Euler< Problem, SolverMonitor > :: configSetup( Config::ConfigDescription& config,
                                                const String& prefix )
 {
    //ExplicitSolver< Problem >::configSetup( config, prefix );
    config.addEntry< double >( prefix + "euler-cfl", "Coefficient C in the Courant–Friedrichs–Lewy condition.", 0.0 );
 };
 
-template< typename Problem >
-bool Euler< Problem > :: setup( const Config::ParameterContainer& parameters,
+template< typename Problem, typename SolverMonitor >
+bool Euler< Problem, SolverMonitor > :: setup( const Config::ParameterContainer& parameters,
                                         const String& prefix )
 {
-   ExplicitSolver< Problem >::setup( parameters, prefix );
+   ExplicitSolver< Problem, SolverMonitor >::setup( parameters, prefix );
    if( parameters.checkParameter( prefix + "euler-cfl" ) )
       this->setCFLCondition( parameters.getParameter< double >( prefix + "euler-cfl" ) );
    return true;
 }
 
-template< typename Problem >
-void Euler< Problem > :: setCFLCondition( const RealType& cfl )
+template< typename Problem, typename SolverMonitor >
+void Euler< Problem, SolverMonitor > :: setCFLCondition( const RealType& cfl )
 {
    this -> cflCondition = cfl;
 }
 
-template< typename Problem >
-const typename Problem :: RealType& Euler< Problem > :: getCFLCondition() const
+template< typename Problem, typename SolverMonitor >
+const typename Problem :: RealType& Euler< Problem, SolverMonitor > :: getCFLCondition() const
 {
    return this -> cflCondition;
 }
 
-template< typename Problem >
-bool Euler< Problem > :: solve( DofVectorPointer& _u )
+template< typename Problem, typename SolverMonitor >
+bool Euler< Problem, SolverMonitor > :: solve( DofVectorPointer& _u )
 {
    /****
     * First setup the supporting meshes k1...k5 and k_tmp.

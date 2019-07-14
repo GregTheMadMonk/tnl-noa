@@ -14,8 +14,8 @@ namespace TNL {
 namespace Solvers {
 namespace ODE {   
 
-template< typename Problem >
-ExplicitSolver< Problem >::
+template< typename Problem, typename SolverMonitor >
+ExplicitSolver< Problem, SolverMonitor >::
 ExplicitSolver()
 :  time( 0.0 ),
    stopTime( 0.0 ),
@@ -28,110 +28,110 @@ ExplicitSolver()
 {
 };
 
-template< typename Problem >
+template< typename Problem, typename SolverMonitor >
 void
-ExplicitSolver< Problem >::
+ExplicitSolver< Problem, SolverMonitor >::
 configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
    //IterativeSolver< typename Problem::RealType, typename Problem::IndexType >::configSetup( config, prefix );
 }
 
-template< typename Problem >
+template< typename Problem, typename SolverMonitor >
 bool
-ExplicitSolver< Problem >::
+ExplicitSolver< Problem, SolverMonitor >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
    this->setVerbose( parameters.getParameter< int >( "verbose" ) );
-   return IterativeSolver< typename Problem::RealType, typename Problem::IndexType >::setup( parameters, prefix );
+   return IterativeSolver< typename Problem::RealType, typename Problem::IndexType, SolverMonitor >::setup( parameters, prefix );
 }
 
-template< typename Problem >
+template< typename Problem, typename SolverMonitor >
 void
-ExplicitSolver< Problem >::
+ExplicitSolver< Problem, SolverMonitor >::
 setProblem( Problem& problem )
 {
    this->problem = &problem;
 };
 
-template< class Problem >
+template< class Problem, typename SolverMonitor >
 void
-ExplicitSolver< Problem >::
+ExplicitSolver< Problem, SolverMonitor >::
 setTime( const RealType& time )
 {
    this->time = time;
 };
 
-template< class Problem >
+template< class Problem, typename SolverMonitor >
 const typename Problem :: RealType&
-ExplicitSolver< Problem >::
+ExplicitSolver< Problem, SolverMonitor >::
 getTime() const
 {
    return this->time;
 };
 
-template< class Problem >
+template< class Problem, typename SolverMonitor >
 void
-ExplicitSolver< Problem >::
+ExplicitSolver< Problem, SolverMonitor >::
 setTau( const RealType& tau )
 {
    this->tau = tau;
 };
 
-template< class Problem >
+template< class Problem, typename SolverMonitor >
 const typename Problem :: RealType&
-ExplicitSolver< Problem >::
+ExplicitSolver< Problem, SolverMonitor >::
 getTau() const
 {
    return this->tau;
 };
 
-template< class Problem >
+template< class Problem, typename SolverMonitor >
 void
-ExplicitSolver< Problem >::
+ExplicitSolver< Problem, SolverMonitor >::
 setMaxTau( const RealType& maxTau )
 {
    this->maxTau = maxTau;
 };
 
 
-template< class Problem >
+template< class Problem, typename SolverMonitor >
 const typename Problem :: RealType&
-ExplicitSolver< Problem >::
+ExplicitSolver< Problem, SolverMonitor >::
 getMaxTau() const
 {
    return this->maxTau;
 };
 
 
-template< class Problem >
+template< class Problem, typename SolverMonitor >
 typename Problem :: RealType
-ExplicitSolver< Problem >::
+ExplicitSolver< Problem, SolverMonitor >::
 getStopTime() const
 {
     return this->stopTime;
 }
 
-template< class Problem >
+template< class Problem, typename SolverMonitor >
 void
-ExplicitSolver< Problem >::
+ExplicitSolver< Problem, SolverMonitor >::
 setStopTime( const RealType& stopTime )
 {
     this->stopTime = stopTime;
 }
 
-template< class Problem >
+template< class Problem, typename SolverMonitor >
 void
-ExplicitSolver< Problem >::
+ExplicitSolver< Problem, SolverMonitor >::
 setVerbose( IndexType v )
 {
    this->verbosity = v;
 };
 
-template< class Problem >
+template< class Problem, typename SolverMonitor >
 void
-ExplicitSolver< Problem >::
+ExplicitSolver< Problem, SolverMonitor >::
 refreshSolverMonitor( bool force )
 {
    if( this->solverMonitor )
@@ -144,9 +144,9 @@ refreshSolverMonitor( bool force )
    }
 }
 
-template< class Problem >
+template< class Problem, typename SolverMonitor >
 void
-ExplicitSolver< Problem >::
+ExplicitSolver< Problem, SolverMonitor >::
 setTestingMode( bool testingMode )
 {
    this->testingMode = testingMode;

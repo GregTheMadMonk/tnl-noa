@@ -48,76 +48,57 @@ using CommunicatorType = Communicators::NoDistrCommunicator;
 #endif
 
 
-/*static const std::set< std::string > valid_solvers = {
-   "euler",
-   "merson",
-};
-
-std::set< std::string >
-parse_comma_list( const Config::ParameterContainer& parameters,
-                  const char* parameter,
-                  const std::set< std::string >& options )
-{
-   const String solvers = parameters.getParameter< String >( parameter );
-
-   if( solvers == "all" )
-      return options;
-
-   std::stringstream ss( solvers.getString() );
-   std::string s;
-   std::set< std::string > set;
-
-   while( std::getline( ss, s, ',' ) ) {
-      if( ! options.count( s ) )
-         throw std::logic_error( std::string("Invalid value in the comma-separated list for the parameter '")
-                                 + parameter + "': '" + s + "'. The list contains: '" + solvers.getString() + "'." );
-
-      set.insert( s );
-
-      if( ss.peek() == ',' )
-         ss.ignore();
-   }
-
-   return set;
-}*/
-
-template< typename Problem, typename VectorPointer >
+template< typename Real, typename Index >
 void
 benchmarkODESolvers( Benchmark& benchmark,
                      const Config::ParameterContainer& parameters,
-                     VectorPointer& u )
+                     size_t dofs )
 {
-   Problem problem;
+   using HostVectorType = Containers::Vector< Real, Devices::Host, Index >;
+   using CudaVectorType = Containers::Vector< Real, Devices::Cuda, Index >;
+   using HostVectorPointer = Pointers::SharedPointer< HostVectorType >;
+   using CudaVectorPointer = Pointers::SharedPointer< CudaVectorType >;
+   using HostProblem = SimpleProblem< Real, Devices::Host, Index >;
+   using CudaProblem = SimpleProblem< Real, Devices::Cuda, Index >;
+   using SolverMonitorType = typename Benchmark::SolverMonitorType;
+
    const auto& solvers = parameters.getList< String >( "solvers" );
    for( auto&& solver : solvers )
    {
+      HostVectorPointer host_u( dofs );
+      *host_u = 0.0;
+#ifdef HAVE_CUDA
+      CudaVectorPointer cuda_u( dofs );
+      *cuda_u = 0.0;
+#endif      
       if( solver == "euler" || solver == "all" ) {
-         using Solver = Solvers::ODE::Euler< Problem >;
+         using HostSolver = Solvers::ODE::Euler< HostProblem, SolverMonitorType >;
          benchmark.setOperation("Euler");
-         benchmarkSolver< Solver >( benchmark, parameters, problem, u );
-         #ifdef HAVE_CUDA
-         benchmarkSolver< Solver >( benchmark, parameters, problem, u );
-         #endif
+         benchmarkSolver< HostSolver >( benchmark, parameters, host_u );
+#ifdef HAVE_CUDA
+         using CudaSolver = Solvers::ODE::Euler< CudaProblem, SolverMonitorType >;
+         benchmarkSolver< CudaSolver >( benchmark, parameters, cuda_u );
+#endif
       }
 
       if( solver == "merson" || solver == "all" ) {
-         using Solver = Solvers::ODE::Merson< Problem >;
+         using HostSolver = Solvers::ODE::Merson< HostProblem, SolverMonitorType >;
          benchmark.setOperation("Merson");
-         benchmarkSolver< Solver >( benchmark, parameters, problem, u );
-         #ifdef HAVE_CUDA
-         benchmarkSolver< Solver >( benchmark, parameters, problem, u );
-         #endif
+         benchmarkSolver< HostSolver >( benchmark, parameters, host_u );
+#ifdef HAVE_CUDA
+         using CudaSolver = Solvers::ODE::Merson< CudaProblem, SolverMonitorType >;
+         benchmarkSolver< CudaSolver >( benchmark, parameters, cuda_u );
+#endif
       }
    }
 }
 
-template< typename Real, typename Device, typename Index >
+template< typename Real, typename Index >
 struct ODESolversBenchmark
 {
    using RealType = Real;
-   using DeviceType = Device;
    using IndexType = Index;
-   using VectorType = Containers::Vector< RealType, DeviceType, IndexType >;
+   using VectorType = Containers::Vector< RealType, Devices::Host, IndexType >;
    using VectorPointer = Pointers::SharedPointer< VectorType >;
 
    static bool
@@ -128,18 +109,16 @@ struct ODESolversBenchmark
       const String name = String( (CommunicatorType::isDistributed()) ? "Distributed ODE solvers" : "ODE solvers" );
                           //+ " (" + parameters.getParameter< String >( "name" ) + "): ";
       benchmark.newBenchmark( name, metadata );
-      for( int dofs = 25; dofs <= 100000; dofs *= 2 ) {
+      for( size_t dofs = 25; dofs <= 100000; dofs *= 2 ) {
          benchmark.setMetadataColumns( Benchmark::MetadataColumns({
             // TODO: strip the device
             { "DOFs", convertToString( dofs ) },
          } ));
 
-         Pointers::SharedPointer< VectorType > u( dofs );
-         *u = 0.0;
          if( CommunicatorType::isDistributed() )
-            runDistributed( benchmark, metadata, parameters, u );
+            runDistributed( benchmark, metadata, parameters, dofs );
          else
-            runNonDistributed( benchmark, metadata, parameters, u );
+            runNonDistributed( benchmark, metadata, parameters, dofs );
       }
       return true;
    }
@@ -148,53 +127,33 @@ struct ODESolversBenchmark
    runDistributed( Benchmark& benchmark,
                    Benchmark::MetadataMap metadata,
                    const Config::ParameterContainer& parameters,
-                   VectorPointer& u )
+                   size_t dofs )
    {
-      using Problem = SimpleProblem< Real, Device, Index >;
       const auto group = CommunicatorType::AllGroup;
 
       std::cout << "Iterative solvers:" << std::endl;
-      benchmarkODESolvers< Problem, VectorPointer >( benchmark, parameters, u );
+      benchmarkODESolvers< Real, Index >( benchmark, parameters, dofs );
    }
 
    static void
    runNonDistributed( Benchmark& benchmark,
                       Benchmark::MetadataMap metadata,
                       const Config::ParameterContainer& parameters,
-                      VectorPointer& u )
+                      size_t dofs )
    {
-      using Problem = SimpleProblem< Real, Device, Index >;
       std::cout << "Iterative solvers:" << std::endl;
-      benchmarkODESolvers< Problem, VectorPointer >( benchmark, parameters, u );
+      benchmarkODESolvers< Real, Index >( benchmark, parameters, dofs );
    }
 };
 
-template< typename Real, typename Device >
+template< typename Real >
 bool resolveIndexType( Benchmark& benchmark,
    Benchmark::MetadataMap& metadata,
    Config::ParameterContainer& parameters )
 {
    const String& index = parameters.getParameter< String >( "index-type" );
-   if( index == "int" ) return ODESolversBenchmark< Real, Device, int >::run( benchmark, metadata, parameters );
-   return ODESolversBenchmark< Real, Device, long int >::run( benchmark, metadata, parameters );
-}
-
-template< typename Real >
-bool resolveDevice( Benchmark& benchmark,
-   Benchmark::MetadataMap& metadata,
-   Config::ParameterContainer& parameters )
-{
-   const auto& device = parameters.getParameter< String >( "device" );
-   if( ( device == "host" || device == "all" ) &&
-       ! resolveIndexType< Real, Devices::Host >( benchmark, metadata, parameters ) )
-      return false;
-      
-#ifdef HAVE_CUDA
-   if( ( device == "cuda" || device == "all" ) &&
-       ! resolveIndexType< Real, Devices::Cuda >( benchmark, metadata, parameters ) )
-      return false;
-#endif
-   return true;
+   if( index == "int" ) return ODESolversBenchmark< Real, int >::run( benchmark, metadata, parameters );
+   return ODESolversBenchmark< Real, long int >::run( benchmark, metadata, parameters );
 }
 
 bool resolveRealTypes( Benchmark& benchmark,
@@ -203,10 +162,10 @@ bool resolveRealTypes( Benchmark& benchmark,
 {
    const String& realType = parameters.getParameter< String >( "real-type" );
    if( ( realType == "float" || realType == "all" ) && 
-       ! resolveDevice< float >( benchmark, metadata, parameters ) )
+       ! resolveIndexType< float >( benchmark, metadata, parameters ) )
       return false;
    if( ( realType == "double" || realType == "all" ) && 
-       ! resolveDevice< double >( benchmark, metadata, parameters ) )
+       ! resolveIndexType< double >( benchmark, metadata, parameters ) )
       return false;
    return true;
 }
@@ -229,12 +188,6 @@ configSetup( Config::ConfigDescription& config )
    config.addEntryEnum< String >( "float" );
    config.addEntryEnum< String >( "double" );
    config.addEntryEnum< String >( "all" );
-   config.addEntry< String >( "device", "Run benchmarks on these devices.", "all" );
-   config.addEntryEnum( "all" );
-   config.addEntryEnum( "host" );
-   #ifdef HAVE_CUDA
-   config.addEntryEnum( "cuda" );
-   #endif
    config.addEntry< String >( "index-type", "Run benchmarks with given index type.", "int" );
    config.addEntryEnum< String >( "int" );
    config.addEntryEnum< String >( "long int" );

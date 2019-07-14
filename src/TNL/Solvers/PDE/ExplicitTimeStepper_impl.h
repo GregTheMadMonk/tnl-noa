@@ -17,7 +17,7 @@ namespace Solvers {
 namespace PDE {   
 
 template< typename Problem,
-          template < typename OdeProblem > class OdeSolver >
+          template < typename OdeProblem, typename SolverMonitor > class OdeSolver >
 String
 ExplicitTimeStepper< Problem, OdeSolver >::
 getType()
@@ -30,7 +30,7 @@ getType()
    
    
 template< typename Problem,
-          template < typename OdeProblem > class OdeSolver >
+          template < typename OdeProblem, typename SolverMonitor > class OdeSolver >
 ExplicitTimeStepper< Problem, OdeSolver >::
 ExplicitTimeStepper()
 : problem( 0 ),
@@ -40,7 +40,7 @@ ExplicitTimeStepper()
 };
 
 template< typename Problem,
-          template < typename OdeProblem > class OdeSolver >
+          template < typename OdeProblem, typename SolverMonitor > class OdeSolver >
 void
 ExplicitTimeStepper< Problem, OdeSolver >::
 configSetup( Config::ConfigDescription& config,
@@ -49,7 +49,7 @@ configSetup( Config::ConfigDescription& config,
 }
 
 template< typename Problem,
-          template < typename OdeProblem > class OdeSolver >
+          template < typename OdeProblem, typename SolverMonitor > class OdeSolver >
 bool
 ExplicitTimeStepper< Problem, OdeSolver >::
 setup( const Config::ParameterContainer& parameters,
@@ -59,7 +59,7 @@ setup( const Config::ParameterContainer& parameters,
 }
 
 template< typename Problem,
-          template < typename OdeProblem > class OdeSolver >
+          template < typename OdeProblem, typename SolverMonitor > class OdeSolver >
 bool
 ExplicitTimeStepper< Problem, OdeSolver >::
 init( const MeshPointer& meshPointer )
@@ -72,7 +72,7 @@ init( const MeshPointer& meshPointer )
 }
 
 template< typename Problem,
-          template < typename OdeProblem > class OdeSolver >
+          template < typename OdeProblem, typename SolverMonitor > class OdeSolver >
 void
 ExplicitTimeStepper< Problem, OdeSolver >::
 setSolver( typename ExplicitTimeStepper< Problem, OdeSolver >::OdeSolverType& odeSolver )
@@ -81,7 +81,7 @@ setSolver( typename ExplicitTimeStepper< Problem, OdeSolver >::OdeSolverType& od
 };
 
 template< typename Problem,
-          template < typename OdeProblem > class OdeSolver >
+          template < typename OdeProblem, typename SolverMonitor > class OdeSolver >
 void
 ExplicitTimeStepper< Problem, OdeSolver >::
 setProblem( ProblemType& problem )
@@ -90,7 +90,7 @@ setProblem( ProblemType& problem )
 };
 
 template< typename Problem,
-          template < typename OdeProblem > class OdeSolver >
+          template < typename OdeProblem, typename SolverMonitor > class OdeSolver >
 void
 ExplicitTimeStepper< Problem, OdeSolver >::
 setSolverMonitor( SolverMonitorType& solverMonitor )
@@ -101,7 +101,7 @@ setSolverMonitor( SolverMonitorType& solverMonitor )
 }
 
 template< typename Problem,
-          template < typename OdeProblem > class OdeSolver >
+          template < typename OdeProblem, typename SolverMonitor > class OdeSolver >
 Problem*
 ExplicitTimeStepper< Problem, OdeSolver >::
 getProblem() const
@@ -110,7 +110,7 @@ getProblem() const
 };
 
 template< typename Problem,
-          template < typename OdeProblem > class OdeSolver >
+          template < typename OdeProblem, typename SolverMonitor > class OdeSolver >
 bool
 ExplicitTimeStepper< Problem, OdeSolver >::
 setTimeStep( const RealType& timeStep )
@@ -125,7 +125,7 @@ setTimeStep( const RealType& timeStep )
 };
 
 template< typename Problem,
-          template < typename OdeProblem > class OdeSolver >
+          template < typename OdeProblem, typename SolverMonitor > class OdeSolver >
 bool
 ExplicitTimeStepper< Problem, OdeSolver >::
 solve( const RealType& time,
@@ -139,7 +139,7 @@ solve( const RealType& time,
    this->odeSolver->setTime( time );
    this->odeSolver->setStopTime( stopTime );
    if( this->odeSolver->getMinIterations() )
-      this->odeSolver->setMaxTau( ( stopTime - time ) / ( typename OdeSolver< Problem >::RealType ) this->odeSolver->getMinIterations() );
+      this->odeSolver->setMaxTau( ( stopTime - time ) / ( typename OdeSolver< Problem, SolverMonitor >::RealType ) this->odeSolver->getMinIterations() );
    if( ! this->odeSolver->solve( dofVector ) )
       return false;
    //this->problem->setExplicitBoundaryConditions( stopTime, dofVector );
@@ -149,7 +149,7 @@ solve( const RealType& time,
 }
 
 template< typename Problem,
-          template < typename OdeProblem > class OdeSolver >
+          template < typename OdeProblem, typename SolverMonitor > class OdeSolver >
 void
 ExplicitTimeStepper< Problem, OdeSolver >::
 getExplicitUpdate( const RealType& time,
@@ -193,7 +193,7 @@ getExplicitUpdate( const RealType& time,
 }
 
 template< typename Problem,
-          template < typename OdeProblem > class OdeSolver >
+          template < typename OdeProblem, typename SolverMonitor > class OdeSolver >
 void
 ExplicitTimeStepper< Problem, OdeSolver >::
 applyBoundaryConditions( const RealType& time,
@@ -204,7 +204,7 @@ applyBoundaryConditions( const RealType& time,
 
 
 template< typename Problem,
-          template < typename OdeProblem > class OdeSolver >
+          template < typename OdeProblem, typename SolverMonitor > class OdeSolver >
 bool
 ExplicitTimeStepper< Problem, OdeSolver >::
 writeEpilog( Logger& logger ) const

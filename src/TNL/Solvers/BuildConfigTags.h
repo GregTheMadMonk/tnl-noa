@@ -63,15 +63,15 @@ template< typename ConfigTag, typename TimeDiscretisation > struct ConfigTagTime
 class ExplicitEulerSolverTag
 {
 public:
-    template< typename Problem >
-    using Template = ODE::Euler< Problem >;
+    template< typename Problem, typename SolverMonitor >
+    using Template = ODE::Euler< Problem, SolverMonitor >;
 };
 
 class ExplicitMersonSolverTag
 {
 public:
-    template< typename Problem >
-    using Template = ODE::Merson< Problem >;
+    template< typename Problem, typename SolverMonitor >
+    using Template = ODE::Merson< Problem, SolverMonitor >;
 };
 
 template< typename ConfigTag, typename ExplicitSolver > struct ConfigTagExplicitSolver{ enum { enabled = true }; };

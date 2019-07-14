@@ -19,8 +19,9 @@ namespace TNL {
 namespace Solvers {
 namespace ODE {   
 
-template< class Problem = DummyProblem<> >
-class Merson : public ExplicitSolver< Problem >
+template< class Problem = DummyProblem<>,
+          typename SolverMonitor = IterativeSolverMonitor< typename Problem::RealType, typename Problem::IndexType > >
+class Merson : public ExplicitSolver< Problem, SolverMonitor >
 {
    public:
 
@@ -29,7 +30,8 @@ class Merson : public ExplicitSolver< Problem >
       using RealType = typename Problem::RealType;
       using DeviceType = typename Problem::DeviceType;
       using IndexType = typename Problem::IndexType;
-      using DofVectorPointer = Pointers::SharedPointer<  DofVectorType, DeviceType >;
+      using DofVectorPointer = Pointers::SharedPointer< DofVectorType, DeviceType >;
+      using SolverMonitorType = SolverMonitor;
 
       Merson();
 
