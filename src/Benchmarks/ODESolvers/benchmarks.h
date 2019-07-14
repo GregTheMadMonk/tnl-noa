@@ -48,7 +48,7 @@ void barrier( const Matrices::DistributedMatrix< Matrix, Communicator >& matrix 
 template< typename Device >
 bool checkDevice( const Config::ParameterContainer& parameters )
 {
-   const String device = parameters.getParameter< String >( "devices" );
+   const String device = parameters.getParameter< String >( "device" );
    if( device == "all" )
       return true;
    if( std::is_same< Device, Devices::Host >::value && device == "host" )

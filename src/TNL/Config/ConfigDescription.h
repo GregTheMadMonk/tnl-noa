@@ -44,6 +44,7 @@ public:
    {
       entries.push_back( std::make_unique< ConfigEntry< EntryType > >( name, description, false ) );
       currentEntry = entries.back().get();
+      isCurrentEntryList = false;
    }
 
    /**
@@ -59,6 +60,7 @@ public:
    {
       entries.push_back( std::make_unique< ConfigEntry< EntryType > >( name, description, true ) );
       currentEntry = entries.back().get();
+      isCurrentEntryList = false;
    }
 
    /**
@@ -76,6 +78,7 @@ public:
    {
       entries.push_back( std::make_unique< ConfigEntry< EntryType > >( name, description, false, defaultValue ) );
       currentEntry = entries.back().get();
+      isCurrentEntryList = false;
    }
 
    /**
@@ -91,6 +94,7 @@ public:
    {
       entries.push_back( std::make_unique< ConfigEntryList< EntryType > >( name, description, false ) );
       currentEntry = entries.back().get();
+      isCurrentEntryList = true;
    }
 
    /**
@@ -106,6 +110,7 @@ public:
    {
       entries.push_back( std::make_unique< ConfigEntryList< EntryType > >( name, description, true ) );
       currentEntry = entries.back().get();
+      isCurrentEntryList = true;
    }
 
    /**
@@ -123,6 +128,7 @@ public:
    {
       entries.push_back( std::make_unique< ConfigEntryList< EntryType > >( name, description, false, defaultValue ) );
       currentEntry = entries.back().get();
+      isCurrentEntryList = true;
    }
 
    /**
@@ -136,8 +142,14 @@ public:
    void addEntryEnum( const EntryType& entryEnum )
    {
       TNL_ASSERT_TRUE( this->currentEntry, "there is no current entry" );
-      ConfigEntry< EntryType >& entry = dynamic_cast< ConfigEntry< EntryType >& >( *currentEntry );
-      entry.getEnumValues().push_back( entryEnum );
+      if( isCurrentEntryList ) {
+         ConfigEntryList< EntryType >& entry = dynamic_cast< ConfigEntryList< EntryType >& >( *currentEntry );
+         entry.getEnumValues().push_back( entryEnum );         
+      }
+      else {
+         ConfigEntry< EntryType >& entry = dynamic_cast< ConfigEntry< EntryType >& >( *currentEntry );
+         entry.getEnumValues().push_back( entryEnum );
+      }
    }
 
    /**
@@ -268,6 +280,31 @@ public:
                parameter_container.addParameter< double >( entry_name, entry.defaultValue );
                continue;
             }
+            
+            if( entries[ i ]->getEntryType() == "ConfigEntryList< String >" )
+            {
+               ConfigEntryList< String >& entry = dynamic_cast< ConfigEntryList< String >& >( *entries[ i ] );
+               parameter_container.addList< String >( entry_name, entry.defaultValue );
+               continue;
+            }
+            if( entries[ i ]->getEntryType() == "ConfigEntryList< bool >" )
+            {
+               ConfigEntryList< bool >& entry = dynamic_cast< ConfigEntryList< bool >& >( *entries[ i ] );
+               parameter_container.addList< bool >( entry_name, entry.defaultValue );
+               continue;
+            }
+            if( entries[ i ]->getEntryType() == "ConfigEntryList< int >" )
+            {
+               ConfigEntryList< int >& entry = dynamic_cast< ConfigEntryList< int >& >( *entries[ i ] );
+               parameter_container.addList< int >( entry_name, entry.defaultValue );
+               continue;
+            }
+            if( entries[ i ]->getEntryType() == "ConfigEntryList< double >" )
+            {
+               ConfigEntryList< double >& entry = dynamic_cast< ConfigEntryList< double >& >( *entries[ i ] );
+               parameter_container.addList< double >( entry_name, entry.defaultValue );
+               continue;
+            }
          }
       }
    }
@@ -365,6 +402,7 @@ public:
 protected:
    std::vector< std::unique_ptr< ConfigEntryBase > > entries;
    ConfigEntryBase* currentEntry = nullptr;
+   bool isCurrentEntryList = false;
 };
 
 } //namespace Config

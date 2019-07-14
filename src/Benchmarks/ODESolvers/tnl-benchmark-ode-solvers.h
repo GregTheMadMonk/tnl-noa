@@ -48,7 +48,7 @@ using CommunicatorType = Communicators::NoDistrCommunicator;
 #endif
 
 
-static const std::set< std::string > valid_solvers = {
+/*static const std::set< std::string > valid_solvers = {
    "euler",
    "merson",
 };
@@ -79,7 +79,7 @@ parse_comma_list( const Config::ParameterContainer& parameters,
    }
 
    return set;
-}
+}*/
 
 template< typename Problem, typename VectorPointer >
 void
@@ -88,26 +88,27 @@ benchmarkODESolvers( Benchmark& benchmark,
                      VectorPointer& u )
 {
    Problem problem;
-   const std::set< std::string > solvers = parse_comma_list( parameters, "solvers", valid_solvers );
+   const auto& solvers = parameters.getList< String >( "solvers" );
+   for( auto&& solver : solvers )
+   {
+      if( solver == "euler" || solver == "all" ) {
+         using Solver = Solvers::ODE::Euler< Problem >;
+         benchmark.setOperation("Euler");
+         benchmarkSolver< Solver >( benchmark, parameters, problem, u );
+         #ifdef HAVE_CUDA
+         benchmarkSolver< Solver >( benchmark, parameters, problem, u );
+         #endif
+      }
 
-   if( solvers.count( "euler" ) ) {
-      using Solver = Solvers::ODE::Euler< Problem >;
-      benchmark.setOperation("Euler");
-      benchmarkSolver< Solver >( benchmark, parameters, problem, u );
-      #ifdef HAVE_CUDA
-      benchmarkSolver< Solver >( benchmark, parameters, problem, u );
-      #endif
+      if( solver == "merson" || solver == "all" ) {
+         using Solver = Solvers::ODE::Merson< Problem >;
+         benchmark.setOperation("Merson");
+         benchmarkSolver< Solver >( benchmark, parameters, problem, u );
+         #ifdef HAVE_CUDA
+         benchmarkSolver< Solver >( benchmark, parameters, problem, u );
+         #endif
+      }
    }
-
-   if( solvers.count( "merson" ) ) {
-      using Solver = Solvers::ODE::Merson< Problem >;
-      benchmark.setOperation("Merson");
-      benchmarkSolver< Solver >( benchmark, parameters, problem, u );
-      #ifdef HAVE_CUDA
-      benchmarkSolver< Solver >( benchmark, parameters, problem, u );
-      #endif
-   }
-
 }
 
 template< typename Real, typename Device, typename Index >
@@ -124,8 +125,8 @@ struct ODESolversBenchmark
         Benchmark::MetadataMap metadata,
         const Config::ParameterContainer& parameters )
    {
-      const String name = String( (CommunicatorType::isDistributed()) ? "Distributed ODE solvers" : "ODE solvers" )
-                          + " (" + parameters.getParameter< String >( "name" ) + "): ";
+      const String name = String( (CommunicatorType::isDistributed()) ? "Distributed ODE solvers" : "ODE solvers" );
+                          //+ " (" + parameters.getParameter< String >( "name" ) + "): ";
       benchmark.newBenchmark( name, metadata );
       for( int dofs = 25; dofs <= 100000; dofs *= 2 ) {
          benchmark.setMetadataColumns( Benchmark::MetadataColumns({
@@ -173,30 +174,41 @@ bool resolveIndexType( Benchmark& benchmark,
    Benchmark::MetadataMap& metadata,
    Config::ParameterContainer& parameters )
 {
-   const String& index = parameters.getParameter< String >( "index" );
+   const String& index = parameters.getParameter< String >( "index-type" );
    if( index == "int" ) return ODESolversBenchmark< Real, Device, int >::run( benchmark, metadata, parameters );
-   if( index == "long int" ) return ODESolversBenchmark< Real, Device, long int >::run( benchmark, metadata, parameters );
+   return ODESolversBenchmark< Real, Device, long int >::run( benchmark, metadata, parameters );
 }
 
 template< typename Real >
-bool resolveDeviceType( Benchmark& benchmark,
+bool resolveDevice( Benchmark& benchmark,
    Benchmark::MetadataMap& metadata,
    Config::ParameterContainer& parameters )
 {
-   const String& device = parameters.getParameter< String >( "device" );
-   if( device == "host" ) return resolveIndexType< Real, Devices::Host >( benchmark, metadata, parameters );
+   const auto& device = parameters.getParameter< String >( "device" );
+   if( ( device == "host" || device == "all" ) &&
+       ! resolveIndexType< Real, Devices::Host >( benchmark, metadata, parameters ) )
+      return false;
+      
 #ifdef HAVE_CUDA
-   if( device == "cuda" ) return resolveIndexType< Real, Devices::Cuda >( benchmark, metadata, parameters );
+   if( ( device == "cuda" || device == "all" ) &&
+       ! resolveIndexType< Real, Devices::Cuda >( benchmark, metadata, parameters ) )
+      return false;
 #endif
+   return true;
 }
 
-bool resolveRealType( Benchmark& benchmark,
+bool resolveRealTypes( Benchmark& benchmark,
    Benchmark::MetadataMap& metadata,
    Config::ParameterContainer& parameters )
 {
-   const String& real = parameters.getParameter< String >( "real" );
-   if( real == "float" ) return resolveDeviceType< float >( benchmark, metadata, parameters );
-   if( real == "double" ) return resolveDeviceType< double >( benchmark, metadata, parameters );
+   const String& realType = parameters.getParameter< String >( "real-type" );
+   if( ( realType == "float" || realType == "all" ) && 
+       ! resolveDevice< float >( benchmark, metadata, parameters ) )
+      return false;
+   if( ( realType == "double" || realType == "all" ) && 
+       ! resolveDevice< double >( benchmark, metadata, parameters ) )
+      return false;
+   return true;
 }
 
 void
@@ -209,13 +221,24 @@ configSetup( Config::ConfigDescription& config )
    config.addEntryEnum( "overwrite" );
    config.addEntry< int >( "loops", "Number of repetitions of the benchmark.", 10 );
    config.addEntry< int >( "verbose", "Verbose mode.", 1 );
-   config.addEntry< String >( "solvers", "Comma-separated list of solvers to run benchmarks for. Options: gmres, cwygmres, tfqmr, bicgstab, bicgstab-ell.", "all" );
-   config.addEntry< String >( "devices", "Run benchmarks on these devices.", "all" );
+   config.addList< String >( "solvers", "Comma-separated list of solvers to run benchmarks for.", "all" );
+   config.addEntryEnum< String >( "euler" );
+   config.addEntryEnum< String >( "merson" );
+   config.addEntryEnum< String >( "all" );
+   config.addEntry< String >( "real-type", "Run benchmarks with given precision.", "all" );
+   config.addEntryEnum< String >( "float" );
+   config.addEntryEnum< String >( "double" );
+   config.addEntryEnum< String >( "all" );
+   config.addEntry< String >( "device", "Run benchmarks on these devices.", "all" );
    config.addEntryEnum( "all" );
    config.addEntryEnum( "host" );
    #ifdef HAVE_CUDA
    config.addEntryEnum( "cuda" );
    #endif
+   config.addEntry< String >( "index-type", "Run benchmarks with given index type.", "int" );
+   config.addEntryEnum< String >( "int" );
+   config.addEntryEnum< String >( "long int" );
+
 
    config.addDelimiter( "Device settings:" );
    Devices::Host::configSetup( config );
@@ -271,7 +294,7 @@ main( int argc, char* argv[] )
    // prepare global metadata
    Benchmark::MetadataMap metadata = getHardwareMetadata();
 
-   const bool status = resolveRealType( benchmark, metadata, parameters );
+   const bool status = resolveRealTypes( benchmark, metadata, parameters );
 
    if( rank == 0 )
       if( ! benchmark.save( logFile ) ) {
