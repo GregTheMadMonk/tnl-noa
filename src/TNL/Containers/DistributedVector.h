@@ -43,6 +43,10 @@ public:
    using BaseType::DistributedArray;
    using BaseType::operator=;
 
+   // comparison operator is defined in DistributedVectorExpressions
+   template< typename ArrayT >
+   bool operator == ( const ArrayT& a  ) = delete;
+
    // we return only the view so that the user cannot resize it
    LocalVectorViewType getLocalVectorView();
 

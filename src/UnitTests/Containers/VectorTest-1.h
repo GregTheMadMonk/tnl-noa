@@ -289,23 +289,23 @@ TYPED_TEST( VectorTest, comparison )
    w = 4.0;
 
    // Test with Vectors
-   EXPECT_TRUE( _u == _u );
-   EXPECT_TRUE( _u == 1.0 );
-   EXPECT_TRUE( 1.0 == _u );
-   EXPECT_TRUE( _w == _v + _v );
-   EXPECT_TRUE( _v + _v == _w );
-   EXPECT_TRUE( abs( _w ) == _v + _v );
-   EXPECT_TRUE( _v + _v == abs( _w ) );
+   EXPECT_EQ( _u, _u );
+   EXPECT_EQ( _u, 1.0 );
+   EXPECT_EQ( 1.0, _u );
+   EXPECT_EQ( _w, _v + _v );
+   EXPECT_EQ( _v + _v, _w );
+   EXPECT_EQ( abs( _w ), _v + _v );
+   EXPECT_EQ( _v + _v, abs( _w ) );
 
-   EXPECT_TRUE( _u != _v );
-   EXPECT_TRUE( _u != 2.0 );
-   EXPECT_TRUE( 2.0 != _u );
-   EXPECT_TRUE( _u != _w + _w );
-   EXPECT_TRUE( _w + _v != _u );
-   EXPECT_TRUE( abs( _w ) != abs( _u ) );
-   EXPECT_TRUE( ( _w + _v ) != ( _u + _v ) );
-   EXPECT_TRUE( ( abs( _u ) ) != ( _w + _v ) );
-   EXPECT_TRUE( ( _w + _v ) != ( abs( _u ) ) );
+   EXPECT_NE( _u, _v );
+   EXPECT_NE( _u, 2.0 );
+   EXPECT_NE( 2.0, _u );
+   EXPECT_NE( _u, _w + _w );
+   EXPECT_NE( _w + _v, _u );
+   EXPECT_NE( abs( _w ), abs( _u ) );
+   EXPECT_NE( ( _w + _v ), ( _u + _v ) );
+   EXPECT_NE( ( abs( _u ) ), ( _w + _v ) );
+   EXPECT_NE( ( _w + _v ), ( abs( _u ) ) );
 
    EXPECT_LT( _u, _v );
    EXPECT_LT( _u, 2.0 );
@@ -335,23 +335,23 @@ TYPED_TEST( VectorTest, comparison )
    EXPECT_GT( _v + _w, abs( _u ) );
 
    // Test with VectorViews
-   EXPECT_TRUE( u == u );
-   EXPECT_TRUE( u == 1.0 );
-   EXPECT_TRUE( 1.0 == u );
-   EXPECT_TRUE( w == v + v );
-   EXPECT_TRUE( v + v == w );
-   EXPECT_TRUE( abs( w ) == v + v );
-   EXPECT_TRUE( v + v == abs( w ) );
+   EXPECT_EQ( u, u );
+   EXPECT_EQ( u, 1.0 );
+   EXPECT_EQ( 1.0, u );
+   EXPECT_EQ( w, v + v );
+   EXPECT_EQ( v + v, w );
+   EXPECT_EQ( abs( w ), v + v );
+   EXPECT_EQ( v + v, abs( w ) );
 
-   EXPECT_TRUE( u != v );
-   EXPECT_TRUE( u != 2.0 );
-   EXPECT_TRUE( 2.0 != u );
-   EXPECT_TRUE( u != w + w );
-   EXPECT_TRUE( w + v != u );
-   EXPECT_TRUE( abs( w ) != abs( u ) );
-   EXPECT_TRUE( ( w + v ) != ( u + v ) );
-   EXPECT_TRUE( ( abs( u ) ) != ( w + v ) );
-   EXPECT_TRUE( ( w + v ) != ( abs( u ) ) );
+   EXPECT_NE( u, v );
+   EXPECT_NE( u, 2.0 );
+   EXPECT_NE( 2.0, u );
+   EXPECT_NE( u, w + w );
+   EXPECT_NE( w + v, u );
+   EXPECT_NE( abs( w ), abs( u ) );
+   EXPECT_NE( ( w + v ), ( u + v ) );
+   EXPECT_NE( ( abs( u ) ), ( w + v ) );
+   EXPECT_NE( ( w + v ), ( abs( u ) ) );
 
    EXPECT_LT( u, v );
    EXPECT_LT( u, 2.0 );

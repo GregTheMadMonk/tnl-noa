@@ -191,9 +191,7 @@ TYPED_TEST( StaticVectorTest, abs )
       u[ i ] = i;
 
    VectorType v = -u;
-   // TODO: replace with EXPECT_EQ when nvcc accepts it
-   //EXPECT_EQ( abs( v ), u );
-   EXPECT_TRUE( abs( v ) == u );
+   EXPECT_EQ( abs( v ), u );
 }
 
 TYPED_TEST( StaticVectorTest, sin )
@@ -208,9 +206,7 @@ TYPED_TEST( StaticVectorTest, sin )
       v[ i ] = sin( u[ i ] );
    }
 
-   // TODO: replace with EXPECT_EQ when nvcc accepts it
-   //EXPECT_EQ( sin( u ), v );
-   EXPECT_TRUE( sin( u ) == v );
+   EXPECT_EQ( sin( u ), v );
 }
 
 TYPED_TEST( StaticVectorTest, cos )
@@ -225,9 +221,7 @@ TYPED_TEST( StaticVectorTest, cos )
       v[ i ] = cos( u[ i ] );
    }
 
-   // TODO: replace with EXPECT_EQ when nvcc accepts it
-   //EXPECT_EQ( cos( u ), v );
-   EXPECT_TRUE( cos( u ) == v );
+   EXPECT_EQ( cos( u ), v );
 }
 
 TYPED_TEST( StaticVectorTest, tan )
@@ -242,9 +236,7 @@ TYPED_TEST( StaticVectorTest, tan )
       v[ i ] = tan( u[ i ] );
    }
 
-   // TODO: replace with EXPECT_EQ when nvcc accepts it
-   //EXPECT_EQ( tan( u ), v );
-   EXPECT_TRUE( tan( u ) == v );
+   EXPECT_EQ( tan( u ), v );
 }
 
 TYPED_TEST( StaticVectorTest, sqrt )
@@ -259,9 +251,7 @@ TYPED_TEST( StaticVectorTest, sqrt )
       v[ i ] = sqrt( u[ i ] );
    }
 
-   // TODO: replace with EXPECT_EQ when nvcc accepts it
-   //EXPECT_EQ( sqrt( u ), v );
-   EXPECT_TRUE( sqrt( u ) == v );
+   EXPECT_EQ( sqrt( u ), v );
 }
 
 TYPED_TEST( StaticVectorTest, cbrt )
@@ -294,11 +284,8 @@ TYPED_TEST( StaticVectorTest, pow )
       w[ i ] = pow( u[ i ], 3.0 );
    }
 
-   // TODO: replace with EXPECT_EQ when nvcc accepts it
-   //EXPECT_EQ( pow( u, 2.0 ), v );
-   //EXPECT_EQ( pow( u, 3.0 ), w );
-   EXPECT_TRUE( pow( u, 2.0 ) == v );
-   EXPECT_TRUE( pow( u, 3.0 ) == w );
+   EXPECT_EQ( pow( u, 2.0 ), v );
+   EXPECT_EQ( pow( u, 3.0 ), w );
 }
 
 TYPED_TEST( StaticVectorTest, floor )
@@ -313,9 +300,7 @@ TYPED_TEST( StaticVectorTest, floor )
       v[ i ] = floor( u[ i ] );
    }
 
-   // TODO: replace with EXPECT_EQ when nvcc accepts it
-   //EXPECT_EQ( floor( u ), v );
-   EXPECT_TRUE( floor( u ) == v );
+   EXPECT_EQ( floor( u ), v );
 }
 
 TYPED_TEST( StaticVectorTest, ceil )
@@ -330,9 +315,7 @@ TYPED_TEST( StaticVectorTest, ceil )
       v[ i ] = ceil( u[ i ] );
    }
 
-   // TODO: replace with EXPECT_EQ when nvcc accepts it
-   //EXPECT_EQ( ceil( u ), v );
-   EXPECT_TRUE( ceil( u ) == v );
+   EXPECT_EQ( ceil( u ), v );
 }
 
 TYPED_TEST( StaticVectorTest, acos )
@@ -347,9 +330,7 @@ TYPED_TEST( StaticVectorTest, acos )
       v[ i ] = acos( u[ i ] );
    }
 
-   // TODO: replace with EXPECT_EQ when nvcc accepts it
-   //EXPECT_EQ( acos( u ), v );
-   EXPECT_TRUE( acos( u ) == v );
+   EXPECT_EQ( acos( u ), v );
 }
 
 TYPED_TEST( StaticVectorTest, asin )
@@ -364,9 +345,7 @@ TYPED_TEST( StaticVectorTest, asin )
       v[ i ] = asin( u[ i ] );
    }
 
-   // TODO: replace with EXPECT_EQ when nvcc accepts it
-   //EXPECT_EQ( asin( u ), v );
-   EXPECT_TRUE( asin( u ) == v );
+   EXPECT_EQ( asin( u ), v );
 }
 
 TYPED_TEST( StaticVectorTest, atan )
@@ -381,9 +360,7 @@ TYPED_TEST( StaticVectorTest, atan )
       v[ i ] = atan( u[ i ] );
    }
 
-   // TODO: replace with EXPECT_EQ when nvcc accepts it
-   //EXPECT_EQ( atan( u ), v );
-   EXPECT_TRUE( atan( u ) == v );
+   EXPECT_EQ( atan( u ), v );
 }
 
 TYPED_TEST( StaticVectorTest, cosh )
@@ -416,9 +393,7 @@ TYPED_TEST( StaticVectorTest, tanh )
       v[ i ] = tanh( u[ i ] );
    }
 
-   // TODO: replace with EXPECT_EQ when nvcc accepts it
-   //EXPECT_EQ( tanh( u ), v );
-   EXPECT_TRUE( tanh( u ) == v );
+   EXPECT_EQ( tanh( u ), v );
 }
 
 TYPED_TEST( StaticVectorTest, log )
@@ -433,9 +408,7 @@ TYPED_TEST( StaticVectorTest, log )
       v[ i ] = log( u[ i ] );
    }
 
-   // TODO: replace with EXPECT_EQ when nvcc accepts it
-   //EXPECT_EQ( log( u ), v );
-   EXPECT_TRUE( log( u ) == v );
+   EXPECT_EQ( log( u ), v );
 }
 
 TYPED_TEST( StaticVectorTest, log10 )
@@ -468,9 +441,7 @@ TYPED_TEST( StaticVectorTest, log2 )
       v[ i ] = log2( u[ i ] );
    }
 
-   // TODO: replace with EXPECT_EQ when nvcc accepts it
-   //EXPECT_EQ( log2( u ), v );
-   EXPECT_TRUE( log2( u ) == v );
+   EXPECT_EQ( log2( u ), v );
 }
 
 TYPED_TEST( StaticVectorTest, exp )
@@ -485,9 +456,7 @@ TYPED_TEST( StaticVectorTest, exp )
       v[ i ] = exp( u[ i ] );
    }
 
-   // TODO: replace with EXPECT_EQ when nvcc accepts it
-   //EXPECT_EQ( exp( u ), v );
-   EXPECT_TRUE( exp( u ) == v );
+   EXPECT_EQ( exp( u ), v );
 }
 
 TYPED_TEST( StaticVectorTest, sign )
@@ -581,23 +550,23 @@ TYPED_TEST( StaticVectorTest, comparisonOperators )
    v = 2.0;
    w = 4.0;
 
-   EXPECT_TRUE( u == u );
-   EXPECT_TRUE( u == 1.0 );
-   EXPECT_TRUE( 1.0 == u );
-   EXPECT_TRUE( w == v + v );
-   EXPECT_TRUE( v + v == w );
-   EXPECT_TRUE( abs( w ) == v + v );
-   EXPECT_TRUE( v + v == abs( w ) );
+   EXPECT_EQ( u, u );
+   EXPECT_EQ( u, 1.0 );
+   EXPECT_EQ( 1.0, u );
+   EXPECT_EQ( w, v + v );
+   EXPECT_EQ( v + v, w );
+   EXPECT_EQ( abs( w ), v + v );
+   EXPECT_EQ( v + v, abs( w ) );
 
-   EXPECT_TRUE( u != v );
-   EXPECT_TRUE( u != 2.0 );
-   EXPECT_TRUE( 2.0 != u );
-   EXPECT_TRUE( u != w + w );
-   EXPECT_TRUE( w + v != u );
-   EXPECT_TRUE( abs( w ) != abs( u ) );
-   EXPECT_TRUE( ( w + v ) != ( u + v ) );
-   EXPECT_TRUE( ( abs( u ) ) != ( w + v ) );
-   EXPECT_TRUE( ( w + v ) != ( abs( u ) ) );
+   EXPECT_NE( u, v );
+   EXPECT_NE( u, 2.0 );
+   EXPECT_NE( 2.0, u );
+   EXPECT_NE( u, w + w );
+   EXPECT_NE( w + v, u );
+   EXPECT_NE( abs( w ), abs( u ) );
+   EXPECT_NE( ( w + v ), ( u + v ) );
+   EXPECT_NE( ( abs( u ) ), ( w + v ) );
+   EXPECT_NE( ( w + v ), ( abs( u ) ) );
 
    EXPECT_LT( u, v );
    EXPECT_LT( u, 2.0 );

@@ -209,5 +209,5 @@ struct IsStatic< Containers::VectorView< Real, Device, Index > >
 
 } // namespace TNL
 
-#include <TNL/Containers/VectorView.hpp>
 #include <TNL/Containers/VectorViewExpressions.h>
+#include <TNL/Containers/VectorView.hpp>

@@ -30,6 +30,22 @@ class DistributedVectorView;
 template< typename Real, typename Device, typename Index, typename Communicator >
 class DistributedVector;
 
+template< int Size, typename Real >
+class StaticArray;
+
+template< typename Real, typename Device, typename Index >
+class ArrayView;
+
+template< typename Real, typename Device, typename Index >
+class Array;
+
+template< typename Real, typename Device, typename Index, typename Communicator >
+class DistributedArrayView;
+
+template< typename Real, typename Device, typename Index, typename Communicator >
+class DistributedArray;
+
+
       namespace Expressions {
 
 enum ExpressionVariableType { ArithmeticVariable, VectorVariable, VectorExpressionVariable, OtherVariable };
@@ -90,11 +106,43 @@ struct IsVectorType< DistributedVectorView< Real, Device, Index, Communicator > 
    static constexpr bool value = true;
 };
 
+template< int Size,
+          typename Real >
+struct IsVectorType< StaticArray< Size, Real > >
+{
+   static constexpr bool value = true;
+};
+
+template< typename Real,
+          typename Device,
+          typename Index >
+struct IsVectorType< ArrayView< Real, Device, Index > >
+{
+   static constexpr bool value = true;
+};
+
+template< typename Real,
+          typename Device,
+          typename Index >
+struct IsVectorType< Array< Real, Device, Index > >
+{
+   static constexpr bool value = true;
+};
+
 template< typename Real,
           typename Device,
           typename Index,
           typename Communicator >
-struct IsVectorType< DistributedVector< Real, Device, Index, Communicator > >
+struct IsVectorType< DistributedArrayView< Real, Device, Index, Communicator > >
+{
+   static constexpr bool value = true;
+};
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Communicator >
+struct IsVectorType< DistributedArray< Real, Device, Index, Communicator > >
 {
    static constexpr bool value = true;
 };

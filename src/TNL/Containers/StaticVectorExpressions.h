@@ -16,7 +16,7 @@
 #include <TNL/Containers/Expressions/StaticVerticalOperations.h>
 
 namespace TNL {
-
+   namespace Containers {
 // operators must be defined in the same namespace as the first operand, otherwise
 // they may not be considered by the compiler (e.g. inside pybind11's macros)
 // namespace Containers { Overriden operators should be in namespace TNL
@@ -299,6 +299,7 @@ auto operator,( const Containers::StaticVector< Size, Real1 >& a, const Containe
    return TNL::sum( a * b );
 }
 
+   }// namespace Containers
 ////
 // Min
 template< int Size, typename Real, typename ET >

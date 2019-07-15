@@ -180,23 +180,6 @@ public:
    Vector& operator/=( const VectorExpression& expression );
 
    /**
-    * \brief Scalar product
-    * @param v
-    * @return
-    */
-   template< typename Vector_ >
-   Real operator,( const Vector_& v ) const;
-
-   /**
-    * \brief Returns the length of this vector in p-dimensional vector space.
-    *
-    * \tparam
-    * \param p Number specifying the dimension of vector space.
-    */
-   //template< typename ResultType = RealType, typename Scalar >
-   //ResultType lpNorm( const Scalar p ) const;
-
-   /**
     * \brief Returns sum of all vector elements.
     */
    template< typename ResultType = RealType >

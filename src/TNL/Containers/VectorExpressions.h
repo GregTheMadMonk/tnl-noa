@@ -20,130 +20,345 @@
 #include "Vector.h"
 
 namespace TNL {
-
-////
-// All operations are supposed to be in namespace TNL
-//   namespace Containers {
+   namespace Containers {
 
 ////
 // Addition
 template< typename Real, typename Device, typename Index, typename ET >
-const Containers::Expressions::BinaryExpressionTemplate< 
-   typename Containers::VectorView< Real, Device, Index >::ConstViewType,
+const Expressions::BinaryExpressionTemplate< 
+   typename VectorView< Real, Device, Index >::ConstViewType,
    ET,
-   Containers::Expressions::Addition >
-operator+( const Containers::Vector< Real, Device, Index >& a, const ET& b )
+   Expressions::Addition >
+operator+( const Vector< Real, Device, Index >& a, const ET& b )
 {
-   using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
-   return Containers::Expressions::BinaryExpressionTemplate< ConstView, ET, Containers::Expressions::Addition >( a.getView(), b );
+   using ConstView = typename Vector< Real, Device, Index >::ConstViewType;
+   return Expressions::BinaryExpressionTemplate< ConstView, ET, Expressions::Addition >( a.getView(), b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index >
-const Containers::Expressions::BinaryExpressionTemplate< 
+const Expressions::BinaryExpressionTemplate< 
    ET,
-   typename Containers::VectorView< Real, Device, Index >::ConstViewType,
-   Containers::Expressions::Addition >
-operator+( const ET& a, const Containers::Vector< Real, Device, Index >& b )
+   typename VectorView< Real, Device, Index >::ConstViewType,
+   Expressions::Addition >
+operator+( const ET& a, const Vector< Real, Device, Index >& b )
 {
-   using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
-   return Containers::Expressions::BinaryExpressionTemplate< ET, ConstView, Containers::Expressions::Addition >( a, b.getView() );
+   using ConstView = typename Vector< Real, Device, Index >::ConstViewType;
+   return Expressions::BinaryExpressionTemplate< ET, ConstView, Expressions::Addition >( a, b.getView() );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index >
-const Containers::Expressions::BinaryExpressionTemplate< 
-   typename Containers::Vector< Real1, Device, Index >::ConstViewType,
-   typename Containers::VectorView< Real2, Device, Index >::ConstViewType,
-   Containers::Expressions::Addition >
-operator+( const Containers::Vector< Real1, Device, Index >& a, const Containers::Vector< Real2, Device, Index >& b )
+const Expressions::BinaryExpressionTemplate< 
+   typename Vector< Real1, Device, Index >::ConstViewType,
+   typename VectorView< Real2, Device, Index >::ConstViewType,
+   Expressions::Addition >
+operator+( const Vector< Real1, Device, Index >& a, const Vector< Real2, Device, Index >& b )
 {
-   using ConstView1 = typename Containers::Vector< Real1, Device, Index >::ConstViewType;
-   using ConstView2 = typename Containers::Vector< Real2, Device, Index >::ConstViewType;
-   return Containers::Expressions::BinaryExpressionTemplate< ConstView1, ConstView2, Containers::Expressions::Addition >( a.getView(), b.getView() );
+   using ConstView1 = typename Vector< Real1, Device, Index >::ConstViewType;
+   using ConstView2 = typename Vector< Real2, Device, Index >::ConstViewType;
+   return Expressions::BinaryExpressionTemplate< ConstView1, ConstView2, Expressions::Addition >( a.getView(), b.getView() );
 }
 
 ////
 // Subtraction
 template< typename Real, typename Device, typename Index, typename ET >
-const Containers::Expressions::BinaryExpressionTemplate< typename Containers::Vector< Real, Device, Index >::ConstViewType, ET, Containers::Expressions::Subtraction >
-operator-( const Containers::Vector< Real, Device, Index >& a, const ET& b )
+const Expressions::BinaryExpressionTemplate< typename Vector< Real, Device, Index >::ConstViewType, ET, Expressions::Subtraction >
+operator-( const Vector< Real, Device, Index >& a, const ET& b )
 {
-   using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
-   return Containers::Expressions::BinaryExpressionTemplate< ConstView, ET, Containers::Expressions::Subtraction >( a.getView(), b );
+   using ConstView = typename Vector< Real, Device, Index >::ConstViewType;
+   return Expressions::BinaryExpressionTemplate< ConstView, ET, Expressions::Subtraction >( a.getView(), b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index >
-const Containers::Expressions::BinaryExpressionTemplate< ET, typename Containers::Vector< Real, Device, Index >::ConstViewType, Containers::Expressions::Subtraction >
-operator-( const ET& a, const Containers::Vector< Real, Device, Index >& b )
+const Expressions::BinaryExpressionTemplate< ET, typename Vector< Real, Device, Index >::ConstViewType, Expressions::Subtraction >
+operator-( const ET& a, const Vector< Real, Device, Index >& b )
 {
-   using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
-   return Containers::Expressions::BinaryExpressionTemplate< ET, ConstView, Containers::Expressions::Subtraction >( a, b.getView() );
+   using ConstView = typename Vector< Real, Device, Index >::ConstViewType;
+   return Expressions::BinaryExpressionTemplate< ET, ConstView, Expressions::Subtraction >( a, b.getView() );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index >
-const Containers::Expressions::BinaryExpressionTemplate< 
-   typename Containers::Vector< Real1, Device, Index >::ConstViewType,
-   typename Containers::VectorView< Real2, Device, Index >::ConstViewType,
-   Containers::Expressions::Subtraction >
-operator-( const Containers::Vector< Real1, Device, Index >& a, const Containers::Vector< Real2, Device, Index >& b )
+const Expressions::BinaryExpressionTemplate< 
+   typename Vector< Real1, Device, Index >::ConstViewType,
+   typename VectorView< Real2, Device, Index >::ConstViewType,
+   Expressions::Subtraction >
+operator-( const Vector< Real1, Device, Index >& a, const Vector< Real2, Device, Index >& b )
 {
-   using ConstView1 = typename Containers::Vector< Real1, Device, Index >::ConstViewType;
-   using ConstView2 = typename Containers::Vector< Real2, Device, Index >::ConstViewType;
-   return Containers::Expressions::BinaryExpressionTemplate< ConstView1, ConstView2, Containers::Expressions::Subtraction >( a.getView(), b.getView() );
+   using ConstView1 = typename Vector< Real1, Device, Index >::ConstViewType;
+   using ConstView2 = typename Vector< Real2, Device, Index >::ConstViewType;
+   return Expressions::BinaryExpressionTemplate< ConstView1, ConstView2, Expressions::Subtraction >( a.getView(), b.getView() );
 }
 
 ////
 // Multiplication
 template< typename Real, typename Device, typename Index, typename ET >
-const Containers::Expressions::BinaryExpressionTemplate< typename Containers::Vector< Real, Device, Index >::ConstViewType, ET, Containers::Expressions::Multiplication >
-operator*( const Containers::Vector< Real, Device, Index >& a, const ET& b )
+const Expressions::BinaryExpressionTemplate< typename Vector< Real, Device, Index >::ConstViewType, ET, Expressions::Multiplication >
+operator*( const Vector< Real, Device, Index >& a, const ET& b )
 {
-   using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
-   return Containers::Expressions::BinaryExpressionTemplate< ConstView, ET, Containers::Expressions::Multiplication >( a.getView(), b );
+   using ConstView = typename Vector< Real, Device, Index >::ConstViewType;
+   return Expressions::BinaryExpressionTemplate< ConstView, ET, Expressions::Multiplication >( a.getView(), b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index >
-const Containers::Expressions::BinaryExpressionTemplate< ET, typename Containers::Vector< Real, Device, Index >::ConstViewType, Containers::Expressions::Multiplication >
-operator*( const ET& a, const Containers::Vector< Real, Device, Index >& b )
+const Expressions::BinaryExpressionTemplate< ET, typename Vector< Real, Device, Index >::ConstViewType, Expressions::Multiplication >
+operator*( const ET& a, const Vector< Real, Device, Index >& b )
 {
-   using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
-   return Containers::Expressions::BinaryExpressionTemplate< ET, ConstView, Containers::Expressions::Multiplication >( a, b.getView() );
+   using ConstView = typename Vector< Real, Device, Index >::ConstViewType;
+   return Expressions::BinaryExpressionTemplate< ET, ConstView, Expressions::Multiplication >( a, b.getView() );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index >
-const Containers::Expressions::BinaryExpressionTemplate< typename Containers::Vector< Real1, Device, Index >::ConstViewType, typename Containers::Vector< Real2, Device, Index >::ConstViewType, Containers::Expressions::Multiplication >
-operator*( const Containers::Vector< Real1, Device, Index >& a, const Containers::Vector< Real2, Device, Index >& b )
+const Expressions::BinaryExpressionTemplate< typename Vector< Real1, Device, Index >::ConstViewType, typename Vector< Real2, Device, Index >::ConstViewType, Expressions::Multiplication >
+operator*( const Vector< Real1, Device, Index >& a, const Vector< Real2, Device, Index >& b )
 {
-   using ConstView1 = typename Containers::Vector< Real1, Device, Index >::ConstViewType;
-   using ConstView2 = typename Containers::Vector< Real2, Device, Index >::ConstViewType;
-   return Containers::Expressions::BinaryExpressionTemplate< ConstView1, ConstView2, Containers::Expressions::Multiplication >( a.getView(), b.getView() );
+   using ConstView1 = typename Vector< Real1, Device, Index >::ConstViewType;
+   using ConstView2 = typename Vector< Real2, Device, Index >::ConstViewType;
+   return Expressions::BinaryExpressionTemplate< ConstView1, ConstView2, Expressions::Multiplication >( a.getView(), b.getView() );
 }
 
 ////
 // Division
 template< typename Real, typename Device, typename Index, typename ET >
-const Containers::Expressions::BinaryExpressionTemplate< typename Containers::Vector< Real, Device, Index >::ConstViewType, ET, Containers::Expressions::Division >
-operator/( const Containers::Vector< Real, Device, Index >& a, const ET& b )
+const Expressions::BinaryExpressionTemplate< typename Vector< Real, Device, Index >::ConstViewType, ET, Expressions::Division >
+operator/( const Vector< Real, Device, Index >& a, const ET& b )
 {
-   using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
-   return Containers::Expressions::BinaryExpressionTemplate< ConstView, ET, Containers::Expressions::Division >( a.getView(), b );
+   using ConstView = typename Vector< Real, Device, Index >::ConstViewType;
+   return Expressions::BinaryExpressionTemplate< ConstView, ET, Expressions::Division >( a.getView(), b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index >
-const Containers::Expressions::BinaryExpressionTemplate< ET, typename Containers::Vector< Real, Device, Index >::ConstViewType, Containers::Expressions::Division >
-operator/( const ET& a, const Containers::Vector< Real, Device, Index >& b )
+const Expressions::BinaryExpressionTemplate< ET, typename Vector< Real, Device, Index >::ConstViewType, Expressions::Division >
+operator/( const ET& a, const Vector< Real, Device, Index >& b )
 {
-   using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
-   return Containers::Expressions::BinaryExpressionTemplate< ET, ConstView, Containers::Expressions::Division >( a, b.getView() );
+   using ConstView = typename Vector< Real, Device, Index >::ConstViewType;
+   return Expressions::BinaryExpressionTemplate< ET, ConstView, Expressions::Division >( a, b.getView() );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index >
-const Containers::Expressions::BinaryExpressionTemplate< typename Containers::Vector< Real1, Device, Index >::ConstViewType, typename Containers::Vector< Real2, Device, Index >::ConstViewType, Containers::Expressions::Division >
-operator/( const Containers::Vector< Real1, Device, Index >& a, const Containers::Vector< Real2, Device, Index >& b )
+const Expressions::BinaryExpressionTemplate< typename Vector< Real1, Device, Index >::ConstViewType, typename Vector< Real2, Device, Index >::ConstViewType, Expressions::Division >
+operator/( const Vector< Real1, Device, Index >& a, const Vector< Real2, Device, Index >& b )
 {
-   using ConstView1 = typename Containers::Vector< Real1, Device, Index >::ConstViewType;
-   using ConstView2 = typename Containers::Vector< Real2, Device, Index >::ConstViewType;
-   return Containers::Expressions::BinaryExpressionTemplate< ConstView1, ConstView2, Containers::Expressions::Division >( a.getView(), b.getView() );
+   using ConstView1 = typename Vector< Real1, Device, Index >::ConstViewType;
+   using ConstView2 = typename Vector< Real2, Device, Index >::ConstViewType;
+   return Expressions::BinaryExpressionTemplate< ConstView1, ConstView2, Expressions::Division >( a.getView(), b.getView() );
 }
+
+////
+// Comparison operations - operator ==
+template< typename Real, typename Device, typename Index, typename ET >
+bool operator==( const Vector< Real, Device, Index >& a, const ET& b )
+{
+   using ConstView = typename VectorView< Real, Device, Index >::ConstViewType;
+   return Expressions::Comparison< ConstView, ET >::EQ( a.getView(), b );
+}
+
+template< typename ET, typename Real, typename Device, typename Index >
+bool operator==( const ET& a, const Vector< Real, Device, Index >& b )
+{
+   using ConstView = typename VectorView< Real, Device, Index >::ConstViewType;
+   return Expressions::Comparison< ET, ConstView >::EQ( a, b.getView() );
+}
+
+template< typename Real1, typename Real2, typename Device1, typename Device2, typename Index >
+bool operator==( const Vector< Real1, Device1, Index >& a, const Vector< Real2, Device2, Index >& b )
+{
+   if( a.getSize() != b.getSize() )
+      return false;
+   if( a.getSize() == 0 )
+      return true;
+   return Algorithms::ArrayOperations< Device1, Device2 >::
+            compareMemory( a.getData(),
+                           b.getData(),
+                           a.getSize() );
+}
+
+template< typename Real1, typename Real2, typename Device1, typename Device2, typename Index >
+bool operator==( const VectorView< Real1, Device1, Index >& a, const Vector< Real2, Device2, Index >& b )
+{
+   if( a.getSize() != b.getSize() )
+      return false;
+   if( a.getSize() == 0 )
+      return true;
+   return Algorithms::ArrayOperations< Device1, Device2 >::
+            compareMemory( a.getData(),
+                           b.getData(),
+                           a.getSize() );
+}
+
+template< typename Real1, typename Real2, typename Device1, typename Device2, typename Index >
+bool operator==( const Vector< Real1, Device1, Index >& a, const VectorView< Real2, Device2, Index >& b )
+{
+   if( a.getSize() != b.getSize() )
+      return false;
+   if( a.getSize() == 0 )
+      return true;
+   return Algorithms::ArrayOperations< Device1, Device2 >::
+            compareMemory( a.getData(),
+                           b.getData(),
+                           a.getSize() );
+}
+
+////
+// Comparison operations - operator !=
+template< typename Real, typename Device, typename Index, typename ET >
+bool operator!=( const Vector< Real, Device, Index >& a, const ET& b )
+{
+   using ConstView = typename VectorView< Real, Device, Index >::ConstViewType;
+   return Expressions::Comparison< ConstView, ET >::NE( a.getView(), b );
+}
+
+template< typename ET, typename Real, typename Device, typename Index >
+bool operator!=( const ET& a, const Vector< Real, Device, Index >& b )
+{
+   using ConstView = typename VectorView< Real, Device, Index >::ConstViewType;
+   return Expressions::Comparison< ET, ConstView >::NE( a, b.getView() );
+}
+
+template< typename Real1, typename Real2, typename Device1, typename Device2, typename Index >
+bool operator!=( const Vector< Real1, Device1, Index >& a, const Vector< Real2, Device2, Index >& b )
+{
+   if( a.getSize() != b.getSize() )
+      return false;
+   if( a.getSize() == 0 )
+      return true;
+   return !Algorithms::ArrayOperations< Device1, Device2 >::
+            compareMemory( a.getData(),
+                           b.getData(),
+                           a.getSize() );
+}
+
+////
+// Comparison operations - operator <
+template< typename Real, typename Device, typename Index, typename ET >
+bool operator<( const Vector< Real, Device, Index >& a, const ET& b )
+{
+   using ConstView = typename VectorView< Real, Device, Index >::ConstViewType;
+   return Expressions::Comparison< ConstView, ET >::LT( a.getView(), b );
+}
+
+template< typename ET, typename Real, typename Device, typename Index >
+bool operator<( const ET& a, const Vector< Real, Device, Index >& b )
+{
+   using ConstView = typename VectorView< Real, Device, Index >::ConstViewType;
+   return Expressions::Comparison< ET, ConstView >::LT( a, b.getView() );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index >
+bool operator<( const Vector< Real1, Device, Index >& a, const Vector< Real2, Device, Index >& b )
+{
+   using ConstView1 = typename Vector< Real1, Device, Index >::ConstViewType;
+   using ConstView2 = typename VectorView< Real2, Device, Index >::ConstViewType;
+   return Expressions::Comparison< ConstView1, ConstView2 >::LT( a.getView(), b.getView() );
+}
+
+////
+// Comparison operations - operator <=
+template< typename Real, typename Device, typename Index, typename ET >
+bool operator<=( const Vector< Real, Device, Index >& a, const ET& b )
+{
+   using ConstView = typename VectorView< Real, Device, Index >::ConstViewType;
+   return Expressions::Comparison< ConstView, ET >::LE( a.getView(), b );
+}
+
+template< typename ET, typename Real, typename Device, typename Index >
+bool operator<=( const ET& a, const Vector< Real, Device, Index >& b )
+{
+   using ConstView = typename VectorView< Real, Device, Index >::ConstViewType;
+   return Expressions::Comparison< ET, ConstView >::LE( a, b.getView() );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index >
+bool operator<=( const Vector< Real1, Device, Index >& a, const Vector< Real2, Device, Index >& b )
+{
+   using ConstView1 = typename Vector< Real1, Device, Index >::ConstViewType;
+   using ConstView2 = typename VectorView< Real2, Device, Index >::ConstViewType;
+   return Expressions::Comparison< ConstView1, ConstView2 >::LE( a.getView(), b.getView() );
+}
+
+////
+// Comparison operations - operator >
+template< typename Real, typename Device, typename Index, typename ET >
+bool operator>( const Vector< Real, Device, Index >& a, const ET& b )
+{
+   using ConstView = typename VectorView< Real, Device, Index >::ConstViewType;
+   return Expressions::Comparison< ConstView, ET >::GT( a.getView(), b );
+}
+
+template< typename ET, typename Real, typename Device, typename Index >
+bool operator>( const ET& a, const Vector< Real, Device, Index >& b )
+{
+   using ConstView = typename VectorView< Real, Device, Index >::ConstViewType;
+   return Expressions::Comparison< ET, ConstView >::GT( a, b.getView() );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index >
+bool operator>( const Vector< Real1, Device, Index >& a, const Vector< Real2, Device, Index >& b )
+{
+   using ConstView1 = typename Vector< Real1, Device, Index >::ConstViewType;
+   using ConstView2 = typename VectorView< Real2, Device, Index >::ConstViewType;
+   return Expressions::Comparison< ConstView1, ConstView2 >::GT( a.getView(), b.getView() );
+}
+
+////
+// Comparison operations - operator >=
+template< typename Real, typename Device, typename Index, typename ET >
+bool operator>=( const Vector< Real, Device, Index >& a, const ET& b )
+{
+   using ConstView = typename VectorView< Real, Device, Index >::ConstViewType;
+   return Expressions::Comparison< ConstView, ET >::GE( a.getView(), b );
+}
+
+template< typename ET, typename Real, typename Device, typename Index >
+bool operator>=( const ET& a, const Vector< Real, Device, Index >& b )
+{
+   using ConstView = typename VectorView< Real, Device, Index >::ConstViewType;
+   return Expressions::Comparison< ET, ConstView >::GE( a, b.getView() );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index >
+bool operator>=( const Vector< Real1, Device, Index >& a, const Vector< Real2, Device, Index >& b )
+{
+   using ConstView1 = typename Vector< Real1, Device, Index >::ConstViewType;
+   using ConstView2 = typename VectorView< Real2, Device, Index >::ConstViewType;
+   return Expressions::Comparison< ConstView1, ConstView2 >::GE( a.getView(), b.getView() );
+}
+
+////
+// Minus
+template< typename Real, typename Device, typename Index >
+const Expressions::UnaryExpressionTemplate< typename Vector< Real, Device, Index >::ConstViewType, Expressions::Minus >
+operator-( const Vector< Real, Device, Index >& a )
+{
+   using ConstView = typename Vector< Real, Device, Index >::ConstViewType;
+   return Expressions::UnaryExpressionTemplate< ConstView, Expressions::Minus >( a.getView() );
+}
+
+////
+// Scalar product
+template< typename Real, typename Device, typename Index, typename ET >
+Real operator,( const Vector< Real, Device, Index >& a, const ET& b )
+{
+   return TNL::sum( a.getView() * b );
+}
+
+template< typename ET, typename Real, typename Device, typename Index >
+Real operator,( const ET& a, const Vector< Real, Device, Index >& b )
+{
+   return TNL::sum( a * b.getView() );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index >
+//auto 
+// TODO: auto+decltype does not work with NVCC 10.1
+Real1 operator,( const Vector< Real1, Device, Index >& a, const Vector< Real2, Device, Index >& b )
+//->decltype( TNL::sum( a.getView() * b.getView() ) )
+{
+   return TNL::sum( a.getView() * b.getView() );
+}
+
+} //namespace Containers
+
+////
+// All operations are supposed to be in namespace TNL
 
 ////
 // Min
@@ -199,169 +414,6 @@ max( const Containers::Vector< Real1, Device, Index >& a, const Containers::Vect
    return Containers::Expressions::BinaryExpressionTemplate< ConstView1, ConstView2, Containers::Expressions::Max >( a.getView(), b.getView() );
 }
 
-////
-// Comparison operations - operator ==
-template< typename Real, typename Device, typename Index, typename ET >
-bool operator==( const Containers::Vector< Real, Device, Index >& a, const ET& b )
-{
-   using ConstView = typename Containers::VectorView< Real, Device, Index >::ConstViewType;
-   return Containers::Expressions::Comparison< ConstView, ET >::EQ( a.getView(), b );
-}
-
-template< typename ET, typename Real, typename Device, typename Index >
-bool operator==( const ET& a, const Containers::Vector< Real, Device, Index >& b )
-{
-   using ConstView = typename Containers::VectorView< Real, Device, Index >::ConstViewType;
-   return Containers::Expressions::Comparison< ET, ConstView >::EQ( a, b.getView() );
-}
-
-template< typename Real1, typename Real2, typename Device1, typename Device2, typename Index >
-bool operator==( const Containers::Vector< Real1, Device1, Index >& a, const Containers::Vector< Real2, Device2, Index >& b )
-{
-   if( a.getSize() != b.getSize() )
-      return false;
-   if( a.getSize() == 0 )
-      return true;
-   return Containers::Algorithms::ArrayOperations< Device1, Device2 >::
-            compareMemory( a.getData(),
-                           b.getData(),
-                           a.getSize() );
-}
-
-////
-// Comparison operations - operator !=
-template< typename Real, typename Device, typename Index, typename ET >
-bool operator!=( const Containers::Vector< Real, Device, Index >& a, const ET& b )
-{
-   using ConstView = typename Containers::VectorView< Real, Device, Index >::ConstViewType;
-   return Containers::Expressions::Comparison< ConstView, ET >::NE( a.getView(), b );
-}
-
-template< typename ET, typename Real, typename Device, typename Index >
-bool operator!=( const ET& a, const Containers::Vector< Real, Device, Index >& b )
-{
-   using ConstView = typename Containers::VectorView< Real, Device, Index >::ConstViewType;
-   return Containers::Expressions::Comparison< ET, ConstView >::NE( a, b.getView() );
-}
-
-template< typename Real1, typename Real2, typename Device1, typename Device2, typename Index >
-bool operator!=( const Containers::Vector< Real1, Device1, Index >& a, const Containers::Vector< Real2, Device2, Index >& b )
-{
-   if( a.getSize() != b.getSize() )
-      return false;
-   if( a.getSize() == 0 )
-      return true;
-   return !Containers::Algorithms::ArrayOperations< Device1, Device2 >::
-            compareMemory( a.getData(),
-                           b.getData(),
-                           a.getSize() );
-}
-
-////
-// Comparison operations - operator <
-template< typename Real, typename Device, typename Index, typename ET >
-bool operator<( const Containers::Vector< Real, Device, Index >& a, const ET& b )
-{
-   using ConstView = typename Containers::VectorView< Real, Device, Index >::ConstViewType;
-   return Containers::Expressions::Comparison< ConstView, ET >::LT( a.getView(), b );
-}
-
-template< typename ET, typename Real, typename Device, typename Index >
-bool operator<( const ET& a, const Containers::Vector< Real, Device, Index >& b )
-{
-   using ConstView = typename Containers::VectorView< Real, Device, Index >::ConstViewType;
-   return Containers::Expressions::Comparison< ET, ConstView >::LT( a, b.getView() );
-}
-
-template< typename Real1, typename Real2, typename Device, typename Index >
-bool operator<( const Containers::Vector< Real1, Device, Index >& a, const Containers::Vector< Real2, Device, Index >& b )
-{
-   using ConstView1 = typename Containers::Vector< Real1, Device, Index >::ConstViewType;
-   using ConstView2 = typename Containers::VectorView< Real2, Device, Index >::ConstViewType;
-   return Containers::Expressions::Comparison< ConstView1, ConstView2 >::LT( a.getView(), b.getView() );
-}
-
-////
-// Comparison operations - operator <=
-template< typename Real, typename Device, typename Index, typename ET >
-bool operator<=( const Containers::Vector< Real, Device, Index >& a, const ET& b )
-{
-   using ConstView = typename Containers::VectorView< Real, Device, Index >::ConstViewType;
-   return Containers::Expressions::Comparison< ConstView, ET >::LE( a.getView(), b );
-}
-
-template< typename ET, typename Real, typename Device, typename Index >
-bool operator<=( const ET& a, const Containers::Vector< Real, Device, Index >& b )
-{
-   using ConstView = typename Containers::VectorView< Real, Device, Index >::ConstViewType;
-   return Containers::Expressions::Comparison< ET, ConstView >::LE( a, b.getView() );
-}
-
-template< typename Real1, typename Real2, typename Device, typename Index >
-bool operator<=( const Containers::Vector< Real1, Device, Index >& a, const Containers::Vector< Real2, Device, Index >& b )
-{
-   using ConstView1 = typename Containers::Vector< Real1, Device, Index >::ConstViewType;
-   using ConstView2 = typename Containers::VectorView< Real2, Device, Index >::ConstViewType;
-   return Containers::Expressions::Comparison< ConstView1, ConstView2 >::LE( a.getView(), b.getView() );
-}
-
-////
-// Comparison operations - operator >
-template< typename Real, typename Device, typename Index, typename ET >
-bool operator>( const Containers::Vector< Real, Device, Index >& a, const ET& b )
-{
-   using ConstView = typename Containers::VectorView< Real, Device, Index >::ConstViewType;
-   return Containers::Expressions::Comparison< ConstView, ET >::GT( a.getView(), b );
-}
-
-template< typename ET, typename Real, typename Device, typename Index >
-bool operator>( const ET& a, const Containers::Vector< Real, Device, Index >& b )
-{
-   using ConstView = typename Containers::VectorView< Real, Device, Index >::ConstViewType;
-   return Containers::Expressions::Comparison< ET, ConstView >::GT( a, b.getView() );
-}
-
-template< typename Real1, typename Real2, typename Device, typename Index >
-bool operator>( const Containers::Vector< Real1, Device, Index >& a, const Containers::Vector< Real2, Device, Index >& b )
-{
-   using ConstView1 = typename Containers::Vector< Real1, Device, Index >::ConstViewType;
-   using ConstView2 = typename Containers::VectorView< Real2, Device, Index >::ConstViewType;
-   return Containers::Expressions::Comparison< ConstView1, ConstView2 >::GT( a.getView(), b.getView() );
-}
-
-////
-// Comparison operations - operator >=
-template< typename Real, typename Device, typename Index, typename ET >
-bool operator>=( const Containers::Vector< Real, Device, Index >& a, const ET& b )
-{
-   using ConstView = typename Containers::VectorView< Real, Device, Index >::ConstViewType;
-   return Containers::Expressions::Comparison< ConstView, ET >::GE( a.getView(), b );
-}
-
-template< typename ET, typename Real, typename Device, typename Index >
-bool operator>=( const ET& a, const Containers::Vector< Real, Device, Index >& b )
-{
-   using ConstView = typename Containers::VectorView< Real, Device, Index >::ConstViewType;
-   return Containers::Expressions::Comparison< ET, ConstView >::GE( a, b.getView() );
-}
-
-template< typename Real1, typename Real2, typename Device, typename Index >
-bool operator>=( const Containers::Vector< Real1, Device, Index >& a, const Containers::Vector< Real2, Device, Index >& b )
-{
-   using ConstView1 = typename Containers::Vector< Real1, Device, Index >::ConstViewType;
-   using ConstView2 = typename Containers::VectorView< Real2, Device, Index >::ConstViewType;
-   return Containers::Expressions::Comparison< ConstView1, ConstView2 >::GE( a.getView(), b.getView() );
-}
-
-////
-// Minus
-template< typename Real, typename Device, typename Index >
-const Containers::Expressions::UnaryExpressionTemplate< typename Containers::Vector< Real, Device, Index >::ConstViewType, Containers::Expressions::Minus >
-operator-( const Containers::Vector< Real, Device, Index >& a )
-{
-   using ConstView = typename Containers::Vector< Real, Device, Index >::ConstViewType;
-   return Containers::Expressions::UnaryExpressionTemplate< ConstView, Containers::Expressions::Minus >( a.getView() );
-}
 
 ////
 // Abs
@@ -660,43 +712,26 @@ binaryAnd( const Containers::Vector< Real, Device, Index >& a ) -> decltype( Con
 }
 
 ////
-// Scalar product
-template< typename Real, typename Device, typename Index, typename ET >
-Real operator,( const Containers::Vector< Real, Device, Index >& a, const ET& b )
-{
-   return TNL::sum( a.getView() * b );
-}
-
-template< typename ET, typename Real, typename Device, typename Index >
-Real operator,( const ET& a, const Containers::Vector< Real, Device, Index >& b )
-{
-   return TNL::sum( a * b.getView() );
-}
-
-template< typename Real1, typename Real2, typename Device, typename Index >
-auto operator,( const Containers::Vector< Real1, Device, Index >& a, const Containers::Vector< Real2, Device, Index >& b )
-->decltype( TNL::sum( a.getView() * b.getView() ) )
-{
-   return TNL::sum( a.getView() * b.getView() );
-}
-
-////
 // Dot product - the same as scalar product, just for convenience
+// TODO: auto+decltype does not work with NVCC 10.1
 template< typename Real, typename Device, typename Index, typename ET >
-auto dot( const Containers::Vector< Real, Device, Index >& a, const ET& b )->decltype( TNL::sum( a.getView() * b ) )
+//auto
+Real dot( const Containers::Vector< Real, Device, Index >& a, const ET& b )//->decltype( TNL::sum( a.getView() * b ) )
 {
    return TNL::sum( a.getView() * b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index >
-auto dot( const ET& a, const Containers::Vector< Real, Device, Index >& b )->decltype( TNL::sum( a * b.getView() ) )
+//auto
+Real dot( const ET& a, const Containers::Vector< Real, Device, Index >& b )//->decltype( TNL::sum( a * b.getView() ) )
 {
    return TNL::sum( a * b.getView() );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index >
-auto dot( const Containers::Vector< Real1, Device, Index >& a, const Containers::Vector< Real2, Device, Index >& b )
-->decltype( TNL::sum( a.getView() * b.getView() ) )
+//auto
+Real1 dot( const Containers::Vector< Real1, Device, Index >& a, const Containers::Vector< Real2, Device, Index >& b )
+//->decltype( TNL::sum( a.getView() * b.getView() ) )
 {
    return TNL::sum( a.getView() * b.getView() );
 }

@@ -363,7 +363,7 @@ benchmarkVectorOperations( Benchmark & benchmark,
       resultDevice = Benchmarks::CommonVectorOperations< Devices::Cuda >::getScalarProduct( deviceVector, deviceVector2 );
    };
    auto scalarProductHostET = [&]() {
-      resultHost = ( hostView, hostView2 );
+      resultHost = ( hostVector, hostVector2 );
    };
    auto scalarProductCudaET = [&]() {
       resultDevice = ( deviceView, deviceView2 );

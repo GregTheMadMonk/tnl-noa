@@ -201,17 +201,6 @@ operator/=( const VectorExpression& expression )
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename Vector_ >
-Real Vector< Real, Device, Index >::
-operator,( const Vector_& v ) const
-{
-   static_assert( std::is_same< DeviceType, typename Vector_::DeviceType >::value, "Cannot compute product of vectors allocated on different devices." );
-   return Algorithms::VectorOperations< Device >::getScalarProduct( *this, v );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
    template< typename ResultType >
 ResultType Vector< Real, Device, Index >::sum() const
 {

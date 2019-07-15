@@ -203,7 +203,7 @@ VectorView< Real, Device, Index >::
 operator,( const Vector_& v ) const
 {
    static_assert( std::is_same< DeviceType, typename Vector_::DeviceType >::value, "Cannot compute product of vectors allocated on different devices." );
-   return Algorithms::VectorOperations< Device >::getScalarProduct( *this, v );
+   return dot( *this, v );
 }
 
 template< typename Real,
@@ -225,7 +225,7 @@ typename VectorView< Real, Device, Index >::NonConstReal
 VectorView< Real, Device, Index >::
 scalarProduct( const Vector& v ) const
 {
-   return dot( this->getView(), v.getView() );
+   return TNL::sum( *this * v );
 }
 
 template< typename Real,

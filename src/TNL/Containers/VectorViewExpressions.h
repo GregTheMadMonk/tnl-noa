@@ -17,10 +17,10 @@
 #include <TNL/Containers/Expressions/VerticalOperations.h>
 
 namespace TNL {
-
+   namespace Containers {
 ////
 // All operations are supposed to be in namespace TNL
-//   namespace Containers {
+
 
 ////
 // Addition
@@ -112,52 +112,6 @@ const Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView<
 operator/( const Containers::VectorView< Real1, Device, Index >& a, const Containers::VectorView< Real2, Device, Index >& b )
 {
    return Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real1, Device, Index >, Containers::VectorView< Real2, Device, Index >, Containers::Expressions::Division >( a, b );
-}
-
-////
-// Min
-template< typename Real, typename Device, typename Index, typename ET >
-const Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, ET, Containers::Expressions::Min >
-min( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
-{
-   return Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, ET, Containers::Expressions::Min >( a, b );
-}
-
-template< typename ET, typename Real, typename Device, typename Index >
-const Containers::Expressions::BinaryExpressionTemplate< ET, Containers::VectorView< Real, Device, Index >, Containers::Expressions::Min >
-min( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
-{
-   return Containers::Expressions::BinaryExpressionTemplate< ET, Containers::VectorView< Real, Device, Index >, Containers::Expressions::Min >( a, b );
-}
-
-template< typename Real1, typename Real2, typename Device, typename Index >
-const Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real1, Device, Index >, Containers::VectorView< Real2, Device, Index >, Containers::Expressions::Min >
-min( const Containers::VectorView< Real1, Device, Index >& a, const Containers::VectorView< Real2, Device, Index >& b )
-{
-   return Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real1, Device, Index >, Containers::VectorView< Real2, Device, Index >, Containers::Expressions::Min >( a, b );
-}
-
-////
-// Max
-template< typename Real, typename Device, typename Index, typename ET >
-const Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, ET, Containers::Expressions::Max >
-max( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
-{
-   return Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, ET, Containers::Expressions::Max >( a, b );
-}
-
-template< typename ET, typename Real, typename Device, typename Index >
-const Containers::Expressions::BinaryExpressionTemplate< ET, Containers::VectorView< Real, Device, Index >, Containers::Expressions::Max >
-max( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
-{
-   return Containers::Expressions::BinaryExpressionTemplate< ET, Containers::VectorView< Real, Device, Index >, Containers::Expressions::Max >( a, b );
-}
-
-template< typename Real1, typename Real2, typename Device, typename Index >
-const Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real1, Device, Index >, Containers::VectorView< Real2, Device, Index >, Containers::Expressions::Max >
-max( const Containers::VectorView< Real1, Device, Index >& a, const Containers::VectorView< Real2, Device, Index >& b )
-{
-   return Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real1, Device, Index >, Containers::VectorView< Real2, Device, Index >, Containers::Expressions::Max >( a, b );
 }
 
 ////
@@ -301,6 +255,84 @@ const Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< 
 operator-( const Containers::VectorView< Real, Device, Index >& a )
 {
    return Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Minus >( a );
+}
+
+////
+// Scalar product
+template< typename Real, typename Device, typename Index, typename ET >
+//Real 
+auto
+operator,( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
+->decltype( TNL::sum( a * b ) )
+{
+   return TNL::sum( a * b );
+}
+
+template< typename ET, typename Real, typename Device, typename Index >
+//Real
+auto
+operator,( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
+->decltype( TNL::sum( a * b ) )
+{
+   return TNL::sum( a * b );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index >
+auto operator,( const Containers::VectorView< Real1, Device, Index >& a, const Containers::VectorView< Real2, Device, Index >& b )
+->decltype( TNL::sum( a * b ) )
+{
+   return TNL::sum( a * b );
+}
+
+} //namespace Containers
+
+////
+// All functions are supposed to be in namespace TNL
+
+////
+// Min
+template< typename Real, typename Device, typename Index, typename ET >
+const Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, ET, Containers::Expressions::Min >
+min( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
+{
+   return Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, ET, Containers::Expressions::Min >( a, b );
+}
+
+template< typename ET, typename Real, typename Device, typename Index >
+const Containers::Expressions::BinaryExpressionTemplate< ET, Containers::VectorView< Real, Device, Index >, Containers::Expressions::Min >
+min( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
+{
+   return Containers::Expressions::BinaryExpressionTemplate< ET, Containers::VectorView< Real, Device, Index >, Containers::Expressions::Min >( a, b );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index >
+const Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real1, Device, Index >, Containers::VectorView< Real2, Device, Index >, Containers::Expressions::Min >
+min( const Containers::VectorView< Real1, Device, Index >& a, const Containers::VectorView< Real2, Device, Index >& b )
+{
+   return Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real1, Device, Index >, Containers::VectorView< Real2, Device, Index >, Containers::Expressions::Min >( a, b );
+}
+
+////
+// Max
+template< typename Real, typename Device, typename Index, typename ET >
+const Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, ET, Containers::Expressions::Max >
+max( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
+{
+   return Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, ET, Containers::Expressions::Max >( a, b );
+}
+
+template< typename ET, typename Real, typename Device, typename Index >
+const Containers::Expressions::BinaryExpressionTemplate< ET, Containers::VectorView< Real, Device, Index >, Containers::Expressions::Max >
+max( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
+{
+   return Containers::Expressions::BinaryExpressionTemplate< ET, Containers::VectorView< Real, Device, Index >, Containers::Expressions::Max >( a, b );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index >
+const Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real1, Device, Index >, Containers::VectorView< Real2, Device, Index >, Containers::Expressions::Max >
+max( const Containers::VectorView< Real1, Device, Index >& a, const Containers::VectorView< Real2, Device, Index >& b )
+{
+   return Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real1, Device, Index >, Containers::VectorView< Real2, Device, Index >, Containers::Expressions::Max >( a, b );
 }
 
 ////
@@ -586,33 +618,6 @@ binaryAnd( const Containers::VectorView< Real, Device, Index >& a )
 }
 
 ////
-// Scalar product
-template< typename Real, typename Device, typename Index, typename ET >
-//Real 
-auto
-operator,( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
-->decltype( TNL::sum( a * b ) )
-{
-   return TNL::sum( a * b );
-}
-
-template< typename ET, typename Real, typename Device, typename Index >
-//Real
-auto
-operator,( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
-->decltype( TNL::sum( a * b ) )
-{
-   return TNL::sum( a * b );
-}
-
-template< typename Real1, typename Real2, typename Device, typename Index >
-auto operator,( const Containers::VectorView< Real1, Device, Index >& a, const Containers::VectorView< Real2, Device, Index >& b )
-->decltype( TNL::sum( a * b ) )
-{
-   return TNL::sum( a * b );
-}
-
-////
 // Dot product - the same as scalar product, just for convenience
 template< typename Real, typename Device, typename Index, typename ET >
 auto
@@ -630,9 +635,10 @@ dot( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
    return TNL::sum( a * b );
 }
 
-template< typename Real1, typename Real2, typename Device, typename Index >
-auto dot( const Containers::VectorView< Real1, Device, Index >& a, const Containers::VectorView< Real2, Device, Index >& b )
-->decltype( TNL::sum( a * b ) )
+template< typename Real1, typename Real2, typename Device, typename Index1, typename Index2 >
+//auto
+Real1 dot( const Containers::VectorView< Real1, Device, Index1 >& a, const Containers::VectorView< Real2, Device, Index2 >& b )
+//->decltype( TNL::sum( a * b ) )
 {
    return TNL::sum( a * b );
 }

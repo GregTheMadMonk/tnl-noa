@@ -44,6 +44,10 @@ public:
    using BaseType::DistributedArrayView;
    using BaseType::operator=;
 
+   // comparison operator is defined in DistributedVectorExpressions
+   template< typename ArrayViewT >
+   bool operator == ( const ArrayViewT& a  ) = delete;
+
    // In C++14, default constructors cannot be inherited, although Clang
    // and GCC since version 7.0 inherit them.
    // https://stackoverflow.com/a/51854172
@@ -81,9 +85,7 @@ public:
    __cuda_callable__
    ConstViewType getConstView() const;
 
-
    static String getType();
-
 
    /*
     * Usual Vector methods follow below.

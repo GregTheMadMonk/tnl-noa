@@ -137,110 +137,6 @@ StaticVector< Size, Real >& StaticVector< Size, Real >::operator /= ( const Real
    return *this;
 }
 
-#ifdef UNDEF
-template< int Size, typename Real >
-__cuda_callable__
-StaticVector< Size, Real > StaticVector< Size, Real >::operator + ( const StaticVector& u ) const
-{
-   StaticVector< Size, Real > res;
-   for( int i = 0; i < Size; i++ )
-      res[ i ] = this->data[ i ] + u[ i ];
-   return res;
-}
-
-template< int Size, typename Real >
-__cuda_callable__
-StaticVector< Size, Real > StaticVector< Size, Real >::operator - ( const StaticVector& u ) const
-{
-   StaticVector< Size, Real > res;
-   for( int i = 0; i < Size; i++ )
-      res[ i ] = this->data[ i ] - u[ i ];
-   return res;
-}
-
-template< int Size, typename Real >
-__cuda_callable__
-StaticVector< Size, Real > StaticVector< Size, Real >::operator * ( const Real& c ) const
-{
-   StaticVector< Size, Real > res;
-   for( int i = 0; i < Size; i++ )
-      res[ i ] = c * this->data[ i ];
-   return res;
-}
-
-template< int Size, typename Real >
-__cuda_callable__
-Real StaticVector< Size, Real >::operator * ( const StaticVector& u ) const
-{
-   Real res( 0.0 );
-   for( int i = 0; i < Size; i++ )
-      res += this->data[ i ] * u[ i ];
-   return res;
-}
-#endif
-
-#ifdef UNDEF
-template< int Size, typename Real >
-   template< typename StaticVectorExpression >
-__cuda_callable__
-bool StaticVector< Size, Real >::operator == ( const StaticVectorExpression& v ) const
-{
-   using Left = StaticVector< Size, Real >;
-   using Right = StaticVectorExpression;
-   return Containers::Expressions::StaticComparison< Left, Right >::EQ( *this, v );
-}
-
-template< int Size, typename Real >
-   template< typename StaticVectorExpression >
-__cuda_callable__
-bool StaticVector< Size, Real >::operator != ( const StaticVectorExpression& v ) const
-{
-   using Left = StaticVector< Size, Real >;
-   using Right = StaticVectorExpression;
-   return Containers::Expressions::StaticComparison< Left, Right >::NE( *this, v );
-}
-
-template< int Size, typename Real >
-   template< typename StaticVectorExpression >
-__cuda_callable__
-bool StaticVector< Size, Real >::operator < ( const StaticVectorExpression& v ) const
-{
-   using Left = StaticVector< Size, Real >;
-   using Right = StaticVectorExpression;
-   return Containers::Expressions::StaticComparison< Left, Right >::LT( *this, v );
-}
-
-template< int Size, typename Real >
-   template< typename StaticVectorExpression >
-__cuda_callable__
-bool StaticVector< Size, Real >::operator <= ( const StaticVectorExpression& v ) const
-{
-   using Left = StaticVector< Size, Real >;
-   using Right = StaticVectorExpression;
-   return Containers::Expressions::StaticComparison< Left, Right >::LE( *this, v );
-}
-
-template< int Size, typename Real >
-   template< typename StaticVectorExpression >
-__cuda_callable__
-bool StaticVector< Size, Real >::operator > ( const StaticVectorExpression& v ) const
-{
-   using Left = StaticVector< Size, Real >;
-   using Right = StaticVectorExpression;
-   return Containers::Expressions::StaticComparison< Left, Right >::GT( *this, v );
-}
-
-template< int Size, typename Real >
-   template< typename StaticVectorExpression >
-__cuda_callable__
-bool StaticVector< Size, Real >::operator >= ( const StaticVectorExpression& v ) const
-{
-   using Left = StaticVector< Size, Real >;
-   using Right = StaticVectorExpression;
-   return Containers::Expressions::StaticComparison< Left, Right >::GE( *this, v );
-}
-#endif
-
 template< int Size, typename Real >
    template< typename OtherReal >
 __cuda_callable__
@@ -288,14 +184,6 @@ StaticVector< Size, Real >::lpNorm( const Real& p ) const
       aux += TNL::pow( TNL::abs( this->data[ i ] ), p );
    return TNL::pow( aux, 1.0 / p );
 }
-
-/*
-template< int Size, typename Real, typename Scalar >
-__cuda_callable__
-StaticVector< Size, Real > operator * ( const Scalar& c, const StaticVector< Size, Real >& u )
-{
-   return u * c;
-}*/
 
 } // namespace Containers
 } // namespace TNL
