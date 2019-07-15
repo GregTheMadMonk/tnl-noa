@@ -66,36 +66,42 @@ public:
    /**
     * \brief Returns a modifiable view of the vector.
     *
-    * If \e begin and \e end is set, view for sub-interval [ \e begin, \e end )
-    * is returned.
+    * If \e begin or \e end is set to a non-zero value, a view for the
+    * sub-interval `[begin, end)` is returned. Otherwise a view for whole
+    * vector is returned.
     *
-    * \param begin is the beginning of the Vector sub-interval, 0 by default.
-    * \param end is the end of the Vector sub-interval. Default value is 0 which is,
-    * however, replaced with the Vector size.
+    * \param begin The beginning of the vector sub-interval. It is 0 by
+    *              default.
+    * \param end The end of the vector sub-interval. The default value is 0
+    *            which is, however, replaced with the array size.
     */
    ViewType getView( IndexType begin = 0, IndexType end = 0 );
 
    /**
     * \brief Returns a non-modifiable view of the vector.
     *
-    * If \e begin and \e end is set, view for sub-interval [ \e begin, \e end )
-    * is returned.
+    * If \e begin or \e end is set to a non-zero value, a view for the
+    * sub-interval `[begin, end)` is returned. Otherwise a view for whole
+    * vector is returned.
     *
-    * \param begin is the beginning of the sub-interval, 0 by default.
-    * \param end is the end of the sub-interval. Default value is 0 which is,
-    * however, replaced with the Vector size.
-    */   
+    * \param begin The beginning of the vector sub-interval. It is 0 by
+    *              default.
+    * \param end The end of the vector sub-interval. The default value is 0
+    *            which is, however, replaced with the array size.
+    */
    ConstViewType getView( IndexType begin = 0, IndexType end = 0 ) const;
 
    /**
     * \brief Returns a non-modifiable view of the vector.
     *
-    * If \e begin and \e end is set, view for sub-interval [ \e begin, \e end )
-    * is returned.
+    * If \e begin or \e end is set to a non-zero value, a view for the
+    * sub-interval `[begin, end)` is returned. Otherwise a view for whole
+    * vector is returned.
     *
-    * \param begin is the beginning of the sub-interval, 0 by default.
-    * \param end is the end of the sub-interval. Default value is 0 which is,
-    * however, replaced with the Vector size.
+    * \param begin The beginning of the vector sub-interval. It is 0 by
+    *              default.
+    * \param end The end of the vector sub-interval. The default value is 0
+    *            which is, however, replaced with the array size.
     */
    ConstViewType getConstView( IndexType begin = 0, IndexType end = 0 ) const;
 

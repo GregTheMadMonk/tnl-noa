@@ -158,7 +158,8 @@ public:
     * \brief Returns a modifiable view of the array view.
     *
     * If \e begin or \e end is set to a non-zero value, a view for the
-    * sub-interval `[begin, end)` is returned.
+    * sub-interval `[begin, end)` is returned. Otherwise a view for whole
+    * array view is returned.
     *
     * \param begin The beginning of the array view sub-interval. It is 0 by
     *              default.
@@ -172,7 +173,8 @@ public:
     * \brief Returns a non-modifiable view of the array view.
     *
     * If \e begin or \e end is set to a non-zero value, a view for the
-    * sub-interval `[begin, end)` is returned.
+    * sub-interval `[begin, end)` is returned. Otherwise a view for whole
+    * array view is returned.
     *
     * \param begin The beginning of the array view sub-interval. It is 0 by
     *              default.
@@ -185,12 +187,14 @@ public:
    /**
     * \brief Returns a non-modifiable view of the array view.
     *
-    * If \e begin and \e end is set, view for sub-interval [ \e begin, \e end )
-    * is returned.
+    * If \e begin or \e end is set to a non-zero value, a view for the
+    * sub-interval `[begin, end)` is returned. Otherwise a view for whole
+    * array view is returned.
     *
-    * \param begin is the beginning of the sub-interval, 0 by default.
-    * \param end is the end of the sub-interval. Default value is 0 which is,
-    * however, replaced with the ArrayView size.
+    * \param begin The beginning of the array view sub-interval. It is 0 by
+    *              default.
+    * \param end The end of the array view sub-interval. The default value is 0
+    *            which is, however, replaced with the array size.
     */
    __cuda_callable__
    ConstViewType getConstView( const IndexType begin = 0, IndexType end = 0 ) const;

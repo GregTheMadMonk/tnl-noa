@@ -146,6 +146,17 @@ template< typename Value,
           typename Communicator >
 typename DistributedArray< Value, Device, Index, Communicator >::ConstViewType
 DistributedArray< Value, Device, Index, Communicator >::
+getView() const
+{
+   return ConstViewType( getLocalRange(), getSize(), getCommunicationGroup(), getLocalArrayView() );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
+typename DistributedArray< Value, Device, Index, Communicator >::ConstViewType
+DistributedArray< Value, Device, Index, Communicator >::
 getConstView() const
 {
    return ConstViewType( getLocalRange(), getSize(), getCommunicationGroup(), getLocalArrayView() );
