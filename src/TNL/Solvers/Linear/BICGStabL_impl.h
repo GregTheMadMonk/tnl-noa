@@ -71,7 +71,7 @@ solve( ConstVectorViewType b, VectorViewType x )
       b_norm = lpNorm( M_tmp, 2.0 );
    }
    else
-      b_norm = lpNorm( b.getView(), 2.0 );
+      b_norm = lpNorm( b, 2.0 );
    if( b_norm == 0.0 )
       b_norm = 1.0;
 
