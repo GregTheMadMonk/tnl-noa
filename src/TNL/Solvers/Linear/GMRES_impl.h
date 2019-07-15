@@ -97,7 +97,7 @@ solve( ConstVectorViewType b, VectorViewType x )
    RealType normb;
    if( this->preconditioner ) {
       this->preconditioner->solve( b, _M_tmp );
-      normb = lpNorm( _M_tmp.getView(), 2.0 );
+      normb = lpNorm( _M_tmp, 2.0 );
    }
    else
       normb = lpNorm( b, 2.0 );
