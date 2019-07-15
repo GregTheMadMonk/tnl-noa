@@ -234,7 +234,7 @@ solve( ConstVectorViewType b, VectorViewType x )
           * Compute the exact preconditioned residue into the 's' vector.
           */
          compute_residue( res_tmp, x, b );
-         sigma[ 0 ] = lpNorm( res_tmp.getView(), 2.0 );
+         sigma[ 0 ] = lpNorm( res_tmp, 2.0 );
          this->setResidue( sigma[ 0 ] / b_norm );
       }
       else {
