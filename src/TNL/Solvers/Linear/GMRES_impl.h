@@ -228,7 +228,7 @@ orthogonalize_MGS( const int m, const RealType normb, const RealType beta )
       /***
        * H_{i+1,i} = |w|
        */
-      RealType normw = lpNorm( w.getView(), ( RealType ) 2.0 );
+      RealType normw = lpNorm( w, 2.0 );
       H[ i + 1 + i * ( m + 1 ) ] = normw;
 
       /***
