@@ -68,7 +68,7 @@ solve( ConstVectorViewType b, VectorViewType x )
    // initialize the norm of the preconditioned right-hand-side
    if( this->preconditioner ) {
       this->preconditioner->solve( b, M_tmp );
-      b_norm = lpNorm( M_tmp.getView(), 2.0 );
+      b_norm = lpNorm( M_tmp, 2.0 );
    }
    else
       b_norm = lpNorm( b.getView(), 2.0 );
