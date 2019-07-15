@@ -166,7 +166,7 @@ solve( ConstVectorViewType b, VectorViewType x )
       // compute the new residual vector
       compute_residue( r, x, b );
       const RealType beta_old = beta;
-      beta = lpNorm( r.getView(), 2.0 );
+      beta = lpNorm( r, 2.0 );
       this->setResidue( beta / normb );
 
       // update parameters for the adaptivity of the restarting parameter
