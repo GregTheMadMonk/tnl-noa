@@ -106,7 +106,7 @@ bool BICGStab< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
       else {
          this->matrix->vectorProduct( s, As );
       }
-      aux = lpNorm( As.getView(), 2.0 );
+      aux = lpNorm( As, 2.0 );
       omega = As.scalarProduct( s ) / ( aux * aux );
 
       /****
