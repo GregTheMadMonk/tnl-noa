@@ -144,7 +144,7 @@ bool BICGStab< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
             this->matrix->vectorProduct( x, s );
             s.addVector( b, 1.0, -1.0 );
          }
-         const RealType residue = lpNorm( s.getView(), 2.0 );
+         const RealType residue = lpNorm( s, 2.0 );
          this->setResidue( residue / b_norm );
       }
       else {
