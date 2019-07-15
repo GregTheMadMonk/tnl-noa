@@ -24,6 +24,8 @@ template< typename Value,
           typename Communicator = Communicators::MpiCommunicator >
 class DistributedArray
 {
+   using CommunicationGroup = typename Communicator::CommunicationGroup;
+
 public:
    using ValueType = Value;
    using DeviceType = Device;
