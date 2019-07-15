@@ -151,7 +151,7 @@ bool BICGStab< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
          /****
           * Use the "orthogonal residue vector" for stopping.
           */
-         const RealType residue = lpNorm( r.getView(), 2.0 );
+         const RealType residue = lpNorm( r, 2.0 );
          this->setResidue( residue / b_norm );
       }
    }
