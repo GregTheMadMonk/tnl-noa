@@ -32,7 +32,7 @@ class DistributedVector;
 
       namespace Expressions {
 
-enum ExpressionVariableType { ArithmeticVariable, VectorVariable, OtherVariable };
+enum ExpressionVariableType { ArithmeticVariable, VectorVariable, VectorExpressionVariable, OtherVariable };
 
 
 /**
@@ -117,7 +117,7 @@ struct  ExpressionVariableTypeGetter< T, true, false >
 template< typename T >
 struct ExpressionVariableTypeGetter< T, false, true >
 {
-   static constexpr ExpressionVariableType value = VectorVariable;
+   static constexpr ExpressionVariableType value = VectorExpressionVariable;
 };
 
 ////

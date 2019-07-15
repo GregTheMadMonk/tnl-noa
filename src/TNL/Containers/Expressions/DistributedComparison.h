@@ -31,7 +31,7 @@ struct DistributedComparison
 // Distributed comparison of two vector expressions
 template< typename T1,
           typename T2 >
-struct DistributedComparison< T1, T2, VectorVariable, VectorVariable >
+struct DistributedComparison< T1, T2, VectorExpressionVariable, VectorExpressionVariable >
 {
    template< typename Communicator >
    static bool EQ( const T1& a, const T2& b, const typename Communicator::CommunicationGroup& communicationGroup )
@@ -119,7 +119,7 @@ struct DistributedComparison< T1, T2, VectorVariable, VectorVariable >
 // Distributed comparison of number and vector expression
 template< typename T1,
           typename T2 >
-struct DistributedComparison< T1, T2, ArithmeticVariable, VectorVariable >
+struct DistributedComparison< T1, T2, ArithmeticVariable, VectorExpressionVariable >
 {
 
    template< typename Communicator >
@@ -199,7 +199,7 @@ struct DistributedComparison< T1, T2, ArithmeticVariable, VectorVariable >
 // Distributed comparison of vector expressions and number
 template< typename T1,
           typename T2 >
-struct DistributedComparison< T1, T2, VectorVariable, ArithmeticVariable >
+struct DistributedComparison< T1, T2, VectorExpressionVariable, ArithmeticVariable >
 {
 
    template< typename Communicator >

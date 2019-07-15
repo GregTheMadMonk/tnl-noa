@@ -62,7 +62,7 @@ struct IsStaticType< StaticBinaryExpressionTemplate< T1, T2, Operation > >
 template< typename T1,
           typename T2,
           template< typename, typename > class Operation >
-struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorVariable, VectorVariable >
+struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, VectorExpressionVariable >
 {
    static_assert( IsStaticType< T1 >::value, "Left-hand side operand of static expression is not static, i.e. based on static vector." );
    static_assert( IsStaticType< T2 >::value, "Right-hand side operand of static expression is not static, i.e. based on static vector." );
@@ -123,7 +123,7 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorVariable, Vector
 template< typename T1,
           typename T2,
           template< typename, typename > class Operation >
-struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorVariable, ArithmeticVariable  >
+struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, ArithmeticVariable  >
 {
    static_assert( IsStaticType< T1 >::value, "Left-hand side operand of static expression is not static, i.e. based on static vector." );
 
@@ -184,7 +184,7 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorVariable, Arithm
 template< typename T1,
           typename T2,
           template< typename, typename > class Operation >
-struct StaticBinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorVariable  >
+struct StaticBinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorExpressionVariable  >
 {
    static_assert( IsStaticType< T2 >::value, "Right-hand side operand of static expression is not static, i.e. based on static vector." );
 
@@ -249,7 +249,7 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, Ve
 template< typename T1,
           template< typename > class Operation,
           typename Parameter >
-struct StaticUnaryExpressionTemplate< T1, Operation, Parameter, VectorVariable >
+struct StaticUnaryExpressionTemplate< T1, Operation, Parameter, VectorExpressionVariable >
 {
    static_assert( IsStaticType< T1 >::value, "Operand of static expression is not static, i.e. based on static vector." );
 
@@ -314,7 +314,7 @@ struct StaticUnaryExpressionTemplate< T1, Operation, Parameter, VectorVariable >
 // Static unary expression template with no parameter
 template< typename T1,
           template< typename > class Operation >
-struct StaticUnaryExpressionTemplate< T1, Operation, void, VectorVariable >
+struct StaticUnaryExpressionTemplate< T1, Operation, void, VectorExpressionVariable >
 {
    using RealType = typename T1::RealType;
    using IsExpressionTemplate = bool;

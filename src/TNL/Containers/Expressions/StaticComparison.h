@@ -29,7 +29,7 @@ struct StaticComparison
 // Static comparison of vector expressions
 template< typename T1,
           typename T2 >
-struct StaticComparison< T1, T2, VectorVariable, VectorVariable >
+struct StaticComparison< T1, T2, VectorExpressionVariable, VectorExpressionVariable >
 {
 
    __cuda_callable__
@@ -93,7 +93,7 @@ struct StaticComparison< T1, T2, VectorVariable, VectorVariable >
 // Static comparison of number and vector expressions
 template< typename T1,
           typename T2 >
-struct StaticComparison< T1, T2, ArithmeticVariable, VectorVariable >
+struct StaticComparison< T1, T2, ArithmeticVariable, VectorExpressionVariable >
 {
 
    __cuda_callable__
@@ -152,7 +152,7 @@ struct StaticComparison< T1, T2, ArithmeticVariable, VectorVariable >
 // Static comparison of vector expressions and number
 template< typename T1,
           typename T2 >
-struct StaticComparison< T1, T2, VectorVariable, ArithmeticVariable >
+struct StaticComparison< T1, T2, VectorExpressionVariable, ArithmeticVariable >
 {
 
    __cuda_callable__

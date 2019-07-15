@@ -53,7 +53,7 @@ template< typename T1,
           typename T2,
           template< typename, typename > class Operation,
           typename Communicator >
-struct DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator, VectorVariable, VectorVariable >
+struct DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator, VectorExpressionVariable, VectorExpressionVariable >
 {
    using RealType = typename std::remove_const< typename T1::RealType >::type;
    using DeviceType = typename T1::DeviceType;
@@ -108,7 +108,7 @@ template< typename T1,
           typename T2,
           template< typename, typename > class Operation,
           typename Communicator >
-struct DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator, VectorVariable, ArithmeticVariable >
+struct DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator, VectorExpressionVariable, ArithmeticVariable >
 {
    using RealType = typename std::remove_const< typename T1::RealType >::type;
    using DeviceType = typename T1::DeviceType;
@@ -161,7 +161,7 @@ template< typename T1,
           typename T2,
           template< typename, typename > class Operation,
           typename Communicator >
-struct DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator, ArithmeticVariable, VectorVariable >
+struct DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator, ArithmeticVariable, VectorExpressionVariable >
 {
    using RealType = typename std::remove_const< typename T2::RealType >::type;
    using DeviceType = typename T2::DeviceType;
@@ -219,7 +219,7 @@ template< typename T1,
           template< typename > class Operation,
           typename Parameter,
           typename Communicator >
-struct DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator, VectorVariable >
+struct DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator, VectorExpressionVariable >
 {
    using RealType = typename std::remove_const< typename T1::RealType >::type;
    using DeviceType = typename T1::DeviceType;
@@ -275,7 +275,7 @@ struct DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicato
 template< typename T1,
           template< typename > class Operation,
           typename Communicator >
-struct DistributedUnaryExpressionTemplate< T1, Operation, void, Communicator, VectorVariable >
+struct DistributedUnaryExpressionTemplate< T1, Operation, void, Communicator, VectorExpressionVariable >
 {
    using RealType = typename std::remove_const< typename T1::RealType >::type;
    using DeviceType = typename T1::DeviceType;

@@ -278,7 +278,6 @@ TYPED_TEST( VectorTest, abs )
 TYPED_TEST( VectorTest, comparison )
 {
    using VectorType = typename TestFixture::VectorType;
-   using VectorOperations = typename TestFixture::VectorOperations;
    using ViewType = typename TestFixture::ViewType;
    const int size = VECTOR_TEST_SIZE;
 
@@ -380,6 +379,25 @@ TYPED_TEST( VectorTest, comparison )
    EXPECT_GT( v + w, u );
    EXPECT_GT( abs( w ), u + v );
    EXPECT_GT( v + w, abs( u ) );
+}
+
+TYPED_TEST( VectorTest, comparisonOnDifferentDevices )
+{
+#ifdef HAVE_CUDA
+   using VectorType = typename TestFixture::VectorType;
+   const int size = VECTOR_TEST_SIZE;
+
+   typename VectorType::HostType host_vec( size );
+   typename VectorType::CudaType cuda_vec( size );
+   host_vec = 1.0;
+   cuda_vec = 1.0;
+   EXPECT_EQ( host_vec, cuda_vec );
+   EXPECT_EQ( host_vec.getView(), cuda_vec.getView() );
+   
+   host_vec = 0.0;
+   EXPECT_TRUE( host_vec != cuda_vec );
+   EXPECT_TRUE( host_vec.getView() != cuda_vec.getView() );
+#endif
 }
 
 TYPED_TEST( VectorTest, horizontalOperations )

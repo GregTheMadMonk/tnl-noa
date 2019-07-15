@@ -44,7 +44,7 @@ struct BinaryExpressionTemplate
 template< typename T1,
           typename T2,
           template< typename, typename > class Operation >
-struct BinaryExpressionTemplate< T1, T2, Operation, VectorVariable, VectorVariable >
+struct BinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, VectorExpressionVariable >
 {
    using RealType = typename T1::RealType;
    using DeviceType = typename T1::DeviceType;
@@ -89,7 +89,7 @@ struct BinaryExpressionTemplate< T1, T2, Operation, VectorVariable, VectorVariab
 template< typename T1,
           typename T2,
           template< typename, typename > class Operation >
-struct BinaryExpressionTemplate< T1, T2, Operation, VectorVariable, ArithmeticVariable >
+struct BinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, ArithmeticVariable >
 {
    using RealType = typename T1::RealType;
    using DeviceType = typename T1::DeviceType;
@@ -132,7 +132,7 @@ struct BinaryExpressionTemplate< T1, T2, Operation, VectorVariable, ArithmeticVa
 template< typename T1,
           typename T2,
           template< typename, typename > class Operation >
-struct BinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorVariable >
+struct BinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorExpressionVariable >
 {
    using RealType = typename T2::RealType;
    using DeviceType = typename T2::DeviceType;
@@ -180,7 +180,7 @@ struct BinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorVa
 template< typename T1,
           template< typename > class Operation,
           typename Parameter >
-struct UnaryExpressionTemplate< T1, Operation, Parameter, VectorVariable >
+struct UnaryExpressionTemplate< T1, Operation, Parameter, VectorExpressionVariable >
 {
    using RealType = typename T1::RealType;
    using DeviceType = typename T1::DeviceType;
@@ -227,7 +227,7 @@ struct UnaryExpressionTemplate< T1, Operation, Parameter, VectorVariable >
 // Non-static unary expression template with no parameter
 template< typename T1,
           template< typename > class Operation >
-struct UnaryExpressionTemplate< T1, Operation, void, VectorVariable >
+struct UnaryExpressionTemplate< T1, Operation, void, VectorExpressionVariable >
 {
    using RealType = typename T1::RealType;
    using DeviceType = typename T1::DeviceType;
