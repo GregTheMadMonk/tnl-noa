@@ -35,7 +35,7 @@ bool TFQMR< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
 
    if( this->preconditioner ) {
       this->preconditioner->solve( b, M_tmp );
-      b_norm = lpNorm( M_tmp.getView(), ( RealType ) 2.0 );
+      b_norm = lpNorm( M_tmp, 2.0 );
 
       this->matrix->vectorProduct( x, M_tmp );
       M_tmp.addVector( b, 1.0, -1.0 );
