@@ -89,7 +89,7 @@ bool TFQMR< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
       }
       w.addVector( Au, -alpha );
       d.addVector( u, 1.0, theta * theta * eta / alpha );
-      w_norm = lpNorm( w.getView(), 2.0 );
+      w_norm = lpNorm( w, 2.0 );
       theta = w_norm / tau;
       const RealType c = 1.0 / std::sqrt( 1.0 + theta * theta );
       tau = tau * theta * c;
