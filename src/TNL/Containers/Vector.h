@@ -197,15 +197,6 @@ public:
    ResultType sum() const;
 
    /**
-    * \brief Returns this vector multiplied by scalar \e alpha.
-    *
-    * This function multiplies every element of this vector by scalar \e alpha.
-    * \param alpha Reference to a real number.
-    */
-   template< typename Scalar >
-   void scalarMultiplication( const Scalar alpha );
-
-   /**
     * \brief Computes scalar (dot) product.
     *
     * An algebraic operation that takes two equal-length vectors and returns a single number.

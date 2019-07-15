@@ -206,17 +206,6 @@ operator,( const Vector_& v ) const
    return Algorithms::VectorOperations< Device >::getScalarProduct( *this, v );
 }
 
-/*template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename ResultType, typename Scalar >
-ResultType
-VectorView< Real, Device, Index >::
-lpNorm( const Scalar p ) const
-{
-   return Algorithms::VectorOperations< Device >::template getVectorLpNorm< VectorView, ResultType >( *this, p );
-}*/
-
 template< typename Real,
           typename Device,
           typename Index >
@@ -231,24 +220,12 @@ sum() const
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename Scalar >
-void
-VectorView< Real, Device, Index >::
-scalarMultiplication( Scalar alpha )
-{
-   Algorithms::VectorOperations< Device >::vectorScalarMultiplication( *this, alpha );
-}
-
-
-template< typename Real,
-          typename Device,
-          typename Index >
    template< typename Vector >
 typename VectorView< Real, Device, Index >::NonConstReal
 VectorView< Real, Device, Index >::
 scalarProduct( const Vector& v ) const
 {
-   return dot( this->getView(), v.getView() );//Algorithms::VectorOperations< Device >::template getScalarProduct< VectorView, Vector, NonConstReal >( *this, v );
+   return dot( this->getView(), v.getView() );
 }
 
 template< typename Real,

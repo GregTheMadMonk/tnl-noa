@@ -153,14 +153,8 @@ public:
    template< typename Vector_ >
    NonConstReal operator,( const Vector_& v ) const;
 
-   //template< typename ResultType = NonConstReal, typename Scalar >
-   //ResultType lpNorm( Scalar p ) const;
-
    template< typename ResultType = NonConstReal >
    ResultType sum() const;
-
-   template< typename Scalar >
-   void scalarMultiplication( Scalar alpha );
 
    //! Computes scalar dot product
    template< typename Vector >

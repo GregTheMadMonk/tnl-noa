@@ -254,7 +254,7 @@ TYPED_TEST( DistributedVectorTest, differenceSum )
    EXPECT_EQ( TNL::sum( this->y_view - this->y_view ), 0 );
 }
 
-TYPED_TEST( DistributedVectorTest, scalarMultiplication )
+/*TYPED_TEST( DistributedVectorTest, scalarMultiplication )
 {
    this->y *= 2;
    for( int i = 0; i < this->y.getLocalVectorView().getSize(); i++ ) {
@@ -281,7 +281,7 @@ TYPED_TEST( DistributedVectorTest, scalarMultiplication )
       const auto gi = this->y_view.getLocalRange().getGlobalIndex( i );
       EXPECT_EQ( this->y_view.getElement( gi ), 4 * gi );
    }
-}
+}*/
 
 TYPED_TEST( DistributedVectorTest, scalarProduct )
 {

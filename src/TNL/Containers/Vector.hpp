@@ -158,7 +158,6 @@ Vector< Real, Device, Index >&
 Vector< Real, Device, Index >::
 operator-=( const VectorExpression& expression )
 {
-   //addVector( vector, -1.0 );
    Algorithms::VectorSubtraction< Vector, VectorExpression >::subtraction( *this, expression );
    return *this;
 }
@@ -171,7 +170,6 @@ Vector< Real, Device, Index >&
 Vector< Real, Device, Index >::
 operator+=( const VectorExpression& expression )
 {
-   //addVector( vector );
    Algorithms::VectorAddition< Vector, VectorExpression >::addition( *this, expression );
    return *this;
 }
@@ -184,7 +182,6 @@ Vector< Real, Device, Index >&
 Vector< Real, Device, Index >::
 operator*=( const VectorExpression& expression )
 {
-   //Algorithms::VectorOperations< Device >::vectorScalarMultiplication( *this, c );
    Algorithms::VectorMultiplication< Vector, VectorExpression >::multiplication( *this, expression );
    return *this;
 }
@@ -197,7 +194,6 @@ Vector< Real, Device, Index >&
 Vector< Real, Device, Index >::
 operator/=( const VectorExpression& expression )
 {
-   //Algorithms::VectorOperations< Device >::vectorScalarMultiplication( *this, 1.0 / c );
    Algorithms::VectorDivision< Vector, VectorExpression >::division( *this, expression );
    return *this;
 }
@@ -213,15 +209,6 @@ operator,( const Vector_& v ) const
    return Algorithms::VectorOperations< Device >::getScalarProduct( *this, v );
 }
 
-/*template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename ResultType, typename Scalar >
-ResultType Vector< Real, Device, Index >::lpNorm( const Scalar p ) const
-{
-   return Algorithms::VectorOperations< Device >::template getVectorLpNorm< Vector, ResultType >( *this, p );
-}*/
-
 template< typename Real,
           typename Device,
           typename Index >
@@ -234,20 +221,10 @@ ResultType Vector< Real, Device, Index >::sum() const
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename Scalar >
-void Vector< Real, Device, Index >::scalarMultiplication( const Scalar alpha )
-{
-   Algorithms::VectorOperations< Device >::vectorScalarMultiplication( *this, alpha );
-}
-
-
-template< typename Real,
-          typename Device,
-          typename Index >
    template< typename VectorT >
 Real Vector< Real, Device, Index >::scalarProduct( const VectorT& v ) const
 {
-   return dot( this->getView(), v.getView() );//Algorithms::VectorOperations< Device >::getScalarProduct( *this, v );
+   return dot( this->getView(), v.getView() );
 }
 
 template< typename Real,

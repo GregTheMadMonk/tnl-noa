@@ -246,26 +246,6 @@ operator/=( Scalar c )
    return *this;
 }
 
-/*
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Communicator >
-   template< typename ResultType, typename Scalar >
-ResultType
-DistributedVector< Real, Device, Index, Communicator >::
-lpNorm( const Scalar p ) const
-{
-   const auto group = this->getCommunicationGroup();
-   ResultType result = Containers::Algorithms::ParallelReductionLpNorm< Real, ResultType, Scalar >::initialValue();
-   if( group != CommunicatorType::NullGroup ) {
-      const ResultType localResult = std::pow( getLocalVectorView().lpNorm( p ), p );
-      CommunicatorType::Allreduce( &localResult, &result, 1, MPI_SUM, group );
-      result = std::pow( result, 1.0 / p );
-   }
-   return result;
-}*/
-
 template< typename Real,
           typename Device,
           typename Index,
@@ -282,20 +262,6 @@ sum() const
       CommunicatorType::Allreduce( &localResult, &result, 1, MPI_SUM, group );
    }
    return result;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Communicator >
-   template< typename Scalar >
-void
-DistributedVector< Real, Device, Index, Communicator >::
-scalarMultiplication( Scalar alpha )
-{
-   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalVectorView().scalarMultiplication( alpha );
-   }
 }
 
 template< typename Real,

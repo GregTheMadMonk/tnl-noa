@@ -162,42 +162,6 @@ TEST( VectorSpecialCasesTest, initializationOfVectorViewByArrayView )
    EXPECT_EQ( sum( v_view ), 0 );
 }
 
-TYPED_TEST( VectorTest, scalarMultiplication )
-{
-   using VectorType = typename TestFixture::VectorType;
-   using VectorOperations = typename TestFixture::VectorOperations;
-   using ViewType = typename TestFixture::ViewType;
-   const int size = VECTOR_TEST_SIZE;
-
-   VectorType u( size );
-   ViewType u_view( u );
-
-   typename VectorType::HostType expected;
-   expected.setSize( size );
-   for( int i = 0; i < size; i++ )
-      expected[ i ] = 2.0 * i;
-
-   setLinearSequence( u );
-   VectorOperations::vectorScalarMultiplication( u, 2.0 );
-   EXPECT_EQ( u, expected );
-
-   setLinearSequence( u );
-   u.scalarMultiplication( 2.0 );
-   EXPECT_EQ( u, expected );
-
-   setLinearSequence( u );
-   u_view.scalarMultiplication( 2.0 );
-   EXPECT_EQ( u, expected );
-
-   setLinearSequence( u );
-   u *= 2.0;
-   EXPECT_EQ( u, expected );
-
-   setLinearSequence( u );
-   u_view *= 2.0;
-   EXPECT_EQ( u, expected );
-}
-
 TYPED_TEST( VectorTest, addVector )
 {
    using VectorType = typename TestFixture::VectorType;

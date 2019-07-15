@@ -39,7 +39,6 @@ public:
    using CudaType = DistributedArray< Value, Devices::Cuda, Index, Communicator >;
    using ViewType = DistributedArrayView< Value, Device, Index, Communicator >;
    using ConstViewType = DistributedArrayView< std::add_const_t< Value >, Device, Index, Communicator >;
-   using CommunicationGroup = typename Communicator::CommunicationGroup;
 
    DistributedArray() = default;
 
