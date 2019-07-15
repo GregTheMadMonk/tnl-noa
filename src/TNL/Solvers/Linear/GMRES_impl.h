@@ -106,7 +106,7 @@ solve( ConstVectorViewType b, VectorViewType x )
 
    // r = M.solve(b - A * x);
    compute_residue( r, x, b );
-   RealType beta = lpNorm( r.getView(), 2.0 );
+   RealType beta = lpNorm( r, 2.0 );
 
    // initialize stopping criterion
    this->resetIterations();
