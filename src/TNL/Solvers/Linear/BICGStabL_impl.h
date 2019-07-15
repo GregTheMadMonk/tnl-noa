@@ -241,7 +241,7 @@ solve( ConstVectorViewType b, VectorViewType x )
          /****
           * Use the "orthogonal residue vector" for stopping.
           */
-         sigma[ 0 ] = lpNorm( r_0.getView(), 2.0 );
+         sigma[ 0 ] = lpNorm( r_0, 2.0 );
          this->setResidue( sigma[ 0 ] / b_norm );
       }
    }
