@@ -55,7 +55,7 @@ class StaticArray
    // reference: https://stackoverflow.com/q/4610503
    template< typename _unused = void >
    __cuda_callable__
-   inline StaticArray( const Value v[ Size ] );
+   StaticArray( const Value v[ Size ] );
 
    /**
     * \brief Constructor that sets all array components to value \e v.
