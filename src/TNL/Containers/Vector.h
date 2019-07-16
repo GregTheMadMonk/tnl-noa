@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <TNL/TypeTraits.h>
 #include <TNL/Containers/Array.h>
 #include <TNL/Containers/VectorView.h>
 
@@ -65,24 +66,42 @@ public:
    /**
     * \brief Returns a modifiable view of the vector.
     *
-    * If \e begin and \e end is set, view for sub-interval [ \e begin, \e end )
-    * is returned.
+    * If \e begin or \e end is set to a non-zero value, a view for the
+    * sub-interval `[begin, end)` is returned. Otherwise a view for whole
+    * vector is returned.
     *
-    * \param begin is the beginning of the Vector sub-interval, 0 by default.
-    * \param end is the end of the Vector sub-interval. Default value is 0 which is,
-    * however, replaced with the Vector size.
+    * \param begin The beginning of the vector sub-interval. It is 0 by
+    *              default.
+    * \param end The end of the vector sub-interval. The default value is 0
+    *            which is, however, replaced with the array size.
     */
    ViewType getView( IndexType begin = 0, IndexType end = 0 );
 
    /**
     * \brief Returns a non-modifiable view of the vector.
     *
-    * If \e begin and \e end is set, view for sub-interval [ \e begin, \e end )
-    * is returned.
+    * If \e begin or \e end is set to a non-zero value, a view for the
+    * sub-interval `[begin, end)` is returned. Otherwise a view for whole
+    * vector is returned.
     *
-    * \param begin is the beginning of the sub-interval, 0 by default.
-    * \param end is the end of the sub-interval. Default value is 0 which is,
-    * however, replaced with the Vector size.
+    * \param begin The beginning of the vector sub-interval. It is 0 by
+    *              default.
+    * \param end The end of the vector sub-interval. The default value is 0
+    *            which is, however, replaced with the array size.
+    */
+   ConstViewType getView( IndexType begin = 0, IndexType end = 0 ) const;
+
+   /**
+    * \brief Returns a non-modifiable view of the vector.
+    *
+    * If \e begin or \e end is set to a non-zero value, a view for the
+    * sub-interval `[begin, end)` is returned. Otherwise a view for whole
+    * vector is returned.
+    *
+    * \param begin The beginning of the vector sub-interval. It is 0 by
+    *              default.
+    * \param end The end of the vector sub-interval. The default value is 0
+    *            which is, however, replaced with the array size.
     */
    ConstViewType getConstView( IndexType begin = 0, IndexType end = 0 ) const;
 
@@ -161,111 +180,10 @@ public:
    Vector& operator/=( const VectorExpression& expression );
 
    /**
-    * \brief Scalar product
-    * @param v
-    * @return
-    */
-   template< typename Vector_ >
-   Real operator,( const Vector_& v ) const;
-
-   /**
-    * \brief Returns the maximum value out of all vector elements.
-    */
-   Real max() const;
-
-   /**
-    * \brief Returns the minimum value out of all vector elements.
-    */
-   Real min() const;
-
-   /**
-    * \brief Returns the maximum absolute value out of all vector elements.
-    */
-   Real absMax() const;
-
-   /**
-    * \brief Returns the minimum absolute value out of all vector elements.
-    */
-   Real absMin() const;
-
-   /**
-    * \brief Returns the length of this vector in p-dimensional vector space.
-    *
-    * \tparam
-    * \param p Number specifying the dimension of vector space.
-    */
-   template< typename ResultType = RealType, typename Scalar >
-   ResultType lpNorm( const Scalar p ) const;
-
-   /**
     * \brief Returns sum of all vector elements.
     */
    template< typename ResultType = RealType >
    ResultType sum() const;
-
-   /**
-    * \brief Returns maximal difference between elements of this vector and vector \e v.
-    *
-    * \tparam Vector Type of vector.
-    * \param v Reference to another vector of the same size as this vector.
-    */
-   template< typename Vector >
-   Real differenceMax( const Vector& v ) const;
-
-   /**
-    * \brief Returns minimal difference between elements of this vector and vector \e v.
-    *
-    * \tparam Vector Type of vector.
-    * \param v Reference to another vector of the same size as this vector.
-    */
-   template< typename Vector >
-   Real differenceMin( const Vector& v ) const;
-
-   /**
-    * \brief Returns maximal absolute difference between elements of this vector and vector \e v.
-    *
-    * \tparam Vector Type of vector.
-    * \param v Reference to another vector of the same size as this vector.
-    */
-   template< typename Vector >
-   Real differenceAbsMax( const Vector& v ) const;
-
-   /**
-    * \brief Returns minimal absolute difference between elements of this vector and vector \e v.
-    *
-    * \tparam Vector Type of vector.
-    * \param v Reference to another vector of the same size as this vector.
-    */
-   template< typename Vector >
-   Real differenceAbsMin( const Vector& v ) const;
-
-   /**
-    * \brief Returns difference between L^p norms of this vector and vector \e v.
-    *
-    * See also \ref lpNorm.
-    *
-    * \param v Reference to another vector.
-    * \param p Number specifying the dimension of vector space.
-    */
-   template< typename ResultType = RealType, typename Vector, typename Scalar >
-   ResultType differenceLpNorm( const Vector& v, const Scalar p ) const;
-
-   /**
-    * \brief Returns difference between sums of elements of this vector and vector \e v.
-    *
-    * \param v Reference to another vector.
-    */
-   template< typename ResultType = RealType, typename Vector >
-   ResultType differenceSum( const Vector& v ) const;
-
-   /**
-    * \brief Returns this vector multiplied by scalar \e alpha.
-    *
-    * This function multiplies every element of this vector by scalar \e alpha.
-    * \param alpha Reference to a real number.
-    */
-   template< typename Scalar >
-   void scalarMultiplication( const Scalar alpha );
 
    /**
     * \brief Computes scalar (dot) product.
@@ -327,6 +245,21 @@ public:
 };
 
 } // namespace Containers
+
+template< typename Real, typename Device, typename Index >
+struct ViewTypeGetter< Containers::Vector< Real, Device, Index > >
+{
+   using Type = Containers::VectorView< Real, Device, Index >;
+};
+
+template< typename Real, typename Device, typename Index >
+struct IsStatic< Containers::Vector< Real, Device, Index > >
+{
+   static constexpr bool Value = false;
+};
+
+
 } // namespace TNL
 
 #include <TNL/Containers/Vector.hpp>
+#include <TNL/Containers/VectorExpressions.h>

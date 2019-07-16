@@ -94,6 +94,18 @@ template< typename Value,
           typename Device,
           typename Index,
           typename Communicator >
+typename DistributedArray< Value, Device, Index, Communicator >::ConstLocalArrayViewType
+DistributedArray< Value, Device, Index, Communicator >::
+getConstLocalArrayView() const
+{
+   return localData.getConstView();
+}
+
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
 void
 DistributedArray< Value, Device, Index, Communicator >::
 copyFromGlobal( ConstLocalArrayViewType globalArray )
@@ -126,6 +138,17 @@ DistributedArray< Value, Device, Index, Communicator >::
 getView()
 {
    return ViewType( getLocalRange(), getSize(), getCommunicationGroup(), getLocalArrayView() );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
+typename DistributedArray< Value, Device, Index, Communicator >::ConstViewType
+DistributedArray< Value, Device, Index, Communicator >::
+getView() const
+{
+   return ConstViewType( getLocalRange(), getSize(), getCommunicationGroup(), getLocalArrayView() );
 }
 
 template< typename Value,

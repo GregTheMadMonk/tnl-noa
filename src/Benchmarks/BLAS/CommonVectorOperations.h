@@ -13,8 +13,7 @@
 #include <TNL/Containers/Algorithms/PrefixSumType.h>
 
 namespace TNL {
-namespace Containers {
-namespace Algorithms {
+namespace Benchmarks {
 
 template< typename Device >
 struct CommonVectorOperations
@@ -71,22 +70,9 @@ struct CommonVectorOperations
 
    template< typename Vector1, typename Vector2, typename ResultType = typename Vector1::RealType >
    static ResultType getScalarProduct( const Vector1& v1, const Vector2& v2 );
-
-   template< Algorithms::PrefixSumType Type,
-             typename Vector >
-   static void prefixSum( Vector& v,
-                          const typename Vector::IndexType begin,
-                          const typename Vector::IndexType end );
-
-   template< Algorithms::PrefixSumType Type, typename Vector, typename Flags >
-   static void segmentedPrefixSum( Vector& v,
-                                   Flags& f,
-                                   const typename Vector::IndexType begin,
-                                   const typename Vector::IndexType end );
 };
 
-} // namespace Algorithms
-} // namespace Containers
+} // namespace Benchmarks
 } // namespace TNL
 
-#include <TNL/Containers/Algorithms/CommonVectorOperations.hpp>
+#include "CommonVectorOperations.hpp"

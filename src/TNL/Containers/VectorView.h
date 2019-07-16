@@ -72,12 +72,14 @@ public:
    /**
     * \brief Returns a modifiable view of the vector view.
     *
-    * If \e begin and \e end is set, view for sub-interval [ \e begin, \e end )
-    * is returned.
+    * If \e begin or \e end is set to a non-zero value, a view for the
+    * sub-interval `[begin, end)` is returned. Otherwise a view for whole
+    * vector view is returned.
     *
-    * \param begin is the beginning of the VectorView sub-interval, 0 by default.
-    * \param end is the end of the VectorView sub-interval. Default value is 0 which is,
-    * however, replaced with the VectorView size.
+    * \param begin The beginning of the vector view sub-interval. It is 0 by
+    *              default.
+    * \param end The end of the vector view sub-interval. The default value is 0
+    *            which is, however, replaced with the array size.
     */
    __cuda_callable__
    ViewType getView( IndexType begin = 0, IndexType end = 0 );
@@ -85,16 +87,32 @@ public:
    /**
     * \brief Returns a non-modifiable view of the vector view.
     *
-    * If \e begin and \e end is set, view for sub-interval [ \e begin, \e end )
-    * is returned.
+    * If \e begin or \e end is set to a non-zero value, a view for the
+    * sub-interval `[begin, end)` is returned. Otherwise a view for whole
+    * vector view is returned.
     *
-    * \param begin is the beginning of the sub-interval, 0 by default.
-    * \param end is the end of the sub-interval. Default value is 0 which is,
-    * however, replaced with the VectorView size.
+    * \param begin The beginning of the vector view sub-interval. It is 0 by
+    *              default.
+    * \param end The end of the vector view sub-interval. The default value is 0
+    *            which is, however, replaced with the array size.
+    */
+   __cuda_callable__
+   ConstViewType getView( IndexType begin = 0, IndexType end = 0 ) const;
+
+   /**
+    * \brief Returns a non-modifiable view of the vector view.
+    *
+    * If \e begin or \e end is set to a non-zero value, a view for the
+    * sub-interval `[begin, end)` is returned. Otherwise a view for whole
+    * vector view is returned.
+    *
+    * \param begin The beginning of the vector view sub-interval. It is 0 by
+    *              default.
+    * \param end The end of the vector view sub-interval. The default value is 0
+    *            which is, however, replaced with the array size.
     */
    __cuda_callable__
    ConstViewType getConstView( IndexType begin = 0, IndexType end = 0 ) const;
-
 
    static String getType();
 
@@ -141,40 +159,8 @@ public:
    template< typename Vector_ >
    NonConstReal operator,( const Vector_& v ) const;
 
-   NonConstReal max() const;
-
-   NonConstReal min() const;
-
-   NonConstReal absMax() const;
-
-   NonConstReal absMin() const;
-
-   template< typename ResultType = NonConstReal, typename Scalar >
-   ResultType lpNorm( Scalar p ) const;
-
    template< typename ResultType = NonConstReal >
    ResultType sum() const;
-
-   template< typename Vector >
-   NonConstReal differenceMax( const Vector& v ) const;
-
-   template< typename Vector >
-   NonConstReal differenceMin( const Vector& v ) const;
-
-   template< typename Vector >
-   NonConstReal differenceAbsMax( const Vector& v ) const;
-
-   template< typename Vector >
-   NonConstReal differenceAbsMin( const Vector& v ) const;
-
-   template< typename ResultType = NonConstReal, typename Vector, typename Scalar >
-   ResultType differenceLpNorm( const Vector& v, Scalar p ) const;
-
-   template< typename ResultType = NonConstReal, typename Vector >
-   ResultType differenceSum( const Vector& v ) const;
-
-   template< typename Scalar >
-   void scalarMultiplication( Scalar alpha );
 
    //! Computes scalar dot product
    template< typename Vector >
@@ -214,7 +200,14 @@ public:
 };
 
 } // namespace Containers
+
+template< typename Real, typename Device, typename Index >
+struct IsStatic< Containers::VectorView< Real, Device, Index > >
+{
+   static constexpr bool Value = false;
+};
+
 } // namespace TNL
 
-#include <TNL/Containers/VectorView.hpp>
 #include <TNL/Containers/VectorViewExpressions.h>
+#include <TNL/Containers/VectorView.hpp>

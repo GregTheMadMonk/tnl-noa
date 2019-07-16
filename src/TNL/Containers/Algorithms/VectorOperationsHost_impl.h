@@ -62,22 +62,6 @@ vectorScalarMultiplication( Vector& v,
 }
 
 
-/*template< typename Vector1, typename Vector2, typename ResultType >
-ResultType
-VectorOperations< Devices::Host >::
-getScalarProduct( const Vector1& v1,
-                  const Vector2& v2 )
-{
-   TNL_ASSERT_GT( v1.getSize(), 0, "Vector size must be positive." );
-   TNL_ASSERT_EQ( v1.getSize(), v2.getSize(), "The vector sizes must be the same." );
-
-   Algorithms::ParallelReductionScalarProduct< typename Vector1::RealType, typename Vector2::RealType, ResultType > operation;
-   return Reduction< Devices::Host >::reduce( operation,
-                                              v1.getSize(),
-                                              v1.getData(),
-                                              v2.getData() );
-}*/
-
 template< typename Vector1, typename Vector2, typename Scalar1, typename Scalar2 >
 void
 VectorOperations< Devices::Host >::
@@ -139,6 +123,58 @@ addVectors( Vector1& v,
          v[ i ] = thisMultiplicator * v[ i ] + multiplicator1 * v1[ i ] + multiplicator2 * v2[ i ];
 }
 
+template< typename Vector, typename ResultType >
+ResultType
+VectorOperations< Devices::Host >::
+getVectorSum( const Vector& v )
+{
+   TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
+
+   if( std::is_same< ResultType, bool >::value )
+      abort();
+
+   using RealType = typename Vector::RealType;
+   using IndexType = typename Vector::IndexType;
+
+   const auto* data = v.getData();
+   auto fetch = [=] __cuda_callable__ ( IndexType i )  -> ResultType { return  data[ i ]; };
+   auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a += b; };
+   auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a += b; };
+   return Reduction< Devices::Host >::reduce( v.getSize(), reduction, volatileReduction, fetch, ( ResultType ) 0 );
+}
+
+template< Algorithms::PrefixSumType Type, typename Vector >
+void
+VectorOperations< Devices::Host >::
+prefixSum( Vector& v,
+           typename Vector::IndexType begin,
+           typename Vector::IndexType end )
+{
+   using RealType = typename Vector::RealType;
+   using IndexType = typename Vector::IndexType;
+
+   auto reduction = [=] __cuda_callable__ ( RealType& a, const RealType& b ) { a += b; };
+   auto volatileReduction = [=] __cuda_callable__ ( volatile RealType& a, volatile RealType& b ) { a += b; };
+
+   PrefixSum< Devices::Host, Type >::perform( v, begin, end, reduction, volatileReduction, ( RealType ) 0.0 );
+}
+
+template< Algorithms::PrefixSumType Type, typename Vector, typename Flags >
+void
+VectorOperations< Devices::Host >::
+segmentedPrefixSum( Vector& v,
+                    Flags& f,
+                    typename Vector::IndexType begin,
+                    typename Vector::IndexType end )
+{
+   using RealType = typename Vector::RealType;
+   using IndexType = typename Vector::IndexType;
+
+   auto reduction = [=] __cuda_callable__ ( RealType& a, const RealType& b ) { a += b; };
+   auto volatileReduction = [=] __cuda_callable__ ( volatile RealType& a, volatile RealType& b ) { a += b; };
+
+   SegmentedPrefixSum< Devices::Host, Type >::perform( v, f, begin, end, reduction, volatileReduction, ( RealType ) 0.0 );
+}
 
 } // namespace Algorithms
 } // namespace Containers

@@ -63,6 +63,23 @@ public:
       parameters.push_back( std::make_unique< Parameter< T > >( name, TNL::getType< T >(), value ) );
       return true;
    }
+   
+   /**
+    * \brief Adds new parameter to the ParameterContainer.
+    *
+    * \tparam T Type of parameter value.
+    * \param name Name of the new parameter.
+    * \param value Value assigned to the parameter.
+    */
+   template< class T >
+   bool addList( const String& name,
+                      const T& value )
+   {
+      std::vector< T > v;
+      v.push_back( value );
+      parameters.push_back( std::make_unique< Parameter< std::vector< T > > >( name, TNL::getType< T >(), v ) );
+      return true;
+   }
 
    /**
     * \brief Checks whether the parameter \e name already exists in ParameterContainer.
@@ -150,17 +167,73 @@ public:
    template< class T >
    T getParameter( const String& name ) const
    {
-      for( int i = 0; i < (int) parameters.size(); i++ )
-         if( parameters[ i ]->name == name )
-         {
+      for( int i = 0; i < (int) parameters.size(); i++ ) {
+         if( parameters[ i ]->name == name ) {
             // dynamic_cast throws std::bad_cast if parameters[i] does not have the type Parameter<T>
             const Parameter< T >& parameter = dynamic_cast< Parameter< T >& >( *parameters[ i ] );
             return parameter.value;
          }
+      }
       std::cerr << "The program attempts to get unknown parameter " << name << std::endl;
       std::cerr << "Aborting the program." << std::endl;
       throw 0;
    }
+
+   /**
+    * \brief Checks whether the parameter list \e name is given the \e value.
+    *
+    * Returns \e true if the parameter list \e name is given the \e value.
+    * If the parameter list does not have any value or has different value then the given
+    * \e value the method returns \e false and shows message when \e verbose is \e true.
+    *
+    * \param name Name of parameter list.
+    * \param value Value of type T we want to check whether is assigned to the parameter.
+    * \param verbose Boolean value defining whether to show error message (when true) or not (when false).
+    *
+    * \par Example
+    * \include ParameterContainerExample.cpp
+    */
+   template< class T >
+   bool getParameter( const String& name,
+                      std::vector< T >& value,
+                      bool verbose = true ) const
+   {
+      for( int i = 0; i < (int) parameters.size(); i++ )
+         if( parameters[ i ]->name == name )
+         {
+            // dynamic_cast throws std::bad_cast if parameters[i] does not have the type Parameter<T>
+            const Parameter< std::vector< T > >& parameter = dynamic_cast< Parameter< std::vector< T > >& >( *parameters[ i ] );
+            value = parameter.value;
+            return true;
+         }
+      if( verbose )
+      {
+         std::cerr << "Missing parameter '" << name << "'." << std::endl;
+         throw 0; //PrintStackBacktrace;
+      }
+      return false;
+   }
+
+   /**
+    * \brief Returns parameter list.
+    *
+    * \param name Name of parameter list.
+    */
+   template< class T >
+   const std::vector< T >& getList( const String& name ) const
+   {
+      for( int i = 0; i < (int) parameters.size(); i++ ) {
+         if( parameters[ i ]->name == name ) {
+            // dynamic_cast throws std::bad_cast if parameters[i] does not have the type Parameter<T>
+            const Parameter< std::vector< T > >& parameter = dynamic_cast< Parameter< std::vector< T > >& >( *parameters[ i ] );
+            return parameter.value; 
+         }
+      }
+      std::cerr << "The program attempts to get unknown parameter " << name << std::endl;
+      std::cerr << "Aborting the program." << std::endl;
+      throw 0;
+   }
+
 
 /*
    //! Broadcast to other nodes in MPI cluster

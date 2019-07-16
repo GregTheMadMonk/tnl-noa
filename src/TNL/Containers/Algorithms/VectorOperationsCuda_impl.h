@@ -80,34 +80,6 @@ vectorScalarMultiplication( Vector& v,
 #endif
 }
 
-/*
-#ifdef HAVE_CUDA
-template< typename Real1, typename Real2, typename Index, typename Scalar1, typename Scalar2 >
-__global__ void
-vectorAddVectorCudaKernel( Real1* y,
-                           const Real2* x,
-                           const Index size,
-                           const Scalar1 alpha,
-                           const Scalar2 thisMultiplicator )
-{
-   Index elementIdx = blockDim.x * blockIdx.x + threadIdx.x;
-   const Index maxGridSize = blockDim.x * gridDim.x;
-   if( thisMultiplicator == 1.0 )
-      while( elementIdx < size )
-      {
-         y[ elementIdx ] += alpha * x[ elementIdx ];
-         elementIdx += maxGridSize;
-      }
-   else
-      while( elementIdx < size )
-      {
-         y[ elementIdx ] = thisMultiplicator * y[ elementIdx ] + alpha * x[ elementIdx ];
-         elementIdx += maxGridSize;
-      }
-}
-#endif
-*/
-
 template< typename Vector1, typename Vector2, typename Scalar1, typename Scalar2 >
 void
 VectorOperations< Devices::Cuda >::
@@ -132,16 +104,6 @@ addVector( Vector1& _y,
       ParallelFor< Devices::Cuda >::exec( ( IndexType ) 0, _y.getSize(), add1 );
    else
       ParallelFor< Devices::Cuda >::exec( ( IndexType ) 0, _y.getSize(), add2 );
-   /*const Index& size = x.getSize();
-   dim3 cudaBlockSize( 256 );
-   dim3 cudaBlocks;
-   cudaBlocks.x = TNL::min( Devices::Cuda::getMaxGridSize(), Devices::Cuda::getNumberOfBlocks( size, cudaBlockSize.x ) );
-
-   vectorAddVectorCudaKernel<<< cudaBlocks, cudaBlockSize >>>( y.getData(),
-                                                               x.getData(),
-                                                               size,
-                                                               alpha,
-                                                               thisMultiplicator);*/
    TNL_CHECK_CUDA_DEVICE;
 #else
    throw Exceptions::CudaSupportMissing();
@@ -216,55 +178,60 @@ addVectors( Vector1& v,
 #endif
 }
 
-/*template< typename Vector >
-void
+template< typename Vector, typename ResultType >
+ResultType
 VectorOperations< Devices::Cuda >::
-computePrefixSum( Vector& v,
-                  typename Vector::IndexType begin,
-                  typename Vector::IndexType end )
+getVectorSum( const Vector& v )
 {
-#ifdef HAVE_CUDA
-   typedef Algorithms::ParallelReductionSum< typename Vector::RealType > OperationType;
+   TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
 
-   OperationType operation;
-   Algorithms::cudaPrefixSum< typename Vector::RealType,
-                              OperationType,
-                              typename Vector::IndexType >
-                                 ( end - begin,
-                                   256,
-                                   &v.getData()[ begin ],
-                                   &v.getData()[ begin ],
-                                   operation,
-                                   operation.initialValue(),
-                                   Algorithms::PrefixSumType::inclusive );
-#else
-   throw Exceptions::CudaSupportMissing();
-#endif
+   if( std::is_same< ResultType, bool >::value )
+      abort();
+
+   using RealType = typename Vector::RealType;
+   using IndexType = typename Vector::IndexType;
+
+   const auto* data = v.getData();
+   auto fetch = [=] __cuda_callable__ ( IndexType i )  -> ResultType { return  data[ i ]; };
+   auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a += b; };
+   auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a += b; };
+   return Reduction< Devices::Cuda >::reduce( v.getSize(), reduction, volatileReduction, fetch, ( ResultType ) 0 );
 }
 
-template< typename Vector >
+template< Algorithms::PrefixSumType Type,
+          typename Vector >
 void
 VectorOperations< Devices::Cuda >::
-computeExclusivePrefixSum( Vector& v,
-                           typename Vector::IndexType begin,
-                           typename Vector::IndexType end )
+prefixSum( Vector& v,
+           typename Vector::IndexType begin,
+           typename Vector::IndexType end )
 {
-#ifdef HAVE_CUDA
-   typedef Algorithms::ParallelReductionSum< typename Vector::RealType > OperationType;
+   using RealType = typename Vector::RealType;
+   using IndexType = typename Vector::IndexType;
 
-   OperationType operation;
-   Algorithms::cudaPrefixSum< typename Vector::RealType,
-                              OperationType,
-                              typename Vector::IndexType >
-                                 ( end - begin,
-                                   256,
-                                   &v.getData()[ begin ],
-                                   &v.getData()[ begin ],
-                                   operation,
-                                   operation.initialValue(),
-                                   Algorithms::PrefixSumType::exclusive );
-#endif
-}*/
+   auto reduction = [=] __cuda_callable__ ( RealType& a, const RealType& b ) { a += b; };
+   auto volatileReduction = [=] __cuda_callable__ ( volatile RealType& a, volatile RealType& b ) { a += b; };
+
+   PrefixSum< Devices::Cuda, Type >::perform( v, begin, end, reduction, volatileReduction, ( RealType ) 0.0 );
+}
+
+template< Algorithms::PrefixSumType Type, typename Vector, typename Flags >
+void
+VectorOperations< Devices::Cuda >::
+segmentedPrefixSum( Vector& v,
+                    Flags& f,
+                    typename Vector::IndexType begin,
+                    typename Vector::IndexType end )
+{
+   using RealType = typename Vector::RealType;
+   using IndexType = typename Vector::IndexType;
+
+   auto reduction = [=] __cuda_callable__ ( RealType& a, const RealType& b ) { a += b; };
+   auto volatileReduction = [=] __cuda_callable__ ( volatile RealType& a, volatile RealType& b ) { a += b; };
+
+   SegmentedPrefixSum< Devices::Cuda, Type >::perform( v, f, begin, end, reduction, volatileReduction, ( RealType ) 0.0 );
+}
+
 
 } // namespace Algorithms
 } // namespace Containers

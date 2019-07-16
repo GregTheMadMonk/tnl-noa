@@ -32,7 +32,7 @@ getResidue( const Matrix& matrix,
    const IndexType size = matrix.getRows();
    RealType res( 0.0 );
    if( bNorm == 0.0 )
-      bNorm = b.lpNorm( 2.0 );
+      bNorm = lpNorm( b, 2.0 );
    for( IndexType i = 0; i < size; i ++ )
    {
       RealType err = abs( matrix.rowVectorProduct( i, x ) - b[ i ] );

@@ -68,17 +68,17 @@ solve( ConstVectorViewType b, VectorViewType x )
    // initialize the norm of the preconditioned right-hand-side
    if( this->preconditioner ) {
       this->preconditioner->solve( b, M_tmp );
-      b_norm = M_tmp.lpNorm( 2.0 );
+      b_norm = lpNorm( M_tmp, 2.0 );
    }
    else
-      b_norm = b.lpNorm( 2.0 );
+      b_norm = lpNorm( b, 2.0 );
    if( b_norm == 0.0 )
       b_norm = 1.0;
 
    // r_0 = M.solve(b - A * x);
    compute_residue( r_0, x, b );
 
-   sigma[ 0 ] = r_0.lpNorm( 2.0 );
+   sigma[ 0 ] = lpNorm( r_0, 2.0 );
    if( std::isnan( sigma[ 0 ] ) )
       throw std::runtime_error( "BiCGstab(ell): initial residue is NAN" );
 
@@ -234,14 +234,14 @@ solve( ConstVectorViewType b, VectorViewType x )
           * Compute the exact preconditioned residue into the 's' vector.
           */
          compute_residue( res_tmp, x, b );
-         sigma[ 0 ] = res_tmp.lpNorm( 2.0 );
+         sigma[ 0 ] = lpNorm( res_tmp, 2.0 );
          this->setResidue( sigma[ 0 ] / b_norm );
       }
       else {
          /****
           * Use the "orthogonal residue vector" for stopping.
           */
-         sigma[ 0 ] = r_0.lpNorm( 2.0 );
+         sigma[ 0 ] = lpNorm( r_0, 2.0 );
          this->setResidue( sigma[ 0 ] / b_norm );
       }
    }

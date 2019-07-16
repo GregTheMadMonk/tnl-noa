@@ -43,15 +43,23 @@ public:
    using BaseType::DistributedArray;
    using BaseType::operator=;
 
+   // comparison operator is defined in DistributedVectorExpressions
+   template< typename ArrayT >
+   bool operator == ( const ArrayT& a  ) = delete;
+
    // we return only the view so that the user cannot resize it
    LocalVectorViewType getLocalVectorView();
 
    ConstLocalVectorViewType getLocalVectorView() const;
+   
+   ConstLocalVectorViewType getConstLocalVectorView() const;
 
    /**
     * \brief Returns a modifiable view of the vector.
     */
    ViewType getView();
+
+   ConstViewType getView() const;
 
    /**
     * \brief Returns a non-modifiable view of the vector.
@@ -97,40 +105,8 @@ public:
    template< typename Scalar >
    DistributedVector& operator/=( Scalar c );
 
-   Real max() const;
-
-   Real min() const;
-
-   Real absMax() const;
-
-   Real absMin() const;
-
-   template< typename ResultType = RealType, typename Scalar >
-   ResultType lpNorm( const Scalar p ) const;
-
    template< typename ResultType = RealType >
    ResultType sum() const;
-
-   template< typename Vector >
-   Real differenceMax( const Vector& v ) const;
-
-   template< typename Vector >
-   Real differenceMin( const Vector& v ) const;
-
-   template< typename Vector >
-   Real differenceAbsMax( const Vector& v ) const;
-
-   template< typename Vector >
-   Real differenceAbsMin( const Vector& v ) const;
-
-   template< typename ResultType = RealType, typename Vector, typename Scalar >
-   ResultType differenceLpNorm( const Vector& v, const Scalar p ) const;
-
-   template< typename ResultType = RealType, typename Vector >
-   ResultType differenceSum( const Vector& v ) const;
-
-   template< typename Scalar >
-   void scalarMultiplication( Scalar alpha );
 
    //! Computes scalar dot product
    template< typename Vector >
@@ -162,4 +138,5 @@ public:
 } // namespace Containers
 } // namespace TNL
 
-#include "DistributedVector_impl.h"
+#include <TNL/Containers/DistributedVector_impl.h>
+#include <TNL/Containers/DistributedVectorExpressions.h>

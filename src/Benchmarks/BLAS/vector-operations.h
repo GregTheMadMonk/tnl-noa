@@ -17,6 +17,7 @@
 #include "../Benchmarks.h"
 
 #include <TNL/Containers/Vector.h>
+#include "CommonVectorOperations.h"
 
 #ifdef HAVE_BLAS
 #include "blasWrappers.h"
@@ -110,10 +111,10 @@ benchmarkVectorOperations( Benchmark & benchmark,
    ////
    // Max
    auto maxHost = [&]() {
-      resultHost = hostVector.max();
+      resultHost = Benchmarks::CommonVectorOperations< Devices::Host >::getVectorMax( hostVector );
    };
    auto maxCuda = [&]() {
-      resultDevice = deviceVector.max();
+      resultDevice = Benchmarks::CommonVectorOperations< Devices::Cuda >::getVectorMax( deviceVector );
    };
    auto maxHostET = [&]() {
       resultHost = max( hostView );
@@ -133,10 +134,10 @@ benchmarkVectorOperations( Benchmark & benchmark,
    ////
    // Min
    auto minHost = [&]() {
-      resultHost = hostVector.min();
+      resultHost = Benchmarks::CommonVectorOperations< Devices::Host >::getVectorMin( hostVector );
    };
    auto minCuda = [&]() {
-      resultDevice = deviceVector.min();
+      resultDevice = Benchmarks::CommonVectorOperations< Devices::Cuda >::getVectorMin( deviceVector );
    };
    auto minHostET = [&]() {
       resultHost = min( hostView );
@@ -155,10 +156,10 @@ benchmarkVectorOperations( Benchmark & benchmark,
    ////
    // Absmax
    auto absMaxHost = [&]() {
-      resultHost = hostVector.absMax();
+      resultHost = Benchmarks::CommonVectorOperations< Devices::Host >::getVectorAbsMax( hostVector );
    };
    auto absMaxCuda = [&]() {
-      resultDevice = deviceVector.absMax();
+      resultDevice = Benchmarks::CommonVectorOperations< Devices::Cuda >::getVectorAbsMax( deviceVector );
    };
    auto absMaxHostET = [&]() {
       resultHost = max( abs( hostView ) );
@@ -196,10 +197,10 @@ benchmarkVectorOperations( Benchmark & benchmark,
    ////
    // Absmin
    auto absMinHost = [&]() {
-      resultHost = hostVector.absMin();
+      resultHost = Benchmarks::CommonVectorOperations< Devices::Host >::getVectorAbsMin( hostVector );
    };
    auto absMinCuda = [&]() {
-      resultDevice = deviceVector.absMin();
+      resultDevice = Benchmarks::CommonVectorOperations< Devices::Cuda >::getVectorAbsMin( deviceVector );
    };
    auto absMinHostET = [&]() {
       resultHost = min( abs( hostView ) );
@@ -235,10 +236,10 @@ benchmarkVectorOperations( Benchmark & benchmark,
    ////
    // Sum
    auto sumHost = [&]() {
-      resultHost = hostVector.sum();
+      resultHost = Benchmarks::CommonVectorOperations< Devices::Host >::getVectorSum( hostVector );
    };
    auto sumCuda = [&]() {
-      resultDevice = deviceVector.sum();
+      resultDevice = Benchmarks::CommonVectorOperations< Devices::Cuda >::getVectorSum( deviceVector );
    };
    auto sumHostET = [&]() {
       resultHost = sum( hostView );
@@ -257,10 +258,10 @@ benchmarkVectorOperations( Benchmark & benchmark,
    ////
    // L1 norm
    auto l1normHost = [&]() {
-      resultHost = hostVector.lpNorm( 1.0 );
+      resultHost = Benchmarks::CommonVectorOperations< Devices::Host >::getVectorLpNorm( hostVector, 1.0 );
    };
    auto l1normCuda = [&]() {
-      resultDevice = deviceVector.lpNorm( 1.0 );
+      resultDevice = Benchmarks::CommonVectorOperations< Devices::Cuda >::getVectorLpNorm( deviceVector, 1.0 );
    };
    auto l1normHostET = [&]() {
       resultHost = lpNorm( hostView, 1.0 );
@@ -295,10 +296,10 @@ benchmarkVectorOperations( Benchmark & benchmark,
    ////
    // L2 norm
    auto l2normHost = [&]() {
-      resultHost = hostVector.lpNorm( 2.0 );
+      resultHost = Benchmarks::CommonVectorOperations< Devices::Host >::getVectorLpNorm( hostVector, 2.0 );
    };
    auto l2normCuda = [&]() {
-      resultDevice = deviceVector.lpNorm( 2.0 );
+      resultDevice = Benchmarks::CommonVectorOperations< Devices::Cuda >::getVectorLpNorm( deviceVector, 2.0 );
    };
    auto l2normHostET = [&]() {
       resultHost = lpNorm( hostView, 2.0 );
@@ -333,10 +334,10 @@ benchmarkVectorOperations( Benchmark & benchmark,
    ////
    // L3 norm
    auto l3normHost = [&]() {
-      resultHost = hostVector.lpNorm( 3.0 );
+      resultHost = Benchmarks::CommonVectorOperations< Devices::Host >::getVectorLpNorm( hostVector, 3.0 );
    };
    auto l3normCuda = [&]() {
-      resultDevice = deviceVector.lpNorm( 3.0 );
+      resultDevice = Benchmarks::CommonVectorOperations< Devices::Cuda >::getVectorLpNorm( deviceVector, 3.0 );
    };
    auto l3normHostET = [&]() {
       resultHost = lpNorm( hostView, 3.0 );
@@ -356,13 +357,13 @@ benchmarkVectorOperations( Benchmark & benchmark,
    ////
    // Scalar product
    auto scalarProductHost = [&]() {
-      resultHost = hostVector.scalarProduct( hostVector2 );
+      resultHost = Benchmarks::CommonVectorOperations< Devices::Host >::getScalarProduct( hostVector, hostVector2 );
    };
    auto scalarProductCuda = [&]() {
-      resultDevice = deviceVector.scalarProduct( deviceVector2 );
+      resultDevice = Benchmarks::CommonVectorOperations< Devices::Cuda >::getScalarProduct( deviceVector, deviceVector2 );
    };
    auto scalarProductHostET = [&]() {
-      resultHost = ( hostView, hostView2 );
+      resultHost = ( hostVector, hostVector2 );
    };
    auto scalarProductCudaET = [&]() {
       resultDevice = ( deviceView, deviceView2 );

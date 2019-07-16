@@ -346,6 +346,18 @@ template< typename Value,
           typename Index >
 typename Array< Value, Device, Index >::ConstViewType
 Array< Value, Device, Index >::
+getView( IndexType begin, IndexType end ) const
+{
+   if( end == 0 )
+      end = getSize();
+   return ConstViewType( &getData()[ begin ], end - begin );
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+typename Array< Value, Device, Index >::ConstViewType
+Array< Value, Device, Index >::
 getConstView( IndexType begin, IndexType end ) const
 {
    if( end == 0 )

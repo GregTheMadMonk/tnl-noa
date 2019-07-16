@@ -1,5 +1,5 @@
 /***************************************************************************
-                          VectorTest-6.h  -  description
+                          VectorTest-7.h  -  description
                              -------------------
     begin                : Oct 25, 2010
     copyright            : (C) 2010 by Tomas Oberhuber

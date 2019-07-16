@@ -83,7 +83,7 @@ private:
 
    bool validate() const
    {
-      if( pointsSet.min() != true ) {
+      if( min( pointsSet ) != true ) {
          std::cerr << "Mesh builder error: Not all points were set." << std::endl;
          return false;
       }
@@ -103,7 +103,7 @@ private:
          }
       }
 
-      if( assignedPoints.min() != true ) {
+      if( min( assignedPoints ) != true ) {
          std::cerr << "Mesh builder error: Some points were not used for cells." << std::endl;
          return false;
       }

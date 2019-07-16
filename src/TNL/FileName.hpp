@@ -114,7 +114,7 @@ inline String removeFileNameExtension( String fileName )
    const int size = fileName.getLength();
    int i = 1;
    while( fileName[ size - i ] != '.' && size > i ) i++;
-   fileName = fileName.substr( 0, size - i + 1 );
+   fileName = fileName.substr( 0, size - i );
    return fileName;
 }
 

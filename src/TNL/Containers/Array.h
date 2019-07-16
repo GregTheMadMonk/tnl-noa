@@ -14,6 +14,7 @@
 #include <vector>
 
 #include <TNL/File.h>
+#include <TNL/TypeTraits.h>
 #include <TNL/Containers/ArrayView.h>
 
 namespace TNL {
@@ -259,7 +260,8 @@ class Array
        * \brief Returns a modifiable view of the array.
        *
        * If \e begin or \e end is set to a non-zero value, a view for the
-       * sub-interval `[begin, end)` is returned.
+       * sub-interval `[begin, end)` is returned. Otherwise a view for whole
+       * array is returned.
        *
        * \param begin The beginning of the array sub-interval. It is 0 by
        *              default.
@@ -272,7 +274,22 @@ class Array
        * \brief Returns a non-modifiable view of the array.
        *
        * If \e begin or \e end is set to a non-zero value, a view for the
-       * sub-interval `[begin, end)` is returned.
+       * sub-interval `[begin, end)` is returned. Otherwise a view for whole
+       * array is returned.
+       *
+       * \param begin The beginning of the array sub-interval. It is 0 by
+       *              default.
+       * \param end The end of the array sub-interval. The default value is 0
+       *            which is, however, replaced with the array size.
+       */
+      ConstViewType getView( IndexType begin = 0, IndexType end = 0 ) const;
+
+      /**
+       * \brief Returns a non-modifiable view of the array.
+       *
+       * If \e begin or \e end is set to a non-zero value, a view for the
+       * sub-interval `[begin, end)` is returned. Otherwise a view for whole
+       * array is returned.
        *
        * \param begin The beginning of the array sub-interval. It is 0 by
        *              default.
@@ -619,6 +636,19 @@ template< typename Value, typename Device, typename Index >
 File& operator>>( File&& file, Array< Value, Device, Index >& array );
 
 } // namespace Containers
+
+template< typename Value, typename Device, typename Index >
+struct ViewTypeGetter< Containers::Array< Value, Device, Index > >
+{
+   using Type = Containers::ArrayView< Value, Device, Index >;
+};
+
+template< typename Value_, typename Device, typename Index >
+struct IsStatic< Containers::Array< Value_, Device, Index > >
+{
+   static constexpr bool Value = false;
+};
+
 } // namespace TNL
 
 #include <TNL/Containers/Array.hpp>

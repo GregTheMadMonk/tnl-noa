@@ -19,6 +19,7 @@
 #include <TNL/Meshes/GridDetails/NeighborGridEntityGetter2D_impl.h>
 #include <TNL/Meshes/GridDetails/Grid2D.h>
 #include <TNL/Meshes/GridDetails/GridEntityMeasureGetter.h>
+#include <TNL/Containers/Vector.h>
 
 namespace TNL {
 namespace Meshes {
@@ -403,9 +404,9 @@ template< typename Real,
    template< typename GridFunction >
       typename GridFunction::RealType
          Grid< 2, Real, Device, Index >::getDifferenceAbsMax( const GridFunction& f1,
-                                                                 const GridFunction& f2 ) const
+                                                              const GridFunction& f2 ) const
 {
-   return f1.differenceAbsMax( f2 );
+   return TNL::max( TNL::abs( f1.getData() - f2.getData() ) );
 }
 
 template< typename Real,

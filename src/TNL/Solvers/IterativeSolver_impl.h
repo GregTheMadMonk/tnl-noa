@@ -12,14 +12,15 @@
 
 #include <cmath>
 #include <float.h>
+#include <limits>
 
 #include "IterativeSolver.h"
 
 namespace TNL {
 namespace Solvers {   
 
-template< typename Real, typename Index >
-IterativeSolver< Real, Index> :: IterativeSolver()
+template< typename Real, typename Index, typename SolverMonitor >
+IterativeSolver< Real, Index, SolverMonitor >::IterativeSolver()
 : maxIterations( 1000000000 ),
   minIterations( 0 ),
   currentIteration( 0 ),
@@ -31,8 +32,8 @@ IterativeSolver< Real, Index> :: IterativeSolver()
 {
 };
 
-template< typename Real, typename Index >
-void IterativeSolver< Real, Index> :: configSetup( Config::ConfigDescription& config,
+template< typename Real, typename Index, typename SolverMonitor >
+void IterativeSolver< Real, Index, SolverMonitor >::configSetup( Config::ConfigDescription& config,
                                                       const String& prefix )
 {
    config.addEntry< int >   ( prefix + "max-iterations", "Maximal number of iterations the solver may perform.", 1000000000 );
@@ -42,13 +43,13 @@ void IterativeSolver< Real, Index> :: configSetup( Config::ConfigDescription& co
    // when we reach a state near a steady state. This can be only temporary if, for example, when the boundary conditions
    // are time dependent (growing velocity at inlet starting from 0).
    config.addEntry< double >( prefix + "convergence-residue", "Convergence occurs when the residue drops bellow this limit.", 0.0 );
-   config.addEntry< double >( prefix + "divergence-residue", "Divergence occurs when the residue exceeds given limit.", DBL_MAX );
+   config.addEntry< double >( prefix + "divergence-residue", "Divergence occurs when the residue exceeds given limit.", std::numeric_limits< float >::max() );
    // TODO: setting refresh rate should be done in SolverStarter::setup (it's not a parameter of the IterativeSolver)
    config.addEntry< int >   ( prefix + "refresh-rate", "Number of iterations between solver monitor refreshes.", 1 );
 }
 
-template< typename Real, typename Index >
-bool IterativeSolver< Real, Index> :: setup( const Config::ParameterContainer& parameters,
+template< typename Real, typename Index, typename SolverMonitor >
+bool IterativeSolver< Real, Index, SolverMonitor >::setup( const Config::ParameterContainer& parameters,
                                                const String& prefix )
 {
    this->setMaxIterations( parameters.getParameter< int >( "max-iterations" ) );
@@ -60,32 +61,32 @@ bool IterativeSolver< Real, Index> :: setup( const Config::ParameterContainer& p
    return true;
 }
 
-template< typename Real, typename Index >
-void IterativeSolver< Real, Index> :: setMaxIterations( const Index& maxIterations )
+template< typename Real, typename Index, typename SolverMonitor >
+void IterativeSolver< Real, Index, SolverMonitor >::setMaxIterations( const Index& maxIterations )
 {
    this->maxIterations = maxIterations;
 }
 
-template< typename Real, typename Index >
-const Index& IterativeSolver< Real, Index> :: getMaxIterations() const
+template< typename Real, typename Index, typename SolverMonitor >
+const Index& IterativeSolver< Real, Index, SolverMonitor >::getMaxIterations() const
 {
    return this->maxIterations;
 }
 
-template< typename Real, typename Index >
-void IterativeSolver< Real, Index> :: setMinIterations( const Index& minIterations )
+template< typename Real, typename Index, typename SolverMonitor >
+void IterativeSolver< Real, Index, SolverMonitor >::setMinIterations( const Index& minIterations )
 {
    this->minIterations = minIterations;
 }
 
-template< typename Real, typename Index >
-const Index& IterativeSolver< Real, Index> :: getMinIterations() const
+template< typename Real, typename Index, typename SolverMonitor >
+const Index& IterativeSolver< Real, Index, SolverMonitor >::getMinIterations() const
 {
    return this->minIterations;
 }
 
-template< typename Real, typename Index >
-void IterativeSolver< Real, Index> :: resetIterations()
+template< typename Real, typename Index, typename SolverMonitor >
+void IterativeSolver< Real, Index, SolverMonitor >::resetIterations()
 {
    this->currentIteration = 0;
    if( this->solverMonitor )
@@ -93,8 +94,8 @@ void IterativeSolver< Real, Index> :: resetIterations()
    
 }
 
-template< typename Real, typename Index >
-bool IterativeSolver< Real, Index> :: nextIteration()
+template< typename Real, typename Index, typename SolverMonitor >
+bool IterativeSolver< Real, Index, SolverMonitor >::nextIteration()
 {
    // this->checkNextIteration() must be called before the iteration counter is incremented
    bool result = this->checkNextIteration();
@@ -106,8 +107,8 @@ bool IterativeSolver< Real, Index> :: nextIteration()
    return result;
 }
 
-template< typename Real, typename Index >
-bool IterativeSolver< Real, Index> :: checkNextIteration()
+template< typename Real, typename Index, typename SolverMonitor >
+bool IterativeSolver< Real, Index, SolverMonitor >::checkNextIteration()
 {
    this->refreshSolverMonitor();
 
@@ -119,9 +120,9 @@ bool IterativeSolver< Real, Index> :: checkNextIteration()
    return true;
 }
 
-template< typename Real, typename Index >
+template< typename Real, typename Index, typename SolverMonitor >
 bool
-IterativeSolver< Real, Index>::
+IterativeSolver< Real, Index, SolverMonitor >::
 checkConvergence()
 {
    if( std::isnan( this->getResidue() ) )
@@ -148,68 +149,68 @@ checkConvergence()
    return true;
 }
 
-template< typename Real, typename Index >
+template< typename Real, typename Index, typename SolverMonitor >
 const Index&
-IterativeSolver< Real, Index>::
+IterativeSolver< Real, Index, SolverMonitor >::
 getIterations() const
 {
    return this->currentIteration;
 }
 
-template< typename Real, typename Index >
-void IterativeSolver< Real, Index> :: setConvergenceResidue( const Real& convergenceResidue )
+template< typename Real, typename Index, typename SolverMonitor >
+void IterativeSolver< Real, Index, SolverMonitor >::setConvergenceResidue( const Real& convergenceResidue )
 {
    this->convergenceResidue = convergenceResidue;
 }
 
-template< typename Real, typename Index >
-const Real& IterativeSolver< Real, Index> :: getConvergenceResidue() const
+template< typename Real, typename Index, typename SolverMonitor >
+const Real& IterativeSolver< Real, Index, SolverMonitor >::getConvergenceResidue() const
 {
    return this->convergenceResidue;
 }
 
-template< typename Real, typename Index >
-void IterativeSolver< Real, Index> :: setDivergenceResidue( const Real& divergenceResidue )
+template< typename Real, typename Index, typename SolverMonitor >
+void IterativeSolver< Real, Index, SolverMonitor >::setDivergenceResidue( const Real& divergenceResidue )
 {
    this->divergenceResidue = divergenceResidue;
 }
 
-template< typename Real, typename Index >
-const Real& IterativeSolver< Real, Index> :: getDivergenceResidue() const
+template< typename Real, typename Index, typename SolverMonitor >
+const Real& IterativeSolver< Real, Index, SolverMonitor >::getDivergenceResidue() const
 {
    return this->divergenceResidue;
 }
 
 
-template< typename Real, typename Index >
-void IterativeSolver< Real, Index> :: setResidue( const Real& residue )
+template< typename Real, typename Index, typename SolverMonitor >
+void IterativeSolver< Real, Index, SolverMonitor >::setResidue( const Real& residue )
 {
    this->currentResidue = residue;
    if( this->solverMonitor )
       this->solverMonitor->setResidue( this->getResidue() );
 }
 
-template< typename Real, typename Index >
-const Real& IterativeSolver< Real, Index> :: getResidue() const
+template< typename Real, typename Index, typename SolverMonitor >
+const Real& IterativeSolver< Real, Index, SolverMonitor >::getResidue() const
 {
    return this->currentResidue;
 }
 
 // TODO: setting refresh rate should be done in SolverStarter::setup (it's not a parameter of the IterativeSolver)
-template< typename Real, typename Index >
-void IterativeSolver< Real, Index> :: setRefreshRate( const Index& refreshRate )
+template< typename Real, typename Index, typename SolverMonitor >
+void IterativeSolver< Real, Index, SolverMonitor >::setRefreshRate( const Index& refreshRate )
 {
    this->refreshRate = refreshRate;
 }
 
-template< typename Real, typename Index >
-void IterativeSolver< Real, Index> :: setSolverMonitor( IterativeSolverMonitor< Real, Index >& solverMonitor )
+template< typename Real, typename Index, typename SolverMonitor >
+void IterativeSolver< Real, Index, SolverMonitor >::setSolverMonitor( SolverMonitorType& solverMonitor )
 {
    this->solverMonitor = &solverMonitor;
 }
 
-template< typename Real, typename Index >
-void IterativeSolver< Real, Index> :: refreshSolverMonitor( bool force )
+template< typename Real, typename Index, typename SolverMonitor >
+void IterativeSolver< Real, Index, SolverMonitor >::refreshSolverMonitor( bool force )
 {
    if( this->solverMonitor )
    {

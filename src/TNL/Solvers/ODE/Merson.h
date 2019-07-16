@@ -11,6 +11,7 @@
 #pragma once
 
 #include <math.h>
+#include <TNL/Solvers/DummyProblem.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Solvers/ODE/ExplicitSolver.h>
 
@@ -18,61 +19,46 @@ namespace TNL {
 namespace Solvers {
 namespace ODE {   
 
-template< class Problem >
-class Merson : public ExplicitSolver< Problem >
+template< class Problem = DummyProblem<>,
+          typename SolverMonitor = IterativeSolverMonitor< typename Problem::RealType, typename Problem::IndexType > >
+class Merson : public ExplicitSolver< Problem, SolverMonitor >
 {
    public:
 
-   typedef Problem ProblemType;
-   typedef typename Problem :: DofVectorType DofVectorType;
-   typedef typename Problem :: RealType RealType;
-   typedef typename Problem :: DeviceType DeviceType;
-   typedef typename Problem :: IndexType IndexType;
-   typedef Pointers::SharedPointer<  DofVectorType, DeviceType > DofVectorPointer;
+      using ProblemType = Problem;
+      using DofVectorType = typename Problem::DofVectorType;
+      using RealType = typename Problem::RealType;
+      using DeviceType = typename Problem::DeviceType;
+      using IndexType = typename Problem::IndexType;
+      using DofVectorPointer = Pointers::SharedPointer< DofVectorType, DeviceType >;
+      using SolverMonitorType = SolverMonitor;
 
-   Merson();
+      Merson();
 
-   static String getType();
+      static String getType();
 
-   static void configSetup( Config::ConfigDescription& config,
-                            const String& prefix = "" );
+      static void configSetup( Config::ConfigDescription& config,
+                               const String& prefix = "" );
 
-   bool setup( const Config::ParameterContainer& parameters,
-              const String& prefix = "" );
+      bool setup( const Config::ParameterContainer& parameters,
+                 const String& prefix = "" );
 
-   void setAdaptivity( const RealType& a );
+      void setAdaptivity( const RealType& a );
 
-   bool solve( DofVectorPointer& u );
+      bool solve( DofVectorPointer& u );
 
    protected:
- 
-   //! Compute the Runge-Kutta coefficients
-   /****
-    * The parameter u is not constant because one often
-    * needs to correct u on the boundaries to be able to compute
-    * the RHS.
-    */
-   void computeKFunctions( DofVectorPointer& u,
-                           const RealType& time,
-                           RealType tau );
 
-   RealType computeError( const RealType tau );
+      void writeGrids( const DofVectorPointer& u );
 
-   void computeNewTimeLevel( const RealType time,
-                             const RealType tau,
-                             DofVectorPointer& u,
-                             RealType& currentResidue );
+      DofVectorPointer _k1, _k2, _k3, _k4, _k5, _kAux;
 
-   void writeGrids( const DofVectorPointer& u );
+      /****
+       * This controls the accuracy of the solver
+       */
+      RealType adaptivity;
 
-   DofVectorPointer k1, k2, k3, k4, k5, kAux;
-
-   /****
-    * This controls the accuracy of the solver
-    */
-   RealType adaptivity;
-   
-   Containers::Vector< RealType, DeviceType, IndexType > openMPErrorEstimateBuffer;
+      Containers::Vector< RealType, DeviceType, IndexType > openMPErrorEstimateBuffer;
 };
 
 } // namespace ODE

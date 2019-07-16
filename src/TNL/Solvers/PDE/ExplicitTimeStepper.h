@@ -22,7 +22,7 @@ namespace Solvers {
 namespace PDE {   
 
 template< typename Problem,
-          template < typename OdeProblem > class OdeSolver >
+          template < typename OdeProblem, typename SolverMonitor > class OdeSolver >
 class ExplicitTimeStepper
 {
    public:
@@ -37,7 +37,7 @@ class ExplicitTimeStepper
       using DofVectorPointer = Pointers::SharedPointer< DofVectorType, DeviceType >;
       using SolverMonitorType = IterativeSolverMonitor< RealType, IndexType >;
       using CommunicatorType = typename Problem::CommunicatorType;
-      using OdeSolverType = OdeSolver< ExplicitTimeStepper< Problem, OdeSolver > >;
+      using OdeSolverType = OdeSolver< ExplicitTimeStepper< Problem, OdeSolver >, SolverMonitorType >;
       using OdeSolverPointer = Pointers::SharedPointer< OdeSolverType, DeviceType >;
 
       static_assert( ProblemType::isTimeDependent(), "The problem is not time dependent." );

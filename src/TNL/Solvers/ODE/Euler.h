@@ -13,6 +13,7 @@
 #include <math.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Solvers/ODE/ExplicitSolver.h>
+#include <TNL/Solvers/DummyProblem.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Timer.h>
 
@@ -20,50 +21,45 @@ namespace TNL {
 namespace Solvers {
 namespace ODE {
 
-template< typename Problem >
-class Euler : public ExplicitSolver< Problem >
+template< typename Problem = DummyProblem<>,
+          typename SolverMonitor = IterativeSolverMonitor< typename Problem::RealType, typename Problem::IndexType > >
+class Euler : public ExplicitSolver< Problem, SolverMonitor >
 {
    public:
 
-   typedef Problem  ProblemType;
-   typedef typename Problem :: DofVectorType DofVectorType;
-   typedef typename Problem :: RealType RealType;
-   typedef typename Problem :: DeviceType DeviceType;
-   typedef typename Problem :: IndexType IndexType;
-   typedef Pointers::SharedPointer<  DofVectorType, DeviceType > DofVectorPointer;
+      using ProblemType = Problem;
+      using DofVectorType = typename ProblemType::DofVectorType;
+      using RealType = typename ProblemType::RealType;
+      using DeviceType = typename ProblemType::DeviceType;
+      using IndexType  = typename ProblemType::IndexType;
+      using DofVectorView = typename ViewTypeGetter< DofVectorType >::Type;
+      using DofVectorPointer = Pointers::SharedPointer<  DofVectorType, DeviceType >;
+      using SolverMonitorType = SolverMonitor;
 
+      Euler();
 
-   Euler();
+      static String getType();
 
-   static String getType();
+      static void configSetup( Config::ConfigDescription& config,
+                               const String& prefix = "" );
 
-   static void configSetup( Config::ConfigDescription& config,
-                            const String& prefix = "" );
+      bool setup( const Config::ParameterContainer& parameters,
+                 const String& prefix = "" );
 
-   bool setup( const Config::ParameterContainer& parameters,
-              const String& prefix = "" );
+      void setCFLCondition( const RealType& cfl );
 
-   void setCFLCondition( const RealType& cfl );
+      const RealType& getCFLCondition() const;
 
-   const RealType& getCFLCondition() const;
-
-   bool solve( DofVectorPointer& u );
+      bool solve( DofVectorPointer& u );
 
    protected:
-   void computeNewTimeLevel( DofVectorPointer& u,
-                             RealType tau,
-                             RealType& currentResidue );
+      DofVectorPointer _k1;
 
-   
-   DofVectorPointer k1;
-
-   RealType cflCondition;
- 
-   //Timer timer, updateTimer;
+      RealType cflCondition;
 };
 
 } // namespace ODE
 } // namespace Solvers
 } // namespace TNL
 
-#include <TNL/Solvers/ODE/Euler_impl.h>
+#include <TNL/Solvers/ODE/Euler.hpp>

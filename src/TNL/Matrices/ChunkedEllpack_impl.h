@@ -280,7 +280,7 @@ void ChunkedEllpack< Real, Device, Index >::setCompressedRowLengths( ConstCompre
       this->numberOfSlices = hostMatrix.numberOfSlices;
       elementsToAllocation = hostMatrix.values.getSize();
    }
-   this->maxRowLength = rowLengths.max();
+   this->maxRowLength = max( rowLengths );
 //   std::cout << "\nrowLengths.max() = " << rowLengths.max() << std::endl;
    Sparse< Real, Device, Index >::allocateMatrixElements( elementsToAllocation );
 }

@@ -95,11 +95,11 @@ setup( const Config::ParameterContainer& parameters,
       return false;
    }
 
-   String param=parameters.getParameter< String >( "distributed-grid-io-type" );
-   if(param=="MpiIO")
-        distributedIOType=Meshes::DistributedMeshes::MpiIO;
-   if(param=="LocalCopy")
-        distributedIOType=Meshes::DistributedMeshes::LocalCopy;
+   String param = parameters.getParameter< String >( "distributed-grid-io-type" );
+   if( param == "MpiIO" )
+        distributedIOType = Meshes::DistributedMeshes::MpiIO;
+   if( param == "LocalCopy" )
+        distributedIOType = Meshes::DistributedMeshes::LocalCopy;
 
    this->explicitUpdater.setDifferentialOperator( this->differentialOperatorPointer );
    this->explicitUpdater.setBoundaryConditions( this->boundaryConditionPointer );
@@ -107,6 +107,8 @@ setup( const Config::ParameterContainer& parameters,
    this->systemAssembler.setDifferentialOperator( this->differentialOperatorPointer );
    this->systemAssembler.setBoundaryConditions( this->boundaryConditionPointer );
    this->systemAssembler.setRightHandSide( this->rightHandSidePointer );
+
+   this->catchExceptions = parameters.getParameter< bool >( "catch-exceptions" );
    return true;
 }
 
@@ -150,7 +152,6 @@ setInitialCondition( const Config::ParameterContainer& parameters,
 {
    this->bindDofs( dofs );
    const String& initialConditionFile = parameters.getParameter< String >( "initial-condition" );
-   std::cout<<"setInitialCondition" <<std::endl; 
    if(CommunicatorType::isDistributed())
     {
         std::cout<<"Nodes Distribution: " << uPointer->getMesh().getDistributedMesh()->printProcessDistr() << std::endl;
@@ -162,15 +163,20 @@ setInitialCondition( const Config::ParameterContainer& parameters,
     }
     else
     {
-      try
+      if( this->catchExceptions )
       {
-         this->uPointer->boundLoad( initialConditionFile );
+         try
+         {
+            this->uPointer->boundLoad( initialConditionFile );
+         }
+         catch( std::ios_base::failure& e )
+         {
+            std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << std::endl;
+            std::cerr << e.what() << std::endl;
+            return false;
+         }
       }
-      catch(...)
-      {
-         std::cerr << "I am not able to load the initial condition from the file " << initialConditionFile << "." << std::endl;
-         return false;
-      }
+      else this->uPointer->boundLoad( initialConditionFile );
    }
    return true;
 }

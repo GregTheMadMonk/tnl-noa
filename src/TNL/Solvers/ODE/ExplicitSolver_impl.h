@@ -14,8 +14,8 @@ namespace TNL {
 namespace Solvers {
 namespace ODE {   
 
-template< typename Problem >
-ExplicitSolver< Problem >::
+template< typename Problem, typename SolverMonitor >
+ExplicitSolver< Problem, SolverMonitor >::
 ExplicitSolver()
 :  time( 0.0 ),
    stopTime( 0.0 ),
@@ -28,110 +28,110 @@ ExplicitSolver()
 {
 };
 
-template< typename Problem >
+template< typename Problem, typename SolverMonitor >
 void
-ExplicitSolver< Problem >::
+ExplicitSolver< Problem, SolverMonitor >::
 configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
    //IterativeSolver< typename Problem::RealType, typename Problem::IndexType >::configSetup( config, prefix );
 }
 
-template< typename Problem >
+template< typename Problem, typename SolverMonitor >
 bool
-ExplicitSolver< Problem >::
+ExplicitSolver< Problem, SolverMonitor >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
    this->setVerbose( parameters.getParameter< int >( "verbose" ) );
-   return IterativeSolver< typename Problem::RealType, typename Problem::IndexType >::setup( parameters, prefix );
+   return IterativeSolver< typename Problem::RealType, typename Problem::IndexType, SolverMonitor >::setup( parameters, prefix );
 }
 
-template< typename Problem >
+template< typename Problem, typename SolverMonitor >
 void
-ExplicitSolver< Problem >::
+ExplicitSolver< Problem, SolverMonitor >::
 setProblem( Problem& problem )
 {
    this->problem = &problem;
 };
 
-template< class Problem >
+template< class Problem, typename SolverMonitor >
 void
-ExplicitSolver< Problem >::
+ExplicitSolver< Problem, SolverMonitor >::
 setTime( const RealType& time )
 {
    this->time = time;
 };
 
-template< class Problem >
+template< class Problem, typename SolverMonitor >
 const typename Problem :: RealType&
-ExplicitSolver< Problem >::
+ExplicitSolver< Problem, SolverMonitor >::
 getTime() const
 {
    return this->time;
 };
 
-template< class Problem >
+template< class Problem, typename SolverMonitor >
 void
-ExplicitSolver< Problem >::
+ExplicitSolver< Problem, SolverMonitor >::
 setTau( const RealType& tau )
 {
    this->tau = tau;
 };
 
-template< class Problem >
+template< class Problem, typename SolverMonitor >
 const typename Problem :: RealType&
-ExplicitSolver< Problem >::
+ExplicitSolver< Problem, SolverMonitor >::
 getTau() const
 {
    return this->tau;
 };
 
-template< class Problem >
+template< class Problem, typename SolverMonitor >
 void
-ExplicitSolver< Problem >::
+ExplicitSolver< Problem, SolverMonitor >::
 setMaxTau( const RealType& maxTau )
 {
    this->maxTau = maxTau;
 };
 
 
-template< class Problem >
+template< class Problem, typename SolverMonitor >
 const typename Problem :: RealType&
-ExplicitSolver< Problem >::
+ExplicitSolver< Problem, SolverMonitor >::
 getMaxTau() const
 {
    return this->maxTau;
 };
 
 
-template< class Problem >
+template< class Problem, typename SolverMonitor >
 typename Problem :: RealType
-ExplicitSolver< Problem >::
+ExplicitSolver< Problem, SolverMonitor >::
 getStopTime() const
 {
     return this->stopTime;
 }
 
-template< class Problem >
+template< class Problem, typename SolverMonitor >
 void
-ExplicitSolver< Problem >::
+ExplicitSolver< Problem, SolverMonitor >::
 setStopTime( const RealType& stopTime )
 {
     this->stopTime = stopTime;
 }
 
-template< class Problem >
+template< class Problem, typename SolverMonitor >
 void
-ExplicitSolver< Problem >::
+ExplicitSolver< Problem, SolverMonitor >::
 setVerbose( IndexType v )
 {
    this->verbosity = v;
 };
 
-template< class Problem >
+template< class Problem, typename SolverMonitor >
 void
-ExplicitSolver< Problem >::
+ExplicitSolver< Problem, SolverMonitor >::
 refreshSolverMonitor( bool force )
 {
    if( this->solverMonitor )
@@ -144,172 +144,14 @@ refreshSolverMonitor( bool force )
    }
 }
 
-template< class Problem >
+template< class Problem, typename SolverMonitor >
 void
-ExplicitSolver< Problem >::
+ExplicitSolver< Problem, SolverMonitor >::
 setTestingMode( bool testingMode )
 {
    this->testingMode = testingMode;
 }
 
-#ifdef HAVE_CUDA
-template< typename Real, typename Index >
-__device__ void computeBlockResidue( Real* du,
-                                     Real* blockResidue,
-                                     Index n )
-{
-   if( n == 128 || n ==  64 || n ==  32 || n ==  16 ||
-       n ==   8 || n ==   4 || n ==   2 || n == 256 ||
-       n == 512 )
-    {
-       if( blockDim.x >= 512 )
-       {
-          if( threadIdx.x < 256 )
-             du[ threadIdx.x ] += du[ threadIdx.x  + 256 ];
-          __syncthreads();
-       }
-       if( blockDim.x >= 256 )
-       {
-          if( threadIdx.x < 128 )
-             du[ threadIdx.x ] += du[ threadIdx.x  + 128 ];
-          __syncthreads();
-       }
-       if( blockDim.x >= 128 )
-       {
-          if( threadIdx.x < 64 )
-             du[ threadIdx.x ] += du[ threadIdx.x  + 64 ];
-          __syncthreads();
-       }
-
-       /***
-        * This runs in one warp so it is synchronized implicitly.
-        */
-       if ( threadIdx.x < 32)
-       {
-          if( blockDim.x >= 64 )
-             du[ threadIdx.x ] += du[ threadIdx.x  + 32 ];
-          if( blockDim.x >= 32 )
-             du[ threadIdx.x ] += du[ threadIdx.x  + 16 ];
-          if( blockDim.x >= 16 )
-             du[ threadIdx.x ] += du[ threadIdx.x  + 8 ];
-          if( blockDim.x >=  8 )
-             du[ threadIdx.x ] += du[ threadIdx.x  + 4 ];
-          if( blockDim.x >=  4 )
-             du[ threadIdx.x ] += du[ threadIdx.x  + 2 ];
-          if( blockDim.x >=  2 )
-             du[ threadIdx.x ] += du[ threadIdx.x  + 1 ];
-       }
-    }
-    else
-    {
-       int s;
-       if( n >= 512 )
-       {
-          s = n / 2;
-          if( threadIdx.x < s )
-             du[ threadIdx.x ] += du[ threadIdx.x + s ];
-
-          __syncthreads();
-          if( 2 * s < n  && threadIdx.x == n - 1 )
-             du[ 0 ] += du[ threadIdx.x ];
-          n = s;
-          __syncthreads();
-       }
-       if( n >= 256 )
-       {
-          s = n / 2;
-          if( threadIdx.x < s )
-             du[ threadIdx.x ] += du[ threadIdx.x + s ];
-
-          __syncthreads();
-          if( 2 * s < n  && threadIdx.x == n - 1 )
-             du[ 0 ] += du[ threadIdx.x ];
-          n = s;
-          __syncthreads();
-       }
-       if( n >= 128 )
-       {
-          s = n / 2;
-          if( threadIdx.x < s )
-             du[ threadIdx.x ] += du[ threadIdx.x + s ];
-
-          __syncthreads();
-          if( 2 * s < n  && threadIdx.x == n - 1 )
-             du[ 0 ] += du[ threadIdx.x ];
-          n = s;
-          __syncthreads();
-       }
-       if( n >= 64 )
-       {
-          s = n / 2;
-          if( threadIdx.x < s )
-             du[ threadIdx.x ] += du[ threadIdx.x + s ];
-
-          __syncthreads();
-          if( 2 * s < n  && threadIdx.x == n - 1 )
-             du[ 0 ] += du[ threadIdx.x ];
-          n = s;
-          __syncthreads();
-
-       }
-       if( n >= 32 )
-       {
-          s = n / 2;
-          if( threadIdx.x < s )
-             du[ threadIdx.x ] += du[ threadIdx.x + s ];
-
-          __syncthreads();
-          if( 2 * s < n  && threadIdx.x == n - 1 )
-             du[ 0 ] += du[ threadIdx.x ];
-          n = s;
-          __syncthreads();
-       }
-       /***
-        * This runs in one warp so it is synchronised implicitly.
-        */
-       if( n >= 16 )
-       {
-          s = n / 2;
-          if( threadIdx.x < s )
-             du[ threadIdx.x ] += du[ threadIdx.x + s ];
-          if( 2 * s < n  && threadIdx.x == n - 1 )
-             du[ 0 ] += du[ threadIdx.x ];
-          n = s;
-       }
-       if( n >= 8 )
-       {
-          s = n / 2;
-          if( threadIdx.x < s )
-             du[ threadIdx.x ] += du[ threadIdx.x + s ];
-          if( 2 * s < n  && threadIdx.x == n - 1 )
-             du[ 0 ] += du[ threadIdx.x ];
-          n = s;
-       }
-       if( n >= 4 )
-       {
-          s = n / 2;
-          if( threadIdx.x < s )
-             du[ threadIdx.x ] += du[ threadIdx.x + s ];
-          if( 2 * s < n  && threadIdx.x == n - 1 )
-             du[ 0 ] += du[ threadIdx.x ];
-          n = s;
-       }
-       if( n >= 2 )
-       {
-          s = n / 2;
-          if( threadIdx.x < s )
-             du[ threadIdx.x ] += du[ threadIdx.x + s ];
-          if( 2 * s < n  && threadIdx.x == n - 1 )
-             du[ 0 ] += du[ threadIdx.x ];
-          n = s;
-       }
-    }
-
-   if( threadIdx.x == 0 )
-      blockResidue[ blockIdx.x ] = du[ 0 ];
-
-}
-#endif
 
 } // namespace ODE
 } // namespace Solvers

@@ -215,14 +215,14 @@ reorderEntities( const GlobalIndexVector& perm,
                               "perm size = " + std::to_string( perm.getSize() ) + ", "
                               "iperm size = " + std::to_string( iperm.getSize() ) );
    }
-   TNL_ASSERT( perm.min() == 0 && perm.max() == entitiesCount - 1,
-               std::cerr << "Given array is not a permutation: min = " << perm.min()
-                         << ", max = " << perm.max()
+   TNL_ASSERT( min( perm ) == 0 && max( perm ) == entitiesCount - 1,
+               std::cerr << "Given array is not a permutation: min = " << min( perm )
+                         << ", max = " << max( perm )
                          << ", number of entities = " << entitiesCount
                          << ", array = " << perm << std::endl; );
-   TNL_ASSERT( iperm.min() == 0 && iperm.max() == entitiesCount - 1,
-               std::cerr << "Given array is not a permutation: min = " << iperm.min()
-                         << ", max = " << iperm.max()
+   TNL_ASSERT( min( iperm ) == 0 && max( iperm ) == entitiesCount - 1,
+               std::cerr << "Given array is not a permutation: min = " << min( iperm )
+                         << ", max = " << max( iperm )
                          << ", number of entities = " << entitiesCount
                          << ", array = " << iperm << std::endl; );
 

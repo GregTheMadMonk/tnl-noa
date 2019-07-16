@@ -1,3 +1,4 @@
+ADD_SUBDIRECTORY( Communicators )
 ADD_SUBDIRECTORY( Containers )
 ADD_SUBDIRECTORY( Functions )
 ADD_SUBDIRECTORY( Matrices )

@@ -158,7 +158,8 @@ public:
     * \brief Returns a modifiable view of the array view.
     *
     * If \e begin or \e end is set to a non-zero value, a view for the
-    * sub-interval `[begin, end)` is returned.
+    * sub-interval `[begin, end)` is returned. Otherwise a view for whole
+    * array view is returned.
     *
     * \param begin The beginning of the array view sub-interval. It is 0 by
     *              default.
@@ -172,7 +173,23 @@ public:
     * \brief Returns a non-modifiable view of the array view.
     *
     * If \e begin or \e end is set to a non-zero value, a view for the
-    * sub-interval `[begin, end)` is returned.
+    * sub-interval `[begin, end)` is returned. Otherwise a view for whole
+    * array view is returned.
+    *
+    * \param begin The beginning of the array view sub-interval. It is 0 by
+    *              default.
+    * \param end The end of the array view sub-interval. The default value is 0
+    *            which is, however, replaced with the array size.
+    */
+   __cuda_callable__
+   ConstViewType getView( const IndexType begin = 0, IndexType end = 0 ) const;
+   
+   /**
+    * \brief Returns a non-modifiable view of the array view.
+    *
+    * If \e begin or \e end is set to a non-zero value, a view for the
+    * sub-interval `[begin, end)` is returned. Otherwise a view for whole
+    * array view is returned.
     *
     * \param begin The beginning of the array view sub-interval. It is 0 by
     *              default.
@@ -473,6 +490,14 @@ template< typename Value, typename Device, typename Index >
 File& operator>>( File&& file, ArrayView< Value, Device, Index > view );
 
 } // namespace Containers
+
+template< typename Value_, typename Device, typename Index >
+struct IsStatic< Containers::ArrayView< Value_, Device, Index > >
+{
+   static constexpr bool Value = false;
+};
+
+
 } // namespace TNL
 
 #include <TNL/Containers/ArrayView.hpp>

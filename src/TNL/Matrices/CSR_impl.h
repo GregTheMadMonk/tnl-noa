@@ -105,7 +105,7 @@ void CSR< Real, Device, Index >::setCompressedRowLengths( ConstCompressedRowLeng
    rowPtrs = rowLengths;
    this->rowPointers.setElement( this->rows, 0 );
    this->rowPointers.template prefixSum< Containers::Algorithms::PrefixSumType::Exclusive >();
-   this->maxRowLength = rowLengths.max();
+   this->maxRowLength = max( rowLengths );
 
    /****
     * Allocate values and column indexes

@@ -133,18 +133,18 @@ TEST( VectorSpecialCasesTest, operationsOnConstView )
    u.setValue( 1 );
    v.setValue( 1 );
 
-   EXPECT_EQ( u_view.max(), 1 );
-   EXPECT_EQ( u_view.min(), 1 );
-   EXPECT_EQ( u_view.absMax(), 1 );
-   EXPECT_EQ( u_view.absMin(), 1 );
-   EXPECT_EQ( u_view.lpNorm( 1 ), 100 );
-   EXPECT_EQ( u_view.differenceMax( v_view ), 0 );
-   EXPECT_EQ( u_view.differenceMin( v_view ), 0 );
-   EXPECT_EQ( u_view.differenceAbsMax( v_view ), 0 );
-   EXPECT_EQ( u_view.differenceAbsMin( v_view ), 0 );
-   EXPECT_EQ( u_view.differenceLpNorm( v_view, 1 ), 0 );
-   EXPECT_EQ( u_view.differenceSum( v_view ), 0 );
-   EXPECT_EQ( u_view.scalarProduct( v_view ), 100 );
+   EXPECT_EQ( max( u_view ), 1 );
+   EXPECT_EQ( min( u_view ), 1 );
+   EXPECT_EQ( max( abs( u_view ) ), 1 );
+   EXPECT_EQ( min( abs( u_view ) ), 1 );
+   EXPECT_EQ( lpNorm( u_view, 1 ), 100 );
+   EXPECT_EQ( max( u_view - v_view ), 0 );
+   EXPECT_EQ( min( u_view - v_view ), 0 );
+   EXPECT_EQ( max( abs( u_view - v_view ) ), 0 );
+   EXPECT_EQ( min( abs( u_view - v_view ) ), 0 );
+   EXPECT_EQ( lpNorm( u_view - v_view, 1 ), 0 );
+   EXPECT_EQ( sum( u_view - v_view ), 0 );
+   EXPECT_EQ( ( u_view, v_view ), 100 );
 }
 
 TEST( VectorSpecialCasesTest, initializationOfVectorViewByArrayView )
@@ -159,43 +159,7 @@ TEST( VectorSpecialCasesTest, initializationOfVectorViewByArrayView )
 
    VectorViewType v_view( a_view );
    EXPECT_EQ( v_view.getData(), a_view.getData() );
-   EXPECT_EQ( v_view.sum(), 0 );
-}
-
-TYPED_TEST( VectorTest, scalarMultiplication )
-{
-   using VectorType = typename TestFixture::VectorType;
-   using VectorOperations = typename TestFixture::VectorOperations;
-   using ViewType = typename TestFixture::ViewType;
-   const int size = VECTOR_TEST_SIZE;
-
-   VectorType u( size );
-   ViewType u_view( u );
-
-   typename VectorType::HostType expected;
-   expected.setSize( size );
-   for( int i = 0; i < size; i++ )
-      expected[ i ] = 2.0 * i;
-
-   setLinearSequence( u );
-   VectorOperations::vectorScalarMultiplication( u, 2.0 );
-   EXPECT_EQ( u, expected );
-
-   setLinearSequence( u );
-   u.scalarMultiplication( 2.0 );
-   EXPECT_EQ( u, expected );
-
-   setLinearSequence( u );
-   u_view.scalarMultiplication( 2.0 );
-   EXPECT_EQ( u, expected );
-
-   setLinearSequence( u );
-   u *= 2.0;
-   EXPECT_EQ( u, expected );
-
-   setLinearSequence( u );
-   u_view *= 2.0;
-   EXPECT_EQ( u, expected );
+   EXPECT_EQ( sum( v_view ), 0 );
 }
 
 TYPED_TEST( VectorTest, addVector )
@@ -210,35 +174,42 @@ TYPED_TEST( VectorTest, addVector )
    y.setSize( size );
    ViewType x_view( x ), y_view( y );
 
-   typename VectorType::HostType expected1, expected2;
-   expected1.setSize( size );
-   expected2.setSize( size );
+   typename VectorType::HostType host_expected1( size ), host_expected2( size );
    for( int i = 0; i < size; i++ ) {
-      expected1[ i ] = 2.0 + 3.0 * i;
-      expected2[ i ] = 1.0 + 3.0 * i;
+      host_expected1.setElement( i, 2.0 + 3.0 * i );
+      host_expected2.setElement( i, 1.0 + 3.0 * i );
    }
+   VectorType expected1, expected2;
+   expected1 = host_expected1;
+   expected2 = host_expected2;
 
    setConstantSequence( x, 1 );
    setLinearSequence( y );
+   EXPECT_TRUE( 2.0 * x + 3.0 * y == expected1 );
    VectorOperations::addVector( x, y, 3.0, 2.0 );
    EXPECT_EQ( x, expected1 );
 
    setConstantSequence( x, 1 );
    setLinearSequence( y );
+   EXPECT_TRUE( x + 3.0 * y == expected2 );
    x.addVector( y, 3.0, 1.0 );
    EXPECT_EQ( x, expected2 );
 
    setConstantSequence( x, 1 );
    setLinearSequence( y );
+   EXPECT_TRUE( x_view + 3.0 * y_view == expected2 );
    x_view.addVector( y_view, 3.0, 1.0 );
    EXPECT_EQ( x, expected2 );
 
    // multiplication by floating-point scalars which produces integer values
    setConstantSequence( x, 2 );
    setConstantSequence( y, 4 );
+   EXPECT_EQ( min( -1.5 * x + 2.5 * y ), 7 );
+   EXPECT_EQ( max( -1.5 * x + 2.5 * y ), 7 );
    x.addVector( y, 2.5, -1.5 );
-   EXPECT_EQ( x.min(), 7 );
-   EXPECT_EQ( x.max(), 7 );
+   EXPECT_EQ( min( x ), 7 );
+   EXPECT_EQ( max( x ), 7 );
+
 }
 
 TYPED_TEST( VectorTest, addVectors )
@@ -254,29 +225,33 @@ TYPED_TEST( VectorTest, addVectors )
    z.setSize( size );
    ViewType x_view( x ), y_view( y ), z_view( z );
 
-   typename VectorType::HostType expected1, expected2;
-   expected1.setSize( size );
-   expected2.setSize( size );
+   typename VectorType::HostType host_expected1( size ), host_expected2( size );
    for( int i = 0; i < size; i++ ) {
-      expected1[ i ] = 1.0 + 3.0 * i + 2.0;
-      expected2[ i ] = 2.0 + 3.0 * i + 2.0;
+      host_expected1.setElement( i, 1.0 + 3.0 * i + 2.0 );
+      host_expected2.setElement( i, 2.0 + 3.0 * i + 2.0 );
    }
+   VectorType expected1, expected2;
+   expected1 = host_expected1;
+   expected2 = host_expected2;
 
    setConstantSequence( x, 1 );
    setLinearSequence( y );
    setConstantSequence( z, 2 );
+   EXPECT_TRUE( 3.0 * y + z + x == expected1 );
    VectorOperations::addVectors( x, y, 3.0, z, 1.0, 1.0 );
    EXPECT_EQ( x, expected1 );
 
    setConstantSequence( x, 1 );
    setLinearSequence( y );
    setConstantSequence( z, 2 );
+   EXPECT_TRUE( 3.0 * y + z + 2.0 * x == expected2 );
    x.addVectors( y, 3.0, z, 1.0, 2.0 );
    EXPECT_EQ( x, expected2 );
 
    setConstantSequence( x, 1 );
    setLinearSequence( y );
    setConstantSequence( z, 2 );
+   EXPECT_TRUE( 3.0 * y_view + z_view + 2.0 * x_view == expected2 );
    x_view.addVectors( y_view, 3.0, z_view, 1.0, 2.0 );
    EXPECT_EQ( x, expected2 );
 
@@ -284,9 +259,11 @@ TYPED_TEST( VectorTest, addVectors )
    setConstantSequence( x, 2 );
    setConstantSequence( y, 4 );
    setConstantSequence( z, 6 );
+   EXPECT_EQ( min( 2.5 * y - 1.5 * z - 1.5 * x ), -2 );
+   EXPECT_EQ( max( 2.5 * y - 1.5 * z - 1.5 * x ), -2 );
    x.addVectors( y, 2.5, z, -1.5, -1.5 );
-   EXPECT_EQ( x.min(), -2 );
-   EXPECT_EQ( x.max(), -2 );
+   EXPECT_EQ( min( x ), -2 );
+   EXPECT_EQ( max( x ), -2 );
 }
 
 TYPED_TEST( VectorTest, abs )
@@ -307,18 +284,126 @@ TYPED_TEST( VectorTest, abs )
 TYPED_TEST( VectorTest, comparison )
 {
    using VectorType = typename TestFixture::VectorType;
-   using VectorOperations = typename TestFixture::VectorOperations;
    using ViewType = typename TestFixture::ViewType;
    const int size = VECTOR_TEST_SIZE;
 
-   VectorType _v( size ), _w( size );
-   ViewType v( _v ), w( _w );
-   v = 1.0;
-   w = 2.0;
+   VectorType _u( size ), _v( size ), _w( size );
+   ViewType u( _u ), v( _v ), w( _w );
 
-   EXPECT_TRUE( v < w );
-   EXPECT_TRUE( w > v );
-   EXPECT_TRUE( w + 1.0 < v + 4.0 );
+   u = 1.0;
+   v = 2.0;
+   w = 4.0;
+
+   // Test with Vectors
+   EXPECT_EQ( _u, _u );
+   EXPECT_EQ( _u, 1.0 );
+   EXPECT_EQ( 1.0, _u );
+   EXPECT_EQ( _w, _v + _v );
+   EXPECT_EQ( _v + _v, _w );
+   EXPECT_EQ( abs( _w ), _v + _v );
+   EXPECT_EQ( _v + _v, abs( _w ) );
+
+   EXPECT_NE( _u, _v );
+   EXPECT_NE( _u, 2.0 );
+   EXPECT_NE( 2.0, _u );
+   EXPECT_NE( _u, _w + _w );
+   EXPECT_NE( _w + _v, _u );
+   EXPECT_NE( abs( _w ), abs( _u ) );
+   EXPECT_NE( ( _w + _v ), ( _u + _v ) );
+   EXPECT_NE( ( abs( _u ) ), ( _w + _v ) );
+   EXPECT_NE( ( _w + _v ), ( abs( _u ) ) );
+
+   EXPECT_LT( _u, _v );
+   EXPECT_LT( _u, 2.0 );
+   EXPECT_LT( 0.0, _u );
+   EXPECT_LT( _u, _v + _w );
+   EXPECT_LT( _u + _v, _w );
+   EXPECT_LT( abs( _u ), abs( _w ) );
+   EXPECT_LT( abs( _u ), _v + _w );
+   EXPECT_LT( _u + _v, abs( _w ) );
+   EXPECT_LT( _u + _v, _u + _w );
+
+   EXPECT_LE( _u, _v );
+   EXPECT_LE( _u, 2.0 );
+   EXPECT_LE( 0.0, _u );
+   EXPECT_LE( _u, _v + _w );
+   EXPECT_LE( _u + _v, _w );
+   EXPECT_LE( abs( _u ), abs( _w ) );
+   EXPECT_LE( abs( _u ), _v + _w );
+   EXPECT_LE( _u + _v, abs( _w ) );
+
+   EXPECT_GT( _v, _u );
+   EXPECT_GT( _v, 1.0 );
+   EXPECT_GT( 3.0, _v );
+   EXPECT_GT( _w, _u + _v );
+   EXPECT_GT( _v + _w, _u );
+   EXPECT_GT( abs( _w ), _u + _v );
+   EXPECT_GT( _v + _w, abs( _u ) );
+
+   // Test with VectorViews
+   EXPECT_EQ( u, u );
+   EXPECT_EQ( u, 1.0 );
+   EXPECT_EQ( 1.0, u );
+   EXPECT_EQ( w, v + v );
+   EXPECT_EQ( v + v, w );
+   EXPECT_EQ( abs( w ), v + v );
+   EXPECT_EQ( v + v, abs( w ) );
+
+   EXPECT_NE( u, v );
+   EXPECT_NE( u, 2.0 );
+   EXPECT_NE( 2.0, u );
+   EXPECT_NE( u, w + w );
+   EXPECT_NE( w + v, u );
+   EXPECT_NE( abs( w ), abs( u ) );
+   EXPECT_NE( ( w + v ), ( u + v ) );
+   EXPECT_NE( ( abs( u ) ), ( w + v ) );
+   EXPECT_NE( ( w + v ), ( abs( u ) ) );
+
+   EXPECT_LT( u, v );
+   EXPECT_LT( u, 2.0 );
+   EXPECT_LT( 0.0, u );
+   EXPECT_LT( u, v + w );
+   EXPECT_LT( u + v, w );
+   EXPECT_LT( abs( u ), abs( w ) );
+   EXPECT_LT( abs( u ), v + w );
+   EXPECT_LT( u + v, abs( w ) );
+   EXPECT_LT( u + v, u + w );
+
+   EXPECT_LE( u, v );
+   EXPECT_LE( u, 2.0 );
+   EXPECT_LE( 0.0, u );
+   EXPECT_LE( u, v + w );
+   EXPECT_LE( u + v, w );
+   EXPECT_LE( abs( u ), abs( w ) );
+   EXPECT_LE( abs( u ), v + w );
+   EXPECT_LE( u + v, abs( w ) );
+
+   EXPECT_GT( v, u );
+   EXPECT_GT( v, 1.0 );
+   EXPECT_GT( 3.0, v );
+   EXPECT_GT( w, u + v );
+   EXPECT_GT( v + w, u );
+   EXPECT_GT( abs( w ), u + v );
+   EXPECT_GT( v + w, abs( u ) );
+}
+
+TYPED_TEST( VectorTest, comparisonOnDifferentDevices )
+{
+#ifdef HAVE_CUDA
+   using VectorType = typename TestFixture::VectorType;
+   const int size = VECTOR_TEST_SIZE;
+
+   typename VectorType::HostType host_vec( size );
+   typename VectorType::CudaType cuda_vec( size );
+   host_vec = 1.0;
+   cuda_vec = 1.0;
+   EXPECT_EQ( host_vec, cuda_vec );
+   EXPECT_EQ( host_vec.getView(), cuda_vec.getView() );
+   
+   host_vec = 0.0;
+   EXPECT_TRUE( host_vec != cuda_vec );
+   EXPECT_TRUE( host_vec.getView() != cuda_vec.getView() );
+#endif
 }
 
 TYPED_TEST( VectorTest, horizontalOperations )

@@ -56,6 +56,18 @@ template< typename Real,
           typename Index >
 typename Vector< Real, Device, Index >::ConstViewType
 Vector< Real, Device, Index >::
+getView( IndexType begin, IndexType end ) const
+{
+   if( end == 0 )
+      end = this->getSize();
+   return ConstViewType( &this->getData()[ begin ], end - begin );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+typename Vector< Real, Device, Index >::ConstViewType
+Vector< Real, Device, Index >::
 getConstView( IndexType begin, IndexType end ) const
 {
    if( end == 0 )
@@ -146,7 +158,6 @@ Vector< Real, Device, Index >&
 Vector< Real, Device, Index >::
 operator-=( const VectorExpression& expression )
 {
-   //addVector( vector, -1.0 );
    Algorithms::VectorSubtraction< Vector, VectorExpression >::subtraction( *this, expression );
    return *this;
 }
@@ -159,7 +170,6 @@ Vector< Real, Device, Index >&
 Vector< Real, Device, Index >::
 operator+=( const VectorExpression& expression )
 {
-   //addVector( vector );
    Algorithms::VectorAddition< Vector, VectorExpression >::addition( *this, expression );
    return *this;
 }
@@ -172,7 +182,6 @@ Vector< Real, Device, Index >&
 Vector< Real, Device, Index >::
 operator*=( const VectorExpression& expression )
 {
-   //Algorithms::VectorOperations< Device >::vectorScalarMultiplication( *this, c );
    Algorithms::VectorMultiplication< Vector, VectorExpression >::multiplication( *this, expression );
    return *this;
 }
@@ -185,62 +194,8 @@ Vector< Real, Device, Index >&
 Vector< Real, Device, Index >::
 operator/=( const VectorExpression& expression )
 {
-   //Algorithms::VectorOperations< Device >::vectorScalarMultiplication( *this, 1.0 / c );
    Algorithms::VectorDivision< Vector, VectorExpression >::division( *this, expression );
    return *this;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-Real Vector< Real, Device, Index >::max() const
-{
-   return Algorithms::VectorOperations< Device >::getVectorMax( *this );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-Real Vector< Real, Device, Index >::min() const
-{
-   return Algorithms::VectorOperations< Device >::getVectorMin( *this );
-}
-
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename Vector_ >
-Real Vector< Real, Device, Index >::
-operator,( const Vector_& v ) const
-{
-   static_assert( std::is_same< DeviceType, typename Vector_::DeviceType >::value, "Cannot compute product of vectors allocated on different devices." );
-   return Algorithms::VectorOperations< Device >::getScalarProduct( *this, v );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-Real Vector< Real, Device, Index >::absMax() const
-{
-   return Algorithms::VectorOperations< Device >::getVectorAbsMax( *this );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-Real Vector< Real, Device, Index >::absMin() const
-{
-   return Algorithms::VectorOperations< Device >::getVectorAbsMin( *this );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename ResultType, typename Scalar >
-ResultType Vector< Real, Device, Index >::lpNorm( const Scalar p ) const
-{
-   return Algorithms::VectorOperations< Device >::template getVectorLpNorm< Vector, ResultType >( *this, p );
 }
 
 template< typename Real,
@@ -256,76 +211,9 @@ template< typename Real,
           typename Device,
           typename Index >
    template< typename VectorT >
-Real Vector< Real, Device, Index >::differenceMax( const VectorT& v ) const
-{
-   return Algorithms::VectorOperations< Device >::getVectorDifferenceMax( *this, v );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename VectorT >
-Real Vector< Real, Device, Index >::differenceMin( const VectorT& v ) const
-{
-   return Algorithms::VectorOperations< Device >::getVectorDifferenceMin( *this, v );
-}
-
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename VectorT >
-Real Vector< Real, Device, Index >::differenceAbsMax( const VectorT& v ) const
-{
-   return Algorithms::VectorOperations< Device >::getVectorDifferenceAbsMax( *this, v );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename VectorT >
-Real Vector< Real, Device, Index >::differenceAbsMin( const VectorT& v ) const
-{
-   return Algorithms::VectorOperations< Device >::getVectorDifferenceAbsMin( *this, v );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename ResultType, typename VectorT, typename Scalar >
-ResultType Vector< Real, Device, Index >::differenceLpNorm( const VectorT& v, const Scalar p ) const
-{
-   return Algorithms::VectorOperations< Device >::template getVectorDifferenceLpNorm< Vector, VectorT, ResultType >( *this, v, p );
-}
-
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename ResultType, typename VectorT >
-ResultType Vector< Real, Device, Index >::differenceSum( const VectorT& v ) const
-{
-   return Algorithms::VectorOperations< Device >::template getVectorDifferenceSum< Vector, VectorT, ResultType >( *this, v );
-}
-
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename Scalar >
-void Vector< Real, Device, Index >::scalarMultiplication( const Scalar alpha )
-{
-   Algorithms::VectorOperations< Device >::vectorScalarMultiplication( *this, alpha );
-}
-
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename VectorT >
 Real Vector< Real, Device, Index >::scalarProduct( const VectorT& v ) const
 {
-   return Algorithms::VectorOperations< Device >::getScalarProduct( *this, v );
+   return dot( this->getView(), v.getView() );
 }
 
 template< typename Real,

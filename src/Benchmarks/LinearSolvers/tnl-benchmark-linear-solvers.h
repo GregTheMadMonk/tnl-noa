@@ -338,7 +338,7 @@ struct LinearSolversBenchmark
 
       typename MatrixType::CompressedRowLengthsVector rowLengths;
       matrixPointer->getCompressedRowLengths( rowLengths );
-      const IndexType maxRowLength = rowLengths.max();
+      const IndexType maxRowLength = max( rowLengths );
 
       const String name = String( (CommunicatorType::isDistributed()) ? "Distributed linear solvers" : "Linear solvers" )
                           + " (" + parameters.getParameter< String >( "name" ) + "): ";

@@ -10,149 +10,276 @@
 
 #pragma once
 
+#include <stdexcept>
 #include <TNL/Assert.h>
 #include <TNL/Containers/Algorithms/Reduction.h>
+#include <TNL/Containers/Algorithms/ArrayOperations.h>
 
 namespace TNL {
    namespace Containers {
       namespace Expressions {
 
-template< typename T1,
-          typename T2 >
-__cuda_callable__
-bool StaticComparisonEQ( const T1& a, const T2& b )
-{
-   TNL_ASSERT_EQ( a.getSize(), b.getSize(), "Sizes of expressions to be compared do not fit." );
-   for( int i = 0; i < a.getSize(); i++ )
-      if( a[ i ] != b[ i ] )
-         return false;
-   return true;
-}
-
-template< typename T1,
-          typename T2 >
-__cuda_callable__
-bool StaticComparisonNE( const T1& a, const T2& b )
-{
-   return ! StaticComparisonEQ( a, b );
-}
-
-template< typename T1,
-          typename T2 >
-__cuda_callable__
-bool StaticComparisonGT( const T1& a, const T2& b )
-{
-   TNL_ASSERT_EQ( a.getSize(), b.getSize(), "Sizes of expressions to be compared do not fit." );
-   for( int i = 0; i < a.getSize(); i++ )
-      if( a[ i ] <= b[ i ] )
-         return false;
-   return true;
-}
-
-template< typename T1,
-          typename T2 >
-__cuda_callable__
-bool StaticComparisonLE( const T1& a, const T2& b )
-{
-   return ! StaticComparisonGT( a, b );
-}
-
-template< typename T1,
-          typename T2 >
-__cuda_callable__
-bool StaticComparisonLT( const T1& a, const T2& b )
-{
-   TNL_ASSERT_EQ( a.getSize(), b.getSize(), "Sizes of expressions to be compared do not fit." );
-   for( int i = 0; i < a.getSize(); i++ )
-      if( a[ i ] >= b[ i ] )
-         return false;
-   return true;
-}
-
-template< typename T1,
-          typename T2 >
-__cuda_callable__
-bool StaticComparisonGE( const T1& a, const T2& b )
-{
-   return ! StaticComparisonLT( a, b );
-}
-
 ////
 // Non-static comparison
 template< typename T1,
-          typename T2 >
-__cuda_callable__
-bool ComparisonEQ( const T1& a, const T2& b )
+          typename T2,
+          ExpressionVariableType T1Type = ExpressionVariableTypeGetter< T1 >::value,
+          ExpressionVariableType T2Type = ExpressionVariableTypeGetter< T2 >::value >
+struct Comparison
 {
-   if( a.getSize() != b.getSize() )
-      return false;
-   if( a.getSize() == 0 )
-      return true;
-
-   using DeviceType = typename T1::DeviceType;
-   using IndexType = typename T1::IndexType;
-
-   auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return  ( a[ i ] == b[ i ] ); };
-   auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
-   auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
-   return Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
-}
+};
 
 template< typename T1,
-          typename T2 >
-__cuda_callable__
-bool ComparisonNE( const T1& a, const T2& b )
+         typename T2,
+         bool BothAreVectors = IsVectorType< T1 >::value && IsVectorType< T2 >::value >
+struct VectorComparison
 {
-   return ! ComparisonEQ( a, b );
-}
+};
 
 template< typename T1,
-          typename T2 >
-__cuda_callable__
-bool ComparisonGT( const T1& a, const T2& b )
+         typename T2 >
+struct VectorComparison< T1, T2, true >
 {
-   TNL_ASSERT_EQ( a.getSize(), b.getSize(), "Sizes of expressions to be compared do not fit." );
+   // If both operands are vectors we compare them using array operations.
+   // It allows to compare vectors on different devices
 
-   using DeviceType = typename T1::DeviceType;
-   using IndexType = typename T1::IndexType;
-
-   auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return  ( a[ i ] > b[ i ] ); };
-   auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
-   auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
-   return Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
-}
+   static bool EQ( const T1& a, const T2& b )
+   {
+      return Algorithms::ArrayOperations< typename T1::DeviceType, typename T2::DeviceType >::compareMemory( a.getData(), b.getData(), a.getSize() );
+   }
+};
 
 template< typename T1,
-          typename T2 >
-__cuda_callable__
-bool ComparisonLE( const T1& a, const T2& b )
+         typename T2 >
+struct VectorComparison< T1, T2, false >
 {
-   return ! ComparisonGT( a, b );
-}
+   // If both operands are not vectors we compare them parallel reduction
 
+   static bool EQ( const T1& a, const T2& b )
+   {
+      using DeviceType = typename T1::DeviceType;
+      using IndexType = typename T1::IndexType;
+
+      if( ! std::is_same< typename T1::DeviceType, typename T2::DeviceType >::value )
+         throw std::runtime_error( "Cannot compare two expressions allocated on different devices." );
+      auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return  ( a[ i ] == b[ i ] ); };
+      auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
+      auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
+      return Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
+   }
+};
+
+/////
+// Comparison of two vector expressions
 template< typename T1,
           typename T2 >
-__cuda_callable__
-bool ComparisonLT( const T1& a, const T2& b )
+struct Comparison< T1, T2, VectorExpressionVariable, VectorExpressionVariable >
 {
-   TNL_ASSERT_EQ( a.getSize(), b.getSize(), "Sizes of expressions to be compared do not fit." );
+   static bool EQ( const T1& a, const T2& b )
+   {
+      if( a.getSize() != b.getSize() )
+         return false;
+      if( a.getSize() == 0 )
+         return true;
+      return VectorComparison< T1, T2 >::EQ( a, b );
+   }
 
-   using DeviceType = typename T1::DeviceType;
-   using IndexType = typename T1::IndexType;
+   static bool NE( const T1& a, const T2& b )
+   {
+      return ! EQ( a, b );
+   }
 
-   auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return  ( a[ i ] < b[ i ] ); };
-   auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
-   auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
-   return Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
-}
+   static bool GT( const T1& a, const T2& b )
+   {
+      TNL_ASSERT_EQ( a.getSize(), b.getSize(), "Sizes of expressions to be compared do not fit." );
 
+      using DeviceType = typename T1::DeviceType;
+      using IndexType = typename T1::IndexType;
+
+      auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return  ( a[ i ] > b[ i ] ); };
+      auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
+      auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
+      return Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
+   }
+
+   static bool GE( const T1& a, const T2& b )
+   {
+      TNL_ASSERT_EQ( a.getSize(), b.getSize(), "Sizes of expressions to be compared do not fit." );
+
+      using DeviceType = typename T1::DeviceType;
+      using IndexType = typename T1::IndexType;
+
+      auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return  ( a[ i ] >= b[ i ] ); };
+      auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
+      auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
+      return Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
+   }
+
+   static bool LT( const T1& a, const T2& b )
+   {
+      TNL_ASSERT_EQ( a.getSize(), b.getSize(), "Sizes of expressions to be compared do not fit." );
+
+      using DeviceType = typename T1::DeviceType;
+      using IndexType = typename T1::IndexType;
+
+      auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return  ( a[ i ] < b[ i ] ); };
+      auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
+      auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
+      return Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
+   }
+
+   static bool LE( const T1& a, const T2& b )
+   {
+      TNL_ASSERT_EQ( a.getSize(), b.getSize(), "Sizes of expressions to be compared do not fit." );
+
+      using DeviceType = typename T1::DeviceType;
+      using IndexType = typename T1::IndexType;
+
+      auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return  ( a[ i ] <= b[ i ] ); };
+      auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
+      auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
+      return Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
+   }
+};
+
+/////
+// Comparison of number and vector expression
 template< typename T1,
           typename T2 >
-__cuda_callable__
-bool ComparisonGE( const T1& a, const T2& b )
+struct Comparison< T1, T2, ArithmeticVariable, VectorExpressionVariable >
 {
-   return ! ComparisonLT( a, b );
-}
+
+
+   static bool EQ( const T1& a, const T2& b )
+   {
+      using DeviceType = typename T2::DeviceType;
+      using IndexType = typename T2::IndexType;
+
+      auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return  ( a == b[ i ] ); };
+      auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
+      auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
+      return Algorithms::Reduction< DeviceType >::reduce( b.getSize(), reduction, volatileReduction, fetch, true );
+   }
+
+   static bool NE( const T1& a, const T2& b )
+   {
+      return ! EQ( a, b );
+   }
+
+   static bool GT( const T1& a, const T2& b )
+   {
+      using DeviceType = typename T2::DeviceType;
+      using IndexType = typename T2::IndexType;
+
+      auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return  ( a > b[ i ] ); };
+      auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
+      auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
+      return Algorithms::Reduction< DeviceType >::reduce( b.getSize(), reduction, volatileReduction, fetch, true );
+   }
+
+   static bool GE( const T1& a, const T2& b )
+   {
+      using DeviceType = typename T2::DeviceType;
+      using IndexType = typename T2::IndexType;
+
+      auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return  ( a >= b[ i ] ); };
+      auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
+      auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
+      return Algorithms::Reduction< DeviceType >::reduce( b.getSize(), reduction, volatileReduction, fetch, true );
+   }
+
+   static bool LT( const T1& a, const T2& b )
+   {
+      using DeviceType = typename T2::DeviceType;
+      using IndexType = typename T2::IndexType;
+
+      auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return  ( a < b[ i ] ); };
+      auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
+      auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
+      return Algorithms::Reduction< DeviceType >::reduce( b.getSize(), reduction, volatileReduction, fetch, true );
+   }
+
+   static bool LE( const T1& a, const T2& b )
+   {
+      using DeviceType = typename T2::DeviceType;
+      using IndexType = typename T2::IndexType;
+
+      auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return  ( a <= b[ i ] ); };
+      auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
+      auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
+      return Algorithms::Reduction< DeviceType >::reduce( b.getSize(), reduction, volatileReduction, fetch, true );
+   }
+};
+
+/////
+// Comparison of vector expressions and number
+template< typename T1,
+          typename T2 >
+struct Comparison< T1, T2, VectorExpressionVariable, ArithmeticVariable >
+{
+
+
+   static bool EQ( const T1& a, const T2& b )
+   {
+      using DeviceType = typename T1::DeviceType;
+      using IndexType = typename T1::IndexType;
+
+      auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return  ( a[ i ] == b ); };
+      auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
+      auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
+      return Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
+   }
+
+   static bool NE( const T1& a, const T2& b )
+   {
+      return ! EQ( a, b );
+   }
+
+   static bool GT( const T1& a, const T2& b )
+   {
+      using DeviceType = typename T1::DeviceType;
+      using IndexType = typename T1::IndexType;
+
+      auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return  ( a[ i ] > b ); };
+      auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
+      auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
+      return Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
+   }
+
+   static bool GE( const T1& a, const T2& b )
+   {
+      using DeviceType = typename T1::DeviceType;
+      using IndexType = typename T1::IndexType;
+
+      auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return  ( a[ i ] >= b ); };
+      auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
+      auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
+      return Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
+   }
+
+   static bool LT( const T1& a, const T2& b )
+   {
+      using DeviceType = typename T1::DeviceType;
+      using IndexType = typename T1::IndexType;
+
+      auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return  ( a[ i ] < b ); };
+      auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
+      auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
+      return Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
+   }
+
+   static bool LE( const T1& a, const T2& b )
+   {
+      using DeviceType = typename T1::DeviceType;
+      using IndexType = typename T1::IndexType;
+
+      auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return  ( a[ i ] <= b ); };
+      auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
+      auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
+      return Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
+   }
+};
+
 
       } //namespace Expressions
    } // namespace Containers

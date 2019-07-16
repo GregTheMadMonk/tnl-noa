@@ -10,13 +10,12 @@
 
 #pragma once
 
-#include <TNL/Containers/Algorithms/CommonVectorOperations.h>
 #include <TNL/Containers/Algorithms/Reduction.h>
 #include <TNL/Containers/Algorithms/PrefixSum.h>
+#include "CommonVectorOperations.h"
 
 namespace TNL {
-namespace Containers {
-namespace Algorithms {
+namespace Benchmarks {
 
 template< typename Device >
    template< typename Vector, typename ResultType >
@@ -33,7 +32,7 @@ getVectorMax( const Vector& v )
    auto fetch = [=] __cuda_callable__ ( IndexType i ) -> ResultType { return data[ i ]; };
    auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a = TNL::max( a, b ); };
    auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a = TNL::max( a, b ); };
-   return Reduction< DeviceType >::reduce( v.getSize(), reduction, volatileReduction, fetch, std::numeric_limits< ResultType >::lowest() );
+   return Containers::Algorithms::Reduction< DeviceType >::reduce( v.getSize(), reduction, volatileReduction, fetch, std::numeric_limits< ResultType >::lowest() );
 }
 
 template< typename Device >
@@ -48,10 +47,10 @@ getVectorMin( const Vector& v )
    using IndexType = typename Vector::IndexType;
 
    const auto* data = v.getData();
-   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return data[ i ]; };
+   auto fetch = [=] __cuda_callable__ ( IndexType i ) -> RealType { return data[ i ]; };
    auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a =  TNL::min( a, b ); };
    auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a =  TNL::min( a, b ); };
-   return Reduction< DeviceType >::reduce( v.getSize(), reduction, volatileReduction, fetch, std::numeric_limits< ResultType >::max() );
+   return Containers::Algorithms::Reduction< DeviceType >::reduce( v.getSize(), reduction, volatileReduction, fetch, std::numeric_limits< ResultType >::max() );
 }
 
 template< typename Device >
@@ -69,7 +68,7 @@ getVectorAbsMax( const Vector& v )
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return TNL::abs( data[ i ] ); };
    auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a = TNL::max( a, b ); };
    auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a = TNL::max( a, b ); };
-   return Reduction< DeviceType >::reduce( v.getSize(), reduction, volatileReduction, fetch, std::numeric_limits< ResultType >::lowest() );
+   return Containers::Algorithms::Reduction< DeviceType >::reduce( v.getSize(), reduction, volatileReduction, fetch, std::numeric_limits< ResultType >::lowest() );
 }
 
 template< typename Device >
@@ -87,7 +86,7 @@ getVectorAbsMin( const Vector& v )
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return TNL::abs( data[ i ] ); };
    auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a = TNL::min( a, b ); };
    auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a = TNL::min( a, b ); };
-   return Reduction< DeviceType >::reduce( v.getSize(), reduction, volatileReduction, fetch, std::numeric_limits< ResultType >::max() );
+   return Containers::Algorithms::Reduction< DeviceType >::reduce( v.getSize(), reduction, volatileReduction, fetch, std::numeric_limits< ResultType >::max() );
 }
 
 template< typename Device >
@@ -105,7 +104,7 @@ getVectorL1Norm( const Vector& v )
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return TNL::abs( data[ i ] ); };
    auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a += b; };
    auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a += b; };
-   return Reduction< DeviceType >::reduce( v.getSize(), reduction, volatileReduction, fetch, ( ResultType ) 0 );
+   return Containers::Algorithms::Reduction< DeviceType >::reduce( v.getSize(), reduction, volatileReduction, fetch, ( ResultType ) 0 );
 }
 
 template< typename Device >
@@ -123,7 +122,7 @@ getVectorL2Norm( const Vector& v )
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return  data[ i ] * data[ i ]; };
    auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a += b; };
    auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a += b; };
-   return std::sqrt( Reduction< DeviceType >::reduce( v.getSize(), reduction, volatileReduction, fetch, ( ResultType ) 0 ) );
+   return std::sqrt( Containers::Algorithms::Reduction< DeviceType >::reduce( v.getSize(), reduction, volatileReduction, fetch, ( ResultType ) 0 ) );
 }
 
 template< typename Device >
@@ -148,7 +147,7 @@ getVectorLpNorm( const Vector& v,
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return  TNL::pow( TNL::abs( data[ i ] ), p ); };
    auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a += b; };
    auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a += b; };
-   return std::pow( Reduction< DeviceType >::reduce( v.getSize(), reduction, volatileReduction, fetch, ( ResultType ) 0 ), 1.0 / p );
+   return std::pow( Containers::Algorithms::Reduction< DeviceType >::reduce( v.getSize(), reduction, volatileReduction, fetch, ( ResultType ) 0 ), 1.0 / p );
 }
 
 template< typename Device >
@@ -169,7 +168,7 @@ getVectorSum( const Vector& v )
    auto fetch = [=] __cuda_callable__ ( IndexType i )  -> ResultType { return  data[ i ]; };
    auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a += b; };
    auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a += b; };
-   return Reduction< DeviceType >::reduce( v.getSize(), reduction, volatileReduction, fetch, ( ResultType ) 0 );
+   return Containers::Algorithms::Reduction< DeviceType >::reduce( v.getSize(), reduction, volatileReduction, fetch, ( ResultType ) 0 );
 }
 
 template< typename Device >
@@ -190,7 +189,7 @@ getVectorDifferenceMax( const Vector1& v1,
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return  data1[ i ] - data2[ i ]; };
    auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a = TNL::max( a, b ); };
    auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a = TNL::max( a, b ); };
-   return Reduction< DeviceType >::reduce( v1.getSize(), reduction, volatileReduction, fetch, std::numeric_limits< ResultType >::lowest() );
+   return Containers::Algorithms::Reduction< DeviceType >::reduce( v1.getSize(), reduction, volatileReduction, fetch, std::numeric_limits< ResultType >::lowest() );
 }
 
 template< typename Device >
@@ -211,7 +210,7 @@ getVectorDifferenceMin( const Vector1& v1,
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return  data1[ i ] - data2[ i ]; };
    auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a = TNL::min( a, b ); };
    auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a = TNL::min( a, b ); };
-   return Reduction< DeviceType >::reduce( v1.getSize(), reduction, volatileReduction, fetch, std::numeric_limits< ResultType >::max() );
+   return Containers::Algorithms::Reduction< DeviceType >::reduce( v1.getSize(), reduction, volatileReduction, fetch, std::numeric_limits< ResultType >::max() );
 }
 
 template< typename Device >
@@ -232,7 +231,7 @@ getVectorDifferenceAbsMax( const Vector1& v1,
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return  TNL::abs( data1[ i ] - data2[ i ] ); };
    auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a = TNL::max( a, b ); };
    auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a = TNL::max( a, b ); };
-   return Reduction< DeviceType >::reduce( v1.getSize(), reduction, volatileReduction, fetch, std::numeric_limits< ResultType >::lowest() );
+   return Containers::Algorithms::Reduction< DeviceType >::reduce( v1.getSize(), reduction, volatileReduction, fetch, std::numeric_limits< ResultType >::lowest() );
 }
 
 template< typename Device >
@@ -253,7 +252,7 @@ getVectorDifferenceAbsMin( const Vector1& v1,
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return  TNL::abs( data1[ i ] - data2[ i ] ); };
    auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a = TNL::min( a, b ); };
    auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a = TNL::min( a, b ); };
-   return Reduction< DeviceType >::reduce( v1.getSize(), reduction, volatileReduction, fetch, std::numeric_limits< ResultType >::max() );
+   return Containers::Algorithms::Reduction< DeviceType >::reduce( v1.getSize(), reduction, volatileReduction, fetch, std::numeric_limits< ResultType >::max() );
 }
 
 template< typename Device >
@@ -274,7 +273,7 @@ getVectorDifferenceL1Norm( const Vector1& v1,
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return  TNL::abs( data1[ i ] - data2[ i ] ); };
    auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a += b; };
    auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a += b; };
-   return Reduction< DeviceType >::reduce( v1.getSize(), reduction, volatileReduction, fetch, ( ResultType ) 0 );
+   return Containers::Algorithms::Reduction< DeviceType >::reduce( v1.getSize(), reduction, volatileReduction, fetch, ( ResultType ) 0 );
 }
 
 template< typename Device >
@@ -298,7 +297,7 @@ getVectorDifferenceL2Norm( const Vector1& v1,
    };
    auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a += b; };
    auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a += b; };
-   return std::sqrt( Reduction< DeviceType >::reduce( v1.getSize(), reduction, volatileReduction, fetch, ( ResultType ) 0 ) );
+   return std::sqrt( Containers::Algorithms::Reduction< DeviceType >::reduce( v1.getSize(), reduction, volatileReduction, fetch, ( ResultType ) 0 ) );
 }
 
 template< typename Device >
@@ -326,7 +325,7 @@ getVectorDifferenceLpNorm( const Vector1& v1,
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return  TNL::pow( TNL::abs( data1[ i ] - data2[ i ] ), p ); };
    auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a += b; };
    auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a += b; };
-   return std::pow( Reduction< DeviceType >::reduce( v1.getSize(), reduction, volatileReduction, fetch, ( ResultType ) 0 ), 1.0 / p );
+   return std::pow( Containers::Algorithms::Reduction< DeviceType >::reduce( v1.getSize(), reduction, volatileReduction, fetch, ( ResultType ) 0 ), 1.0 / p );
 }
 
 template< typename Device >
@@ -347,7 +346,7 @@ getVectorDifferenceSum( const Vector1& v1,
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return  data1[ i ] - data2[ i ]; };
    auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a += b; };
    auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a += b; };
-   return Reduction< DeviceType >::reduce( v1.getSize(), reduction, volatileReduction, fetch, ( ResultType ) 0 );
+   return Containers::Algorithms::Reduction< DeviceType >::reduce( v1.getSize(), reduction, volatileReduction, fetch, ( ResultType ) 0 );
 }
 
 template< typename Device >
@@ -368,46 +367,8 @@ getScalarProduct( const Vector1& v1,
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return  data1[ i ] * data2[ i ]; };
    auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a += b; };
    auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a += b; };
-   return Reduction< DeviceType >::reduce( v1.getSize(), reduction, volatileReduction, fetch, ( ResultType ) 0 );
+   return Containers::Algorithms::Reduction< DeviceType >::reduce( v1.getSize(), reduction, volatileReduction, fetch, ( ResultType ) 0 );
 }
 
-template< typename Device >
-template< Algorithms::PrefixSumType Type,
-          typename Vector >
-void
-CommonVectorOperations< Device >::
-prefixSum( Vector& v,
-           typename Vector::IndexType begin,
-           typename Vector::IndexType end )
-{
-   using RealType = typename Vector::RealType;
-   using IndexType = typename Vector::IndexType;
-
-   auto reduction = [=] __cuda_callable__ ( RealType& a, const RealType& b ) { a += b; };
-   auto volatileReduction = [=] __cuda_callable__ ( volatile RealType& a, volatile RealType& b ) { a += b; };
-
-   PrefixSum< Device, Type >::perform( v, begin, end, reduction, volatileReduction, ( RealType ) 0.0 );
-}
-
-template< typename Device >
-   template< Algorithms::PrefixSumType Type, typename Vector, typename Flags >
-void
-CommonVectorOperations< Device >::
-segmentedPrefixSum( Vector& v,
-                    Flags& f,
-                    typename Vector::IndexType begin,
-                    typename Vector::IndexType end )
-{
-   using RealType = typename Vector::RealType;
-   using IndexType = typename Vector::IndexType;
-
-   auto reduction = [=] __cuda_callable__ ( RealType& a, const RealType& b ) { a += b; };
-   auto volatileReduction = [=] __cuda_callable__ ( volatile RealType& a, volatile RealType& b ) { a += b; };
-
-   SegmentedPrefixSum< Device, Type >::perform( v, f, begin, end, reduction, volatileReduction, ( RealType ) 0.0 );
-}
-
-
-} // namespace Algorithms
-} // namespace Containers
+} // namespace Benchmarks
 } // namespace TNL

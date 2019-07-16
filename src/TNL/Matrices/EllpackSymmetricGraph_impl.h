@@ -89,7 +89,7 @@ void EllpackSymmetricGraph< Real, Device, Index >::setCompressedRowLengths( Cons
    TNL_ASSERT( this->getColumns() > 0, );
    //TNL_ASSERT( this->rowLengths > 0,
    //          std::cerr << "this->rowLengths = " << this->rowLengths );
-   this->rowLengths = this->maxRowLength = rowLengths.max();
+   this->rowLengths = this->maxRowLength = max( rowLengths );
    this->permutationArray.setSize( this->getRows() );
    for( IndexType i = 0; i < this->getRows(); i++ )
       this->permutationArray.setElement( i, i );

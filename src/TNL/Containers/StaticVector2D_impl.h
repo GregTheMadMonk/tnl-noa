@@ -143,38 +143,6 @@ StaticVector< 2, Real >& StaticVector< 2, Real >::operator /= ( const Real& c )
 }
 
 template< typename Real >
-__cuda_callable__
-bool StaticVector< 2, Real >::operator < ( const StaticVector& v ) const
-{
-   return ( this->data[ 0 ] < v[ 0 ] &&
-            this->data[ 1 ] < v[ 1 ] );
-}
-
-template< typename Real >
-__cuda_callable__
-bool StaticVector< 2, Real >::operator <= ( const StaticVector& v ) const
-{
-   return ( this->data[ 0 ] <= v[ 0 ] &&
-            this->data[ 1 ] <= v[ 1 ] );
-}
-
-template< typename Real >
-__cuda_callable__
-bool StaticVector< 2, Real >::operator > ( const StaticVector& v ) const
-{
-   return ( this->data[ 0 ] > v[ 0 ] &&
-            this->data[ 1 ] > v[ 1 ] );
-}
-
-template< typename Real >
-__cuda_callable__
-bool StaticVector< 2, Real >::operator >= ( const StaticVector& v ) const
-{
-   return ( this->data[ 0 ] >= v[ 0 ] &&
-            this->data[ 1 ] >= v[ 1 ] );
-}
-
-template< typename Real >
    template< typename OtherReal >
 __cuda_callable__
 StaticVector< 2, Real >::

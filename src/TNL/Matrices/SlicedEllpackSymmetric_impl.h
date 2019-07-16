@@ -78,7 +78,7 @@ void SlicedEllpackSymmetric< Real, Device, Index, SliceSize >::setCompressedRowL
 
    throw std::runtime_error("code fix required");
 
-   this->maxRowLength = rowLengths.max();
+   this->maxRowLength = max( rowLengths );
 
    this->slicePointers.template prefixSum< Containers::Algorithms::PrefixSumType::Exclusive >();
    this->allocateMatrixElements( this->slicePointers.getElement( slices ) );

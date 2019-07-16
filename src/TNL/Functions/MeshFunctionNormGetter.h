@@ -50,10 +50,10 @@ class MeshFunctionNormGetter< MeshFunction< Meshes::Grid< Dimension, MeshReal, D
          if( EntityDimension == Dimension )
          {
             if( p == 1.0 )
-               return function.getMesh().getCellMeasure() * function.getData().lpNorm( 1.0 );
+               return function.getMesh().getCellMeasure() * lpNorm( function.getData(), 1.0 );
             if( p == 2.0 )
-               return std::sqrt( function.getMesh().getCellMeasure() ) * function.getData().lpNorm( 2.0 );
-            return std::pow( function.getMesh().getCellMeasure(), 1.0 / p ) * function.getData().lpNorm( p );
+               return std::sqrt( function.getMesh().getCellMeasure() ) * lpNorm( function.getData(), 2.0 );
+            return std::pow( function.getMesh().getCellMeasure(), 1.0 / p ) * lpNorm( function.getData(), p );
          }
          if( EntityDimension > 0 )
          {
@@ -94,10 +94,10 @@ class MeshFunctionNormGetter< MeshFunction< Meshes::Grid< Dimension, MeshReal, D
          }
  
          if( p == 1.0 )
-            return function.getData().lpNorm( 1.0 );
+            return lpNorm( function.getData(), 1.0 );
          if( p == 2.0 )
-            return function.getData().lpNorm( 2.0 );
-         return function.getData().lpNorm( p );
+            return lpNorm( function.getData(), 2.0 );
+         return lpNorm( function.getData(), p );
       }
 };
 

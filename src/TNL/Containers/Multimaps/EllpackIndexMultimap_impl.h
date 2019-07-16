@@ -126,7 +126,7 @@ allocate( const ValuesAllocationVectorType& valuesCounts )
                std::cerr << "valuesCounts.getSize() =  " << valuesCounts.getSize()
                          << "this->keysRange = " << this->keysRange
                          << std::endl; );
-   this->maxValuesCount = valuesCounts.max();
+   this->maxValuesCount = max( valuesCounts );
  
    TNL_ASSERT( this->maxValuesCount >= 0,
                std::cerr << "this->maxValuesCount = " << this->maxValuesCount << std::endl; );

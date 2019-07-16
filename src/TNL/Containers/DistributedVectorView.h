@@ -44,6 +44,10 @@ public:
    using BaseType::DistributedArrayView;
    using BaseType::operator=;
 
+   // comparison operator is defined in DistributedVectorExpressions
+   template< typename ArrayViewT >
+   bool operator == ( const ArrayViewT& a  ) = delete;
+
    // In C++14, default constructors cannot be inherited, although Clang
    // and GCC since version 7.0 inherit them.
    // https://stackoverflow.com/a/51854172
@@ -59,6 +63,8 @@ public:
    LocalVectorViewType getLocalVectorView();
 
    ConstLocalVectorViewType getLocalVectorView() const;
+   
+   ConstLocalVectorViewType getConstLocalVectorView() const;
 
    /**
     * \brief Returns a modifiable view of the array view.
@@ -67,14 +73,19 @@ public:
    ViewType getView();
 
    /**
+    * \brief Returns a modifiable view of the array view.
+    */
+   __cuda_callable__
+   ConstViewType getView() const;
+
+
+   /**
     * \brief Returns a non-modifiable view of the array view.
     */
    __cuda_callable__
    ConstViewType getConstView() const;
 
-
    static String getType();
-
 
    /*
     * Usual Vector methods follow below.
@@ -99,40 +110,8 @@ public:
    template< typename Scalar >
    DistributedVectorView& operator/=( Scalar c );
 
-   NonConstReal max() const;
-
-   NonConstReal min() const;
-
-   NonConstReal absMax() const;
-
-   NonConstReal absMin() const;
-
-   template< typename ResultType = NonConstReal, typename Scalar >
-   ResultType lpNorm( Scalar p ) const;
-
    template< typename ResultType = NonConstReal >
    ResultType sum() const;
-
-   template< typename Vector >
-   NonConstReal differenceMax( const Vector& v ) const;
-
-   template< typename Vector >
-   NonConstReal differenceMin( const Vector& v ) const;
-
-   template< typename Vector >
-   NonConstReal differenceAbsMax( const Vector& v ) const;
-
-   template< typename Vector >
-   NonConstReal differenceAbsMin( const Vector& v ) const;
-
-   template< typename ResultType = NonConstReal, typename Vector, typename Scalar >
-   ResultType differenceLpNorm( const Vector& v, Scalar p ) const;
-
-   template< typename ResultType = NonConstReal, typename Vector >
-   ResultType differenceSum( const Vector& v ) const;
-
-   template< typename Scalar >
-   void scalarMultiplication( Scalar alpha );
 
    //! Computes scalar dot product
    template< typename Vector >
@@ -164,4 +143,5 @@ public:
 } // namespace Containers
 } // namespace TNL
 
-#include "DistributedVectorView_impl.h"
+#include <TNL/Containers/DistributedVectorView_impl.h>
+#include <TNL/Containers/DistributedVectorViewExpressions.h>
