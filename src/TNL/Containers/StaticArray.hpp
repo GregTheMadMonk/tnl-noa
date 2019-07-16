@@ -13,6 +13,7 @@
 #include <TNL/param-types.h>
 #include <TNL/Math.h>
 #include <TNL/Containers/StaticArray.h>
+#include <TNL/TemplateStaticFor.h>
 
 namespace TNL {
 namespace Containers {
@@ -64,6 +65,25 @@ StaticArray< Size, Value >::StaticArray( const std::initializer_list< Value > &e
 }
 
 template< int Size, typename Value >
+ __cuda_callable__
+StaticArray< Size, Value >::StaticArray( const Value& v1, const Value& v2 )
+{
+   static_assert( Size == 2, "This constructor can be called only for arrays with Size = 2." );
+   data[ 0 ] = v1;
+   data[ 1 ] = v2;
+}
+
+template< int Size, typename Value >
+ __cuda_callable__
+StaticArray< Size, Value >::StaticArray( const Value& v1, const Value& v2, const Value& v3 )
+{
+   static_assert( Size == 3, "This constructor can be called only for arrays with Size = 3." );
+   data[ 0 ] = v1;
+   data[ 1 ] = v2;
+   data[ 2 ] = v3;
+}
+
+template< int Size, typename Value >
 String StaticArray< Size, Value >::getType()
 {
    return String( "Containers::StaticArray< " ) +
@@ -103,6 +123,51 @@ inline Value& StaticArray< Size, Value >::operator[]( int i )
    TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
    TNL_ASSERT_LT( i, Size, "Element index is out of bounds." );
    return data[ i ];
+}
+template< int Size, typename Value >
+__cuda_callable__
+inline Value& StaticArray< Size, Value >::x()
+{
+   return data[ 0 ];
+}
+
+template< int Size, typename Value >
+__cuda_callable__
+inline const Value& StaticArray< Size, Value >::x() const
+{
+   return data[ 0 ];
+}
+
+template< int Size, typename Value >
+__cuda_callable__
+inline Value& StaticArray< Size, Value >::y()
+{
+   static_assert( Size > 1, "Cannot call StaticArray< Size, Value >::y() for arrays with Size < 2." );
+   return data[ 1 ];
+}
+
+template< int Size, typename Value >
+__cuda_callable__
+inline const Value& StaticArray< Size, Value >::y() const
+{
+   static_assert( Size > 1, "Cannot call StaticArray< Size, Value >::y() for arrays with Size < 2." );
+   return data[ 1 ];
+}
+
+template< int Size, typename Value >
+__cuda_callable__
+inline Value& StaticArray< Size, Value >::z()
+{
+   static_assert( Size > 1, "Cannot call StaticArray< Size, Value >::z() for arrays with Size < 3." );
+   return data[ 2 ];
+}
+
+template< int Size, typename Value >
+__cuda_callable__
+inline const Value& StaticArray< Size, Value >::z() const
+{
+   static_assert( Size > 1, "Cannot call StaticArray< Size, Value >::z() for arrays with Size < 3." );
+   return data[ 2 ];
 }
 
 template< int Size, typename Value >

@@ -76,6 +76,25 @@ class StaticArray
    inline StaticArray( const std::initializer_list< Value > &elems );
 
    /**
+    * \brief Constructor that sets components of arrays with Size = 2.
+    *
+    * \param v1 Value of the first array component.
+    * \param v2 Value of the second array component.
+    */
+   __cuda_callable__
+   inline StaticArray( const Value& v1, const Value& v2 );
+
+   /**
+    * \brief Constructor that sets components of arrays with Size = 3.
+    *
+    * \param v1 Value of the first array component.
+    * \param v2 Value of the second array component.
+    * \param v3 Value of the third array component.
+    */
+   __cuda_callable__
+   inline StaticArray( const Value& v1, const Value& v2, const Value& v3 );
+
+   /**
     * \brief Gets type of this array.
     */
    static String getType();
@@ -108,6 +127,30 @@ class StaticArray
     */
    __cuda_callable__
    inline Value& operator[]( int i );
+
+   /** \brief Returns the first coordinate.*/
+   __cuda_callable__
+   inline Value& x();
+
+   /** \brief Returns the first coordinate.*/
+   __cuda_callable__
+   inline const Value& x() const;
+
+   /** \brief Returns the second coordinate for arrays with Size >= 2.*/
+   __cuda_callable__
+   inline Value& y();
+
+   /** \brief Returns the second coordinate for arrays with Size >= 2.*/
+   __cuda_callable__
+   inline const Value& y() const;
+
+   /** \brief Returns the third coordinate for arrays with Size >= 3..*/
+   __cuda_callable__
+   inline Value& z();
+
+   /** \brief Returns the third coordinate for arrays with Size >= 3..*/
+   __cuda_callable__
+   inline const Value& z() const;
 
    /**
     * \brief Assigns another static \e array to this array, replacing its current contents.
@@ -180,379 +223,6 @@ class StaticArray
    Value data[ Size ];
 };
 
-/**
- * \brief Specific static array with the size of 1. Works like the class StaticArray.
- */
-template< typename Value >
-class StaticArray< 1, Value >
-{
-   protected:
-      enum { Size = 1 };
-
-   public:
-   using ValueType = Value;
-   using IndexType = int;
-
-   /**
-    * \brief Gets size of this array.
-    */
-   __cuda_callable__
-   static constexpr int getSize();
-
-   /** \brief See StaticArray::StaticArray().*/
-   __cuda_callable__
-   inline StaticArray();
-
-   /** \brief See StaticArray::StaticArray(const Value v[Size]).*/
-   // Note: the template avoids ambiguity of overloaded functions with literal 0 and pointer
-   // reference: https://stackoverflow.com/q/4610503
-   template< typename _unused = void >
-   __cuda_callable__
-   inline StaticArray( const Value v[ Size ] );
-
-   /** \brief See StaticArray::StaticArray(const Value& v).*/
-   __cuda_callable__
-   inline StaticArray( const Value& v );
-
-   /** \brief See StaticArray::StaticArray( const StaticArray< Size, Value >& v ).*/
-   __cuda_callable__
-   inline StaticArray( const StaticArray< Size, Value >& v );
-
-   inline StaticArray( const std::initializer_list< Value > &elems );
-
-   /** \brief See StaticArray::getType().*/
-   static String getType();
-
-   /** \brief See StaticArray::getData().*/
-   __cuda_callable__
-   inline Value* getData();
-
-   /** \brief See StaticArray::getData() const.*/
-   __cuda_callable__
-   inline const Value* getData() const;
-
-   /** \brief See StaticArray::operator[]( int i ) const.*/
-   __cuda_callable__
-   inline const Value& operator[]( int i ) const;
-
-   /** \brief See StaticArray::operator[]( int i ).*/
-   __cuda_callable__
-   inline Value& operator[]( int i );
-
-   /** \brief Returns the first coordinate - the first element of this static array.*/
-   __cuda_callable__
-   inline Value& x();
-
-   /** \brief Returns the first coordinate - the first element of this static array.*/
-   __cuda_callable__
-   inline const Value& x() const;
-
-   /** \brief Similar to StaticArray::operator = ( const StaticArray< Size, Value >& array ) only with Size equal to 1.*/
-   __cuda_callable__
-   inline StaticArray< 1, Value >& operator = ( const StaticArray< 1, Value >& array );
-
-   /** \brief See StaticArray::operator = (const Array& array).*/
-   template< typename Array >
-   __cuda_callable__
-   inline StaticArray< 1, Value >& operator = ( const Array& array );
-
-   /** \brief See StaticArray::operator == (const Array& array) const.*/
-   template< typename Array >
-   __cuda_callable__
-   inline bool operator == ( const Array& array ) const;
-
-   /** \brief See StaticArray::operator != (const Array& array) const.*/
-   template< typename Array >
-   __cuda_callable__
-   inline bool operator != ( const Array& array ) const;
-
-   template< typename OtherValue >
-   __cuda_callable__
-   operator StaticArray< 1, OtherValue >() const;
-
-   /** \brief See StaticArray::setValue().*/
-   __cuda_callable__
-   inline
-   void setValue( const ValueType& val );
-
-   /** \brief See StaticArray::save().*/
-   bool save( File& file ) const;
-
-   /** \brief See StaticArray::load().*/
-   bool load( File& file);
-
-   /** \brief See StaticArray::sort().*/
-   void sort();
-
-   /** \brief See StaticArray::write().*/
-   std::ostream& write( std::ostream& str, const char* separator = " " ) const;
-
-   protected:
-   Value data[ Size ];
-};
-
-/**
- * \brief Specific static array with the size of 2. Works like the class StaticArray.
- */
-template< typename Value >
-class StaticArray< 2, Value >
-{
-   protected:
-   enum { Size = 2 };
-
-   public:
-   using ValueType = Value;
-   using IndexType = int;
-
-   /**
-    * \brief Gets size of this array.
-    */
-   __cuda_callable__
-   static constexpr int getSize();
-
-   /** \brief See StaticArray::StaticArray().*/
-   __cuda_callable__
-   inline StaticArray();
-
-   /** \brief See StaticArray::StaticArray(const Value v[Size]).*/
-   // Note: the template avoids ambiguity of overloaded functions with literal 0 and pointer
-   // reference: https://stackoverflow.com/q/4610503
-   template< typename _unused = void >
-   __cuda_callable__
-   inline StaticArray( const Value v[ Size ] );
-
-   /** \brief See StaticArray::StaticArray(const Value& v).*/
-   __cuda_callable__
-   inline StaticArray( const Value& v );
-
-   /**
-    * \brief Constructor that sets the two static array components to value \e v1 and \e v2.
-    *
-    * \param v1 Reference to the value of first array/vector component.
-    * \param v2 Reference to the value of second array/vector component.
-    */
-   __cuda_callable__
-   inline StaticArray( const Value& v1, const Value& v2 );
-
-   /** \brief See StaticArray::StaticArray( const StaticArray< Size, Value >& v ).*/
-   __cuda_callable__
-   inline StaticArray( const StaticArray< Size, Value >& v );
-
-   inline StaticArray( const std::initializer_list< Value > &elems );
-
-   /** \brief See StaticArray::getType().*/
-   static String getType();
-
-   /** \brief See StaticArray::getData().*/
-   __cuda_callable__
-   inline Value* getData();
-
-   /** \brief See StaticArray::getData() const.*/
-   __cuda_callable__
-   inline const Value* getData() const;
-
-   /** \brief See StaticArray::operator[]( int i ) const.*/
-   __cuda_callable__
-   inline const Value& operator[]( int i ) const;
-
-   /** \brief See StaticArray::operator[]( int i ).*/
-   __cuda_callable__
-   inline Value& operator[]( int i );
-
-   /** \brief Returns the first coordinate - the first element of this static array.*/
-   __cuda_callable__
-   inline Value& x();
-
-   /** \brief Returns the first coordinate - the first element of this static array.*/
-   __cuda_callable__
-   inline const Value& x() const;
-
-   /** \brief Returns the second coordinate - the second element of this static array.*/
-   __cuda_callable__
-   inline Value& y();
-
-   /** \brief Returns the second coordinate - the second element of this static array.*/
-   __cuda_callable__
-   inline const Value& y() const;
-
-   /** \brief Similar to StaticArray::operator = ( const StaticArray< Size, Value >& array ) only with Size equal to 2.*/
-   __cuda_callable__
-   inline StaticArray< 2, Value >& operator = ( const StaticArray< 2, Value >& array );
-
-   /** \brief See StaticArray::operator = (const Array& array).*/
-   template< typename Array >
-   __cuda_callable__
-   inline StaticArray< 2, Value >& operator = ( const Array& array );
-
-   /** \brief See StaticArray::operator == (const Array& array) const.*/
-   template< typename Array >
-   __cuda_callable__
-   inline bool operator == ( const Array& array ) const;
-
-   /** \brief See StaticArray::operator != (const Array& array) const.*/
-   template< typename Array >
-   __cuda_callable__
-   inline bool operator != ( const Array& array ) const;
-
-   template< typename OtherValue >
-   __cuda_callable__
-   operator StaticArray< 2, OtherValue >() const;
-
-   /** \brief See StaticArray::setValue().*/
-   __cuda_callable__
-   inline void setValue( const ValueType& val );
-
-   /** \brief See StaticArray::save().*/
-   bool save( File& file ) const;
-
-   /** \brief See StaticArray::load().*/
-   bool load( File& file);
-
-   /** \brief See StaticArray::sort().*/
-   void sort();
-
-   /** \brief See StaticArray::write().*/
-   std::ostream& write( std::ostream& str, const char* separator = " " ) const;
-
-   protected:
-   Value data[ Size ];
-};
-
-/**
- * \brief Specific static array with the size of 3. Works like the class StaticArray.
- */
-template< typename Value >
-class StaticArray< 3, Value >
-{
-   protected:
-      enum { Size = 3 };
-   public:
-   using ValueType = Value;
-   using IndexType = int;
-
-   /**
-    * \brief Gets size of this array.
-    */
-   __cuda_callable__
-   static constexpr int getSize();
-
-   /** \brief See StaticArray::StaticArray().*/
-   __cuda_callable__
-   inline StaticArray();
-
-   /** \brief See StaticArray::StaticArray(const Value v[ size ]).*/
-   // Note: the template avoids ambiguity of overloaded functions with literal 0 and pointer
-   // reference: https://stackoverflow.com/q/4610503
-   template< typename _unused = void >
-   __cuda_callable__
-   inline StaticArray( const Value v[ Size ] );
-
-   /** \brief See StaticArray::StaticArray(const Value& v).*/
-   __cuda_callable__
-   inline StaticArray( const Value& v );
-
-   /**
-    * \brief Constructor that sets the three array components to value \e v1 \e v2 and \e v3.
-    *
-    * \param v1 Reference to the value of first array/vector component.
-    * \param v2 Reference to the value of second array/vector component.
-    * \param v3 Reference to the value of third array/vector component.
-    */
-   __cuda_callable__
-   inline StaticArray( const Value& v1, const Value& v2, const Value& v3 );
-
-   /** \brief See StaticArray::StaticArray( const StaticArray< Size, Value >& v ).*/
-   __cuda_callable__
-   inline StaticArray( const StaticArray< Size, Value >& v );
-
-   StaticArray( const std::initializer_list< Value > &elems );
-
-   /** \brief See StaticArray::getType().*/
-   static String getType();
-
-   /** \brief See StaticArray::getData().*/
-   __cuda_callable__
-   inline Value* getData();
-
-   /** \brief See StaticArray::getData() const.*/
-   __cuda_callable__
-   inline const Value* getData() const;
-
-   /** \brief See StaticArray::operator[]( int i ) const.*/
-   __cuda_callable__
-   inline const Value& operator[]( int i ) const;
-
-   /** \brief See StaticArray::operator[]( int i ).*/
-   __cuda_callable__
-   inline Value& operator[]( int i );
-
-   /** \brief Returns the first coordinate - the first element of this static array.*/
-   __cuda_callable__
-   inline Value& x();
-
-   /** \brief Returns the first coordinate - the first element of this static array.*/
-   __cuda_callable__
-   inline const Value& x() const;
-
-   /** \brief Returns the second coordinate - the second element of this static array.*/
-   __cuda_callable__
-   inline Value& y();
-
-   /** \brief Returns the second coordinate - the second element of this static array.*/
-   __cuda_callable__
-   inline const Value& y() const;
-
-   /** \brief Returns the third coordinate - the third element of this static array.*/
-   __cuda_callable__
-   inline Value& z();
-
-   /** \brief Returns the third coordinate - the third element of this static array.*/
-   __cuda_callable__
-   inline const Value& z() const;
-
-   /** \brief Similar to StaticArray::operator = ( const StaticArray< Size, Value >& array ) only with Size equal to 3.*/
-   __cuda_callable__
-   inline StaticArray< 3, Value >& operator = ( const StaticArray< 3, Value >& array );
-
-   /** \brief See StaticArray::operator = (const Array& array).*/
-   template< typename Array >
-   __cuda_callable__
-   inline StaticArray< 3, Value >& operator = ( const Array& array );
-
-   /** \brief See StaticArray::operator == (const Array& array) const.*/
-   template< typename Array >
-   __cuda_callable__
-   inline bool operator == ( const Array& array ) const;
-
-   /** \brief See StaticArray::operator != (const Array& array) const.*/
-   template< typename Array >
-   __cuda_callable__
-   inline bool operator != ( const Array& array ) const;
-
-   template< typename OtherValue >
-   __cuda_callable__
-   operator StaticArray< 3, OtherValue >() const;
-
-   /** \brief See StaticArray::setValue().*/
-   __cuda_callable__
-   inline void setValue( const ValueType& val );
-
-   /** \brief See StaticArray::save().*/
-   bool save( File& file ) const;
-
-   /** \brief See StaticArray::load().*/
-   bool load( File& file);
-
-   /** \brief See StaticArray::sort().*/
-   void sort();
-
-   /** \brief See StaticArray::write().*/
-   std::ostream& write( std::ostream& str, const char* separator = " " ) const;
-
-   protected:
-   Value data[ Size ];
-};
-
 template< int Size, typename Value >
 std::ostream& operator << ( std::ostream& str, const StaticArray< Size, Value >& a );
 
@@ -566,7 +236,4 @@ struct IsStatic< Containers::StaticArray< Size, Value_ > >
 
 } // namespace TNL
 
-#include <TNL/Containers/StaticArray_impl.h>
-#include <TNL/Containers/StaticArray1D_impl.h>
-#include <TNL/Containers/StaticArray2D_impl.h>
-#include <TNL/Containers/StaticArray3D_impl.h>
+#include <TNL/Containers/StaticArray.hpp>
