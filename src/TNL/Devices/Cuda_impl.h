@@ -111,10 +111,10 @@ inline int Cuda::getNumberOfBlocks( const int threads,
    return roundUpDivision( threads, blockSize );
 }
 
-inline int Cuda::getNumberOfGrids( const int threads,
+inline int Cuda::getNumberOfGrids( const int blocks,
                                    const int gridSize )
 {
-   return roundUpDivision( threads, gridSize );
+   return roundUpDivision( blocks, gridSize );
 }
 
 #ifdef HAVE_CUDA
