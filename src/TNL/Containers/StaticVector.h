@@ -172,20 +172,6 @@ class StaticVector : public StaticArray< Size, Real >
    template< typename OtherReal >
    __cuda_callable__
    operator StaticVector< Size, OtherReal >() const;
-
-   /**
-    * \brief Returns static vector with all elements in absolute value.
-    */
-   __cuda_callable__
-   StaticVector abs() const;
-
-   /**
-    * \brief Returns the length of this vector in p-dimensional vector space.
-    *
-    * \param p Number specifying the dimension of vector space.
-    */
-   __cuda_callable__
-   Real lpNorm( const Real& p ) const;
 };
 
 } // namespace Containers
