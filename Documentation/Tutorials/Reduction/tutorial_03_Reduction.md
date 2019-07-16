@@ -1,4 +1,4 @@
-\page tutorial_01_arrays Flexible (parallel) reduction tutorial
+\page tutorial_03_reduction Flexible (parallel) reduction tutorial
 
 ## Introduction
 
