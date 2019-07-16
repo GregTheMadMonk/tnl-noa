@@ -75,10 +75,10 @@ class Cuda
 
    /****
     * This functions helps to count number of CUDA grids depending on the 
-    * number of the CUDA blocks and maximum grid size.
+    * number of the CUDA threads and maximum grid size.
     * It is obsolete and it will be replaced by setupThreads.
     */
-   static inline int getNumberOfGrids( const int blocks,
+   static inline int getNumberOfGrids( const int threads,
                                        const int gridSize = getMaxGridSize() );
    
 #ifdef HAVE_CUDA   
