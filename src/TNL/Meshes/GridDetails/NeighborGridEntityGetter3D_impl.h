@@ -14,7 +14,7 @@
 #include <TNL/Meshes/GridDetails/Grid1D.h>
 #include <TNL/Meshes/GridDetails/Grid2D.h>
 #include <TNL/Meshes/GridDetails/Grid3D.h>
-#include <TNL/StaticFor.h>
+#include <TNL/TemplateStaticFor.h>
 
 namespace TNL {
 namespace Meshes {
@@ -223,11 +223,11 @@ class NeighborGridEntityGetter<
       void refresh( const GridType& grid, const IndexType& entityIndex )
       {
 #ifndef HAVE_CUDA // TODO: fix this to work with CUDA
-         StaticFor< IndexType, -stencilSize, 0, StencilZRefresher >::exec( *this, entityIndex );
-         StaticFor< IndexType, 1, stencilSize + 1, StencilZRefresher >::exec( *this, entityIndex );
-         StaticFor< IndexType, -stencilSize, 0, StencilYRefresher >::exec( *this, entityIndex );
-         StaticFor< IndexType, 1, stencilSize + 1, StencilYRefresher >::exec( *this, entityIndex );
-         StaticFor< IndexType, -stencilSize, stencilSize + 1, StencilXRefresher >::exec( *this, entityIndex );
+         TemplateStaticFor< IndexType, -stencilSize, 0, StencilZRefresher >::exec( *this, entityIndex );
+         TemplateStaticFor< IndexType, 1, stencilSize + 1, StencilZRefresher >::exec( *this, entityIndex );
+         TemplateStaticFor< IndexType, -stencilSize, 0, StencilYRefresher >::exec( *this, entityIndex );
+         TemplateStaticFor< IndexType, 1, stencilSize + 1, StencilYRefresher >::exec( *this, entityIndex );
+         TemplateStaticFor< IndexType, -stencilSize, stencilSize + 1, StencilXRefresher >::exec( *this, entityIndex );
 #endif
       };
  

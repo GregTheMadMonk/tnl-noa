@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include <TNL/StaticFor.h>
+#include <TNL/TemplateStaticFor.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshTraits.h>
 
 namespace TNL {
@@ -47,7 +47,7 @@ public:
    static SubentitySeedArray create( const SubvertexAccessorType& subvertices )
    {
       SubentitySeedArray subentitySeeds;
-      StaticFor< LocalIndexType, 0, SUBENTITIES_COUNT, CreateSubentitySeeds >::execHost( subentitySeeds, subvertices );
+      TemplateStaticFor< LocalIndexType, 0, SUBENTITIES_COUNT, CreateSubentitySeeds >::execHost( subentitySeeds, subvertices );
 
       return subentitySeeds;
    }
@@ -61,7 +61,7 @@ private:
       public:
          static void exec( SubentitySeedArray& subentitySeeds, const SubvertexAccessorType& subvertices )
          {
-            StaticFor< LocalIndexType, 0, SUBENTITY_VERTICES_COUNT, SetSubentitySeedVertex >::execHost( subentitySeeds[ subentityIndex ], subvertices );
+            TemplateStaticFor< LocalIndexType, 0, SUBENTITY_VERTICES_COUNT, SetSubentitySeedVertex >::execHost( subentitySeeds[ subentityIndex ], subvertices );
          }
 
       private:

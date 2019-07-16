@@ -29,7 +29,7 @@
 #include <TNL/Meshes/Mesh.h>
 #include <TNL/Pointers/DevicePointer.h>
 #include <TNL/ParallelFor.h>
-#include <TNL/StaticFor.h>
+#include <TNL/TemplateStaticFor.h>
 
 namespace TNL {
 namespace Meshes {
@@ -144,14 +144,14 @@ public:
 
       static void exec( Mesh& mesh )
       {
-         StaticFor< int, Dimension + 1, Mesh::getMeshDimension() + 1, Inner >::execHost( mesh );
+         TemplateStaticFor< int, Dimension + 1, Mesh::getMeshDimension() + 1, Inner >::execHost( mesh );
       }
    };
 
 public:
    static void exec( Mesh& mesh )
    {
-      StaticFor< int, 0, Mesh::getMeshDimension() + 1, OuterLoop >::execHost( mesh );
+      TemplateStaticFor< int, 0, Mesh::getMeshDimension() + 1, OuterLoop >::execHost( mesh );
    }
 };
 

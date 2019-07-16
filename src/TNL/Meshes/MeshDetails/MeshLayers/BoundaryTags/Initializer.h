@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/StaticFor.h>
+#include <TNL/TemplateStaticFor.h>
 #include <TNL/ParallelFor.h>
 #include <TNL/Pointers/DevicePointer.h>
 #include <TNL/Meshes/DimensionTag.h>
@@ -121,8 +121,8 @@ public:
    public:
       static void exec( Mesh& mesh )
       {
-         StaticFor< int, 0, Mesh::getMeshDimension() + 1, SetEntitiesCount >::execHost( mesh );
-         StaticFor< int, 0, Mesh::getMeshDimension() + 1, ResetBoundaryTags >::execHost( mesh );
+         TemplateStaticFor< int, 0, Mesh::getMeshDimension() + 1, SetEntitiesCount >::execHost( mesh );
+         TemplateStaticFor< int, 0, Mesh::getMeshDimension() + 1, ResetBoundaryTags >::execHost( mesh );
 
          auto kernel = [] __cuda_callable__
             ( GlobalIndexType faceIndex,
@@ -136,7 +136,7 @@ public:
                const GlobalIndexType cellIndex = face.template getSuperentityIndex< Mesh::getMeshDimension() >( 0 );
                mesh->template setIsBoundaryEntity< Mesh::getMeshDimension() >( cellIndex, true );
                // initialize all subentities
-               StaticFor< int, 0, Mesh::getMeshDimension() - 1, InitializeSubentities >::exec( *mesh, faceIndex, face );
+               TemplateStaticFor< int, 0, Mesh::getMeshDimension() - 1, InitializeSubentities >::exec( *mesh, faceIndex, face );
             }
          };
 
@@ -146,7 +146,7 @@ public:
                                           kernel,
                                           &meshPointer.template modifyData< DeviceType >() );
 
-         StaticFor< int, 0, Mesh::getMeshDimension() + 1, UpdateBoundaryIndices >::execHost( mesh );
+         TemplateStaticFor< int, 0, Mesh::getMeshDimension() + 1, UpdateBoundaryIndices >::execHost( mesh );
       }
    };
 

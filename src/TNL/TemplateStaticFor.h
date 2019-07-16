@@ -1,5 +1,5 @@
 /***************************************************************************
-                          StaticFor.h  -  description
+                          TemplateStaticFor.h  -  description
                              -------------------
     begin                : Feb 23, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -22,14 +22,14 @@ template< typename IndexType,
           typename Begin,
           typename N,
           template< IndexType > class LoopBody >
-struct StaticForExecutor
+struct TemplateStaticForExecutor
 {
    template< typename... Args >
    __cuda_callable__
    static void exec( Args&&... args )
    {
       using Decrement = std::integral_constant< IndexType, N::value - 1 >;
-      StaticForExecutor< IndexType, Begin, Decrement, LoopBody >::exec( std::forward< Args >( args )... );
+      TemplateStaticForExecutor< IndexType, Begin, Decrement, LoopBody >::exec( std::forward< Args >( args )... );
       LoopBody< Begin::value + N::value - 1 >::exec( std::forward< Args >( args )... );
    }
 
@@ -37,7 +37,7 @@ struct StaticForExecutor
    static void execHost( Args&&... args )
    {
       using Decrement = std::integral_constant< IndexType, N::value - 1 >;
-      StaticForExecutor< IndexType, Begin, Decrement, LoopBody >::execHost( std::forward< Args >( args )... );
+      TemplateStaticForExecutor< IndexType, Begin, Decrement, LoopBody >::execHost( std::forward< Args >( args )... );
       LoopBody< Begin::value + N::value - 1 >::exec( std::forward< Args >( args )... );
    }
 };
@@ -45,10 +45,10 @@ struct StaticForExecutor
 template< typename IndexType,
           typename Begin,
           template< IndexType > class LoopBody >
-struct StaticForExecutor< IndexType,
-                          Begin,
-                          std::integral_constant< IndexType, 0 >,
-                          LoopBody >
+struct TemplateStaticForExecutor< IndexType,
+                                  Begin,
+                                  std::integral_constant< IndexType, 0 >,
+                                  LoopBody >
 {
    template< typename... Args >
    __cuda_callable__
@@ -66,13 +66,13 @@ template< typename IndexType,
           IndexType begin,
           IndexType end,
           template< IndexType > class LoopBody >
-struct StaticFor
+struct TemplateStaticFor
 {
    template< typename... Args >
    __cuda_callable__
    static void exec( Args&&... args )
    {
-      detail::StaticForExecutor< IndexType,
+      detail::TemplateStaticForExecutor< IndexType,
                                  std::integral_constant< IndexType, begin >,
                                  std::integral_constant< IndexType, end - begin >,
                                  LoopBody >::exec( std::forward< Args >( args )... );
@@ -82,7 +82,7 @@ struct StaticFor
    template< typename... Args >
    static void execHost( Args&&... args )
    {
-      detail::StaticForExecutor< IndexType,
+      detail::TemplateStaticForExecutor< IndexType,
                                  std::integral_constant< IndexType, begin >,
                                  std::integral_constant< IndexType, end - begin >,
                                  LoopBody >::execHost( std::forward< Args >( args )... );
