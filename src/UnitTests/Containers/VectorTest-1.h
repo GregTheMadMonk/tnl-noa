@@ -174,11 +174,14 @@ TYPED_TEST( VectorTest, addVector )
    y.setSize( size );
    ViewType x_view( x ), y_view( y );
 
-   VectorType expected1( size ), expected2( size );
+   typename VectorType::HostType host_expected1( size ), host_expected2( size );
    for( int i = 0; i < size; i++ ) {
-      expected1.setElement( i, 2.0 + 3.0 * i );
-      expected2.setElement( i, 1.0 + 3.0 * i );
+      host_expected1.setElement( i, 2.0 + 3.0 * i );
+      host_expected2.setElement( i, 1.0 + 3.0 * i );
    }
+   VectorType expected1, expected2;
+   expected1 = host_expected1;
+   expected2 = host_expected2;
 
    setConstantSequence( x, 1 );
    setLinearSequence( y );
@@ -222,11 +225,14 @@ TYPED_TEST( VectorTest, addVectors )
    z.setSize( size );
    ViewType x_view( x ), y_view( y ), z_view( z );
 
-   VectorType expected1( size ), expected2( size );
+   typename VectorType::HostType host_expected1( size ), host_expected2( size );
    for( int i = 0; i < size; i++ ) {
-      expected1.setElement( i, 1.0 + 3.0 * i + 2.0 );
-      expected2.setElement( i, 2.0 + 3.0 * i + 2.0 );
+      host_expected1.setElement( i, 1.0 + 3.0 * i + 2.0 );
+      host_expected2.setElement( i, 2.0 + 3.0 * i + 2.0 );
    }
+   VectorType expected1, expected2;
+   expected1 = host_expected1;
+   expected2 = host_expected2;
 
    setConstantSequence( x, 1 );
    setLinearSequence( y );
