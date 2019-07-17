@@ -9,6 +9,7 @@ This tutorial introduces vectors in TNL. `Vector`, in addition to `Array`, offer
    1. [Horizontal operations] (#horizontal_operations)
    2. [Vertical operations] (#vertical_operations)
 2. [Static vectors](#static_vectors)
+3. [Distributed vectors](#distributed_vectors)
 
 ## Vectors <a name="vectors"></a>
 
@@ -33,7 +34,7 @@ Output is:
 Vector expressions work only with `VectorView` not with `Vector`. The expression is evaluated on the same device where the vectors are allocated, this is done automatically. One cannot, however, mix vectors from different devices in one expression. Vector expression may contain any common function like `min`, `max`, `abs`, `sin`, `cos`, `exp`, `log`, `sqrt`, `pow` etc. 
 
 ### Vertical operations <a name="vertical_operations"></a>
-By *vertical operations* we mean (parallel) reduction based operations where we have one or more vectors (or vector expressions) as an input and one value as an output. For example computing scalar product, vector norm or finding minimum or maximum of vector elements is based on reduction. See the following example.
+By *vertical operations* we mean (parallel) reduction based operations where we have one vector expressions as an input and one value as an output. For example computing scalar product, vector norm or finding minimum or maximum of vector elements is based on reduction. See the following example.
 
 \include Reduction.cpp
 
@@ -42,3 +43,5 @@ Output is:
 \include Reduction.out
 
 ## Static vectors <a name="static_vectors"></a>
+
+## Distributed vectors <a name="distributed_vectors"></a>

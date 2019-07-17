@@ -15,6 +15,7 @@ This tutorial introduces arrays in TNL. Array is one of the most important struc
    5. [Checking the array contents](#checking_the_array_contents)
    6. [IO operations with arrays](#io_operations_with-arrays)
 2. [Static arrays](#static_arrays)
+2. [Distributed arrays](#distributed_arrays)
 
 ## Arrays <a name="arrays"></a>
 
@@ -148,3 +149,5 @@ Output:
 \include ArrayIO.out
 
 ## Static arrays <a name="static_arrays"></a>
+
+## Distributed arrays <a name="distributed_arrays"></a>
