@@ -13,7 +13,7 @@
 #include <type_traits>
 
 namespace TNL {
-   namespace Containers {
+namespace Containers {
 
 template< int Size, typename Real >
 class StaticVector;
@@ -21,7 +21,7 @@ class StaticVector;
 template< typename Real, typename Device, typename Index >
 class VectorView;
 
-template< typename Real, typename Device, typename Index >
+template< typename Real, typename Device, typename Index, typename Allocator >
 class Vector;
 
 template< typename Real, typename Device, typename Index, typename Communicator >
@@ -36,7 +36,7 @@ class StaticArray;
 template< typename Real, typename Device, typename Index >
 class ArrayView;
 
-template< typename Real, typename Device, typename Index >
+template< typename Real, typename Device, typename Index, typename Allocator >
 class Array;
 
 template< typename Real, typename Device, typename Index, typename Communicator >
@@ -46,7 +46,7 @@ template< typename Real, typename Device, typename Index, typename Communicator 
 class DistributedArray;
 
 
-      namespace Expressions {
+namespace Expressions {
 
 enum ExpressionVariableType { ArithmeticVariable, VectorVariable, VectorExpressionVariable, OtherVariable };
 
@@ -91,8 +91,9 @@ struct IsVectorType< VectorView< Real, Device, Index > >
 
 template< typename Real,
           typename Device,
-          typename Index >
-struct IsVectorType< Vector< Real, Device, Index > >
+          typename Index,
+          typename Allocator >
+struct IsVectorType< Vector< Real, Device, Index, Allocator > >
 {
    static constexpr bool value = true;
 };
@@ -123,8 +124,9 @@ struct IsVectorType< ArrayView< Real, Device, Index > >
 
 template< typename Real,
           typename Device,
-          typename Index >
-struct IsVectorType< Array< Real, Device, Index > >
+          typename Index,
+          typename Allocator >
+struct IsVectorType< Array< Real, Device, Index, Allocator > >
 {
    static constexpr bool value = true;
 };
@@ -184,6 +186,6 @@ struct OperandType< T, Devices::Host >
    using type = typename std::add_const< typename std::add_lvalue_reference< T >::type >::type;
 };
 
-      } //namespace Expressions
-   } //namespace Containers
+} //namespace Expressions
+} //namespace Containers
 } //namespace TNL

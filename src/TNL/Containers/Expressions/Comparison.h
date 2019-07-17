@@ -45,7 +45,7 @@ struct VectorComparison< T1, T2, true >
 
    static bool EQ( const T1& a, const T2& b )
    {
-      return Algorithms::ArrayOperations< typename T1::DeviceType, typename T2::DeviceType >::compareMemory( a.getData(), b.getData(), a.getSize() );
+      return Algorithms::ArrayOperations< typename T1::DeviceType, typename T2::DeviceType >::compare( a.getData(), b.getData(), a.getSize() );
    }
 };
 
