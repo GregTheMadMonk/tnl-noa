@@ -47,7 +47,7 @@ template< int blockSize,
 __global__ void
 __launch_bounds__( Reduction_maxThreadsPerBlock, Reduction_minBlocksPerMultiprocessor )
 CudaReductionKernel( const Result zero,
-                     const DataFetcher dataFetcher,
+                     DataFetcher dataFetcher,
                      const Reduction reduction,
                      const Index size,
                      Result* output )

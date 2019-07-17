@@ -1,7 +1,10 @@
 #include <iostream>
 #include <cstdlib>
 #include <TNL/Containers/Vector.h>
+#include <TNL/Containers/Array.h>
 #include <TNL/Containers/Algorithms/Reduction.h>
+
+#include <TNL/Containers/StaticVector.h>
 
 using namespace TNL;
 using namespace TNL::Containers;
@@ -10,23 +13,47 @@ using namespace TNL::Containers::Algorithms;
 template< typename Device >
 double sum( const Vector< double, Device >& v )
 {
+   /****
+    * Get vector view which can be captured by lambda.
+    */
    auto view = v.getView();
+
+   /****
+    * The fetch method just reads elements of vector v.
+    */
    auto fetch = [=] __cuda_callable__ ( int i ) { return view[ i ]; };
+
+   /***
+    * Reduction is sum of two numbers.
+    */
    auto reduce = [] __cuda_callable__ ( double& a, const double& b ) { a += b; };
-   auto volatileReduce = [=] __cuda_callable__ ( volatile double& a, const volatile double& b ) { a += b; };
-   return Reduction< Device >::reduce( v.getSize(), reduce, volatileReduce, fetch, 0.0 );
+   auto volatileReduce = [] __cuda_callable__ ( volatile double& a, const volatile double& b ) { a += b; };
+
+   /***
+    * Finally we call the templated function Reduction and pass number of elements to reduce,
+    * lambdas defined above and finally value of idempotent element, zero in this case, which serve for the
+    * reduction initiation.
+    */
+   return Reduction< Device >::reduce( view.getSize(), reduce, volatileReduce, fetch, 0.0 );
 }
 
 int main( int argc, char* argv[] )
 {
+   /***
+    * Firstly, test the sum with vectors allocated on CPU.
+    */
    Vector< double, Devices::Host > host_v( 10 );
    host_v = 1.0;
-   std::cout << "host_v = " << host_v << std::cout;
+   std::cout << "host_v = " << host_v << std::endl;
    std::cout << "The sum of the host vector elements is " << sum( host_v ) << "." << std::endl;
+
+   /***
+    * And then also on GPU.
+    */
 #ifdef HAVE_CUDA
    Vector< double, Devices::Cuda > cuda_v( 10 );
    cuda_v = 1.0;
-   std::cout << "cuda_v = " << cuda_v << std::cout;
+   std::cout << "cuda_v = " << cuda_v << std::endl;
    std::cout << "The sum of the CUDA vector elements is " << sum( cuda_v ) << "." << std::endl;
 #endif
    return EXIT_SUCCESS;

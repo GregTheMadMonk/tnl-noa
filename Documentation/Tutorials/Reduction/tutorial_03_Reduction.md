@@ -10,6 +10,7 @@ This tutorial introduces flexible parallel reduction in TNL. It shows how to eas
    2. [Product](#flexible_parallel_reduction_product)
    3. [Scalar product](#flexible_parallel_reduction_scalar_product)
    4. [Maxium norm](#flexible_parallel_reduction_maximum_norm)
+   5. [Vectors comparison](#flexible_parallel_reduction_vector_comparison)
 
 ## Flexible parallel reduction<a name="flexible_parallel_reduction"></a>
 
@@ -84,3 +85,33 @@ Maximum norm of a vector equals modulus of the vector largest element.  Therefor
 The output is:
 
 \include MaximumNormExample.out
+
+Maximum norm in TNL computes function `maxNorm( v )`.
+
+### Vectors comparison<a name="flexible_parallel_reduction_vector_comparison"></a>
+
+Comparison of two vectors involve (parallel) reduction as well. The `fetch` part is responsible for comparison of corresponding vector elements result of which is boolean `true` or `false` for each vector elements. The `reduce` part must perform logical and operation on all of them. We must not forget to change the *idempotent element* to `true`. The code may look as follows:
+
+\include ComparisonExample.cpp
+
+And the output looks as:
+
+\include ComparisonExample.out
+
+### Update and residue<a name="flexible_parallel_reduction_update_and_residue"></a>
+
+In iterative solvers we often need to update a vector and compute the update norm at the same time. For example the [Euler method](https://en.wikipedia.org/wiki/Euler_method) is defined as 
+
+\f[
+\bf u^{k+1} = \bf u^k + \tau \Delta \bf u.
+\f]
+
+Except the vector addition, we may want to compute \f$L_p\f$-norm of \f$\Delta \bf u\f$ which may indicate convergence. Computing first the addition and then the norm would be inefficient because we would have to fetch the vector \f$\Delta \bf u\f$ twice from the memory. The following example shows how to do the addition and norm computation at the same time.
+
+\include UpdateAndResidueExample.cpp
+
+The result reads as:
+
+\include UpdateAndResidueExample.out
+
+
