@@ -298,9 +298,9 @@ class Array
       /**
        * \brief Returns a modifiable view of the array.
        *
-       * If \e begin or \e end is set to a non-zero value, a view for the
-       * sub-interval `[begin, end)` is returned. Otherwise a view for whole
-       * array is returned.
+       * By default, a view for the whole array is returned. If \e begin or
+       * \e end is set to a non-zero value, a view only for the sub-interval
+       * `[begin, end)` is returned.
        *
        * \param begin The beginning of the array sub-interval. It is 0 by
        *              default.
@@ -312,9 +312,9 @@ class Array
       /**
        * \brief Returns a non-modifiable view of the array.
        *
-       * If \e begin or \e end is set to a non-zero value, a view for the
-       * sub-interval `[begin, end)` is returned. Otherwise a view for whole
-       * array is returned.
+       * By default, a view for the whole array is returned. If \e begin or
+       * \e end is set to a non-zero value, a view only for the sub-interval
+       * `[begin, end)` is returned.
        *
        * \param begin The beginning of the array sub-interval. It is 0 by
        *              default.
@@ -326,9 +326,9 @@ class Array
       /**
        * \brief Returns a non-modifiable view of the array.
        *
-       * If \e begin or \e end is set to a non-zero value, a view for the
-       * sub-interval `[begin, end)` is returned. Otherwise a view for whole
-       * array is returned.
+       * By default, a view for the whole array is returned. If \e begin or
+       * \e end is set to a non-zero value, a view only for the sub-interval
+       * `[begin, end)` is returned.
        *
        * \param begin The beginning of the array sub-interval. It is 0 by
        *              default.

@@ -13,6 +13,7 @@
 
 namespace TNL {
 
+// TODO: remove - not used anywhere
 template< typename T >
 struct ViewTypeGetter
 {
