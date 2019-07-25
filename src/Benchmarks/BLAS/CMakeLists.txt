@@ -11,7 +11,7 @@ find_library( CBLAS_LIBRARY NAMES cblas
                     /usr/local/lib
                     /usr/local/lib64 )
 if( CBLAS_LIBRARY )
-   target_compile_options( tnl-benchmark-blas PUBLIC "-DHAVE_BLAS" )
+   target_compile_definitions( tnl-benchmark-blas PUBLIC "-DHAVE_BLAS" )
    target_link_libraries( tnl-benchmark-blas ${CBLAS_LIBRARY} )
 endif()
 
