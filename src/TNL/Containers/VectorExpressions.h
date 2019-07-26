@@ -691,7 +691,7 @@ template< typename Real,
           typename Real2 >
 auto
 lpNorm( const Containers::Vector< Real, Device, Index, Allocator >& a, const Real2& p )
--> decltype( Containers::Expressions::ExpressionLpNorm( a.getView(), p ) )
+-> decltype( Containers::Expressions::ExpressionLpNorm( a.getConstView(), p ) )
 {
    if( p == 1.0 )
       return Containers::Expressions::ExpressionLpNorm( a.getConstView(), p );
