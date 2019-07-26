@@ -134,29 +134,6 @@ class MIC
             }
         };
 
-        static inline
-        void* AllocMIC(size_t size)
-        {
-            Devices::MICHider<void> hide_ptr;
-            #pragma offload target(mic) out(hide_ptr) in(size)
-            {
-                hide_ptr.pointer=malloc(size);
-            }
-            return hide_ptr.pointer;
-        };
-
-        static inline
-        void FreeMIC(void* ptr)
-        {
-                Devices::MICHider<void> hide_ptr;
-                hide_ptr.pointer=ptr;
-                #pragma offload target(mic) in(hide_ptr)
-                {
-                        free(hide_ptr.pointer);
-                }
-        };
-
-
 #endif
 
    static void insertSmartPointer( Pointers::SmartPointer* pointer )

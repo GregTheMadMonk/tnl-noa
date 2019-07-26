@@ -326,7 +326,7 @@ Reduction< Devices::Cuda >::
        * Transfer the reduced data from device to host.
        */
       std::unique_ptr< ResultType[] > resultArray{ new ResultType[ reducedSize ] };
-      ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( resultArray.get(), deviceAux1, reducedSize );
+      ArrayOperations< Devices::Host, Devices::Cuda >::copy( resultArray.get(), deviceAux1, reducedSize );
 
       #ifdef CUDA_REDUCTION_PROFILING
          timer.stop();
@@ -427,8 +427,8 @@ reduceWithArgument( const Index size,
        */
       std::unique_ptr< ResultType[] > resultArray{ new ResultType[ reducedSize ] };
       std::unique_ptr< IndexType[] > indexArray{ new IndexType[ reducedSize ] };
-      ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( resultArray.get(), deviceAux1, reducedSize );
-      ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( indexArray.get(), deviceIndexes, reducedSize );
+      ArrayOperations< Devices::Host, Devices::Cuda >::copy( resultArray.get(), deviceAux1, reducedSize );
+      ArrayOperations< Devices::Host, Devices::Cuda >::copy( indexArray.get(), deviceIndexes, reducedSize );
 
       #ifdef CUDA_REDUCTION_PROFILING
          timer.stop();

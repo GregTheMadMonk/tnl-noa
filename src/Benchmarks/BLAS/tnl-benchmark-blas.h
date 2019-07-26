@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <TNL/Allocators/CudaHost.h>
+#include <TNL/Allocators/CudaManaged.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Config/ConfigDescription.h>
@@ -19,6 +21,7 @@
 
 #include "array-operations.h"
 #include "vector-operations.h"
+#include "triad.h"
 #include "spmv.h"
 
 using namespace TNL;
@@ -38,7 +41,7 @@ runBlasBenchmarks( Benchmark & benchmark,
    metadata["precision"] = precision;
 
    // Array operations
-   benchmark.newBenchmark( String("Array operations (") + precision + ")",
+   benchmark.newBenchmark( String("Array operations (") + precision + ", host allocator = Host)",
                            metadata );
    for( std::size_t size = minSize; size <= maxSize; size *= 2 ) {
       benchmark.setMetadataColumns( Benchmark::MetadataColumns({
@@ -46,6 +49,24 @@ runBlasBenchmarks( Benchmark & benchmark,
       } ));
       benchmarkArrayOperations< Real >( benchmark, size );
    }
+#ifdef HAVE_CUDA
+   benchmark.newBenchmark( String("Array operations (") + precision + ", host allocator = CudaHost)",
+                           metadata );
+   for( std::size_t size = minSize; size <= maxSize; size *= 2 ) {
+      benchmark.setMetadataColumns( Benchmark::MetadataColumns({
+         { "size", convertToString( size ) },
+      } ));
+      benchmarkArrayOperations< Real, int, Allocators::CudaHost >( benchmark, size );
+   }
+   benchmark.newBenchmark( String("Array operations (") + precision + ", host allocator = CudaManaged)",
+                           metadata );
+   for( std::size_t size = minSize; size <= maxSize; size *= 2 ) {
+      benchmark.setMetadataColumns( Benchmark::MetadataColumns({
+         { "size", convertToString( size ) },
+      } ));
+      benchmarkArrayOperations< Real, int, Allocators::CudaManaged >( benchmark, size );
+   }
+#endif
 
    // Vector operations
    benchmark.newBenchmark( String("Vector operations (") + precision + ")",
@@ -56,6 +77,18 @@ runBlasBenchmarks( Benchmark & benchmark,
       } ));
       benchmarkVectorOperations< Real >( benchmark, size );
    }
+
+   // Triad benchmark: copy from host, compute, copy to host
+#ifdef HAVE_CUDA
+   benchmark.newBenchmark( String("Triad benchmark (") + precision + ")",
+                           metadata );
+   for( std::size_t size = minSize; size <= maxSize; size *= 2 ) {
+      benchmark.setMetadataColumns( Benchmark::MetadataColumns({
+         { "size", convertToString( size ) },
+      } ));
+      benchmarkTriad< Real >( benchmark, size );
+   }
+#endif
 
    // Sparse matrix-vector multiplication
    benchmark.newBenchmark( String("Sparse matrix-vector multiplication (") + precision + ")",

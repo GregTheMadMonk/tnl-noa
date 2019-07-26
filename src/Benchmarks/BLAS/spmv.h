@@ -90,9 +90,8 @@ void setCudaTestMatrix( Matrix& matrix,
 
 // TODO: rename as benchmark_SpMV_synthetic and move to spmv-synthetic.h
 template< typename Real,
-          template< typename, typename, typename > class Matrix,
-          template< typename, typename, typename > class Vector = Containers::Vector >
-bool
+          template< typename, typename, typename > class Matrix >
+void
 benchmarkSpMV( Benchmark & benchmark,
                const int & size,
                const int elementsPerRow = 5 )
@@ -165,24 +164,20 @@ benchmarkSpMV( Benchmark & benchmark,
 #ifdef HAVE_CUDA
    benchmark.time< Devices::Cuda >( reset, "GPU", spmvCuda );
 #endif
-
-   return true;
 }
 
 template< typename Real = double,
           typename Index = int >
-bool
+void
 benchmarkSpmvSynthetic( Benchmark & benchmark,
                         const int & size,
                         const int & elementsPerRow )
 {
-   bool result = true;
    // TODO: benchmark all formats from tnl-benchmark-spmv (different parameters of the base formats)
-   result |= benchmarkSpMV< Real, Matrices::CSR >( benchmark, size, elementsPerRow );
-   result |= benchmarkSpMV< Real, Matrices::Ellpack >( benchmark, size, elementsPerRow );
-   result |= benchmarkSpMV< Real, SlicedEllpack >( benchmark, size, elementsPerRow );
-   result |= benchmarkSpMV< Real, Matrices::ChunkedEllpack >( benchmark, size, elementsPerRow );
-   return result;
+   benchmarkSpMV< Real, Matrices::CSR >( benchmark, size, elementsPerRow );
+   benchmarkSpMV< Real, Matrices::Ellpack >( benchmark, size, elementsPerRow );
+   benchmarkSpMV< Real, SlicedEllpack >( benchmark, size, elementsPerRow );
+   benchmarkSpMV< Real, Matrices::ChunkedEllpack >( benchmark, size, elementsPerRow );
 }
 
 } // namespace Benchmarks

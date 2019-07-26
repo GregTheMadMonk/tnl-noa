@@ -19,11 +19,8 @@
 namespace TNL {
 namespace Containers {
 
-template< typename Real, typename Device, typename Index >
+template< typename Real, typename Device, typename Index, typename Allocator >
 class Vector;
-
-template< int Size, typename Real >
-class StaticVector;
 
 template< typename Real = double,
           typename Device = Devices::Host,
@@ -72,9 +69,9 @@ public:
    /**
     * \brief Returns a modifiable view of the vector view.
     *
-    * If \e begin or \e end is set to a non-zero value, a view for the
-    * sub-interval `[begin, end)` is returned. Otherwise a view for whole
-    * vector view is returned.
+    * By default, a view for the whole vector is returned. If \e begin or
+    * \e end is set to a non-zero value, a view only for the sub-interval
+    * `[begin, end)` is returned.
     *
     * \param begin The beginning of the vector view sub-interval. It is 0 by
     *              default.
@@ -87,9 +84,9 @@ public:
    /**
     * \brief Returns a non-modifiable view of the vector view.
     *
-    * If \e begin or \e end is set to a non-zero value, a view for the
-    * sub-interval `[begin, end)` is returned. Otherwise a view for whole
-    * vector view is returned.
+    * By default, a view for the whole vector is returned. If \e begin or
+    * \e end is set to a non-zero value, a view only for the sub-interval
+    * `[begin, end)` is returned.
     *
     * \param begin The beginning of the vector view sub-interval. It is 0 by
     *              default.
@@ -102,9 +99,9 @@ public:
    /**
     * \brief Returns a non-modifiable view of the vector view.
     *
-    * If \e begin or \e end is set to a non-zero value, a view for the
-    * sub-interval `[begin, end)` is returned. Otherwise a view for whole
-    * vector view is returned.
+    * By default, a view for the whole vector is returned. If \e begin or
+    * \e end is set to a non-zero value, a view only for the sub-interval
+    * `[begin, end)` is returned.
     *
     * \param begin The beginning of the vector view sub-interval. It is 0 by
     *              default.
@@ -133,8 +130,8 @@ public:
    template< typename Real_, typename Device_, typename Index_ >
    VectorView& operator=( const VectorView< Real_, Device_, Index_ >& v );
 
-   template< typename Real_, typename Device_, typename Index_ >
-   VectorView& operator=( const Vector< Real_, Device_, Index_ >& v );
+   template< typename Real_, typename Device_, typename Index_, typename Allocator_ >
+   VectorView& operator=( const Vector< Real_, Device_, Index_, Allocator_ >& v );
 
    template< typename VectorExpression >
    VectorView& operator=( const VectorExpression& expression );

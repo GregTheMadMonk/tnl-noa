@@ -460,7 +460,7 @@ hauseholder_apply_trunc( HostView out,
    // The upper (m+1)x(m+1) submatrix of Y is duplicated in the YL buffer,
    // which resides on host and is broadcasted from rank 0 to all processes.
    HostView YL_i( &YL[ i * (restarting_max + 1) ], restarting_max + 1 );
-   Containers::Algorithms::ArrayOperations< Devices::Host, DeviceType >::copyMemory( YL_i.getData(), Traits::getLocalVectorView( y_i ).getData(), YL_i.getSize() );
+   Containers::Algorithms::ArrayOperations< Devices::Host, DeviceType >::copy( YL_i.getData(), Traits::getLocalVectorView( y_i ).getData(), YL_i.getSize() );
    // no-op if the problem is not distributed
    CommunicatorType::Bcast( YL_i.getData(), YL_i.getSize(), 0, Traits::getCommunicationGroup( *this->matrix ) );
 
@@ -475,7 +475,7 @@ hauseholder_apply_trunc( HostView out,
       }
       if( std::is_same< DeviceType, Devices::Cuda >::value ) {
          RealType host_z[ i + 1 ];
-         Containers::Algorithms::ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( host_z, Traits::getLocalVectorView( z ).getData(), i + 1 );
+         Containers::Algorithms::ArrayOperations< Devices::Host, Devices::Cuda >::copy( host_z, Traits::getLocalVectorView( z ).getData(), i + 1 );
          for( int k = 0; k <= i; k++ )
             out[ k ] = host_z[ k ] - YL_i[ k ] * aux;
       }

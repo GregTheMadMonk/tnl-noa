@@ -11,6 +11,7 @@
 #pragma once
 
 #include <type_traits>
+#include <stdexcept>
 #include <string.h>
 
 #include <TNL/ParallelFor.h>
@@ -22,33 +23,11 @@ namespace TNL {
 namespace Containers {
 namespace Algorithms {
 
-template< typename Element, typename Index >
-void
-ArrayOperations< Devices::Host >::
-allocateMemory( Element*& data,
-                const Index size )
-{
-   data = new Element[ size ];
-   // According to the standard, new either throws, or returns non-nullptr.
-   // Some (old) compilers don't comply:
-   // https://stackoverflow.com/questions/550451/will-new-return-null-in-any-case
-   TNL_ASSERT_TRUE( data, "Operator 'new' returned a nullptr. This should never happen - there is "
-                          "either a bug or the compiler does not comply to the standard." );
-}
-
 template< typename Element >
 void
 ArrayOperations< Devices::Host >::
-freeMemory( Element* data )
-{
-   delete[] data;
-}
-
-template< typename Element >
-void
-ArrayOperations< Devices::Host >::
-setMemoryElement( Element* data,
-                  const Element& value )
+setElement( Element* data,
+            const Element& value )
 {
    TNL_ASSERT_TRUE( data, "Attempted to set data through a nullptr." );
    *data = value;
@@ -57,7 +36,7 @@ setMemoryElement( Element* data,
 template< typename Element >
 Element
 ArrayOperations< Devices::Host >::
-getMemoryElement( const Element* data )
+getElement( const Element* data )
 {
    TNL_ASSERT_TRUE( data, "Attempted to get data through a nullptr." );
    return *data;
@@ -66,9 +45,9 @@ getMemoryElement( const Element* data )
 template< typename Element, typename Index >
 void
 ArrayOperations< Devices::Host >::
-setMemory( Element* data,
-           const Element& value,
-           const Index size )
+set( Element* data,
+     const Element& value,
+     const Index size )
 {
    TNL_ASSERT_TRUE( data, "Attempted to set data through a nullptr." );
    auto kernel = [data, value]( Index i )
@@ -83,9 +62,9 @@ template< typename DestinationElement,
           typename Index >
 void
 ArrayOperations< Devices::Host >::
-copyMemory( DestinationElement* destination,
-            const SourceElement* source,
-            const Index size )
+copy( DestinationElement* destination,
+      const SourceElement* source,
+      const Index size )
 {
    if( std::is_same< DestinationElement, SourceElement >::value &&
        ( std::is_fundamental< DestinationElement >::value ||
@@ -113,15 +92,20 @@ copyMemory( DestinationElement* destination,
 }
 
 template< typename DestinationElement,
-          typename SourceElement >
+          typename Index,
+          typename SourceIterator >
 void
 ArrayOperations< Devices::Host >::
-copySTLList( DestinationElement* destination,
-             const std::list< SourceElement >& source )
+copyFromIterator( DestinationElement* destination,
+                  Index destinationSize,
+                  SourceIterator first,
+                  SourceIterator last )
 {
-   std::size_t i = 0;
-   for( const SourceElement& e : source )
-      destination[ i++ ] = e;
+   Index i = 0;
+   while( i < destinationSize && first != last )
+      destination[ i++ ] = *first++;
+   if( first != last )
+      throw std::length_error( "Source iterator is larger than the destination array." );
 }
 
 
@@ -130,9 +114,9 @@ template< typename DestinationElement,
           typename Index >
 bool
 ArrayOperations< Devices::Host >::
-compareMemory( const DestinationElement* destination,
-               const SourceElement* source,
-               const Index size )
+compare( const DestinationElement* destination,
+         const SourceElement* source,
+         const Index size )
 {
    TNL_ASSERT_TRUE( destination, "Attempted to compare data through a nullptr." );
    TNL_ASSERT_TRUE( source, "Attempted to compare data through a nullptr." );

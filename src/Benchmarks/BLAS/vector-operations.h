@@ -32,7 +32,7 @@ namespace Benchmarks {
 
 template< typename Real = double,
           typename Index = int >
-bool
+void
 benchmarkVectorOperations( Benchmark & benchmark,
                            const long & size )
 {
@@ -608,8 +608,6 @@ benchmarkVectorOperations( Benchmark & benchmark,
 #ifdef HAVE_CUDA
    cublasDestroy( cublasHandle );
 #endif
-
-   return true;
 }
 
 } // namespace Benchmarks

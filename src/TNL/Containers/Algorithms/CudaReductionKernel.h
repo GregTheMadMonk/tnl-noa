@@ -402,7 +402,7 @@ struct CudaReductionKernelLauncher
       ////
       // Copy result on CPU
       ResultType result;
-      ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( &result, output, 1 );
+      ArrayOperations< Devices::Host, Devices::Cuda >::copy( &result, output, 1 );
       return result;
    }
 
@@ -438,8 +438,8 @@ struct CudaReductionKernelLauncher
       ////
       // Copy result on CPU
       ResultType result;
-      ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( &result, output, 1 );
-      ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory( &argument, idxOutput, 1 );
+      ArrayOperations< Devices::Host, Devices::Cuda >::copy( &result, output, 1 );
+      ArrayOperations< Devices::Host, Devices::Cuda >::copy( &argument, idxOutput, 1 );
       return result;
    }
 

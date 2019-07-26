@@ -127,9 +127,9 @@ VectorView< Real, Device, Index >::operator=( const VectorView< Real_, Device_, 
 template< typename Real,
           typename Device,
           typename Index >
-  template< typename Real_, typename Device_, typename Index_ >
+  template< typename Real_, typename Device_, typename Index_, typename Allocator_ >
 VectorView< Real, Device, Index >&
-VectorView< Real, Device, Index >::operator=( const Vector< Real_, Device_, Index_ >& v )
+VectorView< Real, Device, Index >::operator=( const Vector< Real_, Device_, Index_, Allocator_ >& v )
 {
    ArrayView< Real, Device, Index >::operator=( v );
    return *this;

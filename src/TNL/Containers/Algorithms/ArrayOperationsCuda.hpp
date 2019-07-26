@@ -12,11 +12,11 @@
 
 #include <iostream>
 #include <memory>
+#include <stdexcept>
 
 #include <TNL/Math.h>
 #include <TNL/ParallelFor.h>
 #include <TNL/Exceptions/CudaSupportMissing.h>
-#include <TNL/Exceptions/CudaBadAlloc.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Algorithms/Reduction.h>
 #include <TNL/Containers/Algorithms/ReductionOperations.h>
@@ -25,68 +25,33 @@ namespace TNL {
 namespace Containers {
 namespace Algorithms {
 
-template< typename Element, typename Index >
-void
-ArrayOperations< Devices::Cuda >::
-allocateMemory( Element*& data,
-                const Index size )
-{
-#ifdef HAVE_CUDA
-   TNL_CHECK_CUDA_DEVICE;
-   if( cudaMalloc( ( void** ) &data,
-                   ( std::size_t ) size * sizeof( Element ) ) != cudaSuccess )
-   {
-      data = 0;
-      throw Exceptions::CudaBadAlloc();
-   }
-   TNL_CHECK_CUDA_DEVICE;
-#else
-   throw Exceptions::CudaSupportMissing();
-#endif
-}
-
 template< typename Element >
 void
 ArrayOperations< Devices::Cuda >::
-freeMemory( Element* data )
-{
-   TNL_ASSERT_TRUE( data, "Attempted to free a nullptr." );
-#ifdef HAVE_CUDA
-   TNL_CHECK_CUDA_DEVICE;
-   cudaFree( data );
-   TNL_CHECK_CUDA_DEVICE;
-#else
-   throw Exceptions::CudaSupportMissing();
-#endif
-}
-
-template< typename Element >
-void
-ArrayOperations< Devices::Cuda >::
-setMemoryElement( Element* data,
-                  const Element& value )
+setElement( Element* data,
+            const Element& value )
 {
    TNL_ASSERT_TRUE( data, "Attempted to set data through a nullptr." );
-   ArrayOperations< Devices::Cuda >::setMemory( data, value, 1 );
+   ArrayOperations< Devices::Cuda >::set( data, value, 1 );
 }
 
 template< typename Element >
 Element
 ArrayOperations< Devices::Cuda >::
-getMemoryElement( const Element* data )
+getElement( const Element* data )
 {
    TNL_ASSERT_TRUE( data, "Attempted to get data through a nullptr." );
    Element result;
-   ArrayOperations< Devices::Host, Devices::Cuda >::copyMemory< Element, Element, int >( &result, data, 1 );
+   ArrayOperations< Devices::Host, Devices::Cuda >::copy< Element, Element, int >( &result, data, 1 );
    return result;
 }
 
 template< typename Element, typename Index >
 void
 ArrayOperations< Devices::Cuda >::
-setMemory( Element* data,
-           const Element& value,
-           const Index size )
+set( Element* data,
+     const Element& value,
+     const Index size )
 {
    TNL_ASSERT_TRUE( data, "Attempted to set data through a nullptr." );
    auto kernel = [data, value] __cuda_callable__ ( Index i )
@@ -101,9 +66,9 @@ template< typename DestinationElement,
           typename Index >
 void
 ArrayOperations< Devices::Cuda >::
-copyMemory( DestinationElement* destination,
-            const SourceElement* source,
-            const Index size )
+copy( DestinationElement* destination,
+      const SourceElement* source,
+      const Index size )
 {
    TNL_ASSERT_TRUE( destination, "Attempted to copy data to a nullptr." );
    TNL_ASSERT_TRUE( source, "Attempted to copy data from a nullptr." );
@@ -130,35 +95,37 @@ copyMemory( DestinationElement* destination,
 }
 
 template< typename DestinationElement,
-          typename SourceElement >
+          typename Index,
+          typename SourceIterator >
 void
 ArrayOperations< Devices::Cuda >::
-copySTLList( DestinationElement* destination,
-             const std::list< SourceElement >& source )
+copyFromIterator( DestinationElement* destination,
+                  Index destinationSize,
+                  SourceIterator first,
+                  SourceIterator last )
 {
-   const auto size = source.size();
-   const std::size_t copy_buffer_size = std::min( Devices::Cuda::TransferBufferSize / (std::size_t) sizeof( DestinationElement ), ( std::size_t ) size );
    using BaseType = typename std::remove_cv< DestinationElement >::type;
-   std::unique_ptr< BaseType[] > copy_buffer{ new BaseType[ copy_buffer_size ] };
-   std::size_t copiedElements = 0;
-   auto it = source.begin();
-   while( copiedElements < size )
-   {
-      const auto copySize = std::min( size - copiedElements, copy_buffer_size );
-      for( std::size_t i = 0; i < copySize; i++ )
-         copy_buffer[ i ] = static_cast< DestinationElement >( * it ++ );
-      ArrayOperations< Devices::Cuda, Devices::Host >::copyMemory( &destination[ copiedElements ], &copy_buffer[ 0 ], copySize );
-      copiedElements += copySize;
+   std::unique_ptr< BaseType[] > buffer{ new BaseType[ Devices::Cuda::getGPUTransferBufferSize() ] };
+   Index copiedElements = 0;
+   while( copiedElements < destinationSize && first != last ) {
+      Index i = 0;
+      while( i < Devices::Cuda::getGPUTransferBufferSize() && first != last )
+         buffer[ i++ ] = *first++;
+      ArrayOperations< Devices::Cuda, Devices::Host >::copy( &destination[ copiedElements ], buffer.get(), i );
+      copiedElements += i;
    }
+   if( first != last )
+      throw std::length_error( "Source iterator is larger than the destination array." );
 }
+
 template< typename Element1,
           typename Element2,
           typename Index >
 bool
 ArrayOperations< Devices::Cuda >::
-compareMemory( const Element1* destination,
-               const Element2* source,
-               const Index size )
+compare( const Element1* destination,
+         const Element2* source,
+         const Index size )
 {
    TNL_ASSERT_TRUE( destination, "Attempted to compare data through a nullptr." );
    TNL_ASSERT_TRUE( source, "Attempted to compare data through a nullptr." );
@@ -215,9 +182,9 @@ template< typename DestinationElement,
           typename Index >
 void
 ArrayOperations< Devices::Host, Devices::Cuda >::
-copyMemory( DestinationElement* destination,
-            const SourceElement* source,
-            const Index size )
+copy( DestinationElement* destination,
+      const SourceElement* source,
+      const Index size )
 {
    TNL_ASSERT_TRUE( destination, "Attempted to copy data to a nullptr." );
    TNL_ASSERT_TRUE( source, "Attempted to copy data from a nullptr." );
@@ -264,9 +231,9 @@ template< typename Element1,
           typename Index >
 bool
 ArrayOperations< Devices::Host, Devices::Cuda >::
-compareMemory( const Element1* destination,
-               const Element2* source,
-               const Index size )
+compare( const Element1* destination,
+         const Element2* source,
+         const Index size )
 {
    /***
     * Here, destination is on host and source is on CUDA device.
@@ -286,7 +253,7 @@ compareMemory( const Element1* destination,
                       cudaMemcpyDeviceToHost ) != cudaSuccess )
          std::cerr << "Transfer of data from CUDA device to host failed." << std::endl;
       TNL_CHECK_CUDA_DEVICE;
-      if( ! ArrayOperations< Devices::Host >::compareMemory( &destination[ compared ], host_buffer.get(), transfer ) )
+      if( ! ArrayOperations< Devices::Host >::compare( &destination[ compared ], host_buffer.get(), transfer ) )
          return false;
       compared += transfer;
    }
@@ -304,9 +271,9 @@ template< typename DestinationElement,
           typename Index >
 void
 ArrayOperations< Devices::Cuda, Devices::Host >::
-copyMemory( DestinationElement* destination,
-            const SourceElement* source,
-            const Index size )
+copy( DestinationElement* destination,
+      const SourceElement* source,
+      const Index size )
 {
    TNL_ASSERT_TRUE( destination, "Attempted to copy data to a nullptr." );
    TNL_ASSERT_TRUE( source, "Attempted to copy data from a nullptr." );
@@ -352,14 +319,14 @@ template< typename Element1,
           typename Index >
 bool
 ArrayOperations< Devices::Cuda, Devices::Host >::
-compareMemory( const Element1* hostData,
-               const Element2* deviceData,
-               const Index size )
+compare( const Element1* hostData,
+         const Element2* deviceData,
+         const Index size )
 {
    TNL_ASSERT_TRUE( hostData, "Attempted to compare data through a nullptr." );
    TNL_ASSERT_TRUE( deviceData, "Attempted to compare data through a nullptr." );
    TNL_ASSERT_GE( size, (Index) 0, "Array size must be non-negative." );
-   return ArrayOperations< Devices::Host, Devices::Cuda >::compareMemory( deviceData, hostData, size );
+   return ArrayOperations< Devices::Host, Devices::Cuda >::compare( deviceData, hostData, size );
 }
 
 } // namespace Algorithms

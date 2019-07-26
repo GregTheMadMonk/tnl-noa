@@ -145,7 +145,6 @@ TYPED_TEST_SUITE( ArrayTest, ArrayTypes );
 TYPED_TEST( ArrayTest, constructors )
 {
    using ArrayType = typename TestFixture::ArrayType;
-   //using ArrayType = Array< float, Devices::Host, long >;
 
    ArrayType u;
    EXPECT_EQ( u.getSize(), 0 );
@@ -178,11 +177,59 @@ TYPED_TEST( ArrayTest, constructors )
    EXPECT_EQ( a2.getElement( 2 ), 6 );
 
    std::vector< int > q = { 7, 8, 9 };
-
    ArrayType a3( q );
    EXPECT_EQ( a3.getElement( 0 ), 7 );
    EXPECT_EQ( a3.getElement( 1 ), 8 );
    EXPECT_EQ( a3.getElement( 2 ), 9 );
+}
+
+TYPED_TEST( ArrayTest, constructorsWithAllocators )
+{
+   using ArrayType = typename TestFixture::ArrayType;
+   using AllocatorType = typename ArrayType::AllocatorType;
+
+   AllocatorType allocator;
+
+   ArrayType u( allocator );
+   EXPECT_EQ( u.getAllocator(), allocator );
+   u.setSize( 10 );
+   EXPECT_EQ( u.getSize(), 10 );
+
+   ArrayType v( 10, allocator );
+   EXPECT_EQ( v.getSize(), 10 );
+   EXPECT_EQ( v.getAllocator(), allocator );
+   v.reset();
+   EXPECT_EQ( v.getAllocator(), allocator );
+
+   // deep copy
+   ArrayType w( u, allocator );
+   EXPECT_NE( w.getData(), u.getData() );
+   EXPECT_EQ( w.getSize(), u.getSize() );
+   for( int i = 0; i < 10; i++ )
+      EXPECT_EQ( u.getElement( i ), w.getElement( i ) );
+   EXPECT_EQ( w.getAllocator(), allocator );
+   u.reset();
+   EXPECT_EQ( w.getSize(), 10 );
+
+   ArrayType a1( { 1, 2, 3 }, allocator );
+   EXPECT_EQ( a1.getElement( 0 ), 1 );
+   EXPECT_EQ( a1.getElement( 1 ), 2 );
+   EXPECT_EQ( a1.getElement( 2 ), 3 );
+   EXPECT_EQ( a1.getAllocator(), allocator );
+
+   std::list< int > l = { 4, 5, 6 };
+   ArrayType a2( l, allocator );
+   EXPECT_EQ( a2.getElement( 0 ), 4 );
+   EXPECT_EQ( a2.getElement( 1 ), 5 );
+   EXPECT_EQ( a2.getElement( 2 ), 6 );
+   EXPECT_EQ( a2.getAllocator(), allocator );
+
+   std::vector< int > q = { 7, 8, 9 };
+   ArrayType a3( q, allocator );
+   EXPECT_EQ( a3.getElement( 0 ), 7 );
+   EXPECT_EQ( a3.getElement( 1 ), 8 );
+   EXPECT_EQ( a3.getElement( 2 ), 9 );
+   EXPECT_EQ( a3.getAllocator(), allocator );
 }
 
 TYPED_TEST( ArrayTest, setSize )

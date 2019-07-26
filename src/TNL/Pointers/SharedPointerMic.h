@@ -14,6 +14,7 @@
 
 #include "SharedPointer.h"
 
+#include <TNL/Allocators/Default.h>
 #include <TNL/Devices/MIC.h>
 #include <TNL/Pointers/SmartPointer.h>
 
@@ -307,7 +308,7 @@ class SharedPointer< Object, Devices::MIC > : public SmartPointer
          if( ! this->pd )
             return false;
 
-         mic_pointer=(Object*)Devices::MIC::AllocMIC(sizeof(Object));
+         mic_pointer = Allocators::MIC< Object >().allocate(1);
          Devices::MIC::CopyToMIC((void*)this->mic_pointer,(void*) &this->pd->data,sizeof(Object));
 
          if( ! this->mic_pointer )
@@ -350,8 +351,8 @@ class SharedPointer< Object, Devices::MIC > : public SmartPointer
                this->pd = nullptr;
                if( this->mic_pointer )
                {
-                   Devices::MIC::FreeMIC((void*)mic_pointer);
-                   mic_pointer=nullptr;
+                  Allocators:::MIC< ObjectType >().deallocate(mic_pointer, 1);
+                  mic_pointer=nullptr;
                }
 #ifdef TNL_DEBUG_SHARED_POINTERS
                std::cerr << "...deleted data." << std::endl;

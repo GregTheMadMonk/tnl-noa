@@ -15,6 +15,7 @@
 
 #include <TNL/File.h>
 #include <TNL/TypeTraits.h>
+#include <TNL/Allocators/Default.h>
 #include <TNL/Containers/ArrayView.h>
 
 namespace TNL {
@@ -30,10 +31,13 @@ template< int, typename > class StaticArray;
  * elements, and general array operations.
  *
  * \tparam Value  The type of array elements.
- * \tparam Device The device where the array is to be allocated. This ensures
- *                the compile-time checks of correct pointers manipulation. It
- *                can be either \ref Devices::Host or \ref Devices::Cuda.
+ * \tparam Device The device to be used for the execution of array operations.
+ *                It can be either \ref Devices::Host or \ref Devices::Cuda.
  * \tparam Index  The indexing type.
+ * \tparam Allocator The type of the allocator used for the allocation and
+ *                   deallocation of memory used by the array. By default,
+ *                   an appropriate allocator for the specified \e Device
+ *                   is selected with \ref Allocators::Default.
  *
  * Memory management handled by constructors and destructors according to the
  * [RAII](https://en.wikipedia.org/wiki/RAII) principle and by methods
@@ -64,7 +68,8 @@ template< int, typename > class StaticArray;
  */
 template< typename Value,
           typename Device = Devices::Host,
-          typename Index = int >
+          typename Index = int,
+          typename Allocator = typename Allocators::Default< Device >::template Allocator< Value > >
 class Array
 {
    public:
@@ -72,6 +77,7 @@ class Array
       using ValueType = Value;
       using DeviceType = Device;
       using IndexType = Index;
+      using AllocatorType = Allocator;
       using HostType = Containers::Array< Value, Devices::Host, Index >;
       using CudaType = Containers::Array< Value, Devices::Cuda, Index >;
       using ViewType = ArrayView< Value, Device, Index >;
@@ -80,14 +86,22 @@ class Array
       /**
        * \brief Constructs an empty array with zero size.
        */
-      Array();
+      Array() = default;
+
+      /**
+       * \brief Constructs an empty array and sets the provided allocator.
+       *
+       * \param allocator The allocator to be associated with this array.
+       */
+      explicit Array( const AllocatorType& allocator );
 
       /**
        * \brief Constructs an array with given size.
        *
        * \param size The number of array elements to be allocated.
+       * \param allocator The allocator to be associated with this array.
        */
-      Array( const IndexType& size );
+      explicit Array( const IndexType& size, const AllocatorType& allocator = AllocatorType() );
 
       /**
        * \brief Constructs an array with given size and copies data from given
@@ -95,9 +109,11 @@ class Array
        *
        * \param data The pointer to the data to be copied to the array.
        * \param size The number of array elements to be copied to the array.
+       * \param allocator The allocator to be associated with this array.
        */
       Array( Value* data,
-             const IndexType& size );
+             const IndexType& size,
+             const AllocatorType& allocator = AllocatorType() );
 
       /**
        * \brief Copy constructor.
@@ -107,15 +123,25 @@ class Array
       explicit Array( const Array& array );
 
       /**
+       * \brief Copy constructor with a specific allocator.
+       *
+       * \param array The array to be copied.
+       * \param allocator The allocator to be associated with this array.
+       */
+      explicit Array( const Array& array, const AllocatorType& allocator );
+
+      /**
        * \brief Copy constructor.
        *
        * \param array The array to be copied.
        * \param begin The first index which should be copied.
        * \param size The number of elements that should be copied.
+       * \param allocator The allocator to be associated with this array.
        */
       Array( const Array& array,
              IndexType begin,
-             IndexType size = 0 );
+             IndexType size = 0,
+             const AllocatorType& allocator = AllocatorType() );
 
       /**
        * \brief Move constructor for initialization from \e rvalues.
@@ -129,27 +155,40 @@ class Array
        * \ref std::initializer_list, e.g. `{...}`.
        *
        * \param list The initializer list containing elements to be copied.
+       * \param allocator The allocator to be associated with this array.
        */
       template< typename InValue >
-      Array( const std::initializer_list< InValue >& list );
+      Array( const std::initializer_list< InValue >& list,
+             const AllocatorType& allocator = AllocatorType() );
 
       /**
        * \brief Constructor which initializes the array by copying elements from
        * \ref std::list.
        *
        * \param list The STL list containing elements to be copied.
+       * \param allocator The allocator to be associated with this array.
        */
       template< typename InValue >
-      Array( const std::list< InValue >& list );
+      Array( const std::list< InValue >& list,
+             const AllocatorType& allocator = AllocatorType() );
+
 
       /**
        * \brief Constructor which initializes the array by copying elements from
        * \ref std::vector.
        *
        * \param vector The STL vector containing elements to be copied.
+       * \param allocator The allocator to be associated with this array.
        */
       template< typename InValue >
-      Array( const std::vector< InValue >& vector );
+      Array( const std::vector< InValue >& vector,
+             const AllocatorType& allocator = AllocatorType() );
+
+
+      /**
+       * \brief Returns the allocator associated with the array.
+       */
+      AllocatorType getAllocator() const;
 
       /**
        * \brief Returns a \ref String representation of the array type in C++ style.
@@ -259,9 +298,9 @@ class Array
       /**
        * \brief Returns a modifiable view of the array.
        *
-       * If \e begin or \e end is set to a non-zero value, a view for the
-       * sub-interval `[begin, end)` is returned. Otherwise a view for whole
-       * array is returned.
+       * By default, a view for the whole array is returned. If \e begin or
+       * \e end is set to a non-zero value, a view only for the sub-interval
+       * `[begin, end)` is returned.
        *
        * \param begin The beginning of the array sub-interval. It is 0 by
        *              default.
@@ -273,9 +312,9 @@ class Array
       /**
        * \brief Returns a non-modifiable view of the array.
        *
-       * If \e begin or \e end is set to a non-zero value, a view for the
-       * sub-interval `[begin, end)` is returned. Otherwise a view for whole
-       * array is returned.
+       * By default, a view for the whole array is returned. If \e begin or
+       * \e end is set to a non-zero value, a view only for the sub-interval
+       * `[begin, end)` is returned.
        *
        * \param begin The beginning of the array sub-interval. It is 0 by
        *              default.
@@ -287,9 +326,9 @@ class Array
       /**
        * \brief Returns a non-modifiable view of the array.
        *
-       * If \e begin or \e end is set to a non-zero value, a view for the
-       * sub-interval `[begin, end)` is returned. Otherwise a view for whole
-       * array is returned.
+       * By default, a view for the whole array is returned. If \e begin or
+       * \e end is set to a non-zero value, a view only for the sub-interval
+       * `[begin, end)` is returned.
        *
        * \param begin The beginning of the array sub-interval. It is 0 by
        *              default.
@@ -586,7 +625,7 @@ class Array
    protected:
 
       /** \brief Method for releasing (deallocating) array data. */
-      void releaseData() const;
+      void releaseData();
 
       /** \brief Number of elements in the array. */
       mutable Index size = 0;
@@ -612,28 +651,33 @@ class Array
        * more arrays. This is to avoid unnecessary dynamic memory allocation.
        */
       mutable int* referenceCounter = nullptr;
+
+      /**
+       * \brief The internal allocator instance.
+       */
+      Allocator allocator;
 };
 
-template< typename Value, typename Device, typename Index >
-std::ostream& operator<<( std::ostream& str, const Array< Value, Device, Index >& array );
+template< typename Value, typename Device, typename Index, typename Allocator >
+std::ostream& operator<<( std::ostream& str, const Array< Value, Device, Index, Allocator >& array );
 
 /**
  * \brief Serialization of arrays into binary files.
  */
-template< typename Value, typename Device, typename Index >
-File& operator<<( File& file, const Array< Value, Device, Index >& array );
+template< typename Value, typename Device, typename Index, typename Allocator >
+File& operator<<( File& file, const Array< Value, Device, Index, Allocator >& array );
 
-template< typename Value, typename Device, typename Index >
-File& operator<<( File&& file, const Array< Value, Device, Index >& array );
+template< typename Value, typename Device, typename Index, typename Allocator >
+File& operator<<( File&& file, const Array< Value, Device, Index, Allocator >& array );
 
 /**
  * \brief Deserialization of arrays from binary files.
  */
-template< typename Value, typename Device, typename Index >
-File& operator>>( File& file, Array< Value, Device, Index >& array );
+template< typename Value, typename Device, typename Index, typename Allocator >
+File& operator>>( File& file, Array< Value, Device, Index, Allocator >& array );
 
-template< typename Value, typename Device, typename Index >
-File& operator>>( File&& file, Array< Value, Device, Index >& array );
+template< typename Value, typename Device, typename Index, typename Allocator >
+File& operator>>( File&& file, Array< Value, Device, Index, Allocator >& array );
 
 } // namespace Containers
 

@@ -14,14 +14,21 @@ several modules:
 > TODO: Each topic in this list should have a separate page or tutorial.
 
 - _Core concepts_.
-  The main concept used in the TNL is the `Device` type which is used in most of
-  the other parts of the library. For data structures such as
-  \ref TNL::Containers::Array "Array" it specifies where the data should be
-  allocated, whereas for algorithms such as \ref TNL::ParallelFor "ParallelFor"
-  it specifies how the algorithm should be executed.
+  The main concepts used in TNL are the _memory space_, which represents the
+  part of memory where given data is allocated, and the _execution model_,
+  which represents the way how given (typically parallel) algorithm is executed.
+  For example, data can be allocated in the main system memory, in the GPU
+  memory, or using the CUDA Unified Memory which can be accessed from the host
+  as well as from the GPU. On the other hand, algorithms can be executed using
+  either the host CPU or an accelerator (GPU), and for each there are many ways
+  to manage parallel execution. The usage of memory spaces is abstracted with
+  \ref TNL::Allocators "allocators" and the execution model is represented by
+  \ref TNL::Devices "devices". See the \ref core_concepts "Core concepts" page
+  for details.
 - \ref TNL::Containers "Containers".
   TNL provides generic containers such as array, multidimensional array or array
-  views, which abstract data management on different hardware architectures.
+  views, which abstract data management and execution of common operations on
+  different hardware architectures.
 - _Linear algebra._
   TNL provides generic data structures and algorithms for linear algebra, such
   as \ref TNL::Containers::Vector "vectors",
