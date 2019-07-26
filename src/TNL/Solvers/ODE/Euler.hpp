@@ -79,8 +79,8 @@ bool Euler< Problem, SolverMonitor > :: solve( DofVectorPointer& _u )
     */
    //timer.start();
    _k1->setLike( *_u );
-   DofVectorView k1 = _k1->getView();
-   DofVectorView u = _u->getView();
+   auto k1 = _k1->getView();
+   auto u = _u->getView();
    k1 = 0.0;
 
 

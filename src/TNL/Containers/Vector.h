@@ -259,12 +259,6 @@ public:
 } // namespace Containers
 
 template< typename Real, typename Device, typename Index >
-struct ViewTypeGetter< Containers::Vector< Real, Device, Index > >
-{
-   using Type = Containers::VectorView< Real, Device, Index >;
-};
-
-template< typename Real, typename Device, typename Index >
 struct IsStatic< Containers::Vector< Real, Device, Index > >
 {
    static constexpr bool Value = false;

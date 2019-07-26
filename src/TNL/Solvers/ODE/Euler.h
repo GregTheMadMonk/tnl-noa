@@ -32,7 +32,6 @@ class Euler : public ExplicitSolver< Problem, SolverMonitor >
       using RealType = typename ProblemType::RealType;
       using DeviceType = typename ProblemType::DeviceType;
       using IndexType  = typename ProblemType::IndexType;
-      using DofVectorView = typename ViewTypeGetter< DofVectorType >::Type;
       using DofVectorPointer = Pointers::SharedPointer<  DofVectorType, DeviceType >;
       using SolverMonitorType = SolverMonitor;
 
