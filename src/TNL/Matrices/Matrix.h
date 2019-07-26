@@ -32,7 +32,7 @@ public:
    typedef Index IndexType;
    typedef Containers::Vector< IndexType, DeviceType, IndexType > CompressedRowLengthsVector;
    typedef Containers::VectorView< IndexType, DeviceType, IndexType > CompressedRowLengthsVectorView;
-   typedef Containers::VectorView< const IndexType, DeviceType, IndexType > ConstCompressedRowLengthsVectorView;
+   typedef typename CompressedRowLengthsVectorView::ConstViewType ConstCompressedRowLengthsVectorView;
    typedef Containers::Vector< RealType, DeviceType, IndexType > ValuesVector;
 
    Matrix();
