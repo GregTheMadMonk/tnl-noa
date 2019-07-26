@@ -16,11 +16,10 @@
 #include <TNL/Containers/Expressions/Comparison.h>
 #include <TNL/Containers/Expressions/VerticalOperations.h>
 
-namespace TNL {
-   namespace Containers {
-////
-// All operations are supposed to be in namespace TNL
+#include "VectorView.h"
 
+namespace TNL {
+namespace Containers {
 
 ////
 // Addition
@@ -284,7 +283,7 @@ auto operator,( const Containers::VectorView< Real1, Device, Index >& a, const C
    return TNL::sum( a * b );
 }
 
-} //namespace Containers
+} // namespace Containers
 
 ////
 // All functions are supposed to be in namespace TNL

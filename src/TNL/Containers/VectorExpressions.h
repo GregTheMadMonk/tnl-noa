@@ -16,7 +16,6 @@
 #include <TNL/Containers/Expressions/Comparison.h>
 #include <TNL/Containers/Expressions/VerticalOperations.h>
 
-#include "VectorView.h"
 #include "Vector.h"
 
 namespace TNL {
@@ -24,7 +23,8 @@ namespace Containers {
 
 ////
 // Addition
-template< typename Real, typename Device, typename Index, typename Allocator, typename ET >
+template< typename Real, typename Device, typename Index, typename Allocator, typename ET,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 auto
 operator+( const Vector< Real, Device, Index, Allocator >& a, const ET& b )
 {
@@ -32,7 +32,8 @@ operator+( const Vector< Real, Device, Index, Allocator >& a, const ET& b )
    return Expressions::BinaryExpressionTemplate< ConstView, ET, Expressions::Addition >( a.getConstView(), b );
 }
 
-template< typename ET, typename Real, typename Device, typename Index, typename Allocator >
+template< typename ET, typename Real, typename Device, typename Index, typename Allocator,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 auto
 operator+( const ET& a, const Vector< Real, Device, Index, Allocator >& b )
 {
@@ -51,7 +52,8 @@ operator+( const Vector< Real1, Device, Index, Allocator >& a, const Vector< Rea
 
 ////
 // Subtraction
-template< typename Real, typename Device, typename Index, typename Allocator, typename ET >
+template< typename Real, typename Device, typename Index, typename Allocator, typename ET,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 auto
 operator-( const Vector< Real, Device, Index, Allocator >& a, const ET& b )
 {
@@ -59,7 +61,8 @@ operator-( const Vector< Real, Device, Index, Allocator >& a, const ET& b )
    return Expressions::BinaryExpressionTemplate< ConstView, ET, Expressions::Subtraction >( a.getConstView(), b );
 }
 
-template< typename ET, typename Real, typename Device, typename Index, typename Allocator >
+template< typename ET, typename Real, typename Device, typename Index, typename Allocator,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 auto
 operator-( const ET& a, const Vector< Real, Device, Index, Allocator >& b )
 {
@@ -78,7 +81,8 @@ operator-( const Vector< Real1, Device, Index, Allocator >& a, const Vector< Rea
 
 ////
 // Multiplication
-template< typename Real, typename Device, typename Index, typename Allocator, typename ET >
+template< typename Real, typename Device, typename Index, typename Allocator, typename ET,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 auto
 operator*( const Vector< Real, Device, Index, Allocator >& a, const ET& b )
 {
@@ -86,7 +90,8 @@ operator*( const Vector< Real, Device, Index, Allocator >& a, const ET& b )
    return Expressions::BinaryExpressionTemplate< ConstView, ET, Expressions::Multiplication >( a.getConstView(), b );
 }
 
-template< typename ET, typename Real, typename Device, typename Index, typename Allocator >
+template< typename ET, typename Real, typename Device, typename Index, typename Allocator,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 auto
 operator*( const ET& a, const Vector< Real, Device, Index, Allocator >& b )
 {
@@ -105,7 +110,8 @@ operator*( const Vector< Real1, Device, Index, Allocator >& a, const Vector< Rea
 
 ////
 // Division
-template< typename Real, typename Device, typename Index, typename Allocator, typename ET >
+template< typename Real, typename Device, typename Index, typename Allocator, typename ET,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 auto
 operator/( const Vector< Real, Device, Index, Allocator >& a, const ET& b )
 {
@@ -113,7 +119,8 @@ operator/( const Vector< Real, Device, Index, Allocator >& a, const ET& b )
    return Expressions::BinaryExpressionTemplate< ConstView, ET, Expressions::Division >( a.getConstView(), b );
 }
 
-template< typename ET, typename Real, typename Device, typename Index, typename Allocator >
+template< typename ET, typename Real, typename Device, typename Index, typename Allocator,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 auto
 operator/( const ET& a, const Vector< Real, Device, Index, Allocator >& b )
 {
@@ -132,22 +139,27 @@ operator/( const Vector< Real1, Device, Index, Allocator >& a, const Vector< Rea
 
 ////
 // Comparison operations - operator ==
-template< typename Real, typename Device, typename Index, typename Allocator, typename ET >
-bool operator==( const Vector< Real, Device, Index, Allocator >& a, const ET& b )
+template< typename Real, typename Device, typename Index, typename Allocator, typename ET,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
+bool
+operator==( const Vector< Real, Device, Index, Allocator >& a, const ET& b )
 {
    using ConstView = typename VectorView< Real, Device, Index >::ConstViewType;
    return Expressions::Comparison< ConstView, ET >::EQ( a.getConstView(), b );
 }
 
-template< typename ET, typename Real, typename Device, typename Index, typename Allocator >
-bool operator==( const ET& a, const Vector< Real, Device, Index, Allocator >& b )
+template< typename ET, typename Real, typename Device, typename Index, typename Allocator,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
+bool
+operator==( const ET& a, const Vector< Real, Device, Index, Allocator >& b )
 {
    using ConstView = typename VectorView< Real, Device, Index >::ConstViewType;
    return Expressions::Comparison< ET, ConstView >::EQ( a, b.getConstView() );
 }
 
 template< typename Real1, typename Real2, typename Device1, typename Device2, typename Index, typename Allocator >
-bool operator==( const Vector< Real1, Device1, Index, Allocator >& a, const Vector< Real2, Device2, Index, Allocator >& b )
+bool
+operator==( const Vector< Real1, Device1, Index, Allocator >& a, const Vector< Real2, Device2, Index, Allocator >& b )
 {
    if( a.getSize() != b.getSize() )
       return false;
@@ -160,7 +172,8 @@ bool operator==( const Vector< Real1, Device1, Index, Allocator >& a, const Vect
 }
 
 template< typename Real1, typename Real2, typename Device1, typename Device2, typename Index, typename Allocator >
-bool operator==( const VectorView< Real1, Device1, Index >& a, const Vector< Real2, Device2, Index, Allocator >& b )
+bool
+operator==( const VectorView< Real1, Device1, Index >& a, const Vector< Real2, Device2, Index, Allocator >& b )
 {
    if( a.getSize() != b.getSize() )
       return false;
@@ -173,7 +186,8 @@ bool operator==( const VectorView< Real1, Device1, Index >& a, const Vector< Rea
 }
 
 template< typename Real1, typename Real2, typename Device1, typename Device2, typename Index, typename Allocator >
-bool operator==( const Vector< Real1, Device1, Index, Allocator >& a, const VectorView< Real2, Device2, Index >& b )
+bool
+operator==( const Vector< Real1, Device1, Index, Allocator >& a, const VectorView< Real2, Device2, Index >& b )
 {
    if( a.getSize() != b.getSize() )
       return false;
@@ -187,22 +201,27 @@ bool operator==( const Vector< Real1, Device1, Index, Allocator >& a, const Vect
 
 ////
 // Comparison operations - operator !=
-template< typename Real, typename Device, typename Index, typename Allocator, typename ET >
-bool operator!=( const Vector< Real, Device, Index, Allocator >& a, const ET& b )
+template< typename Real, typename Device, typename Index, typename Allocator, typename ET,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
+bool
+operator!=( const Vector< Real, Device, Index, Allocator >& a, const ET& b )
 {
    using ConstView = typename VectorView< Real, Device, Index >::ConstViewType;
    return Expressions::Comparison< ConstView, ET >::NE( a.getConstView(), b );
 }
 
-template< typename ET, typename Real, typename Device, typename Index, typename Allocator >
-bool operator!=( const ET& a, const Vector< Real, Device, Index, Allocator >& b )
+template< typename ET, typename Real, typename Device, typename Index, typename Allocator,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
+bool
+operator!=( const ET& a, const Vector< Real, Device, Index, Allocator >& b )
 {
    using ConstView = typename VectorView< Real, Device, Index >::ConstViewType;
    return Expressions::Comparison< ET, ConstView >::NE( a, b.getConstView() );
 }
 
 template< typename Real1, typename Real2, typename Device1, typename Device2, typename Index, typename Allocator >
-bool operator!=( const Vector< Real1, Device1, Index, Allocator >& a, const Vector< Real2, Device2, Index, Allocator >& b )
+bool
+operator!=( const Vector< Real1, Device1, Index, Allocator >& a, const Vector< Real2, Device2, Index, Allocator >& b )
 {
    if( a.getSize() != b.getSize() )
       return false;
@@ -216,22 +235,27 @@ bool operator!=( const Vector< Real1, Device1, Index, Allocator >& a, const Vect
 
 ////
 // Comparison operations - operator <
-template< typename Real, typename Device, typename Index, typename Allocator, typename ET >
-bool operator<( const Vector< Real, Device, Index, Allocator >& a, const ET& b )
+template< typename Real, typename Device, typename Index, typename Allocator, typename ET,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
+bool
+operator<( const Vector< Real, Device, Index, Allocator >& a, const ET& b )
 {
    using ConstView = typename VectorView< Real, Device, Index >::ConstViewType;
    return Expressions::Comparison< ConstView, ET >::LT( a.getConstView(), b );
 }
 
-template< typename ET, typename Real, typename Device, typename Index, typename Allocator >
-bool operator<( const ET& a, const Vector< Real, Device, Index, Allocator >& b )
+template< typename ET, typename Real, typename Device, typename Index, typename Allocator,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
+bool
+operator<( const ET& a, const Vector< Real, Device, Index, Allocator >& b )
 {
    using ConstView = typename VectorView< Real, Device, Index >::ConstViewType;
    return Expressions::Comparison< ET, ConstView >::LT( a, b.getConstView() );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
-bool operator<( const Vector< Real1, Device, Index, Allocator >& a, const Vector< Real2, Device, Index, Allocator >& b )
+bool
+operator<( const Vector< Real1, Device, Index, Allocator >& a, const Vector< Real2, Device, Index, Allocator >& b )
 {
    using ConstView1 = typename Vector< Real1, Device, Index, Allocator >::ConstViewType;
    using ConstView2 = typename VectorView< Real2, Device, Index >::ConstViewType;
@@ -240,22 +264,27 @@ bool operator<( const Vector< Real1, Device, Index, Allocator >& a, const Vector
 
 ////
 // Comparison operations - operator <=
-template< typename Real, typename Device, typename Index, typename Allocator, typename ET >
-bool operator<=( const Vector< Real, Device, Index, Allocator >& a, const ET& b )
+template< typename Real, typename Device, typename Index, typename Allocator, typename ET,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
+bool
+operator<=( const Vector< Real, Device, Index, Allocator >& a, const ET& b )
 {
    using ConstView = typename VectorView< Real, Device, Index >::ConstViewType;
    return Expressions::Comparison< ConstView, ET >::LE( a.getConstView(), b );
 }
 
-template< typename ET, typename Real, typename Device, typename Index, typename Allocator >
-bool operator<=( const ET& a, const Vector< Real, Device, Index, Allocator >& b )
+template< typename ET, typename Real, typename Device, typename Index, typename Allocator,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
+bool
+operator<=( const ET& a, const Vector< Real, Device, Index, Allocator >& b )
 {
    using ConstView = typename VectorView< Real, Device, Index >::ConstViewType;
    return Expressions::Comparison< ET, ConstView >::LE( a, b.getConstView() );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
-bool operator<=( const Vector< Real1, Device, Index, Allocator >& a, const Vector< Real2, Device, Index, Allocator >& b )
+bool
+operator<=( const Vector< Real1, Device, Index, Allocator >& a, const Vector< Real2, Device, Index, Allocator >& b )
 {
    using ConstView1 = typename Vector< Real1, Device, Index, Allocator >::ConstViewType;
    using ConstView2 = typename VectorView< Real2, Device, Index >::ConstViewType;
@@ -264,22 +293,27 @@ bool operator<=( const Vector< Real1, Device, Index, Allocator >& a, const Vecto
 
 ////
 // Comparison operations - operator >
-template< typename Real, typename Device, typename Index, typename Allocator, typename ET >
-bool operator>( const Vector< Real, Device, Index, Allocator >& a, const ET& b )
+template< typename Real, typename Device, typename Index, typename Allocator, typename ET,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
+bool
+operator>( const Vector< Real, Device, Index, Allocator >& a, const ET& b )
 {
    using ConstView = typename VectorView< Real, Device, Index >::ConstViewType;
    return Expressions::Comparison< ConstView, ET >::GT( a.getConstView(), b );
 }
 
-template< typename ET, typename Real, typename Device, typename Index, typename Allocator >
-bool operator>( const ET& a, const Vector< Real, Device, Index, Allocator >& b )
+template< typename ET, typename Real, typename Device, typename Index, typename Allocator,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
+bool
+operator>( const ET& a, const Vector< Real, Device, Index, Allocator >& b )
 {
    using ConstView = typename VectorView< Real, Device, Index >::ConstViewType;
    return Expressions::Comparison< ET, ConstView >::GT( a, b.getConstView() );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
-bool operator>( const Vector< Real1, Device, Index, Allocator >& a, const Vector< Real2, Device, Index, Allocator >& b )
+bool
+operator>( const Vector< Real1, Device, Index, Allocator >& a, const Vector< Real2, Device, Index, Allocator >& b )
 {
    using ConstView1 = typename Vector< Real1, Device, Index, Allocator >::ConstViewType;
    using ConstView2 = typename VectorView< Real2, Device, Index >::ConstViewType;
@@ -288,22 +322,27 @@ bool operator>( const Vector< Real1, Device, Index, Allocator >& a, const Vector
 
 ////
 // Comparison operations - operator >=
-template< typename Real, typename Device, typename Index, typename Allocator, typename ET >
-bool operator>=( const Vector< Real, Device, Index, Allocator >& a, const ET& b )
+template< typename Real, typename Device, typename Index, typename Allocator, typename ET,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
+bool
+operator>=( const Vector< Real, Device, Index, Allocator >& a, const ET& b )
 {
    using ConstView = typename VectorView< Real, Device, Index >::ConstViewType;
    return Expressions::Comparison< ConstView, ET >::GE( a.getConstView(), b );
 }
 
-template< typename ET, typename Real, typename Device, typename Index, typename Allocator >
-bool operator>=( const ET& a, const Vector< Real, Device, Index, Allocator >& b )
+template< typename ET, typename Real, typename Device, typename Index, typename Allocator,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
+bool
+operator>=( const ET& a, const Vector< Real, Device, Index, Allocator >& b )
 {
    using ConstView = typename VectorView< Real, Device, Index >::ConstViewType;
    return Expressions::Comparison< ET, ConstView >::GE( a, b.getConstView() );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
-bool operator>=( const Vector< Real1, Device, Index, Allocator >& a, const Vector< Real2, Device, Index, Allocator >& b )
+bool
+operator>=( const Vector< Real1, Device, Index, Allocator >& a, const Vector< Real2, Device, Index, Allocator >& b )
 {
    using ConstView1 = typename Vector< Real1, Device, Index, Allocator >::ConstViewType;
    using ConstView2 = typename VectorView< Real2, Device, Index >::ConstViewType;
@@ -322,23 +361,25 @@ operator-( const Vector< Real, Device, Index, Allocator >& a )
 
 ////
 // Scalar product
-template< typename Real, typename Device, typename Index, typename Allocator, typename ET >
-Real operator,( const Vector< Real, Device, Index, Allocator >& a, const ET& b )
+template< typename Real, typename Device, typename Index, typename Allocator, typename ET,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
+Real
+operator,( const Vector< Real, Device, Index, Allocator >& a, const ET& b )
 {
    return TNL::sum( a.getConstView() * b );
 }
 
-template< typename ET, typename Real, typename Device, typename Index, typename Allocator >
-Real operator,( const ET& a, const Vector< Real, Device, Index, Allocator >& b )
+template< typename ET, typename Real, typename Device, typename Index, typename Allocator,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
+Real
+operator,( const ET& a, const Vector< Real, Device, Index, Allocator >& b )
 {
    return TNL::sum( a * b.getConstView() );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
-//auto 
-// TODO: auto+decltype does not work with NVCC 10.1
-Real1 operator,( const Vector< Real1, Device, Index, Allocator >& a, const Vector< Real2, Device, Index, Allocator >& b )
-//->decltype( TNL::sum( a.getConstView() * b.getConstView() ) )
+auto
+operator,( const Vector< Real1, Device, Index, Allocator >& a, const Vector< Real2, Device, Index, Allocator >& b )
 {
    return TNL::sum( a.getConstView() * b.getConstView() );
 }
@@ -346,11 +387,12 @@ Real1 operator,( const Vector< Real1, Device, Index, Allocator >& a, const Vecto
 } //namespace Containers
 
 ////
-// All operations are supposed to be in namespace TNL
+// All functions are supposed to be in namespace TNL
 
 ////
 // Min
-template< typename Real, typename Device, typename Index, typename Allocator, typename ET >
+template< typename Real, typename Device, typename Index, typename Allocator, typename ET,
+          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
 auto
 min( const Containers::Vector< Real, Device, Index, Allocator >& a, const ET& b )
 {
@@ -358,7 +400,8 @@ min( const Containers::Vector< Real, Device, Index, Allocator >& a, const ET& b 
    return Containers::Expressions::BinaryExpressionTemplate< ConstView, ET, Containers::Expressions::Min >( a.getConstView(), b );
 }
 
-template< typename ET, typename Real, typename Device, typename Index, typename Allocator >
+template< typename ET, typename Real, typename Device, typename Index, typename Allocator,
+          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
 auto
 min( const ET& a, const Containers::Vector< Real, Device, Index, Allocator >& b )
 {
@@ -377,7 +420,8 @@ min( const Containers::Vector< Real1, Device, Index, Allocator >& a, const Conta
 
 ////
 // Max
-template< typename Real, typename Device, typename Index, typename Allocator, typename ET >
+template< typename Real, typename Device, typename Index, typename Allocator, typename ET,
+          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
 auto
 max( const Containers::Vector< Real, Device, Index, Allocator >& a, const ET& b )
 {
@@ -385,7 +429,8 @@ max( const Containers::Vector< Real, Device, Index, Allocator >& a, const ET& b 
    return Containers::Expressions::BinaryExpressionTemplate< ConstView, ET, Containers::Expressions::Max >( a.getConstView(), b );
 }
 
-template< typename ET, typename Real, typename Device, typename Index, typename Allocator >
+template< typename ET, typename Real, typename Device, typename Index, typename Allocator,
+          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
 auto
 max( const ET& a, const Containers::Vector< Real, Device, Index, Allocator >& b )
 {
@@ -702,32 +747,33 @@ binaryAnd( const Containers::Vector< Real, Device, Index, Allocator >& a )
 
 ////
 // Dot product - the same as scalar product, just for convenience
-// TODO: auto+decltype does not work with NVCC 10.1
-template< typename Real, typename Device, typename Index, typename Allocator, typename ET >
-//auto
-Real dot( const Containers::Vector< Real, Device, Index, Allocator >& a, const ET& b )//->decltype( TNL::sum( a.getConstView() * b ) )
+template< typename Real, typename Device, typename Index, typename Allocator, typename ET,
+          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
+auto
+dot( const Containers::Vector< Real, Device, Index, Allocator >& a, const ET& b )
 {
    return TNL::sum( a.getConstView() * b );
 }
 
-template< typename ET, typename Real, typename Device, typename Index, typename Allocator >
-//auto
-Real dot( const ET& a, const Containers::Vector< Real, Device, Index, Allocator >& b )//->decltype( TNL::sum( a * b.getConstView() ) )
+template< typename ET, typename Real, typename Device, typename Index, typename Allocator,
+          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
+auto
+dot( const ET& a, const Containers::Vector< Real, Device, Index, Allocator >& b )
 {
    return TNL::sum( a * b.getConstView() );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
-//auto
-Real1 dot( const Containers::Vector< Real1, Device, Index, Allocator >& a, const Containers::Vector< Real2, Device, Index, Allocator >& b )
-//->decltype( TNL::sum( a.getConstView() * b.getConstView() ) )
+auto
+dot( const Containers::Vector< Real1, Device, Index, Allocator >& a, const Containers::Vector< Real2, Device, Index, Allocator >& b )
 {
    return TNL::sum( a.getConstView() * b.getConstView() );
 }
 
 ////
 // TODO: Replace this with multiplication when its safe
-template< typename Real, typename Device, typename Index, typename Allocator, typename ET >
+template< typename Real, typename Device, typename Index, typename Allocator, typename ET,
+          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
 Containers::VectorView< Real, Device, Index >
 Scale( const Containers::Vector< Real, Device, Index, Allocator >& a, const ET& b )
 {
@@ -735,7 +781,8 @@ Scale( const Containers::Vector< Real, Device, Index, Allocator >& a, const ET& 
    return result;
 }
 
-template< typename ET, typename Real, typename Device, typename Index, typename Allocator >
+template< typename ET, typename Real, typename Device, typename Index, typename Allocator,
+          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
 Containers::Expressions::BinaryExpressionTemplate< ET, typename Containers::Vector< Real, Device, Index, Allocator >::ConstViewType, Containers::Expressions::Multiplication >
 Scale( const ET& a, const Containers::Vector< Real, Device, Index, Allocator >& b )
 {
