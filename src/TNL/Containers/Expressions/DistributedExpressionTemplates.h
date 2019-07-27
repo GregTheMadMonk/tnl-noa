@@ -15,6 +15,7 @@
 #include <TNL/Containers/Expressions/ExpressionVariableType.h>
 #include <TNL/Containers/Expressions/DistributedComparison.h>
 #include <TNL/Containers/Expressions/IsStatic.h>
+#include <TNL/Containers/Expressions/TypeTraits.h>
 
 #include <TNL/Communicators/MPIPrint.h>
 
@@ -34,8 +35,16 @@ template< typename T1,
           typename Communicator,
           ExpressionVariableType T1Type = ExpressionVariableTypeGetter< T1 >::value >
 struct DistributedUnaryExpressionTemplate
-{
-};
+{};
+
+template< typename T1,
+          template< typename > class Operation,
+          typename Parameter,
+          typename Communicator,
+          ExpressionVariableType T1Type >
+struct IsExpressionTemplate< DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator, T1Type > >
+: std::true_type
+{};
 
 ////
 // Distributed binary expression template
@@ -46,8 +55,17 @@ template< typename T1,
           ExpressionVariableType T1Type = ExpressionVariableTypeGetter< T1 >::value,
           ExpressionVariableType T2Type = ExpressionVariableTypeGetter< T2 >::value >
 struct DistributedBinaryExpressionTemplate
-{
-};
+{};
+
+template< typename T1,
+          typename T2,
+          template< typename, typename > class Operation,
+          typename Communicator,
+          ExpressionVariableType T1Type,
+          ExpressionVariableType T2Type >
+struct IsExpressionTemplate< DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator, T1Type, T2Type > >
+: std::true_type
+{};
 
 template< typename T1,
           typename T2,
@@ -58,7 +76,6 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator, Vec
    using RealType = typename std::remove_const< typename T1::RealType >::type;
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
-   using IsExpressionTemplate = bool;
    using CommunicatorType = Communicator; //Communicators::MpiCommunicator;
    using CommunicationGroup = typename CommunicatorType::CommunicationGroup;
 
@@ -116,7 +133,6 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator, Vec
    using CommunicatorType = Communicator;
    using CommunicationGroup = typename CommunicatorType::CommunicationGroup;
 
-   using IsExpressionTemplate = bool;
    static constexpr bool isStatic() { return false; }
 
    DistributedBinaryExpressionTemplate( const T1& a, const T2& b, const CommunicationGroup& group )
@@ -169,7 +185,6 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator, Ari
    using CommunicatorType = Communicator;
    using CommunicationGroup = typename CommunicatorType::CommunicationGroup;
 
-   using IsExpressionTemplate = bool;
    static constexpr bool isStatic() { return false; }
 
    DistributedBinaryExpressionTemplate( const T1& a, const T2& b, const CommunicationGroup& group )
@@ -224,7 +239,6 @@ struct DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicato
    using RealType = typename std::remove_const< typename T1::RealType >::type;
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
-   using IsExpressionTemplate = bool;
    using CommunicatorType = Communicator;
    using CommunicationGroup = typename CommunicatorType::CommunicationGroup;
    static constexpr bool isStatic() { return false; }
@@ -280,7 +294,6 @@ struct DistributedUnaryExpressionTemplate< T1, Operation, void, Communicator, Ve
    using RealType = typename std::remove_const< typename T1::RealType >::type;
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
-   using IsExpressionTemplate = bool;
    using CommunicatorType = Communicator;
    using CommunicationGroup = typename CommunicatorType::CommunicationGroup;
    static constexpr bool isStatic() { return false; }

@@ -14,6 +14,7 @@
 
 #include <type_traits>  // std::add_const_t
 
+#include <TNL/TypeTraits.h>
 #include <TNL/File.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
@@ -221,7 +222,9 @@ public:
     * \param data Reference to the source array or value.
     * \return Reference to this array view.
     */
-   template< typename T >
+   template< typename T,
+             typename...,
+             typename = std::enable_if_t< std::is_convertible< T, ValueType >::value || IsArrayType< T >::value > >
    ArrayView& operator=( const T& array );
 
    /**
@@ -490,14 +493,6 @@ template< typename Value, typename Device, typename Index >
 File& operator>>( File&& file, ArrayView< Value, Device, Index > view );
 
 } // namespace Containers
-
-template< typename Value_, typename Device, typename Index >
-struct IsStatic< Containers::ArrayView< Value_, Device, Index > >
-{
-   static constexpr bool Value = false;
-};
-
-
 } // namespace TNL
 
 #include <TNL/Containers/ArrayView.hpp>

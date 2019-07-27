@@ -10,41 +10,20 @@
 
 #pragma once
 
-#include <type_traits>
-#include <utility>
-#include <TNL/Containers/Algorithms/VectorOperations.h>
+#include <TNL/TypeTraits.h>
 #include <TNL/ParallelFor.h>
+#include <TNL/Containers/Algorithms/VectorOperations.h>
 
 namespace TNL {
 namespace Containers {
 namespace Algorithms {
-
-namespace detail {
-/**
- * SFINAE for checking if T has getSize method
- * TODO: We should better test operator[] but we need to know the indexing type.
- */
-template< typename T >
-class HasSubscriptOperator
-{
-private:
-    typedef char YesType[1];
-    typedef char NoType[2];
-
-    template< typename C > static YesType& test( decltype(std::declval< C >().getSize() ) );
-    template< typename C > static NoType& test(...);
-
-public:
-    static constexpr bool value = ( sizeof( test< T >(0) ) == sizeof( YesType ) );
-};
-} // namespace detail
 
 /**
  * \brief Vector assignment
  */
 template< typename Vector,
           typename T,
-          bool hasSubscriptOperator = detail::HasSubscriptOperator< T >::value >
+          bool hasSubscriptOperator = HasSubscriptOperator< T >::value >
 struct VectorAssignment{};
 
 /**
@@ -52,7 +31,7 @@ struct VectorAssignment{};
  */
 template< typename Vector,
           typename T,
-          bool hasSubscriptOperator = detail::HasSubscriptOperator< T >::value >
+          bool hasSubscriptOperator = HasSubscriptOperator< T >::value >
 struct VectorAddition{};
 
 /**
@@ -60,7 +39,7 @@ struct VectorAddition{};
  */
 template< typename Vector,
           typename T,
-          bool hasSubscriptOperator = detail::HasSubscriptOperator< T >::value >
+          bool hasSubscriptOperator = HasSubscriptOperator< T >::value >
 struct VectorSubtraction{};
 
 /**
@@ -68,7 +47,7 @@ struct VectorSubtraction{};
  */
 template< typename Vector,
           typename T,
-          bool hasSubscriptOperator = detail::HasSubscriptOperator< T >::value >
+          bool hasSubscriptOperator = HasSubscriptOperator< T >::value >
 struct VectorMultiplication{};
 
 /**
@@ -76,7 +55,7 @@ struct VectorMultiplication{};
  */
 template< typename Vector,
           typename T,
-          bool hasSubscriptOperator = detail::HasSubscriptOperator< T >::value >
+          bool hasSubscriptOperator = HasSubscriptOperator< T >::value >
 struct VectorDivision{};
 
 /**
@@ -95,7 +74,7 @@ struct VectorAssignment< Vector, T, true >
    static void assignStatic( Vector& v, const T& t )
    {
       TNL_ASSERT_EQ( v.getSize(), t.getSize(), "The sizes of the vectors must be equal." );
-      for( decltype( v.getSize() ) i = 0; i < v.getSize(); i ++ )
+      for( decltype( v.getSize() ) i = 0; i < v.getSize(); i++ )
          v[ i ] = t[ i ];
    }
 
@@ -107,11 +86,11 @@ struct VectorAssignment< Vector, T, true >
       using IndexType = typename Vector::IndexType;
 
       RealType* data = v.getData();
-      auto ass = [=] __cuda_callable__ ( IndexType i )
+      auto assignment = [=] __cuda_callable__ ( IndexType i )
       {
          data[ i ] = t[ i ];
       };
-      ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), ass );
+      ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), assignment );
    }
 };
 
@@ -131,7 +110,7 @@ struct VectorAssignment< Vector, T, false >
    static void assignStatic( Vector& v, const T& t )
    {
       TNL_ASSERT_GT( v.getSize(), 0, "Cannot assign value to empty vector." );
-      for( decltype( v.getSize() ) i = 0; i < v.getSize(); i ++ )
+      for( decltype( v.getSize() ) i = 0; i < v.getSize(); i++ )
          v[ i ] = t;
    }
 
@@ -142,11 +121,11 @@ struct VectorAssignment< Vector, T, false >
       using IndexType = typename Vector::IndexType;
 
       RealType* data = v.getData();
-      auto ass = [=] __cuda_callable__ ( IndexType i )
+      auto assignment = [=] __cuda_callable__ ( IndexType i )
       {
          data[ i ] = t;
       };
-      ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), ass );
+      ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), assignment );
    }
 };
 
@@ -161,7 +140,7 @@ struct VectorAddition< Vector, T, true >
    static void additionStatic( Vector& v, const T& t )
    {
       TNL_ASSERT_EQ( v.getSize(), t.getSize(), "The sizes of the vectors must be equal." );
-      for( decltype( v.getSize() ) i = 0; i < v.getSize(); i ++ )
+      for( decltype( v.getSize() ) i = 0; i < v.getSize(); i++ )
          v[ i ] += t[ i ];
    }
 
@@ -193,7 +172,7 @@ struct VectorAddition< Vector, T, false >
    static void additionStatic( Vector& v, const T& t )
    {
       TNL_ASSERT_GT( v.getSize(), 0, "Cannot assign value to empty vector." );
-      for( decltype( v.getSize() ) i = 0; i < v.getSize(); i ++ )
+      for( decltype( v.getSize() ) i = 0; i < v.getSize(); i++ )
          v[ i ] += t;
    }
 
@@ -223,7 +202,7 @@ struct VectorSubtraction< Vector, T, true >
    static void subtractionStatic( Vector& v, const T& t )
    {
       TNL_ASSERT_EQ( v.getSize(), t.getSize(), "The sizes of the vectors must be equal." );
-      for( decltype( v.getSize() ) i = 0; i < v.getSize(); i ++ )
+      for( decltype( v.getSize() ) i = 0; i < v.getSize(); i++ )
          v[ i ] -= t[ i ];
    }
 
@@ -255,7 +234,7 @@ struct VectorSubtraction< Vector, T, false >
    static void subtractionStatic( Vector& v, const T& t )
    {
       TNL_ASSERT_GT( v.getSize(), 0, "Cannot assign value to empty vector." );
-      for( decltype( v.getSize() ) i = 0; i < v.getSize(); i ++ )
+      for( decltype( v.getSize() ) i = 0; i < v.getSize(); i++ )
          v[ i ] -= t;
    }
 
@@ -285,7 +264,7 @@ struct VectorMultiplication< Vector, T, true >
    static void multiplicationStatic( Vector& v, const T& t )
    {
       TNL_ASSERT_EQ( v.getSize(), t.getSize(), "The sizes of the vectors must be equal." );
-      for( decltype( v.getSize() ) i = 0; i < v.getSize(); i ++ )
+      for( decltype( v.getSize() ) i = 0; i < v.getSize(); i++ )
          v[ i ] *= t[ i ];
    }
 
@@ -317,7 +296,7 @@ struct VectorMultiplication< Vector, T, false >
    static void multiplicationStatic( Vector& v, const T& t )
    {
       TNL_ASSERT_GT( v.getSize(), 0, "Cannot assign value to empty vector." );
-      for( decltype( v.getSize() ) i = 0; i < v.getSize(); i ++ )
+      for( decltype( v.getSize() ) i = 0; i < v.getSize(); i++ )
          v[ i ] *= t;
    }
 
@@ -348,7 +327,7 @@ struct VectorDivision< Vector, T, true >
    static void divisionStatic( Vector& v, const T& t )
    {
       TNL_ASSERT_EQ( v.getSize(), t.getSize(), "The sizes of the vectors must be equal." );
-      for( decltype( v.getSize() ) i = 0; i < v.getSize(); i ++ )
+      for( decltype( v.getSize() ) i = 0; i < v.getSize(); i++ )
          v[ i ] /= t[ i ];
    }
 
@@ -380,7 +359,7 @@ struct VectorDivision< Vector, T, false >
    static void divisionStatic( Vector& v, const T& t )
    {
       TNL_ASSERT_GT( v.getSize(), 0, "Cannot assign value to empty vector." );
-      for( decltype( v.getSize() ) i = 0; i < v.getSize(); i ++ )
+      for( decltype( v.getSize() ) i = 0; i < v.getSize(); i++ )
          v[ i ] /= t;
    }
 

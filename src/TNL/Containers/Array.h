@@ -478,7 +478,9 @@ class Array
        * \param data Reference to the source array or value.
        * \return Reference to this array.
        */
-      template< typename T >
+      template< typename T,
+                typename...,
+                typename = std::enable_if_t< std::is_convertible< T, ValueType >::value || IsArrayType< T >::value > >
       Array& operator=( const T& data );
 
       /**
@@ -680,13 +682,6 @@ template< typename Value, typename Device, typename Index, typename Allocator >
 File& operator>>( File&& file, Array< Value, Device, Index, Allocator >& array );
 
 } // namespace Containers
-
-template< typename Value_, typename Device, typename Index >
-struct IsStatic< Containers::Array< Value_, Device, Index > >
-{
-   static constexpr bool Value = false;
-};
-
 } // namespace TNL
 
 #include <TNL/Containers/Array.hpp>

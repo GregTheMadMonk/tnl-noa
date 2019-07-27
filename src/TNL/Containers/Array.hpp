@@ -584,7 +584,7 @@ template< typename Value,
           typename Device,
           typename Index,
           typename Allocator >
-   template< typename T >
+   template< typename T, typename..., typename >
 Array< Value, Device, Index, Allocator >&
 Array< Value, Device, Index, Allocator >::
 operator=( const T& data )

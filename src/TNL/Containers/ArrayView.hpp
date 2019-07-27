@@ -132,7 +132,7 @@ operator=( const ArrayView& view )
 template< typename Value,
           typename Device,
           typename Index >
-   template< typename T >
+   template< typename T, typename..., typename >
 ArrayView< Value, Device, Index >&
 ArrayView< Value, Device, Index >::
 operator=( const T& data )

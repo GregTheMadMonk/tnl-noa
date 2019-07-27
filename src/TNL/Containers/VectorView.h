@@ -19,9 +19,6 @@
 namespace TNL {
 namespace Containers {
 
-template< typename Real, typename Device, typename Index, typename Allocator >
-class Vector;
-
 template< typename Real = double,
           typename Device = Devices::Host,
           typename Index = int >
@@ -54,17 +51,6 @@ public:
    __cuda_callable__
    VectorView( const ArrayView< Real_, Device, Index >& view )
    : BaseType::ArrayView( view ) {}
-
-   template< typename T1,
-             typename T2,
-             template< typename, typename > class Operation >
-   __cuda_callable__
-   VectorView( const Expressions::BinaryExpressionTemplate< T1, T2, Operation >& expression );
-
-   template< typename T,
-             template< typename > class Operation >
-   __cuda_callable__
-   VectorView( const Expressions::UnaryExpressionTemplate< T, Operation >& expression );
 
    /**
     * \brief Returns a modifiable view of the vector view.
@@ -113,12 +99,6 @@ public:
 
    static String getType();
 
-   //template< typename VectorOperationType >
-   //void evaluate( const VectorOperationType& vo );
-
-   template< typename VectorOperationType >
-   void evaluateFor( const VectorOperationType& vo );
-
    // All other Vector methods follow...
    void addElement( IndexType i, RealType value );
 
@@ -127,13 +107,11 @@ public:
                     RealType value,
                     Scalar thisElementMultiplicator );
 
-   template< typename Real_, typename Device_, typename Index_ >
-   VectorView& operator=( const VectorView< Real_, Device_, Index_ >& v );
-
-   template< typename Real_, typename Device_, typename Index_, typename Allocator_ >
-   VectorView& operator=( const Vector< Real_, Device_, Index_, Allocator_ >& v );
-
-   template< typename VectorExpression >
+   template< typename VectorExpression,
+             typename...,
+             typename = std::enable_if_t< Expressions::IsExpressionTemplate< VectorExpression >::value >,
+             // workaround for nvcc 10.1: adding one more template parameter fixes a problem with inheriting operator= from the base class
+             typename = void >
    VectorView& operator=( const VectorExpression& expression );
 
    template< typename VectorExpression >
@@ -197,13 +175,6 @@ public:
 };
 
 } // namespace Containers
-
-template< typename Real, typename Device, typename Index >
-struct IsStatic< Containers::VectorView< Real, Device, Index > >
-{
-   static constexpr bool Value = false;
-};
-
 } // namespace TNL
 
 #include <TNL/Containers/VectorViewExpressions.h>

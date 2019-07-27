@@ -11,6 +11,7 @@
 #pragma once
 
 #include <type_traits>
+#include <TNL/Containers/Expressions/TypeTraits.h>
 
 namespace TNL {
 namespace Containers {
@@ -50,23 +51,6 @@ namespace Expressions {
 
 enum ExpressionVariableType { ArithmeticVariable, VectorVariable, VectorExpressionVariable, OtherVariable };
 
-
-/**
- * SFINAE for checking if T has getSize method
- */
-template< typename T >
-class IsExpressionTemplate
-{
-private:
-    typedef char YesType[1];
-    typedef char NoType[2];
-
-    template< typename C > static YesType& test( typename C::IsExpressionTemplate );
-    template< typename C > static NoType& test(...);
-
-public:
-    static constexpr bool value = ( sizeof( test< typename std::remove_reference< T >::type >(0) ) == sizeof( YesType ) );
-};
 
 template< typename T >
 struct IsVectorType

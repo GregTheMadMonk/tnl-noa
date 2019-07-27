@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include <TNL/TypeTraits.h>
 #include <TNL/Containers/Array.h>
 #include <TNL/Containers/VectorView.h>
 
@@ -146,13 +145,14 @@ public:
                     const RealType& value,
                     const Scalar thisElementMultiplicator );
 
-   template< typename Real_, typename Device_, typename Index_, typename Allocator_ >
-   Vector& operator=( const Vector< Real_, Device_, Index_, Allocator_ >& v );
-
-   template< typename Real_, typename Device_, typename Index_ >
-   Vector& operator=( const VectorView< Real_, Device_, Index_ >& v );
-
-   template< typename VectorExpression >
+   /**
+    * \brief Assigns a vector expression to this vector.
+    */
+   template< typename VectorExpression,
+             typename...,
+             typename = std::enable_if_t< Expressions::IsExpressionTemplate< VectorExpression >::value >,
+             // workaround for nvcc 10.1: adding one more template parameter fixes a problem with inheriting operator= from the base class
+             typename = void >
    Vector& operator=( const VectorExpression& expression );
 
    /**
@@ -257,14 +257,6 @@ public:
 };
 
 } // namespace Containers
-
-template< typename Real, typename Device, typename Index >
-struct IsStatic< Containers::Vector< Real, Device, Index > >
-{
-   static constexpr bool Value = false;
-};
-
-
 } // namespace TNL
 
 #include <TNL/Containers/Vector.hpp>

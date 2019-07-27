@@ -10,36 +10,16 @@
 
 #pragma once
 
-#include <type_traits>
-#include <utility>
+#include <TNL/TypeTraits.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
 
 namespace TNL {
 namespace Containers {
 namespace Algorithms {
 
-namespace detail {
-/**
- * SFINAE for checking if T has getArrayData method
- */
-template< typename T >
-class HasGetArrayData
-{
-private:
-    typedef char YesType[1];
-    typedef char NoType[2];
-
-    template< typename C > static YesType& test( decltype(std::declval< C >().getArrayData()) );
-    template< typename C > static NoType& test(...);
-
-public:
-    static constexpr bool value = ( sizeof( test< T >(0) ) == sizeof( YesType ) );
-};
-} // namespace detail
-
 template< typename Array,
           typename T,
-          bool hasGetArrayData = detail::HasGetArrayData< T >::value >
+          bool isArrayType = IsArrayType< T >::value >
 struct ArrayAssignment;
 
 /**

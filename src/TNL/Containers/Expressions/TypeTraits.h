@@ -1,5 +1,5 @@
 /***************************************************************************
-                          IsNumericExpression.h  -  description
+                          TypeTraits.h  -  description
                              -------------------
     begin                : Jul 26, 2019
     copyright            : (C) 2019 by Tomas Oberhuber et al.
@@ -17,7 +17,14 @@ namespace Containers {
 namespace Expressions {
 
 template< typename T >
-struct IsNumericExpression : std::is_arithmetic< T >
+struct IsExpressionTemplate : std::false_type
+{};
+
+template< typename T >
+struct IsNumericExpression
+: std::integral_constant< bool,
+      std::is_arithmetic< T >::value ||
+      IsExpressionTemplate< T >::value >
 {};
 
 } //namespace Expressions

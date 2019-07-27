@@ -15,6 +15,7 @@
 #include <TNL/Containers/Expressions/ExpressionVariableType.h>
 #include <TNL/Containers/Expressions/StaticComparison.h>
 #include <TNL/Containers/Expressions/IsStatic.h>
+#include <TNL/Containers/Expressions/TypeTraits.h>
 #include <TNL/Containers/Expressions/VerticalOperations.h>
 
 namespace TNL {
@@ -27,8 +28,15 @@ template< typename T1,
           typename Parameter = void,
           ExpressionVariableType T1Type = ExpressionVariableTypeGetter< T1 >::value >
 struct StaticUnaryExpressionTemplate
-{
-};
+{};
+
+template< typename T1,
+          template< typename > class Operation,
+          typename Parameter,
+          ExpressionVariableType T1Type >
+struct IsExpressionTemplate< StaticUnaryExpressionTemplate< T1, Operation, Parameter, T1Type > >
+: std::true_type
+{};
 
 template< typename T1,
           typename T2,
@@ -36,8 +44,16 @@ template< typename T1,
           ExpressionVariableType T1Type = ExpressionVariableTypeGetter< T1 >::value,
           ExpressionVariableType T2Type = ExpressionVariableTypeGetter< T2 >::value >
 struct StaticBinaryExpressionTemplate
-{
-};
+{};
+
+template< typename T1,
+          typename T2,
+          template< typename, typename > class Operation,
+          ExpressionVariableType T1Type,
+          ExpressionVariableType T2Type >
+struct IsExpressionTemplate< StaticBinaryExpressionTemplate< T1, T2, Operation, T1Type, T2Type > >
+: std::true_type
+{};
 
 
 template< typename T1,
@@ -67,7 +83,7 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariab
    static_assert( IsStaticType< T1 >::value, "Left-hand side operand of static expression is not static, i.e. based on static vector." );
    static_assert( IsStaticType< T2 >::value, "Right-hand side operand of static expression is not static, i.e. based on static vector." );
    using RealType = typename T1::RealType;
-   using IsExpressionTemplate = bool;
+
    static_assert( IsStaticType< T1 >::value == IsStaticType< T2 >::value, "Attempt to mix static and non-static operands in binary expression templates" );
    static_assert( T1::getSize() == T2::getSize(), "Attempt to mix static operands with different sizes." );
 
@@ -128,7 +144,6 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariab
    static_assert( IsStaticType< T1 >::value, "Left-hand side operand of static expression is not static, i.e. based on static vector." );
 
    using RealType = typename T1::RealType;
-   using IsExpressionTemplate = bool;
 
    static constexpr bool isStatic() { return true; }
 
@@ -189,7 +204,6 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, Ve
    static_assert( IsStaticType< T2 >::value, "Right-hand side operand of static expression is not static, i.e. based on static vector." );
 
    using RealType = typename T2::RealType;
-   using IsExpressionTemplate = bool;
 
    static constexpr bool isStatic() { return true; }
 
@@ -254,7 +268,6 @@ struct StaticUnaryExpressionTemplate< T1, Operation, Parameter, VectorExpression
    static_assert( IsStaticType< T1 >::value, "Operand of static expression is not static, i.e. based on static vector." );
 
    using RealType = typename T1::RealType;
-   using IsExpressionTemplate = bool;
 
    static constexpr bool isStatic() { return true; }
 
@@ -317,7 +330,6 @@ template< typename T1,
 struct StaticUnaryExpressionTemplate< T1, Operation, void, VectorExpressionVariable >
 {
    using RealType = typename T1::RealType;
-   using IsExpressionTemplate = bool;
 
    static constexpr bool isStatic() { return true; }
 

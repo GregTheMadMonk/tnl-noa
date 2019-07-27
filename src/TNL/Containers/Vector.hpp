@@ -141,38 +141,12 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Allocator >
-   template< typename VectorExpression >
+   template< typename VectorExpression, typename..., typename, typename >
 Vector< Real, Device, Index, Allocator >&
 Vector< Real, Device, Index, Allocator >::
 operator=( const VectorExpression& expression )
 {
    Algorithms::VectorAssignment< Vector, VectorExpression >::assign( *this, expression );
-   return *this;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Allocator >
-   template< typename Real_, typename Device_, typename Index_, typename Allocator_ >
-Vector< Real, Device, Index, Allocator >&
-Vector< Real, Device, Index, Allocator >::
-operator=( const Vector< Real_, Device_, Index_, Allocator_ >& vector )
-{
-   Array< Real, Device, Index, Allocator >::operator=( vector );
-   return *this;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Allocator >
-   template< typename Real_, typename Device_, typename Index_ >
-Vector< Real, Device, Index, Allocator >&
-Vector< Real, Device, Index, Allocator >::
-operator=( const VectorView< Real_, Device_, Index_ >& view )
-{
-   Array< Real, Device, Index, Allocator >::operator=( view );
    return *this;
 }
 

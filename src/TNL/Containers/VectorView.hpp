@@ -22,28 +22,6 @@ namespace Containers {
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename T1,
-             typename T2,
-             template< typename, typename > class Operation >
-VectorView< Real, Device, Index >::VectorView( const Expressions::BinaryExpressionTemplate< T1, T2, Operation >& expression )
-{
-   Algorithms::VectorAssignment< VectorView< Real, Device, Index >, Expressions::BinaryExpressionTemplate< T1, T2, Operation > >::assign( *this, expression );
-};
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename T,
-             template< typename > class Operation >
-__cuda_callable__
-VectorView< Real, Device, Index >::VectorView( const Expressions::UnaryExpressionTemplate< T, Operation >& expression )
-{
-   Algorithms::VectorAssignment< VectorView< Real, Device, Index >, Expressions::UnaryExpressionTemplate< T, Operation > >::assign( *this, expression );
-};
-
-template< typename Real,
-          typename Device,
-          typename Index >
 __cuda_callable__
 typename VectorView< Real, Device, Index >::ViewType
 VectorView< Real, Device, Index >::
@@ -116,29 +94,7 @@ addElement( IndexType i, RealType value, Scalar thisElementMultiplicator )
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename Real_, typename Device_, typename Index_ >
-VectorView< Real, Device, Index >&
-VectorView< Real, Device, Index >::operator=( const VectorView< Real_, Device_, Index_ >& v )
-{
-   ArrayView< Real, Device, Index >::operator=( v );
-   return *this;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-  template< typename Real_, typename Device_, typename Index_, typename Allocator_ >
-VectorView< Real, Device, Index >&
-VectorView< Real, Device, Index >::operator=( const Vector< Real_, Device_, Index_, Allocator_ >& v )
-{
-   ArrayView< Real, Device, Index >::operator=( v );
-   return *this;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename VectorExpression >
+   template< typename VectorExpression, typename..., typename, typename >
 VectorView< Real, Device, Index >&
 VectorView< Real, Device, Index >::operator=( const VectorExpression& expression )
 {
@@ -202,7 +158,6 @@ typename VectorView< Real, Device, Index >::NonConstReal
 VectorView< Real, Device, Index >::
 operator,( const Vector_& v ) const
 {
-   static_assert( std::is_same< DeviceType, typename Vector_::DeviceType >::value, "Cannot compute product of vectors allocated on different devices." );
    return dot( *this, v );
 }
 
