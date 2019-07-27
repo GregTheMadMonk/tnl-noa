@@ -91,10 +91,38 @@ struct IsArrayType
             HasSubscriptOperator< T >::value >
 {};
 
+/*
+ * \brief Type trait for checking if T has a \e constexpr \e getSize method.
+ */
 template< typename T >
-struct IsStatic
+struct HasConstexprGetSizeMethod
 {
-   static constexpr bool Value = std::is_arithmetic< T >::value;
+private:
+   // adapted from here: https://stackoverflow.com/a/50169108
+   template< typename M, M method >
+   static constexpr std::true_type is_constexpr_impl( decltype(int{((*method)(), 0U)}) );
+
+   template< typename M, M method >
+   static constexpr std::false_type is_constexpr_impl(...);
+
+   using type = decltype(is_constexpr_impl< decltype(&T::getSize), &T::getSize >(0));
+
+public:
+   static constexpr bool value = type::value;
 };
+
+/*
+ * \brief Type trait for checking if T is a static array type.
+ *
+ * Static array types are array types which have a \e constexpr \e getSize
+ * method.
+ */
+template< typename T >
+struct IsStaticArrayType
+: public std::integral_constant< bool,
+            HasGetSizeMethod< T >::value &&
+            HasConstexprGetSizeMethod< T >::value &&
+            HasSubscriptOperator< T >::value >
+{};
 
 } //namespace TNL

@@ -11,21 +11,21 @@
 #pragma once
 
 #include <iostream>
+
+#include <TNL/TypeTraits.h>
+#include <TNL/Containers/Expressions/TypeTraits.h>
 #include <TNL/Containers/Expressions/ExpressionTemplatesOperations.h>
 #include <TNL/Containers/Expressions/ExpressionVariableType.h>
 #include <TNL/Containers/Expressions/DistributedComparison.h>
-#include <TNL/Containers/Expressions/IsStatic.h>
-#include <TNL/Containers/Expressions/TypeTraits.h>
 
 #include <TNL/Communicators/MPIPrint.h>
 
 #include <typeinfo>
 #include <cxxabi.h>
 
-
 namespace TNL {
-   namespace Containers {
-      namespace Expressions {
+namespace Containers {
+namespace Expressions {
 
 ////
 // Distributed unary expression template
@@ -80,8 +80,7 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator, Vec
    using CommunicationGroup = typename CommunicatorType::CommunicationGroup;
 
    static_assert( std::is_same< typename T1::DeviceType, typename T2::DeviceType >::value, "Attempt to mix operands allocated on different device types." );
-   static_assert( IsStaticType< T1 >::value == IsStaticType< T2 >::value, "Attempt to mix static and non-static operands in binary expression templates." );
-   static constexpr bool isStatic() { return false; }
+   static_assert( IsStaticArrayType< T1 >::value == IsStaticArrayType< T2 >::value, "Attempt to mix static and non-static operands in binary expression templates." );
 
    DistributedBinaryExpressionTemplate( const T1& a, const T2& b, const CommunicationGroup& group )
       : op1( a ), op2( b ), communicationGroup( group ) {}
@@ -133,8 +132,6 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator, Vec
    using CommunicatorType = Communicator;
    using CommunicationGroup = typename CommunicatorType::CommunicationGroup;
 
-   static constexpr bool isStatic() { return false; }
-
    DistributedBinaryExpressionTemplate( const T1& a, const T2& b, const CommunicationGroup& group )
       : op1( a ), op2( b ), communicationGroup( group ){}
 
@@ -184,8 +181,6 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator, Ari
    using IndexType = typename T2::IndexType;
    using CommunicatorType = Communicator;
    using CommunicationGroup = typename CommunicatorType::CommunicationGroup;
-
-   static constexpr bool isStatic() { return false; }
 
    DistributedBinaryExpressionTemplate( const T1& a, const T2& b, const CommunicationGroup& group )
       : op1( a ), op2( b ), communicationGroup( group ){}
@@ -241,7 +236,6 @@ struct DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicato
    using IndexType = typename T1::IndexType;
    using CommunicatorType = Communicator;
    using CommunicationGroup = typename CommunicatorType::CommunicationGroup;
-   static constexpr bool isStatic() { return false; }
 
    DistributedUnaryExpressionTemplate( const T1& a, const Parameter& p, const CommunicationGroup& group )
    : operand( a ), parameter( p ), communicationGroup( group ) {}
@@ -296,7 +290,6 @@ struct DistributedUnaryExpressionTemplate< T1, Operation, void, Communicator, Ve
    using IndexType = typename T1::IndexType;
    using CommunicatorType = Communicator;
    using CommunicationGroup = typename CommunicatorType::CommunicationGroup;
-   static constexpr bool isStatic() { return false; }
 
    DistributedUnaryExpressionTemplate( const T1& a, const CommunicationGroup& group )
       : operand( a ), communicationGroup( group ){}
@@ -334,8 +327,8 @@ struct DistributedUnaryExpressionTemplate< T1, Operation, void, Communicator, Ve
       CommunicationGroup communicationGroup;
 };
 
-      } //namespace Expressions
-   } //namespace Containers
+} // namespace Expressions
+} // namespace Containers
 
 ////
 // All operations are supposed to be in namespace TNL
@@ -2944,4 +2937,5 @@ std::ostream& operator << ( std::ostream& str, const Containers::Expressions::Di
    str << expression.getElement( expression.getLocalSize() - 1 ) << " ]";
    return str;
 }
+
 } // namespace TNL

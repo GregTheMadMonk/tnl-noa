@@ -252,13 +252,6 @@ Real TriangleArea( const StaticVector< 3, Real >& a,
 }
 
 } // namespace Containers
-
-template< int Size, typename Real >
-struct IsStatic< Containers::StaticVector< Size, Real > >
-{
-   static constexpr bool Value = true;
-};
-
 } // namespace TNL
 
 #include <TNL/Containers/StaticVectorExpressions.h>

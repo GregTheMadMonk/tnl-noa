@@ -11,11 +11,12 @@
 #pragma once
 
 #include <iostream>
+
+#include <TNL/TypeTraits.h>
+#include <TNL/Containers/Expressions/TypeTraits.h>
 #include <TNL/Containers/Expressions/ExpressionTemplatesOperations.h>
 #include <TNL/Containers/Expressions/ExpressionVariableType.h>
 #include <TNL/Containers/Expressions/Comparison.h>
-#include <TNL/Containers/Expressions/IsStatic.h>
-#include <TNL/Containers/Expressions/TypeTraits.h>
 
 namespace TNL {
 namespace Containers {
@@ -67,7 +68,7 @@ struct BinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, Ve
    using IndexType = typename T1::IndexType;
 
    static_assert( std::is_same< typename T1::DeviceType, typename T2::DeviceType >::value, "Attempt to mix operands allocated on different device types." );
-   static_assert( IsStaticType< T1 >::value == IsStaticType< T2 >::value, "Attempt to mix static and non-static operands in binary expression templates." );
+   static_assert( IsStaticArrayType< T1 >::value == IsStaticArrayType< T2 >::value, "Attempt to mix static and non-static operands in binary expression templates." );
    static constexpr bool is() { return false; }
 
    BinaryExpressionTemplate( const T1& a, const T2& b ): op1( a ), op2( b ){}
