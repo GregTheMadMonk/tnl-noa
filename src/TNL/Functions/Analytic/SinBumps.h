@@ -23,13 +23,13 @@ namespace Functions {
 namespace Analytic {   
 
 template< typename Point >
-class SinBumpsBase : public Domain< Point::size, SpaceDomain >
+class SinBumpsBase : public Domain< Point::getSize(), SpaceDomain >
 {
    public:
  
       typedef Point PointType;
       typedef typename Point::RealType RealType;
-      enum { Dimension = PointType::size };
+      enum { Dimension = PointType::getSize() };
 
       void setWaveLength( const PointType& waveLength );
 

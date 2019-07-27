@@ -455,13 +455,13 @@ VTKWriter< Mesh >::writePoints( const Mesh& mesh, std::ostream& str )
    for( Index i = 0; i < verticesCount; i++ ) {
       const auto& vertex = mesh.template getEntity< typename Mesh::Vertex >( i );
       const auto& point = vertex.getPoint();
-      for( Index j = 0; j < point.size; j++ ) {
+      for( Index j = 0; j < point.getSize(); j++ ) {
          str << point[ j ];
-         if( j < point.size - 1 )
+         if( j < point.getSize() - 1 )
             str << " ";
       }
       // VTK needs zeros for unused dimensions
-      for( Index j = 0; j < 3 - point.size; j++ )
+      for( Index j = 0; j < 3 - point.getSize(); j++ )
          str << " 0";
       str << "\n";
    }

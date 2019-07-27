@@ -20,13 +20,13 @@ namespace TNL {
 
 
 template< typename Point >
-class SinBumpsSDFBase : public Domain< Point::size, SpaceDomain >
+class SinBumpsSDFBase : public Domain< Point::getSize(), SpaceDomain >
 {
    public:
 
       typedef Point PointType;
       typedef typename Point::RealType RealType;
-      enum { Dimensions = PointType::size };
+      enum { Dimensions = PointType::getSize() };
 
       void setWaveLength( const PointType& waveLength );
 
