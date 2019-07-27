@@ -91,7 +91,7 @@ struct IsArrayType
             HasSubscriptOperator< T >::value >
 {};
 
-/*
+/**
  * \brief Type trait for checking if T has a \e constexpr \e getSize method.
  */
 template< typename T >
@@ -111,7 +111,7 @@ public:
    static constexpr bool value = type::value;
 };
 
-/*
+/**
  * \brief Type trait for checking if T is a static array type.
  *
  * Static array types are array types which have a \e constexpr \e getSize
