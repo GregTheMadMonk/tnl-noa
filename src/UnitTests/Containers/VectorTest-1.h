@@ -406,28 +406,6 @@ TYPED_TEST( VectorTest, comparisonOnDifferentDevices )
 #endif
 }
 
-TYPED_TEST( VectorTest, horizontalOperations )
-{
-   using VectorType = typename TestFixture::VectorType;
-   using ViewType = typename TestFixture::ViewType;
-   using RealType = typename VectorType::RealType;
-   using IndexType = typename VectorType::IndexType;
-   const int size = VECTOR_TEST_SIZE;
-
-   VectorType _u( size ), _v( size ), _w( size );
-   ViewType u( _u ), v( _v ), w( _w );
-   EXPECT_EQ( u.getSize(), size );
-   u = 0;
-   v = 1;
-   w = 2;
-
-   u = u + 4 * TNL::max( v, 0 );
-   EXPECT_TRUE( u.containsOnlyValue( 4.0 ) );
-
-   u = u + 3 * w + 4 * TNL::max( v, 0 );
-   EXPECT_TRUE( u.containsOnlyValue( 14.0 ) );
-}
-
 #endif // HAVE_GTEST
 
 #include "../main.h"

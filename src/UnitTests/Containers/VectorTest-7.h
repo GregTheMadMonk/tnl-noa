@@ -15,8 +15,6 @@
 #ifdef HAVE_GTEST
 #include "VectorTestSetup.h"
 
-// should be small enough to have fast tests, but larger than minGPUReductionDataSize
-// and large enough to require multiple CUDA blocks for reduction
 constexpr int VECTOR_TEST_SIZE = 100;
 
 TYPED_TEST( VectorTest, sin )
