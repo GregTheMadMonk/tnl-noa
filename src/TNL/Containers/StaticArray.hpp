@@ -21,13 +21,25 @@ namespace Containers {
 namespace detail {
 
 ////
-// Lambdas used together with StaticFor for static loop unrolling in the
+// Functors used together with StaticFor for static loop unrolling in the
 // implementation of the StaticArray
 template< typename LeftValue, typename RightValue = LeftValue >
-auto assignArrayLambda = [] __cuda_callable__ ( int i, LeftValue* data, const RightValue* v ) { data[ i ] = v[ i ]; };
+struct assignArrayFunctor
+{
+   __cuda_callable__ void operator()( int i, LeftValue* data, const RightValue* v ) const
+   {
+      data[ i ] = v[ i ];
+   }
+};
 
 template< typename LeftValue, typename RightValue = LeftValue >
-auto assignValueLambda = [] __cuda_callable__ ( int i, LeftValue* data, const RightValue v ) { data[ i ] = v; };
+struct assignValueFunctor
+{
+   __cuda_callable__ void operator()( int i, LeftValue* data, const RightValue v ) const
+   {
+      data[ i ] = v;
+   }
+};
 
 ////
 // StaticArrayComparator does static loop unrolling of array comparison
@@ -111,21 +123,21 @@ template< int Size, typename Value >
 __cuda_callable__
 StaticArray< Size, Value >::StaticArray( const Value v[ Size ] )
 {
-   StaticFor< 0, Size >::exec( detail::assignArrayLambda< Value >, data, v );
+   StaticFor< 0, Size >::exec( detail::assignArrayFunctor< Value >{}, data, v );
 }
 
 template< int Size, typename Value >
 __cuda_callable__
 StaticArray< Size, Value >::StaticArray( const Value& v )
 {
-   StaticFor< 0, Size >::exec( detail::assignValueLambda< Value >, data, v );
+   StaticFor< 0, Size >::exec( detail::assignValueFunctor< Value >{}, data, v );
 }
 
 template< int Size, typename Value >
 __cuda_callable__
 StaticArray< Size, Value >::StaticArray( const StaticArray< Size, Value >& v )
 {
-   StaticFor< 0, Size >::exec( detail::assignArrayLambda< Value >, data, v.getData() );
+   StaticFor< 0, Size >::exec( detail::assignArrayFunctor< Value >{}, data, v.getData() );
 }
 
 template< int Size, typename Value >
@@ -246,7 +258,7 @@ template< int Size, typename Value >
 __cuda_callable__
 StaticArray< Size, Value >& StaticArray< Size, Value >::operator=( const StaticArray< Size, Value >& array )
 {
-   StaticFor< 0, Size >::exec( detail::assignArrayLambda< Value >, data, array.getData() );
+   StaticFor< 0, Size >::exec( detail::assignArrayFunctor< Value >{}, data, array.getData() );
    return *this;
 }
 
@@ -255,7 +267,7 @@ template< int Size, typename Value >
 __cuda_callable__
 StaticArray< Size, Value >& StaticArray< Size, Value >::operator=( const Array& array )
 {
-   StaticFor< 0, Size >::exec( detail::assignArrayLambda< Value, typename Array::ValueType >, data, array.getData() );
+   StaticFor< 0, Size >::exec( detail::assignArrayFunctor< Value, typename Array::ValueType >{}, data, array.getData() );
    return *this;
 }
 
@@ -282,7 +294,7 @@ StaticArray< Size, Value >::
 operator StaticArray< Size, OtherValue >() const
 {
    StaticArray< Size, OtherValue > aux;
-   StaticFor< 0, Size >::exec( detail::assignArrayLambda< OtherValue, Value >, aux.getData(), data );
+   StaticFor< 0, Size >::exec( detail::assignArrayFunctor< OtherValue, Value >{}, aux.getData(), data );
    return aux;
 }
 
@@ -290,7 +302,7 @@ template< int Size, typename Value >
 __cuda_callable__
 void StaticArray< Size, Value >::setValue( const ValueType& val )
 {
-   StaticFor< 0, Size >::exec( detail::assignValueLambda< Value >, data, val );
+   StaticFor< 0, Size >::exec( detail::assignValueFunctor< Value >{}, data, val );
 }
 
 template< int Size, typename Value >

@@ -20,16 +20,34 @@ namespace Containers {
 namespace detail {
 
 ////
-// Lambdas used together with StaticFor for static loop unrolling in the
+// Functors used together with StaticFor for static loop unrolling in the
 // implementation of the StaticVector
 template< typename LeftReal, typename RightReal = LeftReal >
-auto addVectorLambda = [] __cuda_callable__ ( int i, LeftReal* data, const RightReal* v ) { data[ i ] += v[ i ]; };
+struct addVectorFunctor
+{
+   void __cuda_callable__ operator()( int i, LeftReal* data, const RightReal* v ) const
+   {
+      data[ i ] += v[ i ];
+   }
+};
 
 template< typename LeftReal, typename RightReal = LeftReal >
-auto subtractVectorLambda = [] __cuda_callable__ ( int i, LeftReal* data, const RightReal* v ) { data[ i ] -= v[ i ]; };
+struct subtractVectorFunctor
+{
+   void __cuda_callable__ operator()( int i, LeftReal* data, const RightReal* v ) const
+   {
+      data[ i ] -= v[ i ];
+   }
+};
 
 template< typename LeftReal, typename RightReal = LeftReal >
-auto scalarMultiplicationLambda = [] __cuda_callable__ ( int i, LeftReal* data, const RightReal v ) { data[ i ] *= v; };
+struct scalarMultiplicationFunctor
+{
+   void __cuda_callable__ operator()( int i, LeftReal* data, const RightReal v ) const
+   {
+      data[ i ] *= v;
+   }
+};
 
 } // namespace detail
 
@@ -90,7 +108,7 @@ template< int Size, typename Real >
 __cuda_callable__
 StaticVector< Size, Real >& StaticVector< Size, Real >::operator+=( const StaticVector& v )
 {
-   StaticFor< 0, Size >::exec( detail::addVectorLambda< Real >, this->getData(), v.getData() );
+   StaticFor< 0, Size >::exec( detail::addVectorFunctor< Real >{}, this->getData(), v.getData() );
    return *this;
 }
 
@@ -98,7 +116,7 @@ template< int Size, typename Real >
 __cuda_callable__
 StaticVector< Size, Real >& StaticVector< Size, Real >::operator-=( const StaticVector& v )
 {
-   StaticFor< 0, Size >::exec( detail::subtractVectorLambda< Real >, this->getData(), v.getData() );
+   StaticFor< 0, Size >::exec( detail::subtractVectorFunctor< Real >{}, this->getData(), v.getData() );
    return *this;
 }
 
@@ -106,7 +124,7 @@ template< int Size, typename Real >
 __cuda_callable__
 StaticVector< Size, Real >& StaticVector< Size, Real >::operator*=( const Real& c )
 {
-   StaticFor< 0, Size >::exec( detail::scalarMultiplicationLambda< Real >, this->getData(), c );
+   StaticFor< 0, Size >::exec( detail::scalarMultiplicationFunctor< Real >{}, this->getData(), c );
    return *this;
 }
 
@@ -114,7 +132,7 @@ template< int Size, typename Real >
 __cuda_callable__
 StaticVector< Size, Real >& StaticVector< Size, Real >::operator/=( const Real& c )
 {
-   StaticFor< 0, Size >::exec( detail::scalarMultiplicationLambda< Real >, this->getData(), 1.0 / c );
+   StaticFor< 0, Size >::exec( detail::scalarMultiplicationFunctor< Real >{}, this->getData(), 1.0 / c );
    return *this;
 }
 
@@ -125,7 +143,7 @@ StaticVector< Size, Real >::
 operator StaticVector< Size, OtherReal >() const
 {
    StaticVector< Size, OtherReal > aux;
-   StaticFor< 0, Size >::exec( detail::assignArrayLambda< OtherReal, Real >, aux.getData(), this->getData() );
+   StaticFor< 0, Size >::exec( detail::assignArrayFunctor< OtherReal, Real >{}, aux.getData(), this->getData() );
    return aux;
 }
 
