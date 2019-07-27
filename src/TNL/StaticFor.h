@@ -1,8 +1,8 @@
 /***************************************************************************
                           StaticFor.h  -  description
                              -------------------
-    begin                : Feb 23, 2014
-    copyright            : (C) 2014 by Tomas Oberhuber
+    begin                : Jul 16, 2019
+    copyright            : (C) 2019 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -10,83 +10,29 @@
 
 #pragma once
 
-#include <utility>
-#include <type_traits>
-
-#include <TNL/Devices/CudaCallable.h>
+#include <TNL/Devices/Cuda.h>
 
 namespace TNL {
-namespace detail {
 
-template< typename IndexType,
-          typename Begin,
-          typename N,
-          template< IndexType > class LoopBody >
-struct StaticForExecutor
-{
-   template< typename... Args >
-   __cuda_callable__
-   static void exec( Args&&... args )
-   {
-      using Decrement = std::integral_constant< IndexType, N::value - 1 >;
-      StaticForExecutor< IndexType, Begin, Decrement, LoopBody >::exec( std::forward< Args >( args )... );
-      LoopBody< Begin::value + N::value - 1 >::exec( std::forward< Args >( args )... );
-   }
-
-   template< typename... Args >
-   static void execHost( Args&&... args )
-   {
-      using Decrement = std::integral_constant< IndexType, N::value - 1 >;
-      StaticForExecutor< IndexType, Begin, Decrement, LoopBody >::execHost( std::forward< Args >( args )... );
-      LoopBody< Begin::value + N::value - 1 >::exec( std::forward< Args >( args )... );
-   }
-};
-
-template< typename IndexType,
-          typename Begin,
-          template< IndexType > class LoopBody >
-struct StaticForExecutor< IndexType,
-                          Begin,
-                          std::integral_constant< IndexType, 0 >,
-                          LoopBody >
-{
-   template< typename... Args >
-   __cuda_callable__
-   static void exec( Args&&... args )
-   {}
-
-   template< typename... Args >
-   static void execHost( Args&&... args )
-   {}
-};
-
-} // namespace detail
-
-template< typename IndexType,
-          IndexType begin,
-          IndexType end,
-          template< IndexType > class LoopBody >
+template< int Begin, int End >
 struct StaticFor
 {
-   template< typename... Args >
-   __cuda_callable__
-   static void exec( Args&&... args )
-   {
-      detail::StaticForExecutor< IndexType,
-                                 std::integral_constant< IndexType, begin >,
-                                 std::integral_constant< IndexType, end - begin >,
-                                 LoopBody >::exec( std::forward< Args >( args )... );
-   }
-
-   // nvcc would complain if we wonted to call a host-only function from the __cuda_callable__ exec above
-   template< typename... Args >
-   static void execHost( Args&&... args )
-   {
-      detail::StaticForExecutor< IndexType,
-                                 std::integral_constant< IndexType, begin >,
-                                 std::integral_constant< IndexType, end - begin >,
-                                 LoopBody >::execHost( std::forward< Args >( args )... );
-   }
+    template< typename Function, typename... Args >
+    __cuda_callable__
+    static void exec( const Function& f, Args... args )
+    {
+        static_assert( Begin < End, "Wrong index interval for StaticFor. Being must be lower than end." );
+        f( Begin, args... );
+        StaticFor< Begin + 1, End >::exec( f, args... );
+    };
 };
 
-} // namespace TNL
+template< int End >
+struct StaticFor< End, End >
+{
+    template< typename Function, typename... Args >
+    __cuda_callable__
+    static void exec( const Function& f, Args... args ){};
+};
+
+} //namespace TNL

@@ -407,10 +407,10 @@ VTKWriter< Mesh >::writeAllEntities( const Mesh& mesh, std::ostream& str )
    const Index cellsListSize = __impl::getCellsListSize( mesh );
 
    str << std::endl << "CELLS " << allEntitiesCount << " " << cellsListSize << std::endl;
-   StaticFor< int, 0, Mesh::getMeshDimension() + 1, EntitiesWriter >::exec( mesh, str );
+   TemplateStaticFor< int, 0, Mesh::getMeshDimension() + 1, EntitiesWriter >::exec( mesh, str );
 
    str << std::endl << "CELL_TYPES " << allEntitiesCount << std::endl;
-   StaticFor< int, 0, Mesh::getMeshDimension() + 1, EntityTypesWriter >::exec( mesh, str );
+   TemplateStaticFor< int, 0, Mesh::getMeshDimension() + 1, EntityTypesWriter >::exec( mesh, str );
 }
 
 template< typename Mesh >

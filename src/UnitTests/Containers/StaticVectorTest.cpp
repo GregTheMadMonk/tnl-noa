@@ -487,9 +487,9 @@ TYPED_TEST( StaticVectorTest, lpNorm )
    const RealType expectedL1norm = size;
    const RealType expectedL2norm = std::sqrt( size );
    const RealType expectedL3norm = std::cbrt( size );
-   EXPECT_EQ( v.lpNorm( 1.0 ), expectedL1norm );
-   EXPECT_EQ( v.lpNorm( 2.0 ), expectedL2norm );
-   EXPECT_NEAR( v.lpNorm( 3.0 ), expectedL3norm, epsilon );
+   EXPECT_EQ( lpNorm( v, 1.0 ), expectedL1norm );
+   EXPECT_EQ( lpNorm( v, 2.0 ), expectedL2norm );
+   EXPECT_NEAR( lpNorm( v, 3.0 ), expectedL3norm, epsilon );
 }
 
 TYPED_TEST( StaticVectorTest, verticalOperations )

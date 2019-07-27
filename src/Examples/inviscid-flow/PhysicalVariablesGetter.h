@@ -79,7 +79,7 @@ class PhysicalVariablesGetter
             {
                const RealType e = energy.template getData< DeviceType >()( meshEntity );
                const RealType rho = density.template getData< DeviceType >()( meshEntity );
-               const RealType momentumNorm = momentum.template getData< DeviceType >().getVector( meshEntity ).lpNorm( 2.0 );
+               const RealType momentumNorm = lpNorm( momentum.template getData< DeviceType >().getVector( meshEntity ), 2.0 );
                if( rho == 0.0 )
                   return 0;
                else
