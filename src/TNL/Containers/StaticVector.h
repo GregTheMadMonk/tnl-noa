@@ -130,48 +130,12 @@ public:
 } // namespace TNL
 
 #include <TNL/Containers/StaticVector.hpp>
+#include <TNL/Containers/StaticVectorExpressions.h>
+#include <TNL/Containers/Expressions/StaticExpressionTemplates.h>
 
-
+// TODO: move to some other source file
 namespace TNL {
 namespace Containers {
-// TODO: move to some other source file
-
-template< int Size, typename Real1, typename Real2 >
-struct StaticScalarProductGetter
-{
-   __cuda_callable__
-   static auto compute( const Real1* u, const Real2* v ) -> decltype( u[ 0 ] * v[ 0 ] )
-   {
-      return u[ 0 ] * v[ 0 ] + StaticScalarProductGetter< Size - 1, Real1, Real2 >::compute( &u[ 1 ], &v[ 1 ] );
-   }
-};
-
-template< typename Real1, typename Real2 >
-struct StaticScalarProductGetter< 1, Real1, Real2 >
-{
-   __cuda_callable__
-   static auto compute( const Real1* u, const Real2* v ) -> decltype( u[ 0 ] * v[ 0 ] )
-   {
-      return u[ 0 ] * v[ 0 ];
-   }
-};
-
-template< int Size, typename Real1, typename Real2 >
-__cuda_callable__
-auto ScalarProduct( const StaticVector< Size, Real1 >& u,
-                    const StaticVector< Size, Real2 >& v ) -> decltype( u[ 0 ] * v[ 0 ] )
-{
-   return StaticScalarProductGetter< Size, Real1, Real2 >::compute( u.getData(), v.getData() );
-}
-
-template< int Size, typename Real1, typename Real2 >
-__cuda_callable__
-auto operator,( const StaticVector< Size, Real1 >& u,
-                    const StaticVector< Size, Real2 >& v ) -> decltype( u[ 0 ] * v[ 0 ] )
-{
-   return StaticScalarProductGetter< Size, Real1, Real2 >::compute( u.getData(), v.getData() );
-}
-
 
 template< typename Real >
 StaticVector< 3, Real > VectorProduct( const StaticVector< 3, Real >& u,
@@ -182,39 +146,6 @@ StaticVector< 3, Real > VectorProduct( const StaticVector< 3, Real >& u,
    p[ 1 ] = u[ 2 ] * v[ 0 ] - u[ 0 ] * v[ 2 ];
    p[ 2 ] = u[ 0 ] * v[ 1 ] - u[ 1 ] * v[ 0 ];
    return p;
-}
-
-template< typename T1,
-          typename T2>
-StaticVector<1, T1> Scale( const StaticVector< 1, T1 >& u,
-                           const StaticVector< 1, T2 >& v )
-{
-   StaticVector<1, T1> ret;
-   ret[0]=u[0]*v[0];
-   return ret;
-}
-
-template< typename T1,
-          typename T2>
-StaticVector<2, T1> Scale( const StaticVector< 2, T1 >& u,
-                           const StaticVector< 2, T2 >& v )
-{
-   StaticVector<2, T1> ret;
-   ret[0]=u[0]*v[0];
-   ret[1]=u[1]*v[1];
-   return ret;
-}
-
-template< typename T1,
-          typename T2>
-StaticVector<3, T1> Scale( const StaticVector< 3, T1 >& u,
-                           const StaticVector< 3, T2 >& v )
-{
-   StaticVector<3, T1> ret;
-   ret[0]=u[0]*v[0];
-   ret[1]=u[1]*v[1];
-   ret[2]=u[2]*v[2];
-   return ret;
 }
 
 template< typename Real >
@@ -231,7 +162,7 @@ Real TriangleArea( const StaticVector< 2, Real >& a,
    u2. z() = 0;
 
    const StaticVector< 3, Real > v = VectorProduct( u1, u2 );
-   return 0.5 * TNL::sqrt( tnlScalarProduct( v, v ) );
+   return 0.5 * TNL::sqrt( dot( v, v ) );
 }
 
 template< typename Real >
@@ -248,11 +179,8 @@ Real TriangleArea( const StaticVector< 3, Real >& a,
    u2. z() = c. z() - a. z();
 
    const StaticVector< 3, Real > v = VectorProduct( u1, u2 );
-   return 0.5 * TNL::sqrt( ScalarProduct( v, v ) );
+   return 0.5 * TNL::sqrt( dot( v, v ) );
 }
 
 } // namespace Containers
 } // namespace TNL
-
-#include <TNL/Containers/StaticVectorExpressions.h>
-#include <TNL/Containers/Expressions/StaticExpressionTemplates.h>

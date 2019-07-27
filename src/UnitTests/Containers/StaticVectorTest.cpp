@@ -122,7 +122,12 @@ TYPED_TEST( StaticVectorTest, operators )
    EXPECT_EQ( u3[ 0 ], 4 );
    EXPECT_EQ( u3[ size - 1 ], 4 );
 
-   EXPECT_EQ( ScalarProduct( u1, u2 ), 4 * size );
+   u3 = u1 * u2;
+   EXPECT_EQ( u3[ 0 ], 4 );
+   EXPECT_EQ( u3[ size - 1 ], 4 );
+
+   EXPECT_EQ( dot( u1, u2 ), 4 * size );
+   EXPECT_EQ( ( u1, u2 ), 4 * size );
 }
 
 TYPED_TEST( StaticVectorTest, MinMax )

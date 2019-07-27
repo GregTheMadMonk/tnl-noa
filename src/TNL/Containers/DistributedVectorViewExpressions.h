@@ -24,7 +24,8 @@ namespace Containers {
 
 ////
 // Addition
-template< typename Real, typename Device, typename Index, typename Communicator, typename ET >
+template< typename Real, typename Device, typename Index, typename Communicator, typename ET,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 auto
 operator+( const DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
 {
@@ -32,7 +33,8 @@ operator+( const DistributedVectorView< Real, Device, Index, Communicator >& a, 
    return Expressions::DistributedBinaryExpressionTemplate< ConstView, ET, Expressions::Addition, Communicator >( a.getLocalVectorView(), b, a.getCommunicationGroup() );
 }
 
-template< typename ET, typename Real, typename Device, typename Index, typename Communicator >
+template< typename ET, typename Real, typename Device, typename Index, typename Communicator,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 auto
 operator+( const ET& a, const DistributedVectorView< Real, Device, Index, Communicator >& b )
 {
@@ -51,7 +53,8 @@ operator+( const DistributedVectorView< Real1, Device, Index, Communicator >& a,
 
 ////
 // Subtraction
-template< typename Real, typename Device, typename Index, typename Communicator, typename ET >
+template< typename Real, typename Device, typename Index, typename Communicator, typename ET,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 auto
 operator-( const DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
 {
@@ -59,7 +62,8 @@ operator-( const DistributedVectorView< Real, Device, Index, Communicator >& a, 
    return Expressions::DistributedBinaryExpressionTemplate< ConstView, ET, Expressions::Subtraction, Communicator >( a.getLocalVectorView(), b, a.getCommunicationGroup() );
 }
 
-template< typename ET, typename Real, typename Device, typename Index, typename Communicator >
+template< typename ET, typename Real, typename Device, typename Index, typename Communicator,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 auto
 operator-( const ET& a, const DistributedVectorView< Real, Device, Index, Communicator >& b )
 {
@@ -78,7 +82,8 @@ operator-( const DistributedVectorView< Real1, Device, Index, Communicator >& a,
 
 ////
 // Multiplication
-template< typename Real, typename Device, typename Index, typename Communicator, typename ET >
+template< typename Real, typename Device, typename Index, typename Communicator, typename ET,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 auto
 operator*( const DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
 {
@@ -86,7 +91,8 @@ operator*( const DistributedVectorView< Real, Device, Index, Communicator >& a, 
    return Expressions::DistributedBinaryExpressionTemplate< ConstView, ET, Expressions::Multiplication, Communicator >( a.getLocalVectorView(), b, a.getCommunicationGroup() );
 }
 
-template< typename ET, typename Real, typename Device, typename Index, typename Communicator >
+template< typename ET, typename Real, typename Device, typename Index, typename Communicator,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 auto
 operator*( const ET& a, const DistributedVectorView< Real, Device, Index, Communicator >& b )
 {
@@ -105,7 +111,8 @@ operator*( const DistributedVectorView< Real1, Device, Index, Communicator >& a,
 
 ////
 // Division
-template< typename Real, typename Device, typename Index, typename Communicator, typename ET >
+template< typename Real, typename Device, typename Index, typename Communicator, typename ET,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 auto
 operator/( const DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
 {
@@ -113,7 +120,8 @@ operator/( const DistributedVectorView< Real, Device, Index, Communicator >& a, 
    return Expressions::DistributedBinaryExpressionTemplate< ConstView, ET, Expressions::Division, Communicator >( a.getLocalVectorView(), b, a.getCommunicationGroup() );
 }
 
-template< typename ET, typename Real, typename Device, typename Index, typename Communicator >
+template< typename ET, typename Real, typename Device, typename Index, typename Communicator,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 auto
 operator/( const ET& a, const DistributedVectorView< Real, Device, Index, Communicator >& b )
 {
@@ -132,7 +140,8 @@ operator/( const DistributedVectorView< Real1, Device, Index, Communicator >& a,
 
 ////
 // Comparison operations - operator ==
-template< typename Real, typename Device, typename Index, typename Communicator, typename ET >
+template< typename Real, typename Device, typename Index, typename Communicator, typename ET,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 bool operator==( const DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
 {
    using Left = DistributedVectorView< Real, Device, Index, Communicator >;
@@ -140,7 +149,8 @@ bool operator==( const DistributedVectorView< Real, Device, Index, Communicator 
    return Expressions::DistributedComparison< Left, Right >::template EQ< Communicator >( a.getLocalVectorView(), b, a.getCommunicatorGroup() );
 }
 
-template< typename ET, typename Real, typename Device, typename Index, typename Communicator >
+template< typename ET, typename Real, typename Device, typename Index, typename Communicator,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 bool operator==( const ET& a, const DistributedVectorView< Real, Device, Index, Communicator >& b )
 {
    using Left = ET;
@@ -165,7 +175,8 @@ bool operator==( const DistributedVectorView< Real1, Device1, Index1, Communicat
 
 ////
 // Comparison operations - operator !=
-template< typename Real, typename Device, typename Index, typename Communicator, typename ET >
+template< typename Real, typename Device, typename Index, typename Communicator, typename ET,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 bool operator!=( const DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
 {
    using Left = DistributedVectorView< Real, Device, Index, Communicator >;
@@ -173,7 +184,8 @@ bool operator!=( const DistributedVectorView< Real, Device, Index, Communicator 
    return Expressions::DistributedComparison< Left, Right >::template NE< Communicator >( a.getLocalVectorView(), b, a.getCommunicationGroup() );
 }
 
-template< typename ET, typename Real, typename Device, typename Index, typename Communicator >
+template< typename ET, typename Real, typename Device, typename Index, typename Communicator,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 bool operator!=( const ET& a, const DistributedVectorView< Real, Device, Index, Communicator >& b )
 {
    using Left = ET;
@@ -189,7 +201,8 @@ bool operator!=( const DistributedVectorView< Real1, Device1, Index >& a, const 
 
 ////
 // Comparison operations - operator <
-template< typename Real, typename Device, typename Index, typename Communicator, typename ET >
+template< typename Real, typename Device, typename Index, typename Communicator, typename ET,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 bool operator<( const DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
 {
    using Left = DistributedVectorView< Real, Device, Index, Communicator >;
@@ -197,7 +210,8 @@ bool operator<( const DistributedVectorView< Real, Device, Index, Communicator >
    return Expressions::DistributedComparison< Left, Right >::template LT< Communicator >( a.getLocalVectorView(), b, a.getCommunicationGroup() );
 }
 
-template< typename ET, typename Real, typename Device, typename Index, typename Communicator >
+template< typename ET, typename Real, typename Device, typename Index, typename Communicator,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 bool operator<( const ET& a, const DistributedVectorView< Real, Device, Index, Communicator >& b )
 {
    using Left = ET;
@@ -215,7 +229,8 @@ bool operator<( const DistributedVectorView< Real1, Device, Index, Communicator 
 
 ////
 // Comparison operations - operator <=
-template< typename Real, typename Device, typename Index, typename Communicator, typename ET >
+template< typename Real, typename Device, typename Index, typename Communicator, typename ET,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 bool operator<=( const DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
 {
    using Left = DistributedVectorView< Real, Device, Index, Communicator >;
@@ -223,7 +238,8 @@ bool operator<=( const DistributedVectorView< Real, Device, Index, Communicator 
    return Expressions::DistributedComparison< Left, Right >::template LE< Communicator >( a.getLocalVectorView(), b, a.getCommunicationGroup() );
 }
 
-template< typename ET, typename Real, typename Device, typename Index, typename Communicator >
+template< typename ET, typename Real, typename Device, typename Index, typename Communicator,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 bool operator<=( const ET& a, const DistributedVectorView< Real, Device, Index, Communicator >& b )
 {
    using Left = ET;
@@ -241,7 +257,8 @@ bool operator<=( const DistributedVectorView< Real1, Device, Index, Communicator
 
 ////
 // Comparison operations - operator >
-template< typename Real, typename Device, typename Index, typename Communicator, typename ET >
+template< typename Real, typename Device, typename Index, typename Communicator, typename ET,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 bool operator>( const DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
 {
    using Left = DistributedVectorView< Real, Device, Index, Communicator >;
@@ -249,7 +266,8 @@ bool operator>( const DistributedVectorView< Real, Device, Index, Communicator >
    return Expressions::DistributedComparison< Left, Right >::template GT< Communicator >( a.getLocalVectorView(), b, a.getCommunicationGroup() );
 }
 
-template< typename ET, typename Real, typename Device, typename Index, typename Communicator >
+template< typename ET, typename Real, typename Device, typename Index, typename Communicator,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 bool operator>( const ET& a, const DistributedVectorView< Real, Device, Index, Communicator >& b )
 {
    using Left = ET;
@@ -267,7 +285,8 @@ bool operator>( const DistributedVectorView< Real1, Device, Index, Communicator 
 
 ////
 // Comparison operations - operator >=
-template< typename Real, typename Device, typename Index, typename Communicator, typename ET >
+template< typename Real, typename Device, typename Index, typename Communicator, typename ET,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 bool operator>=( const DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
 {
    using Left = DistributedVectorView< Real, Device, Index, Communicator >;
@@ -275,7 +294,8 @@ bool operator>=( const DistributedVectorView< Real, Device, Index, Communicator 
    return Expressions::DistributedComparison< Left, Right >::template GE< Communicator >( a.getLocalVectorView(), b, a.getCommunicationGroup() );
 }
 
-template< typename ET, typename Real, typename Device, typename Index, typename Communicator >
+template< typename ET, typename Real, typename Device, typename Index, typename Communicator,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 bool operator>=( const ET& a, const DistributedVectorView< Real, Device, Index, Communicator >& b )
 {
    using Left = ET;
@@ -303,7 +323,8 @@ operator-( const DistributedVectorView< Real, Device, Index, Communicator >& a )
 
 ////
 // Scalar product
-template< typename Real, typename Device, typename Index, typename Communicator, typename ET >
+template< typename Real, typename Device, typename Index, typename Communicator, typename ET,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 auto
 operator,( const DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
 {
@@ -316,7 +337,8 @@ operator,( const DistributedVectorView< Real, Device, Index, Communicator >& a, 
    return result;
 }
 
-template< typename ET, typename Real, typename Device, typename Index, typename Communicator >
+template< typename ET, typename Real, typename Device, typename Index, typename Communicator,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 auto
 operator,( const ET& a, const DistributedVectorView< Real, Device, Index, Communicator >& b ) 
 {
@@ -350,7 +372,8 @@ operator,( const DistributedVectorView< Real1, Device, Index, Communicator >& a,
 
 ////
 // Min
-template< typename Real, typename Device, typename Index, typename Communicator, typename ET >
+template< typename Real, typename Device, typename Index, typename Communicator, typename ET,
+          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
 auto
 min( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
 {
@@ -358,7 +381,8 @@ min( const Containers::DistributedVectorView< Real, Device, Index, Communicator 
    return Containers::Expressions::DistributedBinaryExpressionTemplate< ConstView, ET, Containers::Expressions::Min, Communicator >( a.getLocalVectorView(), b, a.getCommunicationGroup() );
 }
 
-template< typename ET, typename Real, typename Device, typename Index, typename Communicator >
+template< typename ET, typename Real, typename Device, typename Index, typename Communicator,
+          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
 auto
 min( const ET& a, const Containers::DistributedVectorView< Real, Device, Index, Communicator >& b )
 {
@@ -377,7 +401,8 @@ min( const Containers::DistributedVectorView< Real1, Device, Index, Communicator
 
 ////
 // Max
-template< typename Real, typename Device, typename Index, typename Communicator, typename ET >
+template< typename Real, typename Device, typename Index, typename Communicator, typename ET,
+          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
 auto
 max( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
 {
@@ -385,7 +410,8 @@ max( const Containers::DistributedVectorView< Real, Device, Index, Communicator 
    return Containers::Expressions::DistributedBinaryExpressionTemplate< ConstView, ET, Containers::Expressions::Max, Communicator >( a.getLocalVectorView(), b, a.getCommunicationGroup() );
 }
 
-template< typename ET, typename Real, typename Device, typename Index, typename Communicator >
+template< typename ET, typename Real, typename Device, typename Index, typename Communicator,
+          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
 auto
 max( const ET& a, const Containers::DistributedVectorView< Real, Device, Index, Communicator >& b )
 {
@@ -753,14 +779,16 @@ binaryAnd( const Containers::DistributedVectorView< Real, Device, Index, Communi
 
 ////
 // Dot product - the same as scalar product, just for convenience
-template< typename Real, typename Device, typename Index, typename Communicator, typename ET >
+template< typename Real, typename Device, typename Index, typename Communicator, typename ET,
+          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
 auto
 dot( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
 {
    return ( a, b );
 }
 
-template< typename ET, typename Real, typename Device, typename Index, typename Communicator >
+template< typename ET, typename Real, typename Device, typename Index, typename Communicator,
+          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
 auto
 dot( const ET& a, const Containers::DistributedVectorView< Real, Device, Index, Communicator >& b )
 {
@@ -776,7 +804,8 @@ dot( const Containers::DistributedVectorView< Real1, Device, Index, Communicator
 
 ////
 // TODO: Replace this with multiplication when its safe
-template< typename Real, typename Device, typename Index, typename Communicator, typename ET >
+template< typename Real, typename Device, typename Index, typename Communicator, typename ET,
+          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
 auto
 Scale( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
 {
@@ -784,7 +813,8 @@ Scale( const Containers::DistributedVectorView< Real, Device, Index, Communicato
    return result;
 }
 
-template< typename ET, typename Real, typename Device, typename Index, typename Communicator >
+template< typename ET, typename Real, typename Device, typename Index, typename Communicator,
+          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
 auto
 Scale( const ET& a, const Containers::DistributedVectorView< Real, Device, Index, Communicator >& b )
 {

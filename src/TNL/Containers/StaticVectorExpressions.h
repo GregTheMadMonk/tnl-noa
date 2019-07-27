@@ -25,7 +25,8 @@ namespace Containers {
 
 ////
 // Addition
-template< int Size, typename Real, typename ET >
+template< int Size, typename Real, typename ET,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 __cuda_callable__
 auto
 operator+( const StaticVector< Size, Real >& a, const ET& b )
@@ -33,7 +34,8 @@ operator+( const StaticVector< Size, Real >& a, const ET& b )
    return Expressions::StaticBinaryExpressionTemplate< StaticVector< Size, Real >, ET, Expressions::Addition >( a, b );
 }
 
-template< typename ET, int Size, typename Real >
+template< typename ET, int Size, typename Real,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 __cuda_callable__
 auto
 operator+( const ET& a, const StaticVector< Size, Real >& b )
@@ -51,7 +53,8 @@ operator+( const StaticVector< Size, Real1 >& a, const StaticVector< Size, Real2
 
 ////
 // Subtraction
-template< int Size, typename Real, typename ET >
+template< int Size, typename Real, typename ET,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 __cuda_callable__
 auto
 operator-( const StaticVector< Size, Real >& a, const ET& b )
@@ -59,7 +62,8 @@ operator-( const StaticVector< Size, Real >& a, const ET& b )
    return Expressions::StaticBinaryExpressionTemplate< StaticVector< Size, Real >, ET, Expressions::Subtraction >( a, b );
 }
 
-template< typename ET, int Size, typename Real >
+template< typename ET, int Size, typename Real,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 __cuda_callable__
 auto
 operator-( const ET& a, const StaticVector< Size, Real >& b )
@@ -77,7 +81,8 @@ operator-( const StaticVector< Size, Real1 >& a, const StaticVector< Size, Real2
 
 ////
 // Multiplication
-template< int Size, typename Real, typename ET >
+template< int Size, typename Real, typename ET,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 __cuda_callable__
 auto
 operator*( const StaticVector< Size, Real >& a, const ET& b )
@@ -85,7 +90,8 @@ operator*( const StaticVector< Size, Real >& a, const ET& b )
    return Expressions::StaticBinaryExpressionTemplate< StaticVector< Size, Real >, ET, Expressions::Multiplication >( a, b );
 }
 
-template< typename ET, int Size, typename Real >
+template< typename ET, int Size, typename Real,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 __cuda_callable__
 auto
 operator*( const ET& a, const StaticVector< Size, Real >& b )
@@ -103,7 +109,8 @@ operator*( const StaticVector< Size, Real1 >& a, const StaticVector< Size, Real2
 
 ////
 // Division
-template< int Size, typename Real, typename ET >
+template< int Size, typename Real, typename ET,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 __cuda_callable__
 auto
 operator/( const StaticVector< Size, Real >& a, const ET& b )
@@ -111,7 +118,8 @@ operator/( const StaticVector< Size, Real >& a, const ET& b )
    return Expressions::StaticBinaryExpressionTemplate< StaticVector< Size, Real >, ET, Expressions::Division >( a, b );
 }
 
-template< typename ET, int Size, typename Real >
+template< typename ET, int Size, typename Real,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 __cuda_callable__
 auto
 operator/( const ET& a, const StaticVector< Size, Real >& b )
@@ -129,14 +137,16 @@ operator/( const StaticVector< Size, Real1 >& a, const StaticVector< Size, Real2
 
 ////
 // Comparison operations - operator ==
-template< int Size, typename Real, typename ET >
+template< int Size, typename Real, typename ET,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 __cuda_callable__
 bool operator==( const StaticVector< Size, Real >& a, const ET& b )
 {
    return Expressions::StaticComparison< StaticVector< Size, Real >, ET >::EQ( a, b );
 }
 
-template< typename ET, int Size, typename Real >
+template< typename ET, int Size, typename Real,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 __cuda_callable__
 bool operator==( const ET& a, const StaticVector< Size, Real >& b )
 {
@@ -152,14 +162,16 @@ bool operator==( const StaticVector< Size, Real1 >& a, const StaticVector< Size,
 
 ////
 // Comparison operations - operator !=
-template< int Size, typename Real, typename ET >
+template< int Size, typename Real, typename ET,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 __cuda_callable__
 bool operator!=( const StaticVector< Size, Real >& a, const ET& b )
 {
    return Expressions::StaticComparison< StaticVector< Size, Real >, ET >::NE( a, b );
 }
 
-template< typename ET, int Size, typename Real >
+template< typename ET, int Size, typename Real,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 __cuda_callable__
 bool operator!=( const ET& a, const StaticVector< Size, Real >& b )
 {
@@ -175,14 +187,16 @@ bool operator!=( const StaticVector< Size, Real1 >& a, const StaticVector< Size,
 
 ////
 // Comparison operations - operator <
-template< int Size, typename Real, typename ET >
+template< int Size, typename Real, typename ET,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 __cuda_callable__
 bool operator<( const StaticVector< Size, Real >& a, const ET& b )
 {
    return Expressions::StaticComparison< StaticVector< Size, Real >, ET >::LT( a, b );
 }
 
-template< typename ET, int Size, typename Real >
+template< typename ET, int Size, typename Real,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 __cuda_callable__
 bool operator<( const ET& a, const StaticVector< Size, Real >& b )
 {
@@ -198,14 +212,16 @@ bool operator<( const StaticVector< Size, Real1 >& a, const StaticVector< Size, 
 
 ////
 // Comparison operations - operator <=
-template< int Size, typename Real, typename ET >
+template< int Size, typename Real, typename ET,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 __cuda_callable__
 bool operator<=( const StaticVector< Size, Real >& a, const ET& b )
 {
    return Expressions::StaticComparison< StaticVector< Size, Real >, ET >::LE( a, b );
 }
 
-template< typename ET, int Size, typename Real >
+template< typename ET, int Size, typename Real,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 __cuda_callable__
 bool operator<=( const ET& a, const StaticVector< Size, Real >& b )
 {
@@ -221,14 +237,16 @@ bool operator<=( const StaticVector< Size, Real1 >& a, const StaticVector< Size,
 
 ////
 // Comparison operations - operator >
-template< int Size, typename Real, typename ET >
+template< int Size, typename Real, typename ET,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 __cuda_callable__
 bool operator>( const StaticVector< Size, Real >& a, const ET& b )
 {
    return Expressions::StaticComparison< StaticVector< Size, Real >, ET >::GT( a, b );
 }
 
-template< typename ET, int Size, typename Real >
+template< typename ET, int Size, typename Real,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 __cuda_callable__
 bool operator>( const ET& a, const StaticVector< Size, Real >& b )
 {
@@ -244,14 +262,16 @@ bool operator>( const StaticVector< Size, Real1 >& a, const StaticVector< Size, 
 
 ////
 // Comparison operations - operator >=
-template< int Size, typename Real, typename ET >
+template< int Size, typename Real, typename ET,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 __cuda_callable__
 bool operator>=( const StaticVector< Size, Real >& a, const ET& b )
 {
    return Expressions::StaticComparison< StaticVector< Size, Real >, ET >::GE( a, b );
 }
 
-template< typename ET, int Size, typename Real >
+template< typename ET, int Size, typename Real,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 __cuda_callable__
 bool operator>=( const ET& a, const StaticVector< Size, Real >& b )
 {
@@ -277,7 +297,8 @@ operator-( const StaticVector< Size, Real >& a )
 
 ////
 // Scalar product
-template< int Size, typename Real, typename ET >
+template< int Size, typename Real, typename ET,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 __cuda_callable__
 auto
 operator,( const StaticVector< Size, Real >& a, const ET& b )
@@ -285,7 +306,8 @@ operator,( const StaticVector< Size, Real >& a, const ET& b )
    return TNL::sum( a * b );
 }
 
-template< typename ET, int Size, typename Real >
+template< typename ET, int Size, typename Real,
+          typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 __cuda_callable__
 auto
 operator,( const ET& a, const StaticVector< Size, Real >& b )
@@ -305,7 +327,8 @@ operator,( const StaticVector< Size, Real1 >& a, const StaticVector< Size, Real2
 
 ////
 // Min
-template< int Size, typename Real, typename ET >
+template< int Size, typename Real, typename ET,
+          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
 __cuda_callable__
 auto
 min( const Containers::StaticVector< Size, Real >& a, const ET& b )
@@ -313,7 +336,8 @@ min( const Containers::StaticVector< Size, Real >& a, const ET& b )
    return Containers::Expressions::StaticBinaryExpressionTemplate< Containers::StaticVector< Size, Real >, ET, Containers::Expressions::Min >( a, b );
 }
 
-template< typename ET, int Size, typename Real >
+template< typename ET, int Size, typename Real,
+          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
 __cuda_callable__
 auto
 min( const ET& a, const Containers::StaticVector< Size, Real >& b )
@@ -331,7 +355,8 @@ min( const Containers::StaticVector< Size, Real1 >& a, const Containers::StaticV
 
 ////
 // Max
-template< int Size, typename Real, typename ET >
+template< int Size, typename Real, typename ET,
+          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
 __cuda_callable__
 auto
 max( const Containers::StaticVector< Size, Real >& a, const ET& b )
@@ -339,7 +364,8 @@ max( const Containers::StaticVector< Size, Real >& a, const ET& b )
    return Containers::Expressions::StaticBinaryExpressionTemplate< Containers::StaticVector< Size, Real >, ET, Containers::Expressions::Max >( a, b );
 }
 
-template< typename ET, int Size, typename Real >
+template< typename ET, int Size, typename Real,
+          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
 __cuda_callable__
 auto
 max( const ET& a, const Containers::StaticVector< Size, Real >& b )
@@ -642,7 +668,8 @@ binaryAnd( const Containers::StaticVector< Size, Real >& a )
 
 ////
 // Dot product - the same as scalar product, just for convenience
-template< int Size, typename Real, typename ET >
+template< int Size, typename Real, typename ET,
+          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
 __cuda_callable__
 auto
 dot( const Containers::StaticVector< Size, Real >& a, const ET& b )
@@ -650,7 +677,8 @@ dot( const Containers::StaticVector< Size, Real >& a, const ET& b )
    return TNL::sum( a * b );
 }
 
-template< typename ET, int Size, typename Real >
+template< typename ET, int Size, typename Real,
+          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
 __cuda_callable__
 auto
 dot( const ET& a, const Containers::StaticVector< Size, Real >& b )
@@ -668,7 +696,8 @@ dot( const Containers::StaticVector< Size, Real1 >& a, const Containers::StaticV
 
 ////
 // TODO: Replace this with multiplication when its safe
-template< int Size, typename Real, typename ET >
+template< int Size, typename Real, typename ET,
+          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
 __cuda_callable__
 auto
 Scale( const Containers::StaticVector< Size, Real >& a, const ET& b )
@@ -677,7 +706,8 @@ Scale( const Containers::StaticVector< Size, Real >& a, const ET& b )
    return result;
 }
 
-template< typename ET, int Size, typename Real >
+template< typename ET, int Size, typename Real,
+          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
 __cuda_callable__
 auto
 Scale( const ET& a, const Containers::StaticVector< Size, Real >& b )
