@@ -30,68 +30,23 @@ public:
    using RealType = Real;
    using IndexType = int;
 
-   using StaticArray< Size, Real >::getSize;
-   //using StaticArray< Size, Real >::operator ==;
-   //using StaticArray< Size, Real >::operator !=;
-
-   /**
-    * \brief Basic constructor.
-    *
-    * Constructs an empty static vector.
-    */
+   //! \brief Default constructor.
    __cuda_callable__
-   StaticVector();
+   StaticVector() = default;
 
-   /**
-    * \brief Constructor that sets all vector components (with the number of \e Size) to value \e v.
-    *
-    * Once this static array is constructed, its size can not be changed.
-    * \tparam _unused
-    * \param v[Size]
-    */
-   // Note: the template avoids ambiguity of overloaded functions with literal 0 and pointer
-   // reference: https://stackoverflow.com/q/4610503
-   template< typename _unused = void >
+   //! \brief Default copy constructor.
    __cuda_callable__
-   StaticVector( const Real v[ Size ] );
+   StaticVector( const StaticVector& ) = default;
 
-   /**
-    * \brief Constructor that sets all vector components to value \e v.
-    *
-    * \param v Reference to a value.
-    */
-   __cuda_callable__
-   StaticVector( const Real& v );
+   //! \brief Default copy-assignment operator.
+   StaticVector& operator=( const StaticVector& ) = default;
 
-   /**
-    * \brief Copy constructor.
-    *
-    * Constructs a copy of another static vector \e v.
-    */
-   __cuda_callable__
-   StaticVector( const StaticVector< Size, Real >& v );
+   //! \brief Default move-assignment operator.
+   StaticVector& operator=( StaticVector&& ) = default;
 
-   StaticVector( const std::initializer_list< Real > &elems );
-
-   /**
-    * \brief Constructor that sets components of arrays with Size = 2.
-    *
-    * \param v1 Real of the first array component.
-    * \param v2 Real of the second array component.
-    */
-   __cuda_callable__
-   inline StaticVector( const Real& v1, const Real& v2 );
-
-   /**
-    * \brief Constructor that sets components of arrays with Size = 3.
-    *
-    * \param v1 Real of the first array component.
-    * \param v2 Real of the second array component.
-    * \param v3 Real of the third array component.
-    */
-   __cuda_callable__
-   inline StaticVector( const Real& v1, const Real& v2, const Real& v3 );
-
+   //! Constructors and assignment operators are inherited from the class \ref StaticArray.
+   using StaticArray< Size, Real >::StaticArray;
+   using StaticArray< Size, Real >::operator=;
 
    template< typename T1,
              typename T2,
@@ -119,7 +74,7 @@ public:
    static String getType();
 
    template< typename StaticVectorOperationType >
-   StaticVector& operator = ( const StaticVectorOperationType& vo );
+   StaticVector& operator=( const StaticVectorOperationType& vo );
 
    /**
     * \brief Adding operator.
@@ -129,7 +84,7 @@ public:
     * \param vector Reference to another vector.
     */
    __cuda_callable__
-   StaticVector& operator += ( const StaticVector& v );
+   StaticVector& operator+=( const StaticVector& v );
 
    /**
     * \brief Subtracting operator.
@@ -139,7 +94,7 @@ public:
     * \param vector Reference to another vector.
     */
    __cuda_callable__
-   StaticVector& operator -= ( const StaticVector& v );
+   StaticVector& operator-=( const StaticVector& v );
 
    /**
     * \brief Multiplication by number.
@@ -149,7 +104,7 @@ public:
     * \param c Multiplicator.
     */
    __cuda_callable__
-   StaticVector& operator *= ( const Real& c );
+   StaticVector& operator*=( const Real& c );
 
    /**
     * \brief Division by number
@@ -159,7 +114,7 @@ public:
     * \param c Divisor.
     */
    __cuda_callable__
-   StaticVector& operator /= ( const Real& c );
+   StaticVector& operator/=( const Real& c );
 
    /**
     * \brief Changes the type of static vector to \e OtherReal while the size remains the same.

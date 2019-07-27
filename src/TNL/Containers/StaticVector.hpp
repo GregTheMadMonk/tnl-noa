@@ -34,61 +34,13 @@ auto scalarMultiplicationLambda = [] __cuda_callable__ ( int i, LeftReal* data, 
 } // namespace detail
 
 template< int Size, typename Real >
-__cuda_callable__
-StaticVector< Size, Real >::StaticVector()
-{
-}
-
-template< int Size, typename Real >
-   template< typename _unused >
-__cuda_callable__
-StaticVector< Size, Real >::StaticVector( const Real v[ Size ] )
-: StaticArray< Size, Real >( v )
-{
-}
-
-template< int Size, typename Real >
-__cuda_callable__
-StaticVector< Size, Real >::StaticVector( const Real& v )
-: StaticArray< Size, Real >( v )
-{
-}
-
-template< int Size, typename Real >
-__cuda_callable__
-StaticVector< Size, Real >::StaticVector( const StaticVector< Size, Real >& v )
-: StaticArray< Size, Real >( v )
-{
-}
-
-template< int Size, typename Real >
-StaticVector< Size, Real >::StaticVector( const std::initializer_list< Real > &elems )
-: StaticArray< Size, Real >( elems )
-{
-}
-
-template< int Size, typename Real >
- __cuda_callable__
-StaticVector< Size, Real >::StaticVector( const Real& v1, const Real& v2 )
-: StaticArray< Size, Real >( v1, v2 )
-{
-}
-
-template< int Size, typename Real >
- __cuda_callable__
-StaticVector< Size, Real >::StaticVector( const Real& v1, const Real& v2, const Real& v3 )
-: StaticArray< Size, Real >( v1, v2, v3 )
-{
-}
-
-template< int Size, typename Real >
    template< typename T1,
              typename T2,
              template< typename, typename > class Operation >
 StaticVector< Size, Real >::StaticVector( const Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& op )
 {
    Algorithms::VectorAssignment< StaticVector< Size, Real >, Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation > >::assignStatic( *this, op );
-};
+}
 
 template< int Size,
           typename Real >
@@ -98,7 +50,7 @@ __cuda_callable__
 StaticVector< Size, Real >::StaticVector( const Expressions::StaticUnaryExpressionTemplate< T, Operation >& op )
 {
    Algorithms::VectorAssignment< StaticVector< Size, Real >, Expressions::StaticUnaryExpressionTemplate< T, Operation > >::assignStatic( *this, op );
-};
+}
 
 template< int Size, typename Real >
 bool
@@ -128,7 +80,7 @@ String StaticVector< Size, Real >::getType()
 template< int Size, typename Real >
    template< typename RHS >
 StaticVector< Size, Real >&
-StaticVector< Size, Real >::operator =( const RHS& rhs )
+StaticVector< Size, Real >::operator=( const RHS& rhs )
 {
    Algorithms::VectorAssignment< StaticVector< Size, Real >, RHS >::assignStatic( *this, rhs );
    return *this;
@@ -136,7 +88,7 @@ StaticVector< Size, Real >::operator =( const RHS& rhs )
 
 template< int Size, typename Real >
 __cuda_callable__
-StaticVector< Size, Real >& StaticVector< Size, Real >::operator += ( const StaticVector& v )
+StaticVector< Size, Real >& StaticVector< Size, Real >::operator+=( const StaticVector& v )
 {
    StaticFor< 0, Size >::exec( detail::addVectorLambda< Real >, this->getData(), v.getData() );
    return *this;
@@ -144,7 +96,7 @@ StaticVector< Size, Real >& StaticVector< Size, Real >::operator += ( const Stat
 
 template< int Size, typename Real >
 __cuda_callable__
-StaticVector< Size, Real >& StaticVector< Size, Real >::operator -= ( const StaticVector& v )
+StaticVector< Size, Real >& StaticVector< Size, Real >::operator-=( const StaticVector& v )
 {
    StaticFor< 0, Size >::exec( detail::subtractVectorLambda< Real >, this->getData(), v.getData() );
    return *this;
@@ -152,7 +104,7 @@ StaticVector< Size, Real >& StaticVector< Size, Real >::operator -= ( const Stat
 
 template< int Size, typename Real >
 __cuda_callable__
-StaticVector< Size, Real >& StaticVector< Size, Real >::operator *= ( const Real& c )
+StaticVector< Size, Real >& StaticVector< Size, Real >::operator*=( const Real& c )
 {
    StaticFor< 0, Size >::exec( detail::scalarMultiplicationLambda< Real >, this->getData(), c );
    return *this;
@@ -160,7 +112,7 @@ StaticVector< Size, Real >& StaticVector< Size, Real >::operator *= ( const Real
 
 template< int Size, typename Real >
 __cuda_callable__
-StaticVector< Size, Real >& StaticVector< Size, Real >::operator /= ( const Real& c )
+StaticVector< Size, Real >& StaticVector< Size, Real >::operator/=( const Real& c )
 {
    StaticFor< 0, Size >::exec( detail::scalarMultiplicationLambda< Real >, this->getData(), 1.0 / c );
    return *this;

@@ -102,10 +102,9 @@ constexpr int StaticArray< Size, Value >::getSize()
 
 template< int Size, typename Value >
 __cuda_callable__
-inline StaticArray< Size, Value >::StaticArray()
+StaticArray< Size, Value >::StaticArray()
 {
-};
-
+}
 
 template< int Size, typename Value >
    template< typename _unused >
@@ -330,7 +329,7 @@ std::ostream& operator<<( std::ostream& str, const StaticArray< Size, Value >& a
    a.write( str, ", " );
    str << " ]";
    return str;
-};
+}
 
 } // namespace Containers
 } // namespace TNL

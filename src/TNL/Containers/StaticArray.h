@@ -36,11 +36,7 @@ public:
    __cuda_callable__
    static constexpr int getSize();
 
-   /**
-    * \brief Basic constructor.
-    *
-    * Constructs an empty static array.
-    */
+   //! \brief Default constructor.
    __cuda_callable__
    inline StaticArray();
 
@@ -48,7 +44,6 @@ public:
     * \brief Constructor that sets all array components (with the number of \e Size) to value \e v.
     *
     * Once this static array is constructed, its size can not be changed.
-    * \tparam _unused
     * \param v[Size]
     */
    // Note: the template avoids ambiguity of overloaded functions with literal 0 and pointer
