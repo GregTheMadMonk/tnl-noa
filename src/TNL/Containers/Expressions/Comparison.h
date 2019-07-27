@@ -11,13 +11,15 @@
 #pragma once
 
 #include <stdexcept>
+
 #include <TNL/Assert.h>
+#include <TNL/TypeTraits.h>
 #include <TNL/Containers/Algorithms/Reduction.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
 
 namespace TNL {
-   namespace Containers {
-      namespace Expressions {
+namespace Containers {
+namespace Expressions {
 
 ////
 // Non-static comparison
@@ -30,11 +32,9 @@ struct Comparison
 };
 
 template< typename T1,
-         typename T2,
-         bool BothAreVectors = IsVectorType< T1 >::value && IsVectorType< T2 >::value >
-struct VectorComparison
-{
-};
+          typename T2,
+          bool BothAreVectors = IsArrayType< T1 >::value && IsArrayType< T2 >::value >
+struct VectorComparison;
 
 template< typename T1,
          typename T2 >
