@@ -1402,12 +1402,13 @@ operator,( const BinaryExpressionTemplate< L1, L2, LOperation >& a,
    return TNL::sum( a * b );
 }
 
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
+template< typename L1,
+          template< typename > class LOperation,
+          typename R1,
+          template< typename > class ROperation >
 auto
-operator,( const BinaryExpressionTemplate< T1, T2, Operation >& a,
-           const typename BinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
+operator,( const UnaryExpressionTemplate< L1, LOperation >& a,
+           const UnaryExpressionTemplate< R1, ROperation >& b )
 {
    return TNL::sum( a * b );
 }
@@ -1451,8 +1452,8 @@ template< typename L1,
           typename R2,
           template< typename, typename > class ROperation >
 auto
-min ( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a,
-      const Containers::Expressions::BinaryExpressionTemplate< R1, R2, ROperation >& b )
+min( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a,
+     const Containers::Expressions::BinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
    return Containers::Expressions::BinaryExpressionTemplate<
       Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >,
@@ -2325,12 +2326,26 @@ binaryAnd( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperatio
    return ExpressionBinaryAnd( a );
 }
 
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation,
+          typename R1,
+          typename R2,
+          template< typename, typename > class ROperation >
 auto
-dot( const Containers::Expressions::BinaryExpressionTemplate< T1, T2, Operation >& a,
-     const typename Containers::Expressions::BinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
+dot( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a,
+     const Containers::Expressions::BinaryExpressionTemplate< R1, R2, ROperation >& b )
+{
+   return TNL::sum( a * b );
+}
+
+template< typename L1,
+          template< typename > class LOperation,
+          typename R1,
+          template< typename > class ROperation >
+auto
+dot( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a,
+     const Containers::Expressions::UnaryExpressionTemplate< R1, ROperation >& b )
 {
    return TNL::sum( a * b );
 }
@@ -2342,7 +2357,7 @@ template< typename L1,
           template< typename, typename > class ROperation >
 auto
 dot( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a,
-     const typename Containers::Expressions::BinaryExpressionTemplate< R1, R2, ROperation >& b )
+     const Containers::Expressions::BinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
    return TNL::sum( a * b );
 }
@@ -2354,7 +2369,7 @@ template< typename L1,
           template< typename > class ROperation >
 auto
 dot( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a,
-     const typename Containers::Expressions::UnaryExpressionTemplate< R1, ROperation >& b )
+     const Containers::Expressions::UnaryExpressionTemplate< R1, ROperation >& b )
 {
    return TNL::sum( a * b );
 }
