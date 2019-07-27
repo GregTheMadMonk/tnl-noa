@@ -69,7 +69,6 @@ struct BinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, Ve
 
    static_assert( std::is_same< typename T1::DeviceType, typename T2::DeviceType >::value, "Attempt to mix operands allocated on different device types." );
    static_assert( IsStaticArrayType< T1 >::value == IsStaticArrayType< T2 >::value, "Attempt to mix static and non-static operands in binary expression templates." );
-   static constexpr bool is() { return false; }
 
    BinaryExpressionTemplate( const T1& a, const T2& b ): op1( a ), op2( b ){}
 
@@ -111,8 +110,6 @@ struct BinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, Ar
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
 
-   static constexpr bool is() { return false; }
-
    BinaryExpressionTemplate( const T1& a, const T2& b ): op1( a ), op2( b ){}
 
    BinaryExpressionTemplate evaluate( const T1& a, const T2& b )
@@ -152,8 +149,6 @@ struct BinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorEx
    using RealType = typename T2::RealType;
    using DeviceType = typename T2::DeviceType;
    using IndexType = typename T2::IndexType;
-
-   static constexpr bool is() { return false; }
 
    BinaryExpressionTemplate( const T1& a, const T2& b ): op1( a ), op2( b ){}
 
@@ -200,8 +195,6 @@ struct UnaryExpressionTemplate< T1, Operation, Parameter, VectorExpressionVariab
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
 
-   static constexpr bool is() { return false; }
-
    UnaryExpressionTemplate( const T1& a, const Parameter& p )
    : operand( a ), parameter( p ) {}
 
@@ -246,8 +239,6 @@ struct UnaryExpressionTemplate< T1, Operation, void, VectorExpressionVariable >
    using RealType = typename T1::RealType;
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
-
-   static constexpr bool is() { return false; }
 
    UnaryExpressionTemplate( const T1& a ): operand( a ){}
 
