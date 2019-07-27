@@ -515,7 +515,7 @@ template< typename Value,
           typename Index,
           typename Allocator >
 __cuda_callable__
-inline Value&
+Value&
 Array< Value, Device, Index, Allocator >::
 operator[]( const Index& i )
 {
@@ -529,7 +529,7 @@ template< typename Value,
           typename Index,
           typename Allocator >
 __cuda_callable__
-inline const Value&
+const Value&
 Array< Value, Device, Index, Allocator >::
 operator[]( const Index& i ) const
 {

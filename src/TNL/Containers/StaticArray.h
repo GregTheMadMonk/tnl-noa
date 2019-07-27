@@ -37,7 +37,7 @@ public:
 
    //! \brief Default constructor.
    __cuda_callable__
-   inline StaticArray();
+   StaticArray();
 
    /**
     * \brief Constructor that sets all array components (with the number of \e Size) to value \e v.
@@ -57,7 +57,7 @@ public:
     * \param v Reference to a value.
     */
    __cuda_callable__
-   inline StaticArray( const Value& v );
+   StaticArray( const Value& v );
 
    /**
     * \brief Copy constructor.
@@ -65,9 +65,9 @@ public:
     * Constructs a copy of another static array \e v.
     */
    __cuda_callable__
-   inline StaticArray( const StaticArray< Size, Value >& v );
+   StaticArray( const StaticArray< Size, Value >& v );
 
-   inline StaticArray( const std::initializer_list< Value > &elems );
+   StaticArray( const std::initializer_list< Value > &elems );
 
    /**
     * \brief Constructor that sets components of arrays with Size = 2.
@@ -76,7 +76,7 @@ public:
     * \param v2 Value of the second array component.
     */
    __cuda_callable__
-   inline StaticArray( const Value& v1, const Value& v2 );
+   StaticArray( const Value& v1, const Value& v2 );
 
    /**
     * \brief Constructor that sets components of arrays with Size = 3.
@@ -86,7 +86,7 @@ public:
     * \param v3 Value of the third array component.
     */
    __cuda_callable__
-   inline StaticArray( const Value& v1, const Value& v2, const Value& v3 );
+   StaticArray( const Value& v1, const Value& v2, const Value& v3 );
 
    /**
     * \brief Gets type of this array.
@@ -98,13 +98,13 @@ public:
     * \brief Gets all data of this static array.
     */
    __cuda_callable__
-   inline Value* getData();
+   Value* getData();
 
    /**
     * \brief Gets all data of this static array.
     */
    __cuda_callable__
-   inline const Value* getData() const;
+   const Value* getData() const;
 
    /**
     * \brief Accesses specified element at the position \e i and returns a reference to its value.
@@ -112,7 +112,7 @@ public:
     * \param i Index position of an element.
     */
    __cuda_callable__
-   inline const Value& operator[]( int i ) const;
+   const Value& operator[]( int i ) const;
 
    /**
     * \brief Accesses specified element at the position \e i and returns a reference to its value.
@@ -120,44 +120,44 @@ public:
     * \param i Index position of an element.
     */
    __cuda_callable__
-   inline Value& operator[]( int i );
+   Value& operator[]( int i );
 
    /** \brief Returns the first coordinate.*/
    __cuda_callable__
-   inline Value& x();
+   Value& x();
 
    /** \brief Returns the first coordinate.*/
    __cuda_callable__
-   inline const Value& x() const;
+   const Value& x() const;
 
    /** \brief Returns the second coordinate for arrays with Size >= 2.*/
    __cuda_callable__
-   inline Value& y();
+   Value& y();
 
    /** \brief Returns the second coordinate for arrays with Size >= 2.*/
    __cuda_callable__
-   inline const Value& y() const;
+   const Value& y() const;
 
    /** \brief Returns the third coordinate for arrays with Size >= 3..*/
    __cuda_callable__
-   inline Value& z();
+   Value& z();
 
    /** \brief Returns the third coordinate for arrays with Size >= 3..*/
    __cuda_callable__
-   inline const Value& z() const;
+   const Value& z() const;
 
    /**
     * \brief Assigns another static \e array to this array, replacing its current contents.
     */
    __cuda_callable__
-   inline StaticArray< Size, Value >& operator=( const StaticArray< Size, Value >& array );
+   StaticArray< Size, Value >& operator=( const StaticArray< Size, Value >& array );
 
    /**
     * \brief Assigns another static \e array to this array, replacing its current contents.
     */
    template< typename Array >
    __cuda_callable__
-   inline StaticArray< Size, Value >& operator=( const Array& array );
+   StaticArray< Size, Value >& operator=( const Array& array );
 
    /**
     * \brief This function checks whether this static array is equal to another \e array.
@@ -166,7 +166,7 @@ public:
     */
    template< typename Array >
    __cuda_callable__
-   inline bool operator==( const Array& array ) const;
+   bool operator==( const Array& array ) const;
 
    /**
     * \brief This function checks whether this static array is not equal to another \e array.
@@ -175,7 +175,7 @@ public:
     */
    template< typename Array >
    __cuda_callable__
-   inline bool operator!=( const Array& array ) const;
+   bool operator!=( const Array& array ) const;
 
    template< typename OtherValue >
    __cuda_callable__
@@ -185,7 +185,7 @@ public:
     * \brief Sets all values of this static array to \e val.
     */
    __cuda_callable__
-   inline void setValue( const ValueType& val );
+   void setValue( const ValueType& val );
 
    /**
     * \brief Saves this static array into the \e file.

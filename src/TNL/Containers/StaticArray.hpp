@@ -116,14 +116,14 @@ StaticArray< Size, Value >::StaticArray( const Value v[ Size ] )
 
 template< int Size, typename Value >
 __cuda_callable__
-inline StaticArray< Size, Value >::StaticArray( const Value& v )
+StaticArray< Size, Value >::StaticArray( const Value& v )
 {
    StaticFor< 0, Size >::exec( detail::assignValueLambda< Value >, data, v );
 }
 
 template< int Size, typename Value >
 __cuda_callable__
-inline StaticArray< Size, Value >::StaticArray( const StaticArray< Size, Value >& v )
+StaticArray< Size, Value >::StaticArray( const StaticArray< Size, Value >& v )
 {
    StaticFor< 0, Size >::exec( detail::assignArrayLambda< Value >, data, v.getData() );
 }
@@ -167,21 +167,21 @@ String StaticArray< Size, Value >::getType()
 
 template< int Size, typename Value >
 __cuda_callable__
-inline Value* StaticArray< Size, Value >::getData()
+Value* StaticArray< Size, Value >::getData()
 {
    return data;
 }
 
 template< int Size, typename Value >
 __cuda_callable__
-inline const Value* StaticArray< Size, Value >::getData() const
+const Value* StaticArray< Size, Value >::getData() const
 {
    return data;
 }
 
 template< int Size, typename Value >
 __cuda_callable__
-inline const Value& StaticArray< Size, Value >::operator[]( int i ) const
+const Value& StaticArray< Size, Value >::operator[]( int i ) const
 {
    TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
    TNL_ASSERT_LT( i, Size, "Element index is out of bounds." );
@@ -190,7 +190,7 @@ inline const Value& StaticArray< Size, Value >::operator[]( int i ) const
 
 template< int Size, typename Value >
 __cuda_callable__
-inline Value& StaticArray< Size, Value >::operator[]( int i )
+Value& StaticArray< Size, Value >::operator[]( int i )
 {
    TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
    TNL_ASSERT_LT( i, Size, "Element index is out of bounds." );
@@ -198,21 +198,21 @@ inline Value& StaticArray< Size, Value >::operator[]( int i )
 }
 template< int Size, typename Value >
 __cuda_callable__
-inline Value& StaticArray< Size, Value >::x()
+Value& StaticArray< Size, Value >::x()
 {
    return data[ 0 ];
 }
 
 template< int Size, typename Value >
 __cuda_callable__
-inline const Value& StaticArray< Size, Value >::x() const
+const Value& StaticArray< Size, Value >::x() const
 {
    return data[ 0 ];
 }
 
 template< int Size, typename Value >
 __cuda_callable__
-inline Value& StaticArray< Size, Value >::y()
+Value& StaticArray< Size, Value >::y()
 {
    static_assert( Size > 1, "Cannot call StaticArray< Size, Value >::y() for arrays with Size < 2." );
    return data[ 1 ];
@@ -220,7 +220,7 @@ inline Value& StaticArray< Size, Value >::y()
 
 template< int Size, typename Value >
 __cuda_callable__
-inline const Value& StaticArray< Size, Value >::y() const
+const Value& StaticArray< Size, Value >::y() const
 {
    static_assert( Size > 1, "Cannot call StaticArray< Size, Value >::y() for arrays with Size < 2." );
    return data[ 1 ];
@@ -228,7 +228,7 @@ inline const Value& StaticArray< Size, Value >::y() const
 
 template< int Size, typename Value >
 __cuda_callable__
-inline Value& StaticArray< Size, Value >::z()
+Value& StaticArray< Size, Value >::z()
 {
    static_assert( Size > 1, "Cannot call StaticArray< Size, Value >::z() for arrays with Size < 3." );
    return data[ 2 ];
@@ -236,7 +236,7 @@ inline Value& StaticArray< Size, Value >::z()
 
 template< int Size, typename Value >
 __cuda_callable__
-inline const Value& StaticArray< Size, Value >::z() const
+const Value& StaticArray< Size, Value >::z() const
 {
    static_assert( Size > 1, "Cannot call StaticArray< Size, Value >::z() for arrays with Size < 3." );
    return data[ 2 ];
@@ -244,7 +244,7 @@ inline const Value& StaticArray< Size, Value >::z() const
 
 template< int Size, typename Value >
 __cuda_callable__
-inline StaticArray< Size, Value >& StaticArray< Size, Value >::operator=( const StaticArray< Size, Value >& array )
+StaticArray< Size, Value >& StaticArray< Size, Value >::operator=( const StaticArray< Size, Value >& array )
 {
    StaticFor< 0, Size >::exec( detail::assignArrayLambda< Value >, data, array.getData() );
    return *this;
@@ -253,7 +253,7 @@ inline StaticArray< Size, Value >& StaticArray< Size, Value >::operator=( const 
 template< int Size, typename Value >
    template< typename Array >
 __cuda_callable__
-inline StaticArray< Size, Value >& StaticArray< Size, Value >::operator=( const Array& array )
+StaticArray< Size, Value >& StaticArray< Size, Value >::operator=( const Array& array )
 {
    StaticFor< 0, Size >::exec( detail::assignArrayLambda< Value, typename Array::ValueType >, data, array.getData() );
    return *this;
@@ -262,7 +262,7 @@ inline StaticArray< Size, Value >& StaticArray< Size, Value >::operator=( const 
 template< int Size, typename Value >
    template< typename Array >
 __cuda_callable__
-inline bool StaticArray< Size, Value >::operator==( const Array& array ) const
+bool StaticArray< Size, Value >::operator==( const Array& array ) const
 {
    return detail::StaticArrayComparator< Size, Value, typename Array::ValueType, 0 >::EQ( *this, array );
 }
@@ -270,7 +270,7 @@ inline bool StaticArray< Size, Value >::operator==( const Array& array ) const
 template< int Size, typename Value >
    template< typename Array >
 __cuda_callable__
-inline bool StaticArray< Size, Value >::operator!=( const Array& array ) const
+bool StaticArray< Size, Value >::operator!=( const Array& array ) const
 {
    return ! this->operator==( array );
 }
@@ -288,7 +288,7 @@ operator StaticArray< Size, OtherValue >() const
 
 template< int Size, typename Value >
 __cuda_callable__
-inline void StaticArray< Size, Value >::setValue( const ValueType& val )
+void StaticArray< Size, Value >::setValue( const ValueType& val )
 {
    StaticFor< 0, Size >::exec( detail::assignValueLambda< Value >, data, val );
 }

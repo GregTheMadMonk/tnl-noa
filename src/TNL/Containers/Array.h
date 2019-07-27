@@ -433,7 +433,7 @@ class Array
        * \param i The index of the element to be accessed.
        * \return Reference to the \e i-th element.
        */
-      __cuda_callable__ inline Value& operator[]( const Index& i );
+      __cuda_callable__ Value& operator[]( const Index& i );
 
       /**
        * \brief Accesses the \e i-th element of the array.
@@ -447,7 +447,7 @@ class Array
        * \param i The index of the element to be accessed.
        * \return Constant reference to the \e i-th element.
        */
-      __cuda_callable__ inline const Value& operator[]( const Index& i ) const;
+      __cuda_callable__ const Value& operator[]( const Index& i ) const;
 
       /**
        * \brief Copy-assignment operator for copying data from another array.
