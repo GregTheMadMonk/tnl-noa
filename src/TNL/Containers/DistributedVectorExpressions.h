@@ -20,17 +20,12 @@
 #include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
-   namespace Containers {
-////
-// All operations are supposed to be in namespace TNL
+namespace Containers {
 
 ////
 // Addition
 template< typename Real, typename Device, typename Index, typename Communicator, typename ET >
-const Expressions::DistributedBinaryExpressionTemplate<
-   typename DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
-   ET,
-   Expressions::Addition, Communicator >
+auto
 operator+( const DistributedVector< Real, Device, Index, Communicator >& a, const ET& b )
 {
    using ConstView = typename DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -38,10 +33,7 @@ operator+( const DistributedVector< Real, Device, Index, Communicator >& a, cons
 }
 
 template< typename ET, typename Real, typename Device, typename Index, typename Communicator >
-const Expressions::DistributedBinaryExpressionTemplate< 
-   ET,
-   typename DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
-   Expressions::Addition, Communicator >
+auto
 operator+( const ET& a, const DistributedVector< Real, Device, Index, Communicator >& b )
 {
    using ConstView = typename DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -49,10 +41,7 @@ operator+( const ET& a, const DistributedVector< Real, Device, Index, Communicat
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
-const Expressions::DistributedBinaryExpressionTemplate< 
-   typename DistributedVector< Real1, Device, Index, Communicator >::ConstLocalVectorViewType,
-   typename DistributedVector< Real2, Device, Index, Communicator >::ConstLocalVectorViewType,
-   Expressions::Addition, Communicator >
+auto
 operator+( const DistributedVector< Real1, Device, Index, Communicator >& a, const DistributedVector< Real2, Device, Index, Communicator >& b )
 {
    using ConstView1 = typename DistributedVector< Real1, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -63,10 +52,7 @@ operator+( const DistributedVector< Real1, Device, Index, Communicator >& a, con
 ////
 // Subtraction
 template< typename Real, typename Device, typename Index, typename Communicator, typename ET >
-const Expressions::DistributedBinaryExpressionTemplate< 
-   typename DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
-   ET,
-   Expressions::Subtraction, Communicator >
+auto
 operator-( const DistributedVector< Real, Device, Index, Communicator >& a, const ET& b )
 {
    using ConstView = typename DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -74,10 +60,7 @@ operator-( const DistributedVector< Real, Device, Index, Communicator >& a, cons
 }
 
 template< typename ET, typename Real, typename Device, typename Index, typename Communicator >
-const Expressions::DistributedBinaryExpressionTemplate<
-   ET,
-   typename DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
-   Expressions::Subtraction, Communicator >
+auto
 operator-( const ET& a, const DistributedVector< Real, Device, Index, Communicator >& b )
 {
    using ConstView = typename DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -85,10 +68,7 @@ operator-( const ET& a, const DistributedVector< Real, Device, Index, Communicat
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
-const Expressions::DistributedBinaryExpressionTemplate< 
-   typename DistributedVector< Real1, Device, Index, Communicator >::ConstLocalVectorViewType,
-   typename DistributedVector< Real2, Device, Index, Communicator >::ConstLocalVectorViewType,
-   Expressions::Subtraction, Communicator >
+auto
 operator-( const DistributedVector< Real1, Device, Index, Communicator >& a, const DistributedVector< Real2, Device, Index, Communicator >& b )
 {
    using ConstView1 = typename DistributedVector< Real1, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -99,10 +79,7 @@ operator-( const DistributedVector< Real1, Device, Index, Communicator >& a, con
 ////
 // Multiplication
 template< typename Real, typename Device, typename Index, typename Communicator, typename ET >
-const Expressions::DistributedBinaryExpressionTemplate< 
-   typename DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
-   ET, 
-   Expressions::Multiplication, Communicator >
+auto
 operator*( const DistributedVector< Real, Device, Index, Communicator >& a, const ET& b )
 {
    using ConstView = typename DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -110,10 +87,7 @@ operator*( const DistributedVector< Real, Device, Index, Communicator >& a, cons
 }
 
 template< typename ET, typename Real, typename Device, typename Index, typename Communicator >
-const Expressions::DistributedBinaryExpressionTemplate< 
-   ET,
-   typename DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
-   Expressions::Multiplication, Communicator >
+auto
 operator*( const ET& a, const DistributedVector< Real, Device, Index, Communicator >& b )
 {
    using ConstView = typename DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -121,10 +95,7 @@ operator*( const ET& a, const DistributedVector< Real, Device, Index, Communicat
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
-const Expressions::DistributedBinaryExpressionTemplate< 
-   typename DistributedVector< Real1, Device, Index, Communicator >::ConstLocalVectorViewType,
-   typename DistributedVector< Real2, Device, Index, Communicator >::ConstLocalVectorViewType,
-   Expressions::Multiplication, Communicator >
+auto
 operator*( const DistributedVector< Real1, Device, Index, Communicator >& a, const DistributedVector< Real2, Device, Index, Communicator >& b )
 {
    using ConstView1 = typename DistributedVector< Real1, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -135,10 +106,7 @@ operator*( const DistributedVector< Real1, Device, Index, Communicator >& a, con
 ////
 // Division
 template< typename Real, typename Device, typename Index, typename Communicator, typename ET >
-const Expressions::DistributedBinaryExpressionTemplate< 
-   typename DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
-   ET, 
-   Expressions::Division, Communicator >
+auto
 operator/( const DistributedVector< Real, Device, Index, Communicator >& a, const ET& b )
 {
    using ConstView = typename DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -146,10 +114,7 @@ operator/( const DistributedVector< Real, Device, Index, Communicator >& a, cons
 }
 
 template< typename ET, typename Real, typename Device, typename Index, typename Communicator >
-const Expressions::DistributedBinaryExpressionTemplate<
-   ET,
-   typename DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
-   Expressions::Division, Communicator >
+auto
 operator/( const ET& a, const DistributedVector< Real, Device, Index, Communicator >& b )
 {
    using ConstView = typename DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -157,10 +122,7 @@ operator/( const ET& a, const DistributedVector< Real, Device, Index, Communicat
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
-const Expressions::DistributedBinaryExpressionTemplate< 
-   typename DistributedVector< Real1, Device, Index, Communicator >::ConstLocalVectorViewType,
-   typename DistributedVector< Real2, Device, Index, Communicator >::ConstLocalVectorViewType,
-   Expressions::Division, Communicator >
+auto
 operator/( const DistributedVector< Real1, Device, Index, Communicator >& a, const DistributedVector< Real2, Device, Index, Communicator >& b )
 {
    using ConstView1 = typename DistributedVector< Real1, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -332,9 +294,7 @@ bool operator>=( const DistributedVector< Real1, Device, Index, Communicator >& 
 ////
 // Minus
 template< typename Real, typename Device, typename Index, typename Communicator >
-const Expressions::DistributedUnaryExpressionTemplate< 
-   typename DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
-   Expressions::Minus, void, Communicator >
+auto
 operator-( const DistributedVector< Real, Device, Index, Communicator >& a )
 {
    using ConstView = typename DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -346,7 +306,6 @@ operator-( const DistributedVector< Real, Device, Index, Communicator >& a )
 template< typename Real, typename Device, typename Index, typename Communicator, typename ET >
 auto
 operator,( const DistributedVector< Real, Device, Index, Communicator >& a, const ET& b )
--> decltype( TNL::sum( a.getLocalVectorView() * b ) )
 {
    using CommunicatorType = typename DistributedVector< Real, Device, Index, Communicator >::CommunicatorType;
    Real result = 0.0;
@@ -360,7 +319,6 @@ operator,( const DistributedVector< Real, Device, Index, Communicator >& a, cons
 template< typename ET, typename Real, typename Device, typename Index, typename Communicator >
 auto
 operator,( const ET& a, const DistributedVector< Real, Device, Index, Communicator >& b ) 
--> decltype( TNL::sum( a * b.getLocalVectorView(), b.getCommunicationGroup() ) )
 {
    using CommunicatorType = typename DistributedVector< Real, Device, Index, Communicator >::CommunicatorType;
    Real result = 0.0;
@@ -372,8 +330,8 @@ operator,( const ET& a, const DistributedVector< Real, Device, Index, Communicat
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
-auto operator,( const DistributedVector< Real1, Device, Index, Communicator >& a, const DistributedVector< Real2, Device, Index, Communicator >& b )
-->decltype( TNL::sum( a.getLocalVectorView() * b.getLocalVectorView(), b.getCommunicationGroup() ) )
+auto
+operator,( const DistributedVector< Real1, Device, Index, Communicator >& a, const DistributedVector< Real2, Device, Index, Communicator >& b )
 {
    using CommunicatorType = typename DistributedVector< Real1, Device, Index, Communicator >::CommunicatorType;
    using Real = decltype( TNL::sum( a.getLocalVectorView() * b.getLocalVectorView(), b.getCommunicationGroup() ) );
@@ -385,7 +343,7 @@ auto operator,( const DistributedVector< Real1, Device, Index, Communicator >& a
    return result;
 }
 
-} //namespace Containers
+} // namespace Containers
 
 /////
 // Functions are supposed to be in namespace TNL
@@ -393,10 +351,7 @@ auto operator,( const DistributedVector< Real1, Device, Index, Communicator >& a
 ////
 // Min
 template< typename Real, typename Device, typename Index, typename Communicator, typename ET >
-const Containers::Expressions::DistributedBinaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
-   ET,
-   Containers::Expressions::Min, Communicator >
+auto
 min( const Containers::DistributedVector< Real, Device, Index, Communicator >& a, const ET& b )
 {
    using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -404,10 +359,7 @@ min( const Containers::DistributedVector< Real, Device, Index, Communicator >& a
 }
 
 template< typename ET, typename Real, typename Device, typename Index, typename Communicator >
-const Containers::Expressions::DistributedBinaryExpressionTemplate< 
-   ET,
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
-   Containers::Expressions::Min, Communicator >
+auto
 min( const ET& a, const Containers::DistributedVector< Real, Device, Index, Communicator >& b )
 {
    using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -415,10 +367,7 @@ min( const ET& a, const Containers::DistributedVector< Real, Device, Index, Comm
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
-const Containers::Expressions::DistributedBinaryExpressionTemplate<
-   typename Containers::DistributedVector< Real1, Device, Index, Communicator >::ConstLocalVectorViewType,
-   typename Containers::DistributedVector< Real2, Device, Index, Communicator >::ConstLocalVectorViewType,
-   Containers::Expressions::Min, Communicator >
+auto
 min( const Containers::DistributedVector< Real1, Device, Index, Communicator >& a, const Containers::DistributedVector< Real2, Device, Index, Communicator >& b )
 {
    using ConstView1 = typename Containers::DistributedVector< Real1, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -429,10 +378,7 @@ min( const Containers::DistributedVector< Real1, Device, Index, Communicator >& 
 ////
 // Max
 template< typename Real, typename Device, typename Index, typename Communicator, typename ET >
-const Containers::Expressions::DistributedBinaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
-   ET,
-   Containers::Expressions::Max, Communicator >
+auto
 max( const Containers::DistributedVector< Real, Device, Index, Communicator >& a, const ET& b )
 {
    using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -440,10 +386,7 @@ max( const Containers::DistributedVector< Real, Device, Index, Communicator >& a
 }
 
 template< typename ET, typename Real, typename Device, typename Index, typename Communicator >
-const Containers::Expressions::DistributedBinaryExpressionTemplate< 
-   ET,
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
-   Containers::Expressions::Max, Communicator >
+auto
 max( const ET& a, const Containers::DistributedVector< Real, Device, Index, Communicator >& b )
 {
    using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -451,10 +394,7 @@ max( const ET& a, const Containers::DistributedVector< Real, Device, Index, Comm
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
-const Containers::Expressions::DistributedBinaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real1, Device, Index, Communicator >::ConstLocalVectorViewType,
-   typename Containers::DistributedVector< Real2, Device, Index, Communicator >::ConstLocalVectorViewType,
-   Containers::Expressions::Max, Communicator >
+auto
 max( const Containers::DistributedVector< Real1, Device, Index, Communicator >& a, const Containers::DistributedVector< Real2, Device, Index, Communicator >& b )
 {
    using ConstView1 = typename Containers::DistributedVector< Real1, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -465,9 +405,7 @@ max( const Containers::DistributedVector< Real1, Device, Index, Communicator >& 
 ////
 // Abs
 template< typename Real, typename Device, typename Index, typename Communicator >
-const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
-   Containers::Expressions::Abs, void, Communicator >
+auto
 abs( const Containers::DistributedVector< Real, Device, Index, Communicator >& a )
 {
    using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -477,9 +415,7 @@ abs( const Containers::DistributedVector< Real, Device, Index, Communicator >& a
 ////
 // Sine
 template< typename Real, typename Device, typename Index, typename Communicator >
-const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType, 
-   Containers::Expressions::Sin, void, Communicator >
+auto
 sin( const Containers::DistributedVector< Real, Device, Index, Communicator >& a )
 {
    using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -489,9 +425,7 @@ sin( const Containers::DistributedVector< Real, Device, Index, Communicator >& a
 ////
 // Cosine
 template< typename Real, typename Device, typename Index, typename Communicator >
-const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType, 
-   Containers::Expressions::Cos, void, Communicator >
+auto
 cos( const Containers::DistributedVector< Real, Device, Index, Communicator >& a )
 {
    using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -501,9 +435,7 @@ cos( const Containers::DistributedVector< Real, Device, Index, Communicator >& a
 ////
 // Tangent
 template< typename Real, typename Device, typename Index, typename Communicator >
-const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType, 
-   Containers::Expressions::Tan, void, Communicator >
+auto
 tan( const Containers::DistributedVector< Real, Device, Index, Communicator >& a )
 {
    using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -513,9 +445,7 @@ tan( const Containers::DistributedVector< Real, Device, Index, Communicator >& a
 ////
 // Sqrt
 template< typename Real, typename Device, typename Index, typename Communicator >
-const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType, 
-   Containers::Expressions::Sqrt, void, Communicator >
+auto
 sqrt( const Containers::DistributedVector< Real, Device, Index, Communicator >& a )
 {
    using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -525,9 +455,7 @@ sqrt( const Containers::DistributedVector< Real, Device, Index, Communicator >& 
 ////
 // Cbrt
 template< typename Real, typename Device, typename Index, typename Communicator >
-const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType, 
-   Containers::Expressions::Cbrt, void, Communicator >
+auto
 cbrt( const Containers::DistributedVector< Real, Device, Index, Communicator >& a )
 {
    using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -537,9 +465,7 @@ cbrt( const Containers::DistributedVector< Real, Device, Index, Communicator >& 
 ////
 // Power
 template< typename Real, typename Device, typename Index, typename Communicator, typename ExpType >
-const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
-   Containers::Expressions::Pow, ExpType, Communicator >
+auto
 pow( const Containers::DistributedVector< Real, Device, Index, Communicator >& a, const ExpType& exp )
 {
    using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -549,9 +475,7 @@ pow( const Containers::DistributedVector< Real, Device, Index, Communicator >& a
 ////
 // Floor
 template< typename Real, typename Device, typename Index, typename Communicator >
-const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
-   Containers::Expressions::Floor, void, Communicator >
+auto
 floor( const Containers::DistributedVector< Real, Device, Index, Communicator >& a )
 {
    using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -561,9 +485,7 @@ floor( const Containers::DistributedVector< Real, Device, Index, Communicator >&
 ////
 // Ceil
 template< typename Real, typename Device, typename Index, typename Communicator >
-const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType, 
-   Containers::Expressions::Ceil, void, Communicator >
+auto
 ceil( const Containers::DistributedVector< Real, Device, Index, Communicator >& a )
 {
    using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -573,9 +495,7 @@ ceil( const Containers::DistributedVector< Real, Device, Index, Communicator >& 
 ////
 // Acos
 template< typename Real, typename Device, typename Index, typename Communicator >
-const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType, 
-   Containers::Expressions::Acos, void, Communicator >
+auto
 acos( const Containers::DistributedVector< Real, Device, Index, Communicator >& a )
 {
    using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -585,9 +505,7 @@ acos( const Containers::DistributedVector< Real, Device, Index, Communicator >& 
 ////
 // Asin
 template< typename Real, typename Device, typename Index, typename Communicator >
-const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType, 
-   Containers::Expressions::Asin, void, Communicator >
+auto
 asin( const Containers::DistributedVector< Real, Device, Index, Communicator >& a )
 {
    using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -597,9 +515,7 @@ asin( const Containers::DistributedVector< Real, Device, Index, Communicator >& 
 ////
 // Atan
 template< typename Real, typename Device, typename Index, typename Communicator >
-const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType, 
-   Containers::Expressions::Atan, void, Communicator >
+auto
 atan( const Containers::DistributedVector< Real, Device, Index, Communicator >& a )
 {
    using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -609,9 +525,7 @@ atan( const Containers::DistributedVector< Real, Device, Index, Communicator >& 
 ////
 // Cosh
 template< typename Real, typename Device, typename Index, typename Communicator >
-const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType, 
-   Containers::Expressions::Cosh, void, Communicator >
+auto
 cosh( const Containers::DistributedVector< Real, Device, Index, Communicator >& a )
 {
    using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -621,9 +535,7 @@ cosh( const Containers::DistributedVector< Real, Device, Index, Communicator >& 
 ////
 // Tanh
 template< typename Real, typename Device, typename Index, typename Communicator >
-const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
-   Containers::Expressions::Tanh, void, Communicator >
+auto
 tanh( const Containers::DistributedVector< Real, Device, Index, Communicator >& a )
 {
    using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -633,9 +545,7 @@ tanh( const Containers::DistributedVector< Real, Device, Index, Communicator >& 
 ////
 // Log
 template< typename Real, typename Device, typename Index, typename Communicator >
-const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
-   Containers::Expressions::Log, void, Communicator >
+auto
 log( const Containers::DistributedVector< Real, Device, Index, Communicator >& a )
 {
    using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -645,9 +555,7 @@ log( const Containers::DistributedVector< Real, Device, Index, Communicator >& a
 ////
 // Log10
 template< typename Real, typename Device, typename Index, typename Communicator >
-const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
-   Containers::Expressions::Log10, void, Communicator >
+auto
 log10( const Containers::DistributedVector< Real, Device, Index, Communicator >& a )
 {
    using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -657,9 +565,7 @@ log10( const Containers::DistributedVector< Real, Device, Index, Communicator >&
 ////
 // Log2
 template< typename Real, typename Device, typename Index, typename Communicator >
-const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
-   Containers::Expressions::Log2, void, Communicator >
+auto
 log2( const Containers::DistributedVector< Real, Device, Index, Communicator >& a )
 {
    using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -669,9 +575,7 @@ log2( const Containers::DistributedVector< Real, Device, Index, Communicator >& 
 ////
 // Exp
 template< typename Real, typename Device, typename Index, typename Communicator >
-const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
-   Containers::Expressions::Exp, void, Communicator >
+auto
 exp( const Containers::DistributedVector< Real, Device, Index, Communicator >& a )
 {
    using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -681,9 +585,7 @@ exp( const Containers::DistributedVector< Real, Device, Index, Communicator >& a
 ////
 // Sign
 template< typename Real, typename Device, typename Index, typename Communicator >
-const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
-   Containers::Expressions::Sign, void, Communicator >
+auto
 sign( const Containers::DistributedVector< Real, Device, Index, Communicator >& a )
 {
    using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -697,7 +599,6 @@ template< typename Real,
           typename Index, typename Communicator >
 auto
 min( const Containers::DistributedVector< Real, Device, Index, Communicator >& a )
--> decltype( Containers::Expressions::ExpressionMin( a.getLocalVectorView() ) )
 {
    using CommunicatorType = typename Containers::DistributedVector< Real, Device, Index, Communicator >::CommunicatorType;
    Real result = std::numeric_limits< Real >::max();
@@ -713,7 +614,6 @@ template< typename Real,
           typename Index, typename Communicator >
 auto
 argMin( const Containers::DistributedVector< Real, Device, Index, Communicator >& a, Index& arg )
--> decltype( Containers::Expressions::ExpressionArgMin( a.getLocalVectorView(), arg ) )
 {
    throw Exceptions::NotImplementedError( "agrMin for distributed vector view is not implemented yet." );
    return Containers::Expressions::ExpressionArgMin( a.getLocalVectorView(), arg );
@@ -724,7 +624,6 @@ template< typename Real,
           typename Index, typename Communicator >
 auto
 max( const Containers::DistributedVector< Real, Device, Index, Communicator >& a )
--> decltype( Containers::Expressions::ExpressionMax( a.getLocalVectorView() ) )
 {
    using CommunicatorType = typename Containers::DistributedVector< Real, Device, Index, Communicator >::CommunicatorType;
    Real result = std::numeric_limits< Real >::min();
@@ -740,7 +639,6 @@ template< typename Real,
           typename Index, typename Communicator >
 auto
 argMax( const Containers::DistributedVector< Real, Device, Index, Communicator >& a, Index& arg )
--> decltype( Containers::Expressions::ExpressionArgMax( a.getLocalVectorView(), arg ) )
 {
    throw Exceptions::NotImplementedError( "agrMax for distributed vector view is not implemented yet." );
    return Containers::Expressions::ExpressionArgMax( a.getLocalVectorView(), arg );
@@ -751,7 +649,6 @@ template< typename Real,
           typename Index, typename Communicator >
 auto
 sum( const Containers::DistributedVector< Real, Device, Index, Communicator >& a )
--> decltype( Containers::Expressions::ExpressionSum( a.getLocalVectorView() ) )
 {
    using CommunicatorType = typename Containers::DistributedVector< Real, Device, Index, Communicator >::CommunicatorType;
    Real result = 0.0;
@@ -784,7 +681,6 @@ template< typename Real,
           typename Index, typename Communicator >
 auto
 product( const Containers::DistributedVector< Real, Device, Index, Communicator >& a )
--> decltype( Containers::Expressions::ExpressionProduct( a.getLocalVectorView() ) )
 {
    using CommunicatorType = typename Containers::DistributedVector< Real, Device, Index, Communicator >::CommunicatorType;
    Real result = ( Real ) 1.0;
@@ -798,7 +694,7 @@ product( const Containers::DistributedVector< Real, Device, Index, Communicator 
 template< typename Real,
           typename Device,
           typename Index, typename Communicator >
-bool
+auto
 logicalOr( const Containers::DistributedVector< Real, Device, Index, Communicator >& a )
 {
    using CommunicatorType = typename Containers::DistributedVector< Real, Device, Index, Communicator >::CommunicatorType;
@@ -813,7 +709,7 @@ logicalOr( const Containers::DistributedVector< Real, Device, Index, Communicato
 template< typename Real,
           typename Device,
           typename Index, typename Communicator >
-typename Containers::DistributedVector< Real, Device, Index, Communicator >::RealType
+auto
 binaryOr( const Containers::DistributedVector< Real, Device, Index, Communicator >& a )
 {
    using CommunicatorType = typename Containers::DistributedVector< Real, Device, Index, Communicator >::CommunicatorType;
@@ -828,7 +724,7 @@ binaryOr( const Containers::DistributedVector< Real, Device, Index, Communicator
 template< typename Real,
           typename Device,
           typename Index, typename Communicator >
-bool
+auto
 logicalAnd( const Containers::DistributedVector< Real, Device, Index, Communicator >& a )
 {
    using CommunicatorType = typename Containers::DistributedVector< Real, Device, Index, Communicator >::CommunicatorType;
@@ -843,7 +739,7 @@ logicalAnd( const Containers::DistributedVector< Real, Device, Index, Communicat
 template< typename Real,
           typename Device,
           typename Index, typename Communicator >
-typename Containers::DistributedVector< Real, Device, Index, Communicator >::RealType
+auto
 binaryAnd( const Containers::DistributedVector< Real, Device, Index, Communicator >& a )
 {
    using CommunicatorType = typename Containers::DistributedVector< Real, Device, Index, Communicator >::CommunicatorType;
@@ -860,7 +756,6 @@ binaryAnd( const Containers::DistributedVector< Real, Device, Index, Communicato
 template< typename Real, typename Device, typename Index, typename Communicator, typename ET >
 auto
 dot( const Containers::DistributedVector< Real, Device, Index, Communicator >& a, const ET& b )
--> decltype( ( a, b ) )
 {
    return ( a, b );
 }
@@ -868,7 +763,6 @@ dot( const Containers::DistributedVector< Real, Device, Index, Communicator >& a
 template< typename ET, typename Real, typename Device, typename Index, typename Communicator >
 auto
 dot( const ET& a, const Containers::DistributedVector< Real, Device, Index, Communicator >& b )
--> decltype( ( a, b ) )
 {
    return ( a, b );
 }
@@ -876,7 +770,6 @@ dot( const ET& a, const Containers::DistributedVector< Real, Device, Index, Comm
 template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
 auto
 dot( const Containers::DistributedVector< Real1, Device, Index, Communicator >& a, const Containers::DistributedVector< Real2, Device, Index, Communicator >& b )
--> decltype( ( a, b ) )
 {
    return ( a, b );
 }
@@ -884,7 +777,7 @@ dot( const Containers::DistributedVector< Real1, Device, Index, Communicator >& 
 ////
 // TODO: Replace this with multiplication when its safe
 template< typename Real, typename Device, typename Index, typename Communicator, typename ET >
-Containers::DistributedVector< Real, Device, Index, Communicator >
+auto
 Scale( const Containers::DistributedVector< Real, Device, Index, Communicator >& a, const ET& b )
 {
    Containers::DistributedVector< Real, Device, Index, Communicator > result = Containers::Expressions::DistributedBinaryExpressionTemplate< Containers::DistributedVector< Real, Device, Index, Communicator >, ET, Containers::Expressions::Multiplication, Communicator >( a, b );
@@ -892,7 +785,7 @@ Scale( const Containers::DistributedVector< Real, Device, Index, Communicator >&
 }
 
 template< typename ET, typename Real, typename Device, typename Index, typename Communicator >
-Containers::Expressions::DistributedBinaryExpressionTemplate< ET, Containers::DistributedVector< Real, Device, Index, Communicator >, Containers::Expressions::Multiplication, Communicator >
+auto
 Scale( const ET& a, const Containers::DistributedVector< Real, Device, Index, Communicator >& b )
 {
    Containers::DistributedVector< Real, Device, Index, Communicator > result =  Containers::Expressions::DistributedBinaryExpressionTemplate< ET, Containers::DistributedVector< Real, Device, Index, Communicator >, Containers::Expressions::Multiplication, Communicator >( a, b );
@@ -900,7 +793,7 @@ Scale( const ET& a, const Containers::DistributedVector< Real, Device, Index, Co
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
-Containers::Expressions::DistributedBinaryExpressionTemplate< Containers::DistributedVector< Real1, Device, Index, Communicator >, Containers::DistributedVector< Real2, Device, Index, Communicator >, Containers::Expressions::Multiplication, Communicator >
+auto
 Scale( const Containers::DistributedVector< Real1, Device, Index, Communicator >& a, const Containers::DistributedVector< Real2, Device, Index, Communicator >& b )
 {
    Containers::DistributedVector< Real1, Device, Index, Communicator > result =  Containers::Expressions::DistributedBinaryExpressionTemplate< Containers::DistributedVector< Real1, Device, Index, Communicator >, Containers::DistributedVector< Real2, Device, Index, Communicator >, Containers::Expressions::Multiplication, Communicator >( a, b );

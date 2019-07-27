@@ -1,5 +1,5 @@
 /***************************************************************************
-                          Containers::StaticVectorExpressions.h  -  description
+                          StaticVectorExpressions.h  -  description
                              -------------------
     begin                : Apr 19, 2019
     copyright            : (C) 2019 by Tomas Oberhuber
@@ -15,8 +15,10 @@
 #include <TNL/Containers/Expressions/StaticComparison.h>
 #include <TNL/Containers/Expressions/StaticVerticalOperations.h>
 
+#include "StaticVector.h"
+
 namespace TNL {
-   namespace Containers {
+namespace Containers {
 // operators must be defined in the same namespace as the first operand, otherwise
 // they may not be considered by the compiler (e.g. inside pybind11's macros)
 // namespace Containers { Overriden operators should be in namespace TNL
@@ -25,286 +27,287 @@ namespace TNL {
 // Addition
 template< int Size, typename Real, typename ET >
 __cuda_callable__
-const Containers::Expressions::StaticBinaryExpressionTemplate< Containers::StaticVector< Size, Real >, ET, Containers::Expressions::Addition >
-operator+( const Containers::StaticVector< Size, Real >& a, const ET& b )
+auto
+operator+( const StaticVector< Size, Real >& a, const ET& b )
 {
-   return Containers::Expressions::StaticBinaryExpressionTemplate< Containers::StaticVector< Size, Real >, ET, Containers::Expressions::Addition >( a, b );
+   return Expressions::StaticBinaryExpressionTemplate< StaticVector< Size, Real >, ET, Expressions::Addition >( a, b );
 }
 
 template< typename ET, int Size, typename Real >
 __cuda_callable__
-const Containers::Expressions::StaticBinaryExpressionTemplate< ET, Containers::StaticVector< Size, Real >, Containers::Expressions::Addition >
-operator+( const ET& a, const Containers::StaticVector< Size, Real >& b )
+auto
+operator+( const ET& a, const StaticVector< Size, Real >& b )
 {
-   return Containers::Expressions::StaticBinaryExpressionTemplate< ET, Containers::StaticVector< Size, Real >, Containers::Expressions::Addition >( a, b );
+   return Expressions::StaticBinaryExpressionTemplate< ET, StaticVector< Size, Real >, Expressions::Addition >( a, b );
 }
 
 template< int Size, typename Real1, typename Real2 >
 __cuda_callable__
-const Containers::Expressions::StaticBinaryExpressionTemplate< Containers::StaticVector< Size, Real1 >, Containers::StaticVector< Size, Real2 >, Containers::Expressions::Addition >
-operator+( const Containers::StaticVector< Size, Real1 >& a, const Containers::StaticVector< Size, Real2 >& b )
+auto
+operator+( const StaticVector< Size, Real1 >& a, const StaticVector< Size, Real2 >& b )
 {
-   return Containers::Expressions::StaticBinaryExpressionTemplate< Containers::StaticVector< Size, Real1 >, Containers::StaticVector< Size, Real2 >, Containers::Expressions::Addition >( a, b );
+   return Expressions::StaticBinaryExpressionTemplate< StaticVector< Size, Real1 >, StaticVector< Size, Real2 >, Expressions::Addition >( a, b );
 }
 
 ////
 // Subtraction
 template< int Size, typename Real, typename ET >
 __cuda_callable__
-const Containers::Expressions::StaticBinaryExpressionTemplate< Containers::StaticVector< Size, Real >, ET, Containers::Expressions::Subtraction >
-operator-( const Containers::StaticVector< Size, Real >& a, const ET& b )
+auto
+operator-( const StaticVector< Size, Real >& a, const ET& b )
 {
-   return Containers::Expressions::StaticBinaryExpressionTemplate< Containers::StaticVector< Size, Real >, ET, Containers::Expressions::Subtraction >( a, b );
+   return Expressions::StaticBinaryExpressionTemplate< StaticVector< Size, Real >, ET, Expressions::Subtraction >( a, b );
 }
 
 template< typename ET, int Size, typename Real >
 __cuda_callable__
-const Containers::Expressions::StaticBinaryExpressionTemplate< ET, Containers::StaticVector< Size, Real >, Containers::Expressions::Subtraction >
-operator-( const ET& a, const Containers::StaticVector< Size, Real >& b )
+auto
+operator-( const ET& a, const StaticVector< Size, Real >& b )
 {
-   return Containers::Expressions::StaticBinaryExpressionTemplate< ET, Containers::StaticVector< Size, Real >, Containers::Expressions::Subtraction >( a, b );
+   return Expressions::StaticBinaryExpressionTemplate< ET, StaticVector< Size, Real >, Expressions::Subtraction >( a, b );
 }
 
 template< int Size, typename Real1, typename Real2 >
 __cuda_callable__
-const Containers::Expressions::StaticBinaryExpressionTemplate< Containers::StaticVector< Size, Real1 >, Containers::StaticVector< Size, Real2 >, Containers::Expressions::Subtraction >
-operator-( const Containers::StaticVector< Size, Real1 >& a, const Containers::StaticVector< Size, Real2 >& b )
+auto
+operator-( const StaticVector< Size, Real1 >& a, const StaticVector< Size, Real2 >& b )
 {
-   return Containers::Expressions::StaticBinaryExpressionTemplate< Containers::StaticVector< Size, Real1 >, Containers::StaticVector< Size, Real2 >, Containers::Expressions::Subtraction >( a, b );
+   return Expressions::StaticBinaryExpressionTemplate< StaticVector< Size, Real1 >, StaticVector< Size, Real2 >, Expressions::Subtraction >( a, b );
 }
 
 ////
 // Multiplication
 template< int Size, typename Real, typename ET >
 __cuda_callable__
-const Containers::Expressions::StaticBinaryExpressionTemplate< Containers::StaticVector< Size, Real >, ET, Containers::Expressions::Multiplication >
-operator*( const Containers::StaticVector< Size, Real >& a, const ET& b )
+auto
+operator*( const StaticVector< Size, Real >& a, const ET& b )
 {
-   return Containers::Expressions::StaticBinaryExpressionTemplate< Containers::StaticVector< Size, Real >, ET, Containers::Expressions::Multiplication >( a, b );
+   return Expressions::StaticBinaryExpressionTemplate< StaticVector< Size, Real >, ET, Expressions::Multiplication >( a, b );
 }
 
 template< typename ET, int Size, typename Real >
 __cuda_callable__
-const Containers::Expressions::StaticBinaryExpressionTemplate< ET, Containers::StaticVector< Size, Real >, Containers::Expressions::Multiplication >
-operator*( const ET& a, const Containers::StaticVector< Size, Real >& b )
+auto
+operator*( const ET& a, const StaticVector< Size, Real >& b )
 {
-   return Containers::Expressions::StaticBinaryExpressionTemplate< ET, Containers::StaticVector< Size, Real >, Containers::Expressions::Multiplication >( a, b );
+   return Expressions::StaticBinaryExpressionTemplate< ET, StaticVector< Size, Real >, Expressions::Multiplication >( a, b );
 }
 
 template< int Size, typename Real1, typename Real2 >
 __cuda_callable__
-const Containers::Expressions::StaticBinaryExpressionTemplate< Containers::StaticVector< Size, Real1 >, Containers::StaticVector< Size, Real2 >, Containers::Expressions::Multiplication >
-operator*( const Containers::StaticVector< Size, Real1 >& a, const Containers::StaticVector< Size, Real2 >& b )
+auto
+operator*( const StaticVector< Size, Real1 >& a, const StaticVector< Size, Real2 >& b )
 {
-   return Containers::Expressions::StaticBinaryExpressionTemplate< Containers::StaticVector< Size, Real1 >, Containers::StaticVector< Size, Real2 >, Containers::Expressions::Multiplication >( a, b );
+   return Expressions::StaticBinaryExpressionTemplate< StaticVector< Size, Real1 >, StaticVector< Size, Real2 >, Expressions::Multiplication >( a, b );
 }
 
 ////
 // Division
 template< int Size, typename Real, typename ET >
 __cuda_callable__
-const Containers::Expressions::StaticBinaryExpressionTemplate< Containers::StaticVector< Size, Real >, ET, Containers::Expressions::Division >
-operator/( const Containers::StaticVector< Size, Real >& a, const ET& b )
+auto
+operator/( const StaticVector< Size, Real >& a, const ET& b )
 {
-   return Containers::Expressions::StaticBinaryExpressionTemplate< Containers::StaticVector< Size, Real >, ET, Containers::Expressions::Division >( a, b );
+   return Expressions::StaticBinaryExpressionTemplate< StaticVector< Size, Real >, ET, Expressions::Division >( a, b );
 }
 
 template< typename ET, int Size, typename Real >
 __cuda_callable__
-const Containers::Expressions::StaticBinaryExpressionTemplate< ET, Containers::StaticVector< Size, Real >, Containers::Expressions::Division >
-operator/( const ET& a, const Containers::StaticVector< Size, Real >& b )
+auto
+operator/( const ET& a, const StaticVector< Size, Real >& b )
 {
-   return Containers::Expressions::StaticBinaryExpressionTemplate< ET, Containers::StaticVector< Size, Real >, Containers::Expressions::Division >( a, b );
+   return Expressions::StaticBinaryExpressionTemplate< ET, StaticVector< Size, Real >, Expressions::Division >( a, b );
 }
 
 template< int Size, typename Real1, typename Real2 >
 __cuda_callable__
-const Containers::Expressions::StaticBinaryExpressionTemplate< Containers::StaticVector< Size, Real1 >, Containers::StaticVector< Size, Real2 >, Containers::Expressions::Division >
-operator/( const Containers::StaticVector< Size, Real1 >& a, const Containers::StaticVector< Size, Real2 >& b )
+auto
+operator/( const StaticVector< Size, Real1 >& a, const StaticVector< Size, Real2 >& b )
 {
-   return Containers::Expressions::StaticBinaryExpressionTemplate< Containers::StaticVector< Size, Real1 >, Containers::StaticVector< Size, Real2 >, Containers::Expressions::Division >( a, b );
+   return Expressions::StaticBinaryExpressionTemplate< StaticVector< Size, Real1 >, StaticVector< Size, Real2 >, Expressions::Division >( a, b );
 }
 
 ////
 // Comparison operations - operator ==
 template< int Size, typename Real, typename ET >
 __cuda_callable__
-bool operator==( const Containers::StaticVector< Size, Real >& a, const ET& b )
+bool operator==( const StaticVector< Size, Real >& a, const ET& b )
 {
-   return Containers::Expressions::StaticComparison< Containers::StaticVector< Size, Real >, ET >::EQ( a, b );
+   return Expressions::StaticComparison< StaticVector< Size, Real >, ET >::EQ( a, b );
 }
 
 template< typename ET, int Size, typename Real >
 __cuda_callable__
-bool operator==( const ET& a, const Containers::StaticVector< Size, Real >& b )
+bool operator==( const ET& a, const StaticVector< Size, Real >& b )
 {
-   return Containers::Expressions::StaticComparison< ET, Containers::StaticVector< Size, Real > >::EQ( a, b );
+   return Expressions::StaticComparison< ET, StaticVector< Size, Real > >::EQ( a, b );
 }
 
 template< int Size, typename Real1, typename Real2 >
 __cuda_callable__
-bool operator==( const Containers::StaticVector< Size, Real1 >& a, const Containers::StaticVector< Size, Real2 >& b )
+bool operator==( const StaticVector< Size, Real1 >& a, const StaticVector< Size, Real2 >& b )
 {
-   return Containers::Expressions::StaticComparison< Containers::StaticVector< Size, Real1 >, Containers::StaticVector< Size, Real2 > >::EQ( a, b );
+   return Expressions::StaticComparison< StaticVector< Size, Real1 >, StaticVector< Size, Real2 > >::EQ( a, b );
 }
 
 ////
 // Comparison operations - operator !=
 template< int Size, typename Real, typename ET >
 __cuda_callable__
-bool operator!=( const Containers::StaticVector< Size, Real >& a, const ET& b )
+bool operator!=( const StaticVector< Size, Real >& a, const ET& b )
 {
-   return Containers::Expressions::StaticComparison< Containers::StaticVector< Size, Real >, ET >::NE( a, b );
+   return Expressions::StaticComparison< StaticVector< Size, Real >, ET >::NE( a, b );
 }
 
 template< typename ET, int Size, typename Real >
 __cuda_callable__
-bool operator!=( const ET& a, const Containers::StaticVector< Size, Real >& b )
+bool operator!=( const ET& a, const StaticVector< Size, Real >& b )
 {
-   return Containers::Expressions::StaticComparison< ET, Containers::StaticVector< Size, Real > >::NE( a, b );
+   return Expressions::StaticComparison< ET, StaticVector< Size, Real > >::NE( a, b );
 }
 
 template< int Size, typename Real1, typename Real2 >
 __cuda_callable__
-bool operator!=( const Containers::StaticVector< Size, Real1 >& a, const Containers::StaticVector< Size, Real2 >& b )
+bool operator!=( const StaticVector< Size, Real1 >& a, const StaticVector< Size, Real2 >& b )
 {
-   return Containers::Expressions::StaticComparison< Containers::StaticVector< Size, Real1 >, Containers::StaticVector< Size, Real2 > >::NE( a, b );
+   return Expressions::StaticComparison< StaticVector< Size, Real1 >, StaticVector< Size, Real2 > >::NE( a, b );
 }
 
 ////
 // Comparison operations - operator <
 template< int Size, typename Real, typename ET >
 __cuda_callable__
-bool operator<( const Containers::StaticVector< Size, Real >& a, const ET& b )
+bool operator<( const StaticVector< Size, Real >& a, const ET& b )
 {
-   return Containers::Expressions::StaticComparison< Containers::StaticVector< Size, Real >, ET >::LT( a, b );
+   return Expressions::StaticComparison< StaticVector< Size, Real >, ET >::LT( a, b );
 }
 
 template< typename ET, int Size, typename Real >
 __cuda_callable__
-bool operator<( const ET& a, const Containers::StaticVector< Size, Real >& b )
+bool operator<( const ET& a, const StaticVector< Size, Real >& b )
 {
-   return Containers::Expressions::StaticComparison< ET, Containers::StaticVector< Size, Real > >::LT( a, b );
+   return Expressions::StaticComparison< ET, StaticVector< Size, Real > >::LT( a, b );
 }
 
 template< int Size, typename Real1, typename Real2 >
 __cuda_callable__
-bool operator<( const Containers::StaticVector< Size, Real1 >& a, const Containers::StaticVector< Size, Real2 >& b )
+bool operator<( const StaticVector< Size, Real1 >& a, const StaticVector< Size, Real2 >& b )
 {
-   return Containers::Expressions::StaticComparison< Containers::StaticVector< Size, Real1 >, Containers::StaticVector< Size, Real2 > >::LT( a, b );
+   return Expressions::StaticComparison< StaticVector< Size, Real1 >, StaticVector< Size, Real2 > >::LT( a, b );
 }
 
 ////
 // Comparison operations - operator <=
 template< int Size, typename Real, typename ET >
 __cuda_callable__
-bool operator<=( const Containers::StaticVector< Size, Real >& a, const ET& b )
+bool operator<=( const StaticVector< Size, Real >& a, const ET& b )
 {
-   return Containers::Expressions::StaticComparison< Containers::StaticVector< Size, Real >, ET >::LE( a, b );
+   return Expressions::StaticComparison< StaticVector< Size, Real >, ET >::LE( a, b );
 }
 
 template< typename ET, int Size, typename Real >
 __cuda_callable__
-bool operator<=( const ET& a, const Containers::StaticVector< Size, Real >& b )
+bool operator<=( const ET& a, const StaticVector< Size, Real >& b )
 {
-   return Containers::Expressions::StaticComparison< ET, Containers::StaticVector< Size, Real > >::LE( a, b );
+   return Expressions::StaticComparison< ET, StaticVector< Size, Real > >::LE( a, b );
 }
 
 template< int Size, typename Real1, typename Real2 >
 __cuda_callable__
-bool operator<=( const Containers::StaticVector< Size, Real1 >& a, const Containers::StaticVector< Size, Real2 >& b )
+bool operator<=( const StaticVector< Size, Real1 >& a, const StaticVector< Size, Real2 >& b )
 {
-   return Containers::Expressions::StaticComparison< Containers::StaticVector< Size, Real1 >, Containers::StaticVector< Size, Real2 > >::LE( a, b );
+   return Expressions::StaticComparison< StaticVector< Size, Real1 >, StaticVector< Size, Real2 > >::LE( a, b );
 }
 
 ////
 // Comparison operations - operator >
 template< int Size, typename Real, typename ET >
 __cuda_callable__
-bool operator>( const Containers::StaticVector< Size, Real >& a, const ET& b )
+bool operator>( const StaticVector< Size, Real >& a, const ET& b )
 {
-   return Containers::Expressions::StaticComparison< Containers::StaticVector< Size, Real >, ET >::GT( a, b );
+   return Expressions::StaticComparison< StaticVector< Size, Real >, ET >::GT( a, b );
 }
 
 template< typename ET, int Size, typename Real >
 __cuda_callable__
-bool operator>( const ET& a, const Containers::StaticVector< Size, Real >& b )
+bool operator>( const ET& a, const StaticVector< Size, Real >& b )
 {
-   return Containers::Expressions::StaticComparison< ET, Containers::StaticVector< Size, Real > >::GT( a, b );
+   return Expressions::StaticComparison< ET, StaticVector< Size, Real > >::GT( a, b );
 }
 
 template< int Size, typename Real1, typename Real2 >
 __cuda_callable__
-bool operator>( const Containers::StaticVector< Size, Real1 >& a, const Containers::StaticVector< Size, Real2 >& b )
+bool operator>( const StaticVector< Size, Real1 >& a, const StaticVector< Size, Real2 >& b )
 {
-   return Containers::Expressions::StaticComparison< Containers::StaticVector< Size, Real1 >, Containers::StaticVector< Size, Real2 > >::GT( a, b );
+   return Expressions::StaticComparison< StaticVector< Size, Real1 >, StaticVector< Size, Real2 > >::GT( a, b );
 }
 
 ////
 // Comparison operations - operator >=
 template< int Size, typename Real, typename ET >
 __cuda_callable__
-bool operator>=( const Containers::StaticVector< Size, Real >& a, const ET& b )
+bool operator>=( const StaticVector< Size, Real >& a, const ET& b )
 {
-   return Containers::Expressions::StaticComparison< Containers::StaticVector< Size, Real >, ET >::GE( a, b );
+   return Expressions::StaticComparison< StaticVector< Size, Real >, ET >::GE( a, b );
 }
 
 template< typename ET, int Size, typename Real >
 __cuda_callable__
-bool operator>=( const ET& a, const Containers::StaticVector< Size, Real >& b )
+bool operator>=( const ET& a, const StaticVector< Size, Real >& b )
 {
-   return Containers::Expressions::StaticComparison< ET, Containers::StaticVector< Size, Real > >::GE( a, b );
+   return Expressions::StaticComparison< ET, StaticVector< Size, Real > >::GE( a, b );
 }
 
 template< int Size, typename Real1, typename Real2 >
 __cuda_callable__
-bool operator>=( const Containers::StaticVector< Size, Real1 >& a, const Containers::StaticVector< Size, Real2 >& b )
+bool operator>=( const StaticVector< Size, Real1 >& a, const StaticVector< Size, Real2 >& b )
 {
-   return Containers::Expressions::StaticComparison< Containers::StaticVector< Size, Real1 >, Containers::StaticVector< Size, Real2 > >::GE( a, b );
+   return Expressions::StaticComparison< StaticVector< Size, Real1 >, StaticVector< Size, Real2 > >::GE( a, b );
 }
 
 ////
 // Minus
 template< int Size, typename Real >
 __cuda_callable__
-const Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Minus >
-operator-( const Containers::StaticVector< Size, Real >& a )
+auto
+operator-( const StaticVector< Size, Real >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Minus >( a );
+   return Expressions::StaticUnaryExpressionTemplate< StaticVector< Size, Real >, Expressions::Minus >( a );
 }
 
 ////
 // Scalar product
 template< int Size, typename Real, typename ET >
 __cuda_callable__
-auto operator,( const Containers::StaticVector< Size, Real >& a, const ET& b )
-->decltype( TNL::sum( a * b ) )
+auto
+operator,( const StaticVector< Size, Real >& a, const ET& b )
 {
    return TNL::sum( a * b );
 }
 
 template< typename ET, int Size, typename Real >
 __cuda_callable__
-auto operator,( const ET& a, const Containers::StaticVector< Size, Real >& b )
-->decltype( TNL::sum( a * b ) )
+auto
+operator,( const ET& a, const StaticVector< Size, Real >& b )
 {
    return TNL::sum( a * b );
 }
 
 template< typename Real1, int Size, typename Real2 >
 __cuda_callable__
-auto operator,( const Containers::StaticVector< Size, Real1 >& a, const Containers::StaticVector< Size, Real2 >& b )
-->decltype( TNL::sum( a * b ) )
+auto
+operator,( const StaticVector< Size, Real1 >& a, const StaticVector< Size, Real2 >& b )
 {
    return TNL::sum( a * b );
 }
 
-   }// namespace Containers
+} // namespace Containers
+
 ////
 // Min
 template< int Size, typename Real, typename ET >
 __cuda_callable__
-const Containers::Expressions::StaticBinaryExpressionTemplate< Containers::StaticVector< Size, Real >, ET, Containers::Expressions::Min >
+auto
 min( const Containers::StaticVector< Size, Real >& a, const ET& b )
 {
    return Containers::Expressions::StaticBinaryExpressionTemplate< Containers::StaticVector< Size, Real >, ET, Containers::Expressions::Min >( a, b );
@@ -312,7 +315,7 @@ min( const Containers::StaticVector< Size, Real >& a, const ET& b )
 
 template< typename ET, int Size, typename Real >
 __cuda_callable__
-const Containers::Expressions::StaticBinaryExpressionTemplate< ET, Containers::StaticVector< Size, Real >, Containers::Expressions::Min >
+auto
 min( const ET& a, const Containers::StaticVector< Size, Real >& b )
 {
    return Containers::Expressions::StaticBinaryExpressionTemplate< ET, Containers::StaticVector< Size, Real >, Containers::Expressions::Min >( a, b );
@@ -320,7 +323,7 @@ min( const ET& a, const Containers::StaticVector< Size, Real >& b )
 
 template< int Size, typename Real1, typename Real2 >
 __cuda_callable__
-const Containers::Expressions::StaticBinaryExpressionTemplate< Containers::StaticVector< Size, Real1 >, Containers::StaticVector< Size, Real2 >, Containers::Expressions::Min >
+auto
 min( const Containers::StaticVector< Size, Real1 >& a, const Containers::StaticVector< Size, Real2 >& b )
 {
    return Containers::Expressions::StaticBinaryExpressionTemplate< Containers::StaticVector< Size, Real1 >, Containers::StaticVector< Size, Real2 >, Containers::Expressions::Min >( a, b );
@@ -330,7 +333,7 @@ min( const Containers::StaticVector< Size, Real1 >& a, const Containers::StaticV
 // Max
 template< int Size, typename Real, typename ET >
 __cuda_callable__
-const Containers::Expressions::StaticBinaryExpressionTemplate< Containers::StaticVector< Size, Real >, ET, Containers::Expressions::Max >
+auto
 max( const Containers::StaticVector< Size, Real >& a, const ET& b )
 {
    return Containers::Expressions::StaticBinaryExpressionTemplate< Containers::StaticVector< Size, Real >, ET, Containers::Expressions::Max >( a, b );
@@ -338,7 +341,7 @@ max( const Containers::StaticVector< Size, Real >& a, const ET& b )
 
 template< typename ET, int Size, typename Real >
 __cuda_callable__
-const Containers::Expressions::StaticBinaryExpressionTemplate< ET, Containers::StaticVector< Size, Real >, Containers::Expressions::Max >
+auto
 max( const ET& a, const Containers::StaticVector< Size, Real >& b )
 {
    return Containers::Expressions::StaticBinaryExpressionTemplate< ET, Containers::StaticVector< Size, Real >, Containers::Expressions::Max >( a, b );
@@ -346,7 +349,7 @@ max( const ET& a, const Containers::StaticVector< Size, Real >& b )
 
 template< int Size, typename Real1, typename Real2 >
 __cuda_callable__
-const Containers::Expressions::StaticBinaryExpressionTemplate< Containers::StaticVector< Size, Real1 >, Containers::StaticVector< Size, Real2 >, Containers::Expressions::Max >
+auto
 max( const Containers::StaticVector< Size, Real1 >& a, const Containers::StaticVector< Size, Real2 >& b )
 {
    return Containers::Expressions::StaticBinaryExpressionTemplate< Containers::StaticVector< Size, Real1 >, Containers::StaticVector< Size, Real2 >, Containers::Expressions::Max >( a, b );
@@ -356,7 +359,7 @@ max( const Containers::StaticVector< Size, Real1 >& a, const Containers::StaticV
 // Abs
 template< int Size, typename Real >
 __cuda_callable__
-const Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Abs >
+auto
 abs( const Containers::StaticVector< Size, Real >& a )
 {
    return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Abs >( a );
@@ -366,7 +369,7 @@ abs( const Containers::StaticVector< Size, Real >& a )
 // Sine
 template< int Size, typename Real >
 __cuda_callable__
-const Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Sin >
+auto
 sin( const Containers::StaticVector< Size, Real >& a )
 {
    return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Sin >( a );
@@ -376,7 +379,7 @@ sin( const Containers::StaticVector< Size, Real >& a )
 // Cosine
 template< int Size, typename Real >
 __cuda_callable__
-const Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Cos >
+auto
 cos( const Containers::StaticVector< Size, Real >& a )
 {
    return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Cos >( a );
@@ -386,7 +389,7 @@ cos( const Containers::StaticVector< Size, Real >& a )
 // Tangent
 template< int Size, typename Real >
 __cuda_callable__
-const Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Tan >
+auto
 tan( const Containers::StaticVector< Size, Real >& a )
 {
    return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Tan >( a );
@@ -396,7 +399,7 @@ tan( const Containers::StaticVector< Size, Real >& a )
 // Sqrt
 template< int Size, typename Real >
 __cuda_callable__
-const Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Sqrt >
+auto
 sqrt( const Containers::StaticVector< Size, Real >& a )
 {
    return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Sqrt >( a );
@@ -406,7 +409,7 @@ sqrt( const Containers::StaticVector< Size, Real >& a )
 // Cbrt
 template< int Size, typename Real >
 __cuda_callable__
-const Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Cbrt >
+auto
 cbrt( const Containers::StaticVector< Size, Real >& a )
 {
    return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Cbrt >( a );
@@ -416,7 +419,7 @@ cbrt( const Containers::StaticVector< Size, Real >& a )
 // Power
 template< int Size, typename Real, typename ExpType >
 __cuda_callable__
-const Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Pow, ExpType >
+auto
 pow( const Containers::StaticVector< Size, Real >& a, const ExpType& exp )
 {
    return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Pow, ExpType >( a, exp );
@@ -426,7 +429,7 @@ pow( const Containers::StaticVector< Size, Real >& a, const ExpType& exp )
 // Floor
 template< int Size, typename Real >
 __cuda_callable__
-const Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Floor >
+auto
 floor( const Containers::StaticVector< Size, Real >& a )
 {
    return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Floor >( a );
@@ -436,7 +439,7 @@ floor( const Containers::StaticVector< Size, Real >& a )
 // Ceil
 template< int Size, typename Real >
 __cuda_callable__
-const Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Ceil >
+auto
 ceil( const Containers::StaticVector< Size, Real >& a )
 {
    return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Ceil >( a );
@@ -446,7 +449,7 @@ ceil( const Containers::StaticVector< Size, Real >& a )
 // Acos
 template< int Size, typename Real >
 __cuda_callable__
-const Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Acos >
+auto
 acos( const Containers::StaticVector< Size, Real >& a )
 {
    return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Acos >( a );
@@ -456,7 +459,7 @@ acos( const Containers::StaticVector< Size, Real >& a )
 // Asin
 template< int Size, typename Real >
 __cuda_callable__
-const Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Asin >
+auto
 asin( const Containers::StaticVector< Size, Real >& a )
 {
    return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Asin >( a );
@@ -466,7 +469,7 @@ asin( const Containers::StaticVector< Size, Real >& a )
 // Atan
 template< int Size, typename Real >
 __cuda_callable__
-const Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Atan >
+auto
 atan( const Containers::StaticVector< Size, Real >& a )
 {
    return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Atan >( a );
@@ -476,7 +479,7 @@ atan( const Containers::StaticVector< Size, Real >& a )
 // Cosh
 template< int Size, typename Real >
 __cuda_callable__
-const Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Cosh >
+auto
 cosh( const Containers::StaticVector< Size, Real >& a )
 {
    return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Cosh >( a );
@@ -486,7 +489,7 @@ cosh( const Containers::StaticVector< Size, Real >& a )
 // Tanh
 template< int Size, typename Real >
 __cuda_callable__
-const Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Tanh >
+auto
 tanh( const Containers::StaticVector< Size, Real >& a )
 {
    return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Tanh >( a );
@@ -496,7 +499,7 @@ tanh( const Containers::StaticVector< Size, Real >& a )
 // Log
 template< int Size, typename Real >
 __cuda_callable__
-const Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Log >
+auto
 log( const Containers::StaticVector< Size, Real >& a )
 {
    return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Log >( a );
@@ -506,7 +509,7 @@ log( const Containers::StaticVector< Size, Real >& a )
 // Log10
 template< int Size, typename Real >
 __cuda_callable__
-const Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Log10 >
+auto
 log10( const Containers::StaticVector< Size, Real >& a )
 {
    return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Log10 >( a );
@@ -516,7 +519,7 @@ log10( const Containers::StaticVector< Size, Real >& a )
 // Log2
 template< int Size, typename Real >
 __cuda_callable__
-const Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Log2 >
+auto
 log2( const Containers::StaticVector< Size, Real >& a )
 {
    return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Log2 >( a );
@@ -526,7 +529,7 @@ log2( const Containers::StaticVector< Size, Real >& a )
 // Exp
 template< int Size, typename Real >
 __cuda_callable__
-const Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Exp >
+auto
 exp( const Containers::StaticVector< Size, Real >& a )
 {
    return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Exp >( a );
@@ -536,7 +539,7 @@ exp( const Containers::StaticVector< Size, Real >& a )
 // Sign
 template< int Size, typename Real >
 __cuda_callable__
-const Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Sign >
+auto
 sign( const Containers::StaticVector< Size, Real >& a )
 {
    return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Sign >( a );
@@ -548,7 +551,6 @@ template< int Size, typename Real >
 __cuda_callable__
 auto
 min( const Containers::StaticVector< Size, Real >& a )
--> decltype( Containers::Expressions::StaticExpressionMin( a ) )
 {
    return Containers::Expressions::StaticExpressionMin( a );
 }
@@ -557,7 +559,6 @@ template< int Size, typename Real >
 __cuda_callable__
 auto
 argMin( const Containers::StaticVector< Size, Real >& a, int& arg )
--> decltype( Containers::Expressions::StaticExpressionArgMin( a, arg ) )
 {
    return Containers::Expressions::StaticExpressionArgMin( a, arg );
 }
@@ -566,7 +567,6 @@ template< int Size, typename Real >
 __cuda_callable__
 auto
 max( const Containers::StaticVector< Size, Real >& a )
--> decltype( Containers::Expressions::StaticExpressionMax( a ) )
 {
    return Containers::Expressions::StaticExpressionMax( a );
 }
@@ -575,7 +575,6 @@ template< int Size, typename Real >
 __cuda_callable__
 auto
 argMax( const Containers::StaticVector< Size, Real >& a, int& arg )
--> decltype( Containers::Expressions::StaticExpressionArgMax( a, arg ) )
 {
    return Containers::Expressions::StaticExpressionArgMax( a, arg );
 }
@@ -584,7 +583,6 @@ template< int Size, typename Real >
 __cuda_callable__
 auto
 sum( const Containers::StaticVector< Size, Real >& a )
--> decltype( Containers::Expressions::StaticExpressionSum( a ) )
 {
    return Containers::Expressions::StaticExpressionSum( a );
 }
@@ -606,14 +604,13 @@ template< int Size, typename Real >
 __cuda_callable__
 auto
 product( const Containers::StaticVector< Size, Real >& a )
--> decltype( Containers::Expressions::StaticExpressionProduct( a ) )
 {
    return Containers::Expressions::StaticExpressionProduct( a );
 }
 
 template< int Size, typename Real >
 __cuda_callable__
-bool
+auto
 logicalOr( const Containers::StaticVector< Size, Real >& a )
 {
    return Containers::Expressions::StaticExpressionLogicalOr( a );
@@ -623,14 +620,13 @@ template< int Size, typename Real >
 __cuda_callable__
 auto
 binaryOr( const Containers::StaticVector< Size, Real >& a )
--> decltype( Containers::Expressions::StaticExpressionBinaryOr( a ) )
 {
    return Containers::Expressions::StaticExpressionBinaryOr( a );
 }
 
 template< int Size, typename Real >
 __cuda_callable__
-bool
+auto
 logicalAnd( const Containers::StaticVector< Size, Real >& a )
 {
    return Containers::Expressions::StaticExpressionLogicalAnd( a );
@@ -640,7 +636,6 @@ template< int Size, typename Real >
 __cuda_callable__
 auto
 binaryAnd( const Containers::StaticVector< Size, Real >& a )
--> decltype( Containers::Expressions::StaticExpressionBinaryAnd( a ) )
 {
    return Containers::Expressions::StaticExpressionBinaryAnd( a );
 }
@@ -649,24 +644,24 @@ binaryAnd( const Containers::StaticVector< Size, Real >& a )
 // Dot product - the same as scalar product, just for convenience
 template< int Size, typename Real, typename ET >
 __cuda_callable__
-auto dot( const Containers::StaticVector< Size, Real >& a, const ET& b )
-->decltype( TNL::sum( a * b ) )
+auto
+dot( const Containers::StaticVector< Size, Real >& a, const ET& b )
 {
    return TNL::sum( a * b );
 }
 
 template< typename ET, int Size, typename Real >
 __cuda_callable__
-auto dot( const ET& a, const Containers::StaticVector< Size, Real >& b )
-->decltype( TNL::sum( a * b ) )
+auto
+dot( const ET& a, const Containers::StaticVector< Size, Real >& b )
 {
    return TNL::sum( a * b );
 }
 
 template< typename Real1, int Size, typename Real2 >
 __cuda_callable__
-auto dot( const Containers::StaticVector< Size, Real1 >& a, const Containers::StaticVector< Size, Real2 >& b )
-->decltype( TNL::sum( a * b ) )
+auto
+dot( const Containers::StaticVector< Size, Real1 >& a, const Containers::StaticVector< Size, Real2 >& b )
 {
    return TNL::sum( a * b );
 }
@@ -675,7 +670,7 @@ auto dot( const Containers::StaticVector< Size, Real1 >& a, const Containers::St
 // TODO: Replace this with multiplication when its safe
 template< int Size, typename Real, typename ET >
 __cuda_callable__
-Containers::StaticVector< Size, Real >
+auto
 Scale( const Containers::StaticVector< Size, Real >& a, const ET& b )
 {
    Containers::StaticVector< Size, Real > result = Containers::Expressions::StaticBinaryExpressionTemplate< Containers::StaticVector< Size, Real >, ET, Containers::Expressions::Multiplication >( a, b );
@@ -684,19 +679,19 @@ Scale( const Containers::StaticVector< Size, Real >& a, const ET& b )
 
 template< typename ET, int Size, typename Real >
 __cuda_callable__
-Containers::Expressions::StaticBinaryExpressionTemplate< ET, Containers::StaticVector< Size, Real >, Containers::Expressions::Multiplication >
+auto
 Scale( const ET& a, const Containers::StaticVector< Size, Real >& b )
 {
-   Containers::StaticVector< Size, Real > result =  Containers::Expressions::StaticBinaryExpressionTemplate< ET, Containers::StaticVector< Size, Real >, Containers::Expressions::Multiplication >( a, b );
+   Containers::StaticVector< Size, Real > result = Containers::Expressions::StaticBinaryExpressionTemplate< ET, Containers::StaticVector< Size, Real >, Containers::Expressions::Multiplication >( a, b );
    return result;
 }
 
 template< int Size, typename Real1, typename Real2 >
 __cuda_callable__
-Containers::Expressions::StaticBinaryExpressionTemplate< Containers::StaticVector< Size, Real1 >, Containers::StaticVector< Size, Real2 >, Containers::Expressions::Multiplication >
+auto
 Scale( const Containers::StaticVector< Size, Real1 >& a, const Containers::StaticVector< Size, Real2 >& b )
 {
-   Containers::StaticVector< Size, Real1 > result =  Containers::Expressions::StaticBinaryExpressionTemplate< Containers::StaticVector< Size, Real1 >, Containers::StaticVector< Size, Real2 >, Containers::Expressions::Multiplication >( a, b );
+   Containers::StaticVector< Size, Real1 > result = Containers::Expressions::StaticBinaryExpressionTemplate< Containers::StaticVector< Size, Real1 >, Containers::StaticVector< Size, Real2 >, Containers::Expressions::Multiplication >( a, b );
    return result;
 }
 
