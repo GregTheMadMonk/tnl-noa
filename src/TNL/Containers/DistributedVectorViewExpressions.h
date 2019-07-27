@@ -334,11 +334,11 @@ bool operator>=( const DistributedVectorView< Real1, Device, Index, Communicator
 // Minus
 template< typename Real, typename Device, typename Index, typename Communicator >
 const Expressions::DistributedUnaryExpressionTemplate< 
-   typename DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
+   typename DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
    Expressions::Minus, void, Communicator >
 operator-( const DistributedVectorView< Real, Device, Index, Communicator >& a )
 {
-   using ConstView = typename DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
+   using ConstView = typename DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
    return Expressions::DistributedUnaryExpressionTemplate< ConstView, Expressions::Minus, void, Communicator >( a.getLocalVectorView() );
 }
 
@@ -468,11 +468,11 @@ max( const Containers::DistributedVectorView< Real1, Device, Index, Communicator
 // Abs
 template< typename Real, typename Device, typename Index, typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType, 
+   typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType, 
    Containers::Expressions::Abs, void, Communicator >
 abs( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
 {
-   using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
+   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
    return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Abs, void, Communicator >( a.getLocalVectorView(), a.getCommunicationGroup() );
 }
 
@@ -480,11 +480,11 @@ abs( const Containers::DistributedVectorView< Real, Device, Index, Communicator 
 // Sine
 template< typename Real, typename Device, typename Index, typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType, 
+   typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType, 
    Containers::Expressions::Sin, void, Communicator >
 sin( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
 {
-   using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
+   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
    return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Sin, void, Communicator >( a.getLocalVectorView() );
 }
 
@@ -492,11 +492,11 @@ sin( const Containers::DistributedVectorView< Real, Device, Index, Communicator 
 // Cosine
 template< typename Real, typename Device, typename Index, typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType, 
+   typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType, 
    Containers::Expressions::Cos, void, Communicator >
 cos( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
 {
-   using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
+   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
    return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Cos, void, Communicator >( a.getLocalVectorView() );
 }
 
@@ -504,11 +504,11 @@ cos( const Containers::DistributedVectorView< Real, Device, Index, Communicator 
 // Tangent
 template< typename Real, typename Device, typename Index, typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType, 
+   typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType, 
    Containers::Expressions::Tan, void, Communicator >
 tan( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
 {
-   using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
+   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
    return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Tan, void, Communicator >( a.getLocalVectorView() );
 }
 
@@ -516,11 +516,11 @@ tan( const Containers::DistributedVectorView< Real, Device, Index, Communicator 
 // Sqrt
 template< typename Real, typename Device, typename Index, typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType, 
+   typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType, 
    Containers::Expressions::Sqrt, void, Communicator >
 sqrt( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
 {
-   using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
+   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
    return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Sqrt, void, Communicator >( a.getLocalVectorView() );
 }
 
@@ -528,11 +528,11 @@ sqrt( const Containers::DistributedVectorView< Real, Device, Index, Communicator
 // Cbrt
 template< typename Real, typename Device, typename Index, typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType, 
+   typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType, 
    Containers::Expressions::Cbrt, void, Communicator >
 cbrt( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
 {
-   using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
+   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
    return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Cbrt, void, Communicator >( a.getLocalVectorView() );
 }
 
@@ -540,11 +540,11 @@ cbrt( const Containers::DistributedVectorView< Real, Device, Index, Communicator
 // Power
 template< typename Real, typename Device, typename Index, typename Communicator, typename ExpType >
 const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
+   typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
    Containers::Expressions::Pow, ExpType, Communicator >
 pow( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a, const ExpType& exp )
 {
-   using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
+   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
    return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Pow, ExpType, Communicator >( a.getLocalVectorView(), exp );
 }
 
@@ -552,11 +552,11 @@ pow( const Containers::DistributedVectorView< Real, Device, Index, Communicator 
 // Floor
 template< typename Real, typename Device, typename Index, typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
+   typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
    Containers::Expressions::Floor, void, Communicator >
 floor( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
 {
-   using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
+   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
    return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Floor, void, Communicator >( a.getLocalVectorView() );
 }
 
@@ -564,11 +564,11 @@ floor( const Containers::DistributedVectorView< Real, Device, Index, Communicato
 // Ceil
 template< typename Real, typename Device, typename Index, typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType, 
+   typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType, 
    Containers::Expressions::Ceil, void, Communicator >
 ceil( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
 {
-   using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
+   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
    return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Ceil, void, Communicator >( a.getLocalVectorView() );
 }
 
@@ -576,11 +576,11 @@ ceil( const Containers::DistributedVectorView< Real, Device, Index, Communicator
 // Acos
 template< typename Real, typename Device, typename Index, typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType, 
+   typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType, 
    Containers::Expressions::Acos, void, Communicator >
 acos( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
 {
-   using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
+   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
    return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Acos, void, Communicator >( a.getLocalVectorView() );
 }
 
@@ -588,11 +588,11 @@ acos( const Containers::DistributedVectorView< Real, Device, Index, Communicator
 // Asin
 template< typename Real, typename Device, typename Index, typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType, 
+   typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType, 
    Containers::Expressions::Asin, void, Communicator >
 asin( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
 {
-   using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
+   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
    return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Asin, void, Communicator >( a.getLocalVectorView() );
 }
 
@@ -600,11 +600,11 @@ asin( const Containers::DistributedVectorView< Real, Device, Index, Communicator
 // Atan
 template< typename Real, typename Device, typename Index, typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType, 
+   typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType, 
    Containers::Expressions::Atan, void, Communicator >
 atan( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
 {
-   using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
+   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
    return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Atan, void, Communicator >( a.getLocalVectorView() );
 }
 
@@ -612,11 +612,11 @@ atan( const Containers::DistributedVectorView< Real, Device, Index, Communicator
 // Cosh
 template< typename Real, typename Device, typename Index, typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType, 
+   typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType, 
    Containers::Expressions::Cosh, void, Communicator >
 cosh( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
 {
-   using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
+   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
    return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Cosh, void, Communicator >( a.getLocalVectorView() );
 }
 
@@ -624,11 +624,11 @@ cosh( const Containers::DistributedVectorView< Real, Device, Index, Communicator
 // Tanh
 template< typename Real, typename Device, typename Index, typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
+   typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
    Containers::Expressions::Tanh, void, Communicator >
 tanh( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
 {
-   using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
+   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
    return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Tanh, void, Communicator >( a.getLocalVectorView() );
 }
 
@@ -636,11 +636,11 @@ tanh( const Containers::DistributedVectorView< Real, Device, Index, Communicator
 // Log
 template< typename Real, typename Device, typename Index, typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
+   typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
    Containers::Expressions::Log, void, Communicator >
 log( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
 {
-   using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
+   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
    return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Log, void, Communicator >( a.getLocalVectorView() );
 }
 
@@ -648,11 +648,11 @@ log( const Containers::DistributedVectorView< Real, Device, Index, Communicator 
 // Log10
 template< typename Real, typename Device, typename Index, typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
+   typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
    Containers::Expressions::Log10, void, Communicator >
 log10( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
 {
-   using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
+   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
    return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Log10, void, Communicator >( a.getLocalVectorView() );
 }
 
@@ -660,11 +660,11 @@ log10( const Containers::DistributedVectorView< Real, Device, Index, Communicato
 // Log2
 template< typename Real, typename Device, typename Index, typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
+   typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
    Containers::Expressions::Log2, void, Communicator >
 log2( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
 {
-   using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
+   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
    return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Log2, void, Communicator >( a.getLocalVectorView() );
 }
 
@@ -672,11 +672,11 @@ log2( const Containers::DistributedVectorView< Real, Device, Index, Communicator
 // Exp
 template< typename Real, typename Device, typename Index, typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
+   typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
    Containers::Expressions::Exp, void, Communicator >
 exp( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
 {
-   using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
+   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
    return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Exp, void, Communicator >( a.getLocalVectorView() );
 }
 
@@ -684,11 +684,11 @@ exp( const Containers::DistributedVectorView< Real, Device, Index, Communicator 
 // Sign
 template< typename Real, typename Device, typename Index, typename Communicator >
 const Containers::Expressions::DistributedUnaryExpressionTemplate< 
-   typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
+   typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType,
    Containers::Expressions::Sign, void, Communicator >
 sign( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
 {
-   using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
+   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType;
    return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Sign, void, Communicator >( a.getLocalVectorView() );
 }
 
