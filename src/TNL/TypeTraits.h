@@ -98,9 +98,19 @@ template< typename T >
 struct HasConstexprGetSizeMethod
 {
 private:
-   // adapted from here: https://stackoverflow.com/a/50169108
+   // implementation adopted from here: https://stackoverflow.com/a/50169108
+
+// disable nvcc warning: invalid narrowing conversion from "unsigned int" to "int"
+// (the implementation is based on the conversion)
+#ifdef __NVCC__
+   #pragma push
+   #pragma diag_suppress 2361
+#endif
    template< typename M, M method >
    static constexpr std::true_type is_constexpr_impl( decltype(int{((*method)(), 0U)}) );
+#ifdef __NVCC__
+   #pragma pop
+#endif
 
    template< typename M, M method >
    static constexpr std::false_type is_constexpr_impl(...);
