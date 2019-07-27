@@ -141,7 +141,7 @@ public:
          std::cerr << "Unknown cell topology: mesh dimension is " << meshDimension << ", number of vertices in cells is " << verticesInCell << "." << std::endl;
          return false;
       }
-      
+
       return true;
    }
 
@@ -150,8 +150,8 @@ public:
    {
       typedef typename MeshType::PointType PointType;
       typedef MeshBuilder< MeshType > MeshBuilder;
- 
-      const int dimension = PointType::size;
+
+      const int dimension = PointType::getSize();
 
       std::ifstream inputFile( fileName.getString() );
       if( ! inputFile )
