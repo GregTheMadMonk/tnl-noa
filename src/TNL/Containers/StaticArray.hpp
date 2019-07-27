@@ -18,7 +18,7 @@
 namespace TNL {
 namespace Containers {
 
-namespace Detail {
+namespace detail {
 
 ////
 // Lambdas used together with StaticFor for static loop unrolling in the
@@ -90,7 +90,7 @@ struct StaticArraySort< 0, 0, Value >
    static void exec( Value* data ) {}
 };
 
-} //namespace Detail
+} // namespace detail
 
 
 template< int Size, typename Value >
@@ -112,21 +112,21 @@ template< int Size, typename Value >
 __cuda_callable__
 StaticArray< Size, Value >::StaticArray( const Value v[ Size ] )
 {
-   StaticFor< 0, Size >::exec( Detail::assignArrayLambda< Value >, data, v );
+   StaticFor< 0, Size >::exec( detail::assignArrayLambda< Value >, data, v );
 }
 
 template< int Size, typename Value >
 __cuda_callable__
 inline StaticArray< Size, Value >::StaticArray( const Value& v )
 {
-   StaticFor< 0, Size >::exec( Detail::assignValueLambda< Value >, data, v );
+   StaticFor< 0, Size >::exec( detail::assignValueLambda< Value >, data, v );
 }
 
 template< int Size, typename Value >
 __cuda_callable__
 inline StaticArray< Size, Value >::StaticArray( const StaticArray< Size, Value >& v )
 {
-   StaticFor< 0, Size >::exec( Detail::assignArrayLambda< Value >, data, v.getData() );
+   StaticFor< 0, Size >::exec( detail::assignArrayLambda< Value >, data, v.getData() );
 }
 
 template< int Size, typename Value >
@@ -245,35 +245,35 @@ inline const Value& StaticArray< Size, Value >::z() const
 
 template< int Size, typename Value >
 __cuda_callable__
-inline StaticArray< Size, Value >& StaticArray< Size, Value >::operator = ( const StaticArray< Size, Value >& array )
+inline StaticArray< Size, Value >& StaticArray< Size, Value >::operator=( const StaticArray< Size, Value >& array )
 {
-   StaticFor< 0, Size >::exec( Detail::assignArrayLambda< Value >, data, array.getData() );
+   StaticFor< 0, Size >::exec( detail::assignArrayLambda< Value >, data, array.getData() );
    return *this;
 }
 
 template< int Size, typename Value >
    template< typename Array >
 __cuda_callable__
-inline StaticArray< Size, Value >& StaticArray< Size, Value >::operator = ( const Array& array )
+inline StaticArray< Size, Value >& StaticArray< Size, Value >::operator=( const Array& array )
 {
-   StaticFor< 0, Size >::exec( Detail::assignArrayLambda< Value, typename Array::ValueType >, data, array.getData() );
+   StaticFor< 0, Size >::exec( detail::assignArrayLambda< Value, typename Array::ValueType >, data, array.getData() );
    return *this;
 }
 
 template< int Size, typename Value >
    template< typename Array >
 __cuda_callable__
-inline bool StaticArray< Size, Value >::operator == ( const Array& array ) const
+inline bool StaticArray< Size, Value >::operator==( const Array& array ) const
 {
-   return Detail::StaticArrayComparator< Size, Value, typename Array::ValueType, 0 >::EQ( *this, array );
+   return detail::StaticArrayComparator< Size, Value, typename Array::ValueType, 0 >::EQ( *this, array );
 }
 
 template< int Size, typename Value >
    template< typename Array >
 __cuda_callable__
-inline bool StaticArray< Size, Value >::operator != ( const Array& array ) const
+inline bool StaticArray< Size, Value >::operator!=( const Array& array ) const
 {
-   return ! this->operator == ( array );
+   return ! this->operator==( array );
 }
 
 template< int Size, typename Value >
@@ -283,7 +283,7 @@ StaticArray< Size, Value >::
 operator StaticArray< Size, OtherValue >() const
 {
    StaticArray< Size, OtherValue > aux;
-   StaticFor< 0, Size >::exec( Detail::assignArrayLambda< OtherValue, Value >, aux.getData(), data );
+   StaticFor< 0, Size >::exec( detail::assignArrayLambda< OtherValue, Value >, aux.getData(), data );
    return aux;
 }
 
@@ -291,7 +291,7 @@ template< int Size, typename Value >
 __cuda_callable__
 inline void StaticArray< Size, Value >::setValue( const ValueType& val )
 {
-   StaticFor< 0, Size >::exec( Detail::assignValueLambda< Value >, data, val );
+   StaticFor< 0, Size >::exec( detail::assignValueLambda< Value >, data, val );
 }
 
 template< int Size, typename Value >
@@ -311,7 +311,7 @@ bool StaticArray< Size, Value >::load( File& file)
 template< int Size, typename Value >
 void StaticArray< Size, Value >::sort()
 {
-   Detail::StaticArraySort< Size - 1, 0, Value >::exec( data );
+   detail::StaticArraySort< Size - 1, 0, Value >::exec( data );
 }
 
 template< int Size, typename Value >
@@ -324,7 +324,7 @@ std::ostream& StaticArray< Size, Value >::write( std::ostream& str, const char* 
 }
 
 template< int Size, typename Value >
-std::ostream& operator << ( std::ostream& str, const StaticArray< Size, Value >& a )
+std::ostream& operator<<( std::ostream& str, const StaticArray< Size, Value >& a )
 {
    str << "[ ";
    a.write( str, ", " );

@@ -61,7 +61,7 @@ public:
     static int getDirection(Containers::StaticVector<numerofDriection,int> directions) //takes +/- nuber of ax (i.e. (-2,+3))
     {
         int result=0;
-        for(int i=0;i<directions.size;i++)
+        for(int i=0;i<directions.getSize();i++)
             result+=add(directions[i]);
         return result-1;
     }

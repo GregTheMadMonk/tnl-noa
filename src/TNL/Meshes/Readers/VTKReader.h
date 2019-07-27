@@ -209,7 +209,7 @@ public:
          iss.clear();
          iss.str( line );
          PointType p;
-         for( int i = 0; i < p.size; i++ ) {
+         for( int i = 0; i < p.getSize(); i++ ) {
             iss >> p[ i ];
             if( ! iss ) {
                std::cerr << "VTKReader: unable to read " << i << "th component of the vertex number " << vertexIndex << "." << std::endl;

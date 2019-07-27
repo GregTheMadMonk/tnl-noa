@@ -26,12 +26,9 @@ namespace Containers {
 template< int Size, typename Real = double >
 class StaticVector : public StaticArray< Size, Real >
 {
-   public:
+public:
    using RealType = Real;
    using IndexType = int;
-   using ThisType = StaticVector< Size, Real >;
-
-   constexpr static int size = Size;
 
    using StaticArray< Size, Real >::getSize;
    //using StaticArray< Size, Real >::operator ==;

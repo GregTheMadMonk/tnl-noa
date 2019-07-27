@@ -17,7 +17,7 @@
 namespace TNL {
 namespace Containers {
 
-namespace Detail {
+namespace detail {
 
 ////
 // Lambdas used together with StaticFor for static loop unrolling in the
@@ -31,7 +31,7 @@ auto subtractVectorLambda = [] __cuda_callable__ ( int i, LeftReal* data, const 
 template< typename LeftReal, typename RightReal = LeftReal >
 auto scalarMultiplicationLambda = [] __cuda_callable__ ( int i, LeftReal* data, const RightReal v ) { data[ i ] *= v; };
 
-} //namespace Detail
+} // namespace detail
 
 template< int Size, typename Real >
 __cuda_callable__
@@ -138,7 +138,7 @@ template< int Size, typename Real >
 __cuda_callable__
 StaticVector< Size, Real >& StaticVector< Size, Real >::operator += ( const StaticVector& v )
 {
-   StaticFor< 0, Size >::exec( Detail::addVectorLambda< Real >, this->getData(), v.getData() );
+   StaticFor< 0, Size >::exec( detail::addVectorLambda< Real >, this->getData(), v.getData() );
    return *this;
 }
 
@@ -146,7 +146,7 @@ template< int Size, typename Real >
 __cuda_callable__
 StaticVector< Size, Real >& StaticVector< Size, Real >::operator -= ( const StaticVector& v )
 {
-   StaticFor< 0, Size >::exec( Detail::subtractVectorLambda< Real >, this->getData(), v.getData() );
+   StaticFor< 0, Size >::exec( detail::subtractVectorLambda< Real >, this->getData(), v.getData() );
    return *this;
 }
 
@@ -154,7 +154,7 @@ template< int Size, typename Real >
 __cuda_callable__
 StaticVector< Size, Real >& StaticVector< Size, Real >::operator *= ( const Real& c )
 {
-   StaticFor< 0, Size >::exec( Detail::scalarMultiplicationLambda< Real >, this->getData(), c );
+   StaticFor< 0, Size >::exec( detail::scalarMultiplicationLambda< Real >, this->getData(), c );
    return *this;
 }
 
@@ -162,7 +162,7 @@ template< int Size, typename Real >
 __cuda_callable__
 StaticVector< Size, Real >& StaticVector< Size, Real >::operator /= ( const Real& c )
 {
-   StaticFor< 0, Size >::exec( Detail::scalarMultiplicationLambda< Real >, this->getData(), 1.0 / c );
+   StaticFor< 0, Size >::exec( detail::scalarMultiplicationLambda< Real >, this->getData(), 1.0 / c );
    return *this;
 }
 
@@ -173,7 +173,7 @@ StaticVector< Size, Real >::
 operator StaticVector< Size, OtherReal >() const
 {
    StaticVector< Size, OtherReal > aux;
-   StaticFor< 0, Size >::exec( Detail::assignArrayLambda< OtherReal, Real >, aux.getData(), this->getData() );
+   StaticFor< 0, Size >::exec( detail::assignArrayLambda< OtherReal, Real >, aux.getData(), this->getData() );
    return aux;
 }
 

@@ -26,7 +26,7 @@ namespace Containers {
 template< int Size, typename Value >
 class StaticArray
 {
-   public:
+public:
    using ValueType = Value;
    using IndexType = int;
 
@@ -156,14 +156,14 @@ class StaticArray
     * \brief Assigns another static \e array to this array, replacing its current contents.
     */
    __cuda_callable__
-   inline StaticArray< Size, Value >& operator = ( const StaticArray< Size, Value >& array );
+   inline StaticArray< Size, Value >& operator=( const StaticArray< Size, Value >& array );
 
    /**
     * \brief Assigns another static \e array to this array, replacing its current contents.
     */
    template< typename Array >
    __cuda_callable__
-   inline StaticArray< Size, Value >& operator = ( const Array& array );
+   inline StaticArray< Size, Value >& operator=( const Array& array );
 
    /**
     * \brief This function checks whether this static array is equal to another \e array.
@@ -172,7 +172,7 @@ class StaticArray
     */
    template< typename Array >
    __cuda_callable__
-   inline bool operator == ( const Array& array ) const;
+   inline bool operator==( const Array& array ) const;
 
    /**
     * \brief This function checks whether this static array is not equal to another \e array.
@@ -181,7 +181,7 @@ class StaticArray
     */
    template< typename Array >
    __cuda_callable__
-   inline bool operator != ( const Array& array ) const;
+   inline bool operator!=( const Array& array ) const;
 
    template< typename OtherValue >
    __cuda_callable__
@@ -219,12 +219,12 @@ class StaticArray
     */
    std::ostream& write( std::ostream& str, const char* separator = " " ) const;
 
-   protected:
+protected:
    Value data[ Size ];
 };
 
 template< int Size, typename Value >
-std::ostream& operator << ( std::ostream& str, const StaticArray< Size, Value >& a );
+std::ostream& operator<<( std::ostream& str, const StaticArray< Size, Value >& a );
 
 } // namespace Containers
 

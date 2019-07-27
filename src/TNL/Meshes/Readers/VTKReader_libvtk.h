@@ -93,7 +93,7 @@ public:
 
       for( GlobalIndexType i = 0; i < numberOfPoints; i++ ) {
          typename MeshType::PointType p;
-         for( int j = 0; j < p.size; j++ )
+         for( int j = 0; j < p.getSize(); j++ )
             p[ j ] = this->pointsData.at( i )[ j ];
          meshBuilder.setPoint( i, p );
       }

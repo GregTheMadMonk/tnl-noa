@@ -61,7 +61,7 @@ TYPED_TEST( StaticVectorTest, constructors )
 {
    using VectorType = typename TestFixture::VectorType;
    using RealType = typename TestFixture::RealType;
-   constexpr int Size = VectorType::size;
+   constexpr int Size = VectorType::getSize();
 
    RealType data[ Size ];
    for( int i = 0; i < Size; i++ )
@@ -92,7 +92,7 @@ TYPED_TEST( StaticVectorTest, constructors )
 TYPED_TEST( StaticVectorTest, operators )
 {
    using VectorType = typename TestFixture::VectorType;
-   constexpr int size = VectorType::size;
+   constexpr int size = VectorType::getSize();
 
    static_assert( HasSubscriptOperator< VectorType >::value, "Subscript operator detection by SFINAE does not work for StaticVector." );
 
@@ -128,7 +128,7 @@ TYPED_TEST( StaticVectorTest, operators )
 TYPED_TEST( StaticVectorTest, MinMax )
 {
    using VectorType = typename TestFixture::VectorType;
-   constexpr int size = VectorType::size;
+   constexpr int size = VectorType::getSize();
 
    VectorType u1( 1 ), u2( 2 ), u3( 3 ), u4, u_min, u_max;
    for( int i = 0; i < size; i++ )
@@ -147,7 +147,7 @@ TYPED_TEST( StaticVectorTest, MinMax )
 TYPED_TEST( StaticVectorTest, comparisons )
 {
    using VectorType = typename TestFixture::VectorType;
-   constexpr int size = VectorType::size;
+   constexpr int size = VectorType::getSize();
 
    VectorType u1( 1 ), u2( 2 ), u3( 3 ), u4;
    for( int i = 0; i < size; i++ )
@@ -175,7 +175,7 @@ TYPED_TEST( StaticVectorTest, comparisons )
 TYPED_TEST( StaticVectorTest, cast )
 {
    using VectorType = typename TestFixture::VectorType;
-   constexpr int size = VectorType::size;
+   constexpr int size = VectorType::getSize();
 
    VectorType u( 1 );
    EXPECT_EQ( (StaticVector< size, double >) u, u );
@@ -184,7 +184,7 @@ TYPED_TEST( StaticVectorTest, cast )
 TYPED_TEST( StaticVectorTest, abs )
 {
    using VectorType = typename TestFixture::VectorType;
-   constexpr int size = VectorType::size;
+   constexpr int size = VectorType::getSize();
 
    VectorType u;
    for( int i = 0; i < size; i++ )
@@ -197,7 +197,7 @@ TYPED_TEST( StaticVectorTest, abs )
 TYPED_TEST( StaticVectorTest, sin )
 {
    using VectorType = typename TestFixture::VectorType;
-   constexpr int size = VectorType::size;
+   constexpr int size = VectorType::getSize();
 
    VectorType u, v;
    for( int i = 0; i < size; i++ )
@@ -212,7 +212,7 @@ TYPED_TEST( StaticVectorTest, sin )
 TYPED_TEST( StaticVectorTest, cos )
 {
    using VectorType = typename TestFixture::VectorType;
-   constexpr int size = VectorType::size;
+   constexpr int size = VectorType::getSize();
 
    VectorType u, v;
    for( int i = 0; i < size; i++ )
@@ -227,7 +227,7 @@ TYPED_TEST( StaticVectorTest, cos )
 TYPED_TEST( StaticVectorTest, tan )
 {
    using VectorType = typename TestFixture::VectorType;
-   constexpr int size = VectorType::size;
+   constexpr int size = VectorType::getSize();
 
    VectorType u, v;
    for( int i = 0; i < size; i++ )
@@ -242,7 +242,7 @@ TYPED_TEST( StaticVectorTest, tan )
 TYPED_TEST( StaticVectorTest, sqrt )
 {
    using VectorType = typename TestFixture::VectorType;
-   constexpr int size = VectorType::size;
+   constexpr int size = VectorType::getSize();
 
    VectorType u, v;
    for( int i = 0; i < size; i++ )
@@ -257,7 +257,7 @@ TYPED_TEST( StaticVectorTest, sqrt )
 TYPED_TEST( StaticVectorTest, cbrt )
 {
    using VectorType = typename TestFixture::VectorType;
-   constexpr int size = VectorType::size;
+   constexpr int size = VectorType::getSize();
 
    VectorType u, v;
    for( int i = 0; i < size; i++ )
@@ -274,7 +274,7 @@ TYPED_TEST( StaticVectorTest, pow )
 {
    using VectorType = typename TestFixture::VectorType;
    using RealType = typename VectorType::RealType;
-   constexpr int size = VectorType::size;
+   constexpr int size = VectorType::getSize();
 
    VectorType u, v, w;
    for( int i = 0; i < size; i++ )
@@ -291,7 +291,7 @@ TYPED_TEST( StaticVectorTest, pow )
 TYPED_TEST( StaticVectorTest, floor )
 {
    using VectorType = typename TestFixture::VectorType;
-   constexpr int size = VectorType::size;
+   constexpr int size = VectorType::getSize();
 
    VectorType u, v;
    for( int i = 0; i < size; i++ )
@@ -306,7 +306,7 @@ TYPED_TEST( StaticVectorTest, floor )
 TYPED_TEST( StaticVectorTest, ceil )
 {
    using VectorType = typename TestFixture::VectorType;
-   constexpr int size = VectorType::size;
+   constexpr int size = VectorType::getSize();
 
    VectorType u, v;
    for( int i = 0; i < size; i++ )
@@ -321,7 +321,7 @@ TYPED_TEST( StaticVectorTest, ceil )
 TYPED_TEST( StaticVectorTest, acos )
 {
    using VectorType = typename TestFixture::VectorType;
-   constexpr int size = VectorType::size;
+   constexpr int size = VectorType::getSize();
 
    VectorType u, v;
    for( int i = 0; i < size; i++ )
@@ -336,7 +336,7 @@ TYPED_TEST( StaticVectorTest, acos )
 TYPED_TEST( StaticVectorTest, asin )
 {
    using VectorType = typename TestFixture::VectorType;
-   constexpr int size = VectorType::size;
+   constexpr int size = VectorType::getSize();
 
    VectorType u, v;
    for( int i = 0; i < size; i++ )
@@ -351,7 +351,7 @@ TYPED_TEST( StaticVectorTest, asin )
 TYPED_TEST( StaticVectorTest, atan )
 {
    using VectorType = typename TestFixture::VectorType;
-   constexpr int size = VectorType::size;
+   constexpr int size = VectorType::getSize();
 
    VectorType u, v;
    for( int i = 0; i < size; i++ )
@@ -366,7 +366,7 @@ TYPED_TEST( StaticVectorTest, atan )
 TYPED_TEST( StaticVectorTest, cosh )
 {
    using VectorType = typename TestFixture::VectorType;
-   constexpr int size = VectorType::size;
+   constexpr int size = VectorType::getSize();
 
    VectorType u, v;
    for( int i = 0; i < size; i++ )
@@ -384,7 +384,7 @@ TYPED_TEST( StaticVectorTest, cosh )
 TYPED_TEST( StaticVectorTest, tanh )
 {
    using VectorType = typename TestFixture::VectorType;
-   constexpr int size = VectorType::size;
+   constexpr int size = VectorType::getSize();
 
    VectorType u, v;
    for( int i = 0; i < size; i++ )
@@ -399,7 +399,7 @@ TYPED_TEST( StaticVectorTest, tanh )
 TYPED_TEST( StaticVectorTest, log )
 {
    using VectorType = typename TestFixture::VectorType;
-   constexpr int size = VectorType::size;
+   constexpr int size = VectorType::getSize();
 
    VectorType u, v;
    for( int i = 0; i < size; i++ )
@@ -414,7 +414,7 @@ TYPED_TEST( StaticVectorTest, log )
 TYPED_TEST( StaticVectorTest, log10 )
 {
    using VectorType = typename TestFixture::VectorType;
-   constexpr int size = VectorType::size;
+   constexpr int size = VectorType::getSize();
 
    VectorType u, v;
    for( int i = 0; i < size; i++ )
@@ -432,7 +432,7 @@ TYPED_TEST( StaticVectorTest, log10 )
 TYPED_TEST( StaticVectorTest, log2 )
 {
    using VectorType = typename TestFixture::VectorType;
-   constexpr int size = VectorType::size;
+   constexpr int size = VectorType::getSize();
 
    VectorType u, v;
    for( int i = 0; i < size; i++ )
@@ -447,7 +447,7 @@ TYPED_TEST( StaticVectorTest, log2 )
 TYPED_TEST( StaticVectorTest, exp )
 {
    using VectorType = typename TestFixture::VectorType;
-   constexpr int size = VectorType::size;
+   constexpr int size = VectorType::getSize();
 
    VectorType u, v;
    for( int i = 0; i < size; i++ )
@@ -462,7 +462,7 @@ TYPED_TEST( StaticVectorTest, exp )
 TYPED_TEST( StaticVectorTest, sign )
 {
    using VectorType = typename TestFixture::VectorType;
-   constexpr int size = VectorType::size;
+   constexpr int size = VectorType::getSize();
 
    VectorType u, v;
    for( int i = 0; i < size; i++ )
@@ -479,7 +479,7 @@ TYPED_TEST( StaticVectorTest, lpNorm )
 {
    using VectorType = typename TestFixture::VectorType;
    using RealType = typename TestFixture::RealType;
-   constexpr int size = VectorType::size;
+   constexpr int size = VectorType::getSize();
    const RealType epsilon = std::numeric_limits< RealType >::epsilon();
 
    VectorType v( 1 );
@@ -497,7 +497,7 @@ TYPED_TEST( StaticVectorTest, verticalOperations )
    using VectorType = typename TestFixture::VectorType;
 
    using RealType = typename VectorType::RealType;
-   constexpr int size = VectorType::size;
+   constexpr int size = VectorType::getSize();
 
    VectorType u, v;
    RealType sum_( 0.0 ), absSum( 0.0 ), diffSum( 0.0 ), diffAbsSum( 0.0 ),
@@ -541,9 +541,7 @@ TYPED_TEST( StaticVectorTest, comparisonOperators )
 {
    using namespace TNL::Containers::Expressions;
    using VectorType = typename TestFixture::VectorType;
-
    using RealType = typename VectorType::RealType;
-   constexpr int size = VectorType::size;
 
    VectorType u, v, w;
    u = 1.0;
