@@ -192,7 +192,7 @@ orthogonalize_MGS( const int m, const RealType normb, const RealType beta )
     * v_0 = r / | r | =  1.0 / beta * r
     */
    v_i.bind( V.getData(), size );
-   v_i.addVector( r, 1.0 / beta, 0.0 );
+   v_i = (1.0 / beta) * r;
 
    H.setValue( 0.0 );
    s.setValue( 0.0 );
@@ -217,25 +217,25 @@ orthogonalize_MGS( const int m, const RealType normb, const RealType beta )
             /***
              * H_{k,i} = ( w, v_k )
              */
-            RealType H_k_i = w.scalarProduct( v_k );
-            H[ k + i * ( m + 1 ) ] += H_k_i;
+            RealType H_k_i = (w, v_k);
+            H[ k + i * (m + 1) ] += H_k_i;
 
             /****
              * w = w - H_{k,i} v_k
              */
-            w.addVector( v_k, -H_k_i );
+            w = w - H_k_i * v_k;
          }
       /***
        * H_{i+1,i} = |w|
        */
       RealType normw = lpNorm( w, 2.0 );
-      H[ i + 1 + i * ( m + 1 ) ] = normw;
+      H[ i + 1 + i * (m + 1) ] = normw;
 
       /***
        * v_{i+1} = w / |w|
        */
       v_i.bind( &V.getData()[ ( i + 1 ) * ldSize ], size );
-      v_i.addVector( w, 1.0 / normw, 0.0 );
+      v_i = (1.0 / normw) * w;
 
       /****
        * Applying the Givens rotations G_0, ..., G_i
@@ -266,8 +266,8 @@ orthogonalize_CWY( const int m, const RealType normb, const RealType beta )
     * z = r / | r | =  1.0 / beta * r
     */
    // TODO: investigate normalization by beta and normb
-//   z.addVector( r, 1.0 / beta, 0.0 );
-//   z.addVector( r, 1.0 / normb, 0.0 );
+//   z = (1.0 / beta) * r;
+//   z = (1.0 / normb) * r;
    z = r;
 
    H.setValue( 0.0 );
@@ -349,12 +349,12 @@ compute_residue( VectorViewType r, ConstVectorViewType x, ConstVectorViewType b 
     */
    if( this->preconditioner ) {
       this->matrix->vectorProduct( x, _M_tmp );
-      _M_tmp.addVector( b, 1.0, -1.0 );
+      _M_tmp = b - _M_tmp;
       this->preconditioner->solve( _M_tmp, r );
    }
    else {
       this->matrix->vectorProduct( x, r );
-      r.addVector( b, 1.0, -1.0 );
+      r = b - r;
    }
 }
 
@@ -466,7 +466,7 @@ hauseholder_apply_trunc( HostView out,
 
    // NOTE: aux = t_i * (y_i, z) = 1  since  t_i = 2 / ||y_i||^2  and
    //       (y_i, z) = ||z_trunc||^2 + |z_i| ||z_trunc|| = ||y_i||^2 / 2
-//   const RealType aux = T[ i + i * (restarting_max + 1) ] * y_i.scalarProduct( z );
+//   const RealType aux = T[ i + i * (restarting_max + 1) ] * (y_i, z);
    constexpr RealType aux = 1.0;
    if( localOffset == 0 ) {
       if( std::is_same< DeviceType, Devices::Host >::value ) {

@@ -57,18 +57,18 @@ bool BICGStab< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
       b_norm = lpNorm( M_tmp, 2.0 );
 
       this->matrix->vectorProduct( x, M_tmp );
-      M_tmp.addVector( b, 1.0, -1.0 );
+      M_tmp = b - M_tmp;
       this->preconditioner->solve( M_tmp, r );
    }
    else {
       b_norm = lpNorm( b, 2.0 );
       this->matrix->vectorProduct( x, r );
-      r.addVector( b, 1.0, -1.0 );
+      r = b - r;
    }
 
    p = r_ast = r;
    s.setValue( 0.0 );
-   rho = r.scalarProduct( r_ast );
+   rho = (r, r_ast);
 
    if( b_norm == 0.0 )
        b_norm = 1.0;
@@ -88,13 +88,13 @@ bool BICGStab< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
       else {
          this->matrix->vectorProduct( p, Ap );
       }
-      aux = Ap.scalarProduct( r_ast );
+      aux = (Ap, r_ast);
       alpha = rho / aux;
 
       /****
        * s_j = r_j - alpha_j * A p_j
        */
-      s.addVectors( r, 1.0, Ap, -alpha, 0.0 );
+      s = r - alpha * Ap;
 
       /****
        * omega_j = ( A s_j, s_j ) / ( A s_j, A s_j )
@@ -107,29 +107,29 @@ bool BICGStab< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
          this->matrix->vectorProduct( s, As );
       }
       aux = lpNorm( As, 2.0 );
-      omega = As.scalarProduct( s ) / ( aux * aux );
+      omega = (As, s) / (aux * aux);
 
       /****
        * x_{j+1} = x_j + alpha_j * p_j + omega_j * s_j
        */
-      x.addVectors( p, alpha, s, omega );
+      x += alpha * p + omega * s;
 
       /****
        * r_{j+1} = s_j - omega_j * A s_j
        */
-      r.addVectors( s, 1.0, As, -omega, 0.0 );
+      r = s - omega * As;
 
       /****
        * beta = alpha_j / omega_j * ( r_{j+1}, r^ast_0 ) / ( r_j, r^ast_0 )
        */
       rho_old = rho;
-      rho = r.scalarProduct( r_ast );
-      beta = ( rho / rho_old ) * ( alpha / omega );
+      rho = (r, r_ast);
+      beta = (rho / rho_old) * (alpha / omega);
 
       /****
        * p_{j+1} = r_{j+1} + beta_j * ( p_j - omega_j * A p_j )
        */
-      p.addVectors( r, 1.0, Ap, -beta * omega, beta );
+      p = r + beta * p - (beta * omega) * Ap;
 
       if( exact_residue ) {
          /****
@@ -137,12 +137,12 @@ bool BICGStab< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
           */
          if( this->preconditioner ) {
             this->matrix->vectorProduct( x, M_tmp );
-            M_tmp.addVector( b, 1.0, -1.0 );
+            M_tmp = b - M_tmp;
             this->preconditioner->solve( M_tmp, s );
          }
          else {
             this->matrix->vectorProduct( x, s );
-            s.addVector( b, 1.0, -1.0 );
+            s = b - s;
          }
          const RealType residue = lpNorm( s, 2.0 );
          this->setResidue( residue / b_norm );

@@ -157,7 +157,7 @@ benchmarkSolver( Benchmark& benchmark,
          Vector r;
          r.setLike( x );
          matrix->vectorProduct( x, r );
-         r.addVector( b, 1.0, -1.0 );
+         r = b - r;
          const double residue_true = lpNorm( r, 2.0 ) / lpNorm( b, 2.0 );
 
          return RowElements({ time, speedup, (double) converged, (double) iterations,
