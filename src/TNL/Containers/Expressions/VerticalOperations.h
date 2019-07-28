@@ -18,8 +18,8 @@
 // vector expression elements. It means for example minim/maximum of all
 // vector elements etc.
 namespace TNL {
-   namespace Containers {
-      namespace Expressions {
+namespace Containers {
+namespace Expressions {
 
 ////
 // Vertical operations
@@ -211,6 +211,6 @@ auto ExpressionBinaryOr( const Expression& expression ) -> typename std::remove_
    return Algorithms::Reduction< typename Expression::DeviceType >::reduce( expression.getSize(), reduction, volatileReduction, fetch, ( ResultType ) 0 );
 }
 
-      } //namespace Expressions
-   } // namespace Containers
+} // namespace Expressions
+} // namespace Containers
 } // namespace TNL

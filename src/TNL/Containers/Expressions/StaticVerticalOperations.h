@@ -18,12 +18,12 @@
 // vector expression elements. It means for example minim/maximum of all
 // vector elements etc.
 namespace TNL {
-   namespace Containers {
-      namespace Expressions {
+namespace Containers {
+namespace Expressions {
 
 template< typename Expression >
 __cuda_callable__
-auto StaticExpressionMin( const Expression& expression ) -> typename std::remove_reference< decltype( expression[ 0 ] ) >::type
+auto StaticExpressionMin( const Expression& expression )
 {
    auto aux = expression[ 0 ];
    for( int i = 1; i < expression.getSize(); i++ )
@@ -33,7 +33,7 @@ auto StaticExpressionMin( const Expression& expression ) -> typename std::remove
 
 template< typename Expression, typename Real >
 __cuda_callable__
-auto StaticExpressionArgMin( const Expression& expression, int& arg ) -> typename std::remove_reference< decltype( expression[ 0 ] ) >::type
+auto StaticExpressionArgMin( const Expression& expression, int& arg )
 {
    auto value = expression[ 0 ];
    arg = 0;
@@ -50,7 +50,7 @@ auto StaticExpressionArgMin( const Expression& expression, int& arg ) -> typenam
 
 template< typename Expression >
 __cuda_callable__
-auto StaticExpressionMax( const Expression& expression ) -> typename std::remove_reference< decltype( expression[ 0 ] ) >::type
+auto StaticExpressionMax( const Expression& expression )
 {
    auto aux = expression[ 0 ];
    for( int i = 1; i < expression.getSize(); i++ )
@@ -60,7 +60,7 @@ auto StaticExpressionMax( const Expression& expression ) -> typename std::remove
 
 template< typename Expression, typename Real >
 __cuda_callable__
-auto StaticExpressionArgMax( const Expression& expression, int& arg ) -> typename std::remove_reference< decltype( expression[ 0 ] ) >::type
+auto StaticExpressionArgMax( const Expression& expression, int& arg )
 {
    auto value = expression[ 0 ];
    arg = 0;
@@ -77,7 +77,7 @@ auto StaticExpressionArgMax( const Expression& expression, int& arg ) -> typenam
 
 template< typename Expression >
 __cuda_callable__
-auto StaticExpressionSum( const Expression& expression ) -> typename std::remove_reference< decltype( expression[ 0 ] ) >::type
+auto StaticExpressionSum( const Expression& expression )
 {
    auto aux = expression[ 0 ];
    for( int i = 1; i < expression.getSize(); i++ )
@@ -87,7 +87,8 @@ auto StaticExpressionSum( const Expression& expression ) -> typename std::remove
 
 template< typename Expression, typename Real >
 __cuda_callable__
-auto StaticExpressionLpNorm( const Expression& expression, const Real& p ) -> typename std::remove_reference< decltype( expression[ 0 ] ) >::type
+auto StaticExpressionLpNorm( const Expression& expression, const Real& p )
+-> typename std::remove_reference< decltype( expression[ 0 ] ) >::type
 {
    if( p == ( Real ) 1.0 )
    {
@@ -112,7 +113,7 @@ auto StaticExpressionLpNorm( const Expression& expression, const Real& p ) -> ty
 
 template< typename Expression >
 __cuda_callable__
-auto StaticExpressionProduct( const Expression& expression ) -> typename std::remove_reference< decltype( expression[ 0 ] ) >::type
+auto StaticExpressionProduct( const Expression& expression )
 {
    auto aux = expression[ 0 ];
    for( int i = 1; i < expression.getSize(); i++ )
@@ -142,7 +143,7 @@ bool StaticExpressionLogicalOr( const Expression& expression )
 
 template< typename Expression >
 __cuda_callable__
-auto StaticExpressionBinaryAnd( const Expression& expression ) -> typename std::remove_reference< decltype( expression[ 0 ] ) >::type
+auto StaticExpressionBinaryAnd( const Expression& expression )
 {
    auto aux = expression[ 0 ];
    for( int i = 1; i < expression.getSize(); i++ )
@@ -152,7 +153,7 @@ auto StaticExpressionBinaryAnd( const Expression& expression ) -> typename std::
 
 template< typename Expression >
 __cuda_callable__
-auto StaticExpressionBinaryOr( const Expression& expression ) -> typename std::remove_reference< decltype( expression[ 0 ] ) >::type
+auto StaticExpressionBinaryOr( const Expression& expression )
 {
    auto aux = expression[ 0 ];
    for( int i = 1; i < expression.getSize(); i++ )
@@ -160,6 +161,6 @@ auto StaticExpressionBinaryOr( const Expression& expression ) -> typename std::r
    return aux;
 }
 
-      } //namespace Expressions
-   } // namespace Containers
+} // namespace Expressions
+} // namespace Containers
 } // namespace TNL

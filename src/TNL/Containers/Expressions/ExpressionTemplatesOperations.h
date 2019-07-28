@@ -13,8 +13,8 @@
 #include <TNL/Math.h>
 
 namespace TNL {
-   namespace Containers {
-      namespace Expressions {
+namespace Containers {
+namespace Expressions {
 
 template< typename T1, typename T2 >
 struct Addition
@@ -287,6 +287,6 @@ struct Sign
    }
 };
 
-      } //namespace Expressions
-   } // namespace Containers
+} // namespace Expressions
+} // namespace Containers
 } // namespace TNL
