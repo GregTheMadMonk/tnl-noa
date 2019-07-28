@@ -59,21 +59,14 @@ CudaReductionKernel( const Result zero,
 
    ResultType* sdata = Devices::Cuda::getSharedMemory< ResultType >();
 
-   /***
-    * Get thread id (tid) and global thread id (gid).
-    * gridSize is the number of element processed by all blocks at the
-    * same time.
-    */
+   // Get the thread id (tid), global thread id (gid) and gridSize.
    const IndexType tid = threadIdx.x;
          IndexType gid = blockIdx.x * blockDim. x + threadIdx.x;
    const IndexType gridSize = blockDim.x * gridDim.x;
 
    sdata[ tid ] = zero;
 
-   /***
-    * Read data into the shared memory. We start with the
-    * sequential reduction.
-    */
+   // Read data into the shared memory. We start with the sequential reduction.
    while( gid + 4 * gridSize < size ) {
       reduction( sdata[ tid ], dataFetcher( gid ) );
       reduction( sdata[ tid ], dataFetcher( gid + gridSize ) );
@@ -92,10 +85,7 @@ CudaReductionKernel( const Result zero,
    }
    __syncthreads();
 
-   //printf( "1: tid %d data %f \n", tid, sdata[ tid ] );
-   /***
-    *  Perform the parallel reduction.
-    */
+   // Perform the parallel reduction.
    if( blockSize >= 1024 ) {
       if( tid < 512 )
          reduction( sdata[ tid ], sdata[ tid + 512 ] );
@@ -117,16 +107,15 @@ CudaReductionKernel( const Result zero,
       __syncthreads();
    }
 
-   /***
-    * This runs in one warp so it is synchronized implicitly.
-    */
+   // This runs in one warp so it is synchronized implicitly.
    if( tid < 32 ) {
       volatile ResultType* vsdata = sdata;
       if( blockSize >= 64 ) {
          volatileReduction( vsdata[ tid ], vsdata[ tid + 32 ] );
       }
-      // TODO: If blocksize == 32, the following does not work
-      // We do not check if tid < 16. Fix it!!!
+      // Note that here we do not have to check if tid < 16 etc, because we have
+      // twice as much shared memory, so we do not access out of bounds. The
+      // results for the upper half will be undefined, but unused anyway.
       if( blockSize >= 32 ) {
          volatileReduction( vsdata[ tid ], vsdata[ tid + 16 ] );
       }
@@ -144,9 +133,7 @@ CudaReductionKernel( const Result zero,
       }
    }
 
-   /***
-    * Store the result back in the global memory.
-    */
+   // Store the result back in the global memory.
    if( tid == 0 )
       output[ blockIdx.x ] = sdata[ 0 ];
 }
@@ -174,19 +161,12 @@ CudaReductionWithArgumentKernel( const Result zero,
    ResultType* sdata = Devices::Cuda::getSharedMemory< ResultType >();
    IndexType* sidx = reinterpret_cast< IndexType* >( &sdata[ blockDim.x ] );
 
-   /***
-    * Get thread id (tid) and global thread id (gid).
-    * gridSize is the number of element processed by all blocks at the
-    * same time.
-    */
+   // Get the thread id (tid), global thread id (gid) and gridSize.
    const IndexType tid = threadIdx.x;
          IndexType gid = blockIdx.x * blockDim. x + threadIdx.x;
    const IndexType gridSize = blockDim.x * gridDim.x;
 
-   /***
-    * Read data into the shared memory. We start with the
-    * sequential reduction.
-    */
+   // Read data into the shared memory. We start with the sequential reduction.
    if( idxInput ) {
       if( gid < size ) {
          sdata[ tid ] = dataFetcher( gid );
@@ -239,10 +219,7 @@ CudaReductionWithArgumentKernel( const Result zero,
    }
    __syncthreads();
 
-   //printf( "1: tid %d data %f \n", tid, sdata[ tid ] );
-   /***
-    *  Perform the parallel reduction.
-    */
+   // Perform the parallel reduction.
    if( blockSize >= 1024 ) {
       if( tid < 512 )
          reduction( sidx[ tid ], sidx[ tid + 512 ], sdata[ tid ], sdata[ tid + 512 ] );
@@ -264,17 +241,16 @@ CudaReductionWithArgumentKernel( const Result zero,
       __syncthreads();
    }
 
-   /***
-    * This runs in one warp so it is synchronized implicitly.
-    */
+   // This runs in one warp so it is synchronized implicitly.
    if( tid < 32 ) {
       volatile ResultType* vsdata = sdata;
       volatile IndexType* vsidx = sidx;
       if( blockSize >= 64 ) {
          volatileReduction( vsidx[ tid ], vsidx[ tid + 32 ], vsdata[ tid ], vsdata[ tid + 32 ] );
       }
-      // TODO: If blocksize == 32, the following does not work
-      // We do not check if tid < 16. Fix it!!!
+      // Note that here we do not have to check if tid < 16 etc, because we have
+      // twice as much shared memory, so we do not access out of bounds. The
+      // results for the upper half will be undefined, but unused anyway.
       if( blockSize >= 32 ) {
          volatileReduction( vsidx[ tid ], vsidx[ tid + 16 ], vsdata[ tid ], vsdata[ tid + 16 ] );
       }
@@ -292,9 +268,7 @@ CudaReductionWithArgumentKernel( const Result zero,
       }
    }
 
-   /***
-    * Store the result back in the global memory.
-    */
+   // Store the result back in the global memory.
    if( tid == 0 ) {
       output[ blockIdx.x ] = sdata[ 0 ];
       idxOutput[ blockIdx.x ] = sidx[ 0 ];
@@ -309,7 +283,6 @@ struct CudaReductionKernelLauncher
    using IndexType = Index;
    using ResultType = Result;
 
-   ////
    // The number of blocks should be a multiple of the number of multiprocessors
    // to ensure optimum balancing of the load. This is very important, because
    // we run the kernel with a fixed number of blocks, so the amount of work per
@@ -342,7 +315,6 @@ struct CudaReductionKernelLauncher
               const Result& zero,
               ResultType*& output )
    {
-      ////
       // create reference to the reduction buffer singleton and set size
       const std::size_t buf_size = 2 * desGridSize * sizeof( ResultType );
       CudaReductionBuffer& cudaReductionBuffer = CudaReductionBuffer::getInstance();
@@ -363,7 +335,6 @@ struct CudaReductionKernelLauncher
                           ResultType*& output,
                           IndexType*& idxOutput )
    {
-      ////
       // create reference to the reduction buffer singleton and set size
       const std::size_t buf_size = 2 * desGridSize * ( sizeof( ResultType ) + sizeof( IndexType ) );
       CudaReductionBuffer& cudaReductionBuffer = CudaReductionBuffer::getInstance();
@@ -381,7 +352,6 @@ struct CudaReductionKernelLauncher
                   const VolatileReduction& volatileReduction,
                   const Result& zero )
    {
-      ////
       // Input is the first half of the buffer, output is the second half
       CudaReductionBuffer& cudaReductionBuffer = CudaReductionBuffer::getInstance();
       ResultType* input = cudaReductionBuffer.template getData< ResultType >();
@@ -399,7 +369,6 @@ struct CudaReductionKernelLauncher
       // AND to solve the case when this->reducedSize was 1 since the beginning
       std::swap( input, output );
 
-      ////
       // Copy result on CPU
       ResultType result;
       ArrayOperations< Devices::Host, Devices::Cuda >::copy( &result, output, 1 );
@@ -413,7 +382,6 @@ struct CudaReductionKernelLauncher
                               const VolatileReduction& volatileReduction,
                               const Result& zero )
    {
-      ////
       // Input is the first half of the buffer, output is the second half
       CudaReductionBuffer& cudaReductionBuffer = CudaReductionBuffer::getInstance();
       ResultType* input = cudaReductionBuffer.template getData< ResultType >();
@@ -459,7 +427,6 @@ struct CudaReductionKernelLauncher
          blockSize.x = Reduction_maxThreadsPerBlock;
          gridSize.x = TNL::min( Devices::Cuda::getNumberOfBlocks( size, blockSize.x ), desGridSize );
 
-         ////
          // when there is only one warp per blockSize.x, we need to allocate two warps
          // worth of shared memory so that we don't index shared memory out of bounds
          const IndexType shmem = (blockSize.x <= 32)
@@ -469,7 +436,6 @@ struct CudaReductionKernelLauncher
         // This is "general", but this method always sets blockSize.x to a specific value,
         // so runtime switch is not necessary - it only prolongs the compilation time.
 /*
-        /////
         // Depending on the blockSize we generate appropriate template instance.
         switch( blockSize.x )
         {
@@ -544,7 +510,6 @@ struct CudaReductionKernelLauncher
            TNL_ASSERT( false, std::cerr << "Block size was expected to be " << Reduction_maxThreadsPerBlock << ", but " << blockSize.x << " was specified." << std::endl; );
         }
 
-        ////
         // Return the size of the output array on the CUDA device
         return gridSize.x;
       }
@@ -565,7 +530,6 @@ struct CudaReductionKernelLauncher
          blockSize.x = Reduction_maxThreadsPerBlock;
          gridSize.x = TNL::min( Devices::Cuda::getNumberOfBlocks( size, blockSize.x ), desGridSize );
 
-         ////
          // when there is only one warp per blockSize.x, we need to allocate two warps
          // worth of shared memory so that we don't index shared memory out of bounds
          const IndexType shmem = (blockSize.x <= 32)
@@ -575,7 +539,6 @@ struct CudaReductionKernelLauncher
         // This is "general", but this method always sets blockSize.x to a specific value,
         // so runtime switch is not necessary - it only prolongs the compilation time.
 /*
-        /////
         // Depending on the blockSize we generate appropriate template instance.
         switch( blockSize.x )
         {
@@ -650,7 +613,6 @@ struct CudaReductionKernelLauncher
            TNL_ASSERT( false, std::cerr << "Block size was expected to be " << Reduction_maxThreadsPerBlock << ", but " << blockSize.x << " was specified." << std::endl; );
         }
 
-        ////
         // return the size of the output array on the CUDA device
         return gridSize.x;
       }
