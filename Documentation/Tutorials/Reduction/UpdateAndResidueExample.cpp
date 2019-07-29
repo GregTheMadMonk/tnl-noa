@@ -18,7 +18,7 @@ double updateAndResidue( Vector< double, Device >& u, const Vector< double, Devi
       return add * add; };
    auto reduce = [] __cuda_callable__ ( double& a, const double& b ) { a += b; };
    auto volatileReduce = [=] __cuda_callable__ ( volatile double& a, const volatile double& b ) { a += b; };
-   return Reduction< Device >::reduce( u_view.getSize(), reduce, volatileReduce, fetch, 0.0 );
+   return sqrt( Reduction< Device >::reduce( u_view.getSize(), reduce, volatileReduce, fetch, 0.0 ) );
 }
 
 int main( int argc, char* argv[] )

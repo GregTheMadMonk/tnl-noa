@@ -11,6 +11,8 @@ This tutorial introduces flexible parallel reduction in TNL. It shows how to eas
    3. [Scalar product](#flexible_parallel_reduction_scalar_product)
    4. [Maxium norm](#flexible_parallel_reduction_maximum_norm)
    5. [Vectors comparison](#flexible_parallel_reduction_vector_comparison)
+   6. [Update and Residue](#flexible_parallel_reduction_update_and_residue)
+   7. [Simple Mask and Reduce](#flexible_parallel_reduction_simple_mask_and_reduce)
 
 ## Flexible parallel reduction<a name="flexible_parallel_reduction"></a>
 
@@ -50,11 +52,11 @@ Note tha we pass `0.0` as the last argument of the method `Reduction< Device >::
 
 \include SumExample.out
 
-Sum of vector elements can be also obtained as `sum( v )`.
+Sum of vector elements can be also obtained as `sum(v)`.
 
 ### Product<a name="flexible_parallel_reduction_product"></a>
 
-To demonstrate the effect of the *idempotent element*, we will now compute product of all elements of the vector. The *idempotent element* is one for multiplication and we also need to replace `a +=b` with `a *= b` in the definition of `reduce` and `volatileReduce`. We get the following code:
+To demonstrate the effect of the *idempotent element*, we will now compute product of all elements of the vector. The *idempotent element* is one for multiplication and we also need to replace `a+=b` with `a*=b` in the definition of `reduce` and `volatileReduce`. We get the following code:
 i
 \include ProductExample.cpp
 
@@ -62,7 +64,7 @@ leading to output like this:
 
 \include ProductExample.out
 
-Product of vector elements can be computed using fuction `product( v )`.
+Product of vector elements can be computed using fuction `product(v)`.
 
 ### Scalar product<a name="flexible_parallel_reduction_scalar_product"></a>
 
@@ -74,7 +76,7 @@ The result is:
 
 \include ScalarProductExample.out
 
-Scalar product of vectors `u` and `v` can be in TNL computed by `dot( u, v )` or simply as `(u,v)`.
+Scalar product of vectors `u` and `v` can be in TNL computed by `dot(u,v)` or simply as `(u,v)`.
 
 ### Maxium norm<a name="flexible_parallel_reduction_maximum_norm"></a>
 
@@ -86,7 +88,7 @@ The output is:
 
 \include MaximumNormExample.out
 
-Maximum norm in TNL computes function `maxNorm( v )`.
+Maximum norm in TNL computes function `maxNorm(v)`.
 
 ### Vectors comparison<a name="flexible_parallel_reduction_vector_comparison"></a>
 
@@ -106,7 +108,7 @@ In iterative solvers we often need to update a vector and compute the update nor
 \bf u^{k+1} = \bf u^k + \tau \Delta \bf u.
 \f]
 
-Except the vector addition, we may want to compute \f$L_p\f$-norm of \f$\Delta \bf u\f$ which may indicate convergence. Computing first the addition and then the norm would be inefficient because we would have to fetch the vector \f$\Delta \bf u\f$ twice from the memory. The following example shows how to do the addition and norm computation at the same time.
+Together with the vector addition, we may want to compute also \f$L_2\f$-norm of \f$\Delta \bf u\f$ which may indicate convergence. Computing first the addition and then the norm would be inefficient because we would have to fetch the vector \f$\Delta \bf u\f$ twice from the memory. The following example shows how to do the addition and norm computation at the same time.
 
 \include UpdateAndResidueExample.cpp
 
@@ -114,4 +116,5 @@ The result reads as:
 
 \include UpdateAndResidueExample.out
 
+### Simple Mask and Reduce<a name="flexible_parallel_reduction_simple_mask_and_reduce"></a>
 
