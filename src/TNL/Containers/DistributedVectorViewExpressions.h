@@ -356,10 +356,10 @@ auto
 operator,( const DistributedVectorView< Real1, Device, Index, Communicator >& a, const DistributedVectorView< Real2, Device, Index, Communicator >& b )
 {
    using CommunicatorType = typename DistributedVectorView< Real1, Device, Index, Communicator >::CommunicatorType;
-   using Real = decltype( TNL::sum( a.getLocalVectorView() * b.getLocalVectorView(), b.getCommunicationGroup() ) );
+   using Real = decltype( TNL::sum( a.getLocalVectorView() * b.getLocalVectorView() ) );
    Real result = 0.0;
    if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      const Real localResult = TNL::sum( a.getLocalVectorView() * b.getLocalVectorView(), b.getCommunicationGroup() );
+      const Real localResult = TNL::sum( a.getLocalVectorView() * b.getLocalVectorView() );
       CommunicatorType::Allreduce( &localResult, &result, 1, MPI_SUM, a.getCommunicationGroup() );
    }
    return result;

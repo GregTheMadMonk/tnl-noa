@@ -369,7 +369,7 @@ operator+( const DistributedBinaryExpressionTemplate< L1, L2, LOperation, Commun
    return DistributedBinaryExpressionTemplate<
       DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
       DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
-      Addition, Communicator >( a, b );
+      Addition, Communicator >( a, b, a.getCommunicationGroup() );
 }
 
 template< typename T1,
@@ -383,7 +383,7 @@ operator+( const DistributedBinaryExpressionTemplate< T1, T2, Operation, Communi
    return DistributedBinaryExpressionTemplate<
       DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
       typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
-      Addition, Communicator >( a, b );
+      Addition, Communicator >( a, b, a.getCommunicationGroup() );
 }
 
 template< typename T1,
@@ -396,7 +396,7 @@ operator+( const typename DistributedBinaryExpressionTemplate< T1, T2, Operation
    return DistributedBinaryExpressionTemplate<
       typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
       DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
-      Addition, Communicator >( a, b );
+      Addition, Communicator >( a, b, b.getCommunicationGroup() );
 }
 
 template< typename T1,
@@ -408,7 +408,7 @@ operator+( const DistributedUnaryExpressionTemplate< T1, Operation, Parameter, C
    return DistributedBinaryExpressionTemplate<
       DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >,
       typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType,
-      Addition, Communicator >( a, b );
+      Addition, Communicator >( a, b, a.getCommunicationGroup() );
 }
 
 template< typename T1,
@@ -420,7 +420,7 @@ operator+( const typename DistributedUnaryExpressionTemplate< T1, Operation, Par
    return DistributedBinaryExpressionTemplate<
       typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType,
       DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >,
-      Addition, Communicator >( a, b );
+      Addition, Communicator >( a, b, b.getCommunicationGroup() );
 }
 
 template< typename L1,
@@ -436,7 +436,7 @@ operator+( const DistributedUnaryExpressionTemplate< L1, LOperation, Parameter, 
    return DistributedBinaryExpressionTemplate<
       DistributedUnaryExpressionTemplate< L1, LOperation, Parameter, Communicator >,
       DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
-      Addition, Communicator >( a, b );
+      Addition, Communicator >( a, b, a.getCommunicationGroup() );
 }
 
 template< typename L1,
@@ -451,7 +451,7 @@ operator+( const DistributedBinaryExpressionTemplate< L1, L2, LOperation, Commun
    return DistributedBinaryExpressionTemplate<
       DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
       DistributedUnaryExpressionTemplate< R1, ROperation, Parameter, Communicator >,
-      Addition, Communicator >( a, b );
+      Addition, Communicator >( a, b, a.getCommunicationGroup() );
 }
 
 template< typename L1,
@@ -465,7 +465,7 @@ operator+( const DistributedUnaryExpressionTemplate< L1,LOperation, LParameter, 
    return DistributedBinaryExpressionTemplate<
       DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
       DistributedUnaryExpressionTemplate< R1, ROperation, RParameter, Communicator >,
-      Addition, Communicator >( a, b );
+      Addition, Communicator >( a, b, a.getCommunicationGroup() );
 }
 
 ////
@@ -483,7 +483,7 @@ operator-( const DistributedBinaryExpressionTemplate< L1, L2, LOperation, Commun
    return DistributedBinaryExpressionTemplate<
       DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
       DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
-      Subtraction, Communicator >( a, b );
+      Subtraction, Communicator >( a, b, a.getCommunicationGroup() );
 }
 
 template< typename T1,
@@ -496,7 +496,7 @@ operator-( const DistributedBinaryExpressionTemplate< T1, T2, Operation, Communi
    return DistributedBinaryExpressionTemplate<
       DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
       typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
-      Subtraction, Communicator >( a, b );
+      Subtraction, Communicator >( a, b, a.getCommunicationGroup() );
 }
 
 template< typename T1,
@@ -509,7 +509,7 @@ operator-( const typename DistributedBinaryExpressionTemplate< T1, T2, Operation
    return DistributedBinaryExpressionTemplate<
       typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
       DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
-      Subtraction, Communicator >( a, b );
+      Subtraction, Communicator >( a, b, b.getCommunicationGroup() );
 }
 
 template< typename T1,
@@ -521,7 +521,7 @@ operator-( const DistributedUnaryExpressionTemplate< T1, Operation, Parameter, C
    return DistributedBinaryExpressionTemplate<
       DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >,
       typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType,
-      Subtraction, Communicator >( a, b );
+      Subtraction, Communicator >( a, b, a.getCommunicationGroup() );
 }
 
 template< typename T1,
@@ -533,7 +533,7 @@ operator-( const typename DistributedUnaryExpressionTemplate< T1, Operation, Par
    return DistributedBinaryExpressionTemplate<
       typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType,
       DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >,
-      Subtraction, Communicator >( a, b );
+      Subtraction, Communicator >( a, b, b.getCommunicationGroup() );
 }
 
 template< typename L1,
@@ -548,7 +548,7 @@ operator-( const DistributedUnaryExpressionTemplate< L1, LOperation, LParameter,
    return DistributedBinaryExpressionTemplate<
       DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
       DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
-      Subtraction, Communicator >( a, b );
+      Subtraction, Communicator >( a, b, a.getCommunicationGroup() );
 }
 
 template< typename L1,
@@ -563,7 +563,7 @@ operator-( const DistributedBinaryExpressionTemplate< L1, L2, LOperation, Commun
    return DistributedBinaryExpressionTemplate<
       DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
       DistributedUnaryExpressionTemplate< R1, ROperation, Parameter, Communicator >,
-      Subtraction, Communicator >( a, b );
+      Subtraction, Communicator >( a, b, a.getCommunicationGroup() );
 }
 
 template< typename L1,
@@ -577,7 +577,7 @@ operator-( const DistributedUnaryExpressionTemplate< L1,LOperation, LParameter, 
    return DistributedBinaryExpressionTemplate<
       DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
       DistributedUnaryExpressionTemplate< R1, ROperation, RParameter, Communicator >,
-      Subtraction, Communicator >( a, b );
+      Subtraction, Communicator >( a, b, a.getCommunicationGroup() );
 }
 
 ////
@@ -595,7 +595,7 @@ operator*( const DistributedBinaryExpressionTemplate< L1, L2, LOperation, Commun
    return DistributedBinaryExpressionTemplate<
       DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
       DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
-      Multiplication, Communicator >( a, b );
+      Multiplication, Communicator >( a, b, a.getCommunicationGroup() );
 }
 
 template< typename T1,
@@ -608,7 +608,7 @@ operator*( const DistributedBinaryExpressionTemplate< T1, T2, Operation, Communi
    return DistributedBinaryExpressionTemplate<
       DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
       typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
-      Multiplication, Communicator >( a, b );
+      Multiplication, Communicator >( a, b, a.getCommunicationGroup() );
 }
 
 template< typename T1,
@@ -621,7 +621,7 @@ operator*( const typename DistributedBinaryExpressionTemplate< T1, T2, Operation
    return DistributedBinaryExpressionTemplate<
       typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
       DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
-      Multiplication, Communicator >( a, b );
+      Multiplication, Communicator >( a, b, b.getCommunicationGroup() );
 }
 
 template< typename T1,
@@ -633,7 +633,7 @@ operator*( const DistributedUnaryExpressionTemplate< T1, Operation, Parameter, C
    return DistributedBinaryExpressionTemplate<
       DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >,
       typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType,
-      Multiplication, Communicator >( a, b );
+      Multiplication, Communicator >( a, b, a.getCommunicationGroup() );
 }
 
 template< typename T1,
@@ -645,7 +645,7 @@ operator*( const typename DistributedUnaryExpressionTemplate< T1, Operation, Par
    return DistributedBinaryExpressionTemplate<
       typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType,
       DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >,
-      Multiplication, Communicator >( a, b );
+      Multiplication, Communicator >( a, b, b.getCommunicationGroup() );
 }
 
 template< typename L1,
@@ -660,7 +660,7 @@ operator*( const DistributedUnaryExpressionTemplate< L1, LOperation, LParameter,
    return DistributedBinaryExpressionTemplate<
       DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
       DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
-      Multiplication, Communicator >( a, b );
+      Multiplication, Communicator >( a, b, a.getCommunicationGroup() );
 }
 
 template< typename L1,
@@ -675,7 +675,7 @@ operator*( const DistributedBinaryExpressionTemplate< L1, L2, LOperation, Commun
    return DistributedBinaryExpressionTemplate<
       DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
       DistributedUnaryExpressionTemplate< R1, ROperation, Parameter, Communicator >,
-      Multiplication, Communicator >( a, b );
+      Multiplication, Communicator >( a, b, a.getCommunicationGroup() );
 }
 
 template< typename L1,
@@ -689,7 +689,7 @@ operator*( const DistributedUnaryExpressionTemplate< L1,LOperation, LParameter, 
    return DistributedBinaryExpressionTemplate<
       DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
       DistributedUnaryExpressionTemplate< R1, ROperation, RParameter, Communicator >,
-      Multiplication, Communicator >( a, b );
+      Multiplication, Communicator >( a, b, a.getCommunicationGroup() );
 }
 
 ////
@@ -707,7 +707,7 @@ operator/( const DistributedBinaryExpressionTemplate< L1, L2, LOperation, Commun
    return DistributedBinaryExpressionTemplate<
       DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
       DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
-      Division, Communicator >( a, b );
+      Division, Communicator >( a, b, a.getCommunicationGroup() );
 }
 
 template< typename T1,
@@ -720,7 +720,7 @@ operator/( const DistributedBinaryExpressionTemplate< T1, T2, Operation, Communi
    return DistributedBinaryExpressionTemplate<
       DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
       typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
-      Division, Communicator >( a, b );
+      Division, Communicator >( a, b, a.getCommunicationGroup() );
 }
 
 template< typename T1,
@@ -733,7 +733,7 @@ operator/( const typename DistributedBinaryExpressionTemplate< T1, T2, Operation
    return DistributedBinaryExpressionTemplate<
       typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
       DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
-      Division, Communicator >( a, b );
+      Division, Communicator >( a, b, b.getCommunicationGroup() );
 }
 
 template< typename T1,
@@ -745,7 +745,7 @@ operator/( const DistributedUnaryExpressionTemplate< T1, Operation, Parameter, C
    return DistributedBinaryExpressionTemplate<
       DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >,
       typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType,
-      Division, Communicator >( a, b );
+      Division, Communicator >( a, b, a.getCommunicationGroup() );
 }
 
 template< typename T1,
@@ -757,7 +757,7 @@ operator/( const typename DistributedUnaryExpressionTemplate< T1, Operation, Par
    return DistributedBinaryExpressionTemplate<
       typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType,
       DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >,
-      Division, Communicator >( a, b );
+      Division, Communicator >( a, b, b.getCommunicationGroup() );
 }
 
 template< typename L1,
@@ -772,7 +772,7 @@ operator/( const DistributedUnaryExpressionTemplate< L1, LOperation, LParameter,
    return DistributedBinaryExpressionTemplate<
       DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
       DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
-      Division, Communicator >( a, b );
+      Division, Communicator >( a, b, a.getCommunicationGroup() );
 }
 
 template< typename L1,
@@ -787,7 +787,7 @@ operator/( const DistributedBinaryExpressionTemplate< L1, L2, LOperation, Commun
    return DistributedBinaryExpressionTemplate<
       DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
       DistributedUnaryExpressionTemplate< R1, ROperation, Parameter, Communicator >,
-      Division, Communicator >( a, b );
+      Division, Communicator >( a, b, a.getCommunicationGroup() );
 }
 
 template< typename L1,
@@ -801,7 +801,7 @@ operator/( const DistributedUnaryExpressionTemplate< L1,LOperation, LParameter, 
    return DistributedBinaryExpressionTemplate<
       DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
       DistributedUnaryExpressionTemplate< R1, ROperation, RParameter, Communicator >,
-      Division, Communicator >( a, b );
+      Division, Communicator >( a, b, a.getCommunicationGroup() );
 }
 
 ////
@@ -854,7 +854,7 @@ operator==( const typename DistributedBinaryExpressionTemplate< T1, T2, Operatio
 {
    using Left = typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType;
    using Right = DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >;
-   return DistributedComparison< Left, Right >::template EQ< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< Left, Right >::template EQ< typename Left::CommunicatorType >( a, b, b.getCommunicationGroup() );
 }
 
 template< typename T1,
@@ -866,7 +866,7 @@ operator==( const typename DistributedUnaryExpressionTemplate< T1, Operation, Pa
 {
    using Left = typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType;
    using Right = DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >;
-   return DistributedComparison< Left, Right >::template EQ< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< Left, Right >::template EQ< typename Left::CommunicatorType >( a, b, b.getCommunicationGroup() );
 }
 
 template< typename L1,
@@ -965,7 +965,7 @@ operator!=( const typename DistributedBinaryExpressionTemplate< T1, T2, Operatio
 {
    using Left = typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType;
    using Right = DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >;
-   return DistributedComparison< Left, Right >::template NE< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< Left, Right >::template NE< typename Left::CommunicatorType >( a, b, b.getCommunicationGroup() );
 }
 
 template< typename T1,
@@ -977,7 +977,7 @@ operator!=( const typename DistributedUnaryExpressionTemplate< T1, Operation, Pa
 {
    using Left = typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType;
    using Right = DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >;
-   return DistributedComparison< Left, Right >::template NE< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< Left, Right >::template NE< typename Left::CommunicatorType >( a, b, b.getCommunicationGroup() );
 }
 
 template< typename L1,
@@ -1075,7 +1075,7 @@ operator<( const typename DistributedBinaryExpressionTemplate< T1, T2, Operation
 {
    using Left = typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType;
    using Right = DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >;
-   return DistributedComparison< Left, Right >::template LT< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< Left, Right >::template LT< typename Left::CommunicatorType >( a, b, b.getCommunicationGroup() );
 }
 
 template< typename T1,
@@ -1087,7 +1087,7 @@ operator<( const typename DistributedUnaryExpressionTemplate< T1, Operation, Par
 {
    using Left = typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType;
    using Right = DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >;
-   return DistributedComparison< Left, Right >::template LT< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< Left, Right >::template LT< typename Left::CommunicatorType >( a, b, b.getCommunicationGroup() );
 }
 
 template< typename L1,
@@ -1185,7 +1185,7 @@ operator<=( const typename DistributedBinaryExpressionTemplate< T1, T2, Operatio
 {
    using Left = typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType;
    using Right = DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >;
-   return DistributedComparison< Left, Right >::template LE< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< Left, Right >::template LE< typename Left::CommunicatorType >( a, b, b.getCommunicationGroup() );
 }
 
 template< typename T1,
@@ -1197,7 +1197,7 @@ operator<=( const typename DistributedUnaryExpressionTemplate< T1, Operation, Pa
 {
    using Left = typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType;
    using Right = DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >;
-   return DistributedComparison< Left, Right >::template LE< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< Left, Right >::template LE< typename Left::CommunicatorType >( a, b, b.getCommunicationGroup() );
 }
 
 template< typename L1,
@@ -1280,7 +1280,7 @@ operator>( const typename DistributedBinaryExpressionTemplate< T1, T2, Operation
 {
    using Left = typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType;
    using Right = DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >;
-   return DistributedComparison< Left, Right >::template GT< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< Left, Right >::template GT< typename Left::CommunicatorType >( a, b, b.getCommunicationGroup() );
 }
 
 template< typename T1,
@@ -1292,7 +1292,7 @@ operator>( const typename DistributedUnaryExpressionTemplate< T1, Operation, Par
 {
    using Left = typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType;
    using Right = DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >;
-   return DistributedComparison< Left, Right >::template GT< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< Left, Right >::template GT< typename Left::CommunicatorType >( a, b, b.getCommunicationGroup() );
 }
 
 template< typename L1,
@@ -1375,7 +1375,7 @@ operator>=( const typename DistributedBinaryExpressionTemplate< T1, T2, Operatio
 {
    using Left = typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType;
    using Right = DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >;
-   return DistributedComparison< Left, Right >::template GE< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< Left, Right >::template GE< typename Left::CommunicatorType >( a, b, b.getCommunicationGroup() );
 }
 
 template< typename T1,
@@ -1387,7 +1387,7 @@ operator>=( const typename DistributedUnaryExpressionTemplate< T1, Operation, Pa
 {
    using Left = typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType;
    using Right = DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >;
-   return DistributedComparison< Left, Right >::template GE< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< Left, Right >::template GE< typename Left::CommunicatorType >( a, b, b.getCommunicationGroup() );
 }
 
 template< typename L1,

@@ -523,7 +523,7 @@ operator,( const ET& a, const DistributedVector< Real, Device, Index, Communicat
    using CommunicatorType = typename DistributedVector< Real, Device, Index, Communicator >::CommunicatorType;
    Real result = 0.0;
    if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      const Real localResult = TNL::sum( a * b.getLocalVectorView(), b.getCommunicationGroup() );
+      const Real localResult = TNL::sum( a * b.getLocalVectorView() );
       CommunicatorType::Allreduce( &localResult, &result, 1, MPI_SUM, a.getCommunicationGroup() );
    }
    return result;
@@ -534,7 +534,7 @@ auto
 operator,( const DistributedVector< Real1, Device, Index, Communicator >& a, const DistributedVector< Real2, Device, Index, Communicator >& b )
 {
    using CommunicatorType = typename DistributedVector< Real1, Device, Index, Communicator >::CommunicatorType;
-   using Real = decltype( TNL::sum( a.getLocalVectorView() * b.getLocalVectorView(), b.getCommunicationGroup() ) );
+   using Real = decltype( TNL::sum( a.getLocalVectorView() * b.getLocalVectorView() ) );
    Real result = 0.0;
    if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
       const Real localResult = TNL::sum( a.getLocalVectorView() * b.getLocalVectorView() );
