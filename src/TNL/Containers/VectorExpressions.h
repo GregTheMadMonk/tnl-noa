@@ -50,6 +50,24 @@ operator+( const Vector< Real1, Device, Index, Allocator >& a, const Vector< Rea
    return Expressions::BinaryExpressionTemplate< ConstView1, ConstView2, Expressions::Addition >( a.getConstView(), b.getConstView() );
 }
 
+template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
+auto
+operator+( const VectorView< Real1, Device, Index >& a, const Vector< Real2, Device, Index, Allocator >& b )
+{
+   using ConstView1 = typename Vector< Real1, Device, Index, Allocator >::ConstViewType;
+   using ConstView2 = typename Vector< Real2, Device, Index, Allocator >::ConstViewType;
+   return Expressions::BinaryExpressionTemplate< ConstView1, ConstView2, Expressions::Addition >( a.getConstView(), b.getConstView() );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
+auto
+operator+( const Vector< Real1, Device, Index, Allocator >& a, const VectorView< Real2, Device, Index >& b )
+{
+   using ConstView1 = typename Vector< Real1, Device, Index, Allocator >::ConstViewType;
+   using ConstView2 = typename Vector< Real2, Device, Index, Allocator >::ConstViewType;
+   return Expressions::BinaryExpressionTemplate< ConstView1, ConstView2, Expressions::Addition >( a.getConstView(), b.getConstView() );
+}
+
 ////
 // Subtraction
 template< typename Real, typename Device, typename Index, typename Allocator, typename ET,
@@ -73,6 +91,24 @@ operator-( const ET& a, const Vector< Real, Device, Index, Allocator >& b )
 template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
 auto
 operator-( const Vector< Real1, Device, Index, Allocator >& a, const Vector< Real2, Device, Index, Allocator >& b )
+{
+   using ConstView1 = typename Vector< Real1, Device, Index, Allocator >::ConstViewType;
+   using ConstView2 = typename Vector< Real2, Device, Index, Allocator >::ConstViewType;
+   return Expressions::BinaryExpressionTemplate< ConstView1, ConstView2, Expressions::Subtraction >( a.getConstView(), b.getConstView() );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
+auto
+operator-( const VectorView< Real1, Device, Index >& a, const Vector< Real2, Device, Index, Allocator >& b )
+{
+   using ConstView1 = typename Vector< Real1, Device, Index, Allocator >::ConstViewType;
+   using ConstView2 = typename Vector< Real2, Device, Index, Allocator >::ConstViewType;
+   return Expressions::BinaryExpressionTemplate< ConstView1, ConstView2, Expressions::Subtraction >( a.getConstView(), b.getConstView() );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
+auto
+operator-( const Vector< Real1, Device, Index, Allocator >& a, const VectorView< Real2, Device, Index >& b )
 {
    using ConstView1 = typename Vector< Real1, Device, Index, Allocator >::ConstViewType;
    using ConstView2 = typename Vector< Real2, Device, Index, Allocator >::ConstViewType;
@@ -108,6 +144,24 @@ operator*( const Vector< Real1, Device, Index, Allocator >& a, const Vector< Rea
    return Expressions::BinaryExpressionTemplate< ConstView1, ConstView2, Expressions::Multiplication >( a.getConstView(), b.getConstView() );
 }
 
+template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
+auto
+operator*( const VectorView< Real1, Device, Index >& a, const Vector< Real2, Device, Index, Allocator >& b )
+{
+   using ConstView1 = typename Vector< Real1, Device, Index, Allocator >::ConstViewType;
+   using ConstView2 = typename Vector< Real2, Device, Index, Allocator >::ConstViewType;
+   return Expressions::BinaryExpressionTemplate< ConstView1, ConstView2, Expressions::Multiplication >( a.getConstView(), b.getConstView() );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
+auto
+operator*( const Vector< Real1, Device, Index, Allocator >& a, const VectorView< Real2, Device, Index >& b )
+{
+   using ConstView1 = typename Vector< Real1, Device, Index, Allocator >::ConstViewType;
+   using ConstView2 = typename Vector< Real2, Device, Index, Allocator >::ConstViewType;
+   return Expressions::BinaryExpressionTemplate< ConstView1, ConstView2, Expressions::Multiplication >( a.getConstView(), b.getConstView() );
+}
+
 ////
 // Division
 template< typename Real, typename Device, typename Index, typename Allocator, typename ET,
@@ -131,6 +185,24 @@ operator/( const ET& a, const Vector< Real, Device, Index, Allocator >& b )
 template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
 auto
 operator/( const Vector< Real1, Device, Index, Allocator >& a, const Vector< Real2, Device, Index, Allocator >& b )
+{
+   using ConstView1 = typename Vector< Real1, Device, Index, Allocator >::ConstViewType;
+   using ConstView2 = typename Vector< Real2, Device, Index, Allocator >::ConstViewType;
+   return Expressions::BinaryExpressionTemplate< ConstView1, ConstView2, Expressions::Division >( a.getConstView(), b.getConstView() );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
+auto
+operator/( const VectorView< Real1, Device, Index >& a, const Vector< Real2, Device, Index, Allocator >& b )
+{
+   using ConstView1 = typename Vector< Real1, Device, Index, Allocator >::ConstViewType;
+   using ConstView2 = typename Vector< Real2, Device, Index, Allocator >::ConstViewType;
+   return Expressions::BinaryExpressionTemplate< ConstView1, ConstView2, Expressions::Division >( a.getConstView(), b.getConstView() );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
+auto
+operator/( const Vector< Real1, Device, Index, Allocator >& a, const VectorView< Real2, Device, Index >& b )
 {
    using ConstView1 = typename Vector< Real1, Device, Index, Allocator >::ConstViewType;
    using ConstView2 = typename Vector< Real2, Device, Index, Allocator >::ConstViewType;
@@ -233,6 +305,34 @@ operator!=( const Vector< Real1, Device1, Index, Allocator >& a, const Vector< R
                      a.getSize() );
 }
 
+template< typename Real1, typename Real2, typename Device1, typename Device2, typename Index, typename Allocator >
+bool
+operator!=( const VectorView< Real1, Device1, Index >& a, const Vector< Real2, Device2, Index, Allocator >& b )
+{
+   if( a.getSize() != b.getSize() )
+      return false;
+   if( a.getSize() == 0 )
+      return true;
+   return !Algorithms::ArrayOperations< Device1, Device2 >::
+            compare( a.getData(),
+                     b.getData(),
+                     a.getSize() );
+}
+
+template< typename Real1, typename Real2, typename Device1, typename Device2, typename Index, typename Allocator >
+bool
+operator!=( const Vector< Real1, Device1, Index, Allocator >& a, const VectorView< Real2, Device2, Index >& b )
+{
+   if( a.getSize() != b.getSize() )
+      return false;
+   if( a.getSize() == 0 )
+      return true;
+   return !Algorithms::ArrayOperations< Device1, Device2 >::
+            compare( a.getData(),
+                     b.getData(),
+                     a.getSize() );
+}
+
 ////
 // Comparison operations - operator <
 template< typename Real, typename Device, typename Index, typename Allocator, typename ET,
@@ -256,6 +356,24 @@ operator<( const ET& a, const Vector< Real, Device, Index, Allocator >& b )
 template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
 bool
 operator<( const Vector< Real1, Device, Index, Allocator >& a, const Vector< Real2, Device, Index, Allocator >& b )
+{
+   using ConstView1 = typename Vector< Real1, Device, Index, Allocator >::ConstViewType;
+   using ConstView2 = typename VectorView< Real2, Device, Index >::ConstViewType;
+   return Expressions::Comparison< ConstView1, ConstView2 >::LT( a.getConstView(), b.getConstView() );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
+bool
+operator<( const VectorView< Real1, Device, Index >& a, const Vector< Real2, Device, Index, Allocator >& b )
+{
+   using ConstView1 = typename Vector< Real1, Device, Index, Allocator >::ConstViewType;
+   using ConstView2 = typename VectorView< Real2, Device, Index >::ConstViewType;
+   return Expressions::Comparison< ConstView1, ConstView2 >::LT( a.getConstView(), b.getConstView() );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
+bool
+operator<( const Vector< Real1, Device, Index, Allocator >& a, const VectorView< Real2, Device, Index >& b )
 {
    using ConstView1 = typename Vector< Real1, Device, Index, Allocator >::ConstViewType;
    using ConstView2 = typename VectorView< Real2, Device, Index >::ConstViewType;
@@ -291,6 +409,24 @@ operator<=( const Vector< Real1, Device, Index, Allocator >& a, const Vector< Re
    return Expressions::Comparison< ConstView1, ConstView2 >::LE( a.getConstView(), b.getConstView() );
 }
 
+template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
+bool
+operator<=( const VectorView< Real1, Device, Index >& a, const Vector< Real2, Device, Index, Allocator >& b )
+{
+   using ConstView1 = typename Vector< Real1, Device, Index, Allocator >::ConstViewType;
+   using ConstView2 = typename VectorView< Real2, Device, Index >::ConstViewType;
+   return Expressions::Comparison< ConstView1, ConstView2 >::LE( a.getConstView(), b.getConstView() );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
+bool
+operator<=( const Vector< Real1, Device, Index, Allocator >& a, const VectorView< Real2, Device, Index >& b )
+{
+   using ConstView1 = typename Vector< Real1, Device, Index, Allocator >::ConstViewType;
+   using ConstView2 = typename VectorView< Real2, Device, Index >::ConstViewType;
+   return Expressions::Comparison< ConstView1, ConstView2 >::LE( a.getConstView(), b.getConstView() );
+}
+
 ////
 // Comparison operations - operator >
 template< typename Real, typename Device, typename Index, typename Allocator, typename ET,
@@ -314,6 +450,24 @@ operator>( const ET& a, const Vector< Real, Device, Index, Allocator >& b )
 template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
 bool
 operator>( const Vector< Real1, Device, Index, Allocator >& a, const Vector< Real2, Device, Index, Allocator >& b )
+{
+   using ConstView1 = typename Vector< Real1, Device, Index, Allocator >::ConstViewType;
+   using ConstView2 = typename VectorView< Real2, Device, Index >::ConstViewType;
+   return Expressions::Comparison< ConstView1, ConstView2 >::GT( a.getConstView(), b.getConstView() );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
+bool
+operator>( const VectorView< Real1, Device, Index >& a, const Vector< Real2, Device, Index, Allocator >& b )
+{
+   using ConstView1 = typename Vector< Real1, Device, Index, Allocator >::ConstViewType;
+   using ConstView2 = typename VectorView< Real2, Device, Index >::ConstViewType;
+   return Expressions::Comparison< ConstView1, ConstView2 >::GT( a.getConstView(), b.getConstView() );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
+bool
+operator>( const Vector< Real1, Device, Index, Allocator >& a, const VectorView< Real2, Device, Index >& b )
 {
    using ConstView1 = typename Vector< Real1, Device, Index, Allocator >::ConstViewType;
    using ConstView2 = typename VectorView< Real2, Device, Index >::ConstViewType;
@@ -349,6 +503,24 @@ operator>=( const Vector< Real1, Device, Index, Allocator >& a, const Vector< Re
    return Expressions::Comparison< ConstView1, ConstView2 >::GE( a.getConstView(), b.getConstView() );
 }
 
+template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
+bool
+operator>=( const VectorView< Real1, Device, Index >& a, const Vector< Real2, Device, Index, Allocator >& b )
+{
+   using ConstView1 = typename Vector< Real1, Device, Index, Allocator >::ConstViewType;
+   using ConstView2 = typename VectorView< Real2, Device, Index >::ConstViewType;
+   return Expressions::Comparison< ConstView1, ConstView2 >::GE( a.getConstView(), b.getConstView() );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
+bool
+operator>=( const Vector< Real1, Device, Index, Allocator >& a, const VectorView< Real2, Device, Index >& b )
+{
+   using ConstView1 = typename Vector< Real1, Device, Index, Allocator >::ConstViewType;
+   using ConstView2 = typename VectorView< Real2, Device, Index >::ConstViewType;
+   return Expressions::Comparison< ConstView1, ConstView2 >::GE( a.getConstView(), b.getConstView() );
+}
+
 ////
 // Minus
 template< typename Real, typename Device, typename Index, typename Allocator >
@@ -366,7 +538,7 @@ template< typename Real, typename Device, typename Index, typename Allocator, ty
 Real
 operator,( const Vector< Real, Device, Index, Allocator >& a, const ET& b )
 {
-   return Containers::Expressions::ExpressionSum( a.getConstView() * b );
+   return Expressions::ExpressionSum( a.getConstView() * b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index, typename Allocator,
@@ -374,14 +546,28 @@ template< typename ET, typename Real, typename Device, typename Index, typename 
 Real
 operator,( const ET& a, const Vector< Real, Device, Index, Allocator >& b )
 {
-   return Containers::Expressions::ExpressionSum( a * b.getConstView() );
+   return Expressions::ExpressionSum( a * b.getConstView() );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
 auto
 operator,( const Vector< Real1, Device, Index, Allocator >& a, const Vector< Real2, Device, Index, Allocator >& b )
 {
-   return Containers::Expressions::ExpressionSum( a.getConstView() * b.getConstView() );
+   return Expressions::ExpressionSum( a.getConstView() * b.getConstView() );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
+auto
+operator,( const VectorView< Real1, Device, Index >& a, const Vector< Real2, Device, Index, Allocator >& b )
+{
+   return Expressions::ExpressionSum( a.getConstView() * b.getConstView() );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
+auto
+operator,( const Vector< Real1, Device, Index, Allocator >& a, const VectorView< Real2, Device, Index >& b )
+{
+   return Expressions::ExpressionSum( a.getConstView() * b.getConstView() );
 }
 
 } //namespace Containers
@@ -418,6 +604,24 @@ min( const Containers::Vector< Real1, Device, Index, Allocator >& a, const Conta
    return Containers::Expressions::BinaryExpressionTemplate< ConstView1, ConstView2, Containers::Expressions::Min >( a.getConstView(), b.getConstView() );
 }
 
+template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
+auto
+min( const Containers::VectorView< Real1, Device, Index >& a, const Containers::Vector< Real2, Device, Index, Allocator >& b )
+{
+   using ConstView1 = typename Containers::Vector< Real1, Device, Index, Allocator >::ConstViewType;
+   using ConstView2 = typename Containers::Vector< Real2, Device, Index, Allocator >::ConstViewType;
+   return Containers::Expressions::BinaryExpressionTemplate< ConstView1, ConstView2, Containers::Expressions::Min >( a.getConstView(), b.getConstView() );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
+auto
+min( const Containers::Vector< Real1, Device, Index, Allocator >& a, const Containers::VectorView< Real2, Device, Index >& b )
+{
+   using ConstView1 = typename Containers::Vector< Real1, Device, Index, Allocator >::ConstViewType;
+   using ConstView2 = typename Containers::Vector< Real2, Device, Index, Allocator >::ConstViewType;
+   return Containers::Expressions::BinaryExpressionTemplate< ConstView1, ConstView2, Containers::Expressions::Min >( a.getConstView(), b.getConstView() );
+}
+
 ////
 // Max
 template< typename Real, typename Device, typename Index, typename Allocator, typename ET,
@@ -445,6 +649,63 @@ max( const Containers::Vector< Real1, Device, Index, Allocator >& a, const Conta
    using ConstView1 = typename Containers::Vector< Real1, Device, Index, Allocator >::ConstViewType;
    using ConstView2 = typename Containers::Vector< Real2, Device, Index, Allocator >::ConstViewType;
    return Containers::Expressions::BinaryExpressionTemplate< ConstView1, ConstView2, Containers::Expressions::Max >( a.getConstView(), b.getConstView() );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
+auto
+max( const Containers::VectorView< Real1, Device, Index >& a, const Containers::Vector< Real2, Device, Index, Allocator >& b )
+{
+   using ConstView1 = typename Containers::Vector< Real1, Device, Index, Allocator >::ConstViewType;
+   using ConstView2 = typename Containers::Vector< Real2, Device, Index, Allocator >::ConstViewType;
+   return Containers::Expressions::BinaryExpressionTemplate< ConstView1, ConstView2, Containers::Expressions::Max >( a.getConstView(), b.getConstView() );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
+auto
+max( const Containers::Vector< Real1, Device, Index, Allocator >& a, const Containers::VectorView< Real2, Device, Index >& b )
+{
+   using ConstView1 = typename Containers::Vector< Real1, Device, Index, Allocator >::ConstViewType;
+   using ConstView2 = typename Containers::Vector< Real2, Device, Index, Allocator >::ConstViewType;
+   return Containers::Expressions::BinaryExpressionTemplate< ConstView1, ConstView2, Containers::Expressions::Max >( a.getConstView(), b.getConstView() );
+}
+
+////
+// Dot product - the same as scalar product, just for convenience
+template< typename Real, typename Device, typename Index, typename Allocator, typename ET,
+          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
+auto
+dot( const Containers::Vector< Real, Device, Index, Allocator >& a, const ET& b )
+{
+   return (a, b);
+}
+
+template< typename ET, typename Real, typename Device, typename Index, typename Allocator,
+          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
+auto
+dot( const ET& a, const Containers::Vector< Real, Device, Index, Allocator >& b )
+{
+   return (a, b);
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
+auto
+dot( const Containers::Vector< Real1, Device, Index, Allocator >& a, const Containers::Vector< Real2, Device, Index, Allocator >& b )
+{
+   return (a, b);
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
+auto
+dot( const Containers::VectorView< Real1, Device, Index >& a, const Containers::Vector< Real2, Device, Index, Allocator >& b )
+{
+   return (a, b);
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
+auto
+dot( const Containers::Vector< Real1, Device, Index, Allocator >& a, const Containers::VectorView< Real2, Device, Index >& b )
+{
+   return (a, b);
 }
 
 
@@ -743,31 +1004,6 @@ auto
 binaryAnd( const Containers::Vector< Real, Device, Index, Allocator >& a )
 {
    return Containers::Expressions::ExpressionBinaryAnd( a.getConstView() );
-}
-
-////
-// Dot product - the same as scalar product, just for convenience
-template< typename Real, typename Device, typename Index, typename Allocator, typename ET,
-          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
-auto
-dot( const Containers::Vector< Real, Device, Index, Allocator >& a, const ET& b )
-{
-   return TNL::sum( a.getConstView() * b );
-}
-
-template< typename ET, typename Real, typename Device, typename Index, typename Allocator,
-          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
-auto
-dot( const ET& a, const Containers::Vector< Real, Device, Index, Allocator >& b )
-{
-   return TNL::sum( a * b.getConstView() );
-}
-
-template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
-auto
-dot( const Containers::Vector< Real1, Device, Index, Allocator >& a, const Containers::Vector< Real2, Device, Index, Allocator >& b )
-{
-   return TNL::sum( a.getConstView() * b.getConstView() );
 }
 
 ////

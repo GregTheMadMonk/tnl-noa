@@ -51,6 +51,24 @@ operator+( const DistributedVector< Real1, Device, Index, Communicator >& a, con
    return Expressions::DistributedBinaryExpressionTemplate< ConstView1, ConstView2, Expressions::Addition, Communicator >( a.getLocalVectorView(), b.getLocalVectorView(), b.getCommunicationGroup() );
 }
 
+template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
+auto
+operator+( const DistributedVectorView< Real1, Device, Index, Communicator >& a, const DistributedVector< Real2, Device, Index, Communicator >& b )
+{
+   using ConstView1 = typename DistributedVector< Real1, Device, Index, Communicator >::ConstLocalVectorViewType;
+   using ConstView2 = typename DistributedVector< Real2, Device, Index, Communicator >::ConstLocalVectorViewType;
+   return Expressions::DistributedBinaryExpressionTemplate< ConstView1, ConstView2, Expressions::Addition, Communicator >( a.getLocalVectorView(), b.getLocalVectorView(), b.getCommunicationGroup() );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
+auto
+operator+( const DistributedVector< Real1, Device, Index, Communicator >& a, const DistributedVectorView< Real2, Device, Index, Communicator >& b )
+{
+   using ConstView1 = typename DistributedVector< Real1, Device, Index, Communicator >::ConstLocalVectorViewType;
+   using ConstView2 = typename DistributedVector< Real2, Device, Index, Communicator >::ConstLocalVectorViewType;
+   return Expressions::DistributedBinaryExpressionTemplate< ConstView1, ConstView2, Expressions::Addition, Communicator >( a.getLocalVectorView(), b.getLocalVectorView(), b.getCommunicationGroup() );
+}
+
 ////
 // Subtraction
 template< typename Real, typename Device, typename Index, typename Communicator, typename ET,
@@ -74,6 +92,24 @@ operator-( const ET& a, const DistributedVector< Real, Device, Index, Communicat
 template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
 auto
 operator-( const DistributedVector< Real1, Device, Index, Communicator >& a, const DistributedVector< Real2, Device, Index, Communicator >& b )
+{
+   using ConstView1 = typename DistributedVector< Real1, Device, Index, Communicator >::ConstLocalVectorViewType;
+   using ConstView2 = typename DistributedVector< Real2, Device, Index, Communicator >::ConstLocalVectorViewType;
+   return Expressions::DistributedBinaryExpressionTemplate< ConstView1, ConstView2, Expressions::Subtraction, Communicator >( a.getLocalVectorView(), b.getLocalVectorView(), b.getCommunicationGroup() );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
+auto
+operator-( const DistributedVectorView< Real1, Device, Index, Communicator >& a, const DistributedVector< Real2, Device, Index, Communicator >& b )
+{
+   using ConstView1 = typename DistributedVector< Real1, Device, Index, Communicator >::ConstLocalVectorViewType;
+   using ConstView2 = typename DistributedVector< Real2, Device, Index, Communicator >::ConstLocalVectorViewType;
+   return Expressions::DistributedBinaryExpressionTemplate< ConstView1, ConstView2, Expressions::Subtraction, Communicator >( a.getLocalVectorView(), b.getLocalVectorView(), b.getCommunicationGroup() );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
+auto
+operator-( const DistributedVector< Real1, Device, Index, Communicator >& a, const DistributedVectorView< Real2, Device, Index, Communicator >& b )
 {
    using ConstView1 = typename DistributedVector< Real1, Device, Index, Communicator >::ConstLocalVectorViewType;
    using ConstView2 = typename DistributedVector< Real2, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -109,6 +145,24 @@ operator*( const DistributedVector< Real1, Device, Index, Communicator >& a, con
    return Expressions::DistributedBinaryExpressionTemplate< ConstView1, ConstView2, Expressions::Multiplication, Communicator >( a.getLocalVectorView(), b.getLocalVectorView(), b.getCommunicationGroup() );
 }
 
+template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
+auto
+operator*( const DistributedVectorView< Real1, Device, Index, Communicator >& a, const DistributedVector< Real2, Device, Index, Communicator >& b )
+{
+   using ConstView1 = typename DistributedVector< Real1, Device, Index, Communicator >::ConstLocalVectorViewType;
+   using ConstView2 = typename DistributedVector< Real2, Device, Index, Communicator >::ConstLocalVectorViewType;
+   return Expressions::DistributedBinaryExpressionTemplate< ConstView1, ConstView2, Expressions::Multiplication, Communicator >( a.getLocalVectorView(), b.getLocalVectorView(), b.getCommunicationGroup() );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
+auto
+operator*( const DistributedVector< Real1, Device, Index, Communicator >& a, const DistributedVectorView< Real2, Device, Index, Communicator >& b )
+{
+   using ConstView1 = typename DistributedVector< Real1, Device, Index, Communicator >::ConstLocalVectorViewType;
+   using ConstView2 = typename DistributedVector< Real2, Device, Index, Communicator >::ConstLocalVectorViewType;
+   return Expressions::DistributedBinaryExpressionTemplate< ConstView1, ConstView2, Expressions::Multiplication, Communicator >( a.getLocalVectorView(), b.getLocalVectorView(), b.getCommunicationGroup() );
+}
+
 ////
 // Division
 template< typename Real, typename Device, typename Index, typename Communicator, typename ET,
@@ -132,6 +186,24 @@ operator/( const ET& a, const DistributedVector< Real, Device, Index, Communicat
 template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
 auto
 operator/( const DistributedVector< Real1, Device, Index, Communicator >& a, const DistributedVector< Real2, Device, Index, Communicator >& b )
+{
+   using ConstView1 = typename DistributedVector< Real1, Device, Index, Communicator >::ConstLocalVectorViewType;
+   using ConstView2 = typename DistributedVector< Real2, Device, Index, Communicator >::ConstLocalVectorViewType;
+   return Expressions::DistributedBinaryExpressionTemplate< ConstView1, ConstView2, Expressions::Division, Communicator >( a.getLocalVectorView(), b.getLocalVectorView(), b.getCommunicationGroup() );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
+auto
+operator/( const DistributedVectorView< Real1, Device, Index, Communicator >& a, const DistributedVector< Real2, Device, Index, Communicator >& b )
+{
+   using ConstView1 = typename DistributedVector< Real1, Device, Index, Communicator >::ConstLocalVectorViewType;
+   using ConstView2 = typename DistributedVector< Real2, Device, Index, Communicator >::ConstLocalVectorViewType;
+   return Expressions::DistributedBinaryExpressionTemplate< ConstView1, ConstView2, Expressions::Division, Communicator >( a.getLocalVectorView(), b.getLocalVectorView(), b.getCommunicationGroup() );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
+auto
+operator/( const DistributedVector< Real1, Device, Index, Communicator >& a, const DistributedVectorView< Real2, Device, Index, Communicator >& b )
 {
    using ConstView1 = typename DistributedVector< Real1, Device, Index, Communicator >::ConstLocalVectorViewType;
    using ConstView2 = typename DistributedVector< Real2, Device, Index, Communicator >::ConstLocalVectorViewType;
@@ -173,6 +245,36 @@ bool operator==( const DistributedVector< Real1, Device1, Index1, Communicator >
    return result;
 }
 
+template< typename Real1, typename Real2, typename Device1, typename Device2, typename Index1, typename Index2, typename Communicator >
+bool operator==( const DistributedVectorView< Real1, Device1, Index1, Communicator >& a, const DistributedVector< Real2, Device2, Index2, Communicator >& b )
+{
+   if( a.getCommunicationGroup() != b.getCommunicationGroup() )
+      return false;
+   const bool localResult =
+         a.getLocalRange() == b.getLocalRange() &&
+         a.getSize() == b.getSize() &&
+         a.getLocalArrayView() == b.getLocalArrayView();
+   bool result = true;
+   if( a.getCommunicationGroup() != Communicator::NullGroup )
+      Communicator::Allreduce( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
+   return result;
+}
+
+template< typename Real1, typename Real2, typename Device1, typename Device2, typename Index1, typename Index2, typename Communicator >
+bool operator==( const DistributedVector< Real1, Device1, Index1, Communicator >& a, const DistributedVectorView< Real2, Device2, Index2, Communicator >& b )
+{
+   if( a.getCommunicationGroup() != b.getCommunicationGroup() )
+      return false;
+   const bool localResult =
+         a.getLocalRange() == b.getLocalRange() &&
+         a.getSize() == b.getSize() &&
+         a.getLocalArrayView() == b.getLocalArrayView();
+   bool result = true;
+   if( a.getCommunicationGroup() != Communicator::NullGroup )
+      Communicator::Allreduce( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
+   return result;
+}
+
 ////
 // Comparison operations - operator !=
 template< typename Real, typename Device, typename Index, typename Communicator, typename ET,
@@ -199,6 +301,18 @@ bool operator!=( const DistributedVector< Real1, Device1, Index >& a, const Dist
    return ! operator==( a, b );
 }
 
+template< typename Real1, typename Real2, typename Device1, typename Device2, typename Index, typename Communicator >
+bool operator!=( const DistributedVectorView< Real1, Device1, Index >& a, const DistributedVector< Real2, Device2, Index >& b )
+{
+   return ! operator==( a, b );
+}
+
+template< typename Real1, typename Real2, typename Device1, typename Device2, typename Index, typename Communicator >
+bool operator!=( const DistributedVector< Real1, Device1, Index >& a, const DistributedVectorView< Real2, Device2, Index >& b )
+{
+   return ! operator==( a, b );
+}
+
 ////
 // Comparison operations - operator <
 template< typename Real, typename Device, typename Index, typename Communicator, typename ET,
@@ -221,6 +335,22 @@ bool operator<( const ET& a, const DistributedVector< Real, Device, Index, Commu
 
 template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
 bool operator<( const DistributedVector< Real1, Device, Index, Communicator >& a, const DistributedVector< Real2, Device, Index, Communicator >& b )
+{
+   using Left = DistributedVectorView< Real1, Device, Index, Communicator >;
+   using Right = DistributedVectorView< Real2, Device, Index, Communicator >;
+   return Expressions::DistributedComparison< Left, Right >::template LT< Communicator >( a.getLocalVectorView(), b.getLocalVectorView(), b.getCommunicationGroup() );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
+bool operator<( const DistributedVectorView< Real1, Device, Index, Communicator >& a, const DistributedVector< Real2, Device, Index, Communicator >& b )
+{
+   using Left = DistributedVectorView< Real1, Device, Index, Communicator >;
+   using Right = DistributedVectorView< Real2, Device, Index, Communicator >;
+   return Expressions::DistributedComparison< Left, Right >::template LT< Communicator >( a.getLocalVectorView(), b.getLocalVectorView(), b.getCommunicationGroup() );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
+bool operator<( const DistributedVector< Real1, Device, Index, Communicator >& a, const DistributedVectorView< Real2, Device, Index, Communicator >& b )
 {
    using Left = DistributedVectorView< Real1, Device, Index, Communicator >;
    using Right = DistributedVectorView< Real2, Device, Index, Communicator >;
@@ -255,6 +385,22 @@ bool operator<=( const DistributedVector< Real1, Device, Index, Communicator >& 
    return Expressions::DistributedComparison< Left, Right >::template LE< Communicator >( a.getLocalVectorView(), b.getLocalVectorView(), b.getCommunicationGroup() );
 }
 
+template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
+bool operator<=( const DistributedVectorView< Real1, Device, Index, Communicator >& a, const DistributedVector< Real2, Device, Index, Communicator >& b )
+{
+   using Left = DistributedVectorView< Real1, Device, Index, Communicator >;
+   using Right = DistributedVectorView< Real2, Device, Index, Communicator >;
+   return Expressions::DistributedComparison< Left, Right >::template LE< Communicator >( a.getLocalVectorView(), b.getLocalVectorView(), b.getCommunicationGroup() );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
+bool operator<=( const DistributedVector< Real1, Device, Index, Communicator >& a, const DistributedVectorView< Real2, Device, Index, Communicator >& b )
+{
+   using Left = DistributedVectorView< Real1, Device, Index, Communicator >;
+   using Right = DistributedVectorView< Real2, Device, Index, Communicator >;
+   return Expressions::DistributedComparison< Left, Right >::template LE< Communicator >( a.getLocalVectorView(), b.getLocalVectorView(), b.getCommunicationGroup() );
+}
+
 ////
 // Comparison operations - operator >
 template< typename Real, typename Device, typename Index, typename Communicator, typename ET,
@@ -283,6 +429,22 @@ bool operator>( const DistributedVector< Real1, Device, Index, Communicator >& a
    return Expressions::DistributedComparison< Left, Right >::template GT< Communicator >( a.getLocalVectorView(), b.getLocalVectorView(), b.getCommunicationGroup() );
 }
 
+template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
+bool operator>( const DistributedVectorView< Real1, Device, Index, Communicator >& a, const DistributedVector< Real2, Device, Index, Communicator >& b )
+{
+   using Left = DistributedVectorView< Real1, Device, Index, Communicator >;
+   using Right = DistributedVectorView< Real2, Device, Index, Communicator >;
+   return Expressions::DistributedComparison< Left, Right >::template GT< Communicator >( a.getLocalVectorView(), b.getLocalVectorView(), b.getCommunicationGroup() );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
+bool operator>( const DistributedVector< Real1, Device, Index, Communicator >& a, const DistributedVectorView< Real2, Device, Index, Communicator >& b )
+{
+   using Left = DistributedVectorView< Real1, Device, Index, Communicator >;
+   using Right = DistributedVectorView< Real2, Device, Index, Communicator >;
+   return Expressions::DistributedComparison< Left, Right >::template GT< Communicator >( a.getLocalVectorView(), b.getLocalVectorView(), b.getCommunicationGroup() );
+}
+
 ////
 // Comparison operations - operator >=
 template< typename Real, typename Device, typename Index, typename Communicator, typename ET,
@@ -305,6 +467,22 @@ bool operator>=( const ET& a, const DistributedVector< Real, Device, Index, Comm
 
 template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
 bool operator>=( const DistributedVector< Real1, Device, Index, Communicator >& a, const DistributedVector< Real2, Device, Index, Communicator >& b )
+{
+   using Left = DistributedVectorView< Real1, Device, Index, Communicator >;
+   using Right = DistributedVectorView< Real2, Device, Index, Communicator >;
+   return Expressions::DistributedComparison< Left, Right >::template GE< Communicator >( a.getLocalVectorView(), b.getLocalVectorView(), b.getCommunicationGroup() );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
+bool operator>=( const DistributedVectorView< Real1, Device, Index, Communicator >& a, const DistributedVector< Real2, Device, Index, Communicator >& b )
+{
+   using Left = DistributedVectorView< Real1, Device, Index, Communicator >;
+   using Right = DistributedVectorView< Real2, Device, Index, Communicator >;
+   return Expressions::DistributedComparison< Left, Right >::template GE< Communicator >( a.getLocalVectorView(), b.getLocalVectorView(), b.getCommunicationGroup() );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
+bool operator>=( const DistributedVector< Real1, Device, Index, Communicator >& a, const DistributedVectorView< Real2, Device, Index, Communicator >& b )
 {
    using Left = DistributedVectorView< Real1, Device, Index, Communicator >;
    using Right = DistributedVectorView< Real2, Device, Index, Communicator >;
@@ -359,7 +537,35 @@ operator,( const DistributedVector< Real1, Device, Index, Communicator >& a, con
    using Real = decltype( TNL::sum( a.getLocalVectorView() * b.getLocalVectorView(), b.getCommunicationGroup() ) );
    Real result = 0.0;
    if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      const Real localResult = TNL::sum( a.getLocalVectorView() * b.getLocalVectorView(), b.getCommunicationGroup() );
+      const Real localResult = TNL::sum( a.getLocalVectorView() * b.getLocalVectorView() );
+      CommunicatorType::Allreduce( &localResult, &result, 1, MPI_SUM, a.getCommunicationGroup() );
+   }
+   return result;
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
+auto
+operator,( const DistributedVectorView< Real1, Device, Index, Communicator >& a, const DistributedVector< Real2, Device, Index, Communicator >& b )
+{
+   using CommunicatorType = typename DistributedVector< Real1, Device, Index, Communicator >::CommunicatorType;
+   using Real = decltype( TNL::sum( a.getLocalVectorView() * b.getLocalVectorView() ) );
+   Real result = 0.0;
+   if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
+      const Real localResult = TNL::sum( a.getLocalVectorView() * b.getLocalVectorView() );
+      CommunicatorType::Allreduce( &localResult, &result, 1, MPI_SUM, a.getCommunicationGroup() );
+   }
+   return result;
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
+auto
+operator,( const DistributedVector< Real1, Device, Index, Communicator >& a, const DistributedVectorView< Real2, Device, Index, Communicator >& b )
+{
+   using CommunicatorType = typename DistributedVector< Real1, Device, Index, Communicator >::CommunicatorType;
+   using Real = decltype( TNL::sum( a.getLocalVectorView() * b.getLocalVectorView() ) );
+   Real result = 0.0;
+   if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
+      const Real localResult = TNL::sum( a.getLocalVectorView() * b.getLocalVectorView() );
       CommunicatorType::Allreduce( &localResult, &result, 1, MPI_SUM, a.getCommunicationGroup() );
    }
    return result;
@@ -399,6 +605,24 @@ min( const Containers::DistributedVector< Real1, Device, Index, Communicator >& 
    return Containers::Expressions::DistributedBinaryExpressionTemplate< ConstView1, ConstView2, Containers::Expressions::Min, Communicator >( a.getLocalVectorView(), b.getLocalVectorView(), b.getCommunicationGroup() );
 }
 
+template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
+auto
+min( const Containers::DistributedVectorView< Real1, Device, Index, Communicator >& a, const Containers::DistributedVector< Real2, Device, Index, Communicator >& b )
+{
+   using ConstView1 = typename Containers::DistributedVector< Real1, Device, Index, Communicator >::ConstLocalVectorViewType;
+   using ConstView2 = typename Containers::DistributedVector< Real2, Device, Index, Communicator >::ConstLocalVectorViewType;
+   return Containers::Expressions::DistributedBinaryExpressionTemplate< ConstView1, ConstView2, Containers::Expressions::Min, Communicator >( a.getLocalVectorView(), b.getLocalVectorView(), b.getCommunicationGroup() );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
+auto
+min( const Containers::DistributedVector< Real1, Device, Index, Communicator >& a, const Containers::DistributedVectorView< Real2, Device, Index, Communicator >& b )
+{
+   using ConstView1 = typename Containers::DistributedVector< Real1, Device, Index, Communicator >::ConstLocalVectorViewType;
+   using ConstView2 = typename Containers::DistributedVector< Real2, Device, Index, Communicator >::ConstLocalVectorViewType;
+   return Containers::Expressions::DistributedBinaryExpressionTemplate< ConstView1, ConstView2, Containers::Expressions::Min, Communicator >( a.getLocalVectorView(), b.getLocalVectorView(), b.getCommunicationGroup() );
+}
+
 ////
 // Max
 template< typename Real, typename Device, typename Index, typename Communicator, typename ET,
@@ -427,6 +651,64 @@ max( const Containers::DistributedVector< Real1, Device, Index, Communicator >& 
    using ConstView2 = typename Containers::DistributedVector< Real2, Device, Index, Communicator >::ConstLocalVectorViewType;
    return Containers::Expressions::DistributedBinaryExpressionTemplate< ConstView1, ConstView2, Containers::Expressions::Max, Communicator >( a.getLocalVectorView(), b.getLocalVectorView(), b.getCommunicationGroup() );
 }
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
+auto
+max( const Containers::DistributedVectorView< Real1, Device, Index, Communicator >& a, const Containers::DistributedVector< Real2, Device, Index, Communicator >& b )
+{
+   using ConstView1 = typename Containers::DistributedVector< Real1, Device, Index, Communicator >::ConstLocalVectorViewType;
+   using ConstView2 = typename Containers::DistributedVector< Real2, Device, Index, Communicator >::ConstLocalVectorViewType;
+   return Containers::Expressions::DistributedBinaryExpressionTemplate< ConstView1, ConstView2, Containers::Expressions::Max, Communicator >( a.getLocalVectorView(), b.getLocalVectorView(), b.getCommunicationGroup() );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
+auto
+max( const Containers::DistributedVector< Real1, Device, Index, Communicator >& a, const Containers::DistributedVectorView< Real2, Device, Index, Communicator >& b )
+{
+   using ConstView1 = typename Containers::DistributedVector< Real1, Device, Index, Communicator >::ConstLocalVectorViewType;
+   using ConstView2 = typename Containers::DistributedVector< Real2, Device, Index, Communicator >::ConstLocalVectorViewType;
+   return Containers::Expressions::DistributedBinaryExpressionTemplate< ConstView1, ConstView2, Containers::Expressions::Max, Communicator >( a.getLocalVectorView(), b.getLocalVectorView(), b.getCommunicationGroup() );
+}
+
+////
+// Dot product - the same as scalar product, just for convenience
+template< typename Real, typename Device, typename Index, typename Communicator, typename ET,
+          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
+auto
+dot( const Containers::DistributedVector< Real, Device, Index, Communicator >& a, const ET& b )
+{
+   return ( a, b );
+}
+
+template< typename ET, typename Real, typename Device, typename Index, typename Communicator,
+          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
+auto
+dot( const ET& a, const Containers::DistributedVector< Real, Device, Index, Communicator >& b )
+{
+   return ( a, b );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
+auto
+dot( const Containers::DistributedVector< Real1, Device, Index, Communicator >& a, const Containers::DistributedVector< Real2, Device, Index, Communicator >& b )
+{
+   return ( a, b );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
+auto
+dot( const Containers::DistributedVectorView< Real1, Device, Index, Communicator >& a, const Containers::DistributedVector< Real2, Device, Index, Communicator >& b )
+{
+   return ( a, b );
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
+auto
+dot( const Containers::DistributedVector< Real1, Device, Index, Communicator >& a, const Containers::DistributedVectorView< Real2, Device, Index, Communicator >& b )
+{
+   return ( a, b );
+}
+
 
 ////
 // Abs
@@ -775,31 +1057,6 @@ binaryAnd( const Containers::DistributedVector< Real, Device, Index, Communicato
       CommunicatorType::Allreduce( &localResult, &result, 1, MPI_BAND, a.getCommunicationGroup() );
    }
    return result;
-}
-
-////
-// Dot product - the same as scalar product, just for convenience
-template< typename Real, typename Device, typename Index, typename Communicator, typename ET,
-          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
-auto
-dot( const Containers::DistributedVector< Real, Device, Index, Communicator >& a, const ET& b )
-{
-   return ( a, b );
-}
-
-template< typename ET, typename Real, typename Device, typename Index, typename Communicator,
-          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
-auto
-dot( const ET& a, const Containers::DistributedVector< Real, Device, Index, Communicator >& b )
-{
-   return ( a, b );
-}
-
-template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
-auto
-dot( const Containers::DistributedVector< Real1, Device, Index, Communicator >& a, const Containers::DistributedVector< Real2, Device, Index, Communicator >& b )
-{
-   return ( a, b );
 }
 
 ////

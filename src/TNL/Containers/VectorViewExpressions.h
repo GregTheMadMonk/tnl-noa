@@ -301,7 +301,7 @@ template< typename Real, typename Device, typename Index, typename ET,
 auto
 operator,( const VectorView< Real, Device, Index >& a, const ET& b )
 {
-   return Containers::Expressions::ExpressionSum( a * b );
+   return Expressions::ExpressionSum( a * b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index,
@@ -309,14 +309,14 @@ template< typename ET, typename Real, typename Device, typename Index,
 auto
 operator,( const ET& a, const VectorView< Real, Device, Index >& b )
 {
-   return Containers::Expressions::ExpressionSum( a * b );
+   return Expressions::ExpressionSum( a * b );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index >
 auto
 operator,( const VectorView< Real1, Device, Index >& a, const VectorView< Real2, Device, Index >& b )
 {
-   return Containers::Expressions::ExpressionSum( a * b );
+   return Expressions::ExpressionSum( a * b );
 }
 
 } // namespace Containers
