@@ -1526,7 +1526,7 @@ auto
 operator,( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
            const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return TNL::sum( a * b );
+   return StaticExpressionSum( a * b );
 }
 
 template< typename L1,
@@ -1538,7 +1538,7 @@ auto
 operator,( const StaticUnaryExpressionTemplate< L1, LOperation >& a,
            const StaticUnaryExpressionTemplate< R1, ROperation >& b )
 {
-   return TNL::sum( a * b );
+   return StaticExpressionSum( a * b );
 }
 
 template< typename L1,
@@ -1552,7 +1552,7 @@ auto
 operator,( const StaticUnaryExpressionTemplate< L1, LOperation, LParameter >& a,
            const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return TNL::sum( a * b );
+   return StaticExpressionSum( a * b );
 }
 
 template< typename L1,
@@ -1566,7 +1566,7 @@ auto
 operator,( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
            const StaticUnaryExpressionTemplate< R1,ROperation >& b )
 {
-   return TNL::sum( a * b );
+   return StaticExpressionSum( a * b );
 }
 
 ////

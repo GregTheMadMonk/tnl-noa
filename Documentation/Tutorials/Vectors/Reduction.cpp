@@ -52,9 +52,11 @@ int main( int argc, char* argv[] )
    /****
     * Perform test on GPU
     */
+#ifdef HAVE_CUDA
    std::cout << std::endl;
    std::cout << "Expressions on GPU ..." << std::endl;
    expressions< Devices::Cuda >();
+#endif
 }
 
 

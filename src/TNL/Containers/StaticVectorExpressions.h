@@ -303,7 +303,7 @@ __cuda_callable__
 auto
 operator,( const StaticVector< Size, Real >& a, const ET& b )
 {
-   return TNL::sum( a * b );
+   return Containers::Expressions::StaticExpressionSum( a * b );
 }
 
 template< typename ET, int Size, typename Real,
@@ -312,7 +312,7 @@ __cuda_callable__
 auto
 operator,( const ET& a, const StaticVector< Size, Real >& b )
 {
-   return TNL::sum( a * b );
+   return Containers::Expressions::StaticExpressionSum( a * b );
 }
 
 template< typename Real1, int Size, typename Real2 >
@@ -320,7 +320,7 @@ __cuda_callable__
 auto
 operator,( const StaticVector< Size, Real1 >& a, const StaticVector< Size, Real2 >& b )
 {
-   return TNL::sum( a * b );
+   return Containers::Expressions::StaticExpressionSum( a * b );
 }
 
 } // namespace Containers

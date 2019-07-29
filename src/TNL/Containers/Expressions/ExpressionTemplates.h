@@ -1399,7 +1399,7 @@ auto
 operator,( const BinaryExpressionTemplate< L1, L2, LOperation >& a,
            const BinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return TNL::sum( a * b );
+   return ExpressionSum( a * b );
 }
 
 template< typename L1,
@@ -1410,7 +1410,7 @@ auto
 operator,( const UnaryExpressionTemplate< L1, LOperation >& a,
            const UnaryExpressionTemplate< R1, ROperation >& b )
 {
-   return TNL::sum( a * b );
+   return ExpressionSum( a * b );
 }
 
 template< typename L1,
@@ -1422,7 +1422,7 @@ auto
 operator,( const UnaryExpressionTemplate< L1, LOperation >& a,
            const BinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return TNL::sum( a * b );
+   return ExpressionSum( a * b );
 }
 
 template< typename L1,
@@ -1434,7 +1434,7 @@ auto
 operator,( const BinaryExpressionTemplate< L1, L2, LOperation >& a,
            const UnaryExpressionTemplate< R1,ROperation >& b )
 {
-   return TNL::sum( a * b );
+   return ExpressionSum( a * b );
 }
 
 } // namespace Expressions

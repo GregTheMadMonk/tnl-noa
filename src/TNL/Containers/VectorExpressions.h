@@ -366,7 +366,7 @@ template< typename Real, typename Device, typename Index, typename Allocator, ty
 Real
 operator,( const Vector< Real, Device, Index, Allocator >& a, const ET& b )
 {
-   return TNL::sum( a.getConstView() * b );
+   return Containers::Expressions::ExpressionSum( a.getConstView() * b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index, typename Allocator,
@@ -374,14 +374,14 @@ template< typename ET, typename Real, typename Device, typename Index, typename 
 Real
 operator,( const ET& a, const Vector< Real, Device, Index, Allocator >& b )
 {
-   return TNL::sum( a * b.getConstView() );
+   return Containers::Expressions::ExpressionSum( a * b.getConstView() );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
 auto
 operator,( const Vector< Real1, Device, Index, Allocator >& a, const Vector< Real2, Device, Index, Allocator >& b )
 {
-   return TNL::sum( a.getConstView() * b.getConstView() );
+   return Containers::Expressions::ExpressionSum( a.getConstView() * b.getConstView() );
 }
 
 } //namespace Containers
