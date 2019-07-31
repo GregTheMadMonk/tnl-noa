@@ -5,19 +5,20 @@ else()
     add_executable( tnl-benchmark-blas tnl-benchmark-blas.cpp )
 endif()
 
-find_package( BLAS )
-if( BLAS_FOUND )
+find_library( CBLAS_LIBRARY NAMES cblas
+           PATHS /usr/lib
+                 /usr/lib64
+                 /usr/lib/x86_64-linux-gnu
+                 /usr/local/lib
+                 /usr/local/lib64 )
+if( CBLAS_LIBRARY )
    target_compile_definitions( tnl-benchmark-blas PUBLIC "-DHAVE_BLAS" )
-   target_link_libraries( tnl-benchmark-blas ${BLAS_LIBRARIES} )
+   target_link_libraries( tnl-benchmark-blas ${CBLAS_LIBRARY} )
 else()
-   find_library( CBLAS_LIBRARY NAMES cblas
-              PATHS /usr/lib
-                    /usr/lib64
-                    /usr/local/lib
-                    /usr/local/lib64 )
-   if( CBLAS_LIBRARY )
+   find_package( BLAS )
+   if( BLAS_FOUND )
       target_compile_definitions( tnl-benchmark-blas PUBLIC "-DHAVE_BLAS" )
-      target_link_libraries( tnl-benchmark-blas ${CBLAS_LIBRARY} )
+      target_link_libraries( tnl-benchmark-blas ${BLAS_LIBRARIES} )
    endif()
 endif()
 
