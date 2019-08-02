@@ -276,13 +276,13 @@ TYPED_TEST( DistributedArrayTest, containsOnlyValue )
    EXPECT_TRUE( this->distributedArray.containsOnlyValue( 100 ) );
 }
 
-TYPED_TEST( DistributedArrayTest, boolOperator )
+TYPED_TEST( DistributedArrayTest, empty )
 {
    EXPECT_GT( this->distributedArray.getSize(), 0 );
-   EXPECT_TRUE( this->distributedArray );
+   EXPECT_FALSE( this->distributedArray.empty() );
    this->distributedArray.reset();
    EXPECT_EQ( this->distributedArray.getSize(), 0 );
-   EXPECT_FALSE( this->distributedArray );
+   EXPECT_TRUE( this->distributedArray.empty() );
 }
 
 #endif  // HAVE_GTEST
