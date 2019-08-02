@@ -126,14 +126,6 @@ public:
    template< typename VectorExpression >
    VectorView& operator/=( const VectorExpression& expression );
 
-   /**
-    * \brief Scalar product
-    * @param v
-    * @return
-    */
-   template< typename Vector_ >
-   NonConstReal operator,( const Vector_& v ) const;
-
    template< typename ResultType = NonConstReal >
    ResultType sum() const;
 

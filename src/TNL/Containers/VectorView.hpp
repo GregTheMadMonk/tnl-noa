@@ -153,17 +153,6 @@ operator/=( const VectorExpression& expression )
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename Vector_ >
-typename VectorView< Real, Device, Index >::NonConstReal
-VectorView< Real, Device, Index >::
-operator,( const Vector_& v ) const
-{
-   return dot( *this, v );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
    template< typename ResultType >
 ResultType
 VectorView< Real, Device, Index >::
