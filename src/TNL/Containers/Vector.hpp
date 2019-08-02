@@ -141,7 +141,7 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Allocator >
-   template< typename VectorExpression, typename..., typename, typename >
+   template< typename VectorExpression, typename..., typename >
 Vector< Real, Device, Index, Allocator >&
 Vector< Real, Device, Index, Allocator >::
 operator=( const VectorExpression& expression )

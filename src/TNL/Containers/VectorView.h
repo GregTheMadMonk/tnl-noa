@@ -50,7 +50,7 @@ public:
    template< typename Real_ >  // template catches both const and non-const qualified Element
    __cuda_callable__
    VectorView( const ArrayView< Real_, Device, Index >& view )
-   : BaseType::ArrayView( view ) {}
+   : BaseType( view ) {}
 
    /**
     * \brief Returns a modifiable view of the vector view.
@@ -109,10 +109,22 @@ public:
 
    template< typename VectorExpression,
              typename...,
-             typename = std::enable_if_t< Expressions::IsExpressionTemplate< VectorExpression >::value >,
-             // workaround for nvcc 10.1: adding one more template parameter fixes a problem with inheriting operator= from the base class
-             typename = void >
+             typename = std::enable_if_t< Expressions::IsExpressionTemplate< VectorExpression >::value > >
    VectorView& operator=( const VectorExpression& expression );
+
+   /**
+    * \brief Assigns a value or an array - same as \ref ArrayView::operator=.
+    */
+   // operator= from the base class should be hidden according to the C++14 standard,
+   // although GCC does not do that - see https://stackoverflow.com/q/57322624
+   template< typename T,
+             typename...,
+             typename = std::enable_if_t< std::is_convertible< T, Real >::value || IsArrayType< T >::value > >
+   ArrayView< Real, Device, Index >&
+   operator=( const T& data )
+   {
+      return ArrayView< Real, Device, Index >::operator=(data);
+   }
 
    template< typename VectorExpression >
    VectorView& operator-=( const VectorExpression& expression );

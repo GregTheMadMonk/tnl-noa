@@ -53,8 +53,8 @@ public:
    // initialization by base class is not a copy constructor so it has to be explicit
    template< typename Real_ >  // template catches both const and non-const qualified Element
    __cuda_callable__
-   DistributedVectorView( const DistributedArrayView< Real_, Device, Index, Communicator >& view )
-   : BaseType::DistributedArrayView( view ) {}
+   DistributedVectorView( const Containers::DistributedArrayView< Real_, Device, Index, Communicator >& view )
+   : BaseType( view ) {}
 
    LocalVectorViewType getLocalVectorView();
 

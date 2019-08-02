@@ -150,10 +150,22 @@ public:
     */
    template< typename VectorExpression,
              typename...,
-             typename = std::enable_if_t< Expressions::IsExpressionTemplate< VectorExpression >::value >,
-             // workaround for nvcc 10.1: adding one more template parameter fixes a problem with inheriting operator= from the base class
-             typename = void >
+             typename = std::enable_if_t< Expressions::IsExpressionTemplate< VectorExpression >::value > >
    Vector& operator=( const VectorExpression& expression );
+
+   /**
+    * \brief Assigns a value or an array - same as \ref Array::operator=.
+    */
+   // operator= from the base class should be hidden according to the C++14 standard,
+   // although GCC does not do that - see https://stackoverflow.com/q/57322624
+   template< typename T,
+             typename...,
+             typename = std::enable_if_t< std::is_convertible< T, Real >::value || IsArrayType< T >::value > >
+   Array< Real, Device, Index, Allocator >&
+   operator=( const T& data )
+   {
+      return Array< Real, Device, Index, Allocator >::operator=(data);
+   }
 
    /**
     * \brief This function subtracts \e vector from this vector and returns the resulting vector.

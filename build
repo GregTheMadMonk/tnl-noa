@@ -118,6 +118,7 @@ fi
 if [[ ${WITH_CLANG} == "yes" ]]; then
    export CXX=clang++
    export CC=clang
+   export CUDA_HOST_COMPILER=clang++
 else
    export CXX=g++
    export CC=gcc

@@ -94,7 +94,7 @@ addElement( IndexType i, RealType value, Scalar thisElementMultiplicator )
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename VectorExpression, typename..., typename, typename >
+   template< typename VectorExpression, typename..., typename >
 VectorView< Real, Device, Index >&
 VectorView< Real, Device, Index >::operator=( const VectorExpression& expression )
 {
