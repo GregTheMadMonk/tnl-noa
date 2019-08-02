@@ -247,6 +247,14 @@ public:
    void reset();
 
    /**
+    * \brief Returns \e true if the current array view size is zero.
+    *
+    * This method can be called from device kernels.
+    */
+   __cuda_callable__
+   bool empty() const;
+
+   /**
     * \brief Returns a \e const-qualified raw pointer to the data.
     *
     * This method can be called from device kernels.
@@ -440,14 +448,6 @@ public:
    bool containsOnlyValue( Value value,
                            const Index begin = 0,
                            Index end = 0  ) const;
-
-   /**
-    * \brief Returns \e true if the current array view size is zero.
-    *
-    * This method can be called from device kernels.
-    */
-   __cuda_callable__
-   bool empty() const;
 
    /**
     * \brief Method for saving the data to a binary file \e fileName.

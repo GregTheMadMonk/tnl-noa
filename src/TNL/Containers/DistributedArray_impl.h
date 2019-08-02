@@ -242,6 +242,17 @@ template< typename Value,
           typename Device,
           typename Index,
           typename Communicator >
+bool
+DistributedArray< Value, Device, Index, Communicator >::
+empty() const
+{
+   return getSize() == 0;
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
 Index
 DistributedArray< Value, Device, Index, Communicator >::
 getSize() const
@@ -401,16 +412,6 @@ containsOnlyValue( ValueType value ) const
       CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, group );
    }
    return result;
-}
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Communicator >
-DistributedArray< Value, Device, Index, Communicator >::
-operator bool() const
-{
-   return getSize() != 0;
 }
 
 } // namespace Containers

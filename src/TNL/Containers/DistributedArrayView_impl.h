@@ -215,6 +215,17 @@ reset()
    localData.reset();
 }
 
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Communicator >
+bool
+DistributedArrayView< Value, Device, Index, Communicator >::
+empty() const
+{
+   return getSize() == 0;
+}
+
 // TODO: swap
 
 template< typename Value,
@@ -353,16 +364,6 @@ containsOnlyValue( ValueType value ) const
       CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, group );
    }
    return result;
-}
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Communicator >
-DistributedArrayView< Value, Device, Index, Communicator >::
-operator bool() const
-{
-   return getSize() != 0;
 }
 
 } // namespace Containers

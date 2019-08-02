@@ -134,7 +134,11 @@ public:
    template< typename Array >
    void setLike( const Array& array );
 
+   // Resets the array to the empty state.
    void reset();
+
+   // Returns true if the current array size is zero.
+   bool empty() const;
 
    // TODO: swap
 
@@ -176,9 +180,6 @@ public:
 
    // Checks if all elements in this array have the same given value
    bool containsOnlyValue( ValueType value ) const;
-
-   // Returns true iff non-zero size is set
-   operator bool() const;
 
    // TODO: serialization (save, load)
 

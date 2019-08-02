@@ -169,6 +169,17 @@ template< typename Value,
           typename Device,
           typename Index >
 __cuda_callable__
+bool
+ArrayView< Value, Device, Index >::
+empty() const
+{
+   return data == nullptr;
+}
+
+template< typename Value,
+          typename Device,
+          typename Index >
+__cuda_callable__
 const
 Value* ArrayView< Value, Device, Index >::
 getData() const
@@ -358,17 +369,6 @@ containsOnlyValue( Value value,
    if( end == 0 )
       end = this->getSize();
    return Algorithms::ArrayOperations< Device >::containsOnlyValue( &this->getData()[ begin ], end - begin, value );
-}
-
-template< typename Value,
-          typename Device,
-          typename Index >
-__cuda_callable__
-bool
-ArrayView< Value, Device, Index >::
-empty() const
-{
-   return ( data == nullptr );
 }
 
 template< typename Value, typename Device, typename Index >

@@ -440,6 +440,18 @@ template< typename Value,
           typename Device,
           typename Index,
           typename Allocator >
+bool
+__cuda_callable__
+Array< Value, Device, Index, Allocator >::
+empty() const
+{
+   return data == nullptr;
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Allocator >
 __cuda_callable__
 const Value*
 Array< Value, Device, Index, Allocator >::
@@ -717,18 +729,6 @@ containsOnlyValue( const ValueType& v,
       end = this->getSize();
 
    return Algorithms::ArrayOperations< Device >::containsOnlyValue( &this->getData()[ begin ], end - begin, v );
-}
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
-bool
-__cuda_callable__
-Array< Value, Device, Index, Allocator >::
-empty() const
-{
-   return ( data == nullptr );
 }
 
 template< typename Value,
