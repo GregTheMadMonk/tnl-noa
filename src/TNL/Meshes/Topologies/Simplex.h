@@ -32,7 +32,7 @@ class Simplex
 
       static String getType()
       {
-         return String( "Topologies::Simplex< " ) + String( dimension ) + " >";
+         return String( "Topologies::Simplex< " ) + convertToString( dimension ) + " >";
       }
 };
 
