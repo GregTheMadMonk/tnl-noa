@@ -131,14 +131,14 @@ TYPED_TEST( VectorUnaryOperationsTest, sin )
 {
    SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -VECTOR_TEST_SIZE, VECTOR_TEST_SIZE, TNL::sin );
 //   EXPECT_EQ( sin(V1), expected );
-   expect_vectors_near( cos(V1), expected );
+   expect_vectors_near( sin(V1), expected );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, asin )
 {
    SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -1.0, 1.0, TNL::asin );
 //   EXPECT_EQ( asin(V1), expected );
-   expect_vectors_near( acos(V1), expected );
+   expect_vectors_near( asin(V1), expected );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, cos )
