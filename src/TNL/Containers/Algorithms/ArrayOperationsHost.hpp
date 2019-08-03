@@ -49,6 +49,7 @@ set( Element* data,
      const Element& value,
      const Index size )
 {
+   if( size == 0 ) return;
    TNL_ASSERT_TRUE( data, "Attempted to set data through a nullptr." );
    auto kernel = [data, value]( Index i )
    {
@@ -66,6 +67,7 @@ copy( DestinationElement* destination,
       const SourceElement* source,
       const Index size )
 {
+   if( size == 0 ) return;
    if( std::is_same< DestinationElement, SourceElement >::value &&
        ( std::is_fundamental< DestinationElement >::value ||
          std::is_pointer< DestinationElement >::value ) )
@@ -118,6 +120,7 @@ compare( const DestinationElement* destination,
          const SourceElement* source,
          const Index size )
 {
+   if( size == 0 ) return true;
    TNL_ASSERT_TRUE( destination, "Attempted to compare data through a nullptr." );
    TNL_ASSERT_TRUE( source, "Attempted to compare data through a nullptr." );
    if( std::is_same< DestinationElement, SourceElement >::value &&
@@ -142,6 +145,7 @@ containsValue( const Element* data,
                const Index size,
                const Element& value )
 {
+   if( size == 0 ) return false;
    TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
    TNL_ASSERT_GE( size, 0, "" );
 
@@ -159,10 +163,9 @@ containsOnlyValue( const Element* data,
                    const Index size,
                    const Element& value )
 {
+   if( size == 0 ) return false;
    TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
    TNL_ASSERT_GE( size, 0, "" );
-
-   if( size == 0 ) return false;
 
    for( Index i = 0; i < size; i++ )
       if( ! ( data[ i ] == value ) )

@@ -53,6 +53,7 @@ set( Element* data,
      const Element& value,
      const Index size )
 {
+   if( size == 0 ) return;
    TNL_ASSERT_TRUE( data, "Attempted to set data through a nullptr." );
    auto kernel = [data, value] __cuda_callable__ ( Index i )
    {
@@ -70,6 +71,7 @@ copy( DestinationElement* destination,
       const SourceElement* source,
       const Index size )
 {
+   if( size == 0 ) return;
    TNL_ASSERT_TRUE( destination, "Attempted to copy data to a nullptr." );
    TNL_ASSERT_TRUE( source, "Attempted to copy data from a nullptr." );
    if( std::is_same< DestinationElement, SourceElement >::value )
@@ -127,6 +129,7 @@ compare( const Element1* destination,
          const Element2* source,
          const Index size )
 {
+   if( size == 0 ) return true;
    TNL_ASSERT_TRUE( destination, "Attempted to compare data through a nullptr." );
    TNL_ASSERT_TRUE( source, "Attempted to compare data through a nullptr." );
 
@@ -144,10 +147,10 @@ containsValue( const Element* data,
                const Index size,
                const Element& value )
 {
+   if( size == 0 ) return false;
    TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
    TNL_ASSERT_GE( size, (Index) 0, "" );
 
-   if( size == 0 ) return false;
    auto fetch = [=] __cuda_callable__ ( Index i ) -> bool { return  ( data[ i ] == value ); };
    auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a |= b; };
    auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a |= b; };
@@ -162,11 +165,10 @@ containsOnlyValue( const Element* data,
                    const Index size,
                    const Element& value )
 {
+   if( size == 0 ) return false;
    TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
    TNL_ASSERT_GE( size, 0, "" );
-   if( size == 0 ) return false;
 
-   if( size == 0 ) return false;
    auto fetch = [=] __cuda_callable__ ( Index i ) -> bool { return  ( data[ i ] == value ); };
    auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
    auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
@@ -186,6 +188,7 @@ copy( DestinationElement* destination,
       const SourceElement* source,
       const Index size )
 {
+   if( size == 0 ) return;
    TNL_ASSERT_TRUE( destination, "Attempted to copy data to a nullptr." );
    TNL_ASSERT_TRUE( source, "Attempted to copy data from a nullptr." );
 #ifdef HAVE_CUDA
@@ -235,6 +238,7 @@ compare( const Element1* destination,
          const Element2* source,
          const Index size )
 {
+   if( size == 0 ) return true;
    /***
     * Here, destination is on host and source is on CUDA device.
     */
@@ -275,6 +279,7 @@ copy( DestinationElement* destination,
       const SourceElement* source,
       const Index size )
 {
+   if( size == 0 ) return;
    TNL_ASSERT_TRUE( destination, "Attempted to copy data to a nullptr." );
    TNL_ASSERT_TRUE( source, "Attempted to copy data from a nullptr." );
    TNL_ASSERT_GE( size, (Index) 0, "Array size must be non-negative." );
@@ -323,6 +328,7 @@ compare( const Element1* hostData,
          const Element2* deviceData,
          const Index size )
 {
+   if( size == 0 ) return true;
    TNL_ASSERT_TRUE( hostData, "Attempted to compare data through a nullptr." );
    TNL_ASSERT_TRUE( deviceData, "Attempted to compare data through a nullptr." );
    TNL_ASSERT_GE( size, (Index) 0, "Array size must be non-negative." );

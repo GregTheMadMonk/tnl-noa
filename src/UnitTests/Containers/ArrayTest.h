@@ -146,6 +146,11 @@ TYPED_TEST( ArrayTest, constructors )
 {
    using ArrayType = typename TestFixture::ArrayType;
 
+   ArrayType empty_u;
+   ArrayType empty_v( empty_u );
+   EXPECT_EQ( empty_u.getSize(), 0 );
+   EXPECT_EQ( empty_v.getSize(), 0 );
+
    ArrayType u;
    EXPECT_EQ( u.getSize(), 0 );
    u.setSize( 10 );
