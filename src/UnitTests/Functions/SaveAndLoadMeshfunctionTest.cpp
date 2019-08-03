@@ -11,7 +11,7 @@
 #ifdef HAVE_GTEST
 #include <gtest/gtest.h>
 
-#include "Functions/Functions.h"
+#include "Functions.h"
 
 #include <iostream>
 
@@ -110,4 +110,4 @@ TEST( CopyEntitiesTest, 3D )
 }
 #endif
 
-#include "main.h"
+#include "../main.h"

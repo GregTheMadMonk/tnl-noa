@@ -1,5 +1,5 @@
 /***************************************************************************
-                          FileNameTest.cpp  -  description
+                          TimerTest.cpp  -  description
                              -------------------
     begin                : Oct 17, 2018
     copyright            : (C) 2018 by Tomas Oberhuber

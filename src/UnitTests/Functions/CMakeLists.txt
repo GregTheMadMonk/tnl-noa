@@ -16,5 +16,10 @@ ELSE(  BUILD_CUDA )
    TARGET_LINK_LIBRARIES( BoundaryMeshFunctionTest ${GTEST_BOTH_LIBRARIES} )
 ENDIF( BUILD_CUDA )
 
+ADD_EXECUTABLE( SaveAndLoadMeshfunctionTest SaveAndLoadMeshfunctionTest.cpp )
+TARGET_COMPILE_OPTIONS( SaveAndLoadMeshfunctionTest PRIVATE ${CXX_TESTS_FLAGS} )
+TARGET_LINK_LIBRARIES( SaveAndLoadMeshfunctionTest ${GTEST_BOTH_LIBRARIES} )
+
 ADD_TEST( MeshFunctionTest ${EXECUTABLE_OUTPUT_PATH}/MeshFunctionTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( BoundaryMeshFunctionTest ${EXECUTABLE_OUTPUT_PATH}/BoundaryMeshFunctionTest${CMAKE_EXECUTABLE_SUFFIX} )
+ADD_TEST( SaveAndLoadMeshfunctionTest ${EXECUTABLE_OUTPUT_PATH}/SaveAndLoadMeshfunctionTest${CMAKE_EXECUTABLE_SUFFIX} )
