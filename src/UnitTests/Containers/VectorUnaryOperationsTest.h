@@ -87,6 +87,12 @@ TYPED_TEST_SUITE( VectorUnaryOperationsTest, VectorTypes );
    VectorOrView V1( _V1 );                                  \
    VectorType expected; expected = expected_h;              \
 
+// This is because exact comparison does not work due to rounding errors:
+// - the "expected" vector is computed sequentially on CPU
+// - the host compiler might decide to use a vectorized version of the
+//   math function, which may have slightly different precision
+// - GPU may have different precision than CPU, so exact comparison with
+//   the result from host is not possible
 template< typename Left, typename Right >
 void expect_vectors_near( const Left& v1, const Right& v2 )
 {
@@ -124,59 +130,135 @@ TYPED_TEST( VectorUnaryOperationsTest, abs )
 TYPED_TEST( VectorUnaryOperationsTest, sin )
 {
    SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -VECTOR_TEST_SIZE, VECTOR_TEST_SIZE, TNL::sin );
-   EXPECT_EQ( sin(V1), expected );
+//   EXPECT_EQ( sin(V1), expected );
+   expect_vectors_near( cos(V1), expected );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, asin )
 {
    SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -1.0, 1.0, TNL::asin );
-   EXPECT_EQ( asin(V1), expected );
+//   EXPECT_EQ( asin(V1), expected );
+   expect_vectors_near( acos(V1), expected );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, cos )
 {
    SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -VECTOR_TEST_SIZE, VECTOR_TEST_SIZE, TNL::cos );
-   EXPECT_EQ( cos(V1), expected );
+//   EXPECT_EQ( cos(V1), expected );
+   expect_vectors_near( cos(V1), expected );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, acos )
 {
    SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -1.0, 1.0, TNL::acos );
-   EXPECT_EQ( acos(V1), expected );
+//   EXPECT_EQ( acos(V1), expected );
+   expect_vectors_near( acos(V1), expected );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, tan )
 {
    SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -1.5, 1.5, TNL::tan );
-   EXPECT_EQ( tan(V1), expected );
+//   EXPECT_EQ( tan(V1), expected );
+   expect_vectors_near( tan(V1), expected );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, atan )
 {
    SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -VECTOR_TEST_SIZE, VECTOR_TEST_SIZE, TNL::atan );
-   EXPECT_EQ( atan(V1), expected );
+//   EXPECT_EQ( atan(V1), expected );
+   expect_vectors_near( atan(V1), expected );
 }
 
-TYPED_TEST( VectorUnaryOperationsTest, sqrt )
+TYPED_TEST( VectorUnaryOperationsTest, sinh )
 {
-   SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, 0, VECTOR_TEST_SIZE, TNL::sqrt );
-   EXPECT_EQ( sqrt(V1), expected );
+   SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -VECTOR_TEST_SIZE, VECTOR_TEST_SIZE, TNL::sinh );
+//   EXPECT_EQ( sinh(V1), expected );
+   expect_vectors_near( sinh(V1), expected );
 }
 
-TYPED_TEST( VectorUnaryOperationsTest, cbrt )
+TYPED_TEST( VectorUnaryOperationsTest, asinh )
 {
-   SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -VECTOR_TEST_SIZE, VECTOR_TEST_SIZE, TNL::cbrt );
-   // exact comparison does not work in Release, probably due to rounding
-   // errors in the vectorized version of cbrt
-//   EXPECT_EQ( cbrt(V1), expected );
-   expect_vectors_near( cbrt(V1), expected );
+   SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -VECTOR_TEST_SIZE, VECTOR_TEST_SIZE, TNL::asinh );
+//   EXPECT_EQ( asinh(V1), expected );
+   expect_vectors_near( asinh(V1), expected );
+}
+
+TYPED_TEST( VectorUnaryOperationsTest, cosh )
+{
+   SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -VECTOR_TEST_SIZE, VECTOR_TEST_SIZE, TNL::cosh );
+//   EXPECT_EQ( cosh(V1), expected );
+   expect_vectors_near( cosh(V1), expected );
+}
+
+TYPED_TEST( VectorUnaryOperationsTest, acosh )
+{
+   SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, 1, VECTOR_TEST_SIZE, TNL::acosh );
+//   EXPECT_EQ( acosh(V1), expected );
+   expect_vectors_near( acosh(V1), expected );
+}
+
+TYPED_TEST( VectorUnaryOperationsTest, tanh )
+{
+   SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -VECTOR_TEST_SIZE, VECTOR_TEST_SIZE, TNL::tanh );
+//   EXPECT_EQ( tanh(V1), expected );
+   expect_vectors_near( tanh(V1), expected );
+}
+
+TYPED_TEST( VectorUnaryOperationsTest, atanh )
+{
+   SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -0.99, 0.99, TNL::atanh );
+//   EXPECT_EQ( atanh(V1), expected );
+   expect_vectors_near( atanh(V1), expected );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, pow )
 {
    auto pow3 = [](int i) { return TNL::pow(i, 3); };
    SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -VECTOR_TEST_SIZE, VECTOR_TEST_SIZE, pow3 );
-   EXPECT_EQ( pow(V1, 3), expected );
+//   EXPECT_EQ( pow(V1, 3), expected );
+   expect_vectors_near( pow(V1, 3), expected );
+}
+
+TYPED_TEST( VectorUnaryOperationsTest, exp )
+{
+   SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -VECTOR_TEST_SIZE, VECTOR_TEST_SIZE, TNL::exp );
+//   EXPECT_EQ( exp(V1), expected );
+   expect_vectors_near( exp(V1), expected );
+}
+
+TYPED_TEST( VectorUnaryOperationsTest, sqrt )
+{
+   SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, 0, VECTOR_TEST_SIZE, TNL::sqrt );
+//   EXPECT_EQ( sqrt(V1), expected );
+   expect_vectors_near( sqrt(V1), expected );
+}
+
+TYPED_TEST( VectorUnaryOperationsTest, cbrt )
+{
+   SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -VECTOR_TEST_SIZE, VECTOR_TEST_SIZE, TNL::cbrt );
+//   EXPECT_EQ( cbrt(V1), expected );
+   expect_vectors_near( cbrt(V1), expected );
+}
+
+TYPED_TEST( VectorUnaryOperationsTest, log )
+{
+   SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, 1, VECTOR_TEST_SIZE, TNL::log );
+//   EXPECT_EQ( log(V1), expected );
+   expect_vectors_near( log(V1), expected );
+}
+
+TYPED_TEST( VectorUnaryOperationsTest, log10 )
+{
+   SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, 1, VECTOR_TEST_SIZE, TNL::log10 );
+//   EXPECT_EQ( log10(V1), expected );
+   expect_vectors_near( log10(V1), expected );
+}
+
+TYPED_TEST( VectorUnaryOperationsTest, log2 )
+{
+   SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, 1, VECTOR_TEST_SIZE, TNL::log2 );
+//   EXPECT_EQ( log2(V1), expected );
+   expect_vectors_near( log2(V1), expected );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, floor )
@@ -189,66 +271,6 @@ TYPED_TEST( VectorUnaryOperationsTest, ceil )
 {
    SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -3.0, 3.0, TNL::ceil );
    EXPECT_EQ( ceil(V1), expected );
-}
-
-TYPED_TEST( VectorUnaryOperationsTest, sinh )
-{
-   SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -VECTOR_TEST_SIZE, VECTOR_TEST_SIZE, TNL::sinh );
-   EXPECT_EQ( sinh(V1), expected );
-}
-
-TYPED_TEST( VectorUnaryOperationsTest, asinh )
-{
-   SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -VECTOR_TEST_SIZE, VECTOR_TEST_SIZE, TNL::asinh );
-   EXPECT_EQ( asinh(V1), expected );
-}
-
-TYPED_TEST( VectorUnaryOperationsTest, cosh )
-{
-   SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -VECTOR_TEST_SIZE, VECTOR_TEST_SIZE, TNL::cosh );
-   EXPECT_EQ( cosh(V1), expected );
-}
-
-TYPED_TEST( VectorUnaryOperationsTest, acosh )
-{
-   SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, 1, VECTOR_TEST_SIZE, TNL::acosh );
-   EXPECT_EQ( acosh(V1), expected );
-}
-
-TYPED_TEST( VectorUnaryOperationsTest, tanh )
-{
-   SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -VECTOR_TEST_SIZE, VECTOR_TEST_SIZE, TNL::tanh );
-   EXPECT_EQ( tanh(V1), expected );
-}
-
-TYPED_TEST( VectorUnaryOperationsTest, atanh )
-{
-   SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -0.99, 0.99, TNL::atanh );
-   EXPECT_EQ( atanh(V1), expected );
-}
-
-TYPED_TEST( VectorUnaryOperationsTest, log )
-{
-   SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, 1, VECTOR_TEST_SIZE, TNL::log );
-   EXPECT_EQ( log(V1), expected );
-}
-
-TYPED_TEST( VectorUnaryOperationsTest, log10 )
-{
-   SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, 1, VECTOR_TEST_SIZE, TNL::log10 );
-   EXPECT_EQ( log10(V1), expected );
-}
-
-TYPED_TEST( VectorUnaryOperationsTest, log2 )
-{
-   SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, 1, VECTOR_TEST_SIZE, TNL::log2 );
-   EXPECT_EQ( log2(V1), expected );
-}
-
-TYPED_TEST( VectorUnaryOperationsTest, exp )
-{
-   SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -VECTOR_TEST_SIZE, VECTOR_TEST_SIZE, TNL::exp );
-   EXPECT_EQ( exp(V1), expected );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, sign )
