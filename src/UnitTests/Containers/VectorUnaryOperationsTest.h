@@ -94,14 +94,20 @@ TYPED_TEST_SUITE( VectorUnaryOperationsTest, VectorTypes );
 // - GPU may have different precision than CPU, so exact comparison with
 //   the result from host is not possible
 template< typename Left, typename Right >
-void expect_vectors_near( const Left& v1, const Right& v2 )
+void expect_vectors_near( const Left& _v1, const Right& _v2 )
 {
-   ASSERT_EQ( v1.getSize(), v2.getSize() );
+   ASSERT_EQ( _v1.getSize(), _v2.getSize() );
    using LeftNonConstReal = std::remove_const_t< typename Left::RealType >;
    using RightNonConstReal = std::remove_const_t< typename Right::RealType >;
+   using LeftVector = Vector< LeftNonConstReal, typename Left::DeviceType, typename Left::IndexType >;
+   using RightVector = Vector< RightNonConstReal, typename Right::DeviceType, typename Right::IndexType >;
    using LeftHostVector = Vector< LeftNonConstReal, Devices::Host, typename Left::IndexType >;
    using RightHostVector = Vector< RightNonConstReal, Devices::Host, typename Right::IndexType >;
 
+   // first evaluate expressions
+   LeftVector v1; v1 = _v1;
+   RightVector v2; v2 = _v2;
+   // then copy to host
    LeftHostVector v1_h; v1_h = v1;
    RightHostVector v2_h; v2_h = v1;
    for( int i = 0; i < v1.getSize(); i++ )
