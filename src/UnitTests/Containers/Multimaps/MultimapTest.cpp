@@ -144,6 +144,8 @@ TEST( MultimapTest, TestSaveAndLoad )
          ASSERT_EQ( values2[ o ], i + o );
       }
    }
+
+   EXPECT_EQ( std::remove( "multimap-test.tnl" ), 0 );
 }
 #endif
 
