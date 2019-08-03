@@ -273,7 +273,7 @@ TYPED_TEST( VectorUnaryOperationsTest, argMax )
    EXPECT_EQ( arg, VECTOR_TEST_REDUCTION_SIZE - 1 );
    // unary expression
    arg = -1;
-   EXPECT_EQ( argMax(-V1, arg), 2 );
+   EXPECT_EQ( argMax(-V1, arg), 0 );
    EXPECT_EQ( arg, 0 );
    // expression
    arg = -1;
@@ -315,7 +315,7 @@ TYPED_TEST( VectorUnaryOperationsTest, argMin )
    EXPECT_EQ( arg, 0 );
    // unary expression
    arg = -1;
-   EXPECT_EQ( argMin(-V1, arg), 1 - VECTOR_TEST_REDUCTION_SIZE + 2 );
+   EXPECT_EQ( argMin(-V1, arg), 1 - VECTOR_TEST_REDUCTION_SIZE );
    EXPECT_EQ( arg, VECTOR_TEST_REDUCTION_SIZE - 1 );
    // binary expression
    arg = -1;
