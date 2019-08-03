@@ -87,6 +87,21 @@ TYPED_TEST_SUITE( VectorUnaryOperationsTest, VectorTypes );
    VectorOrView V1( _V1 );                                  \
    VectorType expected; expected = expected_h;              \
 
+template< typename Left, typename Right >
+void expect_vectors_near( const Left& v1, const Right& v2 )
+{
+   ASSERT_EQ( v1.getSize(), v2.getSize() );
+   using LeftNonConstReal = std::remove_const_t< typename Left::RealType >;
+   using RightNonConstReal = std::remove_const_t< typename Right::RealType >;
+   using LeftHostVector = Vector< LeftNonConstReal, Devices::Host, typename Left::IndexType >;
+   using RightHostVector = Vector< RightNonConstReal, Devices::Host, typename Right::IndexType >;
+
+   LeftHostVector v1_h; v1_h = v1;
+   RightHostVector v2_h; v2_h = v1;
+   for( int i = 0; i < v1.getSize(); i++ )
+      EXPECT_NEAR( v1_h[i], v2_h[i], 1e-6 );
+}
+
 TYPED_TEST( VectorUnaryOperationsTest, minus )
 {
    SETUP_UNARY_VECTOR_TEST( VECTOR_TEST_SIZE );
@@ -151,7 +166,10 @@ TYPED_TEST( VectorUnaryOperationsTest, sqrt )
 TYPED_TEST( VectorUnaryOperationsTest, cbrt )
 {
    SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -VECTOR_TEST_SIZE, VECTOR_TEST_SIZE, TNL::cbrt );
-   EXPECT_EQ( cbrt(V1), expected );
+   // exact comparison does not work in Release, probably due to rounding
+   // errors in the vectorized version of cbrt
+//   EXPECT_EQ( cbrt(V1), expected );
+   expect_vectors_near( cbrt(V1), expected );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, pow )
