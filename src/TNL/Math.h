@@ -77,7 +77,8 @@ ResultType max( const T1& a, const T2& b )
 /**
  * \brief This function returns absolute value of given number \e n.
  */
-template< class T >
+template< class T,
+          std::enable_if_t< ! std::is_unsigned<T>::value, bool > = true >
 __cuda_callable__ inline
 T abs( const T& n )
 {
@@ -93,6 +94,17 @@ T abs( const T& n )
 #else
    return std::abs( n );
 #endif
+}
+
+/**
+ * \brief This function returns the absolute value of given unsigned number \e n, i.e. \e n.
+ */
+template< class T,
+          std::enable_if_t< std::is_unsigned<T>::value, bool > = true >
+__cuda_callable__ inline
+T abs( const T& n )
+{
+   return n;
 }
 
 /***
