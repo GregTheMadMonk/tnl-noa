@@ -8,8 +8,6 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-// NOTE: Vector = Array + VectorOperations, so we test Vector and VectorOperations at the same time
-
 #pragma once
 
 #ifdef HAVE_GTEST

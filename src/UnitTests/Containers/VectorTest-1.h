@@ -8,8 +8,6 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-// NOTE: Vector = Array + VectorOperations, so we test Vector and VectorOperations at the same time
-
 #pragma once
 
 #ifdef HAVE_GTEST
@@ -22,11 +20,10 @@ TYPED_TEST( VectorTest, constructors )
    using VectorType = typename TestFixture::VectorType;
    const int size = VECTOR_TEST_SIZE;
 
-   // TODO: Does not work yet.
-   /*VectorType empty_u;
+   VectorType empty_u;
    VectorType empty_v( empty_u );
    EXPECT_EQ( empty_u.getSize(), 0 );
-   EXPECT_EQ( empty_v.getSize(), 0 );*/
+   EXPECT_EQ( empty_v.getSize(), 0 );
 
    VectorType u( size );
    EXPECT_EQ( u.getSize(), size );
@@ -120,31 +117,6 @@ TEST( VectorSpecialCasesTest, assignmentThroughView )
    EXPECT_EQ( v_view.getData(), v.getData() );
    for( int i = 0; i < 100; i++ )
       EXPECT_EQ( v_view[ i ], 42 );
-}
-
-TEST( VectorSpecialCasesTest, operationsOnConstView )
-{
-   using VectorType = Containers::Vector< int, Devices::Host >;
-   using ViewType = VectorView< const int, Devices::Host >;
-
-   VectorType u( 100 ), v( 100 );
-   ViewType u_view( u ), v_view( v );
-
-   u.setValue( 1 );
-   v.setValue( 1 );
-
-   EXPECT_EQ( max( u_view ), 1 );
-   EXPECT_EQ( min( u_view ), 1 );
-   EXPECT_EQ( max( abs( u_view ) ), 1 );
-   EXPECT_EQ( min( abs( u_view ) ), 1 );
-   EXPECT_EQ( lpNorm( u_view, 1 ), 100 );
-   EXPECT_EQ( max( u_view - v_view ), 0 );
-   EXPECT_EQ( min( u_view - v_view ), 0 );
-   EXPECT_EQ( max( abs( u_view - v_view ) ), 0 );
-   EXPECT_EQ( min( abs( u_view - v_view ) ), 0 );
-   EXPECT_EQ( lpNorm( u_view - v_view, 1 ), 0 );
-   EXPECT_EQ( sum( u_view - v_view ), 0 );
-   EXPECT_EQ( ( u_view, v_view ), 100 );
 }
 
 TEST( VectorSpecialCasesTest, initializationOfVectorViewByArrayView )
@@ -266,144 +238,53 @@ TYPED_TEST( VectorTest, addVectors )
    EXPECT_EQ( max( x ), -2 );
 }
 
-TYPED_TEST( VectorTest, abs )
+TEST( VectorSpecialCasesTest, sumOfBoolVector )
 {
-   using VectorType = typename TestFixture::VectorType;
-   using ViewType = typename TestFixture::ViewType;
-   const int size = VECTOR_TEST_SIZE;
+   using VectorType = Containers::Vector< bool, Devices::Host >;
+   using ViewType = VectorView< bool, Devices::Host >;
+   const float epsilon = 64 * std::numeric_limits< float >::epsilon();
 
-   VectorType _u( size ), _v( size );
-   ViewType u( _u ), v( _v );
-   for( int i = 0; i < size; i++ )
-      u.setElement( i, i );
+   VectorType v( 512 ), w( 512 );
+   ViewType v_view( v ), w_view( w );
+   v.setValue( true );
+   w.setValue( false );
 
-   v = -u;
-   EXPECT_TRUE( abs( v ) == u );
-}
+   const int sum = TNL::sum( v );
+   const int l1norm = lpNorm( v, 1.0 );
+   const float l2norm = lpNorm( v, 2.0 );
+   const float l3norm = lpNorm( v, 3.0 );
+   EXPECT_EQ( sum, 512 );
+   EXPECT_EQ( l1norm, 512 );
+   EXPECT_NEAR( l2norm, std::sqrt( 512 ), epsilon );
+   EXPECT_NEAR( l3norm, std::cbrt( 512 ), epsilon );
 
-TYPED_TEST( VectorTest, comparison )
-{
-   using VectorType = typename TestFixture::VectorType;
-   using ViewType = typename TestFixture::ViewType;
-   const int size = VECTOR_TEST_SIZE;
+   const int diff_sum = TNL::sum( v - w );
+   const int diff_l1norm = lpNorm( v - w, 1.0 );
+   const float diff_l2norm = lpNorm( v - w, 2.0 );
+   const float diff_l3norm = lpNorm( v - w, 3.0 );
+   EXPECT_EQ( diff_sum, 512 );
+   EXPECT_EQ( diff_l1norm, 512 );
+   EXPECT_NEAR( diff_l2norm, std::sqrt( 512 ), epsilon );
+   EXPECT_NEAR( diff_l3norm, std::cbrt( 512 ), epsilon );
 
-   VectorType _u( size ), _v( size ), _w( size );
-   ViewType u( _u ), v( _v ), w( _w );
+   // test views
+   const int sum_view = TNL::sum( v_view );
+   const int l1norm_view = lpNorm( v_view, 1.0 );
+   const float l2norm_view = lpNorm( v_view, 2.0 );
+   const float l3norm_view = lpNorm( v_view, 3.0 );
+   EXPECT_EQ( sum_view, 512 );
+   EXPECT_EQ( l1norm_view, 512 );
+   EXPECT_NEAR( l2norm_view, std::sqrt( 512 ), epsilon );
+   EXPECT_NEAR( l3norm_view, std::cbrt( 512 ), epsilon );
 
-   u = 1.0;
-   v = 2.0;
-   w = 4.0;
-
-   // Test with Vectors
-   EXPECT_EQ( _u, _u );
-   EXPECT_EQ( _u, 1.0 );
-   EXPECT_EQ( 1.0, _u );
-   EXPECT_EQ( _w, _v + _v );
-   EXPECT_EQ( _v + _v, _w );
-   EXPECT_EQ( abs( _w ), _v + _v );
-   EXPECT_EQ( _v + _v, abs( _w ) );
-
-   EXPECT_NE( _u, _v );
-   EXPECT_NE( _u, 2.0 );
-   EXPECT_NE( 2.0, _u );
-   EXPECT_NE( _u, _w + _w );
-   EXPECT_NE( _w + _v, _u );
-   EXPECT_NE( abs( _w ), abs( _u ) );
-   EXPECT_NE( ( _w + _v ), ( _u + _v ) );
-   EXPECT_NE( ( abs( _u ) ), ( _w + _v ) );
-   EXPECT_NE( ( _w + _v ), ( abs( _u ) ) );
-
-   EXPECT_LT( _u, _v );
-   EXPECT_LT( _u, 2.0 );
-   EXPECT_LT( 0.0, _u );
-   EXPECT_LT( _u, _v + _w );
-   EXPECT_LT( _u + _v, _w );
-   EXPECT_LT( abs( _u ), abs( _w ) );
-   EXPECT_LT( abs( _u ), _v + _w );
-   EXPECT_LT( _u + _v, abs( _w ) );
-   EXPECT_LT( _u + _v, _u + _w );
-
-   EXPECT_LE( _u, _v );
-   EXPECT_LE( _u, 2.0 );
-   EXPECT_LE( 0.0, _u );
-   EXPECT_LE( _u, _v + _w );
-   EXPECT_LE( _u + _v, _w );
-   EXPECT_LE( abs( _u ), abs( _w ) );
-   EXPECT_LE( abs( _u ), _v + _w );
-   EXPECT_LE( _u + _v, abs( _w ) );
-
-   EXPECT_GT( _v, _u );
-   EXPECT_GT( _v, 1.0 );
-   EXPECT_GT( 3.0, _v );
-   EXPECT_GT( _w, _u + _v );
-   EXPECT_GT( _v + _w, _u );
-   EXPECT_GT( abs( _w ), _u + _v );
-   EXPECT_GT( _v + _w, abs( _u ) );
-
-   // Test with VectorViews
-   EXPECT_EQ( u, u );
-   EXPECT_EQ( u, 1.0 );
-   EXPECT_EQ( 1.0, u );
-   EXPECT_EQ( w, v + v );
-   EXPECT_EQ( v + v, w );
-   EXPECT_EQ( abs( w ), v + v );
-   EXPECT_EQ( v + v, abs( w ) );
-
-   EXPECT_NE( u, v );
-   EXPECT_NE( u, 2.0 );
-   EXPECT_NE( 2.0, u );
-   EXPECT_NE( u, w + w );
-   EXPECT_NE( w + v, u );
-   EXPECT_NE( abs( w ), abs( u ) );
-   EXPECT_NE( ( w + v ), ( u + v ) );
-   EXPECT_NE( ( abs( u ) ), ( w + v ) );
-   EXPECT_NE( ( w + v ), ( abs( u ) ) );
-
-   EXPECT_LT( u, v );
-   EXPECT_LT( u, 2.0 );
-   EXPECT_LT( 0.0, u );
-   EXPECT_LT( u, v + w );
-   EXPECT_LT( u + v, w );
-   EXPECT_LT( abs( u ), abs( w ) );
-   EXPECT_LT( abs( u ), v + w );
-   EXPECT_LT( u + v, abs( w ) );
-   EXPECT_LT( u + v, u + w );
-
-   EXPECT_LE( u, v );
-   EXPECT_LE( u, 2.0 );
-   EXPECT_LE( 0.0, u );
-   EXPECT_LE( u, v + w );
-   EXPECT_LE( u + v, w );
-   EXPECT_LE( abs( u ), abs( w ) );
-   EXPECT_LE( abs( u ), v + w );
-   EXPECT_LE( u + v, abs( w ) );
-
-   EXPECT_GT( v, u );
-   EXPECT_GT( v, 1.0 );
-   EXPECT_GT( 3.0, v );
-   EXPECT_GT( w, u + v );
-   EXPECT_GT( v + w, u );
-   EXPECT_GT( abs( w ), u + v );
-   EXPECT_GT( v + w, abs( u ) );
-}
-
-TYPED_TEST( VectorTest, comparisonOnDifferentDevices )
-{
-#ifdef HAVE_CUDA
-   using VectorType = typename TestFixture::VectorType;
-   const int size = VECTOR_TEST_SIZE;
-
-   typename VectorType::HostType host_vec( size );
-   typename VectorType::CudaType cuda_vec( size );
-   host_vec = 1.0;
-   cuda_vec = 1.0;
-   EXPECT_EQ( host_vec, cuda_vec );
-   EXPECT_EQ( host_vec.getView(), cuda_vec.getView() );
-   
-   host_vec = 0.0;
-   EXPECT_TRUE( host_vec != cuda_vec );
-   EXPECT_TRUE( host_vec.getView() != cuda_vec.getView() );
-#endif
+   const int diff_sum_view = TNL::sum( v_view - w_view );
+   const int diff_l1norm_view = lpNorm( v_view -w_view, 1.0 );
+   const float diff_l2norm_view = lpNorm( v_view - w_view, 2.0 );
+   const float diff_l3norm_view = lpNorm( v_view - w_view, 3.0 );
+   EXPECT_EQ( diff_sum_view, 512 );
+   EXPECT_EQ( diff_l1norm_view, 512 );
+   EXPECT_NEAR( diff_l2norm_view, std::sqrt( 512 ), epsilon );
+   EXPECT_NEAR( diff_l3norm_view, std::cbrt( 512 ), epsilon );
 }
 
 #endif // HAVE_GTEST
