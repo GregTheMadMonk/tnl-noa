@@ -2147,7 +2147,7 @@ template< typename L1,
 auto
 argMin( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >& a, Index& arg )
 {
-   return ExpressionArgMin( a );
+   return ExpressionArgMin( a, arg );
 }
 
 template< typename L1,
@@ -2185,7 +2185,7 @@ template< typename L1,
 auto
 argMax( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >& a, Index& arg )
 {
-   return ExpressionArgMax( a );
+   return ExpressionArgMax( a, arg );
 }
 
 template< typename L1,
