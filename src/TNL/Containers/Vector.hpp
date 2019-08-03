@@ -146,6 +146,7 @@ Vector< Real, Device, Index, Allocator >&
 Vector< Real, Device, Index, Allocator >::
 operator=( const VectorExpression& expression )
 {
+   Algorithms::VectorAssignment< Vector, VectorExpression >::resize( *this, expression );
    Algorithms::VectorAssignment< Vector, VectorExpression >::assign( *this, expression );
    return *this;
 }
