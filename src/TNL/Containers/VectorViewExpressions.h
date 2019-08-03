@@ -377,30 +377,21 @@ abs( const Containers::VectorView< Real, Device, Index >& a )
 }
 
 ////
-// Sine
-template< typename Real, typename Device, typename Index >
+// Power
+template< typename Real, typename Device, typename Index, typename ExpType >
 auto
-sin( const Containers::VectorView< Real, Device, Index >& a )
+pow( const Containers::VectorView< Real, Device, Index >& a, const ExpType& exp )
 {
-   return Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Sin >( a );
+   return Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Pow, ExpType >( a, exp );
 }
 
 ////
-// Cosine
+// Exp
 template< typename Real, typename Device, typename Index >
 auto
-cos( const Containers::VectorView< Real, Device, Index >& a )
+exp( const Containers::VectorView< Real, Device, Index >& a )
 {
-   return Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Cos >( a );
-}
-
-////
-// Tangent
-template< typename Real, typename Device, typename Index >
-auto
-tan( const Containers::VectorView< Real, Device, Index >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Tan >( a );
+   return Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Exp >( a );
 }
 
 ////
@@ -419,78 +410,6 @@ auto
 cbrt( const Containers::VectorView< Real, Device, Index >& a )
 {
    return Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Cbrt >( a );
-}
-
-////
-// Power
-template< typename Real, typename Device, typename Index, typename ExpType >
-auto
-pow( const Containers::VectorView< Real, Device, Index >& a, const ExpType& exp )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Pow, ExpType >( a, exp );
-}
-
-////
-// Floor
-template< typename Real, typename Device, typename Index >
-auto
-floor( const Containers::VectorView< Real, Device, Index >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Floor >( a );
-}
-
-////
-// Ceil
-template< typename Real, typename Device, typename Index >
-auto
-ceil( const Containers::VectorView< Real, Device, Index >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Ceil >( a );
-}
-
-////
-// Acos
-template< typename Real, typename Device, typename Index >
-auto
-acos( const Containers::VectorView< Real, Device, Index >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Acos >( a );
-}
-
-////
-// Asin
-template< typename Real, typename Device, typename Index >
-auto
-asin( const Containers::VectorView< Real, Device, Index >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Asin >( a );
-}
-
-////
-// Atan
-template< typename Real, typename Device, typename Index >
-auto
-atan( const Containers::VectorView< Real, Device, Index >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Atan >( a );
-}
-
-////
-// Cosh
-template< typename Real, typename Device, typename Index >
-auto
-cosh( const Containers::VectorView< Real, Device, Index >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Cosh >( a );
-}
-
-////
-// Tanh
-template< typename Real, typename Device, typename Index >
-auto
-tanh( const Containers::VectorView< Real, Device, Index >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Tanh >( a );
 }
 
 ////
@@ -521,12 +440,129 @@ log2( const Containers::VectorView< Real, Device, Index >& a )
 }
 
 ////
-// Exp
+// Sine
 template< typename Real, typename Device, typename Index >
 auto
-exp( const Containers::VectorView< Real, Device, Index >& a )
+sin( const Containers::VectorView< Real, Device, Index >& a )
 {
-   return Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Exp >( a );
+   return Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Sin >( a );
+}
+
+////
+// Cosine
+template< typename Real, typename Device, typename Index >
+auto
+cos( const Containers::VectorView< Real, Device, Index >& a )
+{
+   return Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Cos >( a );
+}
+
+////
+// Tangent
+template< typename Real, typename Device, typename Index >
+auto
+tan( const Containers::VectorView< Real, Device, Index >& a )
+{
+   return Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Tan >( a );
+}
+
+////
+// Asin
+template< typename Real, typename Device, typename Index >
+auto
+asin( const Containers::VectorView< Real, Device, Index >& a )
+{
+   return Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Asin >( a );
+}
+
+////
+// Acos
+template< typename Real, typename Device, typename Index >
+auto
+acos( const Containers::VectorView< Real, Device, Index >& a )
+{
+   return Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Acos >( a );
+}
+
+////
+// Atan
+template< typename Real, typename Device, typename Index >
+auto
+atan( const Containers::VectorView< Real, Device, Index >& a )
+{
+   return Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Atan >( a );
+}
+
+////
+// Sinh
+template< typename Real, typename Device, typename Index >
+auto
+sinh( const Containers::VectorView< Real, Device, Index >& a )
+{
+   return Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Sinh >( a );
+}
+
+////
+// Cosh
+template< typename Real, typename Device, typename Index >
+auto
+cosh( const Containers::VectorView< Real, Device, Index >& a )
+{
+   return Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Cosh >( a );
+}
+
+////
+// Tanh
+template< typename Real, typename Device, typename Index >
+auto
+tanh( const Containers::VectorView< Real, Device, Index >& a )
+{
+   return Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Tanh >( a );
+}
+
+////
+// Asinh
+template< typename Real, typename Device, typename Index >
+auto
+asinh( const Containers::VectorView< Real, Device, Index >& a )
+{
+   return Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Asinh >( a );
+}
+
+////
+// Acosh
+template< typename Real, typename Device, typename Index >
+auto
+acosh( const Containers::VectorView< Real, Device, Index >& a )
+{
+   return Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Acosh >( a );
+}
+
+////
+// Atanh
+template< typename Real, typename Device, typename Index >
+auto
+atanh( const Containers::VectorView< Real, Device, Index >& a )
+{
+   return Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Atanh >( a );
+}
+
+////
+// Floor
+template< typename Real, typename Device, typename Index >
+auto
+floor( const Containers::VectorView< Real, Device, Index >& a )
+{
+   return Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Floor >( a );
+}
+
+////
+// Ceil
+template< typename Real, typename Device, typename Index >
+auto
+ceil( const Containers::VectorView< Real, Device, Index >& a )
+{
+   return Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Ceil >( a );
 }
 
 ////

@@ -97,6 +97,77 @@ struct Abs
 };
 
 template< typename T1 >
+struct Pow
+{
+   template< typename Real >
+   __cuda_callable__
+   static auto evaluate( const T1& a, const Real& exp ) -> decltype( TNL::pow( a, exp ) )
+   {
+      return TNL::pow( a, exp );
+   }
+};
+
+template< typename T1 >
+struct Exp
+{
+   __cuda_callable__
+   static auto evaluate( const T1& a ) -> decltype( TNL::exp( a ) )
+   {
+      return TNL::exp( a );
+   }
+};
+
+template< typename T1 >
+struct Sqrt
+{
+   __cuda_callable__
+   static auto evaluate( const T1& a ) -> decltype( TNL::sqrt( a ) )
+   {
+      return TNL::sqrt( a );
+   }
+};
+
+template< typename T1 >
+struct Cbrt
+{
+   __cuda_callable__
+   static auto evaluate( const T1& a ) -> decltype( TNL::cbrt( a ) )
+   {
+      return TNL::cbrt( a );
+   }
+};
+
+template< typename T1 >
+struct Log
+{
+   __cuda_callable__
+   static auto evaluate( const T1& a ) -> decltype( TNL::log( a ) )
+   {
+      return TNL::log( a );
+   }
+};
+
+template< typename T1 >
+struct Log10
+{
+   __cuda_callable__
+   static auto evaluate( const T1& a ) -> decltype( TNL::log10( a ) )
+   {
+      return TNL::log10( a );
+   }
+};
+
+template< typename T1 >
+struct Log2
+{
+   __cuda_callable__
+   static auto evaluate( const T1& a ) -> decltype( TNL::log2( a ) )
+   {
+      return TNL::log2( a );
+   }
+};
+
+template< typename T1 >
 struct Sin
 {
    __cuda_callable__
@@ -127,53 +198,12 @@ struct Tan
 };
 
 template< typename T1 >
-struct Sqrt
+struct Asin
 {
    __cuda_callable__
-   static auto evaluate( const T1& a ) -> decltype( TNL::sqrt( a ) )
+   static auto evaluate( const T1& a ) -> decltype( TNL::asin( a ) )
    {
-      return TNL::sqrt( a );
-   }
-};
-
-template< typename T1 >
-struct Cbrt
-{
-   __cuda_callable__
-   static auto evaluate( const T1& a ) -> decltype( TNL::cbrt( a ) )
-   {
-      return TNL::cbrt( a );
-   }
-};
-
-template< typename T1 >
-struct Pow
-{
-   template< typename Real >
-   __cuda_callable__
-   static auto evaluate( const T1& a, const Real& exp ) -> decltype( TNL::pow( a, exp ) )
-   {
-      return TNL::pow( a, exp );
-   }
-};
-
-template< typename T1 >
-struct Floor
-{
-   __cuda_callable__
-   static auto evaluate( const T1& a ) -> decltype( TNL::floor( a ) )
-   {
-      return TNL::floor( a );
-   }
-};
-
-template< typename T1 >
-struct Ceil
-{
-   __cuda_callable__
-   static auto evaluate( const T1& a ) -> decltype( TNL::ceil( a ) )
-   {
-      return TNL::ceil( a );
+      return TNL::asin( a );
    }
 };
 
@@ -184,16 +214,6 @@ struct Acos
    static auto evaluate( const T1& a ) -> decltype( TNL::acos( a ) )
    {
       return TNL::acos( a );
-   }
-};
-
-template< typename T1 >
-struct Asin
-{
-   __cuda_callable__
-   static auto evaluate( const T1& a ) -> decltype( TNL::asin( a ) )
-   {
-      return TNL::asin( a );
    }
 };
 
@@ -238,42 +258,52 @@ struct Tanh
 };
 
 template< typename T1 >
-struct Log
+struct Asinh
 {
    __cuda_callable__
-   static auto evaluate( const T1& a ) -> decltype( TNL::log( a ) )
+   static auto evaluate( const T1& a ) -> decltype( TNL::asinh( a ) )
    {
-      return TNL::log( a );
+      return TNL::asinh( a );
    }
 };
 
 template< typename T1 >
-struct Log10
+struct Acosh
 {
    __cuda_callable__
-   static auto evaluate( const T1& a ) -> decltype( TNL::log10( a ) )
+   static auto evaluate( const T1& a ) -> decltype( TNL::acosh( a ) )
    {
-      return TNL::log10( a );
+      return TNL::acosh( a );
    }
 };
 
 template< typename T1 >
-struct Log2
+struct Atanh
 {
    __cuda_callable__
-   static auto evaluate( const T1& a ) -> decltype( TNL::log2( a ) )
+   static auto evaluate( const T1& a ) -> decltype( TNL::atanh( a ) )
    {
-      return TNL::log2( a );
+      return TNL::atanh( a );
    }
 };
 
 template< typename T1 >
-struct Exp
+struct Floor
 {
    __cuda_callable__
-   static auto evaluate( const T1& a ) -> decltype( TNL::exp( a ) )
+   static auto evaluate( const T1& a ) -> decltype( TNL::floor( a ) )
    {
-      return TNL::exp( a );
+      return TNL::floor( a );
+   }
+};
+
+template< typename T1 >
+struct Ceil
+{
+   __cuda_callable__
+   static auto evaluate( const T1& a ) -> decltype( TNL::ceil( a ) )
+   {
+      return TNL::ceil( a );
    }
 };
 

@@ -14,6 +14,7 @@
 #include <type_traits>
 #include <algorithm>
 
+#include <TNL/TypeTraits.h>
 #include <TNL/Devices/CudaCallable.h>
 
 namespace TNL {
@@ -31,7 +32,9 @@ ResultType sum( const T1& a, const T2& b )
  * GPU device code uses the functions defined in the CUDA's math_functions.h,
  * MIC uses trivial override and host uses the STL functions.
  */
-template< typename T1, typename T2, typename ResultType = typename std::common_type< T1, T2 >::type >
+template< typename T1, typename T2, typename ResultType = typename std::common_type< T1, T2 >::type,
+          // enable_if is necessary to avoid ambiguity in vector expressions
+          std::enable_if_t< ! HasSubscriptOperator<T1>::value && ! HasSubscriptOperator<T2>::value, bool > = true >
 __cuda_callable__ inline
 ResultType min( const T1& a, const T2& b )
 {
@@ -56,7 +59,9 @@ ResultType min( const T1& a, const T2& b )
  * GPU device code uses the functions defined in the CUDA's math_functions.h,
  * MIC uses trivial override and host uses the STL functions.
  */
-template< typename T1, typename T2, typename ResultType = typename std::common_type< T1, T2 >::type >
+template< typename T1, typename T2, typename ResultType = typename std::common_type< T1, T2 >::type,
+          // enable_if is necessary to avoid ambiguity in vector expressions
+          std::enable_if_t< ! HasSubscriptOperator<T1>::value && ! HasSubscriptOperator<T2>::value, bool > = true >
 __cuda_callable__
 ResultType max( const T1& a, const T2& b )
 {
@@ -162,6 +167,20 @@ ResultType pow( const T1& base, const T2& exp )
 }
 
 /**
+ * \brief This function returns the base-e exponential of the given \e value.
+ */
+template< typename T >
+__cuda_callable__ inline
+T exp( const T& value )
+{
+#if defined(__CUDA_ARCH__) || defined(__MIC__)
+   return ::exp( value );
+#else
+   return std::exp( value );
+#endif
+}
+
+/**
  * \brief This function returns square root of the given \e value.
  */
 template< typename T >
@@ -186,6 +205,48 @@ T cbrt( const T& value )
    return ::cbrt( value );
 #else
    return std::cbrt( value );
+#endif
+}
+
+/**
+ * \brief This function returns the natural logarithm of the given \e value.
+ */
+template< typename T >
+__cuda_callable__ inline
+T log( const T& value )
+{
+#if defined(__CUDA_ARCH__) || defined(__MIC__)
+   return ::log( value );
+#else
+   return std::log( value );
+#endif
+}
+
+/**
+ * \brief This function returns the common logarithm of the given \e value.
+ */
+template< typename T >
+__cuda_callable__ inline
+T log10( const T& value )
+{
+#if defined(__CUDA_ARCH__) || defined(__MIC__)
+   return ::log10( value );
+#else
+   return std::log10( value );
+#endif
+}
+
+/**
+ * \brief This function returns the binary logarithm of the given \e value.
+ */
+template< typename T >
+__cuda_callable__ inline
+T log2( const T& value )
+{
+#if defined(__CUDA_ARCH__) || defined(__MIC__)
+   return ::log2( value );
+#else
+   return std::log2( value );
 #endif
 }
 
@@ -232,30 +293,16 @@ T tan( const T& value )
 }
 
 /**
- * \brief This function returns largest integer value not greater than the given \e value.
+ * \brief This function returns the arc sine of the given \e value.
  */
 template< typename T >
 __cuda_callable__ inline
-T floor( const T& value )
+T asin( const T& value )
 {
 #if defined(__CUDA_ARCH__) || defined(__MIC__)
-   return ::floor( value );
+   return ::asin( value );
 #else
-   return std::floor( value );
-#endif
-}
-
-/**
- * \brief This function returns the smallest integer value not less than the given \e value.
- */
-template< typename T >
-__cuda_callable__ inline
-T ceil( const T& value )
-{
-#if defined(__CUDA_ARCH__) || defined(__MIC__)
-   return ::ceil( value );
-#else
-   return std::ceil( value );
+   return std::asin( value );
 #endif
 }
 
@@ -270,20 +317,6 @@ T acos( const T& value )
    return ::acos( value );
 #else
    return std::acos( value );
-#endif
-}
-
-/**
- * \brief This function returns the arc sine of the given \e value.
- */
-template< typename T >
-__cuda_callable__ inline
-T asin( const T& value )
-{
-#if defined(__CUDA_ARCH__) || defined(__MIC__)
-   return ::asin( value );
-#else
-   return std::asin( value );
 #endif
 }
 
@@ -344,58 +377,72 @@ T tanh( const T& value )
 }
 
 /**
- * \brief This function returns the natural logarithm of the given \e value.
+ * \brief This function returns the inverse hyperbolic sine of the given \e value.
  */
 template< typename T >
 __cuda_callable__ inline
-T log( const T& value )
+T asinh( const T& value )
 {
 #if defined(__CUDA_ARCH__) || defined(__MIC__)
-   return ::log( value );
+   return ::asinh( value );
 #else
-   return std::log( value );
+   return std::asinh( value );
 #endif
 }
 
 /**
- * \brief This function returns the common logarithm of the given \e value.
+ * \brief This function returns the inverse hyperbolic cosine of the given \e value.
  */
 template< typename T >
 __cuda_callable__ inline
-T log10( const T& value )
+T acosh( const T& value )
 {
 #if defined(__CUDA_ARCH__) || defined(__MIC__)
-   return ::log10( value );
+   return ::acosh( value );
 #else
-   return std::log10( value );
+   return std::acosh( value );
 #endif
 }
 
 /**
- * \brief This function returns the binary logarithm of the given \e value.
+ * \brief This function returns the inverse hyperbolic tangent of the given \e value.
  */
 template< typename T >
 __cuda_callable__ inline
-T log2( const T& value )
+T atanh( const T& value )
 {
 #if defined(__CUDA_ARCH__) || defined(__MIC__)
-   return ::log2( value );
+   return ::atanh( value );
 #else
-   return std::log2( value );
+   return std::atanh( value );
 #endif
 }
 
 /**
- * \brief This function returns the base-e exponential of the given \e value.
+ * \brief This function returns largest integer value not greater than the given \e value.
  */
 template< typename T >
 __cuda_callable__ inline
-T exp( const T& value )
+T floor( const T& value )
 {
 #if defined(__CUDA_ARCH__) || defined(__MIC__)
-   return ::exp( value );
+   return ::floor( value );
 #else
-   return std::exp( value );
+   return std::floor( value );
+#endif
+}
+
+/**
+ * \brief This function returns the smallest integer value not less than the given \e value.
+ */
+template< typename T >
+__cuda_callable__ inline
+T ceil( const T& value )
+{
+#if defined(__CUDA_ARCH__) || defined(__MIC__)
+   return ::ceil( value );
+#else
+   return std::ceil( value );
 #endif
 }
 

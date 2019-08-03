@@ -699,33 +699,23 @@ abs( const Containers::Vector< Real, Device, Index, Allocator >& a )
 }
 
 ////
-// Sine
-template< typename Real, typename Device, typename Index, typename Allocator >
+// Power
+template< typename Real, typename Device, typename Index, typename Allocator, typename ExpType >
 auto
-sin( const Containers::Vector< Real, Device, Index, Allocator >& a )
+pow( const Containers::Vector< Real, Device, Index, Allocator >& a, const ExpType& exp )
 {
    using ConstView = typename Containers::Vector< Real, Device, Index, Allocator >::ConstViewType;
-   return Containers::Expressions::UnaryExpressionTemplate< ConstView, Containers::Expressions::Sin >( a.getConstView() );
+   return Containers::Expressions::UnaryExpressionTemplate< ConstView, Containers::Expressions::Pow, ExpType >( a.getConstView(), exp );
 }
 
 ////
-// Cosine
+// Exp
 template< typename Real, typename Device, typename Index, typename Allocator >
 auto
-cos( const Containers::Vector< Real, Device, Index, Allocator >& a )
+exp( const Containers::Vector< Real, Device, Index, Allocator >& a )
 {
    using ConstView = typename Containers::Vector< Real, Device, Index, Allocator >::ConstViewType;
-   return Containers::Expressions::UnaryExpressionTemplate< ConstView, Containers::Expressions::Cos >( a.getConstView() );
-}
-
-////
-// Tangent
-template< typename Real, typename Device, typename Index, typename Allocator >
-auto
-tan( const Containers::Vector< Real, Device, Index, Allocator >& a )
-{
-   using ConstView = typename Containers::Vector< Real, Device, Index, Allocator >::ConstViewType;
-   return Containers::Expressions::UnaryExpressionTemplate< ConstView, Containers::Expressions::Tan >( a.getConstView() );
+   return Containers::Expressions::UnaryExpressionTemplate< ConstView, Containers::Expressions::Exp >( a.getConstView() );
 }
 
 ////
@@ -746,86 +736,6 @@ cbrt( const Containers::Vector< Real, Device, Index, Allocator >& a )
 {
    using ConstView = typename Containers::Vector< Real, Device, Index, Allocator >::ConstViewType;
    return Containers::Expressions::UnaryExpressionTemplate< ConstView, Containers::Expressions::Cbrt >( a.getConstView() );
-}
-
-////
-// Power
-template< typename Real, typename Device, typename Index, typename Allocator, typename ExpType >
-auto
-pow( const Containers::Vector< Real, Device, Index, Allocator >& a, const ExpType& exp )
-{
-   using ConstView = typename Containers::Vector< Real, Device, Index, Allocator >::ConstViewType;
-   return Containers::Expressions::UnaryExpressionTemplate< ConstView, Containers::Expressions::Pow, ExpType >( a.getConstView(), exp );
-}
-
-////
-// Floor
-template< typename Real, typename Device, typename Index, typename Allocator >
-auto
-floor( const Containers::Vector< Real, Device, Index, Allocator >& a )
-{
-   using ConstView = typename Containers::Vector< Real, Device, Index, Allocator >::ConstViewType;
-   return Containers::Expressions::UnaryExpressionTemplate< ConstView, Containers::Expressions::Floor >( a.getConstView() );
-}
-
-////
-// Ceil
-template< typename Real, typename Device, typename Index, typename Allocator >
-auto
-ceil( const Containers::Vector< Real, Device, Index, Allocator >& a )
-{
-   using ConstView = typename Containers::Vector< Real, Device, Index, Allocator >::ConstViewType;
-   return Containers::Expressions::UnaryExpressionTemplate< ConstView, Containers::Expressions::Ceil >( a.getConstView() );
-}
-
-////
-// Acos
-template< typename Real, typename Device, typename Index, typename Allocator >
-auto
-acos( const Containers::Vector< Real, Device, Index, Allocator >& a )
-{
-   using ConstView = typename Containers::Vector< Real, Device, Index, Allocator >::ConstViewType;
-   return Containers::Expressions::UnaryExpressionTemplate< ConstView, Containers::Expressions::Acos >( a.getConstView() );
-}
-
-////
-// Asin
-template< typename Real, typename Device, typename Index, typename Allocator >
-auto
-asin( const Containers::Vector< Real, Device, Index, Allocator >& a )
-{
-   using ConstView = typename Containers::Vector< Real, Device, Index, Allocator >::ConstViewType;
-   return Containers::Expressions::UnaryExpressionTemplate< ConstView, Containers::Expressions::Asin >( a.getConstView() );
-}
-
-////
-// Atan
-template< typename Real, typename Device, typename Index, typename Allocator >
-auto
-atan( const Containers::Vector< Real, Device, Index, Allocator >& a )
-{
-   using ConstView = typename Containers::Vector< Real, Device, Index, Allocator >::ConstViewType;
-   return Containers::Expressions::UnaryExpressionTemplate< ConstView, Containers::Expressions::Atan >( a.getConstView() );
-}
-
-////
-// Cosh
-template< typename Real, typename Device, typename Index, typename Allocator >
-auto
-cosh( const Containers::Vector< Real, Device, Index, Allocator >& a )
-{
-   using ConstView = typename Containers::Vector< Real, Device, Index, Allocator >::ConstViewType;
-   return Containers::Expressions::UnaryExpressionTemplate< ConstView, Containers::Expressions::Cosh >( a.getConstView() );
-}
-
-////
-// Tanh
-template< typename Real, typename Device, typename Index, typename Allocator >
-auto
-tanh( const Containers::Vector< Real, Device, Index, Allocator >& a )
-{
-   using ConstView = typename Containers::Vector< Real, Device, Index, Allocator >::ConstViewType;
-   return Containers::Expressions::UnaryExpressionTemplate< ConstView, Containers::Expressions::Tanh >( a.getConstView() );
 }
 
 ////
@@ -859,13 +769,143 @@ log2( const Containers::Vector< Real, Device, Index, Allocator >& a )
 }
 
 ////
-// Exp
+// Sine
 template< typename Real, typename Device, typename Index, typename Allocator >
 auto
-exp( const Containers::Vector< Real, Device, Index, Allocator >& a )
+sin( const Containers::Vector< Real, Device, Index, Allocator >& a )
 {
    using ConstView = typename Containers::Vector< Real, Device, Index, Allocator >::ConstViewType;
-   return Containers::Expressions::UnaryExpressionTemplate< ConstView, Containers::Expressions::Exp >( a.getConstView() );
+   return Containers::Expressions::UnaryExpressionTemplate< ConstView, Containers::Expressions::Sin >( a.getConstView() );
+}
+
+////
+// Cosine
+template< typename Real, typename Device, typename Index, typename Allocator >
+auto
+cos( const Containers::Vector< Real, Device, Index, Allocator >& a )
+{
+   using ConstView = typename Containers::Vector< Real, Device, Index, Allocator >::ConstViewType;
+   return Containers::Expressions::UnaryExpressionTemplate< ConstView, Containers::Expressions::Cos >( a.getConstView() );
+}
+
+////
+// Tangent
+template< typename Real, typename Device, typename Index, typename Allocator >
+auto
+tan( const Containers::Vector< Real, Device, Index, Allocator >& a )
+{
+   using ConstView = typename Containers::Vector< Real, Device, Index, Allocator >::ConstViewType;
+   return Containers::Expressions::UnaryExpressionTemplate< ConstView, Containers::Expressions::Tan >( a.getConstView() );
+}
+
+////
+// Asin
+template< typename Real, typename Device, typename Index, typename Allocator >
+auto
+asin( const Containers::Vector< Real, Device, Index, Allocator >& a )
+{
+   using ConstView = typename Containers::Vector< Real, Device, Index, Allocator >::ConstViewType;
+   return Containers::Expressions::UnaryExpressionTemplate< ConstView, Containers::Expressions::Asin >( a.getConstView() );
+}
+
+////
+// Acos
+template< typename Real, typename Device, typename Index, typename Allocator >
+auto
+acos( const Containers::Vector< Real, Device, Index, Allocator >& a )
+{
+   using ConstView = typename Containers::Vector< Real, Device, Index, Allocator >::ConstViewType;
+   return Containers::Expressions::UnaryExpressionTemplate< ConstView, Containers::Expressions::Acos >( a.getConstView() );
+}
+
+////
+// Atan
+template< typename Real, typename Device, typename Index, typename Allocator >
+auto
+atan( const Containers::Vector< Real, Device, Index, Allocator >& a )
+{
+   using ConstView = typename Containers::Vector< Real, Device, Index, Allocator >::ConstViewType;
+   return Containers::Expressions::UnaryExpressionTemplate< ConstView, Containers::Expressions::Atan >( a.getConstView() );
+}
+
+////
+// Sinh
+template< typename Real, typename Device, typename Index, typename Allocator >
+auto
+sinh( const Containers::Vector< Real, Device, Index, Allocator >& a )
+{
+   using ConstView = typename Containers::Vector< Real, Device, Index, Allocator >::ConstViewType;
+   return Containers::Expressions::UnaryExpressionTemplate< ConstView, Containers::Expressions::Sinh >( a.getConstView() );
+}
+
+////
+// Cosh
+template< typename Real, typename Device, typename Index, typename Allocator >
+auto
+cosh( const Containers::Vector< Real, Device, Index, Allocator >& a )
+{
+   using ConstView = typename Containers::Vector< Real, Device, Index, Allocator >::ConstViewType;
+   return Containers::Expressions::UnaryExpressionTemplate< ConstView, Containers::Expressions::Cosh >( a.getConstView() );
+}
+
+////
+// Tanh
+template< typename Real, typename Device, typename Index, typename Allocator >
+auto
+tanh( const Containers::Vector< Real, Device, Index, Allocator >& a )
+{
+   using ConstView = typename Containers::Vector< Real, Device, Index, Allocator >::ConstViewType;
+   return Containers::Expressions::UnaryExpressionTemplate< ConstView, Containers::Expressions::Tanh >( a.getConstView() );
+}
+
+////
+// Asinh
+template< typename Real, typename Device, typename Index, typename Allocator >
+auto
+asinh( const Containers::Vector< Real, Device, Index, Allocator >& a )
+{
+   using ConstView = typename Containers::Vector< Real, Device, Index, Allocator >::ConstViewType;
+   return Containers::Expressions::UnaryExpressionTemplate< ConstView, Containers::Expressions::Asinh >( a.getConstView() );
+}
+
+////
+// Acosh
+template< typename Real, typename Device, typename Index, typename Allocator >
+auto
+acosh( const Containers::Vector< Real, Device, Index, Allocator >& a )
+{
+   using ConstView = typename Containers::Vector< Real, Device, Index, Allocator >::ConstViewType;
+   return Containers::Expressions::UnaryExpressionTemplate< ConstView, Containers::Expressions::Acosh >( a.getConstView() );
+}
+
+////
+// Atanh
+template< typename Real, typename Device, typename Index, typename Allocator >
+auto
+atanh( const Containers::Vector< Real, Device, Index, Allocator >& a )
+{
+   using ConstView = typename Containers::Vector< Real, Device, Index, Allocator >::ConstViewType;
+   return Containers::Expressions::UnaryExpressionTemplate< ConstView, Containers::Expressions::Atanh >( a.getConstView() );
+}
+
+////
+// Floor
+template< typename Real, typename Device, typename Index, typename Allocator >
+auto
+floor( const Containers::Vector< Real, Device, Index, Allocator >& a )
+{
+   using ConstView = typename Containers::Vector< Real, Device, Index, Allocator >::ConstViewType;
+   return Containers::Expressions::UnaryExpressionTemplate< ConstView, Containers::Expressions::Floor >( a.getConstView() );
+}
+
+////
+// Ceil
+template< typename Real, typename Device, typename Index, typename Allocator >
+auto
+ceil( const Containers::Vector< Real, Device, Index, Allocator >& a )
+{
+   using ConstView = typename Containers::Vector< Real, Device, Index, Allocator >::ConstViewType;
+   return Containers::Expressions::UnaryExpressionTemplate< ConstView, Containers::Expressions::Ceil >( a.getConstView() );
 }
 
 ////
