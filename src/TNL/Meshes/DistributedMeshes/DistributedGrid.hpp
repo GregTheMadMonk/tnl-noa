@@ -172,15 +172,9 @@ setOverlaps( const SubdomainOverlapsType& lower,
 {
    this->lowerOverlap = lower;
    this->upperOverlap = upper;
-
-
-   this->localOrigin = this->globalGrid.getOrigin() +
-         Scale( this->globalGrid.getSpaceSteps(),
-            ( this->globalBegin - this->lowerOverlap ) );
-
+   this->localOrigin = this->globalGrid.getOrigin() + this->globalGrid.getSpaceSteps() * (this->globalBegin - this->lowerOverlap);
    this->localBegin = this->lowerOverlap;
    this->localGridSize = this->localSize + this->lowerOverlap + this->upperOverlap;
-   //this->print( std::cerr );   
 }
 
 

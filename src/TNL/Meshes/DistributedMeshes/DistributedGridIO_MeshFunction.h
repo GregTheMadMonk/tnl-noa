@@ -62,7 +62,7 @@ class DistributedGridIO<
          newMesh->setDimensions(localSize);
          newMesh->setSpaceSteps(spaceSteps);
          CoordinatesType newOrigin;
-         newMesh->setOrigin(origin+TNL::Scale(spaceSteps,localBegin));
+         newMesh->setOrigin(origin+spaceSteps*localBegin);
 
          File meshFile;
          meshFile.open( fileName+String("-mesh-")+distrGrid->printProcessCoords()+String(".tnl"), std::ios_base::out );
@@ -109,7 +109,7 @@ class DistributedGridIO<
         newMesh->setDimensions(localSize);
         newMesh->setSpaceSteps(spaceSteps);
         CoordinatesType newOrigin;
-        newMesh->setOrigin(origin+TNL::Scale(spaceSteps,localBegin));
+        newMesh->setOrigin(origin+spaceSteps*localBegin);
         
         VectorType newDof(newMesh-> template getEntitiesCount< typename MeshType::Cell >());
         MeshFunctionType newMeshFunction;

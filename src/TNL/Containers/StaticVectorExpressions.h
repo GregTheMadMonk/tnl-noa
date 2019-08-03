@@ -694,35 +694,4 @@ dot( const Containers::StaticVector< Size, Real1 >& a, const Containers::StaticV
    return TNL::sum( a * b );
 }
 
-////
-// TODO: Replace this with multiplication when its safe
-template< int Size, typename Real, typename ET,
-          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
-__cuda_callable__
-auto
-Scale( const Containers::StaticVector< Size, Real >& a, const ET& b )
-{
-   Containers::StaticVector< Size, Real > result = Containers::Expressions::StaticBinaryExpressionTemplate< Containers::StaticVector< Size, Real >, ET, Containers::Expressions::Multiplication >( a, b );
-   return result;
-}
-
-template< typename ET, int Size, typename Real,
-          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
-__cuda_callable__
-auto
-Scale( const ET& a, const Containers::StaticVector< Size, Real >& b )
-{
-   Containers::StaticVector< Size, Real > result = Containers::Expressions::StaticBinaryExpressionTemplate< ET, Containers::StaticVector< Size, Real >, Containers::Expressions::Multiplication >( a, b );
-   return result;
-}
-
-template< int Size, typename Real1, typename Real2 >
-__cuda_callable__
-auto
-Scale( const Containers::StaticVector< Size, Real1 >& a, const Containers::StaticVector< Size, Real2 >& b )
-{
-   Containers::StaticVector< Size, Real1 > result = Containers::Expressions::StaticBinaryExpressionTemplate< Containers::StaticVector< Size, Real1 >, Containers::StaticVector< Size, Real2 >, Containers::Expressions::Multiplication >( a, b );
-   return result;
-}
-
 } // namespace TNL

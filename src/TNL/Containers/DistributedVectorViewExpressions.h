@@ -802,32 +802,4 @@ dot( const Containers::DistributedVectorView< Real1, Device, Index, Communicator
    return ( a, b );
 }
 
-////
-// TODO: Replace this with multiplication when its safe
-template< typename Real, typename Device, typename Index, typename Communicator, typename ET,
-          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
-auto
-Scale( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
-{
-   Containers::DistributedVectorView< Real, Device, Index, Communicator > result = Containers::Expressions::DistributedBinaryExpressionTemplate< Containers::DistributedVectorView< Real, Device, Index, Communicator >, ET, Containers::Expressions::Multiplication, Communicator >( a, b );
-   return result;
-}
-
-template< typename ET, typename Real, typename Device, typename Index, typename Communicator,
-          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
-auto
-Scale( const ET& a, const Containers::DistributedVectorView< Real, Device, Index, Communicator >& b )
-{
-   Containers::DistributedVectorView< Real, Device, Index, Communicator > result =  Containers::Expressions::DistributedBinaryExpressionTemplate< ET, Containers::DistributedVectorView< Real, Device, Index, Communicator >, Containers::Expressions::Multiplication, Communicator >( a, b );
-   return result;
-}
-
-template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
-auto
-Scale( const Containers::DistributedVectorView< Real1, Device, Index, Communicator >& a, const Containers::DistributedVectorView< Real2, Device, Index, Communicator >& b )
-{
-   Containers::DistributedVectorView< Real1, Device, Index, Communicator > result =  Containers::Expressions::DistributedBinaryExpressionTemplate< Containers::DistributedVectorView< Real1, Device, Index, Communicator >, Containers::DistributedVectorView< Real2, Device, Index, Communicator >, Containers::Expressions::Multiplication, Communicator >( a, b );
-   return result;
-}
-
 } // namespace TNL

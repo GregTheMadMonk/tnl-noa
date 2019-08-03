@@ -985,32 +985,4 @@ binaryAnd( const Containers::Vector< Real, Device, Index, Allocator >& a )
    return Containers::Expressions::ExpressionBinaryAnd( a.getConstView() );
 }
 
-////
-// TODO: Replace this with multiplication when its safe
-template< typename Real, typename Device, typename Index, typename Allocator, typename ET,
-          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
-Containers::VectorView< Real, Device, Index >
-Scale( const Containers::Vector< Real, Device, Index, Allocator >& a, const ET& b )
-{
-   Containers::VectorView< Real, Device, Index > result = Containers::Expressions::BinaryExpressionTemplate< typename Containers::Vector< Real, Device, Index, Allocator >::ConstViewType, ET, Containers::Expressions::Multiplication >( a.getConstView(), b );
-   return result;
-}
-
-template< typename ET, typename Real, typename Device, typename Index, typename Allocator,
-          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
-Containers::Expressions::BinaryExpressionTemplate< ET, typename Containers::Vector< Real, Device, Index, Allocator >::ConstViewType, Containers::Expressions::Multiplication >
-Scale( const ET& a, const Containers::Vector< Real, Device, Index, Allocator >& b )
-{
-   Containers::VectorView< Real, Device, Index > result =  Containers::Expressions::BinaryExpressionTemplate< ET, typename Containers::Vector< Real, Device, Index, Allocator >::ConstViewType, Containers::Expressions::Multiplication >( a, b.getConstView() );
-   return result;
-}
-
-template< typename Real1, typename Real2, typename Device, typename Index, typename Allocator >
-Containers::Expressions::BinaryExpressionTemplate< typename Containers::Vector< Real1, Device, Index, Allocator >::ConstViewType, typename Containers::Vector< Real2, Device, Index, Allocator >::ConstViewType, Containers::Expressions::Multiplication >
-Scale( const Containers::Vector< Real1, Device, Index, Allocator >& a, const Containers::Vector< Real2, Device, Index, Allocator >& b )
-{
-   Containers::VectorView< Real1, Device, Index > result =  Containers::Expressions::BinaryExpressionTemplate< typename Containers::Vector< Real1, Device, Index, Allocator >::ConstViewType, typename Containers::Vector< Real2, Device, Index, Allocator >::ConstViewType, Containers::Expressions::Multiplication >( a.getConstView(), b.getConstView() );
-   return result;
-}
-
 } // namespace TNL

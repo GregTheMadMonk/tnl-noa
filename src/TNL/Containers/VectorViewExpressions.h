@@ -670,32 +670,4 @@ dot( const Containers::VectorView< Real1, Device, Index1 >& a, const Containers:
    return TNL::sum( a * b );
 }
 
-////
-// TODO: Replace this with multiplication when its safe
-template< typename Real, typename Device, typename Index, typename ET,
-          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
-Containers::VectorView< Real, Device, Index >
-Scale( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
-{
-   Containers::VectorView< Real, Device, Index > result = Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, ET, Containers::Expressions::Multiplication >( a, b );
-   return result;
-}
-
-template< typename ET, typename Real, typename Device, typename Index,
-          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
-Containers::Expressions::BinaryExpressionTemplate< ET, Containers::VectorView< Real, Device, Index >, Containers::Expressions::Multiplication >
-Scale( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
-{
-   Containers::VectorView< Real, Device, Index > result =  Containers::Expressions::BinaryExpressionTemplate< ET, Containers::VectorView< Real, Device, Index >, Containers::Expressions::Multiplication >( a, b );
-   return result;
-}
-
-template< typename Real1, typename Real2, typename Device, typename Index >
-Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real1, Device, Index >, Containers::VectorView< Real2, Device, Index >, Containers::Expressions::Multiplication >
-Scale( const Containers::VectorView< Real1, Device, Index >& a, const Containers::VectorView< Real2, Device, Index >& b )
-{
-   Containers::VectorView< Real1, Device, Index > result =  Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real1, Device, Index >, Containers::VectorView< Real2, Device, Index >, Containers::Expressions::Multiplication >( a, b );
-   return result;
-}
-
 } // namespace TNL
