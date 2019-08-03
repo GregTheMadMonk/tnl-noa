@@ -17,6 +17,7 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/StaticVector.h>
 #include <TNL/Functions/MeshFunction.h>
+#include <TNL/Exceptions/NotImplementedError.h>
 
 using namespace TNL;
 
@@ -33,7 +34,7 @@ class ExactMatchTest
                        std::fstream& outputFile,
                        bool verbose = false)
       {
-         TNL_ASSERT( false, "Not implemented yet." );
+         throw Exceptions::NotImplementedError("Not implemented yet.");
       }
 };
 
