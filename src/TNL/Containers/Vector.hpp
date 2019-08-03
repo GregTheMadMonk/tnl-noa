@@ -160,7 +160,7 @@ Vector< Real, Device, Index, Allocator >&
 Vector< Real, Device, Index, Allocator >::
 operator-=( const VectorExpression& expression )
 {
-   Algorithms::VectorSubtraction< Vector, VectorExpression >::subtraction( *this, expression );
+   Algorithms::VectorAssignmentWithOperation< Vector, VectorExpression >::subtraction( *this, expression );
    return *this;
 }
 
@@ -173,7 +173,7 @@ Vector< Real, Device, Index, Allocator >&
 Vector< Real, Device, Index, Allocator >::
 operator+=( const VectorExpression& expression )
 {
-   Algorithms::VectorAddition< Vector, VectorExpression >::addition( *this, expression );
+   Algorithms::VectorAssignmentWithOperation< Vector, VectorExpression >::addition( *this, expression );
    return *this;
 }
 
@@ -186,7 +186,7 @@ Vector< Real, Device, Index, Allocator >&
 Vector< Real, Device, Index, Allocator >::
 operator*=( const VectorExpression& expression )
 {
-   Algorithms::VectorMultiplication< Vector, VectorExpression >::multiplication( *this, expression );
+   Algorithms::VectorAssignmentWithOperation< Vector, VectorExpression >::multiplication( *this, expression );
    return *this;
 }
 
@@ -199,7 +199,7 @@ Vector< Real, Device, Index, Allocator >&
 Vector< Real, Device, Index, Allocator >::
 operator/=( const VectorExpression& expression )
 {
-   Algorithms::VectorDivision< Vector, VectorExpression >::division( *this, expression );
+   Algorithms::VectorAssignmentWithOperation< Vector, VectorExpression >::division( *this, expression );
    return *this;
 }
 

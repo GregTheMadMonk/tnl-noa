@@ -110,7 +110,7 @@ VectorView< Real, Device, Index >&
 VectorView< Real, Device, Index >::
 operator-=( const VectorExpression& expression )
 {
-   Algorithms::VectorSubtraction< VectorView, VectorExpression >::subtraction( *this, expression );
+   Algorithms::VectorAssignmentWithOperation< VectorView, VectorExpression >::subtraction( *this, expression );
    return *this;
 }
 
@@ -122,7 +122,7 @@ VectorView< Real, Device, Index >&
 VectorView< Real, Device, Index >::
 operator+=( const VectorExpression& expression )
 {
-   Algorithms::VectorAddition< VectorView, VectorExpression >::addition( *this, expression );
+   Algorithms::VectorAssignmentWithOperation< VectorView, VectorExpression >::addition( *this, expression );
    return *this;
 }
 
@@ -134,7 +134,7 @@ VectorView< Real, Device, Index >&
 VectorView< Real, Device, Index >::
 operator*=( const VectorExpression& expression )
 {
-   Algorithms::VectorMultiplication< VectorView, VectorExpression >::multiplication( *this, expression );
+   Algorithms::VectorAssignmentWithOperation< VectorView, VectorExpression >::multiplication( *this, expression );
    return *this;
 }
 
@@ -146,7 +146,7 @@ VectorView< Real, Device, Index >&
 VectorView< Real, Device, Index >::
 operator/=( const VectorExpression& expression )
 {
-   Algorithms::VectorDivision< VectorView, VectorExpression >::division( *this, expression );
+   Algorithms::VectorAssignmentWithOperation< VectorView, VectorExpression >::division( *this, expression );
    return *this;
 }
 

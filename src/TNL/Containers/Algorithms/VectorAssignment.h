@@ -27,36 +27,13 @@ template< typename Vector,
 struct VectorAssignment{};
 
 /**
- * \brief Vector addition
+ * \brief Vector assignment with an operation: +=, -=, *=, /=
  */
 template< typename Vector,
           typename T,
-          bool hasSubscriptOperator = HasSubscriptOperator< T >::value >
-struct VectorAddition{};
-
-/**
- * \brief Vector subtraction
- */
-template< typename Vector,
-          typename T,
-          bool hasSubscriptOperator = HasSubscriptOperator< T >::value >
-struct VectorSubtraction{};
-
-/**
- * \brief Vector multiplication
- */
-template< typename Vector,
-          typename T,
-          bool hasSubscriptOperator = HasSubscriptOperator< T >::value >
-struct VectorMultiplication{};
-
-/**
- * \brief Vector division
- */
-template< typename Vector,
-          typename T,
-          bool hasSubscriptOperator = HasSubscriptOperator< T >::value >
-struct VectorDivision{};
+          bool hasSubscriptOperator = HasSubscriptOperator< T >::value,
+          bool hasSetSizeMethod = HasSetSizeMethod< T >::value >
+struct VectorAssignmentWithOperation{};
 
 /**
  * \brief Specialization of ASSIGNEMENT with subscript operator
@@ -80,6 +57,8 @@ struct VectorAssignment< Vector, T, true >
 
    static void assign( Vector& v, const T& t )
    {
+      static_assert( std::is_same< typename Vector::DeviceType, typename T::DeviceType >::value,
+                     "Cannot assign an expression to a vector allocated on a different device." );
       TNL_ASSERT_EQ( v.getSize(), t.getSize(), "The sizes of the vectors must be equal." );
       using RealType = typename Vector::RealType;
       using DeviceType = typename Vector::DeviceType;
@@ -130,11 +109,44 @@ struct VectorAssignment< Vector, T, false >
 };
 
 /**
- * \brief Specialization of ADDITION with subscript operator
+ * \brief Specialization for types with subscript operator and setSize
+ *        method - i.e. for Vectors.
+ *
+ * This is necessary, because Vectors cannot be passed-by-value to CUDA kernels
+ * so we have to do it with views.
  */
 template< typename Vector,
           typename T >
-struct VectorAddition< Vector, T, true >
+struct VectorAssignmentWithOperation< Vector, T, true, true >
+{
+   static void addition( Vector& v, const T& t )
+   {
+      VectorAssignmentWithOperation< Vector, typename Vector::ConstViewType >::addition( v, t.getConstView() );
+   }
+
+   static void subtraction( Vector& v, const T& t )
+   {
+      VectorAssignmentWithOperation< Vector, typename Vector::ConstViewType >::subtraction( v, t.getConstView() );
+   }
+
+   static void multiplication( Vector& v, const T& t )
+   {
+      VectorAssignmentWithOperation< Vector, typename Vector::ConstViewType >::multiplication( v, t.getConstView() );
+   }
+
+   static void division( Vector& v, const T& t )
+   {
+      VectorAssignmentWithOperation< Vector, typename Vector::ConstViewType >::subtraction( v, t.getConstView() );
+   }
+};
+
+/**
+ * \brief Specialization for types with subscript operator, but without setSize
+ *        method - i.e. for expressions, views and static vectors.
+ */
+template< typename Vector,
+          typename T >
+struct VectorAssignmentWithOperation< Vector, T, true, false >
 {
    __cuda_callable__
    static void additionStatic( Vector& v, const T& t )
@@ -146,6 +158,8 @@ struct VectorAddition< Vector, T, true >
 
    static void addition( Vector& v, const T& t )
    {
+      static_assert( std::is_same< typename Vector::DeviceType, typename T::DeviceType >::value,
+                     "Cannot assign an expression to a vector allocated on a different device." );
       TNL_ASSERT_EQ( v.getSize(), t.getSize(), "The sizes of the vectors must be equal." );
       using RealType = typename Vector::RealType;
       using DeviceType = typename Vector::DeviceType;
@@ -158,15 +172,90 @@ struct VectorAddition< Vector, T, true >
       };
       ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), add );
    }
+
+   __cuda_callable__
+   static void subtractionStatic( Vector& v, const T& t )
+   {
+      TNL_ASSERT_EQ( v.getSize(), t.getSize(), "The sizes of the vectors must be equal." );
+      for( decltype( v.getSize() ) i = 0; i < v.getSize(); i++ )
+         v[ i ] -= t[ i ];
+   }
+
+   static void subtraction( Vector& v, const T& t )
+   {
+      static_assert( std::is_same< typename Vector::DeviceType, typename T::DeviceType >::value,
+                     "Cannot assign an expression to a vector allocated on a different device." );
+      TNL_ASSERT_EQ( v.getSize(), t.getSize(), "The sizes of the vectors must be equal." );
+      using RealType = typename Vector::RealType;
+      using DeviceType = typename Vector::DeviceType;
+      using IndexType = typename Vector::IndexType;
+
+      RealType* data = v.getData();
+      auto subtract = [=] __cuda_callable__ ( IndexType i )
+      {
+         data[ i ] -= t[ i ];
+      };
+      ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), subtract );
+   }
+
+   __cuda_callable__
+   static void multiplicationStatic( Vector& v, const T& t )
+   {
+      TNL_ASSERT_EQ( v.getSize(), t.getSize(), "The sizes of the vectors must be equal." );
+      for( decltype( v.getSize() ) i = 0; i < v.getSize(); i++ )
+         v[ i ] *= t[ i ];
+   }
+
+   static void multiplication( Vector& v, const T& t )
+   {
+      static_assert( std::is_same< typename Vector::DeviceType, typename T::DeviceType >::value,
+                     "Cannot assign an expression to a vector allocated on a different device." );
+      TNL_ASSERT_EQ( v.getSize(), t.getSize(), "The sizes of the vectors must be equal." );
+      using RealType = typename Vector::RealType;
+      using DeviceType = typename Vector::DeviceType;
+      using IndexType = typename Vector::IndexType;
+
+      RealType* data = v.getData();
+      auto multiply = [=] __cuda_callable__ ( IndexType i )
+      {
+         data[ i ] *= t[ i ];
+      };
+      ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), multiply );
+   }
+
+   __cuda_callable__
+   static void divisionStatic( Vector& v, const T& t )
+   {
+      TNL_ASSERT_EQ( v.getSize(), t.getSize(), "The sizes of the vectors must be equal." );
+      for( decltype( v.getSize() ) i = 0; i < v.getSize(); i++ )
+         v[ i ] /= t[ i ];
+   }
+
+   static void division( Vector& v, const T& t )
+   {
+      static_assert( std::is_same< typename Vector::DeviceType, typename T::DeviceType >::value,
+                     "Cannot assign an expression to a vector allocated on a different device." );
+      TNL_ASSERT_EQ( v.getSize(), t.getSize(), "The sizes of the vectors must be equal." );
+      using RealType = typename Vector::RealType;
+      using DeviceType = typename Vector::DeviceType;
+      using IndexType = typename Vector::IndexType;
+
+      RealType* data = v.getData();
+      auto divide = [=] __cuda_callable__ ( IndexType i )
+      {
+         data[ i ] /= t[ i ];
+      };
+      ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), divide );
+   }
 };
 
 /**
- * \brief Specialization of ADDITION for array-value assignment for other types. We assume
+ * \brief Specialization for array-value assignment for other types. We assume
  * that T is convertible to Vector::ValueType.
  */
 template< typename Vector,
           typename T >
-struct VectorAddition< Vector, T, false >
+struct VectorAssignmentWithOperation< Vector, T, false, false >
 {
    __cuda_callable__
    static void additionStatic( Vector& v, const T& t )
@@ -189,47 +278,7 @@ struct VectorAddition< Vector, T, false >
       };
       ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), add );
    }
-};
 
-/**
- * \brief Specialization of SUBTRACTION with subscript operator
- */
-template< typename Vector,
-          typename T >
-struct VectorSubtraction< Vector, T, true >
-{
-   __cuda_callable__
-   static void subtractionStatic( Vector& v, const T& t )
-   {
-      TNL_ASSERT_EQ( v.getSize(), t.getSize(), "The sizes of the vectors must be equal." );
-      for( decltype( v.getSize() ) i = 0; i < v.getSize(); i++ )
-         v[ i ] -= t[ i ];
-   }
-
-   static void subtraction( Vector& v, const T& t )
-   {
-      TNL_ASSERT_EQ( v.getSize(), t.getSize(), "The sizes of the vectors must be equal." );
-      using RealType = typename Vector::RealType;
-      using DeviceType = typename Vector::DeviceType;
-      using IndexType = typename Vector::IndexType;
-
-      RealType* data = v.getData();
-      auto subtract = [=] __cuda_callable__ ( IndexType i )
-      {
-         data[ i ] -= t[ i ];
-      };
-      ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), subtract );
-   }
-};
-
-/**
- * \brief Specialization of SUBTRACTION for array-value assignment for other types. We assume
- * that T is convertible to Vector::ValueType.
- */
-template< typename Vector,
-          typename T >
-struct VectorSubtraction< Vector, T, false >
-{
    __cuda_callable__
    static void subtractionStatic( Vector& v, const T& t )
    {
@@ -251,47 +300,7 @@ struct VectorSubtraction< Vector, T, false >
       };
       ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), subtract );
    }
-};
 
-/**
- * \brief Specialization of MULTIPLICATION with subscript operator
- */
-template< typename Vector,
-          typename T >
-struct VectorMultiplication< Vector, T, true >
-{
-   __cuda_callable__
-   static void multiplicationStatic( Vector& v, const T& t )
-   {
-      TNL_ASSERT_EQ( v.getSize(), t.getSize(), "The sizes of the vectors must be equal." );
-      for( decltype( v.getSize() ) i = 0; i < v.getSize(); i++ )
-         v[ i ] *= t[ i ];
-   }
-
-   static void multiplication( Vector& v, const T& t )
-   {
-      TNL_ASSERT_EQ( v.getSize(), t.getSize(), "The sizes of the vectors must be equal." );
-      using RealType = typename Vector::RealType;
-      using DeviceType = typename Vector::DeviceType;
-      using IndexType = typename Vector::IndexType;
-
-      RealType* data = v.getData();
-      auto multiply = [=] __cuda_callable__ ( IndexType i )
-      {
-         data[ i ] *= t[ i ];
-      };
-      ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), multiply );
-   }
-};
-
-/**
- * \brief Specialization of MULTIPLICATION for array-value assignment for other types. We assume
- * that T is convertible to Vector::ValueType.
- */
-template< typename Vector,
-          typename T >
-struct VectorMultiplication< Vector, T, false >
-{
    __cuda_callable__
    static void multiplicationStatic( Vector& v, const T& t )
    {
@@ -313,48 +322,7 @@ struct VectorMultiplication< Vector, T, false >
       };
       ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), multiply );
    }
-};
 
-
-/**
- * \brief Specialization of DIVISION with subscript operator
- */
-template< typename Vector,
-          typename T >
-struct VectorDivision< Vector, T, true >
-{
-   __cuda_callable__
-   static void divisionStatic( Vector& v, const T& t )
-   {
-      TNL_ASSERT_EQ( v.getSize(), t.getSize(), "The sizes of the vectors must be equal." );
-      for( decltype( v.getSize() ) i = 0; i < v.getSize(); i++ )
-         v[ i ] /= t[ i ];
-   }
-
-   static void division( Vector& v, const T& t )
-   {
-      TNL_ASSERT_EQ( v.getSize(), t.getSize(), "The sizes of the vectors must be equal." );
-      using RealType = typename Vector::RealType;
-      using DeviceType = typename Vector::DeviceType;
-      using IndexType = typename Vector::IndexType;
-
-      RealType* data = v.getData();
-      auto divide = [=] __cuda_callable__ ( IndexType i )
-      {
-         data[ i ] /= t[ i ];
-      };
-      ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), divide );
-   }
-};
-
-/**
- * \brief Specialization of DIVISION for array-value assignment for other types. We assume
- * that T is convertible to Vector::ValueType.
- */
-template< typename Vector,
-          typename T >
-struct VectorDivision< Vector, T, false >
-{
    __cuda_callable__
    static void divisionStatic( Vector& v, const T& t )
    {

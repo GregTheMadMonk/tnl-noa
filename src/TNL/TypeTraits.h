@@ -50,6 +50,34 @@ public:
 };
 
 /**
+ * \brief Type trait for checking if T has setSize method.
+ */
+template< typename T >
+class HasSetSizeMethod
+{
+private:
+   template< typename U >
+   static constexpr auto check(U*)
+   -> typename
+      std::enable_if_t<
+         std::is_same<
+               decltype( std::declval<U>().setSize(0) ),
+               void
+            >::value,
+         std::true_type
+      >;
+
+   template< typename >
+   static constexpr std::false_type check(...);
+
+   using type = decltype(check<T>(0));
+
+public:
+    static constexpr bool value = type::value;
+};
+
+
+/**
  * \brief Type trait for checking if T has operator[] taking one index argument.
  */
 template< typename T >
