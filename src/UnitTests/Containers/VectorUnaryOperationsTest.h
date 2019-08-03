@@ -73,18 +73,19 @@ TYPED_TEST_SUITE( VectorUnaryOperationsTest, VectorTypes );
    using VectorOrView = typename TestFixture::VectorOrView; \
    using RealType = typename VectorType::RealType;          \
                                                             \
-   typename VectorType::HostType _V1h( size ), expected( size );  \
+   typename VectorType::HostType _V1h( size ), expected_h( size );  \
                                                             \
    const double h = (end - begin) / size;                   \
    for( int i = 0; i < size; i++ )                          \
    {                                                        \
       const RealType x = begin + i * h;                     \
       _V1h[ i ] = x;                                        \
-      expected[ i ] = function(x);                          \
+      expected_h[ i ] = function(x);                        \
    }                                                        \
                                                             \
    VectorType _V1; _V1 = _V1h;                              \
    VectorOrView V1( _V1 );                                  \
+   VectorType expected; expected = expected_h;              \
 
 TYPED_TEST( VectorUnaryOperationsTest, minus )
 {
