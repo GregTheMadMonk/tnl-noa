@@ -5,6 +5,7 @@
 /Documentation/html/
 /CMakeLists.txt.user
 /Build
+/coverage_report
 
 # Eclipse project stuff
 /.settings
