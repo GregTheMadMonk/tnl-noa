@@ -145,7 +145,7 @@ auto ExpressionLpNorm( const Expression& expression, const Real& p ) ->
       auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a += b; };
       return Algorithms::Reduction< typename Expression::DeviceType >::reduce( expression.getSize(), reduction, volatileReduction, fetch, ( ResultType ) 0.0 );
    }
-   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return  TNL::pow( expression[ i ], p ); };
+   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return  TNL::pow( TNL::abs( expression[ i ] ), p ); };
    auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a += b; };
    auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a += b; };
    return Algorithms::Reduction< typename Expression::DeviceType >::reduce( expression.getSize(), reduction, volatileReduction, fetch, ( ResultType ) 0.0 );
