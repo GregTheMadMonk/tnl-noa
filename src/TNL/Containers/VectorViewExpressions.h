@@ -175,14 +175,7 @@ template< typename Real1, typename Real2, typename Device1, typename Device2, ty
 bool
 operator!=( const VectorView< Real1, Device1, Index >& a, const VectorView< Real2, Device2, Index >& b )
 {
-   if( a.getSize() != b.getSize() )
-      return false;
-   if( a.getSize() == 0 )
-      return true;
-   return !Algorithms::ArrayOperations< Device1, Device2 >::
-            compare( a.getData(),
-                     b.getData(),
-                     a.getSize() );
+   return ! (a == b);
 }
 
 ////
