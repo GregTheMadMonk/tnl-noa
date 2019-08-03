@@ -30,13 +30,6 @@ WITH_PYTHON="yes"
 WITH_TOOLS="yes"
 WITH_BENCHMARKS="yes"
 
-WITH_TEMPLATE_INSTANTIATION="no"
-INSTANTIATE_LONG_INT="no"
-INSTANTIATE_INT="yes"
-INSTANTIATE_LONG_DOUBLE="no"
-INSTANTIATE_DOUBLE="yes"
-INSTANTIATE_FLOAT="no"
-
 for option in "$@"
 do
     case $option in
@@ -66,19 +59,7 @@ do
         --with-tools=*                   ) WITH_TOOLS="${option#*=}" ;;
         --with-benchmarks=*              ) WITH_BENCHMARKS="${option#*=}" ;;
         --with-python=*                  ) WITH_PYTHON="${option#*=}" ;;
-        --with-templates-instantiation=* ) WITH_TEMPLATE_INSTANTIATION="${option#*=}" ;;
-        --instantiate-long-int=*         ) INSTANTIATE_LONG_INT="${option#*=}" ;;
-        --instantiate-int=*              ) INSTANTIATE_INT="${option#*=}" ;;
-        --instantiate-long-double=*      ) INSTANTIATE_LONG_DOUBLE="${option#*=}" ;;
-        --instantiate-double=*           ) INSTANTIATE_DOUBLE="${option#*=}" ;;
-        --instantiate-float=*            ) INSTANTIATE_FLOAT="${option#*=}" ;;
-        --fast-build                     ) INSTANTIATE_LONG_INT="no"
-                                           INSTANTIATE_INT="yes"
-                                           INSTANTIATE_LONG_DOUBLE="no"
-                                           INSTANTIATE_DOUBLE="yes"
-                                           INSTANTIATE_FLOAT="no"
-                                           WITH_CUDA_ARCH="auto" ;;
-        *                                ) 
+        *                                )
            echo "Unknown option ${option}. Use --help for more information."
            exit 1 ;;
     esac
@@ -106,7 +87,6 @@ if [[ ${HELP} == "yes" ]]; then
     echo "   --with-tools=yes/no                   Compile the 'src/Tools' directory. 'yes' by default."
     echo "   --with-python=yes/no                  Compile the Python bindings. 'yes' by default."
     echo "   --with-benchmarks=yes/no              Compile the 'src/Benchmarks' directory. 'yes' by default."
-    echo "   --with-templates-instantiation=yes/no Precompiles some TNL templates during the build. 'no' by default."
     echo "   --cmake=CMAKE                         Path to cmake. 'cmake' by default."
     echo "   --verbose                             It enables verbose build."
     echo "   --root-dir=PATH                       Path to the TNL source code root dir."
@@ -181,12 +161,6 @@ cmake_command=(
          -DWITH_PYTHON=${WITH_PYTHON}
          -DWITH_BENCHMARKS=${WITH_BENCHMARKS}
          -DDCMTK_DIR=${DCMTK_DIR}
-         -DWITH_TEMPLATE_INSTANTIATION=${WITH_TEMPLATE_INSTANTIATION}
-         -DINSTANTIATE_FLOAT=${INSTANTIATE_FLOAT}
-         -DINSTANTIATE_DOUBLE=${INSTANTIATE_DOUBLE}
-         -DINSTANTIATE_LONG_DOUBLE=${INSTANTIATE_LONG_DOUBLE}
-         -DINSTANTIATE_INT=${INSTANTIATE_INT}
-         -DINSTANTIATE_LONG_INT=${INSTANTIATE_LONG_INT}
 )
 
 # Skip running cmake if it was already run and the cmake command is the same.

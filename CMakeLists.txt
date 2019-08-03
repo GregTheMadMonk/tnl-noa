@@ -30,7 +30,6 @@ option(WITH_TOOLS "Compile the 'src/Tools' directory" ON)
 option(WITH_BENCHMARKS "Compile the 'src/Benchmarks' directory" ON)
 option(WITH_PYTHON "Compile the Python bindings" ON)
 option(WITH_DOC "Generate documentation" ON)
-option(WITH_TEMPLATES_INSTANTIATION "Enable explicit template instantiation" OFF)
 
 # install paths relative to the cmake's prefix
 set( TNL_TARGET_INCLUDE_DIRECTORY "include/TNL" )
@@ -342,34 +341,6 @@ endif()
 #   endif()
 #endif()
 
-####
-# Explicit template instantiation
-#
-#if( ${WITH_TEMPLATE_INSTANTIATION} )
-#   AddCompilerFlag( "-DTEMPLATE_EXPLICIT_INSTANTIATION " )
-#
-#   if( INSTANTIATE_INT STREQUAL "yes" )
-#      AddCompilerFlag( "-DINSTANTIATE_INT " )
-#   endif()
-#
-#   if( INSTANTIATE_LONG_INT STREQUAL "yes" )
-#      AddCompilerFlag( "-DINSTANTIATE_LONG_INT " )
-#   endif()
-#
-#   if( INSTANTIATE_FLOAT STREQUAL "yes" )
-#      AddCompilerFlag( "-DINSTANTIATE_FLOAT " )
-#   endif()
-#
-#   if( INSTANTIATE_DOUBLE STREQUAL "yes" )
-#      AddCompilerFlag( "-DINSTANTIATE_DOUBLE " )
-#   endif()
-#
-#   if( INSTANTIATE_LONG_DOUBLE STREQUAL "yes" )
-#      AddCompilerFlag( "-DINSTANTIATE_LONG_DOUBLE " )
-#   endif()
-#endif()
-
-#Nastavime cesty k hlavickovym souborum a knihovnam
 INCLUDE_DIRECTORIES( src )
 INCLUDE_DIRECTORIES( ${PROJECT_BUILD_PATH} )
 LINK_DIRECTORIES( ${LIBRARY_OUTPUT_PATH} )
@@ -433,7 +404,6 @@ message( "   WITH_EXAMPLES = ${WITH_EXAMPLES}" )
 message( "   WITH_TOOLS = ${WITH_TOOLS}" )
 message( "   WITH_BENCHMARKS = ${WITH_BENCHMARKS}" )
 message( "   WITH_PYTHON = ${WITH_PYTHON}" )
-message( "   WITH_TEMPLATES_INSTANTIATION = ${WITH_TEMPLATES_INSTANTIATION}" )
 # Print compiler options
 message( "-- Compiler options:" )
 message( "   CMAKE_CXX_FLAGS = ${CMAKE_CXX_FLAGS}" )
