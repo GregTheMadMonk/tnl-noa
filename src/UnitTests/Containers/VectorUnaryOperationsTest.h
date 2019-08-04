@@ -164,7 +164,7 @@ void expect_vectors_near( const Left& _v1, const Right& _v2 )
    ASSERT_EQ( _v1.getSize(), _v2.getSize() );
 #ifdef STATIC_VECTOR
    for( int i = 0; i < _v1.getSize(); i++ )
-      EXPECT_NEAR( _v1[i], _v2[i], 1e-6 );
+      EXPECT_NEAR( _v1[i], _v2[i], 1e-6 ) << "i = " << i;
 #else
    using LeftNonConstReal = std::remove_const_t< typename Left::RealType >;
    using RightNonConstReal = std::remove_const_t< typename Right::RealType >;
@@ -247,7 +247,7 @@ TYPED_TEST( VectorUnaryOperationsTest, atan )
 
 TYPED_TEST( VectorUnaryOperationsTest, sinh )
 {
-   SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -VECTOR_TEST_SIZE, VECTOR_TEST_SIZE, TNL::sinh );
+   SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -10, 10, TNL::sinh );
 //   EXPECT_EQ( sinh(V1), expected );
    expect_vectors_near( sinh(V1), expected );
 }
@@ -261,7 +261,7 @@ TYPED_TEST( VectorUnaryOperationsTest, asinh )
 
 TYPED_TEST( VectorUnaryOperationsTest, cosh )
 {
-   SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -VECTOR_TEST_SIZE, VECTOR_TEST_SIZE, TNL::cosh );
+   SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -10, 10, TNL::cosh );
 //   EXPECT_EQ( cosh(V1), expected );
    expect_vectors_near( cosh(V1), expected );
 }
@@ -297,7 +297,7 @@ TYPED_TEST( VectorUnaryOperationsTest, pow )
 
 TYPED_TEST( VectorUnaryOperationsTest, exp )
 {
-   SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -VECTOR_TEST_SIZE, VECTOR_TEST_SIZE, TNL::exp );
+   SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -10, 10, TNL::exp );
 //   EXPECT_EQ( exp(V1), expected );
    expect_vectors_near( exp(V1), expected );
 }
