@@ -534,7 +534,7 @@ TYPED_TEST( ArrayTest, SaveAndLoad )
    ArrayType u, v;
    v.setSize( 100 );
    for( int i = 0; i < 100; i ++ )
-      v.setElement( i, 3.14147 );
+      v.setElement( i, 42 );
    ASSERT_NO_THROW( File( "test-file.tnl", std::ios_base::out ) << v );
    ASSERT_NO_THROW( File( "test-file.tnl", std::ios_base::in ) >> u );
    EXPECT_EQ( u, v );
@@ -549,7 +549,7 @@ TYPED_TEST( ArrayTest, LoadViaView )
    ArrayType v, w;
    v.setSize( 100 );
    for( int i = 0; i < 100; i ++ )
-      v.setElement( i, 3.14147 );
+      v.setElement( i, 42 );
    ASSERT_NO_THROW( File( "test-file.tnl", std::ios_base::out ) << v );
 
    w.setSize( 100 );
