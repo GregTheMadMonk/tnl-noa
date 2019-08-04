@@ -174,4 +174,4 @@ protected:
 } // namespace Containers
 } // namespace TNL
 
-#include "DistributedArray_impl.h"
+#include "DistributedArray.hpp"

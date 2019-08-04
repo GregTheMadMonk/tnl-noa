@@ -59,4 +59,4 @@ std::ostream& operator <<( std::ostream& str, UnorderedIndexedSet< Element, Inde
 } // namespace Containers
 } // namespace TNL
 
-#include <TNL/Containers/UnorderedIndexedSet_impl.h>
+#include <TNL/Containers/UnorderedIndexedSet.hpp>

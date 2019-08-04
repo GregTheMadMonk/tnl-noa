@@ -130,5 +130,5 @@ public:
 } // namespace Containers
 } // namespace TNL
 
-#include <TNL/Containers/DistributedVectorView_impl.h>
+#include <TNL/Containers/DistributedVectorView.hpp>
 #include <TNL/Containers/DistributedVectorViewExpressions.h>
