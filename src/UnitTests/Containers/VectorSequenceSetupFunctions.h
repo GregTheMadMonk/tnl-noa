@@ -5,8 +5,12 @@
 template< typename Vector >
 void setLinearSequence( Vector& deviceVector )
 {
+#ifdef STATIC_VECTOR
+   Vector a;
+#else
    typename Vector::HostType a;
    a.setLike( deviceVector );
+#endif
    for( int i = 0; i < a.getSize(); i++ )
       a[ i ] = i;
    deviceVector = a;
@@ -54,8 +58,12 @@ template< typename Vector >
 void setOscilatingSequence( Vector& deviceVector,
                             typename Vector::RealType v )
 {
+#ifdef STATIC_VECTOR
+   Vector a;
+#else
    typename Vector::HostType a;
    a.setLike( deviceVector );
+#endif
    a[ 0 ] = v;
    for( int i = 1; i < a.getSize(); i++ )
       a[ i ] = a[ i-1 ] * -1;

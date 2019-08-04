@@ -21,6 +21,8 @@ using namespace TNL;
 using namespace TNL::Containers;
 using namespace TNL::Containers::Algorithms;
 
+namespace unary_tests {
+
 constexpr int VECTOR_TEST_SIZE = 100;
 
 // should be small enough to have fast tests, but larger than minGPUReductionDataSize
@@ -33,59 +35,122 @@ class VectorUnaryOperationsTest : public ::testing::Test
 {
 protected:
    using VectorOrView = T;
+#ifndef STATIC_VECTOR
    using NonConstReal = std::remove_const_t< typename VectorOrView::RealType >;
    using VectorType = Vector< NonConstReal, typename VectorOrView::DeviceType, typename VectorOrView::IndexType >;
+#endif
 };
 
 // types for which VectorUnaryOperationsTest is instantiated
-using VectorTypes = ::testing::Types<
-#ifndef HAVE_CUDA
-   Vector<     int,       Devices::Host >,
-   VectorView< int,       Devices::Host >,
-   VectorView< const int, Devices::Host >,
-   Vector<     double,    Devices::Host >,
-   VectorView< double,    Devices::Host >
+#ifdef STATIC_VECTOR
+   using VectorTypes = ::testing::Types<
+      StaticVector< 1, int >,
+      StaticVector< 1, double >,
+      StaticVector< 2, int >,
+      StaticVector< 2, double >,
+      StaticVector< 3, int >,
+      StaticVector< 3, double >,
+      StaticVector< 4, int >,
+      StaticVector< 4, double >,
+      StaticVector< 5, int >,
+      StaticVector< 5, double >
+   >;
+#else
+   using VectorTypes = ::testing::Types<
+   #ifndef HAVE_CUDA
+      Vector<     int,       Devices::Host >,
+      VectorView< int,       Devices::Host >,
+      VectorView< const int, Devices::Host >,
+      Vector<     double,    Devices::Host >,
+      VectorView< double,    Devices::Host >
+   #endif
+   #ifdef HAVE_CUDA
+      Vector<     int,       Devices::Cuda >,
+      VectorView< int,       Devices::Cuda >,
+      VectorView< const int, Devices::Cuda >,
+      Vector<     double,    Devices::Cuda >,
+      VectorView< double,    Devices::Cuda >
+   #endif
+   >;
 #endif
-#ifdef HAVE_CUDA
-   Vector<     int,       Devices::Cuda >,
-   VectorView< int,       Devices::Cuda >,
-   VectorView< const int, Devices::Cuda >,
-   Vector<     double,    Devices::Cuda >,
-   VectorView< double,    Devices::Cuda >
-#endif
->;
 
 TYPED_TEST_SUITE( VectorUnaryOperationsTest, VectorTypes );
 
-#define SETUP_UNARY_VECTOR_TEST( size ) \
-   using VectorType = typename TestFixture::VectorType;     \
-   using VectorOrView = typename TestFixture::VectorOrView; \
-                                                            \
-   VectorType _V1( size ), _V2( size );                     \
-                                                            \
-   _V1 = 1;                                                 \
-   _V2 = 2;                                                 \
-                                                            \
-   VectorOrView V1( _V1 ), V2( _V2 );                       \
+#ifdef STATIC_VECTOR
+   #define SETUP_UNARY_VECTOR_TEST( _ ) \
+      using VectorOrView = typename TestFixture::VectorOrView; \
+      constexpr int size = VectorOrView::getSize();            \
+                                                               \
+      VectorOrView V1, V2;                                     \
+                                                               \
+      V1 = 1;                                                  \
+      V2 = 2;                                                  \
 
-#define SETUP_UNARY_VECTOR_TEST_FUNCTION( size, begin, end, function ) \
-   using VectorType = typename TestFixture::VectorType;     \
-   using VectorOrView = typename TestFixture::VectorOrView; \
-   using RealType = typename VectorType::RealType;          \
-                                                            \
-   typename VectorType::HostType _V1h( size ), expected_h( size );  \
-                                                            \
-   const double h = (end - begin) / size;                   \
-   for( int i = 0; i < size; i++ )                          \
-   {                                                        \
-      const RealType x = begin + i * h;                     \
-      _V1h[ i ] = x;                                        \
-      expected_h[ i ] = function(x);                        \
-   }                                                        \
-                                                            \
-   VectorType _V1; _V1 = _V1h;                              \
-   VectorOrView V1( _V1 );                                  \
-   VectorType expected; expected = expected_h;              \
+   #define SETUP_UNARY_VECTOR_TEST_FUNCTION( _, begin, end, function ) \
+      using VectorOrView = typename TestFixture::VectorOrView; \
+      using RealType = typename VectorOrView::RealType;        \
+      constexpr int size = VectorOrView::getSize();            \
+                                                               \
+      VectorOrView V1, expected;                               \
+                                                               \
+      const double h = (end - begin) / size;                   \
+      for( int i = 0; i < size; i++ )                          \
+      {                                                        \
+         const RealType x = begin + i * h;                     \
+         V1[ i ] = x;                                          \
+         expected[ i ] = function(x);                          \
+      }                                                        \
+
+   #define SETUP_UNARY_VECTOR_TEST_REDUCTION \
+      using VectorOrView = typename TestFixture::VectorOrView; \
+      constexpr int size = VectorOrView::getSize();            \
+                                                               \
+      VectorOrView V1;                                         \
+      setLinearSequence( V1 );                                 \
+
+#else
+   #define SETUP_UNARY_VECTOR_TEST( _size ) \
+      using VectorType = typename TestFixture::VectorType;     \
+      using VectorOrView = typename TestFixture::VectorOrView; \
+      constexpr int size = _size;                              \
+                                                               \
+      VectorType _V1( size ), _V2( size );                     \
+                                                               \
+      _V1 = 1;                                                 \
+      _V2 = 2;                                                 \
+                                                               \
+      VectorOrView V1( _V1 ), V2( _V2 );                       \
+
+   #define SETUP_UNARY_VECTOR_TEST_FUNCTION( _size, begin, end, function ) \
+      using VectorType = typename TestFixture::VectorType;     \
+      using VectorOrView = typename TestFixture::VectorOrView; \
+      using RealType = typename VectorType::RealType;          \
+      constexpr int size = _size;                              \
+                                                               \
+      typename VectorType::HostType _V1h( size ), expected_h( size );  \
+                                                               \
+      const double h = (end - begin) / size;                   \
+      for( int i = 0; i < size; i++ )                          \
+      {                                                        \
+         const RealType x = begin + i * h;                     \
+         _V1h[ i ] = x;                                        \
+         expected_h[ i ] = function(x);                        \
+      }                                                        \
+                                                               \
+      VectorType _V1; _V1 = _V1h;                              \
+      VectorOrView V1( _V1 );                                  \
+      VectorType expected; expected = expected_h;              \
+
+   #define SETUP_UNARY_VECTOR_TEST_REDUCTION \
+      using VectorType = typename TestFixture::VectorType;     \
+      using VectorOrView = typename TestFixture::VectorOrView; \
+      constexpr int size = VECTOR_TEST_REDUCTION_SIZE;         \
+                                                               \
+      VectorType _V1( size );                                  \
+      setLinearSequence( _V1 );                                \
+      VectorOrView V1( _V1 );                                  \
+
+#endif
 
 // This is because exact comparison does not work due to rounding errors:
 // - the "expected" vector is computed sequentially on CPU
@@ -97,6 +162,10 @@ template< typename Left, typename Right >
 void expect_vectors_near( const Left& _v1, const Right& _v2 )
 {
    ASSERT_EQ( _v1.getSize(), _v2.getSize() );
+#ifdef STATIC_VECTOR
+   for( int i = 0; i < _v1.getSize(); i++ )
+      EXPECT_NEAR( _v1[i], _v2[i], 1e-6 );
+#else
    using LeftNonConstReal = std::remove_const_t< typename Left::RealType >;
    using RightNonConstReal = std::remove_const_t< typename Right::RealType >;
    using LeftVector = Vector< LeftNonConstReal, typename Left::DeviceType, typename Left::IndexType >;
@@ -112,6 +181,7 @@ void expect_vectors_near( const Left& _v1, const Right& _v2 )
    RightHostVector v2_h; v2_h = v1;
    for( int i = 0; i < v1.getSize(); i++ )
       EXPECT_NEAR( v1_h[i], v2_h[i], 1e-6 );
+#endif
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, minus )
@@ -288,73 +358,49 @@ TYPED_TEST( VectorUnaryOperationsTest, sign )
 
 TYPED_TEST( VectorUnaryOperationsTest, max )
 {
-   using VectorType = typename TestFixture::VectorType;
-   using VectorOrView = typename TestFixture::VectorOrView;
-
-   VectorType _V1( VECTOR_TEST_REDUCTION_SIZE ), _V2( VECTOR_TEST_REDUCTION_SIZE );
-   setLinearSequence( _V1 );
-   setConstantSequence( _V2, 2 );
-   VectorOrView V1( _V1 ), V2( _V2 );
+   SETUP_UNARY_VECTOR_TEST_REDUCTION;
 
    // vector or view
-   EXPECT_EQ( max(V1), VECTOR_TEST_REDUCTION_SIZE - 1 );
+   EXPECT_EQ( max(V1), size - 1 );
    // unary expression
    EXPECT_EQ( max(-V1), 0 );
    // binary expression
-   EXPECT_EQ( max(V1 + V2), VECTOR_TEST_REDUCTION_SIZE - 1 + 2 );
+   EXPECT_EQ( max(V1 + 2), size - 1 + 2 );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, argMax )
 {
-   using VectorType = typename TestFixture::VectorType;
-   using VectorOrView = typename TestFixture::VectorOrView;
-
-   VectorType _V1( VECTOR_TEST_REDUCTION_SIZE ), _V2( VECTOR_TEST_REDUCTION_SIZE );
-   setLinearSequence( _V1 );
-   setConstantSequence( _V2, 2 );
-   VectorOrView V1( _V1 ), V2( _V2 );
+   SETUP_UNARY_VECTOR_TEST_REDUCTION;
 
    // vector or view
    int arg = -1;
-   EXPECT_EQ( argMax(V1, arg), VECTOR_TEST_REDUCTION_SIZE - 1 );
-   EXPECT_EQ( arg, VECTOR_TEST_REDUCTION_SIZE - 1 );
+   EXPECT_EQ( argMax(V1, arg), size - 1 );
+   EXPECT_EQ( arg, size - 1 );
    // unary expression
    arg = -1;
    EXPECT_EQ( argMax(-V1, arg), 0 );
    EXPECT_EQ( arg, 0 );
    // expression
    arg = -1;
-   EXPECT_EQ( argMax(V1 + V2, arg), VECTOR_TEST_REDUCTION_SIZE - 1 + 2 );
-   EXPECT_EQ( arg, VECTOR_TEST_REDUCTION_SIZE - 1 );
+   EXPECT_EQ( argMax(V1 + 2, arg), size - 1 + 2 );
+   EXPECT_EQ( arg, size - 1 );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, min )
 {
-   using VectorType = typename TestFixture::VectorType;
-   using VectorOrView = typename TestFixture::VectorOrView;
-
-   VectorType _V1( VECTOR_TEST_REDUCTION_SIZE ), _V2( VECTOR_TEST_REDUCTION_SIZE );
-   setLinearSequence( _V1 );
-   setConstantSequence( _V2, 2 );
-   VectorOrView V1( _V1 ), V2( _V2 );
+   SETUP_UNARY_VECTOR_TEST_REDUCTION;
 
    // vector or view
    EXPECT_EQ( min(V1), 0 );
    // unary expression
-   EXPECT_EQ( min(-V1), 1 - VECTOR_TEST_REDUCTION_SIZE );
+   EXPECT_EQ( min(-V1), 1 - size );
    // binary expression
-   EXPECT_EQ( min(V1 + V2), 2 );
+   EXPECT_EQ( min(V1 + 2), 2 );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, argMin )
 {
-   using VectorType = typename TestFixture::VectorType;
-   using VectorOrView = typename TestFixture::VectorOrView;
-
-   VectorType _V1( VECTOR_TEST_REDUCTION_SIZE ), _V2( VECTOR_TEST_REDUCTION_SIZE );
-   setLinearSequence( _V1 );
-   setConstantSequence( _V2, 2 );
-   VectorOrView V1( _V1 ), V2( _V2 );
+   SETUP_UNARY_VECTOR_TEST_REDUCTION;
 
    // vector or view
    int arg = -1;
@@ -362,32 +408,24 @@ TYPED_TEST( VectorUnaryOperationsTest, argMin )
    EXPECT_EQ( arg, 0 );
    // unary expression
    arg = -1;
-   EXPECT_EQ( argMin(-V1, arg), 1 - VECTOR_TEST_REDUCTION_SIZE );
-   EXPECT_EQ( arg, VECTOR_TEST_REDUCTION_SIZE - 1 );
+   EXPECT_EQ( argMin(-V1, arg), 1 - size );
+   EXPECT_EQ( arg, size - 1 );
    // binary expression
    arg = -1;
-   EXPECT_EQ( argMin(V1 + V2, arg), 2 );
+   EXPECT_EQ( argMin(V1 + 2, arg), 2 );
    EXPECT_EQ( arg, 0 );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, sum )
 {
-   using VectorType = typename TestFixture::VectorType;
-   using VectorOrView = typename TestFixture::VectorOrView;
-   // this test expect an even size
-   const int size = VECTOR_TEST_REDUCTION_SIZE % 2 ? VECTOR_TEST_REDUCTION_SIZE - 1 : VECTOR_TEST_REDUCTION_SIZE;
-
-   VectorType _V1( size ), _V2( size );
-   setLinearSequence( _V1 );
-   setConstantSequence( _V2, 1 );
-   VectorOrView V1( _V1 ), V2( _V2 );
+   SETUP_UNARY_VECTOR_TEST_REDUCTION;
 
    // vector or view
    EXPECT_EQ( sum(V1), 0.5 * size * (size - 1) );
    // unary expression
    EXPECT_EQ( sum(-V1), - 0.5 * size * (size - 1) );
    // binary expression
-   EXPECT_EQ( sum(V1 - V2), 0.5 * size * (size - 1) - size );
+   EXPECT_EQ( sum(V1 - 1), 0.5 * size * (size - 1) - size );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, lpNorm )
@@ -397,9 +435,9 @@ TYPED_TEST( VectorUnaryOperationsTest, lpNorm )
 
    const RealType epsilon = 64 * std::numeric_limits< RealType >::epsilon();
 
-   const RealType expectedL1norm = VECTOR_TEST_REDUCTION_SIZE;
-   const RealType expectedL2norm = std::sqrt( VECTOR_TEST_REDUCTION_SIZE );
-   const RealType expectedL3norm = std::cbrt( VECTOR_TEST_REDUCTION_SIZE );
+   const RealType expectedL1norm = size;
+   const RealType expectedL2norm = std::sqrt( size );
+   const RealType expectedL3norm = std::cbrt( size );
 
    // vector or vector view
    EXPECT_EQ( lpNorm(V1, 1.0), expectedL1norm );
@@ -420,15 +458,19 @@ TYPED_TEST( VectorUnaryOperationsTest, product )
    SETUP_UNARY_VECTOR_TEST( 16 );
 
    // vector or vector view
-   EXPECT_EQ( product(V2), std::exp2(16) );
+   EXPECT_EQ( product(V2), std::exp2(size) );
    // unary expression
-   EXPECT_EQ( product(-V2), std::exp2(16) );
+   EXPECT_EQ( product(-V2), std::exp2(size) * ( (size % 2) ? -1 : 1 ) );
    // binary expression
-   EXPECT_EQ( product(V1 + V1), std::exp2(16) );
+   EXPECT_EQ( product(V1 + V1), std::exp2(size) );
 }
 
 // TODO: tests for logicalOr, binaryOr, logicalAnd, binaryAnd
 
+} // namespace unary_tests
+
 #endif // HAVE_GTEST
 
+#ifndef STATIC_VECTOR
 #include "../main.h"
+#endif

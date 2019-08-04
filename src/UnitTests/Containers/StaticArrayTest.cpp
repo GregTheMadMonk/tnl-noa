@@ -62,41 +62,41 @@ TYPED_TEST( StaticArrayTest, constructors )
 {
    using ArrayType = typename TestFixture::ArrayType;
    using ValueType = typename TestFixture::ValueType;
-   constexpr int Size = ArrayType::getSize();
+   constexpr int size = ArrayType::getSize();
 
-   ValueType data[ Size ];
-   for( int i = 0; i < Size; i++ )
+   ValueType data[ size ];
+   for( int i = 0; i < size; i++ )
       data[ i ] = i;
 
    ArrayType u0;
    EXPECT_TRUE( u0.getData() );
 
    ArrayType u1( data );
-   for( int i = 0; i < Size; i++ )
+   for( int i = 0; i < size; i++ )
       EXPECT_EQ( u1[ i ], data[ i ] );
 
    ArrayType u2( 7 );
-   for( int i = 0; i < Size; i++ )
+   for( int i = 0; i < size; i++ )
       EXPECT_EQ( u2[ i ], 7 );
 
    ArrayType u3( u1 );
-   for( int i = 0; i < Size; i++ )
+   for( int i = 0; i < size; i++ )
       EXPECT_EQ( u3[ i ], u1[ i ] );
 
    // initialization with 0 requires special treatment to avoid ambiguity,
    // see https://stackoverflow.com/q/4610503
    ArrayType v( 0 );
-   for( int i = 0; i < Size; i++ )
+   for( int i = 0; i < size; i++ )
       EXPECT_EQ( v[ i ], 0 );
 }
 
 TYPED_TEST( StaticArrayTest, getSize )
 {
    using ArrayType = typename TestFixture::ArrayType;
-   constexpr int Size = ArrayType::getSize();
+   constexpr int size = ArrayType::getSize();
 
    ArrayType u;
-   EXPECT_EQ( u.getSize(), Size );
+   EXPECT_EQ( u.getSize(), size );
 }
 
 TYPED_TEST( StaticArrayTest, getData )
@@ -143,18 +143,18 @@ void checkCoordinates( StaticArray< 3, Value >& u )
    EXPECT_EQ( u.z(), 3 );
 }
 
-template< int _Size, typename Value >
-void checkCoordinates( StaticArray< _Size, Value >& u )
+template< int _size, typename Value >
+void checkCoordinates( StaticArray< _size, Value >& u )
 {
 }
 
 TYPED_TEST( StaticArrayTest, CoordinatesGetter )
 {
    using ArrayType = typename TestFixture::ArrayType;
-   constexpr int Size = ArrayType::getSize();
+   constexpr int size = ArrayType::getSize();
 
    ArrayType u;
-   for( int i = 0; i < Size; i++ )
+   for( int i = 0; i < size; i++ )
       u[ i ] = i;
 
    checkCoordinates( u );
@@ -163,11 +163,11 @@ TYPED_TEST( StaticArrayTest, CoordinatesGetter )
 TYPED_TEST( StaticArrayTest, ComparisonOperator )
 {
    using ArrayType = typename TestFixture::ArrayType;
-   constexpr int Size = ArrayType::getSize();
+   constexpr int size = ArrayType::getSize();
 
    ArrayType u1, u2, u3;
 
-   for( int i = 0; i < Size; i++ ) {
+   for( int i = 0; i < size; i++ ) {
       u1[ i ] = 1;
       u2[ i ] = i;
       u3[ i ] = i;
@@ -178,12 +178,12 @@ TYPED_TEST( StaticArrayTest, ComparisonOperator )
    EXPECT_TRUE( u2 == u3 );
 
    // comparison with different type
-   StaticArray< Size, char > u4( 1 );
+   StaticArray< size, char > u4( 1 );
    EXPECT_TRUE( u1 == u4 );
    EXPECT_TRUE( u2 != u4 );
    EXPECT_TRUE( u3 != u4 );
 
-   for( int i = 0; i < Size; i++ )
+   for( int i = 0; i < size; i++ )
       u4[ i ] = i;
    EXPECT_TRUE( u1 != u4 );
    EXPECT_TRUE( u2 == u4 );
@@ -193,11 +193,11 @@ TYPED_TEST( StaticArrayTest, ComparisonOperator )
 TYPED_TEST( StaticArrayTest, AssignmentOperator )
 {
    using ArrayType = typename TestFixture::ArrayType;
-   constexpr int Size = ArrayType::getSize();
+   constexpr int size = ArrayType::getSize();
 
    ArrayType u1, u2, u3;
 
-   for( int i = 0; i < Size; i++ )
+   for( int i = 0; i < size; i++ )
    {
       u1[ i ] = 1;
       u2[ i ] = i;
@@ -212,7 +212,7 @@ TYPED_TEST( StaticArrayTest, AssignmentOperator )
    EXPECT_TRUE( u3 != u1 );
 
    // assignment from different type
-   StaticArray< Size, char > u4( 127 );
+   StaticArray< size, char > u4( 127 );
    u3 = u4;
    EXPECT_TRUE( u3 == u4 );
 }
@@ -220,19 +220,19 @@ TYPED_TEST( StaticArrayTest, AssignmentOperator )
 TYPED_TEST( StaticArrayTest, setValue )
 {
    using ArrayType = typename TestFixture::ArrayType;
-   constexpr int Size = ArrayType::getSize();
+   constexpr int size = ArrayType::getSize();
 
    ArrayType u;
    u.setValue( 42 );
-   for( int i = 0; i < Size; i++ )
+   for( int i = 0; i < size; i++ )
       EXPECT_EQ( u[ i ], 42 );
 }
 
 TYPED_TEST( StaticArrayTest, CastToDifferentStaticArray )
 {
    using ArrayType = typename TestFixture::ArrayType;
-   constexpr int Size = ArrayType::getSize();
-   using OtherArray = StaticArray< Size, char >;
+   constexpr int size = ArrayType::getSize();
+   using OtherArray = StaticArray< size, char >;
 
    ArrayType u1( 1 );
    OtherArray u2( 1 );
@@ -261,14 +261,14 @@ TYPED_TEST( StaticArrayTest, SaveAndLoad )
 TYPED_TEST( StaticArrayTest, sort )
 {
    using ArrayType = typename TestFixture::ArrayType;
-   constexpr int Size = ArrayType::getSize();
+   constexpr int size = ArrayType::getSize();
 
    ArrayType u;
-   for( int i = 0; i < Size; i++ )
-      u[ i ] = Size - i - 1;
+   for( int i = 0; i < size; i++ )
+      u[ i ] = size - i - 1;
    u.sort();
 
-   for( int i = 0; i < Size; i++ )
+   for( int i = 0; i < size; i++ )
       EXPECT_EQ( u[ i ], i );
 }
 

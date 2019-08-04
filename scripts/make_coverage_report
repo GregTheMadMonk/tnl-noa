@@ -32,6 +32,7 @@ tests=(
    UnaryVectorOperationsTest-dbg
    StaticArrayTest-dbg
    StaticVectorTest-dbg
+   StaticVectorOperationsTest-dbg
    ListTest-dbg
 #   MultireductionTest-dbg  # FIXME: CUDA
    MultimapTest-dbg

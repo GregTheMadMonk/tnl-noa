@@ -13,6 +13,7 @@
 #ifdef HAVE_GTEST
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/VectorView.h>
+#include <TNL/Containers/StaticVector.h>
 #include "VectorSequenceSetupFunctions.h"
 
 #include "gtest/gtest.h"
@@ -20,6 +21,8 @@
 using namespace TNL;
 using namespace TNL::Containers;
 using namespace TNL::Containers::Algorithms;
+
+namespace binary_tests {
 
 constexpr int VECTOR_TEST_SIZE = 100;
 
@@ -41,64 +44,97 @@ class VectorBinaryOperationsTest : public ::testing::Test
 protected:
    using Left = typename Pair::Left;
    using Right = typename Pair::Right;
+#ifndef STATIC_VECTOR
    using LeftNonConstReal = std::remove_const_t< typename Left::RealType >;
    using RightNonConstReal = std::remove_const_t< typename Right::RealType >;
    using LeftVector = Vector< LeftNonConstReal, typename Left::DeviceType, typename Left::IndexType >;
    using RightVector = Vector< RightNonConstReal, typename Right::DeviceType, typename Right::IndexType >;
+#endif
 };
 
 // types for which VectorBinaryOperationsTest is instantiated
-using VectorPairs = ::testing::Types<
-#ifndef HAVE_CUDA
-   Pair< Vector<     int,       Devices::Host >, Vector<     int,       Devices::Host > >,
-   Pair< VectorView< int,       Devices::Host >, Vector<     int,       Devices::Host > >,
-   Pair< VectorView< const int, Devices::Host >, Vector<     int,       Devices::Host > >,
-   Pair< Vector<     int,       Devices::Host >, VectorView< int,       Devices::Host > >,
-   Pair< Vector<     int,       Devices::Host >, VectorView< const int, Devices::Host > >,
-   Pair< VectorView< int,       Devices::Host >, VectorView< int,       Devices::Host > >,
-   Pair< VectorView< const int, Devices::Host >, VectorView< int,       Devices::Host > >,
-   Pair< VectorView< const int, Devices::Host >, VectorView< const int, Devices::Host > >,
-   Pair< VectorView< int,       Devices::Host >, VectorView< const int, Devices::Host > >,
-   Pair< Vector<     double,    Devices::Host >, Vector<     double,    Devices::Host > >,
-   Pair< VectorView< double,    Devices::Host >, Vector<     double,    Devices::Host > >,
-   Pair< Vector<     double,    Devices::Host >, VectorView< double,    Devices::Host > >,
-   Pair< VectorView< double,    Devices::Host >, VectorView< double,    Devices::Host > >
+#ifdef STATIC_VECTOR
+   using VectorPairs = ::testing::Types<
+      Pair< StaticVector< 1, int >,     StaticVector< 1, int >    >,
+      Pair< StaticVector< 1, double >,  StaticVector< 1, double > >,
+      Pair< StaticVector< 2, int >,     StaticVector< 2, int >    >,
+      Pair< StaticVector< 2, double >,  StaticVector< 2, double > >,
+      Pair< StaticVector< 3, int >,     StaticVector< 3, int >    >,
+      Pair< StaticVector< 3, double >,  StaticVector< 3, double > >,
+      Pair< StaticVector< 4, int >,     StaticVector< 4, int >    >,
+      Pair< StaticVector< 4, double >,  StaticVector< 4, double > >,
+      Pair< StaticVector< 5, int >,     StaticVector< 5, int >    >,
+      Pair< StaticVector< 5, double >,  StaticVector< 5, double > >
+   >;
+#else
+   using VectorPairs = ::testing::Types<
+   #ifndef HAVE_CUDA
+      Pair< Vector<     int,       Devices::Host >, Vector<     int,       Devices::Host > >,
+      Pair< VectorView< int,       Devices::Host >, Vector<     int,       Devices::Host > >,
+      Pair< VectorView< const int, Devices::Host >, Vector<     int,       Devices::Host > >,
+      Pair< Vector<     int,       Devices::Host >, VectorView< int,       Devices::Host > >,
+      Pair< Vector<     int,       Devices::Host >, VectorView< const int, Devices::Host > >,
+      Pair< VectorView< int,       Devices::Host >, VectorView< int,       Devices::Host > >,
+      Pair< VectorView< const int, Devices::Host >, VectorView< int,       Devices::Host > >,
+      Pair< VectorView< const int, Devices::Host >, VectorView< const int, Devices::Host > >,
+      Pair< VectorView< int,       Devices::Host >, VectorView< const int, Devices::Host > >,
+      Pair< Vector<     double,    Devices::Host >, Vector<     double,    Devices::Host > >,
+      Pair< VectorView< double,    Devices::Host >, Vector<     double,    Devices::Host > >,
+      Pair< Vector<     double,    Devices::Host >, VectorView< double,    Devices::Host > >,
+      Pair< VectorView< double,    Devices::Host >, VectorView< double,    Devices::Host > >
+   #endif
+   #ifdef HAVE_CUDA
+      Pair< Vector<     int,       Devices::Cuda >, Vector<     int,       Devices::Cuda > >,
+      Pair< VectorView< int,       Devices::Cuda >, Vector<     int,       Devices::Cuda > >,
+      Pair< VectorView< const int, Devices::Cuda >, Vector<     int,       Devices::Cuda > >,
+      Pair< Vector<     int,       Devices::Cuda >, VectorView< int,       Devices::Cuda > >,
+      Pair< Vector<     int,       Devices::Cuda >, VectorView< const int, Devices::Cuda > >,
+      Pair< VectorView< int,       Devices::Cuda >, VectorView< int,       Devices::Cuda > >,
+      Pair< VectorView< const int, Devices::Cuda >, VectorView< int,       Devices::Cuda > >,
+      Pair< VectorView< const int, Devices::Cuda >, VectorView< const int, Devices::Cuda > >,
+      Pair< VectorView< int,       Devices::Cuda >, VectorView< const int, Devices::Cuda > >,
+      Pair< Vector<     double,    Devices::Cuda >, Vector<     double,    Devices::Cuda > >,
+      Pair< VectorView< double,    Devices::Cuda >, Vector<     double,    Devices::Cuda > >,
+      Pair< Vector<     double,    Devices::Cuda >, VectorView< double,    Devices::Cuda > >,
+      Pair< VectorView< double,    Devices::Cuda >, VectorView< double,    Devices::Cuda > >
+   #endif
+   >;
 #endif
-#ifdef HAVE_CUDA
-   Pair< Vector<     int,       Devices::Cuda >, Vector<     int,       Devices::Cuda > >,
-   Pair< VectorView< int,       Devices::Cuda >, Vector<     int,       Devices::Cuda > >,
-   Pair< VectorView< const int, Devices::Cuda >, Vector<     int,       Devices::Cuda > >,
-   Pair< Vector<     int,       Devices::Cuda >, VectorView< int,       Devices::Cuda > >,
-   Pair< Vector<     int,       Devices::Cuda >, VectorView< const int, Devices::Cuda > >,
-   Pair< VectorView< int,       Devices::Cuda >, VectorView< int,       Devices::Cuda > >,
-   Pair< VectorView< const int, Devices::Cuda >, VectorView< int,       Devices::Cuda > >,
-   Pair< VectorView< const int, Devices::Cuda >, VectorView< const int, Devices::Cuda > >,
-   Pair< VectorView< int,       Devices::Cuda >, VectorView< const int, Devices::Cuda > >,
-   Pair< Vector<     double,    Devices::Cuda >, Vector<     double,    Devices::Cuda > >,
-   Pair< VectorView< double,    Devices::Cuda >, Vector<     double,    Devices::Cuda > >,
-   Pair< Vector<     double,    Devices::Cuda >, VectorView< double,    Devices::Cuda > >,
-   Pair< VectorView< double,    Devices::Cuda >, VectorView< double,    Devices::Cuda > >
-#endif
->;
 
 TYPED_TEST_SUITE( VectorBinaryOperationsTest, VectorPairs );
 
-#define SETUP_BINARY_VECTOR_TEST( size ) \
-   using LeftVector = typename TestFixture::LeftVector;     \
-   using RightVector = typename TestFixture::RightVector;   \
-   using Left = typename TestFixture::Left;                 \
-   using Right = typename TestFixture::Right;               \
-                                                            \
-   LeftVector _L1( size ), _L2( size );                     \
-   RightVector _R1( size ), _R2( size );                    \
-                                                            \
-   _L1 = 1;                                                 \
-   _L2 = 2;                                                 \
-   _R1 = 1;                                                 \
-   _R2 = 2;                                                 \
-                                                            \
-   Left L1( _L1 ), L2( _L2 );                               \
-   Right R1( _R1 ), R2( _R2 );                              \
+#ifdef STATIC_VECTOR
+   #define SETUP_BINARY_VECTOR_TEST( size ) \
+      using Left = typename TestFixture::Left;                 \
+      using Right = typename TestFixture::Right;               \
+                                                               \
+      Left L1, L2;                                             \
+      Right R1, R2;                                            \
+                                                               \
+      L1 = 1;                                                  \
+      L2 = 2;                                                  \
+      R1 = 1;                                                  \
+      R2 = 2;                                                  \
+
+#else
+   #define SETUP_BINARY_VECTOR_TEST( size ) \
+      using LeftVector = typename TestFixture::LeftVector;     \
+      using RightVector = typename TestFixture::RightVector;   \
+      using Left = typename TestFixture::Left;                 \
+      using Right = typename TestFixture::Right;               \
+                                                               \
+      LeftVector _L1( size ), _L2( size );                     \
+      RightVector _R1( size ), _R2( size );                    \
+                                                               \
+      _L1 = 1;                                                 \
+      _L2 = 2;                                                 \
+      _R1 = 1;                                                 \
+      _R2 = 2;                                                 \
+                                                               \
+      Left L1( _L1 ), L2( _L2 );                               \
+      Right R1( _R1 ), R2( _R2 );                              \
+
+#endif
 
 TYPED_TEST( VectorBinaryOperationsTest, EQ )
 {
@@ -111,10 +147,12 @@ TYPED_TEST( VectorBinaryOperationsTest, EQ )
    EXPECT_EQ( L1 + L1, R2 );  // left expression
    EXPECT_EQ( L1 + L1, R1 + R1 );  // two expressions
 
+#ifndef STATIC_VECTOR
    // with different sizes
    EXPECT_FALSE( L1 == Right() );
    // with zero sizes
    EXPECT_TRUE( Left() == Right() );
+#endif
 }
 
 TYPED_TEST( VectorBinaryOperationsTest, NE )
@@ -128,10 +166,12 @@ TYPED_TEST( VectorBinaryOperationsTest, NE )
    EXPECT_NE( L1 + L1, R1 );  // left expression
    EXPECT_NE( L1 + L1, R2 + R2 );  // two expressions
 
+#ifndef STATIC_VECTOR
    // with different sizes
    EXPECT_TRUE( L1 != Right() );
    // with zero sizes
    EXPECT_FALSE( Left() != Right() );
+#endif
 }
 
 TYPED_TEST( VectorBinaryOperationsTest, LT )
@@ -393,34 +433,39 @@ TYPED_TEST( VectorBinaryOperationsTest, divide_assignment )
 TYPED_TEST( VectorBinaryOperationsTest, scalarProduct )
 {
    // this test expects an odd size
-   const int size = VECTOR_TEST_REDUCTION_SIZE % 2 ? VECTOR_TEST_REDUCTION_SIZE : VECTOR_TEST_REDUCTION_SIZE - 1;
+//   const int size = VECTOR_TEST_REDUCTION_SIZE % 2 ? VECTOR_TEST_REDUCTION_SIZE : VECTOR_TEST_REDUCTION_SIZE - 1;
+   SETUP_BINARY_VECTOR_TEST( VECTOR_TEST_REDUCTION_SIZE );
 
-   using LeftVector = typename TestFixture::LeftVector;
-   using RightVector = typename TestFixture::RightVector;
-   using Left = typename TestFixture::Left;
-   using Right = typename TestFixture::Right;
+#ifdef STATIC_VECTOR
+   setOscilatingSequence( L1, 1 );
+   setConstantSequence( R1, 1 );
 
-   LeftVector _L( size );
-   RightVector _R( size );
+   const Left& L( L1 );
+   const Right& R( R1 );
+#else
+   // we have to use _L1 and _R1 because L1 and R1 might be a const view
+   setOscilatingSequence( _L1, 1 );
+   setConstantSequence( _R1, 1 );
 
-   setOscilatingSequence( _L, 1 );
-   setConstantSequence( _R, 1 );
+   const Left L( _L1 );
+   const Right R( _R1 );
+#endif
 
-   Left L( _L );
-   Right R( _R );
+   const int size = L.getSize();
+   const int expected = size % 2 ? 1 : 0;
 
    // vector or vector view
-   EXPECT_EQ( dot(L, R), 1.0 );
-   EXPECT_EQ( (L, R), 1.0 );
+   EXPECT_EQ( dot(L, R), expected );
+   EXPECT_EQ( (L, R), expected );
    // left expression
-   EXPECT_EQ( dot(2 * L - L, R), 1.0 );
-   EXPECT_EQ( (2 * L - L, R), 1.0 );
+   EXPECT_EQ( dot(2 * L - L, R), expected );
+   EXPECT_EQ( (2 * L - L, R), expected );
    // right expression
-   EXPECT_EQ( dot(L, 2 * R - R), 1.0 );
-   EXPECT_EQ( (L, 2 * R - R), 1.0 );
+   EXPECT_EQ( dot(L, 2 * R - R), expected );
+   EXPECT_EQ( (L, 2 * R - R), expected );
    // both expressions
-   EXPECT_EQ( dot(2 * L - L, 2 * R - R), 1.0 );
-   EXPECT_EQ( (2 * L - L, 2 * R - R), 1.0 );
+   EXPECT_EQ( dot(2 * L - L, 2 * R - R), expected );
+   EXPECT_EQ( (2 * L - L, 2 * R - R), expected );
 }
 
 TYPED_TEST( VectorBinaryOperationsTest, min )
@@ -459,7 +504,7 @@ TYPED_TEST( VectorBinaryOperationsTest, max )
    EXPECT_EQ( TNL::max(L1 - L1, R1 + R1), L2 );
 }
 
-#ifdef HAVE_CUDA
+#if defined(HAVE_CUDA) && !defined(STATIC_VECTOR)
 TYPED_TEST( VectorBinaryOperationsTest, comparisonOnDifferentDevices )
 {
    SETUP_BINARY_VECTOR_TEST( VECTOR_TEST_SIZE );
@@ -473,6 +518,10 @@ TYPED_TEST( VectorBinaryOperationsTest, comparisonOnDifferentDevices )
 }
 #endif
 
+} // namespace binary_tests
+
 #endif // HAVE_GTEST
 
+#ifndef STATIC_VECTOR
 #include "../main.h"
+#endif
