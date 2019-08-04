@@ -459,24 +459,19 @@ TYPED_TEST( VectorBinaryOperationsTest, max )
    EXPECT_EQ( TNL::max(L1 - L1, R1 + R1), L2 );
 }
 
-//#ifdef HAVE_CUDA
-//TYPED_TEST( VectorBinaryOperationsTest, comparisonOnDifferentDevices )
-//{
-//   using VectorType = typename TestFixture::VectorType;
-//   const int size = VECTOR_TEST_SIZE;
+#ifdef HAVE_CUDA
+TYPED_TEST( VectorBinaryOperationsTest, comparisonOnDifferentDevices )
+{
+   SETUP_BINARY_VECTOR_TEST( VECTOR_TEST_SIZE );
 
-//   typename VectorType::HostType host_vec( size );
-//   typename VectorType::CudaType cuda_vec( size );
-//   host_vec = 1.0;
-//   cuda_vec = 1.0;
-//   EXPECT_EQ( host_vec, cuda_vec );
-//   EXPECT_EQ( host_vec.getView(), cuda_vec.getView() );
+   typename RightVector::HostType _R1_h; _R1_h = _R1;
+   typename Right::HostType R1_h( _R1_h );
 
-//   host_vec = 0.0;
-//   EXPECT_TRUE( host_vec != cuda_vec );
-//   EXPECT_TRUE( host_vec.getView() != cuda_vec.getView() );
-//}
-//#endif
+   // L1 and L2 are device vectors
+   EXPECT_EQ( L1, R1_h );
+   EXPECT_NE( L2, R1_h );
+}
+#endif
 
 #endif // HAVE_GTEST
 
