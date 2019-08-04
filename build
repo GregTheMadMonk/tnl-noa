@@ -107,33 +107,6 @@ else
    export CC=gcc
 fi
 
-if [[ ${WITH_MPI} == "yes" ]]; then
-    # NOTE: OpenMPI provides mpic++, but Intel MPI does not
-    if [[ ! -x  "$(command -v mpicxx)" ]]; then
-       echo "Warning: mpicxx is not installed on this system. MPI support is turned off."
-    else
-       # instruct OpenMPI to use the original compiler
-       # reference: https://www.open-mpi.org/faq/?category=mpi-apps#override-wrappers-after-v1.0
-       # FIXME: this does not work with CUDA_HOST_COMPILER=mpicxx
-#       if [ -n "$CXX" ]; then
-#          export OMPI_CXX="$CXX"
-#       fi
-       export CUDA_ARCH_HOST_COMPILER="$CXX"
-       export CUDA_HOST_COMPILER=mpicxx
-       export CXX=mpicxx
-    fi
-    if [[ ! -x  "$(command -v mpicc)" ]]; then
-       echo "Warning: mpicc is not installed on this system." 
-    else
-       # instruct OpenMPI to use the original compiler
-       # reference: https://www.open-mpi.org/faq/?category=mpi-apps#override-wrappers-after-v1.0
-#       if [ -n "$CC" ]; then
-#          export OMPI_CC="$CC"
-#       fi
-       export CC=mpicc
-    fi
-fi
-
 if hash ninja 2>/dev/null; then
    generator=Ninja
    make=ninja
@@ -154,6 +127,7 @@ cmake_command=(
          -DWITH_CUDA=${WITH_CUDA}
          -DWITH_CUDA_ARCH=${WITH_CUDA_ARCH}
          -DWITH_OPENMP=${WITH_OPENMP}
+         -DWITH_MPI=${WITH_MPI}
          -DWITH_GMP=${WITH_GMP}
          -DWITH_TESTS=${WITH_TESTS}
          -DWITH_PROFILING=${WITH_PROFILING}

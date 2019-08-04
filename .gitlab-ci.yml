@@ -33,11 +33,6 @@ stages:
 .build_template_def: &build_template
     stage: build
     script:
-        # set MPI compiler wrapper
-        - if [[ ${WITH_MPI} == "yes" ]]; then
-                export CXX=mpicxx;
-                export CC=mpicc;
-          fi
         # all cores including hyperthreading
 #        - export NUM_CORES=$(grep "core id" /proc/cpuinfo | wc -l)
 #       # all pyhsical cores
@@ -53,6 +48,7 @@ stages:
                 -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
                 -DCMAKE_INSTALL_PREFIX=$(pwd)/${BUILD_TYPE}_install_prefix
                 -DWITH_OPENMP=${WITH_OPENMP}
+                -DWITH_MPI=${WITH_MPI}
                 -DWITH_CUDA=${WITH_CUDA}
                 -DWITH_CUDA_ARCH=${WITH_CUDA_ARCH}
                 -DWITH_MIC=${WITH_MIC}
