@@ -2361,6 +2361,28 @@ min( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperatio
 
 template< typename L1,
           typename L2,
+          template< typename, typename > class LOperation,
+          typename Index >
+__cuda_callable__
+auto
+argMin( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a, Index& arg )
+{
+   return StaticExpressionArgMin( a, arg );
+}
+
+template< typename L1,
+          template< typename > class LOperation,
+          typename LParameter,
+          typename Index >
+__cuda_callable__
+auto
+argMin( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation, LParameter >& a, Index& arg )
+{
+   return StaticExpressionArgMin( a, arg );
+}
+
+template< typename L1,
+          typename L2,
           template< typename, typename > class LOperation >
 __cuda_callable__
 auto
@@ -2377,6 +2399,28 @@ auto
 max( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation, LParameter >& a )
 {
    return StaticExpressionMax( a );
+}
+
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation,
+          typename Index >
+__cuda_callable__
+auto
+argMax( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a, Index& arg )
+{
+   return StaticExpressionArgMax( a, arg );
+}
+
+template< typename L1,
+          template< typename > class LOperation,
+          typename LParameter,
+          typename Index >
+__cuda_callable__
+auto
+argMax( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation, LParameter >& a, Index& arg )
+{
+   return StaticExpressionArgMax( a, arg );
 }
 
 template< typename L1,

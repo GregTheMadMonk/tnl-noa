@@ -31,7 +31,7 @@ auto StaticExpressionMin( const Expression& expression )
    return aux;
 }
 
-template< typename Expression, typename Real >
+template< typename Expression >
 __cuda_callable__
 auto StaticExpressionArgMin( const Expression& expression, int& arg )
 {
@@ -58,7 +58,7 @@ auto StaticExpressionMax( const Expression& expression )
    return aux;
 }
 
-template< typename Expression, typename Real >
+template< typename Expression >
 __cuda_callable__
 auto StaticExpressionArgMax( const Expression& expression, int& arg )
 {
