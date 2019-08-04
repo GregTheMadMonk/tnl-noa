@@ -180,7 +180,7 @@ setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
    TNL_ASSERT_EQ( rowLengths.getCommunicationGroup(), getCommunicationGroup(), "row lengths vector has wrong communication group" );
 
    if( getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      localMatrix.setCompressedRowLengths( rowLengths.getLocalVectorView() );
+      localMatrix.setCompressedRowLengths( rowLengths.getConstLocalVectorView() );
 
       spmv.reset();
    }

@@ -154,8 +154,8 @@ public:
       // prepare buffers
       commRequests.clear();
       globalBuffer.init( Partitioner::getOffset( localMatrix.getColumns(), rank, nproc ),
-                         inVector.getLocalVectorView(),
-                         localMatrix.getColumns() - Partitioner::getOffset( localMatrix.getColumns(), rank, nproc ) - inVector.getLocalVectorView().getSize() );
+                         inVector.getConstLocalVectorView(),
+                         localMatrix.getColumns() - Partitioner::getOffset( localMatrix.getColumns(), rank, nproc ) - inVector.getConstLocalVectorView().getSize() );
       const auto globalBufferView = globalBuffer.getConstView();
 
       // send our data to all processes that need it
@@ -164,7 +164,7 @@ public:
              continue;
          if( commPatternStarts( i, rank ) < commPatternEnds( i, rank ) )
             commRequests.push_back( CommunicatorType::ISend(
-                     inVector.getLocalVectorView().getData() + commPatternStarts( i, rank ) - Partitioner::getOffset( localMatrix.getColumns(), rank, nproc ),
+                     inVector.getConstLocalVectorView().getData() + commPatternStarts( i, rank ) - Partitioner::getOffset( localMatrix.getColumns(), rank, nproc ),
                      commPatternEnds( i, rank ) - commPatternStarts( i, rank ),
                      i, 0, group ) );
       }

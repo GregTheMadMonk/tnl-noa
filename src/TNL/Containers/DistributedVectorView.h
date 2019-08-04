@@ -58,8 +58,6 @@ public:
 
    LocalVectorViewType getLocalVectorView();
 
-   ConstLocalVectorViewType getLocalVectorView() const;
-   
    ConstLocalVectorViewType getConstLocalVectorView() const;
 
    /**
@@ -67,13 +65,6 @@ public:
     */
    __cuda_callable__
    ViewType getView();
-
-   /**
-    * \brief Returns a modifiable view of the array view.
-    */
-   __cuda_callable__
-   ConstViewType getView() const;
-
 
    /**
     * \brief Returns a non-modifiable view of the array view.

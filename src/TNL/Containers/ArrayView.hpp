@@ -92,19 +92,6 @@ getView( const IndexType begin, IndexType end )
 template< typename Value,
           typename Device,
           typename Index >
-__cuda_callable__
-typename ArrayView< Value, Device, Index >::ConstViewType
-ArrayView< Value, Device, Index >::
-getView( const IndexType begin, IndexType end ) const
-{
-   if( end == 0 )
-      end = this->getSize();
-   return ConstViewType( &getData()[ begin ], end - begin );
-}
-
-template< typename Value,
-          typename Device,
-          typename Index >
 typename ArrayView< Value, Device, Index >::ConstViewType
 ArrayView< Value, Device, Index >::
 getConstView( const IndexType begin, IndexType end ) const

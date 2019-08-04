@@ -78,20 +78,6 @@ public:
     * \param end The end of the array view sub-interval. The default value is 0
     *            which is, however, replaced with the array size.
     */
-   ConstLocalArrayViewType getLocalArrayView() const;
-
-   /**
-    * \brief Returns a non-modifiable view of the local part of the array.
-    *
-    * If \e begin or \e end is set to a non-zero value, a view for the
-    * sub-interval `[begin, end)` is returned. Otherwise a view for whole
-    * local part of the array view is returned.
-    *
-    * \param begin The beginning of the array view sub-interval. It is 0 by
-    *              default.
-    * \param end The end of the array view sub-interval. The default value is 0
-    *            which is, however, replaced with the array size.
-    */
    ConstLocalArrayViewType getConstLocalArrayView() const;
 
    void copyFromGlobal( ConstLocalArrayViewType globalArray );
@@ -110,11 +96,6 @@ public:
     * \brief Returns a modifiable view of the array.
     */
    ViewType getView();
-
-   /**
-    * \brief Returns a non-modifiable view of the array.
-    */
-   ConstViewType getView() const;
 
    /**
     * \brief Returns a non-modifiable view of the array.

@@ -85,17 +85,6 @@ template< typename Value,
           typename Communicator >
 typename DistributedArray< Value, Device, Index, Communicator >::ConstLocalArrayViewType
 DistributedArray< Value, Device, Index, Communicator >::
-getLocalArrayView() const
-{
-   return localData.getConstView();
-}
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Communicator >
-typename DistributedArray< Value, Device, Index, Communicator >::ConstLocalArrayViewType
-DistributedArray< Value, Device, Index, Communicator >::
 getConstLocalArrayView() const
 {
    return localData.getConstView();
@@ -146,20 +135,9 @@ template< typename Value,
           typename Communicator >
 typename DistributedArray< Value, Device, Index, Communicator >::ConstViewType
 DistributedArray< Value, Device, Index, Communicator >::
-getView() const
-{
-   return ConstViewType( getLocalRange(), getSize(), getCommunicationGroup(), getLocalArrayView() );
-}
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Communicator >
-typename DistributedArray< Value, Device, Index, Communicator >::ConstViewType
-DistributedArray< Value, Device, Index, Communicator >::
 getConstView() const
 {
-   return ConstViewType( getLocalRange(), getSize(), getCommunicationGroup(), getLocalArrayView() );
+   return ConstViewType( getLocalRange(), getSize(), getCommunicationGroup(), getConstLocalArrayView() );
 }
 
 template< typename Value,
@@ -221,7 +199,7 @@ setLike( const Array& array )
    localRange = array.getLocalRange();
    globalSize = array.getSize();
    group = array.getCommunicationGroup();
-   localData.setLike( array.getLocalArrayView() );
+   localData.setLike( array.getConstLocalArrayView() );
 }
 
 template< typename Value,
@@ -330,7 +308,7 @@ DistributedArray< Value, Device, Index, Communicator >::
 operator=( const DistributedArray& array )
 {
    setLike( array );
-   localData = array.getLocalArrayView();
+   localData = array.getConstLocalArrayView();
    return *this;
 }
 
@@ -344,7 +322,7 @@ DistributedArray< Value, Device, Index, Communicator >::
 operator=( const Array& array )
 {
    setLike( array );
-   localData = array.getLocalArrayView();
+   localData = array.getConstLocalArrayView();
    return *this;
 }
 
@@ -363,7 +341,7 @@ operator==( const Array& array ) const
    const bool localResult =
          localRange == array.getLocalRange() &&
          globalSize == array.getSize() &&
-         localData == array.getLocalArrayView();
+         localData == array.getConstLocalArrayView();
    bool result = true;
    if( group != CommunicatorType::NullGroup )
       CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, group );

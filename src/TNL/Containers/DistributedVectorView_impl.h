@@ -36,20 +36,9 @@ template< typename Real,
           typename Communicator >
 typename DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType
 DistributedVectorView< Real, Device, Index, Communicator >::
-getLocalVectorView() const
-{
-   return this->getLocalArrayView();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Communicator >
-typename DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalVectorViewType
-DistributedVectorView< Real, Device, Index, Communicator >::
 getConstLocalVectorView() const
 {
-   return this->getLocalArrayView();
+   return this->getConstLocalArrayView();
 }
 
 template< typename Value,
@@ -60,18 +49,6 @@ __cuda_callable__
 typename DistributedVectorView< Value, Device, Index, Communicator >::ViewType
 DistributedVectorView< Value, Device, Index, Communicator >::
 getView()
-{
-   return *this;
-}
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Communicator >
-__cuda_callable__
-typename DistributedVectorView< Value, Device, Index, Communicator >::ConstViewType
-DistributedVectorView< Value, Device, Index, Communicator >::
-getView() const
 {
    return *this;
 }
@@ -160,7 +137,7 @@ operator-=( const Vector& vector )
                   "Multiary operations are supported only on vectors within the same communication group." );
 
    if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalVectorView() -= vector.getLocalVectorView();
+      getLocalVectorView() -= vector.getConstLocalVectorView();
    }
    return *this;
 }
@@ -182,7 +159,7 @@ operator+=( const Vector& vector )
                   "Multiary operations are supported only on vectors within the same communication group." );
 
    if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalVectorView() += vector.getLocalVectorView();
+      getLocalVectorView() += vector.getConstLocalVectorView();
    }
    return *this;
 }
@@ -229,7 +206,7 @@ sum() const
    const auto group = this->getCommunicationGroup();
    ResultType result = Containers::Algorithms::ParallelReductionSum< Real, ResultType >::initialValue();
    if( group != CommunicatorType::NullGroup ) {
-      const ResultType localResult = getLocalVectorView().sum();
+      const ResultType localResult = getConstLocalVectorView().sum();
       CommunicatorType::Allreduce( &localResult, &result, 1, MPI_SUM, group );
    }
    return result;
@@ -247,7 +224,7 @@ scalarProduct( const Vector& v ) const
    const auto group = this->getCommunicationGroup();
    NonConstReal result = Containers::Algorithms::ParallelReductionScalarProduct< Real, typename Vector::RealType >::initialValue();
    if( group != CommunicatorType::NullGroup ) {
-      const Real localResult = getLocalVectorView().scalarProduct( v.getLocalVectorView() );
+      const Real localResult = getConstLocalVectorView().scalarProduct( v.getConstLocalVectorView() );
       CommunicatorType::Allreduce( &localResult, &result, 1, MPI_SUM, group );
    }
    return result;
@@ -272,7 +249,7 @@ addVector( const Vector& x,
                   "Multiary operations are supported only on vectors within the same communication group." );
 
    if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalVectorView().addVector( x.getLocalVectorView(), alpha, thisMultiplicator );
+      getLocalVectorView().addVector( x.getConstLocalVectorView(), alpha, thisMultiplicator );
    }
 }
 
@@ -303,9 +280,9 @@ addVectors( const Vector1& v1,
                   "Multiary operations are supported only on vectors within the same communication group." );
 
    if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalVectorView().addVectors( v1.getLocalVectorView(),
+      getLocalVectorView().addVectors( v1.getConstLocalVectorView(),
                                        multiplicator1,
-                                       v2.getLocalVectorView(),
+                                       v2.getConstLocalVectorView(),
                                        multiplicator2,
                                        thisMultiplicator );
    }

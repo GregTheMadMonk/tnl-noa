@@ -137,7 +137,6 @@ TYPED_TEST( DistributedVectorTest, min )
 
 TYPED_TEST( DistributedVectorTest, absMax )
 {
-   
    EXPECT_EQ( max( abs( this->x ) ), 1 );
    EXPECT_EQ( max( abs( this->y ) ), this->globalSize - 1 );
    EXPECT_EQ( max( abs( this->z ) ), this->globalSize - 1 );

@@ -71,19 +71,6 @@ template< typename Real,
           typename Allocator >
 typename Vector< Real, Device, Index, Allocator >::ConstViewType
 Vector< Real, Device, Index, Allocator >::
-getView( IndexType begin, IndexType end ) const
-{
-   if( end == 0 )
-      end = this->getSize();
-   return ConstViewType( &this->getData()[ begin ], end - begin );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Allocator >
-typename Vector< Real, Device, Index, Allocator >::ConstViewType
-Vector< Real, Device, Index, Allocator >::
 getConstView( IndexType begin, IndexType end ) const
 {
    if( end == 0 )
@@ -220,7 +207,7 @@ template< typename Real,
    template< typename VectorT >
 Real Vector< Real, Device, Index, Allocator >::scalarProduct( const VectorT& v ) const
 {
-   return dot( this->getView(), v.getView() );
+   return dot( this->getConstView(), v.getConstView() );
 }
 
 template< typename Real,

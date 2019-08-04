@@ -46,16 +46,12 @@ public:
    // we return only the view so that the user cannot resize it
    LocalVectorViewType getLocalVectorView();
 
-   ConstLocalVectorViewType getLocalVectorView() const;
-   
    ConstLocalVectorViewType getConstLocalVectorView() const;
 
    /**
     * \brief Returns a modifiable view of the vector.
     */
    ViewType getView();
-
-   ConstViewType getView() const;
 
    /**
     * \brief Returns a non-modifiable view of the vector.

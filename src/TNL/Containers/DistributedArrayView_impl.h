@@ -28,7 +28,7 @@ DistributedArrayView( const DistributedArrayView< Value_, Device, Index, Communi
 : localRange( view.getLocalRange() ),
   globalSize( view.getSize() ),
   group( view.getCommunicationGroup() ),
-  localData( view.getLocalArrayView() )
+  localData( view.getConstLocalArrayView() )
 {}
 
 template< typename Value,
@@ -96,7 +96,7 @@ operator=( const DistributedArrayView& view )
    TNL_ASSERT_EQ( getSize(), view.getSize(), "The sizes of the array views must be equal, views are not resizable." );
    TNL_ASSERT_EQ( getLocalRange(), view.getLocalRange(), "The local ranges must be equal, views are not resizable." );
    TNL_ASSERT_EQ( getCommunicationGroup(), view.getCommunicationGroup(), "The communication groups of the array views must be equal." );
-   localData = view.getLocalArrayView();
+   localData = view.getConstLocalArrayView();
    return *this;
 }
 
@@ -112,7 +112,7 @@ operator=( const Array& array )
    TNL_ASSERT_EQ( getSize(), array.getSize(), "The global sizes must be equal, views are not resizable." );
    TNL_ASSERT_EQ( getLocalRange(), array.getLocalRange(), "The local ranges must be equal, views are not resizable." );
    TNL_ASSERT_EQ( getCommunicationGroup(), array.getCommunicationGroup(), "The communication groups must be equal." );
-   localData = array.getLocalArrayView();
+   localData = array.getConstLocalArrayView();
    return *this;
 }
 
@@ -156,7 +156,7 @@ template< typename Value,
           typename Communicator >
 typename DistributedArrayView< Value, Device, Index, Communicator >::ConstLocalArrayViewType
 DistributedArrayView< Value, Device, Index, Communicator >::
-getLocalArrayView() const
+getConstLocalArrayView() const
 {
    return localData;
 }
@@ -315,7 +315,7 @@ operator==( const Array& array ) const
    const bool localResult =
          localRange == array.getLocalRange() &&
          globalSize == array.getSize() &&
-         localData == array.getLocalArrayView();
+         localData == array.getConstLocalArrayView();
    bool result = true;
    if( group != CommunicatorType::NullGroup )
       CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, group );

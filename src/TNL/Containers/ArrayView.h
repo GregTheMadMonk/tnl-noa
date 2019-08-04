@@ -183,21 +183,6 @@ public:
     *            which is, however, replaced with the array size.
     */
    __cuda_callable__
-   ConstViewType getView( const IndexType begin = 0, IndexType end = 0 ) const;
-
-   /**
-    * \brief Returns a non-modifiable view of the array view.
-    *
-    * By default, a view for the whole array is returned. If \e begin or
-    * \e end is set to a non-zero value, a view only for the sub-interval
-    * `[begin, end)` is returned.
-    *
-    * \param begin The beginning of the array view sub-interval. It is 0 by
-    *              default.
-    * \param end The end of the array view sub-interval. The default value is 0
-    *            which is, however, replaced with the array size.
-    */
-   __cuda_callable__
    ConstViewType getConstView( const IndexType begin = 0, IndexType end = 0 ) const;
 
    /**
