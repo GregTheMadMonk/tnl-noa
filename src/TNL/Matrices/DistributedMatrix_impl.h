@@ -180,7 +180,7 @@ setCompressedRowLengths( const CompressedRowLengthsVector& rowLengths )
    TNL_ASSERT_EQ( rowLengths.getCommunicationGroup(), getCommunicationGroup(), "row lengths vector has wrong communication group" );
 
    if( getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      localMatrix.setCompressedRowLengths( rowLengths.getConstLocalVectorView() );
+      localMatrix.setCompressedRowLengths( rowLengths.getConstLocalView() );
 
       spmv.reset();
    }
@@ -194,7 +194,7 @@ getCompressedRowLengths( CompressedRowLengthsVector& rowLengths ) const
 {
    if( getCommunicationGroup() != CommunicatorType::NullGroup ) {
       rowLengths.setDistribution( getLocalRowRange(), getRows(), getCommunicationGroup() );
-      localMatrix.getCompressedRowLengths( rowLengths.getLocalVectorView() );
+      localMatrix.getCompressedRowLengths( rowLengths.getLocalView() );
    }
 }
 
@@ -319,7 +319,7 @@ vectorProduct( const InVector& inVector,
    TNL_ASSERT_EQ( outVector.getLocalRange(), getLocalRowRange(), "output vector has wrong distribution" );
    TNL_ASSERT_EQ( outVector.getCommunicationGroup(), getCommunicationGroup(), "output vector has wrong communication group" );
 
-   auto outView = outVector.getLocalVectorView();
+   auto outView = outVector.getLocalView();
    localMatrix.vectorProduct( inVector, outView );
 }
 

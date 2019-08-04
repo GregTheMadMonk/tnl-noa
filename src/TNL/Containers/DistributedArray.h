@@ -25,6 +25,7 @@ template< typename Value,
 class DistributedArray
 {
    using CommunicationGroup = typename Communicator::CommunicationGroup;
+   using LocalArrayType = Containers::Array< Value, Device, Index >;
 
 public:
    using ValueType = Value;
@@ -32,9 +33,8 @@ public:
    using CommunicatorType = Communicator;
    using IndexType = Index;
    using LocalRangeType = Subrange< Index >;
-   using LocalArrayType = Containers::Array< Value, Device, Index >;
-   using LocalArrayViewType = Containers::ArrayView< Value, Device, Index >;
-   using ConstLocalArrayViewType = Containers::ArrayView< std::add_const_t< Value >, Device, Index >;
+   using LocalViewType = Containers::ArrayView< Value, Device, Index >;
+   using ConstLocalViewType = Containers::ArrayView< std::add_const_t< Value >, Device, Index >;
    using HostType = DistributedArray< Value, Devices::Host, Index, Communicator >;
    using CudaType = DistributedArray< Value, Devices::Cuda, Index, Communicator >;
    using ViewType = DistributedArrayView< Value, Device, Index, Communicator >;
@@ -64,7 +64,7 @@ public:
     * \param end The end of the array view sub-interval. The default value is 0
     *            which is, however, replaced with the array size.
     */
-   LocalArrayViewType getLocalArrayView();
+   LocalViewType getLocalView();
 
    /**
     * \brief Returns a non-modifiable view of the local part of the array.
@@ -78,9 +78,9 @@ public:
     * \param end The end of the array view sub-interval. The default value is 0
     *            which is, however, replaced with the array size.
     */
-   ConstLocalArrayViewType getConstLocalArrayView() const;
+   ConstLocalViewType getConstLocalView() const;
 
-   void copyFromGlobal( ConstLocalArrayViewType globalArray );
+   void copyFromGlobal( ConstLocalViewType globalArray );
 
 
    static String getType();

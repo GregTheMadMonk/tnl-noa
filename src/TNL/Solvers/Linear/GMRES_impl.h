@@ -394,8 +394,8 @@ hauseholder_generate( const int i,
       ParallelFor< DeviceType >::exec( (IndexType) 0, size, kernel_truncation );
    }
    else {
-      ConstDeviceView z_local = Traits::getLocalVectorView( z );
-      DeviceView y_i_local = Traits::getLocalVectorView( y_i );
+      ConstDeviceView z_local = Traits::getConstLocalView( z );
+      DeviceView y_i_local = Traits::getLocalView( y_i );
       y_i_local = z_local;
    }
 
@@ -434,7 +434,7 @@ hauseholder_generate( const int i,
                  size,
                  Y.getData(),
                  ldSize,
-                 Traits::getLocalVectorView( y_i ).getData(),
+                 Traits::getLocalView( y_i ).getData(),
                  aux );
       // no-op if the problem is not distributed
       CommunicatorType::Allreduce( aux, i, MPI_SUM, Traits::getCommunicationGroup( *this->matrix ) );
@@ -460,7 +460,7 @@ hauseholder_apply_trunc( HostView out,
    // The upper (m+1)x(m+1) submatrix of Y is duplicated in the YL buffer,
    // which resides on host and is broadcasted from rank 0 to all processes.
    HostView YL_i( &YL[ i * (restarting_max + 1) ], restarting_max + 1 );
-   Containers::Algorithms::ArrayOperations< Devices::Host, DeviceType >::copy( YL_i.getData(), Traits::getLocalVectorView( y_i ).getData(), YL_i.getSize() );
+   Containers::Algorithms::ArrayOperations< Devices::Host, DeviceType >::copy( YL_i.getData(), Traits::getLocalView( y_i ).getData(), YL_i.getSize() );
    // no-op if the problem is not distributed
    CommunicatorType::Bcast( YL_i.getData(), YL_i.getSize(), 0, Traits::getCommunicationGroup( *this->matrix ) );
 
@@ -475,7 +475,7 @@ hauseholder_apply_trunc( HostView out,
       }
       if( std::is_same< DeviceType, Devices::Cuda >::value ) {
          RealType host_z[ i + 1 ];
-         Containers::Algorithms::ArrayOperations< Devices::Host, Devices::Cuda >::copy( host_z, Traits::getLocalVectorView( z ).getData(), i + 1 );
+         Containers::Algorithms::ArrayOperations< Devices::Host, Devices::Cuda >::copy( host_z, Traits::getConstLocalView( z ).getData(), i + 1 );
          for( int k = 0; k <= i; k++ )
             out[ k ] = host_z[ k ] - YL_i[ k ] * aux;
       }
@@ -511,7 +511,7 @@ hauseholder_cwy( VectorViewType v,
    Matrices::MatrixOperations< DeviceType >::
       gemv( size, i + 1,
             -1.0, Y.getData(), ldSize, aux,
-            0.0, Traits::getLocalVectorView( v ).getData() );
+            0.0, Traits::getLocalView( v ).getData() );
    if( localOffset == 0 )
       v.setElement( i, 1.0 + v.getElement( i ) );
 }
@@ -532,7 +532,7 @@ hauseholder_cwy_transposed( VectorViewType z,
               size,
               Y.getData(),
               ldSize,
-              Traits::getLocalVectorView( w ).getData(),
+              Traits::getConstLocalView( w ).getData(),
               aux );
    // no-op if the problem is not distributed
    Traits::CommunicatorType::Allreduce( aux, i + 1, MPI_SUM, Traits::getCommunicationGroup( *this->matrix ) );
@@ -551,7 +551,7 @@ hauseholder_cwy_transposed( VectorViewType z,
    Matrices::MatrixOperations< DeviceType >::
       gemv( size, i + 1,
             -1.0, Y.getData(), ldSize, aux,
-            1.0, Traits::getLocalVectorView( z ).getData() );
+            1.0, Traits::getLocalView( z ).getData() );
 }
 
 template< typename Matrix >
@@ -593,7 +593,7 @@ update( const int k,
       Matrices::MatrixOperations< DeviceType >::
          gemv( size, k + 1,
                1.0, V.getData(), ldSize, y,
-               1.0, Traits::getLocalVectorView( x ).getData() );
+               1.0, Traits::getLocalView( x ).getData() );
    }
    else {
       // The vectors v_i are not stored, they can be reconstructed as P_0...P_j * e_j.
@@ -625,7 +625,7 @@ update( const int k,
       Matrices::MatrixOperations< DeviceType >::
          gemv( size, k + 1,
                -1.0, Y.getData(), ldSize, aux,
-               1.0, Traits::getLocalVectorView( x ).getData() );
+               1.0, Traits::getLocalView( x ).getData() );
 
       // x += y
       if( localOffset == 0 )
@@ -703,7 +703,7 @@ void
 GMRES< Matrix >::
 setSize( const VectorViewType& x )
 {
-   this->size = Traits::getLocalVectorView( x ).getSize();
+   this->size = Traits::getLocalView( x ).getSize();
    if( std::is_same< DeviceType, Devices::Cuda >::value )
       // align each column to 256 bytes - optimal for CUDA
       ldSize = roundToMultiple( size, 256 / sizeof( RealType ) );

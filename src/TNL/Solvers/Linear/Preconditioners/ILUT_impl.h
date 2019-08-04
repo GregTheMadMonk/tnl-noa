@@ -266,8 +266,8 @@ void
 ILUT_impl< Matrix, Real, Devices::Host, Index >::
 solve( ConstVectorViewType _b, VectorViewType _x ) const
 {
-   const auto b = Traits< Matrix >::getLocalVectorView( _b );
-   auto x = Traits< Matrix >::getLocalVectorView( _x );
+   const auto b = Traits< Matrix >::getConstLocalView( _b );
+   auto x = Traits< Matrix >::getLocalView( _x );
 
    // Step 1: solve y from Ly = b
    triangularSolveLower< false >( L, x, b );

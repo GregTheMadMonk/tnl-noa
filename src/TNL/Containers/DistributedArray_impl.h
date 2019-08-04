@@ -72,9 +72,9 @@ template< typename Value,
           typename Device,
           typename Index,
           typename Communicator >
-typename DistributedArray< Value, Device, Index, Communicator >::LocalArrayViewType
+typename DistributedArray< Value, Device, Index, Communicator >::LocalViewType
 DistributedArray< Value, Device, Index, Communicator >::
-getLocalArrayView()
+getLocalView()
 {
    return localData.getView();
 }
@@ -83,9 +83,9 @@ template< typename Value,
           typename Device,
           typename Index,
           typename Communicator >
-typename DistributedArray< Value, Device, Index, Communicator >::ConstLocalArrayViewType
+typename DistributedArray< Value, Device, Index, Communicator >::ConstLocalViewType
 DistributedArray< Value, Device, Index, Communicator >::
-getConstLocalArrayView() const
+getConstLocalView() const
 {
    return localData.getConstView();
 }
@@ -97,12 +97,12 @@ template< typename Value,
           typename Communicator >
 void
 DistributedArray< Value, Device, Index, Communicator >::
-copyFromGlobal( ConstLocalArrayViewType globalArray )
+copyFromGlobal( ConstLocalViewType globalArray )
 {
    TNL_ASSERT_EQ( getSize(), globalArray.getSize(),
                   "given global array has different size than the distributed array" );
 
-   LocalArrayViewType localView( localData );
+   LocalViewType localView( localData );
    const LocalRangeType localRange = getLocalRange();
 
    auto kernel = [=] __cuda_callable__ ( IndexType i ) mutable
@@ -126,7 +126,7 @@ typename DistributedArray< Value, Device, Index, Communicator >::ViewType
 DistributedArray< Value, Device, Index, Communicator >::
 getView()
 {
-   return ViewType( getLocalRange(), getSize(), getCommunicationGroup(), getLocalArrayView() );
+   return ViewType( getLocalRange(), getSize(), getCommunicationGroup(), getLocalView() );
 }
 
 template< typename Value,
@@ -137,7 +137,7 @@ typename DistributedArray< Value, Device, Index, Communicator >::ConstViewType
 DistributedArray< Value, Device, Index, Communicator >::
 getConstView() const
 {
-   return ConstViewType( getLocalRange(), getSize(), getCommunicationGroup(), getConstLocalArrayView() );
+   return ConstViewType( getLocalRange(), getSize(), getCommunicationGroup(), getConstLocalView() );
 }
 
 template< typename Value,
@@ -199,7 +199,7 @@ setLike( const Array& array )
    localRange = array.getLocalRange();
    globalSize = array.getSize();
    group = array.getCommunicationGroup();
-   localData.setLike( array.getConstLocalArrayView() );
+   localData.setLike( array.getConstLocalView() );
 }
 
 template< typename Value,
@@ -308,7 +308,7 @@ DistributedArray< Value, Device, Index, Communicator >::
 operator=( const DistributedArray& array )
 {
    setLike( array );
-   localData = array.getConstLocalArrayView();
+   localData = array.getConstLocalView();
    return *this;
 }
 
@@ -322,7 +322,7 @@ DistributedArray< Value, Device, Index, Communicator >::
 operator=( const Array& array )
 {
    setLike( array );
-   localData = array.getConstLocalArrayView();
+   localData = array.getConstLocalView();
    return *this;
 }
 
@@ -341,7 +341,7 @@ operator==( const Array& array ) const
    const bool localResult =
          localRange == array.getLocalRange() &&
          globalSize == array.getSize() &&
-         localData == array.getConstLocalArrayView();
+         localData == array.getConstLocalView();
    bool result = true;
    if( group != CommunicatorType::NullGroup )
       CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, group );

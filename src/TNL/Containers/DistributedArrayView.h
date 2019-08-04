@@ -32,8 +32,8 @@ public:
    using CommunicatorType = Communicator;
    using IndexType = Index;
    using LocalRangeType = Subrange< Index >;
-   using LocalArrayViewType = Containers::ArrayView< Value, Device, Index >;
-   using ConstLocalArrayViewType = Containers::ArrayView< std::add_const_t< Value >, Device, Index >;
+   using LocalViewType = Containers::ArrayView< Value, Device, Index >;
+   using ConstLocalViewType = Containers::ArrayView< std::add_const_t< Value >, Device, Index >;
    using HostType = DistributedArrayView< Value, Devices::Host, Index, Communicator >;
    using CudaType = DistributedArrayView< Value, Devices::Cuda, Index, Communicator >;
    using ViewType = DistributedArrayView< Value, Device, Index, Communicator >;
@@ -41,7 +41,7 @@ public:
 
    // Initialization by raw data
    __cuda_callable__
-   DistributedArrayView( const LocalRangeType& localRange, IndexType globalSize, CommunicationGroup group, LocalArrayViewType localData )
+   DistributedArrayView( const LocalRangeType& localRange, IndexType globalSize, CommunicationGroup group, LocalViewType localData )
    : localRange(localRange), globalSize(globalSize), group(group), localData(localData)
    {}
 
@@ -99,11 +99,11 @@ public:
 
    CommunicationGroup getCommunicationGroup() const;
 
-   LocalArrayViewType getLocalArrayView();
+   LocalViewType getLocalView();
 
-   ConstLocalArrayViewType getConstLocalArrayView() const;
+   ConstLocalViewType getConstLocalView() const;
 
-   void copyFromGlobal( ConstLocalArrayViewType globalArray );
+   void copyFromGlobal( ConstLocalViewType globalArray );
 
 
    static String getType();
@@ -158,7 +158,7 @@ protected:
    LocalRangeType localRange;
    IndexType globalSize = 0;
    CommunicationGroup group = Communicator::NullGroup;
-   LocalArrayViewType localData;
+   LocalViewType localData;
 };
 
 } // namespace Containers

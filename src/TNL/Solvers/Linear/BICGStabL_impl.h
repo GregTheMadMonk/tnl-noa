@@ -217,17 +217,17 @@ solve( ConstVectorViewType b, VectorViewType x )
       Matrices::MatrixOperations< DeviceType >::
          gemv( size, ell,
                1.0, R.getData(), ldSize, g_2.getData(),
-               1.0, Traits::getLocalVectorView( x ).getData() );
+               1.0, Traits::getLocalView( x ).getData() );
       // r_0 := r_0 - R_[1:ell] * g_1_[1:ell]
       Matrices::MatrixOperations< DeviceType >::
          gemv( size, ell,
                -1.0, R.getData() + ldSize, ldSize, &g_1[ 1 ],
-               1.0, Traits::getLocalVectorView( r_0 ).getData() );
+               1.0, Traits::getLocalView( r_0 ).getData() );
       // u_0 := u_0 - U_[1:ell] * g_0_[1:ell]
       Matrices::MatrixOperations< DeviceType >::
          gemv( size, ell,
                -1.0, U.getData() + ldSize, ldSize, &g_0[ 1 ],
-               1.0, Traits::getLocalVectorView( u_0 ).getData() );
+               1.0, Traits::getLocalView( u_0 ).getData() );
 
       if( exact_residue ) {
          /****
@@ -288,7 +288,7 @@ void
 BICGStabL< Matrix >::
 setSize( const VectorViewType& x )
 {
-   this->size = ldSize = Traits::getLocalVectorView( x ).getSize();
+   this->size = ldSize = Traits::getConstLocalView( x ).getSize();
    R.setSize( (ell + 1) * ldSize );
    U.setSize( (ell + 1) * ldSize );
    r_ast.setLike( x );

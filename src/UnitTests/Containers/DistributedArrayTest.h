@@ -34,8 +34,8 @@ protected:
    using CommunicatorType = typename DistributedArray::CommunicatorType;
    using IndexType = typename DistributedArray::IndexType;
    using DistributedArrayType = DistributedArray;
-   using ArrayViewType = typename DistributedArrayType::LocalArrayViewType;
-   using ArrayType = typename DistributedArrayType::LocalArrayType;
+   using ArrayViewType = typename DistributedArrayType::LocalViewType;
+   using ArrayType = Array< typename ArrayViewType::ValueType, typename ArrayViewType::DeviceType, typename ArrayViewType::IndexType >;
 
    const int globalSize = 97;  // prime number to force non-uniform distribution
 
@@ -74,7 +74,7 @@ TYPED_TEST( DistributedArrayTest, checkSumOfLocalSizes )
 {
    using CommunicatorType = typename TestFixture::CommunicatorType;
 
-   const int localSize = this->distributedArray.getLocalArrayView().getSize();
+   const int localSize = this->distributedArray.getLocalView().getSize();
    int sumOfLocalSizes = 0;
    CommunicatorType::Allreduce( &localSize, &sumOfLocalSizes, 1, MPI_SUM, this->group );
    EXPECT_EQ( sumOfLocalSizes, this->globalSize );
@@ -91,7 +91,7 @@ TYPED_TEST( DistributedArrayTest, copyFromGlobal )
    globalArray.setValue( 1.0 );
    this->distributedArray.copyFromGlobal( globalArray );
 
-   ArrayViewType localArrayView = this->distributedArray.getLocalArrayView();
+   ArrayViewType localArrayView = this->distributedArray.getLocalView();
    auto globalView = globalArray.getConstView();
    const auto localRange = this->distributedArray.getLocalRange();
    globalView.bind( &globalArray[ localRange.getBegin() ], localRange.getEnd() - localRange.getBegin() );
@@ -112,10 +112,10 @@ TYPED_TEST( DistributedArrayTest, setLike )
 TYPED_TEST( DistributedArrayTest, reset )
 {
    EXPECT_EQ( this->distributedArray.getSize(), this->globalSize );
-   EXPECT_GT( this->distributedArray.getLocalArrayView().getSize(), 0 );
+   EXPECT_GT( this->distributedArray.getLocalView().getSize(), 0 );
    this->distributedArray.reset();
    EXPECT_EQ( this->distributedArray.getSize(), 0 );
-   EXPECT_EQ( this->distributedArray.getLocalArrayView().getSize(), 0 );
+   EXPECT_EQ( this->distributedArray.getLocalView().getSize(), 0 );
 }
 
 // TODO: swap
@@ -126,7 +126,7 @@ TYPED_TEST( DistributedArrayTest, setValue )
    using ArrayType = typename TestFixture::ArrayType;
 
    this->distributedArray.setValue( 1.0 );
-   ArrayViewType localArrayView = this->distributedArray.getLocalArrayView();
+   ArrayViewType localArrayView = this->distributedArray.getLocalView();
    ArrayType expected( localArrayView.getSize() );
    expected.setValue( 1.0 );
    EXPECT_EQ( localArrayView, expected );
@@ -138,7 +138,7 @@ TYPED_TEST( DistributedArrayTest, elementwiseAccess )
    using IndexType = typename TestFixture::IndexType;
 
    this->distributedArray.setValue( 0 );
-   ArrayViewType localArrayView = this->distributedArray.getLocalArrayView();
+   ArrayViewType localArrayView = this->distributedArray.getLocalView();
    const auto localRange = this->distributedArray.getLocalRange();
 
    // check initial value
@@ -191,7 +191,7 @@ TYPED_TEST( DistributedArrayTest, copyConstructor )
    this->distributedArray.setValue( 1 );
    DistributedArrayType copy( this->distributedArray );
    // Array has "binding" copy-constructor
-   //EXPECT_EQ( copy.getLocalArrayView().getData(), this->distributedArray.getLocalArrayView().getData() );
+   //EXPECT_EQ( copy.getLocalView().getData(), this->distributedArray.getLocalView().getData() );
 }
 
 TYPED_TEST( DistributedArrayTest, copyAssignment )
@@ -202,8 +202,8 @@ TYPED_TEST( DistributedArrayTest, copyAssignment )
    DistributedArrayType copy;
    copy = this->distributedArray;
    // no binding, but deep copy
-   EXPECT_NE( copy.getLocalArrayView().getData(), this->distributedArray.getLocalArrayView().getData() );
-   EXPECT_EQ( copy.getLocalArrayView(), this->distributedArray.getLocalArrayView() );
+   EXPECT_NE( copy.getLocalView().getData(), this->distributedArray.getLocalView().getData() );
+   EXPECT_EQ( copy.getLocalView(), this->distributedArray.getLocalView() );
 }
 
 TYPED_TEST( DistributedArrayTest, comparisonOperators )
@@ -217,7 +217,7 @@ TYPED_TEST( DistributedArrayTest, comparisonOperators )
    v.setLike( u );
    w.setLike( u );
 
-   for( int i = 0; i < u.getLocalArrayView().getSize(); i ++ ) {
+   for( int i = 0; i < u.getLocalView().getSize(); i ++ ) {
       const IndexType gi = localRange.getGlobalIndex( i );
       u.setElement( gi, i );
       v.setElement( gi, i );
@@ -246,7 +246,7 @@ TYPED_TEST( DistributedArrayTest, containsValue )
 
    const auto localRange = this->distributedArray.getLocalRange();
 
-   for( int i = 0; i < this->distributedArray.getLocalArrayView().getSize(); i++ ) {
+   for( int i = 0; i < this->distributedArray.getLocalView().getSize(); i++ ) {
       const IndexType gi = localRange.getGlobalIndex( i );
       this->distributedArray.setElement( gi, i % 10 );
    }
@@ -264,7 +264,7 @@ TYPED_TEST( DistributedArrayTest, containsOnlyValue )
 
    const auto localRange = this->distributedArray.getLocalRange();
 
-   for( int i = 0; i < this->distributedArray.getLocalArrayView().getSize(); i++ ) {
+   for( int i = 0; i < this->distributedArray.getLocalView().getSize(); i++ ) {
       const IndexType gi = localRange.getGlobalIndex( i );
       this->distributedArray.setElement( gi, i % 10 );
    }

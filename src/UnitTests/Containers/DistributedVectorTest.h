@@ -11,7 +11,7 @@ void setLinearSequence( Vector& deviceVector )
 {
    typename Vector::HostType a;
    a.setLike( deviceVector );
-   for( int i = 0; i < a.getLocalVectorView().getSize(); i++ ) {
+   for( int i = 0; i < a.getLocalView().getSize(); i++ ) {
       const auto gi = a.getLocalRange().getGlobalIndex( i );
       a[ gi ] = gi;
    }
@@ -30,7 +30,7 @@ void setNegativeLinearSequence( Vector& deviceVector )
 {
    typename Vector::HostType a;
    a.setLike( deviceVector );
-   for( int i = 0; i < a.getLocalVectorView().getSize(); i++ ) {
+   for( int i = 0; i < a.getLocalView().getSize(); i++ ) {
       const auto gi = a.getLocalRange().getGlobalIndex( i );
       a[ gi ] = -gi;
    }
@@ -68,7 +68,7 @@ protected:
    using CommunicatorType = typename DistributedVector::CommunicatorType;
    using IndexType = typename DistributedVector::IndexType;
    using DistributedVectorType = DistributedVector;
-   using VectorViewType = typename DistributedVectorType::LocalVectorViewType;
+   using VectorViewType = typename DistributedVectorType::LocalViewType;
    using DistributedVectorView = Containers::DistributedVectorView< RealType, DeviceType, IndexType, CommunicatorType >;
 
    const int globalSize = 97;  // prime number to force non-uniform distribution
@@ -256,13 +256,13 @@ TYPED_TEST( DistributedVectorTest, differenceSum )
 /*TYPED_TEST( DistributedVectorTest, scalarMultiplication )
 {
    this->y *= 2;
-   for( int i = 0; i < this->y.getLocalVectorView().getSize(); i++ ) {
+   for( int i = 0; i < this->y.getLocalView().getSize(); i++ ) {
       const auto gi = this->y.getLocalRange().getGlobalIndex( i );
       EXPECT_EQ( this->y.getElement( gi ), 2 * gi );
    }
 
    this->y.scalarMultiplication( 2 );
-   for( int i = 0; i < this->y.getLocalVectorView().getSize(); i++ ) {
+   for( int i = 0; i < this->y.getLocalView().getSize(); i++ ) {
       const auto gi = this->y.getLocalRange().getGlobalIndex( i );
       EXPECT_EQ( this->y.getElement( gi ), 4 * gi );
    }
@@ -270,13 +270,13 @@ TYPED_TEST( DistributedVectorTest, differenceSum )
    setLinearSequence( this->y );
 
    this->y_view *= 2;
-   for( int i = 0; i < this->y_view.getLocalVectorView().getSize(); i++ ) {
+   for( int i = 0; i < this->y_view.getLocalView().getSize(); i++ ) {
       const auto gi = this->y_view.getLocalRange().getGlobalIndex( i );
       EXPECT_EQ( this->y_view.getElement( gi ), 2 * gi );
    }
 
    this->y_view.scalarMultiplication( 2 );
-   for( int i = 0; i < this->y_view.getLocalVectorView().getSize(); i++ ) {
+   for( int i = 0; i < this->y_view.getLocalView().getSize(); i++ ) {
       const auto gi = this->y_view.getLocalRange().getGlobalIndex( i );
       EXPECT_EQ( this->y_view.getElement( gi ), 4 * gi );
    }
@@ -300,13 +300,13 @@ TYPED_TEST( DistributedVectorTest, scalarProduct )
 TYPED_TEST( DistributedVectorTest, addVector )
 {
    this->x.addVector( this->y, 3.0, 1.0 );
-   for( int i = 0; i < this->y.getLocalVectorView().getSize(); i++ ) {
+   for( int i = 0; i < this->y.getLocalView().getSize(); i++ ) {
       const auto gi = this->y.getLocalRange().getGlobalIndex( i );
       EXPECT_EQ( this->x.getElement( gi ), 1 + 3 * gi );
    }
 
    this->y += this->z;
-   for( int i = 0; i < this->y.getLocalVectorView().getSize(); i++ ) {
+   for( int i = 0; i < this->y.getLocalView().getSize(); i++ ) {
       const auto gi = this->y.getLocalRange().getGlobalIndex( i );
       EXPECT_EQ( this->y.getElement( gi ), 0 );
    }
@@ -315,13 +315,13 @@ TYPED_TEST( DistributedVectorTest, addVector )
    setLinearSequence( this->y );
 
    this->x_view.addVector( this->y_view, 3.0, 1.0 );
-   for( int i = 0; i < this->y_view.getLocalVectorView().getSize(); i++ ) {
+   for( int i = 0; i < this->y_view.getLocalView().getSize(); i++ ) {
       const auto gi = this->y_view.getLocalRange().getGlobalIndex( i );
       EXPECT_EQ( this->x_view.getElement( gi ), 1 + 3 * gi );
    }
 
    this->y_view += this->z_view;
-   for( int i = 0; i < this->y_view.getLocalVectorView().getSize(); i++ ) {
+   for( int i = 0; i < this->y_view.getLocalView().getSize(); i++ ) {
       const auto gi = this->y_view.getLocalRange().getGlobalIndex( i );
       EXPECT_EQ( this->y_view.getElement( gi ), 0 );
    }
@@ -330,7 +330,7 @@ TYPED_TEST( DistributedVectorTest, addVector )
 TYPED_TEST( DistributedVectorTest, addVectors )
 {
    this->x.addVectors( this->y, 3.0, this->z, 1.0, 2.0 );
-   for( int i = 0; i < this->y.getLocalVectorView().getSize(); i++ ) {
+   for( int i = 0; i < this->y.getLocalView().getSize(); i++ ) {
       const auto gi = this->y.getLocalRange().getGlobalIndex( i );
       EXPECT_EQ( this->x.getElement( gi ), 2 + 3 * gi - gi );
    }
@@ -338,7 +338,7 @@ TYPED_TEST( DistributedVectorTest, addVectors )
    setConstantSequence( this->x, 1 );
 
    this->x_view.addVectors( this->y_view, 3.0, this->z_view, 1.0, 2.0 );
-   for( int i = 0; i < this->y_view.getLocalVectorView().getSize(); i++ ) {
+   for( int i = 0; i < this->y_view.getLocalView().getSize(); i++ ) {
       const auto gi = this->y_view.getLocalRange().getGlobalIndex( i );
       EXPECT_EQ( this->x_view.getElement( gi ), 2 + 3 * gi - gi );
    }

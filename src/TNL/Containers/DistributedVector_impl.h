@@ -23,22 +23,22 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Communicator >
-typename DistributedVector< Real, Device, Index, Communicator >::LocalVectorViewType
+typename DistributedVector< Real, Device, Index, Communicator >::LocalViewType
 DistributedVector< Real, Device, Index, Communicator >::
-getLocalVectorView()
+getLocalView()
 {
-   return this->getLocalArrayView();
+   return BaseType::getLocalView();
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           typename Communicator >
-typename DistributedVector< Real, Device, Index, Communicator >::ConstLocalVectorViewType
+typename DistributedVector< Real, Device, Index, Communicator >::ConstLocalViewType
 DistributedVector< Real, Device, Index, Communicator >::
-getConstLocalVectorView() const
+getConstLocalView() const
 {
-   return this->getConstLocalArrayView();
+   return BaseType::getConstLocalView();
 }
 
 template< typename Value,
@@ -49,7 +49,7 @@ typename DistributedVector< Value, Device, Index, Communicator >::ViewType
 DistributedVector< Value, Device, Index, Communicator >::
 getView()
 {
-   return ViewType( this->getLocalRange(), this->getSize(), this->getCommunicationGroup(), this->getLocalVectorView() );
+   return ViewType( this->getLocalRange(), this->getSize(), this->getCommunicationGroup(), this->getLocalView() );
 }
 
 template< typename Value,
@@ -60,7 +60,7 @@ typename DistributedVector< Value, Device, Index, Communicator >::ConstViewType
 DistributedVector< Value, Device, Index, Communicator >::
 getConstView() const
 {
-   return ConstViewType( this->getLocalRange(), this->getSize(), this->getCommunicationGroup(), this->getConstLocalVectorView() );
+   return ConstViewType( this->getLocalRange(), this->getSize(), this->getCommunicationGroup(), this->getConstLocalView() );
 }
 
 template< typename Value,
@@ -127,7 +127,7 @@ addElement( IndexType i,
 {
    if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
       const IndexType li = this->getLocalRange().getLocalIndex( i );
-      LocalVectorViewType view = getLocalVectorView();
+      LocalViewType view = getLocalView();
       view.addElement( li, value );
    }
 }
@@ -145,7 +145,7 @@ addElement( IndexType i,
 {
    if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
       const IndexType li = this->getLocalRange().getLocalIndex( i );
-      LocalVectorViewType view = getLocalVectorView();
+      LocalViewType view = getLocalView();
       view.addElement( li, value, thisElementMultiplicator );
    }
 }
@@ -167,7 +167,7 @@ operator-=( const Vector& vector )
                   "Multiary operations are supported only on vectors within the same communication group." );
 
    if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalVectorView() -= vector.getConstLocalVectorView();
+      getLocalView() -= vector.getConstLocalView();
    }
    return *this;
 }
@@ -189,7 +189,7 @@ operator+=( const Vector& vector )
                   "Multiary operations are supported only on vectors within the same communication group." );
 
    if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalVectorView() += vector.getConstLocalVectorView();
+      getLocalView() += vector.getConstLocalView();
    }
    return *this;
 }
@@ -204,7 +204,7 @@ DistributedVector< Real, Device, Index, Communicator >::
 operator*=( Scalar c )
 {
    if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalVectorView() *= c;
+      getLocalView() *= c;
    }
    return *this;
 }
@@ -219,7 +219,7 @@ DistributedVector< Real, Device, Index, Communicator >::
 operator/=( Scalar c )
 {
    if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalVectorView() /= c;
+      getLocalView() /= c;
    }
    return *this;
 }
@@ -236,7 +236,7 @@ sum() const
    const auto group = this->getCommunicationGroup();
    ResultType result = Containers::Algorithms::ParallelReductionSum< Real, ResultType >::initialValue();
    if( group != CommunicatorType::NullGroup ) {
-      const ResultType localResult = getConstLocalVectorView().sum();
+      const ResultType localResult = getConstLocalView().sum();
       CommunicatorType::Allreduce( &localResult, &result, 1, MPI_SUM, group );
    }
    return result;
@@ -254,7 +254,7 @@ scalarProduct( const Vector& v ) const
    const auto group = this->getCommunicationGroup();
    Real result = Containers::Algorithms::ParallelReductionScalarProduct< Real, typename Vector::RealType >::initialValue();
    if( group != CommunicatorType::NullGroup ) {
-      const Real localResult = getConstLocalVectorView().scalarProduct( v.getConstLocalVectorView() );
+      const Real localResult = getConstLocalView().scalarProduct( v.getConstLocalView() );
       CommunicatorType::Allreduce( &localResult, &result, 1, MPI_SUM, group );
    }
    return result;
@@ -279,7 +279,7 @@ addVector( const Vector& x,
                   "Multiary operations are supported only on vectors within the same communication group." );
 
    if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalVectorView().addVector( x.getConstLocalVectorView(), alpha, thisMultiplicator );
+      getLocalView().addVector( x.getConstLocalView(), alpha, thisMultiplicator );
    }
 }
 
@@ -310,9 +310,9 @@ addVectors( const Vector1& v1,
                   "Multiary operations are supported only on vectors within the same communication group." );
 
    if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalVectorView().addVectors( v1.getConstLocalVectorView(),
+      getLocalView().addVectors( v1.getConstLocalView(),
                                        multiplicator1,
-                                       v2.getConstLocalVectorView(),
+                                       v2.getConstLocalView(),
                                        multiplicator2,
                                        thisMultiplicator );
    }
