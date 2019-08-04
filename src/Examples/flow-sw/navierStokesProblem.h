@@ -12,6 +12,7 @@
 
 #include <TNL/Problems/PDEProblem.h>
 #include <TNL/Functions/MeshFunction.h>
+#include <TNL/Exceptions/NotImplementedError.h>
 #include "CompressibleConservativeVariables.h"
 
 
@@ -85,7 +86,10 @@ class navierStokesProblem:
                               DofVectorPointer& _fu );
       
       void applyBoundaryConditions( const RealType& time,
-                                    DofVectorPointer& dofs ) { TNL_ASSERT( false, "TODO:Implement")};      
+                                    DofVectorPointer& dofs )
+      {
+         throw Exceptions::NotImplementedError("TODO:Implement");
+      }
 
       template< typename Matrix >
       void assemblyLinearSystem( const RealType& time,

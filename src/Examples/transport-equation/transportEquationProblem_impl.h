@@ -15,6 +15,7 @@
 #include <TNL/Solvers/PDE/ExplicitUpdater.h>
 #include <TNL/Solvers/PDE/LinearSystemAssembler.h>
 #include <TNL/Solvers/PDE/BackwardTimeDiscretisation.h>
+#include <TNL/Exceptions/NotImplementedError.h>
 
 #include "transportEquationProblem.h"
 
@@ -223,7 +224,7 @@ applyBoundaryConditions( const RealType& time,
                          DofVectorPointer& dofs )
 {
    this->bindDofs( dofs );
-   TNL_ASSERT( false, "TODO: implement BC ... see HeatEquationProblem" );   
+   throw Exceptions::NotImplementedError("TODO: implement BC ... see HeatEquationProblem");
 }
 
 template< typename Mesh,
