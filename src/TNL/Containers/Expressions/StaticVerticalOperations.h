@@ -104,7 +104,7 @@ auto StaticExpressionLpNorm( const Expression& expression, const Real& p )
          aux += expression[ i ] * expression[ i ];
       return aux;
    }
-   auto aux = TNL::pow( expression[ 0 ], p );
+   auto aux = TNL::pow( TNL::abs( expression[ 0 ] ), p );
    for( int i = 1; i < expression.getSize(); i++ )
       aux += TNL::pow( TNL::abs( expression[ i ] ), p );
    return aux;
