@@ -7,7 +7,7 @@ using namespace std;
 
 int main()
 {
-    unsigned int microseconds = 0.5;
+    unsigned int microseconds = 0.5e6;
     Timer time;
     time.start();
     usleep(microseconds);
