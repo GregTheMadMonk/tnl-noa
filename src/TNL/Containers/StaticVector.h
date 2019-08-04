@@ -73,48 +73,24 @@ public:
     */
    static String getType();
 
-   template< typename StaticVectorOperationType >
-   StaticVector& operator=( const StaticVectorOperationType& vo );
+   template< typename VectorExpression >
+   StaticVector& operator=( const VectorExpression& expression );
 
-   /**
-    * \brief Adding operator.
-    *
-    * This function adds \e vector from this static vector and returns the resulting static vector.
-    * The addition is applied to all the vector elements separately.
-    * \param vector Reference to another vector.
-    */
+   template< typename VectorExpression >
    __cuda_callable__
-   StaticVector& operator+=( const StaticVector& v );
+   StaticVector& operator+=( const VectorExpression& expression );
 
-   /**
-    * \brief Subtracting operator.
-    *
-    * This function subtracts \e vector from this static vector and returns the resulting static vector.
-    * The subtraction is applied to all the vector elements separately.
-    * \param vector Reference to another vector.
-    */
+   template< typename VectorExpression >
    __cuda_callable__
-   StaticVector& operator-=( const StaticVector& v );
+   StaticVector& operator-=( const VectorExpression& expression );
 
-   /**
-    * \brief Multiplication by number.
-    *
-    * This function multiplies this static vector by \e c and returns the resulting static vector.
-    * The multiplication is applied to all the vector elements separately.
-    * \param c Multiplicator.
-    */
+   template< typename VectorExpression >
    __cuda_callable__
-   StaticVector& operator*=( const Real& c );
+   StaticVector& operator*=( const VectorExpression& expression );
 
-   /**
-    * \brief Division by number
-    *
-    * This function divides this static veSize of static array. Number of its elements.ctor by \e c and returns the resulting static vector.
-    * The division is applied to all the vector elements separately.
-    * \param c Divisor.
-    */
+   template< typename VectorExpression >
    __cuda_callable__
-   StaticVector& operator/=( const Real& c );
+   StaticVector& operator/=( const VectorExpression& expression );
 
    /**
     * \brief Changes the type of static vector to \e OtherReal while the size remains the same.
