@@ -382,6 +382,35 @@ max( const Containers::StaticVector< Size, Real1 >& a, const Containers::StaticV
 }
 
 ////
+// Dot product - the same as scalar product, just for convenience
+template< int Size, typename Real, typename ET,
+          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
+__cuda_callable__
+auto
+dot( const Containers::StaticVector< Size, Real >& a, const ET& b )
+{
+   return (a, b);
+}
+
+template< typename ET, int Size, typename Real,
+          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
+__cuda_callable__
+auto
+dot( const ET& a, const Containers::StaticVector< Size, Real >& b )
+{
+   return (a, b);
+}
+
+template< typename Real1, int Size, typename Real2 >
+__cuda_callable__
+auto
+dot( const Containers::StaticVector< Size, Real1 >& a, const Containers::StaticVector< Size, Real2 >& b )
+{
+   return (a, b);
+}
+
+
+////
 // Abs
 template< int Size, typename Real >
 __cuda_callable__
@@ -392,33 +421,23 @@ abs( const Containers::StaticVector< Size, Real >& a )
 }
 
 ////
-// Sine
-template< int Size, typename Real >
+// Power
+template< int Size, typename Real, typename ExpType >
 __cuda_callable__
 auto
-sin( const Containers::StaticVector< Size, Real >& a )
+pow( const Containers::StaticVector< Size, Real >& a, const ExpType& exp )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Sin >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Pow, ExpType >( a, exp );
 }
 
 ////
-// Cosine
+// Exp
 template< int Size, typename Real >
 __cuda_callable__
 auto
-cos( const Containers::StaticVector< Size, Real >& a )
+exp( const Containers::StaticVector< Size, Real >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Cos >( a );
-}
-
-////
-// Tangent
-template< int Size, typename Real >
-__cuda_callable__
-auto
-tan( const Containers::StaticVector< Size, Real >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Tan >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Exp >( a );
 }
 
 ////
@@ -439,86 +458,6 @@ auto
 cbrt( const Containers::StaticVector< Size, Real >& a )
 {
    return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Cbrt >( a );
-}
-
-////
-// Power
-template< int Size, typename Real, typename ExpType >
-__cuda_callable__
-auto
-pow( const Containers::StaticVector< Size, Real >& a, const ExpType& exp )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Pow, ExpType >( a, exp );
-}
-
-////
-// Floor
-template< int Size, typename Real >
-__cuda_callable__
-auto
-floor( const Containers::StaticVector< Size, Real >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Floor >( a );
-}
-
-////
-// Ceil
-template< int Size, typename Real >
-__cuda_callable__
-auto
-ceil( const Containers::StaticVector< Size, Real >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Ceil >( a );
-}
-
-////
-// Acos
-template< int Size, typename Real >
-__cuda_callable__
-auto
-acos( const Containers::StaticVector< Size, Real >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Acos >( a );
-}
-
-////
-// Asin
-template< int Size, typename Real >
-__cuda_callable__
-auto
-asin( const Containers::StaticVector< Size, Real >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Asin >( a );
-}
-
-////
-// Atan
-template< int Size, typename Real >
-__cuda_callable__
-auto
-atan( const Containers::StaticVector< Size, Real >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Atan >( a );
-}
-
-////
-// Cosh
-template< int Size, typename Real >
-__cuda_callable__
-auto
-cosh( const Containers::StaticVector< Size, Real >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Cosh >( a );
-}
-
-////
-// Tanh
-template< int Size, typename Real >
-__cuda_callable__
-auto
-tanh( const Containers::StaticVector< Size, Real >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Tanh >( a );
 }
 
 ////
@@ -552,13 +491,143 @@ log2( const Containers::StaticVector< Size, Real >& a )
 }
 
 ////
-// Exp
+// Sine
 template< int Size, typename Real >
 __cuda_callable__
 auto
-exp( const Containers::StaticVector< Size, Real >& a )
+sin( const Containers::StaticVector< Size, Real >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Exp >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Sin >( a );
+}
+
+////
+// Cosine
+template< int Size, typename Real >
+__cuda_callable__
+auto
+cos( const Containers::StaticVector< Size, Real >& a )
+{
+   return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Cos >( a );
+}
+
+////
+// Tangent
+template< int Size, typename Real >
+__cuda_callable__
+auto
+tan( const Containers::StaticVector< Size, Real >& a )
+{
+   return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Tan >( a );
+}
+
+////
+// Asin
+template< int Size, typename Real >
+__cuda_callable__
+auto
+asin( const Containers::StaticVector< Size, Real >& a )
+{
+   return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Asin >( a );
+}
+
+////
+// Acos
+template< int Size, typename Real >
+__cuda_callable__
+auto
+acos( const Containers::StaticVector< Size, Real >& a )
+{
+   return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Acos >( a );
+}
+
+////
+// Atan
+template< int Size, typename Real >
+__cuda_callable__
+auto
+atan( const Containers::StaticVector< Size, Real >& a )
+{
+   return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Atan >( a );
+}
+
+////
+// Sinh
+template< int Size, typename Real >
+__cuda_callable__
+auto
+sinh( const Containers::StaticVector< Size, Real >& a )
+{
+   return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Sinh >( a );
+}
+
+////
+// Cosh
+template< int Size, typename Real >
+__cuda_callable__
+auto
+cosh( const Containers::StaticVector< Size, Real >& a )
+{
+   return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Cosh >( a );
+}
+
+////
+// Tanh
+template< int Size, typename Real >
+__cuda_callable__
+auto
+tanh( const Containers::StaticVector< Size, Real >& a )
+{
+   return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Tanh >( a );
+}
+
+////
+// Asinh
+template< int Size, typename Real >
+__cuda_callable__
+auto
+asinh( const Containers::StaticVector< Size, Real >& a )
+{
+   return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Asinh >( a );
+}
+
+////
+// Acosh
+template< int Size, typename Real >
+__cuda_callable__
+auto
+acosh( const Containers::StaticVector< Size, Real >& a )
+{
+   return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Acosh >( a );
+}
+
+////
+// Atanh
+template< int Size, typename Real >
+__cuda_callable__
+auto
+atanh( const Containers::StaticVector< Size, Real >& a )
+{
+   return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Atanh >( a );
+}
+
+////
+// Floor
+template< int Size, typename Real >
+__cuda_callable__
+auto
+floor( const Containers::StaticVector< Size, Real >& a )
+{
+   return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Floor >( a );
+}
+
+////
+// Ceil
+template< int Size, typename Real >
+__cuda_callable__
+auto
+ceil( const Containers::StaticVector< Size, Real >& a )
+{
+   return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Ceil >( a );
 }
 
 ////
@@ -664,34 +733,6 @@ auto
 binaryAnd( const Containers::StaticVector< Size, Real >& a )
 {
    return Containers::Expressions::StaticExpressionBinaryAnd( a );
-}
-
-////
-// Dot product - the same as scalar product, just for convenience
-template< int Size, typename Real, typename ET,
-          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
-__cuda_callable__
-auto
-dot( const Containers::StaticVector< Size, Real >& a, const ET& b )
-{
-   return TNL::sum( a * b );
-}
-
-template< typename ET, int Size, typename Real,
-          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
-__cuda_callable__
-auto
-dot( const ET& a, const Containers::StaticVector< Size, Real >& b )
-{
-   return TNL::sum( a * b );
-}
-
-template< typename Real1, int Size, typename Real2 >
-__cuda_callable__
-auto
-dot( const Containers::StaticVector< Size, Real1 >& a, const Containers::StaticVector< Size, Real2 >& b )
-{
-   return TNL::sum( a * b );
 }
 
 } // namespace TNL
