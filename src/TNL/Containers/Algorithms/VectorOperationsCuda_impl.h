@@ -39,47 +39,6 @@ addElement( Vector& v,
    v[ i ] = thisElementMultiplicator * v[ i ] + value;
 }
 
-#ifdef HAVE_CUDA
-template< typename Real, typename Index, typename Scalar >
-__global__ void
-vectorScalarMultiplicationCudaKernel( Real* data,
-                                      Index size,
-                                      Scalar alpha )
-{
-   Index elementIdx = blockDim.x * blockIdx.x + threadIdx.x;
-   const Index maxGridSize = blockDim.x * gridDim.x;
-   while( elementIdx < size )
-   {
-      data[ elementIdx ] *= alpha;
-      elementIdx += maxGridSize;
-   }
-}
-#endif
-
-template< typename Vector, typename Scalar >
-void
-VectorOperations< Devices::Cuda >::
-vectorScalarMultiplication( Vector& v,
-                            const Scalar alpha )
-{
-   TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
-
-#ifdef HAVE_CUDA
-   typedef typename Vector::IndexType Index;
-   dim3 blockSize( 0 ), gridSize( 0 );
-   const Index& size = v.getSize();
-   blockSize.x = 256;
-   Index blocksNumber = TNL::ceil( ( double ) size / ( double ) blockSize.x );
-   gridSize.x = min( blocksNumber, Devices::Cuda::getMaxGridSize() );
-   vectorScalarMultiplicationCudaKernel<<< gridSize, blockSize >>>( v.getData(),
-                                                                    size,
-                                                                    alpha );
-   TNL_CHECK_CUDA_DEVICE;
-#else
-   throw Exceptions::CudaSupportMissing();
-#endif
-}
-
 template< typename Vector1, typename Vector2, typename Scalar1, typename Scalar2 >
 void
 VectorOperations< Devices::Cuda >::

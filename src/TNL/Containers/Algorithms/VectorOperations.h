@@ -37,9 +37,6 @@ public:
                            const typename Vector::RealType& value,
                            const Scalar thisElementMultiplicator );
 
-   template< typename Vector, typename Scalar >
-   static void vectorScalarMultiplication( Vector& v, Scalar alpha );
-
    template< typename Vector1, typename Vector2, typename Scalar1, typename Scalar2 >
    static void addVector( Vector1& y,
                           const Vector2& x,
@@ -84,9 +81,6 @@ public:
                            const typename Vector::IndexType i,
                            const typename Vector::RealType& value,
                            const Scalar thisElementMultiplicator );
-
-   template< typename Vector, typename Scalar >
-   static void vectorScalarMultiplication( Vector& v, const Scalar alpha );
 
    template< typename Vector1, typename Vector2, typename Scalar1, typename Scalar2 >
    static void addVector( Vector1& y,

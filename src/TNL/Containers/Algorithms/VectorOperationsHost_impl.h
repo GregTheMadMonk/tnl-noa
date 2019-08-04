@@ -41,27 +41,6 @@ addElement( Vector& v,
    v[ i ] = thisElementMultiplicator * v[ i ] + value;
 }
 
-
-
-template< typename Vector, typename Scalar >
-void
-VectorOperations< Devices::Host >::
-vectorScalarMultiplication( Vector& v,
-                            const Scalar alpha )
-{
-   typedef typename Vector::IndexType Index;
-
-   TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
-
-   const Index n = v.getSize();
-#ifdef HAVE_OPENMP
-#pragma omp parallel for if( n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
-#endif
-   for( Index i = 0; i < n; i ++ )
-      v[ i ] *= alpha;
-}
-
-
 template< typename Vector1, typename Vector2, typename Scalar1, typename Scalar2 >
 void
 VectorOperations< Devices::Host >::
