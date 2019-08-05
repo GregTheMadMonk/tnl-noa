@@ -777,7 +777,7 @@ auto
 pow( const Containers::DistributedVector< Real, Device, Index, Communicator >& a, const ExpType& exp )
 {
    using ConstView = typename Containers::DistributedVector< Real, Device, Index, Communicator >::ConstLocalViewType;
-   return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Pow, ExpType, Communicator >( a.getConstLocalView(), exp, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedBinaryExpressionTemplate< ConstView, ExpType, Containers::Expressions::Pow, Communicator >( a.getConstLocalView(), exp, a.getCommunicationGroup() );
 }
 
 ////

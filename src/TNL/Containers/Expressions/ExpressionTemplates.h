@@ -26,16 +26,14 @@ namespace Expressions {
 // Non-static unary expression template
 template< typename T1,
           template< typename > class Operation,
-          typename Parameter = void,
           ExpressionVariableType T1Type = ExpressionVariableTypeGetter< T1 >::value >
 struct UnaryExpressionTemplate
 {};
 
 template< typename T1,
           template< typename > class Operation,
-          typename Parameter,
           ExpressionVariableType T1Type >
-struct IsExpressionTemplate< UnaryExpressionTemplate< T1, Operation, Parameter, T1Type > >
+struct IsExpressionTemplate< UnaryExpressionTemplate< T1, Operation, T1Type > >
 : std::true_type
 {};
 
@@ -79,26 +77,24 @@ struct BinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, Ve
 
    RealType getElement( const IndexType i ) const
    {
-       return Operation< typename T1::RealType, typename T2::RealType >::evaluate( op1.getElement( i ), op2.getElement( i ) );
+      return Operation< typename T1::RealType, typename T2::RealType >::evaluate( op1.getElement( i ), op2.getElement( i ) );
    }
 
    __cuda_callable__
    RealType operator[]( const IndexType i ) const
    {
-       return Operation< typename T1::RealType, typename T2::RealType >::evaluate( op1[ i ], op2[ i ] );
+      return Operation< typename T1::RealType, typename T2::RealType >::evaluate( op1[ i ], op2[ i ] );
    }
 
    __cuda_callable__
-   int getSize() const
+   IndexType getSize() const
    {
-       return op1.getSize();
+      return op1.getSize();
    }
 
-   protected:
-      const T1 op1;
-      const T2 op2;
-      //typename OperandType< T1, DeviceType >::type op1;
-      //typename OperandType< T2, DeviceType >::type op2;
+protected:
+   const T1 op1;
+   const T2 op2;
 };
 
 template< typename T1,
@@ -119,26 +115,24 @@ struct BinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, Ar
 
    RealType getElement( const IndexType i ) const
    {
-       return Operation< typename T1::RealType, T2 >::evaluate( op1.getElement( i ), op2 );
+      return Operation< typename T1::RealType, T2 >::evaluate( op1.getElement( i ), op2 );
    }
 
    __cuda_callable__
    RealType operator[]( const IndexType i ) const
    {
-       return Operation< typename T1::RealType, T2 >::evaluate( op1[ i ], op2 );
+      return Operation< typename T1::RealType, T2 >::evaluate( op1[ i ], op2 );
    }
 
    __cuda_callable__
-   int getSize() const
+   IndexType getSize() const
    {
-       return op1.getSize();
+      return op1.getSize();
    }
 
-   protected:
-      const T1 op1;
-      const T2 op2;
-      //typename OperandType< T1, DeviceType >::type op1;
-      //typename OperandType< T2, DeviceType >::type op2;
+protected:
+   const T1 op1;
+   const T2 op2;
 };
 
 template< typename T1,
@@ -159,82 +153,31 @@ struct BinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorEx
 
    RealType getElement( const IndexType i ) const
    {
-       return Operation< T1, typename T2::RealType >::evaluate( op1, op2.getElement( i ) );
+      return Operation< T1, typename T2::RealType >::evaluate( op1, op2.getElement( i ) );
    }
 
    __cuda_callable__
    RealType operator[]( const IndexType i ) const
    {
-       return Operation< T1, typename T2::RealType >::evaluate( op1, op2[ i ] );
+      return Operation< T1, typename T2::RealType >::evaluate( op1, op2[ i ] );
    }
 
    __cuda_callable__
-   int getSize() const
+   IndexType getSize() const
    {
-       return op2.getSize();
+      return op2.getSize();
    }
 
-   protected:
-      const T1 op1;
-      const T2 op2;
-      //typename OperandType< T1, DeviceType >::type op1;
-      //typename OperandType< T2, DeviceType >::type op2;
+protected:
+   const T1 op1;
+   const T2 op2;
 };
 
 ////
 // Non-static unary expression template
-//
-// Parameter type serves mainly for pow( base, exp ). Here exp is parameter we need
-// to pass to pow.
-template< typename T1,
-          template< typename > class Operation,
-          typename Parameter >
-struct UnaryExpressionTemplate< T1, Operation, Parameter, VectorExpressionVariable >
-{
-   using RealType = typename T1::RealType;
-   using DeviceType = typename T1::DeviceType;
-   using IndexType = typename T1::IndexType;
-
-   UnaryExpressionTemplate( const T1& a, const Parameter& p )
-   : operand( a ), parameter( p ) {}
-
-   static UnaryExpressionTemplate evaluate( const T1& a )
-   {
-      return UnaryExpressionTemplate( a );
-   }
-
-   RealType getElement( const IndexType i ) const
-   {
-       return Operation< typename T1::RealType >::evaluate( operand.getElement( i ), parameter );
-   }
-
-   __cuda_callable__
-   RealType operator[]( const IndexType i ) const
-   {
-       return Operation< typename T1::RealType >::evaluate( operand[ i ], parameter );
-   }
-
-   __cuda_callable__
-   int getSize() const
-   {
-       return operand.getSize();
-   }
-
-   void set( const Parameter& p ) { parameter = p; }
-
-   const Parameter& get() { return parameter; }
-
-   protected:
-      const T1 operand;
-      //typename OperandType< T1, DeviceType >::type operand;
-      Parameter parameter;
-};
-
-////
-// Non-static unary expression template with no parameter
 template< typename T1,
           template< typename > class Operation >
-struct UnaryExpressionTemplate< T1, Operation, void, VectorExpressionVariable >
+struct UnaryExpressionTemplate< T1, Operation, VectorExpressionVariable >
 {
    using RealType = typename T1::RealType;
    using DeviceType = typename T1::DeviceType;
@@ -249,24 +192,23 @@ struct UnaryExpressionTemplate< T1, Operation, void, VectorExpressionVariable >
 
    RealType getElement( const IndexType i ) const
    {
-       return Operation< typename T1::RealType >::evaluate( operand.getElement( i ) );
+      return Operation< typename T1::RealType >::evaluate( operand.getElement( i ) );
    }
 
    __cuda_callable__
    RealType operator[]( const IndexType i ) const
    {
-       return Operation< typename T1::RealType >::evaluate( operand[ i ] );
+      return Operation< typename T1::RealType >::evaluate( operand[ i ] );
    }
 
    __cuda_callable__
-   int getSize() const
+   IndexType getSize() const
    {
-       return operand.getSize();
+      return operand.getSize();
    }
 
-   protected:
-      const T1 operand; // TODO: fix
-      //typename std::add_const< typename OperandType< T1, DeviceType >::type >::type operand;
+protected:
+   const T1 operand;
 };
 
 ////
@@ -284,9 +226,8 @@ std::ostream& operator<<( std::ostream& str, const BinaryExpressionTemplate< T1,
 }
 
 template< typename T,
-          template< typename > class Operation,
-          typename Parameter >
-std::ostream& operator<<( std::ostream& str, const UnaryExpressionTemplate< T, Operation, Parameter >& expression )
+          template< typename > class Operation >
+std::ostream& operator<<( std::ostream& str, const UnaryExpressionTemplate< T, Operation >& expression )
 {
    str << "[ ";
    for( int i = 0; i < expression.getSize() - 1; i++ )
@@ -776,14 +717,13 @@ operator==( const BinaryExpressionTemplate< T1, T2, Operation >& a,
 }
 
 template< typename T1,
-          template< typename > class Operation,
-          typename Parameter >
+          template< typename > class Operation >
 bool
-operator==( const UnaryExpressionTemplate< T1, Operation, Parameter >& a,
-            const typename UnaryExpressionTemplate< T1, Operation, Parameter >::RealType& b )
+operator==( const UnaryExpressionTemplate< T1, Operation >& a,
+            const typename UnaryExpressionTemplate< T1, Operation >::RealType& b )
 {
-   using Left = UnaryExpressionTemplate< T1, Operation, Parameter >;
-   using Right = typename UnaryExpressionTemplate< T1, Operation, Parameter >::RealType;
+   using Left = UnaryExpressionTemplate< T1, Operation >;
+   using Right = typename UnaryExpressionTemplate< T1, Operation >::RealType;
    return Comparison< Left, Right >::EQ( a, b );
 }
 
@@ -800,28 +740,26 @@ operator==( const typename BinaryExpressionTemplate< T1, T2, Operation >::RealTy
 }
 
 template< typename T1,
-          template< typename > class Operation,
-          typename Parameter >
+          template< typename > class Operation >
 bool
-operator==( const typename UnaryExpressionTemplate< T1, Operation, Parameter >::RealType& a,
-            const UnaryExpressionTemplate< T1, Operation, Parameter >& b )
+operator==( const typename UnaryExpressionTemplate< T1, Operation >::RealType& a,
+            const UnaryExpressionTemplate< T1, Operation >& b )
 {
-   using Left = typename UnaryExpressionTemplate< T1, Operation, Parameter >::RealType;
-   using Right = UnaryExpressionTemplate< T1, Operation, Parameter >;
+   using Left = typename UnaryExpressionTemplate< T1, Operation >::RealType;
+   using Right = UnaryExpressionTemplate< T1, Operation >;
    return Comparison< Left, Right >::EQ( a, b );
 }
 
 template< typename L1,
           template< typename > class LOperation,
-          typename LParameter,
           typename R1,
           typename R2,
           template< typename, typename > class ROperation >
 bool
-operator==( const UnaryExpressionTemplate< L1, LOperation, LParameter >& a,
+operator==( const UnaryExpressionTemplate< L1, LOperation >& a,
             const BinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   using Left = UnaryExpressionTemplate< L1, LOperation, LParameter >;
+   using Left = UnaryExpressionTemplate< L1, LOperation >;
    using Right = BinaryExpressionTemplate< R1, R2, ROperation >;
    return Comparison< Left, Right >::EQ( a, b );
 }
@@ -830,14 +768,13 @@ template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
           typename R1,
-          template< typename > class ROperation,
-          typename RParameter >
+          template< typename > class ROperation >
 bool
 operator==( const BinaryExpressionTemplate< L1, L2, LOperation >& a,
-            const UnaryExpressionTemplate< R1,ROperation, RParameter >& b )
+            const UnaryExpressionTemplate< R1,ROperation >& b )
 {
    using Left = BinaryExpressionTemplate< L1, L2, LOperation >;
-   using Right = UnaryExpressionTemplate< R1, ROperation, RParameter >;
+   using Right = UnaryExpressionTemplate< R1, ROperation >;
    return Comparison< Left, Right >::EQ( a, b );
 }
 
@@ -872,28 +809,25 @@ operator!=( const BinaryExpressionTemplate< T1, T2, Operation >& a,
 
 template< typename L1,
           template< typename > class LOperation,
-          typename LParameter,
           typename R1,
-          template< typename > class ROperation,
-          typename RParameter >
+          template< typename > class ROperation >
 bool
-operator!=( const UnaryExpressionTemplate< L1, LOperation, LParameter >& a,
-            const UnaryExpressionTemplate< R1, ROperation, RParameter >& b )
+operator!=( const UnaryExpressionTemplate< L1, LOperation >& a,
+            const UnaryExpressionTemplate< R1, ROperation >& b )
 {
-   using Left = UnaryExpressionTemplate< L1, LOperation, LParameter >;
-   using Right = UnaryExpressionTemplate< R1, ROperation, RParameter >;
+   using Left = UnaryExpressionTemplate< L1, LOperation >;
+   using Right = UnaryExpressionTemplate< R1, ROperation >;
    return Comparison< Left, Right >::NE( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation,
-          typename Parameter >
+          template< typename > class Operation >
 bool
-operator!=( const UnaryExpressionTemplate< T1, Operation, Parameter >& a,
-            const typename UnaryExpressionTemplate< T1, Operation, Parameter >::RealType& b )
+operator!=( const UnaryExpressionTemplate< T1, Operation >& a,
+            const typename UnaryExpressionTemplate< T1, Operation >::RealType& b )
 {
-   using Left = UnaryExpressionTemplate< T1, Operation, Parameter >;
-   using Right = typename UnaryExpressionTemplate< T1, Operation, Parameter >::RealType;
+   using Left = UnaryExpressionTemplate< T1, Operation >;
+   using Right = typename UnaryExpressionTemplate< T1, Operation >::RealType;
    return Comparison< Left, Right >::NE( a, b );
 }
 
@@ -910,28 +844,26 @@ operator!=( const typename BinaryExpressionTemplate< T1, T2, Operation >::RealTy
 }
 
 template< typename T1,
-          template< typename > class Operation,
-          typename Parameter >
+          template< typename > class Operation >
 bool
-operator!=( const typename UnaryExpressionTemplate< T1, Operation, Parameter >::RealType& a,
-            const UnaryExpressionTemplate< T1, Operation, Parameter >& b )
+operator!=( const typename UnaryExpressionTemplate< T1, Operation >::RealType& a,
+            const UnaryExpressionTemplate< T1, Operation >& b )
 {
-   using Left = typename UnaryExpressionTemplate< T1, Operation, Parameter >::RealType;
-   using Right = UnaryExpressionTemplate< T1, Operation, Parameter >;
+   using Left = typename UnaryExpressionTemplate< T1, Operation >::RealType;
+   using Right = UnaryExpressionTemplate< T1, Operation >;
    return Comparison< Left, Right >::NE( a, b );
 }
 
 template< typename L1,
           template< typename > class LOperation,
-          typename LParameter,
           typename R1,
           typename R2,
           template< typename, typename > class ROperation >
 bool
-operator!=( const UnaryExpressionTemplate< L1, LOperation, LParameter >& a,
+operator!=( const UnaryExpressionTemplate< L1, LOperation >& a,
             const BinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   using Left = UnaryExpressionTemplate< L1, LOperation, LParameter >;
+   using Left = UnaryExpressionTemplate< L1, LOperation >;
    using Right = BinaryExpressionTemplate< R1, R2, ROperation >;
    return Comparison< Left, Right >::NE( a, b );
 }
@@ -940,14 +872,13 @@ template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
           typename R1,
-          template< typename > class ROperation,
-          typename RParameter >
+          template< typename > class ROperation >
 bool
 operator!=( const BinaryExpressionTemplate< L1, L2, LOperation >& a,
-            const UnaryExpressionTemplate< R1,ROperation, RParameter >& b )
+            const UnaryExpressionTemplate< R1,ROperation >& b )
 {
    using Left = BinaryExpressionTemplate< L1, L2, LOperation >;
-   using Right = UnaryExpressionTemplate< R1, ROperation, RParameter >;
+   using Right = UnaryExpressionTemplate< R1, ROperation >;
    return Comparison< Left, Right >::NE( a, b );
 }
 
@@ -982,28 +913,25 @@ operator<( const BinaryExpressionTemplate< T1, T2, Operation >& a,
 
 template< typename L1,
           template< typename > class LOperation,
-          typename LParameter,
           typename R1,
-          template< typename > class ROperation,
-          typename RParameter >
+          template< typename > class ROperation >
 bool
-operator<( const UnaryExpressionTemplate< L1, LOperation, LParameter >& a,
-           const UnaryExpressionTemplate< R1, ROperation, RParameter >& b )
+operator<( const UnaryExpressionTemplate< L1, LOperation >& a,
+           const UnaryExpressionTemplate< R1, ROperation >& b )
 {
-   using Left = UnaryExpressionTemplate< L1, LOperation, LParameter >;
-   using Right = UnaryExpressionTemplate< R1, ROperation, RParameter >;
+   using Left = UnaryExpressionTemplate< L1, LOperation >;
+   using Right = UnaryExpressionTemplate< R1, ROperation >;
    return Comparison< Left, Right >::LT( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation,
-          typename Parameter >
+          template< typename > class Operation >
 bool
-operator<( const UnaryExpressionTemplate< T1, Operation, Parameter >& a,
-           const typename UnaryExpressionTemplate< T1, Operation, Parameter >::RealType& b )
+operator<( const UnaryExpressionTemplate< T1, Operation >& a,
+           const typename UnaryExpressionTemplate< T1, Operation >::RealType& b )
 {
-   using Left = UnaryExpressionTemplate< T1, Operation, Parameter >;
-   using Right = typename UnaryExpressionTemplate< T1, Operation, Parameter >::RealType;
+   using Left = UnaryExpressionTemplate< T1, Operation >;
+   using Right = typename UnaryExpressionTemplate< T1, Operation >::RealType;
    return Comparison< Left, Right >::LT( a, b );
 }
 
@@ -1020,28 +948,26 @@ operator<( const typename BinaryExpressionTemplate< T1, T2, Operation >::RealTyp
 }
 
 template< typename T1,
-          template< typename > class Operation,
-          typename Parameter >
+          template< typename > class Operation >
 bool
-operator<( const typename UnaryExpressionTemplate< T1, Operation, Parameter >::RealType& a,
-           const UnaryExpressionTemplate< T1, Operation, Parameter >& b )
+operator<( const typename UnaryExpressionTemplate< T1, Operation >::RealType& a,
+           const UnaryExpressionTemplate< T1, Operation >& b )
 {
-   using Left = typename UnaryExpressionTemplate< T1, Operation, Parameter >::RealType;
-   using Right = UnaryExpressionTemplate< T1, Operation, Parameter >;
+   using Left = typename UnaryExpressionTemplate< T1, Operation >::RealType;
+   using Right = UnaryExpressionTemplate< T1, Operation >;
    return Comparison< Left, Right >::LT( a, b );
 }
 
 template< typename L1,
           template< typename > class LOperation,
-          typename LParameter,
           typename R1,
           typename R2,
           template< typename, typename > class ROperation >
 bool
-operator<( const UnaryExpressionTemplate< L1, LOperation, LParameter >& a,
+operator<( const UnaryExpressionTemplate< L1, LOperation >& a,
            const BinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   using Left = UnaryExpressionTemplate< L1, LOperation, LParameter >;
+   using Left = UnaryExpressionTemplate< L1, LOperation >;
    using Right = BinaryExpressionTemplate< R1, R2, ROperation >;
    return Comparison< Left, Right >::LT( a, b );
 }
@@ -1050,14 +976,13 @@ template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
           typename R1,
-          template< typename > class ROperation,
-          typename RParameter >
+          template< typename > class ROperation >
 bool
 operator<( const BinaryExpressionTemplate< L1, L2, LOperation >& a,
-           const UnaryExpressionTemplate< R1,ROperation, RParameter >& b )
+           const UnaryExpressionTemplate< R1,ROperation >& b )
 {
    using Left = BinaryExpressionTemplate< L1, L2, LOperation >;
-   using Right = UnaryExpressionTemplate< R1, ROperation, RParameter >;
+   using Right = UnaryExpressionTemplate< R1, ROperation >;
    return Comparison< Left, Right >::LT( a, b );
 }
 
@@ -1092,28 +1017,25 @@ operator<=( const BinaryExpressionTemplate< T1, T2, Operation >& a,
 
 template< typename L1,
           template< typename > class LOperation,
-          typename LParameter,
           typename R1,
-          template< typename > class ROperation,
-          typename RParameter >
+          template< typename > class ROperation >
 bool
-operator<=( const UnaryExpressionTemplate< L1, LOperation, LParameter >& a,
-            const UnaryExpressionTemplate< R1, ROperation, RParameter >& b )
+operator<=( const UnaryExpressionTemplate< L1, LOperation >& a,
+            const UnaryExpressionTemplate< R1, ROperation >& b )
 {
-   using Left = UnaryExpressionTemplate< L1, LOperation, LParameter >;
-   using Right = UnaryExpressionTemplate< R1, ROperation, RParameter >;
+   using Left = UnaryExpressionTemplate< L1, LOperation >;
+   using Right = UnaryExpressionTemplate< R1, ROperation >;
    return Comparison< Left, Right >::LE( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation,
-          typename Parameter >
+          template< typename > class Operation >
 bool
-operator<=( const UnaryExpressionTemplate< T1, Operation, Parameter >& a,
-            const typename UnaryExpressionTemplate< T1, Operation, Parameter >::RealType& b )
+operator<=( const UnaryExpressionTemplate< T1, Operation >& a,
+            const typename UnaryExpressionTemplate< T1, Operation >::RealType& b )
 {
-   using Left = UnaryExpressionTemplate< T1, Operation, Parameter >;
-   using Right = typename UnaryExpressionTemplate< T1, Operation, Parameter >::RealType;
+   using Left = UnaryExpressionTemplate< T1, Operation >;
+   using Right = typename UnaryExpressionTemplate< T1, Operation >::RealType;
    return Comparison< Left, Right >::LE( a, b );
 }
 
@@ -1130,28 +1052,26 @@ operator<=( const typename BinaryExpressionTemplate< T1, T2, Operation >::RealTy
 }
 
 template< typename T1,
-          template< typename > class Operation,
-          typename Parameter >
+          template< typename > class Operation >
 bool
-operator<=( const typename UnaryExpressionTemplate< T1, Operation, Parameter >::RealType& a,
-            const UnaryExpressionTemplate< T1, Operation, Parameter >& b )
+operator<=( const typename UnaryExpressionTemplate< T1, Operation >::RealType& a,
+            const UnaryExpressionTemplate< T1, Operation >& b )
 {
-   using Left = typename UnaryExpressionTemplate< T1, Operation, Parameter >::RealType;
-   using Right = UnaryExpressionTemplate< T1, Operation, Parameter >;
+   using Left = typename UnaryExpressionTemplate< T1, Operation >::RealType;
+   using Right = UnaryExpressionTemplate< T1, Operation >;
    return Comparison< Left, Right >::LE( a, b );
 }
 
 template< typename L1,
           template< typename > class LOperation,
-          typename LParameter,
           typename R1,
           typename R2,
           template< typename, typename > class ROperation >
 bool
-operator<=( const UnaryExpressionTemplate< L1, LOperation, LParameter >& a,
+operator<=( const UnaryExpressionTemplate< L1, LOperation >& a,
             const BinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   using Left = UnaryExpressionTemplate< L1, LOperation, LParameter >;
+   using Left = UnaryExpressionTemplate< L1, LOperation >;
    using Right = BinaryExpressionTemplate< R1, R2, ROperation >;
    return Comparison< Left, Right >::LE( a, b );
 }
@@ -1160,14 +1080,13 @@ template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
           typename R1,
-          template< typename > class ROperation,
-          typename RParameter >
+          template< typename > class ROperation >
 bool
 operator<=( const BinaryExpressionTemplate< L1, L2, LOperation >& a,
-            const UnaryExpressionTemplate< R1,ROperation, RParameter >& b )
+            const UnaryExpressionTemplate< R1,ROperation >& b )
 {
    using Left = BinaryExpressionTemplate< L1, L2, LOperation >;
-   using Right = UnaryExpressionTemplate< R1, ROperation, RParameter >;
+   using Right = UnaryExpressionTemplate< R1, ROperation >;
    return Comparison< Left, Right >::LE( a, b );
 }
 
@@ -1201,14 +1120,13 @@ operator>( const BinaryExpressionTemplate< T1, T2, Operation >& a,
 }
 
 template< typename T1,
-          template< typename > class Operation,
-          typename Parameter >
+          template< typename > class Operation >
 bool
-operator>( const UnaryExpressionTemplate< T1, Operation, Parameter >& a,
-           const typename UnaryExpressionTemplate< T1, Operation, Parameter >::RealType& b )
+operator>( const UnaryExpressionTemplate< T1, Operation >& a,
+           const typename UnaryExpressionTemplate< T1, Operation >::RealType& b )
 {
-   using Left = UnaryExpressionTemplate< T1, Operation, Parameter >;
-   using Right = typename UnaryExpressionTemplate< T1, Operation, Parameter >::RealType;
+   using Left = UnaryExpressionTemplate< T1, Operation >;
+   using Right = typename UnaryExpressionTemplate< T1, Operation >::RealType;
    return Comparison< Left, Right >::GT( a, b );
 }
 
@@ -1225,28 +1143,26 @@ operator>( const typename BinaryExpressionTemplate< T1, T2, Operation >::RealTyp
 }
 
 template< typename T1,
-          template< typename > class Operation,
-          typename Parameter >
+          template< typename > class Operation >
 bool
-operator>( const typename UnaryExpressionTemplate< T1, Operation, Parameter >::RealType& a,
-           const UnaryExpressionTemplate< T1, Operation, Parameter >& b )
+operator>( const typename UnaryExpressionTemplate< T1, Operation >::RealType& a,
+           const UnaryExpressionTemplate< T1, Operation >& b )
 {
-   using Left = typename UnaryExpressionTemplate< T1, Operation, Parameter >::RealType;
-   using Right = UnaryExpressionTemplate< T1, Operation, Parameter >;
+   using Left = typename UnaryExpressionTemplate< T1, Operation >::RealType;
+   using Right = UnaryExpressionTemplate< T1, Operation >;
    return Comparison< Left, Right >::GT( a, b );
 }
 
 template< typename L1,
           template< typename > class LOperation,
-          typename LParameter,
           typename R1,
           typename R2,
           template< typename, typename > class ROperation >
 bool
-operator>( const UnaryExpressionTemplate< L1, LOperation, LParameter >& a,
+operator>( const UnaryExpressionTemplate< L1, LOperation >& a,
            const BinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   using Left = UnaryExpressionTemplate< L1, LOperation, LParameter >;
+   using Left = UnaryExpressionTemplate< L1, LOperation >;
    using Right = BinaryExpressionTemplate< R1, R2, ROperation >;
    return Comparison< Left, Right >::GT( a, b );
 }
@@ -1255,14 +1171,13 @@ template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
           typename R1,
-          template< typename > class ROperation,
-          typename RParameter >
+          template< typename > class ROperation >
 bool
 operator>( const BinaryExpressionTemplate< L1, L2, LOperation >& a,
-           const UnaryExpressionTemplate< R1,ROperation, RParameter >& b )
+           const UnaryExpressionTemplate< R1,ROperation >& b )
 {
    using Left = BinaryExpressionTemplate< L1, L2, LOperation >;
-   using Right = UnaryExpressionTemplate< R1, ROperation, RParameter >;
+   using Right = UnaryExpressionTemplate< R1, ROperation >;
    return Comparison< Left, Right >::GT( a, b );
 }
 
@@ -1296,14 +1211,13 @@ operator>=( const BinaryExpressionTemplate< T1, T2, Operation >& a,
 }
 
 template< typename T1,
-          template< typename > class Operation,
-          typename Parameter >
+          template< typename > class Operation >
 bool
-operator>=( const UnaryExpressionTemplate< T1, Operation, Parameter >& a,
-            const typename UnaryExpressionTemplate< T1, Operation, Parameter >::RealType& b )
+operator>=( const UnaryExpressionTemplate< T1, Operation >& a,
+            const typename UnaryExpressionTemplate< T1, Operation >::RealType& b )
 {
-   using Left = UnaryExpressionTemplate< T1, Operation, Parameter >;
-   using Right = typename UnaryExpressionTemplate< T1, Operation, Parameter >::RealType;
+   using Left = UnaryExpressionTemplate< T1, Operation >;
+   using Right = typename UnaryExpressionTemplate< T1, Operation >::RealType;
    return Comparison< Left, Right >::GE( a, b );
 }
 
@@ -1320,28 +1234,26 @@ operator>=( const typename BinaryExpressionTemplate< T1, T2, Operation >::RealTy
 }
 
 template< typename T1,
-          template< typename > class Operation,
-          typename Parameter >
+          template< typename > class Operation >
 bool
-operator>=( const typename UnaryExpressionTemplate< T1, Operation, Parameter >::RealType& a,
-            const UnaryExpressionTemplate< T1, Operation, Parameter >& b )
+operator>=( const typename UnaryExpressionTemplate< T1, Operation >::RealType& a,
+            const UnaryExpressionTemplate< T1, Operation >& b )
 {
-   using Left = typename UnaryExpressionTemplate< T1, Operation, Parameter >::RealType;
-   using Right = UnaryExpressionTemplate< T1, Operation, Parameter >;
+   using Left = typename UnaryExpressionTemplate< T1, Operation >::RealType;
+   using Right = UnaryExpressionTemplate< T1, Operation >;
    return Comparison< Left, Right >::GE( a, b );
 }
 
 template< typename L1,
           template< typename > class LOperation,
-          typename LParameter,
           typename R1,
           typename R2,
           template< typename, typename > class ROperation >
 bool
-operator>=( const UnaryExpressionTemplate< L1, LOperation, LParameter >& a,
+operator>=( const UnaryExpressionTemplate< L1, LOperation >& a,
             const BinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   using Left = UnaryExpressionTemplate< L1, LOperation, LParameter >;
+   using Left = UnaryExpressionTemplate< L1, LOperation >;
    using Right = BinaryExpressionTemplate< R1, R2, ROperation >;
    return Comparison< Left, Right >::GE( a, b );
 }
@@ -1350,14 +1262,13 @@ template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
           typename R1,
-          template< typename > class ROperation,
-          typename RParameter >
+          template< typename > class ROperation >
 bool
 operator>=( const BinaryExpressionTemplate< L1, L2, LOperation >& a,
-            const UnaryExpressionTemplate< R1,ROperation, RParameter >& b )
+            const UnaryExpressionTemplate< R1,ROperation >& b )
 {
    using Left = BinaryExpressionTemplate< L1, L2, LOperation >;
-   using Right = UnaryExpressionTemplate< R1, ROperation, RParameter >;
+   using Right = UnaryExpressionTemplate< R1, ROperation >;
    return Comparison< Left, Right >::GE( a, b );
 }
 
@@ -1814,11 +1725,10 @@ template< typename L1,
 auto
 pow( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a, const Real& exp )
 {
-   auto e = Containers::Expressions::UnaryExpressionTemplate<
+   return Containers::Expressions::BinaryExpressionTemplate<
       Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >,
-      Containers::Expressions::Pow >( a );
-   e.parameter.set( exp );
-   return e;
+      Real,
+      Containers::Expressions::Pow >( a, exp );
 }
 
 template< typename L1,
@@ -1827,11 +1737,10 @@ template< typename L1,
 auto
 pow( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a, const Real& exp )
 {
-   auto e = Containers::Expressions::UnaryExpressionTemplate<
+   return Containers::Expressions::BinaryExpressionTemplate<
       Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >,
-      Containers::Expressions::Pow >( a );
-   e.parameter.set( exp );
-   return e;
+      Real,
+      Containers::Expressions::Pow >( a, exp );
 }
 
 ////
@@ -2122,10 +2031,9 @@ min( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation
 }
 
 template< typename L1,
-          template< typename > class LOperation,
-          typename Parameter >
+          template< typename > class LOperation >
 auto
-min( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >& a )
+min( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
 {
    return ExpressionMin( a );
 }
@@ -2142,10 +2050,9 @@ argMin( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperat
 
 template< typename L1,
           template< typename > class LOperation,
-          typename Parameter,
           typename Index >
 auto
-argMin( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >& a, Index& arg )
+argMin( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a, Index& arg )
 {
    return ExpressionArgMin( a, arg );
 }
@@ -2160,10 +2067,9 @@ max( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation
 }
 
 template< typename L1,
-          template< typename > class LOperation,
-          typename Parameter >
+          template< typename > class LOperation >
 auto
-max( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >& a )
+max( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
 {
    return ExpressionMax( a );
 }
@@ -2180,10 +2086,9 @@ argMax( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperat
 
 template< typename L1,
           template< typename > class LOperation,
-          typename Parameter,
           typename Index >
 auto
-argMax( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >& a, Index& arg )
+argMax( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a, Index& arg )
 {
    return ExpressionArgMax( a, arg );
 }
@@ -2198,10 +2103,9 @@ sum( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation
 }
 
 template< typename L1,
-          template< typename > class LOperation,
-          typename Parameter >
+          template< typename > class LOperation >
 auto
-sum( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >& a )
+sum( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
 {
    return ExpressionSum( a );
 }
@@ -2223,10 +2127,9 @@ lpNorm( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperat
 
 template< typename L1,
           template< typename > class LOperation,
-          typename Parameter,
           typename Real >
 auto
-lpNorm( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >& a, const Real& p )
+lpNorm( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a, const Real& p )
 -> decltype( ExpressionLpNorm( a, p ) )
 {
    if( p == 1.0 )
@@ -2246,10 +2149,9 @@ product( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOpera
 }
 
 template< typename L1,
-          template< typename > class LOperation,
-          typename Parameter >
+          template< typename > class LOperation >
 auto
-product( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >& a )
+product( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
 {
    return ExpressionProduct( a );
 }
@@ -2264,10 +2166,9 @@ logicalOr( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOpe
 }
 
 template< typename L1,
-          template< typename > class LOperation,
-          typename Parameter >
+          template< typename > class LOperation >
 auto
-logicalOr( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >& a )
+logicalOr( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
 {
    return ExpressionLogicalOr( a );
 }
@@ -2282,10 +2183,9 @@ logicalAnd( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOp
 }
 
 template< typename L1,
-          template< typename > class LOperation,
-          typename Parameter >
+          template< typename > class LOperation >
 auto
-logicalAnd( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >& a )
+logicalAnd( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
 {
    return ExpressionLogicalAnd( a );
 }
@@ -2300,10 +2200,9 @@ binaryOr( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOper
 }
 
 template< typename L1,
-          template< typename > class LOperation,
-          typename Parameter >
+          template< typename > class LOperation >
 auto
-binaryOr( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >& a )
+binaryOr( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
 {
    return ExpressionBinaryOr( a );
 }
@@ -2318,10 +2217,9 @@ binaryAnd( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOpe
 }
 
 template< typename L1,
-          template< typename > class LOperation,
-          typename Parameter >
+          template< typename > class LOperation >
 auto
-binaryAnd( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation, Parameter >& a )
+binaryAnd( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
 {
    return ExpressionBinaryAnd( a );
 }

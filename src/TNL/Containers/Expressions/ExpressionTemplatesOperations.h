@@ -96,12 +96,11 @@ struct Abs
    }
 };
 
-template< typename T1 >
+template< typename T1, typename T2 >
 struct Pow
 {
-   template< typename Real >
    __cuda_callable__
-   static auto evaluate( const T1& a, const Real& exp ) -> decltype( TNL::pow( a, exp ) )
+   static auto evaluate( const T1& a, const T2& exp ) -> decltype( TNL::pow( a, exp ) )
    {
       return TNL::pow( a, exp );
    }

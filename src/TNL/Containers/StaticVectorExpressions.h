@@ -427,7 +427,7 @@ __cuda_callable__
 auto
 pow( const Containers::StaticVector< Size, Real >& a, const ExpType& exp )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Pow, ExpType >( a, exp );
+   return Containers::Expressions::StaticBinaryExpressionTemplate< Containers::StaticVector< Size, Real >, ExpType, Containers::Expressions::Pow >( a, exp );
 }
 
 ////

@@ -705,7 +705,7 @@ auto
 pow( const Containers::Vector< Real, Device, Index, Allocator >& a, const ExpType& exp )
 {
    using ConstView = typename Containers::Vector< Real, Device, Index, Allocator >::ConstViewType;
-   return Containers::Expressions::UnaryExpressionTemplate< ConstView, Containers::Expressions::Pow, ExpType >( a.getConstView(), exp );
+   return Containers::Expressions::BinaryExpressionTemplate< ConstView, ExpType, Containers::Expressions::Pow >( a.getConstView(), exp );
 }
 
 ////

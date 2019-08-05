@@ -1872,11 +1872,10 @@ template< typename L1,
 auto
 pow( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a, const Real& exp )
 {
-   auto e = Containers::Expressions::DistributedUnaryExpressionTemplate<
+   return Containers::Expressions::DistributedBinaryExpressionTemplate<
       Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
-      Containers::Expressions::Pow, Real, Communicator >( a, a.getCommunicationGroup() );
-   e.parameter.set( exp );
-   return e;
+      Real,
+      Containers::Expressions::Pow, Communicator >( a, exp, a.getCommunicationGroup() );
 }
 
 template< typename L1,
@@ -1885,11 +1884,10 @@ template< typename L1,
 auto
 pow( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a, const Real& exp )
 {
-   auto e = Containers::Expressions::DistributedUnaryExpressionTemplate<
+   return Containers::Expressions::DistributedBinaryExpressionTemplate<
       Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
-      Containers::Expressions::Pow, Real, Communicator >( a, a.getCommunicationGroup() );
-   e.parameter.set( exp );
-   return e;
+      Real,
+      Containers::Expressions::Pow, Communicator >( a, exp, a.getCommunicationGroup() );
 }
 
 ////

@@ -382,7 +382,7 @@ template< typename Real, typename Device, typename Index, typename ExpType >
 auto
 pow( const Containers::VectorView< Real, Device, Index >& a, const ExpType& exp )
 {
-   return Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Pow, ExpType >( a, exp );
+   return Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, ExpType, Containers::Expressions::Pow >( a, exp );
 }
 
 ////
