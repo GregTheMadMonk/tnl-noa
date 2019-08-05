@@ -11,8 +11,15 @@ void setLinearSequence( Vector& deviceVector )
    typename Vector::HostType a;
    a.setLike( deviceVector );
 #endif
+#ifdef DISTRIBUTED_VECTOR
+   for( int i = 0; i < a.getLocalView().getSize(); i++ ) {
+      const auto gi = a.getLocalRange().getGlobalIndex( i );
+      a[ gi ] = gi;
+   }
+#else
    for( int i = 0; i < a.getSize(); i++ )
       a[ i ] = i;
+#endif
    deviceVector = a;
 }
 
@@ -49,8 +56,15 @@ void setNegativeLinearSequence( Vector& deviceVector )
 {
    typename Vector::HostType a;
    a.setLike( deviceVector );
+#ifdef DISTRIBUTED_VECTOR
+   for( int i = 0; i < a.getLocalView().getSize(); i++ ) {
+      const auto gi = a.getLocalRange().getGlobalIndex( i );
+      a[ gi ] = -gi;
+   }
+#else
    for( int i = 0; i < a.getSize(); i++ )
       a[ i ] = -i;
+#endif
    deviceVector = a;
 }
 

@@ -11,9 +11,20 @@
 #pragma once
 
 #ifdef HAVE_GTEST
-#include <TNL/Containers/Vector.h>
-#include <TNL/Containers/VectorView.h>
-#include <TNL/Containers/StaticVector.h>
+
+#if defined(DISTRIBUTED_VECTOR)
+   #include <TNL/Communicators/MpiCommunicator.h>
+   #include <TNL/Communicators/NoDistrCommunicator.h>
+   #include <TNL/Containers/DistributedVector.h>
+   #include <TNL/Containers/DistributedVectorView.h>
+   #include <TNL/Containers/Partitioner.h>
+#elif defined(STATIC_VECTOR)
+   #include <TNL/Containers/StaticVector.h>
+#else
+   #include <TNL/Containers/Vector.h>
+   #include <TNL/Containers/VectorView.h>
+#endif
+
 #include "VectorSequenceSetupFunctions.h"
 
 #include "gtest/gtest.h"
@@ -22,13 +33,30 @@ using namespace TNL;
 using namespace TNL::Containers;
 using namespace TNL::Containers::Algorithms;
 
+// specialization for V1 = view
+template< typename V1, typename V2,
+          std::enable_if_t< IsViewType< V1 >::value, bool > = true >
+void bindOrAssign( V1& v1, V2& v2 )
+{
+   v1.bind( v2.getView() );
+}
+
+// specialization for V1 = vector
+template< typename V1, typename V2,
+          std::enable_if_t< ! IsViewType< V1 >::value, bool > = true >
+void bindOrAssign( V1& v1, V2& v2 )
+{
+   v1 = v2;
+}
+
 namespace binary_tests {
 
-constexpr int VECTOR_TEST_SIZE = 100;
+// prime number to force non-uniform distribution in block-wise algorithms
+constexpr int VECTOR_TEST_SIZE = 97;
 
 // should be small enough to have fast tests, but larger than minGPUReductionDataSize
 // and large enough to require multiple CUDA blocks for reduction
-constexpr int VECTOR_TEST_REDUCTION_SIZE = 5000;
+constexpr int VECTOR_TEST_REDUCTION_SIZE = 4999;
 
 template< typename T1, typename T2 >
 struct Pair
@@ -47,13 +75,124 @@ protected:
 #ifndef STATIC_VECTOR
    using LeftNonConstReal = std::remove_const_t< typename Left::RealType >;
    using RightNonConstReal = std::remove_const_t< typename Right::RealType >;
-   using LeftVector = Vector< LeftNonConstReal, typename Left::DeviceType, typename Left::IndexType >;
-   using RightVector = Vector< RightNonConstReal, typename Right::DeviceType, typename Right::IndexType >;
+   #ifdef DISTRIBUTED_VECTOR
+      using CommunicatorType = typename Left::CommunicatorType;
+      static_assert( std::is_same< typename Right::CommunicatorType, CommunicatorType >::value,
+                     "CommunicatorType must be the same for both Left and Right vectors." );
+      using LeftVector = DistributedVector< LeftNonConstReal, typename Left::DeviceType, typename Left::IndexType, CommunicatorType >;
+      using RightVector = DistributedVector< RightNonConstReal, typename Right::DeviceType, typename Right::IndexType, CommunicatorType >;
+   #else
+      using LeftVector = Vector< LeftNonConstReal, typename Left::DeviceType, typename Left::IndexType >;
+      using RightVector = Vector< RightNonConstReal, typename Right::DeviceType, typename Right::IndexType >;
+   #endif
 #endif
+
+   Left L1, L2;
+   Right R1, R2;
+
+#ifndef STATIC_VECTOR
+   LeftVector _L1, _L2;
+   RightVector _R1, _R2;
+#endif
+
+   void reset( int size )
+   {
+#ifdef STATIC_VECTOR
+      L1 = 1;
+      L2 = 2;
+      R1 = 1;
+      R2 = 2;
+#else
+   #ifdef DISTRIBUTED_VECTOR
+      const typename CommunicatorType::CommunicationGroup group = CommunicatorType::AllGroup;
+      using LocalRangeType = typename LeftVector::LocalRangeType;
+      const LocalRangeType localRange = Partitioner< typename Left::IndexType, CommunicatorType >::splitRange( size, group );
+
+      const int rank = CommunicatorType::GetRank(group);
+      const int nproc = CommunicatorType::GetSize(group);
+
+      _L1.setDistribution( localRange, size, group );
+      _L2.setDistribution( localRange, size, group );
+      _R1.setDistribution( localRange, size, group );
+      _R2.setDistribution( localRange, size, group );
+   #else
+      _L1.setSize( size );
+      _L2.setSize( size );
+      _R1.setSize( size );
+      _R2.setSize( size );
+   #endif
+      _L1 = 1;
+      _L2 = 2;
+      _R1 = 1;
+      _R2 = 2;
+      bindOrAssign( L1, _L1 );
+      bindOrAssign( L2, _L2 );
+      bindOrAssign( R1, _R1 );
+      bindOrAssign( R2, _R2 );
+#endif
+   }
+
+   VectorBinaryOperationsTest()
+   {
+      reset( VECTOR_TEST_SIZE );
+   }
 };
 
+#ifdef HAVE_CUDA
+   // ignore useless nvcc warning: https://stackoverflow.com/a/49997636
+   #pragma push
+   #pragma diag_suppress = declared_but_not_referenced
+#endif
+
+#define SETUP_BINARY_TEST_ALIASES \
+   using Left = typename TestFixture::Left;                 \
+   using Right = typename TestFixture::Right;               \
+   Left& L1 = this->L1;                                     \
+   Left& L2 = this->L2;                                     \
+   Right& R1 = this->R1;                                    \
+   Right& R2 = this->R2;                                    \
+
 // types for which VectorBinaryOperationsTest is instantiated
-#ifdef STATIC_VECTOR
+#if defined(DISTRIBUTED_VECTOR)
+   using VectorPairs = ::testing::Types<
+   #ifndef HAVE_CUDA
+      Pair< DistributedVector<     double, Devices::Host, int, Communicators::MpiCommunicator >,
+            DistributedVector<     double, Devices::Host, int, Communicators::MpiCommunicator > >,
+      Pair< DistributedVector<     double, Devices::Host, int, Communicators::MpiCommunicator >,
+            DistributedVectorView< double, Devices::Host, int, Communicators::MpiCommunicator > >,
+      Pair< DistributedVectorView< double, Devices::Host, int, Communicators::MpiCommunicator >,
+            DistributedVector<     double, Devices::Host, int, Communicators::MpiCommunicator > >,
+      Pair< DistributedVectorView< double, Devices::Host, int, Communicators::MpiCommunicator >,
+            DistributedVectorView< double, Devices::Host, int, Communicators::MpiCommunicator > >,
+
+      Pair< DistributedVector<     double, Devices::Host, int, Communicators::NoDistrCommunicator >,
+            DistributedVector<     double, Devices::Host, int, Communicators::NoDistrCommunicator > >,
+      Pair< DistributedVector<     double, Devices::Host, int, Communicators::NoDistrCommunicator >,
+            DistributedVectorView< double, Devices::Host, int, Communicators::NoDistrCommunicator > >,
+      Pair< DistributedVectorView< double, Devices::Host, int, Communicators::NoDistrCommunicator >,
+            DistributedVector<     double, Devices::Host, int, Communicators::NoDistrCommunicator > >,
+      Pair< DistributedVectorView< double, Devices::Host, int, Communicators::NoDistrCommunicator >,
+            DistributedVectorView< double, Devices::Host, int, Communicators::NoDistrCommunicator > >
+   #else
+      Pair< DistributedVector<     double, Devices::Cuda, int, Communicators::MpiCommunicator >,
+            DistributedVector<     double, Devices::Cuda, int, Communicators::MpiCommunicator > >,
+      Pair< DistributedVector<     double, Devices::Cuda, int, Communicators::MpiCommunicator >,
+            DistributedVectorView< double, Devices::Cuda, int, Communicators::MpiCommunicator > >,
+      Pair< DistributedVectorView< double, Devices::Cuda, int, Communicators::MpiCommunicator >,
+            DistributedVector<     double, Devices::Cuda, int, Communicators::MpiCommunicator > >,
+      Pair< DistributedVectorView< double, Devices::Cuda, int, Communicators::MpiCommunicator >,
+            DistributedVectorView< double, Devices::Cuda, int, Communicators::MpiCommunicator > >,
+      Pair< DistributedVector<     double, Devices::Cuda, int, Communicators::NoDistrCommunicator >,
+            DistributedVector<     double, Devices::Cuda, int, Communicators::NoDistrCommunicator > >,
+      Pair< DistributedVector<     double, Devices::Cuda, int, Communicators::NoDistrCommunicator >,
+            DistributedVectorView< double, Devices::Cuda, int, Communicators::NoDistrCommunicator > >,
+      Pair< DistributedVectorView< double, Devices::Cuda, int, Communicators::NoDistrCommunicator >,
+            DistributedVector<     double, Devices::Cuda, int, Communicators::NoDistrCommunicator > >,
+      Pair< DistributedVectorView< double, Devices::Cuda, int, Communicators::NoDistrCommunicator >,
+            DistributedVectorView< double, Devices::Cuda, int, Communicators::NoDistrCommunicator > >
+   #endif
+   >;
+#elif defined(STATIC_VECTOR)
    using VectorPairs = ::testing::Types<
       Pair< StaticVector< 1, int >,     StaticVector< 1, int >    >,
       Pair< StaticVector< 1, double >,  StaticVector< 1, double > >,
@@ -82,8 +221,7 @@ protected:
       Pair< VectorView< double,    Devices::Host >, Vector<     double,    Devices::Host > >,
       Pair< Vector<     double,    Devices::Host >, VectorView< double,    Devices::Host > >,
       Pair< VectorView< double,    Devices::Host >, VectorView< double,    Devices::Host > >
-   #endif
-   #ifdef HAVE_CUDA
+   #else
       Pair< Vector<     int,       Devices::Cuda >, Vector<     int,       Devices::Cuda > >,
       Pair< VectorView< int,       Devices::Cuda >, Vector<     int,       Devices::Cuda > >,
       Pair< VectorView< const int, Devices::Cuda >, Vector<     int,       Devices::Cuda > >,
@@ -103,42 +241,9 @@ protected:
 
 TYPED_TEST_SUITE( VectorBinaryOperationsTest, VectorPairs );
 
-#ifdef STATIC_VECTOR
-   #define SETUP_BINARY_VECTOR_TEST( size ) \
-      using Left = typename TestFixture::Left;                 \
-      using Right = typename TestFixture::Right;               \
-                                                               \
-      Left L1, L2;                                             \
-      Right R1, R2;                                            \
-                                                               \
-      L1 = 1;                                                  \
-      L2 = 2;                                                  \
-      R1 = 1;                                                  \
-      R2 = 2;                                                  \
-
-#else
-   #define SETUP_BINARY_VECTOR_TEST( size ) \
-      using LeftVector = typename TestFixture::LeftVector;     \
-      using RightVector = typename TestFixture::RightVector;   \
-      using Left = typename TestFixture::Left;                 \
-      using Right = typename TestFixture::Right;               \
-                                                               \
-      LeftVector _L1( size ), _L2( size );                     \
-      RightVector _R1( size ), _R2( size );                    \
-                                                               \
-      _L1 = 1;                                                 \
-      _L2 = 2;                                                 \
-      _R1 = 1;                                                 \
-      _R2 = 2;                                                 \
-                                                               \
-      Left L1( _L1 ), L2( _L2 );                               \
-      Right R1( _R1 ), R2( _R2 );                              \
-
-#endif
-
 TYPED_TEST( VectorBinaryOperationsTest, EQ )
 {
-   SETUP_BINARY_VECTOR_TEST( VECTOR_TEST_SIZE );
+   SETUP_BINARY_TEST_ALIASES;
 
    EXPECT_EQ( L1, R1 );       // vector or vector view
    EXPECT_EQ( L1, 1 );        // right scalar
@@ -157,7 +262,7 @@ TYPED_TEST( VectorBinaryOperationsTest, EQ )
 
 TYPED_TEST( VectorBinaryOperationsTest, NE )
 {
-   SETUP_BINARY_VECTOR_TEST( VECTOR_TEST_SIZE );
+   SETUP_BINARY_TEST_ALIASES;
 
    EXPECT_NE( L1, R2 );       // vector or vector view
    EXPECT_NE( L1, 2 );        // right scalar
@@ -176,7 +281,7 @@ TYPED_TEST( VectorBinaryOperationsTest, NE )
 
 TYPED_TEST( VectorBinaryOperationsTest, LT )
 {
-   SETUP_BINARY_VECTOR_TEST( VECTOR_TEST_SIZE );
+   SETUP_BINARY_TEST_ALIASES;
 
    EXPECT_LT( L1, R2 );       // vector or vector view
    EXPECT_LT( L1, 2 );        // right scalar
@@ -188,7 +293,7 @@ TYPED_TEST( VectorBinaryOperationsTest, LT )
 
 TYPED_TEST( VectorBinaryOperationsTest, GT )
 {
-   SETUP_BINARY_VECTOR_TEST( VECTOR_TEST_SIZE );
+   SETUP_BINARY_TEST_ALIASES;
 
    EXPECT_GT( L2, R1 );       // vector or vector view
    EXPECT_GT( L2, 1 );        // right scalar
@@ -200,7 +305,7 @@ TYPED_TEST( VectorBinaryOperationsTest, GT )
 
 TYPED_TEST( VectorBinaryOperationsTest, LE )
 {
-   SETUP_BINARY_VECTOR_TEST( VECTOR_TEST_SIZE );
+   SETUP_BINARY_TEST_ALIASES;
 
    // same as LT
    EXPECT_LE( L1, R2 );       // vector or vector view
@@ -221,7 +326,7 @@ TYPED_TEST( VectorBinaryOperationsTest, LE )
 
 TYPED_TEST( VectorBinaryOperationsTest, GE )
 {
-   SETUP_BINARY_VECTOR_TEST( VECTOR_TEST_SIZE );
+   SETUP_BINARY_TEST_ALIASES;
 
    // same as GT
    EXPECT_GE( L2, R1 );       // vector or vector view
@@ -242,7 +347,7 @@ TYPED_TEST( VectorBinaryOperationsTest, GE )
 
 TYPED_TEST( VectorBinaryOperationsTest, addition )
 {
-   SETUP_BINARY_VECTOR_TEST( VECTOR_TEST_SIZE );
+   SETUP_BINARY_TEST_ALIASES;
 
    // with vector or vector view
    EXPECT_EQ( L1 + R1, 2 );
@@ -260,7 +365,7 @@ TYPED_TEST( VectorBinaryOperationsTest, addition )
 
 TYPED_TEST( VectorBinaryOperationsTest, subtraction )
 {
-   SETUP_BINARY_VECTOR_TEST( VECTOR_TEST_SIZE );
+   SETUP_BINARY_TEST_ALIASES;
 
    // with vector or vector view
    EXPECT_EQ( L1 - R1, 0 );
@@ -278,7 +383,7 @@ TYPED_TEST( VectorBinaryOperationsTest, subtraction )
 
 TYPED_TEST( VectorBinaryOperationsTest, multiplication )
 {
-   SETUP_BINARY_VECTOR_TEST( VECTOR_TEST_SIZE );
+   SETUP_BINARY_TEST_ALIASES;
 
    // with vector or vector view
    EXPECT_EQ( L1 * R2, L2 );
@@ -296,7 +401,7 @@ TYPED_TEST( VectorBinaryOperationsTest, multiplication )
 
 TYPED_TEST( VectorBinaryOperationsTest, division )
 {
-   SETUP_BINARY_VECTOR_TEST( VECTOR_TEST_SIZE );
+   SETUP_BINARY_TEST_ALIASES;
 
    // with vector or vector view
    EXPECT_EQ( L2 / R2, L1 );
@@ -330,7 +435,7 @@ void test_assignment( Left& L1, Left& L2, Right& R1, Right& R2 )
 }
 TYPED_TEST( VectorBinaryOperationsTest, assignment )
 {
-   SETUP_BINARY_VECTOR_TEST( VECTOR_TEST_SIZE );
+   SETUP_BINARY_TEST_ALIASES;
    test_assignment( L1, L2, R1, R2 );
 }
 
@@ -354,7 +459,7 @@ void test_add_assignment( Left& L1, Left& L2, Right& R1, Right& R2 )
 }
 TYPED_TEST( VectorBinaryOperationsTest, add_assignment )
 {
-   SETUP_BINARY_VECTOR_TEST( VECTOR_TEST_SIZE );
+   SETUP_BINARY_TEST_ALIASES;
    test_add_assignment( L1, L2, R1, R2 );
 }
 
@@ -378,7 +483,7 @@ void test_subtract_assignment( Left& L1, Left& L2, Right& R1, Right& R2 )
 }
 TYPED_TEST( VectorBinaryOperationsTest, subtract_assignment )
 {
-   SETUP_BINARY_VECTOR_TEST( VECTOR_TEST_SIZE );
+   SETUP_BINARY_TEST_ALIASES;
    test_subtract_assignment( L1, L2, R1, R2 );
 }
 
@@ -402,7 +507,7 @@ void test_multiply_assignment( Left& L1, Left& L2, Right& R1, Right& R2 )
 }
 TYPED_TEST( VectorBinaryOperationsTest, multiply_assignment )
 {
-   SETUP_BINARY_VECTOR_TEST( VECTOR_TEST_SIZE );
+   SETUP_BINARY_TEST_ALIASES;
    test_multiply_assignment( L1, L2, R1, R2 );
 }
 
@@ -426,29 +531,27 @@ void test_divide_assignment( Left& L1, Left& L2, Right& R1, Right& R2 )
 }
 TYPED_TEST( VectorBinaryOperationsTest, divide_assignment )
 {
-   SETUP_BINARY_VECTOR_TEST( VECTOR_TEST_SIZE );
+   SETUP_BINARY_TEST_ALIASES;
    test_divide_assignment( L1, L2, R1, R2 );
 }
 
 TYPED_TEST( VectorBinaryOperationsTest, scalarProduct )
 {
-   // this test expects an odd size
-//   const int size = VECTOR_TEST_REDUCTION_SIZE % 2 ? VECTOR_TEST_REDUCTION_SIZE : VECTOR_TEST_REDUCTION_SIZE - 1;
-   SETUP_BINARY_VECTOR_TEST( VECTOR_TEST_REDUCTION_SIZE );
+   this->reset( VECTOR_TEST_REDUCTION_SIZE );
 
 #ifdef STATIC_VECTOR
-   setOscilatingSequence( L1, 1 );
-   setConstantSequence( R1, 1 );
+   setOscilatingSequence( this->L1, 1 );
+   setConstantSequence( this->R1, 1 );
 
-   const Left& L( L1 );
-   const Right& R( R1 );
+   const typename TestFixture::Left& L( this->L1 );
+   const typename TestFixture::Right& R( this->R1 );
 #else
    // we have to use _L1 and _R1 because L1 and R1 might be a const view
-   setOscilatingSequence( _L1, 1 );
-   setConstantSequence( _R1, 1 );
+   setOscilatingSequence( this->_L1, 1 );
+   setConstantSequence( this->_R1, 1 );
 
-   const Left L( _L1 );
-   const Right R( _R1 );
+   const typename TestFixture::Left L( this->_L1 );
+   const typename TestFixture::Right R( this->_R1 );
 #endif
 
    const int size = L.getSize();
@@ -470,7 +573,7 @@ TYPED_TEST( VectorBinaryOperationsTest, scalarProduct )
 
 TYPED_TEST( VectorBinaryOperationsTest, min )
 {
-   SETUP_BINARY_VECTOR_TEST( VECTOR_TEST_SIZE );
+   SETUP_BINARY_TEST_ALIASES;
 
 // FIXME: does not work without TNL::, because std::min conflicts (why?!)
 
@@ -488,7 +591,7 @@ TYPED_TEST( VectorBinaryOperationsTest, min )
 
 TYPED_TEST( VectorBinaryOperationsTest, max )
 {
-   SETUP_BINARY_VECTOR_TEST( VECTOR_TEST_SIZE );
+   SETUP_BINARY_TEST_ALIASES;
 
 // FIXME: does not work without TNL::, because std::min conflicts (why?!)
 
@@ -507,10 +610,10 @@ TYPED_TEST( VectorBinaryOperationsTest, max )
 #if defined(HAVE_CUDA) && !defined(STATIC_VECTOR)
 TYPED_TEST( VectorBinaryOperationsTest, comparisonOnDifferentDevices )
 {
-   SETUP_BINARY_VECTOR_TEST( VECTOR_TEST_SIZE );
+   SETUP_BINARY_TEST_ALIASES;
 
-   typename RightVector::HostType _R1_h; _R1_h = _R1;
-   typename Right::HostType R1_h( _R1_h );
+   typename TestFixture::RightVector::HostType _R1_h; _R1_h = this->_R1;
+   typename TestFixture::Right::HostType R1_h( _R1_h );
 
    // L1 and L2 are device vectors
    EXPECT_EQ( L1, R1_h );
@@ -518,10 +621,14 @@ TYPED_TEST( VectorBinaryOperationsTest, comparisonOnDifferentDevices )
 }
 #endif
 
+#ifdef HAVE_CUDA
+   #pragma pop
+#endif
+
 } // namespace binary_tests
 
 #endif // HAVE_GTEST
 
-#ifndef STATIC_VECTOR
+#if !defined(DISTRIBUTED_VECTOR) && !defined(STATIC_VECTOR)
 #include "../main.h"
 #endif

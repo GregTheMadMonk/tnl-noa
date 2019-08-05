@@ -163,4 +163,13 @@ struct IsStaticArrayType
             HasSubscriptOperator< T >::value >
 {};
 
+/**
+ * \brief Type trait for checking if T is a view type.
+ */
+template< typename T >
+struct IsViewType
+: public std::integral_constant< bool,
+            std::is_same< typename T::ViewType, T >::value >
+{};
+
 } //namespace TNL
