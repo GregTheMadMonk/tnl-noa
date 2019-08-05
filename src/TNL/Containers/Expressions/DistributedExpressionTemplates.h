@@ -85,11 +85,6 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator, Vec
    DistributedBinaryExpressionTemplate( const T1& a, const T2& b, const CommunicationGroup& group )
       : op1( a ), op2( b ), communicationGroup( group ) {}
 
-   static DistributedBinaryExpressionTemplate evaluate( const T1& a, const T2& b )
-   {
-      return DistributedBinaryExpressionTemplate( a, b );
-   }
-
    RealType getElement( const IndexType i ) const
    {
        return Operation< typename T1::RealType, typename T2::RealType >::evaluate( op1.getElement( i ), op2.getElement( i ) );
@@ -135,11 +130,6 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator, Vec
    DistributedBinaryExpressionTemplate( const T1& a, const T2& b, const CommunicationGroup& group )
       : op1( a ), op2( b ), communicationGroup( group ){}
 
-   DistributedBinaryExpressionTemplate evaluate( const T1& a, const T2& b )
-   {
-      return DistributedBinaryExpressionTemplate( a, b );
-   }
-
    RealType getElement( const IndexType i ) const
    {
        return Operation< typename T1::RealType, T2 >::evaluate( op1.getElement( i ), op2 );
@@ -184,11 +174,6 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator, Ari
 
    DistributedBinaryExpressionTemplate( const T1& a, const T2& b, const CommunicationGroup& group )
       : op1( a ), op2( b ), communicationGroup( group ){}
-
-   DistributedBinaryExpressionTemplate evaluate( const T1& a, const T2& b )
-   {
-      return DistributedBinaryExpressionTemplate( a, b );
-   }
 
    RealType getElement( const IndexType i ) const
    {
@@ -240,11 +225,6 @@ struct DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicato
    DistributedUnaryExpressionTemplate( const T1& a, const Parameter& p, const CommunicationGroup& group )
    : operand( a ), parameter( p ), communicationGroup( group ) {}
 
-   static DistributedUnaryExpressionTemplate evaluate( const T1& a )
-   {
-      return DistributedUnaryExpressionTemplate( a );
-   }
-
    RealType getElement( const IndexType i ) const
    {
        return Operation< typename T1::RealType >::evaluate( operand.getElement( i ), parameter );
@@ -293,11 +273,6 @@ struct DistributedUnaryExpressionTemplate< T1, Operation, void, Communicator, Ve
 
    DistributedUnaryExpressionTemplate( const T1& a, const CommunicationGroup& group )
       : operand( a ), communicationGroup( group ){}
-
-   static DistributedUnaryExpressionTemplate evaluate( const T1& a )
-   {
-      return DistributedUnaryExpressionTemplate( a );
-   }
 
    RealType getElement( const IndexType i ) const
    {

@@ -73,12 +73,6 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariab
    __cuda_callable__
    StaticBinaryExpressionTemplate( const T1& a, const T2& b ): op1( a ), op2( b ){}
 
-   __cuda_callable__
-   static StaticBinaryExpressionTemplate evaluate( const T1& a, const T2& b )
-   {
-      return StaticBinaryExpressionTemplate( a, b );
-   }
-
    RealType getElement( const int i ) const
    {
       TNL_ASSERT_LT( i, this->getSize(), "Asking for element with index larger than expression size." );
@@ -129,12 +123,6 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariab
 
    __cuda_callable__
    StaticBinaryExpressionTemplate( const T1& a, const T2& b ): op1( a ), op2( b ){}
-
-   __cuda_callable__
-   StaticBinaryExpressionTemplate evaluate( const T1& a, const T2& b )
-   {
-      return StaticBinaryExpressionTemplate( a, b );
-   }
 
    RealType getElement( const int i ) const
    {
@@ -188,12 +176,6 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, Ve
    __cuda_callable__
    StaticBinaryExpressionTemplate( const T1& a, const T2& b ): op1( a ), op2( b ){}
 
-   __cuda_callable__
-   StaticBinaryExpressionTemplate evaluate( const T1& a, const T2& b )
-   {
-      return StaticBinaryExpressionTemplate( a, b );
-   }
-
    RealType getElement( const int i ) const
    {
       TNL_ASSERT_LT( i, this->getSize(), "Asking for element with index larger than expression size." );
@@ -242,12 +224,6 @@ struct StaticUnaryExpressionTemplate< T1, Operation, VectorExpressionVariable >
 
    __cuda_callable__
    StaticUnaryExpressionTemplate( const T1& a ): operand( a ){}
-
-   __cuda_callable__
-   static StaticUnaryExpressionTemplate evaluate( const T1& a )
-   {
-      return StaticUnaryExpressionTemplate( a );
-   }
 
    RealType getElement( const int i ) const
    {

@@ -70,11 +70,6 @@ struct BinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, Ve
 
    BinaryExpressionTemplate( const T1& a, const T2& b ): op1( a ), op2( b ){}
 
-   static BinaryExpressionTemplate evaluate( const T1& a, const T2& b )
-   {
-      return BinaryExpressionTemplate( a, b );
-   }
-
    RealType getElement( const IndexType i ) const
    {
       return Operation< typename T1::RealType, typename T2::RealType >::evaluate( op1.getElement( i ), op2.getElement( i ) );
@@ -107,11 +102,6 @@ struct BinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, Ar
    using IndexType = typename T1::IndexType;
 
    BinaryExpressionTemplate( const T1& a, const T2& b ): op1( a ), op2( b ){}
-
-   BinaryExpressionTemplate evaluate( const T1& a, const T2& b )
-   {
-      return BinaryExpressionTemplate( a, b );
-   }
 
    RealType getElement( const IndexType i ) const
    {
@@ -146,11 +136,6 @@ struct BinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorEx
 
    BinaryExpressionTemplate( const T1& a, const T2& b ): op1( a ), op2( b ){}
 
-   BinaryExpressionTemplate evaluate( const T1& a, const T2& b )
-   {
-      return BinaryExpressionTemplate( a, b );
-   }
-
    RealType getElement( const IndexType i ) const
    {
       return Operation< T1, typename T2::RealType >::evaluate( op1, op2.getElement( i ) );
@@ -184,11 +169,6 @@ struct UnaryExpressionTemplate< T1, Operation, VectorExpressionVariable >
    using IndexType = typename T1::IndexType;
 
    UnaryExpressionTemplate( const T1& a ): operand( a ){}
-
-   static UnaryExpressionTemplate evaluate( const T1& a )
-   {
-      return UnaryExpressionTemplate( a );
-   }
 
    RealType getElement( const IndexType i ) const
    {
