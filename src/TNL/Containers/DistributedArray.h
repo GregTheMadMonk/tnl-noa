@@ -146,7 +146,9 @@ public:
    // Copy-assignment operator
    DistributedArray& operator=( const DistributedArray& array );
 
-   template< typename Array >
+   template< typename Array,
+             typename...,
+             typename = std::enable_if_t< HasSubscriptOperator<Array>::value > >
    DistributedArray& operator=( const Array& array );
 
    // Comparison operators

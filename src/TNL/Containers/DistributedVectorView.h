@@ -85,17 +85,55 @@ public:
                     RealType value,
                     Scalar thisElementMultiplicator );
 
-   template< typename Vector >
-   DistributedVectorView& operator-=( const Vector& vector );
+   template< typename Scalar,
+             typename...,
+             typename = std::enable_if_t< ! HasSubscriptOperator<Scalar>::value > >
+   DistributedVectorView& operator=( Scalar c );
 
-   template< typename Vector >
-   DistributedVectorView& operator+=( const Vector& vector );
+   template< typename Scalar,
+             typename...,
+             typename = std::enable_if_t< ! HasSubscriptOperator<Scalar>::value > >
+   DistributedVectorView& operator+=( Scalar c );
 
-   template< typename Scalar >
+   template< typename Scalar,
+             typename...,
+             typename = std::enable_if_t< ! HasSubscriptOperator<Scalar>::value > >
+   DistributedVectorView& operator-=( Scalar c );
+
+   template< typename Scalar,
+             typename...,
+             typename = std::enable_if_t< ! HasSubscriptOperator<Scalar>::value > >
    DistributedVectorView& operator*=( Scalar c );
 
-   template< typename Scalar >
+   template< typename Scalar,
+             typename...,
+             typename = std::enable_if_t< ! HasSubscriptOperator<Scalar>::value > >
    DistributedVectorView& operator/=( Scalar c );
+
+   template< typename Vector,
+             typename...,
+             typename = std::enable_if_t< HasSubscriptOperator<Vector>::value > >
+   DistributedVectorView& operator=( const Vector& vector );
+
+   template< typename Vector,
+             typename...,
+             typename = std::enable_if_t< HasSubscriptOperator<Vector>::value > >
+   DistributedVectorView& operator+=( const Vector& vector );
+
+   template< typename Vector,
+             typename...,
+             typename = std::enable_if_t< HasSubscriptOperator<Vector>::value > >
+   DistributedVectorView& operator-=( const Vector& vector );
+
+   template< typename Vector,
+             typename...,
+             typename = std::enable_if_t< HasSubscriptOperator<Vector>::value > >
+   DistributedVectorView& operator*=( const Vector& vector );
+
+   template< typename Vector,
+             typename...,
+             typename = std::enable_if_t< HasSubscriptOperator<Vector>::value > >
+   DistributedVectorView& operator/=( const Vector& vector );
 
    template< typename ResultType = NonConstReal >
    ResultType sum() const;

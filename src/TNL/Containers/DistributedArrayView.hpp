@@ -104,7 +104,7 @@ template< typename Value,
           typename Device,
           typename Index,
           typename Communicator >
-   template< typename Array >
+   template< typename Array, typename..., typename >
 DistributedArrayView< Value, Device, Index, Communicator >&
 DistributedArrayView< Value, Device, Index, Communicator >::
 operator=( const Array& array )

@@ -11,8 +11,20 @@
 #pragma once
 
 #ifdef HAVE_GTEST
-#include <TNL/Containers/Vector.h>
-#include <TNL/Containers/VectorView.h>
+
+#if defined(DISTRIBUTED_VECTOR)
+   #include <TNL/Communicators/MpiCommunicator.h>
+   #include <TNL/Communicators/NoDistrCommunicator.h>
+   #include <TNL/Containers/DistributedVector.h>
+   #include <TNL/Containers/DistributedVectorView.h>
+   #include <TNL/Containers/Partitioner.h>
+#elif defined(STATIC_VECTOR)
+   #include <TNL/Containers/StaticVector.h>
+#else
+   #include <TNL/Containers/Vector.h>
+   #include <TNL/Containers/VectorView.h>
+#endif
+
 #include "VectorSequenceSetupFunctions.h"
 
 #include "gtest/gtest.h"
@@ -23,11 +35,12 @@ using namespace TNL::Containers::Algorithms;
 
 namespace unary_tests {
 
-constexpr int VECTOR_TEST_SIZE = 100;
+// prime number to force non-uniform distribution in block-wise algorithms
+constexpr int VECTOR_TEST_SIZE = 97;
 
 // should be small enough to have fast tests, but larger than minGPUReductionDataSize
 // and large enough to require multiple CUDA blocks for reduction
-constexpr int VECTOR_TEST_REDUCTION_SIZE = 5000;
+constexpr int VECTOR_TEST_REDUCTION_SIZE = 4999;
 
 // test fixture for typed tests
 template< typename T >
@@ -37,12 +50,35 @@ protected:
    using VectorOrView = T;
 #ifndef STATIC_VECTOR
    using NonConstReal = std::remove_const_t< typename VectorOrView::RealType >;
-   using VectorType = Vector< NonConstReal, typename VectorOrView::DeviceType, typename VectorOrView::IndexType >;
+   #ifdef DISTRIBUTED_VECTOR
+      using CommunicatorType = typename VectorOrView::CommunicatorType;
+      using VectorType = DistributedVector< NonConstReal, typename VectorOrView::DeviceType, typename VectorOrView::IndexType, CommunicatorType >;
+   #else
+      using VectorType = Vector< NonConstReal, typename VectorOrView::DeviceType, typename VectorOrView::IndexType >;
+   #endif
 #endif
 };
 
 // types for which VectorUnaryOperationsTest is instantiated
-#ifdef STATIC_VECTOR
+#if defined(DISTRIBUTED_VECTOR)
+   using VectorTypes = ::testing::Types<
+   #ifndef HAVE_CUDA
+      DistributedVector<           double, Devices::Host, int, Communicators::MpiCommunicator >,
+      DistributedVectorView<       double, Devices::Host, int, Communicators::MpiCommunicator >,
+      DistributedVectorView< const double, Devices::Host, int, Communicators::MpiCommunicator >,
+      DistributedVector<           double, Devices::Host, int, Communicators::NoDistrCommunicator >,
+      DistributedVectorView<       double, Devices::Host, int, Communicators::NoDistrCommunicator >,
+      DistributedVectorView< const double, Devices::Host, int, Communicators::NoDistrCommunicator >
+   #else
+      DistributedVector<           double, Devices::Cuda, int, Communicators::MpiCommunicator >,
+      DistributedVectorView<       double, Devices::Cuda, int, Communicators::MpiCommunicator >,
+      DistributedVectorView< const double, Devices::Cuda, int, Communicators::MpiCommunicator >,
+      DistributedVector<           double, Devices::Cuda, int, Communicators::NoDistrCommunicator >,
+      DistributedVectorView<       double, Devices::Cuda, int, Communicators::NoDistrCommunicator >,
+      DistributedVectorView< const double, Devices::Cuda, int, Communicators::NoDistrCommunicator >
+   #endif
+   >;
+#elif defined(STATIC_VECTOR)
    using VectorTypes = ::testing::Types<
       StaticVector< 1, int >,
       StaticVector< 1, double >,
@@ -108,6 +144,69 @@ TYPED_TEST_SUITE( VectorUnaryOperationsTest, VectorTypes );
       VectorOrView V1;                                         \
       setLinearSequence( V1 );                                 \
 
+#elif defined(DISTRIBUTED_VECTOR)
+   #define SETUP_UNARY_VECTOR_TEST( _size ) \
+      using VectorType = typename TestFixture::VectorType;     \
+      using VectorOrView = typename TestFixture::VectorOrView; \
+      constexpr int size = _size;                              \
+      using CommunicatorType = typename VectorOrView::CommunicatorType; \
+      const auto group = CommunicatorType::AllGroup; \
+      using LocalRangeType = typename VectorOrView::LocalRangeType; \
+      const LocalRangeType localRange = Partitioner< typename VectorOrView::IndexType, CommunicatorType >::splitRange( size, group ); \
+                                                               \
+      const int rank = CommunicatorType::GetRank(group);       \
+      const int nproc = CommunicatorType::GetSize(group);      \
+                                                               \
+      VectorType _V1, _V2;                                     \
+      _V1.setDistribution( localRange, size, group );          \
+      _V2.setDistribution( localRange, size, group );          \
+                                                               \
+      _V1 = 1;                                                 \
+      _V2 = 2;                                                 \
+                                                               \
+      VectorOrView V1( _V1 ), V2( _V2 );                       \
+
+   #define SETUP_UNARY_VECTOR_TEST_FUNCTION( _size, begin, end, function ) \
+      using VectorType = typename TestFixture::VectorType;     \
+      using VectorOrView = typename TestFixture::VectorOrView; \
+      using RealType = typename VectorType::RealType;          \
+      constexpr int size = _size;                              \
+      using CommunicatorType = typename VectorOrView::CommunicatorType; \
+      const auto group = CommunicatorType::AllGroup; \
+      using LocalRangeType = typename VectorOrView::LocalRangeType; \
+      const LocalRangeType localRange = Partitioner< typename VectorOrView::IndexType, CommunicatorType >::splitRange( size, group ); \
+                                                               \
+      typename VectorType::HostType _V1h, expected_h;          \
+      _V1h.setDistribution( localRange, size, group );         \
+      expected_h.setDistribution( localRange, size, group );   \
+                                                               \
+      const double h = (end - begin) / size;                   \
+      for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ ) \
+      {                                                        \
+         const RealType x = begin + i * h;                     \
+         _V1h[ i ] = x;                                        \
+         expected_h[ i ] = function(x);                        \
+      }                                                        \
+                                                               \
+      VectorType _V1; _V1 = _V1h;                              \
+      VectorOrView V1( _V1 );                                  \
+      VectorType expected; expected = expected_h;              \
+
+   #define SETUP_UNARY_VECTOR_TEST_REDUCTION \
+      using VectorType = typename TestFixture::VectorType;     \
+      using VectorOrView = typename TestFixture::VectorOrView; \
+      constexpr int size = VECTOR_TEST_REDUCTION_SIZE;         \
+      using CommunicatorType = typename VectorOrView::CommunicatorType; \
+      const auto group = CommunicatorType::AllGroup; \
+      using LocalRangeType = typename VectorOrView::LocalRangeType; \
+      const LocalRangeType localRange = Partitioner< typename VectorOrView::IndexType, CommunicatorType >::splitRange( size, group ); \
+                                                               \
+      VectorType _V1;                                          \
+      _V1.setDistribution( localRange, size, group );          \
+                                                               \
+      setLinearSequence( _V1 );                                \
+      VectorOrView V1( _V1 );                                  \
+
 #else
    #define SETUP_UNARY_VECTOR_TEST( _size ) \
       using VectorType = typename TestFixture::VectorType;     \
@@ -168,10 +267,18 @@ void expect_vectors_near( const Left& _v1, const Right& _v2 )
 #else
    using LeftNonConstReal = std::remove_const_t< typename Left::RealType >;
    using RightNonConstReal = std::remove_const_t< typename Right::RealType >;
+#ifdef DISTRIBUTED_VECTOR
+   using CommunicatorType = typename Left::CommunicatorType;
+   static_assert( std::is_same< typename Right::CommunicatorType, CommunicatorType >::value,
+                  "CommunicatorType must be the same for both Left and Right vectors." );
+   using LeftVector = DistributedVector< LeftNonConstReal, typename Left::DeviceType, typename Left::IndexType, CommunicatorType >;
+   using RightVector = DistributedVector< RightNonConstReal, typename Right::DeviceType, typename Right::IndexType, CommunicatorType >;
+#else
    using LeftVector = Vector< LeftNonConstReal, typename Left::DeviceType, typename Left::IndexType >;
    using RightVector = Vector< RightNonConstReal, typename Right::DeviceType, typename Right::IndexType >;
-   using LeftHostVector = Vector< LeftNonConstReal, Devices::Host, typename Left::IndexType >;
-   using RightHostVector = Vector< RightNonConstReal, Devices::Host, typename Right::IndexType >;
+#endif
+   using LeftHostVector = typename LeftVector::HostType;
+   using RightHostVector = typename RightVector::HostType;
 
    // first evaluate expressions
    LeftVector v1; v1 = _v1;
@@ -179,7 +286,12 @@ void expect_vectors_near( const Left& _v1, const Right& _v2 )
    // then copy to host
    LeftHostVector v1_h; v1_h = v1;
    RightHostVector v2_h; v2_h = v1;
+#ifdef DISTRIBUTED_VECTOR
+   const auto localRange = v1.getLocalRange();
+   for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
+#else
    for( int i = 0; i < v1.getSize(); i++ )
+#endif
       EXPECT_NEAR( v1_h[i], v2_h[i], 1e-6 );
 #endif
 }
@@ -368,7 +480,12 @@ TYPED_TEST( VectorUnaryOperationsTest, max )
    EXPECT_EQ( max(V1 + 2), size - 1 + 2 );
 }
 
+// FIXME: distributed argMax is not implemented yet
+#ifdef DISTRIBUTED_VECTOR
+TYPED_TEST( VectorUnaryOperationsTest, DISABLED_argMax )
+#else
 TYPED_TEST( VectorUnaryOperationsTest, argMax )
+#endif
 {
    SETUP_UNARY_VECTOR_TEST_REDUCTION;
 
@@ -398,7 +515,12 @@ TYPED_TEST( VectorUnaryOperationsTest, min )
    EXPECT_EQ( min(V1 + 2), 2 );
 }
 
+// FIXME: distributed argMin is not implemented yet
+#ifdef DISTRIBUTED_VECTOR
+TYPED_TEST( VectorUnaryOperationsTest, DISABLED_argMin )
+#else
 TYPED_TEST( VectorUnaryOperationsTest, argMin )
+#endif
 {
    SETUP_UNARY_VECTOR_TEST_REDUCTION;
 
@@ -471,6 +593,6 @@ TYPED_TEST( VectorUnaryOperationsTest, product )
 
 #endif // HAVE_GTEST
 
-#ifndef STATIC_VECTOR
+#if !defined(DISTRIBUTED_VECTOR) && !defined(STATIC_VECTOR)
 #include "../main.h"
 #endif

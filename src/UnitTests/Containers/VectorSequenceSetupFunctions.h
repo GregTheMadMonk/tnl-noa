@@ -78,8 +78,14 @@ void setOscilatingSequence( Vector& deviceVector,
    typename Vector::HostType a;
    a.setLike( deviceVector );
 #endif
-   a[ 0 ] = v;
-   for( int i = 1; i < a.getSize(); i++ )
-      a[ i ] = a[ i-1 ] * -1;
+#ifdef DISTRIBUTED_VECTOR
+   for( int i = 0; i < a.getLocalView().getSize(); i++ ) {
+      const auto gi = a.getLocalRange().getGlobalIndex( i );
+      a[ gi ] = v * std::pow( -1, gi );
+   }
+#else
+   for( int i = 0; i < a.getSize(); i++ )
+      a[ i ] = v * std::pow( -1, i );
+#endif
    deviceVector = a;
 }

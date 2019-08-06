@@ -2,7 +2,7 @@
                           DistributedExpressionTemplates.h  -  description
                              -------------------
     begin                : Jun 28, 2019
-    copyright            : (C) 2019 by Tomas Oberhuber
+    copyright            : (C) 2019 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -10,18 +10,8 @@
 
 #pragma once
 
-#include <iostream>
-
-#include <TNL/TypeTraits.h>
-#include <TNL/Containers/Expressions/TypeTraits.h>
-#include <TNL/Containers/Expressions/ExpressionTemplatesOperations.h>
-#include <TNL/Containers/Expressions/ExpressionVariableType.h>
+#include <TNL/Containers/Expressions/ExpressionTemplates.h>
 #include <TNL/Containers/Expressions/DistributedComparison.h>
-
-#include <TNL/Communicators/MPIPrint.h>
-
-#include <typeinfo>
-#include <cxxabi.h>
 
 namespace TNL {
 namespace Containers {
@@ -31,18 +21,14 @@ namespace Expressions {
 // Distributed unary expression template
 template< typename T1,
           template< typename > class Operation,
-          typename Parameter,
-          typename Communicator,
           ExpressionVariableType T1Type = ExpressionVariableTypeGetter< T1 >::value >
 struct DistributedUnaryExpressionTemplate
 {};
 
 template< typename T1,
           template< typename > class Operation,
-          typename Parameter,
-          typename Communicator,
           ExpressionVariableType T1Type >
-struct IsExpressionTemplate< DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator, T1Type > >
+struct IsExpressionTemplate< DistributedUnaryExpressionTemplate< T1, Operation, T1Type > >
 : std::true_type
 {};
 
@@ -51,7 +37,6 @@ struct IsExpressionTemplate< DistributedUnaryExpressionTemplate< T1, Operation, 
 template< typename T1,
           typename T2,
           template< typename, typename > class Operation,
-          typename Communicator,
           ExpressionVariableType T1Type = ExpressionVariableTypeGetter< T1 >::value,
           ExpressionVariableType T2Type = ExpressionVariableTypeGetter< T2 >::value >
 struct DistributedBinaryExpressionTemplate
@@ -60,273 +45,264 @@ struct DistributedBinaryExpressionTemplate
 template< typename T1,
           typename T2,
           template< typename, typename > class Operation,
-          typename Communicator,
           ExpressionVariableType T1Type,
           ExpressionVariableType T2Type >
-struct IsExpressionTemplate< DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator, T1Type, T2Type > >
+struct IsExpressionTemplate< DistributedBinaryExpressionTemplate< T1, T2, Operation, T1Type, T2Type > >
 : std::true_type
 {};
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation,
-          typename Communicator >
-struct DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator, VectorExpressionVariable, VectorExpressionVariable >
+          template< typename, typename > class Operation >
+struct DistributedBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, VectorExpressionVariable >
 {
-   using RealType = typename std::remove_const< typename T1::RealType >::type;
+   using RealType = typename T1::RealType;
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
-   using CommunicatorType = Communicator; //Communicators::MpiCommunicator;
+   using CommunicatorType = typename T1::CommunicatorType;
    using CommunicationGroup = typename CommunicatorType::CommunicationGroup;
+   using LocalRangeType = typename T1::LocalRangeType;
+   using ConstLocalViewType = BinaryExpressionTemplate< typename T1::ConstLocalViewType,
+                                                        typename T2::ConstLocalViewType,
+                                                        Operation >;
 
    static_assert( std::is_same< typename T1::DeviceType, typename T2::DeviceType >::value, "Attempt to mix operands allocated on different device types." );
    static_assert( IsStaticArrayType< T1 >::value == IsStaticArrayType< T2 >::value, "Attempt to mix static and non-static operands in binary expression templates." );
 
-   DistributedBinaryExpressionTemplate( const T1& a, const T2& b, const CommunicationGroup& group )
-      : op1( a ), op2( b ), communicationGroup( group ) {}
+   DistributedBinaryExpressionTemplate( const T1& a, const T2& b )
+   : op1( a ), op2( b )
+   {
+      TNL_ASSERT_EQ( op1.getSize(), op2.getSize(),
+                     "Sizes of both operands must be equal." );
+      TNL_ASSERT_EQ( op1.getLocalRange(), op2.getLocalRange(),
+                     "Distributed expressions are supported only on vectors which are distributed the same way." );
+      TNL_ASSERT_EQ( op1.getCommunicationGroup(), op2.getCommunicationGroup(),
+                     "Distributed expressions are supported only on vectors within the same communication group." );
+   }
 
    RealType getElement( const IndexType i ) const
    {
-       return Operation< typename T1::RealType, typename T2::RealType >::evaluate( op1.getElement( i ), op2.getElement( i ) );
+      return getConstLocalView().getElement( i );
    }
 
-   __cuda_callable__
+   // this is actually never executed, but needed for proper ExpressionVariableTypeGetter
+   // selection via HasSubscriptOperator type trait
    RealType operator[]( const IndexType i ) const
    {
-       return Operation< typename T1::RealType, typename T2::RealType >::evaluate( op1[ i ], op2[ i ] );
+      return getConstLocalView()[ i ];
    }
 
-   __cuda_callable__
-   int getSize() const
+   IndexType getSize() const
    {
-       return op1.getSize();
+      return op1.getSize();
+   }
+
+   LocalRangeType getLocalRange() const
+   {
+      return op1.getLocalRange();
    }
 
    CommunicationGroup getCommunicationGroup() const
    {
-      return communicationGroup;
+      return op1.getCommunicationGroup();
    }
 
-   protected:
-      const T1 op1;
-      const T2 op2;
-      CommunicationGroup communicationGroup;
-      //typename OperandType< T1, DeviceType >::type op1;
-      //typename OperandType< T2, DeviceType >::type op2;
+   ConstLocalViewType getConstLocalView() const
+   {
+      return ConstLocalViewType( op1.getConstLocalView(), op2.getConstLocalView() );
+   }
+
+protected:
+   const T1& op1;
+   const T2& op2;
 };
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation,
-          typename Communicator >
-struct DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator, VectorExpressionVariable, ArithmeticVariable >
+          template< typename, typename > class Operation >
+struct DistributedBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, ArithmeticVariable >
 {
-   using RealType = typename std::remove_const< typename T1::RealType >::type;
+   using RealType = typename T1::RealType;
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
-   using CommunicatorType = Communicator;
+   using CommunicatorType = typename T1::CommunicatorType;
    using CommunicationGroup = typename CommunicatorType::CommunicationGroup;
+   using LocalRangeType = typename T1::LocalRangeType;
+   using ConstLocalViewType = BinaryExpressionTemplate< typename T1::ConstLocalViewType, T2, Operation >;
 
-   DistributedBinaryExpressionTemplate( const T1& a, const T2& b, const CommunicationGroup& group )
-      : op1( a ), op2( b ), communicationGroup( group ){}
+   DistributedBinaryExpressionTemplate( const T1& a, const T2& b )
+   : op1( a ), op2( b ) {}
 
    RealType getElement( const IndexType i ) const
    {
-       return Operation< typename T1::RealType, T2 >::evaluate( op1.getElement( i ), op2 );
+      return getConstLocalView().getElement( i );
    }
 
-   __cuda_callable__
+   // this is actually never executed, but needed for proper ExpressionVariableTypeGetter
+   // selection via HasSubscriptOperator type trait
    RealType operator[]( const IndexType i ) const
    {
-       return Operation< typename T1::RealType, T2 >::evaluate( op1[ i ], op2 );
+      return getConstLocalView()[ i ];
    }
 
-   __cuda_callable__
-   int getSize() const
+   IndexType getSize() const
    {
-       return op1.getSize();
+      return op1.getSize();
+   }
+
+   LocalRangeType getLocalRange() const
+   {
+      return op1.getLocalRange();
    }
 
    CommunicationGroup getCommunicationGroup() const
    {
-      return communicationGroup;
+      return op1.getCommunicationGroup();
    }
 
-   protected:
-      const T1 op1;
-      const T2 op2;
-      CommunicationGroup communicationGroup;
-      //typename OperandType< T1, DeviceType >::type op1;
-      //typename OperandType< T2, DeviceType >::type op2;
+   ConstLocalViewType getConstLocalView() const
+   {
+      return ConstLocalViewType( op1.getConstLocalView(), op2 );
+   }
+
+protected:
+   const T1& op1;
+   const T2& op2;
 };
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation,
-          typename Communicator >
-struct DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator, ArithmeticVariable, VectorExpressionVariable >
+          template< typename, typename > class Operation >
+struct DistributedBinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorExpressionVariable >
 {
-   using RealType = typename std::remove_const< typename T2::RealType >::type;
+   using RealType = typename T2::RealType;
    using DeviceType = typename T2::DeviceType;
    using IndexType = typename T2::IndexType;
-   using CommunicatorType = Communicator;
+   using CommunicatorType = typename T2::CommunicatorType;
    using CommunicationGroup = typename CommunicatorType::CommunicationGroup;
+   using LocalRangeType = typename T2::LocalRangeType;
+   using ConstLocalViewType = BinaryExpressionTemplate< T1, typename T2::ConstLocalViewType, Operation >;
 
-   DistributedBinaryExpressionTemplate( const T1& a, const T2& b, const CommunicationGroup& group )
-      : op1( a ), op2( b ), communicationGroup( group ){}
+   DistributedBinaryExpressionTemplate( const T1& a, const T2& b )
+   : op1( a ), op2( b ) {}
 
    RealType getElement( const IndexType i ) const
    {
-       return Operation< T1, typename T2::RealType >::evaluate( op1, op2.getElement( i ) );
+      return getConstLocalView().getElement( i );
    }
 
-   __cuda_callable__
+   // this is actually never executed, but needed for proper ExpressionVariableTypeGetter
+   // selection via HasSubscriptOperator type trait
    RealType operator[]( const IndexType i ) const
    {
-       return Operation< T1, typename T2::RealType >::evaluate( op1, op2[ i ] );
+      return getConstLocalView()[ i ];
    }
 
-   __cuda_callable__
-   int getSize() const
+   IndexType getSize() const
    {
-       return op2.getSize();
+      return op2.getSize();
+   }
+
+   LocalRangeType getLocalRange() const
+   {
+      return op2.getLocalRange();
    }
 
    CommunicationGroup getCommunicationGroup() const
    {
-      return communicationGroup;
+      return op2.getCommunicationGroup();
    }
 
-   protected:
-      const T1 op1;
-      const T2 op2;
-      CommunicationGroup communicationGroup;
-      //typename OperandType< T1, DeviceType >::type op1;
-      //typename OperandType< T2, DeviceType >::type op2;
+   ConstLocalViewType getConstLocalView() const
+   {
+      return ConstLocalViewType( op1, op2.getConstLocalView() );
+   }
+
+protected:
+   const T1& op1;
+   const T2& op2;
 };
 
 ////
 // Distributed unary expression template
-//
-// Parameter type serves mainly for pow( base, exp ). Here exp is parameter we need
-// to pass to pow.
 template< typename T1,
-          template< typename > class Operation,
-          typename Parameter,
-          typename Communicator >
-struct DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator, VectorExpressionVariable >
+          template< typename > class Operation >
+struct DistributedUnaryExpressionTemplate< T1, Operation, VectorExpressionVariable >
 {
-   using RealType = typename std::remove_const< typename T1::RealType >::type;
+   using RealType = typename T1::RealType;
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
-   using CommunicatorType = Communicator;
+   using CommunicatorType = typename T1::CommunicatorType;
    using CommunicationGroup = typename CommunicatorType::CommunicationGroup;
+   using LocalRangeType = typename T1::LocalRangeType;
+   using ConstLocalViewType = UnaryExpressionTemplate< typename T1::ConstLocalViewType, Operation >;
 
-   DistributedUnaryExpressionTemplate( const T1& a, const Parameter& p, const CommunicationGroup& group )
-   : operand( a ), parameter( p ), communicationGroup( group ) {}
+   DistributedUnaryExpressionTemplate( const T1& a )
+   : operand( a ) {}
 
    RealType getElement( const IndexType i ) const
    {
-       return Operation< typename T1::RealType >::evaluate( operand.getElement( i ), parameter );
+      return getConstLocalView().getElement( i );
    }
 
-   __cuda_callable__
+   // this is actually never executed, but needed for proper ExpressionVariableTypeGetter
+   // selection via HasSubscriptOperator type trait
    RealType operator[]( const IndexType i ) const
    {
-       return Operation< typename T1::RealType >::evaluate( operand[ i ], parameter );
+      return getConstLocalView()[ i ];
    }
 
-   __cuda_callable__
-   int getSize() const
+   IndexType getSize() const
    {
-       return operand.getSize();
+      return operand.getSize();
    }
 
-   void set( const Parameter& p ) { parameter = p; }
-
-   const Parameter& get() { return parameter; }
-
-   CommunicationGroup getCommunicationGroup() const
+   LocalRangeType getLocalRange() const
    {
-      return communicationGroup;
-   }
-
-   protected:
-      const T1 operand;
-      //typename OperandType< T1, DeviceType >::type operand;
-      Parameter parameter;
-      CommunicationGroup communicationGroup;
-};
-
-////
-// Distributed unary expression template with no parameter
-template< typename T1,
-          template< typename > class Operation,
-          typename Communicator >
-struct DistributedUnaryExpressionTemplate< T1, Operation, void, Communicator, VectorExpressionVariable >
-{
-   using RealType = typename std::remove_const< typename T1::RealType >::type;
-   using DeviceType = typename T1::DeviceType;
-   using IndexType = typename T1::IndexType;
-   using CommunicatorType = Communicator;
-   using CommunicationGroup = typename CommunicatorType::CommunicationGroup;
-
-   DistributedUnaryExpressionTemplate( const T1& a, const CommunicationGroup& group )
-      : operand( a ), communicationGroup( group ){}
-
-   RealType getElement( const IndexType i ) const
-   {
-       return Operation< typename T1::RealType >::evaluate( operand.getElement( i ) );
-   }
-
-   __cuda_callable__
-   RealType operator[]( const IndexType i ) const
-   {
-       return Operation< typename T1::RealType >::evaluate( operand[ i ] );
-   }
-
-   __cuda_callable__
-   int getSize() const
-   {
-       return operand.getSize();
+      return operand.getLocalRange();
    }
 
    CommunicationGroup getCommunicationGroup() const
    {
-      return communicationGroup;
+      return operand.getCommunicationGroup();
    }
 
-   protected:
-      const T1 operand; // TODO: fix
-      //typename std::add_const< typename OperandType< T1, DeviceType >::type >::type operand;
-      CommunicationGroup communicationGroup;
+   ConstLocalViewType getConstLocalView() const
+   {
+      return ConstLocalViewType( operand.getConstLocalView() );
+   }
+
+protected:
+   const T1& operand;
 };
 
 ////
 // Output stream
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation, typename Communicator >
-std::ostream& operator<<( std::ostream& str, const DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& expression )
+          template< typename, typename > class Operation >
+std::ostream& operator<<( std::ostream& str, const DistributedBinaryExpressionTemplate< T1, T2, Operation >& expression )
 {
    str << "[ ";
-   for( int i = 0; i < expression.getLocalSize() - 1; i++ )
+   for( int i = 0; i < expression.getSize() - 1; i++ )
       str << expression.getElement( i ) << ", ";
-   str << expression.getElement( expression.getLocalSize() - 1 ) << " ]";
+   str << expression.getElement( expression.getSize() - 1 ) << " ]";
    return str;
 }
 
 template< typename T,
-          template< typename > class Operation,
-          typename Parameter, typename Communicator >
-std::ostream& operator<<( std::ostream& str, const DistributedUnaryExpressionTemplate< T, Operation, Parameter, Communicator >& expression )
+          template< typename > class Operation >
+std::ostream& operator<<( std::ostream& str, const DistributedUnaryExpressionTemplate< T, Operation >& expression )
 {
    str << "[ ";
-   for( int i = 0; i < expression.getLocalSize() - 1; i++ )
+   for( int i = 0; i < expression.getSize() - 1; i++ )
       str << expression.getElement( i ) << ", ";
-   str << expression.getElement( expression.getLocalSize() - 1 ) << " ]";
+   str << expression.getElement( expression.getSize() - 1 ) << " ]";
    return str;
 }
+
+////
+// Operators are supposed to be in the same namespace as the expression templates
 
 ////
 // Binary expressions addition
@@ -335,112 +311,85 @@ template< typename L1,
           template< typename, typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation,
-          typename Communicator >
+          template< typename, typename > class ROperation >
 auto
-operator+( const DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
-           const DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
+operator+( const DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
+           const DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return DistributedBinaryExpressionTemplate<
-      DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
-      DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
-      Addition, Communicator >( a, b, a.getCommunicationGroup() );
+   return DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Addition >( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation,
-          typename Communicator >
+          template< typename, typename > class Operation >
 auto
-operator+( const DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& a,
-           const typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& b )
+operator+( const DistributedBinaryExpressionTemplate< T1, T2, Operation >& a,
+           const typename DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
 {
-   return DistributedBinaryExpressionTemplate<
-      DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
-      typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
-      Addition, Communicator >( a, b, a.getCommunicationGroup() );
+   return DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Addition >( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation, typename Communicator >
+          template< typename, typename > class Operation >
 auto
-operator+( const typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& a,
-           const DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& b )
+operator+( const typename DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
+           const DistributedBinaryExpressionTemplate< T1, T2, Operation >& b )
 {
-   return DistributedBinaryExpressionTemplate<
-      typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
-      DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
-      Addition, Communicator >( a, b, b.getCommunicationGroup() );
+   return DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Addition >( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation, typename Parameter, typename Communicator >
+          template< typename > class Operation >
 auto
-operator+( const DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >& a,
-           const typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType& b )
+operator+( const DistributedUnaryExpressionTemplate< T1, Operation >& a,
+           const typename DistributedUnaryExpressionTemplate< T1, Operation >::RealType& b )
 {
-   return DistributedBinaryExpressionTemplate<
-      DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >,
-      typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType,
-      Addition, Communicator >( a, b, a.getCommunicationGroup() );
+   return DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Addition >( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation, typename Parameter, typename Communicator >
+          template< typename > class Operation >
 auto
-operator+( const typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType& a,
-           const DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >& b )
+operator+( const typename DistributedUnaryExpressionTemplate< T1, Operation >::RealType& a,
+           const DistributedUnaryExpressionTemplate< T1, Operation >& b )
 {
-   return DistributedBinaryExpressionTemplate<
-      typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType,
-      DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >,
-      Addition, Communicator >( a, b, b.getCommunicationGroup() );
+   return DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Addition >( a, b );
 }
 
 template< typename L1,
           template< typename > class LOperation,
-          typename Parameter,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation, typename Communicator >
+          template< typename, typename > class ROperation >
 auto
-operator+( const DistributedUnaryExpressionTemplate< L1, LOperation, Parameter, Communicator >& a,
-           const DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
+operator+( const DistributedUnaryExpressionTemplate< L1, LOperation >& a,
+           const DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return DistributedBinaryExpressionTemplate<
-      DistributedUnaryExpressionTemplate< L1, LOperation, Parameter, Communicator >,
-      DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
-      Addition, Communicator >( a, b, a.getCommunicationGroup() );
+   return DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Addition >( a, b );
 }
 
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
           typename R1,
-          template< typename > class ROperation, typename Parameter, typename Communicator >
+          template< typename > class ROperation >
 auto
-operator+( const DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
-           const DistributedUnaryExpressionTemplate< R1, ROperation, Parameter, Communicator >& b )
+operator+( const DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
+           const DistributedUnaryExpressionTemplate< R1,ROperation >& b )
 {
-   return DistributedBinaryExpressionTemplate<
-      DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
-      DistributedUnaryExpressionTemplate< R1, ROperation, Parameter, Communicator >,
-      Addition, Communicator >( a, b, a.getCommunicationGroup() );
+   return DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Addition >( a, b );
 }
 
 template< typename L1,
-          template< typename > class LOperation, typename LParameter,
+          template< typename > class LOperation,
           typename R1,
-          template< typename > class ROperation, typename RParameter, typename Communicator >
+          template< typename > class ROperation >
 auto
-operator+( const DistributedUnaryExpressionTemplate< L1,LOperation, LParameter, Communicator >& a,
-           const DistributedUnaryExpressionTemplate< R1,ROperation, RParameter, Communicator >& b )
+operator+( const DistributedUnaryExpressionTemplate< L1,LOperation >& a,
+           const DistributedUnaryExpressionTemplate< R1,ROperation >& b )
 {
-   return DistributedBinaryExpressionTemplate<
-      DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
-      DistributedUnaryExpressionTemplate< R1, ROperation, RParameter, Communicator >,
-      Addition, Communicator >( a, b, a.getCommunicationGroup() );
+   return DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Addition >( a, b );
 }
 
 ////
@@ -450,109 +399,85 @@ template< typename L1,
           template< typename, typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation, typename Communicator >
+          template< typename, typename > class ROperation >
 auto
-operator-( const DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
-           const DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
+operator-( const DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
+           const DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return DistributedBinaryExpressionTemplate<
-      DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
-      DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
-      Subtraction, Communicator >( a, b, a.getCommunicationGroup() );
+   return DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Subtraction >( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation, typename Communicator >
+          template< typename, typename > class Operation >
 auto
-operator-( const DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& a,
-           const typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& b )
+operator-( const DistributedBinaryExpressionTemplate< T1, T2, Operation >& a,
+           const typename DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
 {
-   return DistributedBinaryExpressionTemplate<
-      DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
-      typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
-      Subtraction, Communicator >( a, b, a.getCommunicationGroup() );
+   return DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Subtraction >( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation, typename Communicator >
+          template< typename, typename > class Operation >
 auto
-operator-( const typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& a,
-           const DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& b )
+operator-( const typename DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
+           const DistributedBinaryExpressionTemplate< T1, T2, Operation >& b )
 {
-   return DistributedBinaryExpressionTemplate<
-      typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
-      DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
-      Subtraction, Communicator >( a, b, b.getCommunicationGroup() );
+   return DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Subtraction >( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation, typename Parameter, typename Communicator >
+          template< typename > class Operation >
 auto
-operator-( const DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >& a,
-           const typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType& b )
+operator-( const DistributedUnaryExpressionTemplate< T1, Operation >& a,
+           const typename DistributedUnaryExpressionTemplate< T1, Operation >::RealType& b )
 {
-   return DistributedBinaryExpressionTemplate<
-      DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >,
-      typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType,
-      Subtraction, Communicator >( a, b, a.getCommunicationGroup() );
+   return DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Subtraction >( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation, typename Parameter, typename Communicator >
+          template< typename > class Operation >
 auto
-operator-( const typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType& a,
-           const DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >& b )
+operator-( const typename DistributedUnaryExpressionTemplate< T1, Operation >::RealType& a,
+           const DistributedUnaryExpressionTemplate< T1, Operation >& b )
 {
-   return DistributedBinaryExpressionTemplate<
-      typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType,
-      DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >,
-      Subtraction, Communicator >( a, b, b.getCommunicationGroup() );
+   return DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Subtraction >( a, b );
 }
 
 template< typename L1,
-          template< typename > class LOperation, typename LParameter,
+          template< typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation, typename Communicator >
+          template< typename, typename > class ROperation >
 auto
-operator-( const DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a,
-           const DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
+operator-( const DistributedUnaryExpressionTemplate< L1, LOperation >& a,
+           const DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return DistributedBinaryExpressionTemplate<
-      DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
-      DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
-      Subtraction, Communicator >( a, b, a.getCommunicationGroup() );
+   return DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Subtraction >( a, b );
 }
 
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
           typename R1,
-          template< typename > class ROperation, typename Parameter, typename Communicator >
+          template< typename > class ROperation >
 auto
-operator-( const DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
-           const DistributedUnaryExpressionTemplate< R1, ROperation, Parameter, Communicator >& b )
+operator-( const DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
+           const DistributedUnaryExpressionTemplate< R1,ROperation >& b )
 {
-   return DistributedBinaryExpressionTemplate<
-      DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
-      DistributedUnaryExpressionTemplate< R1, ROperation, Parameter, Communicator >,
-      Subtraction, Communicator >( a, b, a.getCommunicationGroup() );
+   return DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Subtraction >( a, b );
 }
 
 template< typename L1,
-          template< typename > class LOperation, typename LParameter,
+          template< typename > class LOperation,
           typename R1,
-          template< typename > class ROperation, typename RParameter, typename Communicator >
+          template< typename > class ROperation >
 auto
-operator-( const DistributedUnaryExpressionTemplate< L1,LOperation, LParameter, Communicator >& a,
-           const DistributedUnaryExpressionTemplate< R1,ROperation, RParameter, Communicator >& b )
+operator-( const DistributedUnaryExpressionTemplate< L1,LOperation >& a,
+           const DistributedUnaryExpressionTemplate< R1,ROperation >& b )
 {
-   return DistributedBinaryExpressionTemplate<
-      DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
-      DistributedUnaryExpressionTemplate< R1, ROperation, RParameter, Communicator >,
-      Subtraction, Communicator >( a, b, a.getCommunicationGroup() );
+   return DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Subtraction >( a, b );
 }
 
 ////
@@ -562,109 +487,85 @@ template< typename L1,
           template< typename, typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation, typename Communicator >
+          template< typename, typename > class ROperation >
 auto
-operator*( const DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
-           const DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
+operator*( const DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
+           const DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return DistributedBinaryExpressionTemplate<
-      DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
-      DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
-      Multiplication, Communicator >( a, b, a.getCommunicationGroup() );
+   return DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Multiplication >( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation, typename Communicator >
+          template< typename, typename > class Operation >
 auto
-operator*( const DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& a,
-           const typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& b )
+operator*( const DistributedBinaryExpressionTemplate< T1, T2, Operation >& a,
+           const typename DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
 {
-   return DistributedBinaryExpressionTemplate<
-      DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
-      typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
-      Multiplication, Communicator >( a, b, a.getCommunicationGroup() );
+   return DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Multiplication >( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation, typename Communicator >
+          template< typename, typename > class Operation >
 auto
-operator*( const typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& a,
-           const DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& b )
+operator*( const typename DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
+           const DistributedBinaryExpressionTemplate< T1, T2, Operation >& b )
 {
-   return DistributedBinaryExpressionTemplate<
-      typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
-      DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
-      Multiplication, Communicator >( a, b, b.getCommunicationGroup() );
+   return DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Multiplication >( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation, typename Parameter, typename Communicator >
+          template< typename > class Operation >
 auto
-operator*( const DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >& a,
-           const typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType& b )
+operator*( const DistributedUnaryExpressionTemplate< T1, Operation >& a,
+           const typename DistributedUnaryExpressionTemplate< T1, Operation >::RealType& b )
 {
-   return DistributedBinaryExpressionTemplate<
-      DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >,
-      typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType,
-      Multiplication, Communicator >( a, b, a.getCommunicationGroup() );
+   return DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Multiplication >( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation, typename Parameter, typename Communicator >
+          template< typename > class Operation >
 auto
-operator*( const typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType& a,
-           const DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >& b )
+operator*( const typename DistributedUnaryExpressionTemplate< T1, Operation >::RealType& a,
+           const DistributedUnaryExpressionTemplate< T1, Operation >& b )
 {
-   return DistributedBinaryExpressionTemplate<
-      typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType,
-      DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >,
-      Multiplication, Communicator >( a, b, b.getCommunicationGroup() );
+   return DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Multiplication >( a, b );
 }
 
 template< typename L1,
-          template< typename > class LOperation, typename LParameter,
+          template< typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation, typename Communicator >
+          template< typename, typename > class ROperation >
 auto
-operator*( const DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a,
-           const DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
+operator*( const DistributedUnaryExpressionTemplate< L1, LOperation >& a,
+           const DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return DistributedBinaryExpressionTemplate<
-      DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
-      DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
-      Multiplication, Communicator >( a, b, a.getCommunicationGroup() );
+   return DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Multiplication >( a, b );
 }
 
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
           typename R1,
-          template< typename > class ROperation, typename Parameter, typename Communicator >
+          template< typename > class ROperation >
 auto
-operator*( const DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
-           const DistributedUnaryExpressionTemplate< R1, ROperation, Parameter, Communicator >& b )
+operator*( const DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
+           const DistributedUnaryExpressionTemplate< R1, ROperation >& b )
 {
-   return DistributedBinaryExpressionTemplate<
-      DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
-      DistributedUnaryExpressionTemplate< R1, ROperation, Parameter, Communicator >,
-      Multiplication, Communicator >( a, b, a.getCommunicationGroup() );
+   return DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Multiplication >( a, b );
 }
 
 template< typename L1,
-          template< typename > class LOperation, typename LParameter,
+          template< typename > class LOperation,
           typename R1,
-          template< typename > class ROperation, typename RParameter, typename Communicator >
+          template< typename > class ROperation >
 auto
-operator*( const DistributedUnaryExpressionTemplate< L1,LOperation, LParameter, Communicator >& a,
-           const DistributedUnaryExpressionTemplate< R1,ROperation, RParameter, Communicator >& b )
+operator*( const DistributedUnaryExpressionTemplate< L1,LOperation >& a,
+           const DistributedUnaryExpressionTemplate< R1,ROperation >& b )
 {
-   return DistributedBinaryExpressionTemplate<
-      DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
-      DistributedUnaryExpressionTemplate< R1, ROperation, RParameter, Communicator >,
-      Multiplication, Communicator >( a, b, a.getCommunicationGroup() );
+   return DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Multiplication >( a, b );
 }
 
 ////
@@ -674,109 +575,85 @@ template< typename L1,
           template< typename, typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation, typename Communicator >
+          template< typename, typename > class ROperation >
 auto
-operator/( const DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
-           const DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
+operator/( const DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
+           const DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return DistributedBinaryExpressionTemplate<
-      DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
-      DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
-      Division, Communicator >( a, b, a.getCommunicationGroup() );
+   return DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Division >( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation, typename Communicator >
+          template< typename, typename > class Operation >
 auto
-operator/( const DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& a,
-           const typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& b )
+operator/( const DistributedBinaryExpressionTemplate< T1, T2, Operation >& a,
+           const typename DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
 {
-   return DistributedBinaryExpressionTemplate<
-      DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
-      typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
-      Division, Communicator >( a, b, a.getCommunicationGroup() );
+   return DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Division >( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation, typename Communicator >
+          template< typename, typename > class Operation >
 auto
-operator/( const typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& a,
-           const DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& b )
+operator/( const typename DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
+           const DistributedBinaryExpressionTemplate< T1, T2, Operation >& b )
 {
-   return DistributedBinaryExpressionTemplate<
-      typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
-      DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
-      Division, Communicator >( a, b, b.getCommunicationGroup() );
+   return DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Division >( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation, typename Parameter, typename Communicator >
+          template< typename > class Operation >
 auto
-operator/( const DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >& a,
-           const typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType& b )
+operator/( const DistributedUnaryExpressionTemplate< T1, Operation >& a,
+           const typename DistributedUnaryExpressionTemplate< T1, Operation >::RealType& b )
 {
-   return DistributedBinaryExpressionTemplate<
-      DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >,
-      typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType,
-      Division, Communicator >( a, b, a.getCommunicationGroup() );
+   return DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Division >( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation, typename Parameter, typename Communicator >
+          template< typename > class Operation >
 auto
-operator/( const typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType& a,
-           const DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >& b )
+operator/( const typename DistributedUnaryExpressionTemplate< T1, Operation >::RealType& a,
+           const DistributedUnaryExpressionTemplate< T1, Operation >& b )
 {
-   return DistributedBinaryExpressionTemplate<
-      typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType,
-      DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >,
-      Division, Communicator >( a, b, b.getCommunicationGroup() );
+   return DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Division >( a, b );
 }
 
 template< typename L1,
-          template< typename > class LOperation, typename LParameter,
+          template< typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation, typename Communicator >
+          template< typename, typename > class ROperation >
 auto
-operator/( const DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a,
-           const DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
+operator/( const DistributedUnaryExpressionTemplate< L1, LOperation >& a,
+           const DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return DistributedBinaryExpressionTemplate<
-      DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
-      DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
-      Division, Communicator >( a, b, a.getCommunicationGroup() );
+   return DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Division >( a, b );
 }
 
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
           typename R1,
-          template< typename > class ROperation, typename Parameter, typename Communicator >
+          template< typename > class ROperation >
 auto
-operator/( const DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
-           const DistributedUnaryExpressionTemplate< R1,ROperation, Parameter, Communicator >& b )
+operator/( const DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
+           const DistributedUnaryExpressionTemplate< R1,ROperation >& b )
 {
-   return DistributedBinaryExpressionTemplate<
-      DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
-      DistributedUnaryExpressionTemplate< R1, ROperation, Parameter, Communicator >,
-      Division, Communicator >( a, b, a.getCommunicationGroup() );
+   return DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Division >( a, b );
 }
 
 template< typename L1,
-          template< typename > class LOperation, typename LParameter,
+          template< typename > class LOperation,
           typename R1,
-          template< typename > class ROperation, typename RParameter, typename Communicator >
+          template< typename > class ROperation >
 auto
-operator/( const DistributedUnaryExpressionTemplate< L1,LOperation, LParameter, Communicator >& a,
-           const DistributedUnaryExpressionTemplate< R1,ROperation, RParameter, Communicator >& b )
+operator/( const DistributedUnaryExpressionTemplate< L1,LOperation >& a,
+           const DistributedUnaryExpressionTemplate< R1,ROperation >& b )
 {
-   return DistributedBinaryExpressionTemplate<
-      DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
-      DistributedUnaryExpressionTemplate< R1, ROperation, RParameter, Communicator >,
-      Division, Communicator >( a, b, a.getCommunicationGroup() );
+   return DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Division >( a, b );
 }
 
 ////
@@ -786,93 +663,74 @@ template< typename L1,
           template< typename, typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation, typename Communicator >
+          template< typename, typename > class ROperation >
 bool
-operator==( const DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
-            const DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
+operator==( const DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
+            const DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   using Left = DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >;
-   using Right = DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >;
-   return DistributedComparison< Left, Right >::template EQ< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::EQ( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation, typename Communicator >
+          template< typename, typename > class Operation >
 bool
-operator==( const DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& a,
-            const typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& b )
+operator==( const DistributedBinaryExpressionTemplate< T1, T2, Operation >& a,
+            const typename DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
 {
-   using Left = DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >;
-   using Right = typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType;
-   return DistributedComparison< Left, Right >::template EQ< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::EQ( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation,
-          typename Parameter, typename Communicator >
+          template< typename > class Operation >
 bool
-operator==( const DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >& a,
-            const typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType& b )
+operator==( const DistributedUnaryExpressionTemplate< T1, Operation >& a,
+            const typename DistributedUnaryExpressionTemplate< T1, Operation >::RealType& b )
 {
-   using Left = DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >;
-   using Right = typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType;
-   return DistributedComparison< Left, Right >::template EQ< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::EQ( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation, typename Communicator >
+          template< typename, typename > class Operation >
 bool
-operator==( const typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& a,
-            const DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& b )
+operator==( const typename DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
+            const DistributedBinaryExpressionTemplate< T1, T2, Operation >& b )
 {
-   using Left = typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType;
-   using Right = DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >;
-   return DistributedComparison< Left, Right >::template EQ< typename Left::CommunicatorType >( a, b, b.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::EQ( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation,
-          typename Parameter, typename Communicator >
+          template< typename > class Operation >
 bool
-operator==( const typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType& a,
-            const DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >& b )
+operator==( const typename DistributedUnaryExpressionTemplate< T1, Operation >::RealType& a,
+            const DistributedUnaryExpressionTemplate< T1, Operation >& b )
 {
-   using Left = typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType;
-   using Right = DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >;
-   return DistributedComparison< Left, Right >::template EQ< typename Left::CommunicatorType >( a, b, b.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::EQ( a, b );
 }
 
 template< typename L1,
           template< typename > class LOperation,
-          typename LParameter,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation, typename Communicator >
+          template< typename, typename > class ROperation >
 bool
-operator==( const DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a,
-            const DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
+operator==( const DistributedUnaryExpressionTemplate< L1, LOperation >& a,
+            const DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   using Left = DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >;
-   using Right = DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >;
-   return DistributedComparison< Left, Right >::template EQ< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::EQ( a, b );
 }
 
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
           typename R1,
-          template< typename > class ROperation,
-          typename RParameter,
-          typename Communicator >
+          template< typename > class ROperation >
 bool
-operator==( const DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
-            const DistributedUnaryExpressionTemplate< R1,ROperation, RParameter, Communicator >& b )
+operator==( const DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
+            const DistributedUnaryExpressionTemplate< R1,ROperation >& b )
 {
-   using Left = DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >;
-   using Right = DistributedUnaryExpressionTemplate< R1, ROperation, RParameter, Communicator >;
-   return DistributedComparison< Left, Right >::template EQ< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::EQ( a, b );
 }
 
 ////
@@ -882,107 +740,85 @@ template< typename L1,
           template< typename, typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation, typename Communicator >
+          template< typename, typename > class ROperation >
 bool
-operator!=( const DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
-            const DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
+operator!=( const DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
+            const DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   using Left = DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >;
-   using Right = DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >;
-   return DistributedComparison< Left, Right >::template NE< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::NE( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation, typename Communicator >
+          template< typename, typename > class Operation >
 bool
-operator!=( const DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& a,
-            const typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& b )
+operator!=( const DistributedBinaryExpressionTemplate< T1, T2, Operation >& a,
+            const typename DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
 {
-   using Left = DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >;
-   using Right = typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType;
-   return DistributedComparison< Left, Right >::template NE< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::NE( a, b );
 }
 
 template< typename L1,
           template< typename > class LOperation,
-          typename LParameter,
           typename R1,
-          template< typename > class ROperation,
-          typename RParameter, typename Communicator >
+          template< typename > class ROperation >
 bool
-operator!=( const DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a,
-            const DistributedUnaryExpressionTemplate< R1, ROperation, RParameter, Communicator >& b )
+operator!=( const DistributedUnaryExpressionTemplate< L1, LOperation >& a,
+            const DistributedUnaryExpressionTemplate< R1, ROperation >& b )
 {
-   using Left = DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >;
-   using Right = DistributedUnaryExpressionTemplate< R1, ROperation, RParameter, Communicator >;
-   return DistributedComparison< Left, Right >::template NE< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::NE( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation,
-          typename Parameter, typename Communicator >
+          template< typename > class Operation >
 bool
-operator!=( const DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >& a,
-            const typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType& b )
+operator!=( const DistributedUnaryExpressionTemplate< T1, Operation >& a,
+            const typename DistributedUnaryExpressionTemplate< T1, Operation >::RealType& b )
 {
-   using Left = DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >;
-   using Right = typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType;
-   return DistributedComparison< Left, Right >::template NE< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::NE( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation, typename Communicator >
+          template< typename, typename > class Operation >
 bool
-operator!=( const typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& a,
-            const DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& b )
+operator!=( const typename DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
+            const DistributedBinaryExpressionTemplate< T1, T2, Operation >& b )
 {
-   using Left = typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType;
-   using Right = DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >;
-   return DistributedComparison< Left, Right >::template NE< typename Left::CommunicatorType >( a, b, b.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::NE( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation,
-          typename Parameter, typename Communicator >
+          template< typename > class Operation >
 bool
-operator!=( const typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType& a,
-            const DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >& b )
+operator!=( const typename DistributedUnaryExpressionTemplate< T1, Operation >::RealType& a,
+            const DistributedUnaryExpressionTemplate< T1, Operation >& b )
 {
-   using Left = typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType;
-   using Right = DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >;
-   return DistributedComparison< Left, Right >::template NE< typename Left::CommunicatorType >( a, b, b.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::NE( a, b );
 }
 
 template< typename L1,
           template< typename > class LOperation,
-          typename LParameter,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation, typename Communicator >
+          template< typename, typename > class ROperation >
 bool
-operator!=( const DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a,
-            const DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
+operator!=( const DistributedUnaryExpressionTemplate< L1, LOperation >& a,
+            const DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   using Left = DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >;
-   using Right = DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >;
-   return DistributedComparison< Left, Right >::template NE< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::NE( a, b );
 }
 
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
           typename R1,
-          template< typename > class ROperation,
-          typename RParameter, typename Communicator >
+          template< typename > class ROperation >
 bool
-operator!=( const DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
-            const DistributedUnaryExpressionTemplate< R1,ROperation, RParameter, Communicator >& b )
+operator!=( const DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
+            const DistributedUnaryExpressionTemplate< R1,ROperation >& b )
 {
-   using Left = DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >;
-   using Right = DistributedUnaryExpressionTemplate< R1, ROperation, RParameter, Communicator >;
-   return DistributedComparison< Left, Right >::template NE< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::NE( a, b );
 }
 
 ////
@@ -992,107 +828,85 @@ template< typename L1,
           template< typename, typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation, typename Communicator >
+          template< typename, typename > class ROperation >
 bool
-operator<( const DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
-           const DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
+operator<( const DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
+           const DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   using Left = DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >;
-   using Right = DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >;
-   return DistributedComparison< Left, Right >::template LT< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LT( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation, typename Communicator >
+          template< typename, typename > class Operation >
 bool
-operator<( const DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& a,
-           const typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& b )
+operator<( const DistributedBinaryExpressionTemplate< T1, T2, Operation >& a,
+           const typename DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
 {
-   using Left = DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >;
-   using Right = typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType;
-   return DistributedComparison< Left, Right >::template LT< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LT( a, b );
 }
 
 template< typename L1,
           template< typename > class LOperation,
-          typename LParameter,
           typename R1,
-          template< typename > class ROperation,
-          typename RParameter, typename Communicator >
+          template< typename > class ROperation >
 bool
-operator<( const DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a,
-           const DistributedUnaryExpressionTemplate< R1, ROperation, RParameter, Communicator >& b )
+operator<( const DistributedUnaryExpressionTemplate< L1, LOperation >& a,
+           const DistributedUnaryExpressionTemplate< R1, ROperation >& b )
 {
-   using Left = DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >;
-   using Right = DistributedUnaryExpressionTemplate< R1, ROperation, RParameter, Communicator >;
-   return DistributedComparison< Left, Right >::template LT< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LT( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation,
-          typename Parameter, typename Communicator >
+          template< typename > class Operation >
 bool
-operator<( const DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >& a,
-           const typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType& b )
+operator<( const DistributedUnaryExpressionTemplate< T1, Operation >& a,
+           const typename DistributedUnaryExpressionTemplate< T1, Operation >::RealType& b )
 {
-   using Left = DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >;
-   using Right = typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType;
-   return DistributedComparison< Left, Right >::template LT< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LT( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation, typename Communicator >
+          template< typename, typename > class Operation >
 bool
-operator<( const typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& a,
-           const DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& b )
+operator<( const typename DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
+           const DistributedBinaryExpressionTemplate< T1, T2, Operation >& b )
 {
-   using Left = typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType;
-   using Right = DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >;
-   return DistributedComparison< Left, Right >::template LT< typename Left::CommunicatorType >( a, b, b.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LT( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation,
-          typename Parameter, typename Communicator >
+          template< typename > class Operation >
 bool
-operator<( const typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType& a,
-           const DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >& b )
+operator<( const typename DistributedUnaryExpressionTemplate< T1, Operation >::RealType& a,
+           const DistributedUnaryExpressionTemplate< T1, Operation >& b )
 {
-   using Left = typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType;
-   using Right = DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >;
-   return DistributedComparison< Left, Right >::template LT< typename Left::CommunicatorType >( a, b, b.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LT( a, b );
 }
 
 template< typename L1,
           template< typename > class LOperation,
-          typename LParameter,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation, typename Communicator >
+          template< typename, typename > class ROperation >
 bool
-operator<( const DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a,
-           const DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
+operator<( const DistributedUnaryExpressionTemplate< L1, LOperation >& a,
+           const DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   using Left = DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >;
-   using Right = DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >;
-   return DistributedComparison< Left, Right >::template LT< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LT( a, b );
 }
 
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
           typename R1,
-          template< typename > class ROperation,
-          typename RParameter, typename Communicator >
+          template< typename > class ROperation >
 bool
-operator<( const DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
-           const DistributedUnaryExpressionTemplate< R1,ROperation, RParameter, Communicator >& b )
+operator<( const DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
+           const DistributedUnaryExpressionTemplate< R1,ROperation >& b )
 {
-   using Left = DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >;
-   using Right = DistributedUnaryExpressionTemplate< R1, ROperation, RParameter, Communicator >;
-   return DistributedComparison< Left, Right >::template LT< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LT( a, b );
 }
 
 ////
@@ -1102,107 +916,85 @@ template< typename L1,
           template< typename, typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation, typename Communicator >
+          template< typename, typename > class ROperation >
 bool
-operator<=( const DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
-            const DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
+operator<=( const DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
+            const DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   using Left = DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >;
-   using Right = DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >;
-   return DistributedComparison< Left, Right >::template LE< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LE( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation, typename Communicator >
+          template< typename, typename > class Operation >
 bool
-operator<=( const DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& a,
-            const typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& b )
+operator<=( const DistributedBinaryExpressionTemplate< T1, T2, Operation >& a,
+            const typename DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
 {
-   using Left = DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >;
-   using Right = typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType;
-   return DistributedComparison< Left, Right >::template LE< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LE( a, b );
 }
 
 template< typename L1,
           template< typename > class LOperation,
-          typename LParameter,
           typename R1,
-          template< typename > class ROperation,
-          typename RParameter, typename Communicator >
+          template< typename > class ROperation >
 bool
-operator<=( const DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a,
-            const DistributedUnaryExpressionTemplate< R1, ROperation, RParameter, Communicator >& b )
+operator<=( const DistributedUnaryExpressionTemplate< L1, LOperation >& a,
+            const DistributedUnaryExpressionTemplate< R1, ROperation >& b )
 {
-   using Left = DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >;
-   using Right = DistributedUnaryExpressionTemplate< R1, ROperation, RParameter, Communicator >;
-   return DistributedComparison< Left, Right >::template LE< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LE( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation,
-          typename Parameter, typename Communicator >
+          template< typename > class Operation >
 bool
-operator<=( const DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >& a,
-            const typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType& b )
+operator<=( const DistributedUnaryExpressionTemplate< T1, Operation >& a,
+            const typename DistributedUnaryExpressionTemplate< T1, Operation >::RealType& b )
 {
-   using Left = DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >;
-   using Right = typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType;
-   return DistributedComparison< Left, Right >::template LE< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LE( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation, typename Communicator >
+          template< typename, typename > class Operation >
 bool
-operator<=( const typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& a,
-            const DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& b )
+operator<=( const typename DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
+            const DistributedBinaryExpressionTemplate< T1, T2, Operation >& b )
 {
-   using Left = typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType;
-   using Right = DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >;
-   return DistributedComparison< Left, Right >::template LE< typename Left::CommunicatorType >( a, b, b.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LE( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation,
-          typename Parameter, typename Communicator >
+          template< typename > class Operation >
 bool
-operator<=( const typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType& a,
-            const DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >& b )
+operator<=( const typename DistributedUnaryExpressionTemplate< T1, Operation >::RealType& a,
+            const DistributedUnaryExpressionTemplate< T1, Operation >& b )
 {
-   using Left = typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType;
-   using Right = DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >;
-   return DistributedComparison< Left, Right >::template LE< typename Left::CommunicatorType >( a, b, b.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LE( a, b );
 }
 
 template< typename L1,
           template< typename > class LOperation,
-          typename LParameter,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation, typename Communicator >
+          template< typename, typename > class ROperation >
 bool
-operator<=( const DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a,
-            const DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
+operator<=( const DistributedUnaryExpressionTemplate< L1, LOperation >& a,
+            const DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   using Left = DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >;
-   using Right = DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >;
-   return DistributedComparison< Left, Right >::template LE< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LE( a, b );
 }
 
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
           typename R1,
-          template< typename > class ROperation,
-          typename RParameter, typename Communicator >
+          template< typename > class ROperation >
 bool
-operator<=( const DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
-            const DistributedUnaryExpressionTemplate< R1,ROperation, RParameter, Communicator >& b )
+operator<=( const DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
+            const DistributedUnaryExpressionTemplate< R1,ROperation >& b )
 {
-   using Left = DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >;
-   using Right = DistributedUnaryExpressionTemplate< R1, ROperation, RParameter, Communicator >;
-   return DistributedComparison< Left, Right >::template LE< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LE( a, b );
 }
 
 ////
@@ -1212,92 +1004,74 @@ template< typename L1,
           template< typename, typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation, typename Communicator >
+          template< typename, typename > class ROperation >
 bool
-operator>( const DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
-           const DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
+operator>( const DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
+           const DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   using Left = DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >;
-   using Right = DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >;
-   return DistributedComparison< Left, Right >::template GT< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GT( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation, typename Communicator >
+          template< typename, typename > class Operation >
 bool
-operator>( const DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& a,
-           const typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& b )
+operator>( const DistributedBinaryExpressionTemplate< T1, T2, Operation >& a,
+           const typename DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
 {
-   using Left = DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >;
-   using Right = typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType;
-   return DistributedComparison< Left, Right >::template GT< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GT( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation,
-          typename Parameter, typename Communicator >
+          template< typename > class Operation >
 bool
-operator>( const DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >& a,
-           const typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType& b )
+operator>( const DistributedUnaryExpressionTemplate< T1, Operation >& a,
+           const typename DistributedUnaryExpressionTemplate< T1, Operation >::RealType& b )
 {
-   using Left = DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >;
-   using Right = typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType;
-   return DistributedComparison< Left, Right >::template GT< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GT( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation, typename Communicator >
+          template< typename, typename > class Operation >
 bool
-operator>( const typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& a,
-           const DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& b )
+operator>( const typename DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
+           const DistributedBinaryExpressionTemplate< T1, T2, Operation >& b )
 {
-   using Left = typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType;
-   using Right = DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >;
-   return DistributedComparison< Left, Right >::template GT< typename Left::CommunicatorType >( a, b, b.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GT( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation,
-          typename Parameter, typename Communicator >
+          template< typename > class Operation >
 bool
-operator>( const typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType& a,
-           const DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >& b )
+operator>( const typename DistributedUnaryExpressionTemplate< T1, Operation >::RealType& a,
+           const DistributedUnaryExpressionTemplate< T1, Operation >& b )
 {
-   using Left = typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType;
-   using Right = DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >;
-   return DistributedComparison< Left, Right >::template GT< typename Left::CommunicatorType >( a, b, b.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GT( a, b );
 }
 
 template< typename L1,
           template< typename > class LOperation,
-          typename LParameter,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation, typename Communicator >
+          template< typename, typename > class ROperation >
 bool
-operator>( const DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a,
-           const DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
+operator>( const DistributedUnaryExpressionTemplate< L1, LOperation >& a,
+           const DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   using Left = DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >;
-   using Right = DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >;
-   return DistributedComparison< Left, Right >::template GT< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GT( a, b );
 }
 
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
           typename R1,
-          template< typename > class ROperation,
-          typename RParameter, typename Communicator >
+          template< typename > class ROperation >
 bool
-operator>( const DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
-           const DistributedUnaryExpressionTemplate< R1,ROperation, RParameter, Communicator >& b )
+operator>( const DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
+           const DistributedUnaryExpressionTemplate< R1,ROperation >& b )
 {
-   using Left = DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >;
-   using Right = DistributedUnaryExpressionTemplate< R1, ROperation, RParameter, Communicator >;
-   return DistributedComparison< Left, Right >::template GT< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GT( a, b );
 }
 
 ////
@@ -1307,115 +1081,96 @@ template< typename L1,
           template< typename, typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation, typename Communicator >
+          template< typename, typename > class ROperation >
 bool
-operator>=( const DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
-            const DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
+operator>=( const DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
+            const DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   using Left = DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >;
-   using Right = DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >;
-   return DistributedComparison< Left, Right >::template GE< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GE( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation, typename Communicator >
+          template< typename, typename > class Operation >
 bool
-operator>=( const DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& a,
-            const typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& b )
+operator>=( const DistributedBinaryExpressionTemplate< T1, T2, Operation >& a,
+            const typename DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
 {
-   using Left = DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >;
-   using Right = typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType;
-   return DistributedComparison< Left, Right >::template GE< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GE( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation,
-          typename Parameter, typename Communicator >
+          template< typename > class Operation >
 bool
-operator>=( const DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >& a,
-            const typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType& b )
+operator>=( const DistributedUnaryExpressionTemplate< T1, Operation >& a,
+            const typename DistributedUnaryExpressionTemplate< T1, Operation >::RealType& b )
 {
-   using Left = DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >;
-   using Right = typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType;
-   return DistributedComparison< Left, Right >::template GE< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GE( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation, typename Communicator >
+          template< typename, typename > class Operation >
 bool
-operator>=( const typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& a,
-            const DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& b )
+operator>=( const typename DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
+            const DistributedBinaryExpressionTemplate< T1, T2, Operation >& b )
 {
-   using Left = typename DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType;
-   using Right = DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >;
-   return DistributedComparison< Left, Right >::template GE< typename Left::CommunicatorType >( a, b, b.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GE( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation,
-          typename Parameter, typename Communicator >
+          template< typename > class Operation >
 bool
-operator>=( const typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType& a,
-            const DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >& b )
+operator>=( const typename DistributedUnaryExpressionTemplate< T1, Operation >::RealType& a,
+            const DistributedUnaryExpressionTemplate< T1, Operation >& b )
 {
-   using Left = typename DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType;
-   using Right = DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >;
-   return DistributedComparison< Left, Right >::template GE< typename Left::CommunicatorType >( a, b, b.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GE( a, b );
 }
 
 template< typename L1,
           template< typename > class LOperation,
-          typename LParameter,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation, typename Communicator >
+          template< typename, typename > class ROperation >
 bool
-operator>=( const DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a,
-            const DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
+operator>=( const DistributedUnaryExpressionTemplate< L1, LOperation >& a,
+            const DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   using Left = DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >;
-   using Right = DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >;
-   return DistributedComparison< Left, Right >::template GE< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GE( a, b );
 }
 
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
           typename R1,
-          template< typename > class ROperation,
-          typename RParameter, typename Communicator >
+          template< typename > class ROperation >
 bool
-operator>=( const DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
-            const DistributedUnaryExpressionTemplate< R1,ROperation, RParameter, Communicator >& b )
+operator>=( const DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
+            const DistributedUnaryExpressionTemplate< R1,ROperation >& b )
 {
-   using Left = DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >;
-   using Right = DistributedUnaryExpressionTemplate< R1, ROperation, RParameter, Communicator >;
-   return DistributedComparison< Left, Right >::template GE< typename Left::CommunicatorType >( a, b, a.getCommunicationGroup() );
+   return DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GE( a, b );
 }
 
 ////
-// Unary minus
+// Unary operations
+
+////
+// Minus
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation, typename Communicator >
+          template< typename, typename > class LOperation >
 auto
-operator-( const DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
+operator-( const DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return DistributedUnaryExpressionTemplate<
-      DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
-      Minus, void, Communicator >( a, a.getCommunicationGroup() );
+   return DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Minus >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation, typename LParameter, typename Communicator >
+          template< typename > class LOperation >
 auto
-operator-( const DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a )
+operator-( const DistributedUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return DistributedUnaryExpressionTemplate<
-      DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
-      Minus, void, Communicator >( a, a.getCommunicationGroup() );
+   return DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Minus >( a );
 }
 
 ////
@@ -1425,55 +1180,54 @@ template< typename L1,
           template< typename, typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation, typename Communicator >
+          template< typename, typename > class ROperation >
 auto
-operator,( const DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
-           const DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
+operator,( const DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
+           const DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return TNL::sum( a * b );
+   return DistributedExpressionSum( a * b );
 }
 
 template< typename L1,
           template< typename > class LOperation,
-          typename LParameter,
           typename R1,
-          template< typename > class ROperation,
-          typename RParameter,
-          typename Communicator >
+          template< typename > class ROperation >
 auto
-operator,( const DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a,
-           const DistributedUnaryExpressionTemplate< R1, ROperation, RParameter, Communicator >& b )
+operator,( const DistributedUnaryExpressionTemplate< L1, LOperation >& a,
+           const DistributedUnaryExpressionTemplate< R1, ROperation >& b )
 {
-   return TNL::sum( a * b );
+   return DistributedExpressionSum( a * b );
 }
 
 template< typename L1,
-          template< typename > class LOperation, typename LParameter,
+          template< typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation, typename Communicator >
+          template< typename, typename > class ROperation >
 auto
-operator,( const DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a,
-           const DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
+operator,( const DistributedUnaryExpressionTemplate< L1, LOperation >& a,
+           const DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return TNL::sum( a * b );
+   return DistributedExpressionSum( a * b );
 }
 
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
           typename R1,
-          template< typename > class ROperation, typename Parameter, typename Communicator >
+          template< typename > class ROperation >
 auto
-operator,( const DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
-           const DistributedUnaryExpressionTemplate< R1, ROperation, Parameter, Communicator >& b )
+operator,( const DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
+           const DistributedUnaryExpressionTemplate< R1,ROperation >& b )
 {
-   return TNL::sum( a * b );
+   return DistributedExpressionSum( a * b );
 }
 
 } // namespace Expressions
 } // namespace Containers
 
+////
+// All operations are supposed to be in namespace TNL
 
 ////
 // Binary expression min
@@ -1482,109 +1236,85 @@ template< typename L1,
           template< typename, typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation, typename Communicator >
+          template< typename, typename > class ROperation >
 auto
-min( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
-     const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
+min( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
+     const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
-      Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
-      Containers::Expressions::Min, Communicator >( a, b );
+   return Containers::Expressions::DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Min >( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation, typename Communicator >
+          template< typename, typename > class Operation >
 auto
-min( const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& a,
-     const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& b )
+min( const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& a,
+     const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
 {
-   return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
-      typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
-      Containers::Expressions::Min, Communicator >( a, b );
+   return Containers::Expressions::DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Min >( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation, typename Communicator >
+          template< typename, typename > class Operation >
 auto
-min( const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& a,
-     const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& b )
+min( const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
+     const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& b )
 {
-   return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
-      Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
-      Containers::Expressions::Min, Communicator >( a, b );
+   return Containers::Expressions::DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Min >( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation, typename Parameter, typename Communicator >
+          template< typename > class Operation >
 auto
-min( const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >& a,
-     const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType& b )
+min( const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& a,
+     const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType& b )
 {
-   return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >,
-      typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType,
-      Containers::Expressions::Min, Communicator >( a, b );
+   return Containers::Expressions::DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Min >( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation, typename Parameter, typename Communicator >
+          template< typename > class Operation >
 auto
-min( const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType& a,
-     const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >& b )
+min( const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType& a,
+     const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& b )
 {
-   return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType,
-      Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >,
-      Containers::Expressions::Min, Communicator >( a, b );
+   return Containers::Expressions::DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Min >( a, b );
 }
 
 template< typename L1,
-          template< typename > class LOperation, typename LParameter,
+          template< typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation, typename Communicator >
+          template< typename, typename > class ROperation >
 auto
-min( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a,
-     const typename Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
+min( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a,
+     const typename Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
-      Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
-      Containers::Expressions::Min, Communicator >( a, b );
+   return Containers::Expressions::DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Min >( a, b );
 }
 
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
           typename R1,
-          template< typename > class ROperation, typename RParameter, typename Communicator >
+          template< typename > class ROperation >
 auto
-min( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
-     const Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation, RParameter, Communicator >& b )
+min( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
+     const Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation >& b )
 {
-   return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
-      Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation, RParameter, Communicator >,
-      Containers::Expressions::Min, Communicator >( a, b );
+   return Containers::Expressions::DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Min >( a, b );
 }
 
 template< typename L1,
-          template< typename > class LOperation, typename LParameter,
+          template< typename > class LOperation,
           typename R1,
-          template< typename > class ROperation, typename RParameter, typename Communicator >
+          template< typename > class ROperation >
 auto
-min( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1,LOperation, LParameter, Communicator >& a,
-     const Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation, RParameter, Communicator >& b )
+min( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1,LOperation >& a,
+     const Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation >& b )
 {
-   return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
-      Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation, RParameter, Communicator >,
-      Containers::Expressions::Min, Communicator >( a, b );
+   return Containers::Expressions::DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Min >( a, b );
 }
 
 ////
@@ -1594,248 +1324,199 @@ template< typename L1,
           template< typename, typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation, typename Communicator >
+          template< typename, typename > class ROperation >
 auto
-max( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
-     const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
+max( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
+     const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
-      Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
-      Containers::Expressions::Max, Communicator >( a, b );
+   return Containers::Expressions::DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Max >( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation, typename Communicator >
+          template< typename, typename > class Operation >
 auto
-max( const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& a,
-     const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& b )
+max( const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& a,
+     const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
 {
-   return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
-      typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
-      Containers::Expressions::Max, Communicator >( a, b );
+   return Containers::Expressions::DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Max >( a, b );
 }
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation, typename Communicator >
+          template< typename, typename > class Operation >
 auto
-max( const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType& a,
-     const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& b )
+max( const typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
+     const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& b )
 {
-   return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      typename Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >::RealType,
-      Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >,
-      Containers::Expressions::Max, Communicator >( a, b );
+   return Containers::Expressions::DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Max >( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation, typename Parameter, typename Communicator >
+          template< typename > class Operation >
 auto
-max( const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >& a,
-     const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType& b )
+max( const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& a,
+     const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType& b )
 {
-   return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >,
-      typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType,
-      Containers::Expressions::Max, Communicator >( a, b );
+   return Containers::Expressions::DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Max >( a, b );
 }
 
 template< typename T1,
-          template< typename > class Operation, typename Parameter, typename Communicator >
+          template< typename > class Operation >
 auto
-max( const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType& a,
-     const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >& b )
+max( const typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >::RealType& a,
+     const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& b )
 {
-   return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      typename Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >::RealType,
-      Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >,
-      Containers::Expressions::Max, Communicator >( a, b );
+   return Containers::Expressions::DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Max >( a, b );
 }
 
 template< typename L1,
-          template< typename > class LOperation, typename LParameter,
+          template< typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation, typename Communicator >
+          template< typename, typename > class ROperation >
 auto
-max( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a,
-     const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
+max( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a,
+     const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
-      Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >,
-      Containers::Expressions::Max, Communicator >( a, b );
+   return Containers::Expressions::DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Max >( a, b );
 }
 
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
           typename R1,
-          template< typename > class ROperation, typename RParameter, typename Communicator >
+          template< typename > class ROperation >
 auto
-max( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
-     const Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation, RParameter, Communicator >& b )
+max( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
+     const Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation >& b )
 {
-   return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
-      Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation, RParameter, Communicator >,
-      Containers::Expressions::Max, Communicator >( a, b );
+   return Containers::Expressions::DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Max >( a, b );
 }
 
 template< typename L1,
-          template< typename > class LOperation, typename LParameter,
+          template< typename > class LOperation,
           typename R1,
-          template< typename > class ROperation, typename RParameter, typename Communicator >
+          template< typename > class ROperation >
 auto
-max( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1,LOperation, LParameter, Communicator >& a,
-     const Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation, RParameter, Communicator >& b )
+max( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1,LOperation >& a,
+     const Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation >& b )
 {
-   return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
-      Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation, RParameter, Communicator >,
-      Containers::Expressions::Max, Communicator >( a, b );
+   return Containers::Expressions::DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Max >( a, b );
 }
-
 
 ////
 // Abs
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation, typename Communicator >
+          template< typename, typename > class LOperation >
 auto
-abs( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
+abs( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
-      Containers::Expressions::Abs, void, Communicator >( a, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Abs >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation, typename LParameter, typename Communicator >
+          template< typename > class LOperation >
 auto
-abs( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a )
+abs( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
-      Containers::Expressions::Abs, void, Communicator >( a, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Abs >( a );
 }
 
 ////
 // Sin
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation, typename Communicator >
+          template< typename, typename > class LOperation >
 auto
-sin( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
+sin( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
-      Containers::Expressions::Sin, void, Communicator >( a, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sin >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation, typename LParameter, typename Communicator >
+          template< typename > class LOperation >
 auto
-sin( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a )
+sin( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
-      Containers::Expressions::Sin, void, Communicator >( a, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sin >( a );
 }
 
 ////
 // Cos
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation, typename Communicator >
+          template< typename, typename > class LOperation >
 auto
-cos( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
+cos( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
-      Containers::Expressions::Cos, void, Communicator >( a, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Cos >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation, typename LParameter, typename Communicator >
+          template< typename > class LOperation >
 auto
-cos( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a )
+cos( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
-      Containers::Expressions::Cos, void, Communicator >( a, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Cos >( a );
 }
 
 ////
 // Tan
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation, typename Communicator >
+          template< typename, typename > class LOperation >
 auto
-tan( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
+tan( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
-      Containers::Expressions::Tan, void, Communicator >( a, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Tan >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation, typename LParameter, typename Communicator >
+          template< typename > class LOperation >
 auto
-tan( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a )
+tan( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
-      Containers::Expressions::Tan, void, Communicator >( a, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Tan >( a );
 }
 
 ////
 // Sqrt
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation, typename Communicator >
+          template< typename, typename > class LOperation >
 auto
-sqrt( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
+sqrt( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
-      Containers::Expressions::Sqrt, void, Communicator >( a, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sqrt >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation, typename LParameter, typename Communicator >
+          template< typename > class LOperation >
 auto
-sqrt( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a )
+sqrt( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
-      Containers::Expressions::Sqrt, void, Communicator >( a, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sqrt >( a );
 }
 
 ////
 // Cbrt
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation, typename Communicator >
+          template< typename, typename > class LOperation >
 auto
-cbrt( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
+cbrt( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
-      Containers::Expressions::Cbrt, void, Communicator >( a, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Cbrt >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation, typename LParameter, typename Communicator >
+          template< typename > class LOperation >
 auto
-cbrt( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a )
+cbrt( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
-      Containers::Expressions::Cbrt, void, Communicator >( a, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Cbrt >( a );
 }
 
 ////
@@ -1843,644 +1524,453 @@ cbrt( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOp
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
-          typename Real, typename Communicator >
+          typename Real >
 auto
-pow( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a, const Real& exp )
+pow( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a, const Real& exp )
 {
-   return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
-      Real,
-      Containers::Expressions::Pow, Communicator >( a, exp, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, Real, Containers::Expressions::Pow >( a, exp );
 }
 
 template< typename L1,
-          template< typename > class LOperation, typename LParameter,
-          typename Real, typename Communicator >
+          template< typename > class LOperation,
+          typename Real >
 auto
-pow( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a, const Real& exp )
+pow( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a, const Real& exp )
 {
-   return Containers::Expressions::DistributedBinaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
-      Real,
-      Containers::Expressions::Pow, Communicator >( a, exp, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, Real, Containers::Expressions::Pow >( a, exp );
 }
 
 ////
 // Floor
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation, typename Communicator >
+          template< typename, typename > class LOperation >
 auto
-floor( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
+floor( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
-      Containers::Expressions::Floor, void, Communicator >( a, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Floor >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation, typename LParameter, typename Communicator >
+          template< typename > class LOperation >
 auto
-floor( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a )
+floor( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
-      Containers::Expressions::Floor, void, Communicator >( a, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Floor >( a );
 }
 
 ////
 // Ceil
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation, typename Communicator >
+          template< typename, typename > class LOperation >
 auto
-ceil( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
+ceil( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
-      Containers::Expressions::Ceil, void, Communicator >( a, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Ceil >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation, typename LParameter, typename Communicator >
+          template< typename > class LOperation >
 auto
-ceil( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a )
+ceil( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
-      Containers::Expressions::Ceil, void, Communicator>( a );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Ceil >( a );
 }
 
 ////
 // Asin
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation, typename Communicator >
+          template< typename, typename > class LOperation >
 auto
-asin( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
+asin( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
-      Containers::Expressions::Asin, void, Communicator >( a, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Asin >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation, typename LParameter, typename Communicator >
+          template< typename > class LOperation >
 auto
-asin( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a )
+asin( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
-      Containers::Expressions::Asin, void, Communicator >( a, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Asin >( a );
 }
 
 ////
 // Acos
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation, typename Communicator >
+          template< typename, typename > class LOperation >
 auto
-acos( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
+acos( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
-      Containers::Expressions::Acos, void, Communicator >( a, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Acos >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation, typename LParameter, typename Communicator >
+          template< typename > class LOperation >
 auto
-acos( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a )
+acos( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
-      Containers::Expressions::Acos, void, Communicator >( a, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Acos >( a );
 }
 
 ////
 // Atan
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation, typename Communicator >
+          template< typename, typename > class LOperation >
 auto
-atan( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
+atan( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
-      Containers::Expressions::Atan, void, Communicator >( a, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Atan >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation, typename LParameter, typename Communicator >
+          template< typename > class LOperation >
 auto
-atan( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a )
+atan( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
-      Containers::Expressions::Atan, void, Communicator >( a, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Atan >( a );
 }
 
 ////
 // Sinh
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation, typename Communicator >
+          template< typename, typename > class LOperation >
 auto
-sinh( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
+sinh( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
-      Containers::Expressions::Sinh, void, Communicator >( a, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sinh >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation, typename LParameter, typename Communicator >
+          template< typename > class LOperation >
 auto
-sinh( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a )
+sinh( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
-      Containers::Expressions::Sinh, void, Communicator >( a, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sinh >( a );
 }
 
 ////
 // Cosh
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation, typename Communicator >
+          template< typename, typename > class LOperation >
 auto
-cosh( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
+cosh( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
-      Containers::Expressions::Cosh, void, Communicator >( a, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Cosh >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation, typename LParameter, typename Communicator >
+          template< typename > class LOperation >
 auto
-cosh( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a )
+cosh( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
-      Containers::Expressions::Cosh, void, Communicator >( a, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Cosh >( a );
 }
 
 ////
 // Tanh
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation, typename Communicator >
+          template< typename, typename > class LOperation >
 auto
-tanh( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
+tanh( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
-      Containers::Expressions::Tanh, void, Communicator >( a, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Tanh >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation, typename LParameter, typename Communicator >
+          template< typename > class LOperation >
 auto
-tanh( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a )
+tanh( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
-      Containers::Expressions::Tanh, void, Communicator >( a, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Tanh >( a );
 }
 
 ////
 // Log
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation, typename Communicator >
+          template< typename, typename > class LOperation >
 auto
-log( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
+log( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
-      Containers::Expressions::Log, void, Communicator >( a, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation, typename LParameter, typename Communicator >
+          template< typename > class LOperation >
 auto
-log( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a )
+log( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
-      Containers::Expressions::Log, void, Communicator >( a, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log >( a );
 }
 
 ////
 // Log10
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation, typename Communicator >
+          template< typename, typename > class LOperation >
 auto
-log10( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
+log10( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
-      Containers::Expressions::Log10, void, Communicator >( a, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log10 >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation, typename LParameter, typename Communicator >
+          template< typename > class LOperation >
 auto
-log10( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a )
+log10( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
-      Containers::Expressions::Log10, void, Communicator >( a, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log10 >( a );
 }
 
 ////
 // Log2
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation, typename Communicator >
+          template< typename, typename > class LOperation >
 auto
-log2( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
+log2( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
-      Containers::Expressions::Log2, void, Communicator >( a, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log2 >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation, typename LParameter, typename Communicator >
+          template< typename > class LOperation >
 auto
-log2( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a )
+log2( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >,
-      Containers::Expressions::Log2, void, Communicator >( a, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log2 >( a );
 }
 
 ////
 // Exp
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation, typename Communicator >
+          template< typename, typename > class LOperation >
 auto
-exp( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
+exp( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >,
-      Containers::Expressions::Exp, void, Communicator >( a, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Exp >( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation,
-          typename Parameter, typename Communicator >
+          template< typename > class LOperation >
 auto
-exp( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter, Communicator >& a )
+exp( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate<
-      Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter, Communicator >,
-      Containers::Expressions::Exp, void, Communicator >( a, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Exp >( a );
 }
 
 ////
 // Vertical operations - min
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation, typename Communicator >
+          template< typename, typename > class LOperation >
 auto
-min( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
+min( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   using CommunicatorType = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::CommunicatorType;
-   using Real = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::RealType;
-   Real result = std::numeric_limits< Real >::max();
-   if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      const Real localResult = Containers::Expressions::ExpressionMin( a );
-      CommunicatorType::template Allreduce< Real >( &localResult, &result, 1, MPI_MIN, a.getCommunicationGroup() );
-   }
-   return result;
+   return DistributedExpressionMin( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation,
-          typename Parameter,
-          typename Communicator >
+          template< typename > class LOperation >
 auto
-min( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter, Communicator >& a )
+min( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   using CommunicatorType = Communicator;
-   using Real = typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter, Communicator >::RealType;
-   Real result = std::numeric_limits< Real >::max();
-   if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      const Real localResult = Containers::Expressions::ExpressionMin( a );
-      CommunicatorType::template Allreduce< Real >( &localResult, &result, 1, MPI_MIN, a.getCommunicationGroup() );
-   }
-   return result;
+   return DistributedExpressionMin( a );
 }
 
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
-          typename Communicator,
           typename Index >
 auto
-argMin( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a, Index& arg ) -> decltype( ExpressionArgMin( a, arg ) )
+argMin( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a, Index& arg )
 {
-   throw Exceptions::NotImplementedError( "agrMin for distributed vector view is not implemented yet." );
-   return ExpressionArgMin( a, arg );
+   return DistributedExpressionArgMin( a, arg );
 }
 
 template< typename L1,
           template< typename > class LOperation,
-          typename Parameter,
-          typename Communicator,
           typename Index >
 auto
-argMin( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter, Communicator >& a, Index& arg ) -> decltype( ExpressionMin( a, arg ) )
+argMin( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a, Index& arg )
 {
-   throw Exceptions::NotImplementedError( "agrMin for distributed vector view is not implemented yet." );
-   return ExpressionArgMin( a );
+   return DistributedExpressionArgMin( a, arg );
 }
 
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation, typename Communicator >
+          template< typename, typename > class LOperation >
 auto
-max( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
+max( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   using Real = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::RealType;
-   using CommunicatorType = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::CommunicatorType;
-   Real result = std::numeric_limits< Real >::min();
-   if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      const Real localResult = Containers::Expressions::ExpressionMax( a );
-      CommunicatorType::template Allreduce< Real >( &localResult, &result, 1, MPI_MAX, a.getCommunicationGroup() );
-   }
-   return result;
+   return DistributedExpressionMax( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation,
-          typename Parameter, typename Communicator >
+          template< typename > class LOperation >
 auto
-max( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter, Communicator >& a )
+max( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   using Real = typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter, Communicator >::RealType;
-   using CommunicatorType = typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter, Communicator >::CommunicatorType;
-   Real result = std::numeric_limits< Real >::min();
-   if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      Real localResult = Containers::Expressions::ExpressionMax( a );
-      CommunicatorType::template Allreduce< Real >( &localResult, &result, 1, MPI_MAX, a.getCommunicationGroup() );
-   }
-   return result;
+   return DistributedExpressionMax( a );
 }
 
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
-          typename Communicator,
           typename Index >
 auto
-argMax( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a, Index& arg ) -> decltype( ExpressionArgMax( a, arg ) )
+argMax( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a, Index& arg )
 {
-   throw Exceptions::NotImplementedError( "agrMax for distributed vector view is not implemented yet." );
-   return ExpressionArgMax( a, arg );
+   return DistributedExpressionArgMax( a, arg );
 }
 
 template< typename L1,
           template< typename > class LOperation,
-          typename Parameter,
-          typename Communicator,
           typename Index >
 auto
-argMax( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter, Communicator >& a, Index& arg ) -> decltype( ExpressionMax( a, arg ) )
+argMax( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a, Index& arg )
 {
-   throw Exceptions::NotImplementedError( "agrMax for distributed vector view is not implemented yet." );
-   return ExpressionArgMax( a );
+   return DistributedExpressionArgMax( a, arg );
+}
+
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+auto
+sum( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return DistributedExpressionSum( a );
+}
+
+template< typename L1,
+          template< typename > class LOperation >
+auto
+sum( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
+{
+   return DistributedExpressionSum( a );
 }
 
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
-          typename Communicator >
-auto
-sum( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
-{
-   using Real = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::RealType;
-   using CommunicatorType = Communicator; //typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::CommunicatorType;
-   Real result = 0.0;
-   if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      const Real localResult = Containers::Expressions::ExpressionSum( a );
-      CommunicatorType::template Allreduce< Real >( &localResult, &result, 1, MPI_SUM, a.getCommunicationGroup() );
-   }
-   return result;
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename Parameter, typename Communicator >
-auto
-sum( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter, Communicator >& a )
-{
-   using Real = typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter, Communicator >::RealType;
-   using CommunicatorType = typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter, Communicator >::CommunicatorType;
-   Real result = 0.0;
-   if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      const Real localResult = Containers::Expressions::ExpressionSum( a );
-      CommunicatorType::template Allreduce< Real >( &localResult, &result, 1, MPI_SUM, a.getCommunicationGroup() );
-   }
-   return result;
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename Communicator,
           typename Real >
 auto
-lpNorm( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a, const Real& p )
+lpNorm( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a, const Real& p )
+-> decltype( DistributedExpressionLpNorm( a, p ) )
 {
-   using CommunicatorType = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::CommunicatorType;
-   Real result = ( Real ) 0.0;
-   if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      const Real localResult = Containers::Expressions::ExpressionLpNorm( a, p );
-      CommunicatorType::template Allreduce< Real >( &localResult, &result, 1, MPI_SUM, a.getCommunicationGroup() );
-   }
-   return TNL::pow( result, 1.0 / p );
+   if( p == 1.0 )
+      return DistributedExpressionLpNorm( a, p );
+   if( p == 2.0 )
+      return TNL::sqrt( DistributedExpressionLpNorm( a, p ) );
+   return TNL::pow( DistributedExpressionLpNorm( a, p ), 1.0 / p );
 }
 
 template< typename L1,
           template< typename > class LOperation,
-          typename Parameter,
-          typename Communicator,
           typename Real >
 auto
-lpNorm( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter, Communicator >& a, const Real& p )
+lpNorm( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a, const Real& p )
+-> decltype( DistributedExpressionLpNorm( a, p ) )
 {
-   using CommunicatorType = typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter, Communicator >::CommunicatorType;
-   Real result = ( Real ) 0.0;
-   if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      const Real localResult = TNL::pow( Containers::Expressions::ExpressionLpNorm( a, p ), p );
-      CommunicatorType::template Allreduce< Real >( &localResult, &result, 1, MPI_SUM, a.getCommunicationGroup() );
-   }
-   return TNL::pow( result, 1.0 / p );
+   if( p == 1.0 )
+      return DistributedExpressionLpNorm( a, p );
+   if( p == 2.0 )
+      return TNL::sqrt( DistributedExpressionLpNorm( a, p ) );
+   return TNL::pow( DistributedExpressionLpNorm( a, p ), 1.0 / p );
 }
 
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation, typename Communicator >
+          template< typename, typename > class LOperation >
 auto
-product( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
+product( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   using Real = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::RealType;
-   using CommunicatorType = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::CommunicatorType;
-   Real result = ( Real ) 1.0;
-   if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      const Real localResult = Containers::Expressions::ExpressionProduct( a );
-      CommunicatorType::template Allreduce< Real >( &localResult, &result, 1, MPI_PROD, a.getCommunicationGroup() );
-   }
-   return result;
+   return DistributedExpressionProduct( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation,
-          typename Parameter, typename Communicator >
+          template< typename > class LOperation >
 auto
-product( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter, Communicator >& a )
+product( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   using Real = typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter, Communicator >::RealType;
-   using CommunicatorType = typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter, Communicator >::CommunicatorType;
-   Real result = ( Real ) 1.0;
-   if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      const Real localResult = Containers::Expressions::ExpressionProduct( a );
-      CommunicatorType::template Allreduce< Real >( &localResult, &result, 1, MPI_PROD, a.getCommunicationGroup() );
-   }
-   return result;
+   return DistributedExpressionProduct( a );
 }
 
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation, typename Communicator >
+          template< typename, typename > class LOperation >
 auto
-logicalOr( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
+logicalOr( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   using Real = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::RealType;
-   using CommunicatorType = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::CommunicatorType;
-   Real result = 0.0;
-   if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      const Real localResult = Containers::Expressions::ExpressionLogicalOr( a );
-      CommunicatorType::template Allreduce< Real >( &localResult, &result, 1, MPI_LOR, a.getCommunicationGroup() );
-   }
-   return result;
+   return DistributedExpressionLogicalOr( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation,
-          typename Parameter, typename Communicator >
+          template< typename > class LOperation >
 auto
-logicalOr( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter, Communicator >& a )
+logicalOr( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   using Real = typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter, Communicator >::RealType;
-   using CommunicatorType = typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter, Communicator >::CommunicatorType;
-   bool result = false;
-   if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      const Real localResult = Containers::Expressions::ExpressionLogicalOr( a );
-      CommunicatorType::template Allreduce< Real >( &localResult, &result, 1, MPI_LOR, a.getCommunicationGroup() );
-   }
-   return result;
-}
-
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation, typename Communicator >
-auto
-logicalAnd( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
-{
-   using CommunicatorType = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::CommunicatorType;
-   bool result = false;
-   if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      const bool localResult = Containers::Expressions::ExpressionLogicalAnd( a );
-      CommunicatorType::template Allreduce< Real >( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
-   }
-   return result;
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename Parameter, typename Communicator >
-auto
-logicalAnd( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter, Communicator >& a )
-{
-   using CommunicatorType = typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter, Communicator >::CommunicatorType;
-   bool result = false;
-   if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      const bool localResult = Containers::Expressions::ExpressionLogicalAnd( a );
-      CommunicatorType::template Allreduce< Real >( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
-   }
-   return result;
+   return DistributedExpressionLogicalOr( a );
 }
 
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation, typename Communicator >
+          template< typename, typename > class LOperation >
 auto
-binaryOr( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
+logicalAnd( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   using Real = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::RealType;
-   using CommunicatorType = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::CommunicatorType;
-   Real result = ( Real ) 0.0;
-   if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      const Real localResult = Containers::Expressions::ExpressionBinaryOr( a );
-      CommunicatorType::template Allreduce< Real >( &localResult, &result, 1, MPI_BOR, a.getCommunicationGroup() );
-   }
-   return result;
+   return DistributedExpressionLogicalAnd( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation,
-          typename Parameter, typename Communicator >
+          template< typename > class LOperation >
 auto
-binaryOr( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter, Communicator >& a )
+logicalAnd( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   using Real = typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter, Communicator >::RealType;
-   using CommunicatorType = typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter, Communicator >::CommunicatorType;
-   Real result = ( Real ) 0.0;
-   if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      const Real localResult = Containers::Expressions::ExpressionBinaryOr( a );
-      CommunicatorType::template Allreduce< Real >( &localResult, &result, 1, MPI_BOR, a.getCommunicationGroup() );
-   }
-   return result;
+   return DistributedExpressionLogicalAnd( a );
 }
 
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation, typename Communicator >
+          template< typename, typename > class LOperation >
 auto
-binaryAnd( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a )
+binaryOr( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   using Real = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::RealType;
-   using CommunicatorType = typename Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >::CommunicatorType;
-   Real result = std::numeric_limits< Real >::max;
-   if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      const Real localResult = Containers::Expressions::ExpressionBinaryAnd( a );
-      CommunicatorType::template Allreduce< Real >( &localResult, &result, 1, MPI_BAND, a.getCommunicationGroup() );
-   }
-   return result;
+   return DistributedExpressionBinaryOr( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation,
-          typename Parameter, typename Communicator >
+          template< typename > class LOperation >
 auto
-binaryAnd( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter, Communicator >& a )
+binaryOr( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   using Real = typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter, Communicator >::RealType;
-   using CommunicatorType = typename Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, Parameter, Communicator >::CommunicatorType;
-   Real result = std::numeric_limits< Real >::max;
-   if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      const Real localResult = Containers::Expressions::ExpressionBinaryAnd( a );
-      CommunicatorType::template Allreduce< Real >( &localResult, &result, 1, MPI_BAND, a.getCommunicationGroup() );
-   }
-   return result;
+   return DistributedExpressionBinaryOr( a );
+}
+
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+auto
+binaryAnd( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return DistributedExpressionBinaryAnd( a );
+}
+
+template< typename L1,
+          template< typename > class LOperation >
+auto
+binaryAnd( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
+{
+   return DistributedExpressionBinaryAnd( a );
 }
 
 template< typename L1,
@@ -2488,50 +1978,47 @@ template< typename L1,
           template< typename, typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation, typename Communicator >
+          template< typename, typename > class ROperation >
 auto
-dot( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
-     const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
+dot( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
+     const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return TNL::sum( a * b );
+   return (a, b);
 }
 
 template< typename L1,
           template< typename > class LOperation,
-          typename LParameter,
           typename R1,
-          template< typename > class ROperation,
-          typename RParameter,
-          typename Communicator >
+          template< typename > class ROperation >
 auto
-dot( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a,
-     const Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation, RParameter, Communicator >& b )
+dot( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a,
+     const Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation >& b )
 {
-   return TNL::sum( a * b );
+   return (a, b);
 }
 
 template< typename L1,
-          template< typename > class LOperation, typename LParameter,
+          template< typename > class LOperation,
           typename R1,
           typename R2,
-          template< typename, typename > class ROperation, typename Communicator >
+          template< typename, typename > class ROperation >
 auto
-dot( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation, LParameter, Communicator >& a,
-     const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation, Communicator >& b )
+dot( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a,
+     const Containers::Expressions::DistributedBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return TNL::sum( a * b );
+   return (a, b);
 }
 
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation,
           typename R1,
-          template< typename > class ROperation, typename RParameter, typename Communicator >
+          template< typename > class ROperation >
 auto
-dot( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation, Communicator >& a,
-     const Containers::Expressions::DistributedUnaryExpressionTemplate< R1,ROperation, RParameter, Communicator >& b )
+dot( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a,
+     const Containers::Expressions::DistributedUnaryExpressionTemplate< R1, ROperation >& b )
 {
-   return TNL::sum( a * b );
+   return (a, b);
 }
 
 
@@ -2541,12 +2028,11 @@ template< typename Vector,
    typename T1,
    typename T2,
    template< typename, typename > class Operation,
-   typename Communicator,
    typename Reduction,
    typename VolatileReduction,
    typename Result >
 Result evaluateAndReduce( Vector& lhs,
-   const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& expression,
+   const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& expression,
    Reduction& reduction,
    VolatileReduction& volatileReduction,
    const Result& zero )
@@ -2557,19 +2043,17 @@ Result evaluateAndReduce( Vector& lhs,
 
    RealType* lhs_data = lhs.getData();
    auto fetch = [=] __cuda_callable__ ( IndexType i ) -> RealType { return ( lhs_data[ i ] = expression[ i ] ); };
-   return Containers::Algorithms::Reduction< DeviceType >::reduce( lhs.getLocalSize(), reduction, volatileReduction, fetch, zero );
+   return Containers::Algorithms::Reduction< DeviceType >::reduce( lhs.getSize(), reduction, volatileReduction, fetch, zero );
 }
 
 template< typename Vector,
    typename T1,
    template< typename > class Operation,
-   typename Parameter,
-   typename Communicator,
    typename Reduction,
    typename VolatileReduction,
    typename Result >
 Result evaluateAndReduce( Vector& lhs,
-   const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >& expression,
+   const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& expression,
    Reduction& reduction,
    VolatileReduction& volatileReduction,
    const Result& zero )
@@ -2580,7 +2064,7 @@ Result evaluateAndReduce( Vector& lhs,
 
    RealType* lhs_data = lhs.getData();
    auto fetch = [=] __cuda_callable__ ( IndexType i ) -> RealType { return ( lhs_data[ i ] = expression[ i ] ); };
-   return Containers::Algorithms::Reduction< DeviceType >::reduce( lhs.getLocalSize(), reduction, volatileReduction, fetch, zero );
+   return Containers::Algorithms::Reduction< DeviceType >::reduce( lhs.getSize(), reduction, volatileReduction, fetch, zero );
 }
 
 ////
@@ -2589,12 +2073,11 @@ template< typename Vector,
    typename T1,
    typename T2,
    template< typename, typename > class Operation,
-   typename Communicator,
    typename Reduction,
    typename VolatileReduction,
    typename Result >
 Result addAndReduce( Vector& lhs,
-   const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& expression,
+   const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& expression,
    Reduction& reduction,
    VolatileReduction& volatileReduction,
    const Result& zero )
@@ -2609,19 +2092,17 @@ Result addAndReduce( Vector& lhs,
       lhs_data[ i ] += aux;
       return aux;
    };
-   return Containers::Algorithms::Reduction< DeviceType >::reduce( lhs.getLocalSize(), reduction, volatileReduction, fetch, zero );
+   return Containers::Algorithms::Reduction< DeviceType >::reduce( lhs.getSize(), reduction, volatileReduction, fetch, zero );
 }
 
 template< typename Vector,
    typename T1,
    template< typename > class Operation,
-   typename Parameter,
-   typename Communicator,
    typename Reduction,
    typename VolatileReduction,
    typename Result >
 Result addAndReduce( Vector& lhs,
-   const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >& expression,
+   const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& expression,
    Reduction& reduction,
    VolatileReduction& volatileReduction,
    const Result& zero )
@@ -2636,7 +2117,7 @@ Result addAndReduce( Vector& lhs,
       lhs_data[ i ] += aux;
       return aux;
    };
-   return Containers::Algorithms::Reduction< DeviceType >::reduce( lhs.getLocalSize(), reduction, volatileReduction, fetch, zero );
+   return Containers::Algorithms::Reduction< DeviceType >::reduce( lhs.getSize(), reduction, volatileReduction, fetch, zero );
 }
 
 ////
@@ -2645,12 +2126,11 @@ template< typename Vector,
    typename T1,
    typename T2,
    template< typename, typename > class Operation,
-   typename Communicator,
    typename Reduction,
    typename VolatileReduction,
    typename Result >
 Result addAndReduceAbs( Vector& lhs,
-   const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation, Communicator >& expression,
+   const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& expression,
    Reduction& reduction,
    VolatileReduction& volatileReduction,
    const Result& zero )
@@ -2665,19 +2145,17 @@ Result addAndReduceAbs( Vector& lhs,
       lhs_data[ i ] += aux;
       return TNL::abs( aux );
    };
-   return Containers::Algorithms::Reduction< DeviceType >::reduce( lhs.getLocalSize(), reduction, volatileReduction, fetch, zero );
+   return Containers::Algorithms::Reduction< DeviceType >::reduce( lhs.getSize(), reduction, volatileReduction, fetch, zero );
 }
 
 template< typename Vector,
    typename T1,
    template< typename > class Operation,
-   typename Parameter,
-   typename Communicator,
    typename Reduction,
    typename VolatileReduction,
    typename Result >
 Result addAndReduceAbs( Vector& lhs,
-   const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation, Parameter, Communicator >& expression,
+   const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& expression,
    Reduction& reduction,
    VolatileReduction& volatileReduction,
    const Result& zero )
@@ -2692,7 +2170,7 @@ Result addAndReduceAbs( Vector& lhs,
       lhs_data[ i ] += aux;
       return TNL::abs( aux );
    };
-   return Containers::Algorithms::Reduction< DeviceType >::reduce( lhs.getLocalSize(), reduction, volatileReduction, fetch, zero );
+   return Containers::Algorithms::Reduction< DeviceType >::reduce( lhs.getSize(), reduction, volatileReduction, fetch, zero );
 }
 
 } // namespace TNL

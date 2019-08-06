@@ -118,23 +118,58 @@ if( ${BUILD_MPI} )
       CUDA_ADD_EXECUTABLE( DistributedArrayTest DistributedArrayTest.cu
                            OPTIONS ${CXX_TESTS_FLAGS} )
       TARGET_LINK_LIBRARIES( DistributedArrayTest ${GTEST_BOTH_LIBRARIES} )
-
-      CUDA_ADD_EXECUTABLE( DistributedVectorTest DistributedVectorTest.cu
-                           OPTIONS ${CXX_TESTS_FLAGS} )
-      TARGET_LINK_LIBRARIES( DistributedVectorTest ${GTEST_BOTH_LIBRARIES} )
    else()
       ADD_EXECUTABLE( DistributedArrayTest DistributedArrayTest.cpp )
       TARGET_COMPILE_OPTIONS( DistributedArrayTest PRIVATE ${CXX_TESTS_FLAGS} )
       TARGET_LINK_LIBRARIES( DistributedArrayTest ${GTEST_BOTH_LIBRARIES} )
-
-      ADD_EXECUTABLE( DistributedVectorTest DistributedVectorTest.cpp )
-      TARGET_COMPILE_OPTIONS( DistributedVectorTest PRIVATE ${CXX_TESTS_FLAGS} )
-      TARGET_LINK_LIBRARIES( DistributedVectorTest ${GTEST_BOTH_LIBRARIES} )
    endif()
+
+   ADD_EXECUTABLE( DistributedVectorTest DistributedVectorTest.cpp )
+   TARGET_COMPILE_OPTIONS( DistributedVectorTest PRIVATE ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( DistributedVectorTest ${GTEST_BOTH_LIBRARIES} )
+
+   if( BUILD_CUDA )
+      CUDA_ADD_EXECUTABLE( DistributedVectorTestCuda DistributedVectorTest.cu
+                           OPTIONS ${CXX_TESTS_FLAGS} )
+      TARGET_LINK_LIBRARIES( DistributedVectorTestCuda ${GTEST_BOTH_LIBRARIES} )
+   endif()
+
+   ADD_EXECUTABLE( DistributedVectorBinaryOperationsTest DistributedVectorBinaryOperationsTest.cpp )
+   TARGET_COMPILE_OPTIONS( DistributedVectorBinaryOperationsTest PRIVATE ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( DistributedVectorBinaryOperationsTest ${GTEST_BOTH_LIBRARIES} )
+
+   ADD_EXECUTABLE( DistributedVectorUnaryOperationsTest DistributedVectorUnaryOperationsTest.cpp )
+   TARGET_COMPILE_OPTIONS( DistributedVectorUnaryOperationsTest PRIVATE ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( DistributedVectorUnaryOperationsTest ${GTEST_BOTH_LIBRARIES} )
+
+   if( BUILD_CUDA )
+      CUDA_ADD_EXECUTABLE( DistributedVectorBinaryOperationsTestCuda DistributedVectorBinaryOperationsTest.cu OPTIONS ${CXX_TESTS_FLAGS} )
+      TARGET_LINK_LIBRARIES( DistributedVectorBinaryOperationsTestCuda ${GTEST_BOTH_LIBRARIES} )
+
+      CUDA_ADD_EXECUTABLE( DistributedVectorUnaryOperationsTestCuda DistributedVectorUnaryOperationsTest.cu OPTIONS ${CXX_TESTS_FLAGS} )
+      TARGET_LINK_LIBRARIES( DistributedVectorUnaryOperationsTestCuda ${GTEST_BOTH_LIBRARIES} )
+   endif( BUILD_CUDA )
 
    SET( mpi_test_parameters -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedArrayTest${CMAKE_EXECUTABLE_SUFFIX}" )
    ADD_TEST( NAME DistributedArrayTest COMMAND "mpirun" ${mpi_test_parameters})
 
    SET( mpi_test_parameters -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedVectorTest${CMAKE_EXECUTABLE_SUFFIX}" )
    ADD_TEST( NAME DistributedVectorTest COMMAND "mpirun" ${mpi_test_parameters})
+
+   SET( mpi_test_parameters -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedVectorBinaryOperationsTest${CMAKE_EXECUTABLE_SUFFIX}" )
+   ADD_TEST( NAME DistributedVectorBinaryOperationsTest COMMAND "mpirun" ${mpi_test_parameters})
+
+   SET( mpi_test_parameters -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedVectorUnaryOperationsTest${CMAKE_EXECUTABLE_SUFFIX}" )
+   ADD_TEST( NAME DistributedVectorUnaryOperationsTest COMMAND "mpirun" ${mpi_test_parameters})
+
+   if( BUILD_CUDA )
+      SET( mpi_test_parameters -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedVectorTestCuda${CMAKE_EXECUTABLE_SUFFIX}" )
+      ADD_TEST( NAME DistributedVectorTestCuda COMMAND "mpirun" ${mpi_test_parameters})
+
+      SET( mpi_test_parameters -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedVectorBinaryOperationsTestCuda${CMAKE_EXECUTABLE_SUFFIX}" )
+      ADD_TEST( NAME DistributedVectorBinaryOperationsTestCuda COMMAND "mpirun" ${mpi_test_parameters})
+
+      SET( mpi_test_parameters -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedVectorUnaryOperationsTestCuda${CMAKE_EXECUTABLE_SUFFIX}" )
+      ADD_TEST( NAME DistributedVectorUnaryOperationsTestCuda COMMAND "mpirun" ${mpi_test_parameters})
+   endif()
 endif()

@@ -91,7 +91,9 @@ public:
    // must match (i.e. copy-assignment cannot resize).
    DistributedArrayView& operator=( const DistributedArrayView& view );
 
-   template< typename Array >
+   template< typename Array,
+             typename...,
+             typename = std::enable_if_t< HasSubscriptOperator<Array>::value > >
    DistributedArrayView& operator=( const Array& array );
 
 

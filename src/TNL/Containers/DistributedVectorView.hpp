@@ -124,20 +124,20 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Communicator >
-   template< typename Vector >
+   template< typename Vector, typename..., typename >
 DistributedVectorView< Real, Device, Index, Communicator >&
 DistributedVectorView< Real, Device, Index, Communicator >::
-operator-=( const Vector& vector )
+operator=( const Vector& vector )
 {
    TNL_ASSERT_EQ( this->getSize(), vector.getSize(),
-                  "Vector sizes must be equal." );
+                  "The sizes of the array views must be equal, views are not resizable." );
    TNL_ASSERT_EQ( this->getLocalRange(), vector.getLocalRange(),
-                  "Multiary operations are supported only on vectors which are distributed the same way." );
+                  "The local ranges must be equal, views are not resizable." );
    TNL_ASSERT_EQ( this->getCommunicationGroup(), vector.getCommunicationGroup(),
-                  "Multiary operations are supported only on vectors within the same communication group." );
+                  "The communication groups of the array views must be equal." );
 
    if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalView() -= vector.getConstLocalView();
+      getLocalView() = vector.getConstLocalView();
    }
    return *this;
 }
@@ -146,7 +146,7 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Communicator >
-   template< typename Vector >
+   template< typename Vector, typename..., typename >
 DistributedVectorView< Real, Device, Index, Communicator >&
 DistributedVectorView< Real, Device, Index, Communicator >::
 operator+=( const Vector& vector )
@@ -168,7 +168,118 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Communicator >
-   template< typename Scalar >
+   template< typename Vector, typename..., typename >
+DistributedVectorView< Real, Device, Index, Communicator >&
+DistributedVectorView< Real, Device, Index, Communicator >::
+operator-=( const Vector& vector )
+{
+   TNL_ASSERT_EQ( this->getSize(), vector.getSize(),
+                  "Vector sizes must be equal." );
+   TNL_ASSERT_EQ( this->getLocalRange(), vector.getLocalRange(),
+                  "Multiary operations are supported only on vectors which are distributed the same way." );
+   TNL_ASSERT_EQ( this->getCommunicationGroup(), vector.getCommunicationGroup(),
+                  "Multiary operations are supported only on vectors within the same communication group." );
+
+   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
+      getLocalView() -= vector.getConstLocalView();
+   }
+   return *this;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Communicator >
+   template< typename Vector, typename..., typename >
+DistributedVectorView< Real, Device, Index, Communicator >&
+DistributedVectorView< Real, Device, Index, Communicator >::
+operator*=( const Vector& vector )
+{
+   TNL_ASSERT_EQ( this->getSize(), vector.getSize(),
+                  "Vector sizes must be equal." );
+   TNL_ASSERT_EQ( this->getLocalRange(), vector.getLocalRange(),
+                  "Multiary operations are supported only on vectors which are distributed the same way." );
+   TNL_ASSERT_EQ( this->getCommunicationGroup(), vector.getCommunicationGroup(),
+                  "Multiary operations are supported only on vectors within the same communication group." );
+
+   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
+      getLocalView() *= vector.getConstLocalView();
+   }
+   return *this;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Communicator >
+   template< typename Vector, typename..., typename >
+DistributedVectorView< Real, Device, Index, Communicator >&
+DistributedVectorView< Real, Device, Index, Communicator >::
+operator/=( const Vector& vector )
+{
+   TNL_ASSERT_EQ( this->getSize(), vector.getSize(),
+                  "Vector sizes must be equal." );
+   TNL_ASSERT_EQ( this->getLocalRange(), vector.getLocalRange(),
+                  "Multiary operations are supported only on vectors which are distributed the same way." );
+   TNL_ASSERT_EQ( this->getCommunicationGroup(), vector.getCommunicationGroup(),
+                  "Multiary operations are supported only on vectors within the same communication group." );
+
+   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
+      getLocalView() /= vector.getConstLocalView();
+   }
+   return *this;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Communicator >
+   template< typename Scalar, typename..., typename >
+DistributedVectorView< Real, Device, Index, Communicator >&
+DistributedVectorView< Real, Device, Index, Communicator >::
+operator=( Scalar c )
+{
+   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
+      getLocalView() = c;
+   }
+   return *this;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Communicator >
+   template< typename Scalar, typename..., typename >
+DistributedVectorView< Real, Device, Index, Communicator >&
+DistributedVectorView< Real, Device, Index, Communicator >::
+operator+=( Scalar c )
+{
+   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
+      getLocalView() += c;
+   }
+   return *this;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Communicator >
+   template< typename Scalar, typename..., typename >
+DistributedVectorView< Real, Device, Index, Communicator >&
+DistributedVectorView< Real, Device, Index, Communicator >::
+operator-=( Scalar c )
+{
+   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
+      getLocalView() -= c;
+   }
+   return *this;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename Communicator >
+   template< typename Scalar, typename..., typename >
 DistributedVectorView< Real, Device, Index, Communicator >&
 DistributedVectorView< Real, Device, Index, Communicator >::
 operator*=( Scalar c )
@@ -183,7 +294,7 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Communicator >
-   template< typename Scalar >
+   template< typename Scalar, typename..., typename >
 DistributedVectorView< Real, Device, Index, Communicator >&
 DistributedVectorView< Real, Device, Index, Communicator >::
 operator/=( Scalar c )

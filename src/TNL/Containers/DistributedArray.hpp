@@ -316,7 +316,7 @@ template< typename Value,
           typename Device,
           typename Index,
           typename Communicator >
-   template< typename Array >
+   template< typename Array, typename..., typename >
 DistributedArray< Value, Device, Index, Communicator >&
 DistributedArray< Value, Device, Index, Communicator >::
 operator=( const Array& array )

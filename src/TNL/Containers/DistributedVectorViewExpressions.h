@@ -1,8 +1,8 @@
 /***************************************************************************
                           DistributedVectorViewExpressions.h  -  description
                              -------------------
-    begin                : Apr 27, 2019
-    copyright            : (C) 2019 by Tomas Oberhuber
+    begin                : Jun 28, 2019
+    copyright            : (C) 2019 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -10,14 +10,12 @@
 
 #pragma once
 
-#include <limits>
-#include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Expressions/DistributedExpressionTemplates.h>
-#include <TNL/Containers/Expressions/ExpressionTemplatesOperations.h>
-#include <TNL/Containers/Expressions/Comparison.h>
-#include <TNL/Containers/Expressions/VerticalOperations.h>
+#include <TNL/Containers/Expressions/DistributedComparison.h>
+#include <TNL/Containers/Expressions/DistributedVerticalOperations.h>
 #include <TNL/Exceptions/NotImplementedError.h>
-#include <TNL/Containers/DistributedVectorView.h>
+
+#include "DistributedVectorView.h"
 
 namespace TNL {
 namespace Containers {
@@ -29,8 +27,7 @@ template< typename Real, typename Device, typename Index, typename Communicator,
 auto
 operator+( const DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
 {
-   using ConstView = typename DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalViewType;
-   return Expressions::DistributedBinaryExpressionTemplate< ConstView, ET, Expressions::Addition, Communicator >( a.getConstLocalView(), b, a.getCommunicationGroup() );
+   return Expressions::DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, ET, Expressions::Addition >( a, b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index, typename Communicator,
@@ -38,17 +35,14 @@ template< typename ET, typename Real, typename Device, typename Index, typename 
 auto
 operator+( const ET& a, const DistributedVectorView< Real, Device, Index, Communicator >& b )
 {
-   using ConstView = typename DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalViewType;
-   return Expressions::DistributedBinaryExpressionTemplate< ET, ConstView, Expressions::Addition, Communicator >( a, b.getConstLocalView(), b.getCommunicationGroup() );
+   return Expressions::DistributedBinaryExpressionTemplate< ET, std::decay_t<decltype(b)>, Expressions::Addition >( a, b );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
 auto
 operator+( const DistributedVectorView< Real1, Device, Index, Communicator >& a, const DistributedVectorView< Real2, Device, Index, Communicator >& b )
 {
-   using ConstView1 = typename DistributedVectorView< Real1, Device, Index, Communicator >::ConstLocalViewType;
-   using ConstView2 = typename DistributedVectorView< Real2, Device, Index, Communicator >::ConstLocalViewType;
-   return Expressions::DistributedBinaryExpressionTemplate< ConstView1, ConstView2, Expressions::Addition, Communicator >( a.getConstLocalView(), b.getConstLocalView(), b.getCommunicationGroup() );
+   return Expressions::DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Expressions::Addition >( a, b );
 }
 
 ////
@@ -58,8 +52,7 @@ template< typename Real, typename Device, typename Index, typename Communicator,
 auto
 operator-( const DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
 {
-   using ConstView = typename DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalViewType;
-   return Expressions::DistributedBinaryExpressionTemplate< ConstView, ET, Expressions::Subtraction, Communicator >( a.getConstLocalView(), b, a.getCommunicationGroup() );
+   return Expressions::DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, ET, Expressions::Subtraction >( a, b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index, typename Communicator,
@@ -67,17 +60,14 @@ template< typename ET, typename Real, typename Device, typename Index, typename 
 auto
 operator-( const ET& a, const DistributedVectorView< Real, Device, Index, Communicator >& b )
 {
-   using ConstView = typename DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalViewType;
-   return Expressions::DistributedBinaryExpressionTemplate< ET, ConstView, Expressions::Subtraction, Communicator >( a.getConstLocalView(), b.getConstLocalView(), b.getCommunicationGroup() );
+   return Expressions::DistributedBinaryExpressionTemplate< ET, std::decay_t<decltype(b)>, Expressions::Subtraction >( a, b );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
 auto
 operator-( const DistributedVectorView< Real1, Device, Index, Communicator >& a, const DistributedVectorView< Real2, Device, Index, Communicator >& b )
 {
-   using ConstView1 = typename DistributedVectorView< Real1, Device, Index, Communicator >::ConstLocalViewType;
-   using ConstView2 = typename DistributedVectorView< Real2, Device, Index, Communicator >::ConstLocalViewType;
-   return Expressions::DistributedBinaryExpressionTemplate< ConstView1, ConstView2, Expressions::Subtraction, Communicator >( a.getConstLocalView(), b.getConstLocalView(), b.getCommunicationGroup() );
+   return Expressions::DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Expressions::Subtraction >( a, b );
 }
 
 ////
@@ -87,8 +77,7 @@ template< typename Real, typename Device, typename Index, typename Communicator,
 auto
 operator*( const DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
 {
-   using ConstView = typename DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalViewType;
-   return Expressions::DistributedBinaryExpressionTemplate< ConstView, ET, Expressions::Multiplication, Communicator >( a.getConstLocalView(), b, a.getCommunicationGroup() );
+   return Expressions::DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, ET, Expressions::Multiplication >( a, b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index, typename Communicator,
@@ -96,17 +85,14 @@ template< typename ET, typename Real, typename Device, typename Index, typename 
 auto
 operator*( const ET& a, const DistributedVectorView< Real, Device, Index, Communicator >& b )
 {
-   using ConstView = typename DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalViewType;
-   return Expressions::DistributedBinaryExpressionTemplate< ET, ConstView, Expressions::Multiplication, Communicator >( a, b.getConstLocalView(), b.getCommunicationGroup() );
+   return Expressions::DistributedBinaryExpressionTemplate< ET, std::decay_t<decltype(b)>, Expressions::Multiplication >( a, b );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
 auto
 operator*( const DistributedVectorView< Real1, Device, Index, Communicator >& a, const DistributedVectorView< Real2, Device, Index, Communicator >& b )
 {
-   using ConstView1 = typename DistributedVectorView< Real1, Device, Index, Communicator >::ConstLocalViewType;
-   using ConstView2 = typename DistributedVectorView< Real2, Device, Index, Communicator >::ConstLocalViewType;
-   return Expressions::DistributedBinaryExpressionTemplate< ConstView1, ConstView2, Expressions::Multiplication, Communicator >( a.getConstLocalView(), b.getConstLocalView(), b.getCommunicationGroup() );
+   return Expressions::DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Expressions::Multiplication >( a, b );
 }
 
 ////
@@ -116,8 +102,7 @@ template< typename Real, typename Device, typename Index, typename Communicator,
 auto
 operator/( const DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
 {
-   using ConstView = typename DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalViewType;
-   return Expressions::DistributedBinaryExpressionTemplate< ConstView, ET, Expressions::Division, Communicator >( a.getConstLocalView(), b, a.getCommunicationGroup() );
+   return Expressions::DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, ET, Expressions::Division >( a, b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index, typename Communicator,
@@ -125,190 +110,164 @@ template< typename ET, typename Real, typename Device, typename Index, typename 
 auto
 operator/( const ET& a, const DistributedVectorView< Real, Device, Index, Communicator >& b )
 {
-   using ConstView = typename DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalViewType;
-   return Expressions::DistributedBinaryExpressionTemplate< ET, ConstView, Expressions::Division, Communicator >( a, b.getConstLocalView(), b.getCommunicationGroup() );
+   return Expressions::DistributedBinaryExpressionTemplate< ET, std::decay_t<decltype(b)>, Expressions::Division >( a, b );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
 auto
 operator/( const DistributedVectorView< Real1, Device, Index, Communicator >& a, const DistributedVectorView< Real2, Device, Index, Communicator >& b )
 {
-   using ConstView1 = typename DistributedVectorView< Real1, Device, Index, Communicator >::ConstLocalViewType;
-   using ConstView2 = typename DistributedVectorView< Real2, Device, Index, Communicator >::ConstLocalViewType;
-   return Expressions::DistributedBinaryExpressionTemplate< ConstView1, ConstView2, Expressions::Division, Communicator >( a.getConstLocalView(), b.getConstLocalView(), b.getCommunicationGroup() );
+   return Expressions::DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Expressions::Division >( a, b );
 }
 
 ////
 // Comparison operations - operator ==
 template< typename Real, typename Device, typename Index, typename Communicator, typename ET,
           typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
-bool operator==( const DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
+bool
+operator==( const DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
 {
-   using Left = DistributedVectorView< Real, Device, Index, Communicator >;
-   using Right = ET;
-   return Expressions::DistributedComparison< Left, Right >::template EQ< Communicator >( a.getConstLocalView(), b, a.getCommunicatorGroup() );
+   return Expressions::DistributedComparison< std::decay_t<decltype(a)>, ET >::EQ( a, b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index, typename Communicator,
           typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
-bool operator==( const ET& a, const DistributedVectorView< Real, Device, Index, Communicator >& b )
+bool
+operator==( const ET& a, const DistributedVectorView< Real, Device, Index, Communicator >& b )
 {
-   using Left = ET;
-   using Right = DistributedVectorView< Real, Device, Index, Communicator >;
-   return Expressions::DistributedComparison< Left, Right >::template EQ< Communicator >( a, b.getConstLocalView(), b.getCommunicationGroup() );
+   return Expressions::DistributedComparison< ET, std::decay_t<decltype(b)> >::EQ( a, b );
 }
 
-template< typename Real1, typename Real2, typename Device1, typename Device2, typename Index1, typename Index2, typename Communicator >
-bool operator==( const DistributedVectorView< Real1, Device1, Index1, Communicator >& a, const DistributedVectorView< Real2, Device2, Index2, Communicator >& b )
+template< typename Real1, typename Real2, typename Device1, typename Device2, typename Index, typename Communicator >
+bool
+operator==( const DistributedVectorView< Real1, Device1, Index, Communicator >& a, const DistributedVectorView< Real2, Device2, Index, Communicator >& b )
 {
-   if( a.getCommunicationGroup() != b.getCommunicationGroup() )
-      return false;
-   const bool localResult =
-         a.getLocalRange() == b.getLocalRange() &&
-         a.getSize() == b.getSize() &&
-         a.getConstLocalView() == b.getConstLocalView();
-   bool result = true;
-   if( a.getCommunicationGroup() != Communicator::NullGroup )
-      Communicator::Allreduce( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
-   return result;
+   return Expressions::DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::EQ( a, b );
 }
 
 ////
 // Comparison operations - operator !=
 template< typename Real, typename Device, typename Index, typename Communicator, typename ET,
           typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
-bool operator!=( const DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
+bool
+operator!=( const DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
 {
-   using Left = DistributedVectorView< Real, Device, Index, Communicator >;
-   using Right = ET;
-   return Expressions::DistributedComparison< Left, Right >::template NE< Communicator >( a.getConstLocalView(), b, a.getCommunicationGroup() );
+   return Expressions::DistributedComparison< std::decay_t<decltype(a)>, ET >::NE( a, b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index, typename Communicator,
           typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
-bool operator!=( const ET& a, const DistributedVectorView< Real, Device, Index, Communicator >& b )
+bool
+operator!=( const ET& a, const DistributedVectorView< Real, Device, Index, Communicator >& b )
 {
-   using Left = ET;
-   using Right = DistributedVectorView< Real, Device, Index, Communicator >;
-   return Expressions::DistributedComparison< Left, Right >::template NE< Communicator >( a, b.getConstLocalView(), b.getCommunicationGroup() );
+   return Expressions::DistributedComparison< ET, std::decay_t<decltype(b)> >::NE( a, b );
 }
 
 template< typename Real1, typename Real2, typename Device1, typename Device2, typename Index, typename Communicator >
-bool operator!=( const DistributedVectorView< Real1, Device1, Index >& a, const DistributedVectorView< Real2, Device2, Index >& b )
+bool
+operator!=( const DistributedVectorView< Real1, Device1, Index, Communicator >& a, const DistributedVectorView< Real2, Device2, Index, Communicator >& b )
 {
-   return ! operator==( a, b );
+   return Expressions::DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::NE( a, b );
 }
 
 ////
 // Comparison operations - operator <
 template< typename Real, typename Device, typename Index, typename Communicator, typename ET,
           typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
-bool operator<( const DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
+bool
+operator<( const DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
 {
-   using Left = DistributedVectorView< Real, Device, Index, Communicator >;
-   using Right = ET;
-   return Expressions::DistributedComparison< Left, Right >::template LT< Communicator >( a.getConstLocalView(), b, a.getCommunicationGroup() );
+   return Expressions::DistributedComparison< std::decay_t<decltype(a)>, ET >::LT( a, b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index, typename Communicator,
           typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
-bool operator<( const ET& a, const DistributedVectorView< Real, Device, Index, Communicator >& b )
+bool
+operator<( const ET& a, const DistributedVectorView< Real, Device, Index, Communicator >& b )
 {
-   using Left = ET;
-   using Right = DistributedVectorView< Real, Device, Index, Communicator >;
-   return Expressions::DistributedComparison< Left, Right >::template LT< Communicator >( a, b.getConstLocalView(), b.getCommunicationGroup() );
+   return Expressions::DistributedComparison< ET, std::decay_t<decltype(b)> >::LT( a, b );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
-bool operator<( const DistributedVectorView< Real1, Device, Index, Communicator >& a, const DistributedVectorView< Real2, Device, Index, Communicator >& b )
+bool
+operator<( const DistributedVectorView< Real1, Device, Index, Communicator >& a, const DistributedVectorView< Real2, Device, Index, Communicator >& b )
 {
-   using Left = DistributedVectorView< Real1, Device, Index, Communicator >;
-   using Right = DistributedVectorView< Real2, Device, Index, Communicator >;
-   return Expressions::DistributedComparison< Left, Right >::template LT< Communicator >( a.getConstLocalView(), b.getConstLocalView(), b.getCommunicationGroup() );
+   return Expressions::DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LT( a, b );
 }
 
 ////
 // Comparison operations - operator <=
 template< typename Real, typename Device, typename Index, typename Communicator, typename ET,
           typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
-bool operator<=( const DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
+bool
+operator<=( const DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
 {
-   using Left = DistributedVectorView< Real, Device, Index, Communicator >;
-   using Right = ET;
-   return Expressions::DistributedComparison< Left, Right >::template LE< Communicator >( a.getConstLocalView(), b, a.getCommunicationGroup() );
+   return Expressions::DistributedComparison< std::decay_t<decltype(a)>, ET >::LE( a, b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index, typename Communicator,
           typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
-bool operator<=( const ET& a, const DistributedVectorView< Real, Device, Index, Communicator >& b )
+bool
+operator<=( const ET& a, const DistributedVectorView< Real, Device, Index, Communicator >& b )
 {
-   using Left = ET;
-   using Right = DistributedVectorView< Real, Device, Index, Communicator >;
-   return Expressions::DistributedComparison< Left, Right >::template LE< Communicator >( a, b.getConstLocalView(), b.getCommunicationGroup() );
+   return Expressions::DistributedComparison< ET, std::decay_t<decltype(b)> >::LE( a, b );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
-bool operator<=( const DistributedVectorView< Real1, Device, Index, Communicator >& a, const DistributedVectorView< Real2, Device, Index, Communicator >& b )
+bool
+operator<=( const DistributedVectorView< Real1, Device, Index, Communicator >& a, const DistributedVectorView< Real2, Device, Index, Communicator >& b )
 {
-   using Left = DistributedVectorView< Real1, Device, Index, Communicator >;
-   using Right = DistributedVectorView< Real2, Device, Index, Communicator >;
-   return Expressions::DistributedComparison< Left, Right >::template LE< Communicator >( a.getConstLocalView(), b.getConstLocalView(), b.getCommunicationGroup() );
+   return Expressions::DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LE( a, b );
 }
 
 ////
 // Comparison operations - operator >
 template< typename Real, typename Device, typename Index, typename Communicator, typename ET,
           typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
-bool operator>( const DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
+bool
+operator>( const DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
 {
-   using Left = DistributedVectorView< Real, Device, Index, Communicator >;
-   using Right = ET;
-   return Expressions::DistributedComparison< Left, Right >::template GT< Communicator >( a.getConstLocalView(), b, a.getCommunicationGroup() );
+   return Expressions::DistributedComparison< std::decay_t<decltype(a)>, ET >::GT( a, b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index, typename Communicator,
           typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
-bool operator>( const ET& a, const DistributedVectorView< Real, Device, Index, Communicator >& b )
+bool
+operator>( const ET& a, const DistributedVectorView< Real, Device, Index, Communicator >& b )
 {
-   using Left = ET;
-   using Right = DistributedVectorView< Real, Device, Index, Communicator >;
-   return Expressions::DistributedComparison< Left, Right >::template GT< Communicator >( a, b.getConstLocalView(), b.getCommunicationGroup() );
+   return Expressions::DistributedComparison< ET, std::decay_t<decltype(b)> >::GT( a, b );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
-bool operator>( const DistributedVectorView< Real1, Device, Index, Communicator >& a, const DistributedVectorView< Real2, Device, Index, Communicator >& b )
+bool
+operator>( const DistributedVectorView< Real1, Device, Index, Communicator >& a, const DistributedVectorView< Real2, Device, Index, Communicator >& b )
 {
-   using Left = DistributedVectorView< Real1, Device, Index, Communicator >;
-   using Right = DistributedVectorView< Real2, Device, Index, Communicator >;
-   return Expressions::DistributedComparison< Left, Right >::template GT< Communicator >( a.getConstLocalView(), b.getConstLocalView(), b.getCommunicationGroup() );
+   return Expressions::DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GT( a, b );
 }
 
 ////
 // Comparison operations - operator >=
 template< typename Real, typename Device, typename Index, typename Communicator, typename ET,
           typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
-bool operator>=( const DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
+bool
+operator>=( const DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
 {
-   using Left = DistributedVectorView< Real, Device, Index, Communicator >;
-   using Right = ET;
-   return Expressions::DistributedComparison< Left, Right >::template GE< Communicator >( a.getConstLocalView(), b, a.getCommunicationGroup() );
+   return Expressions::DistributedComparison< std::decay_t<decltype(a)>, ET >::GE( a, b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index, typename Communicator,
           typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
-bool operator>=( const ET& a, const DistributedVectorView< Real, Device, Index, Communicator >& b )
+bool
+operator>=( const ET& a, const DistributedVectorView< Real, Device, Index, Communicator >& b )
 {
-   using Left = ET;
-   using Right = DistributedVectorView< Real, Device, Index, Communicator >;
-   return Expressions::DistributedComparison< Left, Right >::template GE< Communicator >( a, b.getConstLocalView(), b.getCommunicationGroup() );
+   return Expressions::DistributedComparison< ET, std::decay_t<decltype(b)> >::GE( a, b );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
-bool operator>=( const DistributedVectorView< Real1, Device, Index, Communicator >& a, const DistributedVectorView< Real2, Device, Index, Communicator >& b )
+bool
+operator>=( const DistributedVectorView< Real1, Device, Index, Communicator >& a, const DistributedVectorView< Real2, Device, Index, Communicator >& b )
 {
-   using Left = DistributedVectorView< Real1, Device, Index, Communicator >;
-   using Right = DistributedVectorView< Real2, Device, Index, Communicator >;
-   return Expressions::DistributedComparison< Left, Right >::template GE< Communicator >( a.getConstLocalView(), b.getConstLocalView(), b.getCommunicationGroup() );
+   return Expressions::DistributedComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GE( a, b );
 }
 
 ////
@@ -317,8 +276,7 @@ template< typename Real, typename Device, typename Index, typename Communicator 
 auto
 operator-( const DistributedVectorView< Real, Device, Index, Communicator >& a )
 {
-   using ConstView = typename DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalViewType;
-   return Expressions::DistributedUnaryExpressionTemplate< ConstView, Expressions::Minus, void, Communicator >( a.getConstLocalView() );
+   return Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Expressions::Minus >( a );
 }
 
 ////
@@ -328,47 +286,28 @@ template< typename Real, typename Device, typename Index, typename Communicator,
 auto
 operator,( const DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
 {
-   using CommunicatorType = typename DistributedVectorView< Real, Device, Index, Communicator >::CommunicatorType;
-   Real result = 0.0;
-   if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      const Real localResult = TNL::sum( a.getConstLocalView() * b );
-      CommunicatorType::Allreduce( &localResult, &result, 1, MPI_SUM, a.getCommunicationGroup() );
-   }
-   return result;
+   return Expressions::DistributedExpressionSum( a * b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index, typename Communicator,
           typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 auto
-operator,( const ET& a, const DistributedVectorView< Real, Device, Index, Communicator >& b ) 
+operator,( const ET& a, const DistributedVectorView< Real, Device, Index, Communicator >& b )
 {
-   using CommunicatorType = typename DistributedVectorView< Real, Device, Index, Communicator >::CommunicatorType;
-   Real result = 0.0;
-   if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      const Real localResult = TNL::sum( a * b.getConstLocalView(), b.getCommunicationGroup() );
-      CommunicatorType::Allreduce( &localResult, &result, 1, MPI_SUM, a.getCommunicationGroup() );
-   }
-   return result;
+   return Expressions::DistributedExpressionSum( a * b );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
 auto
 operator,( const DistributedVectorView< Real1, Device, Index, Communicator >& a, const DistributedVectorView< Real2, Device, Index, Communicator >& b )
 {
-   using CommunicatorType = typename DistributedVectorView< Real1, Device, Index, Communicator >::CommunicatorType;
-   using Real = decltype( TNL::sum( a.getConstLocalView() * b.getConstLocalView() ) );
-   Real result = 0.0;
-   if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      const Real localResult = TNL::sum( a.getConstLocalView() * b.getConstLocalView() );
-      CommunicatorType::Allreduce( &localResult, &result, 1, MPI_SUM, a.getCommunicationGroup() );
-   }
-   return result;
+   return Expressions::DistributedExpressionSum( a * b );
 }
 
 } // namespace Containers
 
 ////
-// Functions are supposed to be in namespace TNL
+// All functions are supposed to be in namespace TNL
 
 ////
 // Min
@@ -377,8 +316,7 @@ template< typename Real, typename Device, typename Index, typename Communicator,
 auto
 min( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
 {
-   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalViewType;
-   return Containers::Expressions::DistributedBinaryExpressionTemplate< ConstView, ET, Containers::Expressions::Min, Communicator >( a.getConstLocalView(), b, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, ET, Containers::Expressions::Min >( a, b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index, typename Communicator,
@@ -386,17 +324,14 @@ template< typename ET, typename Real, typename Device, typename Index, typename 
 auto
 min( const ET& a, const Containers::DistributedVectorView< Real, Device, Index, Communicator >& b )
 {
-   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalViewType;
-   return Containers::Expressions::DistributedBinaryExpressionTemplate< ET, ConstView, Containers::Expressions::Min, Communicator >( a, b.getConstLocalView(), b.getCommunicationGroup() );
+   return Containers::Expressions::DistributedBinaryExpressionTemplate< ET, std::decay_t<decltype(b)>, Containers::Expressions::Min >( a, b );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
 auto
 min( const Containers::DistributedVectorView< Real1, Device, Index, Communicator >& a, const Containers::DistributedVectorView< Real2, Device, Index, Communicator >& b )
 {
-   using ConstView1 = typename Containers::DistributedVectorView< Real1, Device, Index, Communicator >::ConstLocalViewType;
-   using ConstView2 = typename Containers::DistributedVectorView< Real2, Device, Index, Communicator >::ConstLocalViewType;
-   return Containers::Expressions::DistributedBinaryExpressionTemplate< ConstView1, ConstView2, Containers::Expressions::Min, Communicator >( a.getConstLocalView(), b.getConstLocalView(), b.getCommunicationGroup() );
+   return Containers::Expressions::DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Min >( a, b );
 }
 
 ////
@@ -406,8 +341,7 @@ template< typename Real, typename Device, typename Index, typename Communicator,
 auto
 max( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
 {
-   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalViewType;
-   return Containers::Expressions::DistributedBinaryExpressionTemplate< ConstView, ET, Containers::Expressions::Max, Communicator >( a.getConstLocalView(), b, a.getCommunicationGroup() );
+   return Containers::Expressions::DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, ET, Containers::Expressions::Max >( a, b );
 }
 
 template< typename ET, typename Real, typename Device, typename Index, typename Communicator,
@@ -415,366 +349,14 @@ template< typename ET, typename Real, typename Device, typename Index, typename 
 auto
 max( const ET& a, const Containers::DistributedVectorView< Real, Device, Index, Communicator >& b )
 {
-   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalViewType;
-   return Containers::Expressions::DistributedBinaryExpressionTemplate< ET, ConstView, Containers::Expressions::Max, Communicator >( a, b.getConstLocalView(), b.getCommunicationGroup() );
+   return Containers::Expressions::DistributedBinaryExpressionTemplate< ET, std::decay_t<decltype(b)>, Containers::Expressions::Max >( a, b );
 }
 
 template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
 auto
 max( const Containers::DistributedVectorView< Real1, Device, Index, Communicator >& a, const Containers::DistributedVectorView< Real2, Device, Index, Communicator >& b )
 {
-   using ConstView1 = typename Containers::DistributedVectorView< Real1, Device, Index, Communicator >::ConstLocalViewType;
-   using ConstView2 = typename Containers::DistributedVectorView< Real2, Device, Index, Communicator >::ConstLocalViewType;
-   return Containers::Expressions::DistributedBinaryExpressionTemplate< ConstView1, ConstView2, Containers::Expressions::Max, Communicator >( a.getConstLocalView(), b.getConstLocalView(), b.getCommunicationGroup() );
-}
-
-////
-// Abs
-template< typename Real, typename Device, typename Index, typename Communicator >
-auto
-abs( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
-{
-   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalViewType;
-   return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Abs, void, Communicator >( a.getConstLocalView(), a.getCommunicationGroup() );
-}
-
-////
-// Sine
-template< typename Real, typename Device, typename Index, typename Communicator >
-auto
-sin( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
-{
-   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalViewType;
-   return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Sin, void, Communicator >( a.getConstLocalView() );
-}
-
-////
-// Cosine
-template< typename Real, typename Device, typename Index, typename Communicator >
-auto
-cos( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
-{
-   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalViewType;
-   return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Cos, void, Communicator >( a.getConstLocalView() );
-}
-
-////
-// Tangent
-template< typename Real, typename Device, typename Index, typename Communicator >
-auto
-tan( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
-{
-   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalViewType;
-   return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Tan, void, Communicator >( a.getConstLocalView() );
-}
-
-////
-// Sqrt
-template< typename Real, typename Device, typename Index, typename Communicator >
-auto
-sqrt( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
-{
-   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalViewType;
-   return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Sqrt, void, Communicator >( a.getConstLocalView() );
-}
-
-////
-// Cbrt
-template< typename Real, typename Device, typename Index, typename Communicator >
-auto
-cbrt( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
-{
-   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalViewType;
-   return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Cbrt, void, Communicator >( a.getConstLocalView() );
-}
-
-////
-// Power
-template< typename Real, typename Device, typename Index, typename Communicator, typename ExpType >
-auto
-pow( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a, const ExpType& exp )
-{
-   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalViewType;
-   return Containers::Expressions::DistributedBinaryExpressionTemplate< ConstView, ExpType, Containers::Expressions::Pow, Communicator >( a.getConstLocalView(), exp );
-}
-
-////
-// Floor
-template< typename Real, typename Device, typename Index, typename Communicator >
-auto
-floor( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
-{
-   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalViewType;
-   return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Floor, void, Communicator >( a.getConstLocalView() );
-}
-
-////
-// Ceil
-template< typename Real, typename Device, typename Index, typename Communicator >
-auto
-ceil( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
-{
-   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalViewType;
-   return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Ceil, void, Communicator >( a.getConstLocalView() );
-}
-
-////
-// Acos
-template< typename Real, typename Device, typename Index, typename Communicator >
-auto
-acos( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
-{
-   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalViewType;
-   return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Acos, void, Communicator >( a.getConstLocalView() );
-}
-
-////
-// Asin
-template< typename Real, typename Device, typename Index, typename Communicator >
-auto
-asin( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
-{
-   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalViewType;
-   return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Asin, void, Communicator >( a.getConstLocalView() );
-}
-
-////
-// Atan
-template< typename Real, typename Device, typename Index, typename Communicator >
-auto
-atan( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
-{
-   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalViewType;
-   return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Atan, void, Communicator >( a.getConstLocalView() );
-}
-
-////
-// Cosh
-template< typename Real, typename Device, typename Index, typename Communicator >
-auto
-cosh( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
-{
-   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalViewType;
-   return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Cosh, void, Communicator >( a.getConstLocalView() );
-}
-
-////
-// Tanh
-template< typename Real, typename Device, typename Index, typename Communicator >
-auto
-tanh( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
-{
-   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalViewType;
-   return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Tanh, void, Communicator >( a.getConstLocalView() );
-}
-
-////
-// Log
-template< typename Real, typename Device, typename Index, typename Communicator >
-auto
-log( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
-{
-   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalViewType;
-   return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Log, void, Communicator >( a.getConstLocalView() );
-}
-
-////
-// Log10
-template< typename Real, typename Device, typename Index, typename Communicator >
-auto
-log10( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
-{
-   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalViewType;
-   return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Log10, void, Communicator >( a.getConstLocalView() );
-}
-
-////
-// Log2
-template< typename Real, typename Device, typename Index, typename Communicator >
-auto
-log2( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
-{
-   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalViewType;
-   return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Log2, void, Communicator >( a.getConstLocalView() );
-}
-
-////
-// Exp
-template< typename Real, typename Device, typename Index, typename Communicator >
-auto
-exp( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
-{
-   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalViewType;
-   return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Exp, void, Communicator >( a.getConstLocalView() );
-}
-
-////
-// Sign
-template< typename Real, typename Device, typename Index, typename Communicator >
-auto
-sign( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
-{
-   using ConstView = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::ConstLocalViewType;
-   return Containers::Expressions::DistributedUnaryExpressionTemplate< ConstView, Containers::Expressions::Sign, void, Communicator >( a.getConstLocalView() );
-}
-
-////
-// Vertical operations - min
-template< typename Real,
-          typename Device,
-          typename Index, typename Communicator >
-auto
-min( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
-{
-   using CommunicatorType = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::CommunicatorType;
-   Real result = std::numeric_limits< Real >::max();
-   if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      const Real localResult = Containers::Expressions::ExpressionMin( a.getConstLocalView() );
-      CommunicatorType::Allreduce( &localResult, &result, 1, MPI_MIN, a.getCommunicationGroup() );
-   }
-   return result;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index, typename Communicator >
-auto
-argMin( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a, Index& arg )
-{
-   throw Exceptions::NotImplementedError( "agrMin for distributed vector view is not implemented yet." );
-   return Containers::Expressions::ExpressionArgMin( a.getConstLocalView(), arg );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index, typename Communicator >
-auto
-max( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
-{
-   using CommunicatorType = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::CommunicatorType;
-   Real result = std::numeric_limits< Real >::min();
-   if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      const Real localResult = Containers::Expressions::ExpressionMax( a.getConstLocalView() );
-      CommunicatorType::Allreduce( &localResult, &result, 1, MPI_MAX, a.getCommunicationGroup() );
-   }
-   return result;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index, typename Communicator >
-auto
-argMax( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a, Index& arg )
-{
-   throw Exceptions::NotImplementedError( "agrMax for distributed vector view is not implemented yet." );
-   return Containers::Expressions::ExpressionArgMax( a.getConstLocalView(), arg );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index, typename Communicator >
-auto
-sum( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
-{
-   using CommunicatorType = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::CommunicatorType;
-   Real result = 0.0;
-   if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      const Real localResult = Containers::Expressions::ExpressionSum( a.getConstLocalView() );
-      CommunicatorType::Allreduce( &localResult, &result, 1, MPI_SUM, a.getCommunicationGroup() );
-   }
-   return result;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index, typename Communicator,
-          typename Real2 >
-auto
-lpNorm( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a, const Real2& p )
--> decltype( TNL::pow( Containers::Expressions::ExpressionLpNorm( a.getConstLocalView(), p ), p ) )
-{
-   using CommunicatorType = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::CommunicatorType;
-   Real result = ( Real ) 0.0;
-   if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      const Real localResult = Containers::Expressions::ExpressionLpNorm( a.getConstLocalView(), p );
-      CommunicatorType::template Allreduce< Real >( &localResult, &result, 1, MPI_SUM, a.getCommunicationGroup() );
-   }
-   return TNL::pow( result, 1.0 / p );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index, typename Communicator >
-auto
-product( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
-{
-   using CommunicatorType = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::CommunicatorType;
-   Real result = ( Real ) 1.0;
-   if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      const Real localResult = Containers::Expressions::ExpressionProduct( a.getConstLocalView() );
-      CommunicatorType::Allreduce( &localResult, &result, 1, MPI_PROD, a.getCommunicationGroup() );
-   }
-   return result;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index, typename Communicator >
-auto
-logicalOr( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
-{
-   using CommunicatorType = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::CommunicatorType;
-   bool result = false;
-   if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      const Real localResult = Containers::Expressions::ExpressionLogicalOr( a.getConstLocalView() );
-      CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LOR, a.getCommunicationGroup() );
-   }
-   return result;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index, typename Communicator >
-auto
-binaryOr( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
-{
-   using CommunicatorType = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::CommunicatorType;
-   Real result = ( Real ) 0.0;
-   if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      const Real localResult = Containers::Expressions::ExpressionBinaryOr( a.getConstLocalView() );
-      CommunicatorType::Allreduce( &localResult, &result, 1, MPI_BOR, a.getCommunicationGroup() );
-   }
-   return result;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index, typename Communicator >
-auto
-logicalAnd( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
-{
-   using CommunicatorType = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::CommunicatorType;
-   Real result = std::numeric_limits< Real >::max();
-   if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      const Real localResult = Containers::Expressions::ExpressionLogicalAnd( a.getConstLocalView() );
-      CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
-   }
-   return result;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index, typename Communicator >
-auto
-binaryAnd( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
-{
-   using CommunicatorType = typename Containers::DistributedVectorView< Real, Device, Index, Communicator >::CommunicatorType;
-   bool result = true;
-   if( a.getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      const Real localResult = Containers::Expressions::ExpressionBinaryAnd( a.getConstLocalView() );
-      CommunicatorType::Allreduce( &localResult, &result, 1, MPI_BAND, a.getCommunicationGroup() );
-   }
-   return result;
+   return Containers::Expressions::DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Max >( a, b );
 }
 
 ////
@@ -784,7 +366,7 @@ template< typename Real, typename Device, typename Index, typename Communicator,
 auto
 dot( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a, const ET& b )
 {
-   return ( a, b );
+   return (a, b);
 }
 
 template< typename ET, typename Real, typename Device, typename Index, typename Communicator,
@@ -792,14 +374,306 @@ template< typename ET, typename Real, typename Device, typename Index, typename 
 auto
 dot( const ET& a, const Containers::DistributedVectorView< Real, Device, Index, Communicator >& b )
 {
-   return ( a, b );
+   return (a, b);
 }
 
-template< typename Real1, typename Real2, typename Device, typename Index, typename Communicator >
+template< typename Real1, typename Real2, typename Device, typename Index1, typename Index2, typename Communicator >
 auto
-dot( const Containers::DistributedVectorView< Real1, Device, Index, Communicator >& a, const Containers::DistributedVectorView< Real2, Device, Index, Communicator >& b )
+dot( const Containers::DistributedVectorView< Real1, Device, Index1, Communicator >& a, const Containers::DistributedVectorView< Real2, Device, Index2, Communicator >& b )
 {
-   return ( a, b );
+   return (a, b);
+}
+
+////
+// Abs
+template< typename Real, typename Device, typename Index, typename Communicator >
+auto
+abs( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Abs >( a );
+}
+
+
+////
+// Power
+template< typename Real, typename Device, typename Index, typename Communicator, typename ExpType >
+auto
+pow( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a, const ExpType& exp )
+{
+   return Containers::Expressions::DistributedBinaryExpressionTemplate< Containers::DistributedVectorView< Real, Device, Index, Communicator >, ExpType, Containers::Expressions::Pow >( a, exp );
+}
+
+////
+// Exp
+template< typename Real, typename Device, typename Index, typename Communicator >
+auto
+exp( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Exp >( a );
+}
+
+////
+// Sqrt
+template< typename Real, typename Device, typename Index, typename Communicator >
+auto
+sqrt( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sqrt >( a );
+}
+
+////
+// Cbrt
+template< typename Real, typename Device, typename Index, typename Communicator >
+auto
+cbrt( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Cbrt >( a );
+}
+
+////
+// Log
+template< typename Real, typename Device, typename Index, typename Communicator >
+auto
+log( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log >( a );
+}
+
+////
+// Log10
+template< typename Real, typename Device, typename Index, typename Communicator >
+auto
+log10( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log10 >( a );
+}
+
+////
+// Log2
+template< typename Real, typename Device, typename Index, typename Communicator >
+auto
+log2( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log2 >( a );
+}
+
+////
+// Sine
+template< typename Real, typename Device, typename Index, typename Communicator >
+auto
+sin( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sin >( a );
+}
+
+////
+// Cosine
+template< typename Real, typename Device, typename Index, typename Communicator >
+auto
+cos( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Cos >( a );
+}
+
+////
+// Tangent
+template< typename Real, typename Device, typename Index, typename Communicator >
+auto
+tan( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Tan >( a );
+}
+
+////
+// Asin
+template< typename Real, typename Device, typename Index, typename Communicator >
+auto
+asin( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Asin >( a );
+}
+
+////
+// Acos
+template< typename Real, typename Device, typename Index, typename Communicator >
+auto
+acos( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Acos >( a );
+}
+
+////
+// Atan
+template< typename Real, typename Device, typename Index, typename Communicator >
+auto
+atan( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Atan >( a );
+}
+
+////
+// Sinh
+template< typename Real, typename Device, typename Index, typename Communicator >
+auto
+sinh( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sinh >( a );
+}
+
+////
+// Cosh
+template< typename Real, typename Device, typename Index, typename Communicator >
+auto
+cosh( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Cosh >( a );
+}
+
+////
+// Tanh
+template< typename Real, typename Device, typename Index, typename Communicator >
+auto
+tanh( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Tanh >( a );
+}
+
+////
+// Asinh
+template< typename Real, typename Device, typename Index, typename Communicator >
+auto
+asinh( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Asinh >( a );
+}
+
+////
+// Acosh
+template< typename Real, typename Device, typename Index, typename Communicator >
+auto
+acosh( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Acosh >( a );
+}
+
+////
+// Atanh
+template< typename Real, typename Device, typename Index, typename Communicator >
+auto
+atanh( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Atanh >( a );
+}
+
+////
+// Floor
+template< typename Real, typename Device, typename Index, typename Communicator >
+auto
+floor( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Floor >( a );
+}
+
+////
+// Ceil
+template< typename Real, typename Device, typename Index, typename Communicator >
+auto
+ceil( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Ceil >( a );
+}
+
+////
+// Sign
+template< typename Real, typename Device, typename Index, typename Communicator >
+auto
+sign( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sign >( a );
+}
+
+////
+// Vertical operations - min
+template< typename Real, typename Device, typename Index, typename Communicator >
+Real
+min( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
+{
+   return Containers::Expressions::DistributedExpressionMin( a );
+}
+
+template< typename Real, typename Device, typename Index, typename Communicator >
+Real
+argMin( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a, Index& arg )
+{
+   return Containers::Expressions::DistributedExpressionArgMin( a, arg );
+}
+
+template< typename Real, typename Device, typename Index, typename Communicator >
+Real
+max( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
+{
+   return Containers::Expressions::DistributedExpressionMax( a );
+}
+
+template< typename Real, typename Device, typename Index, typename Communicator >
+Real
+argMax( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a, Index& arg )
+{
+   return Containers::Expressions::DistributedExpressionArgMax( a, arg );
+}
+
+template< typename Real, typename Device, typename Index, typename Communicator >
+auto
+sum( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
+{
+   return Containers::Expressions::DistributedExpressionSum( a );
+}
+
+template< typename Real, typename Device, typename Index, typename Communicator, typename Real2 >
+auto
+lpNorm( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a, const Real2& p )
+-> decltype( Containers::Expressions::DistributedExpressionLpNorm( a, p ) )
+{
+   if( p == 1.0 )
+      return Containers::Expressions::DistributedExpressionLpNorm( a, p );
+   if( p == 2.0 )
+      return TNL::sqrt( Containers::Expressions::DistributedExpressionLpNorm( a, p ) );
+   return TNL::pow( Containers::Expressions::DistributedExpressionLpNorm( a, p ), (Real2) (1.0 / p) );
+}
+
+template< typename Real, typename Device, typename Index, typename Communicator >
+auto
+product( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
+{
+   return Containers::Expressions::DistributedExpressionProduct( a );
+}
+
+template< typename Real, typename Device, typename Index, typename Communicator >
+auto
+logicalOr( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
+{
+   return Containers::Expressions::DistributedExpressionLogicalOr( a );
+}
+
+template< typename Real, typename Device, typename Index, typename Communicator >
+auto
+binaryOr( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
+{
+   return Containers::Expressions::DistributedExpressionBinaryOr( a );
+}
+
+template< typename Real, typename Device, typename Index, typename Communicator >
+auto
+logicalAnd( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
+{
+   return Containers::Expressions::DistributedExpressionLogicalAnd( a );
+}
+
+template< typename Real, typename Device, typename Index, typename Communicator >
+auto
+binaryAnd( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
+{
+   return Containers::Expressions::DistributedExpressionBinaryAnd( a );
 }
 
 } // namespace TNL
