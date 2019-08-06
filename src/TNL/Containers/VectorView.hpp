@@ -163,32 +163,6 @@ scalarProduct( const Vector& v ) const
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename Vector, typename Scalar1, typename Scalar2 >
-void
-VectorView< Real, Device, Index >::
-addVector( const Vector& x, Scalar1 alpha, Scalar2 thisMultiplicator )
-{
-   Algorithms::VectorOperations< Device >::addVector( *this, x, alpha, thisMultiplicator );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename Vector1, typename Vector2, typename Scalar1, typename Scalar2, typename Scalar3 >
-void
-VectorView< Real, Device, Index >::
-addVectors( const Vector1& v1,
-            Scalar1 multiplicator1,
-            const Vector2& v2,
-            Scalar2 multiplicator2,
-            Scalar3 thisMultiplicator )
-{
-   Algorithms::VectorOperations< Device >::addVectors( *this, v1, multiplicator1, v2, multiplicator2, thisMultiplicator );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
    template< Algorithms::PrefixSumType Type >
 void
 VectorView< Real, Device, Index >::

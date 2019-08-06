@@ -85,53 +85,6 @@ using DistributedVectorTypes = ::testing::Types<
 
 TYPED_TEST_SUITE( DistributedVectorTest, DistributedVectorTypes );
 
-TYPED_TEST( DistributedVectorTest, addVector )
-{
-   this->x.addVector( this->y, 3.0, 1.0 );
-   for( int i = 0; i < this->y.getLocalView().getSize(); i++ ) {
-      const auto gi = this->y.getLocalRange().getGlobalIndex( i );
-      EXPECT_EQ( this->x.getElement( gi ), 1 + 3 * gi );
-   }
-
-   this->y += this->z;
-   for( int i = 0; i < this->y.getLocalView().getSize(); i++ ) {
-      const auto gi = this->y.getLocalRange().getGlobalIndex( i );
-      EXPECT_EQ( this->y.getElement( gi ), 0 );
-   }
-
-   setConstantSequence( this->x, 1 );
-   setLinearSequence( this->y );
-
-   this->x_view.addVector( this->y_view, 3.0, 1.0 );
-   for( int i = 0; i < this->y_view.getLocalView().getSize(); i++ ) {
-      const auto gi = this->y_view.getLocalRange().getGlobalIndex( i );
-      EXPECT_EQ( this->x_view.getElement( gi ), 1 + 3 * gi );
-   }
-
-   this->y_view += this->z_view;
-   for( int i = 0; i < this->y_view.getLocalView().getSize(); i++ ) {
-      const auto gi = this->y_view.getLocalRange().getGlobalIndex( i );
-      EXPECT_EQ( this->y_view.getElement( gi ), 0 );
-   }
-}
-
-TYPED_TEST( DistributedVectorTest, addVectors )
-{
-   this->x.addVectors( this->y, 3.0, this->z, 1.0, 2.0 );
-   for( int i = 0; i < this->y.getLocalView().getSize(); i++ ) {
-      const auto gi = this->y.getLocalRange().getGlobalIndex( i );
-      EXPECT_EQ( this->x.getElement( gi ), 2 + 3 * gi - gi );
-   }
-
-   setConstantSequence( this->x, 1 );
-
-   this->x_view.addVectors( this->y_view, 3.0, this->z_view, 1.0, 2.0 );
-   for( int i = 0; i < this->y_view.getLocalView().getSize(); i++ ) {
-      const auto gi = this->y_view.getLocalRange().getGlobalIndex( i );
-      EXPECT_EQ( this->x_view.getElement( gi ), 2 + 3 * gi - gi );
-   }
-}
-
 // TODO: distributed prefix sum
 
 #endif  // HAVE_GTEST

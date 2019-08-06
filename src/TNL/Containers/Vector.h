@@ -117,6 +117,7 @@ public:
     *
     * New element has index type \e i and reference to its real type \e value.
     */
+   [[deprecated("useless method - use getElement and setElement")]]
    void addElement( const IndexType i,
                     const RealType& value );
 
@@ -127,6 +128,7 @@ public:
     * multiplied by \e thisElementMultiplicator.
     */
    template< typename Scalar >
+   [[deprecated("useless method - use getElement and setElement")]]
    void addElement( const IndexType i,
                     const RealType& value,
                     const Scalar thisElementMultiplicator );
@@ -205,26 +207,6 @@ public:
     */
    template< typename Vector >
    Real scalarProduct( const Vector& v ) const;
-
-   /**
-    * \brief Returns the result of following: thisMultiplicator * this + multiplicator * v.
-    */
-   template< typename Vector, typename Scalar1 = Real, typename Scalar2 = Real >
-   [[deprecated("addVector is deprecated - use expression templates instead.")]]
-   void addVector( const Vector& v,
-                   const Scalar1 multiplicator = 1.0,
-                   const Scalar2 thisMultiplicator = 1.0 );
-
-   /**
-    * \brief Returns the result of following: thisMultiplicator * this + multiplicator1 * v1 + multiplicator2 * v2.
-    */
-   template< typename Vector1, typename Vector2, typename Scalar1, typename Scalar2, typename Scalar3 = Real >
-   [[deprecated("addVectors is deprecated - use expression templates instead.")]]
-   void addVectors( const Vector1& v1,
-                    const Scalar1 multiplicator1,
-                    const Vector2& v2,
-                    const Scalar2 multiplicator2,
-                    const Scalar3 thisMultiplicator = 1.0 );
 
    /**
     * \brief Returns specific sums of elements of this vector.

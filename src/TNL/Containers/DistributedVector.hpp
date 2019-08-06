@@ -369,64 +369,6 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Communicator >
-   template< typename Vector, typename Scalar1, typename Scalar2 >
-void
-DistributedVector< Real, Device, Index, Communicator >::
-addVector( const Vector& x,
-           Scalar1 alpha,
-           Scalar2 thisMultiplicator )
-{
-   TNL_ASSERT_EQ( this->getSize(), x.getSize(),
-                  "Vector sizes must be equal." );
-   TNL_ASSERT_EQ( this->getLocalRange(), x.getLocalRange(),
-                  "Multiary operations are supported only on vectors which are distributed the same way." );
-   TNL_ASSERT_EQ( this->getCommunicationGroup(), x.getCommunicationGroup(),
-                  "Multiary operations are supported only on vectors within the same communication group." );
-
-   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalView().addVector( x.getConstLocalView(), alpha, thisMultiplicator );
-   }
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Communicator >
-   template< typename Vector1, typename Vector2, typename Scalar1, typename Scalar2, typename Scalar3 >
-void
-DistributedVector< Real, Device, Index, Communicator >::
-addVectors( const Vector1& v1,
-            Scalar1 multiplicator1,
-            const Vector2& v2,
-            Scalar2 multiplicator2,
-            Scalar3 thisMultiplicator )
-{
-   TNL_ASSERT_EQ( this->getSize(), v1.getSize(),
-                  "Vector sizes must be equal." );
-   TNL_ASSERT_EQ( this->getLocalRange(), v1.getLocalRange(),
-                  "Multiary operations are supported only on vectors which are distributed the same way." );
-   TNL_ASSERT_EQ( this->getCommunicationGroup(), v1.getCommunicationGroup(),
-                  "Multiary operations are supported only on vectors within the same communication group." );
-   TNL_ASSERT_EQ( this->getSize(), v2.getSize(),
-                  "Vector sizes must be equal." );
-   TNL_ASSERT_EQ( this->getLocalRange(), v2.getLocalRange(),
-                  "Multiary operations are supported only on vectors which are distributed the same way." );
-   TNL_ASSERT_EQ( this->getCommunicationGroup(), v2.getCommunicationGroup(),
-                  "Multiary operations are supported only on vectors within the same communication group." );
-
-   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      getLocalView().addVectors( v1.getConstLocalView(),
-                                       multiplicator1,
-                                       v2.getConstLocalView(),
-                                       multiplicator2,
-                                       thisMultiplicator );
-   }
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Communicator >
 void
 DistributedVector< Real, Device, Index, Communicator >::
 computePrefixSum()

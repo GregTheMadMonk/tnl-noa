@@ -214,36 +214,6 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Allocator >
-   template< typename VectorT, typename Scalar1, typename Scalar2 >
-void
-Vector< Real, Device, Index, Allocator >::
-addVector( const VectorT& x,
-           const Scalar1 multiplicator,
-           const Scalar2 thisMultiplicator )
-{
-   Algorithms::VectorOperations< Device >::addVector( *this, x, multiplicator, thisMultiplicator );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Allocator >
-   template< typename Vector1, typename Vector2, typename Scalar1, typename Scalar2, typename Scalar3 >
-void
-Vector< Real, Device, Index, Allocator >::
-addVectors( const Vector1& v1,
-            const Scalar1 multiplicator1,
-            const Vector2& v2,
-            const Scalar2 multiplicator2,
-            const Scalar3 thisMultiplicator )
-{
-   Algorithms::VectorOperations< Device >::addVectors( *this, v1, multiplicator1, v2, multiplicator2, thisMultiplicator );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Allocator >
    template< Algorithms::PrefixSumType Type >
 void
 Vector< Real, Device, Index, Allocator >::

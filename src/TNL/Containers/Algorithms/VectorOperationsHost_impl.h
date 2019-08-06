@@ -17,9 +17,6 @@ namespace TNL {
 namespace Containers {
 namespace Algorithms {
 
-static constexpr int OpenMPVectorOperationsThreshold = 512; // TODO: check this threshold
-static constexpr int PrefetchDistance = 128;
-
 template< typename Vector >
 void
 VectorOperations< Devices::Host >::
@@ -39,67 +36,6 @@ addElement( Vector& v,
             const Scalar thisElementMultiplicator )
 {
    v[ i ] = thisElementMultiplicator * v[ i ] + value;
-}
-
-template< typename Vector1, typename Vector2, typename Scalar1, typename Scalar2 >
-void
-VectorOperations< Devices::Host >::
-addVector( Vector1& y,
-           const Vector2& x,
-           const Scalar1 alpha,
-           const Scalar2 thisMultiplicator )
-{
-   typedef typename Vector1::IndexType Index;
-
-   TNL_ASSERT_GT( x.getSize(), 0, "Vector size must be positive." );
-   TNL_ASSERT_EQ( x.getSize(), y.getSize(), "The vector sizes must be the same." );
-
-   const Index n = y.getSize();
-
-   if( thisMultiplicator == 1.0 )
-#ifdef HAVE_OPENMP
-#pragma omp parallel for if( TNL::Devices::Host::isOMPEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
-#endif
-      for( Index i = 0; i < n; i ++ )
-         y[ i ] += alpha * x[ i ];
-   else
-#ifdef HAVE_OPENMP
-#pragma omp parallel for if( TNL::Devices::Host::isOMPEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
-#endif
-      for( Index i = 0; i < n; i ++ )
-         y[ i ] = thisMultiplicator * y[ i ] + alpha * x[ i ];
-}
-
-template< typename Vector1, typename Vector2, typename Vector3,
-          typename Scalar1, typename Scalar2, typename Scalar3 >
-void
-VectorOperations< Devices::Host >::
-addVectors( Vector1& v,
-            const Vector2& v1,
-            const Scalar1 multiplicator1,
-            const Vector3& v2,
-            const Scalar2 multiplicator2,
-            const Scalar3 thisMultiplicator )
-{
-   typedef typename Vector1::IndexType Index;
-
-   TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
-   TNL_ASSERT_EQ( v.getSize(), v1.getSize(), "The vector sizes must be the same." );
-   TNL_ASSERT_EQ( v.getSize(), v2.getSize(), "The vector sizes must be the same." );
- 
-   const Index n = v.getSize();
-   if( thisMultiplicator == 1.0 )
-#ifdef HAVE_OPENMP
-#pragma omp parallel for if( TNL::Devices::Host::isOMPEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
-#endif
-      for( Index i = 0; i < n; i ++ )
-         v[ i ] += multiplicator1 * v1[ i ] + multiplicator2 * v2[ i ];
-   else
-#ifdef HAVE_OPENMP
-#pragma omp parallel for if( TNL::Devices::Host::isOMPEnabled() && n > OpenMPVectorOperationsThreshold ) // TODO: check this threshold
-#endif
-      for( Index i = 0; i < n; i ++ )
-         v[ i ] = thisMultiplicator * v[ i ] + multiplicator1 * v1[ i ] + multiplicator2 * v2[ i ];
 }
 
 template< typename Vector, typename ResultType >

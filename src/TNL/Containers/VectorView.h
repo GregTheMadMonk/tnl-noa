@@ -85,9 +85,11 @@ public:
    static String getType();
 
    // All other Vector methods follow...
+   [[deprecated("useless method - use getElement and setElement")]]
    void addElement( IndexType i, RealType value );
 
    template< typename Scalar >
+   [[deprecated("useless method - use getElement and setElement")]]
    void addElement( IndexType i,
                     RealType value,
                     Scalar thisElementMultiplicator );
@@ -129,22 +131,6 @@ public:
    //! Computes scalar dot product
    template< typename Vector >
    NonConstReal scalarProduct( const Vector& v ) const;
-
-   //! Computes this = thisMultiplicator * this + alpha * x.
-   template< typename Vector, typename Scalar1 = Real, typename Scalar2 = Real >
-   [[deprecated("addVector is deprecated - use expression templates instead.")]]
-   void addVector( const Vector& x,
-                   Scalar1 alpha = 1.0,
-                   Scalar2 thisMultiplicator = 1.0 );
-
-   //! Computes this = thisMultiplicator * this + multiplicator1 * v1 + multiplicator2 * v2.
-   template< typename Vector1, typename Vector2, typename Scalar1, typename Scalar2, typename Scalar3 = Real >
-   [[deprecated("addVectors is deprecated - use expression templates instead.")]]
-   void addVectors( const Vector1& v1,
-                    Scalar1 multiplicator1,
-                    const Vector2& v2,
-                    Scalar2 multiplicator2,
-                    Scalar3 thisMultiplicator = 1.0 );
 
    template< Algorithms::PrefixSumType Type = Algorithms::PrefixSumType::Inclusive >
    void prefixSum( IndexType begin = 0, IndexType end = 0 );

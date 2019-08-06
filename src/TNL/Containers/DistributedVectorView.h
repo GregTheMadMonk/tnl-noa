@@ -142,20 +142,6 @@ public:
    template< typename Vector >
    NonConstReal scalarProduct( const Vector& v ) const;
 
-   //! Computes this = thisMultiplicator * this + alpha * x.
-   template< typename Vector, typename Scalar1 = Real, typename Scalar2 = Real >
-   void addVector( const Vector& x,
-                   Scalar1 alpha = 1.0,
-                   Scalar2 thisMultiplicator = 1.0 );
-
-   //! Computes this = thisMultiplicator * this + multiplicator1 * v1 + multiplicator2 * v2.
-   template< typename Vector1, typename Vector2, typename Scalar1, typename Scalar2, typename Scalar3 = Real >
-   void addVectors( const Vector1& v1,
-                    Scalar1 multiplicator1,
-                    const Vector2& v2,
-                    Scalar2 multiplicator2,
-                    Scalar3 thisMultiplicator = 1.0 );
-
    void computePrefixSum();
 
    void computePrefixSum( IndexType begin, IndexType end );
