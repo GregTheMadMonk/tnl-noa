@@ -35,6 +35,7 @@ getView( IndexType begin, IndexType end )
 template< typename Real,
           typename Device,
           typename Index >
+__cuda_callable__
 typename VectorView< Real, Device, Index >::ConstViewType
 VectorView< Real, Device, Index >::
 getConstView( const IndexType begin, IndexType end ) const
