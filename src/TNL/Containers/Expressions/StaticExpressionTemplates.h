@@ -10,14 +10,14 @@
 
 #pragma once
 
-#include <iostream>
+#include <ostream>
 
 #include <TNL/TypeTraits.h>
 #include <TNL/Containers/Expressions/TypeTraits.h>
 #include <TNL/Containers/Expressions/ExpressionTemplatesOperations.h>
 #include <TNL/Containers/Expressions/ExpressionVariableType.h>
 #include <TNL/Containers/Expressions/StaticComparison.h>
-#include <TNL/Containers/Expressions/VerticalOperations.h>
+#include <TNL/Containers/Expressions/StaticVerticalOperations.h>
 
 namespace TNL {
 namespace Containers {
@@ -272,10 +272,7 @@ auto
 operator+( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
            const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return StaticBinaryExpressionTemplate<
-      StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      StaticBinaryExpressionTemplate< R1, R2, ROperation >,
-      Addition >( a, b );
+   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Addition >( a, b );
 }
 
 template< typename T1,
@@ -285,10 +282,7 @@ auto
 operator+( const StaticBinaryExpressionTemplate< T1, T2, Operation >& a,
            const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
 {
-   return StaticBinaryExpressionTemplate<
-      StaticBinaryExpressionTemplate< T1, T2, Operation >,
-      typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType,
-      Addition >( a, b );
+   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Addition >( a, b );
 }
 
 template< typename T1,
@@ -298,10 +292,7 @@ auto
 operator+( const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
            const StaticBinaryExpressionTemplate< T1, T2, Operation >& b )
 {
-   return StaticBinaryExpressionTemplate<
-      typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType,
-      StaticBinaryExpressionTemplate< T1, T2, Operation >,
-      Addition >( a, b );
+   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Addition >( a, b );
 }
 
 template< typename T1,
@@ -310,10 +301,7 @@ auto
 operator+( const StaticUnaryExpressionTemplate< T1, Operation >& a,
            const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& b )
 {
-   return StaticBinaryExpressionTemplate<
-      StaticUnaryExpressionTemplate< T1, Operation >,
-      typename StaticUnaryExpressionTemplate< T1, Operation >::RealType,
-      Addition >( a, b );
+   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Addition >( a, b );
 }
 
 template< typename T1,
@@ -322,10 +310,7 @@ auto
 operator+( const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& a,
            const StaticUnaryExpressionTemplate< T1, Operation >& b )
 {
-   return StaticBinaryExpressionTemplate<
-      typename StaticUnaryExpressionTemplate< T1, Operation >::RealType,
-      StaticUnaryExpressionTemplate< T1, Operation >,
-      Addition >( a, b );
+   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Addition >( a, b );
 }
 
 template< typename L1,
@@ -337,10 +322,7 @@ auto
 operator+( const StaticUnaryExpressionTemplate< L1, LOperation >& a,
            const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return StaticBinaryExpressionTemplate<
-      StaticUnaryExpressionTemplate< L1, LOperation >,
-      StaticBinaryExpressionTemplate< R1, R2, ROperation >,
-      Addition >( a, b );
+   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Addition >( a, b );
 }
 
 template< typename L1,
@@ -352,10 +334,7 @@ auto
 operator+( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
            const StaticUnaryExpressionTemplate< R1, ROperation >& b )
 {
-   return StaticBinaryExpressionTemplate<
-      StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      StaticUnaryExpressionTemplate< R1, ROperation >,
-      Addition >( a, b );
+   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Addition >( a, b );
 }
 
 template< typename L1,
@@ -366,10 +345,7 @@ auto
 operator+( const StaticUnaryExpressionTemplate< L1,LOperation >& a,
            const StaticUnaryExpressionTemplate< R1,ROperation >& b )
 {
-   return StaticBinaryExpressionTemplate<
-      StaticUnaryExpressionTemplate< L1, LOperation >,
-      StaticUnaryExpressionTemplate< R1, ROperation >,
-      Addition >( a, b );
+   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Addition >( a, b );
 }
 
 ////
@@ -384,10 +360,7 @@ auto
 operator-( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
            const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return StaticBinaryExpressionTemplate<
-      StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      StaticBinaryExpressionTemplate< R1, R2, ROperation >,
-      Subtraction >( a, b );
+   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Subtraction >( a, b );
 }
 
 template< typename T1,
@@ -397,10 +370,7 @@ auto
 operator-( const StaticBinaryExpressionTemplate< T1, T2, Operation >& a,
            const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
 {
-   return StaticBinaryExpressionTemplate<
-      StaticBinaryExpressionTemplate< T1, T2, Operation >,
-      typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType,
-      Subtraction >( a, b );
+   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Subtraction >( a, b );
 }
 
 template< typename T1,
@@ -410,10 +380,7 @@ auto
 operator-( const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
            const StaticBinaryExpressionTemplate< T1, T2, Operation >& b )
 {
-   return StaticBinaryExpressionTemplate<
-      typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType,
-      StaticBinaryExpressionTemplate< T1, T2, Operation >,
-      Subtraction >( a, b );
+   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Subtraction >( a, b );
 }
 
 template< typename T1,
@@ -422,10 +389,7 @@ auto
 operator-( const StaticUnaryExpressionTemplate< T1, Operation >& a,
            const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& b )
 {
-   return StaticBinaryExpressionTemplate<
-      StaticUnaryExpressionTemplate< T1, Operation >,
-      typename StaticUnaryExpressionTemplate< T1, Operation >::RealType,
-      Subtraction >( a, b );
+   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Subtraction >( a, b );
 }
 
 template< typename T1,
@@ -434,10 +398,7 @@ auto
 operator-( const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& a,
            const StaticUnaryExpressionTemplate< T1, Operation >& b )
 {
-   return StaticBinaryExpressionTemplate<
-      typename StaticUnaryExpressionTemplate< T1, Operation >::RealType,
-      StaticUnaryExpressionTemplate< T1, Operation >,
-      Subtraction >( a, b );
+   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Subtraction >( a, b );
 }
 
 template< typename L1,
@@ -449,10 +410,7 @@ auto
 operator-( const StaticUnaryExpressionTemplate< L1, LOperation >& a,
            const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return StaticBinaryExpressionTemplate<
-      StaticUnaryExpressionTemplate< L1, LOperation >,
-      StaticBinaryExpressionTemplate< R1, R2, ROperation >,
-      Subtraction >( a, b );
+   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Subtraction >( a, b );
 }
 
 template< typename L1,
@@ -464,10 +422,7 @@ auto
 operator-( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
            const StaticUnaryExpressionTemplate< R1,ROperation >& b )
 {
-   return StaticBinaryExpressionTemplate<
-      StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      StaticUnaryExpressionTemplate< R1, ROperation >,
-      Subtraction >( a, b );
+   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Subtraction >( a, b );
 }
 
 template< typename L1,
@@ -478,10 +433,7 @@ auto
 operator-( const StaticUnaryExpressionTemplate< L1,LOperation >& a,
            const StaticUnaryExpressionTemplate< R1,ROperation >& b )
 {
-   return StaticBinaryExpressionTemplate<
-      StaticUnaryExpressionTemplate< L1, LOperation >,
-      StaticUnaryExpressionTemplate< R1, ROperation >,
-      Subtraction >( a, b );
+   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Subtraction >( a, b );
 }
 
 ////
@@ -496,10 +448,7 @@ auto
 operator*( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
            const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return StaticBinaryExpressionTemplate<
-      StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      StaticBinaryExpressionTemplate< R1, R2, ROperation >,
-      Multiplication >( a, b );
+   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Multiplication >( a, b );
 }
 
 template< typename T1,
@@ -509,10 +458,7 @@ auto
 operator*( const StaticBinaryExpressionTemplate< T1, T2, Operation >& a,
            const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
 {
-   return StaticBinaryExpressionTemplate<
-      StaticBinaryExpressionTemplate< T1, T2, Operation >,
-      typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType,
-      Multiplication >( a, b );
+   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Multiplication >( a, b );
 }
 
 template< typename T1,
@@ -522,10 +468,7 @@ auto
 operator*( const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
            const StaticBinaryExpressionTemplate< T1, T2, Operation >& b )
 {
-   return StaticBinaryExpressionTemplate<
-      typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType,
-      StaticBinaryExpressionTemplate< T1, T2, Operation >,
-      Multiplication >( a, b );
+   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Multiplication >( a, b );
 }
 
 template< typename T1,
@@ -534,10 +477,7 @@ auto
 operator*( const StaticUnaryExpressionTemplate< T1, Operation >& a,
            const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& b )
 {
-   return StaticBinaryExpressionTemplate<
-      StaticUnaryExpressionTemplate< T1, Operation >,
-      typename StaticUnaryExpressionTemplate< T1, Operation >::RealType,
-      Multiplication >( a, b );
+   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Multiplication >( a, b );
 }
 
 template< typename T1,
@@ -546,10 +486,7 @@ auto
 operator*( const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& a,
            const StaticUnaryExpressionTemplate< T1, Operation >& b )
 {
-   return StaticBinaryExpressionTemplate<
-      typename StaticUnaryExpressionTemplate< T1, Operation >::RealType,
-      StaticUnaryExpressionTemplate< T1, Operation >,
-      Multiplication >( a, b );
+   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Multiplication >( a, b );
 }
 
 template< typename L1,
@@ -561,10 +498,7 @@ auto
 operator*( const StaticUnaryExpressionTemplate< L1, LOperation >& a,
            const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return StaticBinaryExpressionTemplate<
-      StaticUnaryExpressionTemplate< L1, LOperation >,
-      StaticBinaryExpressionTemplate< R1, R2, ROperation >,
-      Multiplication >( a, b );
+   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Multiplication >( a, b );
 }
 
 template< typename L1,
@@ -576,10 +510,7 @@ auto
 operator*( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
            const StaticUnaryExpressionTemplate< R1, ROperation >& b )
 {
-   return StaticBinaryExpressionTemplate<
-      StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      StaticUnaryExpressionTemplate< R1, ROperation >,
-      Multiplication >( a, b );
+   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Multiplication >( a, b );
 }
 
 template< typename L1,
@@ -590,10 +521,7 @@ auto
 operator*( const StaticUnaryExpressionTemplate< L1,LOperation >& a,
            const StaticUnaryExpressionTemplate< R1,ROperation >& b )
 {
-   return StaticBinaryExpressionTemplate<
-      StaticUnaryExpressionTemplate< L1, LOperation >,
-      StaticUnaryExpressionTemplate< R1, ROperation >,
-      Multiplication >( a, b );
+   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Multiplication >( a, b );
 }
 
 ////
@@ -608,10 +536,7 @@ auto
 operator/( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
            const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return StaticBinaryExpressionTemplate<
-      StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      StaticBinaryExpressionTemplate< R1, R2, ROperation >,
-      Division >( a, b );
+   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Division >( a, b );
 }
 
 template< typename T1,
@@ -621,10 +546,7 @@ auto
 operator/( const StaticBinaryExpressionTemplate< T1, T2, Operation >& a,
            const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
 {
-   return StaticBinaryExpressionTemplate<
-      StaticBinaryExpressionTemplate< T1, T2, Operation >,
-      typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType,
-      Division >( a, b );
+   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Division >( a, b );
 }
 
 template< typename T1,
@@ -634,10 +556,7 @@ auto
 operator/( const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
            const StaticBinaryExpressionTemplate< T1, T2, Operation >& b )
 {
-   return StaticBinaryExpressionTemplate<
-      typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType,
-      StaticBinaryExpressionTemplate< T1, T2, Operation >,
-      Division >( a, b );
+   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Division >( a, b );
 }
 
 template< typename T1,
@@ -646,10 +565,7 @@ auto
 operator/( const StaticUnaryExpressionTemplate< T1, Operation >& a,
            const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& b )
 {
-   return StaticBinaryExpressionTemplate<
-      StaticUnaryExpressionTemplate< T1, Operation >,
-      typename StaticUnaryExpressionTemplate< T1, Operation >::RealType,
-      Division >( a, b );
+   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Division >( a, b );
 }
 
 template< typename T1,
@@ -658,10 +574,7 @@ auto
 operator/( const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& a,
            const StaticUnaryExpressionTemplate< T1, Operation >& b )
 {
-   return StaticBinaryExpressionTemplate<
-      typename StaticUnaryExpressionTemplate< T1, Operation >::RealType,
-      StaticUnaryExpressionTemplate< T1, Operation >,
-      Division >( a, b );
+   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Division >( a, b );
 }
 
 template< typename L1,
@@ -673,10 +586,7 @@ auto
 operator/( const StaticUnaryExpressionTemplate< L1, LOperation >& a,
            const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return StaticBinaryExpressionTemplate<
-      StaticUnaryExpressionTemplate< L1, LOperation >,
-      StaticBinaryExpressionTemplate< R1, R2, ROperation >,
-      Division >( a, b );
+   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Division >( a, b );
 }
 
 template< typename L1,
@@ -688,10 +598,7 @@ auto
 operator/( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
            const StaticUnaryExpressionTemplate< R1,ROperation >& b )
 {
-   return StaticBinaryExpressionTemplate<
-      StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      StaticUnaryExpressionTemplate< R1, ROperation >,
-      Division >( a, b );
+   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Division >( a, b );
 }
 
 template< typename L1,
@@ -702,10 +609,7 @@ auto
 operator/( const StaticUnaryExpressionTemplate< L1,LOperation >& a,
            const StaticUnaryExpressionTemplate< R1,ROperation >& b )
 {
-   return StaticBinaryExpressionTemplate<
-      StaticUnaryExpressionTemplate< L1, LOperation >,
-      StaticUnaryExpressionTemplate< R1, ROperation >,
-      Division >( a, b );
+   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Division >( a, b );
 }
 
 ////
@@ -721,9 +625,7 @@ bool
 operator==( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
             const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   using Left = StaticBinaryExpressionTemplate< L1, L2, LOperation >;
-   using Right = StaticBinaryExpressionTemplate< R1, R2, ROperation >;
-   return StaticComparison< Left, Right >::EQ( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::EQ( a, b );
 }
 
 template< typename T1,
@@ -734,9 +636,7 @@ bool
 operator==( const StaticBinaryExpressionTemplate< T1, T2, Operation >& a,
             const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
 {
-   using Left = StaticBinaryExpressionTemplate< T1, T2, Operation >;
-   using Right = typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType;
-   return StaticComparison< Left, Right >::EQ( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::EQ( a, b );
 }
 
 template< typename T1,
@@ -746,9 +646,7 @@ bool
 operator==( const StaticUnaryExpressionTemplate< T1, Operation >& a,
             const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& b )
 {
-   using Left = StaticUnaryExpressionTemplate< T1, Operation >;
-   using Right = typename StaticUnaryExpressionTemplate< T1, Operation >::RealType;
-   return StaticComparison< Left, Right >::EQ( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::EQ( a, b );
 }
 
 template< typename T1,
@@ -759,9 +657,7 @@ bool
 operator==( const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
             const StaticBinaryExpressionTemplate< T1, T2, Operation >& b )
 {
-   using Left = typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType;
-   using Right = StaticBinaryExpressionTemplate< T1, T2, Operation >;
-   return StaticComparison< Left, Right >::EQ( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::EQ( a, b );
 }
 
 template< typename T1,
@@ -771,9 +667,7 @@ bool
 operator==( const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& a,
             const StaticUnaryExpressionTemplate< T1, Operation >& b )
 {
-   using Left = typename StaticUnaryExpressionTemplate< T1, Operation >::RealType;
-   using Right = StaticUnaryExpressionTemplate< T1, Operation >;
-   return StaticComparison< Left, Right >::EQ( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::EQ( a, b );
 }
 
 template< typename L1,
@@ -786,9 +680,7 @@ bool
 operator==( const StaticUnaryExpressionTemplate< L1, LOperation >& a,
             const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   using Left = StaticUnaryExpressionTemplate< L1, LOperation >;
-   using Right = StaticBinaryExpressionTemplate< R1, R2, ROperation >;
-   return StaticComparison< Left, Right >::EQ( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::EQ( a, b );
 }
 
 template< typename L1,
@@ -801,9 +693,7 @@ bool
 operator==( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
             const StaticUnaryExpressionTemplate< R1,ROperation >& b )
 {
-   using Left = StaticBinaryExpressionTemplate< L1, L2, LOperation >;
-   using Right = StaticUnaryExpressionTemplate< R1, ROperation >;
-   return StaticComparison< Left, Right >::EQ( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::EQ( a, b );
 }
 
 ////
@@ -819,9 +709,7 @@ bool
 operator!=( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
             const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   using Left = StaticBinaryExpressionTemplate< L1, L2, LOperation >;
-   using Right = StaticBinaryExpressionTemplate< R1, R2, ROperation >;
-   return StaticComparison< Left, Right >::NE( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::NE( a, b );
 }
 
 template< typename T1,
@@ -832,9 +720,7 @@ bool
 operator!=( const StaticBinaryExpressionTemplate< T1, T2, Operation >& a,
             const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
 {
-   using Left = StaticBinaryExpressionTemplate< T1, T2, Operation >;
-   using Right = typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType;
-   return StaticComparison< Left, Right >::NE( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::NE( a, b );
 }
 
 template< typename L1,
@@ -846,9 +732,7 @@ bool
 operator!=( const StaticUnaryExpressionTemplate< L1, LOperation >& a,
             const StaticUnaryExpressionTemplate< R1, ROperation >& b )
 {
-   using Left = StaticUnaryExpressionTemplate< L1, LOperation >;
-   using Right = StaticUnaryExpressionTemplate< R1, ROperation >;
-   return StaticComparison< Left, Right >::NE( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::NE( a, b );
 }
 
 template< typename T1,
@@ -858,9 +742,7 @@ bool
 operator!=( const StaticUnaryExpressionTemplate< T1, Operation >& a,
             const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& b )
 {
-   using Left = StaticUnaryExpressionTemplate< T1, Operation >;
-   using Right = typename StaticUnaryExpressionTemplate< T1, Operation >::RealType;
-   return StaticComparison< Left, Right >::NE( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::NE( a, b );
 }
 
 template< typename T1,
@@ -871,9 +753,7 @@ bool
 operator!=( const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
             const StaticBinaryExpressionTemplate< T1, T2, Operation >& b )
 {
-   using Left = typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType;
-   using Right = StaticBinaryExpressionTemplate< T1, T2, Operation >;
-   return StaticComparison< Left, Right >::NE( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::NE( a, b );
 }
 
 template< typename T1,
@@ -883,9 +763,7 @@ bool
 operator!=( const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& a,
             const StaticUnaryExpressionTemplate< T1, Operation >& b )
 {
-   using Left = typename StaticUnaryExpressionTemplate< T1, Operation >::RealType;
-   using Right = StaticUnaryExpressionTemplate< T1, Operation >;
-   return StaticComparison< Left, Right >::NE( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::NE( a, b );
 }
 
 template< typename L1,
@@ -898,9 +776,7 @@ bool
 operator!=( const StaticUnaryExpressionTemplate< L1, LOperation >& a,
             const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   using Left = StaticUnaryExpressionTemplate< L1, LOperation >;
-   using Right = StaticBinaryExpressionTemplate< R1, R2, ROperation >;
-   return StaticComparison< Left, Right >::NE( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::NE( a, b );
 }
 
 template< typename L1,
@@ -913,9 +789,7 @@ bool
 operator!=( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
             const StaticUnaryExpressionTemplate< R1,ROperation >& b )
 {
-   using Left = StaticBinaryExpressionTemplate< L1, L2, LOperation >;
-   using Right = StaticUnaryExpressionTemplate< R1, ROperation >;
-   return StaticComparison< Left, Right >::NE( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::NE( a, b );
 }
 
 ////
@@ -931,9 +805,7 @@ bool
 operator<( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
            const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   using Left = StaticBinaryExpressionTemplate< L1, L2, LOperation >;
-   using Right = StaticBinaryExpressionTemplate< R1, R2, ROperation >;
-   return StaticComparison< Left, Right >::LT( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LT( a, b );
 }
 
 template< typename T1,
@@ -944,9 +816,7 @@ bool
 operator<( const StaticBinaryExpressionTemplate< T1, T2, Operation >& a,
            const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
 {
-   using Left = StaticBinaryExpressionTemplate< T1, T2, Operation >;
-   using Right = typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType;
-   return StaticComparison< Left, Right >::LT( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LT( a, b );
 }
 
 template< typename L1,
@@ -958,9 +828,7 @@ bool
 operator<( const StaticUnaryExpressionTemplate< L1, LOperation >& a,
            const StaticUnaryExpressionTemplate< R1, ROperation >& b )
 {
-   using Left = StaticUnaryExpressionTemplate< L1, LOperation >;
-   using Right = StaticUnaryExpressionTemplate< R1, ROperation >;
-   return StaticComparison< Left, Right >::LT( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LT( a, b );
 }
 
 template< typename T1,
@@ -970,9 +838,7 @@ bool
 operator<( const StaticUnaryExpressionTemplate< T1, Operation >& a,
            const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& b )
 {
-   using Left = StaticUnaryExpressionTemplate< T1, Operation >;
-   using Right = typename StaticUnaryExpressionTemplate< T1, Operation >::RealType;
-   return StaticComparison< Left, Right >::LT( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LT( a, b );
 }
 
 template< typename T1,
@@ -983,9 +849,7 @@ bool
 operator<( const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
            const StaticBinaryExpressionTemplate< T1, T2, Operation >& b )
 {
-   using Left = typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType;
-   using Right = StaticBinaryExpressionTemplate< T1, T2, Operation >;
-   return StaticComparison< Left, Right >::LT( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LT( a, b );
 }
 
 template< typename T1,
@@ -995,9 +859,7 @@ bool
 operator<( const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& a,
            const StaticUnaryExpressionTemplate< T1, Operation >& b )
 {
-   using Left = typename StaticUnaryExpressionTemplate< T1, Operation >::RealType;
-   using Right = StaticUnaryExpressionTemplate< T1, Operation >;
-   return StaticComparison< Left, Right >::LT( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LT( a, b );
 }
 
 template< typename L1,
@@ -1010,9 +872,7 @@ bool
 operator<( const StaticUnaryExpressionTemplate< L1, LOperation >& a,
            const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   using Left = StaticUnaryExpressionTemplate< L1, LOperation >;
-   using Right = StaticBinaryExpressionTemplate< R1, R2, ROperation >;
-   return StaticComparison< Left, Right >::LT( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LT( a, b );
 }
 
 template< typename L1,
@@ -1025,9 +885,7 @@ bool
 operator<( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
            const StaticUnaryExpressionTemplate< R1,ROperation >& b )
 {
-   using Left = StaticBinaryExpressionTemplate< L1, L2, LOperation >;
-   using Right = StaticUnaryExpressionTemplate< R1, ROperation >;
-   return StaticComparison< Left, Right >::LT( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LT( a, b );
 }
 
 ////
@@ -1043,9 +901,7 @@ bool
 operator<=( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
             const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   using Left = StaticBinaryExpressionTemplate< L1, L2, LOperation >;
-   using Right = StaticBinaryExpressionTemplate< R1, R2, ROperation >;
-   return StaticComparison< Left, Right >::LE( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LE( a, b );
 }
 
 template< typename T1,
@@ -1056,9 +912,7 @@ bool
 operator<=( const StaticBinaryExpressionTemplate< T1, T2, Operation >& a,
             const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
 {
-   using Left = StaticBinaryExpressionTemplate< T1, T2, Operation >;
-   using Right = typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType;
-   return StaticComparison< Left, Right >::LE( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LE( a, b );
 }
 
 template< typename L1,
@@ -1070,9 +924,7 @@ bool
 operator<=( const StaticUnaryExpressionTemplate< L1, LOperation >& a,
             const StaticUnaryExpressionTemplate< R1, ROperation >& b )
 {
-   using Left = StaticUnaryExpressionTemplate< L1, LOperation >;
-   using Right = StaticUnaryExpressionTemplate< R1, ROperation >;
-   return StaticComparison< Left, Right >::LE( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LE( a, b );
 }
 
 template< typename T1,
@@ -1082,9 +934,7 @@ bool
 operator<=( const StaticUnaryExpressionTemplate< T1, Operation >& a,
             const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& b )
 {
-   using Left = StaticUnaryExpressionTemplate< T1, Operation >;
-   using Right = typename StaticUnaryExpressionTemplate< T1, Operation >::RealType;
-   return StaticComparison< Left, Right >::LE( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LE( a, b );
 }
 
 template< typename T1,
@@ -1095,9 +945,7 @@ bool
 operator<=( const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
             const StaticBinaryExpressionTemplate< T1, T2, Operation >& b )
 {
-   using Left = typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType;
-   using Right = StaticBinaryExpressionTemplate< T1, T2, Operation >;
-   return StaticComparison< Left, Right >::LE( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LE( a, b );
 }
 
 template< typename T1,
@@ -1107,9 +955,7 @@ bool
 operator<=( const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& a,
             const StaticUnaryExpressionTemplate< T1, Operation >& b )
 {
-   using Left = typename StaticUnaryExpressionTemplate< T1, Operation >::RealType;
-   using Right = StaticUnaryExpressionTemplate< T1, Operation >;
-   return StaticComparison< Left, Right >::LE( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LE( a, b );
 }
 
 template< typename L1,
@@ -1122,9 +968,7 @@ bool
 operator<=( const StaticUnaryExpressionTemplate< L1, LOperation >& a,
             const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   using Left = StaticUnaryExpressionTemplate< L1, LOperation >;
-   using Right = StaticBinaryExpressionTemplate< R1, R2, ROperation >;
-   return StaticComparison< Left, Right >::LE( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LE( a, b );
 }
 
 template< typename L1,
@@ -1137,9 +981,7 @@ bool
 operator<=( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
             const StaticUnaryExpressionTemplate< R1,ROperation >& b )
 {
-   using Left = StaticBinaryExpressionTemplate< L1, L2, LOperation >;
-   using Right = StaticUnaryExpressionTemplate< R1, ROperation >;
-   return StaticComparison< Left, Right >::LE( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LE( a, b );
 }
 
 ////
@@ -1155,9 +997,7 @@ bool
 operator>( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
            const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   using Left = StaticBinaryExpressionTemplate< L1, L2, LOperation >;
-   using Right = StaticBinaryExpressionTemplate< R1, R2, ROperation >;
-   return StaticComparison< Left, Right >::GT( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GT( a, b );
 }
 
 template< typename T1,
@@ -1168,9 +1008,7 @@ bool
 operator>( const StaticBinaryExpressionTemplate< T1, T2, Operation >& a,
            const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
 {
-   using Left = StaticBinaryExpressionTemplate< T1, T2, Operation >;
-   using Right = typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType;
-   return StaticComparison< Left, Right >::GT( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GT( a, b );
 }
 
 template< typename T1,
@@ -1180,9 +1018,7 @@ bool
 operator>( const StaticUnaryExpressionTemplate< T1, Operation >& a,
            const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& b )
 {
-   using Left = StaticUnaryExpressionTemplate< T1, Operation >;
-   using Right = typename StaticUnaryExpressionTemplate< T1, Operation >::RealType;
-   return StaticComparison< Left, Right >::GT( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GT( a, b );
 }
 
 template< typename T1,
@@ -1193,9 +1029,7 @@ bool
 operator>( const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
            const StaticBinaryExpressionTemplate< T1, T2, Operation >& b )
 {
-   using Left = typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType;
-   using Right = StaticBinaryExpressionTemplate< T1, T2, Operation >;
-   return StaticComparison< Left, Right >::GT( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GT( a, b );
 }
 
 template< typename T1,
@@ -1205,9 +1039,7 @@ bool
 operator>( const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& a,
            const StaticUnaryExpressionTemplate< T1, Operation >& b )
 {
-   using Left = typename StaticUnaryExpressionTemplate< T1, Operation >::RealType;
-   using Right = StaticUnaryExpressionTemplate< T1, Operation >;
-   return StaticComparison< Left, Right >::GT( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GT( a, b );
 }
 
 template< typename L1,
@@ -1220,9 +1052,7 @@ bool
 operator>( const StaticUnaryExpressionTemplate< L1, LOperation >& a,
            const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   using Left = StaticUnaryExpressionTemplate< L1, LOperation >;
-   using Right = StaticBinaryExpressionTemplate< R1, R2, ROperation >;
-   return StaticComparison< Left, Right >::GT( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GT( a, b );
 }
 
 template< typename L1,
@@ -1235,9 +1065,7 @@ bool
 operator>( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
            const StaticUnaryExpressionTemplate< R1,ROperation >& b )
 {
-   using Left = StaticBinaryExpressionTemplate< L1, L2, LOperation >;
-   using Right = StaticUnaryExpressionTemplate< R1, ROperation >;
-   return StaticComparison< Left, Right >::GT( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GT( a, b );
 }
 
 ////
@@ -1253,9 +1081,7 @@ bool
 operator>=( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
             const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   using Left = StaticBinaryExpressionTemplate< L1, L2, LOperation >;
-   using Right = StaticBinaryExpressionTemplate< R1, R2, ROperation >;
-   return StaticComparison< Left, Right >::GE( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GE( a, b );
 }
 
 template< typename T1,
@@ -1266,9 +1092,7 @@ bool
 operator>=( const StaticBinaryExpressionTemplate< T1, T2, Operation >& a,
             const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
 {
-   using Left = StaticBinaryExpressionTemplate< T1, T2, Operation >;
-   using Right = typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType;
-   return StaticComparison< Left, Right >::GE( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GE( a, b );
 }
 
 template< typename T1,
@@ -1278,9 +1102,7 @@ bool
 operator>=( const StaticUnaryExpressionTemplate< T1, Operation >& a,
             const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& b )
 {
-   using Left = StaticUnaryExpressionTemplate< T1, Operation >;
-   using Right = typename StaticUnaryExpressionTemplate< T1, Operation >::RealType;
-   return StaticComparison< Left, Right >::GE( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GE( a, b );
 }
 
 template< typename T1,
@@ -1291,9 +1113,7 @@ bool
 operator>=( const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
             const StaticBinaryExpressionTemplate< T1, T2, Operation >& b )
 {
-   using Left = typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType;
-   using Right = StaticBinaryExpressionTemplate< T1, T2, Operation >;
-   return StaticComparison< Left, Right >::GE( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GE( a, b );
 }
 
 template< typename T1,
@@ -1303,9 +1123,7 @@ bool
 operator>=( const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& a,
             const StaticUnaryExpressionTemplate< T1, Operation >& b )
 {
-   using Left = typename StaticUnaryExpressionTemplate< T1, Operation >::RealType;
-   using Right = StaticUnaryExpressionTemplate< T1, Operation >;
-   return StaticComparison< Left, Right >::GE( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GE( a, b );
 }
 
 template< typename L1,
@@ -1318,9 +1136,7 @@ bool
 operator>=( const StaticUnaryExpressionTemplate< L1, LOperation >& a,
             const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   using Left = StaticUnaryExpressionTemplate< L1, LOperation >;
-   using Right = StaticBinaryExpressionTemplate< R1, R2, ROperation >;
-   return StaticComparison< Left, Right >::GE( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GE( a, b );
 }
 
 template< typename L1,
@@ -1333,9 +1149,7 @@ bool
 operator>=( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
             const StaticUnaryExpressionTemplate< R1,ROperation >& b )
 {
-   using Left = StaticBinaryExpressionTemplate< L1, L2, LOperation >;
-   using Right = StaticUnaryExpressionTemplate< R1, ROperation >;
-   return StaticComparison< Left, Right >::GE( a, b );
+   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GE( a, b );
 }
 
 ////
@@ -1350,9 +1164,7 @@ __cuda_callable__
 auto
 operator-( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return StaticUnaryExpressionTemplate<
-      StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      Minus >( a );
+   return StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Minus >( a );
 }
 
 template< typename L1,
@@ -1361,9 +1173,7 @@ __cuda_callable__
 auto
 operator-( const StaticUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return StaticUnaryExpressionTemplate<
-      StaticUnaryExpressionTemplate< L1, LOperation >,
-      Minus >( a );
+   return StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Minus >( a );
 }
 
 ////
@@ -1463,10 +1273,7 @@ auto
 min( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
      const Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return Containers::Expressions::StaticBinaryExpressionTemplate<
-      Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
-      Containers::Expressions::Min >( a, b );
+   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Min >( a, b );
 }
 
 template< typename T1,
@@ -1476,10 +1283,7 @@ auto
 min( const Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& a,
      const typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
 {
-   return Containers::Expressions::StaticBinaryExpressionTemplate<
-      Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >,
-      typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType,
-      Containers::Expressions::Min >( a, b );
+   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Min >( a, b );
 }
 
 template< typename T1,
@@ -1489,10 +1293,7 @@ auto
 min( const typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
      const Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& b )
 {
-   return Containers::Expressions::StaticBinaryExpressionTemplate<
-      typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType,
-      Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >,
-      Containers::Expressions::Min >( a, b );
+   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Min >( a, b );
 }
 
 template< typename T1,
@@ -1501,10 +1302,7 @@ auto
 min( const Containers::Expressions::StaticUnaryExpressionTemplate< T1, Operation >& a,
      const typename Containers::Expressions::StaticUnaryExpressionTemplate< T1, Operation >::RealType& b )
 {
-   return Containers::Expressions::StaticBinaryExpressionTemplate<
-      Containers::Expressions::StaticUnaryExpressionTemplate< T1, Operation >,
-      typename Containers::Expressions::StaticUnaryExpressionTemplate< T1, Operation >::RealType,
-      Containers::Expressions::Min >( a, b );
+   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Min >( a, b );
 }
 
 template< typename T1,
@@ -1513,10 +1311,7 @@ auto
 min( const typename Containers::Expressions::StaticUnaryExpressionTemplate< T1, Operation >::RealType& a,
      const Containers::Expressions::StaticUnaryExpressionTemplate< T1, Operation >& b )
 {
-   return Containers::Expressions::StaticBinaryExpressionTemplate<
-      typename Containers::Expressions::StaticUnaryExpressionTemplate< T1, Operation >::RealType,
-      Containers::Expressions::StaticUnaryExpressionTemplate< T1, Operation >,
-      Containers::Expressions::Min >( a, b );
+   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Min >( a, b );
 }
 
 template< typename L1,
@@ -1528,10 +1323,7 @@ auto
 min( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a,
      const Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return Containers::Expressions::StaticBinaryExpressionTemplate<
-      Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
-      Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
-      Containers::Expressions::Min >( a, b );
+   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Min >( a, b );
 }
 
 template< typename L1,
@@ -1543,10 +1335,7 @@ auto
 min( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
      const Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation >& b )
 {
-   return Containers::Expressions::StaticBinaryExpressionTemplate<
-      Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
-      Containers::Expressions::Min >( a, b );
+   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Min >( a, b );
 }
 
 template< typename L1,
@@ -1557,10 +1346,7 @@ auto
 min( const Containers::Expressions::StaticUnaryExpressionTemplate< L1,LOperation >& a,
      const Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation >& b )
 {
-   return Containers::Expressions::StaticBinaryExpressionTemplate<
-      Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
-      Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
-      Containers::Expressions::Min >( a, b );
+   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Min >( a, b );
 }
 
 ////
@@ -1575,10 +1361,7 @@ auto
 max( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
      const Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return Containers::Expressions::StaticBinaryExpressionTemplate<
-      Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
-      Containers::Expressions::Max >( a, b );
+   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Max >( a, b );
 }
 
 template< typename T1,
@@ -1588,10 +1371,7 @@ auto
 max( const Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& a,
      const typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
 {
-   return Containers::Expressions::StaticBinaryExpressionTemplate<
-      Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >,
-      typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType,
-      Containers::Expressions::Max >( a, b );
+   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Max >( a, b );
 }
 
 template< typename T1,
@@ -1601,10 +1381,7 @@ auto
 max( const typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
      const Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& b )
 {
-   return Containers::Expressions::StaticBinaryExpressionTemplate<
-      typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType,
-      Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >,
-      Containers::Expressions::Max >( a, b );
+   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Max >( a, b );
 }
 
 template< typename T1,
@@ -1613,10 +1390,7 @@ auto
 max( const Containers::Expressions::StaticUnaryExpressionTemplate< T1, Operation >& a,
      const typename Containers::Expressions::StaticUnaryExpressionTemplate< T1, Operation >::RealType& b )
 {
-   return Containers::Expressions::StaticBinaryExpressionTemplate<
-      Containers::Expressions::StaticUnaryExpressionTemplate< T1, Operation >,
-      typename Containers::Expressions::StaticUnaryExpressionTemplate< T1, Operation >::RealType,
-      Containers::Expressions::Max >( a, b );
+   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Max >( a, b );
 }
 
 template< typename T1,
@@ -1625,10 +1399,7 @@ auto
 max( const typename Containers::Expressions::StaticUnaryExpressionTemplate< T1, Operation >::RealType& a,
      const Containers::Expressions::StaticUnaryExpressionTemplate< T1, Operation >& b )
 {
-   return Containers::Expressions::StaticBinaryExpressionTemplate<
-      typename Containers::Expressions::StaticUnaryExpressionTemplate< T1, Operation >::RealType,
-      Containers::Expressions::StaticUnaryExpressionTemplate< T1, Operation >,
-      Containers::Expressions::Max >( a, b );
+   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Max >( a, b );
 }
 
 template< typename L1,
@@ -1640,10 +1411,7 @@ auto
 max( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a,
      const Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return Containers::Expressions::StaticBinaryExpressionTemplate<
-      Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
-      Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >,
-      Containers::Expressions::Max >( a, b );
+   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Max >( a, b );
 }
 
 template< typename L1,
@@ -1655,10 +1423,7 @@ auto
 max( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
      const Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation >& b )
 {
-   return Containers::Expressions::StaticBinaryExpressionTemplate<
-      Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
-      Containers::Expressions::Max >( a, b );
+   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Max >( a, b );
 }
 
 template< typename L1,
@@ -1669,10 +1434,7 @@ auto
 max( const Containers::Expressions::StaticUnaryExpressionTemplate< L1,LOperation >& a,
      const Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation >& b )
 {
-   return Containers::Expressions::StaticBinaryExpressionTemplate<
-      Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
-      Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >,
-      Containers::Expressions::Max >( a, b );
+   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Max >( a, b );
 }
 
 ////
@@ -1684,9 +1446,7 @@ __cuda_callable__
 auto
 abs( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate<
-      Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      Containers::Expressions::Abs >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Abs >( a );
 }
 
 template< typename L1,
@@ -1695,9 +1455,7 @@ __cuda_callable__
 auto
 abs( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate<
-      Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
-      Containers::Expressions::Abs >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Abs >( a );
 }
 
 ////
@@ -1709,9 +1467,7 @@ __cuda_callable__
 auto
 sin( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate<
-      Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      Containers::Expressions::Sin >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sin >( a );
 }
 
 template< typename L1,
@@ -1720,9 +1476,7 @@ __cuda_callable__
 auto
 sin( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate<
-      Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
-      Containers::Expressions::Sin >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sin >( a );
 }
 
 ////
@@ -1734,9 +1488,7 @@ __cuda_callable__
 auto
 cos( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate<
-      Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      Containers::Expressions::Cos >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Cos >( a );
 }
 
 template< typename L1,
@@ -1745,9 +1497,7 @@ __cuda_callable__
 auto
 cos( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate<
-      Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
-      Containers::Expressions::Cos >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Cos >( a );
 }
 
 ////
@@ -1759,9 +1509,7 @@ __cuda_callable__
 auto
 tan( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate<
-      Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      Containers::Expressions::Tan >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Tan >( a );
 }
 
 template< typename L1,
@@ -1770,9 +1518,7 @@ __cuda_callable__
 auto
 tan( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate<
-      Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
-      Containers::Expressions::Tan >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Tan >( a );
 }
 
 ////
@@ -1784,9 +1530,7 @@ __cuda_callable__
 auto
 sqrt( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate<
-      Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      Containers::Expressions::Sqrt >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sqrt >( a );
 }
 
 template< typename L1,
@@ -1795,9 +1539,7 @@ __cuda_callable__
 auto
 sqrt( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate<
-      Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
-      Containers::Expressions::Sqrt >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sqrt >( a );
 }
 
 ////
@@ -1809,9 +1551,7 @@ __cuda_callable__
 auto
 cbrt( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate<
-      Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      Containers::Expressions::Cbrt >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Cbrt >( a );
 }
 
 template< typename L1,
@@ -1820,9 +1560,7 @@ __cuda_callable__
 auto
 cbrt( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate<
-      Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
-      Containers::Expressions::Cbrt >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Cbrt >( a );
 }
 
 ////
@@ -1835,10 +1573,7 @@ __cuda_callable__
 auto
 pow( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a, const Real& exp )
 {
-   return Containers::Expressions::StaticBinaryExpressionTemplate<
-      Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      Real,
-      Containers::Expressions::Pow >( a, exp );
+   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, Real, Containers::Expressions::Pow >( a, exp );
 }
 
 template< typename L1,
@@ -1848,10 +1583,7 @@ __cuda_callable__
 auto
 pow( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a, const Real& exp )
 {
-   return Containers::Expressions::StaticBinaryExpressionTemplate<
-      Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
-      Real,
-      Containers::Expressions::Pow >( a, exp );
+   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, Real, Containers::Expressions::Pow >( a, exp );
 }
 
 ////
@@ -1863,9 +1595,7 @@ __cuda_callable__
 auto
 floor( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate<
-      Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      Containers::Expressions::Floor >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Floor >( a );
 }
 
 template< typename L1,
@@ -1874,9 +1604,7 @@ __cuda_callable__
 auto
 floor( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate<
-      Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
-      Containers::Expressions::Floor >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Floor >( a );
 }
 
 ////
@@ -1888,9 +1616,7 @@ __cuda_callable__
 auto
 ceil( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate<
-      Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      Containers::Expressions::Ceil >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Ceil >( a );
 }
 
 template< typename L1,
@@ -1899,9 +1625,7 @@ __cuda_callable__
 auto
 ceil( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate<
-      Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
-      Containers::Expressions::Ceil >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Ceil >( a );
 }
 
 ////
@@ -1913,9 +1637,7 @@ __cuda_callable__
 auto
 asin( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate<
-      Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      Containers::Expressions::Asin >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Asin >( a );
 }
 
 template< typename L1,
@@ -1924,9 +1646,7 @@ __cuda_callable__
 auto
 asin( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate<
-      Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
-      Containers::Expressions::Asin >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Asin >( a );
 }
 
 ////
@@ -1938,9 +1658,7 @@ __cuda_callable__
 auto
 acos( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate<
-      Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      Containers::Expressions::Acos >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Acos >( a );
 }
 
 template< typename L1,
@@ -1949,9 +1667,7 @@ __cuda_callable__
 auto
 acos( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate<
-      Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
-      Containers::Expressions::Acos >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Acos >( a );
 }
 
 ////
@@ -1963,9 +1679,7 @@ __cuda_callable__
 auto
 atan( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate<
-      Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      Containers::Expressions::Atan >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Atan >( a );
 }
 
 template< typename L1,
@@ -1974,9 +1688,7 @@ __cuda_callable__
 auto
 atan( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate<
-      Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
-      Containers::Expressions::Atan >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Atan >( a );
 }
 
 ////
@@ -1988,9 +1700,7 @@ __cuda_callable__
 auto
 sinh( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate<
-      Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      Containers::Expressions::Sinh >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sinh >( a );
 }
 
 template< typename L1,
@@ -1999,9 +1709,7 @@ __cuda_callable__
 auto
 sinh( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate<
-      Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
-      Containers::Expressions::Sinh >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sinh >( a );
 }
 
 ////
@@ -2013,9 +1721,7 @@ __cuda_callable__
 auto
 cosh( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate<
-      Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      Containers::Expressions::Cosh >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Cosh >( a );
 }
 
 template< typename L1,
@@ -2024,9 +1730,7 @@ __cuda_callable__
 auto
 cosh( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate<
-      Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
-      Containers::Expressions::Cosh >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Cosh >( a );
 }
 
 ////
@@ -2038,9 +1742,7 @@ __cuda_callable__
 auto
 tanh( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate<
-      Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      Containers::Expressions::Tanh >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Tanh >( a );
 }
 
 template< typename L1,
@@ -2049,9 +1751,7 @@ __cuda_callable__
 auto
 tanh( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate<
-      Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
-      Containers::Expressions::Tanh >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Tanh >( a );
 }
 
 ////
@@ -2063,9 +1763,7 @@ __cuda_callable__
 auto
 log( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate<
-      Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      Containers::Expressions::Log >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log >( a );
 }
 
 template< typename L1,
@@ -2074,9 +1772,7 @@ __cuda_callable__
 auto
 log( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate<
-      Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
-      Containers::Expressions::Log >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log >( a );
 }
 
 ////
@@ -2088,9 +1784,7 @@ __cuda_callable__
 auto
 log10( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate<
-      Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      Containers::Expressions::Log10 >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log10 >( a );
 }
 
 template< typename L1,
@@ -2099,9 +1793,7 @@ __cuda_callable__
 auto
 log10( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate<
-      Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
-      Containers::Expressions::Log10 >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log10 >( a );
 }
 
 ////
@@ -2113,9 +1805,7 @@ __cuda_callable__
 auto
 log2( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate<
-      Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      Containers::Expressions::Log2 >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log2 >( a );
 }
 
 template< typename L1,
@@ -2124,9 +1814,7 @@ __cuda_callable__
 auto
 log2( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate<
-      Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
-      Containers::Expressions::Log2 >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log2 >( a );
 }
 
 ////
@@ -2138,9 +1826,7 @@ __cuda_callable__
 auto
 exp( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate<
-      Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >,
-      Containers::Expressions::Exp >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Exp >( a );
 }
 
 template< typename L1,
@@ -2149,9 +1835,7 @@ __cuda_callable__
 auto
 exp( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate<
-      Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >,
-      Containers::Expressions::Exp >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Exp >( a );
 }
 
 ////
@@ -2363,8 +2047,8 @@ template< typename L1,
           template< typename > class ROperation >
 __cuda_callable__
 auto
-operator,( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a,
-           const Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >& b )
+dot( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a,
+     const Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >& b )
 {
    return (a, b);
 }
