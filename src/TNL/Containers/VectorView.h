@@ -84,16 +84,6 @@ public:
 
    static String getType();
 
-   // All other Vector methods follow...
-   [[deprecated("useless method - use getElement and setElement")]]
-   void addElement( IndexType i, RealType value );
-
-   template< typename Scalar >
-   [[deprecated("useless method - use getElement and setElement")]]
-   void addElement( IndexType i,
-                    RealType value,
-                    Scalar thisElementMultiplicator );
-
    template< typename VectorExpression,
              typename...,
              typename = std::enable_if_t< Expressions::IsExpressionTemplate< VectorExpression >::value > >

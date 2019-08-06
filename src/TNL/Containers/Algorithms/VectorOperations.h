@@ -26,17 +26,6 @@ template<>
 class VectorOperations< Devices::Host >
 {
 public:
-   template< typename Vector >
-   static void addElement( Vector& v,
-                           const typename Vector::IndexType i,
-                           const typename Vector::RealType& value );
-
-   template< typename Vector, typename Scalar >
-   static void addElement( Vector& v,
-                           const typename Vector::IndexType i,
-                           const typename Vector::RealType& value,
-                           const Scalar thisElementMultiplicator );
-
    template< typename Vector, typename ResultType = typename Vector::RealType >
    static ResultType getVectorSum( const Vector& v );
 
@@ -57,17 +46,6 @@ template<>
 class VectorOperations< Devices::Cuda >
 {
 public:
-   template< typename Vector >
-   static void addElement( Vector& v,
-                           const typename Vector::IndexType i,
-                           const typename Vector::RealType& value );
-
-   template< typename Vector, typename Scalar >
-   static void addElement( Vector& v,
-                           const typename Vector::IndexType i,
-                           const typename Vector::RealType& value,
-                           const Scalar thisElementMultiplicator );
-
    template< typename Vector, typename ResultType = typename Vector::RealType >
    static ResultType getVectorSum( const Vector& v );
 

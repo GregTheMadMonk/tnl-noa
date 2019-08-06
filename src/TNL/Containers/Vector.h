@@ -113,27 +113,6 @@ public:
    operator ConstViewType() const;
 
    /**
-    * \brief Adds another element to this vector.
-    *
-    * New element has index type \e i and reference to its real type \e value.
-    */
-   [[deprecated("useless method - use getElement and setElement")]]
-   void addElement( const IndexType i,
-                    const RealType& value );
-
-   /**
-    * \brief Adds another element with multiplicator to this vector.
-    *
-    * New element has index type \e i and reference to its real type \e value
-    * multiplied by \e thisElementMultiplicator.
-    */
-   template< typename Scalar >
-   [[deprecated("useless method - use getElement and setElement")]]
-   void addElement( const IndexType i,
-                    const RealType& value,
-                    const Scalar thisElementMultiplicator );
-
-   /**
     * \brief Assigns a vector expression to this vector.
     */
    template< typename VectorExpression,

@@ -17,27 +17,6 @@ namespace TNL {
 namespace Containers {
 namespace Algorithms {
 
-template< typename Vector >
-void
-VectorOperations< Devices::Host >::
-addElement( Vector& v,
-            const typename Vector::IndexType i,
-            const typename Vector::RealType& value )
-{
-   v[ i ] += value;
-}
-
-template< typename Vector, typename Scalar >
-void
-VectorOperations< Devices::Host >::
-addElement( Vector& v,
-            const typename Vector::IndexType i,
-            const typename Vector::RealType& value,
-            const Scalar thisElementMultiplicator )
-{
-   v[ i ] = thisElementMultiplicator * v[ i ] + value;
-}
-
 template< typename Vector, typename ResultType >
 ResultType
 VectorOperations< Devices::Host >::

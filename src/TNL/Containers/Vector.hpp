@@ -102,32 +102,6 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Allocator >
-void
-Vector< Real, Device, Index, Allocator >::
-addElement( const IndexType i,
-            const RealType& value )
-{
-   Algorithms::VectorOperations< Device >::addElement( *this, i, value );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Allocator >
-   template< typename Scalar >
-void
-Vector< Real, Device, Index, Allocator >::
-addElement( const IndexType i,
-            const RealType& value,
-            const Scalar thisElementMultiplicator )
-{
-   Algorithms::VectorOperations< Device >::addElement( *this, i, value, thisElementMultiplicator );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Allocator >
    template< typename VectorExpression, typename..., typename >
 Vector< Real, Device, Index, Allocator >&
 Vector< Real, Device, Index, Allocator >::

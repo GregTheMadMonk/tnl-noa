@@ -90,40 +90,6 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Communicator >
-void
-DistributedVectorView< Real, Device, Index, Communicator >::
-addElement( IndexType i,
-            RealType value )
-{
-   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      const IndexType li = this->getLocalRange().getLocalIndex( i );
-      LocalViewType view = getLocalView();
-      view.addElement( li, value );
-   }
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Communicator >
-   template< typename Scalar >
-void
-DistributedVectorView< Real, Device, Index, Communicator >::
-addElement( IndexType i,
-            RealType value,
-            Scalar thisElementMultiplicator )
-{
-   if( this->getCommunicationGroup() != CommunicatorType::NullGroup ) {
-      const IndexType li = this->getLocalRange().getLocalIndex( i );
-      LocalViewType view = getLocalView();
-      view.addElement( li, value, thisElementMultiplicator );
-   }
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Communicator >
    template< typename Vector, typename..., typename >
 DistributedVectorView< Real, Device, Index, Communicator >&
 DistributedVectorView< Real, Device, Index, Communicator >::

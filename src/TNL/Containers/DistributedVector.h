@@ -77,14 +77,6 @@ public:
    /*
     * Usual Vector methods follow below.
     */
-   void addElement( IndexType i,
-                    RealType value );
-
-   template< typename Scalar >
-   void addElement( IndexType i,
-                    RealType value,
-                    Scalar thisElementMultiplicator );
-
    template< typename Scalar,
              typename...,
              typename = std::enable_if_t< ! HasSubscriptOperator<Scalar>::value > >

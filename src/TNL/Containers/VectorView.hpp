@@ -61,27 +61,6 @@ getType()
 template< typename Real,
           typename Device,
           typename Index >
-void
-VectorView< Real, Device, Index >::
-addElement( IndexType i, RealType value )
-{
-   Algorithms::VectorOperations< Device >::addElement( *this, i, value );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename Scalar >
-void
-VectorView< Real, Device, Index >::
-addElement( IndexType i, RealType value, Scalar thisElementMultiplicator )
-{
-   Algorithms::VectorOperations< Device >::addElement( *this, i, value, thisElementMultiplicator );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
    template< typename VectorExpression, typename..., typename >
 VectorView< Real, Device, Index >&
 VectorView< Real, Device, Index >::operator=( const VectorExpression& expression )
