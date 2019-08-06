@@ -13,7 +13,7 @@
 #include <stdexcept>
 
 #include <TNL/Assert.h>
-#include <TNL/TypeTraits.h>
+#include <TNL/Containers/Expressions/ExpressionVariableType.h>
 #include <TNL/Containers/Algorithms/Reduction.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
 

@@ -368,6 +368,32 @@ max( const Containers::VectorView< Real1, Device, Index >& a, const Containers::
 }
 
 ////
+// Dot product - the same as scalar product, just for convenience
+template< typename Real, typename Device, typename Index, typename ET,
+          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
+auto
+dot( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
+{
+   return (a, b);
+}
+
+template< typename ET, typename Real, typename Device, typename Index,
+          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
+auto
+dot( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
+{
+   return (a, b);
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index1, typename Index2 >
+auto
+dot( const Containers::VectorView< Real1, Device, Index1 >& a, const Containers::VectorView< Real2, Device, Index2 >& b )
+{
+   return (a, b);
+}
+
+
+////
 // Abs
 template< typename Real, typename Device, typename Index >
 auto
@@ -679,31 +705,6 @@ auto
 binaryAnd( const Containers::VectorView< Real, Device, Index >& a )
 {
    return Containers::Expressions::ExpressionBinaryAnd( a );
-}
-
-////
-// Dot product - the same as scalar product, just for convenience
-template< typename Real, typename Device, typename Index, typename ET,
-          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
-auto
-dot( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
-{
-   return TNL::sum( a * b );
-}
-
-template< typename ET, typename Real, typename Device, typename Index,
-          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
-auto
-dot( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
-{
-   return TNL::sum( a * b );
-}
-
-template< typename Real1, typename Real2, typename Device, typename Index1, typename Index2 >
-auto
-dot( const Containers::VectorView< Real1, Device, Index1 >& a, const Containers::VectorView< Real2, Device, Index2 >& b )
-{
-   return TNL::sum( a * b );
 }
 
 } // namespace TNL

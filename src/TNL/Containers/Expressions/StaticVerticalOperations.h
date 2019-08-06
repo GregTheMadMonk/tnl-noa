@@ -10,8 +10,7 @@
 
 #pragma once
 
-#include <TNL/Assert.h>
-#include <TNL/Containers/Algorithms/Reduction.h>
+#include <TNL/Math.h>
 
 ////
 // By vertical operations we mean those applied across vector elements or

@@ -2214,7 +2214,7 @@ auto
 dot( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a,
      const Containers::Expressions::BinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return TNL::sum( a * b );
+   return (a, b);
 }
 
 template< typename L1,
@@ -2225,7 +2225,7 @@ auto
 dot( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a,
      const Containers::Expressions::UnaryExpressionTemplate< R1, ROperation >& b )
 {
-   return TNL::sum( a * b );
+   return (a, b);
 }
 
 template< typename L1,
@@ -2237,7 +2237,7 @@ auto
 dot( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a,
      const Containers::Expressions::BinaryExpressionTemplate< R1, R2, ROperation >& b )
 {
-   return TNL::sum( a * b );
+   return (a, b);
 }
 
 template< typename L1,
@@ -2249,7 +2249,7 @@ auto
 dot( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a,
      const Containers::Expressions::UnaryExpressionTemplate< R1, ROperation >& b )
 {
-   return TNL::sum( a * b );
+   return (a, b);
 }
 
 
