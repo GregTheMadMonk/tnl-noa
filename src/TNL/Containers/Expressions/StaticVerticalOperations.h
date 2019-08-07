@@ -84,31 +84,35 @@ auto StaticExpressionSum( const Expression& expression )
    return aux;
 }
 
+template< typename Expression >
+__cuda_callable__
+auto StaticExpressionL1Norm( const Expression& expression )
+{
+   auto aux = TNL::abs( expression[ 0 ] );
+   for( int i = 1; i < expression.getSize(); i++ )
+      aux += TNL::abs( expression[ i ] );
+   return aux;
+}
+
+template< typename Expression >
+__cuda_callable__
+auto StaticExpressionL2Norm( const Expression& expression )
+{
+   auto aux = expression[ 0 ] * expression[ 0 ];
+   for( int i = 1; i < expression.getSize(); i++ )
+      aux += expression[ i ] * expression[ i ];
+   return aux;
+}
+
 template< typename Expression, typename Real >
 __cuda_callable__
 auto StaticExpressionLpNorm( const Expression& expression, const Real& p )
--> typename std::remove_reference< decltype( expression[ 0 ] ) >::type
 {
-   if( p == ( Real ) 1.0 )
-   {
-      auto aux = TNL::abs( expression[ 0 ] );
-      for( int i = 1; i < expression.getSize(); i++ )
-         aux += TNL::abs( expression[ i ] );
-      return aux;
-   }
-   if( p == ( Real ) 2.0 )
-   {
-      auto aux = expression[ 0 ] * expression[ 0 ];
-      for( int i = 1; i < expression.getSize(); i++ )
-         aux += expression[ i ] * expression[ i ];
-      return aux;
-   }
    auto aux = TNL::pow( TNL::abs( expression[ 0 ] ), p );
    for( int i = 1; i < expression.getSize(); i++ )
       aux += TNL::pow( TNL::abs( expression[ i ] ), p );
    return aux;
 }
-
 
 template< typename Expression >
 __cuda_callable__

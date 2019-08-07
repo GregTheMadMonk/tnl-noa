@@ -1798,7 +1798,7 @@ template< typename L1,
 auto
 l1Norm( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return ExpressionLpNorm( a, 1 );
+   return ExpressionL1Norm( a );
 }
 
 template< typename L1,
@@ -1806,7 +1806,7 @@ template< typename L1,
 auto
 l1Norm( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return ExpressionLpNorm( a, 1 );
+   return ExpressionL1Norm( a );
 }
 
 template< typename L1,
@@ -1815,7 +1815,7 @@ template< typename L1,
 auto
 l2Norm( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return TNL::sqrt( ExpressionLpNorm( a, 2 ) );
+   return TNL::sqrt( ExpressionL2Norm( a ) );
 }
 
 template< typename L1,
@@ -1823,7 +1823,7 @@ template< typename L1,
 auto
 l2Norm( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return TNL::sqrt( ExpressionLpNorm( a, 2 ) );
+   return TNL::sqrt( ExpressionL2Norm( a ) );
 }
 
 template< typename L1,
@@ -1832,7 +1832,8 @@ template< typename L1,
           typename Real >
 auto
 lpNorm( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a, const Real& p )
--> decltype( ExpressionLpNorm( a, p ) )
+// since (1.0 / p) has type double, TNL::pow returns double
+-> double
 {
    if( p == 1.0 )
       return l1Norm( a );
@@ -1846,7 +1847,8 @@ template< typename L1,
           typename Real >
 auto
 lpNorm( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a, const Real& p )
--> decltype( ExpressionLpNorm( a, p ) )
+// since (1.0 / p) has type double, TNL::pow returns double
+-> double
 {
    if( p == 1.0 )
       return l1Norm( a );

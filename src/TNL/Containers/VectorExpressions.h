@@ -977,7 +977,7 @@ template< typename Real,
 auto
 l1Norm( const Containers::Vector< Real, Device, Index, Allocator >& a )
 {
-   return Containers::Expressions::ExpressionLpNorm( a.getConstView(), 1 );
+   return Containers::Expressions::ExpressionL1Norm( a.getConstView() );
 }
 
 template< typename Real,
@@ -986,7 +986,7 @@ template< typename Real,
 auto
 l2Norm( const Containers::Vector< Real, Device, Index, Allocator >& a )
 {
-   return TNL::sqrt( Containers::Expressions::ExpressionLpNorm( a.getConstView(), 2 ) );
+   return TNL::sqrt( Containers::Expressions::ExpressionL2Norm( a.getConstView() ) );
 }
 
 template< typename Real,
@@ -995,13 +995,14 @@ template< typename Real,
           typename Real2 >
 auto
 lpNorm( const Containers::Vector< Real, Device, Index, Allocator >& a, const Real2& p )
--> decltype( Containers::Expressions::ExpressionLpNorm( a.getConstView(), p ) )
+// since (1.0 / p) has type double, TNL::pow returns double
+-> double
 {
    if( p == 1.0 )
       return l1Norm( a );
    if( p == 2.0 )
       return l2Norm( a );
-   return TNL::pow( Containers::Expressions::ExpressionLpNorm( a.getConstView(), p ), (Real2) (1.0 / p) );
+   return TNL::pow( Containers::Expressions::ExpressionLpNorm( a.getConstView(), p ), 1.0 / p );
 }
 
 template< typename Real,

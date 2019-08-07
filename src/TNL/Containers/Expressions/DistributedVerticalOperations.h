@@ -47,7 +47,7 @@ auto DistributedExpressionMax( const Expression& expression ) -> std::remove_ref
    using ResultType = std::decay_t< decltype( expression[0] ) >;
    using CommunicatorType = typename Expression::CommunicatorType;
 
-   ResultType result = std::numeric_limits< ResultType >::min();
+   ResultType result = std::numeric_limits< ResultType >::lowest();
    if( expression.getCommunicationGroup() != CommunicatorType::NullGroup ) {
       const ResultType localResult = ExpressionMax( expression.getConstLocalView() );
       CommunicatorType::Allreduce( &localResult, &result, 1, MPI_MAX, expression.getCommunicationGroup() );
@@ -63,16 +63,10 @@ auto DistributedExpressionArgMax( const Expression& expression, typename Express
 }
 
 template< typename Expression >
-auto DistributedExpressionSum( const Expression& expression ) ->
-   typename std::conditional<
-      std::is_same< std::decay_t< decltype( expression[0] ) >, bool >::value,
-      typename Expression::IndexType,
-      std::remove_reference_t< decltype( expression[0] ) >
-   >::type
+auto DistributedExpressionSum( const Expression& expression ) -> std::decay_t< decltype( expression[0] ) >
 {
-   using ResultTypeBase = std::decay_t< decltype( expression[0] ) >;
+   using ResultType = std::decay_t< decltype( expression[0] ) >;
    using IndexType = typename Expression::IndexType;
-   using ResultType = typename std::conditional< std::is_same< ResultTypeBase, bool >::value, IndexType, ResultTypeBase >::type;
    using CommunicatorType = typename Expression::CommunicatorType;
 
    ResultType result = 0;
@@ -83,17 +77,41 @@ auto DistributedExpressionSum( const Expression& expression ) ->
    return result;
 }
 
-template< typename Expression, typename Real >
-auto DistributedExpressionLpNorm( const Expression& expression, const Real& p ) ->
-   typename std::conditional<
-      std::is_same< std::decay_t< decltype( expression[0] ) >, bool >::value,
-      double, // TODO: Solve this some better way
-      std::remove_reference_t< decltype( expression[0] ) >
-   >::type
+template< typename Expression >
+auto DistributedExpressionL1Norm( const Expression& expression ) -> std::decay_t< decltype( expression[0] ) >
 {
-   using ResultTypeBase = std::decay_t< decltype( expression[0] ) >;
+   using ResultType = std::decay_t< decltype( expression[0] ) >;
    using IndexType = typename Expression::IndexType;
-   using ResultType = typename std::conditional< std::is_same< ResultTypeBase, bool >::value, double, ResultTypeBase >::type;
+   using CommunicatorType = typename Expression::CommunicatorType;
+
+   ResultType result = 0;
+   if( expression.getCommunicationGroup() != CommunicatorType::NullGroup ) {
+      const ResultType localResult = ExpressionL1Norm( expression.getConstLocalView() );
+      CommunicatorType::Allreduce( &localResult, &result, 1, MPI_SUM, expression.getCommunicationGroup() );
+   }
+   return result;
+}
+
+template< typename Expression >
+auto DistributedExpressionL2Norm( const Expression& expression ) -> std::decay_t< decltype( expression[0] * expression[0] ) >
+{
+   using ResultType = std::decay_t< decltype( expression[0] * expression[0] ) >;
+   using IndexType = typename Expression::IndexType;
+   using CommunicatorType = typename Expression::CommunicatorType;
+
+   ResultType result = 0;
+   if( expression.getCommunicationGroup() != CommunicatorType::NullGroup ) {
+      const ResultType localResult = ExpressionL2Norm( expression.getConstLocalView() );
+      CommunicatorType::Allreduce( &localResult, &result, 1, MPI_SUM, expression.getCommunicationGroup() );
+   }
+   return result;
+}
+
+template< typename Expression, typename Real >
+auto DistributedExpressionLpNorm( const Expression& expression, const Real& p ) -> std::decay_t< decltype( TNL::pow( expression[0], p ) ) >
+{
+   using ResultType = std::decay_t< decltype( TNL::pow( expression[0], p ) ) >;
+   using IndexType = typename Expression::IndexType;
    using CommunicatorType = typename Expression::CommunicatorType;
 
    ResultType result = 0;

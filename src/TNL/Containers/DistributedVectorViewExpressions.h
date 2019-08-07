@@ -642,7 +642,7 @@ template< typename Real,
 auto
 l1Norm( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
 {
-   return Containers::Expressions::DistributedExpressionLpNorm( a, 1 );
+   return Containers::Expressions::DistributedExpressionL1Norm( a );
 }
 
 template< typename Real,
@@ -651,19 +651,20 @@ template< typename Real,
 auto
 l2Norm( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
 {
-   return TNL::sqrt( Containers::Expressions::DistributedExpressionLpNorm( a, 2 ) );
+   return TNL::sqrt( Containers::Expressions::DistributedExpressionL2Norm( a ) );
 }
 
 template< typename Real, typename Device, typename Index, typename Communicator, typename Real2 >
 auto
 lpNorm( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a, const Real2& p )
--> decltype( Containers::Expressions::DistributedExpressionLpNorm( a, p ) )
+// since (1.0 / p) has type double, TNL::pow returns double
+-> double
 {
    if( p == 1.0 )
       return l1Norm( a );
    if( p == 2.0 )
       return l2Norm( a );
-   return TNL::pow( Containers::Expressions::DistributedExpressionLpNorm( a, p ), (Real2) (1.0 / p) );
+   return TNL::pow( Containers::Expressions::DistributedExpressionLpNorm( a, p ), 1.0 / p );
 }
 
 template< typename Real, typename Device, typename Index, typename Communicator >

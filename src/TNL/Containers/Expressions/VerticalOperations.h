@@ -104,65 +104,63 @@ auto ExpressionArgMax( const Expression& expression, typename Expression::IndexT
 }
 
 template< typename Expression >
-auto ExpressionSum( const Expression& expression ) ->
-   typename std::conditional<
-      std::is_same< std::decay_t< decltype( expression[0] ) >, bool >::value,
-      typename Expression::IndexType,
-      std::decay_t< decltype( expression[0] ) >
-   >::type
+auto ExpressionSum( const Expression& expression ) -> std::decay_t< decltype( expression[0] + expression[0] ) >
 {
-   using ResultTypeBase = std::decay_t< decltype( expression[0] ) >;
+   using ResultType = std::decay_t< decltype( expression[0] + expression[0] ) >;
    using IndexType = typename Expression::IndexType;
-   using ResultType = typename std::conditional< std::is_same< ResultTypeBase, bool >::value, IndexType, ResultTypeBase >::type;
 
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return expression[ i ]; };
    auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a += b; };
    auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a += b; };
-   return Algorithms::Reduction< typename Expression::DeviceType >::reduce( expression.getSize(), reduction, volatileReduction, fetch, ( ResultType ) 0.0 );
+   return Algorithms::Reduction< typename Expression::DeviceType >::reduce( expression.getSize(), reduction, volatileReduction, fetch, (ResultType) 0 );
+}
+
+template< typename Expression >
+auto ExpressionL1Norm( const Expression& expression ) -> std::decay_t< decltype( expression[0] + expression[0] ) >
+{
+   using ResultType = std::decay_t< decltype( expression[0] + expression[0] ) >;
+   using IndexType = typename Expression::IndexType;
+
+   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return TNL::abs( expression[ i ] ); };
+   auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a += b; };
+   auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a += b; };
+   return Algorithms::Reduction< typename Expression::DeviceType >::reduce( expression.getSize(), reduction, volatileReduction, fetch, (ResultType) 0 );
+}
+
+template< typename Expression >
+auto ExpressionL2Norm( const Expression& expression ) -> std::decay_t< decltype( expression[0] * expression[0] ) >
+{
+   using ResultType = std::decay_t< decltype( expression[0] * expression[0] ) >;
+   using IndexType = typename Expression::IndexType;
+
+   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return expression[ i ] * expression[ i ]; };
+   auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a += b; };
+   auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a += b; };
+   return Algorithms::Reduction< typename Expression::DeviceType >::reduce( expression.getSize(), reduction, volatileReduction, fetch, (ResultType) 0 );
 }
 
 template< typename Expression, typename Real >
-auto ExpressionLpNorm( const Expression& expression, const Real& p ) ->
-   typename std::conditional<
-      std::is_same< std::decay_t< decltype( expression[0] ) >, bool >::value,
-      double, // TODO: Solve this some better way
-      std::decay_t< decltype( expression[0] ) >
-   >::type
+auto ExpressionLpNorm( const Expression& expression, const Real& p ) -> std::decay_t< decltype( TNL::pow( expression[0], p ) ) >
 {
-   using ResultTypeBase = std::decay_t< decltype( expression[0] ) >;
+   using ResultType = std::decay_t< decltype( TNL::pow( expression[0], p ) ) >;
    using IndexType = typename Expression::IndexType;
-   using ResultType = typename std::conditional< std::is_same< ResultTypeBase, bool >::value, double, ResultTypeBase >::type;
 
-   if( p == ( Real ) 1.0 )
-   {
-      auto fetch = [=] __cuda_callable__ ( IndexType i ) { return TNL::abs( expression[ i ] ); };
-      auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a += b; };
-      auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a += b; };
-      return Algorithms::Reduction< typename Expression::DeviceType >::reduce( expression.getSize(), reduction, volatileReduction, fetch, ( ResultType ) 0.0 );
-   }
-   if( p == ( Real ) 2.0 )
-   {
-      auto fetch = [=] __cuda_callable__ ( IndexType i ) { return expression[ i ] * expression[ i ]; };
-      auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a += b; };
-      auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a += b; };
-      return Algorithms::Reduction< typename Expression::DeviceType >::reduce( expression.getSize(), reduction, volatileReduction, fetch, ( ResultType ) 0.0 );
-   }
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return TNL::pow( TNL::abs( expression[ i ] ), p ); };
    auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a += b; };
    auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a += b; };
-   return Algorithms::Reduction< typename Expression::DeviceType >::reduce( expression.getSize(), reduction, volatileReduction, fetch, ( ResultType ) 0.0 );
+   return Algorithms::Reduction< typename Expression::DeviceType >::reduce( expression.getSize(), reduction, volatileReduction, fetch, (ResultType) 0 );
 }
 
 template< typename Expression >
 auto ExpressionProduct( const Expression& expression ) -> std::decay_t< decltype( expression[0] * expression[0] ) >
 {
-   using ResultType = std::decay_t< decltype( expression[0] ) >;
+   using ResultType = std::decay_t< decltype( expression[0] * expression[0] ) >;
    using IndexType = typename Expression::IndexType;
 
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return expression[ i ]; };
    auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a *= b; };
    auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a *= b; };
-   return Algorithms::Reduction< typename Expression::DeviceType >::reduce( expression.getSize(), reduction, volatileReduction, fetch, ( ResultType ) 1.0 );
+   return Algorithms::Reduction< typename Expression::DeviceType >::reduce( expression.getSize(), reduction, volatileReduction, fetch, (ResultType) 1 );
 }
 
 template< typename Expression >
@@ -174,7 +172,7 @@ auto ExpressionLogicalAnd( const Expression& expression ) -> std::decay_t< declt
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return expression[ i ]; };
    auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a = a && b; };
    auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a = a && b; };
-   return Algorithms::Reduction< typename Expression::DeviceType >::reduce( expression.getSize(), reduction, volatileReduction, fetch, true );
+   return Algorithms::Reduction< typename Expression::DeviceType >::reduce( expression.getSize(), reduction, volatileReduction, fetch, std::numeric_limits< ResultType >::max() );
 }
 
 template< typename Expression >
@@ -186,7 +184,7 @@ auto ExpressionLogicalOr( const Expression& expression ) -> std::decay_t< declty
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return expression[ i ]; };
    auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a = a || b; };
    auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a = a || b; };
-   return Algorithms::Reduction< typename Expression::DeviceType >::reduce( expression.getSize(), reduction, volatileReduction, fetch, false );
+   return Algorithms::Reduction< typename Expression::DeviceType >::reduce( expression.getSize(), reduction, volatileReduction, fetch, (ResultType) 0 );
 }
 
 template< typename Expression >
@@ -210,7 +208,7 @@ auto ExpressionBinaryOr( const Expression& expression ) -> std::decay_t< decltyp
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return expression[ i ]; };
    auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a = a | b; };
    auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a = a | b; };
-   return Algorithms::Reduction< typename Expression::DeviceType >::reduce( expression.getSize(), reduction, volatileReduction, fetch, ( ResultType ) 0 );
+   return Algorithms::Reduction< typename Expression::DeviceType >::reduce( expression.getSize(), reduction, volatileReduction, fetch, (ResultType) 0 );
 }
 
 } // namespace Expressions

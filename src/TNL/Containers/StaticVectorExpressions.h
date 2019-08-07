@@ -692,7 +692,7 @@ __cuda_callable__
 auto
 l1Norm( const Containers::StaticVector< Size, Real >& a )
 {
-   return Containers::Expressions::StaticExpressionLpNorm( a, 1 );
+   return Containers::Expressions::StaticExpressionL1Norm( a );
 }
 
 template< int Size, typename Real >
@@ -700,14 +700,15 @@ __cuda_callable__
 auto
 l2Norm( const Containers::StaticVector< Size, Real >& a )
 {
-   return TNL::sqrt( Containers::Expressions::StaticExpressionLpNorm( a, 2 ) );
+   return TNL::sqrt( Containers::Expressions::StaticExpressionL2Norm( a ) );
 }
 
 template< int Size, typename Real, typename Real2 >
 __cuda_callable__
 auto
 lpNorm( const Containers::StaticVector< Size, Real >& a, const Real2& p )
--> decltype( Containers::Expressions::StaticExpressionLpNorm( a, p ) )
+// since (1.0 / p) has type double, TNL::pow returns double
+-> double
 {
    if( p == 1.0 )
       return l1Norm( a );
