@@ -1,8 +1,8 @@
 /***************************************************************************
                           NoDistrCommunicator.h  -  description
                              -------------------
-    begin                : 2018/01/09
-    copyright            : (C) 2018 by Tomas Oberhuber
+    begin                : Jan 9, 2018
+    copyright            : (C) 2018 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -11,42 +11,40 @@
 #pragma once
 
 #include <TNL/Logger.h>
+#include <TNL/Config/ConfigDescription.h>
 #include <TNL/Communicators/MpiDefs.h>
 
 namespace TNL {
 namespace Communicators {
-namespace {
 
+//! \brief Dummy communicator without any distribution support.
 class NoDistrCommunicator
 {
-
-
    public:
-
-      typedef int Request;
-      typedef int CommunicationGroup;
+      using Request = int;
+      using CommunicationGroup = int;
       static constexpr Request NullRequest = -1;
       static constexpr CommunicationGroup AllGroup = 1;
       static constexpr CommunicationGroup NullGroup = 0;
 
       static void configSetup( Config::ConfigDescription& config, const String& prefix = "" ){};
- 
+
       static bool setup( const Config::ParameterContainer& parameters,
                          const String& prefix = "" )
       {
          return true;
       }
-      
+
       static void Init(int& argc, char**& argv) {}
-      
+
       static void setRedirection( bool redirect_ ) {}
-      
+
       static void setupRedirection(){}
 
       static void Finalize(){}
 
       static bool IsInitialized()
-      {   
+      {
           return true;
       }
 
@@ -145,6 +143,5 @@ class NoDistrCommunicator
       static void writeProlog( Logger& logger ){};
 };
 
-} // namespace <unnamed>
 } // namespace Communicators
 } // namespace TNL

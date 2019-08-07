@@ -100,8 +100,6 @@ template<> struct MPITypeResolver< bool >
    static inline MPI_Datatype getType() { return MPI_C_BOOL; };
 };
 #endif
-   
-   
-   
-   } // namespace Communicators
+
+} // namespace Communicators
 } // namespace TNL
