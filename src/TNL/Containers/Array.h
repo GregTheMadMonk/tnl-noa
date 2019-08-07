@@ -116,14 +116,14 @@ class Array
              const AllocatorType& allocator = AllocatorType() );
 
       /**
-       * \brief Copy constructor.
+       * \brief Copy constructor (makes a deep copy).
        *
        * \param array The array to be copied.
        */
       explicit Array( const Array& array );
 
       /**
-       * \brief Copy constructor with a specific allocator.
+       * \brief Copy constructor with a specific allocator (makes a deep copy).
        *
        * \param array The array to be copied.
        * \param allocator The allocator to be associated with this array.
@@ -131,7 +131,7 @@ class Array
       explicit Array( const Array& array, const AllocatorType& allocator );
 
       /**
-       * \brief Copy constructor.
+       * \brief Copy constructor (makes a deep copy).
        *
        * \param array The array to be copied.
        * \param begin The first index which should be copied.

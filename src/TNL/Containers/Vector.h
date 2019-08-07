@@ -22,7 +22,7 @@ namespace Containers {
  * The template parameters have the same meaning as in \ref Array, with \e Real
  * corresponding to \e Array's \e Value parameter.
  *
- * \tparam Real   A numeric type for the vector values, e.g. \ref float or
+ * \tparam Real   An arithmetic type for the vector values, e.g. \ref float or
  *                \ref double.
  * \tparam Device The device to be used for the execution of vector operations.
  * \tparam Index  The indexing type.
@@ -51,27 +51,27 @@ public:
    using ViewType = VectorView< Real, Device, Index >;
    using ConstViewType = VectorView< std::add_const_t< Real >, Device, Index >;
 
-   //! \brief Default constructor.
-   Vector() = default;
-   //! \brief Default copy constructor.
-   explicit Vector( const Vector& ) = default;
-   //! \brief Copy constructor with a specific allocator.
-   explicit Vector( const Vector& vector, const AllocatorType& allocator );
-   //! \brief Default move constructor.
-   Vector( Vector&& ) = default;
-   //! \brief Default copy-assignment operator.
-   Vector& operator=( const Vector& ) = default;
-   //! \brief Default move-assignment operator.
-   Vector& operator=( Vector&& ) = default;
-
-   //! Constructors and assignment operators are inherited from the class \ref Array.
+   // constructors and assignment operators inherited from the class Array
    using Array< Real, Device, Index, Allocator >::Array;
    using Array< Real, Device, Index, Allocator >::operator=;
 
-   /** \brief Returns type of vector Real value, Device type and the type of Index. */
+   //! \brief Constructs an empty array with zero size.
+   Vector() = default;
+   //! \brief Copy constructor (makes a deep copy).
+   explicit Vector( const Vector& ) = default;
+   //! \brief Copy constructor with a specific allocator (makes a deep copy).
+   explicit Vector( const Vector& vector, const AllocatorType& allocator );
+   //! \brief Default move constructor.
+   Vector( Vector&& ) = default;
+   //! \brief Copy-assignment operator for copying data from another vector.
+   Vector& operator=( const Vector& ) = default;
+   //! \brief Move-assignment operator for acquiring data from \e rvalues.
+   Vector& operator=( Vector&& ) = default;
+
+   //! \brief Returns a \ref String representation of the vector type in C++ style.
    static String getType();
 
-   /** \brief Returns type of vector Real value, Device type and the type of Index. */
+   //! \brief Returns a \ref String representation of the vector type in C++ style.
    virtual String getTypeVirtual() const;
 
    /**
@@ -114,6 +114,15 @@ public:
 
    /**
     * \brief Assigns a vector expression to this vector.
+    *
+    * The assignment is evaluated element-wise. The vector expression must
+    * either evaluate to a scalar or a vector. If it evaluates to a vector
+    * with a different size than this vector, this vector is reallocated to
+    * match the size of the vector expression.
+    *
+    * \param expression The vector expression to be evaluated and assigned to
+    *                   this vector.
+    * \return Reference to this vector.
     */
    template< typename VectorExpression,
              typename...,
@@ -122,6 +131,8 @@ public:
 
    /**
     * \brief Assigns a value or an array - same as \ref Array::operator=.
+    *
+    * \return Reference to this vector.
     */
    // operator= from the base class should be hidden according to the C++14 standard,
    // although GCC does not do that - see https://stackoverflow.com/q/57322624
@@ -135,37 +146,53 @@ public:
    }
 
    /**
-    * \brief This function subtracts \e vector from this vector and returns the resulting vector.
+    * \brief Adds elements of this vector and a vector expression and
+    * stores the result in this vector.
     *
-    * The subtraction is applied to all the vector elements separately.
-    * \param vector Reference to another vector.
-    */
-   template< typename VectorExpression >
-   Vector& operator-=( const VectorExpression& expression );
-
-   /**
-    * \brief This function adds \e vector to this vector and returns the resulting vector.
+    * The addition is evaluated element-wise. The vector expression must
+    * either evaluate to a scalar or a vector of the same size as this vector.
     *
-    * The addition is applied to all the vector elements separately.
-    * \param vector Reference to another vector.
+    * \param expression Reference to a vector expression.
+    * \return Reference to this vector.
     */
    template< typename VectorExpression >
    Vector& operator+=( const VectorExpression& expression );
 
    /**
-    * \brief This function multiplies this vector by \e c and returns the resulting vector.
+    * \brief Subtracts elements of this vector and a vector expression and
+    * stores the result in this vector.
     *
-    * The multiplication is applied to all the vector elements separately.
-    * \param c Multiplicator.
+    * The subtraction is evaluated element-wise. The vector expression must
+    * either evaluate to a scalar or a vector of the same size as this vector.
+    *
+    * \param expression Reference to a vector expression.
+    * \return Reference to this vector.
+    */
+   template< typename VectorExpression >
+   Vector& operator-=( const VectorExpression& expression );
+
+   /**
+    * \brief Multiplies elements of this vector and a vector expression and
+    * stores the result in this vector.
+    *
+    * The multiplication is evaluated element-wise. The vector expression must
+    * either evaluate to a scalar or a vector of the same size as this vector.
+    *
+    * \param expression Reference to a vector expression.
+    * \return Reference to this vector.
     */
    template< typename VectorExpression >
    Vector& operator*=( const VectorExpression& expression );
 
    /**
-    * \brief This function divides this vector by \e c and returns the resulting vector.
+    * \brief Divides elements of this vector and a vector expression and
+    * stores the result in this vector.
     *
-    * The division is applied to all the vector elements separately.
-    * \param c Divisor.
+    * The division is evaluated element-wise. The vector expression must
+    * either evaluate to a scalar or a vector of the same size as this vector.
+    *
+    * \param expression Reference to a vector expression.
+    * \return Reference to this vector.
     */
    template< typename VectorExpression >
    Vector& operator/=( const VectorExpression& expression );
@@ -179,10 +206,11 @@ public:
    /**
     * \brief Returns specific sums of elements of this vector.
     *
+    * FIXME: computePrefixSum does not exist
+    *
     * Does the same as \ref computePrefixSum, but computes only sums for elements
     * with the index in range from \e begin to \e end. The other elements of this
-    * vector remain untouched - with the same value. Therefore this method returns
-    * a new vector with the length of this vector.
+    * vector remain untouched - with the same value.
     *
     * \param begin Index of the element in this vector which to begin with.
     * \param end Index of the element in this vector which to end with.

@@ -22,6 +22,19 @@ namespace Containers {
 template< typename Real,
           typename Device,
           typename Index >
+String
+VectorView< Real, Device, Index >::
+getType()
+{
+   return String( "Containers::VectorView< " ) +
+                  TNL::getType< Real >() + ", " +
+                  Device::getDeviceType() + ", " +
+                  TNL::getType< Index >() + " >";
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 __cuda_callable__
 typename VectorView< Real, Device, Index >::ViewType
 VectorView< Real, Device, Index >::
@@ -48,19 +61,6 @@ getConstView( const IndexType begin, IndexType end ) const
 template< typename Real,
           typename Device,
           typename Index >
-String
-VectorView< Real, Device, Index >::
-getType()
-{
-   return String( "Containers::VectorView< " ) +
-                  TNL::getType< Real >() + ", " +
-                  Device::getDeviceType() + ", " +
-                  TNL::getType< Index >() + " >";
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
    template< typename VectorExpression, typename..., typename >
 VectorView< Real, Device, Index >&
 VectorView< Real, Device, Index >::operator=( const VectorExpression& expression )
@@ -75,9 +75,9 @@ template< typename Real,
    template< typename VectorExpression >
 VectorView< Real, Device, Index >&
 VectorView< Real, Device, Index >::
-operator-=( const VectorExpression& expression )
+operator+=( const VectorExpression& expression )
 {
-   Algorithms::VectorAssignmentWithOperation< VectorView, VectorExpression >::subtraction( *this, expression );
+   Algorithms::VectorAssignmentWithOperation< VectorView, VectorExpression >::addition( *this, expression );
    return *this;
 }
 
@@ -87,9 +87,9 @@ template< typename Real,
    template< typename VectorExpression >
 VectorView< Real, Device, Index >&
 VectorView< Real, Device, Index >::
-operator+=( const VectorExpression& expression )
+operator-=( const VectorExpression& expression )
 {
-   Algorithms::VectorAssignmentWithOperation< VectorView, VectorExpression >::addition( *this, expression );
+   Algorithms::VectorAssignmentWithOperation< VectorView, VectorExpression >::subtraction( *this, expression );
    return *this;
 }
 

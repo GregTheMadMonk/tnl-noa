@@ -119,9 +119,9 @@ template< typename Real,
    template< typename VectorExpression >
 Vector< Real, Device, Index, Allocator >&
 Vector< Real, Device, Index, Allocator >::
-operator-=( const VectorExpression& expression )
+operator+=( const VectorExpression& expression )
 {
-   Algorithms::VectorAssignmentWithOperation< Vector, VectorExpression >::subtraction( *this, expression );
+   Algorithms::VectorAssignmentWithOperation< Vector, VectorExpression >::addition( *this, expression );
    return *this;
 }
 
@@ -132,9 +132,9 @@ template< typename Real,
    template< typename VectorExpression >
 Vector< Real, Device, Index, Allocator >&
 Vector< Real, Device, Index, Allocator >::
-operator+=( const VectorExpression& expression )
+operator-=( const VectorExpression& expression )
 {
-   Algorithms::VectorAssignmentWithOperation< Vector, VectorExpression >::addition( *this, expression );
+   Algorithms::VectorAssignmentWithOperation< Vector, VectorExpression >::subtraction( *this, expression );
    return *this;
 }
 
