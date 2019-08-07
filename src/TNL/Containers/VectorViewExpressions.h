@@ -12,9 +12,6 @@
 
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Expressions/ExpressionTemplates.h>
-#include <TNL/Containers/Expressions/ExpressionTemplatesOperations.h>
-#include <TNL/Containers/Expressions/Comparison.h>
-#include <TNL/Containers/Expressions/VerticalOperations.h>
 
 #include "VectorView.h"
 

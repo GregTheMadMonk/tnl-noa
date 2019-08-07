@@ -14,9 +14,9 @@
 
 #include <TNL/TypeTraits.h>
 #include <TNL/Containers/Expressions/TypeTraits.h>
-#include <TNL/Containers/Expressions/ExpressionTemplatesOperations.h>
 #include <TNL/Containers/Expressions/ExpressionVariableType.h>
 #include <TNL/Containers/Expressions/Comparison.h>
+#include <TNL/Containers/Expressions/HorizontalOperations.h>
 #include <TNL/Containers/Expressions/VerticalOperations.h>
 
 namespace TNL {

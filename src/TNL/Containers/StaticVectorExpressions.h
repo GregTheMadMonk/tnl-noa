@@ -11,9 +11,6 @@
 #pragma once
 
 #include <TNL/Containers/Expressions/StaticExpressionTemplates.h>
-#include <TNL/Containers/Expressions/ExpressionTemplatesOperations.h>
-#include <TNL/Containers/Expressions/StaticComparison.h>
-#include <TNL/Containers/Expressions/StaticVerticalOperations.h>
 
 #include "StaticVector.h"
 

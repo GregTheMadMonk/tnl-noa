@@ -12,6 +12,7 @@
 
 #include <TNL/Containers/Expressions/ExpressionTemplates.h>
 #include <TNL/Containers/Expressions/DistributedComparison.h>
+#include <TNL/Containers/Expressions/DistributedVerticalOperations.h>
 
 namespace TNL {
 namespace Containers {

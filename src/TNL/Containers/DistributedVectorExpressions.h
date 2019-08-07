@@ -11,8 +11,6 @@
 #pragma once
 
 #include <TNL/Containers/Expressions/DistributedExpressionTemplates.h>
-#include <TNL/Containers/Expressions/DistributedComparison.h>
-#include <TNL/Containers/Expressions/DistributedVerticalOperations.h>
 
 #include "DistributedVector.h"
 

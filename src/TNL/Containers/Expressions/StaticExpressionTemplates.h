@@ -14,8 +14,8 @@
 
 #include <TNL/TypeTraits.h>
 #include <TNL/Containers/Expressions/TypeTraits.h>
-#include <TNL/Containers/Expressions/ExpressionTemplatesOperations.h>
 #include <TNL/Containers/Expressions/ExpressionVariableType.h>
+#include <TNL/Containers/Expressions/HorizontalOperations.h>
 #include <TNL/Containers/Expressions/StaticComparison.h>
 #include <TNL/Containers/Expressions/StaticVerticalOperations.h>
 
