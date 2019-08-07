@@ -177,17 +177,6 @@ public:
    ResultType sum() const;
 
    /**
-    * \brief Computes scalar (dot) product.
-    *
-    * An algebraic operation that takes two equal-length vectors and returns a single number.
-    *
-    * \tparam vector Type of vector.
-    * \param v Reference to another vector of the same size as this vector.
-    */
-   template< typename Vector >
-   Real scalarProduct( const Vector& v ) const;
-
-   /**
     * \brief Returns specific sums of elements of this vector.
     *
     * Does the same as \ref computePrefixSum, but computes only sums for elements

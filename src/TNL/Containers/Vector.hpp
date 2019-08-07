@@ -178,16 +178,6 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Allocator >
-   template< typename VectorT >
-Real Vector< Real, Device, Index, Allocator >::scalarProduct( const VectorT& v ) const
-{
-   return dot( this->getConstView(), v.getConstView() );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Allocator >
    template< Algorithms::PrefixSumType Type >
 void
 Vector< Real, Device, Index, Allocator >::

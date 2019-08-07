@@ -118,10 +118,6 @@ public:
    template< typename ResultType = NonConstReal >
    ResultType sum() const;
 
-   //! Computes scalar dot product
-   template< typename Vector >
-   NonConstReal scalarProduct( const Vector& v ) const;
-
    template< Algorithms::PrefixSumType Type = Algorithms::PrefixSumType::Inclusive >
    void prefixSum( IndexType begin = 0, IndexType end = 0 );
 

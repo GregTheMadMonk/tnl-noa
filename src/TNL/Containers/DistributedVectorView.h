@@ -130,10 +130,6 @@ public:
    template< typename ResultType = NonConstReal >
    ResultType sum() const;
 
-   //! Computes scalar dot product
-   template< typename Vector >
-   NonConstReal scalarProduct( const Vector& v ) const;
-
    void computePrefixSum();
 
    void computePrefixSum( IndexType begin, IndexType end );

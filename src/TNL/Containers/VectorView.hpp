@@ -131,17 +131,6 @@ sum() const
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename Vector >
-typename VectorView< Real, Device, Index >::NonConstReal
-VectorView< Real, Device, Index >::
-scalarProduct( const Vector& v ) const
-{
-   return TNL::sum( *this * v );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
    template< Algorithms::PrefixSumType Type >
 void
 VectorView< Real, Device, Index >::

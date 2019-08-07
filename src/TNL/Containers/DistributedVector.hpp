@@ -317,24 +317,6 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Communicator >
-   template< typename Vector >
-Real
-DistributedVector< Real, Device, Index, Communicator >::
-scalarProduct( const Vector& v ) const
-{
-   const auto group = this->getCommunicationGroup();
-   Real result = Containers::Algorithms::ParallelReductionScalarProduct< Real, typename Vector::RealType >::initialValue();
-   if( group != CommunicatorType::NullGroup ) {
-      const Real localResult = getConstLocalView().scalarProduct( v.getConstLocalView() );
-      CommunicatorType::Allreduce( &localResult, &result, 1, MPI_SUM, group );
-   }
-   return result;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Communicator >
 void
 DistributedVector< Real, Device, Index, Communicator >::
 computePrefixSum()
