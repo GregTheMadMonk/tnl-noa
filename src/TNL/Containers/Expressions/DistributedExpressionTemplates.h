@@ -1861,6 +1861,57 @@ sum( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOpe
 
 template< typename L1,
           typename L2,
+          template< typename, typename > class LOperation >
+auto
+maxNorm( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return max( abs( a ) );
+}
+
+template< typename L1,
+          template< typename > class LOperation >
+auto
+maxNorm( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
+{
+   return max( abs( a ) );
+}
+
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+auto
+l1Norm( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return DistributedExpressionLpNorm( a, 1 );
+}
+
+template< typename L1,
+          template< typename > class LOperation >
+auto
+l1Norm( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
+{
+   return DistributedExpressionLpNorm( a, 1 );
+}
+
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+auto
+l2Norm( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return TNL::sqrt( DistributedExpressionLpNorm( a, 2 ) );
+}
+
+template< typename L1,
+          template< typename > class LOperation >
+auto
+l2Norm( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
+{
+   return TNL::sqrt( DistributedExpressionLpNorm( a, 2 ) );
+}
+
+template< typename L1,
+          typename L2,
           template< typename, typename > class LOperation,
           typename Real >
 auto
@@ -1868,9 +1919,9 @@ lpNorm( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, 
 -> decltype( DistributedExpressionLpNorm( a, p ) )
 {
    if( p == 1.0 )
-      return DistributedExpressionLpNorm( a, p );
+      return l1Norm( a );
    if( p == 2.0 )
-      return TNL::sqrt( DistributedExpressionLpNorm( a, p ) );
+      return l2Norm( a );
    return TNL::pow( DistributedExpressionLpNorm( a, p ), 1.0 / p );
 }
 
@@ -1882,9 +1933,9 @@ lpNorm( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, L
 -> decltype( DistributedExpressionLpNorm( a, p ) )
 {
    if( p == 1.0 )
-      return DistributedExpressionLpNorm( a, p );
+      return l1Norm( a );
    if( p == 2.0 )
-      return TNL::sqrt( DistributedExpressionLpNorm( a, p ) );
+      return l2Norm( a );
    return TNL::pow( DistributedExpressionLpNorm( a, p ), 1.0 / p );
 }
 

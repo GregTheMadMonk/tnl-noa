@@ -629,15 +629,42 @@ sum( const Containers::DistributedVectorView< Real, Device, Index, Communicator 
    return Containers::Expressions::DistributedExpressionSum( a );
 }
 
+template< typename Real,
+          typename Device,
+          typename Index, typename Communicator >
+auto
+maxNorm( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
+{
+   return max( abs( a ) );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index, typename Communicator >
+auto
+l1Norm( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
+{
+   return Containers::Expressions::DistributedExpressionLpNorm( a, 1 );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index, typename Communicator >
+auto
+l2Norm( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a )
+{
+   return TNL::sqrt( Containers::Expressions::DistributedExpressionLpNorm( a, 2 ) );
+}
+
 template< typename Real, typename Device, typename Index, typename Communicator, typename Real2 >
 auto
 lpNorm( const Containers::DistributedVectorView< Real, Device, Index, Communicator >& a, const Real2& p )
 -> decltype( Containers::Expressions::DistributedExpressionLpNorm( a, p ) )
 {
    if( p == 1.0 )
-      return Containers::Expressions::DistributedExpressionLpNorm( a, p );
+      return l1Norm( a );
    if( p == 2.0 )
-      return TNL::sqrt( Containers::Expressions::DistributedExpressionLpNorm( a, p ) );
+      return l2Norm( a );
    return TNL::pow( Containers::Expressions::DistributedExpressionLpNorm( a, p ), (Real2) (1.0 / p) );
 }
 

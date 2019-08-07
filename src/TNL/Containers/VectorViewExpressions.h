@@ -649,6 +649,33 @@ sum( const Containers::VectorView< Real, Device, Index >& a )
 
 template< typename Real,
           typename Device,
+          typename Index >
+auto
+maxNorm( const Containers::VectorView< Real, Device, Index >& a )
+{
+   return max( abs( a ) );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+auto
+l1Norm( const Containers::VectorView< Real, Device, Index >& a )
+{
+   return Containers::Expressions::ExpressionLpNorm( a, 1 );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+auto
+l2Norm( const Containers::VectorView< Real, Device, Index >& a )
+{
+   return TNL::sqrt( Containers::Expressions::ExpressionLpNorm( a, 2 ) );
+}
+
+template< typename Real,
+          typename Device,
           typename Index,
           typename Real2 >
 auto
@@ -656,9 +683,9 @@ lpNorm( const Containers::VectorView< Real, Device, Index >& a, const Real2& p )
 -> decltype( Containers::Expressions::ExpressionLpNorm( a, p ) )
 {
    if( p == 1.0 )
-      return Containers::Expressions::ExpressionLpNorm( a, p );
+      return l1Norm( a );
    if( p == 2.0 )
-      return TNL::sqrt( Containers::Expressions::ExpressionLpNorm( a, p ) );
+      return l2Norm( a );
    return TNL::pow( Containers::Expressions::ExpressionLpNorm( a, p ), (Real2) (1.0 / p) );
 }
 

@@ -967,6 +967,33 @@ sum( const Containers::Vector< Real, Device, Index, Allocator >& a )
 
 template< typename Real,
           typename Device,
+          typename Index, typename Allocator >
+auto
+maxNorm( const Containers::Vector< Real, Device, Index, Allocator >& a )
+{
+   return max( abs( a ) );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index, typename Allocator >
+auto
+l1Norm( const Containers::Vector< Real, Device, Index, Allocator >& a )
+{
+   return Containers::Expressions::ExpressionLpNorm( a.getConstView(), 1 );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index, typename Allocator >
+auto
+l2Norm( const Containers::Vector< Real, Device, Index, Allocator >& a )
+{
+   return TNL::sqrt( Containers::Expressions::ExpressionLpNorm( a.getConstView(), 2 ) );
+}
+
+template< typename Real,
+          typename Device,
           typename Index, typename Allocator,
           typename Real2 >
 auto
@@ -974,9 +1001,9 @@ lpNorm( const Containers::Vector< Real, Device, Index, Allocator >& a, const Rea
 -> decltype( Containers::Expressions::ExpressionLpNorm( a.getConstView(), p ) )
 {
    if( p == 1.0 )
-      return Containers::Expressions::ExpressionLpNorm( a.getConstView(), p );
+      return l1Norm( a );
    if( p == 2.0 )
-      return TNL::sqrt( Containers::Expressions::ExpressionLpNorm( a.getConstView(), p ) );
+      return l2Norm( a );
    return TNL::pow( Containers::Expressions::ExpressionLpNorm( a.getConstView(), p ), (Real2) (1.0 / p) );
 }
 

@@ -682,6 +682,30 @@ sum( const Containers::StaticVector< Size, Real >& a )
    return Containers::Expressions::StaticExpressionSum( a );
 }
 
+template< int Size, typename Real >
+__cuda_callable__
+auto
+maxNorm( const Containers::StaticVector< Size, Real >& a )
+{
+   return max( abs( a ) );
+}
+
+template< int Size, typename Real >
+__cuda_callable__
+auto
+l1Norm( const Containers::StaticVector< Size, Real >& a )
+{
+   return Containers::Expressions::StaticExpressionLpNorm( a, 1 );
+}
+
+template< int Size, typename Real >
+__cuda_callable__
+auto
+l2Norm( const Containers::StaticVector< Size, Real >& a )
+{
+   return TNL::sqrt( Containers::Expressions::StaticExpressionLpNorm( a, 2 ) );
+}
+
 template< int Size, typename Real, typename Real2 >
 __cuda_callable__
 auto
@@ -689,9 +713,9 @@ lpNorm( const Containers::StaticVector< Size, Real >& a, const Real2& p )
 -> decltype( Containers::Expressions::StaticExpressionLpNorm( a, p ) )
 {
    if( p == 1.0 )
-      return Containers::Expressions::StaticExpressionLpNorm( a, p );
+      return l1Norm( a );
    if( p == 2.0 )
-      return TNL::sqrt( Containers::Expressions::StaticExpressionLpNorm( a, p ) );
+      return l2Norm( a );
    return TNL::pow( Containers::Expressions::StaticExpressionLpNorm( a, p ), 1.0 / p );
 }
 

@@ -1777,6 +1777,57 @@ sum( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a
 
 template< typename L1,
           typename L2,
+          template< typename, typename > class LOperation >
+auto
+maxNorm( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return max( abs( a ) );
+}
+
+template< typename L1,
+          template< typename > class LOperation >
+auto
+maxNorm( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
+{
+   return max( abs( a ) );
+}
+
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+auto
+l1Norm( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return ExpressionLpNorm( a, 1 );
+}
+
+template< typename L1,
+          template< typename > class LOperation >
+auto
+l1Norm( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
+{
+   return ExpressionLpNorm( a, 1 );
+}
+
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+auto
+l2Norm( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return TNL::sqrt( ExpressionLpNorm( a, 2 ) );
+}
+
+template< typename L1,
+          template< typename > class LOperation >
+auto
+l2Norm( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
+{
+   return TNL::sqrt( ExpressionLpNorm( a, 2 ) );
+}
+
+template< typename L1,
+          typename L2,
           template< typename, typename > class LOperation,
           typename Real >
 auto
@@ -1784,9 +1835,9 @@ lpNorm( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperat
 -> decltype( ExpressionLpNorm( a, p ) )
 {
    if( p == 1.0 )
-      return ExpressionLpNorm( a, p );
+      return l1Norm( a );
    if( p == 2.0 )
-      return TNL::sqrt( ExpressionLpNorm( a, p ) );
+      return l2Norm( a );
    return TNL::pow( ExpressionLpNorm( a, p ), 1.0 / p );
 }
 
@@ -1798,9 +1849,9 @@ lpNorm( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >
 -> decltype( ExpressionLpNorm( a, p ) )
 {
    if( p == 1.0 )
-      return ExpressionLpNorm( a, p );
+      return l1Norm( a );
    if( p == 2.0 )
-      return TNL::sqrt( ExpressionLpNorm( a, p ) );
+      return l2Norm( a );
    return TNL::pow( ExpressionLpNorm( a, p ), 1.0 / p );
 }
 

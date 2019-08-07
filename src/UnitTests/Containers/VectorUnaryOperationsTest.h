@@ -550,6 +550,45 @@ TYPED_TEST( VectorUnaryOperationsTest, sum )
    EXPECT_EQ( sum(V1 - 1), 0.5 * size * (size - 1) - size );
 }
 
+TYPED_TEST( VectorUnaryOperationsTest, maxNorm )
+{
+   SETUP_UNARY_VECTOR_TEST_REDUCTION;
+
+   // vector or view
+   EXPECT_EQ( maxNorm(V1), size - 1 );
+   // unary expression
+   EXPECT_EQ( maxNorm(-V1), size - 1 );
+   // binary expression
+   EXPECT_EQ( maxNorm(V1 - size), size );
+}
+
+TYPED_TEST( VectorUnaryOperationsTest, l1Norm )
+{
+   SETUP_UNARY_VECTOR_TEST( VECTOR_TEST_REDUCTION_SIZE );
+
+   // vector or vector view
+   EXPECT_EQ( l1Norm(V1), size );
+   // unary expression
+   EXPECT_EQ( l1Norm(-V1), size );
+   // binary expression
+   EXPECT_EQ( l1Norm(2 * V1 - V1), size );
+}
+
+TYPED_TEST( VectorUnaryOperationsTest, l2Norm )
+{
+   SETUP_UNARY_VECTOR_TEST( VECTOR_TEST_REDUCTION_SIZE );
+   using RealType = typename VectorOrView::RealType;
+
+   const RealType expected = std::sqrt( size );
+
+   // vector or vector view
+   EXPECT_EQ( l2Norm(V1), expected );
+   // unary expression
+   EXPECT_EQ( l2Norm(-V1), expected );
+   // binary expression
+   EXPECT_EQ( l2Norm(2 * V1 - V1), expected );
+}
+
 TYPED_TEST( VectorUnaryOperationsTest, lpNorm )
 {
    SETUP_UNARY_VECTOR_TEST( VECTOR_TEST_REDUCTION_SIZE );
