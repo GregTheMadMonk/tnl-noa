@@ -56,7 +56,7 @@ using AdEllpackMatrixTypes = ::testing::Types
 #endif
 >;
 
-TYPED_TEST_CASE( AdEllpackMatrixTest, AdEllpackMatrixTypes);
+TYPED_TEST_SUITE( AdEllpackMatrixTest, AdEllpackMatrixTypes);
 
 TYPED_TEST( AdEllpackMatrixTest, setDimensionsTest )
 {

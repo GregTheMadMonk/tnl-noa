@@ -64,7 +64,7 @@ using ListTypes = ::testing::Types<
    List< MyData >
 >;
 
-TYPED_TEST_CASE( ListTest, ListTypes );
+TYPED_TEST_SUITE( ListTest, ListTypes );
 
 
 TYPED_TEST( ListTest, constructor )

@@ -1421,7 +1421,7 @@ using MatrixTypes = ::testing::Types
 #endif
 >;
 
-TYPED_TEST_CASE( MatrixTest, MatrixTypes );
+TYPED_TEST_SUITE( MatrixTest, MatrixTypes );
 
 TYPED_TEST( MatrixTest, setDimensionsTest )
 {

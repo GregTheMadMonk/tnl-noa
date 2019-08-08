@@ -55,7 +55,7 @@ using EllpackMatrixTypes = ::testing::Types
 #endif
 >;
 
-TYPED_TEST_CASE( EllpackMatrixTest, EllpackMatrixTypes );
+TYPED_TEST_SUITE( EllpackMatrixTest, EllpackMatrixTypes );
 
 TYPED_TEST( EllpackMatrixTest, setDimensionsTest )
 {

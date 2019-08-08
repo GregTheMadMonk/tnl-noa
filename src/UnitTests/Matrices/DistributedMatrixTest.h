@@ -108,7 +108,7 @@ using DistributedMatrixTypes = ::testing::Types<
 #endif
 >;
 
-TYPED_TEST_CASE( DistributedMatrixTest, DistributedMatrixTypes );
+TYPED_TEST_SUITE( DistributedMatrixTest, DistributedMatrixTypes );
 
 TYPED_TEST( DistributedMatrixTest, checkSumOfLocalSizes )
 {

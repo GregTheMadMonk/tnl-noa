@@ -56,7 +56,7 @@ using BiEllpackMatrixTypes = ::testing::Types
 //#endif
 >;
 
-TYPED_TEST_CASE( BiEllpackMatrixTest, BiEllpackMatrixTypes);
+TYPED_TEST_SUITE( BiEllpackMatrixTest, BiEllpackMatrixTypes);
 
 TYPED_TEST( BiEllpackMatrixTest, setDimensionsTest )
 {

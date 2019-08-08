@@ -54,7 +54,7 @@ using StaticVectorTypes = ::testing::Types<
    StaticVector< 5, double >
 >;
 
-TYPED_TEST_CASE( StaticVectorTest, StaticVectorTypes );
+TYPED_TEST_SUITE( StaticVectorTest, StaticVectorTypes );
 
 
 TYPED_TEST( StaticVectorTest, constructors )
