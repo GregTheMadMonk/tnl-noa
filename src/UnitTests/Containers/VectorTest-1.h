@@ -137,50 +137,54 @@ TEST( VectorSpecialCasesTest, initializationOfVectorViewByArrayView )
 TEST( VectorSpecialCasesTest, sumOfBoolVector )
 {
    using VectorType = Containers::Vector< bool, Devices::Host >;
-   using ViewType = VectorView< bool, Devices::Host >;
-   const float epsilon = 64 * std::numeric_limits< float >::epsilon();
+   using ViewType = typename VectorType::ViewType;
+   const double epsilon = 64 * std::numeric_limits< double >::epsilon();
+   constexpr int size = 4999;
 
-   VectorType v( 512 ), w( 512 );
-   ViewType v_view( v ), w_view( w );
+   VectorType v( size );
+   ViewType v_view( v );
    v.setValue( true );
-   w.setValue( false );
 
-   const int sum = TNL::sum( v );
-   const int l1norm = lpNorm( v, 1.0 );
-   const float l2norm = lpNorm( v, 2.0 );
-   const float l3norm = lpNorm( v, 3.0 );
-   EXPECT_EQ( sum, 512 );
-   EXPECT_EQ( l1norm, 512 );
-   EXPECT_NEAR( l2norm, std::sqrt( 512 ), epsilon );
-   EXPECT_NEAR( l3norm, std::cbrt( 512 ), epsilon );
+   // normal sum and lpNorm rely on built-in integral promotion
+   const auto sum = TNL::sum( v );
+   const auto l1norm = l1Norm( v );
+   const auto l2norm = l2Norm( v );
+   const auto l3norm = lpNorm( v, 3.0 );
+   EXPECT_EQ( sum, size );
+   EXPECT_EQ( l1norm, size );
+   EXPECT_EQ( l2norm, std::sqrt( size ) );
+   EXPECT_NEAR( l3norm, std::cbrt( size ), epsilon );
 
-   const int diff_sum = TNL::sum( v - w );
-   const int diff_l1norm = lpNorm( v - w, 1.0 );
-   const float diff_l2norm = lpNorm( v - w, 2.0 );
-   const float diff_l3norm = lpNorm( v - w, 3.0 );
-   EXPECT_EQ( diff_sum, 512 );
-   EXPECT_EQ( diff_l1norm, 512 );
-   EXPECT_NEAR( diff_l2norm, std::sqrt( 512 ), epsilon );
-   EXPECT_NEAR( diff_l3norm, std::cbrt( 512 ), epsilon );
+   // explicit cast to double
+   const auto sum_cast = TNL::sum( cast<double>( v ) );
+   const auto l1norm_cast = l1Norm( cast<double>( v ) );
+   const auto l2norm_cast = l2Norm( cast<double>( v ) );
+   const auto l3norm_cast = lpNorm( cast<double>( v ), 3.0 );
+   EXPECT_EQ( sum_cast, size );
+   EXPECT_EQ( l1norm_cast, size );
+   EXPECT_EQ( l2norm_cast, std::sqrt( size ) );
+   EXPECT_NEAR( l3norm_cast, std::cbrt( size ), epsilon );
 
    // test views
-   const int sum_view = TNL::sum( v_view );
-   const int l1norm_view = lpNorm( v_view, 1.0 );
-   const float l2norm_view = lpNorm( v_view, 2.0 );
-   const float l3norm_view = lpNorm( v_view, 3.0 );
-   EXPECT_EQ( sum_view, 512 );
-   EXPECT_EQ( l1norm_view, 512 );
-   EXPECT_NEAR( l2norm_view, std::sqrt( 512 ), epsilon );
-   EXPECT_NEAR( l3norm_view, std::cbrt( 512 ), epsilon );
+   // normal sum and lpNorm rely on built-in integral promotion
+   const auto sum_view = TNL::sum( v_view );
+   const auto l1norm_view = l1Norm( v_view );
+   const auto l2norm_view = l2Norm( v_view );
+   const auto l3norm_view = lpNorm( v_view, 3.0 );
+   EXPECT_EQ( sum_view, size );
+   EXPECT_EQ( l1norm_view, size );
+   EXPECT_EQ( l2norm_view, std::sqrt( size ) );
+   EXPECT_NEAR( l3norm_view, std::cbrt( size ), epsilon );
 
-   const int diff_sum_view = TNL::sum( v_view - w_view );
-   const int diff_l1norm_view = lpNorm( v_view -w_view, 1.0 );
-   const float diff_l2norm_view = lpNorm( v_view - w_view, 2.0 );
-   const float diff_l3norm_view = lpNorm( v_view - w_view, 3.0 );
-   EXPECT_EQ( diff_sum_view, 512 );
-   EXPECT_EQ( diff_l1norm_view, 512 );
-   EXPECT_NEAR( diff_l2norm_view, std::sqrt( 512 ), epsilon );
-   EXPECT_NEAR( diff_l3norm_view, std::cbrt( 512 ), epsilon );
+   // explicit cast to double
+   const auto sum_view_cast = TNL::sum( cast<double>( v_view ) );
+   const auto l1norm_view_cast = l1Norm( cast<double>( v_view ) );
+   const auto l2norm_view_cast = l2Norm( cast<double>( v_view ) );
+   const auto l3norm_view_cast = lpNorm( cast<double>( v_view ), 3.0 );
+   EXPECT_EQ( sum_view_cast, size );
+   EXPECT_EQ( l1norm_view_cast, size);
+   EXPECT_EQ( l2norm_view_cast, std::sqrt( size ) );
+   EXPECT_NEAR( l3norm_view_cast, std::cbrt( size ), epsilon );
 }
 
 #endif // HAVE_GTEST

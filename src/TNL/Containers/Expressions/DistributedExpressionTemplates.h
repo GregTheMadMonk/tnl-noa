@@ -1775,6 +1775,31 @@ exp( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOpe
 }
 
 ////
+// Cast
+template< typename ResultType,
+          typename L1,
+          typename L2,
+          template< typename, typename > class LOperation,
+          // workaround: templated type alias cannot be declared at block level
+          template<typename> class CastOperation = Containers::Expressions::Cast< ResultType >::template Operation >
+auto
+cast( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, CastOperation >( a );
+}
+
+template< typename ResultType,
+          typename L1,
+          template< typename > class LOperation,
+          // workaround: templated type alias cannot be declared at block level
+          template<typename> class CastOperation = Containers::Expressions::Cast< ResultType >::template Operation >
+auto
+cast( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, CastOperation >( a );
+}
+
+////
 // Vertical operations - min
 template< typename L1,
           typename L2,

@@ -484,6 +484,34 @@ TYPED_TEST( VectorUnaryOperationsTest, sign )
    EXPECT_EQ( sign(V1), expected );
 }
 
+TYPED_TEST( VectorUnaryOperationsTest, cast )
+{
+   auto identity = [](int i) { return i; };
+   SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, 1, VECTOR_TEST_SIZE, identity );
+
+   // vector or vector view
+   auto expression1 = cast<bool>(V1);
+   static_assert( std::is_same< typename decltype(expression1)::RealType, bool >::value,
+                  "BUG: the cast function does not work for vector or vector view." );
+   EXPECT_EQ( expression1, true );
+
+   // binary expression
+   auto expression2( cast<bool>(V1 + V1) );
+   static_assert( std::is_same< typename decltype(expression2)::RealType, bool >::value,
+                  "BUG: the cast function does not work for binary expression." );
+   // FIXME: expression2 cannot be reused, because expression templates for StaticVector and DistributedVector contain references and the test would crash in Release
+//   EXPECT_EQ( expression2, true );
+   EXPECT_EQ( cast<bool>(V1 + V1), true );
+
+   // unary expression
+   auto expression3( cast<bool>(-V1) );
+   static_assert( std::is_same< typename decltype(expression3)::RealType, bool >::value,
+                  "BUG: the cast function does not work for unary expression." );
+   // FIXME: expression2 cannot be reused, because expression templates for StaticVector and DistributedVector contain references and the test would crash in Release
+//   EXPECT_EQ( expression3, true );
+   EXPECT_EQ( cast<bool>(-V1), true );
+}
+
 
 TYPED_TEST( VectorUnaryOperationsTest, max )
 {

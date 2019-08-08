@@ -638,6 +638,18 @@ sign( const Containers::StaticVector< Size, Real >& a )
 }
 
 ////
+// Cast
+template< typename ResultType, int Size, typename Real,
+          // workaround: templated type alias cannot be declared at block level
+          template<typename> class Operation = Containers::Expressions::Cast< ResultType >::template Operation >
+auto
+__cuda_callable__
+cast( const Containers::StaticVector< Size, Real >& a )
+{
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Operation >( a );
+}
+
+////
 // Vertical operations - min
 template< int Size, typename Real >
 __cuda_callable__

@@ -316,6 +316,20 @@ struct Sign
    }
 };
 
+template< typename ResultType >
+struct Cast
+{
+   template< typename T1 >
+   struct Operation
+   {
+      __cuda_callable__
+      static auto evaluate( const T1& a ) -> ResultType
+      {
+         return static_cast<ResultType>( a );
+      }
+   };
+};
+
 } // namespace Expressions
 } // namespace Containers
 } // namespace TNL

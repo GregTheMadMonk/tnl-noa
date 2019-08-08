@@ -916,6 +916,17 @@ sign( const Containers::Vector< Real, Device, Index, Allocator >& a )
 }
 
 ////
+// Cast
+template< typename ResultType, typename Real, typename Device, typename Index, typename Allocator,
+          // workaround: templated type alias cannot be declared at block level
+          template<typename> class Operation = Containers::Expressions::Cast< ResultType >::template Operation >
+auto
+cast( const Containers::Vector< Real, Device, Index, Allocator >& a )
+{
+   return Containers::Expressions::UnaryExpressionTemplate< decltype(a.getConstView()), Operation >( a.getConstView() );
+}
+
+////
 // Vertical operations - min
 template< typename Real,
           typename Device,
