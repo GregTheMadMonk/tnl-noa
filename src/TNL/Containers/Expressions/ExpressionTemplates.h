@@ -2,7 +2,7 @@
                           ExpressionTemplates.h  -  description
                              -------------------
     begin                : Apr 18, 2019
-    copyright            : (C) 2019 by Tomas Oberhuber
+    copyright            : (C) 2019 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 

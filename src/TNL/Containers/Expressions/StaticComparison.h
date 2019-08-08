@@ -2,7 +2,7 @@
                           StaticComparison.h  -  description
                              -------------------
     begin                : Jul 3, 2019
-    copyright            : (C) 2019 by Tomas Oberhuber
+    copyright            : (C) 2019 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -11,19 +11,17 @@
 #pragma once
 
 #include <TNL/Assert.h>
-#include <TNL/Containers/Algorithms/Reduction.h>
+#include <TNL/Containers/Expressions/ExpressionVariableType.h>
 
 namespace TNL {
-   namespace Containers {
-      namespace Expressions {
+namespace Containers {
+namespace Expressions {
 
 template< typename T1,
           typename T2,
           ExpressionVariableType T1Type = ExpressionVariableTypeGetter< T1 >::value,
           ExpressionVariableType T2Type = ExpressionVariableTypeGetter< T2 >::value >
-struct StaticComparison
-{
-};
+struct StaticComparison;
 
 /////
 // Static comparison of vector expressions
@@ -207,6 +205,6 @@ struct StaticComparison< T1, T2, VectorExpressionVariable, ArithmeticVariable >
    }
 };
 
-      } //namespace Expressions
-   } // namespace Containers
+} // namespace Expressions
+} // namespace Containers
 } // namespace TNL

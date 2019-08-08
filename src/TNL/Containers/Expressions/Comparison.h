@@ -2,7 +2,7 @@
                           Comparison.h  -  description
                              -------------------
     begin                : Apr 19, 2019
-    copyright            : (C) 2019 by Tomas Oberhuber
+    copyright            : (C) 2019 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -27,9 +27,7 @@ template< typename T1,
           typename T2,
           ExpressionVariableType T1Type = ExpressionVariableTypeGetter< T1 >::value,
           ExpressionVariableType T2Type = ExpressionVariableTypeGetter< T2 >::value >
-struct Comparison
-{
-};
+struct Comparison;
 
 template< typename T1,
           typename T2,
@@ -280,7 +278,6 @@ struct Comparison< T1, T2, VectorExpressionVariable, ArithmeticVariable >
    }
 };
 
-
-      } //namespace Expressions
-   } // namespace Containers
+} // namespace Expressions
+} // namespace Containers
 } // namespace TNL
