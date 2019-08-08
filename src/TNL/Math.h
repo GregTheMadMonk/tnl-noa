@@ -171,7 +171,7 @@ ResultType pow( const T1& base, const T2& exp )
  */
 template< typename T >
 __cuda_callable__ inline
-T exp( const T& value )
+auto exp( const T& value ) -> decltype( std::exp(value) )
 {
 #if defined(__CUDA_ARCH__) || defined(__MIC__)
    return ::exp( value );
@@ -185,7 +185,7 @@ T exp( const T& value )
  */
 template< typename T >
 __cuda_callable__ inline
-T sqrt( const T& value )
+auto sqrt( const T& value ) -> decltype( std::sqrt(value) )
 {
 #if defined(__CUDA_ARCH__) || defined(__MIC__)
    return ::sqrt( value );
@@ -199,7 +199,7 @@ T sqrt( const T& value )
  */
 template< typename T >
 __cuda_callable__ inline
-T cbrt( const T& value )
+auto cbrt( const T& value ) -> decltype( std::cbrt(value) )
 {
 #if defined(__CUDA_ARCH__) || defined(__MIC__)
    return ::cbrt( value );
@@ -213,7 +213,7 @@ T cbrt( const T& value )
  */
 template< typename T >
 __cuda_callable__ inline
-T log( const T& value )
+auto log( const T& value ) -> decltype( std::log(value) )
 {
 #if defined(__CUDA_ARCH__) || defined(__MIC__)
    return ::log( value );
@@ -227,7 +227,7 @@ T log( const T& value )
  */
 template< typename T >
 __cuda_callable__ inline
-T log10( const T& value )
+auto log10( const T& value ) -> decltype( std::log10(value) )
 {
 #if defined(__CUDA_ARCH__) || defined(__MIC__)
    return ::log10( value );
@@ -241,7 +241,7 @@ T log10( const T& value )
  */
 template< typename T >
 __cuda_callable__ inline
-T log2( const T& value )
+auto log2( const T& value ) -> decltype( std::log2(value) )
 {
 #if defined(__CUDA_ARCH__) || defined(__MIC__)
    return ::log2( value );
@@ -255,7 +255,7 @@ T log2( const T& value )
  */
 template< typename T >
 __cuda_callable__ inline
-T sin( const T& value )
+auto sin( const T& value ) -> decltype( std::sin(value) )
 {
 #if defined(__CUDA_ARCH__) || defined(__MIC__)
    return ::sin( value );
@@ -269,7 +269,7 @@ T sin( const T& value )
  */
 template< typename T >
 __cuda_callable__ inline
-T cos( const T& value )
+auto cos( const T& value ) -> decltype( std::cos(value) )
 {
 #if defined(__CUDA_ARCH__) || defined(__MIC__)
    return ::cos( value );
@@ -283,7 +283,7 @@ T cos( const T& value )
  */
 template< typename T >
 __cuda_callable__ inline
-T tan( const T& value )
+auto tan( const T& value ) -> decltype( std::tan(value) )
 {
 #if defined(__CUDA_ARCH__) || defined(__MIC__)
    return ::tan( value );
@@ -297,7 +297,7 @@ T tan( const T& value )
  */
 template< typename T >
 __cuda_callable__ inline
-T asin( const T& value )
+auto asin( const T& value ) -> decltype( std::asin(value) )
 {
 #if defined(__CUDA_ARCH__) || defined(__MIC__)
    return ::asin( value );
@@ -311,7 +311,7 @@ T asin( const T& value )
  */
 template< typename T >
 __cuda_callable__ inline
-T acos( const T& value )
+auto acos( const T& value ) -> decltype( std::acos(value) )
 {
 #if defined(__CUDA_ARCH__) || defined(__MIC__)
    return ::acos( value );
@@ -325,7 +325,7 @@ T acos( const T& value )
  */
 template< typename T >
 __cuda_callable__ inline
-T atan( const T& value )
+auto atan( const T& value ) -> decltype( std::atan(value) )
 {
 #if defined(__CUDA_ARCH__) || defined(__MIC__)
    return ::atan( value );
@@ -339,7 +339,7 @@ T atan( const T& value )
  */
 template< typename T >
 __cuda_callable__ inline
-T sinh( const T& value )
+auto sinh( const T& value ) -> decltype( std::sinh(value) )
 {
 #if defined(__CUDA_ARCH__) || defined(__MIC__)
    return ::sinh( value );
@@ -353,7 +353,7 @@ T sinh( const T& value )
  */
 template< typename T >
 __cuda_callable__ inline
-T cosh( const T& value )
+auto cosh( const T& value ) -> decltype( std::cosh(value) )
 {
 #if defined(__CUDA_ARCH__) || defined(__MIC__)
    return ::cosh( value );
@@ -367,7 +367,7 @@ T cosh( const T& value )
  */
 template< typename T >
 __cuda_callable__ inline
-T tanh( const T& value )
+auto tanh( const T& value ) -> decltype( std::tanh(value) )
 {
 #if defined(__CUDA_ARCH__) || defined(__MIC__)
    return ::tanh( value );
@@ -381,7 +381,7 @@ T tanh( const T& value )
  */
 template< typename T >
 __cuda_callable__ inline
-T asinh( const T& value )
+auto asinh( const T& value ) -> decltype( std::asinh(value) )
 {
 #if defined(__CUDA_ARCH__) || defined(__MIC__)
    return ::asinh( value );
@@ -395,7 +395,7 @@ T asinh( const T& value )
  */
 template< typename T >
 __cuda_callable__ inline
-T acosh( const T& value )
+auto acosh( const T& value ) -> decltype( std::acosh(value) )
 {
 #if defined(__CUDA_ARCH__) || defined(__MIC__)
    return ::acosh( value );
@@ -409,7 +409,7 @@ T acosh( const T& value )
  */
 template< typename T >
 __cuda_callable__ inline
-T atanh( const T& value )
+auto atanh( const T& value ) -> decltype( std::atanh(value) )
 {
 #if defined(__CUDA_ARCH__) || defined(__MIC__)
    return ::atanh( value );
@@ -423,7 +423,7 @@ T atanh( const T& value )
  */
 template< typename T >
 __cuda_callable__ inline
-T floor( const T& value )
+auto floor( const T& value ) -> decltype( std::floor(value) )
 {
 #if defined(__CUDA_ARCH__) || defined(__MIC__)
    return ::floor( value );
@@ -437,7 +437,7 @@ T floor( const T& value )
  */
 template< typename T >
 __cuda_callable__ inline
-T ceil( const T& value )
+auto ceil( const T& value ) -> decltype( std::ceil(value) )
 {
 #if defined(__CUDA_ARCH__) || defined(__MIC__)
    return ::ceil( value );
@@ -465,7 +465,6 @@ void swap( Type& a, Type& b )
  *
  * It extracts the sign of the number \e a. In other words, the signum function projects
  * negative numbers to value -1, positive numbers to value 1 and zero to value 0.
- * Non-zero complex numbers are projected to the unit circle.
  */
 template< class T >
 __cuda_callable__

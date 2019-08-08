@@ -11,6 +11,7 @@
 #pragma once
 
 #include <ostream>
+#include <utility>
 
 #include <TNL/TypeTraits.h>
 #include <TNL/Containers/Expressions/TypeTraits.h>
@@ -62,14 +63,16 @@ template< typename T1,
           template< typename, typename > class Operation >
 struct BinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, VectorExpressionVariable >
 {
-   using RealType = typename T1::RealType;
+   using RealType = decltype( Operation< typename T1::RealType, typename T2::RealType >::
+                              evaluate( std::declval<T1>()[0], std::declval<T2>()[0] ) );
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
 
    static_assert( std::is_same< typename T1::DeviceType, typename T2::DeviceType >::value, "Attempt to mix operands allocated on different device types." );
    static_assert( IsStaticArrayType< T1 >::value == IsStaticArrayType< T2 >::value, "Attempt to mix static and non-static operands in binary expression templates." );
 
-   BinaryExpressionTemplate( const T1& a, const T2& b ): op1( a ), op2( b ){}
+   BinaryExpressionTemplate( const T1& a, const T2& b )
+   : op1( a ), op2( b ) {}
 
    RealType getElement( const IndexType i ) const
    {
@@ -98,11 +101,13 @@ template< typename T1,
           template< typename, typename > class Operation >
 struct BinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, ArithmeticVariable >
 {
-   using RealType = typename T1::RealType;
+   using RealType = decltype( Operation< typename T1::RealType, T2 >::
+                              evaluate( std::declval<T1>()[0], std::declval<T2>() ) );
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
 
-   BinaryExpressionTemplate( const T1& a, const T2& b ): op1( a ), op2( b ){}
+   BinaryExpressionTemplate( const T1& a, const T2& b )
+   : op1( a ), op2( b ) {}
 
    RealType getElement( const IndexType i ) const
    {
@@ -131,11 +136,13 @@ template< typename T1,
           template< typename, typename > class Operation >
 struct BinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorExpressionVariable >
 {
-   using RealType = typename T2::RealType;
+   using RealType = decltype( Operation< T1, typename T2::RealType >::
+                              evaluate( std::declval<T1>(), std::declval<T2>()[0] ) );
    using DeviceType = typename T2::DeviceType;
    using IndexType = typename T2::IndexType;
 
-   BinaryExpressionTemplate( const T1& a, const T2& b ): op1( a ), op2( b ){}
+   BinaryExpressionTemplate( const T1& a, const T2& b )
+   : op1( a ), op2( b ) {}
 
    RealType getElement( const IndexType i ) const
    {
@@ -165,11 +172,13 @@ template< typename T1,
           template< typename > class Operation >
 struct UnaryExpressionTemplate< T1, Operation, VectorExpressionVariable >
 {
-   using RealType = typename T1::RealType;
+   using RealType = decltype( Operation< typename T1::RealType >::
+                              evaluate( std::declval<T1>()[0] ) );
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
 
-   UnaryExpressionTemplate( const T1& a ): operand( a ){}
+   UnaryExpressionTemplate( const T1& a )
+   : operand( a ) {}
 
    RealType getElement( const IndexType i ) const
    {

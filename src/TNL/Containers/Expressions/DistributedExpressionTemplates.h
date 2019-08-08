@@ -9,6 +9,7 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #pragma once
+#include <utility>
 
 #include <TNL/Containers/Expressions/ExpressionTemplates.h>
 #include <TNL/Containers/Expressions/DistributedComparison.h>
@@ -57,7 +58,8 @@ template< typename T1,
           template< typename, typename > class Operation >
 struct DistributedBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, VectorExpressionVariable >
 {
-   using RealType = typename T1::RealType;
+   using RealType = decltype( Operation< typename T1::RealType, typename T2::RealType >::
+                              evaluate( std::declval<T1>()[0], std::declval<T2>()[0] ) );
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
    using CommunicatorType = typename T1::CommunicatorType;
@@ -123,7 +125,8 @@ template< typename T1,
           template< typename, typename > class Operation >
 struct DistributedBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, ArithmeticVariable >
 {
-   using RealType = typename T1::RealType;
+   using RealType = decltype( Operation< typename T1::RealType, T2 >::
+                              evaluate( std::declval<T1>()[0], std::declval<T2>() ) );
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
    using CommunicatorType = typename T1::CommunicatorType;
@@ -176,7 +179,8 @@ template< typename T1,
           template< typename, typename > class Operation >
 struct DistributedBinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorExpressionVariable >
 {
-   using RealType = typename T2::RealType;
+   using RealType = decltype( Operation< T1, typename T2::RealType >::
+                              evaluate( std::declval<T1>(), std::declval<T2>()[0] ) );
    using DeviceType = typename T2::DeviceType;
    using IndexType = typename T2::IndexType;
    using CommunicatorType = typename T2::CommunicatorType;
@@ -230,7 +234,8 @@ template< typename T1,
           template< typename > class Operation >
 struct DistributedUnaryExpressionTemplate< T1, Operation, VectorExpressionVariable >
 {
-   using RealType = typename T1::RealType;
+   using RealType = decltype( Operation< typename T1::RealType >::
+                              evaluate( std::declval<T1>()[0] ) );
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
    using CommunicatorType = typename T1::CommunicatorType;

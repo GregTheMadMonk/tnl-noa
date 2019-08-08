@@ -11,6 +11,7 @@
 #pragma once
 
 #include <ostream>
+#include <utility>
 
 #include <TNL/TypeTraits.h>
 #include <TNL/Containers/Expressions/TypeTraits.h>
@@ -63,7 +64,8 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariab
 {
    static_assert( IsStaticArrayType< T1 >::value, "Left-hand side operand of static expression is not static, i.e. based on static vector." );
    static_assert( IsStaticArrayType< T2 >::value, "Right-hand side operand of static expression is not static, i.e. based on static vector." );
-   using RealType = typename T1::RealType;
+   using RealType = decltype( Operation< typename T1::RealType, typename T2::RealType >::
+                              evaluate( std::declval<T1>()[0], std::declval<T2>()[0] ) );
 
    static_assert( IsStaticArrayType< T1 >::value == IsStaticArrayType< T2 >::value, "Attempt to mix static and non-static operands in binary expression templates" );
    static_assert( T1::getSize() == T2::getSize(), "Attempt to mix static operands with different sizes." );
@@ -71,7 +73,8 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariab
    static constexpr int getSize() { return T1::getSize(); };
 
    __cuda_callable__
-   StaticBinaryExpressionTemplate( const T1& a, const T2& b ): op1( a ), op2( b ){}
+   StaticBinaryExpressionTemplate( const T1& a, const T2& b )
+   : op1( a ), op2( b ) {}
 
    RealType getElement( const int i ) const
    {
@@ -116,13 +119,15 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariab
 {
    static_assert( IsStaticArrayType< T1 >::value, "Left-hand side operand of static expression is not static, i.e. based on static vector." );
 
-   using RealType = typename T1::RealType;
+   using RealType = decltype( Operation< typename T1::RealType, T2 >::
+                              evaluate( std::declval<T1>()[0], std::declval<T2>() ) );
 
    static constexpr int getSize() { return T1::getSize(); };
 
 
    __cuda_callable__
-   StaticBinaryExpressionTemplate( const T1& a, const T2& b ): op1( a ), op2( b ){}
+   StaticBinaryExpressionTemplate( const T1& a, const T2& b )
+   : op1( a ), op2( b ) {}
 
    RealType getElement( const int i ) const
    {
@@ -168,13 +173,15 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, Ve
 {
    static_assert( IsStaticArrayType< T2 >::value, "Right-hand side operand of static expression is not static, i.e. based on static vector." );
 
-   using RealType = typename T2::RealType;
+   using RealType = decltype( Operation< T1, typename T2::RealType >::
+                              evaluate( std::declval<T1>(), std::declval<T2>()[0] ) );
 
    static constexpr int getSize() { return T2::getSize(); };
 
 
    __cuda_callable__
-   StaticBinaryExpressionTemplate( const T1& a, const T2& b ): op1( a ), op2( b ){}
+   StaticBinaryExpressionTemplate( const T1& a, const T2& b )
+   : op1( a ), op2( b ) {}
 
    RealType getElement( const int i ) const
    {
@@ -218,12 +225,14 @@ template< typename T1,
           template< typename > class Operation >
 struct StaticUnaryExpressionTemplate< T1, Operation, VectorExpressionVariable >
 {
-   using RealType = typename T1::RealType;
+   using RealType = decltype( Operation< typename T1::RealType >::
+                              evaluate( std::declval<T1>()[0] ) );
 
    static constexpr int getSize() { return T1::getSize(); };
 
    __cuda_callable__
-   StaticUnaryExpressionTemplate( const T1& a ): operand( a ){}
+   StaticUnaryExpressionTemplate( const T1& a )
+   : operand( a ) {}
 
    RealType getElement( const int i ) const
    {
