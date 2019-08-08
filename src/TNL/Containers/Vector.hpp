@@ -168,16 +168,6 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Allocator >
-   template< typename ResultType >
-ResultType Vector< Real, Device, Index, Allocator >::sum() const
-{
-   return Algorithms::VectorOperations< Device >::template getVectorSum< Vector, ResultType >( *this );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Allocator >
    template< Algorithms::PrefixSumType Type >
 void
 Vector< Real, Device, Index, Allocator >::

@@ -198,12 +198,6 @@ public:
    Vector& operator/=( const VectorExpression& expression );
 
    /**
-    * \brief Returns sum of all vector elements.
-    */
-   template< typename ResultType = RealType >
-   ResultType sum() const;
-
-   /**
     * \brief Returns specific sums of elements of this vector.
     *
     * FIXME: computePrefixSum does not exist

@@ -120,17 +120,6 @@ operator/=( const VectorExpression& expression )
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename ResultType >
-ResultType
-VectorView< Real, Device, Index >::
-sum() const
-{
-   return Algorithms::VectorOperations< Device >::template getVectorSum< VectorView, ResultType >( *this );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
    template< Algorithms::PrefixSumType Type >
 void
 VectorView< Real, Device, Index >::

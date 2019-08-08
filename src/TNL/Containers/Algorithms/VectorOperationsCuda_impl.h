@@ -18,26 +18,6 @@ namespace TNL {
 namespace Containers {
 namespace Algorithms {
 
-template< typename Vector, typename ResultType >
-ResultType
-VectorOperations< Devices::Cuda >::
-getVectorSum( const Vector& v )
-{
-   TNL_ASSERT_GT( v.getSize(), 0, "Vector size must be positive." );
-
-   if( std::is_same< ResultType, bool >::value )
-      abort();
-
-   using RealType = typename Vector::RealType;
-   using IndexType = typename Vector::IndexType;
-
-   const auto* data = v.getData();
-   auto fetch = [=] __cuda_callable__ ( IndexType i )  -> ResultType { return  data[ i ]; };
-   auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a += b; };
-   auto volatileReduction = [=] __cuda_callable__ ( volatile ResultType& a, volatile ResultType& b ) { a += b; };
-   return Reduction< Devices::Cuda >::reduce( v.getSize(), reduction, volatileReduction, fetch, ( ResultType ) 0 );
-}
-
 template< Algorithms::PrefixSumType Type,
           typename Vector >
 void

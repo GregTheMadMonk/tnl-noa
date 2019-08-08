@@ -26,9 +26,6 @@ template<>
 class VectorOperations< Devices::Host >
 {
 public:
-   template< typename Vector, typename ResultType = typename Vector::RealType >
-   static ResultType getVectorSum( const Vector& v );
-
    template< Algorithms::PrefixSumType Type,
              typename Vector >
    static void prefixSum( Vector& v,
@@ -46,9 +43,6 @@ template<>
 class VectorOperations< Devices::Cuda >
 {
 public:
-   template< typename Vector, typename ResultType = typename Vector::RealType >
-   static ResultType getVectorSum( const Vector& v );
-
    template< Algorithms::PrefixSumType Type,
              typename Vector >
    static void prefixSum( Vector& v,

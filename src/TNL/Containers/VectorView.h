@@ -187,12 +187,6 @@ public:
    VectorView& operator/=( const VectorExpression& expression );
 
    /**
-    * \brief Returns sum of all vector elements.
-    */
-   template< typename ResultType = NonConstReal >
-   ResultType sum() const;
-
-   /**
     * \brief Returns specific sums of elements of this vector view.
     *
     * FIXME: computePrefixSum does not exist

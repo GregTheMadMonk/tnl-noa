@@ -275,24 +275,6 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Communicator >
-   template< typename ResultType >
-ResultType
-DistributedVectorView< Real, Device, Index, Communicator >::
-sum() const
-{
-   const auto group = this->getCommunicationGroup();
-   ResultType result = Containers::Algorithms::ParallelReductionSum< Real, ResultType >::initialValue();
-   if( group != CommunicatorType::NullGroup ) {
-      const ResultType localResult = getConstLocalView().sum();
-      CommunicatorType::Allreduce( &localResult, &result, 1, MPI_SUM, group );
-   }
-   return result;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Communicator >
 void
 DistributedVectorView< Real, Device, Index, Communicator >::
 computePrefixSum()

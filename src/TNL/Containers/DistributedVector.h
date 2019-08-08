@@ -127,9 +127,6 @@ public:
              typename = std::enable_if_t< HasSubscriptOperator<Vector>::value > >
    DistributedVector& operator/=( const Vector& vector );
 
-   template< typename ResultType = RealType >
-   ResultType sum() const;
-
    void computePrefixSum();
 
    void computePrefixSum( IndexType begin, IndexType end );

@@ -99,7 +99,7 @@ public:
       // Array does not have sum(), Vector of bools does not fit due to arithmetics
       Containers::VectorView< typename BoundaryTagsArray::ValueType, typename BoundaryTagsArray::DeviceType, typename BoundaryTagsArray::IndexType > _boundaryTagsVector;
       _boundaryTagsVector.bind( boundaryTags.getData(), boundaryTags.getSize() );
-      const GlobalIndexType boundaryEntities = _boundaryTagsVector.template sum< GlobalIndexType >();
+      const GlobalIndexType boundaryEntities = sum(cast< GlobalIndexType >( _boundaryTagsVector ));
       boundaryIndices.setSize( boundaryEntities );
       interiorIndices.setSize( boundaryTags.getSize() - boundaryEntities );
 

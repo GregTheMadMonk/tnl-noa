@@ -466,7 +466,7 @@ void Merson< Problem, SolverMonitor >::computeNewTimeLevel( const RealType time,
                                                                        &_k5[ gridOffset ],
                                                                        &_u[ gridOffset ],
                                                                        this->cudaBlockResidue.getData() );
-         localResidue += this->cudaBlockResidue.sum();
+         localResidue += sum( this->cudaBlockResidue );
          cudaDeviceSynchronize();
       }
       this->problem->applyBoundaryConditions( time, u );
