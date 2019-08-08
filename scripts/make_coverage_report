@@ -8,7 +8,7 @@ pushd Debug
 ../build --root-dir=.. --build=Debug \
          --with-examples=no --with-benchmarks=no --with-tools=no --with-python=no --with-doc=no \
          --with-tests=yes --run-tests=no \
-         --with-clang=yes --with-cuda=yes --with-mpi=no --with-coverage=yes
+         --with-clang=yes --with-cuda=yes --with-coverage=yes
 popd
 
 tests=(
@@ -37,6 +37,10 @@ tests=(
 #   MultireductionTest-dbg  # FIXME: CUDA
    MultimapTest-dbg
    StaticMultimapTest-dbg
+   # TODO: run these with mpirun (coverage.py does not support that)
+   DistributedArrayTest-dbg
+   DistributedVectorBinaryOperationsTest-dbg
+   DistributedVectorUnaryOperationsTest-dbg
 
    # Functions
 #   BoundaryMeshFunctionTest-dbg  # FIXME: CUDA
