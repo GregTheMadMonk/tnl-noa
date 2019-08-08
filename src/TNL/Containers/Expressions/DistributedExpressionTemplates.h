@@ -1431,6 +1431,141 @@ abs( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOpe
 }
 
 ////
+// Pow
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation,
+          typename Real >
+auto
+pow( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a, const Real& exp )
+{
+   return Containers::Expressions::DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, Real, Containers::Expressions::Pow >( a, exp );
+}
+
+template< typename L1,
+          template< typename > class LOperation,
+          typename Real >
+auto
+pow( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a, const Real& exp )
+{
+   return Containers::Expressions::DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, Real, Containers::Expressions::Pow >( a, exp );
+}
+
+////
+// Exp
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+auto
+exp( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Exp >( a );
+}
+
+template< typename L1,
+          template< typename > class LOperation >
+auto
+exp( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Exp >( a );
+}
+
+////
+// Sqrt
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+auto
+sqrt( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sqrt >( a );
+}
+
+template< typename L1,
+          template< typename > class LOperation >
+auto
+sqrt( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sqrt >( a );
+}
+
+////
+// Cbrt
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+auto
+cbrt( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Cbrt >( a );
+}
+
+template< typename L1,
+          template< typename > class LOperation >
+auto
+cbrt( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Cbrt >( a );
+}
+
+////
+// Log
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+auto
+log( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log >( a );
+}
+
+template< typename L1,
+          template< typename > class LOperation >
+auto
+log( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log >( a );
+}
+
+////
+// Log10
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+auto
+log10( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log10 >( a );
+}
+
+template< typename L1,
+          template< typename > class LOperation >
+auto
+log10( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log10 >( a );
+}
+
+////
+// Log2
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+auto
+log2( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log2 >( a );
+}
+
+template< typename L1,
+          template< typename > class LOperation >
+auto
+log2( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log2 >( a );
+}
+
+////
 // Sin
 template< typename L1,
           typename L2,
@@ -1485,103 +1620,6 @@ auto
 tan( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
 {
    return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Tan >( a );
-}
-
-////
-// Sqrt
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-sqrt( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sqrt >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-sqrt( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sqrt >( a );
-}
-
-////
-// Cbrt
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-cbrt( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Cbrt >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-cbrt( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Cbrt >( a );
-}
-
-////
-// Pow
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename Real >
-auto
-pow( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a, const Real& exp )
-{
-   return Containers::Expressions::DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, Real, Containers::Expressions::Pow >( a, exp );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename Real >
-auto
-pow( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a, const Real& exp )
-{
-   return Containers::Expressions::DistributedBinaryExpressionTemplate< std::decay_t<decltype(a)>, Real, Containers::Expressions::Pow >( a, exp );
-}
-
-////
-// Floor
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-floor( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Floor >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-floor( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Floor >( a );
-}
-
-////
-// Ceil
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-ceil( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Ceil >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-ceil( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Ceil >( a );
 }
 
 ////
@@ -1699,79 +1737,117 @@ tanh( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOp
 }
 
 ////
-// Log
+// Asinh
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation >
 auto
-log( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+asinh( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log >( a );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Asinh >( a );
 }
 
 template< typename L1,
           template< typename > class LOperation >
 auto
-log( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
+asinh( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log >( a );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Asinh >( a );
 }
 
 ////
-// Log10
+// Acosh
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation >
 auto
-log10( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+acosh( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log10 >( a );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Acosh >( a );
 }
 
 template< typename L1,
           template< typename > class LOperation >
 auto
-log10( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
+acosh( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log10 >( a );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Acosh >( a );
 }
 
 ////
-// Log2
+// Atanh
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation >
 auto
-log2( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+atanh( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log2 >( a );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Atanh >( a );
 }
 
 template< typename L1,
           template< typename > class LOperation >
 auto
-log2( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
+atanh( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log2 >( a );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Atanh >( a );
 }
 
 ////
-// Exp
+// Floor
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation >
 auto
-exp( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+floor( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Exp >( a );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Floor >( a );
 }
 
 template< typename L1,
           template< typename > class LOperation >
 auto
-exp( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
+floor( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Exp >( a );
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Floor >( a );
+}
+
+////
+// Ceil
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+auto
+ceil( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Ceil >( a );
+}
+
+template< typename L1,
+          template< typename > class LOperation >
+auto
+ceil( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Ceil >( a );
+}
+
+////
+// Sign
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+auto
+sign( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sign >( a );
+}
+
+template< typename L1,
+          template< typename > class LOperation >
+auto
+sign( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
+{
+   return Containers::Expressions::DistributedUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sign >( a );
 }
 
 ////

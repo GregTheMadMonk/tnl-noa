@@ -1468,6 +1468,155 @@ abs( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperatio
 }
 
 ////
+// Pow
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation,
+          typename Real >
+__cuda_callable__
+auto
+pow( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a, const Real& exp )
+{
+   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, Real, Containers::Expressions::Pow >( a, exp );
+}
+
+template< typename L1,
+          template< typename > class LOperation,
+          typename Real >
+__cuda_callable__
+auto
+pow( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a, const Real& exp )
+{
+   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, Real, Containers::Expressions::Pow >( a, exp );
+}
+
+////
+// Exp
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+__cuda_callable__
+auto
+exp( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Exp >( a );
+}
+
+template< typename L1,
+          template< typename > class LOperation >
+__cuda_callable__
+auto
+exp( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
+{
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Exp >( a );
+}
+
+////
+// Sqrt
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+__cuda_callable__
+auto
+sqrt( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sqrt >( a );
+}
+
+template< typename L1,
+          template< typename > class LOperation >
+__cuda_callable__
+auto
+sqrt( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
+{
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sqrt >( a );
+}
+
+////
+// Cbrt
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+__cuda_callable__
+auto
+cbrt( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Cbrt >( a );
+}
+
+template< typename L1,
+          template< typename > class LOperation >
+__cuda_callable__
+auto
+cbrt( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
+{
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Cbrt >( a );
+}
+
+////
+// Log
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+__cuda_callable__
+auto
+log( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log >( a );
+}
+
+template< typename L1,
+          template< typename > class LOperation >
+__cuda_callable__
+auto
+log( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
+{
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log >( a );
+}
+
+////
+// Log10
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+__cuda_callable__
+auto
+log10( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log10 >( a );
+}
+
+template< typename L1,
+          template< typename > class LOperation >
+__cuda_callable__
+auto
+log10( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
+{
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log10 >( a );
+}
+
+////
+// Log2
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+__cuda_callable__
+auto
+log2( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log2 >( a );
+}
+
+template< typename L1,
+          template< typename > class LOperation >
+__cuda_callable__
+auto
+log2( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
+{
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log2 >( a );
+}
+
+////
 // Sin
 template< typename L1,
           typename L2,
@@ -1528,113 +1677,6 @@ auto
 tan( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
 {
    return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Tan >( a );
-}
-
-////
-// Sqrt
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-__cuda_callable__
-auto
-sqrt( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sqrt >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-__cuda_callable__
-auto
-sqrt( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sqrt >( a );
-}
-
-////
-// Cbrt
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-__cuda_callable__
-auto
-cbrt( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Cbrt >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-__cuda_callable__
-auto
-cbrt( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Cbrt >( a );
-}
-
-////
-// Pow
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename Real >
-__cuda_callable__
-auto
-pow( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a, const Real& exp )
-{
-   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, Real, Containers::Expressions::Pow >( a, exp );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename Real >
-__cuda_callable__
-auto
-pow( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a, const Real& exp )
-{
-   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, Real, Containers::Expressions::Pow >( a, exp );
-}
-
-////
-// Floor
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-__cuda_callable__
-auto
-floor( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Floor >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-__cuda_callable__
-auto
-floor( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Floor >( a );
-}
-
-////
-// Ceil
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-__cuda_callable__
-auto
-ceil( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Ceil >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-__cuda_callable__
-auto
-ceil( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Ceil >( a );
 }
 
 ////
@@ -1764,87 +1806,129 @@ tanh( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperati
 }
 
 ////
-// Log
+// Asinh
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation >
 __cuda_callable__
 auto
-log( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
+asinh( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Asinh >( a );
 }
 
 template< typename L1,
           template< typename > class LOperation >
 __cuda_callable__
 auto
-log( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
+asinh( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Asinh >( a );
 }
 
 ////
-// Log10
+// Acosh
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation >
 __cuda_callable__
 auto
-log10( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
+acosh( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log10 >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Acosh >( a );
 }
 
 template< typename L1,
           template< typename > class LOperation >
 __cuda_callable__
 auto
-log10( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
+acosh( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log10 >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Acosh >( a );
 }
 
 ////
-// Log2
+// Atanh
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation >
 __cuda_callable__
 auto
-log2( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
+atanh( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log2 >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Atanh >( a );
 }
 
 template< typename L1,
           template< typename > class LOperation >
 __cuda_callable__
 auto
-log2( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
+atanh( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log2 >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Atanh >( a );
 }
 
 ////
-// Exp
+// Floor
 template< typename L1,
           typename L2,
           template< typename, typename > class LOperation >
 __cuda_callable__
 auto
-exp( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
+floor( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Exp >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Floor >( a );
 }
 
 template< typename L1,
           template< typename > class LOperation >
 __cuda_callable__
 auto
-exp( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
+floor( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Exp >( a );
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Floor >( a );
+}
+
+////
+// Ceil
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+__cuda_callable__
+auto
+ceil( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Ceil >( a );
+}
+
+template< typename L1,
+          template< typename > class LOperation >
+__cuda_callable__
+auto
+ceil( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
+{
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Ceil >( a );
+}
+
+////
+// Sign
+template< typename L1,
+          typename L2,
+          template< typename, typename > class LOperation >
+__cuda_callable__
+auto
+sign( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
+{
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sign >( a );
+}
+
+template< typename L1,
+          template< typename > class LOperation >
+__cuda_callable__
+auto
+sign( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
+{
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sign >( a );
 }
 
 ////

@@ -313,8 +313,11 @@ TYPED_TEST( VectorUnaryOperationsTest, minus )
 {
    SETUP_UNARY_VECTOR_TEST( VECTOR_TEST_SIZE );
 
+   // vector or view
    EXPECT_EQ( -V1, -1 );
+   // unary expression
    EXPECT_EQ( V2 * (-V1), -2 );
+   // binary expression
    EXPECT_EQ( -(V1 + V1), -2 );
 }
 
@@ -324,92 +327,154 @@ TYPED_TEST( VectorUnaryOperationsTest, abs )
 
    // vector or view
    EXPECT_EQ( abs(V1), V1 );
-   // expression
+   // unary expression
    EXPECT_EQ( abs(-V1), V1 );
+   // unary expression
+   EXPECT_EQ( abs(-V1-V1), V2 );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, sin )
 {
    SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -VECTOR_TEST_SIZE, VECTOR_TEST_SIZE, TNL::sin );
-//   EXPECT_EQ( sin(V1), expected );
+
+   // vector or view
    expect_vectors_near( sin(V1), expected );
+   // binary expression
+   expect_vectors_near( sin(2 * V1 - V1), expected );
+   // unary expression
+   expect_vectors_near( sin(-(-V1)), expected );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, asin )
 {
    SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -1.0, 1.0, TNL::asin );
-//   EXPECT_EQ( asin(V1), expected );
+
+   // vector or view
    expect_vectors_near( asin(V1), expected );
+   // binary expression
+   expect_vectors_near( asin(2 * V1 - V1), expected );
+   // unary expression
+   expect_vectors_near( asin(-(-V1)), expected );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, cos )
 {
    SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -VECTOR_TEST_SIZE, VECTOR_TEST_SIZE, TNL::cos );
-//   EXPECT_EQ( cos(V1), expected );
+
+   // vector or view
    expect_vectors_near( cos(V1), expected );
+   // binary expression
+   expect_vectors_near( cos(2 * V1 - V1), expected );
+   // unary expression
+   expect_vectors_near( cos(-(-V1)), expected );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, acos )
 {
    SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -1.0, 1.0, TNL::acos );
-//   EXPECT_EQ( acos(V1), expected );
+
+   // vector or view
    expect_vectors_near( acos(V1), expected );
+   // binary expression
+   expect_vectors_near( acos(2 * V1 - V1), expected );
+   // unary expression
+   expect_vectors_near( acos(-(-V1)), expected );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, tan )
 {
    SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -1.5, 1.5, TNL::tan );
-//   EXPECT_EQ( tan(V1), expected );
+
+   // vector or view
    expect_vectors_near( tan(V1), expected );
+   // binary expression
+   expect_vectors_near( tan(2 * V1 - V1), expected );
+   // unary expression
+   expect_vectors_near( tan(-(-V1)), expected );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, atan )
 {
    SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -VECTOR_TEST_SIZE, VECTOR_TEST_SIZE, TNL::atan );
-//   EXPECT_EQ( atan(V1), expected );
+
+   // vector or view
    expect_vectors_near( atan(V1), expected );
+   // binary expression
+   expect_vectors_near( atan(2 * V1 - V1), expected );
+   // unary expression
+   expect_vectors_near( atan(-(-V1)), expected );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, sinh )
 {
    SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -10, 10, TNL::sinh );
-//   EXPECT_EQ( sinh(V1), expected );
+
+   // vector or view
    expect_vectors_near( sinh(V1), expected );
+   // binary expression
+   expect_vectors_near( sinh(2 * V1 - V1), expected );
+   // unary expression
+   expect_vectors_near( sinh(-(-V1)), expected );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, asinh )
 {
    SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -VECTOR_TEST_SIZE, VECTOR_TEST_SIZE, TNL::asinh );
-//   EXPECT_EQ( asinh(V1), expected );
+
+   // vector or view
    expect_vectors_near( asinh(V1), expected );
+   // binary expression
+   expect_vectors_near( asinh(2 * V1 - V1), expected );
+   // unary expression
+   expect_vectors_near( asinh(-(-V1)), expected );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, cosh )
 {
    SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -10, 10, TNL::cosh );
-//   EXPECT_EQ( cosh(V1), expected );
+
+   // vector or view
    expect_vectors_near( cosh(V1), expected );
+   // binary expression
+   expect_vectors_near( cosh(2 * V1 - V1), expected );
+   // unary expression
+   expect_vectors_near( cosh(-(-V1)), expected );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, acosh )
 {
    SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, 1, VECTOR_TEST_SIZE, TNL::acosh );
-//   EXPECT_EQ( acosh(V1), expected );
+
+   // vector or view
    expect_vectors_near( acosh(V1), expected );
+   // binary expression
+   expect_vectors_near( acosh(2 * V1 - V1), expected );
+   // unary expression
+   expect_vectors_near( acosh(-(-V1)), expected );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, tanh )
 {
    SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -VECTOR_TEST_SIZE, VECTOR_TEST_SIZE, TNL::tanh );
-//   EXPECT_EQ( tanh(V1), expected );
+
+   // vector or view
    expect_vectors_near( tanh(V1), expected );
+   // binary expression
+   expect_vectors_near( tanh(2 * V1 - V1), expected );
+   // unary expression
+   expect_vectors_near( tanh(-(-V1)), expected );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, atanh )
 {
    SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -0.99, 0.99, TNL::atanh );
-//   EXPECT_EQ( atanh(V1), expected );
+
+   // vector or view
    expect_vectors_near( atanh(V1), expected );
+   // binary expression
+   expect_vectors_near( atanh(2 * V1 - V1), expected );
+   // unary expression
+   expect_vectors_near( atanh(-(-V1)), expected );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, pow )
@@ -418,70 +483,121 @@ TYPED_TEST( VectorUnaryOperationsTest, pow )
 //   auto pow3 = [](double i) { return TNL::pow(i, 3); };
    auto pow3 = [](double i) { return TNL::pow(i, 3.0); };
    SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -VECTOR_TEST_SIZE, VECTOR_TEST_SIZE, pow3 );
-//   EXPECT_EQ( pow(V1, 3), expected );
-   // FIXME: for integer exponent, the test fails with CUDA
-//   expect_vectors_near( pow(V1, 3), expected );
+
+   // vector or view
    expect_vectors_near( pow(V1, 3.0), expected );
+   // binary expression
+   expect_vectors_near( pow(2 * V1 - V1, 3.0), expected );
+   // unary expression
+   expect_vectors_near( pow(-(-V1), 3.0), expected );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, exp )
 {
    SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -10, 10, TNL::exp );
-//   EXPECT_EQ( exp(V1), expected );
+
+   // vector or view
    expect_vectors_near( exp(V1), expected );
+   // binary expression
+   expect_vectors_near( exp(2 * V1 - V1), expected );
+   // unary expression
+   expect_vectors_near( exp(-(-V1)), expected );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, sqrt )
 {
    SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, 0, VECTOR_TEST_SIZE, TNL::sqrt );
-//   EXPECT_EQ( sqrt(V1), expected );
+
+   // vector or view
    expect_vectors_near( sqrt(V1), expected );
+   // binary expression
+   expect_vectors_near( sqrt(2 * V1 - V1), expected );
+   // unary expression
+   expect_vectors_near( sqrt(-(-V1)), expected );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, cbrt )
 {
    SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -VECTOR_TEST_SIZE, VECTOR_TEST_SIZE, TNL::cbrt );
-//   EXPECT_EQ( cbrt(V1), expected );
+
+   // vector or view
    expect_vectors_near( cbrt(V1), expected );
+   // binary expression
+   expect_vectors_near( cbrt(2 * V1 - V1), expected );
+   // unary expression
+   expect_vectors_near( cbrt(-(-V1)), expected );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, log )
 {
    SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, 1, VECTOR_TEST_SIZE, TNL::log );
-//   EXPECT_EQ( log(V1), expected );
+
+   // vector or view
    expect_vectors_near( log(V1), expected );
+   // binary expression
+   expect_vectors_near( log(2 * V1 - V1), expected );
+   // unary expression
+   expect_vectors_near( log(-(-V1)), expected );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, log10 )
 {
    SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, 1, VECTOR_TEST_SIZE, TNL::log10 );
-//   EXPECT_EQ( log10(V1), expected );
+
+   // vector or view
    expect_vectors_near( log10(V1), expected );
+   // binary expression
+   expect_vectors_near( log10(2 * V1 - V1), expected );
+   // unary expression
+   expect_vectors_near( log10(-(-V1)), expected );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, log2 )
 {
    SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, 1, VECTOR_TEST_SIZE, TNL::log2 );
-//   EXPECT_EQ( log2(V1), expected );
+
+   // vector or view
    expect_vectors_near( log2(V1), expected );
+   // binary expression
+   expect_vectors_near( log2(2 * V1 - V1), expected );
+   // unary expression
+   expect_vectors_near( log2(-(-V1)), expected );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, floor )
 {
    SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -3.0, 3.0, TNL::floor );
-   EXPECT_EQ( floor(V1), expected );
+
+   // vector or view
+   expect_vectors_near( floor(V1), expected );
+   // binary expression
+   expect_vectors_near( floor(2 * V1 - V1), expected );
+   // unary expression
+   expect_vectors_near( floor(-(-V1)), expected );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, ceil )
 {
    SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -3.0, 3.0, TNL::ceil );
-   EXPECT_EQ( ceil(V1), expected );
+
+   // vector or view
+   expect_vectors_near( ceil(V1), expected );
+   // binary expression
+   expect_vectors_near( ceil(2 * V1 - V1), expected );
+   // unary expression
+   expect_vectors_near( ceil(-(-V1)), expected );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, sign )
 {
    SETUP_UNARY_VECTOR_TEST_FUNCTION( VECTOR_TEST_SIZE, -VECTOR_TEST_SIZE, VECTOR_TEST_SIZE, TNL::sign );
-   EXPECT_EQ( sign(V1), expected );
+
+   // vector or view
+   expect_vectors_near( sign(V1), expected );
+   // binary expression
+   expect_vectors_near( sign(2 * V1 - V1), expected );
+   // unary expression
+   expect_vectors_near( sign(-(-V1)), expected );
 }
 
 TYPED_TEST( VectorUnaryOperationsTest, cast )
