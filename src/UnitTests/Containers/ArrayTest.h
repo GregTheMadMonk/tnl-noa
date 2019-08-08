@@ -78,8 +78,6 @@ using ArrayTypes = ::testing::Types<
    Array< float,  Devices::Host, long >,
    Array< double, Devices::Host, long >,
    Array< MyData, Devices::Host, long >
-   // FIXME: this segfaults in String::~String()
-//   Array< String, Devices::Host, long >
 #endif
 #ifdef HAVE_CUDA
    Array< int,    Devices::Cuda, short >,
@@ -207,6 +205,7 @@ TYPED_TEST( ArrayTest, constructorsWithAllocators )
    EXPECT_EQ( v.getAllocator(), allocator );
 
    // deep copy
+   u = 0;   // floating-point values have to be initialized before comparison, because nan != nan
    ArrayType w( u, allocator );
    EXPECT_NE( w.getData(), u.getData() );
    EXPECT_EQ( w.getSize(), u.getSize() );
@@ -463,12 +462,6 @@ TYPED_TEST( ArrayTest, assignmentOperator )
       u_host.setElement( i, i );
    }
 
-   v = 42;
-   for( int i = 0; i < 10; i++ )
-      EXPECT_EQ( v.getElement( i ), 42 );
-   v = u;
-   EXPECT_EQ( u, v );
-
    // assignment from host to device
    v.setValue( 0 );
    v = u_host;
@@ -479,9 +472,10 @@ TYPED_TEST( ArrayTest, assignmentOperator )
    u_host = u;
    EXPECT_EQ( u_host, u );
 
-   u = 5;
+   // assignment of a scalar
+   u = 42;
    for( int i = 0; i < 10; i++ )
-      EXPECT_EQ( u.getElement( i ), 5 );
+      EXPECT_EQ( u.getElement( i ), 42 );
 }
 
 // test works only for arithmetic types
