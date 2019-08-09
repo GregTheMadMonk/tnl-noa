@@ -62,13 +62,15 @@ template< typename T1,
           template< typename, typename > class Operation >
 struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, VectorExpressionVariable >
 {
-   static_assert( IsStaticArrayType< T1 >::value, "Left-hand side operand of static expression is not static, i.e. based on static vector." );
-   static_assert( IsStaticArrayType< T2 >::value, "Right-hand side operand of static expression is not static, i.e. based on static vector." );
    using RealType = decltype( Operation< typename T1::RealType, typename T2::RealType >::
                               evaluate( std::declval<T1>()[0], std::declval<T2>()[0] ) );
 
-   static_assert( IsStaticArrayType< T1 >::value == IsStaticArrayType< T2 >::value, "Attempt to mix static and non-static operands in binary expression templates" );
-   static_assert( T1::getSize() == T2::getSize(), "Attempt to mix static operands with different sizes." );
+   static_assert( IsStaticArrayType< T1 >::value,
+                  "Left-hand side operand of static expression is not static, i.e. based on static vector." );
+   static_assert( IsStaticArrayType< T2 >::value,
+                  "Right-hand side operand of static expression is not static, i.e. based on static vector." );
+   static_assert( T1::getSize() == T2::getSize(),
+                  "Attempt to mix static operands with different sizes." );
 
    static constexpr int getSize() { return T1::getSize(); };
 
@@ -79,7 +81,6 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariab
    __cuda_callable__
    RealType operator[]( const int i ) const
    {
-      TNL_ASSERT_LT( i, this->getSize(), "Asking for element with index larger than expression size." );
       return Operation< typename T1::RealType, typename T2::RealType >::evaluate( op1[ i ], op2[ i ] );
    }
 
@@ -111,7 +112,8 @@ template< typename T1,
           template< typename, typename > class Operation >
 struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, ArithmeticVariable  >
 {
-   static_assert( IsStaticArrayType< T1 >::value, "Left-hand side operand of static expression is not static, i.e. based on static vector." );
+   static_assert( IsStaticArrayType< T1 >::value,
+                  "Left-hand side operand of static expression is not static, i.e. based on static vector." );
 
    using RealType = decltype( Operation< typename T1::RealType, T2 >::
                               evaluate( std::declval<T1>()[0], std::declval<T2>() ) );
@@ -125,7 +127,6 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariab
    __cuda_callable__
    RealType operator[]( const int i ) const
    {
-      TNL_ASSERT_LT( i, this->getSize(), "Asking for element with index larger than expression size." );
       return Operation< typename T1::RealType, T2 >::evaluate( op1[ i ], op2 );
    }
 
@@ -157,7 +158,8 @@ template< typename T1,
           template< typename, typename > class Operation >
 struct StaticBinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorExpressionVariable  >
 {
-   static_assert( IsStaticArrayType< T2 >::value, "Right-hand side operand of static expression is not static, i.e. based on static vector." );
+   static_assert( IsStaticArrayType< T2 >::value,
+                  "Right-hand side operand of static expression is not static, i.e. based on static vector." );
 
    using RealType = decltype( Operation< T1, typename T2::RealType >::
                               evaluate( std::declval<T1>(), std::declval<T2>()[0] ) );
@@ -171,7 +173,6 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, Ve
    __cuda_callable__
    RealType operator[]( const int i ) const
    {
-      TNL_ASSERT_LT( i, this->getSize(), "Asking for element with index larger than expression size." );
       return Operation< T1, typename T2::RealType >::evaluate( op1, op2[ i ] );
    }
 
@@ -216,7 +217,6 @@ struct StaticUnaryExpressionTemplate< T1, Operation, VectorExpressionVariable >
    __cuda_callable__
    RealType operator[]( const int i ) const
    {
-      TNL_ASSERT_LT( i, this->getSize(), "Asking for element with index larger than expression size." );
       return Operation< typename T1::RealType >::evaluate( operand[ i ] );
    }
 

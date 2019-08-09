@@ -68,11 +68,17 @@ struct BinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, Ve
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
 
-   static_assert( std::is_same< typename T1::DeviceType, typename T2::DeviceType >::value, "Attempt to mix operands allocated on different device types." );
-   static_assert( IsStaticArrayType< T1 >::value == IsStaticArrayType< T2 >::value, "Attempt to mix static and non-static operands in binary expression templates." );
+   static_assert( std::is_same< typename T1::DeviceType, typename T2::DeviceType >::value,
+                  "Attempt to mix operands which have different DeviceType." );
+   static_assert( IsStaticArrayType< T1 >::value == IsStaticArrayType< T2 >::value,
+                  "Attempt to mix static and non-static operands in binary expression templates." );
 
    BinaryExpressionTemplate( const T1& a, const T2& b )
-   : op1( a ), op2( b ) {}
+   : op1( a ), op2( b )
+   {
+      TNL_ASSERT_EQ( op1.getSize(), op2.getSize(),
+                     "Attempt to mix operands with different sizes." );
+   }
 
    RealType getElement( const IndexType i ) const
    {

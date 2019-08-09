@@ -24,7 +24,7 @@ namespace Algorithms {
 template< typename Vector,
           typename T,
           bool hasSubscriptOperator = HasSubscriptOperator< T >::value >
-struct VectorAssignment{};
+struct VectorAssignment;
 
 /**
  * \brief Vector assignment with an operation: +=, -=, *=, /=
@@ -33,7 +33,7 @@ template< typename Vector,
           typename T,
           bool hasSubscriptOperator = HasSubscriptOperator< T >::value,
           bool hasSetSizeMethod = HasSetSizeMethod< T >::value >
-struct VectorAssignmentWithOperation{};
+struct VectorAssignmentWithOperation;
 
 /**
  * \brief Specialization of ASSIGNEMENT with subscript operator

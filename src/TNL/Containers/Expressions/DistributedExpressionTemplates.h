@@ -69,14 +69,16 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionV
                                                         typename T2::ConstLocalViewType,
                                                         Operation >;
 
-   static_assert( std::is_same< typename T1::DeviceType, typename T2::DeviceType >::value, "Attempt to mix operands allocated on different device types." );
-   static_assert( IsStaticArrayType< T1 >::value == IsStaticArrayType< T2 >::value, "Attempt to mix static and non-static operands in binary expression templates." );
+   static_assert( std::is_same< typename T1::DeviceType, typename T2::DeviceType >::value,
+                  "Attempt to mix operands which have different DeviceType." );
+   static_assert( IsStaticArrayType< T1 >::value == IsStaticArrayType< T2 >::value,
+                  "Attempt to mix static and non-static operands in binary expression templates." );
 
    DistributedBinaryExpressionTemplate( const T1& a, const T2& b )
    : op1( a ), op2( b )
    {
       TNL_ASSERT_EQ( op1.getSize(), op2.getSize(),
-                     "Sizes of both operands must be equal." );
+                     "Attempt to mix operands with different sizes." );
       TNL_ASSERT_EQ( op1.getLocalRange(), op2.getLocalRange(),
                      "Distributed expressions are supported only on vectors which are distributed the same way." );
       TNL_ASSERT_EQ( op1.getCommunicationGroup(), op2.getCommunicationGroup(),
