@@ -2,7 +2,7 @@
                           VectorViewExpressions.h  -  description
                              -------------------
     begin                : Apr 27, 2019
-    copyright            : (C) 2019 by Tomas Oberhuber
+    copyright            : (C) 2019 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Expressions/ExpressionTemplates.h>
 
 #include "VectorView.h"
@@ -140,14 +139,7 @@ template< typename Real1, typename Real2, typename Device1, typename Device2, ty
 bool
 operator==( const VectorView< Real1, Device1, Index >& a, const VectorView< Real2, Device2, Index >& b )
 {
-   if( a.getSize() != b.getSize() )
-      return false;
-   if( a.getSize() == 0 )
-      return true;
-   return Algorithms::ArrayOperations< Device1, Device2 >::
-            compare( a.getData(),
-                     b.getData(),
-                     a.getSize() );
+   return Expressions::Comparison< VectorView< Real1, Device1, Index >, VectorView< Real2, Device2, Index > >::EQ( a, b );
 }
 
 ////

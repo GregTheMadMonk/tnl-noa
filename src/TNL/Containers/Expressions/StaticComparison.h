@@ -29,13 +29,13 @@ template< typename T1,
           typename T2 >
 struct StaticComparison< T1, T2, VectorExpressionVariable, VectorExpressionVariable >
 {
-
    __cuda_callable__
    static bool EQ( const T1& a, const T2& b )
    {
-      TNL_ASSERT_EQ( a.getSize(), b.getSize(), "Sizes of expressions to be compared do not fit." );
+      if( a.getSize() != b.getSize() )
+         return false;
       for( int i = 0; i < a.getSize(); i++ )
-         if( a[ i ] != b[ i ] )
+         if( ! (a[ i ] == b[ i ]) )
             return false;
       return true;
    }
@@ -51,7 +51,7 @@ struct StaticComparison< T1, T2, VectorExpressionVariable, VectorExpressionVaria
    {
       TNL_ASSERT_EQ( a.getSize(), b.getSize(), "Sizes of expressions to be compared do not fit." );
       for( int i = 0; i < a.getSize(); i++ )
-         if( a[ i ] <= b[ i ] )
+         if( ! (a[ i ] > b[ i ]) )
             return false;
       return true;
    }
@@ -61,7 +61,7 @@ struct StaticComparison< T1, T2, VectorExpressionVariable, VectorExpressionVaria
    {
       TNL_ASSERT_EQ( a.getSize(), b.getSize(), "Sizes of expressions to be compared do not fit." );
       for( int i = 0; i < a.getSize(); i++ )
-         if( a[ i ] < b[ i ] )
+         if( ! (a[ i ] >= b[ i ]) )
             return false;
       return true;
    }
@@ -71,7 +71,7 @@ struct StaticComparison< T1, T2, VectorExpressionVariable, VectorExpressionVaria
    {
       TNL_ASSERT_EQ( a.getSize(), b.getSize(), "Sizes of expressions to be compared do not fit." );
       for( int i = 0; i < a.getSize(); i++ )
-         if( a[ i ] >= b[ i ] )
+         if( ! (a[ i ] < b[ i ]) )
             return false;
       return true;
    }
@@ -81,7 +81,7 @@ struct StaticComparison< T1, T2, VectorExpressionVariable, VectorExpressionVaria
    {
       TNL_ASSERT_EQ( a.getSize(), b.getSize(), "Sizes of expressions to be compared do not fit." );
       for( int i = 0; i < a.getSize(); i++ )
-         if( a[ i ] > b[ i ] )
+         if( ! (a[ i ] <= b[ i ]) )
             return false;
       return true;
    }
@@ -93,12 +93,11 @@ template< typename T1,
           typename T2 >
 struct StaticComparison< T1, T2, ArithmeticVariable, VectorExpressionVariable >
 {
-
    __cuda_callable__
    static bool EQ( const T1& a, const T2& b )
    {
       for( int i = 0; i < b.getSize(); i++ )
-         if( a != b[ i ] )
+         if( ! (a == b[ i ]) )
             return false;
       return true;
    }
@@ -113,7 +112,7 @@ struct StaticComparison< T1, T2, ArithmeticVariable, VectorExpressionVariable >
    static bool GT( const T1& a, const T2& b )
    {
       for( int i = 0; i < b.getSize(); i++ )
-         if( a <= b[ i ] )
+         if( ! (a > b[ i ]) )
             return false;
       return true;
    }
@@ -122,7 +121,7 @@ struct StaticComparison< T1, T2, ArithmeticVariable, VectorExpressionVariable >
    static bool GE( const T1& a, const T2& b )
    {
       for( int i = 0; i < b.getSize(); i++ )
-         if( a < b[ i ] )
+         if( ! (a >= b[ i ]) )
             return false;
       return true;
    }
@@ -131,7 +130,7 @@ struct StaticComparison< T1, T2, ArithmeticVariable, VectorExpressionVariable >
    static bool LT( const T1& a, const T2& b )
    {
       for( int i = 0; i < b.getSize(); i++ )
-         if( a >= b[ i ] )
+         if( ! (a < b[ i ]) )
             return false;
       return true;
    }
@@ -140,7 +139,7 @@ struct StaticComparison< T1, T2, ArithmeticVariable, VectorExpressionVariable >
    static bool LE( const T1& a, const T2& b )
    {
       for( int i = 0; i < b.getSize(); i++ )
-         if( a > b[ i ] )
+         if( ! (a <= b[ i ]) )
             return false;
       return true;
    }
@@ -152,12 +151,11 @@ template< typename T1,
           typename T2 >
 struct StaticComparison< T1, T2, VectorExpressionVariable, ArithmeticVariable >
 {
-
    __cuda_callable__
    static bool EQ( const T1& a, const T2& b )
    {
       for( int i = 0; i < a.getSize(); i++ )
-         if( a[ i ] != b )
+         if( ! (a[ i ] == b) )
             return false;
       return true;
    }
@@ -172,7 +170,7 @@ struct StaticComparison< T1, T2, VectorExpressionVariable, ArithmeticVariable >
    static bool GT( const T1& a, const T2& b )
    {
       for( int i = 0; i < a.getSize(); i++ )
-         if( a[ i ] <= b )
+         if( ! (a[ i ] > b) )
             return false;
       return true;
    }
@@ -181,7 +179,7 @@ struct StaticComparison< T1, T2, VectorExpressionVariable, ArithmeticVariable >
    static bool GE( const T1& a, const T2& b )
    {
       for( int i = 0; i < a.getSize(); i++ )
-         if( a[ i ] < b )
+         if( ! (a[ i ] >= b) )
             return false;
       return true;
    }
@@ -190,7 +188,7 @@ struct StaticComparison< T1, T2, VectorExpressionVariable, ArithmeticVariable >
    static bool LT( const T1& a, const T2& b )
    {
       for( int i = 0; i < a.getSize(); i++ )
-         if( a[ i ] >= b )
+         if( ! (a[ i ] < b) )
             return false;
       return true;
    }
@@ -199,7 +197,7 @@ struct StaticComparison< T1, T2, VectorExpressionVariable, ArithmeticVariable >
    static bool LE( const T1& a, const T2& b )
    {
       for( int i = 0; i < a.getSize(); i++ )
-         if( a[ i ] > b )
+         if( ! (a[ i ] <= b) )
             return false;
       return true;
    }

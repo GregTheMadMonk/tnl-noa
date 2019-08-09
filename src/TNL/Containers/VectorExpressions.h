@@ -2,7 +2,7 @@
                           VectorExpressions.h  -  description
                              -------------------
     begin                : Jun 27, 2019
-    copyright            : (C) 2019 by Tomas Oberhuber
+    copyright            : (C) 2019 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Expressions/ExpressionTemplates.h>
 
 #include "Vector.h"
@@ -230,42 +229,27 @@ template< typename Real1, typename Real2, typename Device1, typename Device2, ty
 bool
 operator==( const Vector< Real1, Device1, Index, Allocator >& a, const Vector< Real2, Device2, Index, Allocator >& b )
 {
-   if( a.getSize() != b.getSize() )
-      return false;
-   if( a.getSize() == 0 )
-      return true;
-   return Algorithms::ArrayOperations< Device1, Device2 >::
-            compare( a.getData(),
-                     b.getData(),
-                     a.getSize() );
+   using ConstView1 = typename Vector< Real1, Device1, Index, Allocator >::ConstViewType;
+   using ConstView2 = typename Vector< Real2, Device2, Index, Allocator >::ConstViewType;
+   return Expressions::Comparison< ConstView1, ConstView2 >::EQ( a.getConstView(), b.getConstView() );
 }
 
 template< typename Real1, typename Real2, typename Device1, typename Device2, typename Index, typename Allocator >
 bool
 operator==( const VectorView< Real1, Device1, Index >& a, const Vector< Real2, Device2, Index, Allocator >& b )
 {
-   if( a.getSize() != b.getSize() )
-      return false;
-   if( a.getSize() == 0 )
-      return true;
-   return Algorithms::ArrayOperations< Device1, Device2 >::
-            compare( a.getData(),
-                     b.getData(),
-                     a.getSize() );
+   using ConstView1 = VectorView< Real1, Device1, Index >;
+   using ConstView2 = typename Vector< Real2, Device2, Index, Allocator >::ConstViewType;
+   return Expressions::Comparison< ConstView1, ConstView2 >::EQ( a, b.getConstView() );
 }
 
 template< typename Real1, typename Real2, typename Device1, typename Device2, typename Index, typename Allocator >
 bool
 operator==( const Vector< Real1, Device1, Index, Allocator >& a, const VectorView< Real2, Device2, Index >& b )
 {
-   if( a.getSize() != b.getSize() )
-      return false;
-   if( a.getSize() == 0 )
-      return true;
-   return Algorithms::ArrayOperations< Device1, Device2 >::
-            compare( a.getData(),
-                     b.getData(),
-                     a.getSize() );
+   using ConstView1 = typename Vector< Real1, Device1, Index, Allocator >::ConstViewType;
+   using ConstView2 = VectorView< Real2, Device2, Index >;
+   return Expressions::Comparison< ConstView1, ConstView2 >::EQ( a.getConstView(), b );
 }
 
 ////
