@@ -18,7 +18,7 @@
 #include <TNL/Containers/Partitioner.h>
 
 #define DISTRIBUTED_VECTOR
-#include "VectorSequenceSetupFunctions.h"
+#include "VectorHelperFunctions.h"
 
 using namespace TNL;
 using namespace TNL::Containers;

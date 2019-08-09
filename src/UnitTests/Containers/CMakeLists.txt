@@ -40,6 +40,10 @@ ADD_EXECUTABLE( VectorUnaryOperationsTest VectorUnaryOperationsTest.cpp )
 TARGET_COMPILE_OPTIONS( VectorUnaryOperationsTest PRIVATE ${CXX_TESTS_FLAGS} )
 TARGET_LINK_LIBRARIES( VectorUnaryOperationsTest ${GTEST_BOTH_LIBRARIES} )
 
+ADD_EXECUTABLE( VectorVerticalOperationsTest VectorVerticalOperationsTest.cpp )
+TARGET_COMPILE_OPTIONS( VectorVerticalOperationsTest PRIVATE ${CXX_TESTS_FLAGS} )
+TARGET_LINK_LIBRARIES( VectorVerticalOperationsTest ${GTEST_BOTH_LIBRARIES} )
+
 IF( BUILD_CUDA )
    CUDA_ADD_EXECUTABLE( ArrayTestCuda ArrayTest.cu
                         OPTIONS ${CXX_TESTS_FLAGS} )
@@ -61,6 +65,9 @@ IF( BUILD_CUDA )
 
    CUDA_ADD_EXECUTABLE( VectorUnaryOperationsTestCuda VectorUnaryOperationsTest.cu OPTIONS ${CXX_TESTS_FLAGS} )
    TARGET_LINK_LIBRARIES( VectorUnaryOperationsTestCuda ${GTEST_BOTH_LIBRARIES} )
+
+   CUDA_ADD_EXECUTABLE( VectorVerticalOperationsTestCuda VectorVerticalOperationsTest.cu OPTIONS ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( VectorVerticalOperationsTestCuda ${GTEST_BOTH_LIBRARIES} )
 ENDIF( BUILD_CUDA )
 
 IF( BUILD_CUDA )
@@ -95,6 +102,7 @@ ADD_TEST( VectorPrefixSumTest ${EXECUTABLE_OUTPUT_PATH}/VectorPrefixSumTest${CMA
 ADD_TEST( VectorEvaluateAndReduceTest ${EXECUTABLE_OUTPUT_PATH}/VectorEvaluateAndReduceTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( VectorBinaryOperationsTest ${EXECUTABLE_OUTPUT_PATH}/VectorBinaryOperationsTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( VectorUnaryOperationsTest ${EXECUTABLE_OUTPUT_PATH}/VectorUnaryOperationsTest${CMAKE_EXECUTABLE_SUFFIX} )
+ADD_TEST( VectorVerticalOperationsTest ${EXECUTABLE_OUTPUT_PATH}/VectorVerticalOperationsTest${CMAKE_EXECUTABLE_SUFFIX} )
 IF( BUILD_CUDA )
    ADD_TEST( ArrayTestCuda ${EXECUTABLE_OUTPUT_PATH}/ArrayTestCuda${CMAKE_EXECUTABLE_SUFFIX} )
    ADD_TEST( ArrayViewTestCuda ${EXECUTABLE_OUTPUT_PATH}/ArrayViewTestCuda${CMAKE_EXECUTABLE_SUFFIX} )
@@ -103,6 +111,7 @@ IF( BUILD_CUDA )
    ADD_TEST( VectorEvaluateAndReduceTestCuda ${EXECUTABLE_OUTPUT_PATH}/VectorEvaluateAndReduceTestCuda${CMAKE_EXECUTABLE_SUFFIX} )
    ADD_TEST( VectorBinaryOperationsTestCuda ${EXECUTABLE_OUTPUT_PATH}/VectorBinaryOperationsTestCuda${CMAKE_EXECUTABLE_SUFFIX} )
    ADD_TEST( VectorUnaryOperationsTestCuda ${EXECUTABLE_OUTPUT_PATH}/VectorUnaryOperationsTestCuda${CMAKE_EXECUTABLE_SUFFIX} )
+   ADD_TEST( VectorVerticalOperationsTestCuda ${EXECUTABLE_OUTPUT_PATH}/VectorVerticalOperationsTestCuda${CMAKE_EXECUTABLE_SUFFIX} )
 ENDIF()
 ADD_TEST( MultireductionTest ${EXECUTABLE_OUTPUT_PATH}/MultireductionTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( StaticArrayTest ${EXECUTABLE_OUTPUT_PATH}/StaticArrayTest${CMAKE_EXECUTABLE_SUFFIX} )
@@ -142,12 +151,19 @@ if( ${BUILD_MPI} )
    TARGET_COMPILE_OPTIONS( DistributedVectorUnaryOperationsTest PRIVATE ${CXX_TESTS_FLAGS} )
    TARGET_LINK_LIBRARIES( DistributedVectorUnaryOperationsTest ${GTEST_BOTH_LIBRARIES} )
 
+   ADD_EXECUTABLE( DistributedVectorVerticalOperationsTest DistributedVectorVerticalOperationsTest.cpp )
+   TARGET_COMPILE_OPTIONS( DistributedVectorVerticalOperationsTest PRIVATE ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( DistributedVectorVerticalOperationsTest ${GTEST_BOTH_LIBRARIES} )
+
    if( BUILD_CUDA )
       CUDA_ADD_EXECUTABLE( DistributedVectorBinaryOperationsTestCuda DistributedVectorBinaryOperationsTest.cu OPTIONS ${CXX_TESTS_FLAGS} )
       TARGET_LINK_LIBRARIES( DistributedVectorBinaryOperationsTestCuda ${GTEST_BOTH_LIBRARIES} )
 
       CUDA_ADD_EXECUTABLE( DistributedVectorUnaryOperationsTestCuda DistributedVectorUnaryOperationsTest.cu OPTIONS ${CXX_TESTS_FLAGS} )
       TARGET_LINK_LIBRARIES( DistributedVectorUnaryOperationsTestCuda ${GTEST_BOTH_LIBRARIES} )
+
+      CUDA_ADD_EXECUTABLE( DistributedVectorVerticalOperationsTestCuda DistributedVectorVerticalOperationsTest.cu OPTIONS ${CXX_TESTS_FLAGS} )
+      TARGET_LINK_LIBRARIES( DistributedVectorVerticalOperationsTestCuda ${GTEST_BOTH_LIBRARIES} )
    endif( BUILD_CUDA )
 
    SET( mpi_test_parameters -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedArrayTest${CMAKE_EXECUTABLE_SUFFIX}" )
@@ -162,6 +178,9 @@ if( ${BUILD_MPI} )
    SET( mpi_test_parameters -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedVectorUnaryOperationsTest${CMAKE_EXECUTABLE_SUFFIX}" )
    ADD_TEST( NAME DistributedVectorUnaryOperationsTest COMMAND "mpirun" ${mpi_test_parameters})
 
+   SET( mpi_test_parameters -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedVectorVerticalOperationsTest${CMAKE_EXECUTABLE_SUFFIX}" )
+   ADD_TEST( NAME DistributedVectorVerticalOperationsTest COMMAND "mpirun" ${mpi_test_parameters})
+
    if( BUILD_CUDA )
       SET( mpi_test_parameters -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedVectorTestCuda${CMAKE_EXECUTABLE_SUFFIX}" )
       ADD_TEST( NAME DistributedVectorTestCuda COMMAND "mpirun" ${mpi_test_parameters})
@@ -171,5 +190,8 @@ if( ${BUILD_MPI} )
 
       SET( mpi_test_parameters -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedVectorUnaryOperationsTestCuda${CMAKE_EXECUTABLE_SUFFIX}" )
       ADD_TEST( NAME DistributedVectorUnaryOperationsTestCuda COMMAND "mpirun" ${mpi_test_parameters})
+
+      SET( mpi_test_parameters -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedVectorVerticalOperationsTestCuda${CMAKE_EXECUTABLE_SUFFIX}" )
+      ADD_TEST( NAME DistributedVectorVerticalOperationsTestCuda COMMAND "mpirun" ${mpi_test_parameters})
    endif()
 endif()

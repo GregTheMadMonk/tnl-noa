@@ -25,7 +25,7 @@
    #include <TNL/Containers/VectorView.h>
 #endif
 
-#include "VectorSequenceSetupFunctions.h"
+#include "VectorHelperFunctions.h"
 
 #include "gtest/gtest.h"
 
@@ -37,10 +37,6 @@ namespace unary_tests {
 
 // prime number to force non-uniform distribution in block-wise algorithms
 constexpr int VECTOR_TEST_SIZE = 97;
-
-// should be small enough to have fast tests, but larger than minGPUReductionDataSize
-// and large enough to require multiple CUDA blocks for reduction
-constexpr int VECTOR_TEST_REDUCTION_SIZE = 4999;
 
 // test fixture for typed tests
 template< typename T >
@@ -146,13 +142,6 @@ TYPED_TEST_SUITE( VectorUnaryOperationsTest, VectorTypes );
          expected[ i ] = function(x);                          \
       }                                                        \
 
-   #define SETUP_UNARY_VECTOR_TEST_REDUCTION \
-      using VectorOrView = typename TestFixture::VectorOrView; \
-      constexpr int size = VectorOrView::getSize();            \
-                                                               \
-      VectorOrView V1;                                         \
-      setLinearSequence( V1 );                                 \
-
 #elif defined(DISTRIBUTED_VECTOR)
    #define SETUP_UNARY_VECTOR_TEST( _size ) \
       using VectorType = typename TestFixture::VectorType;     \
@@ -203,21 +192,6 @@ TYPED_TEST_SUITE( VectorUnaryOperationsTest, VectorTypes );
       VectorOrView V1( _V1 );                                  \
       ExpectedVector expected; expected = expected_h;          \
 
-   #define SETUP_UNARY_VECTOR_TEST_REDUCTION \
-      using VectorType = typename TestFixture::VectorType;     \
-      using VectorOrView = typename TestFixture::VectorOrView; \
-      constexpr int size = VECTOR_TEST_REDUCTION_SIZE;         \
-      using CommunicatorType = typename VectorOrView::CommunicatorType; \
-      const auto group = CommunicatorType::AllGroup; \
-      using LocalRangeType = typename VectorOrView::LocalRangeType; \
-      const LocalRangeType localRange = Partitioner< typename VectorOrView::IndexType, CommunicatorType >::splitRange( size, group ); \
-                                                               \
-      VectorType _V1;                                          \
-      _V1.setDistribution( localRange, size, group );          \
-                                                               \
-      setLinearSequence( _V1 );                                \
-      VectorOrView V1( _V1 );                                  \
-
 #else
    #define SETUP_UNARY_VECTOR_TEST( _size ) \
       using VectorType = typename TestFixture::VectorType;     \
@@ -252,15 +226,6 @@ TYPED_TEST_SUITE( VectorUnaryOperationsTest, VectorTypes );
       VectorType _V1; _V1 = _V1h;                              \
       VectorOrView V1( _V1 );                                  \
       ExpectedVector expected; expected = expected_h;          \
-
-   #define SETUP_UNARY_VECTOR_TEST_REDUCTION \
-      using VectorType = typename TestFixture::VectorType;     \
-      using VectorOrView = typename TestFixture::VectorOrView; \
-      constexpr int size = VECTOR_TEST_REDUCTION_SIZE;         \
-                                                               \
-      VectorType _V1( size );                                  \
-      setLinearSequence( _V1 );                                \
-      VectorOrView V1( _V1 );                                  \
 
 #endif
 
@@ -627,167 +592,6 @@ TYPED_TEST( VectorUnaryOperationsTest, cast )
 //   EXPECT_EQ( expression3, true );
    EXPECT_EQ( cast<bool>(-V1), true );
 }
-
-
-TYPED_TEST( VectorUnaryOperationsTest, max )
-{
-   SETUP_UNARY_VECTOR_TEST_REDUCTION;
-
-   // vector or view
-   EXPECT_EQ( max(V1), size - 1 );
-   // unary expression
-   EXPECT_EQ( max(-V1), 0 );
-   // binary expression
-   EXPECT_EQ( max(V1 + 2), size - 1 + 2 );
-}
-
-// FIXME: distributed argMax is not implemented yet
-#ifdef DISTRIBUTED_VECTOR
-TYPED_TEST( VectorUnaryOperationsTest, DISABLED_argMax )
-#else
-TYPED_TEST( VectorUnaryOperationsTest, argMax )
-#endif
-{
-   SETUP_UNARY_VECTOR_TEST_REDUCTION;
-
-   // vector or view
-   int arg = -1;
-   EXPECT_EQ( argMax(V1, arg), size - 1 );
-   EXPECT_EQ( arg, size - 1 );
-   // unary expression
-   arg = -1;
-   EXPECT_EQ( argMax(-V1, arg), 0 );
-   EXPECT_EQ( arg, 0 );
-   // expression
-   arg = -1;
-   EXPECT_EQ( argMax(V1 + 2, arg), size - 1 + 2 );
-   EXPECT_EQ( arg, size - 1 );
-}
-
-TYPED_TEST( VectorUnaryOperationsTest, min )
-{
-   SETUP_UNARY_VECTOR_TEST_REDUCTION;
-
-   // vector or view
-   EXPECT_EQ( min(V1), 0 );
-   // unary expression
-   EXPECT_EQ( min(-V1), 1 - size );
-   // binary expression
-   EXPECT_EQ( min(V1 + 2), 2 );
-}
-
-// FIXME: distributed argMin is not implemented yet
-#ifdef DISTRIBUTED_VECTOR
-TYPED_TEST( VectorUnaryOperationsTest, DISABLED_argMin )
-#else
-TYPED_TEST( VectorUnaryOperationsTest, argMin )
-#endif
-{
-   SETUP_UNARY_VECTOR_TEST_REDUCTION;
-
-   // vector or view
-   int arg = -1;
-   EXPECT_EQ( argMin(V1, arg), 0 );
-   EXPECT_EQ( arg, 0 );
-   // unary expression
-   arg = -1;
-   EXPECT_EQ( argMin(-V1, arg), 1 - size );
-   EXPECT_EQ( arg, size - 1 );
-   // binary expression
-   arg = -1;
-   EXPECT_EQ( argMin(V1 + 2, arg), 2 );
-   EXPECT_EQ( arg, 0 );
-}
-
-TYPED_TEST( VectorUnaryOperationsTest, sum )
-{
-   SETUP_UNARY_VECTOR_TEST_REDUCTION;
-
-   // vector or view
-   EXPECT_EQ( sum(V1), 0.5 * size * (size - 1) );
-   // unary expression
-   EXPECT_EQ( sum(-V1), - 0.5 * size * (size - 1) );
-   // binary expression
-   EXPECT_EQ( sum(V1 - 1), 0.5 * size * (size - 1) - size );
-}
-
-TYPED_TEST( VectorUnaryOperationsTest, maxNorm )
-{
-   SETUP_UNARY_VECTOR_TEST_REDUCTION;
-
-   // vector or view
-   EXPECT_EQ( maxNorm(V1), size - 1 );
-   // unary expression
-   EXPECT_EQ( maxNorm(-V1), size - 1 );
-   // binary expression
-   EXPECT_EQ( maxNorm(V1 - size), size );
-}
-
-TYPED_TEST( VectorUnaryOperationsTest, l1Norm )
-{
-   SETUP_UNARY_VECTOR_TEST( VECTOR_TEST_REDUCTION_SIZE );
-
-   // vector or vector view
-   EXPECT_EQ( l1Norm(V1), size );
-   // unary expression
-   EXPECT_EQ( l1Norm(-V1), size );
-   // binary expression
-   EXPECT_EQ( l1Norm(2 * V1 - V1), size );
-}
-
-TYPED_TEST( VectorUnaryOperationsTest, l2Norm )
-{
-   SETUP_UNARY_VECTOR_TEST( VECTOR_TEST_REDUCTION_SIZE );
-   using RealType = typename VectorOrView::RealType;
-
-   const auto expected = std::sqrt( (RealType) size );
-
-   // vector or vector view
-   EXPECT_EQ( l2Norm(V1), expected );
-   // unary expression
-   EXPECT_EQ( l2Norm(-V1), expected );
-   // binary expression
-   EXPECT_EQ( l2Norm(2 * V1 - V1), expected );
-}
-
-TYPED_TEST( VectorUnaryOperationsTest, lpNorm )
-{
-   SETUP_UNARY_VECTOR_TEST( VECTOR_TEST_REDUCTION_SIZE );
-   using RealType = typename VectorOrView::RealType;
-
-   const auto expectedL1norm = size;
-   const auto expectedL2norm = std::sqrt( (RealType) size );
-   const auto expectedL3norm = std::cbrt( (RealType) size );
-
-   const auto epsilon = 64 * std::numeric_limits< decltype(expectedL3norm) >::epsilon();
-
-   // vector or vector view
-   EXPECT_EQ( lpNorm(V1, 1.0), expectedL1norm );
-   EXPECT_EQ( lpNorm(V1, 2.0), expectedL2norm );
-   EXPECT_NEAR( lpNorm(V1, 3.0), expectedL3norm, epsilon );
-   // unary expression
-   EXPECT_EQ( lpNorm(-V1, 1.0), expectedL1norm );
-   EXPECT_EQ( lpNorm(-V1, 2.0), expectedL2norm );
-   EXPECT_NEAR( lpNorm(-V1, 3.0), expectedL3norm, epsilon );
-   // binary expression
-   EXPECT_EQ( lpNorm(2 * V1 - V1, 1.0), expectedL1norm );
-   EXPECT_EQ( lpNorm(2 * V1 - V1, 2.0), expectedL2norm );
-   EXPECT_NEAR( lpNorm(2 * V1 - V1, 3.0), expectedL3norm, epsilon );
-}
-
-TYPED_TEST( VectorUnaryOperationsTest, product )
-{
-   SETUP_UNARY_VECTOR_TEST( 16 );
-
-   // vector or vector view
-   EXPECT_EQ( product(V2), std::exp2(size) );
-   // unary expression
-   EXPECT_EQ( product(-V2), std::exp2(size) * ( (size % 2) ? -1 : 1 ) );
-   // binary expression
-   EXPECT_EQ( product(V1 + V1), std::exp2(size) );
-}
-
-// TODO: tests for logicalOr, binaryOr, logicalAnd, binaryAnd
 
 } // namespace unary_tests
 

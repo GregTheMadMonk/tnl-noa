@@ -25,29 +25,13 @@
    #include <TNL/Containers/VectorView.h>
 #endif
 
-#include "VectorSequenceSetupFunctions.h"
+#include "VectorHelperFunctions.h"
 
 #include "gtest/gtest.h"
 
 using namespace TNL;
 using namespace TNL::Containers;
 using namespace TNL::Containers::Algorithms;
-
-// specialization for V1 = view
-template< typename V1, typename V2,
-          std::enable_if_t< IsViewType< V1 >::value, bool > = true >
-void bindOrAssign( V1& v1, V2& v2 )
-{
-   v1.bind( v2.getView() );
-}
-
-// specialization for V1 = vector
-template< typename V1, typename V2,
-          std::enable_if_t< ! IsViewType< V1 >::value, bool > = true >
-void bindOrAssign( V1& v1, V2& v2 )
-{
-   v1 = v2;
-}
 
 namespace binary_tests {
 

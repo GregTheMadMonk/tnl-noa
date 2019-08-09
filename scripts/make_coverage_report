@@ -32,6 +32,7 @@ tests=(
    VectorEvaluateAndReduceTest-dbg
    VectorBinaryOperationsTest-dbg
    VectorUnaryOperationsTest-dbg
+   VectorVerticalOperationsTest-dbg
    StaticArrayTest-dbg
    StaticVectorTest-dbg
    StaticVectorOperationsTest-dbg
@@ -43,6 +44,7 @@ tests=(
    DistributedArrayTest-dbg
    DistributedVectorBinaryOperationsTest-dbg
    DistributedVectorUnaryOperationsTest-dbg
+   DistributedVectorVerticalOperationsTest-dbg
 
    # Functions
 #   BoundaryMeshFunctionTest-dbg  # FIXME: CUDA
