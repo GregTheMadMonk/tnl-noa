@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <utility>  // std::pair
+
 #ifdef HAVE_CUDA
 #include <cuda.h>
 #endif
@@ -348,9 +350,10 @@ struct CudaReductionKernelLauncher
 
    template< typename Reduction,
              typename VolatileReduction >
-   Result finish( const Reduction& reduction,
-                  const VolatileReduction& volatileReduction,
-                  const Result& zero )
+   Result
+   finish( const Reduction& reduction,
+           const VolatileReduction& volatileReduction,
+           const Result& zero )
    {
       // Input is the first half of the buffer, output is the second half
       CudaReductionBuffer& cudaReductionBuffer = CudaReductionBuffer::getInstance();
@@ -377,10 +380,10 @@ struct CudaReductionKernelLauncher
 
    template< typename Reduction,
              typename VolatileReduction >
-   Result finishWithArgument( IndexType& argument,
-                              const Reduction& reduction,
-                              const VolatileReduction& volatileReduction,
-                              const Result& zero )
+   std::pair< Index, Result >
+   finishWithArgument( const Reduction& reduction,
+                       const VolatileReduction& volatileReduction,
+                       const Result& zero )
    {
       // Input is the first half of the buffer, output is the second half
       CudaReductionBuffer& cudaReductionBuffer = CudaReductionBuffer::getInstance();
@@ -405,9 +408,9 @@ struct CudaReductionKernelLauncher
 
       ////
       // Copy result on CPU
-      ResultType result;
-      ArrayOperations< Devices::Host, Devices::Cuda >::copy( &result, output, 1 );
-      ArrayOperations< Devices::Host, Devices::Cuda >::copy( &argument, idxOutput, 1 );
+      std::pair< Index, Result > result;
+      ArrayOperations< Devices::Host, Devices::Cuda >::copy( &result.first, idxOutput, 1 );
+      ArrayOperations< Devices::Host, Devices::Cuda >::copy( &result.second, output, 1 );
       return result;
    }
 

@@ -810,10 +810,10 @@ min( const Containers::DistributedVector< Real, Device, Index, Communicator >& a
 template< typename Real,
           typename Device,
           typename Index, typename Communicator >
-Real
-argMin( const Containers::DistributedVector< Real, Device, Index, Communicator >& a, Index& arg )
+std::pair< Index, std::decay_t< Real > >
+argMin( const Containers::DistributedVector< Real, Device, Index, Communicator >& a )
 {
-   return Containers::Expressions::DistributedExpressionArgMin( a, arg );
+   return Containers::Expressions::DistributedExpressionArgMin( a );
 }
 
 template< typename Real,
@@ -828,10 +828,10 @@ max( const Containers::DistributedVector< Real, Device, Index, Communicator >& a
 template< typename Real,
           typename Device,
           typename Index, typename Communicator >
-Real
-argMax( const Containers::DistributedVector< Real, Device, Index, Communicator >& a, Index& arg )
+std::pair< Index, std::decay_t< Real > >
+argMax( const Containers::DistributedVector< Real, Device, Index, Communicator >& a )
 {
-   return Containers::Expressions::DistributedExpressionArgMax( a, arg );
+   return Containers::Expressions::DistributedExpressionArgMax( a );
 }
 
 template< typename Real,

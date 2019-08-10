@@ -2002,23 +2002,21 @@ min( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperatio
 
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation,
-          typename Index >
+          template< typename, typename > class LOperation >
 __cuda_callable__
 auto
-argMin( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a, Index& arg )
+argMin( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return StaticExpressionArgMin( a, arg );
+   return StaticExpressionArgMin( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation,
-          typename Index >
+          template< typename > class LOperation >
 __cuda_callable__
 auto
-argMin( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a, Index& arg )
+argMin( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return StaticExpressionArgMin( a, arg );
+   return StaticExpressionArgMin( a );
 }
 
 template< typename L1,
@@ -2042,23 +2040,21 @@ max( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperatio
 
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation,
-          typename Index >
+          template< typename, typename > class LOperation >
 __cuda_callable__
 auto
-argMax( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a, Index& arg )
+argMax( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return StaticExpressionArgMax( a, arg );
+   return StaticExpressionArgMax( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation,
-          typename Index >
+          template< typename > class LOperation >
 __cuda_callable__
 auto
-argMax( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a, Index& arg )
+argMax( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return StaticExpressionArgMax( a, arg );
+   return StaticExpressionArgMax( a );
 }
 
 template< typename L1,

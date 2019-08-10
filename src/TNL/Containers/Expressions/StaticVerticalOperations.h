@@ -32,10 +32,10 @@ auto StaticExpressionMin( const Expression& expression )
 
 template< typename Expression >
 __cuda_callable__
-auto StaticExpressionArgMin( const Expression& expression, int& arg )
+auto StaticExpressionArgMin( const Expression& expression )
 {
+   int arg = 0;
    auto value = expression[ 0 ];
-   arg = 0;
    for( int i = 1; i < expression.getSize(); i++ )
    {
       if( expression[ i ] < value )
@@ -44,7 +44,7 @@ auto StaticExpressionArgMin( const Expression& expression, int& arg )
          arg = i;
       }
    }
-   return value;
+   return std::make_pair( arg, value );
 }
 
 template< typename Expression >
@@ -59,10 +59,10 @@ auto StaticExpressionMax( const Expression& expression )
 
 template< typename Expression >
 __cuda_callable__
-auto StaticExpressionArgMax( const Expression& expression, int& arg )
+auto StaticExpressionArgMax( const Expression& expression )
 {
+   int arg = 0;
    auto value = expression[ 0 ];
-   arg = 0;
    for( int i = 1; i < expression.getSize(); i++ )
    {
       if( expression[ i ] > value )
@@ -71,7 +71,7 @@ auto StaticExpressionArgMax( const Expression& expression, int& arg )
          arg = i;
       }
    }
-   return value;
+   return std::make_pair( arg, value );
 }
 
 template< typename Expression >

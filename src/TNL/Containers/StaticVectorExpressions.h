@@ -661,10 +661,10 @@ min( const Containers::StaticVector< Size, Real >& a )
 
 template< int Size, typename Real >
 __cuda_callable__
-auto
-argMin( const Containers::StaticVector< Size, Real >& a, int& arg )
+std::pair< int, Real >
+argMin( const Containers::StaticVector< Size, Real >& a )
 {
-   return Containers::Expressions::StaticExpressionArgMin( a, arg );
+   return Containers::Expressions::StaticExpressionArgMin( a );
 }
 
 template< int Size, typename Real >
@@ -677,10 +677,10 @@ max( const Containers::StaticVector< Size, Real >& a )
 
 template< int Size, typename Real >
 __cuda_callable__
-auto
-argMax( const Containers::StaticVector< Size, Real >& a, int& arg )
+std::pair< int, Real >
+argMax( const Containers::StaticVector< Size, Real >& a )
 {
-   return Containers::Expressions::StaticExpressionArgMax( a, arg );
+   return Containers::Expressions::StaticExpressionArgMax( a );
 }
 
 template< int Size, typename Real >

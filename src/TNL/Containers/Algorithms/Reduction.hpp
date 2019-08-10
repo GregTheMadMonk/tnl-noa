@@ -47,11 +47,11 @@ template< typename Index,
           typename DataFetcher >
 Result
 Reduction< Devices::Host >::
-   reduce( const Index size,
-           ReductionOperation& reduction,
-           VolatileReductionOperation& volatileReduction,
-           DataFetcher& dataFetcher,
-           const Result& zero )
+reduce( const Index size,
+        ReductionOperation& reduction,
+        VolatileReductionOperation& volatileReduction,
+        DataFetcher& dataFetcher,
+        const Result& zero )
 {
    using IndexType = Index;
    using ResultType = Result;
@@ -143,10 +143,9 @@ template< typename Index,
           typename ReductionOperation,
           typename VolatileReductionOperation,
           typename DataFetcher >
-Result
+std::pair< Index, Result >
 Reduction< Devices::Host >::
 reduceWithArgument( const Index size,
-                    Index& argument,
                     ReductionOperation& reduction,
                     VolatileReductionOperation& volatileReduction,
                     DataFetcher& dataFetcher,
@@ -161,20 +160,19 @@ reduceWithArgument( const Index size,
 #ifdef HAVE_OPENMP
    if( TNL::Devices::Host::isOMPEnabled() && size >= 2 * block_size ) {
       // global result variable
-      ResultType result = zero;
-      argument = -1;
+      std::pair< Index, Result > result( -1, zero );
 #pragma omp parallel
       {
          // initialize array for thread-local results
-         ResultType r[ 4 ] = { zero, zero, zero, zero  };
          IndexType arg[ 4 ] = { 0, 0, 0, 0 };
-         bool initialised( false );
+         ResultType r[ 4 ] = { zero, zero, zero, zero  };
+         bool initialized( false );
 
          #pragma omp for nowait
          for( int b = 0; b < blocks; b++ ) {
             const IndexType offset = b * block_size;
             for( int i = 0; i < block_size; i += 4 ) {
-               if( ! initialised ) {
+               if( ! initialized ) {
                   arg[ 0 ] = offset + i;
                   arg[ 1 ] = offset + i + 1;
                   arg[ 2 ] = offset + i + 2;
@@ -183,7 +181,7 @@ reduceWithArgument( const Index size,
                   r[ 1 ] = dataFetcher( offset + i + 1 );
                   r[ 2 ] = dataFetcher( offset + i + 2 );
                   r[ 3 ] = dataFetcher( offset + i + 3 );
-                  initialised = true;
+                  initialized = true;
                   continue;
                }
                reduction( arg[ 0 ], offset + i,     r[ 0 ], dataFetcher( offset + i ) );
@@ -208,9 +206,9 @@ reduceWithArgument( const Index size,
          // inter-thread reduction of local results
          #pragma omp critical
          {
-            if( argument == - 1 )
-               argument = arg[ 0 ];
-            reduction( argument, arg[ 0 ], result, r[ 0 ] );
+            if( result.first == -1 )
+               result.first = arg[ 0 ];
+            reduction( result.first, arg[ 0 ], result.second, r[ 0 ] );
          }
       }
       return result;
@@ -219,15 +217,15 @@ reduceWithArgument( const Index size,
 #endif
       if( blocks > 1 ) {
          // initialize array for unrolled results
-         ResultType r[ 4 ] = { zero, zero, zero, zero };
          IndexType arg[ 4 ] = { 0, 0, 0, 0 };
-         bool initialised( false );
+         ResultType r[ 4 ] = { zero, zero, zero, zero };
+         bool initialized( false );
 
          // main reduction (explicitly unrolled loop)
          for( int b = 0; b < blocks; b++ ) {
             const IndexType offset = b * block_size;
             for( int i = 0; i < block_size; i += 4 ) {
-               if( ! initialised )
+               if( ! initialized )
                {
                   arg[ 0 ] = offset + i;
                   arg[ 1 ] = offset + i + 1;
@@ -237,7 +235,7 @@ reduceWithArgument( const Index size,
                   r[ 1 ] = dataFetcher( offset + i + 1 );
                   r[ 2 ] = dataFetcher( offset + i + 2 );
                   r[ 3 ] = dataFetcher( offset + i + 3 );
-                  initialised = true;
+                  initialized = true;
                   continue;
                }
                reduction( arg[ 0 ], offset + i,     r[ 0 ], dataFetcher( offset + i ) );
@@ -255,14 +253,12 @@ reduceWithArgument( const Index size,
          reduction( arg[ 0 ], arg[ 2 ], r[ 0 ], r[ 2 ] );
          reduction( arg[ 1 ], arg[ 3 ], r[ 1 ], r[ 3 ] );
          reduction( arg[ 0 ], arg[ 1 ], r[ 0 ], r[ 1 ] );
-         argument = arg[ 0 ];
-         return r[ 0 ];
+         return std::make_pair( arg[ 0 ], r[ 0 ] );
       }
       else {
-         ResultType result = dataFetcher( 0 );
-         argument = 0;
+         std::pair< Index, Result > result( 0, dataFetcher( 0 ) );
          for( IndexType i = 1; i < size; i++ )
-            reduction( argument, i, result, dataFetcher( i ) );
+            reduction( result.first, i, result.second, dataFetcher( i ) );
          return result;
       }
 #ifdef HAVE_OPENMP
@@ -277,11 +273,11 @@ template< typename Index,
           typename DataFetcher >
 Result
 Reduction< Devices::Cuda >::
-   reduce( const Index size,
-           ReductionOperation& reduction,
-           VolatileReductionOperation& volatileReduction,
-           DataFetcher& dataFetcher,
-           const Result& zero )
+reduce( const Index size,
+        ReductionOperation& reduction,
+        VolatileReductionOperation& volatileReduction,
+        DataFetcher& dataFetcher,
+        const Result& zero )
 {
 #ifdef HAVE_CUDA
 
@@ -372,16 +368,15 @@ template< typename Index,
           typename ReductionOperation,
           typename VolatileReductionOperation,
           typename DataFetcher >
-Result
+std::pair< Index, Result >
 Reduction< Devices::Cuda >::
 reduceWithArgument( const Index size,
-                    Index& argument,
                     ReductionOperation& reduction,
                     VolatileReductionOperation& volatileReduction,
                     DataFetcher& dataFetcher,
                     const Result& zero )
 {
-   #ifdef HAVE_CUDA
+#ifdef HAVE_CUDA
 
    using IndexType = Index;
    using ResultType = Result;
@@ -449,14 +444,13 @@ reduceWithArgument( const Index size,
          timer.stop();
          std::cout << "   Reduction of small data set on CPU took " << timer.getRealTime() << " sec. " << std::endl;
       #endif
-      argument = indexArray[ 0 ];
-      return resultArray[ 0 ];
+      return std::make_pair( indexArray[ 0 ], resultArray[ 0 ] );
    }
    else {
       /***
        * Data can't be safely reduced on host, so continue with the reduction on the CUDA device.
        */
-      auto result = reductionLauncher.finishWithArgument( argument, reduction, volatileReduction, zero );
+      auto result = reductionLauncher.finishWithArgument( reduction, volatileReduction, zero );
 
       #ifdef CUDA_REDUCTION_PROFILING
          timer.stop();

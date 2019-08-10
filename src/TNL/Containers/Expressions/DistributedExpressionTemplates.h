@@ -1898,21 +1898,19 @@ min( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOpe
 
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation,
-          typename Index >
+          template< typename, typename > class LOperation >
 auto
-argMin( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a, Index& arg )
+argMin( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return DistributedExpressionArgMin( a, arg );
+   return DistributedExpressionArgMin( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation,
-          typename Index >
+          template< typename > class LOperation >
 auto
-argMin( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a, Index& arg )
+argMin( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return DistributedExpressionArgMin( a, arg );
+   return DistributedExpressionArgMin( a );
 }
 
 template< typename L1,
@@ -1934,21 +1932,19 @@ max( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOpe
 
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation,
-          typename Index >
+          template< typename, typename > class LOperation >
 auto
-argMax( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a, Index& arg )
+argMax( const Containers::Expressions::DistributedBinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return DistributedExpressionArgMax( a, arg );
+   return DistributedExpressionArgMax( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation,
-          typename Index >
+          template< typename > class LOperation >
 auto
-argMax( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a, Index& arg )
+argMax( const Containers::Expressions::DistributedUnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return DistributedExpressionArgMax( a, arg );
+   return DistributedExpressionArgMax( a );
 }
 
 template< typename L1,

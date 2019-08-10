@@ -21,7 +21,7 @@ namespace Expressions {
 ////
 // Vertical operations
 template< typename Expression >
-auto DistributedExpressionMin( const Expression& expression ) -> std::remove_reference_t< decltype( expression[0] ) >
+auto DistributedExpressionMin( const Expression& expression ) -> std::decay_t< decltype( expression[0] ) >
 {
    using ResultType = std::decay_t< decltype( expression[0] ) >;
    using CommunicatorType = typename Expression::CommunicatorType;
@@ -35,14 +35,15 @@ auto DistributedExpressionMin( const Expression& expression ) -> std::remove_ref
 }
 
 template< typename Expression >
-auto DistributedExpressionArgMin( const Expression& expression, typename Expression::IndexType& arg ) -> std::remove_reference_t< decltype( expression[0] ) >
+auto DistributedExpressionArgMin( const Expression& expression )
+-> std::pair< typename Expression::IndexType, std::decay_t< decltype( expression[0] ) > >
 {
    using ResultType = std::decay_t< decltype( expression[0] ) >;
    throw Exceptions::NotImplementedError("DistributedExpressionArgMin is not implemented yet");
 }
 
 template< typename Expression >
-auto DistributedExpressionMax( const Expression& expression ) -> std::remove_reference_t< decltype( expression[0] ) >
+auto DistributedExpressionMax( const Expression& expression ) -> std::decay_t< decltype( expression[0] ) >
 {
    using ResultType = std::decay_t< decltype( expression[0] ) >;
    using CommunicatorType = typename Expression::CommunicatorType;
@@ -56,7 +57,8 @@ auto DistributedExpressionMax( const Expression& expression ) -> std::remove_ref
 }
 
 template< typename Expression >
-auto DistributedExpressionArgMax( const Expression& expression, typename Expression::IndexType& arg ) -> std::remove_reference_t< decltype( expression[0] ) >
+auto DistributedExpressionArgMax( const Expression& expression )
+-> std::pair< typename Expression::IndexType, std::decay_t< decltype( expression[0] ) > >
 {
    using ResultType = std::decay_t< decltype( expression[0] ) >;
    throw Exceptions::NotImplementedError("DistributedExpressionArgMax is not implemented yet");
@@ -123,7 +125,7 @@ auto DistributedExpressionLpNorm( const Expression& expression, const Real& p ) 
 }
 
 template< typename Expression >
-auto DistributedExpressionProduct( const Expression& expression ) -> std::remove_reference_t< decltype( expression[0] * expression[0] ) >
+auto DistributedExpressionProduct( const Expression& expression ) -> std::decay_t< decltype( expression[0] * expression[0] ) >
 {
    using ResultType = std::decay_t< decltype( expression[0] ) >;
    using CommunicatorType = typename Expression::CommunicatorType;
@@ -137,9 +139,9 @@ auto DistributedExpressionProduct( const Expression& expression ) -> std::remove
 }
 
 template< typename Expression >
-auto DistributedExpressionLogicalAnd( const Expression& expression ) -> std::remove_reference_t< decltype( expression[0] && expression[0] ) >
+auto DistributedExpressionLogicalAnd( const Expression& expression ) -> std::decay_t< decltype( expression[0] && expression[0] ) >
 {
-   using ResultType = std::remove_reference_t< decltype( expression[0] && expression[0] ) >;
+   using ResultType = std::decay_t< decltype( expression[0] && expression[0] ) >;
    using CommunicatorType = typename Expression::CommunicatorType;
 
    ResultType result = std::numeric_limits< ResultType >::max();
@@ -151,9 +153,9 @@ auto DistributedExpressionLogicalAnd( const Expression& expression ) -> std::rem
 }
 
 template< typename Expression >
-auto DistributedExpressionLogicalOr( const Expression& expression ) -> std::remove_reference_t< decltype( expression[0] || expression[0] ) >
+auto DistributedExpressionLogicalOr( const Expression& expression ) -> std::decay_t< decltype( expression[0] || expression[0] ) >
 {
-   using ResultType = std::remove_reference_t< decltype( expression[0] || expression[0] ) >;
+   using ResultType = std::decay_t< decltype( expression[0] || expression[0] ) >;
    using CommunicatorType = typename Expression::CommunicatorType;
 
    ResultType result = 0;
@@ -165,7 +167,7 @@ auto DistributedExpressionLogicalOr( const Expression& expression ) -> std::remo
 }
 
 template< typename Expression >
-auto DistributedExpressionBinaryAnd( const Expression& expression ) -> std::remove_reference_t< decltype( expression[0] | expression[0] ) >
+auto DistributedExpressionBinaryAnd( const Expression& expression ) -> std::decay_t< decltype( expression[0] | expression[0] ) >
 {
    using ResultType = std::decay_t< decltype( expression[0] & expression[0] ) >;
    using CommunicatorType = typename Expression::CommunicatorType;
@@ -179,7 +181,7 @@ auto DistributedExpressionBinaryAnd( const Expression& expression ) -> std::remo
 }
 
 template< typename Expression >
-auto DistributedExpressionBinaryOr( const Expression& expression ) -> std::remove_reference_t< decltype( expression[0] | expression[0] ) >
+auto DistributedExpressionBinaryOr( const Expression& expression ) -> std::decay_t< decltype( expression[0] | expression[0] ) >
 {
    using ResultType = std::decay_t< decltype( expression[0] | expression[0] ) >;
    using CommunicatorType = typename Expression::CommunicatorType;

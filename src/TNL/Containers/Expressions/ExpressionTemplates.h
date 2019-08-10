@@ -1821,21 +1821,19 @@ min( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a
 
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation,
-          typename Index >
+          template< typename, typename > class LOperation >
 auto
-argMin( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a, Index& arg )
+argMin( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return ExpressionArgMin( a, arg );
+   return ExpressionArgMin( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation,
-          typename Index >
+          template< typename > class LOperation >
 auto
-argMin( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a, Index& arg )
+argMin( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return ExpressionArgMin( a, arg );
+   return ExpressionArgMin( a );
 }
 
 template< typename L1,
@@ -1857,21 +1855,19 @@ max( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a
 
 template< typename L1,
           typename L2,
-          template< typename, typename > class LOperation,
-          typename Index >
+          template< typename, typename > class LOperation >
 auto
-argMax( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a, Index& arg )
+argMax( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
 {
-   return ExpressionArgMax( a, arg );
+   return ExpressionArgMax( a );
 }
 
 template< typename L1,
-          template< typename > class LOperation,
-          typename Index >
+          template< typename > class LOperation >
 auto
-argMax( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a, Index& arg )
+argMax( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
 {
-   return ExpressionArgMax( a, arg );
+   return ExpressionArgMax( a );
 }
 
 template< typename L1,

@@ -614,10 +614,10 @@ min( const Containers::VectorView< Real, Device, Index >& a )
 template< typename Real,
           typename Device,
           typename Index >
-Real
-argMin( const Containers::VectorView< Real, Device, Index >& a, Index& arg )
+std::pair< Index, std::decay_t< Real > >
+argMin( const Containers::VectorView< Real, Device, Index >& a )
 {
-   return Containers::Expressions::ExpressionArgMin( a, arg );
+   return Containers::Expressions::ExpressionArgMin( a );
 }
 
 template< typename Real,
@@ -632,10 +632,10 @@ max( const Containers::VectorView< Real, Device, Index >& a )
 template< typename Real,
           typename Device,
           typename Index >
-Real
-argMax( const Containers::VectorView< Real, Device, Index >& a, Index& arg )
+std::pair< Index, std::decay_t< Real > >
+argMax( const Containers::VectorView< Real, Device, Index >& a )
 {
-   return Containers::Expressions::ExpressionArgMax( a, arg );
+   return Containers::Expressions::ExpressionArgMax( a );
 }
 
 template< typename Real,
