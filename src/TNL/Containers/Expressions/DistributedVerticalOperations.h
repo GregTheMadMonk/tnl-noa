@@ -12,7 +12,6 @@
 
 #include <TNL/Containers/Expressions/VerticalOperations.h>
 #include <TNL/Communicators/MpiDefs.h>
-#include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
 namespace Containers {
@@ -38,8 +37,51 @@ template< typename Expression >
 auto DistributedExpressionArgMin( const Expression& expression )
 -> std::pair< typename Expression::IndexType, std::decay_t< decltype( expression[0] ) > >
 {
-   using ResultType = std::decay_t< decltype( expression[0] ) >;
-   throw Exceptions::NotImplementedError("DistributedExpressionArgMin is not implemented yet");
+   using RealType = std::decay_t< decltype( expression[0] ) >;
+   using IndexType = typename Expression::IndexType;
+   using ResultType = std::pair< IndexType, RealType >;
+   using CommunicatorType = typename Expression::CommunicatorType;
+
+   ResultType result( -1, std::numeric_limits< RealType >::max() );
+   const auto group = expression.getCommunicationGroup();
+   if( group != CommunicatorType::NullGroup ) {
+      // compute local argMin
+      ResultType localResult = ExpressionArgMin( expression.getConstLocalView() );
+      // transform local index to global index
+      localResult.first += expression.getLocalRange().getBegin();
+
+      // scatter local result to all processes and gather their results
+      const int nproc = CommunicatorType::GetSize( group );
+      ResultType dataForScatter[ nproc ];
+      for( int i = 0; i < nproc; i++ ) dataForScatter[ i ] = localResult;
+      ResultType gatheredResults[ nproc ];
+      // NOTE: exchanging general data types does not work with MPI
+      //CommunicatorType::Alltoall( dataForScatter, 1, gatheredResults, 1, group );
+      CommunicatorType::Alltoall( (char*) dataForScatter, sizeof(ResultType), (char*) gatheredResults, sizeof(ResultType), group );
+
+      // reduce the gathered data
+      const auto* _data = gatheredResults;  // workaround for nvcc which does not allow to capture variable-length arrays (even in pure host code!)
+      auto fetch = [_data] ( IndexType i ) { return _data[ i ].second; };
+      auto reduction = [] ( IndexType& aIdx, const IndexType& bIdx, RealType& a, const RealType& b ) {
+         if( a > b ) {
+            a = b;
+            aIdx = bIdx;
+         }
+         else if( a == b && bIdx < aIdx )
+            aIdx = bIdx;
+      };
+      auto volatileReduction = [] ( volatile IndexType& aIdx, volatile IndexType& bIdx, volatile RealType& a, volatile RealType& b ) {
+         if( a > b ) {
+            a = b;
+            aIdx = bIdx;
+         }
+         else if( a == b && bIdx < aIdx )
+            aIdx = bIdx;
+      };
+      result = Algorithms::Reduction< Devices::Host >::reduceWithArgument( (IndexType) nproc, reduction, volatileReduction, fetch, std::numeric_limits< RealType >::max() );
+      result.first = gatheredResults[ result.first ].first;
+   }
+   return result;
 }
 
 template< typename Expression >
@@ -60,8 +102,51 @@ template< typename Expression >
 auto DistributedExpressionArgMax( const Expression& expression )
 -> std::pair< typename Expression::IndexType, std::decay_t< decltype( expression[0] ) > >
 {
-   using ResultType = std::decay_t< decltype( expression[0] ) >;
-   throw Exceptions::NotImplementedError("DistributedExpressionArgMax is not implemented yet");
+   using RealType = std::decay_t< decltype( expression[0] ) >;
+   using IndexType = typename Expression::IndexType;
+   using ResultType = std::pair< IndexType, RealType >;
+   using CommunicatorType = typename Expression::CommunicatorType;
+
+   ResultType result( -1, std::numeric_limits< RealType >::lowest() );
+   const auto group = expression.getCommunicationGroup();
+   if( group != CommunicatorType::NullGroup ) {
+      // compute local argMax
+      ResultType localResult = ExpressionArgMax( expression.getConstLocalView() );
+      // transform local index to global index
+      localResult.first += expression.getLocalRange().getBegin();
+
+      // scatter local result to all processes and gather their results
+      const int nproc = CommunicatorType::GetSize( group );
+      ResultType dataForScatter[ nproc ];
+      for( int i = 0; i < nproc; i++ ) dataForScatter[ i ] = localResult;
+      ResultType gatheredResults[ nproc ];
+      // NOTE: exchanging general data types does not work with MPI
+      //CommunicatorType::Alltoall( dataForScatter, 1, gatheredResults, 1, group );
+      CommunicatorType::Alltoall( (char*) dataForScatter, sizeof(ResultType), (char*) gatheredResults, sizeof(ResultType), group );
+
+      // reduce the gathered data
+      const auto* _data = gatheredResults;  // workaround for nvcc which does not allow to capture variable-length arrays (even in pure host code!)
+      auto fetch = [_data] ( IndexType i ) { return _data[ i ].second; };
+      auto reduction = [] ( IndexType& aIdx, const IndexType& bIdx, RealType& a, const RealType& b ) {
+         if( a < b ) {
+            a = b;
+            aIdx = bIdx;
+         }
+         else if( a == b && bIdx < aIdx )
+            aIdx = bIdx;
+      };
+      auto volatileReduction = [] ( volatile IndexType& aIdx, volatile IndexType& bIdx, volatile RealType& a, volatile RealType& b ) {
+         if( a < b ) {
+            a = b;
+            aIdx = bIdx;
+         }
+         else if( a == b && bIdx < aIdx )
+            aIdx = bIdx;
+      };
+      result = Algorithms::Reduction< Devices::Host >::reduceWithArgument( (IndexType) nproc, reduction, volatileReduction, fetch, std::numeric_limits< RealType >::lowest() );
+      result.first = gatheredResults[ result.first ].first;
+   }
+   return result;
 }
 
 template< typename Expression >

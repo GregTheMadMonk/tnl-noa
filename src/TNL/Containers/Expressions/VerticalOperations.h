@@ -52,7 +52,6 @@ auto ExpressionArgMin( const Expression& expression )
       }
       else if( a == b && bIdx < aIdx )
          aIdx = bIdx;
-
    };
    auto volatileReduction = [=] __cuda_callable__ ( volatile IndexType& aIdx, volatile IndexType& bIdx, volatile ResultType& a, volatile ResultType& b ) {
       if( a > b ) {
@@ -61,7 +60,6 @@ auto ExpressionArgMin( const Expression& expression )
       }
       else if( a == b && bIdx < aIdx )
          aIdx = bIdx;
-
    };
    return Algorithms::Reduction< typename Expression::DeviceType >::reduceWithArgument( expression.getSize(), reduction, volatileReduction, fetch, std::numeric_limits< ResultType >::max() );
 }

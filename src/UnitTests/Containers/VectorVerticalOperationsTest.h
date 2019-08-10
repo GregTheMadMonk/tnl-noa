@@ -166,12 +166,7 @@ TYPED_TEST( VectorVerticalOperationsTest, max )
    EXPECT_EQ( max(V1 + 2), size - 1 + 2 );
 }
 
-// FIXME: distributed argMax is not implemented yet
-#ifdef DISTRIBUTED_VECTOR
-TYPED_TEST( VectorVerticalOperationsTest, DISABLED_argMax )
-#else
 TYPED_TEST( VectorVerticalOperationsTest, argMax )
-#endif
 {
    SETUP_VERTICAL_TEST_ALIASES;
    using RealType = typename TestFixture::VectorOrView::RealType;
@@ -196,12 +191,7 @@ TYPED_TEST( VectorVerticalOperationsTest, min )
    EXPECT_EQ( min(V1 + 2), 2 );
 }
 
-// FIXME: distributed argMin is not implemented yet
-#ifdef DISTRIBUTED_VECTOR
-TYPED_TEST( VectorVerticalOperationsTest, DISABLED_argMin )
-#else
 TYPED_TEST( VectorVerticalOperationsTest, argMin )
-#endif
 {
    SETUP_VERTICAL_TEST_ALIASES;
    using RealType = typename TestFixture::VectorOrView::RealType;
