@@ -133,6 +133,8 @@ class NoDistrCommunicator
                             int receiveCount,
                             CommunicationGroup group )
       {
+         TNL_ASSERT_EQ( sendCount, receiveCount, "sendCount must be equal to receiveCount for NoDistrCommunicator." );
+         memcpy( (void*) receiveData, (const void*) sendData, sendCount * sizeof( T ) );
       }
 
       static void CreateNewGroup(bool meToo, int myRank, CommunicationGroup &oldGroup, CommunicationGroup &newGroup)
@@ -140,7 +142,9 @@ class NoDistrCommunicator
          newGroup=oldGroup;
       }
 
-      static void writeProlog( Logger& logger ){};
+      static void writeProlog( Logger& logger )
+      {
+      }
 };
 
 } // namespace Communicators
