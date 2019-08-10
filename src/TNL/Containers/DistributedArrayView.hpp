@@ -28,7 +28,7 @@ DistributedArrayView( const DistributedArrayView< Value_, Device, Index, Communi
 : localRange( view.getLocalRange() ),
   globalSize( view.getSize() ),
   group( view.getCommunicationGroup() ),
-  localData( view.getLocalArrayView() )
+  localData( view.getConstLocalView() )
 {}
 
 template< typename Value,
@@ -43,7 +43,7 @@ bind( DistributedArrayView view )
    localRange = view.getLocalRange();
    globalSize = view.getSize();
    group = view.getCommunicationGroup();
-   localData.bind( view.getLocalArrayView() );
+   localData.bind( view.getLocalView() );
 }
 
 template< typename Value,
@@ -96,7 +96,7 @@ operator=( const DistributedArrayView& view )
    TNL_ASSERT_EQ( getSize(), view.getSize(), "The sizes of the array views must be equal, views are not resizable." );
    TNL_ASSERT_EQ( getLocalRange(), view.getLocalRange(), "The local ranges must be equal, views are not resizable." );
    TNL_ASSERT_EQ( getCommunicationGroup(), view.getCommunicationGroup(), "The communication groups of the array views must be equal." );
-   localData = view.getLocalArrayView();
+   localData = view.getConstLocalView();
    return *this;
 }
 
@@ -104,7 +104,7 @@ template< typename Value,
           typename Device,
           typename Index,
           typename Communicator >
-   template< typename Array >
+   template< typename Array, typename..., typename >
 DistributedArrayView< Value, Device, Index, Communicator >&
 DistributedArrayView< Value, Device, Index, Communicator >::
 operator=( const Array& array )
@@ -112,7 +112,7 @@ operator=( const Array& array )
    TNL_ASSERT_EQ( getSize(), array.getSize(), "The global sizes must be equal, views are not resizable." );
    TNL_ASSERT_EQ( getLocalRange(), array.getLocalRange(), "The local ranges must be equal, views are not resizable." );
    TNL_ASSERT_EQ( getCommunicationGroup(), array.getCommunicationGroup(), "The communication groups must be equal." );
-   localData = array.getLocalArrayView();
+   localData = array.getConstLocalView();
    return *this;
 }
 
@@ -143,9 +143,9 @@ template< typename Value,
           typename Device,
           typename Index,
           typename Communicator >
-typename DistributedArrayView< Value, Device, Index, Communicator >::LocalArrayViewType
+typename DistributedArrayView< Value, Device, Index, Communicator >::LocalViewType
 DistributedArrayView< Value, Device, Index, Communicator >::
-getLocalArrayView()
+getLocalView()
 {
    return localData;
 }
@@ -154,9 +154,9 @@ template< typename Value,
           typename Device,
           typename Index,
           typename Communicator >
-typename DistributedArrayView< Value, Device, Index, Communicator >::ConstLocalArrayViewType
+typename DistributedArrayView< Value, Device, Index, Communicator >::ConstLocalViewType
 DistributedArrayView< Value, Device, Index, Communicator >::
-getLocalArrayView() const
+getConstLocalView() const
 {
    return localData;
 }
@@ -167,12 +167,12 @@ template< typename Value,
           typename Communicator >
 void
 DistributedArrayView< Value, Device, Index, Communicator >::
-copyFromGlobal( ConstLocalArrayViewType globalArray )
+copyFromGlobal( ConstLocalViewType globalArray )
 {
    TNL_ASSERT_EQ( getSize(), globalArray.getSize(),
                   "given global array has different size than the distributed array view" );
 
-   LocalArrayViewType localView( localData );
+   LocalViewType localView( localData );
    const LocalRangeType localRange = getLocalRange();
 
    auto kernel = [=] __cuda_callable__ ( IndexType i ) mutable
@@ -315,7 +315,7 @@ operator==( const Array& array ) const
    const bool localResult =
          localRange == array.getLocalRange() &&
          globalSize == array.getSize() &&
-         localData == array.getLocalArrayView();
+         localData == array.getConstLocalView();
    bool result = true;
    if( group != CommunicatorType::NullGroup )
       CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, group );

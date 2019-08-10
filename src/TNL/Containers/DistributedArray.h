@@ -25,6 +25,7 @@ template< typename Value,
 class DistributedArray
 {
    using CommunicationGroup = typename Communicator::CommunicationGroup;
+   using LocalArrayType = Containers::Array< Value, Device, Index >;
 
 public:
    using ValueType = Value;
@@ -32,9 +33,8 @@ public:
    using CommunicatorType = Communicator;
    using IndexType = Index;
    using LocalRangeType = Subrange< Index >;
-   using LocalArrayType = Containers::Array< Value, Device, Index >;
-   using LocalArrayViewType = Containers::ArrayView< Value, Device, Index >;
-   using ConstLocalArrayViewType = Containers::ArrayView< std::add_const_t< Value >, Device, Index >;
+   using LocalViewType = Containers::ArrayView< Value, Device, Index >;
+   using ConstLocalViewType = Containers::ArrayView< std::add_const_t< Value >, Device, Index >;
    using HostType = DistributedArray< Value, Devices::Host, Index, Communicator >;
    using CudaType = DistributedArray< Value, Devices::Cuda, Index, Communicator >;
    using ViewType = DistributedArrayView< Value, Device, Index, Communicator >;
@@ -64,7 +64,7 @@ public:
     * \param end The end of the array view sub-interval. The default value is 0
     *            which is, however, replaced with the array size.
     */
-   LocalArrayViewType getLocalArrayView();
+   LocalViewType getLocalView();
 
    /**
     * \brief Returns a non-modifiable view of the local part of the array.
@@ -78,23 +78,9 @@ public:
     * \param end The end of the array view sub-interval. The default value is 0
     *            which is, however, replaced with the array size.
     */
-   ConstLocalArrayViewType getLocalArrayView() const;
+   ConstLocalViewType getConstLocalView() const;
 
-   /**
-    * \brief Returns a non-modifiable view of the local part of the array.
-    *
-    * If \e begin or \e end is set to a non-zero value, a view for the
-    * sub-interval `[begin, end)` is returned. Otherwise a view for whole
-    * local part of the array view is returned.
-    *
-    * \param begin The beginning of the array view sub-interval. It is 0 by
-    *              default.
-    * \param end The end of the array view sub-interval. The default value is 0
-    *            which is, however, replaced with the array size.
-    */
-   ConstLocalArrayViewType getConstLocalArrayView() const;
-
-   void copyFromGlobal( ConstLocalArrayViewType globalArray );
+   void copyFromGlobal( ConstLocalViewType globalArray );
 
 
    static String getType();
@@ -110,11 +96,6 @@ public:
     * \brief Returns a modifiable view of the array.
     */
    ViewType getView();
-
-   /**
-    * \brief Returns a non-modifiable view of the array.
-    */
-   ConstViewType getView() const;
 
    /**
     * \brief Returns a non-modifiable view of the array.
@@ -165,7 +146,9 @@ public:
    // Copy-assignment operator
    DistributedArray& operator=( const DistributedArray& array );
 
-   template< typename Array >
+   template< typename Array,
+             typename...,
+             typename = std::enable_if_t< HasSubscriptOperator<Array>::value > >
    DistributedArray& operator=( const Array& array );
 
    // Comparison operators
@@ -193,4 +176,4 @@ protected:
 } // namespace Containers
 } // namespace TNL
 
-#include "DistributedArray_impl.h"
+#include "DistributedArray.hpp"

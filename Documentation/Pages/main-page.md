@@ -51,6 +51,8 @@ several modules:
   [libpng](http://www.libpng.org/pub/png/libpng.html) for PNG files, or
   [libjpeg](http://libjpeg.sourceforge.net/) for JPEG files.
 
+See also \ref comparison_with_other_libraries "Comparison with other libraries".
+
 ## Installation
 
 You can either download the [stable version](http://tnl-project.org/download/)

@@ -49,7 +49,7 @@ solve( ConstVectorViewType b, VectorViewType x )
     * r_0 = b - A x_0, p_0 = r_0
     */
    this->matrix->vectorProduct( x, r );
-   r.addVector( b, 1.0, -1.0 );
+   r = b - r;
 
    if( this->preconditioner ) {
       // z_0 = M^{-1} r_0
@@ -57,13 +57,13 @@ solve( ConstVectorViewType b, VectorViewType x )
       // p_0 = z_0
       p = z;
       // s1 = (r_0, z_0)
-      s1 = r.scalarProduct( z );
+      s1 = (r, z);
    }
    else {
       // p_0 = r_0
       p = r;
       // s1 = (r_0, r_0)
-      s1 = r.scalarProduct( r );
+      s1 = (r, r);
    }
 
    this->setResidue( std::sqrt(s1) / normb );
@@ -72,7 +72,7 @@ solve( ConstVectorViewType b, VectorViewType x )
    {
       // s2 = (A * p_j, p_j)
       this->matrix->vectorProduct( p, Ap );
-      s2 = Ap.scalarProduct( p );
+      s2 = (Ap, p);
 
       // if s2 = 0 => p = 0 => r = 0 => we have the solution (provided A != 0)
       if( s2 == 0.0 ) {
@@ -84,22 +84,22 @@ solve( ConstVectorViewType b, VectorViewType x )
       alpha = s1 / s2;
 
       // x_{j+1} = x_j + alpha_j p_j
-      x.addVector( p, alpha );
+      x += alpha * p;
 
       // r_{j+1} = r_j - alpha_j A * p_j
-      r.addVector( Ap, -alpha );
+      r -= alpha * Ap;
 
       if( this->preconditioner ) {
          // z_{j+1} = M^{-1} * r_{j+1}
          this->preconditioner->solve( r, z );
          // beta_j = (r_{j+1}, z_{j+1}) / (r_j, z_j)
          s2 = s1;
-         s1 = r.scalarProduct( z );
+         s1 = (r, z);
       }
       else {
          // beta_j = (r_{j+1}, r_{j+1}) / (r_j, r_j)
          s2 = s1;
-         s1 = r.scalarProduct( r );
+         s1 = (r, r);
       }
 
       // if s2 = 0 => r = 0 => we have the solution
@@ -108,10 +108,10 @@ solve( ConstVectorViewType b, VectorViewType x )
 
       if( this->preconditioner )
          // p_{j+1} = z_{j+1} + beta_j * p_j
-         p.addVector( z, 1.0, beta );
+         p = z + beta * p;
       else
          // p_{j+1} = r_{j+1} + beta_j * p_j
-         p.addVector( r, 1.0, beta );
+         p = r + beta * p;
 
       this->setResidue( std::sqrt(s1) / normb );
    }

@@ -60,7 +60,7 @@ using ChEllpackMatrixTypes = ::testing::Types
 #endif
 >;
 
-TYPED_TEST_CASE( ChunkedEllpackMatrixTest, ChEllpackMatrixTypes);
+TYPED_TEST_SUITE( ChunkedEllpackMatrixTest, ChEllpackMatrixTypes);
 
 TYPED_TEST( ChunkedEllpackMatrixTest, setDimensionsTest )
 {

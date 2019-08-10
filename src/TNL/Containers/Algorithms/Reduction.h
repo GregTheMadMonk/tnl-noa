@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <utility>  // std::pair
+
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Devices/MIC.h>
@@ -21,9 +23,7 @@ namespace Containers {
 namespace Algorithms {
 
 template< typename Device >
-class Reduction
-{
-};
+class Reduction;
 
 template<>
 class Reduction< Devices::Host >
@@ -46,9 +46,8 @@ class Reduction< Devices::Host >
                 typename ReductionOperation,
                 typename VolatileReductionOperation,
                 typename DataFetcher >
-      static Result
+      static std::pair< Index, Result >
       reduceWithArgument( const Index size,
-                          Index& argument,
                           ReductionOperation& reduction,
                           VolatileReductionOperation& volatileReduction,
                           DataFetcher& dataFetcher,
@@ -76,9 +75,8 @@ class Reduction< Devices::Cuda >
                 typename ReductionOperation,
                 typename VolatileReductionOperation,
                 typename DataFetcher >
-      static Result
+      static std::pair< Index, Result >
       reduceWithArgument( const Index size,
-                          Index& argument,
                           ReductionOperation& reduction,
                           VolatileReductionOperation& volatileReduction,
                           DataFetcher& dataFetcher,
@@ -106,14 +104,12 @@ class Reduction< Devices::MIC >
                 typename ReductionOperation,
                 typename VolatileReductionOperation,
                 typename DataFetcher >
-      static Result
+      static std::pair< Index, Result >
       reduceWithArgument( const Index size,
-                          Index& argument,
                           ReductionOperation& reduction,
                           VolatileReductionOperation& volatileReduction,
                           DataFetcher& dataFetcher,
                           const Result& zero );
-
 };
 
 } // namespace Algorithms

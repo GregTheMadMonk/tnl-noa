@@ -55,7 +55,7 @@ using CSRMatrixTypes = ::testing::Types
 #endif
 >;
 
-TYPED_TEST_CASE( CSRMatrixTest, CSRMatrixTypes);
+TYPED_TEST_SUITE( CSRMatrixTest, CSRMatrixTypes);
 
 TYPED_TEST( CSRMatrixTest, setDimensionsTest )
 {

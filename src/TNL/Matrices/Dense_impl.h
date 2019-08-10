@@ -437,8 +437,8 @@ template< typename Real,
           typename Index >
    template< typename Matrix >
 void Dense< Real, Device, Index >::addMatrix( const Matrix& matrix,
-                                                       const RealType& matrixMultiplicator,
-                                                       const RealType& thisMatrixMultiplicator )
+                                              const RealType& matrixMultiplicator,
+                                              const RealType& thisMatrixMultiplicator )
 {
    TNL_ASSERT( this->getColumns() == matrix.getColumns() &&
               this->getRows() == matrix.getRows(),
@@ -448,9 +448,9 @@ void Dense< Real, Device, Index >::addMatrix( const Matrix& matrix,
                  << "That matrix rows: " << matrix.getRows() << std::endl );
 
    if( thisMatrixMultiplicator == 1.0 )
-      this->values.addVector( matrix.values, matrixMultiplicator );
+      this->values += matrixMultiplicator * matrix.values;
    else
-      this->values.addVector( matrix.values, matrixMultiplicator, thisMatrixMultiplicator );
+      this->values = thisMatrixMultiplicator * this->values + matrixMultiplicator * matrix.values;
 }
 
 #ifdef HAVE_CUDA

@@ -1,8 +1,8 @@
 /***************************************************************************
                           MpiCommunicator.h  -  description
                              -------------------
-    begin                : 2005/04/23
-    copyright            : (C) 2005 by Tomas Oberhuber
+    begin                : Apr 23, 2005
+    copyright            : (C) 2005 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -43,34 +43,15 @@
 
 
 namespace TNL {
+//! \brief Namespace for TNL communicators.
 namespace Communicators {
 namespace {
 
+//! \brief MPI communicator.
 class MpiCommunicator
 {
-
-   public: // TODO: this was private
+   public:
 #ifdef HAVE_MPI
-      /*inline static MPI_Datatype MPIDataType( const signed char* ) { return MPI_CHAR; };
-      inline static MPI_Datatype MPIDataType( const signed short int* ) { return MPI_SHORT; };
-      inline static MPI_Datatype MPIDataType( const signed int* ) { return MPI_INT; };
-      inline static MPI_Datatype MPIDataType( const signed long int* ) { return MPI_LONG; };
-      inline static MPI_Datatype MPIDataType( const unsigned char *) { return MPI_UNSIGNED_CHAR; };
-      inline static MPI_Datatype MPIDataType( const unsigned short int* ) { return MPI_UNSIGNED_SHORT; };
-      inline static MPI_Datatype MPIDataType( const unsigned int* ) { return MPI_UNSIGNED; };
-      inline static MPI_Datatype MPIDataType( const unsigned long int* ) { return MPI_UNSIGNED_LONG; };
-      inline static MPI_Datatype MPIDataType( const float* ) { return MPI_FLOAT; };
-      inline static MPI_Datatype MPIDataType( const double* ) { return MPI_DOUBLE; };
-      inline static MPI_Datatype MPIDataType( const long double* ) { return MPI_LONG_DOUBLE; };
-
-      // TODO: tested with MPI_LOR and MPI_LAND, but there should probably be unit tests for all operations
-      inline static MPI_Datatype MPIDataType( const bool* )
-      {
-         // sizeof(bool) is implementation-defined: https://stackoverflow.com/a/4897859
-         static_assert( sizeof(bool) == 1, "The programmer did not count with systems where sizeof(bool) != 1." );
-         return MPI_CHAR;
-      };*/
-
       using Request = MPI_Request;
       using CommunicationGroup = MPI_Comm;
 #else
@@ -223,11 +204,11 @@ class MpiCommunicator
       static int GetRank(CommunicationGroup group = AllGroup )
       {
 #ifdef HAVE_MPI
-        TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
-        TNL_ASSERT_NE(group, NullGroup, "GetRank cannot be called with NullGroup");
-        int rank;
-        MPI_Comm_rank(group,&rank);
-        return rank;
+         TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
+         TNL_ASSERT_NE(group, NullGroup, "GetRank cannot be called with NullGroup");
+         int rank;
+         MPI_Comm_rank(group,&rank);
+         return rank;
 #else
          throw Exceptions::MPISupportMissing();
 #endif
@@ -249,224 +230,220 @@ class MpiCommunicator
 #ifdef HAVE_MPI
       template< typename T >
       static MPI_Datatype getDataType( const T& t )
-      { 
+      {
          return MPITypeResolver< T >::getType();
       }
 #endif
-      
+
       //dim-number of dimensions, distr array of guess distr - 0 for computation
       //distr array will be filled by computed distribution
       //more information in MPI documentation
       static void DimsCreate(int nproc, int dim, int *distr)
       {
 #ifdef HAVE_MPI
-           int sum = 0, prod = 1;
-           for( int i = 0;i < dim; i++ )
-           {
-               sum += distr[ i ];
-               prod *= distr[ i ];
-           }
-           if( prod != 0 && prod != GetSize( AllGroup ) )
-              throw Exceptions::MPIDimsCreateError();
-           if(sum==0)
-           {
-               for(int i=0;i<dim-1;i++)
-               {
-                    distr[i]=1;
-               }
-               distr[dim-1]=0;
-            }
-
-            MPI_Dims_create(nproc, dim, distr);
-#else
-            throw Exceptions::MPISupportMissing();
-#endif
-        }
-
-         static void Barrier( CommunicationGroup group = AllGroup )
-         {
-#ifdef HAVE_MPI
-            TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
-            TNL_ASSERT_NE(group, NullGroup, "Barrier cannot be called with NullGroup");
-            MPI_Barrier(group);
-#else
-            throw Exceptions::MPISupportMissing();
-#endif
-        }
-
-         template <typename T>
-         static void Send( const T* data, int count, int dest, int tag, CommunicationGroup group = AllGroup )
-         {
-#ifdef HAVE_MPI
-            TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
-            TNL_ASSERT_NE(group, NullGroup, "Send cannot be called with NullGroup");
-            MPI_Send( const_cast< void* >( ( const void* ) data ), count, MPITypeResolver< T >::getType(), dest, tag, group );
-#else
-            throw Exceptions::MPISupportMissing();
-#endif
-        }
-
-         template <typename T>
-         static void Recv( T* data, int count, int src, int tag, CommunicationGroup group = AllGroup )
-         {
-#ifdef HAVE_MPI
-            TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
-            TNL_ASSERT_NE(group, NullGroup, "Recv cannot be called with NullGroup");
-            MPI_Status status;
-            MPI_Recv( const_cast< void* >( ( const void* ) data ), count, MPITypeResolver< T >::getType() , src, tag, group, &status );
-#else
-            throw Exceptions::MPISupportMissing();
-#endif
-        }
-
-         template <typename T>
-         static Request ISend( const T* data, int count, int dest, int tag, CommunicationGroup group = AllGroup )
-         {
-#ifdef HAVE_MPI
-            TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
-            TNL_ASSERT_NE(group, NullGroup, "ISend cannot be called with NullGroup");
-            Request req;
-            MPI_Isend( const_cast< void* >( ( const void* ) data ), count, MPITypeResolver< T >::getType(), dest, tag, group, &req);
-            return req;
-#else
-            throw Exceptions::MPISupportMissing();
-#endif
-        }
-
-         template <typename T>
-         static Request IRecv( T* data, int count, int src, int tag, CommunicationGroup group = AllGroup )
-         {
-#ifdef HAVE_MPI
-            TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
-            TNL_ASSERT_NE(group, NullGroup, "IRecv cannot be called with NullGroup");
-            Request req;
-            MPI_Irecv( const_cast< void* >( ( const void* ) data ), count, MPITypeResolver< T >::getType() , src, tag, group, &req);
-            return req;
-#else
-            throw Exceptions::MPISupportMissing();
-#endif
-        }
-
-         static void WaitAll(Request *reqs, int length)
-         {
-#ifdef HAVE_MPI
-            TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
-            MPI_Waitall(length, reqs, MPI_STATUSES_IGNORE);
-#else
-            throw Exceptions::MPISupportMissing();
-#endif
-        }
-
-        template< typename T >
-        static void Bcast( T* data, int count, int root, CommunicationGroup group)
-        {
-#ifdef HAVE_MPI
-           TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
-           TNL_ASSERT_NE(group, NullGroup, "BCast cannot be called with NullGroup");
-           MPI_Bcast((void*) data, count, MPITypeResolver< T >::getType(), root, group);
-#else
-           throw Exceptions::MPISupportMissing();
-#endif
-        }
-
-        template< typename T >
-        static void Allreduce( const T* data,
-                               T* reduced_data,
-                               int count,
-                               const MPI_Op &op,
-                               CommunicationGroup group)
-        {
-#ifdef HAVE_MPI
-            TNL_ASSERT_NE(group, NullGroup, "Allreduce cannot be called with NullGroup");
-            MPI_Allreduce( const_cast< void* >( ( void* ) data ), (void*) reduced_data,count,MPITypeResolver< T >::getType(),op,group);
-#else
-            throw Exceptions::MPISupportMissing();
-#endif
-        }
-
-        // in-place variant of Allreduce
-        template< typename T >
-        static void Allreduce( T* data,
-                               int count,
-                               const MPI_Op &op,
-                               CommunicationGroup group)
-        {
-#ifdef HAVE_MPI
-            TNL_ASSERT_NE(group, NullGroup, "Allreduce cannot be called with NullGroup");
-            MPI_Allreduce( MPI_IN_PLACE, (void*) data,count,MPITypeResolver< T >::getType(),op,group);
-#else
-            throw Exceptions::MPISupportMissing();
-#endif
-        }
-
-
-         template< typename T >
-         static void Reduce( const T* data,
-                    T* reduced_data,
-                    int count,
-                    MPI_Op &op,
-                    int root,
-                    CommunicationGroup group)
-         {
-#ifdef HAVE_MPI
-            TNL_ASSERT_NE(group, NullGroup, "Reduce cannot be called with NullGroup");
-            MPI_Reduce( const_cast< void* >( ( void*) data ), (void*) reduced_data,count,MPITypeResolver< T >::getType(),op,root,group);
-#else
-            throw Exceptions::MPISupportMissing();
-#endif
-        }
-
-         template< typename T >
-         static void SendReceive( const T* sendData,
-                                  int sendCount,
-                                  int destination,
-                                  int sendTag,
-                                  T* receiveData,
-                                  int receiveCount,
-                                  int source,
-                                  int receiveTag,
-                                  CommunicationGroup group )
-         {
-#ifdef HAVE_MPI
-            TNL_ASSERT_NE(group, NullGroup, "SendReceive cannot be called with NullGroup");
-            MPI_Status status;
-            MPI_Sendrecv( const_cast< void* >( ( void* ) sendData ),
-                          sendCount,
-                          MPITypeResolver< T >::getType(),
-                          destination,
-                          sendTag,
-                          ( void* ) receiveData,
-                          receiveCount,
-                          MPITypeResolver< T >::getType(),
-                          source,
-                          receiveTag,
-                          group,
-                          &status );
-#else
-            throw Exceptions::MPISupportMissing();
-#endif
+         int sum = 0, prod = 1;
+         for( int i = 0;i < dim; i++ ) {
+            sum += distr[ i ];
+            prod *= distr[ i ];
+         }
+         if( prod != 0 && prod != GetSize( AllGroup ) )
+            throw Exceptions::MPIDimsCreateError();
+         if(sum==0) {
+            for(int i=0;i<dim-1;i++)
+               distr[i]=1;
+            distr[dim-1]=0;
          }
 
-         template< typename T >
-         static void Alltoall( const T* sendData,
+         MPI_Dims_create(nproc, dim, distr);
+#else
+         throw Exceptions::MPISupportMissing();
+#endif
+      }
+
+      static void Barrier( CommunicationGroup group = AllGroup )
+      {
+#ifdef HAVE_MPI
+         TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
+         TNL_ASSERT_NE(group, NullGroup, "Barrier cannot be called with NullGroup");
+         MPI_Barrier(group);
+#else
+         throw Exceptions::MPISupportMissing();
+#endif
+      }
+
+      template <typename T>
+      static void Send( const T* data, int count, int dest, int tag, CommunicationGroup group = AllGroup )
+      {
+#ifdef HAVE_MPI
+         TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
+         TNL_ASSERT_NE(group, NullGroup, "Send cannot be called with NullGroup");
+         MPI_Send( const_cast< void* >( ( const void* ) data ), count, MPITypeResolver< T >::getType(), dest, tag, group );
+#else
+         throw Exceptions::MPISupportMissing();
+#endif
+      }
+
+      template <typename T>
+      static void Recv( T* data, int count, int src, int tag, CommunicationGroup group = AllGroup )
+      {
+#ifdef HAVE_MPI
+         TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
+         TNL_ASSERT_NE(group, NullGroup, "Recv cannot be called with NullGroup");
+         MPI_Status status;
+         MPI_Recv( const_cast< void* >( ( const void* ) data ), count, MPITypeResolver< T >::getType() , src, tag, group, &status );
+#else
+         throw Exceptions::MPISupportMissing();
+#endif
+     }
+
+      template <typename T>
+      static Request ISend( const T* data, int count, int dest, int tag, CommunicationGroup group = AllGroup )
+      {
+#ifdef HAVE_MPI
+         TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
+         TNL_ASSERT_NE(group, NullGroup, "ISend cannot be called with NullGroup");
+         Request req;
+         MPI_Isend( const_cast< void* >( ( const void* ) data ), count, MPITypeResolver< T >::getType(), dest, tag, group, &req);
+         return req;
+#else
+         throw Exceptions::MPISupportMissing();
+#endif
+      }
+
+      template <typename T>
+      static Request IRecv( T* data, int count, int src, int tag, CommunicationGroup group = AllGroup )
+      {
+#ifdef HAVE_MPI
+         TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
+         TNL_ASSERT_NE(group, NullGroup, "IRecv cannot be called with NullGroup");
+         Request req;
+         MPI_Irecv( const_cast< void* >( ( const void* ) data ), count, MPITypeResolver< T >::getType() , src, tag, group, &req);
+         return req;
+#else
+         throw Exceptions::MPISupportMissing();
+#endif
+      }
+
+      static void WaitAll(Request *reqs, int length)
+      {
+#ifdef HAVE_MPI
+         TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
+         MPI_Waitall(length, reqs, MPI_STATUSES_IGNORE);
+#else
+         throw Exceptions::MPISupportMissing();
+#endif
+      }
+
+      template< typename T >
+      static void Bcast( T* data, int count, int root, CommunicationGroup group)
+      {
+#ifdef HAVE_MPI
+         TNL_ASSERT_TRUE(IsInitialized(), "Fatal Error - MPI communicator is not initialized");
+         TNL_ASSERT_NE(group, NullGroup, "BCast cannot be called with NullGroup");
+         MPI_Bcast((void*) data, count, MPITypeResolver< T >::getType(), root, group);
+#else
+         throw Exceptions::MPISupportMissing();
+#endif
+      }
+
+      template< typename T >
+      static void Allreduce( const T* data,
+                             T* reduced_data,
+                             int count,
+                             const MPI_Op &op,
+                             CommunicationGroup group)
+      {
+#ifdef HAVE_MPI
+         TNL_ASSERT_NE(group, NullGroup, "Allreduce cannot be called with NullGroup");
+         MPI_Allreduce( const_cast< void* >( ( void* ) data ), (void*) reduced_data,count,MPITypeResolver< T >::getType(),op,group);
+#else
+         throw Exceptions::MPISupportMissing();
+#endif
+      }
+
+      // in-place variant of Allreduce
+      template< typename T >
+      static void Allreduce( T* data,
+                             int count,
+                             const MPI_Op &op,
+                             CommunicationGroup group)
+      {
+#ifdef HAVE_MPI
+         TNL_ASSERT_NE(group, NullGroup, "Allreduce cannot be called with NullGroup");
+         MPI_Allreduce( MPI_IN_PLACE, (void*) data,count,MPITypeResolver< T >::getType(),op,group);
+#else
+         throw Exceptions::MPISupportMissing();
+#endif
+      }
+
+
+      template< typename T >
+      static void Reduce( const T* data,
+                          T* reduced_data,
+                          int count,
+                          MPI_Op &op,
+                          int root,
+                          CommunicationGroup group)
+      {
+#ifdef HAVE_MPI
+         TNL_ASSERT_NE(group, NullGroup, "Reduce cannot be called with NullGroup");
+         MPI_Reduce( const_cast< void* >( ( void*) data ), (void*) reduced_data,count,MPITypeResolver< T >::getType(),op,root,group);
+#else
+         throw Exceptions::MPISupportMissing();
+#endif
+      }
+
+      template< typename T >
+      static void SendReceive( const T* sendData,
                                int sendCount,
+                               int destination,
+                               int sendTag,
                                T* receiveData,
                                int receiveCount,
+                               int source,
+                               int receiveTag,
                                CommunicationGroup group )
-         {
+      {
 #ifdef HAVE_MPI
-            TNL_ASSERT_NE(group, NullGroup, "SendReceive cannot be called with NullGroup");
-            MPI_Alltoall( const_cast< void* >( ( void* ) sendData ),
-                          sendCount,
-                          MPITypeResolver< T >::getType(),
-                          ( void* ) receiveData,
-                          receiveCount,
-                          MPITypeResolver< T >::getType(),
-                          group );
+         TNL_ASSERT_NE(group, NullGroup, "SendReceive cannot be called with NullGroup");
+         MPI_Status status;
+         MPI_Sendrecv( const_cast< void* >( ( void* ) sendData ),
+                       sendCount,
+                       MPITypeResolver< T >::getType(),
+                       destination,
+                       sendTag,
+                       ( void* ) receiveData,
+                       receiveCount,
+                       MPITypeResolver< T >::getType(),
+                       source,
+                       receiveTag,
+                       group,
+                       &status );
 #else
-            throw Exceptions::MPISupportMissing();
+         throw Exceptions::MPISupportMissing();
 #endif
-         }
+      }
+
+      template< typename T >
+      static void Alltoall( const T* sendData,
+                            int sendCount,
+                            T* receiveData,
+                            int receiveCount,
+                            CommunicationGroup group )
+      {
+#ifdef HAVE_MPI
+         TNL_ASSERT_NE(group, NullGroup, "SendReceive cannot be called with NullGroup");
+         MPI_Alltoall( const_cast< void* >( ( void* ) sendData ),
+                       sendCount,
+                       MPITypeResolver< T >::getType(),
+                       ( void* ) receiveData,
+                       receiveCount,
+                       MPITypeResolver< T >::getType(),
+                       group );
+#else
+         throw Exceptions::MPISupportMissing();
+#endif
+      }
 
 
       static void writeProlog( Logger& logger )
@@ -480,14 +457,10 @@ class MpiCommunicator
       static void CreateNewGroup( bool meToo, int myRank, CommunicationGroup &oldGroup, CommunicationGroup &newGroup )
       {
 #ifdef HAVE_MPI
-        if(meToo)
-        {
+         if(meToo)
             MPI_Comm_split(oldGroup, 1, myRank, &newGroup);
-        }
-        else
-        {
+         else
             MPI_Comm_split(oldGroup, MPI_UNDEFINED, GetRank(oldGroup), &newGroup);
-        }
 #else
          throw Exceptions::MPISupportMissing();
 #endif
@@ -502,7 +475,7 @@ class MpiCommunicator
       static constexpr int AllGroup = 1;
       static constexpr int NullGroup = 0;
 #endif
-    private :
+   private:
       static std::streambuf* psbuf;
       static std::streambuf* backup;
       static std::ofstream filestr;
@@ -543,7 +516,6 @@ class MpiCommunicator
          TNL_CHECK_CUDA_DEVICE;
 
          //std::cout<<"Node: " << rank << " gpu: " << gpuNumber << std::endl;
-
     #endif
 #endif
       }
@@ -559,8 +531,6 @@ std::streambuf* MpiCommunicator::backup = nullptr;
 std::ofstream MpiCommunicator::filestr;
 bool MpiCommunicator::redirect = true;
 
-
 } // namespace <unnamed>
 } // namespace Communicators
 } // namespace TNL
-

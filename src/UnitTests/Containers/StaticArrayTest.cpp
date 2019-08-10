@@ -56,7 +56,7 @@ using StaticArrayTypes = ::testing::Types<
    StaticArray< 5, double >
 >;
 
-TYPED_TEST_CASE( StaticArrayTest, StaticArrayTypes );
+TYPED_TEST_SUITE( StaticArrayTest, StaticArrayTypes );
 
 TYPED_TEST( StaticArrayTest, constructors )
 {

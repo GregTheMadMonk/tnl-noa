@@ -49,8 +49,8 @@ public:
 
 protected:
    // local vectors/views
-   using ConstDeviceView = typename Traits::ConstLocalVectorViewType;
-   using DeviceView = typename Traits::LocalVectorViewType;
+   using ConstDeviceView = typename Traits::ConstLocalViewType;
+   using DeviceView = typename Traits::LocalViewType;
    using HostView = typename DeviceView::HostType;
    using DeviceVector = typename Traits::LocalVectorType;
    using HostVector = typename DeviceVector::HostType;

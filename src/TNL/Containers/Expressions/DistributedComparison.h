@@ -2,7 +2,7 @@
                           DistributedComparison.h  -  description
                              -------------------
     begin                : Jul 4, 2019
-    copyright            : (C) 2019 by Tomas Oberhuber
+    copyright            : (C) 2019 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -10,12 +10,13 @@
 
 #pragma once
 
-#include <TNL/Assert.h>
+#include <TNL/Containers/Expressions/ExpressionVariableType.h>
 #include <TNL/Containers/Algorithms/Reduction.h>
+#include <TNL/Communicators/MpiDefs.h>
 
 namespace TNL {
-   namespace Containers {
-      namespace Expressions {
+namespace Containers {
+namespace Expressions {
 
 ////
 // Non-static comparison
@@ -23,9 +24,7 @@ template< typename T1,
           typename T2,
           ExpressionVariableType T1Type = ExpressionVariableTypeGetter< T1 >::value,
           ExpressionVariableType T2Type = ExpressionVariableTypeGetter< T2 >::value >
-struct DistributedComparison
-{
-};
+struct DistributedComparison;
 
 /////
 // Distributed comparison of two vector expressions
@@ -33,85 +32,84 @@ template< typename T1,
           typename T2 >
 struct DistributedComparison< T1, T2, VectorExpressionVariable, VectorExpressionVariable >
 {
-   template< typename Communicator >
-   static bool EQ( const T1& a, const T2& b, const typename Communicator::CommunicationGroup& communicationGroup )
+   static bool EQ( const T1& a, const T2& b )
    {
-      if( a.getSize() != b.getSize() )
+      // we can't run allreduce if the communication groups are different
+      if( a.getCommunicationGroup() != b.getCommunicationGroup() )
          return false;
-      if( a.getSize() == 0 )
-         return true;
-
-      using DeviceType = typename T1::DeviceType;
-      using IndexType = typename T1::IndexType;
-
-      auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return  ( a[ i ] == b[ i ] ); };
-      auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
-      auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
-      bool localResult = Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
-
-      bool result = localResult;
-      if( communicationGroup != Communicator::NullGroup ) {
-         Communicator::Allreduce( &localResult, &result, 1, MPI_LAND, communicationGroup );
-      }
+      const bool localResult =
+            a.getLocalRange() == b.getLocalRange() &&
+            a.getSize() == b.getSize() &&
+            a.getConstLocalView() == b.getConstLocalView();
+      bool result = true;
+      if( a.getCommunicationGroup() != T1::CommunicatorType::NullGroup )
+         T1::CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
       return result;
    }
 
-   template< typename Communicator >
-   static bool NE( const T1& a, const T2& b, const typename Communicator::CommunicationGroup& communicationGroup )
+   static bool NE( const T1& a, const T2& b )
    {
-      return ! EQ< Communicator >( a, b, communicationGroup );
+      return ! DistributedComparison::EQ( a, b );
    }
 
-   template< typename Communicator >
-   static bool GT( const T1& a, const T2& b, const typename Communicator::CommunicationGroup& communicationGroup )
+   static bool LT( const T1& a, const T2& b )
    {
-      TNL_ASSERT_EQ( a.getSize(), b.getSize(), "Sizes of expressions to be compared do not fit." );
+      TNL_ASSERT_EQ( a.getSize(), b.getSize(), "Sizes of expressions to be compared do not match." );
+      TNL_ASSERT_EQ( a.getLocalRange(), b.getLocalRange(), "Local ranges of expressions to be compared do not match." );
 
-      using DeviceType = typename T1::DeviceType;
-      using IndexType = typename T1::IndexType;
-
-      auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return  ( a[ i ] > b[ i ] ); };
-      auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
-      auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
-      bool localResult = Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
-
-      bool result = localResult;
-      if( communicationGroup != Communicator::NullGroup ) {
-         Communicator::Allreduce( &localResult, &result, 1, MPI_LAND, communicationGroup );
-      }
+      // we can't run allreduce if the communication groups are different
+      if( a.getCommunicationGroup() != b.getCommunicationGroup() )
+         return false;
+      const bool localResult = a.getConstLocalView() < b.getConstLocalView();
+      bool result = true;
+      if( a.getCommunicationGroup() != T1::CommunicatorType::NullGroup )
+         T1::CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
       return result;
    }
 
-   template< typename Communicator >
-   static bool LE( const T1& a, const T2& b, const typename Communicator::CommunicationGroup& communicationGroup )
+   static bool LE( const T1& a, const T2& b )
    {
-      return ! GT( a, b, communicationGroup );
-   }
+      TNL_ASSERT_EQ( a.getSize(), b.getSize(), "Sizes of expressions to be compared do not match." );
+      TNL_ASSERT_EQ( a.getLocalRange(), b.getLocalRange(), "Local ranges of expressions to be compared do not match." );
 
-   template< typename Communicator >
-   static bool LT( const T1& a, const T2& b, const typename Communicator::CommunicationGroup& communicationGroup )
-   {
-      TNL_ASSERT_EQ( a.getSize(), b.getSize(), "Sizes of expressions to be compared do not fit." );
-
-      using DeviceType = typename T1::DeviceType;
-      using IndexType = typename T1::IndexType;
-
-      auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return  ( a[ i ] < b[ i ] ); };
-      auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
-      auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
-      bool localResult = Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
-
-      bool result = localResult;
-      if( communicationGroup != Communicator::NullGroup ) {
-         Communicator::Allreduce( &localResult, &result, 1, MPI_LAND, communicationGroup );
-      }
+      // we can't run allreduce if the communication groups are different
+      if( a.getCommunicationGroup() != b.getCommunicationGroup() )
+         return false;
+      const bool localResult = a.getConstLocalView() <= b.getConstLocalView();
+      bool result = true;
+      if( a.getCommunicationGroup() != T1::CommunicatorType::NullGroup )
+         T1::CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
       return result;
    }
 
-   template< typename Communicator >
-   static bool GE( const T1& a, const T2& b, const typename Communicator::CommunicationGroup& communicationGroup )
+   static bool GT( const T1& a, const T2& b )
    {
-      return ! LT( a, b, communicationGroup );
+      TNL_ASSERT_EQ( a.getSize(), b.getSize(), "Sizes of expressions to be compared do not match." );
+      TNL_ASSERT_EQ( a.getLocalRange(), b.getLocalRange(), "Local ranges of expressions to be compared do not match." );
+
+      // we can't run allreduce if the communication groups are different
+      if( a.getCommunicationGroup() != b.getCommunicationGroup() )
+         return false;
+      const bool localResult = a.getConstLocalView() > b.getConstLocalView();
+      bool result = true;
+      if( a.getCommunicationGroup() != T1::CommunicatorType::NullGroup )
+         T1::CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
+      return result;
+   }
+
+   static bool GE( const T1& a, const T2& b )
+   {
+      TNL_ASSERT_EQ( a.getSize(), b.getSize(), "Sizes of expressions to be compared do not match." );
+      TNL_ASSERT_EQ( a.getLocalRange(), b.getLocalRange(), "Local ranges of expressions to be compared do not match." );
+
+      // we can't run allreduce if the communication groups are different
+      if( a.getCommunicationGroup() != b.getCommunicationGroup() )
+         return false;
+      const bool localResult = a.getConstLocalView() >= b.getConstLocalView();
+      bool result = true;
+      if( a.getCommunicationGroup() != T1::CommunicatorType::NullGroup )
+         T1::CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
+      return result;
    }
 };
 
@@ -121,77 +119,54 @@ template< typename T1,
           typename T2 >
 struct DistributedComparison< T1, T2, ArithmeticVariable, VectorExpressionVariable >
 {
-
-   template< typename Communicator >
-   static bool EQ( const T1& a, const T2& b, const typename Communicator::CommunicationGroup& communicationGroup )
+   static bool EQ( const T1& a, const T2& b )
    {
-      using DeviceType = typename T1::DeviceType;
-      using IndexType = typename T1::IndexType;
-
-      auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return  ( a == b[ i ] ); };
-      auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
-      auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
-      bool localResult = Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
-
-      bool result = localResult;
-      if( communicationGroup != Communicator::NullGroup ) {
-         Communicator::Allreduce( &localResult, &result, 1, MPI_LAND, communicationGroup );
-      }
+      const bool localResult = a == b.getConstLocalView();
+      bool result = true;
+      if( b.getCommunicationGroup() != T2::CommunicatorType::NullGroup )
+         T2::CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, b.getCommunicationGroup() );
       return result;
    }
 
-   template< typename Communicator >
-   static bool NE( const T1& a, const T2& b, const typename Communicator::CommunicationGroup& communicationGroup )
+   static bool NE( const T1& a, const T2& b )
    {
-      return ! EQ( a, b, communicationGroup );
+      return ! DistributedComparison::EQ( a, b );
    }
 
-   template< typename Communicator >
-   static bool GT( const T1& a, const T2& b, const typename Communicator::CommunicationGroup& communicationGroup )
+   static bool LT( const T1& a, const T2& b )
    {
-      using DeviceType = typename T1::DeviceType;
-      using IndexType = typename T1::IndexType;
-
-      auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return  ( a > b[ i ] ); };
-      auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
-      auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
-      bool localResult = Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
-
-      bool result = localResult;
-      if( communicationGroup != Communicator::NullGroup ) {
-         Communicator::Allreduce( &localResult, &result, 1, MPI_LAND, communicationGroup );
-      }
+      const bool localResult = a < b.getConstLocalView();
+      bool result = true;
+      if( b.getCommunicationGroup() != T2::CommunicatorType::NullGroup )
+         T2::CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, b.getCommunicationGroup() );
       return result;
    }
 
-   template< typename Communicator >
-   static bool LE( const T1& a, const T2& b, const typename Communicator::CommunicationGroup& communicationGroup )
+   static bool LE( const T1& a, const T2& b )
    {
-      return ! GT( a, b, communicationGroup );
-   }
-
-   template< typename Communicator >
-   static bool LT( const T1& a, const T2& b, const typename Communicator::CommunicationGroup& communicationGroup )
-   {
-      using DeviceType = typename T1::DeviceType;
-      using IndexType = typename T1::IndexType;
-
-      auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return  ( a < b[ i ] ); };
-      auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
-      auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
-      bool localResult = Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
-
-      bool result = localResult;
-      if( communicationGroup != Communicator::NullGroup ) {
-         Communicator::Allreduce( &localResult, &result, 1, MPI_LAND, communicationGroup );
-      }
+      const bool localResult = a <= b.getConstLocalView();
+      bool result = true;
+      if( b.getCommunicationGroup() != T2::CommunicatorType::NullGroup )
+         T2::CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, b.getCommunicationGroup() );
       return result;
    }
 
-   template< typename Communicator >
-   static bool GE( const T1& a, const T2& b, const typename Communicator::CommunicationGroup& communicationGroup )
+   static bool GT( const T1& a, const T2& b )
    {
-      return ! LT( a, b, communicationGroup );
+      const bool localResult = a > b.getConstLocalView();
+      bool result = true;
+      if( b.getCommunicationGroup() != T2::CommunicatorType::NullGroup )
+         T2::CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, b.getCommunicationGroup() );
+      return result;
+   }
+
+   static bool GE( const T1& a, const T2& b )
+   {
+      const bool localResult = a >= b.getConstLocalView();
+      bool result = true;
+      if( b.getCommunicationGroup() != T2::CommunicatorType::NullGroup )
+         T2::CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, b.getCommunicationGroup() );
+      return result;
    }
 };
 
@@ -201,80 +176,57 @@ template< typename T1,
           typename T2 >
 struct DistributedComparison< T1, T2, VectorExpressionVariable, ArithmeticVariable >
 {
-
-   template< typename Communicator >
-   static bool EQ( const T1& a, const T2& b, const typename Communicator::CommunicationGroup& communicationGroup )
+   static bool EQ( const T1& a, const T2& b )
    {
-      using DeviceType = typename T1::DeviceType;
-      using IndexType = typename T1::IndexType;
-
-      auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return  ( a[ i ] == b ); };
-      auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
-      auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
-      bool localResult = Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
-
-      bool result = localResult;
-      if( communicationGroup != Communicator::NullGroup ) {
-         Communicator::Allreduce( &localResult, &result, 1, MPI_LAND, communicationGroup );
-      }
+      const bool localResult = a.getConstLocalView() == b;
+      bool result = true;
+      if( a.getCommunicationGroup() != T1::CommunicatorType::NullGroup )
+         T1::CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
       return result;
    }
 
-   template< typename Communicator >
-   static bool NE( const T1& a, const T2& b, const typename Communicator::CommunicationGroup& communicationGroup )
+   static bool NE( const T1& a, const T2& b )
    {
-      return ! EQ( a, b, communicationGroup );
+      return ! DistributedComparison::EQ( a, b );
    }
 
-   template< typename Communicator >
-   static bool GT( const T1& a, const T2& b, const typename Communicator::CommunicationGroup& communicationGroup )
+   static bool LT( const T1& a, const T2& b )
    {
-      using DeviceType = typename T1::DeviceType;
-      using IndexType = typename T1::IndexType;
-
-      auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return  ( a[ i ] > b ); };
-      auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
-      auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
-      bool localResult = Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
-
-      bool result = localResult;
-      if( communicationGroup != Communicator::NullGroup ) {
-         Communicator::Allreduce( &localResult, &result, 1, MPI_LAND, communicationGroup );
-      }
+      const bool localResult = a.getConstLocalView() < b;
+      bool result = true;
+      if( a.getCommunicationGroup() != T1::CommunicatorType::NullGroup )
+         T1::CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
       return result;
    }
 
-   template< typename Communicator >
-   static bool LE( const T1& a, const T2& b, const typename Communicator::CommunicationGroup& communicationGroup )
+   static bool LE( const T1& a, const T2& b )
    {
-      return ! GT( a, b, communicationGroup );
-   }
-
-   template< typename Communicator >
-   static bool LT( const T1& a, const T2& b, const typename Communicator::CommunicationGroup& communicationGroup )
-   {
-      using DeviceType = typename T1::DeviceType;
-      using IndexType = typename T1::IndexType;
-
-      auto fetch = [=] __cuda_callable__ ( IndexType i ) -> bool { return  ( a[ i ] < b ); };
-      auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
-      auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
-      bool localResult = Algorithms::Reduction< DeviceType >::reduce( a.getSize(), reduction, volatileReduction, fetch, true );
-
-      bool result = localResult;
-      if( communicationGroup != Communicator::NullGroup ) {
-         Communicator::Allreduce( &localResult, &result, 1, MPI_LAND, communicationGroup );
-      }
+      const bool localResult = a.getConstLocalView() <= b;
+      bool result = true;
+      if( a.getCommunicationGroup() != T1::CommunicatorType::NullGroup )
+         T1::CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
       return result;
    }
 
-   template< typename Communicator >
-   static bool GE( const T1& a, const T2& b, const typename Communicator::CommunicationGroup& communicationGroup )
+   static bool GT( const T1& a, const T2& b )
    {
-      return ! LT( a, b, communicationGroup );
+      const bool localResult = a.getConstLocalView() > b;
+      bool result = true;
+      if( a.getCommunicationGroup() != T1::CommunicatorType::NullGroup )
+         T1::CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
+      return result;
+   }
+
+   static bool GE( const T1& a, const T2& b )
+   {
+      const bool localResult = a.getConstLocalView() >= b;
+      bool result = true;
+      if( a.getCommunicationGroup() != T1::CommunicatorType::NullGroup )
+         T1::CommunicatorType::Allreduce( &localResult, &result, 1, MPI_LAND, a.getCommunicationGroup() );
+      return result;
    }
 };
 
-      } //namespace Expressions
-   } // namespace Containers
+} // namespace Expressions
+} // namespace Containers
 } // namespace TNL

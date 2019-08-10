@@ -2,7 +2,7 @@
                           VectorExpressions.h  -  description
                              -------------------
     begin                : Jun 27, 2019
-    copyright            : (C) 2019 by Tomas Oberhuber
+    copyright            : (C) 2019 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -10,11 +10,7 @@
 
 #pragma once
 
-#include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Expressions/ExpressionTemplates.h>
-#include <TNL/Containers/Expressions/ExpressionTemplatesOperations.h>
-#include <TNL/Containers/Expressions/Comparison.h>
-#include <TNL/Containers/Expressions/VerticalOperations.h>
 
 #include "Vector.h"
 
@@ -233,42 +229,27 @@ template< typename Real1, typename Real2, typename Device1, typename Device2, ty
 bool
 operator==( const Vector< Real1, Device1, Index, Allocator >& a, const Vector< Real2, Device2, Index, Allocator >& b )
 {
-   if( a.getSize() != b.getSize() )
-      return false;
-   if( a.getSize() == 0 )
-      return true;
-   return Algorithms::ArrayOperations< Device1, Device2 >::
-            compare( a.getData(),
-                     b.getData(),
-                     a.getSize() );
+   using ConstView1 = typename Vector< Real1, Device1, Index, Allocator >::ConstViewType;
+   using ConstView2 = typename Vector< Real2, Device2, Index, Allocator >::ConstViewType;
+   return Expressions::Comparison< ConstView1, ConstView2 >::EQ( a.getConstView(), b.getConstView() );
 }
 
 template< typename Real1, typename Real2, typename Device1, typename Device2, typename Index, typename Allocator >
 bool
 operator==( const VectorView< Real1, Device1, Index >& a, const Vector< Real2, Device2, Index, Allocator >& b )
 {
-   if( a.getSize() != b.getSize() )
-      return false;
-   if( a.getSize() == 0 )
-      return true;
-   return Algorithms::ArrayOperations< Device1, Device2 >::
-            compare( a.getData(),
-                     b.getData(),
-                     a.getSize() );
+   using ConstView1 = VectorView< Real1, Device1, Index >;
+   using ConstView2 = typename Vector< Real2, Device2, Index, Allocator >::ConstViewType;
+   return Expressions::Comparison< ConstView1, ConstView2 >::EQ( a, b.getConstView() );
 }
 
 template< typename Real1, typename Real2, typename Device1, typename Device2, typename Index, typename Allocator >
 bool
 operator==( const Vector< Real1, Device1, Index, Allocator >& a, const VectorView< Real2, Device2, Index >& b )
 {
-   if( a.getSize() != b.getSize() )
-      return false;
-   if( a.getSize() == 0 )
-      return true;
-   return Algorithms::ArrayOperations< Device1, Device2 >::
-            compare( a.getData(),
-                     b.getData(),
-                     a.getSize() );
+   using ConstView1 = typename Vector< Real1, Device1, Index, Allocator >::ConstViewType;
+   using ConstView2 = VectorView< Real2, Device2, Index >;
+   return Expressions::Comparison< ConstView1, ConstView2 >::EQ( a.getConstView(), b );
 }
 
 ////
@@ -705,7 +686,7 @@ auto
 pow( const Containers::Vector< Real, Device, Index, Allocator >& a, const ExpType& exp )
 {
    using ConstView = typename Containers::Vector< Real, Device, Index, Allocator >::ConstViewType;
-   return Containers::Expressions::UnaryExpressionTemplate< ConstView, Containers::Expressions::Pow, ExpType >( a.getConstView(), exp );
+   return Containers::Expressions::BinaryExpressionTemplate< ConstView, ExpType, Containers::Expressions::Pow >( a.getConstView(), exp );
 }
 
 ////
@@ -919,6 +900,17 @@ sign( const Containers::Vector< Real, Device, Index, Allocator >& a )
 }
 
 ////
+// Cast
+template< typename ResultType, typename Real, typename Device, typename Index, typename Allocator,
+          // workaround: templated type alias cannot be declared at block level
+          template<typename> class Operation = Containers::Expressions::Cast< ResultType >::template Operation >
+auto
+cast( const Containers::Vector< Real, Device, Index, Allocator >& a )
+{
+   return Containers::Expressions::UnaryExpressionTemplate< decltype(a.getConstView()), Operation >( a.getConstView() );
+}
+
+////
 // Vertical operations - min
 template< typename Real,
           typename Device,
@@ -932,10 +924,10 @@ min( const Containers::Vector< Real, Device, Index, Allocator >& a )
 template< typename Real,
           typename Device,
           typename Index, typename Allocator >
-Real
-argMin( const Containers::Vector< Real, Device, Index, Allocator >& a, Index& arg )
+std::pair< Index, std::decay_t< Real > >
+argMin( const Containers::Vector< Real, Device, Index, Allocator >& a )
 {
-   return Containers::Expressions::ExpressionArgMin( a.getConstView(), arg );
+   return Containers::Expressions::ExpressionArgMin( a.getConstView() );
 }
 
 template< typename Real,
@@ -950,10 +942,10 @@ max( const Containers::Vector< Real, Device, Index, Allocator >& a )
 template< typename Real,
           typename Device,
           typename Index, typename Allocator >
-Real
-argMax( const Containers::Vector< Real, Device, Index, Allocator >& a, Index& arg )
+std::pair< Index, std::decay_t< Real > >
+argMax( const Containers::Vector< Real, Device, Index, Allocator >& a )
 {
-   return Containers::Expressions::ExpressionArgMax( a.getConstView(), arg );
+   return Containers::Expressions::ExpressionArgMax( a.getConstView() );
 }
 
 template< typename Real,
@@ -967,17 +959,45 @@ sum( const Containers::Vector< Real, Device, Index, Allocator >& a )
 
 template< typename Real,
           typename Device,
+          typename Index, typename Allocator >
+auto
+maxNorm( const Containers::Vector< Real, Device, Index, Allocator >& a )
+{
+   return max( abs( a ) );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index, typename Allocator >
+auto
+l1Norm( const Containers::Vector< Real, Device, Index, Allocator >& a )
+{
+   return Containers::Expressions::ExpressionL1Norm( a.getConstView() );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index, typename Allocator >
+auto
+l2Norm( const Containers::Vector< Real, Device, Index, Allocator >& a )
+{
+   return TNL::sqrt( Containers::Expressions::ExpressionL2Norm( a.getConstView() ) );
+}
+
+template< typename Real,
+          typename Device,
           typename Index, typename Allocator,
           typename Real2 >
 auto
 lpNorm( const Containers::Vector< Real, Device, Index, Allocator >& a, const Real2& p )
--> decltype( Containers::Expressions::ExpressionLpNorm( a.getConstView(), p ) )
+// since (1.0 / p) has type double, TNL::pow returns double
+-> double
 {
    if( p == 1.0 )
-      return Containers::Expressions::ExpressionLpNorm( a.getConstView(), p );
+      return l1Norm( a );
    if( p == 2.0 )
-      return TNL::sqrt( Containers::Expressions::ExpressionLpNorm( a.getConstView(), p ) );
-   return TNL::pow( Containers::Expressions::ExpressionLpNorm( a.getConstView(), p ), (Real2) (1.0 / p) );
+      return l2Norm( a );
+   return TNL::pow( Containers::Expressions::ExpressionLpNorm( a.getConstView(), p ), 1.0 / p );
 }
 
 template< typename Real,

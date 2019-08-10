@@ -154,8 +154,8 @@ public:
       // prepare buffers
       commRequests.clear();
       globalBuffer.init( Partitioner::getOffset( localMatrix.getColumns(), rank, nproc ),
-                         inVector.getLocalVectorView(),
-                         localMatrix.getColumns() - Partitioner::getOffset( localMatrix.getColumns(), rank, nproc ) - inVector.getLocalVectorView().getSize() );
+                         inVector.getConstLocalView(),
+                         localMatrix.getColumns() - Partitioner::getOffset( localMatrix.getColumns(), rank, nproc ) - inVector.getConstLocalView().getSize() );
       const auto globalBufferView = globalBuffer.getConstView();
 
       // send our data to all processes that need it
@@ -164,7 +164,7 @@ public:
              continue;
          if( commPatternStarts( i, rank ) < commPatternEnds( i, rank ) )
             commRequests.push_back( CommunicatorType::ISend(
-                     inVector.getLocalVectorView().getData() + commPatternStarts( i, rank ) - Partitioner::getOffset( localMatrix.getColumns(), rank, nproc ),
+                     inVector.getConstLocalView().getData() + commPatternStarts( i, rank ) - Partitioner::getOffset( localMatrix.getColumns(), rank, nproc ),
                      commPatternEnds( i, rank ) - commPatternStarts( i, rank ),
                      i, 0, group ) );
       }
@@ -186,7 +186,7 @@ public:
          CommunicatorType::WaitAll( &commRequests[0], commRequests.size() );
 
          // perform matrix-vector multiplication
-         auto outVectorView = outVector.getLocalVectorView();
+         auto outVectorView = outVector.getLocalView();
          const Pointers::DevicePointer< const MatrixType > localMatrixPointer( localMatrix );
          auto kernel = [=] __cuda_callable__ ( IndexType i, const MatrixType* localMatrix ) mutable
          {
@@ -197,7 +197,7 @@ public:
       }
       // optimization for banded matrices
       else {
-         auto outVectorView = outVector.getLocalVectorView();
+         auto outVectorView = outVector.getLocalView();
          const Pointers::DevicePointer< const MatrixType > localMatrixPointer( localMatrix );
          const auto inView = inVector.getConstView();
 

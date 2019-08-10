@@ -1,8 +1,8 @@
 /***************************************************************************
-                          ExpressionTemplatesOperations.h  -  description
+                          HorizontalOperations.h  -  description
                              -------------------
     begin                : Apr 18, 2019
-    copyright            : (C) 2019 by Tomas Oberhuber
+    copyright            : (C) 2019 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -96,12 +96,11 @@ struct Abs
    }
 };
 
-template< typename T1 >
+template< typename T1, typename T2 >
 struct Pow
 {
-   template< typename Real >
    __cuda_callable__
-   static auto evaluate( const T1& a, const Real& exp ) -> decltype( TNL::pow( a, exp ) )
+   static auto evaluate( const T1& a, const T2& exp ) -> decltype( TNL::pow( a, exp ) )
    {
       return TNL::pow( a, exp );
    }
@@ -315,6 +314,20 @@ struct Sign
    {
       return TNL::sign( a );
    }
+};
+
+template< typename ResultType >
+struct Cast
+{
+   template< typename T1 >
+   struct Operation
+   {
+      __cuda_callable__
+      static auto evaluate( const T1& a ) -> ResultType
+      {
+         return static_cast<ResultType>( a );
+      }
+   };
 };
 
 } // namespace Expressions

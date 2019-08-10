@@ -21,6 +21,7 @@ option(WITH_MIC "Build with MIC support" OFF)
 option(WITH_CUDA "Build with CUDA support" ON)
 set(WITH_CUDA_ARCH "auto" CACHE STRING "Build for these CUDA architectures")
 option(WITH_OPENMP "Build with OpenMP support" ON)
+option(WITH_MPI "Build with MPI support" ON)
 option(WITH_GMP "Build with GMP support" OFF)
 option(WITH_TESTS "Build tests" ON)
 option(WITH_PROFILING "Enable code profiling compiler flags" OFF )
@@ -39,10 +40,11 @@ set( TNL_TARGET_DATA_DIRECTORY "share/TNL" )
 # the cmake directory in the TNL repository
 set( CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
 
-# Note that in cmake 3.10 the FindOpenMP module is broken - it does not work when
+# Note that in cmake 3.10 the FindOpenMP and FindMPI modules are broken - they do not work when
 # CMAKE_EXECUTABLE_SUFFIX is not empty, see https://www.mail-archive.com/cmake@cmake.org/msg56886.html
-# Hence, we find OpenMP before setting CMAKE_EXECUTABLE_SUFFIX.
+# Hence, we find OpenMP and MPI before setting CMAKE_EXECUTABLE_SUFFIX.
 find_package( OpenMP )
+find_package( MPI )
 
 ####
 # Settings for debug/release version
@@ -127,27 +129,40 @@ if( DEFINED ENV{CI_JOB_NAME} OR ${CMAKE_GENERATOR} STREQUAL "Ninja" )
    endif()
 endif()
 
-#####
-# Check for MPI -- poznej podle vraperu compileru -- da se testovat preklad bez MPI
-#
-get_filename_component( CXX_COMPILER_NAME ${CMAKE_CXX_COMPILER} NAME )
-if( ${CXX_COMPILER_NAME} STREQUAL "mpicxx" )
-   message( "MPI compiler detected."    )
-   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_MPI" )
-   set( CUDA_HOST_COMPILER "mpicxx" )
-   set( BUILD_MPI ON )
+# gtest has to be built before we add the MPI flags
+if( ${WITH_TESTS} )
+   enable_testing()
+
+   # build gtest libs
+   include( BuildGtest )
+
+   if( ${WITH_COVERAGE} AND CMAKE_BUILD_TYPE STREQUAL "Debug" )
+      # enable code coverage reports
+      include( UseCodeCoverage )
+   endif()
 endif()
 
 ####
-# Check for MPI -- not working
+# Check for OpenMP
 #
-#find_package( MPI )
-#if( MPI_CXX_FOUND )
-   # set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_MPI" )
-   # message( "MPI headers found -- ${MPI_CXX_INCLUDE_PATH}")
-   # message( "MPI link flags  -- ${MPI_CXX_LINK_FLAGS}")
-   # message( "MPI libraries-- ${MPI_CXX_LIBRARIES}")
-#endif()
+if( OPENMP_FOUND AND ${WITH_OPENMP} )
+   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_OPENMP ${OpenMP_CXX_FLAGS}" )
+endif()
+
+####
+# Check for MPI
+#
+if( MPI_CXX_FOUND AND ${WITH_MPI} )
+   set( BUILD_MPI TRUE)
+   # add the appropriate flags to all targets (will be hidden from the CMAKE_CXX_* variables)
+   include_directories( ${MPI_CXX_INCLUDE_DIRS} )
+   add_compile_options( ${MPI_CXX_COMPILE_OPTIONS} )
+   add_compile_definitions( ${MPI_CXX_COMPILE_DEFINITIONS} )
+   add_link_options( "SHELL:${MPI_CXX_LINK_FLAGS}" )
+   link_libraries( ${MPI_CXX_LIBRARIES} )
+   # enable MPI in TNL
+   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_MPI" )
+endif()
 
 #####
 # Check for CUDA
@@ -243,13 +258,6 @@ if( ${WITH_CUDA} )
 endif()
 
 
-####
-# Check for OpenMP
-#
-if( OPENMP_FOUND AND ${WITH_OPENMP} )
-   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_OPENMP ${OpenMP_CXX_FLAGS}" )
-endif()
-
 if( ${WITH_PROFILING} )
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g" )
     set( CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS} --generate-line-info")
@@ -301,18 +309,6 @@ if( ${WITH_GMP} )
       set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -I${GMP_INCLUDES} -DHAVE_GMP" )
       set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${GMP_LIBRARIES}" )
       mark_as_advanced(GMP_INCLUDES GMP_LIBRARIES)
-   endif()
-endif()
-
-if( ${WITH_TESTS} )
-   enable_testing()
-
-   # build gtest libs
-   include( BuildGtest )
-
-   if( ${WITH_COVERAGE} AND CMAKE_BUILD_TYPE STREQUAL "Debug" )
-      # enable code coverage reports
-      include( UseCodeCoverage )
    endif()
 endif()
 
@@ -396,6 +392,7 @@ message( "   WITH_MIC = ${WITH_MIC}" )
 message( "   WITH_CUDA = ${WITH_CUDA}" )
 message( "   WITH_CUDA_ARCH = ${WITH_CUDA_ARCH}" )
 message( "   WITH_OPENMP = ${WITH_OPENMP}" )
+message( "   WITH_MPI = ${WITH_MPI}" )
 message( "   WITH_GMP = ${WITH_GMP}" )
 message( "   WITH_TESTS = ${WITH_TESTS}" )
 message( "   WITH_PROFILING = ${WITH_PROFILING}" )
@@ -420,3 +417,10 @@ message( "   CMAKE_SHARED_LINKER_FLAGS_DEBUG = ${CMAKE_SHARED_LINKER_FLAGS_DEBUG
 message( "   CMAKE_SHARED_LINKER_FLAGS_RELEASE = ${CMAKE_SHARED_LINKER_FLAGS_RELEASE}" )
 message( "   CUDA_NVCC_FLAGS = ${CUDA_NVCC_FLAGS}" )
 message( "   GMP_LIBRARIES = ${GMP_LIBRARIES}" )
+if( MPI_CXX_FOUND AND ${WITH_MPI} )
+   message( "   MPI_CXX_COMPILE_OPTIONS = ${MPI_CXX_COMPILE_OPTIONS}" )
+   message( "   MPI_CXX_COMPILE_DEFINITIONS = ${MPI_CXX_COMPILE_DEFINITIONS}" )
+   message( "   MPI_CXX_INCLUDE_DIRS = ${MPI_CXX_INCLUDE_DIRS}" )
+   message( "   MPI_CXX_LINK_FLAGS = ${MPI_CXX_LINK_FLAGS}" )
+   message( "   MPI_CXX_LIBRARIES = ${MPI_CXX_LIBRARIES}" )
+endif()

@@ -203,7 +203,7 @@ void Euler< Problem, SolverMonitor >::computeNewTimeLevel( DofVectorPointer& u,
                                                                       &_k1[ gridOffset ],
                                                                       &_u[ gridOffset ],
                                                                       this->cudaBlockResidue.getData() );
-         localResidue += this->cudaBlockResidue.sum();
+         localResidue += sum( this->cudaBlockResidue );
          cudaDeviceSynchronize();
          TNL_CHECK_CUDA_DEVICE;
       }

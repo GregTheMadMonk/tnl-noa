@@ -105,4 +105,4 @@ std::ostream& operator << ( std::ostream& str, const StaticEllpackIndexMultimapV
 } // namespace Containers
 } // namespace TNL
 
-#include <TNL/Containers/Multimaps/StaticEllpackIndexMultimapValues_impl.h>
+#include <TNL/Containers/Multimaps/StaticEllpackIndexMultimapValues.hpp>

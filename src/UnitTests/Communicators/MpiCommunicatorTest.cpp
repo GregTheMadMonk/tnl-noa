@@ -34,7 +34,7 @@ using MpiCommunicatorTypes = ::testing::Types<
    double
 >;
 
-TYPED_TEST_CASE( MpiCommunicatorTest, MpiCommunicatorTypes );
+TYPED_TEST_SUITE( MpiCommunicatorTest, MpiCommunicatorTypes );
 
 TYPED_TEST( MpiCommunicatorTest, allReduce )
 {

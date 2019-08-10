@@ -108,4 +108,4 @@ std::ostream& operator << ( std::ostream& str, const StaticEllpackIndexMultimap<
 } // namespace Containers
 } // namespace TNL
 
-#include <TNL/Containers/Multimaps/StaticEllpackIndexMultimap_impl.h>
+#include <TNL/Containers/Multimaps/StaticEllpackIndexMultimap.hpp>

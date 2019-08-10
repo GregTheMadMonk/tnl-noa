@@ -81,8 +81,6 @@ using ViewTypes = ::testing::Types<
    ArrayView< float,  Devices::Host, long >,
    ArrayView< double, Devices::Host, long >,
    ArrayView< MyData, Devices::Host, long >
-   // FIXME: this segfaults in String::~String()
-//   , ArrayView< String, Devices::Host, long >
 #endif
 #ifdef HAVE_CUDA
    ArrayView< int,    Devices::Cuda, short >,
@@ -411,9 +409,7 @@ TYPED_TEST( ArrayViewTest, comparisonOperator )
    // comparison with different device
    EXPECT_TRUE( u == a_host );
    EXPECT_TRUE( a_host == u );
-   // FIXME: what operator is called without explicit retyping?
-//   EXPECT_TRUE( w != a_host );
-   EXPECT_TRUE( w != (ArrayView< typename ArrayType::ValueType, Devices::Host, typename ArrayType::IndexType >) a_host );
+   EXPECT_TRUE( w != a_host );
    EXPECT_TRUE( a_host != w );
 
    v.reset();
@@ -472,25 +468,27 @@ TYPED_TEST( ArrayViewTest, assignmentOperator )
    EXPECT_EQ( v.getData(), b.getData() );
 
    // assignment from host to device
-   //v.setValue( 0 );
-   v = 0;
+   v.setValue( 0 );
    v = u_host;
-   // TODO: Replace with EXPECT_EQ when nvcc accepts it
-   EXPECT_TRUE( u == v );
+   EXPECT_EQ( u, v );
    EXPECT_EQ( v.getData(), b.getData() );
 
    // assignment from device to host
-   /*u_host.setValue( 0 );
+   u_host.setValue( 0 );
    u_host = u;
-   
-   EXPECT_TRUE( u_host == u );
-   //EXPECT_EQ( u_host, u ); TODO: this is not accepted by nvcc 10, because nvcc is cockot
+   EXPECT_EQ( u_host, u );
    EXPECT_EQ( u_host.getData(), a_host.getData() );
 
    // assignment of const view to non-const view
    v.setValue( 0 );
    ConstViewType c( u );
-   v = c;*/
+   v = c;
+
+   // assignment of a scalar
+   u = 42;
+   for( int i = 0; i < 10; i++ )
+      EXPECT_EQ( u.getElement( i ), 42 );
+   EXPECT_EQ( u.getData(), a.getData() );
 }
 
 // test works only for arithmetic types

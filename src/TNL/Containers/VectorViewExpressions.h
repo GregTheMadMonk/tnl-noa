@@ -2,7 +2,7 @@
                           VectorViewExpressions.h  -  description
                              -------------------
     begin                : Apr 27, 2019
-    copyright            : (C) 2019 by Tomas Oberhuber
+    copyright            : (C) 2019 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -10,11 +10,7 @@
 
 #pragma once
 
-#include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Expressions/ExpressionTemplates.h>
-#include <TNL/Containers/Expressions/ExpressionTemplatesOperations.h>
-#include <TNL/Containers/Expressions/Comparison.h>
-#include <TNL/Containers/Expressions/VerticalOperations.h>
 
 #include "VectorView.h"
 
@@ -143,14 +139,7 @@ template< typename Real1, typename Real2, typename Device1, typename Device2, ty
 bool
 operator==( const VectorView< Real1, Device1, Index >& a, const VectorView< Real2, Device2, Index >& b )
 {
-   if( a.getSize() != b.getSize() )
-      return false;
-   if( a.getSize() == 0 )
-      return true;
-   return Algorithms::ArrayOperations< Device1, Device2 >::
-            compare( a.getData(),
-                     b.getData(),
-                     a.getSize() );
+   return Expressions::Comparison< VectorView< Real1, Device1, Index >, VectorView< Real2, Device2, Index > >::EQ( a, b );
 }
 
 ////
@@ -368,6 +357,32 @@ max( const Containers::VectorView< Real1, Device, Index >& a, const Containers::
 }
 
 ////
+// Dot product - the same as scalar product, just for convenience
+template< typename Real, typename Device, typename Index, typename ET,
+          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
+auto
+dot( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
+{
+   return (a, b);
+}
+
+template< typename ET, typename Real, typename Device, typename Index,
+          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
+auto
+dot( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
+{
+   return (a, b);
+}
+
+template< typename Real1, typename Real2, typename Device, typename Index1, typename Index2 >
+auto
+dot( const Containers::VectorView< Real1, Device, Index1 >& a, const Containers::VectorView< Real2, Device, Index2 >& b )
+{
+   return (a, b);
+}
+
+
+////
 // Abs
 template< typename Real, typename Device, typename Index >
 auto
@@ -382,7 +397,7 @@ template< typename Real, typename Device, typename Index, typename ExpType >
 auto
 pow( const Containers::VectorView< Real, Device, Index >& a, const ExpType& exp )
 {
-   return Containers::Expressions::UnaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, Containers::Expressions::Pow, ExpType >( a, exp );
+   return Containers::Expressions::BinaryExpressionTemplate< Containers::VectorView< Real, Device, Index >, ExpType, Containers::Expressions::Pow >( a, exp );
 }
 
 ////
@@ -575,6 +590,17 @@ sign( const Containers::VectorView< Real, Device, Index >& a )
 }
 
 ////
+// Cast
+template< typename ResultType, typename Real, typename Device, typename Index,
+          // workaround: templated type alias cannot be declared at block level
+          template<typename> class Operation = Containers::Expressions::Cast< ResultType >::template Operation >
+auto
+cast( const Containers::VectorView< Real, Device, Index >& a )
+{
+   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Operation >( a );
+}
+
+////
 // Vertical operations - min
 template< typename Real,
           typename Device,
@@ -588,10 +614,10 @@ min( const Containers::VectorView< Real, Device, Index >& a )
 template< typename Real,
           typename Device,
           typename Index >
-Real
-argMin( const Containers::VectorView< Real, Device, Index >& a, Index& arg )
+std::pair< Index, std::decay_t< Real > >
+argMin( const Containers::VectorView< Real, Device, Index >& a )
 {
-   return Containers::Expressions::ExpressionArgMin( a, arg );
+   return Containers::Expressions::ExpressionArgMin( a );
 }
 
 template< typename Real,
@@ -606,10 +632,10 @@ max( const Containers::VectorView< Real, Device, Index >& a )
 template< typename Real,
           typename Device,
           typename Index >
-Real
-argMax( const Containers::VectorView< Real, Device, Index >& a, Index& arg )
+std::pair< Index, std::decay_t< Real > >
+argMax( const Containers::VectorView< Real, Device, Index >& a )
 {
-   return Containers::Expressions::ExpressionArgMax( a, arg );
+   return Containers::Expressions::ExpressionArgMax( a );
 }
 
 template< typename Real,
@@ -623,17 +649,45 @@ sum( const Containers::VectorView< Real, Device, Index >& a )
 
 template< typename Real,
           typename Device,
+          typename Index >
+auto
+maxNorm( const Containers::VectorView< Real, Device, Index >& a )
+{
+   return max( abs( a ) );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+auto
+l1Norm( const Containers::VectorView< Real, Device, Index >& a )
+{
+   return Containers::Expressions::ExpressionL1Norm( a );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+auto
+l2Norm( const Containers::VectorView< Real, Device, Index >& a )
+{
+   return TNL::sqrt( Containers::Expressions::ExpressionL2Norm( a ) );
+}
+
+template< typename Real,
+          typename Device,
           typename Index,
           typename Real2 >
 auto
 lpNorm( const Containers::VectorView< Real, Device, Index >& a, const Real2& p )
--> decltype( Containers::Expressions::ExpressionLpNorm( a, p ) )
+// since (1.0 / p) has type double, TNL::pow returns double
+-> double
 {
    if( p == 1.0 )
-      return Containers::Expressions::ExpressionLpNorm( a, p );
+      return l1Norm( a );
    if( p == 2.0 )
-      return TNL::sqrt( Containers::Expressions::ExpressionLpNorm( a, p ) );
-   return TNL::pow( Containers::Expressions::ExpressionLpNorm( a, p ), (Real2) (1.0 / p) );
+      return l2Norm( a );
+   return TNL::pow( Containers::Expressions::ExpressionLpNorm( a, p ), 1.0 / p );
 }
 
 template< typename Real,
@@ -679,31 +733,6 @@ auto
 binaryAnd( const Containers::VectorView< Real, Device, Index >& a )
 {
    return Containers::Expressions::ExpressionBinaryAnd( a );
-}
-
-////
-// Dot product - the same as scalar product, just for convenience
-template< typename Real, typename Device, typename Index, typename ET,
-          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
-auto
-dot( const Containers::VectorView< Real, Device, Index >& a, const ET& b )
-{
-   return TNL::sum( a * b );
-}
-
-template< typename ET, typename Real, typename Device, typename Index,
-          typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
-auto
-dot( const ET& a, const Containers::VectorView< Real, Device, Index >& b )
-{
-   return TNL::sum( a * b );
-}
-
-template< typename Real1, typename Real2, typename Device, typename Index1, typename Index2 >
-auto
-dot( const Containers::VectorView< Real1, Device, Index1 >& a, const Containers::VectorView< Real2, Device, Index2 >& b )
-{
-   return TNL::sum( a * b );
 }
 
 } // namespace TNL

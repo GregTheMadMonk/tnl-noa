@@ -11,9 +11,6 @@
 #pragma once
 
 #include <TNL/Containers/Expressions/StaticExpressionTemplates.h>
-#include <TNL/Containers/Expressions/ExpressionTemplatesOperations.h>
-#include <TNL/Containers/Expressions/StaticComparison.h>
-#include <TNL/Containers/Expressions/StaticVerticalOperations.h>
 
 #include "StaticVector.h"
 
@@ -427,7 +424,7 @@ __cuda_callable__
 auto
 pow( const Containers::StaticVector< Size, Real >& a, const ExpType& exp )
 {
-   return Containers::Expressions::StaticUnaryExpressionTemplate< Containers::StaticVector< Size, Real >, Containers::Expressions::Pow, ExpType >( a, exp );
+   return Containers::Expressions::StaticBinaryExpressionTemplate< Containers::StaticVector< Size, Real >, ExpType, Containers::Expressions::Pow >( a, exp );
 }
 
 ////
@@ -641,6 +638,18 @@ sign( const Containers::StaticVector< Size, Real >& a )
 }
 
 ////
+// Cast
+template< typename ResultType, int Size, typename Real,
+          // workaround: templated type alias cannot be declared at block level
+          template<typename> class Operation = Containers::Expressions::Cast< ResultType >::template Operation >
+auto
+__cuda_callable__
+cast( const Containers::StaticVector< Size, Real >& a )
+{
+   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Operation >( a );
+}
+
+////
 // Vertical operations - min
 template< int Size, typename Real >
 __cuda_callable__
@@ -652,10 +661,10 @@ min( const Containers::StaticVector< Size, Real >& a )
 
 template< int Size, typename Real >
 __cuda_callable__
-auto
-argMin( const Containers::StaticVector< Size, Real >& a, int& arg )
+std::pair< int, Real >
+argMin( const Containers::StaticVector< Size, Real >& a )
 {
-   return Containers::Expressions::StaticExpressionArgMin( a, arg );
+   return Containers::Expressions::StaticExpressionArgMin( a );
 }
 
 template< int Size, typename Real >
@@ -668,10 +677,10 @@ max( const Containers::StaticVector< Size, Real >& a )
 
 template< int Size, typename Real >
 __cuda_callable__
-auto
-argMax( const Containers::StaticVector< Size, Real >& a, int& arg )
+std::pair< int, Real >
+argMax( const Containers::StaticVector< Size, Real >& a )
 {
-   return Containers::Expressions::StaticExpressionArgMax( a, arg );
+   return Containers::Expressions::StaticExpressionArgMax( a );
 }
 
 template< int Size, typename Real >
@@ -682,16 +691,41 @@ sum( const Containers::StaticVector< Size, Real >& a )
    return Containers::Expressions::StaticExpressionSum( a );
 }
 
+template< int Size, typename Real >
+__cuda_callable__
+auto
+maxNorm( const Containers::StaticVector< Size, Real >& a )
+{
+   return max( abs( a ) );
+}
+
+template< int Size, typename Real >
+__cuda_callable__
+auto
+l1Norm( const Containers::StaticVector< Size, Real >& a )
+{
+   return Containers::Expressions::StaticExpressionL1Norm( a );
+}
+
+template< int Size, typename Real >
+__cuda_callable__
+auto
+l2Norm( const Containers::StaticVector< Size, Real >& a )
+{
+   return TNL::sqrt( Containers::Expressions::StaticExpressionL2Norm( a ) );
+}
+
 template< int Size, typename Real, typename Real2 >
 __cuda_callable__
 auto
 lpNorm( const Containers::StaticVector< Size, Real >& a, const Real2& p )
--> decltype( Containers::Expressions::StaticExpressionLpNorm( a, p ) )
+// since (1.0 / p) has type double, TNL::pow returns double
+-> double
 {
    if( p == 1.0 )
-      return Containers::Expressions::StaticExpressionLpNorm( a, p );
+      return l1Norm( a );
    if( p == 2.0 )
-      return TNL::sqrt( Containers::Expressions::StaticExpressionLpNorm( a, p ) );
+      return l2Norm( a );
    return TNL::pow( Containers::Expressions::StaticExpressionLpNorm( a, p ), 1.0 / p );
 }
 

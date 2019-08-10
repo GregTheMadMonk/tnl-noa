@@ -11,7 +11,7 @@ void setLinearSequence( Vector& deviceVector, typename Vector::RealType offset =
 {
    typename Vector::HostType a;
    a.setLike( deviceVector );
-   for( int i = 0; i < a.getLocalVectorView().getSize(); i++ ) {
+   for( int i = 0; i < a.getLocalView().getSize(); i++ ) {
       const auto gi = a.getLocalRange().getGlobalIndex( i );
       a[ gi ] = gi + offset;
    }
@@ -108,7 +108,7 @@ using DistributedMatrixTypes = ::testing::Types<
 #endif
 >;
 
-TYPED_TEST_CASE( DistributedMatrixTest, DistributedMatrixTypes );
+TYPED_TEST_SUITE( DistributedMatrixTest, DistributedMatrixTypes );
 
 TYPED_TEST( DistributedMatrixTest, checkSumOfLocalSizes )
 {
@@ -213,8 +213,8 @@ TYPED_TEST( DistributedMatrixTest, vectorProduct_globalInput )
    this->matrix.vectorProduct( inVector, outVector );
 
    EXPECT_EQ( outVector, this->rowLengths )
-      << "outVector.getLocalVectorView() = " << outVector.getLocalVectorView()
-      << ",\nthis->rowLengths.getLocalVectorView() = " << this->rowLengths.getLocalVectorView();
+      << "outVector.getLocalView() = " << outVector.getLocalView()
+      << ",\nthis->rowLengths.getLocalView() = " << this->rowLengths.getLocalView();
 }
 
 TYPED_TEST( DistributedMatrixTest, vectorProduct_distributedInput )
@@ -230,8 +230,8 @@ TYPED_TEST( DistributedMatrixTest, vectorProduct_distributedInput )
    this->matrix.vectorProduct( inVector, outVector );
 
    EXPECT_EQ( outVector, this->rowLengths )
-      << "outVector.getLocalVectorView() = " << outVector.getLocalVectorView()
-      << ",\nthis->rowLengths.getLocalVectorView() = " << this->rowLengths.getLocalVectorView();
+      << "outVector.getLocalView() = " << outVector.getLocalView()
+      << ",\nthis->rowLengths.getLocalView() = " << this->rowLengths.getLocalView();
 }
 
 #endif  // HAVE_GTEST

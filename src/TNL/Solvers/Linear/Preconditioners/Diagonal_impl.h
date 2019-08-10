@@ -68,7 +68,7 @@ update( const MatrixPointer& matrixPointer )
 
    diagonal.setSize( matrixPointer->getLocalMatrix().getRows() );
 
-   LocalVectorViewType diag_view( diagonal );
+   LocalViewType diag_view( diagonal );
    const MatrixType* kernel_matrix = &matrixPointer.template getData< DeviceType >();
 
    auto kernel = [=] __cuda_callable__ ( IndexType i ) mutable
@@ -85,9 +85,9 @@ void
 Diagonal< Matrices::DistributedMatrix< Matrix, Communicator > >::
 solve( ConstVectorViewType b, VectorViewType x ) const
 {
-   ConstLocalVectorViewType diag_view( diagonal );
-   const auto b_view = b.getLocalVectorView();
-   auto x_view = x.getLocalVectorView();
+   ConstLocalViewType diag_view( diagonal );
+   const auto b_view = b.getConstLocalView();
+   auto x_view = x.getLocalView();
 
    auto kernel = [=] __cuda_callable__ ( IndexType i ) mutable
    {

@@ -43,13 +43,13 @@ struct Traits
 
    // compatibility aliases
    using LocalVectorType = VectorType;
-   using LocalVectorViewType = VectorViewType;
-   using ConstLocalVectorViewType = ConstVectorViewType;
+   using LocalViewType = VectorViewType;
+   using ConstLocalViewType = ConstVectorViewType;
 
    // compatibility wrappers for some DistributedMatrix methods
    static const Matrix& getLocalMatrix( const Matrix& m ) { return m; }
-   static ConstLocalVectorViewType getLocalVectorView( ConstVectorViewType v ) { return v; }
-   static LocalVectorViewType getLocalVectorView( VectorViewType v ) { return v; }
+   static ConstLocalViewType getConstLocalView( ConstVectorViewType v ) { return v; }
+   static LocalViewType getLocalView( VectorViewType v ) { return v; }
 
    static typename CommunicatorType::CommunicationGroup getCommunicationGroup( const Matrix& m ) { return CommunicatorType::AllGroup; }
 };
@@ -79,11 +79,11 @@ struct Traits< Matrices::DistributedMatrix< Matrix, Communicator > >
          < typename Matrix::RealType,
            typename Matrix::DeviceType,
            typename Matrix::IndexType >;
-   using LocalVectorViewType = Containers::VectorView
+   using LocalViewType = Containers::VectorView
          < typename Matrix::RealType,
            typename Matrix::DeviceType,
            typename Matrix::IndexType >;
-   using ConstLocalVectorViewType = Containers::VectorView
+   using ConstLocalViewType = Containers::VectorView
          < std::add_const_t< typename Matrix::RealType >,
            typename Matrix::DeviceType,
            typename Matrix::IndexType >;
@@ -91,8 +91,8 @@ struct Traits< Matrices::DistributedMatrix< Matrix, Communicator > >
    // compatibility wrappers for some DistributedMatrix methods
    static const Matrix& getLocalMatrix( const Matrices::DistributedMatrix< Matrix, Communicator >& m )
    { return m.getLocalMatrix(); }
-   static ConstLocalVectorViewType getLocalVectorView( ConstVectorViewType v ) { return v.getLocalVectorView(); }
-   static LocalVectorViewType getLocalVectorView( VectorViewType v ) { return v.getLocalVectorView(); }
+   static ConstLocalViewType getConstLocalView( ConstVectorViewType v ) { return v.getConstLocalView(); }
+   static LocalViewType getLocalView( VectorViewType v ) { return v.getLocalView(); }
 
    static typename CommunicatorType::CommunicationGroup getCommunicationGroup( const Matrices::DistributedMatrix< Matrix, Communicator >& m ) { return m.getCommunicationGroup(); }
 };

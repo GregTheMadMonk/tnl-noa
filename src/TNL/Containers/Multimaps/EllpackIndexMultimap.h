@@ -111,4 +111,4 @@ std::ostream& operator << ( std::ostream& str, const EllpackIndexMultimap< Index
 } // namespace Containers
 } // namespace TNL
 
-#include <TNL/Containers/Multimaps/EllpackIndexMultimap_impl.h>
+#include <TNL/Containers/Multimaps/EllpackIndexMultimap.hpp>

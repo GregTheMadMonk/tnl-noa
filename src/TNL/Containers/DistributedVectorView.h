@@ -33,8 +33,8 @@ public:
    using DeviceType = Device;
    using CommunicatorType = Communicator;
    using IndexType = Index;
-   using LocalVectorViewType = Containers::VectorView< Real, Device, Index >;
-   using ConstLocalVectorViewType = Containers::VectorView< std::add_const_t< Real >, Device, Index >;
+   using LocalViewType = Containers::VectorView< Real, Device, Index >;
+   using ConstLocalViewType = Containers::VectorView< std::add_const_t< Real >, Device, Index >;
    using HostType = DistributedVectorView< Real, Devices::Host, Index, Communicator >;
    using CudaType = DistributedVectorView< Real, Devices::Cuda, Index, Communicator >;
    using ViewType = DistributedVectorView< Real, Device, Index, Communicator >;
@@ -56,24 +56,15 @@ public:
    DistributedVectorView( const Containers::DistributedArrayView< Real_, Device, Index, Communicator >& view )
    : BaseType( view ) {}
 
-   LocalVectorViewType getLocalVectorView();
+   LocalViewType getLocalView();
 
-   ConstLocalVectorViewType getLocalVectorView() const;
-   
-   ConstLocalVectorViewType getConstLocalVectorView() const;
+   ConstLocalViewType getConstLocalView() const;
 
    /**
     * \brief Returns a modifiable view of the array view.
     */
    __cuda_callable__
    ViewType getView();
-
-   /**
-    * \brief Returns a modifiable view of the array view.
-    */
-   __cuda_callable__
-   ConstViewType getView() const;
-
 
    /**
     * \brief Returns a non-modifiable view of the array view.
@@ -86,46 +77,55 @@ public:
    /*
     * Usual Vector methods follow below.
     */
-   void addElement( IndexType i,
-                    RealType value );
+   template< typename Scalar,
+             typename...,
+             typename = std::enable_if_t< ! HasSubscriptOperator<Scalar>::value > >
+   DistributedVectorView& operator=( Scalar c );
 
-   template< typename Scalar >
-   void addElement( IndexType i,
-                    RealType value,
-                    Scalar thisElementMultiplicator );
+   template< typename Scalar,
+             typename...,
+             typename = std::enable_if_t< ! HasSubscriptOperator<Scalar>::value > >
+   DistributedVectorView& operator+=( Scalar c );
 
-   template< typename Vector >
-   DistributedVectorView& operator-=( const Vector& vector );
+   template< typename Scalar,
+             typename...,
+             typename = std::enable_if_t< ! HasSubscriptOperator<Scalar>::value > >
+   DistributedVectorView& operator-=( Scalar c );
 
-   template< typename Vector >
-   DistributedVectorView& operator+=( const Vector& vector );
-
-   template< typename Scalar >
+   template< typename Scalar,
+             typename...,
+             typename = std::enable_if_t< ! HasSubscriptOperator<Scalar>::value > >
    DistributedVectorView& operator*=( Scalar c );
 
-   template< typename Scalar >
+   template< typename Scalar,
+             typename...,
+             typename = std::enable_if_t< ! HasSubscriptOperator<Scalar>::value > >
    DistributedVectorView& operator/=( Scalar c );
 
-   template< typename ResultType = NonConstReal >
-   ResultType sum() const;
+   template< typename Vector,
+             typename...,
+             typename = std::enable_if_t< HasSubscriptOperator<Vector>::value > >
+   DistributedVectorView& operator=( const Vector& vector );
 
-   //! Computes scalar dot product
-   template< typename Vector >
-   NonConstReal scalarProduct( const Vector& v ) const;
+   template< typename Vector,
+             typename...,
+             typename = std::enable_if_t< HasSubscriptOperator<Vector>::value > >
+   DistributedVectorView& operator+=( const Vector& vector );
 
-   //! Computes this = thisMultiplicator * this + alpha * x.
-   template< typename Vector, typename Scalar1 = Real, typename Scalar2 = Real >
-   void addVector( const Vector& x,
-                   Scalar1 alpha = 1.0,
-                   Scalar2 thisMultiplicator = 1.0 );
+   template< typename Vector,
+             typename...,
+             typename = std::enable_if_t< HasSubscriptOperator<Vector>::value > >
+   DistributedVectorView& operator-=( const Vector& vector );
 
-   //! Computes this = thisMultiplicator * this + multiplicator1 * v1 + multiplicator2 * v2.
-   template< typename Vector1, typename Vector2, typename Scalar1, typename Scalar2, typename Scalar3 = Real >
-   void addVectors( const Vector1& v1,
-                    Scalar1 multiplicator1,
-                    const Vector2& v2,
-                    Scalar2 multiplicator2,
-                    Scalar3 thisMultiplicator = 1.0 );
+   template< typename Vector,
+             typename...,
+             typename = std::enable_if_t< HasSubscriptOperator<Vector>::value > >
+   DistributedVectorView& operator*=( const Vector& vector );
+
+   template< typename Vector,
+             typename...,
+             typename = std::enable_if_t< HasSubscriptOperator<Vector>::value > >
+   DistributedVectorView& operator/=( const Vector& vector );
 
    void computePrefixSum();
 
@@ -139,5 +139,5 @@ public:
 } // namespace Containers
 } // namespace TNL
 
-#include <TNL/Containers/DistributedVectorView_impl.h>
+#include <TNL/Containers/DistributedVectorView.hpp>
 #include <TNL/Containers/DistributedVectorViewExpressions.h>

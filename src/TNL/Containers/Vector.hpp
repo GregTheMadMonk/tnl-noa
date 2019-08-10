@@ -71,19 +71,6 @@ template< typename Real,
           typename Allocator >
 typename Vector< Real, Device, Index, Allocator >::ConstViewType
 Vector< Real, Device, Index, Allocator >::
-getView( IndexType begin, IndexType end ) const
-{
-   if( end == 0 )
-      end = this->getSize();
-   return ConstViewType( &this->getData()[ begin ], end - begin );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Allocator >
-typename Vector< Real, Device, Index, Allocator >::ConstViewType
-Vector< Real, Device, Index, Allocator >::
 getConstView( IndexType begin, IndexType end ) const
 {
    if( end == 0 )
@@ -115,32 +102,6 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Allocator >
-void
-Vector< Real, Device, Index, Allocator >::
-addElement( const IndexType i,
-            const RealType& value )
-{
-   Algorithms::VectorOperations< Device >::addElement( *this, i, value );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Allocator >
-   template< typename Scalar >
-void
-Vector< Real, Device, Index, Allocator >::
-addElement( const IndexType i,
-            const RealType& value,
-            const Scalar thisElementMultiplicator )
-{
-   Algorithms::VectorOperations< Device >::addElement( *this, i, value, thisElementMultiplicator );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Allocator >
    template< typename VectorExpression, typename..., typename >
 Vector< Real, Device, Index, Allocator >&
 Vector< Real, Device, Index, Allocator >::
@@ -158,9 +119,9 @@ template< typename Real,
    template< typename VectorExpression >
 Vector< Real, Device, Index, Allocator >&
 Vector< Real, Device, Index, Allocator >::
-operator-=( const VectorExpression& expression )
+operator+=( const VectorExpression& expression )
 {
-   Algorithms::VectorAssignmentWithOperation< Vector, VectorExpression >::subtraction( *this, expression );
+   Algorithms::VectorAssignmentWithOperation< Vector, VectorExpression >::addition( *this, expression );
    return *this;
 }
 
@@ -171,9 +132,9 @@ template< typename Real,
    template< typename VectorExpression >
 Vector< Real, Device, Index, Allocator >&
 Vector< Real, Device, Index, Allocator >::
-operator+=( const VectorExpression& expression )
+operator-=( const VectorExpression& expression )
 {
-   Algorithms::VectorAssignmentWithOperation< Vector, VectorExpression >::addition( *this, expression );
+   Algorithms::VectorAssignmentWithOperation< Vector, VectorExpression >::subtraction( *this, expression );
    return *this;
 }
 
@@ -201,56 +162,6 @@ operator/=( const VectorExpression& expression )
 {
    Algorithms::VectorAssignmentWithOperation< Vector, VectorExpression >::division( *this, expression );
    return *this;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Allocator >
-   template< typename ResultType >
-ResultType Vector< Real, Device, Index, Allocator >::sum() const
-{
-   return Algorithms::VectorOperations< Device >::template getVectorSum< Vector, ResultType >( *this );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Allocator >
-   template< typename VectorT >
-Real Vector< Real, Device, Index, Allocator >::scalarProduct( const VectorT& v ) const
-{
-   return dot( this->getView(), v.getView() );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Allocator >
-   template< typename VectorT, typename Scalar1, typename Scalar2 >
-void
-Vector< Real, Device, Index, Allocator >::
-addVector( const VectorT& x,
-           const Scalar1 multiplicator,
-           const Scalar2 thisMultiplicator )
-{
-   Algorithms::VectorOperations< Device >::addVector( *this, x, multiplicator, thisMultiplicator );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Allocator >
-   template< typename Vector1, typename Vector2, typename Scalar1, typename Scalar2, typename Scalar3 >
-void
-Vector< Real, Device, Index, Allocator >::
-addVectors( const Vector1& v1,
-            const Scalar1 multiplicator1,
-            const Vector2& v2,
-            const Scalar2 multiplicator2,
-            const Scalar3 thisMultiplicator )
-{
-   Algorithms::VectorOperations< Device >::addVectors( *this, v1, multiplicator1, v2, multiplicator2, thisMultiplicator );
 }
 
 template< typename Real,

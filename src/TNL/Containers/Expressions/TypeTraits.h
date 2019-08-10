@@ -27,6 +27,6 @@ struct IsNumericExpression
       IsExpressionTemplate< T >::value >
 {};
 
-} //namespace Expressions
-} //namespace Containers
-} //namespace TNL
+} // namespace Expressions
+} // namespace Containers
+} // namespace TNL

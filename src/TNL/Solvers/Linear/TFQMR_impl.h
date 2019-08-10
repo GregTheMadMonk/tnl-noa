@@ -38,13 +38,13 @@ bool TFQMR< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
       b_norm = lpNorm( M_tmp, 2.0 );
 
       this->matrix->vectorProduct( x, M_tmp );
-      M_tmp.addVector( b, 1.0, -1.0 );
+      M_tmp = b - M_tmp;
       this->preconditioner->solve( M_tmp, r );
    }
    else {
       b_norm = lpNorm( b, 2.0 );
       this->matrix->vectorProduct( x, r );
-      r.addVector( b, 1.0, -1.0 );
+      r = b - r;
    }
    w = u = r;
    if( this->preconditioner ) {
@@ -59,7 +59,7 @@ bool TFQMR< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
    tau = lpNorm( r, 2.0 );
    theta = eta = 0.0;
    r_ast = r;
-   rho = r_ast.scalarProduct( r );
+   rho = (r_ast, r);
    // only to avoid compiler warning; alpha is initialized inside the loop
    alpha = 0.0;
 
@@ -74,7 +74,7 @@ bool TFQMR< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
       const IndexType iter = this->getIterations();
 
       if( iter % 2 == 1 ) {
-         alpha = rho / v. scalarProduct( this->r_ast );
+         alpha = rho / (v, r_ast);
       }
       else {
          // not necessary in odd iter since the previous iteration
@@ -87,14 +87,14 @@ bool TFQMR< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
             this->matrix->vectorProduct( u, Au );
          }
       }
-      w.addVector( Au, -alpha );
-      d.addVector( u, 1.0, theta * theta * eta / alpha );
+      w -= alpha * Au;
+      d = u + (theta * theta * eta / alpha) * d;
       w_norm = lpNorm( w, 2.0 );
       theta = w_norm / tau;
       const RealType c = 1.0 / std::sqrt( 1.0 + theta * theta );
       tau = tau * theta * c;
       eta = c * c  * alpha;
-      x.addVector( d, eta );
+      x += eta * d;
 
       this->setResidue( tau * std::sqrt(iter+1) / b_norm );
       if( iter > this->getMinIterations() && this->getResidue() < this->getConvergenceResidue() ) {
@@ -102,12 +102,12 @@ bool TFQMR< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
       }
 
       if( iter % 2 == 0 ) {
-         const RealType rho_new  = w.scalarProduct( this->r_ast );
+         const RealType rho_new = (w, r_ast);
          const RealType beta = rho_new / rho;
          rho = rho_new;
 
-         u.addVector( w, 1.0, beta );
-         v.addVector( Au, beta, beta * beta );
+         u = w + beta * u;
+         v = beta * Au + (beta * beta) * v;
          if( this->preconditioner ) {
             this->matrix->vectorProduct( u, M_tmp );
             this->preconditioner->solve( M_tmp, Au );
@@ -115,10 +115,10 @@ bool TFQMR< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
          else {
             this->matrix->vectorProduct( u, Au );
          }
-         v.addVector( Au, 1.0 );
+         v += Au;
       }
       else {
-         u.addVector( v, -alpha );
+         u -= alpha * v;
       }
 
       this->refreshSolverMonitor();

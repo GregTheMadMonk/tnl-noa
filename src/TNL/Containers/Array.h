@@ -116,14 +116,14 @@ class Array
              const AllocatorType& allocator = AllocatorType() );
 
       /**
-       * \brief Copy constructor.
+       * \brief Copy constructor (makes a deep copy).
        *
        * \param array The array to be copied.
        */
       explicit Array( const Array& array );
 
       /**
-       * \brief Copy constructor with a specific allocator.
+       * \brief Copy constructor with a specific allocator (makes a deep copy).
        *
        * \param array The array to be copied.
        * \param allocator The allocator to be associated with this array.
@@ -131,7 +131,7 @@ class Array
       explicit Array( const Array& array, const AllocatorType& allocator );
 
       /**
-       * \brief Copy constructor.
+       * \brief Copy constructor (makes a deep copy).
        *
        * \param array The array to be copied.
        * \param begin The first index which should be copied.
@@ -308,20 +308,6 @@ class Array
        *            which is, however, replaced with the array size.
        */
       ViewType getView( IndexType begin = 0, IndexType end = 0 );
-
-      /**
-       * \brief Returns a non-modifiable view of the array.
-       *
-       * By default, a view for the whole array is returned. If \e begin or
-       * \e end is set to a non-zero value, a view only for the sub-interval
-       * `[begin, end)` is returned.
-       *
-       * \param begin The beginning of the array sub-interval. It is 0 by
-       *              default.
-       * \param end The end of the array sub-interval. The default value is 0
-       *            which is, however, replaced with the array size.
-       */
-      ConstViewType getView( IndexType begin = 0, IndexType end = 0 ) const;
 
       /**
        * \brief Returns a non-modifiable view of the array.

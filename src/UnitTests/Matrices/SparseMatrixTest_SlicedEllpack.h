@@ -55,7 +55,7 @@ using SlicedEllpackMatrixTypes = ::testing::Types
 #endif
 >;
 
-TYPED_TEST_CASE( SlicedEllpackMatrixTest, SlicedEllpackMatrixTypes );
+TYPED_TEST_SUITE( SlicedEllpackMatrixTest, SlicedEllpackMatrixTypes );
 
 TYPED_TEST( SlicedEllpackMatrixTest, setDimensionsTest )
 {

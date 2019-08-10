@@ -445,17 +445,17 @@ template< typename Real,
           typename Index >
    template< typename Real2, typename Index2 >
 void Tridiagonal< Real, Device, Index >::addMatrix( const Tridiagonal< Real2, Device, Index2 >& matrix,
-                                                             const RealType& matrixMultiplicator,
-                                                             const RealType& thisMatrixMultiplicator )
+                                                    const RealType& matrixMultiplicator,
+                                                    const RealType& thisMatrixMultiplicator )
 {
    TNL_ASSERT( this->getRows() == matrix.getRows(),
             std::cerr << "This matrix columns: " << this->getColumns() << std::endl
                  << "This matrix rows: " << this->getRows() << std::endl );
 
    if( thisMatrixMultiplicator == 1.0 )
-      this->values.addVector( matrix.values, matrixMultiplicator );
+      this->values += matrixMultiplicator * matrix.values;
    else
-      this->values.addVector( matrix.values, matrixMultiplicator, thisMatrixMultiplicator );
+      this->values = thisMatrixMultiplicator * this->values + matrixMultiplicator * matrix.values;
 }
 
 #ifdef HAVE_CUDA

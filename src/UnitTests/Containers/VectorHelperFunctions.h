@@ -1,6 +1,7 @@
 #pragma once
 
 #include <TNL/Math.h>
+#include <TNL/TypeTraits.h>
 
 template< typename Vector >
 void setLinearSequence( Vector& deviceVector )
@@ -11,8 +12,15 @@ void setLinearSequence( Vector& deviceVector )
    typename Vector::HostType a;
    a.setLike( deviceVector );
 #endif
+#ifdef DISTRIBUTED_VECTOR
+   for( int i = 0; i < a.getLocalView().getSize(); i++ ) {
+      const auto gi = a.getLocalRange().getGlobalIndex( i );
+      a[ gi ] = gi;
+   }
+#else
    for( int i = 0; i < a.getSize(); i++ )
       a[ i ] = i;
+#endif
    deviceVector = a;
 }
 
@@ -49,8 +57,15 @@ void setNegativeLinearSequence( Vector& deviceVector )
 {
    typename Vector::HostType a;
    a.setLike( deviceVector );
+#ifdef DISTRIBUTED_VECTOR
+   for( int i = 0; i < a.getLocalView().getSize(); i++ ) {
+      const auto gi = a.getLocalRange().getGlobalIndex( i );
+      a[ gi ] = -gi;
+   }
+#else
    for( int i = 0; i < a.getSize(); i++ )
       a[ i ] = -i;
+#endif
    deviceVector = a;
 }
 
@@ -64,8 +79,31 @@ void setOscilatingSequence( Vector& deviceVector,
    typename Vector::HostType a;
    a.setLike( deviceVector );
 #endif
-   a[ 0 ] = v;
-   for( int i = 1; i < a.getSize(); i++ )
-      a[ i ] = a[ i-1 ] * -1;
+#ifdef DISTRIBUTED_VECTOR
+   for( int i = 0; i < a.getLocalView().getSize(); i++ ) {
+      const auto gi = a.getLocalRange().getGlobalIndex( i );
+      a[ gi ] = v * std::pow( -1, gi );
+   }
+#else
+   for( int i = 0; i < a.getSize(); i++ )
+      a[ i ] = v * std::pow( -1, i );
+#endif
    deviceVector = a;
+}
+
+
+// specialization for V1 = view
+template< typename V1, typename V2,
+          std::enable_if_t< TNL::IsViewType< V1 >::value, bool > = true >
+void bindOrAssign( V1& v1, V2& v2 )
+{
+   v1.bind( v2.getView() );
+}
+
+// specialization for V1 = vector
+template< typename V1, typename V2,
+          std::enable_if_t< ! TNL::IsViewType< V1 >::value, bool > = true >
+void bindOrAssign( V1& v1, V2& v2 )
+{
+   v1 = v2;
 }

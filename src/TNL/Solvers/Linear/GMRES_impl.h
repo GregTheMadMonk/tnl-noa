@@ -192,7 +192,7 @@ orthogonalize_MGS( const int m, const RealType normb, const RealType beta )
     * v_0 = r / | r | =  1.0 / beta * r
     */
    v_i.bind( V.getData(), size );
-   v_i.addVector( r, 1.0 / beta, 0.0 );
+   v_i = (1.0 / beta) * r;
 
    H.setValue( 0.0 );
    s.setValue( 0.0 );
@@ -217,25 +217,25 @@ orthogonalize_MGS( const int m, const RealType normb, const RealType beta )
             /***
              * H_{k,i} = ( w, v_k )
              */
-            RealType H_k_i = w.scalarProduct( v_k );
-            H[ k + i * ( m + 1 ) ] += H_k_i;
+            RealType H_k_i = (w, v_k);
+            H[ k + i * (m + 1) ] += H_k_i;
 
             /****
              * w = w - H_{k,i} v_k
              */
-            w.addVector( v_k, -H_k_i );
+            w = w - H_k_i * v_k;
          }
       /***
        * H_{i+1,i} = |w|
        */
       RealType normw = lpNorm( w, 2.0 );
-      H[ i + 1 + i * ( m + 1 ) ] = normw;
+      H[ i + 1 + i * (m + 1) ] = normw;
 
       /***
        * v_{i+1} = w / |w|
        */
       v_i.bind( &V.getData()[ ( i + 1 ) * ldSize ], size );
-      v_i.addVector( w, 1.0 / normw, 0.0 );
+      v_i = (1.0 / normw) * w;
 
       /****
        * Applying the Givens rotations G_0, ..., G_i
@@ -266,8 +266,8 @@ orthogonalize_CWY( const int m, const RealType normb, const RealType beta )
     * z = r / | r | =  1.0 / beta * r
     */
    // TODO: investigate normalization by beta and normb
-//   z.addVector( r, 1.0 / beta, 0.0 );
-//   z.addVector( r, 1.0 / normb, 0.0 );
+//   z = (1.0 / beta) * r;
+//   z = (1.0 / normb) * r;
    z = r;
 
    H.setValue( 0.0 );
@@ -349,12 +349,12 @@ compute_residue( VectorViewType r, ConstVectorViewType x, ConstVectorViewType b 
     */
    if( this->preconditioner ) {
       this->matrix->vectorProduct( x, _M_tmp );
-      _M_tmp.addVector( b, 1.0, -1.0 );
+      _M_tmp = b - _M_tmp;
       this->preconditioner->solve( _M_tmp, r );
    }
    else {
       this->matrix->vectorProduct( x, r );
-      r.addVector( b, 1.0, -1.0 );
+      r = b - r;
    }
 }
 
@@ -394,8 +394,8 @@ hauseholder_generate( const int i,
       ParallelFor< DeviceType >::exec( (IndexType) 0, size, kernel_truncation );
    }
    else {
-      ConstDeviceView z_local = Traits::getLocalVectorView( z );
-      DeviceView y_i_local = Traits::getLocalVectorView( y_i );
+      ConstDeviceView z_local = Traits::getConstLocalView( z );
+      DeviceView y_i_local = Traits::getLocalView( y_i );
       y_i_local = z_local;
    }
 
@@ -434,7 +434,7 @@ hauseholder_generate( const int i,
                  size,
                  Y.getData(),
                  ldSize,
-                 Traits::getLocalVectorView( y_i ).getData(),
+                 Traits::getLocalView( y_i ).getData(),
                  aux );
       // no-op if the problem is not distributed
       CommunicatorType::Allreduce( aux, i, MPI_SUM, Traits::getCommunicationGroup( *this->matrix ) );
@@ -460,13 +460,13 @@ hauseholder_apply_trunc( HostView out,
    // The upper (m+1)x(m+1) submatrix of Y is duplicated in the YL buffer,
    // which resides on host and is broadcasted from rank 0 to all processes.
    HostView YL_i( &YL[ i * (restarting_max + 1) ], restarting_max + 1 );
-   Containers::Algorithms::ArrayOperations< Devices::Host, DeviceType >::copy( YL_i.getData(), Traits::getLocalVectorView( y_i ).getData(), YL_i.getSize() );
+   Containers::Algorithms::ArrayOperations< Devices::Host, DeviceType >::copy( YL_i.getData(), Traits::getLocalView( y_i ).getData(), YL_i.getSize() );
    // no-op if the problem is not distributed
    CommunicatorType::Bcast( YL_i.getData(), YL_i.getSize(), 0, Traits::getCommunicationGroup( *this->matrix ) );
 
    // NOTE: aux = t_i * (y_i, z) = 1  since  t_i = 2 / ||y_i||^2  and
    //       (y_i, z) = ||z_trunc||^2 + |z_i| ||z_trunc|| = ||y_i||^2 / 2
-//   const RealType aux = T[ i + i * (restarting_max + 1) ] * y_i.scalarProduct( z );
+//   const RealType aux = T[ i + i * (restarting_max + 1) ] * (y_i, z);
    constexpr RealType aux = 1.0;
    if( localOffset == 0 ) {
       if( std::is_same< DeviceType, Devices::Host >::value ) {
@@ -475,7 +475,7 @@ hauseholder_apply_trunc( HostView out,
       }
       if( std::is_same< DeviceType, Devices::Cuda >::value ) {
          RealType host_z[ i + 1 ];
-         Containers::Algorithms::ArrayOperations< Devices::Host, Devices::Cuda >::copy( host_z, Traits::getLocalVectorView( z ).getData(), i + 1 );
+         Containers::Algorithms::ArrayOperations< Devices::Host, Devices::Cuda >::copy( host_z, Traits::getConstLocalView( z ).getData(), i + 1 );
          for( int k = 0; k <= i; k++ )
             out[ k ] = host_z[ k ] - YL_i[ k ] * aux;
       }
@@ -511,7 +511,7 @@ hauseholder_cwy( VectorViewType v,
    Matrices::MatrixOperations< DeviceType >::
       gemv( size, i + 1,
             -1.0, Y.getData(), ldSize, aux,
-            0.0, Traits::getLocalVectorView( v ).getData() );
+            0.0, Traits::getLocalView( v ).getData() );
    if( localOffset == 0 )
       v.setElement( i, 1.0 + v.getElement( i ) );
 }
@@ -532,7 +532,7 @@ hauseholder_cwy_transposed( VectorViewType z,
               size,
               Y.getData(),
               ldSize,
-              Traits::getLocalVectorView( w ).getData(),
+              Traits::getConstLocalView( w ).getData(),
               aux );
    // no-op if the problem is not distributed
    Traits::CommunicatorType::Allreduce( aux, i + 1, MPI_SUM, Traits::getCommunicationGroup( *this->matrix ) );
@@ -551,7 +551,7 @@ hauseholder_cwy_transposed( VectorViewType z,
    Matrices::MatrixOperations< DeviceType >::
       gemv( size, i + 1,
             -1.0, Y.getData(), ldSize, aux,
-            1.0, Traits::getLocalVectorView( z ).getData() );
+            1.0, Traits::getLocalView( z ).getData() );
 }
 
 template< typename Matrix >
@@ -593,7 +593,7 @@ update( const int k,
       Matrices::MatrixOperations< DeviceType >::
          gemv( size, k + 1,
                1.0, V.getData(), ldSize, y,
-               1.0, Traits::getLocalVectorView( x ).getData() );
+               1.0, Traits::getLocalView( x ).getData() );
    }
    else {
       // The vectors v_i are not stored, they can be reconstructed as P_0...P_j * e_j.
@@ -625,7 +625,7 @@ update( const int k,
       Matrices::MatrixOperations< DeviceType >::
          gemv( size, k + 1,
                -1.0, Y.getData(), ldSize, aux,
-               1.0, Traits::getLocalVectorView( x ).getData() );
+               1.0, Traits::getLocalView( x ).getData() );
 
       // x += y
       if( localOffset == 0 )
@@ -703,7 +703,7 @@ void
 GMRES< Matrix >::
 setSize( const VectorViewType& x )
 {
-   this->size = Traits::getLocalVectorView( x ).getSize();
+   this->size = Traits::getLocalView( x ).getSize();
    if( std::is_same< DeviceType, Devices::Cuda >::value )
       // align each column to 256 bytes - optimal for CUDA
       ldSize = roundToMultiple( size, 256 / sizeof( RealType ) );

@@ -103,7 +103,7 @@ solve( ConstVectorViewType b, VectorViewType x )
          this->nextIteration();
          r_j.bind( &R.getData()[ j * ldSize ], size );
 
-         rho_1 = r_ast.scalarProduct( r_j );
+         rho_1 = (r_ast, r_j);
          beta = alpha * rho_1 / rho_0;
          rho_0 = rho_1;
 
@@ -123,7 +123,7 @@ solve( ConstVectorViewType b, VectorViewType x )
          Au.bind( &U.getData()[ (j + 1) * ldSize ], size );
          preconditioned_matvec( u, Au );
 
-         gamma = r_ast.scalarProduct( Au );
+         gamma = (r_ast, Au);
          alpha = rho_0 / gamma;
 
          /****
@@ -145,7 +145,7 @@ solve( ConstVectorViewType b, VectorViewType x )
          /****
           * x_0 := x_0 + alpha * u_0
           */
-         x.addVector( u_0, alpha );
+         x += alpha * u_0;
       }
 
       /****
@@ -162,8 +162,8 @@ solve( ConstVectorViewType b, VectorViewType x )
              * r_j := r_j - T_{i,j} * r_i
              */
             const int ij = (i-1) + (j-1) * ell;
-            T[ ij ] = r_i.scalarProduct( r_j ) / sigma[ i ];
-            r_j.addVector( r_i, -T[ ij ] );
+            T[ ij ] = (r_i, r_j) / sigma[ i ];
+            r_j -= T[ ij ] * r_i;
          }
 
          // MGS with reorthogonalization
@@ -179,13 +179,13 @@ solve( ConstVectorViewType b, VectorViewType x )
 //                * r_j := r_j - T_{i,j} * r_i
 //                */
 //               const int ij = (i-1) + (j-1) * ell;
-//               const RealType T_ij = r_i.scalarProduct( r_j ) / sigma[ i ];
+//               const RealType T_ij = (r_i, r_j) / sigma[ i ];
 //               T[ ij ] += T_ij;
-//               r_j.addVector( r_i, -T_ij );
+//               r_j -= T_ij * r_i );
 //            }
 
-         sigma[ j ] = r_j.scalarProduct( r_j );
-         g_1[ j ] = r_0.scalarProduct( r_j ) / sigma[ j ];
+         sigma[ j ] = (r_j, r_j);
+         g_1[ j ] = (r_0, r_j) / sigma[ j ];
       }
 
       omega = g_1[ ell ];
@@ -217,17 +217,17 @@ solve( ConstVectorViewType b, VectorViewType x )
       Matrices::MatrixOperations< DeviceType >::
          gemv( size, ell,
                1.0, R.getData(), ldSize, g_2.getData(),
-               1.0, Traits::getLocalVectorView( x ).getData() );
+               1.0, Traits::getLocalView( x ).getData() );
       // r_0 := r_0 - R_[1:ell] * g_1_[1:ell]
       Matrices::MatrixOperations< DeviceType >::
          gemv( size, ell,
                -1.0, R.getData() + ldSize, ldSize, &g_1[ 1 ],
-               1.0, Traits::getLocalVectorView( r_0 ).getData() );
+               1.0, Traits::getLocalView( r_0 ).getData() );
       // u_0 := u_0 - U_[1:ell] * g_0_[1:ell]
       Matrices::MatrixOperations< DeviceType >::
          gemv( size, ell,
                -1.0, U.getData() + ldSize, ldSize, &g_0[ 1 ],
-               1.0, Traits::getLocalVectorView( u_0 ).getData() );
+               1.0, Traits::getLocalView( u_0 ).getData() );
 
       if( exact_residue ) {
          /****
@@ -260,12 +260,12 @@ compute_residue( VectorViewType r, ConstVectorViewType x, ConstVectorViewType b 
     */
    if( this->preconditioner ) {
       this->matrix->vectorProduct( x, M_tmp );
-      M_tmp.addVector( b, 1.0, -1.0 );
+      M_tmp = b - M_tmp;
       this->preconditioner->solve( M_tmp, r );
    }
    else {
       this->matrix->vectorProduct( x, r );
-      r.addVector( b, 1.0, -1.0 );
+      r = b - r;
    }
 }
 
@@ -288,7 +288,7 @@ void
 BICGStabL< Matrix >::
 setSize( const VectorViewType& x )
 {
-   this->size = ldSize = Traits::getLocalVectorView( x ).getSize();
+   this->size = ldSize = Traits::getConstLocalView( x ).getSize();
    R.setSize( (ell + 1) * ldSize );
    U.setSize( (ell + 1) * ldSize );
    r_ast.setLike( x );
