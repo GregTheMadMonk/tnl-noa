@@ -196,7 +196,7 @@ reduce( const Result zero,
 
    // start the reduction on the GPU
    Result* deviceAux1 = nullptr;
-   const int reducedSize = CudaMultireductionKernelLauncher( zero, dataFetcher, reduction, volatileReduction, size, n, deviceAux1 );
+   const int reducedSize = CudaMultireductionKernelLauncher( zero, dataFetcher, reduction, size, n, deviceAux1 );
 
    #ifdef CUDA_REDUCTION_PROFILING
       timer.stop();

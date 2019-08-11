@@ -288,7 +288,6 @@ reduce( const Index size,
    Result* deviceAux1( 0 );
    Index reducedSize = reductionLauncher.start(
       reduction,
-      volatileReduction,
       dataFetcher,
       zero,
       deviceAux1 );
@@ -324,7 +323,7 @@ reduce( const Index size,
    }
    else {
       // data can't be safely reduced on host, so continue with the reduction on the GPU
-      auto result = reductionLauncher.finish( reduction, volatileReduction, zero );
+      auto result = reductionLauncher.finish( reduction, zero );
 
       #ifdef CUDA_REDUCTION_PROFILING
          timer.stop();
@@ -368,7 +367,6 @@ reduceWithArgument( const Index size,
    Index* deviceIndexes( nullptr );
    Index reducedSize = reductionLauncher.startWithArgument(
       reduction,
-      volatileReduction,
       dataFetcher,
       zero,
       deviceAux1,
@@ -409,7 +407,7 @@ reduceWithArgument( const Index size,
    }
    else {
       // data can't be safely reduced on host, so continue with the reduction on the GPU
-      auto result = reductionLauncher.finishWithArgument( reduction, volatileReduction, zero );
+      auto result = reductionLauncher.finishWithArgument( reduction, zero );
 
       #ifdef CUDA_REDUCTION_PROFILING
          timer.stop();
