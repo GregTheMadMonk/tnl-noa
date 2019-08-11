@@ -308,20 +308,6 @@ reduce( Operation& operation,
 #endif
 }
 
-template< typename Operation, typename Index >
-void
-Multireduction< Devices::MIC >::
-reduce( Operation& operation,
-        const int n,
-        const Index size,
-        const typename Operation::DataType1* input1,
-        const Index ldInput1,
-        const typename Operation::DataType2* input2,
-        typename Operation::ResultType* result )
-{
-   throw Exceptions::NotImplementedError("Multireduction is not implemented for MIC.");
-}
-
 } // namespace Algorithms
 } // namespace Containers
 } // namespace TNL
