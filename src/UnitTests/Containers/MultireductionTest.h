@@ -94,29 +94,48 @@ using VectorTypes = ::testing::Types<
 
 TYPED_TEST_SUITE( MultireductionTest, VectorTypes );
 
-TYPED_TEST( MultireductionTest, scalarProduct )
+// idiot nvcc does not allow __cuda_callable__ lambdas inside private or protected regions
+template< typename DeviceVector, typename HostVector >
+void test_multireduction( const DeviceVector& V, const DeviceVector& y, HostVector& result )
 {
-   using RealType = typename TestFixture::DeviceVector::RealType;
-   using DeviceType = typename TestFixture::DeviceVector::DeviceType;
+   using RealType = typename DeviceVector::RealType;
+   using DeviceType = typename DeviceVector::DeviceType;
+   using IndexType = typename DeviceVector::IndexType;
 
-   ParallelReductionScalarProduct< RealType, RealType > scalarProduct;
+   const RealType* _V = V.getData();
+   const RealType* _y = y.getData();
+   const IndexType size = y.getSize();
+   const int n = result.getSize();
+   ASSERT_EQ( V.getSize(), size * n );
+
+   auto fetch = [=] __cuda_callable__ ( IndexType i, int k )
+   {
+      TNL_ASSERT_LT( i, size, "BUG: fetcher got invalid index i" );
+      TNL_ASSERT_LT( k, n, "BUG: fetcher got invalid index k" );
+      return _V[ i + k * size ] * _y[ i ];
+   };
+   auto reduction = [] __cuda_callable__ ( RealType& a, const RealType& b ) { a += b; };
+   auto volatileReduction = [] __cuda_callable__ ( volatile RealType& a, volatile RealType& b ) { a += b; };
    Multireduction< DeviceType >::reduce
-               ( scalarProduct,
-                 this->n,
-                 this->size,
-                 this->V.getData(),
-                 this->size,
-                 this->y.getData(),
-                 this->result.getData() );
+               ( (RealType) 0,
+                 fetch,
+                 reduction,
+                 volatileReduction,
+                 size,
+                 n,
+                 result.getData() );
 
-   for( int i = 0; i < this->n; i++ ) {
+   for( int i = 0; i < n; i++ ) {
       if( i % 2 == 0 )
-         EXPECT_EQ( this->result[ i ], 0.5 * this->size * ( this->size - 1 ) );
+         EXPECT_EQ( result[ i ], 0.5 * size * ( size - 1 ) );
       else
-         EXPECT_EQ( this->result[ i ], - 0.5 * this->size * ( this->size - 1 ) );
+         EXPECT_EQ( result[ i ], - 0.5 * size * ( size - 1 ) );
    }
 }
-
+TYPED_TEST( MultireductionTest, scalarProduct )
+{
+   test_multireduction( this->V, this->y, this->result );
+}
 #endif // HAVE_GTEST
 
 

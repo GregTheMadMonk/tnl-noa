@@ -84,9 +84,16 @@ protected:
    void hauseholder_cwy( VectorViewType v,
                          const int i );
 
+// nvcc allows __cuda_callable__ lambdas only in public methods
+#ifdef __NVCC__
+public:
+#endif
    void hauseholder_cwy_transposed( VectorViewType z,
                                     const int i,
                                     ConstVectorViewType w );
+#ifdef __NVCC__
+protected:
+#endif
 
    template< typename Vector >
    void update( const int k,
