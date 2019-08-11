@@ -18,7 +18,6 @@
 #include <TNL/Exceptions/MICSupportMissing.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Algorithms/Reduction.h>
-#include <TNL/Containers/Algorithms/ReductionOperations.h>
 #include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {

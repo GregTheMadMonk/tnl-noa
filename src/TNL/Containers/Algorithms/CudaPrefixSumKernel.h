@@ -15,7 +15,6 @@
 #include <TNL/Math.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Exceptions/CudaBadAlloc.h>
-#include <TNL/Containers/Algorithms/ReductionOperations.h>
 #include <TNL/Containers/Array.h>
 
 namespace TNL {

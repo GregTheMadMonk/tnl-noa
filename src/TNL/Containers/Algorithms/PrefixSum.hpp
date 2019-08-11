@@ -18,7 +18,6 @@
 
 #include <TNL/Assert.h>
 #include <TNL/Exceptions/CudaSupportMissing.h>
-#include <TNL/Containers/Algorithms/ReductionOperations.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Algorithms/CudaPrefixSumKernel.h>
 #include <TNL/Exceptions/NotImplementedError.h>

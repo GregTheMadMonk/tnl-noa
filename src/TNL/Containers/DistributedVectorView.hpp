@@ -13,7 +13,6 @@
 #pragma once
 
 #include "DistributedVectorView.h"
-#include <TNL/Containers/Algorithms/ReductionOperations.h>
 #include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
