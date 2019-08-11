@@ -12,13 +12,11 @@
 
 #pragma once
 
+#include <memory>  // std::unique_ptr
 
 //#define CUDA_REDUCTION_PROFILING
 
-#include <TNL/Assert.h>
-#include <TNL/Exceptions/CudaSupportMissing.h>
 #include <TNL/Containers/Algorithms/Reduction.h>
-#include <TNL/Containers/Algorithms/ReductionOperations.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Algorithms/CudaReductionKernel.h>
 
@@ -53,24 +51,21 @@ reduce( const Index size,
         DataFetcher& dataFetcher,
         const Result& zero )
 {
-   using IndexType = Index;
-   using ResultType = Result;
-
    constexpr int block_size = 128;
    const int blocks = size / block_size;
 
 #ifdef HAVE_OPENMP
    if( TNL::Devices::Host::isOMPEnabled() && size >= 2 * block_size ) {
       // global result variable
-      ResultType result = zero;
+      Result result = zero;
 #pragma omp parallel
       {
          // initialize array for thread-local results
-         ResultType r[ 4 ] = { zero, zero, zero, zero  };
+         Result r[ 4 ] = { zero, zero, zero, zero  };
 
          #pragma omp for nowait
          for( int b = 0; b < blocks; b++ ) {
-            const IndexType offset = b * block_size;
+            const Index offset = b * block_size;
             for( int i = 0; i < block_size; i += 4 ) {
                reduction( r[ 0 ], dataFetcher( offset + i ) );
                reduction( r[ 1 ], dataFetcher( offset + i + 1 ) );
@@ -82,7 +77,7 @@ reduce( const Index size,
          // the first thread that reaches here processes the last, incomplete block
          #pragma omp single nowait
          {
-            for( IndexType i = blocks * block_size; i < size; i++ )
+            for( Index i = blocks * block_size; i < size; i++ )
                reduction( r[ 0 ], dataFetcher( i ) );
          }
 
@@ -103,11 +98,11 @@ reduce( const Index size,
 #endif
       if( blocks > 1 ) {
          // initialize array for unrolled results
-         ResultType r[ 4 ] = { zero, zero, zero, zero };
+         Result r[ 4 ] = { zero, zero, zero, zero };
 
          // main reduction (explicitly unrolled loop)
          for( int b = 0; b < blocks; b++ ) {
-            const IndexType offset = b * block_size;
+            const Index offset = b * block_size;
             for( int i = 0; i < block_size; i += 4 ) {
                reduction( r[ 0 ], dataFetcher( offset + i ) );
                reduction( r[ 1 ], dataFetcher( offset + i + 1 ) );
@@ -117,7 +112,7 @@ reduce( const Index size,
          }
 
          // reduction of the last, incomplete block (not unrolled)
-         for( IndexType i = blocks * block_size; i < size; i++ )
+         for( Index i = blocks * block_size; i < size; i++ )
             reduction( r[ 0 ], dataFetcher( i ) );
             //operation.dataFetcher( r[ 0 ], i, input1, input2 );
 
@@ -128,8 +123,8 @@ reduce( const Index size,
          return r[ 0 ];
       }
       else {
-         ResultType result = zero;
-         for( IndexType i = 0; i < size; i++ )
+         Result result = zero;
+         for( Index i = 0; i < size; i++ )
             reduction( result, dataFetcher( i ) );
          return result;
       }
@@ -151,9 +146,6 @@ reduceWithArgument( const Index size,
                     DataFetcher& dataFetcher,
                     const Result& zero )
 {
-   using IndexType = Index;
-   using ResultType = Result;
-
    constexpr int block_size = 128;
    const int blocks = size / block_size;
 
@@ -164,13 +156,13 @@ reduceWithArgument( const Index size,
 #pragma omp parallel
       {
          // initialize array for thread-local results
-         IndexType arg[ 4 ] = { 0, 0, 0, 0 };
-         ResultType r[ 4 ] = { zero, zero, zero, zero  };
+         Index arg[ 4 ] = { 0, 0, 0, 0 };
+         Result r[ 4 ] = { zero, zero, zero, zero  };
          bool initialized( false );
 
          #pragma omp for nowait
          for( int b = 0; b < blocks; b++ ) {
-            const IndexType offset = b * block_size;
+            const Index offset = b * block_size;
             for( int i = 0; i < block_size; i += 4 ) {
                if( ! initialized ) {
                   arg[ 0 ] = offset + i;
@@ -194,7 +186,7 @@ reduceWithArgument( const Index size,
          // the first thread that reaches here processes the last, incomplete block
          #pragma omp single nowait
          {
-            for( IndexType i = blocks * block_size; i < size; i++ )
+            for( Index i = blocks * block_size; i < size; i++ )
                reduction( arg[ 0 ], i, r[ 0 ], dataFetcher( i ) );
          }
 
@@ -217,13 +209,13 @@ reduceWithArgument( const Index size,
 #endif
       if( blocks > 1 ) {
          // initialize array for unrolled results
-         IndexType arg[ 4 ] = { 0, 0, 0, 0 };
-         ResultType r[ 4 ] = { zero, zero, zero, zero };
+         Index arg[ 4 ] = { 0, 0, 0, 0 };
+         Result r[ 4 ] = { zero, zero, zero, zero };
          bool initialized( false );
 
          // main reduction (explicitly unrolled loop)
          for( int b = 0; b < blocks; b++ ) {
-            const IndexType offset = b * block_size;
+            const Index offset = b * block_size;
             for( int i = 0; i < block_size; i += 4 ) {
                if( ! initialized )
                {
@@ -246,7 +238,7 @@ reduceWithArgument( const Index size,
          }
 
          // reduction of the last, incomplete block (not unrolled)
-         for( IndexType i = blocks * block_size; i < size; i++ )
+         for( Index i = blocks * block_size; i < size; i++ )
             reduction( arg[ 0 ], i, r[ 0 ], dataFetcher( i ) );
 
          // reduction of unrolled results
@@ -257,7 +249,7 @@ reduceWithArgument( const Index size,
       }
       else {
          std::pair< Index, Result > result( 0, dataFetcher( 0 ) );
-         for( IndexType i = 1; i < size; i++ )
+         for( Index i = 1; i < size; i++ )
             reduction( result.first, i, result.second, dataFetcher( i ) );
          return result;
       }
@@ -279,18 +271,10 @@ reduce( const Index size,
         DataFetcher& dataFetcher,
         const Result& zero )
 {
-#ifdef HAVE_CUDA
-
-   using IndexType = Index;
-   using ResultType = Result;
-
-   /***
-    * Only fundamental and pointer types can be safely reduced on host. Complex
-    * objects stored on the device might contain pointers into the device memory,
-    * in which case reduction on host might fail.
-    */
-   //constexpr bool can_reduce_all_on_host = std::is_fundamental< DataType1 >::value || std::is_fundamental< DataType2 >::value || std::is_pointer< DataType1 >::value || std::is_pointer< DataType2 >::value;
-   constexpr bool can_reduce_later_on_host = std::is_fundamental< ResultType >::value || std::is_pointer< ResultType >::value;
+   // Only fundamental and pointer types can be safely reduced on host. Complex
+   // objects stored on the device might contain pointers into the device memory,
+   // in which case reduction on host might fail.
+   constexpr bool can_reduce_later_on_host = std::is_fundamental< Result >::value || std::is_pointer< Result >::value;
 
    #ifdef CUDA_REDUCTION_PROFILING
       Timer timer;
@@ -298,18 +282,17 @@ reduce( const Index size,
       timer.start();
    #endif
 
-   CudaReductionKernelLauncher< IndexType, ResultType > reductionLauncher( size );
+   CudaReductionKernelLauncher< Index, Result > reductionLauncher( size );
 
-   /****
-    * Reduce the data on the CUDA device.
-    */
-   ResultType* deviceAux1( 0 );
-   IndexType reducedSize = reductionLauncher.start(
+   // start the reduction on the GPU
+   Result* deviceAux1( 0 );
+   Index reducedSize = reductionLauncher.start(
       reduction,
       volatileReduction,
       dataFetcher,
       zero,
       deviceAux1 );
+
    #ifdef CUDA_REDUCTION_PROFILING
       timer.stop();
       std::cout << "   Reduction on GPU to size " << reducedSize << " took " << timer.getRealTime() << " sec. " << std::endl;
@@ -318,10 +301,8 @@ reduce( const Index size,
    #endif
 
    if( can_reduce_later_on_host ) {
-      /***
-       * Transfer the reduced data from device to host.
-       */
-      std::unique_ptr< ResultType[] > resultArray{ new ResultType[ reducedSize ] };
+      // transfer the reduced data from device to host
+      std::unique_ptr< Result[] > resultArray{ new Result[ reducedSize ] };
       ArrayOperations< Devices::Host, Devices::Cuda >::copy( resultArray.get(), deviceAux1, reducedSize );
 
       #ifdef CUDA_REDUCTION_PROFILING
@@ -331,11 +312,9 @@ reduce( const Index size,
          timer.start();
       #endif
 
-      /***
-       * Reduce the data on the host system.
-       */
-      auto fetch = [&] ( IndexType i ) { return resultArray[ i ]; };
-      const ResultType result = Reduction< Devices::Host >::reduce( reducedSize, reduction, volatileReduction, fetch, zero );
+      // finish the reduction on the host
+      auto fetch = [&] ( Index i ) { return resultArray[ i ]; };
+      const Result result = Reduction< Devices::Host >::reduce( reducedSize, reduction, volatileReduction, fetch, zero );
 
       #ifdef CUDA_REDUCTION_PROFILING
          timer.stop();
@@ -344,9 +323,7 @@ reduce( const Index size,
       return result;
    }
    else {
-      /***
-       * Data can't be safely reduced on host, so continue with the reduction on the CUDA device.
-       */
+      // data can't be safely reduced on host, so continue with the reduction on the GPU
       auto result = reductionLauncher.finish( reduction, volatileReduction, zero );
 
       #ifdef CUDA_REDUCTION_PROFILING
@@ -358,10 +335,7 @@ reduce( const Index size,
 
       return result;
    }
-#else
-   throw Exceptions::CudaSupportMissing();
-#endif
-};
+}
 
 template< typename Index,
           typename Result,
@@ -376,18 +350,10 @@ reduceWithArgument( const Index size,
                     DataFetcher& dataFetcher,
                     const Result& zero )
 {
-#ifdef HAVE_CUDA
-
-   using IndexType = Index;
-   using ResultType = Result;
-
-   /***
-    * Only fundamental and pointer types can be safely reduced on host. Complex
-    * objects stored on the device might contain pointers into the device memory,
-    * in which case reduction on host might fail.
-    */
-   //constexpr bool can_reduce_all_on_host = std::is_fundamental< DataType1 >::value || std::is_fundamental< DataType2 >::value || std::is_pointer< DataType1 >::value || std::is_pointer< DataType2 >::value;
-   constexpr bool can_reduce_later_on_host = std::is_fundamental< ResultType >::value || std::is_pointer< ResultType >::value;
+   // Only fundamental and pointer types can be safely reduced on host. Complex
+   // objects stored on the device might contain pointers into the device memory,
+   // in which case reduction on host might fail.
+   constexpr bool can_reduce_later_on_host = std::is_fundamental< Result >::value || std::is_pointer< Result >::value;
 
    #ifdef CUDA_REDUCTION_PROFILING
       Timer timer;
@@ -395,20 +361,19 @@ reduceWithArgument( const Index size,
       timer.start();
    #endif
 
-   CudaReductionKernelLauncher< IndexType, ResultType > reductionLauncher( size );
+   CudaReductionKernelLauncher< Index, Result > reductionLauncher( size );
 
-   /****
-    * Reduce the data on the CUDA device.
-    */
-   ResultType* deviceAux1( nullptr );
-   IndexType* deviceIndexes( nullptr );
-   IndexType reducedSize = reductionLauncher.startWithArgument(
+   // start the reduction on the GPU
+   Result* deviceAux1( nullptr );
+   Index* deviceIndexes( nullptr );
+   Index reducedSize = reductionLauncher.startWithArgument(
       reduction,
       volatileReduction,
       dataFetcher,
       zero,
       deviceAux1,
       deviceIndexes );
+
    #ifdef CUDA_REDUCTION_PROFILING
       timer.stop();
       std::cout << "   Reduction on GPU to size " << reducedSize << " took " << timer.getRealTime() << " sec. " << std::endl;
@@ -417,11 +382,9 @@ reduceWithArgument( const Index size,
    #endif
 
    if( can_reduce_later_on_host ) {
-      /***
-       * Transfer the reduced data from device to host.
-       */
-      std::unique_ptr< ResultType[] > resultArray{ new ResultType[ reducedSize ] };
-      std::unique_ptr< IndexType[] > indexArray{ new IndexType[ reducedSize ] };
+      // transfer the reduced data from device to host
+      std::unique_ptr< Result[] > resultArray{ new Result[ reducedSize ] };
+      std::unique_ptr< Index[] > indexArray{ new Index[ reducedSize ] };
       ArrayOperations< Devices::Host, Devices::Cuda >::copy( resultArray.get(), deviceAux1, reducedSize );
       ArrayOperations< Devices::Host, Devices::Cuda >::copy( indexArray.get(), deviceIndexes, reducedSize );
 
@@ -432,12 +395,10 @@ reduceWithArgument( const Index size,
          timer.start();
       #endif
 
-      /***
-       * Reduce the data on the host system.
-       */
-      //auto fetch = [&] ( IndexType i ) { return resultArray[ i ]; };
-      //const ResultType result = Reduction< Devices::Host >::reduceWithArgument( reducedSize, argument, reduction, volatileReduction, fetch, zero );
-      for( IndexType i = 1; i < reducedSize; i++ )
+      // finish the reduction on the host
+//      auto fetch = [&] ( Index i ) { return resultArray[ i ]; };
+//      const Result result = Reduction< Devices::Host >::reduceWithArgument( reducedSize, argument, reduction, volatileReduction, fetch, zero );
+      for( Index i = 1; i < reducedSize; i++ )
          reduction( indexArray[ 0 ], indexArray[ i ], resultArray[ 0 ], resultArray[ i ] );
 
       #ifdef CUDA_REDUCTION_PROFILING
@@ -447,9 +408,7 @@ reduceWithArgument( const Index size,
       return std::make_pair( indexArray[ 0 ], resultArray[ 0 ] );
    }
    else {
-      /***
-       * Data can't be safely reduced on host, so continue with the reduction on the CUDA device.
-       */
+      // data can't be safely reduced on host, so continue with the reduction on the GPU
       auto result = reductionLauncher.finishWithArgument( reduction, volatileReduction, zero );
 
       #ifdef CUDA_REDUCTION_PROFILING
@@ -461,9 +420,6 @@ reduceWithArgument( const Index size,
 
       return result;
    }
-#else
-   throw Exceptions::CudaSupportMissing();
-#endif
 }
 
 } // namespace Algorithms

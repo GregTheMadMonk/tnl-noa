@@ -22,64 +22,62 @@ namespace Containers {
 namespace Algorithms {
 
 template< typename Device >
-class Reduction;
+struct Reduction;
 
 template<>
-class Reduction< Devices::Host >
+struct Reduction< Devices::Host >
 {
-   public:
-      template< typename Index,
-                typename Result,
-                typename ReductionOperation,
-                typename VolatileReductionOperation,
-                typename DataFetcher >
-      static Result
-      reduce( const Index size,
-              ReductionOperation& reduction,
-              VolatileReductionOperation& volatileReduction,
-              DataFetcher& dataFetcher,
-              const Result& zero );
+   template< typename Index,
+             typename Result,
+             typename ReductionOperation,
+             typename VolatileReductionOperation,
+             typename DataFetcher >
+   static Result
+   reduce( const Index size,
+           ReductionOperation& reduction,
+           VolatileReductionOperation& volatileReduction,
+           DataFetcher& dataFetcher,
+           const Result& zero );
 
-      template< typename Index,
-                typename Result,
-                typename ReductionOperation,
-                typename VolatileReductionOperation,
-                typename DataFetcher >
-      static std::pair< Index, Result >
-      reduceWithArgument( const Index size,
-                          ReductionOperation& reduction,
-                          VolatileReductionOperation& volatileReduction,
-                          DataFetcher& dataFetcher,
-                          const Result& zero );
+   template< typename Index,
+             typename Result,
+             typename ReductionOperation,
+             typename VolatileReductionOperation,
+             typename DataFetcher >
+   static std::pair< Index, Result >
+   reduceWithArgument( const Index size,
+                       ReductionOperation& reduction,
+                       VolatileReductionOperation& volatileReduction,
+                       DataFetcher& dataFetcher,
+                       const Result& zero );
 };
 
 template<>
-class Reduction< Devices::Cuda >
+struct Reduction< Devices::Cuda >
 {
-   public:
-      template< typename Index,
-                typename Result,
-                typename ReductionOperation,
-                typename VolatileReductionOperation,
-                typename DataFetcher >
-      static Result
-      reduce( const Index size,
-              ReductionOperation& reduction,
-              VolatileReductionOperation& volatileReduction,
-              DataFetcher& dataFetcher,
-              const Result& zero );
+   template< typename Index,
+             typename Result,
+             typename ReductionOperation,
+             typename VolatileReductionOperation,
+             typename DataFetcher >
+   static Result
+   reduce( const Index size,
+           ReductionOperation& reduction,
+           VolatileReductionOperation& volatileReduction,
+           DataFetcher& dataFetcher,
+           const Result& zero );
 
-      template< typename Index,
-                typename Result,
-                typename ReductionOperation,
-                typename VolatileReductionOperation,
-                typename DataFetcher >
-      static std::pair< Index, Result >
-      reduceWithArgument( const Index size,
-                          ReductionOperation& reduction,
-                          VolatileReductionOperation& volatileReduction,
-                          DataFetcher& dataFetcher,
-                          const Result& zero );
+   template< typename Index,
+             typename Result,
+             typename ReductionOperation,
+             typename VolatileReductionOperation,
+             typename DataFetcher >
+   static std::pair< Index, Result >
+   reduceWithArgument( const Index size,
+                       ReductionOperation& reduction,
+                       VolatileReductionOperation& volatileReduction,
+                       DataFetcher& dataFetcher,
+                       const Result& zero );
 };
 
 } // namespace Algorithms
