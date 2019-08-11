@@ -70,15 +70,7 @@ auto DistributedExpressionArgMin( const Expression& expression )
          else if( a == b && bIdx < aIdx )
             aIdx = bIdx;
       };
-      auto volatileReduction = [] ( volatile IndexType& aIdx, volatile IndexType& bIdx, volatile RealType& a, volatile RealType& b ) {
-         if( a > b ) {
-            a = b;
-            aIdx = bIdx;
-         }
-         else if( a == b && bIdx < aIdx )
-            aIdx = bIdx;
-      };
-      result = Algorithms::Reduction< Devices::Host >::reduceWithArgument( (IndexType) nproc, reduction, volatileReduction, fetch, std::numeric_limits< RealType >::max() );
+      result = Algorithms::Reduction< Devices::Host >::reduceWithArgument( (IndexType) nproc, reduction, fetch, std::numeric_limits< RealType >::max() );
       result.first = gatheredResults[ result.first ].first;
    }
    return result;
@@ -135,15 +127,7 @@ auto DistributedExpressionArgMax( const Expression& expression )
          else if( a == b && bIdx < aIdx )
             aIdx = bIdx;
       };
-      auto volatileReduction = [] ( volatile IndexType& aIdx, volatile IndexType& bIdx, volatile RealType& a, volatile RealType& b ) {
-         if( a < b ) {
-            a = b;
-            aIdx = bIdx;
-         }
-         else if( a == b && bIdx < aIdx )
-            aIdx = bIdx;
-      };
-      result = Algorithms::Reduction< Devices::Host >::reduceWithArgument( (IndexType) nproc, reduction, volatileReduction, fetch, std::numeric_limits< RealType >::lowest() );
+      result = Algorithms::Reduction< Devices::Host >::reduceWithArgument( (IndexType) nproc, reduction, fetch, std::numeric_limits< RealType >::lowest() );
       result.first = gatheredResults[ result.first ].first;
    }
    return result;

@@ -120,8 +120,7 @@ bool Euler< Problem, SolverMonitor > :: solve( DofVectorPointer& _u )
          }
       }
       auto reduction = [] __cuda_callable__ ( RealType& a , const RealType& b ) { a += b; };
-      auto volatileReduction = [] __cuda_callable__ ( volatile RealType& a , const volatile RealType& b ) { a += b; };
-      this->setResidue( addAndReduceAbs( u, currentTau * k1, reduction, volatileReduction, ( RealType ) 0.0 ) / ( currentTau * ( RealType ) u.getSize() ) );
+      this->setResidue( addAndReduceAbs( u, currentTau * k1, reduction, ( RealType ) 0.0 ) / ( currentTau * ( RealType ) u.getSize() ) );
 
       /****
        * When time is close to stopTime the new residue

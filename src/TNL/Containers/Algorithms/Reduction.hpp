@@ -41,13 +41,11 @@ static constexpr int Reduction_minGpuDataSize = 256;//65536; //16384;//1024;//25
 template< typename Index,
           typename Result,
           typename ReductionOperation,
-          typename VolatileReductionOperation,
           typename DataFetcher >
 Result
 Reduction< Devices::Host >::
 reduce( const Index size,
         ReductionOperation& reduction,
-        VolatileReductionOperation& volatileReduction,
         DataFetcher& dataFetcher,
         const Result& zero )
 {
@@ -136,13 +134,11 @@ reduce( const Index size,
 template< typename Index,
           typename Result,
           typename ReductionOperation,
-          typename VolatileReductionOperation,
           typename DataFetcher >
 std::pair< Index, Result >
 Reduction< Devices::Host >::
 reduceWithArgument( const Index size,
                     ReductionOperation& reduction,
-                    VolatileReductionOperation& volatileReduction,
                     DataFetcher& dataFetcher,
                     const Result& zero )
 {
@@ -261,13 +257,11 @@ reduceWithArgument( const Index size,
 template< typename Index,
           typename Result,
           typename ReductionOperation,
-          typename VolatileReductionOperation,
           typename DataFetcher >
 Result
 Reduction< Devices::Cuda >::
 reduce( const Index size,
         ReductionOperation& reduction,
-        VolatileReductionOperation& volatileReduction,
         DataFetcher& dataFetcher,
         const Result& zero )
 {
@@ -313,7 +307,7 @@ reduce( const Index size,
 
       // finish the reduction on the host
       auto fetch = [&] ( Index i ) { return resultArray[ i ]; };
-      const Result result = Reduction< Devices::Host >::reduce( reducedSize, reduction, volatileReduction, fetch, zero );
+      const Result result = Reduction< Devices::Host >::reduce( reducedSize, reduction, fetch, zero );
 
       #ifdef CUDA_REDUCTION_PROFILING
          timer.stop();
@@ -339,13 +333,11 @@ reduce( const Index size,
 template< typename Index,
           typename Result,
           typename ReductionOperation,
-          typename VolatileReductionOperation,
           typename DataFetcher >
 std::pair< Index, Result >
 Reduction< Devices::Cuda >::
 reduceWithArgument( const Index size,
                     ReductionOperation& reduction,
-                    VolatileReductionOperation& volatileReduction,
                     DataFetcher& dataFetcher,
                     const Result& zero )
 {
@@ -395,7 +387,7 @@ reduceWithArgument( const Index size,
 
       // finish the reduction on the host
 //      auto fetch = [&] ( Index i ) { return resultArray[ i ]; };
-//      const Result result = Reduction< Devices::Host >::reduceWithArgument( reducedSize, argument, reduction, volatileReduction, fetch, zero );
+//      const Result result = Reduction< Devices::Host >::reduceWithArgument( reducedSize, argument, reduction, fetch, zero );
       for( Index i = 1; i < reducedSize; i++ )
          reduction( indexArray[ 0 ], indexArray[ i ], resultArray[ 0 ], resultArray[ i ] );
 

@@ -115,12 +115,10 @@ void test_multireduction( const DeviceVector& V, const DeviceVector& y, HostVect
       return _V[ i + k * size ] * _y[ i ];
    };
    auto reduction = [] __cuda_callable__ ( RealType& a, const RealType& b ) { a += b; };
-   auto volatileReduction = [] __cuda_callable__ ( volatile RealType& a, volatile RealType& b ) { a += b; };
    Multireduction< DeviceType >::reduce
                ( (RealType) 0,
                  fetch,
                  reduction,
-                 volatileReduction,
                  size,
                  n,
                  result.getData() );

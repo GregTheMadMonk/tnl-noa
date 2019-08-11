@@ -33,14 +33,12 @@ namespace Algorithms {
 template< typename Result,
           typename DataFetcher,
           typename Reduction,
-          typename VolatileReduction,
           typename Index >
 void
 Multireduction< Devices::Host >::
 reduce( const Result zero,
         DataFetcher dataFetcher,
         const Reduction reduction,
-        const VolatileReduction volatileReduction,
         const Index size,
         const int n,
         Result* result )
@@ -173,14 +171,12 @@ reduce( const Result zero,
 template< typename Result,
           typename DataFetcher,
           typename Reduction,
-          typename VolatileReduction,
           typename Index >
 void
 Multireduction< Devices::Cuda >::
 reduce( const Result zero,
         DataFetcher dataFetcher,
         const Reduction reduction,
-        const VolatileReduction volatileReduction,
         const Index size,
         const int n,
         Result* hostResult )
@@ -218,7 +214,7 @@ reduce( const Result zero,
 
    // finish the reduction on the host
    auto dataFetcherFinish = [&] ( int i, int k ) { return resultArray[ i + k * reducedSize ]; };
-   Multireduction< Devices::Host >::reduce( zero, dataFetcherFinish, reduction, volatileReduction, reducedSize, n, hostResult );
+   Multireduction< Devices::Host >::reduce( zero, dataFetcherFinish, reduction, reducedSize, n, hostResult );
 
    #ifdef CUDA_REDUCTION_PROFILING
       timer.stop();

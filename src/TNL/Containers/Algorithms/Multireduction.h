@@ -32,7 +32,6 @@ struct Multireduction< Devices::Host >
     *                 the i-th value to be reduced from the j-th dataset
     *                 (i = 0,...,size-1; j = 0,...,n-1)
     *    reduction: callable object representing the reduction operation
-    *    volatileReduction: callable object representing the reduction operation
     *    size: the size of each dataset
     *    n: number of datasets to be reduced
     *    result: output array of size = n
@@ -40,13 +39,11 @@ struct Multireduction< Devices::Host >
    template< typename Result,
              typename DataFetcher,
              typename Reduction,
-             typename VolatileReduction,
              typename Index >
    static void
    reduce( const Result zero,
            DataFetcher dataFetcher,
            const Reduction reduction,
-           const VolatileReduction volatileReduction,
            const Index size,
            const int n,
            Result* result );
@@ -62,7 +59,6 @@ struct Multireduction< Devices::Cuda >
     *                 the i-th value to be reduced from the j-th dataset
     *                 (i = 0,...,size-1; j = 0,...,n-1)
     *    reduction: callable object representing the reduction operation
-    *    volatileReduction: callable object representing the reduction operation
     *    size: the size of each dataset
     *    n: number of datasets to be reduced
     *    hostResult: output array of size = n
@@ -70,13 +66,11 @@ struct Multireduction< Devices::Cuda >
    template< typename Result,
              typename DataFetcher,
              typename Reduction,
-             typename VolatileReduction,
              typename Index >
    static void
    reduce( const Result zero,
            DataFetcher dataFetcher,
            const Reduction reduction,
-           const VolatileReduction volatileReduction,
            const Index size,
            const int n,
            Result* hostResult );

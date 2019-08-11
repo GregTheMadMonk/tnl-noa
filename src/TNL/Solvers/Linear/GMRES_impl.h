@@ -440,12 +440,10 @@ hauseholder_generate( const int i,
       const IndexType ldSize = this->ldSize;
       auto fetch = [_Y, _y_i, ldSize] __cuda_callable__ ( IndexType idx, int k ) { return _Y[ idx + k * ldSize ] * _y_i[ idx ]; };
       auto reduction = [] __cuda_callable__ ( RealType& a, const RealType& b ) { a += b; };
-      auto volatileReduction = [] __cuda_callable__ ( volatile RealType& a, volatile RealType& b ) { a += b; };
       Containers::Algorithms::Multireduction< DeviceType >::reduce
                ( (RealType) 0,
                  fetch,
                  reduction,
-                 volatileReduction,
                  size,
                  i,
                  aux );
@@ -552,12 +550,10 @@ hauseholder_cwy_transposed( VectorViewType z,
    const IndexType ldSize = this->ldSize;
    auto fetch = [_Y, _w, ldSize] __cuda_callable__ ( IndexType idx, int k ) { return _Y[ idx + k * ldSize ] * _w[ idx ]; };
    auto reduction = [] __cuda_callable__ ( RealType& a, const RealType& b ) { a += b; };
-   auto volatileReduction = [] __cuda_callable__ ( volatile RealType& a, volatile RealType& b ) { a += b; };
    Containers::Algorithms::Multireduction< DeviceType >::reduce
             ( (RealType) 0,
               fetch,
               reduction,
-              volatileReduction,
               size,
               i + 1,
               aux );

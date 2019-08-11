@@ -30,24 +30,20 @@ struct Reduction< Devices::Host >
    template< typename Index,
              typename Result,
              typename ReductionOperation,
-             typename VolatileReductionOperation,
              typename DataFetcher >
    static Result
    reduce( const Index size,
            ReductionOperation& reduction,
-           VolatileReductionOperation& volatileReduction,
            DataFetcher& dataFetcher,
            const Result& zero );
 
    template< typename Index,
              typename Result,
              typename ReductionOperation,
-             typename VolatileReductionOperation,
              typename DataFetcher >
    static std::pair< Index, Result >
    reduceWithArgument( const Index size,
                        ReductionOperation& reduction,
-                       VolatileReductionOperation& volatileReduction,
                        DataFetcher& dataFetcher,
                        const Result& zero );
 };
@@ -58,24 +54,20 @@ struct Reduction< Devices::Cuda >
    template< typename Index,
              typename Result,
              typename ReductionOperation,
-             typename VolatileReductionOperation,
              typename DataFetcher >
    static Result
    reduce( const Index size,
            ReductionOperation& reduction,
-           VolatileReductionOperation& volatileReduction,
            DataFetcher& dataFetcher,
            const Result& zero );
 
    template< typename Index,
              typename Result,
              typename ReductionOperation,
-             typename VolatileReductionOperation,
              typename DataFetcher >
    static std::pair< Index, Result >
    reduceWithArgument( const Index size,
                        ReductionOperation& reduction,
-                       VolatileReductionOperation& volatileReduction,
                        DataFetcher& dataFetcher,
                        const Result& zero );
 };

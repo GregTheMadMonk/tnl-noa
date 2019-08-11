@@ -174,15 +174,13 @@ bool Merson< Problem, SolverMonitor >::solve( DofVectorPointer& _u )
          time += currentTau;
 
          auto reduction = [] __cuda_callable__ ( RealType& a , const RealType& b ) { a += b; };
-         auto volatileReduction = [] __cuda_callable__ ( volatile RealType& a , const volatile RealType& b ) { a += b; };
          this->setResidue( addAndReduceAbs( u, currentTau / 6.0 * ( k1 + 4.0 * k4 + k5 ),
-            reduction, volatileReduction, ( RealType ) 0.0 ) / ( currentTau * ( RealType ) u.getSize() ) );
+            reduction, ( RealType ) 0.0 ) / ( currentTau * ( RealType ) u.getSize() ) );
 
          /////
          // When time is close to stopTime the new residue
          // may be inaccurate significantly.
          if( abs( time - this->stopTime ) < 1.0e-7 ) this->setResidue( lastResidue );
-         
 
          if( ! this->nextIteration() )
             return false;

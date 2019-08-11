@@ -2187,12 +2187,10 @@ template< typename Vector,
    typename T2,
    template< typename, typename > class Operation,
    typename Reduction,
-   typename VolatileReduction,
    typename Result >
 Result evaluateAndReduce( Vector& lhs,
    const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& expression,
    Reduction& reduction,
-   VolatileReduction& volatileReduction,
    const Result& zero )
 {
    using RealType = typename Vector::RealType;
@@ -2201,19 +2199,17 @@ Result evaluateAndReduce( Vector& lhs,
 
    RealType* lhs_data = lhs.getData();
    auto fetch = [=] __cuda_callable__ ( IndexType i ) -> RealType { return ( lhs_data[ i ] = expression[ i ] ); };
-   return Containers::Algorithms::Reduction< DeviceType >::reduce( lhs.getSize(), reduction, volatileReduction, fetch, zero );
+   return Containers::Algorithms::Reduction< DeviceType >::reduce( lhs.getSize(), reduction, fetch, zero );
 }
 
 template< typename Vector,
    typename T1,
    template< typename > class Operation,
    typename Reduction,
-   typename VolatileReduction,
    typename Result >
 Result evaluateAndReduce( Vector& lhs,
    const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& expression,
    Reduction& reduction,
-   VolatileReduction& volatileReduction,
    const Result& zero )
 {
    using RealType = typename Vector::RealType;
@@ -2222,7 +2218,7 @@ Result evaluateAndReduce( Vector& lhs,
 
    RealType* lhs_data = lhs.getData();
    auto fetch = [=] __cuda_callable__ ( IndexType i ) -> RealType { return ( lhs_data[ i ] = expression[ i ] ); };
-   return Containers::Algorithms::Reduction< DeviceType >::reduce( lhs.getSize(), reduction, volatileReduction, fetch, zero );
+   return Containers::Algorithms::Reduction< DeviceType >::reduce( lhs.getSize(), reduction, fetch, zero );
 }
 
 ////
@@ -2232,12 +2228,10 @@ template< typename Vector,
    typename T2,
    template< typename, typename > class Operation,
    typename Reduction,
-   typename VolatileReduction,
    typename Result >
 Result addAndReduce( Vector& lhs,
    const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& expression,
    Reduction& reduction,
-   VolatileReduction& volatileReduction,
    const Result& zero )
 {
    using RealType = typename Vector::RealType;
@@ -2250,19 +2244,17 @@ Result addAndReduce( Vector& lhs,
       lhs_data[ i ] += aux;
       return aux;
    };
-   return Containers::Algorithms::Reduction< DeviceType >::reduce( lhs.getSize(), reduction, volatileReduction, fetch, zero );
+   return Containers::Algorithms::Reduction< DeviceType >::reduce( lhs.getSize(), reduction, fetch, zero );
 }
 
 template< typename Vector,
    typename T1,
    template< typename > class Operation,
    typename Reduction,
-   typename VolatileReduction,
    typename Result >
 Result addAndReduce( Vector& lhs,
    const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& expression,
    Reduction& reduction,
-   VolatileReduction& volatileReduction,
    const Result& zero )
 {
    using RealType = typename Vector::RealType;
@@ -2275,7 +2267,7 @@ Result addAndReduce( Vector& lhs,
       lhs_data[ i ] += aux;
       return aux;
    };
-   return Containers::Algorithms::Reduction< DeviceType >::reduce( lhs.getSize(), reduction, volatileReduction, fetch, zero );
+   return Containers::Algorithms::Reduction< DeviceType >::reduce( lhs.getSize(), reduction, fetch, zero );
 }
 
 ////
@@ -2285,12 +2277,10 @@ template< typename Vector,
    typename T2,
    template< typename, typename > class Operation,
    typename Reduction,
-   typename VolatileReduction,
    typename Result >
 Result addAndReduceAbs( Vector& lhs,
    const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& expression,
    Reduction& reduction,
-   VolatileReduction& volatileReduction,
    const Result& zero )
 {
    using RealType = typename Vector::RealType;
@@ -2303,19 +2293,17 @@ Result addAndReduceAbs( Vector& lhs,
       lhs_data[ i ] += aux;
       return TNL::abs( aux );
    };
-   return Containers::Algorithms::Reduction< DeviceType >::reduce( lhs.getSize(), reduction, volatileReduction, fetch, zero );
+   return Containers::Algorithms::Reduction< DeviceType >::reduce( lhs.getSize(), reduction, fetch, zero );
 }
 
 template< typename Vector,
    typename T1,
    template< typename > class Operation,
    typename Reduction,
-   typename VolatileReduction,
    typename Result >
 Result addAndReduceAbs( Vector& lhs,
    const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& expression,
    Reduction& reduction,
-   VolatileReduction& volatileReduction,
    const Result& zero )
 {
    using RealType = typename Vector::RealType;
@@ -2328,7 +2316,7 @@ Result addAndReduceAbs( Vector& lhs,
       lhs_data[ i ] += aux;
       return TNL::abs( aux );
    };
-   return Containers::Algorithms::Reduction< DeviceType >::reduce( lhs.getSize(), reduction, volatileReduction, fetch, zero );
+   return Containers::Algorithms::Reduction< DeviceType >::reduce( lhs.getSize(), reduction, fetch, zero );
 }
 
 } // namespace TNL
