@@ -259,12 +259,21 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
    const Index dofsCount = gridXSize * gridYSize;
    dim3 cudaUpdateBlocks( dofsCount / 256 + ( dofsCount % 256 != 0 ) );
    dim3 cudaUpdateBlockSize( 256 );
- 
+
    /****
     * Initiation
     */
+   // Workaround for nvcc 10.1.168 - it would modifie the simple expression
+   // `new Index[reducedSize]` in the source code to `new (Index[reducedSize])`
+   // which is not correct - see e.g. https://stackoverflow.com/a/39671946
+   // Thus, the host compiler would spit out some warnings...
+   #ifdef __NVCC__
+   Real* u = new Real[ static_cast<const Index&>(dofsCount) ];
+   Real* aux = new Real[ static_cast<const Index&>(dofsCount) ];
+   #else
    Real* u = new Real[ dofsCount ];
    Real* aux = new Real[ dofsCount ];
+   #endif
    Real* max_du = new Real[ cudaUpdateBlocks.x ];
    if( ! u || ! aux )
    {

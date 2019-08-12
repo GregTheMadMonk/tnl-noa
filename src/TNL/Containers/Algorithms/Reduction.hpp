@@ -279,7 +279,7 @@ reduce( const Index size,
 
    // start the reduction on the GPU
    Result* deviceAux1( 0 );
-   Index reducedSize = reductionLauncher.start(
+   const int reducedSize = reductionLauncher.start(
       reduction,
       dataFetcher,
       zero,
@@ -294,7 +294,20 @@ reduce( const Index size,
 
    if( can_reduce_later_on_host ) {
       // transfer the reduced data from device to host
-      std::unique_ptr< Result[] > resultArray{ new Result[ reducedSize ] };
+      std::unique_ptr< Result[] > resultArray{
+         // Workaround for nvcc 10.1.168 - it would modifie the simple expression
+         // `new Result[reducedSize]` in the source code to `new (Result[reducedSize])`
+         // which is not correct - see e.g. https://stackoverflow.com/a/39671946
+         // Thus, the host compiler would spit out hundreds of warnings...
+         // Funnily enough, nvcc's behaviour depends on the context rather than the
+         // expression, because exactly the same simple expression in different places
+         // does not produce warnings.
+         #ifdef __NVCC__
+         new Result[ static_cast<const int&>(reducedSize) ]
+         #else
+         new Result[ reducedSize ]
+         #endif
+      };
       ArrayOperations< Devices::Host, Devices::Cuda >::copy( resultArray.get(), deviceAux1, reducedSize );
 
       #ifdef CUDA_REDUCTION_PROFILING
@@ -356,7 +369,7 @@ reduceWithArgument( const Index size,
    // start the reduction on the GPU
    Result* deviceAux1( nullptr );
    Index* deviceIndexes( nullptr );
-   Index reducedSize = reductionLauncher.startWithArgument(
+   const int reducedSize = reductionLauncher.startWithArgument(
       reduction,
       dataFetcher,
       zero,
@@ -372,8 +385,34 @@ reduceWithArgument( const Index size,
 
    if( can_reduce_later_on_host ) {
       // transfer the reduced data from device to host
-      std::unique_ptr< Result[] > resultArray{ new Result[ reducedSize ] };
-      std::unique_ptr< Index[] > indexArray{ new Index[ reducedSize ] };
+      std::unique_ptr< Result[] > resultArray{
+         // Workaround for nvcc 10.1.168 - it would modifie the simple expression
+         // `new Result[reducedSize]` in the source code to `new (Result[reducedSize])`
+         // which is not correct - see e.g. https://stackoverflow.com/a/39671946
+         // Thus, the host compiler would spit out hundreds of warnings...
+         // Funnily enough, nvcc's behaviour depends on the context rather than the
+         // expression, because exactly the same simple expression in different places
+         // does not produce warnings.
+         #ifdef __NVCC__
+         new Result[ static_cast<const int&>(reducedSize) ]
+         #else
+         new Result[ reducedSize ]
+         #endif
+      };
+      std::unique_ptr< Index[] > indexArray{
+         // Workaround for nvcc 10.1.168 - it would modifie the simple expression
+         // `new Index[reducedSize]` in the source code to `new (Index[reducedSize])`
+         // which is not correct - see e.g. https://stackoverflow.com/a/39671946
+         // Thus, the host compiler would spit out hundreds of warnings...
+         // Funnily enough, nvcc's behaviour depends on the context rather than the
+         // expression, because exactly the same simple expression in different places
+         // does not produce warnings.
+         #ifdef __NVCC__
+         new Index[ static_cast<const int&>(reducedSize) ]
+         #else
+         new Index[ reducedSize ]
+         #endif
+      };
       ArrayOperations< Devices::Host, Devices::Cuda >::copy( resultArray.get(), deviceAux1, reducedSize );
       ArrayOperations< Devices::Host, Devices::Cuda >::copy( indexArray.get(), deviceIndexes, reducedSize );
 
