@@ -31,7 +31,6 @@
 
 using namespace TNL;
 using namespace TNL::Containers;
-using namespace TNL::Containers::Algorithms;
 
 namespace binary_tests {
 

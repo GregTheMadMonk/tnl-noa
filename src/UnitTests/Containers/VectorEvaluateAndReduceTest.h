@@ -22,7 +22,6 @@
 
 using namespace TNL;
 using namespace TNL::Containers;
-using namespace TNL::Containers::Algorithms;
 using namespace TNL::Arithmetics;
 
 // should be small enough to have fast tests, but larger than minGPUReductionDataSize

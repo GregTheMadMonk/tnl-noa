@@ -8,8 +8,6 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-// NOTE: Vector = Array + VectorOperations, so we test Vector and VectorOperations at the same time
-
 #pragma once
 
 #ifdef HAVE_GTEST
@@ -24,7 +22,6 @@
 
 using namespace TNL;
 using namespace TNL::Containers;
-using namespace TNL::Containers::Algorithms;
 using namespace TNL::Arithmetics;
 
 // test fixture for typed tests
@@ -33,7 +30,6 @@ class VectorTest : public ::testing::Test
 {
 protected:
    using VectorType = Vector;
-   using VectorOperations = Algorithms::VectorOperations< typename VectorType::DeviceType >;
    using ViewType = VectorView< typename Vector::RealType, typename Vector::DeviceType, typename Vector::IndexType >;
 };
 

@@ -12,7 +12,6 @@
 
 #include <TNL/TypeTraits.h>
 #include <TNL/ParallelFor.h>
-#include <TNL/Containers/Algorithms/VectorOperations.h>
 
 namespace TNL {
 namespace Containers {

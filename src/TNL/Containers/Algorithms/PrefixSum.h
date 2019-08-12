@@ -14,20 +14,23 @@
 
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
-#include <TNL/Devices/MIC.h>
-#include <TNL/Containers/Algorithms/PrefixSumType.h>
 
 namespace TNL {
 namespace Containers {
 namespace Algorithms {
 
-template< typename Device,
-           PrefixSumType Type = PrefixSumType::Inclusive >
-class PrefixSum {};
+enum class PrefixSumType {
+   Exclusive,
+   Inclusive
+};
 
 template< typename Device,
            PrefixSumType Type = PrefixSumType::Inclusive >
-class SegmentedPrefixSum {};
+class PrefixSum;
+
+template< typename Device,
+           PrefixSumType Type = PrefixSumType::Inclusive >
+class SegmentedPrefixSum;
 
 
 template< PrefixSumType Type >

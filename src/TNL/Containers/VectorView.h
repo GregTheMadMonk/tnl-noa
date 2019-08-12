@@ -14,7 +14,7 @@
 
 #include <TNL/Containers/ArrayView.h>
 #include <TNL/Containers/Expressions/ExpressionTemplates.h>
-#include <TNL/Containers/Algorithms/PrefixSumType.h>
+#include <TNL/Containers/Algorithms/PrefixSum.h>
 
 namespace TNL {
 namespace Containers {

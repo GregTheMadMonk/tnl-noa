@@ -11,7 +11,6 @@
 #pragma once
 
 #include <TNL/Containers/Algorithms/Reduction.h>
-#include <TNL/Containers/Algorithms/PrefixSum.h>
 #include "CommonVectorOperations.h"
 
 namespace TNL {
