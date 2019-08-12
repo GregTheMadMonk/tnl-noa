@@ -45,7 +45,7 @@ template< typename Index,
 Result
 Reduction< Devices::Host >::
 reduce( const Index size,
-        ReductionOperation& reduction,
+        const ReductionOperation& reduction,
         DataFetcher& dataFetcher,
         const Result& zero )
 {
@@ -137,7 +137,7 @@ template< typename Index,
 std::pair< Index, Result >
 Reduction< Devices::Host >::
 reduceWithArgument( const Index size,
-                    ReductionOperation& reduction,
+                    const ReductionOperation& reduction,
                     DataFetcher& dataFetcher,
                     const Result& zero )
 {
@@ -260,7 +260,7 @@ template< typename Index,
 Result
 Reduction< Devices::Cuda >::
 reduce( const Index size,
-        ReductionOperation& reduction,
+        const ReductionOperation& reduction,
         DataFetcher& dataFetcher,
         const Result& zero )
 {
@@ -336,7 +336,7 @@ template< typename Index,
 std::pair< Index, Result >
 Reduction< Devices::Cuda >::
 reduceWithArgument( const Index size,
-                    ReductionOperation& reduction,
+                    const ReductionOperation& reduction,
                     DataFetcher& dataFetcher,
                     const Result& zero )
 {

@@ -13,6 +13,7 @@
 #pragma once
 
 #include <utility>  // std::pair
+#include <functional>  // reduction functions like std::plus, std::logical_and, std::logical_or etc.
 
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
@@ -33,7 +34,7 @@ struct Reduction< Devices::Host >
              typename DataFetcher >
    static Result
    reduce( const Index size,
-           ReductionOperation& reduction,
+           const ReductionOperation& reduction,
            DataFetcher& dataFetcher,
            const Result& zero );
 
@@ -43,7 +44,7 @@ struct Reduction< Devices::Host >
              typename DataFetcher >
    static std::pair< Index, Result >
    reduceWithArgument( const Index size,
-                       ReductionOperation& reduction,
+                       const ReductionOperation& reduction,
                        DataFetcher& dataFetcher,
                        const Result& zero );
 };
@@ -57,7 +58,7 @@ struct Reduction< Devices::Cuda >
              typename DataFetcher >
    static Result
    reduce( const Index size,
-           ReductionOperation& reduction,
+           const ReductionOperation& reduction,
            DataFetcher& dataFetcher,
            const Result& zero );
 
@@ -67,7 +68,7 @@ struct Reduction< Devices::Cuda >
              typename DataFetcher >
    static std::pair< Index, Result >
    reduceWithArgument( const Index size,
-                       ReductionOperation& reduction,
+                       const ReductionOperation& reduction,
                        DataFetcher& dataFetcher,
                        const Result& zero );
 };

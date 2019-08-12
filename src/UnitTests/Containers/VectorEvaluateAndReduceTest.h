@@ -36,8 +36,7 @@ performEvaluateAndReduce( VectorView& u, VectorView& v, VectorView& w )
 {
    using RealType = typename VectorView::RealType;
 
-   auto reduction = [] __cuda_callable__ ( const RealType& a, const RealType& b ) { return a + b; };
-   return evaluateAndReduce( w, u * v, reduction, ( RealType ) 0.0 );
+   return evaluateAndReduce( w, u * v, std::plus<>{}, ( RealType ) 0.0 );
 }
 
 TYPED_TEST( VectorTest, evaluateAndReduce )
@@ -72,8 +71,7 @@ performAddAndReduce1( VectorView& u, VectorView& v, VectorView& w )
 {
    using RealType = typename VectorView::RealType;
 
-   auto reduction = [] __cuda_callable__ ( const RealType& a, const RealType& b ) { return a + b; };
-   return addAndReduce( w, u * v, reduction, ( RealType ) 0.0 );
+   return addAndReduce( w, u * v, std::plus<>{}, ( RealType ) 0.0 );
 }
 
 template< typename VectorView >
@@ -82,8 +80,7 @@ performAddAndReduce2( VectorView& v, VectorView& w )
 {
    using RealType = typename VectorView::RealType;
 
-   auto reduction = [] __cuda_callable__ ( const RealType& a, const RealType& b ) { return a + b; };
-   return addAndReduce( w, 5.0 * v, reduction, ( RealType ) 0.0 );
+   return addAndReduce( w, 5.0 * v, std::plus<>{}, ( RealType ) 0.0 );
 }
 
 

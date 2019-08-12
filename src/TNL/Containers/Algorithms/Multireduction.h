@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <functional>  // reduction functions like std::plus, std::logical_and, std::logical_or etc.
+
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 
@@ -32,6 +34,8 @@ struct Multireduction< Devices::Host >
     *                 the i-th value to be reduced from the j-th dataset
     *                 (i = 0,...,size-1; j = 0,...,n-1)
     *    reduction: callable object representing the reduction operation
+    *               for example, it can be an instance of std::plus, std::logical_and,
+    *               std::logical_or etc.
     *    size: the size of each dataset
     *    n: number of datasets to be reduced
     *    result: output array of size = n
@@ -59,6 +63,8 @@ struct Multireduction< Devices::Cuda >
     *                 the i-th value to be reduced from the j-th dataset
     *                 (i = 0,...,size-1; j = 0,...,n-1)
     *    reduction: callable object representing the reduction operation
+    *               for example, it can be an instance of std::plus, std::logical_and,
+    *               std::logical_or etc.
     *    size: the size of each dataset
     *    n: number of datasets to be reduced
     *    hostResult: output array of size = n

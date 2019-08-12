@@ -173,9 +173,8 @@ bool Merson< Problem, SolverMonitor >::solve( DofVectorPointer& _u )
          RealType lastResidue = this->getResidue();
          time += currentTau;
 
-         auto reduction = [] __cuda_callable__ ( const RealType& a, const RealType& b ) { return a + b; };
          this->setResidue( addAndReduceAbs( u, currentTau / 6.0 * ( k1 + 4.0 * k4 + k5 ),
-            reduction, ( RealType ) 0.0 ) / ( currentTau * ( RealType ) u.getSize() ) );
+            std::plus<>{}, ( RealType ) 0.0 ) / ( currentTau * ( RealType ) u.getSize() ) );
 
          /////
          // When time is close to stopTime the new residue

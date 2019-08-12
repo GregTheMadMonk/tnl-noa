@@ -119,8 +119,7 @@ bool Euler< Problem, SolverMonitor > :: solve( DofVectorPointer& _u )
             continue;
          }
       }
-      auto reduction = [] __cuda_callable__ ( const RealType& a, const RealType& b ) { return a + b; };
-      this->setResidue( addAndReduceAbs( u, currentTau * k1, reduction, ( RealType ) 0.0 ) / ( currentTau * ( RealType ) u.getSize() ) );
+      this->setResidue( addAndReduceAbs( u, currentTau * k1, std::plus<>{}, ( RealType ) 0.0 ) / ( currentTau * ( RealType ) u.getSize() ) );
 
       /****
        * When time is close to stopTime the new residue

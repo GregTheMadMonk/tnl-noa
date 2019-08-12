@@ -114,11 +114,10 @@ void test_multireduction( const DeviceVector& V, const DeviceVector& y, HostVect
       TNL_ASSERT_LT( k, n, "BUG: fetcher got invalid index k" );
       return _V[ i + k * size ] * _y[ i ];
    };
-   auto reduction = [] __cuda_callable__ ( const RealType& a, const RealType& b ) { return a + b; };
    Multireduction< DeviceType >::reduce
                ( (RealType) 0,
                  fetch,
-                 reduction,
+                 std::plus<>{},
                  size,
                  n,
                  result.getData() );

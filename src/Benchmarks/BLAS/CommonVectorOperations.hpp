@@ -97,8 +97,7 @@ getVectorL1Norm( const Vector& v )
 
    const auto* data = v.getData();
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return TNL::abs( data[ i ] ); };
-   auto reduction = [] __cuda_callable__ ( const ResultType& a, const ResultType& b ) { return a + b; };
-   return Containers::Algorithms::Reduction< DeviceType >::reduce( v.getSize(), reduction, fetch, ( ResultType ) 0 );
+   return Containers::Algorithms::Reduction< DeviceType >::reduce( v.getSize(), std::plus<>{}, fetch, ( ResultType ) 0 );
 }
 
 template< typename Device >
@@ -114,8 +113,7 @@ getVectorL2Norm( const Vector& v )
 
    const auto* data = v.getData();
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return data[ i ] * data[ i ]; };
-   auto reduction = [] __cuda_callable__ ( const ResultType& a, const ResultType& b ) { return a + b; };
-   return std::sqrt( Containers::Algorithms::Reduction< DeviceType >::reduce( v.getSize(), reduction, fetch, ( ResultType ) 0 ) );
+   return std::sqrt( Containers::Algorithms::Reduction< DeviceType >::reduce( v.getSize(), std::plus<>{}, fetch, ( ResultType ) 0 ) );
 }
 
 template< typename Device >
@@ -138,8 +136,7 @@ getVectorLpNorm( const Vector& v,
 
    const auto* data = v.getData();
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return TNL::pow( TNL::abs( data[ i ] ), p ); };
-   auto reduction = [] __cuda_callable__ ( const ResultType& a, const ResultType& b ) { return a + b; };
-   return std::pow( Containers::Algorithms::Reduction< DeviceType >::reduce( v.getSize(), reduction, fetch, ( ResultType ) 0 ), 1.0 / p );
+   return std::pow( Containers::Algorithms::Reduction< DeviceType >::reduce( v.getSize(), std::plus<>{}, fetch, ( ResultType ) 0 ), 1.0 / p );
 }
 
 template< typename Device >
@@ -158,8 +155,7 @@ getVectorSum( const Vector& v )
 
    const auto* data = v.getData();
    auto fetch = [=] __cuda_callable__ ( IndexType i )  -> ResultType { return data[ i ]; };
-   auto reduction = [] __cuda_callable__ ( const ResultType& a, const ResultType& b ) { return a + b; };
-   return Containers::Algorithms::Reduction< DeviceType >::reduce( v.getSize(), reduction, fetch, ( ResultType ) 0 );
+   return Containers::Algorithms::Reduction< DeviceType >::reduce( v.getSize(), std::plus<>{}, fetch, ( ResultType ) 0 );
 }
 
 template< typename Device >
@@ -258,8 +254,7 @@ getVectorDifferenceL1Norm( const Vector1& v1,
    const auto* data1 = v1.getData();
    const auto* data2 = v2.getData();
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return TNL::abs( data1[ i ] - data2[ i ] ); };
-   auto reduction = [] __cuda_callable__ ( const ResultType& a, const ResultType& b ) { return a + b; };
-   return Containers::Algorithms::Reduction< DeviceType >::reduce( v1.getSize(), reduction, fetch, ( ResultType ) 0 );
+   return Containers::Algorithms::Reduction< DeviceType >::reduce( v1.getSize(), std::plus<>{}, fetch, ( ResultType ) 0 );
 }
 
 template< typename Device >
@@ -281,8 +276,7 @@ getVectorDifferenceL2Norm( const Vector1& v1,
       auto diff = data1[ i ] - data2[ i ];
       return diff * diff;
    };
-   auto reduction = [] __cuda_callable__ ( const ResultType& a, const ResultType& b ) { return a + b; };
-   return std::sqrt( Containers::Algorithms::Reduction< DeviceType >::reduce( v1.getSize(), reduction, fetch, ( ResultType ) 0 ) );
+   return std::sqrt( Containers::Algorithms::Reduction< DeviceType >::reduce( v1.getSize(), std::plus<>{}, fetch, ( ResultType ) 0 ) );
 }
 
 template< typename Device >
@@ -308,8 +302,7 @@ getVectorDifferenceLpNorm( const Vector1& v1,
    const auto* data1 = v1.getData();
    const auto* data2 = v2.getData();
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return TNL::pow( TNL::abs( data1[ i ] - data2[ i ] ), p ); };
-   auto reduction = [] __cuda_callable__ ( const ResultType& a, const ResultType& b ) { return a + b; };
-   return std::pow( Containers::Algorithms::Reduction< DeviceType >::reduce( v1.getSize(), reduction, fetch, ( ResultType ) 0 ), 1.0 / p );
+   return std::pow( Containers::Algorithms::Reduction< DeviceType >::reduce( v1.getSize(), std::plus<>{}, fetch, ( ResultType ) 0 ), 1.0 / p );
 }
 
 template< typename Device >
@@ -328,8 +321,7 @@ getVectorDifferenceSum( const Vector1& v1,
    const auto* data1 = v1.getData();
    const auto* data2 = v2.getData();
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return data1[ i ] - data2[ i ]; };
-   auto reduction = [] __cuda_callable__ ( const ResultType& a, const ResultType& b ) { return a + b; };
-   return Containers::Algorithms::Reduction< DeviceType >::reduce( v1.getSize(), reduction, fetch, ( ResultType ) 0 );
+   return Containers::Algorithms::Reduction< DeviceType >::reduce( v1.getSize(), std::plus<>{}, fetch, ( ResultType ) 0 );
 }
 
 template< typename Device >
@@ -348,8 +340,7 @@ getScalarProduct( const Vector1& v1,
    const auto* data1 = v1.getData();
    const auto* data2 = v2.getData();
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return data1[ i ] * data2[ i ]; };
-   auto reduction = [] __cuda_callable__ ( const ResultType& a, const ResultType& b ) { return a + b; };
-   return Containers::Algorithms::Reduction< DeviceType >::reduce( v1.getSize(), reduction, fetch, ( ResultType ) 0 );
+   return Containers::Algorithms::Reduction< DeviceType >::reduce( v1.getSize(), std::plus<>{}, fetch, ( ResultType ) 0 );
 }
 
 } // namespace Benchmarks
