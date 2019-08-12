@@ -29,7 +29,7 @@ getVectorMax( const Vector& v )
 
    const auto* data = v.getData();
    auto fetch = [=] __cuda_callable__ ( IndexType i ) -> ResultType { return data[ i ]; };
-   auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a = TNL::max( a, b ); };
+   auto reduction = [] __cuda_callable__ ( const ResultType& a, const ResultType& b ) { return TNL::max( a, b ); };
    return Containers::Algorithms::Reduction< DeviceType >::reduce( v.getSize(), reduction, fetch, std::numeric_limits< ResultType >::lowest() );
 }
 
@@ -46,7 +46,7 @@ getVectorMin( const Vector& v )
 
    const auto* data = v.getData();
    auto fetch = [=] __cuda_callable__ ( IndexType i ) -> RealType { return data[ i ]; };
-   auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a =  TNL::min( a, b ); };
+   auto reduction = [] __cuda_callable__ ( const ResultType& a, const ResultType& b ) { return TNL::min( a, b ); };
    return Containers::Algorithms::Reduction< DeviceType >::reduce( v.getSize(), reduction, fetch, std::numeric_limits< ResultType >::max() );
 }
 
@@ -63,7 +63,7 @@ getVectorAbsMax( const Vector& v )
 
    const auto* data = v.getData();
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return TNL::abs( data[ i ] ); };
-   auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a = TNL::max( a, b ); };
+   auto reduction = [] __cuda_callable__ ( const ResultType& a, const ResultType& b ) { return TNL::max( a, b ); };
    return Containers::Algorithms::Reduction< DeviceType >::reduce( v.getSize(), reduction, fetch, std::numeric_limits< ResultType >::lowest() );
 }
 
@@ -80,7 +80,7 @@ getVectorAbsMin( const Vector& v )
 
    const auto* data = v.getData();
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return TNL::abs( data[ i ] ); };
-   auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a = TNL::min( a, b ); };
+   auto reduction = [] __cuda_callable__ ( const ResultType& a, const ResultType& b ) { return TNL::min( a, b ); };
    return Containers::Algorithms::Reduction< DeviceType >::reduce( v.getSize(), reduction, fetch, std::numeric_limits< ResultType >::max() );
 }
 
@@ -97,7 +97,7 @@ getVectorL1Norm( const Vector& v )
 
    const auto* data = v.getData();
    auto fetch = [=] __cuda_callable__ ( IndexType i ) { return TNL::abs( data[ i ] ); };
-   auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a += b; };
+   auto reduction = [] __cuda_callable__ ( const ResultType& a, const ResultType& b ) { return a + b; };
    return Containers::Algorithms::Reduction< DeviceType >::reduce( v.getSize(), reduction, fetch, ( ResultType ) 0 );
 }
 
@@ -113,8 +113,8 @@ getVectorL2Norm( const Vector& v )
    using IndexType = typename Vector::IndexType;
 
    const auto* data = v.getData();
-   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return  data[ i ] * data[ i ]; };
-   auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a += b; };
+   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return data[ i ] * data[ i ]; };
+   auto reduction = [] __cuda_callable__ ( const ResultType& a, const ResultType& b ) { return a + b; };
    return std::sqrt( Containers::Algorithms::Reduction< DeviceType >::reduce( v.getSize(), reduction, fetch, ( ResultType ) 0 ) );
 }
 
@@ -137,8 +137,8 @@ getVectorLpNorm( const Vector& v,
       return getVectorL2Norm< Vector, ResultType >( v );
 
    const auto* data = v.getData();
-   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return  TNL::pow( TNL::abs( data[ i ] ), p ); };
-   auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a += b; };
+   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return TNL::pow( TNL::abs( data[ i ] ), p ); };
+   auto reduction = [] __cuda_callable__ ( const ResultType& a, const ResultType& b ) { return a + b; };
    return std::pow( Containers::Algorithms::Reduction< DeviceType >::reduce( v.getSize(), reduction, fetch, ( ResultType ) 0 ), 1.0 / p );
 }
 
@@ -157,8 +157,8 @@ getVectorSum( const Vector& v )
    using IndexType = typename Vector::IndexType;
 
    const auto* data = v.getData();
-   auto fetch = [=] __cuda_callable__ ( IndexType i )  -> ResultType { return  data[ i ]; };
-   auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a += b; };
+   auto fetch = [=] __cuda_callable__ ( IndexType i )  -> ResultType { return data[ i ]; };
+   auto reduction = [] __cuda_callable__ ( const ResultType& a, const ResultType& b ) { return a + b; };
    return Containers::Algorithms::Reduction< DeviceType >::reduce( v.getSize(), reduction, fetch, ( ResultType ) 0 );
 }
 
@@ -177,8 +177,8 @@ getVectorDifferenceMax( const Vector1& v1,
 
    const auto* data1 = v1.getData();
    const auto* data2 = v2.getData();
-   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return  data1[ i ] - data2[ i ]; };
-   auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a = TNL::max( a, b ); };
+   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return data1[ i ] - data2[ i ]; };
+   auto reduction = [] __cuda_callable__ ( const ResultType& a, const ResultType& b ) { return TNL::max( a, b ); };
    return Containers::Algorithms::Reduction< DeviceType >::reduce( v1.getSize(), reduction, fetch, std::numeric_limits< ResultType >::lowest() );
 }
 
@@ -197,8 +197,8 @@ getVectorDifferenceMin( const Vector1& v1,
 
    const auto* data1 = v1.getData();
    const auto* data2 = v2.getData();
-   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return  data1[ i ] - data2[ i ]; };
-   auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a = TNL::min( a, b ); };
+   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return data1[ i ] - data2[ i ]; };
+   auto reduction = [] __cuda_callable__ ( const ResultType& a, const ResultType& b ) { return TNL::min( a, b ); };
    return Containers::Algorithms::Reduction< DeviceType >::reduce( v1.getSize(), reduction, fetch, std::numeric_limits< ResultType >::max() );
 }
 
@@ -217,8 +217,8 @@ getVectorDifferenceAbsMax( const Vector1& v1,
 
    const auto* data1 = v1.getData();
    const auto* data2 = v2.getData();
-   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return  TNL::abs( data1[ i ] - data2[ i ] ); };
-   auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a = TNL::max( a, b ); };
+   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return TNL::abs( data1[ i ] - data2[ i ] ); };
+   auto reduction = [] __cuda_callable__ ( const ResultType& a, const ResultType& b ) { return TNL::max( a, b ); };
    return Containers::Algorithms::Reduction< DeviceType >::reduce( v1.getSize(), reduction, fetch, std::numeric_limits< ResultType >::lowest() );
 }
 
@@ -237,8 +237,8 @@ getVectorDifferenceAbsMin( const Vector1& v1,
 
    const auto* data1 = v1.getData();
    const auto* data2 = v2.getData();
-   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return  TNL::abs( data1[ i ] - data2[ i ] ); };
-   auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a = TNL::min( a, b ); };
+   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return TNL::abs( data1[ i ] - data2[ i ] ); };
+   auto reduction = [] __cuda_callable__ ( const ResultType& a, const ResultType& b ) { return TNL::min( a, b ); };
    return Containers::Algorithms::Reduction< DeviceType >::reduce( v1.getSize(), reduction, fetch, std::numeric_limits< ResultType >::max() );
 }
 
@@ -257,8 +257,8 @@ getVectorDifferenceL1Norm( const Vector1& v1,
 
    const auto* data1 = v1.getData();
    const auto* data2 = v2.getData();
-   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return  TNL::abs( data1[ i ] - data2[ i ] ); };
-   auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a += b; };
+   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return TNL::abs( data1[ i ] - data2[ i ] ); };
+   auto reduction = [] __cuda_callable__ ( const ResultType& a, const ResultType& b ) { return a + b; };
    return Containers::Algorithms::Reduction< DeviceType >::reduce( v1.getSize(), reduction, fetch, ( ResultType ) 0 );
 }
 
@@ -281,7 +281,7 @@ getVectorDifferenceL2Norm( const Vector1& v1,
       auto diff = data1[ i ] - data2[ i ];
       return diff * diff;
    };
-   auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a += b; };
+   auto reduction = [] __cuda_callable__ ( const ResultType& a, const ResultType& b ) { return a + b; };
    return std::sqrt( Containers::Algorithms::Reduction< DeviceType >::reduce( v1.getSize(), reduction, fetch, ( ResultType ) 0 ) );
 }
 
@@ -307,8 +307,8 @@ getVectorDifferenceLpNorm( const Vector1& v1,
 
    const auto* data1 = v1.getData();
    const auto* data2 = v2.getData();
-   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return  TNL::pow( TNL::abs( data1[ i ] - data2[ i ] ), p ); };
-   auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a += b; };
+   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return TNL::pow( TNL::abs( data1[ i ] - data2[ i ] ), p ); };
+   auto reduction = [] __cuda_callable__ ( const ResultType& a, const ResultType& b ) { return a + b; };
    return std::pow( Containers::Algorithms::Reduction< DeviceType >::reduce( v1.getSize(), reduction, fetch, ( ResultType ) 0 ), 1.0 / p );
 }
 
@@ -327,8 +327,8 @@ getVectorDifferenceSum( const Vector1& v1,
 
    const auto* data1 = v1.getData();
    const auto* data2 = v2.getData();
-   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return  data1[ i ] - data2[ i ]; };
-   auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a += b; };
+   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return data1[ i ] - data2[ i ]; };
+   auto reduction = [] __cuda_callable__ ( const ResultType& a, const ResultType& b ) { return a + b; };
    return Containers::Algorithms::Reduction< DeviceType >::reduce( v1.getSize(), reduction, fetch, ( ResultType ) 0 );
 }
 
@@ -347,8 +347,8 @@ getScalarProduct( const Vector1& v1,
 
    const auto* data1 = v1.getData();
    const auto* data2 = v2.getData();
-   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return  data1[ i ] * data2[ i ]; };
-   auto reduction = [=] __cuda_callable__ ( ResultType& a, const ResultType& b ) { a += b; };
+   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return data1[ i ] * data2[ i ]; };
+   auto reduction = [] __cuda_callable__ ( const ResultType& a, const ResultType& b ) { return a + b; };
    return Containers::Algorithms::Reduction< DeviceType >::reduce( v1.getSize(), reduction, fetch, ( ResultType ) 0 );
 }
 

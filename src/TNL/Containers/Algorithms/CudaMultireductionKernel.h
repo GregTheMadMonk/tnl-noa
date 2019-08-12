@@ -67,19 +67,19 @@ CudaMultireductionKernel( const Result zero,
 
    // Start with the sequential reduction and push the result into the shared memory.
    while( gid + 4 * gridSizeX < size ) {
-      reduction( sdata[ tid ], dataFetcher( gid,                 y ) );
-      reduction( sdata[ tid ], dataFetcher( gid + gridSizeX,     y ) );
-      reduction( sdata[ tid ], dataFetcher( gid + 2 * gridSizeX, y ) );
-      reduction( sdata[ tid ], dataFetcher( gid + 3 * gridSizeX, y ) );
+      sdata[ tid ] = reduction( sdata[ tid ], dataFetcher( gid,                 y ) );
+      sdata[ tid ] = reduction( sdata[ tid ], dataFetcher( gid + gridSizeX,     y ) );
+      sdata[ tid ] = reduction( sdata[ tid ], dataFetcher( gid + 2 * gridSizeX, y ) );
+      sdata[ tid ] = reduction( sdata[ tid ], dataFetcher( gid + 3 * gridSizeX, y ) );
       gid += 4 * gridSizeX;
    }
    while( gid + 2 * gridSizeX < size ) {
-      reduction( sdata[ tid ], dataFetcher( gid, y ) );
-      reduction( sdata[ tid ], dataFetcher( gid + gridSizeX, y ) );
+      sdata[ tid ] = reduction( sdata[ tid ], dataFetcher( gid, y ) );
+      sdata[ tid ] = reduction( sdata[ tid ], dataFetcher( gid + gridSizeX, y ) );
       gid += 2 * gridSizeX;
    }
    while( gid < size ) {
-      reduction( sdata[ tid ], dataFetcher( gid, y ) );
+      sdata[ tid ] = reduction( sdata[ tid ], dataFetcher( gid, y ) );
       gid += gridSizeX;
    }
    __syncthreads();
@@ -87,48 +87,48 @@ CudaMultireductionKernel( const Result zero,
    // Perform the parallel reduction.
    if( blockSizeX >= 1024 ) {
       if( threadIdx.x < 512 )
-         reduction( sdata[ tid ], sdata[ tid + 512 ] );
+         sdata[ tid ] = reduction( sdata[ tid ], sdata[ tid + 512 ] );
       __syncthreads();
    }
    if( blockSizeX >= 512 ) {
       if( threadIdx.x < 256 )
-         reduction( sdata[ tid ], sdata[ tid + 256 ] );
+         sdata[ tid ] = reduction( sdata[ tid ], sdata[ tid + 256 ] );
       __syncthreads();
    }
    if( blockSizeX >= 256 ) {
       if( threadIdx.x < 128 )
-         reduction( sdata[ tid ], sdata[ tid + 128 ] );
+         sdata[ tid ] = reduction( sdata[ tid ], sdata[ tid + 128 ] );
       __syncthreads();
    }
    if( blockSizeX >= 128 ) {
       if( threadIdx.x <  64 )
-         reduction( sdata[ tid ], sdata[ tid + 64 ] );
+         sdata[ tid ] = reduction( sdata[ tid ], sdata[ tid + 64 ] );
       __syncthreads();
    }
 
    // This runs in one warp so we use __syncwarp() instead of __syncthreads().
    if( threadIdx.x < 32 ) {
       if( blockSizeX >= 64 )
-         reduction( sdata[ tid ], sdata[ tid + 32 ] );
+         sdata[ tid ] = reduction( sdata[ tid ], sdata[ tid + 32 ] );
       __syncwarp();
       // Note that here we do not have to check if tid < 16 etc, because we have
       // 2 * blockSize.x elements of shared memory per block, so we do not
       // access out of bounds. The results for the upper half will be undefined,
       // but unused anyway.
       if( blockSizeX >= 32 )
-         reduction( sdata[ tid ], sdata[ tid + 16 ] );
+         sdata[ tid ] = reduction( sdata[ tid ], sdata[ tid + 16 ] );
       __syncwarp();
       if( blockSizeX >= 16 )
-         reduction( sdata[ tid ], sdata[ tid + 8 ] );
+         sdata[ tid ] = reduction( sdata[ tid ], sdata[ tid + 8 ] );
       __syncwarp();
       if( blockSizeX >=  8 )
-         reduction( sdata[ tid ], sdata[ tid + 4 ] );
+         sdata[ tid ] = reduction( sdata[ tid ], sdata[ tid + 4 ] );
       __syncwarp();
       if( blockSizeX >=  4 )
-         reduction( sdata[ tid ], sdata[ tid + 2 ] );
+         sdata[ tid ] = reduction( sdata[ tid ], sdata[ tid + 2 ] );
       __syncwarp();
       if( blockSizeX >=  2 )
-         reduction( sdata[ tid ], sdata[ tid + 1 ] );
+         sdata[ tid ] = reduction( sdata[ tid ], sdata[ tid + 1 ] );
    }
 
    // Store the result back in the global memory.

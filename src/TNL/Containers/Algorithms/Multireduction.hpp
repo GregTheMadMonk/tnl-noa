@@ -72,10 +72,10 @@ reduce( const Result zero,
          for( int k = 0; k < n; k++ ) {
             Result* _r = r + 4 * k;
             for( int i = 0; i < block_size; i += 4 ) {
-               reduction( _r[ 0 ], dataFetcher( offset + i,     k ) );
-               reduction( _r[ 1 ], dataFetcher( offset + i + 1, k ) );
-               reduction( _r[ 2 ], dataFetcher( offset + i + 2, k ) );
-               reduction( _r[ 3 ], dataFetcher( offset + i + 3, k ) );
+               _r[ 0 ] = reduction( _r[ 0 ], dataFetcher( offset + i,     k ) );
+               _r[ 1 ] = reduction( _r[ 1 ], dataFetcher( offset + i + 1, k ) );
+               _r[ 2 ] = reduction( _r[ 2 ], dataFetcher( offset + i + 2, k ) );
+               _r[ 3 ] = reduction( _r[ 3 ], dataFetcher( offset + i + 3, k ) );
             }
          }
       }
@@ -86,23 +86,23 @@ reduce( const Result zero,
          for( int k = 0; k < n; k++ ) {
             Result* _r = r + 4 * k;
             for( Index i = blocks * block_size; i < size; i++ )
-               reduction( _r[ 0 ], dataFetcher( i, k ) );
+               _r[ 0 ] = reduction( _r[ 0 ], dataFetcher( i, k ) );
          }
       }
 
       // local reduction of unrolled results
       for( int k = 0; k < n; k++ ) {
          Result* _r = r + 4 * k;
-         reduction( _r[ 0 ], _r[ 1 ] );
-         reduction( _r[ 0 ], _r[ 2 ] );
-         reduction( _r[ 0 ], _r[ 3 ] );
+         _r[ 0 ] = reduction( _r[ 0 ], _r[ 1 ] );
+         _r[ 0 ] = reduction( _r[ 0 ], _r[ 2 ] );
+         _r[ 0 ] = reduction( _r[ 0 ], _r[ 3 ] );
       }
 
       // inter-thread reduction of local results
       #pragma omp critical
       {
          for( int k = 0; k < n; k++ )
-            reduction( result[ k ], r[ 4 * k ] );
+            result[ k ] = reduction( result[ k ], r[ 4 * k ] );
       }
    }
    else {
@@ -120,10 +120,10 @@ reduce( const Result zero,
             for( int k = 0; k < n; k++ ) {
                Result* _r = r + 4 * k;
                for( int i = 0; i < block_size; i += 4 ) {
-                  reduction( _r[ 0 ], dataFetcher( offset + i,     k ) );
-                  reduction( _r[ 1 ], dataFetcher( offset + i + 1, k ) );
-                  reduction( _r[ 2 ], dataFetcher( offset + i + 2, k ) );
-                  reduction( _r[ 3 ], dataFetcher( offset + i + 3, k ) );
+                  _r[ 0 ] = reduction( _r[ 0 ], dataFetcher( offset + i,     k ) );
+                  _r[ 1 ] = reduction( _r[ 1 ], dataFetcher( offset + i + 1, k ) );
+                  _r[ 2 ] = reduction( _r[ 2 ], dataFetcher( offset + i + 2, k ) );
+                  _r[ 3 ] = reduction( _r[ 3 ], dataFetcher( offset + i + 3, k ) );
                }
             }
          }
@@ -132,15 +132,15 @@ reduce( const Result zero,
          for( int k = 0; k < n; k++ ) {
             Result* _r = r + 4 * k;
             for( Index i = blocks * block_size; i < size; i++ )
-               reduction( _r[ 0 ], dataFetcher( i, k ) );
+               _r[ 0 ] = reduction( _r[ 0 ], dataFetcher( i, k ) );
          }
 
          // reduction of unrolled results
          for( int k = 0; k < n; k++ ) {
             Result* _r = r + 4 * k;
-            reduction( _r[ 0 ], _r[ 1 ] );
-            reduction( _r[ 0 ], _r[ 2 ] );
-            reduction( _r[ 0 ], _r[ 3 ] );
+            _r[ 0 ] = reduction( _r[ 0 ], _r[ 1 ] );
+            _r[ 0 ] = reduction( _r[ 0 ], _r[ 2 ] );
+            _r[ 0 ] = reduction( _r[ 0 ], _r[ 3 ] );
 
             // copy the result into the output parameter
             result[ k ] = _r[ 0 ];
@@ -154,13 +154,13 @@ reduce( const Result zero,
             const Index offset = b * block_size;
             for( int k = 0; k < n; k++ ) {
                for( int i = 0; i < block_size; i++ )
-                  reduction( result[ k ], dataFetcher( offset + i, k ) );
+                  result[ k ] = reduction( result[ k ], dataFetcher( offset + i, k ) );
             }
          }
 
          for( int k = 0; k < n; k++ ) {
             for( Index i = blocks * block_size; i < size; i++ )
-               reduction( result[ k ], dataFetcher( i, k ) );
+               result[ k ] = reduction( result[ k ], dataFetcher( i, k ) );
          }
       }
 #ifdef HAVE_OPENMP

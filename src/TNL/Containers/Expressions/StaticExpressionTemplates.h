@@ -2280,12 +2280,12 @@ template< typename Vector,
 __cuda_callable__
 Result evaluateAndReduce( Vector& lhs,
    const Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& expression,
-   Reduction& reduction,
+   const Reduction& reduction,
    const Result& zero )
 {
    Result result( zero );
    for( int i = 0; i < Vector::getSize(); i++ )
-      reduction( result, lhs[ i ] = expression[ i ] );
+      result = reduction( result, lhs[ i ] = expression[ i ] );
    return result;
 }
 
@@ -2297,12 +2297,12 @@ template< typename Vector,
 __cuda_callable__
 Result evaluateAndReduce( Vector& lhs,
    const Containers::Expressions::StaticUnaryExpressionTemplate< T1, Operation >& expression,
-   Reduction& reduction,
+   const Reduction& reduction,
    const Result& zero )
 {
    Result result( zero );
    for( int i = 0; i < Vector::getSize(); i++ )
-      reduction( result, lhs[ i ] = expression[ i ] );
+      result = reduction( result, lhs[ i ] = expression[ i ] );
    return result;
 }
 
@@ -2317,14 +2317,14 @@ template< typename Vector,
 __cuda_callable__
 Result addAndReduce( Vector& lhs,
    const Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& expression,
-   Reduction& reduction,
+   const Reduction& reduction,
    const Result& zero )
 {
    Result result( zero );
    for( int i = 0; i < Vector::getSize(); i++ ) {
       const Result aux = expression[ i ];
       lhs[ i ] += aux;
-      reduction( result, aux );
+      result = reduction( result, aux );
    }
    return result;
 }
@@ -2337,14 +2337,14 @@ template< typename Vector,
 __cuda_callable__
 Result addAndReduce( Vector& lhs,
    const Containers::Expressions::StaticUnaryExpressionTemplate< T1, Operation >& expression,
-   Reduction& reduction,
+   const Reduction& reduction,
    const Result& zero )
 {
    Result result( zero );
    for( int i = 0; i < Vector::getSize(); i++ ) {
       const Result aux = expression[ i ];
       lhs[ i ] += aux;
-      reduction( result, aux );
+      result = reduction( result, aux );
    }
    return result;
 }
@@ -2360,14 +2360,14 @@ template< typename Vector,
 __cuda_callable__
 Result addAndReduceAbs( Vector& lhs,
    const Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& expression,
-   Reduction& reduction,
+   const Reduction& reduction,
    const Result& zero )
 {
    Result result( zero );
    for( int i = 0; i < Vector::getSize(); i++ ) {
       const Result aux = expression[ i ];
       lhs[ i ] += aux;
-      reduction( result, TNL::abs( aux ) );
+      result = reduction( result, TNL::abs( aux ) );
    }
    return result;
 }
@@ -2380,14 +2380,14 @@ template< typename Vector,
 __cuda_callable__
 Result addAndReduceAbs( Vector& lhs,
    const Containers::Expressions::StaticUnaryExpressionTemplate< T1, Operation >& expression,
-   Reduction& reduction,
+   const Reduction& reduction,
    const Result& zero )
 {
    Result result( zero );
    for( int i = 0; i < Vector::getSize(); i++ ) {
       const Result aux = expression[ i ];
       lhs[ i ] += aux;
-      reduction( result, TNL::abs( aux ) );
+      result = reduction( result, TNL::abs( aux ) );
    }
    return result;
 }

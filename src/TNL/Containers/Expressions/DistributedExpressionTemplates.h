@@ -2190,7 +2190,7 @@ template< typename Vector,
    typename Result >
 Result evaluateAndReduce( Vector& lhs,
    const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& expression,
-   Reduction& reduction,
+   const Reduction& reduction,
    const Result& zero )
 {
    using RealType = typename Vector::RealType;
@@ -2209,7 +2209,7 @@ template< typename Vector,
    typename Result >
 Result evaluateAndReduce( Vector& lhs,
    const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& expression,
-   Reduction& reduction,
+   const Reduction& reduction,
    const Result& zero )
 {
    using RealType = typename Vector::RealType;
@@ -2231,7 +2231,7 @@ template< typename Vector,
    typename Result >
 Result addAndReduce( Vector& lhs,
    const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& expression,
-   Reduction& reduction,
+   const Reduction& reduction,
    const Result& zero )
 {
    using RealType = typename Vector::RealType;
@@ -2254,7 +2254,7 @@ template< typename Vector,
    typename Result >
 Result addAndReduce( Vector& lhs,
    const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& expression,
-   Reduction& reduction,
+   const Reduction& reduction,
    const Result& zero )
 {
    using RealType = typename Vector::RealType;
@@ -2280,7 +2280,7 @@ template< typename Vector,
    typename Result >
 Result addAndReduceAbs( Vector& lhs,
    const Containers::Expressions::DistributedBinaryExpressionTemplate< T1, T2, Operation >& expression,
-   Reduction& reduction,
+   const Reduction& reduction,
    const Result& zero )
 {
    using RealType = typename Vector::RealType;
@@ -2303,7 +2303,7 @@ template< typename Vector,
    typename Result >
 Result addAndReduceAbs( Vector& lhs,
    const Containers::Expressions::DistributedUnaryExpressionTemplate< T1, Operation >& expression,
-   Reduction& reduction,
+   const Reduction& reduction,
    const Result& zero )
 {
    using RealType = typename Vector::RealType;

@@ -36,7 +36,7 @@ performEvaluateAndReduce( VectorView& u, VectorView& v, VectorView& w )
 {
    using RealType = typename VectorView::RealType;
 
-   auto reduction = [] __cuda_callable__ ( RealType& a, const RealType& b ) { a += b; };
+   auto reduction = [] __cuda_callable__ ( const RealType& a, const RealType& b ) { return a + b; };
    return evaluateAndReduce( w, u * v, reduction, ( RealType ) 0.0 );
 }
 
@@ -72,7 +72,7 @@ performAddAndReduce1( VectorView& u, VectorView& v, VectorView& w )
 {
    using RealType = typename VectorView::RealType;
 
-   auto reduction = [] __cuda_callable__ ( RealType& a, const RealType& b ) { a += b; };
+   auto reduction = [] __cuda_callable__ ( const RealType& a, const RealType& b ) { return a + b; };
    return addAndReduce( w, u * v, reduction, ( RealType ) 0.0 );
 }
 
@@ -82,7 +82,7 @@ performAddAndReduce2( VectorView& v, VectorView& w )
 {
    using RealType = typename VectorView::RealType;
 
-   auto reduction = [] __cuda_callable__ ( RealType& a, const RealType& b ) { a += b; };
+   auto reduction = [] __cuda_callable__ ( const RealType& a, const RealType& b ) { return a + b; };
    return addAndReduce( w, 5.0 * v, reduction, ( RealType ) 0.0 );
 }
 

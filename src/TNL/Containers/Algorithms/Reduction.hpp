@@ -65,10 +65,10 @@ reduce( const Index size,
          for( int b = 0; b < blocks; b++ ) {
             const Index offset = b * block_size;
             for( int i = 0; i < block_size; i += 4 ) {
-               reduction( r[ 0 ], dataFetcher( offset + i ) );
-               reduction( r[ 1 ], dataFetcher( offset + i + 1 ) );
-               reduction( r[ 2 ], dataFetcher( offset + i + 2 ) );
-               reduction( r[ 3 ], dataFetcher( offset + i + 3 ) );
+               r[ 0 ] = reduction( r[ 0 ], dataFetcher( offset + i ) );
+               r[ 1 ] = reduction( r[ 1 ], dataFetcher( offset + i + 1 ) );
+               r[ 2 ] = reduction( r[ 2 ], dataFetcher( offset + i + 2 ) );
+               r[ 3 ] = reduction( r[ 3 ], dataFetcher( offset + i + 3 ) );
             }
          }
 
@@ -76,18 +76,18 @@ reduce( const Index size,
          #pragma omp single nowait
          {
             for( Index i = blocks * block_size; i < size; i++ )
-               reduction( r[ 0 ], dataFetcher( i ) );
+               r[ 0 ] = reduction( r[ 0 ], dataFetcher( i ) );
          }
 
          // local reduction of unrolled results
-         reduction( r[ 0 ], r[ 2 ] );
-         reduction( r[ 1 ], r[ 3 ] );
-         reduction( r[ 0 ], r[ 1 ] );
+         r[ 0 ] = reduction( r[ 0 ], r[ 2 ] );
+         r[ 1 ] = reduction( r[ 1 ], r[ 3 ] );
+         r[ 0 ] = reduction( r[ 0 ], r[ 1 ] );
 
          // inter-thread reduction of local results
          #pragma omp critical
          {
-            reduction( result, r[ 0 ] );
+            result = reduction( result, r[ 0 ] );
          }
       }
       return result;
@@ -102,28 +102,27 @@ reduce( const Index size,
          for( int b = 0; b < blocks; b++ ) {
             const Index offset = b * block_size;
             for( int i = 0; i < block_size; i += 4 ) {
-               reduction( r[ 0 ], dataFetcher( offset + i ) );
-               reduction( r[ 1 ], dataFetcher( offset + i + 1 ) );
-               reduction( r[ 2 ], dataFetcher( offset + i + 2 ) );
-               reduction( r[ 3 ], dataFetcher( offset + i + 3 ) );
+               r[ 0 ] = reduction( r[ 0 ], dataFetcher( offset + i ) );
+               r[ 1 ] = reduction( r[ 1 ], dataFetcher( offset + i + 1 ) );
+               r[ 2 ] = reduction( r[ 2 ], dataFetcher( offset + i + 2 ) );
+               r[ 3 ] = reduction( r[ 3 ], dataFetcher( offset + i + 3 ) );
             }
          }
 
          // reduction of the last, incomplete block (not unrolled)
          for( Index i = blocks * block_size; i < size; i++ )
-            reduction( r[ 0 ], dataFetcher( i ) );
-            //operation.dataFetcher( r[ 0 ], i, input1, input2 );
+            r[ 0 ] = reduction( r[ 0 ], dataFetcher( i ) );
 
          // reduction of unrolled results
-         reduction( r[ 0 ], r[ 2 ] );
-         reduction( r[ 1 ], r[ 3 ] );
-         reduction( r[ 0 ], r[ 1 ] );
+         r[ 0 ] = reduction( r[ 0 ], r[ 2 ] );
+         r[ 1 ] = reduction( r[ 1 ], r[ 3 ] );
+         r[ 0 ] = reduction( r[ 0 ], r[ 1 ] );
          return r[ 0 ];
       }
       else {
          Result result = zero;
          for( Index i = 0; i < size; i++ )
-            reduction( result, dataFetcher( i ) );
+            result = reduction( result, dataFetcher( i ) );
          return result;
       }
 #ifdef HAVE_OPENMP

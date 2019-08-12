@@ -132,8 +132,8 @@ compare( const Element1* destination,
    TNL_ASSERT_TRUE( destination, "Attempted to compare data through a nullptr." );
    TNL_ASSERT_TRUE( source, "Attempted to compare data through a nullptr." );
 
-   auto fetch = [=] __cuda_callable__ ( Index i ) -> bool { return  ( destination[ i ] == source[ i ] ); };
-   auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
+   auto fetch = [=] __cuda_callable__ ( Index i ) -> bool { return destination[ i ] == source[ i ]; };
+   auto reduction = [] __cuda_callable__ ( bool a, bool b ) { return a && b; };
    return Reduction< Devices::Cuda >::reduce( size, reduction, fetch, true );
 }
 
@@ -149,8 +149,8 @@ containsValue( const Element* data,
    TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
    TNL_ASSERT_GE( size, (Index) 0, "" );
 
-   auto fetch = [=] __cuda_callable__ ( Index i ) -> bool { return  ( data[ i ] == value ); };
-   auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a |= b; };
+   auto fetch = [=] __cuda_callable__ ( Index i ) -> bool { return data[ i ] == value; };
+   auto reduction = [] __cuda_callable__ ( bool a, bool b ) { return a || b; };
    return Reduction< Devices::Cuda >::reduce( size, reduction, fetch, false );
 }
 
@@ -166,8 +166,8 @@ containsOnlyValue( const Element* data,
    TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
    TNL_ASSERT_GE( size, 0, "" );
 
-   auto fetch = [=] __cuda_callable__ ( Index i ) -> bool { return  ( data[ i ] == value ); };
-   auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
+   auto fetch = [=] __cuda_callable__ ( Index i ) -> bool { return data[ i ] == value; };
+   auto reduction = [] __cuda_callable__ ( bool a, bool b ) { return a && b; };
    return Reduction< Devices::Cuda >::reduce( size, reduction, fetch, true );
 }
 
