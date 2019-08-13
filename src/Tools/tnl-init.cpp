@@ -42,7 +42,7 @@ void setupConfig( Config::ConfigDescription& config )
    config.addRequiredEntry< String >( "output-file", "Output file name." );
    config.addEntry< bool >( "check-output-file", "If the output file already exists, do not recreate it.", false );
    config.addEntry< String >( "help", "Write help." );
- 
+
    config.addDelimiter                            ( "Functions parameters:" );
    Functions::TestFunction< 1 >::configSetup( config );
 }
