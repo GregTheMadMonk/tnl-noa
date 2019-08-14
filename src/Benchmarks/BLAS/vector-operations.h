@@ -435,6 +435,11 @@ benchmarkVectorOperations( Benchmark & benchmark,
    auto multiplyCuda = [&]() {
       deviceVector *= 0.5;
    };
+#ifdef HAVE_BLAS
+   auto multiplyBlas = [&]() {
+      blasGscal( hostVector.getSize(), (Real) 0.5, hostVector.getData(), 1 );
+   };
+#endif
 #ifdef HAVE_CUDA
    auto multiplyCublas = [&]() {
       const Real alpha = 0.5;
@@ -445,6 +450,9 @@ benchmarkVectorOperations( Benchmark & benchmark,
 #endif
    benchmark.setOperation( "scalar multiplication", 2 * datasetSize );
    benchmark.time< Devices::Host >( reset1, "CPU ET", multiplyHost );
+#ifdef HAVE_BLAS
+   benchmark.time< Devices::Host >( reset1, "CPU BLAS", multiplyBlas );
+#endif
 #ifdef HAVE_CUDA
    benchmark.time< Devices::Cuda >( reset1, "GPU ET", multiplyCuda );
    benchmark.time< Devices::Cuda >( reset1, "cuBLAS", multiplyCublas );
