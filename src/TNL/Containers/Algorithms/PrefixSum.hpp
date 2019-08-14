@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <memory>  // std::unique_ptr
+
 #include "PrefixSum.h"
 
 //#define CUDA_REDUCTION_PROFILING
@@ -56,21 +58,76 @@ perform( Vector& v,
    using RealType = typename Vector::RealType;
    using IndexType = typename Vector::IndexType;
 
-   // TODO: parallelize with OpenMP
-   if( Type == PrefixSumType::Inclusive )
+#ifdef HAVE_OPENMP
+   const int threads = Devices::Host::getMaxThreadsCount();
+   std::unique_ptr< RealType[] > block_sums{
+      // Workaround for nvcc 10.1.168 - it would modifie the simple expression
+      // `new RealType[reducedSize]` in the source code to `new (RealType[reducedSize])`
+      // which is not correct - see e.g. https://stackoverflow.com/a/39671946
+      // Thus, the host compiler would spit out hundreds of warnings...
+      // Funnily enough, nvcc's behaviour depends on the context rather than the
+      // expression, because exactly the same simple expression in different places
+      // does not produce warnings.
+      #ifdef __NVCC__
+      new RealType[ static_cast<const int&>(threads) + 1 ]
+      #else
+      new RealType[ threads + 1 ]
+      #endif
+   };
+   block_sums[ 0 ] = zero;
+
+   #pragma omp parallel
+   {
+      // init
+      const int thread_idx = omp_get_thread_num();
+      RealType block_sum = zero;
+
+      // perform prefix-sum on blocks statically assigned to threads
+      if( Type == PrefixSumType::Inclusive ) {
+         #pragma omp for schedule(static)
+         for( IndexType i = begin; i < end; i++ ) {
+            reduction( block_sum, v[ i ] );
+            v[ i ] = block_sum;
+         }
+      }
+      else {
+         #pragma omp for schedule(static)
+         for( IndexType i = begin; i < end; i++ ) {
+            const RealType x = v[ i ];
+            v[ i ] = block_sum;
+            reduction( block_sum, x );
+         }
+      }
+
+      // write the block sums into the buffer
+      block_sums[ thread_idx + 1 ] = block_sum;
+      #pragma omp barrier
+
+      // calculate per-block offsets
+      RealType offset = 0;
+      for( int i = 0; i < thread_idx + 1; i++ )
+         reduction( offset, block_sums[ i ] );
+
+      // shift intermediate results by the offset
+      #pragma omp for schedule(static)
+      for( IndexType i = begin; i < end; i++ )
+         reduction( v[ i ], offset );
+   }
+#else
+   if( Type == PrefixSumType::Inclusive ) {
       for( IndexType i = begin + 1; i < end; i++ )
          reduction( v[ i ], v[ i - 1 ] );
+   }
    else // Exclusive prefix sum
    {
-      RealType aux( v[ begin ] );
-      v[ begin ] = zero;
-      for( IndexType i = begin + 1; i < end; i++ )
-      {
-         RealType x = v[ i ];
+      RealType aux = zero;
+      for( IndexType i = begin; i < end; i++ ) {
+         const RealType x = v[ i ];
          v[ i ] = aux;
          reduction( aux, x );
       }
    }
+#endif
 }
 
 ////
