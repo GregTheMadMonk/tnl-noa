@@ -38,14 +38,12 @@ class PrefixSum< Devices::Host, Type >
 {
    public:
       template< typename Vector,
-                typename PrefixSumOperation,
-                typename VolatilePrefixSumOperation >
+                typename Reduction >
       static void
       perform( Vector& v,
                const typename Vector::IndexType begin,
                const typename Vector::IndexType end,
-               PrefixSumOperation& reduction,
-               VolatilePrefixSumOperation& volatilePrefixSum,
+               const Reduction& reduction,
                const typename Vector::RealType& zero );
 };
 
@@ -54,14 +52,12 @@ class PrefixSum< Devices::Cuda, Type >
 {
    public:
       template< typename Vector,
-                typename PrefixSumOperation,
-                typename VolatilePrefixSumOperation >
+                typename Reduction >
       static void
       perform( Vector& v,
                const typename Vector::IndexType begin,
                const typename Vector::IndexType end,
-               PrefixSumOperation& reduction,
-               VolatilePrefixSumOperation& volatilePrefixSum,
+               const Reduction& reduction,
                const typename Vector::RealType& zero );
 };
 
@@ -70,16 +66,14 @@ class SegmentedPrefixSum< Devices::Host, Type >
 {
    public:
       template< typename Vector,
-                typename PrefixSumOperation,
-                typename VolatilePrefixSumOperation,
+                typename Reduction,
                 typename Flags >
       static void
       perform( Vector& v,
                Flags& flags,
                const typename Vector::IndexType begin,
                const typename Vector::IndexType end,
-               PrefixSumOperation& reduction,
-               VolatilePrefixSumOperation& volatilePrefixSum,
+               const Reduction& reduction,
                const typename Vector::RealType& zero );
 };
 
@@ -88,20 +82,16 @@ class SegmentedPrefixSum< Devices::Cuda, Type >
 {
    public:
       template< typename Vector,
-                typename PrefixSumOperation,
-                typename VolatilePrefixSumOperation,
+                typename Reduction,
                 typename Flags >
       static void
       perform( Vector& v,
                Flags& flags,
                const typename Vector::IndexType begin,
                const typename Vector::IndexType end,
-               PrefixSumOperation& reduction,
-               VolatilePrefixSumOperation& volatilePrefixSum,
+               const Reduction& reduction,
                const typename Vector::RealType& zero );
 };
-
-
 
 } // namespace Algorithms
 } // namespace Containers

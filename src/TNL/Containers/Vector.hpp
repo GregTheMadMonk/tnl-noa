@@ -175,10 +175,7 @@ prefixSum( IndexType begin, IndexType end )
 {
    if( end == 0 )
       end = this->getSize();
-
-   auto reduction = [=] __cuda_callable__ ( RealType& a, const RealType& b ) { a += b; };
-   auto volatileReduction = [=] __cuda_callable__ ( volatile RealType& a, volatile RealType& b ) { a += b; };
-   Algorithms::PrefixSum< DeviceType, Type >::perform( *this, begin, end, reduction, volatileReduction, (RealType) 0.0 );
+   Algorithms::PrefixSum< DeviceType, Type >::perform( *this, begin, end, std::plus<>{}, (RealType) 0.0 );
 }
 
 template< typename Real,
@@ -193,10 +190,7 @@ segmentedPrefixSum( FlagsArray& flags, IndexType begin, IndexType end )
 {
    if( end == 0 )
       end = this->getSize();
-
-   auto reduction = [=] __cuda_callable__ ( RealType& a, const RealType& b ) { a += b; };
-   auto volatileReduction = [=] __cuda_callable__ ( volatile RealType& a, volatile RealType& b ) { a += b; };
-   Algorithms::SegmentedPrefixSum< DeviceType, Type >::perform( *this, flags, begin, end, reduction, volatileReduction, (RealType) 0.0 );
+   Algorithms::SegmentedPrefixSum< DeviceType, Type >::perform( *this, flags, begin, end, std::plus<>{}, (RealType) 0.0 );
 }
 
 template< typename Real,

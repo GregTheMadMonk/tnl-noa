@@ -44,15 +44,13 @@ static constexpr int PrefixSum_minGpuDataSize = 256;//65536; //16384;//1024;//25
 // PrefixSum on host
 template< PrefixSumType Type >
 template< typename Vector,
-          typename PrefixSumOperation,
-          typename VolatilePrefixSumOperation >
+          typename Reduction >
 void
 PrefixSum< Devices::Host, Type >::
 perform( Vector& v,
          const typename Vector::IndexType begin,
          const typename Vector::IndexType end,
-         PrefixSumOperation& reduction,
-         VolatilePrefixSumOperation& volatilePrefixSum,
+         const Reduction& reduction,
          const typename Vector::RealType& zero )
 {
    using RealType = typename Vector::RealType;
@@ -86,7 +84,7 @@ perform( Vector& v,
       if( Type == PrefixSumType::Inclusive ) {
          #pragma omp for schedule(static)
          for( IndexType i = begin; i < end; i++ ) {
-            reduction( block_sum, v[ i ] );
+            block_sum = reduction( block_sum, v[ i ] );
             v[ i ] = block_sum;
          }
       }
@@ -95,7 +93,7 @@ perform( Vector& v,
          for( IndexType i = begin; i < end; i++ ) {
             const RealType x = v[ i ];
             v[ i ] = block_sum;
-            reduction( block_sum, x );
+            block_sum = reduction( block_sum, x );
          }
       }
 
@@ -106,17 +104,17 @@ perform( Vector& v,
       // calculate per-block offsets
       RealType offset = 0;
       for( int i = 0; i < thread_idx + 1; i++ )
-         reduction( offset, block_sums[ i ] );
+         offset = reduction( offset, block_sums[ i ] );
 
       // shift intermediate results by the offset
       #pragma omp for schedule(static)
       for( IndexType i = begin; i < end; i++ )
-         reduction( v[ i ], offset );
+         v[ i ] = reduction( v[ i ], offset );
    }
 #else
    if( Type == PrefixSumType::Inclusive ) {
       for( IndexType i = begin + 1; i < end; i++ )
-         reduction( v[ i ], v[ i - 1 ] );
+         v[ i ] = reduction( v[ i ], v[ i - 1 ] );
    }
    else // Exclusive prefix sum
    {
@@ -124,7 +122,7 @@ perform( Vector& v,
       for( IndexType i = begin; i < end; i++ ) {
          const RealType x = v[ i ];
          v[ i ] = aux;
-         reduction( aux, x );
+         aux = reduction( aux, x );
       }
    }
 #endif
@@ -134,15 +132,13 @@ perform( Vector& v,
 // PrefixSum on CUDA device
 template< PrefixSumType Type >
 template< typename Vector,
-          typename PrefixSumOperation,
-          typename VolatilePrefixSumOperation >
+          typename Reduction >
 void
 PrefixSum< Devices::Cuda, Type >::
 perform( Vector& v,
          const typename Vector::IndexType begin,
          const typename Vector::IndexType end,
-         PrefixSumOperation& reduction,
-         VolatilePrefixSumOperation& volatileReduction,
+         const Reduction& reduction,
          const typename Vector::RealType& zero )
 {
    using RealType = typename Vector::RealType;
@@ -155,7 +151,6 @@ perform( Vector& v,
       &v[ begin ],
       &v[ begin ],
       reduction,
-      volatileReduction,
       zero );
 #endif
 }
@@ -165,8 +160,7 @@ perform( Vector& v,
 // PrefixSum on host
 template< PrefixSumType Type >
    template< typename Vector,
-             typename PrefixSumOperation,
-             typename VolatilePrefixSumOperation,
+             typename Reduction,
              typename Flags >
 void
 SegmentedPrefixSum< Devices::Host, Type >::
@@ -174,8 +168,7 @@ perform( Vector& v,
          Flags& flags,
          const typename Vector::IndexType begin,
          const typename Vector::IndexType end,
-         PrefixSumOperation& reduction,
-         VolatilePrefixSumOperation& volatilePrefixSum,
+         const Reduction& reduction,
          const typename Vector::RealType& zero )
 {
    using RealType = typename Vector::RealType;
@@ -186,7 +179,7 @@ perform( Vector& v,
    {
       for( IndexType i = begin + 1; i < end; i++ )
          if( ! flags[ i ] )
-            reduction( v[ i ], v[ i - 1 ] );
+            v[ i ] = reduction( v[ i ], v[ i - 1 ] );
    }
    else // Exclusive prefix sum
    {
@@ -198,7 +191,7 @@ perform( Vector& v,
          if( flags[ i ] )
             aux = zero;
          v[ i ] = aux;
-         reduction( aux, x );
+         aux = reduction( aux, x );
       }
    }
 }
@@ -207,8 +200,7 @@ perform( Vector& v,
 // PrefixSum on CUDA device
 template< PrefixSumType Type >
    template< typename Vector,
-             typename PrefixSumOperation,
-             typename VolatilePrefixSumOperation,
+             typename Reduction,
              typename Flags >
 void
 SegmentedPrefixSum< Devices::Cuda, Type >::
@@ -216,8 +208,7 @@ perform( Vector& v,
          Flags& flags,
          const typename Vector::IndexType begin,
          const typename Vector::IndexType end,
-         PrefixSumOperation& reduction,
-         VolatilePrefixSumOperation& volatileReduction,
+         const Reduction& reduction,
          const typename Vector::RealType& zero )
 {
    using RealType = typename Vector::RealType;
@@ -231,7 +222,6 @@ perform( Vector& v,
       &v[ begin ],
       &v[ begin ],
       reduction,
-      volatileReduction,
       zero );*/
 #endif
 }
