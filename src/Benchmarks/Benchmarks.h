@@ -17,7 +17,6 @@
 #include "Logging.h"
 
 #include <iostream>
-#include <iomanip>
 #include <exception>
 #include <limits>
 
@@ -35,24 +34,24 @@ namespace Benchmarks {
 const double oneGB = 1024.0 * 1024.0 * 1024.0;
 
 
-
 struct BenchmarkResult
 {
    using HeaderElements = Logging::HeaderElements;
    using RowElements = Logging::RowElements;
 
-   double bandwidth = std::numeric_limits<double>::quiet_NaN();
    double time = std::numeric_limits<double>::quiet_NaN();
+   double stddev = std::numeric_limits<double>::quiet_NaN();
+   double bandwidth = std::numeric_limits<double>::quiet_NaN();
    double speedup = std::numeric_limits<double>::quiet_NaN();
 
    virtual HeaderElements getTableHeader() const
    {
-      return HeaderElements({"bandwidth", "time", "speedup"});
+      return HeaderElements({ "time", "stddev", "stddev/time", "bandwidth", "speedup" });
    }
 
    virtual RowElements getRowElements() const
    {
-      return RowElements({ bandwidth, time, speedup });
+      return RowElements({ time, stddev, stddev / time, bandwidth, speedup });
    }
 };
 
@@ -200,21 +199,22 @@ public:
          BenchmarkResult & result )
    {
       result.time = std::numeric_limits<double>::quiet_NaN();
+      result.stddev = std::numeric_limits<double>::quiet_NaN();
       FunctionTimer< Device > functionTimer;
       try {
          if( verbose > 1 ) {
             // run the monitor main loop
             Solvers::SolverMonitorThread monitor_thread( monitor );
             if( this->reset )
-               result.time = functionTimer.timeFunction( compute, reset, loops, minTime, verbose, monitor );
+               std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, reset, loops, minTime, verbose, monitor );
             else
-               result.time = functionTimer.timeFunction( compute, loops, minTime, verbose, monitor );
+               std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, loops, minTime, verbose, monitor );
          }
          else {
             if( this->reset )
-               result.time = functionTimer.timeFunction( compute, reset, loops, minTime, verbose, monitor );
+               std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, reset, loops, minTime, verbose, monitor );
             else
-               result.time = functionTimer.timeFunction( compute, loops, minTime, verbose, monitor );
+               std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, loops, minTime, verbose, monitor );
          }
          this->performedLoops = functionTimer.getPerformedLoops();
       }
@@ -257,15 +257,16 @@ public:
          BenchmarkResult & result )
    {
       result.time = std::numeric_limits<double>::quiet_NaN();
+      result.stddev = std::numeric_limits<double>::quiet_NaN();
       FunctionTimer< Device > functionTimer;
       try {
          if( verbose > 1 ) {
             // run the monitor main loop
             Solvers::SolverMonitorThread monitor_thread( monitor );
-            result.time = functionTimer.timeFunction( compute, loops, minTime, verbose, monitor );
+            std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, loops, minTime, verbose, monitor );
          }
          else {
-            result.time = functionTimer.timeFunction( compute, loops, minTime, verbose, monitor );
+            std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, loops, minTime, verbose, monitor );
          }
       }
       catch ( const std::exception& e ) {
