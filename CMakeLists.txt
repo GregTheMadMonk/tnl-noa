@@ -102,6 +102,17 @@ if( CMAKE_CXX_COMPILER_ID STREQUAL "GNU" )
    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-maybe-uninitialized" )
 endif()
 
+# enable link time optimizations (but not in continuous integration)
+if( NOT DEFINED ENV{CI_JOB_NAME} )
+   if( CMAKE_CXX_COMPILER_ID STREQUAL "GNU" )
+      add_compile_options( "-flto" )
+      add_link_options( "-flto" )
+   elseif( CMAKE_CXX_COMPILER_ID STREQUAL "Clang" )
+      add_compile_options( "-flto=thin" )
+      add_link_options( "-flto=thin" )
+   endif()
+endif()
+
 if( CMAKE_CXX_COMPILER_ID STREQUAL "Intel" )
    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_ICPC -wd2568 -wd2571 -wd2570")
    #####
