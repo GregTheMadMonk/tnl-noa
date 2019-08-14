@@ -1,5 +1,6 @@
 add_subdirectory( HeatEquation )
 add_subdirectory( BLAS )
+add_subdirectory( NDArray )
 add_subdirectory( SpMV )
 add_subdirectory( DistSpMV )
 add_subdirectory( LinearSolvers )
