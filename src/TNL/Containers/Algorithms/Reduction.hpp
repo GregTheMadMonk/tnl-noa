@@ -53,10 +53,11 @@ reduce( const Index size,
    const int blocks = size / block_size;
 
 #ifdef HAVE_OPENMP
-   if( TNL::Devices::Host::isOMPEnabled() && size >= 2 * block_size ) {
+   if( Devices::Host::isOMPEnabled() && blocks >= 2 ) {
       // global result variable
       Result result = zero;
-#pragma omp parallel
+      const int threads = TNL::min( blocks, Devices::Host::getMaxThreadsCount() );
+#pragma omp parallel num_threads(threads)
       {
          // initialize array for thread-local results
          Result r[ 4 ] = { zero, zero, zero, zero  };
@@ -145,10 +146,11 @@ reduceWithArgument( const Index size,
    const int blocks = size / block_size;
 
 #ifdef HAVE_OPENMP
-   if( TNL::Devices::Host::isOMPEnabled() && size >= 2 * block_size ) {
+   if( Devices::Host::isOMPEnabled() && blocks >= 2 ) {
       // global result variable
       std::pair< Index, Result > result( -1, zero );
-#pragma omp parallel
+      const int threads = TNL::min( blocks, Devices::Host::getMaxThreadsCount() );
+#pragma omp parallel num_threads(threads)
       {
          // initialize array for thread-local results
          Index arg[ 4 ] = { 0, 0, 0, 0 };

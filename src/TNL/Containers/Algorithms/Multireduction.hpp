@@ -50,59 +50,61 @@ reduce( const Result zero,
    const int blocks = size / block_size;
 
 #ifdef HAVE_OPENMP
-   if( TNL::Devices::Host::isOMPEnabled() && blocks >= 2 )
-#pragma omp parallel
-   {
-      // first thread initializes the result array
-      #pragma omp single nowait
+   if( Devices::Host::isOMPEnabled() && blocks >= 2 ) {
+      const int threads = TNL::min( blocks, Devices::Host::getMaxThreadsCount() );
+#pragma omp parallel num_threads(threads)
       {
-         for( int k = 0; k < n; k++ )
-            result[ k ] = zero;
-      }
+         // first thread initializes the result array
+         #pragma omp single nowait
+         {
+            for( int k = 0; k < n; k++ )
+               result[ k ] = zero;
+         }
 
-      // initialize array for thread-local results
-      // (it is accessed as a row-major matrix with n rows and 4 columns)
-      Result r[ n * 4 ];
-      for( int k = 0; k < n * 4; k++ )
-         r[ k ] = zero;
+         // initialize array for thread-local results
+         // (it is accessed as a row-major matrix with n rows and 4 columns)
+         Result r[ n * 4 ];
+         for( int k = 0; k < n * 4; k++ )
+            r[ k ] = zero;
 
-      #pragma omp for nowait
-      for( int b = 0; b < blocks; b++ ) {
-         const Index offset = b * block_size;
-         for( int k = 0; k < n; k++ ) {
-            Result* _r = r + 4 * k;
-            for( int i = 0; i < block_size; i += 4 ) {
-               _r[ 0 ] = reduction( _r[ 0 ], dataFetcher( offset + i,     k ) );
-               _r[ 1 ] = reduction( _r[ 1 ], dataFetcher( offset + i + 1, k ) );
-               _r[ 2 ] = reduction( _r[ 2 ], dataFetcher( offset + i + 2, k ) );
-               _r[ 3 ] = reduction( _r[ 3 ], dataFetcher( offset + i + 3, k ) );
+         #pragma omp for nowait
+         for( int b = 0; b < blocks; b++ ) {
+            const Index offset = b * block_size;
+            for( int k = 0; k < n; k++ ) {
+               Result* _r = r + 4 * k;
+               for( int i = 0; i < block_size; i += 4 ) {
+                  _r[ 0 ] = reduction( _r[ 0 ], dataFetcher( offset + i,     k ) );
+                  _r[ 1 ] = reduction( _r[ 1 ], dataFetcher( offset + i + 1, k ) );
+                  _r[ 2 ] = reduction( _r[ 2 ], dataFetcher( offset + i + 2, k ) );
+                  _r[ 3 ] = reduction( _r[ 3 ], dataFetcher( offset + i + 3, k ) );
+               }
             }
          }
-      }
 
-      // the first thread that reaches here processes the last, incomplete block
-      #pragma omp single nowait
-      {
+         // the first thread that reaches here processes the last, incomplete block
+         #pragma omp single nowait
+         {
+            for( int k = 0; k < n; k++ ) {
+               Result* _r = r + 4 * k;
+               for( Index i = blocks * block_size; i < size; i++ )
+                  _r[ 0 ] = reduction( _r[ 0 ], dataFetcher( i, k ) );
+            }
+         }
+
+         // local reduction of unrolled results
          for( int k = 0; k < n; k++ ) {
             Result* _r = r + 4 * k;
-            for( Index i = blocks * block_size; i < size; i++ )
-               _r[ 0 ] = reduction( _r[ 0 ], dataFetcher( i, k ) );
+            _r[ 0 ] = reduction( _r[ 0 ], _r[ 1 ] );
+            _r[ 0 ] = reduction( _r[ 0 ], _r[ 2 ] );
+            _r[ 0 ] = reduction( _r[ 0 ], _r[ 3 ] );
          }
-      }
 
-      // local reduction of unrolled results
-      for( int k = 0; k < n; k++ ) {
-         Result* _r = r + 4 * k;
-         _r[ 0 ] = reduction( _r[ 0 ], _r[ 1 ] );
-         _r[ 0 ] = reduction( _r[ 0 ], _r[ 2 ] );
-         _r[ 0 ] = reduction( _r[ 0 ], _r[ 3 ] );
-      }
-
-      // inter-thread reduction of local results
-      #pragma omp critical
-      {
-         for( int k = 0; k < n; k++ )
-            result[ k ] = reduction( result[ k ], r[ 4 * k ] );
+         // inter-thread reduction of local results
+         #pragma omp critical
+         {
+            for( int k = 0; k < n; k++ )
+               result[ k ] = reduction( result[ k ], r[ 4 * k ] );
+         }
       }
    }
    else {
