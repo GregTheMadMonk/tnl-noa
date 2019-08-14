@@ -86,7 +86,6 @@ set( CMAKE_CXX_EXTENSIONS OFF )
 set( CMAKE_CXX_FLAGS "-pthread -Wall -Wno-unused-local-typedefs -Wno-unused-variable -Wno-unknown-pragmas" )
 set( CMAKE_CXX_FLAGS_DEBUG "-g" )
 set( CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -mtune=native -DNDEBUG" )
-#set( CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -mtune=native -DNDEBUG -ftree-vectorizer-verbose=1 -ftree-vectorize -fopt-info-vec-missed -funroll-loops" )
 # pass -rdynamic only in Debug mode
 set( CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "" )
 set( CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_DEBUG "-rdynamic" )
@@ -251,9 +250,6 @@ if( ${WITH_CUDA} )
                 endif()
             endif()
         endif()
-        set( CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; ${CUDA_ARCH} -D_FORCE_INLINES )
-        # TODO: this is necessary only due to a bug in cmake
-        set( CUDA_ADD_LIBRARY_OPTIONS -shared )
     endif()
 endif()
 
