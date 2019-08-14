@@ -65,18 +65,17 @@ public:
    using Logging::MetadataMap;
    using Logging::MetadataColumns;
    using SolverMonitorType = Solvers::IterativeSolverMonitor< double, int >;
-   
+
    Benchmark( int loops = 10,
               bool verbose = true )
    : Logging(verbose), loops(loops)
    {}
-   
+
    static void configSetup( Config::ConfigDescription& config )
    {
       config.addEntry< int >( "loops", "Number of iterations for every computation.", 10 );
       config.addEntry< bool >( "reset", "Call reset function between loops.", true );
       config.addEntry< double >( "min-time", "Minimal real time in seconds for every computation.", 0.0 );
-      config.addEntry< bool >( "timing", "Turns off (or on) the timing (for the purpose of profiling).", true );
       config.addEntry< int >( "verbose", "Verbose mode, the higher number the more verbosity.", 1 );
    }
 
@@ -85,7 +84,6 @@ public:
       this->loops = parameters.getParameter< int >( "loops" );
       this->reset = parameters.getParameter< bool >( "reset" );
       this->minTime = parameters.getParameter< double >( "min-time" );
-      this->timing = parameters.getParameter< bool >( "timing" );
       const int verbose = parameters.getParameter< int >( "verbose" );
       Logging::setVerbose( verbose );
    }
@@ -96,7 +94,7 @@ public:
    {
       this->loops = loops;
    }
-   
+
    void setMinTime( const double& minTime )
    {
       this->minTime = minTime;
@@ -121,7 +119,6 @@ public:
       metadata["loops"] = convertToString(loops);
       metadata["reset"] = convertToString( reset );
       metadata["minimal test time"] = convertToString( minTime );
-      metadata["timing"] = convertToString( timing );
       writeMetadata( metadata );
    }
 
@@ -208,28 +205,16 @@ public:
          if( verbose > 1 ) {
             // run the monitor main loop
             Solvers::SolverMonitorThread monitor_thread( monitor );
-            if( this->timing )
-               if( this->reset )
-                  result.time = functionTimer. template timeFunction< true >( compute, reset, loops, minTime, verbose, monitor );
-               else
-                  result.time = functionTimer. template timeFunction< true >( compute, loops, minTime, verbose, monitor );
+            if( this->reset )
+               result.time = functionTimer.timeFunction( compute, reset, loops, minTime, verbose, monitor );
             else
-               if( this->reset )
-                  result.time = functionTimer. template timeFunction< false >( compute, reset, loops, minTime, verbose, monitor );
-               else
-                  result.time = functionTimer. template timeFunction< false >( compute, loops, minTime, verbose, monitor );
+               result.time = functionTimer.timeFunction( compute, loops, minTime, verbose, monitor );
          }
          else {
-            if( this->timing )
-               if( this->reset )
-                  result.time = functionTimer. template timeFunction< true >( compute, reset, loops, minTime, verbose, monitor );
-               else
-                  result.time = functionTimer. template timeFunction< true >( compute, loops, minTime, verbose, monitor );
+            if( this->reset )
+               result.time = functionTimer.timeFunction( compute, reset, loops, minTime, verbose, monitor );
             else
-               if( this->reset )
-                  result.time = functionTimer. template timeFunction< false >( compute, reset, loops, minTime, verbose, monitor );
-               else
-                  result.time = functionTimer. template timeFunction< false >( compute, loops, minTime, verbose, monitor );
+               result.time = functionTimer.timeFunction( compute, loops, minTime, verbose, monitor );
          }
          this->performedLoops = functionTimer.getPerformedLoops();
       }
@@ -248,7 +233,7 @@ public:
       return this->baseTime;
    }
 
-   template< typename Device, 
+   template< typename Device,
              typename ResetFunction,
              typename ComputeFunction,
              typename... NextComputations >
@@ -277,16 +262,10 @@ public:
          if( verbose > 1 ) {
             // run the monitor main loop
             Solvers::SolverMonitorThread monitor_thread( monitor );
-            if( this->timing )
-               result.time = functionTimer. template timeFunction< true >( compute, loops, minTime, verbose, monitor );
-            else
-               result.time = functionTimer. template timeFunction< false >( compute, loops, minTime, verbose, monitor );
+            result.time = functionTimer.timeFunction( compute, loops, minTime, verbose, monitor );
          }
          else {
-            if( this->timing )
-               result.time = functionTimer. template timeFunction< true >( compute, loops, minTime, verbose, monitor );
-            else
-               result.time = functionTimer. template timeFunction< false >( compute, loops, minTime, verbose, monitor );
+            result.time = functionTimer.timeFunction( compute, loops, minTime, verbose, monitor );
          }
       }
       catch ( const std::exception& e ) {
@@ -304,7 +283,7 @@ public:
       return this->baseTime;
    }
 
-   template< typename Device, 
+   template< typename Device,
              typename ComputeFunction,
              typename... NextComputations >
    inline double
@@ -345,7 +324,6 @@ protected:
    double minTime = 0.0;
    double datasetSize = 0.0;
    double baseTime = 0.0;
-   bool timing = true;
    bool reset = true;
    SolverMonitorType monitor;
 };

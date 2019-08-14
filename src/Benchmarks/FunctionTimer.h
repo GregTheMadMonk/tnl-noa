@@ -28,8 +28,7 @@ class FunctionTimer
    public:
       using DeviceType = Device;
 
-      template< bool timing,
-                typename ComputeFunction,
+      template< typename ComputeFunction,
                 typename ResetFunction,
                 typename Monitor = TNL::Solvers::IterativeSolverMonitor< double, int > >
       double
@@ -61,26 +60,24 @@ class FunctionTimer
                if( std::is_same< Device, Devices::Cuda >::value )
                   cudaDeviceSynchronize();
 #endif
-            if( timing )
-               timer.start();
+            timer.start();
 
             for( loops = 0;
-                 loops < maxLoops || ( timing && timer.getRealTime() < minTime );
-                 ++loops)
+                 loops < maxLoops || timer.getRealTime() < minTime;
+                 loops++ )
                compute();
             // Explicit synchronization of the CUDA device
 #ifdef HAVE_CUDA
             if( std::is_same< Device, Devices::Cuda >::value )
                cudaDeviceSynchronize();
 #endif
-            if( timing )
-               timer.stop();
+            timer.stop();
          }
          else
          {
             for( loops = 0;
-                 loops < maxLoops || ( timing && timer.getRealTime() < minTime );
-                 ++loops) 
+                 loops < maxLoops || timer.getRealTime() < minTime;
+                 loops++ )
             {
                // abuse the monitor's "time" for loops
                monitor.setTime( loops + 1 );
@@ -91,25 +88,19 @@ class FunctionTimer
                if( std::is_same< Device, Devices::Cuda >::value )
                   cudaDeviceSynchronize();
 #endif
-               if( timing )
-                  timer.start();
+               timer.start();
                compute();
 #ifdef HAVE_CUDA
                if( std::is_same< Device, Devices::Cuda >::value )
                   cudaDeviceSynchronize();
 #endif
-               if( timing )
-                  timer.stop();
+               timer.stop();
             }
          }
-         if( timing )
-            return timer.getRealTime() / ( double ) loops;
-         else
-            return std::numeric_limits<double>::quiet_NaN();
+         return timer.getRealTime() / ( double ) loops;
       }
 
-      template< bool timing,
-                typename ComputeFunction,
+      template< typename ComputeFunction,
                 typename Monitor = TNL::Solvers::IterativeSolverMonitor< double, int > >
       double
       timeFunction( ComputeFunction compute,
@@ -119,7 +110,7 @@ class FunctionTimer
                     Monitor && monitor = Monitor() )
       {
          auto noReset = [] () {};
-         return timeFunction< timing >( compute, noReset, maxLoops, minTime, verbose, monitor, false );
+         return timeFunction( compute, noReset, maxLoops, minTime, verbose, monitor, false );
       }
 
       int getPerformedLoops() const
