@@ -35,9 +35,12 @@ public:
    using LocalBeginsType = __ndarray_impl::LocalBeginsHolder< typename NDArrayView::SizesHolderType >;
    using LocalRangeType = Subrange< IndexType >;
    using OverlapsType = Overlaps;
+   using LocalIndexerType = NDArrayIndexer< SizesHolderType, PermutationType, typename NDArrayView::NDBaseType, typename NDArrayView::StridesHolderType, Overlaps >;
 
    using ViewType = DistributedNDArrayView< NDArrayView, Communicator, Overlaps >;
    using ConstViewType = DistributedNDArrayView< typename NDArrayView::ConstViewType, Communicator, Overlaps >;
+   using LocalViewType = NDArrayView;
+   using ConstLocalViewType = typename NDArrayView::ConstViewType;
 
    static_assert( Overlaps::size() == NDArrayView::getDimension(), "invalid overlaps" );
 
@@ -67,7 +70,19 @@ public:
    // There is no move-assignment operator, so expressions like `a = b.getView()`
    // are resolved as copy-assignment.
 
-   // method for rebinding (reinitialization)
+   // Templated copy-assignment
+   template< typename OtherArray >
+   DistributedNDArrayView& operator=( const OtherArray& other )
+   {
+      globalSizes = other.getSizes();
+      localBegins = other.getLocalBegins();
+      localEnds = other.getLocalEnds();
+      group = other.getCommunicationGroup();
+      localView = other.getConstLocalView();
+      return *this;
+   }
+
+   // methods for rebinding (reinitialization)
    __cuda_callable__
    void bind( DistributedNDArrayView view )
    {
@@ -76,6 +91,21 @@ public:
       globalSizes = view.globalSizes;
       localBegins = view.localBegins;
       localEnds = view.localEnds;
+   }
+
+   // binds to the given raw pointer and changes the indexer
+   __cuda_callable__
+   void bind( ValueType* data, LocalIndexerType indexer )
+   {
+      localView.bind( data, indexer );
+      localView.bind( data );
+   }
+
+   // binds to the given raw pointer and preserves the current indexer
+   __cuda_callable__
+   void bind( ValueType* data )
+   {
+      localView.bind( data );
    }
 
    __cuda_callable__
@@ -139,6 +169,49 @@ public:
    {
       return localView.getStorageSize();
    }
+
+   LocalIndexerType getLocalIndexer() const
+   {
+      return LocalIndexerType( localEnds - localBegins, typename NDArrayView::StridesHolderType{} );
+   }
+
+   LocalViewType getLocalView()
+   {
+      return localView;
+   }
+
+   ConstLocalViewType getConstLocalView() const
+   {
+      return localView.getConstView();
+   }
+
+   // returns the *local* storage index for given *global* indices
+   template< typename... IndexTypes >
+   __cuda_callable__
+   IndexType
+   getStorageIndex( IndexTypes&&... indices ) const
+   {
+      static_assert( sizeof...( indices ) == SizesHolderType::getDimension(), "got wrong number of indices" );
+      __ndarray_impl::assertIndicesInRange( localBegins, localEnds, Overlaps{}, std::forward< IndexTypes >( indices )... );
+      auto getStorageIndex = [this]( auto&&... indices )
+      {
+         return this->localView.getStorageIndex( std::forward< decltype(indices) >( indices )... );
+      };
+      return __ndarray_impl::call_with_unshifted_indices< LocalBeginsType, Overlaps >( localBegins, getStorageIndex, std::forward< IndexTypes >( indices )... );
+   }
+
+   __cuda_callable__
+   ValueType* getData()
+   {
+      return localView.getData();
+   }
+
+   __cuda_callable__
+   std::add_const_t< ValueType >* getData() const
+   {
+      return localView.getData();
+   }
+
 
    template< typename... IndexTypes >
    __cuda_callable__

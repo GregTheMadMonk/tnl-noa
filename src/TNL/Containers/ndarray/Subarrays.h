@@ -156,6 +156,11 @@ public:
 template< typename Index, std::size_t Dimension >
 struct DummyStrideBase
 {
+   static constexpr std::size_t getDimension()
+   {
+      return Dimension;
+   }
+
    static constexpr bool isContiguous()
    {
       return true;

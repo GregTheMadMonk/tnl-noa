@@ -36,9 +36,12 @@ public:
    using LocalBeginsType = __ndarray_impl::LocalBeginsHolder< typename NDArray::SizesHolderType >;
    using LocalRangeType = Subrange< IndexType >;
    using OverlapsType = Overlaps;
+   using LocalIndexerType = NDArrayIndexer< SizesHolderType, PermutationType, typename NDArray::NDBaseType, typename NDArray::StridesHolderType, Overlaps >;
 
    using ViewType = DistributedNDArrayView< typename NDArray::ViewType, Communicator, Overlaps >;
    using ConstViewType = DistributedNDArrayView< typename NDArray::ConstViewType, Communicator, Overlaps >;
+   using LocalViewType = typename NDArray::ViewType;
+   using ConstLocalViewType = typename NDArray::ConstViewType;
 
    static_assert( Overlaps::size() == NDArray::getDimension(), "invalid overlaps" );
 
@@ -58,6 +61,18 @@ public:
    // default move-semantics
    DistributedNDArray( DistributedNDArray&& ) = default;
    DistributedNDArray& operator=( DistributedNDArray&& ) = default;
+
+   // Templated copy-assignment
+   template< typename OtherArray >
+   DistributedNDArray& operator=( const OtherArray& other )
+   {
+      globalSizes = other.getSizes();
+      localBegins = other.getLocalBegins();
+      localEnds = other.getLocalEnds();
+      group = other.getCommunicationGroup();
+      localArray = other.getConstLocalView();
+      return *this;
+   }
 
    static constexpr std::size_t getDimension()
    {
@@ -110,6 +125,49 @@ public:
    {
       return localArray.getStorageSize();
    }
+
+   LocalIndexerType getLocalIndexer() const
+   {
+      return LocalIndexerType( localEnds - localBegins, typename NDArray::StridesHolderType{} );
+   }
+
+   LocalViewType getLocalView()
+   {
+      return localArray.getView();
+   }
+
+   ConstLocalViewType getConstLocalView() const
+   {
+      return localArray.getConstView();
+   }
+
+   // returns the *local* storage index for given *global* indices
+   template< typename... IndexTypes >
+   __cuda_callable__
+   IndexType
+   getStorageIndex( IndexTypes&&... indices ) const
+   {
+      static_assert( sizeof...( indices ) == SizesHolderType::getDimension(), "got wrong number of indices" );
+      __ndarray_impl::assertIndicesInRange( localBegins, localEnds, Overlaps{}, std::forward< IndexTypes >( indices )... );
+      auto getStorageIndex = [this]( auto&&... indices )
+      {
+         return this->localArray.getStorageIndex( std::forward< decltype(indices) >( indices )... );
+      };
+      return __ndarray_impl::call_with_unshifted_indices< LocalBeginsType, Overlaps >( localBegins, getStorageIndex, std::forward< IndexTypes >( indices )... );
+   }
+
+   __cuda_callable__
+   ValueType* getData()
+   {
+      return localArray.getData();
+   }
+
+   __cuda_callable__
+   std::add_const_t< ValueType >* getData() const
+   {
+      return localArray.getData();
+   }
+
 
    template< typename... IndexTypes >
    __cuda_callable__

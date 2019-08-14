@@ -144,6 +144,28 @@ struct SizesHolderSizePrinter
    }
 };
 
+template< std::size_t level >
+struct SizesHolerOperatorPlusHelper
+{
+   template< typename Result, typename LHS, typename RHS >
+   static void exec( Result& result, const LHS& lhs, const RHS& rhs )
+   {
+      if( result.template getStaticSize< level >() == 0 )
+         result.template setSize< level >( lhs.template getSize< level >() + rhs.template getSize< level >() );
+   }
+};
+
+template< std::size_t level >
+struct SizesHolerOperatorMinusHelper
+{
+   template< typename Result, typename LHS, typename RHS >
+   static void exec( Result& result, const LHS& lhs, const RHS& rhs )
+   {
+      if( result.template getStaticSize< level >() == 0 )
+         result.template setSize< level >( lhs.template getSize< level >() - rhs.template getSize< level >() );
+   }
+};
+
 } // namespace __ndarray_impl
 
 
@@ -201,6 +223,28 @@ public:
       return ! operator==( other );
    }
 };
+
+template< typename Index,
+          std::size_t... sizes,
+          typename OtherHolder >
+SizesHolder< Index, sizes... >
+operator+( const SizesHolder< Index, sizes... >& lhs, const OtherHolder& rhs )
+{
+   SizesHolder< Index, sizes... > result;
+   TemplateStaticFor< std::size_t, 0, sizeof...(sizes), __ndarray_impl::SizesHolerOperatorPlusHelper >::execHost( result, lhs, rhs );
+   return result;
+}
+
+template< typename Index,
+          std::size_t... sizes,
+          typename OtherHolder >
+SizesHolder< Index, sizes... >
+operator-( const SizesHolder< Index, sizes... >& lhs, const OtherHolder& rhs )
+{
+   SizesHolder< Index, sizes... > result;
+   TemplateStaticFor< std::size_t, 0, sizeof...(sizes), __ndarray_impl::SizesHolerOperatorMinusHelper >::execHost( result, lhs, rhs );
+   return result;
+}
 
 
 template< typename Index,

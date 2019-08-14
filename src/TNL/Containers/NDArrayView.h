@@ -98,12 +98,27 @@ public:
    // There is no move-assignment operator, so expressions like `a = b.getView()`
    // are resolved as copy-assignment.
 
-   // method for rebinding (reinitialization)
+   // methods for rebinding (reinitialization)
    __cuda_callable__
    void bind( NDArrayView view )
    {
       IndexerType::operator=( view );
       array = view.array;
+   }
+
+   // binds to the given raw pointer and changes the indexer
+   __cuda_callable__
+   void bind( Value* data, IndexerType indexer )
+   {
+      IndexerType::operator=( indexer );
+      array = data;
+   }
+
+   // binds to the given raw pointer and preserves the current indexer
+   __cuda_callable__
+   void bind( Value* data )
+   {
+      array = data;
    }
 
    __cuda_callable__
