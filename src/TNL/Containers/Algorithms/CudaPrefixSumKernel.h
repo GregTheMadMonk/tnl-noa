@@ -220,7 +220,7 @@ struct CudaPrefixSumKernelLauncher
        */
       const std::size_t sharedDataSize = elementsInBlock +
                                          elementsInBlock / Devices::Cuda::getNumberOfSharedMemoryBanks() + 2;
-      const std::size_t sharedMemory = ( sharedDataSize + blockSize + Devices::Cuda::getWarpSize()  ) * sizeof( Real );
+      const std::size_t sharedMemory = ( sharedDataSize + blockSize + Devices::Cuda::getWarpSize() ) * sizeof( Real );
       cudaFirstPhaseBlockPrefixSum<<< cudaGridSize, cudaBlockSize, sharedMemory >>>
          ( prefixSumType_,
            reduction,
@@ -231,6 +231,7 @@ struct CudaPrefixSumKernelLauncher
            output,
            auxArray1.getData(),
            gridShift );
+      cudaStreamSynchronize(0);
       TNL_CHECK_CUDA_DEVICE;
 
 
@@ -260,6 +261,7 @@ struct CudaPrefixSumKernelLauncher
            gridShift,
            auxArray2.getData(),
            output );
+      cudaStreamSynchronize(0);
       TNL_CHECK_CUDA_DEVICE;
 
       cudaMemcpy( &gridShift,
@@ -284,11 +286,11 @@ struct CudaPrefixSumKernelLauncher
    template< typename Reduction >
    static void
    start( const Index size,
-      const Index blockSize,
-      const Real *deviceInput,
-      Real* deviceOutput,
-      Reduction& reduction,
-      const Real& zero )
+          const Index blockSize,
+          const Real *deviceInput,
+          Real* deviceOutput,
+          Reduction& reduction,
+          const Real& zero )
    {
       /****
        * Compute the number of grids
@@ -323,11 +325,10 @@ struct CudaPrefixSumKernelLauncher
             gridShift,
             &deviceInput[ gridOffset ],
             &deviceOutput[ gridOffset ] );
-         TNL_CHECK_CUDA_DEVICE;
       }
 
       /***
-       * Store the number of CUDA grids for a purpose of unit testing, i.e.
+       * Store the number of CUDA grids for the purpose of unit testing, i.e.
        * to check if we test the algorithm with more than one CUDA grid.
        */
       gridsCount = numberOfGrids;
