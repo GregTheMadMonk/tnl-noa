@@ -297,8 +297,7 @@ struct CudaPrefixSumKernelLauncher
        */
       const Index elementsInBlock = 8 * blockSize;
       const Index numberOfBlocks = roundUpDivision( size, elementsInBlock );
-      //const auto maxGridSize = 3; //Devices::Cuda::getMaxGridSize();
-      const Index numberOfGrids = Devices::Cuda::getNumberOfGrids( numberOfBlocks, maxGridSize );
+      const Index numberOfGrids = Devices::Cuda::getNumberOfGrids( numberOfBlocks, maxGridSize() );
       Real gridShift = zero;
       //std::cerr << "numberOfgrids =  " << numberOfGrids << std::endl;
 
@@ -310,10 +309,10 @@ struct CudaPrefixSumKernelLauncher
          /****
           * Compute current grid size and size of data to be scanned
           */
-         const Index gridOffset = gridIdx * maxGridSize * elementsInBlock;
+         const Index gridOffset = gridIdx * maxGridSize() * elementsInBlock;
          Index currentSize = size - gridOffset;
-         if( currentSize / elementsInBlock > maxGridSize )
-            currentSize = maxGridSize * elementsInBlock;
+         if( currentSize / elementsInBlock > maxGridSize() )
+            currentSize = maxGridSize() * elementsInBlock;
 
          //std::cerr << "GridIdx = " << gridIdx << " grid size = " << currentSize << std::endl;
          cudaRecursivePrefixSum( prefixSumType,
@@ -331,36 +330,30 @@ struct CudaPrefixSumKernelLauncher
        * Store the number of CUDA grids for the purpose of unit testing, i.e.
        * to check if we test the algorithm with more than one CUDA grid.
        */
-      gridsCount = numberOfGrids;
+      gridsCount() = numberOfGrids;
    }
 
    /****
     * The following serves for setting smaller maxGridSize so that we can force
     * the prefix sum in CUDA to run with more the one grids in unit tests.
     */
-   static void setMaxGridSize( int newMaxGridSize ) {
-      maxGridSize = newMaxGridSize;
+   static int& maxGridSize()
+   {
+      static int maxGridSize = Devices::Cuda::getMaxGridSize();
+      return maxGridSize;
    }
 
-   static void resetMaxGridSize() {
-      maxGridSize = Devices::Cuda::getMaxGridSize();
+   static void resetMaxGridSize()
+   {
+      maxGridSize() = Devices::Cuda::getMaxGridSize();
    }
 
-   static int maxGridSize;
-
-   static int gridsCount;
+   static int& gridsCount()
+   {
+      static int gridsCount = -1;
+      return gridsCount;
+   }
 };
-
-template< PrefixSumType prefixSumType,
-          typename Real,
-          typename Index >
-int CudaPrefixSumKernelLauncher< prefixSumType, Real, Index >::maxGridSize = Devices::Cuda::getMaxGridSize();
-
-template< PrefixSumType prefixSumType,
-          typename Real,
-          typename Index >
-int CudaPrefixSumKernelLauncher< prefixSumType, Real, Index >::gridsCount = -1;
-
 
 #endif
 

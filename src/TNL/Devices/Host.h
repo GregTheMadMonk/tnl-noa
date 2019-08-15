@@ -113,17 +113,19 @@ public:
    }
 
    protected:
-      static bool& ompEnabled() {
+      static bool& ompEnabled()
+      {
 #ifdef HAVE_OPENMP
-         static bool ompEnabled( true );
+         static bool ompEnabled = true;
 #else
-         static bool ompEnabled( false );
+         static bool ompEnabled = false;
 #endif
          return ompEnabled;
       }
 
-      static int& maxThreadsCount() {
-         static int maxThreadsCount( -1 );
+      static int& maxThreadsCount()
+      {
+         static int maxThreadsCount = -1;
          return maxThreadsCount;
       }
 };
