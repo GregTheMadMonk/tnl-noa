@@ -26,48 +26,56 @@ TYPED_TEST( VectorTest, prefixSum )
    using IndexType = typename VectorType::IndexType;
    const int size = VECTOR_TEST_SIZE;
 
-   if( std::is_same< RealType, float >::value ||
-       std::is_same< IndexType, short >::value )
-   return;
+   // FIXME: tests should work in all cases
+   if( std::is_same< RealType, float >::value )
+      return;
 
    VectorType v( size );
    ViewType v_view( v );
    typename VectorType::HostType v_host( size );
 
-   v = 0;
+   setConstantSequence( v, 0 );
    v_host = -1;
    v.prefixSum();
    v_host = v;
    for( int i = 0; i < size; i++ )
-      EXPECT_EQ( v_host[ i ], 0 );
+      EXPECT_EQ( v_host[ i ], 0 ) << "i = " << i;
+
+   setConstantSequence( v, 1 );
+   v_host = -1;
+   v.prefixSum();
+   v_host = v_view;
+   for( int i = 0; i < size; i++ )
+      EXPECT_EQ( v_host[ i ], i + 1 ) << "i = " << i;
 
    setLinearSequence( v );
    v_host = -1;
    v.prefixSum();
    v_host = v;
-   for( int i = 1; i < size; i++ )
-      EXPECT_EQ( v_host[ i ] - v_host[ i - 1 ], i );
+   for( int i = 0; i < size; i++ )
+      EXPECT_EQ( v_host[ i ], (i * (i + 1)) / 2 ) << "i = " << i;
+
+   // test views
+   setConstantSequence( v, 0 );
+   v_host = -1;
+   v_view.prefixSum();
+   v_host = v;
+   for( int i = 0; i < size; i++ )
+      EXPECT_EQ( v_host[ i ], 0 ) << "i = " << i;
 
    setConstantSequence( v, 1 );
    v_host = -1;
    v_view.prefixSum();
    v_host = v_view;
    for( int i = 0; i < size; i++ )
-      EXPECT_EQ( v_host[ i ], i + 1 );
-
-   v = 0;
-   v_host = -1;
-   v_view.prefixSum();
-   v_host = v_view;
-   for( int i = 0; i < size; i++ )
-      EXPECT_EQ( v_host[ i ], 0 );
+      EXPECT_EQ( v_host[ i ], i + 1 ) << "i = " << i;
 
    setLinearSequence( v );
    v_host = -1;
    v_view.prefixSum();
-   v_host = v_view;
-   for( int i = 1; i < size; i++ )
-      EXPECT_EQ( v_host[ i ] - v_host[ i - 1 ], i );
+   v_host = v;
+   for( int i = 0; i < size; i++ )
+      EXPECT_EQ( v_host[ i ], (i * (i + 1)) / 2 ) << "i = " << i;
 
    ////
    // With CUDA, perform tests with multiple CUDA grids.
@@ -75,21 +83,39 @@ TYPED_TEST( VectorTest, prefixSum )
    {
 #ifdef HAVE_CUDA
       Algorithms::CudaPrefixSumKernelLauncher< Algorithms::PrefixSumType::Inclusive, RealType, IndexType >::maxGridSize() = 3;
-      v = 0;
+
+      setConstantSequence( v, 0 );
       v_host = -1;
       v.prefixSum();
       EXPECT_GT( ( Algorithms::CudaPrefixSumKernelLauncher< Algorithms::PrefixSumType::Inclusive, RealType, IndexType >::gridsCount() ), 1  );
       v_host = v;
       for( int i = 0; i < size; i++ )
-         EXPECT_EQ( v_host[ i ], 0 );
+         EXPECT_EQ( v_host[ i ], 0 ) << "i = " << i;
+
+      setConstantSequence( v, 1 );
+      v_host = -1;
+      v.prefixSum();
+      EXPECT_GT( ( Algorithms::CudaPrefixSumKernelLauncher< Algorithms::PrefixSumType::Inclusive, RealType, IndexType >::gridsCount() ), 1  );
+      v_host = v_view;
+      for( int i = 0; i < size; i++ )
+         EXPECT_EQ( v_host[ i ], i + 1 ) << "i = " << i;
 
       setLinearSequence( v );
       v_host = -1;
       v.prefixSum();
       EXPECT_GT( ( Algorithms::CudaPrefixSumKernelLauncher< Algorithms::PrefixSumType::Inclusive, RealType, IndexType >::gridsCount() ), 1  );
       v_host = v;
-      for( int i = 1; i < size; i++ )
-         EXPECT_EQ( v_host[ i ] - v_host[ i - 1 ], i );
+      for( int i = 0; i < size; i++ )
+         EXPECT_EQ( v_host[ i ], (i * (i + 1)) / 2 ) << "i = " << i;
+
+      // test views
+      setConstantSequence( v, 0 );
+      v_host = -1;
+      v_view.prefixSum();
+      EXPECT_GT( ( Algorithms::CudaPrefixSumKernelLauncher< Algorithms::PrefixSumType::Inclusive, RealType, IndexType >::gridsCount() ), 1  );
+      v_host = v;
+      for( int i = 0; i < size; i++ )
+         EXPECT_EQ( v_host[ i ], 0 ) << "i = " << i;
 
       setConstantSequence( v, 1 );
       v_host = -1;
@@ -97,23 +123,16 @@ TYPED_TEST( VectorTest, prefixSum )
       EXPECT_GT( ( Algorithms::CudaPrefixSumKernelLauncher< Algorithms::PrefixSumType::Inclusive, RealType, IndexType >::gridsCount() ), 1  );
       v_host = v_view;
       for( int i = 0; i < size; i++ )
-         EXPECT_EQ( v_host[ i ], i + 1 );
-
-      v = 0;
-      v_host = -1;
-      v_view.prefixSum();
-      EXPECT_GT( ( Algorithms::CudaPrefixSumKernelLauncher< Algorithms::PrefixSumType::Inclusive, RealType, IndexType >::gridsCount() ), 1  );
-      v_host = v_view;
-      for( int i = 0; i < size; i++ )
-         EXPECT_EQ( v_host[ i ], 0 );
+         EXPECT_EQ( v_host[ i ], i + 1 ) << "i = " << i;
 
       setLinearSequence( v );
       v_host = -1;
       v_view.prefixSum();
       EXPECT_GT( ( Algorithms::CudaPrefixSumKernelLauncher< Algorithms::PrefixSumType::Inclusive, RealType, IndexType >::gridsCount() ), 1  );
-      v_host = v_view;
-      for( int i = 1; i < size; i++ )
-         EXPECT_EQ( v_host[ i ] - v_host[ i - 1 ], i );
+      v_host = v;
+      for( int i = 0; i < size; i++ )
+         EXPECT_EQ( v_host[ i ], (i * (i + 1)) / 2 ) << "i = " << i;
+
       Algorithms::CudaPrefixSumKernelLauncher< Algorithms::PrefixSumType::Inclusive, RealType, IndexType >::resetMaxGridSize();
 #endif
    }
@@ -128,8 +147,8 @@ TYPED_TEST( VectorTest, exclusivePrefixSum )
    using IndexType = typename VectorType::IndexType;
    const int size = VECTOR_TEST_SIZE;
 
-   if( std::is_same< RealType, float >::value ||
-       std::is_same< IndexType, short >::value )
+   // FIXME: tests should work in all cases
+   if( std::is_same< RealType, float >::value )
       return;
 
    VectorType v;
@@ -137,47 +156,48 @@ TYPED_TEST( VectorTest, exclusivePrefixSum )
    ViewType v_view( v );
    typename VectorType::HostType v_host( size );
 
+   setConstantSequence( v, 0 );
+   v_host = -1;
+   v.template prefixSum< Algorithms::PrefixSumType::Exclusive >();
+   v_host = v;
+   for( int i = 0; i < size; i++ )
+      EXPECT_EQ( v_host[ i ], 0 ) << "i = " << i;
+
    setConstantSequence( v, 1 );
    v_host = -1;
    v.template prefixSum< Algorithms::PrefixSumType::Exclusive >();
    v_host = v;
    for( int i = 0; i < size; i++ )
-      EXPECT_EQ( v_host[ i ], i );
-
-   v.setValue( 0 );
-   v_host = -1;
-   v.template prefixSum< Algorithms::PrefixSumType::Exclusive >();
-   v_host = v;
-   for( int i = 0; i < size; i++ )
-      EXPECT_EQ( v_host[ i ], 0 );
+      EXPECT_EQ( v_host[ i ], i ) << "i = " << i;
 
    setLinearSequence( v );
    v_host = -1;
    v.template prefixSum< Algorithms::PrefixSumType::Exclusive >();
    v_host = v;
-   for( int i = 1; i < size; i++ )
-      EXPECT_EQ( v_host[ i ] - v_host[ i - 1 ], i - 1 );
+   for( int i = 0; i < size; i++ )
+      EXPECT_EQ( v_host[ i ], (i * (i - 1)) / 2 ) << "i = " << i;
+
+   // test views
+   setConstantSequence( v, 0 );
+   v_host = -1;
+   v_view.template prefixSum< Algorithms::PrefixSumType::Exclusive >();
+   v_host = v;
+   for( int i = 0; i < size; i++ )
+      EXPECT_EQ( v_host[ i ], 0 ) << "i = " << i;
 
    setConstantSequence( v, 1 );
    v_host = -1;
    v_view.template prefixSum< Algorithms::PrefixSumType::Exclusive >();
-   v_host = v_view;
+   v_host = v;
    for( int i = 0; i < size; i++ )
-      EXPECT_EQ( v_host[ i ], i );
-
-   v.setValue( 0 );
-   v_host = -1;
-   v_view.template prefixSum< Algorithms::PrefixSumType::Exclusive >();
-   v_host = v_view;
-   for( int i = 0; i < size; i++ )
-      EXPECT_EQ( v_host[ i ], 0 );
+      EXPECT_EQ( v_host[ i ], i ) << "i = " << i;
 
    setLinearSequence( v );
    v_host = -1;
    v_view.template prefixSum< Algorithms::PrefixSumType::Exclusive >();
-   v_host = v_view;
-   for( int i = 1; i < size; i++ )
-      EXPECT_EQ( v_host[ i ] - v_host[ i - 1 ], i - 1 );
+   v_host = v;
+   for( int i = 0; i < size; i++ )
+      EXPECT_EQ( v_host[ i ], (i * (i - 1)) / 2 ) << "i = " << i;
 
    ////
    // With CUDA, perform tests with multiple CUDA grids.
@@ -186,53 +206,55 @@ TYPED_TEST( VectorTest, exclusivePrefixSum )
 #ifdef HAVE_CUDA
       Algorithms::CudaPrefixSumKernelLauncher< Algorithms::PrefixSumType::Exclusive, RealType, IndexType >::maxGridSize() = 3;
 
+      setConstantSequence( v, 0 );
+      v_host = -1;
+      v.template prefixSum< Algorithms::PrefixSumType::Exclusive >();
+      EXPECT_GT( ( Algorithms::CudaPrefixSumKernelLauncher< Algorithms::PrefixSumType::Exclusive, RealType, IndexType >::gridsCount() ), 1 );
+      v_host = v;
+      for( int i = 0; i < size; i++ )
+         EXPECT_EQ( v_host[ i ], 0 ) << "i = " << i;
+
       setConstantSequence( v, 1 );
       v_host = -1;
       v.template prefixSum< Algorithms::PrefixSumType::Exclusive >();
       EXPECT_GT( ( Algorithms::CudaPrefixSumKernelLauncher< Algorithms::PrefixSumType::Exclusive, RealType, IndexType >::gridsCount() ), 1 );
       v_host = v;
       for( int i = 0; i < size; i++ )
-         EXPECT_EQ( v_host[ i ], i );
-
-      v.setValue( 0 );
-      v_host = -1;
-      v.template prefixSum< Algorithms::PrefixSumType::Exclusive >();
-      EXPECT_GT( ( Algorithms::CudaPrefixSumKernelLauncher< Algorithms::PrefixSumType::Exclusive, RealType, IndexType >::gridsCount() ), 1 );
-      v_host = v;
-      for( int i = 0; i < size; i++ )
-         EXPECT_EQ( v_host[ i ], 0 );
+         EXPECT_EQ( v_host[ i ], i ) << "i = " << i;
 
       setLinearSequence( v );
       v_host = -1;
       v.template prefixSum< Algorithms::PrefixSumType::Exclusive >();
       EXPECT_GT( ( Algorithms::CudaPrefixSumKernelLauncher< Algorithms::PrefixSumType::Exclusive, RealType, IndexType >::gridsCount() ), 1 );
       v_host = v;
-      for( int i = 1; i < size; i++ )
-         EXPECT_EQ( v_host[ i ] - v_host[ i - 1 ], i - 1 );
+      for( int i = 0; i < size; i++ )
+         EXPECT_EQ( v_host[ i ], (i * (i - 1)) / 2 ) << "i = " << i;
+
+      // test views
+      setConstantSequence( v, 0 );
+      v_host = -1;
+      v_view.template prefixSum< Algorithms::PrefixSumType::Exclusive >();
+      EXPECT_GT( ( Algorithms::CudaPrefixSumKernelLauncher< Algorithms::PrefixSumType::Exclusive, RealType, IndexType >::gridsCount() ), 1 );
+      v_host = v;
+      for( int i = 0; i < size; i++ )
+         EXPECT_EQ( v_host[ i ], 0 ) << "i = " << i;
 
       setConstantSequence( v, 1 );
       v_host = -1;
       v_view.template prefixSum< Algorithms::PrefixSumType::Exclusive >();
       EXPECT_GT( ( Algorithms::CudaPrefixSumKernelLauncher< Algorithms::PrefixSumType::Exclusive, RealType, IndexType >::gridsCount() ), 1 );
-      v_host = v_view;
+      v_host = v;
       for( int i = 0; i < size; i++ )
-         EXPECT_EQ( v_host[ i ], i );
-
-      v.setValue( 0 );
-      v_host = -1;
-      v_view.template prefixSum< Algorithms::PrefixSumType::Exclusive >();
-      EXPECT_GT( ( Algorithms::CudaPrefixSumKernelLauncher< Algorithms::PrefixSumType::Exclusive, RealType, IndexType >::gridsCount() ), 1 );
-      v_host = v_view;
-      for( int i = 0; i < size; i++ )
-         EXPECT_EQ( v_host[ i ], 0 );
+         EXPECT_EQ( v_host[ i ], i ) << "i = " << i;
 
       setLinearSequence( v );
       v_host = -1;
       v_view.template prefixSum< Algorithms::PrefixSumType::Exclusive >();
       EXPECT_GT( ( Algorithms::CudaPrefixSumKernelLauncher< Algorithms::PrefixSumType::Exclusive, RealType, IndexType >::gridsCount() ), 1 );
-      v_host = v_view;
-      for( int i = 1; i < size; i++ )
-         EXPECT_EQ( v_host[ i ] - v_host[ i - 1 ], i - 1 );
+      v_host = v;
+      for( int i = 0; i < size; i++ )
+         EXPECT_EQ( v_host[ i ], (i * (i - 1)) / 2 ) << "i = " << i;
+
       Algorithms::CudaPrefixSumKernelLauncher< Algorithms::PrefixSumType::Exclusive, RealType, IndexType >::resetMaxGridSize();
 #endif
    }
