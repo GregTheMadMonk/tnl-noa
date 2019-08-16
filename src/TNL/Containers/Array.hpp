@@ -30,6 +30,23 @@ template< typename Value,
           typename Index,
           typename Allocator >
 Array< Value, Device, Index, Allocator >::
+Array( Array&& array )
+: size( std::move(array.size) ),
+  data( std::move(array.data) ),
+  allocationPointer( std::move(array.allocationPointer) ),
+  referenceCounter( std::move(array.referenceCounter) ),
+  allocator( std::move(array.allocator) )
+{
+   array.data = nullptr;
+   array.allocationPointer = nullptr;
+   array.referenceCounter = nullptr;
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Allocator >
+Array< Value, Device, Index, Allocator >::
 Array( const Allocator& allocator )
 : allocator( allocator )
 {

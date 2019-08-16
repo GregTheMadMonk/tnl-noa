@@ -148,7 +148,7 @@ class Array
        *
        * \param array The array to be moved.
        */
-      Array( Array&& array ) = default;
+      Array( Array&& array );
 
       /**
        * \brief Constructor which initializes the array by copying elements from
