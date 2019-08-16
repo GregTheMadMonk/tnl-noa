@@ -12,69 +12,58 @@
 
 #pragma once
 
-#include <memory>  // std::unique_ptr
-
 #include "PrefixSum.h"
 
-//#define CUDA_REDUCTION_PROFILING
-
 #include <TNL/Assert.h>
-#include <TNL/Exceptions/CudaSupportMissing.h>
-#include <TNL/Containers/Algorithms/ArrayOperations.h>
+#include <TNL/Containers/Array.h>
 #include <TNL/Containers/Algorithms/CudaPrefixSumKernel.h>
+#include <TNL/Exceptions/CudaSupportMissing.h>
 #include <TNL/Exceptions/NotImplementedError.h>
-
-#ifdef CUDA_REDUCTION_PROFILING
-#include <iostream>
-#include <TNL/Timer.h>
-#endif
 
 namespace TNL {
 namespace Containers {
 namespace Algorithms {
 
-/****
- * Arrays smaller than the following constant
- * are reduced on CPU. The constant must not be larger
- * than maximal CUDA grid size.
- */
-static constexpr int PrefixSum_minGpuDataSize = 256;//65536; //16384;//1024;//256;
-
-////
-// PrefixSum on host
 template< PrefixSumType Type >
-template< typename Vector,
-          typename Reduction >
+   template< typename Vector,
+             typename Reduction >
 void
 PrefixSum< Devices::Host, Type >::
 perform( Vector& v,
          const typename Vector::IndexType begin,
          const typename Vector::IndexType end,
          const Reduction& reduction,
-         const typename Vector::RealType& zero )
+         const typename Vector::RealType zero )
+{
+#ifdef HAVE_OPENMP
+   const auto blockShifts = performFirstPhase( v, begin, end, reduction, zero );
+   performSecondPhase( v, blockShifts, begin, end, reduction, zero );
+#else
+   // sequential prefix-sum does not need a second phase
+   performFirstPhase( v, begin, end, reduction, zero );
+#endif
+}
+
+template< PrefixSumType Type >
+   template< typename Vector,
+             typename Reduction >
+auto
+PrefixSum< Devices::Host, Type >::
+performFirstPhase( Vector& v,
+                   const typename Vector::IndexType begin,
+                   const typename Vector::IndexType end,
+                   const Reduction& reduction,
+                   const typename Vector::RealType zero )
 {
    using RealType = typename Vector::RealType;
    using IndexType = typename Vector::IndexType;
 
 #ifdef HAVE_OPENMP
    const int threads = Devices::Host::getMaxThreadsCount();
-   std::unique_ptr< RealType[] > block_sums{
-      // Workaround for nvcc 10.1.168 - it would modifie the simple expression
-      // `new RealType[reducedSize]` in the source code to `new (RealType[reducedSize])`
-      // which is not correct - see e.g. https://stackoverflow.com/a/39671946
-      // Thus, the host compiler would spit out hundreds of warnings...
-      // Funnily enough, nvcc's behaviour depends on the context rather than the
-      // expression, because exactly the same simple expression in different places
-      // does not produce warnings.
-      #ifdef __NVCC__
-      new RealType[ static_cast<const int&>(threads) + 1 ]
-      #else
-      new RealType[ threads + 1 ]
-      #endif
-   };
+   Array< RealType, Devices::Host > block_sums( threads + 1 );
    block_sums[ 0 ] = zero;
 
-   #pragma omp parallel
+   #pragma omp parallel num_threads(threads)
    {
       // init
       const int thread_idx = omp_get_thread_num();
@@ -99,18 +88,15 @@ perform( Vector& v,
 
       // write the block sums into the buffer
       block_sums[ thread_idx + 1 ] = block_sum;
-      #pragma omp barrier
-
-      // calculate per-block offsets
-      RealType offset = 0;
-      for( int i = 0; i < thread_idx + 1; i++ )
-         offset = reduction( offset, block_sums[ i ] );
-
-      // shift intermediate results by the offset
-      #pragma omp for schedule(static)
-      for( IndexType i = begin; i < end; i++ )
-         v[ i ] = reduction( v[ i ], offset );
    }
+
+   // block_sums now contains sums of numbers in each block. The first phase
+   // ends by computing prefix-sum of this array.
+   for( int i = 1; i < threads + 1; i++ )
+      block_sums[ i ] = reduction( block_sums[ i ], block_sums[ i - 1 ] );
+
+   // block_sums now contains shift values for each block - to be used in the second phase
+   return block_sums;
 #else
    if( Type == PrefixSumType::Inclusive ) {
       for( IndexType i = begin + 1; i < end; i++ )
@@ -125,21 +111,57 @@ perform( Vector& v,
          aux = reduction( aux, x );
       }
    }
+
+   return 0;
 #endif
 }
 
-////
-// PrefixSum on CUDA device
 template< PrefixSumType Type >
-template< typename Vector,
-          typename Reduction >
+   template< typename Vector,
+             typename BlockShifts,
+             typename Reduction >
+void
+PrefixSum< Devices::Host, Type >::
+performSecondPhase( Vector& v,
+                    const BlockShifts& blockShifts,
+                    const typename Vector::IndexType begin,
+                    const typename Vector::IndexType end,
+                    const Reduction& reduction,
+                    const typename Vector::RealType shift )
+{
+   using RealType = typename Vector::RealType;
+   using IndexType = typename Vector::IndexType;
+
+#ifdef HAVE_OPENMP
+   const int threads = blockShifts.getSize() - 1;
+
+   // launch exactly the same number of threads as in the first phase
+   #pragma omp parallel num_threads(threads)
+   {
+      const int thread_idx = omp_get_thread_num();
+      const RealType offset = reduction( blockShifts[ thread_idx ], shift );
+
+      // shift intermediate results by the offset
+      #pragma omp for schedule(static)
+      for( IndexType i = begin; i < end; i++ )
+         v[ i ] = reduction( v[ i ], offset );
+   }
+#else
+   for( IndexType i = begin; i < end; i++ )
+      v[ i ] = reduction( v[ i ], shift );
+#endif
+}
+
+template< PrefixSumType Type >
+   template< typename Vector,
+             typename Reduction >
 void
 PrefixSum< Devices::Cuda, Type >::
 perform( Vector& v,
          const typename Vector::IndexType begin,
          const typename Vector::IndexType end,
          const Reduction& reduction,
-         const typename Vector::RealType& zero )
+         const typename Vector::RealType zero )
 {
 #ifdef HAVE_CUDA
    using RealType = typename Vector::RealType;
@@ -156,9 +178,61 @@ perform( Vector& v,
 #endif
 }
 
+template< PrefixSumType Type >
+   template< typename Vector,
+             typename Reduction >
+auto
+PrefixSum< Devices::Cuda, Type >::
+performFirstPhase( Vector& v,
+                   const typename Vector::IndexType begin,
+                   const typename Vector::IndexType end,
+                   const Reduction& reduction,
+                   const typename Vector::RealType zero )
+{
+#ifdef HAVE_CUDA
+   using RealType = typename Vector::RealType;
+   using IndexType = typename Vector::IndexType;
 
-////
-// PrefixSum on host
+   return CudaPrefixSumKernelLauncher< Type, RealType, IndexType >::performFirstPhase(
+      end - begin,
+      &v[ begin ],  // input
+      &v[ begin ],  // output
+      reduction,
+      zero );
+#else
+   throw Exceptions::CudaSupportMissing();
+#endif
+}
+
+template< PrefixSumType Type >
+   template< typename Vector,
+             typename BlockShifts,
+             typename Reduction >
+void
+PrefixSum< Devices::Cuda, Type >::
+performSecondPhase( Vector& v,
+                    const BlockShifts& blockShifts,
+                    const typename Vector::IndexType begin,
+                    const typename Vector::IndexType end,
+                    const Reduction& reduction,
+                    const typename Vector::RealType shift )
+{
+#ifdef HAVE_CUDA
+   using RealType = typename Vector::RealType;
+   using IndexType = typename Vector::IndexType;
+
+   CudaPrefixSumKernelLauncher< Type, RealType, IndexType >::performSecondPhase(
+      end - begin,
+      &v[ begin ],  // output
+      blockShifts.getData(),
+      reduction,
+      shift );
+#else
+   throw Exceptions::CudaSupportMissing();
+#endif
+}
+
+
 template< PrefixSumType Type >
    template< typename Vector,
              typename Reduction,
@@ -170,7 +244,7 @@ perform( Vector& v,
          const typename Vector::IndexType begin,
          const typename Vector::IndexType end,
          const Reduction& reduction,
-         const typename Vector::RealType& zero )
+         const typename Vector::RealType zero )
 {
    using RealType = typename Vector::RealType;
    using IndexType = typename Vector::IndexType;
@@ -197,8 +271,6 @@ perform( Vector& v,
    }
 }
 
-////
-// PrefixSum on CUDA device
 template< PrefixSumType Type >
    template< typename Vector,
              typename Reduction,
@@ -210,7 +282,7 @@ perform( Vector& v,
          const typename Vector::IndexType begin,
          const typename Vector::IndexType end,
          const Reduction& reduction,
-         const typename Vector::RealType& zero )
+         const typename Vector::RealType zero )
 {
 #ifdef HAVE_CUDA
    using RealType = typename Vector::RealType;
