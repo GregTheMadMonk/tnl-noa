@@ -31,7 +31,7 @@ cudaFirstPhaseBlockPrefixSum( const PrefixSumType prefixSumType,
                               Reduction reduction,
                               const Real zero,
                               const Index size,
-                              const Index elementsInBlock,
+                              const int elementsInBlock,
                               const Real* input,
                               Real* output,
                               Real* auxArray )
@@ -46,8 +46,8 @@ cudaFirstPhaseBlockPrefixSum( const PrefixSumType prefixSumType,
    /***
     * Load data into the shared memory.
     */
-   const Index blockOffset = blockIdx.x * elementsInBlock;
-   Index idx = threadIdx.x;
+   const int blockOffset = blockIdx.x * elementsInBlock;
+   int idx = threadIdx.x;
    if( prefixSumType == PrefixSumType::Exclusive )
    {
       if( idx == 0 )
@@ -81,7 +81,7 @@ cudaFirstPhaseBlockPrefixSum( const PrefixSumType prefixSumType,
          sharedData[ Devices::Cuda::getInterleaving( chunkOffset ) ];
    }
 
-   Index chunkPointer( 1 );
+   int chunkPointer = 1;
    while( chunkPointer < chunkSize &&
           chunkOffset + chunkPointer < lastElementInBlock )
    {
@@ -132,7 +132,7 @@ cudaFirstPhaseBlockPrefixSum( const PrefixSumType prefixSumType,
    idx = threadIdx.x;
    while( idx < elementsInBlock && blockOffset + idx < size )
    {
-      const Index chunkIdx = idx / chunkSize;
+      const int chunkIdx = idx / chunkSize;
       Real chunkShift( zero );
       if( chunkIdx > 0 )
          chunkShift = auxData[ chunkIdx - 1 ];
@@ -161,18 +161,20 @@ template< typename Real,
 __global__ void
 cudaSecondPhaseBlockPrefixSum( Reduction reduction,
                                const Index size,
-                               const Index elementsInBlock,
-                               Real gridShift,
+                               const int elementsInBlock,
+                               const Index gridIdx,
+                               const Index maxGridSize,
                                const Real* auxArray,
-                               Real* data )
+                               Real* data,
+                               Real shift )
 {
-   if( blockIdx.x > 0 )
-      gridShift = reduction( gridShift, auxArray[ blockIdx.x - 1 ] );
-   const Index readOffset = blockIdx.x * elementsInBlock;
-   Index readIdx = threadIdx.x;
+   if( gridIdx > 0 || blockIdx.x > 0 )
+      shift = reduction( shift, auxArray[ gridIdx * maxGridSize + blockIdx.x - 1 ] );
+   const int readOffset = blockIdx.x * elementsInBlock;
+   int readIdx = threadIdx.x;
    while( readIdx < elementsInBlock && readOffset + readIdx < size )
    {
-      data[ readIdx + readOffset ] = reduction( data[ readIdx + readOffset ], gridShift );
+      data[ readIdx + readOffset ] = reduction( data[ readIdx + readOffset ], shift );
       readIdx += blockDim.x;
    }
 }
@@ -182,143 +184,183 @@ template< PrefixSumType prefixSumType,
           typename Index >
 struct CudaPrefixSumKernelLauncher
 {
-   template< typename Reduction >
-   static void
-   cudaRecursivePrefixSum( PrefixSumType prefixSumType_,
-                           Reduction& reduction,
-                           const Real& zero,
-                           const Index size,
-                           const Index blockSize,
-                           const Index elementsInBlock,
-                           Real& gridShift,
-                           const Real* input,
-                           Real* output )
-   {
-      const Index numberOfBlocks = roundUpDivision( size, elementsInBlock );
-      const Index auxArraySize = numberOfBlocks;
-
-      Array< Real, Devices::Cuda > auxArray1, auxArray2;
-      auxArray1.setSize( auxArraySize );
-      auxArray2.setSize( auxArraySize );
-
-      /****
-       * Setup block and grid size.
-       */
-      dim3 cudaBlockSize( 0 ), cudaGridSize( 0 );
-      cudaBlockSize.x = blockSize;
-      cudaGridSize.x = roundUpDivision( size, elementsInBlock );
-
-      /****
-       * Run the kernel.
-       */
-      const std::size_t sharedDataSize = elementsInBlock +
-                                         elementsInBlock / Devices::Cuda::getNumberOfSharedMemoryBanks() + 2;
-      const std::size_t sharedMemory = ( sharedDataSize + blockSize + Devices::Cuda::getWarpSize() ) * sizeof( Real );
-      cudaFirstPhaseBlockPrefixSum<<< cudaGridSize, cudaBlockSize, sharedMemory >>>
-         ( prefixSumType_,
-           reduction,
-           zero,
-           size,
-           elementsInBlock,
-           input,
-           output,
-           auxArray1.getData() );
-      cudaStreamSynchronize(0);
-      TNL_CHECK_CUDA_DEVICE;
-
-
-      //std::cerr << " auxArray1 = " << auxArray1 << std::endl;
-      /***
-       * In auxArray1 there is now a sum of numbers in each block.
-       * We must compute prefix-sum of auxArray1 and then shift
-       * each block.
-       */
-      Real gridShift2 = zero;
-      if( numberOfBlocks > 1 )
-         cudaRecursivePrefixSum( PrefixSumType::Inclusive,
-            reduction,
-            zero,
-            numberOfBlocks,
-            blockSize,
-            elementsInBlock,
-            gridShift2,
-            auxArray1.getData(),
-            auxArray2.getData() );
-
-      //std::cerr << " auxArray2 = " << auxArray2 << std::endl;
-      cudaSecondPhaseBlockPrefixSum<<< cudaGridSize, cudaBlockSize >>>
-         ( reduction,
-           size,
-           elementsInBlock,
-           gridShift,
-           auxArray2.getData(),
-           output );
-      cudaStreamSynchronize(0);
-      TNL_CHECK_CUDA_DEVICE;
-
-      gridShift = auxArray2.getElement( auxArraySize - 1 );
-      //std::cerr << "gridShift = " << gridShift << std::endl;
-   }
-
    /****
-    * \brief Starts prefix sum in CUDA.
+    * \brief Performs both phases of prefix sum.
     *
-    * \tparam Reduction reduction to be performed on particular elements - addition usually
-    * \param size is number of elements to be scanned
-    * \param blockSize is CUDA block size
-    * \param deviceInput is pointer to input data on GPU
-    * \param deviceOutput is pointer to resulting array, can be the same as input
-    * \param reduction is instance of Reduction
-    * \param zero is neutral element for given Reduction
+    * \param size  Number of elements to be scanned.
+    * \param deviceInput  Pointer to input data on GPU.
+    * \param deviceOutput  Pointer to output array on GPU, can be the same as input.
+    * \param reduction  Symmetric binary function representing the reduction operation
+    *                   (usually addition, i.e. an instance of \ref std::plus).
+    * \param zero  Neutral element for given reduction operation, i.e. value such that
+    *              `reduction(zero, x) == x` for any `x`.
+    * \param blockSize  The CUDA block size to be used for kernel launch.
     */
    template< typename Reduction >
    static void
-   start( const Index size,
-          const Index blockSize,
-          const Real *deviceInput,
-          Real* deviceOutput,
-          Reduction& reduction,
-          const Real& zero )
+   perform( const Index size,
+            const Real* deviceInput,
+            Real* deviceOutput,
+            Reduction& reduction,
+            const Real zero,
+            const int blockSize = 256 )
    {
-      /****
-       * Compute the number of grids
-       */
-      const Index elementsInBlock = 8 * blockSize;
+      const auto blockShifts = performFirstPhase(
+         size,
+         deviceInput,
+         deviceOutput,
+         reduction,
+         zero,
+         blockSize );
+      performSecondPhase(
+         size,
+         deviceOutput,
+         blockShifts.getData(),
+         reduction,
+         zero,
+         blockSize );
+   }
+
+   /****
+    * \brief Performs the first phase of prefix sum.
+    *
+    * \param size  Number of elements to be scanned.
+    * \param deviceInput  Pointer to input data on GPU.
+    * \param deviceOutput  Pointer to output array on GPU, can be the same as input.
+    * \param reduction  Symmetric binary function representing the reduction operation
+    *                   (usually addition, i.e. an instance of \ref std::plus).
+    * \param zero  Neutral value for given reduction operation, i.e. value such that
+    *              `reduction(zero, x) == x` for any `x`.
+    * \param blockSize  The CUDA block size to be used for kernel launch.
+    */
+   template< typename Reduction >
+   static auto
+   performFirstPhase( const Index size,
+                      const Real* deviceInput,
+                      Real* deviceOutput,
+                      Reduction& reduction,
+                      const Real zero,
+                      const int blockSize = 256 )
+   {
+      // compute the number of grids
+      const int elementsInBlock = 8 * blockSize;
       const Index numberOfBlocks = roundUpDivision( size, elementsInBlock );
       const Index numberOfGrids = Devices::Cuda::getNumberOfGrids( numberOfBlocks, maxGridSize() );
-      Real gridShift = zero;
       //std::cerr << "numberOfgrids =  " << numberOfGrids << std::endl;
 
-      /****
-       * Loop over all grids.
-       */
-      for( Index gridIdx = 0; gridIdx < numberOfGrids; gridIdx++ )
-      {
-         /****
-          * Compute current grid size and size of data to be scanned
-          */
+      // allocate array for the block sums
+      Array< Real, Devices::Cuda > blockSums;
+      blockSums.setSize( numberOfBlocks );
+
+      // loop over all grids
+      for( Index gridIdx = 0; gridIdx < numberOfGrids; gridIdx++ ) {
+         // compute current grid size and size of data to be scanned
          const Index gridOffset = gridIdx * maxGridSize() * elementsInBlock;
          Index currentSize = size - gridOffset;
          if( currentSize / elementsInBlock > maxGridSize() )
             currentSize = maxGridSize() * elementsInBlock;
-
          //std::cerr << "GridIdx = " << gridIdx << " grid size = " << currentSize << std::endl;
-         cudaRecursivePrefixSum( prefixSumType,
-            reduction,
-            zero,
-            currentSize,
-            blockSize,
-            elementsInBlock,
-            gridShift,
-            &deviceInput[ gridOffset ],
-            &deviceOutput[ gridOffset ] );
+
+         // setup block and grid size
+         dim3 cudaBlockSize, cudaGridSize;
+         cudaBlockSize.x = blockSize;
+         cudaGridSize.x = roundUpDivision( currentSize, elementsInBlock );
+
+         // run the kernel
+         const std::size_t sharedDataSize = elementsInBlock +
+                                            elementsInBlock / Devices::Cuda::getNumberOfSharedMemoryBanks() + 2;
+         const std::size_t sharedMemory = ( sharedDataSize + blockSize + Devices::Cuda::getWarpSize() ) * sizeof( Real );
+         cudaFirstPhaseBlockPrefixSum<<< cudaGridSize, cudaBlockSize, sharedMemory >>>
+            ( prefixSumType,
+              reduction,
+              zero,
+              currentSize,
+              elementsInBlock,
+              &deviceInput[ gridOffset ],
+              &deviceOutput[ gridOffset ],
+              &blockSums[ gridIdx * maxGridSize() ] );
       }
 
-      /***
-       * Store the number of CUDA grids for the purpose of unit testing, i.e.
-       * to check if we test the algorithm with more than one CUDA grid.
-       */
+      // synchronize the null-stream after all grids
+      cudaStreamSynchronize(0);
+      TNL_CHECK_CUDA_DEVICE;
+
+      // blockSums now contains sums of numbers in each block. The first phase
+      // ends by computing prefix-sum of this array.
+      if( numberOfBlocks > 1 ) {
+         CudaPrefixSumKernelLauncher< PrefixSumType::Inclusive, Real, Index >::perform(
+            blockSums.getSize(),
+            blockSums.getData(),
+            blockSums.getData(),
+            reduction,
+            zero,
+            blockSize );
+      }
+
+      // Store the number of CUDA grids for the purpose of unit testing, i.e.
+      // to check if we test the algorithm with more than one CUDA grid.
       gridsCount() = numberOfGrids;
+
+      // blockSums now contains shift values for each block - to be used in the second phase
+      return blockSums;
+   }
+
+   /****
+    * \brief Performs the seocond phase of prefix sum.
+    *
+    * \param size  Number of elements to be scanned.
+    * \param deviceOutput  Pointer to output array on GPU.
+    * \param blockShifts  Pointer to a GPU array containing the block shifts. It is the
+    *                     result of the first phase.
+    * \param reduction  Symmetric binary function representing the reduction operation
+    *                   (usually addition, i.e. an instance of \ref std::plus).
+    * \param shift  A constant shifting all elements of the array (usually `zero`, i.e.
+    *               the neutral value).
+    * \param blockSize  The CUDA block size to be used for kernel launch.
+    */
+   template< typename Reduction >
+   static void
+   performSecondPhase( const Index size,
+                       Real* deviceOutput,
+                       const Real* blockShifts,
+                       Reduction& reduction,
+                       const Real shift,
+                       const Index blockSize = 256 )
+   {
+      // compute the number of grids
+      const int elementsInBlock = 8 * blockSize;
+      const Index numberOfBlocks = roundUpDivision( size, elementsInBlock );
+      const Index numberOfGrids = Devices::Cuda::getNumberOfGrids( numberOfBlocks, maxGridSize() );
+
+      // loop over all grids
+      for( Index gridIdx = 0; gridIdx < numberOfGrids; gridIdx++ ) {
+         // compute current grid size and size of data to be scanned
+         const Index gridOffset = gridIdx * maxGridSize() * elementsInBlock;
+         Index currentSize = size - gridOffset;
+         if( currentSize / elementsInBlock > maxGridSize() )
+            currentSize = maxGridSize() * elementsInBlock;
+         //std::cerr << "GridIdx = " << gridIdx << " grid size = " << currentSize << std::endl;
+
+         // setup block and grid size
+         dim3 cudaBlockSize, cudaGridSize;
+         cudaBlockSize.x = blockSize;
+         cudaGridSize.x = roundUpDivision( currentSize, elementsInBlock );
+
+         // run the kernel
+         cudaSecondPhaseBlockPrefixSum<<< cudaGridSize, cudaBlockSize >>>
+            ( reduction,
+              size,
+              elementsInBlock,
+              gridIdx,
+              (Index) maxGridSize(),
+              blockShifts,
+              &deviceOutput[ gridOffset ],
+              shift );
+      }
+
+      // synchronize the null-stream after all grids
+      cudaStreamSynchronize(0);
+      TNL_CHECK_CUDA_DEVICE;
    }
 
    /****

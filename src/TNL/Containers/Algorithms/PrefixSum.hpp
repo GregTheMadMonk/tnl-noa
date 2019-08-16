@@ -141,17 +141,18 @@ perform( Vector& v,
          const Reduction& reduction,
          const typename Vector::RealType& zero )
 {
+#ifdef HAVE_CUDA
    using RealType = typename Vector::RealType;
    using IndexType = typename Vector::IndexType;
-   using IndexType = typename Vector::IndexType;
-#ifdef HAVE_CUDA
-   CudaPrefixSumKernelLauncher< Type, RealType, IndexType >::start(
-      ( IndexType ) ( end - begin ),
-      ( IndexType ) 256,
-      &v[ begin ],
-      &v[ begin ],
+
+   CudaPrefixSumKernelLauncher< Type, RealType, IndexType >::perform(
+      end - begin,
+      &v[ begin ],  // input
+      &v[ begin ],  // output
       reduction,
       zero );
+#else
+   throw Exceptions::CudaSupportMissing();
 #endif
 }
 
@@ -211,18 +212,13 @@ perform( Vector& v,
          const Reduction& reduction,
          const typename Vector::RealType& zero )
 {
+#ifdef HAVE_CUDA
    using RealType = typename Vector::RealType;
    using IndexType = typename Vector::IndexType;
-   using IndexType = typename Vector::IndexType;
-#ifdef HAVE_CUDA
-   throw Exceptions::NotImplementedError( "Segmented prefix sum is not implemented for CUDA." ); // NOT IMPLEMENTED YET
-   /*CudaPrefixSumKernelLauncher< Type, RealType, IndexType >::start(
-      ( IndexType ) ( end - begin ),
-      ( IndexType ) 256,
-      &v[ begin ],
-      &v[ begin ],
-      reduction,
-      zero );*/
+
+   throw Exceptions::NotImplementedError( "Segmented prefix sum is not implemented for CUDA." );
+#else
+   throw Exceptions::CudaSupportMissing();
 #endif
 }
 
