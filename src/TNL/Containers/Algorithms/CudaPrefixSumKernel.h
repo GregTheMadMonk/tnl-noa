@@ -34,8 +34,7 @@ cudaFirstPhaseBlockPrefixSum( const PrefixSumType prefixSumType,
                               const Index elementsInBlock,
                               const Real* input,
                               Real* output,
-                              Real* auxArray,
-                              const Real gridShift )
+                              Real* auxArray )
 {
    Real* sharedData = TNL::Devices::Cuda::getSharedMemory< Real >();
    Real* auxData = &sharedData[ elementsInBlock + elementsInBlock / Devices::Cuda::getNumberOfSharedMemoryBanks() + 2 ];
@@ -67,8 +66,6 @@ cudaFirstPhaseBlockPrefixSum( const PrefixSumType prefixSumType,
          idx += blockDim.x;
       }
    }
-   if( blockIdx.x == 0 && threadIdx.x == 0 )
-      sharedData[ 0 ] = reduction( sharedData[ 0 ], gridShift );
 
    /***
     * Perform the sequential prefix-sum.
@@ -150,10 +147,8 @@ cudaFirstPhaseBlockPrefixSum( const PrefixSumType prefixSumType,
    {
       if( prefixSumType == PrefixSumType::Exclusive )
       {
-         Real aux = zero;
-         aux = reduction( aux, sharedData[ Devices::Cuda::getInterleaving( lastElementInBlock - 1 ) ] );
-         aux = reduction( aux, sharedData[ Devices::Cuda::getInterleaving( lastElementInBlock ) ] );
-         auxArray[ blockIdx.x ] = aux;
+         auxArray[ blockIdx.x ] = reduction( sharedData[ Devices::Cuda::getInterleaving( lastElementInBlock - 1 ) ],
+                                             sharedData[ Devices::Cuda::getInterleaving( lastElementInBlock ) ] );
       }
       else
          auxArray[ blockIdx.x ] = sharedData[ Devices::Cuda::getInterleaving( lastElementInBlock - 1 ) ];
@@ -172,15 +167,13 @@ cudaSecondPhaseBlockPrefixSum( Reduction reduction,
                                Real* data )
 {
    if( blockIdx.x > 0 )
+      gridShift = reduction( gridShift, auxArray[ blockIdx.x - 1 ] );
+   const Index readOffset = blockIdx.x * elementsInBlock;
+   Index readIdx = threadIdx.x;
+   while( readIdx < elementsInBlock && readOffset + readIdx < size )
    {
-      const Real shift = auxArray[ blockIdx.x - 1 ];
-      const Index readOffset = blockIdx.x * elementsInBlock;
-      Index readIdx = threadIdx.x;
-      while( readIdx < elementsInBlock && readOffset + readIdx < size )
-      {
-         data[ readIdx + readOffset ] = reduction( data[ readIdx + readOffset ], shift );
-         readIdx += blockDim.x;
-      }
+      data[ readIdx + readOffset ] = reduction( data[ readIdx + readOffset ], gridShift );
+      readIdx += blockDim.x;
    }
 }
 
@@ -229,8 +222,7 @@ struct CudaPrefixSumKernelLauncher
            elementsInBlock,
            input,
            output,
-           auxArray1.getData(),
-           gridShift );
+           auxArray1.getData() );
       cudaStreamSynchronize(0);
       TNL_CHECK_CUDA_DEVICE;
 
@@ -264,12 +256,8 @@ struct CudaPrefixSumKernelLauncher
       cudaStreamSynchronize(0);
       TNL_CHECK_CUDA_DEVICE;
 
-      cudaMemcpy( &gridShift,
-                  &auxArray2[ auxArraySize - 1 ],
-                  sizeof( Real ),
-                  cudaMemcpyDeviceToHost );
+      gridShift = auxArray2.getElement( auxArraySize - 1 );
       //std::cerr << "gridShift = " << gridShift << std::endl;
-      TNL_CHECK_CUDA_DEVICE;
    }
 
    /****
