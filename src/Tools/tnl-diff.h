@@ -502,19 +502,19 @@ bool setTupleType( const MeshPointer& meshPointer,
             return setIndexType< MeshPointer, Containers::StaticVector< 3, double >, double >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
       }
-   if( dataType == "long double" )
-      switch( dimensions )
-      {
-         case 1:
-            return setIndexType< MeshPointer, Containers::StaticVector< 1, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
-            break;
-         case 2:
-            return setIndexType< MeshPointer, Containers::StaticVector< 2, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
-            break;
-         case 3:
-            return setIndexType< MeshPointer, Containers::StaticVector< 3, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
-            break;
-      }
+//   if( dataType == "long double" )
+//      switch( dimensions )
+//      {
+//         case 1:
+//            return setIndexType< MeshPointer, Containers::StaticVector< 1, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
+//            break;
+//         case 2:
+//            return setIndexType< MeshPointer, Containers::StaticVector< 2, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
+//            break;
+//         case 3:
+//            return setIndexType< MeshPointer, Containers::StaticVector< 3, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
+//            break;
+//      }
    return false;
 }
 
@@ -537,8 +537,8 @@ bool setValueType( const MeshPointer& meshPointer,
       return setIndexType< MeshPointer, float, float >( meshPointer, inputFileName, parsedObjectType, parameters );
    if( elementType == "double" )
       return setIndexType< MeshPointer, double, double >( meshPointer, inputFileName, parsedObjectType, parameters );
-   if( elementType == "long double" )
-      return setIndexType< MeshPointer, long double, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
+//   if( elementType == "long double" )
+//      return setIndexType< MeshPointer, long double, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
    const std::vector< String > parsedValueType = parseObjectType( elementType );
    if( ! parsedValueType.size() )
    {
@@ -622,8 +622,8 @@ bool resolveGridRealType( const std::vector< String >& parsedMeshType,
       return resolveGridIndexType< Dim, float >( parsedMeshType, parameters );
    if( parsedMeshType[ 2 ] == "double" )
       return resolveGridIndexType< Dim, double >( parsedMeshType, parameters );
-   if( parsedMeshType[ 2 ] == "long double" )
-      return resolveGridIndexType< Dim, long double >( parsedMeshType, parameters );
+//   if( parsedMeshType[ 2 ] == "long double" )
+//      return resolveGridIndexType< Dim, long double >( parsedMeshType, parameters );
    std::cerr << "Unknown real type " << parsedMeshType[ 2 ] << "." <<  std::endl;
    return false;
 }

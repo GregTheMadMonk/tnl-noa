@@ -291,24 +291,24 @@ bool resolveMesh( const Config::ParameterContainer& parameters )
       std::cerr << "Unable to parse the mesh type " << meshType << "." << std::endl;
       return EXIT_FAILURE;
    }
-   
+
    int dimensions = atoi( parsedMeshType[ 1 ].getString() );
    if( dimensions != 3 )
    {
       std::cerr << "The main mesh '" << meshFile << "' must be a 3D grid." << std::endl;
       return false;
    }
-   
+
    std::cout << "+ -> Setting real type to " << parsedMeshType[ 2 ] << " ... " << std::endl;
+
    if( parsedMeshType[ 2 ] == "float" )
       return resolveMeshIndexType< ProfileMesh, Real, float >( parsedMeshType, parameters );
-
    if( parsedMeshType[ 2 ] == "double" )
       return resolveMeshIndexType< ProfileMesh, Real, double >( parsedMeshType, parameters );
+//   if( parsedMeshType[ 2 ] == "long double" )
+//      return resolveMeshIndexType< ProfileMesh, Real, long double >( parsedMeshType, parameters );
 
-   if( parsedMeshType[ 2 ] == "long-double" )
-      return resolveMeshIndexType< ProfileMesh, Real, long double >( parsedMeshType, parameters );
-   return false;   
+   return false;
 }
 
 template< typename ProfileMesh >
@@ -321,8 +321,8 @@ bool resolveRealType( const Config::ParameterContainer& parameters )
       return resolveMesh< ProfileMesh, float >( parameters );
    if( realType == "double" )
       return resolveMesh< ProfileMesh, double >( parameters );
-   if( realType == "long-double" )
-      return resolveMesh< ProfileMesh, long double >( parameters );
+//   if( realType == "long-double" )
+//      return resolveMesh< ProfileMesh, long double >( parameters );
    return false;
 }
 
@@ -358,14 +358,13 @@ bool resolveProfileMeshRealType( const std::vector< String >& parsedMeshType,
                                  const Config::ParameterContainer& parameters )
 {
    std::cout << "+ -> Setting real type to " << parsedMeshType[ 2 ] << " ... " << std::endl;
+
    if( parsedMeshType[ 2 ] == "float" )
       return resolveProfileMeshIndexType< float >( parsedMeshType, parameters );
-
    if( parsedMeshType[ 2 ] == "double" )
       return resolveProfileMeshIndexType< double >( parsedMeshType, parameters );
-
-   if( parsedMeshType[ 2 ] == "long-double" )
-      return resolveProfileMeshIndexType< long double >( parsedMeshType, parameters );
+//   if( parsedMeshType[ 2 ] == "long double" )
+//      return resolveProfileMeshIndexType< long double >( parsedMeshType, parameters );
 
    return false;
 }

@@ -137,15 +137,15 @@ bool setMeshEntityType( const MeshPointer& meshPointer,
       return setMeshFunctionRealType< MeshPointer, EntityDimension, float, VectorFieldSize >( meshPointer, inputFileName, parsedObjectType, parameters );
    if( parsedObjectType[ 3 ] == "double" )
       return setMeshFunctionRealType< MeshPointer, EntityDimension, double, VectorFieldSize >( meshPointer, inputFileName, parsedObjectType, parameters );
-   if( parsedObjectType[ 3 ] == "long double" )
-      return setMeshFunctionRealType< MeshPointer, EntityDimension, long double, VectorFieldSize >( meshPointer, inputFileName, parsedObjectType, parameters );
+//   if( parsedObjectType[ 3 ] == "long double" )
+//      return setMeshFunctionRealType< MeshPointer, EntityDimension, long double, VectorFieldSize >( meshPointer, inputFileName, parsedObjectType, parameters );
    if( parsedObjectType[ 3 ] == "int" )
       return setMeshFunctionRealType< MeshPointer, EntityDimension, int, VectorFieldSize >( meshPointer, inputFileName, parsedObjectType, parameters );
    if( parsedObjectType[ 3 ] == "long int" )
       return setMeshFunctionRealType< MeshPointer, EntityDimension, long int, VectorFieldSize >( meshPointer, inputFileName, parsedObjectType, parameters );
    if( parsedObjectType[ 3 ] == "bool" )
       return setMeshFunctionRealType< MeshPointer, EntityDimension, bool, VectorFieldSize >( meshPointer, inputFileName, parsedObjectType, parameters );
-   
+
    std::cerr << "Unsupported arithmetics " << parsedObjectType[ 3 ] << " in mesh function " << inputFileName << std::endl;
    return false;
 }
@@ -342,19 +342,19 @@ bool setTupleType( const MeshPointer& meshPointer,
             return setIndexType< MeshPointer, Containers::StaticVector< 3, double >, double >( meshPointer, inputFileName, parsedObjectType, parameters );
             break;
       }
-   if( dataType == "long double" )
-      switch( dimensions )
-      {
-         case 1:
-            return setIndexType< MeshPointer, Containers::StaticVector< 1, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
-            break;
-         case 2:
-            return setIndexType< MeshPointer, Containers::StaticVector< 2, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
-            break;
-         case 3:
-            return setIndexType< MeshPointer, Containers::StaticVector< 3, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
-            break;
-      }
+//   if( dataType == "long double" )
+//      switch( dimensions )
+//      {
+//         case 1:
+//            return setIndexType< MeshPointer, Containers::StaticVector< 1, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
+//            break;
+//         case 2:
+//            return setIndexType< MeshPointer, Containers::StaticVector< 2, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
+//            break;
+//         case 3:
+//            return setIndexType< MeshPointer, Containers::StaticVector< 3, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
+//            break;
+//      }
    return false;
 }
 
@@ -374,8 +374,8 @@ bool setValueType( const MeshPointer& meshPointer,
       return setIndexType< MeshPointer, float, float >( meshPointer, inputFileName, parsedObjectType, parameters );
    if( elementType == "double" )
       return setIndexType< MeshPointer, double, double >( meshPointer, inputFileName, parsedObjectType, parameters );
-   if( elementType == "long double" )
-      return setIndexType< MeshPointer, long double, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
+//   if( elementType == "long double" )
+//      return setIndexType< MeshPointer, long double, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
    if( elementType == "int" )
       return setIndexType< MeshPointer, int, int >( meshPointer, inputFileName, parsedObjectType, parameters );
    if( elementType == "long int" )

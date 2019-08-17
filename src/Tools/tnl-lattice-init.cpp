@@ -24,7 +24,7 @@ void setupConfig( Config::ConfigDescription& config )
       config.addEntryEnum< String >( "mesh-real-type" );
       config.addEntryEnum< String >( "float" );
       config.addEntryEnum< String >( "double" );
-      config.addEntryEnum< String >( "long-double" );
+//      config.addEntryEnum< String >( "long-double" );
    config.addEntry< String >( "profile-mesh", "Mesh file of the 2D mesh function with geometry profile", "profile-mesh.tnl" );
    config.addEntry< String >( "profile-file", "The profile mesh function file.", "profile.tnl" );
    config.addEntry< String >( "output-file", "Output 3D mesh function file.", "init.tnl" );

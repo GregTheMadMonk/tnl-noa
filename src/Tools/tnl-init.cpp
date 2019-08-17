@@ -31,7 +31,7 @@ void setupConfig( Config::ConfigDescription& config )
       config.addEntryEnum< String >( "mesh-real-type" );
       config.addEntryEnum< String >( "float" );
       config.addEntryEnum< String >( "double" );
-      config.addEntryEnum< String >( "long-double" );
+//      config.addEntryEnum< String >( "long-double" );
    config.addEntry< double >( "initial-time", "Initial time for a serie of snapshots of the time-dependent function.", 0.0 );
    config.addEntry< double >( "final-time", "Final time for a serie of snapshots of the time-dependent function.", 0.0 );
    config.addEntry< double >( "snapshot-period", "Period between snapshots in a serie of the time-dependent function.", 0.0 );

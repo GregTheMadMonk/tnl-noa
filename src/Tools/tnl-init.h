@@ -242,8 +242,8 @@ bool resolveRealType( const Config::ParameterContainer& parameters )
       return resolveDerivatives< MeshType, float >( parameters );
    if( realType == "double" )
       return resolveDerivatives< MeshType, double >( parameters );
-   if( realType == "long-double" )
-      return resolveDerivatives< MeshType, long double >( parameters );
+//   if( realType == "long-double" )
+//      return resolveDerivatives< MeshType, long double >( parameters );
    return false;
 }
 
@@ -286,8 +286,8 @@ bool resolveRealType( const std::vector< String >& parsedMeshType,
       return resolveIndexType< Dimension, float >( parsedMeshType, parameters );
    if( parsedMeshType[ 2 ] == "double" )
       return resolveIndexType< Dimension, double >( parsedMeshType, parameters );
-   if( parsedMeshType[ 2 ] == "long-double" )
-      return resolveIndexType< Dimension, long double >( parsedMeshType, parameters );
+//   if( parsedMeshType[ 2 ] == "long double" )
+//      return resolveIndexType< Dimension, long double >( parsedMeshType, parameters );
 
    return false;
 }
