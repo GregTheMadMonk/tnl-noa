@@ -11,8 +11,6 @@
 #pragma once
 
 #include <TNL/Containers/VectorView.h>
-#include <TNL/Containers/Algorithms/VectorOperations.h>
-#include <TNL/Containers/VectorViewExpressions.h>
 #include <TNL/Containers/Algorithms/VectorAssignment.h>
 #include <TNL/Exceptions/NotImplementedError.h>
 
@@ -127,7 +125,7 @@ prefixSum( IndexType begin, IndexType end )
 {
    if( end == 0 )
       end = this->getSize();
-   Algorithms::VectorOperations< Device >::template prefixSum< Type >( *this, begin, end );
+   Algorithms::PrefixSum< DeviceType, Type >::perform( *this, begin, end, std::plus<>{}, (RealType) 0.0 );
 }
 
 template< typename Real,
@@ -141,7 +139,7 @@ segmentedPrefixSum( FlagsArray& flags, IndexType begin, IndexType end )
 {
    if( end == 0 )
       end = this->getSize();
-   Algorithms::VectorOperations< Device >::template segmentedPrefixSum< Type >( *this, flags, begin, end );
+   Algorithms::SegmentedPrefixSum< DeviceType, Type >::perform( *this, flags, begin, end, std::plus<>{}, (RealType) 0.0 );
 }
 
 template< typename Real,

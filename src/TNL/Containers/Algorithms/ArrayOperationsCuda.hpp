@@ -19,7 +19,6 @@
 #include <TNL/Exceptions/CudaSupportMissing.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Algorithms/Reduction.h>
-#include <TNL/Containers/Algorithms/ReductionOperations.h>
 
 namespace TNL {
 namespace Containers {
@@ -133,10 +132,8 @@ compare( const Element1* destination,
    TNL_ASSERT_TRUE( destination, "Attempted to compare data through a nullptr." );
    TNL_ASSERT_TRUE( source, "Attempted to compare data through a nullptr." );
 
-   auto fetch = [=] __cuda_callable__ ( Index i ) -> bool { return  ( destination[ i ] == source[ i ] ); };
-   auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
-   auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
-   return Reduction< Devices::Cuda >::reduce( size, reduction, volatileReduction, fetch, true );
+   auto fetch = [=] __cuda_callable__ ( Index i ) -> bool { return destination[ i ] == source[ i ]; };
+   return Reduction< Devices::Cuda >::reduce( size, std::logical_and<>{}, fetch, true );
 }
 
 template< typename Element,
@@ -151,10 +148,8 @@ containsValue( const Element* data,
    TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
    TNL_ASSERT_GE( size, (Index) 0, "" );
 
-   auto fetch = [=] __cuda_callable__ ( Index i ) -> bool { return  ( data[ i ] == value ); };
-   auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a |= b; };
-   auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a |= b; };
-   return Reduction< Devices::Cuda >::reduce( size, reduction, volatileReduction, fetch, false );
+   auto fetch = [=] __cuda_callable__ ( Index i ) -> bool { return data[ i ] == value; };
+   return Reduction< Devices::Cuda >::reduce( size, std::logical_or<>{}, fetch, false );
 }
 
 template< typename Element,
@@ -169,10 +164,8 @@ containsOnlyValue( const Element* data,
    TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
    TNL_ASSERT_GE( size, 0, "" );
 
-   auto fetch = [=] __cuda_callable__ ( Index i ) -> bool { return  ( data[ i ] == value ); };
-   auto reduction = [=] __cuda_callable__ ( bool& a, const bool& b ) { a &= b; };
-   auto volatileReduction = [=] __cuda_callable__ ( volatile bool& a, volatile bool& b ) { a &= b; };
-   return Reduction< Devices::Cuda >::reduce( size, reduction, volatileReduction, fetch, true );
+   auto fetch = [=] __cuda_callable__ ( Index i ) -> bool { return data[ i ] == value; };
+   return Reduction< Devices::Cuda >::reduce( size, std::logical_and<>{}, fetch, true );
 }
 
 

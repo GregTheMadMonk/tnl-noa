@@ -17,7 +17,6 @@
 #include "Logging.h"
 
 #include <iostream>
-#include <iomanip>
 #include <exception>
 #include <limits>
 
@@ -35,24 +34,24 @@ namespace Benchmarks {
 const double oneGB = 1024.0 * 1024.0 * 1024.0;
 
 
-
 struct BenchmarkResult
 {
    using HeaderElements = Logging::HeaderElements;
    using RowElements = Logging::RowElements;
 
-   double bandwidth = std::numeric_limits<double>::quiet_NaN();
    double time = std::numeric_limits<double>::quiet_NaN();
+   double stddev = std::numeric_limits<double>::quiet_NaN();
+   double bandwidth = std::numeric_limits<double>::quiet_NaN();
    double speedup = std::numeric_limits<double>::quiet_NaN();
 
    virtual HeaderElements getTableHeader() const
    {
-      return HeaderElements({"bandwidth", "time", "speedup"});
+      return HeaderElements({ "time", "stddev", "stddev/time", "bandwidth", "speedup" });
    }
 
    virtual RowElements getRowElements() const
    {
-      return RowElements({ bandwidth, time, speedup });
+      return RowElements({ time, stddev, stddev / time, bandwidth, speedup });
    }
 };
 
@@ -65,18 +64,17 @@ public:
    using Logging::MetadataMap;
    using Logging::MetadataColumns;
    using SolverMonitorType = Solvers::IterativeSolverMonitor< double, int >;
-   
+
    Benchmark( int loops = 10,
               bool verbose = true )
    : Logging(verbose), loops(loops)
    {}
-   
+
    static void configSetup( Config::ConfigDescription& config )
    {
       config.addEntry< int >( "loops", "Number of iterations for every computation.", 10 );
       config.addEntry< bool >( "reset", "Call reset function between loops.", true );
       config.addEntry< double >( "min-time", "Minimal real time in seconds for every computation.", 0.0 );
-      config.addEntry< bool >( "timing", "Turns off (or on) the timing (for the purpose of profiling).", true );
       config.addEntry< int >( "verbose", "Verbose mode, the higher number the more verbosity.", 1 );
    }
 
@@ -85,7 +83,6 @@ public:
       this->loops = parameters.getParameter< int >( "loops" );
       this->reset = parameters.getParameter< bool >( "reset" );
       this->minTime = parameters.getParameter< double >( "min-time" );
-      this->timing = parameters.getParameter< bool >( "timing" );
       const int verbose = parameters.getParameter< int >( "verbose" );
       Logging::setVerbose( verbose );
    }
@@ -96,7 +93,7 @@ public:
    {
       this->loops = loops;
    }
-   
+
    void setMinTime( const double& minTime )
    {
       this->minTime = minTime;
@@ -121,7 +118,6 @@ public:
       metadata["loops"] = convertToString(loops);
       metadata["reset"] = convertToString( reset );
       metadata["minimal test time"] = convertToString( minTime );
-      metadata["timing"] = convertToString( timing );
       writeMetadata( metadata );
    }
 
@@ -203,33 +199,22 @@ public:
          BenchmarkResult & result )
    {
       result.time = std::numeric_limits<double>::quiet_NaN();
+      result.stddev = std::numeric_limits<double>::quiet_NaN();
       FunctionTimer< Device > functionTimer;
       try {
          if( verbose > 1 ) {
             // run the monitor main loop
             Solvers::SolverMonitorThread monitor_thread( monitor );
-            if( this->timing )
-               if( this->reset )
-                  result.time = functionTimer. template timeFunction< true >( compute, reset, loops, minTime, verbose, monitor );
-               else
-                  result.time = functionTimer. template timeFunction< true >( compute, loops, minTime, verbose, monitor );
+            if( this->reset )
+               std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, reset, loops, minTime, verbose, monitor );
             else
-               if( this->reset )
-                  result.time = functionTimer. template timeFunction< false >( compute, reset, loops, minTime, verbose, monitor );
-               else
-                  result.time = functionTimer. template timeFunction< false >( compute, loops, minTime, verbose, monitor );
+               std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, loops, minTime, verbose, monitor );
          }
          else {
-            if( this->timing )
-               if( this->reset )
-                  result.time = functionTimer. template timeFunction< true >( compute, reset, loops, minTime, verbose, monitor );
-               else
-                  result.time = functionTimer. template timeFunction< true >( compute, loops, minTime, verbose, monitor );
+            if( this->reset )
+               std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, reset, loops, minTime, verbose, monitor );
             else
-               if( this->reset )
-                  result.time = functionTimer. template timeFunction< false >( compute, reset, loops, minTime, verbose, monitor );
-               else
-                  result.time = functionTimer. template timeFunction< false >( compute, loops, minTime, verbose, monitor );
+               std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, loops, minTime, verbose, monitor );
          }
          this->performedLoops = functionTimer.getPerformedLoops();
       }
@@ -248,7 +233,7 @@ public:
       return this->baseTime;
    }
 
-   template< typename Device, 
+   template< typename Device,
              typename ResetFunction,
              typename ComputeFunction,
              typename... NextComputations >
@@ -272,21 +257,16 @@ public:
          BenchmarkResult & result )
    {
       result.time = std::numeric_limits<double>::quiet_NaN();
+      result.stddev = std::numeric_limits<double>::quiet_NaN();
       FunctionTimer< Device > functionTimer;
       try {
          if( verbose > 1 ) {
             // run the monitor main loop
             Solvers::SolverMonitorThread monitor_thread( monitor );
-            if( this->timing )
-               result.time = functionTimer. template timeFunction< true >( compute, loops, minTime, verbose, monitor );
-            else
-               result.time = functionTimer. template timeFunction< false >( compute, loops, minTime, verbose, monitor );
+            std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, loops, minTime, verbose, monitor );
          }
          else {
-            if( this->timing )
-               result.time = functionTimer. template timeFunction< true >( compute, loops, minTime, verbose, monitor );
-            else
-               result.time = functionTimer. template timeFunction< false >( compute, loops, minTime, verbose, monitor );
+            std::tie( result.time, result.stddev ) = functionTimer.timeFunction( compute, loops, minTime, verbose, monitor );
          }
       }
       catch ( const std::exception& e ) {
@@ -304,7 +284,7 @@ public:
       return this->baseTime;
    }
 
-   template< typename Device, 
+   template< typename Device,
              typename ComputeFunction,
              typename... NextComputations >
    inline double
@@ -345,7 +325,6 @@ protected:
    double minTime = 0.0;
    double datasetSize = 0.0;
    double baseTime = 0.0;
-   bool timing = true;
    bool reset = true;
    SolverMonitorType monitor;
 };

@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include <TNL/Containers/Algorithms/PrefixSumType.h>
-
 namespace TNL {
 namespace Benchmarks {
 

@@ -12,66 +12,78 @@
 
 #pragma once
 
+#include <functional>  // reduction functions like std::plus, std::logical_and, std::logical_or etc.
+
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
-#include <TNL/Devices/MIC.h>
 
 namespace TNL {
 namespace Containers {
 namespace Algorithms {
 
 template< typename Device >
-class Multireduction
+struct Multireduction;
+
+template<>
+struct Multireduction< Devices::Host >
 {
+   /**
+    * Parameters:
+    *    zero: starting value for reduction
+    *    dataFetcher: callable object such that `dataFetcher( i, j )` yields
+    *                 the i-th value to be reduced from the j-th dataset
+    *                 (i = 0,...,size-1; j = 0,...,n-1)
+    *    reduction: callable object representing the reduction operation
+    *               for example, it can be an instance of std::plus, std::logical_and,
+    *               std::logical_or etc.
+    *    size: the size of each dataset
+    *    n: number of datasets to be reduced
+    *    result: output array of size = n
+    */
+   template< typename Result,
+             typename DataFetcher,
+             typename Reduction,
+             typename Index >
+   static void
+   reduce( const Result zero,
+           DataFetcher dataFetcher,
+           const Reduction reduction,
+           const Index size,
+           const int n,
+           Result* result );
 };
 
 template<>
-class Multireduction< Devices::Cuda >
+struct Multireduction< Devices::Cuda >
 {
-public:
-   template< typename Operation, typename Index >
+   /**
+    * Parameters:
+    *    zero: starting value for reduction
+    *    dataFetcher: callable object such that `dataFetcher( i, j )` yields
+    *                 the i-th value to be reduced from the j-th dataset
+    *                 (i = 0,...,size-1; j = 0,...,n-1)
+    *    reduction: callable object representing the reduction operation
+    *               for example, it can be an instance of std::plus, std::logical_and,
+    *               std::logical_or etc.
+    *    size: the size of each dataset
+    *    n: number of datasets to be reduced
+    *    hostResult: output array of size = n
+    */
+   template< typename Result,
+             typename DataFetcher,
+             typename Reduction,
+             typename Index >
    static void
-   reduce( Operation& operation,
-           const int n,
+   reduce( const Result zero,
+           DataFetcher dataFetcher,
+           const Reduction reduction,
            const Index size,
-           const typename Operation::DataType1* deviceInput1,
-           const Index ldInput1,
-           const typename Operation::DataType2* deviceInput2,
-           typename Operation::ResultType* hostResult );
-};
-
-template<>
-class Multireduction< Devices::Host >
-{
-public:
-   template< typename Operation, typename Index >
-   static void
-   reduce( Operation& operation,
            const int n,
-           const Index size,
-           const typename Operation::DataType1* deviceInput1,
-           const Index ldInput1,
-           const typename Operation::DataType2* deviceInput2,
-           typename Operation::ResultType* hostResult );
-};
-
-template<>
-class Multireduction< Devices::MIC >
-{
-public:
-   template< typename Operation, typename Index >
-   static void
-   reduce( Operation& operation,
-           const int n,
-           const Index size,
-           const typename Operation::DataType1* deviceInput1,
-           const Index ldInput1,
-           const typename Operation::DataType2* deviceInput2,
-           typename Operation::ResultType* hostResult );
+           Result* hostResult );
 };
 
 } // namespace Algorithms
 } // namespace Containers
 } // namespace TNL
 
-#include "Multireduction_impl.h"
+#include "Multireduction.hpp"

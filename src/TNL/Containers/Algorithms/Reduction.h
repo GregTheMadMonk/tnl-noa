@@ -13,103 +13,64 @@
 #pragma once
 
 #include <utility>  // std::pair
+#include <functional>  // reduction functions like std::plus, std::logical_and, std::logical_or etc.
 
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
-#include <TNL/Devices/MIC.h>
 
 namespace TNL {
 namespace Containers {
 namespace Algorithms {
 
 template< typename Device >
-class Reduction;
+struct Reduction;
 
 template<>
-class Reduction< Devices::Host >
+struct Reduction< Devices::Host >
 {
-   public:
-      template< typename Index,
-                typename Result,
-                typename ReductionOperation,
-                typename VolatileReductionOperation,
-                typename DataFetcher >
-      static Result
-      reduce( const Index size,
-              ReductionOperation& reduction,
-              VolatileReductionOperation& volatileReduction,
-              DataFetcher& dataFetcher,
-              const Result& zero );
+   template< typename Index,
+             typename Result,
+             typename ReductionOperation,
+             typename DataFetcher >
+   static Result
+   reduce( const Index size,
+           const ReductionOperation& reduction,
+           DataFetcher& dataFetcher,
+           const Result& zero );
 
-      template< typename Index,
-                typename Result,
-                typename ReductionOperation,
-                typename VolatileReductionOperation,
-                typename DataFetcher >
-      static std::pair< Index, Result >
-      reduceWithArgument( const Index size,
-                          ReductionOperation& reduction,
-                          VolatileReductionOperation& volatileReduction,
-                          DataFetcher& dataFetcher,
-                          const Result& zero );
+   template< typename Index,
+             typename Result,
+             typename ReductionOperation,
+             typename DataFetcher >
+   static std::pair< Index, Result >
+   reduceWithArgument( const Index size,
+                       const ReductionOperation& reduction,
+                       DataFetcher& dataFetcher,
+                       const Result& zero );
 };
 
 template<>
-class Reduction< Devices::Cuda >
+struct Reduction< Devices::Cuda >
 {
-   public:
-      template< typename Index,
-                typename Result,
-                typename ReductionOperation,
-                typename VolatileReductionOperation,
-                typename DataFetcher >
-      static Result
-      reduce( const Index size,
-              ReductionOperation& reduction,
-              VolatileReductionOperation& volatileReduction,
-              DataFetcher& dataFetcher,
-              const Result& zero );
+   template< typename Index,
+             typename Result,
+             typename ReductionOperation,
+             typename DataFetcher >
+   static Result
+   reduce( const Index size,
+           const ReductionOperation& reduction,
+           DataFetcher& dataFetcher,
+           const Result& zero );
 
-      template< typename Index,
-                typename Result,
-                typename ReductionOperation,
-                typename VolatileReductionOperation,
-                typename DataFetcher >
-      static std::pair< Index, Result >
-      reduceWithArgument( const Index size,
-                          ReductionOperation& reduction,
-                          VolatileReductionOperation& volatileReduction,
-                          DataFetcher& dataFetcher,
-                          const Result& zero );
-};
-
-template<>
-class Reduction< Devices::MIC >
-{
-   public:
-      template< typename Index,
-                typename Result,
-                typename ReductionOperation,
-                typename VolatileReductionOperation,
-                typename DataFetcher >
-      static Result
-      reduce( const Index size,
-              ReductionOperation& reduction,
-              VolatileReductionOperation& volatileReduction,
-              DataFetcher& dataFetcher,
-              const Result& zero );
-
-     template< typename Index,
-                typename Result,
-                typename ReductionOperation,
-                typename VolatileReductionOperation,
-                typename DataFetcher >
-      static std::pair< Index, Result >
-      reduceWithArgument( const Index size,
-                          ReductionOperation& reduction,
-                          VolatileReductionOperation& volatileReduction,
-                          DataFetcher& dataFetcher,
-                          const Result& zero );
+   template< typename Index,
+             typename Result,
+             typename ReductionOperation,
+             typename DataFetcher >
+   static std::pair< Index, Result >
+   reduceWithArgument( const Index size,
+                       const ReductionOperation& reduction,
+                       DataFetcher& dataFetcher,
+                       const Result& zero );
 };
 
 } // namespace Algorithms

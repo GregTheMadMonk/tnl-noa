@@ -15,7 +15,6 @@
 #include <type_traits>
 #include <cmath>
 
-#include <TNL/Exceptions/CudaSupportMissing.h>
 #include <TNL/Containers/Algorithms/Multireduction.h>
 #include <TNL/Matrices/MatrixOperations.h>
 
@@ -427,14 +426,25 @@ hauseholder_generate( const int i,
    if( i > 0 ) {
       // aux = Y_{i-1}^T * y_i
       RealType aux[ i ];
-      Containers::Algorithms::ParallelReductionScalarProduct< RealType, RealType > scalarProduct;
+//      Containers::Algorithms::ParallelReductionScalarProduct< RealType, RealType > scalarProduct;
+//      Containers::Algorithms::Multireduction< DeviceType >::reduce
+//               ( scalarProduct,
+//                 i,
+//                 size,
+//                 Y.getData(),
+//                 ldSize,
+//                 Traits::getConstLocalView( y_i ).getData(),
+//                 aux );
+      const RealType* _Y = Y.getData();
+      const RealType* _y_i = Traits::getConstLocalView( y_i ).getData();
+      const IndexType ldSize = this->ldSize;
+      auto fetch = [_Y, _y_i, ldSize] __cuda_callable__ ( IndexType idx, int k ) { return _Y[ idx + k * ldSize ] * _y_i[ idx ]; };
       Containers::Algorithms::Multireduction< DeviceType >::reduce
-               ( scalarProduct,
-                 i,
+               ( (RealType) 0,
+                 fetch,
+                 std::plus<>{},
                  size,
-                 Y.getData(),
-                 ldSize,
-                 Traits::getLocalView( y_i ).getData(),
+                 i,
                  aux );
       // no-op if the problem is not distributed
       CommunicatorType::Allreduce( aux, i, MPI_SUM, Traits::getCommunicationGroup( *this->matrix ) );
@@ -525,14 +535,25 @@ hauseholder_cwy_transposed( VectorViewType z,
 {
    // aux = Y_i^T * w
    RealType aux[ i + 1 ];
-   Containers::Algorithms::ParallelReductionScalarProduct< RealType, RealType > scalarProduct;
+//   Containers::Algorithms::ParallelReductionScalarProduct< RealType, RealType > scalarProduct;
+//   Containers::Algorithms::Multireduction< DeviceType >::reduce
+//            ( scalarProduct,
+//              i + 1,
+//              size,
+//              Y.getData(),
+//              ldSize,
+//              Traits::getConstLocalView( w ).getData(),
+//              aux );
+   const RealType* _Y = Y.getData();
+   const RealType* _w = Traits::getConstLocalView( w ).getData();
+   const IndexType ldSize = this->ldSize;
+   auto fetch = [_Y, _w, ldSize] __cuda_callable__ ( IndexType idx, int k ) { return _Y[ idx + k * ldSize ] * _w[ idx ]; };
    Containers::Algorithms::Multireduction< DeviceType >::reduce
-            ( scalarProduct,
-              i + 1,
+            ( (RealType) 0,
+              fetch,
+              std::plus<>{},
               size,
-              Y.getData(),
-              ldSize,
-              Traits::getConstLocalView( w ).getData(),
+              i + 1,
               aux );
    // no-op if the problem is not distributed
    Traits::CommunicatorType::Allreduce( aux, i + 1, MPI_SUM, Traits::getCommunicationGroup( *this->matrix ) );

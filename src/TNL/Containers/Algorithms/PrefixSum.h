@@ -14,91 +14,120 @@
 
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
-#include <TNL/Devices/MIC.h>
-#include <TNL/Containers/Algorithms/PrefixSumType.h>
 
 namespace TNL {
 namespace Containers {
 namespace Algorithms {
 
+enum class PrefixSumType {
+   Exclusive,
+   Inclusive
+};
+
 template< typename Device,
            PrefixSumType Type = PrefixSumType::Inclusive >
-class PrefixSum {};
+struct PrefixSum;
 
 template< typename Device,
            PrefixSumType Type = PrefixSumType::Inclusive >
-class SegmentedPrefixSum {};
+struct SegmentedPrefixSum;
 
 
 template< PrefixSumType Type >
-class PrefixSum< Devices::Host, Type >
+struct PrefixSum< Devices::Host, Type >
 {
-   public:
-      template< typename Vector,
-                typename PrefixSumOperation,
-                typename VolatilePrefixSumOperation >
-      static void
-      perform( Vector& v,
-               const typename Vector::IndexType begin,
-               const typename Vector::IndexType end,
-               PrefixSumOperation& reduction,
-               VolatilePrefixSumOperation& volatilePrefixSum,
-               const typename Vector::RealType& zero );
+   template< typename Vector,
+             typename Reduction >
+   static void
+   perform( Vector& v,
+            const typename Vector::IndexType begin,
+            const typename Vector::IndexType end,
+            const Reduction& reduction,
+            const typename Vector::RealType zero );
+
+   template< typename Vector,
+             typename Reduction >
+   static auto
+   performFirstPhase( Vector& v,
+                      const typename Vector::IndexType begin,
+                      const typename Vector::IndexType end,
+                      const Reduction& reduction,
+                      const typename Vector::RealType zero );
+
+   template< typename Vector,
+             typename BlockShifts,
+             typename Reduction >
+   static void
+   performSecondPhase( Vector& v,
+                       const BlockShifts& blockShifts,
+                       const typename Vector::IndexType begin,
+                       const typename Vector::IndexType end,
+                       const Reduction& reduction,
+                       const typename Vector::RealType shift );
 };
 
 template< PrefixSumType Type >
-class PrefixSum< Devices::Cuda, Type >
+struct PrefixSum< Devices::Cuda, Type >
 {
-   public:
-      template< typename Vector,
-                typename PrefixSumOperation,
-                typename VolatilePrefixSumOperation >
-      static void
-      perform( Vector& v,
-               const typename Vector::IndexType begin,
-               const typename Vector::IndexType end,
-               PrefixSumOperation& reduction,
-               VolatilePrefixSumOperation& volatilePrefixSum,
-               const typename Vector::RealType& zero );
+   template< typename Vector,
+             typename Reduction >
+   static void
+   perform( Vector& v,
+            const typename Vector::IndexType begin,
+            const typename Vector::IndexType end,
+            const Reduction& reduction,
+            const typename Vector::RealType zero );
+
+   template< typename Vector,
+             typename Reduction >
+   static auto
+   performFirstPhase( Vector& v,
+                      const typename Vector::IndexType begin,
+                      const typename Vector::IndexType end,
+                      const Reduction& reduction,
+                      const typename Vector::RealType zero );
+
+   template< typename Vector,
+             typename BlockShifts,
+             typename Reduction >
+   static void
+   performSecondPhase( Vector& v,
+                       const BlockShifts& blockShifts,
+                       const typename Vector::IndexType begin,
+                       const typename Vector::IndexType end,
+                       const Reduction& reduction,
+                       const typename Vector::RealType shift );
 };
 
 template< PrefixSumType Type >
-class SegmentedPrefixSum< Devices::Host, Type >
+struct SegmentedPrefixSum< Devices::Host, Type >
 {
-   public:
-      template< typename Vector,
-                typename PrefixSumOperation,
-                typename VolatilePrefixSumOperation,
-                typename Flags >
-      static void
-      perform( Vector& v,
-               Flags& flags,
-               const typename Vector::IndexType begin,
-               const typename Vector::IndexType end,
-               PrefixSumOperation& reduction,
-               VolatilePrefixSumOperation& volatilePrefixSum,
-               const typename Vector::RealType& zero );
+   template< typename Vector,
+             typename Reduction,
+             typename Flags >
+   static void
+   perform( Vector& v,
+            Flags& flags,
+            const typename Vector::IndexType begin,
+            const typename Vector::IndexType end,
+            const Reduction& reduction,
+            const typename Vector::RealType zero );
 };
 
 template< PrefixSumType Type >
-class SegmentedPrefixSum< Devices::Cuda, Type >
+struct SegmentedPrefixSum< Devices::Cuda, Type >
 {
-   public:
-      template< typename Vector,
-                typename PrefixSumOperation,
-                typename VolatilePrefixSumOperation,
-                typename Flags >
-      static void
-      perform( Vector& v,
-               Flags& flags,
-               const typename Vector::IndexType begin,
-               const typename Vector::IndexType end,
-               PrefixSumOperation& reduction,
-               VolatilePrefixSumOperation& volatilePrefixSum,
-               const typename Vector::RealType& zero );
+   template< typename Vector,
+             typename Reduction,
+             typename Flags >
+   static void
+   perform( Vector& v,
+            Flags& flags,
+            const typename Vector::IndexType begin,
+            const typename Vector::IndexType end,
+            const Reduction& reduction,
+            const typename Vector::RealType zero );
 };
-
-
 
 } // namespace Algorithms
 } // namespace Containers

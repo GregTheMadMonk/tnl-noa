@@ -13,8 +13,7 @@
 #pragma once
 
 #include "DistributedVector.h"
-#include <TNL/Containers/Algorithms/ReductionOperations.h>
-#include <TNL/Exceptions/NotImplementedError.h>
+#include <TNL/Containers/Algorithms/DistributedPrefixSum.h>
 
 namespace TNL {
 namespace Containers {
@@ -299,44 +298,14 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Communicator >
+   template< Algorithms::PrefixSumType Type >
 void
 DistributedVector< Real, Device, Index, Communicator >::
-computePrefixSum()
+prefixSum( IndexType begin, IndexType end )
 {
-   throw Exceptions::NotImplementedError("Distributed prefix sum is not implemented yet.");
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Communicator >
-void
-DistributedVector< Real, Device, Index, Communicator >::
-computePrefixSum( IndexType begin, IndexType end )
-{
-   throw Exceptions::NotImplementedError("Distributed prefix sum is not implemented yet.");
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Communicator >
-void
-DistributedVector< Real, Device, Index, Communicator >::
-computeExclusivePrefixSum()
-{
-   throw Exceptions::NotImplementedError("Distributed prefix sum is not implemented yet.");
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Communicator >
-void
-DistributedVector< Real, Device, Index, Communicator >::
-computeExclusivePrefixSum( IndexType begin, IndexType end )
-{
-   throw Exceptions::NotImplementedError("Distributed prefix sum is not implemented yet.");
+   if( end == 0 )
+      end = this->getSize();
+   Algorithms::DistributedPrefixSum< Type >::perform( *this, begin, end, std::plus<>{}, (RealType) 0.0 );
 }
 
 } // namespace Containers

@@ -346,7 +346,6 @@ benchmarkVectorOperations( Benchmark & benchmark,
    auto l3normCudaET = [&]() {
       resultDevice = lpNorm( deviceView, 3.0 );
    };
-
    benchmark.setOperation( "l3 norm", datasetSize );
    benchmark.time< Devices::Host >( reset1, "CPU legacy", l3normHost );
    benchmark.time< Devices::Host >( reset1, "CPU ET", l3normHostET );
@@ -369,7 +368,6 @@ benchmarkVectorOperations( Benchmark & benchmark,
    auto scalarProductCudaET = [&]() {
       resultDevice = ( deviceView, deviceView2 );
    };
-
 #ifdef HAVE_BLAS
    auto scalarProductBlas = [&]() {
       resultHost = blasGdot( size, hostVector.getData(), 1, hostVector2.getData(), 1 );
@@ -396,38 +394,6 @@ benchmarkVectorOperations( Benchmark & benchmark,
 #endif
 
    ////
-   // Prefix sum
-   /*
-   std::cout << "Benchmarking prefix-sum:" << std::endl;
-   timer.reset();
-   timer.start();
-   hostVector.computePrefixSum();
-   timer.stop();
-   timeHost = timer.getTime();
-   bandwidth = 2 * datasetSize / timer.getTime();
-   std::cout << "  CPU: bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << std::endl;
-
-   timer.reset();
-   timer.start();
-   deviceVector.computePrefixSum();
-   timer.stop();
-   timeDevice = timer.getTime();
-   bandwidth = 2 * datasetSize / timer.getTime();
-   std::cout << "  GPU: bandwidth: " << bandwidth << " GB/sec, time: " << timer.getTime() << " sec." << std::endl;
-   std::cout << "  CPU/GPU speedup: " << timeHost / timeDevice << std::endl;
-
-   HostVector auxHostVector;
-   auxHostVector.setLike( deviceVector );
-   auxHostVector = deviceVector;
-   for( int i = 0; i < size; i++ )
-      if( hostVector.getElement( i ) != auxHostVector.getElement( i ) )
-      {
-         std::cerr << "Error in prefix sum at position " << i << ":  " << hostVector.getElement( i ) << " != " << auxHostVector.getElement( i ) << std::endl;
-      }
-   */
-
-
-   ////
    // Scalar multiplication
    auto multiplyHost = [&]() {
       hostVector *= 0.5;
@@ -435,6 +401,11 @@ benchmarkVectorOperations( Benchmark & benchmark,
    auto multiplyCuda = [&]() {
       deviceVector *= 0.5;
    };
+#ifdef HAVE_BLAS
+   auto multiplyBlas = [&]() {
+      blasGscal( hostVector.getSize(), (Real) 0.5, hostVector.getData(), 1 );
+   };
+#endif
 #ifdef HAVE_CUDA
    auto multiplyCublas = [&]() {
       const Real alpha = 0.5;
@@ -445,6 +416,9 @@ benchmarkVectorOperations( Benchmark & benchmark,
 #endif
    benchmark.setOperation( "scalar multiplication", 2 * datasetSize );
    benchmark.time< Devices::Host >( reset1, "CPU ET", multiplyHost );
+#ifdef HAVE_BLAS
+   benchmark.time< Devices::Host >( reset1, "CPU BLAS", multiplyBlas );
+#endif
 #ifdef HAVE_CUDA
    benchmark.time< Devices::Cuda >( reset1, "GPU ET", multiplyCuda );
    benchmark.time< Devices::Cuda >( reset1, "cuBLAS", multiplyCublas );
@@ -604,6 +578,34 @@ benchmarkVectorOperations( Benchmark & benchmark,
    benchmark.time< Devices::Cuda >( resetAll, "GPU legacy", addThreeVectorsCuda );
    benchmark.time< Devices::Cuda >( resetAll, "GPU ET", addThreeVectorsCudaET );
    benchmark.time< Devices::Cuda >( resetAll, "cuBLAS", addThreeVectorsCublas );
+#endif
+
+   ////
+   // Inclusive prefix sum
+   auto inclusivePrefixSumHost = [&]() {
+      hostVector.prefixSum();
+   };
+   auto inclusivePrefixSumCuda = [&]() {
+      deviceVector.prefixSum();
+   };
+   benchmark.setOperation( "inclusive prefix sum", 2 * datasetSize );
+   benchmark.time< Devices::Host >( reset1, "CPU ET", inclusivePrefixSumHost );
+#ifdef HAVE_CUDA
+   benchmark.time< Devices::Cuda >( reset1, "GPU ET", inclusivePrefixSumCuda );
+#endif
+
+   ////
+   // Exclusive prefix sum
+   auto exclusivePrefixSumHost = [&]() {
+      hostVector.template prefixSum< Containers::Algorithms::PrefixSumType::Exclusive >();
+   };
+   auto exclusivePrefixSumCuda = [&]() {
+      deviceVector.template prefixSum< Containers::Algorithms::PrefixSumType::Exclusive >();
+   };
+   benchmark.setOperation( "exclusive prefix sum", 2 * datasetSize );
+   benchmark.time< Devices::Host >( reset1, "CPU ET", exclusivePrefixSumHost );
+#ifdef HAVE_CUDA
+   benchmark.time< Devices::Cuda >( reset1, "GPU ET", exclusivePrefixSumCuda );
 #endif
 
 #ifdef HAVE_CUDA

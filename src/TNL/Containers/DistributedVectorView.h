@@ -127,13 +127,8 @@ public:
              typename = std::enable_if_t< HasSubscriptOperator<Vector>::value > >
    DistributedVectorView& operator/=( const Vector& vector );
 
-   void computePrefixSum();
-
-   void computePrefixSum( IndexType begin, IndexType end );
-
-   void computeExclusivePrefixSum();
-
-   void computeExclusivePrefixSum( IndexType begin, IndexType end );
+   template< Algorithms::PrefixSumType Type = Algorithms::PrefixSumType::Inclusive >
+   void prefixSum( IndexType begin = 0, IndexType end = 0 );
 };
 
 } // namespace Containers
