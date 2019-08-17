@@ -48,7 +48,6 @@ do
         --offline-build                  ) OFFLINE_BUILD="yes" ;;
         --with-clang=*                   ) WITH_CLANG="${option#*=}" ;;
         --with-mpi=*                     ) WITH_MPI="${option#*=}" ;;
-        --with-mic=*                     ) WITH_MIC="${option#*=}" ;;
         --with-cuda=*                    ) WITH_CUDA="${option#*=}" ;;
         --with-cuda-arch=*               ) WITH_CUDA_ARCH="${option#*=}";;
         --with-openmp=*                  ) WITH_OPENMP="${option#*=}" ;;
@@ -78,7 +77,6 @@ if [[ ${HELP} == "yes" ]]; then
     echo "   --install=yes/no                      Enables the installation of TNL files."
     echo "   --offline-build=yes/no                Disables online updates during the build. 'no' by default."
     echo "   --with-mpi=yes/no                     Enables MPI. 'yes' by default (OpenMPI required)."
-    echo "   --with-mic=yes/no                     Enables MIC (Intel Xeon Phi). 'no' by default (Intel Compiler required)."
     echo "   --with-cuda=yes/no                    Enables CUDA. 'yes' by default (CUDA Toolkit is required)."
     echo "   --with-cuda-arch=all/auto/3.0/3.5/... Chooses CUDA architecture. 'auto' by default."
     echo "   --with-openmp=yes/no                  Enables OpenMP. 'yes' by default."
@@ -126,7 +124,6 @@ cmake_command=(
          -DCMAKE_BUILD_TYPE=${BUILD}
          -DCMAKE_INSTALL_PREFIX=${PREFIX}
          -DOFFLINE_BUILD=${OFFLINE_BUILD}
-         -DWITH_MIC=${WITH_MIC}
          -DWITH_CUDA=${WITH_CUDA}
          -DWITH_CUDA_ARCH=${WITH_CUDA_ARCH}
          -DWITH_OPENMP=${WITH_OPENMP}

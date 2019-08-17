@@ -18,7 +18,6 @@
 #include <TNL/File.h>
 #include <TNL/Assert.h>
 #include <TNL/Exceptions/CudaSupportMissing.h>
-#include <TNL/Exceptions/MICSupportMissing.h>
 #include <TNL/Exceptions/FileSerializationError.h>
 #include <TNL/Exceptions/FileDeserializationError.h>
 #include <TNL/Exceptions/NotImplementedError.h>
@@ -168,48 +167,6 @@ void File::load_impl( Type* buffer, std::streamsize elements )
 #endif
 }
 
-// MIC
-template< typename Type,
-          typename SourceType,
-          typename Device,
-          typename, typename, typename >
-void File::load_impl( Type* buffer, std::streamsize elements )
-{
-#ifdef HAVE_MIC
-   const std::streamsize host_buffer_size = std::min( TransferBufferSize / (std::streamsize) sizeof(Type), elements );
-   using BaseType = typename std::remove_cv< Type >::type;
-   std::unique_ptr< BaseType[] > host_buffer{ new BaseType[ host_buffer_size ] };
-
-   std::streamsize readElements = 0;
-   if( std::is_same< Type, SourceType >::value )
-   {
-      while( readElements < elements )
-      {
-         const std::streamsize transfer = std::min( elements - readElements, host_buffer_size );
-         file.read( reinterpret_cast<char*>(host_buffer.get()), sizeof(Type) * transfer );
-
-         Devices::MICHider<Type> device_buff;
-         device_buff.pointer=buffer;
-         #pragma offload target(mic) in(device_buff,readElements) in(host_buffer:length(transfer))
-         {
-            /*
-            for(int i=0;i<transfer;i++)
-                 device_buff.pointer[readElements+i]=host_buffer[i];
-             */
-            memcpy(&(device_buff.pointer[readElements]), host_buffer.get(), transfer*sizeof(Type) );
-         }
-
-         readElements += transfer;
-      }
-      free( host_buffer );
-   }
-   else
-      throw Exceptions::NotImplementedError("Type conversion during loading is not implemented for MIC.");
-#else
-   throw Exceptions::MICSupportMissing();
-#endif
-}
-
 template< typename Type,
           typename TargetType,
           typename Device >
@@ -300,48 +257,6 @@ void File::save_impl( const Type* buffer, std::streamsize elements )
    }
 #else
    throw Exceptions::CudaSupportMissing();
-#endif
-}
-
-// MIC
-template< typename Type,
-          typename TargetType,
-          typename Device,
-          typename, typename, typename >
-void File::save_impl( const Type* buffer, std::streamsize elements )
-{
-#ifdef HAVE_MIC
-   const std::streamsize host_buffer_size = std::min( TransferBufferSize / (std::streamsize) sizeof(Type), elements );
-   using BaseType = typename std::remove_cv< Type >::type;
-   std::unique_ptr< BaseType[] > host_buffer{ new BaseType[ host_buffer_size ] };
-
-   std::streamsize writtenElements = 0;
-   if( std::is_same< Type, TargetType >::value )
-   {
-      while( this->writtenElements < elements )
-      {
-         const std::streamsize transfer = std::min( elements - writtenElements, host_buffer_size );
-
-         Devices::MICHider<const Type> device_buff;
-         device_buff.pointer=buffer;
-         #pragma offload target(mic) in(device_buff,writtenElements) out(host_buffer:length(transfer))
-         {
-            //THIS SHOULD WORK... BUT NOT WHY?
-            /*for(int i=0;i<transfer;i++)
-                 host_buffer[i]=device_buff.pointer[writtenElements+i];
-             */
-
-            memcpy(host_buffer.get(), &(device_buff.pointer[writtenElements]), transfer*sizeof(Type) );
-         }
-
-         file.write( reinterpret_cast<const char*>(host_buffer.get()), sizeof(Type) * transfer );
-         writtenElements += transfer;
-      }
-   }
-   else
-      throw Exceptions::NotImplementedError("Type conversion during saving is not implemented for MIC.");
-#else
-   throw Exceptions::MICSupportMissing();
 #endif
 }
 

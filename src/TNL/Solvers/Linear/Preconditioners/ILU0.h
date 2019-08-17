@@ -199,29 +199,6 @@ public:
    }
 };
 
-template< typename Matrix, typename Real, typename Index >
-class ILU0_impl< Matrix, Real, Devices::MIC, Index >
-: public Preconditioner< Matrix >
-{
-public:
-   using RealType = Real;
-   using DeviceType = Devices::MIC;
-   using IndexType = Index;
-   using typename Preconditioner< Matrix >::VectorViewType;
-   using typename Preconditioner< Matrix >::ConstVectorViewType;
-   using typename Preconditioner< Matrix >::MatrixPointer;
-
-   virtual void update( const MatrixPointer& matrixPointer ) override
-   {
-      throw Exceptions::NotImplementedError("Not Iplemented yet for MIC");
-   }
-
-   virtual void solve( ConstVectorViewType b, VectorViewType x ) const override
-   {
-      throw Exceptions::NotImplementedError("Not Iplemented yet for MIC");
-   }
-};
-
 } // namespace Preconditioners
 } // namespace Linear
 } // namespace Solvers

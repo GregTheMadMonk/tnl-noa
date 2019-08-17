@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include <TNL/Devices/MIC.h>
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Pointers/SharedPointer.h>
 #include <TNL/CudaStreamPool.h>
@@ -488,68 +487,5 @@ processEntities(
 #endif
 }
 
-/****
- * 3D traverser, MIC
- */
-template< typename Real,
-          typename Index >
-   template<
-      typename GridEntity,
-      typename EntitiesProcessor,
-      typename UserData,
-      bool processOnlyBoundaryEntities,
-         int XOrthogonalBoundary,
-         int YOrthogonalBoundary,
-         int ZOrthogonalBoundary,
-      typename... GridEntityParameters >
-void
-GridTraverser< Meshes::Grid< 3, Real, Devices::MIC, Index > >::
-processEntities(
-   const GridPointer& gridPointer,
-   const CoordinatesType& begin,
-   const CoordinatesType& end,
-   UserData& userData,
-   GridTraverserMode mode,
-   const int& stream,
-   const GridEntityParameters&... gridEntityParameters )
-{
-    throw Exceptions::NotImplementedError("Not Implemented yet Grid Traverser <3, Real, Device::MIC>");
-    
-/* HAVE_CUDA   
-   dim3 cudaBlockSize( 8, 8, 8 );
-   dim3 cudaBlocks;
-   cudaBlocks.x = Devices::Cuda::getNumberOfBlocks( end.x() - begin.x() + 1, cudaBlockSize.x );
-   cudaBlocks.y = Devices::Cuda::getNumberOfBlocks( end.y() - begin.y() + 1, cudaBlockSize.y );
-   cudaBlocks.z = Devices::Cuda::getNumberOfBlocks( end.z() - begin.z() + 1, cudaBlockSize.z );
-   const IndexType cudaXGrids = Devices::Cuda::getNumberOfGrids( cudaBlocks.x );
-   const IndexType cudaYGrids = Devices::Cuda::getNumberOfGrids( cudaBlocks.y );
-   const IndexType cudaZGrids = Devices::Cuda::getNumberOfGrids( cudaBlocks.z );
-
-   auto& pool = CudaStreamPool::getInstance();
-   const cudaStream_t& s = pool.getStream( stream );
-
-   Devices::Cuda::synchronizeDevice();
-   for( IndexType gridZIdx = 0; gridZIdx < cudaZGrids; gridZIdx ++ )
-      for( IndexType gridYIdx = 0; gridYIdx < cudaYGrids; gridYIdx ++ )
-         for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )
-            GridTraverser3D< Real, Index, GridEntity, UserData, EntitiesProcessor, processOnlyBoundaryEntities, GridEntityParameters... >
-               <<< cudaBlocks, cudaBlockSize, 0, s >>>
-               ( &gridPointer.template getData< Devices::Cuda >(),
-                 userData,
-                 begin,
-                 end,
-                 gridXIdx,
-                 gridYIdx,
-                 gridZIdx,
-                 gridEntityParameters... );
-
-   // only launches into the stream 0 are synchronized
-   if( stream == 0 )
-   {
-      cudaStreamSynchronize( s );
-      TNL_CHECK_CUDA_DEVICE;
-   }
- */
-}
-   } // namespace Meshes
+} // namespace Meshes
 } // namespace TNL

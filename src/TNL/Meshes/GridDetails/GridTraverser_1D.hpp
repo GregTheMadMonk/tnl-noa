@@ -14,7 +14,6 @@
 
 #pragma once
 
-#include <TNL/Devices/MIC.h>
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Pointers/SharedPointer.h>
 #include <TNL/CudaStreamPool.h>
@@ -255,69 +254,5 @@ processEntities(
 #endif
 }
 
-/****
- * 1D traverser, MIC
- */
-
-template< typename Real,
-          typename Index >
-   template<
-      typename GridEntity,
-      typename EntitiesProcessor,
-      typename UserData,
-      bool processOnlyBoundaryEntities >
-void
-GridTraverser< Meshes::Grid< 1, Real, Devices::MIC, Index > >::
-processEntities(
-   const GridPointer& gridPointer,
-   const CoordinatesType& begin,
-   const CoordinatesType& end,
-   UserData& userData,
-   GridTraverserMode mode,
-   const int& stream )
-{
-    throw Exceptions::NotImplementedError("Not Implemented yet Grid Traverser <1, Real, Device::MIC>");
-/*
-   auto& pool = CudaStreamPool::getInstance();
-   const cudaStream_t& s = pool.getStream( stream );
-
-   Devices::Cuda::synchronizeDevice();
-   if( processOnlyBoundaryEntities )
-   {
-      dim3 cudaBlockSize( 2 );
-      dim3 cudaBlocks( 1 );
-      GridBoundaryTraverser1D< Real, Index, GridEntity, UserData, EntitiesProcessor >
-            <<< cudaBlocks, cudaBlockSize, 0, s >>>
-            ( &gridPointer.template getData< Devices::Cuda >(),
-              userData,
-              begin,
-              end );
-   }
-   else
-   {
-      dim3 cudaBlockSize( 256 );
-      dim3 cudaBlocks;
-      cudaBlocks.x = Devices::Cuda::getNumberOfBlocks( end.x() - begin.x() + 1, cudaBlockSize.x );
-      const IndexType cudaXGrids = Devices::Cuda::getNumberOfGrids( cudaBlocks.x );
-
-      for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )
-         GridTraverser1D< Real, Index, GridEntity, UserData, EntitiesProcessor >
-            <<< cudaBlocks, cudaBlockSize, 0, s >>>
-            ( &gridPointer.template getData< Devices::Cuda >(),
-              userData,
-              begin,
-              end,
-              gridXIdx );
-   }
-
-   // only launches into the stream 0 are synchronized
-   if( stream == 0 )
-   {
-      cudaStreamSynchronize( s );
-      TNL_CHECK_CUDA_DEVICE;
-   }
-*/
-}
-
-   } // namespace Meshes
+} // namespace Meshes
 } // namespace TNL

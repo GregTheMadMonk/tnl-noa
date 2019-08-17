@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include <TNL/Devices/MIC.h>
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Pointers/SharedPointer.h>
 #include <TNL/CudaStreamPool.h>
@@ -553,104 +552,5 @@ processEntities(
 #endif
 }
 
-
-/****
- * 2D traverser, MIC
- */
-template< typename Real,
-          typename Index >
-   template<
-      typename GridEntity,
-      typename EntitiesProcessor,
-      typename UserData,
-      bool processOnlyBoundaryEntities,
-         int XOrthogonalBoundary,
-         int YOrthogonalBoundary,
-      typename... GridEntityParameters >
-void
-GridTraverser< Meshes::Grid< 2, Real, Devices::MIC, Index > >::
-processEntities(
-   const GridPointer& gridPointer,
-   const CoordinatesType& begin,
-   const CoordinatesType& end,
-   UserData& userData,
-   GridTraverserMode mode,
-   const int& stream,
-   const GridEntityParameters&... gridEntityParameters )
-{
-        
-    
-#ifdef HAVE_MIC   
-   Devices::MIC::synchronizeDevice();
-
-    //TOHLE JE PRUSER -- nemim poslat vypustku -- 
-    //GridEntity entity( gridPointer.template getData< Devices::MIC >(), begin, gridEntityParameters... );
-
-
-    Devices::MICHider<const GridType> hMicGrid;
-    hMicGrid.pointer=& gridPointer.template getData< Devices::MIC >();
-    Devices::MICHider<UserData> hMicUserData;
-    hMicUserData.pointer=& userDataPointer.template modifyData<Devices::MIC>();
-    TNLMICSTRUCT(begin, const CoordinatesType);
-    TNLMICSTRUCT(end, const CoordinatesType);
-
-    #pragma offload target(mic) in(sbegin,send,hMicUserData,hMicGrid)  
-    {
-        
-        #pragma omp parallel firstprivate( sbegin, send )
-        {     
-            TNLMICSTRUCTUSE(begin, const CoordinatesType);
-            TNLMICSTRUCTUSE(end, const CoordinatesType);    
-            GridEntity entity( *(hMicGrid.pointer), *(kernelbegin) );
-          
-            if( processOnlyBoundaryEntities )
-             {      
-               if( YOrthogonalBoundary )
-                  #pragma omp for
-                  for( auto k = kernelbegin->x();
-                       k <= kernelend->x();
-                       k ++ )
-                  {
-                     entity.getCoordinates().x() = k;
-                     entity.getCoordinates().y() = kernelbegin->y();
-                     entity.refresh();
-                     EntitiesProcessor::processEntity( entity.getMesh(), *(hMicUserData.pointer), entity );
-                     entity.getCoordinates().y() = kernelend->y();
-                     entity.refresh();
-                     EntitiesProcessor::processEntity( entity.getMesh(), *(hMicUserData.pointer), entity );
-                  }
-               if( XOrthogonalBoundary )
-                  #pragma omp for
-                  for( auto k = kernelbegin->y();
-                       k <= kernelend->y();
-                       k ++ )
-                  {
-                     entity.getCoordinates().y() = k;
-                     entity.getCoordinates().x() = kernelbegin->x();
-                     entity.refresh();
-                     EntitiesProcessor::processEntity( entity.getMesh(), *(hMicUserData.pointer), entity );
-                     entity.getCoordinates().x() = kernelend->x();
-                     entity.refresh();
-                     EntitiesProcessor::processEntity( entity.getMesh(), *(hMicUserData.pointer), entity );
-                  }
-             }
-            else
-            {
-                  #pragma omp for
-                  for( IndexType y = kernelbegin->y(); y <= kernelend->y(); y ++ )
-                     for( IndexType x = kernelbegin->x(); x <= kernelend->x(); x ++ )
-                     {
-                        // std::cerr << x << "   " <<y << std::endl;
-                        entity.getCoordinates().x() = x;
-                        entity.getCoordinates().y() = y;
-                        entity.refresh();
-                        EntitiesProcessor::processEntity( entity.getMesh(), *(hMicUserData.pointer), entity );
-                     }      
-             }
-        }
-    }
-      
-#endif
-}
-   } // namespace Meshes
+} // namespace Meshes
 } // namespace TNL

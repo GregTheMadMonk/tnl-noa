@@ -102,27 +102,6 @@ using ArrayTypes = ::testing::Types<
    Array< double, Devices::Cuda, long >,
    Array< MyData, Devices::Cuda, long >
 #endif
-#ifdef HAVE_MIC
-   ,
-   Array< int,    Devices::MIC, short >,
-   Array< long,   Devices::MIC, short >,
-   Array< float,  Devices::MIC, short >,
-   Array< double, Devices::MIC, short >,
-   // TODO: MyData does not work on MIC
-//   Array< MyData, Devices::MIC, short >,
-   Array< int,    Devices::MIC, int >,
-   Array< long,   Devices::MIC, int >,
-   Array< float,  Devices::MIC, int >,
-   Array< double, Devices::MIC, int >,
-   // TODO: MyData does not work on MIC
-//   Array< MyData, Devices::MIC, int >,
-   Array< int,    Devices::MIC, long >,
-   Array< long,   Devices::MIC, long >,
-   Array< float,  Devices::MIC, long >,
-   Array< double, Devices::MIC, long >
-   // TODO: MyData does not work on MIC
-//   Array< MyData, Devices::MIC, long >
-#endif
 
    // all array tests should also work with Vector
    // (but we can't test all types because the argument list would be too long...)
@@ -135,11 +114,6 @@ using ArrayTypes = ::testing::Types<
    ,
    Vector< float,  Devices::Cuda, long >,
    Vector< double, Devices::Cuda, long >
-#endif
-#ifdef HAVE_MIC
-   ,
-   Vector< float,  Devices::MIC, long >,
-   Vector< double, Devices::MIC, long >
 #endif
 >;
 
@@ -350,14 +324,6 @@ void testArrayElementwiseAccess( Array< Value, Devices::Cuda, Index >&& u )
    for( int i = 0; i < 10; i++ ) {
       EXPECT_EQ( u.getElement( i ), i );
    }
-#endif
-}
-
-template< typename Value, typename Index >
-void testArrayElementwiseAccess( Array< Value, Devices::MIC, Index >&& u )
-{
-#ifdef HAVE_MIC
-   // TODO
 #endif
 }
 

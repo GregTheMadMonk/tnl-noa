@@ -14,10 +14,8 @@
 
 #include <TNL/Allocators/Host.h>
 #include <TNL/Allocators/Cuda.h>
-#include <TNL/Allocators/MIC.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
-#include <TNL/Devices/MIC.h>
 
 namespace TNL {
 namespace Allocators {
@@ -43,14 +41,6 @@ struct Default< Devices::Cuda >
 {
    template< typename T >
    using Allocator = Allocators::Cuda< T >;
-};
-
-//! Sets \ref Allocators::MIC as the default allocator for \ref Devices::MIC.
-template<>
-struct Default< Devices::MIC >
-{
-   template< typename T >
-   using Allocator = Allocators::MIC< T >;
 };
 
 } // namespace Allocators

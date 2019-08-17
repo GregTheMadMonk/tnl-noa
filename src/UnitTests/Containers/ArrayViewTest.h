@@ -99,27 +99,6 @@ using ViewTypes = ::testing::Types<
    ArrayView< double, Devices::Cuda, long >,
    ArrayView< MyData, Devices::Cuda, long >
 #endif
-#ifdef HAVE_MIC
-   ,
-   ArrayView< int,    Devices::MIC, short >,
-   ArrayView< long,   Devices::MIC, short >,
-   ArrayView< float,  Devices::MIC, short >,
-   ArrayView< double, Devices::MIC, short >,
-   // TODO: MyData does not work on MIC
-//   ArrayView< MyData, Devices::MIC, short >,
-   ArrayView< int,    Devices::MIC, int >,
-   ArrayView< long,   Devices::MIC, int >,
-   ArrayView< float,  Devices::MIC, int >,
-   ArrayView< double, Devices::MIC, int >,
-   // TODO: MyData does not work on MIC
-//   ArrayView< MyData, Devices::MIC, int >,
-   ArrayView< int,    Devices::MIC, long >,
-   ArrayView< long,   Devices::MIC, long >,
-   ArrayView< float,  Devices::MIC, long >,
-   ArrayView< double, Devices::MIC, long >,
-   // TODO: MyData does not work on MIC
-//   ArrayView< MyData, Devices::MIC, long >,
-#endif
 
    // all ArrayView tests should also work with VectorView
    // (but we can't test all types because the argument list would be too long...)
@@ -132,11 +111,6 @@ using ViewTypes = ::testing::Types<
    ,
    VectorView< float,  Devices::Cuda, long >,
    VectorView< double, Devices::Cuda, long >
-#endif
-#ifdef HAVE_MIC
-   ,
-   VectorView< float,  Devices::MIC, long >,
-   VectorView< double, Devices::MIC, long >
 #endif
 >;
 
@@ -286,14 +260,6 @@ void testArrayViewElementwiseAccess( Array< Value, Devices::Cuda, Index >&& u )
    for( int i = 0; i < 10; i++ ) {
       EXPECT_EQ( u.getElement( i ), i );
    }
-#endif
-}
-
-template< typename Value, typename Index >
-void testArrayViewElementwiseAccess( Array< Value, Devices::MIC, Index >&& u )
-{
-#ifdef HAVE_MIC
-   // TODO
 #endif
 }
 

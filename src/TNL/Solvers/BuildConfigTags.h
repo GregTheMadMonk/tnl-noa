@@ -27,10 +27,6 @@ template< typename ConfigTag, typename Device > struct ConfigTagDevice{ enum { e
 template< typename ConfigTag > struct ConfigTagDevice< ConfigTag, Devices::Cuda >{ enum { enabled = false }; };
 #endif
 
-#ifndef HAVE_MIC
-template< typename ConfigTag > struct ConfigTagDevice< ConfigTag, Devices::MIC >{ enum { enabled = false }; };
-#endif
-
 /****
  * All real types are enabled by default.
  */

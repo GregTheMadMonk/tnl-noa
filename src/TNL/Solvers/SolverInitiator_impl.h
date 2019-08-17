@@ -12,7 +12,6 @@
 
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
-#include <TNL/Devices/MIC.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Meshes/TypeResolver/TypeResolver.h>
 #include <TNL/Solvers/BuildConfigTags.h>
@@ -92,8 +91,6 @@ class SolverInitiatorRealResolver< ProblemSetter, Real, ConfigTag, true >
             return SolverInitiatorDeviceResolver< ProblemSetter, Real, Devices::Host, ConfigTag >::run( parameters );
          if( device == "cuda" )
             return SolverInitiatorDeviceResolver< ProblemSetter, Real, Devices::Cuda, ConfigTag >::run( parameters );
-         if(device == "mic")
-             return SolverInitiatorDeviceResolver< ProblemSetter, Real, Devices::MIC, ConfigTag >::run( parameters );
          std::cerr << "The device '" << device << "' is not defined. " << std::endl;
          return false;
       }

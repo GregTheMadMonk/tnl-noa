@@ -8,8 +8,6 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/Devices/MIC.h>
-
 #pragma once
 
 #include "GridTraverser.h"

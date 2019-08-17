@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include <TNL/Devices/MIC.h>
 #include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Communicators/NoDistrCommunicator.h>
 #include "ComputeBlockResidue.h"
@@ -209,28 +208,7 @@ void Euler< Problem, SolverMonitor >::computeNewTimeLevel( DofVectorPointer& u,
       }
 #endif
    }
-   
-   //MIC
-   if( std::is_same< DeviceType, Devices::MIC >::value )
-   {
 
-#ifdef HAVE_MIC
-      Devices::MICHider<RealType> mu;
-      mu.pointer=_u;
-      Devices::MICHider<RealType> mk1;
-      mk1.pointer=_k1;
-    #pragma offload target(mic) in(mu,mk1,size) inout(localResidue)
-    {
-      #pragma omp parallel for reduction(+:localResidue) firstprivate( mu, mk1 )  
-      for( IndexType i = 0; i < size; i ++ )
-      {
-         const RealType add = tau * mk1.pointer[ i ];
-         mu.pointer[ i ] += add;
-         localResidue += std::fabs( add );
-      }
-    }
-#endif
-   }
    localResidue /= tau * ( RealType ) size;
    Problem::CommunicatorType::Allreduce( &localResidue, &currentResidue, 1, MPI_SUM, Problem::CommunicatorType::AllGroup );
    //std::cerr << "Local residue = " << localResidue << " - globalResidue = " << currentResidue << std::endl;

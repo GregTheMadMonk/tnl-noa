@@ -16,7 +16,6 @@
 #include <TNL/String.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
-#include <TNL/Devices/MIC.h>
 
 namespace TNL {
 
@@ -155,14 +154,6 @@ class File
       void load_impl( Type* buffer, std::streamsize elements );
 
       template< typename Type,
-                typename SourceType,
-                typename Device,
-                typename = typename std::enable_if< std::is_same< Device, Devices::MIC >::value >::type,
-                typename = void,
-                typename = void >
-      void load_impl( Type* buffer, std::streamsize elements );
-
-      template< typename Type,
                 typename TargetType,
                 typename Device,
                 typename = typename std::enable_if< std::is_same< Device, Devices::Host >::value >::type >
@@ -172,14 +163,6 @@ class File
                 typename TargetType,
                 typename Device,
                 typename = typename std::enable_if< std::is_same< Device, Devices::Cuda >::value >::type,
-                typename = void >
-      void save_impl( const Type* buffer, std::streamsize elements );
-
-      template< typename Type,
-                typename TargetType,
-                typename Device,
-                typename = typename std::enable_if< std::is_same< Device, Devices::MIC >::value >::type,
-                typename = void,
                 typename = void >
       void save_impl( const Type* buffer, std::streamsize elements );
 

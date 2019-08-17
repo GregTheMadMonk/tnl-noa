@@ -128,9 +128,7 @@ class Object
        * Since it is not defined as \ref __cuda_callable__, objects inherited
        * from Object should not be created in CUDA kernels.
        */
-#ifndef HAVE_MIC
       virtual ~Object(){};
-#endif
 };
 
 /**

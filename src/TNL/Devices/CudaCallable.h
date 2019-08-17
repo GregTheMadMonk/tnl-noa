@@ -20,11 +20,9 @@
  * This macro serves for definition of function which are supposed to be called
  * even from device. If HAVE_CUDA is defined, the __cuda_callable__ function
  * is compiled for both CPU and GPU. If HAVE_CUDA is not defined, this macro has
- * no effect. Support for Intel Xeon Phi is now in "hibernated" state.
+ * no effect.
  */
-#ifdef HAVE_MIC 
-   #define __cuda_callable__ __attribute__((target(mic)))
-#elif HAVE_CUDA
+#ifdef HAVE_CUDA
    #define __cuda_callable__ __device__ __host__
 #else
    #define __cuda_callable__

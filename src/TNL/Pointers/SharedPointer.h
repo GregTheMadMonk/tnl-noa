@@ -49,7 +49,7 @@ class SharedPointer
 
 } // namespace Pointers
 
-#if (!defined(NDEBUG)) && (!defined(HAVE_MIC))
+#ifndef NDEBUG
 namespace Assert {
 
 template< typename Object, typename Device >
@@ -72,4 +72,3 @@ struct Formatter< Pointers::SharedPointer< Object, Device > >
 
 #include <TNL/Pointers/SharedPointerHost.h>
 #include <TNL/Pointers/SharedPointerCuda.h>
-#include <TNL/Pointers/SharedPointerMic.h>
