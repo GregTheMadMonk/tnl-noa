@@ -41,6 +41,7 @@ stages:
 #        - export MAKEFLAGS="-l$(echo 1.5*$NUM_CORES | bc) -j$NUM_CORES"
         - export NINJAFLAGS="-j$NUM_CORES"
         - export CTEST_OUTPUT_ON_FAILURE=1
+        - export CTEST_PARALLEL_LEVEL=4
         - mkdir -p "./builddir/$CI_JOB_NAME"
         - pushd "./builddir/$CI_JOB_NAME"
         - cmake ../..

@@ -204,5 +204,5 @@ if [[ ${WITH_DOC} == "yes" ]]; then
 fi
 
 if [[ ${WITH_TESTS} == "yes" ]] && [[ ${RUN_TESTS} == "yes" ]]; then
-   CTEST_OUTPUT_ON_FAILURE=1 $make test
+   CTEST_PARALLEL_LEVEL=4 CTEST_OUTPUT_ON_FAILURE=1 $make test
 fi
