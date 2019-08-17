@@ -129,7 +129,7 @@ TYPED_TEST( ChunkedEllpackMatrixTest, saveAndLoadTest )
 {
     using ChunkedEllpackMatrixType = typename TestFixture::ChunkedEllpackMatrixType;
     
-    test_SaveAndLoad< ChunkedEllpackMatrixType >();
+    test_SaveAndLoad< ChunkedEllpackMatrixType >( "test_SparseMatrixTest_ChunkedEllpack" );
 }
 
 TYPED_TEST( ChunkedEllpackMatrixTest, printTest )

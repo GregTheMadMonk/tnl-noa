@@ -760,7 +760,7 @@ void test_PerformSORIteration()
 }
 
 template< typename Matrix >
-void test_SaveAndLoad()
+void test_SaveAndLoad( const char* filename )
 {
    using RealType = typename Matrix::RealType;
    using DeviceType = typename Matrix::DeviceType;
@@ -799,7 +799,7 @@ void test_SaveAndLoad()
     for( IndexType i = 1; i < m_cols; i++ )       // 3rd row
         savedMatrix.setElement( 3, i, value++ );
         
-    ASSERT_NO_THROW( savedMatrix.save( "sparseMatrixFile" ) );
+    ASSERT_NO_THROW( savedMatrix.save( filename ) );
     
     Matrix loadedMatrix;
     loadedMatrix.reset();
@@ -810,7 +810,7 @@ void test_SaveAndLoad()
     loadedMatrix.setCompressedRowLengths( rowLengths2 );
     
     
-    ASSERT_NO_THROW( loadedMatrix.load( "sparseMatrixFile" ) );
+    ASSERT_NO_THROW( loadedMatrix.load( filename ) );
     
     
     EXPECT_EQ( savedMatrix.getElement( 0, 0 ), loadedMatrix.getElement( 0, 0 ) );
@@ -853,7 +853,7 @@ void test_SaveAndLoad()
     EXPECT_EQ( savedMatrix.getElement( 3, 2 ), 10 );
     EXPECT_EQ( savedMatrix.getElement( 3, 3 ), 11 );
     
-    std::remove( "sparseMatrixFile" );
+    EXPECT_EQ( std::remove( filename ), 0 );
 }
 
 template< typename Matrix >

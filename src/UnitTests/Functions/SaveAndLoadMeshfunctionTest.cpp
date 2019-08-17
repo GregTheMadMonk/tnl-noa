@@ -20,8 +20,7 @@ using namespace TNL::Meshes;
 using namespace TNL::Functions;
 using namespace TNL::Devices;
 
-
-#define FILENAME "./test-file.tnl"
+static const char* TEST_FILE_NAME = "test_SaveAndLoadMeshFunctionTest.tnl";
 
 //=====================================TEST CLASS==============================================
 
@@ -62,7 +61,7 @@ class TestSaveAndLoadMeshfunction
             linearFunctionEvaluator.evaluateAllEntities(localMeshFunctionptr , linearFunctionPtr);
 
             File file;
-            ASSERT_NO_THROW( file.open( String( FILENAME), std::ios_base::out ) );
+            ASSERT_NO_THROW( file.open( TEST_FILE_NAME, std::ios_base::out ) );
             ASSERT_NO_THROW( localMeshFunctionptr->save(file) );
             ASSERT_NO_THROW( file.close() );
 
@@ -80,7 +79,7 @@ class TestSaveAndLoadMeshfunction
                 loadDof[i]=-1;
             }
 
-            ASSERT_NO_THROW( file.open( String( FILENAME ), std::ios_base::in ) );
+            ASSERT_NO_THROW( file.open( TEST_FILE_NAME, std::ios_base::in ) );
             ASSERT_NO_THROW( loadMeshFunctionptr->boundLoad(file) );
             ASSERT_NO_THROW( file.close() );
 
@@ -89,7 +88,7 @@ class TestSaveAndLoadMeshfunction
                 EXPECT_EQ( localDof[i], loadDof[i]) << "Compare Loaded and evaluated Dof Failed for: "<< i;
             }
 
-            EXPECT_EQ( std::remove( FILENAME ), 0 );
+            EXPECT_EQ( std::remove( TEST_FILE_NAME ), 0 );
 
         };
 };

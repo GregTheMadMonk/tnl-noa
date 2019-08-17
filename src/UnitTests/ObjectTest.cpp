@@ -19,18 +19,20 @@
 
 using namespace TNL;
 
+static const char* TEST_FILE_NAME = "test_ObjectTest.tnl";
+
 #ifdef HAVE_GTEST
 TEST( ObjectTest, SaveAndLoadTest )
 {
    Object testObject;
    File file;
-   ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::out ) );
+   ASSERT_NO_THROW( file.open( TEST_FILE_NAME, std::ios_base::out ) );
    ASSERT_NO_THROW( testObject.save( file ) );
    ASSERT_NO_THROW( file.close() );
-   ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::in ) );
+   ASSERT_NO_THROW( file.open( TEST_FILE_NAME, std::ios_base::in ) );
    ASSERT_NO_THROW( testObject.load( file ) );
 
-   EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
+   EXPECT_EQ( std::remove( TEST_FILE_NAME ), 0 );
 }
 
 TEST( ObjectTest, parseObjectTypeTest )
@@ -80,15 +82,15 @@ TEST( HeaderTest, SaveAndLoadTest )
 {
    Object testObject;
    File file;
-   ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::out ) );
+   ASSERT_NO_THROW( file.open( TEST_FILE_NAME, std::ios_base::out ) );
    ASSERT_NO_THROW( saveObjectType( file, "TYPE" ) );
    ASSERT_NO_THROW( file.close() );
-   ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::in ) );
+   ASSERT_NO_THROW( file.open( TEST_FILE_NAME, std::ios_base::in ) );
    String type;
    ASSERT_NO_THROW( type = getObjectType( file ) );
    EXPECT_EQ( type, "TYPE" );
 
-   EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
+   EXPECT_EQ( std::remove( TEST_FILE_NAME ), 0 );
 }
 #endif
 

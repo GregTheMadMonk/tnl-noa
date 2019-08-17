@@ -125,7 +125,7 @@ TYPED_TEST( BiEllpackMatrixTest, saveAndLoadTest )
 {
     using BiEllpackMatrixType = typename TestFixture::BiEllpackMatrixType;
     
-    test_SaveAndLoad< BiEllpackMatrixType >();
+    test_SaveAndLoad< BiEllpackMatrixType >( "test_SparseMatrixTest_BiEllpack" );
 }
 
 TYPED_TEST( BiEllpackMatrixTest, printTest )

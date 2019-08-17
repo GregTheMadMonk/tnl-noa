@@ -12,7 +12,7 @@
 #endif
 
 #include <TNL/Meshes/DistributedMeshes/DistributedGridIO.h>
-#include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>    
+#include <TNL/Meshes/DistributedMeshes/SubdomainOverlapsGetter.h>
 #include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Functions/MeshFunction.h>
@@ -39,8 +39,8 @@ class TestDistributedGridMPIIO{
     typedef MeshFunction<MeshType> MeshFunctionType;
     typedef Vector<double,Device,int> DofType;
     typedef typename MeshType::Cell Cell;
-    typedef typename MeshType::IndexType IndexType; 
-    typedef typename MeshType::PointType PointType; 
+    typedef typename MeshType::IndexType IndexType;
+    typedef typename MeshType::PointType PointType;
     typedef DistributedMesh<MeshType> DistributedGridType;
 
     typedef typename DistributedGridType::CoordinatesType CoordinatesType;
@@ -49,8 +49,8 @@ class TestDistributedGridMPIIO{
     static void TestSave()
     {
         Pointers::SharedPointer< LinearFunctionType, Device > linearFunctionPtr;
-        MeshFunctionEvaluator< MeshFunctionType, LinearFunctionType > linearFunctionEvaluator;    
-        
+        MeshFunctionEvaluator< MeshFunctionType, LinearFunctionType > linearFunctionEvaluator;
+
         //save distributed meshfunction into file
         PointType globalOrigin;
         globalOrigin.setValue(-0.5);
@@ -61,7 +61,7 @@ class TestDistributedGridMPIIO{
         Pointers::SharedPointer<MeshType> globalGrid;
         globalGrid->setDimensions(globalProportions);
         globalGrid->setDomain(globalOrigin,globalProportions);
-        
+
         DistributedGridType distributedGrid;
         distributedGrid.template setGlobalGrid<CommunicatorType>( *globalGrid );
         typename DistributedGridType::SubdomainOverlapsType lowerOverlap, upperOverlap;
@@ -73,13 +73,13 @@ class TestDistributedGridMPIIO{
         Pointers::SharedPointer<MeshType> gridptr;
         Pointers::SharedPointer<MeshFunctionType> meshFunctionptr;
         distributedGrid.setupGrid(*gridptr);
-       
+
         DofType dof(gridptr->template getEntitiesCount< Cell >());
         dof.setValue(0);
         meshFunctionptr->bind(gridptr,dof);
-            
+
         linearFunctionEvaluator.evaluateAllEntities(meshFunctionptr , linearFunctionPtr);
- 
+
         String FileName=String("test-file-mpiio-save.tnl");
         DistributedGridIO<MeshFunctionType,MpiIO> ::save(FileName, *meshFunctionptr );
 
@@ -98,7 +98,7 @@ class TestDistributedGridMPIIO{
             loadMeshFunctionptr->bind(globalGrid,loadDof);
 
             loadDof.setValue(-1);
-        
+
             File file;
             file.open( FileName, std::ios_base::in );
             loadMeshFunctionptr->boundLoad(file);
@@ -111,13 +111,13 @@ class TestDistributedGridMPIIO{
             EXPECT_EQ( std::remove( FileName.getString()) , 0 );
         }
     }
-    
+
     static void TestLoad()
     {
         Pointers::SharedPointer< LinearFunctionType, Device > linearFunctionPtr;
-        MeshFunctionEvaluator< MeshFunctionType, LinearFunctionType > linearFunctionEvaluator;    
+        MeshFunctionEvaluator< MeshFunctionType, LinearFunctionType > linearFunctionEvaluator;
 
-        //Crete distributed grid            
+        //Crete distributed grid
         PointType globalOrigin;
         globalOrigin.setValue(-0.5);
 
@@ -136,19 +136,19 @@ class TestDistributedGridMPIIO{
         SubdomainOverlapsGetter< MeshType, CommunicatorType >::getOverlaps( &distributedGrid, lowerOverlap, upperOverlap, 1 );
         distributedGrid.setOverlaps( lowerOverlap, upperOverlap );
 
-        String FileName=String("/tmp/test-file-mpiio-load.tnl");         
+        String FileName=String("test-file-mpiio-load.tnl");
 
-        //Prepare file   
+        //Prepare file
         if(CommunicatorType::GetRank(CommunicatorType::AllGroup)==0)
-        {   
+        {
             DofType saveDof(globalGrid->template getEntitiesCount< Cell >());
 
             Pointers::SharedPointer<MeshFunctionType> saveMeshFunctionptr;
             saveMeshFunctionptr->bind(globalGrid,saveDof);
             linearFunctionEvaluator.evaluateAllEntities(saveMeshFunctionptr , linearFunctionPtr);
-      
+
             File file;
-            file.open( FileName, std::ios_base::out );        
+            file.open( FileName, std::ios_base::out );
             saveMeshFunctionptr->save(file);
             file.close();
         }
@@ -156,7 +156,7 @@ class TestDistributedGridMPIIO{
         Pointers::SharedPointer<MeshType> loadGridptr;
         Pointers::SharedPointer<MeshFunctionType> loadMeshFunctionptr;
         distributedGrid.setupGrid(*loadGridptr);
-        
+
         DofType loadDof(loadGridptr->template getEntitiesCount< Cell >());
         loadDof.setValue(0);
         loadMeshFunctionptr->bind(loadGridptr,loadDof);
@@ -167,12 +167,12 @@ class TestDistributedGridMPIIO{
         Pointers::SharedPointer<MeshType> evalGridPtr;
         Pointers::SharedPointer<MeshFunctionType> evalMeshFunctionptr;
         distributedGrid.setupGrid(*evalGridPtr);
-        
+
         DofType evalDof(evalGridPtr->template getEntitiesCount< Cell >());
         evalDof.setValue(-1);
         evalMeshFunctionptr->bind(evalGridPtr,evalDof);
-        
-        linearFunctionEvaluator.evaluateAllEntities(evalMeshFunctionptr , linearFunctionPtr);        
+
+        linearFunctionEvaluator.evaluateAllEntities(evalMeshFunctionptr , linearFunctionPtr);
         evalMeshFunctionptr->template synchronize<CommunicatorType>();
 
         for(int i=0;i<evalDof.getSize();i++)
@@ -184,7 +184,6 @@ class TestDistributedGridMPIIO{
         {
             EXPECT_EQ( std::remove( FileName.getString()) , 0 );
         }
-        
+
     }
 };
-

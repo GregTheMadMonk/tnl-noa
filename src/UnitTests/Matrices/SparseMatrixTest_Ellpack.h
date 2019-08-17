@@ -124,7 +124,7 @@ TYPED_TEST( EllpackMatrixTest, saveAndLoadTest )
 {
     using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
     
-    test_SaveAndLoad< EllpackMatrixType >();
+    test_SaveAndLoad< EllpackMatrixType >( "test_SparseMatrixTest_Ellpack" );
 }
 
 TYPED_TEST( EllpackMatrixTest, printTest )

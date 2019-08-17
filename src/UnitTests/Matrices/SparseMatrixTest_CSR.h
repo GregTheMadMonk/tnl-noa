@@ -124,7 +124,7 @@ TYPED_TEST( CSRMatrixTest, saveAndLoadTest )
 {
     using CSRMatrixType = typename TestFixture::CSRMatrixType;
     
-    test_SaveAndLoad< CSRMatrixType >();
+    test_SaveAndLoad< CSRMatrixType >( "test_SparseMatrixTest_CSR" );
 }
 
 TYPED_TEST( CSRMatrixTest, printTest )

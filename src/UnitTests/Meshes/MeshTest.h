@@ -25,6 +25,8 @@ using RealType = double;
 using Device = Devices::Host;
 using IndexType = int;
 
+static const char* TEST_FILE_NAME = "test_MeshTest.tnl";
+
 class TestTriangleMeshConfig : public DefaultConfig< Topologies::Triangle >
 {
 public:
@@ -107,16 +109,16 @@ void testMeshOnCuda( const Mesh& mesh )
    EXPECT_EQ( mesh2, mesh );
 
    // test load from file to CUDA
-   ASSERT_NO_THROW( mesh.save( "mesh.tnl" ) );
-   ASSERT_NO_THROW( dmesh1.load( "mesh.tnl" ) );
+   ASSERT_NO_THROW( mesh.save( TEST_FILE_NAME ) );
+   ASSERT_NO_THROW( dmesh1.load( TEST_FILE_NAME ) );
    EXPECT_EQ( dmesh1, mesh );
 
    // test save into file from CUDA
-   ASSERT_NO_THROW( dmesh1.save( "mesh.tnl" ) );
-   ASSERT_NO_THROW( mesh2.load( "mesh.tnl" ) );
+   ASSERT_NO_THROW( dmesh1.save( TEST_FILE_NAME ) );
+   ASSERT_NO_THROW( mesh2.load( TEST_FILE_NAME ) );
    EXPECT_EQ( mesh2, mesh );
 
-   EXPECT_EQ( std::remove( "mesh.tnl" ), 0 );
+   EXPECT_EQ( std::remove( TEST_FILE_NAME ), 0 );
 #endif
 }
 
@@ -154,9 +156,9 @@ template< typename Mesh >
 void testFinishedMesh( const Mesh& mesh )
 {
    Mesh mesh2;
-   ASSERT_NO_THROW( mesh.save( "mesh.tnl" ) );
-   ASSERT_NO_THROW( mesh2.load( "mesh.tnl" ) );
-   EXPECT_EQ( std::remove( "mesh.tnl" ), 0 );
+   ASSERT_NO_THROW( mesh.save( TEST_FILE_NAME ) );
+   ASSERT_NO_THROW( mesh2.load( TEST_FILE_NAME ) );
+   EXPECT_EQ( std::remove( TEST_FILE_NAME ), 0 );
    ASSERT_EQ( mesh, mesh2 );
    compareStringRepresentation( mesh, mesh2 );
    testCopyAssignment( mesh );

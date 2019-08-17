@@ -19,6 +19,8 @@
 
 using namespace TNL;
 
+static const char* TEST_FILE_NAME = "test_ObjectTest.tnl";
+
 #ifdef HAVE_GTEST
 TEST( StringTest, BasicConstructor )
 {
@@ -306,15 +308,15 @@ TEST( StringTest, SaveLoad )
 {
    String str1( "testing-string" );
    File file;
-   ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::out ) );
+   ASSERT_NO_THROW( file.open( TEST_FILE_NAME, std::ios_base::out ) );
    ASSERT_NO_THROW( file << str1 );
    ASSERT_NO_THROW( file.close() );
-   ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::in ) );
+   ASSERT_NO_THROW( file.open( TEST_FILE_NAME, std::ios_base::in ) );
    String str2;
    ASSERT_NO_THROW( file >> str2 );
    EXPECT_EQ( str1, str2 );
 
-   EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
+   EXPECT_EQ( std::remove( TEST_FILE_NAME ), 0 );
 };
 #endif
 

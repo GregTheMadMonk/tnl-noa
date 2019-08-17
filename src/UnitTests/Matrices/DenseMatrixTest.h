@@ -88,6 +88,8 @@ using Dense_host_int = TNL::Matrices::Dense< int, TNL::Devices::Host, int >;
 using Dense_cuda_float = TNL::Matrices::Dense< float, TNL::Devices::Cuda, int >;
 using Dense_cuda_int = TNL::Matrices::Dense< int, TNL::Devices::Cuda, int >;
 
+static const char* TEST_FILE_NAME = "test_DenseMatrixTest.tnl";
+
 #ifdef HAVE_GTEST 
 #include <type_traits>
 
@@ -1281,13 +1283,13 @@ void test_SaveAndLoad()
         for( IndexType j = 0; j < cols; j++ )
             savedMatrix.setElement( i, j, value++ );
         
-    ASSERT_NO_THROW( savedMatrix.save( "denseMatrixFile" ) );
+    ASSERT_NO_THROW( savedMatrix.save( TEST_FILE_NAME ) );
     
     Matrix loadedMatrix;
     loadedMatrix.reset();
     loadedMatrix.setDimensions( rows, cols );
     
-    ASSERT_NO_THROW( loadedMatrix.load( "denseMatrixFile" ) );
+    ASSERT_NO_THROW( loadedMatrix.load( TEST_FILE_NAME ) );
     
     EXPECT_EQ( savedMatrix.getElement( 0, 0 ), loadedMatrix.getElement( 0, 0 ) );
     EXPECT_EQ( savedMatrix.getElement( 0, 1 ), loadedMatrix.getElement( 0, 1 ) );
@@ -1329,7 +1331,7 @@ void test_SaveAndLoad()
     EXPECT_EQ( savedMatrix.getElement( 3, 2 ), 15 );
     EXPECT_EQ( savedMatrix.getElement( 3, 3 ), 16 );
     
-    std::cout << "\nThis will create a file called 'denseMatrixFile' (of the matrix created in the test function), in .../tnl-dev/Debug/bin/\n\n";
+    std::cout << "\nThis will create a file called '" << TEST_FILE_NAME << "' (of the matrix created in the test function), in .../tnl-dev/Debug/bin/\n\n";
 }
 
 template< typename Matrix >

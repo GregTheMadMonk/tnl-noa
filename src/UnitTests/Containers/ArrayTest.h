@@ -21,6 +21,12 @@
 using namespace TNL;
 using namespace TNL::Containers;
 
+#ifdef HAVE_CUDA
+static const char* TEST_FILE_NAME = "test_ArrayTestCuda.tnl";
+#else
+static const char* TEST_FILE_NAME = "test_ArrayTest.tnl";
+#endif
+
 // minimal custom data structure usable as ValueType in Array
 struct MyData
 {
@@ -529,11 +535,11 @@ TYPED_TEST( ArrayTest, SaveAndLoad )
    v.setSize( 100 );
    for( int i = 0; i < 100; i ++ )
       v.setElement( i, 42 );
-   ASSERT_NO_THROW( File( "test-file.tnl", std::ios_base::out ) << v );
-   ASSERT_NO_THROW( File( "test-file.tnl", std::ios_base::in ) >> u );
+   ASSERT_NO_THROW( File( TEST_FILE_NAME, std::ios_base::out ) << v );
+   ASSERT_NO_THROW( File( TEST_FILE_NAME, std::ios_base::in ) >> u );
    EXPECT_EQ( u, v );
 
-   EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
+   EXPECT_EQ( std::remove( TEST_FILE_NAME ), 0 );
 }
 
 TYPED_TEST( ArrayTest, LoadViaView )
@@ -544,20 +550,20 @@ TYPED_TEST( ArrayTest, LoadViaView )
    v.setSize( 100 );
    for( int i = 0; i < 100; i ++ )
       v.setElement( i, 42 );
-   ASSERT_NO_THROW( File( "test-file.tnl", std::ios_base::out ) << v );
+   ASSERT_NO_THROW( File( TEST_FILE_NAME, std::ios_base::out ) << v );
 
    w.setSize( 100 );
    auto u = w.getView();
-   ASSERT_NO_THROW( File( "test-file.tnl", std::ios_base::in ) >> u );
+   ASSERT_NO_THROW( File( TEST_FILE_NAME, std::ios_base::in ) >> u );
    EXPECT_EQ( u, v );
    EXPECT_EQ( u.getData(), w.getData() );
 
    ArrayType z( 50 );
    File file;
-   ASSERT_NO_THROW( file.open( "test-file.tnl", std::ios_base::in ) );
+   ASSERT_NO_THROW( file.open( TEST_FILE_NAME, std::ios_base::in ) );
    EXPECT_THROW( file >> z.getView(), Exceptions::FileDeserializationError );
 
-   EXPECT_EQ( std::remove( "test-file.tnl" ), 0 );
+   EXPECT_EQ( std::remove( TEST_FILE_NAME ), 0 );
 }
 
 // TODO: test all __cuda_callable__ methods from a CUDA kernel

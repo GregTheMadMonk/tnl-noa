@@ -45,7 +45,7 @@ IF( BUILD_CUDA )
 
     CUDA_ADD_EXECUTABLE( DistributedGridIO_MPIIOTest DistributedGridIO_MPIIOTest.cu OPTIONS ${CXX_TESTS_FLAGS})
     TARGET_LINK_LIBRARIES( DistributedGridIO_MPIIOTest ${GTEST_BOTH_LIBRARIES} )
-ELSE(  BUILD_CUDA )   
+ELSE(  BUILD_CUDA )
 
     ADD_EXECUTABLE( DistributedGridIO_MPIIOTest DistributedGridIO_MPIIOTest.cpp )
        TARGET_COMPILE_OPTIONS( DistributedGridIO_MPIIOTest PRIVATE ${CXX_TESTS_FLAGS} )
@@ -56,7 +56,7 @@ ELSE(  BUILD_CUDA )
        TARGET_LINK_LIBRARIES( DistributedGridIOTest ${GTEST_BOTH_LIBRARIES} )
 
 ENDIF( BUILD_CUDA )
-   
+
 SET (mpi_test_parameters_1d -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedGridTest_1D${CMAKE_EXECUTABLE_SUFFIX}")
 ADD_TEST( NAME DistributedGridTest_1D COMMAND "mpirun" ${mpi_test_parameters_1d})
 
@@ -85,6 +85,4 @@ SET (mpi_test_parameters_CutDistributedMeshFunctionTest -np 12 -H localhost:12 "
 #SET (mpi_test_parameters_DistributedVectorFieldIO_MPIIOTest -np 4 -H localhost:4 "${EXECUTABLE_OUTPUT_PATH}/DistributedVectorFieldIO_MPIIOTest ${CMAKE_EXECUTABLE_SUFFIX}")
 #ADD_TEST( NAME DistributedVectorFieldIO_MPIIOTest COMMAND "mpirun" ${mpi_test_parameters_IOMPIIO})
 
-
 endif()
-

@@ -17,6 +17,7 @@
 using namespace TNL;
 using namespace TNL::Containers;
 
+static const char* TEST_FILE_NAME = "test_StaticArrayTest.tnl";
 
 // test fixture for typed tests
 template< typename Array >
@@ -246,16 +247,16 @@ TYPED_TEST( StaticArrayTest, SaveAndLoad )
 
    ArrayType u1( 7 ), u2;
    File file;
-   ASSERT_NO_THROW( file.open( "tnl-static-array-test.tnl", std::ios_base::out ) );
+   ASSERT_NO_THROW( file.open( TEST_FILE_NAME, std::ios_base::out ) );
    ASSERT_NO_THROW( u1.save( file ) );
    ASSERT_NO_THROW( file.close() );
-   ASSERT_NO_THROW( file.open( "tnl-static-array-test.tnl", std::ios_base::in ) );
+   ASSERT_NO_THROW( file.open( TEST_FILE_NAME, std::ios_base::in ) );
    ASSERT_NO_THROW( u2.load( file ) );
    ASSERT_NO_THROW( file.close() );
 
    EXPECT_EQ( u1, u2 );
 
-   EXPECT_EQ( std::remove( "tnl-static-array-test.tnl" ), 0 );
+   EXPECT_EQ( std::remove( TEST_FILE_NAME ), 0 );
 }
 
 TYPED_TEST( StaticArrayTest, sort )

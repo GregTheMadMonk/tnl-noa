@@ -7,6 +7,8 @@ using IndexType = int;
 using Device = Devices::Host;
 using LocalIndexType = short;
 
+static const char* TEST_FILE_NAME = "test_StaticMultimapTest.tnl";
+
 #ifdef HAVE_GTEST
 #include <gtest/gtest.h>
 
@@ -77,8 +79,8 @@ TEST( MultimapTest, TestSaveAndLoad )
          values.setValue( o, i + o );
    }
 
-   map.save( "multimap-test.tnl" );
-   map2.load( "multimap-test.tnl" );
+   map.save( TEST_FILE_NAME );
+   map2.load( TEST_FILE_NAME );
 
    EXPECT_EQ( map, map2 );
    EXPECT_EQ( map.getKeysRange(), map2.getKeysRange() );
@@ -93,7 +95,7 @@ TEST( MultimapTest, TestSaveAndLoad )
       }
    }
 
-   EXPECT_EQ( std::remove( "multimap-test.tnl" ), 0 );
+   EXPECT_EQ( std::remove( TEST_FILE_NAME ), 0 );
 }
 #endif
 

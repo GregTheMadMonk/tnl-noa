@@ -125,7 +125,7 @@ TYPED_TEST( AdEllpackMatrixTest, saveAndLoadTest )
 {
     using AdEllpackMatrixType = typename TestFixture::AdEllpackMatrixType;
     
-    test_SaveAndLoad< AdEllpackMatrixType >();
+    test_SaveAndLoad< AdEllpackMatrixType >( "test_SparseMatrixTest_AdEllpack" );
 }
 
 TYPED_TEST( AdEllpackMatrixTest, printTest )

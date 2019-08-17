@@ -10,16 +10,14 @@
 
 // Implemented by Nina Dzugasova
 
-#ifdef HAVE_GTEST 
+#ifdef HAVE_GTEST
 #include <gtest/gtest.h>
-#endif
 
 #include <TNL/FileName.h>
 // #include <TNL/String.h>
 
 using namespace TNL;
 
-#ifdef HAVE_GTEST 
 TEST( FileNameTest, Constructor )
 {
     FileName fname;
