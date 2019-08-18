@@ -79,7 +79,6 @@ using DistributedVectorTypes = ::testing::Types<
 
 TYPED_TEST_SUITE( DistributedVectorTest, DistributedVectorTypes );
 
-#if 1
 TYPED_TEST( DistributedVectorTest, prefixSum )
 {
    using RealType = typename TestFixture::DistributedVectorType::RealType;
@@ -198,9 +197,7 @@ TYPED_TEST( DistributedVectorTest, prefixSum )
 #endif
    }
 }
-#endif
 
-#if 1
 TYPED_TEST( DistributedVectorTest, exclusivePrefixSum )
 {
    using RealType = typename TestFixture::DistributedVectorType::RealType;
@@ -319,7 +316,6 @@ TYPED_TEST( DistributedVectorTest, exclusivePrefixSum )
 #endif
    }
 }
-#endif
 
 #endif  // HAVE_GTEST
 

@@ -14,7 +14,6 @@
 
 #include <TNL/Assert.h>
 #include <TNL/Math.h>
-#include <TNL/ParallelFor.h>
 
 #include <TNL/Containers/NDArray.h>
 

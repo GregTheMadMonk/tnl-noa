@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include <TNL/Devices/Host.h>
-#include <TNL/Devices/Cuda.h>
 #include <TNL/ParallelFor.h>
 #include <TNL/Containers/StaticVector.h>
 #include <TNL/Communicators/MPIPrint.h>

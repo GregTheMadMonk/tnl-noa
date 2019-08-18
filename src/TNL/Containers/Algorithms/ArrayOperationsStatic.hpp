@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ArrayOperationsStatic_impl.h  -  description
+                          ArrayOperationsStatic.hpp  -  description
                              -------------------
     begin                : Apr 8, 2019
     copyright            : (C) 2019 by Tomas Oberhuber et al.

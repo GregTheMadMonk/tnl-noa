@@ -426,15 +426,6 @@ hauseholder_generate( const int i,
    if( i > 0 ) {
       // aux = Y_{i-1}^T * y_i
       RealType aux[ i ];
-//      Containers::Algorithms::ParallelReductionScalarProduct< RealType, RealType > scalarProduct;
-//      Containers::Algorithms::Multireduction< DeviceType >::reduce
-//               ( scalarProduct,
-//                 i,
-//                 size,
-//                 Y.getData(),
-//                 ldSize,
-//                 Traits::getConstLocalView( y_i ).getData(),
-//                 aux );
       const RealType* _Y = Y.getData();
       const RealType* _y_i = Traits::getConstLocalView( y_i ).getData();
       const IndexType ldSize = this->ldSize;
@@ -535,15 +526,6 @@ hauseholder_cwy_transposed( VectorViewType z,
 {
    // aux = Y_i^T * w
    RealType aux[ i + 1 ];
-//   Containers::Algorithms::ParallelReductionScalarProduct< RealType, RealType > scalarProduct;
-//   Containers::Algorithms::Multireduction< DeviceType >::reduce
-//            ( scalarProduct,
-//              i + 1,
-//              size,
-//              Y.getData(),
-//              ldSize,
-//              Traits::getConstLocalView( w ).getData(),
-//              aux );
    const RealType* _Y = Y.getData();
    const RealType* _w = Traits::getConstLocalView( w ).getData();
    const IndexType ldSize = this->ldSize;

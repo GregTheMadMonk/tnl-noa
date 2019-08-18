@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ArrayOperationsCuda_impl.h  -  description
+                          ArrayOperationsCuda.hpp  -  description
                              -------------------
     begin                : Jul 16, 2013
     copyright            : (C) 2013 by Tomas Oberhuber

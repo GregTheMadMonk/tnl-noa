@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ArrayOperationsHost_impl.h  -  description
+                          ArrayOperationsHost.hpp  -  description
                              -------------------
     begin                : Jul 16, 2013
     copyright            : (C) 2013 by Tomas Oberhuber

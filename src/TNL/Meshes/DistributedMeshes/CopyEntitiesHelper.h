@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include <TNL/Devices/Host.h>
-#include <TNL/Devices/Cuda.h>
 #include <TNL/ParallelFor.h>
 
 namespace TNL {

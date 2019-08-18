@@ -125,7 +125,7 @@ public:
    {
       return "Atomic< " +
              TNL::getType< T >() + ", " +
-             Devices::Host::getDeviceType() + " >";
+             Devices::Cuda::getDeviceType() + " >";
    }
 
    bool is_lock_free() const noexcept

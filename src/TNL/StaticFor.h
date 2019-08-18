@@ -57,4 +57,4 @@ struct StaticFor< Begin, End, false >
    }
 };
 
-} //namespace TNL
+} // namespace TNL

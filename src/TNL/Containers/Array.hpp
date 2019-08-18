@@ -789,7 +789,7 @@ File& operator<<( File& file, const Array< Value, Device, Index, Allocator >& ar
    saveObjectType( file, IO::getSerializationType() );
    const Index size = array.getSize();
    file.save( &size );
-   Algorithms::ArrayIO< Value, Device, Index >::save( file, array.getData(), array.getSize() );
+   IO::save( file, array.getData(), array.getSize() );
    return file;
 }
 
@@ -813,7 +813,7 @@ File& operator>>( File& file, Array< Value, Device, Index, Allocator >& array )
    if( _size < 0 )
       throw Exceptions::FileDeserializationError( file.getFileName(), "invalid array size: " + std::to_string(_size) );
    array.setSize( _size );
-   Algorithms::ArrayIO< Value, Device, Index >::load( file, array.getData(), array.getSize() );
+   IO::load( file, array.getData(), array.getSize() );
    return file;
 }
 

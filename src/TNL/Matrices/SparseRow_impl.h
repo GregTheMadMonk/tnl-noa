@@ -11,7 +11,6 @@
 #pragma once
 
 #include <TNL/Matrices/SparseRow.h>
-#include <TNL/ParallelFor.h>
 #include <TNL/Exceptions/NotImplementedError.h>
 
 // Following includes are here to enable usage of std::vector and std::cout. To avoid having to include Device type (HOW would this be done anyway)
@@ -19,7 +18,7 @@
 #include <vector>
 
 namespace TNL {
-namespace Matrices {   
+namespace Matrices {
 
 template< typename Real, typename Index >
 __cuda_callable__
@@ -137,18 +136,18 @@ getNonZeroElementsCount() const
 //    TODO: Fix/Implement
     throw Exceptions::NotImplementedError( "TODO: Fix/Implement" );
 //    using NonConstIndex = typename std::remove_const< Index >::type;
-//    
+//
 //    NonConstIndex elementCount ( 0 );
-//   
+//
 //    for( NonConstIndex i = 0; i < length; i++ )
 //    {
 ////        std::cout << "this->values[ i * step ] = " << this->values[ i * step ] << " != 0.0" << std::endl;
 //        if( this->values[ i * step ] != 0.0 ) // Returns the same amount of elements in a row as does getRowLength() in ChunkedEllpack. WHY?
 //            elementCount++;
 //    }
-//    
+//
 ////    std::cout << "Element Count = " << elementCount << "\n";
-//    
+//
 //    return elementCount;
 }
 

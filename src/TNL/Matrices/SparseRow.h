@@ -12,8 +12,9 @@
 #pragma once
 
 #include <type_traits>
+#include <ostream>
 
-#include <TNL/Devices/Cuda.h>
+#include <TNL/Devices/CudaCallable.h>
 
 namespace TNL {
 namespace Matrices {
@@ -23,7 +24,7 @@ class SparseRow
 {
    using RealType = Real;
    using IndexType = Index;
-   
+
    public:
 
       __cuda_callable__
@@ -54,7 +55,7 @@ class SparseRow
 
       __cuda_callable__
       Index getLength() const;
-      
+
       __cuda_callable__
       Index getNonZeroElementsCount() const;
 
@@ -70,7 +71,7 @@ class SparseRow
 };
 
 template< typename Real, typename Index >
-std::ostream& operator << ( std::ostream& str, const SparseRow< Real, Index >& row )
+std::ostream& operator<<( std::ostream& str, const SparseRow< Real, Index >& row )
 {
    row.print( str );
    return str;
