@@ -73,7 +73,7 @@ String Grid< 3, Real, Device, Index > :: getType()
    return String( "Meshes::Grid< " ) +
           convertToString( getMeshDimension() ) + ", " +
           String( TNL::getType< RealType >() ) + ", " +
-          String( Device :: getDeviceType() ) + ", " +
+          String( Device::getType() ) + ", " +
           String( TNL::getType< IndexType >() ) + " >";
 }
 

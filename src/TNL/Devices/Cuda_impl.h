@@ -21,7 +21,7 @@
 namespace TNL {
 namespace Devices {
 
-inline String Cuda::getDeviceType()
+inline String Cuda::getType()
 {
    return String( "Devices::Cuda" );
 }

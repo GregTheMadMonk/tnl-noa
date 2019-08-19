@@ -50,7 +50,7 @@ String EllpackSymmetricGraph< Real, Device, Index > :: getType()
    return String( "EllpackSymmetricGraph< ") +
           String( TNL::getType< Real >() ) +
           String( ", " ) +
-          Device::getDeviceType() +
+          Device::getType() +
           String( " >" );
 }
 

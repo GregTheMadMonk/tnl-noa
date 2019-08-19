@@ -31,7 +31,7 @@ String Dense< Real, Device, Index >::getType()
 {
    return String( "Matrices::Dense< " ) +
           String( TNL::getType< RealType >() ) + ", " +
-          String( Device :: getDeviceType() ) + ", " +
+          String( Device::getType() ) + ", " +
           String( TNL::getType< IndexType >() ) + " >";
 }
 

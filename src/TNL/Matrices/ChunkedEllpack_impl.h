@@ -44,7 +44,7 @@ String ChunkedEllpack< Real, Device, Index >::getType()
    return String( "Matrices::ChunkedEllpack< ") +
           String( TNL::getType< Real >() ) +
           String( ", " ) +
-          Device :: getDeviceType() +
+          Device::getType() +
           String( " >" );
 }
 
@@ -314,7 +314,7 @@ template< typename Real,
 Index ChunkedEllpack< Real, Device, Index >::getNonZeroRowLength( const IndexType row ) const
 {
     ConstMatrixRow matrixRow = getRow( row );
-    return matrixRow.getNonZeroElementsCount( Device::getDeviceType() );
+    return matrixRow.getNonZeroElementsCount( Device::getType() );
     
 //    IndexType elementCount ( 0 );
 //    ConstMatrixRow matrixRow = this->getRow( row );

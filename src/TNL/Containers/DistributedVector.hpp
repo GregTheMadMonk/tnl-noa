@@ -93,7 +93,7 @@ getType()
 {
    return String( "Containers::DistributedVector< " ) +
           TNL::getType< Real >() + ", " +
-          Device::getDeviceType() + ", " +
+          Device::getType() + ", " +
           TNL::getType< Index >() + ", " +
           // TODO: communicators don't have a getType method
           "<Communicator> >";

@@ -56,7 +56,7 @@ String BiEllpack< Real, Device, Index, StripSize >::getType()
 	return String( "BiEllpack< ") +
 	       String( TNL::getType< Real >() ) +
 	       String( ", " ) +
-	       Device::getDeviceType() +
+	       Device::getType() +
 	       String( " >" );
 }
 

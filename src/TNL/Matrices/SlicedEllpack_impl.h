@@ -35,7 +35,7 @@ String SlicedEllpack< Real, Device, Index, SliceSize >::getType()
    return String( "Matrices::SlicedEllpack< ") +
           String( TNL::getType< Real >() ) +
           String( ", " ) +
-          Device :: getDeviceType() +
+          Device::getType() +
           String( " >" );
 }
 
@@ -129,7 +129,7 @@ template< typename Real,
 Index SlicedEllpack< Real, Device, Index, SliceSize >::getNonZeroRowLength( const IndexType row ) const
 {
     ConstMatrixRow matrixRow = getRow( row );
-    return matrixRow.getNonZeroElementsCount( Device::getDeviceType() );
+    return matrixRow.getNonZeroElementsCount( Device::getType() );
 }
 
 template< typename Real,

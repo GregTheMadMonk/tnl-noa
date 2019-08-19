@@ -194,7 +194,7 @@ getType()
 {
    return String( "Containers::DistributedArrayView< " ) +
           TNL::getType< Value >() + ", " +
-          Device::getDeviceType() + ", " +
+          Device::getType() + ", " +
           TNL::getType< Index >() + ", " +
           // TODO: communicators don't have a getType method
           "<Communicator> >";

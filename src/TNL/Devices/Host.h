@@ -25,13 +25,10 @@ namespace Devices {
 class Host
 {
 public:
-   static String getDeviceType()
+   static String getType()
    {
       return String( "Devices::Host" );
    }
-
-   // TODO: Remove getDeviceType();
-   static inline String getType() { return getDeviceType();};
 
    static void disableOMP()
    {

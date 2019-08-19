@@ -334,9 +334,9 @@ MeshTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs...
 resolveTerminate( const Reader& reader,
                   ProblemSetterArgs&&... problemSetterArgs )
 {
-   std::cerr << "The mesh config type " << TNL::getType< MeshConfig >() << " is disabled in the build configuration for device " << Device::getDeviceType() << "." << std::endl;
+   std::cerr << "The mesh config type " << TNL::getType< MeshConfig >() << " is disabled in the build configuration for device " << Device::getType() << "." << std::endl;
    return false;
-};
+}
 
 template< typename Reader,
           typename ConfigTag,
@@ -352,7 +352,7 @@ resolveTerminate( const Reader& reader,
 {
    using MeshType = Meshes::Mesh< MeshConfig, Device >;
    return ProblemSetter< MeshType >::run( std::forward<ProblemSetterArgs>(problemSetterArgs)... );
-};
+}
 
 } // namespace Meshes
 } // namespace TNL

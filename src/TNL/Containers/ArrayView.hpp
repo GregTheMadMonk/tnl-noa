@@ -33,7 +33,7 @@ getType()
 {
    return String( "Containers::ArrayView< " ) + ", " +
                   TNL::getType< Value >() + ", " +
-                  Device::getDeviceType() + ", " +
+                  Device::getType() + ", " +
                   TNL::getType< Index >() + " >";
 }
 

@@ -34,7 +34,7 @@ String Tridiagonal< Real, Device, Index >::getType()
 {
    return String( "Matrices::Tridiagonal< " ) +
           String( TNL::getType< RealType >() ) + ", " +
-          String( Device :: getDeviceType() ) + ", " +
+          String( Device::getType() ) + ", " +
           String( TNL::getType< IndexType >() ) + " >";
 }
 

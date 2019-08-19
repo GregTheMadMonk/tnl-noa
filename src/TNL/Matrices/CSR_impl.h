@@ -46,7 +46,7 @@ String CSR< Real, Device, Index >::getType()
    return String( "Matrices::CSR< ") +
           String( TNL::getType< Real>() ) +
           String( ", " ) +
-          Device :: getDeviceType() +
+          Device::getType() +
           String( " >" );
 }
 

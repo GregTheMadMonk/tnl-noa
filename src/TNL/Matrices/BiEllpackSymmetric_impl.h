@@ -54,7 +54,7 @@ String BiEllpackSymmetric< Real, Device, Index, StripSize >::getType()
     return String( "BiEllpackMatrix< ") +
            String( TNL::getType< Real >() ) +
            String( ", " ) +
-           Device :: getDeviceType() +
+           Device::getType() +
            String( " >" );
 }
 

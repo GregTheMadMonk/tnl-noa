@@ -35,7 +35,7 @@ String COOMatrix< Real, Device, Index >::getType()
 	return String("COOMatrix< ") +
   	 	   String(TNL::getType< Real>()) +
 		   String(", ") +
-		   Device::getDeviceType() +
+		   Device::getType() +
 		   String(" >");
 }
 

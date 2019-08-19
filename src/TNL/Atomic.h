@@ -53,7 +53,7 @@ public:
    {
       return "Atomic< " +
              TNL::getType< T >() + ", " +
-             Devices::Host::getDeviceType() + " >";
+             Devices::Host::getType() + " >";
    }
 
    // CAS loops for updating maximum and minimum
@@ -125,7 +125,7 @@ public:
    {
       return "Atomic< " +
              TNL::getType< T >() + ", " +
-             Devices::Cuda::getDeviceType() + " >";
+             Devices::Cuda::getType() + " >";
    }
 
    bool is_lock_free() const noexcept

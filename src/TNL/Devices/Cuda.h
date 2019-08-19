@@ -25,12 +25,8 @@ namespace Devices {
 
 class Cuda
 {
-   public:
-
-   static inline String getDeviceType();
-
-   // TODO: Remove getDeviceType();
-   static inline String getType() { return getDeviceType();};
+public:
+   static inline String getType();
 
    static inline void configSetup( Config::ConfigDescription& config, const String& prefix = "" );
 

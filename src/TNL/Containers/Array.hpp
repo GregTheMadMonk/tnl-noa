@@ -187,7 +187,7 @@ getType()
 {
    return String( "Containers::Array< " ) +
           TNL::getType< Value >() + ", " +
-          Device::getDeviceType() + ", " +
+          Device::getType() + ", " +
           TNL::getType< Index >() + " >";
 }
 

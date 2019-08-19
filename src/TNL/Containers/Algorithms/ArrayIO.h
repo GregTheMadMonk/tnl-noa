@@ -35,7 +35,7 @@ struct ArrayIO< Value, Device, Index, true >
    {
       return String( "Containers::Array< " ) +
              TNL::getType< Value >() + ", " +
-             Devices::Host::getDeviceType() + ", " +
+             Devices::Host::getType() + ", " +
              TNL::getType< Index >() + " >";
    }
 
@@ -81,7 +81,7 @@ struct ArrayIO< Value, Device, Index, false >
    {
       return String( "Containers::Array< " ) +
              TNL::getType< Value >() + ", " +
-             Devices::Host::getDeviceType() + ", " +
+             Devices::Host::getType() + ", " +
              TNL::getType< Index >() + " >";
    }
 

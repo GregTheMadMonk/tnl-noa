@@ -34,7 +34,7 @@ String EllpackSymmetric< Real, Device, Index > :: getType()
    return String( "EllpackSymmetric< ") +
           String( TNL::getType< Real >() ) +
           String( ", " ) +
-          Device::getDeviceType() +
+          Device::getType() +
           String( " >" );
 }
 

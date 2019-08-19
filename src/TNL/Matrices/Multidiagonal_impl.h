@@ -36,7 +36,7 @@ String Multidiagonal< Real, Device, Index > :: getType()
    return String( "Matrices::Multidiagonal< ") +
           String( TNL::getType< Real >() ) +
           String( ", " ) +
-          Device :: getDeviceType() +
+          Device::getType() +
           String( " >" );
 }
 

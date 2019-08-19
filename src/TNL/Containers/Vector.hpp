@@ -37,7 +37,7 @@ getType()
 {
    return String( "Containers::Vector< " ) +
                   TNL::getType< Real >() + ", " +
-                  Device::getDeviceType() + ", " +
+                  Device::getType() + ", " +
                   TNL::getType< Index >() + " >";
 }
 

@@ -35,7 +35,7 @@ String SlicedEllpackSymmetric< Real, Device, Index, SliceSize >::getType()
    return String( "SlicedEllpackSymmetric< ") +
           String( TNL::getType< Real >() ) +
           String( ", " ) +
-          Device :: getDeviceType() +
+          Device::getType() +
           String( " >" );
 }
 

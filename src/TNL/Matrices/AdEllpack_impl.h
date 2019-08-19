@@ -173,7 +173,7 @@ String AdEllpack< Real, Device, Index >::getType()
     return String( "AdEllpack< ") +
            String( TNL::getType< Real >() ) +
            String( ", " ) +
-           Device::getDeviceType() +
+           Device::getType() +
            String( " >" );
 }
 

@@ -481,7 +481,7 @@ struct Formatter< Pointers::DevicePointer< Object, Device > >
    printToString( const Pointers::DevicePointer< Object, Device >& value )
    {
       ::std::stringstream ss;
-      ss << "(DevicePointer< " << Object::getType() << ", " << Device::getDeviceType()
+      ss << "(DevicePointer< " << Object::getType() << ", " << Device::getType()
          << " > object at " << &value << ")";
       return ss.str();
    }

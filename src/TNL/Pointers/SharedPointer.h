@@ -59,7 +59,7 @@ struct Formatter< Pointers::SharedPointer< Object, Device > >
    printToString( const Pointers::SharedPointer< Object, Device >& value )
    {
       ::std::stringstream ss;
-      ss << "(SharedPointer< " << Object::getType() << ", " << Device::getDeviceType()
+      ss << "(SharedPointer< " << Object::getType() << ", " << Device::getType()
          << " > object at " << &value << ")";
       return ss.str();
    }

@@ -26,7 +26,7 @@ getType()
 {
    return String( "Containers::VectorView< " ) +
                   TNL::getType< Real >() + ", " +
-                  Device::getDeviceType() + ", " +
+                  Device::getType() + ", " +
                   TNL::getType< Index >() + " >";
 }
 

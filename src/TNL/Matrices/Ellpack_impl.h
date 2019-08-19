@@ -34,7 +34,7 @@ String Ellpack< Real, Device, Index > :: getType()
    return String( "Matrices::Ellpack< ") +
           String( TNL::getType< Real >() ) +
           String( ", " ) +
-          Device :: getDeviceType() +
+          Device::getType() +
           String( ", " ) +
           String( TNL::getType< Index >() ) +
           String( " >" );
@@ -130,7 +130,7 @@ template< typename Real,
 Index Ellpack< Real, Device, Index >::getNonZeroRowLength( const IndexType row ) const
 {
     ConstMatrixRow matrixRow = getRow( row );
-    return matrixRow.getNonZeroElementsCount( Device::getDeviceType() );
+    return matrixRow.getNonZeroElementsCount( Device::getType() );
 }
 
 template< typename Real,

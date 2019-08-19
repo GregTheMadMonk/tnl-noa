@@ -55,7 +55,7 @@ getType()
    return String( "StaticEllpackIndexMultimap< ") +
           String( TNL::getType< Index >() ) +
           String( ", " ) +
-          Device :: getDeviceType() +
+          Device::getType() +
           String( ", " ) +
           String( TNL::getType< LocalIndexType >() ) +
           String( " >" );
