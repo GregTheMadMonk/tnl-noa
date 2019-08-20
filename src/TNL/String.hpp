@@ -243,12 +243,6 @@ inline String operator+( const std::string& string1, const String& string2 )
    return String( string1 ) + string2;
 }
 
-inline std::ostream& operator<<( std::ostream& stream, const String& str )
-{
-   stream << str.getString();
-   return stream;
-}
-
 #ifdef HAVE_MPI
 inline void mpiSend( const String& str, int target, int tag, MPI_Comm mpi_comm )
 {
