@@ -14,7 +14,6 @@
 #include <string>
 #include <vector>
 #include <memory>
-#include "make_unique.h"
 
 #include <TNL/Assert.h>
 #include <TNL/String.h>
