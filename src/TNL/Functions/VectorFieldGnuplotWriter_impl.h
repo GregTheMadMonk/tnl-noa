@@ -43,9 +43,8 @@ write( const VectorFieldType& vectorField,
 {
    const MeshType& mesh = vectorField.getMesh();
    typename MeshType::Cell entity( mesh );
-   for( entity.getCoordinates().x() = 0;
-        entity.getCoordinates().x() < mesh.getDimensions().x();
-        entity.getCoordinates().x() ++ )
+   auto& c = entity.getCoordinates();
+   for( c.x() = 0; c.x() < mesh.getDimensions().x(); c.x()++ )
    {
       entity.refresh();
       typename MeshType::PointType v = entity.getCenter();
@@ -73,9 +72,8 @@ write( const VectorFieldType& vectorField,
 {
    const MeshType& mesh = vectorField.getMesh();
    typename MeshType::Vertex entity( mesh );
-   for( entity.getCoordinates().x() = 0;
-        entity.getCoordinates().x() <= mesh.getDimensions().x();
-        entity.getCoordinates().x() ++ )
+   auto& c = entity.getCoordinates();
+   for( c.x() = 0; c.x() <= mesh.getDimensions().x(); c.x()++ )
    {
       entity.refresh();
       typename MeshType::PointType v = entity.getCenter();
@@ -104,13 +102,10 @@ write( const VectorFieldType& vectorField,
 {
    const MeshType& mesh = vectorField.getMesh();
    typename MeshType::Cell entity( mesh );
-   for( entity.getCoordinates().y() = 0;
-        entity.getCoordinates().y() < mesh.getDimensions().y();
-        entity.getCoordinates().y() ++ )
+   auto& c = entity.getCoordinates();
+   for( c.y() = 0; c.y() < mesh.getDimensions().y(); c.y()++ )
    {
-      for( entity.getCoordinates().x() = 0;
-           entity.getCoordinates().x() < mesh.getDimensions().x();
-           entity.getCoordinates().x() ++ )
+      for( c.x() = 0; c.x() < mesh.getDimensions().x(); c.x()++ )
       {
          entity.refresh();
          typename MeshType::PointType v = entity.getCenter();
@@ -142,15 +137,12 @@ write( const VectorFieldType& vectorField,
    typedef typename MeshType::Face EntityType;
    typedef typename EntityType::EntityOrientationType EntityOrientation;
    EntityType entity( mesh );
+   auto& c = entity.getCoordinates();
 
    entity.setOrientation( EntityOrientation( 1.0, 0.0 ) );
-   for( entity.getCoordinates().y() = 0;
-        entity.getCoordinates().y() < mesh.getDimensions().y();
-        entity.getCoordinates().y() ++ )
+   for( c.y() = 0; c.y() < mesh.getDimensions().y(); c.y()++ )
    {
-      for( entity.getCoordinates().x() = 0;
-           entity.getCoordinates().x() <= mesh.getDimensions().x();
-           entity.getCoordinates().x() ++ )
+      for( c.x() = 0; c.x() <= mesh.getDimensions().x(); c.x()++ )
       {
          entity.refresh();
          typename MeshType::PointType v = entity.getCenter();
@@ -163,15 +155,9 @@ write( const VectorFieldType& vectorField,
    }
 
    entity.setOrientation( EntityOrientation( 0.0, 1.0 ) );
-         for( entity.getCoordinates().x() = 0;
-           entity.getCoordinates().x() < mesh.getDimensions().x();
-           entity.getCoordinates().x() ++ )
-
+   for( c.x() = 0; c.x() < mesh.getDimensions().x(); c.x()++ )
    {
-            for( entity.getCoordinates().y() = 0;
-        entity.getCoordinates().y() <= mesh.getDimensions().y();
-        entity.getCoordinates().y() ++ )
-
+      for( c.y() = 0; c.y() <= mesh.getDimensions().y(); c.y()++ )
       {
          entity.refresh();
          typename MeshType::PointType v = entity.getCenter();
@@ -202,13 +188,10 @@ write( const VectorFieldType& vectorField,
 {
    const MeshType& mesh = vectorField.getMesh();
    typename MeshType::Vertex entity( mesh );
-   for( entity.getCoordinates().y() = 0;
-        entity.getCoordinates().y() <= mesh.getDimensions().y();
-        entity.getCoordinates().y() ++ )
+   auto& c = entity.getCoordinates();
+   for( c.y() = 0; c.y() <= mesh.getDimensions().y(); c.y()++ )
    {
-      for( entity.getCoordinates().x() = 0;
-           entity.getCoordinates().x() <= mesh.getDimensions().x();
-           entity.getCoordinates().x() ++ )
+      for( c.x() = 0; c.x() <= mesh.getDimensions().x(); c.x()++ )
       {
          entity.refresh();
          typename MeshType::PointType v = entity.getCenter();
@@ -239,16 +222,11 @@ write( const VectorFieldType& vectorField,
 {
    const MeshType& mesh = vectorField.getMesh();
    typename MeshType::Cell entity( mesh );
-   for( entity.getCoordinates().z() = 0;
-        entity.getCoordinates().z() < mesh.getDimensions().z();
-        entity.getCoordinates().z() ++ )
-      for( entity.getCoordinates().y() = 0;
-           entity.getCoordinates().y() < mesh.getDimensions().y();
-           entity.getCoordinates().y() ++ )
+   auto& c = entity.getCoordinates();
+   for( c.z() = 0; c.z() < mesh.getDimensions().z(); c.z()++ )
+      for( c.y() = 0; c.y() < mesh.getDimensions().y(); c.y()++ )
       {
-         for( entity.getCoordinates().x() = 0;
-              entity.getCoordinates().x() < mesh.getDimensions().x();
-              entity.getCoordinates().x() ++ )
+         for( c.x() = 0; c.x() < mesh.getDimensions().x(); c.x()++ )
          {
             entity.refresh();
             typename MeshType::PointType v = entity.getCenter();
@@ -280,18 +258,13 @@ write( const VectorFieldType& vectorField,
    typedef typename MeshType::Face EntityType;
    typedef typename EntityType::EntityOrientationType EntityOrientation;
    EntityType entity( mesh );
+   auto& c = entity.getCoordinates();
 
    entity.setOrientation( EntityOrientation( 1.0, 0.0, 0.0 ) );
-   for( entity.getCoordinates().z() = 0;
-        entity.getCoordinates().z() < mesh.getDimensions().z();
-        entity.getCoordinates().z() ++ )
-      for( entity.getCoordinates().y() = 0;
-           entity.getCoordinates().y() < mesh.getDimensions().y();
-           entity.getCoordinates().y() ++ )
+   for( c.z() = 0; c.z() < mesh.getDimensions().z(); c.z()++ )
+      for( c.y() = 0; c.y() < mesh.getDimensions().y(); c.y()++ )
       {
-         for( entity.getCoordinates().x() = 0;
-              entity.getCoordinates().x() <= mesh.getDimensions().x();
-              entity.getCoordinates().x() ++ )
+         for( c.x() = 0; c.x() <= mesh.getDimensions().x(); c.x()++ )
          {
             entity.refresh();
             typename MeshType::PointType v = entity.getCenter();
@@ -304,16 +277,10 @@ write( const VectorFieldType& vectorField,
       }
 
    entity.setOrientation( EntityOrientation( 0.0, 1.0, 0.0 ) );
-   for( entity.getCoordinates().z() = 0;
-        entity.getCoordinates().z() < mesh.getDimensions().z();
-        entity.getCoordinates().z() ++ )
-      for( entity.getCoordinates().x() = 0;
-           entity.getCoordinates().x() < mesh.getDimensions().x();
-           entity.getCoordinates().x() ++ )
+   for( c.z() = 0; c.z() < mesh.getDimensions().z(); c.z()++ )
+      for( c.x() = 0; c.x() < mesh.getDimensions().x(); c.x()++ )
       {
-         for( entity.getCoordinates().y() = 0;
-              entity.getCoordinates().y() <= mesh.getDimensions().y();
-              entity.getCoordinates().y() ++ )
+         for( c.y() = 0; c.y() <= mesh.getDimensions().y(); c.y()++ )
          {
             entity.refresh();
             typename MeshType::PointType v = entity.getCenter();
@@ -326,16 +293,10 @@ write( const VectorFieldType& vectorField,
       }
 
    entity.setOrientation( EntityOrientation( 0.0, 0.0, 1.0 ) );
-   for( entity.getCoordinates().x() = 0;
-        entity.getCoordinates().x() < mesh.getDimensions().x();
-        entity.getCoordinates().x() ++ )
-      for( entity.getCoordinates().y() = 0;
-           entity.getCoordinates().y() <= mesh.getDimensions().y();
-           entity.getCoordinates().y() ++ )
+   for( c.x() = 0; c.x() < mesh.getDimensions().x(); c.x()++ )
+      for( c.y() = 0; c.y() <= mesh.getDimensions().y(); c.y()++ )
       {
-         for( entity.getCoordinates().z() = 0;
-              entity.getCoordinates().z() < mesh.getDimensions().z();
-              entity.getCoordinates().z() ++ )
+         for( c.z() = 0; c.z() < mesh.getDimensions().z(); c.z()++ )
          {
             entity.refresh();
             typename MeshType::PointType v = entity.getCenter();
@@ -366,16 +327,11 @@ write( const VectorFieldType& vectorField,
 {
    const MeshType& mesh = vectorField.getMesh();
    typename MeshType::Vertex entity( mesh );
-   for( entity.getCoordinates().z() = 0;
-        entity.getCoordinates().z() <= mesh.getDimensions().z();
-        entity.getCoordinates().z() ++ )
-      for( entity.getCoordinates().y() = 0;
-           entity.getCoordinates().y() <= mesh.getDimensions().y();
-           entity.getCoordinates().y() ++ )
+   auto& c = entity.getCoordinates();
+   for( c.z() = 0; c.z() <= mesh.getDimensions().z(); c.z()++ )
+      for( c.y() = 0; c.y() <= mesh.getDimensions().y(); c.y()++ )
       {
-         for( entity.getCoordinates().x() = 0;
-              entity.getCoordinates().x() <= mesh.getDimensions().x();
-              entity.getCoordinates().x() ++ )
+         for( c.x() = 0; c.x() <= mesh.getDimensions().x(); c.x()++ )
          {
             entity.refresh();
             typename MeshType::PointType v = entity.getCenter();
@@ -391,4 +347,3 @@ write( const VectorFieldType& vectorField,
 
 } // namespace Functions
 } // namespace TNL
-
