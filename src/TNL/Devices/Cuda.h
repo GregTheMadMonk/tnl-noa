@@ -10,13 +10,7 @@
 
 #pragma once
 
-#include <iostream>
-
 #include <TNL/String.h>
-#include <TNL/Assert.h>
-#include <TNL/Pointers/SmartPointersRegister.h>
-#include <TNL/Timer.h>
-#include <TNL/Cuda/CudaCallable.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 
@@ -33,16 +27,6 @@ public:
 
    static inline constexpr int getGPUTransferBufferSize();
 
-   static inline void insertSmartPointer( Pointers::SmartPointer* pointer );
-
-   static inline void removeSmartPointer( Pointers::SmartPointer* pointer );
-
-   // Negative deviceId means that CudaDeviceInfo::getActiveDevice will be
-   // called to get the device ID.
-   static inline bool synchronizeDevice( int deviceId = -1 );
-
-   static inline Timer& getSmartPointersSynchronizationTimer();
-
    ////
    // When we transfer data between the GPU and the CPU we use 5 MB buffer. This
    // size should ensure good performance -- see.
@@ -50,11 +34,6 @@ public:
    // We use the same buffer size even for retyping data during IO operations.
    //
    static constexpr std::size_t TransferBufferSize = 5 * 2<<20;
-
-
-   protected:
-
-   static inline Pointers::SmartPointersRegister& getSmartPointersRegister();
 };
 
 #ifdef HAVE_CUDA

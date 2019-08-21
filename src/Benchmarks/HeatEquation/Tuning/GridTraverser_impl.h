@@ -246,7 +246,7 @@ processEntities(
       IndexType cudaThreadsCount = 2 * ( end.x() - begin.x() + end.y() - begin.y() + 1 );
       Cuda::setupThreads( cudaBlockSize, cudaBlocksCount, cudaGridsCount, cudaThreadsCount );
       dim3 gridIdx, cudaGridSize;
-      Devices::Cuda::synchronizeDevice();
+      Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
       for( gridIdx.x = 0; gridIdx.x < cudaGridsCount.x; gridIdx.x++ )
       {
          Cuda::setupGrid( cudaBlocksCount, cudaGridsCount, gridIdx, cudaGridSize );
@@ -273,7 +273,7 @@ processEntities(
       auto& pool = Cuda::StreamPool::getInstance();
       const cudaStream_t& s = pool.getStream( stream );
 
-      Devices::Cuda::synchronizeDevice();
+      Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
       dim3 gridIdx, cudaGridSize;
       for( gridIdx.y = 0; gridIdx.y < cudaGridsCount.y; gridIdx.y ++ )
          for( gridIdx.x = 0; gridIdx.x < cudaGridsCount.x; gridIdx.x ++ )

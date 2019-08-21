@@ -25,7 +25,7 @@ initInterface( const MeshFunctionPointer& _input,
     int numBlocksX = Cuda::getNumberOfBlocks( mesh.getDimensions().x(), cudaBlockSize );
     dim3 blockSize( cudaBlockSize );
     dim3 gridSize( numBlocksX );
-    Devices::Cuda::synchronizeDevice();
+    Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
     CudaInitCaller<<< gridSize, blockSize >>>( _input.template getData< Device >(),
             _output.template modifyData< Device >(),
             _interfaceMap.template modifyData< Device >() );

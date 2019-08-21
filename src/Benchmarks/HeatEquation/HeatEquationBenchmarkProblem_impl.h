@@ -490,7 +490,7 @@ getExplicitUpdate( const RealType& time,
          
          //std::cerr << "Setting boundary conditions..." << std::endl;
 
-         Devices::Cuda::synchronizeDevice();
+         Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
          for( IndexType gridYIdx = 0; gridYIdx < cudaYGrids; gridYIdx ++ )
             for( IndexType gridXIdx = 0; gridXIdx < cudaXGrids; gridXIdx ++ )
                boundaryConditionsTemplatedCompact< MeshType, CellType, BoundaryCondition, MeshFunctionType >
@@ -594,7 +594,7 @@ getExplicitUpdate( const RealType& time,
                                gridYSize / 16 + ( gridYSize % 16 != 0 ) );
             */
 
-            TNL::Devices::Cuda::synchronizeDevice();
+            Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
             int cudaErr;
             Meshes::Traverser< MeshType, Cell > meshTraverser;
             meshTraverser.template processInteriorEntities< UserData,

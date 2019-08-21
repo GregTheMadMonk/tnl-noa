@@ -185,7 +185,7 @@ processEntities(
    auto& pool = Cuda::StreamPool::getInstance();
    const cudaStream_t& s = pool.getStream( stream );
 
-   Devices::Cuda::synchronizeDevice();
+   Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
    if( processOnlyBoundaryEntities )
    {
       dim3 cudaBlockSize( 2 );

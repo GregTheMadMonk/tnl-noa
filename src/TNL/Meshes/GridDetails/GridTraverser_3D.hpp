@@ -346,8 +346,8 @@ processEntities(
       Cuda::setupThreads( cudaBlockSize, cudaBlocksCountAlongYZ, cudaGridsCountAlongYZ, entitiesAlongY - 2, entitiesAlongZ - 2 );
 
       auto& pool = Cuda::StreamPool::getInstance();
-      Devices::Cuda::synchronizeDevice();
-      
+      Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
+
       const cudaStream_t& s1 = pool.getStream( stream );
       const cudaStream_t& s2 = pool.getStream( stream + 1 );
       const cudaStream_t& s3 = pool.getStream( stream + 2 );
@@ -458,7 +458,7 @@ processEntities(
       auto& pool = Cuda::StreamPool::getInstance();
       const cudaStream_t& s = pool.getStream( stream );
 
-      Devices::Cuda::synchronizeDevice();
+      Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
       dim3 gridIdx, gridSize;
       for( gridIdx.z = 0; gridIdx.z < cudaGridsCount.z; gridIdx.z ++ )
          for( gridIdx.y = 0; gridIdx.y < cudaGridsCount.y; gridIdx.y ++ )

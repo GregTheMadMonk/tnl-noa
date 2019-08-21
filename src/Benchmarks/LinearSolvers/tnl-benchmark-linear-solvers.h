@@ -130,7 +130,7 @@ benchmarkIterativeSolvers( Benchmark& benchmark,
    *cudaMatrixPointer = *matrixPointer;
 
    // synchronize shared pointers
-   Devices::Cuda::synchronizeDevice();
+   Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
 #endif
 
    using namespace Solvers::Linear;

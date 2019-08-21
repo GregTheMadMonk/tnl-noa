@@ -295,14 +295,14 @@ solve( const MeshPointer& mesh,
         //MeshFunctionPointer helpFunc1( mesh );      
         MeshFunctionPointer helpFunc( mesh );
         helpFunc.template modifyData() = auxPtr.template getData();
-        Devices::Cuda::synchronizeDevice(); 
+        Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
                 
         int numIter = 0; // number of passages of following while cycle
         
         while( BlockIterD ) //main body of cuda code
         {
           
-          Devices::Cuda::synchronizeDevice();          
+          Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
           // main function that calculates all values in each blocks
           // calculated values are in helpFunc
           CudaUpdateCellCaller< 10 ><<< gridSize, blockSize >>>( ptr,
@@ -315,14 +315,14 @@ solve( const MeshPointer& mesh,
           // Switching pointers to helpFunc and auxPtr so real results are in memory of helpFunc but here under variable auxPtr
           auxPtr.swap( helpFunc );
           
-          Devices::Cuda::synchronizeDevice();
+          Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
           // Neighbours of blocks that calculatedBefore in this passage should calculate in the next!
           // BlockIterDevice contains blocks that calculatedBefore in this passage and BlockIterPom those that should calculate in next (are neighbours)
           GetNeighbours<<< nBlocksNeigh, 1024 >>>( BlockIterDevice.getView(), BlockIterPom.getView(), numBlocksX, numBlocksY, numBlocksZ );
           cudaDeviceSynchronize();
           TNL_CHECK_CUDA_DEVICE;
           BlockIterDevice = BlockIterPom;
-          Devices::Cuda::synchronizeDevice();
+          Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
           
           // .containsValue(1) is actually parallel reduction implemented in TNL
           BlockIterD = BlockIterDevice.containsValue(1);
@@ -340,7 +340,7 @@ solve( const MeshPointer& mesh,
           // We need auxPtr to point on memory of original auxPtr (not to helpFunc)
           // last passage of previous while cycle didnt calculate any number anyway so switching names doesnt effect values
           auxPtr.swap( helpFunc ); 
-          Devices::Cuda::synchronizeDevice();
+          Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
         }
         cudaDeviceSynchronize();
         TNL_CHECK_CUDA_DEVICE;

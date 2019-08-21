@@ -30,7 +30,7 @@ initInterface( const MeshFunctionPointer& _input,
       std::cout << "Invalid kernel call. Dimensions of grid are max: [1024,1024,64], and maximum threads per block are 1024!" << std::endl;
     dim3 blockSize( cudaBlockSize, cudaBlockSize, cudaBlockSize );
     dim3 gridSize( numBlocksX, numBlocksY, numBlocksZ );
-    Devices::Cuda::synchronizeDevice();
+    Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
     CudaInitCaller3d<<< gridSize, blockSize >>>( _input.template getData< Device >(),
             _output.template modifyData< Device >(),
             _interfaceMap.template modifyData< Device >(), vLower, vUpper );

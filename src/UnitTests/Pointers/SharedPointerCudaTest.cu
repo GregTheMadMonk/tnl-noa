@@ -55,7 +55,7 @@ TEST( SharedPointerCudaTest, getDataTest )
    ASSERT_EQ( ptr1->y(), 2 );
 #else
 
-   Devices::Cuda::synchronizeDevice();
+   Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
 
    TestType aux;
 
@@ -89,7 +89,7 @@ TEST( SharedPointerCudaTest, getDataArrayTest )
    ptr->setElement( 0, 1 );
    ptr->setElement( 1, 2 );
 
-   Devices::Cuda::synchronizeDevice();
+   Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
 
    int *testArray_device, *testArray_host;
    cudaMalloc( ( void** ) &testArray_device, 2 * sizeof( int ) );

@@ -16,6 +16,7 @@
 
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Pointers/SmartPointer.h>
+#include <TNL/Pointers/SmartPointersRegister.h>
 #include <TNL/Cuda/MemoryHelpers.h>
 
 #include <cstring>   // std::memcpy, std::memcmp
@@ -546,7 +547,7 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
       ~SharedPointer()
       {
          this->free();
-         Devices::Cuda::removeSmartPointer( this );
+         getSmartPointersRegister< DeviceType >().remove( this );
       }
 
    protected:
@@ -577,7 +578,7 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
 #ifdef TNL_DEBUG_SHARED_POINTERS
          std::cerr << "Created shared pointer to " << getType< ObjectType >() << " (cuda_pointer = " << this->cuda_pointer << ")" << std::endl;
 #endif
-         Devices::Cuda::insertSmartPointer( this );
+         getSmartPointersRegister< DeviceType >().insert( this );
          return true;
       }
 

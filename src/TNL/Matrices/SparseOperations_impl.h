@@ -140,7 +140,7 @@ copySparseMatrix_impl( Matrix1& A, const Matrix2& B )
       const Pointers::DevicePointer< const Matrix2 > Bpointer( B );
 
       // set row lengths
-      Devices::Cuda::synchronizeDevice();
+      Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
       SparseMatrixSetRowLengthsVectorKernel<<< gridSize, blockSize >>>(
             rowLengths.getData(),
             &Bpointer.template getData< TNL::Devices::Cuda >(),
@@ -150,7 +150,7 @@ copySparseMatrix_impl( Matrix1& A, const Matrix2& B )
       Apointer->setCompressedRowLengths( rowLengths );
 
       // copy rows
-      Devices::Cuda::synchronizeDevice();
+      Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
       SparseMatrixCopyKernel<<< gridSize, blockSize >>>(
             &Apointer.template modifyData< TNL::Devices::Cuda >(),
             &Bpointer.template getData< TNL::Devices::Cuda >(),

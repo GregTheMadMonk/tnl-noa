@@ -16,6 +16,7 @@
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Pointers/SmartPointer.h>
+#include <TNL/Pointers/SmartPointersRegister.h>
 #include <TNL/TypeInfo.h>
 #include <TNL/Cuda/MemoryHelpers.h>
 
@@ -406,7 +407,7 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
       ~DevicePointer()
       {
          this->free();
-         Devices::Cuda::removeSmartPointer( this );
+         getSmartPointersRegister< DeviceType >().remove( this );
       }
 
    protected:
@@ -426,7 +427,7 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
          this->cuda_pointer = Cuda::passToDevice( *this->pointer );
          // set last-sync state
          this->set_last_sync_state();
-         Devices::Cuda::insertSmartPointer( this );
+         getSmartPointersRegister< DeviceType >().insert( this );
          return true;
       }
 

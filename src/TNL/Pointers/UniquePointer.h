@@ -16,6 +16,7 @@
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Pointers/SmartPointer.h>
+#include <TNL/Pointers/SmartPointersRegister.h>
 #include <TNL/Cuda/MemoryHelpers.h>
 
 #include <cstring>  // std::memcpy, std::memcmp
@@ -250,7 +251,7 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
       ~UniquePointer()
       {
          this->free();
-         Devices::Cuda::removeSmartPointer( this );
+         getSmartPointersRegister< DeviceType >().remove( this );
       }
 
    protected:
@@ -276,7 +277,7 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
          this->cuda_pointer = Cuda::passToDevice( this->pd->data );
          // set last-sync state
          this->set_last_sync_state();
-         Devices::Cuda::insertSmartPointer( this );
+         getSmartPointersRegister< DeviceType >().insert( this );
          return true;
       }
 

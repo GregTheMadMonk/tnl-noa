@@ -282,7 +282,7 @@ allocate_LU()
    U->setDimensions( N, N );
 
    // extract raw pointer
-   Devices::Cuda::synchronizeDevice();
+   Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
    const CSR* kernel_A = &A.template getData< DeviceType >();
 
    // copy row lengths
@@ -329,7 +329,7 @@ copy_triangular_factors()
    const int N = A->getRows();
 
    // extract raw pointers
-   Devices::Cuda::synchronizeDevice();
+   Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
    CSR* kernel_L = &L.template modifyData< DeviceType >();
    CSR* kernel_U = &U.template modifyData< DeviceType >();
    const CSR* kernel_A = &A.template getData< DeviceType >();

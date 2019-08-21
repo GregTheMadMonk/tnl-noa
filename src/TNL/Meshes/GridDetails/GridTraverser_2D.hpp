@@ -418,8 +418,8 @@ processEntities(
       Cuda::setupThreads( cudaBlockSize, cudaBlocksCountAlongY, cudaGridsCountAlongY, end.y() - begin.y() - 1 );
             
       auto& pool = Cuda::StreamPool::getInstance();
-      Devices::Cuda::synchronizeDevice();
-      
+      Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
+
       const cudaStream_t& s1 = pool.getStream( stream );
       const cudaStream_t& s2 = pool.getStream( stream + 1 );
       dim3 gridIdx, cudaGridSize;
@@ -486,7 +486,7 @@ processEntities(
       //std::cerr << "blocksPerFace = " << blocksPerFace << "Threads count = " << cudaThreadsCount 
       //          << "cudaBlockCount = " << cudaBlocksCount.x << std::endl;      
       dim3 gridIdx, cudaGridSize;
-      Devices::Cuda::synchronizeDevice();
+      Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
       for( gridIdx.x = 0; gridIdx.x < cudaGridsCount.x; gridIdx.x++ )
       {
          Cuda::setupGrid( cudaBlocksCount, cudaGridsCount, gridIdx, cudaGridSize );
@@ -518,7 +518,7 @@ processEntities(
       auto& pool = Cuda::StreamPool::getInstance();
       const cudaStream_t& s = pool.getStream( stream );
 
-      Devices::Cuda::synchronizeDevice();
+      Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
       dim3 gridIdx, cudaGridSize;
       for( gridIdx.y = 0; gridIdx.y < cudaGridsCount.y; gridIdx.y ++ )
          for( gridIdx.x = 0; gridIdx.x < cudaGridsCount.x; gridIdx.x ++ )

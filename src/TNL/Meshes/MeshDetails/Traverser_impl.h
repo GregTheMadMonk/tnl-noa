@@ -164,7 +164,7 @@ processBoundaryEntities( const MeshPointer& meshPointer,
    const int desGridSize = 32 * Cuda::DeviceInfo::getCudaMultiprocessors( Cuda::DeviceInfo::getActiveDevice() );
    gridSize.x = min( desGridSize, Cuda::getNumberOfBlocks( entitiesCount, blockSize.x ) );
 
-   Devices::Cuda::synchronizeDevice();
+   Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
    MeshTraverserBoundaryEntitiesKernel< EntitiesDimension, EntitiesProcessor >
       <<< gridSize, blockSize >>>
       ( &meshPointer.template getData< Devices::Cuda >(),
@@ -195,7 +195,7 @@ processInteriorEntities( const MeshPointer& meshPointer,
    const int desGridSize = 32 * Cuda::DeviceInfo::getCudaMultiprocessors( Cuda::DeviceInfo::getActiveDevice() );
    gridSize.x = min( desGridSize, Cuda::getNumberOfBlocks( entitiesCount, blockSize.x ) );
 
-   Devices::Cuda::synchronizeDevice();
+   Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
    MeshTraverserInteriorEntitiesKernel< EntitiesDimension, EntitiesProcessor >
       <<< gridSize, blockSize >>>
       ( &meshPointer.template getData< Devices::Cuda >(),
@@ -226,7 +226,7 @@ processAllEntities( const MeshPointer& meshPointer,
    const int desGridSize = 32 * Cuda::DeviceInfo::getCudaMultiprocessors( Cuda::DeviceInfo::getActiveDevice() );
    gridSize.x = min( desGridSize, Cuda::getNumberOfBlocks( entitiesCount, blockSize.x ) );
 
-   Devices::Cuda::synchronizeDevice();
+   Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
    MeshTraverserAllEntitiesKernel< EntitiesDimension, EntitiesProcessor >
       <<< gridSize, blockSize >>>
       ( &meshPointer.template getData< Devices::Cuda >(),
