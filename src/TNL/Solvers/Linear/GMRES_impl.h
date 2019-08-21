@@ -25,16 +25,6 @@ namespace Solvers {
 namespace Linear {
 
 template< typename Matrix >
-String
-GMRES< Matrix >::
-getType() const
-{
-   return String( "GMRES< " ) +
-          this->matrix -> getType() + ", " +
-          this->preconditioner -> getType() + " >";
-}
-
-template< typename Matrix >
 void
 GMRES< Matrix >::
 configSetup( Config::ConfigDescription& config,

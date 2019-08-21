@@ -110,10 +110,6 @@ class Mesh
       using Face = EntityType< getMeshDimension() - 1 >;
       using Vertex = EntityType< 0 >;
 
-      static String getType();
-
-      virtual String getTypeVirtual() const;
-
       static String getSerializationType();
 
       virtual String getSerializationTypeVirtual() const;

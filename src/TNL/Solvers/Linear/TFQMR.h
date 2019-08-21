@@ -28,8 +28,6 @@ public:
    using VectorViewType = typename Base::VectorViewType;
    using ConstVectorViewType = typename Base::ConstVectorViewType;
 
-   String getType() const;
-
    bool solve( ConstVectorViewType b, VectorViewType x ) override;
 
 protected:

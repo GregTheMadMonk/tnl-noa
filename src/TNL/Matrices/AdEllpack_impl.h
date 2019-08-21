@@ -11,7 +11,7 @@
 #include <TNL/Matrices/AdEllpack.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Math.h>
-#include <TNL/param-types.h>
+#include <TNL/TypeInfo.h>
 
 #pragma once
 
@@ -156,26 +156,6 @@ AdEllpack< Real, Device, Index >::AdEllpack()
 :
 warpSize( 32 )
 {}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-String AdEllpack< Real, Device, Index >::getTypeVirtual() const
-{
-    return this->getType();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-String AdEllpack< Real, Device, Index >::getType()
-{
-    return String( "AdEllpack< ") +
-           String( TNL::getType< Real >() ) +
-           String( ", " ) +
-           Device::getType() +
-           String( " >" );
-}
 
 template< typename Real,
           typename Device,

@@ -19,11 +19,6 @@
 
 namespace TNL {
 
-inline String String::getType()
-{
-   return String( "String" );
-}
-
 inline int String::getLength() const
 {
    return getSize();

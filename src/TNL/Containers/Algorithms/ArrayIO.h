@@ -34,9 +34,9 @@ struct ArrayIO< Value, Device, Index, true >
    static String getSerializationType()
    {
       return String( "Containers::Array< " ) +
-             TNL::getType< Value >() + ", " +
-             Devices::Host::getType() + ", " +
-             TNL::getType< Index >() + " >";
+             TNL::getSerializationType< Value >() + ", " +
+             TNL::getSerializationType< Devices::Host >() + ", " +
+             TNL::getSerializationType< Index >() + " >";
    }
 
    static void save( File& file,
@@ -80,9 +80,9 @@ struct ArrayIO< Value, Device, Index, false >
    static String getSerializationType()
    {
       return String( "Containers::Array< " ) +
-             TNL::getType< Value >() + ", " +
-             Devices::Host::getType() + ", " +
-             TNL::getType< Index >() + " >";
+             TNL::getSerializationType< Value >() + ", " +
+             TNL::getSerializationType< Devices::Host >() + ", " +
+             TNL::getSerializationType< Index >() + " >";
    }
 
    static void save( File& file,

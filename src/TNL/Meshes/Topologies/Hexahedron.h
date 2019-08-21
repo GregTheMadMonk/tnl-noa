@@ -25,11 +25,6 @@ namespace Topologies {
 struct Hexahedron
 {
    static constexpr int dimension = 3;
-
-   static String getType()
-   {
-      return "Topologies::Hexahedron";
-   }
 };
 
 template<>

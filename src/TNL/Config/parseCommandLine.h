@@ -13,7 +13,6 @@
 #include <cstring>
 #include <string>
 
-//#include <TNL/Object.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 

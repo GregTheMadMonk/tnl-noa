@@ -20,16 +20,6 @@ namespace TNL {
 
 static constexpr char magic_number[] = "TNLMN";
 
-inline String Object::getType()
-{
-   return String( "Object" );
-}
-
-inline String Object::getTypeVirtual() const
-{
-   return this->getType();
-}
-
 inline String Object::getSerializationType()
 {
    return String( "Object" );

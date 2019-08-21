@@ -25,15 +25,9 @@ namespace Meshes {
 namespace Topologies {
 
 template< int dimension_ >
-class Simplex
+struct Simplex
 {
-   public:
-      static constexpr int dimension = dimension_;
-
-      static String getType()
-      {
-         return String( "Topologies::Simplex< " ) + convertToString( dimension ) + " >";
-      }
+   static constexpr int dimension = dimension_;
 };
 
 namespace SimplexDetails {

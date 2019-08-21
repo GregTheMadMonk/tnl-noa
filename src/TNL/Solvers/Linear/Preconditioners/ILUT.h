@@ -33,11 +33,6 @@ class ILUT
 : public ILUT_impl< Matrix, typename Matrix::RealType, typename Matrix::DeviceType, typename Matrix::IndexType >
 {
 public:
-   String getType() const
-   {
-      return String( "ILUT" );
-   }
-
    static void configSetup( Config::ConfigDescription& config,
                             const String& prefix = "" )
    {

@@ -28,8 +28,6 @@ public:
    using VectorViewType = typename Base::VectorViewType;
    using ConstVectorViewType = typename Base::ConstVectorViewType;
 
-   String getType() const;
-
    static void configSetup( Config::ConfigDescription& config,
                             const String& prefix = "" );
 

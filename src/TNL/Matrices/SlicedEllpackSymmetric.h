@@ -55,10 +55,6 @@ class SlicedEllpackSymmetric : public Sparse< Real, Device, Index >
 
    SlicedEllpackSymmetric();
 
-   static String getType();
-
-   String getTypeVirtual() const;
-
    void setDimensions( const IndexType rows,
                        const IndexType columns );
 

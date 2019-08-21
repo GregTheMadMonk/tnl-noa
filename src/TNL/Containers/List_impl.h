@@ -36,12 +36,6 @@ List< T >::~List()
 }
 
 template< typename T >
-String List< T >::getType()
-{
-   return String( "Containers::List< " ) + TNL::getType< T >() +  String( " >" );
-}
-
-template< typename T >
 bool List< T >::isEmpty() const
 {
    return ! size;

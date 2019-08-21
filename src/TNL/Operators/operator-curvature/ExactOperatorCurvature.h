@@ -29,8 +29,6 @@ class ExactOperatorCurvature< OperatorQ, 1 >
 
       enum { Dimension = 1 };
 
-      static String getType();
-
       template< int XDiffOrder = 0, int YDiffOrder = 0, int ZDiffOrder = 0, typename Function, typename Point, typename Real = typename Point::RealType >
       __cuda_callable__
       static Real getValue( const Function& function,
@@ -46,8 +44,6 @@ class ExactOperatorCurvature< ExactOperatorQ, 2 >
 
       enum { Dimension = 2 };
 
-      static String getType();
-         
       template< int XDiffOrder = 0, int YDiffOrder = 0, int ZDiffOrder = 0, typename Function, typename Point, typename Real = typename Point::RealType >
       __cuda_callable__
       static Real getValue( const Function& function,
@@ -62,8 +58,6 @@ class ExactOperatorCurvature< ExactOperatorQ, 3 >
 
       enum { Dimension = 3 };
 
-      static String getType();
-   
       template< int XDiffOrder = 0, int YDiffOrder = 0, int ZDiffOrder = 0, typename Function, typename Point, typename Real = typename Point::RealType >
       __cuda_callable__
       static Real getValue( const Function& function,

@@ -16,6 +16,7 @@
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Pointers/SmartPointer.h>
+#include <TNL/TypeInfo.h>
 
 #include <cstring>  // std::memcpy, std::memcmp
 
@@ -481,8 +482,8 @@ struct Formatter< Pointers::DevicePointer< Object, Device > >
    printToString( const Pointers::DevicePointer< Object, Device >& value )
    {
       ::std::stringstream ss;
-      ss << "(DevicePointer< " << Object::getType() << ", " << Device::getType()
-         << " > object at " << &value << ")";
+      ss << "(" + getType< Pointers::DevicePointer< Object, Device > >()
+         << " object at " << &value << ")";
       return ss.str();
    }
 };

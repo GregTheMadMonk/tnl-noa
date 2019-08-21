@@ -54,8 +54,6 @@ class MeanCurvatureFlowProblem : public PDEProblem< Mesh,
       using typename BaseType::MeshDependentDataType;
       using typename BaseType::MeshDependentDataPointer;
 
-      static String getType();
-
       String getPrologHeader() const;
 
       void writeProlog( Logger& logger,

@@ -35,10 +35,6 @@ public:
 
 	BiEllpackSymmetric();
 
-	static String getType();
-
-	String getTypeVirtual() const;
-
 	void setDimensions( const IndexType rows, const IndexType columns );
 
    void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths );

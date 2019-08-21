@@ -33,8 +33,6 @@ class BenchmarkLaplace< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, In
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       enum { Dimension = MeshType::getMeshDimension() };
 
-      static String getType();
-
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
       Real operator()( const MeshFunction& u,
@@ -80,8 +78,6 @@ class BenchmarkLaplace< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, Real, Ind
       typedef Index IndexType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       enum { Dimension = MeshType::getMeshDimension() };
-
-      static String getType();
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
@@ -143,8 +139,6 @@ class BenchmarkLaplace< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real, Ind
       typedef Index IndexType;
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       enum { Dimension = MeshType::getMeshDimension() };
-
-      static String getType();
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__

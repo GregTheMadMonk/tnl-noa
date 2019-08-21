@@ -89,10 +89,6 @@ public:
 
     AdEllpack();
 
-    static String getType();
-
-    String getTypeVirtual() const;
-
     void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths );
 
     IndexType getWarp( const IndexType row ) const;

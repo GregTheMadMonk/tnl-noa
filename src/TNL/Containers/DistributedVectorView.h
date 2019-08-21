@@ -72,8 +72,6 @@ public:
    __cuda_callable__
    ConstViewType getConstView() const;
 
-   static String getType();
-
    /*
     * Usual Vector methods follow below.
     */

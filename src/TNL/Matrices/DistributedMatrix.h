@@ -80,13 +80,6 @@ public:
    const Matrix& getLocalMatrix() const;
 
 
-   static String getType();
-
-   virtual String getTypeVirtual() const;
-
-   // TODO: no getSerializationType method until there is support for serialization
-
-
    /*
     * Some common Matrix methods follow below.
     */

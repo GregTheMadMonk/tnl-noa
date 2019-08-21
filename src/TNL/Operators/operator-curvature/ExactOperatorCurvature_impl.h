@@ -15,14 +15,6 @@
 namespace TNL {
 namespace Operators {   
 
-template< typename ExactOperatorQ >
-String
-ExactOperatorCurvature< ExactOperatorQ, 1 >::
-getType()
-{
-   return "ExactOperatorCurvature< " + ExactOperatorQ::getType() + ",1 >";
-}
-
 template< typename OperatorQ >
 template< int XDiffOrder, int YDiffOrder, int ZDiffOrder, typename Function, typename Point, typename Real >
 __cuda_callable__
@@ -39,14 +31,6 @@ getValue( const Function& function,
                ( function.template getValue< 1, 0, 0, Point >( v, time ) * ExactOperatorQ::template getValue< 1, 0, 0 >( function, v, time, eps ) )
                 / ( ExactOperatorQ::template getValue< 0, 0, 0 >( function, v, time, eps ) * ExactOperatorQ::template getValue< 0, 0, 0 >( function, v, time, eps ) );
    return 0;
-}
-
-template< typename ExactOperatorQ >
-String
-ExactOperatorCurvature< ExactOperatorQ, 2 >::
-getType()
-{
-   return "ExactOperatorCurvature< " + ExactOperatorQ::getType() + ",2 >";
 }
 
 template< int XDiffOrder, int YDiffOrder, int ZDiffOrder, typename Function, typename Point, typename Real >
@@ -66,14 +50,6 @@ getValue( const Function& function,
                ExactOperatorQ::template getValue< 0, 1, 0 >( function, v, time, eps ) )
                 / ( ExactOperatorQ::template getValue< 0, 0, 0 >( function, v, time, eps ) * ExactOperatorQ::template getValue< 0, 0, 0 >( function, v, time, eps ) );
    return 0;
-}
-
-template< typename ExactOperatorQ >
-String
-ExactOperatorCurvature< ExactOperatorQ, 3 >::
-getType()
-{
-   return "ExactOperatorCurvature< " + ExactOperatorQ::getType() + ",3 >";
 }
 
 } // namespace Operators

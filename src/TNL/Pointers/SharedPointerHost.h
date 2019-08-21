@@ -54,7 +54,7 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
       : pd( nullptr )
       {
 #ifdef TNL_DEBUG_SHARED_POINTERS
-         std::cerr << "Creating shared pointer to " << demangle(typeid(ObjectType).name()) << std::endl;
+         std::cerr << "Creating shared pointer to " << getType< ObjectType >() << std::endl;
 #endif
          this->allocate( args... );
       }
@@ -95,7 +95,7 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
       bool recreate( Args... args )
       {
 #ifdef TNL_DEBUG_SHARED_POINTERS
-         std::cerr << "Recreating shared pointer to " << demangle(typeid(ObjectType).name()) << std::endl;
+         std::cerr << "Recreating shared pointer to " << getType< ObjectType >() << std::endl;
 #endif
          if( ! this->counter )
             return this->allocate( args... );

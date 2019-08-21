@@ -27,21 +27,6 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-String
-LinearDiffusion< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
-getType()
-{
-   return String( "LinearDiffusion< " ) +
-          MeshType::getType() + ", " +
-         TNL::getType< Real >() + ", " +
-         TNL::getType< Index >() + " >";
-}
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
 template< typename PreimageFunction,
           typename MeshEntity >
 __cuda_callable__
@@ -107,21 +92,6 @@ setMatrixElements( const PreimageFunction& u,
    matrixRow.setElement( 0, neighborEntities.template getEntityIndex< -1 >(),      - lambdaX );
    matrixRow.setElement( 1, index,                                              2.0 * lambdaX );
    matrixRow.setElement( 2, neighborEntities.template getEntityIndex< 1 >(),       - lambdaX );
-}
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-String
-LinearDiffusion< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
-getType()
-{
-   return String( "LinearDiffusion< " ) +
-          MeshType::getType() + ", " +
-         TNL::getType< Real >() + ", " +
-         TNL::getType< Index >() + " >";
 }
 
 template< typename MeshReal,
@@ -201,22 +171,6 @@ setMatrixElements( const PreimageFunction& u,
    matrixRow.setElement( 2, index,                                                        2.0 * ( lambdaX + lambdaY ) );
    matrixRow.setElement( 3, neighborEntities.template getEntityIndex< 1, 0 >(),   -lambdaX );
    matrixRow.setElement( 4, neighborEntities.template getEntityIndex< 0, 1 >(),   -lambdaY );
-}
-
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-String
-LinearDiffusion< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
-getType()
-{
-   return String( "LinearDiffusion< " ) +
-          MeshType::getType() + ", " +
-         TNL::getType< Real >() + ", " +
-         TNL::getType< Index >() + " >";
 }
 
 template< typename MeshReal,

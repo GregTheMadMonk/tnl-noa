@@ -98,11 +98,6 @@ class String
       using std::string::operator=;
 
       /**
-       * \brief Returns type of string: \c "String".
-       */
-      static String getType();
-
-      /**
        * \brief Returns the number of characters in given string. Equivalent to \ref getSize.
        */
       int getLength() const;

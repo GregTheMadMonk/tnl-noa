@@ -95,11 +95,6 @@ public:
                const String& prefix = "" );
 
    /**
-    * \brief Gets type of this vector.
-    */
-   static String getType();
-
-   /**
     * \brief Assignment operator with a vector expression.
     * 
     * The vector expression can be even just static vector.

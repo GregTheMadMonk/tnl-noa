@@ -16,7 +16,6 @@
 
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
-#include <TNL/param-types.h>
 
 namespace TNL {
 
@@ -46,14 +45,6 @@ public:
    {
       this->store(desired.load());
       return *this;
-   }
-
-   // just for compatibility with TNL::Containers::Array...
-   static String getType()
-   {
-      return "Atomic< " +
-             TNL::getType< T >() + ", " +
-             Devices::Host::getType() + " >";
    }
 
    // CAS loops for updating maximum and minimum
@@ -118,14 +109,6 @@ public:
 //      *this = desired.load();
       *this = desired.value;
       return *this;
-   }
-
-   // just for compatibility with TNL::Containers::Array...
-   static String getType()
-   {
-      return "Atomic< " +
-             TNL::getType< T >() + ", " +
-             Devices::Cuda::getType() + " >";
    }
 
    bool is_lock_free() const noexcept

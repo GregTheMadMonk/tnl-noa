@@ -41,29 +41,13 @@ CSR< Real, Device, Index >::CSR()
 template< typename Real,
           typename Device,
           typename Index >
-String CSR< Real, Device, Index >::getType()
-{
-   return String( "Matrices::CSR< ") +
-          String( TNL::getType< Real>() ) +
-          String( ", " ) +
-          Device::getType() +
-          String( " >" );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-String CSR< Real, Device, Index >::getTypeVirtual() const
-{
-   return this->getType();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
 String CSR< Real, Device, Index >::getSerializationType()
 {
-   return HostType::getType();
+   return String( "Matrices::CSR< ") +
+          TNL::getType< Real>() +
+          String( ", " ) +
+          getType< Devices::Host >() +
+          String( " >" );
 }
 
 template< typename Real,

@@ -61,8 +61,6 @@ class LaxFridrichs< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index,
          return true;
       }
 
-      static String getType();
-      
       void setViscosity(const Real& artificalViscosity)
       {
          this->artificialViscosity = artificalViscosity;
@@ -153,8 +151,6 @@ class LaxFridrichs< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index,
          return true;
       }
 
-      static String getType();
-      
       void setViscosity(const Real& artificalViscosity)
       {
          this->artificialViscosity = artificalViscosity;
@@ -251,8 +247,6 @@ class LaxFridrichs< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index,
          return true;
       }
 
-      static String getType();
-      
       void setViscosity(const Real& artificalViscosity)
       {
          this->artificialViscosity = artificalViscosity;

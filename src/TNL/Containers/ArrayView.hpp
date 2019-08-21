@@ -13,7 +13,7 @@
 #include <iostream>
 #include <stdexcept>
 
-#include <TNL/param-types.h>
+#include <TNL/TypeInfo.h>
 #include <TNL/ParallelFor.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Algorithms/ArrayIO.h>
@@ -23,19 +23,6 @@
 
 namespace TNL {
 namespace Containers {
-
-template< typename Value,
-          typename Device,
-          typename Index >
-String
-ArrayView< Value, Device, Index >::
-getType()
-{
-   return String( "Containers::ArrayView< " ) + ", " +
-                  TNL::getType< Value >() + ", " +
-                  Device::getType() + ", " +
-                  TNL::getType< Index >() + " >";
-}
 
 // explicit initialization by raw data pointer and size
 template< typename Value,

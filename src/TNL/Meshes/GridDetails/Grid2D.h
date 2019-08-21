@@ -57,20 +57,10 @@ class Grid< 2, Real, Device, Index > : public Object
     */
    Grid();
 
-   /**
-    * \brief See Grid1D::getType().
-    */
    Grid( const Index xSize, const Index ySize );
 
    // empty destructor is needed only to avoid crappy nvcc warnings
    ~Grid() {}
-
-   static String getType();
-
-   /**
-    * \brief See Grid1D::getTypeVirtual().
-    */
-   String getTypeVirtual() const;
 
    /**
     * \brief See Grid1D::getSerializationType().

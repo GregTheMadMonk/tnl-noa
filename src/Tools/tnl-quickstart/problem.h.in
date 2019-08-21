@@ -38,8 +38,6 @@ class {problemBaseName}Problem:
 
       using CommunicatorType = Communicator;
 
-      static TNL::String getTypeStatic();
-
       TNL::String getPrologHeader() const;
 
       void writeProlog( TNL::Logger& logger,

@@ -72,9 +72,9 @@ class MeshEntity
       MeshEntity& operator=( const MeshEntity< MeshConfig, Device_, EntityTopology >& entity );
 
 
-      static String getType();
+      static String getSerializationType();
 
-      String getTypeVirtual() const;
+      String getSerializationTypeVirtual() const;
 
       void save( File& file ) const;
 
@@ -166,9 +166,9 @@ class MeshEntity< MeshConfig, Device, Topologies::Vertex >
       MeshEntity& operator=( const MeshEntity< MeshConfig, Device_, EntityTopology >& entity );
 
 
-      static String getType();
+      static String getSerializationType();
 
-      String getTypeVirtual() const;
+      String getSerializationTypeVirtual() const;
 
       void save( File& file ) const;
 

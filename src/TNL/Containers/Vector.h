@@ -122,16 +122,6 @@ public:
    Vector& operator=( Vector&& ) = default;
 
    /**
-    * \brief Returns a \ref String representation of the vector type in C++ style.
-    */
-   static String getType();
-
-   /**
-    * \brief Returns a \ref String representation of the vector type in C++ style.
-    */
-   virtual String getTypeVirtual() const;
-
-   /**
     * \brief Returns a modifiable view of the vector.
     *
     * By default, a view for the whole vector is returned. If \e begin or

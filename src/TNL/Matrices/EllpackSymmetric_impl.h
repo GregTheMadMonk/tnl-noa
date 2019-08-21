@@ -29,26 +29,6 @@ EllpackSymmetric< Real, Device, Index > :: EllpackSymmetric()
 template< typename Real,
           typename Device,
           typename Index >
-String EllpackSymmetric< Real, Device, Index > :: getType()
-{
-   return String( "EllpackSymmetric< ") +
-          String( TNL::getType< Real >() ) +
-          String( ", " ) +
-          Device::getType() +
-          String( " >" );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-String EllpackSymmetric< Real, Device, Index >::getTypeVirtual() const
-{
-   return this->getType();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
 void EllpackSymmetric< Real, Device, Index >::setDimensions( const IndexType rows,
                                                              const IndexType columns )
 {

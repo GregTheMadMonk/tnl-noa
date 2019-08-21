@@ -144,8 +144,6 @@ class VectorNorm< 1, Real > : public VectorNormBase< 1, Real >
       using typename BaseType::RealType;
       using typename BaseType::PointType;
 
-      static String getType();
-
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
                 int ZDiffOrder = 0 >
@@ -183,8 +181,6 @@ class VectorNorm< 2, Real > : public VectorNormBase< 2, Real >
       typedef VectorNormBase< 2, Real > BaseType;      
       using typename BaseType::RealType;
       using typename BaseType::PointType;
-
-      static String getType();
 
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,
@@ -231,8 +227,6 @@ class VectorNorm< 3, Real > : public VectorNormBase< 3, Real >
       typedef VectorNormBase< 3, Real > BaseType;      
       using typename BaseType::RealType;
       using typename BaseType::PointType;
-
-      static String getType();
 
       template< int XDiffOrder = 0,
                 int YDiffOrder = 0,

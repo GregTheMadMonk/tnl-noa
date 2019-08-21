@@ -55,8 +55,6 @@ class navierStokesProblem:
       typedef Pointers::SharedPointer< BoundaryCondition > BoundaryConditionPointer;
       typedef Pointers::SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
       using CommunicatorType = Communicator;
-      
-      static String getTypeStatic();
 
       String getPrologHeader() const;
 

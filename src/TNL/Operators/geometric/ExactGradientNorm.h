@@ -30,11 +30,6 @@ class ExactGradientNorm< 1, Real >
 {
    public:
 
-      static String getType()
-      {
-         return "ExactGradientNorm< 1 >";
-      }
- 
       ExactGradientNorm()
       : epsilonSquare( 0.0 ){};
 
@@ -98,11 +93,6 @@ class ExactGradientNorm< 2, Real >
 {
    public:
 
-      static String getType()
-      {
-         return "ExactGradientNorm< 2 >";
-      }
- 
       ExactGradientNorm()
       : epsilonSquare( 0.0 ){};
 
@@ -172,11 +162,6 @@ class ExactGradientNorm< 3, Real >
 {
    public:
 
-      static String getType()
-      {
-         return "ExactGradientNorm< 3 >";
-      }
- 
       ExactGradientNorm()
       : epsilonSquare( 0.0 ){};
 

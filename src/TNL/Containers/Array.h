@@ -227,16 +227,6 @@ class Array
       AllocatorType getAllocator() const;
 
       /**
-       * \brief Returns a \ref String representation of the array type in C++ style.
-       */
-      static String getType();
-
-      /**
-       * \brief Returns a \ref String representation of the array type in C++ style.
-       */
-      virtual String getTypeVirtual() const;
-
-      /**
        * \brief Returns a \ref String representation of the array type in C++ style,
        * where device is always \ref Devices::Host.
        */

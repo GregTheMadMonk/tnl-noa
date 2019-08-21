@@ -105,10 +105,6 @@ public:
    __cuda_callable__
    StaticArray( const Value& v1, const Value& v2, const Value& v3 );
 
-   /**
-    * \brief Gets type of this array.
-    */
-   static String getType();
 
    /**
     * \brief Gets pointer to data of this static array.

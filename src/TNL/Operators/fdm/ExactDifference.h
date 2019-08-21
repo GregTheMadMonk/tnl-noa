@@ -22,15 +22,6 @@ class ExactDifference
 {
    public:
  
-      static String getType()
-      {
-         return String( "ExactDifference< " ) +
-            String( Dimension ) + ", " +
-            String( XDerivative ) + ", " +
-            String( YDerivative ) + ", " +
-            String( ZDerivative ) + " >";
-      }
- 
       template< typename Function >
       __cuda_callable__
       typename Function::RealType operator()(

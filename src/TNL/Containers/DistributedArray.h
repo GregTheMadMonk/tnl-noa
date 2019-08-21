@@ -83,13 +83,6 @@ public:
    void copyFromGlobal( ConstLocalViewType globalArray );
 
 
-   static String getType();
-
-   virtual String getTypeVirtual() const;
-
-   // TODO: no getSerializationType method until there is support for serialization
-
-
    // Usual Array methods follow below.
 
    /**

@@ -21,18 +21,6 @@ template< typename Mesh,
           typename RightHandSide,
           typename DifferentialOperator,
           typename Communicator >
-String
-HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, Communicator >::
-getType()
-{
-   return String( "HeatEquationBenchmarkProblem< " ) + Mesh :: getType() + " >";
-}
-
-template< typename Mesh,
-          typename BoundaryCondition,
-          typename RightHandSide,
-          typename DifferentialOperator,
-          typename Communicator >
 HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, Communicator >::
 HeatEquationBenchmarkProblem()
 : cudaMesh( 0 ),

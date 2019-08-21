@@ -41,14 +41,6 @@ Merson< Problem, SolverMonitor >::Merson()
 };
 
 template< typename Problem, typename SolverMonitor >
-String Merson< Problem, SolverMonitor >::getType()
-{
-   return String( "Merson< " ) +
-          Problem::getType() +
-          String( " >" );
-};
-
-template< typename Problem, typename SolverMonitor >
 void Merson< Problem, SolverMonitor >::configSetup( Config::ConfigDescription& config,
                                                 const String& prefix )
 {

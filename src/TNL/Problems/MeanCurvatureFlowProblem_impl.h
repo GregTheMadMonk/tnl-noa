@@ -36,17 +36,6 @@ template< typename Mesh,
           typename DifferentialOperator >
 String
 MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-getType()
-{
-   return String( "tnlMeanCurvativeFlowProblem< " ) + Mesh :: getType() + " >";
-}
-
-template< typename Mesh,
-          typename BoundaryCondition,
-          typename RightHandSide,
-          typename DifferentialOperator >
-String
-MeanCurvatureFlowProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getPrologHeader() const
 {
    return String( "Mean Curvative Flow" );

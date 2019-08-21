@@ -23,12 +23,6 @@ class ExactIdentityOperator
 {
    public:
  
-      static String getType()
-      {
-         return String( "ExactIdentityOperator< " ) +
-                String( Dimension) + " >";
-      }
- 
       template< typename Function >
       __cuda_callable__
       typename Function::RealType

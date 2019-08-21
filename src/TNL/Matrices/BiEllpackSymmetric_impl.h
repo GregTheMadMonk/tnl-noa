@@ -49,28 +49,6 @@ template< typename Real,
           typename Device,
           typename Index,
           int StripSize >
-String BiEllpackSymmetric< Real, Device, Index, StripSize >::getType()
-{
-    return String( "BiEllpackMatrix< ") +
-           String( TNL::getType< Real >() ) +
-           String( ", " ) +
-           Device::getType() +
-           String( " >" );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          int StripSize >
-String BiEllpackSymmetric< Real, Device, Index, StripSize >::getTypeVirtual() const
-{
-    return this->getType();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          int StripSize >
 void BiEllpackSymmetric< Real, Device, Index, StripSize >::setDimensions( const IndexType rows,
                                                                           const IndexType columns )
 {

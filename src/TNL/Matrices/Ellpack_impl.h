@@ -29,31 +29,15 @@ Ellpack< Real, Device, Index > :: Ellpack()
 template< typename Real,
           typename Device,
           typename Index >
-String Ellpack< Real, Device, Index > :: getType()
-{
-   return String( "Matrices::Ellpack< ") +
-          String( TNL::getType< Real >() ) +
-          String( ", " ) +
-          Device::getType() +
-          String( ", " ) +
-          String( TNL::getType< Index >() ) +
-          String( " >" );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-String Ellpack< Real, Device, Index >::getTypeVirtual() const
-{
-   return this->getType();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
 String Ellpack< Real, Device, Index >::getSerializationType()
 {
-   return getType();
+   return String( "Matrices::Ellpack< ") +
+          getType< Real >() +
+          String( ", " ) +
+          getType< Device >() +
+          String( ", " ) +
+          getType< Index >() +
+          String( " >" );
 }
 
 template< typename Real,
@@ -130,7 +114,7 @@ template< typename Real,
 Index Ellpack< Real, Device, Index >::getNonZeroRowLength( const IndexType row ) const
 {
     ConstMatrixRow matrixRow = getRow( row );
-    return matrixRow.getNonZeroElementsCount( Device::getType() );
+    return matrixRow.getNonZeroElementsCount( getType< Device >() );
 }
 
 template< typename Real,

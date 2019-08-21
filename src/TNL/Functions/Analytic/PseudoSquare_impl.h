@@ -34,13 +34,6 @@ setup( const Config::ParameterContainer& parameters,
  */
 
 template< typename Real >
-String
-PseudoSquare< 1, Real >::getType()
-{
-   return "Functions::Analytic::PseudoSquare< 1, " + TNL::getType< Real >() + String( " >" );
-}
-
-template< typename Real >
 PseudoSquare< 1, Real >::PseudoSquare()
 {
 }
@@ -76,13 +69,6 @@ operator()( const PointType& v,
 /****
  * 2D
  */
-template< typename Real >
-String
-PseudoSquare< 2, Real >::getType()
-{
-   return String( "Functions::Analytic::PseudoSquare< 2, " ) + TNL::getType< Real >() + " >";
-}
-
 template< typename Real >
 PseudoSquare< 2, Real >::PseudoSquare()
 {
@@ -120,13 +106,6 @@ operator()( const PointType& v,
 /****
  * 3D
  */
-template< typename Real >
-String
-PseudoSquare< 3, Real >::getType()
-{
-   return String( "Functions::Analytic::PseudoSquare< 3, " ) + TNL::getType< Real >() + " >";
-}
-
 template< typename Real >
 PseudoSquare< 3, Real >::PseudoSquare()
 {

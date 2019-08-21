@@ -54,29 +54,13 @@ Grid< 2, Real, Device, Index >::Grid( const Index xSize, const Index ySize )
 template< typename Real,
           typename Device,
           typename Index >
-String Grid< 2, Real, Device, Index > :: getType()
+String Grid< 2, Real, Device, Index > :: getSerializationType()
 {
    return String( "Meshes::Grid< " ) +
           convertToString( getMeshDimension() ) + ", " +
-          String( TNL::getType< RealType >() ) + ", " +
-          String( Device::getType() ) + ", " +
-          String( TNL::getType< IndexType >() ) + " >";
-}
-
-template< typename Real,
-           typename Device,
-           typename Index >
-String Grid< 2, Real, Device, Index > :: getTypeVirtual() const
-{
-   return this->getType();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-String Grid< 2, Real, Device, Index > :: getSerializationType()
-{
-   return HostType::getType();
+          getType< RealType >() + ", " +
+          getType< Devices::Host >() + ", " +
+          getType< IndexType >() + " >";
 };
 
 template< typename Real,

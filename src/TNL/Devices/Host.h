@@ -25,11 +25,6 @@ namespace Devices {
 class Host
 {
 public:
-   static String getType()
-   {
-      return String( "Devices::Host" );
-   }
-
    static void disableOMP()
    {
       ompEnabled() = false;

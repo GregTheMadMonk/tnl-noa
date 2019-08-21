@@ -24,28 +24,6 @@ template< typename Real,
           int SliceSize >
 SlicedEllpackSymmetric< Real, Device, Index, SliceSize >::SlicedEllpackSymmetric()
 {
-};
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          int SliceSize >
-String SlicedEllpackSymmetric< Real, Device, Index, SliceSize >::getType()
-{
-   return String( "SlicedEllpackSymmetric< ") +
-          String( TNL::getType< Real >() ) +
-          String( ", " ) +
-          Device::getType() +
-          String( " >" );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          int SliceSize >
-String SlicedEllpackSymmetric< Real, Device, Index, SliceSize >::getTypeVirtual() const
-{
-   return this->getType();
 }
 
 template< typename Real,

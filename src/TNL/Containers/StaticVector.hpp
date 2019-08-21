@@ -51,16 +51,6 @@ StaticVector< Size, Real >::setup( const Config::ParameterContainer& parameters,
 }
 
 template< int Size, typename Real >
-String StaticVector< Size, Real >::getType()
-{
-   return String( "Containers::StaticVector< " ) +
-          convertToString( Size ) +
-          String( ", " ) +
-          TNL::getType< Real >() +
-          String( " >" );
-}
-
-template< int Size, typename Real >
    template< typename VectorExpression >
 StaticVector< Size, Real >&
 StaticVector< Size, Real >::operator=( const VectorExpression& expression )

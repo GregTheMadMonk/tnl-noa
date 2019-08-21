@@ -50,8 +50,6 @@ class Blob< 1, Real > : public BlobBase< Real, 1 >
       typedef Real RealType;
       typedef Containers::StaticVector< Dimension, Real > PointType;
 
-      static String getType();
-
       Blob();
 
       template< int XDiffOrder = 0,
@@ -74,8 +72,6 @@ class Blob< 2, Real > : public BlobBase< Real, 2 >
       enum { Dimension = 2 };
       typedef Real RealType;
       typedef Containers::StaticVector< Dimension, Real > PointType;
-
-      static String getType();
 
       Blob();
 
@@ -100,8 +96,6 @@ class Blob< 3, Real > : public BlobBase< Real, 3 >
       enum { Dimension = 3 };
       typedef Real RealType;
       typedef Containers::StaticVector< Dimension, Real > PointType;
-
-      static String getType();
 
       Blob();
 

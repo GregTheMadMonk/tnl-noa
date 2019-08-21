@@ -39,29 +39,13 @@ ChunkedEllpack< Real, Device, Index >::ChunkedEllpack()
 template< typename Real,
           typename Device,
           typename Index >
-String ChunkedEllpack< Real, Device, Index >::getType()
-{
-   return String( "Matrices::ChunkedEllpack< ") +
-          String( TNL::getType< Real >() ) +
-          String( ", " ) +
-          Device::getType() +
-          String( " >" );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-String ChunkedEllpack< Real, Device, Index >::getTypeVirtual() const
-{
-   return this->getType();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
 String ChunkedEllpack< Real, Device, Index >::getSerializationType()
 {
-   return getType();
+   return String( "Matrices::ChunkedEllpack< ") +
+          getType< Real >() +
+          String( ", " ) +
+          getType< Device >() +
+          String( " >" );
 }
 
 template< typename Real,
@@ -314,7 +298,7 @@ template< typename Real,
 Index ChunkedEllpack< Real, Device, Index >::getNonZeroRowLength( const IndexType row ) const
 {
     ConstMatrixRow matrixRow = getRow( row );
-    return matrixRow.getNonZeroElementsCount( Device::getType() );
+    return matrixRow.getNonZeroElementsCount( getType< Device >() );
     
 //    IndexType elementCount ( 0 );
 //    ConstMatrixRow matrixRow = this->getRow( row );
@@ -1349,7 +1333,7 @@ void ChunkedEllpack< Real, Device, Index >::printStructure( std::ostream& str,
                                                                      const String& name ) const
 {
    const IndexType numberOfSlices = this->getNumberOfSlices();
-   str << "Matrix type: " << getType() << std::endl
+   str << "Matrix type: " << getType( *this ) << std::endl
        << "Marix name: " << name << std::endl
        << "Rows: " << this->getRows() << std::endl
        << "Columns: " << this->getColumns() << std::endl

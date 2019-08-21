@@ -24,28 +24,6 @@ template< typename Real,
           int SliceSize >
 SlicedEllpack< Real, Device, Index, SliceSize >::SlicedEllpack()
 {
-};
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          int SliceSize >
-String SlicedEllpack< Real, Device, Index, SliceSize >::getType()
-{
-   return String( "Matrices::SlicedEllpack< ") +
-          String( TNL::getType< Real >() ) +
-          String( ", " ) +
-          Device::getType() +
-          String( " >" );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          int SliceSize >
-String SlicedEllpack< Real, Device, Index, SliceSize >::getTypeVirtual() const
-{
-   return this->getType();
 }
 
 template< typename Real,
@@ -54,7 +32,11 @@ template< typename Real,
           int SliceSize >
 String SlicedEllpack< Real, Device, Index, SliceSize >::getSerializationType()
 {
-   return getType();
+   return String( "Matrices::SlicedEllpack< ") +
+          TNL::getType< Real >() +
+          String( ", " ) +
+          getType< Device >() +
+          String( " >" );
 }
 
 template< typename Real,
@@ -129,7 +111,7 @@ template< typename Real,
 Index SlicedEllpack< Real, Device, Index, SliceSize >::getNonZeroRowLength( const IndexType row ) const
 {
     ConstMatrixRow matrixRow = getRow( row );
-    return matrixRow.getNonZeroElementsCount( Device::getType() );
+    return matrixRow.getNonZeroElementsCount( getType< Device >() );
 }
 
 template< typename Real,

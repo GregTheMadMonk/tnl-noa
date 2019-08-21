@@ -30,18 +30,6 @@ template< typename Mesh,
           typename DifferentialOperator >
 String
 transportEquationProblemEoc< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
-getType()
-{
-   return String( "transportEquationProblemEoc< " ) + Mesh :: getType() + " >";
-}
-
-template< typename Mesh,
-          typename BoundaryCondition,
-          typename RightHandSide,
-          typename Communicator,
-          typename DifferentialOperator >
-String
-transportEquationProblemEoc< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
 getPrologHeader() const
 {
    return String( "Transport Equation EOC" );

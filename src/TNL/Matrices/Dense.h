@@ -49,10 +49,6 @@ public:
 
    Dense();
 
-   static String getType();
-
-   String getTypeVirtual() const;
-
    static String getSerializationType();
 
    virtual String getSerializationTypeVirtual() const;

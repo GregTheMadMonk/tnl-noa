@@ -20,17 +20,6 @@ template< typename Mesh,
           typename DifferentialOperator >
 String
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
-getTypeStatic()
-{
-   return String( "eulerProblem< " ) + Mesh :: getTypeStatic() + " >";
-}
-
-template< typename Mesh,
-          typename BoundaryCondition,
-          typename RightHandSide,
-          typename DifferentialOperator >
-String
-eulerProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getPrologHeader() const
 {
    return String( "euler3D" );

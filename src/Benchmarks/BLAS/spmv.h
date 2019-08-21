@@ -109,7 +109,7 @@ benchmarkSpMV( Benchmark & benchmark,
    CudaVector deviceVector, deviceVector2;
 
    // create benchmark group
-   const std::vector< String > parsedType = parseObjectType( HostMatrix::getType() );
+   const std::vector< String > parsedType = parseObjectType( getType< HostMatrix >() );
 #ifdef HAVE_CUDA
    benchmark.createHorizontalGroup( parsedType[ 0 ], 2 );
 #else

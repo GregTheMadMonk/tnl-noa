@@ -101,11 +101,6 @@ public:
    using ConstViewType = ArrayView< std::add_const_t< Value >, Device, Index >;
 
    /**
-    * \brief Returns a \ref String representation of the array view type.
-    */
-   static String getType();
-
-   /**
     * \brief Constructs an empty array view.
     *
     * This method can be called from device kernels.

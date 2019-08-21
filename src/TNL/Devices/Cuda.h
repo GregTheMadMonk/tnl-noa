@@ -26,8 +26,6 @@ namespace Devices {
 class Cuda
 {
 public:
-   static inline String getType();
-
    static inline void configSetup( Config::ConfigDescription& config, const String& prefix = "" );
 
    static inline bool setup( const Config::ParameterContainer& parameters,

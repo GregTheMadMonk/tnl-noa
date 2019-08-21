@@ -45,8 +45,6 @@ class eulerProblem:
       typedef typename DifferentialOperator::VelocityX VelocityX;
       typedef typename DifferentialOperator::Pressure Pressure;
 
-      static String getTypeStatic();
-
       String getPrologHeader() const;
 
       void writeProlog( Logger& logger,

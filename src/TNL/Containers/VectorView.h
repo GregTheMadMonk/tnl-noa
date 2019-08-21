@@ -98,11 +98,6 @@ public:
    : BaseType( view ) {}
 
    /**
-    * \brief Returns a \ref String representation of the vector view type.
-    */
-   static String getType();
-
-   /**
     * \brief Returns a modifiable view of the vector view.
     *
     * By default, a view for the whole vector is returned. If \e begin or

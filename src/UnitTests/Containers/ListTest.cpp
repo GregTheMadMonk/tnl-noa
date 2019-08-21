@@ -33,11 +33,6 @@ struct MyData
 
    __cuda_callable__
    bool operator!=( const MyData& v ) const { return data != v.data; }
-
-   static String getType()
-   {
-      return String( "MyData" );
-   }
 };
 
 std::ostream& operator<<( std::ostream& str, const MyData& v )

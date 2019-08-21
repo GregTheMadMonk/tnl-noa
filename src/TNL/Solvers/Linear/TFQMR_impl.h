@@ -19,14 +19,6 @@ namespace Solvers {
 namespace Linear {
 
 template< typename Matrix >
-String TFQMR< Matrix > :: getType() const
-{
-   return String( "TFQMR< " ) +
-          this->matrix -> getType() + ", " +
-          this->preconditioner -> getType() + " >";
-}
-
-template< typename Matrix >
 bool TFQMR< Matrix >::solve( ConstVectorViewType b, VectorViewType x )
 {
    this->setSize( x );

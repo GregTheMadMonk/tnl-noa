@@ -108,9 +108,6 @@ public:
    void copyFromGlobal( ConstLocalViewType globalArray );
 
 
-   static String getType();
-
-
    /*
     * Usual ArrayView methods follow below.
     */

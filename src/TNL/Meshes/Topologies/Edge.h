@@ -22,15 +22,10 @@
 namespace TNL {
 namespace Meshes {
 namespace Topologies {
-   
+
 struct Edge
 {
    static constexpr int dimension = 1;
-
-   static String getType()
-   {
-      return "Topologies::Edge";
-   }
 };
 
 

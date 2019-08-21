@@ -40,10 +40,6 @@ public:
 
 	COOMatrix();
 
-	static String getType();
-
-	String getTypeVirtual() const;
-
 	bool setDimensions(const IndexType rows,
 			   	   	   const IndexType columns);
 

@@ -25,8 +25,7 @@ namespace TNL {
  * \brief Basic class for majority of TNL objects like matrices, meshes, grids, solvers, etc..
  *
  * Objects like numerical meshes, matrices large vectors etc. are inherited by
- * this class. This class introduces virtual method \ref getType which is
- * supposed to tell the object type in a C++ style.
+ * this class.
  *
  * Since the virtual destructor is not defined as \ref __cuda_callable__,
  * objects inherited from Object should not be created in CUDA kernels.
@@ -43,35 +42,12 @@ class Object
    public:
 
       /**
-       * \brief Static type getter.
-       *
-       * Returns the type in C++ style - for example the returned value
-       * may look as \c "Array< double, Devices::Cuda, int >".
-       *
-       * \par Example
-       * \include ObjectExample_getType.cpp
-       * \par Output
-       * \include ObjectExample_getType.out
-       */
-      static String getType();
-
-      /***
-       * \brief Virtual type getter.
-       *
-       * Returns the type in C++ style - for example the returned value
-       * may look as \c "Array< double, Devices::Cuda, int >".
-       * See example at \ref Object::getType.
-       */
-      virtual String getTypeVirtual() const;
-
-      /**
        * \brief Static serialization type getter.
        *
        * Objects in TNL are saved as in a device independent manner. This method
        * is supposed to return the object type but with the device type replaced
        * by Devices::Host. For example \c Array< double, Devices::Cuda > is
        * saved as \c Array< double, Devices::Host >.
-       * See example at \ref Object::getType.
        */
       static String getSerializationType();
 
@@ -82,7 +58,6 @@ class Object
        * is supposed to return the object type but with the device type replaced
        * by Devices::Host. For example \c Array< double, Devices::Cuda > is
        * saved as \c Array< double, Devices::Host >.
-       * See example at \ref Object::getType.
        */
       virtual String getSerializationTypeVirtual() const;
 

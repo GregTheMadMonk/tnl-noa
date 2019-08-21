@@ -78,10 +78,6 @@ class Meshes::Grid< 2, Real, Device, Index > : public tnlObject
 
    Grid();
 
-   static String getType();
-
-   String getTypeVirtual() const;
-
    static String getSerializationType();
 
    virtual String getSerializationTypeVirtual() const;
@@ -212,29 +208,13 @@ Meshes::Grid< 2, Real, Device, Index > :: Grid()
 template< typename Real,
           typename Device,
           typename Index >
-String Meshes::Grid< 2, Real, Device, Index > :: getType()
+String Meshes::Grid< 2, Real, Device, Index > :: getSerializationType()
 {
    return String( "Meshes::Grid< " ) +
           convertToString( getMeshDimension() ) + ", " +
-          String( ::getType< RealType >() ) + ", " +
-          String( Device :: getDeviceType() ) + ", " +
-          String( ::getType< IndexType >() ) + " >";
-}
-
-template< typename Real,
-           typename Device,
-           typename Index >
-String Meshes::Grid< 2, Real, Device, Index > :: getTypeVirtual() const
-{
-   return this->getType();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-String Meshes::Grid< 2, Real, Device, Index > :: getSerializationType()
-{
-   return HostType::getType();
+          getType< RealType >() + ", " +
+          getType< Devices::Host >() + ", " +
+          getType< IndexType >() + " >";
 };
 
 template< typename Real,
@@ -854,10 +834,6 @@ class Meshes::Grid< 2, Real, Device, Index > : public tnlObject
 
    Grid();
 
-   static String getType();
-
-   String getTypeVirtual() const;
-
    static String getSerializationType();
 
    virtual String getSerializationTypeVirtual() const;
@@ -977,29 +953,13 @@ Meshes::Grid< 2, Real, Device, Index > :: Grid()
 template< typename Real,
           typename Device,
           typename Index >
-String Meshes::Grid< 2, Real, Device, Index > :: getType()
+String Meshes::Grid< 2, Real, Device, Index > :: getSerializationType()
 {
    return String( "Meshes::Grid< " ) +
           convertToString( getMeshDimension() ) + ", " +
-          String( ::getType< RealType >() ) + ", " +
-          String( Device :: getDeviceType() ) + ", " +
-          String( ::getType< IndexType >() ) + " >";
-}
-
-template< typename Real,
-           typename Device,
-           typename Index >
-String Meshes::Grid< 2, Real, Device, Index > :: getTypeVirtual() const
-{
-   return this->getType();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-String Meshes::Grid< 2, Real, Device, Index > :: getSerializationType()
-{
-   return HostType::getType();
+          getType< RealType >() + ", " +
+          getType< Devices::Host >() + ", " +
+          getType< IndexType >() + " >";
 };
 
 template< typename Real,

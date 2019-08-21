@@ -20,19 +20,6 @@ namespace Containers {
 template< typename Real,
           typename Device,
           typename Index >
-String
-VectorView< Real, Device, Index >::
-getType()
-{
-   return String( "Containers::VectorView< " ) +
-                  TNL::getType< Real >() + ", " +
-                  Device::getType() + ", " +
-                  TNL::getType< Index >() + " >";
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
 __cuda_callable__
 typename VectorView< Real, Device, Index >::ViewType
 VectorView< Real, Device, Index >::

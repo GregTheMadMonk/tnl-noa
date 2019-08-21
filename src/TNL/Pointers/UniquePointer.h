@@ -322,7 +322,7 @@ struct Formatter< Pointers::UniquePointer< Object, Device > >
    printToString( const Pointers::UniquePointer< Object, Device >& value )
    {
       ::std::stringstream ss;
-      ss << "(UniquePointer< " << Object::getType() << ", " << Device::getType()
+      ss << "(" + getType< Pointers::UniquePointer< Object, Device > >()
          << " > object at " << &value << ")";
       return ss.str();
    }

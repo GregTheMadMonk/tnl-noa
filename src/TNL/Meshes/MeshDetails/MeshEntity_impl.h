@@ -80,11 +80,11 @@ template< typename MeshConfig,
           typename EntityTopology >
 String
 MeshEntity< MeshConfig, Device, EntityTopology >::
-getType()
+getSerializationType()
 {
-   return String( "MeshEntity< " ) +
-          MeshConfig::getType() + ", " +
-          EntityTopology::getType() + " >";
+   return String( "MeshEntity<" ) +
+          TNL::getSerializationType< MeshConfig >() + ", " +
+          TNL::getSerializationType< EntityTopology >() + ">";
 }
 
 template< typename MeshConfig,
@@ -92,9 +92,9 @@ template< typename MeshConfig,
           typename EntityTopology >
 String
 MeshEntity< MeshConfig, Device, EntityTopology >::
-getTypeVirtual() const
+getSerializationTypeVirtual() const
 {
-   return this->getType();
+   return this->getSerializationType();
 }
 
 template< typename MeshConfig,
@@ -242,17 +242,19 @@ operator=( const MeshEntity< MeshConfig, Device_, Topologies::Vertex >& entity )
 template< typename MeshConfig, typename Device >
 String
 MeshEntity< MeshConfig, Device, Topologies::Vertex >::
-getType()
+getSerializationType()
 {
-   return String( "MeshEntity< ... >" );
+   return String( "MeshEntity<" ) +
+          TNL::getSerializationType< MeshConfig >() + ", " +
+          TNL::getSerializationType< Topologies::Vertex >() + ">";
 }
 
 template< typename MeshConfig, typename Device >
 String
 MeshEntity< MeshConfig, Device, Topologies::Vertex >::
-getTypeVirtual() const
+getSerializationTypeVirtual() const
 {
-   return this->getType();
+   return this->getSerializationType();
 }
 
 template< typename MeshConfig, typename Device >

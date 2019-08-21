@@ -13,7 +13,8 @@
 #include <vector>
 #include <memory>
 
-#include <TNL/param-types.h>
+#include <TNL/TypeInfo.h>
+#include <TNL/String.h>
 //#include <TNL/Debugging/StackBacktrace.h>
 
 namespace TNL {

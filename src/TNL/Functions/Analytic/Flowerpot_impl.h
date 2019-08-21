@@ -46,13 +46,6 @@ const Real& FlowerpotBase< Real, Dimension >::getDiameter() const
  */
 
 template< typename Real >
-String
-Flowerpot< 1, Real >::getType()
-{
-   return "Functions::Analytic::Flowerpot< 1, " + TNL::getType< Real >() + String( " >" );
-}
-
-template< typename Real >
 Flowerpot< 1, Real >::Flowerpot()
 {
 }
@@ -89,13 +82,6 @@ operator()( const PointType& v,
 /****
  * 2D
  */
-template< typename Real >
-String
-Flowerpot< 2, Real >::getType()
-{
-   return String( "Functions::Analytic::Flowerpot< 2, " ) + TNL::getType< Real >() + " >";
-}
-
 template< typename Real >
 Flowerpot< 2, Real >::Flowerpot()
 {
@@ -135,13 +121,6 @@ operator()( const PointType& v,
 /****
  * 3D
  */
-
-template< typename Real >
-String
-Flowerpot< 3, Real >::getType()
-{
-   return String( "Functions::Analytic::Flowerpot< 3, " ) + TNL::getType< Real >() + " >";
-}
 
 template< typename Real >
 Flowerpot< 3, Real >::Flowerpot()

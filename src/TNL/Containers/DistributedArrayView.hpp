@@ -188,23 +188,6 @@ template< typename Value,
           typename Device,
           typename Index,
           typename Communicator >
-String
-DistributedArrayView< Value, Device, Index, Communicator >::
-getType()
-{
-   return String( "Containers::DistributedArrayView< " ) +
-          TNL::getType< Value >() + ", " +
-          Device::getType() + ", " +
-          TNL::getType< Index >() + ", " +
-          // TODO: communicators don't have a getType method
-          "<Communicator> >";
-}
-
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Communicator >
 void
 DistributedArrayView< Value, Device, Index, Communicator >::
 reset()

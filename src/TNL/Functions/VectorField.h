@@ -113,19 +113,6 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, Real > >
             this->vectorField[ i ]->setMesh( meshPointer );
       };
       
-      static String getType()
-      {
-         return String( "Functions::VectorField< " ) +
-                  convertToString( Size) + ", " +
-                 FunctionType::getType() +
-                  " >";
-      }
- 
-      String getTypeVirtual() const
-      {
-         return this->getType();
-      }
- 
       static String getSerializationType()
       {
          return String( "Functions::VectorField< " ) +

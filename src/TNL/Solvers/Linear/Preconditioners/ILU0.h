@@ -37,13 +37,7 @@ class ILU0_impl
 template< typename Matrix >
 class ILU0
 : public ILU0_impl< Matrix, typename Matrix::RealType, typename Matrix::DeviceType, typename Matrix::IndexType >
-{
-public:
-   String getType() const
-   {
-      return String( "ILU0" );
-   }
-};
+{};
 
 template< typename Matrix, typename Real, typename Index >
 class ILU0_impl< Matrix, Real, Devices::Host, Index >

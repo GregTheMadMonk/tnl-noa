@@ -37,11 +37,6 @@ class ExactNonlinearDiffusion< 1, Nonlinearity, InnerOperator >
 {
    public:
 
-      static String getType()
-      {
-         return "ExactNonlinearDiffusion< 1, " + Nonlinearity::getType() + " >";
-      };
- 
       Nonlinearity& getNonlinearity()
       {
          return this->nonlinearity;
@@ -90,11 +85,6 @@ class ExactNonlinearDiffusion< 2, Nonlinearity, InnerOperator >
    : public Functions::Domain< 2, Functions::SpaceDomain >
 {
    public:
- 
-      static String getType()
-      {
-         return "ExactNonlinearDiffusion< " + Nonlinearity::getType() + ", 2 >";
-      };
  
       Nonlinearity& getNonlinearity()
       {
@@ -149,11 +139,6 @@ class ExactNonlinearDiffusion< 3, Nonlinearity, InnerOperator >
    : public Functions::Domain< 3, Functions::SpaceDomain >
 {
    public:
- 
-      static String getType()
-      {
-         return "ExactNonlinearDiffusion< " + Nonlinearity::getType() + ", 3 >";
-      }
  
       Nonlinearity& getNonlinearity()
       {

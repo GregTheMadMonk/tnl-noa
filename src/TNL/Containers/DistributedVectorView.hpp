@@ -64,22 +64,6 @@ getConstView() const
    return *this;
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Communicator >
-String
-DistributedVectorView< Real, Device, Index, Communicator >::
-getType()
-{
-   return String( "Containers::DistributedVectorView< " ) +
-          TNL::getType< Real >() + ", " +
-          Device::getType() + ", " +
-          TNL::getType< Index >() + ", " +
-          // TODO: communicators don't have a getType method
-          "<Communicator> >";
-}
-
 
 /*
  * Usual Vector methods follow below.

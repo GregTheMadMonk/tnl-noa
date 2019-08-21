@@ -54,8 +54,6 @@ class Flowerpot< 1, Real > : public FlowerpotBase< Real, 1 >
       typedef Real RealType;
       typedef Containers::StaticVector< Dimension, Real > PointType;
 
-      static String getType();
-
       Flowerpot();
 
       template< int XDiffOrder = 0,
@@ -81,8 +79,6 @@ class Flowerpot< 2, Real > : public FlowerpotBase< Real, 2 >
       typedef Real RealType;
       typedef Containers::StaticVector< Dimension, Real > PointType;
 
-      static String getType();
-
       Flowerpot();
 
       template< int XDiffOrder = 0,
@@ -107,8 +103,6 @@ class Flowerpot< 3, Real > : public FlowerpotBase< Real, 3 >
       enum { Dimension = 3 };
       typedef Real RealType;
       typedef Containers::StaticVector< Dimension, Real > PointType;
-
-      static String getType();
 
       Flowerpot();
 

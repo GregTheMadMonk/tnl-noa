@@ -35,8 +35,6 @@ class Merson : public ExplicitSolver< Problem, SolverMonitor >
 
       Merson();
 
-      static String getType();
-
       static void configSetup( Config::ConfigDescription& config,
                                const String& prefix = "" );
 

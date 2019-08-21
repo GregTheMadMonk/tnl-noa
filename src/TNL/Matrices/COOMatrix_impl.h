@@ -12,7 +12,7 @@
 
 #include <TNL/Matrices/COOMatrix.h>
 #include <TNL/Math.h>
-#include <TNL/param-types.h>
+#include <TNL/TypeInfo.h>
 
 namespace TNL {
 namespace Matrices {
@@ -26,26 +26,6 @@ COOMatrix< Real, Device, Index >::COOMatrix()
  appendMode( true )
 {
 };
-
-template< typename Real,
-	  	  typename Device,
-	  	  typename Index >
-String COOMatrix< Real, Device, Index >::getType()
-{
-	return String("COOMatrix< ") +
-  	 	   String(TNL::getType< Real>()) +
-		   String(", ") +
-		   Device::getType() +
-		   String(" >");
-}
-
-template< typename Real,
-	  	  typename Device,
-	  	  typename Index >
-String COOMatrix< Real, Device, Index >::getTypeVirtual() const
-{
-	return this->getType();
-}
 
 template< typename Real,
 		  typename Device,

@@ -55,14 +55,6 @@ class OneSidedMeanCurvature
         nonlinearity( nonlinearityOperator, nonlinearityBoundaryConditions, meshPointer ),
         nonlinearDiffusion( nonlinearity ){}
  
-      static String getType()
-      {
-         return String( "OneSidedMeanCurvature< " ) +
-            MeshType::getType() + ", " +
-           TNL::getType< Real >() + ", " +
-           TNL::getType< Index >() + " >";
-      }
- 
       void setRegularizationEpsilon( const RealType& eps )
       {
          this->gradientNorm.setEps( eps );

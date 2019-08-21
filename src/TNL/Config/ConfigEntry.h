@@ -12,6 +12,7 @@
 
 #include <vector>
 
+#include <TNL/TypeInfo.h>
 #include <TNL/Config/ConfigEntryBase.h>
 
 namespace TNL {

@@ -21,8 +21,6 @@ class EulerVelXGetter
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static String getType();
-      
       EulerVelXGetter( const MeshFunctionType& rho,
                        const MeshFunctionType& rhoVel)
       : rho( rho ), rhoVel( rhoVel )

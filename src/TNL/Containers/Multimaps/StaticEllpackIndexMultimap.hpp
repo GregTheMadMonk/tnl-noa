@@ -48,36 +48,6 @@ template< int ValuesCount,
           typename Device,
           typename LocalIndex,
           int SliceSize >
-String
-StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex, SliceSize >::
-getType()
-{
-   return String( "StaticEllpackIndexMultimap< ") +
-          String( TNL::getType< Index >() ) +
-          String( ", " ) +
-          Device::getType() +
-          String( ", " ) +
-          String( TNL::getType< LocalIndexType >() ) +
-          String( " >" );
-}
-
-template< int ValuesCount,
-          typename Index,
-          typename Device,
-          typename LocalIndex,
-          int SliceSize >
-String
-StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex, SliceSize >::
-getTypeVirtual() const
-{
-   return this->getType();
-}
-
-template< int ValuesCount,
-          typename Index,
-          typename Device,
-          typename LocalIndex,
-          int SliceSize >
 void
 StaticEllpackIndexMultimap< ValuesCount, Index, Device, LocalIndex, SliceSize >::
 setKeysRange( const IndexType& keysRange )

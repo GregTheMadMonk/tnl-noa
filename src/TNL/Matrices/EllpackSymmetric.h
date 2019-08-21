@@ -37,10 +37,6 @@ class EllpackSymmetric : public Sparse< Real, Device, Index >
 
    EllpackSymmetric();
 
-   static String getType();
-
-   String getTypeVirtual() const;
-
    void setDimensions( const IndexType rows,
                        const IndexType columns );
 

@@ -76,7 +76,6 @@ public:
     static constexpr bool value = type::value;
 };
 
-
 /**
  * \brief Type trait for checking if T has operator[] taking one index argument.
  */
@@ -182,5 +181,32 @@ struct IsViewType
 : public std::integral_constant< bool,
             std::is_same< typename T::ViewType, T >::value >
 {};
+
+/**
+ * \brief Type trait for checking if T has a static getSerializationType method.
+ */
+template< typename T >
+class HasStaticGetSerializationType
+{
+private:
+   template< typename U >
+   static constexpr auto check(U*)
+   -> typename
+      std::enable_if_t<
+         ! std::is_same<
+               decltype( U::getSerializationType() ),
+               void
+            >::value,
+         std::true_type
+      >;
+
+   template< typename >
+   static constexpr std::false_type check(...);
+
+   using type = decltype(check<T>(0));
+
+public:
+    static constexpr bool value = type::value;
+};
 
 } //namespace TNL

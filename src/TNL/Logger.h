@@ -12,6 +12,7 @@
 
 #include <ostream>
 
+#include <TNL/String.h>
 #include <TNL/Config/ParameterContainer.h>
 
 namespace TNL {

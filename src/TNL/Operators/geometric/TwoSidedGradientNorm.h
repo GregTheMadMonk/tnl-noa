@@ -46,14 +46,6 @@ class TwoSidedGradientNorm< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, Real,
    TwoSidedGradientNorm()
    : epsSquare( 0.0 ){}
 
-   static String getType()
-   {
-      return String( "TwoSidedGradientNorm< " ) +
-         MeshType::getType() + ", " +
-        TNL::getType< Real >() + ", " +
-        TNL::getType< Index >() + " >";
-   }
-
    template< typename MeshFunction, typename MeshEntity >
    __cuda_callable__
    Real operator()( const MeshFunction& u,
@@ -99,16 +91,6 @@ class TwoSidedGradientNorm< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, Real,
    TwoSidedGradientNorm()
    : epsSquare( 0.0 ){}
 
-
-   static String getType()
-   {
-      return String( "TwoSidedGradientNorm< " ) +
-         MeshType::getType() + ", " +
-        TNL::getType< Real >() + ", " +
-        TNL::getType< Index >() + " >";
-
-   }
- 
    template< typename MeshFunction, typename MeshEntity >
    __cuda_callable__
    Real operator()( const MeshFunction& u,
@@ -161,14 +143,6 @@ class TwoSidedGradientNorm< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real
  
    TwoSidedGradientNorm()
    : epsSquare( 0.0 ){}
-
-   static String getType()
-   {
-      return String( "TwoSidedGradientNorm< " ) +
-         MeshType::getType() + ", " +
-        TNL::getType< Real >() + ", " +
-        TNL::getType< Index >() + " >";
-   }
 
    template< typename MeshFunction, typename MeshEntity >
    __cuda_callable__

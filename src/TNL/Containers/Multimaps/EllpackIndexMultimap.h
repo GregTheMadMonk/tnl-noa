@@ -52,10 +52,6 @@ class EllpackIndexMultimap
       template< typename Device_ >
       EllpackIndexMultimap& operator=( const EllpackIndexMultimap< Index, Device_, LocalIndex, SliceSize >& other );
 
-      static String getType();
-
-      String getTypeVirtual() const;
-
       void setKeysRange( const IndexType& keysRange );
 
       __cuda_callable__

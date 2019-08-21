@@ -63,16 +63,6 @@ class Grid< 3, Real, Device, Index > : public Object
    ~Grid() {}
 
    /**
-    * \brief See Grid1D::getType().
-    */
-   static String getType();
-
-   /**
-    * \brief See Grid1D::getTypeVirtual().
-    */
-   String getTypeVirtual() const;
-
-   /**
     * \brief See Grid1D::getSerializationType().
     */
    static String getSerializationType();

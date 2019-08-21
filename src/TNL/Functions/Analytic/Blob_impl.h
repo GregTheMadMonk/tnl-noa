@@ -33,13 +33,6 @@ setup( const Config::ParameterContainer& parameters,
  */
 
 template< typename Real >
-String
-Blob< 1, Real >::getType()
-{
-   return "Functions::Analytic::Blob< 1, " + TNL::getType< Real >() + String( " >" );
-}
-
-template< typename Real >
 Blob< 1, Real >::Blob()
 {
 }
@@ -75,13 +68,6 @@ operator()( const PointType& v,
 /****
  * 2D
  */
-template< typename Real >
-String
-Blob< 2, Real >::getType()
-{
-   return String( "Functions::Analytic::Blob< 2, " ) + TNL::getType< Real >() + " >";
-}
-
 template< typename Real >
 Blob< 2, Real >::Blob()
 {
@@ -119,13 +105,6 @@ operator()( const PointType& v,
 /****
  * 3D
  */
-template< typename Real >
-String
-Blob< 3, Real >::getType()
-{
-   return String( "Functions::Analytic::Blob< 3, " ) + TNL::getType< Real >() + " >";
-}
-
 template< typename Real >
 Blob< 3, Real >::Blob()
 {

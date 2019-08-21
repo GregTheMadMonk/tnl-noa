@@ -51,18 +51,6 @@ class ForwardFiniteDifference< Meshes::Grid< Dimension, MeshReal, MeshDevice, Me
  
       static constexpr int getMeshDimension() { return Dimension; }
  
-      static String getType()
-      {
-         return String( "ForwardFiniteDifference< " ) +
-            MeshType::getType() + ", " +
-            String( XDifference ) + ", " +
-            String( YDifference ) + ", " +
-            String( ZDifference ) + ", " +
-           TNL::getType< RealType >() + ", " +
-           TNL::getType< IndexType >() + " >";
-      }
-
- 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
       inline Real operator()( const MeshFunction& u,

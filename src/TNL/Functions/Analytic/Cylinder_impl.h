@@ -48,13 +48,6 @@ const Real& CylinderBase< Real, Dimension >::getDiameter() const
  */
 
 template< typename Real >
-String
-Cylinder< 1, Real >::getType()
-{
-   return "Functions::Analytic::Cylinder< 1, " + TNL::getType< Real >() + String( " >" );
-}
-
-template< typename Real >
 Cylinder< 1, Real >::Cylinder()
 {
 }
@@ -90,13 +83,6 @@ operator()( const PointType& v,
 /****
  * 2D
  */
-
-template< typename Real >
-String
-Cylinder< 2, Real >::getType()
-{
-   return String( "Functions::Analytic::Cylinder< 2, " ) + TNL::getType< Real >() + " >";
-}
 
 template< typename Real >
 Cylinder< 2, Real >::Cylinder()
@@ -137,14 +123,6 @@ operator()( const PointType& v,
 /****
  * 3D
  */
-
-template< typename Real >
-String
-Cylinder< 3, Real >::getType()
-{
-   return String( "Functions::Analytic::Cylinder< 3, " ) + TNL::getType< Real >() + " >";
-}
-
 template< typename Real >
 Cylinder< 3, Real >::Cylinder()
 {

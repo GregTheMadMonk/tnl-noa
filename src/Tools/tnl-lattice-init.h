@@ -246,9 +246,9 @@ bool resolveProfileReal( const Config::ParameterContainer& parameters )
       std::cerr << "MeshFunction is required in profile file " << profileFile << "." << std::endl;
       return false;
    }
-   if( parsedMeshFunctionType[ 1 ] != ProfileMesh::getType() )
+   if( parsedMeshFunctionType[ 1 ] != getType< ProfileMesh >() )
    {
-      std::cerr << "The mesh function in the profile file must be defined on " << ProfileMesh::getType() 
+      std::cerr << "The mesh function in the profile file must be defined on " << getType< ProfileMesh >()
                 << " but it is defined on " << parsedMeshFunctionType[ 1 ] << "." << std::endl;
       return false;
    }

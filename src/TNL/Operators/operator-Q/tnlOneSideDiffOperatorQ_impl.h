@@ -21,21 +21,6 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-String
-tnlOneSideDiffOperatorQ< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
-getType()
-{
-   return String( "tnlOneSideDiffOperatorQ< " ) +
-          MeshType::getType() + ", " +
-         TNL::getType< Real >() + ", " +
-         TNL::getType< Index >() + " >";
-}
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
 void
 tnlOneSideDiffOperatorQ< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
 setEps( const Real& eps )
@@ -92,21 +77,6 @@ getValueStriped( const MeshFunction& u,
 /***
  * 2D
  */
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-String
-tnlOneSideDiffOperatorQ< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
-getType()
-{
-   return String( "tnlOneSideDiffOperatorQ< " ) +
-          MeshType::getType() + ", " +
-         TNL::getType< Real >() + ", " +
-         TNL::getType< Index >() + " >";
-}
-
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
@@ -177,21 +147,6 @@ getValueStriped( const MeshFunction& u,
 /***
  * 3D
  */
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-String
-tnlOneSideDiffOperatorQ< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
-getType()
-{
-   return String( "tnlOneSideDiffOperatorQ< " ) +
-          MeshType::getType() + ", " +
-         TNL::getType< Real >() + ", " +
-         TNL::getType< Index >() + " >";
-}
-
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,

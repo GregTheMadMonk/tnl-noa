@@ -56,8 +56,6 @@ class eulerProblem:
       typedef Pointers::SharedPointer<  BoundaryCondition > BoundaryConditionPointer;
       typedef Pointers::SharedPointer<  RightHandSide, DeviceType > RightHandSidePointer;
 
-      static String getType();
-
       String getPrologHeader() const;
 
       void writeProlog( Logger& logger,

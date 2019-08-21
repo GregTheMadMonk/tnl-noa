@@ -44,9 +44,6 @@ struct tnlChunkedEllpackSliceInfo
    IndexType chunkSize;
    IndexType firstRow;
    IndexType pointer;
-
-   static inline String getType()
-   { return String( "tnlChunkedEllpackSliceInfo" ); };
 };
 
 #ifdef HAVE_CUDA
@@ -85,10 +82,6 @@ public:
    typedef SparseRow< const RealType, const IndexType > ConstMatrixRow;
 
    ChunkedEllpack();
-
-   static String getType();
-
-   String getTypeVirtual() const;
 
    static String getSerializationType();
 

@@ -83,34 +83,6 @@ operator ConstViewType() const
 }
 
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Communicator >
-String
-DistributedVector< Real, Device, Index, Communicator >::
-getType()
-{
-   return String( "Containers::DistributedVector< " ) +
-          TNL::getType< Real >() + ", " +
-          Device::getType() + ", " +
-          TNL::getType< Index >() + ", " +
-          // TODO: communicators don't have a getType method
-          "<Communicator> >";
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Communicator >
-String
-DistributedVector< Real, Device, Index, Communicator >::
-getTypeVirtual() const
-{
-   return getType();
-}
-
-
 /*
  * Usual Vector methods follow below.
  */

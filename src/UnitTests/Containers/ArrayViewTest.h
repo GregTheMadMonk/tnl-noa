@@ -41,11 +41,6 @@ struct MyData
    // operator used in tests, not necessary for Array to work
    template< typename T >
    bool operator==( T v ) const { return data == v; }
-
-   static String getType()
-   {
-      return String( "MyData" );
-   }
 };
 
 std::ostream& operator<<( std::ostream& str, const MyData& v )

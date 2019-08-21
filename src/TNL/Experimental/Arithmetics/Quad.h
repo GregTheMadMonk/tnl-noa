@@ -33,8 +33,6 @@ public:
     explicit Quad(const T&);
     explicit Quad(int);
     Quad(const Quad<T>&);
-    
-    static String getType();
 
     /*OVERLOADED OPERATORS*/
     T& operator[](int);

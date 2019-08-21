@@ -44,10 +44,6 @@ public:
 
 	BiEllpack();
 
-	static String getType();
-
-	String getTypeVirtual() const;
-
 	void setDimensions( const IndexType rows,
 	                    const IndexType columns );
 

@@ -164,33 +164,6 @@ template< typename Value,
           typename Device,
           typename Index,
           typename Communicator >
-String
-DistributedArray< Value, Device, Index, Communicator >::
-getType()
-{
-   return String( "Containers::DistributedArray< " ) +
-          TNL::getType< Value >() + ", " +
-          Device::getType() + ", " +
-          TNL::getType< Index >() + ", " +
-          // TODO: communicators don't have a getType method
-          "<Communicator> >";
-}
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Communicator >
-String
-DistributedArray< Value, Device, Index, Communicator >::
-getTypeVirtual() const
-{
-   return getType();
-}
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Communicator >
    template< typename Array >
 void
 DistributedArray< Value, Device, Index, Communicator >::

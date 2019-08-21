@@ -58,8 +58,6 @@ class ExpBump< 1, Real > : public ExpBumpBase< 1, Real >
       typedef Real RealType;
       typedef Containers::StaticVector< 1, RealType > PointType;
 
-      static String getType();
-
       ExpBump();
 
       template< int XDiffOrder = 0,
@@ -82,8 +80,6 @@ class ExpBump< 2, Real > : public ExpBumpBase< 2, Real >
       typedef Real RealType;
       typedef Containers::StaticVector< 2, RealType > PointType;
 
-      static String getType();
-
       ExpBump();
 
       template< int XDiffOrder = 0,
@@ -105,9 +101,6 @@ class ExpBump< 3, Real > : public ExpBumpBase< 3, Real >
  
       typedef Real RealType;
       typedef Containers::StaticVector< 3, RealType > PointType;
-
- 
-      static String getType();
 
       ExpBump();
 

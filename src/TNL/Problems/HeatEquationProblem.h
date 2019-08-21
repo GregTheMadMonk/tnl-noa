@@ -62,8 +62,6 @@ class HeatEquationProblem : public PDEProblem< Mesh,
 
       typedef Communicator CommunicatorType;
 
-      static String getType();
-
       String getPrologHeader() const;
 
       void writeProlog( Logger& logger,

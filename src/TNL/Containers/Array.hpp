@@ -15,7 +15,7 @@
 
 #include <TNL/Assert.h>
 #include <TNL/Math.h>
-#include <TNL/param-types.h>
+#include <TNL/TypeInfo.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Algorithms/ArrayIO.h>
 #include <TNL/Containers/Algorithms/ArrayAssignment.h>
@@ -175,31 +175,6 @@ Array< Value, Device, Index, Allocator >::
 getAllocator() const
 {
    return allocator;
-}
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
-String
-Array< Value, Device, Index, Allocator >::
-getType()
-{
-   return String( "Containers::Array< " ) +
-          TNL::getType< Value >() + ", " +
-          Device::getType() + ", " +
-          TNL::getType< Index >() + " >";
-}
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
-String
-Array< Value, Device, Index, Allocator >::
-getTypeVirtual() const
-{
-   return this->getType();
 }
 
 template< typename Value,

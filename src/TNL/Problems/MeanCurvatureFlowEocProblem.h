@@ -33,8 +33,6 @@ class MeanCurvatureFlowEocProblem : public MeanCurvatureFlowProblem< Mesh, Bound
 {
    public:
 
-      static String getType();
-
       bool setup( const Config::ParameterContainer& parameters );
 };
 

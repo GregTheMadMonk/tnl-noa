@@ -66,16 +66,6 @@ class Grid< 1, Real, Device, Index > : public Object
    ~Grid() {}
 
    /**
-    * \brief Returns type of grid Real (value), Device type and the type of Index.
-    */
-   static String getType();
-
-   /**
-    * \brief Returns type of grid Real (value), Device type and the type of Index.
-    */
-   String getTypeVirtual() const;
-
-   /**
     * \brief Returns (host) type of grid Real (value), Device type and the type of Index.
     */
    static String getSerializationType();

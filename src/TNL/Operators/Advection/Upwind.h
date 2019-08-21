@@ -61,8 +61,6 @@ class Upwind< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index, Veloc
          return true;
       }
 
-      static String getType();
-      
       void setViscosity(const Real& artificalViscosity)
       {
          this->artificialViscosity = artificalViscosity;
@@ -154,8 +152,6 @@ class Upwind< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index, Veloc
          return true;
       }
 
-      static String getType();
-      
       void setViscosity(const Real& artificalViscosity)
       {
          this->artificialViscosity = artificalViscosity;
@@ -256,8 +252,6 @@ class Upwind< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index, Veloc
          return true;
       }
 
-      static String getType();
-      
       void setViscosity(const Real& artificalViscosity)
       {
          this->artificialViscosity = artificalViscosity;

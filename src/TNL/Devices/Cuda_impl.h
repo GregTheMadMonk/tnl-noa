@@ -21,11 +21,6 @@
 namespace TNL {
 namespace Devices {
 
-inline String Cuda::getType()
-{
-   return String( "Devices::Cuda" );
-}
-
 inline void
 Cuda::configSetup( Config::ConfigDescription& config,
                    const String& prefix )

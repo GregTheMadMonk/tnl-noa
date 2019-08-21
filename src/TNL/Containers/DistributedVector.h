@@ -69,11 +69,6 @@ public:
    operator ConstViewType() const;
 
 
-   static String getType();
-
-   virtual String getTypeVirtual() const;
-
-
    /*
     * Usual Vector methods follow below.
     */

@@ -60,10 +60,6 @@ class MeshFunction :
                     Pointers::SharedPointer<  Vector >& data,
                     const IndexType& offset = 0 );
 
-      static String getType();
-
-      String getTypeVirtual() const;
-
       static String getSerializationType();
 
       virtual String getSerializationTypeVirtual() const;

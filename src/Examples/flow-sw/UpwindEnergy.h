@@ -36,14 +36,6 @@ class UpwindEnergyBase
       UpwindEnergyBase()
        : artificialViscosity( 1.0 ){};
 
-      static String getType()
-      {
-         return String( "UpwindEnergy< " ) +
-             MeshType::getType() + ", " +
-             TNL::getType< Real >() + ", " +
-             TNL::getType< Index >() + " >"; 
-      }
-
       void setTau(const Real& tau)
       {
           this->tau = tau;

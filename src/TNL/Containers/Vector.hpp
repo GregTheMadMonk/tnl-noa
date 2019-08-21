@@ -31,31 +31,6 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Allocator >
-String
-Vector< Real, Device, Index, Allocator >::
-getType()
-{
-   return String( "Containers::Vector< " ) +
-                  TNL::getType< Real >() + ", " +
-                  Device::getType() + ", " +
-                  TNL::getType< Index >() + " >";
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Allocator >
-String
-Vector< Real, Device, Index, Allocator >::
-getTypeVirtual() const
-{
-   return this->getType();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Allocator >
 typename Vector< Real, Device, Index, Allocator >::ViewType
 Vector< Real, Device, Index, Allocator >::
 getView( IndexType begin, IndexType end )

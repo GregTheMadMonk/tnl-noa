@@ -17,14 +17,6 @@ namespace Solvers {
 namespace Linear {
 
 template< typename Matrix >
-String CG< Matrix > :: getType() const
-{
-   return String( "CG< " ) +
-          this->matrix -> getType() + ", " +
-          this->preconditioner -> getType() + " >";
-}
-
-template< typename Matrix >
 bool
 CG< Matrix >::
 solve( ConstVectorViewType b, VectorViewType x )

@@ -16,7 +16,7 @@
 
 #include <TNL/Assert.h>
 #include <TNL/String.h>
-#include <TNL/param-types.h>
+#include <TNL/TypeInfo.h>
 
 namespace TNL {
 namespace Containers {
@@ -52,11 +52,6 @@ public:
    {
       begin = 0;
       end = 0;
-   }
-
-   static String getType()
-   {
-      return "Subrange< " + TNL::getType< Index >() + " >";
    }
 
    // Checks if a global index is in the set of local indices.
@@ -127,7 +122,7 @@ protected:
 template< typename Index >
 std::ostream& operator<<( std::ostream& str, const Subrange< Index >& range )
 {
-   return str << Subrange< Index >::getType() << "( " << range.getBegin() << ", " << range.getEnd() << " )";
+   return str << getType< Subrange< Index > >() << "( " << range.getBegin() << ", " << range.getEnd() << " )";
 }
 
 } // namespace Containers

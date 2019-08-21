@@ -23,7 +23,7 @@ write( const VectorField& vectorField,
        std::ostream& str,
        const double& scale  )
 {
-   std::cerr << "Gnuplot writer for mesh vectorFields defined on mesh type " << VectorField::MeshType::getType() << " is not (yet) implemented." << std::endl;
+   std::cerr << "Gnuplot writer for mesh vectorFields defined on mesh type " << getType< typename VectorField::MeshType >() << " is not (yet) implemented." << std::endl;
    return false;
 }
 

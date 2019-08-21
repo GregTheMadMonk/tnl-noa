@@ -46,15 +46,6 @@ class UpwindMomentumY< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Ind
       using typename BaseType::VelocityFieldType;
       using typename BaseType::VelocityFieldPointer;
       using BaseType::Dimensions;
-      
-      static String getType()
-      {
-         return String( "UpwindMomentumY< " ) +
-             MeshType::getType() + ", " +
-             TNL::getType< Real >() + ", " +
-             TNL::getType< Index >() + " >"; 
-      }
-      
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
@@ -108,14 +99,6 @@ class UpwindMomentumY< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Ind
       using typename BaseType::VelocityFieldType;
       using typename BaseType::VelocityFieldPointer;
       using BaseType::Dimensions;
-      
-      static String getType()
-      {
-         return String( "UpwindMomentumY< " ) +
-             MeshType::getType() + ", " +
-             TNL::getType< Real >() + ", " +
-             TNL::getType< Index >() + " >"; 
-      }      
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
@@ -212,14 +195,6 @@ class UpwindMomentumY< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real, Inde
       using typename BaseType::VelocityFieldType;
       using typename BaseType::VelocityFieldPointer;
       using BaseType::Dimensions;      
-      
-      static String getType()
-      {
-         return String( "UpwindMomentumY< " ) +
-             MeshType::getType() + ", " +
-             TNL::getType< Real >() + ", " +
-             TNL::getType< Index >() + " >"; 
-      }      
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__

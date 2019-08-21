@@ -74,7 +74,7 @@ MeshTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs...
 resolveWorldDimension( const Reader& reader,
                        ProblemSetterArgs&&... problemSetterArgs )
 {
-   std::cerr << "The cell topology " << CellTopology::getType() << " is disabled in the build configuration." << std::endl;
+   std::cerr << "The cell topology " << getType< CellTopology >() << " is disabled in the build configuration." << std::endl;
    return false;
 }
 
@@ -334,7 +334,7 @@ MeshTypeResolver< Reader, ConfigTag, Device, ProblemSetter, ProblemSetterArgs...
 resolveTerminate( const Reader& reader,
                   ProblemSetterArgs&&... problemSetterArgs )
 {
-   std::cerr << "The mesh config type " << TNL::getType< MeshConfig >() << " is disabled in the build configuration for device " << Device::getType() << "." << std::endl;
+   std::cerr << "The mesh config type " << getType< MeshConfig >() << " is disabled in the build configuration for device " << getType< Device >() << "." << std::endl;
    return false;
 }
 

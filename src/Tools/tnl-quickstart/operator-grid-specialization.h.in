@@ -14,8 +14,6 @@ class {operatorName}< TNL::Meshes::Grid< {meshDimension}, MeshReal, Device, Mesh
       typedef TNL::Functions::MeshFunction< MeshType > MeshFunctionType;
       enum {{ Dimension = MeshType::getMeshDimension() }};
 
-      static TNL::String getType();
-
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
       Real operator()( const MeshFunction& u,

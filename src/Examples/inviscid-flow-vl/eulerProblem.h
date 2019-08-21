@@ -57,8 +57,6 @@ class eulerProblem:
       typedef Pointers::SharedPointer< RightHandSide, DeviceType > RightHandSidePointer;
       using CommunicatorType = Communicator;
 
-      static String getTypeStatic();
-
       String getPrologHeader() const;
 
       void writeProlog( Logger& logger,

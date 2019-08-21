@@ -34,13 +34,6 @@ class ExactMeanCurvature
       typedef ExactFunctionInverseOperator< Dimension, ExactGradientNormType > FunctionInverse;
       typedef ExactNonlinearDiffusion< Dimension, FunctionInverse > NonlinearDiffusion;
  
-      static String getType()
-      {
-         return String( "ExactMeanCurvature< " ) +
-                String( Dimension) + ", " +
-                InnerOperator::getType() + " >";
-      }
- 
       template< typename Real >
       void setRegularizationEpsilon( const Real& eps)
       {

@@ -22,8 +22,6 @@ class EulerPressureGetter
       typedef Functions::MeshFunction< MeshType > MeshFunctionType;
       enum { Dimensions = MeshType::getMeshDimensions() };
 
-      static String getType();
-      
       EulerPressureGetter( const MeshFunctionType& rho,
                            const MeshFunctionType& rhoVelX,
                            const MeshFunctionType& rhoVelY,

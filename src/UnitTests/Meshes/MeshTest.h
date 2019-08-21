@@ -180,7 +180,8 @@ TEST( MeshTest, TwoTrianglesTest )
    static_assert( VertexMeshEntityType::SuperentityTraits< 1 >::storageEnabled, "Testing vertex entity does not store edges as required." );
 
    using PointType = typename VertexMeshEntityType::PointType;
-   ASSERT_TRUE( PointType::getType() == ( Containers::StaticVector< 2, RealType >::getType() ) );
+   static_assert( std::is_same< PointType, Containers::StaticVector< 2, RealType > >::value,
+                  "unexpected PointType" );
 
    /****
     * We set-up the following situation
@@ -289,7 +290,8 @@ TEST( MeshTest, TetrahedronsTest )
    using VertexMeshEntityType = typename TetrahedronMeshEntityType::SubentityTraits< 0 >::SubentityType;
 
    using PointType = typename VertexMeshEntityType::PointType;
-   ASSERT_TRUE( PointType::getType() == ( Containers::StaticVector< 3, RealType >::getType() ) );
+   static_assert( std::is_same< PointType, Containers::StaticVector< 3, RealType > >::value,
+                  "unexpected PointType" );
 
    typedef Mesh< TestTetrahedronMeshConfig > TestTetrahedronMesh;
    TestTetrahedronMesh mesh;
@@ -454,7 +456,8 @@ TEST( MeshTest, RegularMeshOfTrianglesTest )
    using VertexMeshEntityType = typename TriangleMeshEntityType::SubentityTraits< 0 >::SubentityType;
 
    using PointType = typename VertexMeshEntityType::PointType;
-   ASSERT_TRUE( PointType::getType() == ( Containers::StaticVector< 2, RealType >::getType() ) );
+   static_assert( std::is_same< PointType, Containers::StaticVector< 2, RealType > >::value,
+                  "unexpected PointType" );
 
    const IndexType xSize( 5 ), ySize( 5 );
    const RealType width( 1.0 ), height( 1.0 );
@@ -554,7 +557,8 @@ TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
    using VertexMeshEntityType = typename QuadrilateralMeshEntityType::SubentityTraits< 0 >::SubentityType;
 
    using PointType = typename VertexMeshEntityType::PointType;
-   ASSERT_TRUE( PointType::getType() == ( Containers::StaticVector< 2, RealType >::getType() ) );
+   static_assert( std::is_same< PointType, Containers::StaticVector< 2, RealType > >::value,
+                  "unexpected PointType" );
 
    const IndexType xSize( 3 ), ySize( 4 );
    const RealType width( 1.0 ), height( 1.0 );
@@ -652,7 +656,8 @@ TEST( MeshTest, RegularMeshOfHexahedronsTest )
    using VertexMeshEntityType = typename HexahedronMeshEntityType::SubentityTraits< 0 >::SubentityType;
 
    using PointType = typename VertexMeshEntityType::PointType;
-   ASSERT_TRUE( PointType::getType() == ( Containers::StaticVector< 3, RealType >::getType() ) );
+   static_assert( std::is_same< PointType, Containers::StaticVector< 3, RealType > >::value,
+                  "unexpected PointType" );
 
    const IndexType xSize( 3 ), ySize( 4 ), zSize( 5 );
    const RealType width( 1.0 ), height( 1.0 ), depth( 1.0 );

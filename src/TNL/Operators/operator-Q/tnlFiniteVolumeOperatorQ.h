@@ -42,8 +42,6 @@ class tnlFiniteVolumeOperatorQ< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, R
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   static String getType();
-
    template< typename Vector >
    IndexType bind( Vector& u) 
    { return 0; }
@@ -96,8 +94,6 @@ class tnlFiniteVolumeOperatorQ< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, R
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   static String getType(); 
-
    template< typename Vector >
    IndexType bind( Vector& u)
    { return 0; }
@@ -148,8 +144,6 @@ class tnlFiniteVolumeOperatorQ< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, R
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-
-   static String getType();
 
    template< typename Vector >
    IndexType bind( Vector& u)
@@ -202,8 +196,6 @@ class tnlFiniteVolumeOperatorQ< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, R
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   static String getType();
-
    template< typename Vector >
    Index bind( Vector& u);
 
@@ -255,8 +247,6 @@ class tnlFiniteVolumeOperatorQ< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, R
    typedef Device DeviceType;
    typedef Index IndexType;
    typedef SharedVector< RealType, DeviceType, IndexType > DofVectorType;
-   
-   static String getType(); 
 
    template< typename Vector >
    Index bind( Vector& u);
@@ -309,8 +299,6 @@ class tnlFiniteVolumeOperatorQ< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, R
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   
-   static String getType();
 
    template< typename Vector >
    Index bind( Vector& u);

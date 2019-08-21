@@ -37,10 +37,6 @@ class EllpackSymmetricGraph : public Sparse< Real, Device, Index >
 
    EllpackSymmetricGraph();
 
-   static String getType();
-
-   String getTypeVirtual() const;
-
    void setDimensions( const IndexType rows,
                        const IndexType columns );
 

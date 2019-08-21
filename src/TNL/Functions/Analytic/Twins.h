@@ -46,8 +46,6 @@ class Twins< 1, Real > : public TwinsBase< Real, 1 >
       typedef Real RealType;
       typedef Containers::StaticVector< Dimension, Real > PointType;
 
-      static String getType();
-
       Twins();
 
       template< int XDiffOrder = 0,
@@ -73,8 +71,6 @@ class Twins< 2, Real > : public TwinsBase< Real, 2 >
       typedef Real RealType;
       typedef Containers::StaticVector< Dimension, Real > PointType;
 
-      static String getType();
-
       Twins();
 
       template< int XDiffOrder = 0,
@@ -99,8 +95,6 @@ class Twins< 3, Real > : public TwinsBase< Real, 3 >
       enum { Dimension = 3 };
       typedef Real RealType;
       typedef Containers::StaticVector< Dimension, Real > PointType;
-
-      static String getType();
 
       Twins();
 

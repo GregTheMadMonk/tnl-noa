@@ -11,21 +11,6 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-String
-LaxFridrichsContinuity< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index >::
-getType()
-{
-   return String( "LaxFridrichsContinuity< " ) +
-          MeshType::getType() + ", " +
-         TNL::getType< Real >() + ", " +
-         TNL::getType< Index >() + " >";
-}
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
 template< typename MeshFunction, typename MeshEntity >
 __cuda_callable__
 Real
@@ -109,21 +94,6 @@ updateLinearSystem( const RealType& time,
 /****
  * 2D problem
  */
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-String
-LaxFridrichsContinuity< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index >::
-getType()
-{
-   return String( "LaxFridrichsContinuity< " ) +
-          MeshType::getType() + ", " +
-         TNL::getType< Real >() + ", " +
-         TNL::getType< Index >() + " >";
-}
-
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,
@@ -224,21 +194,6 @@ updateLinearSystem( const RealType& time,
 /****
  * 3D problem
  */
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-String
-LaxFridrichsContinuity< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index >::
-getType()
-{
-   return String( "LaxFridrichsContinuity< " ) +
-          MeshType::getType() + ", " +
-         TNL::getType< Real >() + ", " +
-         TNL::getType< Index >() + " >";
-}
-
 template< typename MeshReal,
           typename Device,
           typename MeshIndex,

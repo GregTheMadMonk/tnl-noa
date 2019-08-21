@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/param-types.h>
+#include <TNL/TypeInfo.h>
 #include <TNL/Math.h>
 #include <TNL/Containers/StaticArray.h>
 #include <TNL/Containers/Algorithms/StaticArrayAssignment.h>
@@ -144,16 +144,6 @@ StaticArray< Size, Value >::StaticArray( const Value& v1, const Value& v2, const
    data[ 0 ] = v1;
    data[ 1 ] = v2;
    data[ 2 ] = v3;
-}
-
-template< int Size, typename Value >
-String StaticArray< Size, Value >::getType()
-{
-   return String( "Containers::StaticArray< " ) +
-          convertToString( Size ) +
-          String( ", " ) +
-          TNL::getType< Value >() +
-          String( " >" );
 }
 
 template< int Size, typename Value >

@@ -33,14 +33,6 @@ Euler< Problem, SolverMonitor >::Euler()
 };
 
 template< typename Problem, typename SolverMonitor >
-String Euler< Problem, SolverMonitor >::getType()
-{
-   return String( "Euler< " ) +
-          Problem :: getType() +
-          String( " >" );
-};
-
-template< typename Problem, typename SolverMonitor >
 void Euler< Problem, SolverMonitor >::configSetup( Config::ConfigDescription& config,
                                                const String& prefix )
 {

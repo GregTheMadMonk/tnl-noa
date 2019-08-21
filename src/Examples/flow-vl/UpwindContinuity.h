@@ -37,14 +37,6 @@ class UpwindContinuityBase
       typedef Pointers::SharedPointer< MeshFunctionType > MeshFunctionPointer;
       typedef Pointers::SharedPointer< VelocityFieldType > VelocityFieldPointer;
 
-      static String getType()
-      {
-         return String( "UpwindContinuity< " ) +
-             MeshType::getType() + ", " +
-             TNL::getType< Real >() + ", " +
-             TNL::getType< Index >() + " >"; 
-      }
-
       void setTau(const Real& tau)
       {
           this->tau = tau;
