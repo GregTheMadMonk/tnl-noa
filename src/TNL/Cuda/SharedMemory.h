@@ -1,5 +1,5 @@
 /***************************************************************************
-                          CudaSharedMemory.h  -  description
+                          SharedMemory.h  -  description
                              -------------------
     begin                : Oct 18, 2017
     copyright            : (C) 2017 by Tomas Oberhuber et al.
@@ -26,11 +26,11 @@
  *
  * Until CUDA 8.0, it was possible to use reinterpret_cast this way:
  *
- *    template< typename Element, size_t Alignment >
- *    __device__ Element* Cuda::getSharedMemory()
+ *    template< typename T, size_t Alignment >
+ *    __device__ T* getSharedMemory()
  *    {
  *       extern __shared__ __align__ ( Alignment ) unsigned char __sdata[];
- *       return reinterpret_cast< Element* >( __sdata );
+ *       return reinterpret_cast< T* >( __sdata );
  *    }
  *
  * But since CUDA 9.0 there is a new restriction that the alignment of the
@@ -44,12 +44,13 @@
 #include <stdint.h>
 
 namespace TNL {
+namespace Cuda {
 
 template< typename T, std::size_t _alignment = CHAR_BIT * sizeof(T) >
-struct CudaSharedMemory {};
+struct SharedMemory;
 
 template< typename T >
-struct CudaSharedMemory< T, 8 >
+struct SharedMemory< T, 8 >
 {
    __device__ inline operator T* ()
    {
@@ -65,7 +66,7 @@ struct CudaSharedMemory< T, 8 >
 };
 
 template< typename T >
-struct CudaSharedMemory< T, 16 >
+struct SharedMemory< T, 16 >
 {
    __device__ inline operator T* ()
    {
@@ -81,7 +82,7 @@ struct CudaSharedMemory< T, 16 >
 };
 
 template< typename T >
-struct CudaSharedMemory< T, 32 >
+struct SharedMemory< T, 32 >
 {
    __device__ inline operator T* ()
    {
@@ -97,7 +98,7 @@ struct CudaSharedMemory< T, 32 >
 };
 
 template< typename T >
-struct CudaSharedMemory< T, 64 >
+struct SharedMemory< T, 64 >
 {
    __device__ inline operator T* ()
    {
@@ -112,6 +113,25 @@ struct CudaSharedMemory< T, 64 >
    }
 };
 
+template< typename T >
+__device__ inline T* getSharedMemory()
+{
+   return SharedMemory< T >{};
+}
+
+// helper functions for indexing shared memory
+inline constexpr int getNumberOfSharedMemoryBanks()
+{
+   return 32;
+}
+
+template< typename Index >
+__device__ Index getInterleaving( const Index index )
+{
+   return index + index / Cuda::getNumberOfSharedMemoryBanks();
+}
+
+} // namespace Cuda
 } // namespace TNL
 
 #endif

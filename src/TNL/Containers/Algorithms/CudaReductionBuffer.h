@@ -14,7 +14,7 @@
 
 #include <stdlib.h>
 
-#include <TNL/Devices/Cuda.h>
+#include <TNL/Cuda/CheckDevice.h>
 #include <TNL/Exceptions/CudaBadAlloc.h>
 #include <TNL/Exceptions/CudaSupportMissing.h>
 

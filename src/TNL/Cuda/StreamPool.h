@@ -1,5 +1,5 @@
 /***************************************************************************
-                          CudaStreamPool.h  -  description
+                          StreamPool.h  -  description
                              -------------------
     begin                : Oct 14, 2016
     copyright            : (C) 2016 by Tomas Oberhuber et al.
@@ -15,22 +15,20 @@
 #include <stdlib.h>
 #include <unordered_map>
 
-#include <TNL/Devices/Host.h>
-#include <TNL/Devices/Cuda.h>
-
 namespace TNL {
+namespace Cuda {
 
 #ifdef HAVE_CUDA
-class CudaStreamPool
+class StreamPool
 {
    public:
       // stop the compiler generating methods of copy the object
-      CudaStreamPool( CudaStreamPool const& copy ) = delete;
-      CudaStreamPool& operator=( CudaStreamPool const& copy ) = delete;
+      StreamPool( StreamPool const& copy ) = delete;
+      StreamPool& operator=( StreamPool const& copy ) = delete;
 
-      inline static CudaStreamPool& getInstance()
+      inline static StreamPool& getInstance()
       {
-         static CudaStreamPool instance;
+         static StreamPool instance;
          return instance;
       }
 
@@ -47,14 +45,14 @@ class CudaStreamPool
 
    private:
       // private constructor of the singleton
-      inline CudaStreamPool()
+      inline StreamPool()
       {
-         atexit( CudaStreamPool::free_atexit );
+         atexit( StreamPool::free_atexit );
       }
 
       inline static void free_atexit( void )
       {
-         CudaStreamPool::getInstance().free();
+         StreamPool::getInstance().free();
       }
 
    protected:
@@ -70,5 +68,6 @@ class CudaStreamPool
 };
 #endif
 
+} // namespace Cuda
 } // namespace TNL
 

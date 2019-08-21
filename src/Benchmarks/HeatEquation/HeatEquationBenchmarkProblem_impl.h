@@ -82,9 +82,9 @@ setup( const Config::ParameterContainer& parameters,
 
    if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
-      this->cudaBoundaryConditions = Devices::Cuda::passToDevice( *this->boundaryConditionPointer );
-      this->cudaRightHandSide = Devices::Cuda::passToDevice( *this->rightHandSidePointer );
-      this->cudaDifferentialOperator = Devices::Cuda::passToDevice( *this->differentialOperatorPointer );
+      this->cudaBoundaryConditions = Cuda::passToDevice( *this->boundaryConditionPointer );
+      this->cudaRightHandSide = Cuda::passToDevice( *this->rightHandSidePointer );
+      this->cudaDifferentialOperator = Cuda::passToDevice( *this->differentialOperatorPointer );
    }
    this->explicitUpdater.setDifferentialOperator( this->differentialOperatorPointer );
    this->explicitUpdater.setBoundaryConditions( this->boundaryConditionPointer );
@@ -266,8 +266,8 @@ boundaryConditionsTemplatedCompact( const GridType* grid,
 {
    typename GridType::CoordinatesType coordinates;
 
-   coordinates.x() = begin.x() + ( gridXIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   coordinates.y() = begin.y() + ( gridYIdx * Devices::Cuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;        
+   coordinates.x() = begin.x() + ( gridXIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   coordinates.y() = begin.y() + ( gridYIdx * Cuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;        
 
    if( coordinates.x() < end.x() &&
        coordinates.y() < end.y() )
@@ -357,8 +357,8 @@ heatEquationTemplatedCompact( const GridType* grid,
    typedef typename GridType::IndexType IndexType;
    typedef typename GridType::RealType RealType;
 
-   coordinates.x() = begin.x() + ( gridXIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   coordinates.y() = begin.y() + ( gridYIdx * Devices::Cuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;     
+   coordinates.x() = begin.x() + ( gridXIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   coordinates.y() = begin.y() + ( gridYIdx * Cuda::getMaxGridSize() + blockIdx.y ) * blockDim.y + threadIdx.y;     
       
    MeshFunction& u = *_u;
    MeshFunction& fu = *_fu;
@@ -483,10 +483,10 @@ getExplicitUpdate( const RealType& time,
          CellType cell( mesh.template getData< DeviceType >() );
          dim3 cudaBlockSize( 16, 16 );
          dim3 cudaBlocks;
-         cudaBlocks.x = Devices::Cuda::getNumberOfBlocks( end.x() - begin.x() + 1, cudaBlockSize.x );
-         cudaBlocks.y = Devices::Cuda::getNumberOfBlocks( end.y() - begin.y() + 1, cudaBlockSize.y );
-         const IndexType cudaXGrids = Devices::Cuda::getNumberOfGrids( cudaBlocks.x );
-         const IndexType cudaYGrids = Devices::Cuda::getNumberOfGrids( cudaBlocks.y );
+         cudaBlocks.x = Cuda::getNumberOfBlocks( end.x() - begin.x() + 1, cudaBlockSize.x );
+         cudaBlocks.y = Cuda::getNumberOfBlocks( end.y() - begin.y() + 1, cudaBlockSize.y );
+         const IndexType cudaXGrids = Cuda::getNumberOfGrids( cudaBlocks.x );
+         const IndexType cudaYGrids = Cuda::getNumberOfGrids( cudaBlocks.y );
          
          //std::cerr << "Setting boundary conditions..." << std::endl;
 
@@ -762,10 +762,10 @@ template< typename Mesh,
 HeatEquationBenchmarkProblem< Mesh, BoundaryCondition, RightHandSide, DifferentialOperator, Communicator >::
 ~HeatEquationBenchmarkProblem()
 {
-   if( this->cudaMesh ) Devices::Cuda::freeFromDevice( this->cudaMesh );
-   if( this->cudaBoundaryConditions )  Devices::Cuda::freeFromDevice( this->cudaBoundaryConditions );
-   if( this->cudaRightHandSide ) Devices::Cuda::freeFromDevice( this->cudaRightHandSide );
-   if( this->cudaDifferentialOperator ) Devices::Cuda::freeFromDevice( this->cudaDifferentialOperator );
+   if( this->cudaMesh ) Cuda::freeFromDevice( this->cudaMesh );
+   if( this->cudaBoundaryConditions )  Cuda::freeFromDevice( this->cudaBoundaryConditions );
+   if( this->cudaRightHandSide ) Cuda::freeFromDevice( this->cudaRightHandSide );
+   if( this->cudaDifferentialOperator ) Cuda::freeFromDevice( this->cudaDifferentialOperator );
 }
 
 

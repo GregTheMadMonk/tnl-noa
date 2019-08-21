@@ -13,7 +13,7 @@
 #pragma once
 
 #include <TNL/Assert.h>
-#include <TNL/Devices/CudaCallable.h>
+#include <TNL/Cuda/CudaCallable.h>
 #include <TNL/TemplateStaticFor.h>
 
 #include <TNL/Containers/ndarray/Meta.h>

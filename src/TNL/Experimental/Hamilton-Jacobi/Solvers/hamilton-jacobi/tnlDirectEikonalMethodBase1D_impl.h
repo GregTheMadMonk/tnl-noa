@@ -22,7 +22,7 @@ initInterface( const MeshFunctionPointer& _input,
     const MeshType& mesh = _input->getMesh();
     
     const int cudaBlockSize( 16 );
-    int numBlocksX = Devices::Cuda::getNumberOfBlocks( mesh.getDimensions().x(), cudaBlockSize );
+    int numBlocksX = Cuda::getNumberOfBlocks( mesh.getDimensions().x(), cudaBlockSize );
     dim3 blockSize( cudaBlockSize );
     dim3 gridSize( numBlocksX );
     Devices::Cuda::synchronizeDevice();

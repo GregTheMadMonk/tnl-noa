@@ -13,6 +13,8 @@
 #include <TNL/Meshes/Traverser.h>
 
 #include <TNL/Exceptions/CudaSupportMissing.h>
+#include <TNL/Cuda/DeviceInfo.h>
+#include <TNL/Cuda/LaunchHelpers.h>
 
 namespace TNL {
 namespace Meshes {
@@ -159,8 +161,8 @@ processBoundaryEntities( const MeshPointer& meshPointer,
 
    dim3 blockSize( 256 );
    dim3 gridSize;
-   const int desGridSize = 32 * Devices::CudaDeviceInfo::getCudaMultiprocessors( Devices::CudaDeviceInfo::getActiveDevice() );
-   gridSize.x = min( desGridSize, Devices::Cuda::getNumberOfBlocks( entitiesCount, blockSize.x ) );
+   const int desGridSize = 32 * Cuda::DeviceInfo::getCudaMultiprocessors( Cuda::DeviceInfo::getActiveDevice() );
+   gridSize.x = min( desGridSize, Cuda::getNumberOfBlocks( entitiesCount, blockSize.x ) );
 
    Devices::Cuda::synchronizeDevice();
    MeshTraverserBoundaryEntitiesKernel< EntitiesDimension, EntitiesProcessor >
@@ -190,8 +192,8 @@ processInteriorEntities( const MeshPointer& meshPointer,
 
    dim3 blockSize( 256 );
    dim3 gridSize;
-   const int desGridSize = 32 * Devices::CudaDeviceInfo::getCudaMultiprocessors( Devices::CudaDeviceInfo::getActiveDevice() );
-   gridSize.x = min( desGridSize, Devices::Cuda::getNumberOfBlocks( entitiesCount, blockSize.x ) );
+   const int desGridSize = 32 * Cuda::DeviceInfo::getCudaMultiprocessors( Cuda::DeviceInfo::getActiveDevice() );
+   gridSize.x = min( desGridSize, Cuda::getNumberOfBlocks( entitiesCount, blockSize.x ) );
 
    Devices::Cuda::synchronizeDevice();
    MeshTraverserInteriorEntitiesKernel< EntitiesDimension, EntitiesProcessor >
@@ -221,8 +223,8 @@ processAllEntities( const MeshPointer& meshPointer,
 
    dim3 blockSize( 256 );
    dim3 gridSize;
-   const int desGridSize = 32 * Devices::CudaDeviceInfo::getCudaMultiprocessors( Devices::CudaDeviceInfo::getActiveDevice() );
-   gridSize.x = min( desGridSize, Devices::Cuda::getNumberOfBlocks( entitiesCount, blockSize.x ) );
+   const int desGridSize = 32 * Cuda::DeviceInfo::getCudaMultiprocessors( Cuda::DeviceInfo::getActiveDevice() );
+   gridSize.x = min( desGridSize, Cuda::getNumberOfBlocks( entitiesCount, blockSize.x ) );
 
    Devices::Cuda::synchronizeDevice();
    MeshTraverserAllEntitiesKernel< EntitiesDimension, EntitiesProcessor >

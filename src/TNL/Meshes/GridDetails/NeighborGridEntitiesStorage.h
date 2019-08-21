@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/Devices/Cuda.h>
+#include <TNL/Cuda/CudaCallable.h>
 #include <TNL/Meshes/DimensionTag.h>
 #include <TNL/Meshes/GridEntityConfig.h>
 #include <TNL/Meshes/GridDetails/NeighborGridEntityGetter.h>

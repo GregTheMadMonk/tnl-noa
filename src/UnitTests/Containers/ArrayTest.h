@@ -15,6 +15,7 @@
 
 #include <TNL/Containers/Array.h>
 #include <TNL/Containers/Vector.h>
+#include <TNL/Pointers/DevicePointer.h>
 
 #include "gtest/gtest.h"
 
@@ -312,9 +313,9 @@ void testArrayElementwiseAccess( Array< Value, Devices::Cuda, Index >&& u )
 #ifdef HAVE_CUDA
    u.setSize( 10 );
    using ArrayType = Array< Value, Devices::Cuda, Index >;
-   ArrayType* kernel_u = Devices::Cuda::passToDevice( u );
-   testSetGetElementKernel<<< 1, 16 >>>( kernel_u );
-   Devices::Cuda::freeFromDevice( kernel_u );
+   Pointers::DevicePointer< ArrayType > kernel_u( u );
+   testSetGetElementKernel<<< 1, 16 >>>( &kernel_u.template modifyData< Devices::Cuda >() );
+   cudaDeviceSynchronize();
    TNL_CHECK_CUDA_DEVICE;
    for( int i = 0; i < 10; i++ ) {
       EXPECT_EQ( u.getElement( i ), i );

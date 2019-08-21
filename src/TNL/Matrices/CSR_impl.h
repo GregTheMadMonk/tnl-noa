@@ -33,7 +33,7 @@ template< typename Real,
           typename Index >
 CSR< Real, Device, Index >::CSR()
 : spmvCudaKernel( hybrid ),
-  cudaWarpSize( 32 ), //Devices::Cuda::getWarpSize() )
+  cudaWarpSize( 32 ), //Cuda::getWarpSize() )
   hybridModeSplit( 4 )
 {
 };
@@ -145,16 +145,16 @@ Index CSR< Real, Device, Index >::getNonZeroRowLength( const IndexType row ) con
 //       //  (gdb) p rowPointers.getElement(0)
 //       //    Attempt to take address of value not located in memory.
 //       IndexType resultHost ( 0 );
-//       IndexType* resultCuda = Devices::Cuda::passToDevice( resultHost );
+//       IndexType* resultCuda = Cuda::passToDevice( resultHost );
 //       // PROBLEM: If the second parameter of getNonZeroRowLengthCudaKernel is '&resultCuda', the following issue is thrown:
 //       //          'error: no instance of function template "TNL::Matrices::getNonZeroRowLengthCudaKernel" matches the argument list'
 //       TNL::Matrices::getNonZeroRowLengthCudaKernel< ConstMatrixRow, IndexType ><<< 1, 1 >>>( matrixRow, resultCuda ); // matrixRow works fine, tested them both separately
 //       delete []cols;
 //       delete []vals;
 //       std::cout << "Checkpoint BEFORE passFromDevice" << std::endl;
-//       resultHost = Devices::Cuda::passFromDevice( resultCuda ); // This causes a crash: Illegal memory address in Cuda_impl.h at TNL_CHECK_CUDA_DEVICE
+//       resultHost = Cuda::passFromDevice( resultCuda ); // This causes a crash: Illegal memory address in Cuda_impl.h at TNL_CHECK_CUDA_DEVICE
 //       std::cout << "Checkpoint AFTER passFromDevice" << std::endl;
-//       Devices::Cuda::freeFromDevice( resultCuda );
+//       Cuda::freeFromDevice( resultCuda );
 //       return resultHost;
 //   }
 }
@@ -713,7 +713,7 @@ void CSR< Real, Device, Index >::spmvCudaVectorized( const InVector& inVector,
                                                               const IndexType warpEnd,
                                                               const IndexType inWarpIdx ) const
 {
-   volatile Real* aux = Devices::Cuda::getSharedMemory< Real >();
+   volatile Real* aux = Cuda::getSharedMemory< Real >();
    for( IndexType row = warpStart; row < warpEnd; row++ )
    {
       aux[ threadIdx.x ] = 0.0;
@@ -753,7 +753,7 @@ void CSR< Real, Device, Index >::vectorProductCuda( const InVector& inVector,
                                                              OutVector& outVector,
                                                              int gridIdx ) const
 {
-   IndexType globalIdx = ( gridIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   IndexType globalIdx = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    const IndexType warpStart = warpSize * ( globalIdx / warpSize );
    const IndexType warpEnd = min( warpStart + warpSize, this->getRows() );
    const IndexType inWarpIdx = globalIdx % warpSize;
@@ -764,7 +764,7 @@ void CSR< Real, Device, Index >::vectorProductCuda( const InVector& inVector,
    /****
     * Hybrid mode
     */
-   const Index firstRow = ( gridIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x;
+   const Index firstRow = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x;
    const IndexType lastRow = min( this->getRows(), firstRow + blockDim. x );
    const IndexType nonzerosPerRow = ( this->rowPointers[ lastRow ] - this->rowPointers[ firstRow ] ) /
                                     ( lastRow - firstRow );
@@ -828,7 +828,7 @@ __global__ void CSRVectorProductCudaKernel( const CSR< Real, Devices::Cuda, Inde
 {
    typedef CSR< Real, Devices::Cuda, Index > Matrix;
    static_assert( std::is_same< typename Matrix::DeviceType, Devices::Cuda >::value, "" );
-   const typename Matrix::IndexType rowIdx = ( gridIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   const typename Matrix::IndexType rowIdx = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    if( matrix->getCudaKernelType() == Matrix::scalar )
    {
       if( rowIdx < matrix->getRows() )
@@ -854,17 +854,17 @@ void CSRVectorProductCuda( const CSR< Real, Devices::Cuda, Index >& matrix,
 #ifdef HAVE_CUDA
    typedef CSR< Real, Devices::Cuda, Index > Matrix;
    typedef typename Matrix::IndexType IndexType;
-   Matrix* kernel_this = Devices::Cuda::passToDevice( matrix );
-   InVector* kernel_inVector = Devices::Cuda::passToDevice( inVector );
-   OutVector* kernel_outVector = Devices::Cuda::passToDevice( outVector );
+   Matrix* kernel_this = Cuda::passToDevice( matrix );
+   InVector* kernel_inVector = Cuda::passToDevice( inVector );
+   OutVector* kernel_outVector = Cuda::passToDevice( outVector );
    TNL_CHECK_CUDA_DEVICE;
-   dim3 cudaBlockSize( 256 ), cudaGridSize( Devices::Cuda::getMaxGridSize() );
+   dim3 cudaBlockSize( 256 ), cudaGridSize( Cuda::getMaxGridSize() );
    const IndexType cudaBlocks = roundUpDivision( matrix.getRows(), cudaBlockSize.x );
-   const IndexType cudaGrids = roundUpDivision( cudaBlocks, Devices::Cuda::getMaxGridSize() );
+   const IndexType cudaGrids = roundUpDivision( cudaBlocks, Cuda::getMaxGridSize() );
    for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
    {
       if( gridIdx == cudaGrids - 1 )
-         cudaGridSize.x = cudaBlocks % Devices::Cuda::getMaxGridSize();
+         cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
       const int sharedMemory = cudaBlockSize.x * sizeof( Real );
       if( matrix.getCudaWarpSize() == 32 )
          CSRVectorProductCudaKernel< Real, Index, InVector, OutVector, 32 >
@@ -911,9 +911,9 @@ void CSRVectorProductCuda( const CSR< Real, Devices::Cuda, Index >& matrix,
 
    }
    TNL_CHECK_CUDA_DEVICE;
-   Devices::Cuda::freeFromDevice( kernel_this );
-   Devices::Cuda::freeFromDevice( kernel_inVector );
-   Devices::Cuda::freeFromDevice( kernel_outVector );
+   Cuda::freeFromDevice( kernel_this );
+   Cuda::freeFromDevice( kernel_inVector );
+   Cuda::freeFromDevice( kernel_outVector );
    TNL_CHECK_CUDA_DEVICE;
 #endif
 }

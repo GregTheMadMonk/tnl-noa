@@ -60,7 +60,7 @@ void Ellpack< Real, Device, Index >::setDimensions( const IndexType rows,
    this->rows = rows;
    this->columns = columns;
    if( std::is_same< Device, Devices::Cuda >::value )
-      this->alignedRows = roundToMultiple( rows, Devices::Cuda::getWarpSize() );
+      this->alignedRows = roundToMultiple( rows, Cuda::getWarpSize() );
    else this->alignedRows = rows;
    if( this->rowLengths != 0 )
       allocateElements();
@@ -128,7 +128,7 @@ void Ellpack< Real, Device, Index >::setLike( const Ellpack< Real2, Device2, Ind
    Sparse< Real, Device, Index >::setLike( matrix );
    this->rowLengths = matrix.rowLengths;
    if( std::is_same< Device, Devices::Cuda >::value )
-      this->alignedRows = roundToMultiple( this->getRows(), Devices::Cuda::getWarpSize() );
+      this->alignedRows = roundToMultiple( this->getRows(), Cuda::getWarpSize() );
    else this->alignedRows = this->getRows();
 }
 
@@ -836,7 +836,7 @@ __global__ void EllpackVectorProductCudaKernel(
    Real multiplicator,
    const Index gridIdx )
 {
-   const Index rowIdx = ( gridIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   const Index rowIdx = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    if( rowIdx >= rows )
       return;
    Index i = rowIdx;
@@ -902,16 +902,16 @@ class EllpackDeviceDependentCode< Devices::Cuda >
          #ifdef HAVE_CUDA
             typedef Ellpack< Real, Device, Index > Matrix;
             typedef typename Matrix::IndexType IndexType;
-            //Matrix* kernel_this = Devices::Cuda::passToDevice( matrix );
-            //InVector* kernel_inVector = Devices::Cuda::passToDevice( inVector );
-            //OutVector* kernel_outVector = Devices::Cuda::passToDevice( outVector );
-            dim3 cudaBlockSize( 256 ), cudaGridSize( Devices::Cuda::getMaxGridSize() );
+            //Matrix* kernel_this = Cuda::passToDevice( matrix );
+            //InVector* kernel_inVector = Cuda::passToDevice( inVector );
+            //OutVector* kernel_outVector = Cuda::passToDevice( outVector );
+            dim3 cudaBlockSize( 256 ), cudaGridSize( Cuda::getMaxGridSize() );
             const IndexType cudaBlocks = roundUpDivision( matrix.getRows(), cudaBlockSize.x );
-            const IndexType cudaGrids = roundUpDivision( cudaBlocks, Devices::Cuda::getMaxGridSize() );
+            const IndexType cudaGrids = roundUpDivision( cudaBlocks, Cuda::getMaxGridSize() );
             for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
             {
                if( gridIdx == cudaGrids - 1 )
-                  cudaGridSize.x = cudaBlocks % Devices::Cuda::getMaxGridSize();
+                  cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
                EllpackVectorProductCudaKernel
                < Real, Index >
                 <<< cudaGridSize, cudaBlockSize >>>
@@ -928,9 +928,9 @@ class EllpackDeviceDependentCode< Devices::Cuda >
                   gridIdx );
                TNL_CHECK_CUDA_DEVICE;
             }
-            //Devices::Cuda::freeFromDevice( kernel_this );
-            //Devices::Cuda::freeFromDevice( kernel_inVector );
-            //Devices::Cuda::freeFromDevice( kernel_outVector );
+            //Cuda::freeFromDevice( kernel_this );
+            //Cuda::freeFromDevice( kernel_inVector );
+            //Cuda::freeFromDevice( kernel_outVector );
             TNL_CHECK_CUDA_DEVICE;
             cudaDeviceSynchronize();
          #endif

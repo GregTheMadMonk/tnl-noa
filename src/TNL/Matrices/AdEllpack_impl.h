@@ -936,14 +936,14 @@ void AdEllpack< Real, Device, Index >::spmvCuda2( const InVector& inVector,
                                                   OutVector& outVector,
                                                   const int gridIdx ) const
 {
-    IndexType globalIdx = ( gridIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+    IndexType globalIdx = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
     IndexType warpIdx = globalIdx >> 5;
     IndexType inWarpIdx = globalIdx & ( this->warpSize - 1 );
     if( globalIdx >= this->reduceMap.getSize() )
 	return;
 
     const int blockSize = 256;
-    Real* temp = Devices::Cuda::getSharedMemory< Real >();
+    Real* temp = Cuda::getSharedMemory< Real >();
     __shared__ IndexType reduceMap[ blockSize ];
     reduceMap[ threadIdx.x ] = this->reduceMap[ globalIdx ];
     temp[ threadIdx.x ] = 0.0;
@@ -984,14 +984,14 @@ void AdEllpack< Real, Device, Index >::spmvCuda4( const InVector& inVector,
                                                            OutVector& outVector,
                                                            const int gridIdx ) const
 {
-    IndexType globalIdx = ( gridIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+    IndexType globalIdx = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
     IndexType warpIdx = globalIdx >> 5;
     IndexType inWarpIdx = globalIdx & ( this->warpSize - 1 );
     if( globalIdx >= this->reduceMap.getSize() )
 	return;
 
     const int blockSize = 192;
-    Real* temp = Devices::Cuda::getSharedMemory< Real >();
+    Real* temp = Cuda::getSharedMemory< Real >();
     __shared__ IndexType reduceMap[ blockSize ];
     reduceMap[ threadIdx.x ] = this->reduceMap[ globalIdx ];
     temp[ threadIdx.x ] = 0.0;
@@ -1043,14 +1043,14 @@ void AdEllpack< Real, Device, Index >::spmvCuda8( const InVector& inVector,
                                                            OutVector& outVector,
                                                            const int gridIdx ) const
 {
-    IndexType globalIdx = ( gridIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+    IndexType globalIdx = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
     IndexType warpIdx = globalIdx >> 5;
     IndexType inWarpIdx = globalIdx & ( this->warpSize - 1 );
     if( globalIdx >= this->reduceMap.getSize() )
 	return;
 
     const int blockSize = 128;
-    Real* temp = Devices::Cuda::getSharedMemory< Real >();
+    Real* temp = Cuda::getSharedMemory< Real >();
     __shared__ IndexType reduceMap[ blockSize ];
     reduceMap[ threadIdx.x ] = this->reduceMap[ globalIdx ];
     temp[ threadIdx.x ] = 0.0;
@@ -1101,14 +1101,14 @@ void AdEllpack< Real, Device, Index >::spmvCuda16( const InVector& inVector,
                                                             OutVector& outVector,
                                                             const int gridIdx ) const
 {
-    IndexType globalIdx = ( gridIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+    IndexType globalIdx = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
     IndexType warpIdx = globalIdx >> 5;
     IndexType inWarpIdx = globalIdx & ( this->warpSize - 1 );
     if( globalIdx >= this->reduceMap.getSize() )
 	return;
 
     const int blockSize = 128;
-    Real* temp = Devices::Cuda::getSharedMemory< Real >();
+    Real* temp = Cuda::getSharedMemory< Real >();
     __shared__ IndexType reduceMap[ blockSize ];
     reduceMap[ threadIdx.x ] = this->reduceMap[ globalIdx ];
     temp[ threadIdx.x ] = 0.0;
@@ -1159,14 +1159,14 @@ void AdEllpack< Real, Device, Index >::spmvCuda32( const InVector& inVector,
                                                             OutVector& outVector,
                                                             const int gridIdx ) const
 {
-    IndexType globalIdx = ( gridIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+    IndexType globalIdx = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
     IndexType warpIdx = globalIdx >> 5;
     IndexType inWarpIdx = globalIdx & ( this->warpSize - 1 );
     if( globalIdx >= this->reduceMap.getSize() )
 	return;
 
     const int blockSize = 96;
-    Real* temp = Devices::Cuda::getSharedMemory< Real >();
+    Real* temp = Cuda::getSharedMemory< Real >();
     __shared__ IndexType reduceMap[ blockSize ];
     reduceMap[ threadIdx.x ] = this->reduceMap[ globalIdx ];
     temp[ threadIdx.x ] = 0.0;
@@ -1292,18 +1292,18 @@ public:
     {
         typedef AdEllpack< Real, Devices::Cuda, Index > Matrix;
 	typedef typename Matrix::IndexType IndexType;
-	Matrix* kernel_this = Devices::Cuda::passToDevice( matrix );
-	InVector* kernel_inVector = Devices::Cuda::passToDevice( inVector );
-	OutVector* kernel_outVector = Devices::Cuda::passToDevice( outVector );
+	Matrix* kernel_this = Cuda::passToDevice( matrix );
+	InVector* kernel_inVector = Cuda::passToDevice( inVector );
+	OutVector* kernel_outVector = Cuda::passToDevice( outVector );
 	if( matrix.totalLoad < 2 )
 	{
-	    dim3 blockSize( 256 ), cudaGridSize( Devices::Cuda::getMaxGridSize() );
+	    dim3 blockSize( 256 ), cudaGridSize( Cuda::getMaxGridSize() );
 	    IndexType cudaBlocks = roundUpDivision( matrix.reduceMap.getSize(), blockSize.x );
-	    IndexType cudaGrids = roundUpDivision( cudaBlocks, Devices::Cuda::getMaxGridSize() );
+	    IndexType cudaGrids = roundUpDivision( cudaBlocks, Cuda::getMaxGridSize() );
 	    for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
 	    {
 	        if( gridIdx == cudaGrids - 1 )
-		    cudaGridSize.x = cudaBlocks % Devices::Cuda::getMaxGridSize();
+		    cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
 	        const int sharedMemory = blockSize.x * sizeof( Real );
 	        AdEllpackVectorProductCuda2< Real, Index, InVector, OutVector >
                                                     <<< cudaGridSize, blockSize, sharedMemory >>>
@@ -1313,20 +1313,20 @@ public:
                                                       gridIdx );
 	    }
 	    TNL_CHECK_CUDA_DEVICE;
-	    Devices::Cuda::freeFromDevice( kernel_this );
-	    Devices::Cuda::freeFromDevice( kernel_inVector );
-	    Devices::Cuda::freeFromDevice( kernel_outVector );
+	    Cuda::freeFromDevice( kernel_this );
+	    Cuda::freeFromDevice( kernel_inVector );
+	    Cuda::freeFromDevice( kernel_outVector );
 	    TNL_CHECK_CUDA_DEVICE;
 	}
 	else if( matrix.totalLoad < 4 )
 	{
-	    dim3 blockSize( 192 ), cudaGridSize( Devices::Cuda::getMaxGridSize() );
+	    dim3 blockSize( 192 ), cudaGridSize( Cuda::getMaxGridSize() );
 	    IndexType cudaBlocks = roundUpDivision( matrix.reduceMap.getSize(), blockSize.x );
-	    IndexType cudaGrids = roundUpDivision( cudaBlocks, Devices::Cuda::getMaxGridSize() );
+	    IndexType cudaGrids = roundUpDivision( cudaBlocks, Cuda::getMaxGridSize() );
 	    for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
 	    {
 	        if( gridIdx == cudaGrids - 1 )
-		    cudaGridSize.x = cudaBlocks % Devices::Cuda::getMaxGridSize();
+		    cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
 	        const int sharedMemory = blockSize.x * sizeof( Real );
 	        AdEllpackVectorProductCuda4< Real, Index, InVector, OutVector >
                                                     <<< cudaGridSize, blockSize, sharedMemory >>>
@@ -1336,20 +1336,20 @@ public:
                                                       gridIdx );
 	    }
 	    TNL_CHECK_CUDA_DEVICE;
-	    Devices::Cuda::freeFromDevice( kernel_this );
-	    Devices::Cuda::freeFromDevice( kernel_inVector );
-	    Devices::Cuda::freeFromDevice( kernel_outVector );
+	    Cuda::freeFromDevice( kernel_this );
+	    Cuda::freeFromDevice( kernel_inVector );
+	    Cuda::freeFromDevice( kernel_outVector );
 	    TNL_CHECK_CUDA_DEVICE;
 	}
 	else if( matrix.totalLoad < 8 )
 	{
-	    dim3 blockSize( 128 ), cudaGridSize( Devices::Cuda::getMaxGridSize() );
+	    dim3 blockSize( 128 ), cudaGridSize( Cuda::getMaxGridSize() );
 	    IndexType cudaBlocks = roundUpDivision( matrix.reduceMap.getSize(), blockSize.x );
-	    IndexType cudaGrids = roundUpDivision( cudaBlocks, Devices::Cuda::getMaxGridSize() );
+	    IndexType cudaGrids = roundUpDivision( cudaBlocks, Cuda::getMaxGridSize() );
 	    for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
 	    {
 	        if( gridIdx == cudaGrids - 1 )
-		    cudaGridSize.x = cudaBlocks % Devices::Cuda::getMaxGridSize();
+		    cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
 	        const int sharedMemory = blockSize.x * sizeof( Real );
 	        AdEllpackVectorProductCuda8< Real, Index, InVector, OutVector >
                                                     <<< cudaGridSize, blockSize, sharedMemory >>>
@@ -1359,20 +1359,20 @@ public:
                                                       gridIdx );
 	    }
 	    TNL_CHECK_CUDA_DEVICE;
-	    Devices::Cuda::freeFromDevice( kernel_this );
-	    Devices::Cuda::freeFromDevice( kernel_inVector );
-	    Devices::Cuda::freeFromDevice( kernel_outVector );
+	    Cuda::freeFromDevice( kernel_this );
+	    Cuda::freeFromDevice( kernel_inVector );
+	    Cuda::freeFromDevice( kernel_outVector );
 	    TNL_CHECK_CUDA_DEVICE;
 	}
 	else if( matrix.totalLoad < 16 )
 	{
-	    dim3 blockSize( 128 ), cudaGridSize( Devices::Cuda::getMaxGridSize() );
+	    dim3 blockSize( 128 ), cudaGridSize( Cuda::getMaxGridSize() );
 	    IndexType cudaBlocks = roundUpDivision( matrix.reduceMap.getSize(), blockSize.x );
-	    IndexType cudaGrids = roundUpDivision( cudaBlocks, Devices::Cuda::getMaxGridSize() );
+	    IndexType cudaGrids = roundUpDivision( cudaBlocks, Cuda::getMaxGridSize() );
 	    for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
 	    {
 	        if( gridIdx == cudaGrids - 1 )
-		    cudaGridSize.x = cudaBlocks % Devices::Cuda::getMaxGridSize();
+		    cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
 	        const int sharedMemory = blockSize.x * sizeof( Real );
 	        AdEllpackVectorProductCuda16< Real, Index, InVector, OutVector >
                                                      <<< cudaGridSize, blockSize, sharedMemory >>>
@@ -1382,20 +1382,20 @@ public:
                                                        gridIdx );
 	    }
 	    TNL_CHECK_CUDA_DEVICE;
-	    Devices::Cuda::freeFromDevice( kernel_this );
-	    Devices::Cuda::freeFromDevice( kernel_inVector );
-	    Devices::Cuda::freeFromDevice( kernel_outVector );
+	    Cuda::freeFromDevice( kernel_this );
+	    Cuda::freeFromDevice( kernel_inVector );
+	    Cuda::freeFromDevice( kernel_outVector );
 	    TNL_CHECK_CUDA_DEVICE;
 	}
 	else
 	{
-	    dim3 blockSize( 96 ), cudaGridSize( Devices::Cuda::getMaxGridSize() );
+	    dim3 blockSize( 96 ), cudaGridSize( Cuda::getMaxGridSize() );
 	    IndexType cudaBlocks = roundUpDivision( matrix.reduceMap.getSize(), blockSize.x );
-	    IndexType cudaGrids = roundUpDivision( cudaBlocks, Devices::Cuda::getMaxGridSize() );
+	    IndexType cudaGrids = roundUpDivision( cudaBlocks, Cuda::getMaxGridSize() );
 	    for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
 	    {
 	        if( gridIdx == cudaGrids - 1 )
-		    cudaGridSize.x = cudaBlocks % Devices::Cuda::getMaxGridSize();
+		    cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
 	        const int sharedMemory = blockSize.x * sizeof( Real );
 	        AdEllpackVectorProductCuda32< Real, Index, InVector, OutVector >
                                                      <<< cudaGridSize, blockSize, sharedMemory >>>
@@ -1405,9 +1405,9 @@ public:
                                                        gridIdx );
 	    }
 	    TNL_CHECK_CUDA_DEVICE;
-	    Devices::Cuda::freeFromDevice( kernel_this );
-	    Devices::Cuda::freeFromDevice( kernel_inVector );
-	    Devices::Cuda::freeFromDevice( kernel_outVector );
+	    Cuda::freeFromDevice( kernel_this );
+	    Cuda::freeFromDevice( kernel_inVector );
+	    Cuda::freeFromDevice( kernel_outVector );
 	    TNL_CHECK_CUDA_DEVICE;
 	}
     }

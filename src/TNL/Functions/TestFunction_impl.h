@@ -11,6 +11,8 @@
 #pragma once
 
 #include <TNL/Devices/Cuda.h>
+#include <TNL/Cuda/MemoryHelpers.h>
+
 #include <TNL/Functions/Analytic/Constant.h>
 #include <TNL/Functions/Analytic/ExpBump.h>
 #include <TNL/Functions/Analytic/SinBumps.h>
@@ -137,7 +139,7 @@ setupFunction( const Config::ParameterContainer& parameters,
    }
    if( std::is_same< Device, Devices::Cuda >::value )
    {
-      this->function = Devices::Cuda::passToDevice( *auxFunction );
+      this->function = Cuda::passToDevice( *auxFunction );
       delete auxFunction;
       TNL_CHECK_CUDA_DEVICE;
    }
@@ -166,7 +168,7 @@ setupOperator( const Config::ParameterContainer& parameters,
    }
    if( std::is_same< Device, Devices::Cuda >::value )
    {
-      this->operator_ = Devices::Cuda::passToDevice( *auxOperator );
+      this->operator_ = Cuda::passToDevice( *auxOperator );
       delete auxOperator;
       TNL_CHECK_CUDA_DEVICE;
    }
@@ -736,7 +738,7 @@ deleteFunction()
    if( std::is_same< Device, Devices::Cuda >::value )
    {
       if( function )
-         Devices::Cuda::freeFromDevice( ( FunctionType * ) function );
+         Cuda::freeFromDevice( ( FunctionType * ) function );
    }
 }
 
@@ -756,7 +758,7 @@ deleteOperator()
    if( std::is_same< Device, Devices::Cuda >::value )
    {
       if( operator_ )
-         Devices::Cuda::freeFromDevice( ( OperatorType * ) operator_ );
+         Cuda::freeFromDevice( ( OperatorType * ) operator_ );
    }
 }
 
@@ -912,7 +914,7 @@ printFunction( std::ostream& str ) const
    }
    if( std::is_same< Device, Devices::Cuda >::value )
    {
-      Devices::Cuda::print( f, str );
+      Cuda::print( f, str );
       return str;
    }
 }

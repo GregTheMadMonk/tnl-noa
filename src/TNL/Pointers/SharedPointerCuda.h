@@ -16,6 +16,7 @@
 
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Pointers/SmartPointer.h>
+#include <TNL/Cuda/MemoryHelpers.h>
 
 #include <cstring>   // std::memcpy, std::memcmp
 #include <cstddef>   // std::nullptr_t
@@ -570,7 +571,7 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
       {
          this->pd = new PointerData( args... );
          // pass to device
-         this->cuda_pointer = Devices::Cuda::passToDevice( this->pd->data );
+         this->cuda_pointer = Cuda::passToDevice( this->pd->data );
          // set last-sync state
          this->set_last_sync_state();
 #ifdef TNL_DEBUG_SHARED_POINTERS
@@ -608,7 +609,7 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
                delete this->pd;
                this->pd = nullptr;
                if( this->cuda_pointer )
-                  Devices::Cuda::freeFromDevice( this->cuda_pointer );
+                  Cuda::freeFromDevice( this->cuda_pointer );
 #ifdef TNL_DEBUG_SHARED_POINTERS
                std::cerr << "...deleted data." << std::endl;
 #endif

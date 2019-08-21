@@ -21,6 +21,8 @@
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Math.h>
+#include <TNL/Cuda/DeviceInfo.h>
+#include <TNL/Cuda/SharedMemory.h>
 
 namespace TNL {
 namespace Matrices {
@@ -248,7 +250,7 @@ GemvCudaKernel( const IndexType m,
    IndexType elementIdx = blockIdx.x * blockDim.x + threadIdx.x;
    const IndexType gridSize = blockDim.x * gridDim.x;
 
-   RealType* shx = Devices::Cuda::getSharedMemory< RealType >();
+   RealType* shx = Cuda::getSharedMemory< RealType >();
 
    if( threadIdx.x < n )
       shx[ threadIdx.x ] = alpha * x[ threadIdx.x ];
@@ -344,10 +346,10 @@ public:
       Containers::Algorithms::ArrayOperations< Devices::Cuda, Devices::Host >::copy< RealType, RealType, IndexType >( xDevice.getData(), x, n );
 
       // desGridSize = blocksPerMultiprocessor * numberOfMultiprocessors
-      const int desGridSize = 32 * Devices::CudaDeviceInfo::getCudaMultiprocessors( Devices::CudaDeviceInfo::getActiveDevice() );
+      const int desGridSize = 32 * Cuda::DeviceInfo::getCudaMultiprocessors( Cuda::DeviceInfo::getActiveDevice() );
       dim3 blockSize, gridSize;
       blockSize.x = 256;
-      gridSize.x = min( desGridSize, Devices::Cuda::getNumberOfBlocks( m, blockSize.x ) );
+      gridSize.x = min( desGridSize, Cuda::getNumberOfBlocks( m, blockSize.x ) );
 
       GemvCudaKernel<<< gridSize, blockSize, n * sizeof( RealType ) >>>(
             m, n,
@@ -401,9 +403,9 @@ public:
          blockSize.x /= 2;
 
       // desGridSize = blocksPerMultiprocessor * numberOfMultiprocessors
-      const int desGridSize = 32 * Devices::CudaDeviceInfo::getCudaMultiprocessors( Devices::CudaDeviceInfo::getActiveDevice() );
-      gridSize.x = min( desGridSize, Devices::Cuda::getNumberOfBlocks( m, blockSize.x ) );
-      gridSize.y = Devices::Cuda::getNumberOfBlocks( n, blockSize.y );
+      const int desGridSize = 32 * Cuda::DeviceInfo::getCudaMultiprocessors( Cuda::DeviceInfo::getActiveDevice() );
+      gridSize.x = min( desGridSize, Cuda::getNumberOfBlocks( m, blockSize.x ) );
+      gridSize.y = Cuda::getNumberOfBlocks( n, blockSize.y );
 
       GeamCudaKernel<<< gridSize, blockSize >>>(
             m, n,

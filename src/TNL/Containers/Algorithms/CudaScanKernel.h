@@ -13,7 +13,7 @@
 #include <iostream>
 
 #include <TNL/Math.h>
-#include <TNL/Devices/Cuda.h>
+#include <TNL/Cuda/SharedMemory.h>
 #include <TNL/Exceptions/CudaBadAlloc.h>
 #include <TNL/Containers/Array.h>
 
@@ -36,8 +36,8 @@ cudaFirstPhaseBlockScan( const ScanType scanType,
                          Real* output,
                          Real* auxArray )
 {
-   Real* sharedData = TNL::Devices::Cuda::getSharedMemory< Real >();
-   Real* auxData = &sharedData[ elementsInBlock + elementsInBlock / Devices::Cuda::getNumberOfSharedMemoryBanks() + 2 ];
+   Real* sharedData = TNL::Cuda::getSharedMemory< Real >();
+   Real* auxData = &sharedData[ elementsInBlock + elementsInBlock / Cuda::getNumberOfSharedMemoryBanks() + 2 ];
    Real* warpSums = &auxData[ blockDim.x ];
 
    const Index lastElementIdx = size - blockIdx.x * elementsInBlock;
@@ -54,7 +54,7 @@ cudaFirstPhaseBlockScan( const ScanType scanType,
          sharedData[ 0 ] = zero;
       while( idx < elementsInBlock && blockOffset + idx < size )
       {
-         sharedData[ Devices::Cuda::getInterleaving( idx + 1 ) ] = input[ blockOffset + idx ];
+         sharedData[ Cuda::getInterleaving( idx + 1 ) ] = input[ blockOffset + idx ];
          idx += blockDim.x;
       }
    }
@@ -62,7 +62,7 @@ cudaFirstPhaseBlockScan( const ScanType scanType,
    {
       while( idx < elementsInBlock && blockOffset + idx < size )
       {
-         sharedData[ Devices::Cuda::getInterleaving( idx ) ] = input[ blockOffset + idx ];
+         sharedData[ Cuda::getInterleaving( idx ) ] = input[ blockOffset + idx ];
          idx += blockDim.x;
       }
    }
@@ -78,33 +78,33 @@ cudaFirstPhaseBlockScan( const ScanType scanType,
    if( chunkOffset < lastElementInBlock )
    {
       auxData[ threadIdx.x ] =
-         sharedData[ Devices::Cuda::getInterleaving( chunkOffset ) ];
+         sharedData[ Cuda::getInterleaving( chunkOffset ) ];
    }
 
    int chunkPointer = 1;
    while( chunkPointer < chunkSize &&
           chunkOffset + chunkPointer < lastElementInBlock )
    {
-      sharedData[ Devices::Cuda::getInterleaving( chunkOffset + chunkPointer ) ] =
-         reduction( sharedData[ Devices::Cuda::getInterleaving( chunkOffset + chunkPointer ) ],
-                    sharedData[ Devices::Cuda::getInterleaving( chunkOffset + chunkPointer - 1 ) ] );
+      sharedData[ Cuda::getInterleaving( chunkOffset + chunkPointer ) ] =
+         reduction( sharedData[ Cuda::getInterleaving( chunkOffset + chunkPointer ) ],
+                    sharedData[ Cuda::getInterleaving( chunkOffset + chunkPointer - 1 ) ] );
       auxData[ threadIdx.x ] =
-         sharedData[ Devices::Cuda::getInterleaving( chunkOffset + chunkPointer ) ];
+         sharedData[ Cuda::getInterleaving( chunkOffset + chunkPointer ) ];
       chunkPointer++;
    }
 
    /***
     *  Perform the parallel prefix-sum inside warps.
     */
-   const int threadInWarpIdx = threadIdx.x % Devices::Cuda::getWarpSize();
-   const int warpIdx = threadIdx.x / Devices::Cuda::getWarpSize();
-   for( int stride = 1; stride < Devices::Cuda::getWarpSize(); stride *= 2 ) {
+   const int threadInWarpIdx = threadIdx.x % Cuda::getWarpSize();
+   const int warpIdx = threadIdx.x / Cuda::getWarpSize();
+   for( int stride = 1; stride < Cuda::getWarpSize(); stride *= 2 ) {
       if( threadInWarpIdx >= stride && threadIdx.x < numberOfChunks )
          auxData[ threadIdx.x ] = reduction( auxData[ threadIdx.x ], auxData[ threadIdx.x - stride ] );
       __syncwarp();
    }
 
-   if( threadInWarpIdx == Devices::Cuda::getWarpSize() - 1 )
+   if( threadInWarpIdx == Cuda::getWarpSize() - 1 )
       warpSums[ warpIdx ] = auxData[ threadIdx.x ];
    __syncthreads();
 
@@ -112,7 +112,7 @@ cudaFirstPhaseBlockScan( const ScanType scanType,
     * Compute prefix-sum of warp sums using one warp
     */
    if( warpIdx == 0 )
-      for( int stride = 1; stride < Devices::Cuda::getWarpSize(); stride *= 2 ) {
+      for( int stride = 1; stride < Cuda::getWarpSize(); stride *= 2 ) {
          if( threadInWarpIdx >= stride )
             warpSums[ threadIdx.x ] = reduction( warpSums[ threadIdx.x ], warpSums[ threadIdx.x - stride ] );
          __syncwarp();
@@ -136,9 +136,9 @@ cudaFirstPhaseBlockScan( const ScanType scanType,
       Real chunkShift( zero );
       if( chunkIdx > 0 )
          chunkShift = auxData[ chunkIdx - 1 ];
-      sharedData[ Devices::Cuda::getInterleaving( idx ) ] =
-         reduction( sharedData[ Devices::Cuda::getInterleaving( idx ) ], chunkShift );
-      output[ blockOffset + idx ] = sharedData[ Devices::Cuda::getInterleaving( idx ) ];
+      sharedData[ Cuda::getInterleaving( idx ) ] =
+         reduction( sharedData[ Cuda::getInterleaving( idx ) ], chunkShift );
+      output[ blockOffset + idx ] = sharedData[ Cuda::getInterleaving( idx ) ];
       idx += blockDim.x;
    }
    __syncthreads();
@@ -147,11 +147,11 @@ cudaFirstPhaseBlockScan( const ScanType scanType,
    {
       if( scanType == ScanType::Exclusive )
       {
-         auxArray[ blockIdx.x ] = reduction( sharedData[ Devices::Cuda::getInterleaving( lastElementInBlock - 1 ) ],
-                                             sharedData[ Devices::Cuda::getInterleaving( lastElementInBlock ) ] );
+         auxArray[ blockIdx.x ] = reduction( sharedData[ Cuda::getInterleaving( lastElementInBlock - 1 ) ],
+                                             sharedData[ Cuda::getInterleaving( lastElementInBlock ) ] );
       }
       else
-         auxArray[ blockIdx.x ] = sharedData[ Devices::Cuda::getInterleaving( lastElementInBlock - 1 ) ];
+         auxArray[ blockIdx.x ] = sharedData[ Cuda::getInterleaving( lastElementInBlock - 1 ) ];
    }
 }
 
@@ -245,7 +245,7 @@ struct CudaScanKernelLauncher
       // compute the number of grids
       const int elementsInBlock = 8 * blockSize;
       const Index numberOfBlocks = roundUpDivision( size, elementsInBlock );
-      const Index numberOfGrids = Devices::Cuda::getNumberOfGrids( numberOfBlocks, maxGridSize() );
+      const Index numberOfGrids = Cuda::getNumberOfGrids( numberOfBlocks, maxGridSize() );
       //std::cerr << "numberOfgrids =  " << numberOfGrids << std::endl;
 
       // allocate array for the block sums
@@ -268,8 +268,8 @@ struct CudaScanKernelLauncher
 
          // run the kernel
          const std::size_t sharedDataSize = elementsInBlock +
-                                            elementsInBlock / Devices::Cuda::getNumberOfSharedMemoryBanks() + 2;
-         const std::size_t sharedMemory = ( sharedDataSize + blockSize + Devices::Cuda::getWarpSize() ) * sizeof( Real );
+                                            elementsInBlock / Cuda::getNumberOfSharedMemoryBanks() + 2;
+         const std::size_t sharedMemory = ( sharedDataSize + blockSize + Cuda::getWarpSize() ) * sizeof( Real );
          cudaFirstPhaseBlockScan<<< cudaGridSize, cudaBlockSize, sharedMemory >>>
             ( scanType,
               reduction,
@@ -330,7 +330,7 @@ struct CudaScanKernelLauncher
       // compute the number of grids
       const int elementsInBlock = 8 * blockSize;
       const Index numberOfBlocks = roundUpDivision( size, elementsInBlock );
-      const Index numberOfGrids = Devices::Cuda::getNumberOfGrids( numberOfBlocks, maxGridSize() );
+      const Index numberOfGrids = Cuda::getNumberOfGrids( numberOfBlocks, maxGridSize() );
 
       // loop over all grids
       for( Index gridIdx = 0; gridIdx < numberOfGrids; gridIdx++ ) {
@@ -369,13 +369,13 @@ struct CudaScanKernelLauncher
     */
    static int& maxGridSize()
    {
-      static int maxGridSize = Devices::Cuda::getMaxGridSize();
+      static int maxGridSize = Cuda::getMaxGridSize();
       return maxGridSize;
    }
 
    static void resetMaxGridSize()
    {
-      maxGridSize() = Devices::Cuda::getMaxGridSize();
+      maxGridSize() = Cuda::getMaxGridSize();
    }
 
    static int& gridsCount()

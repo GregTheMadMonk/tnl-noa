@@ -105,7 +105,7 @@ solve( const MeshPointer& mesh,
          // TODO: CUDA code
 #ifdef HAVE_CUDA
           const int cudaBlockSize( 16 );
-          int numBlocksX = Devices::Cuda::getNumberOfBlocks( mesh->getDimensions().x(), cudaBlockSize );
+          int numBlocksX = Cuda::getNumberOfBlocks( mesh->getDimensions().x(), cudaBlockSize );
           dim3 blockSize( cudaBlockSize );
           dim3 gridSize( numBlocksX );
           

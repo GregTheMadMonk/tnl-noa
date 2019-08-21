@@ -13,7 +13,7 @@
 #endif
 
 #include <TNL/Assert.h>
-#include <TNL/Devices/Cuda.h>
+#include <TNL/Cuda/CheckDevice.h>
 #include <TNL/Exceptions/CudaRuntimeError.h>
 
 #ifdef HAVE_GTEST

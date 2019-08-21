@@ -12,9 +12,6 @@
 
 // The __cuda_callable__ macro has to be in a separate header file to avoid
 // infinite loops by the #include directives.
-//
-// For example, the implementation of Devices::Cuda needs TNL_ASSERT_*
-// macros, which need __cuda_callable__ functions.
 
 /***
  * This macro serves for definition of function which are supposed to be called

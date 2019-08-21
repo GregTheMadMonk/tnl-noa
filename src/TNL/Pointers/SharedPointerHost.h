@@ -15,7 +15,7 @@
 #include "SharedPointer.h"
 
 #include <TNL/Devices/Host.h>
-#include <TNL/Devices/CudaCallable.h>
+#include <TNL/Cuda/CudaCallable.h>
 #include <TNL/Pointers/SmartPointer.h>
 
 #include <cstddef>   // std::nullptr_t

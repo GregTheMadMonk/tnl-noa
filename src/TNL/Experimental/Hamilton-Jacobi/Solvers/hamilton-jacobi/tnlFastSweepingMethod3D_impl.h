@@ -263,9 +263,9 @@ solve( const MeshPointer& mesh,
         const int cudaBlockSize( 8 );
         
         // Getting the number of blocks in grid in each direction (without overlaps bcs we dont calculate on overlaps)
-        int numBlocksX = Devices::Cuda::getNumberOfBlocks( mesh->getDimensions().x() - vecLowerOverlaps[0] - vecUpperOverlaps[0], cudaBlockSize );
-        int numBlocksY = Devices::Cuda::getNumberOfBlocks( mesh->getDimensions().y() - vecLowerOverlaps[1] - vecUpperOverlaps[1], cudaBlockSize );
-        int numBlocksZ = Devices::Cuda::getNumberOfBlocks( mesh->getDimensions().z() - vecLowerOverlaps[2] - vecUpperOverlaps[2], cudaBlockSize ); 
+        int numBlocksX = Cuda::getNumberOfBlocks( mesh->getDimensions().x() - vecLowerOverlaps[0] - vecUpperOverlaps[0], cudaBlockSize );
+        int numBlocksY = Cuda::getNumberOfBlocks( mesh->getDimensions().y() - vecLowerOverlaps[1] - vecUpperOverlaps[1], cudaBlockSize );
+        int numBlocksZ = Cuda::getNumberOfBlocks( mesh->getDimensions().z() - vecLowerOverlaps[2] - vecUpperOverlaps[2], cudaBlockSize ); 
         if( cudaBlockSize * cudaBlockSize * cudaBlockSize > 1024 || numBlocksX > 1024 || numBlocksY > 1024 || numBlocksZ > 64 )
           std::cout << "Invalid kernel call. Dimensions of grid are max: [1024,1024,64], and maximum threads per block are 1024!" << std::endl;
         

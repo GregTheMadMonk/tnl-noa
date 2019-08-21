@@ -12,7 +12,9 @@
 
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
-#include <TNL/Devices/CudaDeviceInfo.h>
+#include <TNL/Cuda/CheckDevice.h>
+#include <TNL/Cuda/DeviceInfo.h>
+#include <TNL/Cuda/LaunchHelpers.h>
 #include <TNL/Math.h>
 
 /****
@@ -203,14 +205,14 @@ struct ParallelFor< Devices::Cuda, Mode >
       if( end > start ) {
          dim3 blockSize( 256 );
          dim3 gridSize;
-         gridSize.x = TNL::min( Devices::Cuda::getMaxGridSize(), Devices::Cuda::getNumberOfBlocks( end - start, blockSize.x ) );
+         gridSize.x = TNL::min( Cuda::getMaxGridSize(), Cuda::getNumberOfBlocks( end - start, blockSize.x ) );
 
          if( (std::size_t) blockSize.x * gridSize.x >= (std::size_t) end - start )
             ParallelForKernel< false ><<< gridSize, blockSize >>>( start, end, f, args... );
          else {
             // decrease the grid size and align to the number of multiprocessors
-            const int desGridSize = 32 * Devices::CudaDeviceInfo::getCudaMultiprocessors( Devices::CudaDeviceInfo::getActiveDevice() );
-            gridSize.x = TNL::min( desGridSize, Devices::Cuda::getNumberOfBlocks( end - start, blockSize.x ) );
+            const int desGridSize = 32 * Cuda::DeviceInfo::getCudaMultiprocessors( Cuda::DeviceInfo::getActiveDevice() );
+            gridSize.x = TNL::min( desGridSize, Cuda::getNumberOfBlocks( end - start, blockSize.x ) );
             ParallelForKernel< true ><<< gridSize, blockSize >>>( start, end, f, args... );
          }
 
@@ -253,8 +255,8 @@ struct ParallelFor2D< Devices::Cuda, Mode >
             blockSize.y = TNL::min( 8, sizeY );
          }
          dim3 gridSize;
-         gridSize.x = TNL::min( Devices::Cuda::getMaxGridSize(), Devices::Cuda::getNumberOfBlocks( sizeX, blockSize.x ) );
-         gridSize.y = TNL::min( Devices::Cuda::getMaxGridSize(), Devices::Cuda::getNumberOfBlocks( sizeY, blockSize.y ) );
+         gridSize.x = TNL::min( Cuda::getMaxGridSize(), Cuda::getNumberOfBlocks( sizeX, blockSize.x ) );
+         gridSize.y = TNL::min( Cuda::getMaxGridSize(), Cuda::getNumberOfBlocks( sizeY, blockSize.y ) );
 
          dim3 gridCount;
          gridCount.x = roundUpDivision( sizeX, blockSize.x * gridSize.x );
@@ -337,9 +339,9 @@ struct ParallelFor3D< Devices::Cuda, Mode >
             blockSize.z = TNL::min( 4, sizeZ );
          }
          dim3 gridSize;
-         gridSize.x = TNL::min( Devices::Cuda::getMaxGridSize(), Devices::Cuda::getNumberOfBlocks( sizeX, blockSize.x ) );
-         gridSize.y = TNL::min( Devices::Cuda::getMaxGridSize(), Devices::Cuda::getNumberOfBlocks( sizeY, blockSize.y ) );
-         gridSize.z = TNL::min( Devices::Cuda::getMaxGridSize(), Devices::Cuda::getNumberOfBlocks( sizeZ, blockSize.z ) );
+         gridSize.x = TNL::min( Cuda::getMaxGridSize(), Cuda::getNumberOfBlocks( sizeX, blockSize.x ) );
+         gridSize.y = TNL::min( Cuda::getMaxGridSize(), Cuda::getNumberOfBlocks( sizeY, blockSize.y ) );
+         gridSize.z = TNL::min( Cuda::getMaxGridSize(), Cuda::getNumberOfBlocks( sizeZ, blockSize.z ) );
 
          dim3 gridCount;
          gridCount.x = roundUpDivision( sizeX, blockSize.x * gridSize.x );

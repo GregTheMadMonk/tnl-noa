@@ -176,10 +176,10 @@ void Euler< Problem, SolverMonitor >::computeNewTimeLevel( DofVectorPointer& u,
    {
 #ifdef HAVE_CUDA
       dim3 cudaBlockSize( 512 );
-      const IndexType cudaBlocks = Devices::Cuda::getNumberOfBlocks( size, cudaBlockSize.x );
-      const IndexType cudaGrids = Devices::Cuda::getNumberOfGrids( cudaBlocks );
-      this->cudaBlockResidue.setSize( min( cudaBlocks, Devices::Cuda::getMaxGridSize() ) );
-      const IndexType threadsPerGrid = Devices::Cuda::getMaxGridSize() * cudaBlockSize.x;
+      const IndexType cudaBlocks = Cuda::getNumberOfBlocks( size, cudaBlockSize.x );
+      const IndexType cudaGrids = Cuda::getNumberOfGrids( cudaBlocks );
+      this->cudaBlockResidue.setSize( min( cudaBlocks, Cuda::getMaxGridSize() ) );
+      const IndexType threadsPerGrid = Cuda::getMaxGridSize() * cudaBlockSize.x;
 
       localResidue = 0.0;
       for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx ++ )
@@ -187,7 +187,7 @@ void Euler< Problem, SolverMonitor >::computeNewTimeLevel( DofVectorPointer& u,
          const IndexType sharedMemory = cudaBlockSize.x * sizeof( RealType );
          const IndexType gridOffset = gridIdx * threadsPerGrid;
          const IndexType currentSize = min( size - gridOffset, threadsPerGrid );
-         const IndexType currentGridSize = Devices::Cuda::getNumberOfBlocks( currentSize, cudaBlockSize.x );
+         const IndexType currentGridSize = Cuda::getNumberOfBlocks( currentSize, cudaBlockSize.x );
 
          updateUEuler<<< currentGridSize, cudaBlockSize, sharedMemory >>>( currentSize,
                                                                       tau,

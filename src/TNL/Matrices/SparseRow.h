@@ -14,7 +14,7 @@
 #include <type_traits>
 #include <ostream>
 
-#include <TNL/Devices/CudaCallable.h>
+#include <TNL/Cuda/CudaCallable.h>
 
 namespace TNL {
 namespace Matrices {

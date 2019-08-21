@@ -251,8 +251,8 @@ solve( const MeshPointer& mesh,
         const int cudaBlockSize( 16 );
         
         // Setting number of threads and blocks for kernel
-        int numBlocksX = Devices::Cuda::getNumberOfBlocks( mesh->getDimensions().x() - vecLowerOverlaps[0] - vecUpperOverlaps[0], cudaBlockSize );
-        int numBlocksY = Devices::Cuda::getNumberOfBlocks( mesh->getDimensions().y() - vecLowerOverlaps[1] - vecUpperOverlaps[1], cudaBlockSize );
+        int numBlocksX = Cuda::getNumberOfBlocks( mesh->getDimensions().x() - vecLowerOverlaps[0] - vecUpperOverlaps[0], cudaBlockSize );
+        int numBlocksY = Cuda::getNumberOfBlocks( mesh->getDimensions().y() - vecLowerOverlaps[1] - vecUpperOverlaps[1], cudaBlockSize );
         dim3 blockSize( cudaBlockSize, cudaBlockSize );
         dim3 gridSize( numBlocksX, numBlocksY );
         

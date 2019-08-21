@@ -24,7 +24,7 @@
 
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/SystemInfo.h>
-#include <TNL/Devices/CudaDeviceInfo.h>
+#include <TNL/Cuda/DeviceInfo.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Communicators/MpiCommunicator.h>
 
@@ -339,9 +339,9 @@ Benchmark::MetadataMap getHardwareMetadata()
                        + convertToString( cacheSizes.L2 ) + ", "
                        + convertToString( cacheSizes.L3 );
 #ifdef HAVE_CUDA
-   const int activeGPU = Devices::CudaDeviceInfo::getActiveDevice();
-   const String deviceArch = convertToString( Devices::CudaDeviceInfo::getArchitectureMajor( activeGPU ) ) + "." +
-                             convertToString( Devices::CudaDeviceInfo::getArchitectureMinor( activeGPU ) );
+   const int activeGPU = Cuda::DeviceInfo::getActiveDevice();
+   const String deviceArch = convertToString( Cuda::DeviceInfo::getArchitectureMajor( activeGPU ) ) + "." +
+                             convertToString( Cuda::DeviceInfo::getArchitectureMinor( activeGPU ) );
 #endif
    Benchmark::MetadataMap metadata {
        { "host name", Devices::SystemInfo::getHostname() },
@@ -362,13 +362,13 @@ Benchmark::MetadataMap getHardwareMetadata()
        { "CPU max frequency (MHz)", convertToString( Devices::SystemInfo::getCPUMaxFrequency( cpu_id ) / 1e3 ) },
        { "CPU cache sizes (L1d, L1i, L2, L3) (kiB)", cacheInfo },
 #ifdef HAVE_CUDA
-       { "GPU name", Devices::CudaDeviceInfo::getDeviceName( activeGPU ) },
+       { "GPU name", Cuda::DeviceInfo::getDeviceName( activeGPU ) },
        { "GPU architecture", deviceArch },
-       { "GPU CUDA cores", convertToString( Devices::CudaDeviceInfo::getCudaCores( activeGPU ) ) },
-       { "GPU clock rate (MHz)", convertToString( (double) Devices::CudaDeviceInfo::getClockRate( activeGPU ) / 1e3 ) },
-       { "GPU global memory (GB)", convertToString( (double) Devices::CudaDeviceInfo::getGlobalMemory( activeGPU ) / 1e9 ) },
-       { "GPU memory clock rate (MHz)", convertToString( (double) Devices::CudaDeviceInfo::getMemoryClockRate( activeGPU ) / 1e3 ) },
-       { "GPU memory ECC enabled", convertToString( Devices::CudaDeviceInfo::getECCEnabled( activeGPU ) ) },
+       { "GPU CUDA cores", convertToString( Cuda::DeviceInfo::getCudaCores( activeGPU ) ) },
+       { "GPU clock rate (MHz)", convertToString( (double) Cuda::DeviceInfo::getClockRate( activeGPU ) / 1e3 ) },
+       { "GPU global memory (GB)", convertToString( (double) Cuda::DeviceInfo::getGlobalMemory( activeGPU ) / 1e9 ) },
+       { "GPU memory clock rate (MHz)", convertToString( (double) Cuda::DeviceInfo::getMemoryClockRate( activeGPU ) / 1e3 ) },
+       { "GPU memory ECC enabled", convertToString( Cuda::DeviceInfo::getECCEnabled( activeGPU ) ) },
 #endif
    };
 

@@ -14,7 +14,8 @@
 
 #include <TNL/Assert.h>
 #include <TNL/Math.h>
-#include <TNL/Devices/CudaDeviceInfo.h>
+#include <TNL/Cuda/DeviceInfo.h>
+#include <TNL/Cuda/SharedMemory.h>
 #include <TNL/Containers/Algorithms/CudaReductionBuffer.h>
 #include <TNL/Exceptions/CudaSupportMissing.h>
 
@@ -52,7 +53,7 @@ CudaMultireductionKernel( const Result zero,
                           const int n,
                           Result* output )
 {
-   Result* sdata = Devices::Cuda::getSharedMemory< Result >();
+   Result* sdata = Cuda::getSharedMemory< Result >();
 
    // Get the thread id (tid), global thread id (gid) and gridSize.
    const Index tid = threadIdx.y * blockDim.x + threadIdx.x;
@@ -160,10 +161,10 @@ CudaMultireductionKernelLauncher( const Result zero,
    // where blocksPerMultiprocessor is determined according to the number of
    // available registers on the multiprocessor.
    // On Tesla K40c, desGridSize = 8 * 15 = 120.
-   const int activeDevice = Devices::CudaDeviceInfo::getActiveDevice();
-   const int blocksdPerMultiprocessor = Devices::CudaDeviceInfo::getRegistersPerMultiprocessor( activeDevice )
+   const int activeDevice = Cuda::DeviceInfo::getActiveDevice();
+   const int blocksdPerMultiprocessor = Cuda::DeviceInfo::getRegistersPerMultiprocessor( activeDevice )
                                       / ( Multireduction_maxThreadsPerBlock * Multireduction_registersPerThread );
-   const int desGridSizeX = blocksdPerMultiprocessor * Devices::CudaDeviceInfo::getCudaMultiprocessors( activeDevice );
+   const int desGridSizeX = blocksdPerMultiprocessor * Cuda::DeviceInfo::getCudaMultiprocessors( activeDevice );
    dim3 blockSize, gridSize;
 
    // version A: max 16 rows of threads
@@ -189,10 +190,10 @@ CudaMultireductionKernelLauncher( const Result zero,
    while( blockSize.x * blockSize.y > Multireduction_maxThreadsPerBlock )
       blockSize.x /= 2;
 
-   gridSize.x = TNL::min( Devices::Cuda::getNumberOfBlocks( size, blockSize.x ), desGridSizeX );
-   gridSize.y = Devices::Cuda::getNumberOfBlocks( n, blockSize.y );
+   gridSize.x = TNL::min( Cuda::getNumberOfBlocks( size, blockSize.x ), desGridSizeX );
+   gridSize.y = Cuda::getNumberOfBlocks( n, blockSize.y );
 
-   if( gridSize.y > (unsigned) Devices::Cuda::getMaxGridSize() ) {
+   if( gridSize.y > (unsigned) Cuda::getMaxGridSize() ) {
       std::cerr << "Maximum gridSize.y limit exceeded (limit is 65535, attempted " << gridSize.y << ")." << std::endl;
       throw 1;
    }

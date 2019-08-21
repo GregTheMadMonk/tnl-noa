@@ -13,7 +13,7 @@
 #include <utility>
 #include <type_traits>
 
-#include <TNL/Devices/CudaCallable.h>
+#include <TNL/Cuda/CudaCallable.h>
 
 namespace TNL {
 namespace detail {

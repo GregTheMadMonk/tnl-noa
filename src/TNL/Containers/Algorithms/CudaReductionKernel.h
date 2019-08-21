@@ -14,7 +14,8 @@
 
 #include <TNL/Assert.h>
 #include <TNL/Math.h>
-#include <TNL/Devices/CudaDeviceInfo.h>
+#include <TNL/Cuda/DeviceInfo.h>
+#include <TNL/Cuda/SharedMemory.h>
 #include <TNL/Containers/Algorithms/CudaReductionBuffer.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Exceptions/CudaSupportMissing.h>
@@ -52,7 +53,7 @@ CudaReductionKernel( const Result zero,
                      const Index size,
                      Result* output )
 {
-   Result* sdata = Devices::Cuda::getSharedMemory< Result >();
+   Result* sdata = Cuda::getSharedMemory< Result >();
 
    // Get the thread id (tid), global thread id (gid) and gridSize.
    const Index tid = threadIdx.x;
@@ -147,7 +148,7 @@ CudaReductionWithArgumentKernel( const Result zero,
                                  Index* idxOutput,
                                  const Index* idxInput = nullptr )
 {
-   Result* sdata = Devices::Cuda::getSharedMemory< Result >();
+   Result* sdata = Cuda::getSharedMemory< Result >();
    Index* sidx = reinterpret_cast< Index* >( &sdata[ blockDim.x ] );
 
    // Get the thread id (tid), global thread id (gid) and gridSize.
@@ -282,11 +283,11 @@ struct CudaReductionKernelLauncher
    // It seems to be better to map only one CUDA block per one multiprocessor or maybe
    // just slightly more. Therefore we omit blocksdPerMultiprocessor in the following.
    CudaReductionKernelLauncher( const Index size )
-   : activeDevice( Devices::CudaDeviceInfo::getActiveDevice() ),
-     blocksdPerMultiprocessor( Devices::CudaDeviceInfo::getRegistersPerMultiprocessor( activeDevice )
+   : activeDevice( Cuda::DeviceInfo::getActiveDevice() ),
+     blocksdPerMultiprocessor( Cuda::DeviceInfo::getRegistersPerMultiprocessor( activeDevice )
                                / ( Reduction_maxThreadsPerBlock * Reduction_registersPerThread ) ),
-     //desGridSize( blocksdPerMultiprocessor * Devices::CudaDeviceInfo::getCudaMultiprocessors( activeDevice ) ),
-     desGridSize( Devices::CudaDeviceInfo::getCudaMultiprocessors( activeDevice ) ),
+     //desGridSize( blocksdPerMultiprocessor * Cuda::DeviceInfo::getCudaMultiprocessors( activeDevice ) ),
+     desGridSize( Cuda::DeviceInfo::getCudaMultiprocessors( activeDevice ) ),
      originalSize( size )
    {
    }
@@ -402,7 +403,7 @@ struct CudaReductionKernelLauncher
 #ifdef HAVE_CUDA
          dim3 blockSize, gridSize;
          blockSize.x = Reduction_maxThreadsPerBlock;
-         gridSize.x = TNL::min( Devices::Cuda::getNumberOfBlocks( size, blockSize.x ), desGridSize );
+         gridSize.x = TNL::min( Cuda::getNumberOfBlocks( size, blockSize.x ), desGridSize );
 
          // when there is only one warp per blockSize.x, we need to allocate two warps
          // worth of shared memory so that we don't index shared memory out of bounds
@@ -510,7 +511,7 @@ struct CudaReductionKernelLauncher
 #ifdef HAVE_CUDA
          dim3 blockSize, gridSize;
          blockSize.x = Reduction_maxThreadsPerBlock;
-         gridSize.x = TNL::min( Devices::Cuda::getNumberOfBlocks( size, blockSize.x ), desGridSize );
+         gridSize.x = TNL::min( Cuda::getNumberOfBlocks( size, blockSize.x ), desGridSize );
 
          // when there is only one warp per blockSize.x, we need to allocate two warps
          // worth of shared memory so that we don't index shared memory out of bounds

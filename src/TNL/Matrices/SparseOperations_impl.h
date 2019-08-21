@@ -130,8 +130,8 @@ copySparseMatrix_impl( Matrix1& A, const Matrix2& B )
 #ifdef HAVE_CUDA
       dim3 blockSize( 256 );
       dim3 gridSize;
-      const IndexType desGridSize = 32 * Devices::CudaDeviceInfo::getCudaMultiprocessors( Devices::CudaDeviceInfo::getActiveDevice() );
-      gridSize.x = min( desGridSize, Devices::Cuda::getNumberOfBlocks( rows, blockSize.x ) );
+      const IndexType desGridSize = 32 * Cuda::DeviceInfo::getCudaMultiprocessors( Cuda::DeviceInfo::getActiveDevice() );
+      gridSize.x = min( desGridSize, Cuda::getNumberOfBlocks( rows, blockSize.x ) );
 
       typename Matrix1::CompressedRowLengthsVector rowLengths;
       rowLengths.setSize( rows );

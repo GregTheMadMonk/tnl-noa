@@ -452,7 +452,7 @@ __global__ void TridiagonalTranspositionCudaKernel( const Tridiagonal< Real2, De
                                                              const Real matrixMultiplicator,
                                                              const Index gridIdx )
 {
-   const Index rowIdx = ( gridIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   const Index rowIdx = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    if( rowIdx < inMatrix->getRows() )
    {
       if( rowIdx > 0 )
@@ -494,24 +494,24 @@ void Tridiagonal< Real, Device, Index >::getTransposition( const Tridiagonal< Re
    if( std::is_same< Device, Devices::Cuda >::value )
    {
 #ifdef HAVE_CUDA
-      Tridiagonal* kernel_this = Devices::Cuda::passToDevice( *this );
+      Tridiagonal* kernel_this = Cuda::passToDevice( *this );
       typedef  Tridiagonal< Real2, Device, Index2 > InMatrixType;
-      InMatrixType* kernel_inMatrix = Devices::Cuda::passToDevice( matrix );
-      dim3 cudaBlockSize( 256 ), cudaGridSize( Devices::Cuda::getMaxGridSize() );
+      InMatrixType* kernel_inMatrix = Cuda::passToDevice( matrix );
+      dim3 cudaBlockSize( 256 ), cudaGridSize( Cuda::getMaxGridSize() );
       const IndexType cudaBlocks = roundUpDivision( matrix.getRows(), cudaBlockSize.x );
-      const IndexType cudaGrids = roundUpDivision( cudaBlocks, Devices::Cuda::getMaxGridSize() );
+      const IndexType cudaGrids = roundUpDivision( cudaBlocks, Cuda::getMaxGridSize() );
       for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
       {
          if( gridIdx == cudaGrids - 1 )
-            cudaGridSize.x = cudaBlocks % Devices::Cuda::getMaxGridSize();
+            cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
          TridiagonalTranspositionCudaKernel<<< cudaGridSize, cudaBlockSize >>>
                                                     ( kernel_inMatrix,
                                                       kernel_this,
                                                       matrixMultiplicator,
                                                       gridIdx );
       }
-      Devices::Cuda::freeFromDevice( kernel_this );
-      Devices::Cuda::freeFromDevice( kernel_inMatrix );
+      Cuda::freeFromDevice( kernel_this );
+      Cuda::freeFromDevice( kernel_inMatrix );
       TNL_CHECK_CUDA_DEVICE;
 #endif
    }

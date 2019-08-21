@@ -1095,7 +1095,7 @@ __global__ void SlicedEllpackSymmetricGraph_computeMaximalRowLengthInSlices_Cuda
                                                                                         typename SlicedEllpackSymmetricGraph< Real, Devices::Cuda, Index, SliceSize >::ConstCompressedRowLengthsVector rowLengths,
                                                                                         int gridIdx )
 {
-   const Index sliceIdx = gridIdx * Devices::Cuda::getMaxGridSize() * blockDim.x + blockIdx.x * blockDim.x + threadIdx.x;
+   const Index sliceIdx = gridIdx * Cuda::getMaxGridSize() * blockDim.x + blockIdx.x * blockDim.x + threadIdx.x;
    matrix->computeMaximalRowLengthInSlicesCuda( rowLengths, sliceIdx );
 }
 #endif
@@ -1152,7 +1152,7 @@ void SlicedEllpackSymmetricGraphVectorProductCuda( const SlicedEllpackSymmetricG
                                                    const int color,
                                                    const int sliceOffset )
 {
-    int globalIdx = ( gridIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x + sliceOffset;
+    int globalIdx = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x + sliceOffset;
     matrix->smvCuda( *inVector, *outVector, globalIdx, color );
 }
 #endif
@@ -1213,21 +1213,21 @@ class SlicedEllpackSymmetricGraphDeviceDependentCode< Devices::Cuda >
 #ifdef HAVE_CUDA
          typedef SlicedEllpackSymmetricGraph< Real, Device, Index, SliceSize > Matrix;
          typedef typename Matrix::RowLengthsVector CompressedRowLengthsVector;
-         Matrix* kernel_matrix = Devices::Cuda::passToDevice( matrix );
+         Matrix* kernel_matrix = Cuda::passToDevice( matrix );
          const Index numberOfSlices = roundUpDivision( matrix.getRows(), SliceSize );
-         dim3 cudaBlockSize( 256 ), cudaGridSize( Devices::Cuda::getMaxGridSize() );
+         dim3 cudaBlockSize( 256 ), cudaGridSize( Cuda::getMaxGridSize() );
          const Index cudaBlocks = roundUpDivision( numberOfSlices, cudaBlockSize.x );
-         const Index cudaGrids = roundUpDivision( cudaBlocks, Devices::Cuda::getMaxGridSize() );
+         const Index cudaGrids = roundUpDivision( cudaBlocks, Cuda::getMaxGridSize() );
          for( int gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
          {
             if( gridIdx == cudaGrids - 1 )
-               cudaGridSize.x = cudaBlocks % Devices::Cuda::getMaxGridSize();
+               cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
             SlicedEllpackSymmetricGraph_computeMaximalRowLengthInSlices_CudaKernel< Real, Index, SliceSize ><<< cudaGridSize, cudaBlockSize >>>
                                                                              ( kernel_matrix,
                                                                                rowLengths,
                                                                                gridIdx );
          }
-         Devices::Cuda::freeFromDevice( kernel_matrix );
+         Cuda::freeFromDevice( kernel_matrix );
          TNL_CHECK_CUDA_DEVICE;
 #endif
       }
@@ -1245,10 +1245,10 @@ class SlicedEllpackSymmetricGraphDeviceDependentCode< Devices::Cuda >
 #ifdef HAVE_CUDA
          typedef SlicedEllpackSymmetricGraph< Real, Devices::Cuda, Index, SliceSize > Matrix;
          typedef typename Matrix::IndexType IndexType;
-         Matrix* kernel_this = Devices::Cuda::passToDevice( matrix );
-         InVector* kernel_inVector = Devices::Cuda::passToDevice( inVector );
-         OutVector* kernel_outVector = Devices::Cuda::passToDevice( outVector );
-         dim3 cudaBlockSize( 256 ), cudaGridSize( Devices::Cuda::getMaxGridSize() );
+         Matrix* kernel_this = Cuda::passToDevice( matrix );
+         InVector* kernel_inVector = Cuda::passToDevice( inVector );
+         OutVector* kernel_outVector = Cuda::passToDevice( outVector );
+         dim3 cudaBlockSize( 256 ), cudaGridSize( Cuda::getMaxGridSize() );
          for( IndexType color = 0; color < matrix.getNumberOfColors(); color++ )
          {
             IndexType offset = matrix.colorPointers.getElement( color ); //can be computed in kernel
@@ -1258,11 +1258,11 @@ class SlicedEllpackSymmetricGraphDeviceDependentCode< Devices::Cuda >
             //IndexType rows = matrix.colorPointers.getElement( color + 1 ) - matrix.colorPointers.getElement( color ) + inSliceIdx;
             // TODO: rows id undefined
             /*const IndexType cudaBlocks = roundUpDivision( rows, cudaBlockSize.x );
-            const IndexType cudaGrids = rondUpDivision( cudaBlocks, Devices::Cuda::getMaxGridSize );
+            const IndexType cudaGrids = rondUpDivision( cudaBlocks, Cuda::getMaxGridSize );
             for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
             {
                if( gridIdx == cudaGrids - 1 )
-                  cudaGridSize.x = cudaBlocks % Devices::Cuda::getMaxGridSize();
+                  cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
                // TODO: this cannot be used here and i is undefined
                //IndexType offset = this->colorPointers[ i ];
                IndexType inSliceIdx = offset % SliceSize;
@@ -1277,9 +1277,9 @@ class SlicedEllpackSymmetricGraphDeviceDependentCode< Devices::Cuda >
                                                              sliceOffset );
             }*/
          }
-         Devices::Cuda::freeFromDevice( kernel_this );
-         Devices::Cuda::freeFromDevice( kernel_inVector );
-         Devices::Cuda::freeFromDevice( kernel_outVector );
+         Cuda::freeFromDevice( kernel_this );
+         Cuda::freeFromDevice( kernel_inVector );
+         Cuda::freeFromDevice( kernel_outVector );
          TNL_CHECK_CUDA_DEVICE;
 #endif
       }

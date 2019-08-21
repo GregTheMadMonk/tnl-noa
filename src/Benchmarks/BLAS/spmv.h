@@ -53,7 +53,7 @@ __global__ void setCudaTestMatrixKernel( Matrix* matrix,
                                          const int elementsPerRow,
                                          const int gridIdx )
 {
-   const int rowIdx = ( gridIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   const int rowIdx = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    if( rowIdx >= matrix->getRows() )
       return;
    int col = rowIdx - elementsPerRow / 2;
@@ -73,12 +73,12 @@ void setCudaTestMatrix( Matrix& matrix,
    typedef typename Matrix::IndexType IndexType;
    typedef typename Matrix::RealType RealType;
    Pointers::DevicePointer< Matrix > kernel_matrix( matrix );
-   dim3 cudaBlockSize( 256 ), cudaGridSize( Devices::Cuda::getMaxGridSize() );
+   dim3 cudaBlockSize( 256 ), cudaGridSize( Cuda::getMaxGridSize() );
    const IndexType cudaBlocks = roundUpDivision( matrix.getRows(), cudaBlockSize.x );
-   const IndexType cudaGrids = roundUpDivision( cudaBlocks, Devices::Cuda::getMaxGridSize() );
+   const IndexType cudaGrids = roundUpDivision( cudaBlocks, Cuda::getMaxGridSize() );
    for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ ) {
       if( gridIdx == cudaGrids - 1 )
-         cudaGridSize.x = cudaBlocks % Devices::Cuda::getMaxGridSize();
+         cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
       setCudaTestMatrixKernel< Matrix >
          <<< cudaGridSize, cudaBlockSize >>>
          ( &kernel_matrix.template modifyData< Devices::Cuda >(), elementsPerRow, gridIdx );

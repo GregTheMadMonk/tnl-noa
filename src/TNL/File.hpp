@@ -17,6 +17,7 @@
 
 #include <TNL/File.h>
 #include <TNL/Assert.h>
+#include <TNL/Cuda/CheckDevice.h>
 #include <TNL/Exceptions/CudaSupportMissing.h>
 #include <TNL/Exceptions/FileSerializationError.h>
 #include <TNL/Exceptions/FileDeserializationError.h>

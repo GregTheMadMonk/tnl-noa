@@ -586,20 +586,20 @@ void Dense< Real, Device, Index >::getMatrixProduct( const Matrix1& matrix1,
       const IndexType cudaBlockRows( matrixProductCudaBlockSize / tileDim );
       cudaBlockSize.x = cudaBlockColumns;
       cudaBlockSize.y = cudaBlockRows;
-      const IndexType rowGrids = roundUpDivision( rowTiles, Devices::Cuda::getMaxGridSize() );
-      const IndexType columnGrids = roundUpDivision( columnTiles, Devices::Cuda::getMaxGridSize() );
+      const IndexType rowGrids = roundUpDivision( rowTiles, Cuda::getMaxGridSize() );
+      const IndexType columnGrids = roundUpDivision( columnTiles, Cuda::getMaxGridSize() );
 
       for( IndexType gridIdx_x = 0; gridIdx_x < columnGrids; gridIdx_x++ )
          for( IndexType gridIdx_y = 0; gridIdx_y < rowGrids; gridIdx_y++ )
          {
-            cudaGridSize.x = cudaGridSize.y = Devices::Cuda::getMaxGridSize();
+            cudaGridSize.x = cudaGridSize.y = Cuda::getMaxGridSize();
             if( gridIdx_x == columnGrids - 1 )
-               cudaGridSize.x = columnTiles % Devices::Cuda::getMaxGridSize();
+               cudaGridSize.x = columnTiles % Cuda::getMaxGridSize();
             if( gridIdx_y == rowGrids - 1 )
-               cudaGridSize.y = rowTiles % Devices::Cuda::getMaxGridSize();
-            Dense* this_kernel = Devices::Cuda::passToDevice( *this );
-            Matrix1* matrix1_kernel = Devices::Cuda::passToDevice( matrix1 );
-            Matrix2* matrix2_kernel = Devices::Cuda::passToDevice( matrix2 );
+               cudaGridSize.y = rowTiles % Cuda::getMaxGridSize();
+            Dense* this_kernel = Cuda::passToDevice( *this );
+            Matrix1* matrix1_kernel = Cuda::passToDevice( matrix1 );
+            Matrix2* matrix2_kernel = Cuda::passToDevice( matrix2 );
             DenseMatrixProductKernel< Real,
                                                Index,
                                                Matrix1,
@@ -616,9 +616,9 @@ void Dense< Real, Device, Index >::getMatrixProduct( const Matrix1& matrix1,
                                                matrix2Multiplicator,
                                                gridIdx_x,
                                                gridIdx_y );
-            Devices::Cuda::freeFromDevice( this_kernel );
-            Devices::Cuda::freeFromDevice( matrix1_kernel );
-            Devices::Cuda::freeFromDevice( matrix2_kernel );
+            Cuda::freeFromDevice( this_kernel );
+            Cuda::freeFromDevice( matrix1_kernel );
+            Cuda::freeFromDevice( matrix2_kernel );
          }
 #endif
    }
@@ -669,7 +669,7 @@ __global__ void DenseTranspositionAlignedKernel( Dense< Real, Devices::Cuda, Ind
         rowBlock < tileDim;
         rowBlock += tileRowBlockSize )
    {
-      tile[ Devices::Cuda::getInterleaving( threadIdx.x*tileDim +  threadIdx.y + rowBlock ) ] =
+      tile[ Cuda::getInterleaving( threadIdx.x*tileDim +  threadIdx.y + rowBlock ) ] =
                inputMatrix->getElementFast( readColumnPosition,
                                             readRowPosition + rowBlock );
    }
@@ -688,7 +688,7 @@ __global__ void DenseTranspositionAlignedKernel( Dense< Real, Devices::Cuda, Ind
    {
       resultMatrix->setElementFast( writeColumnPosition,
                                     writeRowPosition + rowBlock,
-                                    matrixMultiplicator * tile[ Devices::Cuda::getInterleaving( ( threadIdx.y + rowBlock ) * tileDim + threadIdx.x ) ] );
+                                    matrixMultiplicator * tile[ Cuda::getInterleaving( ( threadIdx.y + rowBlock ) * tileDim + threadIdx.x ) ] );
 
    }
 
@@ -741,7 +741,7 @@ __global__ void DenseTranspositionNonAlignedKernel( Dense< Real, Devices::Cuda, 
            rowBlock += tileRowBlockSize )
       {
          if( readRowPosition + rowBlock < rows )
-            tile[ Devices::Cuda::getInterleaving( threadIdx.x*tileDim +  threadIdx.y + rowBlock ) ] =
+            tile[ Cuda::getInterleaving( threadIdx.x*tileDim +  threadIdx.y + rowBlock ) ] =
                inputMatrix->getElementFast( readColumnPosition,
                                             readRowPosition + rowBlock );
       }
@@ -765,7 +765,7 @@ __global__ void DenseTranspositionNonAlignedKernel( Dense< Real, Devices::Cuda, 
          if( writeRowPosition + rowBlock < columns )
             resultMatrix->setElementFast( writeColumnPosition,
                                           writeRowPosition + rowBlock,
-                                          matrixMultiplicator * tile[ Devices::Cuda::getInterleaving( ( threadIdx.y + rowBlock ) * tileDim + threadIdx.x ) ] );
+                                          matrixMultiplicator * tile[ Cuda::getInterleaving( ( threadIdx.y + rowBlock ) * tileDim + threadIdx.x ) ] );
       }
    }
 
@@ -809,21 +809,21 @@ void Dense< Real, Device, Index >::getTransposition( const Matrix& matrix,
       const IndexType cudaBlockRows( matrixProductCudaBlockSize / tileDim );
       cudaBlockSize.x = cudaBlockColumns;
       cudaBlockSize.y = cudaBlockRows;
-      const IndexType rowGrids = roundUpDivision( rowTiles, Devices::Cuda::getMaxGridSize() );
-      const IndexType columnGrids = roundUpDivision( columnTiles, Devices::Cuda::getMaxGridSize() );
-      const IndexType sharedMemorySize = tileDim*tileDim + tileDim*tileDim/Devices::Cuda::getNumberOfSharedMemoryBanks();
+      const IndexType rowGrids = roundUpDivision( rowTiles, Cuda::getMaxGridSize() );
+      const IndexType columnGrids = roundUpDivision( columnTiles, Cuda::getMaxGridSize() );
+      const IndexType sharedMemorySize = tileDim*tileDim + tileDim*tileDim/Cuda::getNumberOfSharedMemoryBanks();
 
-      Dense* this_device = Devices::Cuda::passToDevice( *this );
-      Matrix* matrix_device = Devices::Cuda::passToDevice( matrix );
+      Dense* this_device = Cuda::passToDevice( *this );
+      Matrix* matrix_device = Cuda::passToDevice( matrix );
 
       for( IndexType gridIdx_x = 0; gridIdx_x < columnGrids; gridIdx_x++ )
          for( IndexType gridIdx_y = 0; gridIdx_y < rowGrids; gridIdx_y++ )
          {
-            cudaGridSize.x = cudaGridSize.y = Devices::Cuda::getMaxGridSize();
+            cudaGridSize.x = cudaGridSize.y = Cuda::getMaxGridSize();
             if( gridIdx_x == columnGrids - 1)
-               cudaGridSize.x = columnTiles % Devices::Cuda::getMaxGridSize();
+               cudaGridSize.x = columnTiles % Cuda::getMaxGridSize();
             if( gridIdx_y == rowGrids - 1 )
-               cudaGridSize.y = rowTiles % Devices::Cuda::getMaxGridSize();
+               cudaGridSize.y = rowTiles % Cuda::getMaxGridSize();
             if( ( gridIdx_x < columnGrids - 1 || matrix.getColumns() % tileDim == 0 ) &&
                 ( gridIdx_y < rowGrids - 1 || matrix.getRows() % tileDim == 0 ) )
             {
@@ -859,8 +859,8 @@ void Dense< Real, Device, Index >::getTransposition( const Matrix& matrix,
             }
             TNL_CHECK_CUDA_DEVICE;
          }
-      Devices::Cuda::freeFromDevice( this_device );
-      Devices::Cuda::freeFromDevice( matrix_device );
+      Cuda::freeFromDevice( this_device );
+      Cuda::freeFromDevice( matrix_device );
 #endif
    }
 }

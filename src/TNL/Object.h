@@ -12,7 +12,6 @@
 
 #include <vector>
 
-#include <TNL/Devices/CudaCallable.h>
 #include <TNL/String.h>
 #include <TNL/File.h>
 

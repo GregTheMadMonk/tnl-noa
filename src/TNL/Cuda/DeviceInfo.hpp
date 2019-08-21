@@ -1,5 +1,5 @@
 /***************************************************************************
-                          CudaDeviceInfo_impl.h  -  description
+                          DeviceInfo.hpp  -  description
                              -------------------
     begin                : Jun 21, 2015
     copyright            : (C) 2007 by Tomas Oberhuber
@@ -12,14 +12,14 @@
 
 #include <unordered_map>
 
-#include <TNL/Devices/CudaDeviceInfo.h>
+#include <TNL/Cuda/DeviceInfo.h>
 #include <TNL/Exceptions/CudaSupportMissing.h>
 
 namespace TNL {
-namespace Devices {
+namespace Cuda {
 
 inline int
-CudaDeviceInfo::
+DeviceInfo::
 getNumberOfDevices()
 {
 #ifdef HAVE_CUDA
@@ -32,7 +32,7 @@ getNumberOfDevices()
 }
 
 inline int
-CudaDeviceInfo::
+DeviceInfo::
 getActiveDevice()
 {
 #ifdef HAVE_CUDA
@@ -45,7 +45,7 @@ getActiveDevice()
 }
 
 inline String
-CudaDeviceInfo::
+DeviceInfo::
 getDeviceName( int deviceNum )
 {
 #ifdef HAVE_CUDA
@@ -58,7 +58,7 @@ getDeviceName( int deviceNum )
 }
 
 inline int
-CudaDeviceInfo::
+DeviceInfo::
 getArchitectureMajor( int deviceNum )
 {
 #ifdef HAVE_CUDA
@@ -71,7 +71,7 @@ getArchitectureMajor( int deviceNum )
 }
 
 inline int
-CudaDeviceInfo::
+DeviceInfo::
 getArchitectureMinor( int deviceNum )
 {
 #ifdef HAVE_CUDA
@@ -84,7 +84,7 @@ getArchitectureMinor( int deviceNum )
 }
 
 inline int
-CudaDeviceInfo::
+DeviceInfo::
 getClockRate( int deviceNum )
 {
 #ifdef HAVE_CUDA
@@ -96,8 +96,8 @@ getClockRate( int deviceNum )
 #endif
 }
 
-inline size_t
-CudaDeviceInfo::
+inline std::size_t
+DeviceInfo::
 getGlobalMemory( int deviceNum )
 {
 #ifdef HAVE_CUDA
@@ -109,13 +109,13 @@ getGlobalMemory( int deviceNum )
 #endif
 }
 
-inline size_t
-CudaDeviceInfo::
+inline std::size_t
+DeviceInfo::
 getFreeGlobalMemory()
 {
 #ifdef HAVE_CUDA
-   size_t free = 0;
-   size_t total = 0;
+   std::size_t free = 0;
+   std::size_t total = 0;
    cudaMemGetInfo( &free, &total );
    return free;
 #else
@@ -124,7 +124,7 @@ getFreeGlobalMemory()
 }
 
 inline int
-CudaDeviceInfo::
+DeviceInfo::
 getMemoryClockRate( int deviceNum )
 {
 #ifdef HAVE_CUDA
@@ -137,7 +137,7 @@ getMemoryClockRate( int deviceNum )
 }
 
 inline bool
-CudaDeviceInfo::
+DeviceInfo::
 getECCEnabled( int deviceNum )
 {
 #ifdef HAVE_CUDA
@@ -150,7 +150,7 @@ getECCEnabled( int deviceNum )
 }
 
 inline int
-CudaDeviceInfo::
+DeviceInfo::
 getCudaMultiprocessors( int deviceNum )
 {
 #ifdef HAVE_CUDA
@@ -169,12 +169,12 @@ getCudaMultiprocessors( int deviceNum )
 }
 
 inline int
-CudaDeviceInfo::
+DeviceInfo::
 getCudaCoresPerMultiprocessors( int deviceNum )
 {
 #ifdef HAVE_CUDA
-   int major = CudaDeviceInfo::getArchitectureMajor( deviceNum );
-   int minor = CudaDeviceInfo::getArchitectureMinor( deviceNum );
+   int major = DeviceInfo::getArchitectureMajor( deviceNum );
+   int minor = DeviceInfo::getArchitectureMinor( deviceNum );
    switch( major )
    {
       case 1:   // Tesla generation, G80, G8x, G9x classes
@@ -209,19 +209,19 @@ getCudaCoresPerMultiprocessors( int deviceNum )
 }
 
 inline int
-CudaDeviceInfo::
+DeviceInfo::
 getCudaCores( int deviceNum )
 {
 #ifdef HAVE_CUDA
-   return CudaDeviceInfo::getCudaMultiprocessors( deviceNum ) *
-          CudaDeviceInfo::getCudaCoresPerMultiprocessors( deviceNum );
+   return DeviceInfo::getCudaMultiprocessors( deviceNum ) *
+          DeviceInfo::getCudaCoresPerMultiprocessors( deviceNum );
 #else
    throw Exceptions::CudaSupportMissing();
 #endif
 }
 
 inline int
-CudaDeviceInfo::
+DeviceInfo::
 getRegistersPerMultiprocessor( int deviceNum )
 {
 #ifdef HAVE_CUDA
@@ -239,5 +239,5 @@ getRegistersPerMultiprocessor( int deviceNum )
 #endif
 }
 
-} // namespace Devices
+} // namespace Cuda
 } // namespace TNL
