@@ -15,7 +15,6 @@
 #include <TNL/String.h>
 
 namespace TNL {
-namespace Devices {
 
 struct CacheSizes {
    int L1instruction = 0;
@@ -68,7 +67,6 @@ protected:
    }
 };
 
-} // namespace Devices
 } // namespace TNL
 
-#include <TNL/Devices/SystemInfo_impl.h>
+#include <TNL/SystemInfo.hpp>

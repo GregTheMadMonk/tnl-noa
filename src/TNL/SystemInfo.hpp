@@ -18,10 +18,9 @@
 #include <sys/utsname.h>
 #include <sys/stat.h>
 
-#include <TNL/Devices/SystemInfo.h>
+#include <TNL/SystemInfo.h>
 
 namespace TNL {
-namespace Devices {
 
 inline String
 SystemInfo::getHostname( void )
@@ -215,5 +214,4 @@ SystemInfo::parseCPUInfo( void )
    return info;
 }
 
-} // namespace Devices
 } // namespace TNL

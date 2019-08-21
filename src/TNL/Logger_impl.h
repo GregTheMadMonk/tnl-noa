@@ -15,7 +15,7 @@
 
 #include <TNL/Logger.h>
 #include <TNL/Cuda/DeviceInfo.h>
-#include <TNL/Devices/SystemInfo.h>
+#include <TNL/SystemInfo.h>
 
 namespace TNL {
 
@@ -61,24 +61,24 @@ Logger::writeSystemInformation( const Config::ParameterContainer& parameters )
    const char* compiler_name = "(unknown)";
 #endif
 
-   writeParameter< String >( "Host name:", Devices::SystemInfo::getHostname() );
-   writeParameter< String >( "System:", Devices::SystemInfo::getSystemName() );
-   writeParameter< String >( "Release:", Devices::SystemInfo::getSystemRelease() );
-   writeParameter< String >( "Architecture:", Devices::SystemInfo::getArchitecture() );
+   writeParameter< String >( "Host name:", SystemInfo::getHostname() );
+   writeParameter< String >( "System:", SystemInfo::getSystemName() );
+   writeParameter< String >( "Release:", SystemInfo::getSystemRelease() );
+   writeParameter< String >( "Architecture:", SystemInfo::getArchitecture() );
    writeParameter< String >( "TNL compiler:", compiler_name );
    // FIXME: generalize for multi-socket systems, here we consider only the first found CPU
    const int cpu_id = 0;
-   const int threads = Devices::SystemInfo::getNumberOfThreads( cpu_id );
-   const int cores = Devices::SystemInfo::getNumberOfCores( cpu_id );
+   const int threads = SystemInfo::getNumberOfThreads( cpu_id );
+   const int cores = SystemInfo::getNumberOfCores( cpu_id );
    int threadsPerCore = 0;
    if( cores > 0 )
       threadsPerCore = threads / cores;
    writeParameter< String >( "CPU info", "" );
-   writeParameter< String >( "Model name:", Devices::SystemInfo::getCPUModelName( cpu_id ), 1 );
+   writeParameter< String >( "Model name:", SystemInfo::getCPUModelName( cpu_id ), 1 );
    writeParameter< int >( "Cores:", cores, 1 );
    writeParameter< int >( "Threads per core:", threadsPerCore, 1 );
-   writeParameter< double >( "Max clock rate (in MHz):", Devices::SystemInfo::getCPUMaxFrequency( cpu_id ) / 1000, 1 );
-   const Devices::CacheSizes cacheSizes = Devices::SystemInfo::getCPUCacheSizes( cpu_id );
+   writeParameter< double >( "Max clock rate (in MHz):", SystemInfo::getCPUMaxFrequency( cpu_id ) / 1000, 1 );
+   const CacheSizes cacheSizes = SystemInfo::getCPUCacheSizes( cpu_id );
    const String cacheInfo = convertToString( cacheSizes.L1data ) + ", "
                           + convertToString( cacheSizes.L1instruction ) + ", "
                           + convertToString( cacheSizes.L2 ) + ", "
@@ -116,7 +116,7 @@ Logger::writeSystemInformation( const Config::ParameterContainer& parameters )
 inline void
 Logger::writeCurrentTime( const char* label )
 {
-   writeParameter< String >( label, Devices::SystemInfo::getCurrentTime() );
+   writeParameter< String >( label, SystemInfo::getCurrentTime() );
 }
 
 template< typename T >

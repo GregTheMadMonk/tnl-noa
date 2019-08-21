@@ -23,7 +23,7 @@
 #include <TNL/String.h>
 
 #include <TNL/Devices/Host.h>
-#include <TNL/Devices/SystemInfo.h>
+#include <TNL/SystemInfo.h>
 #include <TNL/Cuda/DeviceInfo.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Communicators/MpiCommunicator.h>
@@ -333,7 +333,7 @@ protected:
 Benchmark::MetadataMap getHardwareMetadata()
 {
    const int cpu_id = 0;
-   Devices::CacheSizes cacheSizes = Devices::SystemInfo::getCPUCacheSizes( cpu_id );
+   const CacheSizes cacheSizes = SystemInfo::getCPUCacheSizes( cpu_id );
    String cacheInfo = convertToString( cacheSizes.L1data ) + ", "
                        + convertToString( cacheSizes.L1instruction ) + ", "
                        + convertToString( cacheSizes.L2 ) + ", "
@@ -344,11 +344,11 @@ Benchmark::MetadataMap getHardwareMetadata()
                              convertToString( Cuda::DeviceInfo::getArchitectureMinor( activeGPU ) );
 #endif
    Benchmark::MetadataMap metadata {
-       { "host name", Devices::SystemInfo::getHostname() },
-       { "architecture", Devices::SystemInfo::getArchitecture() },
-       { "system", Devices::SystemInfo::getSystemName() },
-       { "system release", Devices::SystemInfo::getSystemRelease() },
-       { "start time", Devices::SystemInfo::getCurrentTime() },
+       { "host name", SystemInfo::getHostname() },
+       { "architecture", SystemInfo::getArchitecture() },
+       { "system", SystemInfo::getSystemName() },
+       { "system release", SystemInfo::getSystemRelease() },
+       { "start time", SystemInfo::getCurrentTime() },
 #ifdef HAVE_MPI
        { "number of MPI processes", convertToString( (Communicators::MpiCommunicator::IsInitialized())
                                        ? Communicators::MpiCommunicator::GetSize( Communicators::MpiCommunicator::AllGroup )
@@ -356,10 +356,10 @@ Benchmark::MetadataMap getHardwareMetadata()
 #endif
        { "OpenMP enabled", convertToString( Devices::Host::isOMPEnabled() ) },
        { "OpenMP threads", convertToString( Devices::Host::getMaxThreadsCount() ) },
-       { "CPU model name", Devices::SystemInfo::getCPUModelName( cpu_id ) },
-       { "CPU cores", convertToString( Devices::SystemInfo::getNumberOfCores( cpu_id ) ) },
-       { "CPU threads per core", convertToString( Devices::SystemInfo::getNumberOfThreads( cpu_id ) / Devices::SystemInfo::getNumberOfCores( cpu_id ) ) },
-       { "CPU max frequency (MHz)", convertToString( Devices::SystemInfo::getCPUMaxFrequency( cpu_id ) / 1e3 ) },
+       { "CPU model name", SystemInfo::getCPUModelName( cpu_id ) },
+       { "CPU cores", convertToString( SystemInfo::getNumberOfCores( cpu_id ) ) },
+       { "CPU threads per core", convertToString( SystemInfo::getNumberOfThreads( cpu_id ) / SystemInfo::getNumberOfCores( cpu_id ) ) },
+       { "CPU max frequency (MHz)", convertToString( SystemInfo::getCPUMaxFrequency( cpu_id ) / 1e3 ) },
        { "CPU cache sizes (L1d, L1i, L2, L3) (kiB)", cacheInfo },
 #ifdef HAVE_CUDA
        { "GPU name", Cuda::DeviceInfo::getDeviceName( activeGPU ) },
