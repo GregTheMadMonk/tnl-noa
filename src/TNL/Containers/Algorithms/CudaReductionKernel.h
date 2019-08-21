@@ -473,6 +473,7 @@ struct CudaReductionKernelLauncher
             default:
                TNL_ASSERT( false, std::cerr << "Block size is " << blockSize. x << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." );
          }
+         cudaStreamSynchronize(0);
          TNL_CHECK_CUDA_DEVICE;
 */
 
@@ -482,6 +483,8 @@ struct CudaReductionKernelLauncher
 
             CudaReductionKernel< Reduction_maxThreadsPerBlock >
             <<< gridSize, blockSize, shmem >>>( zero, dataFetcher, reduction, size, output);
+            cudaStreamSynchronize(0);
+            TNL_CHECK_CUDA_DEVICE;
          }
          else {
             TNL_ASSERT( false, std::cerr << "Block size was expected to be " << Reduction_maxThreadsPerBlock << ", but " << blockSize.x << " was specified." << std::endl; );
@@ -578,6 +581,7 @@ struct CudaReductionKernelLauncher
             default:
                TNL_ASSERT( false, std::cerr << "Block size is " << blockSize. x << " which is none of 1, 2, 4, 8, 16, 32, 64, 128, 256 or 512." );
          }
+         cudaStreamSynchronize(0);
          TNL_CHECK_CUDA_DEVICE;
 */
 
@@ -587,6 +591,8 @@ struct CudaReductionKernelLauncher
 
             CudaReductionWithArgumentKernel< Reduction_maxThreadsPerBlock >
             <<< gridSize, blockSize, shmem >>>( zero, dataFetcher, reduction, size, output, idxOutput, idxInput );
+            cudaStreamSynchronize(0);
+            TNL_CHECK_CUDA_DEVICE;
          }
          else {
             TNL_ASSERT( false, std::cerr << "Block size was expected to be " << Reduction_maxThreadsPerBlock << ", but " << blockSize.x << " was specified." << std::endl; );
