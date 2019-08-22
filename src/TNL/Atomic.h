@@ -17,11 +17,36 @@
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 
+// double-precision atomicAdd function for Maxwell and older GPUs
+// copied from: https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#atomic-functions
+#ifdef HAVE_CUDA
+#if __CUDA_ARCH__ < 600
+namespace {
+   __device__ double atomicAdd(double* address, double val)
+   {
+       unsigned long long int* address_as_ull =
+                                 (unsigned long long int*)address;
+       unsigned long long int old = *address_as_ull, assumed;
+
+       do {
+           assumed = old;
+           old = atomicCAS(address_as_ull, assumed,
+                           __double_as_longlong(val +
+                                  __longlong_as_double(assumed)));
+
+       // Note: uses integer comparison to avoid hang in case of NaN (since NaN != NaN)
+       } while (assumed != old);
+
+       return __longlong_as_double(old);
+   }
+} // namespace
+#endif
+#endif
+
 namespace TNL {
 
 template< typename T, typename Device >
-class Atomic
-{};
+class Atomic;
 
 template< typename T >
 class Atomic< T, Devices::Host >

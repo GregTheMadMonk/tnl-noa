@@ -36,14 +36,6 @@ public:
    static constexpr std::size_t TransferBufferSize = 5 * 2<<20;
 };
 
-#ifdef HAVE_CUDA
-#if __CUDA_ARCH__ < 600
-namespace {
-   __device__ double atomicAdd(double* address, double val);
-}
-#endif
-#endif
-
 } // namespace Devices
 } // namespace TNL
 
