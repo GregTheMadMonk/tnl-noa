@@ -48,6 +48,14 @@ struct ArrayOperations< void >
                      const SourceElement* source,
                      const Index size );
 
+   template< typename DestinationElement,
+             typename Index,
+             typename SourceIterator >
+   static void copyFromIterator( DestinationElement* destination,
+                                 Index destinationSize,
+                                 SourceIterator first,
+                                 SourceIterator last );
+
    template< typename Element1,
              typename Element2,
              typename Index >
@@ -55,6 +63,20 @@ struct ArrayOperations< void >
    static bool compare( const Element1* destination,
                         const Element2* source,
                         const Index size );
+
+   template< typename Element,
+             typename Index >
+   __cuda_callable__
+   static bool containsValue( const Element* data,
+                              const Index size,
+                              const Element& value );
+
+   template< typename Element,
+             typename Index >
+   __cuda_callable__
+   static bool containsOnlyValue( const Element* data,
+                                  const Index size,
+                                  const Element& value );
 };
 
 template<>
