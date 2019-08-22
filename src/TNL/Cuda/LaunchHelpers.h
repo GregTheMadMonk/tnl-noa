@@ -30,6 +30,14 @@ inline constexpr int getWarpSize()
    return 32;
 }
 
+// When we transfer data between the GPU and the CPU we use 1 MiB buffer. This
+// size should ensure good performance.
+// We use the same buffer size even for retyping data during IO operations.
+inline constexpr int getTransferBufferSize()
+{
+   return 1 << 20;
+}
+
 #ifdef HAVE_CUDA
 __device__ inline int getGlobalThreadIdx( const int gridIdx = 0,
                                           const int gridSize = getMaxGridSize() )

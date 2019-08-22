@@ -51,10 +51,5 @@ Cuda::setup( const Config::ParameterContainer& parameters,
    return true;
 }
 
-inline constexpr int Cuda::getGPUTransferBufferSize()
-{
-   return 1 << 20;
-}
-
 } // namespace Devices
 } // namespace TNL

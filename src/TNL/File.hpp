@@ -18,6 +18,7 @@
 #include <TNL/File.h>
 #include <TNL/Assert.h>
 #include <TNL/Cuda/CheckDevice.h>
+#include <TNL/Cuda/LaunchHelpers.h>
 #include <TNL/Exceptions/CudaSupportMissing.h>
 #include <TNL/Exceptions/FileSerializationError.h>
 #include <TNL/Exceptions/FileDeserializationError.h>
@@ -101,7 +102,7 @@ void File::load_impl( Type* buffer, std::streamsize elements )
       file.read( reinterpret_cast<char*>(buffer), sizeof(Type) * elements );
    else
    {
-      const std::streamsize cast_buffer_size = std::min( TransferBufferSize / (std::streamsize) sizeof(SourceType), elements );
+      const std::streamsize cast_buffer_size = std::min( Cuda::getTransferBufferSize() / (std::streamsize) sizeof(SourceType), elements );
       using BaseType = typename std::remove_cv< SourceType >::type;
       std::unique_ptr< BaseType[] > cast_buffer{ new BaseType[ cast_buffer_size ] };
       std::streamsize readElements = 0;
@@ -124,7 +125,7 @@ template< typename Type,
 void File::load_impl( Type* buffer, std::streamsize elements )
 {
 #ifdef HAVE_CUDA
-   const std::streamsize host_buffer_size = std::min( TransferBufferSize / (std::streamsize) sizeof(Type), elements );
+   const std::streamsize host_buffer_size = std::min( Cuda::getTransferBufferSize() / (std::streamsize) sizeof(Type), elements );
    using BaseType = typename std::remove_cv< Type >::type;
    std::unique_ptr< BaseType[] > host_buffer{ new BaseType[ host_buffer_size ] };
 
@@ -145,7 +146,7 @@ void File::load_impl( Type* buffer, std::streamsize elements )
    }
    else
    {
-      const std::streamsize cast_buffer_size = std::min( TransferBufferSize / (std::streamsize) sizeof(SourceType), elements );
+      const std::streamsize cast_buffer_size = std::min( Cuda::getTransferBufferSize() / (std::streamsize) sizeof(SourceType), elements );
       using BaseType = typename std::remove_cv< SourceType >::type;
       std::unique_ptr< BaseType[] > cast_buffer{ new BaseType[ cast_buffer_size ] };
 
@@ -192,7 +193,7 @@ void File::save_impl( const Type* buffer, std::streamsize elements )
       file.write( reinterpret_cast<const char*>(buffer), sizeof(Type) * elements );
    else
    {
-      const std::streamsize cast_buffer_size = std::min( TransferBufferSize / (std::streamsize) sizeof(TargetType), elements );
+      const std::streamsize cast_buffer_size = std::min( Cuda::getTransferBufferSize() / (std::streamsize) sizeof(TargetType), elements );
       using BaseType = typename std::remove_cv< TargetType >::type;
       std::unique_ptr< BaseType[] > cast_buffer{ new BaseType[ cast_buffer_size ] };
       std::streamsize writtenElements = 0;
@@ -216,7 +217,7 @@ template< typename Type,
 void File::save_impl( const Type* buffer, std::streamsize elements )
 {
 #ifdef HAVE_CUDA
-   const std::streamsize host_buffer_size = std::min( TransferBufferSize / (std::streamsize) sizeof(Type), elements );
+   const std::streamsize host_buffer_size = std::min( Cuda::getTransferBufferSize() / (std::streamsize) sizeof(Type), elements );
    using BaseType = typename std::remove_cv< Type >::type;
    std::unique_ptr< BaseType[] > host_buffer{ new BaseType[ host_buffer_size ] };
 
@@ -237,7 +238,7 @@ void File::save_impl( const Type* buffer, std::streamsize elements )
    }
    else
    {
-      const std::streamsize cast_buffer_size = std::min( TransferBufferSize / (std::streamsize) sizeof(TargetType), elements );
+      const std::streamsize cast_buffer_size = std::min( Cuda::getTransferBufferSize() / (std::streamsize) sizeof(TargetType), elements );
       using BaseType = typename std::remove_cv< TargetType >::type;
       std::unique_ptr< BaseType[] > cast_buffer{ new BaseType[ cast_buffer_size ] };
 
