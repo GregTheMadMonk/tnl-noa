@@ -63,7 +63,7 @@ public:
       parameters.push_back( std::make_unique< Parameter< T > >( name, TNL::getType< T >(), value ) );
       return true;
    }
-   
+
    /**
     * \brief Adds new parameter to the ParameterContainer.
     *
@@ -73,7 +73,7 @@ public:
     */
    template< class T >
    bool addList( const String& name,
-                      const T& value )
+                 const T& value )
    {
       std::vector< T > v;
       v.push_back( value );

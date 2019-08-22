@@ -142,7 +142,7 @@ public:
       TNL_ASSERT_TRUE( this->currentEntry, "there is no current entry" );
       if( isCurrentEntryList ) {
          ConfigEntryList< EntryType >& entry = dynamic_cast< ConfigEntryList< EntryType >& >( *currentEntry );
-         entry.getEnumValues().push_back( entryEnum );         
+         entry.getEnumValues().push_back( entryEnum );
       }
       else {
          ConfigEntry< EntryType >& entry = dynamic_cast< ConfigEntry< EntryType >& >( *currentEntry );
@@ -216,7 +216,7 @@ public:
       std::cerr << "Asking for the default value of unknown parameter." << std::endl;
       return nullptr;
    }
- 
+
    //! Returns zero pointer if there is no default value
    template< class T >
    T* getDefaultValue( const String& name )
@@ -254,54 +254,58 @@ public:
          if( entries[ i ]->hasDefaultValue &&
              ! parameter_container.checkParameter( entry_name ) )
          {
-            if( entries[ i ]->getEntryType() == "String" )
+            if( entries[ i ]->getEntryType() == "TNL::String" )
             {
                ConfigEntry< String >& entry = dynamic_cast< ConfigEntry< String >& >( *entries[ i ] );
                parameter_container.addParameter< String >( entry_name, entry.defaultValue );
                continue;
             }
-            if( entries[ i ]->getEntryType() == "bool" )
+            else if( entries[ i ]->getEntryType() == "bool" )
             {
                ConfigEntry< bool >& entry = dynamic_cast< ConfigEntry< bool >& >( *entries[ i ] );
                parameter_container.addParameter< bool >( entry_name, entry.defaultValue );
                continue;
             }
-            if( entries[ i ]->getEntryType() == "int" )
+            else if( entries[ i ]->getEntryType() == "int" )
             {
                ConfigEntry< int >& entry = dynamic_cast< ConfigEntry< int >& >( *entries[ i ] );
                parameter_container.addParameter< int >( entry_name, entry.defaultValue );
                continue;
             }
-            if( entries[ i ]->getEntryType() == "double" )
+            else if( entries[ i ]->getEntryType() == "double" )
             {
                ConfigEntry< double >& entry = dynamic_cast< ConfigEntry< double >& >( *entries[ i ] );
                parameter_container.addParameter< double >( entry_name, entry.defaultValue );
                continue;
             }
-            
-            if( entries[ i ]->getEntryType() == "ConfigEntryList< String >" )
+            else if( entries[ i ]->getEntryType() == "ConfigEntryList< TNL::String >" )
             {
                ConfigEntryList< String >& entry = dynamic_cast< ConfigEntryList< String >& >( *entries[ i ] );
                parameter_container.addList< String >( entry_name, entry.defaultValue );
                continue;
             }
-            if( entries[ i ]->getEntryType() == "ConfigEntryList< bool >" )
+            else if( entries[ i ]->getEntryType() == "ConfigEntryList< bool >" )
             {
                ConfigEntryList< bool >& entry = dynamic_cast< ConfigEntryList< bool >& >( *entries[ i ] );
                parameter_container.addList< bool >( entry_name, entry.defaultValue );
                continue;
             }
-            if( entries[ i ]->getEntryType() == "ConfigEntryList< int >" )
+            else if( entries[ i ]->getEntryType() == "ConfigEntryList< int >" )
             {
                ConfigEntryList< int >& entry = dynamic_cast< ConfigEntryList< int >& >( *entries[ i ] );
                parameter_container.addList< int >( entry_name, entry.defaultValue );
                continue;
             }
-            if( entries[ i ]->getEntryType() == "ConfigEntryList< double >" )
+            else if( entries[ i ]->getEntryType() == "ConfigEntryList< double >" )
             {
                ConfigEntryList< double >& entry = dynamic_cast< ConfigEntryList< double >& >( *entries[ i ] );
                parameter_container.addList< double >( entry_name, entry.defaultValue );
                continue;
+            }
+            else
+            {
+               throw std::runtime_error( "Method ConfigDescription::addMissingEntries encountered "
+                                         "unsupported entry type: " + entries[ i ]->getEntryType() );
             }
          }
       }
