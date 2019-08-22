@@ -73,26 +73,13 @@ copy( DestinationElement* destination,
    if( size == 0 ) return;
    TNL_ASSERT_TRUE( destination, "Attempted to copy data to a nullptr." );
    TNL_ASSERT_TRUE( source, "Attempted to copy data from a nullptr." );
-   if( std::is_same< DestinationElement, SourceElement >::value )
+
+   // our ParallelFor kernel is faster than cudaMemcpy
+   auto kernel = [destination, source] __cuda_callable__ ( Index i )
    {
-#ifdef HAVE_CUDA
-      cudaMemcpy( destination,
-                  source,
-                  size * sizeof( DestinationElement ),
-                  cudaMemcpyDeviceToDevice );
-      TNL_CHECK_CUDA_DEVICE;
-#else
-      throw Exceptions::CudaSupportMissing();
-#endif
-   }
-   else
-   {
-      auto kernel = [destination, source] __cuda_callable__ ( Index i )
-      {
-         destination[ i ] = source[ i ];
-      };
-      ParallelFor< Devices::Cuda >::exec( (Index) 0, size, kernel );
-   }
+      destination[ i ] = source[ i ];
+   };
+   ParallelFor< Devices::Cuda >::exec( (Index) 0, size, kernel );
 }
 
 template< typename DestinationElement,

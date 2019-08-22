@@ -12,7 +12,7 @@
 
 #include <type_traits>
 #include <stdexcept>
-#include <string.h>
+#include <algorithm>  // std::copy, std::equal
 
 #include <TNL/ParallelFor.h>
 #include <TNL/Containers/Algorithms/ArrayOperations.h>
@@ -67,28 +67,20 @@ copy( DestinationElement* destination,
       const Index size )
 {
    if( size == 0 ) return;
-   if( std::is_same< DestinationElement, SourceElement >::value &&
-       ( std::is_fundamental< DestinationElement >::value ||
-         std::is_pointer< DestinationElement >::value ) )
-   {
-      // GCC 8.1 complains that we bypass a non-trivial copy-constructor
-      // (in C++17 we could use constexpr if to avoid compiling this branch in that case)
-      #if defined(__GNUC__) && ( __GNUC__ > 8 || ( __GNUC__ == 8 && __GNUC_MINOR__ > 0 ) ) && !defined(__clang__)
-         #pragma GCC diagnostic push
-         #pragma GCC diagnostic ignored "-Wclass-memaccess"
-      #endif
-      memcpy( destination, source, size * sizeof( DestinationElement ) );
-      #if defined(__GNUC__) && !defined(__clang__) && !defined(__NVCC__)
-         #pragma GCC diagnostic pop
-      #endif
-   }
-   else
-   {
+   TNL_ASSERT_TRUE( destination, "Attempted to copy data to a nullptr." );
+   TNL_ASSERT_TRUE( source, "Attempted to copy data from a nullptr." );
+
+   // our ParallelFor version is faster than std::copy iff we use more than 1 thread
+   if( Devices::Host::isOMPEnabled() && Devices::Host::getMaxThreadsCount() > 1 ) {
       auto kernel = [destination, source]( Index i )
       {
          destination[ i ] = source[ i ];
       };
       ParallelFor< Devices::Host >::exec( (Index) 0, size, kernel );
+   }
+   else {
+      // std::copy usually uses std::memcpy for TriviallyCopyable types
+      std::copy( source, source + size, destination );
    }
 }
 
@@ -102,11 +94,7 @@ copyFromIterator( DestinationElement* destination,
                   SourceIterator first,
                   SourceIterator last )
 {
-   Index i = 0;
-   while( i < destinationSize && first != last )
-      destination[ i++ ] = *first++;
-   if( first != last )
-      throw std::length_error( "Source iterator is larger than the destination array." );
+   ArrayOperations< void >::copyFromIterator( destination, destinationSize, first, last );
 }
 
 
@@ -122,18 +110,15 @@ compare( const DestinationElement* destination,
    if( size == 0 ) return true;
    TNL_ASSERT_TRUE( destination, "Attempted to compare data through a nullptr." );
    TNL_ASSERT_TRUE( source, "Attempted to compare data through a nullptr." );
-   if( std::is_same< DestinationElement, SourceElement >::value &&
-       ( std::is_fundamental< DestinationElement >::value ||
-         std::is_pointer< DestinationElement >::value ) )
-   {
-      if( memcmp( destination, source, size * sizeof( DestinationElement ) ) != 0 )
-         return false;
+
+   if( Devices::Host::isOMPEnabled() && Devices::Host::getMaxThreadsCount() > 1 ) {
+      auto fetch = [destination, source] ( Index i ) -> bool { return destination[ i ] == source[ i ]; };
+      return Reduction< Devices::Host >::reduce( size, std::logical_and<>{}, fetch, true );
    }
-   else
-      for( Index i = 0; i < size; i++ )
-         if( ! ( destination[ i ] == source[ i ] ) )
-            return false;
-   return true;
+   else {
+      // sequential algorithm can return as soon as it finds a mismatch
+      return std::equal( source, source + size, destination );
+   }
 }
 
 template< typename Element,
@@ -148,10 +133,14 @@ containsValue( const Element* data,
    TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
    TNL_ASSERT_GE( size, 0, "" );
 
-   for( Index i = 0; i < size; i++ )
-      if( data[ i ] == value )
-         return true;
-   return false;
+   if( Devices::Host::isOMPEnabled() && Devices::Host::getMaxThreadsCount() > 1 ) {
+      auto fetch = [=] ( Index i ) -> bool { return data[ i ] == value; };
+      return Reduction< Devices::Host >::reduce( size, std::logical_or<>{}, fetch, false );
+   }
+   else {
+      // sequential algorithm can return as soon as it finds a match
+      return ArrayOperations< void >::containsValue( data, size, value );
+   }
 }
 
 template< typename Element,
@@ -166,10 +155,14 @@ containsOnlyValue( const Element* data,
    TNL_ASSERT_TRUE( data, "Attempted to check data through a nullptr." );
    TNL_ASSERT_GE( size, 0, "" );
 
-   for( Index i = 0; i < size; i++ )
-      if( ! ( data[ i ] == value ) )
-         return false;
-   return true;
+   if( Devices::Host::isOMPEnabled() && Devices::Host::getMaxThreadsCount() > 1 ) {
+      auto fetch = [data, value] ( Index i ) -> bool { return data[ i ] == value; };
+      return Reduction< Devices::Host >::reduce( size, std::logical_and<>{}, fetch, true );
+   }
+   else {
+      // sequential algorithm can return as soon as it finds a mismatch
+      return ArrayOperations< void >::containsOnlyValue( data, size, value );
+   }
 }
 
 } // namespace Algorithms
