@@ -83,6 +83,8 @@ stages:
 dummy build job:
     stage: build
     script: echo "dummy"
+    only:
+        - merge_requests
     except:
         changes:
             - src/**/*.{h,hpp,cpp,cu}
