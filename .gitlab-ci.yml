@@ -11,6 +11,7 @@ before_script:
 # same job.
 stages:
     - build
+    - deploy
 
 # default flags for cmake
 .default_cmake_flags_def: &default_cmake_flags
@@ -372,3 +373,22 @@ mpi_benchmarks_tools_python_Release:
         WITH_BENCHMARKS: "yes"
         WITH_TOOLS: "yes"
         WITH_PYTHON: "yes"
+
+
+deploy documentation:
+    stage: deploy
+    only:
+        variables:
+            - $TNL_DOC_DEPLOY_KEY
+        changes:
+            - Documentation/**/*
+            - src/TNL/**/*.{h,hpp}
+        refs:
+            - develop
+            - schedules
+            - triggers
+    script:
+        - ./Documentation/build
+        - ./Documentation/deploy
+    tags:
+        - doxygen
