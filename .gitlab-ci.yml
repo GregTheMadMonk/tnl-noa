@@ -72,6 +72,22 @@ stages:
     variables:
         <<: *default_cmake_flags
         BUILD_TYPE: Debug
+    only:
+        changes:
+            - src/**/*.{h,hpp,cpp,cu}
+            - Documentation/Tutorials/**/*.{h,hpp,cpp,cu}
+            - "**/CMakeLists.txt"
+
+# Dummy build job to ensure that a pipeline is created for a merge request, even
+# when there were no changes.
+dummy build job:
+    stage: build
+    script: echo "dummy"
+    except:
+        changes:
+            - src/**/*.{h,hpp,cpp,cu}
+            - Documentation/Tutorials/**/*.{h,hpp,cpp,cu}
+            - "**/CMakeLists.txt"
 
 # Cuda builds are specified first because they take more time than host-only builds,
 # which can be allocated on hosts whitout GPUs.
