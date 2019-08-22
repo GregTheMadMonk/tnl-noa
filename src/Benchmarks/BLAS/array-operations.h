@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <cstring>
+
 #include "../Benchmarks.h"
 
 #include <TNL/Containers/Array.h>
@@ -64,6 +66,36 @@ benchmarkArrayOperations( Benchmark & benchmark,
 
 
    reset12();
+
+
+   if( std::is_fundamental< Real >::value ) {
+      // std::memcmp
+      auto compareHost = [&]() {
+         if( std::memcmp( hostArray.getData(), hostArray2.getData(), hostArray.getSize() * sizeof(Real) ) == 0 )
+            resultHost = true;
+         else
+            resultHost = false;
+      };
+      benchmark.setOperation( "comparison (memcmp)", 2 * datasetSize );
+      benchmark.time< Devices::Host >( reset12, "CPU", compareHost );
+
+      // std::memcpy and cudaMemcpy
+      auto copyHost = [&]() {
+         std::memcpy( hostArray.getData(), hostArray2.getData(), hostArray.getSize() * sizeof(Real) );
+      };
+      benchmark.setOperation( "copy (memcpy)", 2 * datasetSize );
+      benchmark.time< Devices::Host >( reset12, "CPU", copyHost );
+#ifdef HAVE_CUDA
+      auto copyCuda = [&]() {
+         cudaMemcpy( deviceArray.getData(),
+                     deviceArray2.getData(),
+                     deviceArray.getSize() * sizeof(Real),
+                     cudaMemcpyDeviceToDevice );
+         TNL_CHECK_CUDA_DEVICE;
+      };
+      benchmark.time< Devices::Cuda >( reset12, "GPU", copyCuda );
+#endif
+   }
 
 
    auto compareHost = [&]() {
