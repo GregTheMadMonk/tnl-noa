@@ -30,8 +30,12 @@ done
 # Remove existing html/ directory which may contain old files
 rm -rf ./html/
 
+# Assemble environment variables which are used in the Doxyfile
+#PROJECT_NUMBER="version $(git branch --show-current):$(git log -1 --format="%h (%cd)")"
+PROJECT_NUMBER="version $(git branch --show-current):$(git rev-parse --short HEAD)"
+
 # Generate documentation
-doxygen
+PROJECT_NUMBER="$PROJECT_NUMBER" doxygen
 
 # Install
 if [[ "$INSTALL" == "yes" ]]; then

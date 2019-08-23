@@ -37,8 +37,10 @@ PROJECT_NAME           = "Template Numerical Library"
 # The PROJECT_NUMBER tag can be used to enter a project or revision number. This
 # could be handy for archiving the generated documentation or if some version
 # control system is used.
+# We pass the value from the build script using an environment variable, see
+# https://stackoverflow.com/a/54487043
 
-PROJECT_NUMBER         = 0.1
+PROJECT_NUMBER         = $(PROJECT_NUMBER)
 
 # Using the PROJECT_BRIEF tag one can provide an optional one line description
 # for a project that appears at the top of each page and should give viewer a
