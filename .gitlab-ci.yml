@@ -393,20 +393,34 @@ mpi_benchmarks_tools_python_Release:
         WITH_PYTHON: "yes"
 
 
+
+
+build documentation:
+    stage: build
+    only:
+        changes:
+            - Documentation/**/*
+            - src/TNL/**/*.{h,hpp}
+    script:
+        - ./Documentation/build
+    artifacts:
+        paths:
+            - ./Documentation/html/
+    tags:
+        - doxygen
+
 deploy documentation:
     stage: deploy
     only:
         variables:
             - $TNL_DOC_DEPLOY_KEY
-        changes:
-            - Documentation/**/*
-            - src/TNL/**/*.{h,hpp}
         refs:
             - develop
             - schedules
             - triggers
+    dependencies:
+        - build documentation
     script:
-        - ./Documentation/build
         - ./Documentation/deploy
     tags:
         - doxygen
