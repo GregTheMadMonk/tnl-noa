@@ -31,8 +31,13 @@ done
 rm -rf ./html/
 
 # Assemble environment variables which are used in the Doxyfile
-#PROJECT_NUMBER="version $(git branch --show-current):$(git log -1 --format="%h (%cd)")"
-PROJECT_NUMBER="version $(git branch --show-current):$(git rev-parse --short HEAD)"
+if [[ "$CI_COMMIT_REF_NAME" == "" ]]; then
+   _branch=$(git branch --show-current)
+else
+   _branch="$CI_COMMIT_REF_NAME"
+fi
+#PROJECT_NUMBER="version $_branch:$(git log -1 --format="%h (%cd)")"
+PROJECT_NUMBER="version $_branch:$(git rev-parse --short HEAD)"
 
 # Generate documentation
 PROJECT_NUMBER="$PROJECT_NUMBER" doxygen
