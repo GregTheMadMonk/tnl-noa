@@ -224,7 +224,7 @@ struct ParallelExecutor< Permutation, Device, IndexTag< 3 > >
       void operator()( Index i2, Index i1, Index i0, Func f )
       {
          call_with_unpermuted_arguments< Permutation >( f, i0, i1, i2 );
-      };
+      }
    };
 
    // dummy specialization to avoid a shitpile of nvcc warnings
@@ -236,7 +236,7 @@ struct ParallelExecutor< Permutation, Device, IndexTag< 3 > >
       void operator()( Index i2, Index i1, Index i0, Func f )
       {
          call_with_unpermuted_arguments< Permutation >( f, i0, i1, i2 );
-      };
+      }
    };
 };
 
@@ -275,7 +275,7 @@ struct ParallelExecutor< Permutation, Device, IndexTag< 2 > >
       void operator()( Index i1, Index i0, Func f )
       {
          call_with_unpermuted_arguments< Permutation >( f, i0, i1 );
-      };
+      }
    };
 
    // dummy specialization to avoid a shitpile of nvcc warnings
@@ -287,7 +287,7 @@ struct ParallelExecutor< Permutation, Device, IndexTag< 2 > >
       void operator()( Index i1, Index i0, Func f )
       {
          call_with_unpermuted_arguments< Permutation >( f, i0, i1 );
-      };
+      }
    };
 };
 

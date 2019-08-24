@@ -350,7 +350,7 @@ struct LocalBeginsHolder : public SizesHolder
       if( SizesHolder::template getStaticSize< level >() == 0 )
          SizesHolder::template setSize< level >( newSize );
       else
-         TNL_ASSERT_EQ( newSize, ConstValue, "Dynamic size for a static dimension must be equal to the specified ConstValue." );
+         TNL_ASSERT_EQ( newSize, (typename SizesHolder::IndexType) ConstValue, "Dynamic size for a static dimension must be equal to the specified ConstValue." );
    }
 };
 

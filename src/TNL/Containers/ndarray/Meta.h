@@ -15,8 +15,6 @@
 #include <utility>
 #include <initializer_list>
 
-#include <TNL/Devices/CudaCallable.h>
-
 namespace TNL {
 namespace Containers {
 namespace __ndarray_impl {
@@ -170,8 +168,7 @@ struct CallPermutationHelper< Permutation, std::index_sequence< N... > >
 {
    template< typename Func,
              typename... Args >
-   __cuda_callable__
-   static auto apply( Func&& f, Args&&... args ) -> decltype(auto)
+   static constexpr auto apply( Func&& f, Args&&... args ) -> decltype(auto)
    {
       return std::forward< Func >( f )( get_from_pack<
                   get< N >( Permutation{} )
@@ -184,17 +181,11 @@ struct CallPermutationHelper< Permutation, std::index_sequence< N... > >
 template< typename Permutation,
           typename Func,
           typename... Args >
-__cuda_callable__
-// FIXME: does not compile with nvcc 10.0
-//auto call_with_permuted_arguments( Func&& f, Args&&... args ) -> decltype(auto)
-//{
-//   return CallPermutationHelper< Permutation, std::make_index_sequence< sizeof...( Args ) > >
-//          ::apply( std::forward< Func >( f ), std::forward< Args >( args )... );
-//}
-auto call_with_permuted_arguments( Func f, Args&&... args ) -> decltype(auto)
+constexpr auto
+call_with_permuted_arguments( Func&& f, Args&&... args ) -> decltype(auto)
 {
    return CallPermutationHelper< Permutation, std::make_index_sequence< sizeof...( Args ) > >
-          ::apply( f, std::forward< Args >( args )... );
+          ::apply( std::forward< Func >( f ), std::forward< Args >( args )... );
 }
 
 
@@ -209,8 +200,7 @@ struct CallInversePermutationHelper< Permutation, std::index_sequence< N... > >
 {
    template< typename Func,
              typename... Args >
-   __cuda_callable__
-   static auto apply( Func&& f, Args&&... args ) -> decltype(auto)
+   static constexpr auto apply( Func&& f, Args&&... args ) -> decltype(auto)
    {
       return std::forward< Func >( f )( get_from_pack<
                   index_in_sequence( N, Permutation{} )
@@ -223,17 +213,11 @@ struct CallInversePermutationHelper< Permutation, std::index_sequence< N... > >
 template< typename Permutation,
           typename Func,
           typename... Args >
-__cuda_callable__
-// FIXME: does not compile with nvcc 10.0
-//auto call_with_unpermuted_arguments( Func&& f, Args&&... args ) -> decltype(auto)
-//{
-//   return CallInversePermutationHelper< Permutation, std::make_index_sequence< sizeof...( Args ) > >
-//          ::apply( std::forward< Func >( f ), std::forward< Args >( args )... );
-//}
-auto call_with_unpermuted_arguments( Func f, Args&&... args ) -> decltype(auto)
+constexpr auto
+call_with_unpermuted_arguments( Func&& f, Args&&... args ) -> decltype(auto)
 {
    return CallInversePermutationHelper< Permutation, std::make_index_sequence< sizeof...( Args ) > >
-          ::apply( f, std::forward< Args >( args )... );
+          ::apply( std::forward< Func >( f ), std::forward< Args >( args )... );
 }
 
 
