@@ -183,8 +183,6 @@ if( ${WITH_CUDA} )
     find_package( CUDA 9.0 )
     if( CUDA_FOUND )
         set( BUILD_CUDA TRUE)
-        set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF)
-        set(BUILD_SHARED_LIBS ON)
         set(CUDA_SEPARABLE_COMPILATION ON)
         # Use the CUDA_HOST_COMPILER environment variable if the user specified it.
         if( NOT $ENV{CUDA_HOST_COMPILER} STREQUAL "" )
@@ -199,70 +197,29 @@ if( ${WITH_CUDA} )
                set( CUDA_HOST_COMPILER ${CMAKE_CXX_COMPILER} )
             endif()
         endif()
-        # An extra CUDA_ARCH_HOST_COMPILER variable for compiling tnl-cuda-arch alone,
-        # because it SHOULD NOT be compiled using mpicxx, which would cause weird
-        # RPATH_CHANGE error in cmake.
-        # FIXME: find better solution to switch between MPI-enabled and MPI-disabled binaries in cmake
-        if( NOT $ENV{CUDA_ARCH_HOST_COMPILER} STREQUAL "" )
-           message( "-- Setting CUDA_ARCH_HOST_COMPILER to '$ENV{CUDA_ARCH_HOST_COMPILER}'" )
-           set( CUDA_ARCH_HOST_COMPILER $ENV{CUDA_ARCH_HOST_COMPILER} )
-        else()
-            if( EXISTS "${CUDA_TOOLKIT_ROOT_DIR}/bin/g++" )
-               message( "-- Setting CUDA_ARCH_HOST_COMPILER to '${CUDA_TOOLKIT_ROOT_DIR}/bin/g++'" )
-               set( CUDA_ARCH_HOST_COMPILER "${CUDA_TOOLKIT_ROOT_DIR}/bin/g++" )
-            else()
-               message( "-- Setting CUDA_ARCH_HOST_COMPILER to '${CMAKE_CXX_COMPILER}'" )
-               set( CUDA_ARCH_HOST_COMPILER ${CMAKE_CXX_COMPILER} )
-            endif()
-        endif()
         set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ;-DHAVE_CUDA)
         # disable false compiler warnings
         #   reference for the -Xcudafe --diag_suppress and --display_error_number flags: https://stackoverflow.com/a/54142937
         #   incomplete list of tokens: http://www.ssl.berkeley.edu/~jimm/grizzly_docs/SSL/opt/intel/cc/9.0/lib/locale/en_US/mcpcom.msg
         set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; -Wno-deprecated-gpu-targets --expt-relaxed-constexpr --expt-extended-lambda -Xcudafe "\"--diag_suppress=code_is_unreachable --diag_suppress=implicit_return_from_non_void_function --diag_suppress=unsigned_compare_with_zero --diag_suppress=2906 --diag_suppress=2913 --display_error_number\"")
-        set( ALL_CUDA_ARCHS -gencode arch=compute_20,code=sm_20
-                            -gencode arch=compute_30,code=sm_30
-                            -gencode arch=compute_32,code=sm_32 
-                            -gencode arch=compute_35,code=sm_35 
-                            -gencode arch=compute_37,code=sm_37 
-                            -gencode arch=compute_50,code=sm_50 
-                            -gencode arch=compute_52,code=sm_52 )
+        # Select GPU architecture
+        ## cmake bug: cuda_select_nvcc_arch_flags does not work with CMAKE_EXECUTABLE_SUFFIX
+        ## see https://gitlab.kitware.com/cmake/cmake/issues/19636
+        set( executable_suffix_backup "${CMAKE_EXECUTABLE_SUFFIX}" )
+        set( CMAKE_EXECUTABLE_SUFFIX "" )
         if( WITH_CUDA_ARCH STREQUAL "all" )
-           set( CUDA_ARCH ${ALL_CUDA_ARCHS} )   
+           CUDA_SELECT_NVCC_ARCH_FLAGS(ARCH_FLAGS "All")
+           LIST(APPEND CUDA_NVCC_FLAGS ${ARCH_FLAGS})
+        elseif( WITH_CUDA_ARCH STREQUAL "auto" )
+           CUDA_SELECT_NVCC_ARCH_FLAGS(ARCH_FLAGS "Auto")
+           LIST(APPEND CUDA_NVCC_FLAGS ${ARCH_FLAGS})
+        elseif( NOT WITH_CUDA_ARCH STREQUAL "" )
+            CUDA_SELECT_NVCC_ARCH_FLAGS(ARCH_FLAGS ${WITH_CUDA_ARCH})
+            LIST(APPEND CUDA_NVCC_FLAGS ${ARCH_FLAGS})
         else()
-            if( WITH_CUDA_ARCH STREQUAL "auto")
-                ####
-                # Select GPU architecture
-                #
-                set( CUDA_ARCH_EXECUTABLE ${EXECUTABLE_OUTPUT_PATH}/tnl-cuda-arch)
-                set( CUDA_ARCH_SOURCE ${PROJECT_SOURCE_DIR}/src/Tools/tnl-cuda-arch.cu)
-                message( "Compiling tnl-cuda-arch ..." )
-                file( MAKE_DIRECTORY ${EXECUTABLE_OUTPUT_PATH} )
-                execute_process( COMMAND nvcc --compiler-bindir ${CUDA_ARCH_HOST_COMPILER} --std=c++11 ${CUDA_ARCH_SOURCE} -o ${CUDA_ARCH_EXECUTABLE}
-                                 RESULT_VARIABLE CUDA_ARCH_RESULT
-                                 OUTPUT_VARIABLE CUDA_ARCH_OUTPUT
-                                 ERROR_VARIABLE CUDA_ARCH_OUTPUT )
-                execute_process( COMMAND ${CUDA_ARCH_EXECUTABLE}
-                                 OUTPUT_VARIABLE CUDA_ARCH )
-                if( NOT CUDA_ARCH_RESULT )
-                    # strip linebreaks and convert to list delimited with ';'
-                    string( REGEX REPLACE "[\n ]" ";" CUDA_ARCH ${CUDA_ARCH} )
-                    # cache the result
-                    set( CUDA_ARCH ${CUDA_ARCH} CACHE STRING "GPU architecture options" )
-                else()
-                    message( "Failed to detect GPU architecture:\n${CUDA_ARCH_OUTPUT}" )
-                    message( "Using (almost) all GPU architectures as fallback." )
-                    set( CUDA_ARCH ${ALL_CUDA_ARCHS} )
-                endif()
-                message( "GPU architecture options:  ${CUDA_ARCH}" )
-            else()
-                if( NOT WITH_CUDA_ARCH STREQUAL "" )
-                    set( CUDA_ARCH -gencode arch=compute_${WITH_CUDA_ARCH},code=sm_${WITH_CUDA_ARCH} )
-                else()
-                    message( FATAL_ERROR "\$WITH_CUDA_ARCH cannot be empty." )
-                endif()
-            endif()
+            message( FATAL_ERROR "\$WITH_CUDA_ARCH cannot be empty." )
         endif()
+        set( CMAKE_EXECUTABLE_SUFFIX "${executable_suffix_backup}" )
     endif()
 endif()
 

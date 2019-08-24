@@ -78,7 +78,7 @@ if [[ ${HELP} == "yes" ]]; then
     echo "   --with-mpi=yes/no                     Enables MPI. 'yes' by default (OpenMPI required)."
     echo "   --with-mic=yes/no                     Enables MIC (Intel Xeon Phi). 'no' by default (Intel Compiler required)."
     echo "   --with-cuda=yes/no                    Enables CUDA. 'yes' by default (CUDA Toolkit is required)."
-    echo "   --with-cuda-arch=all/auto/30/35/...   Chooses CUDA architecture. 'auto' by default."
+    echo "   --with-cuda-arch=all/auto/3.0/3.5/... Chooses CUDA architecture. 'auto' by default."
     echo "   --with-openmp=yes/no                  Enables OpenMP. 'yes' by default."
     echo "   --with-gmp=yes/no                     Enables the wrapper for GNU Multiple Precision Arithmetic Library. 'no' by default."
     echo "   --with-tests=yes/no                   Enables compilation of unit tests. 'yes' by default."
