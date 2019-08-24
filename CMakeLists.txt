@@ -201,7 +201,7 @@ if( ${WITH_CUDA} )
         # disable false compiler warnings
         #   reference for the -Xcudafe --diag_suppress and --display_error_number flags: https://stackoverflow.com/a/54142937
         #   incomplete list of tokens: http://www.ssl.berkeley.edu/~jimm/grizzly_docs/SSL/opt/intel/cc/9.0/lib/locale/en_US/mcpcom.msg
-        set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; -Wno-deprecated-gpu-targets --expt-relaxed-constexpr --expt-extended-lambda -Xcudafe "\"--diag_suppress=code_is_unreachable --diag_suppress=implicit_return_from_non_void_function --diag_suppress=unsigned_compare_with_zero --diag_suppress=2906 --diag_suppress=2913 --display_error_number\"")
+        set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} ; -Wno-deprecated-gpu-targets --expt-relaxed-constexpr --expt-extended-lambda -Xcudafe "\"--diag_suppress=code_is_unreachable --diag_suppress=implicit_return_from_non_void_function --diag_suppress=unsigned_compare_with_zero --diag_suppress=2906 --diag_suppress=2913 --diag_suppress=2886 --diag_suppress=2929 --display_error_number\"")
         # Select GPU architecture
         ## cmake bug: cuda_select_nvcc_arch_flags does not work with CMAKE_EXECUTABLE_SUFFIX
         ## see https://gitlab.kitware.com/cmake/cmake/issues/19636

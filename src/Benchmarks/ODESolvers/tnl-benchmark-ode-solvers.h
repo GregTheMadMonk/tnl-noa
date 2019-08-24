@@ -144,7 +144,7 @@ struct ODESolversBenchmark
                    const Config::ParameterContainer& parameters,
                    size_t dofs )
    {
-      const auto group = CommunicatorType::AllGroup;
+      //const auto group = CommunicatorType::AllGroup;
 
       std::cout << "Iterative solvers:" << std::endl;
       benchmarkODESolvers< Real, Index >( benchmark, parameters, dofs );

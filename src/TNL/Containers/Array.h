@@ -608,7 +608,7 @@ class Array
       void load( const String& fileName );
 
       /** \brief Destructor. */
-      ~Array();
+      virtual ~Array();
 
    protected:
 

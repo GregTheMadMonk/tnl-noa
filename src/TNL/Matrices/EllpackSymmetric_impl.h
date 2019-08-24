@@ -138,6 +138,7 @@ bool EllpackSymmetric< Real, Device, Index >::operator == ( const EllpackSymmetr
                    << " this->getName() = " << this->getName()
                    << " matrix.getName() = " << matrix.getName() );
    // TODO: implement this
+   throw Exceptions::NotImplementedError( "EllpackSymmetric::operator== is not implemented." );
 }
 
 template< typename Real,

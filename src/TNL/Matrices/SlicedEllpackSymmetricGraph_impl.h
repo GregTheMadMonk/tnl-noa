@@ -147,6 +147,7 @@ bool SlicedEllpackSymmetricGraph< Real, Device, Index, SliceSize >::operator == 
                    << " this->getName() = " << this->getName()
                    << " matrix.getName() = " << matrix.getName() );
    // TODO: implement this
+   throw Exceptions::NotImplementedError( "SlicedEllpackSymmetricGraph::operator== is not implemented." );
 }
 
 template< typename Real,

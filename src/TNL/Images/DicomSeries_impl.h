@@ -217,7 +217,7 @@ inline bool DicomSeries::loadImage( const String& filePath, int number)
         {
             //ok - image loaded
         }
-        else if (EIS_MissingAttribute)
+        else if (imageStatus == EIS_MissingAttribute)
         {
             //bitmap is propably old ARC/NEMA format
             std::cerr << "Error: cannot load DICOM image(ACR/NEMA) (" << DicomImage::getString (dicomImage->getStatus()) << ")" << std::endl;

@@ -139,6 +139,7 @@ bool SlicedEllpackSymmetric< Real, Device, Index, SliceSize >::operator == ( con
                    << " this->getName() = " << this->getName()
                    << " matrix.getName() = " << matrix.getName() );
    // TODO: implement this
+   throw Exceptions::NotImplementedError( "SlicedEllpackSymmetric::operator== is not implemented." );
 }
 
 template< typename Real,

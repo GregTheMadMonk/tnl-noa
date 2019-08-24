@@ -633,7 +633,7 @@ Array< Value, Device, Index, Allocator >&
 Array< Value, Device, Index, Allocator >::
 operator=( const std::vector< InValue >& vector )
 {
-   if( this->getSize() != vector.size() )
+   if( (std::size_t) this->getSize() != vector.size() )
       this->setSize( vector.size() );
    Algorithms::ArrayOperations< Device, Devices::Host >::copy( this->getData(), vector.data(), vector.size() );
    return *this;

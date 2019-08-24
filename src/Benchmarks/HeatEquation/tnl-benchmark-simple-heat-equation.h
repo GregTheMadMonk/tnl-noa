@@ -395,7 +395,7 @@ bool solveHeatEquationCuda( const Config::ParameterContainer& parameters,
          std::cerr << "Copying max_du failed. " << cudaErr << std::endl;
          return false;
       }
-      for( Index i = 0; i < cudaUpdateBlocks.x; i++ )
+      for( unsigned int i = 0; i < cudaUpdateBlocks.x; i++ )
          const Real a = fabs( max_du[ i ] );
       updateTimer.stop();
             
