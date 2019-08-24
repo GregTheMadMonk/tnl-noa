@@ -105,8 +105,10 @@ endif()
 # enable link time optimizations (but not in continuous integration)
 if( NOT DEFINED ENV{CI_JOB_NAME} )
    if( CMAKE_CXX_COMPILER_ID STREQUAL "GNU" )
-      add_compile_options( "-flto" )
-      add_link_options( "-flto" )
+      # LTO with GCC 9.1.0 and Debug build = internal compiler error
+      # LTO with GCC 9.1.0 and nvcc 10.1 and Release build = fatal error: bytecode stream in file `blabla` generated with LTO version 7.1 instead of the expected 8.0
+#      add_compile_options( "-flto" )
+#      add_link_options( "-flto" )
    elseif( CMAKE_CXX_COMPILER_ID STREQUAL "Clang" )
       add_compile_options( "-flto=thin" )
       add_link_options( "-flto=thin" )
