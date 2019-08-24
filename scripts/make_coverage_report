@@ -12,20 +12,21 @@ pushd Debug
 popd
 
 tests=(
-#   AllocatorsTest-dbg  # FIXME: CUDA
+   AllocatorsTest-dbg
    AssertTest-dbg
-#   AssertCudaTest-dbg  # FIXME: CUDA
+   AssertCudaTest-dbg
    FileNameTest-dbg
-#   FileTest-dbg  # FIXME: CUDA
+   FileTest-dbg
    ObjectTest-dbg
-#   ParallelForTest-dbg  # FIXME: CUDA
+#   ParallelForTest-dbg  # FIXME: too slow
    StringTest-dbg
    TimerTest-dbg
+   TypeInfoTest-dbg
 
    # Containers
-#   ArrayOperationsTest-dbg  # FIXME: CUDA
+   ArrayOperationsTest-dbg
    ArrayTest-dbg
-#   ArrayTestCuda-dbg  # FIXME: CUDA
+   ArrayTestCuda-dbg
    ArrayViewTest-dbg
    VectorTest-dbg
    VectorPrefixSumTest-dbg
@@ -36,29 +37,39 @@ tests=(
    StaticArrayTest-dbg
    StaticVectorTest-dbg
    StaticVectorOperationsTest-dbg
+   NDArrayTest-dbg
+   NDSubarrayTest-dbg
+   SlicedNDArrayTest-dbg
+   StaticNDArrayTest-dbg
+   StaticNDArrayCudaTest-dbg
+   MultireductionTest-dbg
    ListTest-dbg
-#   MultireductionTest-dbg  # FIXME: CUDA
    MultimapTest-dbg
    StaticMultimapTest-dbg
-   # TODO: run these with mpirun (coverage.py does not support that)
-   DistributedArrayTest-dbg
-   DistributedVectorBinaryOperationsTest-dbg
-   DistributedVectorUnaryOperationsTest-dbg
-   DistributedVectorVerticalOperationsTest-dbg
+   "DistributedArrayTest-dbg                     :: mpirun -np 4 DistributedArrayTest-dbg"
+   "DistributedVectorTest-dbg                    :: mpirun -np 4 DistributedVectorTest-dbg"
+   "DistributedVectorBinaryOperationsTest-dbg    :: mpirun -np 4 DistributedVectorBinaryOperationsTest-dbg"
+   "DistributedVectorUnaryOperationsTest-dbg     :: mpirun -np 4 DistributedVectorUnaryOperationsTest-dbg"
+   "DistributedVectorVerticalOperationsTest-dbg  :: mpirun -np 4 DistributedVectorVerticalOperationsTest-dbg"
+   "DistributedNDArray_1D_test-dbg               :: mpirun -np 4 DistributedNDArray_1D_test-dbg"
+   "DistributedNDArray_semi1D_test-dbg           :: mpirun -np 4 DistributedNDArray_semi1D_test-dbg"
+   "DistributedNDArrayOverlaps_1D_test-dbg       :: mpirun -np 4 DistributedNDArrayOverlaps_1D_test-dbg"
+   "DistributedNDArrayOverlaps_semi1D_test-dbg   :: mpirun -np 4 DistributedNDArrayOverlaps_semi1D_test-dbg"
 
    # Functions
-#   BoundaryMeshFunctionTest-dbg  # FIXME: CUDA
-#   MeshFunctionTest-dbg  # FIXME: CUDA
+   BoundaryMeshFunctionTest-dbg
+   MeshFunctionTest-dbg
 
    # Matrices
-#   DenseMatrixTest-dbg  # FIXME: CUDA
-#   SparseMatrixCopyTest-dbg  # FIXME: CUDA
-#   SparseMatrixTest_AdEllpack-dbg  # FIXME: CUDA
-#   SparseMatrixTest_BiEllpack-dbg  # FIXME: CUDA
-#   SparseMatrixTest_ChunkedEllpack-dbg  # FIXME: CUDA
-#   SparseMatrixTest_CSR-dbg  # FIXME: CUDA
-#   SparseMatrixTest_Ellpack-dbg  # FIXME: CUDA
-#   SparseMatrixTest_SlicedEllpack-dbg  # FIXME: CUDA
+   DenseMatrixTest-dbg
+   SparseMatrixCopyTest-dbg
+   SparseMatrixTest_AdEllpack-dbg
+   SparseMatrixTest_BiEllpack-dbg
+   SparseMatrixTest_ChunkedEllpack-dbg
+   SparseMatrixTest_CSR-dbg
+   SparseMatrixTest_Ellpack-dbg
+   SparseMatrixTest_SlicedEllpack-dbg
+   "DistributedMatrixTest-dbg   :: mpirun -np 4 DistributedMatrixTest-dbg"
 
    # Meshes
    BoundaryTagsTest-dbg
@@ -69,4 +80,4 @@ tests=(
 )
 
 # run the programs and create coverage reports
-./scripts/code_coverage/coverage.py -b Debug -o coverage_report/ ${tests[@]}
+./scripts/code_coverage/coverage.py -b Debug -o coverage_report/ --ignore-filename-regex="^\/tmp\/tmpxft_.*" "${tests[@]}"

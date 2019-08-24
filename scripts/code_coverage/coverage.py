@@ -231,6 +231,8 @@ def execute_command(target, command, output_file_path):
     # For other cases, "%4m" is chosen as it creates some level of parallelism,
     # but it's not too big to consume too much computing resource or disk space.
     profile_pattern_string = "%1m"
+    if "mpi" in command:
+        profile_pattern_string = "%4m"
     expected_profraw_file_name = os.extsep.join(
         [target, profile_pattern_string, PROFRAW_FILE_EXTENSION])
     expected_profraw_file_path = os.path.join(
@@ -363,18 +365,29 @@ def verify_paths_and_return_absolutes(paths):
     return absolute_paths
 
 
-def get_binary_paths_from_targets(targets, build_dir):
+def parse_targets_arguments(targets_args, build_dir):
     """Return binary paths from target names."""
+    targets = []
+    commands = []
     binary_paths = []
-    for target in targets:
-        binary_path = os.path.join(build_dir, "bin", target)
-
-        if os.path.exists(binary_path):
-            binary_paths.append(binary_path)
+    for target in targets_args:
+        if "::" in target:
+           target, command = target.split("::")
+           target = target.strip()
         else:
-            logging.warning("Target binary '{}' not found in build directory, skipping.".format(os.path.basename(binary_path)))
+           command = target
 
-    return binary_paths
+        binary_path = os.path.join(build_dir, "bin", target)
+        if not os.path.exists(binary_path):
+            logging.warning("Target binary '{}' not found in build directory, skipping.".format(os.path.basename(binary_path)))
+            continue
+
+        targets.append(target)
+        command = command.replace(target, binary_path)
+        commands.append(command)
+        binary_paths.append(binary_path)
+
+    return targets, commands, binary_paths
 
 
 def setup_output_dir():
@@ -450,8 +463,8 @@ if __name__ == "__main__":
 
     setup_output_dir()
 
-    binary_paths = get_binary_paths_from_targets(args.targets, args.build_dir)
-    profdata_file_path = create_coverage_profdata_for_targets(args.targets, binary_paths)
+    targets, commands, binary_paths = parse_targets_arguments(args.targets, args.build_dir)
+    profdata_file_path = create_coverage_profdata_for_targets(targets, commands)
 
     logging.info("Generating code coverage report in html...")
     per_file_summary_data = generate_per_file_coverage_summary(
