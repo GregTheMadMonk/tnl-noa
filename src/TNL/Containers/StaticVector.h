@@ -107,7 +107,6 @@ public:
 
 #include <TNL/Containers/StaticVector.hpp>
 #include <TNL/Containers/StaticVectorExpressions.h>
-#include <TNL/Containers/Expressions/StaticExpressionTemplates.h>
 
 // TODO: move to some other source file
 namespace TNL {

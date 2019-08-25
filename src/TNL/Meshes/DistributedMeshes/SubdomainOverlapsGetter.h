@@ -11,7 +11,6 @@
 #pragma once
 
 #include <TNL/Meshes/Grid.h>
-#include <TNL/Meshes/Mesh.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 
 namespace TNL {
@@ -22,29 +21,6 @@ template< typename Mesh,
           typename Communicator >
 class SubdomainOverlapsGetter
 {};
-
-template< typename MeshConfig,
-          typename Device,
-          typename Communicator >
-class SubdomainOverlapsGetter< Mesh< MeshConfig, Device >, Communicator >
-{
-   public:
-      
-      using MeshType = Mesh< MeshConfig, Device >;
-      using DeviceType = Device;
-      using IndexType = typename MeshType::IndexType;
-      using DistributedMeshType = DistributedMesh< MeshType >;
-      using SubdomainOverlapsType = typename DistributedMeshType::SubdomainOverlapsType;
-      using CommunicatorType = Communicator;
-      
-      // Computes subdomain overlaps
-      // TODO: Its gonna be very likely different for Mesh than for Grid
-      static void getOverlaps( const DistributedMeshType* distributedMesh,
-                               SubdomainOverlapsType& lower,
-                               SubdomainOverlapsType& upper,
-                               IndexType subdomainOverlapSize,
-                               const SubdomainOverlapsType& periodicBoundariesOverlapSize = 0 );
-};
 
 // TODO: Specializations by the grid dimension can be avoided when the MPI directions are 
 // rewritten in a dimension independent way

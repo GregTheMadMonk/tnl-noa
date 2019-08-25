@@ -11,7 +11,6 @@
 #pragma once
 
 #include <TNL/Containers/StaticVector.h>
-#include <TNL/Containers/StaticVectorExpressions.h>
 #include <TNL/Containers/Algorithms/VectorAssignment.h>
 
 namespace TNL {

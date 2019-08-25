@@ -12,8 +12,6 @@
 
 #include <TNL/File.h>
 #include <TNL/Functions/Domain.h>
-#include <TNL/Functions/MeshFunctionGnuplotWriter.h>
-#include <TNL/Functions/MeshFunctionVTKWriter.h>
 #include <TNL/Pointers/SharedPointer.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMesh.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedMeshSynchronizer.h>
