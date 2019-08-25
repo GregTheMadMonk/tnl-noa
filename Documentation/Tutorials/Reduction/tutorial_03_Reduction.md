@@ -13,6 +13,7 @@ This tutorial introduces flexible parallel reduction in TNL. It shows how to eas
    5. [Vectors comparison](#flexible_parallel_reduction_vector_comparison)
    6. [Update and Residue](#flexible_parallel_reduction_update_and_residue)
    7. [Simple Mask and Reduce](#flexible_parallel_reduction_simple_mask_and_reduce)
+   8. [Using reduction in class methods](#flexible_parallel_reduction_using_reduction_in_class_methods)
 
 ## Flexible parallel reduction<a name="flexible_parallel_reduction"></a>
 
@@ -118,3 +119,40 @@ The result reads as:
 
 ### Simple Mask and Reduce<a name="flexible_parallel_reduction_simple_mask_and_reduce"></a>
 
+We can also filter the data to be reduced. This operation is called Mask and Reduce TODO: REF. You simply add necessary if statement to the fetch function, or in the case of the following example we use a statement
+
+```
+return u_view[ i ] > 0.0 ? u_view[ i ] : 0.0;
+```
+
+to sum up only the positive numbers in the vector.
+
+\include MaskAndReduceExample-1.cpp
+
+The result is:
+
+\include MaskAndReduceExample-1.out
+
+Take a look at the following example where the filtering depends on the element indexes rather than values:
+
+\include MaskAndReduceExample-2.cpp
+
+The result is:
+
+\include MaskAndReduceExample-2.out
+
+This is not very efficient. For half of the elements, we return zero which has no effect during the reductin. Better solution is to run the reduction only for a half of the elements and to change the fetch function to
+
+```
+return u_view[ 2 * i ];
+```
+
+See the following example and compare the execution times.
+
+\include MaskAndReduceExample-3.cpp
+
+\include MaskAndReduceExample-3.out
+ 
+### Using reduction in class methods<a name="flexible_parallel_reduction_using_reduction_in_class_methods"></a>
+
+TODO:

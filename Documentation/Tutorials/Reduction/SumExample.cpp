@@ -19,7 +19,7 @@ double sum( const Vector< double, Device >& v )
    auto view = v.getView();
 
    /****
-    * The fetch method just reads elements of vector v.
+    * The fetch function just reads elements of vector v.
     */
    auto fetch = [=] __cuda_callable__ ( int i ) { return view[ i ]; };
 
