@@ -23,6 +23,8 @@ inline DicomImageInfo::DicomImageInfo( DicomHeader& dicomHeader )
 : dicomHeader( dicomHeader )
 {
     isObjectRetrieved = false;
+    width = 0;
+    height = 0;
     depth = 0;
 }
 

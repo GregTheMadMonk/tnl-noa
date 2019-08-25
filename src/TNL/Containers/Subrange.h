@@ -105,12 +105,14 @@ public:
       return i + begin;
    }
 
+   __cuda_callable__
    bool operator==( const Subrange& other ) const
    {
       return begin == other.begin &&
              end == other.end;
    }
 
+   __cuda_callable__
    bool operator!=( const Subrange& other ) const
    {
       return ! (*this == other);

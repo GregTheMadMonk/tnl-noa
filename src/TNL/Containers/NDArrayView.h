@@ -69,6 +69,7 @@ public:
 
    // Copy-assignment does deep copy, just like regular array, but the sizes
    // must match (i.e. copy-assignment cannot resize).
+   TNL_NVCC_HD_WARNING_DISABLE
    __cuda_callable__
    NDArrayView& operator=( const NDArrayView& other )
    {
@@ -79,7 +80,9 @@ public:
    }
 
    // Templated copy-assignment
+   TNL_NVCC_HD_WARNING_DISABLE
    template< typename OtherView >
+   __cuda_callable__
    NDArrayView& operator=( const OtherView& other )
    {
       static_assert( std::is_same< PermutationType, typename OtherView::PermutationType >::value,
@@ -128,6 +131,7 @@ public:
       array = nullptr;
    }
 
+   TNL_NVCC_HD_WARNING_DISABLE
    __cuda_callable__
    bool operator==( const NDArrayView& other ) const
    {
@@ -137,6 +141,7 @@ public:
       return Algorithms::ArrayOperations< Device, Device >::compare( array, other.array, getStorageSize() );
    }
 
+   TNL_NVCC_HD_WARNING_DISABLE
    __cuda_callable__
    bool operator!=( const NDArrayView& other ) const
    {

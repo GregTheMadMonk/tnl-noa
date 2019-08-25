@@ -20,15 +20,7 @@ namespace DistributedMeshes {
 
 template<typename MeshFunctionType,
          int dim=MeshFunctionType::getMeshDimension()>
-class CopyEntitiesHelper
-{
-    public:
-    typedef typename MeshFunctionType::MeshType::CoordinatesType CoordinatesType;
-    static void Copy(MeshFunctionType &from, MeshFunctionType &to, CoordinatesType &fromBegin, CoordinatesType &toBegin, CoordinatesType &size)
-    {
-    }
-
-};
+class CopyEntitiesHelper;
 
 
 template<typename MeshFunctionType>
@@ -43,12 +35,12 @@ class CopyEntitiesHelper<MeshFunctionType, 1>
     {
         auto toData=to.getData().getData();
         auto fromData=from.getData().getData();
-        auto fromMesh=from.getMesh();
-        auto toMesh=to.getMesh();
+        auto* fromMesh=&from.getMeshPointer().template getData< typename MeshFunctionType::MeshType::DeviceType >();
+        auto* toMesh=&to.getMeshPointer().template getData< typename MeshFunctionType::MeshType::DeviceType >();
         auto kernel = [fromData,toData, fromMesh, toMesh, fromBegin, toBegin] __cuda_callable__ ( Index i )
         {
-            Cell fromEntity(fromMesh);
-            Cell toEntity(toMesh);
+            Cell fromEntity(*fromMesh);
+            Cell toEntity(*toMesh);
             toEntity.getCoordinates().x()=toBegin.x()+i;
             toEntity.refresh();
             fromEntity.getCoordinates().x()=fromBegin.x()+i;
@@ -75,12 +67,12 @@ class CopyEntitiesHelper<MeshFunctionType,2>
     {
         auto toData=to.getData().getData();
         auto fromData=from.getData().getData();
-        auto fromMesh=from.getMesh();
-        auto toMesh=to.getMesh();
+        auto* fromMesh=&from.getMeshPointer().template getData< typename MeshFunctionType::MeshType::DeviceType >();
+        auto* toMesh=&to.getMeshPointer().template getData< typename MeshFunctionType::MeshType::DeviceType >();
         auto kernel = [fromData,toData, fromMesh, toMesh, fromBegin, toBegin] __cuda_callable__ ( Index i, Index j )
         {
-            Cell fromEntity(fromMesh);
-            Cell toEntity(toMesh);
+            Cell fromEntity(*fromMesh);
+            Cell toEntity(*toMesh);
             toEntity.getCoordinates().x()=toBegin.x()+i;
             toEntity.getCoordinates().y()=toBegin.y()+j;
             toEntity.refresh();
@@ -107,12 +99,12 @@ class CopyEntitiesHelper<MeshFunctionType,3>
     {
         auto toData=to.getData().getData();
         auto fromData=from.getData().getData();
-        auto fromMesh=from.getMesh();
-        auto toMesh=to.getMesh();
+        auto* fromMesh=&from.getMeshPointer().template getData< typename MeshFunctionType::MeshType::DeviceType >();
+        auto* toMesh=&to.getMeshPointer().template getData< typename MeshFunctionType::MeshType::DeviceType >();
         auto kernel = [fromData,toData, fromMesh, toMesh, fromBegin, toBegin] __cuda_callable__ ( Index i, Index j, Index k )
         {
-            Cell fromEntity(fromMesh);
-            Cell toEntity(toMesh);
+            Cell fromEntity(*fromMesh);
+            Cell toEntity(*toMesh);
             toEntity.getCoordinates().x()=toBegin.x()+i;
             toEntity.getCoordinates().y()=toBegin.y()+j;
             toEntity.getCoordinates().z()=toBegin.z()+k;

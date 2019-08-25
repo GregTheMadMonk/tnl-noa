@@ -30,6 +30,14 @@
  * Implemented by: Jakub Klinkovsky
  */
 
+// wrapper for nvcc pragma which disables warnings about __host__ __device__
+// functions: https://stackoverflow.com/q/55481202
+#ifdef __NVCC__
+   #define TNL_NVCC_HD_WARNING_DISABLE #pragma hd_warning_disable
+#else
+   #define TNL_NVCC_HD_WARNING_DISABLE
+#endif
+
 #if defined(NDEBUG) || defined(HAVE_MIC)
 
 // empty macros for optimized build
@@ -280,6 +288,7 @@ cmpHelperOpFailure( const char* assertion,
    fatalFailure();
 }
 
+TNL_NVCC_HD_WARNING_DISABLE
 template< typename T1, typename T2 >
 __cuda_callable__ void
 cmpHelperTrue( const char* assertion,
@@ -298,6 +307,7 @@ cmpHelperTrue( const char* assertion,
                                          expr1, "true", val1, true, "==" );
 }
 
+TNL_NVCC_HD_WARNING_DISABLE
 template< typename T1, typename T2 >
 __cuda_callable__ void
 cmpHelperFalse( const char* assertion,
@@ -336,16 +346,22 @@ cmpHelper##op_name( const char* assertion, \
 }
 
 // Implements the helper function for TNL_ASSERT_EQ
+TNL_NVCC_HD_WARNING_DISABLE
 TNL_IMPL_CMP_HELPER_( EQ, == );
 // Implements the helper function for TNL_ASSERT_NE
+TNL_NVCC_HD_WARNING_DISABLE
 TNL_IMPL_CMP_HELPER_( NE, != );
 // Implements the helper function for TNL_ASSERT_LE
+TNL_NVCC_HD_WARNING_DISABLE
 TNL_IMPL_CMP_HELPER_( LE, <= );
 // Implements the helper function for TNL_ASSERT_LT
+TNL_NVCC_HD_WARNING_DISABLE
 TNL_IMPL_CMP_HELPER_( LT, < );
 // Implements the helper function for TNL_ASSERT_GE
+TNL_NVCC_HD_WARNING_DISABLE
 TNL_IMPL_CMP_HELPER_( GE, >= );
 // Implements the helper function for TNL_ASSERT_GT
+TNL_NVCC_HD_WARNING_DISABLE
 TNL_IMPL_CMP_HELPER_( GT, > );
 
 #undef TNL_IMPL_CMP_HELPER_

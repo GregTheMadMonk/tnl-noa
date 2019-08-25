@@ -48,9 +48,10 @@ class DistributedGridIO<
          if(distrGrid==NULL) //not distributed
          {
             meshFunction.save(fileName);
+            return true;
          }
 
-         MeshType mesh=meshFunction.getMesh();
+         const MeshType& mesh=meshFunction.getMesh();
 
          PointType spaceSteps=mesh.getSpaceSteps();
          PointType origin=mesh.getOrigin();
@@ -97,7 +98,7 @@ class DistributedGridIO<
             return true;
         }
 
-        MeshType mesh=meshFunction.getMesh();
+        const MeshType& mesh=meshFunction.getMesh();
         
         PointType spaceSteps=mesh.getSpaceSteps();
         PointType origin=mesh.getOrigin();

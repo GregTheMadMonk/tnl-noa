@@ -62,6 +62,9 @@ class Grid< 1, Real, Device, Index > : public Object
    
    Grid( const Index xSize );
 
+   // empty destructor is needed only to avoid crappy nvcc warnings
+   ~Grid() {}
+
    /**
     * \brief Returns type of grid Real (value), Device type and the type of Index.
     */

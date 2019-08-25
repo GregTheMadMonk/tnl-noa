@@ -59,6 +59,9 @@ class Grid< 3, Real, Device, Index > : public Object
 
    Grid( const Index xSize, const Index ySize, const Index zSize );
 
+   // empty destructor is needed only to avoid crappy nvcc warnings
+   ~Grid() {}
+
    /**
     * \brief See Grid1D::getType().
     */

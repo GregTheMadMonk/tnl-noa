@@ -390,6 +390,7 @@ inline DicomHeader &DicomSeries::getHeader(int image)
     //check user argument
     if((image > 0) | (image <= dicomSeriesHeaders.getSize()))
         return *dicomSeriesHeaders.getElement(image);
+    throw std::out_of_range("image index out of range");
 }
 
 inline bool DicomSeries::isDicomSeriesLoaded()

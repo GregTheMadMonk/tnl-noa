@@ -102,6 +102,11 @@ if( CMAKE_CXX_COMPILER_ID STREQUAL "GNU" )
    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-maybe-uninitialized" )
 endif()
 
+# disable false Clang warning: https://stackoverflow.com/q/57645872
+if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-self-assign-overloaded" )
+endif()
+
 # enable link time optimizations (but not in continuous integration)
 if( NOT DEFINED ENV{CI_JOB_NAME} )
    if( CMAKE_CXX_COMPILER_ID STREQUAL "GNU" )

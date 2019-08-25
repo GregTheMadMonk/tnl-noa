@@ -27,9 +27,7 @@ template < typename MeshFunctionType,
            typename RealType=typename MeshFunctionType::MeshType::RealType,
            typename Device=typename MeshFunctionType::MeshType::DeviceType,
            typename Index=typename MeshFunctionType::MeshType::GlobalIndexType >
-class BufferEntitiesHelper
-{
-};
+class BufferEntitiesHelper;
 
 
 template < typename MeshFunctionType,
@@ -53,14 +51,14 @@ class BufferEntitiesHelper< MeshFunctionType, MaskPointer, 1, RealType, Device, 
          Index beginx=begin.x();
          Index sizex=size.x();
 
-         auto mesh = meshFunction.getMesh();
+         auto* mesh = &meshFunction.getMeshPointer().template getData< Device >();
          RealType* meshFunctionData = meshFunction.getData().getData();
          const typename MaskPointer::ObjectType* mask( nullptr );
          if( maskPointer )
             mask = &maskPointer.template getData< Device >();
          auto kernel = [tobuffer, mesh, buffer, isBoundary, meshFunctionData, mask, beginx ] __cuda_callable__ ( Index j )
          {
-            typename MeshFunctionType::MeshType::Cell entity(mesh);
+            typename MeshFunctionType::MeshType::Cell entity(*mesh);
             entity.getCoordinates().x()=beginx+j;
             entity.refresh();
             if( ! isBoundary || ! mask || ( *mask )[ entity.getIndex() ] )
@@ -99,7 +97,7 @@ class BufferEntitiesHelper< MeshFunctionType, MaskPointer, 2, RealType, Device, 
          Index sizex=size.x();
          Index sizey=size.y();
 
-         auto mesh=meshFunction.getMesh();
+         auto* mesh = &meshFunction.getMeshPointer().template getData< Device >();
          RealType* meshFunctionData = meshFunction.getData().getData();
          const typename MaskPointer::ObjectType* mask( nullptr );
          if( maskPointer )
@@ -107,7 +105,7 @@ class BufferEntitiesHelper< MeshFunctionType, MaskPointer, 2, RealType, Device, 
 
          auto kernel = [ tobuffer, mask, mesh, buffer, isBoundary, meshFunctionData, beginx, sizex, beginy] __cuda_callable__ ( Index i, Index j )
          {
-            typename MeshFunctionType::MeshType::Cell entity(mesh);
+            typename MeshFunctionType::MeshType::Cell entity(*mesh);
             entity.getCoordinates().x() = beginx + i;
             entity.getCoordinates().y() = beginy + j;
             entity.refresh();
@@ -148,14 +146,14 @@ class BufferEntitiesHelper< MeshFunctionType, MaskPointer, 3, RealType, Device, 
          Index sizey=size.y();
          Index sizez=size.z();
 
-         auto mesh=meshFunction.getMesh();
+         auto* mesh = &meshFunction.getMeshPointer().template getData< Device >();
          RealType * meshFunctionData=meshFunction.getData().getData();
          const typename MaskPointer::ObjectType* mask( nullptr );
          if( maskPointer )
             mask = &maskPointer.template getData< Device >();
          auto kernel = [ tobuffer, mesh, mask, buffer, isBoundary, meshFunctionData, beginx, sizex, beginy, sizey, beginz] __cuda_callable__ ( Index i, Index j, Index k )
          {
-            typename MeshFunctionType::MeshType::Cell entity(mesh);
+            typename MeshFunctionType::MeshType::Cell entity(*mesh);
             entity.getCoordinates().x() = beginx + i;
             entity.getCoordinates().y() = beginy + j;
             entity.getCoordinates().z() = beginz + k;
