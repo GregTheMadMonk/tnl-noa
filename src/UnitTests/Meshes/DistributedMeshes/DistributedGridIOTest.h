@@ -17,7 +17,6 @@
 using namespace TNL::Containers;
 using namespace TNL::Meshes;
 using namespace TNL::Functions;
-using namespace TNL::Devices;
 using namespace TNL::Communicators;
 using namespace TNL::Meshes::DistributedMeshes;
 

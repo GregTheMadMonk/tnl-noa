@@ -13,32 +13,32 @@
 
 TEST( DistributedGridMPIIO, Save_1D )
 {
-    TestDistributedGridMPIIO<1,Host>::TestSave();
+    TestDistributedGridMPIIO<1,Devices::Host>::TestSave();
 }
 
 TEST( DistributedGridMPIIO, Save_2D )
 {
-    TestDistributedGridMPIIO<2,Host>::TestSave();
+    TestDistributedGridMPIIO<2,Devices::Host>::TestSave();
 }
 
 TEST( DistributedGridMPIIO, Save_3D )
 {
-    TestDistributedGridMPIIO<3,Host>::TestSave();
+    TestDistributedGridMPIIO<3,Devices::Host>::TestSave();
 }
 
 TEST( DistributedGridMPIIO, Load_1D )
 {
-    TestDistributedGridMPIIO<1,Host>::TestLoad();
+    TestDistributedGridMPIIO<1,Devices::Host>::TestLoad();
 }
 
 TEST( DistributedGridMPIIO, Load_2D )
 {
-    TestDistributedGridMPIIO<2,Host>::TestLoad();
+    TestDistributedGridMPIIO<2,Devices::Host>::TestLoad();
 }
 
 TEST( DistributedGridMPIIO, Load_3D )
 {
-    TestDistributedGridMPIIO<3,Host>::TestLoad();
+    TestDistributedGridMPIIO<3,Devices::Host>::TestLoad();
 }
 
 #ifdef HAVE_CUDA

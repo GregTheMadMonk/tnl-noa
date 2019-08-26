@@ -15,32 +15,32 @@
 
 TEST( DistributedGridIO, Save_1D )
 {
-    TestDistributedGridIO<1,Host>::TestSave();
+    TestDistributedGridIO<1,Devices::Host>::TestSave();
 }
 
 TEST( DistributedGridIO, Save_2D )
 {
-    TestDistributedGridIO<2,Host>::TestSave();
+    TestDistributedGridIO<2,Devices::Host>::TestSave();
 }
 
 TEST( DistributedGridIO, Save_3D )
 {
-    TestDistributedGridIO<3,Host>::TestSave();
+    TestDistributedGridIO<3,Devices::Host>::TestSave();
 }
 
 TEST( DistributedGridIO, Load_1D )
 {
-    TestDistributedGridIO<1,Host>::TestLoad();
+    TestDistributedGridIO<1,Devices::Host>::TestLoad();
 }
 
 TEST( DistributedGridIO, Load_2D )
 {
-    TestDistributedGridIO<2,Host>::TestLoad();
+    TestDistributedGridIO<2,Devices::Host>::TestLoad();
 }
 
 TEST( DistributedGridIO, Load_3D )
 {
-    TestDistributedGridIO<3,Host>::TestLoad();
+    TestDistributedGridIO<3,Devices::Host>::TestLoad();
 }
 
 #ifdef HAVE_CUDA
