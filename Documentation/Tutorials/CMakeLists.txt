@@ -1,3 +1,3 @@
 add_subdirectory( Arrays )
 add_subdirectory( Vectors )
-add_subdirectory( Reduction )
+add_subdirectory( ReductionAndScan )

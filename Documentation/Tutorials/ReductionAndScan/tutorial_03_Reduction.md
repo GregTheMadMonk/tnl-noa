@@ -14,6 +14,7 @@ This tutorial introduces flexible parallel reduction in TNL. It shows how to eas
    6. [Update and Residue](#flexible_parallel_reduction_update_and_residue)
    7. [Simple Mask and Reduce](#flexible_parallel_reduction_simple_mask_and_reduce)
    8. [Reduction with argument](#flexible_parallel_reduction_with_argument)
+2. [Flexible Scan](#flexible_scan)
 
 ## Flexible parallel reduction<a name="flexible_parallel_reduction"></a>
 
@@ -71,7 +72,7 @@ The result is:
 
 \include ScalarProductExample.out
 
-Scalar product of vectors `u` and `v` can be in TNL computed by [`dot(u,v)`](../html/namespaceTNL.html#ab49c6303cbe48c65ca350389460c2e40) or simply as [`(u,v)`](../html/namespaceTNL_1_1Containers.html#a6453777fc16ef91a3c309338cd18dd0c).
+Scalar product of vectors `u` and `v` can be in TNL computed by [`dot(u,v)`](../html/namespaceTNL.html#ab49c6303cbe48c65ca350389460c2e40) or simply as [`(u,v)`](@ref Containers_operator_scalar_product_vector_et).
 
 ### Maxium norm<a name="flexible_parallel_reduction_maximum_norm"></a>
 
@@ -83,7 +84,7 @@ The output is:
 
 \include MaximumNormExample.out
 
-Maximum norm in TNL computes function [`maxNorm(v)`](../html/namespaceTNL.html#acea36b20e471c597fb21bc2b996bbb04).
+Maximum norm in TNL computes function @ref TNL::maxNorm "TNL::maxNorm".
 
 ### Vectors comparison<a name="flexible_parallel_reduction_vector_comparison"></a>
 
@@ -159,10 +160,30 @@ The definition of the lambda function `reduction` reads as:
 auto reduction = [] __cuda_callable__ ( int& aIdx, const int& bIdx, double& a, const double& b );
 ```
 
-In addition to vector elements valuesd `a` and `b`, it gets also their positions `aIdx` and `bIdx`. The functions is responsible to set `a` to maximum of the two and `aIdx` to the position of the larger element. Note, that the parameters have the above mentioned meaning only in case of computing minimum or maximum.
+In addition to vector elements valuesd `a` and `b`, it gets also their positions `aIdx` and `bIdx`. The functions is responsible to set `a` to maximum of the two and `aIdx` to the position of the larger element. Note, that the parameters have the above mentioned meaning only in case of computing minimum or maximum.
 
 The result looks as:
 
 \include ReductionWithArgument.out
 
+## Flexible scan<a name="flexible_scan"></a>
 
+Inclusive scan ( or prefix sum) operation turns a sequence \f$a_1, \ldots, a_n\f$ into a sequence \f$s_1, \ldots, s_n\f$ defined as
+
+\f[
+s_i = \sum_{j=1}^i a_i.
+\f]
+
+Exclusive scan (or prefix sum) is defined as
+
+\f[
+\sigma_i = \sum_{j=1}^{i-1} a_i.
+\f]
+
+Both kinds of [scans](https://en.wikipedia.org/wiki/Prefix_sum)) are usually applied only on sumation, however product or logical operations could be handy as well. In TNL, prefix sum is implemented in simillar way as reduction and so it can be easily modified by lambda functions. The following example shows how it works:
+
+\include ScanExample.cpp
+
+The result looks as:
+
+\include ScanExample.out
