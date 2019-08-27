@@ -184,7 +184,8 @@ struct SetSizesCopyHelper
          target.template setSize< level >( source.template getSize< level >() );
          SetSizesCopyHelper< TargetHolder, SourceHolder, level - 1 >::copy( target, source );
       }
-      else if( target.template getStaticSize< level >() != source.template getSize< level >() )
+      else if( source.template getSize< level >() < 0 ||
+               target.template getStaticSize< level >() != (std::size_t) source.template getSize< level >() )
          throw std::logic_error( "Cannot copy sizes due to inconsistent underlying types (static sizes don't match)." );
    }
 };
@@ -198,7 +199,8 @@ struct SetSizesCopyHelper< TargetHolder, SourceHolder, 0 >
    {
       if( target.template getStaticSize< 0 >() == 0 )
          target.template setSize< 0 >( source.template getSize< 0 >() );
-      else if( target.template getStaticSize< 0 >() != source.template getSize< 0 >() )
+      else if( source.template getSize< 0 >() ||
+               target.template getStaticSize< 0 >() != (std::size_t) source.template getSize< 0 >() )
          throw std::logic_error( "Cannot copy sizes due to inconsistent underlying types (static sizes don't match)." );
    }
 };

@@ -294,6 +294,7 @@ __device__ Element* Cuda::getSharedMemory()
 {
    return CudaSharedMemory< Element >();
 }
+#endif
 
 #ifdef HAVE_CUDA
 inline void Cuda::checkDevice( const char* file_name, int line, cudaError error )
@@ -326,6 +327,8 @@ inline bool Cuda::synchronizeDevice( int deviceId )
    getSmartPointersSynchronizationTimer().stop();
    return b;
 #endif
+#else
+   return true;
 #endif
 }
 
@@ -353,6 +356,7 @@ namespace {
 
 // double-precision atomicAdd function for Maxwell and older GPUs
 // copied from: https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#atomic-functions
+#ifdef HAVE_CUDA
 #if __CUDA_ARCH__ < 600
 namespace {
    __device__ double atomicAdd(double* address, double val)
@@ -374,8 +378,7 @@ namespace {
    }
 } // namespace
 #endif
-
-#endif /* HAVE_CUDA */
+#endif
 
 } // namespace Devices
 } // namespace TNL

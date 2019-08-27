@@ -172,8 +172,9 @@ TYPED_TEST( DistributedNDArray_1D_test, elementwiseAccess )
    for( IndexType gi = localRange.getBegin(); gi < localRange.getEnd(); gi++ ) {
 //      EXPECT_EQ( localArrayView.getElement( i ), 0 );
       EXPECT_EQ( this->distributedNDArray.getElement( gi ), 0 );
-      if( std::is_same< typename TestFixture::DeviceType, Devices::Host >::value )
+      if( std::is_same< typename TestFixture::DeviceType, Devices::Host >::value ) {
          EXPECT_EQ( this->distributedNDArray[ gi ], 0 );
+      }
    }
 
    // use operator()

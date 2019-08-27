@@ -69,12 +69,12 @@ benchmarkArrayOperations( Benchmark & benchmark,
    auto compareHost = [&]() {
       resultHost = (int) ( hostArray == hostArray2 );
    };
-   auto compareCuda = [&]() {
-      resultDevice = (int) ( deviceArray == deviceArray2 );
-   };
    benchmark.setOperation( "comparison (operator==)", 2 * datasetSize );
    benchmark.time< Devices::Host >( reset1, "CPU", compareHost );
 #ifdef HAVE_CUDA
+   auto compareCuda = [&]() {
+      resultDevice = (int) ( deviceArray == deviceArray2 );
+   };
    benchmark.time< Devices::Cuda >( reset1, "GPU", compareCuda );
 #endif
 
@@ -82,25 +82,25 @@ benchmarkArrayOperations( Benchmark & benchmark,
    auto copyAssignHostHost = [&]() {
       hostArray = hostArray2;
    };
-   auto copyAssignCudaCuda = [&]() {
-      deviceArray = deviceArray2;
-   };
    benchmark.setOperation( "copy (operator=)", 2 * datasetSize );
    // copyBasetime is used later inside HAVE_CUDA guard, so the compiler will
    // complain when compiling without CUDA
    const double copyBasetime = benchmark.time< Devices::Host >( reset1, "CPU", copyAssignHostHost );
 #ifdef HAVE_CUDA
+   auto copyAssignCudaCuda = [&]() {
+      deviceArray = deviceArray2;
+   };
    benchmark.time< Devices::Cuda >( reset1, "GPU", copyAssignCudaCuda );
 #endif
 
 
+#ifdef HAVE_CUDA
    auto copyAssignHostCuda = [&]() {
       deviceArray = hostArray;
    };
    auto copyAssignCudaHost = [&]() {
       hostArray = deviceArray;
    };
-#ifdef HAVE_CUDA
    benchmark.setOperation( "copy (operator=)", datasetSize, copyBasetime );
    benchmark.time< Devices::Cuda >( reset1, "CPU->GPU", copyAssignHostCuda );
    benchmark.time< Devices::Cuda >( reset1, "GPU->CPU", copyAssignCudaHost );
@@ -110,21 +110,18 @@ benchmarkArrayOperations( Benchmark & benchmark,
    auto setValueHost = [&]() {
       hostArray.setValue( 3.0 );
    };
-   auto setValueCuda = [&]() {
-      deviceArray.setValue( 3.0 );
-   };
    benchmark.setOperation( "setValue", datasetSize );
    benchmark.time< Devices::Host >( reset1, "CPU", setValueHost );
 #ifdef HAVE_CUDA
+   auto setValueCuda = [&]() {
+      deviceArray.setValue( 3.0 );
+   };
    benchmark.time< Devices::Cuda >( reset1, "GPU", setValueCuda );
 #endif
 
 
    auto setSizeHost = [&]() {
       hostArray.setSize( size );
-   };
-   auto setSizeCuda = [&]() {
-      deviceArray.setSize( size );
    };
    auto resetSize1 = [&]() {
       hostArray.reset();
@@ -135,15 +132,15 @@ benchmarkArrayOperations( Benchmark & benchmark,
    benchmark.setOperation( "allocation (setSize)", datasetSize );
    benchmark.time< Devices::Host >( resetSize1, "CPU", setSizeHost );
 #ifdef HAVE_CUDA
+   auto setSizeCuda = [&]() {
+      deviceArray.setSize( size );
+   };
    benchmark.time< Devices::Cuda >( resetSize1, "GPU", setSizeCuda );
 #endif
 
 
    auto resetSizeHost = [&]() {
       hostArray.reset();
-   };
-   auto resetSizeCuda = [&]() {
-      deviceArray.reset();
    };
    auto setSize1 = [&]() {
       hostArray.setSize( size );
@@ -154,6 +151,9 @@ benchmarkArrayOperations( Benchmark & benchmark,
    benchmark.setOperation( "deallocation (reset)", datasetSize );
    benchmark.time< Devices::Host >( setSize1, "CPU", resetSizeHost );
 #ifdef HAVE_CUDA
+   auto resetSizeCuda = [&]() {
+      deviceArray.reset();
+   };
    benchmark.time< Devices::Cuda >( setSize1, "GPU", resetSizeCuda );
 #endif
 }

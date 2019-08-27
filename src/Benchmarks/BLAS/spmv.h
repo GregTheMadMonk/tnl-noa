@@ -155,13 +155,12 @@ benchmarkSpMV( Benchmark & benchmark,
    auto spmvHost = [&]() {
       hostMatrix.vectorProduct( hostVector, hostVector2 );
    };
-   auto spmvCuda = [&]() {
-      deviceMatrix.vectorProduct( deviceVector, deviceVector2 );
-   };
-
    benchmark.setOperation( datasetSize );
    benchmark.time< Devices::Host >( reset, "CPU", spmvHost );
 #ifdef HAVE_CUDA
+   auto spmvCuda = [&]() {
+      deviceMatrix.vectorProduct( deviceVector, deviceVector2 );
+   };
    benchmark.time< Devices::Cuda >( reset, "GPU", spmvCuda );
 #endif
 }

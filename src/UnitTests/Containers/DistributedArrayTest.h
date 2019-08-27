@@ -146,8 +146,9 @@ TYPED_TEST( DistributedArrayTest, elementwiseAccess )
       const IndexType gi = localRange.getGlobalIndex( i );
       EXPECT_EQ( localArrayView.getElement( i ), 0 );
       EXPECT_EQ( this->distributedArray.getElement( gi ), 0 );
-      if( std::is_same< typename TestFixture::DeviceType, Devices::Host >::value )
+      if( std::is_same< typename TestFixture::DeviceType, Devices::Host >::value ) {
          EXPECT_EQ( this->distributedArray[ gi ], 0 );
+      }
    }
 
    // use setValue
@@ -161,8 +162,9 @@ TYPED_TEST( DistributedArrayTest, elementwiseAccess )
       const IndexType gi = localRange.getGlobalIndex( i );
       EXPECT_EQ( localArrayView.getElement( i ), i + 1 );
       EXPECT_EQ( this->distributedArray.getElement( gi ), i + 1 );
-      if( std::is_same< typename TestFixture::DeviceType, Devices::Host >::value )
+      if( std::is_same< typename TestFixture::DeviceType, Devices::Host >::value ) {
          EXPECT_EQ( this->distributedArray[ gi ], i + 1 );
+      }
    }
 
    this->distributedArray.setValue( 0 );

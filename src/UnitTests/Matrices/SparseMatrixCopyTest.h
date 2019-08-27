@@ -54,34 +54,34 @@ void setupUnevenRowSizeMatrix( Matrix& m )
     rowLengths.setElement( 7,  1 );
     rowLengths.setElement( 9,  1 );
     m.setCompressedRowLengths( rowLengths );
-    
+
     int value = 1;
     for( int i = 0; i < cols - 4; i++ )  // 0th row
         m.setElement( 0, i, value++ );
-    
+
     for( int i = 3; i < cols; i++ )      // 1st row
         m.setElement( 1, i, value++ );
-    
+
     for( int i = 0; i < cols - 3; i++ )  // 2nd row
         m.setElement( 2, i, value++ );
-    
+
     for( int i = 1; i < cols; i++ )      // 3rd row
         m.setElement( 3, i, value++ );
-    
+
     for( int i = 0; i < cols - 1; i++ )  // 4th row
         m.setElement( 4, i, value++ );
-    
+
     for( int i = 0; i < cols - 4; i++ )  // 5th row
         m.setElement( 5, i, value++ );
-    
-        m.setElement( 6, 0, value++ );   // 6th row
-        
-        m.setElement( 7, 0, value++ );   // 7th row
-    
+
+    m.setElement( 6, 0, value++ );   // 6th row
+
+    m.setElement( 7, 0, value++ );   // 7th row
+
     for( int i = 0; i < cols - 1; i++ )  // 8th row 
         m.setElement( 8, i, value++ );
-    
-        m.setElement( 9, 5, value++ );   // 9th row
+
+    m.setElement( 9, 5, value++ );   // 9th row
 }
 
 template< typename Matrix >
