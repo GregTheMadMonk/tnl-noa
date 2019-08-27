@@ -41,17 +41,17 @@ Putting everything together gives the following example:
 
 \include SumExample.cpp
 
-Since TNL vectors cannot be pass to CUDA kernels and so they cannot be captured by CUDA lambdas, we must first get vector view from the vector using a method `getView()`.
+Since TNL vectors cannot be pass to CUDA kernels and so they cannot be captured by CUDA lambdas, we must first get vector view from the vector using a method `getConstView()`.
 
 Note tha we pass `0.0` as the last argument of the method `Reduction< Device >::reduce`. It is an *idempotent element* (see [Idempotence](https://cs.wikipedia.org/wiki/Idempotence)). It is an element which, for given operation, does not change the result. For addition, it is zero. The result looks as follows.
 
 \include SumExample.out
 
-Sum of vector elements can be also obtained as `sum(v)`.
+Sum of vector elements can be also obtained as [`sum(v)`](../html/namespaceTNL.html#a41cea4796188f0877dbb6e72e2d3559e).
 
 ### Product<a name="flexible_parallel_reduction_product"></a>
 
-To demonstrate the effect of the *idempotent element*, we will now compute product of all elements of the vector. The *idempotent element* is one for multiplication and we also need to replace `a+=b` with `a*=b` in the definition of `reduce`. We get the following code:
+To demonstrate the effect of the *idempotent element*, we will now compute product of all elements of the vector. The *idempotent element* is one for multiplication and we also need to replace `a+b` with `a*b` in the definition of `reduce`. We get the following code:
 
 \include ProductExample.cpp
 
@@ -59,7 +59,7 @@ leading to output like this:
 
 \include ProductExample.out
 
-Product of vector elements can be computed using fuction `product(v)`.
+Product of vector elements can be computed using fuction [`product(v)`](../html/namespaceTNL.html#ac11e1901681d36b19a0ad3c6f167a718).
 
 ### Scalar product<a name="flexible_parallel_reduction_scalar_product"></a>
 
@@ -71,7 +71,7 @@ The result is:
 
 \include ScalarProductExample.out
 
-Scalar product of vectors `u` and `v` can be in TNL computed by `dot(u,v)` or simply as `(u,v)`.
+Scalar product of vectors `u` and `v` can be in TNL computed by [`dot(u,v)`](../html/namespaceTNL.html#ab49c6303cbe48c65ca350389460c2e40) or simply as [`(u,v)`](../html/namespaceTNL_1_1Containers.html#a6453777fc16ef91a3c309338cd18dd0c).
 
 ### Maxium norm<a name="flexible_parallel_reduction_maximum_norm"></a>
 
@@ -83,7 +83,7 @@ The output is:
 
 \include MaximumNormExample.out
 
-Maximum norm in TNL computes function `maxNorm(v)`.
+Maximum norm in TNL computes function [`maxNorm(v)`](../html/namespaceTNL.html#acea36b20e471c597fb21bc2b996bbb04).
 
 ### Vectors comparison<a name="flexible_parallel_reduction_vector_comparison"></a>
 

@@ -17,8 +17,12 @@
 namespace TNL {
 namespace Containers {
 
-////
-// Addition
+/**
+ * \brief Addition of vector and vector expression.
+ * @param a
+ * @param b
+ * @return 
+ */
 template< typename Real, typename Device, typename Index, typename Allocator, typename ET,
           typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 auto
@@ -493,6 +497,13 @@ operator-( const Vector< Real, Device, Index, Allocator >& a )
 
 ////
 // Scalar product
+/**
+ * \brief Computes scalar product of vector and vector expression.
+ * 
+ * @param a input vector
+ * @param b input vector expression
+ * @return scalar product of vector and vector expression
+ */
 template< typename Real, typename Device, typename Index, typename Allocator, typename ET,
           typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 Real
@@ -631,6 +642,13 @@ max( const Containers::Vector< Real1, Device, Index, Allocator >& a, const Conta
 
 ////
 // Dot product - the same as scalar product, just for convenience
+/**
+ * \brief Computes scalar product of vector and vector expression.
+ * 
+ * @param a input vector
+ * @param b input vector expression
+ * @return scalar product of vector and vector expression
+ */
 template< typename Real, typename Device, typename Index, typename Allocator, typename ET,
           typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
 auto
@@ -948,6 +966,12 @@ argMax( const Containers::Vector< Real, Device, Index, Allocator >& a )
    return Containers::Expressions::ExpressionArgMax( a.getConstView() );
 }
 
+/**
+ * \brief Computes sum of all vector elements.
+ * 
+ * @param a input vector
+ * @return sum of all vector elements
+ */
 template< typename Real,
           typename Device,
           typename Index, typename Allocator >
@@ -957,6 +981,12 @@ sum( const Containers::Vector< Real, Device, Index, Allocator >& a )
    return Containers::Expressions::ExpressionSum( a.getConstView() );
 }
 
+/**
+ * \brief Computes maximum norm of a vector.
+ * 
+ * @param a input vector
+ * @return  maximum norm
+ */
 template< typename Real,
           typename Device,
           typename Index, typename Allocator >
@@ -1000,6 +1030,11 @@ lpNorm( const Containers::Vector< Real, Device, Index, Allocator >& a, const Rea
    return TNL::pow( Containers::Expressions::ExpressionLpNorm( a.getConstView(), p ), 1.0 / p );
 }
 
+/**
+ * \brief Computes product of all vector elements.
+ * @param a
+ * @return 
+ */
 template< typename Real,
           typename Device,
           typename Index, typename Allocator >
