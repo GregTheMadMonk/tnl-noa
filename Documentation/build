@@ -32,7 +32,9 @@ rm -rf ./html/
 
 # Assemble environment variables which are used in the Doxyfile
 if [[ "$CI_COMMIT_REF_NAME" == "" ]]; then
-   _branch=$(git branch --show-current)
+   # The following works only with newer versions of git, not in 2.19.1 for example
+   #_branch=$(git branch --show-current)
+   _branch=$(git rev-parse --abbrev-ref HEAD)
 else
    _branch="$CI_COMMIT_REF_NAME"
 fi
