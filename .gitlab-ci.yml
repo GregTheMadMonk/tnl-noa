@@ -77,6 +77,7 @@ stages:
             - src/**/*.{h,hpp,cpp,cu}
             - Documentation/Tutorials/**/*.{h,hpp,cpp,cu}
             - "**/CMakeLists.txt"
+            - .gitlab-ci.yml
 
 # Dummy build job to ensure that a pipeline is created for a merge request, even
 # when there were no changes.
@@ -90,6 +91,7 @@ dummy build job:
             - src/**/*.{h,hpp,cpp,cu}
             - Documentation/Tutorials/**/*.{h,hpp,cpp,cu}
             - "**/CMakeLists.txt"
+            - .gitlab-ci.yml
 
 # Cuda builds are specified first because they take more time than host-only builds,
 # which can be allocated on hosts whitout GPUs.
@@ -401,6 +403,7 @@ build documentation:
         changes:
             - Documentation/**/*
             - src/TNL/**/*.{h,hpp}
+            - .gitlab-ci.yml
     script:
         - ./Documentation/build
     artifacts:
@@ -412,6 +415,10 @@ build documentation:
 deploy documentation:
     stage: deploy
     only:
+        changes:
+            - Documentation/**/*
+            - src/TNL/**/*.{h,hpp}
+            - .gitlab-ci.yml
         variables:
             - $TNL_DOC_DEPLOY_KEY
         refs:
