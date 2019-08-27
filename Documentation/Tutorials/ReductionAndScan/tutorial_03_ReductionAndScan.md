@@ -251,4 +251,10 @@ In addition to common scan, we need to encode the segments of the input sequence
 [1,0,0,1,0,0,0,1,0,1,0,0, 0, 0]
 [1,3,5,2,4,6,9,3,5,3,6,9,12,15]
 ```
+**Note: Segmented scan is not implemented for CUDA yet.**
 
+\include SegmentedScanExample.cpp
+
+The result reads as:
+
+\include SegmentedScanExample.out

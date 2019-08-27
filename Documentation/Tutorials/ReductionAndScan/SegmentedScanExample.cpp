@@ -11,7 +11,7 @@ using namespace TNL::Containers;
 using namespace TNL::Containers::Algorithms;
 
 template< typename Device >
-void scan( Vector< double, Device >& v )
+void segmentedScan( Vector< double, Device >& v, Vector< bool, Device >& flags )
 {
    /***
     * Reduction is sum of two numbers.
@@ -23,29 +23,31 @@ void scan( Vector< double, Device >& v )
     * where the scan is performed, lambda function which is used by the scan and
     * zero element (idempotent) of the 'sum' operation.
     */
-   Scan< Device >::perform( v, 0, v.getSize(), reduce, 0.0 );
+   SegmentedScan< Device >::perform( v, flags, 0, v.getSize(), reduce, 0.0 );
 }
 
 int main( int argc, char* argv[] )
 {
    /***
-    * Firstly, test the prefix sum with vectors allocated on CPU.
+    * Firstly, test the segmented prefix sum with vectors allocated on CPU.
     */
-   Vector< double, Devices::Host > host_v( 10 );
-   host_v = 1.0;
-   std::cout << "host_v = " << host_v << std::endl;
-   scan( host_v );
-   std::cout << "The prefix sum of the host vector is " << host_v << "." << std::endl;
+   Vector< bool, Devices::Host > host_flags{ 1,0,0,1,0,0,0,1,0,1,0,0, 0, 0 };
+   Vector< double, Devices::Host > host_v { 1,3,5,2,4,6,9,3,5,3,6,9,12,15 };
+   std::cout << "host_flags = " << host_flags << std::endl;
+   std::cout << "host_v     = " << host_v << std::endl;
+   segmentedScan( host_v, host_flags );
+   std::cout << "The segmented prefix sum of the host vector is " << host_v << "." << std::endl;
 
    /***
     * And then also on GPU.
     */
 #ifdef HAVE_CUDA
-   Vector< double, Devices::Cuda > cuda_v( 10 );
-   cuda_v = 1.0;
-   std::cout << "cuda_v = " << cuda_v << std::endl;
-   scan( cuda_v );
-   std::cout << "The prefix sum of the CUDA vector is " << cuda_v << "." << std::endl;
+   //Vector< bool, Devices::Cuda > cuda_flags{ 1,0,0,1,0,0,0,1,0,1,0,0, 0, 0 };
+   //Vector< double, Devices::Cuda > cuda_v { 1,3,5,2,4,6,9,3,5,3,6,9,12,15 };
+   //std::cout << "cuda_flags = " << cuda_flags << std::endl;
+   //std::cout << "cuda_v     = " << cuda_v << std::endl;
+   //segmentedScan( cuda_v, cuda_flags );
+   //std::cout << "The segmnted prefix sum of the CUDA vector is " << cuda_v << "." << std::endl;
 #endif
    return EXIT_SUCCESS;
 }

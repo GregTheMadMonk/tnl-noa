@@ -23,6 +23,8 @@ IF( BUILD_CUDA )
    ADD_CUSTOM_COMMAND( COMMAND ScanExample > ScanExample.out OUTPUT ScanExample.out )
    CUDA_ADD_EXECUTABLE( ExclusiveScanExample ExclusiveScanExample.cu )
    ADD_CUSTOM_COMMAND( COMMAND ExclusiveScanExample > ExclusiveScanExample.out OUTPUT ExclusiveScanExample.out )
+   CUDA_ADD_EXECUTABLE( SegmentedScanExample SegmentedScanExample.cu )
+   ADD_CUSTOM_COMMAND( COMMAND SegmentedScanExample > SegmentedScanExample.out OUTPUT SegmentedScanExample.out )
 ENDIF()
 
 IF( BUILD_CUDA )
@@ -36,7 +38,8 @@ ADD_CUSTOM_TARGET( TutorialsReduction-cuda ALL DEPENDS
    MapReduceExample-1.out
    MapReduceExample-2.out
    MapReduceExample-3.out
-   ReductionWithArgument.out 
-   ScanExample.out  
-   ExclusiveScanExample.out )
+   ReductionWithArgument.out
+   ScanExample.out
+   ExclusiveScanExample.out
+   SegmentedScanExample.out )
 ENDIF()
