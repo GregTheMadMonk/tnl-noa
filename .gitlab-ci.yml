@@ -12,6 +12,7 @@ before_script:
 # same job.
 stages:
     - build
+    - doc_build
     - deploy
 
 # default flags for cmake
@@ -134,6 +135,10 @@ cuda_examples_Debug:
         WITH_CUDA: "yes"
         BUILD_TYPE: Debug
         WITH_EXAMPLES: "yes"
+    # store output snippets for documentation
+    artifacts:
+        paths:
+            - Documentation/output_snippets/
 
 cuda_examples_Release:
     <<: *build_template
@@ -398,12 +403,15 @@ mpi_benchmarks_tools_python_Release:
 
 
 build documentation:
-    stage: build
+    stage: doc_build
     only:
         changes:
             - Documentation/**/*
             - src/TNL/**/*.{h,hpp}
             - .gitlab-ci.yml
+    dependencies:
+        # the job which builds Documentation/output_snippets/
+        - cuda_examples_Debug
     script:
         - ./Documentation/build
     artifacts:

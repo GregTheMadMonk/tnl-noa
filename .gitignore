@@ -3,6 +3,7 @@
 /Release
 /Testing
 /Documentation/html/
+/Documentation/output_snippets/
 /CMakeLists.txt.user
 /Build
 /coverage_report
