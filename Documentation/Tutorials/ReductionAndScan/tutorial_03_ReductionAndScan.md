@@ -15,6 +15,8 @@ This tutorial introduces flexible parallel reduction in TNL. It shows how to eas
    7. [Simple Mask and Reduce](#flexible_parallel_reduction_simple_mask_and_reduce)
    8. [Reduction with argument](#flexible_parallel_reduction_with_argument)
 2. [Flexible Scan](#flexible_scan)
+   1. [Inclusive and exclusive scna](#inclusive_and_exclusive_scan)
+   2. [Segmented scan](#segmented_scan)
 
 ## Flexible parallel reduction<a name="flexible_parallel_reduction"></a>
 
@@ -168,6 +170,7 @@ The result looks as:
 
 ## Flexible scan<a name="flexible_scan"></a>
 
+### Inclusive and exclusive scan<a name="inclusive_and_exclusive_scan"></a>
 Inclusive scan (or prefix sum) operation turns a sequence \f$a_1, \ldots, a_n\f$ into a sequence \f$s_1, \ldots, s_n\f$ defined as
 
 \f[
@@ -179,6 +182,24 @@ Exclusive scan (or prefix sum) is defined as
 \f[
 \sigma_i = \sum_{j=1}^{i-1} a_i.
 \f]
+
+For example, inclusive prefix sum of
+
+```
+[1,3,5,7,9,11,13]
+```
+
+is
+
+```
+[1,4,9,16,25,36,49]
+```
+
+and exclusive prefix sum of the same sequence is
+
+```
+[0,1,4,9,16,25,36]
+```
 
 Both kinds of [scan](https://en.wikipedia.org/wiki/Prefix_sum) are usually applied only on sumation, however product or logical operations could be handy as well. In TNL, prefix sum is implemented in simillar way as reduction and so it can be easily modified by lambda functions. The following example shows how it works:
 
@@ -198,8 +219,36 @@ Scan< Device, ScanType::Exclusive >::perform( v, 0, v.getSize(), reduce, 0.0 );
 
 The complete example looks as follows:
 
-\include ExclusivePrefixSum.cpp
+\include ExclusiveScanExample.cpp
 
 And the result looks as:
 
-\include ExcluxivePrefixSum.out
+\include ExclusiveScanExample.out
+
+### Segmented scan<a name="segmented_scan"></a>
+
+Segmented scan is a modification of common scan. In this case the sequence of numbers in hand is divided into segments like this, for example
+
+```
+[1,3,5][2,4,6,9][3,5],[3,6,9,12,15]
+```
+
+and we want to compute inclusive or exclusive scan of each segment. For inclusive segmented prefix sum we get
+
+```
+[1,4,9][2,6,12,21][3,8][3,9,18,30,45]
+```
+
+and for exclusive segmented prefix sum it is
+
+```
+[0,1,4][0,2,6,12][0,3][0,3,9,18,30]
+```
+
+In addition to common scan, we need to encode the segments of the input sequence. It is done by auxiliary flags array (it can be array of booleans) having one at the begining of each segment and zeros on all other positions. In our example, it would be like this:
+
+```
+[1,0,0,1,0,0,0,1,0,1,0,0, 0, 0]
+[1,3,5,2,4,6,9,3,5,3,6,9,12,15]
+```
+
