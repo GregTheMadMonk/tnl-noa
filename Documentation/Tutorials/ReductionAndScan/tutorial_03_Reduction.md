@@ -168,7 +168,7 @@ The result looks as:
 
 ## Flexible scan<a name="flexible_scan"></a>
 
-Inclusive scan ( or prefix sum) operation turns a sequence \f$a_1, \ldots, a_n\f$ into a sequence \f$s_1, \ldots, s_n\f$ defined as
+Inclusive scan (or prefix sum) operation turns a sequence \f$a_1, \ldots, a_n\f$ into a sequence \f$s_1, \ldots, s_n\f$ defined as
 
 \f[
 s_i = \sum_{j=1}^i a_i.
@@ -180,10 +180,26 @@ Exclusive scan (or prefix sum) is defined as
 \sigma_i = \sum_{j=1}^{i-1} a_i.
 \f]
 
-Both kinds of [scans](https://en.wikipedia.org/wiki/Prefix_sum)) are usually applied only on sumation, however product or logical operations could be handy as well. In TNL, prefix sum is implemented in simillar way as reduction and so it can be easily modified by lambda functions. The following example shows how it works:
+Both kinds of [scan](https://en.wikipedia.org/wiki/Prefix_sum) are usually applied only on sumation, however product or logical operations could be handy as well. In TNL, prefix sum is implemented in simillar way as reduction and so it can be easily modified by lambda functions. The following example shows how it works:
 
 \include ScanExample.cpp
+
+Scan does not use `fetch` function because the scan must be performed on a vector (the first parameter we pass to the scan). Its complexity is also higher compared to reduction. Thus if one needs to do some operation with the vector elements before the scan, this can be done explicitly and it will not affect the performance significantlty. On the other hand, the scan function takes interval of the vector elements where the scan is performed as its second and third argument. The next argument is the operation to be performed by the scan and the last parameter is the idempotent ("zero") element if the operation.
 
 The result looks as:
 
 \include ScanExample.out
+
+Exclusive scan works the same way, we just need to specify it by the second template parameter which is set to `ScanType::Exclusive`. The call of the scan then looks as
+
+```
+Scan< Device, ScanType::Exclusive >::perform( v, 0, v.getSize(), reduce, 0.0 );
+``` 
+
+The complete example looks as follows:
+
+\include ExclusivePrefixSum.cpp
+
+And the result looks as:
+
+\include ExcluxivePrefixSum.out
