@@ -44,32 +44,32 @@ TEST( DistributedGridMPIIO, Load_3D )
 #ifdef HAVE_CUDA
     TEST( DistributedGridMPIIO, Save_1D_GPU )
     {
-        TestDistributedGridMPIIO<1,Cuda>::TestSave();
+        TestDistributedGridMPIIO<1,Devices::Cuda>::TestSave();
     }
 
     TEST( DistributedGridMPIIO, Save_2D_GPU )
     {
-        TestDistributedGridMPIIO<2,Cuda>::TestSave();
+        TestDistributedGridMPIIO<2,Devices::Cuda>::TestSave();
     }
 
     TEST( DistributedGridMPIIO, Save_3D_GPU )
     {
-        TestDistributedGridMPIIO<3,Cuda>::TestSave();
+        TestDistributedGridMPIIO<3,Devices::Cuda>::TestSave();
     }
 
     TEST( DistributedGridMPIIO, Load_1D_GPU )
     {
-        TestDistributedGridMPIIO<1,Cuda>::TestLoad();
+        TestDistributedGridMPIIO<1,Devices::Cuda>::TestLoad();
     }
 
     TEST( DistributedGridMPIIO, Load_2D_GPU )
     {
-        TestDistributedGridMPIIO<2,Cuda>::TestLoad();
+        TestDistributedGridMPIIO<2,Devices::Cuda>::TestLoad();
     }
 
     TEST( DistributedGridMPIIO, Load_3D_GPU )
     {
-        TestDistributedGridMPIIO<3,Cuda>::TestLoad();
+        TestDistributedGridMPIIO<3,Devices::Cuda>::TestLoad();
     }
 #endif
 
