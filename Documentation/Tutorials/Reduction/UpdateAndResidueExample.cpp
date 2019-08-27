@@ -11,14 +11,13 @@ template< typename Device >
 double updateAndResidue( Vector< double, Device >& u, const Vector< double, Device >& delta_u, const double& tau )
 {
    auto u_view = u.getView();
-   auto delta_u_view = delta_u.getView();
+   auto delta_u_view = delta_u.getConstView();
    auto fetch = [=] __cuda_callable__ ( int i ) mutable ->double {
       const double& add = delta_u_view[ i ];
       u_view[ i ] += tau * add;
       return add * add; };
-   auto reduce = [] __cuda_callable__ ( double& a, const double& b ) { a += b; };
-   auto volatileReduce = [=] __cuda_callable__ ( volatile double& a, const volatile double& b ) { a += b; };
-   return sqrt( Reduction< Device >::reduce( u_view.getSize(), reduce, volatileReduce, fetch, 0.0 ) );
+   auto reduce = [] __cuda_callable__ ( const double& a, const double& b ) { return a + b; };
+   return sqrt( Reduction< Device >::reduce( u_view.getSize(), reduce, fetch, 0.0 ) );
 }
 
 int main( int argc, char* argv[] )

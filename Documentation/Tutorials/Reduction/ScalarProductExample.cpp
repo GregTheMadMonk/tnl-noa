@@ -10,16 +10,15 @@ using namespace TNL::Containers::Algorithms;
 template< typename Device >
 double scalarProduct( const Vector< double, Device >& u, const Vector< double, Device >& v )
 {
-   auto u_view = u.getView();
-   auto v_view = v.getView();
+   auto u_view = u.getConstView();
+   auto v_view = v.getConstView();
 
    /***
     * Fetch computes product of corresponding elements of both vectors.
     */
    auto fetch = [=] __cuda_callable__ ( int i ) { return u_view[ i ] * v_view[ i ]; };
-   auto reduce = [] __cuda_callable__ ( double& a, const double& b ) { a += b; };
-   auto volatileReduce = [=] __cuda_callable__ ( volatile double& a, const volatile double& b ) { a += b; };
-   return Reduction< Device >::reduce( v_view.getSize(), reduce, volatileReduce, fetch, 0.0 );
+   auto reduce = [] __cuda_callable__ ( const double& a, const double& b ) { return a + b; };
+   return Reduction< Device >::reduce( v_view.getSize(), reduce, fetch, 0.0 );
 }
 
 int main( int argc, char* argv[] )

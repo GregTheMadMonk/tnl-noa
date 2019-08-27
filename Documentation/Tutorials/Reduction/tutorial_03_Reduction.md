@@ -37,12 +37,6 @@ As can be seen, we split the reduction into two steps:
    3. Perform another secondary operation simoultanously with the parallel reduction.
 2. `reduce` is operation we want to do after the data fetch. Usually it is summation, multiplication, evaluation of minimum or maximum or some logical operation.
 
-For the purpose of the CUDA parallel reduction, we need to provide also volatile variant of `reduce` (this could be hopefully avoided in future when `nvcc` supports generic lambdas better): 
-
-\include SequentialSumWithLambdas-2.cpp
-
-The difference is only in the lambda function parameters definition, they are `volatile` now.
-
 Putting everything together gives the following example:
 
 \include SumExample.cpp
@@ -57,8 +51,8 @@ Sum of vector elements can be also obtained as `sum(v)`.
 
 ### Product<a name="flexible_parallel_reduction_product"></a>
 
-To demonstrate the effect of the *idempotent element*, we will now compute product of all elements of the vector. The *idempotent element* is one for multiplication and we also need to replace `a+=b` with `a*=b` in the definition of `reduce` and `volatileReduce`. We get the following code:
-i
+To demonstrate the effect of the *idempotent element*, we will now compute product of all elements of the vector. The *idempotent element* is one for multiplication and we also need to replace `a+=b` with `a*=b` in the definition of `reduce`. We get the following code:
+
 \include ProductExample.cpp
 
 leading to output like this:

@@ -14,9 +14,8 @@ double maskAndReduce( Vector< double, Device >& u )
    auto u_view = u.getView();
    auto fetch = [=] __cuda_callable__ ( int i )->double {
       return u_view[ 2 * i ]; };
-   auto reduce = [] __cuda_callable__ ( double& a, const double& b ) { a += b; };
-   auto volatileReduce = [=] __cuda_callable__ ( volatile double& a, const volatile double& b ) { a += b; };
-   return Reduction< Device >::reduce( u_view.getSize() / 2, reduce, volatileReduce, fetch, 0.0 );
+   auto reduce = [] __cuda_callable__ ( const double& a, const double& b ) { return a + b; };
+   return Reduction< Device >::reduce( u_view.getSize() / 2, reduce, fetch, 0.0 );
 }
 
 int main( int argc, char* argv[] )

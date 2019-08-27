@@ -10,8 +10,8 @@ using namespace TNL::Containers::Algorithms;
 template< typename Device >
 bool comparison( const Vector< double, Device >& u, const Vector< double, Device >& v )
 {
-   auto u_view = u.getView();
-   auto v_view = v.getView();
+   auto u_view = u.getConstView();
+   auto v_view = v.getConstView();
 
    /***
     * Fetch compares corresponding elements of both vectors
@@ -21,9 +21,8 @@ bool comparison( const Vector< double, Device >& u, const Vector< double, Device
    /***
     * Reduce performs logical AND on intermediate results obtained by fetch.
     */
-   auto reduce = [] __cuda_callable__ ( bool& a, const bool& b ) { a = ( a && b ); };
-   auto volatileReduce = [=] __cuda_callable__ ( volatile bool& a, const volatile bool& b ) { a = ( a && b ); };
-   return Reduction< Device >::reduce( v_view.getSize(), reduce, volatileReduce, fetch, true );
+   auto reduce = [] __cuda_callable__ ( const bool& a, const bool& b ) { return a && b; };
+   return Reduction< Device >::reduce( v_view.getSize(), reduce, fetch, true );
 }
 
 int main( int argc, char* argv[] )

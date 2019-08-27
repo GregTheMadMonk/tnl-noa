@@ -16,25 +16,24 @@ double sum( const Vector< double, Device >& v )
    /****
     * Get vector view which can be captured by lambda.
     */
-   auto view = v.getView();
+   auto view = v.getConstView();
 
    /****
     * The fetch function just reads elements of vector v.
     */
-   auto fetch = [=] __cuda_callable__ ( int i ) { return view[ i ]; };
+   auto fetch = [=] __cuda_callable__ ( int i ) -> double { return view[ i ]; };
 
    /***
     * Reduction is sum of two numbers.
     */
-   auto reduce = [] __cuda_callable__ ( double& a, const double& b ) { a += b; };
-   auto volatileReduce = [] __cuda_callable__ ( volatile double& a, const volatile double& b ) { a += b; };
+   auto reduce = [] __cuda_callable__ ( const double& a, const double& b ) { return a + b; };
 
    /***
     * Finally we call the templated function Reduction and pass number of elements to reduce,
     * lambdas defined above and finally value of idempotent element, zero in this case, which serve for the
     * reduction initiation.
     */
-   return Reduction< Device >::reduce( view.getSize(), reduce, volatileReduce, fetch, 0.0 );
+   return Reduction< Device >::reduce( view.getSize(), reduce, fetch, 0.0 );
 }
 
 int main( int argc, char* argv[] )

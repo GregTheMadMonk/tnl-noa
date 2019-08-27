@@ -22,10 +22,9 @@ class ReductionClass
          ViewType view = v.getView();
          
          auto fetch = [=] __cuda_callable__ ( int i ) { return view[ i ]; };
-         auto reduce = [] __cuda_callable__ ( double& a, const double& b ) { a += b; };
-         auto volatileReduce = [] __cuda_callable__ ( volatile double& a, const volatile double& b ) { a += b; };
+         auto reduce = [] __cuda_callable__ ( const double& a, const double& b ) { return a + b; };
 
-         return Reduction< Device >::reduce( view.getSize(), reduce, volatileReduce, fetch, 0.0 );
+         return Reduction< Device >::reduce( view.getSize(), reduce, fetch, 0.0 );
          
       }
 };
