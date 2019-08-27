@@ -27,14 +27,14 @@ template< typename Real,
           typename Reduction,
           typename Index >
 __global__ void
-cudaFirstPhaseBlockScan( const ScanType ScanType,
-                              Reduction reduction,
-                              const Real zero,
-                              const Index size,
-                              const int elementsInBlock,
-                              const Real* input,
-                              Real* output,
-                              Real* auxArray )
+cudaFirstPhaseBlockScan( const ScanType scanType,
+                         Reduction reduction,
+                         const Real zero,
+                         const Index size,
+                         const int elementsInBlock,
+                         const Real* input,
+                         Real* output,
+                         Real* auxArray )
 {
    Real* sharedData = TNL::Devices::Cuda::getSharedMemory< Real >();
    Real* auxData = &sharedData[ elementsInBlock + elementsInBlock / Devices::Cuda::getNumberOfSharedMemoryBanks() + 2 ];
@@ -48,7 +48,7 @@ cudaFirstPhaseBlockScan( const ScanType ScanType,
     */
    const int blockOffset = blockIdx.x * elementsInBlock;
    int idx = threadIdx.x;
-   if( ScanType == ScanType::Exclusive )
+   if( scanType == ScanType::Exclusive )
    {
       if( idx == 0 )
          sharedData[ 0 ] = zero;
@@ -145,7 +145,7 @@ cudaFirstPhaseBlockScan( const ScanType ScanType,
 
    if( threadIdx.x == 0 )
    {
-      if( ScanType == ScanType::Exclusive )
+      if( scanType == ScanType::Exclusive )
       {
          auxArray[ blockIdx.x ] = reduction( sharedData[ Devices::Cuda::getInterleaving( lastElementInBlock - 1 ) ],
                                              sharedData[ Devices::Cuda::getInterleaving( lastElementInBlock ) ] );
@@ -179,7 +179,7 @@ cudaSecondPhaseBlockScan( Reduction reduction,
    }
 }
 
-template< ScanType ScanType,
+template< ScanType scanType,
           typename Real,
           typename Index >
 struct CudaScanKernelLauncher
@@ -271,7 +271,7 @@ struct CudaScanKernelLauncher
                                             elementsInBlock / Devices::Cuda::getNumberOfSharedMemoryBanks() + 2;
          const std::size_t sharedMemory = ( sharedDataSize + blockSize + Devices::Cuda::getWarpSize() ) * sizeof( Real );
          cudaFirstPhaseBlockScan<<< cudaGridSize, cudaBlockSize, sharedMemory >>>
-            ( ScanType,
+            ( scanType,
               reduction,
               zero,
               currentSize,
@@ -306,7 +306,7 @@ struct CudaScanKernelLauncher
    }
 
    /****
-    * \brief Performs the seocond phase of prefix sum.
+    * \brief Performs the second phase of prefix sum.
     *
     * \param size  Number of elements to be scanned.
     * \param deviceOutput  Pointer to output array on GPU.
