@@ -9,14 +9,13 @@ using namespace TNL::Containers;
 using namespace TNL::Containers::Algorithms;
 
 template< typename Device >
-double maskAndReduce( Vector< double, Device >& u )
+double mapReduce( Vector< double, Device >& u )
 {
    auto u_view = u.getView();
    auto fetch = [=] __cuda_callable__ ( int i )->double {
-      if( i % 2 == 0 ) return u_view[ i ];
-      return 0.0; };
+      return u_view[ 2 * i ]; };
    auto reduce = [] __cuda_callable__ ( const double& a, const double& b ) { return a + b; };
-   return Reduction< Device >::reduce( u_view.getSize(), reduce, fetch, 0.0 );
+   return Reduction< Device >::reduce( u_view.getSize() / 2, reduce, fetch, 0.0 );
 }
 
 int main( int argc, char* argv[] )
@@ -25,15 +24,15 @@ int main( int argc, char* argv[] )
    Vector< double, Devices::Host > host_u( 100000 );
    host_u = 1.0;
    timer.start();
-   double result = maskAndReduce( host_u );
+   double result = mapReduce( host_u );
    timer.stop();
-   std::cout << "Host tesult is:" << result << ". It took " << timer.getRealTime() << "seconds." << std::endl;
+   std::cout << "Host result is:" << result << ". It took " << timer.getRealTime() << "seconds." << std::endl;
 #ifdef HAVE_CUDA
    Vector< double, Devices::Cuda > cuda_u( 100000 );
    cuda_u = 1.0;
    timer.reset();
    timer.start();
-   result = maskAndReduce( cuda_u );
+   result = mapReduce( cuda_u );
    timer.stop();
    std::cout << "CUDA result is:" << result << ". It took " << timer.getRealTime() << "seconds." << std::endl;
 #endif

@@ -1,1 +1,0 @@
-ReductionInMethodsExample.cpp

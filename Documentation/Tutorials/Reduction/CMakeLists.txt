@@ -11,14 +11,14 @@ IF( BUILD_CUDA )
    ADD_CUSTOM_COMMAND( COMMAND ComparisonExample > ComparisonExample.out OUTPUT ComparisonExample.out )
    CUDA_ADD_EXECUTABLE( UpdateAndResidueExample UpdateAndResidueExample.cu )
    ADD_CUSTOM_COMMAND( COMMAND UpdateAndResidueExample > UpdateAndResidueExample.out OUTPUT UpdateAndResidueExample.out )
-   CUDA_ADD_EXECUTABLE( MaskAndReduceExample-1 MaskAndReduceExample-1.cu )
-   ADD_CUSTOM_COMMAND( COMMAND MaskAndReduceExample-1 > MaskAndReduceExample-1.out OUTPUT MaskAndReduceExample-1.out )
-   CUDA_ADD_EXECUTABLE( MaskAndReduceExample-2 MaskAndReduceExample-2.cu )
-   ADD_CUSTOM_COMMAND( COMMAND MaskAndReduceExample-2 > MaskAndReduceExample-2.out OUTPUT MaskAndReduceExample-2.out )
-   CUDA_ADD_EXECUTABLE( MaskAndReduceExample-3 MaskAndReduceExample-3.cu )
-   ADD_CUSTOM_COMMAND( COMMAND MaskAndReduceExample-3 > MaskAndReduceExample-3.out OUTPUT MaskAndReduceExample-3.out )
-   ADD_EXECUTABLE( ReductionInMethodsExample ReductionInMethodsExample.cpp )
-   ADD_CUSTOM_COMMAND( COMMAND ReductionInMethodsExample > ReductionInMethodsExample.out OUTPUT ReductionInMethodsExample.out )
+   CUDA_ADD_EXECUTABLE( MapReduceExample-1 MapReduceExample-1.cu )
+   ADD_CUSTOM_COMMAND( COMMAND MapReduceExample-1 > MapReduceExample-1.out OUTPUT MapReduceExample-1.out )
+   CUDA_ADD_EXECUTABLE( MapReduceExample-2 MapReduceExample-2.cu )
+   ADD_CUSTOM_COMMAND( COMMAND MapReduceExample-2 > MapReduceExample-2.out OUTPUT MapReduceExample-2.out )
+   CUDA_ADD_EXECUTABLE( MapReduceExample-3 MapReduceExample-3.cu )
+   ADD_CUSTOM_COMMAND( COMMAND MapReduceExample-3 > MapReduceExample-3.out OUTPUT MapReduceExample-3.out )
+   CUDA_ADD_EXECUTABLE( ReductionWithArgument ReductionWithArgument.cu )
+   ADD_CUSTOM_COMMAND( COMMAND ReductionWithArgument > ReductionWithArgument.out OUTPUT ReductionWithArgument.out )
 ENDIF()
 
 IF( BUILD_CUDA )
@@ -29,8 +29,8 @@ ADD_CUSTOM_TARGET( TutorialsReduction-cuda ALL DEPENDS
    MaximumNormExample.out 
    ComparisonExample.out
    UpdateAndResidueExample.out
-   MaskAndReduceExample-1.out
-   MaskAndReduceExample-2.out
-   MaskAndReduceExample-3.out
-   ReductionInMethodsExample.out )
+   MapReduceExample-1.out
+   MapReduceExample-2.out
+   MapReduceExample-3.out
+   ReductionWithArgument.out )
 ENDIF()

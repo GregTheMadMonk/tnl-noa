@@ -32,10 +32,10 @@ void expressions()
    auto arg_max_a = argMax( a );
    auto arg_min_b = argMin( b );
    auto arg_max_b = argMax( b );
-   std::cout << "min( a ) = " << arg_min_a.first << " at " << arg_min_a.second << std::endl;
-   std::cout << "max( a ) = " << arg_max_a.first << " at " << arg_max_a.second << std::endl;
-   std::cout << "min( b ) = " << arg_min_b.first << " at " << arg_min_b.second << std::endl;
-   std::cout << "max( b ) = " << arg_max_b.first << " at " << arg_max_b.second << std::endl;
+   std::cout << "min( a ) = " << arg_min_a.second << " at " << arg_min_a.first << std::endl;
+   std::cout << "max( a ) = " << arg_max_a.second << " at " << arg_max_a.first << std::endl;
+   std::cout << "min( b ) = " << arg_min_b.second << " at " << arg_min_b.first << std::endl;
+   std::cout << "max( b ) = " << arg_max_b.second << " at " << arg_max_b.first << std::endl;
    std::cout << "min( abs( b ) ) = " << min( abs( b ) ) << std::endl;
    std::cout << "sum( b ) = " << sum( b ) << std::endl;
    std::cout << "sum( abs( b ) ) = " << sum( abs( b ) ) << std::endl;

@@ -13,7 +13,7 @@ This tutorial introduces flexible parallel reduction in TNL. It shows how to eas
    5. [Vectors comparison](#flexible_parallel_reduction_vector_comparison)
    6. [Update and Residue](#flexible_parallel_reduction_update_and_residue)
    7. [Simple Mask and Reduce](#flexible_parallel_reduction_simple_mask_and_reduce)
-   8. [Using reduction in class methods](#flexible_parallel_reduction_using_reduction_in_class_methods)
+   8. [Reduction with argument](#flexible_parallel_reduction_with_argument)
 
 ## Flexible parallel reduction<a name="flexible_parallel_reduction"></a>
 
@@ -111,9 +111,9 @@ The result reads as:
 
 \include UpdateAndResidueExample.out
 
-### Simple Mask and Reduce<a name="flexible_parallel_reduction_simple_mask_and_reduce"></a>
+### Simple MapReduce<a name="flexible_parallel_reduction_simple_map_reduce"></a>
 
-We can also filter the data to be reduced. This operation is called Mask and Reduce TODO: REF. You simply add necessary if statement to the fetch function, or in the case of the following example we use a statement
+We can also filter the data to be reduced. This operation is called [MapReduce](https://en.wikipedia.org/wiki/MapReduce) . You simply add necessary if statement to the fetch function, or in the case of the following example we use a statement
 
 ```
 return u_view[ i ] > 0.0 ? u_view[ i ] : 0.0;
@@ -121,19 +121,19 @@ return u_view[ i ] > 0.0 ? u_view[ i ] : 0.0;
 
 to sum up only the positive numbers in the vector.
 
-\include MaskAndReduceExample-1.cpp
+\include MapReduceExample-1.cpp
 
 The result is:
 
-\include MaskAndReduceExample-1.out
+\include MapReduceExample-1.out
 
 Take a look at the following example where the filtering depends on the element indexes rather than values:
 
-\include MaskAndReduceExample-2.cpp
+\include MapReduceExample-2.cpp
 
 The result is:
 
-\include MaskAndReduceExample-2.out
+\include MapReduceExample-2.out
 
 This is not very efficient. For half of the elements, we return zero which has no effect during the reductin. Better solution is to run the reduction only for a half of the elements and to change the fetch function to
 
@@ -143,10 +143,26 @@ return u_view[ 2 * i ];
 
 See the following example and compare the execution times.
 
-\include MaskAndReduceExample-3.cpp
+\include MapReduceExample-3.cpp
 
-\include MaskAndReduceExample-3.out
+\include MapReduceExample-3.out
  
-### Using reduction in class methods<a name="flexible_parallel_reduction_using_reduction_in_class_methods"></a>
+### Reduction with argument<a name="flexible_parallel_reduction_with_argument"></a>
 
-TODO:
+In some situations we may need to locate given element in the vector. For example index of the smallest or the largest element. `reductionWithArgument` is a function which can do it. In the following example, we modify function for computing the maximum norm of a vedctor. Instead of just computing the value, now we want to get index of the element having the absolute value equal to the max norm. The lambda function `reduction` do not compute only maximum of two given elements anymore, but it must also compute index of the winner. See the following code:
+
+\include ReductionWithArgument.cpp
+
+The definition of the lambda function `reduction` reads as:
+
+```
+auto reduction = [] __cuda_callable__ ( int& aIdx, const int& bIdx, double& a, const double& b );
+```
+
+In addition to vector elements valuesd `a` and `b`, it gets also their positions `aIdx` and `bIdx`. The functions is responsible to set `a` to maximum of the two and `aIdx` to the position of the larger element. Note, that the parameters have the above mentioned meaning only in case of computing minimum or maximum.
+
+The result looks as:
+
+\include ReductionWithArgument.out
+
+

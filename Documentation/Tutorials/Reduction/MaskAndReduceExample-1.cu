@@ -1,1 +1,0 @@
-MaskAndReduceExample-1.cpp
