@@ -1,5 +1,5 @@
 /***************************************************************************
-                          PrefixSum.h  -  description
+                          Scan.h  -  description
                              -------------------
     begin                : May 9, 2019
     copyright            : (C) 2019 by Tomas Oberhuber et al.
@@ -19,22 +19,22 @@ namespace TNL {
 namespace Containers {
 namespace Algorithms {
 
-enum class PrefixSumType {
+enum class ScanType {
    Exclusive,
    Inclusive
 };
 
 template< typename Device,
-           PrefixSumType Type = PrefixSumType::Inclusive >
-struct PrefixSum;
+           ScanType Type = ScanType::Inclusive >
+struct Scan;
 
 template< typename Device,
-           PrefixSumType Type = PrefixSumType::Inclusive >
-struct SegmentedPrefixSum;
+           ScanType Type = ScanType::Inclusive >
+struct SegmentedScan;
 
 
-template< PrefixSumType Type >
-struct PrefixSum< Devices::Host, Type >
+template< ScanType Type >
+struct Scan< Devices::Host, Type >
 {
    template< typename Vector,
              typename Reduction >
@@ -66,8 +66,8 @@ struct PrefixSum< Devices::Host, Type >
                        const typename Vector::RealType shift );
 };
 
-template< PrefixSumType Type >
-struct PrefixSum< Devices::Cuda, Type >
+template< ScanType Type >
+struct Scan< Devices::Cuda, Type >
 {
    template< typename Vector,
              typename Reduction >
@@ -99,8 +99,8 @@ struct PrefixSum< Devices::Cuda, Type >
                        const typename Vector::RealType shift );
 };
 
-template< PrefixSumType Type >
-struct SegmentedPrefixSum< Devices::Host, Type >
+template< ScanType Type >
+struct SegmentedScan< Devices::Host, Type >
 {
    template< typename Vector,
              typename Reduction,
@@ -114,8 +114,8 @@ struct SegmentedPrefixSum< Devices::Host, Type >
             const typename Vector::RealType zero );
 };
 
-template< PrefixSumType Type >
-struct SegmentedPrefixSum< Devices::Cuda, Type >
+template< ScanType Type >
+struct SegmentedScan< Devices::Cuda, Type >
 {
    template< typename Vector,
              typename Reduction,
@@ -133,4 +133,4 @@ struct SegmentedPrefixSum< Devices::Cuda, Type >
 } // namespace Containers
 } // namespace TNL
 
-#include <TNL/Containers/Algorithms/PrefixSum.hpp>
+#include <TNL/Containers/Algorithms/Scan.hpp>

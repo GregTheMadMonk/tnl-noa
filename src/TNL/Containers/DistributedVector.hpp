@@ -13,7 +13,7 @@
 #pragma once
 
 #include "DistributedVector.h"
-#include <TNL/Containers/Algorithms/DistributedPrefixSum.h>
+#include <TNL/Containers/Algorithms/DistributedScan.h>
 
 namespace TNL {
 namespace Containers {
@@ -298,14 +298,14 @@ template< typename Real,
           typename Device,
           typename Index,
           typename Communicator >
-   template< Algorithms::PrefixSumType Type >
+   template< Algorithms::ScanType Type >
 void
 DistributedVector< Real, Device, Index, Communicator >::
 prefixSum( IndexType begin, IndexType end )
 {
    if( end == 0 )
       end = this->getSize();
-   Algorithms::DistributedPrefixSum< Type >::perform( *this, begin, end, std::plus<>{}, (RealType) 0.0 );
+   Algorithms::DistributedScan< Type >::perform( *this, begin, end, std::plus<>{}, (RealType) 0.0 );
 }
 
 } // namespace Containers

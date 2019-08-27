@@ -127,7 +127,7 @@ public:
              typename = std::enable_if_t< HasSubscriptOperator<Vector>::value > >
    DistributedVectorView& operator/=( const Vector& vector );
 
-   template< Algorithms::PrefixSumType Type = Algorithms::PrefixSumType::Inclusive >
+   template< Algorithms::ScanType Type = Algorithms::ScanType::Inclusive >
    void prefixSum( IndexType begin = 0, IndexType end = 0 );
 };
 

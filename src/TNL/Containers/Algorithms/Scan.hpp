@@ -1,5 +1,5 @@
 /***************************************************************************
-                          PrefixSum.hpp  -  description
+                          Scan.hpp  -  description
                              -------------------
     begin                : Mar 24, 2013
     copyright            : (C) 2013 by Tomas Oberhuber et al.
@@ -12,11 +12,11 @@
 
 #pragma once
 
-#include "PrefixSum.h"
+#include "Scan.h"
 
 #include <TNL/Assert.h>
 #include <TNL/Containers/Array.h>
-#include <TNL/Containers/Algorithms/CudaPrefixSumKernel.h>
+#include <TNL/Containers/Algorithms/CudaScanKernel.h>
 #include <TNL/Exceptions/CudaSupportMissing.h>
 #include <TNL/Exceptions/NotImplementedError.h>
 
@@ -24,11 +24,11 @@ namespace TNL {
 namespace Containers {
 namespace Algorithms {
 
-template< PrefixSumType Type >
+template< ScanType Type >
    template< typename Vector,
              typename Reduction >
 void
-PrefixSum< Devices::Host, Type >::
+Scan< Devices::Host, Type >::
 perform( Vector& v,
          const typename Vector::IndexType begin,
          const typename Vector::IndexType end,
@@ -44,11 +44,11 @@ perform( Vector& v,
 #endif
 }
 
-template< PrefixSumType Type >
+template< ScanType Type >
    template< typename Vector,
              typename Reduction >
 auto
-PrefixSum< Devices::Host, Type >::
+Scan< Devices::Host, Type >::
 performFirstPhase( Vector& v,
                    const typename Vector::IndexType begin,
                    const typename Vector::IndexType end,
@@ -70,7 +70,7 @@ performFirstPhase( Vector& v,
       RealType block_sum = zero;
 
       // perform prefix-sum on blocks statically assigned to threads
-      if( Type == PrefixSumType::Inclusive ) {
+      if( Type == ScanType::Inclusive ) {
          #pragma omp for schedule(static)
          for( IndexType i = begin; i < end; i++ ) {
             block_sum = reduction( block_sum, v[ i ] );
@@ -98,7 +98,7 @@ performFirstPhase( Vector& v,
    // block_sums now contains shift values for each block - to be used in the second phase
    return block_sums;
 #else
-   if( Type == PrefixSumType::Inclusive ) {
+   if( Type == ScanType::Inclusive ) {
       for( IndexType i = begin + 1; i < end; i++ )
          v[ i ] = reduction( v[ i ], v[ i - 1 ] );
    }
@@ -116,12 +116,12 @@ performFirstPhase( Vector& v,
 #endif
 }
 
-template< PrefixSumType Type >
+template< ScanType Type >
    template< typename Vector,
              typename BlockShifts,
              typename Reduction >
 void
-PrefixSum< Devices::Host, Type >::
+Scan< Devices::Host, Type >::
 performSecondPhase( Vector& v,
                     const BlockShifts& blockShifts,
                     const typename Vector::IndexType begin,
@@ -152,11 +152,11 @@ performSecondPhase( Vector& v,
 #endif
 }
 
-template< PrefixSumType Type >
+template< ScanType Type >
    template< typename Vector,
              typename Reduction >
 void
-PrefixSum< Devices::Cuda, Type >::
+Scan< Devices::Cuda, Type >::
 perform( Vector& v,
          const typename Vector::IndexType begin,
          const typename Vector::IndexType end,
@@ -167,7 +167,7 @@ perform( Vector& v,
    using RealType = typename Vector::RealType;
    using IndexType = typename Vector::IndexType;
 
-   CudaPrefixSumKernelLauncher< Type, RealType, IndexType >::perform(
+   CudaScanKernelLauncher< Type, RealType, IndexType >::perform(
       end - begin,
       &v[ begin ],  // input
       &v[ begin ],  // output
@@ -178,11 +178,11 @@ perform( Vector& v,
 #endif
 }
 
-template< PrefixSumType Type >
+template< ScanType Type >
    template< typename Vector,
              typename Reduction >
 auto
-PrefixSum< Devices::Cuda, Type >::
+Scan< Devices::Cuda, Type >::
 performFirstPhase( Vector& v,
                    const typename Vector::IndexType begin,
                    const typename Vector::IndexType end,
@@ -193,7 +193,7 @@ performFirstPhase( Vector& v,
    using RealType = typename Vector::RealType;
    using IndexType = typename Vector::IndexType;
 
-   return CudaPrefixSumKernelLauncher< Type, RealType, IndexType >::performFirstPhase(
+   return CudaScanKernelLauncher< Type, RealType, IndexType >::performFirstPhase(
       end - begin,
       &v[ begin ],  // input
       &v[ begin ],  // output
@@ -204,12 +204,12 @@ performFirstPhase( Vector& v,
 #endif
 }
 
-template< PrefixSumType Type >
+template< ScanType Type >
    template< typename Vector,
              typename BlockShifts,
              typename Reduction >
 void
-PrefixSum< Devices::Cuda, Type >::
+Scan< Devices::Cuda, Type >::
 performSecondPhase( Vector& v,
                     const BlockShifts& blockShifts,
                     const typename Vector::IndexType begin,
@@ -221,7 +221,7 @@ performSecondPhase( Vector& v,
    using RealType = typename Vector::RealType;
    using IndexType = typename Vector::IndexType;
 
-   CudaPrefixSumKernelLauncher< Type, RealType, IndexType >::performSecondPhase(
+   CudaScanKernelLauncher< Type, RealType, IndexType >::performSecondPhase(
       end - begin,
       &v[ begin ],  // output
       blockShifts.getData(),
@@ -233,12 +233,12 @@ performSecondPhase( Vector& v,
 }
 
 
-template< PrefixSumType Type >
+template< ScanType Type >
    template< typename Vector,
              typename Reduction,
              typename Flags >
 void
-SegmentedPrefixSum< Devices::Host, Type >::
+SegmentedScan< Devices::Host, Type >::
 perform( Vector& v,
          Flags& flags,
          const typename Vector::IndexType begin,
@@ -250,7 +250,7 @@ perform( Vector& v,
    using IndexType = typename Vector::IndexType;
 
    // TODO: parallelize with OpenMP
-   if( Type == PrefixSumType::Inclusive )
+   if( Type == ScanType::Inclusive )
    {
       for( IndexType i = begin + 1; i < end; i++ )
          if( ! flags[ i ] )
@@ -271,12 +271,12 @@ perform( Vector& v,
    }
 }
 
-template< PrefixSumType Type >
+template< ScanType Type >
    template< typename Vector,
              typename Reduction,
              typename Flags >
 void
-SegmentedPrefixSum< Devices::Cuda, Type >::
+SegmentedScan< Devices::Cuda, Type >::
 perform( Vector& v,
          Flags& flags,
          const typename Vector::IndexType begin,

@@ -118,20 +118,20 @@ operator/=( const VectorExpression& expression )
 template< typename Real,
           typename Device,
           typename Index >
-   template< Algorithms::PrefixSumType Type >
+   template< Algorithms::ScanType Type >
 void
 VectorView< Real, Device, Index >::
 prefixSum( IndexType begin, IndexType end )
 {
    if( end == 0 )
       end = this->getSize();
-   Algorithms::PrefixSum< DeviceType, Type >::perform( *this, begin, end, std::plus<>{}, (RealType) 0.0 );
+   Algorithms::Scan< DeviceType, Type >::perform( *this, begin, end, std::plus<>{}, (RealType) 0.0 );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-   template< Algorithms::PrefixSumType Type,
+   template< Algorithms::ScanType Type,
              typename FlagsArray >
 void
 VectorView< Real, Device, Index >::
@@ -139,13 +139,13 @@ segmentedPrefixSum( FlagsArray& flags, IndexType begin, IndexType end )
 {
    if( end == 0 )
       end = this->getSize();
-   Algorithms::SegmentedPrefixSum< DeviceType, Type >::perform( *this, flags, begin, end, std::plus<>{}, (RealType) 0.0 );
+   Algorithms::SegmentedScan< DeviceType, Type >::perform( *this, flags, begin, end, std::plus<>{}, (RealType) 0.0 );
 }
 
 template< typename Real,
           typename Device,
           typename Index >
-   template< Algorithms::PrefixSumType Type,
+   template< Algorithms::ScanType Type,
              typename VectorExpression >
 void
 VectorView< Real, Device, Index >::
@@ -157,7 +157,7 @@ prefixSum( const VectorExpression& expression, IndexType begin, IndexType end )
 template< typename Real,
           typename Device,
           typename Index >
-   template< Algorithms::PrefixSumType Type,
+   template< Algorithms::ScanType Type,
              typename VectorExpression,
              typename FlagsArray >
 void

@@ -14,7 +14,7 @@
 
 #include <TNL/Containers/ArrayView.h>
 #include <TNL/Containers/Expressions/ExpressionTemplates.h>
-#include <TNL/Containers/Algorithms/PrefixSum.h>
+#include <TNL/Containers/Algorithms/Scan.h>
 
 namespace TNL {
 namespace Containers {
@@ -198,18 +198,18 @@ public:
     * \param begin Index of the element in this vector view which to begin with.
     * \param end Index of the element in this vector view which to end with.
     */
-   template< Algorithms::PrefixSumType Type = Algorithms::PrefixSumType::Inclusive >
+   template< Algorithms::ScanType Type = Algorithms::ScanType::Inclusive >
    void prefixSum( IndexType begin = 0, IndexType end = 0 );
 
-   template< Algorithms::PrefixSumType Type = Algorithms::PrefixSumType::Inclusive,
+   template< Algorithms::ScanType Type = Algorithms::ScanType::Inclusive,
              typename FlagsArray >
    void segmentedPrefixSum( FlagsArray& flags, IndexType begin = 0, IndexType end = 0 );
 
-   template< Algorithms::PrefixSumType Type = Algorithms::PrefixSumType::Inclusive,
+   template< Algorithms::ScanType Type = Algorithms::ScanType::Inclusive,
              typename VectorExpression >
    void prefixSum( const VectorExpression& expression, IndexType begin = 0, IndexType end = 0 );
 
-   template< Algorithms::PrefixSumType Type = Algorithms::PrefixSumType::Inclusive,
+   template< Algorithms::ScanType Type = Algorithms::ScanType::Inclusive,
              typename VectorExpression,
              typename FlagsArray >
    void segmentedPrefixSum( const VectorExpression& expression, FlagsArray& flags, IndexType begin = 0, IndexType end = 0 );
