@@ -42,11 +42,39 @@ class Vector
 : public Array< Real, Device, Index, Allocator >
 {
 public:
+
+   /**
+    * \brief Type of elements stored in this vector.
+    */
    using RealType = Real;
+
+   /**
+    * \brief Device where the vector is allocated.
+    * 
+    * See \ref Devices::Host or \ref Devices::Cuda.
+    */
    using DeviceType = Device;
+
+   /**
+    * \brief Type being used for the vector elements indexing.
+    */
    using IndexType = Index;
+
+   /**
+    * \brief Allocator type used for allocating this vector.
+    * 
+    * See \ref Allocators::Cuda, \ref Allocators::CudaHost, \ref Allocators::CudaManaged, \ref Allocators::Host or \ref Allocators:Default.
+    */
    using AllocatorType = Allocator;
+
+   /**
+    * \brief Defines the same vector type but allocated on host (CPU).
+    */
    using HostType = Vector< Real, TNL::Devices::Host, Index >;
+
+   /**
+    * \brief Defines the same vector type but allocated on CUDA device (GPU).
+    */
    using CudaType = Vector< Real, TNL::Devices::Cuda, Index >;
    using ViewType = VectorView< Real, Device, Index >;
    using ConstViewType = VectorView< std::add_const_t< Real >, Device, Index >;
@@ -55,23 +83,44 @@ public:
    using Array< Real, Device, Index, Allocator >::Array;
    using Array< Real, Device, Index, Allocator >::operator=;
 
-   //! \brief Constructs an empty array with zero size.
+   /**
+    * \brief Constructs an empty array with zero size.
+    */
    Vector() = default;
-   //! \brief Copy constructor (makes a deep copy).
+
+   /**
+    * \brief Copy constructor (makes a deep copy).
+    */
    explicit Vector( const Vector& ) = default;
-   //! \brief Copy constructor with a specific allocator (makes a deep copy).
+
+   /**
+    * \brief Copy constructor with a specific allocator (makes a deep copy).
+    */
    explicit Vector( const Vector& vector, const AllocatorType& allocator );
-   //! \brief Default move constructor.
+
+   /**
+    * \brief Default move constructor.
+    */
    Vector( Vector&& ) = default;
-   //! \brief Copy-assignment operator for copying data from another vector.
+
+   /**
+    * \brief Copy-assignment operator for copying data from another vector.
+    */
    Vector& operator=( const Vector& ) = default;
-   //! \brief Move-assignment operator for acquiring data from \e rvalues.
+
+   /**
+    * \brief Move-assignment operator for acquiring data from \e rvalues.
+    */
    Vector& operator=( Vector&& ) = default;
 
-   //! \brief Returns a \ref String representation of the vector type in C++ style.
+   /**
+    * \brief Returns a \ref String representation of the vector type in C++ style.
+    */
    static String getType();
 
-   //! \brief Returns a \ref String representation of the vector type in C++ style.
+   /**
+    * \brief Returns a \ref String representation of the vector type in C++ style.
+    */
    virtual String getTypeVirtual() const;
 
    /**
@@ -198,28 +247,71 @@ public:
    Vector& operator/=( const VectorExpression& expression );
 
    /**
-    * \brief Returns specific sums of elements of this vector.
+    * \brief Computes prefix sum of the vector elements.
     *
-    * FIXME: computePrefixSum does not exist
+    * Computes prefix sum for elements within the index range [ \e begin to \e end ).
+    * The other elements of this vector remain unchanged.
     *
-    * Does the same as \ref computePrefixSum, but computes only sums for elements
-    * with the index in range from \e begin to \e end. The other elements of this
-    * vector remain untouched - with the same value.
-    *
-    * \param begin Index of the element in this vector which to begin with.
-    * \param end Index of the element in this vector which to end with.
+    * \tparam Type tells the prefix sum type - either \e Inclusive of \e Exclusive.
+    * 
+    * \param begin beginning of the index range
+    * \param end end of the index range.
     */
    template< Algorithms::ScanType Type = Algorithms::ScanType::Inclusive >
    void prefixSum( IndexType begin = 0, IndexType end = 0 );
 
+   /**
+    * \brief Computes segmented prefix sum of the vector elements.
+    *
+    * Computes segmented prefix sum for elements within the index range [ \e begin to \e end ).
+    * The other elements of this vector remain unchanged. Whole vector is assumed
+    * by default, i.e. when \e begin and \e end are set to zero.
+    *
+    * \tparam Type tells the prefix sum type - either \e Inclusive of \e Exclusive.
+    * \tparam FlagsArray is an array type describing beginnings of the segments.
+    * 
+    * \param flags is an array having `1` at the beginning of each segment and `0` on any other position
+    * \param begin beginning of the index range
+    * \param end end of the index range.
+    */
    template< Algorithms::ScanType Type = Algorithms::ScanType::Inclusive,
              typename FlagsArray >
    void segmentedPrefixSum( FlagsArray& flags, IndexType begin = 0, IndexType end = 0 );
 
+   /**
+    * \brief Computes prefix sum of the vector expression.
+    *
+    * Computes prefix sum for elements within the index range [ \e begin to \e end ).
+    * The other elements of this vector remain unchanged. Whole vector expression is assumed
+    * by default, i.e. when \e begin and \e end are set to zero.
+    *
+    * \tparam Type tells the prefix sum type - either \e Inclusive of \e Exclusive.
+    * \tparam VectorExpression is the vector expression.
+    * 
+    * \param expression is the vector expression.
+    * \param begin beginning of the index range
+    * \param end end of the index range.
+    */
    template< Algorithms::ScanType Type = Algorithms::ScanType::Inclusive,
              typename VectorExpression >
    void prefixSum( const VectorExpression& expression, IndexType begin = 0, IndexType end = 0 );
 
+   /**
+    * \brief Computes segmented prefix sum of a vector expression.
+    *
+    * Computes segmented prefix sum for elements within the index range [ \e begin to \e end ).
+    * The other elements of this vector remain unchanged. Whole vector expression is assumed
+    * by default, i.e. when \e begin and \e end are set to zero.
+    *
+    * \tparam Type tells the prefix sum type - either \e Inclusive of \e Exclusive.
+    * \tparam VectorExpression is the vector expression.
+    * \tparam FlagsArray is an array type describing beginnings of the segments.
+    * 
+    * \param expression is the vector expression.
+    * \param flags is an array having `1` at the beginning of each segment and `0` on any other position
+    * \param begin beginning of the index range
+    * \param end end of the index range.
+    */
    template< Algorithms::ScanType Type = Algorithms::ScanType::Inclusive,
              typename VectorExpression,
              typename FlagsArray >

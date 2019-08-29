@@ -39,12 +39,41 @@ class VectorView
    using BaseType = ArrayView< Real, Device, Index >;
    using NonConstReal = typename std::remove_const< Real >::type;
 public:
+   /**
+    * \brief Type of elements stored in this vector.
+    */
    using RealType = Real;
+
+   /**
+    * \brief Device where the vector is allocated.
+    * 
+    * See \ref Devices::Host or \ref Devices::Cuda.
+    */
    using DeviceType = Device;
+
+   /**
+    * \brief Type being used for the vector elements indexing.
+    */
    using IndexType = Index;
-   using HostType = VectorView< Real, Devices::Host, Index >;
-   using CudaType = VectorView< Real, Devices::Cuda, Index >;
+
+   /**
+    * \brief Defines the same vector type but allocated on host (CPU).
+    */
+   using HostType = VectorView< Real, TNL::Devices::Host, Index >;
+
+   /**
+    * \brief Defines the same vector type but allocated on CUDA device (GPU).
+    */
+   using CudaType = VectorView< Real, TNL::Devices::Cuda, Index >;
+
+   /**
+    * \brief Compatible VectorView type.
+    */
    using ViewType = VectorView< Real, Device, Index >;
+
+   /**
+    * \brief Compatible constant VectorView type.
+    */
    using ConstViewType = VectorView< std::add_const_t< Real >, Device, Index >;
 
    // constructors and assignment operators inherited from the class ArrayView
@@ -58,14 +87,18 @@ public:
    __cuda_callable__
    VectorView() = default;
 
-   //! \brief Constructor for the initialization by a base class object.
+   /**
+    * \brief Constructor for the initialization by a base class object.
+    */
    // initialization by base class is not a copy constructor so it has to be explicit
    template< typename Real_ >  // template catches both const and non-const qualified Element
    __cuda_callable__
    VectorView( const ArrayView< Real_, Device, Index >& view )
    : BaseType( view ) {}
 
-   //! \brief Returns a \ref String representation of the vector view type.
+   /**
+    * \brief Returns a \ref String representation of the vector view type.
+    */
    static String getType();
 
    /**
@@ -187,28 +220,71 @@ public:
    VectorView& operator/=( const VectorExpression& expression );
 
    /**
-    * \brief Returns specific sums of elements of this vector view.
+    * \brief Computes prefix sum of the vector view elements.
     *
-    * FIXME: computePrefixSum does not exist
+    * Computes prefix sum for elements within the index range [ \e begin to \e end ).
+    * The other elements of this vector view remain unchanged.
     *
-    * Does the same as \ref computePrefixSum, but computes only sums for elements
-    * with the index in range from \e begin to \e end. The other elements of this
-    * vector remain untouched - with the same value.
-    *
-    * \param begin Index of the element in this vector view which to begin with.
-    * \param end Index of the element in this vector view which to end with.
+    * \tparam Type tells the prefix sum type - either \e Inclusive of \e Exclusive.
+    * 
+    * \param begin beginning of the index range
+    * \param end end of the index range.
     */
    template< Algorithms::ScanType Type = Algorithms::ScanType::Inclusive >
    void prefixSum( IndexType begin = 0, IndexType end = 0 );
 
+   /**
+    * \brief Computes segmented prefix sum of the vector view elements.
+    *
+    * Computes segmented prefix sum for elements within the index range [ \e begin to \e end ).
+    * The other elements of this vector view remain unchanged. Whole vector view is assumed
+    * by default, i.e. when \e begin and \e end are set to zero.
+    *
+    * \tparam Type tells the prefix sum type - either \e Inclusive of \e Exclusive.
+    * \tparam FlagsArray is an array type describing beginnings of the segments.
+    * 
+    * \param flags is an array having `1` at the beginning of each segment and `0` on any other position
+    * \param begin beginning of the index range
+    * \param end end of the index range.
+    */
    template< Algorithms::ScanType Type = Algorithms::ScanType::Inclusive,
              typename FlagsArray >
    void segmentedPrefixSum( FlagsArray& flags, IndexType begin = 0, IndexType end = 0 );
 
+   /**
+    * \brief Computes prefix sum of the vector expression.
+    *
+    * Computes prefix sum for elements within the index range [ \e begin to \e end ).
+    * The other elements of this vector remain unchanged. Whole vector expression is assumed
+    * by default, i.e. when \e begin and \e end are set to zero.
+    *
+    * \tparam Type tells the prefix sum type - either \e Inclusive of \e Exclusive.
+    * \tparam VectorExpression is the vector expression.
+    * 
+    * \param expression is the vector expression.
+    * \param begin beginning of the index range
+    * \param end end of the index range.
+    */
    template< Algorithms::ScanType Type = Algorithms::ScanType::Inclusive,
              typename VectorExpression >
    void prefixSum( const VectorExpression& expression, IndexType begin = 0, IndexType end = 0 );
 
+   /**
+    * \brief Computes segmented prefix sum of a vector expression.
+    *
+    * Computes segmented prefix sum for elements within the index range [ \e begin to \e end ).
+    * The other elements of this vector remain unchanged. Whole vector expression is assumed
+    * by default, i.e. when \e begin and \e end are set to zero.
+    *
+    * \tparam Type tells the prefix sum type - either \e Inclusive of \e Exclusive.
+    * \tparam VectorExpression is the vector expression.
+    * \tparam FlagsArray is an array type describing beginnings of the segments.
+    * 
+    * \param expression is the vector expression.
+    * \param flags is an array having `1` at the beginning of each segment and `0` on any other position
+    * \param begin beginning of the index range
+    * \param end end of the index range.
+    */
    template< Algorithms::ScanType Type = Algorithms::ScanType::Inclusive,
              typename VectorExpression,
              typename FlagsArray >
