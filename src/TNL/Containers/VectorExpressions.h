@@ -497,13 +497,19 @@ operator-( const Vector< Real, Device, Index, Allocator >& a )
 
 ////
 // Scalar product
+#ifdef DOXYGEN_ONLY
 /**
- * \brief Computes scalar product of vector and vector expression.
- * 
- * @param a input vector
- * @param b input vector expression
- * @return scalar product of vector and vector expression
+ * \brief Computes scalar product of two vectors or vector expressions. Equivalent to \ref TNL::dot.
+ *
+ * @param a input vector or vector expression
+ * @param b input vector or vector expression
+ * @return scalar product of \e a and \e b.
  */
+template< typename ET1, typename ET2 >
+Real
+operator,( const ET1& a, const ET2& b ) {}
+#else
+
 template< typename Real, typename Device, typename Index, typename Allocator, typename ET,
           typename..., typename = std::enable_if_t< Expressions::IsNumericExpression<ET>::value > >
 Real
@@ -540,6 +546,7 @@ operator,( const Vector< Real1, Device, Index, Allocator >& a, const VectorView<
 {
    return Expressions::ExpressionSum( a.getConstView() * b.getConstView() );
 }
+#endif // DOXYGEN_ONLY
 
 } //namespace Containers
 
@@ -642,13 +649,19 @@ max( const Containers::Vector< Real1, Device, Index, Allocator >& a, const Conta
 
 ////
 // Dot product - the same as scalar product, just for convenience
+#ifdef DOXYGEN_ONLY
 /**
- * \brief Computes scalar product of vector and vector expression.
+ * \brief Computes scalar product of vector and vector expression. Equivalent to \ref TNL::Containers::operator,.
  * 
  * @param a input vector
  * @param b input vector expression
  * @return scalar product of vector and vector expression
  */
+template< typename ET1, typename ET2 >
+auto
+dot( const ET1& a, const ET2& b ) {}
+#else
+
 template< typename Real, typename Device, typename Index, typename Allocator, typename ET,
           typename..., typename = std::enable_if_t< Containers::Expressions::IsNumericExpression<ET>::value > >
 auto
@@ -685,6 +698,7 @@ dot( const Containers::Vector< Real1, Device, Index, Allocator >& a, const Conta
 {
    return (a, b);
 }
+#endif // DOXYGEN_ONLY
 
 
 ////
@@ -983,6 +997,7 @@ sum( const Containers::Vector< Real, Device, Index, Allocator >& a )
 
 /**
  * \brief Computes maximum norm of a vector.
+ * \anchor TNL__maxNorm
  * 
  * @param a input vector
  * @return  maximum norm

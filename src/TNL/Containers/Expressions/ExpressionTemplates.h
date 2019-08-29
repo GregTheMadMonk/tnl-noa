@@ -235,6 +235,8 @@ std::ostream& operator<<( std::ostream& str, const UnaryExpressionTemplate< T, O
 ////
 // Operators are supposed to be in the same namespace as the expression templates
 
+#ifndef DOXYGEN_ONLY
+
 ////
 // Binary expressions addition
 template< typename L1,
@@ -1154,11 +1156,15 @@ operator,( const BinaryExpressionTemplate< L1, L2, LOperation >& a,
    return ExpressionSum( a * b );
 }
 
+#endif // DOXYGEN_ONLY
+
 } // namespace Expressions
 } // namespace Containers
 
 ////
 // All operations are supposed to be in namespace TNL
+
+#ifndef DOXYGEN_ONLY
 
 ////
 // Binary expression min
@@ -2101,6 +2107,8 @@ dot( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation
 {
    return (a, b);
 }
+
+#endif // DOXYGEN_ONLY
 
 
 ////

@@ -9,6 +9,7 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #pragma once
+#ifndef DOXYGEN_ONLY
 
 #include <TNL/Containers/Expressions/DistributedExpressionTemplates.h>
 #include <TNL/Exceptions/NotImplementedError.h>
@@ -714,3 +715,4 @@ binaryAnd( const Containers::DistributedVectorView< Real, Device, Index, Communi
 }
 
 } // namespace TNL
+#endif // DOXYGEN_ONLY

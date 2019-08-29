@@ -74,7 +74,7 @@ The result is:
 
 \include ScalarProductExample.out
 
-Scalar product of vectors `u` and `v` can be in TNL computed by [`dot(u,v)`](../html/namespaceTNL.html#ab49c6303cbe48c65ca350389460c2e40) or simply as [`(u,v)`](@ref Containers_operator_scalar_product_vector_et).
+Scalar product of vectors `u` and `v` in TNL can be computed by \ref TNL::dot "TNL::dot(u, v)" or simply as \ref TNL::Containers::operator, "(u, v)".
 
 ### Maxium norm<a name="flexible_parallel_reduction_maximum_norm"></a>
 
@@ -86,7 +86,7 @@ The output is:
 
 \include MaximumNormExample.out
 
-Maximum norm in TNL computes function @ref TNL::maxNorm "TNL::maxNorm".
+Maximum norm in TNL is computed by the function \ref TNL::maxNorm.
 
 ### Vectors comparison<a name="flexible_parallel_reduction_vector_comparison"></a>
 

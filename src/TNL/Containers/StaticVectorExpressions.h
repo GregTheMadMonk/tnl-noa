@@ -9,6 +9,7 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #pragma once
+#ifndef DOXYGEN_ONLY
 
 #include <TNL/Containers/Expressions/StaticExpressionTemplates.h>
 
@@ -770,3 +771,4 @@ binaryAnd( const Containers::StaticVector< Size, Real >& a )
 }
 
 } // namespace TNL
+#endif // DOXYGEN_ONLY
