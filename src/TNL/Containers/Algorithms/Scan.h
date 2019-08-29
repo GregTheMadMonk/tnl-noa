@@ -136,27 +136,25 @@ struct Scan< Devices::Host, Type >
             const Reduction& reduction,
             const typename Vector::RealType zero );
 
-   protected:
+   template< typename Vector,
+             typename Reduction >
+   static auto
+   performFirstPhase( Vector& v,
+                      const typename Vector::IndexType begin,
+                      const typename Vector::IndexType end,
+                      const Reduction& reduction,
+                      const typename Vector::RealType zero );
 
-      template< typename Vector,
-                typename Reduction >
-      static auto
-      performFirstPhase( Vector& v,
-                         const typename Vector::IndexType begin,
-                         const typename Vector::IndexType end,
-                         const Reduction& reduction,
-                         const typename Vector::RealType zero );
-
-      template< typename Vector,
-                typename BlockShifts,
-                typename Reduction >
-      static void
-      performSecondPhase( Vector& v,
-                          const BlockShifts& blockShifts,
-                          const typename Vector::IndexType begin,
-                          const typename Vector::IndexType end,
-                          const Reduction& reduction,
-                          const typename Vector::RealType shift );
+   template< typename Vector,
+             typename BlockShifts,
+             typename Reduction >
+   static void
+   performSecondPhase( Vector& v,
+                       const BlockShifts& blockShifts,
+                       const typename Vector::IndexType begin,
+                       const typename Vector::IndexType end,
+                       const Reduction& reduction,
+                       const typename Vector::RealType shift );
 };
 
 template< ScanType Type >
