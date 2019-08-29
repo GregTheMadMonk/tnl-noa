@@ -63,12 +63,41 @@ template< typename Value,
 class ArrayView
 {
 public:
+   /**
+    * \brief Type of elements stored in this array.
+    */
    using ValueType = Value;
+
+   /**
+    * \brief Device where the array is allocated.
+    * 
+    * See \ref Devices::Host or \ref Devices::Cuda.
+    */
    using DeviceType = Device;
+
+   /**
+    * \brief Type being used for the array elements indexing.
+    */
    using IndexType = Index;
-   using HostType = ArrayView< Value, Devices::Host, Index >;
-   using CudaType = ArrayView< Value, Devices::Cuda, Index >;
+
+   /**
+    * \brief Defines the same array type but allocated on host (CPU).
+    */
+   using HostType = ArrayView< Value, TNL::Devices::Host, Index >;
+
+   /**
+    * \brief Defines the same array type but allocated on CUDA device (GPU).
+    */
+   using CudaType = ArrayView< Value, TNL::Devices::Cuda, Index >;
+
+   /**
+    * \brief Compatible ArrayView type.
+    */
    using ViewType = ArrayView< Value, Device, Index >;
+
+   /**
+    * \brief Compatible constant ArrayView type.
+    */
    using ConstViewType = ArrayView< std::add_const_t< Value >, Device, Index >;
 
    /**

@@ -76,7 +76,15 @@ public:
     * \brief Defines the same vector type but allocated on CUDA device (GPU).
     */
    using CudaType = Vector< Real, TNL::Devices::Cuda, Index >;
+
+   /**
+    * \brief Compatible VectorView type.
+    */
    using ViewType = VectorView< Real, Device, Index >;
+
+   /**
+    * \brief Compatible constant VectorView type.
+    */
    using ConstViewType = VectorView< std::add_const_t< Real >, Device, Index >;
 
    // constructors and assignment operators inherited from the class Array
