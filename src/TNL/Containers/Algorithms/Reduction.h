@@ -30,7 +30,7 @@ namespace Algorithms {
  * vector norm, scalar product of two vectors or computing minimum or maximum. If one needs to know even
  * position of the smallest or the largest element, reduction with argument can be used.
  *
- * \tparam Device this parameter says on what device the reduction is gonna be performed.
+ * \tparam Device parameter says on what device the reduction is gonna be performed.
  * 
  * See \ref Reduction< Devices::Host > and \ref Reduction< Devices::Cuda >.
  */
