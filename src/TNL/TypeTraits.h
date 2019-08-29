@@ -144,6 +144,8 @@ private:
    static constexpr std::false_type is_constexpr_impl(...);
 
    using type = decltype(is_constexpr_impl< decltype(&T::getSize), &T::getSize >(0));
+   // TODO: this does not work for integral types because T::getSize does not exist
+   // error #276: name followed by "::" must be a class or namespace name
 
 public:
    static constexpr bool value = type::value;
