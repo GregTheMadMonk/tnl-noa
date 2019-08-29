@@ -19,14 +19,22 @@ namespace Containers {
 /**
  * \brief Array with constant size.
  *
- * \param Size Size of static array. Number of its elements.
- * \param Value Type of the values in static array.
+ * \tparam Size Size of static array. Number of its elements.
+ * \tparam Value Type of the values in static array.
  */
 template< int Size, typename Value >
 class StaticArray
 {
 public:
+
+   /**
+    * \brief Type of elements stored in this array.
+    */
    using ValueType = Value;
+
+   /**
+    * \brief Type being used for the array elements indexing.
+    */
    using IndexType = int;
 
    /**
@@ -35,7 +43,9 @@ public:
    __cuda_callable__
    static constexpr int getSize();
 
-   //! \brief Default constructor.
+   /**
+    * \brief Default constructor.
+    */
    __cuda_callable__
    StaticArray();
 
@@ -200,7 +210,7 @@ public:
    bool load( File& file);
 
    /**
-    * \brief Sorts the elements in this static array into ascending order.
+    * \brief Sorts the elements in this static array in ascending order.
     */
    void sort();
 
