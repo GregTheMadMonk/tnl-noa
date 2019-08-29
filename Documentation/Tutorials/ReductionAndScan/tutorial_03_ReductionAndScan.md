@@ -245,7 +245,7 @@ and for exclusive segmented prefix sum it is
 [0,1,4][0,2,6,12][0,3][0,3,9,18,30]
 ```
 
-In addition to common scan, we need to encode the segments of the input sequence. It is done by auxiliary flags array (it can be array of booleans) having one at the begining of each segment and zeros on all other positions. In our example, it would be like this:
+In addition to common scan, we need to encode the segments of the input sequence. It is done by auxiliary flags array (it can be array of booleans) having `1` at the begining of each segment and `0` on all other positions. In our example, it would be like this:
 
 ```
 [1,0,0,1,0,0,0,1,0,1,0,0, 0, 0]
