@@ -257,6 +257,14 @@ TYPED_TEST( StaticArrayTest, SaveAndLoad )
    EXPECT_EQ( u1, u2 );
 
    EXPECT_EQ( std::remove( TEST_FILE_NAME ), 0 );
+
+   ASSERT_NO_THROW( File( TEST_FILE_NAME, std::ios_base::out ) << u1 );
+   ASSERT_NO_THROW( File( TEST_FILE_NAME, std::ios_base::in ) >> u2 );
+
+   EXPECT_EQ( u1, u2 );
+
+   EXPECT_EQ( std::remove( TEST_FILE_NAME ), 0 );
+
 }
 
 TYPED_TEST( StaticArrayTest, sort )
