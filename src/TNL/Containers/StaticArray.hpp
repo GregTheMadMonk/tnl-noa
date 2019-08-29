@@ -343,5 +343,37 @@ std::ostream& operator<<( std::ostream& str, const StaticArray< Size, Value >& a
    return str;
 }
 
+// Serialization of arrays into binary files.
+template< int Size, typename Value >
+File& operator<<( File& file, const StaticArray< Size, Value >& array )
+{
+   for( int i = 0; i < Size; i++ )
+      file.save( &array[ i ] );
+   return file;
+}
+
+template< int Size, typename Value >
+File& operator<<( File&& file, const StaticArray< Size, Value >& array )
+{
+   File& f = file;
+   return f << array;
+}
+
+// Deserialization of arrays from binary files.
+template< int Size, typename Value >
+File& operator>>( File& file, StaticArray< Size, Value >& array )
+{
+   for( int i = 0; i < Size; i++ )
+      file.load( &array[ i ] );
+   return file;
+}
+
+template< int Size, typename Value >
+File& operator>>( File&& file, StaticArray< Size, Value >& array )
+{
+   File& f = file;
+   return f >> array;
+}
+
 } // namespace Containers
 } // namespace TNL

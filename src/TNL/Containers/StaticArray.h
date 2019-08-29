@@ -230,6 +230,25 @@ protected:
 template< int Size, typename Value >
 std::ostream& operator<<( std::ostream& str, const StaticArray< Size, Value >& a );
 
+/**
+ * \brief Serialization of arrays into binary files.
+ */
+template< int Size, typename Value >
+File& operator<<( File& file, const StaticArray< Size, Value >& array );
+
+template< int Size, typename Value >
+File& operator<<( File&& file, const StaticArray< Size, Value >& array );
+
+/**
+ * \brief Deserialization of arrays from binary files.
+ */
+template< int Size, typename Value >
+File& operator>>( File& file, StaticArray< Size, Value >& array );
+
+template< int Size, typename Value >
+File& operator>>( File&& file, StaticArray< Size, Value >& array );
+
+
 } // namespace Containers
 } // namespace TNL
 
