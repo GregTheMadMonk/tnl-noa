@@ -50,10 +50,9 @@ public:
    StaticArray();
 
    /**
-    * \brief Constructor that sets all array components (with the number of \e Size) to value \e v.
+    * \brief Constructor from static array.
     *
-    * Once this static array is constructed, its size can not be changed.
-    * \param v[Size]
+    * \param v[Size] input array.
     */
    // Note: the template avoids ambiguity of overloaded functions with literal 0 and pointer
    // reference: https://stackoverflow.com/q/4610503
@@ -77,6 +76,14 @@ public:
    __cuda_callable__
    StaticArray( const StaticArray< Size, Value >& v );
 
+   /**
+    * \brief Constructor which initializes the array by copying elements from
+    * \ref std::initializer_list, e.g. `{...}`.
+    * 
+    * The initializer list size must larger or equal to \e Size.
+    * 
+    * @param elems input initializer list
+    */
    StaticArray( const std::initializer_list< Value > &elems );
 
    /**
@@ -104,19 +111,19 @@ public:
    static String getType();
 
    /**
-    * \brief Gets all data of this static array.
+    * \brief Gets pointer to data of this static array.
     */
    __cuda_callable__
    Value* getData();
 
    /**
-    * \brief Gets all data of this static array.
+    * \brief Gets constant pointer to data of this static array.
     */
    __cuda_callable__
    const Value* getData() const;
 
    /**
-    * \brief Accesses specified element at the position \e i and returns a reference to its value.
+    * \brief Accesses specified element at the position \e i and returns a constant reference to its value.
     *
     * \param i Index position of an element.
     */
@@ -131,27 +138,39 @@ public:
    __cuda_callable__
    Value& operator[]( int i );
 
-   /** \brief Returns the first coordinate.*/
+   /**
+    * \brief Returns reference to the first coordinate.
+    */
    __cuda_callable__
    Value& x();
 
-   /** \brief Returns the first coordinate.*/
+   /**
+    * \brief Returns constant reference to the first coordinate.
+    */
    __cuda_callable__
    const Value& x() const;
 
-   /** \brief Returns the second coordinate for arrays with Size >= 2.*/
+   /**
+    * \brief Returns reference to the second coordinate for arrays with Size >= 2.
+    */
    __cuda_callable__
    Value& y();
 
-   /** \brief Returns the second coordinate for arrays with Size >= 2.*/
+   /**
+    * \brief Returns constant reference to the second coordinate for arrays with Size >= 2.
+    */
    __cuda_callable__
    const Value& y() const;
 
-   /** \brief Returns the third coordinate for arrays with Size >= 3..*/
+   /**
+    * \brief Returns reference to the third coordinate for arrays with Size >= 3.
+    */
    __cuda_callable__
    Value& z();
 
-   /** \brief Returns the third coordinate for arrays with Size >= 3..*/
+   /**
+    * \brief Returns constant reference to the third coordinate for arrays with Size >= 3.
+    */
    __cuda_callable__
    const Value& z() const;
 
@@ -193,6 +212,12 @@ public:
    __cuda_callable__
    bool operator!=( const Array& array ) const;
 
+   /**
+    * \brief Cast operator for changing of the \e Value type.
+    * 
+    * Returns static array having \e ValueType set to \e OtherValue, i.e.
+    * StaticArray< Size, OtherValue >.
+    */
    template< typename OtherValue >
    __cuda_callable__
    operator StaticArray< Size, OtherValue >() const;
@@ -238,19 +263,37 @@ std::ostream& operator<<( std::ostream& str, const StaticArray< Size, Value >& a
 
 /**
  * \brief Serialization of static arrays into binary files.
+ * 
+ * \param file output file
+ * \param array is an array to be written into the output file.
  */
 template< int Size, typename Value >
 File& operator<<( File& file, const StaticArray< Size, Value >& array );
 
+/**
+ * \brief Serialization of static arrays into binary files.
+ * 
+ * \param file output file
+ * \param array is an array to be written into the output file.
+ */
 template< int Size, typename Value >
 File& operator<<( File&& file, const StaticArray< Size, Value >& array );
 
 /**
  * \brief Deserialization of static arrays from binary files.
+ * 
+ * \param file input file
+ * \param array is an array to be read from the input file.
  */
 template< int Size, typename Value >
 File& operator>>( File& file, StaticArray< Size, Value >& array );
 
+/**
+ * \brief Deserialization of static arrays from binary files.
+ * 
+ * \param file input file
+ * \param array is an array to be read from the input file.
+ */
 template< int Size, typename Value >
 File& operator>>( File&& file, StaticArray< Size, Value >& array );
 
