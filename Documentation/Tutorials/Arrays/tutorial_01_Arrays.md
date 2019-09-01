@@ -155,6 +155,12 @@ Static arrays are allocated on stack and thus they can be created even in CUDA k
 * `Size` is the array size.
 * `Value` is type of data stored in the array.
 
-The interface of StaticArray is very smillar to Array.
+The interface of StaticArray is very smillar to Array but much simpler. It contains set of common constructors. Array elements can be accessed by the `operator[]` and also using method `x()`, `y()` and `z()` when it makes sense. See the following example for typical use of StaticArray.
+
+\include StaticArrayExample.cpp
+
+The output looks as:
+
+\include StaticArrayExample.out
 
 ## Distributed arrays <a name="distributed_arrays"></a>

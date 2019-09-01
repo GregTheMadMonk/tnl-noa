@@ -21,6 +21,8 @@ IF( BUILD_CUDA )
    ADD_CUSTOM_COMMAND( COMMAND ElementsAccessing-1 > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/ElementsAccessing-1.out OUTPUT ElementsAccessing-1.out )
    CUDA_ADD_EXECUTABLE( ElementsAccessing-2 ElementsAccessing-2.cu )
    ADD_CUSTOM_COMMAND( COMMAND ElementsAccessing-2 > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/ElementsAccessing-2.out OUTPUT ElementsAccessing-2.out )
+   ADD_EXECUTABLE( StaticArrayExample StaticArrayExample.cpp )
+   ADD_CUSTOM_COMMAND( COMMAND StaticArrayExample > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/StaticArrayExample.out OUTPUT StaticArrayExample.out )
 ENDIF()
 
 IF( BUILD_CUDA )
@@ -35,5 +37,6 @@ ADD_CUSTOM_TARGET( TutorialsArrays-cuda ALL DEPENDS
    ContainsValue.out
    ElementsAccessing-1.out
    ElementsAccessing-2.out
-   ArrayViewEvaluate.out )
+   ArrayViewEvaluate.out 
+   StaticArrayExample.out )
 ENDIF()
