@@ -217,6 +217,11 @@ public:
     * 
     * Returns static array having \e ValueType set to \e OtherValue, i.e.
     * StaticArray< Size, OtherValue >.
+    * 
+    * \tparam OtherValue is the \e Value type of the static array the casting 
+    * will be performed to.
+    * 
+    * \return instance of StaticArray< Size, OtherValue >
     */
    template< typename OtherValue >
    __cuda_callable__
