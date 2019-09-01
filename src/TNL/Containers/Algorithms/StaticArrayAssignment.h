@@ -24,7 +24,7 @@ namespace Algorithms {
       template< typename LeftValue, typename RightValue = LeftValue >
       struct assignArrayFunctor
       {
-         __cuda_callable__ void operator()( int i, LeftValue* data, const RightValue* v ) const
+         __cuda_callable__ void operator()( int i, LeftValue* data, const RightValue& v ) const
          {
             data[ i ] = v[ i ];
          }
@@ -33,7 +33,7 @@ namespace Algorithms {
       template< typename LeftValue, typename RightValue = LeftValue >
       struct assignValueFunctor
       {
-         __cuda_callable__ void operator()( int i, LeftValue* data, const RightValue v ) const
+         __cuda_callable__ void operator()( int i, LeftValue& data, const RightValue& v ) const
          {
             data[ i ] = v;
          }
@@ -52,10 +52,11 @@ template< typename StaticArray,
           typename T >
 struct StaticArrayAssignment< StaticArray, T, true >
 {
+   __cuda_callable__
    static void assign( StaticArray& a, const T& t )
    {
       static_assert( StaticArray::getSize() == T::getSize(), "Cannot assign static arrays with different size." );
-      StaticFor< 0, StaticArray::getSize() >::exec( detail::assignArrayFunctor< StaticArray, T >{}, a, t );
+      StaticFor< 0, StaticArray::getSize() >::exec( detail::assignArrayFunctor< typename StaticArray::ValueType, T >{}, a.getData(), t );
    }
 };
 
@@ -67,6 +68,7 @@ template< typename StaticArray,
           typename T >
 struct StaticArrayAssignment< StaticArray, T, false >
 {
+   __cuda_callable__
    static void assign( StaticArray& a, const T& t )
    {
       StaticFor< 0, StaticArray::getSize() >::exec( detail::assignValueFunctor< StaticArray, T >{}, a, t );

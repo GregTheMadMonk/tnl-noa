@@ -13,6 +13,7 @@
 #include <TNL/param-types.h>
 #include <TNL/Math.h>
 #include <TNL/Containers/StaticArray.h>
+#include <TNL/Containers/Algorithms/StaticArrayAssignment.h>
 #include <TNL/StaticFor.h>
 
 namespace TNL {
@@ -263,11 +264,11 @@ StaticArray< Size, Value >& StaticArray< Size, Value >::operator=( const StaticA
 }
 
 template< int Size, typename Value >
-   template< typename Array >
+   template< typename T >
 __cuda_callable__
-StaticArray< Size, Value >& StaticArray< Size, Value >::operator=( const Array& array )
+StaticArray< Size, Value >& StaticArray< Size, Value >::operator=( const T& v )
 {
-   StaticFor< 0, Size >::exec( detail::assignArrayFunctor< Value, typename Array::ValueType >{}, data, array.getData() );
+   Algorithms::StaticArrayAssignment< StaticArray, T >::assign( *this, v );
    return *this;
 }
 
