@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ArrayOperationsStatic.hpp  -  description
+                          MemoryOperationsSequential.hpp  -  description
                              -------------------
     begin                : Apr 8, 2019
     copyright            : (C) 2019 by Tomas Oberhuber et al.
@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/Containers/Algorithms/ArrayOperations.h>
+#include <TNL/Containers/Algorithms/MemoryOperations.h>
 
 namespace TNL {
 namespace Containers {
@@ -19,7 +19,7 @@ namespace Algorithms {
 template< typename Element >
 __cuda_callable__
 void
-ArrayOperations< void >::
+MemoryOperations< void >::
 setElement( Element* data,
             const Element& value )
 {
@@ -29,7 +29,7 @@ setElement( Element* data,
 template< typename Element >
 __cuda_callable__
 Element
-ArrayOperations< void >::
+MemoryOperations< void >::
 getElement( const Element* data )
 {
    return *data;
@@ -38,7 +38,7 @@ getElement( const Element* data )
 template< typename Element, typename Index >
 __cuda_callable__
 void
-ArrayOperations< void >::
+MemoryOperations< void >::
 set( Element* data,
      const Element& value,
      const Index size )
@@ -52,7 +52,7 @@ template< typename DestinationElement,
           typename Index >
 __cuda_callable__
 void
-ArrayOperations< void >::
+MemoryOperations< void >::
 copy( DestinationElement* destination,
       const SourceElement* source,
       const Index size )
@@ -65,7 +65,7 @@ template< typename DestinationElement,
           typename Index,
           typename SourceIterator >
 void
-ArrayOperations< void >::
+MemoryOperations< void >::
 copyFromIterator( DestinationElement* destination,
                   Index destinationSize,
                   SourceIterator first,
@@ -83,7 +83,7 @@ template< typename Element1,
           typename Index >
 __cuda_callable__
 bool
-ArrayOperations< void >::
+MemoryOperations< void >::
 compare( const Element1* destination,
          const Element2* source,
          const Index size )
@@ -98,7 +98,7 @@ template< typename Element,
           typename Index >
 __cuda_callable__
 bool
-ArrayOperations< void >::
+MemoryOperations< void >::
 containsValue( const Element* data,
                const Index size,
                const Element& value )
@@ -117,7 +117,7 @@ template< typename Element,
           typename Index >
 __cuda_callable__
 bool
-ArrayOperations< void >::
+MemoryOperations< void >::
 containsOnlyValue( const Element* data,
                    const Index size,
                    const Element& value )

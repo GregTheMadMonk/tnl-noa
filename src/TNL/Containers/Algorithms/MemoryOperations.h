@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ArrayOperations.h  -  description
+                          MemoryOperations.h  -  description
                              -------------------
     begin                : Jul 15, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -12,18 +12,18 @@
 
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
+#include <TNL/Cuda/CudaCallable.h>
 
 namespace TNL {
 namespace Containers {
 namespace Algorithms {
 
-template< typename DestinationDevice,
-          typename SourceDevice = DestinationDevice >
-struct ArrayOperations;
+template< typename DestinationExecution >
+struct MemoryOperations;
 
-// TODO: establish the concept of a "void device" for static computations in the whole TNL
+// TODO: change "void" to "Execution::Sequential"
 template<>
-struct ArrayOperations< void >
+struct MemoryOperations< void >
 {
    template< typename Element >
    __cuda_callable__
@@ -80,7 +80,7 @@ struct ArrayOperations< void >
 };
 
 template<>
-struct ArrayOperations< Devices::Host >
+struct MemoryOperations< Devices::Host >
 {
    template< typename Element >
    static void setElement( Element* data,
@@ -130,7 +130,7 @@ struct ArrayOperations< Devices::Host >
 };
 
 template<>
-struct ArrayOperations< Devices::Cuda >
+struct MemoryOperations< Devices::Cuda >
 {
    template< typename Element >
    static void setElement( Element* data,
@@ -177,48 +177,12 @@ struct ArrayOperations< Devices::Cuda >
    static bool containsOnlyValue( const Element* data,
                                   const Index size,
                                   const Element& value );
-};
-
-template<>
-struct ArrayOperations< Devices::Cuda, Devices::Host >
-{
-   template< typename DestinationElement,
-             typename SourceElement,
-             typename Index >
-   static void copy( DestinationElement* destination,
-                     const SourceElement* source,
-                     const Index size );
-
-   template< typename DestinationElement,
-             typename SourceElement,
-             typename Index >
-   static bool compare( const DestinationElement* destination,
-                        const SourceElement* source,
-                        const Index size );
-};
-
-template<>
-struct ArrayOperations< Devices::Host, Devices::Cuda >
-{
-   template< typename DestinationElement,
-             typename SourceElement,
-             typename Index >
-   static void copy( DestinationElement* destination,
-                     const SourceElement* source,
-                     const Index size );
-
-   template< typename Element1,
-             typename Element2,
-             typename Index >
-   static bool compare( const Element1* destination,
-                        const Element2* source,
-                        const Index size );
 };
 
 } // namespace Algorithms
 } // namespace Containers
 } // namespace TNL
 
-#include <TNL/Containers/Algorithms/ArrayOperationsStatic.hpp>
-#include <TNL/Containers/Algorithms/ArrayOperationsHost.hpp>
-#include <TNL/Containers/Algorithms/ArrayOperationsCuda.hpp>
+#include <TNL/Containers/Algorithms/MemoryOperationsSequential.hpp>
+#include <TNL/Containers/Algorithms/MemoryOperationsHost.hpp>
+#include <TNL/Containers/Algorithms/MemoryOperationsCuda.hpp>

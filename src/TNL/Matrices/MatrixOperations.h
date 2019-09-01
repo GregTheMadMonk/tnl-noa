@@ -343,7 +343,7 @@ public:
       // TODO: use static storage, e.g. from the CudaReductionBuffer, to avoid frequent reallocations
       Containers::Vector< RealType, Devices::Cuda, IndexType > xDevice;
       xDevice.setSize( n );
-      Containers::Algorithms::ArrayOperations< Devices::Cuda, Devices::Host >::copy< RealType, RealType, IndexType >( xDevice.getData(), x, n );
+      Containers::Algorithms::MultiDeviceMemoryOperations< Devices::Cuda, Devices::Host >::copy< RealType, RealType, IndexType >( xDevice.getData(), x, n );
 
       // desGridSize = blocksPerMultiprocessor * numberOfMultiprocessors
       const int desGridSize = 32 * Cuda::DeviceInfo::getCudaMultiprocessors( Cuda::DeviceInfo::getActiveDevice() );

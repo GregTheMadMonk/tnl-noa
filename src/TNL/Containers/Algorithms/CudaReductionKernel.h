@@ -17,7 +17,7 @@
 #include <TNL/Cuda/DeviceInfo.h>
 #include <TNL/Cuda/SharedMemory.h>
 #include <TNL/Containers/Algorithms/CudaReductionBuffer.h>
-#include <TNL/Containers/Algorithms/ArrayOperations.h>
+#include <TNL/Containers/Algorithms/MultiDeviceMemoryOperations.h>
 #include <TNL/Exceptions/CudaSupportMissing.h>
 
 namespace TNL {
@@ -352,7 +352,7 @@ struct CudaReductionKernelLauncher
 
       // Copy result on CPU
       Result result;
-      ArrayOperations< Devices::Host, Devices::Cuda >::copy( &result, output, 1 );
+      MultiDeviceMemoryOperations< Devices::Host, Devices::Cuda >::copy( &result, output, 1 );
       return result;
    }
 
@@ -385,8 +385,8 @@ struct CudaReductionKernelLauncher
       ////
       // Copy result on CPU
       std::pair< Index, Result > result;
-      ArrayOperations< Devices::Host, Devices::Cuda >::copy( &result.first, idxOutput, 1 );
-      ArrayOperations< Devices::Host, Devices::Cuda >::copy( &result.second, output, 1 );
+      MultiDeviceMemoryOperations< Devices::Host, Devices::Cuda >::copy( &result.first, idxOutput, 1 );
+      MultiDeviceMemoryOperations< Devices::Host, Devices::Cuda >::copy( &result.second, output, 1 );
       return result;
    }
 

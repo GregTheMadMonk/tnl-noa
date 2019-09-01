@@ -17,7 +17,7 @@
 //#define CUDA_REDUCTION_PROFILING
 
 #include <TNL/Containers/Algorithms/Reduction.h>
-#include <TNL/Containers/Algorithms/ArrayOperations.h>
+#include <TNL/Containers/Algorithms/MultiDeviceMemoryOperations.h>
 #include <TNL/Containers/Algorithms/CudaReductionKernel.h>
 
 #ifdef CUDA_REDUCTION_PROFILING
@@ -310,7 +310,7 @@ reduce( const Index size,
          new Result[ reducedSize ]
          #endif
       };
-      ArrayOperations< Devices::Host, Devices::Cuda >::copy( resultArray.get(), deviceAux1, reducedSize );
+      MultiDeviceMemoryOperations< Devices::Host, Devices::Cuda >::copy( resultArray.get(), deviceAux1, reducedSize );
 
       #ifdef CUDA_REDUCTION_PROFILING
          timer.stop();
@@ -415,8 +415,8 @@ reduceWithArgument( const Index size,
          new Index[ reducedSize ]
          #endif
       };
-      ArrayOperations< Devices::Host, Devices::Cuda >::copy( resultArray.get(), deviceAux1, reducedSize );
-      ArrayOperations< Devices::Host, Devices::Cuda >::copy( indexArray.get(), deviceIndexes, reducedSize );
+      MultiDeviceMemoryOperations< Devices::Host, Devices::Cuda >::copy( resultArray.get(), deviceAux1, reducedSize );
+      MultiDeviceMemoryOperations< Devices::Host, Devices::Cuda >::copy( indexArray.get(), deviceIndexes, reducedSize );
 
       #ifdef CUDA_REDUCTION_PROFILING
          timer.stop();

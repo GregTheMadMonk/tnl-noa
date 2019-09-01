@@ -18,7 +18,7 @@
 
 #include <TNL/Assert.h>
 #include <TNL/Containers/Algorithms/Multireduction.h>
-#include <TNL/Containers/Algorithms/ArrayOperations.h>
+#include <TNL/Containers/Algorithms/MultiDeviceMemoryOperations.h>
 #include <TNL/Containers/Algorithms/CudaMultireductionKernel.h>
 
 #ifdef CUDA_REDUCTION_PROFILING
@@ -205,7 +205,7 @@ reduce( const Result zero,
 
    // transfer the reduced data from device to host
    std::unique_ptr< Result[] > resultArray{ new Result[ n * reducedSize ] };
-   ArrayOperations< Devices::Host, Devices::Cuda >::copy( resultArray.get(), deviceAux1, n * reducedSize );
+   MultiDeviceMemoryOperations< Devices::Host, Devices::Cuda >::copy( resultArray.get(), deviceAux1, n * reducedSize );
 
    #ifdef CUDA_REDUCTION_PROFILING
       timer.stop();

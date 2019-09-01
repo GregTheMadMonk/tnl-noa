@@ -1,5 +1,5 @@
 /***************************************************************************
-                          ArrayOperationsHost.hpp  -  description
+                          MemoryOperationsHost.hpp  -  description
                              -------------------
     begin                : Jul 16, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -14,8 +14,8 @@
 #include <stdexcept>
 #include <algorithm>  // std::copy, std::equal
 
+#include <TNL/Containers/Algorithms/MemoryOperations.h>
 #include <TNL/ParallelFor.h>
-#include <TNL/Containers/Algorithms/ArrayOperations.h>
 #include <TNL/Containers/Algorithms/Reduction.h>
 
 namespace TNL {
@@ -24,7 +24,7 @@ namespace Algorithms {
 
 template< typename Element >
 void
-ArrayOperations< Devices::Host >::
+MemoryOperations< Devices::Host >::
 setElement( Element* data,
             const Element& value )
 {
@@ -34,7 +34,7 @@ setElement( Element* data,
 
 template< typename Element >
 Element
-ArrayOperations< Devices::Host >::
+MemoryOperations< Devices::Host >::
 getElement( const Element* data )
 {
    TNL_ASSERT_TRUE( data, "Attempted to get data through a nullptr." );
@@ -43,7 +43,7 @@ getElement( const Element* data )
 
 template< typename Element, typename Index >
 void
-ArrayOperations< Devices::Host >::
+MemoryOperations< Devices::Host >::
 set( Element* data,
      const Element& value,
      const Index size )
@@ -61,7 +61,7 @@ template< typename DestinationElement,
           typename SourceElement,
           typename Index >
 void
-ArrayOperations< Devices::Host >::
+MemoryOperations< Devices::Host >::
 copy( DestinationElement* destination,
       const SourceElement* source,
       const Index size )
@@ -88,21 +88,20 @@ template< typename DestinationElement,
           typename Index,
           typename SourceIterator >
 void
-ArrayOperations< Devices::Host >::
+MemoryOperations< Devices::Host >::
 copyFromIterator( DestinationElement* destination,
                   Index destinationSize,
                   SourceIterator first,
                   SourceIterator last )
 {
-   ArrayOperations< void >::copyFromIterator( destination, destinationSize, first, last );
+   MemoryOperations< void >::copyFromIterator( destination, destinationSize, first, last );
 }
-
 
 template< typename DestinationElement,
           typename SourceElement,
           typename Index >
 bool
-ArrayOperations< Devices::Host >::
+MemoryOperations< Devices::Host >::
 compare( const DestinationElement* destination,
          const SourceElement* source,
          const Index size )
@@ -124,7 +123,7 @@ compare( const DestinationElement* destination,
 template< typename Element,
           typename Index >
 bool
-ArrayOperations< Devices::Host >::
+MemoryOperations< Devices::Host >::
 containsValue( const Element* data,
                const Index size,
                const Element& value )
@@ -139,14 +138,14 @@ containsValue( const Element* data,
    }
    else {
       // sequential algorithm can return as soon as it finds a match
-      return ArrayOperations< void >::containsValue( data, size, value );
+      return MemoryOperations< void >::containsValue( data, size, value );
    }
 }
 
 template< typename Element,
           typename Index >
 bool
-ArrayOperations< Devices::Host >::
+MemoryOperations< Devices::Host >::
 containsOnlyValue( const Element* data,
                    const Index size,
                    const Element& value )
@@ -161,7 +160,7 @@ containsOnlyValue( const Element* data,
    }
    else {
       // sequential algorithm can return as soon as it finds a mismatch
-      return ArrayOperations< void >::containsOnlyValue( data, size, value );
+      return MemoryOperations< void >::containsOnlyValue( data, size, value );
    }
 }
 
