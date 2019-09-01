@@ -14,7 +14,7 @@
 
 #include "DistributedArray.h"
 
-#include <TNL/ParallelFor.h>
+#include <TNL/Algorithms/ParallelFor.h>
 #include <TNL/Communicators/MpiDefs.h>  // important only when MPI is disabled
 
 namespace TNL {
@@ -110,7 +110,7 @@ copyFromGlobal( ConstLocalViewType globalArray )
       localView[ i ] = globalArray[ localRange.getGlobalIndex( i ) ];
    };
 
-   ParallelFor< DeviceType >::exec( (IndexType) 0, localRange.getSize(), kernel );
+   Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, localRange.getSize(), kernel );
 }
 
 

@@ -15,11 +15,11 @@
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/VectorView.h>
-#include <TNL/Containers/Algorithms/Multireduction.h>
+#include <TNL/Algorithms/Multireduction.h>
 
 using namespace TNL;
 using namespace TNL::Containers;
-using namespace TNL::Containers::Algorithms;
+using namespace TNL::Algorithms;
 
 template< typename View >
 void setLinearSequence( View& deviceVector )

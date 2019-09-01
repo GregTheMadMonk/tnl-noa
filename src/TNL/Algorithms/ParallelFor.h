@@ -29,9 +29,10 @@
  */
 
 namespace TNL {
+namespace Algorithms {
 
 enum ParallelForMode { SynchronousMode, AsynchronousMode };
-   
+
 template< typename Device = Devices::Host,
           ParallelForMode Mode = SynchronousMode >
 struct ParallelFor
@@ -385,4 +386,5 @@ struct ParallelFor3D< Devices::Cuda, Mode >
    }
 };
 
+} // namespace Algorithms
 } // namespace TNL

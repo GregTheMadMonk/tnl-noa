@@ -16,8 +16,6 @@
 
 #pragma once
 
-#include <TNL/TemplateStaticFor.h>
-
 #include <TNL/Meshes/MeshDetails/initializer/EntitySeed.h>
 #include <TNL/Meshes/MeshDetails/initializer/SubentitySeedsCreator.h>
 #include <TNL/Meshes/MeshDetails/initializer/SuperentityStorageInitializer.h>

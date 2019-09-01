@@ -82,8 +82,8 @@ Vector< Real, Device, Index, Allocator >&
 Vector< Real, Device, Index, Allocator >::
 operator=( const VectorExpression& expression )
 {
-   Algorithms::VectorAssignment< Vector, VectorExpression >::resize( *this, expression );
-   Algorithms::VectorAssignment< Vector, VectorExpression >::assign( *this, expression );
+   detail::VectorAssignment< Vector, VectorExpression >::resize( *this, expression );
+   detail::VectorAssignment< Vector, VectorExpression >::assign( *this, expression );
    return *this;
 }
 
@@ -96,7 +96,7 @@ Vector< Real, Device, Index, Allocator >&
 Vector< Real, Device, Index, Allocator >::
 operator+=( const VectorExpression& expression )
 {
-   Algorithms::VectorAssignmentWithOperation< Vector, VectorExpression >::addition( *this, expression );
+   detail::VectorAssignmentWithOperation< Vector, VectorExpression >::addition( *this, expression );
    return *this;
 }
 
@@ -109,7 +109,7 @@ Vector< Real, Device, Index, Allocator >&
 Vector< Real, Device, Index, Allocator >::
 operator-=( const VectorExpression& expression )
 {
-   Algorithms::VectorAssignmentWithOperation< Vector, VectorExpression >::subtraction( *this, expression );
+   detail::VectorAssignmentWithOperation< Vector, VectorExpression >::subtraction( *this, expression );
    return *this;
 }
 
@@ -122,7 +122,7 @@ Vector< Real, Device, Index, Allocator >&
 Vector< Real, Device, Index, Allocator >::
 operator*=( const VectorExpression& expression )
 {
-   Algorithms::VectorAssignmentWithOperation< Vector, VectorExpression >::multiplication( *this, expression );
+   detail::VectorAssignmentWithOperation< Vector, VectorExpression >::multiplication( *this, expression );
    return *this;
 }
 
@@ -135,7 +135,7 @@ Vector< Real, Device, Index, Allocator >&
 Vector< Real, Device, Index, Allocator >::
 operator/=( const VectorExpression& expression )
 {
-   Algorithms::VectorAssignmentWithOperation< Vector, VectorExpression >::division( *this, expression );
+   detail::VectorAssignmentWithOperation< Vector, VectorExpression >::division( *this, expression );
    return *this;
 }
 

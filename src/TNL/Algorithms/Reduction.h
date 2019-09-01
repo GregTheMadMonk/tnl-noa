@@ -19,7 +19,6 @@
 #include <TNL/Devices/Cuda.h>
 
 namespace TNL {
-namespace Containers {
 namespace Algorithms {
 
 /**
@@ -236,7 +235,6 @@ struct Reduction< Devices::Cuda >
 };
 
 } // namespace Algorithms
-} // namespace Containers
 } // namespace TNL
 
-#include <TNL/Containers/Algorithms/Reduction.hpp>
+#include <TNL/Algorithms/Reduction.hpp>

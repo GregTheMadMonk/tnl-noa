@@ -18,7 +18,6 @@
 #include <TNL/Containers/Array.h>
 
 namespace TNL {
-namespace Containers {
 namespace Algorithms {
 
 #ifdef HAVE_CUDA
@@ -249,7 +248,7 @@ struct CudaScanKernelLauncher
       //std::cerr << "numberOfgrids =  " << numberOfGrids << std::endl;
 
       // allocate array for the block sums
-      Array< Real, Devices::Cuda > blockSums;
+      Containers::Array< Real, Devices::Cuda > blockSums;
       blockSums.setSize( numberOfBlocks );
 
       // loop over all grids
@@ -388,5 +387,4 @@ struct CudaScanKernelLauncher
 #endif
 
 } // namespace Algorithms
-} // namespace Containers
 } // namespace TNL

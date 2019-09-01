@@ -139,7 +139,7 @@ void test_helper_setValue( DistributedArray& array, BufferView& buffer_view )
    {
       buffer_view[ i - localRange.getBegin() ] = array_view( i );
    };
-   ParallelFor< DeviceType >::exec( localRange.getBegin(), localRange.getEnd(), kernel );
+   Algorithms::ParallelFor< DeviceType >::exec( localRange.getBegin(), localRange.getEnd(), kernel );
 }
 
 TYPED_TEST( DistributedNDArray_1D_test, setValue )
@@ -224,7 +224,7 @@ void test_helper_comparisonOperators( DistributedArray& u, DistributedArray& v, 
       v_view( gi ) = gi;
       w_view( gi ) = 2 * gi;
    };
-   ParallelFor< DeviceType >::exec( localRange.getBegin(), localRange.getEnd(), kernel );
+   Algorithms::ParallelFor< DeviceType >::exec( localRange.getBegin(), localRange.getEnd(), kernel );
 }
 
 TYPED_TEST( DistributedNDArray_1D_test, comparisonOperators )

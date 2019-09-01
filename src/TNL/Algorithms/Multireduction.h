@@ -18,7 +18,6 @@
 #include <TNL/Devices/Cuda.h>
 
 namespace TNL {
-namespace Containers {
 namespace Algorithms {
 
 template< typename Device >
@@ -83,7 +82,6 @@ struct Multireduction< Devices::Cuda >
 };
 
 } // namespace Algorithms
-} // namespace Containers
 } // namespace TNL
 
 #include "Multireduction.hpp"

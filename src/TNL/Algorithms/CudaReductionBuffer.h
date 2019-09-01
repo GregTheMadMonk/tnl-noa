@@ -19,7 +19,6 @@
 #include <TNL/Exceptions/CudaSupportMissing.h>
 
 namespace TNL {
-namespace Containers {
 namespace Algorithms {
 
 class CudaReductionBuffer
@@ -92,5 +91,4 @@ class CudaReductionBuffer
 };
 
 } // namespace Algorithms
-} // namespace Containers
 } // namespace TNL

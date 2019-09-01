@@ -13,6 +13,7 @@
 #include <TNL/Containers/StaticVector.h>
 
 namespace TNL {
+namespace Algorithms {
 
 struct StaticVectorFor
 {
@@ -48,4 +49,5 @@ struct StaticVectorFor
    }
 };
 
+} // namespace Algorithms
 } // namespace TNL

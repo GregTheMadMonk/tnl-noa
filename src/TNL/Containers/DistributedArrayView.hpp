@@ -180,7 +180,7 @@ copyFromGlobal( ConstLocalViewType globalArray )
       localView[ i ] = globalArray[ localRange.getGlobalIndex( i ) ];
    };
 
-   ParallelFor< DeviceType >::exec( (IndexType) 0, localRange.getSize(), kernel );
+   Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, localRange.getSize(), kernel );
 }
 
 

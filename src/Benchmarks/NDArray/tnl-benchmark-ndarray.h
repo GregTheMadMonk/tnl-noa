@@ -14,7 +14,7 @@
 
 #include <TNL/Assert.h>
 #include <TNL/Math.h>
-#include <TNL/ParallelFor.h>
+#include <TNL/Algorithms/ParallelFor.h>
 
 #include <TNL/Containers/NDArray.h>
 #include <TNL/Containers/ndarray/Operations.h>
@@ -98,7 +98,7 @@ void benchmark_array( Benchmark& benchmark, index_type size = 500000000 )
    };
 
    auto f = [&]() {
-      TNL::ParallelFor< Device >::exec( 0, (int) size, kernel, a.getData(), b.getData() );
+      Algorithms::ParallelFor< Device >::exec( 0, (int) size, kernel, a.getData(), b.getData() );
    };
 
    // warm-up for all benchmarks

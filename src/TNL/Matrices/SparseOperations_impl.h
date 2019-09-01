@@ -17,7 +17,7 @@
 #include <algorithm>
 
 #include <TNL/Pointers/DevicePointer.h>
-#include <TNL/ParallelFor.h>
+#include <TNL/Algorithms/ParallelFor.h>
 
 namespace TNL {
 namespace Matrices {
@@ -353,11 +353,11 @@ reorderArray( const Array1& src, Array2& dest, const PermutationArray& perm )
       dest[ i ] = src[ perm[ i ] ];
    };
 
-   ParallelFor< DeviceType >::exec( (IndexType) 0, src.getSize(),
-                                    kernel,
-                                    src.getData(),
-                                    dest.getData(),
-                                    perm.getData() );
+   Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, src.getSize(),
+                                                kernel,
+                                                src.getData(),
+                                                dest.getData(),
+                                                perm.getData() );
 }
 
 } // namespace Matrices

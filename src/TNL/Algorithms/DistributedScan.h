@@ -12,11 +12,10 @@
 
 #pragma once
 
-#include <TNL/Containers/Algorithms/Scan.h>
+#include <TNL/Algorithms/Scan.h>
 #include <TNL/Containers/Vector.h>
 
 namespace TNL {
-namespace Containers {
 namespace Algorithms {
 
 template< ScanType Type >
@@ -51,7 +50,7 @@ struct DistributedScan
          const int nproc = CommunicatorType::GetSize( group );
          RealType dataForScatter[ nproc ];
          for( int i = 0; i < nproc; i++ ) dataForScatter[ i ] = localSum;
-         Vector< RealType, Devices::Host > rankSums( nproc );
+         Containers::Vector< RealType, Devices::Host > rankSums( nproc );
          // NOTE: exchanging general data types does not work with MPI
          CommunicatorType::Alltoall( dataForScatter, 1, rankSums.getData(), 1, group );
 
@@ -66,5 +65,4 @@ struct DistributedScan
 };
 
 } // namespace Algorithms
-} // namespace Containers
 } // namespace TNL

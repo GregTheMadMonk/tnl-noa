@@ -16,6 +16,7 @@
 #include <TNL/Cuda/CudaCallable.h>
 
 namespace TNL {
+namespace Algorithms {
 namespace detail {
 
 template< typename IndexType,
@@ -89,4 +90,5 @@ struct TemplateStaticFor
    }
 };
 
+} // namespace Algorithms
 } // namespace TNL

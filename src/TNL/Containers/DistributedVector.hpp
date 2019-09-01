@@ -13,7 +13,7 @@
 #pragma once
 
 #include "DistributedVector.h"
-#include <TNL/Containers/Algorithms/DistributedScan.h>
+#include <TNL/Algorithms/DistributedScan.h>
 
 namespace TNL {
 namespace Containers {

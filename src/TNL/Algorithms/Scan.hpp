@@ -17,12 +17,11 @@
 #include <TNL/Assert.h>
 #include <TNL/Containers/Array.h>
 #include <TNL/Containers/StaticArray.h>
-#include <TNL/Containers/Algorithms/CudaScanKernel.h>
+#include <TNL/Algorithms/CudaScanKernel.h>
 #include <TNL/Exceptions/CudaSupportMissing.h>
 #include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
-namespace Containers {
 namespace Algorithms {
 
 template< ScanType Type >
@@ -61,7 +60,7 @@ performFirstPhase( Vector& v,
 
 #ifdef HAVE_OPENMP
    const int threads = Devices::Host::getMaxThreadsCount();
-   Array< RealType, Devices::Host > block_sums( threads + 1 );
+   Containers::Array< RealType, Devices::Host > block_sums( threads + 1 );
    block_sums[ 0 ] = zero;
 
    #pragma omp parallel num_threads(threads)
@@ -100,8 +99,8 @@ performFirstPhase( Vector& v,
    return block_sums;
 #else
    // FIXME: StaticArray does not have getElement() which is used in DistributedScan
-//   return StaticArray< 1, RealType > block_sums;
-   Array< RealType, Devices::Host > block_sums( 1 );
+//   return Containers::StaticArray< 1, RealType > block_sums;
+   Containers::Array< RealType, Devices::Host > block_sums( 1 );
    block_sums[ 0 ] = zero;
 
    if( Type == ScanType::Inclusive ) {
@@ -303,5 +302,4 @@ perform( Vector& v,
 }
 
 } // namespace Algorithms
-} // namespace Containers
 } // namespace TNL

@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Containers/StaticVector.h>
-#include <TNL/Containers/Algorithms/VectorAssignment.h>
+#include <TNL/Containers/detail/VectorAssignment.h>
 
 namespace TNL {
 namespace Containers {
@@ -22,7 +22,7 @@ template< int Size, typename Real >
              template< typename, typename > class Operation >
 StaticVector< Size, Real >::StaticVector( const Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& expr )
 {
-   Algorithms::VectorAssignment< StaticVector< Size, Real >, Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation > >::assignStatic( *this, expr );
+   detail::VectorAssignment< StaticVector< Size, Real >, Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation > >::assignStatic( *this, expr );
 }
 
 template< int Size,
@@ -32,7 +32,7 @@ template< int Size,
 __cuda_callable__
 StaticVector< Size, Real >::StaticVector( const Expressions::StaticUnaryExpressionTemplate< T, Operation >& expr )
 {
-   Algorithms::VectorAssignment< StaticVector< Size, Real >, Expressions::StaticUnaryExpressionTemplate< T, Operation > >::assignStatic( *this, expr );
+   detail::VectorAssignment< StaticVector< Size, Real >, Expressions::StaticUnaryExpressionTemplate< T, Operation > >::assignStatic( *this, expr );
 }
 
 template< int Size, typename Real >
@@ -55,7 +55,7 @@ template< int Size, typename Real >
 StaticVector< Size, Real >&
 StaticVector< Size, Real >::operator=( const VectorExpression& expression )
 {
-   Algorithms::VectorAssignment< StaticVector< Size, Real >, VectorExpression >::assignStatic( *this, expression );
+   detail::VectorAssignment< StaticVector< Size, Real >, VectorExpression >::assignStatic( *this, expression );
    return *this;
 }
 
@@ -64,7 +64,7 @@ template< int Size, typename Real >
 __cuda_callable__
 StaticVector< Size, Real >& StaticVector< Size, Real >::operator+=( const VectorExpression& expression )
 {
-   Algorithms::VectorAssignmentWithOperation< StaticVector, VectorExpression >::additionStatic( *this, expression );
+   detail::VectorAssignmentWithOperation< StaticVector, VectorExpression >::additionStatic( *this, expression );
    return *this;
 }
 
@@ -73,7 +73,7 @@ template< int Size, typename Real >
 __cuda_callable__
 StaticVector< Size, Real >& StaticVector< Size, Real >::operator-=( const VectorExpression& expression )
 {
-   Algorithms::VectorAssignmentWithOperation< StaticVector, VectorExpression >::subtractionStatic( *this, expression );
+   detail::VectorAssignmentWithOperation< StaticVector, VectorExpression >::subtractionStatic( *this, expression );
    return *this;
 }
 
@@ -82,7 +82,7 @@ template< int Size, typename Real >
 __cuda_callable__
 StaticVector< Size, Real >& StaticVector< Size, Real >::operator*=( const VectorExpression& expression )
 {
-   Algorithms::VectorAssignmentWithOperation< StaticVector, VectorExpression >::multiplicationStatic( *this, expression );
+   detail::VectorAssignmentWithOperation< StaticVector, VectorExpression >::multiplicationStatic( *this, expression );
    return *this;
 }
 
@@ -91,7 +91,7 @@ template< int Size, typename Real >
 __cuda_callable__
 StaticVector< Size, Real >& StaticVector< Size, Real >::operator/=( const VectorExpression& expression )
 {
-   Algorithms::VectorAssignmentWithOperation< StaticVector, VectorExpression >::divisionStatic( *this, expression );
+   detail::VectorAssignmentWithOperation< StaticVector, VectorExpression >::divisionStatic( *this, expression );
    return *this;
 }
 
@@ -102,7 +102,7 @@ StaticVector< Size, Real >::
 operator StaticVector< Size, OtherReal >() const
 {
    StaticVector< Size, OtherReal > aux;
-   StaticFor< 0, Size >::exec( Algorithms::detail::AssignArrayFunctor{}, aux.getData(), this->getData() );
+   Algorithms::StaticFor< 0, Size >::exec( detail::AssignArrayFunctor{}, aux.getData(), this->getData() );
    return aux;
 }
 

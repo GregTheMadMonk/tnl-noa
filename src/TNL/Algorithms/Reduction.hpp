@@ -16,9 +16,9 @@
 
 //#define CUDA_REDUCTION_PROFILING
 
-#include <TNL/Containers/Algorithms/Reduction.h>
-#include <TNL/Containers/Algorithms/MultiDeviceMemoryOperations.h>
-#include <TNL/Containers/Algorithms/CudaReductionKernel.h>
+#include <TNL/Algorithms/Reduction.h>
+#include <TNL/Algorithms/MultiDeviceMemoryOperations.h>
+#include <TNL/Algorithms/CudaReductionKernel.h>
 
 #ifdef CUDA_REDUCTION_PROFILING
 #include <iostream>
@@ -26,7 +26,6 @@
 #endif
 
 namespace TNL {
-namespace Containers {
 namespace Algorithms {
 
 /****
@@ -453,5 +452,4 @@ reduceWithArgument( const Index size,
 }
 
 } // namespace Algorithms
-} // namespace Containers
 } // namespace TNL

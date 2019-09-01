@@ -13,6 +13,7 @@
 #include <TNL/Cuda/CudaCallable.h>
 
 namespace TNL {
+namespace Algorithms {
 
 // Manual unrolling does not make sense for loops with a large iterations
 // count. For a very large iterations count it would trigger the compiler's
@@ -57,4 +58,5 @@ struct StaticFor< Begin, End, false >
    }
 };
 
+} // namespace Algorithms
 } // namespace TNL

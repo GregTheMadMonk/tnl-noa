@@ -13,14 +13,13 @@
 #ifdef HAVE_GTEST
 #include <TNL/Allocators/Host.h>
 #include <TNL/Allocators/Cuda.h>
-#include <TNL/Containers/Algorithms/MemoryOperations.h>
-#include <TNL/Containers/Algorithms/MultiDeviceMemoryOperations.h>
+#include <TNL/Algorithms/MemoryOperations.h>
+#include <TNL/Algorithms/MultiDeviceMemoryOperations.h>
 
 #include "gtest/gtest.h"
 
 using namespace TNL;
-using namespace TNL::Containers;
-using namespace TNL::Containers::Algorithms;
+using namespace TNL::Algorithms;
 
 constexpr int ARRAY_TEST_SIZE = 5000;
 

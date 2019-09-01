@@ -578,13 +578,13 @@ benchmarkVectorOperations( Benchmark & benchmark,
    ////
    // Exclusive prefix sum
    auto exclusivePrefixSumHost = [&]() {
-      hostVector.template prefixSum< Containers::Algorithms::ScanType::Exclusive >();
+      hostVector.template prefixSum< Algorithms::ScanType::Exclusive >();
    };
    benchmark.setOperation( "exclusive prefix sum", 2 * datasetSize );
    benchmark.time< Devices::Host >( reset1, "CPU ET", exclusivePrefixSumHost );
 #ifdef HAVE_CUDA
    auto exclusivePrefixSumCuda = [&]() {
-      deviceVector.template prefixSum< Containers::Algorithms::ScanType::Exclusive >();
+      deviceVector.template prefixSum< Algorithms::ScanType::Exclusive >();
    };
    benchmark.time< Devices::Cuda >( reset1, "GPU ET", exclusivePrefixSumCuda );
 #endif

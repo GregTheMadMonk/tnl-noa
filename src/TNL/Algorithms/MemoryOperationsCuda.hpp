@@ -14,14 +14,13 @@
 #include <memory>  // std::unique_ptr
 #include <stdexcept>
 
-#include <TNL/Containers/Algorithms/MemoryOperations.h>
-#include <TNL/Containers/Algorithms/MultiDeviceMemoryOperations.h>
-#include <TNL/ParallelFor.h>
-#include <TNL/Containers/Algorithms/Reduction.h>
+#include <TNL/Algorithms/MemoryOperations.h>
+#include <TNL/Algorithms/MultiDeviceMemoryOperations.h>
+#include <TNL/Algorithms/ParallelFor.h>
+#include <TNL/Algorithms/Reduction.h>
 #include <TNL/Exceptions/CudaSupportMissing.h>
 
 namespace TNL {
-namespace Containers {
 namespace Algorithms {
 
 template< typename Element >
@@ -156,5 +155,4 @@ containsOnlyValue( const Element* data,
 }
 
 } // namespace Algorithms
-} // namespace Containers
 } // namespace TNL

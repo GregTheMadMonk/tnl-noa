@@ -11,33 +11,31 @@
 #pragma once
 
 #include <TNL/TypeTraits.h>
-#include <TNL/StaticFor.h>
+#include <TNL/Algorithms/StaticFor.h>
 
 namespace TNL {
 namespace Containers {
-namespace Algorithms {
+namespace detail {
 
-   namespace detail {
-      struct AssignArrayFunctor
-      {
-         template< typename LeftValue, typename RightValue >
-         __cuda_callable__
-         void operator()( int i, LeftValue& data, const RightValue& v ) const
-         {
-            data[ i ] = v[ i ];
-         }
-      };
+struct AssignArrayFunctor
+{
+   template< typename LeftValue, typename RightValue >
+   __cuda_callable__
+   void operator()( int i, LeftValue& data, const RightValue& v ) const
+   {
+      data[ i ] = v[ i ];
+   }
+};
 
-      struct AssignValueFunctor
-      {
-         template< typename LeftValue, typename RightValue >
-         __cuda_callable__
-         void operator()( int i, LeftValue& data, const RightValue& v ) const
-         {
-            data[ i ] = v;
-         }
-      };
-   } // namespace detail
+struct AssignValueFunctor
+{
+   template< typename LeftValue, typename RightValue >
+   __cuda_callable__
+   void operator()( int i, LeftValue& data, const RightValue& v ) const
+   {
+      data[ i ] = v;
+   }
+};
 
 template< typename StaticArray,
           typename T,
@@ -55,7 +53,7 @@ struct StaticArrayAssignment< StaticArray, T, true >
    static void assign( StaticArray& a, const T& v )
    {
       static_assert( StaticArray::getSize() == T::getSize(), "Cannot assign static arrays with different size." );
-      StaticFor< 0, StaticArray::getSize() >::exec( detail::AssignArrayFunctor{}, a.getData(), v );
+      Algorithms::StaticFor< 0, StaticArray::getSize() >::exec( AssignArrayFunctor{}, a.getData(), v );
    }
 };
 
@@ -70,10 +68,10 @@ struct StaticArrayAssignment< StaticArray, T, false >
    __cuda_callable__
    static void assign( StaticArray& a, const T& v )
    {
-      StaticFor< 0, StaticArray::getSize() >::exec( detail::AssignValueFunctor{}, a, v );
+      Algorithms::StaticFor< 0, StaticArray::getSize() >::exec( AssignValueFunctor{}, a, v );
    }
 };
 
-} // namespace Algorithms
+} // namespace detail
 } // namespace Containers
 } // namespace TNL

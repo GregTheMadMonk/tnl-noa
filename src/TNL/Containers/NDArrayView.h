@@ -18,8 +18,8 @@
 #include <TNL/Containers/ndarray/Executors.h>
 #include <TNL/Containers/ndarray/BoundaryExecutors.h>
 #include <TNL/Containers/ndarray/Operations.h>
-#include <TNL/Containers/Algorithms/MemoryOperations.h>
-#include <TNL/Containers/Algorithms/MultiDeviceMemoryOperations.h>
+#include <TNL/Algorithms/MemoryOperations.h>
+#include <TNL/Algorithms/MultiDeviceMemoryOperations.h>
 
 namespace TNL {
 namespace Containers {

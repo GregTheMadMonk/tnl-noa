@@ -10,10 +10,9 @@
 
 #pragma once
 
-#include <TNL/Containers/Algorithms/MemoryOperations.h>
+#include <TNL/Algorithms/MemoryOperations.h>
 
 namespace TNL {
-namespace Containers {
 namespace Algorithms {
 
 template< typename Element >
@@ -133,5 +132,4 @@ containsOnlyValue( const Element* data,
 }
 
 } // namespace Algorithms
-} // namespace Containers
 } // namespace TNL

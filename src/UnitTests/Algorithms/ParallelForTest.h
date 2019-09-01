@@ -11,7 +11,7 @@
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Containers/Array.h>
-#include <TNL/ParallelFor.h>
+#include <TNL/Algorithms/ParallelFor.h>
 
 #ifdef HAVE_GTEST
 #include <gtest/gtest.h>
@@ -38,7 +38,7 @@ TEST( ParallelForTest, 1D_host )
       {
          view[i] = i;
       };
-      ParallelFor< Devices::Host >::exec( 0, size, kernel );
+      Algorithms::ParallelFor< Devices::Host >::exec( 0, size, kernel );
 
       if( a != expected ) {
          for (int i = 0; i < size; i++)
@@ -65,7 +65,7 @@ TEST( ParallelForTest, 2D_host )
       {
          view[i] = i;
       };
-      ParallelFor2D< Devices::Host >::exec( 0, 0, size, 1, kernel1 );
+      Algorithms::ParallelFor2D< Devices::Host >::exec( 0, 0, size, 1, kernel1 );
 
       if( a != expected ) {
          for (int i = 0; i < size; i++)
@@ -77,7 +77,7 @@ TEST( ParallelForTest, 2D_host )
       {
          view[j] = j;
       };
-      ParallelFor2D< Devices::Host >::exec( 0, 0, 1, size, kernel2 );
+      Algorithms::ParallelFor2D< Devices::Host >::exec( 0, 0, 1, size, kernel2 );
 
       if( a != expected ) {
          for (int i = 0; i < size; i++)
@@ -104,7 +104,7 @@ TEST( ParallelForTest, 3D_host )
       {
          view[i] = i;
       };
-      ParallelFor3D< Devices::Host >::exec( 0, 0, 0, size, 1, 1, kernel1 );
+      Algorithms::ParallelFor3D< Devices::Host >::exec( 0, 0, 0, size, 1, 1, kernel1 );
 
       if( a != expected ) {
          for (int i = 0; i < size; i++)
@@ -116,7 +116,7 @@ TEST( ParallelForTest, 3D_host )
       {
          view[j] = j;
       };
-      ParallelFor3D< Devices::Host >::exec( 0, 0, 0, 1, size, 1, kernel2 );
+      Algorithms::ParallelFor3D< Devices::Host >::exec( 0, 0, 0, 1, size, 1, kernel2 );
 
       if( a != expected ) {
          for (int i = 0; i < size; i++)
@@ -128,7 +128,7 @@ TEST( ParallelForTest, 3D_host )
       {
          view[k] = k;
       };
-      ParallelFor3D< Devices::Host >::exec( 0, 0, 0, 1, 1, size, kernel3 );
+      Algorithms::ParallelFor3D< Devices::Host >::exec( 0, 0, 0, 1, 1, size, kernel3 );
 
       if( a != expected ) {
          for (int i = 0; i < size; i++)
@@ -158,7 +158,7 @@ void test_1D_cuda()
       {
          view[i] = i;
       };
-      ParallelFor< Devices::Cuda >::exec( 0, size, kernel );
+      Algorithms::ParallelFor< Devices::Cuda >::exec( 0, size, kernel );
 
       ArrayHost ah;
       ah = a;
@@ -194,7 +194,7 @@ void test_2D_cuda()
       {
          view[i] = i;
       };
-      ParallelFor2D< Devices::Cuda >::exec( 0, 0, size, 1, kernel1 );
+      Algorithms::ParallelFor2D< Devices::Cuda >::exec( 0, 0, size, 1, kernel1 );
 
       ArrayHost ah;
       ah = a;
@@ -208,7 +208,7 @@ void test_2D_cuda()
       {
          view[j] = j;
       };
-      ParallelFor2D< Devices::Cuda >::exec( 0, 0, 1, size, kernel2 );
+      Algorithms::ParallelFor2D< Devices::Cuda >::exec( 0, 0, 1, size, kernel2 );
 
       ah = a;
       if( ah != expected ) {
@@ -243,7 +243,7 @@ void test_3D_cuda()
       {
          view[i] = i;
       };
-      ParallelFor3D< Devices::Cuda >::exec( 0, 0, 0, size, 1, 1, kernel1 );
+      Algorithms::ParallelFor3D< Devices::Cuda >::exec( 0, 0, 0, size, 1, 1, kernel1 );
 
       ArrayHost ah;
       ah = a;
@@ -257,7 +257,7 @@ void test_3D_cuda()
       {
          view[j] = j;
       };
-      ParallelFor3D< Devices::Cuda >::exec( 0, 0, 0, 1, size, 1, kernel2 );
+      Algorithms::ParallelFor3D< Devices::Cuda >::exec( 0, 0, 0, 1, size, 1, kernel2 );
 
       ah = a;
       if( ah != expected ) {
@@ -270,7 +270,7 @@ void test_3D_cuda()
       {
          view[k] = k;
       };
-      ParallelFor3D< Devices::Cuda >::exec( 0, 0, 0, 1, 1, size, kernel3 );
+      Algorithms::ParallelFor3D< Devices::Cuda >::exec( 0, 0, 0, 1, 1, size, kernel3 );
 
       ah = a;
       if( ah != expected ) {
@@ -287,4 +287,4 @@ TEST( ParallelForTest, 3D_cuda )
 #endif
 #endif
 
-#include "main.h"
+#include "../main.h"

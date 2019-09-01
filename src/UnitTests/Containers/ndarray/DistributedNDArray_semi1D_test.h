@@ -181,7 +181,7 @@ void test_helper_comparisonOperators( DistributedArray& u, DistributedArray& v, 
       v_view( q, gi, j ) = gi;
       w_view( q, gi, j ) = 2 * gi;
    };
-   ParallelFor3D< DeviceType >::exec( (IndexType) 0, localRange.getBegin(), (IndexType) 0,
+   Algorithms::ParallelFor3D< DeviceType >::exec( (IndexType) 0, localRange.getBegin(), (IndexType) 0,
                                       9, localRange.getEnd(), u.template getSize< 2 >(),
                                       kernel );
 }

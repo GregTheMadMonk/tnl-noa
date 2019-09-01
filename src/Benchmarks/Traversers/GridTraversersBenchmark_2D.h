@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <TNL/ParallelFor.h>
+#include <TNL/Algorithms/ParallelFor.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Containers/Vector.h>

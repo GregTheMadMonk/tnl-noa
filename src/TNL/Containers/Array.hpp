@@ -16,10 +16,8 @@
 #include <TNL/Assert.h>
 #include <TNL/Math.h>
 #include <TNL/TypeInfo.h>
-#include <TNL/Containers/Algorithms/MemoryOperations.h>
-#include <TNL/Containers/Algorithms/MultiDeviceMemoryOperations.h>
-#include <TNL/Containers/Algorithms/ArrayIO.h>
-#include <TNL/Containers/Algorithms/ArrayAssignment.h>
+#include <TNL/Containers/detail/ArrayIO.h>
+#include <TNL/Containers/detail/ArrayAssignment.h>
 
 #include "Array.h"
 
@@ -186,7 +184,7 @@ String
 Array< Value, Device, Index, Allocator >::
 getSerializationType()
 {
-   return Algorithms::ArrayIO< Value, Device, Index >::getSerializationType();
+   return detail::ArrayIO< Value, Device, Index >::getSerializationType();
 }
 
 template< typename Value,
@@ -581,8 +579,8 @@ Array< Value, Device, Index, Allocator >&
 Array< Value, Device, Index, Allocator >::
 operator=( const T& data )
 {
-   Algorithms::ArrayAssignment< Array, T >::resize( *this, data );
-   Algorithms::ArrayAssignment< Array, T >::assign( *this, data );
+   detail::ArrayAssignment< Array, T >::resize( *this, data );
+   detail::ArrayAssignment< Array, T >::assign( *this, data );
    return *this;
 }
 
@@ -761,7 +759,7 @@ std::ostream& operator<<( std::ostream& str, const Array< Value, Device, Index, 
 template< typename Value, typename Device, typename Index, typename Allocator >
 File& operator<<( File& file, const Array< Value, Device, Index, Allocator >& array )
 {
-   using IO = Algorithms::ArrayIO< Value, Device, Index >;
+   using IO = detail::ArrayIO< Value, Device, Index >;
    saveObjectType( file, IO::getSerializationType() );
    const Index size = array.getSize();
    file.save( &size );
@@ -780,7 +778,7 @@ File& operator<<( File&& file, const Array< Value, Device, Index, Allocator >& a
 template< typename Value, typename Device, typename Index, typename Allocator >
 File& operator>>( File& file, Array< Value, Device, Index, Allocator >& array )
 {
-   using IO = Algorithms::ArrayIO< Value, Device, Index >;
+   using IO = detail::ArrayIO< Value, Device, Index >;
    const String type = getObjectType( file );
    if( type != IO::getSerializationType() )
       throw Exceptions::FileDeserializationError( file.getFileName(), "object type does not match (expected " + IO::getSerializationType() + ", found " + type + ")." );

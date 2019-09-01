@@ -14,12 +14,11 @@
 #include <stdexcept>
 #include <algorithm>  // std::copy, std::equal
 
-#include <TNL/Containers/Algorithms/MemoryOperations.h>
-#include <TNL/ParallelFor.h>
-#include <TNL/Containers/Algorithms/Reduction.h>
+#include <TNL/Algorithms/MemoryOperations.h>
+#include <TNL/Algorithms/ParallelFor.h>
+#include <TNL/Algorithms/Reduction.h>
 
 namespace TNL {
-namespace Containers {
 namespace Algorithms {
 
 template< typename Element >
@@ -165,5 +164,4 @@ containsOnlyValue( const Element* data,
 }
 
 } // namespace Algorithms
-} // namespace Containers
 } // namespace TNL

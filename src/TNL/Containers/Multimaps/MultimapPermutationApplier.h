@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Pointers/DevicePointer.h>
-#include <TNL/ParallelFor.h>
+#include <TNL/Algorithms/ParallelFor.h>
 
 namespace TNL {
 namespace Containers {
@@ -48,11 +48,11 @@ void permuteMultimapKeys( Multimap& multimap, const PermutationVector& perm )
    Pointers::DevicePointer< Multimap > multimapPointer( multimap );
    Pointers::DevicePointer< Multimap > multimapCopyPointer( multimapCopy );
 
-   ParallelFor< DeviceType >::exec( (IndexType) 0, multimap.getKeysRange(),
-                                    kernel,
-                                    &multimapPointer.template getData< DeviceType >(),
-                                    &multimapCopyPointer.template modifyData< DeviceType >(),
-                                    perm.getData() );
+   Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, multimap.getKeysRange(),
+                                                kernel,
+                                                &multimapPointer.template getData< DeviceType >(),
+                                                &multimapCopyPointer.template modifyData< DeviceType >(),
+                                                perm.getData() );
 
    // copy the permuted data back into the multimap
    multimap = multimapCopy;
@@ -79,10 +79,10 @@ void permuteMultimapValues( Multimap& multimap, const PermutationVector& iperm )
    };
 
    Pointers::DevicePointer< Multimap > multimapPointer( multimap );
-   ParallelFor< DeviceType >::exec( (IndexType) 0, multimap.getKeysRange(),
-                                    kernel,
-                                    &multimapPointer.template modifyData< DeviceType >(),
-                                    iperm.getData() );
+   Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, multimap.getKeysRange(),
+                                                kernel,
+                                                &multimapPointer.template modifyData< DeviceType >(),
+                                                iperm.getData() );
 }
 
 } // namespace Multimaps

@@ -16,12 +16,11 @@
 #include <TNL/Math.h>
 #include <TNL/Cuda/DeviceInfo.h>
 #include <TNL/Cuda/SharedMemory.h>
-#include <TNL/Containers/Algorithms/CudaReductionBuffer.h>
-#include <TNL/Containers/Algorithms/MultiDeviceMemoryOperations.h>
+#include <TNL/Algorithms/CudaReductionBuffer.h>
+#include <TNL/Algorithms/MultiDeviceMemoryOperations.h>
 #include <TNL/Exceptions/CudaSupportMissing.h>
 
 namespace TNL {
-namespace Containers {
 namespace Algorithms {
 
 /****
@@ -615,5 +614,4 @@ struct CudaReductionKernelLauncher
 };
 
 } // namespace Algorithms
-} // namespace Containers
 } // namespace TNL

@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <TNL/ParallelFor.h>
+#include <TNL/Algorithms/ParallelFor.h>
 
 #include <TNL/Containers/ndarray/Meta.h>
 #include <TNL/Containers/ndarray/SizesHolder.h>
@@ -139,7 +139,7 @@ struct ParallelExecutorDeviceDispatch
       const Index end0 = ends.template getSize< get< 0 >( Permutation{} ) >();
       const Index end1 = ends.template getSize< get< 1 >( Permutation{} ) >();
       const Index end2 = ends.template getSize< get< 2 >( Permutation{} ) >();
-      ParallelFor3D< Device >::exec( begin2, begin1, begin0, end2, end1, end0, kernel );
+      Algorithms::ParallelFor3D< Device >::exec( begin2, begin1, begin0, end2, end1, end0, kernel );
    }
 };
 
@@ -168,7 +168,7 @@ struct ParallelExecutorDeviceDispatch< Permutation, Devices::Cuda >
       const Index end0 = ends.template getSize< get< Ends::getDimension() - 3 >( Permutation{} ) >();
       const Index end1 = ends.template getSize< get< Ends::getDimension() - 2 >( Permutation{} ) >();
       const Index end2 = ends.template getSize< get< Ends::getDimension() - 1 >( Permutation{} ) >();
-      ParallelFor3D< Devices::Cuda >::exec( begin2, begin1, begin0, end2, end1, end0, kernel );
+      Algorithms::ParallelFor3D< Devices::Cuda >::exec( begin2, begin1, begin0, end2, end1, end0, kernel );
    }
 };
 
@@ -214,7 +214,7 @@ struct ParallelExecutor< Permutation, Device, IndexTag< 3 > >
       const Index end0 = ends.template getSize< get< 0 >( Permutation{} ) >();
       const Index end1 = ends.template getSize< get< 1 >( Permutation{} ) >();
       const Index end2 = ends.template getSize< get< 2 >( Permutation{} ) >();
-      ParallelFor3D< Device >::exec( begin2, begin1, begin0, end2, end1, end0, kernel, f );
+      Algorithms::ParallelFor3D< Device >::exec( begin2, begin1, begin0, end2, end1, end0, kernel, f );
    }
 
    template< typename __Device, typename = void >
@@ -265,7 +265,7 @@ struct ParallelExecutor< Permutation, Device, IndexTag< 2 > >
       const Index begin1 = begins.template getSize< get< 1 >( Permutation{} ) >();
       const Index end0 = ends.template getSize< get< 0 >( Permutation{} ) >();
       const Index end1 = ends.template getSize< get< 1 >( Permutation{} ) >();
-      ParallelFor2D< Device >::exec( begin1, begin0, end1, end0, kernel, f );
+      Algorithms::ParallelFor2D< Device >::exec( begin1, begin0, end1, end0, kernel, f );
    }
 
    template< typename __Device, typename = void >
@@ -312,8 +312,8 @@ struct ParallelExecutor< Permutation, Device, IndexTag< 1 > >
 
       const Index begin = begins.template getSize< get< 0 >( Permutation{} ) >();
       const Index end = ends.template getSize< get< 0 >( Permutation{} ) >();
-//      ParallelFor< Device >::exec( begin, end, kernel );
-      ParallelFor< Device >::exec( begin, end, f );
+//      Algorithms::ParallelFor< Device >::exec( begin, end, kernel );
+      Algorithms::ParallelFor< Device >::exec( begin, end, f );
    }
 };
 

@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Containers/VectorView.h>
-#include <TNL/Containers/Algorithms/VectorAssignment.h>
+#include <TNL/Containers/detail/VectorAssignment.h>
 #include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
@@ -50,7 +50,7 @@ template< typename Real,
 VectorView< Real, Device, Index >&
 VectorView< Real, Device, Index >::operator=( const VectorExpression& expression )
 {
-   Algorithms::VectorAssignment< VectorView, VectorExpression >::assign( *this, expression );
+   detail::VectorAssignment< VectorView, VectorExpression >::assign( *this, expression );
    return *this;
 }
 
@@ -62,7 +62,7 @@ VectorView< Real, Device, Index >&
 VectorView< Real, Device, Index >::
 operator+=( const VectorExpression& expression )
 {
-   Algorithms::VectorAssignmentWithOperation< VectorView, VectorExpression >::addition( *this, expression );
+   detail::VectorAssignmentWithOperation< VectorView, VectorExpression >::addition( *this, expression );
    return *this;
 }
 
@@ -74,7 +74,7 @@ VectorView< Real, Device, Index >&
 VectorView< Real, Device, Index >::
 operator-=( const VectorExpression& expression )
 {
-   Algorithms::VectorAssignmentWithOperation< VectorView, VectorExpression >::subtraction( *this, expression );
+   detail::VectorAssignmentWithOperation< VectorView, VectorExpression >::subtraction( *this, expression );
    return *this;
 }
 
@@ -86,7 +86,7 @@ VectorView< Real, Device, Index >&
 VectorView< Real, Device, Index >::
 operator*=( const VectorExpression& expression )
 {
-   Algorithms::VectorAssignmentWithOperation< VectorView, VectorExpression >::multiplication( *this, expression );
+   detail::VectorAssignmentWithOperation< VectorView, VectorExpression >::multiplication( *this, expression );
    return *this;
 }
 
@@ -98,7 +98,7 @@ VectorView< Real, Device, Index >&
 VectorView< Real, Device, Index >::
 operator/=( const VectorExpression& expression )
 {
-   Algorithms::VectorAssignmentWithOperation< VectorView, VectorExpression >::division( *this, expression );
+   detail::VectorAssignmentWithOperation< VectorView, VectorExpression >::division( *this, expression );
    return *this;
 }
 

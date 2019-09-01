@@ -51,7 +51,7 @@ public:
          array_view.bind( array.getView() );
 
          // allocate buffers
-         TemplateStaticFor< std::size_t, 0, DistributedNDArray::getDimension(), AllocateHelper >::execHost( buffers, array_view );
+         Algorithms::TemplateStaticFor< std::size_t, 0, DistributedNDArray::getDimension(), AllocateHelper >::execHost( buffers, array_view );
       }
       else {
          // only bind to the actual data
@@ -80,18 +80,18 @@ protected:
       #endif
 
       // fill send buffers
-      TemplateStaticFor< std::size_t, 0, DistributedNDArray::getDimension(), CopyHelper >::execHost( buffers, array_view, true );
+      Algorithms::TemplateStaticFor< std::size_t, 0, DistributedNDArray::getDimension(), CopyHelper >::execHost( buffers, array_view, true );
 
       // issue all send and receive async operations
       std::vector< typename Communicator::Request > requests;
       const typename Communicator::CommunicationGroup group = array_view.getCommunicationGroup();
-      TemplateStaticFor< std::size_t, 0, DistributedNDArray::getDimension(), SendHelper >::execHost( buffers, requests, group );
+      Algorithms::TemplateStaticFor< std::size_t, 0, DistributedNDArray::getDimension(), SendHelper >::execHost( buffers, requests, group );
 
       // wait until send is done
       Communicator::WaitAll( requests.data(), requests.size() );
 
       // copy data from receive buffers
-      TemplateStaticFor< std::size_t, 0, DistributedNDArray::getDimension(), CopyHelper >::execHost( buffers, array_view, false );
+      Algorithms::TemplateStaticFor< std::size_t, 0, DistributedNDArray::getDimension(), CopyHelper >::execHost( buffers, array_view, false );
    }
 
    template< std::size_t dim >

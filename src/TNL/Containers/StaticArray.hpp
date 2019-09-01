@@ -1,5 +1,5 @@
 /***************************************************************************
-                          StaticArray_impl.h  -  description
+                          StaticArray.hpp  -  description
                              -------------------
     begin                : Feb 10, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -13,8 +13,8 @@
 #include <TNL/TypeInfo.h>
 #include <TNL/Math.h>
 #include <TNL/Containers/StaticArray.h>
-#include <TNL/Containers/Algorithms/StaticArrayAssignment.h>
-#include <TNL/StaticFor.h>
+#include <TNL/Containers/detail/StaticArrayAssignment.h>
+#include <TNL/Algorithms/StaticFor.h>
 
 namespace TNL {
 namespace Containers {
@@ -102,21 +102,21 @@ template< int Size, typename Value >
 __cuda_callable__
 StaticArray< Size, Value >::StaticArray( const Value v[ Size ] )
 {
-   StaticFor< 0, Size >::exec( Algorithms::detail::AssignArrayFunctor{}, data, v );
+   Algorithms::StaticFor< 0, Size >::exec( detail::AssignArrayFunctor{}, data, v );
 }
 
 template< int Size, typename Value >
 __cuda_callable__
 StaticArray< Size, Value >::StaticArray( const Value& v )
 {
-   StaticFor< 0, Size >::exec( Algorithms::detail::AssignValueFunctor{}, data, v );
+   Algorithms::StaticFor< 0, Size >::exec( detail::AssignValueFunctor{}, data, v );
 }
 
 template< int Size, typename Value >
 __cuda_callable__
 StaticArray< Size, Value >::StaticArray( const StaticArray< Size, Value >& v )
 {
-   StaticFor< 0, Size >::exec( Algorithms::detail::AssignArrayFunctor{}, data, v.getData() );
+   Algorithms::StaticFor< 0, Size >::exec( detail::AssignArrayFunctor{}, data, v.getData() );
 }
 
 template< int Size, typename Value >
@@ -227,7 +227,7 @@ template< int Size, typename Value >
 __cuda_callable__
 StaticArray< Size, Value >& StaticArray< Size, Value >::operator=( const StaticArray< Size, Value >& array )
 {
-   StaticFor< 0, Size >::exec( Algorithms::detail::AssignArrayFunctor{}, data, array.getData() );
+   Algorithms::StaticFor< 0, Size >::exec( detail::AssignArrayFunctor{}, data, array.getData() );
    return *this;
 }
 
@@ -236,7 +236,7 @@ template< int Size, typename Value >
 __cuda_callable__
 StaticArray< Size, Value >& StaticArray< Size, Value >::operator=( const T& v )
 {
-   Algorithms::StaticArrayAssignment< StaticArray, T >::assign( *this, v );
+   detail::StaticArrayAssignment< StaticArray, T >::assign( *this, v );
    return *this;
 }
 
@@ -263,7 +263,7 @@ StaticArray< Size, Value >::
 operator StaticArray< Size, OtherValue >() const
 {
    StaticArray< Size, OtherValue > aux;
-   StaticFor< 0, Size >::exec( Algorithms::detail::AssignArrayFunctor{}, aux.getData(), data );
+   Algorithms::StaticFor< 0, Size >::exec( detail::AssignArrayFunctor{}, aux.getData(), data );
    return aux;
 }
 
@@ -271,7 +271,7 @@ template< int Size, typename Value >
 __cuda_callable__
 void StaticArray< Size, Value >::setValue( const ValueType& val )
 {
-   StaticFor< 0, Size >::exec( Algorithms::detail::AssignValueFunctor{}, data, val );
+   Algorithms::StaticFor< 0, Size >::exec( detail::AssignValueFunctor{}, data, val );
 }
 
 template< int Size, typename Value >

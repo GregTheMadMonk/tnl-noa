@@ -1,11 +1,11 @@
 #include <iostream>
 #include <cstdlib>
 #include <TNL/Containers/Vector.h>
-#include <TNL/Containers/Algorithms/Reduction.h>
+#include <TNL/Algorithms/Reduction.h>
 
 using namespace TNL;
 using namespace TNL::Containers;
-using namespace TNL::Containers::Algorithms;
+using namespace TNL::Algorithms;
 
 template< typename Device >
 double product( const Vector< double, Device >& v )

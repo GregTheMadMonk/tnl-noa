@@ -15,7 +15,6 @@
 #include <TNL/Cuda/CudaCallable.h>
 
 namespace TNL {
-namespace Containers {
 namespace Algorithms {
 
 template< typename DestinationExecution >
@@ -180,9 +179,8 @@ struct MemoryOperations< Devices::Cuda >
 };
 
 } // namespace Algorithms
-} // namespace Containers
 } // namespace TNL
 
-#include <TNL/Containers/Algorithms/MemoryOperationsSequential.hpp>
-#include <TNL/Containers/Algorithms/MemoryOperationsHost.hpp>
-#include <TNL/Containers/Algorithms/MemoryOperationsCuda.hpp>
+#include <TNL/Algorithms/MemoryOperationsSequential.hpp>
+#include <TNL/Algorithms/MemoryOperationsHost.hpp>
+#include <TNL/Algorithms/MemoryOperationsCuda.hpp>

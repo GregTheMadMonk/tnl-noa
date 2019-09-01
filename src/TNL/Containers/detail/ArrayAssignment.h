@@ -11,12 +11,12 @@
 #pragma once
 
 #include <TNL/TypeTraits.h>
-#include <TNL/Containers/Algorithms/MemoryOperations.h>
-#include <TNL/Containers/Algorithms/MultiDeviceMemoryOperations.h>
+#include <TNL/Algorithms/MemoryOperations.h>
+#include <TNL/Algorithms/MultiDeviceMemoryOperations.h>
 
 namespace TNL {
 namespace Containers {
-namespace Algorithms {
+namespace detail {
 
 template< typename Array,
           typename T,
@@ -40,7 +40,7 @@ struct ArrayAssignment< Array, T, true >
    {
       TNL_ASSERT_EQ( a.getSize(), t.getSize(), "The sizes of the arrays must be equal." );
       if( t.getSize() > 0 ) // we allow even assignment of empty arrays
-         MultiDeviceMemoryOperations< typename Array::DeviceType, typename T::DeviceType >::template
+         Algorithms::MultiDeviceMemoryOperations< typename Array::DeviceType, typename T::DeviceType >::template
             copy< typename Array::ValueType, typename T::ValueType, typename Array::IndexType >
             ( a.getArrayData(), t.getArrayData(), t.getSize() );
    }
@@ -61,12 +61,12 @@ struct ArrayAssignment< Array, T, false >
    static void assign( Array& a, const T& t )
    {
       TNL_ASSERT_FALSE( a.empty(), "Cannot assign value to empty array." );
-      MemoryOperations< typename Array::DeviceType >::template
+      Algorithms::MemoryOperations< typename Array::DeviceType >::template
          set< typename Array::ValueType, typename Array::IndexType >
          ( a.getArrayData(), ( typename Array::ValueType ) t, a.getSize() );
    }
 };
 
-} // namespace Algorithms
+} // namespace detail
 } // namespace Containers
 } // namespace TNL

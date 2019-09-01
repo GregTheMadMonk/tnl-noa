@@ -14,11 +14,11 @@
 #include <stdexcept>
 
 #include <TNL/TypeInfo.h>
-#include <TNL/ParallelFor.h>
-#include <TNL/Containers/Algorithms/MemoryOperations.h>
-#include <TNL/Containers/Algorithms/MultiDeviceMemoryOperations.h>
-#include <TNL/Containers/Algorithms/ArrayIO.h>
-#include <TNL/Containers/Algorithms/ArrayAssignment.h>
+#include <TNL/Algorithms/ParallelFor.h>
+#include <TNL/Algorithms/MemoryOperations.h>
+#include <TNL/Algorithms/MultiDeviceMemoryOperations.h>
+#include <TNL/Containers/detail/ArrayIO.h>
+#include <TNL/Containers/detail/ArrayAssignment.h>
 
 #include "ArrayView.h"
 
@@ -113,7 +113,7 @@ ArrayView< Value, Device, Index >&
 ArrayView< Value, Device, Index >::
 operator=( const T& data )
 {
-   Algorithms::ArrayAssignment< ArrayView, T >::assign( *this, data );
+   detail::ArrayAssignment< ArrayView, T >::assign( *this, data );
    return *this;
 }
 
@@ -316,7 +316,7 @@ evaluate( const Function& f, const Index begin, Index end )
    if( end == 0 )
       end = this->getSize();
 
-   ParallelFor< DeviceType >::exec( begin, end, eval );
+   Algorithms::ParallelFor< DeviceType >::exec( begin, end, eval );
 }
 
 template< typename Value,
@@ -383,7 +383,7 @@ load( const String& fileName )
 template< typename Value, typename Device, typename Index >
 File& operator<<( File& file, const ArrayView< Value, Device, Index > view )
 {
-   using IO = Algorithms::ArrayIO< Value, Device, Index >;
+   using IO = detail::ArrayIO< Value, Device, Index >;
    saveObjectType( file, IO::getSerializationType() );
    const Index size = view.getSize();
    file.save( &size );
@@ -402,7 +402,7 @@ File& operator<<( File&& file, const ArrayView< Value, Device, Index > view )
 template< typename Value, typename Device, typename Index >
 File& operator>>( File& file, ArrayView< Value, Device, Index > view )
 {
-   using IO = Algorithms::ArrayIO< Value, Device, Index >;
+   using IO = detail::ArrayIO< Value, Device, Index >;
    const String type = getObjectType( file );
    if( type != IO::getSerializationType() )
       throw Exceptions::FileDeserializationError( file.getFileName(), "object type does not match (expected " + IO::getSerializationType() + ", found " + type + ")." );

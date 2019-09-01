@@ -11,11 +11,11 @@
 #pragma once
 
 #include <TNL/TypeTraits.h>
-#include <TNL/ParallelFor.h>
+#include <TNL/Algorithms/ParallelFor.h>
 
 namespace TNL {
 namespace Containers {
-namespace Algorithms {
+namespace detail {
 
 /**
  * \brief Vector assignment
@@ -68,7 +68,7 @@ struct VectorAssignment< Vector, T, true >
       {
          data[ i ] = t[ i ];
       };
-      ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), assignment );
+      Algorithms::ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), assignment );
    }
 };
 
@@ -103,7 +103,7 @@ struct VectorAssignment< Vector, T, false >
       {
          data[ i ] = t;
       };
-      ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), assignment );
+      Algorithms::ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), assignment );
    }
 };
 
@@ -169,7 +169,7 @@ struct VectorAssignmentWithOperation< Vector, T, true, false >
       {
          data[ i ] += t[ i ];
       };
-      ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), add );
+      Algorithms::ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), add );
    }
 
    __cuda_callable__
@@ -194,7 +194,7 @@ struct VectorAssignmentWithOperation< Vector, T, true, false >
       {
          data[ i ] -= t[ i ];
       };
-      ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), subtract );
+      Algorithms::ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), subtract );
    }
 
    __cuda_callable__
@@ -219,7 +219,7 @@ struct VectorAssignmentWithOperation< Vector, T, true, false >
       {
          data[ i ] *= t[ i ];
       };
-      ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), multiply );
+      Algorithms::ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), multiply );
    }
 
    __cuda_callable__
@@ -244,7 +244,7 @@ struct VectorAssignmentWithOperation< Vector, T, true, false >
       {
          data[ i ] /= t[ i ];
       };
-      ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), divide );
+      Algorithms::ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), divide );
    }
 };
 
@@ -275,7 +275,7 @@ struct VectorAssignmentWithOperation< Vector, T, false, false >
       {
          data[ i ] += t;
       };
-      ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), add );
+      Algorithms::ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), add );
    }
 
    __cuda_callable__
@@ -297,7 +297,7 @@ struct VectorAssignmentWithOperation< Vector, T, false, false >
       {
          data[ i ] -= t;
       };
-      ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), subtract );
+      Algorithms::ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), subtract );
    }
 
    __cuda_callable__
@@ -319,7 +319,7 @@ struct VectorAssignmentWithOperation< Vector, T, false, false >
       {
          data[ i ] *= t;
       };
-      ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), multiply );
+      Algorithms::ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), multiply );
    }
 
    __cuda_callable__
@@ -341,10 +341,10 @@ struct VectorAssignmentWithOperation< Vector, T, false, false >
       {
          data[ i ] /= t;
       };
-      ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), divide );
+      Algorithms::ParallelFor< DeviceType >::exec( ( IndexType ) 0, v.getSize(), divide );
    }
 };
 
-} // namespace Algorithms
+} // namespace detail
 } // namespace Containers
 } // namespace TNL
