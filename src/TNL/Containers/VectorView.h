@@ -39,6 +39,7 @@ class VectorView
    using BaseType = ArrayView< Real, Device, Index >;
    using NonConstReal = typename std::remove_const< Real >::type;
 public:
+
    /**
     * \brief Type of elements stored in this vector.
     */
