@@ -759,7 +759,7 @@ std::ostream& operator<<( std::ostream& str, const Array< Value, Device, Index, 
 template< typename Value, typename Device, typename Index, typename Allocator >
 File& operator<<( File& file, const Array< Value, Device, Index, Allocator >& array )
 {
-   using IO = detail::ArrayIO< Value, Device, Index >;
+   using IO = detail::ArrayIO< Value, Index, Allocator >;
    saveObjectType( file, IO::getSerializationType() );
    const Index size = array.getSize();
    file.save( &size );
@@ -778,7 +778,7 @@ File& operator<<( File&& file, const Array< Value, Device, Index, Allocator >& a
 template< typename Value, typename Device, typename Index, typename Allocator >
 File& operator>>( File& file, Array< Value, Device, Index, Allocator >& array )
 {
-   using IO = detail::ArrayIO< Value, Device, Index >;
+   using IO = detail::ArrayIO< Value, Index, Allocator >;
    const String type = getObjectType( file );
    if( type != IO::getSerializationType() )
       throw Exceptions::FileDeserializationError( file.getFileName(), "object type does not match (expected " + IO::getSerializationType() + ", found " + type + ")." );

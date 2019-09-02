@@ -228,13 +228,13 @@ class Array
 
       /**
        * \brief Returns a \ref String representation of the array type in C++ style,
-       * where device is always \ref Devices::Host.
+       * with a placeholder in place of \e Device and \e Allocator.
        */
       static String getSerializationType();
 
       /**
        * \brief Returns a \ref String representation of the array type in C++ style,
-       * where device is always \ref Devices::Host.
+       * with a placeholder in place of \e Device and \e Allocator.
        */
       virtual String getSerializationTypeVirtual() const;
 

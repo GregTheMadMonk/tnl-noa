@@ -61,15 +61,15 @@ TEST( FileTest, WriteAndReadWithConversion )
    int intData[ 3 ];
    File file;
    ASSERT_NO_THROW( file.open( TEST_FILE_NAME, std::ios_base::out | std::ios_base::trunc ) );
-   file.save< double, float, Devices::Host >( doubleData, 3 );
+   file.save< double, float >( doubleData, 3 );
    ASSERT_NO_THROW( file.close() );
 
    ASSERT_NO_THROW( file.open( TEST_FILE_NAME, std::ios_base::in ) );
-   file.load< float, float, Devices::Host >( floatData, 3 );
+   file.load< float, float >( floatData, 3 );
    ASSERT_NO_THROW( file.close() );
 
    ASSERT_NO_THROW( file.open( TEST_FILE_NAME, std::ios_base::in ) );
-   file.load< int, float, Devices::Host >( intData, 3 );
+   file.load< int, float >( intData, 3 );
    ASSERT_NO_THROW( file.close() );
 
    EXPECT_NEAR( floatData[ 0 ], 3.14159, 0.0001 );
@@ -112,9 +112,9 @@ TEST( FileTest, WriteAndReadCUDA )
    File file;
    ASSERT_NO_THROW( file.open( String( TEST_FILE_NAME ), std::ios_base::out ) );
 
-   file.save< int, int, Devices::Cuda >( cudaIntData );
-   file.save< float, float, Devices::Cuda >( cudaFloatData, 3 );
-   file.save< const double, double, Devices::Cuda >( cudaConstDoubleData );
+   file.save< int, int, Allocators::Cuda<int> >( cudaIntData );
+   file.save< float, float, Allocators::Cuda<float> >( cudaFloatData, 3 );
+   file.save< const double, double, Allocators::Cuda<const double> >( cudaConstDoubleData );
    ASSERT_NO_THROW( file.close() );
 
    ASSERT_NO_THROW( file.open( String( TEST_FILE_NAME ), std::ios_base::in ) );
@@ -127,9 +127,9 @@ TEST( FileTest, WriteAndReadCUDA )
    cudaMalloc( ( void** ) &newCudaIntData, sizeof( int ) );
    cudaMalloc( ( void** ) &newCudaFloatData, 3 * sizeof( float ) );
    cudaMalloc( ( void** ) &newCudaDoubleData, sizeof( double ) );
-   file.load< int, int, Devices::Cuda >( newCudaIntData, 1 );
-   file.load< float, float, Devices::Cuda >( newCudaFloatData, 3 );
-   file.load< double, double, Devices::Cuda >( newCudaDoubleData, 1 );
+   file.load< int, int, Allocators::Cuda<int> >( newCudaIntData, 1 );
+   file.load< float, float, Allocators::Cuda<float> >( newCudaFloatData, 3 );
+   file.load< double, double, Allocators::Cuda<double> >( newCudaDoubleData, 1 );
    cudaMemcpy( &newIntData,
                newCudaIntData,
                sizeof( int ),
@@ -172,15 +172,15 @@ TEST( FileTest, WriteAndReadCUDAWithConversion )
 
    File file;
    ASSERT_NO_THROW( file.open( String( TEST_FILE_NAME ), std::ios_base::out | std::ios_base::trunc ) );
-   file.save< double, float, Devices::Cuda >( cudaConstDoubleData, 3 );
+   file.save< double, float, Allocators::Cuda<double> >( cudaConstDoubleData, 3 );
    ASSERT_NO_THROW( file.close() );
 
    ASSERT_NO_THROW( file.open( String( TEST_FILE_NAME ), std::ios_base::in ) );
-   file.load< float, float, Devices::Cuda >( cudaFloatData, 3 );
+   file.load< float, float, Allocators::Cuda<float> >( cudaFloatData, 3 );
    ASSERT_NO_THROW( file.close() );
 
    ASSERT_NO_THROW( file.open( String( TEST_FILE_NAME ), std::ios_base::in ) );
-   file.load< int, float, Devices::Cuda >( cudaIntData, 3 );
+   file.load< int, float, Allocators::Cuda<int> >( cudaIntData, 3 );
    ASSERT_NO_THROW( file.close() );
 
    cudaMemcpy( floatData,

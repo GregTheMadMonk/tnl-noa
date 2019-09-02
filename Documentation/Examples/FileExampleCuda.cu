@@ -17,7 +17,7 @@ int main()
     */
    File file;
    file.open( "file-example-cuda-test-file.tnl", std::ios_base::out | std::ios_base::trunc );
-   file.save< double, double, Devices::Host >( doubleArray, size );
+   file.save< double, double, Allocators::Host< double > >( doubleArray, size );
    file.close();
 
    /***
@@ -31,7 +31,7 @@ int main()
     * Read array from the file to device
     */
    file.open( "file-example-cuda-test-file.tnl", std::ios_base::in );
-   file.load< double, double, Devices::Cuda >( deviceArray, size );
+   file.load< double, double, Allocators::Cuda< double > >( deviceArray, size );
    file.close();
 
    /***

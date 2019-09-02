@@ -14,29 +14,29 @@
 
 #include <TNL/Object.h>
 #include <TNL/File.h>
+#include <TNL/TypeInfo.h>
 
 namespace TNL {
 namespace Containers {
 namespace detail {
 
 template< typename Value,
-          typename Device,
           typename Index,
+          typename Allocator,
           bool Elementwise = std::is_base_of< Object, Value >::value >
 struct ArrayIO
 {};
 
 template< typename Value,
-          typename Device,
-          typename Index >
-struct ArrayIO< Value, Device, Index, true >
+          typename Index,
+          typename Allocator >
+struct ArrayIO< Value, Index, Allocator, true >
 {
    static String getSerializationType()
    {
       return String( "Containers::Array< " ) +
-             TNL::getSerializationType< Value >() + ", " +
-             TNL::getSerializationType< Devices::Host >() + ", " +
-             TNL::getSerializationType< Index >() + " >";
+             TNL::getSerializationType< Value >() + ", [any_device], " +
+             TNL::getSerializationType< Index >() + ", [any_allocator] >";
    }
 
    static void save( File& file,
@@ -73,16 +73,15 @@ struct ArrayIO< Value, Device, Index, true >
 };
 
 template< typename Value,
-          typename Device,
-          typename Index >
-struct ArrayIO< Value, Device, Index, false >
+          typename Index,
+          typename Allocator >
+struct ArrayIO< Value, Index, Allocator, false >
 {
    static String getSerializationType()
    {
       return String( "Containers::Array< " ) +
-             TNL::getSerializationType< Value >() + ", " +
-             TNL::getSerializationType< Devices::Host >() + ", " +
-             TNL::getSerializationType< Index >() + " >";
+             TNL::getSerializationType< Value >() + ", [any_device], " +
+             TNL::getSerializationType< Index >() + ", [any_allocator] >";
    }
 
    static void save( File& file,
@@ -93,7 +92,7 @@ struct ArrayIO< Value, Device, Index, false >
          return;
       try
       {
-         file.save< Value, Value, Device >( data, elements );
+         file.save< Value, Value, Allocator >( data, elements );
       }
       catch(...)
       {
@@ -109,7 +108,7 @@ struct ArrayIO< Value, Device, Index, false >
          return;
       try
       {
-         file.load< Value, Value, Device >( data, elements );
+         file.load< Value, Value, Allocator >( data, elements );
       }
       catch(...)
       {

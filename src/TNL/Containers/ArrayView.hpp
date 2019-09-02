@@ -19,6 +19,7 @@
 #include <TNL/Algorithms/MultiDeviceMemoryOperations.h>
 #include <TNL/Containers/detail/ArrayIO.h>
 #include <TNL/Containers/detail/ArrayAssignment.h>
+#include <TNL/Allocators/Default.h>
 
 #include "ArrayView.h"
 
@@ -383,7 +384,7 @@ load( const String& fileName )
 template< typename Value, typename Device, typename Index >
 File& operator<<( File& file, const ArrayView< Value, Device, Index > view )
 {
-   using IO = detail::ArrayIO< Value, Device, Index >;
+   using IO = detail::ArrayIO< Value, Index, typename Allocators::Default< Device >::template Allocator< Value > >;
    saveObjectType( file, IO::getSerializationType() );
    const Index size = view.getSize();
    file.save( &size );
@@ -402,7 +403,7 @@ File& operator<<( File&& file, const ArrayView< Value, Device, Index > view )
 template< typename Value, typename Device, typename Index >
 File& operator>>( File& file, ArrayView< Value, Device, Index > view )
 {
-   using IO = detail::ArrayIO< Value, Device, Index >;
+   using IO = detail::ArrayIO< Value, Index, typename Allocators::Default< Device >::template Allocator< Value > >;
    const String type = getObjectType( file );
    if( type != IO::getSerializationType() )
       throw Exceptions::FileDeserializationError( file.getFileName(), "object type does not match (expected " + IO::getSerializationType() + ", found " + type + ")." );
