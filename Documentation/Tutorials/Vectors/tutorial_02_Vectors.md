@@ -44,4 +44,18 @@ Output is:
 
 ## Static vectors <a name="static_vectors"></a>
 
+Static vectors are derived from static arrays and so they are allocated on the stack and can be created in CUDA kernels as well. Their size is fixed as well and it is given by a template parameter. Static vector is a templated class defined in namespace `TNL::Containers` having two template parameters:
+
+* `Size` is the array size.
+* `Real` is type of numbers stored in the array.
+
+The interface of StaticVectors is smillar to Vector. Probably the most important methods are those related with static vector expressions which are handled by expression templates. They make the use of static vectors simpel and efficient at the same time. See the following simple demonstration:
+
+\include StaticVectorExample.cpp
+
+The output looks as:
+
+\include StaticVectorExample.out
+
+
 ## Distributed vectors <a name="distributed_vectors"></a>
