@@ -1,5 +1,5 @@
 /***************************************************************************
-                          PrefixSum.h  -  description
+                          Scan.h  -  description
                              -------------------
     begin                : Aug 16, 2019
     copyright            : (C) 2019 by Tomas Oberhuber et al.
@@ -12,15 +12,15 @@
 
 #pragma once
 
-#include <TNL/Containers/Algorithms/PrefixSum.h>
+#include <TNL/Containers/Algorithms/Scan.h>
 #include <TNL/Containers/Vector.h>
 
 namespace TNL {
 namespace Containers {
 namespace Algorithms {
 
-template< PrefixSumType Type >
-struct DistributedPrefixSum
+template< ScanType Type >
+struct DistributedScan
 {
    template< typename DistributedVector,
              typename Reduction >
@@ -44,7 +44,7 @@ struct DistributedPrefixSum
 
          // perform first phase on the local data
          auto localView = v.getLocalView();
-         const auto blockShifts = PrefixSum< DeviceType, Type >::performFirstPhase( localView, begin, end, reduction, zero );
+         const auto blockShifts = Scan< DeviceType, Type >::performFirstPhase( localView, begin, end, reduction, zero );
          const RealType localSum = blockShifts.getElement( blockShifts.getSize() - 1 );
 
          // exchange local sums between ranks
@@ -56,11 +56,11 @@ struct DistributedPrefixSum
          CommunicatorType::Alltoall( dataForScatter, 1, rankSums.getData(), 1, group );
 
          // compute prefix-sum of the per-rank sums
-         PrefixSum< Devices::Host, PrefixSumType::Exclusive >::perform( rankSums, 0, nproc, reduction, zero );
+         Scan< Devices::Host, ScanType::Exclusive >::perform( rankSums, 0, nproc, reduction, zero );
 
          // perform second phase: shift by the per-block and per-rank offsets
          const int rank = CommunicatorType::GetRank( group );
-         PrefixSum< DeviceType, Type >::performSecondPhase( localView, blockShifts, begin, end, reduction, rankSums[ rank ] );
+         Scan< DeviceType, Type >::performSecondPhase( localView, blockShifts, begin, end, reduction, rankSums[ rank ] );
       }
    }
 };

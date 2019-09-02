@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This tutorial introduces arrays in TNL. Array is one of the most important structure for memory management. Methods implemented in arrays are particularly useful for GPU programming. From this point of view, the reader will learn how to easily allocate memory on GPU, transfer data between GPU and CPU but also, how to initialize data allocated on GPU. In addition, the resulting code is hardware platform independent, so it can be ran on CPU without any changes.
+This tutorial introduces arrays in TNL. There are three types - common arrays with dynamic allocation, static arrays allocated on stack and distributed arrays with dynamic allocation. Arrays are one of the most important structures for memory management. Methods implemented in arrays are particularly useful for GPU programming. From this point of view, the reader will learn how to easily allocate memory on GPU, transfer data between GPU and CPU but also, how to initialize data allocated on GPU. In addition, the resulting code is hardware platform independent, so it can be ran on CPU nad GPU without any changes.
 
 ## Table of Contents
 1. [Arrays](#arrays)
@@ -15,6 +15,7 @@ This tutorial introduces arrays in TNL. Array is one of the most important struc
    5. [Checking the array contents](#checking_the_array_contents)
    6. [IO operations with arrays](#io_operations_with-arrays)
 2. [Static arrays](#static_arrays)
+3. [Distributed arrays](#distributed_arrays)
 
 ## Arrays <a name="arrays"></a>
 
@@ -148,3 +149,18 @@ Output:
 \include ArrayIO.out
 
 ## Static arrays <a name="static_arrays"></a>
+
+Static arrays are allocated on stack and thus they can be created even in CUDA kernels. Their size is fixed and it is given by a template parameter. Static array is a templated class defined in namespace `TNL::Containers` having two template parameters:
+
+* `Size` is the array size.
+* `Value` is type of data stored in the array.
+
+The interface of StaticArray is very smillar to Array but much simpler. It contains set of common constructors. Array elements can be accessed by the `operator[]` and also using method `x()`, `y()` and `z()` when it makes sense. See the following example for typical use of StaticArray.
+
+\include StaticArrayExample.cpp
+
+The output looks as:
+
+\include StaticArrayExample.out
+
+## Distributed arrays <a name="distributed_arrays"></a>

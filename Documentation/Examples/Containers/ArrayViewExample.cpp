@@ -14,60 +14,60 @@ void arrayViewExample()
    using ArrayType = Containers::Array< int, Device >;
    using IndexType = typename ArrayType::IndexType;
    using ViewType = Containers::ArrayView< int, Device >;
-   ArrayType _a1( size ), _a2( size );
-   ViewType a1 = _a1.getView();
-   ViewType a2 = _a2.getView();
+   ArrayType a1( size ), a2( size );
+   ViewType a1_view = a1.getView();
+   ViewType a2_view = a2.getView();
 
    /***
     * You may initiate the array view using setElement
     */
    for( int i = 0; i < size; i++ )
-      a1.setElement( i, i );
+      a1_view.setElement( i, i );
 
    /***
     * You may also assign value to all array view elements ...
     */
-   a2 = 0;
+   a2_view = 0;
 
    /***
     * Simple array view values checks can be done as follows ...
     */
-   if( a1.containsValue( 1 ) )
+   if( a1_view.containsValue( 1 ) )
       std::cout << "a1 contains value 1." << std::endl;
-   if( a1.containsValue( size ) )
+   if( a1_view.containsValue( size ) )
       std::cout << "a1 contains value " << size << "." << std::endl;
-   if( a1.containsOnlyValue( 0 ) )
+   if( a1_view.containsOnlyValue( 0 ) )
       std::cout << "a2 contains only value 0." << std::endl;
 
    /***
     * More efficient way of array view elements manipulation is with the lambda functions
     */
-   ArrayType _a3( size );
-   ViewType a3 = _a3.getView();
+   ArrayType a3( size );
+   ViewType a3_view = a3.getView();
    auto f1 = [] __cuda_callable__ ( IndexType i ) -> int { return 2 * i; };
-   a3.evaluate( f1 );
+   a3_view.evaluate( f1 );
 
    for( int i = 0; i < size; i++ )
-      if( a3.getElement( i ) != 2 * i )
+      if( a3_view.getElement( i ) != 2 * i )
          std::cerr << "Something is wrong!!!" << std::endl;
 
    /***
     * You may swap array view data with the swap method.
     */
-   a1.swap( a3 );
+   a1_view.swap( a3_view );
 
    /***
     * You may save it to file and load again
     */
-   File( "a1.tnl", std::ios_base::out ) << a1;
-   File( "a1.tnl", std::ios_base::in ) >> a2;
+   File( "a1_view.tnl", std::ios_base::out ) << a1_view;
+   File( "a1_view.tnl", std::ios_base::in ) >> a2_view;
 
-   std::remove( "a1.tnl" );
+   std::remove( "a1_view.tnl" );
 
-   if( a2 != a1 )
+   if( a2_view != a1_view )
       std::cerr << "Something is wrong!!!" << std::endl;
 
-   std::cout << "a2 = " << a2 << std::endl;
+   std::cout << "a2_view = " << a2_view << std::endl;
 }
 
 int main()

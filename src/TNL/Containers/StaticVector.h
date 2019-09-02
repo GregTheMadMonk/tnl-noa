@@ -27,43 +27,69 @@ template< int Size, typename Real = double >
 class StaticVector : public StaticArray< Size, Real >
 {
 public:
+
+   /**
+    * \brief Type of numbers stored in this vector.
+    */
    using RealType = Real;
+
+   /**
+    * \brief Indexing type
+    */
    using IndexType = int;
 
-   //! \brief Default constructor.
+   /**
+    * \brief Default constructor.
+    */
    __cuda_callable__
    StaticVector() = default;
 
-   //! \brief Default copy constructor.
+   /**
+    * \brief Default copy constructor.
+    */
    __cuda_callable__
    StaticVector( const StaticVector& ) = default;
 
-   //! \brief Default copy-assignment operator.
+   /**
+    * \brief Default copy-assignment operator.
+    */
    StaticVector& operator=( const StaticVector& ) = default;
 
-   //! \brief Default move-assignment operator.
+   /**
+    * \brief Default move-assignment operator.
+    */
    StaticVector& operator=( StaticVector&& ) = default;
 
    //! Constructors and assignment operators are inherited from the class \ref StaticArray.
    using StaticArray< Size, Real >::StaticArray;
    using StaticArray< Size, Real >::operator=;
 
+   /**
+    * \brief Constructor from binary vector expression.
+    * 
+    * \param expr is binary expression.
+    */
    template< typename T1,
              typename T2,
              template< typename, typename > class Operation >
    __cuda_callable__
-   StaticVector( const Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& op );
+   StaticVector( const Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& expr );
 
+   /**
+    * \brief Constructor from unary expression.
+    * 
+    * \param expr is unary expression
+    */
    template< typename T,
              template< typename > class Operation >
    __cuda_callable__
-   StaticVector( const Expressions::StaticUnaryExpressionTemplate< T, Operation >& op );
+   StaticVector( const Expressions::StaticUnaryExpressionTemplate< T, Operation >& expr );
 
    /**
     * \brief Sets up a new (vector) parameter which means it can have more elements.
     *
-    * @param parameters Reference to a parameter container where the new parameter is saved.
-    * @param prefix Name of now parameter/prefix.
+    * \param parameters Reference to a parameter container where the new parameter is saved.
+    * \param prefix Name of now parameter/prefix.
     */
    bool setup( const Config::ParameterContainer& parameters,
                const String& prefix = "" );
@@ -73,29 +99,75 @@ public:
     */
    static String getType();
 
+   /**
+    * \brief Assignment operator with a vector expression.
+    * 
+    * The vector expression can be even just static vector.
+    * 
+    * \param expression is the vector expression
+    * \return reference to this vector
+    */
    template< typename VectorExpression >
    StaticVector& operator=( const VectorExpression& expression );
 
+   /**
+    * \brief Addition operator with a vector expression
+    * 
+    * The vector expression can be even just static vector.
+    * 
+    * \param expression is the vector expression
+    * \return reference to this vector
+    */
    template< typename VectorExpression >
    __cuda_callable__
    StaticVector& operator+=( const VectorExpression& expression );
 
+   /**
+    * \brief Subtraction operator with a vector expression.
+    * 
+    * The vector expression can be even just static vector.
+    * 
+    * \param expression is the vector expression
+    * \return reference to this vector
+    */
    template< typename VectorExpression >
    __cuda_callable__
    StaticVector& operator-=( const VectorExpression& expression );
 
+   /**
+    * \brief Elementwise multiplication by a vector expression.
+    *
+    * The vector expression can be even just static vector.
+    * 
+    * \param expression is the vector expression.
+    * \return reference to this vector
+    */
    template< typename VectorExpression >
    __cuda_callable__
    StaticVector& operator*=( const VectorExpression& expression );
 
+   /**
+    * \brief Elementwise division by a vector expression.
+    * 
+    * The vector expression can be even just static vector.
+    * 
+    * \param expression is the vector expression
+    * \return reference to this vector
+    */
    template< typename VectorExpression >
    __cuda_callable__
    StaticVector& operator/=( const VectorExpression& expression );
 
    /**
-    * \brief Changes the type of static vector to \e OtherReal while the size remains the same.
-    *
-    * \tparam OtherReal Other type of the static vector values.
+    * \brief Cast operator for changing of the \e Value type.
+    * 
+    * Returns static array having \e ValueType set to \e OtherValue, i.e.
+    * StaticArray< Size, OtherValue >.
+    * 
+    * \tparam OtherValue is the \e Value type of the static array the casting 
+    * will be performed to.
+    * 
+    * \return instance of StaticVector< Size, OtherValue >
     */
    template< typename OtherReal >
    __cuda_callable__

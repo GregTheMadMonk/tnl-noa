@@ -19,14 +19,22 @@ namespace Containers {
 /**
  * \brief Array with constant size.
  *
- * \param Size Size of static array. Number of its elements.
- * \param Value Type of the values in static array.
+ * \tparam Size Size of static array. Number of its elements.
+ * \tparam Value Type of the values in static array.
  */
 template< int Size, typename Value >
 class StaticArray
 {
 public:
+
+   /**
+    * \brief Type of elements stored in this array.
+    */
    using ValueType = Value;
+
+   /**
+    * \brief Type being used for the array elements indexing.
+    */
    using IndexType = int;
 
    /**
@@ -35,15 +43,16 @@ public:
    __cuda_callable__
    static constexpr int getSize();
 
-   //! \brief Default constructor.
+   /**
+    * \brief Default constructor.
+    */
    __cuda_callable__
    StaticArray();
 
    /**
-    * \brief Constructor that sets all array components (with the number of \e Size) to value \e v.
+    * \brief Constructor from static array.
     *
-    * Once this static array is constructed, its size can not be changed.
-    * \param v[Size]
+    * \param v[Size] input array.
     */
    // Note: the template avoids ambiguity of overloaded functions with literal 0 and pointer
    // reference: https://stackoverflow.com/q/4610503
@@ -67,6 +76,14 @@ public:
    __cuda_callable__
    StaticArray( const StaticArray< Size, Value >& v );
 
+   /**
+    * \brief Constructor which initializes the array by copying elements from
+    * \ref std::initializer_list, e.g. `{...}`.
+    * 
+    * The initializer list size must larger or equal to \e Size.
+    * 
+    * @param elems input initializer list
+    */
    StaticArray( const std::initializer_list< Value > &elems );
 
    /**
@@ -93,21 +110,20 @@ public:
     */
    static String getType();
 
-
    /**
-    * \brief Gets all data of this static array.
+    * \brief Gets pointer to data of this static array.
     */
    __cuda_callable__
    Value* getData();
 
    /**
-    * \brief Gets all data of this static array.
+    * \brief Gets constant pointer to data of this static array.
     */
    __cuda_callable__
    const Value* getData() const;
 
    /**
-    * \brief Accesses specified element at the position \e i and returns a reference to its value.
+    * \brief Accesses specified element at the position \e i and returns a constant reference to its value.
     *
     * \param i Index position of an element.
     */
@@ -122,42 +138,61 @@ public:
    __cuda_callable__
    Value& operator[]( int i );
 
-   /** \brief Returns the first coordinate.*/
+   /**
+    * \brief Returns reference to the first coordinate.
+    */
    __cuda_callable__
    Value& x();
 
-   /** \brief Returns the first coordinate.*/
+   /**
+    * \brief Returns constant reference to the first coordinate.
+    */
    __cuda_callable__
    const Value& x() const;
 
-   /** \brief Returns the second coordinate for arrays with Size >= 2.*/
+   /**
+    * \brief Returns reference to the second coordinate for arrays with Size >= 2.
+    */
    __cuda_callable__
    Value& y();
 
-   /** \brief Returns the second coordinate for arrays with Size >= 2.*/
+   /**
+    * \brief Returns constant reference to the second coordinate for arrays with Size >= 2.
+    */
    __cuda_callable__
    const Value& y() const;
 
-   /** \brief Returns the third coordinate for arrays with Size >= 3..*/
+   /**
+    * \brief Returns reference to the third coordinate for arrays with Size >= 3.
+    */
    __cuda_callable__
    Value& z();
 
-   /** \brief Returns the third coordinate for arrays with Size >= 3..*/
+   /**
+    * \brief Returns constant reference to the third coordinate for arrays with Size >= 3.
+    */
    __cuda_callable__
    const Value& z() const;
 
    /**
-    * \brief Assigns another static \e array to this array, replacing its current contents.
+    * \brief Assigns another static \e array to this array.
     */
    __cuda_callable__
    StaticArray< Size, Value >& operator=( const StaticArray< Size, Value >& array );
 
    /**
-    * \brief Assigns another static \e array to this array, replacing its current contents.
+    * \brief Assigns an object \e t of type \e T.
+    * 
+    * T can be:
+    * 
+    * 1. Static linear container implementing operator[] and having the same size.
+    * In this case, \e t is copied to this array elementwise.
+    * 2. An object that can be converted to \e Value type. In this case all elements
+    * are set to \e t.
     */
-   template< typename Array >
+   template< typename T >
    __cuda_callable__
-   StaticArray< Size, Value >& operator=( const Array& array );
+   StaticArray< Size, Value >& operator=( const T& t );
 
    /**
     * \brief This function checks whether this static array is equal to another \e array.
@@ -177,6 +212,17 @@ public:
    __cuda_callable__
    bool operator!=( const Array& array ) const;
 
+   /**
+    * \brief Cast operator for changing of the \e Value type.
+    * 
+    * Returns static array having \e ValueType set to \e OtherValue, i.e.
+    * StaticArray< Size, OtherValue >.
+    * 
+    * \tparam OtherValue is the \e Value type of the static array the casting 
+    * will be performed to.
+    * 
+    * \return instance of StaticArray< Size, OtherValue >
+    */
    template< typename OtherValue >
    __cuda_callable__
    operator StaticArray< Size, OtherValue >() const;
@@ -184,6 +230,7 @@ public:
    /**
     * \brief Sets all values of this static array to \e val.
     */
+   [[deprecated( "Use of StaticArray::setValue is deprecated, assignment operator=() should be used instead." )]]
    __cuda_callable__
    void setValue( const ValueType& val );
 
@@ -200,7 +247,7 @@ public:
    bool load( File& file);
 
    /**
-    * \brief Sorts the elements in this static array into ascending order.
+    * \brief Sorts the elements in this static array in ascending order.
     */
    void sort();
 
@@ -219,6 +266,43 @@ protected:
 
 template< int Size, typename Value >
 std::ostream& operator<<( std::ostream& str, const StaticArray< Size, Value >& a );
+
+/**
+ * \brief Serialization of static arrays into binary files.
+ * 
+ * \param file output file
+ * \param array is an array to be written into the output file.
+ */
+template< int Size, typename Value >
+File& operator<<( File& file, const StaticArray< Size, Value >& array );
+
+/**
+ * \brief Serialization of static arrays into binary files.
+ * 
+ * \param file output file
+ * \param array is an array to be written into the output file.
+ */
+template< int Size, typename Value >
+File& operator<<( File&& file, const StaticArray< Size, Value >& array );
+
+/**
+ * \brief Deserialization of static arrays from binary files.
+ * 
+ * \param file input file
+ * \param array is an array to be read from the input file.
+ */
+template< int Size, typename Value >
+File& operator>>( File& file, StaticArray< Size, Value >& array );
+
+/**
+ * \brief Deserialization of static arrays from binary files.
+ * 
+ * \param file input file
+ * \param array is an array to be read from the input file.
+ */
+template< int Size, typename Value >
+File& operator>>( File&& file, StaticArray< Size, Value >& array );
+
 
 } // namespace Containers
 } // namespace TNL

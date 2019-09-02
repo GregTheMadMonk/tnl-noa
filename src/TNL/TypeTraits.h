@@ -127,23 +127,35 @@ struct HasConstexprGetSizeMethod
 {
 private:
    // implementation adopted from here: https://stackoverflow.com/a/50169108
+   template< bool hasGetSize = HasGetSizeMethod< T >::value, typename = void >
+   struct impl
+   {
+      // disable nvcc warning: invalid narrowing conversion from "unsigned int" to "int"
+      // (the implementation is based on the conversion)
+      #ifdef __NVCC__
+         #pragma push
+         #pragma diag_suppress 2361
+      #endif
+      template< typename M, M method >
+      static constexpr std::true_type is_constexpr_impl( decltype(int{((*method)(), 0U)}) );
+      #ifdef __NVCC__
+         #pragma pop
+      #endif
 
-// disable nvcc warning: invalid narrowing conversion from "unsigned int" to "int"
-// (the implementation is based on the conversion)
-#ifdef __NVCC__
-   #pragma push
-   #pragma diag_suppress 2361
-#endif
-   template< typename M, M method >
-   static constexpr std::true_type is_constexpr_impl( decltype(int{((*method)(), 0U)}) );
-#ifdef __NVCC__
-   #pragma pop
-#endif
+      template< typename M, M method >
+      static constexpr std::false_type is_constexpr_impl(...);
 
-   template< typename M, M method >
-   static constexpr std::false_type is_constexpr_impl(...);
+      using type = decltype(is_constexpr_impl< decltype(&T::getSize), &T::getSize >(0));
+   };
 
-   using type = decltype(is_constexpr_impl< decltype(&T::getSize), &T::getSize >(0));
+   // specialization for types which don't have getSize() method at all
+   template< typename _ >
+   struct impl< false, _ >
+   {
+      using type = std::false_type;
+   };
+
+   using type = typename impl<>::type;
 
 public:
    static constexpr bool value = type::value;
@@ -158,7 +170,6 @@ public:
 template< typename T >
 struct IsStaticArrayType
 : public std::integral_constant< bool,
-            HasGetSizeMethod< T >::value &&
             HasConstexprGetSizeMethod< T >::value &&
             HasSubscriptOperator< T >::value >
 {};

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          CudaPrefixSumKernel.h  -  description
+                          CudaScanKernel.h  -  description
                              -------------------
     begin                : Jan 18, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -27,14 +27,14 @@ template< typename Real,
           typename Reduction,
           typename Index >
 __global__ void
-cudaFirstPhaseBlockPrefixSum( const PrefixSumType prefixSumType,
-                              Reduction reduction,
-                              const Real zero,
-                              const Index size,
-                              const int elementsInBlock,
-                              const Real* input,
-                              Real* output,
-                              Real* auxArray )
+cudaFirstPhaseBlockScan( const ScanType scanType,
+                         Reduction reduction,
+                         const Real zero,
+                         const Index size,
+                         const int elementsInBlock,
+                         const Real* input,
+                         Real* output,
+                         Real* auxArray )
 {
    Real* sharedData = TNL::Devices::Cuda::getSharedMemory< Real >();
    Real* auxData = &sharedData[ elementsInBlock + elementsInBlock / Devices::Cuda::getNumberOfSharedMemoryBanks() + 2 ];
@@ -48,7 +48,7 @@ cudaFirstPhaseBlockPrefixSum( const PrefixSumType prefixSumType,
     */
    const int blockOffset = blockIdx.x * elementsInBlock;
    int idx = threadIdx.x;
-   if( prefixSumType == PrefixSumType::Exclusive )
+   if( scanType == ScanType::Exclusive )
    {
       if( idx == 0 )
          sharedData[ 0 ] = zero;
@@ -145,7 +145,7 @@ cudaFirstPhaseBlockPrefixSum( const PrefixSumType prefixSumType,
 
    if( threadIdx.x == 0 )
    {
-      if( prefixSumType == PrefixSumType::Exclusive )
+      if( scanType == ScanType::Exclusive )
       {
          auxArray[ blockIdx.x ] = reduction( sharedData[ Devices::Cuda::getInterleaving( lastElementInBlock - 1 ) ],
                                              sharedData[ Devices::Cuda::getInterleaving( lastElementInBlock ) ] );
@@ -159,7 +159,7 @@ template< typename Real,
           typename Reduction,
           typename Index >
 __global__ void
-cudaSecondPhaseBlockPrefixSum( Reduction reduction,
+cudaSecondPhaseBlockScan( Reduction reduction,
                                const Index size,
                                const int elementsInBlock,
                                const Index gridIdx,
@@ -179,10 +179,10 @@ cudaSecondPhaseBlockPrefixSum( Reduction reduction,
    }
 }
 
-template< PrefixSumType prefixSumType,
+template< ScanType scanType,
           typename Real,
           typename Index >
-struct CudaPrefixSumKernelLauncher
+struct CudaScanKernelLauncher
 {
    /****
     * \brief Performs both phases of prefix sum.
@@ -270,8 +270,8 @@ struct CudaPrefixSumKernelLauncher
          const std::size_t sharedDataSize = elementsInBlock +
                                             elementsInBlock / Devices::Cuda::getNumberOfSharedMemoryBanks() + 2;
          const std::size_t sharedMemory = ( sharedDataSize + blockSize + Devices::Cuda::getWarpSize() ) * sizeof( Real );
-         cudaFirstPhaseBlockPrefixSum<<< cudaGridSize, cudaBlockSize, sharedMemory >>>
-            ( prefixSumType,
+         cudaFirstPhaseBlockScan<<< cudaGridSize, cudaBlockSize, sharedMemory >>>
+            ( scanType,
               reduction,
               zero,
               currentSize,
@@ -288,7 +288,7 @@ struct CudaPrefixSumKernelLauncher
       // blockSums now contains sums of numbers in each block. The first phase
       // ends by computing prefix-sum of this array.
       if( numberOfBlocks > 1 ) {
-         CudaPrefixSumKernelLauncher< PrefixSumType::Inclusive, Real, Index >::perform(
+         CudaScanKernelLauncher< ScanType::Inclusive, Real, Index >::perform(
             blockSums.getSize(),
             blockSums.getData(),
             blockSums.getData(),
@@ -306,7 +306,7 @@ struct CudaPrefixSumKernelLauncher
    }
 
    /****
-    * \brief Performs the seocond phase of prefix sum.
+    * \brief Performs the second phase of prefix sum.
     *
     * \param size  Number of elements to be scanned.
     * \param deviceOutput  Pointer to output array on GPU.
@@ -347,7 +347,7 @@ struct CudaPrefixSumKernelLauncher
          cudaGridSize.x = roundUpDivision( currentSize, elementsInBlock );
 
          // run the kernel
-         cudaSecondPhaseBlockPrefixSum<<< cudaGridSize, cudaBlockSize >>>
+         cudaSecondPhaseBlockScan<<< cudaGridSize, cudaBlockSize >>>
             ( reduction,
               size,
               elementsInBlock,

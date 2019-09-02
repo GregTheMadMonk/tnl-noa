@@ -97,7 +97,7 @@ void SlicedEllpack< Real, Device, Index, SliceSize >::setCompressedRowLengths( C
 
    this->maxRowLength = max( rowLengths );
 
-   this->slicePointers.template prefixSum< Containers::Algorithms::PrefixSumType::Exclusive >();
+   this->slicePointers.template prefixSum< Containers::Algorithms::ScanType::Exclusive >();
    this->allocateMatrixElements( this->slicePointers.getElement( slices ) );
 }
 

@@ -9,6 +9,7 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #pragma once
+#ifndef DOXYGEN_ONLY
 
 #include <TNL/Containers/Expressions/ExpressionTemplates.h>
 
@@ -736,3 +737,4 @@ binaryAnd( const Containers::VectorView< Real, Device, Index >& a )
 }
 
 } // namespace TNL
+#endif // DOXYGEN_ONLY

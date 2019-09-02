@@ -74,14 +74,50 @@ class Array
 {
    public:
 
+      /**
+       * \brief Type of elements stored in this array.
+       */
       using ValueType = Value;
+
+      /**
+       * \brief Device where the array is allocated.
+       * 
+       * See \ref Devices::Host or \ref Devices::Cuda.
+       */
       using DeviceType = Device;
+
+      /**
+       * \brief Type being used for the array elements indexing.
+       */
       using IndexType = Index;
+
+      /**
+       * \brief Allocator type used for allocating this array.
+       * 
+       * See \ref Allocators::Cuda, \ref Allocators::CudaHost, \ref Allocators::CudaManaged, \ref Allocators::Host or \ref Allocators:Default.
+       */
       using AllocatorType = Allocator;
-      using HostType = Containers::Array< Value, Devices::Host, Index >;
-      using CudaType = Containers::Array< Value, Devices::Cuda, Index >;
+
+      /**
+       * \brief Defines the same array type but allocated on host (CPU).
+       */
+      using HostType = Array< Value, TNL::Devices::Host, Index >;
+
+      /**
+       * \brief Defines the same array type but allocated on CUDA device (GPU).
+       */
+      using CudaType = Array< Value, TNL::Devices::Cuda, Index >;
+
+      /**
+       * \brief Compatible ArrayView type.
+       */
       using ViewType = ArrayView< Value, Device, Index >;
+
+      /**
+       * \brief Compatible constant ArrayView type.
+       */
       using ConstViewType = ArrayView< std::add_const_t< Value >, Device, Index >;
+
 
       /**
        * \brief Constructs an empty array with zero size.

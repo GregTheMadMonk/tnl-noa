@@ -216,6 +216,15 @@ TYPED_TEST( StaticArrayTest, AssignmentOperator )
    StaticArray< size, char > u4( 127 );
    u3 = u4;
    EXPECT_TRUE( u3 == u4 );
+
+   // assignment of number
+   u3 = 0.0;
+   for( int i = 0; i < size; i++ )
+      u3[ i ] == 0.0;
+   u3 = 1.0;
+   for( int i = 0; i < size; i++ )
+      u3[ i ] == 1.0;
+
 }
 
 TYPED_TEST( StaticArrayTest, setValue )
@@ -257,6 +266,14 @@ TYPED_TEST( StaticArrayTest, SaveAndLoad )
    EXPECT_EQ( u1, u2 );
 
    EXPECT_EQ( std::remove( TEST_FILE_NAME ), 0 );
+
+   ASSERT_NO_THROW( File( TEST_FILE_NAME, std::ios_base::out ) << u1 );
+   ASSERT_NO_THROW( File( TEST_FILE_NAME, std::ios_base::in ) >> u2 );
+
+   EXPECT_EQ( u1, u2 );
+
+   EXPECT_EQ( std::remove( TEST_FILE_NAME ), 0 );
+
 }
 
 TYPED_TEST( StaticArrayTest, sort )

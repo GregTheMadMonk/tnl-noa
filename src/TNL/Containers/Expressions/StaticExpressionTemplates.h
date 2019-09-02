@@ -242,6 +242,8 @@ protected:
    const T1& operand;
 };
 
+#ifndef DOXYGEN_ONLY
+
 ////
 // Binary expressions addition
 template< typename L1,
@@ -1244,6 +1246,8 @@ operator,( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
    return StaticExpressionSum( a * b );
 }
 
+#endif // DOXYGEN_ONLY
+
 ////
 // Output stream
 template< typename T1,
@@ -1274,6 +1278,8 @@ std::ostream& operator<<( std::ostream& str, const StaticUnaryExpressionTemplate
 
 ////
 // All operations are supposed to be in namespace TNL
+
+#ifndef DOXYGEN_ONLY
 
 ////
 // Binary expression min
@@ -2268,6 +2274,8 @@ dot( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOpe
 {
    return (a, b);
 }
+
+#endif // DOXYGEN_ONLY
 
 ////
 // Evaluation with reduction

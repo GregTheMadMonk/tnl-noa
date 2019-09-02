@@ -13,6 +13,7 @@
 #include <TNL/param-types.h>
 #include <TNL/Math.h>
 #include <TNL/Containers/StaticArray.h>
+#include <TNL/Containers/Algorithms/StaticArrayAssignment.h>
 #include <TNL/StaticFor.h>
 
 namespace TNL {
@@ -263,11 +264,11 @@ StaticArray< Size, Value >& StaticArray< Size, Value >::operator=( const StaticA
 }
 
 template< int Size, typename Value >
-   template< typename Array >
+   template< typename T >
 __cuda_callable__
-StaticArray< Size, Value >& StaticArray< Size, Value >::operator=( const Array& array )
+StaticArray< Size, Value >& StaticArray< Size, Value >::operator=( const T& v )
 {
-   StaticFor< 0, Size >::exec( detail::assignArrayFunctor< Value, typename Array::ValueType >{}, data, array.getData() );
+   Algorithms::StaticArrayAssignment< StaticArray, T >::assign( *this, v );
    return *this;
 }
 
@@ -341,6 +342,38 @@ std::ostream& operator<<( std::ostream& str, const StaticArray< Size, Value >& a
    a.write( str, ", " );
    str << " ]";
    return str;
+}
+
+// Serialization of arrays into binary files.
+template< int Size, typename Value >
+File& operator<<( File& file, const StaticArray< Size, Value >& array )
+{
+   for( int i = 0; i < Size; i++ )
+      file.save( &array[ i ] );
+   return file;
+}
+
+template< int Size, typename Value >
+File& operator<<( File&& file, const StaticArray< Size, Value >& array )
+{
+   File& f = file;
+   return f << array;
+}
+
+// Deserialization of arrays from binary files.
+template< int Size, typename Value >
+File& operator>>( File& file, StaticArray< Size, Value >& array )
+{
+   for( int i = 0; i < Size; i++ )
+      file.load( &array[ i ] );
+   return file;
+}
+
+template< int Size, typename Value >
+File& operator>>( File&& file, StaticArray< Size, Value >& array )
+{
+   File& f = file;
+   return f >> array;
 }
 
 } // namespace Containers
