@@ -23,6 +23,7 @@ WITH_OPENMP="yes"
 WITH_GMP="no"
 WITH_TESTS="yes"
 RUN_TESTS="yes"   # whether to run tests if they were compiled (coverage script sets it to no)
+TESTS_JOBS="4"
 WITH_PROFILING="no"
 WITH_COVERAGE="no"
 WITH_DOC="yes"
@@ -54,6 +55,7 @@ do
         --with-gmp=*                     ) WITH_GMP="${option#*=}" ;;
         --with-tests=*                   ) WITH_TESTS="${option#*=}" ;;
         --run-tests=*                    ) RUN_TESTS="${option#*=}" ;;
+        --tests-jobs=*                   ) TESTS_JOBS="${option#*=}" ;;
         --with-profiling=*               ) WITH_PROFILING="${option#*=}" ;;
         --with-coverage=*                ) WITH_COVERAGE="${option#*=}" ;;
         --with-doc=*                     ) WITH_DOC="${option#*=}" ;;
@@ -83,6 +85,7 @@ if [[ ${HELP} == "yes" ]]; then
     echo "   --with-gmp=yes/no                     Enables the wrapper for GNU Multiple Precision Arithmetic Library. 'no' by default."
     echo "   --with-tests=yes/no                   Enables compilation of unit tests. 'yes' by default."
     echo "   --run-tests=yes/no                    Runs unit tests if they were compiled. 'yes' by default."
+    echo "   --tests-jobs=NUM                      Number of processes to be used for the unit tests. It is 4 by default."
     echo "   --with-profiling=yes/no               Enables code profiling compiler falgs. 'no' by default."
     echo "   --with-coverage=yes/no                Enables code coverage reports for unit tests. 'no' by default (lcov is required)."
     echo "   --with-doc=yes/no                     Build documentation. 'yes' by default."
@@ -204,5 +207,5 @@ if [[ ${WITH_DOC} == "yes" ]]; then
 fi
 
 if [[ ${WITH_TESTS} == "yes" ]] && [[ ${RUN_TESTS} == "yes" ]]; then
-   CTEST_PARALLEL_LEVEL=4 CTEST_OUTPUT_ON_FAILURE=1 $make test
+   CTEST_PARALLEL_LEVEL=${TESTS_JOBS} CTEST_OUTPUT_ON_FAILURE=1 $make test
 fi
