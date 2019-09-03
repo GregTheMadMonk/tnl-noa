@@ -1,5 +1,5 @@
 /***************************************************************************
-                          Scan.h  -  description
+                          DistributedScan.h  -  description
                              -------------------
     begin                : Aug 16, 2019
     copyright            : (C) 2019 by Tomas Oberhuber et al.

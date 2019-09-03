@@ -50,7 +50,7 @@ enum class ScanType {
  * See \ref Scan< Devices::Host, Type > and \ref Scan< Devices::Cuda, Type >.
  */
 template< typename Device,
-           ScanType Type = ScanType::Inclusive >
+          ScanType Type = ScanType::Inclusive >
 struct Scan;
 
 /**
@@ -93,7 +93,7 @@ struct Scan;
  * **Note: Segmented scan is not implemented for CUDA yet.**
  */
 template< typename Device,
-           ScanType Type = ScanType::Inclusive >
+          ScanType Type = ScanType::Inclusive >
 struct SegmentedScan;
 
 

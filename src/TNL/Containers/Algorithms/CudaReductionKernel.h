@@ -140,7 +140,7 @@ template< int blockSize,
 __global__ void
 __launch_bounds__( Reduction_maxThreadsPerBlock, Reduction_minBlocksPerMultiprocessor )
 CudaReductionWithArgumentKernel( const Result zero,
-                                 const DataFetcher dataFetcher,
+                                 DataFetcher dataFetcher,
                                  const Reduction reduction,
                                  const Index size,
                                  Result* output,
@@ -294,7 +294,7 @@ struct CudaReductionKernelLauncher
    template< typename DataFetcher,
              typename Reduction >
    int start( const Reduction& reduction,
-              const DataFetcher& dataFetcher,
+              DataFetcher& dataFetcher,
               const Result& zero,
               Result*& output )
    {
@@ -311,7 +311,7 @@ struct CudaReductionKernelLauncher
    template< typename DataFetcher,
              typename Reduction >
    int startWithArgument( const Reduction& reduction,
-                          const DataFetcher& dataFetcher,
+                          DataFetcher& dataFetcher,
                           const Result& zero,
                           Result*& output,
                           Index*& idxOutput )
@@ -395,7 +395,7 @@ struct CudaReductionKernelLauncher
                 typename Reduction >
       int launch( const Index size,
                   const Reduction& reduction,
-                  const DataFetcher& dataFetcher,
+                  DataFetcher& dataFetcher,
                   const Result& zero,
                   Result* output )
       {
@@ -498,7 +498,7 @@ struct CudaReductionKernelLauncher
                 typename Reduction >
       int launchWithArgument( const Index size,
                               const Reduction& reduction,
-                              const DataFetcher& dataFetcher,
+                              DataFetcher& dataFetcher,
                               const Result& zero,
                               Result* output,
                               Index* idxOutput,

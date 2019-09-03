@@ -160,13 +160,13 @@ template< typename Real,
           typename Index >
 __global__ void
 cudaSecondPhaseBlockScan( Reduction reduction,
-                               const Index size,
-                               const int elementsInBlock,
-                               const Index gridIdx,
-                               const Index maxGridSize,
-                               const Real* auxArray,
-                               Real* data,
-                               Real shift )
+                          const Index size,
+                          const int elementsInBlock,
+                          const Index gridIdx,
+                          const Index maxGridSize,
+                          const Real* auxArray,
+                          Real* data,
+                          Real shift )
 {
    if( gridIdx > 0 || blockIdx.x > 0 )
       shift = reduction( shift, auxArray[ gridIdx * maxGridSize + blockIdx.x - 1 ] );
