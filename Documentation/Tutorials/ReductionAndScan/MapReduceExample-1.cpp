@@ -2,7 +2,6 @@
 #include <cstdlib>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/Algorithms/Reduction.h>
-#include <TNL/Timer.h>
 
 using namespace TNL;
 using namespace TNL::Containers;
@@ -20,7 +19,6 @@ double mapReduce( Vector< double, Device >& u )
 
 int main( int argc, char* argv[] )
 {
-   Timer timer;
    Vector< double, Devices::Host > host_u( 10 );
    host_u.evaluate( [] __cuda_callable__ ( int i ) { return sin( ( double ) i ); } );
    double result = mapReduce( host_u );

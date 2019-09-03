@@ -1,10 +1,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <TNL/Containers/Vector.h>
-#include <TNL/Containers/Array.h>
 #include <TNL/Containers/Algorithms/Reduction.h>
-
-#include <TNL/Containers/StaticVector.h>
 
 using namespace TNL;
 using namespace TNL::Containers;
