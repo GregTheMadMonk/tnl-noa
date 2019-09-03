@@ -218,12 +218,12 @@ TYPED_TEST( StaticArrayTest, AssignmentOperator )
    EXPECT_TRUE( u3 == u4 );
 
    // assignment of number
-   u3 = 0.0;
+   u3 = 0;
    for( int i = 0; i < size; i++ )
-      u3[ i ] == 0.0;
-   u3 = 1.0;
+      EXPECT_EQ( u3[ i ], 0 );
+   u3 = 1;
    for( int i = 0; i < size; i++ )
-      u3[ i ] == 1.0;
+      EXPECT_EQ( u3[ i ], 1 );
 
 }
 
