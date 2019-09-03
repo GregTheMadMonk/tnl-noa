@@ -52,10 +52,10 @@ template< typename StaticArray,
 struct StaticArrayAssignment< StaticArray, T, true >
 {
    __cuda_callable__
-   static void assign( StaticArray& a, const T& t )
+   static void assign( StaticArray& a, const T& v )
    {
       static_assert( StaticArray::getSize() == T::getSize(), "Cannot assign static arrays with different size." );
-      StaticFor< 0, StaticArray::getSize() >::exec( detail::AssignArrayFunctor{}, a.getData(), t );
+      StaticFor< 0, StaticArray::getSize() >::exec( detail::AssignArrayFunctor{}, a.getData(), v );
    }
 };
 
@@ -68,9 +68,9 @@ template< typename StaticArray,
 struct StaticArrayAssignment< StaticArray, T, false >
 {
    __cuda_callable__
-   static void assign( StaticArray& a, const T& t )
+   static void assign( StaticArray& a, const T& v )
    {
-      StaticFor< 0, StaticArray::getSize() >::exec( detail::AssignValueFunctor{}, a, t );
+      StaticFor< 0, StaticArray::getSize() >::exec( detail::AssignValueFunctor{}, a, v );
    }
 };
 

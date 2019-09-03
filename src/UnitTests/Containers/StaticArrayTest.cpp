@@ -224,7 +224,6 @@ TYPED_TEST( StaticArrayTest, AssignmentOperator )
    u3 = 1;
    for( int i = 0; i < size; i++ )
       EXPECT_EQ( u3[ i ], 1 );
-
 }
 
 TYPED_TEST( StaticArrayTest, setValue )

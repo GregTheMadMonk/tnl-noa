@@ -181,18 +181,18 @@ public:
    StaticArray< Size, Value >& operator=( const StaticArray< Size, Value >& array );
 
    /**
-    * \brief Assigns an object \e t of type \e T.
+    * \brief Assigns an object \e v of type \e T.
     * 
     * T can be:
     * 
     * 1. Static linear container implementing operator[] and having the same size.
-    * In this case, \e t is copied to this array elementwise.
+    * In this case, \e v is copied to this array elementwise.
     * 2. An object that can be converted to \e Value type. In this case all elements
-    * are set to \e t.
+    * are set to \e v.
     */
    template< typename T >
    __cuda_callable__
-   StaticArray< Size, Value >& operator=( const T& t );
+   StaticArray< Size, Value >& operator=( const T& v );
 
    /**
     * \brief This function checks whether this static array is equal to another \e array.
