@@ -28,10 +28,10 @@ struct StaticFor< Begin, End, true >
 
    template< typename Function, typename... Args >
    __cuda_callable__
-   static void exec( const Function& f, Args... args )
+   static void exec( const Function& f, Args&&... args )
    {
       f( Begin, args... );
-      StaticFor< Begin + 1, End >::exec( f, args... );
+      StaticFor< Begin + 1, End >::exec( f, std::forward< Args >( args )... );
    }
 };
 
@@ -40,7 +40,7 @@ struct StaticFor< End, End, true >
 {
    template< typename Function, typename... Args >
    __cuda_callable__
-   static void exec( const Function& f, Args... args ) {}
+   static void exec( const Function& f, Args&&... args ) {}
 };
 
 template< int Begin, int End >
@@ -50,10 +50,10 @@ struct StaticFor< Begin, End, false >
 
    template< typename Function, typename... Args >
    __cuda_callable__
-   static void exec( const Function& f, Args... args )
+   static void exec( const Function& f, Args&&... args )
    {
       for( int i = Begin; i < End; i++ )
-         f( i, args... );
+         f( i, std::forward< Args >( args )... );
    }
 };
 
