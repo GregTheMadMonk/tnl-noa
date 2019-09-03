@@ -18,27 +18,26 @@ namespace Containers {
 namespace Algorithms {
 
    namespace detail {
-      ////
-      // Functors used together with StaticFor for static loop unrolling in the
-      // implementation of the StaticArray
-      template< typename LeftValue, typename RightValue = LeftValue >
-      struct assignArrayFunctor
+      struct AssignArrayFunctor
       {
-         __cuda_callable__ void operator()( int i, LeftValue* data, const RightValue& v ) const
+         template< typename LeftValue, typename RightValue >
+         __cuda_callable__
+         void operator()( int i, LeftValue& data, const RightValue& v ) const
          {
             data[ i ] = v[ i ];
          }
       };
 
-      template< typename LeftValue, typename RightValue = LeftValue >
-      struct assignValueFunctor
+      struct AssignValueFunctor
       {
-         __cuda_callable__ void operator()( int i, LeftValue& data, const RightValue& v ) const
+         template< typename LeftValue, typename RightValue >
+         __cuda_callable__
+         void operator()( int i, LeftValue& data, const RightValue& v ) const
          {
             data[ i ] = v;
          }
       };
-   } //namespace detail
+   } // namespace detail
 
 template< typename StaticArray,
           typename T,
@@ -56,7 +55,7 @@ struct StaticArrayAssignment< StaticArray, T, true >
    static void assign( StaticArray& a, const T& t )
    {
       static_assert( StaticArray::getSize() == T::getSize(), "Cannot assign static arrays with different size." );
-      StaticFor< 0, StaticArray::getSize() >::exec( detail::assignArrayFunctor< typename StaticArray::ValueType, T >{}, a.getData(), t );
+      StaticFor< 0, StaticArray::getSize() >::exec( detail::AssignArrayFunctor{}, a.getData(), t );
    }
 };
 
@@ -71,8 +70,7 @@ struct StaticArrayAssignment< StaticArray, T, false >
    __cuda_callable__
    static void assign( StaticArray& a, const T& t )
    {
-      StaticFor< 0, StaticArray::getSize() >::exec( detail::assignValueFunctor< StaticArray, T >{}, a, t );
-
+      StaticFor< 0, StaticArray::getSize() >::exec( detail::AssignValueFunctor{}, a, t );
    }
 };
 
