@@ -93,7 +93,7 @@ copyFromIterator( DestinationElement* destination,
                   SourceIterator first,
                   SourceIterator last )
 {
-   MemoryOperations< void >::copyFromIterator( destination, destinationSize, first, last );
+   MemoryOperations< Devices::Sequential >::copyFromIterator( destination, destinationSize, first, last );
 }
 
 template< typename DestinationElement,
@@ -137,7 +137,7 @@ containsValue( const Element* data,
    }
    else {
       // sequential algorithm can return as soon as it finds a match
-      return MemoryOperations< void >::containsValue( data, size, value );
+      return MemoryOperations< Devices::Sequential >::containsValue( data, size, value );
    }
 }
 
@@ -159,7 +159,7 @@ containsOnlyValue( const Element* data,
    }
    else {
       // sequential algorithm can return as soon as it finds a mismatch
-      return MemoryOperations< void >::containsOnlyValue( data, size, value );
+      return MemoryOperations< Devices::Sequential >::containsOnlyValue( data, size, value );
    }
 }
 

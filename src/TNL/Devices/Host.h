@@ -19,7 +19,6 @@
 #endif
 
 namespace TNL {
-//! \brief Namespace for TNL execution models
 namespace Devices {
 
 class Host

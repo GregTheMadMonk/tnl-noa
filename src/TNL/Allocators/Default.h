@@ -14,6 +14,7 @@
 
 #include <TNL/Allocators/Host.h>
 #include <TNL/Allocators/Cuda.h>
+#include <TNL/Devices/Sequential.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 
@@ -26,6 +27,14 @@ namespace Allocators {
  */
 template< typename Device >
 struct Default;
+
+//! Sets \ref Allocators::Host as the default allocator for \ref Devices::Sequential.
+template<>
+struct Default< Devices::Sequential >
+{
+   template< typename T >
+   using Allocator = Allocators::Host< T >;
+};
 
 //! Sets \ref Allocators::Host as the default allocator for \ref Devices::Host.
 template<>

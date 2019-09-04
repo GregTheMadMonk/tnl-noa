@@ -14,6 +14,7 @@
 
 #include <functional>  // reduction functions like std::plus, std::logical_and, std::logical_or etc.
 
+#include <TNL/Devices/Sequential.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 
@@ -22,6 +23,35 @@ namespace Algorithms {
 
 template< typename Device >
 struct Multireduction;
+
+template<>
+struct Multireduction< Devices::Sequential >
+{
+   /**
+    * Parameters:
+    *    zero: starting value for reduction
+    *    dataFetcher: callable object such that `dataFetcher( i, j )` yields
+    *                 the i-th value to be reduced from the j-th dataset
+    *                 (i = 0,...,size-1; j = 0,...,n-1)
+    *    reduction: callable object representing the reduction operation
+    *               for example, it can be an instance of std::plus, std::logical_and,
+    *               std::logical_or etc.
+    *    size: the size of each dataset
+    *    n: number of datasets to be reduced
+    *    result: output array of size = n
+    */
+   template< typename Result,
+             typename DataFetcher,
+             typename Reduction,
+             typename Index >
+   static constexpr void
+   reduce( const Result zero,
+           DataFetcher dataFetcher,
+           const Reduction reduction,
+           const Index size,
+           const int n,
+           Result* result );
+};
 
 template<>
 struct Multireduction< Devices::Host >

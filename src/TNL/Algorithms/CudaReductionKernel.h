@@ -351,7 +351,7 @@ struct CudaReductionKernelLauncher
 
       // Copy result on CPU
       Result result;
-      MultiDeviceMemoryOperations< Devices::Host, Devices::Cuda >::copy( &result, output, 1 );
+      MultiDeviceMemoryOperations< void, Devices::Cuda >::copy( &result, output, 1 );
       return result;
    }
 
@@ -384,8 +384,8 @@ struct CudaReductionKernelLauncher
       ////
       // Copy result on CPU
       std::pair< Index, Result > result;
-      MultiDeviceMemoryOperations< Devices::Host, Devices::Cuda >::copy( &result.first, idxOutput, 1 );
-      MultiDeviceMemoryOperations< Devices::Host, Devices::Cuda >::copy( &result.second, output, 1 );
+      MultiDeviceMemoryOperations< void, Devices::Cuda >::copy( &result.first, idxOutput, 1 );
+      MultiDeviceMemoryOperations< void, Devices::Cuda >::copy( &result.second, output, 1 );
       return result;
    }
 

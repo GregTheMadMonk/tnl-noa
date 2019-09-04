@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <TNL/Devices/Sequential.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Cuda/CudaCallable.h>
@@ -17,12 +18,11 @@
 namespace TNL {
 namespace Algorithms {
 
-template< typename DestinationExecution >
+template< typename DestinationDevice >
 struct MemoryOperations;
 
-// TODO: change "void" to "Execution::Sequential"
 template<>
-struct MemoryOperations< void >
+struct MemoryOperations< Devices::Sequential >
 {
    template< typename Element >
    __cuda_callable__

@@ -10,11 +10,13 @@
 
 #pragma once
 
+#include <TNL/Devices/Sequential.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Cuda/CheckDevice.h>
 #include <TNL/Cuda/DeviceInfo.h>
 #include <TNL/Cuda/LaunchHelpers.h>
+#include <TNL/Exceptions/CudaSupportMissing.h>
 #include <TNL/Math.h>
 
 /****
@@ -33,7 +35,7 @@ namespace Algorithms {
 
 enum ParallelForMode { SynchronousMode, AsynchronousMode };
 
-template< typename Device = Devices::Host,
+template< typename Device = Devices::Sequential,
           ParallelForMode Mode = SynchronousMode >
 struct ParallelFor
 {
@@ -42,26 +44,12 @@ struct ParallelFor
              typename... FunctionArgs >
    static void exec( Index start, Index end, Function f, FunctionArgs... args )
    {
-#ifdef HAVE_OPENMP
-      // Benchmarks show that this is significantly faster compared
-      // to '#pragma omp parallel for if( TNL::Devices::Host::isOMPEnabled() && end - start > 512 )'
-      if( TNL::Devices::Host::isOMPEnabled() && end - start > 512 )
-      {
-#pragma omp parallel for
-         for( Index i = start; i < end; i++ )
-            f( i, args... );
-      }
-      else
-         for( Index i = start; i < end; i++ )
-            f( i, args... );
-#else
       for( Index i = start; i < end; i++ )
          f( i, args... );
-#endif
    }
 };
 
-template< typename Device = Devices::Host,
+template< typename Device = Devices::Sequential,
           ParallelForMode Mode = SynchronousMode >
 struct ParallelFor2D
 {
@@ -70,30 +58,13 @@ struct ParallelFor2D
              typename... FunctionArgs >
    static void exec( Index startX, Index startY, Index endX, Index endY, Function f, FunctionArgs... args )
    {
-#ifdef HAVE_OPENMP
-      // Benchmarks show that this is significantly faster compared
-      // to '#pragma omp parallel for if( TNL::Devices::Host::isOMPEnabled() )'
-      if( TNL::Devices::Host::isOMPEnabled() )
-      {
-#pragma omp parallel for
-         for( Index j = startY; j < endY; j++ )
-         for( Index i = startX; i < endX; i++ )
-            f( i, j, args... );
-      }
-      else {
-         for( Index j = startY; j < endY; j++ )
-         for( Index i = startX; i < endX; i++ )
-            f( i, j, args... );
-      }
-#else
       for( Index j = startY; j < endY; j++ )
       for( Index i = startX; i < endX; i++ )
          f( i, j, args... );
-#endif
    }
 };
 
-template< typename Device = Devices::Host,
+template< typename Device = Devices::Sequential,
           ParallelForMode Mode = SynchronousMode >
 struct ParallelFor3D
 {
@@ -102,29 +73,87 @@ struct ParallelFor3D
              typename... FunctionArgs >
    static void exec( Index startX, Index startY, Index startZ, Index endX, Index endY, Index endZ, Function f, FunctionArgs... args )
    {
-#ifdef HAVE_OPENMP
-      // Benchmarks show that this is significantly faster compared
-      // to '#pragma omp parallel for if( TNL::Devices::Host::isOMPEnabled() )'
-     if( TNL::Devices::Host::isOMPEnabled() )
-     {
-#pragma omp parallel for collapse(2)
       for( Index k = startZ; k < endZ; k++ )
       for( Index j = startY; j < endY; j++ )
       for( Index i = startX; i < endX; i++ )
          f( i, j, k, args... );
+   }
+};
+
+template< ParallelForMode Mode >
+struct ParallelFor< Devices::Host, Mode >
+{
+   template< typename Index,
+             typename Function,
+             typename... FunctionArgs >
+   static void exec( Index start, Index end, Function f, FunctionArgs... args )
+   {
+#ifdef HAVE_OPENMP
+      // Benchmarks show that this is significantly faster compared
+      // to '#pragma omp parallel for if( Devices::Host::isOMPEnabled() && end - start > 512 )'
+      if( Devices::Host::isOMPEnabled() && end - start > 512 )
+      {
+         #pragma omp parallel for
+         for( Index i = start; i < end; i++ )
+            f( i, args... );
       }
       else
+         ParallelFor< Devices::Sequential >::exec( start, end, f, args... );
+#else
+      ParallelFor< Devices::Sequential >::exec( start, end, f, args... );
+#endif
+   }
+};
+
+template< ParallelForMode Mode >
+struct ParallelFor2D< Devices::Host, Mode >
+{
+   template< typename Index,
+             typename Function,
+             typename... FunctionArgs >
+   static void exec( Index startX, Index startY, Index endX, Index endY, Function f, FunctionArgs... args )
+   {
+#ifdef HAVE_OPENMP
+      // Benchmarks show that this is significantly faster compared
+      // to '#pragma omp parallel for if( Devices::Host::isOMPEnabled() )'
+      if( Devices::Host::isOMPEnabled() )
       {
+         #pragma omp parallel for
+         for( Index j = startY; j < endY; j++ )
+         for( Index i = startX; i < endX; i++ )
+            f( i, j, args... );
+      }
+      else
+         ParallelFor2D< Devices::Sequential >::exec( startX, startY, endX, endY, f, args... );
+#else
+      ParallelFor2D< Devices::Sequential >::exec( startX, startY, endX, endY, f, args... );
+#endif
+   }
+};
+
+template< ParallelForMode Mode >
+struct ParallelFor3D< Devices::Host, Mode >
+{
+   template< typename Index,
+             typename Function,
+             typename... FunctionArgs >
+   static void exec( Index startX, Index startY, Index startZ, Index endX, Index endY, Index endZ, Function f, FunctionArgs... args )
+   {
+#ifdef HAVE_OPENMP
+      // Benchmarks show that this is significantly faster compared
+      // to '#pragma omp parallel for if( Devices::Host::isOMPEnabled() )'
+      if( Devices::Host::isOMPEnabled() )
+      {
+         #pragma omp parallel for collapse(2)
          for( Index k = startZ; k < endZ; k++ )
          for( Index j = startY; j < endY; j++ )
          for( Index i = startX; i < endX; i++ )
             f( i, j, k, args... );
       }
+      else
+         ParallelFor3D< Devices::Sequential >::exec( startX, startY, startZ, endX, endY, endZ, f, args... );
 #else
-      for( Index k = startZ; k < endZ; k++ )
-      for( Index j = startY; j < endY; j++ )
-      for( Index i = startX; i < endX; i++ )
-         f( i, j, k, args... );
+      ParallelFor3D< Devices::Sequential >::exec( startX, startY, startZ, endX, endY, endZ, f, args... );
 #endif
    }
 };

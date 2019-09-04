@@ -17,8 +17,8 @@
 //#define CUDA_REDUCTION_PROFILING
 
 #include <TNL/Algorithms/Reduction.h>
-#include <TNL/Algorithms/MultiDeviceMemoryOperations.h>
 #include <TNL/Algorithms/CudaReductionKernel.h>
+#include <TNL/Algorithms/MultiDeviceMemoryOperations.h>
 
 #ifdef CUDA_REDUCTION_PROFILING
 #include <iostream>
@@ -35,8 +35,115 @@ namespace Algorithms {
  */
 static constexpr int Reduction_minGpuDataSize = 256;//65536; //16384;//1024;//256;
 
-////
-// Reduction on host
+template< typename Index,
+          typename Result,
+          typename ReductionOperation,
+          typename DataFetcher >
+constexpr Result
+Reduction< Devices::Sequential >::
+reduce( const Index size,
+        const ReductionOperation& reduction,
+        DataFetcher& dataFetcher,
+        const Result& zero )
+{
+   constexpr int block_size = 128;
+   const int blocks = size / block_size;
+
+   if( blocks > 1 ) {
+      // initialize array for unrolled results
+      Result r[ 4 ] = { zero, zero, zero, zero };
+
+      // main reduction (explicitly unrolled loop)
+      for( int b = 0; b < blocks; b++ ) {
+         const Index offset = b * block_size;
+         for( int i = 0; i < block_size; i += 4 ) {
+            r[ 0 ] = reduction( r[ 0 ], dataFetcher( offset + i ) );
+            r[ 1 ] = reduction( r[ 1 ], dataFetcher( offset + i + 1 ) );
+            r[ 2 ] = reduction( r[ 2 ], dataFetcher( offset + i + 2 ) );
+            r[ 3 ] = reduction( r[ 3 ], dataFetcher( offset + i + 3 ) );
+         }
+      }
+
+      // reduction of the last, incomplete block (not unrolled)
+      for( Index i = blocks * block_size; i < size; i++ )
+         r[ 0 ] = reduction( r[ 0 ], dataFetcher( i ) );
+
+      // reduction of unrolled results
+      r[ 0 ] = reduction( r[ 0 ], r[ 2 ] );
+      r[ 1 ] = reduction( r[ 1 ], r[ 3 ] );
+      r[ 0 ] = reduction( r[ 0 ], r[ 1 ] );
+      return r[ 0 ];
+   }
+   else {
+      Result result = zero;
+      for( Index i = 0; i < size; i++ )
+         result = reduction( result, dataFetcher( i ) );
+      return result;
+   }
+}
+
+template< typename Index,
+          typename Result,
+          typename ReductionOperation,
+          typename DataFetcher >
+constexpr std::pair< Index, Result >
+Reduction< Devices::Sequential >::
+reduceWithArgument( const Index size,
+                    const ReductionOperation& reduction,
+                    DataFetcher& dataFetcher,
+                    const Result& zero )
+{
+   constexpr int block_size = 128;
+   const int blocks = size / block_size;
+
+   if( blocks > 1 ) {
+      // initialize array for unrolled results
+      Index arg[ 4 ] = { 0, 0, 0, 0 };
+      Result r[ 4 ] = { zero, zero, zero, zero };
+      bool initialized( false );
+
+      // main reduction (explicitly unrolled loop)
+      for( int b = 0; b < blocks; b++ ) {
+         const Index offset = b * block_size;
+         for( int i = 0; i < block_size; i += 4 ) {
+            if( ! initialized )
+            {
+               arg[ 0 ] = offset + i;
+               arg[ 1 ] = offset + i + 1;
+               arg[ 2 ] = offset + i + 2;
+               arg[ 3 ] = offset + i + 3;
+               r[ 0 ] = dataFetcher( offset + i );
+               r[ 1 ] = dataFetcher( offset + i + 1 );
+               r[ 2 ] = dataFetcher( offset + i + 2 );
+               r[ 3 ] = dataFetcher( offset + i + 3 );
+               initialized = true;
+               continue;
+            }
+            reduction( arg[ 0 ], offset + i,     r[ 0 ], dataFetcher( offset + i ) );
+            reduction( arg[ 1 ], offset + i + 1, r[ 1 ], dataFetcher( offset + i + 1 ) );
+            reduction( arg[ 2 ], offset + i + 2, r[ 2 ], dataFetcher( offset + i + 2 ) );
+            reduction( arg[ 3 ], offset + i + 3, r[ 3 ], dataFetcher( offset + i + 3 ) );
+         }
+      }
+
+      // reduction of the last, incomplete block (not unrolled)
+      for( Index i = blocks * block_size; i < size; i++ )
+         reduction( arg[ 0 ], i, r[ 0 ], dataFetcher( i ) );
+
+      // reduction of unrolled results
+      reduction( arg[ 0 ], arg[ 2 ], r[ 0 ], r[ 2 ] );
+      reduction( arg[ 1 ], arg[ 3 ], r[ 1 ], r[ 3 ] );
+      reduction( arg[ 0 ], arg[ 1 ], r[ 0 ], r[ 1 ] );
+      return std::make_pair( arg[ 0 ], r[ 0 ] );
+   }
+   else {
+      std::pair< Index, Result > result( 0, dataFetcher( 0 ) );
+      for( Index i = 1; i < size; i++ )
+         reduction( result.first, i, result.second, dataFetcher( i ) );
+      return result;
+   }
+}
+
 template< typename Index,
           typename Result,
           typename ReductionOperation,
@@ -48,10 +155,10 @@ reduce( const Index size,
         DataFetcher& dataFetcher,
         const Result& zero )
 {
+#ifdef HAVE_OPENMP
    constexpr int block_size = 128;
    const int blocks = size / block_size;
 
-#ifdef HAVE_OPENMP
    if( Devices::Host::isOMPEnabled() && blocks >= 2 ) {
       // global result variable
       Result result = zero;
@@ -92,42 +199,9 @@ reduce( const Index size,
       }
       return result;
    }
-   else {
+   else
 #endif
-      if( blocks > 1 ) {
-         // initialize array for unrolled results
-         Result r[ 4 ] = { zero, zero, zero, zero };
-
-         // main reduction (explicitly unrolled loop)
-         for( int b = 0; b < blocks; b++ ) {
-            const Index offset = b * block_size;
-            for( int i = 0; i < block_size; i += 4 ) {
-               r[ 0 ] = reduction( r[ 0 ], dataFetcher( offset + i ) );
-               r[ 1 ] = reduction( r[ 1 ], dataFetcher( offset + i + 1 ) );
-               r[ 2 ] = reduction( r[ 2 ], dataFetcher( offset + i + 2 ) );
-               r[ 3 ] = reduction( r[ 3 ], dataFetcher( offset + i + 3 ) );
-            }
-         }
-
-         // reduction of the last, incomplete block (not unrolled)
-         for( Index i = blocks * block_size; i < size; i++ )
-            r[ 0 ] = reduction( r[ 0 ], dataFetcher( i ) );
-
-         // reduction of unrolled results
-         r[ 0 ] = reduction( r[ 0 ], r[ 2 ] );
-         r[ 1 ] = reduction( r[ 1 ], r[ 3 ] );
-         r[ 0 ] = reduction( r[ 0 ], r[ 1 ] );
-         return r[ 0 ];
-      }
-      else {
-         Result result = zero;
-         for( Index i = 0; i < size; i++ )
-            result = reduction( result, dataFetcher( i ) );
-         return result;
-      }
-#ifdef HAVE_OPENMP
-   }
-#endif
+      return Reduction< Devices::Sequential >::reduce( size, reduction, dataFetcher, zero );
 }
 
 template< typename Index,
@@ -141,10 +215,10 @@ reduceWithArgument( const Index size,
                     DataFetcher& dataFetcher,
                     const Result& zero )
 {
+#ifdef HAVE_OPENMP
    constexpr int block_size = 128;
    const int blocks = size / block_size;
 
-#ifdef HAVE_OPENMP
    if( Devices::Host::isOMPEnabled() && blocks >= 2 ) {
       // global result variable
       std::pair< Index, Result > result( -1, zero );
@@ -201,57 +275,9 @@ reduceWithArgument( const Index size,
       }
       return result;
    }
-   else {
+   else
 #endif
-      if( blocks > 1 ) {
-         // initialize array for unrolled results
-         Index arg[ 4 ] = { 0, 0, 0, 0 };
-         Result r[ 4 ] = { zero, zero, zero, zero };
-         bool initialized( false );
-
-         // main reduction (explicitly unrolled loop)
-         for( int b = 0; b < blocks; b++ ) {
-            const Index offset = b * block_size;
-            for( int i = 0; i < block_size; i += 4 ) {
-               if( ! initialized )
-               {
-                  arg[ 0 ] = offset + i;
-                  arg[ 1 ] = offset + i + 1;
-                  arg[ 2 ] = offset + i + 2;
-                  arg[ 3 ] = offset + i + 3;
-                  r[ 0 ] = dataFetcher( offset + i );
-                  r[ 1 ] = dataFetcher( offset + i + 1 );
-                  r[ 2 ] = dataFetcher( offset + i + 2 );
-                  r[ 3 ] = dataFetcher( offset + i + 3 );
-                  initialized = true;
-                  continue;
-               }
-               reduction( arg[ 0 ], offset + i,     r[ 0 ], dataFetcher( offset + i ) );
-               reduction( arg[ 1 ], offset + i + 1, r[ 1 ], dataFetcher( offset + i + 1 ) );
-               reduction( arg[ 2 ], offset + i + 2, r[ 2 ], dataFetcher( offset + i + 2 ) );
-               reduction( arg[ 3 ], offset + i + 3, r[ 3 ], dataFetcher( offset + i + 3 ) );
-            }
-         }
-
-         // reduction of the last, incomplete block (not unrolled)
-         for( Index i = blocks * block_size; i < size; i++ )
-            reduction( arg[ 0 ], i, r[ 0 ], dataFetcher( i ) );
-
-         // reduction of unrolled results
-         reduction( arg[ 0 ], arg[ 2 ], r[ 0 ], r[ 2 ] );
-         reduction( arg[ 1 ], arg[ 3 ], r[ 1 ], r[ 3 ] );
-         reduction( arg[ 0 ], arg[ 1 ], r[ 0 ], r[ 1 ] );
-         return std::make_pair( arg[ 0 ], r[ 0 ] );
-      }
-      else {
-         std::pair< Index, Result > result( 0, dataFetcher( 0 ) );
-         for( Index i = 1; i < size; i++ )
-            reduction( result.first, i, result.second, dataFetcher( i ) );
-         return result;
-      }
-#ifdef HAVE_OPENMP
-   }
-#endif
+      return Reduction< Devices::Sequential >::reduceWithArgument( size, reduction, dataFetcher, zero );
 }
 
 template< typename Index,
@@ -309,7 +335,7 @@ reduce( const Index size,
          new Result[ reducedSize ]
          #endif
       };
-      MultiDeviceMemoryOperations< Devices::Host, Devices::Cuda >::copy( resultArray.get(), deviceAux1, reducedSize );
+      MultiDeviceMemoryOperations< void, Devices::Cuda >::copy( resultArray.get(), deviceAux1, reducedSize );
 
       #ifdef CUDA_REDUCTION_PROFILING
          timer.stop();
@@ -320,7 +346,7 @@ reduce( const Index size,
 
       // finish the reduction on the host
       auto fetch = [&] ( Index i ) { return resultArray[ i ]; };
-      const Result result = Reduction< Devices::Host >::reduce( reducedSize, reduction, fetch, zero );
+      const Result result = Reduction< Devices::Sequential >::reduce( reducedSize, reduction, fetch, zero );
 
       #ifdef CUDA_REDUCTION_PROFILING
          timer.stop();
@@ -414,8 +440,8 @@ reduceWithArgument( const Index size,
          new Index[ reducedSize ]
          #endif
       };
-      MultiDeviceMemoryOperations< Devices::Host, Devices::Cuda >::copy( resultArray.get(), deviceAux1, reducedSize );
-      MultiDeviceMemoryOperations< Devices::Host, Devices::Cuda >::copy( indexArray.get(), deviceIndexes, reducedSize );
+      MultiDeviceMemoryOperations< void, Devices::Cuda >::copy( resultArray.get(), deviceAux1, reducedSize );
+      MultiDeviceMemoryOperations< void, Devices::Cuda >::copy( indexArray.get(), deviceIndexes, reducedSize );
 
       #ifdef CUDA_REDUCTION_PROFILING
          timer.stop();
@@ -426,7 +452,7 @@ reduceWithArgument( const Index size,
 
       // finish the reduction on the host
 //      auto fetch = [&] ( Index i ) { return resultArray[ i ]; };
-//      const Result result = Reduction< Devices::Host >::reduceWithArgument( reducedSize, argument, reduction, fetch, zero );
+//      const Result result = Reduction< Devices::Sequential >::reduceWithArgument( reducedSize, argument, reduction, fetch, zero );
       for( Index i = 1; i < reducedSize; i++ )
          reduction( indexArray[ 0 ], indexArray[ i ], resultArray[ 0 ], resultArray[ i ] );
 

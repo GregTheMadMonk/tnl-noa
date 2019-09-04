@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include <TNL/Devices/Sequential.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 
@@ -97,10 +98,70 @@ struct SegmentedScan;
 
 
 template< ScanType Type >
+struct Scan< Devices::Sequential, Type >
+{
+   /**
+    * \brief Computes scan (prefix sum) sequentially.
+    *
+    * \tparam Vector type vector being used for the scan.
+    * \tparam Reduction lambda function defining the reduction operation
+    *
+    * \param v input vector, the result of scan is stored in the same vector
+    * \param begin the first element in the array to be scanned
+    * \param end the last element in the array to be scanned
+    * \param reduction lambda function implementing the reduction operation
+    * \param zero is the idempotent element for the reduction operation, i.e. element which
+    *             does not change the result of the reduction.
+    *
+    * The reduction lambda function takes two variables which are supposed to be reduced:
+    *
+    * ```
+    * auto reduction = [] __cuda_callable__ ( const Result& a, const Result& b ) { return ... };
+    * ```
+    *
+    * \par Example
+    *
+    * \include ReductionAndScan/ScanExample.cpp
+    *
+    * \par Output
+    *
+    * \include ScanExample.out
+    */
+   template< typename Vector,
+             typename Reduction >
+   static void
+   perform( Vector& v,
+            const typename Vector::IndexType begin,
+            const typename Vector::IndexType end,
+            const Reduction& reduction,
+            const typename Vector::RealType zero );
+
+   template< typename Vector,
+             typename Reduction >
+   static auto
+   performFirstPhase( Vector& v,
+                      const typename Vector::IndexType begin,
+                      const typename Vector::IndexType end,
+                      const Reduction& reduction,
+                      const typename Vector::RealType zero );
+
+   template< typename Vector,
+             typename BlockShifts,
+             typename Reduction >
+   static void
+   performSecondPhase( Vector& v,
+                       const BlockShifts& blockShifts,
+                       const typename Vector::IndexType begin,
+                       const typename Vector::IndexType end,
+                       const Reduction& reduction,
+                       const typename Vector::RealType shift );
+};
+
+template< ScanType Type >
 struct Scan< Devices::Host, Type >
 {
    /**
-    * \brief Computes scan (prefix sum) on CPU.
+    * \brief Computes scan (prefix sum) using OpenMP.
     *
     * \tparam Vector type vector being used for the scan.
     * \tparam Reduction lambda function defining the reduction operation
@@ -217,10 +278,54 @@ struct Scan< Devices::Cuda, Type >
 };
 
 template< ScanType Type >
+struct SegmentedScan< Devices::Sequential, Type >
+{
+   /**
+    * \brief Computes segmented scan (prefix sum) sequentially.
+    *
+    * \tparam Vector type vector being used for the scan.
+    * \tparam Reduction lambda function defining the reduction operation
+    * \tparam Flags array type containing zeros and ones defining the segments begining
+    *
+    * \param v input vector, the result of scan is stored in the same vector
+    * \param flags is an array with zeros and ones defining the segments begining
+    * \param begin the first element in the array to be scanned
+    * \param end the last element in the array to be scanned
+    * \param reduction lambda function implementing the reduction operation
+    * \param zero is the idempotent element for the reduction operation, i.e. element which
+    *             does not change the result of the reduction.
+    *
+    * The reduction lambda function takes two variables which are supposed to be reduced:
+    *
+    * ```
+    * auto reduction = [] __cuda_callable__ ( const Result& a, const Result& b ) { return ... };
+    * ```
+    *
+    * \par Example
+    *
+    * \include ReductionAndScan/SegmentedScanExample.cpp
+    *
+    * \par Output
+    *
+    * \include SegmentedScanExample.out
+    */
+   template< typename Vector,
+             typename Reduction,
+             typename Flags >
+   static void
+   perform( Vector& v,
+            Flags& flags,
+            const typename Vector::IndexType begin,
+            const typename Vector::IndexType end,
+            const Reduction& reduction,
+            const typename Vector::RealType zero );
+};
+
+template< ScanType Type >
 struct SegmentedScan< Devices::Host, Type >
 {
    /**
-    * \brief Computes segmented scan (prefix sum) on CPU.
+    * \brief Computes segmented scan (prefix sum) using OpenMP.
     *
     * \tparam Vector type vector being used for the scan.
     * \tparam Reduction lambda function defining the reduction operation

@@ -18,7 +18,7 @@ namespace Algorithms {
 template< typename Element >
 __cuda_callable__
 void
-MemoryOperations< void >::
+MemoryOperations< Devices::Sequential >::
 setElement( Element* data,
             const Element& value )
 {
@@ -28,7 +28,7 @@ setElement( Element* data,
 template< typename Element >
 __cuda_callable__
 Element
-MemoryOperations< void >::
+MemoryOperations< Devices::Sequential >::
 getElement( const Element* data )
 {
    return *data;
@@ -37,7 +37,7 @@ getElement( const Element* data )
 template< typename Element, typename Index >
 __cuda_callable__
 void
-MemoryOperations< void >::
+MemoryOperations< Devices::Sequential >::
 set( Element* data,
      const Element& value,
      const Index size )
@@ -51,7 +51,7 @@ template< typename DestinationElement,
           typename Index >
 __cuda_callable__
 void
-MemoryOperations< void >::
+MemoryOperations< Devices::Sequential >::
 copy( DestinationElement* destination,
       const SourceElement* source,
       const Index size )
@@ -64,7 +64,7 @@ template< typename DestinationElement,
           typename Index,
           typename SourceIterator >
 void
-MemoryOperations< void >::
+MemoryOperations< Devices::Sequential >::
 copyFromIterator( DestinationElement* destination,
                   Index destinationSize,
                   SourceIterator first,
@@ -82,7 +82,7 @@ template< typename Element1,
           typename Index >
 __cuda_callable__
 bool
-MemoryOperations< void >::
+MemoryOperations< Devices::Sequential >::
 compare( const Element1* destination,
          const Element2* source,
          const Index size )
@@ -97,7 +97,7 @@ template< typename Element,
           typename Index >
 __cuda_callable__
 bool
-MemoryOperations< void >::
+MemoryOperations< Devices::Sequential >::
 containsValue( const Element* data,
                const Index size,
                const Element& value )
@@ -116,7 +116,7 @@ template< typename Element,
           typename Index >
 __cuda_callable__
 bool
-MemoryOperations< void >::
+MemoryOperations< Devices::Sequential >::
 containsOnlyValue( const Element* data,
                    const Index size,
                    const Element& value )

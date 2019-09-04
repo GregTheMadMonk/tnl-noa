@@ -15,6 +15,7 @@
 #include <utility>  // std::pair
 #include <functional>  // reduction functions like std::plus, std::logical_and, std::logical_or etc.
 
+#include <TNL/Devices/Sequential.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 
@@ -35,6 +36,30 @@ namespace Algorithms {
  */
 template< typename Device >
 struct Reduction;
+
+template<>
+struct Reduction< Devices::Sequential >
+{
+   template< typename Index,
+             typename Result,
+             typename ReductionOperation,
+             typename DataFetcher >
+   static constexpr Result
+   reduce( const Index size,
+           const ReductionOperation& reduction,
+           DataFetcher& dataFetcher,
+           const Result& zero );
+
+   template< typename Index,
+             typename Result,
+             typename ReductionOperation,
+             typename DataFetcher >
+   static constexpr std::pair< Index, Result >
+   reduceWithArgument( const Index size,
+                       const ReductionOperation& reduction,
+                       DataFetcher& dataFetcher,
+                       const Result& zero );
+};
 
 template<>
 struct Reduction< Devices::Host >
