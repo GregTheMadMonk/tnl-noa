@@ -16,6 +16,7 @@
 
 #include <TNL/Assert.h>
 #include <TNL/Containers/Array.h>
+#include <TNL/Containers/StaticArray.h>
 #include <TNL/Containers/Algorithms/CudaScanKernel.h>
 #include <TNL/Exceptions/CudaSupportMissing.h>
 #include <TNL/Exceptions/NotImplementedError.h>
@@ -98,9 +99,15 @@ performFirstPhase( Vector& v,
    // block_sums now contains shift values for each block - to be used in the second phase
    return block_sums;
 #else
+   // FIXME: StaticArray does not have getElement() which is used in DistributedScan
+//   return StaticArray< 1, RealType > block_sums;
+   Array< RealType, Devices::Host > block_sums( 1 );
+   block_sums[ 0 ] = zero;
+
    if( Type == ScanType::Inclusive ) {
       for( IndexType i = begin + 1; i < end; i++ )
          v[ i ] = reduction( v[ i ], v[ i - 1 ] );
+      block_sums[ 0 ] = v[ end - 1 ];
    }
    else // Exclusive prefix sum
    {
@@ -110,9 +117,10 @@ performFirstPhase( Vector& v,
          v[ i ] = aux;
          aux = reduction( aux, x );
       }
+      block_sums[ 0 ] = aux;
    }
 
-   return 0;
+   return block_sums;
 #endif
 }
 
