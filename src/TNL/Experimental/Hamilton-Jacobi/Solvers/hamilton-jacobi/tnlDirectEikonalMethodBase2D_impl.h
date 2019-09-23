@@ -365,13 +365,13 @@ __global__ void GetNeighbours( const TNL::Containers::Array< int, Devices::Cuda,
     m = i%numBlockX;
     k = i/numBlockX;
     if( m > 0 && blockCalculationIndicator[ i - 1 ] ){
-      pom = 1;//BlockIterPom[ i ] = 1;
+      pom = 1;//blockCalculationIndicatorHelp[ i ] = 1;
     }else if( m < numBlockX -1 && blockCalculationIndicator[ i + 1 ] ){
-      pom = 1;//BlockIterPom[ i ] = 1;
-    }else if( k > 0 && blockCalculationIndicatorHelp[ i - numBlockX ] ){
-      pom = 1;// BlockIterPom[ i ] = 1;
+      pom = 1;//blockCalculationIndicatorHelp[ i ] = 1;
+    }else if( k > 0 && blockCalculationIndicator[ i - numBlockX ] ){
+      pom = 1;// blockCalculationIndicatorHelp[ i ] = 1;
     }else if( k < numBlockY -1 && blockCalculationIndicator[ i + numBlockX ] ){
-      pom = 1;//BlockIterPom[ i ] = 1;
+      pom = 1;//blockCalculationIndicatorHelp[ i ] = 1;
     }
     
     if( blockCalculationIndicator[ i ] != 1 )

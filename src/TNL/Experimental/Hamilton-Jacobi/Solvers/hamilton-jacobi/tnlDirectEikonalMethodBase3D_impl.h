@@ -109,7 +109,7 @@ initInterface( const MeshFunctionPointer& _input,
                 output[ cell.getIndex() ] = pom;
               pom = pom - TNL::sign( c )*hx;
               if( TNL::abs( output[ e ] ) > TNL::abs( pom ) )
-                output[ e ] = pom; //( hy * c )/( c - input[ n ]) - hy;
+                output[ e ] = pom; 
               
               interfaceMap[ cell.getIndex() ] = true;
               interfaceMap[ e ] = true;
@@ -122,7 +122,7 @@ initInterface( const MeshFunctionPointer& _input,
                 output[ cell.getIndex() ] = pom;
               pom = pom - TNL::sign( c )*hz;
               if( TNL::abs( output[ t ] ) > TNL::abs( pom ) )
-                output[ t ] = pom; //( hy * c )/( c - input[ n ]) - hy;
+                output[ t ] = pom; 
               
               interfaceMap[ cell.getIndex() ] = true;
               interfaceMap[ t ] = true;
@@ -736,7 +736,7 @@ updateBlocks( const InterfaceMapType interfaceMap,
         MeshFunctionType& helpFunc,
         ArrayContainer BlockIterHost, int numThreadsPerBlock/*, Real **sArray*/ )
 {  
-  //#pragma omp parallel for schedule( dynamic )
+  #pragma omp parallel for schedule( dynamic )
   for( IndexType i = 0; i < BlockIterHost.getSize(); i++ )
   {
     if( BlockIterHost[ i ] )

@@ -363,7 +363,7 @@ solve( const MeshPointer& mesh,
            interfaceMapPtr.template getData< Device >(),
            auxPtr.template getData< Device>(),
            helpFunc.template modifyData< Device>(),
-           blockCalculationIndicator,
+           blockCalculationIndicator, vecLowerOverlaps, vecUpperOverlaps,
            oddEvenBlock );
            cudaDeviceSynchronize();
            TNL_CHECK_CUDA_DEVICE;
@@ -381,15 +381,8 @@ solve( const MeshPointer& mesh,
            
            oddEvenBlock= (oddEvenBlock == 0) ? 1: 0;
            
-           CudaParallelReduc<<< nBlocks , 1024 >>>( blockCalculationIndicator, dBlock, ( numBlocksX * numBlocksY ) );
-           cudaDeviceSynchronize();
-           TNL_CHECK_CUDA_DEVICE;
-           CudaParallelReduc<<< 1, nBlocks >>>( dBlock, dBlock, nBlocks );
-           cudaDeviceSynchronize();
-           TNL_CHECK_CUDA_DEVICE;
-           
-           BlockIterD = dBlock.getElement( 0 );*/
-          
+           calculateCudaBlocksAgain = blockCalculationIndicator.containsValue(1);
+          */
   /**------------------------------------------------------------------------------------------------*/
           
           
@@ -441,7 +434,7 @@ solve( const MeshPointer& mesh,
           cudaDeviceSynchronize();
           TNL_CHECK_CUDA_DEVICE;
           
-          // "Parallel reduction" to see if we should calculate again BlockIterD
+          // "Parallel reduction" to see if we should calculate again calculateCudaBlocksAgain
           calculateCudaBlocksAgain = blockCalculationIndicator.containsValue(1);
           
           // When we change something then we should caclucate again in the next passage of MPI ( calculated = true )
