@@ -262,24 +262,86 @@ solve( const MeshPointer& mesh,
         // IF YOU CHANGE THIS, YOU NEED TO CHANGE THE TEMPLATE PARAMETER IN CudaUpdateCellCaller (The Number + 2)
         const int cudaBlockSize( 8 );
         
-        CudaUpdateCellCaller< 10 ><<< gridSize, blockSize >>>( ptr,
-                interfaceMapPtr.template getData< Device >(),
-                auxPtr.template getData< Device>(),
-                helpFunc.template modifyData< Device>(),
-                BlockIterDevice.getView() );
-        cudaDeviceSynchronize();
-        TNL_CHECK_CUDA_DEVICE;
+        // Getting the number of blocks in grid in each direction (without overlaps bcs we dont calculate on overlaps)
+        int numBlocksX = Devices::Cuda::getNumberOfBlocks( mesh->getDimensions().x() - vecLowerOverlaps[0] - vecUpperOverlaps[0], cudaBlockSize );
+        int numBlocksY = Devices::Cuda::getNumberOfBlocks( mesh->getDimensions().y() - vecLowerOverlaps[1] - vecUpperOverlaps[1], cudaBlockSize );
+        int numBlocksZ = Devices::Cuda::getNumberOfBlocks( mesh->getDimensions().z() - vecLowerOverlaps[2] - vecUpperOverlaps[2], cudaBlockSize ); 
+        if( cudaBlockSize * cudaBlockSize * cudaBlockSize > 1024 || numBlocksX > 1024 || numBlocksY > 1024 || numBlocksZ > 64 )
+          std::cout << "Invalid kernel call. Dimensions of grid are max: [1024,1024,64], and maximum threads per block are 1024!" << std::endl;
         
-        GetNeighbours3D<<< nBlocksNeigh, 1024 >>>( BlockIterDevice.getView(), BlockIterPom.getView(), numBlocksX, numBlocksY, numBlocksZ );
-        cudaDeviceSynchronize();
-        TNL_CHECK_CUDA_DEVICE;
-        BlockIterDevice = BlockIterPom;
+        // Making the variables for global function CudaUpdateCellCaller.
+        dim3 blockSize( cudaBlockSize, cudaBlockSize, cudaBlockSize );
+        dim3 gridSize( numBlocksX, numBlocksY, numBlocksZ );
         
-        CudaParallelReduc<<< nBlocks , 512 >>>( BlockIterDevice.getView(), dBlock.getView(), ( numBlocksX * numBlocksY * numBlocksZ ) );
-        cudaDeviceSynchronize();
-        TNL_CHECK_CUDA_DEVICE;
+        BaseType ptr; // tnlDirectEikonalMethodBase type for calling of function inside CudaUpdateCellCaller
         
-        CudaParallelReduc<<< 1, nBlocks >>>( dBlock.getView(), dBlock.getView(), nBlocks );
+        
+        int BlockIterD = 1; //variable that tells us weather we should calculate the main cuda body again
+        
+        // Array containing information about each block in grid, answering question (Have we calculated in this block?)
+        TNL::Containers::Array< int, Devices::Cuda, IndexType > BlockIterDevice( numBlocksX * numBlocksY * numBlocksZ );
+        BlockIterDevice.setValue( 1 ); // calculate all in the first passage
+        
+        // Helping Array for GetNeighbours3D
+        TNL::Containers::Array< int, Devices::Cuda, IndexType > BlockIterPom( numBlocksX * numBlocksY * numBlocksZ );
+        BlockIterPom.setValue( 0 ); //doesnt matter what number
+        
+        
+        
+        // number of neighbours in one block (1024 threads) for GetNeighbours3D
+        int nBlocksNeigh = ( numBlocksX * numBlocksY * numBlocksZ )/1024 + ((( numBlocksX * numBlocksY * numBlocksZ )%1024 != 0) ? 1:0);
+        
+        
+        //MeshFunctionPointer helpFunc1( mesh );      
+        MeshFunctionPointer helpFunc( mesh );
+        helpFunc.template modifyData() = auxPtr.template getData();
+        Devices::Cuda::synchronizeDevice(); 
+                
+        int numIter = 0; // number of passages of following while cycle
+        
+        while( BlockIterD ) //main body of cuda code
+        {
+          
+          Devices::Cuda::synchronizeDevice();          
+          // main function that calculates all values in each blocks
+          // calculated values are in helpFunc
+          CudaUpdateCellCaller< 10 ><<< gridSize, blockSize >>>( ptr,
+                  interfaceMapPtr.template getData< Device >(),
+                  auxPtr.template getData< Device>(),
+                  helpFunc.template modifyData< Device>(),
+                  BlockIterDevice.getView(), vecLowerOverlaps, vecUpperOverlaps );
+          cudaDeviceSynchronize();
+          TNL_CHECK_CUDA_DEVICE;
+          // Switching pointers to helpFunc and auxPtr so real results are in memory of helpFunc but here under variable auxPtr
+          auxPtr.swap( helpFunc );
+          
+          Devices::Cuda::synchronizeDevice();
+          // Neighbours of blocks that calculatedBefore in this passage should calculate in the next!
+          // BlockIterDevice contains blocks that calculatedBefore in this passage and BlockIterPom those that should calculate in next (are neighbours)
+          GetNeighbours<<< nBlocksNeigh, 1024 >>>( BlockIterDevice.getView(), BlockIterPom.getView(), numBlocksX, numBlocksY, numBlocksZ );
+          cudaDeviceSynchronize();
+          TNL_CHECK_CUDA_DEVICE;
+          BlockIterDevice = BlockIterPom;
+          Devices::Cuda::synchronizeDevice();
+          
+          // .containsValue(1) is actually parallel reduction implemented in TNL
+          BlockIterD = BlockIterDevice.containsValue(1);
+          cudaDeviceSynchronize();
+          TNL_CHECK_CUDA_DEVICE;
+          
+          numIter++;
+          if( BlockIterD ){ 
+            // if we calculated in this passage, we should send the info via MPI so neighbours should calculate after synchronization
+            calculatedBefore = 1;
+          }
+        }
+        if( numIter%2 == 1 ){
+          
+          // We need auxPtr to point on memory of original auxPtr (not to helpFunc)
+          // last passage of previous while cycle didnt calculate any number anyway so switching names doesnt effect values
+          auxPtr.swap( helpFunc ); 
+          Devices::Cuda::synchronizeDevice();
+        }
         cudaDeviceSynchronize();
         TNL_CHECK_CUDA_DEVICE;
         aux = *auxPtr;
@@ -375,10 +437,15 @@ goThroughSweep( const StaticVector boundsFrom, const StaticVector boundsTo,
   return calculated;
 }
 
-template < typename Index >
-__global__ void GetNeighbours3D( TNL::Containers::ArrayView< int, Devices::Cuda, Index > BlockIterDevice,
-        TNL::Containers::ArrayView< int, Devices::Cuda, Index > BlockIterPom,
-        int numBlockX, int numBlockY, int numBlockZ )
+
+
+
+#ifdef HAVE_MPI
+template< typename Real, typename Device, typename Index, 
+          typename Communicator, typename Anisotropy >
+void 
+FastSweepingMethod< Meshes::Grid< 3, Real, Device, Index >, Communicator, Anisotropy >::
+getInfoFromNeighbours( int& calculatedBefore, int& calculateMPIAgain, const MeshPointer& mesh )
 {
   Meshes::DistributedMeshes::DistributedMesh< MeshType >* meshDistr = mesh->getDistributedMesh();
   
@@ -397,22 +464,6 @@ __global__ void GetNeighbours3D( TNL::Containers::ArrayView< int, Devices::Cuda,
     requestsInformation[neighCount++] = 
             MPI::IRecv( &calculateFromNeighbours[0], 1, neighbours[0], 0, MPI::AllGroup );
   }
-}
-
-template < int sizeSArray, typename Real, typename Device, typename Index >
-__global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > > ptr,
-        const Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index >, 3, bool >& interfaceMap,
-        const Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index > >& aux,
-        Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index > >& helpFunc,
-        TNL::Containers::ArrayView< int, Devices::Cuda, Index > BlockIterDevice )
-{
-  int thri = threadIdx.x; int thrj = threadIdx.y; int thrk = threadIdx.z;
-  int blIdx = blockIdx.x; int blIdy = blockIdx.y; int blIdz = blockIdx.z;
-  int i = threadIdx.x + blockDim.x*blockIdx.x + vLower[0]; // WITH OVERLAPS!!! i,j,k aren't coordinates of all values
-  int j = blockDim.y*blockIdx.y + threadIdx.y + vLower[1];
-  int k = blockDim.z*blockIdx.z + threadIdx.z + vLower[2];
-  int currentIndex = thrk * blockDim.x * blockDim.y + thrj * blockDim.x + thri;
-  const Meshes::Grid< 3, Real, Device, Index >& mesh = interfaceMap.template getMesh< Devices::Cuda >();
   
   if( neighbours[1] != -1 ) // EAST
   {

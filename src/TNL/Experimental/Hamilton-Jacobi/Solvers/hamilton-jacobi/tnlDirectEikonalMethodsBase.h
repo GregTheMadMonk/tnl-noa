@@ -62,6 +62,7 @@ class tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >
     typedef Functions::MeshFunction< MeshType > MeshFunctionType;
     typedef Functions::MeshFunction< MeshType, 2, bool > InterfaceMapType;
     typedef TNL::Containers::Array< int, Device, IndexType > ArrayContainer;
+    using ArrayContainerView = typename ArrayContainer::ViewType;
     typedef Containers::StaticVector< 2, Index > StaticVector;
     
     using MeshPointer = Pointers::SharedPointer<  MeshType >;
@@ -87,15 +88,18 @@ class tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >
             const RealType velocity = 1.0 );
         
 // FOR OPENMP WILL BE REMOVED
-    void getNeighbours( ArrayContainer BlockIterHost, int numBlockX, int numBlockY  );
+    void getNeighbours( ArrayContainerView BlockIterHost, int numBlockX, int numBlockY  );
         
     template< int sizeSArray >
-    void updateBlocks( const InterfaceMapType& interfaceMap,
-            MeshFunctionType& aux,
-            MeshFunctionType& helpFunc,
-            ArrayContainer& BlockIterHost, int numThreadsPerBlock/*, Real **sArray*/ );
+    void updateBlocks( InterfaceMapType interfaceMap,
+            MeshFunctionType aux,
+            MeshFunctionType helpFunc,
+            ArrayContainerView BlockIterHost, int numThreadsPerBlock );
     
-    void getNeighbours( ArrayContainer& BlockIterHost, int numBlockX, int numBlockY  );
+  protected:
+    
+   __cuda_callable__ RealType getNewValue( RealType valuesAndSteps[],
+           const RealType originalValue, const RealType v );
 };
 
 template< typename Real,
@@ -111,6 +115,7 @@ class tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > >
     typedef Functions::MeshFunction< MeshType > MeshFunctionType;
     typedef Functions::MeshFunction< MeshType, 3, bool > InterfaceMapType;
     typedef TNL::Containers::Array< int, Device, IndexType > ArrayContainer;
+    using ArrayContainerView = typename ArrayContainer::ViewType;
     typedef Containers::StaticVector< 3, Index > StaticVector;
     using MeshFunctionPointer = Pointers::SharedPointer< MeshFunctionType >;
     using InterfaceMapPointer = Pointers::SharedPointer< InterfaceMapType >;      
@@ -134,15 +139,15 @@ class tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > >
             const RealType velocity = 1.0 );
     
     // OPENMP WILL BE REMOVED
-    void getNeighbours( ArrayContainer BlockIterHost, int numBlockX, int numBlockY, int numBlockZ );
+    void getNeighbours( ArrayContainerView BlockIterHost, int numBlockX, int numBlockY, int numBlockZ );
     
     template< int sizeSArray >
-    void updateBlocks( const InterfaceMapType& interfaceMap,
-            const MeshFunctionType& aux,
+    void updateBlocks( const InterfaceMapType interfaceMap,
+            const MeshFunctionType aux,
             MeshFunctionType& helpFunc,
-            ArrayContainer& BlockIterHost, int numThreadsPerBlock/*, Real **sArray*/ );
+            ArrayContainer BlockIterHost, int numThreadsPerBlock );
     
-    void getNeighbours( ArrayContainer& BlockIterHost, int numBlockX, int numBlockY, int numBlockZ );
+  protected:
     
     __cuda_callable__ RealType getNewValue( RealType valuesAndSteps[],
            const RealType originalValue, const RealType v );
@@ -180,17 +185,14 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
         const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index >, 2, bool >& interfaceMap,
         const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& aux,
         Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& helpFunc,
-        TNL::Containers::Array< int, Devices::Cuda, Index > blockCalculationIndicator,
+        TNL::Containers::ArrayView< int, Devices::Cuda, Index > blockCalculationIndicator,
         const Containers::StaticVector< 2, Index > vecLowerOverlaps, 
         const Containers::StaticVector< 2, Index > vecUpperOverlaps, int oddEvenBlock =0);
 
 template < typename Index >
-__global__ void CudaParallelReduc( TNL::Containers::ArrayView< int, Devices::Cuda, Index > BlockIterDevice,
-        TNL::Containers::ArrayView< int, Devices::Cuda, Index > dBlock, int nBlocks );
+__global__ void GetNeighbours( const TNL::Containers::ArrayView< int, Devices::Cuda, Index > blockCalculationIndicator,
+        TNL::Containers::ArrayView< int, Devices::Cuda, Index > blockCalculationIndicatorHelp, int numBlockX, int numBlockY );
 
-template < typename Index >
-__global__ void GetNeighbours( TNL::Containers::ArrayView< int, Devices::Cuda, Index > BlockIterDevice,
-        TNL::Containers::ArrayView< int, Devices::Cuda, Index > BlockIterPom, int numBlockX, int numBlockY );
 
 
 // 3D
@@ -205,10 +207,11 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
         const Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index >, 3, bool >& interfaceMap,
         const Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index > >& aux,
         Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index > >& helpFunc,
-        TNL::Containers::ArrayView< int, Devices::Cuda, Index > BlockIterDevice );
+        TNL::Containers::ArrayView< int, Devices::Cuda, Index > BlockIterDevice,
+        Containers::StaticVector< 3, Index > vecLowerOverlaps, Containers::StaticVector< 3, Index > vecUpperOverlaps );
 
 template < typename Index >
-__global__ void GetNeighbours3D( TNL::Containers::ArrayView< int, Devices::Cuda, Index > BlockIterDevice,
+__global__ void GetNeighbours( TNL::Containers::ArrayView< int, Devices::Cuda, Index > BlockIterDevice,
         TNL::Containers::ArrayView< int, Devices::Cuda, Index > BlockIterPom,
         int numBlockX, int numBlockY, int numBlockZ );
 #endif

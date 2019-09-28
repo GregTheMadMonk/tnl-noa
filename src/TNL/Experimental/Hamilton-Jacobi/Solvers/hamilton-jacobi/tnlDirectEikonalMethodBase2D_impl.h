@@ -353,8 +353,8 @@ __global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 2, 
 
 
 template < typename Index >
-__global__ void GetNeighbours( const TNL::Containers::Array< int, Devices::Cuda, Index > blockCalculationIndicator,
-        TNL::Containers::Array< int, Devices::Cuda, Index > blockCalculationIndicatorHelp, int numBlockX, int numBlockY )
+__global__ void GetNeighbours( const TNL::Containers::ArrayView< int, Devices::Cuda, Index > blockCalculationIndicator,
+        TNL::Containers::ArrayView< int, Devices::Cuda, Index > blockCalculationIndicatorHelp, int numBlockX, int numBlockY )
 {
   int i = blockIdx.x * 1024 + threadIdx.x;
   
@@ -389,7 +389,7 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
         const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index >, 2, bool >& interfaceMap,
         const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& aux,
         Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& helpFunc,
-        TNL::Containers::Array< int, Devices::Cuda, Index > blockCalculationIndicator,
+        TNL::Containers::ArrayView< int, Devices::Cuda, Index > blockCalculationIndicator,
         const Containers::StaticVector< 2, Index > vecLowerOverlaps, 
         const Containers::StaticVector< 2, Index > vecUpperOverlaps, int oddEvenBlock )
 {
@@ -598,7 +598,7 @@ tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >::
 updateBlocks( InterfaceMapType interfaceMap,
         MeshFunctionType aux,
         MeshFunctionType helpFunc,
-        ArrayContainer BlockIterHost, int numThreadsPerBlock/*, Real **sArray*/ )
+        ArrayContainerView BlockIterHost, int numThreadsPerBlock/*, Real **sArray*/ )
 {
 #pragma omp parallel for schedule( dynamic )
   for( IndexType i = 0; i < BlockIterHost.getSize(); i++ )
@@ -769,7 +769,7 @@ template< typename Real,
         typename Index >
 void 
 tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > >::
-getNeighbours( ArrayContainer BlockIterHost, int numBlockX, int numBlockY )
+getNeighbours( ArrayContainerView BlockIterHost, int numBlockX, int numBlockY )
 {
   int* BlockIterPom; 
   BlockIterPom = new int [numBlockX * numBlockY];

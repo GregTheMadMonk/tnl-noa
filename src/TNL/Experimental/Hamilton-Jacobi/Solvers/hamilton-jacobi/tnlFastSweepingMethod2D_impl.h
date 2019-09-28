@@ -80,40 +80,9 @@ solve( const MeshPointer& mesh,
   IndexType iteration( 0 );
   InterfaceMapType interfaceMap = *interfaceMapPtr;
   MeshFunctionType aux = *auxPtr;
-  aux.template synchronize< Communicator >();
+  aux.template synchronize< Communicator >(); //synchronize initialized overlaps
   
-  
-#ifdef HAVE_MPI
-  int i = Communicators::MpiCommunicator::GetRank( Communicators::MpiCommunicator::AllGroup );
-  //printf( "Hello world from rank: %d ", i );
-  //Communicators::MpiCommunicator::Request r = Communicators::MpiCommunicator::ISend( auxPtr, 0, 0, Communicators::MpiCommunicator::AllGroup );
-  if( i == 1 ) {
-    /*for( int k = 0; k < 16*16; k++ )
-      aux[ k ] = 10;*/
-    printf( "1: mesh x: %d\n", mesh->getDimensions().x() );
-    printf( "1: mesh y: %d\n", mesh->getDimensions().y() );
-    //aux.save("aux_proc1.tnl");
-  }
-  if( i == 0 ) {
-    printf( "0: mesh x: %d\n", mesh->getDimensions().x() );
-    printf( "0: mesh y: %d\n", mesh->getDimensions().y() );
-    //aux.save("aux_proc0.tnl");
-    /*for( int k = 0; k < mesh->getDimensions().x()*mesh->getDimensions().y(); k++ )
-      aux[ k ] = 10;
-    for( int k = 0; k < mesh->getDimensions().x(); k++ ){
-      for( int l = 0; l < mesh->getDimensions().y(); l++ )
-        printf("%f.2\t",aux[ k * 16 + l ] );
-    printf("\n");
-    }*/
-  }
-    
-  /*bool a = Communicators::MpiCommunicator::IsInitialized();
-  if( a )
-    printf("Je Init\n");
-  else
-    printf("Neni Init\n");*/
-#endif
-  
+  std::cout << "Calculating the values ..." << std::endl; 
   while( iteration < this->maxIterations )
   {
     // calculatedBefore indicates weather we calculated in the last passage of the while cycle 
@@ -290,41 +259,8 @@ solve( const MeshPointer& mesh,
         // Need for calling functions from kernel
         BaseType ptr;
         
-        int BlockIterD = 1;
-        /*auxPtr = helpFunc;
-         
-         CudaUpdateCellCaller<18><<< gridSize, blockSize >>>( ptr,
-         interfaceMapPtr.template getData< Device >(),
-         auxPtr.template getData< Device>(),
-         helpFunc.template modifyData< Device>(),
-         BlockIterDevice,
-         oddEvenBlock.getView() );
-         cudaDeviceSynchronize();
-         TNL_CHECK_CUDA_DEVICE;
-         auxPtr = helpFunc;
-         
-         oddEvenBlock= (oddEvenBlock == 0) ? 1: 0;
-         
-         CudaUpdateCellCaller<18><<< gridSize, blockSize >>>( ptr,
-         interfaceMapPtr.template getData< Device >(),
-         auxPtr.template getData< Device>(),
-         helpFunc.template modifyData< Device>(),
-         BlockIterDevice,
-         oddEvenBlock.getView() );
-         cudaDeviceSynchronize();
-         TNL_CHECK_CUDA_DEVICE;
-         auxPtr = helpFunc;
-         
-         oddEvenBlock= (oddEvenBlock == 0) ? 1: 0;
-         
-         CudaParallelReduc<<< nBlocks , 1024 >>>( BlockIterDevice.getView(), dBlock.getView(), ( numBlocksX * numBlocksY ) );
-         cudaDeviceSynchronize();
-         TNL_CHECK_CUDA_DEVICE;
-         CudaParallelReduc<<< 1, nBlocks >>>( dBlock.getView(), dBlock.getView(), nBlocks );
-         cudaDeviceSynchronize();
-         TNL_CHECK_CUDA_DEVICE;
-         
-         BlockIterD = dBlock.getElement( 0 );*/
+        // True if we should calculate again.
+        int calculateCudaBlocksAgain = 1;
         
         // Array that identifies which blocks should be calculated.
         // All blocks should calculate in first passage ( setValue(1) )
@@ -343,16 +279,9 @@ solve( const MeshPointer& mesh,
         MeshFunctionPointer helpFunc( mesh );
         helpFunc.template modifyData() = auxPtr.template getData(); 
         
-        //int pocBloku = 0;
-        Devices::Cuda::synchronizeDevice();
-        CudaUpdateCellCaller<18><<< gridSize, blockSize >>>( ptr,
-                interfaceMapPtr.template getData< Device >(),
-                auxPtr.template modifyData< Device>(),
-                helpFunc.template modifyData< Device>(),
-                BlockIterDevice.getView() );
-        cudaDeviceSynchronize();
-        TNL_CHECK_CUDA_DEVICE;
-        
+        // number of iterations of while calculateCudaBlocksAgain
+        int numIter = 0;
+               
         //int oddEvenBlock = 0;
         while( calculateCudaBlocksAgain )
         {
@@ -390,44 +319,16 @@ solve( const MeshPointer& mesh,
           Devices::Cuda::synchronizeDevice();
           CudaUpdateCellCaller<18><<< gridSize, blockSize >>>( ptr, interfaceMapPtr.template getData< Device >(),
                   auxPtr.template getData< Device>(), helpFunc.template modifyData< Device>(),
-                  blockCalculationIndicator, vecLowerOverlaps, vecUpperOverlaps );
+                  blockCalculationIndicator.getView(), vecLowerOverlaps, vecUpperOverlaps );
           cudaDeviceSynchronize();
           TNL_CHECK_CUDA_DEVICE;
-        
-        cudaDeviceSynchronize();
-        TNL_CHECK_CUDA_DEVICE;
-        
-        
-        aux = *auxPtr;
-        interfaceMap = *interfaceMapPtr;
-#endif
-      }
-
-      
-/**----------------------MPI-TO-DO---------------------------------------------**/
-        
-#ifdef HAVE_MPI
-        //int i = MPI::GetRank( MPI::AllGroup );
-        //TNL::Meshes::DistributedMeshes::DistributedMesh< MeshType > Mesh;
-        int neighCount = 0; // should this thread calculate again?
-        int calculpom[4] = {0,0,0,0};
-        
-          if( i == 0 ){
-            BlockIterPom1 = BlockIterDevice;
-            for( int i =0; i< numBlocksX; i++ ){
-              for( int j = 0; j < numBlocksY; j++ )
-              {
-                std::cout << BlockIterPom1[j*numBlocksX + i];
-              }
-              std::cout << std::endl;
-            }
-            std::cout << std::endl;
-          }
-#endif
+          
+          // Switching helpFunc and auxPtr.
+          auxPtr.swap( helpFunc );
           
           // Getting blocks that should calculate in next passage. These blocks are neighbours of those that were calculated now.
           Devices::Cuda::synchronizeDevice(); 
-          GetNeighbours<<< nBlocksNeigh, 1024 >>>( blockCalculationIndicator, blockCalculationIndicatorHelp, numBlocksX, numBlocksY );
+          GetNeighbours<<< nBlocksNeigh, 1024 >>>( blockCalculationIndicator.getView(), blockCalculationIndicatorHelp.getView(), numBlocksX, numBlocksY );
           cudaDeviceSynchronize();
           TNL_CHECK_CUDA_DEVICE;
           blockCalculationIndicator = blockCalculationIndicatorHelp;
@@ -445,46 +346,24 @@ solve( const MeshPointer& mesh,
 /**-----------------------------------------------------------------------------------------------------------*/
           numIter ++;
         }
-        if( numIter%2  == 1 ){
-          auxPtr = helpFunc;
-        }
-        /*cudaFree( BlockIterDevice );
-         cudaFree( dBlock );
-         delete BlockIter;*/
-        
-        if( neigh[1] != -1 )
+        if( numIter%2 == 1 ) // Need to check parity for MPI overlaps to synchronize ( otherwise doesnt work )
         {
-          req[neighCount] = MPI::ISend( &calculated, 1, neigh[1], 0, MPI::AllGroup ); 
-          neighCount++;
-          
-          
-          req[neighCount] = MPI::IRecv( &calculpom[1], 1, neigh[1], 0, MPI::AllGroup );
-          neighCount++;
+          helpFunc.swap( auxPtr );
+          Devices::Cuda::synchronizeDevice();
+          cudaDeviceSynchronize();
+          TNL_CHECK_CUDA_DEVICE;
         }
-        
-        if( neigh[2] != -1 )
-        {
-          req[neighCount] = MPI::ISend( &calculated, 1, neigh[2], 0, MPI::AllGroup );
-          neighCount++;
-          
-          req[neighCount] = MPI::IRecv( &calculpom[2], 1, neigh[2], 0, MPI::AllGroup  );
-          neighCount++;
-        }
-        
-        if( neigh[5] != -1 )
-        {
-          req[neighCount] = MPI::ISend( &calculated, 1, neigh[5], 0, MPI::AllGroup );
-          neighCount++;
-          
-          req[neighCount] = MPI::IRecv( &calculpom[3], 1, neigh[5], 0, MPI::AllGroup );
-          neighCount++;
-        }
-        
-        MPI::WaitAll(req,neighCount);
-#if ForDebug
-        printf( "%d: Sending Calculated = %d.\n", i, calculated );
-#endif        
-        MPI::Allreduce( &calculated, &calculated, 1, MPI_LOR,  MPI::AllGroup );
+        aux = *auxPtr;
+        interfaceMap = *interfaceMapPtr;
+#endif
+      }
+
+      
+/**----------------------MPI-TO-DO---------------------------------------------**/        
+#ifdef HAVE_MPI
+      if( CommunicatorType::isDistributed() ){
+        getInfoFromNeighbours( calculatedBefore, calculateMPIAgain, mesh );
+       
         aux.template synchronize< Communicator >();
       }
 #endif
@@ -518,9 +397,16 @@ setOverlaps( StaticVector& vecLowerOverlaps, StaticVector& vecUpperOverlaps,
 #endif
 }
 
-template < typename Index >
-__global__ void GetNeighbours( TNL::Containers::ArrayView< int, Devices::Cuda, Index > BlockIterDevice,
-        TNL::Containers::ArrayView< int, Devices::Cuda, Index > BlockIterPom, int numBlockX, int numBlockY )
+
+
+
+template< typename Real, typename Device, typename Index, 
+          typename Communicator, typename Anisotropy >
+bool 
+FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Communicator, Anisotropy >::
+goThroughSweep( const StaticVector boundsFrom, const StaticVector boundsTo, 
+        MeshFunctionType& aux, const InterfaceMapType& interfaceMap,
+        const AnisotropyPointer& anisotropy )
 {
   bool calculated = false;
   const MeshType& mesh = aux.getMesh();
@@ -548,97 +434,15 @@ __global__ void GetNeighbours( TNL::Containers::ArrayView< int, Devices::Cuda, I
   return calculated;
 }
 
-template < typename Index >
-__global__ void CudaParallelReduc( TNL::Containers::ArrayView< int, Devices::Cuda, Index > BlockIterDevice,
-        TNL::Containers::ArrayView< int, Devices::Cuda, Index > dBlock, int nBlocks )
-{
-  int i = threadIdx.x;
-  int blId = blockIdx.x;
-  int blockSize = blockDim.x;
-  /*if ( i == 0 && blId == 0 ){
-    printf( "nBlocks = %d\n", nBlocks );
-    for( int j = nBlocks-1; j > -1 ; j--){
-      printf( "%d: cislo = %d \n", j, BlockIterDevice[ j ] );
-    }
-  }*/
-  __shared__ int sArray[ 1024 ];
-  sArray[ i ] = 0;
-  if( blId * 1024 + i < nBlocks )
-    sArray[ i ] = BlockIterDevice[ blId * 1024 + i ];
-  __syncthreads();
-  /*if ( i == 0 && blId == 0 ){
-   printf( "nBlocks = %d\n", nBlocks );
-   for( int j = 4; j > -1 ; j--){
-   printf( "%d: cislo = %d \n", j, sArray[ j ] );
-   }
-  }*/
-  /*extern __shared__ volatile int sArray[];
-   unsigned int i = threadIdx.x;
-   unsigned int gid = blockIdx.x * blockSize * 2 + threadIdx.x;
-   unsigned int gridSize = blockSize * 2 * gridDim.x;
-   sArray[ i ] = 0;
-   while( gid < nBlocks )
-   {
-   sArray[ i ] += BlockIterDevice[ gid ] + BlockIterDevice[ gid + blockSize ];
-   gid += gridSize;
-   }
-   __syncthreads();*/
-  
-  if ( blockSize == 1024) {
-    if (i < 512)
-      sArray[ i ] += sArray[ i + 512 ];
-  }
-  __syncthreads();
-  if (blockSize >= 512) {
-    if (i < 256) {
-      sArray[ i ] += sArray[ i + 256 ];
-    }
-  }
-  __syncthreads();
-  if (blockSize >= 256) {
-    if (i < 128) {
-      sArray[ i ] += sArray[ i + 128 ];
-    }
-  }
-  __syncthreads();
-  if (blockSize >= 128) {
-    if (i < 64) {
-      sArray[ i ] += sArray[ i + 64 ];
-    }
-  }
-  __syncthreads();
-  if (i < 32 )
-  {
-    if(  blockSize >= 64 ){ sArray[ i ] += sArray[ i + 32 ];}
-  __syncthreads();
-    if(  blockSize >= 32 ){  sArray[ i ] += sArray[ i + 16 ];}
-  __syncthreads();
-    if(  blockSize >= 16 ){  sArray[ i ] += sArray[ i + 8 ];}
-    if(  blockSize >= 8 ){  sArray[ i ] += sArray[ i + 4 ];}
-  __syncthreads();
-    if(  blockSize >= 4 ){  sArray[ i ] += sArray[ i + 2 ];}
-  __syncthreads();
-    if(  blockSize >= 2 ){  sArray[ i ] += sArray[ i + 1 ];}
-  __syncthreads();
-  }
-  __syncthreads();
-  
-  if( i == 0 )
-    dBlock[ blId ] = sArray[ 0 ];
-}
 
 
 
-template < int sizeSArray, typename Real, typename Device, typename Index >
-__global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid< 2, Real, Device, Index > > ptr,
-        const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index >, 2, bool >& interfaceMap,
-        const Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& aux,
-        Functions::MeshFunction< Meshes::Grid< 2, Real, Device, Index > >& helpFunc,
-        CudaParallelReduc<<< nBlocks , 1024 >>>( BlockIterDevice.getView(), dBlock.getView(), ( numBlocksX * numBlocksY ) );
-        TNL_CHECK_CUDA_DEVICE;
-        
-        CudaParallelReduc<<< 1, nBlocks >>>( dBlock.getView(), dBlock.getView(), nBlocks );
-        TNL_CHECK_CUDA_DEVICE;
+#ifdef HAVE_MPI
+template< typename Real, typename Device, typename Index, 
+          typename Communicator, typename Anisotropy >
+void 
+FastSweepingMethod< Meshes::Grid< 2, Real, Device, Index >, Communicator, Anisotropy >::
+getInfoFromNeighbours( int& calculatedBefore, int& calculateMPIAgain, const MeshPointer& mesh )
 {
   Meshes::DistributedMeshes::DistributedMesh< MeshType >* meshDistr = mesh->getDistributedMesh();
   
@@ -687,4 +491,3 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
               calculateFromNeighbours[2] || calculateFromNeighbours[3];
 }
 #endif
-        TNL::Containers::ArrayView< int, Devices::Cuda, Index > BlockIterDevice, int oddEvenBlock )

@@ -480,8 +480,8 @@ __global__ void CudaInitCaller3d( const Functions::MeshFunction< Meshes::Grid< 3
 
 
 template < typename Index >
-__global__ void GetNeighbours( TNL::Containers::Array< int, Devices::Cuda, Index > BlockIterDevice,
-        TNL::Containers::Array< int, Devices::Cuda, Index > BlockIterPom,
+__global__ void GetNeighbours( TNL::Containers::ArrayView< int, Devices::Cuda, Index > BlockIterDevice,
+        TNL::Containers::ArrayView< int, Devices::Cuda, Index > BlockIterPom,
         int numBlockX, int numBlockY, int numBlockZ )
 {
   int i = blockIdx.x * 1024 + threadIdx.x;
@@ -520,7 +520,7 @@ __global__ void CudaUpdateCellCaller( tnlDirectEikonalMethodsBase< Meshes::Grid<
         const Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index >, 3, bool >& interfaceMap,
         const Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index > >& aux,
         Functions::MeshFunction< Meshes::Grid< 3, Real, Device, Index > >& helpFunc,
-        TNL::Containers::Array< int, Devices::Cuda, Index > BlockIterDevice,
+        TNL::Containers::ArrayView< int, Devices::Cuda, Index > BlockIterDevice,
         Containers::StaticVector< 3, Index > vecLowerOverlaps, Containers::StaticVector< 3, Index > vecUpperOverlaps )
 {
   int thri = threadIdx.x; int thrj = threadIdx.y; int thrk = threadIdx.z;
@@ -1056,7 +1056,7 @@ template< typename Real,
         typename Index >
 void 
 tnlDirectEikonalMethodsBase< Meshes::Grid< 3, Real, Device, Index > >::
-getNeighbours( ArrayContainer BlockIterHost, int numBlockX, int numBlockY, int numBlockZ )
+getNeighbours( ArrayContainerView BlockIterHost, int numBlockX, int numBlockY, int numBlockZ )
 {
   int* BlockIterPom; 
   BlockIterPom = new int [ numBlockX * numBlockY * numBlockZ ];
