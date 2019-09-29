@@ -768,7 +768,7 @@ void test_AddMatrix()
     const IndexType rows = 5;
     const IndexType cols = 4;
     
-    Matrix m;                           // We need this matrix to preserve the values for EXPECT_EQ statements comparing the actual operation;
+    Matrix m;
     m.reset();
     m.setDimensions( rows, cols );
     
@@ -1032,88 +1032,6 @@ void test_GetTransposition()
     EXPECT_EQ( mTransposed.getElement( 1, 0 ), 2 );
     EXPECT_EQ( mTransposed.getElement( 1, 1 ), 4 );
     EXPECT_EQ( mTransposed.getElement( 1, 2 ), 6 );
-    
-/*
- * Sets up the following 5x5 dense matrix:
- *
- *    /  1  2  3  4  5 \
- *    |  6  7  8  9 10 |
- *    | 11 12 13 14 15 |
- *    | 16 17 18 19 20 |
- *    \ 21 22 23 24 25 /
- */
-            //    const IndexType rows = 5;
-            //    const IndexType cols = 5;
-            //    
-            //    Matrix m;
-            //    m.reset();
-            //    m.setDimensions( rows, cols );
-            //    
-            //    RealType value = 1;
-            //    for( IndexType i = 0; i < rows; i++ )
-            //        for( IndexType j = 0; j < cols; j++)
-            //            m.setElement( i, j, value++ );
-    
-/*
- * Sets up the following 5x5 dense matrix:
- *
- *    /  2 12 22 32 42 \
- *    |  4 14 24 34 44 |
- *    |  6 16 26 36 46 |
- *    |  8 18 28 38 48 |
- *    \ 10 20 30 40 50 /
- */
-            //    const IndexType resultRows = cols;
-            //    const IndexType resultCols = rows;
-            //    
-            //    Matrix mResult;
-            //    mResult.reset();
-            //    mResult.setDimensions( resultRows, resultCols );
-            //    mResult.setValue( 0 );
-            //    
-            //    RealType matrixMultiplicator = 2;
-            //    
-            //    mResult.getTransposition( m, matrixMultiplicator );
-    
-/*
- * Should result in the following 5x5 resulting dense matrix:
- *
- *    /  0  0  0  0  0 \
- *    |  0  0  0  0  0 |
- *    |  0  0  0  0  0 |
- *    |  0  0  0  0  0 |
- *    \  0  0  0  0  0 /
- */
-            //    
-            //    EXPECT_EQ( mResult.getElement( 0, 0 ),  2 );
-            //    EXPECT_EQ( mResult.getElement( 0, 1 ), 12 );
-            //    EXPECT_EQ( mResult.getElement( 0, 2 ), 22 );
-            //    EXPECT_EQ( mResult.getElement( 0, 3 ), 32 );
-            //    EXPECT_EQ( mResult.getElement( 0, 4 ), 42 );
-            //    
-            //    EXPECT_EQ( mResult.getElement( 1, 0 ),  4 );
-            //    EXPECT_EQ( mResult.getElement( 1, 1 ), 14 );
-            //    EXPECT_EQ( mResult.getElement( 1, 2 ), 24 );
-            //    EXPECT_EQ( mResult.getElement( 1, 3 ), 34 );
-            //    EXPECT_EQ( mResult.getElement( 1, 4 ), 44 );
-            //    
-            //    EXPECT_EQ( mResult.getElement( 2, 0 ),  6 );
-            //    EXPECT_EQ( mResult.getElement( 2, 1 ), 16 );
-            //    EXPECT_EQ( mResult.getElement( 2, 2 ), 26 );
-            //    EXPECT_EQ( mResult.getElement( 2, 3 ), 36 );
-            //    EXPECT_EQ( mResult.getElement( 2, 4 ), 46 );
-            //    
-            //    EXPECT_EQ( mResult.getElement( 3, 0 ),  8 );
-            //    EXPECT_EQ( mResult.getElement( 3, 1 ), 18 );
-            //    EXPECT_EQ( mResult.getElement( 3, 2 ), 28 );
-            //    EXPECT_EQ( mResult.getElement( 3, 3 ), 38 );
-            //    EXPECT_EQ( mResult.getElement( 3, 4 ), 48 );
-            //    
-            //    EXPECT_EQ( mResult.getElement( 4, 0 ), 10 );
-            //    EXPECT_EQ( mResult.getElement( 4, 1 ), 20 );
-            //    EXPECT_EQ( mResult.getElement( 4, 2 ), 30 );
-            //    EXPECT_EQ( mResult.getElement( 4, 3 ), 40 );
-            //    EXPECT_EQ( mResult.getElement( 4, 4 ), 50 );
 }
 
 
@@ -1297,12 +1215,10 @@ void test_Print()
         for( IndexType j = 0; j < cols; j++)
             m.setElement( i, j, value++ );
     
-    // This is from: https://stackoverflow.com/questions/5193173/getting-cout-output-to-a-stdstring
     #include <sstream>
     std::stringstream printed;
     std::stringstream couted;
     
-    // This is from: https://stackoverflow.com/questions/19485536/redirect-output-of-an-function-printing-to-console-to-string
     //change the underlying buffer and save the old buffer
     auto old_buf = std::cout.rdbuf(printed.rdbuf()); 
 
@@ -1310,7 +1226,6 @@ void test_Print()
 
     std::cout.rdbuf(old_buf); //reset
     
-    //printed << printed.str() << std::endl;
     couted << "Row: 0 ->  Col:0->1	 Col:1->2	 Col:2->3	 Col:3->4\t\n"
               "Row: 1 ->  Col:0->5	 Col:1->6	 Col:2->7	 Col:3->8\t\n"
               "Row: 2 ->  Col:0->9	 Col:1->10	 Col:2->11	 Col:3->12\t\n"
