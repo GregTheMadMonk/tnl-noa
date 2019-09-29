@@ -107,6 +107,15 @@ private:
 template< typename Real, typename Device, typename Index >
 class AdEllpack : public Sparse< Real, Device, Index >
 {
+private:
+   // convenient template alias for controlling the selection of copy-assignment operator
+   template< typename Device2 >
+   using Enabler = std::enable_if< ! std::is_same< Device2, Device >::value >;
+
+   // friend class will be needed for templated assignment operators
+   template< typename Real2, typename Device2, typename Index2 >
+   friend class ChunkedEllpack;
+   
 public:
 
     typedef Real RealType;
@@ -135,6 +144,12 @@ public:
     void setLike( const AdEllpack< Real2, Device2, Index2 >& matrix );
 
     void reset();
+    
+    template< typename Real2, typename Device2, typename Index2 >
+    bool operator == ( const AdEllpack< Real2, Device2, Index2 >& matrix ) const;
+
+    template< typename Real2, typename Device2, typename Index2 >
+    bool operator != ( const AdEllpack< Real2, Device2, Index2 >& matrix ) const;
 
     bool setElement( const IndexType row,
                      const IndexType column,
@@ -172,8 +187,16 @@ public:
               typename OutVector >
     void vectorProduct( const InVector& inVector,
                         OutVector& outVector ) const;
+    
+    // copy assignment
+    AdEllpack& operator=( const AdEllpack& matrix );
 
-    void save( File& file ) const;
+    // cross-device copy assignment
+    template< typename Real2, typename Device2, typename Index2,
+             typename = typename Enabler< Device2 >::type >
+    AdEllpack& operator=( const AdEllpack< Real2, Device2, Index2 >& matrix );
+    
+    bool save( File& file ) const;
 
     void load( File& file );
 
