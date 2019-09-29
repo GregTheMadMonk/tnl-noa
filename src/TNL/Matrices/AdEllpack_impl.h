@@ -447,6 +447,38 @@ void AdEllpack< Real, Device, Index >::reset()
 template< typename Real,
           typename Device,
           typename Index >
+   template< typename Real2,
+             typename Device2,
+             typename Index2 >
+bool AdEllpack< Real, Device, Index >::operator == ( const AdEllpack< Real2, Device2, Index2 >& matrix ) const
+{
+   TNL_ASSERT( this->getRows() == matrix.getRows() &&
+               this->getColumns() == matrix.getColumns(),
+               std::cerr << "this->getRows() = " << this->getRows()
+                    << " matrix.getRows() = " << matrix.getRows()
+                    << " this->getColumns() = " << this->getColumns()
+                    << " matrix.getColumns() = " << matrix.getColumns() );
+   
+   TNL_ASSERT_TRUE( false, "operator == is not yet implemented for AdEllpack.");
+   
+   // TODO: implement this
+   return false;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename Real2,
+             typename Device2,
+             typename Index2 >
+bool AdEllpack< Real, Device, Index >::operator != ( const AdEllpack< Real2, Device2, Index2 >& matrix ) const
+{
+   return ! ( ( *this ) == matrix );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 bool AdEllpack< Real, Device, Index >::setElement( const IndexType row,
                                                             const IndexType column,
                                                             const RealType& value )
@@ -650,6 +682,43 @@ void AdEllpack< Real, Device, Index >::vectorProduct( const InVector& inVector,
     DeviceDependentCode::vectorProduct( *this, inVector, outVector );
 }
 
+// copy assignment
+template< typename Real,
+          typename Device,
+          typename Index >
+AdEllpack< Real, Device, Index >&
+AdEllpack< Real, Device, Index >::operator=( const AdEllpack& matrix )
+{
+   this->setLike( matrix );
+   this->values = matrix.values;
+   this->columnIndexes = matrix.columnIndexes;
+   this->offset = matrix.offset;
+   this->rowOffset = matrix.rowOffset;
+   this->localLoad = matrix.localLoad;
+   this->reduceMap = matrix.reduceMap;
+   this->totalLoad = matrix.totalLoad;
+   this->warpSize = matrix.warpSize;
+   return *this;
+}
+
+// cross-device copy assignment
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename Real2, typename Device2, typename Index2, typename >
+AdEllpack< Real, Device, Index >&
+AdEllpack< Real, Device, Index >::operator=( const AdEllpack< Real2, Device2, Index2 >& matrix )
+{
+   static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value,
+                  "unknown device" );
+   static_assert( std::is_same< Device2, Devices::Host >::value || std::is_same< Device2, Devices::Cuda >::value,
+                  "unknown device" );
+   
+   TNL_ASSERT_TRUE( false, "Cross-device copy assignment is not yet implemented for AdEllpack.");
+   
+   return *this;
+}
+
 template< typename Real,
           typename Device,
           typename Index >
@@ -848,116 +917,35 @@ template< typename Real,
 void AdEllpack< Real, Device, Index >::computeWarps( const IndexType SMs,
                                                      const IndexType threadsPerSM,
                                                      warpList< ThisType >* list )
-{
-// Included for 'system("pause")'. Where pause is "read -p 'Press Enter to continue...' var" in linux-based systems.
-#include <iostream>
-//    std::cout << "\t\tComputeWarps:" << std::endl;
-    
+{    
     IndexType averageLoad = 0;
     warpInfo< ThisType >* temp = list->getHead()->next;
     
-    //TEST
-//    list->printList();
-    
-    // MISTAKE? If list looks like this:
-    //
-    //      Head:	i->localLoad = 0	i->offset = 0	i->rowOffset = 0
-    //                  i->localLoad = 1	i->offset = 0	i->rowOffset = 0
-    //      Tail:	i->localLoad = 0	i->offset = 0	i->rowOffset = 0
-    //      
-    //      Then temp will start out as 'Head->next', but 'temp->next' will EQUAL 'list->getTail()'.
-    //      SO, the following while loop to set averageLoad will never happen.
     while( temp/*->next*/ != list->getTail() )
     {
         averageLoad += temp->localLoad;
         temp = temp->next;
     }
-    
-    // MISTAKE? If averageLoad is 1, and number of warpInfos in the warpList is more than 1,
-    //              integer division will occur, setting the averageLoad to 0. Consequently causing an
-    //              infinite loop out of the inner while loop (where splitInHalf( temp ) happens). 
-    /*averageLoad /= list->getNumberOfWarps();*/
-    
-    // TEST
-//    std::cout << "\t\t\tBefore roundUpDivision:" << std::endl;
-//    std::cout << "\t\t\t\taverageLoad = " << averageLoad << "\tlist->getNumberOfWarps() = " << list->getNumberOfWarps() << std::endl;
-    
-    // TEST
     averageLoad = roundUpDivision( averageLoad, list->getNumberOfWarps() );
-    
-    // TEST
-//    std::cout << "\t\t\tAverage load calculated. = " << averageLoad << std::endl;
 
     IndexType totalWarps = SMs * ( threadsPerSM / this->warpSize );
     IndexType remainingThreads = list->getNumberOfWarps();
     bool warpsToSplit = true;
-    
-    // TEST
-//    std::cout << "\t\t\tTotal warps, remaining threads, warpsToSplit set." << std::endl;
 
     while( remainingThreads < ( totalWarps / 2 ) && warpsToSplit )
     {
-        // TEST
-//        std::cout << "\t\t\tBeginning of outer while." << std::endl;
-        
         warpsToSplit = false;
         temp = list->getHead()->next;
-        
-        // TEST - PRINT
-//        std::cout << "\t\t\t\t[ list PRINT ]: " << std::endl;
-//        list->printList();
-        
-        // FIXME: This can be an INFINITE LOOP.
-        //        It will cause the process to be killed by bash.
         while( temp != list->getTail() )
         {
-            // TEST
-//            std::cout << "\n\t\t\t\tBeginning of inner while." << std::endl;
-//            std::cout << "\t\t\t\ttemp->localLoad = " << temp->localLoad << "\ttemp->offset = " << temp->offset << "\ttemp->rowOffset = " << temp->rowOffset << std::endl;
-            
-            // FIXME: localLoad of newly created secondHalf from splitInHalf is always at least 1.
-            //          If averageLoad is 0, then this will create new warpInfos until the system memory is depleted.
             if( temp->localLoad > averageLoad )
             {
                 temp = list->splitInHalf( temp );
-                warpsToSplit = true;
-                
-                // TEST - PRINT after splitInHalf
-//                std::cout << "\t\t\t\t[ list PRINT - after splitInHalf ]: " << std::endl;
-//                list->printList();
-                
-                // TEST
-//                std::cout << "\n\t\t\t\t\ttemp after splitInHalf:" << std::endl;
-//                std::cout << "\t\t\t\t\ttemp->localLoad = " << temp->localLoad << "\ttemp->offset = " << temp->offset << "\ttemp->rowOffset = " << temp->rowOffset << std::endl;
-                
-                // TEST
-//                if( temp == list->getHead()->next )
-//                    std::cout << "\n\t\t\t\t\ttemp == list->getHead()->next" << std::endl;
-                
-            }
-            
-            // TEST
-//            if( temp->next == list->getHead()->next->next )
-//                std::cout << "\n\t\t\t\t\ttemp->next == list->getHead()->next->next" << std::endl;
-            
-            // TEST
-//            if( list->getHead()->next->next == list->getTail() )
-//                std::cout << "\n\t\t\t\t\tlist->getHead()->next->next == list->getTail()" << std::endl;
-            
+                warpsToSplit = true;                
+            }            
             temp = temp->next;
-            
-            // TEST
-//            std::cout << "\t\t\t\t\ttemp after temp->next:" << std::endl;
-//            std::cout << "\t\t\t\t\ttemp->localLoad = " << temp->localLoad << "\ttemp->offset = " << temp->offset << "\ttemp->rowOffset = " << temp->rowOffset << std::endl;
-            
-            // TEST
-//            system("read -p 'Press Enter to continue...' var");
         }
-	remainingThreads = list->getNumberOfWarps();
-        
-        // TEST
-//        std::cout << "\t\t\tRemaining threads set." << std::endl;
-        
+	remainingThreads = list->getNumberOfWarps();        
     }
 }
 
