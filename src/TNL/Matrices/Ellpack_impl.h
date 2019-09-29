@@ -59,41 +59,20 @@ void Ellpack< Real, Device, Index >::setDimensions( const IndexType rows,
                    << " columns = " << columns << std::endl );
    this->rows = rows;
    this->columns = columns;
-      
-//   std::cout << "INSIDE setDimensions (BEFORE roundToMultiple): this->alignedRows = " << this->alignedRows << std::endl;
-//   std::cout << "INSIDE setDimensions (BEFORE roundToMultiple): rows = " << rows << std::endl;
    
-   // ERROR? RoundToMultiple can in very rare cases return a multiple, that is lower than the number of rows?
-   //          e.g. with sls.mtx, the number of rows is 1748122, but when on CUDA, roundToMultiple gives 62752.
    if( std::is_same< Device, Devices::Cuda >::value )
    {
-//       std::cout << "columns = " << columns << "\tWarpSize() = " << Devices::Cuda::getWarpSize() << std::endl;
        this->alignedRows = roundToMultiple( columns, Devices::Cuda::getWarpSize() );
-
-       // If the number of alignedRows is smaller than the number of rows, we find the 
-       //   missing number of "rows" and round it up so that is a multiple of getWarpSize()
-       //   Then add it to alignedRows and repeat until alignedRows is no longer larger than rows.
        if( this->rows - this->alignedRows > 0 )
        {
            IndexType missingRows = this->rows - this->alignedRows;
            
-//           std::cout << "  this->rows = " << this->rows << "\tthis->alignedRows = " << this->alignedRows << std::endl;
-//           std::cout << "  IF missingRows (pre-round) = " << missingRows << std::endl;
-           
            missingRows = roundToMultiple( missingRows, Devices::Cuda::getWarpSize() );
            
-//           std::cout << "  IF missingRows (after-round) = " << missingRows << std::endl;
-//           std::cout << "  PRE this->alignedRows = " << this->alignedRows << std::endl;
-           
            this->alignedRows +=  missingRows;
-           
-//           this->alignedRows += roundToMultiple( this->rows - this->alignedRows, Devices::Cuda::getWarpSize() );
        }
-//       std::cout << "AFTER setDimensions: this->alignedRows = " << this->alignedRows << std::endl;
    }
    else this->alignedRows = rows;
-   
-//   std::cout << "INSIDE setDimensions: this->alignedRows = " << this->alignedRows << std::endl;
    
    if( this->rowLengths != 0 )
       allocateElements();
@@ -109,8 +88,6 @@ void Ellpack< Real, Device, Index >::setCompressedRowLengths( ConstCompressedRow
    TNL_ASSERT_EQ( this->getRows(), rowLengths.getSize(), "wrong size of the rowLengths vector" );
 
    this->rowLengths = this->maxRowLength = rowLengths.max();
-   
-//   std::cout << "  this->rowLengths = " << this->rowLengths << std::endl;
    
    allocateElements();
 }
@@ -795,28 +772,13 @@ template< typename Real,
           typename Index >
 void Ellpack< Real, Device, Index >::allocateElements()
 {
-    // The allocation process isn't limited by RAM with ELL, but rather the size of the values and indexes arrays. Bcs ELL will store rows*maxRowLength elements in one array.
-    // The PROBLEM arises when we try to store the entire matrix into one array, which is what ELL essentially does in this case.
-//   std::cout << "  this->alignedRows = " << this->alignedRows << "\t this->rowLengths = " << this->rowLengths << std::endl;
-   
-   // HOW? Will we have to do this with every format? How to make this global?
    IndexType numMtxElmnts = this->alignedRows * this->rowLengths;
    
-   // CORRECT? Can the overflown value pass this assert?
    if( this->alignedRows != 0 )
    {
        TNL_ASSERT_EQ( numMtxElmnts / this->alignedRows, this->rowLengths, 
                       "Ellpack cannot store this matrix. The number of matrix elements has overflown the value that IndexType is capable of storing" );
-//       TNL_ASSERT_TRUE( this->alignedRows != 0 && numMtxElmnts / this->alignedRows == this->rowLengths, "Ellpack cannot store this matrix. The number of matrix elements has overflown the value that IndexType is capable of storing" );
    }
-   // ORIGINAL from: https://stackoverflow.com/questions/1815367/catch-and-compute-overflow-during-multiplication-of-two-large-integers
-//   if (this->alignedRows != 0 && numMtxElmnts / this->alignedRows != this->rowLengths) {
-//       TNL_ASSERT_FALSE( this->alignedRows != 0 && numMtxElmnts / this->alignedRows != this->rowLengths, "Ellpack cannot store this matrix. The number of matrix elements has overflown the value that IndexType is capable of storing" );
-//   }
-//   else
-//   {
-//       Sparse< Real, Device, Index >::allocateMatrixElements( this->alignedRows * this->rowLengths );
-//   }
    
    Sparse< Real, Device, Index >::allocateMatrixElements( this->alignedRows * this->rowLengths );
 }
