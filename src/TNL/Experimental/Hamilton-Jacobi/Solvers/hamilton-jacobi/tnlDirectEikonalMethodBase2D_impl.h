@@ -297,7 +297,7 @@ __global__ void CudaInitCaller( const Functions::MeshFunction< Meshes::Grid< 2, 
     
     if( i < mesh.getDimensions().x() - vecUpperOverlaps[ 0 ] &&
             j < mesh.getDimensions().y() - vecUpperOverlaps[ 1 ] &&
-            i>vecLowerOverlaps[ 0 ] -1 && j> vecLowerOverlaps[ 0 ]-1 )
+            i>vecLowerOverlaps[ 0 ] -1 && j> vecLowerOverlaps[ 1 ]-1 )
     {
       const Real& hx = mesh.getSpaceSteps().x();
       const Real& hy = mesh.getSpaceSteps().y();
