@@ -79,7 +79,6 @@ TYPED_TEST( BiEllpackMatrixTest, setDimensionsTest )
 //    std::cout << "\n    TODO: Finish implementation of getNonZeroRowLength (Only non-zero elements, not the number of allocated elements.)\n\n";
 //}
 
-// WORKING
 TYPED_TEST( BiEllpackMatrixTest, setLikeTest )
 {
     using BiEllpackMatrixType = typename TestFixture::BiEllpackMatrixType;
@@ -87,7 +86,6 @@ TYPED_TEST( BiEllpackMatrixTest, setLikeTest )
     test_SetLike< BiEllpackMatrixType, BiEllpackMatrixType >();
 }
 
-// WORKING
 TYPED_TEST( BiEllpackMatrixTest, resetTest )
 {
     using BiEllpackMatrixType = typename TestFixture::BiEllpackMatrixType;
@@ -95,12 +93,8 @@ TYPED_TEST( BiEllpackMatrixTest, resetTest )
     test_Reset< BiEllpackMatrixType >();
 }
 
-#ifdef NOT_WORKING
-
 TYPED_TEST( BiEllpackMatrixTest, setElementTest )
 {
-    // This test will segfault in the first test where Device is Cuda.
-    // This test doesn't return the correct values.
     using BiEllpackMatrixType = typename TestFixture::BiEllpackMatrixType;
     
     test_SetElement< BiEllpackMatrixType >();
