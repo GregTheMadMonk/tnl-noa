@@ -200,16 +200,16 @@ void test_SetElement()
 /*
  * Sets up the following 10x10 sparse matrix:
  *
- *    /  1  0  0  0  0  0  0  0  0  0  \
- *    |  0  2  0  0  0  0  0  0  0  0  |
- *    |  0  0  3  0  0  0  0  0  0  0  |
- *    |  0  0  0  4  0  0  0  0  0  0  |
- *    |  0  0  0  0  5  0  0  0  0  0  |
- *    |  0  0  0  0  0  6  0  0  0  0  |
- *    |  0  0  0  0  0  0  7  0  0  0  |
- *    |  0  0  0  0  0  0  0  8  0  0  |
- *    |  0  0  0  0  0  0  0  0  9  0  |
- *    \  0  0  0  0  0  0  0  0  0 10  /
+ *    /  1  2  3  4  0  0  0  0  0  0  \
+ *    |  5  6  7  0  0  0  0  0  0  0  |
+ *    |  8  9 10 11 12 13 14 15  0  0  |
+ *    | 16 17  0  0  0  0  0  0  0  0  |
+ *    | 18  0  0  0  0  0  0  0  0  0  |
+ *    | 19  0  0  0  0  0  0  0  0  0  |
+ *    | 20  0  0  0  0  0  0  0  0  0  |
+ *    | 21  0  0  0  0  0  0  0  0  0  |
+ *    | 22  0  0  0  0  0  0  0  0  0  |
+ *    \ 23  0  0  0  0  0  0  0  0  0  /
  */
     
     const IndexType rows = 10;
@@ -217,22 +217,34 @@ void test_SetElement()
     
     Matrix m;
     m.reset();
+    
     m.setDimensions( rows, cols );
     
     typename Matrix::CompressedRowLengthsVector rowLengths;
     rowLengths.setSize( rows );
-    rowLengths.setValue( 1 );
+    rowLengths.setValue( 8 );
     m.setCompressedRowLengths( rowLengths );
     
     RealType value = 1;
-    for( IndexType i = 0; i < rows; i++ )
-        m.setElement( i, i, value++ );
+    for( IndexType i = 0; i < 4; i++ )
+        m.setElement( 0, i, value++ );
     
+    for( IndexType i = 0; i < 3; i++ )
+        m.setElement( 1, i, value++ );
+    
+    for( IndexType i = 0; i < 8; i++ )
+        m.setElement( 2, i, value++ );
+    
+    for( IndexType i = 0; i < 2; i++ )
+        m.setElement( 3, i, value++ );
+    
+    for( IndexType i = 4; i < rows; i++ )
+        m.setElement( i, 0, value++ );    
     
     EXPECT_EQ( m.getElement( 0, 0 ),  1 );
-    EXPECT_EQ( m.getElement( 0, 1 ),  0 );
-    EXPECT_EQ( m.getElement( 0, 2 ),  0 );
-    EXPECT_EQ( m.getElement( 0, 3 ),  0 );
+    EXPECT_EQ( m.getElement( 0, 1 ),  2 );
+    EXPECT_EQ( m.getElement( 0, 2 ),  3 );
+    EXPECT_EQ( m.getElement( 0, 3 ),  4 );
     EXPECT_EQ( m.getElement( 0, 4 ),  0 );
     EXPECT_EQ( m.getElement( 0, 5 ),  0 );
     EXPECT_EQ( m.getElement( 0, 6 ),  0 );
@@ -240,9 +252,9 @@ void test_SetElement()
     EXPECT_EQ( m.getElement( 0, 8 ),  0 );
     EXPECT_EQ( m.getElement( 0, 9 ),  0 );
     
-    EXPECT_EQ( m.getElement( 1, 0 ),  0 );
-    EXPECT_EQ( m.getElement( 1, 1 ),  2 );
-    EXPECT_EQ( m.getElement( 1, 2 ),  0 );
+    EXPECT_EQ( m.getElement( 1, 0 ),  5 );
+    EXPECT_EQ( m.getElement( 1, 1 ),  6 );
+    EXPECT_EQ( m.getElement( 1, 2 ),  7 );
     EXPECT_EQ( m.getElement( 1, 3 ),  0 );
     EXPECT_EQ( m.getElement( 1, 4 ),  0 );
     EXPECT_EQ( m.getElement( 1, 5 ),  0 );
@@ -251,21 +263,21 @@ void test_SetElement()
     EXPECT_EQ( m.getElement( 1, 8 ),  0 );
     EXPECT_EQ( m.getElement( 1, 9 ),  0 );
     
-    EXPECT_EQ( m.getElement( 2, 0 ),  0 );
-    EXPECT_EQ( m.getElement( 2, 1 ),  0 );
-    EXPECT_EQ( m.getElement( 2, 2 ),  3 );
-    EXPECT_EQ( m.getElement( 2, 3 ),  0 );
-    EXPECT_EQ( m.getElement( 2, 4 ),  0 );
-    EXPECT_EQ( m.getElement( 2, 5 ),  0 );
-    EXPECT_EQ( m.getElement( 2, 6 ),  0 );
-    EXPECT_EQ( m.getElement( 2, 7 ),  0 );
+    EXPECT_EQ( m.getElement( 2, 0 ),  8 );
+    EXPECT_EQ( m.getElement( 2, 1 ),  9 );
+    EXPECT_EQ( m.getElement( 2, 2 ), 10 );
+    EXPECT_EQ( m.getElement( 2, 3 ), 11 );
+    EXPECT_EQ( m.getElement( 2, 4 ), 12 );
+    EXPECT_EQ( m.getElement( 2, 5 ), 13 );
+    EXPECT_EQ( m.getElement( 2, 6 ), 14 );
+    EXPECT_EQ( m.getElement( 2, 7 ), 15 );
     EXPECT_EQ( m.getElement( 2, 8 ),  0 );
     EXPECT_EQ( m.getElement( 2, 9 ),  0 );
     
-    EXPECT_EQ( m.getElement( 3, 0 ),  0 );
-    EXPECT_EQ( m.getElement( 3, 1 ),  0 );
+    EXPECT_EQ( m.getElement( 3, 0 ), 16 );
+    EXPECT_EQ( m.getElement( 3, 1 ), 17 );
     EXPECT_EQ( m.getElement( 3, 2 ),  0 );
-    EXPECT_EQ( m.getElement( 3, 3 ),  4 );
+    EXPECT_EQ( m.getElement( 3, 3 ),  0 );
     EXPECT_EQ( m.getElement( 3, 4 ),  0 );
     EXPECT_EQ( m.getElement( 3, 5 ),  0 );
     EXPECT_EQ( m.getElement( 3, 6 ),  0 );
@@ -273,51 +285,51 @@ void test_SetElement()
     EXPECT_EQ( m.getElement( 3, 8 ),  0 );
     EXPECT_EQ( m.getElement( 3, 9 ),  0 );
     
-    EXPECT_EQ( m.getElement( 4, 0 ),  0 );
+    EXPECT_EQ( m.getElement( 4, 0 ), 18 );
     EXPECT_EQ( m.getElement( 4, 1 ),  0 );
     EXPECT_EQ( m.getElement( 4, 2 ),  0 );
     EXPECT_EQ( m.getElement( 4, 3 ),  0 );
-    EXPECT_EQ( m.getElement( 4, 4 ),  5 );
+    EXPECT_EQ( m.getElement( 4, 4 ),  0 );
     EXPECT_EQ( m.getElement( 4, 5 ),  0 );
     EXPECT_EQ( m.getElement( 4, 6 ),  0 );
     EXPECT_EQ( m.getElement( 4, 7 ),  0 );
     EXPECT_EQ( m.getElement( 4, 8 ),  0 );
     EXPECT_EQ( m.getElement( 4, 9 ),  0 );
     
-    EXPECT_EQ( m.getElement( 5, 0 ),  0 );
+    EXPECT_EQ( m.getElement( 5, 0 ), 19 );
     EXPECT_EQ( m.getElement( 5, 1 ),  0 );
     EXPECT_EQ( m.getElement( 5, 2 ),  0 );
     EXPECT_EQ( m.getElement( 5, 3 ),  0 );
     EXPECT_EQ( m.getElement( 5, 4 ),  0 );
-    EXPECT_EQ( m.getElement( 5, 5 ),  6 );
+    EXPECT_EQ( m.getElement( 5, 5 ),  0 );
     EXPECT_EQ( m.getElement( 5, 6 ),  0 );
     EXPECT_EQ( m.getElement( 5, 7 ),  0 );
     EXPECT_EQ( m.getElement( 5, 8 ),  0 );
     EXPECT_EQ( m.getElement( 5, 9 ),  0 );
     
-    EXPECT_EQ( m.getElement( 6, 0 ),  0 );
+    EXPECT_EQ( m.getElement( 6, 0 ), 20 );
     EXPECT_EQ( m.getElement( 6, 1 ),  0 );
     EXPECT_EQ( m.getElement( 6, 2 ),  0 );
     EXPECT_EQ( m.getElement( 6, 3 ),  0 );
     EXPECT_EQ( m.getElement( 6, 4 ),  0 );
     EXPECT_EQ( m.getElement( 6, 5 ),  0 );
-    EXPECT_EQ( m.getElement( 6, 6 ),  7 );
+    EXPECT_EQ( m.getElement( 6, 6 ),  0 );
     EXPECT_EQ( m.getElement( 6, 7 ),  0 );
     EXPECT_EQ( m.getElement( 6, 8 ),  0 );
     EXPECT_EQ( m.getElement( 6, 9 ),  0 );
     
-    EXPECT_EQ( m.getElement( 7, 0 ),  0 );
+    EXPECT_EQ( m.getElement( 7, 0 ), 21 );
     EXPECT_EQ( m.getElement( 7, 1 ),  0 );
     EXPECT_EQ( m.getElement( 7, 2 ),  0 );
     EXPECT_EQ( m.getElement( 7, 3 ),  0 );
     EXPECT_EQ( m.getElement( 7, 4 ),  0 );
     EXPECT_EQ( m.getElement( 7, 5 ),  0 );
     EXPECT_EQ( m.getElement( 7, 6 ),  0 );
-    EXPECT_EQ( m.getElement( 7, 7 ),  8 );
+    EXPECT_EQ( m.getElement( 7, 7 ),  0 );
     EXPECT_EQ( m.getElement( 7, 8 ),  0 );
     EXPECT_EQ( m.getElement( 7, 9 ),  0 );
     
-    EXPECT_EQ( m.getElement( 8, 0 ),  0 );
+    EXPECT_EQ( m.getElement( 8, 0 ), 22 );
     EXPECT_EQ( m.getElement( 8, 1 ),  0 );
     EXPECT_EQ( m.getElement( 8, 2 ),  0 );
     EXPECT_EQ( m.getElement( 8, 3 ),  0 );
@@ -325,10 +337,10 @@ void test_SetElement()
     EXPECT_EQ( m.getElement( 8, 5 ),  0 );
     EXPECT_EQ( m.getElement( 8, 6 ),  0 );
     EXPECT_EQ( m.getElement( 8, 7 ),  0 );
-    EXPECT_EQ( m.getElement( 8, 8 ),  9 );
+    EXPECT_EQ( m.getElement( 8, 8 ),  0 );
     EXPECT_EQ( m.getElement( 8, 9 ),  0 );
     
-    EXPECT_EQ( m.getElement( 9, 0 ),  0 );
+    EXPECT_EQ( m.getElement( 9, 0 ), 23 );
     EXPECT_EQ( m.getElement( 9, 1 ),  0 );
     EXPECT_EQ( m.getElement( 9, 2 ),  0 );
     EXPECT_EQ( m.getElement( 9, 3 ),  0 );
@@ -337,7 +349,7 @@ void test_SetElement()
     EXPECT_EQ( m.getElement( 9, 6 ),  0 );
     EXPECT_EQ( m.getElement( 9, 7 ),  0 );
     EXPECT_EQ( m.getElement( 9, 8 ),  0 );
-    EXPECT_EQ( m.getElement( 9, 9 ), 10 );
+    EXPECT_EQ( m.getElement( 9, 9 ),  0 );
 }
 
 template< typename Matrix >
@@ -425,6 +437,17 @@ void test_AddElement()
     
     // Add new elements to the old elements with a multiplying factor applied to the old elements.
 
+/*
+ * Sets up the following 6x5 sparse matrix:
+ *
+ *    /  1  2  3  0  0 \
+ *    |  0  4  5  6  0 |
+ *    |  0  0  7  8  9 |
+ *    | 10  0  0  0  0 |
+ *    |  0 11  0  0  0 |
+ *    \  0  0  0 12  0 /
+ */
+    
 /*
  * The following setup results in the following 6x5 sparse matrix:
  *
