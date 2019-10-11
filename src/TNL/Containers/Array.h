@@ -73,7 +73,6 @@ template< typename Value,
 class Array
 {
    public:
-
       /**
        * \brief Type of elements stored in this array.
        */
@@ -99,16 +98,6 @@ class Array
       using AllocatorType = Allocator;
 
       /**
-       * \brief Defines the same array type but allocated on host (CPU).
-       */
-      using HostType = Array< Value, TNL::Devices::Host, Index >;
-
-      /**
-       * \brief Defines the same array type but allocated on CUDA device (GPU).
-       */
-      using CudaType = Array< Value, TNL::Devices::Cuda, Index >;
-
-      /**
        * \brief Compatible ArrayView type.
        */
       using ViewType = ArrayView< Value, Device, Index >;
@@ -117,6 +106,15 @@ class Array
        * \brief Compatible constant ArrayView type.
        */
       using ConstViewType = ArrayView< std::add_const_t< Value >, Device, Index >;
+
+      /**
+       * \brief A template which allows to quickly obtain an \ref Array type with changed template parameters.
+       */
+      template< typename _Value,
+                typename _Device = Device,
+                typename _Index = Index,
+                typename _Allocator = typename Allocators::Default< _Device >::template Allocator< _Value > >
+      using Self = Array< _Value, _Device, _Index, _Allocator >;
 
 
       /**

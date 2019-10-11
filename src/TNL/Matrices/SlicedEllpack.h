@@ -68,12 +68,15 @@ public:
    typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
-   typedef SlicedEllpack< Real, Devices::Host, Index, SliceSize > HostType;
-   typedef SlicedEllpack< Real, Devices::Cuda, Index, SliceSize > CudaType;
    typedef Sparse< Real, Device, Index > BaseType;
    typedef typename BaseType::MatrixRow MatrixRow;
    typedef SparseRow< const RealType, const IndexType > ConstMatrixRow;
 
+   template< typename _Real = Real,
+             typename _Device = Device,
+             typename _Index = Index,
+             int _SliceSize = SliceSize >
+   using Self = SlicedEllpack< _Real, _Device, _Index, _SliceSize >;
 
    SlicedEllpack();
 

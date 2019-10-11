@@ -170,7 +170,8 @@ typename std::enable_if< ! std::is_same< typename Matrix1::DeviceType, typename 
                            std::is_same< typename Matrix2::DeviceType, Devices::Host >::value >::type
 copySparseMatrix_impl( Matrix1& A, const Matrix2& B )
 {
-   typename Matrix2::CudaType B_tmp;
+   using CudaMatrix2 = typename Matrix2::template Self< typename Matrix2::RealType, Devices::Cuda >;
+   CudaMatrix2 B_tmp;
    B_tmp = B;
    copySparseMatrix_impl( A, B_tmp );
 }
@@ -182,7 +183,8 @@ typename std::enable_if< ! std::is_same< typename Matrix1::DeviceType, typename 
                            std::is_same< typename Matrix2::DeviceType, Devices::Cuda >::value >::type
 copySparseMatrix_impl( Matrix1& A, const Matrix2& B )
 {
-   typename Matrix1::CudaType A_tmp;
+   using CudaMatrix1 = typename Matrix1::template Self< typename Matrix1::RealType, Devices::Cuda >;
+   CudaMatrix1 A_tmp;
    copySparseMatrix_impl( A_tmp, B );
    A = A_tmp;
 }

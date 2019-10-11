@@ -54,7 +54,8 @@ template< typename Array >
 void expect_eq( Array& a, Array& b )
 {
    if( std::is_same< typename Array::DeviceType, TNL::Devices::Cuda >::value ) {
-      typename Array::HostType a_host, b_host;
+      using HostArray = typename Array::template Self< typename Array::ValueType, TNL::Devices::Host >;
+      HostArray a_host, b_host;
       a_host = a;
       b_host = b;
       expect_eq_chunked( a_host, b_host );

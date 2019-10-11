@@ -42,7 +42,6 @@ class Vector
 : public Array< Real, Device, Index, Allocator >
 {
 public:
-
    /**
     * \brief Type of elements stored in this vector.
     */
@@ -68,16 +67,6 @@ public:
    using AllocatorType = Allocator;
 
    /**
-    * \brief Defines the same vector type but allocated on host (CPU).
-    */
-   using HostType = Vector< Real, TNL::Devices::Host, Index >;
-
-   /**
-    * \brief Defines the same vector type but allocated on CUDA device (GPU).
-    */
-   using CudaType = Vector< Real, TNL::Devices::Cuda, Index >;
-
-   /**
     * \brief Compatible VectorView type.
     */
    using ViewType = VectorView< Real, Device, Index >;
@@ -86,6 +75,16 @@ public:
     * \brief Compatible constant VectorView type.
     */
    using ConstViewType = VectorView< std::add_const_t< Real >, Device, Index >;
+
+   /**
+    * \brief A template which allows to quickly obtain a \ref Vector type with changed template parameters.
+    */
+   template< typename _Real,
+             typename _Device = Device,
+             typename _Index = Index,
+             typename _Allocator = typename Allocators::Default< _Device >::template Allocator< _Real > >
+   using Self = Vector< _Real, _Device, _Index, _Allocator >;
+
 
    // constructors and assignment operators inherited from the class Array
    using Array< Real, Device, Index, Allocator >::Array;

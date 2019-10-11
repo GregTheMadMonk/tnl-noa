@@ -648,8 +648,8 @@ Ellpack< Real, Device, Index >::operator=( const Ellpack< Real2, Device2, Index2
 
    // host -> cuda
    if( std::is_same< Device, Devices::Cuda >::value ) {
-      typename ValuesVector::HostType tmpValues;
-      typename ColumnIndexesVector::HostType tmpColumnIndexes;
+      typename ValuesVector::template Self< typename ValuesVector::ValueType, Devices::Sequential > tmpValues;
+      typename ColumnIndexesVector::template Self< typename ColumnIndexesVector::ValueType, Devices::Sequential > tmpColumnIndexes;
       tmpValues.setLike( this->values );
       tmpColumnIndexes.setLike( this->columnIndexes );
 

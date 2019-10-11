@@ -34,8 +34,6 @@ class Grid< 1, Real, Device, Index > : public Object
    typedef Index GlobalIndexType;
    typedef Containers::StaticVector< 1, Real > PointType;
    typedef Containers::StaticVector< 1, Index > CoordinatesType;
-   typedef Grid< 1, Real, Devices::Host, Index > HostType;
-   typedef Grid< 1, Real, Devices::Cuda, Index > CudaType;
 
    typedef DistributedMeshes::DistributedMesh <Grid> DistributedMeshType;
 

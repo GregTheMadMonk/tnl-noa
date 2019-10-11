@@ -367,9 +367,10 @@ TYPED_TEST( ArrayTest, containsOnlyValue )
 TYPED_TEST( ArrayTest, comparisonOperator )
 {
    using ArrayType = typename TestFixture::ArrayType;
+   using HostArrayType = typename ArrayType::template Self< typename ArrayType::ValueType, Devices::Sequential >;
 
    ArrayType u( 10 ), v( 10 ), w( 10 );
-   typename ArrayType::HostType u_host( 10 );
+   HostArrayType u_host( 10 );
    for( int i = 0; i < 10; i ++ ) {
       u.setElement( i, i );
       u_host.setElement( i, i );
@@ -422,9 +423,10 @@ TYPED_TEST( ArrayTest, comparisonOperatorWithDifferentType )
 TYPED_TEST( ArrayTest, assignmentOperator )
 {
    using ArrayType = typename TestFixture::ArrayType;
+   using HostArrayType = typename ArrayType::template Self< typename ArrayType::ValueType, Devices::Sequential >;
 
    ArrayType u( 10 ), v( 10 );
-   typename ArrayType::HostType u_host( 10 );
+   HostArrayType u_host( 10 );
    for( int i = 0; i < 10; i++ ) {
       u.setElement( i, i );
       u_host.setElement( i, i );
@@ -451,10 +453,12 @@ template< typename ArrayType,
           typename = typename std::enable_if< std::is_arithmetic< typename ArrayType::ValueType >::value >::type >
 void testArrayAssignmentWithDifferentType()
 {
+   using HostArrayType = typename ArrayType::template Self< typename ArrayType::ValueType, Devices::Sequential >;
+
    ArrayType u( 10 );
    Array< short, typename ArrayType::DeviceType, short > v( 10 );
    Array< short, Devices::Host, short > v_host( 10 );
-   typename ArrayType::HostType u_host( 10 );
+   HostArrayType u_host( 10 );
    for( int i = 0; i < 10; i++ ) {
       u.setElement( i, i );
       u_host.setElement( i, i );

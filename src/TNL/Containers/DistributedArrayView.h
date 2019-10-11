@@ -34,10 +34,18 @@ public:
    using LocalRangeType = Subrange< Index >;
    using LocalViewType = Containers::ArrayView< Value, Device, Index >;
    using ConstLocalViewType = Containers::ArrayView< std::add_const_t< Value >, Device, Index >;
-   using HostType = DistributedArrayView< Value, Devices::Host, Index, Communicator >;
-   using CudaType = DistributedArrayView< Value, Devices::Cuda, Index, Communicator >;
    using ViewType = DistributedArrayView< Value, Device, Index, Communicator >;
    using ConstViewType = DistributedArrayView< std::add_const_t< Value >, Device, Index, Communicator >;
+
+   /**
+    * \brief A template which allows to quickly obtain a \ref DistributedArrayView type with changed template parameters.
+    */
+   template< typename _Value,
+             typename _Device = Device,
+             typename _Index = Index,
+             typename _Communicator = Communicator >
+   using Self = DistributedArrayView< _Value, _Device, _Index, _Communicator >;
+
 
    // Initialization by raw data
    __cuda_callable__

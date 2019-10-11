@@ -10,12 +10,6 @@
 
 // TODO
 /*
- * getType()                        ::HOW?  How to test this for each format? edit string how?
- *      Found the mistake for Cuda instead of Devices::Cuda. Incorrect String in src/TNL/Devices/Cuda.cpp
- *      MISSING: indexType is missing in CSR_impl.h
- * getTypeVirtual()                 ::TEST? This just calls getType().
- * getSerializationType()           ::TEST? This just calls HostType::getType().
- * getSerializationTypeVirtual()    ::TEST? This just calls getSerializationType().
  * setDimensions()                      ::DONE
  * setCompressedRowLengths()            ::DONE
  * getRowLength()                   ::USED! In test_SetCompressedRowLengths() to verify the test itself.

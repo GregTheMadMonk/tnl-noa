@@ -41,11 +41,13 @@ public:
    typedef Index IndexType;
    typedef typename Matrix< Real, Device, Index >::CompressedRowLengthsVector CompressedRowLengthsVector;
    typedef typename Matrix< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
-   typedef Dense< Real, Devices::Host, Index > HostType;
-   typedef Dense< Real, Devices::Cuda, Index > CudaType;
    typedef Matrix< Real, Device, Index > BaseType;
    typedef DenseRow< Real, Index > MatrixRow;
 
+   template< typename _Real = Real,
+             typename _Device = Device,
+             typename _Index = Index >
+   using Self = Dense< _Real, _Device, _Index >;
 
    Dense();
 

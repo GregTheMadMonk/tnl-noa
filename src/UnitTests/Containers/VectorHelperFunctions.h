@@ -9,7 +9,8 @@ void setLinearSequence( Vector& deviceVector )
 #ifdef STATIC_VECTOR
    Vector a;
 #else
-   typename Vector::HostType a;
+   using HostVector = typename Vector::template Self< typename Vector::RealType, TNL::Devices::Host >;
+   HostVector a;
    a.setLike( deviceVector );
 #endif
 #ifdef DISTRIBUTED_VECTOR
@@ -34,7 +35,8 @@ void setConstantSequence( Vector& deviceVector,
 template< typename Vector >
 void setOscilatingLinearSequence( Vector& deviceVector )
 {
-   typename Vector::HostType a;
+   using HostVector = typename Vector::template Self< typename Vector::RealType, TNL::Devices::Host >;
+   HostVector a;
    a.setLike( deviceVector );
    for( int i = 0; i < a.getSize(); i++ )
       a[ i ] = i % 30 - 15;
@@ -45,7 +47,8 @@ template< typename Vector >
 void setOscilatingConstantSequence( Vector& deviceVector,
                                     typename Vector::RealType v )
 {
-   typename Vector::HostType a;
+   using HostVector = typename Vector::template Self< typename Vector::RealType, TNL::Devices::Host >;
+   HostVector a;
    a.setLike( deviceVector );
    for( int i = 0; i < a.getSize(); i++ )
       a[ i ] = TNL::sign( i % 30 - 15 );
@@ -55,7 +58,8 @@ void setOscilatingConstantSequence( Vector& deviceVector,
 template< typename Vector >
 void setNegativeLinearSequence( Vector& deviceVector )
 {
-   typename Vector::HostType a;
+   using HostVector = typename Vector::template Self< typename Vector::RealType, TNL::Devices::Host >;
+   HostVector a;
    a.setLike( deviceVector );
 #ifdef DISTRIBUTED_VECTOR
    for( int i = 0; i < a.getLocalView().getSize(); i++ ) {
@@ -76,7 +80,8 @@ void setOscilatingSequence( Vector& deviceVector,
 #ifdef STATIC_VECTOR
    Vector a;
 #else
-   typename Vector::HostType a;
+   using HostVector = typename Vector::template Self< typename Vector::RealType, TNL::Devices::Host >;
+   HostVector a;
    a.setLike( deviceVector );
 #endif
 #ifdef DISTRIBUTED_VECTOR

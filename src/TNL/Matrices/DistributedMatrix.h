@@ -54,13 +54,16 @@ public:
    using CommunicatorType = Communicator;
    using LocalRangeType = Containers::Subrange< typename Matrix::IndexType >;
 
-   using HostType = DistributedMatrix< typename Matrix::HostType, Communicator >;
-   using CudaType = DistributedMatrix< typename Matrix::CudaType, Communicator >;
-
    using CompressedRowLengthsVector = Containers::DistributedVector< IndexType, DeviceType, IndexType, CommunicatorType >;
 
    using MatrixRow = Matrices::SparseRow< RealType, IndexType >;
    using ConstMatrixRow = Matrices::SparseRow< std::add_const_t< RealType >, std::add_const_t< IndexType > >;
+
+   template< typename _Real = RealType,
+             typename _Device = DeviceType,
+             typename _Index = IndexType,
+             typename _Communicator = Communicator >
+   using Self = DistributedMatrix< typename MatrixType::template Self< _Real, _Device, _Index >, _Communicator >;
 
    DistributedMatrix() = default;
 

@@ -39,7 +39,6 @@ class VectorView
    using BaseType = ArrayView< Real, Device, Index >;
    using NonConstReal = typename std::remove_const< Real >::type;
 public:
-
    /**
     * \brief Type of elements stored in this vector.
     */
@@ -58,16 +57,6 @@ public:
    using IndexType = Index;
 
    /**
-    * \brief Defines the same vector type but allocated on host (CPU).
-    */
-   using HostType = VectorView< Real, TNL::Devices::Host, Index >;
-
-   /**
-    * \brief Defines the same vector type but allocated on CUDA device (GPU).
-    */
-   using CudaType = VectorView< Real, TNL::Devices::Cuda, Index >;
-
-   /**
     * \brief Compatible VectorView type.
     */
    using ViewType = VectorView< Real, Device, Index >;
@@ -76,6 +65,15 @@ public:
     * \brief Compatible constant VectorView type.
     */
    using ConstViewType = VectorView< std::add_const_t< Real >, Device, Index >;
+
+   /**
+    * \brief A template which allows to quickly obtain a \ref VectorView type with changed template parameters.
+    */
+   template< typename _Real,
+             typename _Device = Device,
+             typename _Index = Index >
+   using Self = VectorView< _Real, _Device, _Index >;
+
 
    // constructors and assignment operators inherited from the class ArrayView
    using ArrayView< Real, Device, Index >::ArrayView;

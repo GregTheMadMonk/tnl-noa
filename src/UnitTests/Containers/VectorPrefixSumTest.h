@@ -24,6 +24,7 @@ TYPED_TEST( VectorTest, prefixSum )
    using RealType = typename VectorType::RealType;
    using DeviceType = typename VectorType::DeviceType;
    using IndexType = typename VectorType::IndexType;
+   using HostVectorType = typename VectorType::template Self< RealType, Devices::Sequential >;
    const int size = VECTOR_TEST_SIZE;
 
    // FIXME: tests should work in all cases
@@ -32,7 +33,7 @@ TYPED_TEST( VectorTest, prefixSum )
 
    VectorType v( size );
    ViewType v_view( v );
-   typename VectorType::HostType v_host( size );
+   HostVectorType v_host( size );
 
    setConstantSequence( v, 0 );
    v_host = -1;
@@ -145,6 +146,7 @@ TYPED_TEST( VectorTest, exclusiveScan )
    using RealType = typename VectorType::RealType;
    using DeviceType = typename VectorType::DeviceType;
    using IndexType = typename VectorType::IndexType;
+   using HostVectorType = typename VectorType::template Self< RealType, Devices::Sequential >;
    const int size = VECTOR_TEST_SIZE;
 
    // FIXME: tests should work in all cases
@@ -154,7 +156,7 @@ TYPED_TEST( VectorTest, exclusiveScan )
    VectorType v;
    v.setSize( size );
    ViewType v_view( v );
-   typename VectorType::HostType v_host( size );
+   HostVectorType v_host( size );
 
    setConstantSequence( v, 0 );
    v_host = -1;

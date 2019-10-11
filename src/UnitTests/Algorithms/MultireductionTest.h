@@ -50,8 +50,8 @@ class MultireductionTest : public ::testing::Test
 protected:
    using DeviceVector = Vector;
    using DeviceView = VectorView< typename Vector::RealType, typename Vector::DeviceType, typename Vector::IndexType >;
-   using HostVector = typename DeviceVector::HostType;
-   using HostView = typename DeviceView::HostType;
+   using HostVector = typename DeviceVector::template Self< typename DeviceVector::RealType, Devices::Sequential >;
+   using HostView = typename DeviceView::template Self< typename DeviceView::RealType, Devices::Sequential >;
 
    // should be small enough to have fast tests, but larger than minGPUReductionDataSize
    // and large enough to require multiple CUDA blocks for reduction

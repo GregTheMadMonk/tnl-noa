@@ -42,12 +42,13 @@ protected:
    using DistributedVectorType = DistributedVector;
    using VectorViewType = typename DistributedVectorType::LocalViewType;
    using DistributedVectorView = Containers::DistributedVectorView< RealType, DeviceType, IndexType, CommunicatorType >;
+   using HostDistributedVectorType = typename DistributedVectorType::template Self< RealType, Devices::Sequential >;
 
    const typename CommunicatorType::CommunicationGroup group = CommunicatorType::AllGroup;
 
    DistributedVectorType v;
    DistributedVectorView v_view;
-   typename DistributedVectorType::HostType v_host;
+   HostDistributedVectorType v_host;
 
    const int rank = CommunicatorType::GetRank(group);
    const int nproc = CommunicatorType::GetSize(group);

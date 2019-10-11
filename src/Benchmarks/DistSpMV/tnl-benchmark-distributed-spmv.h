@@ -73,8 +73,8 @@ benchmarkSpmvCuda( Benchmark& benchmark,
 {
    using RealType = typename Matrix::RealType;
    using IndexType = typename Matrix::IndexType;
-   using CudaMatrix = typename Matrix::CudaType;
-   using CudaVector = typename Vector::CudaType;
+   using CudaMatrix = typename Matrix::template Self< RealType, Devices::Cuda >;
+   using CudaVector = typename Vector::template Self< typename Vector::RealType, Devices::Cuda >;
 
    CudaVector cuda_x;
    cuda_x = x;
@@ -125,8 +125,8 @@ benchmarkDistributedSpmvCuda( Benchmark& benchmark,
 {
    using RealType = typename Matrix::RealType;
    using IndexType = typename Matrix::IndexType;
-   using CudaMatrix = typename Matrix::CudaType;
-   using CudaVector = typename Vector::CudaType;
+   using CudaMatrix = typename Matrix::template Self< RealType, Devices::Cuda >;
+   using CudaVector = typename Vector::template Self< typename Vector::RealType, Devices::Cuda >;
 
    CudaVector cuda_x;
    cuda_x = x;

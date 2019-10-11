@@ -49,11 +49,14 @@ public:
    using IndexType = Index;
    typedef typename Sparse< RealType, DeviceType, IndexType >::CompressedRowLengthsVector CompressedRowLengthsVector;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
-   typedef CSR< Real, Devices::Host, Index > HostType;
-   typedef CSR< Real, Devices::Cuda, Index > CudaType;
    typedef Sparse< Real, Device, Index > BaseType;
    using MatrixRow = typename BaseType::MatrixRow;
    using ConstMatrixRow = typename BaseType::ConstMatrixRow;
+
+   template< typename _Real = Real,
+             typename _Device = Device,
+             typename _Index = Index >
+   using Self = CSR< _Real, _Device, _Index >;
 
    enum SPMVCudaKernel { scalar, vector, hybrid };
 

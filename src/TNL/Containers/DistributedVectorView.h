@@ -35,10 +35,18 @@ public:
    using IndexType = Index;
    using LocalViewType = Containers::VectorView< Real, Device, Index >;
    using ConstLocalViewType = Containers::VectorView< std::add_const_t< Real >, Device, Index >;
-   using HostType = DistributedVectorView< Real, Devices::Host, Index, Communicator >;
-   using CudaType = DistributedVectorView< Real, Devices::Cuda, Index, Communicator >;
    using ViewType = DistributedVectorView< Real, Device, Index, Communicator >;
    using ConstViewType = DistributedVectorView< std::add_const_t< Real >, Device, Index, Communicator >;
+
+   /**
+    * \brief A template which allows to quickly obtain a \ref VectorView type with changed template parameters.
+    */
+   template< typename _Real,
+             typename _Device = Device,
+             typename _Index = Index,
+             typename _Communicator = Communicator >
+   using Self = DistributedVectorView< _Real, _Device, _Index, _Communicator >;
+
 
    // inherit all constructors and assignment operators from ArrayView
    using BaseType::DistributedArrayView;

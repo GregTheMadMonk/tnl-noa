@@ -119,8 +119,8 @@ benchmarkIterativeSolvers( Benchmark& benchmark,
                            const Vector& b )
 {
 #ifdef HAVE_CUDA
-   using CudaMatrix = typename Matrix::CudaType;
-   using CudaVector = typename Vector::CudaType;
+   using CudaMatrix = typename Matrix::template Self< typename Matrix::RealType, Devices::Cuda >;
+   using CudaVector = typename Vector::template Self< typename Vector::RealType, Devices::Cuda >;
 
    CudaVector cuda_x0, cuda_b;
    cuda_x0 = x0;
@@ -461,9 +461,11 @@ struct LinearSolversBenchmark
          SharedPointer< CSR > matrixCopy;
          Matrices::copySparseMatrix( *matrixCopy, *matrixPointer );
 
-         SharedPointer< typename CSR::CudaType > cuda_matrixCopy;
+         using CudaCSR = Matrices::CSR< RealType, Devices::Cuda, IndexType >;
+         using CudaVector = typename VectorType::template Self< RealType, Devices::Cuda >;
+         SharedPointer< CudaCSR > cuda_matrixCopy;
          *cuda_matrixCopy = *matrixCopy;
-         typename VectorType::CudaType cuda_x0, cuda_b;
+         CudaVector cuda_x0, cuda_b;
          cuda_x0.setLike( x0 );
          cuda_b.setLike( b );
          cuda_x0 = x0;

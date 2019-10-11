@@ -620,19 +620,14 @@ template< typename Real,
 SlicedEllpack< Real, Device, Index, SliceSize >&
 SlicedEllpack< Real, Device, Index, SliceSize >::operator=( const SlicedEllpack< Real2, Device2, Index2, SliceSize >& matrix )
 {
-   static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value,
-                  "unknown device" );
-   static_assert( std::is_same< Device2, Devices::Host >::value || std::is_same< Device2, Devices::Cuda >::value,
-                  "unknown device" );
-
    this->setLike( matrix );
    this->slicePointers = matrix.slicePointers;
    this->sliceCompressedRowLengths = matrix.sliceCompressedRowLengths;
 
    // host -> cuda
    if( std::is_same< Device, Devices::Cuda >::value ) {
-      typename ValuesVector::HostType tmpValues;
-      typename ColumnIndexesVector::HostType tmpColumnIndexes;
+      typename ValuesVector::template Self< typename ValuesVector::ValueType, Devices::Sequential > tmpValues;
+      typename ColumnIndexesVector::template Self< typename ColumnIndexesVector::ValueType, Devices::Sequential > tmpColumnIndexes;
       tmpValues.setLike( matrix.values );
       tmpColumnIndexes.setLike( matrix.columnIndexes );
 
@@ -654,7 +649,7 @@ SlicedEllpack< Real, Device, Index, SliceSize >::operator=( const SlicedEllpack<
    }
 
    // cuda -> host
-   if( std::is_same< Device, Devices::Host >::value ) {
+   else {
       ValuesVector tmpValues;
       ColumnIndexesVector tmpColumnIndexes;
       tmpValues.setLike( matrix.values );
@@ -724,7 +719,7 @@ template< typename Real,
           int SliceSize >
 void SlicedEllpack< Real, Device, Index, SliceSize >::print( std::ostream& str ) const
 {
-   if( std::is_same< Device, Devices::Host >::value ) {
+   if( ! std::is_same< Device, Devices::Cuda >::value ) {
       for( IndexType row = 0; row < this->getRows(); row++ )
       {
          str <<"Row: " << row << " -> ";
@@ -745,7 +740,7 @@ void SlicedEllpack< Real, Device, Index, SliceSize >::print( std::ostream& str )
       }
    }
    else {
-      HostType hostMatrix;
+      Self< Real, Devices::Sequential > hostMatrix;
       hostMatrix = *this;
       hostMatrix.print( str );
    }
@@ -778,12 +773,13 @@ __device__ void SlicedEllpack< Real, Device, Index, SliceSize >::computeMaximalR
 }
 #endif
 
-template<>
-class SlicedEllpackDeviceDependentCode< Devices::Host >
+// implementation for host types
+template< typename Device_ >
+class SlicedEllpackDeviceDependentCode
 {
    public:
 
-      typedef Devices::Host Device;
+      typedef Device_ Device;
 
       template< typename Real,
                 typename Index,

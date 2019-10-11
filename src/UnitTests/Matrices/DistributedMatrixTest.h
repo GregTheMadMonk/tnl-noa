@@ -6,10 +6,22 @@
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
+#ifdef HAVE_GTEST
+#include <gtest/gtest.h>
+
+#include <TNL/Communicators/MpiCommunicator.h>
+#include <TNL/Communicators/NoDistrCommunicator.h>
+#include <TNL/Matrices/DistributedMatrix.h>
+#include <TNL/Containers/Partitioner.h>
+#include <TNL/Matrices/CSR.h>
+
+using namespace TNL;
+
 template< typename Vector >
 void setLinearSequence( Vector& deviceVector, typename Vector::RealType offset = 0 )
 {
-   typename Vector::HostType a;
+   using HostVector = typename Vector::template Self< typename Vector::RealType, TNL::Devices::Sequential >;
+   HostVector a;
    a.setLike( deviceVector );
    for( int i = 0; i < a.getLocalView().getSize(); i++ ) {
       const auto gi = a.getLocalRange().getGlobalIndex( i );
@@ -21,8 +33,11 @@ void setLinearSequence( Vector& deviceVector, typename Vector::RealType offset =
 template< typename Matrix, typename RowLengths >
 void setMatrix( Matrix& matrix, const RowLengths& rowLengths )
 {
-   typename Matrix::HostType hostMatrix;
-   typename RowLengths::HostType hostRowLengths;
+   using HostMatrix = Matrices::DistributedMatrix< typename Matrix::MatrixType::template Self< typename Matrix::RealType, TNL::Devices::Sequential >, typename Matrix::CommunicatorType >;
+   using HostRowLengths = typename RowLengths::template Self< typename RowLengths::RealType, TNL::Devices::Sequential >;
+
+   HostMatrix hostMatrix;
+   HostRowLengths hostRowLengths;
    hostMatrix.setLike( matrix );
    hostRowLengths = rowLengths;
    hostMatrix.setCompressedRowLengths( hostRowLengths );
@@ -35,17 +50,6 @@ void setMatrix( Matrix& matrix, const RowLengths& rowLengths )
 
    matrix = hostMatrix;
 }
-
-#ifdef HAVE_GTEST
-#include <gtest/gtest.h>
-
-#include <TNL/Communicators/MpiCommunicator.h>
-#include <TNL/Communicators/NoDistrCommunicator.h>
-#include <TNL/Matrices/DistributedMatrix.h>
-#include <TNL/Containers/Partitioner.h>
-#include <TNL/Matrices/CSR.h>
-
-using namespace TNL;
 
 /*
  * Light check of DistributedMatrix.
