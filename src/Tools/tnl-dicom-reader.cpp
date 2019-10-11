@@ -37,7 +37,7 @@ bool processDicomFiles( const Config::ParameterContainer& parameters )
 
 bool processDicomSeries( const Config::ParameterContainer& parameters )
 {
-   const Containers::List< String >& dicomSeriesNames = parameters.getParameter< Containers::List< String > >( "dicom-series" );
+   const std::vector< String >& dicomSeriesNames = parameters.getParameter< std::vector< String > >( "dicom-series" );
    String meshFile = parameters.getParameter< String >( "mesh-file" );
    bool verbose = parameters.getParameter< bool >( "verbose" );
 
@@ -45,7 +45,7 @@ bool processDicomSeries( const Config::ParameterContainer& parameters )
    GridType grid;
    Containers::Vector< double, Devices::Host, int > vector;
    Images::RegionOfInterest< int > roi;
-   for( int i = 0; i < dicomSeriesNames.getSize(); i++ )
+   for( std::size_t i = 0; i < dicomSeriesNames.size(); i++ )
    {
       const String& seriesName = dicomSeriesNames[ i ];
       std::cout << "Reading a file " << seriesName << std::endl;

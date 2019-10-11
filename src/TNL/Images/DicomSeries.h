@@ -14,8 +14,9 @@
 
 #pragma once
 
+#include <list>
+
 #include <TNL/Containers/Array.h>
-#include <TNL/Containers/List.h>
 #include <TNL/String.h>
 #include <TNL/TypeInfo.h>
 #include <TNL/Images//Image.h>
@@ -102,7 +103,7 @@ class DicomSeries : public Image< int >
  
       bool loadImage( const String& filePath, int number );
 
-      Containers::List< String > fileList;
+      std::list< String > fileList;
  
       Containers::Array<DicomHeader *,Devices::Host,int> dicomSeriesHeaders;
 
