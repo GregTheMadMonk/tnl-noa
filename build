@@ -108,7 +108,12 @@ else
    export CC=gcc
 fi
 
-if hash ninja 2>/dev/null; then
+if [[ ! $(command -v cmake) ]]; then
+   echo "Error: cmake is not installed. See http://www.cmake.org/download/" >&2
+   exit 1
+fi
+
+if [[ $(command -v ninja) ]]; then
    generator=Ninja
    make=ninja
    check_file="build.ninja"
