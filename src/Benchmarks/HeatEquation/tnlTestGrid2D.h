@@ -52,9 +52,6 @@ class Meshes::Grid< 2, Real, Device, Index > : public tnlObject
    typedef Index IndexType;
    typedef Containers::StaticVector< 2, Real > PointType;
    typedef Containers::StaticVector< 2, Index > CoordinatesType;
-   typedef Meshes::Grid< 2, Real, Devices::Host, Index > HostType;
-   typedef Meshes::Grid< 2, Real, tnlCuda, Index > CudaType;   
-   typedef Meshes::Grid< 2, Real, Device, Index > ThisType;
    
    static const int meshDimension = 2;
 
@@ -808,9 +805,6 @@ class Meshes::Grid< 2, Real, Device, Index > : public tnlObject
    typedef Index IndexType;
    typedef Containers::StaticVector< 2, Real > PointType;
    typedef Containers::StaticVector< 2, Index > CoordinatesType;
-   typedef Meshes::Grid< 2, Real, Devices::Host, Index > HostType;
-   typedef Meshes::Grid< 2, Real, tnlCuda, Index > CudaType;   
-   typedef Meshes::Grid< 2, Real, Device, Index > ThisType;
    
    static const int meshDimension = 2;
 
