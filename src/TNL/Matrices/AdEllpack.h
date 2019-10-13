@@ -114,7 +114,7 @@ private:
 
    // friend class will be needed for templated assignment operators
    template< typename Real2, typename Device2, typename Index2 >
-   friend class ChunkedEllpack;
+   friend class AdEllpack;
    
 public:
 
