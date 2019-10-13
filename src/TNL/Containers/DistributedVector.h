@@ -131,7 +131,7 @@ public:
    DistributedVector& operator/=( const Vector& vector );
 
    template< Algorithms::ScanType Type = Algorithms::ScanType::Inclusive >
-   void prefixSum( IndexType begin = 0, IndexType end = 0 );
+   void scan( IndexType begin = 0, IndexType end = 0 );
 };
 
 } // namespace Containers

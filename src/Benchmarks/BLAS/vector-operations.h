@@ -562,31 +562,31 @@ benchmarkVectorOperations( Benchmark & benchmark,
 #endif
 
    ////
-   // Inclusive prefix sum
-   auto inclusivePrefixSumHost = [&]() {
-      hostVector.prefixSum();
+   // Inclusive scan
+   auto inclusiveScanHost = [&]() {
+      hostVector.scan();
    };
-   benchmark.setOperation( "inclusive prefix sum", 2 * datasetSize );
-   benchmark.time< Devices::Host >( reset1, "CPU ET", inclusivePrefixSumHost );
+   benchmark.setOperation( "inclusive scan", 2 * datasetSize );
+   benchmark.time< Devices::Host >( reset1, "CPU ET", inclusiveScanHost );
 #ifdef HAVE_CUDA
-   auto inclusivePrefixSumCuda = [&]() {
-      deviceVector.prefixSum();
+   auto inclusiveScanCuda = [&]() {
+      deviceVector.scan();
    };
-   benchmark.time< Devices::Cuda >( reset1, "GPU ET", inclusivePrefixSumCuda );
+   benchmark.time< Devices::Cuda >( reset1, "GPU ET", inclusiveScanCuda );
 #endif
 
    ////
-   // Exclusive prefix sum
-   auto exclusivePrefixSumHost = [&]() {
-      hostVector.template prefixSum< Algorithms::ScanType::Exclusive >();
+   // Exclusive scan
+   auto exclusiveScanHost = [&]() {
+      hostVector.template scan< Algorithms::ScanType::Exclusive >();
    };
-   benchmark.setOperation( "exclusive prefix sum", 2 * datasetSize );
-   benchmark.time< Devices::Host >( reset1, "CPU ET", exclusivePrefixSumHost );
+   benchmark.setOperation( "exclusive scan", 2 * datasetSize );
+   benchmark.time< Devices::Host >( reset1, "CPU ET", exclusiveScanHost );
 #ifdef HAVE_CUDA
-   auto exclusivePrefixSumCuda = [&]() {
-      deviceVector.template prefixSum< Algorithms::ScanType::Exclusive >();
+   auto exclusiveScanCuda = [&]() {
+      deviceVector.template scan< Algorithms::ScanType::Exclusive >();
    };
-   benchmark.time< Devices::Cuda >( reset1, "GPU ET", exclusivePrefixSumCuda );
+   benchmark.time< Devices::Cuda >( reset1, "GPU ET", exclusiveScanCuda );
 #endif
 
 #ifdef HAVE_CUDA

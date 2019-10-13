@@ -108,7 +108,7 @@ template< typename Real,
    template< Algorithms::ScanType Type >
 void
 VectorView< Real, Device, Index >::
-prefixSum( IndexType begin, IndexType end )
+scan( IndexType begin, IndexType end )
 {
    if( end == 0 )
       end = this->getSize();
@@ -122,7 +122,7 @@ template< typename Real,
              typename FlagsArray >
 void
 VectorView< Real, Device, Index >::
-segmentedPrefixSum( FlagsArray& flags, IndexType begin, IndexType end )
+segmentedScan( FlagsArray& flags, IndexType begin, IndexType end )
 {
    if( end == 0 )
       end = this->getSize();
@@ -136,9 +136,9 @@ template< typename Real,
              typename VectorExpression >
 void
 VectorView< Real, Device, Index >::
-prefixSum( const VectorExpression& expression, IndexType begin, IndexType end )
+scan( const VectorExpression& expression, IndexType begin, IndexType end )
 {
-   throw Exceptions::NotImplementedError( "Prefix sum with vector expressions is not implemented." );
+   throw Exceptions::NotImplementedError( "Scan (prefix sum) with vector expressions is not implemented." );
 }
 
 template< typename Real,
@@ -149,9 +149,9 @@ template< typename Real,
              typename FlagsArray >
 void
 VectorView< Real, Device, Index >::
-segmentedPrefixSum( const VectorExpression& expression, FlagsArray& flags, IndexType begin, IndexType end )
+segmentedScan( const VectorExpression& expression, FlagsArray& flags, IndexType begin, IndexType end )
 {
-   throw Exceptions::NotImplementedError( "Prefix sum with vector expressions is not implemented." );
+   throw Exceptions::NotImplementedError( "Segmented scan (prefix sum) with vector expressions is not implemented." );
 }
 
 } // namespace Containers

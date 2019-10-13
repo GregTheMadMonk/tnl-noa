@@ -54,7 +54,7 @@ protected:
    const int nproc = CommunicatorType::GetSize(group);
 
    // should be small enough to have fast tests, but large enough to test
-   // prefix-sum with multiple CUDA grids
+   // scan with multiple CUDA grids
    const int globalSize = 10000 * nproc;
 
    DistributedVectorTest()
@@ -80,7 +80,7 @@ using DistributedVectorTypes = ::testing::Types<
 
 TYPED_TEST_SUITE( DistributedVectorTest, DistributedVectorTypes );
 
-TYPED_TEST( DistributedVectorTest, prefixSum )
+TYPED_TEST( DistributedVectorTest, scan )
 {
    using RealType = typename TestFixture::DistributedVectorType::RealType;
    using DeviceType = typename TestFixture::DistributedVectorType::DeviceType;
@@ -97,21 +97,21 @@ TYPED_TEST( DistributedVectorTest, prefixSum )
 
    setConstantSequence( v, 0 );
    v_host = -1;
-   v.prefixSum();
+   v.scan();
    v_host = v;
    for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
       EXPECT_EQ( v_host[ i ], 0 ) << "i = " << i;
 
    setConstantSequence( v, 1 );
    v_host = -1;
-   v.prefixSum();
+   v.scan();
    v_host = v_view;
    for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
       EXPECT_EQ( v_host[ i ], i + 1 ) << "i = " << i;
 
    setLinearSequence( v );
    v_host = -1;
-   v.prefixSum();
+   v.scan();
    v_host = v;
    for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
       EXPECT_EQ( v_host[ i ], (i * (i + 1)) / 2 ) << "i = " << i;
@@ -119,21 +119,21 @@ TYPED_TEST( DistributedVectorTest, prefixSum )
    // test views
    setConstantSequence( v, 0 );
    v_host = -1;
-   v_view.prefixSum();
+   v_view.scan();
    v_host = v;
    for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
       EXPECT_EQ( v_host[ i ], 0 ) << "i = " << i;
 
    setConstantSequence( v, 1 );
    v_host = -1;
-   v_view.prefixSum();
+   v_view.scan();
    v_host = v_view;
    for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
       EXPECT_EQ( v_host[ i ], i + 1 ) << "i = " << i;
 
    setLinearSequence( v );
    v_host = -1;
-   v_view.prefixSum();
+   v_view.scan();
    v_host = v;
    for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
       EXPECT_EQ( v_host[ i ], (i * (i + 1)) / 2 ) << "i = " << i;
@@ -147,7 +147,7 @@ TYPED_TEST( DistributedVectorTest, prefixSum )
 
       setConstantSequence( v, 0 );
       v_host = -1;
-      v.prefixSum();
+      v.scan();
       EXPECT_GT( ( Algorithms::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, RealType, IndexType >::gridsCount() ), 1  );
       v_host = v;
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
@@ -155,7 +155,7 @@ TYPED_TEST( DistributedVectorTest, prefixSum )
 
       setConstantSequence( v, 1 );
       v_host = -1;
-      v.prefixSum();
+      v.scan();
       EXPECT_GT( ( Algorithms::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, RealType, IndexType >::gridsCount() ), 1  );
       v_host = v_view;
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
@@ -163,7 +163,7 @@ TYPED_TEST( DistributedVectorTest, prefixSum )
 
       setLinearSequence( v );
       v_host = -1;
-      v.prefixSum();
+      v.scan();
       EXPECT_GT( ( Algorithms::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, RealType, IndexType >::gridsCount() ), 1  );
       v_host = v;
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
@@ -172,7 +172,7 @@ TYPED_TEST( DistributedVectorTest, prefixSum )
       // test views
       setConstantSequence( v, 0 );
       v_host = -1;
-      v_view.prefixSum();
+      v_view.scan();
       EXPECT_GT( ( Algorithms::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, RealType, IndexType >::gridsCount() ), 1  );
       v_host = v;
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
@@ -180,7 +180,7 @@ TYPED_TEST( DistributedVectorTest, prefixSum )
 
       setConstantSequence( v, 1 );
       v_host = -1;
-      v_view.prefixSum();
+      v_view.scan();
       EXPECT_GT( ( Algorithms::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, RealType, IndexType >::gridsCount() ), 1  );
       v_host = v_view;
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
@@ -188,7 +188,7 @@ TYPED_TEST( DistributedVectorTest, prefixSum )
 
       setLinearSequence( v );
       v_host = -1;
-      v_view.prefixSum();
+      v_view.scan();
       EXPECT_GT( ( Algorithms::CudaScanKernelLauncher< Algorithms::ScanType::Inclusive, RealType, IndexType >::gridsCount() ), 1  );
       v_host = v;
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
@@ -199,7 +199,7 @@ TYPED_TEST( DistributedVectorTest, prefixSum )
    }
 }
 
-TYPED_TEST( DistributedVectorTest, exclusivePrefixSum )
+TYPED_TEST( DistributedVectorTest, exclusiveScan )
 {
    using RealType = typename TestFixture::DistributedVectorType::RealType;
    using DeviceType = typename TestFixture::DistributedVectorType::DeviceType;
@@ -216,21 +216,21 @@ TYPED_TEST( DistributedVectorTest, exclusivePrefixSum )
 
    setConstantSequence( v, 0 );
    v_host = -1;
-   v.template prefixSum< Algorithms::ScanType::Exclusive >();
+   v.template scan< Algorithms::ScanType::Exclusive >();
    v_host = v;
    for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
       EXPECT_EQ( v_host[ i ], 0 ) << "i = " << i;
 
    setConstantSequence( v, 1 );
    v_host = -1;
-   v.template prefixSum< Algorithms::ScanType::Exclusive >();
+   v.template scan< Algorithms::ScanType::Exclusive >();
    v_host = v_view;
    for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
       EXPECT_EQ( v_host[ i ], i ) << "i = " << i;
 
    setLinearSequence( v );
    v_host = -1;
-   v.template prefixSum< Algorithms::ScanType::Exclusive >();
+   v.template scan< Algorithms::ScanType::Exclusive >();
    v_host = v;
    for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
       EXPECT_EQ( v_host[ i ], (i * (i - 1)) / 2 ) << "i = " << i;
@@ -238,21 +238,21 @@ TYPED_TEST( DistributedVectorTest, exclusivePrefixSum )
    // test views
    setConstantSequence( v, 0 );
    v_host = -1;
-   v_view.template prefixSum< Algorithms::ScanType::Exclusive >();
+   v_view.template scan< Algorithms::ScanType::Exclusive >();
    v_host = v;
    for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
       EXPECT_EQ( v_host[ i ], 0 ) << "i = " << i;
 
    setConstantSequence( v, 1 );
    v_host = -1;
-   v_view.template prefixSum< Algorithms::ScanType::Exclusive >();
+   v_view.template scan< Algorithms::ScanType::Exclusive >();
    v_host = v_view;
    for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
       EXPECT_EQ( v_host[ i ], i ) << "i = " << i;
 
    setLinearSequence( v );
    v_host = -1;
-   v_view.template prefixSum< Algorithms::ScanType::Exclusive >();
+   v_view.template scan< Algorithms::ScanType::Exclusive >();
    v_host = v;
    for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
       EXPECT_EQ( v_host[ i ], (i * (i - 1)) / 2 ) << "i = " << i;
@@ -266,7 +266,7 @@ TYPED_TEST( DistributedVectorTest, exclusivePrefixSum )
 
       setConstantSequence( v, 0 );
       v_host = -1;
-      v.template prefixSum< Algorithms::ScanType::Exclusive >();
+      v.template scan< Algorithms::ScanType::Exclusive >();
       EXPECT_GT( ( Algorithms::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, RealType, IndexType >::gridsCount() ), 1  );
       v_host = v;
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
@@ -274,7 +274,7 @@ TYPED_TEST( DistributedVectorTest, exclusivePrefixSum )
 
       setConstantSequence( v, 1 );
       v_host = -1;
-      v.template prefixSum< Algorithms::ScanType::Exclusive >();
+      v.template scan< Algorithms::ScanType::Exclusive >();
       EXPECT_GT( ( Algorithms::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, RealType, IndexType >::gridsCount() ), 1  );
       v_host = v_view;
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
@@ -282,7 +282,7 @@ TYPED_TEST( DistributedVectorTest, exclusivePrefixSum )
 
       setLinearSequence( v );
       v_host = -1;
-      v.template prefixSum< Algorithms::ScanType::Exclusive >();
+      v.template scan< Algorithms::ScanType::Exclusive >();
       EXPECT_GT( ( Algorithms::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, RealType, IndexType >::gridsCount() ), 1  );
       v_host = v;
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
@@ -291,7 +291,7 @@ TYPED_TEST( DistributedVectorTest, exclusivePrefixSum )
       // test views
       setConstantSequence( v, 0 );
       v_host = -1;
-      v_view.template prefixSum< Algorithms::ScanType::Exclusive >();
+      v_view.template scan< Algorithms::ScanType::Exclusive >();
       EXPECT_GT( ( Algorithms::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, RealType, IndexType >::gridsCount() ), 1  );
       v_host = v;
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
@@ -299,7 +299,7 @@ TYPED_TEST( DistributedVectorTest, exclusivePrefixSum )
 
       setConstantSequence( v, 1 );
       v_host = -1;
-      v_view.template prefixSum< Algorithms::ScanType::Exclusive >();
+      v_view.template scan< Algorithms::ScanType::Exclusive >();
       EXPECT_GT( ( Algorithms::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, RealType, IndexType >::gridsCount() ), 1  );
       v_host = v_view;
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )
@@ -307,7 +307,7 @@ TYPED_TEST( DistributedVectorTest, exclusivePrefixSum )
 
       setLinearSequence( v );
       v_host = -1;
-      v_view.template prefixSum< Algorithms::ScanType::Exclusive >();
+      v_view.template scan< Algorithms::ScanType::Exclusive >();
       EXPECT_GT( ( Algorithms::CudaScanKernelLauncher< Algorithms::ScanType::Exclusive, RealType, IndexType >::gridsCount() ), 1  );
       v_host = v;
       for( int i = localRange.getBegin(); i < localRange.getEnd(); i++ )

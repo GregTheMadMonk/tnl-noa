@@ -232,7 +232,7 @@ void ChunkedEllpack< Real, Device, Index >::setCompressedRowLengths( ConstCompre
       this->rowPointers.setElement( 0, 0 );
       for( IndexType sliceIndex = 0; sliceIndex < numberOfSlices; sliceIndex++ )
          this->setSlice( rowLengths, sliceIndex, elementsToAllocation );
-      this->rowPointers.prefixSum();
+      this->rowPointers.scan();
    }
    
 //   std::cout << "\ngetRowLength after first if: " << std::endl;

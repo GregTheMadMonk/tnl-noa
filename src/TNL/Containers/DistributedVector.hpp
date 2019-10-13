@@ -273,7 +273,7 @@ template< typename Real,
    template< Algorithms::ScanType Type >
 void
 DistributedVector< Real, Device, Index, Communicator >::
-prefixSum( IndexType begin, IndexType end )
+scan( IndexType begin, IndexType end )
 {
    if( end == 0 )
       end = this->getSize();

@@ -88,7 +88,7 @@ void CSR< Real, Device, Index >::setCompressedRowLengths( ConstCompressedRowLeng
    rowPtrs.bind( this->rowPointers.getData(), this->getRows() );
    rowPtrs = rowLengths;
    this->rowPointers.setElement( this->rows, 0 );
-   this->rowPointers.template prefixSum< Algorithms::ScanType::Exclusive >();
+   this->rowPointers.template scan< Algorithms::ScanType::Exclusive >();
    this->maxRowLength = max( rowLengths );
 
    /****

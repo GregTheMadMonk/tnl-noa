@@ -214,75 +214,84 @@ public:
    VectorView& operator/=( const VectorExpression& expression );
 
    /**
-    * \brief Computes prefix sum of the vector view elements.
+    * \brief Computes the scan (prefix sum) of the vector elements.
     *
-    * Computes prefix sum for elements within the index range [ \e begin to \e end ).
-    * The other elements of this vector view remain unchanged.
+    * By default, scan is computed for the whole vector. If \e begin
+    * or \e end is set to a non-zero value, only elements in the sub-interval
+    * `[begin, end)` are scanned.
     *
-    * \tparam Type tells the prefix sum type - either \e Inclusive of \e Exclusive.
-    * 
-    * \param begin beginning of the index range
-    * \param end end of the index range.
+    * \tparam Type The scan type - either \e Inclusive or \e Exclusive.
+    *
+    * \param begin The beginning of the vector sub-interval. It is 0 by
+    *              default.
+    * \param end The end of the vector sub-interval. The default value is 0
+    *            which is, however, replaced with the array size.
     */
    template< Algorithms::ScanType Type = Algorithms::ScanType::Inclusive >
-   void prefixSum( IndexType begin = 0, IndexType end = 0 );
+   void scan( IndexType begin = 0, IndexType end = 0 );
 
    /**
-    * \brief Computes segmented prefix sum of the vector view elements.
+    * \brief Computes the segmented scan (prefix sum) of the vector elements.
     *
-    * Computes segmented prefix sum for elements within the index range [ \e begin to \e end ).
-    * The other elements of this vector view remain unchanged. Whole vector view is assumed
-    * by default, i.e. when \e begin and \e end are set to zero.
+    * By default, segmented scan is computed for the whole vector. If \e begin
+    * or \e end is set to a non-zero value, only elements in the sub-interval
+    * `[begin, end)` are scanned.
     *
-    * \tparam Type tells the prefix sum type - either \e Inclusive of \e Exclusive.
-    * \tparam FlagsArray is an array type describing beginnings of the segments.
-    * 
-    * \param flags is an array having `1` at the beginning of each segment and `0` on any other position
-    * \param begin beginning of the index range
-    * \param end end of the index range.
+    * \tparam Type The scan type - either \e Inclusive or \e Exclusive.
+    *
+    * \param flags A binary array where ones indicate the beginning of each
+    *              segment.
+    * \param begin The beginning of the vector sub-interval. It is 0 by
+    *              default.
+    * \param end The end of the vector sub-interval. The default value is 0
+    *            which is, however, replaced with the array size.
     */
    template< Algorithms::ScanType Type = Algorithms::ScanType::Inclusive,
              typename FlagsArray >
-   void segmentedPrefixSum( FlagsArray& flags, IndexType begin = 0, IndexType end = 0 );
+   void segmentedScan( FlagsArray& flags, IndexType begin = 0, IndexType end = 0 );
 
    /**
-    * \brief Computes prefix sum of the vector expression.
+    * \brief Computes the scan (prefix sum) of the vector expression.
     *
-    * Computes prefix sum for elements within the index range [ \e begin to \e end ).
-    * The other elements of this vector remain unchanged. Whole vector expression is assumed
-    * by default, i.e. when \e begin and \e end are set to zero.
+    * By default, scan is computed for the whole vector. If \e begin
+    * or \e end is set to a non-zero value, only elements in the sub-interval
+    * `[begin, end)` are scanned.
     *
-    * \tparam Type tells the prefix sum type - either \e Inclusive of \e Exclusive.
-    * \tparam VectorExpression is the vector expression.
-    * 
-    * \param expression is the vector expression.
-    * \param begin beginning of the index range
-    * \param end end of the index range.
+    * \tparam Type The scan type - either \e Inclusive or \e Exclusive.
+    *
+    * \param expression A vector expression for which scan is computed and
+    *                   stored in this vector.
+    * \param begin The beginning of the vector sub-interval. It is 0 by
+    *              default.
+    * \param end The end of the vector sub-interval. The default value is 0
+    *            which is, however, replaced with the array size.
     */
    template< Algorithms::ScanType Type = Algorithms::ScanType::Inclusive,
              typename VectorExpression >
-   void prefixSum( const VectorExpression& expression, IndexType begin = 0, IndexType end = 0 );
+   void scan( const VectorExpression& expression, IndexType begin = 0, IndexType end = 0 );
 
    /**
-    * \brief Computes segmented prefix sum of a vector expression.
+    * \brief Computes the segmented scan (prefix sum) of a vector expression.
     *
-    * Computes segmented prefix sum for elements within the index range [ \e begin to \e end ).
-    * The other elements of this vector remain unchanged. Whole vector expression is assumed
-    * by default, i.e. when \e begin and \e end are set to zero.
+    * By default, segmented scan is computed for the whole vector. If \e begin
+    * or \e end is set to a non-zero value, only elements in the sub-interval
+    * `[begin, end)` are scanned.
     *
-    * \tparam Type tells the prefix sum type - either \e Inclusive of \e Exclusive.
-    * \tparam VectorExpression is the vector expression.
-    * \tparam FlagsArray is an array type describing beginnings of the segments.
-    * 
-    * \param expression is the vector expression.
-    * \param flags is an array having `1` at the beginning of each segment and `0` on any other position
-    * \param begin beginning of the index range
-    * \param end end of the index range.
+    * \tparam Type The scan type - either \e Inclusive or \e Exclusive.
+    *
+    * \param expression A vector expression for which scan is computed and
+    *                   stored in this vector.
+    * \param flags A binary array where ones indicate the beginning of each
+    *              segment.
+    * \param begin The beginning of the vector sub-interval. It is 0 by
+    *              default.
+    * \param end The end of the vector sub-interval. The default value is 0
+    *            which is, however, replaced with the array size.
     */
    template< Algorithms::ScanType Type = Algorithms::ScanType::Inclusive,
              typename VectorExpression,
              typename FlagsArray >
-   void segmentedPrefixSum( const VectorExpression& expression, FlagsArray& flags, IndexType begin = 0, IndexType end = 0 );
+   void segmentedScan( const VectorExpression& expression, FlagsArray& flags, IndexType begin = 0, IndexType end = 0 );
 };
 
 } // namespace Containers

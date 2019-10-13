@@ -54,7 +54,7 @@ struct DistributedScan
          // NOTE: exchanging general data types does not work with MPI
          CommunicatorType::Alltoall( dataForScatter, 1, rankSums.getData(), 1, group );
 
-         // compute prefix-sum of the per-rank sums
+         // compute the scan of the per-rank sums
          Scan< Devices::Host, ScanType::Exclusive >::perform( rankSums, 0, nproc, reduction, zero );
 
          // perform second phase: shift by the per-block and per-rank offsets
