@@ -12,13 +12,20 @@ Similarly to the STL, features provided by the TNL can be grouped into
 several modules:
 
 - _Core concepts_.
-  The main concept used in the TNL is the `Device` type which is used in most of
-  the other parts of the library. For data structures such as `Array` it
-  specifies where the data should be allocated, whereas for algorithms such as
-  `ParallelFor` it specifies how the algorithm should be executed.
+  The main concepts used in TNL are the _memory space_, which represents the
+  part of memory where given data is allocated, and the _execution model_,
+  which represents the way how given (typically parallel) algorithm is executed.
+  For example, data can be allocated in the main system memory, in the GPU
+  memory, or using the CUDA Unified Memory which can be accessed from the host
+  as well as from the GPU. On the other hand, algorithms can be executed using
+  either the host CPU or an accelerator (GPU), and for each there are many ways
+  to manage parallel execution. The usage of memory spaces is abstracted with
+  [allocators][allocators] and the execution model is represented by
+  [devices][devices]. See the [Core concepts][core concepts] page for details.
 - _[Containers][containers]_.
   TNL provides generic containers such as array, multidimensional array or array
-  views, which abstract data management on different hardware architectures.
+  views, which abstract data management and execution of common operations on
+  different hardware architectures.
 - _Linear algebra._
   TNL provides generic data structures and algorithms for linear algebra, such
   as [vectors][vectors], [sparse matrices][matrices],
@@ -39,6 +46,9 @@ several modules:
   [libpng](http://www.libpng.org/pub/png/libpng.html) for PNG files, or
   [libjpeg](http://libjpeg.sourceforge.net/) for JPEG files.
 
+[allocators]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/namespaceTNL_1_1Allocators.html
+[devices]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/namespaceTNL_1_1Devices.html
+[core concepts]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/core_concepts.html
 [containers]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/namespaceTNL_1_1Containers.html
 [vectors]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/classTNL_1_1Containers_1_1Vector.html
 [matrices]: https://mmg-gitlab.fjfi.cvut.cz/doc/tnl/namespaceTNL_1_1Matrices.html
