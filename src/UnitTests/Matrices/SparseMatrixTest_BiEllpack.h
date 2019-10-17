@@ -121,6 +121,13 @@ TYPED_TEST( BiEllpackMatrixTest, vectorProductTest )
     test_VectorProduct< BiEllpackMatrixType >();
 }
 
+TYPED_TEST( BiEllpackMatrixTest, operatorEqualsTest )
+{
+    using BiEllpackMatrixType = typename TestFixture::BiEllpackMatrixType;
+    
+    test_OperatorEquals< BiEllpackMatrixType >();
+}
+
 TYPED_TEST( BiEllpackMatrixTest, saveAndLoadTest )
 {
     using BiEllpackMatrixType = typename TestFixture::BiEllpackMatrixType;

@@ -125,12 +125,12 @@ TYPED_TEST( ChunkedEllpackMatrixTest, vectorProductTest )
     test_VectorProduct< ChunkedEllpackMatrixType >();
 }
 
-TYPED_TEST( ChunkedEllpackMatrixTest, operatorEqualsTest )
-{
-    using ChunkedEllpackMatrixType = typename TestFixture::ChunkedEllpackMatrixType;
-    
-    test_OperatorEquals< ChunkedEllpackMatrixType >();
-}
+//TYPED_TEST( ChunkedEllpackMatrixTest, operatorEqualsTest )
+//{
+//    using ChunkedEllpackMatrixType = typename TestFixture::ChunkedEllpackMatrixType;
+//    
+//    test_OperatorEquals< ChunkedEllpackMatrixType >();
+//}
 
 TYPED_TEST( ChunkedEllpackMatrixTest, saveAndLoadTest )
 {
