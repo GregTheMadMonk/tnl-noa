@@ -15,6 +15,7 @@
 
 // Temporary, until test_OperatorEquals doesn't work for all formats.
 #include <TNL/Matrices/ChunkedEllpack.h>
+#include <TNL/Matrices/BiEllpack.h>
 
 #ifdef HAVE_GTEST 
 #include <gtest/gtest.h>
@@ -200,7 +201,7 @@ void test_SetElement()
 /*
  * Sets up the following 10x10 sparse matrix:
  *
- *    /  1  2  3  4  0  0  0  0  0  0  \
+ *    /  1  0  2  0  3  0  4  0  0  0  \
  *    |  5  6  7  0  0  0  0  0  0  0  |
  *    |  8  9 10 11 12 13 14 15  0  0  |
  *    | 16 17  0  0  0  0  0  0  0  0  |
@@ -222,12 +223,20 @@ void test_SetElement()
     
     typename Matrix::CompressedRowLengthsVector rowLengths;
     rowLengths.setSize( rows );
-    rowLengths.setValue( 8 );
+//    rowLengths.setValue( 8 );
+    rowLengths.setElement( 0, 4 );
+    rowLengths.setElement( 1, 3 );
+    rowLengths.setElement( 2, 8 );
+    rowLengths.setElement( 3, 2 );
+    for( IndexType i = 4; i < 10; i++ )
+    {
+        rowLengths.setElement( i, 1 );
+    }
     m.setCompressedRowLengths( rowLengths );
     
     RealType value = 1;
     for( IndexType i = 0; i < 4; i++ )
-        m.setElement( 0, i, value++ );
+        m.setElement( 0, 2 * i, value++ );
     
     for( IndexType i = 0; i < 3; i++ )
         m.setElement( 1, i, value++ );
@@ -242,12 +251,12 @@ void test_SetElement()
         m.setElement( i, 0, value++ );    
     
     EXPECT_EQ( m.getElement( 0, 0 ),  1 );
-    EXPECT_EQ( m.getElement( 0, 1 ),  2 );
-    EXPECT_EQ( m.getElement( 0, 2 ),  3 );
-    EXPECT_EQ( m.getElement( 0, 3 ),  4 );
-    EXPECT_EQ( m.getElement( 0, 4 ),  0 );
+    EXPECT_EQ( m.getElement( 0, 1 ),  0 );
+    EXPECT_EQ( m.getElement( 0, 2 ),  2 );
+    EXPECT_EQ( m.getElement( 0, 3 ),  0 );
+    EXPECT_EQ( m.getElement( 0, 4 ),  3 );
     EXPECT_EQ( m.getElement( 0, 5 ),  0 );
-    EXPECT_EQ( m.getElement( 0, 6 ),  0 );
+    EXPECT_EQ( m.getElement( 0, 6 ),  4 );
     EXPECT_EQ( m.getElement( 0, 7 ),  0 );
     EXPECT_EQ( m.getElement( 0, 8 ),  0 );
     EXPECT_EQ( m.getElement( 0, 9 ),  0 );
@@ -746,43 +755,88 @@ void test_OperatorEquals()
        return;
    else
    {
-       using CHELL_host = TNL::Matrices::ChunkedEllpack< RealType, TNL::Devices::Host, IndexType >;
-       using CHELL_cuda = TNL::Matrices::ChunkedEllpack< RealType, TNL::Devices::Cuda, IndexType >;
+       using BiELL_host = TNL::Matrices::BiEllpack< RealType, TNL::Devices::Host, IndexType >;
+       using BiELL_cuda = TNL::Matrices::BiEllpack< RealType, TNL::Devices::Cuda, IndexType >;
 
         /*
-         * Sets up the following 4x4 sparse matrix:
+         * Sets up the following 8x8 sparse matrix:
          *
-         *    /  1  2  3  0 \
-         *    |  0  4  0  5 |
-         *    |  6  7  8  0 |
-         *    \  0  9 10 11 /
+         *    /  1  2  3  0  4  5  0  0 \   5
+         *    |  0  6  0  7  0  0  0  0 |   2
+         *    |  0  8  9  0 10  0  0  0 |   3
+         *    |  0 11 12 13 14  0  0  0 |   4
+         *    |  0 15  0  0  0  0  0  0 |   1
+         *    |  0 16 17 18 19 20 21  0 |   6
+         *    | 22 23 24 25 26 27 28  0 |   7
+         *    \ 29 30 31 32 33 34 35 36 /   8
          */
+       
+       /* Sorted:
+        * 
+        * 
+        *    / 29 30 31 32 33 34 35 36 \
+        *    | 22 23 24 25 26 27 28    |
+        *    | 16 17 18 19 20 21       |
+        *    |  1  2  3  4  5          |
+        *    | 11 12 13 14             |
+        *    |  8  9 10                |
+        *    |  6  7                   |
+        *    \ 15                      /
+        */
 
-        const IndexType m_rows = 4;
-        const IndexType m_cols = 4;
+        const IndexType m_rows = 8;
+        const IndexType m_cols = 8;
 
-        CHELL_host m_host;
+        BiELL_host m_host;
 
         m_host.reset();
         m_host.setDimensions( m_rows, m_cols );
-        typename CHELL_host::CompressedRowLengthsVector rowLengths;
+        typename BiELL_host::CompressedRowLengthsVector rowLengths;
         rowLengths.setSize( m_rows );
-        rowLengths.setValue( 3 );
+        rowLengths.setElement(0, 5);
+        rowLengths.setElement(1, 2);
+        rowLengths.setElement(2, 3);
+        rowLengths.setElement(3, 4);
+        rowLengths.setElement(4, 1);
+        rowLengths.setElement(5, 6);
+        rowLengths.setElement(6, 7);
+        rowLengths.setElement(7, 8);
         m_host.setCompressedRowLengths( rowLengths );
 
         RealType value = 1;
-        for( IndexType i = 0; i < m_cols - 1; i++ )   // 0th row
+        for( IndexType i = 0; i < 3; i++ )   // 0th row
             m_host.setElement( 0, i, value++ );
 
-        m_host.setElement( 1, 1, value++ );
-        m_host.setElement( 1, 3, value++ );           // 1st row
+        m_host.setElement( 0, 4, value++ );           // 0th row
+        m_host.setElement( 0, 5, value++ );
+        
+        m_host.setElement( 1, 1, value++ );           // 1st row
+        m_host.setElement( 1, 3, value++ );
 
-        for( IndexType i = 0; i < m_cols - 1; i++ )   // 2nd row
+        for( IndexType i = 1; i < 3; i++ )            // 2nd row
             m_host.setElement( 2, i, value++ );
+        
+        m_host.setElement( 2, 4, value++ );           // 2nd row
 
-        for( IndexType i = 1; i < m_cols; i++ )       // 3rd row
+        
+        for( IndexType i = 1; i < 5; i++ )            // 3rd row
             m_host.setElement( 3, i, value++ );
 
+        m_host.setElement( 4, 1, value++ );           // 4th row
+        
+        for( IndexType i = 1; i < 7; i++ )            // 5th row
+            m_host.setElement( 5, i, value++ );
+        
+        for( IndexType i = 0; i < 7; i++ )            // 6th row
+            m_host.setElement( 6, i, value++ );
+        
+        for( IndexType i = 0; i < 8; i++ )            // 7th row
+            m_host.setElement( 7, i, value++ );
+        
+        m_host.print( std::cout );
+        
+        m_host.printValues();
+        
         EXPECT_EQ( m_host.getElement( 0, 0 ),  1 );
         EXPECT_EQ( m_host.getElement( 0, 1 ),  2 );
         EXPECT_EQ( m_host.getElement( 0, 2 ),  3 );
@@ -803,7 +857,7 @@ void test_OperatorEquals()
         EXPECT_EQ( m_host.getElement( 3, 2 ), 10 );
         EXPECT_EQ( m_host.getElement( 3, 3 ), 11 );
 
-        CHELL_cuda m_cuda;
+        BiELL_cuda m_cuda;
 
         // Copy the host matrix into the cuda matrix
         m_cuda = m_host;
