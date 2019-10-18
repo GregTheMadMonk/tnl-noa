@@ -18,6 +18,7 @@ namespace Meshes {
 
 template< typename Mesh,
           typename MeshEntity,
+          // extra parameter which is used only for specializations implementing grid traversers
           int EntitiesDimension = MeshEntity::getEntityDimension() >
 class Traverser
 {
@@ -25,37 +26,12 @@ class Traverser
       using MeshType = Mesh;
       using MeshPointer = Pointers::SharedPointer< MeshType >;
       using DeviceType = typename MeshType::DeviceType;
+      using GlobalIndexType = typename MeshType::GlobalIndexType;
 
       template< typename EntitiesProcessor,
                 typename UserData >
       void processBoundaryEntities( const MeshPointer& meshPointer,
                                     UserData userData ) const;
-
-      template< typename EntitiesProcessor,
-                typename UserData >
-      void processInteriorEntities( const MeshPointer& meshPointer,
-                                    UserData userData ) const;
-
-      template< typename EntitiesProcessor,
-                typename UserData >
-      void processAllEntities( const MeshPointer& meshPointer,
-                               UserData userData ) const;
-};
-
-template< typename MeshConfig,
-          typename MeshEntity,
-          int EntitiesDimension >
-class Traverser< Mesh< MeshConfig, Devices::Cuda >, MeshEntity, EntitiesDimension >
-{
-   public:
-      using MeshType = Mesh< MeshConfig, Devices::Cuda >;
-      using MeshPointer = Pointers::SharedPointer< MeshType >;
-      using DeviceType = typename MeshType::DeviceType;
-
-      template< typename EntitiesProcessor,
-                typename UserData >
-      void processBoundaryEntities( const MeshPointer& meshPointer,
-                                       UserData userData ) const;
 
       template< typename EntitiesProcessor,
                 typename UserData >

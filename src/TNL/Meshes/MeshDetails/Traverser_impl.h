@@ -11,10 +11,7 @@
 #pragma once
 
 #include <TNL/Meshes/Traverser.h>
-
-#include <TNL/Exceptions/CudaSupportMissing.h>
-#include <TNL/Cuda/DeviceInfo.h>
-#include <TNL/Cuda/LaunchHelpers.h>
+#include <TNL/Algorithms/ParallelFor.h>
 
 namespace TNL {
 namespace Meshes {
@@ -29,16 +26,24 @@ Traverser< Mesh, MeshEntity, EntitiesDimension >::
 processBoundaryEntities( const MeshPointer& meshPointer,
                          UserData userData ) const
 {
-   auto entitiesCount = meshPointer->template getBoundaryEntitiesCount< EntitiesDimension >();
-#ifdef HAVE_OPENMP
-#pragma omp parallel for if( Devices::Host::isOMPEnabled() )
-#endif
-   for( decltype(entitiesCount) i = 0; i < entitiesCount; i++ ) {
-      const auto entityIndex = meshPointer->template getBoundaryEntityIndex< EntitiesDimension >( i );
-      auto& entity = meshPointer->template getEntity< EntitiesDimension >( entityIndex );
+   const GlobalIndexType entitiesCount = meshPointer->template getBoundaryEntitiesCount< MeshEntity::getEntityDimension() >();
+   auto kernel = [] __cuda_callable__
+      ( const GlobalIndexType i,
+        const Mesh* mesh,
+        UserData userData )
+   {
+      const GlobalIndexType entityIndex = mesh->template getBoundaryEntityIndex< MeshEntity::getEntityDimension() >( i );
+      auto& entity = mesh->template getEntity< MeshEntity::getEntityDimension() >( entityIndex );
       // TODO: if the Mesh::IdType is void, then we should also pass the entityIndex
-      EntitiesProcessor::processEntity( *meshPointer, userData, entity );
-   }
+      EntitiesProcessor::processEntity( *mesh, userData, entity );
+   };
+   if( std::is_same< DeviceType, Devices::Cuda >::value )
+      Pointers::synchronizeSmartPointersOnDevice< DeviceType >();
+   Algorithms::ParallelFor< DeviceType >::exec(
+         (GlobalIndexType) 0, entitiesCount,
+         kernel,
+         &meshPointer.template getData< DeviceType >(),
+         userData );
 }
 
 template< typename Mesh,
@@ -51,16 +56,24 @@ Traverser< Mesh, MeshEntity, EntitiesDimension >::
 processInteriorEntities( const MeshPointer& meshPointer,
                          UserData userData ) const
 {
-   auto entitiesCount = meshPointer->template getInteriorEntitiesCount< EntitiesDimension >();
-#ifdef HAVE_OPENMP
-#pragma omp parallel for if( Devices::Host::isOMPEnabled() )
-#endif
-   for( decltype(entitiesCount) i = 0; i < entitiesCount; i++ ) {
-      const auto entityIndex = meshPointer->template getInteriorEntityIndex< EntitiesDimension >( i );
-      auto& entity = meshPointer->template getEntity< EntitiesDimension >( entityIndex );
+   const auto entitiesCount = meshPointer->template getInteriorEntitiesCount< MeshEntity::getEntityDimension() >();
+   auto kernel = [] __cuda_callable__
+      ( const GlobalIndexType i,
+        const Mesh* mesh,
+        UserData userData )
+   {
+      const GlobalIndexType entityIndex = mesh->template getInteriorEntityIndex< MeshEntity::getEntityDimension() >( i );
+      auto& entity = mesh->template getEntity< MeshEntity::getEntityDimension() >( entityIndex );
       // TODO: if the Mesh::IdType is void, then we should also pass the entityIndex
-      EntitiesProcessor::processEntity( *meshPointer, userData, entity );
-   }
+      EntitiesProcessor::processEntity( *mesh, userData, entity );
+   };
+   if( std::is_same< DeviceType, Devices::Cuda >::value )
+      Pointers::synchronizeSmartPointersOnDevice< DeviceType >();
+   Algorithms::ParallelFor< DeviceType >::exec(
+         (GlobalIndexType) 0, entitiesCount,
+         kernel,
+         &meshPointer.template getData< DeviceType >(),
+         userData );
 }
 
 template< typename Mesh,
@@ -73,170 +86,23 @@ Traverser< Mesh, MeshEntity, EntitiesDimension >::
 processAllEntities( const MeshPointer& meshPointer,
                     UserData userData ) const
 {
-   auto entitiesCount = meshPointer->template getEntitiesCount< EntitiesDimension >();
-#ifdef HAVE_OPENMP
-#pragma omp parallel for if( Devices::Host::isOMPEnabled() )
-#endif
-   for( decltype(entitiesCount) entityIndex = 0; entityIndex < entitiesCount; entityIndex++ ) {
-      auto& entity = meshPointer->template getEntity< EntitiesDimension >( entityIndex );
-      // TODO: if the Mesh::IdType is void, then we should also pass the entityIndex
-      EntitiesProcessor::processEntity( *meshPointer, userData, entity );
-   }
-}
-
-
-#ifdef HAVE_CUDA
-template< int EntitiesDimension,
-          typename EntitiesProcessor,
-          typename Mesh,
-          typename UserData >
-__global__ void
-MeshTraverserBoundaryEntitiesKernel( const Mesh* mesh,
-                                     UserData userData,
-                                     typename Mesh::GlobalIndexType entitiesCount )
-{
-   for( typename Mesh::GlobalIndexType i = blockIdx.x * blockDim.x + threadIdx.x;
-        i < entitiesCount;
-        i += blockDim.x * gridDim.x )
+   const auto entitiesCount = meshPointer->template getEntitiesCount< MeshEntity::getEntityDimension() >();
+   auto kernel = [] __cuda_callable__
+      ( const GlobalIndexType entityIndex,
+        const Mesh* mesh,
+        UserData userData )
    {
-      const auto entityIndex = mesh->template getBoundaryEntityIndex< EntitiesDimension >( i );
-      auto& entity = mesh->template getEntity< EntitiesDimension >( entityIndex );
+      auto& entity = mesh->template getEntity< MeshEntity::getEntityDimension() >( entityIndex );
       // TODO: if the Mesh::IdType is void, then we should also pass the entityIndex
       EntitiesProcessor::processEntity( *mesh, userData, entity );
-   }
-}
-
-template< int EntitiesDimension,
-          typename EntitiesProcessor,
-          typename Mesh,
-          typename UserData >
-__global__ void
-MeshTraverserInteriorEntitiesKernel( const Mesh* mesh,
-                                     UserData userData,
-                                     typename Mesh::GlobalIndexType entitiesCount )
-{
-   for( typename Mesh::GlobalIndexType i = blockIdx.x * blockDim.x + threadIdx.x;
-        i < entitiesCount;
-        i += blockDim.x * gridDim.x )
-   {
-      const auto entityIndex = mesh->template getInteriorEntityIndex< EntitiesDimension >( i );
-      auto& entity = mesh->template getEntity< EntitiesDimension >( entityIndex );
-      // TODO: if the Mesh::IdType is void, then we should also pass the entityIndex
-      EntitiesProcessor::processEntity( *mesh, userData, entity );
-   }
-}
-
-template< int EntitiesDimension,
-          typename EntitiesProcessor,
-          typename Mesh,
-          typename UserData >
-__global__ void
-MeshTraverserAllEntitiesKernel( const Mesh* mesh,
-                                UserData userData,
-                                typename Mesh::GlobalIndexType entitiesCount )
-{
-   for( typename Mesh::GlobalIndexType entityIndex = blockIdx.x * blockDim.x + threadIdx.x;
-        entityIndex < entitiesCount;
-        entityIndex += blockDim.x * gridDim.x )
-   {
-      auto& entity = mesh->template getEntity< EntitiesDimension >( entityIndex );
-      // TODO: if the Mesh::IdType is void, then we should also pass the entityIndex
-      EntitiesProcessor::processEntity( *mesh, userData, entity );
-   }
-}
-#endif
-
-template< typename MeshConfig,
-          typename MeshEntity,
-          int EntitiesDimension >
-   template< typename EntitiesProcessor,
-             typename UserData >
-void
-Traverser< Mesh< MeshConfig, Devices::Cuda >, MeshEntity, EntitiesDimension >::
-processBoundaryEntities( const MeshPointer& meshPointer,
-                         UserData userData ) const
-{
-#ifdef HAVE_CUDA
-   auto entitiesCount = meshPointer->template getBoundaryEntitiesCount< EntitiesDimension >();
-
-   dim3 blockSize( 256 );
-   dim3 gridSize;
-   const int desGridSize = 32 * Cuda::DeviceInfo::getCudaMultiprocessors( Cuda::DeviceInfo::getActiveDevice() );
-   gridSize.x = min( desGridSize, Cuda::getNumberOfBlocks( entitiesCount, blockSize.x ) );
-
-   Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
-   MeshTraverserBoundaryEntitiesKernel< EntitiesDimension, EntitiesProcessor >
-      <<< gridSize, blockSize >>>
-      ( &meshPointer.template getData< Devices::Cuda >(),
-        userData,
-        entitiesCount );
-   cudaDeviceSynchronize();
-   TNL_CHECK_CUDA_DEVICE;
-#else
-   throw Exceptions::CudaSupportMissing();
-#endif
-}
-
-template< typename MeshConfig,
-          typename MeshEntity,
-          int EntitiesDimension >
-   template< typename EntitiesProcessor,
-             typename UserData >
-void
-Traverser< Mesh< MeshConfig, Devices::Cuda >, MeshEntity, EntitiesDimension >::
-processInteriorEntities( const MeshPointer& meshPointer,
-                         UserData userData ) const
-{
-#ifdef HAVE_CUDA
-   auto entitiesCount = meshPointer->template getInteriorEntitiesCount< EntitiesDimension >();
-
-   dim3 blockSize( 256 );
-   dim3 gridSize;
-   const int desGridSize = 32 * Cuda::DeviceInfo::getCudaMultiprocessors( Cuda::DeviceInfo::getActiveDevice() );
-   gridSize.x = min( desGridSize, Cuda::getNumberOfBlocks( entitiesCount, blockSize.x ) );
-
-   Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
-   MeshTraverserInteriorEntitiesKernel< EntitiesDimension, EntitiesProcessor >
-      <<< gridSize, blockSize >>>
-      ( &meshPointer.template getData< Devices::Cuda >(),
-        userData,
-        entitiesCount );
-   cudaDeviceSynchronize();
-   TNL_CHECK_CUDA_DEVICE;
-#else
-   throw Exceptions::CudaSupportMissing();
-#endif
-}
-
-template< typename MeshConfig,
-          typename MeshEntity,
-          int EntitiesDimension >
-   template< typename EntitiesProcessor,
-             typename UserData >
-void
-Traverser< Mesh< MeshConfig, Devices::Cuda >, MeshEntity, EntitiesDimension >::
-processAllEntities( const MeshPointer& meshPointer,
-                    UserData userData ) const
-{
-#ifdef HAVE_CUDA
-   auto entitiesCount = meshPointer->template getEntitiesCount< EntitiesDimension >();
-
-   dim3 blockSize( 256 );
-   dim3 gridSize;
-   const int desGridSize = 32 * Cuda::DeviceInfo::getCudaMultiprocessors( Cuda::DeviceInfo::getActiveDevice() );
-   gridSize.x = min( desGridSize, Cuda::getNumberOfBlocks( entitiesCount, blockSize.x ) );
-
-   Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
-   MeshTraverserAllEntitiesKernel< EntitiesDimension, EntitiesProcessor >
-      <<< gridSize, blockSize >>>
-      ( &meshPointer.template getData< Devices::Cuda >(),
-        userData,
-        entitiesCount );
-   cudaDeviceSynchronize();
-   TNL_CHECK_CUDA_DEVICE;
-#else
-   throw Exceptions::CudaSupportMissing();
-#endif
+   };
+   if( std::is_same< DeviceType, Devices::Cuda >::value )
+      Pointers::synchronizeSmartPointersOnDevice< DeviceType >();
+   Algorithms::ParallelFor< DeviceType >::exec(
+         (GlobalIndexType) 0, entitiesCount,
+         kernel,
+         &meshPointer.template getData< DeviceType >(),
+         userData );
 }
 
 } // namespace Meshes
