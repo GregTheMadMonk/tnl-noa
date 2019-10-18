@@ -22,12 +22,12 @@ namespace Meshes {
 template< typename Mesh,
           typename MeshEntity,
           int EntitiesDimension >
-   template< typename UserData,
-             typename EntitiesProcessor >
+   template< typename EntitiesProcessor,
+             typename UserData >
 void
 Traverser< Mesh, MeshEntity, EntitiesDimension >::
 processBoundaryEntities( const MeshPointer& meshPointer,
-                         UserData& userData ) const
+                         UserData userData ) const
 {
    auto entitiesCount = meshPointer->template getBoundaryEntitiesCount< EntitiesDimension >();
 #ifdef HAVE_OPENMP
@@ -44,12 +44,12 @@ processBoundaryEntities( const MeshPointer& meshPointer,
 template< typename Mesh,
           typename MeshEntity,
           int EntitiesDimension >
-   template< typename UserData,
-             typename EntitiesProcessor >
+   template< typename EntitiesProcessor,
+             typename UserData >
 void
 Traverser< Mesh, MeshEntity, EntitiesDimension >::
 processInteriorEntities( const MeshPointer& meshPointer,
-                         UserData& userData ) const
+                         UserData userData ) const
 {
    auto entitiesCount = meshPointer->template getInteriorEntitiesCount< EntitiesDimension >();
 #ifdef HAVE_OPENMP
@@ -66,12 +66,12 @@ processInteriorEntities( const MeshPointer& meshPointer,
 template< typename Mesh,
           typename MeshEntity,
           int EntitiesDimension >
-   template< typename UserData,
-             typename EntitiesProcessor >
+   template< typename EntitiesProcessor,
+             typename UserData >
 void
 Traverser< Mesh, MeshEntity, EntitiesDimension >::
 processAllEntities( const MeshPointer& meshPointer,
-                    UserData& userData ) const
+                    UserData userData ) const
 {
    auto entitiesCount = meshPointer->template getEntitiesCount< EntitiesDimension >();
 #ifdef HAVE_OPENMP
@@ -149,12 +149,12 @@ MeshTraverserAllEntitiesKernel( const Mesh* mesh,
 template< typename MeshConfig,
           typename MeshEntity,
           int EntitiesDimension >
-   template< typename UserData,
-             typename EntitiesProcessor >
+   template< typename EntitiesProcessor,
+             typename UserData >
 void
 Traverser< Mesh< MeshConfig, Devices::Cuda >, MeshEntity, EntitiesDimension >::
 processBoundaryEntities( const MeshPointer& meshPointer,
-                         UserData& userData ) const
+                         UserData userData ) const
 {
 #ifdef HAVE_CUDA
    auto entitiesCount = meshPointer->template getBoundaryEntitiesCount< EntitiesDimension >();
@@ -180,12 +180,12 @@ processBoundaryEntities( const MeshPointer& meshPointer,
 template< typename MeshConfig,
           typename MeshEntity,
           int EntitiesDimension >
-   template< typename UserData,
-             typename EntitiesProcessor >
+   template< typename EntitiesProcessor,
+             typename UserData >
 void
 Traverser< Mesh< MeshConfig, Devices::Cuda >, MeshEntity, EntitiesDimension >::
 processInteriorEntities( const MeshPointer& meshPointer,
-                         UserData& userData ) const
+                         UserData userData ) const
 {
 #ifdef HAVE_CUDA
    auto entitiesCount = meshPointer->template getInteriorEntitiesCount< EntitiesDimension >();
@@ -211,12 +211,12 @@ processInteriorEntities( const MeshPointer& meshPointer,
 template< typename MeshConfig,
           typename MeshEntity,
           int EntitiesDimension >
-   template< typename UserData,
-             typename EntitiesProcessor >
+   template< typename EntitiesProcessor,
+             typename UserData >
 void
 Traverser< Mesh< MeshConfig, Devices::Cuda >, MeshEntity, EntitiesDimension >::
 processAllEntities( const MeshPointer& meshPointer,
-                    UserData& userData ) const
+                    UserData userData ) const
 {
 #ifdef HAVE_CUDA
    auto entitiesCount = meshPointer->template getEntitiesCount< EntitiesDimension >();
