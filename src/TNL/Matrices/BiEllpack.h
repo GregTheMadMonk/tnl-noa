@@ -28,7 +28,7 @@ namespace TNL {
 template< typename Device >
 class BiEllpackDeviceDependentCode;
 
-template< typename Real, typename Device /*= Devices::Cuda*/, typename Index /*= int*/ >
+template< typename Real, typename Device, typename Index >
 class BiEllpack : public Sparse< Real, Device, Index >
 {
 private:
