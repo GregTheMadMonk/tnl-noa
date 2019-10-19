@@ -97,18 +97,10 @@ void
 BiEllpack< Real, Device, Index >::
 setCompressedRowLengths( ConstCompressedRowLengthsVectorView constRowLengths )
 {
-    // This method has to have the const argument, bcs its base method
-    //  has the same argument, and the base method is being used
-    //  everywhere. Don't change the base method.
-    
-    // Create a non-const vector, that we will be able to work with.
-    //  BiEllpack needs to sort the rowLengths vector, because it 
-    //  changes a row's location based on the number of non-zero elements in that row.
     CompressedRowLengthsVector rowLengths;
     rowLengths.reset();
     rowLengths.setLike( constRowLengths );
     
-    // Copy the elements from the const vector to the non-const
     rowLengths = constRowLengths;
     
     if( this->getRows() % this->warpSize != 0 )
@@ -118,9 +110,8 @@ setCompressedRowLengths( ConstCompressedRowLengthsVectorView constRowLengths )
     IndexType strips = this->virtualRows / this->warpSize;
     this->rowPermArray.setSize( this->rows );
     this->groupPointers.setSize( strips * ( this->logWarpSize + 1 ) + 1 );
-
-    for( IndexType i = 0; i < this->groupPointers.getSize(); i++ )
-            this->groupPointers.setElement( i, 0 );
+    
+    this->groupPointers.setValue( 0 );
 
     DeviceDependentCode::performRowBubbleSort( *this, rowLengths );
     DeviceDependentCode::computeColumnSizes( *this, rowLengths );
@@ -716,70 +707,14 @@ BiEllpack< Real, Device, Index >::operator=( const BiEllpack< Real2, Device2, In
    static_assert( std::is_same< Device2, Devices::Host >::value || std::is_same< Device2, Devices::Cuda >::value,
                   "unknown device" );
    
-   std::cout << "Inside operator=\n\n" << std::endl;
-   for( Index i = 0; i < this->values.getSize(); i++ ) {
-    // Random values are stored with the column index of getColumns(). e.g. a matrix has 4 columns, values are at column indexes 0, 1, 2, 3 and junk data at index 4.
-    if( this->columnIndexes.getElement( i ) != this->getColumns() )
-        std::cout << "values.getElement( " << i << " ) = " << this->values.getElement( i ) 
-         << "\tcolumnIndexes.getElement( " << i << " ) = " << this->columnIndexes.getElement( i ) << std::endl;
-    }
-    
-    for( Index i = 0; i < this->rowPermArray.getSize(); i++ ) {
-        std::cout << "rowPermArray[ " << i << " ] = " << this->rowPermArray.getElement( i ) << std::endl;
-    }
-//   TNL_ASSERT_TRUE( false, "Cross-device copy assignment is not yet implemented for BiEllpack.");
-   
    this->setLike( matrix );
+   this->values = matrix.values;
+   this->columnIndexes = matrix.columnIndexes;
    this->warpSize = matrix.warpSize;
    this->logWarpSize = matrix.logWarpSize;
    this->virtualRows = matrix.virtualRows;
    this->rowPermArray = matrix.rowPermArray;
    this->groupPointers = matrix.groupPointers;
-   
-   // cuda -> host
-   // The order of elmements in values is:
-   //   Groups in a Strip are stored after each other in column-major order.
-   // Have a look in: "static void verifyRowLengths" at line: 1406.
-   //   There is an interesting piece of code that could crack how groupPointers is being used.
-   if( std::is_same< Device, Devices::Host >::value ) {
-       typename ValuesVector::HostType tmpValues;
-       typename ColumnIndexesVector::HostType tmpColumnIndexes;
-       tmpValues.setLike( matrix.values );
-       tmpColumnIndexes.setLike( matrix.columnIndexes );
-       
-       Index numberOfStrips = this->virtualRows / this->warpSize;
-#ifdef HAVE_OPENMP
-#pragma omp parallel for if( Devices::Host::isOMPEnabled() )
-#endif       
-       for( Index stripIdx = 0; stripIdx < numberOfStrips; stripIdx++ ) {
-           
-       }
-   }
-   
-   // Per strip
-   //   per group
-   //       per row
-   //           per element
-   //               copy element
-   
-   
-   // host -> cuda
-   if( std::is_same< Device, Devices::Cuda >::value ) {
-       typename ValuesVector::HostType tmpValues;
-       typename ColumnIndexesVector::HostType tmpColumnIndexes;
-       tmpValues.setLike( matrix.values );
-       tmpColumnIndexes.setLike( matrix.columnIndexes );
-       tmpValues = matrix.values;
-       tmpColumnIndexes = matrix.columnIndexes;
-       
-       Index numberOfStrips = this->virtualRows / this->warpSize;
-#ifdef HAVE_OPENMP
-#pragma omp parallel for if( Devices::Host::isOMPEnabled() )
-#endif       
-       for( Index stripIdx = 0; stripIdx < numberOfStrips; stripIdx++ ) {
-           
-       }
-   }
    
    if( std::is_same< Device, Devices::MIC >::value ) {
       throw std::runtime_error("Not Implemented yet for MIC");
