@@ -120,6 +120,7 @@ StaticArray< Size, Value >::StaticArray( const StaticArray< Size, Value >& v )
 }
 
 template< int Size, typename Value >
+__cuda_callable__
 StaticArray< Size, Value >::StaticArray( const std::initializer_list< Value > &elems)
 {
    auto it = elems.begin();

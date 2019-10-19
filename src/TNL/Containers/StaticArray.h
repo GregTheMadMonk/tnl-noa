@@ -84,6 +84,7 @@ public:
     * 
     * @param elems input initializer list
     */
+   __cuda_callable__
    StaticArray( const std::initializer_list< Value > &elems );
 
    /**

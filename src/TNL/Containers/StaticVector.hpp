@@ -20,6 +20,7 @@ template< int Size, typename Real >
    template< typename T1,
              typename T2,
              template< typename, typename > class Operation >
+__cuda_callable__
 StaticVector< Size, Real >::StaticVector( const Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& expr )
 {
    detail::VectorAssignment< StaticVector< Size, Real >, Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation > >::assignStatic( *this, expr );
@@ -52,6 +53,7 @@ StaticVector< Size, Real >::setup( const Config::ParameterContainer& parameters,
 
 template< int Size, typename Real >
    template< typename VectorExpression >
+__cuda_callable__
 StaticVector< Size, Real >&
 StaticVector< Size, Real >::operator=( const VectorExpression& expression )
 {

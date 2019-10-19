@@ -53,11 +53,13 @@ public:
    /**
     * \brief Default copy-assignment operator.
     */
+   __cuda_callable__
    StaticVector& operator=( const StaticVector& ) = default;
 
    /**
     * \brief Default move-assignment operator.
     */
+   __cuda_callable__
    StaticVector& operator=( StaticVector&& ) = default;
 
    //! Constructors and assignment operators are inherited from the class \ref StaticArray.
@@ -103,6 +105,7 @@ public:
     * \return reference to this vector
     */
    template< typename VectorExpression >
+   __cuda_callable__
    StaticVector& operator=( const VectorExpression& expression );
 
    /**
@@ -180,6 +183,7 @@ namespace TNL {
 namespace Containers {
 
 template< typename Real >
+__cuda_callable__
 StaticVector< 3, Real > VectorProduct( const StaticVector< 3, Real >& u,
                                        const StaticVector< 3, Real >& v )
 {
@@ -191,6 +195,7 @@ StaticVector< 3, Real > VectorProduct( const StaticVector< 3, Real >& u,
 }
 
 template< typename Real >
+__cuda_callable__
 Real TriangleArea( const StaticVector< 2, Real >& a,
                    const StaticVector< 2, Real >& b,
                    const StaticVector< 2, Real >& c )
@@ -208,6 +213,7 @@ Real TriangleArea( const StaticVector< 2, Real >& a,
 }
 
 template< typename Real >
+__cuda_callable__
 Real TriangleArea( const StaticVector< 3, Real >& a,
                    const StaticVector< 3, Real >& b,
                    const StaticVector< 3, Real >& c )
