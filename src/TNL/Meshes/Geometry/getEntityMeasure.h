@@ -116,8 +116,8 @@ getEntityMeasure( const Mesh< MeshConfig, Device > & mesh,
     const auto& v1 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 1 ) );
     const auto& v2 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 2 ) );
     using Point = decltype( v0.getPoint() );
-    Point p1 = v2.getPoint() - v0.getPoint();
-    Point p2 = v1.getPoint() - v0.getPoint();
+    const Point p1 = v2.getPoint() - v0.getPoint();
+    const Point p2 = v1.getPoint() - v0.getPoint();
     return getTriangleArea( p1, p2 );
 }
 
@@ -134,7 +134,10 @@ getEntityMeasure( const Mesh< MeshConfig, Device > & mesh,
     const auto& v1 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 1 ) );
     const auto& v2 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 2 ) );
     const auto& v3 = mesh.template getEntity< 0 >( entity.template getSubentityIndex< 0 >( 3 ) );
-    return getTriangleArea( v2.getPoint() - v0.getPoint(), v3.getPoint() - v1.getPoint() );
+    using Point = decltype( v0.getPoint() );
+    const Point p1 = v2.getPoint() - v0.getPoint();
+    const Point p2 = v3.getPoint() - v1.getPoint();
+    return getTriangleArea( p1, p2 );
 }
 
 template< typename VectorExpression >
