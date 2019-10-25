@@ -330,7 +330,7 @@ protected:
 };
 
 
-Benchmark::MetadataMap getHardwareMetadata()
+inline Benchmark::MetadataMap getHardwareMetadata()
 {
    const int cpu_id = 0;
    const CacheSizes cacheSizes = SystemInfo::getCPUCacheSizes( cpu_id );
