@@ -1146,33 +1146,34 @@ void BiEllpack< Real, Device, Index >::spmvCuda( const InVector& inVector,
 
     for( IndexType group = 0; group < this->logWarpSize + 1; group++ )
     {
-    temp[ threadIdx.x ] = 0.0;
-    IndexType groupLength = this->groupPointers[ strip * ( this->logWarpSize + 1 ) + group + 1 ]
-                              - this->groupPointers[ strip * ( this->logWarpSize + 1 ) + group ];
+        temp[ threadIdx.x ] = 0.0;
+        IndexType groupLength = this->groupPointers[ strip * ( this->logWarpSize + 1 ) + group + 1 ]
+                                  - this->groupPointers[ strip * ( this->logWarpSize + 1 ) + group ];
 
-    if( groupLength > 0 )
-    {
-        for( IndexType i = 0; i < groupLength; i++ )
+        if( groupLength > 0 )
         {
-            if( this->columnIndexes[ elementPtr ] < this->getColumns() )
-            temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
-            elementPtr += this->warpSize;
+            for( IndexType i = 0; i < groupLength; i++ )
+            {
+                if( this->columnIndexes[ elementPtr ] < this->getColumns() )
+                temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
+                elementPtr += this->warpSize;
+            }
+            IndexType bisection2 = this->warpSize;
+            for( IndexType i = 0; i < group; i++ )
+            {
+                bisection2 >>= 1;
+                if( inWarpIdx < bisection2 )
+                temp[ threadIdx.x ] += temp[ threadIdx.x + bisection2 ];
+            }
+            if( inWarpIdx < bisection )
+                results[ threadIdx.x ] += temp[ threadIdx.x ];
         }
-        IndexType bisection2 = this->warpSize;
-        for( IndexType i = 0; i < group; i++ )
-        {
-            bisection2 >>= 1;
-            if( inWarpIdx < bisection2 )
-            temp[ threadIdx.x ] += temp[ threadIdx.x + bisection2 ];
-        }
-        if( inWarpIdx < bisection )
-            results[ threadIdx.x ] += temp[ threadIdx.x ];
-    }
-    bisection >>= 1;
+        bisection >>= 1;
     }
     __syncthreads();
     if( warpStart + inWarpIdx >= this->getRows() )
-    return;
+        return;
+    
     outVector[ warpStart + inWarpIdx ] = results[ this->rowPermArray[ warpStart + inWarpIdx ] & ( cudaBlockSize - 1 ) ];
 }
 #endif
