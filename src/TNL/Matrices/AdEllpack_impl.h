@@ -701,6 +701,7 @@ AdEllpack< Real, Device, Index >::operator=( const AdEllpack& matrix )
    return *this;
 }
 
+
 // cross-device copy assignment
 template< typename Real,
           typename Device,
@@ -709,13 +710,30 @@ template< typename Real,
 AdEllpack< Real, Device, Index >&
 AdEllpack< Real, Device, Index >::operator=( const AdEllpack< Real2, Device2, Index2 >& matrix )
 {
+    std::cout << "< operator= >" << std::endl;
    static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value,
                   "unknown device" );
    static_assert( std::is_same< Device2, Devices::Host >::value || std::is_same< Device2, Devices::Cuda >::value,
                   "unknown device" );
    
-   TNL_ASSERT_TRUE( false, "Cross-device copy assignment is not yet implemented for AdEllpack.");
+   this->setLike( matrix );
+   this->values = matrix.values;
+   this->columnIndexes = matrix.columnIndexes;
+   std::cout << "After Values" << std::endl;
+   this->offset = matrix.offset;
+   std::cout << "\t offset" << std::endl;
+   this->rowOffset = matrix.rowOffset;
+   std::cout << "\t rowOffset" << std::endl;
+   this->localLoad = matrix.localLoad;
+   std::cout << "\t localLoad" << std::endl;
+   this->reduceMap = matrix.reduceMap;
+   std::cout << "\t reduceMap" << std::endl;
+   this->totalLoad = matrix.totalLoad;
+   std::cout << "\t totalLoad" << std::endl;
+   this->warpSize = matrix.warpSize;
+   std::cout << "After All" << std::endl;
    
+   std::cout << "<// operator= >" << std::endl;
    return *this;
 }
 
@@ -1082,16 +1100,17 @@ void AdEllpack< Real, Device, Index >::spmvCuda2( const InVector& inVector,
     reduceMap[ threadIdx.x ] = this->reduceMap[ globalIdx ];
     temp[ threadIdx.x ] = 0.0;
 
-        IndexType i = 0;
-        IndexType elementPtr = this->offset[ warpIdx ] + inWarpIdx;
-        for( ; i < this->localLoad[ warpIdx ]; i++ )
+    IndexType i = 0;
+    IndexType elementPtr = this->offset[ warpIdx ] + inWarpIdx;
+    for( ; i < this->localLoad[ warpIdx ]; i++ )
+    {
+        if( this->columnIndexes[ elementPtr ] < this->getColumns() )
         {
-	    if( this->columnIndexes[ elementPtr ] < this->getColumns() )
-            {
-	        temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
-                elementPtr += this->warpSize;
-	    }
+            temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
+            elementPtr += this->warpSize;
         }
+    }
+    
     if( ( inWarpIdx == 0 ) || ( reduceMap[ threadIdx.x ] > reduceMap[ threadIdx.x - 1 ] ) )
     {
 	IndexType elementPtr = threadIdx.x + 1;
@@ -1100,9 +1119,9 @@ void AdEllpack< Real, Device, Index >::spmvCuda2( const InVector& inVector,
 	       globalIdx < ( ( warpIdx + 1 ) << 5 ) && 
                reduceMap[ elementPtr ] == reduceMap[ threadIdx.x ] )
         {
-		temp[ threadIdx.x ] += temp[ elementPtr ];
-                elementPtr++;
-                globalIdx++;
+            temp[ threadIdx.x ] += temp[ elementPtr ];
+            elementPtr++;
+            globalIdx++;
         }
         outVector[ reduceMap[ threadIdx.x] ] += temp[ threadIdx.x ];
     }
@@ -1118,9 +1137,11 @@ void AdEllpack< Real, Device, Index >::spmvCuda4( const InVector& inVector,
                                                            OutVector& outVector,
                                                            const int gridIdx ) const
 {
-    IndexType globalIdx = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+    printf( "\n< spmvCuda4 > %d", threadIdx.x );
+    IndexType globalIdx = ( gridIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
     IndexType warpIdx = globalIdx >> 5;
     IndexType inWarpIdx = globalIdx & ( this->warpSize - 1 );
+    printf( "\nglobalIdx = %d;\twarpIdx = %d;\tinWarpIdx = %d;\t", globalIdx, warpIdx, inWarpIdx );
     if( globalIdx >= this->reduceMap.getSize() )
 	return;
 
@@ -1130,27 +1151,35 @@ void AdEllpack< Real, Device, Index >::spmvCuda4( const InVector& inVector,
     reduceMap[ threadIdx.x ] = this->reduceMap[ globalIdx ];
     temp[ threadIdx.x ] = 0.0;
 
-        IndexType i = 0;
-        IndexType elementPtr = this->offset[ warpIdx ] + inWarpIdx;
+    IndexType i = 0;
+    IndexType elementPtr = this->offset[ warpIdx ] + inWarpIdx;
 
-        if( ( this->localLoad[ warpIdx ] & 1 ) == 1 )	
-	    if( this->columnIndexes[ elementPtr ] < this->getColumns() )
-	    {
-	        temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
-                elementPtr += this->warpSize;
-                i++;
-	    }
-        for( ; i < this->localLoad[ warpIdx ]; i += 2 )
+    printf( "\nThread: %d check 0", threadIdx.x );
+    if( ( this->localLoad[ warpIdx ] & 1 ) == 1 )
+    {
+        if( this->columnIndexes[ elementPtr ] < this->getColumns() )
         {
-	    #pragma unroll
-            for( IndexType j = 0; j < 2; j++ )
-	        if( this->columnIndexes[ elementPtr ] < this->getColumns() )
-                {
-	            temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
-                    elementPtr += this->warpSize;
-	        }
+            temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
+            elementPtr += this->warpSize;
+            i++;
         }
+    }
+    
+    printf( "\nThread: %d check 1", threadIdx.x );
+    for( ; i < this->localLoad[ warpIdx ]; i += 2 )
+    {
+        #pragma unroll
+        for( IndexType j = 0; j < 2; j++ )
+        {
+            if( this->columnIndexes[ elementPtr ] < this->getColumns() )
+            {
+                temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
+                elementPtr += this->warpSize;
+            }
+        }
+    }
 
+    printf( "\nThread: %d check 2", threadIdx.x );
     if( ( inWarpIdx == 0 ) || ( reduceMap[ threadIdx.x ] > reduceMap[ threadIdx.x - 1 ] ) )
     {
 	IndexType elementPtr = threadIdx.x + 1;
@@ -1159,12 +1188,13 @@ void AdEllpack< Real, Device, Index >::spmvCuda4( const InVector& inVector,
 	       globalIdx < ( ( warpIdx + 1 ) << 5 ) && 
                reduceMap[ elementPtr ] == reduceMap[ threadIdx.x ] )
         {
-		temp[ threadIdx.x ] += temp[ elementPtr ];
-                elementPtr++;
-                globalIdx++;
+            temp[ threadIdx.x ] += temp[ elementPtr ];
+            elementPtr++;
+            globalIdx++;
         }
         outVector[ reduceMap[ threadIdx.x] ] += temp[ threadIdx.x ];
     }
+    printf( "\n<// spmvCuda4 > %d", threadIdx.x );
 }
 
 template< typename Real,
@@ -1177,11 +1207,17 @@ void AdEllpack< Real, Device, Index >::spmvCuda8( const InVector& inVector,
                                                            OutVector& outVector,
                                                            const int gridIdx ) const
 {
-    IndexType globalIdx = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+    printf( "\n< spmvCuda8 > %d", threadIdx.x );
+    IndexType globalIdx = ( gridIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
     IndexType warpIdx = globalIdx >> 5;
     IndexType inWarpIdx = globalIdx & ( this->warpSize - 1 );
+    printf( "\nglobalIdx = %d;\twarpIdx = %d;\tinWarpIdx = %d;\tthis->reduceMap.size() = %d", globalIdx, warpIdx, inWarpIdx, this->reduceMap.getSize() );
     if( globalIdx >= this->reduceMap.getSize() )
-	return;
+    {
+        return;
+    }
+    // Threads 32 - 127 returned (for matrix #3 in test_VectorProduct in SparseMatrixTest.hpp).
+    // They do not execute the rest of this function.
 
     const int blockSize = 128;
     Real* temp = Cuda::getSharedMemory< Real >();
@@ -1189,26 +1225,101 @@ void AdEllpack< Real, Device, Index >::spmvCuda8( const InVector& inVector,
     reduceMap[ threadIdx.x ] = this->reduceMap[ globalIdx ];
     temp[ threadIdx.x ] = 0.0;
 
-        IndexType i = 0;
-        IndexType elementPtr = this->offset[ warpIdx ] + inWarpIdx;
+    IndexType i = 0;
+    IndexType elementPtr = this->offset[ warpIdx ] + inWarpIdx;
 
-        while( ( this->localLoad[ warpIdx ] & 7 ) != 0 )	
-	    if( this->columnIndexes[ elementPtr ] < this->getColumns() )
-	    {
-	        temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
-                elementPtr += this->warpSize;
-                i++;
-	    }
-        for( ; i < this->localLoad[ warpIdx ]; i += 4 )
+    printf( "\nThread: %d check 0", threadIdx.x );
+    
+    if( threadIdx.x == 0 )
+    {
+        printf( "\nthis->localLoad.size() = %d", this->localLoad.getSize() );
+        printf( "\tthis->localLoad = " );
+        for( IndexType j = 0; j < this->localLoad.getSize(); j++ )
         {
-	    #pragma unroll
-            for( IndexType j = 0; j < 4; j++ )
-	        if( this->columnIndexes[ elementPtr ] < this->getColumns() )
-                {
-	            temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
-                    elementPtr += this->warpSize;
-	        }
+            printf( "%d, ", this->localLoad[ j ] );
         }
+    }
+    
+    if( threadIdx.x == 0 )
+    {
+        printf( "\nvalues.size() = %d\n", this->values.getSize() );
+        for( IndexType j = 0; j < this->values.getSize(); j++ )
+        {
+            printf( "%d, ", this->values[ j ] );
+        }        
+    }
+    
+    if( threadIdx.x == 0 )
+    {
+        printf( "\nColumnIndexes.size() = %d\n", this->columnIndexes.getSize() );
+        for( IndexType j = 0; j < this->columnIndexes.getSize(); j++ )
+        {
+            printf( "%d, ", this->columnIndexes[ j ] );
+        }        
+    }
+    
+    // pragma unroll:
+    //      https://stackoverflow.com/questions/22278631/what-does-pragma-unroll-do-exactly-does-it-affect-the-number-of-threads
+    // Theory:
+    //  This needs to repeat itself, until i is a multiple of 4.
+    //  Because of loop unrolling, we want the loop unrolling to unroll for 4 elements at a time.
+    //  This while will ensure that elements are added up until they are multiples of 4.
+    //  IF correct:
+    //      * The loop unroll must be changed in spmvCuda 2 to be the same as in the paper.
+    //      * Same for spmvCuda4, spmvCuda8, spmvCuda16 and spmvCuda 32
+    
+    // Store the localLoad into a temporary variable.
+    // If the number of non-zero elements in a warp is not divisible by 4, 
+    //  i.e. the loop unroll cannot be used, cause it wouldn't compute all
+    //  the elements or it would compute elements out of bounds.
+    // The loop unroll begin must be moved until the remaining number of 
+    //  non-zero elements can be divided by 4.
+    
+    // Assign the result of if localLoad of this warp is divisible by 4. If not, how far is it.
+    IndexType alignUnroll = this->localLoad[ warpIdx ] & 3;
+    while( alignUnroll != 0 && alignUnroll != 4 )
+    {
+        printf( "\nThread: %d\tcheck 0_1\talignUnroll = %d", threadIdx.x, alignUnroll );
+        printf( "\nThread: %d\tcolumnIndex < columns: %d < %d", threadIdx.x, this->columnIndexes[ elementPtr ], this->getColumns() );
+        
+        if( this->columnIndexes[ elementPtr ] < this->getColumns() )
+        {
+            printf( "\nThread: %d\tcheck 0_2", threadIdx.x );
+            temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
+            printf( "\nThread: %d\tcheck 0_3", threadIdx.x );
+            elementPtr += this->warpSize;
+            i++;
+            // If alignUnroll is not divisible by 4, if it is one or two off: subtract until it is, else add until it is.
+            //  In other words, we're trying to get to the closest multiple of 4 (loop Unroll factor).
+            if( alignUnroll <= 2 )
+                alignUnroll--;
+            else
+                alignUnroll++;
+        }
+        else
+        {
+            break;
+        }
+    }
+    
+    printf( "\nThread: %d check 1", threadIdx.x );
+    for( ; i < this->localLoad[ warpIdx ]; i += 4 )
+    {
+        printf( "\nThread: %d check 1_1", threadIdx.x );
+        #pragma unroll
+        for( IndexType j = 0; j < 4; j++ )
+        {
+           if( this->columnIndexes[ elementPtr ] < this->getColumns() )
+            {
+               printf( "\nThread: %d check 1_2", threadIdx.x );
+               temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
+               printf( "\nThread: %d check 1_3", threadIdx.x );
+               elementPtr += this->warpSize;
+            } 
+        }
+    }
+    
+    printf( "\nThread: %d check 2", threadIdx.x );
     if( ( inWarpIdx == 0 ) || ( reduceMap[ threadIdx.x ] > reduceMap[ threadIdx.x - 1 ] ) )
     {
 	IndexType elementPtr = threadIdx.x + 1;
@@ -1217,12 +1328,13 @@ void AdEllpack< Real, Device, Index >::spmvCuda8( const InVector& inVector,
 	       globalIdx < ( ( warpIdx + 1 ) << 5 ) && 
                reduceMap[ elementPtr ] == reduceMap[ threadIdx.x ] )
         {
-		temp[ threadIdx.x ] += temp[ elementPtr ];
-                elementPtr++;
-                globalIdx++;
+            temp[ threadIdx.x ] += temp[ elementPtr ];
+            elementPtr++;
+            globalIdx++;
         }
         outVector[ reduceMap[ threadIdx.x] ] += temp[ threadIdx.x ];
     }
+    printf( "\n<// spmvCuda8 > %d", threadIdx.x );
 }
 
 template< typename Real,
@@ -1235,38 +1347,119 @@ void AdEllpack< Real, Device, Index >::spmvCuda16( const InVector& inVector,
                                                             OutVector& outVector,
                                                             const int gridIdx ) const
 {
-    IndexType globalIdx = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+    // TODO:
+    //  * Print out the blockID of a thread next to the thread number.
+    //  * The issue arises somewhere in the unrolling. So either I missed something in
+    //      the unrolling alignment or idk.
+    printf( "\n< spmvCuda16 > %d (blockID: %d)", threadIdx.x, blockIdx.x );
+    IndexType globalIdx = ( gridIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
     IndexType warpIdx = globalIdx >> 5;
     IndexType inWarpIdx = globalIdx & ( this->warpSize - 1 );
     if( globalIdx >= this->reduceMap.getSize() )
 	return;
-
+    
+    __syncthreads();
+    
+    printf( "\nthreadIdx.x = %d\tglobalIdx = %d;\twarpIdx = %d;\tinWarpIdx = %d;\tthis->reduceMap.size() = %d", threadIdx.x, globalIdx, warpIdx, inWarpIdx, this->reduceMap.getSize() );
+    
+    __syncthreads();
+    
     const int blockSize = 128;
     Real* temp = Cuda::getSharedMemory< Real >();
     __shared__ IndexType reduceMap[ blockSize ];
     reduceMap[ threadIdx.x ] = this->reduceMap[ globalIdx ];
     temp[ threadIdx.x ] = 0.0;
 
-        IndexType i = 0;
-        IndexType elementPtr = this->offset[ warpIdx ] + inWarpIdx;
-
-        while( ( this->localLoad[ warpIdx ] & 15 ) != 0 )	
-	    if( this->columnIndexes[ elementPtr ] < this->getColumns() )
-	    {
-	        temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
+    IndexType i = 0;
+    IndexType elementPtr = this->offset[ warpIdx ] + inWarpIdx;
+    
+    __syncthreads();
+    
+    printf( "\nThread: %d check 0", threadIdx.x );
+    
+    __syncthreads();
+    
+    IndexType alignUnroll = this->localLoad[ warpIdx ] & 7;
+    
+    __syncthreads();
+    
+    // If the localLoad of a warp is less than the Unroll factor (8 in this case).
+    //  The Unroll cannot be applied to that warp.
+    while( alignUnroll != 0 && alignUnroll != 8 )
+    {
+        printf( "\n[ %d ] Thread: %d\tcheck 0_1\talignUnroll = %d", globalIdx, threadIdx.x, alignUnroll );
+        printf( "\n[ %d ] Thread: %d\tcolumnIndex < columns: %d < %d", globalIdx, threadIdx.x, this->columnIndexes[ elementPtr ], this->getColumns() );
+        if( elementPtr >= this->columnIndexes.getSize() )
+            printf( "\n[ %d ] Thread: %d\t 0 FOUND THE FUCKER", globalIdx, threadIdx.x );
+        if( this->columnIndexes[ elementPtr ] < this->getColumns() )
+        {
+            printf( "\n[ %d ] Thread: %d\tcheck 0_2", globalIdx, threadIdx.x );
+            temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
+            elementPtr += this->warpSize;
+            i++;
+            if( alignUnroll <= 4 )
+                alignUnroll--;
+            else
+                alignUnroll++;
+        }
+        else
+        {
+            break;
+        }
+        printf( "\n[ %d ] Thread: %d\tcheck 0_3\talignUnroll = %d", globalIdx, threadIdx.x, alignUnroll );
+    }
+    
+    __syncthreads();
+    printf( "\n[ %d ] Thread: %d\tcheck 1_0\twarpIdx = %d\telementPtr = %d\tcolumIndexes.size() = %d", globalIdx, threadIdx.x, warpIdx, elementPtr, this->columnIndexes.getSize() );
+    if( this->localLoad[ warpIdx ] < 8 )
+    {
+        while( i < this->localLoad[ warpIdx ] )
+        {
+            __syncthreads();
+            printf( "\n[ %d ] Thread: %d\tcheck 1_0_1\t i = %d", globalIdx, threadIdx.x, i );
+            if( elementPtr >= this->columnIndexes.getSize() )
+                printf( "\n[ %d ] Thread: %d\t 1 FOUND THE FUCKER", globalIdx, threadIdx.x );
+            if( this->columnIndexes[ elementPtr ] < this->getColumns() )
+            {
+                __syncthreads();
+                printf( "\n[ %d ] Thread: %d\tcheck 1_0_2\t i = %d", globalIdx, threadIdx.x, i );
+                temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
                 elementPtr += this->warpSize;
                 i++;
-	    }
-        for( ; i < this->localLoad[ warpIdx ]; i += 8 )
-        {
-	    #pragma unroll
-            for( IndexType j = 0; j < 8; j++ )
-	        if( this->columnIndexes[ elementPtr ] < this->getColumns() )
-                {
-	            temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
-                    elementPtr += this->warpSize;
-	        }
+                __syncthreads();
+                printf( "\n[ %d ] Thread: %d\tcheck 1_0_3\t i = %d", globalIdx, threadIdx.x, i );
+            }
+            else
+            {
+                break;
+            }
+            __syncthreads();
+            printf( "\n[ %d ] Thread: %d\tcheck 1_0_4\t i = %d", globalIdx, threadIdx.x, i );
         }
+    }
+
+    printf( "\n[ %d ] Thread: %d\t localLoad = %d\t i = %d", globalIdx, threadIdx.x, this->localLoad[ warpIdx ], i );
+    __syncthreads();
+    
+    printf( "\n[ %d ] Thread: %d check 1", globalIdx, threadIdx.x );
+    for( ; i < this->localLoad[ warpIdx ]; i += 8 )
+    {
+        printf( "\n[ %d ] Thread: %d check 1_1", globalIdx, threadIdx.x );
+        #pragma unroll
+        for( IndexType j = 0; j < 8; j++ )
+        {
+            if( this->columnIndexes[ elementPtr ] < this->getColumns() )
+            {
+                printf( "\n[ %d ] Thread: %d check 1_2", globalIdx, threadIdx.x );
+                temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
+                elementPtr += this->warpSize;
+            }
+        }
+    }
+    
+    __syncthreads();
+    
+    printf( "\n[ %d ] Thread: %d check 2", globalIdx, threadIdx.x );
     if( ( inWarpIdx == 0 ) || ( reduceMap[ threadIdx.x ] > reduceMap[ threadIdx.x - 1 ] ) )
     {
 	IndexType elementPtr = threadIdx.x + 1;
@@ -1275,12 +1468,16 @@ void AdEllpack< Real, Device, Index >::spmvCuda16( const InVector& inVector,
 	       globalIdx < ( ( warpIdx + 1 ) << 5 ) && 
                reduceMap[ elementPtr ] == reduceMap[ threadIdx.x ] )
         {
-		temp[ threadIdx.x ] += temp[ elementPtr ];
-                elementPtr++;
-                globalIdx++;
+            temp[ threadIdx.x ] += temp[ elementPtr ];
+            elementPtr++;
+            globalIdx++;
         }
         outVector[ reduceMap[ threadIdx.x] ] += temp[ threadIdx.x ];
     }
+    
+    __syncthreads();
+    
+    printf( "\n<// spmvCuda16 > %d (blockID: %d)", threadIdx.x, blockIdx.x );
 }
 
 template< typename Real,
@@ -1304,26 +1501,42 @@ void AdEllpack< Real, Device, Index >::spmvCuda32( const InVector& inVector,
     __shared__ IndexType reduceMap[ blockSize ];
     reduceMap[ threadIdx.x ] = this->reduceMap[ globalIdx ];
     temp[ threadIdx.x ] = 0.0;
-        IndexType i = 0;
-        IndexType elementPtr = this->offset[ warpIdx ] + inWarpIdx;
+    
+    IndexType i = 0;
+    IndexType elementPtr = this->offset[ warpIdx ] + inWarpIdx;
 
-        while( ( this->localLoad[ warpIdx ] & 31 ) != 0 )	
-	    if( this->columnIndexes[ elementPtr ] < this->getColumns() )
-	    {
-	        temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
-                elementPtr += this->warpSize;
-                i++;
-	    }
-        for( ; i < this->localLoad[ warpIdx ]; i += 16 )
+    IndexType alignUnroll = this->localLoad[ warpIdx ] & 15;
+    while( alignUnroll != 0 && alignUnroll != 16 )
+    {
+        if( this->columnIndexes[ elementPtr ] < this->getColumns() )
         {
-	    #pragma unroll
-            for( IndexType j = 0; j < 16; j++ )
-	        if( this->columnIndexes[ elementPtr ] < this->getColumns() )
-                {
-	            temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
-                    elementPtr += this->warpSize;
-	        }
+            temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
+            elementPtr += this->warpSize;
+            i++;
+            if( alignUnroll <= 8 )
+                alignUnroll--;
+            else
+                alignUnroll++;
         }
+        else
+        {
+            break;
+        }
+    }
+
+    for( ; i < this->localLoad[ warpIdx ]; i += 16 )
+    {
+        #pragma unroll
+        for( IndexType j = 0; j < 16; j++ )
+        {
+            if( this->columnIndexes[ elementPtr ] < this->getColumns() )
+            {
+                temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
+                elementPtr += this->warpSize;
+            }
+        }
+    }
+    
     if( ( inWarpIdx == 0 ) || ( reduceMap[ threadIdx.x ] > reduceMap[ threadIdx.x - 1 ] ) )
     {
 	IndexType elementPtr = threadIdx.x + 1;
@@ -1332,9 +1545,9 @@ void AdEllpack< Real, Device, Index >::spmvCuda32( const InVector& inVector,
 	       globalIdx < ( ( warpIdx + 1 ) << 5 ) && 
                reduceMap[ elementPtr ] == reduceMap[ threadIdx.x ] )
         {
-		temp[ threadIdx.x ] += temp[ elementPtr ];
-                elementPtr++;
-                globalIdx++;
+            temp[ threadIdx.x ] += temp[ elementPtr ];
+            elementPtr++;
+            globalIdx++;
         }
         outVector[ reduceMap[ threadIdx.x] ] += temp[ threadIdx.x ];
     }
@@ -1424,12 +1637,21 @@ public:
                                const InVector& inVector,
                                OutVector& outVector )
     {
+        std::cout << "matrix.totalLoad = " << matrix.totalLoad << std::endl;
+        std::cout << "matrix.localLoad = " << matrix.localLoad << std::endl;
+//        printf( "\nthis->localLoad.size() = %d", matrix.localLoad.getSize() );
+//        printf( "\tthis->localLoad = " );
+//        for( int j = 0; j < matrix.localLoad.getSize(); j++ )
+//        {
+//            printf( "%d, ", matrix.localLoad[ j ] );
+//        }
         typedef AdEllpack< Real, Devices::Cuda, Index > Matrix;
 	typedef typename Matrix::IndexType IndexType;
-	Matrix* kernel_this = Cuda::passToDevice( matrix );
-	InVector* kernel_inVector = Cuda::passToDevice( inVector );
-	OutVector* kernel_outVector = Cuda::passToDevice( outVector );
-	if( matrix.totalLoad < 2 )
+	Matrix* kernel_this = Devices::Cuda::passToDevice( matrix );
+	InVector* kernel_inVector = Devices::Cuda::passToDevice( inVector );
+	OutVector* kernel_outVector = Devices::Cuda::passToDevice( outVector );
+        TNL_CHECK_CUDA_DEVICE;
+	if( matrix.totalLoad < 2 ) // Doesn't work for RealType int, long??? WORKS NOW FOR SOME REASON?
 	{
 	    dim3 blockSize( 256 ), cudaGridSize( Cuda::getMaxGridSize() );
 	    IndexType cudaBlocks = roundUpDivision( matrix.reduceMap.getSize(), blockSize.x );
@@ -1452,7 +1674,7 @@ public:
 	    Cuda::freeFromDevice( kernel_outVector );
 	    TNL_CHECK_CUDA_DEVICE;
 	}
-	else if( matrix.totalLoad < 4 )
+	else if( matrix.totalLoad < 4 ) // WORKS
 	{
 	    dim3 blockSize( 192 ), cudaGridSize( Cuda::getMaxGridSize() );
 	    IndexType cudaBlocks = roundUpDivision( matrix.reduceMap.getSize(), blockSize.x );
@@ -1475,7 +1697,7 @@ public:
 	    Cuda::freeFromDevice( kernel_outVector );
 	    TNL_CHECK_CUDA_DEVICE;
 	}
-	else if( matrix.totalLoad < 8 )
+	else if( matrix.totalLoad < 8 ) // Maybe works?
 	{
 	    dim3 blockSize( 128 ), cudaGridSize( Cuda::getMaxGridSize() );
 	    IndexType cudaBlocks = roundUpDivision( matrix.reduceMap.getSize(), blockSize.x );
@@ -1485,6 +1707,7 @@ public:
 	        if( gridIdx == cudaGrids - 1 )
 		    cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
 	        const int sharedMemory = blockSize.x * sizeof( Real );
+                std::cout << "Before kernel" << std::endl;
 	        AdEllpackVectorProductCuda8< Real, Index, InVector, OutVector >
                                                     <<< cudaGridSize, blockSize, sharedMemory >>>
                                                     ( kernel_this,
@@ -1492,22 +1715,28 @@ public:
                                                       kernel_outVector,
                                                       gridIdx );
 	    }
+            std::cout << "After kernel" << std::endl;
 	    TNL_CHECK_CUDA_DEVICE;
-	    Cuda::freeFromDevice( kernel_this );
-	    Cuda::freeFromDevice( kernel_inVector );
-	    Cuda::freeFromDevice( kernel_outVector );
+	    Devices::Cuda::freeFromDevice( kernel_this );
+            std::cout << "this free" << std::endl;
+	    Devices::Cuda::freeFromDevice( kernel_inVector );
+            std::cout << "invector free" << std::endl;
+	    Devices::Cuda::freeFromDevice( kernel_outVector );
+            std::cout << "outvector free" << std::endl;
 	    TNL_CHECK_CUDA_DEVICE;
 	}
-	else if( matrix.totalLoad < 16 )
+	else if( matrix.totalLoad < 16 ) // BROKEN
 	{
 	    dim3 blockSize( 128 ), cudaGridSize( Cuda::getMaxGridSize() );
 	    IndexType cudaBlocks = roundUpDivision( matrix.reduceMap.getSize(), blockSize.x );
-	    IndexType cudaGrids = roundUpDivision( cudaBlocks, Cuda::getMaxGridSize() );
-	    for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
+	    IndexType cudaGrids = roundUpDivision( cudaBlocks, Devices::Cuda::getMaxGridSize() );
+	    printf( "gridSize = %d\tcudaBlocks = %d\tcudaGrids = %d\n", cudaGridSize.x, cudaBlocks, cudaGrids );
+            for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
 	    {
 	        if( gridIdx == cudaGrids - 1 )
 		    cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
 	        const int sharedMemory = blockSize.x * sizeof( Real );
+                printf( "gridSize = %d\tblockSize = %d\tsharedMemory = %d\tgridIdx = %d", cudaGridSize.x, blockSize.x, sharedMemory, gridIdx );
 	        AdEllpackVectorProductCuda16< Real, Index, InVector, OutVector >
                                                      <<< cudaGridSize, blockSize, sharedMemory >>>
                                                      ( kernel_this,
@@ -1521,7 +1750,7 @@ public:
 	    Cuda::freeFromDevice( kernel_outVector );
 	    TNL_CHECK_CUDA_DEVICE;
 	}
-	else
+	else // BROKEN
 	{
 	    dim3 blockSize( 96 ), cudaGridSize( Cuda::getMaxGridSize() );
 	    IndexType cudaBlocks = roundUpDivision( matrix.reduceMap.getSize(), blockSize.x );
@@ -1538,10 +1767,10 @@ public:
                                                        kernel_outVector,
                                                        gridIdx );
 	    }
-	    TNL_CHECK_CUDA_DEVICE;
-	    Cuda::freeFromDevice( kernel_this );
-	    Cuda::freeFromDevice( kernel_inVector );
-	    Cuda::freeFromDevice( kernel_outVector );
+	    TNL_CHECK_CUDA_DEVICE; // FREEZES right here on CHECK CUDA
+	    Devices::Cuda::freeFromDevice( kernel_this );
+	    Devices::Cuda::freeFromDevice( kernel_inVector );
+	    Devices::Cuda::freeFromDevice( kernel_outVector );
 	    TNL_CHECK_CUDA_DEVICE;
 	}
     }
