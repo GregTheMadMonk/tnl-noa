@@ -57,7 +57,6 @@ using AdEllpackMatrixTypes = ::testing::Types
 
 TYPED_TEST_SUITE( AdEllpackMatrixTest, AdEllpackMatrixTypes);
 
-// WORKING
 TYPED_TEST( AdEllpackMatrixTest, setDimensionsTest )
 {
     using AdEllpackMatrixType = typename TestFixture::AdEllpackMatrixType;
@@ -65,21 +64,6 @@ TYPED_TEST( AdEllpackMatrixTest, setDimensionsTest )
     test_SetDimensions< AdEllpackMatrixType >();
 }
 
-//TYPED_TEST( AdEllpackMatrixTest, setCompressedRowLengthsTest )
-//{
-////    using AdEllpackMatrixType = typename TestFixture::AdEllpackMatrixType;
-//    
-////    test_SetCompressedRowLengths< AdEllpackMatrixType >();
-//    
-//    bool testRan = false;
-//    EXPECT_TRUE( testRan );
-//    std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
-//    std::cout << "      This test is dependent on the input format. \n";
-//    std::cout << "      Almost every format allocates elements per row differently.\n\n";
-//    std::cout << "\n    TODO: Finish implementation of getNonZeroRowLength (Only non-zero elements, not the number of allocated elements.)\n\n";
-//}
-
-// WORKING
 TYPED_TEST( AdEllpackMatrixTest, setLikeTest )
 {
     using AdEllpackMatrixType = typename TestFixture::AdEllpackMatrixType;
@@ -87,7 +71,6 @@ TYPED_TEST( AdEllpackMatrixTest, setLikeTest )
     test_SetLike< AdEllpackMatrixType, AdEllpackMatrixType >();
 }
 
-// WORKING
 TYPED_TEST( AdEllpackMatrixTest, resetTest )
 {
     using AdEllpackMatrixType = typename TestFixture::AdEllpackMatrixType;
@@ -97,9 +80,7 @@ TYPED_TEST( AdEllpackMatrixTest, resetTest )
 
 // SUPPOSEDLY WORKING - localLoad, offset and rowOffset are seemingly random numbers in the head and tail of WarpList.
 TYPED_TEST( AdEllpackMatrixTest, setElementTest )
-{
-    // This test fails on m.setCompressedRowLengths( rowLengths ) in SparseMatrixTest.hpp
-    
+{    
     using AdEllpackMatrixType = typename TestFixture::AdEllpackMatrixType;
     
     test_SetElement< AdEllpackMatrixType >();
@@ -121,7 +102,7 @@ TYPED_TEST( AdEllpackMatrixTest, setRowTest )
     test_SetRow< AdEllpackMatrixType >();
 }
 
-// SUPPOSEDLY WORKING
+// WORKS FOR MATRICES up to 99x99, The rest have different results.
 TYPED_TEST( AdEllpackMatrixTest, vectorProductTest )
 {
     using AdEllpackMatrixType = typename TestFixture::AdEllpackMatrixType;
@@ -129,7 +110,14 @@ TYPED_TEST( AdEllpackMatrixTest, vectorProductTest )
     test_VectorProduct< AdEllpackMatrixType >();
 }
 
-// SUPPOSEDLY WORKING
+// TODO test
+TYPED_TEST( AdEllpackMatrixTest, operatorEqualsTest )
+{
+    using AdEllpackMatrixType = typename TestFixture::AdEllpackMatrixType;
+    
+    test_OperatorEquals< AdEllpackMatrixType >();
+}
+
 TYPED_TEST( AdEllpackMatrixTest, saveAndLoadTest )
 {
     using AdEllpackMatrixType = typename TestFixture::AdEllpackMatrixType;
@@ -137,7 +125,6 @@ TYPED_TEST( AdEllpackMatrixTest, saveAndLoadTest )
     test_SaveAndLoad< AdEllpackMatrixType >( "test_SparseMatrixTest_AdEllpack" );
 }
 
-// SUPPOSEDLY WORKING
 TYPED_TEST( AdEllpackMatrixTest, printTest )
 {
     using AdEllpackMatrixType = typename TestFixture::AdEllpackMatrixType;
