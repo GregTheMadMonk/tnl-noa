@@ -1170,22 +1170,32 @@ void AdEllpack< Real, Device, Index >::spmvCuda8( const InVector& inVector,
 
     IndexType i = 0;
     IndexType elementPtr = this->offset[ warpIdx ] + inWarpIdx;
+    // Save the value, to save calling access every loop.
     const IndexType warpLoad = this->localLoad[ warpIdx ];
     
+    // The unroll factor is 4, therefore if a warp has less than 4 localLoad, it cannot be unrolled
+    //  and must be calculated separately.
     if( warpLoad < 4 )
     {
+        // While the helpful index of the warp localLoad is less than localLoad and the element index isn't
+        //  out of the matrix (would return the number of cols of the matrix)
         while( i < warpLoad &&
                this->columnIndexes[ elementPtr ] < this->getColumns() )
         {
             temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
+            // For the current thread, shift the elements ptr by warpSize (to keep the thread on one row)
             elementPtr += this->warpSize;
-            i++;
+            i++; // Increment the helpful localLoad index.
         }
     }
-    else
+    else // If the localLoad of the warp is unrollable.
     {
-        IndexType alignUnroll = this->localLoad[ warpIdx ] & 3;
+        // Is the warpLoad divisible by 4 (4 - 1 for binary AND).
+        //  This will return how far it is from being divisble:
+        //  For 0 & 3 = 0; 1 & 3 = 1; 2 & 3 = 2; 3 & 3 = 3; 4 & 3 = 0, etc.
+        IndexType alignUnroll = warpLoad & 3;
         
+        // While the result of divisibility by 4 has not reached the closest point where it is divisble by 4.
         while( alignUnroll != 0 &&
                alignUnroll != 4 &&
                this->columnIndexes[ elementPtr ] < this->getColumns() )
@@ -1193,10 +1203,18 @@ void AdEllpack< Real, Device, Index >::spmvCuda8( const InVector& inVector,
                 temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
                 elementPtr += this->warpSize;
                 i++;
+                // If alignUnroll is smaller than or equal to 2, decrement, else increment.
+                // alignUnroll will be from 0, 1, 2, 3, 4
+                //  0 and 4 means that it is divisible by 4.
+                //  That leaves 1, 2, 3: we will decide to go down for alignUnroll <= 2 and up for = 3.
+                //  This will ensure that we will get to the closest possible index that is divisible by 4,
+                //      since the i index is always incremented, i.e. moved to the correct position for the unroll.
                 alignUnroll <= 2 ? alignUnroll-- : alignUnroll++;
         }
     }
 
+    // For those rows that have warpLoad < unroll factor, this for loop won't even get past the first condition.
+    //  Otherwise unroll.
     for( ; i < this->localLoad[ warpIdx ]; i += 4 )
     {
         #pragma unroll
@@ -1210,6 +1228,7 @@ void AdEllpack< Real, Device, Index >::spmvCuda8( const InVector& inVector,
         }
     }
     
+    // What is going on here? DOCUMENT
     if( ( inWarpIdx == 0 ) || ( reduceMap[ threadIdx.x ] > reduceMap[ threadIdx.x - 1 ] ) )
     {
 	IndexType elementPtr = threadIdx.x + 1;
