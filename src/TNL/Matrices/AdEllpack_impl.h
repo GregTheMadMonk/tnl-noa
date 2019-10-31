@@ -1131,16 +1131,17 @@ void AdEllpack< Real, Device, Index >::spmvCuda4( const InVector& inVector,
 
     if( ( inWarpIdx == 0 ) || ( reduceMap[ threadIdx.x ] > reduceMap[ threadIdx.x - 1 ] ) )
     {
+        IndexType end = ( warpIdx + 1 ) << 5;
 	IndexType elementPtr = threadIdx.x + 1;
         globalIdx++;
-        while( globalIdx < ( ( warpIdx + 1 ) << 5 ) && 
+        while( globalIdx < end && 
                reduceMap[ elementPtr ] == reduceMap[ threadIdx.x ] )
         {
             temp[ threadIdx.x ] += temp[ elementPtr ];
             elementPtr++;
             globalIdx++;
         }
-        outVector[ reduceMap[ threadIdx.x] ] += temp[ threadIdx.x ];
+        outVector[ reduceMap[ threadIdx.x ] ] += temp[ threadIdx.x ];
     }
 }
 
@@ -1158,13 +1159,11 @@ void AdEllpack< Real, Device, Index >::spmvCuda8( const InVector& inVector,
     IndexType warpIdx = globalIdx >> 5;
     IndexType inWarpIdx = globalIdx & ( this->warpSize - 1 );
     if( globalIdx >= this->reduceMap.getSize() )
-    {
         return;
-    }
-
+    
     const int blockSize = 128;
-    Real* temp = Cuda::getSharedMemory< Real >();
-    __shared__ IndexType reduceMap[ blockSize ];
+    Real* temp = Devices::Cuda::getSharedMemory< Real >();
+    __shared__ IndexType reduceMap[ blockSize ];    
     reduceMap[ threadIdx.x ] = this->reduceMap[ globalIdx ];
     temp[ threadIdx.x ] = 0.0;
 
@@ -1178,7 +1177,7 @@ void AdEllpack< Real, Device, Index >::spmvCuda8( const InVector& inVector,
     if( warpLoad < 4 )
     {
         // While the helpful index of the warp localLoad is less than localLoad and the element index isn't
-        //  out of the matrix (would return the number of cols of the matrix)
+        //  out of the matrix (would return the number of columns of the matrix)
         while( i < warpLoad &&
                this->columnIndexes[ elementPtr ] < this->getColumns() )
         {
@@ -1191,25 +1190,20 @@ void AdEllpack< Real, Device, Index >::spmvCuda8( const InVector& inVector,
     else // If the localLoad of the warp is unrollable.
     {
         // Is the warpLoad divisible by 4 (4 - 1 for binary AND).
-        //  This will return how far it is from being divisble:
+        //  This will return how far it is from being divisible:
         //  For 0 & 3 = 0; 1 & 3 = 1; 2 & 3 = 2; 3 & 3 = 3; 4 & 3 = 0, etc.
         IndexType alignUnroll = warpLoad & 3;
         
-        // While the result of divisibility by 4 has not reached the closest point where it is divisble by 4.
+        // While the result of divisibility by 4 has not reached the point where it is divisble by 4.
         while( alignUnroll != 0 &&
-               alignUnroll != 4 &&
                this->columnIndexes[ elementPtr ] < this->getColumns() )
         {        
                 temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
                 elementPtr += this->warpSize;
                 i++;
-                // If alignUnroll is smaller than or equal to 2, decrement, else increment.
-                // alignUnroll will be from 0, 1, 2, 3, 4
-                //  0 and 4 means that it is divisible by 4.
-                //  That leaves 1, 2, 3: we will decide to go down for alignUnroll <= 2 and up for = 3.
-                //  This will ensure that we will get to the closest possible index that is divisible by 4,
-                //      since the i index is always incremented, i.e. moved to the correct position for the unroll.
-                alignUnroll <= 2 ? alignUnroll-- : alignUnroll++;
+                // If alignUnroll not 0 (i.e. no. of NNZ elements is not divisible by 4), decrement alignUnroll until it is.
+                //  This will ensure that the i starting index with be incremented to the correct starting position for the unroll.
+                alignUnroll--;
         }
     }
 
@@ -1231,16 +1225,17 @@ void AdEllpack< Real, Device, Index >::spmvCuda8( const InVector& inVector,
     // What is going on here? DOCUMENT
     if( ( inWarpIdx == 0 ) || ( reduceMap[ threadIdx.x ] > reduceMap[ threadIdx.x - 1 ] ) )
     {
+        IndexType end = ( warpIdx + 1 ) << 5;
 	IndexType elementPtr = threadIdx.x + 1;
         globalIdx++;
-        while( globalIdx < ( ( warpIdx + 1 ) << 5 ) && 
+        while( globalIdx < end && 
                reduceMap[ elementPtr ] == reduceMap[ threadIdx.x ] )
         {
             temp[ threadIdx.x ] += temp[ elementPtr ];
             elementPtr++;
             globalIdx++;
         }
-        outVector[ reduceMap[ threadIdx.x] ] += temp[ threadIdx.x ];
+        outVector[ reduceMap[ threadIdx.x ] ] += temp[ threadIdx.x ];
     }
 }
 
@@ -1258,18 +1253,27 @@ void AdEllpack< Real, Device, Index >::spmvCuda16( const InVector& inVector,
     IndexType warpIdx = globalIdx >> 5;
     IndexType inWarpIdx = globalIdx & ( this->warpSize - 1 );
     if( globalIdx >= this->reduceMap.getSize() )
-	return;
+        return;
     
     const int blockSize = 128;
-    Real* temp = Cuda::getSharedMemory< Real >();
-    __shared__ IndexType reduceMap[ blockSize ];
+    Real* temp = Devices::Cuda::getSharedMemory< Real >();
+    __shared__ IndexType reduceMap[ blockSize ];    
     reduceMap[ threadIdx.x ] = this->reduceMap[ globalIdx ];
     temp[ threadIdx.x ] = 0.0;
 
     IndexType i = 0;
     IndexType elementPtr = this->offset[ warpIdx ] + inWarpIdx;
     const IndexType warpLoad = this->localLoad[ warpIdx ];
-
+    
+//    for( IndexType i = 0; i < warpLoad; i++ )
+//    {
+//        if( this->columnIndexes[ elementPtr ] < this->getColumns() )
+//        {
+//            temp[ threadIdx.x ] += this->values[ elementPtr] * inVector[ this->columnIndexes[ elementPtr ] ];
+//            elementPtr += this->warpSize;
+//        }
+//    }
+    
     if( warpLoad < 8 )
     {
         while( i < warpLoad &&
@@ -1285,13 +1289,12 @@ void AdEllpack< Real, Device, Index >::spmvCuda16( const InVector& inVector,
         IndexType alignUnroll = warpLoad & 7;
         
         while( alignUnroll != 0 &&
-               alignUnroll != 8 &&
                this->columnIndexes[ elementPtr ] < this->getColumns() )
         {
             temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
             elementPtr += this->warpSize;
             i++;
-            alignUnroll <= 4 ? alignUnroll-- : alignUnroll++;
+            alignUnroll--;
         }
     }
 
@@ -1310,9 +1313,10 @@ void AdEllpack< Real, Device, Index >::spmvCuda16( const InVector& inVector,
     
     if( ( inWarpIdx == 0 ) || ( reduceMap[ threadIdx.x ] > reduceMap[ threadIdx.x - 1 ] ) )
     {
+        IndexType end = ( warpIdx + 1 ) << 5;
 	IndexType elementPtr = threadIdx.x + 1;
         globalIdx++;
-        while( globalIdx < ( ( warpIdx + 1 ) << 5 ) && 
+        while( globalIdx < end && 
                reduceMap[ elementPtr ] == reduceMap[ threadIdx.x ] )
         {
             temp[ threadIdx.x ] += temp[ elementPtr ];
@@ -1340,8 +1344,8 @@ void AdEllpack< Real, Device, Index >::spmvCuda32( const InVector& inVector,
 	return;
 
     const int blockSize = 96;
-    Real* temp = Cuda::getSharedMemory< Real >();
-    __shared__ IndexType reduceMap[ blockSize ];
+    Real* temp = Devices::Cuda::getSharedMemory< Real >();
+    __shared__ IndexType reduceMap[ blockSize ];    
     reduceMap[ threadIdx.x ] = this->reduceMap[ globalIdx ];
     temp[ threadIdx.x ] = 0.0;
     
@@ -1362,14 +1366,14 @@ void AdEllpack< Real, Device, Index >::spmvCuda32( const InVector& inVector,
     else
     {
         IndexType alignUnroll = warpLoad & 15;
+        
         while( alignUnroll != 0 &&
-               alignUnroll != 16 &&
                this->columnIndexes[ elementPtr ] < this->getColumns() )
         {
             temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
             elementPtr += this->warpSize;
             i++;
-            alignUnroll <= 8 ? alignUnroll-- : alignUnroll++;
+            alignUnroll--;
         }
     }
 
@@ -1388,9 +1392,10 @@ void AdEllpack< Real, Device, Index >::spmvCuda32( const InVector& inVector,
     
     if( ( inWarpIdx == 0 ) || ( reduceMap[ threadIdx.x ] > reduceMap[ threadIdx.x - 1 ] ) )
     {
+        IndexType end = ( warpIdx + 1 ) << 5;
 	IndexType elementPtr = threadIdx.x + 1;
         globalIdx++;
-        while( globalIdx < ( ( warpIdx + 1 ) << 5 ) && 
+        while( globalIdx < end && 
                reduceMap[ elementPtr ] == reduceMap[ threadIdx.x ] )
         {
             temp[ threadIdx.x ] += temp[ elementPtr ];
