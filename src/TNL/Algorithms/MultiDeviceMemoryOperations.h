@@ -137,18 +137,19 @@ copy( DestinationElement* destination,
    else
    {
       using BaseType = typename std::remove_cv< SourceElement >::type;
-      std::unique_ptr< BaseType[] > buffer{ new BaseType[ Cuda::getTransferBufferSize() ] };
-      Index i( 0 );
+      const int buffer_size = TNL::min( Cuda::getTransferBufferSize() / sizeof(BaseType), size );
+      std::unique_ptr< BaseType[] > buffer{ new BaseType[ buffer_size ] };
+      Index i = 0;
       while( i < size )
       {
          if( cudaMemcpy( (void*) buffer.get(),
                          (void*) &source[ i ],
-                         TNL::min( size - i, Cuda::getTransferBufferSize() ) * sizeof( SourceElement ),
+                         TNL::min( size - i, buffer_size ) * sizeof(SourceElement),
                          cudaMemcpyDeviceToHost ) != cudaSuccess )
             std::cerr << "Transfer of data from CUDA device to host failed." << std::endl;
          TNL_CHECK_CUDA_DEVICE;
-         Index j( 0 );
-         while( j < Cuda::getTransferBufferSize() && i + j < size )
+         int j = 0;
+         while( j < buffer_size && i + j < size )
          {
             destination[ i + j ] = buffer[ j ];
             j++;
@@ -180,14 +181,15 @@ compare( const Element1* destination,
    TNL_ASSERT_TRUE( source, "Attempted to compare data through a nullptr." );
    TNL_ASSERT_GE( size, (Index) 0, "Array size must be non-negative." );
 #ifdef HAVE_CUDA
-   std::unique_ptr< Element2[] > host_buffer{ new Element2[ Cuda::getTransferBufferSize() ] };
-   Index compared( 0 );
+   const int buffer_size = TNL::min( Cuda::getTransferBufferSize() / sizeof(Element2), size );
+   std::unique_ptr< Element2[] > host_buffer{ new Element2[ buffer_size ] };
+   Index compared = 0;
    while( compared < size )
    {
-      Index transfer = min( size - compared, Cuda::getTransferBufferSize() );
+      const int transfer = TNL::min( size - compared, buffer_size );
       if( cudaMemcpy( (void*) host_buffer.get(),
                       (void*) &source[ compared ],
-                      transfer * sizeof( Element2 ),
+                      transfer * sizeof(Element2),
                       cudaMemcpyDeviceToHost ) != cudaSuccess )
          std::cerr << "Transfer of data from CUDA device to host failed." << std::endl;
       TNL_CHECK_CUDA_DEVICE;
@@ -230,12 +232,13 @@ copy( DestinationElement* destination,
    }
    else
    {
-      std::unique_ptr< DestinationElement[] > buffer{ new DestinationElement[ Cuda::getTransferBufferSize() ] };
-      Index i( 0 );
+      const int buffer_size = TNL::min( Cuda::getTransferBufferSize() / sizeof(DestinationElement), size );
+      std::unique_ptr< DestinationElement[] > buffer{ new DestinationElement[ buffer_size ] };
+      Index i = 0;
       while( i < size )
       {
-         Index j( 0 );
-         while( j < Cuda::getTransferBufferSize() && i + j < size )
+         int j = 0;
+         while( j < buffer_size && i + j < size )
          {
             buffer[ j ] = source[ i + j ];
             j++;

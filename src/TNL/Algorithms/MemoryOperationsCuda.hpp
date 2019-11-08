@@ -92,11 +92,12 @@ copyFromIterator( DestinationElement* destination,
                   SourceIterator last )
 {
    using BaseType = typename std::remove_cv< DestinationElement >::type;
-   std::unique_ptr< BaseType[] > buffer{ new BaseType[ Cuda::getTransferBufferSize() ] };
+   const int buffer_size = TNL::min( Cuda::getTransferBufferSize() / sizeof(BaseType), destinationSize );
+   std::unique_ptr< BaseType[] > buffer{ new BaseType[ buffer_size ] };
    Index copiedElements = 0;
    while( copiedElements < destinationSize && first != last ) {
       Index i = 0;
-      while( i < Cuda::getTransferBufferSize() && first != last )
+      while( i < buffer_size && first != last )
          buffer[ i++ ] = *first++;
       MultiDeviceMemoryOperations< Devices::Cuda, void >::copy( &destination[ copiedElements ], buffer.get(), i );
       copiedElements += i;
