@@ -25,12 +25,6 @@ class ExactFunctionInverseOperator
 {
    public:
  
-      static String getType()
-      {
-         return String( "ExactFunctionInverseOperator< " ) +
-                String( Dimension) + " >";
-      }
- 
       InnerOperator& getInnerOperator()
       {
          return this->innerOperator;

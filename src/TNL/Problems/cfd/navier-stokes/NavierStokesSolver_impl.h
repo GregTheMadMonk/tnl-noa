@@ -32,16 +32,6 @@ NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::Navi
 template< typename AdvectionScheme,
           typename DiffusionScheme,
           typename BoundaryConditions >
-String NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::getType()
-{
-   return String( "NavierStokesSolver< " ) +
-          AdvectionScheme::getType() + ", " +
-          DiffusionScheme::getType() + " >";
-}
-
-template< typename AdvectionScheme,
-          typename DiffusionScheme,
-          typename BoundaryConditions >
 void NavierStokesSolver< AdvectionScheme, DiffusionScheme, BoundaryConditions >::setAdvectionScheme( AdvectionSchemeType& advection )
 {
    this->advection = &advection;

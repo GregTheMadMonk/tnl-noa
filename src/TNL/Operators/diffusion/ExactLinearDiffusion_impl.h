@@ -19,13 +19,6 @@
 namespace TNL {
 namespace Operators {
 
-String
-ExactLinearDiffusion< 1 >::
-getType()
-{
-   return "ExactLinearDiffusion< 1 >";
-}
-
 template< typename Function >
 __cuda_callable__ inline
 typename Function::RealType
@@ -35,13 +28,6 @@ operator()( const Function& function,
             const typename Function::RealType& time ) const
 {
    return function.template getPartialDerivative< 2, 0, 0 >( v, time );
-}
-
-String
-ExactLinearDiffusion< 2 >::
-getType()
-{
-   return "ExactLinearDiffusion< 2 >";
 }
 
 template< typename Function >
@@ -54,13 +40,6 @@ operator()( const Function& function,
 {
    return function.template getPartialDerivative< 2, 0, 0 >( v, time ) +
           function.template getPartialDerivative< 0, 2, 0 >( v, time );
-}
-
-String
-ExactLinearDiffusion< 3 >::
-getType()
-{
-   return "ExactLinearDiffusion< 3 >";
 }
 
 template< typename Function >

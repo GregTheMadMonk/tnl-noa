@@ -55,8 +55,6 @@ class LinearDiffusion< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, Real, Inde
       static const int Dimension = MeshType::getMeshDimension();
  
       static constexpr int getMeshDimension() { return Dimension; }
- 
-      static String getType();
 
       template< typename PreimageFunction,
                 typename MeshEntity >
@@ -107,8 +105,6 @@ class LinearDiffusion< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Ind
  
       static constexpr int getMeshDimension() { return Dimension; }
 
-      static String getType();
-
       template< typename PreimageFunction, typename EntityType >
       __cuda_callable__
       inline Real operator()( const PreimageFunction& u,
@@ -156,8 +152,6 @@ class LinearDiffusion< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Ind
       static const int Dimension = MeshType::getMeshDimension();
  
       static constexpr int getMeshDimension() { return Dimension; }
-
-      static String getType();
 
       template< typename PreimageFunction,
                 typename EntityType >

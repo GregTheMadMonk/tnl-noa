@@ -42,8 +42,6 @@ class LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, GridGeometry >, Pressu
 
    LaxFridrichs();
 
-   static String getType();
-
    void getExplicitUpdate( const IndexType centralVolume,
                         RealType& rho_t,
                         RealType& rho_u1_t,

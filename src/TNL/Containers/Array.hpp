@@ -15,10 +15,9 @@
 
 #include <TNL/Assert.h>
 #include <TNL/Math.h>
-#include <TNL/param-types.h>
-#include <TNL/Containers/Algorithms/ArrayOperations.h>
-#include <TNL/Containers/Algorithms/ArrayIO.h>
-#include <TNL/Containers/Algorithms/ArrayAssignment.h>
+#include <TNL/TypeInfo.h>
+#include <TNL/Containers/detail/ArrayIO.h>
+#include <TNL/Containers/detail/ArrayAssignment.h>
 
 #include "Array.h"
 
@@ -74,7 +73,7 @@ Array( Value* data,
 : allocator( allocator )
 {
    this->setSize( size );
-   Algorithms::ArrayOperations< Device >::copy( this->getData(), data, size );
+   Algorithms::MemoryOperations< Device >::copy( this->getData(), data, size );
 }
 
 template< typename Value,
@@ -85,7 +84,7 @@ Array< Value, Device, Index, Allocator >::
 Array( const Array< Value, Device, Index, Allocator >& array )
 {
    this->setSize( array.getSize() );
-   Algorithms::ArrayOperations< Device >::copy( this->getData(), array.getData(), array.getSize() );
+   Algorithms::MemoryOperations< Device >::copy( this->getData(), array.getData(), array.getSize() );
 }
 
 template< typename Value,
@@ -98,7 +97,7 @@ Array( const Array< Value, Device, Index, Allocator >& array,
 : allocator( allocator )
 {
    this->setSize( array.getSize() );
-   Algorithms::ArrayOperations< Device >::copy( this->getData(), array.getData(), array.getSize() );
+   Algorithms::MemoryOperations< Device >::copy( this->getData(), array.getData(), array.getSize() );
 }
 
 template< typename Value,
@@ -118,7 +117,7 @@ Array( const Array< Value, Device, Index, Allocator >& array,
    TNL_ASSERT_LE( begin + size, array.getSize(), "End of array is out of bounds." );
 
    this->setSize( size );
-   Algorithms::ArrayOperations< Device >::copy( this->getData(), &array.getData()[ begin ], size );
+   Algorithms::MemoryOperations< Device >::copy( this->getData(), &array.getData()[ begin ], size );
 }
 
 template< typename Value,
@@ -135,7 +134,7 @@ Array( const std::initializer_list< InValue >& list,
    // Here we assume that the underlying array for std::initializer_list is
    // const T[N] as noted here:
    // https://en.cppreference.com/w/cpp/utility/initializer_list
-   Algorithms::ArrayOperations< Device, Devices::Host >::copy( this->getData(), &( *list.begin() ), list.size() );
+   Algorithms::MultiDeviceMemoryOperations< Device, Devices::Host >::copy( this->getData(), &( *list.begin() ), list.size() );
 }
 
 template< typename Value,
@@ -149,7 +148,7 @@ Array( const std::list< InValue >& list,
 : allocator( allocator )
 {
    this->setSize( list.size() );
-   Algorithms::ArrayOperations< Device >::copyFromIterator( this->getData(), this->getSize(), list.cbegin(), list.cend() );
+   Algorithms::MemoryOperations< Device >::copyFromIterator( this->getData(), this->getSize(), list.cbegin(), list.cend() );
 }
 
 template< typename Value,
@@ -163,7 +162,7 @@ Array( const std::vector< InValue >& vector,
 : allocator( allocator )
 {
    this->setSize( vector.size() );
-   Algorithms::ArrayOperations< Device, Devices::Host >::copy( this->getData(), vector.data(), vector.size() );
+   Algorithms::MultiDeviceMemoryOperations< Device, Devices::Host >::copy( this->getData(), vector.data(), vector.size() );
 }
 
 template< typename Value,
@@ -183,34 +182,9 @@ template< typename Value,
           typename Allocator >
 String
 Array< Value, Device, Index, Allocator >::
-getType()
-{
-   return String( "Containers::Array< " ) +
-          TNL::getType< Value >() + ", " +
-          Device::getDeviceType() + ", " +
-          TNL::getType< Index >() + " >";
-}
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
-String
-Array< Value, Device, Index, Allocator >::
-getTypeVirtual() const
-{
-   return this->getType();
-}
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Allocator >
-String
-Array< Value, Device, Index, Allocator >::
 getSerializationType()
 {
-   return Algorithms::ArrayIO< Value, Device, Index >::getSerializationType();
+   return detail::ArrayIO< Value, Device, Index >::getSerializationType();
 }
 
 template< typename Value,
@@ -510,7 +484,7 @@ setElement( const Index& i, const Value& x )
 {
    TNL_ASSERT_GE( i, (Index) 0, "Element index must be non-negative." );
    TNL_ASSERT_LT( i, this->getSize(), "Element index is out of bounds." );
-   return Algorithms::ArrayOperations< Device >::setElement( &( this->data[ i ] ), x );
+   return Algorithms::MemoryOperations< Device >::setElement( &( this->data[ i ] ), x );
 }
 
 template< typename Value,
@@ -523,7 +497,7 @@ getElement( const Index& i ) const
 {
    TNL_ASSERT_GE( i, (Index) 0, "Element index must be non-negative." );
    TNL_ASSERT_LT( i, this->getSize(), "Element index is out of bounds." );
-   return Algorithms::ArrayOperations< Device >::getElement( & ( this->data[ i ] ) );
+   return Algorithms::MemoryOperations< Device >::getElement( & ( this->data[ i ] ) );
 }
 
 template< typename Value,
@@ -566,7 +540,7 @@ operator=( const Array< Value, Device, Index, Allocator >& array )
    if( this->getSize() != array.getSize() )
       this->setLike( array );
    if( this->getSize() > 0 )
-      Algorithms::ArrayOperations< Device >::
+      Algorithms::MemoryOperations< Device >::
          copy( this->getData(),
                      array.getData(),
                      array.getSize() );
@@ -605,8 +579,8 @@ Array< Value, Device, Index, Allocator >&
 Array< Value, Device, Index, Allocator >::
 operator=( const T& data )
 {
-   Algorithms::ArrayAssignment< Array, T >::resize( *this, data );
-   Algorithms::ArrayAssignment< Array, T >::assign( *this, data );
+   detail::ArrayAssignment< Array, T >::resize( *this, data );
+   detail::ArrayAssignment< Array, T >::assign( *this, data );
    return *this;
 }
 
@@ -620,7 +594,7 @@ Array< Value, Device, Index, Allocator >::
 operator=( const std::list< InValue >& list )
 {
    this->setSize( list.size() );
-   Algorithms::ArrayOperations< Device >::copyFromIterator( this->getData(), this->getSize(), list.cbegin(), list.cend() );
+   Algorithms::MemoryOperations< Device >::copyFromIterator( this->getData(), this->getSize(), list.cbegin(), list.cend() );
    return *this;
 }
 
@@ -635,7 +609,7 @@ operator=( const std::vector< InValue >& vector )
 {
    if( (std::size_t) this->getSize() != vector.size() )
       this->setSize( vector.size() );
-   Algorithms::ArrayOperations< Device, Devices::Host >::copy( this->getData(), vector.data(), vector.size() );
+   Algorithms::MultiDeviceMemoryOperations< Device, Devices::Host >::copy( this->getData(), vector.data(), vector.size() );
    return *this;
 }
 
@@ -652,7 +626,7 @@ operator==( const ArrayT& array ) const
       return false;
    if( this->getSize() == 0 )
       return true;
-   return Algorithms::ArrayOperations< Device, typename ArrayT::DeviceType >::
+   return Algorithms::MultiDeviceMemoryOperations< Device, typename ArrayT::DeviceType >::
             compare( this->getData(),
                            array.getData(),
                            array.getSize() );
@@ -683,7 +657,7 @@ setValue( const ValueType& v,
    TNL_ASSERT_TRUE( this->getData(), "Attempted to set a value of an empty array." );
    if( end == 0 )
       end = this->getSize();
-   Algorithms::ArrayOperations< Device >::set( &this->getData()[ begin ], v, end - begin );
+   Algorithms::MemoryOperations< Device >::set( &this->getData()[ begin ], v, end - begin );
 }
 
 template< typename Value,
@@ -715,7 +689,7 @@ containsValue( const ValueType& v,
    if( end == 0 )
       end = this->getSize();
 
-   return Algorithms::ArrayOperations< Device >::containsValue( &this->getData()[ begin ], end - begin, v );
+   return Algorithms::MemoryOperations< Device >::containsValue( &this->getData()[ begin ], end - begin, v );
 }
 
 template< typename Value,
@@ -732,7 +706,7 @@ containsOnlyValue( const ValueType& v,
    if( end == 0 )
       end = this->getSize();
 
-   return Algorithms::ArrayOperations< Device >::containsOnlyValue( &this->getData()[ begin ], end - begin, v );
+   return Algorithms::MemoryOperations< Device >::containsOnlyValue( &this->getData()[ begin ], end - begin, v );
 }
 
 template< typename Value,
@@ -785,7 +759,7 @@ std::ostream& operator<<( std::ostream& str, const Array< Value, Device, Index, 
 template< typename Value, typename Device, typename Index, typename Allocator >
 File& operator<<( File& file, const Array< Value, Device, Index, Allocator >& array )
 {
-   using IO = Algorithms::ArrayIO< Value, Device, Index >;
+   using IO = detail::ArrayIO< Value, Index, Allocator >;
    saveObjectType( file, IO::getSerializationType() );
    const Index size = array.getSize();
    file.save( &size );
@@ -804,7 +778,7 @@ File& operator<<( File&& file, const Array< Value, Device, Index, Allocator >& a
 template< typename Value, typename Device, typename Index, typename Allocator >
 File& operator>>( File& file, Array< Value, Device, Index, Allocator >& array )
 {
-   using IO = Algorithms::ArrayIO< Value, Device, Index >;
+   using IO = detail::ArrayIO< Value, Index, Allocator >;
    const String type = getObjectType( file );
    if( type != IO::getSerializationType() )
       throw Exceptions::FileDeserializationError( file.getFileName(), "object type does not match (expected " + IO::getSerializationType() + ", found " + type + ")." );

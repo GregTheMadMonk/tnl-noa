@@ -38,7 +38,7 @@
    #define TNL_NVCC_HD_WARNING_DISABLE
 #endif
 
-#if defined(NDEBUG) || defined(HAVE_MIC)
+#ifdef NDEBUG
 
 // empty macros for optimized build
 /**
@@ -120,7 +120,7 @@
 #include <iostream>
 #include <stdio.h>
 
-#include <TNL/Devices/CudaCallable.h>
+#include <TNL/Cuda/CudaCallable.h>
 #include <TNL/Debugging/StackBacktrace.h>
 
 namespace TNL {

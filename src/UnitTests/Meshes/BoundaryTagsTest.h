@@ -37,7 +37,8 @@ TEST( MeshTest, RegularMeshOfQuadrilateralsTest )
    using VertexMeshEntityType = typename QuadrilateralMeshEntityType::SubentityTraits< 0 >::SubentityType;
 
    using PointType = typename VertexMeshEntityType::PointType;
-   ASSERT_TRUE( PointType::getType() == ( Containers::StaticVector< 2, RealType >::getType() ) );
+   static_assert( std::is_same< PointType, Containers::StaticVector< 2, RealType > >::value,
+                  "unexpected PointType" );
 
    const IndexType xSize( 3 ), ySize( 4 );
    const RealType width( 1.0 ), height( 1.0 );

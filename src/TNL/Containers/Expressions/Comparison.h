@@ -14,8 +14,8 @@
 
 #include <TNL/Assert.h>
 #include <TNL/Containers/Expressions/ExpressionVariableType.h>
-#include <TNL/Containers/Algorithms/Reduction.h>
-#include <TNL/Containers/Algorithms/ArrayOperations.h>
+#include <TNL/Algorithms/Reduction.h>
+#include <TNL/Algorithms/MultiDeviceMemoryOperations.h>
 
 namespace TNL {
 namespace Containers {
@@ -45,7 +45,7 @@ struct VectorComparison< T1, T2, true >
          return false;
       if( a.getSize() == 0 )
          return true;
-      return Algorithms::ArrayOperations< typename T1::DeviceType, typename T2::DeviceType >::compare( a.getData(), b.getData(), a.getSize() );
+      return Algorithms::MultiDeviceMemoryOperations< typename T1::DeviceType, typename T2::DeviceType >::compare( a.getData(), b.getData(), a.getSize() );
    }
 };
 

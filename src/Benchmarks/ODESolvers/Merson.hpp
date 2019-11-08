@@ -95,14 +95,6 @@ Merson< Problem, SolverMonitor >::Merson()
 };
 
 template< typename Problem, typename SolverMonitor >
-String Merson< Problem, SolverMonitor >::getType()
-{
-   return String( "Merson< " ) +
-          Problem::getType() +
-          String( " >" );
-};
-
-template< typename Problem, typename SolverMonitor >
 void Merson< Problem, SolverMonitor >::configSetup( Config::ConfigDescription& config,
                                                 const String& prefix )
 {
@@ -298,10 +290,10 @@ void Merson< Problem, SolverMonitor >::computeKFunctions( DofVectorPointer& u,
    {
 #ifdef HAVE_CUDA
       dim3 cudaBlockSize( 512 );
-      const IndexType cudaBlocks = Devices::Cuda::getNumberOfBlocks( size, cudaBlockSize.x );
-      const IndexType cudaGrids = Devices::Cuda::getNumberOfGrids( cudaBlocks );
-      this->cudaBlockResidue.setSize( min( cudaBlocks, Devices::Cuda::getMaxGridSize() ) );
-      const IndexType threadsPerGrid = Devices::Cuda::getMaxGridSize() * cudaBlockSize.x;
+      const IndexType cudaBlocks = Cuda::getNumberOfBlocks( size, cudaBlockSize.x );
+      const IndexType cudaGrids = Cuda::getNumberOfGrids( cudaBlocks );
+      this->cudaBlockResidue.setSize( min( cudaBlocks, Cuda::getMaxGridSize() ) );
+      const IndexType threadsPerGrid = Cuda::getMaxGridSize() * cudaBlockSize.x;
 
       this->problem->getExplicitUpdate( time, tau, u, k1 );
       cudaDeviceSynchronize();
@@ -392,10 +384,10 @@ typename Problem :: RealType Merson< Problem, SolverMonitor >::computeError( con
    {
 #ifdef HAVE_CUDA
       dim3 cudaBlockSize( 512 );
-      const IndexType cudaBlocks = Devices::Cuda::getNumberOfBlocks( size, cudaBlockSize.x );
-      const IndexType cudaGrids = Devices::Cuda::getNumberOfGrids( cudaBlocks );
-      this->cudaBlockResidue.setSize( min( cudaBlocks, Devices::Cuda::getMaxGridSize() ) );
-      const IndexType threadsPerGrid = Devices::Cuda::getMaxGridSize() * cudaBlockSize.x;
+      const IndexType cudaBlocks = Cuda::getNumberOfBlocks( size, cudaBlockSize.x );
+      const IndexType cudaGrids = Cuda::getNumberOfGrids( cudaBlocks );
+      this->cudaBlockResidue.setSize( min( cudaBlocks, Cuda::getMaxGridSize() ) );
+      const IndexType threadsPerGrid = Cuda::getMaxGridSize() * cudaBlockSize.x;
 
       for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx ++ )
       {
@@ -447,10 +439,10 @@ void Merson< Problem, SolverMonitor >::computeNewTimeLevel( const RealType time,
    {
 #ifdef HAVE_CUDA
       dim3 cudaBlockSize( 512 );
-      const IndexType cudaBlocks = Devices::Cuda::getNumberOfBlocks( size, cudaBlockSize.x );
-      const IndexType cudaGrids = Devices::Cuda::getNumberOfGrids( cudaBlocks );
-      this->cudaBlockResidue.setSize( min( cudaBlocks, Devices::Cuda::getMaxGridSize() ) );
-      const IndexType threadsPerGrid = Devices::Cuda::getMaxGridSize() * cudaBlockSize.x;
+      const IndexType cudaBlocks = Cuda::getNumberOfBlocks( size, cudaBlockSize.x );
+      const IndexType cudaGrids = Cuda::getNumberOfGrids( cudaBlocks );
+      this->cudaBlockResidue.setSize( min( cudaBlocks, Cuda::getMaxGridSize() ) );
+      const IndexType threadsPerGrid = Cuda::getMaxGridSize() * cudaBlockSize.x;
 
       localResidue = 0.0;
       for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx ++ )

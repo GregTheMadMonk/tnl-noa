@@ -36,11 +36,6 @@ class FunctionInverseOperator
       FunctionInverseOperator( const OperatorType& operator_ )
       : operator_( operator_ ) {};
  
-      static String getType()
-      {
-         return String( "FunctionInverseOperator< " ) + OperatorType::getType() + " >";
-      }
- 
       const OperatorType& getOperator() const { return this->operator_; }
  
       template< typename MeshFunction,

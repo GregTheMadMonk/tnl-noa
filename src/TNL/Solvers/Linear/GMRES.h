@@ -37,8 +37,6 @@ public:
    using ConstVectorViewType = typename Base::ConstVectorViewType;
    using VectorType = typename Traits::VectorType;
 
-   String getType() const;
-
    static void configSetup( Config::ConfigDescription& config,
                             const String& prefix = "" );
 
@@ -51,9 +49,9 @@ protected:
    // local vectors/views
    using ConstDeviceView = typename Traits::ConstLocalViewType;
    using DeviceView = typename Traits::LocalViewType;
-   using HostView = typename DeviceView::HostType;
    using DeviceVector = typename Traits::LocalVectorType;
-   using HostVector = typename DeviceVector::HostType;
+   using HostView = typename DeviceView::template Self< RealType, Devices::Host >;
+   using HostVector = typename DeviceVector::template Self< RealType, Devices::Host >;;
 
    enum class Variant { MGS, MGSR, CWY };
 

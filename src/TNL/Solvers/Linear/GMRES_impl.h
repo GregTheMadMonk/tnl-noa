@@ -15,7 +15,7 @@
 #include <type_traits>
 #include <cmath>
 
-#include <TNL/Containers/Algorithms/Multireduction.h>
+#include <TNL/Algorithms/Multireduction.h>
 #include <TNL/Matrices/MatrixOperations.h>
 
 #include "GMRES.h"
@@ -23,16 +23,6 @@
 namespace TNL {
 namespace Solvers {
 namespace Linear {
-
-template< typename Matrix >
-String
-GMRES< Matrix >::
-getType() const
-{
-   return String( "GMRES< " ) +
-          this->matrix -> getType() + ", " +
-          this->preconditioner -> getType() + " >";
-}
 
 template< typename Matrix >
 void
@@ -390,7 +380,7 @@ hauseholder_generate( const int i,
          else
             y_i[ j ] = z[ j ];
       };
-      ParallelFor< DeviceType >::exec( (IndexType) 0, size, kernel_truncation );
+      Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, size, kernel_truncation );
    }
    else {
       ConstDeviceView z_local = Traits::getConstLocalView( z );
@@ -430,7 +420,7 @@ hauseholder_generate( const int i,
       const RealType* _y_i = Traits::getConstLocalView( y_i ).getData();
       const IndexType ldSize = this->ldSize;
       auto fetch = [_Y, _y_i, ldSize] __cuda_callable__ ( IndexType idx, int k ) { return _Y[ idx + k * ldSize ] * _y_i[ idx ]; };
-      Containers::Algorithms::Multireduction< DeviceType >::reduce
+      Algorithms::Multireduction< DeviceType >::reduce
                ( (RealType) 0,
                  fetch,
                  std::plus<>{},
@@ -461,7 +451,7 @@ hauseholder_apply_trunc( HostView out,
    // The upper (m+1)x(m+1) submatrix of Y is duplicated in the YL buffer,
    // which resides on host and is broadcasted from rank 0 to all processes.
    HostView YL_i( &YL[ i * (restarting_max + 1) ], restarting_max + 1 );
-   Containers::Algorithms::ArrayOperations< Devices::Host, DeviceType >::copy( YL_i.getData(), Traits::getLocalView( y_i ).getData(), YL_i.getSize() );
+   Algorithms::MultiDeviceMemoryOperations< Devices::Host, DeviceType >::copy( YL_i.getData(), Traits::getLocalView( y_i ).getData(), YL_i.getSize() );
    // no-op if the problem is not distributed
    CommunicatorType::Bcast( YL_i.getData(), YL_i.getSize(), 0, Traits::getCommunicationGroup( *this->matrix ) );
 
@@ -476,7 +466,7 @@ hauseholder_apply_trunc( HostView out,
       }
       if( std::is_same< DeviceType, Devices::Cuda >::value ) {
          RealType host_z[ i + 1 ];
-         Containers::Algorithms::ArrayOperations< Devices::Host, Devices::Cuda >::copy( host_z, Traits::getConstLocalView( z ).getData(), i + 1 );
+         Algorithms::MultiDeviceMemoryOperations< Devices::Host, Devices::Cuda >::copy( host_z, Traits::getConstLocalView( z ).getData(), i + 1 );
          for( int k = 0; k <= i; k++ )
             out[ k ] = host_z[ k ] - YL_i[ k ] * aux;
       }
@@ -530,7 +520,7 @@ hauseholder_cwy_transposed( VectorViewType z,
    const RealType* _w = Traits::getConstLocalView( w ).getData();
    const IndexType ldSize = this->ldSize;
    auto fetch = [_Y, _w, ldSize] __cuda_callable__ ( IndexType idx, int k ) { return _Y[ idx + k * ldSize ] * _w[ idx ]; };
-   Containers::Algorithms::Multireduction< DeviceType >::reduce
+   Algorithms::Multireduction< DeviceType >::reduce
             ( (RealType) 0,
               fetch,
               std::plus<>{},

@@ -16,8 +16,6 @@
 
 #pragma once
 
-#include <TNL/TemplateStaticFor.h>
-
 #include <TNL/Meshes/MeshDetails/initializer/EntitySeed.h>
 #include <TNL/Meshes/MeshDetails/initializer/SubentitySeedsCreator.h>
 #include <TNL/Meshes/MeshDetails/initializer/SuperentityStorageInitializer.h>
@@ -68,8 +66,6 @@ class EntityInitializer
    using InitializerType  = Initializer< MeshConfig >;
 
 public:
-   static String getType() { return "EntityInitializer"; };
-
    static void initEntity( EntityType& entity, const GlobalIndexType& entityIndex, const SeedType& entitySeed, InitializerType& initializer)
    {
       initializer.setEntityIndex( entity, entityIndex );
@@ -90,8 +86,6 @@ public:
    using GlobalIndexType = typename MeshTraits< MeshConfig >::GlobalIndexType;
    using PointType       = typename MeshTraits< MeshConfig >::PointType;
    using InitializerType = Initializer< MeshConfig >;
-
-   static String getType() { return "EntityInitializer"; };
 
    static void initEntity( VertexType& entity, const GlobalIndexType& entityIndex, const PointType& point, InitializerType& initializer)
    {

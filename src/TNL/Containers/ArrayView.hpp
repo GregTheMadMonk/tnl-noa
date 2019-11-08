@@ -13,29 +13,18 @@
 #include <iostream>
 #include <stdexcept>
 
-#include <TNL/param-types.h>
-#include <TNL/ParallelFor.h>
-#include <TNL/Containers/Algorithms/ArrayOperations.h>
-#include <TNL/Containers/Algorithms/ArrayIO.h>
-#include <TNL/Containers/Algorithms/ArrayAssignment.h>
+#include <TNL/TypeInfo.h>
+#include <TNL/Algorithms/ParallelFor.h>
+#include <TNL/Algorithms/MemoryOperations.h>
+#include <TNL/Algorithms/MultiDeviceMemoryOperations.h>
+#include <TNL/Containers/detail/ArrayIO.h>
+#include <TNL/Containers/detail/ArrayAssignment.h>
+#include <TNL/Allocators/Default.h>
 
 #include "ArrayView.h"
 
 namespace TNL {
 namespace Containers {
-
-template< typename Value,
-          typename Device,
-          typename Index >
-String
-ArrayView< Value, Device, Index >::
-getType()
-{
-   return String( "Containers::ArrayView< " ) + ", " +
-                  TNL::getType< Value >() + ", " +
-                  Device::getDeviceType() + ", " +
-                  TNL::getType< Index >() + " >";
-}
 
 // explicit initialization by raw data pointer and size
 template< typename Value,
@@ -113,7 +102,7 @@ operator=( const ArrayView& view )
 {
    TNL_ASSERT_EQ( getSize(), view.getSize(), "The sizes of the array views must be equal, views are not resizable." );
    if( getSize() > 0 )
-      Algorithms::ArrayOperations< Device >::copy( getData(), view.getData(), getSize() );
+      Algorithms::MemoryOperations< Device >::copy( getData(), view.getData(), getSize() );
    return *this;
 }
 
@@ -125,7 +114,7 @@ ArrayView< Value, Device, Index >&
 ArrayView< Value, Device, Index >::
 operator=( const T& data )
 {
-   Algorithms::ArrayAssignment< ArrayView, T >::assign( *this, data );
+   detail::ArrayAssignment< ArrayView, T >::assign( *this, data );
    return *this;
 }
 
@@ -228,7 +217,7 @@ setElement( Index i, Value value )
 {
    TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
    TNL_ASSERT_LT( i, this->getSize(), "Element index is out of bounds." );
-   return Algorithms::ArrayOperations< Device >::setElement( &data[ i ], value );
+   return Algorithms::MemoryOperations< Device >::setElement( &data[ i ], value );
 }
 
 template< typename Value,
@@ -240,7 +229,7 @@ getElement( Index i ) const
 {
    TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
    TNL_ASSERT_LT( i, this->getSize(), "Element index is out of bounds." );
-   return Algorithms::ArrayOperations< Device >::getElement( &data[ i ] );
+   return Algorithms::MemoryOperations< Device >::getElement( &data[ i ] );
 }
 
 template< typename Value,
@@ -280,7 +269,7 @@ operator==( const ArrayT& array ) const
       return false;
    if( this->getSize() == 0 )
       return true;
-   return Algorithms::ArrayOperations< DeviceType, typename ArrayT::DeviceType >::
+   return Algorithms::MultiDeviceMemoryOperations< DeviceType, typename ArrayT::DeviceType >::
             compare( this->getData(),
                            array.getData(),
                            array.getSize() );
@@ -307,7 +296,7 @@ setValue( Value value, const Index begin, Index end )
    TNL_ASSERT_GT( size, 0, "Attempted to set value to an empty array view." );
    if( end == 0 )
       end = this->getSize();
-   Algorithms::ArrayOperations< Device >::set( &getData()[ begin ], value, end - begin );
+   Algorithms::MemoryOperations< Device >::set( &getData()[ begin ], value, end - begin );
 }
 
 template< typename Value,
@@ -328,7 +317,7 @@ evaluate( const Function& f, const Index begin, Index end )
    if( end == 0 )
       end = this->getSize();
 
-   ParallelFor< DeviceType >::exec( begin, end, eval );
+   Algorithms::ParallelFor< DeviceType >::exec( begin, end, eval );
 }
 
 template< typename Value,
@@ -342,7 +331,7 @@ containsValue( Value value,
 {
    if( end == 0 )
       end = this->getSize();
-   return Algorithms::ArrayOperations< Device >::containsValue( &this->getData()[ begin ], end - begin, value );
+   return Algorithms::MemoryOperations< Device >::containsValue( &this->getData()[ begin ], end - begin, value );
 }
 
 template< typename Value,
@@ -356,7 +345,7 @@ containsOnlyValue( Value value,
 {
    if( end == 0 )
       end = this->getSize();
-   return Algorithms::ArrayOperations< Device >::containsOnlyValue( &this->getData()[ begin ], end - begin, value );
+   return Algorithms::MemoryOperations< Device >::containsOnlyValue( &this->getData()[ begin ], end - begin, value );
 }
 
 template< typename Value, typename Device, typename Index >
@@ -395,7 +384,7 @@ load( const String& fileName )
 template< typename Value, typename Device, typename Index >
 File& operator<<( File& file, const ArrayView< Value, Device, Index > view )
 {
-   using IO = Algorithms::ArrayIO< Value, Device, Index >;
+   using IO = detail::ArrayIO< Value, Index, typename Allocators::Default< Device >::template Allocator< Value > >;
    saveObjectType( file, IO::getSerializationType() );
    const Index size = view.getSize();
    file.save( &size );
@@ -414,7 +403,7 @@ File& operator<<( File&& file, const ArrayView< Value, Device, Index > view )
 template< typename Value, typename Device, typename Index >
 File& operator>>( File& file, ArrayView< Value, Device, Index > view )
 {
-   using IO = Algorithms::ArrayIO< Value, Device, Index >;
+   using IO = detail::ArrayIO< Value, Index, typename Allocators::Default< Device >::template Allocator< Value > >;
    const String type = getObjectType( file );
    if( type != IO::getSerializationType() )
       throw Exceptions::FileDeserializationError( file.getFileName(), "object type does not match (expected " + IO::getSerializationType() + ", found " + type + ")." );

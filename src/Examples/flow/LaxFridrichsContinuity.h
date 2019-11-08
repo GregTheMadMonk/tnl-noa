@@ -38,14 +38,6 @@ class LaxFridrichsContinuityBase
 
       LaxFridrichsContinuityBase()
        : artificialViscosity( 1.0 ){};
-      
-      static String getType()
-      {
-         return String( "LaxFridrichsContinuity< " ) +
-             MeshType::getType() + ", " +
-             TNL::getType< Real >() + ", " +
-             TNL::getType< Index >() + " >"; 
-      }
 
       void setTau(const Real& tau)
       {

@@ -13,7 +13,7 @@
 #include <TNL/Meshes/Writers/VTKWriter.h>
 
 namespace TNL {
-namespace Functions {   
+namespace Functions {
 
 template< typename MeshFunction >
 class MeshFunctionVTKWriter

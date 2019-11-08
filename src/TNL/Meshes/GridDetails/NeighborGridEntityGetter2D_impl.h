@@ -199,9 +199,9 @@ class NeighborGridEntityGetter<
       void refresh( const GridType& grid, const IndexType& entityIndex )
       {
 #ifndef HAVE_CUDA // TODO: fix this to work with CUDA
-         TemplateStaticFor< IndexType, -stencilSize, 0, StencilYRefresher >::exec( *this, entityIndex );
-         TemplateStaticFor< IndexType, 1, stencilSize + 1, StencilYRefresher >::exec( *this, entityIndex );
-         TemplateStaticFor< IndexType, -stencilSize, stencilSize + 1, StencilXRefresher >::exec( *this, entityIndex );
+         Algorithms::TemplateStaticFor< IndexType, -stencilSize, 0, StencilYRefresher >::exec( *this, entityIndex );
+         Algorithms::TemplateStaticFor< IndexType, 1, stencilSize + 1, StencilYRefresher >::exec( *this, entityIndex );
+         Algorithms::TemplateStaticFor< IndexType, -stencilSize, stencilSize + 1, StencilXRefresher >::exec( *this, entityIndex );
 #endif
       };
  

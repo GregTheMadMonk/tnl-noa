@@ -18,7 +18,8 @@
 #include <TNL/Containers/ndarray/Executors.h>
 #include <TNL/Containers/ndarray/BoundaryExecutors.h>
 #include <TNL/Containers/ndarray/Operations.h>
-#include <TNL/Containers/Algorithms/ArrayOperations.h>
+#include <TNL/Algorithms/MemoryOperations.h>
+#include <TNL/Algorithms/MultiDeviceMemoryOperations.h>
 
 namespace TNL {
 namespace Containers {
@@ -75,7 +76,7 @@ public:
    {
       TNL_ASSERT_EQ( getSizes(), other.getSizes(), "The sizes of the array views must be equal, views are not resizable." );
       if( getStorageSize() > 0 )
-         Algorithms::ArrayOperations< DeviceType >::copy( array, other.array, getStorageSize() );
+         Algorithms::MemoryOperations< DeviceType >::copy( array, other.array, getStorageSize() );
       return *this;
    }
 
@@ -93,7 +94,7 @@ public:
                        "The sizes of the array views must be equal, views are not resizable." );
       if( getStorageSize() > 0 ) {
          TNL_ASSERT_TRUE( array, "Attempted to assign to an empty view." );
-         Algorithms::ArrayOperations< DeviceType, typename OtherView::DeviceType >::copy( array, other.getData(), getStorageSize() );
+         Algorithms::MultiDeviceMemoryOperations< DeviceType, typename OtherView::DeviceType >::copy( array, other.getData(), getStorageSize() );
       }
       return *this;
    }
@@ -138,7 +139,7 @@ public:
       if( getSizes() != other.getSizes() )
          return false;
       // FIXME: uninitialized data due to alignment in NDArray and padding in SlicedNDArray
-      return Algorithms::ArrayOperations< Device, Device >::compare( array, other.array, getStorageSize() );
+      return Algorithms::MemoryOperations< Device >::compare( array, other.array, getStorageSize() );
    }
 
    TNL_NVCC_HD_WARNING_DISABLE
@@ -148,7 +149,7 @@ public:
       if( getSizes() != other.getSizes() )
          return true;
       // FIXME: uninitialized data due to alignment in NDArray and padding in SlicedNDArray
-      return ! Algorithms::ArrayOperations< Device, Device >::compare( array, other.array, getStorageSize() );
+      return ! Algorithms::MemoryOperations< Device >::compare( array, other.array, getStorageSize() );
    }
 
    __cuda_callable__

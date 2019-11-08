@@ -19,11 +19,6 @@
 
 namespace TNL {
 
-inline String String::getType()
-{
-   return String( "String" );
-}
-
 inline int String::getLength() const
 {
    return getSize();
@@ -241,12 +236,6 @@ inline String operator+( const char* string1, const String& string2 )
 inline String operator+( const std::string& string1, const String& string2 )
 {
    return String( string1 ) + string2;
-}
-
-inline std::ostream& operator<<( std::ostream& stream, const String& str )
-{
-   stream << str.getString();
-   return stream;
 }
 
 #ifdef HAVE_MPI

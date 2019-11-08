@@ -14,7 +14,7 @@
 
 #include "DistributedArray.h"
 
-#include <TNL/ParallelFor.h>
+#include <TNL/Algorithms/ParallelFor.h>
 #include <TNL/Communicators/MpiDefs.h>  // important only when MPI is disabled
 
 namespace TNL {
@@ -110,7 +110,7 @@ copyFromGlobal( ConstLocalViewType globalArray )
       localView[ i ] = globalArray[ localRange.getGlobalIndex( i ) ];
    };
 
-   ParallelFor< DeviceType >::exec( (IndexType) 0, localRange.getSize(), kernel );
+   Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, localRange.getSize(), kernel );
 }
 
 
@@ -158,33 +158,6 @@ DistributedArray< Value, Device, Index, Communicator >::
 operator ConstViewType() const
 {
    return getConstView();
-}
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Communicator >
-String
-DistributedArray< Value, Device, Index, Communicator >::
-getType()
-{
-   return String( "Containers::DistributedArray< " ) +
-          TNL::getType< Value >() + ", " +
-          Device::getDeviceType() + ", " +
-          TNL::getType< Index >() + ", " +
-          // TODO: communicators don't have a getType method
-          "<Communicator> >";
-}
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Communicator >
-String
-DistributedArray< Value, Device, Index, Communicator >::
-getTypeVirtual() const
-{
-   return getType();
 }
 
 template< typename Value,

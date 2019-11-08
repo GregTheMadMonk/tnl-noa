@@ -81,16 +81,6 @@ public:
    using IndexType = Index;
 
    /**
-    * \brief Defines the same array type but allocated on host (CPU).
-    */
-   using HostType = ArrayView< Value, TNL::Devices::Host, Index >;
-
-   /**
-    * \brief Defines the same array type but allocated on CUDA device (GPU).
-    */
-   using CudaType = ArrayView< Value, TNL::Devices::Cuda, Index >;
-
-   /**
     * \brief Compatible ArrayView type.
     */
    using ViewType = ArrayView< Value, Device, Index >;
@@ -101,9 +91,13 @@ public:
    using ConstViewType = ArrayView< std::add_const_t< Value >, Device, Index >;
 
    /**
-    * \brief Returns a \ref String representation of the array view type.
+    * \brief A template which allows to quickly obtain an \ref ArrayView type with changed template parameters.
     */
-   static String getType();
+   template< typename _Value,
+             typename _Device = Device,
+             typename _Index = Index >
+   using Self = ArrayView< _Value, _Device, _Index >;
+
 
    /**
     * \brief Constructs an empty array view.

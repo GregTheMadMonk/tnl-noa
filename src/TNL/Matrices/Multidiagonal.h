@@ -38,17 +38,15 @@ public:
    typedef Index IndexType;
    typedef typename Matrix< Real, Device, Index >::CompressedRowLengthsVector CompressedRowLengthsVector;
    typedef typename Matrix< Real, Device, Index >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
-   typedef Multidiagonal< Real, Devices::Host, Index > HostType;
-   typedef Multidiagonal< Real, Devices::Cuda, Index > CudaType;
    typedef Matrix< Real, Device, Index > BaseType;
    typedef MultidiagonalRow< Real, Index > MatrixRow;
 
+   template< typename _Real = Real,
+             typename _Device = Device,
+             typename _Index = Index >
+   using Self = Multidiagonal< _Real, _Device, _Index >;
 
    Multidiagonal();
-
-   static String getType();
-
-   String getTypeVirtual() const;
 
    static String getSerializationType();
 

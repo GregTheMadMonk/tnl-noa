@@ -14,7 +14,7 @@
 
 #include "Diagonal.h"
 
-#include <TNL/ParallelFor.h>
+#include <TNL/Algorithms/ParallelFor.h>
 
 namespace TNL {
 namespace Solvers {
@@ -39,7 +39,7 @@ update( const MatrixPointer& matrixPointer )
       diag_view[ i ] = kernel_matrix->getElementFast( i, i );
    };
 
-   ParallelFor< DeviceType >::exec( (IndexType) 0, diagonal.getSize(), kernel );
+   Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, diagonal.getSize(), kernel );
 }
 
 template< typename Matrix >
@@ -54,7 +54,7 @@ solve( ConstVectorViewType b, VectorViewType x ) const
       x[ i ] = b[ i ] / diag_view[ i ];
    };
 
-   ParallelFor< DeviceType >::exec( (IndexType) 0, diagonal.getSize(), kernel );
+   Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, diagonal.getSize(), kernel );
 }
 
 
@@ -77,7 +77,7 @@ update( const MatrixPointer& matrixPointer )
       diag_view[ i ] = kernel_matrix->getLocalMatrix().getElementFast( i, gi );
    };
 
-   ParallelFor< DeviceType >::exec( (IndexType) 0, diagonal.getSize(), kernel );
+   Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, diagonal.getSize(), kernel );
 }
 
 template< typename Matrix, typename Communicator >
@@ -94,7 +94,7 @@ solve( ConstVectorViewType b, VectorViewType x ) const
       x_view[ i ] = b_view[ i ] / diag_view[ i ];
    };
 
-   ParallelFor< DeviceType >::exec( (IndexType) 0, diagonal.getSize(), kernel );
+   Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, diagonal.getSize(), kernel );
 }
 
 } // namespace Preconditioners

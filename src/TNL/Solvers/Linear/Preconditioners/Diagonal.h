@@ -38,11 +38,6 @@ public:
 
    virtual void solve( ConstVectorViewType b, VectorViewType x ) const override;
 
-   String getType() const
-   {
-      return String( "Diagonal" );
-   }
-
 protected:
    VectorType diagonal;
 };
@@ -66,11 +61,6 @@ public:
    virtual void update( const MatrixPointer& matrixPointer ) override;
 
    virtual void solve( ConstVectorViewType b, VectorViewType x ) const override;
-
-   String getType() const
-   {
-      return String( "Diagonal" );
-   }
 
 protected:
    VectorType diagonal;

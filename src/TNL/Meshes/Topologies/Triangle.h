@@ -25,11 +25,6 @@ namespace Topologies {
 struct Triangle
 {
    static constexpr int dimension = 2;
-
-   static String getType()
-   {
-      return "Topologies::Triangle";
-   }
 };
 
 

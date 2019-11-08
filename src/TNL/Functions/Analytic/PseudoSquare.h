@@ -50,8 +50,6 @@ class PseudoSquare< 1, Real > : public PseudoSquareBase< Real, 1 >
       typedef Real RealType;
       typedef Containers::StaticVector< Dimension, Real > PointType;
 
-      static String getType();
-
       PseudoSquare();
 
       template< int XDiffOrder = 0,
@@ -75,8 +73,6 @@ class PseudoSquare< 2, Real > : public PseudoSquareBase< Real, 2 >
       typedef Real RealType;
       typedef Containers::StaticVector< Dimension, Real > PointType;
 
-      static String getType();
-
       PseudoSquare();
 
       template< int XDiffOrder = 0,
@@ -99,8 +95,6 @@ class PseudoSquare< 3, Real > : public PseudoSquareBase< Real, 3 >
       enum { Dimension = 3 };
       typedef Real RealType;
       typedef Containers::StaticVector< Dimension, Real > PointType;
-
-      static String getType();
 
       PseudoSquare();
 

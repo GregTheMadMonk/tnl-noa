@@ -263,9 +263,9 @@ solve( const MeshPointer& mesh,
         const int cudaBlockSize( 8 );
         
         // Getting the number of blocks in grid in each direction (without overlaps bcs we dont calculate on overlaps)
-        int numBlocksX = Devices::Cuda::getNumberOfBlocks( mesh->getDimensions().x() - vecLowerOverlaps[0] - vecUpperOverlaps[0], cudaBlockSize );
-        int numBlocksY = Devices::Cuda::getNumberOfBlocks( mesh->getDimensions().y() - vecLowerOverlaps[1] - vecUpperOverlaps[1], cudaBlockSize );
-        int numBlocksZ = Devices::Cuda::getNumberOfBlocks( mesh->getDimensions().z() - vecLowerOverlaps[2] - vecUpperOverlaps[2], cudaBlockSize ); 
+        int numBlocksX = Cuda::getNumberOfBlocks( mesh->getDimensions().x() - vecLowerOverlaps[0] - vecUpperOverlaps[0], cudaBlockSize );
+        int numBlocksY = Cuda::getNumberOfBlocks( mesh->getDimensions().y() - vecLowerOverlaps[1] - vecUpperOverlaps[1], cudaBlockSize );
+        int numBlocksZ = Cuda::getNumberOfBlocks( mesh->getDimensions().z() - vecLowerOverlaps[2] - vecUpperOverlaps[2], cudaBlockSize ); 
         if( cudaBlockSize * cudaBlockSize * cudaBlockSize > 1024 || numBlocksX > 1024 || numBlocksY > 1024 || numBlocksZ > 64 )
           std::cout << "Invalid kernel call. Dimensions of grid are max: [1024,1024,64], and maximum threads per block are 1024!" << std::endl;
         
@@ -295,14 +295,14 @@ solve( const MeshPointer& mesh,
         //MeshFunctionPointer helpFunc1( mesh );      
         MeshFunctionPointer helpFunc( mesh );
         helpFunc.template modifyData() = auxPtr.template getData();
-        Devices::Cuda::synchronizeDevice(); 
+        Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
                 
         int numIter = 0; // number of passages of following while cycle
         
         while( BlockIterD ) //main body of cuda code
         {
           
-          Devices::Cuda::synchronizeDevice();          
+          Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
           // main function that calculates all values in each blocks
           // calculated values are in helpFunc
           CudaUpdateCellCaller< 10 ><<< gridSize, blockSize >>>( ptr,
@@ -315,14 +315,14 @@ solve( const MeshPointer& mesh,
           // Switching pointers to helpFunc and auxPtr so real results are in memory of helpFunc but here under variable auxPtr
           auxPtr.swap( helpFunc );
           
-          Devices::Cuda::synchronizeDevice();
+          Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
           // Neighbours of blocks that calculatedBefore in this passage should calculate in the next!
           // BlockIterDevice contains blocks that calculatedBefore in this passage and BlockIterPom those that should calculate in next (are neighbours)
           GetNeighbours<<< nBlocksNeigh, 1024 >>>( BlockIterDevice.getView(), BlockIterPom.getView(), numBlocksX, numBlocksY, numBlocksZ );
           cudaDeviceSynchronize();
           TNL_CHECK_CUDA_DEVICE;
           BlockIterDevice = BlockIterPom;
-          Devices::Cuda::synchronizeDevice();
+          Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
           
           // .containsValue(1) is actually parallel reduction implemented in TNL
           BlockIterD = BlockIterDevice.containsValue(1);
@@ -340,7 +340,7 @@ solve( const MeshPointer& mesh,
           // We need auxPtr to point on memory of original auxPtr (not to helpFunc)
           // last passage of previous while cycle didnt calculate any number anyway so switching names doesnt effect values
           auxPtr.swap( helpFunc ); 
-          Devices::Cuda::synchronizeDevice();
+          Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
         }
         cudaDeviceSynchronize();
         TNL_CHECK_CUDA_DEVICE;

@@ -12,7 +12,7 @@
 
 #pragma once
 
-#include <TNL/ParallelFor.h>
+#include <TNL/Algorithms/ParallelFor.h>
 
 #include <TNL/Containers/ndarray/Meta.h>
 #include <TNL/Containers/ndarray/SizesHolder.h>
@@ -225,12 +225,12 @@ struct ParallelBoundaryExecutor< Permutation, Device, IndexTag< 3 > >
       const auto end1 = ends.template getSize< get< 1 >( Permutation{} ) >();
       const auto end2 = ends.template getSize< get< 2 >( Permutation{} ) >();
 
-      ParallelFor3D< Device >::exec( begin2,     begin1,     begin0,   skipBegin2, end1,       end0,       kernel, f );
-      ParallelFor3D< Device >::exec( skipEnd2,   begin1,     begin0,   end2,       end1,       end0,       kernel, f );
-      ParallelFor3D< Device >::exec( skipBegin2, begin1,     begin0,   skipEnd2,   skipBegin1, end0,       kernel, f );
-      ParallelFor3D< Device >::exec( skipBegin2, skipEnd1,   begin0,   skipEnd2,   end1,       end0,       kernel, f );
-      ParallelFor3D< Device >::exec( skipBegin2, skipBegin1, begin0,   skipEnd2,   skipEnd1,   skipBegin0, kernel, f );
-      ParallelFor3D< Device >::exec( skipBegin2, skipBegin1, skipEnd0, skipEnd2,   skipEnd1,   end0,       kernel, f );
+      Algorithms::ParallelFor3D< Device >::exec( begin2,     begin1,     begin0,   skipBegin2, end1,       end0,       kernel, f );
+      Algorithms::ParallelFor3D< Device >::exec( skipEnd2,   begin1,     begin0,   end2,       end1,       end0,       kernel, f );
+      Algorithms::ParallelFor3D< Device >::exec( skipBegin2, begin1,     begin0,   skipEnd2,   skipBegin1, end0,       kernel, f );
+      Algorithms::ParallelFor3D< Device >::exec( skipBegin2, skipEnd1,   begin0,   skipEnd2,   end1,       end0,       kernel, f );
+      Algorithms::ParallelFor3D< Device >::exec( skipBegin2, skipBegin1, begin0,   skipEnd2,   skipEnd1,   skipBegin0, kernel, f );
+      Algorithms::ParallelFor3D< Device >::exec( skipBegin2, skipBegin1, skipEnd0, skipEnd2,   skipEnd1,   end0,       kernel, f );
    }
 
    template< typename __Device, typename = void >
@@ -291,10 +291,10 @@ struct ParallelBoundaryExecutor< Permutation, Device, IndexTag< 2 > >
       const auto end0 = ends.template getSize< get< 0 >( Permutation{} ) >();
       const auto end1 = ends.template getSize< get< 1 >( Permutation{} ) >();
 
-      ParallelFor2D< Device >::exec( begin1,     begin0,   skipBegin1, end0,       kernel, f );
-      ParallelFor2D< Device >::exec( skipEnd1,   begin0,   end1,       end0,       kernel, f );
-      ParallelFor2D< Device >::exec( skipBegin1, begin0,   skipEnd1,   skipBegin0, kernel, f );
-      ParallelFor2D< Device >::exec( skipBegin1, skipEnd0, skipEnd1,   end0,       kernel, f );
+      Algorithms::ParallelFor2D< Device >::exec( begin1,     begin0,   skipBegin1, end0,       kernel, f );
+      Algorithms::ParallelFor2D< Device >::exec( skipEnd1,   begin0,   end1,       end0,       kernel, f );
+      Algorithms::ParallelFor2D< Device >::exec( skipBegin1, begin0,   skipEnd1,   skipBegin0, kernel, f );
+      Algorithms::ParallelFor2D< Device >::exec( skipBegin1, skipEnd0, skipEnd1,   end0,       kernel, f );
    }
 
    template< typename __Device, typename = void >
@@ -343,8 +343,8 @@ struct ParallelBoundaryExecutor< Permutation, Device, IndexTag< 1 > >
       const auto skipEnd = skipEnds.template getSize< get< 0 >( Permutation{} ) >();
       const auto end = ends.template getSize< get< 0 >( Permutation{} ) >();
 
-      ParallelFor< Device >::exec( begin, skipBegin, f );
-      ParallelFor< Device >::exec( skipEnd, end, f );
+      Algorithms::ParallelFor< Device >::exec( begin, skipBegin, f );
+      Algorithms::ParallelFor< Device >::exec( skipEnd, end, f );
    }
 };
 

@@ -34,8 +34,6 @@ class Grid< 1, Real, Device, Index > : public Object
    typedef Index GlobalIndexType;
    typedef Containers::StaticVector< 1, Real > PointType;
    typedef Containers::StaticVector< 1, Index > CoordinatesType;
-   typedef Grid< 1, Real, Devices::Host, Index > HostType;
-   typedef Grid< 1, Real, Devices::Cuda, Index > CudaType;
 
    typedef DistributedMeshes::DistributedMesh <Grid> DistributedMeshType;
 
@@ -64,16 +62,6 @@ class Grid< 1, Real, Device, Index > : public Object
 
    // empty destructor is needed only to avoid crappy nvcc warnings
    ~Grid() {}
-
-   /**
-    * \brief Returns type of grid Real (value), Device type and the type of Index.
-    */
-   static String getType();
-
-   /**
-    * \brief Returns type of grid Real (value), Device type and the type of Index.
-    */
-   String getTypeVirtual() const;
 
    /**
     * \brief Returns (host) type of grid Real (value), Device type and the type of Index.

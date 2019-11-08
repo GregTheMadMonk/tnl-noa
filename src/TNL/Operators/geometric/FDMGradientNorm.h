@@ -50,14 +50,6 @@ class FDMGradientNorm< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, Difference
    FDMGradientNorm()
    : epsSquare( 0.0 ){}
 
-   static String getType()
-   {
-      return String( "FDMGradientNorm< " ) +
-         MeshType::getType() + ", " +
-        TNL::getType< Real >() + ", " +
-        TNL::getType< Index >() + " >";
-   }
-
    template< typename MeshFunction, typename MeshEntity >
    __cuda_callable__
    Real operator()( const MeshFunction& u,
@@ -106,16 +98,6 @@ class FDMGradientNorm< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, Difference
 
       FDMGradientNorm()
       : epsSquare( 0.0 ){}
-
-
-      static String getType()
-      {
-         return String( "FDMGradientNorm< " ) +
-            MeshType::getType() + ", " +
-           TNL::getType< Real >() + ", " +
-           TNL::getType< Index >() + " >";
-
-      }
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
@@ -172,14 +154,6 @@ class FDMGradientNorm< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Differenc
  
       FDMGradientNorm()
       : epsSquare( 0.0 ){}
-
-      static String getType()
-      {
-         return String( "FDMGradientNorm< " ) +
-            MeshType::getType() + ", " +
-           TNL::getType< Real >() + ", " +
-           TNL::getType< Index >() + " >";
-      }
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__

@@ -25,11 +25,6 @@ namespace Topologies {
 struct Quadrilateral
 {
    static constexpr int dimension = 2;
-
-   static String getType()
-   {
-      return "Topologies::Quadrilateral";
-   }
 };
 
 

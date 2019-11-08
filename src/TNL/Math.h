@@ -15,7 +15,7 @@
 #include <algorithm>
 
 #include <TNL/TypeTraits.h>
-#include <TNL/Devices/CudaCallable.h>
+#include <TNL/Cuda/CudaCallable.h>
 
 namespace TNL {
 
@@ -30,7 +30,7 @@ ResultType sum( const T1& a, const T2& b )
  * \brief This function returns minimum of two numbers.
  *
  * GPU device code uses the functions defined in the CUDA's math_functions.h,
- * MIC uses trivial override and host uses the STL functions.
+ * host uses the STL functions.
  */
 template< typename T1, typename T2, typename ResultType = typename std::common_type< T1, T2 >::type,
           // enable_if is necessary to avoid ambiguity in vector expressions
@@ -44,8 +44,6 @@ ResultType min( const T1& a, const T2& b )
 #else
  #if defined(__CUDA_ARCH__)
    return ::min( (ResultType) a, (ResultType) b );
- #elif defined(__MIC__)
-   return a < b ? a : b;
  #else
    return std::min( (ResultType) a, (ResultType) b );
  #endif
@@ -57,7 +55,7 @@ ResultType min( const T1& a, const T2& b )
  * \brief This function returns maximum of two numbers.
  *
  * GPU device code uses the functions defined in the CUDA's math_functions.h,
- * MIC uses trivial override and host uses the STL functions.
+ * host uses the STL functions.
  */
 template< typename T1, typename T2, typename ResultType = typename std::common_type< T1, T2 >::type,
           // enable_if is necessary to avoid ambiguity in vector expressions
@@ -71,8 +69,6 @@ ResultType max( const T1& a, const T2& b )
 #else
  #if defined(__CUDA_ARCH__)
    return ::max( (ResultType) a, (ResultType) b );
- #elif defined(__MIC__)
-   return a > b ? a : b;
  #else
    return std::max( (ResultType) a, (ResultType) b );
  #endif
@@ -92,10 +88,6 @@ T abs( const T& n )
       return ::abs( n );
    else
       return ::fabs( n );
-#elif defined(__MIC__)
-   if( n < ( T ) 0 )
-      return -n;
-   return n;
 #else
    return std::abs( n );
 #endif
@@ -159,7 +151,7 @@ template< typename T1, typename T2, typename ResultType = typename std::common_t
 __cuda_callable__ inline
 ResultType pow( const T1& base, const T2& exp )
 {
-#if defined(__CUDA_ARCH__) || defined(__MIC__)
+#if defined(__CUDA_ARCH__)
    return ::pow( (ResultType) base, (ResultType) exp );
 #else
    return std::pow( (ResultType) base, (ResultType) exp );
@@ -173,7 +165,7 @@ template< typename T >
 __cuda_callable__ inline
 auto exp( const T& value ) -> decltype( std::exp(value) )
 {
-#if defined(__CUDA_ARCH__) || defined(__MIC__)
+#if defined(__CUDA_ARCH__)
    return ::exp( value );
 #else
    return std::exp( value );
@@ -187,7 +179,7 @@ template< typename T >
 __cuda_callable__ inline
 auto sqrt( const T& value ) -> decltype( std::sqrt(value) )
 {
-#if defined(__CUDA_ARCH__) || defined(__MIC__)
+#if defined(__CUDA_ARCH__)
    return ::sqrt( value );
 #else
    return std::sqrt( value );
@@ -201,7 +193,7 @@ template< typename T >
 __cuda_callable__ inline
 auto cbrt( const T& value ) -> decltype( std::cbrt(value) )
 {
-#if defined(__CUDA_ARCH__) || defined(__MIC__)
+#if defined(__CUDA_ARCH__)
    return ::cbrt( value );
 #else
    return std::cbrt( value );
@@ -215,7 +207,7 @@ template< typename T >
 __cuda_callable__ inline
 auto log( const T& value ) -> decltype( std::log(value) )
 {
-#if defined(__CUDA_ARCH__) || defined(__MIC__)
+#if defined(__CUDA_ARCH__)
    return ::log( value );
 #else
    return std::log( value );
@@ -229,7 +221,7 @@ template< typename T >
 __cuda_callable__ inline
 auto log10( const T& value ) -> decltype( std::log10(value) )
 {
-#if defined(__CUDA_ARCH__) || defined(__MIC__)
+#if defined(__CUDA_ARCH__)
    return ::log10( value );
 #else
    return std::log10( value );
@@ -243,7 +235,7 @@ template< typename T >
 __cuda_callable__ inline
 auto log2( const T& value ) -> decltype( std::log2(value) )
 {
-#if defined(__CUDA_ARCH__) || defined(__MIC__)
+#if defined(__CUDA_ARCH__)
    return ::log2( value );
 #else
    return std::log2( value );
@@ -257,7 +249,7 @@ template< typename T >
 __cuda_callable__ inline
 auto sin( const T& value ) -> decltype( std::sin(value) )
 {
-#if defined(__CUDA_ARCH__) || defined(__MIC__)
+#if defined(__CUDA_ARCH__)
    return ::sin( value );
 #else
    return std::sin( value );
@@ -271,7 +263,7 @@ template< typename T >
 __cuda_callable__ inline
 auto cos( const T& value ) -> decltype( std::cos(value) )
 {
-#if defined(__CUDA_ARCH__) || defined(__MIC__)
+#if defined(__CUDA_ARCH__)
    return ::cos( value );
 #else
    return std::cos( value );
@@ -285,7 +277,7 @@ template< typename T >
 __cuda_callable__ inline
 auto tan( const T& value ) -> decltype( std::tan(value) )
 {
-#if defined(__CUDA_ARCH__) || defined(__MIC__)
+#if defined(__CUDA_ARCH__)
    return ::tan( value );
 #else
    return std::tan( value );
@@ -299,7 +291,7 @@ template< typename T >
 __cuda_callable__ inline
 auto asin( const T& value ) -> decltype( std::asin(value) )
 {
-#if defined(__CUDA_ARCH__) || defined(__MIC__)
+#if defined(__CUDA_ARCH__)
    return ::asin( value );
 #else
    return std::asin( value );
@@ -313,7 +305,7 @@ template< typename T >
 __cuda_callable__ inline
 auto acos( const T& value ) -> decltype( std::acos(value) )
 {
-#if defined(__CUDA_ARCH__) || defined(__MIC__)
+#if defined(__CUDA_ARCH__)
    return ::acos( value );
 #else
    return std::acos( value );
@@ -327,7 +319,7 @@ template< typename T >
 __cuda_callable__ inline
 auto atan( const T& value ) -> decltype( std::atan(value) )
 {
-#if defined(__CUDA_ARCH__) || defined(__MIC__)
+#if defined(__CUDA_ARCH__)
    return ::atan( value );
 #else
    return std::atan( value );
@@ -341,7 +333,7 @@ template< typename T >
 __cuda_callable__ inline
 auto sinh( const T& value ) -> decltype( std::sinh(value) )
 {
-#if defined(__CUDA_ARCH__) || defined(__MIC__)
+#if defined(__CUDA_ARCH__)
    return ::sinh( value );
 #else
    return std::sinh( value );
@@ -355,7 +347,7 @@ template< typename T >
 __cuda_callable__ inline
 auto cosh( const T& value ) -> decltype( std::cosh(value) )
 {
-#if defined(__CUDA_ARCH__) || defined(__MIC__)
+#if defined(__CUDA_ARCH__)
    return ::cosh( value );
 #else
    return std::cosh( value );
@@ -369,7 +361,7 @@ template< typename T >
 __cuda_callable__ inline
 auto tanh( const T& value ) -> decltype( std::tanh(value) )
 {
-#if defined(__CUDA_ARCH__) || defined(__MIC__)
+#if defined(__CUDA_ARCH__)
    return ::tanh( value );
 #else
    return std::tanh( value );
@@ -383,7 +375,7 @@ template< typename T >
 __cuda_callable__ inline
 auto asinh( const T& value ) -> decltype( std::asinh(value) )
 {
-#if defined(__CUDA_ARCH__) || defined(__MIC__)
+#if defined(__CUDA_ARCH__)
    return ::asinh( value );
 #else
    return std::asinh( value );
@@ -397,7 +389,7 @@ template< typename T >
 __cuda_callable__ inline
 auto acosh( const T& value ) -> decltype( std::acosh(value) )
 {
-#if defined(__CUDA_ARCH__) || defined(__MIC__)
+#if defined(__CUDA_ARCH__)
    return ::acosh( value );
 #else
    return std::acosh( value );
@@ -411,7 +403,7 @@ template< typename T >
 __cuda_callable__ inline
 auto atanh( const T& value ) -> decltype( std::atanh(value) )
 {
-#if defined(__CUDA_ARCH__) || defined(__MIC__)
+#if defined(__CUDA_ARCH__)
    return ::atanh( value );
 #else
    return std::atanh( value );
@@ -425,7 +417,7 @@ template< typename T >
 __cuda_callable__ inline
 auto floor( const T& value ) -> decltype( std::floor(value) )
 {
-#if defined(__CUDA_ARCH__) || defined(__MIC__)
+#if defined(__CUDA_ARCH__)
    return ::floor( value );
 #else
    return std::floor( value );
@@ -439,7 +431,7 @@ template< typename T >
 __cuda_callable__ inline
 auto ceil( const T& value ) -> decltype( std::ceil(value) )
 {
-#if defined(__CUDA_ARCH__) || defined(__MIC__)
+#if defined(__CUDA_ARCH__)
    return ::ceil( value );
 #else
    return std::ceil( value );

@@ -12,7 +12,9 @@
 
 #pragma once
 
-#include <TNL/Devices/Cuda.h>
+#include <TNL/Exceptions/CudaBadAlloc.h>
+#include <TNL/Exceptions/CudaSupportMissing.h>
+#include <TNL/Cuda/CheckDevice.h>
 
 namespace TNL {
 namespace Allocators {

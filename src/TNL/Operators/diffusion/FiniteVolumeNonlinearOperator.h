@@ -49,8 +49,6 @@ class FiniteVolumeNonlinearOperator< Meshes::Grid< 1,MeshReal, Device, MeshIndex
    typedef Index IndexType;
    typedef OperatorQ OperatorQType;
 
-   static String getType();
-   
    template< typename MeshEntity,
              typename Vector >
    __cuda_callable__
@@ -102,8 +100,6 @@ class FiniteVolumeNonlinearOperator< Meshes::Grid< 2, MeshReal, Device, MeshInde
    typedef OperatorQ OperatorQType;
    
 
-   static String getType();
-   
    template< typename MeshEntity,
              typename Vector >
    __cuda_callable__
@@ -155,8 +151,6 @@ class FiniteVolumeNonlinearOperator< Meshes::Grid< 3, MeshReal, Device, MeshInde
    typedef Index IndexType;
    typedef OperatorQ OperatorQType;
 
-   static String getType();
-   
    template< typename MeshEntity, 
              typename Vector >
    __cuda_callable__

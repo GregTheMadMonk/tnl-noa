@@ -10,8 +10,8 @@
 
 #pragma once
 
-#include <TNL/TemplateStaticFor.h>
-#include <TNL/ParallelFor.h>
+#include <TNL/Algorithms/TemplateStaticFor.h>
+#include <TNL/Algorithms/ParallelFor.h>
 #include <TNL/Pointers/DevicePointer.h>
 #include <TNL/Meshes/DimensionTag.h>
 #include <TNL/Meshes/MeshDetails/traits/MeshEntityTraits.h>
@@ -121,8 +121,8 @@ public:
    public:
       static void exec( Mesh& mesh )
       {
-         TemplateStaticFor< int, 0, Mesh::getMeshDimension() + 1, SetEntitiesCount >::execHost( mesh );
-         TemplateStaticFor< int, 0, Mesh::getMeshDimension() + 1, ResetBoundaryTags >::execHost( mesh );
+         Algorithms::TemplateStaticFor< int, 0, Mesh::getMeshDimension() + 1, SetEntitiesCount >::execHost( mesh );
+         Algorithms::TemplateStaticFor< int, 0, Mesh::getMeshDimension() + 1, ResetBoundaryTags >::execHost( mesh );
 
          auto kernel = [] __cuda_callable__
             ( GlobalIndexType faceIndex,
@@ -136,17 +136,17 @@ public:
                const GlobalIndexType cellIndex = face.template getSuperentityIndex< Mesh::getMeshDimension() >( 0 );
                mesh->template setIsBoundaryEntity< Mesh::getMeshDimension() >( cellIndex, true );
                // initialize all subentities
-               TemplateStaticFor< int, 0, Mesh::getMeshDimension() - 1, InitializeSubentities >::exec( *mesh, faceIndex, face );
+               Algorithms::TemplateStaticFor< int, 0, Mesh::getMeshDimension() - 1, InitializeSubentities >::exec( *mesh, faceIndex, face );
             }
          };
 
          const GlobalIndexType facesCount = mesh.template getEntitiesCount< Mesh::getMeshDimension() - 1 >();
          Pointers::DevicePointer< Mesh > meshPointer( mesh );
-         ParallelFor< DeviceType >::exec( (GlobalIndexType) 0, facesCount,
-                                          kernel,
-                                          &meshPointer.template modifyData< DeviceType >() );
+         Algorithms::ParallelFor< DeviceType >::exec( (GlobalIndexType) 0, facesCount,
+                                                      kernel,
+                                                      &meshPointer.template modifyData< DeviceType >() );
 
-         TemplateStaticFor< int, 0, Mesh::getMeshDimension() + 1, UpdateBoundaryIndices >::execHost( mesh );
+         Algorithms::TemplateStaticFor< int, 0, Mesh::getMeshDimension() + 1, UpdateBoundaryIndices >::execHost( mesh );
       }
    };
 

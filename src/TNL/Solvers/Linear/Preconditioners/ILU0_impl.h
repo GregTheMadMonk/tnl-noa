@@ -16,7 +16,7 @@
 #include "TriangularSolve.h"
 
 #include <TNL/Exceptions/CudaSupportMissing.h>
-#include <TNL/ParallelFor.h>
+#include <TNL/Algorithms/ParallelFor.h>
 
 namespace TNL {
 namespace Solvers {
@@ -282,7 +282,7 @@ allocate_LU()
    U->setDimensions( N, N );
 
    // extract raw pointer
-   Devices::Cuda::synchronizeDevice();
+   Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
    const CSR* kernel_A = &A.template getData< DeviceType >();
 
    // copy row lengths
@@ -308,7 +308,7 @@ allocate_LU()
       L_rowLengths_view[ i ] = L_entries;
       U_rowLengths_view[ i ] = U_entries;
    };
-   ParallelFor< DeviceType >::exec( (IndexType) 0, N, kernel_copy_row_lengths );
+   Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, N, kernel_copy_row_lengths );
    L->setCompressedRowLengths( L_rowLengths );
    U->setCompressedRowLengths( U_rowLengths );
 #else
@@ -329,7 +329,7 @@ copy_triangular_factors()
    const int N = A->getRows();
 
    // extract raw pointers
-   Devices::Cuda::synchronizeDevice();
+   Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
    CSR* kernel_L = &L.template modifyData< DeviceType >();
    CSR* kernel_U = &U.template modifyData< DeviceType >();
    const CSR* kernel_A = &A.template getData< DeviceType >();
@@ -349,7 +349,7 @@ copy_triangular_factors()
             break;
       }
    };
-   ParallelFor< DeviceType >::exec( (IndexType) 0, N, kernel_copy_values );
+   Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, N, kernel_copy_values );
 #else
    throw std::runtime_error("The program was not compiled with the CUSPARSE library. Pass -DHAVE_CUSPARSE -lcusparse to the compiler.");
 #endif

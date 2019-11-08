@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/ParallelFor.h>
+#include <TNL/Algorithms/ParallelFor.h>
 #include <TNL/Containers/StaticVector.h>
 #include <TNL/Communicators/MPIPrint.h>
 
@@ -67,7 +67,7 @@ class BufferEntitiesHelper< MeshFunctionType, MaskPointer, 1, RealType, Device, 
                   meshFunctionData[ entity.getIndex() ] = buffer[ j ];
             }
          };
-         ParallelFor< Device >::exec( 0, sizex, kernel );
+         Algorithms::ParallelFor< Device >::exec( 0, sizex, kernel );
       };
 };
 
@@ -115,7 +115,7 @@ class BufferEntitiesHelper< MeshFunctionType, MaskPointer, 2, RealType, Device, 
                   meshFunctionData[ entity.getIndex() ] = buffer[ j * sizex + i ];
             }
          };
-         ParallelFor2D< Device >::exec( 0, 0, sizex, sizey, kernel );
+         Algorithms::ParallelFor2D< Device >::exec( 0, 0, sizex, sizey, kernel );
       };
 };
 
@@ -164,7 +164,7 @@ class BufferEntitiesHelper< MeshFunctionType, MaskPointer, 3, RealType, Device, 
                   meshFunctionData[ entity.getIndex() ] = buffer[ k * sizex * sizey + j * sizex + i ];
             }
          };
-         ParallelFor3D< Device >::exec( 0, 0, 0, sizex, sizey, sizez, kernel );
+         Algorithms::ParallelFor3D< Device >::exec( 0, 0, 0, sizex, sizey, sizez, kernel );
       };
 };
 

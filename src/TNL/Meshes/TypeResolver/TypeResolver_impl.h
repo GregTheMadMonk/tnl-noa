@@ -149,7 +149,7 @@ loadMesh( const String& fileName,
       std::cerr << "I am not able to load the mesh from the file " << fileName << ". "
                    "Perhaps the mesh stored in the file is not supported by the mesh "
                    "passed to the loadMesh function? The mesh type is "
-                << mesh.getType() << std::endl;
+                << getType< decltype(mesh) >() << std::endl;
       return false;
    }
    return true;

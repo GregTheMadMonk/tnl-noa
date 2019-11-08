@@ -13,7 +13,7 @@
 #pragma once
 
 #include "DistributedVector.h"
-#include <TNL/Containers/Algorithms/DistributedScan.h>
+#include <TNL/Algorithms/DistributedScan.h>
 
 namespace TNL {
 namespace Containers {
@@ -80,34 +80,6 @@ DistributedVector< Value, Device, Index, Communicator >::
 operator ConstViewType() const
 {
    return getConstView();
-}
-
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Communicator >
-String
-DistributedVector< Real, Device, Index, Communicator >::
-getType()
-{
-   return String( "Containers::DistributedVector< " ) +
-          TNL::getType< Real >() + ", " +
-          Device::getDeviceType() + ", " +
-          TNL::getType< Index >() + ", " +
-          // TODO: communicators don't have a getType method
-          "<Communicator> >";
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Communicator >
-String
-DistributedVector< Real, Device, Index, Communicator >::
-getTypeVirtual() const
-{
-   return getType();
 }
 
 
@@ -301,7 +273,7 @@ template< typename Real,
    template< Algorithms::ScanType Type >
 void
 DistributedVector< Real, Device, Index, Communicator >::
-prefixSum( IndexType begin, IndexType end )
+scan( IndexType begin, IndexType end )
 {
    if( end == 0 )
       end = this->getSize();

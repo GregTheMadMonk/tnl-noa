@@ -19,7 +19,7 @@
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
-#include <TNL/ParallelFor.h>
+#include <TNL/Algorithms/ParallelFor.h>
 #include <TNL/Containers/List.h>
 
 using namespace TNL;

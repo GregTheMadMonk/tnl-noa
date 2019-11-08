@@ -24,28 +24,6 @@ template< typename Real,
           int SliceSize >
 SlicedEllpack< Real, Device, Index, SliceSize >::SlicedEllpack()
 {
-};
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          int SliceSize >
-String SlicedEllpack< Real, Device, Index, SliceSize >::getType()
-{
-   return String( "Matrices::SlicedEllpack< ") +
-          String( TNL::getType< Real >() ) +
-          String( ", " ) +
-          Device :: getDeviceType() +
-          String( " >" );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          int SliceSize >
-String SlicedEllpack< Real, Device, Index, SliceSize >::getTypeVirtual() const
-{
-   return this->getType();
 }
 
 template< typename Real,
@@ -54,7 +32,11 @@ template< typename Real,
           int SliceSize >
 String SlicedEllpack< Real, Device, Index, SliceSize >::getSerializationType()
 {
-   return getType();
+   return String( "Matrices::SlicedEllpack< ") +
+          TNL::getType< Real >() +
+          String( ", " ) +
+          getType< Device >() +
+          String( " >" );
 }
 
 template< typename Real,
@@ -97,7 +79,7 @@ void SlicedEllpack< Real, Device, Index, SliceSize >::setCompressedRowLengths( C
 
    this->maxRowLength = max( rowLengths );
 
-   this->slicePointers.template prefixSum< Containers::Algorithms::ScanType::Exclusive >();
+   this->slicePointers.template scan< Algorithms::ScanType::Exclusive >();
    this->allocateMatrixElements( this->slicePointers.getElement( slices ) );
 }
 
@@ -129,7 +111,7 @@ template< typename Real,
 Index SlicedEllpack< Real, Device, Index, SliceSize >::getNonZeroRowLength( const IndexType row ) const
 {
     ConstMatrixRow matrixRow = getRow( row );
-    return matrixRow.getNonZeroElementsCount( Device::getDeviceType() );
+    return matrixRow.getNonZeroElementsCount( getType< Device >() );
 }
 
 template< typename Real,
@@ -638,19 +620,14 @@ template< typename Real,
 SlicedEllpack< Real, Device, Index, SliceSize >&
 SlicedEllpack< Real, Device, Index, SliceSize >::operator=( const SlicedEllpack< Real2, Device2, Index2, SliceSize >& matrix )
 {
-   static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value || std::is_same< Device, Devices::MIC >::value,
-                  "unknown device" );
-   static_assert( std::is_same< Device2, Devices::Host >::value || std::is_same< Device2, Devices::Cuda >::value || std::is_same< Device2, Devices::MIC >::value,
-                  "unknown device" );
-
    this->setLike( matrix );
    this->slicePointers = matrix.slicePointers;
    this->sliceCompressedRowLengths = matrix.sliceCompressedRowLengths;
 
    // host -> cuda
    if( std::is_same< Device, Devices::Cuda >::value ) {
-      typename ValuesVector::HostType tmpValues;
-      typename ColumnIndexesVector::HostType tmpColumnIndexes;
+      typename ValuesVector::template Self< typename ValuesVector::ValueType, Devices::Sequential > tmpValues;
+      typename ColumnIndexesVector::template Self< typename ColumnIndexesVector::ValueType, Devices::Sequential > tmpColumnIndexes;
       tmpValues.setLike( matrix.values );
       tmpColumnIndexes.setLike( matrix.columnIndexes );
 
@@ -672,7 +649,7 @@ SlicedEllpack< Real, Device, Index, SliceSize >::operator=( const SlicedEllpack<
    }
 
    // cuda -> host
-   if( std::is_same< Device, Devices::Host >::value ) {
+   else {
       ValuesVector tmpValues;
       ColumnIndexesVector tmpColumnIndexes;
       tmpValues.setLike( matrix.values );
@@ -692,10 +669,6 @@ SlicedEllpack< Real, Device, Index, SliceSize >::operator=( const SlicedEllpack<
                this->columnIndexes[ offset + i * rowLength + j ] = tmpColumnIndexes[ offset + j * SliceSize + i ];
             }
       }
-   }
-   
-   if( std::is_same< Device, Devices::MIC >::value ) {
-      throw Exceptions::NotImplementedError("Cross-device assignment for the SlicedEllpack format is not implemented for MIC.");
    }
 
    return *this;
@@ -746,7 +719,7 @@ template< typename Real,
           int SliceSize >
 void SlicedEllpack< Real, Device, Index, SliceSize >::print( std::ostream& str ) const
 {
-   if( std::is_same< Device, Devices::Host >::value ) {
+   if( ! std::is_same< Device, Devices::Cuda >::value ) {
       for( IndexType row = 0; row < this->getRows(); row++ )
       {
          str <<"Row: " << row << " -> ";
@@ -767,7 +740,7 @@ void SlicedEllpack< Real, Device, Index, SliceSize >::print( std::ostream& str )
       }
    }
    else {
-      HostType hostMatrix;
+      Self< Real, Devices::Sequential > hostMatrix;
       hostMatrix = *this;
       hostMatrix.print( str );
    }
@@ -800,12 +773,13 @@ __device__ void SlicedEllpack< Real, Device, Index, SliceSize >::computeMaximalR
 }
 #endif
 
-template<>
-class SlicedEllpackDeviceDependentCode< Devices::Host >
+// implementation for host types
+template< typename Device_ >
+class SlicedEllpackDeviceDependentCode
 {
    public:
 
-      typedef Devices::Host Device;
+      typedef Device_ Device;
 
       template< typename Real,
                 typename Index,
@@ -898,7 +872,7 @@ __global__ void SlicedEllpack_computeMaximalRowLengthInSlices_CudaKernel( Sliced
                                                                           typename SlicedEllpack< Real, Devices::Cuda, Index, SliceSize >::ConstCompressedRowLengthsVectorView rowLengths,
                                                                           int gridIdx )
 {
-   const Index sliceIdx = gridIdx * Devices::Cuda::getMaxGridSize() * blockDim.x + blockIdx.x * blockDim.x + threadIdx.x;
+   const Index sliceIdx = gridIdx * Cuda::getMaxGridSize() * blockDim.x + blockIdx.x * blockDim.x + threadIdx.x;
    matrix->computeMaximalRowLengthInSlicesCuda( rowLengths, sliceIdx );
 }
 #endif
@@ -921,7 +895,7 @@ __global__ void SlicedEllpackVectorProductCudaKernel(
    Real multiplicator,
    const Index gridIdx )
 {
-   const Index rowIdx = ( gridIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   const Index rowIdx = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    if( rowIdx >= rows )
       return;
    const Index sliceIdx = rowIdx / SliceSize;
@@ -997,21 +971,21 @@ class SlicedEllpackDeviceDependentCode< Devices::Cuda >
 #ifdef HAVE_CUDA
          typedef SlicedEllpack< Real, Device, Index, SliceSize > Matrix;
          typedef typename Matrix::CompressedRowLengthsVector CompressedRowLengthsVector;
-         Matrix* kernel_matrix = Devices::Cuda::passToDevice( matrix );
+         Matrix* kernel_matrix = Cuda::passToDevice( matrix );
          const Index numberOfSlices = roundUpDivision( matrix.getRows(), SliceSize );
-         dim3 cudaBlockSize( 256 ), cudaGridSize( Devices::Cuda::getMaxGridSize() );
+         dim3 cudaBlockSize( 256 ), cudaGridSize( Cuda::getMaxGridSize() );
          const Index cudaBlocks = roundUpDivision( numberOfSlices, cudaBlockSize.x );
-         const Index cudaGrids = roundUpDivision( cudaBlocks, Devices::Cuda::getMaxGridSize() );
+         const Index cudaGrids = roundUpDivision( cudaBlocks, Cuda::getMaxGridSize() );
          for( int gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
          {
             if( gridIdx == cudaGrids - 1 )
-               cudaGridSize.x = cudaBlocks % Devices::Cuda::getMaxGridSize();
+               cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
             SlicedEllpack_computeMaximalRowLengthInSlices_CudaKernel< Real, Index, SliceSize ><<< cudaGridSize, cudaBlockSize >>>
                                                                              ( kernel_matrix,
                                                                                rowLengths,
                                                                                gridIdx );
          }
-         Devices::Cuda::freeFromDevice( kernel_matrix );
+         Cuda::freeFromDevice( kernel_matrix );
          TNL_CHECK_CUDA_DEVICE;
 #endif
          return true;
@@ -1031,16 +1005,16 @@ class SlicedEllpackDeviceDependentCode< Devices::Cuda >
          #ifdef HAVE_CUDA
             typedef SlicedEllpack< Real, Device, Index, SliceSize > Matrix;
             typedef typename Matrix::IndexType IndexType;
-            //Matrix* kernel_this = Devices::Cuda::passToDevice( matrix );
-            //InVector* kernel_inVector = Devices::Cuda::passToDevice( inVector );
-            //OutVector* kernel_outVector = Devices::Cuda::passToDevice( outVector );
-            dim3 cudaBlockSize( 256 ), cudaGridSize( Devices::Cuda::getMaxGridSize() );
+            //Matrix* kernel_this = Cuda::passToDevice( matrix );
+            //InVector* kernel_inVector = Cuda::passToDevice( inVector );
+            //OutVector* kernel_outVector = Cuda::passToDevice( outVector );
+            dim3 cudaBlockSize( 256 ), cudaGridSize( Cuda::getMaxGridSize() );
             const IndexType cudaBlocks = roundUpDivision( matrix.getRows(), cudaBlockSize.x );
-            const IndexType cudaGrids = roundUpDivision( cudaBlocks, Devices::Cuda::getMaxGridSize() );
+            const IndexType cudaGrids = roundUpDivision( cudaBlocks, Cuda::getMaxGridSize() );
             for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
             {
                if( gridIdx == cudaGrids - 1 )
-                  cudaGridSize.x = cudaBlocks % Devices::Cuda::getMaxGridSize();
+                  cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
                SlicedEllpackVectorProductCudaKernel
                < Real, Index, SliceSize >
                 <<< cudaGridSize, cudaBlockSize >>>
@@ -1057,67 +1031,12 @@ class SlicedEllpackDeviceDependentCode< Devices::Cuda >
                   gridIdx );
                TNL_CHECK_CUDA_DEVICE;
             }
-            //Devices::Cuda::freeFromDevice( kernel_this );
-            //Devices::Cuda::freeFromDevice( kernel_inVector );
-            //Devices::Cuda::freeFromDevice( kernel_outVector );
+            //Cuda::freeFromDevice( kernel_this );
+            //Cuda::freeFromDevice( kernel_inVector );
+            //Cuda::freeFromDevice( kernel_outVector );
             TNL_CHECK_CUDA_DEVICE;
             cudaDeviceSynchronize();
          #endif
-      }
-
-};
-
-template<>
-class SlicedEllpackDeviceDependentCode< Devices::MIC >
-{
-   public:
-
-      typedef Devices::MIC Device;
-
-      template< typename Real,
-                typename Index,
-                int SliceSize >
-      static void initRowTraverse( const SlicedEllpack< Real, Device, Index, SliceSize >& matrix,
-                                   const Index row,
-                                   Index& rowBegin,
-                                   Index& rowEnd,
-                                   Index& step )
-      {
-         throw Exceptions::NotImplementedError("Not Implemented yet SlicedEllpackDeviceDependentCode< Devices::MIC >::initRowTraverse");
-      }
-
-      template< typename Real,
-                typename Index,
-                int SliceSize >
-      __cuda_callable__
-      static void initRowTraverseFast( const SlicedEllpack< Real, Device, Index, SliceSize >& matrix,
-                                       const Index row,
-                                       Index& rowBegin,
-                                       Index& rowEnd,
-                                       Index& step )
-      {
-         throw Exceptions::NotImplementedError("Not Implemented yet SlicedEllpackDeviceDependentCode< Devices::MIC >::initRowTraverseFast");
-      }
-
-      template< typename Real,
-                typename Index,
-                int SliceSize >
-      static bool computeMaximalRowLengthInSlices( SlicedEllpack< Real, Device, Index, SliceSize >& matrix,
-                                                   typename SlicedEllpack< Real, Device, Index >::ConstCompressedRowLengthsVectorView rowLengths )
-      {
-         throw Exceptions::NotImplementedError("Not Implemented yet SlicedEllpackDeviceDependentCode< Devices::MIC >::computeMaximalRowLengthInSlices");
-      }
-
-      template< typename Real,
-                typename Index,
-                typename InVector,
-                typename OutVector,
-                int SliceSize >
-      static void vectorProduct( const SlicedEllpack< Real, Device, Index, SliceSize >& matrix,
-                                 const InVector& inVector,
-                                 OutVector& outVector )
-      {
-         throw Exceptions::NotImplementedError("Not Implemented yet SlicedEllpackDeviceDependentCode< Devices::MIC >::vectorProduct");
       }
 };
 

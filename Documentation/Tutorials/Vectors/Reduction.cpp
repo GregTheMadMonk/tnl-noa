@@ -24,7 +24,6 @@ void expressions()
    b.evaluate( [] __cuda_callable__ ( int i )->RealType { return i - 5.0; } );
    c = -5;
 
-   int arg;
    std::cout << "a = " << a << std::endl;
    std::cout << "b = " << b << std::endl;
    std::cout << "c = " << c << std::endl;

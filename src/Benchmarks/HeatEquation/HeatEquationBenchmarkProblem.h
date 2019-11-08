@@ -40,8 +40,6 @@ class HeatEquationBenchmarkProblem:
       using typename BaseType::DofVectorPointer;
 
       HeatEquationBenchmarkProblem();
-      
-      static String getType();
 
       String getPrologHeader() const;
 

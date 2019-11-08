@@ -25,11 +25,11 @@ initInterface( const MeshFunctionPointer& _input,
     const MeshType& mesh = _input->getMesh();
     
     const int cudaBlockSize( 16 );
-    int numBlocksX = Devices::Cuda::getNumberOfBlocks( mesh.getDimensions().x(), cudaBlockSize );
-    int numBlocksY = Devices::Cuda::getNumberOfBlocks( mesh.getDimensions().y(), cudaBlockSize );
+    int numBlocksX = Cuda::getNumberOfBlocks( mesh.getDimensions().x(), cudaBlockSize );
+    int numBlocksY = Cuda::getNumberOfBlocks( mesh.getDimensions().y(), cudaBlockSize );
     dim3 blockSize( cudaBlockSize, cudaBlockSize );
     dim3 gridSize( numBlocksX, numBlocksY );
-    Devices::Cuda::synchronizeDevice();
+    Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
     CudaInitCaller<<< gridSize, blockSize >>>( _input.template getData< Device >(),
             _output.template modifyData< Device >(),
             _interfaceMap.template modifyData< Device >(),

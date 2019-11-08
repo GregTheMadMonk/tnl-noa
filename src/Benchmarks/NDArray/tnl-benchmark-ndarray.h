@@ -14,7 +14,7 @@
 
 #include <TNL/Assert.h>
 #include <TNL/Math.h>
-#include <TNL/ParallelFor.h>
+#include <TNL/Algorithms/ParallelFor.h>
 
 #include <TNL/Containers/NDArray.h>
 #include <TNL/Containers/ndarray/Operations.h>
@@ -54,7 +54,8 @@ template< typename Array >
 void expect_eq( Array& a, Array& b )
 {
    if( std::is_same< typename Array::DeviceType, TNL::Devices::Cuda >::value ) {
-      typename Array::HostType a_host, b_host;
+      using HostArray = typename Array::template Self< typename Array::ValueType, TNL::Devices::Host >;
+      HostArray a_host, b_host;
       a_host = a;
       b_host = b;
       expect_eq_chunked( a_host, b_host );
@@ -98,7 +99,7 @@ void benchmark_array( Benchmark& benchmark, index_type size = 500000000 )
    };
 
    auto f = [&]() {
-      TNL::ParallelFor< Device >::exec( 0, (int) size, kernel, a.getData(), b.getData() );
+      Algorithms::ParallelFor< Device >::exec( 0, (int) size, kernel, a.getData(), b.getData() );
    };
 
    // warm-up for all benchmarks

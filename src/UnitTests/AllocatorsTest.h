@@ -15,7 +15,7 @@
 #include <TNL/Allocators/Cuda.h>
 #include <TNL/Allocators/CudaHost.h>
 #include <TNL/Allocators/CudaManaged.h>
-#include <TNL/Containers/Algorithms/ArrayOperations.h>
+#include <TNL/Algorithms/MemoryOperations.h>
 
 #include "gtest/gtest.h"
 
@@ -83,7 +83,7 @@ TYPED_TEST( AllocatorsTest, CudaManaged )
    ASSERT_NE( data, nullptr );
 
    // set data on the device
-   Containers::Algorithms::ArrayOperations< Devices::Cuda >::set( data, (ValueType) 0, ARRAY_TEST_SIZE );
+   Algorithms::MemoryOperations< Devices::Cuda >::set( data, (ValueType) 0, ARRAY_TEST_SIZE );
    ASSERT_NO_THROW( TNL_CHECK_CUDA_DEVICE );
 
    // check values on the host
@@ -103,7 +103,7 @@ TYPED_TEST( AllocatorsTest, Cuda )
    ASSERT_NE( data, nullptr );
 
    // set data on the device
-   Containers::Algorithms::ArrayOperations< Devices::Cuda >::set( data, (ValueType) 0, ARRAY_TEST_SIZE );
+   Algorithms::MemoryOperations< Devices::Cuda >::set( data, (ValueType) 0, ARRAY_TEST_SIZE );
    ASSERT_NO_THROW( TNL_CHECK_CUDA_DEVICE );
 
    allocator.deallocate( data, ARRAY_TEST_SIZE );

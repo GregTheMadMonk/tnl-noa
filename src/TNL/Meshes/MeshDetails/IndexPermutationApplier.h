@@ -156,27 +156,27 @@ public:
       };
 
       Pointers::DevicePointer< Mesh > meshPointer( mesh );
-      ParallelFor< DeviceType >::exec( (IndexType) 0, entitiesCount,
-                                       kernel1,
-                                       &meshPointer.template getData< DeviceType >(),
-                                       entities.getData(),
-                                       perm.getData() );
-      ParallelFor< DeviceType >::exec( (IndexType) 0, entitiesCount,
-                                       kernel2,
-                                       &meshPointer.template modifyData< DeviceType >(),
-                                       entities.getData() );
+      Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, entitiesCount,
+                                                   kernel1,
+                                                   &meshPointer.template getData< DeviceType >(),
+                                                   entities.getData(),
+                                                   perm.getData() );
+      Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, entitiesCount,
+                                                   kernel2,
+                                                   &meshPointer.template modifyData< DeviceType >(),
+                                                   entities.getData() );
 
       // permute superentities storage
-      TemplateStaticFor< int, 0, Dimension, SubentitiesStorageWorker >::execHost( mesh, perm );
+      Algorithms::TemplateStaticFor< int, 0, Dimension, SubentitiesStorageWorker >::execHost( mesh, perm );
 
       // permute subentities storage
-      TemplateStaticFor< int, Dimension + 1, Mesh::getMeshDimension() + 1, SuperentitiesStorageWorker >::execHost( mesh, perm );
+      Algorithms::TemplateStaticFor< int, Dimension + 1, Mesh::getMeshDimension() + 1, SuperentitiesStorageWorker >::execHost( mesh, perm );
 
       // update superentity indices from the subentities
-      TemplateStaticFor< int, 0, Dimension, SubentitiesWorker >::execHost( mesh, iperm );
+      Algorithms::TemplateStaticFor< int, 0, Dimension, SubentitiesWorker >::execHost( mesh, iperm );
 
       // update subentity indices from the superentities
-      TemplateStaticFor< int, Dimension + 1, Mesh::getMeshDimension() + 1, SuperentitiesWorker >::execHost( mesh, iperm );
+      Algorithms::TemplateStaticFor< int, Dimension + 1, Mesh::getMeshDimension() + 1, SuperentitiesWorker >::execHost( mesh, iperm );
    }
 };
 

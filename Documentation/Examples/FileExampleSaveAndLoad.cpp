@@ -18,21 +18,21 @@ int main()
     */
    File file;
    file.open( "test-file.tnl", std::ios_base::out | std::ios_base::trunc );
-   file.save< double, float, Devices::Host >( doubleArray, size );
+   file.save< double, float >( doubleArray, size );
    file.close();
 
    /***
     * Load the array of floats from the file.
     */
    file.open( "test-file.tnl", std::ios_base::in );
-   file.load< float, float, Devices::Host >( floatArray, size );
+   file.load< float, float >( floatArray, size );
    file.close();
 
    /***
     * Load the array of floats from the file and convert them to integers.
     */
    file.open( "test-file.tnl", std::ios_base::in );
-   file.load< int, float, Devices::Host >( intArray, size );
+   file.load< int, float >( intArray, size );
    file.close();
 
    /***

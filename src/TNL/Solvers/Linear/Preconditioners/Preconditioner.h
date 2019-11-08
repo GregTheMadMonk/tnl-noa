@@ -55,11 +55,6 @@ public:
       throw std::logic_error("The solve() method of a dummy preconditioner should not be called.");
    }
 
-   String getType() const
-   {
-      return String( "Preconditioner" );
-   }
-
    virtual ~Preconditioner() {}
 };
 

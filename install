@@ -1,59 +1,51 @@
 #!/bin/bash
 
+set -e
+
 BUILD_DEBUG="yes"
 BUILD_RELEASE="yes"
 
 OPTIONS=""
 
-CMAKE_TEST=`which cmake`    
-if test x${CMAKE_TEST} = "x";
-then
-    echo "Cmake is not installed on your system. Please install it by:"
-    echo ""
-    echo "   sudo apt-get install cmake     on Ubuntu and Debian based systems"
-    echo "   sudo yum install cmake         on RedHat, Fedora or CentOS"
-    echo "   sudo zypper install cmake      on OpenSuse"
-    echo ""
-    echo "You may also install it from the source code at:"
-    echo " http://www.cmake.org/download/"
-    exit 1
-fi
-
-for option in "$@"
-do
-    case $option in
-        --no-debug                    ) BUILD_DEBUG="no" ;;
-        --no-release                  ) BUILD_RELEASE="no" ;;        
-        *                             ) OPTIONS="${OPTIONS} ${option}" ;;
-    esac
+for option in "$@"; do
+   case $option in
+      --no-debug)
+         BUILD_DEBUG="no"
+         ;;
+      --no-release)
+         BUILD_RELEASE="no"
+         ;;
+      --build=*                     )
+         BUILD="${option#*=}"
+         if [[ "$BUILD" != "Release" ]]; then
+            BUILD_RELEASE="no"
+         fi
+         if [[ "$BUILD" != "Debug" ]]; then
+            BUILD_DEBUG="no"
+         fi
+         ;;
+      *)
+         OPTIONS="${OPTIONS} ${option}"
+         ;;
+   esac
 done
 
-if test ${BUILD_DEBUG} = "yes";
-then
-    if [ ! -d Debug ];
-    then
-       mkdir Debug
-    fi
-    cd Debug
-    if ! ../build --root-dir=.. --build=Debug --install=yes ${OPTIONS}
-    then
-       exit 1
-    fi
-    cd ..
+if [[ ${BUILD_DEBUG} == "yes" ]]; then
+   if [[ ! -d Debug ]]; then
+      mkdir Debug
+   fi
+   pushd Debug
+   ../build --root-dir=.. --build=Debug --install=yes ${OPTIONS}
+   popd
 fi
 
-if test ${BUILD_RELEASE} = "yes";
-then
-    if [ ! -d Release ];
-    then
-       mkdir Release
-    fi
-    cd Release
-    if ! ../build --root-dir=.. --build=Release --install=yes ${OPTIONS};
-    then
-        exit 1
-    fi
-    cd ..
+if [[ ${BUILD_RELEASE} == "yes" ]]; then
+   if [[ ! -d Release ]]; then
+      mkdir Release
+   fi
+   pushd Release
+   ../build --root-dir=.. --build=Release --install=yes ${OPTIONS};
+   popd
 fi
 
 

@@ -13,8 +13,8 @@
 #pragma once
 
 #include <TNL/Assert.h>
-#include <TNL/Devices/CudaCallable.h>
-#include <TNL/TemplateStaticFor.h>
+#include <TNL/Cuda/CudaCallable.h>
+#include <TNL/Algorithms/TemplateStaticFor.h>
 
 #include <TNL/Containers/ndarray/Meta.h>
 
@@ -231,7 +231,7 @@ SizesHolder< Index, sizes... >
 operator+( const SizesHolder< Index, sizes... >& lhs, const OtherHolder& rhs )
 {
    SizesHolder< Index, sizes... > result;
-   TemplateStaticFor< std::size_t, 0, sizeof...(sizes), __ndarray_impl::SizesHolerOperatorPlusHelper >::execHost( result, lhs, rhs );
+   Algorithms::TemplateStaticFor< std::size_t, 0, sizeof...(sizes), __ndarray_impl::SizesHolerOperatorPlusHelper >::execHost( result, lhs, rhs );
    return result;
 }
 
@@ -242,7 +242,7 @@ SizesHolder< Index, sizes... >
 operator-( const SizesHolder< Index, sizes... >& lhs, const OtherHolder& rhs )
 {
    SizesHolder< Index, sizes... > result;
-   TemplateStaticFor< std::size_t, 0, sizeof...(sizes), __ndarray_impl::SizesHolerOperatorMinusHelper >::execHost( result, lhs, rhs );
+   Algorithms::TemplateStaticFor< std::size_t, 0, sizeof...(sizes), __ndarray_impl::SizesHolerOperatorMinusHelper >::execHost( result, lhs, rhs );
    return result;
 }
 
@@ -295,9 +295,9 @@ template< typename Index,
 std::ostream& operator<<( std::ostream& str, const SizesHolder< Index, sizes... >& holder )
 {
    str << "SizesHolder< ";
-   TemplateStaticFor< std::size_t, 0, sizeof...(sizes) - 1, __ndarray_impl::SizesHolderStaticSizePrinter >::execHost( str, holder );
+   Algorithms::TemplateStaticFor< std::size_t, 0, sizeof...(sizes) - 1, __ndarray_impl::SizesHolderStaticSizePrinter >::execHost( str, holder );
    str << holder.template getStaticSize< sizeof...(sizes) - 1 >() << " >( ";
-   TemplateStaticFor< std::size_t, 0, sizeof...(sizes) - 1, __ndarray_impl::SizesHolderSizePrinter >::execHost( str, holder );
+   Algorithms::TemplateStaticFor< std::size_t, 0, sizeof...(sizes) - 1, __ndarray_impl::SizesHolderSizePrinter >::execHost( str, holder );
    str << holder.template getSize< sizeof...(sizes) - 1 >() << " )";
    return str;
 }
@@ -360,10 +360,10 @@ template< typename Index,
 std::ostream& operator<<( std::ostream& str, const __ndarray_impl::LocalBeginsHolder< SizesHolder< Index, sizes... >, ConstValue >& holder )
 {
    str << "LocalBeginsHolder< SizesHolder< ";
-   TemplateStaticFor< std::size_t, 0, sizeof...(sizes) - 1, __ndarray_impl::SizesHolderStaticSizePrinter >::execHost( str, (SizesHolder< Index, sizes... >) holder );
+   Algorithms::TemplateStaticFor< std::size_t, 0, sizeof...(sizes) - 1, __ndarray_impl::SizesHolderStaticSizePrinter >::execHost( str, (SizesHolder< Index, sizes... >) holder );
    str << holder.template getStaticSize< sizeof...(sizes) - 1 >() << " >, ";
    str << ConstValue << " >( ";
-   TemplateStaticFor< std::size_t, 0, sizeof...(sizes) - 1, __ndarray_impl::SizesHolderSizePrinter >::execHost( str, holder );
+   Algorithms::TemplateStaticFor< std::size_t, 0, sizeof...(sizes) - 1, __ndarray_impl::SizesHolderSizePrinter >::execHost( str, holder );
    str << holder.template getSize< sizeof...(sizes) - 1 >() << " )";
    return str;
 }

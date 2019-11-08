@@ -182,7 +182,7 @@ main( int argc, char* argv[] )
       runBlasBenchmarks< double >( benchmark, metadata, minSize, maxSize, sizeStepFactor, elementsPerRow );
 
    if( ! benchmark.save( logFile ) ) {
-      std::cerr << "Failed to write the benchmark results to file '" << parameters.getParameter< String >( "log-file" ) << "'." << std::endl;
+      std::cerr << "Failed to write the benchmark results to file '" << logFileName << "'." << std::endl;
       return EXIT_FAILURE;
    }
 

@@ -286,13 +286,6 @@ SolverMonitor*
 }
 
 template< typename Mesh, typename EulerScheme >
-String navierStokesSolver< Mesh, EulerScheme > :: getType()
-{
-   return String( "navierStokesSolver< " ) +
-          Mesh :: getType() + " >";
-}
-
-template< typename Mesh, typename EulerScheme >
 String navierStokesSolver< Mesh, EulerScheme > :: getPrologHeader() const
 {
    return String( "Navier-Stokes Problem Solver" );

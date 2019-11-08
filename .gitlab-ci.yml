@@ -21,7 +21,6 @@ stages:
     WITH_OPENMP: "no"
     WITH_CUDA: "no"
     WITH_CUDA_ARCH: "auto"
-    WITH_MIC: "no"
     WITH_MPI: "no"
     # configurations
     WITH_TESTS: "no"
@@ -46,6 +45,8 @@ stages:
           fi
         - export CTEST_OUTPUT_ON_FAILURE=1
         - export CTEST_PARALLEL_LEVEL=4
+        # enforce (more or less) warning-free builds
+        - export CXXFLAGS="-Werror -Wno-error=deprecated -Wno-error=deprecated-declarations -Wno-error=uninitialized -Wno-error=vla"
         - mkdir -p "./builddir/$CI_JOB_NAME"
         - pushd "./builddir/$CI_JOB_NAME"
         - cmake ../..
@@ -56,7 +57,6 @@ stages:
                 -DWITH_MPI=${WITH_MPI}
                 -DWITH_CUDA=${WITH_CUDA}
                 -DWITH_CUDA_ARCH=${WITH_CUDA_ARCH}
-                -DWITH_MIC=${WITH_MIC}
                 -DWITH_TESTS=${WITH_TESTS}
                 -DWITH_DOC=${WITH_DOC}
                 -DWITH_COVERAGE=${WITH_COVERAGE}

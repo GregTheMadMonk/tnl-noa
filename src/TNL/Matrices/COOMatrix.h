@@ -35,14 +35,13 @@ public:
 	typedef Index IndexType;
 	typedef typename Sparse< RealType, DeviceType, IndexType >:: CompressedRowLengthsVector CompressedRowLengthsVector;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
-	typedef COOMatrix< Real, Devices::Host, Index > HostType;
-	typedef COOMatrix< Real, Devices::Cuda, Index > CudaType;
+
+   template< typename _Real = Real,
+             typename _Device = Device,
+             typename _Index = Index >
+   using Self = COOMatrix< _Real, _Device, _Index >;
 
 	COOMatrix();
-
-	static String getType();
-
-	String getTypeVirtual() const;
 
 	bool setDimensions(const IndexType rows,
 			   	   	   const IndexType columns);

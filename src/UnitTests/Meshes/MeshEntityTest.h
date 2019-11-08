@@ -114,7 +114,8 @@ TEST( MeshEntityTest, VertexMeshEntityTest )
    using VertexMeshEntityType = TestMeshEntity< TestEdgeMeshConfig, typename EdgeMeshEntityType::SubentityTraits< 0 >::SubentityTopology >;
 
    using PointType = typename VertexMeshEntityType::PointType;
-   EXPECT_EQ( PointType::getType(),  ( Containers::StaticVector< 2, RealType >::getType() ) );
+   static_assert( std::is_same< PointType, Containers::StaticVector< 2, RealType > >::value,
+                  "unexpected PointType" );
 
    VertexMeshEntityType vertexEntity;
    PointType point;
@@ -131,7 +132,8 @@ TEST( MeshEntityTest, EdgeMeshEntityTest )
    static_assert( EdgeMeshEntityType::SubentityTraits< 0 >::storageEnabled, "Testing edge entity does not store vertices as required." );
 
    using PointType = typename VertexMeshEntityType::PointType;
-   EXPECT_EQ( PointType::getType(),  ( Containers::StaticVector< 2, RealType >::getType() ) );
+   static_assert( std::is_same< PointType, Containers::StaticVector< 2, RealType > >::value,
+                  "unexpected PointType" );
 
    /****
     *
@@ -211,7 +213,8 @@ TEST( MeshEntityTest, TriangleMeshEntityTest )
    static_assert( EdgeMeshEntityType::SubentityTraits< 0 >::storageEnabled, "Testing edge entity does not store vertices as required." );
 
    using PointType = typename VertexMeshEntityType::PointType;
-   EXPECT_EQ( PointType::getType(), ( Containers::StaticVector< 2, RealType >::getType() ) );
+   static_assert( std::is_same< PointType, Containers::StaticVector< 2, RealType > >::value,
+                  "unexpected PointType" );
 
    /****
     * We set-up the same situation as in the test above
@@ -293,7 +296,8 @@ TEST( MeshEntityTest, TetrahedronMeshEntityTest )
    static_assert( EdgeMeshEntityType::SubentityTraits< 0 >::storageEnabled, "Testing edge entity does not store vertices as required." );
 
    using PointType = typename VertexMeshEntityType::PointType;
-   EXPECT_EQ( PointType::getType(),  ( Containers::StaticVector< 3, RealType >::getType() ) );
+   static_assert( std::is_same< PointType, Containers::StaticVector< 3, RealType > >::value,
+                  "unexpected PointType" );
 
    /****
     * We set-up similar situation as above but with
@@ -457,7 +461,8 @@ TEST( MeshEntityTest, TwoTrianglesMeshEntityTest )
    static_assert( VertexMeshEntityType::SuperentityTraits< 1 >::storageEnabled, "Testing vertex entity does not store edges as required." );
 
    using PointType = typename VertexMeshEntityType::PointType;
-   EXPECT_EQ( PointType::getType(),  ( Containers::StaticVector< 2, RealType >::getType() ) );
+   static_assert( std::is_same< PointType, Containers::StaticVector< 2, RealType > >::value,
+                  "unexpected PointType" );
 
    /****
     * We set-up the following situation
@@ -647,7 +652,8 @@ TEST( MeshEntityTest, OneTriangleComparisonTest )
    static_assert( VertexMeshEntityType::SuperentityTraits< 1 >::storageEnabled, "Testing vertex entity does not store edges as required." );
 
    using PointType = typename VertexMeshEntityType::PointType;
-   EXPECT_EQ( PointType::getType(),  ( Containers::StaticVector< 2, RealType >::getType() ) );
+   static_assert( std::is_same< PointType, Containers::StaticVector< 2, RealType > >::value,
+                  "unexpected PointType" );
 
    PointType point0( 0.0, 0.0 ),
              point1( 1.0, 0.0 ),

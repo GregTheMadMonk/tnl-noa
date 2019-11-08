@@ -2207,7 +2207,7 @@ Result evaluateAndReduce( Vector& lhs,
 
    RealType* lhs_data = lhs.getData();
    auto fetch = [=] __cuda_callable__ ( IndexType i ) -> RealType { return ( lhs_data[ i ] = expression[ i ] ); };
-   return Containers::Algorithms::Reduction< DeviceType >::reduce( lhs.getSize(), reduction, fetch, zero );
+   return Algorithms::Reduction< DeviceType >::reduce( lhs.getSize(), reduction, fetch, zero );
 }
 
 template< typename Vector,
@@ -2226,7 +2226,7 @@ Result evaluateAndReduce( Vector& lhs,
 
    RealType* lhs_data = lhs.getData();
    auto fetch = [=] __cuda_callable__ ( IndexType i ) -> RealType { return ( lhs_data[ i ] = expression[ i ] ); };
-   return Containers::Algorithms::Reduction< DeviceType >::reduce( lhs.getSize(), reduction, fetch, zero );
+   return Algorithms::Reduction< DeviceType >::reduce( lhs.getSize(), reduction, fetch, zero );
 }
 
 ////
@@ -2252,7 +2252,7 @@ Result addAndReduce( Vector& lhs,
       lhs_data[ i ] += aux;
       return aux;
    };
-   return Containers::Algorithms::Reduction< DeviceType >::reduce( lhs.getSize(), reduction, fetch, zero );
+   return Algorithms::Reduction< DeviceType >::reduce( lhs.getSize(), reduction, fetch, zero );
 }
 
 template< typename Vector,
@@ -2275,7 +2275,7 @@ Result addAndReduce( Vector& lhs,
       lhs_data[ i ] += aux;
       return aux;
    };
-   return Containers::Algorithms::Reduction< DeviceType >::reduce( lhs.getSize(), reduction, fetch, zero );
+   return Algorithms::Reduction< DeviceType >::reduce( lhs.getSize(), reduction, fetch, zero );
 }
 
 ////
@@ -2301,7 +2301,7 @@ Result addAndReduceAbs( Vector& lhs,
       lhs_data[ i ] += aux;
       return TNL::abs( aux );
    };
-   return Containers::Algorithms::Reduction< DeviceType >::reduce( lhs.getSize(), reduction, fetch, zero );
+   return Algorithms::Reduction< DeviceType >::reduce( lhs.getSize(), reduction, fetch, zero );
 }
 
 template< typename Vector,
@@ -2324,7 +2324,7 @@ Result addAndReduceAbs( Vector& lhs,
       lhs_data[ i ] += aux;
       return TNL::abs( aux );
    };
-   return Containers::Algorithms::Reduction< DeviceType >::reduce( lhs.getSize(), reduction, fetch, zero );
+   return Algorithms::Reduction< DeviceType >::reduce( lhs.getSize(), reduction, fetch, zero );
 }
 
 } // namespace TNL

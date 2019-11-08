@@ -35,10 +35,18 @@ public:
    using LocalRangeType = Subrange< Index >;
    using LocalViewType = Containers::ArrayView< Value, Device, Index >;
    using ConstLocalViewType = Containers::ArrayView< std::add_const_t< Value >, Device, Index >;
-   using HostType = DistributedArray< Value, Devices::Host, Index, Communicator >;
-   using CudaType = DistributedArray< Value, Devices::Cuda, Index, Communicator >;
    using ViewType = DistributedArrayView< Value, Device, Index, Communicator >;
    using ConstViewType = DistributedArrayView< std::add_const_t< Value >, Device, Index, Communicator >;
+
+   /**
+    * \brief A template which allows to quickly obtain a \ref DistributedArray type with changed template parameters.
+    */
+   template< typename _Value,
+             typename _Device = Device,
+             typename _Index = Index,
+             typename _Communicator = Communicator >
+   using Self = DistributedArray< _Value, _Device, _Index, _Communicator >;
+
 
    DistributedArray() = default;
 
@@ -81,13 +89,6 @@ public:
    ConstLocalViewType getConstLocalView() const;
 
    void copyFromGlobal( ConstLocalViewType globalArray );
-
-
-   static String getType();
-
-   virtual String getTypeVirtual() const;
-
-   // TODO: no getSerializationType method until there is support for serialization
 
 
    // Usual Array methods follow below.

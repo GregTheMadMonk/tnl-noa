@@ -14,10 +14,11 @@
 
 #pragma once
 
+#include <list>
+
 #include <TNL/Containers/Array.h>
-#include <TNL/Containers/List.h>
 #include <TNL/String.h>
-#include <TNL/param-types.h>
+#include <TNL/TypeInfo.h>
 #include <TNL/Images//Image.h>
 #include <TNL/Images//DicomHeader.h>
 #include <TNL/Images//RegionOfInterest.h>
@@ -33,10 +34,7 @@
 #include <string>
 
 namespace TNL {
-
-template<> inline String getType< Images::DicomHeader * > () { return String( "DicomHeader *" ); }
-
-namespace Images {   
+namespace Images {
 
 struct WindowCenterWidth
 {
@@ -105,7 +103,7 @@ class DicomSeries : public Image< int >
  
       bool loadImage( const String& filePath, int number );
 
-      Containers::List< String > fileList;
+      std::list< String > fileList;
  
       Containers::Array<DicomHeader *,Devices::Host,int> dicomSeriesHeaders;
 

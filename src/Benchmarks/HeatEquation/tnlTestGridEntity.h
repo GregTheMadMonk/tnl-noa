@@ -55,8 +55,6 @@ class tnlTestGridEntity< Meshes::Grid< Dimension, Real, Device, Index >, Dimensi
       
       typedef TNL::Containers::StaticVector< meshDimension, IndexType > EntityOrientationType;
       typedef TNL::Containers::StaticVector< meshDimension, IndexType > EntityBasisType;
-      typedef tnlTestGridEntity< GridType, entityDimension, Config > ThisType;
-      //typedef tnlTestNeighborGridEntitiesStorage< ThisType > NeighborGridEntitiesStorageType;
       
       /*template< int NeighborEntityDimension = entityDimension >
       using NeighborEntities = 

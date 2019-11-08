@@ -65,8 +65,6 @@ public:
    using ConstVectorViewType = typename Base::ConstVectorViewType;
    using VectorType = typename Traits::VectorType;
 
-   String getType() const;
-
    static void configSetup( Config::ConfigDescription& config,
                             const String& prefix = "" );
 

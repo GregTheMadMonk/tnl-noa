@@ -17,7 +17,7 @@
 #pragma once
 
 #include <TNL/String.h>
-#include <TNL/param-types.h>
+#include <TNL/TypeInfo.h>
 #include <TNL/Meshes/Topologies/SubentityVertexMap.h>
 
 namespace TNL {
@@ -45,17 +45,6 @@ struct DefaultConfig
 
    static constexpr int worldDimension = WorldDimension;
    static constexpr int meshDimension = Cell::dimension;
-
-   static String getType()
-   {
-      return String( "Meshes::DefaultConfig< " ) +
-             Cell::getType() + ", " +
-             convertToString( WorldDimension ) + ", " +
-             TNL::getType< Real >() + ", " +
-             TNL::getType< GlobalIndex >() + ", " +
-             TNL::getType< LocalIndex >() + ", " +
-             TNL::getType< Id >() + " >";
-   };
 
    /****
     * Storage of mesh entities.

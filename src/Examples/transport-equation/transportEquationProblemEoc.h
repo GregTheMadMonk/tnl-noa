@@ -49,8 +49,6 @@ public transportEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communi
       using typename BaseType::DofVectorPointer;
       
       //using BaseType::getExplicitUpdate;
-      
-      static String getType();
 
       String getPrologHeader() const;
 

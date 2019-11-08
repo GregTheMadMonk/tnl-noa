@@ -18,14 +18,6 @@ namespace Solvers {
 namespace Linear {
 
 template< typename Matrix >
-String SOR< Matrix > :: getType() const
-{
-   return String( "SOR< " ) +
-          this->matrix -> getType() + ", " +
-          this->preconditioner -> getType() + " >";
-}
-
-template< typename Matrix >
 void
 SOR< Matrix >::
 configSetup( Config::ConfigDescription& config,

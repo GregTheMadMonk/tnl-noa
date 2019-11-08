@@ -28,8 +28,8 @@
 #include <TNL/Meshes/DimensionTag.h>
 #include <TNL/Meshes/Mesh.h>
 #include <TNL/Pointers/DevicePointer.h>
-#include <TNL/ParallelFor.h>
-#include <TNL/TemplateStaticFor.h>
+#include <TNL/Algorithms/ParallelFor.h>
+#include <TNL/Algorithms/TemplateStaticFor.h>
 
 namespace TNL {
 namespace Meshes {
@@ -69,10 +69,10 @@ public:
             subentity.template bindSuperentitiesStorageNetwork< SuperdimensionTag::value >( superentitiesStorage->getValues( i ) );
          };
 
-         ParallelFor< DeviceType >::exec( (IndexType) 0, entitiesCount,
-                                          kernel,
-                                          &meshPointer.template modifyData< DeviceType >(),
-                                          &superentitiesStoragePointer.template modifyData< DeviceType >() );
+         Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, entitiesCount,
+                                                      kernel,
+                                                      &meshPointer.template modifyData< DeviceType >(),
+                                                      &superentitiesStoragePointer.template modifyData< DeviceType >() );
       }
    };
 
@@ -109,10 +109,10 @@ public:
             superentity.template bindSubentitiesStorageNetwork< DimensionTag::value >( subentitiesStorage->getValues( i ) );
          };
 
-         ParallelFor< DeviceType >::exec( (IndexType) 0, entitiesCount,
-                                          kernel,
-                                          &meshPointer.template modifyData< DeviceType >(),
-                                          &subentitiesStoragePointer.template modifyData< DeviceType >() );
+         Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, entitiesCount,
+                                                      kernel,
+                                                      &meshPointer.template modifyData< DeviceType >(),
+                                                      &subentitiesStoragePointer.template modifyData< DeviceType >() );
       }
    };
 
@@ -144,14 +144,14 @@ public:
 
       static void exec( Mesh& mesh )
       {
-         TemplateStaticFor< int, Dimension + 1, Mesh::getMeshDimension() + 1, Inner >::execHost( mesh );
+         Algorithms::TemplateStaticFor< int, Dimension + 1, Mesh::getMeshDimension() + 1, Inner >::execHost( mesh );
       }
    };
 
 public:
    static void exec( Mesh& mesh )
    {
-      TemplateStaticFor< int, 0, Mesh::getMeshDimension() + 1, OuterLoop >::execHost( mesh );
+      Algorithms::TemplateStaticFor< int, 0, Mesh::getMeshDimension() + 1, OuterLoop >::execHost( mesh );
    }
 };
 

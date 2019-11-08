@@ -27,23 +27,6 @@ template< typename MeshReal,
           typename Real,
           typename Index,
           typename OperatorQ >
-String
-FiniteVolumeNonlinearOperator< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
-getType()
-{
-   return String( "FiniteVolumeNonlinearOperator< " ) +
-          MeshType::getType() + ", " +
-         TNL::getType< Real >() + ", " +
-         TNL::getType< Index >() + ", " +
-	  OperatorQ::getType() + " >";
-}
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index,
-          typename OperatorQ >
 template< typename MeshEntity,
           typename Vector >
 __cuda_callable__
@@ -96,23 +79,6 @@ setMatrixElements( const RealType& time,
                     Matrix& matrix ) const
 {
    typename Matrix::MatrixRow matrixRow = matrix.getRow( index );
-}
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index,
-	  typename OperatorQ >
-String
-FiniteVolumeNonlinearOperator< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
-getType()
-{
-   return String( "FiniteVolumeNonlinearOperator< " ) +
-          MeshType::getType() + ", " +
-         TNL::getType< Real >() + ", " +
-         TNL::getType< Index >() + ", " +
-	  OperatorQ::getType() + " >";
 }
 
 template< typename MeshReal,
@@ -199,23 +165,6 @@ setMatrixElements( const RealType& time,
    matrixRow.setElement( 2, entity.getIndex(),                                     cCoef );
    matrixRow.setElement( 3, neighborEntities.template getEntityIndex<  1,  0 >(), dCoef );
    matrixRow.setElement( 4, neighborEntities.template getEntityIndex<  0,  1 >(), eCoef );
-}
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index,
- 	  typename OperatorQ >
-String
-FiniteVolumeNonlinearOperator< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, OperatorQ, Real, Index >::
-getType()
-{
-   return String( "FiniteVolumeNonlinearOperator< " ) +
-          MeshType::getType() + ", " +
-         TNL::getType< Real >() + ", " +
-         TNL::getType< Index >() + ", " +
-	  OperatorQ::getType() + " >";
 }
 
 template< typename MeshReal,

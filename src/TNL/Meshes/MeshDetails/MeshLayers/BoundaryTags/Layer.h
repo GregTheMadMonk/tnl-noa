@@ -116,8 +116,8 @@ public:
       }
       // TODO: parallelize directly on the device
       else {
-         using BoundaryTagsHostArray = typename BoundaryTagsArray::HostType;
-         using OrderingHostArray     = typename OrderingArray::HostType;
+         using BoundaryTagsHostArray = typename BoundaryTagsArray::template Self< typename BoundaryTagsArray::ValueType, Devices::Host >;
+         using OrderingHostArray     = typename OrderingArray::template Self< typename OrderingArray::ValueType, Devices::Host >;
 
          BoundaryTagsHostArray hostBoundaryTags;
          OrderingHostArray hostBoundaryIndices;

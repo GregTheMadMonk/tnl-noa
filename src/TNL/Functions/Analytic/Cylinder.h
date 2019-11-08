@@ -54,8 +54,6 @@ class Cylinder< 1, Real > : public CylinderBase< Real, 1 >
       typedef Real RealType;
       typedef Containers::StaticVector< Dimension, Real > PointType;
 
-      static String getType();
-
       Cylinder();
 
       template< int XDiffOrder = 0,
@@ -81,8 +79,6 @@ class Cylinder< 2, Real > : public CylinderBase< Real, 2 >
       typedef Real RealType;
       typedef Containers::StaticVector< Dimension, Real > PointType;
 
-      static String getType();
-
       Cylinder();
 
       template< int XDiffOrder = 0,
@@ -107,8 +103,6 @@ class Cylinder< 3, Real > : public CylinderBase< Real, 3 >
       enum { Dimension = 3 };
       typedef Real RealType;
       typedef Containers::StaticVector< Dimension, Real > PointType;
-
-      static String getType();
 
       Cylinder();
 

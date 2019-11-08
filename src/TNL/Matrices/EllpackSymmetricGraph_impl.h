@@ -45,26 +45,6 @@ Index EllpackSymmetricGraph< Real, Device, Index >::getAlignedRows() const
 template< typename Real,
           typename Device,
           typename Index >
-String EllpackSymmetricGraph< Real, Device, Index > :: getType()
-{
-   return String( "EllpackSymmetricGraph< ") +
-          String( TNL::getType< Real >() ) +
-          String( ", " ) +
-          Device::getDeviceType() +
-          String( " >" );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-String EllpackSymmetricGraph< Real, Device, Index >::getTypeVirtual() const
-{
-   return this->getType();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
 void EllpackSymmetricGraph< Real, Device, Index >::setDimensions( const IndexType rows,
                                                                   const IndexType columns )
 {
@@ -74,7 +54,7 @@ void EllpackSymmetricGraph< Real, Device, Index >::setDimensions( const IndexTyp
    this->rows = rows;
    this->columns = columns;   
    if( std::is_same< DeviceType, Devices::Cuda >::value )
-      this->alignedRows = roundToMultiple( columns, Devices::Cuda::getWarpSize() );
+      this->alignedRows = roundToMultiple( columns, Cuda::getWarpSize() );
    else this->alignedRows = rows;
    if( this->rowLengths != 0 )
    allocateElements();
@@ -937,7 +917,7 @@ void EllpackSymmetricGraphVectorProductCuda( const EllpackSymmetricGraph< Real, 
                                              const int gridIdx,
                                              const int color )
 {
-   int globalIdx = ( gridIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   int globalIdx = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    matrix->spmvCuda( *inVector, *outVector, globalIdx, color );
 }
 #endif
@@ -986,19 +966,19 @@ class EllpackSymmetricGraphDeviceDependentCode< Devices::Cuda >
 #ifdef HAVE_CUDA
           typedef EllpackSymmetricGraph< Real, Devices::Cuda, Index > Matrix;
           typedef typename Matrix::IndexType IndexType;
-          Matrix* kernel_this = Devices::Cuda::passToDevice( matrix );
-          InVector* kernel_inVector = Devices::Cuda::passToDevice( inVector );
-          OutVector* kernel_outVector = Devices::Cuda::passToDevice( outVector );
-          dim3 cudaBlockSize( 256 ), cudaGridSize( Devices::Cuda::getMaxGridSize() );
+          Matrix* kernel_this = Cuda::passToDevice( matrix );
+          InVector* kernel_inVector = Cuda::passToDevice( inVector );
+          OutVector* kernel_outVector = Cuda::passToDevice( outVector );
+          dim3 cudaBlockSize( 256 ), cudaGridSize( Cuda::getMaxGridSize() );
           for( IndexType color = 0; color < matrix.getNumberOfColors(); color++ )
           {
               IndexType rows = matrix.getRowsOfColor( color );
               const IndexType cudaBlocks = roundUpDivision( rows, cudaBlockSize.x );
-              const IndexType cudaGrids = roundUpDivision( cudaBlocks, Devices::Cuda::getMaxGridSize() );
+              const IndexType cudaGrids = roundUpDivision( cudaBlocks, Cuda::getMaxGridSize() );
               for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
               {
                   if( gridIdx == cudaGrids - 1 )
-                      cudaGridSize.x = cudaBlocks % Devices::Cuda::getMaxGridSize();
+                      cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
                   EllpackSymmetricGraphVectorProductCuda< Real, Index, InVector, OutVector >
                                                       <<< cudaGridSize, cudaBlockSize >>>
                                                         ( kernel_this,
@@ -1009,9 +989,9 @@ class EllpackSymmetricGraphDeviceDependentCode< Devices::Cuda >
               }
           }
 
-          Devices::Cuda::freeFromDevice( kernel_this );
-          Devices::Cuda::freeFromDevice( kernel_inVector );
-          Devices::Cuda::freeFromDevice( kernel_outVector );
+          Cuda::freeFromDevice( kernel_this );
+          Cuda::freeFromDevice( kernel_inVector );
+          Cuda::freeFromDevice( kernel_outVector );
           TNL_CHECK_CUDA_DEVICE;
 #endif
       }

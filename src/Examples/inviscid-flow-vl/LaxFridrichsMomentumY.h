@@ -46,15 +46,6 @@ class LaxFridrichsMomentumY< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Rea
       using typename BaseType::VelocityFieldType;
       using typename BaseType::VelocityFieldPointer;
       using BaseType::Dimensions;
-      
-      static String getType()
-      {
-         return String( "LaxFridrichsMomentumY< " ) +
-             MeshType::getType() + ", " +
-             TNL::getType< Real >() + ", " +
-             TNL::getType< Index >() + " >"; 
-      }
-      
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
@@ -108,14 +99,6 @@ class LaxFridrichsMomentumY< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Rea
       using typename BaseType::VelocityFieldType;
       using typename BaseType::VelocityFieldPointer;
       using BaseType::Dimensions;
-      
-      static String getType()
-      {
-         return String( "LaxFridrichsMomentumY< " ) +
-             MeshType::getType() + ", " +
-             TNL::getType< Real >() + ", " +
-             TNL::getType< Index >() + " >"; 
-      }      
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__
@@ -189,14 +172,6 @@ class LaxFridrichsMomentumY< Meshes::Grid< 3,MeshReal, Device, MeshIndex >, Real
       using typename BaseType::VelocityFieldType;
       using typename BaseType::VelocityFieldPointer;
       using BaseType::Dimensions;      
-      
-      static String getType()
-      {
-         return String( "LaxFridrichsMomentumY< " ) +
-             MeshType::getType() + ", " +
-             TNL::getType< Real >() + ", " +
-             TNL::getType< Index >() + " >"; 
-      }      
 
       template< typename MeshFunction, typename MeshEntity >
       __cuda_callable__

@@ -41,11 +41,6 @@ struct MyData
    // operator used in tests, not necessary for Array to work
    template< typename T >
    bool operator==( T v ) const { return data == v; }
-
-   static String getType()
-   {
-      return String( "MyData" );
-   }
 };
 
 std::ostream& operator<<( std::ostream& str, const MyData& v )
@@ -99,27 +94,6 @@ using ViewTypes = ::testing::Types<
    ArrayView< double, Devices::Cuda, long >,
    ArrayView< MyData, Devices::Cuda, long >
 #endif
-#ifdef HAVE_MIC
-   ,
-   ArrayView< int,    Devices::MIC, short >,
-   ArrayView< long,   Devices::MIC, short >,
-   ArrayView< float,  Devices::MIC, short >,
-   ArrayView< double, Devices::MIC, short >,
-   // TODO: MyData does not work on MIC
-//   ArrayView< MyData, Devices::MIC, short >,
-   ArrayView< int,    Devices::MIC, int >,
-   ArrayView< long,   Devices::MIC, int >,
-   ArrayView< float,  Devices::MIC, int >,
-   ArrayView< double, Devices::MIC, int >,
-   // TODO: MyData does not work on MIC
-//   ArrayView< MyData, Devices::MIC, int >,
-   ArrayView< int,    Devices::MIC, long >,
-   ArrayView< long,   Devices::MIC, long >,
-   ArrayView< float,  Devices::MIC, long >,
-   ArrayView< double, Devices::MIC, long >,
-   // TODO: MyData does not work on MIC
-//   ArrayView< MyData, Devices::MIC, long >,
-#endif
 
    // all ArrayView tests should also work with VectorView
    // (but we can't test all types because the argument list would be too long...)
@@ -132,11 +106,6 @@ using ViewTypes = ::testing::Types<
    ,
    VectorView< float,  Devices::Cuda, long >,
    VectorView< double, Devices::Cuda, long >
-#endif
-#ifdef HAVE_MIC
-   ,
-   VectorView< float,  Devices::MIC, long >,
-   VectorView< double, Devices::MIC, long >
 #endif
 >;
 
@@ -289,14 +258,6 @@ void testArrayViewElementwiseAccess( Array< Value, Devices::Cuda, Index >&& u )
 #endif
 }
 
-template< typename Value, typename Index >
-void testArrayViewElementwiseAccess( Array< Value, Devices::MIC, Index >&& u )
-{
-#ifdef HAVE_MIC
-   // TODO
-#endif
-}
-
 TYPED_TEST( ArrayViewTest, elementwiseAccess )
 {
    using ArrayType = typename TestFixture::ArrayType;
@@ -375,9 +336,10 @@ TYPED_TEST( ArrayViewTest, comparisonOperator )
 {
    using ArrayType = typename TestFixture::ArrayType;
    using ViewType = typename TestFixture::ViewType;
+   using HostArrayType = typename ArrayType::template Self< typename ArrayType::ValueType, Devices::Sequential >;
 
    ArrayType a( 10 ), b( 10 );
-   typename ArrayType::HostType a_host( 10 );
+   HostArrayType a_host( 10 );
    for( int i = 0; i < 10; i ++ ) {
       a.setElement( i, i );
       a_host.setElement( i, i );
@@ -450,9 +412,11 @@ TYPED_TEST( ArrayViewTest, assignmentOperator )
    using ArrayType = typename TestFixture::ArrayType;
    using ViewType = typename TestFixture::ViewType;
    using ConstViewType = VectorView< const typename ArrayType::ValueType, typename ArrayType::DeviceType, typename ArrayType::IndexType >;
+   using HostArrayType = typename ArrayType::template Self< typename ArrayType::ValueType, Devices::Sequential >;
+   using HostViewType = typename HostArrayType::ViewType;
 
    ArrayType a( 10 ), b( 10 );
-   typename ArrayType::HostType a_host( 10 );
+   HostArrayType a_host( 10 );
    for( int i = 0; i < 10; i++ ) {
       a.setElement( i, i );
       a_host.setElement( i, i );
@@ -460,7 +424,7 @@ TYPED_TEST( ArrayViewTest, assignmentOperator )
 
    ViewType u = a.getView();
    ViewType v = b.getView();
-   typename ViewType::HostType u_host = a_host.getView();
+   HostViewType u_host = a_host.getView();
 
    v.setValue( 0 );
    v = u;
@@ -496,21 +460,25 @@ template< typename ArrayType,
           typename = typename std::enable_if< std::is_arithmetic< typename ArrayType::ValueType >::value >::type >
 void testArrayAssignmentWithDifferentType()
 {
+   using HostArrayType = typename ArrayType::template Self< typename ArrayType::ValueType, Devices::Sequential >;
+
    ArrayType a( 10 );
    Array< short, typename ArrayType::DeviceType, short > b( 10 );
-   Array< short, Devices::Host, short > b_host( 10 );
-   typename ArrayType::HostType a_host( 10 );
+   Array< short, Devices::Sequential, short > b_host( 10 );
+   HostArrayType a_host( 10 );
    for( int i = 0; i < 10; i++ ) {
       a.setElement( i, i );
       a_host.setElement( i, i );
    }
 
    using ViewType = ArrayView< typename ArrayType::ValueType, typename ArrayType::DeviceType, typename ArrayType::IndexType >;
+   using HostViewType = typename ViewType::template Self< typename ViewType::ValueType, Devices::Sequential >;
    ViewType u = a.getView();
-   typename ViewType::HostType u_host( a_host );
+   HostViewType u_host( a_host );
    using ShortViewType = ArrayView< short, typename ArrayType::DeviceType, short >;
+   using HostShortViewType = ArrayView< short, Devices::Sequential, short >;
    ShortViewType v( b );
-   typename ShortViewType::HostType v_host( b_host );
+   HostShortViewType v_host( b_host );
 
    v.setValue( 0 );
    v = u;

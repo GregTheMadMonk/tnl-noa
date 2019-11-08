@@ -17,7 +17,7 @@
 #include <algorithm>
 
 #include <TNL/Pointers/DevicePointer.h>
-#include <TNL/ParallelFor.h>
+#include <TNL/Algorithms/ParallelFor.h>
 
 namespace TNL {
 namespace Matrices {
@@ -130,8 +130,8 @@ copySparseMatrix_impl( Matrix1& A, const Matrix2& B )
 #ifdef HAVE_CUDA
       dim3 blockSize( 256 );
       dim3 gridSize;
-      const IndexType desGridSize = 32 * Devices::CudaDeviceInfo::getCudaMultiprocessors( Devices::CudaDeviceInfo::getActiveDevice() );
-      gridSize.x = min( desGridSize, Devices::Cuda::getNumberOfBlocks( rows, blockSize.x ) );
+      const IndexType desGridSize = 32 * Cuda::DeviceInfo::getCudaMultiprocessors( Cuda::DeviceInfo::getActiveDevice() );
+      gridSize.x = min( desGridSize, Cuda::getNumberOfBlocks( rows, blockSize.x ) );
 
       typename Matrix1::CompressedRowLengthsVector rowLengths;
       rowLengths.setSize( rows );
@@ -140,7 +140,7 @@ copySparseMatrix_impl( Matrix1& A, const Matrix2& B )
       const Pointers::DevicePointer< const Matrix2 > Bpointer( B );
 
       // set row lengths
-      Devices::Cuda::synchronizeDevice();
+      Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
       SparseMatrixSetRowLengthsVectorKernel<<< gridSize, blockSize >>>(
             rowLengths.getData(),
             &Bpointer.template getData< TNL::Devices::Cuda >(),
@@ -150,7 +150,7 @@ copySparseMatrix_impl( Matrix1& A, const Matrix2& B )
       Apointer->setCompressedRowLengths( rowLengths );
 
       // copy rows
-      Devices::Cuda::synchronizeDevice();
+      Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
       SparseMatrixCopyKernel<<< gridSize, blockSize >>>(
             &Apointer.template modifyData< TNL::Devices::Cuda >(),
             &Bpointer.template getData< TNL::Devices::Cuda >(),
@@ -170,7 +170,8 @@ typename std::enable_if< ! std::is_same< typename Matrix1::DeviceType, typename 
                            std::is_same< typename Matrix2::DeviceType, Devices::Host >::value >::type
 copySparseMatrix_impl( Matrix1& A, const Matrix2& B )
 {
-   typename Matrix2::CudaType B_tmp;
+   using CudaMatrix2 = typename Matrix2::template Self< typename Matrix2::RealType, Devices::Cuda >;
+   CudaMatrix2 B_tmp;
    B_tmp = B;
    copySparseMatrix_impl( A, B_tmp );
 }
@@ -182,7 +183,8 @@ typename std::enable_if< ! std::is_same< typename Matrix1::DeviceType, typename 
                            std::is_same< typename Matrix2::DeviceType, Devices::Cuda >::value >::type
 copySparseMatrix_impl( Matrix1& A, const Matrix2& B )
 {
-   typename Matrix1::CudaType A_tmp;
+   using CudaMatrix1 = typename Matrix1::template Self< typename Matrix1::RealType, Devices::Cuda >;
+   CudaMatrix1 A_tmp;
    copySparseMatrix_impl( A_tmp, B );
    A = A_tmp;
 }
@@ -353,11 +355,11 @@ reorderArray( const Array1& src, Array2& dest, const PermutationArray& perm )
       dest[ i ] = src[ perm[ i ] ];
    };
 
-   ParallelFor< DeviceType >::exec( (IndexType) 0, src.getSize(),
-                                    kernel,
-                                    src.getData(),
-                                    dest.getData(),
-                                    perm.getData() );
+   Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, src.getSize(),
+                                                kernel,
+                                                src.getData(),
+                                                dest.getData(),
+                                                perm.getData() );
 }
 
 } // namespace Matrices

@@ -180,24 +180,7 @@ copyFromGlobal( ConstLocalViewType globalArray )
       localView[ i ] = globalArray[ localRange.getGlobalIndex( i ) ];
    };
 
-   ParallelFor< DeviceType >::exec( (IndexType) 0, localRange.getSize(), kernel );
-}
-
-
-template< typename Value,
-          typename Device,
-          typename Index,
-          typename Communicator >
-String
-DistributedArrayView< Value, Device, Index, Communicator >::
-getType()
-{
-   return String( "Containers::DistributedArrayView< " ) +
-          TNL::getType< Value >() + ", " +
-          Device::getDeviceType() + ", " +
-          TNL::getType< Index >() + ", " +
-          // TODO: communicators don't have a getType method
-          "<Communicator> >";
+   Algorithms::ParallelFor< DeviceType >::exec( (IndexType) 0, localRange.getSize(), kernel );
 }
 
 

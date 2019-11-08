@@ -155,22 +155,22 @@ inline bool DicomSeries::retrieveFileList( const String& filePath)
       String fileNamePrefix(fileName.getString(), 0, fileName.getLength() - separatorPosition);
 
       struct dirent **dirp;
-      Containers::List<String > files;
+      std::list< String > files;
 
       //scan and sort directory
       int ndirs = scandir(directoryPath.getString(), &dirp, filter, alphasort);
       for(int i = 0 ; i < ndirs; ++i)
       {
-         files.Append( String((char *)dirp[i]->d_name));
+         files.push_back( String((char *)dirp[i]->d_name) );
          delete dirp[i];
       }
 
-      for (int i = 0; i < files.getSize(); i++)
+      for (auto& file : files)
       {
          //check if file prefix contained
-         if (strstr(files[ i ].getString(), fileNamePrefix.getString()))
+         if (strstr(file.getString(), fileNamePrefix.getString()))
          {
-            fileList.Append( directoryPath + files[ i ] );
+            fileList.push_back( directoryPath + file );
          }
       }
    }
@@ -182,7 +182,7 @@ inline bool DicomSeries::loadImage( const String& filePath, int number)
 #ifdef HAVE_DCMTK_H
    //load header
    DicomHeader *header = new DicomHeader();
-   dicomSeriesHeaders.setSize( fileList.getSize() );
+   dicomSeriesHeaders.setSize( fileList.size() );
    dicomSeriesHeaders.setElement( number, header );
    if( !header->loadFromFile( filePath ) )
       return false;
@@ -283,7 +283,7 @@ inline bool DicomSeries::loadImage( const String& filePath, int number)
         imagesInfo.frameSize = size;
         if (pixelData)
             delete pixelData;
-        pixelData = new Uint16[imagesInfo.frameUintsCount * fileList.getSize()];
+        pixelData = new Uint16[imagesInfo.frameUintsCount * fileList.size()];
     }
     else
     {//check image size for compatibility
@@ -328,13 +328,14 @@ inline bool DicomSeries::loadDicomSeries( const String& filePath )
    }
 
    //load images
-   int imagesCountToLoad = fileList.getSize();
-   for( int i=0; i < imagesCountToLoad; i++ )
+   int counter = 0;
+   for( auto& file : fileList )
    {
-      if( !loadImage( fileList[ i ].getString(),i ) )
+      if( !loadImage( file.getString(), counter ) )
       {
-         std::cerr << fileList[ i ] << " skipped";
+         std::cerr << file << " skipped";
       }
+      counter++;
    }
    return true;
 }

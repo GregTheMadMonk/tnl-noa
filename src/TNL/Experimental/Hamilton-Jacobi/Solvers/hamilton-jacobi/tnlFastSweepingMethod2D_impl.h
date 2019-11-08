@@ -251,8 +251,8 @@ solve( const MeshPointer& mesh,
         const int cudaBlockSize( 16 );
         
         // Setting number of threads and blocks for kernel
-        int numBlocksX = Devices::Cuda::getNumberOfBlocks( mesh->getDimensions().x() - vecLowerOverlaps[0] - vecUpperOverlaps[0], cudaBlockSize );
-        int numBlocksY = Devices::Cuda::getNumberOfBlocks( mesh->getDimensions().y() - vecLowerOverlaps[1] - vecUpperOverlaps[1], cudaBlockSize );
+        int numBlocksX = Cuda::getNumberOfBlocks( mesh->getDimensions().x() - vecLowerOverlaps[0] - vecUpperOverlaps[0], cudaBlockSize );
+        int numBlocksY = Cuda::getNumberOfBlocks( mesh->getDimensions().y() - vecLowerOverlaps[1] - vecUpperOverlaps[1], cudaBlockSize );
         dim3 blockSize( cudaBlockSize, cudaBlockSize );
         dim3 gridSize( numBlocksX, numBlocksY );
         
@@ -316,7 +316,7 @@ solve( const MeshPointer& mesh,
           
           
   /** HERE IS FIM FOR MPI AND WITHOUT MPI **/
-          Devices::Cuda::synchronizeDevice();
+          Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
           CudaUpdateCellCaller<18><<< gridSize, blockSize >>>( ptr, interfaceMapPtr.template getData< Device >(),
                   auxPtr.template getData< Device>(), helpFunc.template modifyData< Device>(),
                   blockCalculationIndicator.getView(), vecLowerOverlaps, vecUpperOverlaps );
@@ -327,7 +327,7 @@ solve( const MeshPointer& mesh,
           auxPtr.swap( helpFunc );
           
           // Getting blocks that should calculate in next passage. These blocks are neighbours of those that were calculated now.
-          Devices::Cuda::synchronizeDevice(); 
+          Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
           GetNeighbours<<< nBlocksNeigh, 1024 >>>( blockCalculationIndicator.getView(), blockCalculationIndicatorHelp.getView(), numBlocksX, numBlocksY );
           cudaDeviceSynchronize();
           TNL_CHECK_CUDA_DEVICE;
@@ -349,7 +349,7 @@ solve( const MeshPointer& mesh,
         if( numIter%2 == 1 ) // Need to check parity for MPI overlaps to synchronize ( otherwise doesnt work )
         {
           helpFunc.swap( auxPtr );
-          Devices::Cuda::synchronizeDevice();
+          Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
           cudaDeviceSynchronize();
           TNL_CHECK_CUDA_DEVICE;
         }

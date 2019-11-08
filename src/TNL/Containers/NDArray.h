@@ -352,13 +352,13 @@ class StaticNDArray
                          SizesHolder,
                          Permutation,
                          __ndarray_impl::NDArrayBase< SliceInfo< 0, 0 > >,
-                         void >
+                         Devices::Sequential >
 {
    using Base = NDArrayStorage< StaticArray< __ndarray_impl::StaticStorageSizeGetter< SizesHolder >::get(), Value >,
                          SizesHolder,
                          Permutation,
                          __ndarray_impl::NDArrayBase< SliceInfo< 0, 0 > >,
-                         void >;
+                         Devices::Sequential >;
    static_assert( __ndarray_impl::StaticStorageSizeGetter< SizesHolder >::get() > 0,
                   "All dimensions of a static array must to be positive." );
 

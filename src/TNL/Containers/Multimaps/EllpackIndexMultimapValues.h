@@ -13,7 +13,7 @@
 #include <type_traits>
 #include <ostream>
 
-#include <TNL/Devices/Cuda.h>
+#include <TNL/Cuda/CudaCallable.h>
 
 namespace TNL {
 namespace Containers {

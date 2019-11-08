@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include <TNL/Devices/Cuda.h>
+#include <TNL/Cuda/CudaCallable.h>
 #include <TNL/Functions/FunctionAdapter.h>
 #include <TNL/Pointers/SharedPointer.h>
 #include <TNL/Meshes/Traverser.h>

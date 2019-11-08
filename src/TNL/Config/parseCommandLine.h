@@ -13,7 +13,6 @@
 #include <cstring>
 #include <string>
 
-//#include <TNL/Object.h>
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
 
@@ -51,7 +50,7 @@ parseCommandLine( int argc, char* argv[],
 
    int i;
    bool parse_error( false );
-   for( i = 1; i < argc; i ++ )
+   for( i = 1; i < argc; i++ )
    {
       const char* _option = argv[ i ];
       if( _option[ 0 ] != '-' )
@@ -75,7 +74,7 @@ parseCommandLine( int argc, char* argv[],
       else
       {
          const String& entryType = entry->getEntryType();
-         const char* value = argv[ ++ i ];
+         const char* value = argv[ ++i ];
          if( ! value )
          {
             std::cerr << "Missing value for the parameter " << option << "." << std::endl;
@@ -97,11 +96,11 @@ parseCommandLine( int argc, char* argv[],
             while( i < argc && ( ( argv[ i ] )[ 0 ] != '-' || ( atof( argv[ i ] ) < 0.0 && ( parsedEntryType[ 1 ] == "int" || parsedEntryType[ 1 ] == "double" ) ) ) )
             {
                const char* value = argv[ i ++ ];
-               if( parsedEntryType[ 1 ] == "String" )
+               if( parsedEntryType[ 1 ] == "TNL::String" )
                {
                   string_list.push_back( String( value ) );
                }
-               if( parsedEntryType[ 1 ] == "bool" )
+               else if( parsedEntryType[ 1 ] == "bool" )
                {
                   const int v = matob( value );
                   if( v == -1 )
@@ -111,13 +110,18 @@ parseCommandLine( int argc, char* argv[],
                   }
                   else bool_list.push_back( v );
                }
-               if( parsedEntryType[ 1 ] == "int" )
+               else if( parsedEntryType[ 1 ] == "int" )
                {
                   integer_list.push_back( atoi( value ) );
                }
-               if( parsedEntryType[ 1 ] == "double" )
+               else if( parsedEntryType[ 1 ] == "double" )
                {
                   real_list.push_back( atof( value ) );
+               }
+               else
+               {
+                  // this will not happen if all entry types are handled above
+                  throw std::runtime_error( "Function parseCommandLine encountered unsupported entry type: " + entryType );
                }
             }
             if( string_list.size() )
@@ -133,14 +137,14 @@ parseCommandLine( int argc, char* argv[],
          }
          else
          {
-            if( parsedEntryType[ 0 ] == "String" )
+            if( parsedEntryType[ 0 ] == "TNL::String" )
             {
                if( ! ( ( ConfigEntry< String >* ) entry )->checkValue( value ) )
                   return false;
                 parameters.addParameter< String >( option, value );
                 continue;
             }
-            if( parsedEntryType[ 0 ] == "bool" )
+            else if( parsedEntryType[ 0 ] == "bool" )
             {
                const int v = matob( value );
                if( v == -1 )
@@ -151,7 +155,7 @@ parseCommandLine( int argc, char* argv[],
                else parameters.addParameter< bool >( option, v );
                continue;
             }
-            if( parsedEntryType[ 0 ] == "int" )
+            else if( parsedEntryType[ 0 ] == "int" )
             {
                /*if( ! std::isdigit( value ) ) //TODO: Check for real number
                {
@@ -163,7 +167,7 @@ parseCommandLine( int argc, char* argv[],
                   return false;
                parameters.addParameter< int >( option, atoi( value ) );
             }
-            if( parsedEntryType[ 0 ] == "double" )
+            else if( parsedEntryType[ 0 ] == "double" )
             {
                /*if( ! std::isdigit( value ) )  //TODO: Check for real number
                {
@@ -174,6 +178,11 @@ parseCommandLine( int argc, char* argv[],
                if( ! ( ( ConfigEntry< double >* ) entry )->checkValue( atof( value ) ) )
                   return false;
                parameters.addParameter< double >( option, atof( value ) );
+            }
+            else
+            {
+               // this will not happen if all entry types are handled above
+               throw std::runtime_error( "Function parseCommandLine encountered unsupported entry type: " + entryType );
             }
          }
       }

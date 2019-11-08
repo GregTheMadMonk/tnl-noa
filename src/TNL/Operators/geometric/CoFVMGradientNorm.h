@@ -58,15 +58,6 @@ class CoFVMGradientNorm< Meshes::Grid< MeshDimension, MeshReal, Device, MeshInde
       : BaseType( outerOperator, innerOperator, mesh )
       {}
  
-      static String getType()
-      {
-         return String( "CoFVMGradientNorm< " ) +
-            MeshType::getType() + ", " +
-            String( MeshDimension ) + ", " +
-           TNL::getType< Real >() + ", " +
-           TNL::getType< Index >() + " >";
-      }
- 
       void setEps( const RealType& eps )
       {
          this->getInnerOperator().setEps( eps );
@@ -99,14 +90,6 @@ class CoFVMGradientNorm< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, 0, Real,
  
    CoFVMGradientNorm()
    : epsSquare( 0.0 ){}
-
-   static String getType()
-   {
-      return String( "CoFVMGradientNorm< " ) +
-         MeshType::getType() + ", 0, " +
-        TNL::getType< Real >() + ", " +
-        TNL::getType< Index >() + " >";
-   }
 
    template< typename MeshFunction, typename MeshEntity >
    __cuda_callable__
@@ -160,16 +143,6 @@ class CoFVMGradientNorm< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, 1, Real
    CoFVMGradientNorm()
    : epsSquare( 0.0 ){}
 
-
-   static String getType()
-   {
-      return String( "CoFVMGradientNorm< " ) +
-         MeshType::getType() + ", 1, " +
-        TNL::getType< Real >() + ", " +
-        TNL::getType< Index >() + " >";
-
-   }
- 
    template< typename MeshFunction, typename MeshEntity >
    __cuda_callable__
    Real operator()( const MeshFunction& u,
@@ -277,14 +250,6 @@ class CoFVMGradientNorm< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, 2, Real
  
    CoFVMGradientNorm()
    : epsSquare( 0.0 ){}
-
-   static String getType()
-   {
-      return String( "CoFVMGradientNorm< " ) +
-         MeshType::getType() + ", 2, " +
-        TNL::getType< Real >() + ", " +
-        TNL::getType< Index >() + " >";
-   }
 
    template< typename MeshFunction, typename MeshEntity >
    __cuda_callable__

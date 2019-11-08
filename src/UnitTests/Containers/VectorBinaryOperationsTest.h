@@ -595,8 +595,11 @@ TYPED_TEST( VectorBinaryOperationsTest, comparisonOnDifferentDevices )
 {
    SETUP_BINARY_TEST_ALIASES;
 
-   typename TestFixture::RightVector::HostType _R1_h; _R1_h = this->_R1;
-   typename TestFixture::Right::HostType R1_h( _R1_h );
+   using RightHostVector = typename TestFixture::RightVector::Self< typename TestFixture::RightVector::RealType, Devices::Sequential >;
+   using RightHost = typename TestFixture::Right::Self< typename TestFixture::Right::RealType, Devices::Sequential >;
+
+   RightHostVector _R1_h; _R1_h = this->_R1;
+   RightHost R1_h( _R1_h );
 
    // L1 and L2 are device vectors
    EXPECT_EQ( L1, R1_h );

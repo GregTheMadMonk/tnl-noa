@@ -16,31 +16,12 @@
 
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Pointers/SmartPointer.h>
+#include <TNL/Pointers/SmartPointersRegister.h>
+#include <TNL/Cuda/MemoryHelpers.h>
 
 #include <cstring>   // std::memcpy, std::memcmp
 #include <cstddef>   // std::nullptr_t
 #include <algorithm> // swap
-
-//#define TNL_DEBUG_SHARED_POINTERS
-
-#ifdef TNL_DEBUG_SHARED_POINTERS
-   #include <typeinfo>
-   #include <cxxabi.h>
-   #include <iostream>
-   #include <string>
-   #include <memory>
-   #include <cstdlib>
-
-   inline
-   std::string demangle(const char* mangled)
-   {
-      int status;
-      std::unique_ptr<char[], void (*)(void*)> result(
-         abi::__cxa_demangle(mangled, 0, 0, &status), std::free);
-      return result.get() ? std::string(result.get()) : "error occurred";
-   }
-#endif
-
 
 namespace TNL {
 namespace Pointers {
@@ -78,7 +59,7 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
       : pd( nullptr )
       {
 #ifdef TNL_DEBUG_SHARED_POINTERS
-         std::cerr << "Creating shared pointer to " << demangle(typeid(ObjectType).name()) << std::endl;
+         std::cerr << "Creating shared pointer to " << getType< ObjectType >() << std::endl;
 #endif
          this->allocate( args... );
       }
@@ -119,7 +100,7 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
       bool recreate( Args... args )
       {
 #ifdef TNL_DEBUG_SHARED_POINTERS
-         std::cerr << "Recreating shared pointer to " << demangle(typeid(ObjectType).name()) << std::endl;
+         std::cerr << "Recreating shared pointer to " << getType< ObjectType >() << std::endl;
 #endif
          if( ! this->counter )
             return this->allocate( args... );
@@ -377,7 +358,7 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
       bool recreate( Args... args )
       {
 #ifdef TNL_DEBUG_SHARED_POINTERS
-         std::cerr << "Recreating shared pointer to " << demangle(typeid(ObjectType).name()) << std::endl;
+         std::cerr << "Recreating shared pointer to " << getType< ObjectType >() << std::endl;
 #endif
          if( ! this->pd )
             return this->allocate( args... );
@@ -478,7 +459,7 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
          if( this->pd != nullptr )
             this->pd->counter += 1;
 #ifdef TNL_DEBUG_SHARED_POINTERS
-         std::cerr << "Copy-assigned shared pointer: counter = " << this->pd->counter << ", type: " << demangle(typeid(ObjectType).name()) << std::endl;
+         std::cerr << "Copy-assigned shared pointer: counter = " << this->pd->counter << ", type: " << getType< ObjectType >() << std::endl;
 #endif
          return *this;
       }
@@ -494,7 +475,7 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
          if( this->pd != nullptr )
             this->pd->counter += 1;
 #ifdef TNL_DEBUG_SHARED_POINTERS
-         std::cerr << "Copy-assigned shared pointer: counter = " << this->pd->counter << ", type: " << demangle(typeid(ObjectType).name()) << std::endl;
+         std::cerr << "Copy-assigned shared pointer: counter = " << this->pd->counter << ", type: " << getType< ObjectType >() << std::endl;
 #endif
          return *this;
       }
@@ -508,7 +489,7 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
          ptr.pd = nullptr;
          ptr.cuda_pointer = nullptr;
 #ifdef TNL_DEBUG_SHARED_POINTERS
-         std::cerr << "Move-assigned shared pointer: counter = " << this->pd->counter << ", type: " << demangle(typeid(ObjectType).name()) << std::endl;
+         std::cerr << "Move-assigned shared pointer: counter = " << this->pd->counter << ", type: " << getType< ObjectType >() << std::endl;
 #endif
          return *this;
       }
@@ -524,7 +505,7 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
          ptr.pd = nullptr;
          ptr.cuda_pointer = nullptr;
 #ifdef TNL_DEBUG_SHARED_POINTERS
-         std::cerr << "Move-assigned shared pointer: counter = " << this->pd->counter << ", type: " << demangle(typeid(ObjectType).name()) << std::endl;
+         std::cerr << "Move-assigned shared pointer: counter = " << this->pd->counter << ", type: " << getType< ObjectType >() << std::endl;
 #endif
          return *this;
       }
@@ -537,7 +518,7 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
          if( this->modified() )
          {
 #ifdef TNL_DEBUG_SHARED_POINTERS
-            std::cerr << "Synchronizing shared pointer: counter = " << this->pd->counter << ", type: " << demangle(typeid(Object).name()) << std::endl;
+            std::cerr << "Synchronizing shared pointer: counter = " << this->pd->counter << ", type: " << getType< ObjectType >() << std::endl;
             std::cerr << "   ( " << sizeof( Object ) << " bytes, CUDA adress " << this->cuda_pointer << " )" << std::endl;
 #endif
             TNL_ASSERT( this->cuda_pointer, );
@@ -566,7 +547,7 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
       ~SharedPointer()
       {
          this->free();
-         Devices::Cuda::removeSmartPointer( this );
+         getSmartPointersRegister< DeviceType >().remove( this );
       }
 
    protected:
@@ -591,13 +572,13 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
       {
          this->pd = new PointerData( args... );
          // pass to device
-         this->cuda_pointer = Devices::Cuda::passToDevice( this->pd->data );
+         this->cuda_pointer = Cuda::passToDevice( this->pd->data );
          // set last-sync state
          this->set_last_sync_state();
 #ifdef TNL_DEBUG_SHARED_POINTERS
-         std::cerr << "Created shared pointer to " << demangle(typeid(ObjectType).name()) << " (cuda_pointer = " << this->cuda_pointer << ")" << std::endl;
+         std::cerr << "Created shared pointer to " << getType< ObjectType >() << " (cuda_pointer = " << this->cuda_pointer << ")" << std::endl;
 #endif
-         Devices::Cuda::insertSmartPointer( this );
+         getSmartPointersRegister< DeviceType >().insert( this );
          return true;
       }
 
@@ -622,14 +603,14 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
          if( this->pd )
          {
 #ifdef TNL_DEBUG_SHARED_POINTERS
-            std::cerr << "Freeing shared pointer: counter = " << this->pd->counter << ", cuda_pointer = " << this->cuda_pointer << ", type: " << demangle(typeid(ObjectType).name()) << std::endl;
+            std::cerr << "Freeing shared pointer: counter = " << this->pd->counter << ", cuda_pointer = " << this->cuda_pointer << ", type: " << getType< ObjectType >() << std::endl;
 #endif
             if( ! --this->pd->counter )
             {
                delete this->pd;
                this->pd = nullptr;
                if( this->cuda_pointer )
-                  Devices::Cuda::freeFromDevice( this->cuda_pointer );
+                  Cuda::freeFromDevice( this->cuda_pointer );
 #ifdef TNL_DEBUG_SHARED_POINTERS
                std::cerr << "...deleted data." << std::endl;
 #endif

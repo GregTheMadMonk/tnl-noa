@@ -13,7 +13,7 @@
 #pragma once
 
 #include "DistributedVectorView.h"
-#include <TNL/Containers/Algorithms/DistributedScan.h>
+#include <TNL/Algorithms/DistributedScan.h>
 
 namespace TNL {
 namespace Containers {
@@ -62,22 +62,6 @@ DistributedVectorView< Value, Device, Index, Communicator >::
 getConstView() const
 {
    return *this;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename Communicator >
-String
-DistributedVectorView< Real, Device, Index, Communicator >::
-getType()
-{
-   return String( "Containers::DistributedVectorView< " ) +
-          TNL::getType< Real >() + ", " +
-          Device::getDeviceType() + ", " +
-          TNL::getType< Index >() + ", " +
-          // TODO: communicators don't have a getType method
-          "<Communicator> >";
 }
 
 
@@ -277,7 +261,7 @@ template< typename Real,
    template< Algorithms::ScanType Type >
 void
 DistributedVectorView< Real, Device, Index, Communicator >::
-prefixSum( IndexType begin, IndexType end )
+scan( IndexType begin, IndexType end )
 {
    if( end == 0 )
       end = this->getSize();

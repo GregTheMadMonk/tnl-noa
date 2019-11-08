@@ -26,8 +26,8 @@ namespace Meshes {
 template< typename MeshConfig, typename EntityTopology >
 class MeshEntityReferenceOrientation
 {
-	typedef typename MeshTraits< MeshConfig >::LocalIndexType  LocalIndexType;
-	typedef typename MeshTraits< MeshConfig >::GlobalIndexType GlobalIndexType;
+   typedef typename MeshTraits< MeshConfig >::LocalIndexType  LocalIndexType;
+   typedef typename MeshTraits< MeshConfig >::GlobalIndexType GlobalIndexType;
 
    public:
       typedef EntitySeed< MeshConfig, EntityTopology >            SeedType;
@@ -45,8 +45,6 @@ class MeshEntityReferenceOrientation
             this->cornerIdsMap.insert( std::make_pair( referenceCornerIds[i], i ) );
          }
       }
- 
-      static String getType(){ return "MeshEntityReferenceOrientation"; };
 
       EntityOrientation createOrientation( const SeedType& seed ) const
       {
@@ -67,4 +65,3 @@ class MeshEntityReferenceOrientation
 
 } // namespace Meshes
 } // namespace TNL
-

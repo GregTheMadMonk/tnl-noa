@@ -57,14 +57,6 @@ Quad<T>::Quad(const Quad<T>& other) {
 }
 
 template <class T>
-String
-Quad< T >::
-getType()
-{
-   return String( "Quad< " + getType< T >() + " >" );
-}
-
-template <class T>
 T& Quad<T>::operator [](int idx) {
     return data[idx];
 }

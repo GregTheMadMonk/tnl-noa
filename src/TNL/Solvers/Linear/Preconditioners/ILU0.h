@@ -37,13 +37,7 @@ class ILU0_impl
 template< typename Matrix >
 class ILU0
 : public ILU0_impl< Matrix, typename Matrix::RealType, typename Matrix::DeviceType, typename Matrix::IndexType >
-{
-public:
-   String getType() const
-   {
-      return String( "ILU0" );
-   }
-};
+{};
 
 template< typename Matrix, typename Real, typename Index >
 class ILU0_impl< Matrix, Real, Devices::Host, Index >
@@ -196,29 +190,6 @@ public:
    virtual void solve( ConstVectorViewType b, VectorViewType x ) const override
    {
       throw Exceptions::NotImplementedError("ILU0 is not implemented yet for CUDA and distributed matrices.");
-   }
-};
-
-template< typename Matrix, typename Real, typename Index >
-class ILU0_impl< Matrix, Real, Devices::MIC, Index >
-: public Preconditioner< Matrix >
-{
-public:
-   using RealType = Real;
-   using DeviceType = Devices::MIC;
-   using IndexType = Index;
-   using typename Preconditioner< Matrix >::VectorViewType;
-   using typename Preconditioner< Matrix >::ConstVectorViewType;
-   using typename Preconditioner< Matrix >::MatrixPointer;
-
-   virtual void update( const MatrixPointer& matrixPointer ) override
-   {
-      throw Exceptions::NotImplementedError("Not Iplemented yet for MIC");
-   }
-
-   virtual void solve( ConstVectorViewType b, VectorViewType x ) const override
-   {
-      throw Exceptions::NotImplementedError("Not Iplemented yet for MIC");
    }
 };
 

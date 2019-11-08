@@ -52,9 +52,6 @@ class Meshes::Grid< 2, Real, Device, Index > : public tnlObject
    typedef Index IndexType;
    typedef Containers::StaticVector< 2, Real > PointType;
    typedef Containers::StaticVector< 2, Index > CoordinatesType;
-   typedef Meshes::Grid< 2, Real, Devices::Host, Index > HostType;
-   typedef Meshes::Grid< 2, Real, tnlCuda, Index > CudaType;   
-   typedef Meshes::Grid< 2, Real, Device, Index > ThisType;
    
    static const int meshDimension = 2;
 
@@ -77,10 +74,6 @@ class Meshes::Grid< 2, Real, Device, Index > : public tnlObject
    static constexpr int getMeshDimension() { return meshDimension; };
 
    Grid();
-
-   static String getType();
-
-   String getTypeVirtual() const;
 
    static String getSerializationType();
 
@@ -212,29 +205,13 @@ Meshes::Grid< 2, Real, Device, Index > :: Grid()
 template< typename Real,
           typename Device,
           typename Index >
-String Meshes::Grid< 2, Real, Device, Index > :: getType()
+String Meshes::Grid< 2, Real, Device, Index > :: getSerializationType()
 {
    return String( "Meshes::Grid< " ) +
           convertToString( getMeshDimension() ) + ", " +
-          String( ::getType< RealType >() ) + ", " +
-          String( Device :: getDeviceType() ) + ", " +
-          String( ::getType< IndexType >() ) + " >";
-}
-
-template< typename Real,
-           typename Device,
-           typename Index >
-String Meshes::Grid< 2, Real, Device, Index > :: getTypeVirtual() const
-{
-   return this->getType();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-String Meshes::Grid< 2, Real, Device, Index > :: getSerializationType()
-{
-   return HostType::getType();
+          getType< RealType >() + ", " +
+          getType< Devices::Host >() + ", " +
+          getType< IndexType >() + " >";
 };
 
 template< typename Real,
@@ -828,9 +805,6 @@ class Meshes::Grid< 2, Real, Device, Index > : public tnlObject
    typedef Index IndexType;
    typedef Containers::StaticVector< 2, Real > PointType;
    typedef Containers::StaticVector< 2, Index > CoordinatesType;
-   typedef Meshes::Grid< 2, Real, Devices::Host, Index > HostType;
-   typedef Meshes::Grid< 2, Real, tnlCuda, Index > CudaType;   
-   typedef Meshes::Grid< 2, Real, Device, Index > ThisType;
    
    static const int meshDimension = 2;
 
@@ -853,10 +827,6 @@ class Meshes::Grid< 2, Real, Device, Index > : public tnlObject
    static constexpr int getMeshDimension() { return meshDimension; };
 
    Grid();
-
-   static String getType();
-
-   String getTypeVirtual() const;
 
    static String getSerializationType();
 
@@ -977,29 +947,13 @@ Meshes::Grid< 2, Real, Device, Index > :: Grid()
 template< typename Real,
           typename Device,
           typename Index >
-String Meshes::Grid< 2, Real, Device, Index > :: getType()
+String Meshes::Grid< 2, Real, Device, Index > :: getSerializationType()
 {
    return String( "Meshes::Grid< " ) +
           convertToString( getMeshDimension() ) + ", " +
-          String( ::getType< RealType >() ) + ", " +
-          String( Device :: getDeviceType() ) + ", " +
-          String( ::getType< IndexType >() ) + " >";
-}
-
-template< typename Real,
-           typename Device,
-           typename Index >
-String Meshes::Grid< 2, Real, Device, Index > :: getTypeVirtual() const
-{
-   return this->getType();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-String Meshes::Grid< 2, Real, Device, Index > :: getSerializationType()
-{
-   return HostType::getType();
+          getType< RealType >() + ", " +
+          getType< Devices::Host >() + ", " +
+          getType< IndexType >() + " >";
 };
 
 template< typename Real,

@@ -32,13 +32,6 @@ setup( const Config::ParameterContainer& parameters,
  */
 
 template< typename Real >
-String
-Twins< 1, Real >::getType()
-{
-   return "Functions::Analytic::Twins< 1, " + TNL::getType< Real >() + String( " >" );
-}
-
-template< typename Real >
 Twins< 1, Real >::Twins()
 {
 }
@@ -75,13 +68,6 @@ operator()( const PointType& v,
 /****
  * 2D
  */
-template< typename Real >
-String
-Twins< 2, Real >::getType()
-{
-   return String( "Functions::Analytic::Twins< 2, " ) + TNL::getType< Real >() + " >";
-}
-
 template< typename Real >
 Twins< 2, Real >::Twins()
 {
@@ -121,13 +107,6 @@ operator()( const PointType& v,
 /****
  * 3D
  */
-template< typename Real >
-String
-Twins< 3, Real >::getType()
-{
-   return String( "Functions::Analytic::Twins< 3, " ) + TNL::getType< Real >() + " >";
-}
-
 template< typename Real >
 Twins< 3, Real >::Twins()
 {

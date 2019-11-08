@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/Devices/CudaCallable.h>
+#include <TNL/Cuda/CudaCallable.h>
 #include <TNL/Config/ParameterContainer.h>
 #include <TNL/Functions/Domain.h>
 

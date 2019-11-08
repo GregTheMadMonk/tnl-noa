@@ -25,11 +25,6 @@ namespace Topologies {
 struct Vertex
 {
    static constexpr int dimension = 0;
-
-   static String getType()
-   {
-      return "Topologies::Vertex";
-   }
 };
 
 } // namespace Topologies

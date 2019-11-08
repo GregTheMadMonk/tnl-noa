@@ -32,8 +32,6 @@ class ExactLinearDiffusion< 1 > : public Functions::Domain< 1, Functions::SpaceD
 
       static const int Dimension = 1;
  
-      static String getType();
- 
       template< typename Function >
       __cuda_callable__ inline
       typename Function::RealType operator()( const Function& function,
@@ -47,8 +45,6 @@ class ExactLinearDiffusion< 2 > : public Functions::Domain< 2, Functions::SpaceD
    public:
  
       static const int Dimension = 2;
- 
-      static String getType();
 
       template< typename Function >
       __cuda_callable__ inline
@@ -63,8 +59,6 @@ class ExactLinearDiffusion< 3 > : public Functions::Domain< 3 >
    public:
  
       static const int Dimension = 3;
- 
-      static String getType();
 
       template< typename Function >
       __cuda_callable__ inline

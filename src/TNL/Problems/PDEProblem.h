@@ -50,8 +50,6 @@ class PDEProblem : public Problem< Real, Device, Index >
        * This means that the time stepper will be set from the command line arguments.
        */
       typedef void TimeStepper;
-      
-      static String getType();
 
       String getPrologHeader() const;
 

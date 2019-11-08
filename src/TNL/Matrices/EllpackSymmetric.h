@@ -31,15 +31,13 @@ class EllpackSymmetric : public Sparse< Real, Device, Index >
    typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
-   typedef EllpackSymmetric< Real, Devices::Host, Index > HostType;
-   typedef EllpackSymmetric< Real, Devices::Cuda, Index > CudaType;
 
+   template< typename _Real = Real,
+             typename _Device = Device,
+             typename _Index = Index >
+   using Self = EllpackSymmetric< _Real, _Device, _Index >;
 
    EllpackSymmetric();
-
-   static String getType();
-
-   String getTypeVirtual() const;
 
    void setDimensions( const IndexType rows,
                        const IndexType columns );

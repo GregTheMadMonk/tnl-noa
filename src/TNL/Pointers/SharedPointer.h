@@ -15,27 +15,9 @@
 #include <cstring>
 #include <type_traits>
 #include <TNL/Assert.h>
+#include <TNL/TypeInfo.h>
 
 //#define TNL_DEBUG_SHARED_POINTERS
-
-#ifdef TNL_DEBUG_SHARED_POINTERS
-   #include <typeinfo>
-   #include <cxxabi.h>
-   #include <iostream>
-   #include <string>
-   #include <memory>
-   #include <cstdlib>
-
-   inline
-   std::string demangle(const char* mangled)
-   {
-      int status;
-      std::unique_ptr<char[], void (*)(void*)> result(
-         abi::__cxa_demangle(mangled, 0, 0, &status), std::free);
-      return result.get() ? std::string(result.get()) : "error occurred";
-   }
-#endif
-
 
 namespace TNL {
 namespace Pointers {
@@ -49,7 +31,7 @@ class SharedPointer
 
 } // namespace Pointers
 
-#if (!defined(NDEBUG)) && (!defined(HAVE_MIC))
+#ifndef NDEBUG
 namespace Assert {
 
 template< typename Object, typename Device >
@@ -59,7 +41,7 @@ struct Formatter< Pointers::SharedPointer< Object, Device > >
    printToString( const Pointers::SharedPointer< Object, Device >& value )
    {
       ::std::stringstream ss;
-      ss << "(SharedPointer< " << Object::getType() << ", " << Device::getDeviceType()
+      ss << "(" + getType< Pointers::SharedPointer< Object, Device > >()
          << " > object at " << &value << ")";
       return ss.str();
    }
@@ -72,4 +54,3 @@ struct Formatter< Pointers::SharedPointer< Object, Device > >
 
 #include <TNL/Pointers/SharedPointerHost.h>
 #include <TNL/Pointers/SharedPointerCuda.h>
-#include <TNL/Pointers/SharedPointerMic.h>

@@ -21,8 +21,6 @@
 
 namespace TNL {
 
-class String;
-
 /**
  * \brief Class for managing strings.
  *
@@ -38,8 +36,6 @@ class String;
  * \ref convertToString
  * 
  * \ref operator+
- * 
- * \ref operator<<
  * 
  * \ref mpiSend
  * 
@@ -100,11 +96,6 @@ class String
        * \brief Inherited assignment operators.
        */
       using std::string::operator=;
-
-      /**
-       * \brief Returns type of string: \c "String".
-       */
-      static String getType();
 
       /**
        * \brief Returns the number of characters in given string. Equivalent to \ref getSize.
@@ -367,11 +358,6 @@ String operator+( const char* string1, const String& string2 );
  * \brief Returns concatenation of \e string1 and \e string2.
  */
 String operator+( const std::string& string1, const String& string2 );
-
-/**
- * \brief Writes the string \e str to given \e stream
- */
-std::ostream& operator<<( std::ostream& stream, const String& str );
 
 /**
  * \brief Converts \e value of type \e T to a String.

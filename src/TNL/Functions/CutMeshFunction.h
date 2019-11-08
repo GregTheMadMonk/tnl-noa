@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Functions/MeshFunction.h>
-#include <TNL/StaticVectorFor.h>
+#include <TNL/Algorithms/StaticVectorFor.h>
 #include <TNL/Containers/StaticVector.h>
 
 namespace TNL {
@@ -101,7 +101,7 @@ class CutMeshFunction
 
             typename OutMesh::CoordinatesType starts;
             starts.setValue(0);
-            StaticVectorFor::exec(starts,outMesh.getDimensions(),kernel);
+            Algorithms::StaticVectorFor::exec(starts,outMesh.getDimensions(),kernel);
         }
 
         return inCut;

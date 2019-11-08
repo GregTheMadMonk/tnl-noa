@@ -14,21 +14,8 @@
 
 namespace TNL {
 namespace Solvers {
-namespace PDE {   
+namespace PDE {
 
-template< typename Problem,
-          template < typename OdeProblem, typename SolverMonitor > class OdeSolver >
-String
-ExplicitTimeStepper< Problem, OdeSolver >::
-getType()
-{
-   return String( "ExplicitTimeStepper< " ) +
-          Problem::getType() + ", " +
-          OdeSolverType::getType() + ", " +
-          String( " >" );
-};
-   
-   
 template< typename Problem,
           template < typename OdeProblem, typename SolverMonitor > class OdeSolver >
 ExplicitTimeStepper< Problem, OdeSolver >::
@@ -37,7 +24,7 @@ ExplicitTimeStepper()
   timeStep( 0 ),
   allIterations( 0 )
 {
-};
+}
 
 template< typename Problem,
           template < typename OdeProblem, typename SolverMonitor > class OdeSolver >

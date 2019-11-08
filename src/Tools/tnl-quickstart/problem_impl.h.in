@@ -12,18 +12,6 @@ template< typename Mesh,
           typename BoundaryCondition,
           typename RightHandSide,
           typename DifferentialOperator >
-TNL::String
-{problemBaseName}Problem< Mesh, Communicator, BoundaryCondition, RightHandSide, DifferentialOperator >::
-getTypeStatic()
-{{
-   return TNL::String( "{problemBaseName}Problem< " ) + Mesh :: getTypeStatic() + " >";
-}}
-
-template< typename Mesh,
-          typename Communicator,
-          typename BoundaryCondition,
-          typename RightHandSide,
-          typename DifferentialOperator >
 TNL::String 
 {problemBaseName}Problem< Mesh, Communicator, BoundaryCondition, RightHandSide, DifferentialOperator >::
 getPrologHeader() const

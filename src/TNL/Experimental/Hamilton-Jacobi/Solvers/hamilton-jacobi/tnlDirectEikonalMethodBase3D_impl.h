@@ -23,14 +23,14 @@ initInterface( const MeshFunctionPointer& _input,
     const MeshType& mesh = _input->getMesh();
     
     const int cudaBlockSize( 8 );
-    int numBlocksX = Devices::Cuda::getNumberOfBlocks( mesh.getDimensions().x(), cudaBlockSize );
-    int numBlocksY = Devices::Cuda::getNumberOfBlocks( mesh.getDimensions().y(), cudaBlockSize );
-    int numBlocksZ = Devices::Cuda::getNumberOfBlocks( mesh.getDimensions().z(), cudaBlockSize );
+    int numBlocksX = Cuda::getNumberOfBlocks( mesh.getDimensions().x(), cudaBlockSize );
+    int numBlocksY = Cuda::getNumberOfBlocks( mesh.getDimensions().y(), cudaBlockSize );
+    int numBlocksZ = Cuda::getNumberOfBlocks( mesh.getDimensions().z(), cudaBlockSize );
     if( cudaBlockSize * cudaBlockSize * cudaBlockSize > 1024 || numBlocksX > 1024 || numBlocksY > 1024 || numBlocksZ > 64 )
       std::cout << "Invalid kernel call. Dimensions of grid are max: [1024,1024,64], and maximum threads per block are 1024!" << std::endl;
     dim3 blockSize( cudaBlockSize, cudaBlockSize, cudaBlockSize );
     dim3 gridSize( numBlocksX, numBlocksY, numBlocksZ );
-    Devices::Cuda::synchronizeDevice();
+    Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
     CudaInitCaller3d<<< gridSize, blockSize >>>( _input.template getData< Device >(),
             _output.template modifyData< Device >(),
             _interfaceMap.template modifyData< Device >(), vLower, vUpper );

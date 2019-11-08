@@ -392,7 +392,7 @@ public:
    void allocate()
    {
       SizesHolderType localSizes;
-      TemplateStaticFor< std::size_t, 0, SizesHolderType::getDimension(), LocalSizesSetter >::execHost( localSizes, globalSizes, localBegins, localEnds );
+      Algorithms::TemplateStaticFor< std::size_t, 0, SizesHolderType::getDimension(), LocalSizesSetter >::execHost( localSizes, globalSizes, localBegins, localEnds );
       localArray.setSize( localSizes );
    }
 

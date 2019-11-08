@@ -24,7 +24,7 @@
 #include <unistd.h>  // getpid
 
 #ifdef HAVE_CUDA
-    #include <TNL/Devices/Cuda.h>
+    #include <TNL/Cuda/CheckDevice.h>
 
     typedef struct __attribute__((__packed__))  {
        char name[MPI_MAX_PROCESSOR_NAME];

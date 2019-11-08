@@ -68,11 +68,10 @@ template< typename MeshFunction,
 class MeshFunctionGnuplotWriter
 : public MeshFunctionGnuplotWriterBase
 {
-   public:
-
-      using MeshType = typename MeshFunction::MeshType;
-      using EntityType = typename MeshType::template EntityType< MeshFunction::getEntitiesDimension() >;
-      using GlobalIndex = typename MeshType::GlobalIndexType;
+public:
+   using MeshType = typename MeshFunction::MeshType;
+   using EntityType = typename MeshType::template EntityType< MeshFunction::getEntitiesDimension() >;
+   using GlobalIndex = typename MeshType::GlobalIndexType;
 
    static bool write( const MeshFunction& function,
                       std::ostream& str,
@@ -99,11 +98,10 @@ template< typename MeshFunction,
 class MeshFunctionGnuplotWriter< MeshFunction, Meshes::Grid< 2, Real, Device, Index >, EntityDimension >
 : public MeshFunctionGnuplotWriterBase
 {
-   public:
-
-      using MeshType = typename MeshFunction::MeshType;
-      using EntityType = typename MeshType::template EntityType< MeshFunction::getEntitiesDimension() >;
-      using GlobalIndex = typename MeshType::GlobalIndexType;
+public:
+   using MeshType = typename MeshFunction::MeshType;
+   using EntityType = typename MeshType::template EntityType< MeshFunction::getEntitiesDimension() >;
+   using GlobalIndex = typename MeshType::GlobalIndexType;
 
    static bool write( const MeshFunction& function,
                       std::ostream& str,
@@ -137,11 +135,10 @@ template< typename MeshFunction,
 class MeshFunctionGnuplotWriter< MeshFunction, Meshes::Grid< 3, Real, Device, Index >, EntityDimension >
 : public MeshFunctionGnuplotWriterBase
 {
-   public:
-
-      using MeshType = typename MeshFunction::MeshType;
-      using EntityType = typename MeshType::template EntityType< MeshFunction::getEntitiesDimension() >;
-      using GlobalIndex = typename MeshType::GlobalIndexType;
+public:
+   using MeshType = typename MeshFunction::MeshType;
+   using EntityType = typename MeshType::template EntityType< MeshFunction::getEntitiesDimension() >;
+   using GlobalIndex = typename MeshType::GlobalIndexType;
 
    static bool write( const MeshFunction& function,
                       std::ostream& str,
@@ -166,7 +163,6 @@ class MeshFunctionGnuplotWriter< MeshFunction, Meshes::Grid< 3, Real, Device, In
       return true;
    }
 };
-
 
 } // namespace Functions
 } // namespace TNL

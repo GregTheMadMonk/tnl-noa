@@ -111,7 +111,6 @@ class DensityBoundaryConditionsBoiler< Meshes::Grid< 1, MeshReal, Device, MeshIn
    typedef Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
    typedef Containers::StaticVector< 1, RealType > PointType;
    typedef typename MeshType::CoordinatesType CoordinatesType;
-   typedef DensityBoundaryConditionsBoiler< MeshType, Function, Real, Index > ThisType;
    typedef DensityBoundaryConditionsBoilerBase< Function > BaseType;
    typedef CompressibleConservativeVariables< MeshType > CompressibleConservativeVariablesType;
    typedef Pointers::SharedPointer< CompressibleConservativeVariablesType > CompressibleConservativeVariablesPointer;
@@ -234,7 +233,6 @@ class DensityBoundaryConditionsBoiler< Meshes::Grid< 2, MeshReal, Device, MeshIn
       typedef Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
       typedef Containers::StaticVector< 2, RealType > PointType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
-      typedef DensityBoundaryConditionsBoiler< MeshType, Function, Real, Index > ThisType;
       typedef DensityBoundaryConditionsBoilerBase< Function > BaseType;
       typedef CompressibleConservativeVariables< MeshType > CompressibleConservativeVariablesType;
       typedef Pointers::SharedPointer< CompressibleConservativeVariablesType > CompressibleConservativeVariablesPointer;
@@ -384,7 +382,6 @@ class DensityBoundaryConditionsBoiler< Meshes::Grid< 3, MeshReal, Device, MeshIn
       typedef Containers::Vector< RealType, DeviceType, IndexType> DofVectorType;
       typedef Containers::StaticVector< 3, RealType > PointType;
       typedef typename MeshType::CoordinatesType CoordinatesType;
-      typedef DensityBoundaryConditionsBoiler< MeshType, Function, Real, Index > ThisType;
       typedef DensityBoundaryConditionsBoilerBase< Function > BaseType;   
       typedef CompressibleConservativeVariables< MeshType > CompressibleConservativeVariablesType;
       typedef Pointers::SharedPointer< CompressibleConservativeVariablesType > CompressibleConservativeVariablesPointer;

@@ -71,28 +71,6 @@ getLocalMatrix() const
 }
 
 
-template< typename Matrix,
-          typename Communicator >
-String
-DistributedMatrix< Matrix, Communicator >::
-getType()
-{
-   return String( "Matrices::DistributedMatrix< " ) +
-          Matrix::getType() + ", " +
-          // TODO: communicators don't have a getType method
-          "<Communicator>" + " >";
-}
-
-template< typename Matrix,
-          typename Communicator >
-String
-DistributedMatrix< Matrix, Communicator >::
-getTypeVirtual() const
-{
-   return getType();
-}
-
-
 /*
  * Some common Matrix methods follow below.
  */

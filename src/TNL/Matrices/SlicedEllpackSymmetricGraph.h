@@ -49,15 +49,14 @@ class SlicedEllpackSymmetricGraph : public Sparse< Real, Device, Index >
    typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
-   typedef SlicedEllpackSymmetricGraph< Real, Devices::Host, Index > HostType;
-   typedef SlicedEllpackSymmetricGraph< Real, Devices::Cuda, Index > CudaType;
 
+   template< typename _Real = Real,
+             typename _Device = Device,
+             typename _Index = Index,
+             int _SliceSize = SliceSize >
+   using Self = SlicedEllpackSymmetricGraph< _Real, _Device, _Index, _SliceSize >;
 
    SlicedEllpackSymmetricGraph();
-
-   static String getType();
-
-   String getTypeVirtual() const;
 
    void setDimensions( const IndexType rows,
                        const IndexType columns );

@@ -94,25 +94,9 @@ getMeshDimension()
 template< typename MeshConfig, typename Device >
 String
 Mesh< MeshConfig, Device >::
-getType()
-{
-   return String( "Meshes::Mesh< ") + MeshConfig::getType() + " >";
-}
-
-template< typename MeshConfig, typename Device >
-String
-Mesh< MeshConfig, Device >::
-getTypeVirtual() const
-{
-   return this->getType();
-}
-
-template< typename MeshConfig, typename Device >
-String
-Mesh< MeshConfig, Device >::
 getSerializationType()
 {
-   return Mesh::getType();
+   return String( "Meshes::Mesh< ") + TNL::getType< MeshConfig >() + " >";
 }
 
 template< typename MeshConfig, typename Device >

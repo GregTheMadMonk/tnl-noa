@@ -12,7 +12,7 @@
 
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Pointers/SharedPointer.h>
-#include <TNL/CudaStreamPool.h>
+#include <TNL/Cuda/StreamPool.h>
 
 namespace TNL {
 

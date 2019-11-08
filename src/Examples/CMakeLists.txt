@@ -12,6 +12,5 @@ add_subdirectory( flow-vl )
 
 
 ADD_EXECUTABLE( ConfigDescriptionExample ConfigDescriptionExample.cpp )
-ADD_EXECUTABLE( ListExample ListExample.cpp )
 ADD_EXECUTABLE( LoggerExample LoggerExample.cpp )
 ADD_EXECUTABLE( MathExample MathExample.cpp )

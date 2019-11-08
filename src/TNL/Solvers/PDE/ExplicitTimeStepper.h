@@ -42,8 +42,6 @@ class ExplicitTimeStepper
 
       static_assert( ProblemType::isTimeDependent(), "The problem is not time dependent." );
 
-      static String getType();
-      
       ExplicitTimeStepper();
 
       static void configSetup( Config::ConfigDescription& config,

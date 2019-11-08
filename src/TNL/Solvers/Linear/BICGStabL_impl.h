@@ -21,16 +21,6 @@ namespace Solvers {
 namespace Linear {
 
 template< typename Matrix >
-String
-BICGStabL< Matrix >::
-getType() const
-{
-   return String( "BICGStabL< " ) +
-          this->matrix -> getType() + ", " +
-          this->preconditioner -> getType() + " >";
-}
-
-template< typename Matrix >
 void
 BICGStabL< Matrix >::
 configSetup( Config::ConfigDescription& config,

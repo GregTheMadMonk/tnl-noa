@@ -32,19 +32,6 @@ template< typename Real,
           typename Index,
           typename PressureGradient,
           template< int, typename, typename, typename > class GridGeometry >
-String LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, GridGeometry >,
-                           PressureGradient > :: getType()
-{
-   return String( "LaxFridrichs< " ) +
-          Meshes::Grid< 2, Real, Device, Index, GridGeometry > :: getType() + ", " +
-          PressureGradient :: getType() + " >";
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename PressureGradient,
-          template< int, typename, typename, typename > class GridGeometry >
 void LaxFridrichs< Meshes::Grid< 2, Real, Device, Index, GridGeometry >, PressureGradient  >::bindMesh( const MeshType& mesh )
 {
    this->mesh = &mesh;

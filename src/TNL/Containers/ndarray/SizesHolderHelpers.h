@@ -15,7 +15,7 @@
 #include <algorithm>
 
 #include <TNL/Assert.h>
-#include <TNL/TemplateStaticFor.h>
+#include <TNL/Algorithms/TemplateStaticFor.h>
 #include <TNL/Containers/ndarray/Meta.h>
 
 namespace TNL {
@@ -227,7 +227,7 @@ bool sizesWeakCompare( const SizesHolder1& sizes1, const SizesHolder2& sizes2 )
    static_assert( SizesHolder1::getDimension() == SizesHolder2::getDimension(),
                   "Cannot compare sizes of different dimensions." );
    bool result = true;
-   TemplateStaticFor< std::size_t, 0, SizesHolder1::getDimension(), WeakCompareHelper >::exec( sizes1, sizes2, result );
+   Algorithms::TemplateStaticFor< std::size_t, 0, SizesHolder1::getDimension(), WeakCompareHelper >::exec( sizes1, sizes2, result );
    return result;
 }
 

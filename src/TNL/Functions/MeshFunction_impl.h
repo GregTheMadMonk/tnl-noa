@@ -97,37 +97,13 @@ template< typename Mesh,
           typename Real >
 String
 MeshFunction< Mesh, MeshEntityDimension, Real >::
-getType()
-{
-   return String( "Functions::MeshFunction< " ) +
-                     Mesh::getType() + ", " +
-                     convertToString( MeshEntityDimension ) + ", " +
-                    TNL::getType< Real >() +
-                     " >";
-};
-
-template< typename Mesh,
-          int MeshEntityDimension,
-          typename Real >
-String
-MeshFunction< Mesh, MeshEntityDimension, Real >::
-getTypeVirtual() const
-{
-   return this->getType();
-};
-
-template< typename Mesh,
-          int MeshEntityDimension,
-          typename Real >
-String
-MeshFunction< Mesh, MeshEntityDimension, Real >::
 getSerializationType()
 {
    return String( "Functions::MeshFunction< " ) +
-                     Mesh::getSerializationType() + ", " +
-                     convertToString( MeshEntityDimension ) + ", " +
-                    TNL::getType< Real >() +
-                     " >";
+          TNL::getSerializationType< Mesh >() + ", " +
+          convertToString( MeshEntityDimension ) + ", " +
+          getType< Real >() +
+          " >";
 };
 
 template< typename Mesh,

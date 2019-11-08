@@ -37,8 +37,6 @@ class tnlOneSideDiffOperatorQ< Meshes::Grid< 1,MeshReal, Device, MeshIndex >, Re
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   static String getType();
-
    template< typename MeshFunction, typename MeshEntity >
    __cuda_callable__
    Real operator()( const MeshFunction& u,
@@ -74,8 +72,6 @@ class tnlOneSideDiffOperatorQ< Meshes::Grid< 2,MeshReal, Device, MeshIndex >, Re
    typedef Device DeviceType;
    typedef Index IndexType;
 
-   static String getType(); 
-      
    template< typename MeshFunction, typename MeshEntity >
    __cuda_callable__
    Real operator()( const MeshFunction& u,
@@ -111,8 +107,6 @@ class tnlOneSideDiffOperatorQ< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, R
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-
-   static String getType();
 
    template< typename MeshFunction, typename MeshEntity >
    __cuda_callable__

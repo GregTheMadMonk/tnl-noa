@@ -33,8 +33,6 @@ class Grid< 3, Real, Device, Index > : public Object
    typedef Index GlobalIndexType;
    typedef Containers::StaticVector< 3, Real > PointType;
    typedef Containers::StaticVector< 3, Index > CoordinatesType;
-   typedef Grid< 3, Real, Devices::Host, Index > HostType;
-   typedef Grid< 3, Real, Devices::Cuda, Index > CudaType;
 
    typedef DistributedMeshes::DistributedMesh <Grid> DistributedMeshType;
  
@@ -61,16 +59,6 @@ class Grid< 3, Real, Device, Index > : public Object
 
    // empty destructor is needed only to avoid crappy nvcc warnings
    ~Grid() {}
-
-   /**
-    * \brief See Grid1D::getType().
-    */
-   static String getType();
-
-   /**
-    * \brief See Grid1D::getTypeVirtual().
-    */
-   String getTypeVirtual() const;
 
    /**
     * \brief See Grid1D::getSerializationType().

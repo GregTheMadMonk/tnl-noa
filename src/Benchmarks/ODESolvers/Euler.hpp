@@ -10,7 +10,6 @@
 
 #pragma once
 
-#include <TNL/Devices/MIC.h>
 #include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Communicators/NoDistrCommunicator.h>
 #include "ComputeBlockResidue.h"
@@ -31,14 +30,6 @@ template< typename Problem, typename SolverMonitor >
 Euler< Problem, SolverMonitor >::Euler()
 : cflCondition( 0.0 )
 {
-};
-
-template< typename Problem, typename SolverMonitor >
-String Euler< Problem, SolverMonitor >::getType()
-{
-   return String( "Euler< " ) +
-          Problem :: getType() +
-          String( " >" );
 };
 
 template< typename Problem, typename SolverMonitor >
@@ -185,10 +176,10 @@ void Euler< Problem, SolverMonitor >::computeNewTimeLevel( DofVectorPointer& u,
    {
 #ifdef HAVE_CUDA
       dim3 cudaBlockSize( 512 );
-      const IndexType cudaBlocks = Devices::Cuda::getNumberOfBlocks( size, cudaBlockSize.x );
-      const IndexType cudaGrids = Devices::Cuda::getNumberOfGrids( cudaBlocks );
-      this->cudaBlockResidue.setSize( min( cudaBlocks, Devices::Cuda::getMaxGridSize() ) );
-      const IndexType threadsPerGrid = Devices::Cuda::getMaxGridSize() * cudaBlockSize.x;
+      const IndexType cudaBlocks = Cuda::getNumberOfBlocks( size, cudaBlockSize.x );
+      const IndexType cudaGrids = Cuda::getNumberOfGrids( cudaBlocks );
+      this->cudaBlockResidue.setSize( min( cudaBlocks, Cuda::getMaxGridSize() ) );
+      const IndexType threadsPerGrid = Cuda::getMaxGridSize() * cudaBlockSize.x;
 
       localResidue = 0.0;
       for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx ++ )
@@ -196,7 +187,7 @@ void Euler< Problem, SolverMonitor >::computeNewTimeLevel( DofVectorPointer& u,
          const IndexType sharedMemory = cudaBlockSize.x * sizeof( RealType );
          const IndexType gridOffset = gridIdx * threadsPerGrid;
          const IndexType currentSize = min( size - gridOffset, threadsPerGrid );
-         const IndexType currentGridSize = Devices::Cuda::getNumberOfBlocks( currentSize, cudaBlockSize.x );
+         const IndexType currentGridSize = Cuda::getNumberOfBlocks( currentSize, cudaBlockSize.x );
 
          updateUEuler<<< currentGridSize, cudaBlockSize, sharedMemory >>>( currentSize,
                                                                       tau,
@@ -209,28 +200,7 @@ void Euler< Problem, SolverMonitor >::computeNewTimeLevel( DofVectorPointer& u,
       }
 #endif
    }
-   
-   //MIC
-   if( std::is_same< DeviceType, Devices::MIC >::value )
-   {
 
-#ifdef HAVE_MIC
-      Devices::MICHider<RealType> mu;
-      mu.pointer=_u;
-      Devices::MICHider<RealType> mk1;
-      mk1.pointer=_k1;
-    #pragma offload target(mic) in(mu,mk1,size) inout(localResidue)
-    {
-      #pragma omp parallel for reduction(+:localResidue) firstprivate( mu, mk1 )  
-      for( IndexType i = 0; i < size; i ++ )
-      {
-         const RealType add = tau * mk1.pointer[ i ];
-         mu.pointer[ i ] += add;
-         localResidue += std::fabs( add );
-      }
-    }
-#endif
-   }
    localResidue /= tau * ( RealType ) size;
    Problem::CommunicatorType::Allreduce( &localResidue, &currentResidue, 1, MPI_SUM, Problem::CommunicatorType::AllGroup );
    //std::cerr << "Local residue = " << localResidue << " - globalResidue = " << currentResidue << std::endl;

@@ -11,24 +11,11 @@
 #pragma once
 
 #include <TNL/Containers/VectorView.h>
-#include <TNL/Containers/Algorithms/VectorAssignment.h>
+#include <TNL/Containers/detail/VectorAssignment.h>
 #include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
 namespace Containers {
-
-template< typename Real,
-          typename Device,
-          typename Index >
-String
-VectorView< Real, Device, Index >::
-getType()
-{
-   return String( "Containers::VectorView< " ) +
-                  TNL::getType< Real >() + ", " +
-                  Device::getDeviceType() + ", " +
-                  TNL::getType< Index >() + " >";
-}
 
 template< typename Real,
           typename Device,
@@ -63,7 +50,7 @@ template< typename Real,
 VectorView< Real, Device, Index >&
 VectorView< Real, Device, Index >::operator=( const VectorExpression& expression )
 {
-   Algorithms::VectorAssignment< VectorView, VectorExpression >::assign( *this, expression );
+   detail::VectorAssignment< VectorView, VectorExpression >::assign( *this, expression );
    return *this;
 }
 
@@ -75,7 +62,7 @@ VectorView< Real, Device, Index >&
 VectorView< Real, Device, Index >::
 operator+=( const VectorExpression& expression )
 {
-   Algorithms::VectorAssignmentWithOperation< VectorView, VectorExpression >::addition( *this, expression );
+   detail::VectorAssignmentWithOperation< VectorView, VectorExpression >::addition( *this, expression );
    return *this;
 }
 
@@ -87,7 +74,7 @@ VectorView< Real, Device, Index >&
 VectorView< Real, Device, Index >::
 operator-=( const VectorExpression& expression )
 {
-   Algorithms::VectorAssignmentWithOperation< VectorView, VectorExpression >::subtraction( *this, expression );
+   detail::VectorAssignmentWithOperation< VectorView, VectorExpression >::subtraction( *this, expression );
    return *this;
 }
 
@@ -99,7 +86,7 @@ VectorView< Real, Device, Index >&
 VectorView< Real, Device, Index >::
 operator*=( const VectorExpression& expression )
 {
-   Algorithms::VectorAssignmentWithOperation< VectorView, VectorExpression >::multiplication( *this, expression );
+   detail::VectorAssignmentWithOperation< VectorView, VectorExpression >::multiplication( *this, expression );
    return *this;
 }
 
@@ -111,7 +98,7 @@ VectorView< Real, Device, Index >&
 VectorView< Real, Device, Index >::
 operator/=( const VectorExpression& expression )
 {
-   Algorithms::VectorAssignmentWithOperation< VectorView, VectorExpression >::division( *this, expression );
+   detail::VectorAssignmentWithOperation< VectorView, VectorExpression >::division( *this, expression );
    return *this;
 }
 
@@ -121,7 +108,7 @@ template< typename Real,
    template< Algorithms::ScanType Type >
 void
 VectorView< Real, Device, Index >::
-prefixSum( IndexType begin, IndexType end )
+scan( IndexType begin, IndexType end )
 {
    if( end == 0 )
       end = this->getSize();
@@ -135,7 +122,7 @@ template< typename Real,
              typename FlagsArray >
 void
 VectorView< Real, Device, Index >::
-segmentedPrefixSum( FlagsArray& flags, IndexType begin, IndexType end )
+segmentedScan( FlagsArray& flags, IndexType begin, IndexType end )
 {
    if( end == 0 )
       end = this->getSize();
@@ -149,9 +136,9 @@ template< typename Real,
              typename VectorExpression >
 void
 VectorView< Real, Device, Index >::
-prefixSum( const VectorExpression& expression, IndexType begin, IndexType end )
+scan( const VectorExpression& expression, IndexType begin, IndexType end )
 {
-   throw Exceptions::NotImplementedError( "Prefix sum with vector expressions is not implemented." );
+   throw Exceptions::NotImplementedError( "Scan (prefix sum) with vector expressions is not implemented." );
 }
 
 template< typename Real,
@@ -162,9 +149,9 @@ template< typename Real,
              typename FlagsArray >
 void
 VectorView< Real, Device, Index >::
-segmentedPrefixSum( const VectorExpression& expression, FlagsArray& flags, IndexType begin, IndexType end )
+segmentedScan( const VectorExpression& expression, FlagsArray& flags, IndexType begin, IndexType end )
 {
-   throw Exceptions::NotImplementedError( "Prefix sum with vector expressions is not implemented." );
+   throw Exceptions::NotImplementedError( "Segmented scan (prefix sum) with vector expressions is not implemented." );
 }
 
 } // namespace Containers

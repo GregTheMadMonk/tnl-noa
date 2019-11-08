@@ -79,10 +79,6 @@ class Mesh
       using RealType        = typename PointType::RealType;
       using GlobalIndexVector = Containers::Vector< GlobalIndexType, DeviceType, GlobalIndexType >;
 
-      // shortcuts, compatibility with grids
-      using HostType = Mesh< MeshConfig, Devices::Host >;
-      using CudaType = Mesh< MeshConfig, Devices::Cuda >;
-
       template< int Dimension >
       using EntityTraits = typename MeshTraitsType::template EntityTraits< Dimension >;
 
@@ -109,10 +105,6 @@ class Mesh
       using Cell = EntityType< getMeshDimension() >;
       using Face = EntityType< getMeshDimension() - 1 >;
       using Vertex = EntityType< 0 >;
-
-      static String getType();
-
-      virtual String getTypeVirtual() const;
 
       static String getSerializationType();
 

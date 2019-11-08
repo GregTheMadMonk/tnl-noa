@@ -30,14 +30,13 @@ public:
    typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
 	typedef typename Sparse< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
 	typedef typename Sparse< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
-	typedef BiEllpackSymmetric< Real, Devices::Host, Index > HostType;
-	typedef BiEllpackSymmetric< Real, Devices::Cuda, Index > CudaType;
+
+   template< typename _Real = Real,
+             typename _Device = Device,
+             typename _Index = Index >
+   using Self = BiEllpackSymmetric< _Real, _Device, _Index >;
 
 	BiEllpackSymmetric();
-
-	static String getType();
-
-	String getTypeVirtual() const;
 
 	void setDimensions( const IndexType rows, const IndexType columns );
 

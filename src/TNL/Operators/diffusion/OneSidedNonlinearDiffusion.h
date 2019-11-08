@@ -52,15 +52,6 @@ class OneSidedNonlinearDiffusion< Meshes::Grid< 1,MeshReal, Device, MeshIndex >,
 
       OneSidedNonlinearDiffusion( const Nonlinearity& nonlinearity )
       : nonlinearity( nonlinearity ){}
- 
-      static String getType()
-      {
-         return String( "OneSidedNonlinearDiffusion< " ) +
-            MeshType::getType() + ", " +
-            Nonlinearity::getType() + "," +
-           TNL::getType< Real >() + ", " +
-           TNL::getType< Index >() + " >";
-      }
 
       template< typename MeshFunction,
                 typename MeshEntity >
@@ -146,15 +137,6 @@ class OneSidedNonlinearDiffusion< Meshes::Grid< 2, MeshReal, Device, MeshIndex >
 
       OneSidedNonlinearDiffusion( const Nonlinearity& nonlinearity )
       : nonlinearity( nonlinearity ){}
- 
-      static String getType()
-      {
-         return String( "OneSidedNonlinearDiffusion< " ) +
-            MeshType::getType() + ", " +
-            Nonlinearity::getType() + "," +
-           TNL::getType< Real >() + ", " +
-           TNL::getType< Index >() + " >";
-      }
 
       template< typename MeshFunction,
                 typename MeshEntity >
@@ -255,15 +237,6 @@ class OneSidedNonlinearDiffusion< Meshes::Grid< 3, MeshReal, Device, MeshIndex >
 
       OneSidedNonlinearDiffusion( const Nonlinearity& nonlinearity )
       : nonlinearity( nonlinearity ){}
- 
-      static String getType()
-      {
-         return String( "OneSidedNonlinearDiffusion< " ) +
-            MeshType::getType() + ", " +
-            Nonlinearity::getType() + "," +
-           TNL::getType< Real >() + ", " +
-           TNL::getType< Index >() + " >";
-      }
 
       template< typename MeshFunction,
                 typename MeshEntity >

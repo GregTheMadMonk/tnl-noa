@@ -23,22 +23,6 @@ template< typename Mesh,
           typename Index >
 String
 PDEProblem< Mesh, Communicator, Real, Device, Index >::
-getType()
-{
-   return String( "PDEProblem< " ) +
-          Mesh::getType() + ", " +
-          TNL::getType< Real >() + ", " +
-          Device::getDeviceType() + ", " +
-          TNL::getType< Index >() + " >";
-}
-
-template< typename Mesh,
-          typename Communicator,
-          typename Real,
-          typename Device,
-          typename Index >
-String
-PDEProblem< Mesh, Communicator, Real, Device, Index >::
 getPrologHeader() const
 {
    return String( "General PDE Problem" );

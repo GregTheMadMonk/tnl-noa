@@ -12,6 +12,9 @@
 
 #include <TNL/Matrices/Matrix.h>
 #include <TNL/Assert.h>
+#include <TNL/Cuda/LaunchHelpers.h>
+#include <TNL/Cuda/MemoryHelpers.h>
+#include <TNL/Cuda/SharedMemory.h>
 
 namespace TNL {
 namespace Matrices {
@@ -240,7 +243,7 @@ __global__ void MatrixVectorProductCudaKernel( const Matrix* matrix,
                                                   int gridIdx )
 {
    static_assert( std::is_same< typename Matrix::DeviceType, Devices::Cuda >::value, "" );
-   const typename Matrix::IndexType rowIdx = ( gridIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   const typename Matrix::IndexType rowIdx = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    if( rowIdx < matrix->getRows() )
       ( *outVector )[ rowIdx ] = matrix->rowVectorProduct( rowIdx, *inVector );
 }
@@ -255,16 +258,16 @@ void MatrixVectorProductCuda( const Matrix& matrix,
 {
 #ifdef HAVE_CUDA
    typedef typename Matrix::IndexType IndexType;
-   Matrix* kernel_this = Devices::Cuda::passToDevice( matrix );
-   InVector* kernel_inVector = Devices::Cuda::passToDevice( inVector );
-   OutVector* kernel_outVector = Devices::Cuda::passToDevice( outVector );
-   dim3 cudaBlockSize( 256 ), cudaGridSize( Devices::Cuda::getMaxGridSize() );
+   Matrix* kernel_this = Cuda::passToDevice( matrix );
+   InVector* kernel_inVector = Cuda::passToDevice( inVector );
+   OutVector* kernel_outVector = Cuda::passToDevice( outVector );
+   dim3 cudaBlockSize( 256 ), cudaGridSize( Cuda::getMaxGridSize() );
    const IndexType cudaBlocks = roundUpDivision( matrix.getRows(), cudaBlockSize.x );
-   const IndexType cudaGrids = roundUpDivision( cudaBlocks, Devices::Cuda::getMaxGridSize() );
+   const IndexType cudaGrids = roundUpDivision( cudaBlocks, Cuda::getMaxGridSize() );
    for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
    {
       if( gridIdx == cudaGrids - 1 )
-         cudaGridSize.x = cudaBlocks % Devices::Cuda::getMaxGridSize();
+         cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
       MatrixVectorProductCudaKernel<<< cudaGridSize, cudaBlockSize >>>
                                      ( kernel_this,
                                        kernel_inVector,
@@ -272,9 +275,9 @@ void MatrixVectorProductCuda( const Matrix& matrix,
                                        gridIdx );
       TNL_CHECK_CUDA_DEVICE;
    }
-   Devices::Cuda::freeFromDevice( kernel_this );
-   Devices::Cuda::freeFromDevice( kernel_inVector );
-   Devices::Cuda::freeFromDevice( kernel_outVector );
+   Cuda::freeFromDevice( kernel_this );
+   Cuda::freeFromDevice( kernel_inVector );
+   Cuda::freeFromDevice( kernel_outVector );
    TNL_CHECK_CUDA_DEVICE;
 #endif
 }

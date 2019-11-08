@@ -425,11 +425,11 @@ class MatrixReaderDeviceDependentCode< Devices::Cuda >
                             bool verbose,
                             bool symReader )
    {
-      typedef typename Matrix::HostType HostMatrixType;
-      typedef typename HostMatrixType::CompressedRowLengthsVector CompressedRowLengthsVector;
+      using HostMatrixType = typename Matrix::template Self< typename Matrix::RealType, Devices::Sequential >;
+      using CompressedRowLengthsVector = typename HostMatrixType::CompressedRowLengthsVector;
 
       HostMatrixType hostMatrix;
-      typename Matrix::CompressedRowLengthsVector rowLengths;
+      CompressedRowLengthsVector rowLengths;
       return MatrixReader< Matrix >::readMtxFileHostMatrix( file, matrix, rowLengths, verbose, symReader );
 
       matrix = hostMatrix;

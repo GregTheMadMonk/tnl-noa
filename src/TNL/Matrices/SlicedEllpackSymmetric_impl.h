@@ -24,28 +24,6 @@ template< typename Real,
           int SliceSize >
 SlicedEllpackSymmetric< Real, Device, Index, SliceSize >::SlicedEllpackSymmetric()
 {
-};
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          int SliceSize >
-String SlicedEllpackSymmetric< Real, Device, Index, SliceSize >::getType()
-{
-   return String( "SlicedEllpackSymmetric< ") +
-          String( TNL::getType< Real >() ) +
-          String( ", " ) +
-          Device :: getDeviceType() +
-          String( " >" );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          int SliceSize >
-String SlicedEllpackSymmetric< Real, Device, Index, SliceSize >::getTypeVirtual() const
-{
-   return this->getType();
 }
 
 template< typename Real,
@@ -80,7 +58,7 @@ void SlicedEllpackSymmetric< Real, Device, Index, SliceSize >::setCompressedRowL
 
    this->maxRowLength = max( rowLengths );
 
-   this->slicePointers.template prefixSum< Containers::Algorithms::ScanType::Exclusive >();
+   this->slicePointers.template scan< Algorithms::ScanType::Exclusive >();
    this->allocateMatrixElements( this->slicePointers.getElement( slices ) );
 }
 
@@ -534,7 +512,7 @@ const SlicedEllpackSymmetric< Real, Devices::Cuda, Index, SliceSize >* matrix,
                                                        OutVector* outVector,
                                                        int gridIdx )
 {
-   int rowIdx = ( gridIdx * Devices::Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
+   int rowIdx = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    matrix->spmvCuda( *inVector, *outVector, rowIdx );
 }
 #endif
@@ -806,7 +784,7 @@ __global__ void SlicedEllpackSymmetric_computeMaximalRowLengthInSlices_CudaKerne
                                                                                    typename SlicedEllpackSymmetric< Real, Devices::Cuda, Index, SliceSize >::ConstCompressedRowLengthsVectorView rowLengths,
                                                                                    int gridIdx )
 {
-   const Index sliceIdx = gridIdx * Devices::Cuda::getMaxGridSize() * blockDim.x + blockIdx.x * blockDim.x + threadIdx.x;
+   const Index sliceIdx = gridIdx * Cuda::getMaxGridSize() * blockDim.x + blockIdx.x * blockDim.x + threadIdx.x;
    matrix->computeMaximalRowLengthInSlicesCuda( rowLengths, sliceIdx );
 }
 #endif
@@ -865,21 +843,21 @@ class SlicedEllpackSymmetricDeviceDependentCode< Devices::Cuda >
 #ifdef HAVE_CUDA
          typedef SlicedEllpackSymmetric< Real, Device, Index, SliceSize > Matrix;
          typedef typename Matrix::RowLengthsVector CompressedRowLengthsVector;
-         Matrix* kernel_matrix = Devices::Cuda::passToDevice( matrix );
+         Matrix* kernel_matrix = Cuda::passToDevice( matrix );
          const Index numberOfSlices = roundUpDivision( matrix.getRows(), SliceSize );
-         dim3 cudaBlockSize( 256 ), cudaGridSize( Devices::Cuda::getMaxGridSize() );
+         dim3 cudaBlockSize( 256 ), cudaGridSize( Cuda::getMaxGridSize() );
          const Index cudaBlocks = roundUpDivision( numberOfSlices, cudaBlockSize.x );
-         const Index cudaGrids = roundUpDivision( cudaBlocks, Devices::Cuda::getMaxGridSize() );
+         const Index cudaGrids = roundUpDivision( cudaBlocks, Cuda::getMaxGridSize() );
          for( int gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
          {
             if( gridIdx == cudaGrids - 1 )
-               cudaGridSize.x = cudaBlocks % Devices::Cuda::getMaxGridSize();
+               cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
             SlicedEllpackSymmetric_computeMaximalRowLengthInSlices_CudaKernel< Real, Index, SliceSize ><<< cudaGridSize, cudaBlockSize >>>
                                                                              ( kernel_matrix,
                                                                                rowLengths,
                                                                                gridIdx );
          }
-         Devices::Cuda::freeFromDevice( kernel_matrix );
+         Cuda::freeFromDevice( kernel_matrix );
          TNL_CHECK_CUDA_DEVICE;
 #endif
       }
@@ -896,16 +874,16 @@ class SlicedEllpackSymmetricDeviceDependentCode< Devices::Cuda >
 #ifdef HAVE_CUDA
          typedef SlicedEllpackSymmetric< Real, Device, Index, SliceSize > Matrix;
          typedef typename Matrix::IndexType IndexType;
-         Matrix* kernel_this = Devices::Cuda::passToDevice( matrix );
-         InVector* kernel_inVector = Devices::Cuda::passToDevice( inVector );
-         OutVector* kernel_outVector = Devices::Cuda::passToDevice( outVector );
-         dim3 cudaBlockSize( 256 ), cudaGridSize( Devices::Cuda::getMaxGridSize() );
+         Matrix* kernel_this = Cuda::passToDevice( matrix );
+         InVector* kernel_inVector = Cuda::passToDevice( inVector );
+         OutVector* kernel_outVector = Cuda::passToDevice( outVector );
+         dim3 cudaBlockSize( 256 ), cudaGridSize( Cuda::getMaxGridSize() );
          const IndexType cudaBlocks = roundUpDivision( matrix.getRows(), cudaBlockSize.x );
-         const IndexType cudaGrids = roundUpDivision( cudaBlocks, Devices::Cuda::getMaxGridSize() );
+         const IndexType cudaGrids = roundUpDivision( cudaBlocks, Cuda::getMaxGridSize() );
          for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
          {
             if( gridIdx == cudaGrids - 1 )
-               cudaGridSize.x = cudaBlocks % Devices::Cuda::getMaxGridSize();
+               cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
             SlicedEllpackSymmetricVectorProductCudaKernel< Real, Index, SliceSize, InVector, OutVector >
                                                             <<< cudaGridSize, cudaBlockSize >>>
                                                               ( kernel_this,
@@ -913,9 +891,9 @@ class SlicedEllpackSymmetricDeviceDependentCode< Devices::Cuda >
                                                                 kernel_outVector,
                                                                 gridIdx );
          }
-         Devices::Cuda::freeFromDevice( kernel_this );
-         Devices::Cuda::freeFromDevice( kernel_inVector );
-         Devices::Cuda::freeFromDevice( kernel_outVector );
+         Cuda::freeFromDevice( kernel_this );
+         Cuda::freeFromDevice( kernel_inVector );
+         Cuda::freeFromDevice( kernel_outVector );
          TNL_CHECK_CUDA_DEVICE;
 #endif
       }

@@ -38,8 +38,6 @@ class Euler : public Solvers::ODE::ExplicitSolver< Problem, SolverMonitor >
 
    Euler();
 
-   static String getType();
-
    static void configSetup( Config::ConfigDescription& config,
                             const String& prefix = "" );
 

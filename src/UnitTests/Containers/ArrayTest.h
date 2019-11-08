@@ -15,6 +15,7 @@
 
 #include <TNL/Containers/Array.h>
 #include <TNL/Containers/Vector.h>
+#include <TNL/Pointers/DevicePointer.h>
 
 #include "gtest/gtest.h"
 
@@ -45,11 +46,6 @@ struct MyData
    // operator used in tests, not necessary for Array to work
    template< typename T >
    bool operator==( T v ) const { return data == v; }
-
-   static String getType()
-   {
-      return String( "MyData" );
-   }
 };
 
 std::ostream& operator<<( std::ostream& str, const MyData& v )
@@ -102,27 +98,6 @@ using ArrayTypes = ::testing::Types<
    Array< double, Devices::Cuda, long >,
    Array< MyData, Devices::Cuda, long >
 #endif
-#ifdef HAVE_MIC
-   ,
-   Array< int,    Devices::MIC, short >,
-   Array< long,   Devices::MIC, short >,
-   Array< float,  Devices::MIC, short >,
-   Array< double, Devices::MIC, short >,
-   // TODO: MyData does not work on MIC
-//   Array< MyData, Devices::MIC, short >,
-   Array< int,    Devices::MIC, int >,
-   Array< long,   Devices::MIC, int >,
-   Array< float,  Devices::MIC, int >,
-   Array< double, Devices::MIC, int >,
-   // TODO: MyData does not work on MIC
-//   Array< MyData, Devices::MIC, int >,
-   Array< int,    Devices::MIC, long >,
-   Array< long,   Devices::MIC, long >,
-   Array< float,  Devices::MIC, long >,
-   Array< double, Devices::MIC, long >
-   // TODO: MyData does not work on MIC
-//   Array< MyData, Devices::MIC, long >
-#endif
 
    // all array tests should also work with Vector
    // (but we can't test all types because the argument list would be too long...)
@@ -135,11 +110,6 @@ using ArrayTypes = ::testing::Types<
    ,
    Vector< float,  Devices::Cuda, long >,
    Vector< double, Devices::Cuda, long >
-#endif
-#ifdef HAVE_MIC
-   ,
-   Vector< float,  Devices::MIC, long >,
-   Vector< double, Devices::MIC, long >
 #endif
 >;
 
@@ -343,21 +313,13 @@ void testArrayElementwiseAccess( Array< Value, Devices::Cuda, Index >&& u )
 #ifdef HAVE_CUDA
    u.setSize( 10 );
    using ArrayType = Array< Value, Devices::Cuda, Index >;
-   ArrayType* kernel_u = Devices::Cuda::passToDevice( u );
-   testSetGetElementKernel<<< 1, 16 >>>( kernel_u );
-   Devices::Cuda::freeFromDevice( kernel_u );
+   Pointers::DevicePointer< ArrayType > kernel_u( u );
+   testSetGetElementKernel<<< 1, 16 >>>( &kernel_u.template modifyData< Devices::Cuda >() );
+   cudaDeviceSynchronize();
    TNL_CHECK_CUDA_DEVICE;
    for( int i = 0; i < 10; i++ ) {
       EXPECT_EQ( u.getElement( i ), i );
    }
-#endif
-}
-
-template< typename Value, typename Index >
-void testArrayElementwiseAccess( Array< Value, Devices::MIC, Index >&& u )
-{
-#ifdef HAVE_MIC
-   // TODO
 #endif
 }
 
@@ -405,9 +367,10 @@ TYPED_TEST( ArrayTest, containsOnlyValue )
 TYPED_TEST( ArrayTest, comparisonOperator )
 {
    using ArrayType = typename TestFixture::ArrayType;
+   using HostArrayType = typename ArrayType::template Self< typename ArrayType::ValueType, Devices::Sequential >;
 
    ArrayType u( 10 ), v( 10 ), w( 10 );
-   typename ArrayType::HostType u_host( 10 );
+   HostArrayType u_host( 10 );
    for( int i = 0; i < 10; i ++ ) {
       u.setElement( i, i );
       u_host.setElement( i, i );
@@ -460,9 +423,10 @@ TYPED_TEST( ArrayTest, comparisonOperatorWithDifferentType )
 TYPED_TEST( ArrayTest, assignmentOperator )
 {
    using ArrayType = typename TestFixture::ArrayType;
+   using HostArrayType = typename ArrayType::template Self< typename ArrayType::ValueType, Devices::Sequential >;
 
    ArrayType u( 10 ), v( 10 );
-   typename ArrayType::HostType u_host( 10 );
+   HostArrayType u_host( 10 );
    for( int i = 0; i < 10; i++ ) {
       u.setElement( i, i );
       u_host.setElement( i, i );
@@ -489,10 +453,12 @@ template< typename ArrayType,
           typename = typename std::enable_if< std::is_arithmetic< typename ArrayType::ValueType >::value >::type >
 void testArrayAssignmentWithDifferentType()
 {
+   using HostArrayType = typename ArrayType::template Self< typename ArrayType::ValueType, Devices::Sequential >;
+
    ArrayType u( 10 );
    Array< short, typename ArrayType::DeviceType, short > v( 10 );
    Array< short, Devices::Host, short > v_host( 10 );
-   typename ArrayType::HostType u_host( 10 );
+   HostArrayType u_host( 10 );
    for( int i = 0; i < 10; i++ ) {
       u.setElement( i, i );
       u_host.setElement( i, i );

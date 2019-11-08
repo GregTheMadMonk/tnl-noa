@@ -34,18 +34,6 @@ template< typename Mesh,
           typename DifferentialOperator >
 String
 HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
-getType()
-{
-   return String( "HeatEquationProblem< " ) + Mesh :: getType() + " >";
-}
-
-template< typename Mesh,
-          typename BoundaryCondition,
-          typename RightHandSide,
-          typename Communicator,
-          typename DifferentialOperator >
-String
-HeatEquationProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, DifferentialOperator >::
 getPrologHeader() const
 {
    return String( "Heat equation" );

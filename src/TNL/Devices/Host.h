@@ -19,20 +19,11 @@
 #endif
 
 namespace TNL {
-//! \brief Namespace for TNL execution models
 namespace Devices {
 
 class Host
 {
 public:
-   static String getDeviceType()
-   {
-      return String( "Devices::Host" );
-   }
-
-   // TODO: Remove getDeviceType();
-   static inline String getType() { return getDeviceType();};
-
    static void disableOMP()
    {
       ompEnabled() = false;

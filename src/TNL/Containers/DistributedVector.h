@@ -34,10 +34,18 @@ public:
    using IndexType = Index;
    using LocalViewType = Containers::VectorView< Real, Device, Index >;
    using ConstLocalViewType = Containers::VectorView< std::add_const_t< Real >, Device, Index >;
-   using HostType = DistributedVector< Real, Devices::Host, Index, Communicator >;
-   using CudaType = DistributedVector< Real, Devices::Cuda, Index, Communicator >;
    using ViewType = DistributedVectorView< Real, Device, Index, Communicator >;
    using ConstViewType = DistributedVectorView< std::add_const_t< Real >, Device, Index, Communicator >;
+
+   /**
+    * \brief A template which allows to quickly obtain a \ref Vector type with changed template parameters.
+    */
+   template< typename _Real,
+             typename _Device = Device,
+             typename _Index = Index,
+             typename _Communicator = Communicator >
+   using Self = DistributedVector< _Real, _Device, _Index, _Communicator >;
+
 
    // inherit all constructors and assignment operators from Array
    using BaseType::DistributedArray;
@@ -67,11 +75,6 @@ public:
     * \brief Conversion operator to a non-modifiable view of the vector.
     */
    operator ConstViewType() const;
-
-
-   static String getType();
-
-   virtual String getTypeVirtual() const;
 
 
    /*
@@ -128,7 +131,7 @@ public:
    DistributedVector& operator/=( const Vector& vector );
 
    template< Algorithms::ScanType Type = Algorithms::ScanType::Inclusive >
-   void prefixSum( IndexType begin = 0, IndexType end = 0 );
+   void scan( IndexType begin = 0, IndexType end = 0 );
 };
 
 } // namespace Containers

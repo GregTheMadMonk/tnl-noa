@@ -29,11 +29,6 @@ public:
    using VectorViewType = typename Base::VectorViewType;
    using ConstVectorViewType = typename Base::ConstVectorViewType;
 
-   String getType() const
-   {
-      return String( "Jacobi< " ) + this->matrix->getType() + ", " + this->preconditioner->getType() + " >";
-   }
-
    static void configSetup( Config::ConfigDescription& config,
                             const String& prefix = "" )
    {

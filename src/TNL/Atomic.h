@@ -16,13 +16,37 @@
 
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
-#include <TNL/param-types.h>
+
+// double-precision atomicAdd function for Maxwell and older GPUs
+// copied from: https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#atomic-functions
+#ifdef HAVE_CUDA
+#if __CUDA_ARCH__ < 600
+namespace {
+   __device__ double atomicAdd(double* address, double val)
+   {
+       unsigned long long int* address_as_ull =
+                                 (unsigned long long int*)address;
+       unsigned long long int old = *address_as_ull, assumed;
+
+       do {
+           assumed = old;
+           old = atomicCAS(address_as_ull, assumed,
+                           __double_as_longlong(val +
+                                  __longlong_as_double(assumed)));
+
+       // Note: uses integer comparison to avoid hang in case of NaN (since NaN != NaN)
+       } while (assumed != old);
+
+       return __longlong_as_double(old);
+   }
+} // namespace
+#endif
+#endif
 
 namespace TNL {
 
 template< typename T, typename Device >
-class Atomic
-{};
+class Atomic;
 
 template< typename T >
 class Atomic< T, Devices::Host >
@@ -46,14 +70,6 @@ public:
    {
       this->store(desired.load());
       return *this;
-   }
-
-   // just for compatibility with TNL::Containers::Array...
-   static String getType()
-   {
-      return "Atomic< " +
-             TNL::getType< T >() + ", " +
-             Devices::Host::getDeviceType() + " >";
    }
 
    // CAS loops for updating maximum and minimum
@@ -118,14 +134,6 @@ public:
 //      *this = desired.load();
       *this = desired.value;
       return *this;
-   }
-
-   // just for compatibility with TNL::Containers::Array...
-   static String getType()
-   {
-      return "Atomic< " +
-             TNL::getType< T >() + ", " +
-             Devices::Cuda::getDeviceType() + " >";
    }
 
    bool is_lock_free() const noexcept

@@ -13,7 +13,7 @@
 #include <limits>
 #include <type_traits>
 
-#include <TNL/Containers/Algorithms/Reduction.h>
+#include <TNL/Algorithms/Reduction.h>
 
 ////
 // By vertical operations we mean those applied across vector elements or

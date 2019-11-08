@@ -31,29 +31,13 @@ Multidiagonal< Real, Device, Index > :: Multidiagonal()
 template< typename Real,
           typename Device,
           typename Index >
-String Multidiagonal< Real, Device, Index > :: getType()
-{
-   return String( "Matrices::Multidiagonal< ") +
-          String( TNL::getType< Real >() ) +
-          String( ", " ) +
-          Device :: getDeviceType() +
-          String( " >" );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-String Multidiagonal< Real, Device, Index >::getTypeVirtual() const
-{
-   return this->getType();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
 String Multidiagonal< Real, Device, Index >::getSerializationType()
 {
-   return getType();
+   return String( "Matrices::Multidiagonal< ") +
+          getType< Real >() +
+          String( ", " ) +
+          getType< Device >() +
+          String( " >" );
 }
 
 template< typename Real,

@@ -34,8 +34,6 @@ class NavierStokesSolver
 
    NavierStokesSolver();
 
-   static String getType();
-
    void setAdvectionScheme( AdvectionSchemeType& advection );
 
    void setDiffusionScheme( DiffusionSchemeType& u1Viscosity,

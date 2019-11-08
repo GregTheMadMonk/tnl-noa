@@ -40,16 +40,15 @@ public:
    typedef Index IndexType;
    typedef typename Matrix< Real, Device, Index >::CompressedRowLengthsVector CompressedRowLengthsVector;
    typedef typename Matrix< Real, Device, Index >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
-   typedef Tridiagonal< Real, Devices::Host, Index > HostType;
-   typedef Tridiagonal< Real, Devices::Cuda, Index > CudaType;
    typedef Matrix< Real, Device, Index > BaseType;
    typedef TridiagonalRow< Real, Index > MatrixRow;
 
+   template< typename _Real = Real,
+             typename _Device = Device,
+             typename _Index = Index >
+   using Self = Tridiagonal< _Real, _Device, _Index >;
+
    Tridiagonal();
-
-   static String getType();
-
-   String getTypeVirtual() const;
 
    static String getSerializationType();
 

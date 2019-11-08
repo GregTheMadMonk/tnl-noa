@@ -10,7 +10,6 @@ using namespace TNL;
 using namespace TNL::Containers;
 using namespace TNL::Meshes;
 using namespace TNL::Functions;
-using namespace TNL::Devices;
 
 int main(int argc, char ** argv)
 {
@@ -28,9 +27,9 @@ int main(int argc, char ** argv)
     time.start();
 
 #ifdef HAVE_CUDA
-    using Device=Cuda;
+    using Device=Devices::Cuda;
 #else
-    using Device=Host;
+    using Device=Devices::Host;
 #endif
 
   using MeshType= Grid<2, double,Device,int>;

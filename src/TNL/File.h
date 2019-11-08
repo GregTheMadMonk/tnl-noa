@@ -14,9 +14,8 @@
 #include <type_traits>
 
 #include <TNL/String.h>
-#include <TNL/Devices/Host.h>
-#include <TNL/Devices/Cuda.h>
-#include <TNL/Devices/MIC.h>
+#include <TNL/Allocators/Host.h>
+#include <TNL/Allocators/Cuda.h>
 
 namespace TNL {
 
@@ -86,9 +85,9 @@ class File
       /**
        * \brief Method for loading data from the file.
        *
-       * The data will be stored in \e buffer allocated on device given by the
-       * \e Device parameter. The data type of the buffer is given by the
-       * template parameter \e Type. The second template parameter 
+       * The data will be stored in \e buffer which was allocated using the
+       * allocator of type \e Allocator. The data type of the buffer is given
+       * by the template parameter \e Type. The second template parameter
        * \e SourceType defines the type of data in the source file. If both
        * types are different, on-the-fly conversion takes place during the
        * data loading.
@@ -97,31 +96,31 @@ class File
        *
        * \tparam Type type of data to be loaded to the \e buffer.
        * \tparam SourceType type of data stored on the file,
-       * \tparam Device device where the data are stored after reading. For example \ref Devices::Host or \ref Devices::Cuda.
+       * \tparam Allocator type of the allocator which was used to allocate \e buffer.
        * \param buffer Pointer in memory where the elements are loaded and stored after reading.
        * \param elements number of elements to be loaded from the file.
-       * 
+       *
        * The following example shows how to load data directly to GPU.
-       * 
+       *
        * \par Example
        * \include FileExampleCuda.cpp
        * \par Output
        * \include FileExampleCuda.out
        * The following example shows how to do on-the-fly data conversion.
-       * 
+       *
        * \par Example
        * \include FileExampleSaveAndLoad.cpp
        * \par Output
        * \include FileExampleSaveAndLoad.out
        */
-      template< typename Type, typename SourceType = Type, typename Device = Devices::Host >
+      template< typename Type, typename SourceType = Type, typename Allocator = Allocators::Host< Type > >
       void load( Type* buffer, std::streamsize elements = 1 );
 
       /**
        * \brief Method for saving data to the file.
        *
-       * The data from the \e buffer (with type \e Type) allocated on the device
-       * \e Device will be saved into the file. \e TargetType defines as what
+       * The data from the \e buffer (with type \e Type) which was allocated
+       * using an allocator of type \e Allocator. \e TargetType defines as what
        * data type the buffer shall be saved. If the type is different from the
        * data type, on-the-fly data type conversion takes place during the data
        * saving.
@@ -130,69 +129,49 @@ class File
        *
        * \tparam Type type of data in the \e buffer.
        * \tparam TargetType tells as what type data the buffer shall be saved.
-       * \tparam Device device from where the data are loaded before writing into file. For example \ref Devices::Host or \ref Devices::Cuda.
+       * \tparam Allocator type of the allocator which was used to allocate \e buffer.
        * \tparam Index type of index by which the elements are indexed.
        * \param buffer buffer that is going to be saved to the file.
        * \param elements number of elements saved to the file.
        * 
        * See \ref File::load for examples.
        */
-      template< typename Type, typename TargetType = Type, typename Device = Devices::Host >
+      template< typename Type, typename TargetType = Type, typename Allocator = Allocators::Host< Type > >
       void save( const Type* buffer, std::streamsize elements = 1 );
 
    protected:
+      // implementation for all allocators which allocate data accessible from host
       template< typename Type,
                 typename SourceType,
-                typename Device,
-                typename = typename std::enable_if< std::is_same< Device, Devices::Host >::value >::type >
+                typename Allocator,
+                typename = std::enable_if_t< ! std::is_same< Allocator, Allocators::Cuda< Type > >::value > >
       void load_impl( Type* buffer, std::streamsize elements );
 
+      // implementation for \ref Allocators::Cuda
       template< typename Type,
                 typename SourceType,
-                typename Device,
-                typename = typename std::enable_if< std::is_same< Device, Devices::Cuda >::value >::type,
+                typename Allocator,
+                typename = std::enable_if_t< std::is_same< Allocator, Allocators::Cuda< Type > >::value >,
                 typename = void >
       void load_impl( Type* buffer, std::streamsize elements );
 
-      template< typename Type,
-                typename SourceType,
-                typename Device,
-                typename = typename std::enable_if< std::is_same< Device, Devices::MIC >::value >::type,
-                typename = void,
-                typename = void >
-      void load_impl( Type* buffer, std::streamsize elements );
-
+      // implementation for all allocators which allocate data accessible from host
       template< typename Type,
                 typename TargetType,
-                typename Device,
-                typename = typename std::enable_if< std::is_same< Device, Devices::Host >::value >::type >
+                typename Allocator,
+                typename = std::enable_if_t< ! std::is_same< Allocator, Allocators::Cuda< Type > >::value > >
       void save_impl( const Type* buffer, std::streamsize elements );
 
+      // implementation for \ref Allocators::Cuda
       template< typename Type,
                 typename TargetType,
-                typename Device,
-                typename = typename std::enable_if< std::is_same< Device, Devices::Cuda >::value >::type,
-                typename = void >
-      void save_impl( const Type* buffer, std::streamsize elements );
-
-      template< typename Type,
-                typename TargetType,
-                typename Device,
-                typename = typename std::enable_if< std::is_same< Device, Devices::MIC >::value >::type,
-                typename = void,
+                typename Allocator,
+                typename = std::enable_if_t< std::is_same< Allocator, Allocators::Cuda< Type > >::value >,
                 typename = void >
       void save_impl( const Type* buffer, std::streamsize elements );
 
       std::fstream file;
       String fileName;
-
-      ////
-      // When we transfer data between the GPU and the CPU we use 5 MB buffer. This
-      // size should ensure good performance -- see.
-      // http://wiki.accelereyes.com/wiki/index.php/GPU_Memory_Transfer .
-      // We use the same buffer size even for retyping data during IO operations.
-      //
-      static constexpr std::streamsize TransferBufferSize = 5 * 2<<20;
 };
 
 /**

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          StaticArray_impl.h  -  description
+                          StaticArray.hpp  -  description
                              -------------------
     begin                : Feb 10, 2014
     copyright            : (C) 2014 by Tomas Oberhuber
@@ -10,11 +10,11 @@
 
 #pragma once
 
-#include <TNL/param-types.h>
+#include <TNL/TypeInfo.h>
 #include <TNL/Math.h>
 #include <TNL/Containers/StaticArray.h>
-#include <TNL/Containers/Algorithms/StaticArrayAssignment.h>
-#include <TNL/StaticFor.h>
+#include <TNL/Containers/detail/StaticArrayAssignment.h>
+#include <TNL/Algorithms/StaticFor.h>
 
 namespace TNL {
 namespace Containers {
@@ -102,24 +102,25 @@ template< int Size, typename Value >
 __cuda_callable__
 StaticArray< Size, Value >::StaticArray( const Value v[ Size ] )
 {
-   StaticFor< 0, Size >::exec( Algorithms::detail::AssignArrayFunctor{}, data, v );
+   Algorithms::StaticFor< 0, Size >::exec( detail::AssignArrayFunctor{}, data, v );
 }
 
 template< int Size, typename Value >
 __cuda_callable__
 StaticArray< Size, Value >::StaticArray( const Value& v )
 {
-   StaticFor< 0, Size >::exec( Algorithms::detail::AssignValueFunctor{}, data, v );
+   Algorithms::StaticFor< 0, Size >::exec( detail::AssignValueFunctor{}, data, v );
 }
 
 template< int Size, typename Value >
 __cuda_callable__
 StaticArray< Size, Value >::StaticArray( const StaticArray< Size, Value >& v )
 {
-   StaticFor< 0, Size >::exec( Algorithms::detail::AssignArrayFunctor{}, data, v.getData() );
+   Algorithms::StaticFor< 0, Size >::exec( detail::AssignArrayFunctor{}, data, v.getData() );
 }
 
 template< int Size, typename Value >
+__cuda_callable__
 StaticArray< Size, Value >::StaticArray( const std::initializer_list< Value > &elems)
 {
    auto it = elems.begin();
@@ -144,16 +145,6 @@ StaticArray< Size, Value >::StaticArray( const Value& v1, const Value& v2, const
    data[ 0 ] = v1;
    data[ 1 ] = v2;
    data[ 2 ] = v3;
-}
-
-template< int Size, typename Value >
-String StaticArray< Size, Value >::getType()
-{
-   return String( "Containers::StaticArray< " ) +
-          convertToString( Size ) +
-          String( ", " ) +
-          TNL::getType< Value >() +
-          String( " >" );
 }
 
 template< int Size, typename Value >
@@ -237,7 +228,7 @@ template< int Size, typename Value >
 __cuda_callable__
 StaticArray< Size, Value >& StaticArray< Size, Value >::operator=( const StaticArray< Size, Value >& array )
 {
-   StaticFor< 0, Size >::exec( Algorithms::detail::AssignArrayFunctor{}, data, array.getData() );
+   Algorithms::StaticFor< 0, Size >::exec( detail::AssignArrayFunctor{}, data, array.getData() );
    return *this;
 }
 
@@ -246,7 +237,7 @@ template< int Size, typename Value >
 __cuda_callable__
 StaticArray< Size, Value >& StaticArray< Size, Value >::operator=( const T& v )
 {
-   Algorithms::StaticArrayAssignment< StaticArray, T >::assign( *this, v );
+   detail::StaticArrayAssignment< StaticArray, T >::assign( *this, v );
    return *this;
 }
 
@@ -273,7 +264,7 @@ StaticArray< Size, Value >::
 operator StaticArray< Size, OtherValue >() const
 {
    StaticArray< Size, OtherValue > aux;
-   StaticFor< 0, Size >::exec( Algorithms::detail::AssignArrayFunctor{}, aux.getData(), data );
+   Algorithms::StaticFor< 0, Size >::exec( detail::AssignArrayFunctor{}, aux.getData(), data );
    return aux;
 }
 
@@ -281,20 +272,20 @@ template< int Size, typename Value >
 __cuda_callable__
 void StaticArray< Size, Value >::setValue( const ValueType& val )
 {
-   StaticFor< 0, Size >::exec( Algorithms::detail::AssignValueFunctor{}, data, val );
+   Algorithms::StaticFor< 0, Size >::exec( detail::AssignValueFunctor{}, data, val );
 }
 
 template< int Size, typename Value >
 bool StaticArray< Size, Value >::save( File& file ) const
 {
-   file.save< Value, Value, Devices::Host >( data, Size );
+   file.save( data, Size );
    return true;
 }
 
 template< int Size, typename Value >
 bool StaticArray< Size, Value >::load( File& file)
 {
-   file.load< Value, Value, Devices::Host >( data, Size );
+   file.load( data, Size );
    return true;
 }
 

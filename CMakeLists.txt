@@ -17,7 +17,6 @@ set( tnlVersion "0.1" )
 
 # declare all custom build options
 option(OFFLINE_BUILD "Offline build (i.e. without downloading libraries such as pybind11)" OFF)
-option(WITH_MIC "Build with MIC support" OFF)
 option(WITH_CUDA "Build with CUDA support" ON)
 set(WITH_CUDA_ARCH "auto" CACHE STRING "Build for these CUDA architectures")
 option(WITH_OPENMP "Build with OpenMP support" ON)
@@ -83,7 +82,7 @@ set( CMAKE_CXX_STANDARD_REQUIRED ON )
 set( CMAKE_CXX_EXTENSIONS OFF )
 
 # set Debug/Release options
-set( CMAKE_CXX_FLAGS "-pthread -Wall -Wno-unused-local-typedefs -Wno-unused-variable -Wno-unknown-pragmas" )
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -Wall -Wno-unused-local-typedefs -Wno-unused-variable -Wno-unknown-pragmas" )
 set( CMAKE_CXX_FLAGS_DEBUG "-g" )
 set( CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -mtune=native -DNDEBUG" )
 # pass -rdynamic only in Debug mode
@@ -117,22 +116,6 @@ if( NOT DEFINED ENV{CI_JOB_NAME} )
    elseif( CMAKE_CXX_COMPILER_ID STREQUAL "Clang" )
       add_compile_options( "-flto=thin" )
       add_link_options( "-flto=thin" )
-   endif()
-endif()
-
-if( CMAKE_CXX_COMPILER_ID STREQUAL "Intel" )
-   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DHAVE_ICPC -wd2568 -wd2571 -wd2570")
-   #####
-   #  Check for MIC
-   #
-   if( ${WITH_MIC} )
-      message( "Enabled MIC support." )
-      set( MIC_CXX_FLAGS "-DHAVE_MIC")
-      # build all tests with MIC support
-      set( CXX_TESTS_FLAGS ${CXX_TESTS_FLAGS} -DHAVE_MIC )
-      set( WITH_CUDA OFF CACHE BOOL "Build with CUDA support" )
-   else()
-      set( MIC_CXX_FLAGS "")
    endif()
 endif()
 
@@ -355,7 +338,6 @@ INCLUDE( CPack )
 # Print custom build options
 message( "-- Build options:" )
 message( "   OFFLINE_BUILD = ${OFFLINE_BUILD}" )
-message( "   WITH_MIC = ${WITH_MIC}" )
 message( "   WITH_CUDA = ${WITH_CUDA}" )
 message( "   WITH_CUDA_ARCH = ${WITH_CUDA_ARCH}" )
 message( "   WITH_OPENMP = ${WITH_OPENMP}" )

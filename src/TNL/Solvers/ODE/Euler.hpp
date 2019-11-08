@@ -10,9 +10,7 @@
 
 #pragma once
 
-#include <TNL/Devices/MIC.h>
-#include <TNL/Communicators/MpiCommunicator.h>
-#include <TNL/Communicators/NoDistrCommunicator.h>
+#include <TNL/Solvers/ODE/Euler.h>
 
 namespace TNL {
 namespace Solvers {
@@ -31,14 +29,6 @@ template< typename Problem, typename SolverMonitor >
 Euler< Problem, SolverMonitor > :: Euler()
 : cflCondition( 0.0 )
 {
-};
-
-template< typename Problem, typename SolverMonitor >
-String Euler< Problem, SolverMonitor > :: getType()
-{
-   return String( "Euler< " ) +
-          Problem :: getType() +
-          String( " >" );
 };
 
 template< typename Problem, typename SolverMonitor >
@@ -77,7 +67,6 @@ bool Euler< Problem, SolverMonitor > :: solve( DofVectorPointer& _u )
    /****
     * First setup the supporting meshes k1...k5 and k_tmp.
     */
-   //timer.start();
    _k1->setLike( *_u );
    auto k1 = _k1->getView();
    auto u = _u->getView();
@@ -104,9 +93,7 @@ bool Euler< Problem, SolverMonitor > :: solve( DofVectorPointer& _u )
       /****
        * Compute the RHS
        */
-      //timer.stop();
       this->problem->getExplicitUpdate( time, currentTau, _u, _k1 );
-      //timer.start();
 
       RealType lastResidue = this->getResidue();
       RealType maxResidue( 0.0 );

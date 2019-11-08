@@ -21,36 +21,6 @@ template< typename MeshReal,
           typename MeshIndex,
           typename Real,
           typename Index >
-String
-tnlFiniteVolumeOperatorQ< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
-getType()
-{
-   return String( "tnlFiniteVolumeOperatorQ< " ) +
-          MeshType::getType() + ", " +
-         TNL::getType< Real >() + ", " +
-         TNL::getType< Index >() + ", 0 >";
-}
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-String
-tnlFiniteVolumeOperatorQ< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
-getType()
-{
-   return String( "tnlFiniteVolumeOperatorQ< " ) +
-          MeshType::getType() + ", " +
-         TNL::getType< Real >() + ", " +
-         TNL::getType< Index >() + ", 1 >";
-}
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
 bool tnlFiniteVolumeOperatorQ< Meshes::Grid< 1, MeshReal, Device, MeshIndex >, Real, Index, 0 >::setEps( const Real& eps )
 {
   this->eps = eps;
@@ -163,36 +133,6 @@ operator()(
    const IndexType& dz ) const
 {
     return 0.0;
-}
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-String
-tnlFiniteVolumeOperatorQ< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
-getType()
-{
-   return String( "tnlFiniteVolumeOperatorQ< " ) +
-          MeshType::getType() + ", " +
-         TNL::getType< Real >() + ", " +
-         TNL::getType< Index >() + ", 0 >";
-}
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-String
-tnlFiniteVolumeOperatorQ< Meshes::Grid< 2, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
-getType()
-{
-   return String( "tnlFiniteVolumeOperatorQ< " ) +
-          MeshType::getType() + ", " +
-         TNL::getType< Real >() + ", " +
-         TNL::getType< Index >() + ", 1 >";
 }
 
 template< typename MeshReal,
@@ -370,36 +310,6 @@ operator()( const MeshType& mesh,
           const IndexType& dz ) const
 {
    return q.getElement( entity.getIndex() );
-}
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-String
-tnlFiniteVolumeOperatorQ< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index, 0 >::
-getType()
-{
-   return String( "tnlFiniteVolumeOperatorQ< " ) +
-          MeshType::getType() + ", " +
-         TNL::getType< Real >() + ", " +
-         TNL::getType< Index >() + ", 0 >";
-}
-
-template< typename MeshReal,
-          typename Device,
-          typename MeshIndex,
-          typename Real,
-          typename Index >
-String
-tnlFiniteVolumeOperatorQ< Meshes::Grid< 3, MeshReal, Device, MeshIndex >, Real, Index, 1 >::
-getType()
-{
-   return String( "tnlFiniteVolumeOperatorQ< " ) +
-          MeshType::getType() + ", " +
-         TNL::getType< Real >() + ", " +
-         TNL::getType< Index >() + ", 1 >";
 }
 
 template< typename MeshReal,

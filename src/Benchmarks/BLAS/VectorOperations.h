@@ -12,7 +12,7 @@
 
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
-#include <TNL/ParallelFor.h>
+#include <TNL/Algorithms/ParallelFor.h>
 
 namespace TNL {
 namespace Benchmarks {
@@ -104,9 +104,9 @@ struct VectorOperations< Devices::Cuda >
       auto add2 = [=] __cuda_callable__ ( IndexType i ) { y[ i ] = thisMultiplicator * y[ i ] + alpha * x[ i ]; };
 
       if( thisMultiplicator == 1.0 )
-         ParallelFor< Devices::Cuda >::exec( (IndexType) 0, _y.getSize(), add1 );
+         Algorithms::ParallelFor< Devices::Cuda >::exec( (IndexType) 0, _y.getSize(), add1 );
       else
-         ParallelFor< Devices::Cuda >::exec( (IndexType) 0, _y.getSize(), add2 );
+         Algorithms::ParallelFor< Devices::Cuda >::exec( (IndexType) 0, _y.getSize(), add2 );
    }
 
    template< typename Vector1, typename Vector2, typename Vector3, typename Scalar1, typename Scalar2, typename Scalar3 >
@@ -131,9 +131,9 @@ struct VectorOperations< Devices::Cuda >
       auto add2 = [=] __cuda_callable__ ( IndexType i ) { v[ i ] = thisMultiplicator * v[ i ] + multiplicator1 * v1[ i ] + multiplicator2 * v2[ i ]; };
 
       if( thisMultiplicator == 1.0 )
-         ParallelFor< Devices::Cuda >::exec( (IndexType) 0, _v.getSize(), add1 );
+         Algorithms::ParallelFor< Devices::Cuda >::exec( (IndexType) 0, _v.getSize(), add1 );
       else
-         ParallelFor< Devices::Cuda >::exec( (IndexType) 0, _v.getSize(), add2 );
+         Algorithms::ParallelFor< Devices::Cuda >::exec( (IndexType) 0, _v.getSize(), add2 );
    }
 };
 

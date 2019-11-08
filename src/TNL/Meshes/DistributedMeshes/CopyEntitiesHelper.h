@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/ParallelFor.h>
+#include <TNL/Algorithms/ParallelFor.h>
 
 namespace TNL {
 namespace Meshes {
@@ -45,7 +45,7 @@ class CopyEntitiesHelper<MeshFunctionType, 1>
             fromEntity.refresh();
             toData[toEntity.getIndex()]=fromData[fromEntity.getIndex()];
         };
-        ParallelFor< typename MeshFunctionType::MeshType::DeviceType >::exec( (Index)0, (Index)size.x(), kernel );
+        Algorithms::ParallelFor< typename MeshFunctionType::MeshType::DeviceType >::exec( (Index)0, (Index)size.x(), kernel );
 
     }
 
@@ -79,7 +79,7 @@ class CopyEntitiesHelper<MeshFunctionType,2>
             fromEntity.refresh();
             toData[toEntity.getIndex()]=fromData[fromEntity.getIndex()];
         };
-        ParallelFor2D< typename MeshFunctionType::MeshType::DeviceType >::exec( (Index)0,(Index)0,(Index)size.x(), (Index)size.y(), kernel );
+        Algorithms::ParallelFor2D< typename MeshFunctionType::MeshType::DeviceType >::exec( (Index)0,(Index)0,(Index)size.x(), (Index)size.y(), kernel );
     }
 
 };
@@ -113,7 +113,7 @@ class CopyEntitiesHelper<MeshFunctionType,3>
             fromEntity.refresh();
             toData[toEntity.getIndex()]=fromData[fromEntity.getIndex()];
         };
-        ParallelFor3D< typename MeshFunctionType::MeshType::DeviceType >::exec( (Index)0,(Index)0,(Index)0,(Index)size.x(),(Index)size.y(), (Index)size.z(), kernel );
+        Algorithms::ParallelFor3D< typename MeshFunctionType::MeshType::DeviceType >::exec( (Index)0,(Index)0,(Index)0,(Index)size.x(),(Index)size.y(), (Index)size.z(), kernel );
     }
 };
 

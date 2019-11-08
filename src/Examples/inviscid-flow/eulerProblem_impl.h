@@ -38,18 +38,6 @@ template< typename Mesh,
           typename InviscidOperators >
 String
 eulerProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, InviscidOperators >::
-getType()
-{
-   return String( "eulerProblem< " ) + Mesh :: getType() + " >";
-}
-
-template< typename Mesh,
-          typename BoundaryCondition,
-          typename RightHandSide,
-          typename Communicator,
-          typename InviscidOperators >
-String
-eulerProblem< Mesh, BoundaryCondition, RightHandSide, Communicator, InviscidOperators >::
 getPrologHeader() const
 {
    return String( "Inviscid flow solver" );

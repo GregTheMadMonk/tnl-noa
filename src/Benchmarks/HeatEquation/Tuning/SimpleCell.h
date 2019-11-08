@@ -26,8 +26,7 @@ class SimpleCell
       typedef typename GridType::IndexType IndexType;
       typedef typename GridType::CoordinatesType CoordinatesType;
       typedef typename GridType::PointType PointType;
-      typedef SimpleCell< GridType, Config > ThisType;
-      typedef Meshes::NeighborGridEntitiesStorage< ThisType, Config >
+      typedef Meshes::NeighborGridEntitiesStorage< SimpleCell, Config >
          NeighborGridEntitiesStorageType;
       typedef Config ConfigType;
       

@@ -4,7 +4,7 @@
 
 using namespace TNL;
 using namespace TNL::Containers;
-using namespace TNL::Containers::Algorithms;
+using namespace TNL::Algorithms;
 
 template< typename Device >
 void segmentedScan( Vector< double, Device >& v, Vector< bool, Device >& flags )

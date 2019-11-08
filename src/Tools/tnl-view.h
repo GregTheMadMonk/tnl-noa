@@ -52,7 +52,7 @@ bool writeMeshFunction( const typename MeshFunction::MeshPointer& meshPointer,
 {
 
    MeshFunction function( meshPointer );
-   std::cout << "Mesh function: " << function.getType() << std::endl;
+   std::cout << "Mesh function: " << getType( function ) << std::endl;
    try
    {
       function.load( inputFileName );
@@ -84,7 +84,7 @@ bool writeVectorField( const typename VectorField::FunctionType::MeshPointer& me
 {
 
    VectorField field( meshPointer );
-   std::cout << "VectorField: " << field.getType() << std::endl;
+   std::cout << "VectorField: " << getType( field ) << std::endl;
    try
    {
       field.load( inputFileName );

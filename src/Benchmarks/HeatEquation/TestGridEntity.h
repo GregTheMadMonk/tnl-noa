@@ -78,8 +78,7 @@ class TestGridEntity< Meshes::Grid< Dimension, Real, Device, Index >, Dimension 
       
       typedef Containers::StaticVector< meshDimension, IndexType > EntityOrientationType;
       typedef Containers::StaticVector< meshDimension, IndexType > EntityBasisType;
-      typedef TestGridEntity< GridType, entityDimension > ThisType;
-      typedef TestNeighborGridEntitiesStorage< ThisType > NeighborGridEntitiesStorageType;
+      typedef TestNeighborGridEntitiesStorage< TestGridEntity > NeighborGridEntitiesStorageType;
       
       __cuda_callable__ inline
       TestGridEntity( const GridType& grid )

@@ -168,14 +168,16 @@ TYPED_TEST_SUITE( VectorUnaryOperationsTest, VectorTypes );
       using VectorOrView = typename TestFixture::VectorOrView; \
       using RealType = typename VectorType::RealType;          \
       using ExpectedVector = typename TestFixture::template Vector< decltype(function(RealType{})) >; \
+      using HostVector = typename VectorType::template Self< RealType, Devices::Host >; \
+      using HostExpectedVector = typename ExpectedVector::template Self< decltype(function(RealType{})), Devices::Host >; \
       constexpr int size = _size;                              \
       using CommunicatorType = typename VectorOrView::CommunicatorType; \
       const auto group = CommunicatorType::AllGroup; \
       using LocalRangeType = typename VectorOrView::LocalRangeType; \
       const LocalRangeType localRange = Partitioner< typename VectorOrView::IndexType, CommunicatorType >::splitRange( size, group ); \
                                                                \
-      typename VectorType::HostType _V1h;                      \
-      typename ExpectedVector::HostType expected_h;            \
+      HostVector _V1h;                                         \
+      HostExpectedVector expected_h;                           \
       _V1h.setDistribution( localRange, size, group );         \
       expected_h.setDistribution( localRange, size, group );   \
                                                                \
@@ -209,10 +211,12 @@ TYPED_TEST_SUITE( VectorUnaryOperationsTest, VectorTypes );
       using VectorOrView = typename TestFixture::VectorOrView; \
       using RealType = typename VectorType::RealType;          \
       using ExpectedVector = typename TestFixture::template Vector< decltype(function(RealType{})) >; \
+      using HostVector = typename VectorType::template Self< RealType, Devices::Host >; \
+      using HostExpectedVector = typename ExpectedVector::template Self< decltype(function(RealType{})), Devices::Host >; \
       constexpr int size = _size;                              \
                                                                \
-      typename VectorType::HostType _V1h( size );              \
-      typename ExpectedVector::HostType expected_h( size );    \
+      HostVector _V1h( size );                                 \
+      HostExpectedVector expected_h( size );                   \
                                                                \
       const double h = (double) (end - begin) / size;          \
       for( int i = 0; i < size; i++ )                          \
@@ -254,8 +258,8 @@ void expect_vectors_near( const Left& _v1, const Right& _v2 )
    using LeftVector = Vector< LeftNonConstReal, typename Left::DeviceType, typename Left::IndexType >;
    using RightVector = Vector< RightNonConstReal, typename Right::DeviceType, typename Right::IndexType >;
 #endif
-   using LeftHostVector = typename LeftVector::HostType;
-   using RightHostVector = typename RightVector::HostType;
+   using LeftHostVector = typename LeftVector::template Self< LeftNonConstReal, Devices::Sequential >;
+   using RightHostVector = typename RightVector::template Self< RightNonConstReal, Devices::Sequential >;
 
    // first evaluate expressions
    LeftVector v1; v1 = _v1;
