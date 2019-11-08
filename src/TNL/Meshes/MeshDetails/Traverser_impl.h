@@ -37,8 +37,7 @@ processBoundaryEntities( const MeshPointer& meshPointer,
       // TODO: if the Mesh::IdType is void, then we should also pass the entityIndex
       EntitiesProcessor::processEntity( *mesh, userData, entity );
    };
-   if( std::is_same< DeviceType, Devices::Cuda >::value )
-      Pointers::synchronizeSmartPointersOnDevice< DeviceType >();
+   Pointers::synchronizeSmartPointersOnDevice< DeviceType >();
    Algorithms::ParallelFor< DeviceType >::exec(
          (GlobalIndexType) 0, entitiesCount,
          kernel,
@@ -67,8 +66,7 @@ processInteriorEntities( const MeshPointer& meshPointer,
       // TODO: if the Mesh::IdType is void, then we should also pass the entityIndex
       EntitiesProcessor::processEntity( *mesh, userData, entity );
    };
-   if( std::is_same< DeviceType, Devices::Cuda >::value )
-      Pointers::synchronizeSmartPointersOnDevice< DeviceType >();
+   Pointers::synchronizeSmartPointersOnDevice< DeviceType >();
    Algorithms::ParallelFor< DeviceType >::exec(
          (GlobalIndexType) 0, entitiesCount,
          kernel,
@@ -96,8 +94,7 @@ processAllEntities( const MeshPointer& meshPointer,
       // TODO: if the Mesh::IdType is void, then we should also pass the entityIndex
       EntitiesProcessor::processEntity( *mesh, userData, entity );
    };
-   if( std::is_same< DeviceType, Devices::Cuda >::value )
-      Pointers::synchronizeSmartPointersOnDevice< DeviceType >();
+   Pointers::synchronizeSmartPointersOnDevice< DeviceType >();
    Algorithms::ParallelFor< DeviceType >::exec(
          (GlobalIndexType) 0, entitiesCount,
          kernel,

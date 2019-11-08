@@ -16,6 +16,8 @@
 #include <TNL/Pointers/SmartPointer.h>
 #include <TNL/Timer.h>
 #include <TNL/Cuda/DeviceInfo.h>
+#include <TNL/Devices/Sequential.h>
+#include <TNL/Devices/Host.h>
 
 namespace TNL {
 namespace Pointers {
@@ -109,6 +111,10 @@ Timer& getSmartPointersSynchronizationTimer()
 template< typename Device >
 bool synchronizeSmartPointersOnDevice( int deviceId = -1 )
 {
+   // TODO: better way to skip synchronization of host-only smart pointers
+   if( std::is_same< Device, Devices::Sequential >::value || std::is_same< Device, Devices::Host >::value )
+      return true;
+
    getSmartPointersSynchronizationTimer< Device >().start();
    bool b = getSmartPointersRegister< Device >().synchronizeDevice( deviceId );
    getSmartPointersSynchronizationTimer< Device >().stop();
