@@ -76,6 +76,7 @@ stages:
     only:
         changes:
             - src/**/*.{h,hpp,cpp,cu}
+            - Documentation/Examples/**/*.{h,hpp,cpp,cu}
             - Documentation/Tutorials/**/*.{h,hpp,cpp,cu}
             - "**/CMakeLists.txt"
             - .gitlab-ci.yml
@@ -90,6 +91,7 @@ dummy build job:
     except:
         changes:
             - src/**/*.{h,hpp,cpp,cu}
+            - Documentation/Examples/**/*.{h,hpp,cpp,cu}
             - Documentation/Tutorials/**/*.{h,hpp,cpp,cu}
             - "**/CMakeLists.txt"
             - .gitlab-ci.yml
