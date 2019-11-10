@@ -4,7 +4,6 @@
 #include <unistd.h>
 
 using namespace TNL;
-using namespace std;
 
 int main()
 {
@@ -14,6 +13,6 @@ int main()
     usleep(microseconds);
     time.stop();
 
-    Logger logger( 50,cout );
+    Logger logger( 50, std::cout );
     time.writeLog( logger, 0 );
 }

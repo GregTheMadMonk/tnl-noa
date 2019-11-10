@@ -3,7 +3,6 @@
 #include <cuda.h>
 
 using namespace TNL;
-using namespace std;
 
 int main()
 {
@@ -52,6 +51,3 @@ int main()
    cudaFree( deviceArray );
    delete[] hostArray;
 }
-
-
-

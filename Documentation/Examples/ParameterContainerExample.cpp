@@ -3,8 +3,7 @@
 #include <TNL/String.h>
 
 using namespace TNL;
-using namespace std;
-       
+
 int main()
 {
     Config::ParameterContainer parameters;

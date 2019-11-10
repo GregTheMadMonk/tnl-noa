@@ -3,7 +3,6 @@
 #include <TNL/String.h>
 
 using namespace TNL;
-using namespace std;
 
 int main()
 {
@@ -19,5 +18,5 @@ int main()
     file >> restoredString;
     file.close();
 
-    cout << "restored string = " << restoredString <<endl;
+    std::cout << "restored string = " << restoredString << std::endl;
 }

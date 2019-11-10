@@ -1,9 +1,7 @@
 #include <iostream>
 #include <TNL/Timer.h>
-#include <unistd.h>
 
 using namespace TNL;
-using namespace std;
 
 int main()
 {
@@ -12,12 +10,11 @@ int main()
     time.start();
     usleep(microseconds);
     time.stop();
-    cout << "Elapsed real time: " << time.getRealTime() << endl;
-    cout << "Elapsed CPU time: " << time.getCPUTime() << endl;
-    cout << "Elapsed CPU cycles: " << time.getCPUCycles() << endl;
+    std::cout << "Elapsed real time: " << time.getRealTime() << std::endl;
+    std::cout << "Elapsed CPU time: " << time.getCPUTime() << std::endl;
+    std::cout << "Elapsed CPU cycles: " << time.getCPUCycles() << std::endl;
     time.reset();
-    cout << "Real time after reset:" << time.getRealTime() << endl;
-    cout << "CPU time after reset: " << time.getCPUTime() << endl;
-    cout << "CPU cycles after reset: " << time.getCPUCycles() << endl;
+    std::cout << "Real time after reset:" << time.getRealTime() << std::endl;
+    std::cout << "CPU time after reset: " << time.getCPUTime() << std::endl;
+    std::cout << "CPU cycles after reset: " << time.getCPUCycles() << std::endl;
 }
-

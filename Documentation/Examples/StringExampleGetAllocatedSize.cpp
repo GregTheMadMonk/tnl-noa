@@ -2,10 +2,9 @@
 #include <TNL/String.h>
 
 using namespace TNL;
-using namespace std;
 
 int main()
 {
     String str("my world");
-    cout << "Allocated_size = " << str.getAllocatedSize() << endl;
+    std::cout << "Allocated_size = " << str.getAllocatedSize() << std::endl;
 }

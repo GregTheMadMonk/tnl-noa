@@ -2,7 +2,6 @@
 #include <TNL/File.h>
 
 using namespace TNL;
-using namespace std;
 
 int main()
 {

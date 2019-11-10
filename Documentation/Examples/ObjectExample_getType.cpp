@@ -5,7 +5,6 @@
 #include <TNL/Devices/Cuda.h>
 
 using namespace TNL;
-using namespace std;
 
 template< typename Value,
           typename Device >
@@ -35,16 +34,16 @@ int main()
    Object* cudaArrayPtr = &cudaArray;
 
    // Object types
-   cout << "HostArray type is                  " << getType< HostArray >() << endl;
-   cout << "hostArrayPtr type is               " << getType( *hostArrayPtr ) << endl;
+   std::cout << "HostArray type is                  " << getType< HostArray >() << std::endl;
+   std::cout << "hostArrayPtr type is               " << getType( *hostArrayPtr ) << std::endl;
 
-   cout << "CudaArray type is                  " << getType< CudaArray >() << endl;
-   cout << "cudaArrayPtr type is               " << getType( *cudaArrayPtr ) << endl;
+   std::cout << "CudaArray type is                  " << getType< CudaArray >() << std::endl;
+   std::cout << "cudaArrayPtr type is               " << getType( *cudaArrayPtr ) << std::endl;
 
    // Object serialization types
-   cout << "HostArray serialization type is    " << HostArray::getSerializationType() << endl;
-   cout << "hostArrayPtr serialization type is " << hostArrayPtr->getSerializationTypeVirtual() << endl;
+   std::cout << "HostArray serialization type is    " << HostArray::getSerializationType() << std::endl;
+   std::cout << "hostArrayPtr serialization type is " << hostArrayPtr->getSerializationTypeVirtual() << std::endl;
 
-   cout << "CudaArray serialization type is    " << CudaArray::getSerializationType() << endl;
-   cout << "cudaArrayPtr serialization type is " << cudaArrayPtr->getSerializationTypeVirtual() << endl;
+   std::cout << "CudaArray serialization type is    " << CudaArray::getSerializationType() << std::endl;
+   std::cout << "cudaArrayPtr serialization type is " << cudaArrayPtr->getSerializationTypeVirtual() << std::endl;
 }

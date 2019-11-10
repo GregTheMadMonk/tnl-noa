@@ -1,9 +1,7 @@
 #include <iostream>
 #include <TNL/FileName.h>
 
-
 using namespace TNL;
-using namespace std;
 
 int main()
 {
@@ -33,5 +31,3 @@ int main()
       std::cout << fileName.getFileName() << std::endl;
    }
 }
-
-
