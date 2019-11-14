@@ -92,6 +92,10 @@ Thus you have one code which you may easily compile with or without CUDA dependi
 
 ## Build with Makefile <a name="makefile"></a>
 
+Larger projects needs to be managed by Makefile tool. In this section we propose a Makefile template which might help you to create more complex applications with TNL. The basic setup is stored in `Makefile.inc` file:
+
+\include Makefile.inc
+
 ## Build with Cmake <a name="cmake"></a>
 
 
