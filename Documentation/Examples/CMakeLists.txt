@@ -1,3 +1,4 @@
+ADD_SUBDIRECTORY( Algorithms )
 ADD_SUBDIRECTORY( Containers )
 
 ADD_EXECUTABLE( FileExample FileExample.cpp )
