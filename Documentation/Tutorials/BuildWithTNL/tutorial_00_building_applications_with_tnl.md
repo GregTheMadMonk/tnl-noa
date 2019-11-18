@@ -92,9 +92,17 @@ Thus you have one code which you may easily compile with or without CUDA dependi
 
 ## Build with Makefile <a name="makefile"></a>
 
-Larger projects needs to be managed by Makefile tool. In this section we propose a Makefile template which might help you to create more complex applications with TNL. The basic setup is stored in `Makefile.inc` file:
+Larger projects needs to be managed by Makefile tool. In this section we propose a Makefile template which might help you to create more complex applications with TNL. The basic setup is stored in [Makefile.inc](../../BuildWithTNL/Makefile.inc) file:
 
 \include Makefile.inc
+
+In this file, you may define a name of your project (`PROJECT_NAME`), set the path to TNL headers (`TNL_HEADERS`), set the installation directory (`INSTALL_DIR`), turn on and off support of CUDA (`WITH_CUDA`), OpenMP (`WITH_OPEMP`) or debug mode (`WITH_DEBUG`). If you compile with CUDA you may set the CUDA architecture of your system.
+
+The main [Makefile](../../BuildWithTNL/Makefile) looks as follows:
+
+\include Makefile
+
+If your project source codes are splitted into several subdirectories you may specify them in variable `SUBDIRS`. Next, in variables `HEADERS` and `SOURCES` you should tell all source files in the current folder. The same holds for `CUDA_SOURCES` which are all .cu files in the current folder. `TARGETS` and `CUDA_TRGETS` tell the names of binaries to be build in the current folder.
 
 ## Build with Cmake <a name="cmake"></a>
 

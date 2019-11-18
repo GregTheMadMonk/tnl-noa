@@ -1,15 +1,21 @@
 include Makefile.inc
 
+SUBDIRS = 
+HEADERS =
+SOURCES = tnl-make-example.cpp
+CUDA_SOURCES = tnl-make-example-cuda.cu
+TARGETS = tnl-make-example 
+CUDA_TARGETS = tnl-make-example-cuda
+
 FILES = Makefile \
         Makefile.inc \
+        $(CUDA_SOURCES) \
         $(SOURCES) \
-	$(HEADERS)
-
-SUBDIRS = 
+        $(HEADERS)
 
 SUBDIRSCLEAN=$(addsuffix clean,$(SUBDIRS))
 
-all: bin subdirs
+all: bin subdirs $(TARGETS) $(CUDA_TARGETS)
 
 .PHONY:	subdirs $(SUBDIRS)
 subdirs:    $(SUBDIRS)
@@ -33,16 +39,16 @@ clean_curdir:
 	$(MAKE) -C $< clean
 
 dist: clean
-	tar zcvf fjfi-num1-src.tgz $(SUBDIRS) $(FILES)
+	tar zcvf $(PROJECT_NAME)-src.tgz $(SUBDIRS) $(FILES)
 
 $(TARGETS): % : %.o
 	$(CXX) $(LDFLAGS) -o $@ $< $(LDLIBS)
 
 $(CUDA_TARGETS): % : %.cu.o
-	$(CXX) $(CUDA_LDFLAGS) -o $@ $< $(CUDA_LDLIBS)
+	$(CUDA_CXX) $(CUDA_LDFLAGS) -o $@ $< $(CUDA_LDLIBS)
 
 $(SOURCES:%.cpp=%.o): %.o: %.cpp
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
 
 $(CUDA_SOURCES:%.cu=%.cu.o): %.cu.o : %.cu
-	$(CUDA_COMPILER) $(CUDA_CPPFLAGS) $(CUDA_CXXFLAGS) -c -o $@ $<
+	$(CUDA_CXX) $(CUDA_CPPFLAGS) $(CUDA_CXXFLAGS) -c -o $@ $<
