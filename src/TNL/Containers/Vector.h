@@ -32,7 +32,9 @@ namespace Containers {
  *                   is selected with \ref Allocators::Default.
  *
  * \par Example
- * \include VectorExample.cpp
+ * \include Containers/VectorExample.cpp
+ * \par Output
+ * \include VectorExample.out
  */
 template< typename Real = double,
           typename Device = Devices::Host,
