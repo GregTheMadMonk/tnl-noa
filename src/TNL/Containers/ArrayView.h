@@ -55,7 +55,9 @@ namespace Containers {
  * See also \ref Array, \ref Vector, \ref VectorView.
  *
  * \par Example
- * \include ArrayViewExample.cpp
+ * \include Containers/ArrayViewExample.cpp
+ * \par Output
+ * \include ArrayViewExample.out
  */
 template< typename Value,
           typename Device = Devices::Host,
