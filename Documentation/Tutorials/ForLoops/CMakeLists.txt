@@ -8,7 +8,11 @@ ELSE()
    ADD_EXECUTABLE( ParallelForExample-3D ParallelForExample-3D.cpp )
 ENDIF()
 
+ADD_EXECUTABLE( StaticForExample StaticForExample.cpp )
+ADD_CUSTOM_COMMAND( COMMAND StaticForExample > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/StaticForExample.out OUTPUT StaticForExample.out )
+
 IF( BUILD_CUDA )
 ADD_CUSTOM_TARGET( ForLoops-cuda ALL DEPENDS
-   ParallelForExample.out )
+   ParallelForExample.out
+   StaticForExample.out )
 ENDIF()
