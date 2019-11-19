@@ -63,7 +63,38 @@ The effect of `StaticFor` is really the same as usual for-loop. The following co
 
 \include StaticForExample-2.cpp
 
-The benefit of `StaticFor` is mainly in the explicit unrolling of short loops which can improve the performance in some sitautions. `StaticFor` can be used also in CUDA kernels.
+The benefit of `StaticFor` is mainly in the explicit unrolling of short loops which can improve the performance in some situations. `StaticFor` can be forced to do the loop-unrolling in any situations using the third template parameter as follows:
+
+\include StaticForExample-3.cpp
+
+`StaticFor` can be used also in CUDA kernels.
 
 ## Templated Static For<a name="templated_static_for"></a>
 
+Templated static for-loop (`TemplateStaticFor`) is a for-loop in template parameters. For example, if class `LoopBody` is defined as
+
+```
+template< int i >
+struct LoopBody
+{
+   static void exec() { ... };
+}
+```
+
+one might need to execute the following sequence of statements:
+
+```
+LoopBody< 0 >::exec();
+LoopBody< 1 >::exec();
+LoopBody< 3 >::exec();
+...
+LoodBody< N >::exec();
+```
+
+This is exactly what `TemplateStaticFor` can do - in a slightly more general way. See the following example:
+
+\include TemplateStaticForExample.cpp
+
+The output looks as follows:
+
+\include TemplateStaticForExample.out

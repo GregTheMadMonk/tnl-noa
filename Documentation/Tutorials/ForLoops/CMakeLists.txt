@@ -11,8 +11,12 @@ ENDIF()
 ADD_EXECUTABLE( StaticForExample StaticForExample.cpp )
 ADD_CUSTOM_COMMAND( COMMAND StaticForExample > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/StaticForExample.out OUTPUT StaticForExample.out )
 
+ADD_EXECUTABLE( TemplateStaticForExample TemplateStaticForExample.cpp )
+ADD_CUSTOM_COMMAND( COMMAND TemplateStaticForExample > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/TemplateStaticForExample.out OUTPUT TemplateStaticForExample.out )
+
 IF( BUILD_CUDA )
 ADD_CUSTOM_TARGET( ForLoops-cuda ALL DEPENDS
    ParallelForExample.out
-   StaticForExample.out )
+   StaticForExample.out
+   TemplateStaticForExample.out )
 ENDIF()
