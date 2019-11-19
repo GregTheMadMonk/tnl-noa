@@ -15,7 +15,7 @@
 namespace TNL {
 namespace Algorithms {
 
-/***
+/**
  * \brief StaticFor is a wrapper for common for-loop with explicit unrolling.
  *
  * StaticFor can be used only for for-loops bounds of which are known at the
@@ -48,8 +48,8 @@ struct StaticFor< Begin, End, true >
    /**
     * \brief Static method for execution od the StaticFor.
     *
-    * @param f is a (lambda) function to be performed in each iteration.
-    * @param args are auxiliary data to be passed to the function f.
+    * \param f is a (lambda) function to be performed in each iteration.
+    * \param args are auxiliary data to be passed to the function f.
     */
    template< typename Function, typename... Args >
    __cuda_callable__
