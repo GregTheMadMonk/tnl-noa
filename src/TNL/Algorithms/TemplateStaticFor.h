@@ -17,6 +17,31 @@
 
 namespace TNL {
 namespace Algorithms {
+
+/**
+ * \brief TemplateStaticFor serves for coding for-loops in template parameters.
+ *
+ * The result of calling this loop with a templated class \p LoopBody is as follows:
+ *
+ * LoopBody< begin >::exec( ... );
+ *
+ * LoodBody< begin + 1 >::exec( ... );
+ *
+ * ...
+ *
+ * LoopBody< end - 1 >::exec( ... );
+ *
+ * \tparam IndexType is type of the loop indexes
+ * \tparam begin the loop iterates over index interval [begin,end).
+ * \tparam end the loop iterates over index interval [begin,end).
+ * \tparam LoopBody is a templated class having one template parameter of IndexType.
+ */
+template< typename IndexType,
+          IndexType begin,
+          IndexType end,
+          template< IndexType > class LoopBody >
+struct TemplateStaticFor;
+
 namespace detail {
 
 template< typename IndexType,

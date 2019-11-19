@@ -1,28 +1,31 @@
 #include <iostream>
 #include <cstdlib>
 #include <TNL/Containers/StaticVector.h>
-#include <TNL/Algorithms/StaticFor.h>
+#include <TNL/Algorithms/TemplateStaticFor.h>
 
 using namespace TNL;
 using namespace TNL::Containers;
 
+const int Size( 5 );
+
+template< int I >
+struct LoopBody
+{
+   static void exec( const StaticVector< Size, double >& v ) {
+      std::cout << "v[ " << I << " ] = " << v[ I ] << std::endl;
+   }
+};
+
 int main( int argc, char* argv[] )
 {
    /****
-    * Create two static vectors
+    * Initiate static vector
     */
-   const int Size( 3 );
-   StaticVector< Size, double > a, b;
-   a = 1.0;
-   b = 2.0;
-   double sum( 0.0 );
+   StaticVector< Size, double > v{ 1.0, 2.0, 3.0, 4.0, 5.0 };
 
    /****
-    * Compute an addition of a vector and a constant number.
+    * Print out the vector using template parameters for indexing.
     */
-   auto addition = [&]( int i, const double& c ) { a[ i ] = b[ i ] + c; sum += a[ i ]; };
-   Algorithms::StaticFor< 0, Size >::exec( addition, 3.14 );
-   std::cout << "a = " << a << std::endl;
-   std::cout << "sum = " << sum << std::endl;
+   Algorithms::TemplateStaticFor< 0, Size, LoopBody >::exec( v );
 }
 
