@@ -5,7 +5,6 @@
 
 using namespace TNL;
 using namespace TNL::Containers;
-using namespace TNL::Algorithms;
 
 template< typename Device >
 void meshFunctionSum( const int xSize,
@@ -30,7 +29,7 @@ void meshFunctionSum( const int xSize,
       const int idx = ( k * ySize + j ) * xSize + i;
       result_view[ idx ] = v1_view[ idx ] + v2_view[ idx ] + c; };
 
-   ParallelFor3D< Device >::exec( 0, 0, 0, xSize, ySize,zSize, sum, xSize, ySize, c );
+   Algorithms::ParallelFor3D< Device >::exec( 0, 0, 0, xSize, ySize,zSize, sum, xSize, ySize, c );
 }
 
 int main( int argc, char* argv[] )

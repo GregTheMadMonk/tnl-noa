@@ -5,7 +5,6 @@
 
 using namespace TNL;
 using namespace TNL::Containers;
-using namespace TNL::Algorithms;
 
 template< typename Device >
 void vectorSum( const Vector< double, Device >& v1,
@@ -26,7 +25,7 @@ void vectorSum( const Vector< double, Device >& v1,
    auto sum = [=] __cuda_callable__  ( int i, const double c ) mutable {
       result_view[ i ] = v1_view[ i ] + v2_view[ i ] + c; };
 
-      ParallelFor< Device >::exec( 0, v1.getSize(), sum, c );
+   Algorithms::ParallelFor< Device >::exec( 0, v1.getSize(), sum, c );
 }
 
 int main( int argc, char* argv[] )
