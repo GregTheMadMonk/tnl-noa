@@ -47,7 +47,23 @@ For the completness, we show modification of the previous example into 3D:
 
 \include ParallelForExample-3D.cpp
 
-
 ## Static For<a name="static_for"></a>
+
+Static for-loop is designed for short loops with constant (i.e. known at the compile time) number of iterations. It is often used with static arrays and vectors. An adventage of this kind of for loop is that it is explicitly unrolled when the loop is short (up to eight iterations). See the following example:
+
+\include StaticForExample.cpp
+
+Notice that the static for-loop works with a lambda function simillar to parallel for-loop. The bounds of the loop are passed as template parameters in the statement `Algorithms::StaticFor< 0, Size >`. The parameters of the static method `exec` are the lambda functions to be performed in each iteration and auxiliar data to be passed to the function. The function gets the loop index `i` first followed by the auxiliary data `sum` in this example. 
+
+The result looks as:
+
+\include StaticForExample.out
+
+The effect of `StaticFor` is really the same as usual for-loop. The following code does the same as the previous example:
+
+\include StaticForExample-2.cpp
+
+The benefit of `StaticFor` is mainly in the explicit unrolling of short loops which can improve the performance in some sitautions. `StaticFor` can be used also in CUDA kernels.
+
 ## Templated Static For<a name="templated_static_for"></a>
 
