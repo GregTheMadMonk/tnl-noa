@@ -16,7 +16,7 @@ void initVector( Vector< double, Device >& v,
 {
    auto view = v.getConstView();
    auto init = [=] __cuda_callable__  ( int i, const double c ) mutable {
-      view[ i ] = c;
+      view[ i ] = c; }
 
    ParallelFor< Device >::exec( 0, v.getSize(), init, c );
 }
