@@ -1,4 +1,4 @@
-\page tutorial_04_ForLoops For loops
+\page tutorial_ForLoops For loops
 
 ## Introduction
 

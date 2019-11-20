@@ -1,4 +1,4 @@
-\page tutorial_02_vectors  Vectors tutorial
+\page tutorial_Vectors  Vectors tutorial
 
 ## Introduction
 

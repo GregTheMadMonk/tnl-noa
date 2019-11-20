@@ -1,4 +1,4 @@
-\page tutorial_00_building_applications_with_tnl  Building Applications with TNL
+\page tutorial_building_applications_with_tnl  Building Applications with TNL
 
 ## Introduction
 

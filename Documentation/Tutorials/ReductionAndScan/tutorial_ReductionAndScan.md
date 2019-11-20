@@ -1,4 +1,4 @@
-\page tutorial_03_reduction Flexible (parallel) reduction and prefix-sum tutorial
+\page tutorial_ReductionAndScan Flexible (parallel) reduction and prefix-sum tutorial
 
 ## Introduction
 
