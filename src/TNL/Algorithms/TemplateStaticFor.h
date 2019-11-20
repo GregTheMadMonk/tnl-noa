@@ -35,6 +35,11 @@ namespace Algorithms {
  * \tparam begin the loop iterates over index interval [begin,end).
  * \tparam end the loop iterates over index interval [begin,end).
  * \tparam LoopBody is a templated class having one template parameter of IndexType.
+ *
+ * \par Example
+ * \include Algorithms/TamplateStaticForExample.cpp
+ * \par Output
+ * \include TamplateStaticForExample.out
  */
 template< typename IndexType,
           IndexType begin,
@@ -50,6 +55,12 @@ template< typename IndexType,
           template< IndexType > class LoopBody >
 struct TemplateStaticForExecutor
 {
+   /**
+    * \brief Static method initiating the for-loop.
+    *
+    * \tparam Args type of user defined data to be passed to for-loop.
+    * \param args user defined data to be passed to for-loop.
+    */
    template< typename... Args >
    __cuda_callable__
    static void exec( Args&&... args )
