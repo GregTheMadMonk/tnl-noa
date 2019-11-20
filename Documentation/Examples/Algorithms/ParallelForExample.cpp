@@ -5,7 +5,6 @@
 
 using namespace TNL;
 using namespace TNL::Containers;
-using namespace TNL::Algorithms;
 
 /****
  * Set all elements of the vector v to the constant c.
@@ -16,9 +15,9 @@ void initVector( Vector< double, Device >& v,
 {
    auto view = v.getConstView();
    auto init = [=] __cuda_callable__  ( int i, const double c ) mutable {
-      view[ i ] = c; }
+      view[ i ] = c; };
 
-   ParallelFor< Device >::exec( 0, v.getSize(), init, c );
+   Algorithms::ParallelFor< Device >::exec( 0, v.getSize(), init, c );
 }
 
 int main( int argc, char* argv[] )
