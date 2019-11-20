@@ -46,6 +46,8 @@ namespace Algorithms {
  *
  * Synchronous means that the program control returns to the caller when the loop is processed completely.
  * Asynchronous means that the program control returns to the caller immediately even before the loop is processing is finished.
+ *
+ * Only parallel for-loops in CUDA are affected by this mode.
  */
 enum ParallelForMode { SynchronousMode, AsynchronousMode };
 
