@@ -37,7 +37,7 @@ namespace TNL {
  * It contains algorithms like for-loops, memory operations, (parallel) reduction,
  * multireduction, scan etc.
  */
-namespace Algorithms
+namespace Algorithms {
 
 // TODO: ParallelForMode should be moved to Device (=Executor)
 
