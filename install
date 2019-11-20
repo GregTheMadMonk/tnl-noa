@@ -35,7 +35,10 @@ if [[ ${BUILD_DEBUG} == "yes" ]]; then
       mkdir Debug
    fi
    pushd Debug
-   ../build --root-dir=.. --build=Debug --install=yes ${OPTIONS}
+   if ! ../build --root-dir=.. --build=Debug --install=yes ${OPTIONS}; then
+      echo "Debug build failed."
+      exit 1
+   fi
    popd
 fi
 
@@ -44,7 +47,10 @@ if [[ ${BUILD_RELEASE} == "yes" ]]; then
       mkdir Release
    fi
    pushd Release
-   ../build --root-dir=.. --build=Release --install=yes ${OPTIONS};
+   if ! ../build --root-dir=.. --build=Release --install=yes ${OPTIONS}; then
+      echo "Release build failed."
+      exit 1
+   fi
    popd
 fi
 

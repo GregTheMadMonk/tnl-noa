@@ -202,7 +202,9 @@ if [[ "$make" != "make" ]] && [[ "$VERBOSE" ]]; then
    VERBOSE="-v"
 fi
 
-$make ${VERBOSE} $make_target
+if ! $make ${VERBOSE} $make_target; then
+   exit 1
+fi
 
 if [[ ${WITH_DOC} == "yes" ]]; then
    "$ROOT_DIR/Documentation/build" --prefix="$PREFIX"
