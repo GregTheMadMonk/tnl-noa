@@ -7,3 +7,4 @@
 3. [Vectors](tutorial_Vectors.html)
 4. [Flexible parallel reduction and scan](tutorial_ReductionAndScan.html)
 5. [For loops](tutorial_ForLoops.html)
+6. [Cross-device pointers](tutorial_Pointers.html)
