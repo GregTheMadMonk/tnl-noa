@@ -3,13 +3,11 @@
 #include <TNL/Containers/Array.h>
 #include <TNL/Pointers/UniquePointer.h>
 
-
 using namespace TNL;
 
-using ArrayHost = Containers::Array< int, Devices::Host >;
 using ArrayCuda = Containers::Array< int, Devices::Cuda >;
 
-__global__ void checkArray( const ArrayCuda* ptr )
+__global__ void printArray( const ArrayCuda* ptr )
 {
    printf( "Array size is: %d\n", ptr->getSize() );
    for( int i = 0; i < ptr->getSize(); i++ )
@@ -18,24 +16,24 @@ __global__ void checkArray( const ArrayCuda* ptr )
 
 int main( int argc, char* argv[] )
 {
-
    /***
-    * Make unique pointer on array on CPU and manipulate the
-    * array via the pointer.
-    */
-   Pointers::UniquePointer< ArrayHost > array_host_ptr( 10 );
-   *array_host_ptr = 1;
-   std::cout << "Array = " << *array_host_ptr << std::endl;
-
-   /***
-    * Let's do the same in CUDA
+    * Create an array and print its elements in CUDA kernel
     */
 #ifdef HAVE_CUDA
-   Pointers::UniquePointer< ArrayCuda > array_cuda_ptr( 10 );
-   array_cuda_ptr.modifyData< Devices::Host >() = 1;
-   //Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
-   //checkArray<<< 1, 1 >>>( &array_cuda_ptr.getData< Devices::Cuda >() );
+   Pointers::UniquePointer< ArrayCuda > array_ptr( 10 );
+   array_ptr.modifyData< Devices::Host >() = 1;
+   Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
+   printArray<<< 1, 1 >>>( &array_ptr.getData< Devices::Cuda >() );
+
+   /***
+    * Resize the array and print it again
+    */
+   array_ptr->setSize( 5 );
+   array_ptr.modifyData< Devices::Host >() = 2;
+   Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
+   printArray<<< 1, 1 >>>( &array_ptr.getData< Devices::Cuda >() );
 #endif
    return EXIT_SUCCESS;
+
 }
 
