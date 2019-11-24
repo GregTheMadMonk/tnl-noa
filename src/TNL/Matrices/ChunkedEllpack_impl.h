@@ -275,22 +275,7 @@ template< typename Real,
 Index ChunkedEllpack< Real, Device, Index >::getNonZeroRowLength( const IndexType row ) const
 {
     ConstMatrixRow matrixRow = getRow( row );
-    return matrixRow.getNonZeroElementsCount( getType< Device >() );
-    
-//    IndexType elementCount ( 0 );
-//    ConstMatrixRow matrixRow = this->getRow( row );
-//    
-//    auto computeNonZeros = [&] /*__cuda_callable__*/ ( IndexType i ) mutable
-//    {
-//        std::cout << "matrixRow.getElementValue( i ) = " << matrixRow.getElementValue( i ) << " != 0.0" << std::endl;
-//        if( matrixRow.getElementValue( i ) !=  0.0 )
-//            elementCount++;
-//        
-//        std::cout << "End of lambda elementCount = " << elementCount << std::endl;
-//    };
-//   
-//    ParallelFor< DeviceType >::exec( ( IndexType ) 0, matrixRow.getLength(), computeNonZeros );
-//    return elementCount;
+    return matrixRow.getNonZeroElementsCount( Device::getDeviceType() );
 }
 
 template< typename Real,

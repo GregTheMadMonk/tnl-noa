@@ -78,7 +78,6 @@ TYPED_TEST( AdEllpackMatrixTest, resetTest )
     test_Reset< AdEllpackMatrixType >();
 }
 
-// SUPPOSEDLY WORKING - localLoad, offset and rowOffset are seemingly random numbers in the head and tail of WarpList.
 TYPED_TEST( AdEllpackMatrixTest, setElementTest )
 {    
     using AdEllpackMatrixType = typename TestFixture::AdEllpackMatrixType;
@@ -86,7 +85,6 @@ TYPED_TEST( AdEllpackMatrixTest, setElementTest )
     test_SetElement< AdEllpackMatrixType >();
 }
 
-// SUPPOSEDLY WORKING - localLoad, offset and rowOffset are seemingly random numbers in the head and tail of WarpList.
 TYPED_TEST( AdEllpackMatrixTest, addElementTest )
 {
     using AdEllpackMatrixType = typename TestFixture::AdEllpackMatrixType;
@@ -94,7 +92,6 @@ TYPED_TEST( AdEllpackMatrixTest, addElementTest )
     test_AddElement< AdEllpackMatrixType >();
 }
 
-// SUPPOSEDLY WORKING - Tests take longer than expected. setElement takes 13ms, compared to SlicedEllpack's 2ms.
 TYPED_TEST( AdEllpackMatrixTest, setRowTest )
 {
     using AdEllpackMatrixType = typename TestFixture::AdEllpackMatrixType;
@@ -102,7 +99,6 @@ TYPED_TEST( AdEllpackMatrixTest, setRowTest )
     test_SetRow< AdEllpackMatrixType >();
 }
 
-// WORKS FOR MATRICES up to 99x99, The rest have different results.
 TYPED_TEST( AdEllpackMatrixTest, vectorProductTest )
 {
     using AdEllpackMatrixType = typename TestFixture::AdEllpackMatrixType;
@@ -110,7 +106,6 @@ TYPED_TEST( AdEllpackMatrixTest, vectorProductTest )
     test_VectorProduct< AdEllpackMatrixType >();
 }
 
-// TODO test
 TYPED_TEST( AdEllpackMatrixTest, operatorEqualsTest )
 {
     using AdEllpackMatrixType = typename TestFixture::AdEllpackMatrixType;

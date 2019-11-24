@@ -124,41 +124,8 @@ template< typename Real,
 Index CSR< Real, Device, Index >::getNonZeroRowLength( const IndexType row ) const
 {
     // TODO: Fix/Implement
-    throw Exceptions::NotImplementedError( "CSR::getNonZeroRowLength is not implemented." );
-//    if( std::is_same< DeviceType, Devices::Host >::value )
-//    {
-//       ConstMatrixRow matrixRow = this->getRow( row );
-//       return matrixRow.getNonZeroElementsCount();
-//    }
-//    if( std::is_same< DeviceType, Devices::Cuda >::value )
-//    {
-//       IndexType *cols = new IndexType[4];
-//       RealType *vals = new RealType[4];
-//       for( int i = 0; i < 4; i++ )
-//       {
-//           cols[i] = i;
-//           vals[i] = 1.0;
-//       }
-//       ConstMatrixRow matrixRow(cols, vals, 4, 1);
-// //      ConstMatrixRow matrixRow = this->getRow( row );// If the program even compiles, this line fails because a segfault is thrown on the first line of getRow()
-//       // WHEN debugging with GDB:
-//       //  (gdb) p this->rowPointers[0]
-//       //    Could not find operator[].
-//       //  (gdb) p rowPointers.getElement(0)
-//       //    Attempt to take address of value not located in memory.
-//       IndexType resultHost ( 0 );
-//       IndexType* resultCuda = Cuda::passToDevice( resultHost );
-//       // PROBLEM: If the second parameter of getNonZeroRowLengthCudaKernel is '&resultCuda', the following issue is thrown:
-//       //          'error: no instance of function template "TNL::Matrices::getNonZeroRowLengthCudaKernel" matches the argument list'
-//       TNL::Matrices::getNonZeroRowLengthCudaKernel< ConstMatrixRow, IndexType ><<< 1, 1 >>>( matrixRow, resultCuda ); // matrixRow works fine, tested them both separately
-//       delete []cols;
-//       delete []vals;
-//       std::cout << "Checkpoint BEFORE passFromDevice" << std::endl;
-//       resultHost = Cuda::passFromDevice( resultCuda ); // This causes a crash: Illegal memory address in Cuda_impl.h at TNL_CHECK_CUDA_DEVICE
-//       std::cout << "Checkpoint AFTER passFromDevice" << std::endl;
-//       Cuda::freeFromDevice( resultCuda );
-//       return resultHost;
-//   }
+    TNL_ASSERT( false, std::cerr << "TODO: Fix/Implement" );
+    return 0;
 }
 
 template< typename Real,
@@ -223,13 +190,6 @@ bool CSR< Real, Device, Index >::addElementFast( const IndexType row,
                                                           const RealType& value,
                                                           const RealType& thisElementMultiplicator )
 {
-   /*TNL_ASSERT( row >= 0 && row < this->rows &&
-              column >= 0 && column <= this->rows,
-              std::cerr << " row = " << row
-                   << " column = " << column
-                   << " this->rows = " << this->rows
-                   << " this->columns = " << this-> columns );*/
-
    IndexType elementPtr = this->rowPointers[ row ];
    const IndexType rowEnd = this->rowPointers[ row + 1 ];
    IndexType col = 0;

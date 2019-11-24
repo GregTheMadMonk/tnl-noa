@@ -109,19 +109,7 @@ template< typename Real,
           typename Index >
 void Sparse< Real, Device, Index >::allocateMatrixElements( const IndexType& numberOfMatrixElements )
 {
-//    std::cout << "  Allocating matrix elements..." << std::endl;
-   // CHECKING: if the number of matrix elements is larger than the highest number the IndexType can go to?
-   // INT OVERFLOW
-    
-   // CORRECT? ELL stores certain matrices in such a way, which could cause the number of matrix elements 
-   //          to be greater than the maximum value IndexType can store, thus causing int overflow when 
-   //          creating the arrays "values" and "indexes".
-   //   PROBLEM: int can overflow in such a way that it is still positive, thus rendering this assert useless.
-   //       HOW FIX? Do we have to create special conditions for every format in its allocation method? We can't 
-   //                tell from within this method, if numberOfMatrixElements is an overflown value or not.
    TNL_ASSERT_GE( numberOfMatrixElements, 0, "Number of matrix elements must be non-negative." );
-    
-//   std::cout << "  numberOfMatrixElements = " << numberOfMatrixElements << std::endl;
    
    this->values.setSize( numberOfMatrixElements );
    this->columnIndexes.setSize( numberOfMatrixElements );
@@ -132,8 +120,6 @@ void Sparse< Real, Device, Index >::allocateMatrixElements( const IndexType& num
     */
    if( numberOfMatrixElements > 0 )
       this->columnIndexes.setValue( this->columns );
-   
-//   std::cout << "->END OF allocateMatrixElements!!!" << std::endl;
 }
 
 template< typename Real,

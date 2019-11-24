@@ -57,7 +57,6 @@ using BiEllpackMatrixTypes = ::testing::Types
 
 TYPED_TEST_SUITE( BiEllpackMatrixTest, BiEllpackMatrixTypes);
 
-// WORKING
 TYPED_TEST( BiEllpackMatrixTest, setDimensionsTest )
 {
     using BiEllpackMatrixType = typename TestFixture::BiEllpackMatrixType;

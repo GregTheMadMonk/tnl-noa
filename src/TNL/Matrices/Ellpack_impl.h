@@ -655,8 +655,6 @@ Ellpack< Real, Device, Index >::operator=( const Ellpack< Real2, Device2, Index2
    // setLike does not work here due to different alignment on Cuda and Host
    this->rowLengths = matrix.rowLengths;
    this->setDimensions( matrix.getRows(), matrix.getColumns() );
-   
-//   std::cout << "DIMENSIONS set; after setDimensions in operator= cross-device" << std::endl;
 
    const int blockSize = 32;
    const int blocks = roundUpDivision( this->getRows(), blockSize );

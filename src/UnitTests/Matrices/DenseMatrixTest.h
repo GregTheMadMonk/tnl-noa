@@ -41,17 +41,14 @@ void host_test_GetType()
     EXPECT_EQ( mtrxHostInt.getType(), TNL::String( "Matrices::Dense< int, Devices::Host, int >" ) );
 }
 
-// QUESITON: Cant these two functions be combined into one? Because if no CUDA is present and we were to call
-//           CUDA into the function in the TEST, to be tested, then we could have a problem.
-
 template< typename MatrixCudaFloat, typename MatrixCudaInt >
 void cuda_test_GetType()
 {
     MatrixCudaFloat mtrxCudaFloat;
     MatrixCudaInt mtrxCudaInt;
 
-    EXPECT_EQ( mtrxCudaFloat.getType(), TNL::String( "Matrices::Dense< float, Devices::Cuda, int >" ) );    // This is mistakenly labeled in /src/TNL/Devices/Cuda.cpp
-    EXPECT_EQ( mtrxCudaInt.getType(), TNL::String( "Matrices::Dense< int, Devices::Cuda, int >" ) );        // Should be Devices::Cuda
+    EXPECT_EQ( mtrxCudaFloat.getType(), TNL::String( "Matrices::Dense< float, Devices::Cuda, int >" ) );
+    EXPECT_EQ( mtrxCudaInt.getType(), TNL::String( "Matrices::Dense< int, Devices::Cuda, int >" ) );
 }
 
 template< typename Matrix >
@@ -1397,7 +1394,6 @@ TYPED_TEST( MatrixTest, printTest )
 
 TEST( DenseMatrixTest, Dense_getMatrixProductTest_Host )
 {
-//    test_GetMatrixProduct< Dense_host_int >();
     bool testRan = false;
     EXPECT_TRUE( testRan );
     std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
@@ -1414,7 +1410,6 @@ TEST( DenseMatrixTest, Dense_getMatrixProductTest_Host )
 #ifdef HAVE_CUDA
 TEST( DenseMatrixTest, Dense_getMatrixProductTest_Cuda )
 {
-//    test_GetMatrixProduct< Dense_cuda_int >();
     bool testRan = false;
     EXPECT_TRUE( testRan );
     std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";

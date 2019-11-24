@@ -802,10 +802,9 @@ template< typename Real,
 void BiEllpack< Real, Device, Index >::printValues() const
 {
     for( Index i = 0; i < this->values.getSize(); i++ ) {
-    // Random values are stored with the column index of getColumns(). e.g. a matrix has 4 columns, values are at column indexes 0, 1, 2, 3 and junk data at index 4.
-    if( this->columnIndexes.getElement( i ) != this->getColumns() )
-        std::cout << "values.getElement( " << i << " ) = " << this->values.getElement( i ) 
-         << "\tcolumnIndexes.getElement( " << i << " ) = " << this->columnIndexes.getElement( i ) << std::endl;
+        if( this->columnIndexes.getElement( i ) != this->getColumns() )
+            std::cout << "values.getElement( " << i << " ) = " << this->values.getElement( i ) 
+             << "\tcolumnIndexes.getElement( " << i << " ) = " << this->columnIndexes.getElement( i ) << std::endl;
     }
     
     for( Index i = 0; i < this->rowPermArray.getSize(); i++ ) {

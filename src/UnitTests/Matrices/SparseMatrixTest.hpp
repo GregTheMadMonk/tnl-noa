@@ -28,12 +28,6 @@ void host_test_GetType()
     EXPECT_TRUE( testRan );
     std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
     std::cerr << "This test has not been implemented properly yet.\n" << std::endl;
-    
-//    MatrixHostFloat mtrxHostFloat;
-//    MatrixHostInt mtrxHostInt;
-//    
-//    EXPECT_EQ( mtrxHostFloat.getType(), TNL::String( "Matrices::CSR< float, Devices::Host >" ) );
-//    EXPECT_EQ( mtrxHostInt.getType(), TNL::String( "Matrices::CSR< int, Devices::Host >" ) ); 
 }
 
 template< typename MatrixCudaFloat, typename MatrixCudaInt >
@@ -42,13 +36,7 @@ void cuda_test_GetType()
     bool testRan = false;
     EXPECT_TRUE( testRan );
     std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
-    std::cerr << "This test has not been implemented properly yet.\n" << std::endl;
-    
-//    MatrixCudaFloat mtrxCudaFloat;
-//    MatrixCudaInt mtrxCudaInt;
-//    
-//    EXPECT_EQ( mtrxCudaFloat.getType(), TNL::String( "Matrices::CSR< float, Devices::Cuda >" ) );
-//    EXPECT_EQ( mtrxCudaInt.getType(), TNL::String( "Matrices::CSR< int, Devices::Cuda >" ) );        
+    std::cerr << "This test has not been implemented properly yet.\n" << std::endl;    
 }
 
 template< typename Matrix >
@@ -224,7 +212,6 @@ void test_SetElement()
     
     typename Matrix::CompressedRowLengthsVector rowLengths;
     rowLengths.setSize( rows );
-//    rowLengths.setValue( 8 );
     rowLengths.setElement( 0, 4 );
     rowLengths.setElement( 1, 3 );
     rowLengths.setElement( 2, 8 );
@@ -614,7 +601,6 @@ void test_VectorProduct()
     using IndexType = typename Matrix::IndexType;
     using VectorType = TNL::Containers::Vector< RealType, DeviceType, IndexType >;
     
-// Matrix totalLoad (AdEll) = 1
 /*
  * Sets up the following 4x4 sparse matrix:
  *
@@ -668,7 +654,6 @@ void test_VectorProduct()
     EXPECT_EQ( outVector_1.getElement( 3 ), 10 );
     
     
-// Matrix totalLoad (AdEll) = 2
 /*
  * Sets up the following 4x4 sparse matrix:
  *
@@ -723,7 +708,6 @@ void test_VectorProduct()
     EXPECT_EQ( outVector_2.getElement( 3 ), 16 );
     
     
-// Matrix totalLoad (AdEll) = 3
 /*
  * Sets up the following 4x4 sparse matrix:
  *
@@ -777,7 +761,6 @@ void test_VectorProduct()
     EXPECT_EQ( outVector_3.getElement( 3 ), 66 );
     
     
-// Matrix totalLoad (AdEll) = 4
 /*
  * Sets up the following 8x8 sparse matrix:
  *
@@ -856,7 +839,6 @@ void test_VectorProduct()
     EXPECT_EQ( outVector_4.getElement( 7 ), 330 );
     
   
-// Matrix totalLoad (AdEll) = 5
 /*
  * Sets up the following 8x8 sparse matrix:
  *
@@ -942,9 +924,6 @@ void test_VectorProduct()
     EXPECT_EQ( outVector_5.getElement( 5 ), 224 );
     EXPECT_EQ( outVector_5.getElement( 6 ), 352 );
     EXPECT_EQ( outVector_5.getElement( 7 ), 520 );
-    
-    
-    // ONE MORE TEST HERE FOR 16X16
 }
 
 template< typename Matrix >
@@ -1053,19 +1032,6 @@ void test_OperatorEquals()
         *    |  0 16 17 18 19 20 21  1 |   7
         *    | 22 23 24 25 26 27 28  1 |   8
         *    \ 29 30 31 32 33 34 35 36 /   8
-        */
-       
-       /* Sorted BiELL:
-        * 
-        * 
-        *    / 22 23 24 25 26 27 28  1 \
-        *    | 29 30 31 32 33 34 35 36 |
-        *    | 16 17 18 19 20 21  1    |
-        *    |  1  2  3  4  5  1       |
-        *    | 11 12 13 14  1          |
-        *    |  8  9 10  1             |
-        *    |  6  7  1                |
-        *    \ 15  1                   /
         */
 
         const IndexType m_rows = 8;
@@ -1453,7 +1419,6 @@ void test_Print()
 
     std::cout.rdbuf(old_buf); //reset
     
-    //printed << printed.str() << std::endl;
     couted << "Row: 0 ->  Col:0->1	 Col:1->2	 Col:2->3\t\n"
                "Row: 1 ->  Col:3->4\t\n"
                "Row: 2 ->  Col:0->5	 Col:1->6	 Col:2->7\t\n"
