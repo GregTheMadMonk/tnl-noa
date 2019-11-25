@@ -77,4 +77,10 @@ One of the differences between `UniquePointer` and `SmartPointer` is that the `S
 
 ## Device pointers <a name="device_pointers"></a>
 
-The last type of the smart pointer implemented in TNL is `DevicePointer`. It works the same way as `SharedPointer` but it does not create new object on the host system. `DevicePointer` is therefore useful in situation when there is already an object created in the host memory and we want to create its image even on the device. Both images are linked one with each other and so one can just manipulate the one on the host and then synchronize it on the device.
+The last type of the smart pointer implemented in TNL is `DevicePointer`. It works the same way as `SharedPointer` but it does not create new object on the host system. `DevicePointer` is therefore useful in situation when there is already an object created in the host memory and we want to create its image even on the device. Both images are linked one with each other and so one can just manipulate the one on the host and then synchronize it on the device. The following listing is a modification of the previous example with tuple:
+
+\include DevicePointerExample.cpp
+
+The result looks the same:
+
+\include DevicePointerExample.out

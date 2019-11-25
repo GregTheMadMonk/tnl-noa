@@ -1,7 +1,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <TNL/Containers/Array.h>
-#include <TNL/Pointers/SharedPointer.h>
+#include <TNL/Pointers/DevicePointer.h>
 
 using namespace TNL;
 
@@ -9,16 +9,10 @@ using ArrayCuda = Containers::Array< int, Devices::Cuda >;
 
 struct Tuple
 {
-   Tuple( const int size ):
-   a1( size ), a2( size ){};
+   Tuple( ArrayCuda& _a1, ArrayCuda& _a2 ):
+   a1( _a1 ), a2( _a2 ){};
 
-   void setSize( const int size )
-   {
-      a1->setSize( size );
-      a2->setSize( size );
-   }
-
-   Pointers::SharedPointer< ArrayCuda > a1, a2;
+   Pointers::DevicePointer< ArrayCuda > a1, a2;
 };
 
 __global__ void printTuple( const Tuple t )
@@ -37,18 +31,20 @@ int main( int argc, char* argv[] )
     * Create a tuple of arrays and print them in CUDA kernel
     */
 #ifdef HAVE_CUDA
-   Tuple t( 3 );
-   *t.a1 = 1;
-   *t.a2 = 2;
+   ArrayCuda a1( 3 ), a2( 3 );
+   Tuple t( a1, a2 );
+   a1 = 1;
+   a2 = 2;
    Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
    printTuple<<< 1, 1 >>>( t );
 
    /***
     * Resize the arrays
     */
-   t.setSize( 5 );
-   *t.a1 = 3;
-   *t.a2 = 4;
+   a1.setSize( 5 );
+   a2.setSize( 5 );
+   a1 = 3;
+   a2 = 4;
    Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
    printTuple<<< 1, 1 >>>( t );
 #endif

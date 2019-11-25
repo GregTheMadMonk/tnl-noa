@@ -267,26 +267,46 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
          pointer.cuda_pointer = nullptr;
       }
 
+      __cuda_callable__
       const Object* operator->() const
       {
+#ifdef __CUDA_ARCH__
+         return this->cuda_pointer;
+#else
          return this->pointer;
+#endif
       }
 
+      __cuda_callable__
       Object* operator->()
       {
+#ifdef __CUDA_ARCH__
+         return this->cuda_pointer;
+#else
          this->pd->maybe_modified = true;
          return this->pointer;
+#endif
       }
 
+      __cuda_callable__
       const Object& operator *() const
       {
+#ifdef __CUDA_ARCH__
+         return *( this->cuda_pointer );
+#else
          return *( this->pointer );
+#endif
       }
 
+      __cuda_callable__
       Object& operator *()
       {
+#ifdef __CUDA_ARCH__
+         return *( this->cuda_pointer );
+#else
          this->pd->maybe_modified = true;
          return *( this->pointer );
+#endif
       }
 
       __cuda_callable__
