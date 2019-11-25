@@ -57,7 +57,7 @@ class UniquePointer
 };
 
 /**
- * \brief Specialization of the UniqueSmart pointer for the host system.
+ * \brief Specialization of the UniquePointer for the host system.
  * 
  * \tparam  Object is a type of object to be owned by the pointer.
  */
@@ -217,7 +217,7 @@ class UniquePointer< Object, Devices::Host > : public SmartPointer
       }
 
       /**
-       * \brief Assignment operator.
+       * \brief Move operator.
        * 
        * It assigns object owned by the pointer \ref ptr to \ref this pointer. 
        * The original pointer \ref ptr is reset to empty state.
@@ -233,10 +233,9 @@ class UniquePointer< Object, Devices::Host > : public SmartPointer
       /**
        * \brief Cross-device pointer synchronization.
        * 
-       * This method is usually called by the smart pointers register when calling
-       * \ref Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >() 
+       * For the smart pointers in the host, this method does nothing.
        * 
-       * \return true if the synchronization was successful, false otherwise.
+       * \return true.
        */
       bool synchronize()
       {
@@ -259,7 +258,7 @@ class UniquePointer< Object, Devices::Host > : public SmartPointer
 };
 
 /**
- * \brief Specialization of the UniqueSmart pointer for the CUDA device.
+ * \brief Specialization of the UniquePointer for the CUDA device.
  * 
  * \tparam  Object is a type of object to be owned by the pointer.
  */
@@ -438,7 +437,7 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
       }
 
       /**
-       * \brief Assignment operator.
+       * \brief Move operator.
        * 
        * It assigns object owned by the pointer \ref ptr to \ref this pointer. 
        * The original pointer \ref ptr is reset to empty state.

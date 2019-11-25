@@ -24,14 +24,23 @@
 namespace TNL {
 namespace Pointers {
 
+/**
+ * \brief Specialization of the UniquePointer for the host system.
+ * 
+ * \tparam  Object is a type of object to be owned by the pointer.
+ */
 template< typename Object >
 class SharedPointer< Object, Devices::Host > : public SmartPointer
 {
    private:
-      // Convenient template alias for controlling the selection of copy- and
-      // move-constructors and assignment operators using SFINAE.
-      // The type Object_ is "enabled" iff Object_ and Object are not the same,
-      // but after removing const and volatile qualifiers they are the same.
+      
+      /**
+       * \typedef Enabler
+       * Convenient template alias for controlling the selection of copy- and
+       * move-constructors and assignment operators using SFINAE.
+       * The type Object_ is "enabled" iff Object_ and Object are not the same,
+       * but after removing const and volatile qualifiers they are the same.
+       */
       template< typename Object_ >
       using Enabler = std::enable_if< ! std::is_same< Object_, Object >::value &&
                                       std::is_same< typename std::remove_cv< Object >::type, Object_ >::value >;
@@ -42,13 +51,30 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
 
    public:
 
+      /**
+       * \typedef ObjectType is the type of object owned by the pointer. 
+       */
       using ObjectType = Object;
-      using DeviceType = Devices::Host; 
 
+      /**
+       * \typedef DeviceType is the type of device where the object is to be
+       * mirrored.
+       */
+      using DeviceType = Devices::Host;
+
+      /**
+       * \brief Constructor of empty pointer.
+       */
       SharedPointer( std::nullptr_t )
       : pd( nullptr )
       {}
 
+      /**
+       * \brief Constructor with parameters of the Object constructor.
+       * 
+       * \tparam Args is variadic template type of arguments of the Object constructor.
+       * \tparam args are arguments passed to the Object constructor.
+       */
       template< typename... Args >
       explicit  SharedPointer( Args... args )
       : pd( nullptr )
@@ -59,38 +85,70 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
          this->allocate( args... );
       }
 
-      // this is needed only to avoid the default compiler-generated constructor
-      SharedPointer( const SharedPointer& pointer )
+      /**
+       * \brief Copy constructor.
+       * 
+       * \param pointer is the source shared pointer.
+       */
+      SharedPointer( const SharedPointer& pointer ) // this is needed only to avoid the default compiler-generated constructor
       : pd( (PointerData*) pointer.pd )
       {
          this->pd->counter += 1;
       }
 
-      // conditional constructor for non-const -> const data
+      /**
+       * \brief Copy constructor.
+       * 
+       * This is specialization for compatible object types.
+       * 
+       * See \ref Enabler.
+       * 
+       * \param pointer is the source shared pointer.
+       */
       template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      SharedPointer( const SharedPointer<  Object_, DeviceType >& pointer )
+      SharedPointer( const SharedPointer<  Object_, DeviceType >& pointer ) // conditional constructor for non-const -> const data
       : pd( (PointerData*) pointer.pd )
       {
          this->pd->counter += 1;
       }
 
-      // this is needed only to avoid the default compiler-generated constructor
-      SharedPointer( SharedPointer&& pointer )
+      /**
+       * \brief Move constructor.
+       * 
+       * \param pointer is the source shared pointer.
+       */
+      SharedPointer( SharedPointer&& pointer ) // this is needed only to avoid the default compiler-generated constructor
       : pd( (PointerData*) pointer.pd )
       {
          pointer.pd = nullptr;
       }
 
-      // conditional constructor for non-const -> const data
+      /**
+       * \brief Move constructor.
+       * 
+       * This is specialization for compatible object types.
+       * 
+       * See \ref Enabler.
+       * 
+       * \param pointer is the source shared pointer.
+       */
       template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      SharedPointer( SharedPointer<  Object_, DeviceType >&& pointer )
+      SharedPointer( SharedPointer<  Object_, DeviceType >&& pointer ) // conditional constructor for non-const -> const data
       : pd( (PointerData*) pointer.pd )
       {
          pointer.pd = nullptr;
       }
 
+      /**
+       * \brief Create new object based in given constructor parameters.
+       * 
+       * \tparam Args is variadic template type of arguments to be passed to the
+       *    object constructor.
+       * \param args are arguments to be passed to the object constructor.
+       * \return true if recreation was successful, false otherwise.
+       */
       template< typename... Args >
       bool recreate( Args... args )
       {
@@ -116,42 +174,80 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
          return this->allocate( args... );
       }
 
+      /**
+       * \brief Arrow operator for accessing the object owned by constant smart pointer.
+       * 
+       * \return constant pointer to the object owned by this smart pointer.
+       */
       const Object* operator->() const
       {
          TNL_ASSERT_TRUE( this->pd, "Attempt to dereference a null pointer" );
          return &this->pd->data;
       }
 
+      /**
+       * \brief Arrow operator for accessing the object owned by non-constant smart pointer.
+       * 
+       * \return pointer to the object owned by this smart pointer.
+       */
       Object* operator->()
       {
          TNL_ASSERT_TRUE( this->pd, "Attempt to dereference a null pointer" );
          return &this->pd->data;
       }
 
+      /**
+       * \brief Dereferencing operator for accessing the object owned by constant smart pointer.
+       * 
+       * \return constant reference to the object owned by this smart pointer.
+       */
       const Object& operator *() const
       {
          TNL_ASSERT_TRUE( this->pd, "Attempt to dereference a null pointer" );
          return this->pd->data;
       }
 
+      /**
+       * \brief Dereferencing operator for accessing the object owned by non-constant smart pointer.
+       * 
+       * \return reference to the object owned by this smart pointer.
+       */
       Object& operator *()
       {
          TNL_ASSERT_TRUE( this->pd, "Attempt to dereference a null pointer" );
          return this->pd->data;
       }
 
-      __cuda_callable__
+      /**
+       * \brief Conversion to boolean type.
+       * 
+       * \return Returns true if the pointer is not empty, false otherwise.
+       */
       operator bool() const
       {
          return this->pd;
       }
 
-      __cuda_callable__
+      /**
+       * \brief Negation operator.
+       *
+       * \return Returns false if the pointer is not empty, true otherwise.
+       */
       bool operator!() const
       {
          return ! this->pd;
       }
 
+      /**
+       * \brief Constant object reference getter.
+       *
+       * No synchronization of this pointer will be performed due to calling
+       * this method.
+       * 
+       * \tparam Device says what image of the object one want to dereference. It
+       * can be either \ref DeviceType or Devices::Host.
+       * \return constant reference to the object image on given device.
+       */
       template< typename Device = Devices::Host >
       __cuda_callable__
       const Object& getData() const
@@ -160,6 +256,16 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
          return this->pd->data;
       }
 
+      /**
+       * \brief Non-constant object reference getter.
+       *
+       * No synchronization of this pointer will be performed due to calling
+       * this method.
+       * 
+       * \tparam Device says what image of the object one want to dereference. It
+       * can be either \ref DeviceType or Devices::Host.
+       * \return constant reference to the object image on given device.
+       */
       template< typename Device = Devices::Host >
       __cuda_callable__
       Object& modifyData()
@@ -168,8 +274,15 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
          return this->pd->data;
       }
 
-      // this is needed only to avoid the default compiler-generated operator
-      const SharedPointer& operator=( const SharedPointer& ptr )
+      /**
+       * \brief Assignment operator.
+       * 
+       * It assigns object owned by the pointer \ref ptr to \ref this pointer. 
+       * 
+       * \param ptr input pointer
+       * \return constant reference to \ref this
+       */
+      const SharedPointer& operator=( const SharedPointer& ptr ) // this is needed only to avoid the default compiler-generated operator
       {
          this->free();
          this->pd = (PointerData*) ptr.pd;
@@ -178,10 +291,19 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
          return *this;
       }
 
-      // conditional operator for non-const -> const data
+      /**
+       * \brief Assignment operator for compatible object types.
+       * 
+       * It assigns object owned by the pointer \ref ptr to \ref this pointer. 
+       * 
+       * See \ref Enabler.
+       * 
+       * \param ptr input pointer
+       * \return constant reference to \ref this
+       */
       template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      const SharedPointer& operator=( const SharedPointer<  Object_, DeviceType >& ptr )
+      const SharedPointer& operator=( const SharedPointer<  Object_, DeviceType >& ptr ) // conditional operator for non-const -> const data
       {
          this->free();
          this->pd = (PointerData*) ptr.pd;
@@ -190,8 +312,15 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
          return *this;
       }
 
-      // this is needed only to avoid the default compiler-generated operator
-      const SharedPointer& operator=( SharedPointer&& ptr )
+      /**
+       * \brief Move operator.
+       * 
+       * It assigns object owned by the pointer \ref ptr to \ref this pointer. 
+       * 
+       * \param ptr input pointer
+       * \return constant reference to \ref this
+       */
+      const SharedPointer& operator=( SharedPointer&& ptr ) // this is needed only to avoid the default compiler-generated operator
       {
          this->free();
          this->pd = (PointerData*) ptr.pd;
@@ -199,10 +328,19 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
          return *this;
       }
 
-      // conditional operator for non-const -> const data
+      /**
+       * \brief Move operator.
+       * 
+       * It assigns object owned by the pointer \ref ptr to \ref this pointer. 
+       * 
+       * See \ref Enabler.
+       * 
+       * \param ptr input pointer
+       * \return constant reference to \ref this
+       */
       template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      const SharedPointer& operator=( SharedPointer<  Object_, DeviceType >&& ptr )
+      const SharedPointer& operator=( SharedPointer<  Object_, DeviceType >&& ptr ) // conditional operator for non-const -> const data
       {
          this->free();
          this->pd = (PointerData*) ptr.pd;
@@ -210,21 +348,39 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
          return *this;
       }
 
+      /**
+       * \brief Cross-device pointer synchronization.
+       * 
+       * For the smart pointers in the host, this method does nothing.
+       * 
+       * \return true.
+       */
       bool synchronize()
       {
          return true;
       }
 
+      /**
+       * \brief Reset the pointer to empty state.
+       */
       void clear()
       {
          this->free();
       }
 
+      /**
+       * \brief Swap the owned object with another pointer.
+       *
+       * \param ptr2 the other shared pointer for swapping.
+       */
       void swap( SharedPointer& ptr2 )
       {
          std::swap( this->pd, ptr2.pd );
       }
 
+      /**
+       * \brief Destructor.
+       */
       ~SharedPointer()
       {
          this->free();

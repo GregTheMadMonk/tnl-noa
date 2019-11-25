@@ -21,6 +21,7 @@ struct Tuple
    Pointers::SharedPointer< ArrayCuda > a1, a2;
 };
 
+#ifdef HAVE_CUDA
 __global__ void printTuple( const Tuple t )
 {
    printf( "Tuple size is: %d\n", t.a1->getSize() );
@@ -30,6 +31,7 @@ __global__ void printTuple( const Tuple t )
       printf( "a2[ %d ] = %d \n", i, ( *t.a2 )[ i ] );
    }
 }
+#endif
 
 int main( int argc, char* argv[] )
 {
