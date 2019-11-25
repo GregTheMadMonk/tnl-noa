@@ -38,7 +38,7 @@ The result looks as:
 
 \include UniquePointerExample.out
 
-A disadventage of `UniquePointer` is that it cannot be passed to the CUDA kernel since it requires making a copy of itself. This is, however, from the nature of this object, prohibited. Not only for this reason, TNL offers also a `SharedPointer`.
+A disadventage of `UniquePointer` is that it cannot be passed to the CUDA kernel since it requires making a copy of itself. This is, however, from the nature of this object, prohibited. For this reason we have to derreference the pointer on the host. This is done by a method `getData`. Its template parameter tells what object image we want to dereference - the one on the host or the one on the device. When we passing the object on the device, we need to get the device image. The method `getData` returns constant reference on the object. Non-constant reference is accessible via a method `modifyData`. When this method is used to get the reference on the host image, the pointer is marked as **potentialy modified**. Note that we need to have non-const reference even when we need to change the data (array elements for example) but not the meta-data (array size for example). If meta-data do not change there is no need to synchronize the object image with the one on the device. To distinguish between these two situations, the smart pointer keeps one more object image which stores the meta-data state since the last synchronization. Before the device image is synchronised, the host image and the last-synchronization-state image are compared. If they do not change no synchronization is required. One can see that TNL cross-device smart pointers are really meant only for small objects, otherwise the smart pointers overhead might be significant.
 
 ## Shared pointers <a name="shared_pointers"></a>
 
@@ -72,6 +72,8 @@ The previous example could be implemented in TNL as follows:
 The result looks as:
 
 \include SharedPointerExample.out
+
+One of the differences between `UniquePointer` and `SmartPointer` is that the `SmartPointer` can be passed to the CUDA kernel. Dereferencing by operators `*` and `->` can be done in kernels as well and the result is reference to a proper object image i.e. on the host or the device. When these operators are used on constant smart pointer, constant reference is returned which is the same as calling the method `getData` with appropriate explicitely stated `Device` template parameter. In case of non-constant `SharedPointer` non-constant reference is obtained. It has the same effect as calling `modifyData` method. On the host system, everything what was mentioned in the section about `UniquePointer` holds even for the `SharedPointer`. In addition, `modifyData` method call or non-constant dereferencing can be done in kernel on the device. In this case, the programmer gets non-constant reference to an object which is however meant to be used to change the data managed by the object but not the metadata. There is no way to synchronize objects managed by the smart pointers from the device to the host. **It means that the metadata should not be changed on the device!** In fact, it would not make sense. Imagine changing array size or re-allocating the array within a CUDA kernel. This is something one should never do.
 
 ## Device pointers <a name="device_pointers"></a>
 
