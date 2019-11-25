@@ -30,8 +30,9 @@ int main( int argc, char* argv[] )
    /***
     * Resize the array and print it again
     */
-   array_ptr->setSize( 5 );
+   array_ptr.modifyData< Devices::Host >().setSize( 5 );
    array_ptr.modifyData< Devices::Host >() = 2;
+   std::cout << array_ptr.modifyData< Devices::Host >().getSize() << std::endl;
    Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
    printArray<<< 1, 1 >>>( &array_ptr.getData< Devices::Cuda >() );
 #endif
