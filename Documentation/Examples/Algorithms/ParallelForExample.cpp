@@ -13,7 +13,7 @@ template< typename Device >
 void initVector( Vector< double, Device >& v,
                  const double& c )
 {
-   auto view = v.getConstView();
+   auto view = v.getView();
    auto init = [=] __cuda_callable__  ( int i, const double c ) mutable {
       view[ i ] = c; };
 
