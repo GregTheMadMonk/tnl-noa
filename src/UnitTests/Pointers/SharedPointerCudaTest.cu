@@ -77,6 +77,14 @@ __global__ void copyArrayKernel( const TNL::Containers::Array< int, Devices::Cud
    }
 }
 
+__global__ void copyArrayKernel2( const Pointers::SharedPointer< TNL::Containers::Array< int, Devices::Cuda > > inArray,
+                                  int* outArray )
+{
+   if( threadIdx.x < 2 )
+   {
+      outArray[ threadIdx.x ] = ( *inArray )[ threadIdx.x ];
+   }
+}
 #endif
 
 TEST( SharedPointerCudaTest, getDataArrayTest )
@@ -95,6 +103,12 @@ TEST( SharedPointerCudaTest, getDataArrayTest )
    cudaMalloc( ( void** ) &testArray_device, 2 * sizeof( int ) );
    copyArrayKernel<<< 1, 2 >>>( &ptr.getData< Devices::Cuda >(), testArray_device );
    testArray_host = new int [ 2 ];
+   cudaMemcpy( testArray_host, testArray_device, 2 * sizeof( int ), cudaMemcpyDeviceToHost );
+
+   ASSERT_EQ( testArray_host[ 0 ], 1 );
+   ASSERT_EQ( testArray_host[ 1 ], 2 );
+
+   copyArrayKernel2<<< 1, 2 >>>( ptr, testArray_device );
    cudaMemcpy( testArray_host, testArray_device, 2 * sizeof( int ), cudaMemcpyDeviceToHost );
 
    ASSERT_EQ( testArray_host[ 0 ], 1 );

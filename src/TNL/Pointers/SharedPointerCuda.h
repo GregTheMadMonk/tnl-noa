@@ -383,30 +383,50 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
          return this->allocate( args... );
       }
 
+      __cuda_callable__
       const Object* operator->() const
       {
          TNL_ASSERT_TRUE( this->pd, "Attempt to dereference a null pointer" );
+#ifdef __CUDA_ARCH__
+         return this->cuda_pointer;
+#else
          return &this->pd->data;
+#endif
       }
 
+      __cuda_callable__
       Object* operator->()
       {
          TNL_ASSERT_TRUE( this->pd, "Attempt to dereference a null pointer" );
+#ifdef __CUDA_ARCH__
+         return this->cuda_pointer;
+#else
          this->pd->maybe_modified = true;
          return &this->pd->data;
+#endif
       }
 
+      __cuda_callable__
       const Object& operator *() const
       {
          TNL_ASSERT_TRUE( this->pd, "Attempt to dereference a null pointer" );
+#ifdef __CUDA_ARCH__
+         return *( this->cuda_pointer );
+#else
          return this->pd->data;
+#endif
       }
 
+      __cuda_callable__
       Object& operator *()
       {
          TNL_ASSERT_TRUE( this->pd, "Attempt to dereference a null pointer" );
+#ifdef __CUDA_ARCH__
+         return *( this->cuda_pointer );
+#else
          this->pd->maybe_modified = true;
          return this->pd->data;
+#endif
       }
 
       __cuda_callable__
