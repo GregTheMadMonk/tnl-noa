@@ -27,23 +27,23 @@ namespace Pointers {
 
 /**
  * \brief Cross-device unique smart pointer.
- * 
+ *
  * This smart pointer is inspired by std::unique_ptr from STL library. It means
  * that the object owned by the smart pointer is accessible only through this
  * smart pointer. One cannot make any copy of this smart pointer. In addition,
  * the smart pointer is able to work across different devices which means that the
  * object owned by the smart pointer is mirrored on both host and device.
- * 
- * **NOTE: When using smart pointers to pass objects on GPU, one must call 
- * \ref Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >() 
+ *
+ * **NOTE: When using smart pointers to pass objects on GPU, one must call
+ * \ref Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >()
  * before calling a CUDA kernel working with smart pointers.**
- * 
+ *
  * \tparam Object is a type of object to be owned by the pointer.
  * \tparam Device is device where the object is to be allocated. The object is
  * always allocated on the host system as well for easier object manipulation.
- * 
+ *
  * See also \ref SharedPointer and \ref DevicePointer.
- * 
+ *
  * See also \ref UniquePointer< Object, Devices::Host > and \ref UniquePointer< Object, Devices::Cuda >.
  *
  * \par Example
@@ -57,8 +57,8 @@ class UniquePointer
 };
 
 /**
- * \brief Specialization of the UniquePointer for the host system.
- * 
+ * \brief Specialization of the \ref UniquePointer for the host system.
+ *
  * \tparam  Object is a type of object to be owned by the pointer.
  */
 template< typename Object >
@@ -67,7 +67,7 @@ class UniquePointer< Object, Devices::Host > : public SmartPointer
    public:
 
       /**
-       * \typedef ObjectType is the type of object owned by the pointer. 
+       * \typedef ObjectType is the type of object owned by the pointer.
        */
       using ObjectType = Object;
 
@@ -86,7 +86,7 @@ class UniquePointer< Object, Devices::Host > : public SmartPointer
 
       /**
        * \brief Constructor with parameters of the Object constructor.
-       * 
+       *
        * \tparam Args is variadic template type of arguments of the Object constructor.
        * \tparam args are arguments passed to the Object constructor.
        */
@@ -98,7 +98,7 @@ class UniquePointer< Object, Devices::Host > : public SmartPointer
 
       /**
        * \brief Arrow operator for accessing the object owned by constant smart pointer.
-       * 
+       *
        * \return constant pointer to the object owned by this smart pointer.
        */
       const Object* operator->() const
@@ -109,7 +109,7 @@ class UniquePointer< Object, Devices::Host > : public SmartPointer
 
       /**
        * \brief Arrow operator for accessing the object owned by non-constant smart pointer.
-       * 
+       *
        * \return pointer to the object owned by this smart pointer.
        */
       Object* operator->()
@@ -120,7 +120,7 @@ class UniquePointer< Object, Devices::Host > : public SmartPointer
 
       /**
        * \brief Dereferencing operator for accessing the object owned by constant smart pointer.
-       * 
+       *
        * \return constant reference to the object owned by this smart pointer.
        */
       const Object& operator *() const
@@ -131,7 +131,7 @@ class UniquePointer< Object, Devices::Host > : public SmartPointer
 
       /**
        * \brief Dereferencing operator for accessing the object owned by non-constant smart pointer.
-       * 
+       *
        * \return reference to the object owned by this smart pointer.
        */
       Object& operator *()
@@ -142,7 +142,7 @@ class UniquePointer< Object, Devices::Host > : public SmartPointer
 
       /**
        * \brief Conversion to boolean type.
-       * 
+       *
        * \return Returns true if the pointer is not empty, false otherwise.
        */
       __cuda_callable__
@@ -167,7 +167,7 @@ class UniquePointer< Object, Devices::Host > : public SmartPointer
        *
        * No synchronization of this pointer will be performed due to calling
        * this method.
-       * 
+       *
        * \tparam Device says what image of the object one want to dereference. It
        * can be either \ref DeviceType or Devices::Host.
        * \return constant reference to the object image on given device.
@@ -183,10 +183,10 @@ class UniquePointer< Object, Devices::Host > : public SmartPointer
        * \brief Non-constant object reference getter.
        *
        * After calling this method, the object owned by the pointer might need
-       * to be synchronized. One should not forget to call 
-       * \ref Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >() 
+       * to be synchronized. One should not forget to call
+       * \ref Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >()
        * before calling CUDA kernel using object from this smart pointer.
-       * 
+       *
        * \tparam Device says what image of the object one want to dereference. It
        * can be either \ref DeviceType or Devices::Host.
        * \return constant reference to the object image on given device.
@@ -200,10 +200,10 @@ class UniquePointer< Object, Devices::Host > : public SmartPointer
 
       /**
        * \brief Assignment operator.
-       * 
-       * It assigns object owned by the pointer \ref ptr to \ref this pointer. 
+       *
+       * It assigns object owned by the pointer \ref ptr to \ref this pointer.
        * The original pointer \ref ptr is reset to empty state.
-       * 
+       *
        * \param ptr input pointer
        * \return constant reference to \ref this
        */
@@ -218,10 +218,10 @@ class UniquePointer< Object, Devices::Host > : public SmartPointer
 
       /**
        * \brief Move operator.
-       * 
-       * It assigns object owned by the pointer \ref ptr to \ref this pointer. 
+       *
+       * It assigns object owned by the pointer \ref ptr to \ref this pointer.
        * The original pointer \ref ptr is reset to empty state.
-       * 
+       *
        * \param ptr input pointer
        * \return constant reference to \ref this
        */
@@ -232,9 +232,9 @@ class UniquePointer< Object, Devices::Host > : public SmartPointer
 
       /**
        * \brief Cross-device pointer synchronization.
-       * 
+       *
        * For the smart pointers in the host, this method does nothing.
-       * 
+       *
        * \return true.
        */
       bool synchronize()
@@ -258,8 +258,8 @@ class UniquePointer< Object, Devices::Host > : public SmartPointer
 };
 
 /**
- * \brief Specialization of the UniquePointer for the CUDA device.
- * 
+ * \brief Specialization of the \ref UniquePointer for the CUDA device.
+ *
  * \tparam  Object is a type of object to be owned by the pointer.
  */
 template< typename Object >
@@ -268,7 +268,7 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
    public:
 
       /**
-       * \typedef ObjectType is the type of object owned by the pointer. 
+       * \typedef ObjectType is the type of object owned by the pointer.
        */
       using ObjectType = Object;
 
@@ -288,7 +288,7 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
 
       /**
        * \brief Constructor with parameters of the Object constructor.
-       * 
+       *
        * \tparam Args is variadic template type of arguments of the Object constructor.
        * \tparam args are arguments passed to the Object constructor.
        */
@@ -302,7 +302,7 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
 
       /**
        * \brief Arrow operator for accessing the object owned by constant smart pointer.
-       * 
+       *
        * \return constant pointer to the object owned by this smart pointer.
        */
       const Object* operator->() const
@@ -313,7 +313,7 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
 
       /**
        * \brief Arrow operator for accessing the object owned by non-constant smart pointer.
-       * 
+       *
        * \return pointer to the object owned by this smart pointer.
        */
       Object* operator->()
@@ -325,7 +325,7 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
 
       /**
        * \brief Dereferencing operator for accessing the object owned by constant smart pointer.
-       * 
+       *
        * \return constant reference to the object owned by this smart pointer.
        */
       const Object& operator *() const
@@ -336,7 +336,7 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
 
       /**
        * \brief Dereferencing operator for accessing the object owned by non-constant smart pointer.
-       * 
+       *
        * \return reference to the object owned by this smart pointer.
        */
       Object& operator *()
@@ -348,7 +348,7 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
 
       /**
        * \brief Conversion to boolean type.
-       * 
+       *
        * \return Returns true if the pointer is not empty, false otherwise.
        */
       __cuda_callable__
@@ -373,7 +373,7 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
        *
        * No synchronization of this pointer will be performed due to calling
        * this method.
-       * 
+       *
        * \tparam Device says what image of the object one want to dereference. It
        * can be either \ref DeviceType or Devices::Host.
        * \return constant reference to the object image on given device.
@@ -394,10 +394,10 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
        * \brief Non-constant object reference getter.
        *
        * After calling this method, the object owned by the pointer might need
-       * to be synchronized. One should not forget to call 
-       * \ref Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >() 
+       * to be synchronized. One should not forget to call
+       * \ref Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >()
        * before calling CUDA kernel using object from this smart pointer.
-       * 
+       *
        * \tparam Device says what image of the object one want to dereference. It
        * can be either \ref DeviceType or Devices::Host.
        * \return constant reference to the object image on given device.
@@ -419,10 +419,10 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
 
       /**
        * \brief Assignment operator.
-       * 
-       * It assigns object owned by the pointer \ref ptr to \ref this pointer. 
+       *
+       * It assigns object owned by the pointer \ref ptr to \ref this pointer.
        * The original pointer \ref ptr is reset to empty state.
-       * 
+       *
        * \param ptr input pointer
        * \return constant reference to \ref this
        */
@@ -438,10 +438,10 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
 
       /**
        * \brief Move operator.
-       * 
-       * It assigns object owned by the pointer \ref ptr to \ref this pointer. 
+       *
+       * It assigns object owned by the pointer \ref ptr to \ref this pointer.
        * The original pointer \ref ptr is reset to empty state.
-       * 
+       *
        * \param ptr input pointer
        * \return constant reference to \ref this
        */
@@ -452,10 +452,10 @@ class UniquePointer< Object, Devices::Cuda > : public SmartPointer
 
       /**
        * \brief Cross-device pointer synchronization.
-       * 
+       *
        * This method is usually called by the smart pointers register when calling
-       * \ref Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >() 
-       * 
+       * \ref Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >()
+       *
        * \return true if the synchronization was successful, false otherwise.
        */
       bool synchronize()
