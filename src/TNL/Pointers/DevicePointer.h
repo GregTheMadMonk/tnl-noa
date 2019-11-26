@@ -20,7 +20,8 @@
 #include <TNL/TypeInfo.h>
 #include <TNL/Cuda/MemoryHelpers.h>
 
-#include <cstring>  // std::memcpy, std::memcmp
+#include <cstring>
+#include <c++/8/bits/c++config.h>  // std::memcpy, std::memcmp
 
 namespace TNL {
 namespace Pointers {
@@ -59,6 +60,13 @@ class DevicePointer< Object, Devices::Host > : public SmartPointer
 
       typedef Object ObjectType;
       typedef Devices::Host DeviceType;
+
+      /**
+       * \brief Constructor of empty pointer.
+       */
+      DevicePointer( std::nullptr_t )
+      : pointer( nullptr )
+      {}
 
       explicit  DevicePointer( ObjectType& obj )
       : pointer( nullptr )
@@ -181,6 +189,17 @@ class DevicePointer< Object, Devices::Host > : public SmartPointer
          return true;
       }
 
+      /**
+       * \brief Swap the owned object with another pointer.
+       *
+       * \param ptr2 the other shared pointer for swapping.
+       */
+      void swap( DevicePointer& ptr2 )
+      {
+         std::swap( this->pointer, ptr2.pointer );
+      }
+
+
       ~DevicePointer()
       {
       }
@@ -214,6 +233,14 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
 
       typedef Object ObjectType;
       typedef Devices::Cuda DeviceType;
+
+      /**
+       * \brief Constructor of empty pointer.
+       */
+      DevicePointer( std::nullptr_t )
+      : pointer( nullptr ),
+        pd( nullptr ),
+        cuda_pointer( nullptr ) {}
 
       explicit  DevicePointer( ObjectType& obj )
       : pointer( nullptr ),
@@ -359,7 +386,8 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
          this->pointer = ptr.pointer;
          this->pd = (PointerData*) ptr.pd;
          this->cuda_pointer = ptr.cuda_pointer;
-         this->pd->counter += 1;
+         if( this->pd )
+            this->pd->counter += 1;
          return *this;
       }
 
@@ -372,7 +400,8 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
          this->pointer = ptr.pointer;
          this->pd = (PointerData*) ptr.pd;
          this->cuda_pointer = ptr.cuda_pointer;
-         this->pd->counter += 1;
+         if( this->pd )
+            this->pd->counter += 1;
          return *this;
       }
 
@@ -423,6 +452,19 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
          return false;
 #endif
       }
+
+      /**
+       * \brief Swap the owned object with another pointer.
+       *
+       * \param ptr2 the other shared pointer for swapping.
+       */
+      void swap( DevicePointer& ptr2 )
+      {
+         std::swap( this->pointer, ptr2.pointer );
+         std::swap( this->pd, ptr2.pd );
+         std::swap( this->cuda_pointer, ptr2.cuda_pointer );
+      }
+
 
       ~DevicePointer()
       {
