@@ -195,7 +195,7 @@ public:
              typename = typename Enabler< Device2 >::type >
     AdEllpack& operator=( const AdEllpack< Real2, Device2, Index2 >& matrix );
     
-    bool save( File& file ) const;
+    void save( File& file ) const;
 
     void load( File& file );
 
@@ -207,13 +207,13 @@ public:
 
     bool balanceLoad( const RealType average,
                       ConstCompressedRowLengthsVectorView rowLengths,
-                      warpList< ThisType >* list );
+                      warpList< AdEllpack >* list );
 
     void computeWarps( const IndexType SMs,
                        const IndexType threadsPerSM,
-                       warpList< ThisType >* list );
+                       warpList< AdEllpack >* list );
 
-    bool createArrays( warpList< ThisType >* list );
+    bool createArrays( warpList< AdEllpack >* list );
 
     void performRowTest();
 

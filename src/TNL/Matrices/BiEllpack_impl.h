@@ -48,28 +48,6 @@ BiEllpack< Real, Device, Index >::BiEllpack()
 template< typename Real,
 	  typename Device,
 	  typename Index >
-String BiEllpack< Real, Device, Index >::getType()
-{
-	return String( "Matrices::BiEllpack< ") +
-	       String( TNL::getType< Real >() ) +
-	       String( ", " ) +
-	       String( Device :: getDeviceType() ) +
-               String( ", " ) +
-               String( TNL::getType< Index >() ) +
-	       String( " >" );
-}
-
-template< typename Real,
-	  typename Device,
-	  typename Index >
-String BiEllpack< Real, Device, Index >::getTypeVirtual() const
-{
-    return this->getType();
-}
-
-template< typename Real,
-	  typename Device,
-	  typename Index >
 void
 BiEllpack< Real, Device, Index >::
 setDimensions( const IndexType rows, const IndexType columns )
@@ -715,18 +693,13 @@ BiEllpack< Real, Device, Index >::operator=( const BiEllpack< Real2, Device2, In
    this->virtualRows = matrix.virtualRows;
    this->rowPermArray = matrix.rowPermArray;
    this->groupPointers = matrix.groupPointers;
-   
-   if( std::is_same< Device, Devices::MIC >::value ) {
-      throw std::runtime_error("Not Implemented yet for MIC");
-   }
-   
    return *this;
 }
 
 template< typename Real,
 		  typename Device,
 		  typename Index >
-bool BiEllpack< Real, Device, Index >::save( File& file ) const
+void BiEllpack< Real, Device, Index >::save( File& file ) const
 {
    Sparse< Real, Device, Index >::save( file );
    file << this->groupPointers << this->rowPermArray;
@@ -735,7 +708,7 @@ bool BiEllpack< Real, Device, Index >::save( File& file ) const
 template< typename Real,
 		  typename Device,
 		  typename Index >
-bool BiEllpack< Real, Device, Index >::load( File& file )
+void BiEllpack< Real, Device, Index >::load( File& file )
 {
    Sparse< Real, Device, Index >::load( file );
    file >> this->groupPointers >> this->rowPermArray;
@@ -744,7 +717,7 @@ bool BiEllpack< Real, Device, Index >::load( File& file )
 template< typename Real,
 		  typename Device,
 		  typename Index >
-bool BiEllpack< Real, Device, Index >::save( const String& fileName ) const
+void BiEllpack< Real, Device, Index >::save( const String& fileName ) const
 {
    Object::save( fileName );
 }
@@ -752,7 +725,7 @@ bool BiEllpack< Real, Device, Index >::save( const String& fileName ) const
 template< typename Real,
 		  typename Device,
 		  typename Index >
-bool BiEllpack< Real, Device, Index >::load( const String& fileName )
+void BiEllpack< Real, Device, Index >::load( const String& fileName )
 {
    Object::load( fileName );
 }

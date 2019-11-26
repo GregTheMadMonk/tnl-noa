@@ -165,28 +165,6 @@ warpSize( 32 )
 template< typename Real,
           typename Device,
           typename Index >
-String AdEllpack< Real, Device, Index >::getTypeVirtual() const
-{
-    return this->getType();
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-String AdEllpack< Real, Device, Index >::getType()
-{
-    return String( "Matrices::AdEllpack< ") +
-           String( TNL::getType< Real >() ) +
-           String( ", " ) +
-           String( Device::getDeviceType() ) +
-           String( ", " ) +
-           String( TNL::getType< Index >() ) +
-           String( " >" );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
 void
 AdEllpack< Real, Device, Index >::
 setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths )
@@ -204,7 +182,7 @@ setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths )
         average /= ( RealType ) this->getRows();
         this->totalLoad = average;
 
-        warpList< ThisType >* list = new warpList< ThisType >();
+        warpList< AdEllpack >* list = new warpList< AdEllpack >();
 
         if( !this->balanceLoad( average, rowLengths, list ) )
             throw 0; // TODO: Make better exception
@@ -766,7 +744,7 @@ template< typename Real,
           typename Index >
 bool AdEllpack< Real, Device, Index >::balanceLoad( const RealType average,
                                                     ConstCompressedRowLengthsVectorView rowLengths,
-                                                    warpList< ThisType >* list )
+                                                    warpList< AdEllpack >* list )
 {
     IndexType offset, rowOffset, localLoad, reduceMap[ 32 ];
 
@@ -882,10 +860,10 @@ template< typename Real,
           typename Index >
 void AdEllpack< Real, Device, Index >::computeWarps( const IndexType SMs,
                                                      const IndexType threadsPerSM,
-                                                     warpList< ThisType >* list )
+                                                     warpList< AdEllpack >* list )
 {    
     IndexType averageLoad = 0;
-    warpInfo< ThisType >* temp = list->getHead()->next;
+    warpInfo< AdEllpack >* temp = list->getHead()->next;
     
     while( temp/*->next*/ != list->getTail() )
     {
@@ -918,7 +896,7 @@ void AdEllpack< Real, Device, Index >::computeWarps( const IndexType SMs,
 template< typename Real,
           typename Device,
           typename Index >
-bool AdEllpack< Real, Device, Index >::createArrays( warpList< ThisType >* list )
+bool AdEllpack< Real, Device, Index >::createArrays( warpList< AdEllpack >* list )
 {
     IndexType length = list->getNumberOfWarps();
 
@@ -928,7 +906,7 @@ bool AdEllpack< Real, Device, Index >::createArrays( warpList< ThisType >* list 
     this->reduceMap.setSize( length * this->warpSize );
 
     IndexType iteration = 0;
-    warpInfo< ThisType >* warp = list->getHead()->next;
+    warpInfo< AdEllpack >* warp = list->getHead()->next;
     while( warp != list->getTail() )
     {
         this->offset.setElement( iteration, warp->offset );

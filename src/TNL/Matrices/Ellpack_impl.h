@@ -16,7 +16,7 @@
 #include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
-namespace Matrices {   
+namespace Matrices {
 
 template< typename Real,
           typename Device,
@@ -33,9 +33,7 @@ String Ellpack< Real, Device, Index >::getSerializationType()
 {
    return String( "Matrices::Ellpack< " ) +
           String( TNL::getType< Real >() ) +
-          String( ", " ) +
-          String( Device :: getDeviceType() ) +
-          String( ", " ) +
+          ", [any device], " + 
           getType< Index >() +
           String( " >" );
 }
@@ -59,21 +57,21 @@ void Ellpack< Real, Device, Index >::setDimensions( const IndexType rows,
                    << " columns = " << columns << std::endl );
    this->rows = rows;
    this->columns = columns;
-   
+
    if( std::is_same< Device, Devices::Cuda >::value )
    {
-       this->alignedRows = roundToMultiple( columns, Devices::Cuda::getWarpSize() );
+       this->alignedRows = roundToMultiple( columns, Cuda::getWarpSize() );
        if( this->rows - this->alignedRows > 0 )
        {
            IndexType missingRows = this->rows - this->alignedRows;
-           
-           missingRows = roundToMultiple( missingRows, Devices::Cuda::getWarpSize() );
+
+           missingRows = roundToMultiple( missingRows, Cuda::getWarpSize() );
            
            this->alignedRows +=  missingRows;
        }
    }
    else this->alignedRows = rows;
-   
+
    if( this->rowLengths != 0 )
       allocateElements();
 }
@@ -87,7 +85,7 @@ void Ellpack< Real, Device, Index >::setCompressedRowLengths( ConstCompressedRow
    TNL_ASSERT_GT( this->getColumns(), 0, "cannot set row lengths of an empty matrix" );
    TNL_ASSERT_EQ( this->getRows(), rowLengths.getSize(), "wrong size of the rowLengths vector" );
 
-   this->rowLengths = this->maxRowLength = rowLengths.max();
+   this->rowLengths = this->maxRowLength = max( rowLengths );
    
    allocateElements();
 }

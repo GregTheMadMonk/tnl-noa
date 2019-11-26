@@ -1278,11 +1278,6 @@ ChunkedEllpack< Real, Device, Index >::operator=( const ChunkedEllpack< Real2, D
                }
        }
    }
-
-   if( std::is_same< Device, Devices::MIC >::value ) {
-      throw std::runtime_error("Not Implemented yet for MIC");
-   }
-   
    return *this;
 }
 
