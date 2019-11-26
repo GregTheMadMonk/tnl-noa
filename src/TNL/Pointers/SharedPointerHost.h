@@ -25,15 +25,15 @@ namespace TNL {
 namespace Pointers {
 
 /**
- * \brief Specialization of the UniquePointer for the host system.
- * 
+ * \brief Specialization of the \ref SharedPointer for the host system.
+ *
  * \tparam  Object is a type of object to be owned by the pointer.
  */
 template< typename Object >
 class SharedPointer< Object, Devices::Host > : public SmartPointer
 {
    private:
-      
+
       /**
        * \typedef Enabler
        * Convenient template alias for controlling the selection of copy- and
@@ -52,7 +52,7 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
    public:
 
       /**
-       * \typedef ObjectType is the type of object owned by the pointer. 
+       * \typedef ObjectType is the type of object owned by the pointer.
        */
       using ObjectType = Object;
 
@@ -63,7 +63,7 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
       using DeviceType = Devices::Host;
 
       /**
-       * \brief Constructor of empty pointer.
+       * \brief Constructor of an empty pointer.
        */
       SharedPointer( std::nullptr_t )
       : pd( nullptr )
@@ -71,7 +71,7 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
 
       /**
        * \brief Constructor with parameters of the Object constructor.
-       * 
+       *
        * \tparam Args is variadic template type of arguments of the Object constructor.
        * \tparam args are arguments passed to the Object constructor.
        */
@@ -87,7 +87,7 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
 
       /**
        * \brief Copy constructor.
-       * 
+       *
        * \param pointer is the source shared pointer.
        */
       SharedPointer( const SharedPointer& pointer ) // this is needed only to avoid the default compiler-generated constructor
@@ -98,11 +98,11 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
 
       /**
        * \brief Copy constructor.
-       * 
+       *
        * This is specialization for compatible object types.
-       * 
+       *
        * See \ref Enabler.
-       * 
+       *
        * \param pointer is the source shared pointer.
        */
       template< typename Object_,
@@ -115,7 +115,7 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
 
       /**
        * \brief Move constructor.
-       * 
+       *
        * \param pointer is the source shared pointer.
        */
       SharedPointer( SharedPointer&& pointer ) // this is needed only to avoid the default compiler-generated constructor
@@ -126,11 +126,11 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
 
       /**
        * \brief Move constructor.
-       * 
+       *
        * This is specialization for compatible object types.
-       * 
+       *
        * See \ref Enabler.
-       * 
+       *
        * \param pointer is the source shared pointer.
        */
       template< typename Object_,
@@ -143,7 +143,7 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
 
       /**
        * \brief Create new object based in given constructor parameters.
-       * 
+       *
        * \tparam Args is variadic template type of arguments to be passed to the
        *    object constructor.
        * \param args are arguments to be passed to the object constructor.
@@ -176,7 +176,7 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
 
       /**
        * \brief Arrow operator for accessing the object owned by constant smart pointer.
-       * 
+       *
        * \return constant pointer to the object owned by this smart pointer.
        */
       const Object* operator->() const
@@ -187,7 +187,7 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
 
       /**
        * \brief Arrow operator for accessing the object owned by non-constant smart pointer.
-       * 
+       *
        * \return pointer to the object owned by this smart pointer.
        */
       Object* operator->()
@@ -198,7 +198,7 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
 
       /**
        * \brief Dereferencing operator for accessing the object owned by constant smart pointer.
-       * 
+       *
        * \return constant reference to the object owned by this smart pointer.
        */
       const Object& operator *() const
@@ -209,7 +209,7 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
 
       /**
        * \brief Dereferencing operator for accessing the object owned by non-constant smart pointer.
-       * 
+       *
        * \return reference to the object owned by this smart pointer.
        */
       Object& operator *()
@@ -220,7 +220,7 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
 
       /**
        * \brief Conversion to boolean type.
-       * 
+       *
        * \return Returns true if the pointer is not empty, false otherwise.
        */
       operator bool() const
@@ -243,7 +243,7 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
        *
        * No synchronization of this pointer will be performed due to calling
        * this method.
-       * 
+       *
        * \tparam Device says what image of the object one want to dereference. It
        * can be either \ref DeviceType or Devices::Host.
        * \return constant reference to the object image on given device.
@@ -261,7 +261,7 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
        *
        * No synchronization of this pointer will be performed due to calling
        * this method.
-       * 
+       *
        * \tparam Device says what image of the object one want to dereference. It
        * can be either \ref DeviceType or Devices::Host.
        * \return constant reference to the object image on given device.
@@ -276,9 +276,9 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
 
       /**
        * \brief Assignment operator.
-       * 
-       * It assigns object owned by the pointer \ref ptr to \ref this pointer. 
-       * 
+       *
+       * It assigns object owned by the pointer \ref ptr to \ref this pointer.
+       *
        * \param ptr input pointer
        * \return constant reference to \ref this
        */
@@ -293,11 +293,11 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
 
       /**
        * \brief Assignment operator for compatible object types.
-       * 
-       * It assigns object owned by the pointer \ref ptr to \ref this pointer. 
-       * 
+       *
+       * It assigns object owned by the pointer \ref ptr to \ref this pointer.
+       *
        * See \ref Enabler.
-       * 
+       *
        * \param ptr input pointer
        * \return constant reference to \ref this
        */
@@ -314,9 +314,9 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
 
       /**
        * \brief Move operator.
-       * 
-       * It assigns object owned by the pointer \ref ptr to \ref this pointer. 
-       * 
+       *
+       * It assigns object owned by the pointer \ref ptr to \ref this pointer.
+       *
        * \param ptr input pointer
        * \return constant reference to \ref this
        */
@@ -330,11 +330,11 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
 
       /**
        * \brief Move operator.
-       * 
-       * It assigns object owned by the pointer \ref ptr to \ref this pointer. 
-       * 
+       *
+       * It assigns object owned by the pointer \ref ptr to \ref this pointer.
+       *
        * See \ref Enabler.
-       * 
+       *
        * \param ptr input pointer
        * \return constant reference to \ref this
        */
@@ -350,9 +350,9 @@ class SharedPointer< Object, Devices::Host > : public SmartPointer
 
       /**
        * \brief Cross-device pointer synchronization.
-       * 
-       * For the smart pointers in the host, this method does nothing.
-       * 
+       *
+       * For the smart pointers on the host, this method does nothing.
+       *
        * \return true.
        */
       bool synchronize()

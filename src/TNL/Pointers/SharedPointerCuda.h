@@ -31,8 +31,8 @@ namespace Pointers {
 #if ! defined HAVE_CUDA_UNIFIED_MEMORY
 
 /**
- * \brief Specialization of the UniquePointer for the CUDA device.
- * 
+ * \brief Specialization of the \ref SharedPointer for the CUDA device.
+ *
  * \tparam  Object is a type of object to be owned by the pointer.
  */
 template< typename Object >
@@ -41,7 +41,7 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
    private:
       /**
        * \typedef Enabler
-       * 
+       *
        * Convenient template alias for controlling the selection of copy- and
        * move-constructors and assignment operators using SFINAE.
        * The type Object_ is "enabled" iff Object_ and Object are not the same,
@@ -58,7 +58,7 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
    public:
 
       /**
-       * \typedef ObjectType is the type of object owned by the pointer. 
+       * \typedef ObjectType is the type of object owned by the pointer.
        */
       using ObjectType = Object;
 
@@ -78,7 +78,7 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
 
       /**
        * \brief Constructor with parameters of the Object constructor.
-       * 
+       *
        * \tparam Args is variadic template type of arguments of the Object constructor.
        * \tparam args are arguments passed to the Object constructor.
        */
@@ -92,7 +92,7 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
 
       /**
        * \brief Copy constructor.
-       * 
+       *
        * \param pointer is the source shared pointer.
        */
       SharedPointer( const SharedPointer& pointer ) // this is needed only to avoid the default compiler-generated constructor
@@ -104,11 +104,11 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
 
       /**
        * \brief Copy constructor.
-       * 
+       *
        * This is specialization for compatible object types.
-       * 
+       *
        * See \ref Enabler.
-       * 
+       *
        * \param pointer is the source shared pointer.
        */
       template< typename Object_,
@@ -122,7 +122,7 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
 
       /**
        * \brief Move constructor.
-       * 
+       *
        * \param pointer is the source shared pointer.
        */
       SharedPointer( SharedPointer&& pointer ) // this is needed only to avoid the default compiler-generated constructor
@@ -135,11 +135,11 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
 
       /**
        * \brief Move constructor.
-       * 
+       *
        * This is specialization for compatible object types.
-       * 
+       *
        * See \ref Enabler.
-       * 
+       *
        * \param pointer is the source shared pointer.
        */
       template< typename Object_,
@@ -154,7 +154,7 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
 
       /**
        * \brief Create new object based in given constructor parameters.
-       * 
+       *
        * \tparam Args is variadic template type of arguments to be passed to the
        *    object constructor.
        * \param args are arguments to be passed to the object constructor.
@@ -191,9 +191,9 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
 
       /**
        * \brief Arrow operator for accessing the object owned by constant smart pointer.
-       * 
+       *
        * \return constant pointer to the object owned by this smart pointer. It
-       * returns pointer to object image on the CUDA device if it is called from CUDA 
+       * returns pointer to object image on the CUDA device if it is called from CUDA
        * kernel and pointer to host image otherwise.
        */
       __cuda_callable__
@@ -209,9 +209,9 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
 
       /**
        * \brief Arrow operator for accessing the object owned by non-constant smart pointer.
-       * 
+       *
        * \return pointer to the object owned by this smart pointer. It
-       * returns pointer to object image on the CUDA device if it is called from CUDA 
+       * returns pointer to object image on the CUDA device if it is called from CUDA
        * kernel and pointer to host image otherwise.
        */
       __cuda_callable__
@@ -228,9 +228,9 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
 
       /**
        * \brief Dereferencing operator for accessing the object owned by constant smart pointer.
-       * 
+       *
        * \return constant reference to the object owned by this smart pointer. It
-       * returns reference to object image on the CUDA device if it is called from CUDA 
+       * returns reference to object image on the CUDA device if it is called from CUDA
        * kernel and reference to host image otherwise.
        */
       __cuda_callable__
@@ -246,9 +246,9 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
 
       /**
        * \brief Dereferencing operator for accessing the object owned by non-constant smart pointer.
-       * 
+       *
        * \return reference to the object owned by this smart pointer.  It
-       * returns reference to object image on the CUDA device if it is called from CUDA 
+       * returns reference to object image on the CUDA device if it is called from CUDA
        * kernel and reference to host image otherwise.
        */
       __cuda_callable__
@@ -265,7 +265,7 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
 
       /**
        * \brief Conversion to boolean type.
-       * 
+       *
        * \return Returns true if the pointer is not empty, false otherwise.
        */
       __cuda_callable__
@@ -290,7 +290,7 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
        *
        * No synchronization of this pointer will be performed due to calling
        * this method.
-       * 
+       *
        * \tparam Device says what image of the object one want to dereference. It
        * can be either \ref DeviceType or Devices::Host.
        * \return constant reference to the object image on given device.
@@ -312,10 +312,10 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
        * \brief Non-constant object reference getter.
        *
        * After calling this method, the object owned by the pointer might need
-       * to be synchronized. One should not forget to call 
-       * \ref Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >() 
+       * to be synchronized. One should not forget to call
+       * \ref Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >()
        * before calling CUDA kernel using object from this smart pointer.
-       * 
+       *
        * \tparam Device says what image of the object one want to dereference. It
        * can be either \ref DeviceType or Devices::Host.
        * \return constant reference to the object image on given device.
@@ -338,9 +338,9 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
 
       /**
        * \brief Assignment operator.
-       * 
-       * It assigns object owned by the pointer \ref ptr to \ref this pointer. 
-       * 
+       *
+       * It assigns object owned by the pointer \ref ptr to \ref this pointer.
+       *
        * \param ptr input pointer
        * \return constant reference to \ref this
        */
@@ -359,11 +359,11 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
 
       /**
        * \brief Assignment operator for compatible object types.
-       * 
-       * It assigns object owned by the pointer \ref ptr to \ref this pointer. 
-       * 
+       *
+       * It assigns object owned by the pointer \ref ptr to \ref this pointer.
+       *
        * See \ref Enabler.
-       * 
+       *
        * \param ptr input pointer
        * \return constant reference to \ref this
        */
@@ -384,9 +384,9 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
 
       /**
        * \brief Move operator.
-       * 
-       * It assigns object owned by the pointer \ref ptr to \ref this pointer. 
-       * 
+       *
+       * It assigns object owned by the pointer \ref ptr to \ref this pointer.
+       *
        * \param ptr input pointer
        * \return constant reference to \ref this
        */
@@ -405,11 +405,11 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
 
       /**
        * \brief Move operator.
-       * 
-       * It assigns object owned by the pointer \ref ptr to \ref this pointer. 
-       * 
+       *
+       * It assigns object owned by the pointer \ref ptr to \ref this pointer.
+       *
        * See \ref Enabler.
-       * 
+       *
        * \param ptr input pointer
        * \return constant reference to \ref this
        */
@@ -430,10 +430,11 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
 
       /**
        * \brief Cross-device pointer synchronization.
-       * 
-       * For the smart pointers in the host, this method does nothing.
-       * 
-       * \return true.
+       *
+       * This method is usually called by the smart pointers register when calling
+       * \ref Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >()
+       *
+       * \return true if the synchronization was successful, false otherwise.
        */
       bool synchronize()
       {
@@ -560,8 +561,8 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
       // unable to dereference this-pd on the device
       Object* cuda_pointer;
 };
-   
-#else 
+
+#else
 // Implementation with CUDA unified memory. It is very slow, we keep it only for experimental reasons.
 template< typename Object >
 class SharedPointer< Object, Devices::Cuda > : public SmartPointer
@@ -582,7 +583,7 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
    public:
 
       using ObjectType = Object;
-      using DeviceType = Devices::Cuda; 
+      using DeviceType = Devices::Cuda;
 
       SharedPointer( std::nullptr_t )
       : pd( nullptr )
@@ -712,7 +713,7 @@ class SharedPointer< Object, Devices::Cuda > : public SmartPointer
       {
          this->free();
          this->pd = (PointerData*) ptr.pd;
-         if( this->pd != nullptr ) 
+         if( this->pd != nullptr )
             this->pd->counter += 1;
          return *this;
       }
