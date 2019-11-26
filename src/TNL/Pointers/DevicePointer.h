@@ -20,15 +20,31 @@
 #include <TNL/TypeInfo.h>
 #include <TNL/Cuda/MemoryHelpers.h>
 
-#include <cstring>
-#include <c++/8/bits/c++config.h>  // std::memcpy, std::memcmp
+#include <cstring>  // std::memcpy, std::memcmp
 
 namespace TNL {
 namespace Pointers {
 
-/***
- * The DevicePointer is like SharedPointer, except it takes an existing host
+/**
+ * \brief The DevicePointer is like SharedPointer, except it takes an existing host
  * object - there is no call to the ObjectType's constructor nor destructor.
+ *
+ * **NOTE: When using smart pointers to pass objects on GPU, one must call
+ * \ref Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >()
+ * before calling a CUDA kernel working with smart pointers.**
+ *
+ * \tparam Object is a type of object to be owned by the pointer.
+ * \tparam Device is device where the object is to be allocated. The object is
+ * always allocated on the host system as well for easier object manipulation.
+ *
+ * See also \ref UniquePointer and \ref SharedPointer.
+ *
+ * See also \ref DevicePointer< Object, Devices::Host > and \ref DevicePointer< Object, Devices::Cuda >.
+ *
+ * \par Example
+ * \include Pointers/DevicePointerExample.cpp
+ * \par Output
+ * \include DevicePointerExample.out
  */
 template< typename Object,
           typename Device = typename Object::DeviceType >
@@ -37,17 +53,22 @@ class DevicePointer
    static_assert( ! std::is_same< Device, void >::value, "The device cannot be void. You need to specify the device explicitly in your code." );
 };
 
-/****
- * Specialization for Devices::Host
+/**
+ * \brief Specialization of the \ref DevicePointer for the host system.
+ *
+ * \tparam  Object is a type of object to be owned by the pointer.
  */
 template< typename Object >
 class DevicePointer< Object, Devices::Host > : public SmartPointer
 {
    private:
-      // Convenient template alias for controlling the selection of copy- and
-      // move-constructors and assignment operators using SFINAE.
-      // The type Object_ is "enabled" iff Object_ and Object are not the same,
-      // but after removing const and volatile qualifiers they are the same.
+      /**
+       * \typedef Enabler
+       * Convenient template alias for controlling the selection of copy- and
+       * move-constructors and assignment operators using SFINAE.
+       * The type Object_ is "enabled" iff Object_ and Object are not the same,
+       * but after removing const and volatile qualifiers they are the same.
+       */
       template< typename Object_ >
       using Enabler = std::enable_if< ! std::is_same< Object_, Object >::value &&
                                       std::is_same< typename std::remove_cv< Object >::type, Object_ >::value >;
@@ -58,84 +79,161 @@ class DevicePointer< Object, Devices::Host > : public SmartPointer
 
    public:
 
-      typedef Object ObjectType;
-      typedef Devices::Host DeviceType;
+      /**
+       * \typedef ObjectType is the type of object owned by the pointer.
+       */
+      using ObjectType = Object;
 
       /**
-       * \brief Constructor of empty pointer.
+       * \typedef DeviceType is the type of device where the object is to be
+       * mirrored.
+       */
+      using DeviceType = Devices::Host;
+
+      /**
+       * \brief Constructor of an empty pointer.
        */
       DevicePointer( std::nullptr_t )
       : pointer( nullptr )
       {}
 
+      /**
+       * \brief Constructor with an object reference.
+       *
+       * \param obj reference to an object to be managed by the pointer.
+       */
       explicit  DevicePointer( ObjectType& obj )
       : pointer( nullptr )
       {
          this->pointer = &obj;
       }
 
-      // this is needed only to avoid the default compiler-generated constructor
-      DevicePointer( const DevicePointer& pointer )
+      /**
+       * \brief Copy constructor.
+       *
+       * \param pointer is the source device pointer.
+       */
+      DevicePointer( const DevicePointer& pointer ) // this is needed only to avoid the default compiler-generated constructor
       : pointer( pointer.pointer )
       {
       }
 
-      // conditional constructor for non-const -> const data
+      /**
+       * \brief Copy constructor.
+       *
+       * This is specialization for compatible object types.
+       *
+       * See \ref Enabler.
+       *
+       * \param pointer is the source device pointer.
+       */
       template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      DevicePointer( const DevicePointer< Object_, DeviceType >& pointer )
+      DevicePointer( const DevicePointer< Object_, DeviceType >& pointer ) // conditional constructor for non-const -> const data
       : pointer( pointer.pointer )
       {
       }
 
-      // this is needed only to avoid the default compiler-generated constructor
-      DevicePointer( DevicePointer&& pointer )
+      /**
+       * \brief Move constructor.
+       *
+       * \param pointer is the source device pointer.
+       */
+      DevicePointer( DevicePointer&& pointer ) // this is needed only to avoid the default compiler-generated constructor
       : pointer( pointer.pointer )
       {
          pointer.pointer = nullptr;
       }
 
-      // conditional constructor for non-const -> const data
+      /**
+       * \brief Move constructor.
+       *
+       * This is specialization for compatible object types.
+       *
+       * See \ref Enabler.
+       *
+       * \param pointer is the source device pointer.
+       */
       template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      DevicePointer( DevicePointer< Object_, DeviceType >&& pointer )
+      DevicePointer( DevicePointer< Object_, DeviceType >&& pointer ) // conditional constructor for non-const -> const data
       : pointer( pointer.pointer )
       {
          pointer.pointer = nullptr;
       }
 
+      /**
+       * \brief Arrow operator for accessing the object owned by constant smart pointer.
+       *
+       * \return constant pointer to the object owned by this smart pointer.
+       */
       const Object* operator->() const
       {
          return this->pointer;
       }
 
+      /**
+       * \brief Arrow operator for accessing the object owned by non-constant smart pointer.
+       *
+       * \return pointer to the object owned by this smart pointer.
+       */
       Object* operator->()
       {
          return this->pointer;
       }
 
+      /**
+       * \brief Dereferencing operator for accessing the object owned by constant smart pointer.
+       *
+       * \return constant reference to the object owned by this smart pointer.
+       */
       const Object& operator *() const
       {
          return *( this->pointer );
       }
 
+      /**
+       * \brief Dereferencing operator for accessing the object owned by non-constant smart pointer.
+       *
+       * \return reference to the object owned by this smart pointer.
+       */
       Object& operator *()
       {
          return *( this->pointer );
       }
 
+      /**
+       * \brief Conversion to boolean type.
+       *
+       * \return Returns true if the pointer is not empty, false otherwise.
+       */
       __cuda_callable__
       operator bool() const
       {
          return this->pointer;
       }
 
+      /**
+       * \brief Negation operator.
+       *
+       * \return Returns false if the pointer is not empty, true otherwise.
+       */
       __cuda_callable__
       bool operator!() const
       {
          return ! this->pointer;
       }
 
+      /**
+       * \brief Constant object reference getter.
+       *
+       * No synchronization of this pointer will be performed due to calling
+       * this method.
+       *
+       * \tparam Device says what image of the object one want to dereference. It
+       * can be either \ref DeviceType or Devices::Host.
+       * \return constant reference to the object image on given device.
+       */
       template< typename Device = Devices::Host >
       __cuda_callable__
       const Object& getData() const
@@ -143,6 +241,16 @@ class DevicePointer< Object, Devices::Host > : public SmartPointer
          return *( this->pointer );
       }
 
+      /**
+       * \brief Non-constant object reference getter.
+       *
+       * No synchronization of this pointer will be performed due to calling
+       * this method.
+       *
+       * \tparam Device says what image of the object one want to dereference. It
+       * can be either \ref DeviceType or Devices::Host.
+       * \return constant reference to the object image on given device.
+       */
       template< typename Device = Devices::Host >
       __cuda_callable__
       Object& modifyData()
@@ -150,40 +258,79 @@ class DevicePointer< Object, Devices::Host > : public SmartPointer
          return *( this->pointer );
       }
 
-      // this is needed only to avoid the default compiler-generated operator
-      const DevicePointer& operator=( const DevicePointer& ptr )
+      /**
+       * \brief Assignment operator.
+       *
+       * It assigns object owned by the pointer \ref ptr to \ref this pointer.
+       *
+       * \param ptr input pointer
+       * \return constant reference to \ref this
+       */
+      const DevicePointer& operator=( const DevicePointer& ptr ) // this is needed only to avoid the default compiler-generated operator
       {
          this->pointer = ptr.pointer;
          return *this;
       }
 
-      // conditional operator for non-const -> const data
+      /**
+       * \brief Assignment operator for compatible object types.
+       *
+       * It assigns object owned by the pointer \ref ptr to \ref this pointer.
+       *
+       * See \ref Enabler.
+       *
+       * \param ptr input pointer
+       * \return constant reference to \ref this
+       */
       template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      const DevicePointer& operator=( const DevicePointer< Object_, DeviceType >& ptr )
+      const DevicePointer& operator=( const DevicePointer< Object_, DeviceType >& ptr ) // conditional operator for non-const -> const data
       {
          this->pointer = ptr.pointer;
          return *this;
       }
 
-      // this is needed only to avoid the default compiler-generated operator
-      const DevicePointer& operator=( DevicePointer&& ptr )
+      /**
+       * \brief Move operator.
+       *
+       * It assigns object owned by the pointer \ref ptr to \ref this pointer.
+       *
+       * \param ptr input pointer
+       * \return constant reference to \ref this
+       */
+      const DevicePointer& operator=( DevicePointer&& ptr ) // this is needed only to avoid the default compiler-generated operator
       {
          this->pointer = ptr.pointer;
          ptr.pointer = nullptr;
          return *this;
       }
 
-      // conditional operator for non-const -> const data
+      /**
+       * \brief Move operator.
+       *
+       * It assigns object owned by the pointer \ref ptr to \ref this pointer.
+       *
+       * See \ref Enabler.
+       *
+       * \param ptr input pointer
+       * \return constant reference to \ref this
+       */
       template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      const DevicePointer& operator=( DevicePointer< Object_, DeviceType >&& ptr )
+      const DevicePointer& operator=( DevicePointer< Object_, DeviceType >&& ptr ) // conditional operator for non-const -> const data
       {
          this->pointer = ptr.pointer;
          ptr.pointer = nullptr;
          return *this;
       }
 
+      /**
+       * \brief Cross-device pointer synchronization.
+       *
+       * For the smart pointers on the host, this method does nothing.
+       *
+       * \return true.
+       */
       bool synchronize()
       {
          return true;
@@ -192,14 +339,16 @@ class DevicePointer< Object, Devices::Host > : public SmartPointer
       /**
        * \brief Swap the owned object with another pointer.
        *
-       * \param ptr2 the other shared pointer for swapping.
+       * \param ptr2 the other device pointer for swapping.
        */
       void swap( DevicePointer& ptr2 )
       {
          std::swap( this->pointer, ptr2.pointer );
       }
 
-
+      /**
+       * \brief Destructor.
+       */
       ~DevicePointer()
       {
       }
@@ -210,17 +359,23 @@ class DevicePointer< Object, Devices::Host > : public SmartPointer
       Object* pointer;
 };
 
-/****
- * Specialization for CUDA
+/**
+ * \brief Specialization of the \ref DevicePointer for the CUDA device.
+ *
+ * \tparam  Object is a type of object to be owned by the pointer.
  */
 template< typename Object >
 class DevicePointer< Object, Devices::Cuda > : public SmartPointer
 {
    private:
-      // Convenient template alias for controlling the selection of copy- and
-      // move-constructors and assignment operators using SFINAE.
-      // The type Object_ is "enabled" iff Object_ and Object are not the same,
-      // but after removing const and volatile qualifiers they are the same.
+      /**
+       * \typedef Enabler
+       *
+       * Convenient template alias for controlling the selection of copy- and
+       * move-constructors and assignment operators using SFINAE.
+       * The type Object_ is "enabled" iff Object_ and Object are not the same,
+       * but after removing const and volatile qualifiers they are the same.
+       */
       template< typename Object_ >
       using Enabler = std::enable_if< ! std::is_same< Object_, Object >::value &&
                                       std::is_same< typename std::remove_cv< Object >::type, Object_ >::value >;
@@ -231,8 +386,16 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
 
    public:
 
-      typedef Object ObjectType;
-      typedef Devices::Cuda DeviceType;
+      /**
+       * \typedef ObjectType is the type of object owned by the pointer.
+       */
+      using ObjectType = Object;
+
+      /**
+       * \typedef DeviceType is the type of device where the object is to be
+       * mirrored.
+       */
+      using DeviceType = Devices::Cuda;
 
       /**
        * \brief Constructor of empty pointer.
@@ -242,6 +405,11 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
         pd( nullptr ),
         cuda_pointer( nullptr ) {}
 
+      /**
+       * \brief Constructor with an object reference.
+       *
+       * \param obj is a reference on an object to be managed by the pointer.
+       */
       explicit  DevicePointer( ObjectType& obj )
       : pointer( nullptr ),
         pd( nullptr ),
@@ -250,8 +418,12 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
          this->allocate( obj );
       }
 
-      // this is needed only to avoid the default compiler-generated constructor
-      DevicePointer( const DevicePointer& pointer )
+      /**
+       * \brief Copy constructor.
+       *
+       * \param pointer is the source device pointer.
+       */
+      DevicePointer( const DevicePointer& pointer ) // this is needed only to avoid the default compiler-generated constructor
       : pointer( pointer.pointer ),
         pd( (PointerData*) pointer.pd ),
         cuda_pointer( pointer.cuda_pointer )
@@ -259,10 +431,18 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
          this->pd->counter += 1;
       }
 
-      // conditional constructor for non-const -> const data
+      /**
+       * \brief Copy constructor.
+       *
+       * This is specialization for compatible object types.
+       *
+       * See \ref Enabler.
+       *
+       * \param pointer is the source device pointer.
+       */
       template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      DevicePointer( const DevicePointer< Object_, DeviceType >& pointer )
+      DevicePointer( const DevicePointer< Object_, DeviceType >& pointer ) // conditional constructor for non-const -> const data
       : pointer( pointer.pointer ),
         pd( (PointerData*) pointer.pd ),
         cuda_pointer( pointer.cuda_pointer )
@@ -270,8 +450,12 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
          this->pd->counter += 1;
       }
 
-      // this is needed only to avoid the default compiler-generated constructor
-      DevicePointer( DevicePointer&& pointer )
+      /**
+       * \brief Move constructor.
+       *
+       * \param pointer is the source device pointer.
+       */
+      DevicePointer( DevicePointer&& pointer ) // this is needed only to avoid the default compiler-generated constructor
       : pointer( pointer.pointer ),
         pd( (PointerData*) pointer.pd ),
         cuda_pointer( pointer.cuda_pointer )
@@ -281,10 +465,18 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
          pointer.cuda_pointer = nullptr;
       }
 
-      // conditional constructor for non-const -> const data
+      /**
+       * \brief Move constructor.
+       *
+       * This is specialization for compatible object types.
+       *
+       * See \ref Enabler.
+       *
+       * \param pointer is the source device pointer.
+       */
       template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      DevicePointer( DevicePointer< Object_, DeviceType >&& pointer )
+      DevicePointer( DevicePointer< Object_, DeviceType >&& pointer ) // conditional constructor for non-const -> const data
       : pointer( pointer.pointer ),
         pd( (PointerData*) pointer.pd ),
         cuda_pointer( pointer.cuda_pointer )
@@ -294,6 +486,13 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
          pointer.cuda_pointer = nullptr;
       }
 
+      /**
+       * \brief Arrow operator for accessing the object owned by constant smart pointer.
+       *
+       * \return constant pointer to the object owned by this smart pointer. It
+       * returns pointer to object image on the CUDA device if it is called from CUDA
+       * kernel and pointer to host image otherwise.
+       */
       __cuda_callable__
       const Object* operator->() const
       {
@@ -304,6 +503,13 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
 #endif
       }
 
+      /**
+       * \brief Arrow operator for accessing the object owned by non-constant smart pointer.
+       *
+       * \return pointer to the object owned by this smart pointer. It
+       * returns pointer to object image on the CUDA device if it is called from CUDA
+       * kernel and pointer to host image otherwise.
+       */
       __cuda_callable__
       Object* operator->()
       {
@@ -315,6 +521,13 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
 #endif
       }
 
+      /**
+       * \brief Dereferencing operator for accessing the object owned by constant smart pointer.
+       *
+       * \return constant reference to the object owned by this smart pointer. It
+       * returns reference to object image on the CUDA device if it is called from CUDA
+       * kernel and reference to host image otherwise.
+       */
       __cuda_callable__
       const Object& operator *() const
       {
@@ -325,6 +538,13 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
 #endif
       }
 
+      /**
+       * \brief Dereferencing operator for accessing the object owned by non-constant smart pointer.
+       *
+       * \return reference to the object owned by this smart pointer.  It
+       * returns reference to object image on the CUDA device if it is called from CUDA
+       * kernel and reference to host image otherwise.
+       */
       __cuda_callable__
       Object& operator *()
       {
@@ -336,18 +556,38 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
 #endif
       }
 
+      /**
+       * \brief Conversion to boolean type.
+       *
+       * \return Returns true if the pointer is not empty, false otherwise.
+       */
       __cuda_callable__
       operator bool() const
       {
          return this->pd;
       }
 
+      /**
+       * \brief Negation operator.
+       *
+       * \return Returns false if the pointer is not empty, true otherwise.
+       */
       __cuda_callable__
       bool operator!() const
       {
          return ! this->pd;
       }
 
+      /**
+       * \brief Constant object reference getter.
+       *
+       * No synchronization of this pointer will be performed due to calling
+       * this method.
+       *
+       * \tparam Device says what image of the object one want to dereference. It
+       * can be either \ref DeviceType or Devices::Host.
+       * \return constant reference to the object image on given device.
+       */
       template< typename Device = Devices::Host >
       __cuda_callable__
       const Object& getData() const
@@ -362,6 +602,18 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
             return *( this->cuda_pointer );
       }
 
+      /**
+       * \brief Non-constant object reference getter.
+       *
+       * After calling this method, the object owned by the pointer might need
+       * to be synchronized. One should not forget to call
+       * \ref Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >()
+       * before calling CUDA kernel using object from this smart pointer.
+       *
+       * \tparam Device says what image of the object one want to dereference. It
+       * can be either \ref DeviceType or Devices::Host.
+       * \return constant reference to the object image on given device.
+       */
       template< typename Device = Devices::Host >
       __cuda_callable__
       Object& modifyData()
@@ -379,8 +631,15 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
             return *( this->cuda_pointer );
       }
 
-      // this is needed only to avoid the default compiler-generated operator
-      const DevicePointer& operator=( const DevicePointer& ptr )
+      /**
+       * \brief Assignment operator.
+       *
+       * It assigns object owned by the pointer \ref ptr to \ref this pointer.
+       *
+       * \param ptr input pointer
+       * \return constant reference to \ref this
+       */
+      const DevicePointer& operator=( const DevicePointer& ptr ) // this is needed only to avoid the default compiler-generated operator
       {
          this->free();
          this->pointer = ptr.pointer;
@@ -391,10 +650,19 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
          return *this;
       }
 
-      // conditional operator for non-const -> const data
+      /**
+       * \brief Assignment operator for compatible object types.
+       *
+       * It assigns object owned by the pointer \ref ptr to \ref this pointer.
+       *
+       * See \ref Enabler.
+       *
+       * \param ptr input pointer
+       * \return constant reference to \ref this
+       */
       template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      const DevicePointer& operator=( const DevicePointer< Object_, DeviceType >& ptr )
+      const DevicePointer& operator=( const DevicePointer< Object_, DeviceType >& ptr ) // conditional operator for non-const -> const data
       {
          this->free();
          this->pointer = ptr.pointer;
@@ -405,8 +673,15 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
          return *this;
       }
 
-      // this is needed only to avoid the default compiler-generated operator
-      const DevicePointer& operator=( DevicePointer&& ptr )
+      /**
+       * \brief Move operator.
+       *
+       * It assigns object owned by the pointer \ref ptr to \ref this pointer.
+       *
+       * \param ptr input pointer
+       * \return constant reference to \ref this
+       */
+      const DevicePointer& operator=( DevicePointer&& ptr ) // this is needed only to avoid the default compiler-generated operator
       {
          this->free();
          this->pointer = ptr.pointer;
@@ -418,10 +693,19 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
          return *this;
       }
 
-      // conditional operator for non-const -> const data
+      /**
+       * \brief Move operator.
+       *
+       * It assigns object owned by the pointer \ref ptr to \ref this pointer.
+       *
+       * See \ref Enabler.
+       *
+       * \param ptr input pointer
+       * \return constant reference to \ref this
+       */
       template< typename Object_,
                 typename = typename Enabler< Object_ >::type >
-      const DevicePointer& operator=( DevicePointer< Object_, DeviceType >&& ptr )
+      const DevicePointer& operator=( DevicePointer< Object_, DeviceType >&& ptr ) // conditional operator for non-const -> const data
       {
          this->free();
          this->pointer = ptr.pointer;
@@ -433,6 +717,14 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
          return *this;
       }
 
+      /**
+       * \brief Cross-device pointer synchronization.
+       *
+       * This method is usually called by the smart pointers register when calling
+       * \ref Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >()
+       *
+       * \return true if the synchronization was successful, false otherwise.
+       */
       bool synchronize()
       {
          if( ! this->pd )
@@ -456,7 +748,7 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
       /**
        * \brief Swap the owned object with another pointer.
        *
-       * \param ptr2 the other shared pointer for swapping.
+       * \param ptr2 the other device pointer for swapping.
        */
       void swap( DevicePointer& ptr2 )
       {
@@ -465,7 +757,9 @@ class DevicePointer< Object, Devices::Cuda > : public SmartPointer
          std::swap( this->cuda_pointer, ptr2.cuda_pointer );
       }
 
-
+      /**
+       * \brief Destructor.
+       */
       ~DevicePointer()
       {
          this->free();
