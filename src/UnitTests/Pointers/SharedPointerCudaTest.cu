@@ -50,11 +50,6 @@ TEST( SharedPointerCudaTest, getDataTest )
    typedef TNL::Containers::StaticArray< 2, int  > TestType;
    Pointers::SharedPointer< TestType, Devices::Cuda > ptr1( 1, 2 );
 
-#ifdef HAVE_CUDA_UNIFIED_MEMORY
-   ASSERT_EQ( ptr1->x(), 1 );
-   ASSERT_EQ( ptr1->y(), 2 );
-#else
-
    Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
 
    TestType aux;
@@ -63,7 +58,6 @@ TEST( SharedPointerCudaTest, getDataTest )
 
    ASSERT_EQ( aux[ 0 ], 1 );
    ASSERT_EQ( aux[ 1 ], 2 );
-#endif  // HAVE_CUDA_UNIFIED_MEMORY
 #endif  // HAVE_CUDA
 };
 
