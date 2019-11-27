@@ -25,7 +25,7 @@
 #include <TNL/Containers/Vector.h>
 
 namespace TNL {
-namespace Matrices {   
+namespace Matrices {
 
 template< typename Device >
 class SlicedEllpackDeviceDependentCode;
@@ -93,7 +93,7 @@ public:
 
    __cuda_callable__
    IndexType getRowLengthFast( const IndexType row ) const;
-   
+
    IndexType getNonZeroRowLength( const IndexType row ) const;
 
    template< typename Real2, typename Device2, typename Index2 >

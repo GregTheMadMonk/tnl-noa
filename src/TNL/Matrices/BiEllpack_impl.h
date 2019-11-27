@@ -94,7 +94,8 @@ setCompressedRowLengths( ConstCompressedRowLengthsVectorView constRowLengths )
     DeviceDependentCode::performRowBubbleSort( *this, rowLengths );
     DeviceDependentCode::computeColumnSizes( *this, rowLengths );
 
-    this->groupPointers.computeExclusivePrefixSum();
+    //this->groupPointers.computeExclusivePrefixSum();
+    this->groupPointers.template scan< Algorithms::ScanType::Exclusive >();
 
     DeviceDependentCode::verifyRowPerm( *this, rowLengths );
     DeviceDependentCode::verifyRowLengths( *this, rowLengths );

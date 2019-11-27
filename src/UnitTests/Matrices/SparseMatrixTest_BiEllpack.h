@@ -13,7 +13,7 @@
 #include "SparseMatrixTest.hpp"
 #include <iostream>
 
-#ifdef HAVE_GTEST 
+#ifdef HAVE_GTEST
 #include <gtest/gtest.h>
 
 // test fixture for typed tests
@@ -38,9 +38,9 @@ using BiEllpackMatrixTypes = ::testing::Types
     TNL::Matrices::BiEllpack< int,    TNL::Devices::Host, long >,
     TNL::Matrices::BiEllpack< long,   TNL::Devices::Host, long >,
     TNL::Matrices::BiEllpack< float,  TNL::Devices::Host, long >,
-    TNL::Matrices::BiEllpack< double, TNL::Devices::Host, long >,
+    TNL::Matrices::BiEllpack< double, TNL::Devices::Host, long >
 #ifdef HAVE_CUDA
-    TNL::Matrices::BiEllpack< int,    TNL::Devices::Cuda, short >,
+   ,TNL::Matrices::BiEllpack< int,    TNL::Devices::Cuda, short >,
     TNL::Matrices::BiEllpack< long,   TNL::Devices::Cuda, short >,
     TNL::Matrices::BiEllpack< float,  TNL::Devices::Cuda, short >,
     TNL::Matrices::BiEllpack< double, TNL::Devices::Cuda, short >,
@@ -60,16 +60,16 @@ TYPED_TEST_SUITE( BiEllpackMatrixTest, BiEllpackMatrixTypes);
 TYPED_TEST( BiEllpackMatrixTest, setDimensionsTest )
 {
     using BiEllpackMatrixType = typename TestFixture::BiEllpackMatrixType;
-    
+
     test_SetDimensions< BiEllpackMatrixType >();
 }
 
 //TYPED_TEST( BiEllpackMatrixTest, setCompressedRowLengthsTest )
 //{
 ////    using BiEllpackMatrixType = typename TestFixture::BiEllpackMatrixType;
-//    
+//
 ////    test_SetCompressedRowLengths< BiEllpackMatrixType >();
-//    
+//
 //    bool testRan = false;
 //    EXPECT_TRUE( testRan );
 //    std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
@@ -81,67 +81,65 @@ TYPED_TEST( BiEllpackMatrixTest, setDimensionsTest )
 TYPED_TEST( BiEllpackMatrixTest, setLikeTest )
 {
     using BiEllpackMatrixType = typename TestFixture::BiEllpackMatrixType;
-    
+
     test_SetLike< BiEllpackMatrixType, BiEllpackMatrixType >();
 }
 
 TYPED_TEST( BiEllpackMatrixTest, resetTest )
 {
     using BiEllpackMatrixType = typename TestFixture::BiEllpackMatrixType;
-    
+
     test_Reset< BiEllpackMatrixType >();
 }
 
 TYPED_TEST( BiEllpackMatrixTest, setElementTest )
 {
     using BiEllpackMatrixType = typename TestFixture::BiEllpackMatrixType;
-    
+
     test_SetElement< BiEllpackMatrixType >();
 }
 
 TYPED_TEST( BiEllpackMatrixTest, addElementTest )
 {
     using BiEllpackMatrixType = typename TestFixture::BiEllpackMatrixType;
-    
+
     test_AddElement< BiEllpackMatrixType >();
 }
 
 TYPED_TEST( BiEllpackMatrixTest, setRowTest )
 {
     using BiEllpackMatrixType = typename TestFixture::BiEllpackMatrixType;
-    
+
     test_SetRow< BiEllpackMatrixType >();
 }
 
 TYPED_TEST( BiEllpackMatrixTest, vectorProductTest )
 {
     using BiEllpackMatrixType = typename TestFixture::BiEllpackMatrixType;
-    
+
     test_VectorProduct< BiEllpackMatrixType >();
 }
 
 //TYPED_TEST( BiEllpackMatrixTest, operatorEqualsTest )
 //{
 //    using BiEllpackMatrixType = typename TestFixture::BiEllpackMatrixType;
-//    
+//
 //    test_OperatorEquals< BiEllpackMatrixType >();
 //}
 
 TYPED_TEST( BiEllpackMatrixTest, saveAndLoadTest )
 {
     using BiEllpackMatrixType = typename TestFixture::BiEllpackMatrixType;
-    
+
     test_SaveAndLoad< BiEllpackMatrixType >( "test_SparseMatrixTest_BiEllpack" );
 }
 
 TYPED_TEST( BiEllpackMatrixTest, printTest )
 {
     using BiEllpackMatrixType = typename TestFixture::BiEllpackMatrixType;
-    
+
     test_Print< BiEllpackMatrixType >();
 }
-#endif
-
-#endif
+#endif // HAVE_GTEST
 
 #include "../main.h"

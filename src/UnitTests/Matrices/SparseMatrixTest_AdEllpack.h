@@ -38,9 +38,9 @@ using AdEllpackMatrixTypes = ::testing::Types
     TNL::Matrices::AdEllpack< int,    TNL::Devices::Host, long >,
     TNL::Matrices::AdEllpack< long,   TNL::Devices::Host, long >,
     TNL::Matrices::AdEllpack< float,  TNL::Devices::Host, long >,
-    TNL::Matrices::AdEllpack< double, TNL::Devices::Host, long >,
+    TNL::Matrices::AdEllpack< double, TNL::Devices::Host, long >
 #ifdef HAVE_CUDA
-    TNL::Matrices::AdEllpack< int,    TNL::Devices::Cuda, short >,
+   ,TNL::Matrices::AdEllpack< int,    TNL::Devices::Cuda, short >,
     TNL::Matrices::AdEllpack< long,   TNL::Devices::Cuda, short >,
     TNL::Matrices::AdEllpack< float,  TNL::Devices::Cuda, short >,
     TNL::Matrices::AdEllpack< double, TNL::Devices::Cuda, short >,

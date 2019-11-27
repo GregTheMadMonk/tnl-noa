@@ -43,9 +43,7 @@ String ChunkedEllpack< Real, Device, Index >::getSerializationType()
 {
    return String( "Matrices::ChunkedEllpack< ") +
           getType< Real >() +
-          String( ", " ) +
-          String( Device :: getDeviceType() ) +
-          String( ", " ) +
+          String( ", [any device], " ) +
           String( TNL::getType< Index >() ) +
           String( " >" );
 }
