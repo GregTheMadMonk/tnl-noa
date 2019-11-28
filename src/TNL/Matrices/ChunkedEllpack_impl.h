@@ -16,7 +16,7 @@
 #include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
-namespace Matrices {   
+namespace Matrices {
 
 template< typename Real,
           typename Index,
@@ -164,7 +164,7 @@ bool ChunkedEllpack< Real, Device, Index >::setSlice( ConstCompressedRowLengthsV
     */
    IndexType maxChunkInSlice( 0 );
    for( IndexType i = sliceBegin; i < sliceEnd; i++ )
-   {       
+   {
        maxChunkInSlice = max( maxChunkInSlice,
                           roundUpDivision( rowLengths[ i ], this->rowToChunkMapping[ i ] ) );
    }
@@ -1218,7 +1218,7 @@ ChunkedEllpack< Real, Device, Index >::operator=( const ChunkedEllpack< Real2, D
                   "unknown device" );
    static_assert( std::is_same< Device2, Devices::Host >::value || std::is_same< Device2, Devices::Cuda >::value,
                   "unknown device" );
-   
+
    this->setLike( matrix );
    this->chunksInSlice = matrix.chunksInSlice;
    this->desiredChunkSize = matrix.desiredChunkSize;
@@ -1227,32 +1227,32 @@ ChunkedEllpack< Real, Device, Index >::operator=( const ChunkedEllpack< Real2, D
    this->rowPointers = matrix.rowPointers;
    this->slices = matrix.slices;
    this->numberOfSlices = matrix.numberOfSlices;
-   
+
    // host -> cuda
    if( std::is_same< Device, Devices::Cuda >::value ) {
-       typename ValuesVector::Self< typename ValuesVector::RealType, Devices::Host > tmpValues;
-       typename ColumnIndexesVector::Self< typename ColumnIndexesVector::RealType, Devices::Host > tmpColumnIndexes;
+       typename ValuesVector::template Self< typename ValuesVector::RealType, Devices::Host > tmpValues;
+       typename ColumnIndexesVector::template Self< typename ColumnIndexesVector::RealType, Devices::Host > tmpColumnIndexes;
        tmpValues.setLike( matrix.values );
        tmpColumnIndexes.setLike( matrix.columnIndexes );
-       
+
 #ifdef HAVE_OPENMP
 #pragma omp parallel for if( Devices::Host::isOMPEnabled() )
 #endif
        for( Index sliceIdx = 0; sliceIdx < matrix.numberOfSlices; sliceIdx++ ) {
            const Index chunkSize = matrix.slices.getElement( sliceIdx ).chunkSize;
            const Index offset = matrix.slices.getElement( sliceIdx ).pointer;
-           
+
            for( Index j = 0; j < chunkSize; j++ )
                for( Index i = 0; i < matrix.chunksInSlice; i++ ) {
                    tmpValues[ offset + j * matrix.chunksInSlice + i ] = matrix.values[ offset + i * chunkSize + j ];
                    tmpColumnIndexes[ offset + j * matrix.chunksInSlice + i ] = matrix.columnIndexes[ offset + i * chunkSize + j ];
                }
        }
-       
+
        this->values = tmpValues;
        this->columnIndexes = tmpColumnIndexes;
    }
-   
+
    // cuda -> host
    if( std::is_same< Device, Devices::Host >::value ) {
        ValuesVector tmpValues;
@@ -1261,14 +1261,14 @@ ChunkedEllpack< Real, Device, Index >::operator=( const ChunkedEllpack< Real2, D
        tmpColumnIndexes.setLike( matrix.columnIndexes );
        tmpValues = matrix.values;
        tmpColumnIndexes = matrix.columnIndexes;
-       
+
 #ifdef HAVE_OPENMP
 #pragma omp parallel for if( Devices::Host::isOMPEnabled() )
 #endif
        for( Index sliceIdx = 0; sliceIdx < matrix.numberOfSlices; sliceIdx++ ) {
            const Index chunkSize = matrix.slices.getElement( sliceIdx ).chunkSize;
            const Index offset = matrix.slices.getElement( sliceIdx ).pointer;
-           
+
            for( Index j = 0; j < chunkSize; j++ )
                for( Index i = 0; i < matrix.chunksInSlice; i++ ) {
                    this->values[ offset + i * chunkSize + j ] = tmpValues[ offset + j * matrix.chunksInSlice + i ];
@@ -1432,14 +1432,14 @@ class ChunkedEllpackDeviceDependentCode< Devices::Cuda >
    public:
 
       typedef Devices::Cuda Device;
- 
+
       template< typename Real,
                 typename Index >
       static void resolveSliceSizes( ChunkedEllpack< Real, Device, Index >& matrix,
                                      typename ChunkedEllpack< Real, Device, Index >::ConstCompressedRowLengthsVectorView rowLengths )
       {
       }
- 
+
       template< typename Index >
       __cuda_callable__
       static void initChunkTraverse( const Index sliceOffset,
