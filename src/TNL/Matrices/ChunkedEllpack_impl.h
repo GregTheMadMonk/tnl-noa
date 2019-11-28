@@ -1230,8 +1230,8 @@ ChunkedEllpack< Real, Device, Index >::operator=( const ChunkedEllpack< Real2, D
    
    // host -> cuda
    if( std::is_same< Device, Devices::Cuda >::value ) {
-       typename ValuesVector::HostType tmpValues;
-       typename ColumnIndexesVector::HostType tmpColumnIndexes;
+       typename ValuesVector::Self< typename ValuesVector::RealType, Devices::Host > tmpValues;
+       typename ColumnIndexesVector::Self< typename ColumnIndexesVector::RealType, Devices::Host > tmpColumnIndexes;
        tmpValues.setLike( matrix.values );
        tmpColumnIndexes.setLike( matrix.columnIndexes );
        

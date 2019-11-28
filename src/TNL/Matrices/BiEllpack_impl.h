@@ -1406,7 +1406,7 @@ public:
 		for( int gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
 		{
 		     if( gridIdx == cudaGrids - 1 )
-		         cudaGridSize.x = cudaBlocks % Devices::Cuda::getMaxGridSize();
+		         cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
 		     performRowBubbleSortCuda< Real, Index >
 		     	 	 	 	 	 	 <<< cudaGridSize, cudaBlockSize >>>
 		                             ( kernel_this,
@@ -1436,7 +1436,7 @@ public:
 		for( int gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
 		{
 		     if( gridIdx == cudaGrids - 1 )
-		         cudaGridSize.x = cudaBlocks % Devices::Cuda::getMaxGridSize();
+		         cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
 		     computeColumnSizesCuda< Real, Index >
 		     	 	 	 	 	   <<< cudaGridSize, cudaBlockSize >>>
 		                           ( kernel_this,
