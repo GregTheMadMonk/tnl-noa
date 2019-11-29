@@ -13,7 +13,7 @@
 #include "SparseMatrixTest.hpp"
 #include <iostream>
 
-#ifdef HAVE_GTEST 
+#ifdef HAVE_GTEST
 #include <gtest/gtest.h>
 
 // test fixture for typed tests
@@ -40,7 +40,7 @@ using SlicedEllpackMatrixTypes = ::testing::Types
     TNL::Matrices::SlicedEllpack< float,  TNL::Devices::Host, long >,
     TNL::Matrices::SlicedEllpack< double, TNL::Devices::Host, long >
 #ifdef HAVE_CUDA
-    ,TNL::Matrices::SlicedEllpack< int,    TNL::Devices::Cuda, short >,
+   ,TNL::Matrices::SlicedEllpack< int,    TNL::Devices::Cuda, short >,
     TNL::Matrices::SlicedEllpack< long,   TNL::Devices::Cuda, short >,
     TNL::Matrices::SlicedEllpack< float,  TNL::Devices::Cuda, short >,
     TNL::Matrices::SlicedEllpack< double, TNL::Devices::Cuda, short >,
@@ -60,16 +60,16 @@ TYPED_TEST_SUITE( SlicedEllpackMatrixTest, SlicedEllpackMatrixTypes );
 TYPED_TEST( SlicedEllpackMatrixTest, setDimensionsTest )
 {
     using SlicedEllpackMatrixType = typename TestFixture::SlicedEllpackMatrixType;
-    
+
     test_SetDimensions< SlicedEllpackMatrixType >();
 }
 
 //TYPED_TEST( SlicedEllpackMatrixTest, setCompressedRowLengthsTest )
 //{
 ////    using SlicedEllpackMatrixType = typename TestFixture::SlicedEllpackMatrixType;
-//    
+//
 ////    test_SetCompressedRowLengths< SlicedEllpackMatrixType >();
-//    
+//
 //    bool testRan = false;
 //    EXPECT_TRUE( testRan );
 //    std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
@@ -81,56 +81,56 @@ TYPED_TEST( SlicedEllpackMatrixTest, setDimensionsTest )
 TYPED_TEST( SlicedEllpackMatrixTest, setLikeTest )
 {
     using SlicedEllpackMatrixType = typename TestFixture::SlicedEllpackMatrixType;
-    
+
     test_SetLike< SlicedEllpackMatrixType, SlicedEllpackMatrixType >();
 }
 
 TYPED_TEST( SlicedEllpackMatrixTest, resetTest )
 {
     using SlicedEllpackMatrixType = typename TestFixture::SlicedEllpackMatrixType;
-    
+
     test_Reset< SlicedEllpackMatrixType >();
 }
 
 TYPED_TEST( SlicedEllpackMatrixTest, setElementTest )
 {
     using SlicedEllpackMatrixType = typename TestFixture::SlicedEllpackMatrixType;
-    
+
     test_SetElement< SlicedEllpackMatrixType >();
 }
 
 TYPED_TEST( SlicedEllpackMatrixTest, addElementTest )
 {
     using SlicedEllpackMatrixType = typename TestFixture::SlicedEllpackMatrixType;
-    
+
     test_AddElement< SlicedEllpackMatrixType >();
 }
 
 TYPED_TEST( SlicedEllpackMatrixTest, setRowTest )
 {
     using SlicedEllpackMatrixType = typename TestFixture::SlicedEllpackMatrixType;
-    
+
     test_SetRow< SlicedEllpackMatrixType >();
 }
 
 TYPED_TEST( SlicedEllpackMatrixTest, vectorProductTest )
 {
     using SlicedEllpackMatrixType = typename TestFixture::SlicedEllpackMatrixType;
-    
+
     test_VectorProduct< SlicedEllpackMatrixType >();
 }
 
 TYPED_TEST( SlicedEllpackMatrixTest, saveAndLoadTest )
 {
     using SlicedEllpackMatrixType = typename TestFixture::SlicedEllpackMatrixType;
-    
+
     test_SaveAndLoad< SlicedEllpackMatrixType >( "test_SparseMatrixTest_SlicedEllpack" );
 }
 
 TYPED_TEST( SlicedEllpackMatrixTest, printTest )
 {
     using SlicedEllpackMatrixType = typename TestFixture::SlicedEllpackMatrixType;
-    
+
     test_Print< SlicedEllpackMatrixType >();
 }
 

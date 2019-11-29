@@ -73,6 +73,19 @@ void Matrix< Real, Device, Index >::setLike( const Matrix< Real2, Device2, Index
 template< typename Real,
           typename Device,
           typename Index >
+Index Matrix< Real, Device, Index >::getNumberOfNonzeroMatrixElements() const
+{
+    IndexType nonZeroElements( 0 );
+    for( IndexType i = 0; this->values.getSize(); i++ )
+        if( this->values.getElement( i ) != 0.0 )
+            nonZeroElements++;
+      
+    return nonZeroElements;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 __cuda_callable__
 Index Matrix< Real, Device, Index >::getRows() const
 {

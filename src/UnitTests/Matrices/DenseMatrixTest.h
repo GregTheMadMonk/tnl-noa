@@ -8,70 +8,6 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-// TODO
-/*
-  * getType()                           ::HOW?  How to test this for each format? edit string how?
- *      MISTAKE! found it for Cuda instead of Devices::Cuda. Incorrect String in src/TNL/Devices/Cuda.cpp
- * getTypeVirtual()                     ::TEST? This just calls getType().
- * getSerializationType()               ::TEST? This just calls getType().
- * getSerializationTypeVirtual()        ::TEST? This just calls getSerializationType().
- * setDimensions()                          ::DONE
- * setLike()                                ::DONE
- * setCompressedRowLengths()            ::NOT IMPLEMENTED! The function body is empty.
- * getRowLength()                           ::DONE
- * getRowLengthFast()                   ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
- * getMaxRowLength()                    ::TEST? This function is identical to getRowLength().
- * getNumberOfMatrixElements()              ::DONE
- * getNumberOfNonZeroMatrixElements()       ::DONE
- * reset()                                  ::DONE
- * setValue()                               ::DONE
- * operator()                           ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
- * const operator()                     ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
- * setElementFast()                     ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
- * setElement()                             ::DONE ; USED! in any test with individual value assignment.
- * addElementFast()                     ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
- * addElement()                             ::DONE
- * setRowFast()                         ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
- * setRow()                                 ::DONE
- *      MISTAKE! This function unlike the setRow() for CSR, doesn't replace all the elements of a row, it only replaces the elements it has values for in its arrays.
- * addRowFast()                         ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
- * addRow()                                 ::DONE
- * getElementFast()                     ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
- * getElement()                             ::USED! in any test with individual value reading.
- * getRowFast()                         ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
- * getRow()                             ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
- * const getRow()                       ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
- * MatrixRow getRow()                   ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
- * ConstMatrixRow getRow()              ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
- * rowVectorProduct()                   ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
- * vectorProduct()                          ::DONE
- *      This used to throw illegal memory access, but instead of using ints for vectors, using Types, helped.
- * addMatrix()                              ::DONE
- * DenseMatrixProductKernel()           ::HOW? How to test __global__?
- * getMatrixProdut()                    ::HOW? It won't build: When testing CPU: no parameters match function DenseMatrixProductKernel(); when testing GPU: identifier tnlCudaMin is undefined. 
- * DenseTranspositionAlignedKernel()    ::HOW? How to test __global__?
- * DenseTranspositionNonAlignedKernel() ::HOW? How to test __global__?
- * getTransposition()                   ::HOW? It won't build when testing CPU: no parameters match functions DenseTranspositionAlignedKernel() and DenseTranspositionNonAlignedKernel(). On GPU if will throw terminate and (core dumped).
- *      MISTAKE! For GPU it works completely fine, when rows == cols. Otherwise it throws assertion failed.
- * performSORIteration()                ::HOW? Throws segmentation fault CUDA.
- * operator=()                          ::HOW? What is this supposed to enable? Overloading operators?
- * save( String& fileName )                 ::DONE
- * load( String& fileName )                 ::DONE
- * save( File& file)                    ::USED! In save( String& fileName )
- * load( File& file )                   ::USED! In load( String& fileName )
- * print()                                  ::DONE
- * getElementIndex()                    ::TEST? How to test __cuda_callable__? ONLY TEST ON CPU FOR NOW
- */
-
-// GENERAL TODO
-/*
- * Template tests for all formats.
- * Figure out __cuda_callable_. When trying to call __cuda_callable__ functions
- *          a segmentation fault (core dumped) is thrown.
- *      ==>__cuda_callable__ works only for CPU at the moment. (for loops vs thread kernel assignment)
- */
-
-
 #include <TNL/Devices/Host.h>
 #include <TNL/Matrices/Matrix.h>
 #include <TNL/Matrices/Dense.h>
@@ -105,17 +41,14 @@ void host_test_GetType()
     EXPECT_EQ( mtrxHostInt.getType(), TNL::String( "Matrices::Dense< int, Devices::Host, int >" ) );
 }
 
-// QUESITON: Cant these two functions be combined into one? Because if no CUDA is present and we were to call
-//           CUDA into the function in the TEST, to be tested, then we could have a problem.
-
 template< typename MatrixCudaFloat, typename MatrixCudaInt >
 void cuda_test_GetType()
 {
     MatrixCudaFloat mtrxCudaFloat;
     MatrixCudaInt mtrxCudaInt;
 
-    EXPECT_EQ( mtrxCudaFloat.getType(), TNL::String( "Matrices::Dense< float, Cuda, int >" ) );    // This is mistakenly labeled in /src/TNL/Devices/Cuda.cpp
-    EXPECT_EQ( mtrxCudaInt.getType(), TNL::String( "Matrices::Dense< int, Cuda, int >" ) );        // Should be Devices::Cuda
+    EXPECT_EQ( mtrxCudaFloat.getType(), TNL::String( "Matrices::Dense< float, Devices::Cuda, int >" ) );
+    EXPECT_EQ( mtrxCudaInt.getType(), TNL::String( "Matrices::Dense< int, Devices::Cuda, int >" ) );
 }
 
 template< typename Matrix >
@@ -832,7 +765,7 @@ void test_AddMatrix()
     const IndexType rows = 5;
     const IndexType cols = 4;
     
-    Matrix m;                           // We need this matrix to preserve the values for EXPECT_EQ statements comparing the actual operation;
+    Matrix m;
     m.reset();
     m.setDimensions( rows, cols );
     
@@ -1096,88 +1029,6 @@ void test_GetTransposition()
     EXPECT_EQ( mTransposed.getElement( 1, 0 ), 2 );
     EXPECT_EQ( mTransposed.getElement( 1, 1 ), 4 );
     EXPECT_EQ( mTransposed.getElement( 1, 2 ), 6 );
-    
-/*
- * Sets up the following 5x5 dense matrix:
- *
- *    /  1  2  3  4  5 \
- *    |  6  7  8  9 10 |
- *    | 11 12 13 14 15 |
- *    | 16 17 18 19 20 |
- *    \ 21 22 23 24 25 /
- */
-            //    const IndexType rows = 5;
-            //    const IndexType cols = 5;
-            //    
-            //    Matrix m;
-            //    m.reset();
-            //    m.setDimensions( rows, cols );
-            //    
-            //    RealType value = 1;
-            //    for( IndexType i = 0; i < rows; i++ )
-            //        for( IndexType j = 0; j < cols; j++)
-            //            m.setElement( i, j, value++ );
-    
-/*
- * Sets up the following 5x5 dense matrix:
- *
- *    /  2 12 22 32 42 \
- *    |  4 14 24 34 44 |
- *    |  6 16 26 36 46 |
- *    |  8 18 28 38 48 |
- *    \ 10 20 30 40 50 /
- */
-            //    const IndexType resultRows = cols;
-            //    const IndexType resultCols = rows;
-            //    
-            //    Matrix mResult;
-            //    mResult.reset();
-            //    mResult.setDimensions( resultRows, resultCols );
-            //    mResult.setValue( 0 );
-            //    
-            //    RealType matrixMultiplicator = 2;
-            //    
-            //    mResult.getTransposition( m, matrixMultiplicator );
-    
-/*
- * Should result in the following 5x5 resulting dense matrix:
- *
- *    /  0  0  0  0  0 \
- *    |  0  0  0  0  0 |
- *    |  0  0  0  0  0 |
- *    |  0  0  0  0  0 |
- *    \  0  0  0  0  0 /
- */
-            //    
-            //    EXPECT_EQ( mResult.getElement( 0, 0 ),  2 );
-            //    EXPECT_EQ( mResult.getElement( 0, 1 ), 12 );
-            //    EXPECT_EQ( mResult.getElement( 0, 2 ), 22 );
-            //    EXPECT_EQ( mResult.getElement( 0, 3 ), 32 );
-            //    EXPECT_EQ( mResult.getElement( 0, 4 ), 42 );
-            //    
-            //    EXPECT_EQ( mResult.getElement( 1, 0 ),  4 );
-            //    EXPECT_EQ( mResult.getElement( 1, 1 ), 14 );
-            //    EXPECT_EQ( mResult.getElement( 1, 2 ), 24 );
-            //    EXPECT_EQ( mResult.getElement( 1, 3 ), 34 );
-            //    EXPECT_EQ( mResult.getElement( 1, 4 ), 44 );
-            //    
-            //    EXPECT_EQ( mResult.getElement( 2, 0 ),  6 );
-            //    EXPECT_EQ( mResult.getElement( 2, 1 ), 16 );
-            //    EXPECT_EQ( mResult.getElement( 2, 2 ), 26 );
-            //    EXPECT_EQ( mResult.getElement( 2, 3 ), 36 );
-            //    EXPECT_EQ( mResult.getElement( 2, 4 ), 46 );
-            //    
-            //    EXPECT_EQ( mResult.getElement( 3, 0 ),  8 );
-            //    EXPECT_EQ( mResult.getElement( 3, 1 ), 18 );
-            //    EXPECT_EQ( mResult.getElement( 3, 2 ), 28 );
-            //    EXPECT_EQ( mResult.getElement( 3, 3 ), 38 );
-            //    EXPECT_EQ( mResult.getElement( 3, 4 ), 48 );
-            //    
-            //    EXPECT_EQ( mResult.getElement( 4, 0 ), 10 );
-            //    EXPECT_EQ( mResult.getElement( 4, 1 ), 20 );
-            //    EXPECT_EQ( mResult.getElement( 4, 2 ), 30 );
-            //    EXPECT_EQ( mResult.getElement( 4, 3 ), 40 );
-            //    EXPECT_EQ( mResult.getElement( 4, 4 ), 50 );
 }
 
 
@@ -1361,12 +1212,10 @@ void test_Print()
         for( IndexType j = 0; j < cols; j++)
             m.setElement( i, j, value++ );
     
-    // This is from: https://stackoverflow.com/questions/5193173/getting-cout-output-to-a-stdstring
     #include <sstream>
     std::stringstream printed;
     std::stringstream couted;
     
-    // This is from: https://stackoverflow.com/questions/19485536/redirect-output-of-an-function-printing-to-console-to-string
     //change the underlying buffer and save the old buffer
     auto old_buf = std::cout.rdbuf(printed.rdbuf()); 
 
@@ -1374,7 +1223,6 @@ void test_Print()
 
     std::cout.rdbuf(old_buf); //reset
     
-    //printed << printed.str() << std::endl;
     couted << "Row: 0 ->  Col:0->1	 Col:1->2	 Col:2->3	 Col:3->4\t\n"
               "Row: 1 ->  Col:0->5	 Col:1->6	 Col:2->7	 Col:3->8\t\n"
               "Row: 2 ->  Col:0->9	 Col:1->10	 Col:2->11	 Col:3->12\t\n"
@@ -1546,7 +1394,6 @@ TYPED_TEST( MatrixTest, printTest )
 
 TEST( DenseMatrixTest, Dense_getMatrixProductTest_Host )
 {
-//    test_GetMatrixProduct< Dense_host_int >();
     bool testRan = false;
     EXPECT_TRUE( testRan );
     std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
@@ -1563,7 +1410,6 @@ TEST( DenseMatrixTest, Dense_getMatrixProductTest_Host )
 #ifdef HAVE_CUDA
 TEST( DenseMatrixTest, Dense_getMatrixProductTest_Cuda )
 {
-//    test_GetMatrixProduct< Dense_cuda_int >();
     bool testRan = false;
     EXPECT_TRUE( testRan );
     std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";

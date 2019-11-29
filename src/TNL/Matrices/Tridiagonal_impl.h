@@ -30,6 +30,28 @@ Tridiagonal< Real, Device, Index >::Tridiagonal()
 template< typename Real,
           typename Device,
           typename Index >
+String Tridiagonal< Real, Device, Index >::getType()
+{
+   return String( "Matrices::Tridiagonal< " ) +
+          String( TNL::getType< Real >() ) +
+          String( ", " ) +
+          String( Device :: getDeviceType() ) +
+          String( ", " ) +
+          String( TNL::getType< Index >() ) +
+          String( " >" );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+String Tridiagonal< Real, Device, Index >::getTypeVirtual() const
+{
+   return this->getType();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 String Tridiagonal< Real, Device, Index >::getSerializationType()
 {
    return String( "Matrices::Tridiagonal< " ) +

@@ -68,7 +68,7 @@ bool MatrixReader< Matrix >::readMtxFileHostMatrix( std::istream& file,
 
    if( ! computeCompressedRowLengthsFromMtxFile( file, rowLengths, columns, rows, symmetricMatrix, verbose ) )
       return false;
-
+   
    matrix.setCompressedRowLengths( rowLengths );
 
    if( ! readMatrixElementsFromMtxFile( file, matrix, symmetricMatrix, verbose, symReader ) )
@@ -340,6 +340,7 @@ bool MatrixReader< Matrix >::readMatrixElementsFromMtxFile( std::istream& file,
    IndexType processedElements( 0 );
    Timer timer;
    timer.start();
+   
    while( std::getline( file, line ) )
    {
       if( line[ 0 ] == '%' ) continue;
@@ -370,6 +371,7 @@ bool MatrixReader< Matrix >::readMatrixElementsFromMtxFile( std::istream& file,
           processedElements++;
       }
    }
+   
    file.clear();
    long int fileSize = file.tellg();
    timer.stop();
@@ -377,6 +379,7 @@ bool MatrixReader< Matrix >::readMatrixElementsFromMtxFile( std::istream& file,
      std::cout << " Reading the matrix elements ... " << processedElements << " / " << matrix.getNumberOfMatrixElements()
               << " -> " << timer.getRealTime()
               << " sec. i.e. " << fileSize / ( timer.getRealTime() * ( 1 << 20 ))  << "MB/s." << std::endl;
+   
    return true;
 }
 

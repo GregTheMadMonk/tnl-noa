@@ -16,7 +16,6 @@
 #ifdef HAVE_GTEST 
 #include <gtest/gtest.h>
 
-#ifdef NOT_WORKING
 // test fixture for typed tests
 template< typename Matrix >
 class AdEllpackMatrixTest : public ::testing::Test
@@ -39,9 +38,9 @@ using AdEllpackMatrixTypes = ::testing::Types
     TNL::Matrices::AdEllpack< int,    TNL::Devices::Host, long >,
     TNL::Matrices::AdEllpack< long,   TNL::Devices::Host, long >,
     TNL::Matrices::AdEllpack< float,  TNL::Devices::Host, long >,
-    TNL::Matrices::AdEllpack< double, TNL::Devices::Host, long >,
+    TNL::Matrices::AdEllpack< double, TNL::Devices::Host, long >
 #ifdef HAVE_CUDA
-    TNL::Matrices::AdEllpack< int,    TNL::Devices::Cuda, short >,
+   ,TNL::Matrices::AdEllpack< int,    TNL::Devices::Cuda, short >,
     TNL::Matrices::AdEllpack< long,   TNL::Devices::Cuda, short >,
     TNL::Matrices::AdEllpack< float,  TNL::Devices::Cuda, short >,
     TNL::Matrices::AdEllpack< double, TNL::Devices::Cuda, short >,
@@ -65,20 +64,6 @@ TYPED_TEST( AdEllpackMatrixTest, setDimensionsTest )
     test_SetDimensions< AdEllpackMatrixType >();
 }
 
-TYPED_TEST( AdEllpackMatrixTest, setCompressedRowLengthsTest )
-{
-//    using AdEllpackMatrixType = typename TestFixture::AdEllpackMatrixType;
-    
-//    test_SetCompressedRowLengths< AdEllpackMatrixType >();
-    
-    bool testRan = false;
-    EXPECT_TRUE( testRan );
-    std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
-    std::cout << "      This test is dependent on the input format. \n";
-    std::cout << "      Almost every format allocates elements per row differently.\n\n";
-    std::cout << "\n    TODO: Finish implementation of getNonZeroRowLength (Only non-zero elements, not the number of allocated elements.)\n\n";
-}
-
 TYPED_TEST( AdEllpackMatrixTest, setLikeTest )
 {
     using AdEllpackMatrixType = typename TestFixture::AdEllpackMatrixType;
@@ -94,7 +79,7 @@ TYPED_TEST( AdEllpackMatrixTest, resetTest )
 }
 
 TYPED_TEST( AdEllpackMatrixTest, setElementTest )
-{
+{    
     using AdEllpackMatrixType = typename TestFixture::AdEllpackMatrixType;
     
     test_SetElement< AdEllpackMatrixType >();
@@ -121,6 +106,13 @@ TYPED_TEST( AdEllpackMatrixTest, vectorProductTest )
     test_VectorProduct< AdEllpackMatrixType >();
 }
 
+TYPED_TEST( AdEllpackMatrixTest, operatorEqualsTest )
+{
+    using AdEllpackMatrixType = typename TestFixture::AdEllpackMatrixType;
+    
+    test_OperatorEquals< AdEllpackMatrixType >();
+}
+
 TYPED_TEST( AdEllpackMatrixTest, saveAndLoadTest )
 {
     using AdEllpackMatrixType = typename TestFixture::AdEllpackMatrixType;
@@ -134,6 +126,8 @@ TYPED_TEST( AdEllpackMatrixTest, printTest )
     
     test_Print< AdEllpackMatrixType >();
 }
+
+#ifdef NOT_WORKING
 #endif
 
 #endif

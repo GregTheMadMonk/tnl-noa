@@ -36,7 +36,9 @@ String Multidiagonal< Real, Device, Index >::getSerializationType()
    return String( "Matrices::Multidiagonal< ") +
           getType< Real >() +
           String( ", " ) +
-          getType< Device >() +
+          String( Device :: getDeviceType() ) +
+          String( ", " ) +
+          String( TNL::getType< Index >() ) +
           String( " >" );
 }
 

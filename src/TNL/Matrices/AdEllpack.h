@@ -27,56 +27,94 @@ namespace Matrices {
 template< typename Device >
 class AdEllpackDeviceDependentCode;
 
+template< typename MatrixType >
 struct warpInfo
 {
-    int offset;
-    int rowOffset;
-    int localLoad;
-    int reduceMap[ 32 ];
+    using RealType = typename MatrixType::RealType;
+    using DeviceType = typename MatrixType::DeviceType;
+    using IndexType = typename MatrixType::IndexType;
+    
+    IndexType offset;
+    IndexType rowOffset;
+    IndexType localLoad;
+    IndexType reduceMap[ 32 ];
 
-    warpInfo* next;
-    warpInfo* previous;
+    warpInfo< MatrixType >* next;
+    warpInfo< MatrixType >* previous;
 };
 
+template< typename MatrixType >
 class warpList
 {
 public:
+    
+    using RealType = typename MatrixType::RealType;
+    using DeviceType = typename MatrixType::DeviceType;
+    using IndexType = typename MatrixType::IndexType;
 
     warpList();
 
-    bool addWarp( const int offset,
-                  const int rowOffset,
-                  const int localLoad,
-                  const int* reduceMap );
+    bool addWarp( const IndexType offset,
+                  const IndexType rowOffset,
+                  const IndexType localLoad,
+                  const IndexType* reduceMap );
 
-    warpInfo* splitInHalf( warpInfo* warp );
+    warpInfo< MatrixType >* splitInHalf( warpInfo< MatrixType >* warp );
 
-    int getNumberOfWarps()
+    IndexType getNumberOfWarps()
     { return this->numberOfWarps; }
 
-    warpInfo* getNextWarp( warpInfo* warp )
+    warpInfo< MatrixType >* getNextWarp( warpInfo< MatrixType >* warp )
     { return warp->next; }
 
-    warpInfo* getHead()
+    warpInfo< MatrixType >* getHead()
     { return this->head; }
 
-    warpInfo* getTail()
+    warpInfo< MatrixType >* getTail()
     { return this->tail; }
 
     ~warpList();
+    
+    void printList()
+    {
+        if( this->getHead() == this->getTail() )
+            std::cout << "HEAD==TAIL" << std::endl;
+        else
+        {
+            for( warpInfo< MatrixType >* i = this->getHead(); i != this->getTail()->next; i = i->next )
+            {
+                if( i == this->getHead() )
+                    std::cout << "Head:" << "\ti->localLoad = " << i->localLoad << "\ti->offset = " << i->offset << "\ti->rowOffset = " << i->rowOffset << std::endl;
+                else if( i == this->getTail() )
+                    std::cout << "Tail:" << "\ti->localLoad = " << i->localLoad << "\ti->offset = " << i->offset << "\ti->rowOffset = " << i->rowOffset << std::endl;
+                else
+                    std::cout << "\ti->localLoad = " << i->localLoad << "\ti->offset = " << i->offset << "\ti->rowOffset = " << i->rowOffset << std::endl;
+            }
+            std::cout << std::endl;
+        }
+    }
 
 private:
 
-    int numberOfWarps;
+    IndexType numberOfWarps;
 
-    warpInfo* head;
-    warpInfo* tail;
+    warpInfo< MatrixType >* head;
+    warpInfo< MatrixType >* tail;
 
 };
 
 template< typename Real, typename Device, typename Index >
 class AdEllpack : public Sparse< Real, Device, Index >
 {
+private:
+   // convenient template alias for controlling the selection of copy-assignment operator
+   template< typename Device2 >
+   using Enabler = std::enable_if< ! std::is_same< Device2, Device >::value >;
+
+   // friend class will be needed for templated assignment operators
+   template< typename Real2, typename Device2, typename Index2 >
+   friend class AdEllpack;
+   
 public:
 
     typedef Real RealType;
@@ -102,9 +140,15 @@ public:
     IndexType getRowLength( const IndexType row ) const;
 
     template< typename Real2, typename Device2, typename Index2 >
-    bool setLike( const AdEllpack< Real2, Device2, Index2 >& matrix );
+    void setLike( const AdEllpack< Real2, Device2, Index2 >& matrix );
 
     void reset();
+    
+    template< typename Real2, typename Device2, typename Index2 >
+    bool operator == ( const AdEllpack< Real2, Device2, Index2 >& matrix ) const;
+
+    template< typename Real2, typename Device2, typename Index2 >
+    bool operator != ( const AdEllpack< Real2, Device2, Index2 >& matrix ) const;
 
     bool setElement( const IndexType row,
                      const IndexType column,
@@ -142,7 +186,15 @@ public:
               typename OutVector >
     void vectorProduct( const InVector& inVector,
                         OutVector& outVector ) const;
+    
+    // copy assignment
+    AdEllpack& operator=( const AdEllpack& matrix );
 
+    // cross-device copy assignment
+    template< typename Real2, typename Device2, typename Index2,
+             typename = typename Enabler< Device2 >::type >
+    AdEllpack& operator=( const AdEllpack< Real2, Device2, Index2 >& matrix );
+    
     void save( File& file ) const;
 
     void load( File& file );
@@ -155,13 +207,13 @@ public:
 
     bool balanceLoad( const RealType average,
                       ConstCompressedRowLengthsVectorView rowLengths,
-                      warpList* list );
+                      warpList< AdEllpack >* list );
 
     void computeWarps( const IndexType SMs,
                        const IndexType threadsPerSM,
-                       warpList* list );
+                       warpList< AdEllpack >* list );
 
-    bool createArrays( warpList* list );
+    bool createArrays( warpList< AdEllpack >* list );
 
     void performRowTest();
 

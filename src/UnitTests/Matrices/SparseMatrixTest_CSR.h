@@ -13,7 +13,7 @@
 #include "SparseMatrixTest.hpp"
 #include <iostream>
 
-#ifdef HAVE_GTEST 
+#ifdef HAVE_GTEST
 #include <gtest/gtest.h>
 
 // test fixture for typed tests
@@ -40,7 +40,7 @@ using CSRMatrixTypes = ::testing::Types
     TNL::Matrices::CSR< float,  TNL::Devices::Host, long >,
     TNL::Matrices::CSR< double, TNL::Devices::Host, long >
 #ifdef HAVE_CUDA
-    ,TNL::Matrices::CSR< int,    TNL::Devices::Cuda, short >,
+   ,TNL::Matrices::CSR< int,    TNL::Devices::Cuda, short >,
     TNL::Matrices::CSR< long,   TNL::Devices::Cuda, short >,
     TNL::Matrices::CSR< float,  TNL::Devices::Cuda, short >,
     TNL::Matrices::CSR< double, TNL::Devices::Cuda, short >,
@@ -60,16 +60,16 @@ TYPED_TEST_SUITE( CSRMatrixTest, CSRMatrixTypes);
 TYPED_TEST( CSRMatrixTest, setDimensionsTest )
 {
     using CSRMatrixType = typename TestFixture::CSRMatrixType;
-    
+
     test_SetDimensions< CSRMatrixType >();
 }
 
 //TYPED_TEST( CSRMatrixTest, setCompressedRowLengthsTest )
 //{
 ////    using CSRMatrixType = typename TestFixture::CSRMatrixType;
-//    
+//
 ////    test_SetCompressedRowLengths< CSRMatrixType >();
-//    
+//
 //    bool testRan = false;
 //    EXPECT_TRUE( testRan );
 //    std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
@@ -81,56 +81,56 @@ TYPED_TEST( CSRMatrixTest, setDimensionsTest )
 TYPED_TEST( CSRMatrixTest, setLikeTest )
 {
     using CSRMatrixType = typename TestFixture::CSRMatrixType;
-    
+
     test_SetLike< CSRMatrixType, CSRMatrixType >();
 }
 
 TYPED_TEST( CSRMatrixTest, resetTest )
 {
     using CSRMatrixType = typename TestFixture::CSRMatrixType;
-    
+
     test_Reset< CSRMatrixType >();
 }
 
 TYPED_TEST( CSRMatrixTest, setElementTest )
 {
     using CSRMatrixType = typename TestFixture::CSRMatrixType;
-    
+
     test_SetElement< CSRMatrixType >();
 }
 
 TYPED_TEST( CSRMatrixTest, addElementTest )
 {
     using CSRMatrixType = typename TestFixture::CSRMatrixType;
-    
+
     test_AddElement< CSRMatrixType >();
 }
 
 TYPED_TEST( CSRMatrixTest, setRowTest )
 {
     using CSRMatrixType = typename TestFixture::CSRMatrixType;
-    
+
     test_SetRow< CSRMatrixType >();
 }
 
 TYPED_TEST( CSRMatrixTest, vectorProductTest )
 {
     using CSRMatrixType = typename TestFixture::CSRMatrixType;
-    
+
     test_VectorProduct< CSRMatrixType >();
 }
 
 TYPED_TEST( CSRMatrixTest, saveAndLoadTest )
 {
     using CSRMatrixType = typename TestFixture::CSRMatrixType;
-    
+
     test_SaveAndLoad< CSRMatrixType >( "test_SparseMatrixTest_CSR" );
 }
 
 TYPED_TEST( CSRMatrixTest, printTest )
 {
     using CSRMatrixType = typename TestFixture::CSRMatrixType;
-    
+
     test_Print< CSRMatrixType >();
 }
 

@@ -16,7 +16,7 @@
 #include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
-namespace Matrices {   
+namespace Matrices {
 
 template< typename Real,
           typename Device,
@@ -31,11 +31,9 @@ template< typename Real,
           typename Index >
 String Ellpack< Real, Device, Index >::getSerializationType()
 {
-   return String( "Matrices::Ellpack< ") +
-          getType< Real >() +
-          String( ", " ) +
-          getType< Device >() +
-          String( ", " ) +
+   return String( "Matrices::Ellpack< " ) +
+          String( TNL::getType< Real >() ) +
+          ", [any device], " + 
           getType< Index >() +
           String( " >" );
 }
@@ -59,9 +57,21 @@ void Ellpack< Real, Device, Index >::setDimensions( const IndexType rows,
                    << " columns = " << columns << std::endl );
    this->rows = rows;
    this->columns = columns;
+
    if( std::is_same< Device, Devices::Cuda >::value )
-      this->alignedRows = roundToMultiple( rows, Cuda::getWarpSize() );
+   {
+       this->alignedRows = roundToMultiple( columns, Cuda::getWarpSize() );
+       if( this->rows - this->alignedRows > 0 )
+       {
+           IndexType missingRows = this->rows - this->alignedRows;
+
+           missingRows = roundToMultiple( missingRows, Cuda::getWarpSize() );
+           
+           this->alignedRows +=  missingRows;
+       }
+   }
    else this->alignedRows = rows;
+
    if( this->rowLengths != 0 )
       allocateElements();
 }
@@ -76,6 +86,7 @@ void Ellpack< Real, Device, Index >::setCompressedRowLengths( ConstCompressedRow
    TNL_ASSERT_EQ( this->getRows(), rowLengths.getSize(), "wrong size of the rowLengths vector" );
 
    this->rowLengths = this->maxRowLength = max( rowLengths );
+   
    allocateElements();
 }
 
@@ -757,6 +768,14 @@ template< typename Real,
           typename Index >
 void Ellpack< Real, Device, Index >::allocateElements()
 {
+   IndexType numMtxElmnts = this->alignedRows * this->rowLengths;
+   
+   if( this->alignedRows != 0 )
+   {
+       TNL_ASSERT_EQ( numMtxElmnts / this->alignedRows, this->rowLengths, 
+                      "Ellpack cannot store this matrix. The number of matrix elements has overflown the value that IndexType is capable of storing" );
+   }
+   
    Sparse< Real, Device, Index >::allocateMatrixElements( this->alignedRows * this->rowLengths );
 }
 

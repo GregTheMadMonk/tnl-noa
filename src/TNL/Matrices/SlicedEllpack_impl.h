@@ -34,8 +34,8 @@ String SlicedEllpack< Real, Device, Index, SliceSize >::getSerializationType()
 {
    return String( "Matrices::SlicedEllpack< ") +
           TNL::getType< Real >() +
-          String( ", " ) +
-          getType< Device >() +
+          ", [any_device], " +
+          String( TNL::getType< Index >() ) +
           String( " >" );
 }
 

@@ -16,7 +16,7 @@
 #include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
-namespace Matrices {   
+namespace Matrices {
 
 template< typename Real,
           typename Index,
@@ -43,8 +43,8 @@ String ChunkedEllpack< Real, Device, Index >::getSerializationType()
 {
    return String( "Matrices::ChunkedEllpack< ") +
           getType< Real >() +
-          String( ", " ) +
-          getType< Device >() +
+          String( ", [any device], " ) +
+          String( TNL::getType< Index >() ) +
           String( " >" );
 }
 
@@ -164,24 +164,7 @@ bool ChunkedEllpack< Real, Device, Index >::setSlice( ConstCompressedRowLengthsV
     */
    IndexType maxChunkInSlice( 0 );
    for( IndexType i = sliceBegin; i < sliceEnd; i++ )
-   {       
-//       ALL OF THE FOLLOWING std::couts are for troubleshooting purposes, can be deleted.
-//       std::cout << "Troubleshooting invalid ceil operation: " << std::endl;
-//       std::cout << "maxChunkInSlice = " << maxChunkInSlice << std::endl;
-//       std::cout << "( RealType ) rowLengths[ i ] = " <<  ( RealType ) rowLengths[ i ] << std::endl;
-//       std::cout << "( RealType ) this->rowToChunkMapping[ i ] = " <<  ( RealType ) this->rowToChunkMapping[ i ] << std::endl;
-//       std::cout << " ceil( RealType / RealType ) = " << ceil( ( RealType ) rowLengths[ i ] / ( RealType ) this->rowToChunkMapping[ i ] ) << std::endl;
-//       std::cout << "( int ) rowLengths[ i ] = " <<  ( int ) rowLengths[ i ] << std::endl;
-//       std::cout << "( int ) this->rowToChunkMapping[ i ] = " <<  ( int ) this->rowToChunkMapping[ i ] << std::endl;
-//       std::cout << " ceil( int / int ) = " << ceil( ( int ) rowLengths[ i ] / ( int ) this->rowToChunkMapping[ i ] ) << std::endl;
-//       std::cout << "( float ) rowLengths[ i ] = " <<  ( float ) rowLengths[ i ] << std::endl;
-//       std::cout << "( float ) this->rowToChunkMapping[ i ] = " <<  ( float ) this->rowToChunkMapping[ i ] << std::endl;
-//       std::cout << " ceil( float / float ) = " << ceil( ( float ) rowLengths[ i ] / ( float ) this->rowToChunkMapping[ i ] ) << std::endl;
-//       The ceil function doesn't work when rowLengths and the other this.->... is 
-//       typecasted into ( RealType ), because when RealType is int, it will perform 
-//       an integer division and return the int as a double, which in this case 
-//       will be zero and make the assertion fail ( https://stackoverflow.com/questions/33273359/in-c-using-the-ceil-a-division-is-not-working ).
-//       To fix this, typecast them to ( float ), instead of ( RealType )
+   {
        maxChunkInSlice = max( maxChunkInSlice,
                           roundUpDivision( rowLengths[ i ], this->rowToChunkMapping[ i ] ) );
    }
@@ -234,13 +217,6 @@ void ChunkedEllpack< Real, Device, Index >::setCompressedRowLengths( ConstCompre
          this->setSlice( rowLengths, sliceIndex, elementsToAllocation );
       this->rowPointers.scan();
    }
-   
-//   std::cout << "\ngetRowLength after first if: " << std::endl;
-//   for( IndexType i = 0; i < rowLengths.getSize(); i++ )
-//   {
-//       std::cout << getRowLength( i ) << std::endl;
-//   }
-//   std::cout << "\n";
 
    if( std::is_same< Device, Devices::Cuda >::value )
    {
@@ -265,7 +241,6 @@ void ChunkedEllpack< Real, Device, Index >::setCompressedRowLengths( ConstCompre
       elementsToAllocation = hostMatrix.values.getSize();
    }
    this->maxRowLength = max( rowLengths );
-//   std::cout << "\nrowLengths.max() = " << rowLengths.max() << std::endl;
    Sparse< Real, Device, Index >::allocateMatrixElements( elementsToAllocation );
 }
 
@@ -298,22 +273,7 @@ template< typename Real,
 Index ChunkedEllpack< Real, Device, Index >::getNonZeroRowLength( const IndexType row ) const
 {
     ConstMatrixRow matrixRow = getRow( row );
-    return matrixRow.getNonZeroElementsCount( getType< Device >() );
-    
-//    IndexType elementCount ( 0 );
-//    ConstMatrixRow matrixRow = this->getRow( row );
-//    
-//    auto computeNonZeros = [&] /*__cuda_callable__*/ ( IndexType i ) mutable
-//    {
-//        std::cout << "matrixRow.getElementValue( i ) = " << matrixRow.getElementValue( i ) << " != 0.0" << std::endl;
-//        if( matrixRow.getElementValue( i ) !=  0.0 )
-//            elementCount++;
-//        
-//        std::cout << "End of lambda elementCount = " << elementCount << std::endl;
-//    };
-//   
-//    ParallelFor< DeviceType >::exec( ( IndexType ) 0, matrixRow.getLength(), computeNonZeros );
-//    return elementCount;
+    return matrixRow.getNonZeroElementsCount( Device::getDeviceType() );
 }
 
 template< typename Real,
@@ -1260,8 +1220,63 @@ ChunkedEllpack< Real, Device, Index >::operator=( const ChunkedEllpack< Real2, D
                   "unknown device" );
 
    this->setLike( matrix );
+   this->chunksInSlice = matrix.chunksInSlice;
+   this->desiredChunkSize = matrix.desiredChunkSize;
+   this->rowToChunkMapping = matrix.rowToChunkMapping;
+   this->rowToSliceMapping = matrix.rowToSliceMapping;
+   this->rowPointers = matrix.rowPointers;
+   this->slices = matrix.slices;
+   this->numberOfSlices = matrix.numberOfSlices;
 
-   throw Exceptions::NotImplementedError("Cross-device assignment for the ChunkedEllpack format is not implemented yet.");
+   // host -> cuda
+   if( std::is_same< Device, Devices::Cuda >::value ) {
+       typename ValuesVector::template Self< typename ValuesVector::RealType, Devices::Host > tmpValues;
+       typename ColumnIndexesVector::template Self< typename ColumnIndexesVector::RealType, Devices::Host > tmpColumnIndexes;
+       tmpValues.setLike( matrix.values );
+       tmpColumnIndexes.setLike( matrix.columnIndexes );
+
+#ifdef HAVE_OPENMP
+#pragma omp parallel for if( Devices::Host::isOMPEnabled() )
+#endif
+       for( Index sliceIdx = 0; sliceIdx < matrix.numberOfSlices; sliceIdx++ ) {
+           const Index chunkSize = matrix.slices.getElement( sliceIdx ).chunkSize;
+           const Index offset = matrix.slices.getElement( sliceIdx ).pointer;
+
+           for( Index j = 0; j < chunkSize; j++ )
+               for( Index i = 0; i < matrix.chunksInSlice; i++ ) {
+                   tmpValues[ offset + j * matrix.chunksInSlice + i ] = matrix.values[ offset + i * chunkSize + j ];
+                   tmpColumnIndexes[ offset + j * matrix.chunksInSlice + i ] = matrix.columnIndexes[ offset + i * chunkSize + j ];
+               }
+       }
+
+       this->values = tmpValues;
+       this->columnIndexes = tmpColumnIndexes;
+   }
+
+   // cuda -> host
+   if( std::is_same< Device, Devices::Host >::value ) {
+       ValuesVector tmpValues;
+       ColumnIndexesVector tmpColumnIndexes;
+       tmpValues.setLike( matrix.values );
+       tmpColumnIndexes.setLike( matrix.columnIndexes );
+       tmpValues = matrix.values;
+       tmpColumnIndexes = matrix.columnIndexes;
+
+#ifdef HAVE_OPENMP
+#pragma omp parallel for if( Devices::Host::isOMPEnabled() )
+#endif
+       for( Index sliceIdx = 0; sliceIdx < matrix.numberOfSlices; sliceIdx++ ) {
+           const Index chunkSize = matrix.slices.getElement( sliceIdx ).chunkSize;
+           const Index offset = matrix.slices.getElement( sliceIdx ).pointer;
+
+           for( Index j = 0; j < chunkSize; j++ )
+               for( Index i = 0; i < matrix.chunksInSlice; i++ ) {
+                   this->values[ offset + i * chunkSize + j ] = tmpValues[ offset + j * matrix.chunksInSlice + i ];
+                   this->columnIndexes[ offset + i * chunkSize + j ] = tmpColumnIndexes[ offset + j * matrix.chunksInSlice + i ];
+               }
+       }
+   }
+   return *this;
 }
 
 
@@ -1417,14 +1432,14 @@ class ChunkedEllpackDeviceDependentCode< Devices::Cuda >
    public:
 
       typedef Devices::Cuda Device;
- 
+
       template< typename Real,
                 typename Index >
       static void resolveSliceSizes( ChunkedEllpack< Real, Device, Index >& matrix,
                                      typename ChunkedEllpack< Real, Device, Index >::ConstCompressedRowLengthsVectorView rowLengths )
       {
       }
- 
+
       template< typename Index >
       __cuda_callable__
       static void initChunkTraverse( const Index sliceOffset,

@@ -25,6 +25,30 @@ template< typename Real,
 SlicedEllpackSymmetricGraph< Real, Device, Index, SliceSize >::SlicedEllpackSymmetricGraph()
 : rearranged( false )
 {
+};
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          int SliceSize >
+String SlicedEllpackSymmetricGraph< Real, Device, Index, SliceSize >::getType()
+{
+   return String( "Matrices::SlicedEllpackSymmetricGraph< ") +
+          String( TNL::getType< Real >() ) +
+          String( ", " ) +
+          String( Device::getDeviceType() ) +
+          String( ", " ) +
+          String( TNL::getType< Index >() ) +
+          String( " >" );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          int SliceSize >
+String SlicedEllpackSymmetricGraph< Real, Device, Index, SliceSize >::getTypeVirtual() const
+{
+   return this->getType();
 }
 
 template< typename Real,

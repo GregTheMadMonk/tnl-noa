@@ -24,10 +24,6 @@ protected:
    using ChunkedEllpackMatrixType = Matrix;
 };
 
-// columnIndexes of ChunkedEllpack appear to be broken, when printed, it prints out a bunch of 4s.
-// rowPointers have interesting elements? 0 18 36 42 54 72 96 126 162 204 256 when rows = 10, cols = 11; rowLengths = 3 3 1 2 3 4 5 6 7 8
-// and 0 52 103 154 205 256 when rows = 5, cols = 4; rowLengths = 3 3 3 3 3
-
 
 // types for which MatrixTest is instantiated
 using ChEllpackMatrixTypes = ::testing::Types
@@ -45,7 +41,7 @@ using ChEllpackMatrixTypes = ::testing::Types
     TNL::Matrices::ChunkedEllpack< float,  TNL::Devices::Host, long >,
     TNL::Matrices::ChunkedEllpack< double, TNL::Devices::Host, long >
 #ifdef HAVE_CUDA
-    ,TNL::Matrices::ChunkedEllpack< int,    TNL::Devices::Cuda, short >,
+   ,TNL::Matrices::ChunkedEllpack< int,    TNL::Devices::Cuda, short >,
     TNL::Matrices::ChunkedEllpack< long,   TNL::Devices::Cuda, short >,
     TNL::Matrices::ChunkedEllpack< float,  TNL::Devices::Cuda, short >,
     TNL::Matrices::ChunkedEllpack< double, TNL::Devices::Cuda, short >,
@@ -124,6 +120,13 @@ TYPED_TEST( ChunkedEllpackMatrixTest, vectorProductTest )
     
     test_VectorProduct< ChunkedEllpackMatrixType >();
 }
+
+//TYPED_TEST( ChunkedEllpackMatrixTest, operatorEqualsTest )
+//{
+//    using ChunkedEllpackMatrixType = typename TestFixture::ChunkedEllpackMatrixType;
+//    
+//    test_OperatorEquals< ChunkedEllpackMatrixType >();
+//}
 
 TYPED_TEST( ChunkedEllpackMatrixTest, saveAndLoadTest )
 {

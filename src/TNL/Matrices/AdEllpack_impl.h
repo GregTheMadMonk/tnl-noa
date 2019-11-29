@@ -21,10 +21,11 @@ namespace Matrices {
 /*
  * Auxiliary list implementation
  */
-warpList::warpList()
+template< typename MatrixType >
+warpList< MatrixType >::warpList()
 {
-    this->head = new warpInfo;
-    this->tail = new warpInfo;
+    this->head = new warpInfo< MatrixType >;
+    this->tail = new warpInfo< MatrixType >;
     this->head->previous = NULL;
     this->head->next = this->tail;
     this->tail->previous = this->head;
@@ -33,12 +34,13 @@ warpList::warpList()
     this->numberOfWarps = 0;
 }
 
-bool warpList::addWarp( const int offset,
-                        const int rowOffset,
-                        const int localLoad,
-                        const int* reduceMap )
+template< typename MatrixType >
+bool warpList< MatrixType >::addWarp( const IndexType offset,
+                                      const IndexType rowOffset,
+                                      const IndexType localLoad,
+                                      const IndexType* reduceMap )
 {
-    warpInfo* temp = new warpInfo();
+    warpInfo< MatrixType >* temp = new warpInfo< MatrixType >();
     if( !temp )
         return false;
     temp->offset = offset;
@@ -56,13 +58,15 @@ bool warpList::addWarp( const int offset,
     return true;
 }
 
-warpInfo* warpList::splitInHalf( warpInfo* warp )
+template< typename MatrixType >
+warpInfo< MatrixType >* warpList< MatrixType >::splitInHalf( warpInfo< MatrixType >* warp )
 {
-    warpInfo* firstHalf = new warpInfo();
-    warpInfo* secondHalf = new warpInfo();
-    int localLoad = ( warp->localLoad / 2 ) + ( warp->localLoad % 2 == 0 ? 0 : 1 );
+    warpInfo< MatrixType >* firstHalf = new warpInfo< MatrixType >();
+    warpInfo< MatrixType >* secondHalf = new warpInfo< MatrixType >();
 
-    int rowOffset = warp->rowOffset;
+    IndexType localLoad = ( warp->localLoad / 2 ) + ( warp->localLoad % 2 == 0 ? 0 : 1 );
+
+    IndexType rowOffset = warp->rowOffset;
 
     // first half split
     firstHalf->localLoad = localLoad;
@@ -132,11 +136,12 @@ warpInfo* warpList::splitInHalf( warpInfo* warp )
     return firstHalf;
 }
 
-warpList::~warpList()
+template< typename MatrixType >
+warpList< MatrixType >::~warpList()
 {
     while( this->head->next != NULL )
     {
-        warpInfo* temp = new warpInfo;
+        warpInfo< MatrixType >* temp = new warpInfo< MatrixType >;
         temp = this->head->next;
         this->head->next = temp->next;
         delete temp;
@@ -164,17 +169,20 @@ void
 AdEllpack< Real, Device, Index >::
 setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths )
 {
+
     TNL_ASSERT( this->getRows() > 0, );
     TNL_ASSERT( this->getColumns() > 0, );
+
     if( std::is_same< DeviceType, Devices::Host >::value )
     {
-         RealType average = 0.0;
-         for( IndexType row = 0; row < this->getRows(); row++ )
-            average += rowLengths.getElement( row );
-         average /= ( RealType ) this->getRows();
-         this->totalLoad = average;
 
-        warpList* list = new warpList();
+        RealType average = 0.0;
+        for( IndexType row = 0; row < this->getRows(); row++ )
+           average += rowLengths.getElement( row );
+        average /= ( RealType ) this->getRows();
+        this->totalLoad = average;
+
+        warpList< AdEllpack >* list = new warpList< AdEllpack >();
 
         if( !this->balanceLoad( average, rowLengths, list ) )
             throw 0; // TODO: Make better exception
@@ -186,18 +194,11 @@ setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths )
 
         if( !this->createArrays( list ) )
             throw 0; // TODO: Make better excpetion
-
-
-
-        //this->performRowTest();
-        //cout << "========================" << std::endl;
-        //cout << "Testing row lengths" << std::endl;
-        //cout << "========================" << std::endl;
-        //this->performRowLengthsTest( rowLengths );
     }
 
     if( std::is_same< DeviceType, Devices::Cuda >::value )
     {
+
         AdEllpack< RealType, Devices::Host, IndexType > hostMatrix;
         hostMatrix.setDimensions( this->getRows(), this->getColumns() );
         Containers::Vector< IndexType, Devices::Host, IndexType > hostRowLengths;
@@ -213,7 +214,7 @@ setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths )
         this->localLoad = hostMatrix.localLoad;
         this->reduceMap.setLike( hostMatrix.reduceMap );
         this->reduceMap = hostMatrix.reduceMap;
-         this->totalLoad = hostMatrix.getTotalLoad();
+        this->totalLoad = hostMatrix.getTotalLoad();
 
         this->allocateMatrixElements( this->offset.getElement( this->offset.getSize() - 1 ) );
     }
@@ -279,7 +280,7 @@ void AdEllpack< Real, Device, Index >::performRowTest()
 	}
 	if( row == this->rowOffset.getElement( warp + 1 ) || row + 1 == this->rowOffset.getElement( warp + 1 ) )
 	    ;
-	else 
+	else
         {
 	    std::cout << "Error warp = " << warp << std::endl;
 	    std::cout << "Row: " << row << ", Row offset: " << this->rowOffset.getElement( warp + 1 ) << std::endl;
@@ -357,15 +358,13 @@ template< typename Real,
 template< typename Real2,
           typename Device2,
           typename Index2 >
-bool AdEllpack< Real, Device, Index >::setLike( const AdEllpack< Real2, Device2, Index2 >& matrix )
+void AdEllpack< Real, Device, Index >::setLike( const AdEllpack< Real2, Device2, Index2 >& matrix )
 {
-    if( !Sparse< Real, Device, Index >::setLike( matrix ) ||
-        !this->offset.setLike( matrix.offset ) ||
-        !this->rowOffset.setLike( matrix.rowOffset ) ||
-        !this->localLoad.setLike( matrix.localLoad ) ||
-        !this->reduceMap.setLike( matrix.reduceMap ) )
-        return false;
-    return true;
+    Sparse< Real, Device, Index >::setLike( matrix );
+    this->offset.setLike( matrix.offset );
+    this->rowOffset.setLike( matrix.rowOffset );
+    this->localLoad.setLike( matrix.localLoad );
+    this->reduceMap.setLike( matrix.reduceMap );
 }
 
 template< typename Real,
@@ -378,6 +377,38 @@ void AdEllpack< Real, Device, Index >::reset()
     this->rowOffset.reset();
     this->localLoad.reset();
     this->reduceMap.reset();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename Real2,
+             typename Device2,
+             typename Index2 >
+bool AdEllpack< Real, Device, Index >::operator == ( const AdEllpack< Real2, Device2, Index2 >& matrix ) const
+{
+   TNL_ASSERT( this->getRows() == matrix.getRows() &&
+               this->getColumns() == matrix.getColumns(),
+               std::cerr << "this->getRows() = " << this->getRows()
+                    << " matrix.getRows() = " << matrix.getRows()
+                    << " this->getColumns() = " << this->getColumns()
+                    << " matrix.getColumns() = " << matrix.getColumns() );
+
+   TNL_ASSERT_TRUE( false, "operator == is not yet implemented for AdEllpack.");
+
+   // TODO: implement this
+   return false;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename Real2,
+             typename Device2,
+             typename Index2 >
+bool AdEllpack< Real, Device, Index >::operator != ( const AdEllpack< Real2, Device2, Index2 >& matrix ) const
+{
+   return ! ( ( *this ) == matrix );
 }
 
 template< typename Real,
@@ -581,9 +612,55 @@ template< typename Real,
 template< typename InVector,
           typename OutVector >
 void AdEllpack< Real, Device, Index >::vectorProduct( const InVector& inVector,
-                                                               OutVector& outVector ) const
+                                                      OutVector& outVector ) const
 {
     DeviceDependentCode::vectorProduct( *this, inVector, outVector );
+}
+
+// copy assignment
+template< typename Real,
+          typename Device,
+          typename Index >
+AdEllpack< Real, Device, Index >&
+AdEllpack< Real, Device, Index >::operator=( const AdEllpack& matrix )
+{
+   this->setLike( matrix );
+   this->values = matrix.values;
+   this->columnIndexes = matrix.columnIndexes;
+   this->offset = matrix.offset;
+   this->rowOffset = matrix.rowOffset;
+   this->localLoad = matrix.localLoad;
+   this->reduceMap = matrix.reduceMap;
+   this->totalLoad = matrix.totalLoad;
+   this->warpSize = matrix.warpSize;
+   return *this;
+}
+
+
+// cross-device copy assignment
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename Real2, typename Device2, typename Index2, typename >
+AdEllpack< Real, Device, Index >&
+AdEllpack< Real, Device, Index >::operator=( const AdEllpack< Real2, Device2, Index2 >& matrix )
+{
+   static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value,
+                  "unknown device" );
+   static_assert( std::is_same< Device2, Devices::Host >::value || std::is_same< Device2, Devices::Cuda >::value,
+                  "unknown device" );
+
+   this->setLike( matrix );
+   this->values = matrix.values;
+   this->columnIndexes = matrix.columnIndexes;
+   this->offset = matrix.offset;
+   this->rowOffset = matrix.rowOffset;
+   this->localLoad = matrix.localLoad;
+   this->reduceMap = matrix.reduceMap;
+   this->totalLoad = matrix.totalLoad;
+   this->warpSize = matrix.warpSize;
+
+   return *this;
 }
 
 template< typename Real,
@@ -627,7 +704,7 @@ void AdEllpack< Real, Device, Index >::print( std::ostream& str ) const
 {
     for( IndexType row = 0; row < this->getRows(); row++ )
     {
-        str  << "Row: " << row << " -> \t";
+        str  << "Row: " << row << " -> ";
 
         IndexType warp = this->getWarp( row );
         IndexType inWarpOffset = this->getInWarpOffset( row, warp );
@@ -642,8 +719,8 @@ void AdEllpack< Real, Device, Index >::print( std::ostream& str ) const
             for( IndexType i = 0; i < this->localLoad.getElement( warp ); i++ )
             {
                 if( this->columnIndexes.getElement( elementPtr ) != this->getPaddingIndex() )
-                    str << " column: " << this->columnIndexes.getElement( elementPtr ) << " -> "
-                        << " value: " << this->values.getElement( elementPtr ) << std::endl;
+                    str << " Col:" << this->columnIndexes.getElement( elementPtr ) << "->"
+                        << this->values.getElement( elementPtr ) << "\t";
                 elementPtr += this->warpSize;
             }
             if( ( inWarpOffset < this->warpSize - 1 ) &&
@@ -658,6 +735,7 @@ void AdEllpack< Real, Device, Index >::print( std::ostream& str ) const
             else
                 found = true;
         }
+        str << std::endl;
     }
 }
 
@@ -666,7 +744,7 @@ template< typename Real,
           typename Index >
 bool AdEllpack< Real, Device, Index >::balanceLoad( const RealType average,
                                                     ConstCompressedRowLengthsVectorView rowLengths,
-                                                    warpList* list )
+                                                    warpList< AdEllpack >* list )
 {
     IndexType offset, rowOffset, localLoad, reduceMap[ 32 ];
 
@@ -749,7 +827,7 @@ bool AdEllpack< Real, Device, Index >::balanceLoad( const RealType average,
             else
             {
                 threadsPerRow = ( IndexType ) ( rowLength / ave ) + ( rowLength % ave == 0 ? 0 : 1 );
-                if( threadsPerRow < this->warpSize )                
+                if( threadsPerRow < this->warpSize )
                     break;
 
                 localLoad = ave;
@@ -781,17 +859,18 @@ template< typename Real,
           typename Device,
           typename Index >
 void AdEllpack< Real, Device, Index >::computeWarps( const IndexType SMs,
-                                                              const IndexType threadsPerSM,
-                                                              warpList* list )
+                                                     const IndexType threadsPerSM,
+                                                     warpList< AdEllpack >* list )
 {
     IndexType averageLoad = 0;
-    warpInfo* temp = list->getHead()->next;
-    while( temp->next != list->getTail() )
+    warpInfo< AdEllpack >* temp = list->getHead()->next;
+
+    while( temp/*->next*/ != list->getTail() )
     {
         averageLoad += temp->localLoad;
         temp = temp->next;
     }
-    averageLoad /= list->getNumberOfWarps();
+    averageLoad = roundUpDivision( averageLoad, list->getNumberOfWarps() );
 
     IndexType totalWarps = SMs * ( threadsPerSM / this->warpSize );
     IndexType remainingThreads = list->getNumberOfWarps();
@@ -807,7 +886,6 @@ void AdEllpack< Real, Device, Index >::computeWarps( const IndexType SMs,
             {
                 temp = list->splitInHalf( temp );
                 warpsToSplit = true;
-		
             }
             temp = temp->next;
         }
@@ -818,7 +896,7 @@ void AdEllpack< Real, Device, Index >::computeWarps( const IndexType SMs,
 template< typename Real,
           typename Device,
           typename Index >
-bool AdEllpack< Real, Device, Index >::createArrays( warpList* list )
+bool AdEllpack< Real, Device, Index >::createArrays( warpList< AdEllpack >* list )
 {
     IndexType length = list->getNumberOfWarps();
 
@@ -828,7 +906,7 @@ bool AdEllpack< Real, Device, Index >::createArrays( warpList* list )
     this->reduceMap.setSize( length * this->warpSize );
 
     IndexType iteration = 0;
-    warpInfo* warp = list->getHead()->next;
+    warpInfo< AdEllpack >* warp = list->getHead()->next;
     while( warp != list->getTail() )
     {
         this->offset.setElement( iteration, warp->offset );
@@ -871,7 +949,7 @@ public:
                                OutVector& outVector )
     {
 	// parallel vector product simulation
-	const Index blockSize = 256; 
+	const Index blockSize = 256;
 	const Index blocks = ( Index ) ( matrix.reduceMap.getSize() / blockSize ) + ( matrix.reduceMap.getSize() % blockSize != 0 );
 	for( Index block = 0; block < blocks; block++ )
 	{
@@ -948,31 +1026,33 @@ void AdEllpack< Real, Device, Index >::spmvCuda2( const InVector& inVector,
     reduceMap[ threadIdx.x ] = this->reduceMap[ globalIdx ];
     temp[ threadIdx.x ] = 0.0;
 
-        IndexType i = 0;
-        IndexType elementPtr = this->offset[ warpIdx ] + inWarpIdx;
-        for( ; i < this->localLoad[ warpIdx ]; i++ )
+    IndexType i = 0;
+    IndexType elementPtr = this->offset[ warpIdx ] + inWarpIdx;
+    const IndexType warpLoad = this->localLoad[ warpIdx ];
+
+    for( ; i < warpLoad; i++ )
+    {
+        if( this->columnIndexes[ elementPtr ] < this->getColumns() )
         {
-	    if( this->columnIndexes[ elementPtr ] < this->getColumns() )
-            {
-	        temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
-                elementPtr += this->warpSize;
-	    }
+            temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
+            elementPtr += this->warpSize;
         }
+    }
+
     if( ( inWarpIdx == 0 ) || ( reduceMap[ threadIdx.x ] > reduceMap[ threadIdx.x - 1 ] ) )
     {
 	IndexType elementPtr = threadIdx.x + 1;
         globalIdx++;
-        while( //elementPtr < this->reduceMap.getSize() && 
-	       globalIdx < ( ( warpIdx + 1 ) << 5 ) && 
+        while( globalIdx < ( ( warpIdx + 1 ) << 5 ) &&
                reduceMap[ elementPtr ] == reduceMap[ threadIdx.x ] )
         {
-		temp[ threadIdx.x ] += temp[ elementPtr ];
-                elementPtr++;
-                globalIdx++;
+            temp[ threadIdx.x ] += temp[ elementPtr ];
+            elementPtr++;
+            globalIdx++;
         }
         outVector[ reduceMap[ threadIdx.x] ] += temp[ threadIdx.x ];
     }
-} 
+}
 
 template< typename Real,
           typename Device,
@@ -996,40 +1076,46 @@ void AdEllpack< Real, Device, Index >::spmvCuda4( const InVector& inVector,
     reduceMap[ threadIdx.x ] = this->reduceMap[ globalIdx ];
     temp[ threadIdx.x ] = 0.0;
 
-        IndexType i = 0;
-        IndexType elementPtr = this->offset[ warpIdx ] + inWarpIdx;
+    IndexType i = 0;
+    IndexType elementPtr = this->offset[ warpIdx ] + inWarpIdx;
+    const IndexType warpLoad = this->localLoad[ warpIdx ];
 
-        if( ( this->localLoad[ warpIdx ] & 1 ) == 1 )	
-	    if( this->columnIndexes[ elementPtr ] < this->getColumns() )
-	    {
-	        temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
-                elementPtr += this->warpSize;
-                i++;
-	    }
-        for( ; i < this->localLoad[ warpIdx ]; i += 2 )
+    if( ( warpLoad & 1 ) == 1 )
+    {
+        if( this->columnIndexes[ elementPtr ] < this->getColumns() )
         {
-	    #pragma unroll
-            for( IndexType j = 0; j < 2; j++ )
-	        if( this->columnIndexes[ elementPtr ] < this->getColumns() )
-                {
-	            temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
-                    elementPtr += this->warpSize;
-	        }
+            temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
+            elementPtr += this->warpSize;
+            i++;
         }
+    }
+
+    for( ; i < warpLoad; i += 2 )
+    {
+        #pragma unroll
+        for( IndexType j = 0; j < 2; j++ )
+        {
+            if( this->columnIndexes[ elementPtr ] < this->getColumns() )
+            {
+                temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
+                elementPtr += this->warpSize;
+            }
+        }
+    }
 
     if( ( inWarpIdx == 0 ) || ( reduceMap[ threadIdx.x ] > reduceMap[ threadIdx.x - 1 ] ) )
     {
+        IndexType end = ( warpIdx + 1 ) << 5;
 	IndexType elementPtr = threadIdx.x + 1;
         globalIdx++;
-        while( //elementPtr < this->reduceMap.getSize() && 
-	       globalIdx < ( ( warpIdx + 1 ) << 5 ) && 
+        while( globalIdx < end &&
                reduceMap[ elementPtr ] == reduceMap[ threadIdx.x ] )
         {
-		temp[ threadIdx.x ] += temp[ elementPtr ];
-                elementPtr++;
-                globalIdx++;
+            temp[ threadIdx.x ] += temp[ elementPtr ];
+            elementPtr++;
+            globalIdx++;
         }
-        outVector[ reduceMap[ threadIdx.x] ] += temp[ threadIdx.x ];
+        outVector[ reduceMap[ threadIdx.x ] ] += temp[ threadIdx.x ];
     }
 }
 
@@ -1047,7 +1133,7 @@ void AdEllpack< Real, Device, Index >::spmvCuda8( const InVector& inVector,
     IndexType warpIdx = globalIdx >> 5;
     IndexType inWarpIdx = globalIdx & ( this->warpSize - 1 );
     if( globalIdx >= this->reduceMap.getSize() )
-	return;
+        return;
 
     const int blockSize = 128;
     Real* temp = Cuda::getSharedMemory< Real >();
@@ -1055,39 +1141,59 @@ void AdEllpack< Real, Device, Index >::spmvCuda8( const InVector& inVector,
     reduceMap[ threadIdx.x ] = this->reduceMap[ globalIdx ];
     temp[ threadIdx.x ] = 0.0;
 
-        IndexType i = 0;
-        IndexType elementPtr = this->offset[ warpIdx ] + inWarpIdx;
+    IndexType i = 0;
+    IndexType elementPtr = this->offset[ warpIdx ] + inWarpIdx;
+    const IndexType warpLoad = this->localLoad[ warpIdx ];
 
-        while( ( this->localLoad[ warpIdx ] & 7 ) != 0 )	
-	    if( this->columnIndexes[ elementPtr ] < this->getColumns() )
-	    {
-	        temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
+    if( warpLoad < 4 )
+    {
+        while( i < warpLoad &&
+               this->columnIndexes[ elementPtr ] < this->getColumns() )
+        {
+            temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
+            elementPtr += this->warpSize;
+            i++;
+        }
+    }
+    else
+    {
+        IndexType alignUnroll = warpLoad & 3;
+
+        while( alignUnroll != 0 &&
+               this->columnIndexes[ elementPtr ] < this->getColumns() )
+        {
+                temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
                 elementPtr += this->warpSize;
                 i++;
-	    }
-        for( ; i < this->localLoad[ warpIdx ]; i += 4 )
-        {
-	    #pragma unroll
-            for( IndexType j = 0; j < 4; j++ )
-	        if( this->columnIndexes[ elementPtr ] < this->getColumns() )
-                {
-	            temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
-                    elementPtr += this->warpSize;
-	        }
+                alignUnroll--;
         }
+    }
+    for( ; i < this->localLoad[ warpIdx ]; i += 4 )
+    {
+        #pragma unroll
+        for( IndexType j = 0; j < 4; j++ )
+        {
+           if( this->columnIndexes[ elementPtr ] < this->getColumns() )
+            {
+               temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
+               elementPtr += this->warpSize;
+            }
+        }
+    }
+
     if( ( inWarpIdx == 0 ) || ( reduceMap[ threadIdx.x ] > reduceMap[ threadIdx.x - 1 ] ) )
     {
+        IndexType end = ( warpIdx + 1 ) << 5;
 	IndexType elementPtr = threadIdx.x + 1;
         globalIdx++;
-        while( //elementPtr < this->reduceMap.getSize() && 
-	       globalIdx < ( ( warpIdx + 1 ) << 5 ) && 
+        while( globalIdx < end &&
                reduceMap[ elementPtr ] == reduceMap[ threadIdx.x ] )
         {
-		temp[ threadIdx.x ] += temp[ elementPtr ];
-                elementPtr++;
-                globalIdx++;
+            temp[ threadIdx.x ] += temp[ elementPtr ];
+            elementPtr++;
+            globalIdx++;
         }
-        outVector[ reduceMap[ threadIdx.x] ] += temp[ threadIdx.x ];
+        outVector[ reduceMap[ threadIdx.x ] ] += temp[ threadIdx.x ];
     }
 }
 
@@ -1098,14 +1204,14 @@ template< typename InVector,
           typename OutVector >
 __device__
 void AdEllpack< Real, Device, Index >::spmvCuda16( const InVector& inVector,
-                                                            OutVector& outVector,
-                                                            const int gridIdx ) const
+                                                         OutVector& outVector,
+                                                         const int gridIdx ) const
 {
     IndexType globalIdx = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
     IndexType warpIdx = globalIdx >> 5;
     IndexType inWarpIdx = globalIdx & ( this->warpSize - 1 );
     if( globalIdx >= this->reduceMap.getSize() )
-	return;
+        return;
 
     const int blockSize = 128;
     Real* temp = Cuda::getSharedMemory< Real >();
@@ -1113,39 +1219,60 @@ void AdEllpack< Real, Device, Index >::spmvCuda16( const InVector& inVector,
     reduceMap[ threadIdx.x ] = this->reduceMap[ globalIdx ];
     temp[ threadIdx.x ] = 0.0;
 
-        IndexType i = 0;
-        IndexType elementPtr = this->offset[ warpIdx ] + inWarpIdx;
+    IndexType i = 0;
+    IndexType elementPtr = this->offset[ warpIdx ] + inWarpIdx;
+    const IndexType warpLoad = this->localLoad[ warpIdx ];
 
-        while( ( this->localLoad[ warpIdx ] & 15 ) != 0 )	
-	    if( this->columnIndexes[ elementPtr ] < this->getColumns() )
-	    {
-	        temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
-                elementPtr += this->warpSize;
-                i++;
-	    }
-        for( ; i < this->localLoad[ warpIdx ]; i += 8 )
+    if( warpLoad < 8 )
+    {
+        while( i < warpLoad &&
+               this->columnIndexes[ elementPtr ] < this->getColumns() )
         {
-	    #pragma unroll
-            for( IndexType j = 0; j < 8; j++ )
-	        if( this->columnIndexes[ elementPtr ] < this->getColumns() )
-                {
-	            temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
-                    elementPtr += this->warpSize;
-	        }
+            temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
+            elementPtr += this->warpSize;
+            i++;
         }
+    }
+    else
+    {
+        IndexType alignUnroll = warpLoad & 7;
+
+        while( alignUnroll != 0 &&
+               this->columnIndexes[ elementPtr ] < this->getColumns() )
+        {
+            temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
+            elementPtr += this->warpSize;
+            i++;
+            alignUnroll--;
+        }
+    }
+
+    for( ; i < warpLoad; i += 8 )
+    {
+        #pragma unroll
+        for( IndexType j = 0; j < 8; j++ )
+        {
+            if( this->columnIndexes[ elementPtr ] < this->getColumns() )
+            {
+                temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
+                elementPtr += this->warpSize;
+            }
+        }
+    }
+
     if( ( inWarpIdx == 0 ) || ( reduceMap[ threadIdx.x ] > reduceMap[ threadIdx.x - 1 ] ) )
     {
+        IndexType end = ( warpIdx + 1 ) << 5;
 	IndexType elementPtr = threadIdx.x + 1;
         globalIdx++;
-        while( //elementPtr < this->reduceMap.getSize() && 
-	       globalIdx < ( ( warpIdx + 1 ) << 5 ) && 
+        while( globalIdx < end &&
                reduceMap[ elementPtr ] == reduceMap[ threadIdx.x ] )
         {
-		temp[ threadIdx.x ] += temp[ elementPtr ];
-                elementPtr++;
-                globalIdx++;
+            temp[ threadIdx.x ] += temp[ elementPtr ];
+            elementPtr++;
+            globalIdx++;
         }
-        outVector[ reduceMap[ threadIdx.x] ] += temp[ threadIdx.x ];
+        outVector[ reduceMap[ threadIdx.x ] ] += temp[ threadIdx.x ];
     }
 }
 
@@ -1170,37 +1297,59 @@ void AdEllpack< Real, Device, Index >::spmvCuda32( const InVector& inVector,
     __shared__ IndexType reduceMap[ blockSize ];
     reduceMap[ threadIdx.x ] = this->reduceMap[ globalIdx ];
     temp[ threadIdx.x ] = 0.0;
-        IndexType i = 0;
-        IndexType elementPtr = this->offset[ warpIdx ] + inWarpIdx;
 
-        while( ( this->localLoad[ warpIdx ] & 31 ) != 0 )	
-	    if( this->columnIndexes[ elementPtr ] < this->getColumns() )
-	    {
-	        temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
-                elementPtr += this->warpSize;
-                i++;
-	    }
-        for( ; i < this->localLoad[ warpIdx ]; i += 16 )
+    IndexType i = 0;
+    IndexType elementPtr = this->offset[ warpIdx ] + inWarpIdx;
+    const IndexType warpLoad = this->localLoad[ warpIdx ];
+
+    if( warpLoad < 16 )
+    {
+        while( i < warpLoad &&
+               this->columnIndexes[ elementPtr ] < this->getColumns() )
         {
-	    #pragma unroll
-            for( IndexType j = 0; j < 16; j++ )
-	        if( this->columnIndexes[ elementPtr ] < this->getColumns() )
-                {
-	            temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
-                    elementPtr += this->warpSize;
-	        }
+            temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
+            elementPtr += this->warpSize;
+            i++;
         }
+    }
+    else
+    {
+        IndexType alignUnroll = warpLoad & 15;
+
+        while( alignUnroll != 0 &&
+               this->columnIndexes[ elementPtr ] < this->getColumns() )
+        {
+            temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
+            elementPtr += this->warpSize;
+            i++;
+            alignUnroll--;
+        }
+    }
+
+    for( ; i < warpLoad; i += 16 )
+    {
+        #pragma unroll
+        for( IndexType j = 0; j < 16; j++ )
+        {
+            if( this->columnIndexes[ elementPtr ] < this->getColumns() )
+            {
+                temp[ threadIdx.x ] += inVector[ this->columnIndexes[ elementPtr ] ] * this->values[ elementPtr ];
+                elementPtr += this->warpSize;
+            }
+        }
+    }
+
     if( ( inWarpIdx == 0 ) || ( reduceMap[ threadIdx.x ] > reduceMap[ threadIdx.x - 1 ] ) )
     {
+        IndexType end = ( warpIdx + 1 ) << 5;
 	IndexType elementPtr = threadIdx.x + 1;
         globalIdx++;
-        while( //elementPtr < this->reduceMap.getSize() && 
-	       globalIdx < ( ( warpIdx + 1 ) << 5 ) && 
+        while( globalIdx < end &&
                reduceMap[ elementPtr ] == reduceMap[ threadIdx.x ] )
         {
-		temp[ threadIdx.x ] += temp[ elementPtr ];
-                elementPtr++;
-                globalIdx++;
+            temp[ threadIdx.x ] += temp[ elementPtr ];
+            elementPtr++;
+            globalIdx++;
         }
         outVector[ reduceMap[ threadIdx.x] ] += temp[ threadIdx.x ];
     }
@@ -1274,7 +1423,6 @@ void AdEllpackVectorProductCuda32( const AdEllpack< Real, Devices::Cuda, Index >
 }
 #endif
 
-#ifdef HAVE_CUDA
 template<>
 class AdEllpackDeviceDependentCode< Devices::Cuda >
 {
@@ -1290,13 +1438,16 @@ public:
                                const InVector& inVector,
                                OutVector& outVector )
     {
-        typedef AdEllpack< Real, Devices::Cuda, Index > Matrix;
-	typedef typename Matrix::IndexType IndexType;
-	Matrix* kernel_this = Cuda::passToDevice( matrix );
-	InVector* kernel_inVector = Cuda::passToDevice( inVector );
-	OutVector* kernel_outVector = Cuda::passToDevice( outVector );
-	if( matrix.totalLoad < 2 )
-	{
+#ifdef HAVE_CUDA
+      typedef AdEllpack< Real, Devices::Cuda, Index > Matrix;
+      typedef typename Matrix::IndexType IndexType;
+	   Matrix* kernel_this = Cuda::passToDevice( matrix );
+	   InVector* kernel_inVector = Cuda::passToDevice( inVector );
+	   OutVector* kernel_outVector = Cuda::passToDevice( outVector );
+      TNL_CHECK_CUDA_DEVICE;
+
+      if( matrix.totalLoad < 2 )
+	   {
 	    dim3 blockSize( 256 ), cudaGridSize( Cuda::getMaxGridSize() );
 	    IndexType cudaBlocks = roundUpDivision( matrix.reduceMap.getSize(), blockSize.x );
 	    IndexType cudaGrids = roundUpDivision( cudaBlocks, Cuda::getMaxGridSize() );
@@ -1369,7 +1520,7 @@ public:
 	    dim3 blockSize( 128 ), cudaGridSize( Cuda::getMaxGridSize() );
 	    IndexType cudaBlocks = roundUpDivision( matrix.reduceMap.getSize(), blockSize.x );
 	    IndexType cudaGrids = roundUpDivision( cudaBlocks, Cuda::getMaxGridSize() );
-	    for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
+            for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
 	    {
 	        if( gridIdx == cudaGrids - 1 )
 		    cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
@@ -1410,11 +1561,11 @@ public:
 	    Cuda::freeFromDevice( kernel_outVector );
 	    TNL_CHECK_CUDA_DEVICE;
 	}
-    }
-
+#endif // HAVE_CUDA
+   }
 };
 
-#endif
+
 
 } // namespace Matrices
 } // namespace TNL
