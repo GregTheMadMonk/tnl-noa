@@ -25,6 +25,12 @@ IF( BUILD_CUDA )
 
    CUDA_ADD_EXECUTABLE( DenseMatrixTest DenseMatrixTest.cu OPTIONS ${CXX_TESTS_FLAGS} )
    TARGET_LINK_LIBRARIES( DenseMatrixTest ${GTEST_BOTH_LIBRARIES} )
+
+   ####
+   # Segments tests
+   CUDA_ADD_EXECUTABLE( SparseMatrixTest_CSR_segments SparseMatrixTest_CSR_segments.cu OPTIONS ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( SparseMatrixTest_CSR_segments ${GTEST_BOTH_LIBRARIES} )
+
 ELSE(  BUILD_CUDA )
    ADD_EXECUTABLE( SparseMatrixCopyTest SparseMatrixCopyTest.cpp )
    TARGET_COMPILE_OPTIONS( SparseMatrixCopyTest PRIVATE ${CXX_TESTS_FLAGS} )
@@ -61,6 +67,13 @@ ELSE(  BUILD_CUDA )
    ADD_EXECUTABLE( DenseMatrixTest DenseMatrixTest.cpp )
    TARGET_COMPILE_OPTIONS( DenseMatrixTest PRIVATE ${CXX_TESTS_FLAGS} )
    TARGET_LINK_LIBRARIES( DenseMatrixTest ${GTEST_BOTH_LIBRARIES} )
+
+   ####
+   # Segments tests
+   ADD_EXECUTABLE( SparseMatrixTest_CSR_segments SparseMatrixTest_CSR_segments.cpp )
+   TARGET_COMPILE_OPTIONS( SparseMatrixTest_CSR_segments PRIVATE ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( SparseMatrixTest_CSR_segments ${GTEST_BOTH_LIBRARIES} )
+
 ENDIF( BUILD_CUDA )
 
 
@@ -76,6 +89,9 @@ ADD_TEST( SparseMatrixTest_SlicedEllpack ${EXECUTABLE_OUTPUT_PATH}/SparseMatrixT
 # TODO: DenseMatrixTest is not finished
 #ADD_TEST( DenseMatrixTest ${EXECUTABLE_OUTPUT_PATH}/DenseMatrixTest${CMAKE_EXECUTABLE_SUFFIX} )
 
+####
+# Segments tests
+ADD_TEST( SparseMatrixTest_CSR_segments ${EXECUTABLE_OUTPUT_PATH}/SparseMatrixTest_CSR_segments${CMAKE_EXECUTABLE_SUFFIX} )
 
 if( ${BUILD_MPI} )
    if( BUILD_CUDA )
