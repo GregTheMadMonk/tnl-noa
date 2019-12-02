@@ -11,6 +11,7 @@
 #pragma once
 
 #include <TNL/Object.h>
+#include <TNL/Allocators/Default.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/VectorView.h>
@@ -23,22 +24,28 @@ namespace Matrices {
 
 template< typename Real = double,
           typename Device = Devices::Host,
-          typename Index = int >
+          typename Index = int,
+          typename RealAllocator = typename Allocators::Default< Device >::template Allocator< Real > >
 class Matrix : public Object
 {
 public:
-   typedef Real RealType;
+   using RealType = Real;
    typedef Device DeviceType;
    typedef Index IndexType;
    typedef Containers::Vector< IndexType, DeviceType, IndexType > CompressedRowLengthsVector;
    typedef Containers::VectorView< IndexType, DeviceType, IndexType > CompressedRowLengthsVectorView;
    typedef typename CompressedRowLengthsVectorView::ConstViewType ConstCompressedRowLengthsVectorView;
-   typedef Containers::Vector< RealType, DeviceType, IndexType > ValuesVector;
+   typedef Containers::Vector< RealType, DeviceType, IndexType, RealAllocator > ValuesVector;
+   using RealAllocatorType = RealAllocator;
 
-   Matrix();
+   Matrix( const RealAllocatorType& allocator = RealAllocatorType() );
+   
+   Matrix( const IndexType rows,
+           const IndexType columns,
+           const RealAllocatorType& allocator = RealAllocatorType() );
 
    virtual void setDimensions( const IndexType rows,
-                                 const IndexType columns );
+                               const IndexType columns );
 
    virtual void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths ) = 0;
 
@@ -50,10 +57,10 @@ public:
 
    virtual void getCompressedRowLengths( CompressedRowLengthsVectorView rowLengths ) const;
 
-   template< typename Real2, typename Device2, typename Index2 >
-   void setLike( const Matrix< Real2, Device2, Index2 >& matrix );
+   template< typename Real2, typename Device2, typename Index2, typename RealAllocator2 >
+   void setLike( const Matrix< Real2, Device2, Index2, RealAllocator2 >& matrix );
 
-   virtual IndexType getNumberOfMatrixElements() const = 0;
+   IndexType getNumberOfMatrixElements() const;
 
    virtual IndexType getNumberOfNonzeroMatrixElements() const = 0;
 

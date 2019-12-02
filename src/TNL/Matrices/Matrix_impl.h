@@ -21,17 +21,33 @@ namespace Matrices {
 
 template< typename Real,
           typename Device,
-          typename Index >
-Matrix< Real, Device, Index >::Matrix()
+          typename Index,
+          typename RealAllocator >
+Matrix< Real, Device, Index, RealAllocator >::
+Matrix( const RealAllocatorType& allocator )
 : rows( 0 ),
-  columns( 0 )
+  columns( 0 ),
+   values( allocator )
 {
 }
 
 template< typename Real,
           typename Device,
-          typename Index >
-void Matrix< Real, Device, Index >::setDimensions( const IndexType rows,
+          typename Index,
+          typename RealAllocator >
+Matrix< Real, Device, Index, RealAllocator >::
+Matrix( const IndexType rows_, const IndexType columns_, const RealAllocatorType& allocator )
+: rows( rows_ ),
+  columns( columns_ ),
+  values( allocator )
+{
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename RealAllocator >
+void Matrix< Real, Device, Index, RealAllocator >::setDimensions( const IndexType rows,
                                                    const IndexType columns )
 {
    TNL_ASSERT( rows > 0 && columns > 0,
@@ -42,8 +58,9 @@ void Matrix< Real, Device, Index >::setDimensions( const IndexType rows,
 
 template< typename Real,
           typename Device,
-          typename Index >
-void Matrix< Real, Device, Index >::getCompressedRowLengths( CompressedRowLengthsVector& rowLengths ) const
+          typename Index,
+          typename RealAllocator >
+void Matrix< Real, Device, Index, RealAllocator >::getCompressedRowLengths( CompressedRowLengthsVector& rowLengths ) const
 {
    rowLengths.setSize( this->getRows() );
    getCompressedRowLengths( rowLengths.getView() );
@@ -51,8 +68,9 @@ void Matrix< Real, Device, Index >::getCompressedRowLengths( CompressedRowLength
 
 template< typename Real,
           typename Device,
-          typename Index >
-void Matrix< Real, Device, Index >::getCompressedRowLengths( CompressedRowLengthsVectorView rowLengths ) const
+          typename Index,
+          typename RealAllocator >
+void Matrix< Real, Device, Index, RealAllocator >::getCompressedRowLengths( CompressedRowLengthsVectorView rowLengths ) const
 {
    TNL_ASSERT_EQ( rowLengths.getSize(), this->getRows(), "invalid size of the rowLengths vector" );
    for( IndexType row = 0; row < this->getRows(); row++ )
@@ -61,19 +79,31 @@ void Matrix< Real, Device, Index >::getCompressedRowLengths( CompressedRowLength
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          typename RealAllocator >
    template< typename Real2,
              typename Device2,
-             typename Index2 >
-void Matrix< Real, Device, Index >::setLike( const Matrix< Real2, Device2, Index2 >& matrix )
+             typename Index2,
+             typename RealAllocator2 >
+void Matrix< Real, Device, Index, RealAllocator >::setLike( const Matrix< Real2, Device2, Index2, RealAllocator2 >& matrix )
 {
    setDimensions( matrix.getRows(), matrix.getColumns() );
 }
 
 template< typename Real,
           typename Device,
-          typename Index >
-Index Matrix< Real, Device, Index >::getNumberOfNonzeroMatrixElements() const
+          typename Index,
+          typename RealAllocator >
+Index Matrix< Real, Device, Index, RealAllocator >::getNumberOfMatrixElements() const
+{
+   return this->values.getSize();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename RealAllocator >
+Index Matrix< Real, Device, Index, RealAllocator >::getNumberOfNonzeroMatrixElements() const
 {
     IndexType nonZeroElements( 0 );
     for( IndexType i = 0; this->values.getSize(); i++ )
@@ -85,27 +115,30 @@ Index Matrix< Real, Device, Index >::getNumberOfNonzeroMatrixElements() const
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          typename RealAllocator >
 __cuda_callable__
-Index Matrix< Real, Device, Index >::getRows() const
+Index Matrix< Real, Device, Index, RealAllocator >::getRows() const
 {
    return this->rows;
 }
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          typename RealAllocator >
 __cuda_callable__
-Index Matrix< Real, Device, Index >::getColumns() const
+Index Matrix< Real, Device, Index, RealAllocator >::getColumns() const
 {
    return this->columns;
 }
 
 template< typename Real,
           typename Device,
-          typename Index >
-const typename Matrix< Real, Device, Index >::ValuesVector&
-Matrix< Real, Device, Index >::
+          typename Index,
+          typename RealAllocator >
+const typename Matrix< Real, Device, Index, RealAllocator >::ValuesVector&
+Matrix< Real, Device, Index, RealAllocator >::
 getValues() const
 {
    return this->values;
@@ -113,9 +146,10 @@ getValues() const
    
 template< typename Real,
           typename Device,
-          typename Index >
-typename Matrix< Real, Device, Index >::ValuesVector& 
-Matrix< Real, Device, Index >::
+          typename Index,
+          typename RealAllocator >
+typename Matrix< Real, Device, Index, RealAllocator >::ValuesVector& 
+Matrix< Real, Device, Index, RealAllocator >::
 getValues()
 {
    return this->values;
@@ -123,8 +157,9 @@ getValues()
 
 template< typename Real,
           typename Device,
-          typename Index >
-void Matrix< Real, Device, Index >::reset()
+          typename Index,
+          typename RealAllocator >
+void Matrix< Real, Device, Index, RealAllocator >::reset()
 {
    this->rows = 0;
    this->columns = 0;
@@ -132,9 +167,10 @@ void Matrix< Real, Device, Index >::reset()
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          typename RealAllocator >
    template< typename MatrixT >
-bool Matrix< Real, Device, Index >::operator == ( const MatrixT& matrix ) const
+bool Matrix< Real, Device, Index, RealAllocator >::operator == ( const MatrixT& matrix ) const
 {
    if( this->getRows() != matrix.getRows() ||
        this->getColumns() != matrix.getColumns() )
@@ -148,17 +184,19 @@ bool Matrix< Real, Device, Index >::operator == ( const MatrixT& matrix ) const
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          typename RealAllocator >
    template< typename MatrixT >
-bool Matrix< Real, Device, Index >::operator != ( const MatrixT& matrix ) const
+bool Matrix< Real, Device, Index, RealAllocator >::operator != ( const MatrixT& matrix ) const
 {
    return ! operator == ( matrix );
 }
 
 template< typename Real,
           typename Device,
-          typename Index >
-void Matrix< Real, Device, Index >::save( File& file ) const
+          typename Index,
+          typename RealAllocator >
+void Matrix< Real, Device, Index, RealAllocator >::save( File& file ) const
 {
    Object::save( file );
    file.save( &this->rows );
@@ -168,8 +206,9 @@ void Matrix< Real, Device, Index >::save( File& file ) const
 
 template< typename Real,
           typename Device,
-          typename Index >
-void Matrix< Real, Device, Index >::load( File& file )
+          typename Index,
+          typename RealAllocator >
+void Matrix< Real, Device, Index, RealAllocator >::load( File& file )
 {
    Object::load( file );
    file.load( &this->rows );
@@ -179,17 +218,19 @@ void Matrix< Real, Device, Index >::load( File& file )
 
 template< typename Real,
           typename Device,
-          typename Index >
-void Matrix< Real, Device, Index >::print( std::ostream& str ) const
+          typename Index,
+          typename RealAllocator >
+void Matrix< Real, Device, Index, RealAllocator >::print( std::ostream& str ) const
 {
 }
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          typename RealAllocator >
 __cuda_callable__
 const Index&
-Matrix< Real, Device, Index >::
+Matrix< Real, Device, Index, RealAllocator >::
 getNumberOfColors() const
 {
    return this->numberOfColors;
@@ -197,9 +238,10 @@ getNumberOfColors() const
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          typename RealAllocator >
 void 
-Matrix< Real, Device, Index >::
+Matrix< Real, Device, Index, RealAllocator >::
 computeColorsVector(Containers::Vector<Index, Device, Index> &colorsVector)
 {
     for( IndexType i = this->getRows() - 1; i >= 0; i-- )
@@ -234,9 +276,10 @@ computeColorsVector(Containers::Vector<Index, Device, Index> &colorsVector)
 
 template< typename Real,
           typename Device,
-          typename Index >
+          typename Index,
+          typename RealAllocator >
 void
-Matrix< Real, Device, Index >::
+Matrix< Real, Device, Index, RealAllocator >::
 copyFromHostToCuda( Matrix< Real, Devices::Host, Index >& matrix )
 {
     this->numberOfColors = matrix.getNumberOfColors();

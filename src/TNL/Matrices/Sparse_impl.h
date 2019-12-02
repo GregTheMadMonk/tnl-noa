@@ -36,13 +36,6 @@ void Sparse< Real, Device, Index >::setLike( const Sparse< Real2, Device2, Index
    this->allocateMatrixElements( matrix.getNumberOfMatrixElements() );
 }
 
-template< typename Real,
-          typename Device,
-          typename Index >
-Index Sparse< Real, Device, Index >::getNumberOfMatrixElements() const
-{
-   return this->values.getSize();
-}
 
 template< typename Real,
           typename Device,

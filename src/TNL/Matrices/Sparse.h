@@ -37,8 +37,6 @@ class Sparse : public Matrix< Real, Device, Index >
    template< typename Real2, typename Device2, typename Index2 >
    void setLike( const Sparse< Real2, Device2, Index2 >& matrix );
 
-   IndexType getNumberOfMatrixElements() const;
-
    IndexType getNumberOfNonzeroMatrixElements() const;
 
    IndexType getMaxRowLength() const;
