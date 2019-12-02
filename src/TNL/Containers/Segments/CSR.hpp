@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Containers/Vector.h>
-#include <TNL/Algorithms/ParalleFor.h>
+#include <TNL/Algorithms/ParallelFor.h>
 #include <TNL/Containers/Segments/CSR.h>
 
 namespace TNL {
@@ -43,68 +43,147 @@ CSR( const CSR&& csr ) : offsets( std::move( csr.offsets ) )
 
 template< typename Device,
           typename Index >
+   template< typename SizesHolder >
+void
 CSR< Device, Index >::
-void setSegmentsCount( const IndexType& size )
-{
-   this->offsets.setSize( size + 1 );
-}
-
-template< typename Device,
-          typename Index >
-   template< typename SizesHolder = OffsetsHolder >
-CSR< Device, Index >::
-void setSizes( const SizesHolder& sizes )
+setSizes( const SizesHolder& sizes )
 {
    this->offsets.setSize( sizes.getSize() + 1 );
    auto view = this->offsets.getView( 0, sizes.getSize() );
    view = sizes;
-   this->offsets.setElement( sizes.getSize>(), 0 );
-   this->offsets.scan< Algorithms::ScanType::Exclusive >();
+   this->offsets.setElement( sizes.getSize(), 0 );
+   this->offsets.template scan< Algorithms::ScanType::Exclusive >();
 }
 
 template< typename Device,
           typename Index >
+__cuda_callable__
+Index
 CSR< Device, Index >::
-Index getSize() const
+getSize() const
 {
    return this->offsets.getSize() - 1;
 }
 
 template< typename Device,
           typename Index >
-   template< typename Function, typename... Args >
+__cuda_callable__
+Index
 CSR< Device, Index >::
-void forAll( Function& f, Args args ) const
+getSegmentSize( const IndexType segmentIdx ) const
+{
+   if( ! std::is_same< DeviceType, Devices::Host >::value )
+   {
+#ifdef __CUDA_ARCH__
+      return offsets[ segmentIdx + 1 ] - offsets[ segmentIdx ];
+#else
+      return offsets.getElement( segmentIdx + 1 ) - offsets.getElement( segmentIdx );
+#endif
+   }
+   return offsets[ segmentIdx + 1 ] - offsets[ segmentIdx ];
+}
+
+template< typename Device,
+          typename Index >
+__cuda_callable__
+Index
+CSR< Device, Index >::
+getStorageSize() const
+{
+   if( ! std::is_same< DeviceType, Devices::Host >::value )
+   {
+#ifdef __CUDA_ARCH__
+      return offsets[ this->getSize() ];
+#else
+      return offsets.getElement( this->getSize() );
+#endif
+   }
+   return offsets[ this->getSize() ];
+}
+
+template< typename Device,
+          typename Index >
+__cuda_callable__
+Index
+CSR< Device, Index >::
+getGlobalIndex( const Index segmentIdx, const Index localIdx ) const
+{
+   if( ! std::is_same< DeviceType, Devices::Host >::value )
+   {
+#ifdef __CUDA_ARCH__
+      return offsets[ segmentIdx ] + localIdx;
+#else
+      return offsets.getElement( segmentIdx ) + localIdx;
+#endif
+   }
+   return offsets[ segmentIdx ] + localIdx;
+}
+
+template< typename Device,
+          typename Index >
+__cuda_callable__
+void
+CSR< Device, Index >::
+getSegmentAndLocalIndex( const Index globalIdx, Index& segmentIdx, Index& localIdx ) const
+{
+}
+
+template< typename Device,
+          typename Index >
+   template< typename Function, typename... Args >
+void
+CSR< Device, Index >::
+forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
 {
    const auto offsetsView = this->offsets.getView();
-   auto f = [=] __cuda_callable__ ( const IndexType i, f, args ) {
+   auto l = [=] __cuda_callable__ ( const IndexType i, Args... args ) {
       const IndexType begin = offsetsView[ i ];
       const IndexType end = offsetsView[ i + 1 ];
       for( IndexType j = begin; j < end; j++  )
-         f( i, j, args );
+         if( ! f( i, j, args... ) )
+            break;
    };
-   Algorithms::ParallelFor< Device >::exec( 0, this->getSize(), f );
+   Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
+}
+
+template< typename Device,
+          typename Index >
+   template< typename Function, typename... Args >
+void
+CSR< Device, Index >::
+forAll( Function& f, Args... args ) const
+{
+   this->forSegments( 0, this->getSize(), f, args... );
 }
 
 template< typename Device,
           typename Index >
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
+void
 CSR< Device, Index >::
-void segmentsReduction( Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, Real zero, Args args )
+segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args )
 {
    const auto offsetsView = this->offsets.getView();
-   auto f = [=] __cuda_callable__ ( const IndexType i, f, args ) {
+   auto l = [=] __cuda_callable__ ( const IndexType i, Args... args ) {
       const IndexType begin = offsetsView[ i ];
       const IndexType end = offsetsView[ i + 1 ];
       Real aux( zero );
       for( IndexType j = begin; j < end; j++  )
-         reduction( aux, fetch( i, j, args ) );
+         reduction( aux, fetch( i, j, args... ) );
       keeper( i, aux );
    };
-   Algorithms::ParallelFor< Device >::exec( 0, this->getSize(), f );
+   Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
 }
 
-
+template< typename Device,
+          typename Index >
+   template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
+void
+CSR< Device, Index >::
+allReduction( Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args )
+{
+   this->segmentsReduction( 0, this->getSize(), fetch, reduction, keeper, zero, args... );
+}
       } // namespace Segements
    }  // namespace Conatiners
 } // namespace TNL

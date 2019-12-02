@@ -108,7 +108,7 @@ TYPED_TEST( CSRMatrixTest, addElementTest )
     test_AddElement< CSRMatrixType >();
 }
 
-TYPED_TEST( CSRMatrixTest, setRowTest )
+/*TYPED_TEST( CSRMatrixTest, setRowTest )
 {
     using CSRMatrixType = typename TestFixture::CSRMatrixType;
 
@@ -134,7 +134,7 @@ TYPED_TEST( CSRMatrixTest, printTest )
     using CSRMatrixType = typename TestFixture::CSRMatrixType;
 
     test_Print< CSRMatrixType >();
-}
+}*/
 
 #endif
 

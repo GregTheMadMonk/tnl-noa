@@ -75,7 +75,6 @@ template< typename Real,
 void Sparse< Real, Device, Index >::reset()
 {
    Matrix< Real, Device, Index >::reset();
-   this->values.reset();
    this->columnIndexes.reset();
 }
 

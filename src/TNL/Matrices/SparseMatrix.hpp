@@ -24,7 +24,7 @@ namespace Matrices {
 SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
 SparseMatrix( const RealAllocatorType& realAllocator,
               const IndexAllocatorType& indexAllocator )
-   : Matrix< Real, Device, Index, RealAllocator >( realAllocator ), columnsVector( indexAllocator )
+   : Matrix< Real, Device, Index, RealAllocator >( realAllocator ), columnIndexes( indexAllocator )
 {
 }
 
@@ -36,7 +36,7 @@ template< typename Real,
           typename IndexAllocator >
 SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
 SparseMatrix( const SparseMatrix& m )
-   : Matrix< Real, Device, Index, RealAllocator >( m ), columnsVector( m.columnsVector )
+   : Matrix< Real, Device, Index, RealAllocator >( m ), columnIndexes( m.columnIndexes )
 {
 }
 
@@ -48,7 +48,7 @@ template< typename Real,
           typename IndexAllocator >
 SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
 SparseMatrix( const SparseMatrix&& m )
-   : Matrix< Real, Device, Index, RealAllocator >( std::move( m ) ), columnsVector( std::move( m.columnsVector ) )
+   : Matrix< Real, Device, Index, RealAllocator >( std::move( m ) ), columnIndexes( std::move( m.columnIndexes ) )
 {
 }
 
@@ -63,10 +63,10 @@ SparseMatrix( const IndexType rows,
               const IndexType columns,
               const RealAllocatorType& realAllocator,
               const IndexAllocatorType& indexAllocator )
-: Matrix< Real, Device, Index, RealAllocator >( rows, columns, realAllocator ), columnsVector( indexAllocator )
+: Matrix< Real, Device, Index, RealAllocator >( rows, columns, realAllocator ), columnIndexes( indexAllocator )
 {  
 }
-   
+
 template< typename Real,
           template< typename, typename > class Segments,
           typename Device,
@@ -104,23 +104,14 @@ template< typename Real,
           typename IndexAllocator >
 void
 SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
-setDimensions( const IndexType rows,
-               const IndexType columns )
-{
-   
-}
-
-template< typename Real,
-          template< typename, typename > class Segments,
-          typename Device,
-          typename Index,
-          typename RealAllocator,
-          typename IndexAllocator >
-void
-SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
 setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths )
 {
-   
+   TNL_ASSERT_EQ( rowLengths.getSize(), this->getRows(), "Number of matrix rows does not fit with rowLengths vector size." );
+   this->segments.setSizes( rowLengths );
+   this->values.setSize( this->segments.getStorageSize() );
+   this->values = ( RealType ) 0;
+   this->columnIndexes.setSize( this->segments.getStorageSize() );
+   this->columnIndexes = this->getPaddingIndex();
 }
 
 template< typename Real,
@@ -188,7 +179,7 @@ void
 SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
 setLike( const SparseMatrix< Real2, Segments2, Device2, Index2, RealAllocator2, IndexAllocator2 >& matrix )
 {
-   
+   Matrix< Real, Device, Index, RealAllocator >::setLike( matrix );
 }
 
 template< typename Real,
@@ -213,7 +204,9 @@ void
 SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
 reset()
 {
-   
+   Matrix< Real, Device, Index >::reset();
+   this->columnIndexes.reset();
+
 }
 
 template< typename Real,
@@ -229,7 +222,7 @@ setElementFast( const IndexType row,
                 const IndexType column,
                 const RealType& value )
 {
-   
+   return this->addElementFast( row, column, value, 0.0 );
 }
 
 template< typename Real,
@@ -244,7 +237,7 @@ setElement( const IndexType row,
             const IndexType column,
             const RealType& value )
 {
-   
+   return this->addElement( row, column, value, 0.0 );
 }
 
 template< typename Real,
@@ -277,7 +270,56 @@ addElement( const IndexType row,
             const RealType& value,
             const RealType& thisElementMultiplicator )
 {
-   
+   TNL_ASSERT( row >= 0 && row < this->rows &&
+               column >= 0 && column < this->columns,
+               std::cerr << " row = " << row
+                    << " column = " << column
+                    << " this->rows = " << this->rows
+                    << " this->columns = " << this->columns );
+
+   const IndexType rowSize = this->segments.getSegmentSize( row );
+   IndexType col( this->getPaddingIndex() );
+   IndexType i;
+   IndexType globalIdx;
+   for( i = 0; i < rowSize; i++ )
+   {
+      globalIdx = this->segments.getGlobalIndex( row, i );
+      TNL_ASSERT_LT( globalIdx, this->columnIndexes.getSize(), "" );
+      col = this->columnIndexes.getElement( globalIdx );
+      if( col == column )
+      {
+         this->values.setElement( globalIdx, thisElementMultiplicator * this->values.getElement( globalIdx ) + value );
+         return true;
+      }
+      if( col == this->getPaddingIndex() || col > column )
+         break;
+   }
+   if( i == rowSize )
+      return false;
+   if( col == this->getPaddingIndex() )
+   {
+      this->columnIndexes.setElement( globalIdx, column );
+      this->values.setElement( globalIdx, value );
+      return true;
+   }
+   else
+   {
+      IndexType j = rowSize - 1;
+      while( j > i )
+      {
+         const IndexType globalIdx1 = this->segments.getGlobalIndex( row, j );
+         const IndexType globalIdx2 = this->segments.getGlobalIndex( row, j - 1 );
+         TNL_ASSERT_LT( globalIdx1, this->columnIndexes.getSize(), "" );
+         TNL_ASSERT_LT( globalIdx2, this->columnIndexes.getSize(), "" );
+         this->columnIndexes.setElement( globalIdx1, this->columnIndexes.getElement( globalIdx2 ) );
+         this->values.setElement( globalIdx1, this->values.getElement( globalIdx2 ) );
+         j--;
+      }
+      
+      this->columnIndexes.setElement( globalIdx, column );
+      this->values.setElement( globalIdx, value );
+      return true;
+   }
 }
 
 
@@ -377,16 +419,25 @@ SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
 getElement( const IndexType row,
             const IndexType column ) const
 {
-   
+   const IndexType rowSize = this->segments.getSegmentSize( row );
+   for( IndexType i = 0; i < rowSize; i++ )
+   {
+      const IndexType globalIdx = this->segments.getGlobalIndex( row, i );
+      TNL_ASSERT_LT( globalIdx, this->columnIndexes.getSize(), "" );
+      const IndexType col = this->columnIndexes.getElement( globalIdx );
+      if( col == column )
+         return this->values.getElement( globalIdx );
+   }
+   return 0.0;
 }
 
-__cuda_callable__
 template< typename Real,
           template< typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
           typename IndexAllocator >
+__cuda_callable__
 void
 SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
 getRowFast( const IndexType row,
@@ -604,6 +655,19 @@ print( std::ostream& str ) const
    
 }
 
+template< typename Real,
+          template< typename, typename > class Segments,
+          typename Device,
+          typename Index,
+          typename RealAllocator,
+          typename IndexAllocator >
+__cuda_callable__
+Index
+SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
+getPaddingIndex() const
+{
+   return -1;
+}
 
    } //namespace Matrices
 } // namespace  TNL

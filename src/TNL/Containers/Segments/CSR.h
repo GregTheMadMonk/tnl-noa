@@ -44,26 +44,43 @@ class CSR
       /**
        * \brief Number segments.
        */
+      __cuda_callable__
       IndexType getSize() const;
 
+      __cuda_callable__
+      IndexType getSegmentSize( const IndexType segmentIdx ) const;
+
+      __cuda_callable__
       IndexType getStorageSize() const;
 
+      __cuda_callable__
       IndexType getGlobalIndex( const Index segmentIdx, const Index localIdx ) const;
 
+      __cuda_callable__
       void getSegmentAndLocalIndex( const Index globalIdx, Index& segmentIdx, Index& localIdx ) const;
 
       /***
        * \brief Go over all segments and for each segment element call
-       * function 'f' with arguments 'args'
+       * function 'f' with arguments 'args'. The return type of 'f' is bool.
+       * When its true, the for-loop continues. Once 'f' returns false, the for-loop
+       * is terminated.
        */
       template< typename Function, typename... Args >
+      void forSegments( IndexType first, IndexType last, Function& f, Args... args ) const;
+
+      template< typename Function, typename... Args >
       void forAll( Function& f, Args... args ) const;
+
 
       /***
        * \brief Go over all segments and perform a reduction in each of them.
        */
-      template< typename Fetch, typename Reduction, typename ResultKeeper, typename... Args >
-      void segmentsReduction( Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, Args... args );
+      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
+      void segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args );
+
+      template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
+      void allReduction( Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args );
+
 
    protected:
 
@@ -75,4 +92,4 @@ class CSR
    }  // namespace Conatiners
 } // namespace TNL
 
-#include <TNL/Containers/Segments/CSR.h>
+#include <TNL/Containers/Segments/CSR.hpp>

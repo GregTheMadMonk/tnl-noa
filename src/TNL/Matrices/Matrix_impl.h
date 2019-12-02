@@ -163,6 +163,7 @@ void Matrix< Real, Device, Index, RealAllocator >::reset()
 {
    this->rows = 0;
    this->columns = 0;
+   this->values.reset();
 }
 
 template< typename Real,

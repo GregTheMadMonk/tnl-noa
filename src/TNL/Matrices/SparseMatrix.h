@@ -55,9 +55,6 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
 
       virtual String getSerializationTypeVirtual() const;
 
-      void setDimensions( const IndexType rows,
-                          const IndexType columns );
-
       void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths );
 
       IndexType getRowLength( const IndexType row ) const;
@@ -85,6 +82,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       bool setElement( const IndexType row,
                        const IndexType column,
                        const RealType& value );
+
       __cuda_callable__
       bool addElementFast( const IndexType row,
                            const IndexType column,
@@ -189,10 +187,18 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       void load( const String& fileName );
 
       void print( std::ostream& str ) const;
-      
+
+      __cuda_callable__
+      IndexType getPaddingIndex() const;
    protected:
 
-      ColumnsVectorType columnsVector;
+      ColumnsVectorType columnIndexes;
+
+      SegmentsType segments;
+
+      IndexAllocator indexAlloctor;
+
+      RealAllocator realAllocator;
 };
 
 }  // namespace Conatiners
