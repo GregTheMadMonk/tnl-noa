@@ -19,7 +19,7 @@ namespace TNL {
 
 template< typename Device,
           typename Index >
-class Segments
+class CSR
 {
    public:
 
@@ -29,29 +29,24 @@ class Segments
 
       CSR();
 
-      CSR( const SizesHolder& sizes );
+      CSR( const Vector< IndexType, DeviceType, IndexType >& sizes );
 
-      CSR( const CSR& csr );
+      CSR( const CSR& segments );
 
-      CSR( const CSR&& csr );
-
-      /**
-       * \brief Set number of segments
-       */
-      //void setSegmentsCount();
+      CSR( const CSR&& segments );
 
       /**
        * \brief Set sizes of particular segmenets.
        */
       template< typename SizesHolder = OffsetsHolder >
-      void setSizes( const SizesHolder& sizes )
+      void setSizes( const SizesHolder& sizes );
 
       /**
        * \brief Number segments.
        */
-      Index getSize() const;
+      IndexType getSize() const;
 
-      Index getStorageSize() const;
+      IndexType getStorageSize() const;
 
       IndexType getGlobalIndex( const Index segmentIdx, const Index localIdx ) const;
 
@@ -62,13 +57,13 @@ class Segments
        * function 'f' with arguments 'args'
        */
       template< typename Function, typename... Args >
-      void forAll( Function& f, Args args ) const;
+      void forAll( Function& f, Args... args ) const;
 
       /***
        * \brief Go over all segments and perform a reduction in each of them.
        */
       template< typename Fetch, typename Reduction, typename ResultKeeper, typename... Args >
-      void segmentsReduction( Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, Args args );
+      void segmentsReduction( Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, Args... args );
 
    protected:
 
