@@ -74,6 +74,11 @@ ELSE(  BUILD_CUDA )
    TARGET_COMPILE_OPTIONS( SparseMatrixTest_CSR_segments PRIVATE ${CXX_TESTS_FLAGS} )
    TARGET_LINK_LIBRARIES( SparseMatrixTest_CSR_segments ${GTEST_BOTH_LIBRARIES} )
 
+   ADD_EXECUTABLE( SparseMatrixTest_Ellpack_segments SparseMatrixTest_Ellpack_segments.cpp )
+   TARGET_COMPILE_OPTIONS( SparseMatrixTest_Ellpack_segments PRIVATE ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( SparseMatrixTest_Ellpack_segments ${GTEST_BOTH_LIBRARIES} )
+
+
 ENDIF( BUILD_CUDA )
 
 
@@ -92,6 +97,7 @@ ADD_TEST( SparseMatrixTest_SlicedEllpack ${EXECUTABLE_OUTPUT_PATH}/SparseMatrixT
 ####
 # Segments tests
 ADD_TEST( SparseMatrixTest_CSR_segments ${EXECUTABLE_OUTPUT_PATH}/SparseMatrixTest_CSR_segments${CMAKE_EXECUTABLE_SUFFIX} )
+ADD_TEST( SparseMatrixTest_Ellpack_segments ${EXECUTABLE_OUTPUT_PATH}/SparseMatrixTest_Ellpack_segments${CMAKE_EXECUTABLE_SUFFIX} )
 
 if( ${BUILD_MPI} )
    if( BUILD_CUDA )

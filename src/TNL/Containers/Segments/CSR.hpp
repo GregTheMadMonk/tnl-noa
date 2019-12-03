@@ -204,6 +204,6 @@ load( File& file )
    file >> this->offsets;
 }
 
-      } // namespace Segements
+      } // namespace Segments
    }  // namespace Conatiners
 } // namespace TNL

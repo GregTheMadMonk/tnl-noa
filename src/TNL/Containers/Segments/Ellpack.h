@@ -18,6 +18,7 @@ namespace TNL {
 
 template< typename Device,
           typename Index,
+          bool RowMajorOrder = std::is_same< Device, Devices::Host >::value,
           int Alignment = 32 >
 class Ellpack
 {
