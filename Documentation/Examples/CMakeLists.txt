@@ -1,4 +1,6 @@
+ADD_SUBDIRECTORY( Algorithms )
 ADD_SUBDIRECTORY( Containers )
+ADD_SUBDIRECTORY( Pointers )
 
 ADD_EXECUTABLE( FileExample FileExample.cpp )
 ADD_CUSTOM_COMMAND( COMMAND FileExample > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/FileExample.out OUTPUT FileExample.out )

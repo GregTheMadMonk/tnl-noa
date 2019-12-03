@@ -1,3 +1,6 @@
+add_subdirectory( BuildWithTNL )
 add_subdirectory( Arrays )
 add_subdirectory( Vectors )
 add_subdirectory( ReductionAndScan )
+add_subdirectory( ForLoops )
+add_subdirectory( Pointers )

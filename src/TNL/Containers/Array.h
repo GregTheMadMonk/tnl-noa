@@ -62,7 +62,7 @@ template< int, typename > class StaticArray;
  * See also \ref ArrayView, \ref Vector, \ref VectorView.
  *
  * \par Example
- * \include ArrayExample.cpp
+ * \include Containers/ArrayExample.cpp
  * \par Output
  * \include ArrayExample.out
  */

@@ -17,6 +17,36 @@
 
 namespace TNL {
 namespace Algorithms {
+
+/**
+ * \brief TemplateStaticFor serves for coding for-loops in template parameters.
+ *
+ * The result of calling this loop with a templated class \p LoopBody is as follows:
+ *
+ * LoopBody< begin >::exec( ... );
+ *
+ * LoodBody< begin + 1 >::exec( ... );
+ *
+ * ...
+ *
+ * LoopBody< end - 1 >::exec( ... );
+ *
+ * \tparam IndexType is type of the loop indexes
+ * \tparam begin the loop iterates over index interval [begin,end).
+ * \tparam end the loop iterates over index interval [begin,end).
+ * \tparam LoopBody is a templated class having one template parameter of IndexType.
+ *
+ * \par Example
+ * \include Algorithms/TamplateStaticForExample.cpp
+ * \par Output
+ * \include TamplateStaticForExample.out
+ */
+template< typename IndexType,
+          IndexType begin,
+          IndexType end,
+          template< IndexType > class LoopBody >
+struct TemplateStaticFor;
+
 namespace detail {
 
 template< typename IndexType,
@@ -25,6 +55,12 @@ template< typename IndexType,
           template< IndexType > class LoopBody >
 struct TemplateStaticForExecutor
 {
+   /**
+    * \brief Static method initiating the for-loop.
+    *
+    * \tparam Args type of user defined data to be passed to for-loop.
+    * \param args user defined data to be passed to for-loop.
+    */
    template< typename... Args >
    __cuda_callable__
    static void exec( Args&&... args )

@@ -11,6 +11,12 @@
 #pragma once
 
 namespace TNL {
+
+/**
+ * \brief Namespace for TNL pointers.
+ *
+ * Pointers in TNL are similar to STL pointers but they work across different device.
+ */
 namespace Pointers {
 
 class SmartPointer

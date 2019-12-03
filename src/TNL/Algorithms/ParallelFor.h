@@ -31,14 +31,57 @@
  */
 
 namespace TNL {
+/**
+ * \brief Namespace for fundamental TNL algorithms
+ *
+ * It contains algorithms like for-loops, memory operations, (parallel) reduction,
+ * multireduction, scan etc.
+ */
 namespace Algorithms {
 
+// TODO: ParallelForMode should be moved to Device (=Executor)
+
+/**
+ * \brief Enum for the parallel processing of the for-loop.
+ *
+ * Synchronous means that the program control returns to the caller when the loop is processed completely.
+ * Asynchronous means that the program control returns to the caller immediately even before the loop is processing is finished.
+ *
+ * Only parallel for-loops in CUDA are affected by this mode.
+ */
 enum ParallelForMode { SynchronousMode, AsynchronousMode };
 
+
+/**
+ * \brief Parallel for loop for one dimensional interval of indexes.
+ *
+ * \tparam Device says on what device the for-loop is gonna be executed.
+ *    It can be Devices::Host, Devices::Cuda or Devices::Sequential.
+ * \tparam Mode defines synchronous/asynchronous mode on parallel devices.
+ */
 template< typename Device = Devices::Sequential,
           ParallelForMode Mode = SynchronousMode >
 struct ParallelFor
 {
+   /**
+    * \brief Static method for execution of the loop.
+    *
+    * \tparam Index defines the type of indexes over which the loop iterates.
+    * \tparam Function is the type of function to be called in each iteration.
+    * \tparam FunctionArgs is a variadic type of additional parameters which are
+    *    supposed to be passed to the inner Function.
+    *
+    * \param start the for-loop iterates over index interval [start, end).
+    * \param end the for-loop iterates over index interval [start, end).
+    * \param f is the function to be called in each iteration
+    * \param args are additional parameters to be passed to the function f.
+    *
+    * \par Example
+    * \include Algorithms/ParallelForExample.cpp
+    * \par Output
+    * \include ParallelForExample.out
+    *
+    */
    template< typename Index,
              typename Function,
              typename... FunctionArgs >
@@ -49,10 +92,44 @@ struct ParallelFor
    }
 };
 
+/**
+ * \brief Parallel for loop for two dimensional domain of indexes.
+ *
+ * \tparam Device says on what device the for-loop is gonna be executed.
+ *    It can be Devices::Host, Devices::Cuda or Devices::Sequential.
+ * \tparam Mode defines synchronous/asynchronous mode on parallel devices.
+ */
 template< typename Device = Devices::Sequential,
           ParallelForMode Mode = SynchronousMode >
 struct ParallelFor2D
 {
+   /**
+    * \brief Static method for execution of the loop.
+    *
+    * \tparam Index defines the type of indexes over which the loop iterates.
+    * \tparam Function is the type of function to be called in each iteration.
+    * \tparam FunctionArgs is a variadic type of additional parameters which are
+    *    supposed to be passed to the inner Function.
+    *
+    * \param startX the for-loop iterates over index domain [startX,endX)x[startY,endY).
+    * \param startY the for-loop iterates over index domain [startX,endX)x[startY,endY).
+    * \param endX the for-loop iterates over index domain [startX,endX)x[startY,endY).
+    * \param endY the for-loop iterates over index domain [startX,endX)x[startY,endY).
+    * \param f is the function to be called in each iteration
+    * \param args are additional parameters to be passed to the function f.
+    *
+    * The function f is called for each iteration as
+    *
+    * f( i, j, args... )
+    *
+    * where the first parameter is changing more often than the second one.
+    *
+    * \par Example
+    * \include Algorithms/ParallelForExample-2D.cpp
+    * \par Output
+    * \include ParallelForExample-2D.out
+    *
+    */
    template< typename Index,
              typename Function,
              typename... FunctionArgs >
@@ -64,10 +141,46 @@ struct ParallelFor2D
    }
 };
 
+/**
+ * \brief Parallel for loop for three dimensional domain of indexes.
+ *
+ * \tparam Device says on what device the for-loop is gonna be executed.
+ *    It can be Devices::Host, Devices::Cuda or Devices::Sequential.
+ * \tparam Mode defines synchronous/asynchronous mode on parallel devices.
+ */
 template< typename Device = Devices::Sequential,
           ParallelForMode Mode = SynchronousMode >
 struct ParallelFor3D
 {
+   /**
+    * \brief Static method for execution of the loop.
+    *
+    * \tparam Index defines the type of indexes over which the loop iterates.
+    * \tparam Function is the type of function to be called in each iteration.
+    * \tparam FunctionArgs is a variadic type of additional parameters which are
+    *    supposed to be passed to the inner Function.
+    *
+    * \param startX the for-loop iterates over index domain [startX,endX)x[startY,endY)x[startZ,endZ).
+    * \param startY the for-loop iterates over index domain [startX,endX)x[startY,endY)x[startZ,endZ).
+    * \param startZ the for-loop iterates over index domain [startX,endX)x[startY,endY)x[startZ,endZ).
+    * \param endX the for-loop iterates over index domain [startX,endX)x[startY,endY)x[startZ,endZ).
+    * \param endY the for-loop iterates over index domain [startX,endX)x[startY,endY)x[startZ,endZ).
+    * \param endZ the for-loop iterates over index domain [startX,endX)x[startY,endY)x[startZ,endZ).
+    * \param f is the function to be called in each iteration
+    * \param args are additional parameters to be passed to the function f.
+    *
+    * The function f is called for each iteration as
+    *
+    * f( i, j, k, args... )
+    *
+    * where the first parameter is changing the most often.
+    *
+    * \par Example
+    * \include Algorithms/ParallelForExample-3D.cpp
+    * \par Output
+    * \include ParallelForExample-3D.out
+    *
+    */
    template< typename Index,
              typename Function,
              typename... FunctionArgs >
