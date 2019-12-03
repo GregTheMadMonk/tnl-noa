@@ -181,10 +181,29 @@ template< typename Device,
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
 void
 CSR< Device, Index >::
-allReduction( Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args )
+allReduction( Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    this->segmentsReduction( 0, this->getSize(), fetch, reduction, keeper, zero, args... );
 }
+
+template< typename Device,
+          typename Index >
+void
+CSR< Device, Index >::
+save( File& file ) const
+{
+   file << this->offsets;
+}
+
+template< typename Device,
+          typename Index >
+void
+CSR< Device, Index >::
+load( File& file )
+{
+   file >> this->offsets;
+}
+
       } // namespace Segements
    }  // namespace Conatiners
 } // namespace TNL

@@ -597,7 +597,9 @@ void
 SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
 save( File& file ) const
 {
-
+   Matrix< RealType, DeviceType, IndexType >::save( file );
+   file << this->columnIndexes;
+   this->segments.save( file );
 }
 
 template< typename Real,
@@ -610,7 +612,9 @@ void
 SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
 load( File& file )
 {
-
+   Matrix< RealType, DeviceType, IndexType >::load( file );
+   file >> this->columnIndexes;
+   this->segments.load( file );
 }
 
 template< typename Real,
@@ -623,7 +627,7 @@ void
 SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
 save( const String& fileName ) const
 {
-
+   Object::save( fileName );
 }
 
 template< typename Real,
@@ -636,7 +640,7 @@ void
 SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
 load( const String& fileName )
 {
-
+   Object::load( fileName );
 }
 
 template< typename Real,
@@ -649,7 +653,20 @@ void
 SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
 print( std::ostream& str ) const
 {
-
+   for( IndexType row = 0; row < this->getRows(); row++ )
+   {
+      str <<"Row: " << row << " -> ";
+      const IndexType rowLength = this->segments.getSegmentSize( row );
+      for( IndexType i = 0; i < rowLength; i++ )
+      {
+         const IndexType globalIdx = this->segments.getGlobalIndex( row, i );
+         const IndexType column = this->columnIndexes.getElement( globalIdx );
+         if( column == this->getPaddingIndex() )
+            break;
+         str << " Col:" << column << "->" << this->values.getElement( globalIdx ) << "\t";
+      }
+      str << std::endl;
+   }
 }
 
 template< typename Real,

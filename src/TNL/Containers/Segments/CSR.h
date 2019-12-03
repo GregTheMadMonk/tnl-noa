@@ -79,8 +79,11 @@ class CSR
       void segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
 
       template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
-      void allReduction( Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args );
+      void allReduction( Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
 
+      void save( File& file ) const;
+
+      void load( File& file );
 
    protected:
 
