@@ -502,7 +502,7 @@ vectorProduct( const InVector& inVector,
    auto keeper = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
       outVectorView[ row ] = value;
    };
-   const_cast< SegmentsType* >( &this->segments )->segmentsReduction( 0, this->getRows(), fetch, reduction, keeper, ( RealType ) 0.0 );
+   this->segments.segmentsReduction( 0, this->getRows(), fetch, reduction, keeper, ( RealType ) 0.0 );
 }
 
 /*template< typename Real,
