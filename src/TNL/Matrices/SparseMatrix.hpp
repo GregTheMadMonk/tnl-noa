@@ -64,7 +64,7 @@ SparseMatrix( const IndexType rows,
               const RealAllocatorType& realAllocator,
               const IndexAllocatorType& indexAllocator )
 : Matrix< Real, Device, Index, RealAllocator >( rows, columns, realAllocator ), columnIndexes( indexAllocator )
-{  
+{
 }
 
 template< typename Real,
@@ -124,7 +124,7 @@ Index
 SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
 getRowLength( const IndexType row ) const
 {
-   
+
 }
 
 template< typename Real,
@@ -138,7 +138,7 @@ Index
 SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
 getRowLengthFast( const IndexType row ) const
 {
-   
+
 }
 
 template< typename Real,
@@ -151,7 +151,7 @@ Index
 SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
 getNonZeroRowLength( const IndexType row ) const
 {
-   
+
 }
 
 template< typename Real,
@@ -165,7 +165,7 @@ Index
 SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
 getNonZeroRowLengthFast( const IndexType row ) const
 {
-   
+
 }
 
 template< typename Real,
@@ -254,7 +254,7 @@ addElementFast( const IndexType row,
                 const RealType& value,
                 const RealType& thisElementMultiplicator )
 {
-   
+
 }
 
 template< typename Real,
@@ -315,7 +315,7 @@ addElement( const IndexType row,
          this->values.setElement( globalIdx1, this->values.getElement( globalIdx2 ) );
          j--;
       }
-      
+
       this->columnIndexes.setElement( globalIdx, column );
       this->values.setElement( globalIdx, value );
       return true;
@@ -337,7 +337,6 @@ setRowFast( const IndexType row,
             const RealType* values,
             const IndexType elements )
 {
-   
 }
 
 template< typename Real,
@@ -353,7 +352,19 @@ setRow( const IndexType row,
         const RealType* values,
         const IndexType elements )
 {
-   
+   const IndexType rowLength = this->segments.getSegmentSize( row );
+   if( elements > rowLength )
+      return false;
+
+   for( IndexType i = 0; i < elements; i++ )
+   {
+      const IndexType globalIdx = this->segments.getGlobalIndex( row, i );
+      this->columnIndexes.setElement( globalIdx, columnIndexes[ i ] );
+      this->values.setElement( globalIdx, values[ i ] );
+   }
+   for( IndexType i = elements; i < rowLength; i++ )
+      this->columnIndexes.setElement( this->segments.getGlobalIndex( row, i ), this->getPaddingIndex() );
+   return true;
 }
 
 
@@ -372,7 +383,7 @@ addRowFast( const IndexType row,
             const IndexType numberOfElements,
             const RealType& thisElementMultiplicator )
 {
-   
+
 }
 
 template< typename Real,
@@ -389,7 +400,7 @@ addRow( const IndexType row,
         const IndexType numberOfElements,
         const RealType& thisElementMultiplicator )
 {
-   
+
 }
 
 
@@ -405,7 +416,7 @@ SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
 getElementFast( const IndexType row,
                 const IndexType column ) const
 {
-   
+
 }
 
 template< typename Real,
@@ -444,36 +455,8 @@ getRowFast( const IndexType row,
             IndexType* columns,
             RealType* values ) const
 {
-   
-}
 
-/*template< typename Real,
-          template< typename, typename > class Segments,
-          typename Device,
-          typename Index,
-          typename RealAllocator,
-          typename IndexAllocator >
-__cuda_callable__
-MatrixRow 
-SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
-getRow( const IndexType rowIndex )
-{
-   
 }
-
-template< typename Real,
-          template< typename, typename > class Segments,
-          typename Device,
-          typename Index,
-          typename RealAllocator,
-          typename IndexAllocator >
-__cuda_callable__
-ConstMatrixRow
-SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
-getRow( const IndexType rowIndex ) const
-{
-   
-}*/
 
 template< typename Real,
           template< typename, typename > class Segments,
@@ -488,7 +471,7 @@ SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
 rowVectorProduct( const IndexType row,
                   const Vector& vector ) const
 {
-   
+
 }
 
 template< typename Real,
@@ -502,10 +485,24 @@ template< typename InVector,
 void
 SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
 vectorProduct( const InVector& inVector,
-               OutVector& outVector ) const
-// TODO: add const RealType& multiplicator = 1.0 )
+               OutVector& outVector,
+               const RealType& matrixMultiplicator,
+               const RealType& inVectorAddition ) const
 {
-   
+   auto inVectorView = inVector.getConstView();
+   auto outVectorView = outVector.getView();
+   auto valuesView = this->values.getConstView();
+   auto columnIndexesView = this->columnIndexes.getConstView();
+   auto fetch = [=] __cuda_callable__ ( IndexType row, IndexType offset ) -> RealType {
+      return valuesView[ offset ] * inVectorView[ columnIndexesView[ offset ] ];
+   };
+   auto reduction = [] __cuda_callable__ ( RealType& sum, const RealType& value ) {
+      sum += value;
+   };
+   auto keeper = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
+      outVectorView[ row ] = value;
+   };
+   const_cast< SegmentsType* >( &this->segments )->segmentsReduction( 0, this->getRows(), fetch, reduction, keeper, ( RealType ) 0.0 );
 }
 
 /*template< typename Real,
@@ -521,7 +518,7 @@ addMatrix( const SparseMatrix< Real2, Segments2, Device, Index2, RealAllocator2,
            const RealType& matrixMultiplicator,
            const RealType& thisMatrixMultiplicator )
 {
-   
+
 }
 
 template< typename Real,
@@ -536,7 +533,7 @@ SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
 getTransposition( const SparseMatrix< Real2, Device, Index2 >& matrix,
                   const RealType& matrixMultiplicator )
 {
-   
+
 }*/
 
 template< typename Real,
@@ -553,7 +550,7 @@ performSORIteration( const Vector1& b,
                      Vector2& x,
                      const RealType& omega ) const
 {
-   
+
 }
 
 // copy assignment
@@ -567,7 +564,7 @@ SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >&
 SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
 operator=( const SparseMatrix& matrix )
 {
-   
+
 }
 
 // cross-device copy assignment
@@ -587,7 +584,7 @@ SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >&
 SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
 operator=( const SparseMatrix< Real2, Segments2, Device2, Index2, RealAllocator2, IndexAllocator2 >& matrix )
 {
-   
+
 }
 
 template< typename Real,
@@ -600,7 +597,7 @@ void
 SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
 save( File& file ) const
 {
-   
+
 }
 
 template< typename Real,
@@ -613,7 +610,7 @@ void
 SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
 load( File& file )
 {
-   
+
 }
 
 template< typename Real,
@@ -626,7 +623,7 @@ void
 SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
 save( const String& fileName ) const
 {
-   
+
 }
 
 template< typename Real,
@@ -639,7 +636,7 @@ void
 SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
 load( const String& fileName )
 {
-   
+
 }
 
 template< typename Real,
@@ -652,7 +649,7 @@ void
 SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
 print( std::ostream& str ) const
 {
-   
+
 }
 
 template< typename Real,

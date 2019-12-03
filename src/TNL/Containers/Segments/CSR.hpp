@@ -163,11 +163,12 @@ void
 CSR< Device, Index >::
 segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args )
 {
-   const auto offsetsView = this->offsets.getView();
+   using RealType = decltype( fetch( IndexType(), IndexType() ) );
+   auto offsetsView = this->offsets.getConstView();
    auto l = [=] __cuda_callable__ ( const IndexType i, Args... args ) {
       const IndexType begin = offsetsView[ i ];
       const IndexType end = offsetsView[ i + 1 ];
-      Real aux( zero );
+      RealType aux( zero );
       for( IndexType j = begin; j < end; j++  )
          reduction( aux, fetch( i, j, args... ) );
       keeper( i, aux );

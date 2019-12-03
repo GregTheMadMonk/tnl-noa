@@ -41,7 +41,7 @@ using CSRMatrixTypes = ::testing::Types
     TNL::Matrices::SparseMatrix< long,    TNL::Containers::Segments::CSR, TNL::Devices::Host, long  >,
     TNL::Matrices::SparseMatrix< float,   TNL::Containers::Segments::CSR, TNL::Devices::Host, long  >,
     TNL::Matrices::SparseMatrix< double,  TNL::Containers::Segments::CSR, TNL::Devices::Host, long  >
-#ifdef HAVE_CUDA                                                                             
+#ifdef HAVE_CUDA
    ,TNL::Matrices::SparseMatrix< int,     TNL::Containers::Segments::CSR, TNL::Devices::Cuda, short >,
     TNL::Matrices::SparseMatrix< long,    TNL::Containers::Segments::CSR, TNL::Devices::Cuda, short >,
     TNL::Matrices::SparseMatrix< float,   TNL::Containers::Segments::CSR, TNL::Devices::Cuda, short >,
@@ -108,7 +108,7 @@ TYPED_TEST( CSRMatrixTest, addElementTest )
     test_AddElement< CSRMatrixType >();
 }
 
-/*TYPED_TEST( CSRMatrixTest, setRowTest )
+TYPED_TEST( CSRMatrixTest, setRowTest )
 {
     using CSRMatrixType = typename TestFixture::CSRMatrixType;
 
@@ -122,7 +122,7 @@ TYPED_TEST( CSRMatrixTest, vectorProductTest )
     test_VectorProduct< CSRMatrixType >();
 }
 
-TYPED_TEST( CSRMatrixTest, saveAndLoadTest )
+/*TYPED_TEST( CSRMatrixTest, saveAndLoadTest )
 {
     using CSRMatrixType = typename TestFixture::CSRMatrixType;
 

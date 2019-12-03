@@ -133,22 +133,20 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
                        IndexType* columns,
                        RealType* values ) const;
 
-      /*__cuda_callable__
-      MatrixRow getRow( const IndexType rowIndex );
-
-      __cuda_callable__
-      ConstMatrixRow getRow( const IndexType rowIndex ) const;*/
-
       template< typename Vector >
       __cuda_callable__
       typename Vector::RealType rowVectorProduct( const IndexType row,
                                                   const Vector& vector ) const;
 
+      /***
+       * \brief This method computes outVector = matrixMultiplicator * ( *this ) * inVector + inVectorAddition * inVector
+       */
       template< typename InVector,
                 typename OutVector >
       void vectorProduct( const InVector& inVector,
-                          OutVector& outVector ) const;
-      // TODO: add const RealType& multiplicator = 1.0 )
+                          OutVector& outVector,
+                          const RealType& matrixMultiplicator = 1.0,
+                          const RealType& inVectorAddition = 0.0 ) const;
 
       /*template< typename Real2, typename Index2 >
       void addMatrix( const SparseMatrix< Real2, Segments, Device, Index2 >& matrix,
@@ -170,7 +168,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       SparseMatrix& operator=( const SparseMatrix& matrix );
 
       // cross-device copy assignment
-      template< typename Real2, 
+      template< typename Real2,
                 template< typename, typename > class Segments2,
                 typename Device2,
                 typename Index2,
