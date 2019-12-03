@@ -1,7 +1,7 @@
 /***************************************************************************
-                          CSR.hpp -  description
+                          Ellpack.hpp -  description
                              -------------------
-    begin                : Nov 29, 2019
+    begin                : Dec 3, 2019
     copyright            : (C) 2019 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -12,7 +12,7 @@
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/ParallelFor.h>
-#include <TNL/Containers/Segments/CSR.h>
+#include <TNL/Containers/Segments/Ellpack.h>
 
 namespace TNL {
    namespace Containers {
@@ -21,22 +21,22 @@ namespace TNL {
 
 template< typename Device,
           typename Index >
-CSR< Device, Index >::
-CSR()
+Ellpack< Device, Index >::
+Ellpack() : size( 0 ), rowLength( 0 )
 {
 }
 
 template< typename Device,
           typename Index >
-CSR< Device, Index >::
-CSR( const CSR& csr ) : offsets( csr.offsets )
+Ellpack< Device, Index >::
+Ellpack( const Ellpack& ellpack ) : offsets( ellpack.offsets )
 {
 }
 
 template< typename Device,
           typename Index >
-CSR< Device, Index >::
-CSR( const CSR&& csr ) : offsets( std::move( csr.offsets ) )
+Ellpack< Device, Index >::
+Ellpack( const Ellpack&& ellpack ) : offsets( std::move( ellpack.offsets ) )
 {
 
 }
@@ -45,21 +45,18 @@ template< typename Device,
           typename Index >
    template< typename SizesHolder >
 void
-CSR< Device, Index >::
+Ellpack< Device, Index >::
 setSizes( const SizesHolder& sizes )
 {
-   this->offsets.setSize( sizes.getSize() + 1 );
-   auto view = this->offsets.getView( 0, sizes.getSize() );
-   view = sizes;
-   this->offsets.setElement( sizes.getSize(), 0 );
-   this->offsets.template scan< Algorithms::ScanType::Exclusive >();
+   this->segmentSize = max( sizes );
+   this->size = sizes.getSize();
 }
 
 template< typename Device,
           typename Index >
 __cuda_callable__
 Index
-CSR< Device, Index >::
+Ellpack< Device, Index >::
 getSize() const
 {
    return this->offsets.getSize() - 1;
@@ -69,43 +66,27 @@ template< typename Device,
           typename Index >
 __cuda_callable__
 Index
-CSR< Device, Index >::
+Ellpack< Device, Index >::
 getSegmentSize( const IndexType segmentIdx ) const
 {
-   if( ! std::is_same< DeviceType, Devices::Host >::value )
-   {
-#ifdef __CUDA_ARCH__
-      return offsets[ segmentIdx + 1 ] - offsets[ segmentIdx ];
-#else
-      return offsets.getElement( segmentIdx + 1 ) - offsets.getElement( segmentIdx );
-#endif
-   }
-   return offsets[ segmentIdx + 1 ] - offsets[ segmentIdx ];
+   return this->segmentSize;
 }
 
 template< typename Device,
           typename Index >
 __cuda_callable__
 Index
-CSR< Device, Index >::
+Ellpack< Device, Index >::
 getStorageSize() const
 {
-   if( ! std::is_same< DeviceType, Devices::Host >::value )
-   {
-#ifdef __CUDA_ARCH__
-      return offsets[ this->getSize() ];
-#else
-      return offsets.getElement( this->getSize() );
-#endif
-   }
-   return offsets[ this->getSize() ];
+   return this->size * this->segmentSize;
 }
 
 template< typename Device,
           typename Index >
 __cuda_callable__
 Index
-CSR< Device, Index >::
+Ellpack< Device, Index >::
 getGlobalIndex( const Index segmentIdx, const Index localIdx ) const
 {
    if( ! std::is_same< DeviceType, Devices::Host >::value )
@@ -123,7 +104,7 @@ template< typename Device,
           typename Index >
 __cuda_callable__
 void
-CSR< Device, Index >::
+Ellpack< Device, Index >::
 getSegmentAndLocalIndex( const Index globalIdx, Index& segmentIdx, Index& localIdx ) const
 {
 }
@@ -132,11 +113,11 @@ template< typename Device,
           typename Index >
    template< typename Function, typename... Args >
 void
-CSR< Device, Index >::
+Ellpack< Device, Index >::
 forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
 {
    const auto offsetsView = this->offsets.getView();
-   auto l = [=] __cuda_callable__ ( const IndexType i, Args... args ) mutable {
+   auto l = [=] __cuda_callable__ ( const IndexType i, Args... args ) {
       const IndexType begin = offsetsView[ i ];
       const IndexType end = offsetsView[ i + 1 ];
       for( IndexType j = begin; j < end; j++  )
@@ -150,7 +131,7 @@ template< typename Device,
           typename Index >
    template< typename Function, typename... Args >
 void
-CSR< Device, Index >::
+Ellpack< Device, Index >::
 forAll( Function& f, Args... args ) const
 {
    this->forSegments( 0, this->getSize(), f, args... );
@@ -160,7 +141,7 @@ template< typename Device,
           typename Index >
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
 void
-CSR< Device, Index >::
+Ellpack< Device, Index >::
 segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    using RealType = decltype( fetch( IndexType(), IndexType() ) );
@@ -180,7 +161,7 @@ template< typename Device,
           typename Index >
    template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
 void
-CSR< Device, Index >::
+Ellpack< Device, Index >::
 allReduction( Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    this->segmentsReduction( 0, this->getSize(), fetch, reduction, keeper, zero, args... );
@@ -189,7 +170,7 @@ allReduction( Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Re
 template< typename Device,
           typename Index >
 void
-CSR< Device, Index >::
+Ellpack< Device, Index >::
 save( File& file ) const
 {
    file << this->offsets;
@@ -198,7 +179,7 @@ save( File& file ) const
 template< typename Device,
           typename Index >
 void
-CSR< Device, Index >::
+Ellpack< Device, Index >::
 load( File& file )
 {
    file >> this->offsets;

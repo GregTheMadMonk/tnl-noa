@@ -1,7 +1,7 @@
 /***************************************************************************
-                          CSR.h -  description
+                          Ellpack.h -  description
                              -------------------
-    begin                : Nov 29, 2019
+    begin                : Dec 3, 2019
     copyright            : (C) 2019 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -17,22 +17,24 @@ namespace TNL {
       namespace Segments {
 
 template< typename Device,
-          typename Index >
-class CSR
+          typename Index,
+          int Alignment = 32 >
+class Ellpack
 {
    public:
 
       using DeviceType = Device;
       using IndexType = Index;
       using OffsetsHolder = Containers::Vector< IndexType, DeviceType, IndexType >;
+      static constexpr int getAlignment() { return Alignment; }
 
-      CSR();
+      Ellpack();
 
-      CSR( const Vector< IndexType, DeviceType, IndexType >& sizes );
+      Ellpack( const Vector< IndexType, DeviceType, IndexType >& sizes );
 
-      CSR( const CSR& segments );
+      Ellpack( const Ellpack& segments );
 
-      CSR( const CSR&& segments );
+      Ellpack( const Ellpack&& segments );
 
       /**
        * \brief Set sizes of particular segments.
@@ -86,10 +88,11 @@ class CSR
 
    protected:
 
-      OffsetsHolder offsets;
+      IndexType segmentSize, size, alignedSize;
 };
+
       } // namespace Segements
    }  // namespace Conatiners
 } // namespace TNL
 
-#include <TNL/Containers/Segments/CSR.hpp>
+#include <TNL/Containers/Segments/Ellpack.hpp>
