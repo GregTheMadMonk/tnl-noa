@@ -143,10 +143,10 @@ public:
    {
       static_assert( sizeof...( indices ) == getDimension(), "got wrong number of indices" );
       static_assert( 0 < sizeof...(Dimensions) && sizeof...(Dimensions) <= getDimension(), "got wrong number of dimensions" );
-      static_assert( __ndarray_impl::all_elements_in_range( 0, Permutation::size(), {Dimensions...} ),
-                     "invalid dimensions" );
 // FIXME: nvcc chokes on the variadic brace-initialization
 #ifndef __NVCC__
+      static_assert( __ndarray_impl::all_elements_in_range( 0, Permutation::size(), {Dimensions...} ),
+                     "invalid dimensions" );
       static_assert( __ndarray_impl::is_increasing_sequence( {Dimensions...} ),
                      "specifying permuted dimensions is not supported" );
 #endif
