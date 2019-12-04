@@ -28,6 +28,7 @@ class Ellpack
       using IndexType = Index;
       using OffsetsHolder = Containers::Vector< IndexType, DeviceType, IndexType >;
       static constexpr int getAlignment() { return Alignment; }
+      static constexpr bool getRowMajorOrder() { return RowMajorOrder; }
 
       Ellpack();
 

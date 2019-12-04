@@ -26,34 +26,45 @@ protected:
    using EllpackMatrixType = Matrix;
 };
 
+////
+// Row-major format is used for the host system
+template< typename Device, typename Index >
+using RowMajorEllpack = TNL::Containers::Segments::Ellpack< Device, Index, true, 32 >;
+
+
+////
+// Column-major format is used for GPUs
+template< typename Device, typename Index >
+using ColumnMajorEllpack = TNL::Containers::Segments::Ellpack< Device, Index, false, 32 >;
+
 // types for which MatrixTest is instantiated
 using EllpackMatrixTypes = ::testing::Types
 <
-    TNL::Matrices::SparseMatrix< int,     TNL::Containers::Segments::Ellpack, TNL::Devices::Host, short >,
-    TNL::Matrices::SparseMatrix< long,    TNL::Containers::Segments::Ellpack, TNL::Devices::Host, short >,
-    TNL::Matrices::SparseMatrix< float,   TNL::Containers::Segments::Ellpack, TNL::Devices::Host, short >,
-    TNL::Matrices::SparseMatrix< double,  TNL::Containers::Segments::Ellpack, TNL::Devices::Host, short >,
-    TNL::Matrices::SparseMatrix< int,     TNL::Containers::Segments::Ellpack, TNL::Devices::Host, int   >,
-    TNL::Matrices::SparseMatrix< long,    TNL::Containers::Segments::Ellpack, TNL::Devices::Host, int   >,
-    TNL::Matrices::SparseMatrix< float,   TNL::Containers::Segments::Ellpack, TNL::Devices::Host, int   >,
-    TNL::Matrices::SparseMatrix< double,  TNL::Containers::Segments::Ellpack, TNL::Devices::Host, int   >,
-    TNL::Matrices::SparseMatrix< int,     TNL::Containers::Segments::Ellpack, TNL::Devices::Host, long  >,
-    TNL::Matrices::SparseMatrix< long,    TNL::Containers::Segments::Ellpack, TNL::Devices::Host, long  >,
-    TNL::Matrices::SparseMatrix< float,   TNL::Containers::Segments::Ellpack, TNL::Devices::Host, long  >,
-    TNL::Matrices::SparseMatrix< double,  TNL::Containers::Segments::Ellpack, TNL::Devices::Host, long  >
+    TNL::Matrices::SparseMatrix< int,     RowMajorEllpack, TNL::Devices::Host, short >,
+    TNL::Matrices::SparseMatrix< long,    RowMajorEllpack, TNL::Devices::Host, short >,
+    TNL::Matrices::SparseMatrix< float,   RowMajorEllpack, TNL::Devices::Host, short >,
+    TNL::Matrices::SparseMatrix< double,  RowMajorEllpack, TNL::Devices::Host, short >,
+    TNL::Matrices::SparseMatrix< int,     RowMajorEllpack, TNL::Devices::Host, int   >,
+    TNL::Matrices::SparseMatrix< long,    RowMajorEllpack, TNL::Devices::Host, int   >,
+    TNL::Matrices::SparseMatrix< float,   RowMajorEllpack, TNL::Devices::Host, int   >,
+    TNL::Matrices::SparseMatrix< double,  RowMajorEllpack, TNL::Devices::Host, int   >,
+    TNL::Matrices::SparseMatrix< int,     RowMajorEllpack, TNL::Devices::Host, long  >,
+    TNL::Matrices::SparseMatrix< long,    RowMajorEllpack, TNL::Devices::Host, long  >,
+    TNL::Matrices::SparseMatrix< float,   RowMajorEllpack, TNL::Devices::Host, long  >,
+    TNL::Matrices::SparseMatrix< double,  RowMajorEllpack, TNL::Devices::Host, long  >
 #ifdef HAVE_CUDA
-   ,TNL::Matrices::SparseMatrix< int,     TNL::Containers::Segments::Ellpack, TNL::Devices::Cuda, short >,
-    TNL::Matrices::SparseMatrix< long,    TNL::Containers::Segments::Ellpack, TNL::Devices::Cuda, short >,
-    TNL::Matrices::SparseMatrix< float,   TNL::Containers::Segments::Ellpack, TNL::Devices::Cuda, short >,
-    TNL::Matrices::SparseMatrix< double,  TNL::Containers::Segments::Ellpack, TNL::Devices::Cuda, short >,
-    TNL::Matrices::SparseMatrix< int,     TNL::Containers::Segments::Ellpack, TNL::Devices::Cuda, int   >,
-    TNL::Matrices::SparseMatrix< long,    TNL::Containers::Segments::Ellpack, TNL::Devices::Cuda, int   >,
-    TNL::Matrices::SparseMatrix< float,   TNL::Containers::Segments::Ellpack, TNL::Devices::Cuda, int   >,
-    TNL::Matrices::SparseMatrix< double,  TNL::Containers::Segments::Ellpack, TNL::Devices::Cuda, int   >,
-    TNL::Matrices::SparseMatrix< int,     TNL::Containers::Segments::Ellpack, TNL::Devices::Cuda, long  >,
-    TNL::Matrices::SparseMatrix< long,    TNL::Containers::Segments::Ellpack, TNL::Devices::Cuda, long  >,
-    TNL::Matrices::SparseMatrix< float,   TNL::Containers::Segments::Ellpack, TNL::Devices::Cuda, long  >,
-    TNL::Matrices::SparseMatrix< double,  TNL::Containers::Segments::Ellpack, TNL::Devices::Cuda, long  >
+   ,TNL::Matrices::SparseMatrix< int,     ColumnMajorEllpack, TNL::Devices::Cuda, short >,
+    TNL::Matrices::SparseMatrix< long,    ColumnMajorEllpack, TNL::Devices::Cuda, short >,
+    TNL::Matrices::SparseMatrix< float,   ColumnMajorEllpack, TNL::Devices::Cuda, short >,
+    TNL::Matrices::SparseMatrix< double,  ColumnMajorEllpack, TNL::Devices::Cuda, short >,
+    TNL::Matrices::SparseMatrix< int,     ColumnMajorEllpack, TNL::Devices::Cuda, int   >,
+    TNL::Matrices::SparseMatrix< long,    ColumnMajorEllpack, TNL::Devices::Cuda, int   >,
+    TNL::Matrices::SparseMatrix< float,   ColumnMajorEllpack, TNL::Devices::Cuda, int   >,
+    TNL::Matrices::SparseMatrix< double,  ColumnMajorEllpack, TNL::Devices::Cuda, int   >,
+    TNL::Matrices::SparseMatrix< int,     ColumnMajorEllpack, TNL::Devices::Cuda, long  >,
+    TNL::Matrices::SparseMatrix< long,    ColumnMajorEllpack, TNL::Devices::Cuda, long  >,
+    TNL::Matrices::SparseMatrix< float,   ColumnMajorEllpack, TNL::Devices::Cuda, long  >,
+    TNL::Matrices::SparseMatrix< double,  ColumnMajorEllpack, TNL::Devices::Cuda, long  >
 #endif
 >;
 

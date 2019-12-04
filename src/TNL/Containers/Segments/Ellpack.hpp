@@ -63,7 +63,7 @@ setSizes( const SizesHolder& sizes )
    if( RowMajorOrder )
       this->alignedSize = this->size;
    else
-      this->alignedSize = roundUpDivision( size / this->getAlignment() ) * this->getAlignment();
+      this->alignedSize = roundUpDivision( size, this->getAlignment() ) * this->getAlignment();
 }
 
 template< typename Device,
@@ -186,17 +186,35 @@ void
 Ellpack< Device, Index, RowMajorOrder, Alignment >::
 segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
-   using RealType = decltype( fetch( IndexType(), IndexType() ) );
-   const auto offsetsView = this->offsets.getConstView();
-   auto l = [=] __cuda_callable__ ( const IndexType i, Args... args ) mutable {
-      const IndexType begin = offsetsView[ i ];
-      const IndexType end = offsetsView[ i + 1 ];
-      RealType aux( zero );
-      for( IndexType j = begin; j < end; j++  )
-         reduction( aux, fetch( i, j, args... ) );
-      keeper( i, aux );
-   };
-   Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
+   if( RowMajorOrder )
+   {
+      using RealType = decltype( fetch( IndexType(), IndexType() ) );
+      const IndexType segmentSize = this->segmentSize;
+      auto l = [=] __cuda_callable__ ( const IndexType i, Args... args ) mutable {
+         const IndexType begin = i * segmentSize;
+         const IndexType end = begin + segmentSize;
+         RealType aux( zero );
+         for( IndexType j = begin; j < end; j++  )
+            reduction( aux, fetch( i, j, args... ) );
+         keeper( i, aux );
+      };
+      Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
+   }
+   else
+   {
+      using RealType = decltype( fetch( IndexType(), IndexType() ) );
+      const IndexType storageSize = this->getStorageSize();
+      const IndexType alignedSize = this->alignedSize;
+      auto l = [=] __cuda_callable__ ( const IndexType i, Args... args ) mutable {
+         const IndexType begin = i;
+         const IndexType end = storageSize;
+         RealType aux( zero );
+         for( IndexType j = begin; j < end; j += alignedSize  )
+            reduction( aux, fetch( i, j, args... ) );
+         keeper( i, aux );
+      };
+      Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
+   }
 }
 
 template< typename Device,
@@ -219,7 +237,9 @@ void
 Ellpack< Device, Index, RowMajorOrder, Alignment >::
 save( File& file ) const
 {
-   file << this->offsets;
+   file.save( &segmentSize );
+   file.save( &size );
+   file.save( &alignedSize );
 }
 
 template< typename Device,
@@ -230,7 +250,9 @@ void
 Ellpack< Device, Index, RowMajorOrder, Alignment >::
 load( File& file )
 {
-   file >> this->offsets;
+   file.load( &segmentSize );
+   file.load( &size );
+   file.load( &alignedSize );
 }
 
       } // namespace Segments

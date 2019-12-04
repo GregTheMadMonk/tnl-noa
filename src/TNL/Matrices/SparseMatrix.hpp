@@ -489,12 +489,16 @@ vectorProduct( const InVector& inVector,
                const RealType& matrixMultiplicator,
                const RealType& inVectorAddition ) const
 {
-   auto inVectorView = inVector.getConstView();
+   const auto inVectorView = inVector.getConstView();
    auto outVectorView = outVector.getView();
-   auto valuesView = this->values.getConstView();
-   auto columnIndexesView = this->columnIndexes.getConstView();
+   const auto valuesView = this->values.getConstView();
+   const auto columnIndexesView = this->columnIndexes.getConstView();
+   const IndexType paddingIndex = this->getPaddingIndex();
    auto fetch = [=] __cuda_callable__ ( IndexType row, IndexType offset ) -> RealType {
-      return valuesView[ offset ] * inVectorView[ columnIndexesView[ offset ] ];
+      const IndexType column = columnIndexesView[ offset ];
+      if( column == paddingIndex )
+         return 0.0;
+      return valuesView[ offset ] * inVectorView[ column ];
    };
    auto reduction = [] __cuda_callable__ ( RealType& sum, const RealType& value ) {
       sum += value;
