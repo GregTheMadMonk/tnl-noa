@@ -1,5 +1,5 @@
 /***************************************************************************
-                          SparseMatrixTest_CSR.h -  description
+                          SparseMatrixTest_CSR_segments.h -  description
                              -------------------
     begin                : Dec 2, 2019
     copyright            : (C) 2019 by Tomas Oberhuber et al.

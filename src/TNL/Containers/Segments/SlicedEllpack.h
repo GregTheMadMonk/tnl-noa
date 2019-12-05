@@ -1,7 +1,7 @@
 /***************************************************************************
-                          Ellpack.h -  description
+                          SlicedEllpack.h -  description
                              -------------------
-    begin                : Dec 3, 2019
+    begin                : Dec 4, 2019
     copyright            : (C) 2019 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -19,23 +19,24 @@ namespace TNL {
 template< typename Device,
           typename Index,
           bool RowMajorOrder = std::is_same< Device, Devices::Host >::value,
-          int Alignment = 32 >
-class Ellpack
+          int SliceSize = 32 >
+class SlicedEllpack
 {
    public:
 
       using DeviceType = Device;
       using IndexType = Index;
-      static constexpr int getAlignment() { return Alignment; }
+      using OffsetsHolder = Containers::Vector< IndexType, DeviceType, IndexType >;
+      static constexpr int getSliceSize() { return SliceSize; }
       static constexpr bool getRowMajorOrder() { return RowMajorOrder; }
 
-      Ellpack();
+      SlicedEllpack();
 
-      Ellpack( const Vector< IndexType, DeviceType, IndexType >& sizes );
+      SlicedEllpack( const Vector< IndexType, DeviceType, IndexType >& sizes );
 
-      Ellpack( const Ellpack& segments );
+      SlicedEllpack( const SlicedEllpack& segments );
 
-      Ellpack( const Ellpack&& segments );
+      SlicedEllpack( const SlicedEllpack&& segments );
 
       /**
        * \brief Set sizes of particular segments.
@@ -43,7 +44,6 @@ class Ellpack
       template< typename SizesHolder = OffsetsHolder >
       void setSizes( const SizesHolder& sizes );
 
-      void setSizes( const IndexType segmentsCount, const IndexType segmentSize );
       /**
        * \brief Number segments.
        */
@@ -90,11 +90,13 @@ class Ellpack
 
    protected:
 
-      IndexType segmentSize, size, alignedSize;
+      IndexType size;
+
+      OffsetHolder sliceOffsets;
 };
 
       } // namespace Segements
    }  // namespace Conatiners
 } // namespace TNL
 
-#include <TNL/Containers/Segments/Ellpack.hpp>
+#include <TNL/Containers/Segments/SlicedEllpack.hpp>

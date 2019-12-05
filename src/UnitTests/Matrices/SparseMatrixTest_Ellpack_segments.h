@@ -1,5 +1,5 @@
 /***************************************************************************
-                          SparseMatrixTest_Ellpack.h -  description
+                          SparseMatrixTest_Ellpack_segments.h -  description
                              -------------------
     begin                : Dec 3, 2019
     copyright            : (C) 2019 by Tomas Oberhuber et al.
