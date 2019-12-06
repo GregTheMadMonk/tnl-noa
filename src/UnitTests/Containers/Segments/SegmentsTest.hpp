@@ -25,7 +25,7 @@ void test_SetSegmentsSizes_EqualSizes()
    const IndexType segmentsCount = 20;
    const IndexType segmentSize = 5;
    TNL::Containers::Vector< IndexType, DeviceType, IndexType > segmentsSizes( segmentsCount );
-   segmentsSizes = 5;//segmentSize;
+   segmentsSizes = segmentSize;
 
    Segments segments( segmentsSizes );
 
@@ -90,6 +90,43 @@ void test_SetSegmentsSizes_EqualSizes_EllpackOnly()
 
    for( IndexType i = 0; i < segmentsCount; i++ )
       EXPECT_EQ( segments3.getSegmentSize( i ), segmentSize );
+}
+
+template< typename Segments >
+void test_GetMaxInSegments()
+{
+   using DeviceType = typename Segments::DeviceType;
+   using IndexType = typename Segments::IndexType;
+
+   const IndexType segmentsCount = 20;
+   const IndexType segmentSize = 5;
+   const IndexType size = segmentsCount * segmentSize;
+
+   Segments segments( segmentsCount, segmentSize );
+   TNL::Containers::Vector< IndexType, DeviceType, IndexType > segmentsSizes( segmentsCount );
+   segmentsSizes = segmentSize;
+
+   Segments segments( segmentsSizes );
+
+   TNL::Containers::Vector< IndexType, DeviceType, IndexType > v( size );
+
+   for( IndexType i = 0; i < size; i++ )
+      v.setElement( i, i );
+
+   TNL::Containers::Vector< IndexType, DeviceType, IndexType >result( segmentsCount );
+
+   const auto v_view = v.getConstView();
+   auto result_view = result.getView();
+   auto fetch = [=] __cuda_callable__ ( IndexType i ) -> IndexType {
+      return v_view[ i ];
+   }
+   auto reduce = [] __cuda_callable__ ( IndexType& a, const IndexType b ) {
+      a = TNL::max( a, b );
+   }
+   auto keep = [=] __cuda_callable__ ( IndexType& i, const IndexType a ) mutable {
+      result_view[ i ] = a;
+   }
+   segments.allReduction( fetch, reduction, keep, std::numeric_limits< ResultType >::min() );
 }
 
 #endif

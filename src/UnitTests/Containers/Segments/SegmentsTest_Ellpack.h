@@ -59,6 +59,12 @@ TYPED_TEST( EllpackSegmentsTest, setSegmentsSizes_EqualSizes_EllpackOnly )
     test_SetSegmentsSizes_EqualSizes_EllpackOnly< EllpackSegmentsType >();
 }
 
+TYPED_TEST( EllpackSegmentsTest, getMaxInSegments )
+{
+    using EllpackSegmentsType = typename TestFixture::EllpackSegmentsType;
+
+    test_GetMaxInSegments< EllpackSegmentsType >();
+}
 
 #endif
 
