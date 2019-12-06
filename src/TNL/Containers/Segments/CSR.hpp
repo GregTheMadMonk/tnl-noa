@@ -29,6 +29,14 @@ CSR()
 template< typename Device,
           typename Index >
 CSR< Device, Index >::
+CSR( const SegmentsSizes& segmentsSizes )
+{
+   this->setSegmentsSizes( segmentsSizes );
+}
+
+template< typename Device,
+          typename Index >
+CSR< Device, Index >::
 CSR( const CSR& csr ) : offsets( csr.offsets )
 {
 }
@@ -46,7 +54,7 @@ template< typename Device,
    template< typename SizesHolder >
 void
 CSR< Device, Index >::
-setSizes( const SizesHolder& sizes )
+setSegmentsSizes( const SizesHolder& sizes )
 {
    this->offsets.setSize( sizes.getSize() + 1 );
    auto view = this->offsets.getView( 0, sizes.getSize() );
@@ -60,7 +68,7 @@ template< typename Device,
 __cuda_callable__
 Index
 CSR< Device, Index >::
-getSize() const
+getSegmentsCount() const
 {
    return this->offsets.getSize() - 1;
 }
@@ -88,17 +96,27 @@ template< typename Device,
 __cuda_callable__
 Index
 CSR< Device, Index >::
+getSize() const
+{
+   return this->getStorageSize();
+}
+
+template< typename Device,
+          typename Index >
+__cuda_callable__
+Index
+CSR< Device, Index >::
 getStorageSize() const
 {
    if( ! std::is_same< DeviceType, Devices::Host >::value )
    {
 #ifdef __CUDA_ARCH__
-      return offsets[ this->getSize() ];
+      return offsets[ this->getSegmentsCount() ];
 #else
-      return offsets.getElement( this->getSize() );
+      return offsets.getElement( this->getSegmentsCount() );
 #endif
    }
-   return offsets[ this->getSize() ];
+   return offsets[ this->getSegmentsCount() ];
 }
 
 template< typename Device,

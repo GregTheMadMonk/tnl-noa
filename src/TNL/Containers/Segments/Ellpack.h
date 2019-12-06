@@ -28,10 +28,14 @@ class Ellpack
       using IndexType = Index;
       static constexpr int getAlignment() { return Alignment; }
       static constexpr bool getRowMajorOrder() { return RowMajorOrder; }
+      using OffsetsHolder = Containers::Vector< IndexType, DeviceType, IndexType >;
+      using SegmentsSizes = OffsetsHolder;
 
       Ellpack();
 
-      Ellpack( const Vector< IndexType, DeviceType, IndexType >& sizes );
+      Ellpack( const SegmentsSizes& sizes );
+
+      Ellpack( const IndexType segmentsCount, const IndexType segmentSize );
 
       Ellpack( const Ellpack& segments );
 
@@ -41,17 +45,20 @@ class Ellpack
        * \brief Set sizes of particular segments.
        */
       template< typename SizesHolder = OffsetsHolder >
-      void setSizes( const SizesHolder& sizes );
+      void setSegmentsSizes( const SizesHolder& sizes );
 
-      void setSizes( const IndexType segmentsCount, const IndexType segmentSize );
+      void setSegmentsSizes( const IndexType segmentsCount, const IndexType segmentSize );
       /**
        * \brief Number segments.
        */
       __cuda_callable__
-      IndexType getSize() const;
+      IndexType getSegmentsCount() const;
 
       __cuda_callable__
       IndexType getSegmentSize( const IndexType segmentIdx ) const;
+
+      __cuda_callable__
+      IndexType getSize() const;
 
       __cuda_callable__
       IndexType getStorageSize() const;

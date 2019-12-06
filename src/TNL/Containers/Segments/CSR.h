@@ -25,10 +25,11 @@ class CSR
       using DeviceType = Device;
       using IndexType = Index;
       using OffsetsHolder = Containers::Vector< IndexType, DeviceType, IndexType >;
+      using SegmentsSizes = OffsetsHolder;
 
       CSR();
 
-      CSR( const Vector< IndexType, DeviceType, IndexType >& sizes );
+      CSR( const SegmentsSizes& sizes );
 
       CSR( const CSR& segments );
 
@@ -38,17 +39,29 @@ class CSR
        * \brief Set sizes of particular segments.
        */
       template< typename SizesHolder = OffsetsHolder >
-      void setSizes( const SizesHolder& sizes );
+      void setSegmentsSizes( const SizesHolder& sizes );
 
       /**
        * \brief Number segments.
        */
       __cuda_callable__
-      IndexType getSize() const;
+      IndexType getSegmentsCount() const;
 
+      /***
+       * \brief Returns size of the segment number \r segmentIdx
+       */
       __cuda_callable__
       IndexType getSegmentSize( const IndexType segmentIdx ) const;
 
+      /***
+       * \brief Returns number of elements managed by all segments.
+       */
+      __cuda_callable__
+      IndexType getSize() const;
+
+      /***
+       * \brief Returns number of elements that needs to be allocated.
+       */
       __cuda_callable__
       IndexType getStorageSize() const;
 

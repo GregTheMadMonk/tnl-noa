@@ -107,7 +107,7 @@ SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
 setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths )
 {
    TNL_ASSERT_EQ( rowLengths.getSize(), this->getRows(), "Number of matrix rows does not fit with rowLengths vector size." );
-   this->segments.setSizes( rowLengths );
+   this->segments.setSegmentsSizes( rowLengths );
    this->values.setSize( this->segments.getStorageSize() );
    this->values = ( RealType ) 0;
    this->columnIndexes.setSize( this->segments.getStorageSize() );

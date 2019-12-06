@@ -34,6 +34,28 @@ template< typename Device,
           bool RowMajorOrder,
           int Alignment >
 Ellpack< Device, Index, RowMajorOrder, Alignment >::
+Ellpack( const SegmentsSizes& segmentsSizes )
+   : segmentSize( 0 ), size( 0 ), alignedSize( 0 )
+{
+   this->setSegmentsSizes( segmentsSizes );
+}
+
+template< typename Device,
+          typename Index,
+          bool RowMajorOrder,
+          int Alignment >
+Ellpack< Device, Index, RowMajorOrder, Alignment >::
+Ellpack( const IndexType segmentsCount, const IndexType segmentSize )
+   : segmentSize( 0 ), size( 0 ), alignedSize( 0 )
+{
+   this->setSegmentsSizes( segmentsCount, segmentSize );
+}
+
+template< typename Device,
+          typename Index,
+          bool RowMajorOrder,
+          int Alignment >
+Ellpack< Device, Index, RowMajorOrder, Alignment >::
 Ellpack( const Ellpack& ellpack )
    : segmentSize( ellpack.segmentSize ), size( ellpack.size ), alignedSize( ellpack.alignedSize )
 {
@@ -56,7 +78,7 @@ template< typename Device,
    template< typename SizesHolder >
 void
 Ellpack< Device, Index, RowMajorOrder, Alignment >::
-setSizes( const SizesHolder& sizes )
+setSegmentsSizes( const SizesHolder& sizes )
 {
    this->segmentSize = max( sizes );
    this->size = sizes.getSize();
@@ -70,10 +92,9 @@ template< typename Device,
           typename Index,
           bool RowMajorOrder,
           int Alignment >
-   template< typename SizesHolder >
 void
 Ellpack< Device, Index, RowMajorOrder, Alignment >::
-setSizes( const IndexType segmentsCount, const IndexType segmentSize );
+setSegmentsSizes( const IndexType segmentsCount, const IndexType segmentSize )
 {
    this->segmentSize = segmentSize;
    this->size = segmentsCount;
@@ -91,7 +112,7 @@ template< typename Device,
 __cuda_callable__
 Index
 Ellpack< Device, Index, RowMajorOrder, Alignment >::
-getSize() const
+getSegmentsCount() const
 {
    return this->size;
 }
@@ -107,6 +128,19 @@ getSegmentSize( const IndexType segmentIdx ) const
 {
    return this->segmentSize;
 }
+
+template< typename Device,
+          typename Index,
+          bool RowMajorOrder,
+          int Alignment >
+__cuda_callable__
+Index
+Ellpack< Device, Index, RowMajorOrder, Alignment >::
+getSize() const
+{
+   return this->size * this->segmentSize;
+}
+
 
 template< typename Device,
           typename Index,
