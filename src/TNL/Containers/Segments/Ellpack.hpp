@@ -278,7 +278,7 @@ void
 Ellpack< Device, Index, RowMajorOrder, Alignment >::
 allReduction( Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
-   this->segmentsReduction( 0, this->getSize(), fetch, reduction, keeper, zero, args... );
+   this->segmentsReduction( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
 }
 
 template< typename Device,

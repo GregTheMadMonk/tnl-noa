@@ -93,7 +93,7 @@ void test_SetSegmentsSizes_EqualSizes_EllpackOnly()
 }
 
 template< typename Segments >
-void test_GetMaxInSegments()
+void test_AllReduction_MaximumInSegments()
 {
    using DeviceType = typename Segments::DeviceType;
    using IndexType = typename Segments::IndexType;
@@ -102,31 +102,36 @@ void test_GetMaxInSegments()
    const IndexType segmentSize = 5;
    const IndexType size = segmentsCount * segmentSize;
 
-   Segments segments( segmentsCount, segmentSize );
    TNL::Containers::Vector< IndexType, DeviceType, IndexType > segmentsSizes( segmentsCount );
    segmentsSizes = segmentSize;
 
    Segments segments( segmentsSizes );
 
-   TNL::Containers::Vector< IndexType, DeviceType, IndexType > v( size );
+   TNL::Containers::Vector< IndexType, DeviceType, IndexType > v( segments.getStorageSize() );
 
-   for( IndexType i = 0; i < size; i++ )
-      v.setElement( i, i );
+   IndexType k( 1 );
+   for( IndexType i = 0; i < segmentsCount; i++ )
+      for( IndexType j = 0; j < segmentSize; j++ )
+         v.setElement( segments.getGlobalIndex( i, j ), k++ );
 
    TNL::Containers::Vector< IndexType, DeviceType, IndexType >result( segmentsCount );
 
    const auto v_view = v.getConstView();
    auto result_view = result.getView();
-   auto fetch = [=] __cuda_callable__ ( IndexType i ) -> IndexType {
-      return v_view[ i ];
-   }
+   auto fetch = [=] __cuda_callable__ ( IndexType segmentIdx, IndexType globalIdx ) -> IndexType {
+      return v_view[ globalIdx ];
+   };
    auto reduce = [] __cuda_callable__ ( IndexType& a, const IndexType b ) {
       a = TNL::max( a, b );
-   }
-   auto keep = [=] __cuda_callable__ ( IndexType& i, const IndexType a ) mutable {
+   };
+   auto keep = [=] __cuda_callable__ ( const IndexType i, const IndexType a ) mutable {
       result_view[ i ] = a;
-   }
-   segments.allReduction( fetch, reduction, keep, std::numeric_limits< ResultType >::min() );
+   };
+   segments.allReduction( fetch, reduce, keep, std::numeric_limits< IndexType >::min() );
+
+   std::cerr << result << std::endl;
+   for( IndexType i = 0; i < segmentsCount; i++ )
+      EXPECT_EQ( result.getElement( i ), ( i + 1 ) * segmentSize );
 }
 
 #endif
