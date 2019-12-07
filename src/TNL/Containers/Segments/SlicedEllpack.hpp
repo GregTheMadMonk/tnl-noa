@@ -64,9 +64,22 @@ setSizes( const SizesHolder& sizes )
    this->segmentOffsets.setSize( segmentsCount + 1 );
    Ellpack< DeviceType, IndexType, true > ellpack;
    ellpack.setSizes( segmentsCount, SliceSize );
-   ...
 
+   const IndexType _size = this->getSize();
+   const auto sizes_view = sizes.getConstView();
+   auto offsets_view = this->segmentOffsets().getView();
+   auto fetch = [=] __cuda_callable__ ( IndexType segmentIdx, IndexType globalIdx ) -> IndexType {
+      if( globalIdx < size )
+         return sizes_view[ globalIdx ];
+   };
+   auto reduce = [] __cuda_callable__ ( IndexType& aux, const IndexType i ) {
+      aux = TNL::max( aux, i );
+   };
+   auto keep = [=] __cuda_callable__ ( IndexType i, IndexType res ) {
+      offsets_view[ i ] = res;
+   }
 
+   std::cerr << offsets_view << std::endl;
 
 
 
