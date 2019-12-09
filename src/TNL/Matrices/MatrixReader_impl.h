@@ -55,7 +55,10 @@ bool MatrixReader< Matrix >::readMtxFileHostMatrix( std::istream& file,
    bool symmetricMatrix( false );
 
    if( ! readMtxHeader( file, rows, columns, symmetricMatrix, verbose ) )
+   {
+      std::cerr << "Unable to read MTX file header." << std::endl;
       return false;
+   }
 
    if( symReader && !symmetricMatrix )
    {
@@ -67,12 +70,18 @@ bool MatrixReader< Matrix >::readMtxFileHostMatrix( std::istream& file,
    rowLengths.setSize( rows );
 
    if( ! computeCompressedRowLengthsFromMtxFile( file, rowLengths, columns, rows, symmetricMatrix, verbose ) )
+   {
+      std::cerr << "Unable to compute compressed row lengths." << std::endl;
       return false;
+   }
 
    matrix.setCompressedRowLengths( rowLengths );
 
    if( ! readMatrixElementsFromMtxFile( file, matrix, symmetricMatrix, verbose, symReader ) )
+   {
+      std::cerr << "Unable to read matrix elements from MTX file," << std::endl;
       return false;
+   }
    return true;
 }
 
@@ -84,7 +93,10 @@ bool MatrixReader< Matrix >::verifyMtxFile( std::istream& file,
    bool symmetricMatrix( false );
    IndexType rows, columns;
    if( ! readMtxHeader( file, rows, columns, symmetricMatrix, false ) )
+   {
+      std::cerr << "Unable to read MTX file header." << std::endl;
       return false;
+   }
    file.clear();
    file.seekg( 0, std::ios::beg );
    String line;
@@ -103,7 +115,10 @@ bool MatrixReader< Matrix >::verifyMtxFile( std::istream& file,
       IndexType row( 1 ), column( 1 );
       RealType value;
       if( ! parseMtxLineWithElement( line, row, column, value ) )
+      {
+         std::cerr << "Unable to parse MTX file line." << std::endl;
          return false;
+      }
       if( value != matrix.getElement( row-1, column-1 ) ||
           ( symmetricMatrix && value != matrix.getElement( column-1, row-1 ) ) )
       {
