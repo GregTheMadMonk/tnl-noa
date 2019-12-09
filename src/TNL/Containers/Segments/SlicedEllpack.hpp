@@ -326,8 +326,8 @@ save( File& file ) const
    file.save( &size );
    file.save( &alignedSize );
    file.save( &segmentsCount );
-   this->sliceOffsets.save( file );
-   this->sliceSegmentSizes.save( file );
+   file << this->sliceOffsets;
+   file << this->sliceSegmentSizes;
 }
 
 template< typename Device,
@@ -341,8 +341,8 @@ load( File& file )
    file.load( &size );
    file.load( &alignedSize );
    file.load( &segmentsCount );
-   this->sliceOffsets.load( file );
-   this->sliceSegmentSizes.load( file );
+   file >> this->sliceOffsets;
+   file >> this->sliceSegmentSizes;
 }
 
       } // namespace Segments

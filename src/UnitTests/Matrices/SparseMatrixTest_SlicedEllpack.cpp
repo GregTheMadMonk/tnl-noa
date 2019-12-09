@@ -1,1 +1,1 @@
-#include "SparseMatrixTest_SlicedEllpack.h"
+#include "SparseMatrixTest_SlicedEllpack_segments.h"
