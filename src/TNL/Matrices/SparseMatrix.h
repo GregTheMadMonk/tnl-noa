@@ -17,7 +17,7 @@ namespace TNL {
 namespace Matrices {
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename Device_, typename Index_ > class Segments,
           typename Device = Devices::Host,
           typename Index = int,
           typename RealAllocator = typename Allocators::Default< Device >::template Allocator< Real >,

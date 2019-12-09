@@ -10,7 +10,9 @@
 
 #pragma once
 
+#include <functional>
 #include <TNL/Matrices/SparseMatrix.h>
+#include <TNL/Algorithms/Reduction.h>
 
 namespace TNL {
 namespace Matrices {
@@ -192,6 +194,12 @@ Index
 SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
 getNumberOfNonzeroMatrixElements() const
 {
+   const auto columns_view = this->columnIndexes.getConstView();
+   const IndexType paddingIndex = this->getPaddingIndex();
+   auto fetch = [=] __cuda_callable__ ( const IndexType i ) -> IndexType {
+      return ( columns_view[ i ] != paddingIndex );
+   };
+   return Algorithms::Reduction< DeviceType >::reduce( this->columnIndexes.getSize(), std::plus<>{}, fetch, 0 );
 }
 
 template< typename Real,
