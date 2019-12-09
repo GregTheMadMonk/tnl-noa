@@ -151,6 +151,75 @@ void test_SetLike()
 }
 
 template< typename Matrix >
+void test_GetNumberOfNonzeroMatrixElements()
+{
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
+
+   /*
+    * Sets up the following 10x10 sparse matrix:
+    *
+    *    /  1  0  2  0  3  0  4  0  0  0  \
+    *    |  5  6  7  0  0  0  0  0  0  0  |
+    *    |  8  9 10 11 12 13 14 15  0  0  |
+    *    | 16 17  0  0  0  0  0  0  0  0  |
+    *    | 18  0  0  0  0  0  0  0  0  0  |
+    *    | 19  0  0  0  0  0  0  0  0  0  |
+    *    | 20  0  0  0  0  0  0  0  0  0  |
+    *    | 21  0  0  0  0  0  0  0  0  0  |
+    *    | 22 23 24 25 26 27 28 29 30 31  |
+    *    \ 32 33 34 35 36 37 38 39 40 41 /
+    */
+
+   const IndexType rows = 10;
+   const IndexType cols = 10;
+    
+   Matrix m;
+   m.reset();
+
+   m.setDimensions( rows, cols );
+
+   typename Matrix::CompressedRowLengthsVector rowLengths;
+   rowLengths.setSize( rows );
+   rowLengths.setElement( 0, 4 );
+   rowLengths.setElement( 1, 3 );
+   rowLengths.setElement( 2, 8 );
+   rowLengths.setElement( 3, 2 );
+   for( IndexType i = 4; i < rows - 2; i++ )
+   {
+      rowLengths.setElement( i, 1 );
+   }
+   rowLengths.setElement( 8, 10 );
+   rowLengths.setElement( 9, 10 );
+   m.setCompressedRowLengths( rowLengths );
+
+   RealType value = 1;
+   for( IndexType i = 0; i < 4; i++ )
+      m.setElement( 0, 2 * i, value++ );
+
+   for( IndexType i = 0; i < 3; i++ )
+      m.setElement( 1, i, value++ );
+
+   for( IndexType i = 0; i < 8; i++ )
+      m.setElement( 2, i, value++ );
+
+   for( IndexType i = 0; i < 2; i++ )
+      m.setElement( 3, i, value++ );
+
+   for( IndexType i = 4; i < 8; i++ )
+      m.setElement( i, 0, value++ );
+
+   for( IndexType j = 8; j < rows; j++)
+   {
+      for( IndexType i = 0; i < cols; i++ )
+         m.setElement( j, i, value++ );
+   }
+
+   EXPECT_EQ( m.getNumberOfNonzeroMatrixElements(), 41 );
+}
+
+template< typename Matrix >
 void test_Reset()
 {
     using RealType = typename Matrix::RealType;
