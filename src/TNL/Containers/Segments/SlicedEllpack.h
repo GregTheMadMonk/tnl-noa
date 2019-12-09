@@ -42,7 +42,13 @@ class SlicedEllpack
        * \brief Set sizes of particular segments.
        */
       template< typename SizesHolder = OffsetsHolder >
-      void setSizes( const SizesHolder& sizes );
+      void setSegmentsSizes( const SizesHolder& sizes );
+
+      __cuda_callable__
+      IndexType getSegmentsCount() const;
+
+      __cuda_callable__
+      IndexType getSegmentSize( const IndexType segmentIdx ) const;
 
       /**
        * \brief Number segments.
@@ -50,8 +56,6 @@ class SlicedEllpack
       __cuda_callable__
       IndexType getSize() const;
 
-      __cuda_callable__
-      IndexType getSegmentSize( const IndexType segmentIdx ) const;
 
       __cuda_callable__
       IndexType getStorageSize() const;
@@ -90,9 +94,9 @@ class SlicedEllpack
 
    protected:
 
-      IndexType size;
+      IndexType size, alignedSize, segmentsCount;
 
-      OffsetHolder sliceOffsets;
+      OffsetsHolder sliceOffsets, sliceSegmentSizes;
 };
 
       } // namespace Segements

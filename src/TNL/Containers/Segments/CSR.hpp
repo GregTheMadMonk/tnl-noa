@@ -153,7 +153,7 @@ void
 CSR< Device, Index >::
 forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
 {
-   const auto offsetsView = this->offsets.getView();
+   const auto offsetsView = this->offsets.getConstView();
    auto l = [=] __cuda_callable__ ( const IndexType i, Args... args ) mutable {
       const IndexType begin = offsetsView[ i ];
       const IndexType end = offsetsView[ i + 1 ];

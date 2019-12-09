@@ -189,11 +189,10 @@ void
 Ellpack< Device, Index, RowMajorOrder, Alignment >::
 forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
 {
-   const auto offsetsView = this->offsets.getView();
    if( RowMajorOrder )
    {
       const IndexType segmentSize = this->segmentSize;
-      auto l = [=] __cuda_callable__ ( const IndexType i, Args... args ) {
+      auto l = [=] __cuda_callable__ ( const IndexType i, Args... args ) mutable {
          const IndexType begin = i * segmentSize;
          const IndexType end = begin + segmentSize;
          for( IndexType j = begin; j < end; j++  )
@@ -206,7 +205,7 @@ forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
    {
       const IndexType storageSize = this->getStorageSize();
       const IndexType alignedSize = this->alignedSize;
-      auto l = [=] __cuda_callable__ ( const IndexType i, Args... args ) {
+      auto l = [=] __cuda_callable__ ( const IndexType i, Args... args ) mutable {
          const IndexType begin = i;
          const IndexType end = storageSize;
          for( IndexType j = begin; j < end; j += alignedSize )
