@@ -40,7 +40,6 @@ void test_SetSegmentsSizes_EqualSizes()
    EXPECT_EQ( segments2.getSegmentsCount(), segmentsCount );
    EXPECT_EQ( segments2.getSize(), segmentsCount * segmentSize );
    EXPECT_LE( segments2.getSize(), segments2.getStorageSize() );
-
    for( IndexType i = 0; i < segmentsCount; i++ )
       EXPECT_EQ( segments2.getSegmentSize( i ), segmentSize );
 
@@ -100,7 +99,6 @@ void test_AllReduction_MaximumInSegments()
 
    const IndexType segmentsCount = 20;
    const IndexType segmentSize = 5;
-   const IndexType size = segmentsCount * segmentSize;
 
    TNL::Containers::Vector< IndexType, DeviceType, IndexType > segmentsSizes( segmentsCount );
    segmentsSizes = segmentSize;
@@ -113,6 +111,13 @@ void test_AllReduction_MaximumInSegments()
    for( IndexType i = 0; i < segmentsCount; i++ )
       for( IndexType j = 0; j < segmentSize; j++ )
          v.setElement( segments.getGlobalIndex( i, j ), k++ );
+   /*auto view = v.getView();
+   auto init = [=] __cuda_callable__ ( const IndexType i, const IndexType j ) mutable -> bool {
+      view[ j ] =  j + 1;
+      return true;
+   };
+   segments.forAll( init );
+   std::cerr << v << std::endl;*/
 
    TNL::Containers::Vector< IndexType, DeviceType, IndexType >result( segmentsCount );
 
@@ -129,7 +134,6 @@ void test_AllReduction_MaximumInSegments()
    };
    segments.allReduction( fetch, reduce, keep, std::numeric_limits< IndexType >::min() );
 
-   std::cerr << result << std::endl;
    for( IndexType i = 0; i < segmentsCount; i++ )
       EXPECT_EQ( result.getElement( i ), ( i + 1 ) * segmentSize );
 }
