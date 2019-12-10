@@ -156,12 +156,12 @@ bool MatrixReader< Matrix >::findLineByElement( std::istream& file,
 }
 
 template< typename Matrix >
-void MatrixReader< Matrix >::checkMtxHeader( const String& header,
+bool MatrixReader< Matrix >::checkMtxHeader( const String& header,
                                                 bool& symmetric )
 {
    std::vector< String > parsedLine = header.split( ' ', String::SplitSkip::SkipEmpty );
    if( (int) parsedLine.size() < 5 || parsedLine[ 0 ] != "%%MatrixMarket" )
-      throw std::runtime_error( "Wrong MTX file header. We expect line like this: %%MatrixMarket matrix coordinate real general" );
+      return false;
    if( parsedLine[ 1 ] != "matrix" )
       throw std::runtime_error( std::string( "Keyword 'matrix' is expected in the header line: " ) + header.getString() );
    if( parsedLine[ 2 ] != "coordinates" &&
@@ -176,6 +176,7 @@ void MatrixReader< Matrix >::checkMtxHeader( const String& header,
       else
          throw std::runtime_error(  std::string( "Only 'general' matrices are supported, not "  ) + parsedLine[ 4 ].getString() );
    }
+   return true;
 }
 
 template< typename Matrix >
@@ -195,7 +196,7 @@ void MatrixReader< Matrix >::readMtxHeader( std::istream& file,
       std::getline( file, line );
       if( ! headerParsed )
       {
-         checkMtxHeader( line, symmetric );
+         headerParsed = checkMtxHeader( line, symmetric );
          if( verbose && symmetric )
            std::cout << "The matrix is SYMMETRIC ... ";
          continue;
@@ -215,6 +216,7 @@ void MatrixReader< Matrix >::readMtxHeader( std::istream& file,
 
       if( rows <= 0 || columns <= 0 )
          throw std::runtime_error( "Row or column index is negative."  );
+      break;
    }
 }
 

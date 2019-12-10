@@ -58,7 +58,7 @@ class MatrixReader
                                   IndexType& lineNumber );
    protected:
 
-   static void checkMtxHeader( const String& header,
+   static bool checkMtxHeader( const String& header,
                                bool& symmetric );
 
    static void readMtxHeader( std::istream& file,
