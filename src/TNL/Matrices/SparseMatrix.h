@@ -34,10 +34,17 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       using IndexType = Index;
       using RealAllocatorType = RealAllocator;
       using IndexAllocatorType = IndexAllocator;
-      using CompressedRowLengthsVectorView = Containers::VectorView< IndexType, DeviceType, IndexType >;
-      using ConstCompressedRowLengthsVectorView = typename CompressedRowLengthsVectorView::ConstViewType;
+      using RowsCapacitiesType = Containers::Vector< IndexType, DeviceType, IndexType >;
+      using RowsCapacitiesView = Containers::VectorView< IndexType, DeviceType, IndexType >;
+      using ConstRowsCapacitiesView = typename RowsCapacitiesView::ConstViewType;
       using ValuesVectorType = typename Matrix< Real, Device, Index, RealAllocator >::ValuesVector;
       using ColumnsVectorType = Containers::Vector< IndexType, DeviceType, IndexType, IndexAllocatorType >;
+      
+      // TODO: remove this - it is here only for compatibility with original matrix implementation
+      typedef Containers::Vector< IndexType, DeviceType, IndexType > CompressedRowLengthsVector;
+      typedef Containers::VectorView< IndexType, DeviceType, IndexType > CompressedRowLengthsVectorView;
+      typedef typename CompressedRowLengthsVectorView::ConstViewType ConstCompressedRowLengthsVectorView;
+
 
       SparseMatrix( const RealAllocatorType& realAllocator = RealAllocatorType(),
                     const IndexAllocatorType& indexAllocator = IndexAllocatorType() );
@@ -157,6 +164,12 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       void getTransposition( const SparseMatrix< Real2, Segments, Device, Index2 >& matrix,
                              const RealType& matrixMultiplicator = 1.0 );
        */
+
+      template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
+      void rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+      
+      template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
+      void allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
       template< typename Vector1, typename Vector2 >
       bool performSORIteration( const Vector1& b,

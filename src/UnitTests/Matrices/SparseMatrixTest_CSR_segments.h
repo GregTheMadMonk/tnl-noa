@@ -122,6 +122,13 @@ TYPED_TEST( CSRMatrixTest, vectorProductTest )
     test_VectorProduct< CSRMatrixType >();
 }
 
+TYPED_TEST( CSRMatrixTest, rowsReduction )
+{
+    using CSRMatrixType = typename TestFixture::CSRMatrixType;
+
+    test_RowsReduction< CSRMatrixType >();
+}
+
 TYPED_TEST( CSRMatrixTest, saveAndLoadTest )
 {
     using CSRMatrixType = typename TestFixture::CSRMatrixType;

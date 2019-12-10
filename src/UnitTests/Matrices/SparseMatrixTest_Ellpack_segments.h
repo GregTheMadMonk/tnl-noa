@@ -133,6 +133,13 @@ TYPED_TEST( EllpackMatrixTest, vectorProductTest )
     test_VectorProduct< EllpackMatrixType >();
 }
 
+TYPED_TEST( EllpackMatrixTest, rowsReduction )
+{
+    using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
+
+    test_RowsReduction< EllpackMatrixType >();
+}
+
 TYPED_TEST( EllpackMatrixTest, saveAndLoadTest )
 {
     using EllpackMatrixType = typename TestFixture::EllpackMatrixType;

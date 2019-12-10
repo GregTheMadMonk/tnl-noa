@@ -908,18 +908,18 @@ void test_VectorProduct()
     EXPECT_EQ( outVector_4.getElement( 7 ), 330 );
     
   
-/*
- * Sets up the following 8x8 sparse matrix:
- *
- *    /  1  2  3  0  4  5  0  1 \   6
- *    |  0  6  0  7  0  0  0  1 |   3
- *    |  0  8  9  0 10  0  0  1 |   4
- *    |  0 11 12 13 14  0  0  1 |   5
- *    |  0 15  0  0  0  0  0  1 |   2
- *    |  0 16 17 18 19 20 21  1 |   7
- *    | 22 23 24 25 26 27 28  1 |   8
- *    \ 29 30 31 32 33 34 35 36 /   8
- */
+   /*
+    * Sets up the following 8x8 sparse matrix:
+    *
+    *    /  1  2  3  0  4  5  0  1 \   6
+    *    |  0  6  0  7  0  0  0  1 |   3
+    *    |  0  8  9  0 10  0  0  1 |   4
+    *    |  0 11 12 13 14  0  0  1 |   5
+    *    |  0 15  0  0  0  0  0  1 |   2
+    *    |  0 16 17 18 19 20 21  1 |   7
+    *    | 22 23 24 25 26 27 28  1 |   8
+    *    \ 29 30 31 32 33 34 35 36 /   8
+    */
 
     const IndexType m_rows_5 = 8;
     const IndexType m_cols_5 = 8;
@@ -970,20 +970,18 @@ void test_VectorProduct()
 
     for( IndexType i = 0; i < 7; i++ )            // 1s at the end of rows
         m_5.setElement( i, 7, 1);
-    
+
     VectorType inVector_5;
     inVector_5.setSize( m_cols_5 );
-    for( IndexType i = 0; i < inVector_5.getSize(); i++ )        
+    for( IndexType i = 0; i < inVector_5.getSize(); i++ )
         inVector_5.setElement( i, 2 );
 
     VectorType outVector_5;  
     outVector_5.setSize( m_rows_5 );
     for( IndexType j = 0; j < outVector_5.getSize(); j++ )
         outVector_5.setElement( j, 0 );
-    
-    
+
     m_5.vectorProduct( inVector_5, outVector_5 );
-    
 
     EXPECT_EQ( outVector_5.getElement( 0 ),  32 );
     EXPECT_EQ( outVector_5.getElement( 1 ),  28 );
@@ -993,6 +991,109 @@ void test_VectorProduct()
     EXPECT_EQ( outVector_5.getElement( 5 ), 224 );
     EXPECT_EQ( outVector_5.getElement( 6 ), 352 );
     EXPECT_EQ( outVector_5.getElement( 7 ), 520 );
+}
+
+template< typename Matrix >
+void test_RowsReduction()
+{
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
+
+   /*
+    * Sets up the following 8x8 sparse matrix:
+    *
+    *    /  1  2  3  0  4  5  0  1 \   6
+    *    |  0  6  0  7  0  0  0  1 |   3
+    *    |  0  8  9  0 10  0  0  1 |   4
+    *    |  0 11 12 13 14  0  0  1 |   5
+    *    |  0 15  0  0  0  0  0  1 |   2
+    *    |  0 16 17 18 19 20 21  1 |   7
+    *    | 22 23 24 25 26 27 28  1 |   8
+    *    \ 29 30 31 32 33 34 35 36 /   8
+    */
+
+   const IndexType rows = 8;
+   const IndexType cols = 8;
+
+   Matrix m;
+   m.setDimensions( rows, cols );
+   typename Matrix::RowsCapacitiesType rowsCapacities( rows );
+   //rowLengths.setSize( rows );
+   rowsCapacities.setElement(0, 6);
+   rowsCapacities.setElement(1, 3);
+   rowsCapacities.setElement(2, 4);
+   rowsCapacities.setElement(3, 5);
+   rowsCapacities.setElement(4, 2);
+   rowsCapacities.setElement(5, 7);
+   rowsCapacities.setElement(6, 8);
+   rowsCapacities.setElement(7, 8);
+   m.setCompressedRowLengths( rowsCapacities );
+
+   RealType value = 1;
+   for( IndexType i = 0; i < 3; i++ )   // 0th row
+      m.setElement( 0, i, value++ );
+
+   m.setElement( 0, 4, value++ );           // 0th row
+   m.setElement( 0, 5, value++ );
+
+   m.setElement( 1, 1, value++ );           // 1st row
+   m.setElement( 1, 3, value++ );
+
+   for( IndexType i = 1; i < 3; i++ )            // 2nd row
+      m.setElement( 2, i, value++ );
+
+   m.setElement( 2, 4, value++ );           // 2nd row
+
+   for( IndexType i = 1; i < 5; i++ )            // 3rd row
+      m.setElement( 3, i, value++ );
+
+   m.setElement( 4, 1, value++ );           // 4th row
+
+   for( IndexType i = 1; i < 7; i++ )            // 5th row
+      m.setElement( 5, i, value++ );
+
+   for( IndexType i = 0; i < 7; i++ )            // 6th row
+      m.setElement( 6, i, value++ );
+
+   for( IndexType i = 0; i < 8; i++ )            // 7th row
+       m.setElement( 7, i, value++ );
+
+   for( IndexType i = 0; i < 7; i++ )            // 1s at the end of rows
+      m.setElement( i, 7, 1);
+
+   ////
+   // Compute number of non-zero elements in rows.
+   typename Matrix::RowsCapacitiesType rowLengths( rows );
+   auto rowLengths_view = rowLengths.getView();
+   auto fetch = [] __cuda_callable__ ( IndexType row, IndexType column, const RealType& value ) -> IndexType {
+      return ( value != 0.0 );
+   };
+   auto reduce = [] __cuda_callable__ ( IndexType& aux, const IndexType a ) {
+      aux += a;
+   };
+   auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const IndexType value ) mutable {
+      rowLengths_view[ rowIdx ] = value;
+   };
+   m.allRowsReduction( fetch, reduce, keep, 0 );
+   EXPECT_EQ( rowsCapacities, rowLengths );
+
+   ////
+   // Compute max norm
+   TNL::Containers::Vector< RealType, DeviceType, IndexType > rowSums( rows );
+   auto rowSums_view = rowSums.getView();
+   auto max_fetch = [] __cuda_callable__ ( IndexType row, IndexType column, const RealType& value ) -> IndexType {
+      return abs( value );
+   };
+   auto max_reduce = [] __cuda_callable__ ( IndexType& aux, const IndexType a ) {
+      aux += a;
+   };
+   auto max_keep = [=] __cuda_callable__ ( const IndexType rowIdx, const IndexType value ) mutable {
+      rowSums_view[ rowIdx ] = value;
+   };
+   m.allRowsReduction( max_fetch, max_reduce, max_keep, 0 );
+   const RealType maxNorm = TNL::max( rowSums );
+   EXPECT_EQ( maxNorm, 260 ) ; // 29+30+31+32+33+34+35+36
 }
 
 template< typename Matrix >

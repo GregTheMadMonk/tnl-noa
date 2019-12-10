@@ -517,6 +517,44 @@ vectorProduct( const InVector& inVector,
    this->segments.segmentsReduction( 0, this->getRows(), fetch, reduction, keeper, ( RealType ) 0.0 );
 }
 
+template< typename Real,
+          template< typename, typename > class Segments,
+          typename Device,
+          typename Index,
+          typename RealAllocator,
+          typename IndexAllocator >
+   template< typename Fetch, typename Reduce, typename Keep, typename FetchValue >
+void
+SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
+rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchValue& zero ) const
+{
+   const auto columns_view = this->columnIndexes.getConstView();
+   const auto values_view = this->values.getConstView();
+   const IndexType paddingIndex_ = this->getPaddingIndex();
+   auto fetch_ = [=] __cuda_callable__ ( IndexType rowIdx, IndexType globalIdx ) mutable -> decltype( fetch( IndexType(), IndexType(), RealType() ) ) {
+      IndexType columnIdx = columns_view[ globalIdx ];
+      if( columnIdx != paddingIndex_ )
+         return fetch( rowIdx, columnIdx, values_view[ globalIdx ] );
+      return zero;
+   };
+   this->segments.segmentsReduction( first, last, fetch_, reduce, keep, zero );
+}
+
+template< typename Real,
+          template< typename, typename > class Segments,
+          typename Device,
+          typename Index,
+          typename RealAllocator,
+          typename IndexAllocator >
+   template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
+void
+SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
+allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const
+{
+   this->rowsReduction( 0, this->getRows(), fetch, reduce, keep, zero );
+}
+
+
 /*template< typename Real,
           template< typename, typename > class Segments,
           typename Device,
@@ -576,7 +614,11 @@ SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >&
 SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
 operator=( const SparseMatrix& matrix )
 {
-
+   Matrix< Real, Device, Index >::operator=( matrix );
+   this->columnIndexes = matrix.columnIndexes;
+   this->segments = matrix.segments;
+   this->indexAlloctor = matrix.indexAllocator;
+   this->realAllocator = matrix.realAllocator;
 }
 
 // cross-device copy assignment
@@ -596,7 +638,12 @@ SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >&
 SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
 operator=( const SparseMatrix< Real2, Segments2, Device2, Index2, RealAllocator2, IndexAllocator2 >& matrix )
 {
-
+   if( std::is_same< Device, Device2 >::value )
+   {
+      
+   }
+      
+   
 }
 
 template< typename Real,

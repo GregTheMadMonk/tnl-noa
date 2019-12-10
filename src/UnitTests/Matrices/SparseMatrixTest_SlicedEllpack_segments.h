@@ -133,6 +133,13 @@ TYPED_TEST( SlicedEllpackMatrixTest, vectorProductTest )
     test_VectorProduct< SlicedEllpackMatrixType >();
 }
 
+TYPED_TEST( SlicedEllpackMatrixTest, rowsReduction )
+{
+    using SlicedEllpackMatrixType = typename TestFixture::SlicedEllpackMatrixType;
+
+    test_RowsReduction< SlicedEllpackMatrixType >();
+}
+
 TYPED_TEST( SlicedEllpackMatrixTest, saveAndLoadTest )
 {
     using SlicedEllpackMatrixType = typename TestFixture::SlicedEllpackMatrixType;
