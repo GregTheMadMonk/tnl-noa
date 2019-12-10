@@ -15,7 +15,7 @@
 #include <TNL/Containers/Vector.h>
 
 namespace TNL {
-namespace Matrices {   
+namespace Matrices {
 
 template< typename Device >
 class MatrixReaderDeviceDependentCode
@@ -30,24 +30,24 @@ class MatrixReader
    typedef typename Matrix::DeviceType DeviceType;
    typedef typename Matrix::RealType RealType;
 
-   static bool readMtxFile( const String& fileName,
+   static void readMtxFile( const String& fileName,
                             Matrix& matrix,
                             bool verbose = false,
                             bool symReader = false );
 
-   static bool readMtxFile( std::istream& file,
+   static void readMtxFile( std::istream& file,
                             Matrix& matrix,
                             bool verbose = false,
                             bool symReader = false );
 
-   static bool readMtxFileHostMatrix( std::istream& file,
+   static void readMtxFileHostMatrix( std::istream& file,
                                       Matrix& matrix,
                                       typename Matrix::CompressedRowLengthsVector& rowLengths,
                                       bool verbose,
                                       bool symReader );
 
 
-   static bool verifyMtxFile( std::istream& file,
+   static void verifyMtxFile( std::istream& file,
                               const Matrix& matrix,
                               bool verbose = false );
 
@@ -58,16 +58,16 @@ class MatrixReader
                                   IndexType& lineNumber );
    protected:
 
-   static bool checkMtxHeader( const String& header,
+   static void checkMtxHeader( const String& header,
                                bool& symmetric );
 
-   static bool readMtxHeader( std::istream& file,
+   static void readMtxHeader( std::istream& file,
                               IndexType& rows,
                               IndexType& columns,
                               bool& symmetricMatrix,
                               bool verbose );
 
-   static bool computeCompressedRowLengthsFromMtxFile( std::istream& file,
+   static void computeCompressedRowLengthsFromMtxFile( std::istream& file,
                                              Containers::Vector< int, DeviceType, int >& rowLengths,
                                              const int columns,
                                              const int rows,
@@ -75,13 +75,13 @@ class MatrixReader
                                              bool verbose,
                                              bool symReader = false );
 
-   static bool readMatrixElementsFromMtxFile( std::istream& file,
+   static void readMatrixElementsFromMtxFile( std::istream& file,
                                               Matrix& matrix,
                                               bool symmetricMatrix,
                                               bool verbose,
                                               bool symReader );
 
-   static bool parseMtxLineWithElement( const String& line,
+   static void parseMtxLineWithElement( const String& line,
                                         IndexType& row,
                                         IndexType& column,
                                         RealType& value );
