@@ -39,7 +39,7 @@ public:
    using RealAllocatorType = RealAllocator;
 
    Matrix( const RealAllocatorType& allocator = RealAllocatorType() );
-   
+
    Matrix( const IndexType rows,
            const IndexType columns,
            const RealAllocatorType& allocator = RealAllocatorType() );
@@ -100,9 +100,9 @@ public:
 
    virtual Real getElement( const IndexType row,
                             const IndexType column ) const = 0;
-   
+
    const ValuesVector& getValues() const;
-   
+
    ValuesVector& getValues();
 
    // TODO: parallelize and optimize for sparse matrices
@@ -137,7 +137,8 @@ public:
    __cuda_callable__
    Index getValuesSize() const;
 
-   protected:
+   // TODO: restore this
+   //protected:
 
    IndexType rows, columns, numberOfColors;
 

@@ -39,7 +39,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       using ConstRowsCapacitiesView = typename RowsCapacitiesView::ConstViewType;
       using ValuesVectorType = typename Matrix< Real, Device, Index, RealAllocator >::ValuesVector;
       using ColumnsVectorType = Containers::Vector< IndexType, DeviceType, IndexType, IndexAllocatorType >;
-      
+
       // TODO: remove this - it is here only for compatibility with original matrix implementation
       typedef Containers::Vector< IndexType, DeviceType, IndexType > CompressedRowLengthsVector;
       typedef Containers::VectorView< IndexType, DeviceType, IndexType > CompressedRowLengthsVectorView;
@@ -63,6 +63,9 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       virtual String getSerializationTypeVirtual() const;
 
       void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths );
+
+      template< typename Vector >
+      void getCompressedRowLengths( Vector& rowLengths ) const;
 
       IndexType getRowLength( const IndexType row ) const;
 
@@ -167,9 +170,15 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
 
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
       void rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
-      
+
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
       void allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+
+      template< typename Function >
+      void forRows( IndexType first, IndexType last, Function& function ) const;
+
+      template< typename Function >
+      void forAllRows( Function& function ) const;
 
       template< typename Vector1, typename Vector2 >
       bool performSORIteration( const Vector1& b,
@@ -201,7 +210,9 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
 
       __cuda_callable__
       IndexType getPaddingIndex() const;
-   protected:
+
+// TODO: restore it and also in Matrix
+//   protected:
 
       ColumnsVectorType columnIndexes;
 
@@ -210,6 +221,8 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       IndexAllocator indexAlloctor;
 
       RealAllocator realAllocator;
+
+
 };
 
 }  // namespace Conatiners

@@ -192,11 +192,12 @@ forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
    if( RowMajorOrder )
    {
       const IndexType segmentSize = this->segmentSize;
-      auto l = [=] __cuda_callable__ ( const IndexType i, Args... args ) mutable {
-         const IndexType begin = i * segmentSize;
+      auto l = [=] __cuda_callable__ ( const IndexType segmentIdx, Args... args ) mutable {
+         const IndexType begin = segmentIdx * segmentSize;
          const IndexType end = begin + segmentSize;
-         for( IndexType j = begin; j < end; j++  )
-            if( ! f( i, j, args... ) )
+         IndexType localIdx( 0 );
+         for( IndexType globalIdx = begin; globalIdx < end; globalIdx++  )
+            if( ! f( segmentIdx, localIdx++, globalIdx,  args... ) )
                break;
       };
       Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
@@ -205,11 +206,12 @@ forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
    {
       const IndexType storageSize = this->getStorageSize();
       const IndexType alignedSize = this->alignedSize;
-      auto l = [=] __cuda_callable__ ( const IndexType i, Args... args ) mutable {
-         const IndexType begin = i;
+      auto l = [=] __cuda_callable__ ( const IndexType segmentIdx, Args... args ) mutable {
+         const IndexType begin = segmentIdx;
          const IndexType end = storageSize;
-         for( IndexType j = begin; j < end; j += alignedSize )
-            if( ! f( i, j, args... ) )
+         IndexType localIdx( 0 );
+         for( IndexType globalIdx = begin; globalIdx < end; globalIdx += alignedSize )
+            if( ! f( segmentIdx, localIdx++, globalIdx, args... ) )
                break;
       };
       Algorithms::ParallelFor< Device >::exec( first, last, l, args... );

@@ -225,8 +225,9 @@ forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
          const IndexType segmentSize = sliceSegmentSizes_view[ sliceIdx ];
          const IndexType begin = sliceOffsets_view[ sliceIdx ] + segmentInSliceIdx * segmentSize;
          const IndexType end = begin + segmentSize;
+         IndexType localIdx( 0 );
          for( IndexType globalIdx = begin; globalIdx < end; globalIdx++  )
-            if( ! f( segmentIdx, globalIdx, args... ) )
+            if( ! f( segmentIdx, localIdx++, globalIdx, args... ) )
                break;
       };
       Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
@@ -239,8 +240,9 @@ forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
          const IndexType segmentSize = sliceSegmentSizes_view[ sliceIdx ];
          const IndexType begin = sliceOffsets_view[ sliceIdx ] + segmentInSliceIdx;
          const IndexType end = sliceOffsets_view[ sliceIdx + 1 ];
+         IndexType localIdx( 0 );
          for( IndexType globalIdx = begin; globalIdx < end; globalIdx += SliceSize )
-            if( ! f( segmentIdx, globalIdx, args... ) )
+            if( ! f( segmentIdx, localIdx++, globalIdx, args... ) )
                break;
       };
       Algorithms::ParallelFor< Device >::exec( first, last, l, args... );

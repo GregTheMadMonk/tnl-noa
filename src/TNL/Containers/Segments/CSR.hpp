@@ -154,11 +154,12 @@ CSR< Device, Index >::
 forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
 {
    const auto offsetsView = this->offsets.getConstView();
-   auto l = [=] __cuda_callable__ ( const IndexType i, Args... args ) mutable {
-      const IndexType begin = offsetsView[ i ];
-      const IndexType end = offsetsView[ i + 1 ];
-      for( IndexType j = begin; j < end; j++  )
-         if( ! f( i, j, args... ) )
+   auto l = [=] __cuda_callable__ ( const IndexType segmentIdx, Args... args ) mutable {
+      const IndexType begin = offsetsView[ segmentIdx ];
+      const IndexType end = offsetsView[ segmentIdx + 1 ];
+      IndexType localIdx( 0 );
+      for( IndexType globalIdx = begin; globalIdx < end; globalIdx++  )
+         if( ! f( segmentIdx, localIdx++, globalIdx, args... ) )
             break;
    };
    Algorithms::ParallelFor< Device >::exec( first, last, l, args... );

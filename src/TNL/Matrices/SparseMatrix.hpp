@@ -122,6 +122,32 @@ template< typename Real,
           typename Index,
           typename RealAllocator,
           typename IndexAllocator >
+   template< typename Vector >
+void
+SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
+getCompressedRowLengths( Vector& rowLengths ) const
+{
+   rowLengths.setSize( this->getRows() );
+   rowLengths = 0;
+   auto rowLengths_view = rowLengths.getView();
+   auto fetch = [] __cuda_callable__ ( IndexType row, IndexType column, const RealType& value ) -> IndexType {
+      return ( value != 0.0 );
+   };
+   auto reduce = [] __cuda_callable__ ( IndexType& aux, const IndexType a ) {
+      aux += a;
+   };
+   auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const IndexType value ) mutable {
+      rowLengths_view[ rowIdx ] = value;
+   };
+   this->allRowsReduction( fetch, reduce, keep, 0 );
+}
+
+template< typename Real,
+          template< typename, typename > class Segments,
+          typename Device,
+          typename Index,
+          typename RealAllocator,
+          typename IndexAllocator >
 Index
 SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
 getRowLength( const IndexType row ) const
@@ -554,6 +580,43 @@ allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zer
    this->rowsReduction( 0, this->getRows(), fetch, reduce, keep, zero );
 }
 
+template< typename Real,
+          template< typename, typename > class Segments,
+          typename Device,
+          typename Index,
+          typename RealAllocator,
+          typename IndexAllocator >
+   template< typename Function >
+void
+SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
+forRows( IndexType first, IndexType last, Function& function ) const
+{
+   const auto columns_view = this->columnIndexes.getConstView();
+   const auto values_view = this->values.getConstView();
+   const IndexType paddingIndex_ = this->getPaddingIndex();
+   auto fetch_ = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType globalIdx ) mutable -> decltype( fetch( IndexType(), IndexType(), RealType() ) ) {
+      IndexType columnIdx = columns_view[ globalIdx ];
+      if( columnIdx != paddingIndex_ )
+         return fetch( rowIdx, columnIdx, values_view[ globalIdx ] );
+      return zero;
+   };
+   this->segments.segmentsReduction( first, last, fetch_, reduce, keep, zero );
+
+}
+
+template< typename Real,
+          template< typename, typename > class Segments,
+          typename Device,
+          typename Index,
+          typename RealAllocator,
+          typename IndexAllocator >
+   template< typename Function >
+void
+SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
+forAllRows( Function& function ) const
+{
+   this->forRows( 0, this->getRows(), function );
+}
 
 /*template< typename Real,
           template< typename, typename > class Segments,
@@ -638,12 +701,31 @@ SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >&
 SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
 operator=( const SparseMatrix< Real2, Segments2, Device2, Index2, RealAllocator2, IndexAllocator2 >& matrix )
 {
+   using RHSMatrixType = SparseMatrix< Real2, Segments2, Device2, Index2, RealAllocator2, IndexAllocator2 >;
    if( std::is_same< Device, Device2 >::value )
    {
-      
+      RowsCapacitiesType rowLengths;
+      matrix.getCompressedRowLengths( rowLengths );
+      this->setCompressedRowLengths( rowLengths );
+      // TODO: Replace this with SparseMatrixView
+      const auto matrix_columns_view = matrix.columnIndexes.getConstView();
+      const auto matrix_values_view = matrix.values.getConstView();
+      const auto segments_view = this->segments.getConstView();
+      auto this_columns_view = this->columnIndexes.getView();
+      auto this_values_view = this->values.getView();
+      const IndexType paddingIndex = this->getPaddingIndex();
+      auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType globalIdx ) {
+         const IndexType column = matrix_columns_view[ globalIdx ];
+         if( column != paddingIndex )
+         {
+            const RealType value = matrix_values_view[ globalIdx ];
+            IndexType thisGlobalIdx = segments_view.getGlobalIdx( rowIdx, localIdx );
+            this_columns_view[ thisGlobalIdx ] = column;
+            this_values_view[ thisGlobalIdx ] = value;
+         }
+      };
+      matrix.forAllRows( f );
    }
-      
-   
 }
 
 template< typename Real,
