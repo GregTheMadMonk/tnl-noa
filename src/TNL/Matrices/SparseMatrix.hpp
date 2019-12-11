@@ -594,13 +594,13 @@ forRows( IndexType first, IndexType last, Function& function ) const
    const auto columns_view = this->columnIndexes.getConstView();
    const auto values_view = this->values.getConstView();
    const IndexType paddingIndex_ = this->getPaddingIndex();
-   auto fetch_ = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType globalIdx ) mutable -> decltype( fetch( IndexType(), IndexType(), RealType() ) ) {
+   /*auto fetch_ = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType globalIdx ) mutable -> decltype( fetch( IndexType(), IndexType(), RealType() ) ) {
       IndexType columnIdx = columns_view[ globalIdx ];
       if( columnIdx != paddingIndex_ )
          return fetch( rowIdx, columnIdx, values_view[ globalIdx ] );
       return zero;
    };
-   this->segments.segmentsReduction( first, last, fetch_, reduce, keep, zero );
+   this->segments.segmentsReduction( first, last, fetch_, reduce, keep, zero );*/
 
 }
 
@@ -704,7 +704,7 @@ operator=( const SparseMatrix< Real2, Segments2, Device2, Index2, RealAllocator2
    using RHSMatrixType = SparseMatrix< Real2, Segments2, Device2, Index2, RealAllocator2, IndexAllocator2 >;
    if( std::is_same< Device, Device2 >::value )
    {
-      RowsCapacitiesType rowLengths;
+      /*RowsCapacitiesType rowLengths;
       matrix.getCompressedRowLengths( rowLengths );
       this->setCompressedRowLengths( rowLengths );
       // TODO: Replace this with SparseMatrixView
@@ -724,7 +724,7 @@ operator=( const SparseMatrix< Real2, Segments2, Device2, Index2, RealAllocator2
             this_values_view[ thisGlobalIdx ] = value;
          }
       };
-      matrix.forAllRows( f );
+      matrix.forAllRows( f );*/
    }
 }
 
