@@ -52,6 +52,16 @@ void test_SetSegmentsSizes_EqualSizes()
 
    for( IndexType i = 0; i < segmentsCount; i++ )
       EXPECT_EQ( segments3.getSegmentSize( i ), segmentSize );
+
+   using SegmentsView = typename Segments::ViewType;
+
+   SegmentsView segmentsView = segments.getView();
+   EXPECT_EQ( segmentsView.getSegmentsCount(), segmentsCount );
+   EXPECT_EQ( segmentsView.getSize(), segmentsCount * segmentSize );
+   EXPECT_LE( segmentsView.getSize(), segments.getStorageSize() );
+
+   for( IndexType i = 0; i < segmentsCount; i++ )
+      EXPECT_EQ( segmentsView.getSegmentSize( i ), segmentSize );
 }
 
 template< typename Segments >
@@ -89,6 +99,16 @@ void test_SetSegmentsSizes_EqualSizes_EllpackOnly()
 
    for( IndexType i = 0; i < segmentsCount; i++ )
       EXPECT_EQ( segments3.getSegmentSize( i ), segmentSize );
+
+   using SegmentsView = typename Segments::ViewType;
+
+   SegmentsView segmentsView = segments.getView();
+   EXPECT_EQ( segmentsView.getSegmentsCount(), segmentsCount );
+   EXPECT_EQ( segmentsView.getSize(), segmentsCount * segmentSize );
+   EXPECT_LE( segmentsView.getSize(), segments.getStorageSize() );
+
+   for( IndexType i = 0; i < segmentsCount; i++ )
+      EXPECT_EQ( segmentsView.getSegmentSize( i ), segmentSize );
 }
 
 template< typename Segments >
@@ -134,6 +154,11 @@ void test_AllReduction_MaximumInSegments()
    };
    segments.allReduction( fetch, reduce, keep, std::numeric_limits< IndexType >::min() );
 
+   for( IndexType i = 0; i < segmentsCount; i++ )
+      EXPECT_EQ( result.getElement( i ), ( i + 1 ) * segmentSize );
+
+   result_view = 0;
+   segments.getView().allReduction( fetch, reduce, keep, std::numeric_limits< IndexType >::min() );
    for( IndexType i = 0; i < segmentsCount; i++ )
       EXPECT_EQ( result.getElement( i ), ( i + 1 ) * segmentSize );
 }

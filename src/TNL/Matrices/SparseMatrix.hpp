@@ -18,7 +18,7 @@ namespace TNL {
 namespace Matrices {
 
    template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -31,7 +31,7 @@ SparseMatrix( const RealAllocatorType& realAllocator,
 }
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -43,7 +43,7 @@ SparseMatrix( const SparseMatrix& m )
 }
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -55,7 +55,7 @@ SparseMatrix( const SparseMatrix&& m )
 }
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -70,7 +70,7 @@ SparseMatrix( const IndexType rows,
 }
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -86,7 +86,7 @@ getSerializationType()
 }
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -99,7 +99,7 @@ getSerializationTypeVirtual() const
 }
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -117,7 +117,7 @@ setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths )
 }
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -143,7 +143,7 @@ getCompressedRowLengths( Vector& rowLengths ) const
 }
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -156,7 +156,7 @@ getRowLength( const IndexType row ) const
 }
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -170,7 +170,7 @@ getRowLengthFast( const IndexType row ) const
 }
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -183,7 +183,7 @@ getNonZeroRowLength( const IndexType row ) const
 }
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -197,12 +197,12 @@ getNonZeroRowLengthFast( const IndexType row ) const
 }
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
           typename IndexAllocator >
-   template< typename Real2, template< typename, typename > class Segments2,  typename Device2, typename Index2, typename RealAllocator2, typename IndexAllocator2 >
+   template< typename Real2, template< typename, typename, typename > class Segments2,  typename Device2, typename Index2, typename RealAllocator2, typename IndexAllocator2 >
 void
 SparseMatrix< Real, Segments, Device, Index, RealAllocator, IndexAllocator >::
 setLike( const SparseMatrix< Real2, Segments2, Device2, Index2, RealAllocator2, IndexAllocator2 >& matrix )
@@ -211,7 +211,7 @@ setLike( const SparseMatrix< Real2, Segments2, Device2, Index2, RealAllocator2, 
 }
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -229,7 +229,7 @@ getNumberOfNonzeroMatrixElements() const
 }
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -244,7 +244,7 @@ reset()
 }
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -260,7 +260,7 @@ setElementFast( const IndexType row,
 }
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -275,7 +275,7 @@ setElement( const IndexType row,
 }
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -292,7 +292,7 @@ addElementFast( const IndexType row,
 }
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -358,7 +358,7 @@ addElement( const IndexType row,
 
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -374,7 +374,7 @@ setRowFast( const IndexType row,
 }
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -403,7 +403,7 @@ setRow( const IndexType row,
 
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -421,7 +421,7 @@ addRowFast( const IndexType row,
 }
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -439,7 +439,7 @@ addRow( const IndexType row,
 
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -454,7 +454,7 @@ getElementFast( const IndexType row,
 }
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -477,7 +477,7 @@ getElement( const IndexType row,
 }
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -493,7 +493,7 @@ getRowFast( const IndexType row,
 }
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -509,7 +509,7 @@ rowVectorProduct( const IndexType row,
 }
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -544,7 +544,7 @@ vectorProduct( const InVector& inVector,
 }
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -567,7 +567,7 @@ rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Ke
 }
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -581,7 +581,7 @@ allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zer
 }
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -605,7 +605,7 @@ forRows( IndexType first, IndexType last, Function& function ) const
 }
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -619,7 +619,7 @@ forAllRows( Function& function ) const
 }
 
 /*template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -635,7 +635,7 @@ addMatrix( const SparseMatrix< Real2, Segments2, Device, Index2, RealAllocator2,
 }
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -650,7 +650,7 @@ getTransposition( const SparseMatrix< Real2, Device, Index2 >& matrix,
 }*/
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -668,7 +668,7 @@ performSORIteration( const Vector1& b,
 
 // copy assignment
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -686,13 +686,13 @@ operator=( const SparseMatrix& matrix )
 
 // cross-device copy assignment
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
           typename IndexAllocator >
    template< typename Real2,
-             template< typename, typename > class Segments2,
+             template< typename, typename, typename > class Segments2,
              typename Device2,
              typename Index2,
              typename RealAllocator2,
@@ -729,7 +729,7 @@ operator=( const SparseMatrix< Real2, Segments2, Device2, Index2, RealAllocator2
 }
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -744,7 +744,7 @@ save( File& file ) const
 }
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -759,7 +759,7 @@ load( File& file )
 }
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -772,7 +772,7 @@ save( const String& fileName ) const
 }
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -785,7 +785,7 @@ load( const String& fileName )
 }
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,
@@ -811,7 +811,7 @@ print( std::ostream& str ) const
 }
 
 template< typename Real,
-          template< typename, typename > class Segments,
+          template< typename, typename, typename > class Segments,
           typename Device,
           typename Index,
           typename RealAllocator,

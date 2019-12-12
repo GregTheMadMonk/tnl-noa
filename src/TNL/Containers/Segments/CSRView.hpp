@@ -31,7 +31,16 @@ template< typename Device,
           typename Index >
 __cuda_callable__
 CSRView< Device, Index >::
-CSRView( const OffsetsHolderView& offsets_view )
+CSRView( const OffsetsView&& offsets_view )
+   : offsets( offsets_view )
+{
+}
+
+template< typename Device,
+          typename Index >
+__cuda_callable__
+CSRView< Device, Index >::
+CSRView( const ConstOffsetsView&& offsets_view )
    : offsets( offsets_view )
 {
 }
@@ -41,9 +50,8 @@ template< typename Device,
 __cuda_callable__
 CSRView< Device, Index >::
 CSRView( const CSRView& csr_view )
-   : offsets( csr_view.offsest )
+   : offsets( csr_view.offsets )
 {
-
 }
 
 template< typename Device,
@@ -51,9 +59,26 @@ template< typename Device,
 __cuda_callable__
 CSRView< Device, Index >::
 CSRView( const CSRView&& csr_view )
-   : offsets( std::move( csr_view.offsest ) )
+   : offsets( std::move( csr_view.offsets ) )
 {
+}
 
+template< typename Device,
+          typename Index >
+typename CSRView< Device, Index >::ViewType
+CSRView< Device, Index >::
+getView()
+{
+   return ViewType( this->offsets );
+}
+
+template< typename Device,
+          typename Index >
+typename CSRView< Device, Index >::ConstViewType
+CSRView< Device, Index >::
+getConstView() const
+{
+   return ConstViewType( this->offsets.getConstView() );
 }
 
 template< typename Device,

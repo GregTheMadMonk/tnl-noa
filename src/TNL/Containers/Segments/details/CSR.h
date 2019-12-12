@@ -1,7 +1,7 @@
 /***************************************************************************
-                          CSRView.h -  description
+                          CSR.h -  description
                              -------------------
-    begin                : Dec 11, 2019
+    begin                : Dec 12, 2019
     copyright            : (C) 2019 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -10,51 +10,30 @@
 
 #pragma once
 
-#include <type_traits>
-
-#include <TNL/Containers/Vector.h>
 
 namespace TNL {
    namespace Containers {
       namespace Segments {
+         namespace details {
 
 template< typename Device,
           typename Index >
-class CSRView
+class CSR
 {
    public:
 
       using DeviceType = Device;
       using IndexType = Index;
-      using OffsetsView = typename Containers::VectorView< IndexType, DeviceType, IndexType >;
-      using ConstOffsetsView = typename Containers::Vector< IndexType, DeviceType, IndexType >::ConstViewType;
-      using ViewType = CSRView;
-      using ConstViewType = CSRView< Device, std::add_const_t< Index > >;
 
-      __cuda_callable__
-      CSRView();
-
-      __cuda_callable__
-      CSRView( const OffsetsView&& offsets );
-
-      __cuda_callable__
-      CSRView( const ConstOffsetsView&& offsets );
-
-      __cuda_callable__
-      CSRView( const CSRView& csr_view );
-
-      __cuda_callable__
-      CSRView( const CSRView&& csr_view );
-
-      ViewType getView();
-
-      ConstViewType getConstView() const;
-
-      /**
-       * \brief Number segments.
-       */
-      __cuda_callable__
-      IndexType getSegmentsCount() const;
+      template< typename SizesHolder, typename CSROffsets >
+      static void setSegmentsSizes( const SizesHolder& sizes, CSROffsets& offsets )
+      {
+         offsets.setSize( sizes.getSize() + 1 );
+         auto view = offsets.getView( 0, sizes.getSize() );
+         view = sizes;
+         offsets.setElement( sizes.getSize(), 0 );
+         offsets.template scan< Algorithms::ScanType::Exclusive >();
+      }
 
       /***
        * \brief Returns size of the segment number \r segmentIdx
@@ -101,17 +80,10 @@ class CSRView
 
       template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
       void allReduction( Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
-
-      void save( File& file ) const;
-
-      void load( File& file );
-
-   protected:
-
-      OffsetsView offsets;
 };
+         } // namespace details
       } // namespace Segements
    }  // namespace Conatiners
 } // namespace TNL
 
-#include <TNL/Containers/Segments/CSRView.hpp>
+#include <TNL/Containers/Segments/CSR.hpp>

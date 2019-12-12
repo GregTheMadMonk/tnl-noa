@@ -1,7 +1,7 @@
 /***************************************************************************
-                          CSRView.h -  description
+                          Ellpack.h -  description
                              -------------------
-    begin                : Dec 11, 2019
+    begin                : Dec 3, 2019
     copyright            : (C) 2019 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -10,8 +10,6 @@
 
 #pragma once
 
-#include <type_traits>
-
 #include <TNL/Containers/Vector.h>
 
 namespace TNL {
@@ -19,58 +17,49 @@ namespace TNL {
       namespace Segments {
 
 template< typename Device,
-          typename Index >
-class CSRView
+          typename Index,
+          bool RowMajorOrder = std::is_same< Device, Devices::Host >::value,
+          int Alignment = 32 >
+class Ellpack
 {
    public:
 
       using DeviceType = Device;
       using IndexType = Index;
-      using OffsetsView = typename Containers::VectorView< IndexType, DeviceType, IndexType >;
-      using ConstOffsetsView = typename Containers::Vector< IndexType, DeviceType, IndexType >::ConstViewType;
-      using ViewType = CSRView;
-      using ConstViewType = CSRView< Device, std::add_const_t< Index > >;
+      static constexpr int getAlignment() { return Alignment; }
+      static constexpr bool getRowMajorOrder() { return RowMajorOrder; }
+      using OffsetsHolder = Containers::Vector< IndexType, DeviceType, IndexType >;
+      using SegmentsSizes = OffsetsHolder;
 
-      __cuda_callable__
-      CSRView();
+      Ellpack();
 
-      __cuda_callable__
-      CSRView( const OffsetsView&& offsets );
+      Ellpack( const SegmentsSizes& sizes );
 
-      __cuda_callable__
-      CSRView( const ConstOffsetsView&& offsets );
+      Ellpack( const IndexType segmentsCount, const IndexType segmentSize );
 
-      __cuda_callable__
-      CSRView( const CSRView& csr_view );
+      Ellpack( const Ellpack& segments );
 
-      __cuda_callable__
-      CSRView( const CSRView&& csr_view );
+      Ellpack( const Ellpack&& segments );
 
-      ViewType getView();
+      /**
+       * \brief Set sizes of particular segments.
+       */
+      template< typename SizesHolder = OffsetsHolder >
+      void setSegmentsSizes( const SizesHolder& sizes );
 
-      ConstViewType getConstView() const;
-
+      void setSegmentsSizes( const IndexType segmentsCount, const IndexType segmentSize );
       /**
        * \brief Number segments.
        */
       __cuda_callable__
       IndexType getSegmentsCount() const;
 
-      /***
-       * \brief Returns size of the segment number \r segmentIdx
-       */
       __cuda_callable__
       IndexType getSegmentSize( const IndexType segmentIdx ) const;
 
-      /***
-       * \brief Returns number of elements managed by all segments.
-       */
       __cuda_callable__
       IndexType getSize() const;
 
-      /***
-       * \brief Returns number of elements that needs to be allocated.
-       */
       __cuda_callable__
       IndexType getStorageSize() const;
 
@@ -108,10 +97,11 @@ class CSRView
 
    protected:
 
-      OffsetsView offsets;
+      IndexType segmentSize, size, alignedSize;
 };
+
       } // namespace Segements
    }  // namespace Conatiners
 } // namespace TNL
 
-#include <TNL/Containers/Segments/CSRView.hpp>
+#include <TNL/Containers/Segments/Ellpack.hpp>

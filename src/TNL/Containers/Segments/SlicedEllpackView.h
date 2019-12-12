@@ -1,7 +1,7 @@
 /***************************************************************************
-                          CSRView.h -  description
+                          SlicedEllpackView.h -  description
                              -------------------
-    begin                : Dec 11, 2019
+    begin                : Dec 12, 2019
     copyright            : (C) 2019 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -19,58 +19,54 @@ namespace TNL {
       namespace Segments {
 
 template< typename Device,
-          typename Index >
-class CSRView
+          typename Index,
+          bool RowMajorOrder = std::is_same< Device, Devices::Host >::value,
+          int SliceSize = 32 >
+class SlicedEllpackView
 {
    public:
 
       using DeviceType = Device;
       using IndexType = Index;
-      using OffsetsView = typename Containers::VectorView< IndexType, DeviceType, IndexType >;
-      using ConstOffsetsView = typename Containers::Vector< IndexType, DeviceType, IndexType >::ConstViewType;
-      using ViewType = CSRView;
-      using ConstViewType = CSRView< Device, std::add_const_t< Index > >;
+      using OffsetsView = typename Containers::VectorView< IndexType, DeviceType, typename std::remove_const < IndexType >::type >;
+      static constexpr int getSliceSize() { return SliceSize; }
+      static constexpr bool getRowMajorOrder() { return RowMajorOrder; }
+      using ViewType = SlicedEllpackView;
+      using ConstViewType = SlicedEllpackView< Device, std::add_const_t< Index > >;
 
       __cuda_callable__
-      CSRView();
+      SlicedEllpackView();
 
       __cuda_callable__
-      CSRView( const OffsetsView&& offsets );
+      SlicedEllpackView( IndexType size,
+                         IndexType alignedSize,
+                         IndexType segmentsCount,
+                         OffsetsView&& sliceOffsets,
+                         OffsetsView&& sliceSegmentSizes );
 
       __cuda_callable__
-      CSRView( const ConstOffsetsView&& offsets );
+      SlicedEllpackView( const SlicedEllpackView& slicedEllpackView );
 
       __cuda_callable__
-      CSRView( const CSRView& csr_view );
-
-      __cuda_callable__
-      CSRView( const CSRView&& csr_view );
+      SlicedEllpackView( const SlicedEllpackView&& slicedEllpackView );
 
       ViewType getView();
 
       ConstViewType getConstView() const;
 
+      __cuda_callable__
+      IndexType getSegmentsCount() const;
+
+      __cuda_callable__
+      IndexType getSegmentSize( const IndexType segmentIdx ) const;
+
       /**
        * \brief Number segments.
        */
       __cuda_callable__
-      IndexType getSegmentsCount() const;
-
-      /***
-       * \brief Returns size of the segment number \r segmentIdx
-       */
-      __cuda_callable__
-      IndexType getSegmentSize( const IndexType segmentIdx ) const;
-
-      /***
-       * \brief Returns number of elements managed by all segments.
-       */
-      __cuda_callable__
       IndexType getSize() const;
 
-      /***
-       * \brief Returns number of elements that needs to be allocated.
-       */
+
       __cuda_callable__
       IndexType getStorageSize() const;
 
@@ -108,10 +104,13 @@ class CSRView
 
    protected:
 
-      OffsetsView offsets;
+      IndexType size, alignedSize, segmentsCount;
+
+      OffsetsView sliceOffsets, sliceSegmentSizes;
 };
+
       } // namespace Segements
    }  // namespace Conatiners
 } // namespace TNL
 
-#include <TNL/Containers/Segments/CSRView.hpp>
+#include <TNL/Containers/Segments/SlicedEllpackView.hpp>

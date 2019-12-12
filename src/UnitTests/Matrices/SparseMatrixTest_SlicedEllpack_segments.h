@@ -28,14 +28,14 @@ protected:
 
 ////
 // Row-major format is used for the host system
-template< typename Device, typename Index >
-using RowMajorSlicedEllpack = TNL::Containers::Segments::SlicedEllpack< Device, Index, true, 32 >;
+template< typename Device, typename Index, typename IndexAllocator >
+using RowMajorSlicedEllpack = TNL::Containers::Segments::SlicedEllpack< Device, Index, IndexAllocator, true, 32 >;
 
 
 ////
 // Column-major format is used for GPUs
-template< typename Device, typename Index >
-using ColumnMajorSlicedEllpack = TNL::Containers::Segments::SlicedEllpack< Device, Index, false, 32 >;
+template< typename Device, typename Index, typename IndexAllocator >
+using ColumnMajorSlicedEllpack = TNL::Containers::Segments::SlicedEllpack< Device, Index, IndexAllocator, false, 32 >;
 
 // types for which MatrixTest is instantiated
 using SlicedEllpackMatrixTypes = ::testing::Types

@@ -17,7 +17,7 @@ namespace TNL {
 namespace Matrices {
 
 template< typename Real,
-          template< typename Device_, typename Index_ > class Segments,
+          template< typename Device_, typename Index_, typename IndexAllocator_ > class Segments,
           typename Device = Devices::Host,
           typename Index = int,
           typename RealAllocator = typename Allocators::Default< Device >::template Allocator< Real >,
@@ -27,9 +27,9 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
    public:
 
       using RealType = Real;
-      template< typename Device_, typename Index_ >
-      using SegmentsTemplate = Segments< Device_, Index_ >;
-      using SegmentsType = Segments< Device, Index >;
+      template< typename Device_, typename Index_, typename IndexAllocator_ >
+      using SegmentsTemplate = Segments< Device_, Index_, IndexAllocator_ >;
+      using SegmentsType = Segments< Device, Index, IndexAllocator >;
       using DeviceType = Device;
       using IndexType = Index;
       using RealAllocatorType = RealAllocator;
@@ -77,7 +77,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       __cuda_callable__
       IndexType getNonZeroRowLengthFast( const IndexType row ) const;
 
-      template< typename Real2, template< typename, typename > class Segments2, typename Device2, typename Index2, typename RealAllocator2, typename IndexAllocator2 >
+      template< typename Real2, template< typename, typename, typename > class Segments2, typename Device2, typename Index2, typename RealAllocator2, typename IndexAllocator2 >
       void setLike( const SparseMatrix< Real2, Segments2, Device2, Index2, RealAllocator2, IndexAllocator2 >& matrix );
 
       IndexType getNumberOfNonzeroMatrixElements() const;
@@ -191,7 +191,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
 
       // cross-device copy assignment
       template< typename Real2,
-                template< typename, typename > class Segments2,
+                template< typename, typename, typename > class Segments2,
                 typename Device2,
                 typename Index2,
                 typename RealAllocator2,

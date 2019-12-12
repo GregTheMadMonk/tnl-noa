@@ -11,6 +11,7 @@
 #pragma once
 
 #include <TNL/Containers/Vector.h>
+#include <TNL/Containers/Segments/SlicedEllpackView.h>
 
 namespace TNL {
    namespace Containers {
@@ -18,6 +19,7 @@ namespace TNL {
 
 template< typename Device,
           typename Index,
+          typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index >,
           bool RowMajorOrder = std::is_same< Device, Devices::Host >::value,
           int SliceSize = 32 >
 class SlicedEllpack
@@ -26,9 +28,11 @@ class SlicedEllpack
 
       using DeviceType = Device;
       using IndexType = Index;
-      using OffsetsHolder = Containers::Vector< IndexType, DeviceType, IndexType >;
+      using OffsetsHolder = Containers::Vector< IndexType, DeviceType, typename std::remove_const< IndexType >::type, IndexAllocator >;
       static constexpr int getSliceSize() { return SliceSize; }
       static constexpr bool getRowMajorOrder() { return RowMajorOrder; }
+      using ViewType = SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >;
+      using ConstViewType = SlicedEllpackView< Device, std::add_const_t< Index >, RowMajorOrder, SliceSize >;
 
       SlicedEllpack();
 
@@ -37,6 +41,10 @@ class SlicedEllpack
       SlicedEllpack( const SlicedEllpack& segments );
 
       SlicedEllpack( const SlicedEllpack&& segments );
+
+      ViewType getView();
+
+      ConstViewType getConstView() const;
 
       /**
        * \brief Set sizes of particular segments.
