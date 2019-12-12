@@ -13,6 +13,7 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Algorithms/ParallelFor.h>
 #include <TNL/Containers/Segments/CSRView.h>
+#include <TNL/Containers/Segments/details/CSR.h>
 
 namespace TNL {
    namespace Containers {
@@ -98,15 +99,7 @@ Index
 CSRView< Device, Index >::
 getSegmentSize( const IndexType segmentIdx ) const
 {
-   if( ! std::is_same< DeviceType, Devices::Host >::value )
-   {
-#ifdef __CUDA_ARCH__
-      return offsets[ segmentIdx + 1 ] - offsets[ segmentIdx ];
-#else
-      return offsets.getElement( segmentIdx + 1 ) - offsets.getElement( segmentIdx );
-#endif
-   }
-   return offsets[ segmentIdx + 1 ] - offsets[ segmentIdx ];
+   return details::CSR< Device, Index >::getSegmentSize( this->offsets, segmentIdx );
 }
 
 template< typename Device,
@@ -126,15 +119,7 @@ Index
 CSRView< Device, Index >::
 getStorageSize() const
 {
-   if( ! std::is_same< DeviceType, Devices::Host >::value )
-   {
-#ifdef __CUDA_ARCH__
-      return offsets[ this->getSegmentsCount() ];
-#else
-      return offsets.getElement( this->getSegmentsCount() );
-#endif
-   }
-   return offsets[ this->getSegmentsCount() ];
+   return details::CSR< Device, Index >::getStorageSize( this->offsets );
 }
 
 template< typename Device,

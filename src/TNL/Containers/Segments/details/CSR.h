@@ -35,23 +35,48 @@ class CSR
          offsets.template scan< Algorithms::ScanType::Exclusive >();
       }
 
+      template< typename CSROffsets >
+      __cuda_callable__
+      static IndexType getSegmentsCount( const CSROffsets& offsets )
+      {
+         return offsets.getSize() - 1;
+      }
+
       /***
        * \brief Returns size of the segment number \r segmentIdx
        */
+      template< typename CSROffsets >
       __cuda_callable__
-      IndexType getSegmentSize( const IndexType segmentIdx ) const;
-
-      /***
-       * \brief Returns number of elements managed by all segments.
-       */
-      __cuda_callable__
-      IndexType getSize() const;
+      static IndexType getSegmentSize( const CSROffsets& offsets, const IndexType segmentIdx )
+      {
+         if( ! std::is_same< DeviceType, Devices::Host >::value )
+         {
+#ifdef __CUDA_ARCH__
+            return offsets[ segmentIdx + 1 ] - offsets[ segmentIdx ];
+#else
+            return offsets.getElement( segmentIdx + 1 ) - offsets.getElement( segmentIdx );
+#endif
+         }
+         return offsets[ segmentIdx + 1 ] - offsets[ segmentIdx ];
+      }
 
       /***
        * \brief Returns number of elements that needs to be allocated.
        */
+      template< typename CSROffsets >
       __cuda_callable__
-      IndexType getStorageSize() const;
+      static IndexType getStorageSize( const CSROffsets& offsets )
+      {
+         if( ! std::is_same< DeviceType, Devices::Host >::value )
+         {
+#ifdef __CUDA_ARCH__
+            return offsets[ getSegmentsCount( offsets ) ];
+#else
+            return offsets.getElement( getSegmentsCount( offsets ) );
+#endif
+         }
+         return offsets[ getSegmentsCount( offsets ) ];
+      }
 
       __cuda_callable__
       IndexType getGlobalIndex( const Index segmentIdx, const Index localIdx ) const;
@@ -85,5 +110,3 @@ class CSR
       } // namespace Segements
    }  // namespace Conatiners
 } // namespace TNL
-
-#include <TNL/Containers/Segments/CSR.hpp>

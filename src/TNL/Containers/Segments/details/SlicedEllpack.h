@@ -102,5 +102,3 @@ class SlicedEllpack
       } // namespace Segements
    }  // namespace Conatiners
 } // namespace TNL
-
-#include <TNL/Containers/Segments/SlicedEllpack.hpp>

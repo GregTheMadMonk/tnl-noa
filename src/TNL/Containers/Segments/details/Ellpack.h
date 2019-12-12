@@ -103,5 +103,3 @@ class Ellpack
       } // namespace Segements
    }  // namespace Conatiners
 } // namespace TNL
-
-#include <TNL/Containers/Segments/Ellpack.hpp>
