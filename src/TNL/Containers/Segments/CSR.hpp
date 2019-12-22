@@ -224,6 +224,17 @@ allReduction( Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Re
 template< typename Device,
           typename Index,
           typename IndexAllocator >
+   template< typename Device_, typename Index_, typename IndexAllocator_ >
+CSR< Device, Index, IndexAllocator >&
+CSR< Device, Index, IndexAllocator >::
+operator=( const CSR< Device_, Index_, IndexAllocator_ >& source )
+{
+   this->offsets = source.offsets;
+}
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator >
 void
 CSR< Device, Index, IndexAllocator >::
 save( File& file ) const

@@ -327,6 +327,21 @@ template< typename Device,
           typename IndexAllocator,
           bool RowMajorOrder,
           int Alignment >
+   template< typename Device_, typename Index_, typename IndexAllocator_, bool RowMajorOrder_, int Alignment_ >
+Ellpack< Device, Index, IndexAllocator, RowMajorOrder, Alignment >&
+Ellpack< Device, Index, IndexAllocator, RowMajorOrder, Alignment >::
+operator=( const Ellpack< Device_, Index_, IndexAllocator_, RowMajorOrder_, Alignment_ >& source )
+{
+   this->segmentSize = source.segmentSize;
+   this->size = source.size;
+   this->alignedSize = roundUpDivision( size, this->getAlignment() ) * this->getAlignment();
+}
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator,
+          bool RowMajorOrder,
+          int Alignment >
 void
 Ellpack< Device, Index, IndexAllocator, RowMajorOrder, Alignment >::
 save( File& file ) const

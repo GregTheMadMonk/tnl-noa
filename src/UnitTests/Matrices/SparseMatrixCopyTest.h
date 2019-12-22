@@ -12,12 +12,31 @@
 #include <TNL/Matrices/Ellpack.h>
 #include <TNL/Matrices/SlicedEllpack.h>
 
-using CSR_host = TNL::Matrices::CSR< int, TNL::Devices::Host, int >;
+#include <TNL/Matrices/SparseMatrix.h>
+#include <TNL/Containers/Segments/CSR.h>
+#include <TNL/Containers/Segments/Ellpack.h>
+#include <TNL/Containers/Segments/SlicedEllpack.h>
+
+/*using CSR_host = TNL::Matrices::CSR< int, TNL::Devices::Host, int >;
 using CSR_cuda = TNL::Matrices::CSR< int, TNL::Devices::Cuda, int >;
 using E_host = TNL::Matrices::Ellpack< int, TNL::Devices::Host, int >;
 using E_cuda = TNL::Matrices::Ellpack< int, TNL::Devices::Cuda, int >;
 using SE_host = TNL::Matrices::SlicedEllpack< int, TNL::Devices::Host, int, 2 >;
-using SE_cuda = TNL::Matrices::SlicedEllpack< int, TNL::Devices::Cuda, int, 2 >;
+using SE_cuda = TNL::Matrices::SlicedEllpack< int, TNL::Devices::Cuda, int, 2 >;*/
+
+template< typename Device, typename Index, typename IndexAllocator >
+using EllpackSegments = TNL::Containers::Segments::Ellpack< Device, Index, IndexAllocator >;
+
+template< typename Device, typename Index, typename IndexAllocator >
+using SlicedEllpackSegments = TNL::Containers::Segments::SlicedEllpack< Device, Index, IndexAllocator >;
+
+using CSR_host = TNL::Matrices::SparseMatrix< int, TNL::Containers::Segments::CSR, TNL::Devices::Host, int >;
+using CSR_cuda = TNL::Matrices::SparseMatrix< int, TNL::Containers::Segments::CSR, TNL::Devices::Cuda, int >;
+using E_host   = TNL::Matrices::SparseMatrix< int, EllpackSegments, TNL::Devices::Host, int >;
+using E_cuda   = TNL::Matrices::SparseMatrix< int, EllpackSegments, TNL::Devices::Cuda, int >;
+using SE_host  = TNL::Matrices::SparseMatrix< int, SlicedEllpackSegments, TNL::Devices::Host, int >;
+using SE_cuda  = TNL::Matrices::SparseMatrix< int, SlicedEllpackSegments, TNL::Devices::Cuda, int >;
+
 
 #ifdef HAVE_GTEST 
 #include <gtest/gtest.h>
@@ -388,7 +407,8 @@ void testConversion()
         checkTriDiagMatrix( triDiag1 );
         
         Matrix2 triDiag2;
-        TNL::Matrices::copySparseMatrix( triDiag2, triDiag1 );
+        //TNL::Matrices::copySparseMatrix( triDiag2, triDiag1 );
+        triDiag2 = triDiag1;
         checkTriDiagMatrix( triDiag2 );
    }
    
@@ -400,7 +420,8 @@ void testConversion()
         checkAntiTriDiagMatrix( antiTriDiag1 );
         
         Matrix2 antiTriDiag2;
-        TNL::Matrices::copySparseMatrix( antiTriDiag2, antiTriDiag1 );
+        //TNL::Matrices::copySparseMatrix( antiTriDiag2, antiTriDiag1 );
+        antiTriDiag2 = antiTriDiag1;
         checkAntiTriDiagMatrix( antiTriDiag2 );
    }
    
@@ -411,7 +432,8 @@ void testConversion()
         checkUnevenRowSizeMatrix( unevenRowSize1 );
         
         Matrix2 unevenRowSize2;
-        TNL::Matrices::copySparseMatrix( unevenRowSize2, unevenRowSize1 );
+        //TNL::Matrices::copySparseMatrix( unevenRowSize2, unevenRowSize1 );
+        unevenRowSize2 = unevenRowSize1;
         checkUnevenRowSizeMatrix( unevenRowSize2 );
    }
 }

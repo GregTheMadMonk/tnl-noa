@@ -361,6 +361,23 @@ template< typename Device,
           typename IndexAllocator,
           bool RowMajorOrder,
           int SliceSize >
+   template< typename Device_, typename Index_, typename IndexAllocator_, bool RowMajorOrder_ >
+SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >&
+SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
+operator=( const SlicedEllpack< Device_, Index_, IndexAllocator_, RowMajorOrder_, SliceSize >& source )
+{
+   this->size = source.size;
+   this->alignedSize = source.alignedSize;
+   this->segmentsCount = source.segmentsCount;
+   this->sliceOffsets = source.sliceOffsets;
+   this->sliceSegmentSizes = source.sliceSegmentSizes;
+}
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator,
+          bool RowMajorOrder,
+          int SliceSize >
 void
 SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
 save( File& file ) const

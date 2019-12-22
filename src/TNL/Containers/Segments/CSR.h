@@ -93,7 +93,6 @@ class CSR
       template< typename Function, typename... Args >
       void forAll( Function& f, Args... args ) const;
 
-
       /***
        * \brief Go over all segments and perform a reduction in each of them.
        */
@@ -102,6 +101,11 @@ class CSR
 
       template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
       void allReduction( Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
+
+      CSR& operator=( const CSR& rhsSegments ) = default;
+
+      template< typename Device_, typename Index_, typename IndexAllocator_ >
+      CSR& operator=( const CSR< Device_, Index_, IndexAllocator_ >& source );
 
       void save( File& file ) const;
 

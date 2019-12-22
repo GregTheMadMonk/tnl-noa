@@ -100,6 +100,11 @@ class Ellpack
       template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
       void allReduction( Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
 
+      Ellpack& operator=( const Ellpack& source ) = default;
+
+      template< typename Device_, typename Index_, typename IndexAllocator_, bool RowMajorOrder_, int Alignment_ >
+      Ellpack& operator=( const Ellpack< Device_, Index_, IndexAllocator_, RowMajorOrder_, Alignment_ >& source );
+
       void save( File& file ) const;
 
       void load( File& file );

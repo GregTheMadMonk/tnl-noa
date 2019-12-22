@@ -218,7 +218,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
 
       SegmentsType segments;
 
-      IndexAllocator indexAlloctor;
+      IndexAllocator indexAllocator;
 
       RealAllocator realAllocator;
 
