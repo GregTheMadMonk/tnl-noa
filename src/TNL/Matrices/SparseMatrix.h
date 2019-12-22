@@ -62,7 +62,13 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
 
       virtual String getSerializationTypeVirtual() const;
 
-      void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths );
+      template< typename RowsCapacitiesVector >
+      void setCompressedRowLengths( const RowsCapacitiesVector& rowCapacities );
+
+      // TODO: Remove this when possible
+      void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths ) {
+         this->setCompressedRowLengths( rowLengths );
+      };
 
       template< typename Vector >
       void getCompressedRowLengths( Vector& rowLengths ) const;
