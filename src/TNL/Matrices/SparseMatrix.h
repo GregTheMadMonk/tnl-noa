@@ -34,7 +34,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       using IndexType = Index;
       using RealAllocatorType = RealAllocator;
       using IndexAllocatorType = IndexAllocator;
-      using RowsCapacitiesType = Containers::Vector< IndexType, DeviceType, IndexType >;
+      using RowsCapacitiesType = Containers::Vector< IndexType, DeviceType, IndexType, IndexAllocatorType >;
       using RowsCapacitiesView = Containers::VectorView< IndexType, DeviceType, IndexType >;
       using ConstRowsCapacitiesView = typename RowsCapacitiesView::ConstViewType;
       using ValuesVectorType = typename Matrix< Real, Device, Index, RealAllocator >::ValuesVector;

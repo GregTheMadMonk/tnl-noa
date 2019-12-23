@@ -438,7 +438,6 @@ void testConversion()
    }
 }
 
-
 TEST( SparseMatrixCopyTest, CSR_HostToHost )
 {
    testCopyAssignment< CSR_host, CSR_host >();

@@ -171,7 +171,7 @@ getGlobalIndex( const Index segmentIdx, const Index localIdx ) const
    }
    else
    {
-#ifdef __CUDA__ARCH__
+#ifdef __CUDA_ARCH__
       sliceOffset = this->sliceOffsets[ sliceIdx ];
       segmentSize = this->sliceSegmentSizes[ sliceIdx ];
 #else

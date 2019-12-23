@@ -739,8 +739,9 @@ operator=( const SparseMatrix< Real2, Segments2, Device2, Index2, RealAllocator2
    }
    else
    {
+      //std::cerr << "Matrix = " << std::endl << matrix << std::endl;
       const IndexType maxRowLength = max( rowLengths );
-      const IndexType bufferRowsCount( 128 );
+      const IndexType bufferRowsCount( 8 );
       const size_t bufferSize = bufferRowsCount * maxRowLength;
       Containers::Vector< Real2, Device2, Index2, RealAllocator2 > matrixValuesBuffer( bufferSize );
       Containers::Vector< Index2, Device2, Index2, IndexAllocator2 > matrixColumnsBuffer( bufferSize );
@@ -757,6 +758,7 @@ operator=( const SparseMatrix< Real2, Segments2, Device2, Index2, RealAllocator2
       {
          const IndexType lastRow = min( baseRow + bufferRowsCount, rowsCount );
          thisColumnsBuffer = paddingIndex;
+         matrixColumnsBuffer_view = paddingIndex;
 
          ////
          // Copy matrix elements into buffer
@@ -765,12 +767,15 @@ operator=( const SparseMatrix< Real2, Segments2, Device2, Index2, RealAllocator2
             if( column != paddingIndex )
             {
                const IndexType bufferIdx = ( rowIdx - baseRow ) * maxRowLength + localIdx;
+               //printf( ">>>RowIdx = %d GlobalIdx = %d  column = %d bufferIdx = %d \n", rowIdx, globalIdx, column, bufferIdx );
                matrixValuesBuffer_view[ bufferIdx ] = matrix_values_view[ globalIdx ];
                matrixColumnsBuffer_view[ bufferIdx ] = column;
             }
          };
          matrix.forRows( baseRow, lastRow, f1 );
 
+         //std::cerr << "Values = " << matrixValuesBuffer_view << std::endl;
+         //std::cerr << "Columns = " << matrixColumnsBuffer_view << std::endl;
          ////
          // Copy the source matrix buffer to this matrix buffer
          thisValuesBuffer_view = matrixValuesBuffer_view;
@@ -790,6 +795,7 @@ operator=( const SparseMatrix< Real2, Segments2, Device2, Index2, RealAllocator2
          this->forRows( baseRow, lastRow, f2 );
          baseRow += bufferRowsCount;
       }
+      //std::cerr << "This matrix = " << std::endl << *this << std::endl;
    }
 }
 
