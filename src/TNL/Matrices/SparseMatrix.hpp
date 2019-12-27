@@ -687,8 +687,7 @@ operator=( const SparseMatrix& matrix )
    Matrix< Real, Device, Index >::operator=( matrix );
    this->columnIndexes = matrix.columnIndexes;
    this->segments = matrix.segments;
-   this->indexAllocator = matrix.indexAllocator;
-   this->realAllocator = matrix.realAllocator;
+   return *this;
 }
 
 // cross-device copy assignment
@@ -797,6 +796,7 @@ operator=( const SparseMatrix< Real2, Segments2, Device2, Index2, RealAllocator2
       }
       //std::cerr << "This matrix = " << std::endl << *this << std::endl;
    }
+   return *this;
 }
 
 template< typename Real,
