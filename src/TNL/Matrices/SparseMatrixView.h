@@ -1,7 +1,7 @@
 /***************************************************************************
-                          SparseMatrix.h -  description
+                          SparseMatrixView.h -  description
                              -------------------
-    begin                : Nov 29, 2019
+    begin                : Dec 28, 2019
     copyright            : (C) 2019 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -14,7 +14,6 @@
 #include <TNL/Matrices/MatrixType.h>
 #include <TNL/Allocators/Default.h>
 #include <TNL/Containers/Segments/CSR.h>
-#include <TNL/Matrices/SparseMatrixView.h>
 
 namespace TNL {
 namespace Matrices {
@@ -23,26 +22,21 @@ template< typename Real,
           typename Device = Devices::Host,
           typename Index = int,
           typename MatrixType = GeneralMatrix,
-          template< typename Device_, typename Index_, typename IndexAllocator_ > class Segments = Containers::Segments::CSR,
-          typename RealAllocator = typename Allocators::Default< Device >::template Allocator< Real >,
-          typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index > >
-class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
+          template< typename Device_, typename Index_ > class SegmentsView = Containers::Segments::CSRView >
+class SparseMatrixView : public MatrixView< Real, Device, Index >
 {
    public:
 
       using RealType = Real;
-      template< typename Device_, typename Index_, typename IndexAllocator_ >
-      using SegmentsTemplate = Segments< Device_, Index_, IndexAllocator_ >;
-      using SegmentsType = Segments< Device, Index, IndexAllocator >;
+      template< typename Device_, typename Index_ >
+      using SegmentsViewTemplate = SegmentsView< Device_, Index_ >;
+      using SegmentsViewType = SegmentsView< Device, Index >;
       using DeviceType = Device;
       using IndexType = Index;
-      using RealAllocatorType = RealAllocator;
-      using IndexAllocatorType = IndexAllocator;
-      using RowsCapacitiesType = Containers::Vector< IndexType, DeviceType, IndexType, IndexAllocatorType >;
       using RowsCapacitiesView = Containers::VectorView< IndexType, DeviceType, IndexType >;
       using ConstRowsCapacitiesView = typename RowsCapacitiesView::ConstViewType;
-      using ValuesVectorType = typename Matrix< Real, Device, Index, RealAllocator >::ValuesVector;
-      using ColumnsVectorType = Containers::Vector< IndexType, DeviceType, IndexType, IndexAllocatorType >;
+      using ValuesViewType = typename MatrixView< Real, Device, Index >::ValuesView;
+      using ColumnsViewType = Containers::VectorView< IndexType, DeviceType, IndexType >;
 
       // TODO: remove this - it is here only for compatibility with original matrix implementation
       typedef Containers::Vector< IndexType, DeviceType, IndexType > CompressedRowLengthsVector;
@@ -51,29 +45,25 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
 
       static constexpr bool isSymmetric() { return MatrixType::isSymmetric(); };
 
-      SparseMatrix( const RealAllocatorType& realAllocator = RealAllocatorType(),
-                    const IndexAllocatorType& indexAllocator = IndexAllocatorType() );
+      __cuda_callable__
+      SparseMatrixView();
 
-      SparseMatrix( const SparseMatrix& m );
+      __cuda_callable__
+      SparseMatrixView( const IndexType rows,
+                        const IndexType columns,
+                        ValuesViewType& values,
+                        ColumnsViewType& columnIndexes,
+                        SegmentsViewType& segments );
 
-      SparseMatrix( const SparseMatrix&& m );
+      __cuda_callable__
+      SparseMatrixView( const SparseMatrixView& m ) = default;
 
-      SparseMatrix( const IndexType rows,
-                    const IndexType columns,
-                    const RealAllocatorType& realAllocator = RealAllocatorType(),
-                    const IndexAllocatorType& indexAllocator = IndexAllocatorType() );
+      //__cuda_callable__
+      //SparseMatrixView( const SparseMatrixView&& m ) = default;
 
       static String getSerializationType();
 
       virtual String getSerializationTypeVirtual() const;
-
-      template< typename RowsCapacitiesVector >
-      void setCompressedRowLengths( const RowsCapacitiesVector& rowCapacities );
-
-      // TODO: Remove this when possible
-      void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths ) {
-         this->setCompressedRowLengths( rowLengths );
-      };
 
       template< typename Vector >
       void getCompressedRowLengths( Vector& rowLengths ) const;
@@ -87,9 +77,6 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
 
       __cuda_callable__
       IndexType getNonZeroRowLengthFast( const IndexType row ) const;
-
-      template< typename Real2, typename Device2, typename Index2, typename MatrixType2, template< typename, typename, typename > class Segments2, typename RealAllocator2, typename IndexAllocator2 >
-      void setLike( const SparseMatrix< Real2, Device2, Index2, MatrixType2, Segments2, RealAllocator2, IndexAllocator2 >& matrix );
 
       IndexType getNumberOfNonzeroMatrixElements() const;
 
@@ -169,16 +156,6 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
                           const RealType& matrixMultiplicator = 1.0,
                           const RealType& inVectorAddition = 0.0 ) const;
 
-      /*template< typename Real2, typename Index2 >
-      void addMatrix( const SparseMatrix< Real2, Segments, Device, Index2 >& matrix,
-                      const RealType& matrixMultiplicator = 1.0,
-                      const RealType& thisMatrixMultiplicator = 1.0 );
-
-      template< typename Real2, typename Index2 >
-      void getTransposition( const SparseMatrix< Real2, Segments, Device, Index2 >& matrix,
-                             const RealType& matrixMultiplicator = 1.0 );
-       */
-
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
       void rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
@@ -197,47 +174,23 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
                                 Vector2& x,
                                 const RealType& omega = 1.0 ) const;
 
-      // copy assignment
-      SparseMatrix& operator=( const SparseMatrix& matrix );
-
-      // cross-device copy assignment
-      template< typename Real2,
-                typename Device2,
-                typename Index2,
-                typename MatrixType2,
-                template< typename, typename, typename > class Segments2,
-                typename RealAllocator2,
-                typename IndexAllocator2 >
-      SparseMatrix& operator=( const SparseMatrix< Real2, Device2, Index2, MatrixType2, Segments2, RealAllocator2, IndexAllocator2 >& matrix );
-
       void save( File& file ) const;
 
-      void load( File& file );
-
       void save( const String& fileName ) const;
-
-      void load( const String& fileName );
 
       void print( std::ostream& str ) const;
 
       __cuda_callable__
       IndexType getPaddingIndex() const;
 
-// TODO: restore it and also in Matrix
-//   protected:
+   protected:
 
-      ColumnsVectorType columnIndexes;
+      ColumnsViewType columnIndexes;
 
-      SegmentsType segments;
-
-      IndexAllocator indexAllocator;
-
-      RealAllocator realAllocator;
-
-
+      SegmentsViewType segments;
 };
 
 }  // namespace Conatiners
 } // namespace TNL
 
-#include <TNL/Matrices/SparseMatrix.hpp>
+#include <TNL/Matrices/SparseMatrixView.hpp>

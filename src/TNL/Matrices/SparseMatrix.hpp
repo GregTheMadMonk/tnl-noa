@@ -1,5 +1,5 @@
 /***************************************************************************
-                          SparseMatrix.h -  description
+                          SparseMatrix.hpp -  description
                              -------------------
     begin                : Nov 29, 2019
     copyright            : (C) 2019 by Tomas Oberhuber
