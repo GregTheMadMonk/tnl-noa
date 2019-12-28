@@ -29,31 +29,31 @@ protected:
 // types for which MatrixTest is instantiated
 using CSRMatrixTypes = ::testing::Types
 <
-    TNL::Matrices::SparseMatrix< int,     TNL::Containers::Segments::CSR, TNL::Devices::Host, short >,
-    TNL::Matrices::SparseMatrix< long,    TNL::Containers::Segments::CSR, TNL::Devices::Host, short >,
-    TNL::Matrices::SparseMatrix< float,   TNL::Containers::Segments::CSR, TNL::Devices::Host, short >,
-    TNL::Matrices::SparseMatrix< double,  TNL::Containers::Segments::CSR, TNL::Devices::Host, short >,
-    TNL::Matrices::SparseMatrix< int,     TNL::Containers::Segments::CSR, TNL::Devices::Host, int   >,
-    TNL::Matrices::SparseMatrix< long,    TNL::Containers::Segments::CSR, TNL::Devices::Host, int   >,
-    TNL::Matrices::SparseMatrix< float,   TNL::Containers::Segments::CSR, TNL::Devices::Host, int   >,
-    TNL::Matrices::SparseMatrix< double,  TNL::Containers::Segments::CSR, TNL::Devices::Host, int   >,
-    TNL::Matrices::SparseMatrix< int,     TNL::Containers::Segments::CSR, TNL::Devices::Host, long  >,
-    TNL::Matrices::SparseMatrix< long,    TNL::Containers::Segments::CSR, TNL::Devices::Host, long  >,
-    TNL::Matrices::SparseMatrix< float,   TNL::Containers::Segments::CSR, TNL::Devices::Host, long  >,
-    TNL::Matrices::SparseMatrix< double,  TNL::Containers::Segments::CSR, TNL::Devices::Host, long  >
+    TNL::Matrices::SparseMatrix< int,     TNL::Devices::Host, short, TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
+    TNL::Matrices::SparseMatrix< long,    TNL::Devices::Host, short, TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
+    TNL::Matrices::SparseMatrix< float,   TNL::Devices::Host, short, TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
+    TNL::Matrices::SparseMatrix< double,  TNL::Devices::Host, short, TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
+    TNL::Matrices::SparseMatrix< int,     TNL::Devices::Host, int,   TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
+    TNL::Matrices::SparseMatrix< long,    TNL::Devices::Host, int,   TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
+    TNL::Matrices::SparseMatrix< float,   TNL::Devices::Host, int,   TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
+    TNL::Matrices::SparseMatrix< double,  TNL::Devices::Host, int,   TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
+    TNL::Matrices::SparseMatrix< int,     TNL::Devices::Host, long,  TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
+    TNL::Matrices::SparseMatrix< long,    TNL::Devices::Host, long,  TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
+    TNL::Matrices::SparseMatrix< float,   TNL::Devices::Host, long,  TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
+    TNL::Matrices::SparseMatrix< double,  TNL::Devices::Host, long,  TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >
 #ifdef HAVE_CUDA
-   ,TNL::Matrices::SparseMatrix< int,     TNL::Containers::Segments::CSR, TNL::Devices::Cuda, short >,
-    TNL::Matrices::SparseMatrix< long,    TNL::Containers::Segments::CSR, TNL::Devices::Cuda, short >,
-    TNL::Matrices::SparseMatrix< float,   TNL::Containers::Segments::CSR, TNL::Devices::Cuda, short >,
-    TNL::Matrices::SparseMatrix< double,  TNL::Containers::Segments::CSR, TNL::Devices::Cuda, short >,
-    TNL::Matrices::SparseMatrix< int,     TNL::Containers::Segments::CSR, TNL::Devices::Cuda, int   >,
-    TNL::Matrices::SparseMatrix< long,    TNL::Containers::Segments::CSR, TNL::Devices::Cuda, int   >,
-    TNL::Matrices::SparseMatrix< float,   TNL::Containers::Segments::CSR, TNL::Devices::Cuda, int   >,
-    TNL::Matrices::SparseMatrix< double,  TNL::Containers::Segments::CSR, TNL::Devices::Cuda, int   >,
-    TNL::Matrices::SparseMatrix< int,     TNL::Containers::Segments::CSR, TNL::Devices::Cuda, long  >,
-    TNL::Matrices::SparseMatrix< long,    TNL::Containers::Segments::CSR, TNL::Devices::Cuda, long  >,
-    TNL::Matrices::SparseMatrix< float,   TNL::Containers::Segments::CSR, TNL::Devices::Cuda, long  >,
-    TNL::Matrices::SparseMatrix< double,  TNL::Containers::Segments::CSR, TNL::Devices::Cuda, long  >
+   ,TNL::Matrices::SparseMatrix< int,     TNL::Devices::Cuda, short, TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
+    TNL::Matrices::SparseMatrix< long,    TNL::Devices::Cuda, short, TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
+    TNL::Matrices::SparseMatrix< float,   TNL::Devices::Cuda, short, TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
+    TNL::Matrices::SparseMatrix< double,  TNL::Devices::Cuda, short, TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
+    TNL::Matrices::SparseMatrix< int,     TNL::Devices::Cuda, int,   TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
+    TNL::Matrices::SparseMatrix< long,    TNL::Devices::Cuda, int,   TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
+    TNL::Matrices::SparseMatrix< float,   TNL::Devices::Cuda, int,   TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
+    TNL::Matrices::SparseMatrix< double,  TNL::Devices::Cuda, int,   TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
+    TNL::Matrices::SparseMatrix< int,     TNL::Devices::Cuda, long,  TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
+    TNL::Matrices::SparseMatrix< long,    TNL::Devices::Cuda, long,  TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
+    TNL::Matrices::SparseMatrix< float,   TNL::Devices::Cuda, long,  TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
+    TNL::Matrices::SparseMatrix< double,  TNL::Devices::Cuda, long,  TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >
 #endif
 >;
 

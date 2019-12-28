@@ -11,15 +11,18 @@
 #pragma once
 
 #include <TNL/Matrices/Matrix.h>
+#include <TNL/Matrices/MatrixType.h>
 #include <TNL/Allocators/Default.h>
+#include <TNL/Containers/Segments/CSR.h>
 
 namespace TNL {
 namespace Matrices {
 
 template< typename Real,
-          template< typename Device_, typename Index_, typename IndexAllocator_ > class Segments,
           typename Device = Devices::Host,
           typename Index = int,
+          typename MatrixType = GeneralMatrix,
+          template< typename Device_, typename Index_, typename IndexAllocator_ > class Segments = Containers::Segments::CSR,
           typename RealAllocator = typename Allocators::Default< Device >::template Allocator< Real >,
           typename IndexAllocator = typename Allocators::Default< Device >::template Allocator< Index > >
 class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
@@ -45,6 +48,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       typedef Containers::VectorView< IndexType, DeviceType, IndexType > CompressedRowLengthsVectorView;
       typedef typename CompressedRowLengthsVectorView::ConstViewType ConstCompressedRowLengthsVectorView;
 
+      static constexpr bool isSymmetric() { return MatrixType::isSymmetric(); };
 
       SparseMatrix( const RealAllocatorType& realAllocator = RealAllocatorType(),
                     const IndexAllocatorType& indexAllocator = IndexAllocatorType() );
@@ -83,8 +87,8 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       __cuda_callable__
       IndexType getNonZeroRowLengthFast( const IndexType row ) const;
 
-      template< typename Real2, template< typename, typename, typename > class Segments2, typename Device2, typename Index2, typename RealAllocator2, typename IndexAllocator2 >
-      void setLike( const SparseMatrix< Real2, Segments2, Device2, Index2, RealAllocator2, IndexAllocator2 >& matrix );
+      template< typename Real2, typename Device2, typename Index2, typename MatrixType2, template< typename, typename, typename > class Segments2, typename RealAllocator2, typename IndexAllocator2 >
+      void setLike( const SparseMatrix< Real2, Device2, Index2, MatrixType2, Segments2, RealAllocator2, IndexAllocator2 >& matrix );
 
       IndexType getNumberOfNonzeroMatrixElements() const;
 
@@ -197,12 +201,13 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
 
       // cross-device copy assignment
       template< typename Real2,
-                template< typename, typename, typename > class Segments2,
                 typename Device2,
                 typename Index2,
+                typename MatrixType2,
+                template< typename, typename, typename > class Segments2,
                 typename RealAllocator2,
                 typename IndexAllocator2 >
-      SparseMatrix& operator=( const SparseMatrix< Real2, Segments2, Device2, Index2, RealAllocator2, IndexAllocator2 >& matrix );
+      SparseMatrix& operator=( const SparseMatrix< Real2, Device2, Index2, MatrixType2, Segments2, RealAllocator2, IndexAllocator2 >& matrix );
 
       void save( File& file ) const;
 

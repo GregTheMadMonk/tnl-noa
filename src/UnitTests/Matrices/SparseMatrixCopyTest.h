@@ -13,6 +13,7 @@
 #include <TNL/Matrices/SlicedEllpack.h>
 
 #include <TNL/Matrices/SparseMatrix.h>
+#include <TNL/Matrices/MatrixType.h>
 #include <TNL/Containers/Segments/CSR.h>
 #include <TNL/Containers/Segments/Ellpack.h>
 #include <TNL/Containers/Segments/SlicedEllpack.h>
@@ -30,12 +31,12 @@ using EllpackSegments = TNL::Containers::Segments::Ellpack< Device, Index, Index
 template< typename Device, typename Index, typename IndexAllocator >
 using SlicedEllpackSegments = TNL::Containers::Segments::SlicedEllpack< Device, Index, IndexAllocator >;
 
-using CSR_host = TNL::Matrices::SparseMatrix< int, TNL::Containers::Segments::CSR, TNL::Devices::Host, int >;
-using CSR_cuda = TNL::Matrices::SparseMatrix< int, TNL::Containers::Segments::CSR, TNL::Devices::Cuda, int >;
-using E_host   = TNL::Matrices::SparseMatrix< int, EllpackSegments, TNL::Devices::Host, int >;
-using E_cuda   = TNL::Matrices::SparseMatrix< int, EllpackSegments, TNL::Devices::Cuda, int >;
-using SE_host  = TNL::Matrices::SparseMatrix< int, SlicedEllpackSegments, TNL::Devices::Host, int >;
-using SE_cuda  = TNL::Matrices::SparseMatrix< int, SlicedEllpackSegments, TNL::Devices::Cuda, int >;
+using CSR_host = TNL::Matrices::SparseMatrix< int, TNL::Devices::Host, int, TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >;
+using CSR_cuda = TNL::Matrices::SparseMatrix< int, TNL::Devices::Cuda, int, TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >;
+using E_host   = TNL::Matrices::SparseMatrix< int, TNL::Devices::Host, int, TNL::Matrices::GeneralMatrix, EllpackSegments >;
+using E_cuda   = TNL::Matrices::SparseMatrix< int, TNL::Devices::Cuda, int, TNL::Matrices::GeneralMatrix, EllpackSegments >;
+using SE_host  = TNL::Matrices::SparseMatrix< int, TNL::Devices::Host, int, TNL::Matrices::GeneralMatrix, SlicedEllpackSegments >;
+using SE_cuda  = TNL::Matrices::SparseMatrix< int, TNL::Devices::Cuda, int, TNL::Matrices::GeneralMatrix, SlicedEllpackSegments >;
 
 
 #ifdef HAVE_GTEST 
