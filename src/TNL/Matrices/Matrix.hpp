@@ -47,6 +47,28 @@ template< typename Real,
           typename Device,
           typename Index,
           typename RealAllocator >
+auto
+Matrix< Real, Device, Index, RealAllocator >::
+getView() -> ViewType
+{
+   return ViewType( rows, columns, values.getView() );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename RealAllocator >
+auto
+Matrix< Real, Device, Index, RealAllocator >::
+getConstView() const -> ConstViewType
+{
+   return ConstViewType( rows, columns, values.getConstView() );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename RealAllocator >
 void Matrix< Real, Device, Index, RealAllocator >::setDimensions( const IndexType rows,
                                                    const IndexType columns )
 {
@@ -105,12 +127,11 @@ template< typename Real,
           typename RealAllocator >
 Index Matrix< Real, Device, Index, RealAllocator >::getNumberOfNonzeroMatrixElements() const
 {
-    IndexType nonZeroElements( 0 );
-    for( IndexType i = 0; this->values.getSize(); i++ )
-        if( this->values.getElement( i ) != 0.0 )
-            nonZeroElements++;
-      
-    return nonZeroElements;
+   const auto values_view = this->values.getConstView();
+   auto fetch = [=] __cuda_callable__ ( const IndexType i ) -> IndexType {
+      return ( values_view[ i ] != 0.0 );
+   };
+   return Algorithms::Reduction< DeviceType >::reduce( this->values.getSize(), std::plus<>{}, fetch, 0 );
 }
 
 template< typename Real,

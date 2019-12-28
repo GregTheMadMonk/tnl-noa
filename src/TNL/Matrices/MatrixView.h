@@ -1,8 +1,8 @@
 /***************************************************************************
-                          Matrix.h  -  description
+                          MatrixView.h  -  description
                              -------------------
-    begin                : Dec 18, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    begin                : Dec 28, 2019
+    copyright            : (C) 2019 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -15,7 +15,6 @@
 #include <TNL/Devices/Host.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/VectorView.h>
-#include <TNL/Matrices/MatrixView.h>
 
 namespace TNL {
 /**
@@ -25,36 +24,28 @@ namespace Matrices {
 
 template< typename Real = double,
           typename Device = Devices::Host,
-          typename Index = int,
-          typename RealAllocator = typename Allocators::Default< Device >::template Allocator< Real > >
-class Matrix : public Object
+          typename Index = int >
+class MatrixView : public Object
 {
 public:
    using RealType = Real;
-   using DeviceType = Device;
-   using IndexType = Index;
-   using CompressedRowLengthsVector = Containers::Vector< IndexType, DeviceType, IndexType >;
-   using CompressedRowLengthsVectorView = Containers::VectorView< IndexType, DeviceType, IndexType >;
-   using ConstCompressedRowLengthsVectorView = typename CompressedRowLengthsVectorView::ConstViewType;
-   using ValuesVector = Containers::Vector< RealType, DeviceType, IndexType, RealAllocator >;
-   using RealAllocatorType = RealAllocator;
-   using ViewType = MatrixView< Real, Device, Index >;
-   using ConstViewType = MatrixView< std::add_const_t< Real >, Device, Index >;
+   typedef Device DeviceType;
+   typedef Index IndexType;
+   typedef Containers::Vector< IndexType, DeviceType, IndexType > CompressedRowLengthsVector;
+   typedef Containers::VectorView< IndexType, DeviceType, IndexType > CompressedRowLengthsVectorView;
+   typedef typename CompressedRowLengthsVectorView::ConstViewType ConstCompressedRowLengthsVectorView;
+   typedef Containers::VectorView< RealType, DeviceType, IndexType > ValuesView;
 
-   Matrix( const RealAllocatorType& allocator = RealAllocatorType() );
+   __cuda_callable__
+   MatrixView();
 
-   Matrix( const IndexType rows,
-           const IndexType columns,
-           const RealAllocatorType& allocator = RealAllocatorType() );
+   __cuda_callable__
+   MatrixView( const IndexType rows,
+               const IndexType columns,
+               const ValuesView& values );
 
-   ViewType getView();
-
-   ConstViewType getConstView() const;
-
-   virtual void setDimensions( const IndexType rows,
-                               const IndexType columns );
-
-   virtual void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths ) = 0;
+   __cuda_callable__
+   MatrixView( const MatrixView& view ) = default;
 
    virtual IndexType getRowLength( const IndexType row ) const = 0;
 
@@ -63,9 +54,6 @@ public:
    void getCompressedRowLengths( CompressedRowLengthsVector& rowLengths ) const;
 
    virtual void getCompressedRowLengths( CompressedRowLengthsVectorView rowLengths ) const;
-
-   template< typename Real2, typename Device2, typename Index2, typename RealAllocator2 >
-   void setLike( const Matrix< Real2, Device2, Index2, RealAllocator2 >& matrix );
 
    IndexType getNumberOfMatrixElements() const;
 
@@ -108,9 +96,9 @@ public:
    virtual Real getElement( const IndexType row,
                             const IndexType column ) const = 0;
 
-   const ValuesVector& getValues() const;
+   const ValuesView& getValues() const;
 
-   ValuesVector& getValues();
+   ValuesView& getValues();
 
    // TODO: parallelize and optimize for sparse matrices
    template< typename Matrix >
@@ -133,40 +121,30 @@ public:
    // TODO: method for symmetric matrices, should not be in general Matrix interface
    void computeColorsVector(Containers::Vector<Index, Device, Index> &colorsVector);
 
-   // TODO: what is this supposed to do?!?  There are redefinitions only in the
-   // EllpackSymmetricGraph and SlicedEllpackSymmetricGraph classes...
-   bool help( bool verbose = false ) { return true;};
+   protected:
 
-   // TODO: copy should be done in the operator= and it should work the other way too
-   void copyFromHostToCuda( Matrices::Matrix< Real, Devices::Host, Index >& matrix );
+   IndexType rows, columns;
 
-   // TODO: missing implementation!
-   __cuda_callable__
-   Index getValuesSize() const;
-
-   // TODO: restore this
-   //protected:
-
-   IndexType rows, columns, numberOfColors;
-
-   ValuesVector values;
+   ValuesView values;
 };
 
 template< typename Real, typename Device, typename Index >
-std::ostream& operator << ( std::ostream& str, const Matrix< Real, Device, Index >& m )
+std::ostream& operator << ( std::ostream& str, const MatrixView< Real, Device, Index >& m )
 {
    m.print( str );
    return str;
 }
 
+/*
 template< typename Matrix,
           typename InVector,
           typename OutVector >
 void MatrixVectorProductCuda( const Matrix& matrix,
                               const InVector& inVector,
                               OutVector& outVector );
+*/
 
 } // namespace Matrices
 } // namespace TNL
 
-#include <TNL/Matrices/Matrix.hpp>
+#include <TNL/Matrices/MatrixView.hpp>
