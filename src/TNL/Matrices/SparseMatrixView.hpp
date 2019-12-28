@@ -41,7 +41,41 @@ SparseMatrixView( const IndexType rows,
                   ColumnsViewType& columnIndexes,
                   SegmentsViewType& segments )
  : MatrixView< Real, Device, Index >( rows, columns, values ), columnIndexes( columnIndexes ), segments( segments )
-{  
+{
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename > class SegmentsView >
+__cuda_callable__
+auto
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+getView() -> ViewType
+{
+   return ViewType( this->getRows(), 
+                    this->getColumns(),
+                    this->getValues().getView(),
+                    this->getColumnsIndexes().getView(),
+                    this->segments.getView() );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename > class SegmentsView >
+__cuda_callable__
+auto
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+getConstView() const -> ConstViewType
+{
+   return ConstViewType( this->getRows(),
+                         this->getColumns(),
+                         this->getValues().getConstView(),
+                         this->getColumnsIndexes().getConstView(),
+                         this->segments.getConstView() );
 }
 
 template< typename Real,

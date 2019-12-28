@@ -31,6 +31,8 @@ class SlicedEllpackView
       using OffsetsView = typename Containers::VectorView< IndexType, DeviceType, typename std::remove_const < IndexType >::type >;
       static constexpr int getSliceSize() { return SliceSize; }
       static constexpr bool getRowMajorOrder() { return RowMajorOrder; }
+      template< typename Device_, typename Index_ >
+      using ViewTemplate = SlicedEllpackView< Device_, Index_ >;
       using ViewType = SlicedEllpackView;
       using ConstViewType = SlicedEllpackView< Device, std::add_const_t< Index > >;
 

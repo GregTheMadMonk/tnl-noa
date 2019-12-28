@@ -45,6 +45,28 @@ MatrixView( const IndexType rows_,
 template< typename Real,
           typename Device,
           typename Index >
+__cuda_callable__
+auto
+MatrixView< Real, Device, Index >::
+getView() ->ViewType
+{
+   return ViewType( rows, columns, values.getView() );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__
+auto
+MatrixView< Real, Device, Index >::
+getConstView() const -> ConstViewType
+{
+   return ConstViewType( rows, columns, values.getConstView() );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 void MatrixView< Real, Device, Index >::getCompressedRowLengths( CompressedRowLengthsVector& rowLengths ) const
 {
    rowLengths.setSize( this->getRows() );

@@ -30,6 +30,8 @@ class CSR
       using IndexType = Index;
       using OffsetsHolder = Containers::Vector< IndexType, DeviceType, typename std::remove_const< IndexType >::type, IndexAllocator >;
       using SegmentsSizes = OffsetsHolder;
+      template< typename Device_, typename Index_ >
+      using ViewTemplate = CSRView< Device_, Index_ >;
       using ViewType = CSRView< Device, Index >;
       using ConstViewType = CSRView< Device, std::add_const_t< Index > >;
 

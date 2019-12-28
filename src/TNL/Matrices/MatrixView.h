@@ -29,12 +29,14 @@ class MatrixView : public Object
 {
 public:
    using RealType = Real;
-   typedef Device DeviceType;
-   typedef Index IndexType;
-   typedef Containers::Vector< IndexType, DeviceType, IndexType > CompressedRowLengthsVector;
-   typedef Containers::VectorView< IndexType, DeviceType, IndexType > CompressedRowLengthsVectorView;
-   typedef typename CompressedRowLengthsVectorView::ConstViewType ConstCompressedRowLengthsVectorView;
-   typedef Containers::VectorView< RealType, DeviceType, IndexType > ValuesView;
+   using DeviceType = Device;
+   using IndexType = Index;
+   using CompressedRowLengthsVector = Containers::Vector< IndexType, DeviceType, IndexType >;
+   using CompressedRowLengthsVectorView = Containers::VectorView< IndexType, DeviceType, IndexType >;
+   using ConstCompressedRowLengthsVectorView = typename CompressedRowLengthsVectorView::ConstViewType;
+   using ValuesView = Containers::VectorView< RealType, DeviceType, IndexType >;
+   using ViewType = MatrixView< typename std::remove_const< Real >::type, Device, Index >;
+   using ConstViewType = MatrixView< typename std::add_const< Real >::type, Device, Index >;
 
    __cuda_callable__
    MatrixView();
@@ -46,6 +48,12 @@ public:
 
    __cuda_callable__
    MatrixView( const MatrixView& view ) = default;
+
+   __cuda_callable__
+   ViewType getView();
+
+   __cuda_callable__
+   ConstViewType getConstView() const;
 
    virtual IndexType getRowLength( const IndexType row ) const = 0;
 

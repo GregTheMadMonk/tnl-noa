@@ -80,6 +80,42 @@ template< typename Real,
           template< typename, typename, typename > class Segments,
           typename RealAllocator,
           typename IndexAllocator >
+auto
+SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
+getView() -> ViewType
+{
+   return ViewType( this->getRows(), 
+                    this->getColumns(),
+                    this->getValues().getView(),
+                    this->getColumnsIndexes().getView(),
+                    this->segments.getView() );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename, typename > class Segments,
+          typename RealAllocator,
+          typename IndexAllocator >
+auto
+SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
+getConstView() const -> ConstViewType
+{
+   return ConstViewType( this->getRows(),
+                         this->getColumns(),
+                         this->getValues().getConstView(),
+                         this->getColumnsIndexes().getConstView(),
+                         this->segments.getConstView() );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename, typename > class Segments,
+          typename RealAllocator,
+          typename IndexAllocator >
 String
 SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
 getSerializationType()

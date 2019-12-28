@@ -34,6 +34,8 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       template< typename Device_, typename Index_, typename IndexAllocator_ >
       using SegmentsTemplate = Segments< Device_, Index_, IndexAllocator_ >;
       using SegmentsType = Segments< Device, Index, IndexAllocator >;
+      template< typename Device_, typename Index_ >
+      using SegmentsViewTemplate = typename SegmentsType::ViewTemplate< Device_, Index >;
       using DeviceType = Device;
       using IndexType = Index;
       using RealAllocatorType = RealAllocator;
@@ -43,6 +45,8 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       using ConstRowsCapacitiesView = typename RowsCapacitiesView::ConstViewType;
       using ValuesVectorType = typename Matrix< Real, Device, Index, RealAllocator >::ValuesVector;
       using ColumnsVectorType = Containers::Vector< IndexType, DeviceType, IndexType, IndexAllocatorType >;
+      using ViewType = SparseMatrixView< Real, Device, Index, MatrixType, SegmentsViewTemplate >;
+      using ConstViewType = SparseMatrixView< typename std::add_const< Real >::type, Device, Index, MatrixType, SegmentsViewTemplate >;
 
       // TODO: remove this - it is here only for compatibility with original matrix implementation
       typedef Containers::Vector< IndexType, DeviceType, IndexType > CompressedRowLengthsVector;
@@ -62,6 +66,10 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
                     const IndexType columns,
                     const RealAllocatorType& realAllocator = RealAllocatorType(),
                     const IndexAllocatorType& indexAllocator = IndexAllocatorType() );
+
+      ViewType getView();
+
+      ConstViewType getConstView() const;
 
       static String getSerializationType();
 

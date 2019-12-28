@@ -37,6 +37,9 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       using ConstRowsCapacitiesView = typename RowsCapacitiesView::ConstViewType;
       using ValuesViewType = typename MatrixView< Real, Device, Index >::ValuesView;
       using ColumnsViewType = Containers::VectorView< IndexType, DeviceType, IndexType >;
+      using ViewType = SparseMatrixView< typename std::remove_const< Real >::type, Device, Index, MatrixType, SegmentsViewTemplate >;
+      using ConstViewType = SparseMatrixView< typename std::add_const< Real >::type, Device, Index, MatrixType, SegmentsViewTemplate >;
+
 
       // TODO: remove this - it is here only for compatibility with original matrix implementation
       typedef Containers::Vector< IndexType, DeviceType, IndexType > CompressedRowLengthsVector;
@@ -60,6 +63,12 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
 
       //__cuda_callable__
       //SparseMatrixView( const SparseMatrixView&& m ) = default;
+
+      __cuda_callable__
+      ViewType getView();
+
+      __cuda_callable__
+      ConstViewType getConstView() const;
 
       static String getSerializationType();
 

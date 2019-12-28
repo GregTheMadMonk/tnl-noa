@@ -32,6 +32,8 @@ class Ellpack
       static constexpr bool getRowMajorOrder() { return RowMajorOrder; }
       using OffsetsHolder = Containers::Vector< IndexType, DeviceType, IndexType >;
       using SegmentsSizes = OffsetsHolder;
+      template< typename Device_, typename Index_ >
+      using ViewTemplate = EllpackView< Device_, Index_ >;
       using ViewType = EllpackView< Device, Index, RowMajorOrder, Alignment >;
       //using ConstViewType = EllpackView< Device, std::add_const_t< Index >, RowMajorOrder, Alignment >;
 

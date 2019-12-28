@@ -29,6 +29,8 @@ class CSRView
       using OffsetsView = typename Containers::VectorView< IndexType, DeviceType, IndexType >;
       using ConstOffsetsView = typename Containers::Vector< IndexType, DeviceType, IndexType >::ConstViewType;
       using ViewType = CSRView;
+      template< typename Device_, typename Index_ >
+      using ViewTemplate = CSRView< Device_, Index_ >;
       using ConstViewType = CSRView< Device, std::add_const_t< Index > >;
 
       __cuda_callable__
