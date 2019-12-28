@@ -12,6 +12,7 @@
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/Segments/EllpackView.h>
+#include <TNL/Containers/Segments/EllpackSegmentView.h>
 
 namespace TNL {
    namespace Containers {
@@ -36,6 +37,7 @@ class Ellpack
       using ViewTemplate = EllpackView< Device_, Index_ >;
       using ViewType = EllpackView< Device, Index, RowMajorOrder, Alignment >;
       //using ConstViewType = EllpackView< Device, std::add_const_t< Index >, RowMajorOrder, Alignment >;
+      using SegmentView = EllpackSegmentView< IndexType >;
 
 
       Ellpack();
@@ -79,6 +81,9 @@ class Ellpack
 
       __cuda_callable__
       void getSegmentAndLocalIndex( const Index globalIdx, Index& segmentIdx, Index& localIdx ) const;
+
+      __cuda_callable__
+      SegmentView getSegmentView( const IndexType segmentIdx ) const;
 
       /***
        * \brief Go over all segments and for each segment element call

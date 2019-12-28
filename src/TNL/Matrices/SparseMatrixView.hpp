@@ -216,6 +216,32 @@ template< typename Real,
           typename Index,
           typename MatrixType,
           template< typename, typename > class SegmentsView >
+__cuda_callable__ auto
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+getRow( const IndexType& rowIdx ) const -> const RowView
+{
+   TNL_ASSERT_LT( rowIdx, this->getRows(), "Row index is larger than number of matrix rows." );
+   return RowView( this->segments.getSegmentView( rowIdx ), this->values.getView(), this->columnIndexes.getView() );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename > class SegmentsView >
+__cuda_callable__ auto
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+getRow( const IndexType& rowIdx ) -> RowView
+{
+   TNL_ASSERT_LT( rowIdx, this->getRows(), "Row index is larger than number of matrix rows." );
+   return RowView( this->segments.getSegmentView( rowIdx ), this->values.getView(), this->columnIndexes.getView() );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename > class SegmentsView >
 __cuda_callable__
 bool
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::

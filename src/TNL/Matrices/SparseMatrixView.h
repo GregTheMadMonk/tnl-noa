@@ -14,6 +14,7 @@
 #include <TNL/Matrices/MatrixType.h>
 #include <TNL/Allocators/Default.h>
 #include <TNL/Containers/Segments/CSR.h>
+#include <TNL/Matrices/SparseMatrixRowView.h>
 
 namespace TNL {
 namespace Matrices {
@@ -39,7 +40,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       using ColumnsViewType = Containers::VectorView< IndexType, DeviceType, IndexType >;
       using ViewType = SparseMatrixView< typename std::remove_const< Real >::type, Device, Index, MatrixType, SegmentsViewTemplate >;
       using ConstViewType = SparseMatrixView< typename std::add_const< Real >::type, Device, Index, MatrixType, SegmentsViewTemplate >;
-
+      using RowView = SparseMatrixRowView< RealType, SegmentsViewType >;
 
       // TODO: remove this - it is here only for compatibility with original matrix implementation
       typedef Containers::Vector< IndexType, DeviceType, IndexType > CompressedRowLengthsVector;
@@ -92,6 +93,12 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       void reset();
 
       __cuda_callable__
+      const RowView getRow( const IndexType& rowIdx ) const;
+
+      __cuda_callable__
+      RowView getRow( const IndexType& rowIdx );
+
+      [[deprecated("")]] __cuda_callable__
       bool setElementFast( const IndexType row,
                            const IndexType column,
                            const RealType& value );
@@ -100,37 +107,40 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
                        const IndexType column,
                        const RealType& value );
 
-      __cuda_callable__
+      [[deprecated("")]] __cuda_callable__
       bool addElementFast( const IndexType row,
                            const IndexType column,
                            const RealType& value,
                            const RealType& thisElementMultiplicator = 1.0 );
 
+      [[deprecated("")]] 
       bool addElement( const IndexType row,
                        const IndexType column,
                        const RealType& value,
                        const RealType& thisElementMultiplicator = 1.0 );
 
 
-      __cuda_callable__
+      [[deprecated("")]] __cuda_callable__
       bool setRowFast( const IndexType row,
                        const IndexType* columnIndexes,
                        const RealType* values,
                        const IndexType elements );
 
+      [[deprecated("")]] 
       bool setRow( const IndexType row,
                    const IndexType* columnIndexes,
                    const RealType* values,
                    const IndexType elements );
 
 
-      __cuda_callable__
+      [[deprecated("")]] __cuda_callable__
       bool addRowFast( const IndexType row,
                        const IndexType* columns,
                        const RealType* values,
                        const IndexType numberOfElements,
                        const RealType& thisElementMultiplicator = 1.0 );
 
+      [[deprecated("")]] 
       bool addRow( const IndexType row,
                    const IndexType* columns,
                    const RealType* values,
@@ -138,14 +148,14 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
                    const RealType& thisElementMultiplicator = 1.0 );
 
 
-      __cuda_callable__
+      [[deprecated("")]] __cuda_callable__
       RealType getElementFast( const IndexType row,
                                const IndexType column ) const;
 
       RealType getElement( const IndexType row,
                            const IndexType column ) const;
 
-      __cuda_callable__
+      [[deprecated("")]] __cuda_callable__
       void getRowFast( const IndexType row,
                        IndexType* columns,
                        RealType* values ) const;

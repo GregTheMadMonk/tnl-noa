@@ -151,6 +151,16 @@ getSegmentAndLocalIndex( const Index globalIdx, Index& segmentIdx, Index& localI
 
 template< typename Device,
           typename Index >
+__cuda_callable__
+auto
+CSRView< Device, Index >::
+getSegmentView( const IndexType segmentIdx ) const -> SegmentView
+{
+   return SegmentView( offsets[ segmentIdx ], offsets[ segmentIdx + 1 ] - offsets[ segmentIdx ] );
+}
+
+template< typename Device,
+          typename Index >
    template< typename Function, typename... Args >
 void
 CSRView< Device, Index >::

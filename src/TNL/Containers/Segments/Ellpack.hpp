@@ -221,6 +221,22 @@ template< typename Device,
           typename IndexAllocator,
           bool RowMajorOrder,
           int Alignment >
+__cuda_callable__
+auto
+Ellpack< Device, Index, IndexAllocator, RowMajorOrder, Alignment >::
+getSegmentView( const IndexType segmentIdx ) const -> SegmentView
+{
+   if( RowMajorOrder )
+      return SegmentView( segmentIdx * this->segmentSize, this->segmentSize, 1 );
+   else
+      return SegmentView( segmentIdx, this->segmentSize, this->alignedSize );
+}
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator,
+          bool RowMajorOrder,
+          int Alignment >
    template< typename Function, typename... Args >
 void
 Ellpack< Device, Index, IndexAllocator, RowMajorOrder, Alignment >::

@@ -15,6 +15,7 @@
 #include <TNL/Allocators/Default.h>
 #include <TNL/Containers/Segments/CSR.h>
 #include <TNL/Matrices/SparseMatrixView.h>
+#include <TNL/Matrices/SparseMatrixRowView.h>
 
 namespace TNL {
 namespace Matrices {
@@ -36,6 +37,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       using SegmentsType = Segments< Device, Index, IndexAllocator >;
       template< typename Device_, typename Index_ >
       using SegmentsViewTemplate = typename SegmentsType::ViewTemplate< Device_, Index >;
+      using SegmentViewType = typename SegmentsType::ViewType;
       using DeviceType = Device;
       using IndexType = Index;
       using RealAllocatorType = RealAllocator;
@@ -47,6 +49,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       using ColumnsVectorType = Containers::Vector< IndexType, DeviceType, IndexType, IndexAllocatorType >;
       using ViewType = SparseMatrixView< Real, Device, Index, MatrixType, SegmentsViewTemplate >;
       using ConstViewType = SparseMatrixView< typename std::add_const< Real >::type, Device, Index, MatrixType, SegmentsViewTemplate >;
+      using RowView = SparseMatrixRowView< RealType, SegmentViewType >;
 
       // TODO: remove this - it is here only for compatibility with original matrix implementation
       typedef Containers::Vector< IndexType, DeviceType, IndexType > CompressedRowLengthsVector;
@@ -104,6 +107,12 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       void reset();
 
       __cuda_callable__
+      const RowView getRow( const IndexType& rowIdx ) const;
+
+      __cuda_callable__
+      RowView getRow( const IndexType& rowIdx );
+
+      [[deprecated("")]] __cuda_callable__
       bool setElementFast( const IndexType row,
                            const IndexType column,
                            const RealType& value );
@@ -112,37 +121,40 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
                        const IndexType column,
                        const RealType& value );
 
-      __cuda_callable__
+      [[deprecated("")]] __cuda_callable__
       bool addElementFast( const IndexType row,
                            const IndexType column,
                            const RealType& value,
                            const RealType& thisElementMultiplicator = 1.0 );
 
+      [[deprecated("")]]
       bool addElement( const IndexType row,
                        const IndexType column,
                        const RealType& value,
                        const RealType& thisElementMultiplicator = 1.0 );
 
 
-      __cuda_callable__
+      [[deprecated("")]] __cuda_callable__
       bool setRowFast( const IndexType row,
                        const IndexType* columnIndexes,
                        const RealType* values,
                        const IndexType elements );
 
+      [[deprecated("")]] 
       bool setRow( const IndexType row,
                    const IndexType* columnIndexes,
                    const RealType* values,
                    const IndexType elements );
 
 
-      __cuda_callable__
+      [[deprecated("")]] __cuda_callable__
       bool addRowFast( const IndexType row,
                        const IndexType* columns,
                        const RealType* values,
                        const IndexType numberOfElements,
                        const RealType& thisElementMultiplicator = 1.0 );
 
+      [[deprecated("")]] 
       bool addRow( const IndexType row,
                    const IndexType* columns,
                    const RealType* values,
@@ -150,14 +162,14 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
                    const RealType& thisElementMultiplicator = 1.0 );
 
 
-      __cuda_callable__
+      [[deprecated("")]] __cuda_callable__
       RealType getElementFast( const IndexType row,
                                const IndexType column ) const;
 
       RealType getElement( const IndexType row,
                            const IndexType column ) const;
 
-      __cuda_callable__
+      [[deprecated("")]] __cuda_callable__
       void getRowFast( const IndexType row,
                        IndexType* columns,
                        RealType* values ) const;

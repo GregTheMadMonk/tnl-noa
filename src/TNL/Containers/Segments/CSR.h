@@ -14,6 +14,7 @@
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/Segments/CSRView.h>
+#include <TNL/Containers/Segments/CSRSegmentView.h>
 
 namespace TNL {
    namespace Containers {
@@ -34,6 +35,7 @@ class CSR
       using ViewTemplate = CSRView< Device_, Index_ >;
       using ViewType = CSRView< Device, Index >;
       using ConstViewType = CSRView< Device, std::add_const_t< Index > >;
+      using SegmentView = CSRSegmentView< IndexType >;
 
       CSR();
 
@@ -82,6 +84,9 @@ class CSR
 
       __cuda_callable__
       void getSegmentAndLocalIndex( const Index globalIdx, Index& segmentIdx, Index& localIdx ) const;
+
+      __cuda_callable__
+      SegmentView getSegmentView( const IndexType segmentIdx ) const;
 
       /***
        * \brief Go over all segments and for each segment element call

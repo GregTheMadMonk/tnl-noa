@@ -164,6 +164,21 @@ template< typename Device,
           typename Index,
           bool RowMajorOrder,
           int Alignment >
+__cuda_callable__
+auto
+EllpackView< Device, Index, RowMajorOrder, Alignment >::
+getSegmentView( const IndexType segmentIdx ) const -> SegmentView
+{
+   if( RowMajorOrder )
+      return SegmentView( segmentIdx * this->segmentSize, this->segmentSize, 1 );
+   else
+      return SegmentView( segmentIdx, this->segmentSize, this->alignedSize );
+}
+
+template< typename Device,
+          typename Index,
+          bool RowMajorOrder,
+          int Alignment >
    template< typename Function, typename... Args >
 void
 EllpackView< Device, Index, RowMajorOrder, Alignment >::

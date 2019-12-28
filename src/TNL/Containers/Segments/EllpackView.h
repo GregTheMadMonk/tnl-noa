@@ -13,6 +13,7 @@
 #include <type_traits>
 
 #include <TNL/Containers/Vector.h>
+#include <TNL/Containers/Segments/EllpackSegmentView.h>
 
 
 namespace TNL {
@@ -37,6 +38,7 @@ class EllpackView
       using ViewTemplate = EllpackView< Device_, Index_ >;
       using ViewType = EllpackView;
       //using ConstViewType = EllpackView< Device, std::add_const_t< Index > >;
+      using SegmentView = EllpackSegmentView< IndexType >;
 
       __cuda_callable__
       EllpackView();
@@ -74,6 +76,9 @@ class EllpackView
 
       __cuda_callable__
       void getSegmentAndLocalIndex( const Index globalIdx, Index& segmentIdx, Index& localIdx ) const;
+
+      __cuda_callable__
+      SegmentView getSegmentView( const IndexType segmentIdx ) const;
 
       /***
        * \brief Go over all segments and for each segment element call

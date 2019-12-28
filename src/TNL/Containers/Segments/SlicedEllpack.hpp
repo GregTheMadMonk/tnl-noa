@@ -246,6 +246,27 @@ template< typename Device,
           typename IndexAllocator,
           bool RowMajorOrder,
           int SliceSize >
+__cuda_callable__
+auto
+SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
+getSegmentView( const IndexType segmentIdx ) const -> SegmentView
+{
+   const IndexType sliceIdx = segmentIdx / SliceSize;
+   const IndexType segmentInSliceIdx = segmentIdx % SliceSize;
+   const IndexType& sliceOffset = this->sliceOffsets[ sliceIdx ];
+   const IndexType& segmentSize = this->sliceSegmentSizes[ sliceIdx ];
+
+   if( RowMajorOrder )
+      return SegmentView( sliceOffset, segmentSize, 1 );
+   else
+      return SegmentView( sliceOffset + segmentInSliceIdx, segmentSize, SliceSize );
+}
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator,
+          bool RowMajorOrder,
+          int SliceSize >
    template< typename Function, typename... Args >
 void
 SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
