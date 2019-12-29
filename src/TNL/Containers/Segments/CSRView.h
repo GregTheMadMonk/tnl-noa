@@ -33,7 +33,7 @@ class CSRView
       template< typename Device_, typename Index_ >
       using ViewTemplate = CSRView< Device_, Index_ >;
       using ConstViewType = CSRView< Device, std::add_const_t< Index > >;
-      using SegmentView = CSRSegmentView< IndexType >;
+      using SegmentViewType = CSRSegmentView< IndexType >;
 
       __cuda_callable__
       CSRView();
@@ -49,6 +49,8 @@ class CSRView
 
       __cuda_callable__
       CSRView( const CSRView&& csr_view );
+
+      static String getSerializationType();
 
       ViewType getView();
 
@@ -85,7 +87,7 @@ class CSRView
       void getSegmentAndLocalIndex( const Index globalIdx, Index& segmentIdx, Index& localIdx ) const;
 
       __cuda_callable__
-      SegmentView getSegmentView( const IndexType segmentIdx ) const;
+      SegmentViewType getSegmentView( const IndexType segmentIdx ) const;
 
       /***
        * \brief Go over all segments and for each segment element call

@@ -13,23 +13,23 @@
 namespace TNL {
    namespace Matrices {
 
-template< typename Real,
-          typename SegmentView >
+template< typename SegmentView,
+          typename ValuesView,
+          typename ColumnsIndexesView >
 class SparseMatrixRowView
 {
    public:
 
-      using RealType = Real;
+      using RealType = typename ValuesView::RealType;
       using SegmentViewType = SegmentView;
-      using DeviceType = typename SegmentViewType::DeviceType;
       using IndexType = typename SegmentViewType::IndexType;
-      using ValuesView = Containers::VectorView< RealType, DeviceType, IndexType >;
-      using ColumnIndexesView = Containers::VectorView< IndexType, DeviceType, IndexType >;
+      using ValuesViewType = ValuesView;
+      using ColumnsIndexesViewType = ColumnsIndexesView;
 
       __cuda_callable__
-      SparseMatrixRowView( const SegmentView& segmentView,
-                           const ValuesView& values,
-                           const ColumnIndexesView& columnIndexes );
+      SparseMatrixRowView( const SegmentViewType& segmentView,
+                           const ValuesViewType& values,
+                           const ColumnsIndexesViewType& columnIndexes );
 
       __cuda_callable__
       IndexType getSize() const;
@@ -52,11 +52,11 @@ class SparseMatrixRowView
                        const RealType& value );
    protected:
 
-      SegmentView segmentView;
+      SegmentViewType segmentView;
 
-      ValuesView values;
+      ValuesViewType values;
 
-      ColumnIndexesView columnIndexes;
+      ColumnsIndexesViewType columnIndexes;
 };
    } // namespace Matrices
 } // namespace TNL

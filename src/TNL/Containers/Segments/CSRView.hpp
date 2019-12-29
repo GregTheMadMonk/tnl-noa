@@ -66,6 +66,15 @@ CSRView( const CSRView&& csr_view )
 
 template< typename Device,
           typename Index >
+String
+CSRView< Device, Index >::
+getSerializationType()
+{
+   return "CSR< [any_device], " + TNL::getSerializationType< IndexType >() + " >";
+}
+
+template< typename Device,
+          typename Index >
 typename CSRView< Device, Index >::ViewType
 CSRView< Device, Index >::
 getView()
@@ -154,9 +163,9 @@ template< typename Device,
 __cuda_callable__
 auto
 CSRView< Device, Index >::
-getSegmentView( const IndexType segmentIdx ) const -> SegmentView
+getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
 {
-   return SegmentView( offsets[ segmentIdx ], offsets[ segmentIdx + 1 ] - offsets[ segmentIdx ] );
+   return SegmentViewType( offsets[ segmentIdx ], offsets[ segmentIdx + 1 ] - offsets[ segmentIdx ] );
 }
 
 template< typename Device,

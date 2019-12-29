@@ -76,6 +76,17 @@ template< typename Device,
           typename Index,
           bool RowMajorOrder,
           int SliceSize >
+String
+SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::
+getSerializationType()
+{
+   return "SlicedEllpack< [any_device], " + TNL::getSerializationType< IndexType >() + " >";
+}
+
+template< typename Device,
+          typename Index,
+          bool RowMajorOrder,
+          int SliceSize >
 typename SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::ViewType
 SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::
 getView()
@@ -203,7 +214,7 @@ template< typename Device,
 __cuda_callable__
 auto
 SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::
-getSegmentView( const IndexType segmentIdx ) const -> SegmentView
+getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
 {
    const IndexType sliceIdx = segmentIdx / SliceSize;
    const IndexType segmentInSliceIdx = segmentIdx % SliceSize;
@@ -211,9 +222,9 @@ getSegmentView( const IndexType segmentIdx ) const -> SegmentView
    const IndexType& segmentSize = this->sliceSegmentSizes[ sliceIdx ];
 
    if( RowMajorOrder )
-      return SegmentView( sliceOffset, segmentSize, 1 );
+      return SegmentViewType( sliceOffset + segmentInSliceIdx * segmentSize, segmentSize, 1 );
    else
-      return SegmentView( sliceOffset + segmentInSliceIdx, segmentSize, SliceSize );
+      return SegmentViewType( sliceOffset + segmentInSliceIdx, segmentSize, SliceSize );
 }
 
 template< typename Device,

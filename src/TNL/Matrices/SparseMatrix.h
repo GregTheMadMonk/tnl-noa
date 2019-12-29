@@ -36,8 +36,8 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       using SegmentsTemplate = Segments< Device_, Index_, IndexAllocator_ >;
       using SegmentsType = Segments< Device, Index, IndexAllocator >;
       template< typename Device_, typename Index_ >
-      using SegmentsViewTemplate = typename SegmentsType::ViewTemplate< Device_, Index >;
-      using SegmentViewType = typename SegmentsType::ViewType;
+      using SegmentsViewTemplate = typename SegmentsType::template ViewTemplate< Device_, Index >;
+      using SegmentViewType = typename SegmentsType::SegmentViewType;
       using DeviceType = Device;
       using IndexType = Index;
       using RealAllocatorType = RealAllocator;
@@ -46,10 +46,12 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       using RowsCapacitiesView = Containers::VectorView< IndexType, DeviceType, IndexType >;
       using ConstRowsCapacitiesView = typename RowsCapacitiesView::ConstViewType;
       using ValuesVectorType = typename Matrix< Real, Device, Index, RealAllocator >::ValuesVector;
-      using ColumnsVectorType = Containers::Vector< IndexType, DeviceType, IndexType, IndexAllocatorType >;
+      using ValuesViewType = typename ValuesVectorType::ViewType;
+      using ColumnsIndexesVectorType = Containers::Vector< IndexType, DeviceType, IndexType, IndexAllocatorType >;
+      using ColumnsIndexesViewType = typename ColumnsIndexesVectorType::ViewType;
       using ViewType = SparseMatrixView< Real, Device, Index, MatrixType, SegmentsViewTemplate >;
       using ConstViewType = SparseMatrixView< typename std::add_const< Real >::type, Device, Index, MatrixType, SegmentsViewTemplate >;
-      using RowView = SparseMatrixRowView< RealType, SegmentViewType >;
+      using RowView = SparseMatrixRowView< SegmentViewType, ValuesViewType, ColumnsIndexesViewType >;
 
       // TODO: remove this - it is here only for compatibility with original matrix implementation
       typedef Containers::Vector< IndexType, DeviceType, IndexType > CompressedRowLengthsVector;
@@ -246,7 +248,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
 // TODO: restore it and also in Matrix
 //   protected:
 
-      ColumnsVectorType columnIndexes;
+      ColumnsIndexesVectorType columnIndexes;
 
       SegmentsType segments;
 

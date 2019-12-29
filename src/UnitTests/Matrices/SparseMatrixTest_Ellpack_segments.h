@@ -105,6 +105,13 @@ TYPED_TEST( EllpackMatrixTest, resetTest )
     test_Reset< EllpackMatrixType >();
 }
 
+TYPED_TEST( EllpackMatrixTest, getRowTest )
+{
+    using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
+
+    test_GetRow< EllpackMatrixType >();
+}
+
 TYPED_TEST( EllpackMatrixTest, setElementTest )
 {
     using EllpackMatrixType = typename TestFixture::EllpackMatrixType;

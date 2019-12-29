@@ -81,6 +81,18 @@ template< typename Device,
           typename IndexAllocator,
           bool RowMajorOrder,
           int Alignment >
+String
+Ellpack< Device, Index, IndexAllocator, RowMajorOrder, Alignment >::
+getSerializationType()
+{
+   return "Ellpack< [any_device], " + TNL::getSerializationType< IndexType >() + " >";
+}
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator,
+          bool RowMajorOrder,
+          int Alignment >
 typename Ellpack< Device, Index, IndexAllocator, RowMajorOrder, Alignment >::ViewType
 Ellpack< Device, Index, IndexAllocator, RowMajorOrder, Alignment >::
 getView()
@@ -224,7 +236,7 @@ template< typename Device,
 __cuda_callable__
 auto
 Ellpack< Device, Index, IndexAllocator, RowMajorOrder, Alignment >::
-getSegmentView( const IndexType segmentIdx ) const -> SegmentView
+getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
 {
    if( RowMajorOrder )
       return SegmentView( segmentIdx * this->segmentSize, this->segmentSize, 1 );

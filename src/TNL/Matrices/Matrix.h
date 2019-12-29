@@ -47,9 +47,9 @@ public:
            const IndexType columns,
            const RealAllocatorType& allocator = RealAllocatorType() );
 
-   ViewType getView();
+   /*ViewType getView();
 
-   ConstViewType getConstView() const;
+   ConstViewType getConstView() const;*/
 
    virtual void setDimensions( const IndexType rows,
                                const IndexType columns );

@@ -43,7 +43,7 @@ Matrix( const IndexType rows_, const IndexType columns_, const RealAllocatorType
 {
 }
 
-template< typename Real,
+/*template< typename Real,
           typename Device,
           typename Index,
           typename RealAllocator >
@@ -63,7 +63,7 @@ Matrix< Real, Device, Index, RealAllocator >::
 getConstView() const -> ConstViewType
 {
    return ConstViewType( rows, columns, values.getConstView() );
-}
+}*/
 
 template< typename Real,
           typename Device,

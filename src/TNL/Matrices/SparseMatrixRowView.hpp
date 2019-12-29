@@ -15,70 +15,77 @@
 namespace TNL {
    namespace Matrices {
 
-template< typename Real,
-          typename SegmentView >
+template< typename SegmentView,
+          typename ValuesView,
+          typename ColumnsIndexesView >
 __cuda_callable__
-SparseMatrixRowView< Real, SegmentView >::
-SparseMatrixRowView( const SegmentView& segmentView,
-                     const ValuesView& values,
-                     const ColumnIndexesView& columnIndexes )
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView >::
+SparseMatrixRowView( const SegmentViewType& segmentView,
+                     const ValuesViewType& values,
+                     const ColumnsIndexesViewType& columnIndexes )
  : segmentView( segmentView ), values( values ), columnIndexes( columnIndexes )
 {
 }
 
-template< typename Real,
-          typename SegmentView >
+template< typename SegmentView,
+          typename ValuesView,
+          typename ColumnsIndexesView >
 __cuda_callable__ auto
-SparseMatrixRowView< Real, SegmentView >::
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView >::
 getSize() const -> IndexType
 {
    return segmentView.getSize();
 }
 
-template< typename Real,
-          typename SegmentView >
+template< typename SegmentView,
+          typename ValuesView,
+          typename ColumnsIndexesView >
 __cuda_callable__ auto
-SparseMatrixRowView< Real, SegmentView >::
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView >::
 getColumnIndex( const IndexType localIdx ) const -> const IndexType&
 {
    TNL_ASSERT_LT( localIdx, this->getSize(), "Local index exceeds matrix row capacity." );
    return columnIndexes[ segmentView.getGlobalIndex( localIdx ) ];
 }
 
-template< typename Real,
-          typename SegmentView >
+template< typename SegmentView,
+          typename ValuesView,
+          typename ColumnsIndexesView >
 __cuda_callable__ auto
-SparseMatrixRowView< Real, SegmentView >::
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView >::
 getColumnIndex( const IndexType localIdx ) -> IndexType&
 {
    TNL_ASSERT_LT( localIdx, this->getSize(), "Local index exceeds matrix row capacity." );
    return columnIndexes[ segmentView.getGlobalIndex( localIdx ) ];
 }
 
-template< typename Real,
-          typename SegmentView >
+template< typename SegmentView,
+          typename ValuesView,
+          typename ColumnsIndexesView >
 __cuda_callable__ auto
-SparseMatrixRowView< Real, SegmentView >::
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView >::
 getValue( const IndexType localIdx ) const -> const RealType&
 {
    TNL_ASSERT_LT( localIdx, this->getSize(), "Local index exceeds matrix row capacity." );
    return values[ segmentView.getGlobalIndex( localIdx ) ];
 }
 
-template< typename Real,
-          typename SegmentView >
+template< typename SegmentView,
+          typename ValuesView,
+          typename ColumnsIndexesView >
 __cuda_callable__ auto
-SparseMatrixRowView< Real, SegmentView >::
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView >::
 getValue( const IndexType localIdx ) -> RealType&
 {
    TNL_ASSERT_LT( localIdx, this->getSize(), "Local index exceeds matrix row capacity." );
    return values[ segmentView.getGlobalIndex( localIdx ) ];
 }
 
-template< typename Real,
-          typename SegmentView >
+template< typename SegmentView,
+          typename ValuesView,
+          typename ColumnsIndexesView >
 __cuda_callable__ void 
-SparseMatrixRowView< Real, SegmentView >::
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView >::
 setElement( const IndexType localIdx,
             const IndexType column,
             const RealType& value )

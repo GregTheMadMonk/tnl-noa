@@ -87,7 +87,7 @@ getView() -> ViewType
    return ViewType( this->getRows(), 
                     this->getColumns(),
                     this->getValues().getView(),
-                    this->getColumnsIndexes().getView(),
+                    this->columnIndexes.getView(),
                     this->segments.getView() );
 }
 
@@ -105,7 +105,7 @@ getConstView() const -> ConstViewType
    return ConstViewType( this->getRows(),
                          this->getColumns(),
                          this->getValues().getConstView(),
-                         this->getColumnsIndexes().getConstView(),
+                         this->columnIndexes.getConstView(),
                          this->segments.getConstView() );
 }
 
@@ -299,8 +299,6 @@ SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAll
 reset()
 {
    Matrix< Real, Device, Index >::reset();
-   this->columnIndexes.reset();
-
 }
 
 template< typename Real,

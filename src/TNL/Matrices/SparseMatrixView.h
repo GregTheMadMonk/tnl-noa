@@ -32,15 +32,16 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       template< typename Device_, typename Index_ >
       using SegmentsViewTemplate = SegmentsView< Device_, Index_ >;
       using SegmentsViewType = SegmentsView< Device, Index >;
+      using SegmentViewType = typename SegmentsViewType::SegmentViewType;
       using DeviceType = Device;
       using IndexType = Index;
       using RowsCapacitiesView = Containers::VectorView< IndexType, DeviceType, IndexType >;
       using ConstRowsCapacitiesView = typename RowsCapacitiesView::ConstViewType;
       using ValuesViewType = typename MatrixView< Real, Device, Index >::ValuesView;
-      using ColumnsViewType = Containers::VectorView< IndexType, DeviceType, IndexType >;
+      using ColumnsIndexesViewType = Containers::VectorView< IndexType, DeviceType, IndexType >;
       using ViewType = SparseMatrixView< typename std::remove_const< Real >::type, Device, Index, MatrixType, SegmentsViewTemplate >;
       using ConstViewType = SparseMatrixView< typename std::add_const< Real >::type, Device, Index, MatrixType, SegmentsViewTemplate >;
-      using RowView = SparseMatrixRowView< RealType, SegmentsViewType >;
+      using RowView = SparseMatrixRowView< SegmentViewType, ValuesViewType, ColumnsIndexesViewType >;
 
       // TODO: remove this - it is here only for compatibility with original matrix implementation
       typedef Containers::Vector< IndexType, DeviceType, IndexType > CompressedRowLengthsVector;
@@ -55,9 +56,9 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       __cuda_callable__
       SparseMatrixView( const IndexType rows,
                         const IndexType columns,
-                        ValuesViewType& values,
-                        ColumnsViewType& columnIndexes,
-                        SegmentsViewType& segments );
+                        const ValuesViewType& values,
+                        const ColumnsIndexesViewType& columnIndexes,
+                        const SegmentsViewType& segments );
 
       __cuda_callable__
       SparseMatrixView( const SparseMatrixView& m ) = default;
@@ -204,7 +205,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
 
    protected:
 
-      ColumnsViewType columnIndexes;
+      ColumnsIndexesViewType columnIndexes;
 
       SegmentsViewType segments;
 };

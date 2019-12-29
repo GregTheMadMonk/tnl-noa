@@ -37,9 +37,9 @@ __cuda_callable__
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
 SparseMatrixView( const IndexType rows,
                   const IndexType columns,
-                  ValuesViewType& values,
-                  ColumnsViewType& columnIndexes,
-                  SegmentsViewType& segments )
+                  const ValuesViewType& values,
+                  const ColumnsIndexesViewType& columnIndexes,
+                  const SegmentsViewType& segments )
  : MatrixView< Real, Device, Index >( rows, columns, values ), columnIndexes( columnIndexes ), segments( segments )
 {
 }
@@ -57,7 +57,7 @@ getView() -> ViewType
    return ViewType( this->getRows(), 
                     this->getColumns(),
                     this->getValues().getView(),
-                    this->getColumnsIndexes().getView(),
+                    this->columnIndexes.getView(),
                     this->segments.getView() );
 }
 
@@ -89,7 +89,7 @@ getSerializationType()
 {
    return String( "Matrices::SparseMatrix< " ) +
              TNL::getSerializationType< RealType >() + ", " +
-             TNL::getSerializationType< SegmentsView >() + ", [any_device], " +
+             TNL::getSerializationType< SegmentsViewType >() + ", [any_device], " +
              TNL::getSerializationType< IndexType >() + ", [any_allocator] >";
 }
 
@@ -648,7 +648,7 @@ void
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
 save( File& file ) const
 {
-   Matrix< RealType, DeviceType, IndexType >::save( file );
+   MatrixView< RealType, DeviceType, IndexType >::save( file );
    file << this->columnIndexes;
    this->segments.save( file );
 }

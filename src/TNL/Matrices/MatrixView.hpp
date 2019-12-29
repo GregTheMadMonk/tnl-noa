@@ -42,7 +42,7 @@ MatrixView( const IndexType rows_,
 {
 }
 
-template< typename Real,
+/*template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
@@ -62,7 +62,7 @@ MatrixView< Real, Device, Index >::
 getConstView() const -> ConstViewType
 {
    return ConstViewType( rows, columns, values.getConstView() );
-}
+}*/
 
 template< typename Real,
           typename Device,

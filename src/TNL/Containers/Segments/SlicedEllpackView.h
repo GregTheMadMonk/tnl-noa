@@ -36,7 +36,7 @@ class SlicedEllpackView
       using ViewTemplate = SlicedEllpackView< Device_, Index_ >;
       using ViewType = SlicedEllpackView;
       using ConstViewType = SlicedEllpackView< Device, std::add_const_t< Index > >;
-      using SegmentView = EllpackSegmentView< IndexType >;
+      using SegmentViewType = EllpackSegmentView< IndexType >;
 
       __cuda_callable__
       SlicedEllpackView();
@@ -53,6 +53,8 @@ class SlicedEllpackView
 
       __cuda_callable__
       SlicedEllpackView( const SlicedEllpackView&& slicedEllpackView );
+
+      static String getSerializationType();
 
       ViewType getView();
 
@@ -80,7 +82,7 @@ class SlicedEllpackView
       void getSegmentAndLocalIndex( const Index globalIdx, Index& segmentIdx, Index& localIdx ) const;
 
       __cuda_callable__
-      SegmentView getSegmentView( const IndexType segmentIdx ) const;
+      SegmentViewType getSegmentView( const IndexType segmentIdx ) const;
 
       /***
        * \brief Go over all segments and for each segment element call

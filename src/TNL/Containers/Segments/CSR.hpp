@@ -57,6 +57,16 @@ CSR( const CSR&& csr ) : offsets( std::move( csr.offsets ) )
 template< typename Device,
           typename Index,
           typename IndexAllocator >
+String
+CSR< Device, Index, IndexAllocator >::
+getSerializationType()
+{
+   return "CSR< [any_device], " + TNL::getSerializationType< IndexType >() + " >";
+}
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator >
    template< typename SizesHolder >
 void
 CSR< Device, Index, IndexAllocator >::
@@ -164,7 +174,7 @@ template< typename Device,
 __cuda_callable__
 auto
 CSR< Device, Index, IndexAllocator >::
-getSegmentView( const IndexType segmentIdx ) const -> SegmentView
+getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
 {
    return SegmentView( offsets[ segmentIdx ], offsets[ segmentIdx + 1 ] - offsets[ segmentIdx ] );
 }

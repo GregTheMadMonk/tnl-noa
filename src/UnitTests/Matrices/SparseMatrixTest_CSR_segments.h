@@ -94,6 +94,14 @@ TYPED_TEST( CSRMatrixTest, resetTest )
     test_Reset< CSRMatrixType >();
 }
 
+TYPED_TEST( CSRMatrixTest, getRowTest )
+{
+    using CSRMatrixType = typename TestFixture::CSRMatrixType;
+
+    test_GetRow< CSRMatrixType >();
+}
+
+
 TYPED_TEST( CSRMatrixTest, setElementTest )
 {
     using CSRMatrixType = typename TestFixture::CSRMatrixType;
