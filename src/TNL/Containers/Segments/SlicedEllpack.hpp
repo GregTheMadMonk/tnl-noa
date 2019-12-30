@@ -354,7 +354,7 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& red
          const IndexType end = begin + segmentSize;
          RealType aux( zero );
          bool compute( true );
-         for( IndexType globalIdx = begin; globalIdx< end && compute; globalIdx++  )
+         for( IndexType globalIdx = begin; globalIdx< end; globalIdx++  )
             reduction( aux, fetch( segmentIdx, globalIdx, compute, args... ) );
          keeper( segmentIdx, aux );
       };
@@ -370,7 +370,7 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& red
          const IndexType end = sliceOffsets_view[ sliceIdx + 1 ];
          RealType aux( zero );
          bool compute( true );
-         for( IndexType globalIdx = begin; globalIdx < end && compute; globalIdx += SliceSize  )
+         for( IndexType globalIdx = begin; globalIdx < end; globalIdx += SliceSize  )
             reduction( aux, fetch( segmentIdx, globalIdx, compute, args... ) );
          keeper( segmentIdx, aux );
       };
