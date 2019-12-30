@@ -14,7 +14,7 @@
 
 #include <type_traits>
 
-#include <TNL/Matrices/SparseRow.h>
+#include <TNL/Matrices/Legacy/SparseRow.h>
 #include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Containers/Subrange.h>
 #include <TNL/Containers/DistributedVector.h>

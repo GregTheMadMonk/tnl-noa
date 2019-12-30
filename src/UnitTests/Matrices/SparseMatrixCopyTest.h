@@ -8,9 +8,9 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/Matrices/CSR.h>
-#include <TNL/Matrices/Ellpack.h>
-#include <TNL/Matrices/SlicedEllpack.h>
+#include <TNL/Matrices/Legacy/CSR.h>
+#include <TNL/Matrices/Legacy/Ellpack.h>
+#include <TNL/Matrices/Legacy/SlicedEllpack.h>
 
 #include <TNL/Matrices/SparseMatrix.h>
 #include <TNL/Matrices/MatrixType.h>

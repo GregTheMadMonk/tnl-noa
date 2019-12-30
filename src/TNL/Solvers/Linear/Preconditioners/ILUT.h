@@ -15,7 +15,7 @@
 #include "Preconditioner.h"
 
 #include <TNL/Containers/Vector.h>
-#include <TNL/Matrices/CSR.h>
+#include <TNL/Matrices/Legacy/CSR.h>
 
 namespace TNL {
 namespace Solvers {

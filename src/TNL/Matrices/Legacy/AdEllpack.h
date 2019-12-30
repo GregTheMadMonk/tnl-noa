@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include <TNL/Matrices/Sparse.h>
+#include <TNL/Matrices/Legacy/Sparse.h>
 #include <TNL/Containers/Vector.h>
 
 namespace TNL {
@@ -293,4 +293,4 @@ protected:
 } // namespace Matrices
 } // namespace TNL
 
-#include <TNL/Matrices/AdEllpack_impl.h>
+#include <TNL/Matrices/Legacy/AdEllpack_impl.h>

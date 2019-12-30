@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/Matrices/ChunkedEllpack.h>
+#include <TNL/Matrices/Legacy/ChunkedEllpack.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Math.h>
 #include <TNL/Exceptions/NotImplementedError.h>

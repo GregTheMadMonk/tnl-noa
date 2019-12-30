@@ -13,7 +13,7 @@
 #include <TNL/Communicators/NoDistrCommunicator.h>
 #include <TNL/Matrices/DistributedMatrix.h>
 #include <TNL/Containers/Partitioner.h>
-#include <TNL/Matrices/CSR.h>
+#include <TNL/Matrices/Legacy/CSR.h>
 
 using namespace TNL;
 

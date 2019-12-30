@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/Matrices/CSR.h>
+#include <TNL/Matrices/Legacy/CSR.h>
 
 #include "SparseMatrixTest.hpp"
 #include <iostream>

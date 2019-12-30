@@ -1,37 +1,26 @@
 /***************************************************************************
-                          CSR.h  -  description
+                          Ellpack.h  -  description
                              -------------------
-    begin                : Dec 10, 2013
+    begin                : Dec 7, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 /* See Copyright Notice in tnl/Copyright */
 
-#pragma once 
+#pragma once
 
-#include <TNL/Matrices/Sparse.h>
+#include <TNL/Matrices/Legacy/Sparse.h>
 #include <TNL/Containers/Vector.h>
 
-#include <TNL/Devices/Cuda.h>
-#include <TNL/Exceptions/CudaBadAlloc.h>
-
 namespace TNL {
-namespace Matrices {
-   
-#ifdef HAVE_UMFPACK
-    template< typename Matrix, typename Preconditioner >
-    class UmfpackWrapper;
-#endif
-
-template< typename Real >
-class CusparseCSR;
+namespace Matrices {   
 
 template< typename Device >
-class CSRDeviceDependentCode;
+class EllpackDeviceDependentCode;
 
 template< typename Real, typename Device = Devices::Host, typename Index = int >
-class CSR : public Sparse< Real, Device, Index >
+class Ellpack : public Sparse< Real, Device, Index >
 {
 private:
    // convenient template alias for controlling the selection of copy-assignment operator
@@ -40,27 +29,26 @@ private:
 
    // friend class will be needed for templated assignment operators
    template< typename Real2, typename Device2, typename Index2 >
-   friend class CSR;
+   friend class Ellpack;
 
 public:
-
-   using RealType = Real;
-   using DeviceType = Device;
-   using IndexType = Index;
+   typedef Real RealType;
+   typedef Device DeviceType;
+   typedef Index IndexType;
    typedef typename Sparse< RealType, DeviceType, IndexType >::CompressedRowLengthsVector CompressedRowLengthsVector;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
+   typedef typename Sparse< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
+   typedef typename Sparse< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
    typedef Sparse< Real, Device, Index > BaseType;
-   using MatrixRow = typename BaseType::MatrixRow;
-   using ConstMatrixRow = typename BaseType::ConstMatrixRow;
+   typedef typename BaseType::MatrixRow MatrixRow;
+   typedef SparseRow< const RealType, const IndexType > ConstMatrixRow;
 
    template< typename _Real = Real,
              typename _Device = Device,
              typename _Index = Index >
-   using Self = CSR< _Real, _Device, _Index >;
+   using Self = Ellpack< _Real, _Device, _Index >;
 
-   enum SPMVCudaKernel { scalar, vector, hybrid };
-
-   CSR();
+   Ellpack();
 
    static String getSerializationType();
 
@@ -71,20 +59,25 @@ public:
 
    void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths );
 
+   void setConstantCompressedRowLengths( const IndexType& rowLengths );
+
    IndexType getRowLength( const IndexType row ) const;
 
    __cuda_callable__
    IndexType getRowLengthFast( const IndexType row ) const;
-
-   IndexType getNonZeroRowLength( const IndexType row ) const;
    
-   __cuda_callable__
-   IndexType getNonZeroRowLengthFast( const IndexType row ) const;
+   IndexType getNonZeroRowLength( const IndexType row ) const;
 
    template< typename Real2, typename Device2, typename Index2 >
-   void setLike( const CSR< Real2, Device2, Index2 >& matrix );
+   void setLike( const Ellpack< Real2, Device2, Index2 >& matrix );
 
    void reset();
+ 
+   template< typename Real2, typename Device2, typename Index2 >
+   bool operator == ( const Ellpack< Real2, Device2, Index2 >& matrix ) const;
+
+   template< typename Real2, typename Device2, typename Index2 >
+   bool operator != ( const Ellpack< Real2, Device2, Index2 >& matrix ) const;
 
    __cuda_callable__
    bool setElementFast( const IndexType row,
@@ -94,6 +87,7 @@ public:
    bool setElement( const IndexType row,
                     const IndexType column,
                     const RealType& value );
+
    __cuda_callable__
    bool addElementFast( const IndexType row,
                         const IndexType column,
@@ -131,7 +125,6 @@ public:
                 const IndexType numberOfElements,
                 const RealType& thisElementMultiplicator = 1.0 );
 
-
    __cuda_callable__
    RealType getElementFast( const IndexType row,
                             const IndexType column ) const;
@@ -158,16 +151,16 @@ public:
    template< typename InVector,
              typename OutVector >
    void vectorProduct( const InVector& inVector,
-                       OutVector& outVector ) const;
-   // TODO: add const RealType& multiplicator = 1.0 )
+                       OutVector& outVector,
+                       RealType multiplicator = 1.0 ) const;
 
    template< typename Real2, typename Index2 >
-   void addMatrix( const CSR< Real2, Device, Index2 >& matrix,
+   void addMatrix( const Ellpack< Real2, Device, Index2 >& matrix,
                    const RealType& matrixMultiplicator = 1.0,
                    const RealType& thisMatrixMultiplicator = 1.0 );
 
    template< typename Real2, typename Index2 >
-   void getTransposition( const CSR< Real2, Device, Index2 >& matrix,
+   void getTransposition( const Ellpack< Real2, Device, Index2 >& matrix,
                           const RealType& matrixMultiplicator = 1.0 );
 
    template< typename Vector1, typename Vector2 >
@@ -176,13 +169,20 @@ public:
                              Vector2& x,
                              const RealType& omega = 1.0 ) const;
 
+   template< typename Vector >
+   bool performJacobiIteration( const Vector& b,
+								const IndexType row,
+								const Vector& old_x,
+								Vector& x,
+								const RealType& omega ) const;
+   
    // copy assignment
-   CSR& operator=( const CSR& matrix );
+   Ellpack& operator=( const Ellpack& matrix );   
 
    // cross-device copy assignment
    template< typename Real2, typename Device2, typename Index2,
              typename = typename Enabler< Device2 >::type >
-   CSR& operator=( const CSR< Real2, Device2, Index2 >& matrix );
+   Ellpack& operator=( const Ellpack< Real2, Device2, Index2 >& matrix );
 
    void save( File& file ) const;
 
@@ -194,82 +194,17 @@ public:
 
    void print( std::ostream& str ) const;
 
-   void setCudaKernelType( const SPMVCudaKernel kernel );
-
-   __cuda_callable__
-   SPMVCudaKernel getCudaKernelType() const;
-
-   void setCudaWarpSize( const int warpSize );
-
-   int getCudaWarpSize() const;
-
-   void setHybridModeSplit( const IndexType hybridModeSplit );
-
-   __cuda_callable__
-   IndexType getHybridModeSplit() const;
-
-#ifdef HAVE_CUDA
-
-   template< typename InVector,
-             typename OutVector,
-             int warpSize >
-   __device__
-   void spmvCudaVectorized( const InVector& inVector,
-                            OutVector& outVector,
-                            const IndexType warpStart,
-                            const IndexType warpEnd,
-                            const IndexType inWarpIdx ) const;
-
-   template< typename InVector,
-             typename OutVector,
-             int warpSize >
-   __device__
-   void vectorProductCuda( const InVector& inVector,
-                           OutVector& outVector,
-                           int gridIdx ) const;
-#endif
-
-   // The following getters allow us to interface TNL with external C-like
-   // libraries such as UMFPACK or SuperLU, which need the raw data.
-   const Containers::Vector< Index, Device, Index >&
-   getRowPointers() const
-   {
-      return this->rowPointers;
-   }
-
-   Containers::Vector< Index, Device, Index >&
-   getRowPointers()
-   {
-      return this->rowPointers;
-   }
-
-   const Containers::Vector< Index, Device, Index >&
-   getColumnIndexes() const
-   {
-      return this->columnIndexes;
-   }
-
-   Containers::Vector< Index, Device, Index >&
-   getColumnIndexes()
-   {
-      return this->columnIndexes;
-   }
-
 protected:
 
-   Containers::Vector< Index, Device, Index > rowPointers;
+   void allocateElements();
 
-   SPMVCudaKernel spmvCudaKernel;
+   IndexType rowLengths, alignedRows;
 
-   int cudaWarpSize, hybridModeSplit;
-
-   typedef CSRDeviceDependentCode< DeviceType > DeviceDependentCode;
-   
-   friend class CSRDeviceDependentCode< DeviceType >;
-   friend class CusparseCSR< RealType >;
+   typedef EllpackDeviceDependentCode< DeviceType > DeviceDependentCode;
+   friend class EllpackDeviceDependentCode< DeviceType >;
 };
 
 } // namespace Matrices
 } // namespace TNL
 
-#include <TNL/Matrices/CSR_impl.h>
+#include <TNL/Matrices/Legacy/Ellpack_impl.h>

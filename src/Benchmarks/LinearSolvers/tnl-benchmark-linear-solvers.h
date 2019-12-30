@@ -55,7 +55,7 @@
    #define HAVE_CUSOLVER
 #endif
 
-#include <TNL/Matrices/SlicedEllpack.h>
+#include <TNL/Matrices/Legacy/SlicedEllpack.h>
 
 using namespace TNL;
 using namespace TNL::Benchmarks;

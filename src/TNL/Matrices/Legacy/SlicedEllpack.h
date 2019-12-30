@@ -21,7 +21,7 @@
 
 #pragma once
 
-#include <TNL/Matrices/Sparse.h>
+#include <TNL/Matrices/Legacy/Sparse.h>
 #include <TNL/Containers/Vector.h>
 
 namespace TNL {
@@ -235,4 +235,4 @@ public:
 } // namespace Matrices
 } // namespace TNL
 
-#include <TNL/Matrices/SlicedEllpack_impl.h>
+#include <TNL/Matrices/Legacy/SlicedEllpack_impl.h>

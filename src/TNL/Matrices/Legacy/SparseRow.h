@@ -80,4 +80,4 @@ std::ostream& operator<<( std::ostream& str, const SparseRow< Real, Index >& row
 } // namespace Matrices
 } // namespace TNL
 
-#include <TNL/Matrices/SparseRow_impl.h>
+#include <TNL/Matrices/Legacy/SparseRow_impl.h>

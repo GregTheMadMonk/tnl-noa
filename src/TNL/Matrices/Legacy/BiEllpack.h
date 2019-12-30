@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include <TNL/Matrices/Sparse.h>
+#include <TNL/Matrices/Legacy/Sparse.h>
 #include <TNL/Containers/Vector.h>
 
 namespace TNL {
@@ -217,5 +217,5 @@ private:
    } //namespace Matrices
 } // namespace TNL
 
-#include <TNL/Matrices/BiEllpack_impl.h>
+#include <TNL/Matrices/Legacy/BiEllpack_impl.h>
 

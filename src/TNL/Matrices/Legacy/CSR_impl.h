@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/Matrices/CSR.h>
+#include <TNL/Matrices/Legacy/CSR.h>
 #include <TNL/Containers/VectorView.h>
 #include <TNL/Math.h>
 #include <TNL/Exceptions/NotImplementedError.h>

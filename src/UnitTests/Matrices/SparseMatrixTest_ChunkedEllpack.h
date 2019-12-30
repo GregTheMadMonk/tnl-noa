@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/Matrices/ChunkedEllpack.h>
+#include <TNL/Matrices/Legacy/ChunkedEllpack.h>
 
 #include "SparseMatrixTest.hpp"
 #include <iostream>
