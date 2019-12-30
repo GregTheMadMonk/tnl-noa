@@ -143,7 +143,7 @@ void test_AllReduction_MaximumInSegments()
 
    const auto v_view = v.getConstView();
    auto result_view = result.getView();
-   auto fetch = [=] __cuda_callable__ ( IndexType segmentIdx, IndexType globalIdx ) -> IndexType {
+   auto fetch = [=] __cuda_callable__ ( IndexType segmentIdx, IndexType globalIdx, bool& compute ) -> IndexType {
       return v_view[ globalIdx ];
    };
    auto reduce = [] __cuda_callable__ ( IndexType& a, const IndexType b ) {

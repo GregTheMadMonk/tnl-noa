@@ -127,7 +127,7 @@ setSegmentsSizes( const SizesHolder& sizes )
    const auto sizes_view = sizes.getConstView();
    auto slices_view = this->sliceOffsets.getView();
    auto slice_segment_size_view = this->sliceSegmentSizes.getView();
-   auto fetch = [=] __cuda_callable__ ( IndexType segmentIdx, IndexType globalIdx ) -> IndexType {
+   auto fetch = [=] __cuda_callable__ ( IndexType segmentIdx, IndexType globalIdx, bool& compute ) -> IndexType {
       if( globalIdx < _size )
          return sizes_view[ globalIdx ];
       return 0;
@@ -341,7 +341,7 @@ void
 SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
 segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
-   using RealType = decltype( fetch( IndexType(), IndexType() ) );
+   using RealType = decltype( fetch( IndexType(), IndexType(), std::declval< bool& >(), args... ) );
    const auto sliceSegmentSizes_view = this->sliceSegmentSizes.getConstView();
    const auto sliceOffsets_view = this->sliceOffsets.getConstView();
    if( RowMajorOrder )
@@ -353,8 +353,9 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& red
          const IndexType begin = sliceOffsets_view[ sliceIdx ] + segmentInSliceIdx * segmentSize;
          const IndexType end = begin + segmentSize;
          RealType aux( zero );
-         for( IndexType globalIdx = begin; globalIdx< end; globalIdx++  )
-            reduction( aux, fetch( segmentIdx, globalIdx, args... ) );
+         bool compute( true );
+         for( IndexType globalIdx = begin; globalIdx< end && compute; globalIdx++  )
+            reduction( aux, fetch( segmentIdx, globalIdx, compute, args... ) );
          keeper( segmentIdx, aux );
       };
       Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
@@ -368,8 +369,9 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& red
          const IndexType begin = sliceOffsets_view[ sliceIdx ] + segmentInSliceIdx;
          const IndexType end = sliceOffsets_view[ sliceIdx + 1 ];
          RealType aux( zero );
-         for( IndexType globalIdx = begin; globalIdx < end; globalIdx += SliceSize  )
-            reduction( aux, fetch( segmentIdx, globalIdx, args... ) );
+         bool compute( true );
+         for( IndexType globalIdx = begin; globalIdx < end && compute; globalIdx += SliceSize  )
+            reduction( aux, fetch( segmentIdx, globalIdx, compute, args... ) );
          keeper( segmentIdx, aux );
       };
       Algorithms::ParallelFor< Device >::exec( first, last, l, args... );

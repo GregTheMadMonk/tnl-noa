@@ -508,9 +508,10 @@ vectorProduct( const InVector& inVector,
    const auto valuesView = this->values.getConstView();
    const auto columnIndexesView = this->columnIndexes.getConstView();
    const IndexType paddingIndex = this->getPaddingIndex();
-   auto fetch = [=] __cuda_callable__ ( IndexType row, IndexType offset ) -> RealType {
+   auto fetch = [=] __cuda_callable__ ( IndexType row, IndexType offset, bool& compute ) -> RealType {
       const IndexType column = columnIndexesView[ offset ];
-      if( column == paddingIndex )
+      compute = ( column != paddingIndex );
+      if( ! compute )
          return 0.0;
       return valuesView[ offset ] * inVectorView[ column ];
    };
