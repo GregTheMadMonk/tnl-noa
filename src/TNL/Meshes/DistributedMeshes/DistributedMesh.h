@@ -27,6 +27,12 @@ public:
    {
       return false;
    };
+
+   bool setup( const Config::ParameterContainer& parameters,
+               const String& prefix )
+   {
+      return false;
+   }
 };
 
 } // namespace DistributedMeshes
