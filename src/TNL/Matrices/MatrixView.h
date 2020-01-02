@@ -49,12 +49,6 @@ public:
    __cuda_callable__
    MatrixView( const MatrixView& view ) = default;
 
-   //__cuda_callable__
-   //ViewType getView();
-
-   //__cuda_callable__
-   //ConstViewType getConstView() const;
-
    virtual IndexType getRowLength( const IndexType row ) const = 0;
 
    // TODO: implementation is not parallel
