@@ -33,12 +33,10 @@ getCompressedRowLengths( const MeshPointer& meshPointer,
                    &boundaryConditionsPointer.template getData< DeviceType >(),
                    &rowLengthsPointer.template modifyData< DeviceType >() );
       Meshes::Traverser< MeshType, EntityType > meshTraverser;
-      meshTraverser.template processBoundaryEntities< TraverserUserData,
-                                                      TraverserBoundaryEntitiesProcessor >
+      meshTraverser.template processBoundaryEntities< TraverserBoundaryEntitiesProcessor >
                                                     ( meshPointer,
                                                       userData );
-      meshTraverser.template processInteriorEntities< TraverserUserData,
-                                                      TraverserInteriorEntitiesProcessor >
+      meshTraverser.template processInteriorEntities< TraverserInteriorEntitiesProcessor >
                                                     ( meshPointer,
                                                       userData );
    }

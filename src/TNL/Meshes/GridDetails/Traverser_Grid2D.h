@@ -29,17 +29,17 @@ class Traverser< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 2 >
       using DistributedGridType = Meshes::DistributedMeshes::DistributedMesh< GridType >;
       using SubdomainOverlapsType = typename DistributedGridType::SubdomainOverlapsType;
 
-      template< typename UserData,
-                typename EntitiesProcessor >
+      template< typename EntitiesProcessor,
+                typename UserData >
       void processBoundaryEntities( const GridPointer& gridPointer,
                                     UserData& userData ) const;
 
-      template< typename UserData,
-                typename EntitiesProcessor >
+      template< typename EntitiesProcessor,
+                typename UserData >
       void processInteriorEntities( const GridPointer& gridPointer,
                                     UserData& userData ) const;
-      template< typename UserData,
-                typename EntitiesProcessor >
+      template< typename EntitiesProcessor,
+                typename UserData >
       void processAllEntities( const GridPointer& gridPointer,
                                UserData& userData ) const;
 };
@@ -57,18 +57,18 @@ class Traverser< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 1 >
       using DistributedGridType = Meshes::DistributedMeshes::DistributedMesh< GridType >;
       using SubdomainOverlapsType = typename DistributedGridType::SubdomainOverlapsType;
 
-      template< typename UserData,
-                typename EntitiesProcessor >
+      template< typename EntitiesProcessor,
+                typename UserData >
       void processBoundaryEntities( const GridPointer& gridPointer,
                                     UserData& userData ) const;
 
-      template< typename UserData,
-                typename EntitiesProcessor >
+      template< typename EntitiesProcessor,
+                typename UserData >
       void processInteriorEntities( const GridPointer& gridPointer,
                                     UserData& userData ) const;
 
-      template< typename UserData,
-                typename EntitiesProcessor >
+      template< typename EntitiesProcessor,
+                typename UserData >
       void processAllEntities( const GridPointer& gridPointer,
                                UserData& userData ) const;
 };
@@ -86,18 +86,18 @@ class Traverser< Meshes::Grid< 2, Real, Device, Index >, GridEntity, 0 >
       using DistributedGridType = Meshes::DistributedMeshes::DistributedMesh< GridType >;
       using SubdomainOverlapsType = typename DistributedGridType::SubdomainOverlapsType;
 
-      template< typename UserData,
-                typename EntitiesProcessor >
+      template< typename EntitiesProcessor,
+                typename UserData >
       void processBoundaryEntities( const GridPointer& gridPointer,
                                     UserData& userData ) const;
 
-      template< typename UserData,
-                typename EntitiesProcessor >
+      template< typename EntitiesProcessor,
+                typename UserData >
       void processInteriorEntities( const GridPointer& gridPointer,
                                     UserData& userData ) const;
 
-      template< typename UserData,
-                typename EntitiesProcessor >
+      template< typename EntitiesProcessor,
+                typename UserData >
       void processAllEntities( const GridPointer& gridPointer,
                                UserData& userData ) const;
 };

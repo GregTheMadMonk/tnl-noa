@@ -122,12 +122,10 @@ class LinearSystemAssembler
       this->userData.matrix = ( void* ) &matrixPointer.template modifyData< DeviceType >();
       this->userData.b = &bPointer.template modifyData< DeviceType >();
       Meshes::Traverser< MeshType, EntityType > meshTraverser;
-      meshTraverser.template processBoundaryEntities< TraverserUserData,
-                                                      TraverserBoundaryEntitiesProcessor< Matrix> >
+      meshTraverser.template processBoundaryEntities< TraverserBoundaryEntitiesProcessor< Matrix> >
                                                     ( meshPointer,
                                                       userData );
-      meshTraverser.template processInteriorEntities< TraverserUserData,
-                                                      TraverserInteriorEntitiesProcessor< Matrix > >
+      meshTraverser.template processInteriorEntities< TraverserInteriorEntitiesProcessor< Matrix > >
                                                     ( meshPointer,
                                                       userData );
       

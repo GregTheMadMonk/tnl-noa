@@ -597,8 +597,7 @@ getExplicitUpdate( const RealType& time,
             Pointers::synchronizeSmartPointersOnDevice< Devices::Cuda >();
             int cudaErr;
             Meshes::Traverser< MeshType, Cell > meshTraverser;
-            meshTraverser.template processInteriorEntities< UserData,
-                                                      InteriorEntitiesProcessor >
+            meshTraverser.template processInteriorEntities< InteriorEntitiesProcessor >
                                                           ( mesh,
                                                             userData );
              // */
@@ -613,8 +612,7 @@ getExplicitUpdate( const RealType& time,
                return;
             }
             
-            meshTraverser.template processBoundaryEntities< UserData,
-                                                      BoundaryEntitiesProcessor >
+            meshTraverser.template processBoundaryEntities< BoundaryEntitiesProcessor >
                                                           ( mesh,
                                                             userData );
             // */
@@ -701,8 +699,7 @@ applyBoundaryConditions( const RealType& time,
       userData.boundaryConditions = &this->boundaryConditionPointer.template getData< Devices::Cuda >();
       Meshes::Traverser< MeshType, Cell > meshTraverser;
       // */
-      /*meshTraverser.template processBoundaryEntities< UserData,
-                                                BoundaryEntitiesProcessor >
+      /*meshTraverser.template processBoundaryEntities< BoundaryEntitiesProcessor >
                                                     ( mesh,
                                                       userData );*/
 

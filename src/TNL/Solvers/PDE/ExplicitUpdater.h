@@ -142,8 +142,7 @@ class ExplicitUpdater
          this->userData.u = &uPointer.template modifyData< DeviceType >();
          this->userData.fu = &fuPointer.template modifyData< DeviceType >();
          Meshes::Traverser< MeshType, EntityType > meshTraverser;
-         meshTraverser.template processInteriorEntities< TraverserUserData,
-                                                         TraverserInteriorEntitiesProcessor >
+         meshTraverser.template processInteriorEntities< TraverserInteriorEntitiesProcessor >
                                                        ( meshPointer,
                                                          userData );
       }
@@ -161,8 +160,7 @@ class ExplicitUpdater
          this->userData.time = time;
          this->userData.u = &uPointer.template modifyData< DeviceType >();         
          Meshes::Traverser< MeshType, EntityType > meshTraverser;
-         meshTraverser.template processBoundaryEntities< TraverserUserData,
-                                             TraverserBoundaryEntitiesProcessor >
+         meshTraverser.template processBoundaryEntities< TraverserBoundaryEntitiesProcessor >
                                            ( meshPointer,
                                              userData );
 

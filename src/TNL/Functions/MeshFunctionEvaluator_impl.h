@@ -130,37 +130,31 @@ evaluateEntities( OutMeshFunctionPointer& meshFunction,
    {
       case all:
          if( outFunctionMultiplicator )
-            meshTraverser.template processAllEntities< TraverserUserData,
-                                                       AdditionEntitiesProcessor >
+            meshTraverser.template processAllEntities< AdditionEntitiesProcessor >
                                                      ( meshFunction->getMeshPointer(),
                                                        userData );
          else
-            meshTraverser.template processAllEntities< TraverserUserData,
-                                                       AssignmentEntitiesProcessor >
+            meshTraverser.template processAllEntities< AssignmentEntitiesProcessor >
                                                     ( meshFunction->getMeshPointer(),
                                                       userData );
          break;
       case interior:
          if( outFunctionMultiplicator )
-            meshTraverser.template processInteriorEntities< TraverserUserData,
-                                                            AdditionEntitiesProcessor >
+            meshTraverser.template processInteriorEntities< AdditionEntitiesProcessor >
                                                           ( meshFunction->getMeshPointer(),
                                                             userData );
          else
-            meshTraverser.template processInteriorEntities< TraverserUserData,
-                                                            AssignmentEntitiesProcessor >
+            meshTraverser.template processInteriorEntities< AssignmentEntitiesProcessor >
                                                           ( meshFunction->getMeshPointer(),
                                                             userData );
          break;
       case boundary:
          if( outFunctionMultiplicator )
-            meshTraverser.template processBoundaryEntities< TraverserUserData,
-                                                            AdditionEntitiesProcessor >
+            meshTraverser.template processBoundaryEntities< AdditionEntitiesProcessor >
                                                           ( meshFunction->getMeshPointer(),
                                                             userData );
          else
-            meshTraverser.template processBoundaryEntities< TraverserUserData,
-                                                            AssignmentEntitiesProcessor >
+            meshTraverser.template processBoundaryEntities< AssignmentEntitiesProcessor >
                                                           ( meshFunction->getMeshPointer(),
                                                             userData );
          break;
