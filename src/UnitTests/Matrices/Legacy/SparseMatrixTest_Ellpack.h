@@ -136,4 +136,4 @@ TYPED_TEST( EllpackMatrixTest, printTest )
 
 #endif
 
-#include "../main.h"
+#include "../../main.h"

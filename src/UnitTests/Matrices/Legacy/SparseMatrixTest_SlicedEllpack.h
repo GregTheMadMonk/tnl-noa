@@ -1,5 +1,5 @@
 /***************************************************************************
-                          SparseMatrixTest_SlicedEllpack_segments.h -  description
+                          SparseMatrixTest_SlicedEllpack.h -  description
                              -------------------
     begin                : Dec 9, 2019
     copyright            : (C) 2019 by Tomas Oberhuber et al.
@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/Containers/Segments/SlicedEllpack.h>
-#include <TNL/Matrices/SparseMatrix.h>
+#include <TNL/Matrices/Legacy/SlicedEllpack.h>
 
 
 #include "SparseMatrixTest.hpp"
@@ -26,45 +25,38 @@ protected:
    using SlicedEllpackMatrixType = Matrix;
 };
 
-////
-// Row-major format is used for the host system
-template< typename Device, typename Index >
-using RowMajorSlicedEllpack = TNL::Containers::Segments::SlicedEllpack< Device, Index, true, 32 >;
+template< typename Real, typename Device, typename Index >
+using SlicedEllpackType = TNL::Matrices::SlicedEllpack< Real, Device, Index, 32 >;
 
-
-////
-// Column-major format is used for GPUs
-template< typename Device, typename Index >
-using ColumnMajorSlicedEllpack = TNL::Containers::Segments::SlicedEllpack< Device, Index, false, 32 >;
 
 // types for which MatrixTest is instantiated
 using SlicedEllpackMatrixTypes = ::testing::Types
 <
-    TNL::Matrices::SparseMatrix< int,     RowMajorSlicedEllpack, TNL::Devices::Host, short >,
-    TNL::Matrices::SparseMatrix< long,    RowMajorSlicedEllpack, TNL::Devices::Host, short >,
-    TNL::Matrices::SparseMatrix< float,   RowMajorSlicedEllpack, TNL::Devices::Host, short >,
-    TNL::Matrices::SparseMatrix< double,  RowMajorSlicedEllpack, TNL::Devices::Host, short >,
-    TNL::Matrices::SparseMatrix< int,     RowMajorSlicedEllpack, TNL::Devices::Host, int   >,
-    TNL::Matrices::SparseMatrix< long,    RowMajorSlicedEllpack, TNL::Devices::Host, int   >,
-    TNL::Matrices::SparseMatrix< float,   RowMajorSlicedEllpack, TNL::Devices::Host, int   >,
-    TNL::Matrices::SparseMatrix< double,  RowMajorSlicedEllpack, TNL::Devices::Host, int   >,
-    TNL::Matrices::SparseMatrix< int,     RowMajorSlicedEllpack, TNL::Devices::Host, long  >,
-    TNL::Matrices::SparseMatrix< long,    RowMajorSlicedEllpack, TNL::Devices::Host, long  >,
-    TNL::Matrices::SparseMatrix< float,   RowMajorSlicedEllpack, TNL::Devices::Host, long  >,
-    TNL::Matrices::SparseMatrix< double,  RowMajorSlicedEllpack, TNL::Devices::Host, long  >
+    SlicedEllpackType< int,     TNL::Devices::Host, short >,
+    SlicedEllpackType< long,    TNL::Devices::Host, short >,
+    SlicedEllpackType< float,   TNL::Devices::Host, short >,
+    SlicedEllpackType< double,  TNL::Devices::Host, short >,
+    SlicedEllpackType< int,     TNL::Devices::Host, int   >,
+    SlicedEllpackType< long,    TNL::Devices::Host, int   >,
+    SlicedEllpackType< float,   TNL::Devices::Host, int   >,
+    SlicedEllpackType< double,  TNL::Devices::Host, int   >,
+    SlicedEllpackType< int,     TNL::Devices::Host, long  >,
+    SlicedEllpackType< long,    TNL::Devices::Host, long  >,
+    SlicedEllpackType< float,   TNL::Devices::Host, long  >,
+    SlicedEllpackType< double,  TNL::Devices::Host, long  >
 #ifdef HAVE_CUDA
-   ,TNL::Matrices::SparseMatrix< int,     ColumnMajorSlicedEllpack, TNL::Devices::Cuda, short >,
-    TNL::Matrices::SparseMatrix< long,    ColumnMajorSlicedEllpack, TNL::Devices::Cuda, short >,
-    TNL::Matrices::SparseMatrix< float,   ColumnMajorSlicedEllpack, TNL::Devices::Cuda, short >,
-    TNL::Matrices::SparseMatrix< double,  ColumnMajorSlicedEllpack, TNL::Devices::Cuda, short >,
-    TNL::Matrices::SparseMatrix< int,     ColumnMajorSlicedEllpack, TNL::Devices::Cuda, int   >,
-    TNL::Matrices::SparseMatrix< long,    ColumnMajorSlicedEllpack, TNL::Devices::Cuda, int   >,
-    TNL::Matrices::SparseMatrix< float,   ColumnMajorSlicedEllpack, TNL::Devices::Cuda, int   >,
-    TNL::Matrices::SparseMatrix< double,  ColumnMajorSlicedEllpack, TNL::Devices::Cuda, int   >,
-    TNL::Matrices::SparseMatrix< int,     ColumnMajorSlicedEllpack, TNL::Devices::Cuda, long  >,
-    TNL::Matrices::SparseMatrix< long,    ColumnMajorSlicedEllpack, TNL::Devices::Cuda, long  >,
-    TNL::Matrices::SparseMatrix< float,   ColumnMajorSlicedEllpack, TNL::Devices::Cuda, long  >,
-    TNL::Matrices::SparseMatrix< double,  ColumnMajorSlicedEllpack, TNL::Devices::Cuda, long  >
+   ,SlicedEllpackType< int,     TNL::Devices::Cuda, short >,
+    SlicedEllpackType< long,    TNL::Devices::Cuda, short >,
+    SlicedEllpackType< float,   TNL::Devices::Cuda, short >,
+    SlicedEllpackType< double,  TNL::Devices::Cuda, short >,
+    SlicedEllpackType< int,     TNL::Devices::Cuda, int   >,
+    SlicedEllpackType< long,    TNL::Devices::Cuda, int   >,
+    SlicedEllpackType< float,   TNL::Devices::Cuda, int   >,
+    SlicedEllpackType< double,  TNL::Devices::Cuda, int   >,
+    SlicedEllpackType< int,     TNL::Devices::Cuda, long  >,
+    SlicedEllpackType< long,    TNL::Devices::Cuda, long  >,
+    SlicedEllpackType< float,   TNL::Devices::Cuda, long  >,
+    SlicedEllpackType< double,  TNL::Devices::Cuda, long  >
 #endif
 >;
 
@@ -149,4 +141,4 @@ TYPED_TEST( SlicedEllpackMatrixTest, printTest )
 
 #endif
 
-#include "../main.h"
+#include "../../main.h"

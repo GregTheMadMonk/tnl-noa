@@ -142,4 +142,4 @@ TYPED_TEST( BiEllpackMatrixTest, printTest )
 }
 #endif // HAVE_GTEST
 
-#include "../main.h"
+#include "../../main.h"

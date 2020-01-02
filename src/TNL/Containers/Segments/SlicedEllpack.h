@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <TNL/Allocators/Default.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/Segments/SlicedEllpackView.h>
 #include <TNL/Containers/Segments/EllpackSegmentView.h>

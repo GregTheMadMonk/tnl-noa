@@ -144,4 +144,4 @@ TYPED_TEST( ChunkedEllpackMatrixTest, printTest )
 
 #endif
 
-#include "../main.h"
+#include "../../main.h"
