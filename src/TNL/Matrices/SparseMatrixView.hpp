@@ -402,7 +402,26 @@ forRows( IndexType first, IndexType last, Function& function ) const
       return true;
    };
    this->segments.forSegments( first, last, f );
+}
 
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename > class SegmentsView >
+   template< typename Function >
+void
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+forRows( IndexType first, IndexType last, Function& function )
+{
+   auto columns_view = this->columnIndexes.getView();
+   auto values_view = this->values.getView();
+   const IndexType paddingIndex_ = this->getPaddingIndex();
+   auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType globalIdx ) mutable -> bool {
+      function( rowIdx, localIdx, globalIdx );
+      return true;
+   };
+   this->segments.forSegments( first, last, f );
 }
 
 template< typename Real,
@@ -414,6 +433,19 @@ template< typename Real,
 void
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
 forAllRows( Function& function ) const
+{
+   this->forRows( 0, this->getRows(), function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename > class SegmentsView >
+   template< typename Function >
+void
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+forAllRows( Function& function )
 {
    this->forRows( 0, this->getRows(), function );
 }

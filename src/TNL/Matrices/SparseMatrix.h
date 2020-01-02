@@ -160,7 +160,13 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       void forRows( IndexType first, IndexType last, Function& function ) const;
 
       template< typename Function >
+      void forRows( IndexType first, IndexType last, Function& function );
+
+      template< typename Function >
       void forAllRows( Function& function ) const;
+
+      template< typename Function >
+      void forAllRows( Function& function );
 
       template< typename Vector1, typename Vector2 >
       bool performSORIteration( const Vector1& b,
@@ -168,18 +174,20 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
                                 Vector2& x,
                                 const RealType& omega = 1.0 ) const;
 
-      // copy assignment
+      /**
+       * \brief Assignment of exactly the same matrix type.
+       * @param matrix
+       * @return 
+       */
       SparseMatrix& operator=( const SparseMatrix& matrix );
 
-      // cross-device copy assignment
-      template< typename Real2,
-                typename Device2,
-                typename Index2,
-                typename MatrixType2,
-                template< typename, typename, typename > class Segments2,
-                typename RealAllocator2,
-                typename IndexAllocator2 >
-      SparseMatrix& operator=( const SparseMatrix< Real2, Device2, Index2, MatrixType2, Segments2, RealAllocator2, IndexAllocator2 >& matrix );
+      /**
+       * \brief Assignment of any other matrix type.
+       * @param matrix
+       * @return 
+       */
+      template< typename RHSMatrix >
+      SparseMatrix& operator=( const RHSMatrix& matrix );
 
       void save( File& file ) const;
 

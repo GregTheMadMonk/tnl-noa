@@ -129,7 +129,13 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       void forRows( IndexType first, IndexType last, Function& function ) const;
 
       template< typename Function >
+      void forRows( IndexType first, IndexType last, Function& function );
+
+      template< typename Function >
       void forAllRows( Function& function ) const;
+
+      template< typename Function >
+      void forAllRows( Function& function );
 
       template< typename Vector1, typename Vector2 >
       bool performSORIteration( const Vector1& b,
