@@ -91,18 +91,17 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       template< typename Vector >
       void getCompressedRowLengths( Vector& rowLengths ) const;
 
-      IndexType getRowLength( const IndexType row ) const;
+      [[deprecated]]
+      virtual IndexType getRowLength( const IndexType row ) const {};
 
-      __cuda_callable__
-      IndexType getRowLengthFast( const IndexType row ) const;
-
-      IndexType getNonZeroRowLength( const IndexType row ) const;
-
-      __cuda_callable__
-      IndexType getNonZeroRowLengthFast( const IndexType row ) const;
-
-      template< typename Real2, typename Device2, typename Index2, typename MatrixType2, template< typename, typename, typename > class Segments2, typename RealAllocator2, typename IndexAllocator2 >
-      void setLike( const SparseMatrix< Real2, Device2, Index2, MatrixType2, Segments2, RealAllocator2, IndexAllocator2 >& matrix );
+      template< typename Real_,
+                typename Device_,
+                typename Index_,
+                typename MatrixType_,
+                template< typename, typename, typename > class Segments_,
+                typename RealAllocator_,
+                typename IndexAllocator_ >
+      void setLike( const SparseMatrix< Real_, Device_, Index_, MatrixType_, Segments_, RealAllocator_, IndexAllocator_ >& matrix );
 
       IndexType getNumberOfNonzeroMatrixElements() const;
 
@@ -114,67 +113,17 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       __cuda_callable__
       RowView getRow( const IndexType& rowIdx );
 
-      [[deprecated("")]] __cuda_callable__
-      bool setElementFast( const IndexType row,
-                           const IndexType column,
-                           const RealType& value );
-
       bool setElement( const IndexType row,
                        const IndexType column,
                        const RealType& value );
 
-      [[deprecated("")]] __cuda_callable__
-      bool addElementFast( const IndexType row,
-                           const IndexType column,
-                           const RealType& value,
-                           const RealType& thisElementMultiplicator = 1.0 );
-
-      [[deprecated("")]]
       bool addElement( const IndexType row,
                        const IndexType column,
                        const RealType& value,
-                       const RealType& thisElementMultiplicator = 1.0 );
-
-
-      [[deprecated("")]] __cuda_callable__
-      bool setRowFast( const IndexType row,
-                       const IndexType* columnIndexes,
-                       const RealType* values,
-                       const IndexType elements );
-
-      [[deprecated("")]] 
-      bool setRow( const IndexType row,
-                   const IndexType* columnIndexes,
-                   const RealType* values,
-                   const IndexType elements );
-
-
-      [[deprecated("")]] __cuda_callable__
-      bool addRowFast( const IndexType row,
-                       const IndexType* columns,
-                       const RealType* values,
-                       const IndexType numberOfElements,
-                       const RealType& thisElementMultiplicator = 1.0 );
-
-      [[deprecated("")]] 
-      bool addRow( const IndexType row,
-                   const IndexType* columns,
-                   const RealType* values,
-                   const IndexType numberOfElements,
-                   const RealType& thisElementMultiplicator = 1.0 );
-
-
-      [[deprecated("")]] __cuda_callable__
-      RealType getElementFast( const IndexType row,
-                               const IndexType column ) const;
+                       const RealType& thisElementMultiplicator );
 
       RealType getElement( const IndexType row,
                            const IndexType column ) const;
-
-      [[deprecated("")]] __cuda_callable__
-      void getRowFast( const IndexType row,
-                       IndexType* columns,
-                       RealType* values ) const;
 
       template< typename Vector >
       __cuda_callable__
@@ -255,8 +204,6 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       IndexAllocator indexAllocator;
 
       RealAllocator realAllocator;
-
-
 };
 
 }  // namespace Conatiners

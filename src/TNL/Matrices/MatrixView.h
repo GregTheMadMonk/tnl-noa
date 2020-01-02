@@ -90,17 +90,6 @@ public:
                             const RealType& value,
                             const RealType& thisElementMultiplicator = 1.0 ) = 0;
 
-   virtual bool setRow( const IndexType row,
-                        const IndexType* columns,
-                        const RealType* values,
-                        const IndexType numberOfElements ) = 0;
-
-   virtual bool addRow( const IndexType row,
-                        const IndexType* columns,
-                        const RealType* values,
-                        const IndexType numberOfElements,
-                        const RealType& thisElementMultiplicator = 1.0 ) = 0;
-
    virtual Real getElement( const IndexType row,
                             const IndexType column ) const = 0;
 

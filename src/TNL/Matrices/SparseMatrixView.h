@@ -79,15 +79,8 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       template< typename Vector >
       void getCompressedRowLengths( Vector& rowLengths ) const;
 
+      [[deprecated]]
       IndexType getRowLength( const IndexType row ) const;
-
-      __cuda_callable__
-      IndexType getRowLengthFast( const IndexType row ) const;
-
-      IndexType getNonZeroRowLength( const IndexType row ) const;
-
-      __cuda_callable__
-      IndexType getNonZeroRowLengthFast( const IndexType row ) const;
 
       IndexType getNumberOfNonzeroMatrixElements() const;
 
@@ -99,67 +92,17 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       __cuda_callable__
       RowView getRow( const IndexType& rowIdx );
 
-      [[deprecated("")]] __cuda_callable__
-      bool setElementFast( const IndexType row,
-                           const IndexType column,
-                           const RealType& value );
-
       bool setElement( const IndexType row,
                        const IndexType column,
                        const RealType& value );
 
-      [[deprecated("")]] __cuda_callable__
-      bool addElementFast( const IndexType row,
-                           const IndexType column,
-                           const RealType& value,
-                           const RealType& thisElementMultiplicator = 1.0 );
-
-      [[deprecated("")]] 
       bool addElement( const IndexType row,
                        const IndexType column,
                        const RealType& value,
                        const RealType& thisElementMultiplicator = 1.0 );
 
-
-      [[deprecated("")]] __cuda_callable__
-      bool setRowFast( const IndexType row,
-                       const IndexType* columnIndexes,
-                       const RealType* values,
-                       const IndexType elements );
-
-      [[deprecated("")]] 
-      bool setRow( const IndexType row,
-                   const IndexType* columnIndexes,
-                   const RealType* values,
-                   const IndexType elements );
-
-
-      [[deprecated("")]] __cuda_callable__
-      bool addRowFast( const IndexType row,
-                       const IndexType* columns,
-                       const RealType* values,
-                       const IndexType numberOfElements,
-                       const RealType& thisElementMultiplicator = 1.0 );
-
-      [[deprecated("")]] 
-      bool addRow( const IndexType row,
-                   const IndexType* columns,
-                   const RealType* values,
-                   const IndexType numberOfElements,
-                   const RealType& thisElementMultiplicator = 1.0 );
-
-
-      [[deprecated("")]] __cuda_callable__
-      RealType getElementFast( const IndexType row,
-                               const IndexType column ) const;
-
       RealType getElement( const IndexType row,
                            const IndexType column ) const;
-
-      [[deprecated("")]] __cuda_callable__
-      void getRowFast( const IndexType row,
-                       IndexType* columns,
-                       RealType* values ) const;
 
       template< typename Vector >
       __cuda_callable__

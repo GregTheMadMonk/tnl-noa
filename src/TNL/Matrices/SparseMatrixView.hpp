@@ -147,44 +147,6 @@ template< typename Real,
           typename Index,
           typename MatrixType,
           template< typename, typename > class SegmentsView >
-__cuda_callable__
-Index
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
-getRowLengthFast( const IndexType row ) const
-{
-
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename MatrixType,
-          template< typename, typename > class SegmentsView >
-Index
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
-getNonZeroRowLength( const IndexType row ) const
-{
-
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename MatrixType,
-          template< typename, typename > class SegmentsView >
-__cuda_callable__
-Index
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
-getNonZeroRowLengthFast( const IndexType row ) const
-{
-
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename MatrixType,
-          template< typename, typename > class SegmentsView >
 Index
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
 getNumberOfNonzeroMatrixElements() const
@@ -242,21 +204,6 @@ template< typename Real,
           typename Index,
           typename MatrixType,
           template< typename, typename > class SegmentsView >
-__cuda_callable__
-bool
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
-setElementFast( const IndexType row,
-                const IndexType column,
-                const RealType& value )
-{
-   return this->addElementFast( row, column, value, 0.0 );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename MatrixType,
-          template< typename, typename > class SegmentsView >
 bool
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
 setElement( const IndexType row,
@@ -264,22 +211,6 @@ setElement( const IndexType row,
             const RealType& value )
 {
    return this->addElement( row, column, value, 0.0 );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename MatrixType,
-          template< typename, typename > class SegmentsView >
-__cuda_callable__
-bool
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
-addElementFast( const IndexType row,
-                const IndexType column,
-                const RealType& value,
-                const RealType& thisElementMultiplicator )
-{
-
 }
 
 template< typename Real,
@@ -346,97 +277,6 @@ addElement( const IndexType row,
    }
 }
 
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename MatrixType,
-          template< typename, typename > class SegmentsView >
-__cuda_callable__
-bool
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
-setRowFast( const IndexType row,
-            const IndexType* columnIndexes,
-            const RealType* values,
-            const IndexType elements )
-{
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename MatrixType,
-          template< typename, typename > class SegmentsView >
-bool
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
-setRow( const IndexType row,
-        const IndexType* columnIndexes,
-        const RealType* values,
-        const IndexType elements )
-{
-   const IndexType rowLength = this->segments.getSegmentSize( row );
-   if( elements > rowLength )
-      return false;
-
-   for( IndexType i = 0; i < elements; i++ )
-   {
-      const IndexType globalIdx = this->segments.getGlobalIndex( row, i );
-      this->columnIndexes.setElement( globalIdx, columnIndexes[ i ] );
-      this->values.setElement( globalIdx, values[ i ] );
-   }
-   for( IndexType i = elements; i < rowLength; i++ )
-      this->columnIndexes.setElement( this->segments.getGlobalIndex( row, i ), this->getPaddingIndex() );
-   return true;
-}
-
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename MatrixType,
-          template< typename, typename > class SegmentsView >
-__cuda_callable__
-bool
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
-addRowFast( const IndexType row,
-            const IndexType* columns,
-            const RealType* values,
-            const IndexType numberOfElements,
-            const RealType& thisElementMultiplicator )
-{
-
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename MatrixType,
-          template< typename, typename > class SegmentsView >
-bool
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
-addRow( const IndexType row,
-        const IndexType* columns,
-        const RealType* values,
-        const IndexType numberOfElements,
-        const RealType& thisElementMultiplicator )
-{
-
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename MatrixType,
-          template< typename, typename > class SegmentsView >
-__cuda_callable__
-Real
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
-getElementFast( const IndexType row,
-                const IndexType column ) const
-{
-
-}
-
 template< typename Real,
           typename Device,
           typename Index,
@@ -457,21 +297,6 @@ getElement( const IndexType row,
          return this->values.getElement( globalIdx );
    }
    return 0.0;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename MatrixType,
-          template< typename, typename > class SegmentsView >
-__cuda_callable__
-void
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
-getRowFast( const IndexType row,
-            IndexType* columns,
-            RealType* values ) const
-{
-
 }
 
 template< typename Real,

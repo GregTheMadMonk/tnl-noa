@@ -127,13 +127,6 @@ TYPED_TEST( SlicedEllpackMatrixTest, addElementTest )
     test_AddElement< SlicedEllpackMatrixType >();
 }
 
-TYPED_TEST( SlicedEllpackMatrixTest, setRowTest )
-{
-    using SlicedEllpackMatrixType = typename TestFixture::SlicedEllpackMatrixType;
-
-    test_SetRow< SlicedEllpackMatrixType >();
-}
-
 TYPED_TEST( SlicedEllpackMatrixTest, vectorProductTest )
 {
     using SlicedEllpackMatrixType = typename TestFixture::SlicedEllpackMatrixType;

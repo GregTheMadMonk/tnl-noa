@@ -126,13 +126,6 @@ TYPED_TEST( EllpackMatrixTest, addElementTest )
     test_AddElement< EllpackMatrixType >();
 }
 
-TYPED_TEST( EllpackMatrixTest, setRowTest )
-{
-    using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
-
-    test_SetRow< EllpackMatrixType >();
-}
-
 TYPED_TEST( EllpackMatrixTest, vectorProductTest )
 {
     using EllpackMatrixType = typename TestFixture::EllpackMatrixType;

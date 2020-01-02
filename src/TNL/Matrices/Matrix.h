@@ -56,6 +56,7 @@ public:
 
    virtual void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths ) = 0;
 
+   [[deprecated]]
    virtual IndexType getRowLength( const IndexType row ) const = 0;
 
    // TODO: implementation is not parallel
@@ -79,12 +80,6 @@ public:
    __cuda_callable__
    IndexType getColumns() const;
 
-   /****
-    * TODO: The fast variants of the following methods cannot be virtual.
-    * If they were, they could not be used in the CUDA kernels. If CUDA allows it
-    * in the future and it does not slow down, declare them as virtual here.
-    */
-
    virtual bool setElement( const IndexType row,
                             const IndexType column,
                             const RealType& value ) = 0;
@@ -93,17 +88,6 @@ public:
                             const IndexType column,
                             const RealType& value,
                             const RealType& thisElementMultiplicator = 1.0 ) = 0;
-
-   virtual bool setRow( const IndexType row,
-                        const IndexType* columns,
-                        const RealType* values,
-                        const IndexType numberOfElements ) = 0;
-
-   virtual bool addRow( const IndexType row,
-                        const IndexType* columns,
-                        const RealType* values,
-                        const IndexType numberOfElements,
-                        const RealType& thisElementMultiplicator = 1.0 ) = 0;
 
    virtual Real getElement( const IndexType row,
                             const IndexType column ) const = 0;
