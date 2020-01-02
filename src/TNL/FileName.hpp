@@ -69,9 +69,7 @@ inline void FileName::setDistributedSystemNodeId( size_t nodeId )
 }
 
 template< typename Coordinates >
-void
-FileName::
-setDistributedSystemNodeCoordinates( const Coordinates& nodeId )
+void FileName::setDistributedSystemNodeCoordinates( const Coordinates& nodeId )
 {
    this->distributedSystemNodeId = "-@";
    this->distributedSystemNodeId += convertToString( nodeId[ 0 ] );
@@ -82,9 +80,7 @@ setDistributedSystemNodeCoordinates( const Coordinates& nodeId )
    }
 }
 
-void
-FileName::
-resetDistributedSystemNodeId()
+inline void FileName::resetDistributedSystemNodeId()
 {
    this->distributedSystemNodeId = "";
 }
