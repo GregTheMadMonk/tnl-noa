@@ -13,7 +13,7 @@
 #include <type_traits>
 
 #include <TNL/Containers/Vector.h>
-#include <TNL/Containers/Segments/CSRSegmentView.h>
+#include <TNL/Containers/Segments/SegmentView.h>
 
 namespace TNL {
    namespace Containers {
@@ -33,7 +33,7 @@ class CSRView
       template< typename Device_, typename Index_ >
       using ViewTemplate = CSRView< Device_, Index_ >;
       using ConstViewType = CSRView< Device, std::add_const_t< Index > >;
-      using SegmentViewType = CSRSegmentView< IndexType >;
+      using SegmentViewType = SegmentView< IndexType >;
 
       __cuda_callable__
       CSRView();

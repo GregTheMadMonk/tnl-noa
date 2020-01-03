@@ -14,7 +14,7 @@
 
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/Segments/CSRView.h>
-#include <TNL/Containers/Segments/CSRSegmentView.h>
+#include <TNL/Containers/Segments/SegmentView.h>
 
 namespace TNL {
    namespace Containers {
@@ -35,7 +35,7 @@ class CSR
       using ViewTemplate = CSRView< Device_, Index_ >;
       using ViewType = CSRView< Device, Index >;
       using ConstViewType = CSRView< Device, std::add_const_t< Index > >;
-      using SegmentViewType = CSRSegmentView< IndexType >;
+      using SegmentViewType = SegmentView< IndexType, true >;
 
       CSR();
 

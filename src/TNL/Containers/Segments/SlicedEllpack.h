@@ -13,7 +13,7 @@
 #include <TNL/Allocators/Default.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/Segments/SlicedEllpackView.h>
-#include <TNL/Containers/Segments/EllpackSegmentView.h>
+#include <TNL/Containers/Segments/SegmentView.h>
 
 namespace TNL {
    namespace Containers {
@@ -37,7 +37,7 @@ class SlicedEllpack
       template< typename Device_, typename Index_ >
       using ViewTemplate = SlicedEllpackView< Device_, Index_ >;
       using ConstViewType = SlicedEllpackView< Device, std::add_const_t< Index >, RowMajorOrder, SliceSize >;
-      using SegmentViewType = EllpackSegmentView< IndexType >;
+      using SegmentViewType = SegmentView< IndexType, RowMajorOrder >;
 
       SlicedEllpack();
 

@@ -176,7 +176,7 @@ auto
 CSR< Device, Index, IndexAllocator >::
 getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
 {
-   return SegmentView( offsets[ segmentIdx ], offsets[ segmentIdx + 1 ] - offsets[ segmentIdx ] );
+   return SegmentViewType( offsets[ segmentIdx ], offsets[ segmentIdx + 1 ] - offsets[ segmentIdx ] );
 }
 
 template< typename Device,

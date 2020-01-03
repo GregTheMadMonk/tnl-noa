@@ -156,7 +156,7 @@ auto
 CSRView< Device, Index >::
 getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
 {
-   return SegmentViewType( offsets[ segmentIdx ], offsets[ segmentIdx + 1 ] - offsets[ segmentIdx ] );
+   return SegmentViewType( offsets[ segmentIdx ], offsets[ segmentIdx + 1 ] - offsets[ segmentIdx ], 1 );
 }
 
 template< typename Device,

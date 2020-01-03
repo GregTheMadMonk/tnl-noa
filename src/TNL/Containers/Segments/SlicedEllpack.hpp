@@ -269,9 +269,9 @@ getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
    const IndexType& segmentSize = this->sliceSegmentSizes[ sliceIdx ];
 
    if( RowMajorOrder )
-      return SegmentView( sliceOffset + segmentInSliceIdx * segmentSize, segmentSize, 1 );
+      return SegmentViewType( sliceOffset + segmentInSliceIdx * segmentSize, segmentSize, 1 );
    else
-      return SegmentView( sliceOffset + segmentInSliceIdx, segmentSize, SliceSize );
+      return SegmentViewType( sliceOffset + segmentInSliceIdx, segmentSize, SliceSize );
 }
 
 template< typename Device,

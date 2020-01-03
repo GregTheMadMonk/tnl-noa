@@ -239,9 +239,9 @@ Ellpack< Device, Index, IndexAllocator, RowMajorOrder, Alignment >::
 getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
 {
    if( RowMajorOrder )
-      return SegmentView( segmentIdx * this->segmentSize, this->segmentSize, 1 );
+      return SegmentViewType( segmentIdx * this->segmentSize, this->segmentSize, 1 );
    else
-      return SegmentView( segmentIdx, this->segmentSize, this->alignedSize );
+      return SegmentViewType( segmentIdx, this->segmentSize, this->alignedSize );
 }
 
 template< typename Device,

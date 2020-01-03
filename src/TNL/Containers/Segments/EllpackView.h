@@ -13,7 +13,7 @@
 #include <type_traits>
 
 #include <TNL/Containers/Vector.h>
-#include <TNL/Containers/Segments/EllpackSegmentView.h>
+#include <TNL/Containers/Segments/SegmentView.h>
 
 
 namespace TNL {
@@ -38,7 +38,7 @@ class EllpackView
       using ViewTemplate = EllpackView< Device_, Index_ >;
       using ViewType = EllpackView;
       //using ConstViewType = EllpackView< Device, std::add_const_t< Index > >;
-      using SegmentViewType = EllpackSegmentView< IndexType >;
+      using SegmentViewType = SegmentView< IndexType, RowMajorOrder >;
 
       __cuda_callable__
       EllpackView();
