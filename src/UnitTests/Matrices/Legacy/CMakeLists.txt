@@ -59,14 +59,14 @@ ELSE(  BUILD_CUDA )
 ENDIF( BUILD_CUDA )
 
 
-ADD_TEST( Legacy_SparseMatrixCopyTest ${EXECUTABLE_OUTPUT_PATH}/SparseMatrixCopyTest${CMAKE_EXECUTABLE_SUFFIX} )
-ADD_TEST( Legacy_SparseMatrixTest ${EXECUTABLE_OUTPUT_PATH}/SparseMatrixTest${CMAKE_EXECUTABLE_SUFFIX} )
+ADD_TEST( Legacy_SparseMatrixCopyTest ${EXECUTABLE_OUTPUT_PATH}/Legacy_SparseMatrixCopyTest${CMAKE_EXECUTABLE_SUFFIX} )
+ADD_TEST( Legacy_SparseMatrixTest ${EXECUTABLE_OUTPUT_PATH}/Legacy_SparseMatrixTest${CMAKE_EXECUTABLE_SUFFIX} )
 # TODO: Uncomment the following when AdEllpack works
 #ADD_TEST( SparseMatrixTest_AdEllpack ${EXECUTABLE_OUTPUT_PATH}/SparseMatrixTest_AdEllpack${CMAKE_EXECUTABLE_SUFFIX} )
-ADD_TEST( Legacy_SparseMatrixTest_BiEllpack ${EXECUTABLE_OUTPUT_PATH}/SparseMatrixTest_BiEllpack${CMAKE_EXECUTABLE_SUFFIX} )
-ADD_TEST( Legacy_SparseMatrixTest_ChunkedEllpack ${EXECUTABLE_OUTPUT_PATH}/SparseMatrixTest_ChunkedEllpack${CMAKE_EXECUTABLE_SUFFIX} )
-ADD_TEST( Legacy_SparseMatrixTest_CSR ${EXECUTABLE_OUTPUT_PATH}/SparseMatrixTest_CSR${CMAKE_EXECUTABLE_SUFFIX} )
-ADD_TEST( Legacy_SparseMatrixTest_Ellpack ${EXECUTABLE_OUTPUT_PATH}/SparseMatrixTest_Ellpack${CMAKE_EXECUTABLE_SUFFIX} )
-ADD_TEST( Legacy_SparseMatrixTest_SlicedEllpack ${EXECUTABLE_OUTPUT_PATH}/SparseMatrixTest_SlicedEllpack${CMAKE_EXECUTABLE_SUFFIX} )
+ADD_TEST( Legacy_SparseMatrixTest_BiEllpack ${EXECUTABLE_OUTPUT_PATH}/Legacy_SparseMatrixTest_BiEllpack${CMAKE_EXECUTABLE_SUFFIX} )
+ADD_TEST( Legacy_SparseMatrixTest_ChunkedEllpack ${EXECUTABLE_OUTPUT_PATH}/Legacy_SparseMatrixTest_ChunkedEllpack${CMAKE_EXECUTABLE_SUFFIX} )
+ADD_TEST( Legacy_SparseMatrixTest_CSR ${EXECUTABLE_OUTPUT_PATH}/Legacy_SparseMatrixTest_CSR${CMAKE_EXECUTABLE_SUFFIX} )
+ADD_TEST( Legacy_SparseMatrixTest_Ellpack ${EXECUTABLE_OUTPUT_PATH}/Legacy_SparseMatrixTest_Ellpack${CMAKE_EXECUTABLE_SUFFIX} )
+ADD_TEST( Legacy_SparseMatrixTest_SlicedEllpack ${EXECUTABLE_OUTPUT_PATH}/Legacy_SparseMatrixTest_SlicedEllpack${CMAKE_EXECUTABLE_SUFFIX} )
 # TODO: DenseMatrixTest is not finished
 #ADD_TEST( DenseMatrixTest ${EXECUTABLE_OUTPUT_PATH}/DenseMatrixTest${CMAKE_EXECUTABLE_SUFFIX} )
