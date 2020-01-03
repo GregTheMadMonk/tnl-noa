@@ -45,7 +45,7 @@ class Dense : public Matrix< Real, Device, Index >
       using BaseType = Matrix< Real, Device, Index >;
       using ValuesType = typename BaseType::ValuesVector;
       using ValuesViewType = typename ValuesType::ViewType;
-      using SegmentsType = Containers::Segments::Ellpack< DeviceType, IndexType, typename Allocators::Default< Device >::template Allocator< IndexType >, RowMajorOrder >;
+      using SegmentsType = Containers::Segments::Ellpack< DeviceType, IndexType, typename Allocators::Default< Device >::template Allocator< IndexType >, RowMajorOrder, 1 >;
       using SegmentViewType = typename SegmentsType::SegmentViewType;
       using RowView = DenseMatrixRowView< SegmentViewType, ValuesViewType >;
 
@@ -59,6 +59,8 @@ class Dense : public Matrix< Real, Device, Index >
       using Self = Dense< _Real, _Device, _Index >;
 
       Dense();
+
+      Dense( const IndexType rows, const IndexType columns );
 
       static String getSerializationType();
 
@@ -75,6 +77,9 @@ class Dense : public Matrix< Real, Device, Index >
        */
       void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths );
 
+      template< typename Vector >
+      void getCompressedRowLengths( Vector& rowLengths ) const;
+
       [[deprecated]]
       IndexType getRowLength( const IndexType row ) const;
 
@@ -83,10 +88,6 @@ class Dense : public Matrix< Real, Device, Index >
       IndexType getNumberOfMatrixElements() const;
 
       IndexType getNumberOfNonzeroMatrixElements() const;
-
-      template< typename Vector >
-      void getCompressedRowLengths( Vector& rowLengths ) const;
-
 
       void reset();
 

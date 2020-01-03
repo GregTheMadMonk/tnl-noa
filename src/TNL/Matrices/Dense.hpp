@@ -31,6 +31,17 @@ template< typename Real,
           typename Index,
           bool RowMajorOrder,
           typename RealAllocator >
+Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
+Dense( const IndexType rows, const IndexType columns )
+{
+   this->setDimensions( rows, columns );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          bool RowMajorOrder,
+          typename RealAllocator >
 String
 Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
 getSerializationType()
