@@ -90,65 +90,17 @@ public:
    const Real& operator()( const IndexType row,
                            const IndexType column ) const;
 
-   __cuda_callable__
-   bool setElementFast( const IndexType row,
-                        const IndexType column,
-                        const RealType& value );
-
    bool setElement( const IndexType row,
                     const IndexType column,
                     const RealType& value );
-
-   __cuda_callable__
-   bool addElementFast( const IndexType row,
-                        const IndexType column,
-                        const RealType& value,
-                        const RealType& thisElementMultiplicator = 1.0 );
 
    bool addElement( const IndexType row,
                     const IndexType column,
                     const RealType& value,
                     const RealType& thisElementMultiplicator = 1.0 );
 
-   __cuda_callable__
-   bool setRowFast( const IndexType row,
-                    const IndexType* columns,
-                    const RealType* values,
-                    const IndexType elements );
-
-   bool setRow( const IndexType row,
-                const IndexType* columns,
-                const RealType* values,
-                const IndexType elements );
-
-   __cuda_callable__
-   bool addRowFast( const IndexType row,
-                    const IndexType* columns,
-                    const RealType* values,
-                    const IndexType elements,
-                    const RealType& thisRowMultiplicator = 1.0 );
-
-   bool addRow( const IndexType row,
-                const IndexType* columns,
-                const RealType* values,
-                const IndexType elements,
-                const RealType& thisRowMultiplicator = 1.0 );
-
-   __cuda_callable__
-   const Real& getElementFast( const IndexType row,
-                               const IndexType column ) const;
-
    Real getElement( const IndexType row,
                     const IndexType column ) const;
-
-   __cuda_callable__
-   void getRowFast( const IndexType row,
-                    IndexType* columns,
-                    RealType* values ) const;
-
-   /*void getRow( const IndexType row,
-                IndexType* columns,
-                RealType* values ) const;*/
 
    __cuda_callable__
    MatrixRow getRow( const IndexType rowIndex );

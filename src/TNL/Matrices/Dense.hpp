@@ -145,7 +145,6 @@ template< typename Real,
 void Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::reset()
 {
    Matrix< Real, Device, Index >::reset();
-   this->values.reset();
 }
 
 template< typename Real,
@@ -155,9 +154,8 @@ template< typename Real,
           typename RealAllocator >
 void Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::setValue( const Real& value )
 {
-   this->values.setValue( value );
+   this->values = value;
 }
-
 
 template< typename Real,
           typename Device,
@@ -193,26 +191,6 @@ const Real& Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::operator
    return this->values.operator[]( this->getElementIndex( row, column ) );
 }
 
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          bool RowMajorOrder,
-          typename RealAllocator >
-__cuda_callable__
-bool Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::setElementFast( const IndexType row,
-                                                            const IndexType column,
-                                                            const RealType& value )
-{
-   TNL_ASSERT_GE( row, 0, "Row index must be non-negative." );
-   TNL_ASSERT_LT( row, this->getRows(), "Row index is out of bounds." );
-   TNL_ASSERT_GE( column, 0, "Column index must be non-negative." );
-   TNL_ASSERT_LT( column, this->getColumns(), "Column index is out of bounds." );
-
-   this->values.operator[]( this->getElementIndex( row, column ) ) = value;
-   return true;
-}
-
 template< typename Real,
           typename Device,
           typename Index,
@@ -223,32 +201,6 @@ bool Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::setElement( con
                                                const RealType& value )
 {
    this->values.setElement( this->getElementIndex( row, column ), value );
-   return true;
-}
-
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          bool RowMajorOrder,
-          typename RealAllocator >
-__cuda_callable__
-bool Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::addElementFast( const IndexType row,
-                                                   const IndexType column,
-                                                   const RealType& value,
-                                                   const RealType& thisElementMultiplicator )
-{
-   TNL_ASSERT_GE( row, 0, "Row index must be non-negative." );
-   TNL_ASSERT_LT( row, this->getRows(), "Row index is out of bounds." );
-   TNL_ASSERT_GE( column, 0, "Column index must be non-negative." );
-   TNL_ASSERT_LT( column, this->getColumns(), "Column index is out of bounds." );
-
-   const IndexType elementIndex = this->getElementIndex( row, column );
-   if( thisElementMultiplicator == 1.0 )
-      this->values.operator[]( elementIndex ) += value;
-   else
-      this->values.operator[]( elementIndex ) =
-         thisElementMultiplicator * this->values.operator[]( elementIndex ) + value;
    return true;
 }
 
@@ -272,103 +224,6 @@ bool Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::addElement( con
    return true;
 }
 
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          bool RowMajorOrder,
-          typename RealAllocator >
-__cuda_callable__
-bool Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::setRowFast( const IndexType row,
-                                                        const IndexType* columns,
-                                                        const RealType* values,
-                                                        const IndexType elements )
-{
-   TNL_ASSERT( elements <= this->getColumns(),
-            std::cerr << " elements = " << elements
-                 << " this->columns = " << this->getColumns() );
-   for( IndexType i = 0; i < elements; i++ )
-      this->setElementFast( row, columns[ i ], values[ i ] );
-   return true;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          bool RowMajorOrder,
-          typename RealAllocator >
-bool Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::setRow( const IndexType row,
-                                                    const IndexType* columns,
-                                                    const RealType* values,
-                                                    const IndexType elements )
-{
-   TNL_ASSERT( elements <= this->getColumns(),
-            std::cerr << " elements = " << elements
-                 << " this->columns = " << this->getColumns() );
-   for( IndexType i = 0; i < elements; i++ )
-      this->setElement( row, columns[ i ], values[ i ] );
-   return true;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          bool RowMajorOrder,
-          typename RealAllocator >
-__cuda_callable__
-bool Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::addRowFast( const IndexType row,
-                                                        const IndexType* columns,
-                                                        const RealType* values,
-                                                        const IndexType elements,
-                                                        const RealType& thisRowMultiplicator )
-{
-   TNL_ASSERT( elements <= this->columns,
-            std::cerr << " elements = " << elements
-                 << " this->columns = " << this->columns );
-   for( IndexType i = 0; i < elements; i++ )
-      this->setElementFast( row, columns[ i ],
-                            thisRowMultiplicator * this->getElementFast( row, columns[ i ] ) + values[ i ] );
-   return true;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          bool RowMajorOrder,
-          typename RealAllocator >
-bool Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::addRow( const IndexType row,
-                                                    const IndexType* columns,
-                                                    const RealType* values,
-                                                    const IndexType elements,
-                                                    const RealType& thisRowMultiplicator )
-{
-   TNL_ASSERT( elements <= this->columns,
-            std::cerr << " elements = " << elements
-                 << " this->columns = " << this->columns );
-   for( IndexType i = 0; i < elements; i++ )
-      this->setElement( row, columns[ i ],
-                        thisRowMultiplicator * this->getElement( row, columns[ i ] ) + values[ i ] );
-   return true;
-}
-
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          bool RowMajorOrder,
-          typename RealAllocator >
-__cuda_callable__
-const Real& Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::getElementFast( const IndexType row,
-                                                          const IndexType column ) const
-{
-   TNL_ASSERT_GE( row, 0, "Row index must be non-negative." );
-   TNL_ASSERT_LT( row, this->getRows(), "Row index is out of bounds." );
-   TNL_ASSERT_GE( column, 0, "Column index must be non-negative." );
-   TNL_ASSERT_LT( column, this->getColumns(), "Column index is out of bounds." );
-
-   return this->values.operator[]( this->getElementIndex( row, column ) );
-}
-
 template< typename Real,
           typename Device,
           typename Index,
@@ -378,23 +233,6 @@ Real Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::getElement( con
                                                         const IndexType column ) const
 {
    return this->values.getElement( this->getElementIndex( row, column ) );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          bool RowMajorOrder,
-          typename RealAllocator >
-__cuda_callable__
-void Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::getRowFast( const IndexType row,
-                                                        IndexType* columns,
-                                                        RealType* values ) const
-{
-   for( IndexType i = 0; i < this->getColumns(); i++ )
-   {
-      columns[ i ] = i;
-      values[ i ] = this->getElementFast( row, i );
-   }
 }
 
 template< typename Real,
@@ -448,8 +286,9 @@ typename Vector::RealType Dense< Real, Device, Index, RowMajorOrder, RealAllocat
                                                                                    const Vector& vector ) const
 {
    RealType sum( 0.0 );
-   for( IndexType column = 0; column < this->getColumns(); column++ )
-      sum += this->getElementFast( row, column ) * vector[ column ];
+   // TODO: Fix this
+   //for( IndexType column = 0; column < this->getColumns(); column++ )
+   //   sum += this->getElementFast( row, column ) * vector[ column ];
    return sum;
 }
 
@@ -949,9 +788,9 @@ void Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::performSORItera
    for( IndexType i = 0; i < this->getColumns(); i++ )
    {
       if( i == row )
-         diagonalValue = this->getElementFast( row, row );
+         diagonalValue = this->getElement( row, row );
       else
-         sum += this->getElementFast( row, i ) * x[ i ];
+         sum += this->getElement( row, i ) * x[ i ];
    }
    x[ row ] = ( 1.0 - omega ) * x[ row ] + omega / diagonalValue * ( b[ row ] - sum );
 }

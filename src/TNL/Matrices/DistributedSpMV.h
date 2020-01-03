@@ -125,8 +125,8 @@ public:
       preCommPatternEnds.setLike( commPatternEnds );
       for( int j = 0; j < nproc; j++ )
       for( int i = 0; i < nproc; i++ ) {
-         preCommPatternStarts.setElementFast( j, i, span_starts.getElement( i ) );
-         preCommPatternEnds.setElementFast( j, i, span_ends.getElement( i ) );
+         preCommPatternStarts.setElement( j, i, span_starts.getElement( i ) );
+         preCommPatternEnds.setElement( j, i, span_ends.getElement( i ) );
       }
 
       // assemble the commPattern* matrices
