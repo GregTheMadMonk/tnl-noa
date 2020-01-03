@@ -99,6 +99,31 @@ template< typename Real,
           typename Index,
           bool RowMajorOrder,
           typename RealAllocator >
+   template< typename Vector >
+void
+Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
+getCompressedRowLengths( Vector& rowLengths ) const
+{
+   rowLengths.setSize( this->getRows() );
+   rowLengths = 0;
+   auto rowLengths_view = rowLengths.getView();
+   auto fetch = [] __cuda_callable__ ( IndexType row, IndexType column, const RealType& value ) -> IndexType {
+      return ( value != 0.0 );
+   };
+   auto reduce = [] __cuda_callable__ ( IndexType& aux, const IndexType a ) {
+      aux += a;
+   };
+   auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const IndexType value ) mutable {
+      rowLengths_view[ rowIdx ] = value;
+   };
+   this->allRowsReduction( fetch, reduce, keep, 0 );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          bool RowMajorOrder,
+          typename RealAllocator >
 Index Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::getRowLength( const IndexType row ) const
 {
    return this->getColumns();
@@ -256,10 +281,107 @@ template< typename Real,
           typename Index,
           bool RowMajorOrder,
           typename RealAllocator >
-Real Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::getElement( const IndexType row,
-                                                        const IndexType column ) const
+Real 
+Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
+getElement( const IndexType row,
+            const IndexType column ) const
 {
    return this->values.getElement( this->getElementIndex( row, column ) );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          bool RowMajorOrder,
+          typename RealAllocator >
+   template< typename Fetch, typename Reduce, typename Keep, typename FetchValue >
+void
+Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
+rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchValue& zero ) const
+{
+   const auto values_view = this->values.getConstView();
+   auto fetch_ = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx, bool& compute ) mutable -> decltype( fetch( IndexType(), IndexType(), RealType() ) ) {
+         return fetch( rowIdx, columnIdx, values_view[ globalIdx ] );
+      return zero;
+   };
+   this->segments.segmentsReduction( first, last, fetch_, reduce, keep, zero );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          bool RowMajorOrder,
+          typename RealAllocator >
+   template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
+void
+Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
+allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const
+{
+   this->rowsReduction( 0, this->getRows(), fetch, reduce, keep, zero );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          bool RowMajorOrder,
+          typename RealAllocator >
+   template< typename Function >
+void
+Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
+forRows( IndexType first, IndexType last, Function& function ) const
+{
+   const auto values_view = this->values.getConstView();
+   auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx ) mutable -> bool {
+      function( rowIdx, columnIdx, values_view[ globalIdx ] );
+      return true;
+   };
+   this->segments.forSegments( first, last, f );
+
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          bool RowMajorOrder,
+          typename RealAllocator >
+   template< typename Function >
+void
+Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
+forRows( IndexType first, IndexType last, Function& function )
+{
+   auto values_view = this->values.getView();
+   auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx ) mutable -> bool {
+      function( rowIdx, columnIdx, values_view[ globalIdx ] );
+      return true;
+   };
+   this->segments.forSegments( first, last, f );
+
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          bool RowMajorOrder,
+          typename RealAllocator >
+   template< typename Function >
+void
+Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
+forAllRows( Function& function ) const
+{
+   this->forRows( 0, this->getRows(), function );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          bool RowMajorOrder,
+          typename RealAllocator >
+   template< typename Function >
+void
+Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
+forAllRows( Function& function )
+{
+   this->forRows( 0, this->getRows(), function );
 }
 
 template< typename Real,
