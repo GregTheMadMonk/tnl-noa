@@ -78,19 +78,12 @@ TYPED_TEST( SlicedEllpackMatrixTest, setDimensionsTest )
     test_SetDimensions< SlicedEllpackMatrixType >();
 }
 
-//TYPED_TEST( SlicedEllpackMatrixTest, setCompressedRowLengthsTest )
-//{
-////    using SlicedEllpackMatrixType = typename TestFixture::SlicedEllpackMatrixType;
-//
-////    test_SetCompressedRowLengths< SlicedEllpackMatrixType >();
-//
-//    bool testRan = false;
-//    EXPECT_TRUE( testRan );
-//    std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
-//    std::cout << "      This test is dependent on the input format. \n";
-//    std::cout << "      Almost every format allocates elements per row differently.\n\n";
-//    std::cout << "\n    TODO: Finish implementation of getNonZeroRowLength (Only non-zero elements, not the number of allocated elements.)\n\n";
-//}
+TYPED_TEST( SlicedEllpackMatrixTest, setCompressedRowLengthsTest )
+{
+   using SlicedEllpackMatrixType = typename TestFixture::SlicedEllpackMatrixType;
+
+   test_SetCompressedRowLengths< SlicedEllpackMatrixType >();
+}
 
 TYPED_TEST( SlicedEllpackMatrixTest, setLikeTest )
 {

@@ -113,17 +113,10 @@ void test_SetCompressedRowLengths()
     for( IndexType i = 0; i < 8; i++ )      // 9th row
         m.setElement( 9, i, value++ );
 
-
-    EXPECT_EQ( m.getNonZeroRowLength( 0 ), 3 );
-    EXPECT_EQ( m.getNonZeroRowLength( 1 ), 3 );
-    EXPECT_EQ( m.getNonZeroRowLength( 2 ), 1 );
-    EXPECT_EQ( m.getNonZeroRowLength( 3 ), 2 );
-    EXPECT_EQ( m.getNonZeroRowLength( 4 ), 3 );
-    EXPECT_EQ( m.getNonZeroRowLength( 5 ), 4 );
-    EXPECT_EQ( m.getNonZeroRowLength( 6 ), 5 );
-    EXPECT_EQ( m.getNonZeroRowLength( 7 ), 6 );
-    EXPECT_EQ( m.getNonZeroRowLength( 8 ), 7 );
-    EXPECT_EQ( m.getNonZeroRowLength( 9 ), 8 );
+   rowLengths = 0;
+   m.getCompressedRowLengths( rowLengths );
+   typename Matrix::CompressedRowLengthsVector correctRowLengths{ 3, 3, 1, 2, 3, 4, 5, 6, 7, 8 };
+   EXPECT_EQ( rowLengths, correctRowLengths );
 }
 
 template< typename Matrix1, typename Matrix2 >

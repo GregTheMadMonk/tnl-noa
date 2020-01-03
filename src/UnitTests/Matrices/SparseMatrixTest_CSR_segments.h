@@ -66,19 +66,12 @@ TYPED_TEST( CSRMatrixTest, setDimensionsTest )
     test_SetDimensions< CSRMatrixType >();
 }
 
-//TYPED_TEST( CSRMatrixTest, setCompressedRowLengthsTest )
-//{
-////    using CSRMatrixType = typename TestFixture::CSRMatrixType;
-//
-////    test_SetCompressedRowLengths< CSRMatrixType >();
-//
-//    bool testRan = false;
-//    EXPECT_TRUE( testRan );
-//    std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
-//    std::cout << "      This test is dependent on the input format. \n";
-//    std::cout << "      Almost every format allocates elements per row differently.\n\n";
-//    std::cout << "\n    TODO: Finish implementation of getNonZeroRowLength (Only non-zero elements, not the number of allocated elements.)\n\n";
-//}
+TYPED_TEST( CSRMatrixTest, setCompressedRowLengthsTest )
+{
+    using CSRMatrixType = typename TestFixture::CSRMatrixType;
+
+    test_SetCompressedRowLengths< CSRMatrixType >();
+}
 
 TYPED_TEST( CSRMatrixTest, setLikeTest )
 {
