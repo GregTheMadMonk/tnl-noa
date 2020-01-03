@@ -14,8 +14,8 @@
 #include <TNL/Matrices/MatrixType.h>
 #include <TNL/Allocators/Default.h>
 #include <TNL/Containers/Segments/CSR.h>
-#include <TNL/Matrices/SparseMatrixView.h>
 #include <TNL/Matrices/SparseMatrixRowView.h>
+#include <TNL/Matrices/SparseMatrixView.h>
 
 namespace TNL {
 namespace Matrices {

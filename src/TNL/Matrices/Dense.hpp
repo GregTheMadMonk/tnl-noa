@@ -163,6 +163,32 @@ template< typename Real,
           typename Index,
           bool RowMajorOrder,
           typename RealAllocator >
+__cuda_callable__ auto
+Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
+getRow( const IndexType& rowIdx ) const -> const RowView
+{
+   TNL_ASSERT_LT( rowIdx, this->getRows(), "Row index is larger than number of matrix rows." );
+   return RowView( this->segments.getSegmentView( rowIdx ), this->values.getView() );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          bool RowMajorOrder,
+          typename RealAllocator >
+__cuda_callable__ auto
+Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
+getRow( const IndexType& rowIdx ) -> RowView
+{
+   TNL_ASSERT_LT( rowIdx, this->getRows(), "Row index is larger than number of matrix rows." );
+   return RowView( this->segments.getSegmentView( rowIdx ), this->values.getView() );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          bool RowMajorOrder,
+          typename RealAllocator >
 __cuda_callable__
 Real& Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::operator()( const IndexType row,
                                                 const IndexType column )
@@ -234,46 +260,6 @@ Real Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::getElement( con
                                                         const IndexType column ) const
 {
    return this->values.getElement( this->getElementIndex( row, column ) );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          bool RowMajorOrder,
-          typename RealAllocator >
-__cuda_callable__
-typename Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::MatrixRow
-Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
-getRow( const IndexType rowIndex )
-{
-   if( std::is_same< Device, Devices::Host >::value )
-      return MatrixRow( &this->values.getData()[ this->getElementIndex( rowIndex, 0 ) ],
-                        this->columns,
-                        1 );
-   if( std::is_same< Device, Devices::Cuda >::value )
-      return MatrixRow( &this->values.getData()[ this->getElementIndex( rowIndex, 0 ) ],
-                        this->columns,
-                        this->rows );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          bool RowMajorOrder,
-          typename RealAllocator >
-__cuda_callable__
-const typename Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::MatrixRow
-Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
-getRow( const IndexType rowIndex ) const
-{
-   if( std::is_same< Device, Devices::Host >::value )
-      return MatrixRow( &this->values.getData()[ this->getElementIndex( rowIndex, 0 ) ],
-                        this->columns,
-                        1 );
-   if( std::is_same< Device, Devices::Cuda >::value )
-      return MatrixRow( &this->values.getData()[ this->getElementIndex( rowIndex, 0 ) ],
-                        this->columns,
-                        this->rows );
 }
 
 template< typename Real,
@@ -898,13 +884,6 @@ Index Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::getElementInde
                                                               const IndexType column ) const
 {
    return this->segments.getGlobalIndex( row, column );
-   /*TNL_ASSERT( ( std::is_same< Device, Devices::Host >::value ||
-          std::is_same< Device, Devices::Cuda >::value ), )
-   if( std::is_same< Device, Devices::Host >::value )
-      return row * this->columns + column;
-   if( std::is_same< Device, Devices::Cuda >::value )
-      return column * this->rows + row;
-   return -1;*/
 }
 
 template<>

@@ -12,8 +12,8 @@
 
 #include <TNL/Allocators/Default.h>
 #include <TNL/Devices/Host.h>
+#include <TNL/Matrices/DenseMatrixRowView.h>
 #include <TNL/Matrices/Matrix.h>
-#include <TNL/Matrices/DenseRow.h>
 #include <TNL/Containers/Segments/Ellpack.h>
 
 namespace TNL {
@@ -42,11 +42,16 @@ public:
    using RealType = Real;
    using DeviceType = Device;
    using IndexType = Index;
+   using BaseType = Matrix< Real, Device, Index >;
+   using ValuesType = typename BaseType::ValuesVector;
+   using ValuesViewType = typename ValuesType::ViewType;
+   using SegmentsType = Containers::Segments::Ellpack< DeviceType, IndexType, typename Allocators::Default< Device >::template Allocator< IndexType >, RowMajorOrder >;
+   using SegmentViewType = typename SegmentsType::SegmentViewType;
+   using RowView = DenseMatrixRowView< SegmentViewType, ValuesViewType >;
+
+   // TODO: remove this
    using CompressedRowLengthsVector = typename Matrix< Real, Device, Index >::CompressedRowLengthsVector;
    using ConstCompressedRowLengthsVectorView = typename Matrix< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView;
-   using BaseType = Matrix< Real, Device, Index >;
-   using MatrixRow = DenseRow< Real, Index >;
-   using SegmentsType = Containers::Segments::Ellpack< DeviceType, IndexType, typename Allocators::Default< Device >::template Allocator< IndexType >, RowMajorOrder >;
 
    template< typename _Real = Real,
              typename _Device = Device,
@@ -81,6 +86,13 @@ public:
 
    void reset();
 
+   __cuda_callable__
+   const RowView getRow( const IndexType& rowIdx ) const;
+
+   __cuda_callable__
+   RowView getRow( const IndexType& rowIdx );
+
+
    void setValue( const RealType& v );
 
    __cuda_callable__
@@ -103,11 +115,11 @@ public:
    Real getElement( const IndexType row,
                     const IndexType column ) const;
 
-   __cuda_callable__
+   /*__cuda_callable__
    MatrixRow getRow( const IndexType rowIndex );
 
    __cuda_callable__
-   const MatrixRow getRow( const IndexType rowIndex ) const;
+   const MatrixRow getRow( const IndexType rowIndex ) const;*/
 
    template< typename Vector >
    __cuda_callable__
