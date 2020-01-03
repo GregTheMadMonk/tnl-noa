@@ -14,10 +14,10 @@
 #include <TNL/Devices/Host.h>
 #include <TNL/Matrices/Matrix.h>
 #include <TNL/Matrices/DenseRow.h>
-#include <TNL/Containers/Array.h>
+#include <TNL/Containers/Segments/Ellpack.h>
 
 namespace TNL {
-namespace Matrices {   
+namespace Matrices {
 
 template< typename Device >
 class DenseDeviceDependentCode;
@@ -46,6 +46,7 @@ public:
    using ConstCompressedRowLengthsVectorView = typename Matrix< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView;
    using BaseType = Matrix< Real, Device, Index >;
    using MatrixRow = DenseRow< Real, Index >;
+   using SegmentsType = Containers::Segments::Ellpack< DeviceType, IndexType, typename Allocators::Default< Device >::template Allocator< IndexType >, RowMajorOrder >;
 
    template< typename _Real = Real,
              typename _Device = Device,
@@ -164,6 +165,8 @@ protected:
 
    typedef DenseDeviceDependentCode< DeviceType > DeviceDependentCode;
    friend class DenseDeviceDependentCode< DeviceType >;
+
+   SegmentsType segments;
 };
 
 } // namespace Matrices
