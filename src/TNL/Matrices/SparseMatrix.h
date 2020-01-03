@@ -94,14 +94,8 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       [[deprecated]]
       virtual IndexType getRowLength( const IndexType row ) const {};
 
-      template< typename Real_,
-                typename Device_,
-                typename Index_,
-                typename MatrixType_,
-                template< typename, typename, typename > class Segments_,
-                typename RealAllocator_,
-                typename IndexAllocator_ >
-      void setLike( const SparseMatrix< Real_, Device_, Index_, MatrixType_, Segments_, RealAllocator_, IndexAllocator_ >& matrix );
+      template< typename Matrix >
+      void setLike( const Matrix& matrix );
 
       IndexType getNumberOfNonzeroMatrixElements() const;
 

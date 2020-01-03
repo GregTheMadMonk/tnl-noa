@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <TNL/Allocators/Default.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Matrices/Matrix.h>
 #include <TNL/Matrices/DenseRow.h>
@@ -23,7 +24,9 @@ class DenseDeviceDependentCode;
 
 template< typename Real = double,
           typename Device = Devices::Host,
-          typename Index = int >
+          typename Index = int,
+          bool RowMajorOrder = std::is_same< Device, Devices::Host >::value,
+          typename RealAllocator = typename Allocators::Default< Device >::template Allocator< Real > >
 class Dense : public Matrix< Real, Device, Index >
 {
 private:
@@ -32,17 +35,17 @@ private:
    using Enabler = std::enable_if< ! std::is_same< Device2, Device >::value >;
 
    // friend class will be needed for templated assignment operators
-   template< typename Real2, typename Device2, typename Index2 >
-   friend class Dense;
+   //template< typename Real2, typename Device2, typename Index2 >
+   //friend class Dense;
 
 public:
-   typedef Real RealType;
-   typedef Device DeviceType;
-   typedef Index IndexType;
-   typedef typename Matrix< Real, Device, Index >::CompressedRowLengthsVector CompressedRowLengthsVector;
-   typedef typename Matrix< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
-   typedef Matrix< Real, Device, Index > BaseType;
-   typedef DenseRow< Real, Index > MatrixRow;
+   using RealType = Real;
+   using DeviceType = Device;
+   using IndexType = Index;
+   using CompressedRowLengthsVector = typename Matrix< Real, Device, Index >::CompressedRowLengthsVector;
+   using ConstCompressedRowLengthsVectorView = typename Matrix< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView;
+   using BaseType = Matrix< Real, Device, Index >;
+   using MatrixRow = DenseRow< Real, Index >;
 
    template< typename _Real = Real,
              typename _Device = Device,
@@ -58,22 +61,16 @@ public:
    void setDimensions( const IndexType rows,
                        const IndexType columns );
 
-   template< typename Real2, typename Device2, typename Index2 >
-   void setLike( const Dense< Real2, Device2, Index2 >& matrix );
+   template< typename Matrix >
+   void setLike( const Matrix& matrix );
 
    /****
     * This method is only for the compatibility with the sparse matrices.
     */
    void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths );
 
-   /****
-    * Returns maximal number of the nonzero matrix elements that can be stored
-    * in a given row.
-    */
+   [[deprecated]]
    IndexType getRowLength( const IndexType row ) const;
-
-   __cuda_callable__
-   IndexType getRowLengthFast( const IndexType row ) const;
 
    IndexType getMaxRowLength() const;
 
@@ -220,4 +217,4 @@ protected:
 } // namespace Matrices
 } // namespace TNL
 
-#include <TNL/Matrices/Dense_impl.h>
+#include <TNL/Matrices/Dense.hpp>

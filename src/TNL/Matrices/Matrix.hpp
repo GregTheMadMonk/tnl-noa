@@ -81,11 +81,8 @@ template< typename Real,
           typename Device,
           typename Index,
           typename RealAllocator >
-   template< typename Real2,
-             typename Device2,
-             typename Index2,
-             typename RealAllocator2 >
-void Matrix< Real, Device, Index, RealAllocator >::setLike( const Matrix< Real2, Device2, Index2, RealAllocator2 >& matrix )
+   template< typename Matrix_ >
+void Matrix< Real, Device, Index, RealAllocator >::setLike( const Matrix_& matrix )
 {
    setDimensions( matrix.getRows(), matrix.getColumns() );
 }

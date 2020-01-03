@@ -19,6 +19,7 @@
 #include <vector>
 #include <utility>  // std::pair
 #include <limits>   // std::numeric_limits
+#include <TNL/Allocators/Host.h>
 #include <TNL/Matrices/Dense.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/VectorView.h>
@@ -235,7 +236,7 @@ public:
 
 protected:
    // communication pattern
-   Matrices::Dense< IndexType, Devices::Host, int > commPatternStarts, commPatternEnds;
+   Matrices::Dense< IndexType, Devices::Host, int, true, Allocators::Host< IndexType > > commPatternStarts, commPatternEnds;
 
    // span of rows with only block-diagonal entries
    std::pair< IndexType, IndexType > localOnlySpan;
