@@ -55,8 +55,7 @@ ADD_TEST( SparseMatrixCopyTest ${EXECUTABLE_OUTPUT_PATH}/SparseMatrixCopyTest${C
 ADD_TEST( SparseMatrixTest ${EXECUTABLE_OUTPUT_PATH}/SparseMatrixTest${CMAKE_EXECUTABLE_SUFFIX} )
 # TODO: Uncomment the following when AdEllpack works
 #ADD_TEST( SparseMatrixTest_AdEllpack ${EXECUTABLE_OUTPUT_PATH}/SparseMatrixTest_AdEllpack${CMAKE_EXECUTABLE_SUFFIX} )
-# TODO: DenseMatrixTest is not finished
-#ADD_TEST( DenseMatrixTest ${EXECUTABLE_OUTPUT_PATH}/DenseMatrixTest${CMAKE_EXECUTABLE_SUFFIX} )
+ADD_TEST( DenseMatrixTest ${EXECUTABLE_OUTPUT_PATH}/DenseMatrixTest${CMAKE_EXECUTABLE_SUFFIX} )
 
 ####
 # Segments tests

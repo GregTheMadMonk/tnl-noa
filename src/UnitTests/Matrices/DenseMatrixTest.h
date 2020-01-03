@@ -585,6 +585,7 @@ void test_SetRow()
       for( IndexType j = 0; j < cols; j++ )
          m->setElement( i, j, value++ );
 
+   // TODO: replace this with dense matrix view
    Matrix* m_ptr = &m.template modifyData< DeviceType >();
    auto f = [=] __cuda_callable__ ( IndexType rowIdx ) mutable {
       RealType values[ 3 ][ 5 ] {
@@ -597,7 +598,7 @@ void test_SetRow()
          { 2, 3, 4, 5, 6 } };
       auto row = m_ptr->getRow( rowIdx );
       for( IndexType i = 0; i < 5; i++ )
-         row.setElement( columnIndexes[ rowIdx ][ i ], values[ rowIdx ][ i ] );
+      /   row.setElement( rowIdx, i ); //columnIndexes[ rowIdx ][ i ], values[ rowIdx ][ i ] );
    };
    TNL::Pointers::synchronizeSmartPointersOnDevice< DeviceType >();
    TNL::Algorithms::ParallelFor< DeviceType >::exec( 0, 3, f );
