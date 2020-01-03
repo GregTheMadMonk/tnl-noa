@@ -130,12 +130,11 @@ template< typename Real,
           typename RealAllocator >
 Index Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::getNumberOfNonzeroMatrixElements() const
 {
-   IndexType nonzeroElements( 0 );
-   for( IndexType row = 0; row < this->getRows(); row++ )
-      for( IndexType column = 0; column < this->getColumns(); column++ )
-         if( this->getElement( row, column ) != 0 )
-            nonzeroElements++;
-   return nonzeroElements;
+   const auto values_view = this->values.getConstView();
+   auto fetch = [=] __cuda_callable__ ( const IndexType i ) -> IndexType {
+      return ( values_view[ i ] != 0.0 );
+   };
+   return Algorithms::Reduction< DeviceType >::reduce( this->values.getSize(), std::plus<>{}, fetch, 0 );
 }
 
 template< typename Real,
