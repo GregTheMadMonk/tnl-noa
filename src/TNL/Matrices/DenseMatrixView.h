@@ -1,5 +1,5 @@
 /***************************************************************************
-                          Dense.h  -  description
+                          DenseMatrixView.h  -  description
                              -------------------
     begin                : Nov 29, 2013
     copyright            : (C) 2013 by Tomas Oberhuber
@@ -13,22 +13,20 @@
 #include <TNL/Allocators/Default.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Matrices/DenseMatrixRowView.h>
-#include <TNL/Matrices/Matrix.h>
-#include <TNL/Matrices/DenseMatrixView.h>
-#include <TNL/Containers/Segments/Ellpack.h>
+#include <TNL/Matrices/MatrixView.h>
+#include <TNL/Containers/Segments/EllpackView.h>
 
 namespace TNL {
 namespace Matrices {
 
-template< typename Device >
-class DenseDeviceDependentCode;
+//template< typename Device >
+//class DenseDeviceDependentCode;
 
 template< typename Real = double,
           typename Device = Devices::Host,
           typename Index = int,
-          bool RowMajorOrder = std::is_same< Device, Devices::Host >::value,
-          typename RealAllocator = typename Allocators::Default< Device >::template Allocator< Real > >
-class Dense : public Matrix< Real, Device, Index >
+          bool RowMajorOrder = std::is_same< Device, Devices::Host >::value >
+class DenseMatrixView : public MatrixView< Real, Device, Index >
 {
    private:
       // convenient template alias for controlling the selection of copy-assignment operator
@@ -47,9 +45,8 @@ class Dense : public Matrix< Real, Device, Index >
       using ValuesType = typename BaseType::ValuesVector;
       using ValuesViewType = typename ValuesType::ViewType;
       using SegmentsType = Containers::Segments::Ellpack< DeviceType, IndexType, typename Allocators::Default< Device >::template Allocator< IndexType >, RowMajorOrder, 1 >;
+      using SegmentsViewType = typename SegmentsType::ViewType;
       using SegmentViewType = typename SegmentsType::SegmentViewType;
-      using ViewType = DenseMatrixView< Real, Device, Index, MatrixType, SegmentsViewTemplate >;
-      using ConstViewType = DenseMatrixView< typename std::add_const< Real >::type, Device, Index, MatrixType, SegmentsViewTemplate >;
       using RowView = DenseMatrixRowView< SegmentViewType, ValuesViewType >;
 
       // TODO: remove this
@@ -61,28 +58,27 @@ class Dense : public Matrix< Real, Device, Index >
                 typename _Index = Index >
       using Self = Dense< _Real, _Device, _Index >;
 
-      Dense();
+      __cuda_callable__
+      DenseMatrixView();
 
-      Dense( const IndexType rows, const IndexType columns );
-      
+      __cuda_callable__
+      DenseMatrixView( const IndexType rows,
+                       const IndexType columns,
+                       const ValuesViewType& values,
+                       const SegmentsViewType& segments );
+
+      __cuda_callable__
+      DenseMatrixView( const DenseMatrixView& m ) = default;
+
+      __cuda_callable__
       ViewType getView();
 
+      __cuda_callable__
       ConstViewType getConstView() const;
 
       static String getSerializationType();
 
       virtual String getSerializationTypeVirtual() const;
-
-      void setDimensions( const IndexType rows,
-                          const IndexType columns );
-
-      template< typename Matrix >
-      void setLike( const Matrix& matrix );
-
-      /****
-       * This method is only for the compatibility with the sparse matrices.
-       */
-      void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths );
 
       template< typename Vector >
       void getCompressedRowLengths( Vector& rowLengths ) const;
@@ -202,10 +198,10 @@ class Dense : public Matrix< Real, Device, Index >
       typedef DenseDeviceDependentCode< DeviceType > DeviceDependentCode;
       friend class DenseDeviceDependentCode< DeviceType >;
 
-      SegmentsType segments;
+      SegmentsViewType segments;
 };
 
 } // namespace Matrices
 } // namespace TNL
 
-#include <TNL/Matrices/Dense.hpp>
+#include <TNL/Matrices/DenseMatrixView.hpp>

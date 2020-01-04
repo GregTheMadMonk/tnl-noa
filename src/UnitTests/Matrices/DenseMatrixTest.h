@@ -597,8 +597,8 @@ void test_SetRow()
          { 0, 1, 2, 3, 4 },
          { 2, 3, 4, 5, 6 } };
       auto row = m_ptr->getRow( rowIdx );
-      for( IndexType i = 0; i < 5; i++ )
-      /   row.setElement( rowIdx, i ); //columnIndexes[ rowIdx ][ i ], values[ rowIdx ][ i ] );
+      //for( IndexType i = 0; i < 5; i++ )
+      ///   row.setElement( rowIdx, i ); //columnIndexes[ rowIdx ][ i ], values[ rowIdx ][ i ] );
    };
    TNL::Pointers::synchronizeSmartPointersOnDevice< DeviceType >();
    TNL::Algorithms::ParallelFor< DeviceType >::exec( 0, 3, f );
