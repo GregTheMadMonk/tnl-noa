@@ -48,8 +48,8 @@ class Dense : public Matrix< Real, Device, Index >
       using ValuesViewType = typename ValuesType::ViewType;
       using SegmentsType = Containers::Segments::Ellpack< DeviceType, IndexType, typename Allocators::Default< Device >::template Allocator< IndexType >, RowMajorOrder, 1 >;
       using SegmentViewType = typename SegmentsType::SegmentViewType;
-      using ViewType = DenseMatrixView< Real, Device, Index, MatrixType, SegmentsViewTemplate >;
-      using ConstViewType = DenseMatrixView< typename std::add_const< Real >::type, Device, Index, MatrixType, SegmentsViewTemplate >;
+      using ViewType = DenseMatrixView< Real, Device, Index, RowMajorOrder >;
+      using ConstViewType = DenseMatrixView< typename std::add_const< Real >::type, Device, Index, RowMajorOrder >;
       using RowView = DenseMatrixRowView< SegmentViewType, ValuesViewType >;
 
       // TODO: remove this

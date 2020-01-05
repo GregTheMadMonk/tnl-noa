@@ -14,13 +14,10 @@
 #include <TNL/Devices/Host.h>
 #include <TNL/Matrices/DenseMatrixRowView.h>
 #include <TNL/Matrices/MatrixView.h>
-#include <TNL/Containers/Segments/EllpackView.h>
+#include <TNL/Containers/Segments/Ellpack.h>
 
 namespace TNL {
 namespace Matrices {
-
-//template< typename Device >
-//class DenseDeviceDependentCode;
 
 template< typename Real = double,
           typename Device = Devices::Host,
@@ -48,6 +45,9 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
       using SegmentsViewType = typename SegmentsType::ViewType;
       using SegmentViewType = typename SegmentsType::SegmentViewType;
       using RowView = DenseMatrixRowView< SegmentViewType, ValuesViewType >;
+      using ViewType = DenseMatrixView< Real, Device, Index, RowMajorOrder >;
+      using ConstViewType = DenseMatrixView< typename std::add_const< Real >::type, Device, Index, RowMajorOrder >;
+
 
       // TODO: remove this
       using CompressedRowLengthsVector = typename Matrix< Real, Device, Index >::CompressedRowLengthsVector;
@@ -56,7 +56,7 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
       template< typename _Real = Real,
                 typename _Device = Device,
                 typename _Index = Index >
-      using Self = Dense< _Real, _Device, _Index >;
+      using Self = DenseMatrixView< _Real, _Device, _Index >;
 
       __cuda_callable__
       DenseMatrixView();
@@ -172,12 +172,12 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
                                 const RealType& omega = 1.0 ) const;
 
       // copy assignment
-      Dense& operator=( const Dense& matrix );
+      DenseMatrixView& operator=( const DenseMatrixView& matrix );
 
       // cross-device copy assignment
       template< typename Real2, typename Device2, typename Index2,
                 typename = typename Enabler< Device2 >::type >
-      Dense& operator=( const Dense< Real2, Device2, Index2 >& matrix );
+      DenseMatrixView& operator=( const DenseMatrixView< Real2, Device2, Index2 >& matrix );
 
       void save( const String& fileName ) const;
 
@@ -195,8 +195,8 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
       IndexType getElementIndex( const IndexType row,
                                  const IndexType column ) const;
 
-      typedef DenseDeviceDependentCode< DeviceType > DeviceDependentCode;
-      friend class DenseDeviceDependentCode< DeviceType >;
+      //typedef DenseDeviceDependentCode< DeviceType > DeviceDependentCode;
+      //friend class DenseDeviceDependentCode< DeviceType >;
 
       SegmentsViewType segments;
 };

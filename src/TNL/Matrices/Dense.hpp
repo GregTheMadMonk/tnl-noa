@@ -41,10 +41,9 @@ template< typename Real,
           typename Device,
           typename Index,
           bool RowMajorOrder,
-          template< typename, typename, typename > class Segments,
           typename RealAllocator >
 auto
-Dense< Real, Device, Index, RowMajorOrder, Segments, RealAllocator >::
+Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
 getView() -> ViewType
 {
    return ViewType( this->getRows(), 
@@ -57,10 +56,9 @@ template< typename Real,
           typename Device,
           typename Index,
           bool RowMajorOrder,
-          template< typename, typename, typename > class Segments,
           typename RealAllocator >
 auto
-Dense< Real, Device, Index, RowMajorOrder, Segments, RealAllocator >::
+Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
 getConstView() const -> ConstViewType
 {
    return ConstViewType( this->getRows(),
@@ -451,8 +449,9 @@ template< typename Real,
           typename RealAllocator >
    template< typename InVector,
              typename OutVector >
-void Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::vectorProduct( const InVector& inVector,
-                                                           OutVector& outVector ) const
+void 
+Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
+vectorProduct( const InVector& inVector, OutVector& outVector ) const
 {
    TNL_ASSERT( this->getColumns() == inVector.getSize(),
             std::cerr << "Matrix columns: " << this->getColumns() << std::endl
@@ -461,7 +460,20 @@ void Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::vectorProduct( 
                std::cerr << "Matrix rows: " << this->getRows() << std::endl
                     << "Vector size: " << outVector.getSize() << std::endl );
 
-   DeviceDependentCode::vectorProduct( *this, inVector, outVector );
+   //DeviceDependentCode::vectorProduct( *this, inVector, outVector );
+   const auto inVectorView = inVector.getConstView();
+   auto outVectorView = outVector.getView();
+   const auto valuesView = this->values.getConstView();
+   auto fetch = [=] __cuda_callable__ ( IndexType row, IndexType column, IndexType offset, bool& compute ) -> RealType {
+      return valuesView[ offset ] * inVectorView[ column ];
+   };
+   auto reduction = [] __cuda_callable__ ( RealType& sum, const RealType& value ) {
+      sum += value;
+   };
+   auto keeper = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
+      outVectorView[ row ] = value;
+   };
+   this->segments.segmentsReduction( 0, this->getRows(), fetch, reduction, keeper, ( RealType ) 0.0 );
 }
 
 template< typename Real,
@@ -1050,52 +1062,6 @@ Index Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::getElementInde
 {
    return this->segments.getGlobalIndex( row, column );
 }
-
-template<>
-class DenseDeviceDependentCode< Devices::Host >
-{
-   public:
-
-      typedef Devices::Host Device;
-
-      template< typename Real,
-                typename Index,
-                bool RowMajorOrder,
-                typename RealAllocator,
-                typename InVector,
-                typename OutVector >
-      static void vectorProduct( const Dense< Real, Device, Index, RowMajorOrder, RealAllocator >& matrix,
-                                 const InVector& inVector,
-                                 OutVector& outVector )
-      {
-#ifdef HAVE_OPENMP
-#pragma omp parallel for if( Devices::Host::isOMPEnabled() )
-#endif
-         for( Index row = 0; row < matrix.getRows(); row ++ )
-            outVector[ row ] = matrix.rowVectorProduct( row, inVector );
-      }
-};
-
-template<>
-class DenseDeviceDependentCode< Devices::Cuda >
-{
-   public:
-
-      typedef Devices::Cuda Device;
-
-      template< typename Real,
-                typename Index,
-                bool RowMajorOrder,
-                typename RealAllocator,
-                typename InVector,
-                typename OutVector >
-      static void vectorProduct( const Dense< Real, Device, Index, RowMajorOrder, RealAllocator >& matrix,
-                                 const InVector& inVector,
-                                 OutVector& outVector )
-      {
-         MatrixVectorProductCuda( matrix, inVector, outVector );
-      }
-};
 
 } // namespace Matrices
 } // namespace TNL
