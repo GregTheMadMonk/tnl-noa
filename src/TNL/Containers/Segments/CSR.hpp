@@ -225,8 +225,9 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& red
       const IndexType end = offsetsView[ i + 1 ];
       RealType aux( zero );
       bool compute( true );
+      IndexType localIdx( 0 );
       for( IndexType j = begin; j < end && compute; j++  )
-         reduction( aux, fetch( i, j, compute, args... ) );
+         reduction( aux, fetch( i, localIdx++, j, compute, args... ) );
       keeper( i, aux );
    };
    Algorithms::ParallelFor< Device >::exec( first, last, l, args... );

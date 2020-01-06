@@ -183,7 +183,7 @@ getCompressedRowLengths( Vector& rowLengths ) const
    rowLengths.setSize( this->getRows() );
    rowLengths = 0;
    auto rowLengths_view = rowLengths.getView();
-   auto fetch = [] __cuda_callable__ ( IndexType row, IndexType column, const RealType& value ) -> IndexType {
+   auto fetch = [] __cuda_callable__ ( IndexType row, IndexType column, IndexType globalIdx, const RealType& value ) -> IndexType {
       return ( value != 0.0 );
    };
    auto reduce = [] __cuda_callable__ ( IndexType& aux, const IndexType a ) {
@@ -448,7 +448,7 @@ rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Ke
    const auto columns_view = this->columnIndexes.getConstView();
    const auto values_view = this->values.getConstView();
    const IndexType paddingIndex_ = this->getPaddingIndex();
-   auto fetch_ = [=] __cuda_callable__ ( IndexType rowIdx, IndexType globalIdx, bool& compute ) mutable -> decltype( fetch( IndexType(), IndexType(), RealType() ) ) {
+   auto fetch_ = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType globalIdx, bool& compute ) mutable -> decltype( fetch( IndexType(), IndexType(), RealType() ) ) {
       IndexType columnIdx = columns_view[ globalIdx ];
       if( columnIdx != paddingIndex_ )
          return fetch( rowIdx, columnIdx, values_view[ globalIdx ] );
@@ -615,7 +615,108 @@ operator=( const SparseMatrix& matrix )
    return *this;
 }
 
-// cross-device copy assignment
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename, typename > class Segments,
+          typename RealAllocator,
+          typename IndexAllocator >
+   template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder, typename RealAllocator_ >
+SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >&
+SparseMatrix& operator=( const Dense< Real_, Device_, Index_, RowMajorOrder, RealAllocator_ >& matrix )
+{
+   using RHSMatrix = Dense< Real_, Device_, Index_, RowMajorOrder, RealAllocator_ >;
+   using RHSIndexType = typename RHSMatrix::IndexType;
+   using RHSRealType = typename RHSMatrix::RealType;
+   using RHSDeviceType = typename RHSMatrix::DeviceType;
+   using RHSRealAllocatorType = typename RHSMatrix::RealAllocatorType;
+
+   typename RHSMatrix::RowsCapacitiesType rowLengths;
+   matrix.getCompressedRowLengths( rowLengths );
+   this->setDimensions( matrix.getRows(), matrix.getColumns() );
+   this->setCompressedRowLengths( rowLengths );
+
+   // TODO: use getConstView when it works
+   const auto matrixView = const_cast< RHSMatrix& >( matrix ).getView();
+   const IndexType paddingIndex = this->getPaddingIndex();
+   auto columns_view = this->columnIndexes.getView();
+   auto values_view = this->values.getView();
+   columns_view = paddingIndex;
+
+   if( std::is_same< DeviceType, RHSDeviceType >::value )
+   {
+      const auto this_segments_view = this->segments.getView();
+      const auto segments_view = this->segments.getView();
+      auto f = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx, RHSIndexType columnIndex, const RHSRealType& value ) mutable {
+         if( columnIndex != paddingIndex )
+         {
+            IndexType thisGlobalIdx = segments_view.getGlobalIndex( rowIdx, localIdx );
+            columns_view[ thisGlobalIdx ] = columnIndex;
+            values_view[ thisGlobalIdx ] = value;
+         }
+      };
+      matrix.forAllRows( f );
+   }
+   else
+   {
+      const IndexType maxRowLength = max( rowLengths );
+      const IndexType bufferRowsCount( 128 );
+      const size_t bufferSize = bufferRowsCount * maxRowLength;
+      Containers::Vector< RHSRealType, RHSDeviceType, RHSIndexType, RHSRealAllocatorType > matrixValuesBuffer( bufferSize );
+      Containers::Vector< RHSIndexType, RHSDeviceType, RHSIndexType, RHSIndexAllocatorType > matrixColumnsBuffer( bufferSize );
+      Containers::Vector< RealType, DeviceType, IndexType, RealAllocatorType > thisValuesBuffer( bufferSize );
+      Containers::Vector< IndexType, DeviceType, IndexType, IndexAllocatorType > thisColumnsBuffer( bufferSize );
+      auto matrixValuesBuffer_view = matrixValuesBuffer.getView();
+      auto matrixColumnsBuffer_view = matrixColumnsBuffer.getView();
+      auto thisValuesBuffer_view = thisValuesBuffer.getView();
+      auto thisColumnsBuffer_view = thisColumnsBuffer.getView();
+
+      IndexType baseRow( 0 );
+      const IndexType rowsCount = this->getRows();
+      while( baseRow < rowsCount )
+      {
+         const IndexType lastRow = min( baseRow + bufferRowsCount, rowsCount );
+         thisColumnsBuffer = paddingIndex;
+         matrixColumnsBuffer_view = paddingIndex;
+
+         ////
+         // Copy matrix elements into buffer
+         auto f1 = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx, RHSIndexType columnIndex, const RHSRealType& value ) mutable {
+            if( columnIndex != paddingIndex )
+            {
+               const IndexType bufferIdx = ( rowIdx - baseRow ) * maxRowLength + localIdx;
+               matrixColumnsBuffer_view[ bufferIdx ] = columnIndex;
+               matrixValuesBuffer_view[ bufferIdx ] = value;
+            }
+         };
+         matrix.forRows( baseRow, lastRow, f1 );
+
+         ////
+         // Copy the source matrix buffer to this matrix buffer
+         thisValuesBuffer_view = matrixValuesBuffer_view;
+         thisColumnsBuffer_view = matrixColumnsBuffer_view;
+
+         ////
+         // Copy matrix elements from the buffer to the matrix
+         auto f2 = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType& columnIndex, RealType& value  ) mutable {
+            const IndexType bufferIdx = ( rowIdx - baseRow ) * maxRowLength + localIdx;
+            const IndexType column = thisColumnsBuffer_view[ bufferIdx ];
+            if( column != paddingIndex )
+            {
+               columnIndex = column;
+               value = thisValuesBuffer_view[ bufferIdx ];
+            }
+         };
+         this->forRows( baseRow, lastRow, f2 );
+         baseRow += bufferRowsCount;
+      }
+      //std::cerr << "This matrix = " << std::endl << *this << std::endl;
+   }
+   return *this;
+   
+}
+
 template< typename Real,
           typename Device,
           typename Index,

@@ -176,6 +176,13 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       SparseMatrix& operator=( const SparseMatrix& matrix );
 
       /**
+       * \brief Assignment of dense matrix
+       */
+      template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder, typename RealAllocator_ >
+      SparseMatrix& operator=( const Dense< Real_, Device_, Index_, RowMajorOrder, RealAllocator_ >& matrix );
+      
+      
+      /**
        * \brief Assignment of any other matrix type.
        * @param matrix
        * @return 

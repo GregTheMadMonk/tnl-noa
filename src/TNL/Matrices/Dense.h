@@ -183,6 +183,12 @@ class Dense : public Matrix< Real, Device, Index >
                 typename = typename Enabler< Device2 >::type >
       Dense& operator=( const Dense< Real2, Device2, Index2 >& matrix );
 
+      template< typename Real_, typename Device_, typename Index_, typename RealAllocator_ >
+      bool operator==( const Dense< Real_, Device_, Index_, RowMajorOrder >& matrix ) const;
+
+      template< typename Real_, typename Device_, typename Index_, typename RealAllocator_ >
+      bool operator!=( const Dense< Real_, Device_, Index_, RowMajorOrder >& matrix ) const;
+      
       void save( const String& fileName ) const;
 
       void load( const String& fileName );

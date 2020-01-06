@@ -354,8 +354,9 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& red
          const IndexType end = begin + segmentSize;
          RealType aux( zero );
          bool compute( true );
+         IndexType localIdx( 0 );
          for( IndexType globalIdx = begin; globalIdx< end; globalIdx++  )
-            reduction( aux, fetch( segmentIdx, globalIdx, compute, args... ) );
+            reduction( aux, fetch( segmentIdx, localIdx++, globalIdx, compute, args... ) );
          keeper( segmentIdx, aux );
       };
       Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
@@ -370,8 +371,9 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& red
          const IndexType end = sliceOffsets_view[ sliceIdx + 1 ];
          RealType aux( zero );
          bool compute( true );
+         IndexType localIdx( 0 );
          for( IndexType globalIdx = begin; globalIdx < end; globalIdx += SliceSize  )
-            reduction( aux, fetch( segmentIdx, globalIdx, compute, args... ) );
+            reduction( aux, fetch( segmentIdx, localIdx++, globalIdx, compute, args... ) );
          keeper( segmentIdx, aux );
       };
       Algorithms::ParallelFor< Device >::exec( first, last, l, args... );

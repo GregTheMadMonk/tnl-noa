@@ -14,6 +14,7 @@
 
 #include <TNL/Matrices/SparseMatrix.h>
 #include <TNL/Matrices/MatrixType.h>
+#include <TNL/Matrices/Dense.h>
 #include <TNL/Containers/Segments/CSR.h>
 #include <TNL/Containers/Segments/Ellpack.h>
 #include <TNL/Containers/Segments/SlicedEllpack.h>
@@ -436,6 +437,55 @@ void testConversion()
    }
 }
 
+template< typename Matrix >
+void denseMatrixAssignment()
+{
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
+   
+   using DenseHost = TNL::Matrices::Dense< RealType, TNL::Devices::Host, IndexType >;
+   using DenseCuda = TNL::Matrices::Dense< RealType, TNL::Devices::Cuda, IndexType >;
+   
+   const IndexType rows( 10 ), columns( 10 );
+   DenseHost hostMatrix( rows, columns );
+   for( IndexType i = 0; i < columns; i++ )
+      for( IndexType j = 0; j <= i; j++ )
+         hostMatrix( i, j ) = i + j;
+   
+   Matrix matrix;
+   matrix = hostMatrix;
+   using RowCapacitiesType = typename Matrix::RowsCapacitiesType;
+   RowCapacitiesType rowCapacities;
+   matrix.getCompressedRowLengths( rowCapacities );
+   RowCapacitiesType exactRowLengths{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+   EXPECT_EQ( rowCapacities, exactRowLengths );
+   for( IndexType i = 0; i < columns; i++ )
+      for( IndexType j = 0; j < rows; j++ )
+      {
+         if( j > i )
+            EXPECT_EQ( matrix.getElement( i, j ), 0.0 );
+         else
+            EXPECT_EQ( matrix.getElement( i, j ), i + j );
+      }
+   
+#ifdef HAVE_CUDA
+   DenseCuda cudaMatrix;
+   cudaMatrix = hostMatrix;
+   matrix = cudaMatrix;
+   matrix.getCompressedRowLengths( rowCapacities );
+   EXPECT_EQ( rowCapacities, exactRowLengths );
+   for( IndexType i = 0; i < columns; i++ )
+      for( IndexType j = 0; j < rows; j++ )
+      {
+         if( j > i )
+            EXPECT_EQ( matrix.getElement( i, j ), 0.0 );
+         else
+            EXPECT_EQ( matrix.getElement( i, j ), i + j );
+      }
+#endif
+}
+
 TEST( SparseMatrixCopyTest, CSR_HostToHost )
 {
    testCopyAssignment< CSR_host, CSR_host >();
@@ -568,6 +618,39 @@ TEST( SparseMatrixCopyTest, SlicedEllpack_to_Ellpack_cuda )
 }
 #endif
 
-#endif
+// Dense matrix assignment test
+TEST( SparseMatrixCopyTest, DenseMatrixAssignment_to_CSR_host )
+{
+   denseMatrixAssignment< CSR_host >();
+}
+
+TEST( SparseMatrixCopyTest, DenseMatrixAssignment_to_Ellpack_host )
+{
+   denseMatrixAssignment< E_host >();
+}
+
+TEST( SparseMatrixCopyTest, DenseMatrixAssignment_to_SlicedEllpack_host )
+{
+   denseMatrixAssignment< SE_host >();
+}
+
+#ifdef HAVE_CUDA
+TEST( SparseMatrixCopyTest, DenseMatrixAssignment_to_CSR_cuda )
+{
+   denseMatrixAssignment< CSR_cuda >();
+}
+
+TEST( SparseMatrixCopyTest, DenseMatrixAssignment_to_Ellpack_cuda )
+{
+   denseMatrixAssignment< E_cuda >();
+}
+
+TEST( SparseMatrixCopyTest, DenseMatrixAssignment_to_SlicedEllpack_cuda )
+{
+   denseMatrixAssignment< SE_cuda >();
+}
+#endif // HAVE_CUDA
+
+#endif //HAVE_GTEST
 
 #include "../main.h"

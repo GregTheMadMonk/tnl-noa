@@ -994,6 +994,33 @@ Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::operator=( const Den
    throw Exceptions::NotImplementedError("Cross-device assignment for the Dense format is not implemented yet.");
 }
 
+template< typename Real,
+          typename Device,
+          typename Index,
+          bool RowMajorOrder,
+          typename RealAllocator >
+   template< typename Real_, typename Device_, typename Index_, typename RealAllocator_ >
+bool
+Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
+operator==( const Dense< Real_, Device_, Index_, RowMajorOrder >& matrix ) const
+{
+   return( this->getRows() == matrix.getRows() &&
+           this->getColumns() == matrix.getColumns() &&
+           this->getValues() == matrix.getValues() );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          bool RowMajorOrder,
+          typename RealAllocator >
+   template< typename Real_, typename Device_, typename Index_, typename RealAllocator_ >
+bool
+Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
+operator!=( const Dense< Real_, Device_, Index_, RowMajorOrder >& matrix ) const
+{
+   return ! ( *this == matrix );
+}
 
 template< typename Real,
           typename Device,
