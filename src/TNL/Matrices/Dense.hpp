@@ -373,7 +373,7 @@ forRows( IndexType first, IndexType last, Function& function ) const
 {
    const auto values_view = this->values.getConstView();
    auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx ) mutable -> bool {
-      function( rowIdx, columnIdx, values_view[ globalIdx ] );
+      function( rowIdx, columnIdx, globalIdx, values_view[ globalIdx ] );
       return true;
    };
    this->segments.forSegments( first, last, f );
@@ -959,39 +959,25 @@ void Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::performSORItera
    x[ row ] = ( 1.0 - omega ) * x[ row ] + omega / diagonalValue * ( b[ row ] - sum );
 }
 
-
-// copy assignment
 template< typename Real,
           typename Device,
           typename Index,
           bool RowMajorOrder,
           typename RealAllocator >
+   template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_, typename RealAllocator_ >
 Dense< Real, Device, Index, RowMajorOrder, RealAllocator >&
-Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::operator=( const Dense& matrix )
+Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
+operator=( const Dense< Real_, Device_, Index_, RowMajorOrder_, RealAllocator_ >& matrix )
 {
-   this->setLike( matrix );
-   this->values = matrix.values;
-   return *this;
-}
-
-// cross-device copy assignment
-template< typename Real,
-          typename Device,
-          typename Index,
-          bool RowMajorOrder,
-          typename RealAllocator >
-   template< typename Real2, typename Device2, typename Index2, typename >
-Dense< Real, Device, Index, RowMajorOrder, RealAllocator >&
-Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::operator=( const Dense< Real2, Device2, Index2 >& matrix )
-{
-   static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value,
-                  "unknown device" );
-   static_assert( std::is_same< Device2, Devices::Host >::value || std::is_same< Device2, Devices::Cuda >::value,
-                  "unknown device" );
-
-   this->setLike( matrix );
-
-   throw Exceptions::NotImplementedError("Cross-device assignment for the Dense format is not implemented yet.");
+   if( RowMajorOrder == RowMajorOrder_ )
+   {
+      this->setLike( matrix );
+      this->values = matrix.getValues();
+   }
+   else
+   {
+      
+   }
 }
 
 template< typename Real,

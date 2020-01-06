@@ -16,6 +16,7 @@
 #include <TNL/Containers/Segments/CSR.h>
 #include <TNL/Matrices/SparseMatrixRowView.h>
 #include <TNL/Matrices/SparseMatrixView.h>
+#include <TNL/Matrices/Dense.h>
 
 namespace TNL {
 namespace Matrices {

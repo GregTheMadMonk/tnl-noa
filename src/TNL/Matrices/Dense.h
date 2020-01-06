@@ -30,15 +30,6 @@ template< typename Real = double,
           typename RealAllocator = typename Allocators::Default< Device >::template Allocator< Real > >
 class Dense : public Matrix< Real, Device, Index >
 {
-   private:
-      // convenient template alias for controlling the selection of copy-assignment operator
-      template< typename Device2 >
-      using Enabler = std::enable_if< ! std::is_same< Device2, Device >::value >;
-
-      // friend class will be needed for templated assignment operators
-      //template< typename Real2, typename Device2, typename Index2 >
-      //friend class Dense;
-
    public:
       using RealType = Real;
       using DeviceType = Device;
@@ -176,12 +167,11 @@ class Dense : public Matrix< Real, Device, Index >
                                 const RealType& omega = 1.0 ) const;
 
       // copy assignment
-      Dense& operator=( const Dense& matrix );
+      //Dense& operator=( const Dense& matrix );
 
       // cross-device copy assignment
-      template< typename Real2, typename Device2, typename Index2,
-                typename = typename Enabler< Device2 >::type >
-      Dense& operator=( const Dense< Real2, Device2, Index2 >& matrix );
+      template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_, typename RealAlocator_ >
+      Dense& operator=( const Dense< Real_, Device_, Index_, RowMajorOrder_, RealAlocator_ >& matrix );
 
       template< typename Real_, typename Device_, typename Index_, typename RealAllocator_ >
       bool operator==( const Dense< Real_, Device_, Index_, RowMajorOrder >& matrix ) const;

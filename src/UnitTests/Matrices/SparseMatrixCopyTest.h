@@ -443,22 +443,22 @@ void denseMatrixAssignment()
    using RealType = typename Matrix::RealType;
    using DeviceType = typename Matrix::DeviceType;
    using IndexType = typename Matrix::IndexType;
-   
+
    using DenseHost = TNL::Matrices::Dense< RealType, TNL::Devices::Host, IndexType >;
    using DenseCuda = TNL::Matrices::Dense< RealType, TNL::Devices::Cuda, IndexType >;
-   
+
    const IndexType rows( 10 ), columns( 10 );
    DenseHost hostMatrix( rows, columns );
    for( IndexType i = 0; i < columns; i++ )
       for( IndexType j = 0; j <= i; j++ )
          hostMatrix( i, j ) = i + j;
-   
+
    Matrix matrix;
    matrix = hostMatrix;
    using RowCapacitiesType = typename Matrix::RowsCapacitiesType;
    RowCapacitiesType rowCapacities;
    matrix.getCompressedRowLengths( rowCapacities );
-   RowCapacitiesType exactRowLengths{ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+   RowCapacitiesType exactRowLengths{ 0, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
    EXPECT_EQ( rowCapacities, exactRowLengths );
    for( IndexType i = 0; i < columns; i++ )
       for( IndexType j = 0; j < rows; j++ )
@@ -468,10 +468,14 @@ void denseMatrixAssignment()
          else
             EXPECT_EQ( matrix.getElement( i, j ), i + j );
       }
-   
+
 #ifdef HAVE_CUDA
-   DenseCuda cudaMatrix;
-   cudaMatrix = hostMatrix;
+   DenseCuda cudaMatrix( rows, columns );
+   //cudaMatrix = hostMatrix;
+   for( IndexType i = 0; i < columns; i++ )
+      for( IndexType j = 0; j <= i; j++ )
+         cudaMatrix.setElement( i, j, i + j );
+
    matrix = cudaMatrix;
    matrix.getCompressedRowLengths( rowCapacities );
    EXPECT_EQ( rowCapacities, exactRowLengths );

@@ -494,7 +494,7 @@ performSORIteration( const Vector1& b,
                      Vector2& x,
                      const RealType& omega ) const
 {
-
+   return false;
 }
 
 template< typename Real,

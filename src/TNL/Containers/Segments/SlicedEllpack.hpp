@@ -127,7 +127,7 @@ setSegmentsSizes( const SizesHolder& sizes )
    const auto sizes_view = sizes.getConstView();
    auto slices_view = this->sliceOffsets.getView();
    auto slice_segment_size_view = this->sliceSegmentSizes.getView();
-   auto fetch = [=] __cuda_callable__ ( IndexType segmentIdx, IndexType globalIdx, bool& compute ) -> IndexType {
+   auto fetch = [=] __cuda_callable__ ( IndexType segmentIdx, IndexType localIdx, IndexType globalIdx, bool& compute ) -> IndexType {
       if( globalIdx < _size )
          return sizes_view[ globalIdx ];
       return 0;
@@ -341,7 +341,7 @@ void
 SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
 segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
-   using RealType = decltype( fetch( IndexType(), IndexType(), std::declval< bool& >(), args... ) );
+   using RealType = decltype( fetch( IndexType(), IndexType(), IndexType(), std::declval< bool& >(), args... ) );
    const auto sliceSegmentSizes_view = this->sliceSegmentSizes.getConstView();
    const auto sliceOffsets_view = this->sliceOffsets.getConstView();
    if( RowMajorOrder )
