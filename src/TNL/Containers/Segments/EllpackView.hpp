@@ -245,7 +245,7 @@ void
 EllpackView< Device, Index, RowMajorOrder, Alignment >::
 segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
-   using RealType = decltype( fetch( IndexType(), IndexType(), std::declval< bool& >(), args... ) );
+   using RealType = decltype( fetch( IndexType(), IndexType(), IndexType(), std::declval< bool& >(), args... ) );
    if( RowMajorOrder )
    {
       const IndexType segmentSize = this->segmentSize;
@@ -253,9 +253,10 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& red
          const IndexType begin = i * segmentSize;
          const IndexType end = begin + segmentSize;
          RealType aux( zero );
+         IndexType localIdx( 0 );
          bool compute( true );
          for( IndexType j = begin; j < end && compute; j++  )
-            reduction( aux, fetch( i, j, compute, args... ) );
+            reduction( aux, fetch( i, localIdx++, j, compute, args... ) );
          keeper( i, aux );
       };
       Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
@@ -268,9 +269,10 @@ segmentsReduction( IndexType first, IndexType last, Fetch& fetch, Reduction& red
          const IndexType begin = i;
          const IndexType end = storageSize;
          RealType aux( zero );
+         IndexType localIdx( 0 );
          bool compute( true );
          for( IndexType j = begin; j < end && compute; j += alignedSize  )
-            reduction( aux, fetch( i, j, compute, args... ) );
+            reduction( aux, fetch( i, localIdx++, j, compute, args... ) );
          keeper( i, aux );
       };
       Algorithms::ParallelFor< Device >::exec( first, last, l, args... );

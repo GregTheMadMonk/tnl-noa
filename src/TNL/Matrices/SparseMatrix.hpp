@@ -417,12 +417,12 @@ vectorProduct( const InVector& inVector,
    const auto valuesView = this->values.getConstView();
    const auto columnIndexesView = this->columnIndexes.getConstView();
    const IndexType paddingIndex = this->getPaddingIndex();
-   auto fetch = [=] __cuda_callable__ ( IndexType row, IndexType offset, bool& compute ) -> RealType {
-      const IndexType column = columnIndexesView[ offset ];
+   auto fetch = [=] __cuda_callable__ ( IndexType row, IndexType localIdx, IndexType globalIdx, bool& compute ) -> RealType {
+      const IndexType column = columnIndexesView[ globalIdx ];
       compute = ( column != paddingIndex );
       if( ! compute )
          return 0.0;
-      return valuesView[ offset ] * inVectorView[ column ];
+      return valuesView[ globalIdx ] * inVectorView[ column ];
    };
    auto reduction = [] __cuda_callable__ ( RealType& sum, const RealType& value ) {
       sum += value;
