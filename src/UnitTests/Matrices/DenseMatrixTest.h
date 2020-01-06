@@ -1167,6 +1167,12 @@ void test_PerformSORIteration()
 }
 
 template< typename Matrix >
+void test_AssignmentOperator()
+{
+   EXPECT_EQ( 1, 0 );
+}
+
+template< typename Matrix >
 void test_SaveAndLoad()
 {
     using RealType = typename Matrix::RealType;
