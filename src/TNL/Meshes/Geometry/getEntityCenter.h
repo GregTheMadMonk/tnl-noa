@@ -51,7 +51,7 @@ getEntityCenter( const Mesh< MeshConfig, Device > & mesh,
 {
    using EntityType = MeshEntity< MeshConfig, Device, EntityTopology >;
    constexpr typename MeshConfig::LocalIndexType subvertices = EntityType::template getSubentitiesCount< 0 >();
-   typename MeshTraits< MeshConfig >::PointType c{ 0.0 };
+   typename MeshTraits< MeshConfig >::PointType c = 0;
    for( typename MeshConfig::LocalIndexType i = 0;
         i < subvertices;
         i++ )
