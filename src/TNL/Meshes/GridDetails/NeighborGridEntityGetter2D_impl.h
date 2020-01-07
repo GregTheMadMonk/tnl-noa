@@ -409,7 +409,7 @@ class NeighborGridEntityGetter<
                     std::cerr << "( stepX, stepY ) cannot be perpendicular to entity coordinates: stepX = " << stepX << " stepY = " << stepY
                          << " entity.getOrientation() = " << entity.getOrientation() );*/
          TNL_ASSERT_GE( entity.getCoordinates(), CoordinatesType( 0, 0 ), "wrong coordinates" );
-         TNL_ASSERT_LT( entity.getCoordinates(), entity.getMesh().getDimensions() + entity.getOrientation().abs(), "wrong coordinates" );
+         TNL_ASSERT_LT( entity.getCoordinates(), entity.getMesh().getDimensions() + TNL::abs(entity.getOrientation()), "wrong coordinates" );
          TNL_ASSERT( entity.getCoordinates() +
                        CoordinatesType( stepX - ( stepX > 0 ) * ( entity.getOrientation().x() != 0.0 ),
                                         stepY - ( stepY > 0 ) * ( entity.getOrientation().y() != 0.0 ) ) >= CoordinatesType( 0, 0 ) &&
