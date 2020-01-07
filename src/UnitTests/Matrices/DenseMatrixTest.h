@@ -1169,8 +1169,50 @@ void test_PerformSORIteration()
 template< typename Matrix >
 void test_AssignmentOperator()
 {
-   EXPECT_EQ( 1, 0 );
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
+
+   using DenseHost = TNL::Matrices::Dense< RealType, TNL::Devices::Host, IndexType >;
+   using DenseCuda = TNL::Matrices::Dense< RealType, TNL::Devices::Cuda, IndexType >;
+
+   const IndexType rows( 10 ), columns( 10 );
+   DenseHost hostMatrix( rows, columns );
+   for( IndexType i = 0; i < columns; i++ )
+      for( IndexType j = 0; j <= i; j++ )
+         hostMatrix( i, j ) = i + j;
+
+   Matrix matrix( rows, columns );
+   matrix.getValues() = 0.0;
+   matrix = hostMatrix;
+   for( IndexType i = 0; i < columns; i++ )
+      for( IndexType j = 0; j < rows; j++ )
+      {
+         if( j > i )
+            EXPECT_EQ( matrix.getElement( i, j ), 0.0 );
+         else
+            EXPECT_EQ( matrix.getElement( i, j ), i + j );
+      }
+
+#ifdef HAVE_CUDA
+   DenseCuda cudaMatrix( rows, columns );
+   for( IndexType i = 0; i < columns; i++ )
+      for( IndexType j = 0; j <= i; j++ )
+         cudaMatrix.setElement( i, j, i + j );
+
+   matrix.getValues() = 0.0;
+   matrix = cudaMatrix;
+   for( IndexType i = 0; i < columns; i++ )
+      for( IndexType j = 0; j < rows; j++ )
+      {
+         if( j > i )
+            EXPECT_EQ( matrix.getElement( i, j ), 0.0 );
+         else
+            EXPECT_EQ( matrix.getElement( i, j ), i + j );
+      }
+#endif
 }
+
 
 template< typename Matrix >
 void test_SaveAndLoad()
@@ -1424,6 +1466,13 @@ TYPED_TEST( MatrixTest, addMatrixTest )
     using MatrixType = typename TestFixture::MatrixType;
     
     test_AddMatrix< MatrixType >();
+}
+
+TYPED_TEST( MatrixTest, assignmentOperatorTest )
+{
+    using MatrixType = typename TestFixture::MatrixType;
+
+    test_AssignmentOperator< MatrixType >();
 }
 
 TYPED_TEST( MatrixTest, saveAndLoadTest )

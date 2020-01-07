@@ -377,7 +377,6 @@ forRows( IndexType first, IndexType last, Function& function ) const
       return true;
    };
    this->segments.forSegments( first, last, f );
-
 }
 
 template< typename Real,
@@ -392,11 +391,10 @@ forRows( IndexType first, IndexType last, Function& function )
 {
    auto values_view = this->values.getView();
    auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx ) mutable -> bool {
-      function( rowIdx, columnIdx, values_view[ globalIdx ] );
+      function( rowIdx, columnIdx, globalIdx, values_view[ globalIdx ] );
       return true;
    };
    this->segments.forSegments( first, last, f );
-
 }
 
 template< typename Real,
@@ -959,6 +957,50 @@ void Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::performSORItera
    x[ row ] = ( 1.0 - omega ) * x[ row ] + omega / diagonalValue * ( b[ row ] - sum );
 }
 
+/*template< typename Real,
+          typename Device,
+          typename Index,
+          bool RowMajorOrder,
+          typename RealAllocator >
+Dense< Real, Device, Index, RowMajorOrder, RealAllocator >&
+Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
+operator=( const Dense< Real, Device, Index, RowMajorOrder, RealAllocator >& matrix )
+{
+   const IndexType bufferRowsCount( 128 );
+   const IndexType columns = this->getColumns();
+   const size_t bufferSize = bufferRowsCount * columns;
+   Containers::Vector< RealType, Device, IndexType, RealAllocatorType > sourceValuesBuffer( bufferSize );
+   Containers::Vector< RealType, DeviceType, IndexType, RealAllocatorType > destinationValuesBuffer( bufferSize );
+   auto sourceValuesBuffer_view = sourceValuesBuffer.getView();
+   auto destinationValuesBuffer_view = destinationValuesBuffer.getView();
+
+   IndexType baseRow( 0 );
+   const IndexType rowsCount = this->getRows();
+   while( baseRow < rowsCount )
+   {
+      const IndexType lastRow = min( baseRow + bufferRowsCount, rowsCount );
+
+      ////
+      // Copy matrix elements into buffer
+      auto f1 = [=] __cuda_callable__ ( Index rowIdx, Index columnIdx, Index globalIdx, const Real& value ) mutable {
+         const IndexType bufferIdx = ( rowIdx - baseRow ) * columns + columnIdx;
+         sourceValuesBuffer_view[ bufferIdx ] = value;
+      };
+      matrix.forRows( baseRow, lastRow, f1 );
+      destinationValuesBuffer = sourceValuesBuffer;
+
+      ////
+      // Copy buffer to this matrix
+      auto f2 = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx, RealType& value ) mutable {
+         const IndexType bufferIdx = ( rowIdx - baseRow ) * columns + columnIdx;
+         value = destinationValuesBuffer_view[ bufferIdx ];
+      };
+      this->forRows( baseRow, lastRow, f2 );
+      baseRow += bufferRowsCount;
+   }
+   return *this;
+}*/
+
 template< typename Real,
           typename Device,
           typename Index,
@@ -969,15 +1011,57 @@ Dense< Real, Device, Index, RowMajorOrder, RealAllocator >&
 Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
 operator=( const Dense< Real_, Device_, Index_, RowMajorOrder_, RealAllocator_ >& matrix )
 {
+   this->setLike( matrix );
    if( RowMajorOrder == RowMajorOrder_ )
-   {
-      this->setLike( matrix );
       this->values = matrix.getValues();
-   }
    else
    {
-      
+      if( std::is_same< DeviceType, Device_ >::value )
+      {
+         auto this_view = this->getView();
+         auto f = [=] __cuda_callable__ ( Index_ rowIdx, Index_ columnIdx, Index_ globalIdx, const Real_& value ) mutable {
+            this_view.getRow( rowIdx ).setElement( columnIdx, value );
+         };
+         matrix.forAllRows( f );
+      }
+      else
+      {
+         const IndexType bufferRowsCount( 128 );
+         const IndexType columns = this->getColumns();
+         const size_t bufferSize = bufferRowsCount * columns;
+         Containers::Vector< RealType, Device_, IndexType, RealAllocator_ > sourceValuesBuffer( bufferSize );
+         Containers::Vector< RealType, DeviceType, IndexType, RealAllocatorType > destinationValuesBuffer( bufferSize );
+         auto sourceValuesBuffer_view = sourceValuesBuffer.getView();
+         auto destinationValuesBuffer_view = destinationValuesBuffer.getView();
+
+         IndexType baseRow( 0 );
+         const IndexType rowsCount = this->getRows();
+         while( baseRow < rowsCount )
+         {
+            const IndexType lastRow = min( baseRow + bufferRowsCount, rowsCount );
+
+            ////
+            // Copy matrix elements into buffer
+            auto f1 = [=] __cuda_callable__ ( Index_ rowIdx, Index_ columnIdx, Index_ globalIdx, const Real_& value ) mutable {
+               const IndexType bufferIdx = ( rowIdx - baseRow ) * columns + columnIdx;
+               sourceValuesBuffer_view[ bufferIdx ] = value;
+            };
+            matrix.forRows( baseRow, lastRow, f1 );
+
+            destinationValuesBuffer = sourceValuesBuffer;
+
+            ////
+            // Copy buffer to this matrix
+            auto f2 = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx, RealType& value ) mutable {
+               const IndexType bufferIdx = ( rowIdx - baseRow ) * columns + columnIdx;
+               value = destinationValuesBuffer_view[ bufferIdx ];
+            };
+            this->forRows( baseRow, lastRow, f2 );
+            baseRow += bufferRowsCount;
+         }
+      }
    }
+   return *this;
 }
 
 template< typename Real,

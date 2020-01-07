@@ -34,7 +34,8 @@ class Dense : public Matrix< Real, Device, Index >
       using RealType = Real;
       using DeviceType = Device;
       using IndexType = Index;
-      using BaseType = Matrix< Real, Device, Index >;
+      using RealAllocatorType = RealAllocator;
+      using BaseType = Matrix< Real, Device, Index, RealAllocator >;
       using ValuesType = typename BaseType::ValuesVector;
       using ValuesViewType = typename ValuesType::ViewType;
       using SegmentsType = Containers::Segments::Ellpack< DeviceType, IndexType, typename Allocators::Default< Device >::template Allocator< IndexType >, RowMajorOrder, 1 >;
