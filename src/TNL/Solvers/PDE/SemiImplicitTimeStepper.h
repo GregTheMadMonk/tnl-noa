@@ -86,8 +86,6 @@ class SemiImplicitTimeStepper
 
    Timer preIterateTimer, linearSystemAssemblerTimer, preconditionerUpdateTimer, linearSystemSolverTimer, postIterateTimer;
 
-   bool verbose = false;
-
    long long int allIterations = 0;
 };
 

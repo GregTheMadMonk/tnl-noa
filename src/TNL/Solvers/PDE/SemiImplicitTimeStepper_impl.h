@@ -24,7 +24,6 @@ SemiImplicitTimeStepper< Problem >::
 configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
-   config.addEntry< bool >( "verbose", "Verbose mode.", true );
 }
 
 template< typename Problem >
@@ -33,8 +32,6 @@ SemiImplicitTimeStepper< Problem >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   this->verbose = parameters.getParameter< bool >( "verbose" );
-
    // set up the linear solver
    linearSystemSolver = getLinearSolver< MatrixType >( parameters );
    if( ! linearSystemSolver )
@@ -156,8 +153,6 @@ solve( const RealType& time,
       }
       this->preIterateTimer.stop();
 
-//      if( verbose )
-//        std::cout << "                                                                  Assembling the linear system ... \r" << std::flush;
       if( this->solverMonitor )
          this->solverMonitor->setStage( "Assembling the linear system" );
 
@@ -169,8 +164,6 @@ solve( const RealType& time,
                                            this->rightHandSidePointer );
       this->linearSystemAssemblerTimer.stop();
 
-//      if( verbose )
-//        std::cout << "                                                                  Solving the linear system for time " << t + currentTau << "             \r" << std::flush;
       if( this->solverMonitor )
          this->solverMonitor->setStage( "Solving the linear system" );
 
@@ -191,9 +184,6 @@ solve( const RealType& time,
       }
       this->linearSystemSolverTimer.stop();
       this->allIterations += this->linearSystemSolver->getIterations();
-
-      //if( verbose )
-      //  std::cout << std::endl;
 
       if( this->solverMonitor )
          this->solverMonitor->setStage( "Postiteration" );
