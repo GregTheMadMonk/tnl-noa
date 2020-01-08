@@ -78,7 +78,7 @@ getSerializationType()
 {
    return String( "Matrices::Dense< " ) +
           TNL::getSerializationType< RealType >() + ", [any_device], " +
-          TNL::getSerializationType< IndexType >() +
+          TNL::getSerializationType< IndexType >() + ", " +
           ( RowMajorOrder ? "true" : "false" ) + ", [any_allocator] >";
 }
 

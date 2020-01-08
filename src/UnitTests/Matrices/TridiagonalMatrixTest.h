@@ -31,16 +31,24 @@ static const char* TEST_FILE_NAME = "test_DenseMatrixTest.tnl";
 
 #include <gtest/gtest.h>
 
-void test_GetSerializationType()
+template< typename MatrixHostFloat, typename MatrixHostInt >
+void host_test_GetType()
 {
-   EXPECT_EQ( ( TNL::Matrices::Dense< float, TNL::Devices::Host, int, true >::getSerializationType() ), TNL::String( "Matrices::Dense< float, [any_device], int, true, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Dense< int,   TNL::Devices::Host, int, true >::getSerializationType() ), TNL::String( "Matrices::Dense< int, [any_device], int, true, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Dense< float, TNL::Devices::Cuda, int, true >::getSerializationType() ), TNL::String( "Matrices::Dense< float, [any_device], int, true, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Dense< int,   TNL::Devices::Cuda, int, true >::getSerializationType() ), TNL::String( "Matrices::Dense< int, [any_device], int, true, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Dense< float, TNL::Devices::Host, int, false >::getSerializationType() ), TNL::String( "Matrices::Dense< float, [any_device], int, false, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Dense< int,   TNL::Devices::Host, int, false >::getSerializationType() ), TNL::String( "Matrices::Dense< int, [any_device], int, false, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Dense< float, TNL::Devices::Cuda, int, false >::getSerializationType() ), TNL::String( "Matrices::Dense< float, [any_device], int, false, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Dense< int,   TNL::Devices::Cuda, int, false >::getSerializationType() ), TNL::String( "Matrices::Dense< int, [any_device], int, false, [any_allocator] >" ) );
+    MatrixHostFloat mtrxHostFloat;
+    MatrixHostInt mtrxHostInt;
+
+    EXPECT_EQ( mtrxHostFloat.getType(), TNL::String( "Matrices::Dense< float, Devices::Host, int >" ) );
+    EXPECT_EQ( mtrxHostInt.getType(), TNL::String( "Matrices::Dense< int, Devices::Host, int >" ) );
+}
+
+template< typename MatrixCudaFloat, typename MatrixCudaInt >
+void cuda_test_GetType()
+{
+    MatrixCudaFloat mtrxCudaFloat;
+    MatrixCudaInt mtrxCudaInt;
+
+    EXPECT_EQ( mtrxCudaFloat.getType(), TNL::String( "Matrices::Dense< float, Devices::Cuda, int >" ) );
+    EXPECT_EQ( mtrxCudaInt.getType(), TNL::String( "Matrices::Dense< int, Devices::Cuda, int >" ) );
 }
 
 template< typename Matrix >
@@ -1368,11 +1376,6 @@ using MatrixTypes = ::testing::Types
 >;
 
 TYPED_TEST_SUITE( MatrixTest, MatrixTypes );
-
-TYPED_TEST( MatrixTest, getSerializationType )
-{
-   test_GetSerializationType();
-}
 
 TYPED_TEST( MatrixTest, setDimensionsTest )
 {
