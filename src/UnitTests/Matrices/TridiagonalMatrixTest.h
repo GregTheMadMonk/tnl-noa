@@ -1,8 +1,8 @@
 /***************************************************************************
-                          DenseMatrixTest.h -  description
+                          TridiagonalMatrixTest.h -  description
                              -------------------
-    begin                : Nov 10, 2018
-    copyright            : (C) 2018 by Tomas Oberhuber et al.
+    begin                : Jan 8, 2020
+    copyright            : (C) 2020 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -10,7 +10,7 @@
 
 #include <TNL/Devices/Host.h>
 #include <TNL/Matrices/Matrix.h>
-#include <TNL/Matrices/Dense.h>
+#include <TNL/Matrices/Tridiagonal.h>
 #include <TNL/Containers/Array.h>
 
 #include <TNL/Containers/Vector.h>
@@ -18,37 +18,29 @@
 #include <TNL/Math.h>
 #include <iostream>
 
-using Dense_host_float = TNL::Matrices::Dense< float, TNL::Devices::Host, int >;
-using Dense_host_int = TNL::Matrices::Dense< int, TNL::Devices::Host, int >;
+using Tridiagonal_host_float = TNL::Matrices::Tridiagonal< float, TNL::Devices::Host, int >;
+using Tridiagonal_host_int = TNL::Matrices::Tridiagonal< int, TNL::Devices::Host, int >;
 
-using Dense_cuda_float = TNL::Matrices::Dense< float, TNL::Devices::Cuda, int >;
-using Dense_cuda_int = TNL::Matrices::Dense< int, TNL::Devices::Cuda, int >;
+using Tridiagonal_cuda_float = TNL::Matrices::Tridiagonal< float, TNL::Devices::Cuda, int >;
+using Tridiagonal_cuda_int = TNL::Matrices::Tridiagonal< int, TNL::Devices::Cuda, int >;
 
-static const char* TEST_FILE_NAME = "test_DenseMatrixTest.tnl";
+static const char* TEST_FILE_NAME = "test_TridiagonalMatrixTest.tnl";
 
 #ifdef HAVE_GTEST
 #include <type_traits>
 
 #include <gtest/gtest.h>
 
-template< typename MatrixHostFloat, typename MatrixHostInt >
-void host_test_GetType()
+void test_GetSerializationType()
 {
-    MatrixHostFloat mtrxHostFloat;
-    MatrixHostInt mtrxHostInt;
-
-    EXPECT_EQ( mtrxHostFloat.getType(), TNL::String( "Matrices::Dense< float, Devices::Host, int >" ) );
-    EXPECT_EQ( mtrxHostInt.getType(), TNL::String( "Matrices::Dense< int, Devices::Host, int >" ) );
-}
-
-template< typename MatrixCudaFloat, typename MatrixCudaInt >
-void cuda_test_GetType()
-{
-    MatrixCudaFloat mtrxCudaFloat;
-    MatrixCudaInt mtrxCudaInt;
-
-    EXPECT_EQ( mtrxCudaFloat.getType(), TNL::String( "Matrices::Dense< float, Devices::Cuda, int >" ) );
-    EXPECT_EQ( mtrxCudaInt.getType(), TNL::String( "Matrices::Dense< int, Devices::Cuda, int >" ) );
+   EXPECT_EQ( ( TNL::Matrices::Tridiagonal< float, TNL::Devices::Host, int, true >::getSerializationType() ), TNL::String( "Matrices::Tridiagonal< float, [any_device], int, true, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::Tridiagonal< int,   TNL::Devices::Host, int, true >::getSerializationType() ), TNL::String( "Matrices::Tridiagonal< int, [any_device], int, true, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::Tridiagonal< float, TNL::Devices::Cuda, int, true >::getSerializationType() ), TNL::String( "Matrices::Tridiagonal< float, [any_device], int, true, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::Tridiagonal< int,   TNL::Devices::Cuda, int, true >::getSerializationType() ), TNL::String( "Matrices::Tridiagonal< int, [any_device], int, true, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::Tridiagonal< float, TNL::Devices::Host, int, false >::getSerializationType() ), TNL::String( "Matrices::Tridiagonal< float, [any_device], int, false, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::Tridiagonal< int,   TNL::Devices::Host, int, false >::getSerializationType() ), TNL::String( "Matrices::Tridiagonal< int, [any_device], int, false, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::Tridiagonal< float, TNL::Devices::Cuda, int, false >::getSerializationType() ), TNL::String( "Matrices::Tridiagonal< float, [any_device], int, false, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::Tridiagonal< int,   TNL::Devices::Cuda, int, false >::getSerializationType() ), TNL::String( "Matrices::Tridiagonal< int, [any_device], int, false, [any_allocator] >" ) );
 }
 
 template< typename Matrix >
@@ -1173,11 +1165,11 @@ void test_AssignmentOperator()
    using DeviceType = typename Matrix::DeviceType;
    using IndexType = typename Matrix::IndexType;
 
-   using DenseHost = TNL::Matrices::Dense< RealType, TNL::Devices::Host, IndexType >;
-   using DenseCuda = TNL::Matrices::Dense< RealType, TNL::Devices::Cuda, IndexType >;
+   using TridiagonalHost = TNL::Matrices::Tridiagonal< RealType, TNL::Devices::Host, IndexType >;
+   using TridiagonalCuda = TNL::Matrices::Tridiagonal< RealType, TNL::Devices::Cuda, IndexType >;
 
    const IndexType rows( 10 ), columns( 10 );
-   DenseHost hostMatrix( rows, columns );
+   TridiagonalHost hostMatrix( rows, columns );
    for( IndexType i = 0; i < columns; i++ )
       for( IndexType j = 0; j <= i; j++ )
          hostMatrix( i, j ) = i + j;
@@ -1195,7 +1187,7 @@ void test_AssignmentOperator()
       }
 
 #ifdef HAVE_CUDA
-   DenseCuda cudaMatrix( rows, columns );
+   TridiagonalCuda cudaMatrix( rows, columns );
    for( IndexType i = 0; i < columns; i++ )
       for( IndexType j = 0; j <= i; j++ )
          cudaMatrix.setElement( i, j, i + j );
@@ -1347,35 +1339,40 @@ protected:
 // types for which MatrixTest is instantiated
 using MatrixTypes = ::testing::Types
 <
-    TNL::Matrices::Dense< int,    TNL::Devices::Host, short >,
-    TNL::Matrices::Dense< long,   TNL::Devices::Host, short >,
-    TNL::Matrices::Dense< float,  TNL::Devices::Host, short >,
-    TNL::Matrices::Dense< double, TNL::Devices::Host, short >,
-    TNL::Matrices::Dense< int,    TNL::Devices::Host, int >,
-    TNL::Matrices::Dense< long,   TNL::Devices::Host, int >,
-    TNL::Matrices::Dense< float,  TNL::Devices::Host, int >,
-    TNL::Matrices::Dense< double, TNL::Devices::Host, int >,
-    TNL::Matrices::Dense< int,    TNL::Devices::Host, long >,
-    TNL::Matrices::Dense< long,   TNL::Devices::Host, long >,
-    TNL::Matrices::Dense< float,  TNL::Devices::Host, long >,
-    TNL::Matrices::Dense< double, TNL::Devices::Host, long >
+    TNL::Matrices::Tridiagonal< int,    TNL::Devices::Host, short >,
+    TNL::Matrices::Tridiagonal< long,   TNL::Devices::Host, short >,
+    TNL::Matrices::Tridiagonal< float,  TNL::Devices::Host, short >,
+    TNL::Matrices::Tridiagonal< double, TNL::Devices::Host, short >,
+    TNL::Matrices::Tridiagonal< int,    TNL::Devices::Host, int >,
+    TNL::Matrices::Tridiagonal< long,   TNL::Devices::Host, int >,
+    TNL::Matrices::Tridiagonal< float,  TNL::Devices::Host, int >,
+    TNL::Matrices::Tridiagonal< double, TNL::Devices::Host, int >,
+    TNL::Matrices::Tridiagonal< int,    TNL::Devices::Host, long >,
+    TNL::Matrices::Tridiagonal< long,   TNL::Devices::Host, long >,
+    TNL::Matrices::Tridiagonal< float,  TNL::Devices::Host, long >,
+    TNL::Matrices::Tridiagonal< double, TNL::Devices::Host, long >
 #ifdef HAVE_CUDA
-    ,TNL::Matrices::Dense< int,    TNL::Devices::Cuda, short >,
-    TNL::Matrices::Dense< long,   TNL::Devices::Cuda, short >,
-    TNL::Matrices::Dense< float,  TNL::Devices::Cuda, short >,
-    TNL::Matrices::Dense< double, TNL::Devices::Cuda, short >,
-    TNL::Matrices::Dense< int,    TNL::Devices::Cuda, int >,
-    TNL::Matrices::Dense< long,   TNL::Devices::Cuda, int >,
-    TNL::Matrices::Dense< float,  TNL::Devices::Cuda, int >,
-    TNL::Matrices::Dense< double, TNL::Devices::Cuda, int >,
-    TNL::Matrices::Dense< int,    TNL::Devices::Cuda, long >,
-    TNL::Matrices::Dense< long,   TNL::Devices::Cuda, long >,
-    TNL::Matrices::Dense< float,  TNL::Devices::Cuda, long >,
-    TNL::Matrices::Dense< double, TNL::Devices::Cuda, long >
+    ,TNL::Matrices::Tridiagonal< int,    TNL::Devices::Cuda, short >,
+    TNL::Matrices::Tridiagonal< long,   TNL::Devices::Cuda, short >,
+    TNL::Matrices::Tridiagonal< float,  TNL::Devices::Cuda, short >,
+    TNL::Matrices::Tridiagonal< double, TNL::Devices::Cuda, short >,
+    TNL::Matrices::Tridiagonal< int,    TNL::Devices::Cuda, int >,
+    TNL::Matrices::Tridiagonal< long,   TNL::Devices::Cuda, int >,
+    TNL::Matrices::Tridiagonal< float,  TNL::Devices::Cuda, int >,
+    TNL::Matrices::Tridiagonal< double, TNL::Devices::Cuda, int >,
+    TNL::Matrices::Tridiagonal< int,    TNL::Devices::Cuda, long >,
+    TNL::Matrices::Tridiagonal< long,   TNL::Devices::Cuda, long >,
+    TNL::Matrices::Tridiagonal< float,  TNL::Devices::Cuda, long >,
+    TNL::Matrices::Tridiagonal< double, TNL::Devices::Cuda, long >
 #endif
 >;
 
 TYPED_TEST_SUITE( MatrixTest, MatrixTypes );
+
+TYPED_TEST( Matrix, getSerializationType )
+{
+   test_GetSerializationType();
+}
 
 TYPED_TEST( MatrixTest, setDimensionsTest )
 {
@@ -1491,114 +1488,114 @@ TYPED_TEST( MatrixTest, printTest )
 
 //// test_getType is not general enough yet. DO NOT TEST IT YET.
 
-//TEST( DenseMatrixTest, Dense_GetTypeTest_Host )
+//TEST( TridiagonalMatrixTest, Tridiagonal_GetTypeTest_Host )
 //{
-//    host_test_GetType< Dense_host_float, Dense_host_int >();
+//    host_test_GetType< Tridiagonal_host_float, Tridiagonal_host_int >();
 //}
 //
 //#ifdef HAVE_CUDA
-//TEST( DenseMatrixTest, Dense_GetTypeTest_Cuda )
+//TEST( TridiagonalMatrixTest, Tridiagonal_GetTypeTest_Cuda )
 //{
-//    cuda_test_GetType< Dense_cuda_float, Dense_cuda_int >();
+//    cuda_test_GetType< Tridiagonal_cuda_float, Tridiagonal_cuda_int >();
 //}
 //#endif
 
-/*TEST( DenseMatrixTest, Dense_getMatrixProductTest_Host )
+/*TEST( TridiagonalMatrixTest, Tridiagonal_getMatrixProductTest_Host )
 {
     bool testRan = false;
     EXPECT_TRUE( testRan );
     std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
     std::cout << "If launched on CPU, this test will not build, but will print the following message: \n";
-    std::cout << "      /home/lukas/tnl-dev/src/TNL/Matrices/Dense_impl.h(609): error: no instance of function template \"TNL::Matrices::DenseMatrixProductKernel\" matches the argument list\n";
-    std::cout << "              argument types are: (TNL::Matrices::Dense<int, TNL::Devices::Host, int> *, Dense_host_int *, Dense_host_int *, const int, const int, int, int)\n";
+    std::cout << "      /home/lukas/tnl-dev/src/TNL/Matrices/Tridiagonal_impl.h(609): error: no instance of function template \"TNL::Matrices::TridiagonalMatrixProductKernel\" matches the argument list\n";
+    std::cout << "              argument types are: (TNL::Matrices::Tridiagonal<int, TNL::Devices::Host, int> *, Tridiagonal_host_int *, Tridiagonal_host_int *, const int, const int, int, int)\n";
     std::cout << "          detected during:\n";
-    std::cout << "              instantiation of \"void TNL::Matrices::Dense<Real, Device, Index>::getMatrixProduct(const Matrix1 &, const Matrix2 &, const TNL::Matrices::Dense<Real, Device, Index>::RealType &, const TNL::Matrices::Dense<Real, Device, Index>::RealType &) [with Real=int, Device=TNL::Devices::Host, Index=int, Matrix1=Dense_host_int, Matrix2=Dense_host_int, tileDim=32]\"\n";
-    std::cout << "              /home/lukas/tnl-dev/src/UnitTests/Matrices/DenseMatrixTest.h(901): here\n";
-    std::cout << "                  instantiation of \"void test_GetMatrixProduct<Matrix>() [with Matrix=Dense_host_int]\"\n";
-    std::cout << "              /home/lukas/tnl-dev/src/UnitTests/Matrices/DenseMatrixTest.h(1315): here\n\n";
+    std::cout << "              instantiation of \"void TNL::Matrices::Tridiagonal<Real, Device, Index>::getMatrixProduct(const Matrix1 &, const Matrix2 &, const TNL::Matrices::Tridiagonal<Real, Device, Index>::RealType &, const TNL::Matrices::Tridiagonal<Real, Device, Index>::RealType &) [with Real=int, Device=TNL::Devices::Host, Index=int, Matrix1=Tridiagonal_host_int, Matrix2=Tridiagonal_host_int, tileDim=32]\"\n";
+    std::cout << "              /home/lukas/tnl-dev/src/UnitTests/Matrices/TridiagonalMatrixTest.h(901): here\n";
+    std::cout << "                  instantiation of \"void test_GetMatrixProduct<Matrix>() [with Matrix=Tridiagonal_host_int]\"\n";
+    std::cout << "              /home/lukas/tnl-dev/src/UnitTests/Matrices/TridiagonalMatrixTest.h(1315): here\n\n";
 }
 
 #ifdef HAVE_CUDA
-TEST( DenseMatrixTest, Dense_getMatrixProductTest_Cuda )
+TEST( TridiagonalMatrixTest, Tridiagonal_getMatrixProductTest_Cuda )
 {
     bool testRan = false;
     EXPECT_TRUE( testRan );
     std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
     std::cout << "If launched on GPU, this test will not build, but will print the following message: \n";
-    std::cout << "      /home/lukas/tnl-dev/src/TNL/Matrices/Dense_impl.h(510): error: identifier \"tnlCudaMin\" is undefined\n";
+    std::cout << "      /home/lukas/tnl-dev/src/TNL/Matrices/Tridiagonal_impl.h(510): error: identifier \"tnlCudaMin\" is undefined\n";
     std::cout << "          detected during:\n";
-    std::cout << "              instantiation of \"void TNL::Matrices::DenseMatrixProductKernel<Real,Index,Matrix1,Matrix2,tileDim,tileRowBlockSize>(TNL::Matrices::Dense<Real, TNL::Devices::Cuda, Index> *, const Matrix1 *, const Matrix2 *, Real, Real, Index, Index) [with Real=int, Index=int, Matrix1=Dense_cuda_int, Matrix2=Dense_cuda_int, tileDim=32, tileRowBlockSize=8]\"\n";
-    std::cout << "              instantiation of \"void TNL::Matrices::Dense<Real, Device, Index>::getMatrixProduct(const Matrix1 &, const Matrix2 &, const TNL::Matrices::Dense<Real, Device, Index>::RealType &, const TNL::Matrices::Dense<Real, Device, Index>::RealType &) [with Real=int, Device=TNL::Devices::Cuda, Index=int, Matrix1=Dense_cuda_int, Matrix2=Dense_cuda_int, tileDim=32]\"\n";
-    std::cout << "              /home/lukas/tnl-dev/src/UnitTests/Matrices/DenseMatrixTest.h(901): here\n";
-    std::cout << "                  instantiation of \"void test_GetMatrixProduct<Matrix>() [with Matrix=Dense_cuda_int]\"\n";
-    std::cout << "              /home/lukas/tnl-dev/src/UnitTests/Matrices/DenseMatrixTest.h(1332): here\n\n";
+    std::cout << "              instantiation of \"void TNL::Matrices::TridiagonalMatrixProductKernel<Real,Index,Matrix1,Matrix2,tileDim,tileRowBlockSize>(TNL::Matrices::Tridiagonal<Real, TNL::Devices::Cuda, Index> *, const Matrix1 *, const Matrix2 *, Real, Real, Index, Index) [with Real=int, Index=int, Matrix1=Tridiagonal_cuda_int, Matrix2=Tridiagonal_cuda_int, tileDim=32, tileRowBlockSize=8]\"\n";
+    std::cout << "              instantiation of \"void TNL::Matrices::Tridiagonal<Real, Device, Index>::getMatrixProduct(const Matrix1 &, const Matrix2 &, const TNL::Matrices::Tridiagonal<Real, Device, Index>::RealType &, const TNL::Matrices::Tridiagonal<Real, Device, Index>::RealType &) [with Real=int, Device=TNL::Devices::Cuda, Index=int, Matrix1=Tridiagonal_cuda_int, Matrix2=Tridiagonal_cuda_int, tileDim=32]\"\n";
+    std::cout << "              /home/lukas/tnl-dev/src/UnitTests/Matrices/TridiagonalMatrixTest.h(901): here\n";
+    std::cout << "                  instantiation of \"void test_GetMatrixProduct<Matrix>() [with Matrix=Tridiagonal_cuda_int]\"\n";
+    std::cout << "              /home/lukas/tnl-dev/src/UnitTests/Matrices/TridiagonalMatrixTest.h(1332): here\n\n";
 }
 #endif
 
-TEST( DenseMatrixTest, Dense_getTranspositionTest_Host )
+TEST( TridiagonalMatrixTest, Tridiagonal_getTranspositionTest_Host )
 {
-//    test_GetTransposition< Dense_host_int >();
+//    test_GetTransposition< Tridiagonal_host_int >();
     bool testRan = false;
     EXPECT_TRUE( testRan );
     std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
     std::cout << "If launched on CPU, this test will not build, but will print the following message: \n";
-    std::cout << "      /home/lukas/tnl-dev/src/TNL/Matrices/Dense_impl.h(836): error: no instance of function template \"TNL::Matrices::DenseTranspositionAlignedKernel\" matches the argument list\n";
-    std::cout << "              argument types are: (TNL::Matrices::Dense<int, TNL::Devices::Host, int> *, Dense_host_int *, const int, int, int)\n";
+    std::cout << "      /home/lukas/tnl-dev/src/TNL/Matrices/Tridiagonal_impl.h(836): error: no instance of function template \"TNL::Matrices::TridiagonalTranspositionAlignedKernel\" matches the argument list\n";
+    std::cout << "              argument types are: (TNL::Matrices::Tridiagonal<int, TNL::Devices::Host, int> *, Tridiagonal_host_int *, const int, int, int)\n";
     std::cout << "          detected during:\n";
-    std::cout << "              instantiation of \"void TNL::Matrices::Dense<Real, Device, Index>::getTransposition(const Matrix &, const TNL::Matrices::Dense<Real, Device, Index>::RealType &) [with Real=int, Device=TNL::Devices::Host, Index=int, Matrix=Dense_host_int, tileDim=32]\"\n";
-    std::cout << "              /home/lukas/tnl-dev/src/UnitTests/Matrices/DenseMatrixTest.h(977): here\n";
-    std::cout << "                  instantiation of \"void test_GetTransposition<Matrix>() [with Matrix=Dense_host_int]\"\n";
-    std::cout << "              /home/lukas/tnl-dev/src/UnitTests/Matrices/DenseMatrixTest.h(1420): here\n\n";
+    std::cout << "              instantiation of \"void TNL::Matrices::Tridiagonal<Real, Device, Index>::getTransposition(const Matrix &, const TNL::Matrices::Tridiagonal<Real, Device, Index>::RealType &) [with Real=int, Device=TNL::Devices::Host, Index=int, Matrix=Tridiagonal_host_int, tileDim=32]\"\n";
+    std::cout << "              /home/lukas/tnl-dev/src/UnitTests/Matrices/TridiagonalMatrixTest.h(977): here\n";
+    std::cout << "                  instantiation of \"void test_GetTransposition<Matrix>() [with Matrix=Tridiagonal_host_int]\"\n";
+    std::cout << "              /home/lukas/tnl-dev/src/UnitTests/Matrices/TridiagonalMatrixTest.h(1420): here\n\n";
     std::cout << "AND this message: \n";
-    std::cout << "      /home/lukas/tnl-dev/src/TNL/Matrices/Dense_impl.h(852): error: no instance of function template \"TNL::Matrices::DenseTranspositionNonAlignedKernel\" matches the argument list\n";
-    std::cout << "              argument types are: (TNL::Matrices::Dense<int, TNL::Devices::Host, int> *, Dense_host_int *, const int, int, int)\n";
+    std::cout << "      /home/lukas/tnl-dev/src/TNL/Matrices/Tridiagonal_impl.h(852): error: no instance of function template \"TNL::Matrices::TridiagonalTranspositionNonAlignedKernel\" matches the argument list\n";
+    std::cout << "              argument types are: (TNL::Matrices::Tridiagonal<int, TNL::Devices::Host, int> *, Tridiagonal_host_int *, const int, int, int)\n";
     std::cout << "          detected during:\n";
-    std::cout << "              instantiation of \"void TNL::Matrices::Dense<Real, Device, Index>::getTransposition(const Matrix &, const TNL::Matrices::Dense<Real, Device, Index>::RealType &) [with Real=int, Device=TNL::Devices::Host, Index=int, Matrix=Dense_host_int, tileDim=32]\"\n";
-    std::cout << "              /home/lukas/tnl-dev/src/UnitTests/Matrices/DenseMatrixTest.h(977): here\n";
-    std::cout << "                  instantiation of \"void test_GetTransposition<Matrix>() [with Matrix=Dense_host_int]\"\n";
-    std::cout << "              /home/lukas/tnl-dev/src/UnitTests/Matrices/DenseMatrixTest.h(1420): here\n\n";
+    std::cout << "              instantiation of \"void TNL::Matrices::Tridiagonal<Real, Device, Index>::getTransposition(const Matrix &, const TNL::Matrices::Tridiagonal<Real, Device, Index>::RealType &) [with Real=int, Device=TNL::Devices::Host, Index=int, Matrix=Tridiagonal_host_int, tileDim=32]\"\n";
+    std::cout << "              /home/lukas/tnl-dev/src/UnitTests/Matrices/TridiagonalMatrixTest.h(977): here\n";
+    std::cout << "                  instantiation of \"void test_GetTransposition<Matrix>() [with Matrix=Tridiagonal_host_int]\"\n";
+    std::cout << "              /home/lukas/tnl-dev/src/UnitTests/Matrices/TridiagonalMatrixTest.h(1420): here\n\n";
 }
 
 #ifdef HAVE_CUDA
-TEST( DenseMatrixTest, Dense_getTranspositionTest_Cuda )
+TEST( TridiagonalMatrixTest, Tridiagonal_getTranspositionTest_Cuda )
 {
-//    test_GetTransposition< Dense_cuda_int >();
+//    test_GetTransposition< Tridiagonal_cuda_int >();
     bool testRan = false;
     EXPECT_TRUE( testRan );
     std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
     std::cout << "If launched on GPU, this test throws the following message: \n";
     std::cout << "  Assertion 'row >= 0 && row < this->getRows() && column >= 0 && column < this->getColumns()' failed !!!\n";
-    std::cout << "      File: /home/lukas/tnl-dev/src/TNL/Matrices/Dense_impl.h \n";
+    std::cout << "      File: /home/lukas/tnl-dev/src/TNL/Matrices/Tridiagonal_impl.h \n";
     std::cout << "      Line: 329 \n";
     std::cout << "      Diagnostics: Not supported with CUDA.\n";
     std::cout << "  Assertion 'row >= 0 && row < this->getRows() && column >= 0 && column < this->getColumns()' failed !!! \n";
-    std::cout << "      File: /home/lukas/tnl-dev/src/TNL/Matrices/Dense_impl.h \n";
+    std::cout << "      File: /home/lukas/tnl-dev/src/TNL/Matrices/Tridiagonal_impl.h \n";
     std::cout << "      Line: 329 \n";
     std::cout << "      Diagnostics: Not supported with CUDA.\n";
     std::cout << "  Assertion 'row >= 0 && row < this->getRows() && column >= 0 && column < this->getColumns()' failed !!! \n";
-    std::cout << "      File: /home/lukas/tnl-dev/src/TNL/Matrices/Dense_impl.h \n";
+    std::cout << "      File: /home/lukas/tnl-dev/src/TNL/Matrices/Tridiagonal_impl.h \n";
     std::cout << "      Line: 329 \n";
     std::cout << "      Diagnostics: Not supported with CUDA.\n";
     std::cout << "  Assertion 'row >= 0 && row < this->getRows() && column >= 0 && column < this->getColumns()' failed !!! \n";
-    std::cout << "      File: /home/lukas/tnl-dev/src/TNL/Matrices/Dense_impl.h \n";
+    std::cout << "      File: /home/lukas/tnl-dev/src/TNL/Matrices/Tridiagonal_impl.h \n";
     std::cout << "      Line: 329 \n";
     std::cout << "      Diagnostics: Not supported with CUDA.\n";
     std::cout << "  terminate called after throwing an instance of 'TNL::Exceptions::CudaRuntimeError'\n";
     std::cout << "          what():  CUDA ERROR 4 (cudaErrorLaunchFailure): unspecified launch failure.\n";
     std::cout << "  Source: line 57 in /home/lukas/tnl-dev/src/TNL/Containers/Algorithms/ArrayOperationsCuda_impl.h: unspecified launch failure\n";
-    std::cout << "  [1]    4003 abort (core dumped)  ./DenseMatrixTest-dbg\n";
+    std::cout << "  [1]    4003 abort (core dumped)  ./TridiagonalMatrixTest-dbg\n";
 }
 #endif
 
-TEST( DenseMatrixTest, Dense_performSORIterationTest_Host )
+TEST( TridiagonalMatrixTest, Tridiagonal_performSORIterationTest_Host )
 {
-    test_PerformSORIteration< Dense_host_float >();
+    test_PerformSORIteration< Tridiagonal_host_float >();
 }
 
 #ifdef HAVE_CUDA
-TEST( DenseMatrixTest, Dense_performSORIterationTest_Cuda )
+TEST( TridiagonalMatrixTest, Tridiagonal_performSORIterationTest_Cuda )
 {
-//    test_PerformSORIteration< Dense_cuda_float >();
+//    test_PerformSORIteration< Tridiagonal_cuda_float >();
     bool testRan = false;
     EXPECT_TRUE( testRan );
     std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
