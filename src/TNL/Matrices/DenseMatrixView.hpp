@@ -15,7 +15,7 @@
 #include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
-namespace Matrices {   
+namespace Matrices {
 
 template< typename Real,
           typename Device,
@@ -50,7 +50,7 @@ auto
 DenseMatrixView< Real, Device, Index, RowMajorOrder >::
 getView() -> ViewType
 {
-   return ViewType( this->getRows(), 
+   return ViewType( this->getRows(),
                     this->getColumns(),
                     this->getValues().getView(),
                     this->columnIndexes.getView(),
@@ -82,9 +82,9 @@ DenseMatrixView< Real, Device, Index, RowMajorOrder >::
 getSerializationType()
 {
    return String( "Matrices::Dense< " ) +
-          getType< RealType >() + ", " +
-          getType< Device >() + ", " +
-          getType< IndexType >() + " >";
+          TNL::getSerializationType< RealType >() + ", [any_device], " +
+          TNL::getSerializationType< IndexType >() +
+          ( RowMajorOrder ? "true" : "false" ) + ", [any_allocator] >";
 }
 
 template< typename Real,
@@ -271,7 +271,7 @@ template< typename Real,
           typename Device,
           typename Index,
           bool RowMajorOrder >
-Real 
+Real
 DenseMatrixView< Real, Device, Index, RowMajorOrder >::
 getElement( const IndexType row,
             const IndexType column ) const
@@ -783,7 +783,7 @@ void DenseMatrixView< Real, Device, Index, RowMajorOrder >::getTransposition( co
                     << "This matrix rows: " << this->getRows() << std::endl
                     << "That matrix columns: " << matrix.getColumns() << std::endl
                     << "That matrix rows: " << matrix.getRows() << std::endl );
- 
+
    if( std::is_same< Device, Devices::Host >::value )
    {
       const IndexType& rows = matrix.getRows();

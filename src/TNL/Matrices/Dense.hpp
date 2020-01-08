@@ -15,7 +15,7 @@
 #include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
-namespace Matrices {   
+namespace Matrices {
 
 template< typename Real,
           typename Device,
@@ -46,7 +46,7 @@ auto
 Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
 getView() -> ViewType
 {
-   return ViewType( this->getRows(), 
+   return ViewType( this->getRows(),
                     this->getColumns(),
                     this->getValues().getView(),
                     this->segments.getView() );
@@ -77,9 +77,9 @@ Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
 getSerializationType()
 {
    return String( "Matrices::Dense< " ) +
-          getType< RealType >() + ", " +
-          getType< Device >() + ", " +
-          getType< IndexType >() + " >";
+          TNL::getSerializationType< RealType >() + ", [any_device], " +
+          TNL::getSerializationType< IndexType >() +
+          ( RowMajorOrder ? "true" : "false" ) + ", [any_allocator] >";
 }
 
 template< typename Real,
@@ -99,7 +99,7 @@ template< typename Real,
           typename Index,
           bool RowMajorOrder,
           typename RealAllocator >
-void 
+void
 Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
 setDimensions( const IndexType rows,
                const IndexType columns )
@@ -128,7 +128,7 @@ template< typename Real,
           typename Index,
           bool RowMajorOrder,
           typename RealAllocator >
-void 
+void
 Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
 setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths )
 {
@@ -322,7 +322,7 @@ template< typename Real,
           typename Index,
           bool RowMajorOrder,
           typename RealAllocator >
-Real 
+Real
 Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
 getElement( const IndexType row,
             const IndexType column ) const
@@ -447,7 +447,7 @@ template< typename Real,
           typename RealAllocator >
    template< typename InVector,
              typename OutVector >
-void 
+void
 Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
 vectorProduct( const InVector& inVector, OutVector& outVector ) const
 {
@@ -857,7 +857,7 @@ void Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::getTranspositio
                     << "This matrix rows: " << this->getRows() << std::endl
                     << "That matrix columns: " << matrix.getColumns() << std::endl
                     << "That matrix rows: " << matrix.getRows() << std::endl );
- 
+
    if( std::is_same< Device, Devices::Host >::value )
    {
       const IndexType& rows = matrix.getRows();

@@ -56,7 +56,7 @@ class Dense : public Matrix< Real, Device, Index >
       Dense();
 
       Dense( const IndexType rows, const IndexType columns );
-      
+
       ViewType getView();
 
       ConstViewType getConstView() const;
@@ -179,7 +179,7 @@ class Dense : public Matrix< Real, Device, Index >
 
       template< typename Real_, typename Device_, typename Index_, typename RealAllocator_ >
       bool operator!=( const Dense< Real_, Device_, Index_, RowMajorOrder >& matrix ) const;
-      
+
       void save( const String& fileName ) const;
 
       void load( const String& fileName );
