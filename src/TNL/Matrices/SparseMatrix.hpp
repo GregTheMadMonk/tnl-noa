@@ -515,7 +515,6 @@ forRows( IndexType first, IndexType last, Function& function )
       return true;
    };
    this->segments.forSegments( first, last, f );
-
 }
 
 template< typename Real,

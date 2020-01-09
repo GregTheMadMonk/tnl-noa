@@ -587,7 +587,7 @@ void test_SetRow()
          { 2, 3, 4, 5, 6 } };
       auto row = matrix_view.getRow( rowIdx );
       for( IndexType i = 0; i < 5; i++ )
-        row.setElement( columnIndexes[ rowIdx ][ i ], values[ rowIdx ][ i ] );
+        row.setElement( i, values[ rowIdx ][ i ] );
    };
    TNL::Algorithms::ParallelFor< DeviceType >::exec( 0, 3, f );
 
@@ -1172,7 +1172,7 @@ void test_AssignmentOperator()
    TridiagonalHost hostMatrix( rows, columns );
    for( IndexType i = 0; i < columns; i++ )
       for( IndexType j = 0; j <= i; j++ )
-         hostMatrix( i, j ) = i + j;
+         hostMatrix.setElement( i, j,  i + j );
 
    Matrix matrix( rows, columns );
    matrix.getValues() = 0.0;
@@ -1369,7 +1369,7 @@ using MatrixTypes = ::testing::Types
 
 TYPED_TEST_SUITE( MatrixTest, MatrixTypes );
 
-TYPED_TEST( Matrix, getSerializationType )
+TYPED_TEST( MatrixTest, getSerializationType )
 {
    test_GetSerializationType();
 }

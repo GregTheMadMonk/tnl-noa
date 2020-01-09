@@ -1,8 +1,8 @@
 /***************************************************************************
-                          Tridiagonal.h  -  description
+                          TridiagonalMatrixView.h  -  description
                              -------------------
-    begin                : Nov 30, 2013
-    copyright            : (C) 2013 by Tomas Oberhuber
+    begin                : Jan 9, 2020
+    copyright            : (C) 2020 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -10,200 +10,163 @@
 
 #pragma once
 
-#include <TNL/Matrices/Matrix.h>
+#include <TNL/Matrices/MatrixView.h>
 #include <TNL/Containers/Vector.h>
-#include <TNL/Matrices/TridiagonalRow.h>
+#include <TNL/Matrices/TridiagonalMatrixRowView.h>
+#include <TNL/Containers/Segments/Ellpack.h>
+#include <TNL/Matrices/details/TridiagonalMatrixIndexer.h>
 
 namespace TNL {
-namespace Matrices {   
-
-template< typename Device >
-class TridiagonalDeviceDependentCode;
+namespace Matrices {
 
 template< typename Real = double,
           typename Device = Devices::Host,
-          typename Index = int >
-class Tridiagonal : public Matrix< Real, Device, Index >
+          typename Index = int,
+          bool RowMajorOrder = std::is_same< Device, Devices::Host >::value >
+class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
 {
-private:
-   // convenient template alias for controlling the selection of copy-assignment operator
-   template< typename Device2 >
-   using Enabler = std::enable_if< ! std::is_same< Device2, Device >::value >;
+   public:
+      using RealType = Real;
+      using DeviceType = Device;
+      using IndexType = Index;
+      using BaseType = MatrixView< Real, Device, Index >;
+      using IndexerType = details::TridiagonalMatrixIndexer< IndexType, RowMajorOrder >;
+      using ValuesViewType = typename BaseType::ValuesView;
+      using ViewType = TridiagonalMatrixView< Real, Device, Index, RowMajorOrder >;
+      using ConstViewType = TridiagonalMatrixView< typename std::add_const< Real >::type, Device, Index, RowMajorOrder >;
+      using RowView = TridiagonalMatrixRowView< ValuesViewType, IndexerType >;
 
-   // friend class will be needed for templated assignment operators
-   template< typename Real2, typename Device2, typename Index2 >
-   friend class Tridiagonal;
+      // TODO: remove this - it is here only for compatibility with original matrix implementation
+      typedef Containers::Vector< IndexType, DeviceType, IndexType > CompressedRowLengthsVector;
+      typedef Containers::VectorView< IndexType, DeviceType, IndexType > CompressedRowLengthsVectorView;
+      typedef typename CompressedRowLengthsVectorView::ConstViewType ConstCompressedRowLengthsVectorView;
 
-public:
-   typedef Real RealType;
-   typedef Device DeviceType;
-   typedef Index IndexType;
-   typedef typename Matrix< Real, Device, Index >::CompressedRowLengthsVector CompressedRowLengthsVector;
-   typedef typename Matrix< Real, Device, Index >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
-   typedef Matrix< Real, Device, Index > BaseType;
-   typedef TridiagonalRow< Real, Index > MatrixRow;
+      template< typename _Real = Real,
+                typename _Device = Device,
+                typename _Index = Index,
+                bool RowMajorOrder_ = std::is_same< Device, Devices::Host >::value >
+      using Self = TridiagonalMatrixView< _Real, _Device, _Index, RowMajorOrder_ >;
 
-   template< typename _Real = Real,
-             typename _Device = Device,
-             typename _Index = Index >
-   using Self = Tridiagonal< _Real, _Device, _Index >;
+      TridiagonalMatrixView();
 
-   Tridiagonal();
+      TridiagonalMatrixView( const ValuesViewType& values, const IndexerType& indexer );
 
-   static String getSerializationType();
+      ViewType getView();
 
-   virtual String getSerializationTypeVirtual() const;
+      ConstViewType getConstView() const;
 
-   void setDimensions( const IndexType rows,
-                       const IndexType columns );
+      static String getSerializationType();
 
-   void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths );
+      virtual String getSerializationTypeVirtual() const;
 
-   IndexType getRowLength( const IndexType row ) const;
+      void setDimensions( const IndexType rows,
+                          const IndexType columns );
 
-   __cuda_callable__
-   IndexType getRowLengthFast( const IndexType row ) const;
+      template< typename Vector >
+      void getCompressedRowLengths( Vector& rowLengths ) const;
 
-   IndexType getMaxRowLength() const;
+      [[deprecated]]
+      IndexType getRowLength( const IndexType row ) const;
 
-   template< typename Real2, typename Device2, typename Index2 >
-   void setLike( const Tridiagonal< Real2, Device2, Index2 >& m );
+      IndexType getMaxRowLength() const;
 
-   IndexType getNumberOfMatrixElements() const;
+      IndexType getNumberOfMatrixElements() const;
 
-   IndexType getNumberOfNonzeroMatrixElements() const;
+      IndexType getNumberOfNonzeroMatrixElements() const;
 
-   IndexType getMaxRowlength() const;
+      IndexType getMaxRowlength() const;
 
-   void reset();
+      template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_ >
+      bool operator == ( const TridiagonalMatrixView< Real_, Device_, Index_, RowMajorOrder_ >& matrix ) const;
 
-   template< typename Real2, typename Device2, typename Index2 >
-   bool operator == ( const Tridiagonal< Real2, Device2, Index2 >& matrix ) const;
+      template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_ >
+      bool operator != ( const TridiagonalMatrixView< Real_, Device_, Index_, RowMajorOrder_ >& matrix ) const;
 
-   template< typename Real2, typename Device2, typename Index2 >
-   bool operator != ( const Tridiagonal< Real2, Device2, Index2 >& matrix ) const;
+      RowView getRow( const IndexType& rowIdx );
 
-   void setValue( const RealType& v );
+      const RowView getRow( const IndexType& rowIdx ) const;
 
-   __cuda_callable__
-   bool setElementFast( const IndexType row,
-                        const IndexType column,
-                        const RealType& value );
+      void setValue( const RealType& v );
 
-   bool setElement( const IndexType row,
-                    const IndexType column,
-                    const RealType& value );
+      bool setElement( const IndexType row,
+                       const IndexType column,
+                       const RealType& value );
 
-   __cuda_callable__
-   bool addElementFast( const IndexType row,
-                        const IndexType column,
-                        const RealType& value,
-                        const RealType& thisElementMultiplicator = 1.0 );
+      bool addElement( const IndexType row,
+                       const IndexType column,
+                       const RealType& value,
+                       const RealType& thisElementMultiplicator = 1.0 );
 
-   bool addElement( const IndexType row,
-                    const IndexType column,
-                    const RealType& value,
-                    const RealType& thisElementMultiplicator = 1.0 );
+      RealType getElement( const IndexType row,
+                           const IndexType column ) const;
 
-   __cuda_callable__
-   bool setRowFast( const IndexType row,
-                    const IndexType* columns,
-                    const RealType* values,
-                    const IndexType elements );
+      template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
+      void rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
-   bool setRow( const IndexType row,
-                const IndexType* columns,
-                const RealType* values,
-                const IndexType elements );
+      template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
+      void allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
 
-   __cuda_callable__
-   bool addRowFast( const IndexType row,
-                    const IndexType* columns,
-                    const RealType* values,
-                    const IndexType elements,
-                    const RealType& thisRowMultiplicator = 1.0 );
+      template< typename Function >
+      void forRows( IndexType first, IndexType last, Function& function ) const;
 
-   bool addRow( const IndexType row,
-                const IndexType* columns,
-                const RealType* values,
-                const IndexType elements,
-                const RealType& thisRowMultiplicator = 1.0 );
+      template< typename Function >
+      void forRows( IndexType first, IndexType last, Function& function );
 
-   __cuda_callable__
-   RealType getElementFast( const IndexType row,
-                            const IndexType column ) const;
+      template< typename Function >
+      void forAllRows( Function& function ) const;
 
-   RealType getElement( const IndexType row,
-                        const IndexType column ) const;
+      template< typename Function >
+      void forAllRows( Function& function );
 
-   __cuda_callable__
-   void getRowFast( const IndexType row,
-                    IndexType* columns,
-                    RealType* values ) const;
+      template< typename Vector >
+      __cuda_callable__
+      typename Vector::RealType rowVectorProduct( const IndexType row,
+                                                  const Vector& vector ) const;
 
-   __cuda_callable__
-   MatrixRow getRow( const IndexType rowIndex );
+      template< typename InVector,
+                typename OutVector >
+      void vectorProduct( const InVector& inVector,
+                          OutVector& outVector ) const;
 
-   __cuda_callable__
-   const MatrixRow getRow( const IndexType rowIndex ) const;
+      template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_ >
+      void addMatrix( const TridiagonalMatrixView< Real_, Device_, Index_, RowMajorOrder_ >& matrix,
+                      const RealType& matrixMultiplicator = 1.0,
+                      const RealType& thisMatrixMultiplicator = 1.0 );
 
-   template< typename Vector >
-   __cuda_callable__
-   typename Vector::RealType rowVectorProduct( const IndexType row,
-                                               const Vector& vector ) const;
+      template< typename Real2, typename Index2 >
+      void getTransposition( const TridiagonalMatrixView< Real2, Device, Index2 >& matrix,
+                             const RealType& matrixMultiplicator = 1.0 );
 
-   template< typename InVector,
-             typename OutVector >
-   void vectorProduct( const InVector& inVector,
-                       OutVector& outVector ) const;
+      template< typename Vector1, typename Vector2 >
+      __cuda_callable__
+      void performSORIteration( const Vector1& b,
+                                const IndexType row,
+                                Vector2& x,
+                                const RealType& omega = 1.0 ) const;
 
-   template< typename Real2, typename Index2 >
-   void addMatrix( const Tridiagonal< Real2, Device, Index2 >& matrix,
-                   const RealType& matrixMultiplicator = 1.0,
-                   const RealType& thisMatrixMultiplicator = 1.0 );
+      // copy assignment
+      TridiagonalMatrixView& operator=( const TridiagonalMatrixView& matrix );
 
-   template< typename Real2, typename Index2 >
-   void getTransposition( const Tridiagonal< Real2, Device, Index2 >& matrix,
-                          const RealType& matrixMultiplicator = 1.0 );
+      // cross-device copy assignment
+      template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_ >
+      TridiagonalMatrixView& operator=( const TridiagonalMatrixView< Real_, Device_, Index_, RowMajorOrder_ >& matrix );
 
-   template< typename Vector1, typename Vector2 >
-   __cuda_callable__
-   void performSORIteration( const Vector1& b,
-                             const IndexType row,
-                             Vector2& x,
-                             const RealType& omega = 1.0 ) const;
+      void save( File& file ) const;
 
-   // copy assignment
-   Tridiagonal& operator=( const Tridiagonal& matrix );
+      void save( const String& fileName ) const;
 
-   // cross-device copy assignment
-   template< typename Real2, typename Device2, typename Index2,
-             typename = typename Enabler< Device2 >::type >
-   Tridiagonal& operator=( const Tridiagonal< Real2, Device2, Index2 >& matrix );
+      void print( std::ostream& str ) const;
 
-   void save( File& file ) const;
+   protected:
 
-   void load( File& file );
+      __cuda_callable__
+      IndexType getElementIndex( const IndexType row,
+                                 const IndexType localIdx ) const;
 
-   void save( const String& fileName ) const;
-
-   void load( const String& fileName );
-
-   void print( std::ostream& str ) const;
-
-protected:
-
-   __cuda_callable__
-   IndexType getElementIndex( const IndexType row,
-                              const IndexType column ) const;
-
-   Containers::Vector< RealType, DeviceType, IndexType > values;
-
-   typedef TridiagonalDeviceDependentCode< DeviceType > DeviceDependentCode;
-   friend class TridiagonalDeviceDependentCode< DeviceType >;
+      IndexerType indexer;
 };
 
 } // namespace Matrices
 } // namespace TNL
 
-#include <TNL/Matrices/Tridiagonal_impl.h>
+#include <TNL/Matrices/TridiagonalMatrixView.hpp>
