@@ -57,11 +57,9 @@ public:
 
    virtual void getCompressedRowLengths( CompressedRowLengthsVectorView rowLengths ) const;
 
-   IndexType getNumberOfMatrixElements() const;
+   IndexType getAllocatedElementsCount() const;
 
    virtual IndexType getNumberOfNonzeroMatrixElements() const;
-
-   void reset();
 
    __cuda_callable__
    IndexType getRows() const;
@@ -91,6 +89,15 @@ public:
 
    ValuesView& getValues();
 
+   /**
+    * \brief Shallow copy of the matrix view.
+    *
+    * @param view
+    * @return 
+    */
+   __cuda_callable__
+   MatrixView& operator=( const MatrixView& view );
+   
    // TODO: parallelize and optimize for sparse matrices
    template< typename Matrix >
    bool operator == ( const Matrix& matrix ) const;

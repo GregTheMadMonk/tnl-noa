@@ -70,11 +70,7 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       IndexType getMaxRowLength() const;
 
-      IndexType getNumberOfMatrixElements() const;
-
       IndexType getNumberOfNonzeroMatrixElements() const;
-
-      IndexType getMaxRowlength() const;
 
       template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_ >
       bool operator == ( const TridiagonalMatrixView< Real_, Device_, Index_, RowMajorOrder_ >& matrix ) const;
@@ -143,13 +139,6 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
                                 const IndexType row,
                                 Vector2& x,
                                 const RealType& omega = 1.0 ) const;
-
-      // copy assignment
-      TridiagonalMatrixView& operator=( const TridiagonalMatrixView& matrix );
-
-      // cross-device copy assignment
-      template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_ >
-      TridiagonalMatrixView& operator=( const TridiagonalMatrixView< Real_, Device_, Index_, RowMajorOrder_ >& matrix );
 
       void save( File& file ) const;
 

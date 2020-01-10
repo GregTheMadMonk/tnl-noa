@@ -79,11 +79,7 @@ class Tridiagonal : public Matrix< Real, Device, Index, RealAllocator >
       template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_, typename RealAllocator_ >
       void setLike( const Tridiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAllocator_ >& m );
 
-      IndexType getNumberOfMatrixElements() const;
-
       IndexType getNumberOfNonzeroMatrixElements() const;
-
-      IndexType getMaxRowlength() const;
 
       void reset();
 
@@ -179,6 +175,8 @@ class Tridiagonal : public Matrix< Real, Device, Index, RealAllocator >
                                  const IndexType localIdx ) const;
 
       IndexerType indexer;
+
+      ViewType view;
 };
 
 } // namespace Matrices

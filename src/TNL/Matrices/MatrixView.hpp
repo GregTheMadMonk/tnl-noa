@@ -64,7 +64,7 @@ void MatrixView< Real, Device, Index >::getCompressedRowLengths( CompressedRowLe
 template< typename Real,
           typename Device,
           typename Index >
-Index MatrixView< Real, Device, Index >::getNumberOfMatrixElements() const
+Index MatrixView< Real, Device, Index >::getAllocatedElementsCount() const
 {
    return this->values.getSize();
 }
@@ -118,15 +118,17 @@ getValues()
 {
    return this->values;
 }
-
 template< typename Real,
           typename Device,
           typename Index >
-void MatrixView< Real, Device, Index >::reset()
+__cuda_callable__
+MatrixView< Real, Device, Index >& 
+MatrixView< Real, Device, Index >::
+operator=( const MatrixView& view )
 {
-   this->rows = 0;
-   this->columns = 0;
-   this->values.reset();
+   rows = view.rows;
+   columns = view.columns;
+   values.copy( view.values );
 }
 
 template< typename Real,

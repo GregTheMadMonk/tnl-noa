@@ -64,7 +64,7 @@ public:
    template< typename Matrix_ >
    void setLike( const Matrix_& matrix );
 
-   IndexType getNumberOfMatrixElements() const;
+   IndexType getAllocatedElementsCount() const;
 
    virtual IndexType getNumberOfNonzeroMatrixElements() const = 0;
 

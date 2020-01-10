@@ -91,7 +91,7 @@ template< typename Real,
           typename Device,
           typename Index,
           typename RealAllocator >
-Index Matrix< Real, Device, Index, RealAllocator >::getNumberOfMatrixElements() const
+Index Matrix< Real, Device, Index, RealAllocator >::getAllocatedElementsCount() const
 {
    return this->values.getSize();
 }
