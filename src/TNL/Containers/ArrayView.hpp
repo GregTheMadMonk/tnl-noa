@@ -119,6 +119,19 @@ operator=( const T& data )
 }
 
 template< typename Value,
+           typename Device,
+           typename Index >
+__cuda_callable__
+ArrayView< Value, Device, Index >&
+ArrayView< Value, Device, Index >::
+copy( const ArrayView& view )
+{
+   data = view.data;
+   size = view.size;
+   return *this;
+}
+
+template< typename Value,
           typename Device,
           typename Index >
 __cuda_callable__
