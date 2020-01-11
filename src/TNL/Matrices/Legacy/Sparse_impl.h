@@ -33,7 +33,7 @@ template< typename Real,
 void Sparse< Real, Device, Index >::setLike( const Sparse< Real2, Device2, Index2 >& matrix )
 {
    Matrix< Real, Device, Index >::setLike( matrix );
-   this->allocateMatrixElements( matrix.getNumberOfMatrixElements() );
+   this->allocateMatrixElements( matrix.getAllocatedElementsCount() );
 }
 
 

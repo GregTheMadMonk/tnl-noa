@@ -340,7 +340,7 @@ void MatrixReader< Matrix >::readMatrixElementsFromMtxFile( std::istream& file,
    long int fileSize = file.tellg();
    timer.stop();
    if( verbose )
-     std::cout << " Reading the matrix elements ... " << processedElements << " / " << matrix.getNumberOfMatrixElements()
+     std::cout << " Reading the matrix elements ... " << processedElements << " / " << matrix.getAllocatedElementsCount()
               << " -> " << timer.getRealTime()
               << " sec. i.e. " << fileSize / ( timer.getRealTime() * ( 1 << 20 ))  << "MB/s." << std::endl;
 }
