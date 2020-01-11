@@ -85,8 +85,10 @@ public:
    virtual Real getElement( const IndexType row,
                             const IndexType column ) const = 0;
 
+   __cuda_callable__
    const ValuesView& getValues() const;
 
+   __cuda_callable__
    ValuesView& getValues();
 
    /**

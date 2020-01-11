@@ -102,6 +102,7 @@ Index MatrixView< Real, Device, Index >::getColumns() const
 template< typename Real,
           typename Device,
           typename Index >
+__cuda_callable__
 const typename MatrixView< Real, Device, Index >::ValuesView&
 MatrixView< Real, Device, Index >::
 getValues() const
@@ -112,6 +113,7 @@ getValues() const
 template< typename Real,
           typename Device,
           typename Index >
+__cuda_callable__
 typename MatrixView< Real, Device, Index >::ValuesView& 
 MatrixView< Real, Device, Index >::
 getValues()
