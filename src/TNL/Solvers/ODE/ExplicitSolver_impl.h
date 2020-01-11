@@ -10,6 +10,8 @@
 
 #pragma once
 
+#include <cfloat>
+
 namespace TNL {
 namespace Solvers {
 namespace ODE {   
