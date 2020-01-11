@@ -72,9 +72,9 @@ template< typename Real,
           typename RealAllocator >
 void Matrix< Real, Device, Index, RealAllocator >::getCompressedRowLengths( CompressedRowLengthsVectorView rowLengths ) const
 {
-   TNL_ASSERT_EQ( rowLengths.getSize(), this->getRows(), "invalid size of the rowLengths vector" );
-   for( IndexType row = 0; row < this->getRows(); row++ )
-      rowLengths.setElement( row, this->getRowLength( row ) );
+   //TNL_ASSERT_EQ( rowLengths.getSize(), this->getRows(), "invalid size of the rowLengths vector" );
+   //for( IndexType row = 0; row < this->getRows(); row++ )
+   //   rowLengths.setElement( row, this->getRowLength( row ) );
 }
 
 template< typename Real,
