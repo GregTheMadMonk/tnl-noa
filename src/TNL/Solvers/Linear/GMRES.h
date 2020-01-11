@@ -53,7 +53,16 @@ protected:
    using HostView = typename DeviceView::template Self< RealType, Devices::Host >;
    using HostVector = typename DeviceVector::template Self< RealType, Devices::Host >;;
 
-   enum class Variant { MGS, MGSR, CWY };
+   enum class Variant { CGS, CGSR, MGS, MGSR, CWY };
+
+// nvcc allows __cuda_callable__ lambdas only in public methods
+#ifdef __NVCC__
+public:
+#endif
+   int orthogonalize_CGS( const int m, const RealType normb, const RealType beta );
+#ifdef __NVCC__
+protected:
+#endif
 
    int orthogonalize_MGS( const int m, const RealType normb, const RealType beta );
 

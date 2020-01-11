@@ -31,6 +31,8 @@ configSetup( Config::ConfigDescription& config,
              const String& prefix )
 {
    config.addEntry< String >( prefix + "gmres-variant", "Minimal number of iterations after which the GMRES restarts.", "CWY" );
+      config.addEntryEnum( "CGS" );
+      config.addEntryEnum( "CGSR" );
       config.addEntryEnum( "MGS" );
       config.addEntryEnum( "MGSR" );
       config.addEntryEnum( "CWY" );
@@ -47,7 +49,11 @@ setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
    const String var = parameters.getParameter< String >( prefix + "gmres-variant" );
-   if( var == "MGS" )
+   if( var == "CGS" )
+      variant = Variant::CGS;
+   else if( var == "CGSR" )
+      variant = Variant::CGSR;
+   else if( var == "MGS" )
       variant = Variant::MGS;
    else if( var == "MGSR" )
       variant = Variant::MGSR;
@@ -133,6 +139,10 @@ solve( ConstVectorViewType b, VectorViewType x )
       // orthogonalization
       int o_steps = 0;
       switch( variant ) {
+         case Variant::CGS:
+         case Variant::CGSR:
+            o_steps = orthogonalize_CGS( m, normb, beta );
+            break;
          case Variant::MGS:
          case Variant::MGSR:
             o_steps = orthogonalize_MGS( m, normb, beta );
@@ -170,6 +180,102 @@ solve( ConstVectorViewType b, VectorViewType x )
 template< typename Matrix >
 int
 GMRES< Matrix >::
+orthogonalize_CGS( const int m, const RealType normb, const RealType beta )
+{
+   // initial binding to _M_tmp sets the correct local range, global size and
+   // communication group for distributed views
+   VectorViewType v_i( _M_tmp.getView() );
+   VectorViewType v_k( _M_tmp.getView() );
+
+   /***
+    * v_0 = r / | r | =  1.0 / beta * r
+    */
+   v_i.bind( V.getData(), size );
+   v_i = (1.0 / beta) * r;
+
+   H.setValue( 0.0 );
+   s.setValue( 0.0 );
+   s[ 0 ] = beta;
+
+   /****
+    * Starting m-loop
+    */
+   for( int i = 0; i < m && this->nextIteration(); i++ ) {
+      v_i.bind( &V.getData()[ i * ldSize ], size );
+      /****
+       * Solve w from M w = A v_i
+       */
+      preconditioned_matvec( w, v_i );
+
+      for( int k = 0; k <= i; k++ )
+         H[ k + i * (m + 1) ] = 0.0;
+      const int reorthogonalize = (variant == Variant::CGSR) ? 2 : 1;
+      for( int l = 0; l < reorthogonalize; l++ ) {
+         // auxiliary array for the H coefficients of the current l-loop
+         RealType H_l[i + 1];
+
+         // CGS part 1: compute projection coefficients
+//         for( int k = 0; k <= i; k++ ) {
+//            v_k.bind( &V.getData()[ k * ldSize ], size );
+//            H_l[k] = (w, v_k);
+//            H[ k + i * (m + 1) ] += H_l[k];
+//         }
+         // H_l = V_i^T * w
+         const RealType* _V = V.getData();
+         const RealType* _w = Traits::getConstLocalView( w ).getData();
+         const IndexType ldSize = this->ldSize;
+         auto fetch = [_V, _w, ldSize] __cuda_callable__ ( IndexType idx, int k ) { return _V[ idx + k * ldSize ] * _w[ idx ]; };
+         Algorithms::Multireduction< DeviceType >::reduce
+                  ( (RealType) 0,
+                    fetch,
+                    std::plus<>{},
+                    size,
+                    i + 1,
+                    H_l );
+         for( int k = 0; k <= i; k++ )
+            H[ k + i * (m + 1) ] += H_l[k];
+
+         // CGS part 2: subtract the projections
+//         for( int k = 0; k <= i; k++ ) {
+//            v_k.bind( &V.getData()[ k * ldSize ], size );
+//            w = w - H_l[k] * v_k;
+//         }
+         // w := w - V_i * H_l
+         Matrices::MatrixOperations< DeviceType >::
+            gemv( size, i + 1,
+                  -1.0, V.getData(), ldSize, H_l,
+                  1.0, Traits::getLocalView( w ).getData() );
+      }
+      /***
+       * H_{i+1,i} = |w|
+       */
+      RealType normw = lpNorm( w, 2.0 );
+      H[ i + 1 + i * (m + 1) ] = normw;
+
+      /***
+       * v_{i+1} = w / |w|
+       */
+      v_i.bind( &V.getData()[ ( i + 1 ) * ldSize ], size );
+      v_i = (1.0 / normw) * w;
+
+      /****
+       * Applying the Givens rotations G_0, ..., G_i
+       */
+      apply_givens_rotations( i, m );
+
+      this->setResidue( std::fabs( s[ i + 1 ] ) / normb );
+      if( ! this->checkNextIteration() )
+         return i;
+      else
+         this->refreshSolverMonitor();
+   }
+
+   return m;
+}
+
+template< typename Matrix >
+int
+GMRES< Matrix >::
 orthogonalize_MGS( const int m, const RealType normb, const RealType beta )
 {
    // initial binding to _M_tmp sets the correct local range, global size and
@@ -198,13 +304,13 @@ orthogonalize_MGS( const int m, const RealType normb, const RealType beta )
       preconditioned_matvec( w, v_i );
 
       for( int k = 0; k <= i; k++ )
-         H[ k + i * ( m + 1 ) ] = 0.0;
+         H[ k + i * (m + 1) ] = 0.0;
       const int reorthogonalize = (variant == Variant::MGSR) ? 2 : 1;
       for( int l = 0; l < reorthogonalize; l++ )
          for( int k = 0; k <= i; k++ ) {
             v_k.bind( &V.getData()[ k * ldSize ], size );
             /***
-             * H_{k,i} = ( w, v_k )
+             * H_{k,i} = (w, v_k)
              */
             RealType H_k_i = (w, v_k);
             H[ k + i * (m + 1) ] += H_k_i;
