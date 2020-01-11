@@ -54,5 +54,5 @@ class MultidiagonalRow
 } // namespace Matrices
 } // namespace TNL
 
-#include <TNL/Matrices/MultidiagonalRow_impl.h>
+#include <TNL/Matrices/Legacy/MultidiagonalRow_impl.h>
 

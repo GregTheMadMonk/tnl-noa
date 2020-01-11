@@ -11,7 +11,7 @@
 #pragma once
 
 #include <TNL/Meshes/Grid.h>
-#include <TNL/Matrices/Multidiagonal.h>
+#include <TNL/Matrices/Legacy/Multidiagonal.h>
 
 namespace TNL {
 namespace Matrices {   
@@ -85,4 +85,4 @@ class MultidiagonalMatrixSetter< Meshes::Grid< 3, MeshReal, Device, MeshIndex > 
 } // namespace Matrices
 } // namespace TNL
 
-#include <TNL/Matrices/MultidiagonalMatrixSetter_impl.h>
+#include <TNL/Matrices/Legacy/MultidiagonalMatrixSetter_impl.h>

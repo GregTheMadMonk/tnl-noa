@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <TNL/Matrices/Multidiagonal.h>
+#include <TNL/Matrices/Legacy/Multidiagonal.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Math.h>
 #include <TNL/Exceptions/NotImplementedError.h>

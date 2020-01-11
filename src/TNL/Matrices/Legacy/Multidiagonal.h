@@ -12,7 +12,7 @@
 
 #include <TNL/Matrices/Matrix.h>
 #include <TNL/Containers/Vector.h>
-#include <TNL/Matrices/MultidiagonalRow.h>
+#include <TNL/Matrices/Legacy/MultidiagonalRow.h>
 
 namespace TNL {
 namespace Matrices {   
@@ -221,4 +221,4 @@ protected:
 } // namespace Matrices
 } // namespace TNL
 
-#include <TNL/Matrices/Multidiagonal_impl.h>
+#include <TNL/Matrices/Legacy/Multidiagonal_impl.h>
