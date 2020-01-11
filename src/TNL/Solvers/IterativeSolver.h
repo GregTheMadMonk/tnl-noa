@@ -88,6 +88,10 @@ protected:
    SolverMonitor* solverMonitor = nullptr;
 
    Index refreshRate = 1;
+
+   String residualHistoryFileName = "";
+
+   std::ofstream residualHistoryFile;
 };
 
 } // namespace Solvers

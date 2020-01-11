@@ -33,6 +33,8 @@ configSetup( Config::ConfigDescription& config,
    config.addEntry< double >( prefix + "divergence-residue", "Divergence occurs when the residue exceeds given limit.", std::numeric_limits< float >::max() );
    // TODO: setting refresh rate should be done in SolverStarter::setup (it's not a parameter of the IterativeSolver)
    config.addEntry< int >   ( prefix + "refresh-rate", "Number of iterations between solver monitor refreshes.", 1 );
+
+   config.addEntry< String >( prefix + "residual-history-file", "Path to the file where the residual history will be saved.", "" );
 }
 
 template< typename Real, typename Index, typename SolverMonitor >
@@ -41,12 +43,15 @@ IterativeSolver< Real, Index, SolverMonitor >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   this->setMaxIterations( parameters.getParameter< int >( "max-iterations" ) );
-   this->setMinIterations( parameters.getParameter< int >( "min-iterations" ) );
-   this->setConvergenceResidue( parameters.getParameter< double >( "convergence-residue" ) );
-   this->setDivergenceResidue( parameters.getParameter< double >( "divergence-residue" ) );
+   this->setMaxIterations( parameters.getParameter< int >( prefix + "max-iterations" ) );
+   this->setMinIterations( parameters.getParameter< int >( prefix + "min-iterations" ) );
+   this->setConvergenceResidue( parameters.getParameter< double >( prefix + "convergence-residue" ) );
+   this->setDivergenceResidue( parameters.getParameter< double >( prefix + "divergence-residue" ) );
    // TODO: setting refresh rate should be done in SolverStarter::setup (it's not a parameter of the IterativeSolver)
-   this->setRefreshRate( parameters.getParameter< int >( "refresh-rate" ) );
+   this->setRefreshRate( parameters.getParameter< int >( prefix + "refresh-rate" ) );
+   this->residualHistoryFileName = parameters.getParameter< String >( prefix + "residual-history-file" );
+   if( this->residualHistoryFileName )
+      this->residualHistoryFile.open( this->residualHistoryFileName.getString() );
    return true;
 }
 
@@ -199,6 +204,11 @@ setResidue( const Real& residue )
    this->currentResidue = residue;
    if( this->solverMonitor )
       this->solverMonitor->setResidue( this->getResidue() );
+   if( this->residualHistoryFile ) {
+      if( this->getIterations() == 0 )
+         this->residualHistoryFile << "\n";
+      this->residualHistoryFile << this->getIterations() << "\t" << std::scientific << residue << std::endl;
+   }
 }
 
 template< typename Real, typename Index, typename SolverMonitor >
