@@ -68,10 +68,17 @@ using CommunicatorType = Communicators::NoDistrCommunicator;
 
 static const std::set< std::string > valid_solvers = {
    "gmres",
-   "cwygmres",
    "tfqmr",
    "bicgstab",
    "bicgstab-ell",
+};
+
+static const std::set< std::string > valid_gmres_variants = {
+   "CGS",
+   "CGSR",
+   "MGS",
+   "MGSR",
+   "CWY",
 };
 
 static const std::set< std::string > valid_preconditioners = {
@@ -85,19 +92,19 @@ parse_comma_list( const Config::ParameterContainer& parameters,
                   const char* parameter,
                   const std::set< std::string >& options )
 {
-   const String solvers = parameters.getParameter< String >( parameter );
+   const String param = parameters.getParameter< String >( parameter );
 
-   if( solvers == "all" )
+   if( param == "all" )
       return options;
 
-   std::stringstream ss( solvers.getString() );
+   std::stringstream ss( param.getString() );
    std::string s;
    std::set< std::string > set;
 
    while( std::getline( ss, s, ',' ) ) {
       if( ! options.count( s ) )
          throw std::logic_error( std::string("Invalid value in the comma-separated list for the parameter '")
-                                 + parameter + "': '" + s + "'. The list contains: '" + solvers.getString() + "'." );
+                                 + parameter + "': '" + s + "'. The list contains: '" + param.getString() + "'." );
 
       set.insert( s );
 
@@ -138,6 +145,7 @@ benchmarkIterativeSolvers( Benchmark& benchmark,
 
    const int ell_max = 2;
    const std::set< std::string > solvers = parse_comma_list( parameters, "solvers", valid_solvers );
+   const std::set< std::string > gmresVariants = parse_comma_list( parameters, "gmres-variants", valid_gmres_variants );
    const std::set< std::string > preconditioners = parse_comma_list( parameters, "preconditioners", valid_preconditioners );
    const bool with_preconditioner_update = parameters.getParameter< bool >( "with-preconditioner-update" );
 
@@ -151,21 +159,14 @@ benchmarkIterativeSolvers( Benchmark& benchmark,
       }
 
       if( solvers.count( "gmres" ) ) {
-         benchmark.setOperation("GMRES (Jacobi)");
-         parameters.template setParameter< String >( "gmres-variant", "MGSR" );
-         benchmarkSolver< GMRES, Diagonal >( benchmark, parameters, matrixPointer, x0, b );
-         #ifdef HAVE_CUDA
-         benchmarkSolver< GMRES, Diagonal >( benchmark, parameters, cudaMatrixPointer, cuda_x0, cuda_b );
-         #endif
-      }
-
-      if( solvers.count( "cwygmres" ) ) {
-         benchmark.setOperation("CWYGMRES (Jacobi)");
-         parameters.template setParameter< String >( "gmres-variant", "CWY" );
-         benchmarkSolver< GMRES, Diagonal >( benchmark, parameters, matrixPointer, x0, b );
-         #ifdef HAVE_CUDA
-         benchmarkSolver< GMRES, Diagonal >( benchmark, parameters, cudaMatrixPointer, cuda_x0, cuda_b );
-         #endif
+         for( auto variant : gmresVariants ) {
+            benchmark.setOperation(variant + "-GMRES (Jacobi)");
+            parameters.template setParameter< String >( "gmres-variant", variant.c_str() );
+            benchmarkSolver< GMRES, Diagonal >( benchmark, parameters, matrixPointer, x0, b );
+            #ifdef HAVE_CUDA
+            benchmarkSolver< GMRES, Diagonal >( benchmark, parameters, cudaMatrixPointer, cuda_x0, cuda_b );
+            #endif
+         }
       }
 
       if( solvers.count( "tfqmr" ) ) {
@@ -208,21 +209,14 @@ benchmarkIterativeSolvers( Benchmark& benchmark,
       }
 
       if( solvers.count( "gmres" ) ) {
-         benchmark.setOperation("GMRES (ILU0)");
-         parameters.template setParameter< String >( "gmres-variant", "MGSR" );
-         benchmarkSolver< GMRES, ILU0 >( benchmark, parameters, matrixPointer, x0, b );
-         #ifdef HAVE_CUDA
-         benchmarkSolver< GMRES, ILU0 >( benchmark, parameters, cudaMatrixPointer, cuda_x0, cuda_b );
-         #endif
-      }
-
-      if( solvers.count( "cwygmres" ) ) {
-         benchmark.setOperation("CWYGMRES (ILU0)");
-         parameters.template setParameter< String >( "gmres-variant", "CWY" );
-         benchmarkSolver< GMRES, ILU0 >( benchmark, parameters, matrixPointer, x0, b );
-         #ifdef HAVE_CUDA
-         benchmarkSolver< GMRES, ILU0 >( benchmark, parameters, cudaMatrixPointer, cuda_x0, cuda_b );
-         #endif
+         for( auto variant : gmresVariants ) {
+            benchmark.setOperation(variant + "-GMRES (ILU0)");
+            parameters.template setParameter< String >( "gmres-variant", variant.c_str() );
+            benchmarkSolver< GMRES, ILU0 >( benchmark, parameters, matrixPointer, x0, b );
+            #ifdef HAVE_CUDA
+            benchmarkSolver< GMRES, ILU0 >( benchmark, parameters, cudaMatrixPointer, cuda_x0, cuda_b );
+            #endif
+         }
       }
 
       if( solvers.count( "tfqmr" ) ) {
@@ -264,21 +258,14 @@ benchmarkIterativeSolvers( Benchmark& benchmark,
       }
 
       if( solvers.count( "gmres" ) ) {
-         benchmark.setOperation("GMRES (ILUT)");
-         parameters.template setParameter< String >( "gmres-variant", "MGSR" );
-         benchmarkSolver< GMRES, ILUT >( benchmark, parameters, matrixPointer, x0, b );
-         #ifdef HAVE_CUDA
-         benchmarkSolver< GMRES, ILUT >( benchmark, parameters, cudaMatrixPointer, cuda_x0, cuda_b );
-         #endif
-      }
-
-      if( solvers.count( "cwygmres" ) ) {
-         benchmark.setOperation("CWYGMRES (ILUT)");
-         parameters.template setParameter< String >( "gmres-variant", "CWY" );
-         benchmarkSolver< GMRES, ILUT >( benchmark, parameters, matrixPointer, x0, b );
-         #ifdef HAVE_CUDA
-         benchmarkSolver< GMRES, ILUT >( benchmark, parameters, cudaMatrixPointer, cuda_x0, cuda_b );
-         #endif
+         for( auto variant : gmresVariants ) {
+            benchmark.setOperation(variant + "-GMRES (ILUT)");
+            parameters.template setParameter< String >( "gmres-variant", variant.c_str() );
+            benchmarkSolver< GMRES, ILUT >( benchmark, parameters, matrixPointer, x0, b );
+            #ifdef HAVE_CUDA
+            benchmarkSolver< GMRES, ILUT >( benchmark, parameters, cudaMatrixPointer, cuda_x0, cuda_b );
+            #endif
+         }
       }
 
       if( solvers.count( "tfqmr" ) ) {
@@ -495,7 +482,8 @@ configSetup( Config::ConfigDescription& config )
    config.addEntry< int >( "verbose", "Verbose mode.", 1 );
    config.addEntry< bool >( "reorder-dofs", "Reorder matrix entries corresponding to the same DOF together.", false );
    config.addEntry< bool >( "with-direct", "Includes the 3rd party direct solvers in the benchmark.", false );
-   config.addEntry< String >( "solvers", "Comma-separated list of solvers to run benchmarks for. Options: gmres, cwygmres, tfqmr, bicgstab, bicgstab-ell.", "all" );
+   config.addEntry< String >( "solvers", "Comma-separated list of solvers to run benchmarks for. Options: gmres, tfqmr, bicgstab, bicgstab-ell.", "all" );
+   config.addEntry< String >( "gmres-variants", "Comma-separated list of GMRES variants to run benchmarks for. Options: CGS, CGSR, MGS, MGSR, CWY.", "all" );
    config.addEntry< String >( "preconditioners", "Comma-separated list of preconditioners to run benchmarks for. Options: jacobi, ilu0, ilut.", "all" );
    config.addEntry< bool >( "with-preconditioner-update", "Run benchmark for the preconditioner update.", true );
    config.addEntry< String >( "devices", "Run benchmarks on these devices.", "all" );
