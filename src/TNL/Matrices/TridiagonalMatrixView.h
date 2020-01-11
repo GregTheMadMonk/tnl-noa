@@ -146,6 +146,12 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       void print( std::ostream& str ) const;
 
+      __cuda_callable__
+      const IndexerType& getIndexer() const;
+
+      __cuda_callable__
+      IndexerType& getIndexer();
+
    protected:
 
       __cuda_callable__

@@ -65,7 +65,7 @@ class TridiagonalMatrixIndexer
       const IndexType& getColumns() const { return this->columns; };
 
       __cuda_callable__
-      const IndexType& getSize() const { return this->nonEmptyRows; };
+      const IndexType& getNonEmptyRowsCount() const { return this->nonEmptyRows; };
       __cuda_callable__
       IndexType getStorageSize() const { return 3 * this->nonEmptyRows; };
 

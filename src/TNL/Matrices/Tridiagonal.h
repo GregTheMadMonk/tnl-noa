@@ -50,13 +50,15 @@ class Tridiagonal : public Matrix< Real, Device, Index, RealAllocator >
                 typename _Index = Index >
       using Self = Tridiagonal< _Real, _Device, _Index >;
 
+      static constexpr bool getRowMajorOrder() { return RowMajorOrder; };
+
       Tridiagonal();
 
       Tridiagonal( const IndexType rows, const IndexType columns );
 
-      ViewType getView();
+      ViewType getView() const; // TODO: remove const
 
-      ConstViewType getConstView() const;
+      //ConstViewType getConstView() const;
 
       static String getSerializationType();
 
@@ -167,6 +169,10 @@ class Tridiagonal : public Matrix< Real, Device, Index, RealAllocator >
       void load( const String& fileName );
 
       void print( std::ostream& str ) const;
+
+      const IndexerType& getIndexer() const;
+
+      IndexerType& getIndexer();
 
    protected:
 
