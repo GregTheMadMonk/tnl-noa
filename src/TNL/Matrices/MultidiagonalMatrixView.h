@@ -1,7 +1,7 @@
 /***************************************************************************
-                          TridiagonalMatrixView.h  -  description
+                          MultidiagonalMatrixView.h  -  description
                              -------------------
-    begin                : Jan 9, 2020
+    begin                : Jan 11, 2020
     copyright            : (C) 2020 by Tomas Oberhuber
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
@@ -12,9 +12,9 @@
 
 #include <TNL/Matrices/MatrixView.h>
 #include <TNL/Containers/Vector.h>
-#include <TNL/Matrices/TridiagonalMatrixRowView.h>
+#include <TNL/Matrices/MultidiagonalMatrixRowView.h>
 #include <TNL/Containers/Segments/Ellpack.h>
-#include <TNL/Matrices/details/TridiagonalMatrixIndexer.h>
+#include <TNL/Matrices/details/MultidiagonalMatrixIndexer.h>
 
 namespace TNL {
 namespace Matrices {
@@ -23,18 +23,22 @@ template< typename Real = double,
           typename Device = Devices::Host,
           typename Index = int,
           bool RowMajorOrder = std::is_same< Device, Devices::Host >::value >
-class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
+class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
 {
    public:
       using RealType = Real;
       using DeviceType = Device;
       using IndexType = Index;
       using BaseType = MatrixView< Real, Device, Index >;
-      using IndexerType = details::TridiagonalMatrixIndexer< IndexType, RowMajorOrder >;
+      using DiagonalsShiftsType = Containers::Vector< IndexType, DeviceType, IndexType >;
+      using DiagonalsShiftsView = typename DiagonalsShiftsType::ViewType;
+      using HostDiagonalsShiftsType = Containers::Vector< IndexType, Devices::Host, IndexType >;
+      using HostDiagonalsShiftsView = typename DiagonalsShiftsType::ViewType;
+      using IndexerType = details::MultidiagonalMatrixIndexer< IndexType, RowMajorOrder >;
       using ValuesViewType = typename BaseType::ValuesView;
-      using ViewType = TridiagonalMatrixView< Real, Device, Index, RowMajorOrder >;
-      using ConstViewType = TridiagonalMatrixView< typename std::add_const< Real >::type, Device, Index, RowMajorOrder >;
-      using RowView = TridiagonalMatrixRowView< ValuesViewType, IndexerType >;
+      using ViewType = MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >;
+      using ConstViewType = MultidiagonalMatrixView< typename std::add_const< Real >::type, Device, Index, RowMajorOrder >;
+      using RowView = MultidiagonalMatrixRowView< ValuesViewType, IndexerType >;
 
       // TODO: remove this - it is here only for compatibility with original matrix implementation
       typedef Containers::Vector< IndexType, DeviceType, IndexType > CompressedRowLengthsVector;
@@ -45,11 +49,13 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
                 typename _Device = Device,
                 typename _Index = Index,
                 bool RowMajorOrder_ = std::is_same< Device, Devices::Host >::value >
-      using Self = TridiagonalMatrixView< _Real, _Device, _Index, RowMajorOrder_ >;
+      using Self = MultidiagonalMatrixView< _Real, _Device, _Index, RowMajorOrder_ >;
 
-      TridiagonalMatrixView();
+      MultidiagonalMatrixView();
 
-      TridiagonalMatrixView( const ValuesViewType& values, const IndexerType& indexer );
+      MultidiagonalMatrixView( const ValuesViewType& values,
+                               const DiagonalsShiftsView& diagonalsShifts,
+                               const IndexerType& indexer );
 
       ViewType getView();
 
@@ -59,8 +65,13 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       virtual String getSerializationTypeVirtual() const;
 
+      __cuda_callable__
+      const IndexType& getDiagonalsCount() const;
+
       template< typename Vector >
       void getCompressedRowLengths( Vector& rowLengths ) const;
+
+      IndexType getNonemptyRowsCount() const;
 
       [[deprecated]]
       IndexType getRowLength( const IndexType row ) const;
@@ -70,10 +81,10 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
       IndexType getNumberOfNonzeroMatrixElements() const;
 
       template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_ >
-      bool operator == ( const TridiagonalMatrixView< Real_, Device_, Index_, RowMajorOrder_ >& matrix ) const;
+      bool operator == ( const MultidiagonalMatrixView< Real_, Device_, Index_, RowMajorOrder_ >& matrix ) const;
 
       template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_ >
-      bool operator != ( const TridiagonalMatrixView< Real_, Device_, Index_, RowMajorOrder_ >& matrix ) const;
+      bool operator != ( const MultidiagonalMatrixView< Real_, Device_, Index_, RowMajorOrder_ >& matrix ) const;
 
       RowView getRow( const IndexType& rowIdx );
 
@@ -92,6 +103,8 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       RealType getElement( const IndexType row,
                            const IndexType column ) const;
+
+      MultidiagonalMatrixView& operator=( const MultidiagonalMatrixView& view );
 
       template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
       void rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
@@ -122,12 +135,12 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
                           OutVector& outVector ) const;
 
       template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_ >
-      void addMatrix( const TridiagonalMatrixView< Real_, Device_, Index_, RowMajorOrder_ >& matrix,
+      void addMatrix( const MultidiagonalMatrixView< Real_, Device_, Index_, RowMajorOrder_ >& matrix,
                       const RealType& matrixMultiplicator = 1.0,
                       const RealType& thisMatrixMultiplicator = 1.0 );
 
       template< typename Real2, typename Index2 >
-      void getTransposition( const TridiagonalMatrixView< Real2, Device, Index2 >& matrix,
+      void getTransposition( const MultidiagonalMatrixView< Real2, Device, Index2 >& matrix,
                              const RealType& matrixMultiplicator = 1.0 );
 
       template< typename Vector1, typename Vector2 >
@@ -155,10 +168,14 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
       IndexType getElementIndex( const IndexType row,
                                  const IndexType localIdx ) const;
 
+      DiagonalsShiftsView diagonalsShifts;
+
+      HostDiagonalsShiftsView hostDiagonalsShifts;
+
       IndexerType indexer;
 };
 
 } // namespace Matrices
 } // namespace TNL
 
-#include <TNL/Matrices/TridiagonalMatrixView.hpp>
+#include <TNL/Matrices/MultidiagonalMatrixView.hpp>

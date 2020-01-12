@@ -1,7 +1,7 @@
 /***************************************************************************
                           MultidiagonalMatrixTest.cpp -  description
                              -------------------
-    begin                : Jan 9, 2020
+    begin                : Jan 8, 2020
     copyright            : (C) 2020 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/

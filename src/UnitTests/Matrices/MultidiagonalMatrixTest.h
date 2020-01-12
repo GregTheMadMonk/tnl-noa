@@ -8,6 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+#include <sstream>
 #include <TNL/Devices/Host.h>
 #include <TNL/Matrices/Matrix.h>
 #include <TNL/Matrices/Multidiagonal.h>
@@ -33,55 +34,110 @@ static const char* TEST_FILE_NAME = "test_MultidiagonalMatrixTest.tnl";
 
 void test_GetSerializationType()
 {
-   EXPECT_EQ( ( TNL::Matrices::Multidiagonal< float, TNL::Devices::Host, int, true >::getSerializationType() ), TNL::String( "Matrices::Multidiagonal< float, [any_device], int, true, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Multidiagonal< int,   TNL::Devices::Host, int, true >::getSerializationType() ), TNL::String( "Matrices::Multidiagonal< int, [any_device], int, true, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Multidiagonal< float, TNL::Devices::Cuda, int, true >::getSerializationType() ), TNL::String( "Matrices::Multidiagonal< float, [any_device], int, true, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Multidiagonal< int,   TNL::Devices::Cuda, int, true >::getSerializationType() ), TNL::String( "Matrices::Multidiagonal< int, [any_device], int, true, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Multidiagonal< float, TNL::Devices::Host, int, false >::getSerializationType() ), TNL::String( "Matrices::Multidiagonal< float, [any_device], int, false, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Multidiagonal< int,   TNL::Devices::Host, int, false >::getSerializationType() ), TNL::String( "Matrices::Multidiagonal< int, [any_device], int, false, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Multidiagonal< float, TNL::Devices::Cuda, int, false >::getSerializationType() ), TNL::String( "Matrices::Multidiagonal< float, [any_device], int, false, [any_allocator] >" ) );
-   EXPECT_EQ( ( TNL::Matrices::Multidiagonal< int,   TNL::Devices::Cuda, int, false >::getSerializationType() ), TNL::String( "Matrices::Multidiagonal< int, [any_device], int, false, [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::Multidiagonal< float, TNL::Devices::Host, int, true >::getSerializationType() ), TNL::String( "Matrices::Multidiagonal< float, [any_device], int, true, [any_allocator], [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::Multidiagonal< int,   TNL::Devices::Host, int, true >::getSerializationType() ), TNL::String( "Matrices::Multidiagonal< int, [any_device], int, true, [any_allocator], [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::Multidiagonal< float, TNL::Devices::Cuda, int, true >::getSerializationType() ), TNL::String( "Matrices::Multidiagonal< float, [any_device], int, true, [any_allocator], [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::Multidiagonal< int,   TNL::Devices::Cuda, int, true >::getSerializationType() ), TNL::String( "Matrices::Multidiagonal< int, [any_device], int, true, [any_allocator], [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::Multidiagonal< float, TNL::Devices::Host, int, false >::getSerializationType() ), TNL::String( "Matrices::Multidiagonal< float, [any_device], int, false, [any_allocator], [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::Multidiagonal< int,   TNL::Devices::Host, int, false >::getSerializationType() ), TNL::String( "Matrices::Multidiagonal< int, [any_device], int, false, [any_allocator], [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::Multidiagonal< float, TNL::Devices::Cuda, int, false >::getSerializationType() ), TNL::String( "Matrices::Multidiagonal< float, [any_device], int, false, [any_allocator], [any_allocator] >" ) );
+   EXPECT_EQ( ( TNL::Matrices::Multidiagonal< int,   TNL::Devices::Cuda, int, false >::getSerializationType() ), TNL::String( "Matrices::Multidiagonal< int, [any_device], int, false, [any_allocator], [any_allocator] >" ) );
 }
 
 template< typename Matrix >
 void test_SetDimensions()
 {
-    using RealType = typename Matrix::RealType;
-    using DeviceType = typename Matrix::DeviceType;
-    using IndexType = typename Matrix::IndexType;
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
+   using DiagonalsShiftsType = typename Matrix::DiagonalsShiftsType;
 
-    const IndexType rows = 9;
-    const IndexType cols = 8;
+   const IndexType rows = 9;
+   const IndexType cols = 8;
+   const DiagonalsShiftsType diagonalsShifts{ -3, -1, 0, 2, 4 };
 
-    Matrix m;
-    m.setDimensions( rows, cols );
+   Matrix m;
+   m.setDimensions( rows, cols, diagonalsShifts );
 
-    EXPECT_EQ( m.getRows(), 9 );
-    EXPECT_EQ( m.getColumns(), 8 );
+   EXPECT_EQ( m.getRows(), 9 );
+   EXPECT_EQ( m.getColumns(), 8 );
 }
+
 
 template< typename Matrix1, typename Matrix2 >
 void test_SetLike()
 {
-    using RealType = typename Matrix1::RealType;
-    using DeviceType = typename Matrix1::DeviceType;
-    using IndexType = typename Matrix1::IndexType;
+   using RealType = typename Matrix1::RealType;
+   using DeviceType = typename Matrix1::DeviceType;
+   using IndexType = typename Matrix1::IndexType;
+   using DiagonalsShiftsType = typename Matrix1::DiagonalsShiftsType;
 
-    const IndexType rows = 8;
-    const IndexType cols = 7;
+   const IndexType rows = 8;
+   const IndexType cols = 7;
+   const DiagonalsShiftsType diagonalsShifts{ -3, -1, 0, 2, 4 };
 
-    Matrix1 m1;
-    m1.reset();
-    m1.setDimensions( rows + 1, cols + 2 );
+   Matrix1 m1;
+   m1.setDimensions( rows + 1, cols + 2, diagonalsShifts );
 
-    Matrix2 m2;
-    m2.reset();
-    m2.setDimensions( rows, cols );
+   Matrix2 m2;
+   m2.setDimensions( rows, cols, diagonalsShifts );
 
-    m1.setLike( m2 );
+   m1.setLike( m2 );
 
-    EXPECT_EQ( m1.getRows(), m2.getRows() );
-    EXPECT_EQ( m1.getColumns(), m2.getColumns() );
+   EXPECT_EQ( m1.getRows(), m2.getRows() );
+   EXPECT_EQ( m1.getColumns(), m2.getColumns() );
+}
+
+template< typename Matrix >
+void test_GetNonemptyRowsCount()
+{
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
+   using DiagonalsShiftsType = typename Matrix::DiagonalsShiftsType;
+
+   /*
+    * Sets up the following 5x8 matrix:
+    *
+    *    /  1  0  0  1  0  1  0  0 \
+    *    |  0  1  0  0  1  0  1  0 |
+    *    |  1  0  1  0  0  1  0  1 |
+    *    |  0  1  0  1  0  0  1  0 |
+    *    \  0  0  1  0  1  0  0  1 /
+    */
+   Matrix m1( 5, 8, DiagonalsShiftsType({ -2, 0, 3, 5 }) );
+   m1.setValue( 1.0 );
+   EXPECT_EQ( m1.getNonemptyRowsCount(), 5 );
+
+   /*
+    * Sets up the following 5x5 matrix:
+    *
+    *    /  1  0  0  1  0  \
+    *    |  0  1  0  0  1  |
+    *    |  1  0  1  0  0  |
+    *    |  0  1  0  1  0  |
+    *    \  0  0  1  0  1  /
+    */
+   Matrix m2( 5, 5, DiagonalsShiftsType({ -2, 0, 3, 5 }) );
+   m2.setValue( 1.0 );
+   EXPECT_EQ( m2.getNonemptyRowsCount(), 5 );
+
+   /*
+    * Sets up the following 8x5 matrix:
+    *
+    *    /  1  0  0  1  0  \
+    *    |  0  1  0  0  1  |
+    *    |  1  0  1  0  0  |
+    *    |  0  1  0  1  0  |
+    *    |  0  0  1  0  1  |
+    *    |  0  0  0  1  0  |
+    *    |  0  0  0  0  1  |
+    *    \  0  0  0  0  0  /
+    */
+   Matrix m3( 8, 5, DiagonalsShiftsType({ -2, 0, 3, 5 }) );
+   m3.setValue( 1.0 );
+   EXPECT_EQ( m3.getNonemptyRowsCount(), 7 );
+
 }
 
 template< typename Matrix >
@@ -90,463 +146,470 @@ void test_GetCompressedRowLengths()
    using RealType = typename Matrix::RealType;
    using DeviceType = typename Matrix::DeviceType;
    using IndexType = typename Matrix::IndexType;
+   using DiagonalsShiftsType = typename Matrix::DiagonalsShiftsType;
 
    const IndexType rows = 10;
    const IndexType cols = 11;
 
-    Matrix m( rows, cols );
+   Matrix m( rows, cols );
 
-    // Insert values into the rows.
-    RealType value = 1;
+   // Insert values into the rows.
+   RealType value = 1;
 
-    for( IndexType i = 0; i < 3; i++ )      // 0th row
-        m.setElement( 0, i, value++ );
+   for( IndexType i = 0; i < 2; i++ )  // 0th row -> 2 elements
+      m.setElement( 0, i, value++ );
 
-    for( IndexType i = 0; i < 3; i++ )      // 1st row
-        m.setElement( 1, i, value++ );
+   for( IndexType i = 0; i < 3; i++ )  // 1st row -> 3 elements
+      m.setElement( 1, i, value++ );
 
-    for( IndexType i = 0; i < 1; i++ )      // 2nd row
-        m.setElement( 2, i, value++ );
+   for( IndexType i = 1; i < 3; i++ )  // 2nd row -> 2 elements
+      m.setElement( 2, i, value++ );
 
-    for( IndexType i = 0; i < 2; i++ )      // 3rd row
-        m.setElement( 3, i, value++ );
+   for( IndexType i = 2; i < 5; i++ )  // 3rd row -> 3 elements
+      m.setElement( 3, i, value++ );
 
-    for( IndexType i = 0; i < 3; i++ )      // 4th row
-        m.setElement( 4, i, value++ );
+   for( IndexType i = 3; i < 6; i++ )  // 4th row -> 3 elements
+      m.setElement( 4, i, value++ );
 
-    for( IndexType i = 0; i < 4; i++ )      // 5th row
-        m.setElement( 5, i, value++ );
+   for( IndexType i = 4; i < 6; i++ )  // 5th row -> 2 elements
+      m.setElement( 5, i, value++ );
 
-    for( IndexType i = 0; i < 5; i++ )      // 6th row
-        m.setElement( 6, i, value++ );
+   for( IndexType i = 5; i < 8; i++ )  // 6th row -> 3 elements
+      m.setElement( 6, i, value++ );
 
-    for( IndexType i = 0; i < 6; i++ )      // 7th row
-        m.setElement( 7, i, value++ );
+   for( IndexType i = 6; i < 8; i++ )  // 7th row -> 2 elements
+      m.setElement( 7, i, value++ );
 
-    for( IndexType i = 0; i < 7; i++ )      // 8th row
-        m.setElement( 8, i, value++ );
+   for( IndexType i = 7; i < 10; i++ ) // 8th row -> 3 elements
+      m.setElement( 8, i, value++ );
 
-    for( IndexType i = 0; i < 8; i++ )      // 9th row
-        m.setElement( 9, i, value++ );
+   for( IndexType i = 8; i < 11; i++ ) // 9th row -> 3 elements
+      m.setElement( 9, i, value++ );
 
-   typename Matrix::CompressedRowLengthsVector rowLengths;
+   typename Matrix::CompressedRowLengthsVector rowLengths( rows );
    rowLengths = 0;
    m.getCompressedRowLengths( rowLengths );
-   typename Matrix::CompressedRowLengthsVector correctRowLengths{ 3, 3, 1, 2, 3, 4, 5, 6, 7, 8 };
+   typename Matrix::CompressedRowLengthsVector correctRowLengths{ 2, 3, 2, 3, 3, 2, 3, 2, 3, 3 };
    EXPECT_EQ( rowLengths, correctRowLengths );
 }
 
 template< typename Matrix >
 void test_GetRowLength()
 {
-    using RealType = typename Matrix::RealType;
-    using DeviceType = typename Matrix::DeviceType;
-    using IndexType = typename Matrix::IndexType;
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
+   using DiagonalsShiftsType = typename Matrix::DiagonalsShiftsType;
 
-    const IndexType rows = 8;
-    const IndexType cols = 7;
+   const IndexType rows = 8;
+   const IndexType cols = 7;
 
-    Matrix m;
-    m.reset();
-    m.setDimensions( rows, cols );
+   Matrix m( rows, cols );
 
-    EXPECT_EQ( m.getRowLength( 0 ), 7 );
-    EXPECT_EQ( m.getRowLength( 1 ), 7 );
-    EXPECT_EQ( m.getRowLength( 2 ), 7 );
-    EXPECT_EQ( m.getRowLength( 3 ), 7 );
-    EXPECT_EQ( m.getRowLength( 4 ), 7 );
-    EXPECT_EQ( m.getRowLength( 5 ), 7 );
-    EXPECT_EQ( m.getRowLength( 6 ), 7 );
-    EXPECT_EQ( m.getRowLength( 7 ), 7 );
+   EXPECT_EQ( m.getRowLength( 0 ), 2 );
+   EXPECT_EQ( m.getRowLength( 1 ), 3 );
+   EXPECT_EQ( m.getRowLength( 2 ), 3 );
+   EXPECT_EQ( m.getRowLength( 3 ), 3 );
+   EXPECT_EQ( m.getRowLength( 4 ), 3 );
+   EXPECT_EQ( m.getRowLength( 5 ), 3 );
+   EXPECT_EQ( m.getRowLength( 6 ), 2 );
+   EXPECT_EQ( m.getRowLength( 7 ), 1 );
 }
 
 template< typename Matrix >
-void test_GetNumberOfMatrixElements()
+void test_GetAllocatedElementsCount()
 {
-    using RealType = typename Matrix::RealType;
-    using DeviceType = typename Matrix::DeviceType;
-    using IndexType = typename Matrix::IndexType;
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
 
-    const IndexType rows = 7;
-    const IndexType cols = 6;
+   const IndexType rows = 7;
+   const IndexType cols = 6;
 
-    Matrix m;
-    m.reset();
-    m.setDimensions( rows, cols );
+   Matrix m( rows, cols );
 
-    EXPECT_EQ( m.getNumberOfMatrixElements(), 42 );
+   EXPECT_EQ( m.getAllocatedElementsCount(), 21 );
 }
 
 template< typename Matrix >
 void test_GetNumberOfNonzeroMatrixElements()
 {
-    using RealType = typename Matrix::RealType;
-    using DeviceType = typename Matrix::DeviceType;
-    using IndexType = typename Matrix::IndexType;
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
 
-/*
- * Sets up the following 7x6 dense matrix:
- *
- *    /  0  2  3  4  5  6 \
- *    |  7  8  9 10 11 12 |
- *    | 13 14 15 16 17 18 |
- *    | 19 20 21 22 23 24 |
- *    | 25 26 27 28 29 30 |
- *    | 31 32 33 34 35 36 |
- *    \ 37 38 39 40 41  0 /
- */
-    const IndexType rows = 7;
-    const IndexType cols = 6;
+   /*
+    * Sets up the following 7x6 matrix:
+    *
+    *    /  0  1  0  0  0  0 \
+    *    |  2  3  4  0  0  0 |
+    *    |  0  5  6  7  0  0 |
+    *    |  0  0  8  9 10  0 |
+    *    |  0  0  0 11 12 13 |
+    *    |  0  0  0  0 14  0 |
+    *    \  0  0  0  0  0 16 /
+    */
+   const IndexType rows = 7;
+   const IndexType cols = 6;
 
-    Matrix m;
-    m.reset();
-    m.setDimensions( rows, cols );
+   Matrix m( rows, cols );
 
-    RealType value = 1;
-    for( IndexType i = 0; i < rows; i++ )
-        for( IndexType j = 0; j < cols; j++ )
-            m.setElement( i, j, value++ );
+   RealType value = 0;
+   for( IndexType i = 0; i < rows; i++ )
+      for( IndexType j = TNL::max( 0, i - 1 ); j < TNL::min( cols, i + 2 ); j++ )
+         m.setElement( i, j, value++ );
 
-    m.setElement( 0, 0, 0); // Set the first element of the diagonal to 0.
-    m.setElement( 6, 5, 0); // Set the last element of the diagonal to 0.
+   m.setElement( 5, 5, 0);
 
-    EXPECT_EQ( m.getNumberOfNonzeroMatrixElements(), 40 );
+   EXPECT_EQ( m.getNumberOfNonzeroMatrixElements(), 15 );
 }
 
 template< typename Matrix >
 void test_Reset()
 {
-    using RealType = typename Matrix::RealType;
-    using DeviceType = typename Matrix::DeviceType;
-    using IndexType = typename Matrix::IndexType;
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
 
-/*
- * Sets up the following 5x4 dense matrix:
- *
- *    /  0  0  0  0 \
- *    |  0  0  0  0 |
- *    |  0  0  0  0 |
- *    |  0  0  0  0 |
- *    \  0  0  0  0 /
- */
-    const IndexType rows = 5;
-    const IndexType cols = 4;
+   /*
+    * Sets up the following 5x4 matrix:
+    *
+    *    /  0  0  0  0 \
+    *    |  0  0  0  0 |
+    *    |  0  0  0  0 |
+    *    |  0  0  0  0 |
+    *    \  0  0  0  0 /
+    */
+   const IndexType rows = 5;
+   const IndexType cols = 4;
 
-    Matrix m;
-    m.setDimensions( rows, cols );
+   Matrix m( rows, cols );
 
-    m.reset();
+   m.reset();
 
-    EXPECT_EQ( m.getRows(), 0 );
-    EXPECT_EQ( m.getColumns(), 0 );
+   EXPECT_EQ( m.getRows(), 0 );
+   EXPECT_EQ( m.getColumns(), 0 );
 }
 
 template< typename Matrix >
 void test_SetValue()
 {
-    using RealType = typename Matrix::RealType;
-    using DeviceType = typename Matrix::DeviceType;
-    using IndexType = typename Matrix::IndexType;
-/*
- * Sets up the following 7x6 dense matrix:
- *
- *    /  1  2  3  4  5  6 \
- *    |  7  8  9 10 11 12 |
- *    | 13 14 15 16 17 18 |
- *    | 19 20 21 22 23 24 |
- *    | 25 26 27 28 29 30 |
- *    | 31 32 33 34 35 36 |
- *    \ 37 38 39 40 41 42 /
- */
-    const IndexType rows = 7;
-    const IndexType cols = 6;
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
 
-    Matrix m;
-    m.reset();
-    m.setDimensions( rows, cols );
+   /*
+    * Sets up the following 7x6 matrix:
+    *
+    *    /  0  1  0  0  0  0 \
+    *    |  2  3  4  0  0  0 |
+    *    |  0  5  6  7  0  0 |
+    *    |  0  0  8  9 10  0 |
+    *    |  0  0  0 11 12 13 |
+    *    |  0  0  0  0 14  0 |
+    *    \  0  0  0  0  0 16 /
+    */
+   const IndexType rows = 7;
+   const IndexType cols = 6;
 
-    RealType value = 1;
-    for( IndexType i = 0; i < rows; i++ )
-        for( IndexType j = 0; j < cols; j++ )
-            m.setElement( i, j, value++ );
+   Matrix m( rows, cols );
 
-    EXPECT_EQ( m.getElement( 0, 0 ),  1 );
-    EXPECT_EQ( m.getElement( 0, 1 ),  2 );
-    EXPECT_EQ( m.getElement( 0, 2 ),  3 );
-    EXPECT_EQ( m.getElement( 0, 3 ),  4 );
-    EXPECT_EQ( m.getElement( 0, 4 ),  5 );
-    EXPECT_EQ( m.getElement( 0, 5 ),  6 );
+   RealType value = 0;
+   for( IndexType i = 0; i < rows; i++ )
+      for( IndexType j = TNL::max( 0, i - 1 ); j < TNL::min( cols, i + 2 ); j++ )
+         m.setElement( i, j, value++ );
 
-    EXPECT_EQ( m.getElement( 1, 0 ),  7 );
-    EXPECT_EQ( m.getElement( 1, 1 ),  8 );
-    EXPECT_EQ( m.getElement( 1, 2 ),  9 );
-    EXPECT_EQ( m.getElement( 1, 3 ), 10 );
-    EXPECT_EQ( m.getElement( 1, 4 ), 11 );
-    EXPECT_EQ( m.getElement( 1, 5 ), 12 );
+   m.setElement( 5, 5, 0);
 
-    EXPECT_EQ( m.getElement( 2, 0 ), 13 );
-    EXPECT_EQ( m.getElement( 2, 1 ), 14 );
-    EXPECT_EQ( m.getElement( 2, 2 ), 15 );
-    EXPECT_EQ( m.getElement( 2, 3 ), 16 );
-    EXPECT_EQ( m.getElement( 2, 4 ), 17 );
-    EXPECT_EQ( m.getElement( 2, 5 ), 18 );
+   EXPECT_EQ( m.getElement( 0, 0 ),  0 );
+   EXPECT_EQ( m.getElement( 0, 1 ),  1 );
+   EXPECT_EQ( m.getElement( 0, 2 ),  0 );
+   EXPECT_EQ( m.getElement( 0, 3 ),  0 );
+   EXPECT_EQ( m.getElement( 0, 4 ),  0 );
+   EXPECT_EQ( m.getElement( 0, 5 ),  0 );
 
-    EXPECT_EQ( m.getElement( 3, 0 ), 19 );
-    EXPECT_EQ( m.getElement( 3, 1 ), 20 );
-    EXPECT_EQ( m.getElement( 3, 2 ), 21 );
-    EXPECT_EQ( m.getElement( 3, 3 ), 22 );
-    EXPECT_EQ( m.getElement( 3, 4 ), 23 );
-    EXPECT_EQ( m.getElement( 3, 5 ), 24 );
+   EXPECT_EQ( m.getElement( 1, 0 ),  2 );
+   EXPECT_EQ( m.getElement( 1, 1 ),  3 );
+   EXPECT_EQ( m.getElement( 1, 2 ),  4 );
+   EXPECT_EQ( m.getElement( 1, 3 ),  0 );
+   EXPECT_EQ( m.getElement( 1, 4 ),  0 );
+   EXPECT_EQ( m.getElement( 1, 5 ),  0 );
 
-    EXPECT_EQ( m.getElement( 4, 0 ), 25 );
-    EXPECT_EQ( m.getElement( 4, 1 ), 26 );
-    EXPECT_EQ( m.getElement( 4, 2 ), 27 );
-    EXPECT_EQ( m.getElement( 4, 3 ), 28 );
-    EXPECT_EQ( m.getElement( 4, 4 ), 29 );
-    EXPECT_EQ( m.getElement( 4, 5 ), 30 );
+   EXPECT_EQ( m.getElement( 2, 0 ),  0 );
+   EXPECT_EQ( m.getElement( 2, 1 ),  5 );
+   EXPECT_EQ( m.getElement( 2, 2 ),  6 );
+   EXPECT_EQ( m.getElement( 2, 3 ),  7 );
+   EXPECT_EQ( m.getElement( 2, 4 ),  0 );
+   EXPECT_EQ( m.getElement( 2, 5 ),  0 );
 
-    EXPECT_EQ( m.getElement( 5, 0 ), 31 );
-    EXPECT_EQ( m.getElement( 5, 1 ), 32 );
-    EXPECT_EQ( m.getElement( 5, 2 ), 33 );
-    EXPECT_EQ( m.getElement( 5, 3 ), 34 );
-    EXPECT_EQ( m.getElement( 5, 4 ), 35 );
-    EXPECT_EQ( m.getElement( 5, 5 ), 36 );
+   EXPECT_EQ( m.getElement( 3, 0 ),  0 );
+   EXPECT_EQ( m.getElement( 3, 1 ),  0 );
+   EXPECT_EQ( m.getElement( 3, 2 ),  8 );
+   EXPECT_EQ( m.getElement( 3, 3 ),  9 );
+   EXPECT_EQ( m.getElement( 3, 4 ), 10 );
+   EXPECT_EQ( m.getElement( 3, 5 ),  0 );
 
-    EXPECT_EQ( m.getElement( 6, 0 ), 37 );
-    EXPECT_EQ( m.getElement( 6, 1 ), 38 );
-    EXPECT_EQ( m.getElement( 6, 2 ), 39 );
-    EXPECT_EQ( m.getElement( 6, 3 ), 40 );
-    EXPECT_EQ( m.getElement( 6, 4 ), 41 );
-    EXPECT_EQ( m.getElement( 6, 5 ), 42 );
+   EXPECT_EQ( m.getElement( 4, 0 ),  0 );
+   EXPECT_EQ( m.getElement( 4, 1 ),  0 );
+   EXPECT_EQ( m.getElement( 4, 2 ),  0 );
+   EXPECT_EQ( m.getElement( 4, 3 ), 11 );
+   EXPECT_EQ( m.getElement( 4, 4 ), 12 );
+   EXPECT_EQ( m.getElement( 4, 5 ), 13 );
 
-    // Set the values of all elements to a certain number
-    m.setValue( 42 );
+   EXPECT_EQ( m.getElement( 5, 0 ),  0 );
+   EXPECT_EQ( m.getElement( 5, 1 ),  0 );
+   EXPECT_EQ( m.getElement( 5, 2 ),  0 );
+   EXPECT_EQ( m.getElement( 5, 3 ),  0 );
+   EXPECT_EQ( m.getElement( 5, 4 ), 14 );
+   EXPECT_EQ( m.getElement( 5, 5 ),  0 );
 
-    EXPECT_EQ( m.getElement( 0, 0 ), 42 );
-    EXPECT_EQ( m.getElement( 0, 1 ), 42 );
-    EXPECT_EQ( m.getElement( 0, 2 ), 42 );
-    EXPECT_EQ( m.getElement( 0, 3 ), 42 );
-    EXPECT_EQ( m.getElement( 0, 4 ), 42 );
-    EXPECT_EQ( m.getElement( 0, 5 ), 42 );
+   EXPECT_EQ( m.getElement( 6, 0 ),  0 );
+   EXPECT_EQ( m.getElement( 6, 1 ),  0 );
+   EXPECT_EQ( m.getElement( 6, 2 ),  0 );
+   EXPECT_EQ( m.getElement( 6, 3 ),  0 );
+   EXPECT_EQ( m.getElement( 6, 4 ),  0 );
+   EXPECT_EQ( m.getElement( 6, 5 ), 16 );
 
-    EXPECT_EQ( m.getElement( 1, 0 ), 42 );
-    EXPECT_EQ( m.getElement( 1, 1 ), 42 );
-    EXPECT_EQ( m.getElement( 1, 2 ), 42 );
-    EXPECT_EQ( m.getElement( 1, 3 ), 42 );
-    EXPECT_EQ( m.getElement( 1, 4 ), 42 );
-    EXPECT_EQ( m.getElement( 1, 5 ), 42 );
+   // Set the values of all elements to a certain number
+   m.setValue( 42 );
 
-    EXPECT_EQ( m.getElement( 2, 0 ), 42 );
-    EXPECT_EQ( m.getElement( 2, 1 ), 42 );
-    EXPECT_EQ( m.getElement( 2, 2 ), 42 );
-    EXPECT_EQ( m.getElement( 2, 3 ), 42 );
-    EXPECT_EQ( m.getElement( 2, 4 ), 42 );
-    EXPECT_EQ( m.getElement( 2, 5 ), 42 );
+   EXPECT_EQ( m.getElement( 0, 0 ), 42 );
+   EXPECT_EQ( m.getElement( 0, 1 ), 42 );
+   EXPECT_EQ( m.getElement( 0, 2 ),  0 );
+   EXPECT_EQ( m.getElement( 0, 3 ),  0 );
+   EXPECT_EQ( m.getElement( 0, 4 ),  0 );
+   EXPECT_EQ( m.getElement( 0, 5 ),  0 );
 
-    EXPECT_EQ( m.getElement( 3, 0 ), 42 );
-    EXPECT_EQ( m.getElement( 3, 1 ), 42 );
-    EXPECT_EQ( m.getElement( 3, 2 ), 42 );
-    EXPECT_EQ( m.getElement( 3, 3 ), 42 );
-    EXPECT_EQ( m.getElement( 3, 4 ), 42 );
-    EXPECT_EQ( m.getElement( 3, 5 ), 42 );
+   EXPECT_EQ( m.getElement( 1, 0 ), 42 );
+   EXPECT_EQ( m.getElement( 1, 1 ), 42 );
+   EXPECT_EQ( m.getElement( 1, 2 ), 42 );
+   EXPECT_EQ( m.getElement( 1, 3 ),  0 );
+   EXPECT_EQ( m.getElement( 1, 4 ),  0 );
+   EXPECT_EQ( m.getElement( 1, 5 ),  0 );
 
-    EXPECT_EQ( m.getElement( 4, 0 ), 42 );
-    EXPECT_EQ( m.getElement( 4, 1 ), 42 );
-    EXPECT_EQ( m.getElement( 4, 2 ), 42 );
-    EXPECT_EQ( m.getElement( 4, 3 ), 42 );
-    EXPECT_EQ( m.getElement( 4, 4 ), 42 );
-    EXPECT_EQ( m.getElement( 4, 5 ), 42 );
+   EXPECT_EQ( m.getElement( 2, 0 ),  0 );
+   EXPECT_EQ( m.getElement( 2, 1 ), 42 );
+   EXPECT_EQ( m.getElement( 2, 2 ), 42 );
+   EXPECT_EQ( m.getElement( 2, 3 ), 42 );
+   EXPECT_EQ( m.getElement( 2, 4 ),  0 );
+   EXPECT_EQ( m.getElement( 2, 5 ),  0 );
 
-    EXPECT_EQ( m.getElement( 5, 0 ), 42 );
-    EXPECT_EQ( m.getElement( 5, 1 ), 42 );
-    EXPECT_EQ( m.getElement( 5, 2 ), 42 );
-    EXPECT_EQ( m.getElement( 5, 3 ), 42 );
-    EXPECT_EQ( m.getElement( 5, 4 ), 42 );
-    EXPECT_EQ( m.getElement( 5, 5 ), 42 );
+   EXPECT_EQ( m.getElement( 3, 0 ),  0 );
+   EXPECT_EQ( m.getElement( 3, 1 ),  0 );
+   EXPECT_EQ( m.getElement( 3, 2 ), 42 );
+   EXPECT_EQ( m.getElement( 3, 3 ), 42 );
+   EXPECT_EQ( m.getElement( 3, 4 ), 42 );
+   EXPECT_EQ( m.getElement( 3, 5 ),  0 );
 
-    EXPECT_EQ( m.getElement( 6, 0 ), 42 );
-    EXPECT_EQ( m.getElement( 6, 1 ), 42 );
-    EXPECT_EQ( m.getElement( 6, 2 ), 42 );
-    EXPECT_EQ( m.getElement( 6, 3 ), 42 );
-    EXPECT_EQ( m.getElement( 6, 4 ), 42 );
-    EXPECT_EQ( m.getElement( 6, 5 ), 42 );
+   EXPECT_EQ( m.getElement( 4, 0 ),  0 );
+   EXPECT_EQ( m.getElement( 4, 1 ),  0 );
+   EXPECT_EQ( m.getElement( 4, 2 ),  0 );
+   EXPECT_EQ( m.getElement( 4, 3 ), 42 );
+   EXPECT_EQ( m.getElement( 4, 4 ), 42 );
+   EXPECT_EQ( m.getElement( 4, 5 ), 42 );
+
+   EXPECT_EQ( m.getElement( 5, 0 ),  0 );
+   EXPECT_EQ( m.getElement( 5, 1 ),  0 );
+   EXPECT_EQ( m.getElement( 5, 2 ),  0 );
+   EXPECT_EQ( m.getElement( 5, 3 ),  0 );
+   EXPECT_EQ( m.getElement( 5, 4 ), 42 );
+   EXPECT_EQ( m.getElement( 5, 5 ), 42 );
+
+   EXPECT_EQ( m.getElement( 6, 0 ),  0 );
+   EXPECT_EQ( m.getElement( 6, 1 ),  0 );
+   EXPECT_EQ( m.getElement( 6, 2 ),  0 );
+   EXPECT_EQ( m.getElement( 6, 3 ),  0 );
+   EXPECT_EQ( m.getElement( 6, 4 ),  0 );
+   EXPECT_EQ( m.getElement( 6, 5 ), 42 );
 }
 
 template< typename Matrix >
 void test_SetElement()
 {
-    using RealType = typename Matrix::RealType;
-    using DeviceType = typename Matrix::DeviceType;
-    using IndexType = typename Matrix::IndexType;
-/*
- * Sets up the following 5x5 dense matrix:
- *
- *    /  1  2  3  4  5 \
- *    |  6  7  8  9 10 |
- *    | 11 12 13 14 15 |
- *    | 16 17 18 19 20 |
- *    \ 21 22 23 24 25 /
- */
-    const IndexType rows = 5;
-    const IndexType cols = 5;
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
 
-    Matrix m;
-    m.reset();
-    m.setDimensions( rows, cols );
+   /*
+    * Sets up the following 5x5 matrix:
+    *
+    *    /  1  2  0  0  0 \
+    *    |  6  7  8  0  0 |
+    *    |  0 12 13 14  0 |
+    *    |  0  0 18 19 20 |
+    *    \  0  0  0 24 25 /
+    */
+   const IndexType rows = 5;
+   const IndexType cols = 5;
 
-    RealType value = 1;
-    for( IndexType i = 0; i < rows; i++ )
-        for( IndexType j = 0; j < cols; j++ )
+   Matrix m( rows, cols );
+
+   RealType value = 1;
+   for( IndexType i = 0; i < rows; i++ )
+      for( IndexType j = 0; j < cols; j++ )
+      {
+         if( abs( i - j ) > 1 )
+         {
+            EXPECT_THROW( m.setElement( i, j, value++ ), std::logic_error );
+         }
+         else
             m.setElement( i, j, value++ );
+      }
 
-    EXPECT_EQ( m.getElement( 0, 0 ),  1 );
-    EXPECT_EQ( m.getElement( 0, 1 ),  2 );
-    EXPECT_EQ( m.getElement( 0, 2 ),  3 );
-    EXPECT_EQ( m.getElement( 0, 3 ),  4 );
-    EXPECT_EQ( m.getElement( 0, 4 ),  5 );
+   EXPECT_EQ( m.getElement( 0, 0 ),  1 );
+   EXPECT_EQ( m.getElement( 0, 1 ),  2 );
+   EXPECT_EQ( m.getElement( 0, 2 ),  0 );
+   EXPECT_EQ( m.getElement( 0, 3 ),  0 );
+   EXPECT_EQ( m.getElement( 0, 4 ),  0 );
 
-    EXPECT_EQ( m.getElement( 1, 0 ),  6 );
-    EXPECT_EQ( m.getElement( 1, 1 ),  7 );
-    EXPECT_EQ( m.getElement( 1, 2 ),  8 );
-    EXPECT_EQ( m.getElement( 1, 3 ),  9 );
-    EXPECT_EQ( m.getElement( 1, 4 ), 10 );
+   EXPECT_EQ( m.getElement( 1, 0 ),  6 );
+   EXPECT_EQ( m.getElement( 1, 1 ),  7 );
+   EXPECT_EQ( m.getElement( 1, 2 ),  8 );
+   EXPECT_EQ( m.getElement( 1, 3 ),  0 );
+   EXPECT_EQ( m.getElement( 1, 4 ),  0 );
 
-    EXPECT_EQ( m.getElement( 2, 0 ), 11 );
-    EXPECT_EQ( m.getElement( 2, 1 ), 12 );
-    EXPECT_EQ( m.getElement( 2, 2 ), 13 );
-    EXPECT_EQ( m.getElement( 2, 3 ), 14 );
-    EXPECT_EQ( m.getElement( 2, 4 ), 15 );
+   EXPECT_EQ( m.getElement( 2, 0 ),  0 );
+   EXPECT_EQ( m.getElement( 2, 1 ), 12 );
+   EXPECT_EQ( m.getElement( 2, 2 ), 13 );
+   EXPECT_EQ( m.getElement( 2, 3 ), 14 );
+   EXPECT_EQ( m.getElement( 2, 4 ),  0 );
 
-    EXPECT_EQ( m.getElement( 3, 0 ), 16 );
-    EXPECT_EQ( m.getElement( 3, 1 ), 17 );
-    EXPECT_EQ( m.getElement( 3, 2 ), 18 );
-    EXPECT_EQ( m.getElement( 3, 3 ), 19 );
-    EXPECT_EQ( m.getElement( 3, 4 ), 20 );
+   EXPECT_EQ( m.getElement( 3, 0 ),  0 );
+   EXPECT_EQ( m.getElement( 3, 1 ),  0 );
+   EXPECT_EQ( m.getElement( 3, 2 ), 18 );
+   EXPECT_EQ( m.getElement( 3, 3 ), 19 );
+   EXPECT_EQ( m.getElement( 3, 4 ), 20 );
 
-    EXPECT_EQ( m.getElement( 4, 0 ), 21 );
-    EXPECT_EQ( m.getElement( 4, 1 ), 22 );
-    EXPECT_EQ( m.getElement( 4, 2 ), 23 );
-    EXPECT_EQ( m.getElement( 4, 3 ), 24 );
-    EXPECT_EQ( m.getElement( 4, 4 ), 25 );
+   EXPECT_EQ( m.getElement( 4, 0 ),  0 );
+   EXPECT_EQ( m.getElement( 4, 1 ),  0 );
+   EXPECT_EQ( m.getElement( 4, 2 ),  0 );
+   EXPECT_EQ( m.getElement( 4, 3 ), 24 );
+   EXPECT_EQ( m.getElement( 4, 4 ), 25 );
 }
 
 template< typename Matrix >
 void test_AddElement()
 {
-    using RealType = typename Matrix::RealType;
-    using DeviceType = typename Matrix::DeviceType;
-    using IndexType = typename Matrix::IndexType;
-/*
- * Sets up the following 6x5 dense matrix:
- *
- *    /  1  2  3  4  5 \
- *    |  6  7  8  9 10 |
- *    | 11 12 13 14 15 |
- *    | 16 17 18 19 20 |
- *    | 21 22 23 24 25 |
- *    \ 26 27 28 29 30 /
- */
-    const IndexType rows = 6;
-    const IndexType cols = 5;
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
 
-    Matrix m;
-    m.reset();
-    m.setDimensions( rows, cols );
+   /*
+    * Sets up the following 6x5 matrix:
+    *
+    *    /  1  2  0  0  0 \
+    *    |  6  7  8  0  0 |
+    *    |  0 12 13 14  0 |
+    *    |  0  0 18 19 20 |
+    *    |  0  0  0 24 25 |
+    *    \  0  0  0  0 30 /
+    */
+
+   const IndexType rows = 6;
+   const IndexType cols = 5;
+
+   Matrix m( rows, cols );
 
     RealType value = 1;
     for( IndexType i = 0; i < rows; i++ )
         for( IndexType j = 0; j < cols; j++ )
-            m.setElement( i, j, value++ );
+        {
+           if( abs( i - j ) <= 1 )
+               m.setElement( i, j, value );
+           value++;
+        }
 
-    // Check the added elements
-    EXPECT_EQ( m.getElement( 0, 0 ),  1 );
-    EXPECT_EQ( m.getElement( 0, 1 ),  2 );
-    EXPECT_EQ( m.getElement( 0, 2 ),  3 );
-    EXPECT_EQ( m.getElement( 0, 3 ),  4 );
-    EXPECT_EQ( m.getElement( 0, 4 ),  5 );
+   // Check the added elements
+   EXPECT_EQ( m.getElement( 0, 0 ),  1 );
+   EXPECT_EQ( m.getElement( 0, 1 ),  2 );
+   EXPECT_EQ( m.getElement( 0, 2 ),  0 );
+   EXPECT_EQ( m.getElement( 0, 3 ),  0 );
+   EXPECT_EQ( m.getElement( 0, 4 ),  0 );
 
-    EXPECT_EQ( m.getElement( 1, 0 ),  6 );
-    EXPECT_EQ( m.getElement( 1, 1 ),  7 );
-    EXPECT_EQ( m.getElement( 1, 2 ),  8 );
-    EXPECT_EQ( m.getElement( 1, 3 ),  9 );
-    EXPECT_EQ( m.getElement( 1, 4 ), 10 );
+   EXPECT_EQ( m.getElement( 1, 0 ),  6 );
+   EXPECT_EQ( m.getElement( 1, 1 ),  7 );
+   EXPECT_EQ( m.getElement( 1, 2 ),  8 );
+   EXPECT_EQ( m.getElement( 1, 3 ),  0 );
+   EXPECT_EQ( m.getElement( 1, 4 ),  0 );
 
-    EXPECT_EQ( m.getElement( 2, 0 ), 11 );
-    EXPECT_EQ( m.getElement( 2, 1 ), 12 );
-    EXPECT_EQ( m.getElement( 2, 2 ), 13 );
-    EXPECT_EQ( m.getElement( 2, 3 ), 14 );
-    EXPECT_EQ( m.getElement( 2, 4 ), 15 );
+   EXPECT_EQ( m.getElement( 2, 0 ),  0 );
+   EXPECT_EQ( m.getElement( 2, 1 ), 12 );
+   EXPECT_EQ( m.getElement( 2, 2 ), 13 );
+   EXPECT_EQ( m.getElement( 2, 3 ), 14 );
+   EXPECT_EQ( m.getElement( 2, 4 ),  0 );
 
-    EXPECT_EQ( m.getElement( 3, 0 ), 16 );
-    EXPECT_EQ( m.getElement( 3, 1 ), 17 );
-    EXPECT_EQ( m.getElement( 3, 2 ), 18 );
-    EXPECT_EQ( m.getElement( 3, 3 ), 19 );
-    EXPECT_EQ( m.getElement( 3, 4 ), 20 );
+   EXPECT_EQ( m.getElement( 3, 0 ),  0 );
+   EXPECT_EQ( m.getElement( 3, 1 ),  0 );
+   EXPECT_EQ( m.getElement( 3, 2 ), 18 );
+   EXPECT_EQ( m.getElement( 3, 3 ), 19 );
+   EXPECT_EQ( m.getElement( 3, 4 ), 20 );
 
-    EXPECT_EQ( m.getElement( 4, 0 ), 21 );
-    EXPECT_EQ( m.getElement( 4, 1 ), 22 );
-    EXPECT_EQ( m.getElement( 4, 2 ), 23 );
-    EXPECT_EQ( m.getElement( 4, 3 ), 24 );
-    EXPECT_EQ( m.getElement( 4, 4 ), 25 );
+   EXPECT_EQ( m.getElement( 4, 0 ),  0 );
+   EXPECT_EQ( m.getElement( 4, 1 ),  0 );
+   EXPECT_EQ( m.getElement( 4, 2 ),  0 );
+   EXPECT_EQ( m.getElement( 4, 3 ), 24 );
+   EXPECT_EQ( m.getElement( 4, 4 ), 25 );
 
-    EXPECT_EQ( m.getElement( 5, 0 ), 26 );
-    EXPECT_EQ( m.getElement( 5, 1 ), 27 );
-    EXPECT_EQ( m.getElement( 5, 2 ), 28 );
-    EXPECT_EQ( m.getElement( 5, 3 ), 29 );
-    EXPECT_EQ( m.getElement( 5, 4 ), 30 );
+   EXPECT_EQ( m.getElement( 5, 0 ),  0 );
+   EXPECT_EQ( m.getElement( 5, 1 ),  0 );
+   EXPECT_EQ( m.getElement( 5, 2 ),  0 );
+   EXPECT_EQ( m.getElement( 5, 3 ),  0 );
+   EXPECT_EQ( m.getElement( 5, 4 ), 30 );
 
-    // Add new elements to the old elements with a multiplying factor applied to the old elements.
-/*
- * The following setup results in the following 6x5 dense matrix:
- *
- *    /  3  6  9 12 15 \
- *    | 18 21 24 27 30 |
- *    | 33 36 39 42 45 |
- *    | 48 51 54 57 60 |
- *    | 63 66 69 72 75 |
- *    \ 78 81 84 87 90 /
- */
-    RealType newValue = 1;
-    RealType multiplicator = 2;
-    for( IndexType i = 0; i < rows; i++ )
-        for( IndexType j = 0; j < cols; j++ )
+   // Add new elements to the old elements with a multiplying factor applied to the old elements.
+   /*
+    * The following setup results in the following 6x5 matrix:
+    *
+    *     /  1  2  0  0  0 \    /  1  2  0  0  0 \   /  3  6  0  0  0 \
+    *     |  6  7  8  0  0 |    |  3  4  5  0  0 |   | 15 18 21  0  0 |
+    * 2 * |  0 12 13 14  0 |  + |  0  6  7  8  0 | = |  0 30 33 36  0 |
+    *     |  0  0 18 19 20 |    |  0  0  9 10 11 |   |  0  0 45 48 51 |
+    *     |  0  0  0 24 25 |    |  0  0  0 12 13 |   |  0  0  0 60 63 |
+    *     \  0  0  0  0 30 /    \  0  0  0  0 14 /   \  0  0  0  0 74 /
+    */
+
+   RealType newValue = 1;
+   RealType multiplicator = 2;
+   for( IndexType i = 0; i < rows; i++ )
+      for( IndexType j = 0; j < cols; j++ )
+         if( abs( i - j ) <= 1 )
             m.addElement( i, j, newValue++, multiplicator );
 
-    EXPECT_EQ( m.getElement( 0, 0 ),  3 );
-    EXPECT_EQ( m.getElement( 0, 1 ),  6 );
-    EXPECT_EQ( m.getElement( 0, 2 ),  9 );
-    EXPECT_EQ( m.getElement( 0, 3 ), 12 );
-    EXPECT_EQ( m.getElement( 0, 4 ), 15 );
+   EXPECT_EQ( m.getElement( 0, 0 ),  3 );
+   EXPECT_EQ( m.getElement( 0, 1 ),  6 );
+   EXPECT_EQ( m.getElement( 0, 2 ),  0 );
+   EXPECT_EQ( m.getElement( 0, 3 ),  0 );
+   EXPECT_EQ( m.getElement( 0, 4 ),  0 );
 
-    EXPECT_EQ( m.getElement( 1, 0 ), 18 );
-    EXPECT_EQ( m.getElement( 1, 1 ), 21 );
-    EXPECT_EQ( m.getElement( 1, 2 ), 24 );
-    EXPECT_EQ( m.getElement( 1, 3 ), 27 );
-    EXPECT_EQ( m.getElement( 1, 4 ), 30 );
+   EXPECT_EQ( m.getElement( 1, 0 ), 15 );
+   EXPECT_EQ( m.getElement( 1, 1 ), 18 );
+   EXPECT_EQ( m.getElement( 1, 2 ), 21 );
+   EXPECT_EQ( m.getElement( 1, 3 ),  0 );
+   EXPECT_EQ( m.getElement( 1, 4 ),  0 );
 
-    EXPECT_EQ( m.getElement( 2, 0 ), 33 );
-    EXPECT_EQ( m.getElement( 2, 1 ), 36 );
-    EXPECT_EQ( m.getElement( 2, 2 ), 39 );
-    EXPECT_EQ( m.getElement( 2, 3 ), 42 );
-    EXPECT_EQ( m.getElement( 2, 4 ), 45 );
+   EXPECT_EQ( m.getElement( 2, 0 ),  0 );
+   EXPECT_EQ( m.getElement( 2, 1 ), 30 );
+   EXPECT_EQ( m.getElement( 2, 2 ), 33 );
+   EXPECT_EQ( m.getElement( 2, 3 ), 36 );
+   EXPECT_EQ( m.getElement( 2, 4 ),  0 );
 
-    EXPECT_EQ( m.getElement( 3, 0 ), 48 );
-    EXPECT_EQ( m.getElement( 3, 1 ), 51 );
-    EXPECT_EQ( m.getElement( 3, 2 ), 54 );
-    EXPECT_EQ( m.getElement( 3, 3 ), 57 );
-    EXPECT_EQ( m.getElement( 3, 4 ), 60 );
+   EXPECT_EQ( m.getElement( 3, 0 ),  0 );
+   EXPECT_EQ( m.getElement( 3, 1 ),  0 );
+   EXPECT_EQ( m.getElement( 3, 2 ), 45  );
+   EXPECT_EQ( m.getElement( 3, 3 ), 48 );
+   EXPECT_EQ( m.getElement( 3, 4 ), 51 );
 
-    EXPECT_EQ( m.getElement( 4, 0 ), 63 );
-    EXPECT_EQ( m.getElement( 4, 1 ), 66 );
-    EXPECT_EQ( m.getElement( 4, 2 ), 69 );
-    EXPECT_EQ( m.getElement( 4, 3 ), 72 );
-    EXPECT_EQ( m.getElement( 4, 4 ), 75 );
+   EXPECT_EQ( m.getElement( 4, 0 ),  0 );
+   EXPECT_EQ( m.getElement( 4, 1 ),  0 );
+   EXPECT_EQ( m.getElement( 4, 2 ),  0 );
+   EXPECT_EQ( m.getElement( 4, 3 ), 60 );
+   EXPECT_EQ( m.getElement( 4, 4 ), 63 );
 
-    EXPECT_EQ( m.getElement( 5, 0 ), 78 );
-    EXPECT_EQ( m.getElement( 5, 1 ), 81 );
-    EXPECT_EQ( m.getElement( 5, 2 ), 84 );
-    EXPECT_EQ( m.getElement( 5, 3 ), 87 );
-    EXPECT_EQ( m.getElement( 5, 4 ), 90 );
+   EXPECT_EQ( m.getElement( 5, 0 ),  0 );
+   EXPECT_EQ( m.getElement( 5, 1 ),  0 );
+   EXPECT_EQ( m.getElement( 5, 2 ),  0 );
+   EXPECT_EQ( m.getElement( 5, 3 ),  0 );
+   EXPECT_EQ( m.getElement( 5, 4 ), 74 );
 }
 
 template< typename Matrix >
@@ -557,63 +620,56 @@ void test_SetRow()
    using IndexType = typename Matrix::IndexType;
 
    /*
-    * Sets up the following 3x7 dense matrix:
+    * Sets up the following 3x7 matrix:
     *
-    *    /  1  2  3  4  5  6  7 \
-    *    |  8  9 10 11 12 13 14 |
-    *    \ 15 16 17 18 19 20 21 /
+    *    /  1  2  0  0  0  0  0 \
+    *    |  8  9 10  0  0  0  0 |
+    *    \  0 16 17 18  0  0  0 /
     */
    const IndexType rows = 3;
    const IndexType cols = 7;
 
-   Matrix m;
-   m.reset();
-   m.setDimensions( rows, cols );
-
-   RealType value = 1;
-   for( IndexType i = 0; i < rows; i++ )
-      for( IndexType j = 0; j < cols; j++ )
-         m.setElement( i, j, value++ );
+   Matrix m( rows, cols );
 
    auto matrix_view = m.getView();
    auto f = [=] __cuda_callable__ ( IndexType rowIdx ) mutable {
-      RealType values[ 3 ][ 5 ] {
-         { 11, 11, 11, 11, 11 },
-         { 22, 22, 22, 22, 22 },
-         { 33, 33, 33, 33, 33 } };
-      IndexType columnIndexes[ 3 ][ 5 ] {
-         { 0, 1, 2, 3, 4 },
-         { 0, 1, 2, 3, 4 },
-         { 2, 3, 4, 5, 6 } };
+      RealType values[ 3 ][ 3 ] {
+         {  1,  2,  0 },
+         {  8,  9, 10 },
+         { 16, 17, 18 } };
       auto row = matrix_view.getRow( rowIdx );
-      for( IndexType i = 0; i < 5; i++ )
-        row.setElement( i, values[ rowIdx ][ i ] );
+      for( IndexType i = 0; i < 3; i++ )
+      {
+         if( rowIdx == 0 && i > 1 )
+            break;
+         row.setElement( i, values[ rowIdx ][ i ] );
+      }
    };
    TNL::Algorithms::ParallelFor< DeviceType >::exec( 0, 3, f );
 
-   EXPECT_EQ( m.getElement( 0, 0 ), 11 );
-   EXPECT_EQ( m.getElement( 0, 1 ), 11 );
-   EXPECT_EQ( m.getElement( 0, 2 ), 11 );
-   EXPECT_EQ( m.getElement( 0, 3 ), 11 );
-   EXPECT_EQ( m.getElement( 0, 4 ), 11 );
-   EXPECT_EQ( m.getElement( 0, 5 ),  6 );
-   EXPECT_EQ( m.getElement( 0, 6 ),  7 );
+   EXPECT_EQ( m.getElement( 0, 0 ),  1 );
+   EXPECT_EQ( m.getElement( 0, 1 ),  2 );
+   EXPECT_EQ( m.getElement( 0, 2 ),  0 );
+   EXPECT_EQ( m.getElement( 0, 3 ),  0 );
+   EXPECT_EQ( m.getElement( 0, 4 ),  0 );
+   EXPECT_EQ( m.getElement( 0, 5 ),  0 );
+   EXPECT_EQ( m.getElement( 0, 6 ),  0 );
 
-   EXPECT_EQ( m.getElement( 1, 0 ), 22 );
-   EXPECT_EQ( m.getElement( 1, 1 ), 22 );
-   EXPECT_EQ( m.getElement( 1, 2 ), 22 );
-   EXPECT_EQ( m.getElement( 1, 3 ), 22 );
-   EXPECT_EQ( m.getElement( 1, 4 ), 22 );
-   EXPECT_EQ( m.getElement( 1, 5 ), 13 );
-   EXPECT_EQ( m.getElement( 1, 6 ), 14 );
+   EXPECT_EQ( m.getElement( 1, 0 ),  8 );
+   EXPECT_EQ( m.getElement( 1, 1 ),  9 );
+   EXPECT_EQ( m.getElement( 1, 2 ), 10 );
+   EXPECT_EQ( m.getElement( 1, 3 ),  0 );
+   EXPECT_EQ( m.getElement( 1, 4 ),  0 );
+   EXPECT_EQ( m.getElement( 1, 5 ),  0 );
+   EXPECT_EQ( m.getElement( 1, 6 ),  0 );
 
-   EXPECT_EQ( m.getElement( 2, 0 ), 15 );
+   EXPECT_EQ( m.getElement( 2, 0 ),  0 );
    EXPECT_EQ( m.getElement( 2, 1 ), 16 );
-   EXPECT_EQ( m.getElement( 2, 2 ), 33 );
-   EXPECT_EQ( m.getElement( 2, 3 ), 33 );
-   EXPECT_EQ( m.getElement( 2, 4 ), 33 );
-   EXPECT_EQ( m.getElement( 2, 5 ), 33 );
-   EXPECT_EQ( m.getElement( 2, 6 ), 33 );
+   EXPECT_EQ( m.getElement( 2, 2 ), 17 );
+   EXPECT_EQ( m.getElement( 2, 3 ), 18 );
+   EXPECT_EQ( m.getElement( 2, 4 ),  0 );
+   EXPECT_EQ( m.getElement( 2, 5 ),  0 );
+   EXPECT_EQ( m.getElement( 2, 6 ),  0 );
 }
 
 template< typename Matrix >
@@ -623,14 +679,14 @@ void test_AddRow()
    using DeviceType = typename Matrix::DeviceType;
    using IndexType = typename Matrix::IndexType;
    /*
-    * Sets up the following 6x5 dense matrix:
+    * Sets up the following 6x5 matrix:
     *
-    *    /  1  2  3  4  5 \
-    *    |  6  7  8  9 10 |
-    *    | 11 12 13 14 15 |
-    *    | 16 17 18 19 20 |
-    *    | 21 22 23 24 25 |
-    *    \ 26 27 28 29 30 /
+    *    /  1  2  0  0  0 \
+    *    |  6  7  8  0  0 |
+    *    |  0 12 13 14  0 |
+    *    |  0  0 18 19 20 |
+    *    |  0  0  0 24 25 |
+    *    \  0  0  0  0 30 /
     */
 
    const IndexType rows = 6;
@@ -641,68 +697,72 @@ void test_AddRow()
    RealType value = 1;
    for( IndexType i = 0; i < rows; i++ )
       for( IndexType j = 0; j < cols; j++ )
-         m.setElement( i, j, value++ );
+      {
+         if( abs( i - j ) <= 1 )
+            m.setElement( i, j, value );
+         value++;
+      }
 
    // Check the added elements
    EXPECT_EQ( m.getElement( 0, 0 ),  1 );
    EXPECT_EQ( m.getElement( 0, 1 ),  2 );
-   EXPECT_EQ( m.getElement( 0, 2 ),  3 );
-   EXPECT_EQ( m.getElement( 0, 3 ),  4 );
-   EXPECT_EQ( m.getElement( 0, 4 ),  5 );
+   EXPECT_EQ( m.getElement( 0, 2 ),  0 );
+   EXPECT_EQ( m.getElement( 0, 3 ),  0 );
+   EXPECT_EQ( m.getElement( 0, 4 ),  0 );
 
    EXPECT_EQ( m.getElement( 1, 0 ),  6 );
    EXPECT_EQ( m.getElement( 1, 1 ),  7 );
    EXPECT_EQ( m.getElement( 1, 2 ),  8 );
-   EXPECT_EQ( m.getElement( 1, 3 ),  9 );
-   EXPECT_EQ( m.getElement( 1, 4 ), 10 );
+   EXPECT_EQ( m.getElement( 1, 3 ),  0 );
+   EXPECT_EQ( m.getElement( 1, 4 ),  0 );
 
-   EXPECT_EQ( m.getElement( 2, 0 ), 11 );
+   EXPECT_EQ( m.getElement( 2, 0 ),  0 );
    EXPECT_EQ( m.getElement( 2, 1 ), 12 );
    EXPECT_EQ( m.getElement( 2, 2 ), 13 );
    EXPECT_EQ( m.getElement( 2, 3 ), 14 );
-   EXPECT_EQ( m.getElement( 2, 4 ), 15 );
+   EXPECT_EQ( m.getElement( 2, 4 ),  0 );
 
-   EXPECT_EQ( m.getElement( 3, 0 ), 16 );
-   EXPECT_EQ( m.getElement( 3, 1 ), 17 );
+   EXPECT_EQ( m.getElement( 3, 0 ),  0 );
+   EXPECT_EQ( m.getElement( 3, 1 ),  0 );
    EXPECT_EQ( m.getElement( 3, 2 ), 18 );
    EXPECT_EQ( m.getElement( 3, 3 ), 19 );
    EXPECT_EQ( m.getElement( 3, 4 ), 20 );
 
-   EXPECT_EQ( m.getElement( 4, 0 ), 21 );
-   EXPECT_EQ( m.getElement( 4, 1 ), 22 );
-   EXPECT_EQ( m.getElement( 4, 2 ), 23 );
+   EXPECT_EQ( m.getElement( 4, 0 ),  0 );
+   EXPECT_EQ( m.getElement( 4, 1 ),  0 );
+   EXPECT_EQ( m.getElement( 4, 2 ),  0 );
    EXPECT_EQ( m.getElement( 4, 3 ), 24 );
    EXPECT_EQ( m.getElement( 4, 4 ), 25 );
 
-   EXPECT_EQ( m.getElement( 5, 0 ), 26 );
-   EXPECT_EQ( m.getElement( 5, 1 ), 27 );
-   EXPECT_EQ( m.getElement( 5, 2 ), 28 );
-   EXPECT_EQ( m.getElement( 5, 3 ), 29 );
+   EXPECT_EQ( m.getElement( 5, 0 ),  0 );
+   EXPECT_EQ( m.getElement( 5, 1 ),  0 );
+   EXPECT_EQ( m.getElement( 5, 2 ),  0 );
+   EXPECT_EQ( m.getElement( 5, 3 ),  0 );
    EXPECT_EQ( m.getElement( 5, 4 ), 30 );
 
    // Add new elements to the old elements with a multiplying factor applied to the old elements.
    /*
     * The following setup results in the following 6x5 sparse matrix:
     *
-    *    /  3  6  9 12 15 \
-    *    | 18 21 24 27 30 |
-    *    | 33 36 39 42 45 |
-    *    | 48 51 54 57 60 |
-    *    | 63 66 69 72 75 |
-    *    \ 78 81 84 87 90 /
+    *  / 0  0  0  0  0  0 \   /  1  2  0  0  0 \   / 11 11  0  0  0 \   / 11  11  0   0   0 \
+    *  | 0  1  0  0  0  0 |   |  6  7  8  0  0 |   | 22 22 22  0  0 |   | 28  29 30   0   0 |
+    *  | 0  0  2  0  0  0 | * |  0 12 13 14  0 | + |  0 33 33 33  0 | = |  0  57 59  61   0 |
+    *  | 0  0  0  3  0  0 |   |  0  0 18 19 20 |   |  0  0 44 44 44 |   |  0   0 98 101 104 |
+    *  | 0  0  0  0  4  0 |   |  0  0  0 24 25 |   |  0  0  0 55 55 |   |  0   0  0 151 155 |
+    *  \ 0  0  0  0  0  5 /   \  0  0  0  0 30 /   \  0  0  0  0 66 /   \  0   0  0   0 216 /
     */
 
    auto matrix_view = m.getView();
    auto f = [=] __cuda_callable__ ( IndexType rowIdx ) mutable {
-      RealType values[ 6 ][ 5 ] {
-         { 11, 11, 11, 11, 0 },
-         { 22, 22, 22, 22, 0 },
-         { 33, 33, 33, 33, 0 },
-         { 44, 44, 44, 44, 0 },
-         { 55, 55, 55, 55, 0 },
-         { 66, 66, 66, 66, 0 } };
+      RealType values[ 6 ][ 3 ] {
+         { 11, 11,  0 },
+         { 22, 22, 22 },
+         { 33, 33, 33 },
+         { 44, 44, 44 },
+         { 55, 55, 55 },
+         { 66, 66, 66 } };
       auto row = matrix_view.getRow( rowIdx );
-      for( IndexType i = 0; i < 5; i++ )
+      for( IndexType i = 0; i < 3; i++ )
       {
          RealType& val = row.getValue( i );
          val = rowIdx * val + values[ rowIdx ][ i ];
@@ -711,208 +771,207 @@ void test_AddRow()
    TNL::Algorithms::ParallelFor< DeviceType >::exec( 0, 6, f );
 
 
-    EXPECT_EQ( m.getElement( 0, 0 ),  11 );
-    EXPECT_EQ( m.getElement( 0, 1 ),  11 );
-    EXPECT_EQ( m.getElement( 0, 2 ),  11 );
-    EXPECT_EQ( m.getElement( 0, 3 ),  11 );
-    EXPECT_EQ( m.getElement( 0, 4 ),   0 );
+   EXPECT_EQ( m.getElement( 0, 0 ),  11 );
+   EXPECT_EQ( m.getElement( 0, 1 ),  11 );
+   EXPECT_EQ( m.getElement( 0, 2 ),   0 );
+   EXPECT_EQ( m.getElement( 0, 3 ),   0 );
+   EXPECT_EQ( m.getElement( 0, 4 ),   0 );
 
-    EXPECT_EQ( m.getElement( 1, 0 ),  28 );
-    EXPECT_EQ( m.getElement( 1, 1 ),  29 );
-    EXPECT_EQ( m.getElement( 1, 2 ),  30 );
-    EXPECT_EQ( m.getElement( 1, 3 ),  31 );
-    EXPECT_EQ( m.getElement( 1, 4 ),  10 );
+   EXPECT_EQ( m.getElement( 1, 0 ),  28 );
+   EXPECT_EQ( m.getElement( 1, 1 ),  29 );
+   EXPECT_EQ( m.getElement( 1, 2 ),  30 );
+   EXPECT_EQ( m.getElement( 1, 3 ),   0 );
+   EXPECT_EQ( m.getElement( 1, 4 ),   0 );
 
-    EXPECT_EQ( m.getElement( 2, 0 ),  55 );
-    EXPECT_EQ( m.getElement( 2, 1 ),  57 );
-    EXPECT_EQ( m.getElement( 2, 2 ),  59 );
-    EXPECT_EQ( m.getElement( 2, 3 ),  61 );
-    EXPECT_EQ( m.getElement( 2, 4 ),  30 );
+   EXPECT_EQ( m.getElement( 2, 0 ),   0 );
+   EXPECT_EQ( m.getElement( 2, 1 ),  57 );
+   EXPECT_EQ( m.getElement( 2, 2 ),  59 );
+   EXPECT_EQ( m.getElement( 2, 3 ),  61 );
+   EXPECT_EQ( m.getElement( 2, 4 ),   0  );
 
-    EXPECT_EQ( m.getElement( 3, 0 ),  92 );
-    EXPECT_EQ( m.getElement( 3, 1 ),  95 );
-    EXPECT_EQ( m.getElement( 3, 2 ),  98 );
-    EXPECT_EQ( m.getElement( 3, 3 ), 101 );
-    EXPECT_EQ( m.getElement( 3, 4 ),  60 );
+   EXPECT_EQ( m.getElement( 3, 0 ),   0 );
+   EXPECT_EQ( m.getElement( 3, 1 ),   0 );
+   EXPECT_EQ( m.getElement( 3, 2 ),  98 );
+   EXPECT_EQ( m.getElement( 3, 3 ), 101 );
+   EXPECT_EQ( m.getElement( 3, 4 ), 104 );
 
-    EXPECT_EQ( m.getElement( 4, 0 ), 139 );
-    EXPECT_EQ( m.getElement( 4, 1 ), 143 );
-    EXPECT_EQ( m.getElement( 4, 2 ), 147 );
-    EXPECT_EQ( m.getElement( 4, 3 ), 151 );
-    EXPECT_EQ( m.getElement( 4, 4 ), 100 );
+   EXPECT_EQ( m.getElement( 4, 0 ),   0 );
+   EXPECT_EQ( m.getElement( 4, 1 ),   0 );
+   EXPECT_EQ( m.getElement( 4, 2 ),   0 );
+   EXPECT_EQ( m.getElement( 4, 3 ), 151 );
+   EXPECT_EQ( m.getElement( 4, 4 ), 155 );
 
-    EXPECT_EQ( m.getElement( 5, 0 ), 196 );
-    EXPECT_EQ( m.getElement( 5, 1 ), 201 );
-    EXPECT_EQ( m.getElement( 5, 2 ), 206 );
-    EXPECT_EQ( m.getElement( 5, 3 ), 211 );
-    EXPECT_EQ( m.getElement( 5, 4 ), 150 );
+   EXPECT_EQ( m.getElement( 5, 0 ),   0 );
+   EXPECT_EQ( m.getElement( 5, 1 ),   0 );
+   EXPECT_EQ( m.getElement( 5, 2 ),   0 );
+   EXPECT_EQ( m.getElement( 5, 3 ),   0 );
+   EXPECT_EQ( m.getElement( 5, 4 ), 216 );
 }
 
 template< typename Matrix >
 void test_VectorProduct()
 {
-    using RealType = typename Matrix::RealType;
-    using DeviceType = typename Matrix::DeviceType;
-    using IndexType = typename Matrix::IndexType;
-/*
- * Sets up the following 5x4 dense matrix:
- *
- *    /  1  2  3  4 \
- *    |  5  6  7  8 |
- *    |  9 10 11 12 |
- *    | 13 14 15 16 |
- *    \ 17 18 19 20 /
- */
-    const IndexType rows = 5;
-    const IndexType cols = 4;
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
 
-    Matrix m;
-    m.reset();
-    m.setDimensions( rows, cols );
+   /*
+    * Sets up the following 5x4 matrix:
+    *
+    *    /  1  2  0  0 \
+    *    |  5  6  7  0 |
+    *    |  0 10 11 12 |
+    *    |  0  0 15 16 |
+    *    \  0  0  0 20 /
+    */
+   const IndexType rows = 5;
+   const IndexType cols = 4;
 
-    RealType value = 1;
-    for( IndexType i = 0; i < rows; i++ )
-        for( IndexType j = 0; j < cols; j++)
-            m.setElement( i, j, value++ );
+   Matrix m( rows, cols );
 
-    using VectorType = TNL::Containers::Vector< RealType, DeviceType, IndexType >;
+   RealType value = 1;
+   for( IndexType i = 0; i < rows; i++ )
+      for( IndexType j = 0; j < cols; j++)
+      {
+         if( abs( i - j ) <= 1 )
+            m.setElement( i, j, value );
+         value++;
+      }
 
-    VectorType inVector;
-    inVector.setSize( 4 );
-    for( IndexType i = 0; i < inVector.getSize(); i++ )
-        inVector.setElement( i, 2 );
+   using VectorType = TNL::Containers::Vector< RealType, DeviceType, IndexType >;
 
-    VectorType outVector;
-    outVector.setSize( 5 );
-    for( IndexType j = 0; j < outVector.getSize(); j++ )
-        outVector.setElement( j, 0 );
+   VectorType inVector( 4 );
+   inVector = 2;
 
+   VectorType outVector( 5 );
+   outVector = 0;
 
-    m.vectorProduct( inVector, outVector);
+   m.vectorProduct( inVector, outVector);
 
-    EXPECT_EQ( outVector.getElement( 0 ),  20 );
-    EXPECT_EQ( outVector.getElement( 1 ),  52 );
-    EXPECT_EQ( outVector.getElement( 2 ),  84 );
-    EXPECT_EQ( outVector.getElement( 3 ), 116 );
-    EXPECT_EQ( outVector.getElement( 4 ), 148 );
+   EXPECT_EQ( outVector.getElement( 0 ),  6 );
+   EXPECT_EQ( outVector.getElement( 1 ), 36 );
+   EXPECT_EQ( outVector.getElement( 2 ), 66 );
+   EXPECT_EQ( outVector.getElement( 3 ), 62 );
+   EXPECT_EQ( outVector.getElement( 4 ), 40 );
 }
 
-template< typename Matrix >
+template< typename Matrix1, typename Matrix2 = Matrix1 >
 void test_AddMatrix()
 {
-    using RealType = typename Matrix::RealType;
-    using DeviceType = typename Matrix::DeviceType;
-    using IndexType = typename Matrix::IndexType;
-/*
- * Sets up the following 5x4 dense matrix:
- *
- *    /  1  2  3  4 \
- *    |  5  6  7  8 |
- *    |  9 10 11 12 |
- *    | 13 14 15 16 |
- *    \ 17 18 19 20 /
- */
-    const IndexType rows = 5;
-    const IndexType cols = 4;
+   using RealType = typename Matrix1::RealType;
+   using DeviceType = typename Matrix1::DeviceType;
+   using IndexType = typename Matrix1::IndexType;
 
-    Matrix m;
-    m.reset();
-    m.setDimensions( rows, cols );
+   /*
+    * Sets up the following 5x4 matrix:
+    *
+    *    /  1  2  0  0 \
+    *    |  5  6  7  0 |
+    *    |  0 10 11 12 |
+    *    |  0  0 15 16 |
+    *    \  0  0  0 20 /
+    */
+   const IndexType rows = 5;
+   const IndexType cols = 4;
 
-    RealType value = 1;
-    for( IndexType i = 0; i < rows; i++ )
-        for( IndexType j = 0; j < cols; j++)
-            m.setElement( i, j, value++ );
+   Matrix1 m( rows, cols );
 
-/*
- * Sets up the following 5x4 dense matrix:
- *
- *    /  1  2  3  4 \
- *    |  5  6  7  8 |
- *    |  9 10 11 12 |
- *    | 13 14 15 16 |
- *    \ 17 18 19 20 /
- */
+   RealType value = 1;
+   for( IndexType i = 0; i < rows; i++ )
+      for( IndexType j = 0; j < cols; j++)
+      {
+         if( abs( i - j ) <= 1 )
+            m.setElement( i, j, value );
+         value++;
+      }
 
-    Matrix m2;
-    m2.reset();
-    m2.setDimensions( rows, cols );
+   /*
+    * Sets up the following 5x4 matrix:
+    *
+    *    /  1  2  0  0 \
+    *    |  3  4  5  0 |
+    *    |  0  6  7  8 |
+    *    |  0  0  9 10 |
+    *    \  0  0  0 11 /
+    */
+   Matrix2 m2( rows, cols );
 
-    RealType newValue = 1;
-    for( IndexType i = 0; i < rows; i++ )
-        for( IndexType j = 0; j < cols; j++)
+   RealType newValue = 1;
+   for( IndexType i = 0; i < rows; i++ )
+      for( IndexType j = 0; j < cols; j++)
+         if( abs( i - j ) <= 1 )
             m2.setElement( i, j, newValue++ );
 
-    /*
- * Sets up the following 5x4 dense matrix:
- *
- *    /  1  2  3  4 \
- *    |  5  6  7  8 |
- *    |  9 10 11 12 |
- *    | 13 14 15 16 |
- *    \ 17 18 19 20 /
- */
+   /*
+    * Compute the following 5x4 matrix:
+    *
+    *  /  1  2  0  0 \       /  1  2  0  0 \    /  3  6  0  0 \
+    *  |  5  6  7  0 |       |  3  4  5  0 |    | 11 14 17  0 |
+    *  |  0 10 11 12 | + 2 * |  0  6  7  8 | =  |  0 22 25 28 |
+    *  |  0  0 15 16 |       |  0  0  9 10 |    |  0  0 33 36 |
+    *  \  0  0  0 20 /       \  0  0  0 11 /    \  0  0  0 42 /
+    */
 
-    Matrix mResult;
-    mResult.reset();
-    mResult.setDimensions( rows, cols );
+   Matrix1 mResult;
+   mResult.reset();
+   mResult.setDimensions( rows, cols );
 
-    mResult = m;
+   mResult = m;
 
-    RealType matrixMultiplicator = 2;
-    RealType thisMatrixMultiplicator = 1;
+   RealType matrixMultiplicator = 2;
+   RealType thisMatrixMultiplicator = 1;
 
-    mResult.addMatrix( m2, matrixMultiplicator, thisMatrixMultiplicator );
+   mResult.addMatrix( m2, matrixMultiplicator, thisMatrixMultiplicator );
 
-    EXPECT_EQ( mResult.getElement( 0, 0 ), matrixMultiplicator * m2.getElement( 0, 0 ) + thisMatrixMultiplicator * m.getElement( 0, 0 ) );
-    EXPECT_EQ( mResult.getElement( 0, 1 ), matrixMultiplicator * m2.getElement( 0, 1 ) + thisMatrixMultiplicator * m.getElement( 0, 1 ) );
-    EXPECT_EQ( mResult.getElement( 0, 2 ), matrixMultiplicator * m2.getElement( 0, 2 ) + thisMatrixMultiplicator * m.getElement( 0, 2 ) );
-    EXPECT_EQ( mResult.getElement( 0, 3 ), matrixMultiplicator * m2.getElement( 0, 3 ) + thisMatrixMultiplicator * m.getElement( 0, 3 ) );
+   EXPECT_EQ( mResult.getElement( 0, 0 ), matrixMultiplicator * m2.getElement( 0, 0 ) + thisMatrixMultiplicator * m.getElement( 0, 0 ) );
+   EXPECT_EQ( mResult.getElement( 0, 1 ), matrixMultiplicator * m2.getElement( 0, 1 ) + thisMatrixMultiplicator * m.getElement( 0, 1 ) );
+   EXPECT_EQ( mResult.getElement( 0, 2 ), matrixMultiplicator * m2.getElement( 0, 2 ) + thisMatrixMultiplicator * m.getElement( 0, 2 ) );
+   EXPECT_EQ( mResult.getElement( 0, 3 ), matrixMultiplicator * m2.getElement( 0, 3 ) + thisMatrixMultiplicator * m.getElement( 0, 3 ) );
 
-    EXPECT_EQ( mResult.getElement( 1, 0 ), matrixMultiplicator * m2.getElement( 1, 0 ) + thisMatrixMultiplicator * m.getElement( 1, 0 ) );
-    EXPECT_EQ( mResult.getElement( 1, 1 ), matrixMultiplicator * m2.getElement( 1, 1 ) + thisMatrixMultiplicator * m.getElement( 1, 1 ) );
-    EXPECT_EQ( mResult.getElement( 1, 2 ), matrixMultiplicator * m2.getElement( 1, 2 ) + thisMatrixMultiplicator * m.getElement( 1, 2 ) );
-    EXPECT_EQ( mResult.getElement( 1, 3 ), matrixMultiplicator * m2.getElement( 1, 3 ) + thisMatrixMultiplicator * m.getElement( 1, 3 ) );
+   EXPECT_EQ( mResult.getElement( 1, 0 ), matrixMultiplicator * m2.getElement( 1, 0 ) + thisMatrixMultiplicator * m.getElement( 1, 0 ) );
+   EXPECT_EQ( mResult.getElement( 1, 1 ), matrixMultiplicator * m2.getElement( 1, 1 ) + thisMatrixMultiplicator * m.getElement( 1, 1 ) );
+   EXPECT_EQ( mResult.getElement( 1, 2 ), matrixMultiplicator * m2.getElement( 1, 2 ) + thisMatrixMultiplicator * m.getElement( 1, 2 ) );
+   EXPECT_EQ( mResult.getElement( 1, 3 ), matrixMultiplicator * m2.getElement( 1, 3 ) + thisMatrixMultiplicator * m.getElement( 1, 3 ) );
 
-    EXPECT_EQ( mResult.getElement( 2, 0 ), matrixMultiplicator * m2.getElement( 2, 0 ) + thisMatrixMultiplicator * m.getElement( 2, 0 ) );
-    EXPECT_EQ( mResult.getElement( 2, 1 ), matrixMultiplicator * m2.getElement( 2, 1 ) + thisMatrixMultiplicator * m.getElement( 2, 1 ) );
-    EXPECT_EQ( mResult.getElement( 2, 2 ), matrixMultiplicator * m2.getElement( 2, 2 ) + thisMatrixMultiplicator * m.getElement( 2, 2 ) );
-    EXPECT_EQ( mResult.getElement( 2, 3 ), matrixMultiplicator * m2.getElement( 2, 3 ) + thisMatrixMultiplicator * m.getElement( 2, 3 ) );
+   EXPECT_EQ( mResult.getElement( 2, 0 ), matrixMultiplicator * m2.getElement( 2, 0 ) + thisMatrixMultiplicator * m.getElement( 2, 0 ) );
+   EXPECT_EQ( mResult.getElement( 2, 1 ), matrixMultiplicator * m2.getElement( 2, 1 ) + thisMatrixMultiplicator * m.getElement( 2, 1 ) );
+   EXPECT_EQ( mResult.getElement( 2, 2 ), matrixMultiplicator * m2.getElement( 2, 2 ) + thisMatrixMultiplicator * m.getElement( 2, 2 ) );
+   EXPECT_EQ( mResult.getElement( 2, 3 ), matrixMultiplicator * m2.getElement( 2, 3 ) + thisMatrixMultiplicator * m.getElement( 2, 3 ) );
 
-    EXPECT_EQ( mResult.getElement( 3, 0 ), matrixMultiplicator * m2.getElement( 3, 0 ) + thisMatrixMultiplicator * m.getElement( 3, 0 ) );
-    EXPECT_EQ( mResult.getElement( 3, 1 ), matrixMultiplicator * m2.getElement( 3, 1 ) + thisMatrixMultiplicator * m.getElement( 3, 1 ) );
-    EXPECT_EQ( mResult.getElement( 3, 2 ), matrixMultiplicator * m2.getElement( 3, 2 ) + thisMatrixMultiplicator * m.getElement( 3, 2 ) );
-    EXPECT_EQ( mResult.getElement( 3, 3 ), matrixMultiplicator * m2.getElement( 3, 3 ) + thisMatrixMultiplicator * m.getElement( 3, 3 ) );
+   EXPECT_EQ( mResult.getElement( 3, 0 ), matrixMultiplicator * m2.getElement( 3, 0 ) + thisMatrixMultiplicator * m.getElement( 3, 0 ) );
+   EXPECT_EQ( mResult.getElement( 3, 1 ), matrixMultiplicator * m2.getElement( 3, 1 ) + thisMatrixMultiplicator * m.getElement( 3, 1 ) );
+   EXPECT_EQ( mResult.getElement( 3, 2 ), matrixMultiplicator * m2.getElement( 3, 2 ) + thisMatrixMultiplicator * m.getElement( 3, 2 ) );
+   EXPECT_EQ( mResult.getElement( 3, 3 ), matrixMultiplicator * m2.getElement( 3, 3 ) + thisMatrixMultiplicator * m.getElement( 3, 3 ) );
 
-    EXPECT_EQ( mResult.getElement( 4, 0 ), matrixMultiplicator * m2.getElement( 4, 0 ) + thisMatrixMultiplicator * m.getElement( 4, 0 ) );
-    EXPECT_EQ( mResult.getElement( 4, 1 ), matrixMultiplicator * m2.getElement( 4, 1 ) + thisMatrixMultiplicator * m.getElement( 4, 1 ) );
-    EXPECT_EQ( mResult.getElement( 4, 2 ), matrixMultiplicator * m2.getElement( 4, 2 ) + thisMatrixMultiplicator * m.getElement( 4, 2 ) );
-    EXPECT_EQ( mResult.getElement( 4, 3 ), matrixMultiplicator * m2.getElement( 4, 3 ) + thisMatrixMultiplicator * m.getElement( 4, 3 ) );
+   EXPECT_EQ( mResult.getElement( 4, 0 ), matrixMultiplicator * m2.getElement( 4, 0 ) + thisMatrixMultiplicator * m.getElement( 4, 0 ) );
+   EXPECT_EQ( mResult.getElement( 4, 1 ), matrixMultiplicator * m2.getElement( 4, 1 ) + thisMatrixMultiplicator * m.getElement( 4, 1 ) );
+   EXPECT_EQ( mResult.getElement( 4, 2 ), matrixMultiplicator * m2.getElement( 4, 2 ) + thisMatrixMultiplicator * m.getElement( 4, 2 ) );
+   EXPECT_EQ( mResult.getElement( 4, 3 ), matrixMultiplicator * m2.getElement( 4, 3 ) + thisMatrixMultiplicator * m.getElement( 4, 3 ) );
 
-    EXPECT_EQ( mResult.getElement( 0, 0 ),  3 );
-    EXPECT_EQ( mResult.getElement( 0, 1 ),  6 );
-    EXPECT_EQ( mResult.getElement( 0, 2 ),  9 );
-    EXPECT_EQ( mResult.getElement( 0, 3 ), 12 );
+   EXPECT_EQ( mResult.getElement( 0, 0 ),  3 );
+   EXPECT_EQ( mResult.getElement( 0, 1 ),  6 );
+   EXPECT_EQ( mResult.getElement( 0, 2 ),  0 );
+   EXPECT_EQ( mResult.getElement( 0, 3 ),  0 );
 
-    EXPECT_EQ( mResult.getElement( 1, 0 ), 15 );
-    EXPECT_EQ( mResult.getElement( 1, 1 ), 18 );
-    EXPECT_EQ( mResult.getElement( 1, 2 ), 21 );
-    EXPECT_EQ( mResult.getElement( 1, 3 ), 24 );
+   EXPECT_EQ( mResult.getElement( 1, 0 ), 11 );
+   EXPECT_EQ( mResult.getElement( 1, 1 ), 14 );
+   EXPECT_EQ( mResult.getElement( 1, 2 ), 17 );
+   EXPECT_EQ( mResult.getElement( 1, 3 ),  0 );
 
-    EXPECT_EQ( mResult.getElement( 2, 0 ), 27 );
-    EXPECT_EQ( mResult.getElement( 2, 1 ), 30 );
-    EXPECT_EQ( mResult.getElement( 2, 2 ), 33 );
-    EXPECT_EQ( mResult.getElement( 2, 3 ), 36 );
+   EXPECT_EQ( mResult.getElement( 2, 0 ),  0 );
+   EXPECT_EQ( mResult.getElement( 2, 1 ), 22 );
+   EXPECT_EQ( mResult.getElement( 2, 2 ), 25 );
+   EXPECT_EQ( mResult.getElement( 2, 3 ), 28 );
 
-    EXPECT_EQ( mResult.getElement( 3, 0 ), 39 );
-    EXPECT_EQ( mResult.getElement( 3, 1 ), 42 );
-    EXPECT_EQ( mResult.getElement( 3, 2 ), 45 );
-    EXPECT_EQ( mResult.getElement( 3, 3 ), 48 );
+   EXPECT_EQ( mResult.getElement( 3, 0 ),  0 );
+   EXPECT_EQ( mResult.getElement( 3, 1 ),  0 );
+   EXPECT_EQ( mResult.getElement( 3, 2 ), 33 );
+   EXPECT_EQ( mResult.getElement( 3, 3 ), 36 );
 
-    EXPECT_EQ( mResult.getElement( 4, 0 ), 51 );
-    EXPECT_EQ( mResult.getElement( 4, 1 ), 54 );
-    EXPECT_EQ( mResult.getElement( 4, 2 ), 57 );
-    EXPECT_EQ( mResult.getElement( 4, 3 ), 60 );
+   EXPECT_EQ( mResult.getElement( 4, 0 ),  0 );
+   EXPECT_EQ( mResult.getElement( 4, 1 ),  0 );
+   EXPECT_EQ( mResult.getElement( 4, 2 ),  0 );
+   EXPECT_EQ( mResult.getElement( 4, 3 ), 42 );
 }
 
 template< typename Matrix >
@@ -922,7 +981,7 @@ void test_GetMatrixProduct()
     using DeviceType = typename Matrix::DeviceType;
     using IndexType = typename Matrix::IndexType;
 /*
- * Sets up the following 5x4 dense matrix:
+ * Sets up the following 5x4 matrix:
  *
  *    /  1  2  3  4 \
  *    |  5  6  7  8 |
@@ -943,7 +1002,7 @@ void test_GetMatrixProduct()
             leftMatrix.setElement( i, j, value++ );
 
 /*
- * Sets up the following 4x5 dense matrix:
+ * Sets up the following 4x5 matrix:
  *
  *    /  1  2  3  4  5 \
  *    |  6  7  8  9 10 |
@@ -963,7 +1022,7 @@ void test_GetMatrixProduct()
             rightMatrix.setElement( i, j, newValue++ );
 
 /*
- * Sets up the following 5x5 resulting dense matrix:
+ * Sets up the following 5x5 resulting matrix:
  *
  *    /  0  0  0  0 \
  *    |  0  0  0  0 |
@@ -1027,7 +1086,7 @@ void test_GetTransposition()
     using DeviceType = typename Matrix::DeviceType;
     using IndexType = typename Matrix::IndexType;
 /*
- * Sets up the following 3x2 dense matrix:
+ * Sets up the following 3x2 matrix:
  *
  *    /  1  2 \
  *    |  3  4 |
@@ -1048,7 +1107,7 @@ void test_GetTransposition()
     m.print( std::cout );
 
 /*
- * Sets up the following 2x3 dense matrix:
+ * Sets up the following 2x3 matrix:
  *
  *    /  0  0  0 \
  *    \  0  0  0 /
@@ -1066,7 +1125,7 @@ void test_GetTransposition()
     mTransposed.print( std::cout );
 
 /*
- * Should result in the following 2x3 dense matrix:
+ * Should result in the following 2x3 matrix:
  *
  *    /  1  3  5 \
  *    \  2  4  6 /
@@ -1089,7 +1148,7 @@ void test_PerformSORIteration()
     using DeviceType = typename Matrix::DeviceType;
     using IndexType = typename Matrix::IndexType;
 /*
- * Sets up the following 4x4 dense matrix:
+ * Sets up the following 4x4 matrix:
  *
  *    /  4  1  1  1 \
  *    |  1  4  1  1 |
@@ -1164,43 +1223,44 @@ void test_AssignmentOperator()
    using RealType = typename Matrix::RealType;
    using DeviceType = typename Matrix::DeviceType;
    using IndexType = typename Matrix::IndexType;
+   constexpr bool rowMajorOrder = Matrix::getRowMajorOrder();
 
-   using MultidiagonalHost = TNL::Matrices::Multidiagonal< RealType, TNL::Devices::Host, IndexType >;
-   using MultidiagonalCuda = TNL::Matrices::Multidiagonal< RealType, TNL::Devices::Cuda, IndexType >;
+   using MultidiagonalHost = TNL::Matrices::Multidiagonal< RealType, TNL::Devices::Host, IndexType, rowMajorOrder >;
+   using MultidiagonalCuda = TNL::Matrices::Multidiagonal< RealType, TNL::Devices::Cuda, IndexType, !rowMajorOrder >;
 
    const IndexType rows( 10 ), columns( 10 );
    MultidiagonalHost hostMatrix( rows, columns );
-   for( IndexType i = 0; i < columns; i++ )
-      for( IndexType j = 0; j <= i; j++ )
-         hostMatrix.setElement( i, j,  i + j );
+   for( IndexType i = 0; i < rows; i++ )
+      for( IndexType j = 0; j <  columns; j++ )
+         if( abs( i - j ) <= 1 )
+            hostMatrix.setElement( i, j,  i + j );
 
    Matrix matrix( rows, columns );
    matrix.getValues() = 0.0;
    matrix = hostMatrix;
    for( IndexType i = 0; i < columns; i++ )
       for( IndexType j = 0; j < rows; j++ )
-      {
-         if( j > i )
-            EXPECT_EQ( matrix.getElement( i, j ), 0.0 );
-         else
-            EXPECT_EQ( matrix.getElement( i, j ), i + j );
-      }
+            if( abs( i - j ) <= 1 )
+               EXPECT_EQ( matrix.getElement( i, j ), i + j );
+            else
+               EXPECT_EQ( matrix.getElement( i, j ), 0.0 );
 
 #ifdef HAVE_CUDA
    MultidiagonalCuda cudaMatrix( rows, columns );
-   for( IndexType i = 0; i < columns; i++ )
-      for( IndexType j = 0; j <= i; j++ )
-         cudaMatrix.setElement( i, j, i + j );
+   for( IndexType i = 0; i < rows; i++ )
+      for( IndexType j = 0; j < columns; j++ )
+         if( abs( i - j ) <= 1 )
+            cudaMatrix.setElement( i, j, i + j );
 
    matrix.getValues() = 0.0;
    matrix = cudaMatrix;
-   for( IndexType i = 0; i < columns; i++ )
-      for( IndexType j = 0; j < rows; j++ )
+   for( IndexType i = 0; i < rows; i++ )
+      for( IndexType j = 0; j < columns; j++ )
       {
-         if( j > i )
-            EXPECT_EQ( matrix.getElement( i, j ), 0.0 );
-         else
+         if( abs( i - j ) <= 1 )
             EXPECT_EQ( matrix.getElement( i, j ), i + j );
+         else
+            EXPECT_EQ( matrix.getElement( i, j ), 0.0 );
       }
 #endif
 }
@@ -1209,123 +1269,125 @@ void test_AssignmentOperator()
 template< typename Matrix >
 void test_SaveAndLoad()
 {
-    using RealType = typename Matrix::RealType;
-    using DeviceType = typename Matrix::DeviceType;
-    using IndexType = typename Matrix::IndexType;
-/*
- * Sets up the following 4x4 dense matrix:
- *
- *    /  1  2  3  4 \
- *    |  5  6  7  8 |
- *    |  9 10 11 12 |
- *    \ 13 14 15 16 /
- */
-    const IndexType rows = 4;
-    const IndexType cols = 4;
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
 
-    Matrix savedMatrix;
-    savedMatrix.reset();
-    savedMatrix.setDimensions( rows, cols );
+   /*
+    * Sets up the following 4x4 matrix:
+    *
+    *    /  1  2  0  0 \
+    *    |  5  6  7  0 |
+    *    |  0 10 11 12 |
+    *    \  0  0 15 16 /
+    */
+   const IndexType rows = 4;
+   const IndexType cols = 4;
 
-    RealType value = 1;
-    for( IndexType i = 0; i < rows; i++ )
-        for( IndexType j = 0; j < cols; j++ )
-            savedMatrix.setElement( i, j, value++ );
+   Matrix savedMatrix( rows, cols );
 
-    ASSERT_NO_THROW( savedMatrix.save( TEST_FILE_NAME ) );
+   RealType value = 1;
+   for( IndexType i = 0; i < rows; i++ )
+      for( IndexType j = 0; j < cols; j++ )
+      {
+         if( abs( i - j ) <= 1 )
+            savedMatrix.setElement( i, j, value );
+         value++;
+      }
 
-    Matrix loadedMatrix;
-    loadedMatrix.reset();
-    loadedMatrix.setDimensions( rows, cols );
+   ASSERT_NO_THROW( savedMatrix.save( TEST_FILE_NAME ) );
 
-    ASSERT_NO_THROW( loadedMatrix.load( TEST_FILE_NAME ) );
+   Matrix loadedMatrix;
 
-    EXPECT_EQ( savedMatrix.getElement( 0, 0 ), loadedMatrix.getElement( 0, 0 ) );
-    EXPECT_EQ( savedMatrix.getElement( 0, 1 ), loadedMatrix.getElement( 0, 1 ) );
-    EXPECT_EQ( savedMatrix.getElement( 0, 2 ), loadedMatrix.getElement( 0, 2 ) );
-    EXPECT_EQ( savedMatrix.getElement( 0, 3 ), loadedMatrix.getElement( 0, 3 ) );
+   ASSERT_NO_THROW( loadedMatrix.load( TEST_FILE_NAME ) );
 
-    EXPECT_EQ( savedMatrix.getElement( 1, 0 ), loadedMatrix.getElement( 1, 0 ) );
-    EXPECT_EQ( savedMatrix.getElement( 1, 1 ), loadedMatrix.getElement( 1, 1 ) );
-    EXPECT_EQ( savedMatrix.getElement( 1, 2 ), loadedMatrix.getElement( 1, 2 ) );
-    EXPECT_EQ( savedMatrix.getElement( 1, 3 ), loadedMatrix.getElement( 1, 3 ) );
+   EXPECT_EQ( savedMatrix.getElement( 0, 0 ), loadedMatrix.getElement( 0, 0 ) );
+   EXPECT_EQ( savedMatrix.getElement( 0, 1 ), loadedMatrix.getElement( 0, 1 ) );
+   EXPECT_EQ( savedMatrix.getElement( 0, 2 ), loadedMatrix.getElement( 0, 2 ) );
+   EXPECT_EQ( savedMatrix.getElement( 0, 3 ), loadedMatrix.getElement( 0, 3 ) );
 
-    EXPECT_EQ( savedMatrix.getElement( 2, 0 ), loadedMatrix.getElement( 2, 0 ) );
-    EXPECT_EQ( savedMatrix.getElement( 2, 1 ), loadedMatrix.getElement( 2, 1 ) );
-    EXPECT_EQ( savedMatrix.getElement( 2, 2 ), loadedMatrix.getElement( 2, 2 ) );
-    EXPECT_EQ( savedMatrix.getElement( 2, 3 ), loadedMatrix.getElement( 2, 3 ) );
+   EXPECT_EQ( savedMatrix.getElement( 1, 0 ), loadedMatrix.getElement( 1, 0 ) );
+   EXPECT_EQ( savedMatrix.getElement( 1, 1 ), loadedMatrix.getElement( 1, 1 ) );
+   EXPECT_EQ( savedMatrix.getElement( 1, 2 ), loadedMatrix.getElement( 1, 2 ) );
+   EXPECT_EQ( savedMatrix.getElement( 1, 3 ), loadedMatrix.getElement( 1, 3 ) );
 
-    EXPECT_EQ( savedMatrix.getElement( 3, 0 ), loadedMatrix.getElement( 3, 0 ) );
-    EXPECT_EQ( savedMatrix.getElement( 3, 1 ), loadedMatrix.getElement( 3, 1 ) );
-    EXPECT_EQ( savedMatrix.getElement( 3, 2 ), loadedMatrix.getElement( 3, 2 ) );
-    EXPECT_EQ( savedMatrix.getElement( 3, 3 ), loadedMatrix.getElement( 3, 3 ) );
+   EXPECT_EQ( savedMatrix.getElement( 2, 0 ), loadedMatrix.getElement( 2, 0 ) );
+   EXPECT_EQ( savedMatrix.getElement( 2, 1 ), loadedMatrix.getElement( 2, 1 ) );
+   EXPECT_EQ( savedMatrix.getElement( 2, 2 ), loadedMatrix.getElement( 2, 2 ) );
+   EXPECT_EQ( savedMatrix.getElement( 2, 3 ), loadedMatrix.getElement( 2, 3 ) );
 
-    EXPECT_EQ( savedMatrix.getElement( 0, 0 ),  1 );
-    EXPECT_EQ( savedMatrix.getElement( 0, 1 ),  2 );
-    EXPECT_EQ( savedMatrix.getElement( 0, 2 ),  3 );
-    EXPECT_EQ( savedMatrix.getElement( 0, 3 ),  4 );
+   EXPECT_EQ( savedMatrix.getElement( 3, 0 ), loadedMatrix.getElement( 3, 0 ) );
+   EXPECT_EQ( savedMatrix.getElement( 3, 1 ), loadedMatrix.getElement( 3, 1 ) );
+   EXPECT_EQ( savedMatrix.getElement( 3, 2 ), loadedMatrix.getElement( 3, 2 ) );
+   EXPECT_EQ( savedMatrix.getElement( 3, 3 ), loadedMatrix.getElement( 3, 3 ) );
 
-    EXPECT_EQ( savedMatrix.getElement( 1, 0 ),  5 );
-    EXPECT_EQ( savedMatrix.getElement( 1, 1 ),  6 );
-    EXPECT_EQ( savedMatrix.getElement( 1, 2 ),  7 );
-    EXPECT_EQ( savedMatrix.getElement( 1, 3 ),  8 );
+   EXPECT_EQ( savedMatrix.getElement( 0, 0 ),  1 );
+   EXPECT_EQ( savedMatrix.getElement( 0, 1 ),  2 );
+   EXPECT_EQ( savedMatrix.getElement( 0, 2 ),  0 );
+   EXPECT_EQ( savedMatrix.getElement( 0, 3 ),  0 );
 
-    EXPECT_EQ( savedMatrix.getElement( 2, 0 ),  9 );
-    EXPECT_EQ( savedMatrix.getElement( 2, 1 ), 10 );
-    EXPECT_EQ( savedMatrix.getElement( 2, 2 ), 11 );
-    EXPECT_EQ( savedMatrix.getElement( 2, 3 ), 12 );
+   EXPECT_EQ( savedMatrix.getElement( 1, 0 ),  5 );
+   EXPECT_EQ( savedMatrix.getElement( 1, 1 ),  6 );
+   EXPECT_EQ( savedMatrix.getElement( 1, 2 ),  7 );
+   EXPECT_EQ( savedMatrix.getElement( 1, 3 ),  0 );
 
-    EXPECT_EQ( savedMatrix.getElement( 3, 0 ), 13 );
-    EXPECT_EQ( savedMatrix.getElement( 3, 1 ), 14 );
-    EXPECT_EQ( savedMatrix.getElement( 3, 2 ), 15 );
-    EXPECT_EQ( savedMatrix.getElement( 3, 3 ), 16 );
+   EXPECT_EQ( savedMatrix.getElement( 2, 0 ),  0 );
+   EXPECT_EQ( savedMatrix.getElement( 2, 1 ), 10 );
+   EXPECT_EQ( savedMatrix.getElement( 2, 2 ), 11 );
+   EXPECT_EQ( savedMatrix.getElement( 2, 3 ), 12 );
+
+   EXPECT_EQ( savedMatrix.getElement( 3, 0 ),  0 );
+   EXPECT_EQ( savedMatrix.getElement( 3, 1 ),  0 );
+   EXPECT_EQ( savedMatrix.getElement( 3, 2 ), 15 );
+   EXPECT_EQ( savedMatrix.getElement( 3, 3 ), 16 );
 }
 
 template< typename Matrix >
 void test_Print()
 {
-    using RealType = typename Matrix::RealType;
-    using DeviceType = typename Matrix::DeviceType;
-    using IndexType = typename Matrix::IndexType;
-/*
- * Sets up the following 5x4 sparse matrix:
- *
- *    /  1  2  3  4 \
- *    |  5  6  7  8 |
- *    |  9 10 11 12 |
- *    | 13 14 15 16 |
- *    \ 17 18 19 20 /
- */
-    const IndexType rows = 5;
-    const IndexType cols = 4;
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
 
-    Matrix m;
-    m.reset();
-    m.setDimensions( rows, cols );
+   /*
+    * Sets up the following 5x4 sparse matrix:
+    *
+    *    /  1  2  0  0 \
+    *    |  5  6  7  0 |
+    *    |  0 10 11 12 |
+    *    |  0  0 15 16 |
+    *    \  0  0  0 20 /
+    */
+   const IndexType rows = 5;
+   const IndexType cols = 4;
 
-    RealType value = 1;
-    for( IndexType i = 0; i < rows; i++)
-        for( IndexType j = 0; j < cols; j++)
-            m.setElement( i, j, value++ );
+   Matrix m( rows, cols );
 
-    #include <sstream>
-    std::stringstream printed;
-    std::stringstream couted;
+   RealType value = 1;
+   for( IndexType i = 0; i < rows; i++)
+      for( IndexType j = 0; j < cols; j++)
+      {
+         if( abs( i - j ) <= 1 )
+            m.setElement( i, j, value );
+         value++;
+      }
 
-    //change the underlying buffer and save the old buffer
-    auto old_buf = std::cout.rdbuf(printed.rdbuf());
+   std::stringstream printed;
+   std::stringstream couted;
 
-    m.print( std::cout ); //all the std::cout goes to ss
+   //change the underlying buffer and save the old buffer
+   auto old_buf = std::cout.rdbuf(printed.rdbuf());
 
-    std::cout.rdbuf(old_buf); //reset
+   m.print( std::cout ); //all the std::cout goes to ss
 
-    couted << "Row: 0 ->  Col:0->1	 Col:1->2	 Col:2->3	 Col:3->4\t\n"
-              "Row: 1 ->  Col:0->5	 Col:1->6	 Col:2->7	 Col:3->8\t\n"
-              "Row: 2 ->  Col:0->9	 Col:1->10	 Col:2->11	 Col:3->12\t\n"
-              "Row: 3 ->  Col:0->13	 Col:1->14	 Col:2->15	 Col:3->16\t\n"
-              "Row: 4 ->  Col:0->17	 Col:1->18	 Col:2->19	 Col:3->20\t\n";
+   std::cout.rdbuf(old_buf); //reset
+   couted << "Row: 0 ->  Col:0->1\t Col:1->2\t\n"
+             "Row: 1 ->  Col:0->5\t Col:1->6\t Col:2->7\t\n"
+             "Row: 2 ->  Col:1->10\t Col:2->11\t Col:3->12\t\n"
+             "Row: 3 ->  Col:2->15\t Col:3->16\t\n"
+             "Row: 4 ->  Col:3->20\t\n";
 
-    EXPECT_EQ( printed.str(), couted.str() );
+   EXPECT_EQ( printed.str(), couted.str() );
 }
 
 // test fixture for typed tests
@@ -1388,6 +1450,21 @@ TYPED_TEST( MatrixTest, setLikeTest )
     test_SetLike< MatrixType, MatrixType >();
 }
 
+TYPED_TEST( MatrixTest, getNonemptyRowsCountTest )
+{
+    using MatrixType = typename TestFixture::MatrixType;
+
+    test_GetNonemptyRowsCount< MatrixType >();
+}
+
+/*
+TYPED_TEST( MatrixTest, getCompressedRowLengthTest )
+{
+    using MatrixType = typename TestFixture::MatrixType;
+
+    test_GetCompressedRowLengths< MatrixType >();
+}
+
 TYPED_TEST( MatrixTest, getRowLengthTest )
 {
     using MatrixType = typename TestFixture::MatrixType;
@@ -1395,11 +1472,11 @@ TYPED_TEST( MatrixTest, getRowLengthTest )
     test_GetRowLength< MatrixType >();
 }
 
-TYPED_TEST( MatrixTest, getNumberOfMatrixElementsTest )
+TYPED_TEST( MatrixTest, getAllocatedElementsCountTest )
 {
     using MatrixType = typename TestFixture::MatrixType;
 
-    test_GetNumberOfMatrixElements< MatrixType >();
+    test_GetAllocatedElementsCount< MatrixType >();
 }
 
 TYPED_TEST( MatrixTest, getNumberOfNonzeroMatrixElementsTest )
@@ -1465,6 +1542,19 @@ TYPED_TEST( MatrixTest, addMatrixTest )
     test_AddMatrix< MatrixType >();
 }
 
+TYPED_TEST( MatrixTest, addMatrixTest_differentOrdering )
+{
+    using MatrixType = typename TestFixture::MatrixType;
+
+    using RealType = typename MatrixType::RealType;
+    using DeviceType = typename MatrixType::DeviceType;
+    using IndexType = typename MatrixType::IndexType;
+    using RealAllocatorType = typename MatrixType::RealAllocatorType;
+    using MatrixType2 = TNL::Matrices::Multidiagonal< RealType, DeviceType, IndexType, ! MatrixType::getRowMajorOrder(), RealAllocatorType >;
+
+    test_AddMatrix< MatrixType, MatrixType2 >();
+}
+
 TYPED_TEST( MatrixTest, assignmentOperatorTest )
 {
     using MatrixType = typename TestFixture::MatrixType;
@@ -1485,6 +1575,7 @@ TYPED_TEST( MatrixTest, printTest )
 
     test_Print< MatrixType >();
 }
+*/
 
 //// test_getType is not general enough yet. DO NOT TEST IT YET.
 
