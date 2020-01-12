@@ -182,7 +182,7 @@ void test_GetNumberOfNonzeroMatrixElements()
    using IndexType = typename Matrix::IndexType;
 
    /*
-    * Sets up the following 7x6 dense matrix:
+    * Sets up the following 7x6 matrix:
     *
     *    /  0  1  0  0  0  0 \
     *    |  2  3  4  0  0  0 |
@@ -215,7 +215,7 @@ void test_Reset()
    using IndexType = typename Matrix::IndexType;
 
    /*
-    * Sets up the following 5x4 dense matrix:
+    * Sets up the following 5x4 matrix:
     *
     *    /  0  0  0  0 \
     *    |  0  0  0  0 |
@@ -242,7 +242,7 @@ void test_SetValue()
    using IndexType = typename Matrix::IndexType;
 
    /*
-    * Sets up the following 7x6 dense matrix:
+    * Sets up the following 7x6 matrix:
     *
     *    /  0  1  0  0  0  0 \
     *    |  2  3  4  0  0  0 |
@@ -374,7 +374,7 @@ void test_SetElement()
    using IndexType = typename Matrix::IndexType;
 
    /*
-    * Sets up the following 5x5 dense matrix:
+    * Sets up the following 5x5 matrix:
     *
     *    /  1  2  0  0  0 \
     *    |  6  7  8  0  0 |
@@ -438,7 +438,7 @@ void test_AddElement()
    using IndexType = typename Matrix::IndexType;
 
    /*
-    * Sets up the following 6x5 dense matrix:
+    * Sets up the following 6x5 matrix:
     *
     *    /  1  2  0  0  0 \
     *    |  6  7  8  0  0 |
@@ -501,7 +501,7 @@ void test_AddElement()
 
    // Add new elements to the old elements with a multiplying factor applied to the old elements.
    /*
-    * The following setup results in the following 6x5 dense matrix:
+    * The following setup results in the following 6x5 matrix:
     *
     *     /  1  2  0  0  0 \    /  1  2  0  0  0 \   /  3  6  0  0  0 \
     *     |  6  7  8  0  0 |    |  3  4  5  0  0 |   | 15 18 21  0  0 |
@@ -563,7 +563,7 @@ void test_SetRow()
    using IndexType = typename Matrix::IndexType;
 
    /*
-    * Sets up the following 3x7 dense matrix:
+    * Sets up the following 3x7 matrix:
     *
     *    /  1  2  0  0  0  0  0 \
     *    |  8  9 10  0  0  0  0 |
@@ -622,7 +622,7 @@ void test_AddRow()
    using DeviceType = typename Matrix::DeviceType;
    using IndexType = typename Matrix::IndexType;
    /*
-    * Sets up the following 6x5 dense matrix:
+    * Sets up the following 6x5 matrix:
     *
     *    /  1  2  0  0  0 \
     *    |  6  7  8  0  0 |
@@ -759,7 +759,7 @@ void test_VectorProduct()
    using IndexType = typename Matrix::IndexType;
 
    /*
-    * Sets up the following 5x4 dense matrix:
+    * Sets up the following 5x4 matrix:
     *
     *    /  1  2  0  0 \
     *    |  5  6  7  0 |
@@ -806,7 +806,7 @@ void test_AddMatrix()
    using IndexType = typename Matrix1::IndexType;
 
    /*
-    * Sets up the following 5x4 dense matrix:
+    * Sets up the following 5x4 matrix:
     *
     *    /  1  2  0  0 \
     *    |  5  6  7  0 |
@@ -829,7 +829,7 @@ void test_AddMatrix()
       }
 
    /*
-    * Sets up the following 5x4 dense matrix:
+    * Sets up the following 5x4 matrix:
     *
     *    /  1  2  0  0 \
     *    |  3  4  5  0 |
@@ -846,7 +846,7 @@ void test_AddMatrix()
             m2.setElement( i, j, newValue++ );
 
    /*
-    * Compute the following 5x4 dense matrix:
+    * Compute the following 5x4 matrix:
     *
     *  /  1  2  0  0 \       /  1  2  0  0 \    /  3  6  0  0 \
     *  |  5  6  7  0 |       |  3  4  5  0 |    | 11 14 17  0 |
@@ -924,7 +924,7 @@ void test_GetMatrixProduct()
     using DeviceType = typename Matrix::DeviceType;
     using IndexType = typename Matrix::IndexType;
 /*
- * Sets up the following 5x4 dense matrix:
+ * Sets up the following 5x4 matrix:
  *
  *    /  1  2  3  4 \
  *    |  5  6  7  8 |
@@ -945,7 +945,7 @@ void test_GetMatrixProduct()
             leftMatrix.setElement( i, j, value++ );
 
 /*
- * Sets up the following 4x5 dense matrix:
+ * Sets up the following 4x5 matrix:
  *
  *    /  1  2  3  4  5 \
  *    |  6  7  8  9 10 |
@@ -965,7 +965,7 @@ void test_GetMatrixProduct()
             rightMatrix.setElement( i, j, newValue++ );
 
 /*
- * Sets up the following 5x5 resulting dense matrix:
+ * Sets up the following 5x5 resulting matrix:
  *
  *    /  0  0  0  0 \
  *    |  0  0  0  0 |
@@ -1029,7 +1029,7 @@ void test_GetTransposition()
     using DeviceType = typename Matrix::DeviceType;
     using IndexType = typename Matrix::IndexType;
 /*
- * Sets up the following 3x2 dense matrix:
+ * Sets up the following 3x2 matrix:
  *
  *    /  1  2 \
  *    |  3  4 |
@@ -1050,7 +1050,7 @@ void test_GetTransposition()
     m.print( std::cout );
 
 /*
- * Sets up the following 2x3 dense matrix:
+ * Sets up the following 2x3 matrix:
  *
  *    /  0  0  0 \
  *    \  0  0  0 /
@@ -1068,7 +1068,7 @@ void test_GetTransposition()
     mTransposed.print( std::cout );
 
 /*
- * Should result in the following 2x3 dense matrix:
+ * Should result in the following 2x3 matrix:
  *
  *    /  1  3  5 \
  *    \  2  4  6 /
@@ -1091,7 +1091,7 @@ void test_PerformSORIteration()
     using DeviceType = typename Matrix::DeviceType;
     using IndexType = typename Matrix::IndexType;
 /*
- * Sets up the following 4x4 dense matrix:
+ * Sets up the following 4x4  matrix:
  *
  *    /  4  1  1  1 \
  *    |  1  4  1  1 |
@@ -1217,7 +1217,7 @@ void test_SaveAndLoad()
    using IndexType = typename Matrix::IndexType;
 
    /*
-    * Sets up the following 4x4 dense matrix:
+    * Sets up the following 4x4 matrix:
     *
     *    /  1  2  0  0 \
     *    |  5  6  7  0 |
