@@ -14,7 +14,8 @@ namespace TNL {
 namespace Matrices {   
 
 template< typename ValuesView,
-          typename Indexer >
+          typename Indexer,
+          typename DiagonalsShiftsView_ >
 class MultidiagonalMatrixRowView
 {
    public:
@@ -23,11 +24,13 @@ class MultidiagonalMatrixRowView
       using IndexType = typename ValuesView::IndexType;
       using ValuesViewType = ValuesView;
       using IndexerType = Indexer;
+      using DiagonalsShiftsView = DiagonalsShiftsView_;
 
       __cuda_callable__
       MultidiagonalMatrixRowView( const IndexType rowIdx,
-                                const ValuesViewType& values,
-                                const IndexerType& indexer );
+                                  const DiagonalsShiftsView& diagonalsShifts,
+                                  const ValuesViewType& values,
+                                  const IndexerType& indexer);
 
       __cuda_callable__
       IndexType getSize() const;
@@ -47,6 +50,8 @@ class MultidiagonalMatrixRowView
    protected:
 
       IndexType rowIdx;
+
+      DiagonalsShiftsView diagonalsShifts;
 
       ValuesViewType values;
 

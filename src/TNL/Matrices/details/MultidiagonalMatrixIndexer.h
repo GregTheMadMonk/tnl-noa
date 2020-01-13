@@ -78,6 +78,9 @@ class MultidiagonalMatrixIndexer
       const IndexType& getColumns() const { return this->columns; };
 
       __cuda_callable__
+      const IndexType& getDiagonals() const { return this->diagonals; };
+
+      __cuda_callable__
       const IndexType& getNonemptyRowsCount() const { return this->nonemptyRows; };
 
       __cuda_callable__

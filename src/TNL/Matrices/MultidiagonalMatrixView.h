@@ -38,7 +38,7 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
       using ValuesViewType = typename BaseType::ValuesView;
       using ViewType = MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >;
       using ConstViewType = MultidiagonalMatrixView< typename std::add_const< Real >::type, Device, Index, RowMajorOrder >;
-      using RowView = MultidiagonalMatrixRowView< ValuesViewType, IndexerType >;
+      using RowView = MultidiagonalMatrixRowView< ValuesViewType, IndexerType, DiagonalsShiftsView >;
 
       // TODO: remove this - it is here only for compatibility with original matrix implementation
       typedef Containers::Vector< IndexType, DeviceType, IndexType > CompressedRowLengthsVector;
@@ -55,6 +55,7 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       MultidiagonalMatrixView( const ValuesViewType& values,
                                const DiagonalsShiftsView& diagonalsShifts,
+                               const HostDiagonalsShiftsView& hostDiagonalsShifts,
                                const IndexerType& indexer );
 
       ViewType getView();
@@ -92,11 +93,11 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
 
       void setValue( const RealType& v );
 
-      bool setElement( const IndexType row,
+      void setElement( const IndexType row,
                        const IndexType column,
                        const RealType& value );
 
-      bool addElement( const IndexType row,
+      void addElement( const IndexType row,
                        const IndexType column,
                        const RealType& value,
                        const RealType& thisElementMultiplicator = 1.0 );

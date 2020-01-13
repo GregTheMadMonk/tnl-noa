@@ -285,11 +285,11 @@ template< typename Real,
           typename Index,
           bool RowMajorOrder,
           typename RealAllocator >
-bool
+void
 Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
 setElement( const IndexType row, const IndexType column, const RealType& value )
 {
-   return this->view.setElement( row, column, value );
+   this->view.setElement( row, column, value );
 }
 
 template< typename Real,
@@ -297,14 +297,14 @@ template< typename Real,
           typename Index,
           bool RowMajorOrder,
           typename RealAllocator >
-bool
+void
 Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
 addElement( const IndexType row,
             const IndexType column,
             const RealType& value,
             const RealType& thisElementMultiplicator )
 {
-   return this->view.addElement( row, column, value, thisElementMultiplicator );
+   this->view.addElement( row, column, value, thisElementMultiplicator );
 }
 
 template< typename Real,
@@ -645,14 +645,7 @@ void
 Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
 print( std::ostream& str ) const
 {
-   for( IndexType row = 0; row < this->getRows(); row++ )
-   {
-      str <<"Row: " << row << " -> ";
-      for( IndexType column = row - 1; column < row + 2; column++ )
-         if( column >= 0 && column < this->columns )
-            str << " Col:" << column << "->" << this->getElement( row, column ) << "\t";
-      str << std::endl;
-   }
+   this->view.print( str );
 }
 
 template< typename Real,

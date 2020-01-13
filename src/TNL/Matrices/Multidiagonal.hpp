@@ -44,6 +44,7 @@ Multidiagonal( const IndexType rows,
                const IndexType columns,
                const Vector& diagonalsShifts )
 {
+   TNL_ASSERT_GT( diagonalsShifts.getSize(), 0, "Cannot construct mutltidiagonal matrix with no diagonals shifts." );
    this->setDimensions( rows, columns, diagonalsShifts );
 }
 
@@ -60,6 +61,7 @@ getView() const -> ViewType
    // TODO: fix when getConstView works
    return ViewType( const_cast< Multidiagonal* >( this )->values.getView(),
                     const_cast< Multidiagonal* >( this )->diagonalsShifts.getView(),
+                    const_cast< Multidiagonal* >( this )->hostDiagonalsShifts.getView(),
                     indexer );
 }
 
@@ -358,11 +360,11 @@ template< typename Real,
           bool RowMajorOrder,
           typename RealAllocator,
           typename IndexAllocator >
-bool
+void
 Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
 setElement( const IndexType row, const IndexType column, const RealType& value )
 {
-   return this->view.setElement( row, column, value );
+   this->view.setElement( row, column, value );
 }
 
 template< typename Real,
@@ -371,14 +373,14 @@ template< typename Real,
           bool RowMajorOrder,
           typename RealAllocator,
           typename IndexAllocator >
-bool
+void
 Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
 addElement( const IndexType row,
             const IndexType column,
             const RealType& value,
             const RealType& thisElementMultiplicator )
 {
-   return this->view.addElement( row, column, value, thisElementMultiplicator );
+   this->view.addElement( row, column, value, thisElementMultiplicator );
 }
 
 template< typename Real,
@@ -745,14 +747,7 @@ void
 Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
 print( std::ostream& str ) const
 {
-   for( IndexType row = 0; row < this->getRows(); row++ )
-   {
-      str <<"Row: " << row << " -> ";
-      for( IndexType column = row - 1; column < row + 2; column++ )
-         if( column >= 0 && column < this->columns )
-            str << " Col:" << column << "->" << this->getElement( row, column ) << "\t";
-      str << std::endl;
-   }
+   this->view.print( str );
 }
 
 template< typename Real,

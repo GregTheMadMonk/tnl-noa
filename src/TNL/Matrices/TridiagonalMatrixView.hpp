@@ -213,7 +213,7 @@ template< typename Real,
           typename Device,
           typename Index,
           bool RowMajorOrder >
-bool
+void
 TridiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
 setElement( const IndexType row, const IndexType column, const RealType& value )
 {
@@ -235,7 +235,7 @@ template< typename Real,
           typename Device,
           typename Index,
           bool RowMajorOrder >
-bool
+void
 TridiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
 addElement( const IndexType row,
             const IndexType column,
@@ -638,7 +638,11 @@ void TridiagonalMatrixView< Real, Device, Index, RowMajorOrder >::print( std::os
       str <<"Row: " << row << " -> ";
       for( IndexType column = row - 1; column < row + 2; column++ )
          if( column >= 0 && column < this->columns )
-            str << " Col:" << column << "->" << this->getElement( row, column ) << "\t";
+         {
+            auto v = this->getElement( row, column );
+            if( v )
+               str << " Col:" << column << "->" << v << "\t";
+         }
       str << std::endl;
    }
 }

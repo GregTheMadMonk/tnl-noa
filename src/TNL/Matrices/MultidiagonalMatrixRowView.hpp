@@ -13,58 +13,59 @@
 namespace TNL {
 namespace Matrices {   
 
-template< typename ValuesView, typename Indexer >
+template< typename ValuesView, typename Indexer, typename DiagonalsShiftsView >
 __cuda_callable__
-MultidiagonalMatrixRowView< ValuesView, Indexer >::
+MultidiagonalMatrixRowView< ValuesView, Indexer, DiagonalsShiftsView >::
 MultidiagonalMatrixRowView( const IndexType rowIdx,
-                          const ValuesViewType& values,
-                          const IndexerType& indexer )
-: rowIdx( rowIdx ), values( values ), indexer( indexer )
+                            const DiagonalsShiftsView& diagonalsShifts,
+                            const ValuesViewType& values,
+                            const IndexerType& indexer )
+: rowIdx( rowIdx ), diagonalsShifts( diagonalsShifts ), values( values ), indexer( indexer )
 {
 }
 
-template< typename ValuesView, typename Indexer >
+template< typename ValuesView, typename Indexer, typename DiagonalsShiftsView >
 __cuda_callable__
 auto
-MultidiagonalMatrixRowView< ValuesView, Indexer >::
+MultidiagonalMatrixRowView< ValuesView, Indexer, DiagonalsShiftsView >::
 getSize() const -> IndexType
 {
    return indexer.getRowSize();
 }
 
-template< typename ValuesView, typename Indexer >
+template< typename ValuesView, typename Indexer, typename DiagonalsShiftsView >
 __cuda_callable__
 auto
-MultidiagonalMatrixRowView< ValuesView, Indexer >::
+MultidiagonalMatrixRowView< ValuesView, Indexer, DiagonalsShiftsView >::
 getColumnIndex( const IndexType localIdx ) const -> const IndexType
 {
    TNL_ASSERT_GE( localIdx, 0, "" );
-   TNL_ASSERT_LT( localIdx, 3, "" );
-   return rowIdx + localIdx - 1;
+   TNL_ASSERT_LT( localIdx, indexer.getDiagonals(), "" );
+   return rowIdx + diagonalsShifts[ localIdx ];
 }
 
-template< typename ValuesView, typename Indexer >
+template< typename ValuesView, typename Indexer, typename DiagonalsShiftsView >
 __cuda_callable__
 auto
-MultidiagonalMatrixRowView< ValuesView, Indexer >::
+MultidiagonalMatrixRowView< ValuesView, Indexer, DiagonalsShiftsView >::
 getValue( const IndexType localIdx ) const -> const RealType&
 {
    return this->values[ this->indexer.getGlobalIndex( rowIdx, localIdx ) ];
 }
 
-template< typename ValuesView, typename Indexer >
+template< typename ValuesView, typename Indexer, typename DiagonalsShiftsView >
 __cuda_callable__
 auto
-MultidiagonalMatrixRowView< ValuesView, Indexer >::
+MultidiagonalMatrixRowView< ValuesView, Indexer, DiagonalsShiftsView >::
 getValue( const IndexType localIdx ) -> RealType&
 {
    return this->values[ this->indexer.getGlobalIndex( rowIdx, localIdx ) ];
 }
 
-template< typename ValuesView, typename Indexer >
+template< typename ValuesView, typename Indexer, typename DiagonalsShiftsView >
 __cuda_callable__
 void 
-MultidiagonalMatrixRowView< ValuesView, Indexer >::
+MultidiagonalMatrixRowView< ValuesView, Indexer, DiagonalsShiftsView >::
 setElement( const IndexType localIdx,
             const RealType& value )
 {

@@ -38,12 +38,12 @@ class Multidiagonal : public Matrix< Real, Device, Index, RealAllocator >
       using ValuesType = typename BaseType::ValuesVector;
       using ValuesViewType = typename ValuesType::ViewType;
       using IndexerType = details::MultidiagonalMatrixIndexer< IndexType, RowMajorOrder >;
-      using RowView = MultidiagonalMatrixRowView< ValuesViewType, IndexerType >;
+      using DiagonalsShiftsType = Containers::Vector< IndexType, DeviceType, IndexType, IndexAllocatorType >;
+      using DiagonalsShiftsView = typename DiagonalsShiftsType::ViewType;
+      using RowView = MultidiagonalMatrixRowView< ValuesViewType, IndexerType, DiagonalsShiftsView >;
       using ViewType = MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >;
       using ConstViewType = MultidiagonalMatrixView< typename std::add_const< Real >::type, Device, Index, RowMajorOrder >;
 
-      using DiagonalsShiftsType = Containers::Vector< IndexType, DeviceType, IndexType, IndexAllocatorType >;
-      using DiagonalsShiftsView = typename DiagonalsShiftsType::ViewType;
       using HostDiagonalsShiftsType = Containers::Vector< IndexType, Devices::Host, IndexType >;
       using HostDiagonalsShiftsView = typename HostDiagonalsShiftsType::ViewType;
 
@@ -119,11 +119,11 @@ class Multidiagonal : public Matrix< Real, Device, Index, RealAllocator >
 
       void setValue( const RealType& v );
 
-      bool setElement( const IndexType row,
+      void setElement( const IndexType row,
                        const IndexType column,
                        const RealType& value );
 
-      bool addElement( const IndexType row,
+      void addElement( const IndexType row,
                        const IndexType column,
                        const RealType& value,
                        const RealType& thisElementMultiplicator = 1.0 );
