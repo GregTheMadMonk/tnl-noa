@@ -145,7 +145,7 @@ benchmarkSolver( Benchmark& benchmark,
 
       virtual HeaderElements getTableHeader() const override
       {
-         return HeaderElements({"time", "speedup", "converged", "iterations", "residue_precond", "residue_true"});
+         return HeaderElements({"time", "stddev", "stddev/time", "speedup", "converged", "iterations", "residue_precond", "residue_true"});
       }
 
       virtual RowElements getRowElements() const override
@@ -160,7 +160,7 @@ benchmarkSolver( Benchmark& benchmark,
          r = b - r;
          const double residue_true = lpNorm( r, 2.0 ) / lpNorm( b, 2.0 );
 
-         return RowElements({ time, speedup, (double) converged, (double) iterations,
+         return RowElements({ time, stddev, stddev/time, speedup, (double) converged, (double) iterations,
                               residue_precond, residue_true });
       }
    };

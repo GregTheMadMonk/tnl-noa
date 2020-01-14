@@ -15,6 +15,7 @@
 #include <set>
 #include <sstream>
 #include <string>
+#include <random>
 
 #ifndef NDEBUG
 #include <TNL/Debugging/FPE.h>
@@ -30,6 +31,7 @@
 #include <TNL/Containers/Partitioner.h>
 #include <TNL/Containers/DistributedVector.h>
 #include <TNL/Matrices/DistributedMatrix.h>
+#include <TNL/Matrices/MatrixReader.h>
 #include <TNL/Solvers/Linear/Preconditioners/Diagonal.h>
 #include <TNL/Solvers/Linear/Preconditioners/ILU0.h>
 #include <TNL/Solvers/Linear/Preconditioners/ILUT.h>
@@ -113,6 +115,42 @@ parse_comma_list( const Config::ParameterContainer& parameters,
    }
 
    return set;
+}
+
+// TODO: implement this in TNL::String
+bool ends_with( const std::string& value, const std::string& ending )
+{
+   if (ending.size() > value.size())
+      return false;
+   return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
+}
+
+// initialize all vector entries with a unioformly distributed random value from the interval [a, b]
+template< typename Vector >
+void set_random_vector( Vector& v, typename Vector::RealType a, typename Vector::RealType b )
+{
+   using RealType = typename Vector::RealType;
+   using IndexType = typename Vector::IndexType;
+   // random device will be used to obtain a seed for the random number engine
+   std::random_device rd;
+   // initialize the standard mersenne_twister_engine with rd() as the seed
+   std::mt19937 gen(rd());
+   // create uniform distribution
+   std::uniform_real_distribution< RealType > dis(a, b);
+
+   // create host vector
+   typename Vector::template Self< RealType, Devices::Host > host_v;
+   host_v.setSize( v.getSize() );
+
+   // initialize the host vector
+   auto kernel = [&] ( IndexType i )
+   {
+      host_v[ i ] = dis(gen);
+   };
+   Algorithms::ParallelFor< Devices::Host >::exec( (IndexType) 0, host_v.getSize(), kernel );
+
+   // copy the data to the device vector
+   v = host_v;
 }
 
 template< typename Matrix, typename Vector >
@@ -317,11 +355,42 @@ struct LinearSolversBenchmark
 //        const Config::ParameterContainer& parameters )
         Config::ParameterContainer& parameters )
    {
+      const String file_matrix = parameters.getParameter< String >( "input-matrix" );
+      const String file_dof = parameters.getParameter< String >( "input-dof" );
+      const String file_rhs = parameters.getParameter< String >( "input-rhs" );
+
       SharedPointer< MatrixType > matrixPointer;
       VectorType x0, b;
-      matrixPointer->load( parameters.getParameter< String >( "input-matrix" ) );
-      File( parameters.getParameter< String >( "input-dof" ), std::ios_base::in ) >> x0;
-      File( parameters.getParameter< String >( "input-rhs" ), std::ios_base::in ) >> b;
+
+      // load the matrix
+      if( ends_with( file_matrix, ".mtx" ) ) {
+         Matrices::MatrixReader< MatrixType > reader;
+         if( ! reader.readMtxFile( file_matrix, *matrixPointer ) )
+            return false;
+      }
+      else {
+         matrixPointer->load( file_matrix );
+      }
+
+      // load the vectors
+      if( file_dof && file_rhs ) {
+         File( file_dof, std::ios_base::in ) >> x0;
+         File( file_rhs, std::ios_base::in ) >> b;
+      }
+      else {
+         // set x0 := 0
+         x0.setSize( matrixPointer->getColumns() );
+         x0 = 0;
+
+         // generate random vector x
+         VectorType x;
+         x.setSize( matrixPointer->getColumns() );
+         set_random_vector( x, 1e2, 1e3 );
+
+         // set b := A*x
+         b.setSize( matrixPointer->getRows() );
+         matrixPointer->vectorProduct( x, b );
+      }
 
       typename MatrixType::CompressedRowLengthsVector rowLengths;
       matrixPointer->getCompressedRowLengths( rowLengths );
@@ -475,9 +544,9 @@ configSetup( Config::ConfigDescription& config )
    config.addEntryEnum( "append" );
    config.addEntryEnum( "overwrite" );
    config.addEntry< int >( "loops", "Number of repetitions of the benchmark.", 10 );
-   config.addRequiredEntry< String >( "input-matrix", "File name of the input matrix (in binary TNL format)." );
-   config.addRequiredEntry< String >( "input-dof", "File name of the input DOF vector (in binary TNL format)." );
-   config.addRequiredEntry< String >( "input-rhs", "File name of the input right-hand-side vector (in binary TNL format)." );
+   config.addRequiredEntry< String >( "input-matrix", "File name of the input matrix (in binary TNL format or textual MTX format)." );
+   config.addEntry< String >( "input-dof", "File name of the input DOF vector (in binary TNL format).", "" );
+   config.addEntry< String >( "input-rhs", "File name of the input right-hand-side vector (in binary TNL format).", "" );
    config.addEntry< String >( "name", "Name of the matrix in the benchmark.", "" );
    config.addEntry< int >( "verbose", "Verbose mode.", 1 );
    config.addEntry< bool >( "reorder-dofs", "Reorder matrix entries corresponding to the same DOF together.", false );
