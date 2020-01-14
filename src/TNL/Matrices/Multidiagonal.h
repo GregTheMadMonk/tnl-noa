@@ -179,8 +179,13 @@ class Multidiagonal : public Matrix< Real, Device, Index, RealAllocator >
       Multidiagonal& operator=( const Multidiagonal& matrix );
 
       // cross-device copy assignment
-      template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_, typename RealAllocator_ >
-      Multidiagonal& operator=( const Multidiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAllocator_ >& matrix );
+      template< typename Real_,
+                typename Device_,
+                typename Index_,
+                bool RowMajorOrder_,
+                typename RealAllocator_,
+                typename IndexAllocator_ >
+      Multidiagonal& operator=( const Multidiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAllocator_, IndexAllocator_ >& matrix );
 
       void save( File& file ) const;
 

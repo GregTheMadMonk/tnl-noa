@@ -648,15 +648,17 @@ template< typename Real,
           bool RowMajorOrder,
           typename RealAllocator,
           typename IndexAllocator >
-   template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_, typename RealAllocator_ >
+   template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_, typename RealAllocator_, typename IndexAllocator_ >
 Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >&
 Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
-operator=( const Multidiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAllocator_ >& matrix )
+operator=( const Multidiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAllocator_, IndexAllocator_ >& matrix )
 {
-   static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value,
-                  "unknown device" );
-   static_assert( std::is_same< Device_, Devices::Host >::value || std::is_same< Device_, Devices::Cuda >::value,
-                  "unknown device" );
+   using RHSMatrix = Multidiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAllocator_, IndexAllocator_ >;
+   using RHSIndexType = typename RHSMatrix::IndexType;
+   using RHSRealType = typename RHSMatrix::RealType;
+   using RHSDeviceType = typename RHSMatrix::DeviceType;
+   using RHSRealAllocatorType = typename RHSMatrix::RealAllocatorType;
+   using RHSIndexAllocatorType = typename RHSMatrix::IndexAllocatorType;
 
    this->setLike( matrix );
    if( RowMajorOrder == RowMajorOrder_ )
@@ -673,13 +675,45 @@ operator=( const Multidiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAllo
       }
       else
       {
-         Multidiagonal< Real, Device, Index, RowMajorOrder_ > auxMatrix;
-         auxMatrix = matrix;
-         const auto matrix_view = auxMatrix.getView();
-         auto f = [=] __cuda_callable__ ( const IndexType& rowIdx, const IndexType& localIdx, const IndexType& column, Real& value ) mutable {
-            value = matrix_view.getValues()[ matrix_view.getIndexer().getGlobalIndex( rowIdx, localIdx ) ];
-         };
-         this->forAllRows( f );
+         const IndexType maxRowLength = this->diagonalsShifts.getSize();
+         const IndexType bufferRowsCount( 128 );
+         const size_t bufferSize = bufferRowsCount * maxRowLength;
+         Containers::Vector< RHSRealType, RHSDeviceType, RHSIndexType, RHSRealAllocatorType > matrixValuesBuffer( bufferSize );
+         Containers::Vector< RHSIndexType, RHSDeviceType, RHSIndexType, RHSIndexAllocatorType > matrixColumnsBuffer( bufferSize );
+         Containers::Vector< RealType, DeviceType, IndexType, RealAllocatorType > thisValuesBuffer( bufferSize );
+         Containers::Vector< IndexType, DeviceType, IndexType, IndexAllocatorType > thisColumnsBuffer( bufferSize );
+         auto matrixValuesBuffer_view = matrixValuesBuffer.getView();
+         auto matrixColumnsBuffer_view = matrixColumnsBuffer.getView();
+         auto thisValuesBuffer_view = thisValuesBuffer.getView();
+         auto thisColumnsBuffer_view = thisColumnsBuffer.getView();
+
+         IndexType baseRow( 0 );
+         const IndexType rowsCount = this->getRows();
+         while( baseRow < rowsCount )
+         {
+            const IndexType lastRow = min( baseRow + bufferRowsCount, rowsCount );
+
+            ////
+            // Copy matrix elements into buffer
+            auto f1 = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx, RHSIndexType columnIndex, const RHSRealType& value ) mutable {
+                  const IndexType bufferIdx = ( rowIdx - baseRow ) * maxRowLength + localIdx;
+                  matrixValuesBuffer_view[ bufferIdx ] = value;
+            };
+            matrix.forRows( baseRow, lastRow, f1 );
+
+            ////
+            // Copy the source matrix buffer to this matrix buffer
+            thisValuesBuffer_view = matrixValuesBuffer_view;
+
+            ////
+            // Copy matrix elements from the buffer to the matrix
+            auto f2 = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType& columnIndex, RealType& value  ) mutable {
+               const IndexType bufferIdx = ( rowIdx - baseRow ) * maxRowLength + localIdx;
+                  value = thisValuesBuffer_view[ bufferIdx ];
+            };
+            this->forRows( baseRow, lastRow, f2 );
+            baseRow += bufferRowsCount;
+         }
       }
    }
 }
