@@ -398,7 +398,7 @@ forRows( IndexType first, IndexType last, Function& function ) const
       {
          const IndexType columnIdx = rowIdx + diagonalsShifts_view[ localIdx ];
          if( columnIdx >= 0 && columnIdx < columns )
-            function( rowIdx, localIdx, columnIdx, values_view[ indexer.getGlobalIndex( rowIdx, localIdx, 0 ) ] );
+            function( rowIdx, localIdx, columnIdx, values_view[ indexer.getGlobalIndex( rowIdx, localIdx ) ] );
       }
    };
    Algorithms::ParallelFor< DeviceType >::exec( first, last, f );

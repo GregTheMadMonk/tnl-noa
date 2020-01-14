@@ -76,14 +76,16 @@ public:
    __cuda_callable__
    IndexType getColumns() const;
 
-   virtual void setElement( const IndexType row,
+   //virtual TODO: uncomment
+   void setElement( const IndexType row,
                             const IndexType column,
-                            const RealType& value ) = 0;
+                            const RealType& value );// = 0;
 
-   virtual void addElement( const IndexType row,
+   //virtual TODO: uncomment
+   void addElement( const IndexType row,
                             const IndexType column,
                             const RealType& value,
-                            const RealType& thisElementMultiplicator = 1.0 ) = 0;
+                            const RealType& thisElementMultiplicator = 1.0 );// = 0;
 
    virtual Real getElement( const IndexType row,
                             const IndexType column ) const = 0;

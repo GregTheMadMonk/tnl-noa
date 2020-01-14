@@ -30,10 +30,10 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
       using DeviceType = Device;
       using IndexType = Index;
       using BaseType = MatrixView< Real, Device, Index >;
-      using DiagonalsShiftsType = Containers::Vector< IndexType, DeviceType, IndexType >;
-      using DiagonalsShiftsView = typename DiagonalsShiftsType::ViewType;
-      using HostDiagonalsShiftsType = Containers::Vector< IndexType, Devices::Host, IndexType >;
-      using HostDiagonalsShiftsView = typename DiagonalsShiftsType::ViewType;
+      //using DiagonalsShiftsType = Containers::Vector< IndexType, DeviceType, IndexType >;
+      using DiagonalsShiftsView = Containers::VectorView< IndexType, DeviceType, IndexType >;
+      //using HostDiagonalsShiftsType = Containers::Vector< IndexType, Devices::Host, IndexType >;
+      using HostDiagonalsShiftsView = Containers::VectorView< IndexType, Devices::Host, IndexType >;
       using IndexerType = details::MultidiagonalMatrixIndexer< IndexType, RowMajorOrder >;
       using ValuesViewType = typename BaseType::ValuesView;
       using ViewType = MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >;
