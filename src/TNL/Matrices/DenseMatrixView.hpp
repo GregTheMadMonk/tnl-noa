@@ -240,22 +240,25 @@ template< typename Real,
           typename Device,
           typename Index,
           bool RowMajorOrder >
-bool DenseMatrixView< Real, Device, Index, RowMajorOrder >::setElement( const IndexType row,
-                                               const IndexType column,
-                                               const RealType& value )
+void
+DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+setElement( const IndexType row,
+            const IndexType column,
+            const RealType& value )
 {
    this->values.setElement( this->getElementIndex( row, column ), value );
-   return true;
 }
 
 template< typename Real,
           typename Device,
           typename Index,
           bool RowMajorOrder >
-bool DenseMatrixView< Real, Device, Index, RowMajorOrder >::addElement( const IndexType row,
-                                                        const IndexType column,
-                                                        const RealType& value,
-                                                        const RealType& thisElementMultiplicator )
+void
+DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+addElement( const IndexType row,
+            const IndexType column,
+            const RealType& value,
+            const RealType& thisElementMultiplicator )
 {
    const IndexType elementIndex = this->getElementIndex( row, column );
    if( thisElementMultiplicator == 1.0 )
@@ -264,7 +267,6 @@ bool DenseMatrixView< Real, Device, Index, RowMajorOrder >::addElement( const In
    else
       this->values.setElement( elementIndex,
                                thisElementMultiplicator * this->values.getElement( elementIndex ) + value );
-   return true;
 }
 
 template< typename Real,

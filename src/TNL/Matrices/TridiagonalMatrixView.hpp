@@ -228,7 +228,6 @@ setElement( const IndexType row, const IndexType column, const RealType& value )
       throw std::logic_error( msg.str() );
    }
    this->values.setElement( this->getElementIndex( row, column ), value );
-   return true;
 }
 
 template< typename Real,
@@ -254,7 +253,6 @@ addElement( const IndexType row,
    }
    const Index i = this->getElementIndex( row, column );
    this->values.setElement( i, thisElementMultiplicator * this->values.getElement( i ) + value );
-   return true;
 }
 
 template< typename Real,

@@ -139,12 +139,12 @@ getValues() const
 {
    return this->values;
 }
-   
+
 template< typename Real,
           typename Device,
           typename Index,
           typename RealAllocator >
-typename Matrix< Real, Device, Index, RealAllocator >::ValuesVector& 
+typename Matrix< Real, Device, Index, RealAllocator >::ValuesVector&
 Matrix< Real, Device, Index, RealAllocator >::
 getValues()
 {
@@ -237,7 +237,7 @@ template< typename Real,
           typename Device,
           typename Index,
           typename RealAllocator >
-void 
+void
 Matrix< Real, Device, Index, RealAllocator >::
 computeColorsVector(Containers::Vector<Index, Device, Index> &colorsVector)
 {

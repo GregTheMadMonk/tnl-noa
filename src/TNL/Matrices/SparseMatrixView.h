@@ -92,11 +92,11 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       __cuda_callable__
       RowView getRow( const IndexType& rowIdx );
 
-      bool setElement( const IndexType row,
+      void setElement( const IndexType row,
                        const IndexType column,
                        const RealType& value );
 
-      bool addElement( const IndexType row,
+      void addElement( const IndexType row,
                        const IndexType column,
                        const RealType& value,
                        const RealType& thisElementMultiplicator = 1.0 );

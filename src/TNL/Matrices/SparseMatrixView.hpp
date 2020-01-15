@@ -54,7 +54,7 @@ auto
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
 getView() -> ViewType
 {
-   return ViewType( this->getRows(), 
+   return ViewType( this->getRows(),
                     this->getColumns(),
                     this->getValues().getView(),
                     this->columnIndexes.getView(),
@@ -204,13 +204,13 @@ template< typename Real,
           typename Index,
           typename MatrixType,
           template< typename, typename > class SegmentsView >
-bool
+void
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
 setElement( const IndexType row,
             const IndexType column,
             const RealType& value )
 {
-   return this->addElement( row, column, value, 0.0 );
+   this->addElement( row, column, value, 0.0 );
 }
 
 template< typename Real,
@@ -218,7 +218,7 @@ template< typename Real,
           typename Index,
           typename MatrixType,
           template< typename, typename > class SegmentsView >
-bool
+void
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
 addElement( const IndexType row,
             const IndexType column,
@@ -244,18 +244,22 @@ addElement( const IndexType row,
       if( col == column )
       {
          this->values.setElement( globalIdx, thisElementMultiplicator * this->values.getElement( globalIdx ) + value );
-         return true;
+         return;
       }
       if( col == this->getPaddingIndex() || col > column )
          break;
    }
    if( i == rowSize )
-      return false;
+   {
+      std::stringstream msg;
+      msg << "The capacity of the sparse matrix row number "  << row << " was exceeded.";
+      throw std::logic_error( msg.str() );
+   }
    if( col == this->getPaddingIndex() )
    {
       this->columnIndexes.setElement( globalIdx, column );
       this->values.setElement( globalIdx, value );
-      return true;
+      return;
    }
    else
    {
@@ -273,7 +277,7 @@ addElement( const IndexType row,
 
       this->columnIndexes.setElement( globalIdx, column );
       this->values.setElement( globalIdx, value );
-      return true;
+      return;
    }
 }
 

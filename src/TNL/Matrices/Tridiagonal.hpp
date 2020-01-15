@@ -404,7 +404,7 @@ template< typename Real,
           typename RealAllocator >
 template< typename Vector >
 __cuda_callable__
-typename Vector::RealType 
+typename Vector::RealType
 Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
 rowVectorProduct( const IndexType row, const Vector& vector ) const
 {
@@ -418,7 +418,7 @@ template< typename Real,
           typename RealAllocator >
    template< typename InVector,
              typename OutVector >
-void 
+void
 Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
 vectorProduct( const InVector& inVector, OutVector& outVector ) const
 {

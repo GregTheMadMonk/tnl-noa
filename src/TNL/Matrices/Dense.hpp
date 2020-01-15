@@ -289,12 +289,13 @@ template< typename Real,
           typename Index,
           bool RowMajorOrder,
           typename RealAllocator >
-bool Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::setElement( const IndexType row,
-                                               const IndexType column,
-                                               const RealType& value )
+void
+Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
+setElement( const IndexType row,
+            const IndexType column,
+            const RealType& value )
 {
    this->values.setElement( this->getElementIndex( row, column ), value );
-   return true;
 }
 
 template< typename Real,
@@ -302,10 +303,12 @@ template< typename Real,
           typename Index,
           bool RowMajorOrder,
           typename RealAllocator >
-bool Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::addElement( const IndexType row,
-                                                        const IndexType column,
-                                                        const RealType& value,
-                                                        const RealType& thisElementMultiplicator )
+void
+Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
+addElement( const IndexType row,
+            const IndexType column,
+            const RealType& value,
+            const RealType& thisElementMultiplicator )
 {
    const IndexType elementIndex = this->getElementIndex( row, column );
    if( thisElementMultiplicator == 1.0 )
@@ -314,7 +317,6 @@ bool Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::addElement( con
    else
       this->values.setElement( elementIndex,
                                thisElementMultiplicator * this->values.getElement( elementIndex ) + value );
-   return true;
 }
 
 template< typename Real,
