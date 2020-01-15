@@ -81,10 +81,10 @@ set( CMAKE_CXX_STANDARD 14 )
 set( CMAKE_CXX_STANDARD_REQUIRED ON )
 set( CMAKE_CXX_EXTENSIONS OFF )
 
-# set Debug/Release options
+# set default build options
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -Wall -Wno-unused-local-typedefs -Wno-unused-variable -Wno-unknown-pragmas" )
 set( CMAKE_CXX_FLAGS_DEBUG "-g" )
-set( CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -mtune=native -DNDEBUG" )
+set( CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG" )
 # pass -rdynamic only in Debug mode
 set( CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "" )
 set( CMAKE_SHARED_LIBRARY_LINK_C_FLAGS_DEBUG "-rdynamic" )
@@ -95,6 +95,13 @@ set( CMAKE_EXE_LINKER_FLAGS_RELEASE "" )
 set( CMAKE_SHARED_LINKER_FLAGS "" )
 set( CMAKE_SHARED_LINKER_FLAGS_DEBUG "-rdynamic" )
 set( CMAKE_SHARED_LINKER_FLAGS_RELEASE "" )
+
+# set additional Debug/Release options using generator expressions
+# (that way we can exclude some options for specific targets, see https://stackoverflow.com/a/59734798 for details)
+add_compile_options(
+   # GOTCHA: CMake uses semicolons as list item separator, spaces would lead to a single argument inside double-quotes on the command line
+   "$<$<CONFIG:RELEASE>:-march=native;-mtune=native>"
+)
 
 # disable GCC's infamous "maybe-uninitialized" warning (it produces mostly false positives)
 if( CMAKE_CXX_COMPILER_ID STREQUAL "GNU" )
