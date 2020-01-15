@@ -159,7 +159,7 @@ void test_GetCompressedRowLengths()
     *    |  0  0  0  0  1  0  1  0 |  -> 2
     *    \  0  0  0  0  0  1  0  0 /  -> 1
     */
-   
+
    const IndexType rows = 8;
    const IndexType cols = 8;
 
@@ -354,22 +354,12 @@ void test_SetElement()
    RealType value = 1;
    for( IndexType i = 0; i < rows; i++ )
       for( IndexType j = 0; j < cols; j++ )
-      {
-         bool found( false );
-         for( IndexType k = 0; k < diagonals.getSize(); k++ )
-         {
-            if( i + diagonals[ k ] == j )
-            {
-               m.setElement( i, j, value++ );
-               found = true;
-               break;
-            }
-         }
-         if( ! found )
+         if( diagonals.containsValue( j - i ) )
+            m.setElement( i, j, value++ );
+         else
          {
             EXPECT_THROW( m.setElement( i, j, value++ ), std::logic_error );
          }
-      }
 
    EXPECT_EQ( m.getElement( 0, 0 ),  1 );
    EXPECT_EQ( m.getElement( 0, 1 ),  2 );
@@ -427,24 +417,16 @@ void test_AddElement()
    RealType value = 1;
    for( IndexType i = 0; i < rows; i++ )
       for( IndexType j = 0; j < cols; j++ )
-      {
-         bool found( false );
-         for( IndexType k = 0; k < diagonals.getSize(); k++ )
+         if( diagonals.containsValue( j - i ) )
          {
-            if( i + diagonals[ k ] == j )
-            {
-               if( j >= i )
-                  m.setElement( i, j, value++ );
-               else value++;
-               found = true;
-               break;
-            }
+            if( j >= i )
+               m.setElement( i, j, value );
+            value++;
          }
-         if( ! found )
+         else
          {
             EXPECT_THROW( m.setElement( i, j, value++ ), std::logic_error );
          }
-      }
 
    // Check the added elements
    EXPECT_EQ( m.getElement( 0, 0 ),  1 );
@@ -486,29 +468,19 @@ void test_AddElement()
     * 2 * |  0  0 13 14  0 | + |  0  0 13 14  0 | =  |  0  0 39 42  0 |
     *     |  0  0  0 19 20 |   | 16  0  0 19 20 |    | 16  0  0 57 60 |
     *     \  0  0  0  0 25 /   \  0 22  0  0 25 /    \  0 22  0  0 75 /
-    *     
+    *
     */
 
    value = 1;
    RealType multiplicator = 2;
    for( IndexType i = 0; i < rows; i++ )
       for( IndexType j = 0; j < cols; j++ )
-      {
-         bool found( false );
-         for( IndexType k = 0; k < diagonals.getSize(); k++ )
-         {
-            if( i + diagonals[ k ] == j )
-            {
-               m.addElement( i, j, value++, multiplicator );
-               found = true;
-               break;
-            }
-         }
-         if( ! found )
+         if( diagonals.containsValue( j - i ) )
+            m.addElement( i, j, value++, multiplicator );
+         else
          {
             EXPECT_THROW( m.addElement( i, j, value++, multiplicator ), std::logic_error );
          }
-      }
 
    EXPECT_EQ( m.getElement( 0, 0 ),  3 );
    EXPECT_EQ( m.getElement( 0, 1 ),  6 );
