@@ -2,7 +2,13 @@
 
 #ifdef HAVE_BLAS
 
+// HOTFIX: cblas.h from the atlas-devel package (version 3.10.1-12.el7) on CentOS 7
+// does not declare the functions as `extern "C"`, which breaks name mangling.
+// Note that nested `extern "C"` is valid and correct:
+// https://stackoverflow.com/questions/48099828/what-happens-if-you-nest-extern-c
+extern "C" {
 #include <cblas.h>
+}
 
 inline int blasIgamax( int n, const float *x, int incx )
 {
