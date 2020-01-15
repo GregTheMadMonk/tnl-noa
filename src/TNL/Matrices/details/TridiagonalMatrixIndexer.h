@@ -26,21 +26,21 @@ class TridiagonalMatrixIndexer
 
       __cuda_callable__
       TridiagonalMatrixIndexer()
-      : rows( 0 ), columns( 0 ), nonEmptyRows( 0 ){};
+      : rows( 0 ), columns( 0 ), nonemptyRows( 0 ){};
 
       __cuda_callable__
       TridiagonalMatrixIndexer( const IndexType& rows, const IndexType& columns )
-      : rows( rows ), columns( columns ), nonEmptyRows( TNL::min( rows, columns ) + ( rows > columns ) ) {};
+      : rows( rows ), columns( columns ), nonemptyRows( TNL::min( rows, columns ) + ( rows > columns ) ) {};
 
       __cuda_callable__
       TridiagonalMatrixIndexer( const TridiagonalMatrixIndexer& indexer )
-      : rows( indexer.rows ), columns( indexer.columns ), nonEmptyRows( indexer.nonEmptyRows ) {};
+      : rows( indexer.rows ), columns( indexer.columns ), nonemptyRows( indexer.nonemptyRows ) {};
 
       void setDimensions( const IndexType& rows, const IndexType& columns )
       {
          this->rows = rows;
          this->columns = columns;
-         this->nonEmptyRows = min( rows, columns ) + ( rows > columns );
+         this->nonemptyRows = min( rows, columns ) + ( rows > columns );
       };
 
       __cuda_callable__
@@ -65,9 +65,9 @@ class TridiagonalMatrixIndexer
       const IndexType& getColumns() const { return this->columns; };
 
       __cuda_callable__
-      const IndexType& getNonEmptyRowsCount() const { return this->nonEmptyRows; };
+      const IndexType& getNonemptyRowsCount() const { return this->nonemptyRows; };
       __cuda_callable__
-      IndexType getStorageSize() const { return 3 * this->nonEmptyRows; };
+      IndexType getStorageSize() const { return 3 * this->nonemptyRows; };
 
       __cuda_callable__
       IndexType getGlobalIndex( const Index rowIdx, const Index localIdx ) const
@@ -76,16 +76,16 @@ class TridiagonalMatrixIndexer
          TNL_ASSERT_LT( localIdx, 3, "" );
          TNL_ASSERT_GE( rowIdx, 0, "" );
          TNL_ASSERT_LT( rowIdx, this->rows, "" );
-         
+
          if( RowMajorOrder )
             return 3 * rowIdx + localIdx;
          else
-            return localIdx * nonEmptyRows + rowIdx;
+            return localIdx * nonemptyRows + rowIdx;
       };
 
       protected:
 
-         IndexType rows, columns, nonEmptyRows;
+         IndexType rows, columns, nonemptyRows;
 };
       } //namespace details
    } // namespace Materices

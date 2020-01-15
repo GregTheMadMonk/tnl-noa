@@ -326,7 +326,7 @@ void
 TridiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
 allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const
 {
-   this->rowsReduction( 0, this->indexer.getNonEmptyRowsCount(), fetch, reduce, keep, zero );
+   this->rowsReduction( 0, this->indexer.getNonemptyRowsCount(), fetch, reduce, keep, zero );
 }
 
 template< typename Real,
@@ -418,7 +418,7 @@ void
 TridiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
 forAllRows( Function& function )
 {
-   this->forRows( 0, this->indexer.getNonEmptyRowsCount(), function );
+   this->forRows( 0, this->indexer.getNonemptyRowsCount(), function );
 }
 
 template< typename Real,
