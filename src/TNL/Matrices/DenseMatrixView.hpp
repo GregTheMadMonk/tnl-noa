@@ -83,7 +83,7 @@ getSerializationType()
 {
    return String( "Matrices::Dense< " ) +
           TNL::getSerializationType< RealType >() + ", [any_device], " +
-          TNL::getSerializationType< IndexType >() +
+          TNL::getSerializationType< IndexType >() + ", " +
           ( RowMajorOrder ? "true" : "false" ) + ", [any_allocator] >";
 }
 
@@ -321,7 +321,7 @@ forRows( IndexType first, IndexType last, Function& function ) const
 {
    const auto values_view = this->values.getConstView();
    auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx ) mutable -> bool {
-      function( rowIdx, columnIdx, values_view[ globalIdx ] );
+      function( rowIdx, columnIdx, columnIdx, values_view[ globalIdx ] );
       return true;
    };
    this->segments.forSegments( first, last, f );
@@ -339,7 +339,7 @@ forRows( IndexType first, IndexType last, Function& function )
 {
    auto values_view = this->values.getView();
    auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx ) mutable -> bool {
-      function( rowIdx, columnIdx, values_view[ globalIdx ] );
+      function( rowIdx, columnIdx, globalIdx, values_view[ globalIdx ] );
       return true;
    };
    this->segments.forSegments( first, last, f );
@@ -395,14 +395,22 @@ template< typename Real,
 void DenseMatrixView< Real, Device, Index, RowMajorOrder >::vectorProduct( const InVector& inVector,
                                                            OutVector& outVector ) const
 {
-   TNL_ASSERT( this->getColumns() == inVector.getSize(),
-            std::cerr << "Matrix columns: " << this->getColumns() << std::endl
-                 << "Vector size: " << inVector.getSize() << std::endl );
-   TNL_ASSERT( this->getRows() == outVector.getSize(),
-               std::cerr << "Matrix rows: " << this->getRows() << std::endl
-                    << "Vector size: " << outVector.getSize() << std::endl );
+   TNL_ASSERT_EQ( this->getColumns(), inVector.getSize(), "Matrix columns count differs with input vector size." );
+   TNL_ASSERT_EQ( this->getRows(), outVector.getSize(), "Matrix rows count differs with output vector size." );
 
-   //DeviceDependentCode::vectorProduct( *this, inVector, outVector );
+   const auto inVectorView = inVector.getConstView();
+   auto outVectorView = outVector.getView();
+   const auto valuesView = this->values.getConstView();
+   auto fetch = [=] __cuda_callable__ ( IndexType row, IndexType column, IndexType offset, bool& compute ) -> RealType {
+      return valuesView[ offset ] * inVectorView[ column ];
+   };
+   auto reduction = [] __cuda_callable__ ( RealType& sum, const RealType& value ) {
+      sum += value;
+   };
+   auto keeper = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
+      outVectorView[ row ] = value;
+   };
+   this->segments.segmentsReduction( 0, this->getRows(), fetch, reduction, keeper, ( RealType ) 0.0 );
 }
 
 template< typename Real,
@@ -885,38 +893,17 @@ void DenseMatrixView< Real, Device, Index, RowMajorOrder >::performSORIteration(
 }
 
 
-// copy assignment
 template< typename Real,
           typename Device,
           typename Index,
           bool RowMajorOrder >
 DenseMatrixView< Real, Device, Index, RowMajorOrder >&
-DenseMatrixView< Real, Device, Index, RowMajorOrder >::operator=( const DenseMatrixView& matrix )
+DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+operator=( const DenseMatrixView& matrix )
 {
-   this->setLike( matrix );
-   this->values = matrix.values;
-   return *this;
+   MatrixView< Real, Device, Index >::operator=( matrix );
+   this->segments = matrix.segments;
 }
-
-// cross-device copy assignment
-template< typename Real,
-          typename Device,
-          typename Index,
-          bool RowMajorOrder >
-   template< typename Real2, typename Device2, typename Index2, typename >
-DenseMatrixView< Real, Device, Index, RowMajorOrder >&
-DenseMatrixView< Real, Device, Index, RowMajorOrder >::operator=( const DenseMatrixView< Real2, Device2, Index2 >& matrix )
-{
-   static_assert( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Cuda >::value,
-                  "unknown device" );
-   static_assert( std::is_same< Device2, Devices::Host >::value || std::is_same< Device2, Devices::Cuda >::value,
-                  "unknown device" );
-
-   this->setLike( matrix );
-
-   throw Exceptions::NotImplementedError("Cross-device assignment for the Dense format is not implemented yet.");
-}
-
 
 template< typename Real,
           typename Device,
@@ -931,27 +918,9 @@ template< typename Real,
           typename Device,
           typename Index,
           bool RowMajorOrder >
-void DenseMatrixView< Real, Device, Index, RowMajorOrder >::load( const String& fileName )
-{
-   Object::load( fileName );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          bool RowMajorOrder >
 void DenseMatrixView< Real, Device, Index, RowMajorOrder >::save( File& file ) const
 {
    MatrixView< Real, Device, Index >::save( file );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          bool RowMajorOrder >
-void DenseMatrixView< Real, Device, Index, RowMajorOrder >::load( File& file )
-{
-   MatrixView< Real, Device, Index >::load( file );
 }
 
 template< typename Real,

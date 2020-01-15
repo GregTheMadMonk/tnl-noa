@@ -168,7 +168,7 @@ class Dense : public Matrix< Real, Device, Index >
                                 const RealType& omega = 1.0 ) const;
 
       // copy assignment
-      //Dense& operator=( const Dense& matrix );
+      Dense& operator=( const Dense& matrix );
 
       // cross-device copy assignment
       template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_, typename RealAlocator_ >
@@ -200,6 +200,8 @@ class Dense : public Matrix< Real, Device, Index >
       friend class DenseDeviceDependentCode< DeviceType >;
 
       SegmentsType segments;
+
+      ViewType view;
 };
 
 } // namespace Matrices

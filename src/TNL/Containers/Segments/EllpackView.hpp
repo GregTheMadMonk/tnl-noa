@@ -295,6 +295,19 @@ template< typename Device,
           typename Index,
           bool RowMajorOrder,
           int Alignment >
+EllpackView< Device, Index, RowMajorOrder, Alignment >&
+EllpackView< Device, Index, RowMajorOrder, Alignment >::
+operator=( const EllpackView< Device, Index, RowMajorOrder, Alignment >& view )
+{
+   this->segmentSize = view.segmentSize;
+   this->size = view.size;
+   this->alignedSize = view.alignedSize;
+}
+
+template< typename Device,
+          typename Index,
+          bool RowMajorOrder,
+          int Alignment >
 void
 EllpackView< Device, Index, RowMajorOrder, Alignment >::
 save( File& file ) const

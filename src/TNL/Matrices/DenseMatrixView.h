@@ -171,21 +171,11 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
                                 Vector2& x,
                                 const RealType& omega = 1.0 ) const;
 
-      // copy assignment
       DenseMatrixView& operator=( const DenseMatrixView& matrix );
-
-      // cross-device copy assignment
-      template< typename Real2, typename Device2, typename Index2,
-                typename = typename Enabler< Device2 >::type >
-      DenseMatrixView& operator=( const DenseMatrixView< Real2, Device2, Index2 >& matrix );
 
       void save( const String& fileName ) const;
 
-      void load( const String& fileName );
-
       void save( File& file ) const;
-
-      void load( File& file );
 
       void print( std::ostream& str ) const;
 

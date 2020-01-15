@@ -1234,9 +1234,7 @@ void test_SaveAndLoad()
 
     ASSERT_NO_THROW( savedMatrix.save( TEST_FILE_NAME ) );
 
-    Matrix loadedMatrix;
-    loadedMatrix.reset();
-    loadedMatrix.setDimensions( rows, cols );
+    Matrix loadedMatrix( rows, cols );
 
     ASSERT_NO_THROW( loadedMatrix.load( TEST_FILE_NAME ) );
 

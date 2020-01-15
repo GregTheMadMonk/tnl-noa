@@ -104,6 +104,8 @@ class EllpackView
       template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
       void allReduction( Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
 
+      EllpackView& operator=( const EllpackView& view );
+
       void save( File& file ) const;
 
       void load( File& file );

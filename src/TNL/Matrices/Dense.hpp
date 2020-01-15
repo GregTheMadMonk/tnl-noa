@@ -76,10 +76,7 @@ String
 Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
 getSerializationType()
 {
-   return String( "Matrices::Dense< " ) +
-          TNL::getSerializationType< RealType >() + ", [any_device], " +
-          TNL::getSerializationType< IndexType >() + ", " +
-          ( RowMajorOrder ? "true" : "false" ) + ", [any_allocator] >";
+   return ViewType::getSerializationType();
 }
 
 template< typename Real,
@@ -108,6 +105,7 @@ setDimensions( const IndexType rows,
    this->segments.setSegmentsSizes( rows, columns );
    this->values.setSize( rows * columns );
    this->values = 0.0;
+   this->view = this->getView();
 }
 
 template< typename Real,
@@ -145,19 +143,7 @@ void
 Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
 getCompressedRowLengths( Vector& rowLengths ) const
 {
-   rowLengths.setSize( this->getRows() );
-   rowLengths = 0;
-   auto rowLengths_view = rowLengths.getView();
-   auto fetch = [] __cuda_callable__ ( IndexType row, IndexType column, const RealType& value ) -> IndexType {
-      return ( value != 0.0 );
-   };
-   auto reduce = [] __cuda_callable__ ( IndexType& aux, const IndexType a ) {
-      aux += a;
-   };
-   auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const IndexType value ) mutable {
-      rowLengths_view[ rowIdx ] = value;
-   };
-   this->allRowsReduction( fetch, reduce, keep, 0 );
+   this->view.getCompressedRowLengths( rowLengths );
 }
 
 template< typename Real,
@@ -197,11 +183,7 @@ template< typename Real,
           typename RealAllocator >
 Index Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::getNumberOfNonzeroMatrixElements() const
 {
-   const auto values_view = this->values.getConstView();
-   auto fetch = [=] __cuda_callable__ ( const IndexType i ) -> IndexType {
-      return ( values_view[ i ] != 0.0 );
-   };
-   return Algorithms::Reduction< DeviceType >::reduce( this->values.getSize(), std::plus<>{}, fetch, 0 );
+   return this->view.getNumberOfNonzeroMatrixElements();
 }
 
 template< typename Real,
@@ -221,7 +203,7 @@ template< typename Real,
           typename RealAllocator >
 void Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::setValue( const Real& value )
 {
-   this->values = value;
+   this->view.setValue( value );
 }
 
 template< typename Real,
@@ -233,8 +215,7 @@ __cuda_callable__ auto
 Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
 getRow( const IndexType& rowIdx ) const -> const RowView
 {
-   TNL_ASSERT_LT( rowIdx, this->getRows(), "Row index is larger than number of matrix rows." );
-   return RowView( this->segments.getSegmentView( rowIdx ), this->values.getView() );
+   return this->view.getRow( rowIdx );
 }
 
 template< typename Real,
@@ -246,8 +227,7 @@ __cuda_callable__ auto
 Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
 getRow( const IndexType& rowIdx ) -> RowView
 {
-   TNL_ASSERT_LT( rowIdx, this->getRows(), "Row index is larger than number of matrix rows." );
-   return RowView( this->segments.getSegmentView( rowIdx ), this->values.getView() );
+   return this->view.getRow( rowIdx );
 }
 
 template< typename Real,
@@ -259,12 +239,7 @@ __cuda_callable__
 Real& Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::operator()( const IndexType row,
                                                 const IndexType column )
 {
-   TNL_ASSERT_GE( row, 0, "Row index must be non-negative." );
-   TNL_ASSERT_LT( row, this->getRows(), "Row index is out of bounds." );
-   TNL_ASSERT_GE( column, 0, "Column index must be non-negative." );
-   TNL_ASSERT_LT( column, this->getColumns(), "Column index is out of bounds." );
-
-   return this->values.operator[]( this->getElementIndex( row, column ) );
+   return this->view.operator()( row, column );
 }
 
 template< typename Real,
@@ -276,12 +251,7 @@ __cuda_callable__
 const Real& Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::operator()( const IndexType row,
                                                       const IndexType column ) const
 {
-   TNL_ASSERT_GE( row, 0, "Row index must be non-negative." );
-   TNL_ASSERT_LT( row, this->getRows(), "Row index is out of bounds." );
-   TNL_ASSERT_GE( column, 0, "Column index must be non-negative." );
-   TNL_ASSERT_LT( column, this->getColumns(), "Column index is out of bounds." );
-
-   return this->values.operator[]( this->getElementIndex( row, column ) );
+   return this->view.operator()( row, column );
 }
 
 template< typename Real,
@@ -295,7 +265,7 @@ setElement( const IndexType row,
             const IndexType column,
             const RealType& value )
 {
-   this->values.setElement( this->getElementIndex( row, column ), value );
+   this->view.setElement( row, column, value );
 }
 
 template< typename Real,
@@ -310,13 +280,7 @@ addElement( const IndexType row,
             const RealType& value,
             const RealType& thisElementMultiplicator )
 {
-   const IndexType elementIndex = this->getElementIndex( row, column );
-   if( thisElementMultiplicator == 1.0 )
-      this->values.setElement( elementIndex,
-                               this->values.getElement( elementIndex ) + value );
-   else
-      this->values.setElement( elementIndex,
-                               thisElementMultiplicator * this->values.getElement( elementIndex ) + value );
+   this->view.addElement( row, column, value, thisElementMultiplicator );
 }
 
 template< typename Real,
@@ -329,7 +293,7 @@ Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
 getElement( const IndexType row,
             const IndexType column ) const
 {
-   return this->values.getElement( this->getElementIndex( row, column ) );
+   return this->view.getElement( row, column );
 }
 
 template< typename Real,
@@ -342,12 +306,7 @@ void
 Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
 rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchValue& zero ) const
 {
-   const auto values_view = this->values.getConstView();
-   auto fetch_ = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx, bool& compute ) mutable -> decltype( fetch( IndexType(), IndexType(), RealType() ) ) {
-         return fetch( rowIdx, columnIdx, values_view[ globalIdx ] );
-      return zero;
-   };
-   this->segments.segmentsReduction( first, last, fetch_, reduce, keep, zero );
+   this->view.rowsReduction( first, last, fetch, reduce, keep, zero );
 }
 
 template< typename Real,
@@ -373,12 +332,7 @@ void
 Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
 forRows( IndexType first, IndexType last, Function& function ) const
 {
-   const auto values_view = this->values.getConstView();
-   auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx ) mutable -> bool {
-      function( rowIdx, columnIdx, globalIdx, values_view[ globalIdx ] );
-      return true;
-   };
-   this->segments.forSegments( first, last, f );
+   this->view.forRows( first, last, function );
 }
 
 template< typename Real,
@@ -391,12 +345,7 @@ void
 Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
 forRows( IndexType first, IndexType last, Function& function )
 {
-   auto values_view = this->values.getView();
-   auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx ) mutable -> bool {
-      function( rowIdx, columnIdx, globalIdx, values_view[ globalIdx ] );
-      return true;
-   };
-   this->segments.forSegments( first, last, f );
+   this->view.forRows( first, last, function );
 }
 
 template< typename Real,
@@ -435,11 +384,7 @@ __cuda_callable__
 typename Vector::RealType Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::rowVectorProduct( const IndexType row,
                                                                                    const Vector& vector ) const
 {
-   RealType sum( 0.0 );
-   // TODO: Fix this
-   //for( IndexType column = 0; column < this->getColumns(); column++ )
-   //   sum += this->getElementFast( row, column ) * vector[ column ];
-   return sum;
+   return this->view.rowVectorProduct( row, vector );
 }
 
 template< typename Real,
@@ -453,27 +398,7 @@ void
 Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
 vectorProduct( const InVector& inVector, OutVector& outVector ) const
 {
-   TNL_ASSERT( this->getColumns() == inVector.getSize(),
-            std::cerr << "Matrix columns: " << this->getColumns() << std::endl
-                 << "Vector size: " << inVector.getSize() << std::endl );
-   TNL_ASSERT( this->getRows() == outVector.getSize(),
-               std::cerr << "Matrix rows: " << this->getRows() << std::endl
-                    << "Vector size: " << outVector.getSize() << std::endl );
-
-   //DeviceDependentCode::vectorProduct( *this, inVector, outVector );
-   const auto inVectorView = inVector.getConstView();
-   auto outVectorView = outVector.getView();
-   const auto valuesView = this->values.getConstView();
-   auto fetch = [=] __cuda_callable__ ( IndexType row, IndexType column, IndexType offset, bool& compute ) -> RealType {
-      return valuesView[ offset ] * inVectorView[ column ];
-   };
-   auto reduction = [] __cuda_callable__ ( RealType& sum, const RealType& value ) {
-      sum += value;
-   };
-   auto keeper = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
-      outVectorView[ row ] = value;
-   };
-   this->segments.segmentsReduction( 0, this->getRows(), fetch, reduction, keeper, ( RealType ) 0.0 );
+   this->view.vectorProduct( inVector, outVector );
 }
 
 template< typename Real,
@@ -959,7 +884,7 @@ void Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::performSORItera
    x[ row ] = ( 1.0 - omega ) * x[ row ] + omega / diagonalValue * ( b[ row ] - sum );
 }
 
-/*template< typename Real,
+template< typename Real,
           typename Device,
           typename Index,
           bool RowMajorOrder,
@@ -968,7 +893,9 @@ Dense< Real, Device, Index, RowMajorOrder, RealAllocator >&
 Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
 operator=( const Dense< Real, Device, Index, RowMajorOrder, RealAllocator >& matrix )
 {
-   const IndexType bufferRowsCount( 128 );
+   setLike( matrix );
+   this->values = matrix.values;
+   /*const IndexType bufferRowsCount( 128 );
    const IndexType columns = this->getColumns();
    const size_t bufferSize = bufferRowsCount * columns;
    Containers::Vector< RealType, Device, IndexType, RealAllocatorType > sourceValuesBuffer( bufferSize );
@@ -1000,8 +927,8 @@ operator=( const Dense< Real, Device, Index, RowMajorOrder, RealAllocator >& mat
       this->forRows( baseRow, lastRow, f2 );
       baseRow += bufferRowsCount;
    }
-   return *this;
-}*/
+   return *this;*/
+}
 
 template< typename Real,
           typename Device,
@@ -1101,7 +1028,7 @@ template< typename Real,
           typename RealAllocator >
 void Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::save( const String& fileName ) const
 {
-   Object::save( fileName );
+   this->view.save( fileName );
 }
 
 template< typename Real,
@@ -1121,7 +1048,7 @@ template< typename Real,
           typename RealAllocator >
 void Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::save( File& file ) const
 {
-   Matrix< Real, Device, Index >::save( file );
+   this->view.save( file );
 }
 
 template< typename Real,
@@ -1141,13 +1068,7 @@ template< typename Real,
           typename RealAllocator >
 void Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::print( std::ostream& str ) const
 {
-   for( IndexType row = 0; row < this->getRows(); row++ )
-   {
-      str <<"Row: " << row << " -> ";
-      for( IndexType column = 0; column < this->getColumns(); column++ )
-         str << " Col:" << column << "->" << this->getElement( row, column ) << "\t";
-      str << std::endl;
-   }
+   this->view.print( str );
 }
 
 template< typename Real,
@@ -1156,8 +1077,9 @@ template< typename Real,
           bool RowMajorOrder,
           typename RealAllocator >
 __cuda_callable__
-Index Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::getElementIndex( const IndexType row,
-                                                              const IndexType column ) const
+Index
+Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
+getElementIndex( const IndexType row, const IndexType column ) const
 {
    return this->segments.getGlobalIndex( row, column );
 }
