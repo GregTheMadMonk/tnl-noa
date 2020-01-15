@@ -57,7 +57,7 @@ public:
 
    // TODO: implementation is not parallel
    // TODO: it would be nice if padding zeros could be stripped
-   void getCompressedRowLengths( CompressedRowLengthsVector& rowLengths ) const;
+   //void getCompressedRowLengths( CompressedRowLengthsVector& rowLengths ) const;
 
    virtual void getCompressedRowLengths( CompressedRowLengthsVectorView rowLengths ) const;
 
