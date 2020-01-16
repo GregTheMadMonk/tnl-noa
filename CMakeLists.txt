@@ -25,11 +25,11 @@ option(WITH_GMP "Build with GMP support" OFF)
 option(WITH_TESTS "Build tests" ON)
 option(WITH_PROFILING "Enable code profiling compiler flags" OFF )
 option(WITH_COVERAGE "Enable code coverage reports from unit tests" OFF)
-option(WITH_EXAMPLES "Compile the 'examples' directory" ON)
+option(WITH_EXAMPLES "Compile the 'src/Examples' directory" ON)
 option(WITH_TOOLS "Compile the 'src/Tools' directory" ON)
 option(WITH_BENCHMARKS "Compile the 'src/Benchmarks' directory" ON)
 option(WITH_PYTHON "Compile the Python bindings" ON)
-option(WITH_DOC "Generate documentation" ON)
+option(WITH_DOC "Build examples included in the documentation" ON)
 
 # install paths relative to the cmake's prefix
 set( TNL_TARGET_INCLUDE_DIRECTORY "include/TNL" )
@@ -307,7 +307,7 @@ add_subdirectory( src )
 add_subdirectory( share )
 
 # Add subdirectories for examples included in the documentation
-if( ${WITH_DOC} OR ${WITH_EXAMPLES} )
+if( ${WITH_DOC} )
    set( TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH "${CMAKE_SOURCE_DIR}/Documentation/output_snippets" )
    file(MAKE_DIRECTORY ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH})
    add_subdirectory( Documentation/Examples )
