@@ -1,68 +1,97 @@
-#!/usr/bin/env bash
-                
-DEBUG="no"
-STOP_TIME="1"
-export CUDA_PROFILE=0
+#! /bin/bash
 
-PWD=`pwd`
-IWD="$PWD"
-BASE="ftp://math.nist.gov/pub/MatrixMarket2/Harwell-Boeing/"
-BENCHMARK="tnl-benchmark-linear-solvers"
-BENCHMARK_DBG="tnl-benchmark-linear-solvers-dbg"
+# exit whenever a command fails
+set -e
 
-export CUDA_PROFILE_CONFIG="$IWD/cuda-profiler.conf"
-PROCESS_CUDA_PROFILE="$IWD/process-cuda-profile.pl"
-source matrix-market
-source florida-matrix-market
+shopt -s extglob            # enable extended pattern-matching features
+shopt -s globstar           # recursive globbing
 
-for link in $MM_MATRICES;
-do
-   echo "======================================================================================================"
-   matrix=matrices`echo $link | sed 's/ftp:\/\/math.nist.gov\/pub//'`
-   unzipped_matrix=`echo $matrix | sed 's/.gz//'`
-   if test ! -e $matrix;
-   then
-      echo "Matrix $matrix is missing !!! Run the script 'get-matrices' first."
-      #echo "Matrix $matrix is missing !!! Run the script 'get-matrices' first." >> sparse-matrix-benchmark.log            
-   else
-      gunzip -c ${matrix} > ${unzipped_matrix}      
-      echo "Benchmarking with the matrix $unzipped_matrix ..."
-      export CUDA_PROFILE_LOG=$unzipped_matrix.float.log
-      if test x$DEBUG = xyes;
-      then
-         gdb --args ${BENCHMARK_DBG} --test mtx --input-file $unzipped_matrix --log-file sparse-matrix-benchmark.log --verbose 1
-      else
-         $BENCHMARK --test mtx --input-file $unzipped_matrix --log-file sparse-matrix-benchmark.log --verbose 1
-      fi
-      #perl $PROCESS_CUDA_PROFILE $unzipped_matrix.float.log sparse-matrix-profiling-float.log          
-   fi
-done
+function get_cpu_count() {
+    echo $(( $(grep -c ^processor /proc/cpuinfo) / 2 ))
+}
 
-for link in $FLORIDA_MM_MATRICES;
-do
-   matrix=matrices`echo $link | sed 's/http:\/\/www.cise.ufl.edu\/research\/sparse//'`
-   if test ! -e $matrix;
-   then      
-      echo "Matrix $matrix is missing !!! Run the script 'get-matrices' first."
-      #echo "Matrix $matrix is missing !!! Run the script 'get-matrices' first." >> sparse-matrix-benchmark.log
-   else
-     DIRNAME=`dirname $matrix`
-     FILENAME=`basename $matrix`
-     cd $DIRNAME
-     tar zxvf $FILENAME
-     cd $IWD
-     SUBDIRNAME=`echo $FILENAME | sed 's/.tar.gz//'`
-     rm -f $DIRNAME/$SUBDIRNAME/*_b.mtx # these are usualy in array format
-     for file in $DIRNAME/$SUBDIRNAME/*.mtx;
-     do
-         echo "======================================================================================================"
-         echo "Benchmarking with the matrix $file ..."
-         if test x$DEBUG = xyes;
-         then
-            gdb --args $BENCHMARK --test mtx --input-file $file --log-file sparse-matrix-benchmark.log --verbose 1
-         else
-            $BENCHMARK --test mtx --input-file $file --log-file sparse-matrix-benchmark.log --verbose 1                        
-         fi
-     done
-   fi
+function get_cpu_affinity() {
+#    echo $(python3 -c "print(','.join(str(i) for i in range(0, 2*$omp_threads, 2)))")
+    echo $(python3 -c "print(','.join(str(i) for i in range(0, $omp_threads)))")
+}
+
+function run_benchmark() {
+    echo "==> omp_threads = $omp_threads, matrix = $bench_name"
+
+    log_file=${log_file:=tnl-benchmark-linear-solvers.mtx.log}
+
+    gmresRestartingMax=${gmresRestartingMax:=30}
+    gmresRestartingMin=${gmresRestartingMin:=3}
+    gmresRestartingStepMax=${gmresRestartingStepMax:=4}
+    gmresRestartingStepMin=${gmresRestartingStepMin:=2}
+
+    # set number of OpenMP threads
+    omp_threads=${omp_threads:=1}
+    if [[ "$omp_threads" == "1" ]]; then
+        omp_enabled=false
+    else
+        omp_enabled=true
+    fi
+
+#    mpirun -np 1 -H localhost:4 ${solver} \
+#    ${solver} \
+    taskset -c $(get_cpu_affinity) ${solver} \
+        --verbose 1 \
+        --loops 10 \
+        --log-file "$log_file" \
+        --output-mode "append" \
+        --name "$bench_name" \
+        --redirect-mpi-output "false" \
+        --devices "$devices" \
+        --openmp-enabled "$omp_enabled" \
+        --openmp-max-threads "$omp_threads" \
+        --input-matrix "$bench_matrix" \
+        --convergence-residue 1e-11 \
+        --max-iterations 10000 \
+        --gmres-restarting-max $gmresRestartingMax \
+        --gmres-restarting-min $gmresRestartingMin \
+        --gmres-restarting-step-max $gmresRestartingStepMax \
+        --gmres-restarting-step-min $gmresRestartingStepMin \
+        --ilut-threshold 1e-4 \
+        --ilut-p 8 \
+        --solvers "$solvers" \
+        --gmres-variants "$gmresVariants" \
+        --preconditioners "$preconditioners" \
+        --with-preconditioner-update "true" \
+    || true
+}
+
+devices="all"
+
+#max_omp_threads=1
+max_omp_threads=$(get_cpu_count)
+
+#solver="tnl-benchmark-linear-solvers"
+solver="tnl-benchmark-linear-solvers-cuda"
+
+solvers="gmres,bicgstab,bicgstab-ell,tfqmr"
+#solvers="gmres"
+#solvers="tfqmr,bicgstab"
+#solvers="bicgstab-ell"
+#solvers="bicgstab"
+gmresVariants="CGS,CGSR,MGS,MGSR,CWY"
+preconditioners="jacobi,ilu0,ilut"
+
+matrices_base_path="./mtx_matrices"
+
+if [[ ! -d "$matrices_base_path" ]]; then
+    echo "The path '$matrices_base_path' does not exist." >&2
+    exit 1
+fi
+
+for bench_matrix in "$matrices_base_path"/**/*.mtx; do
+    bench_name=$(realpath --relative-to="$matrices_base_path" "$bench_matrix")
+    for (( omp_threads=1; omp_threads<=$max_omp_threads; omp_threads++ )); do
+        if [[ "$omp_threads" == "1" ]]; then
+            devices="all"
+        else
+            devices="host"
+        fi
+        run_benchmark
+    done
 done
