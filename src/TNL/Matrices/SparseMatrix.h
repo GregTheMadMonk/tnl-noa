@@ -73,7 +73,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
                     const RealAllocatorType& realAllocator = RealAllocatorType(),
                     const IndexAllocatorType& indexAllocator = IndexAllocatorType() );
 
-      ViewType getView();
+      ViewType getView() const; // TODO: remove const
 
       ConstViewType getConstView() const;
 

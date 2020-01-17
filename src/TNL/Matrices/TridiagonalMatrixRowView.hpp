@@ -29,7 +29,7 @@ auto
 TridiagonalMatrixRowView< ValuesView, Indexer >::
 getSize() const -> IndexType
 {
-   return indexer.getRowSize();
+   return indexer.getRowSize( rowIdx );
 }
 
 template< typename ValuesView, typename Indexer >

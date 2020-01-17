@@ -340,25 +340,26 @@ forRows( IndexType first, IndexType last, Function& function ) const
 {
    const auto values_view = this->values.getConstView();
    const auto indexer = this->indexer;
+   bool compute( true );
    auto f = [=] __cuda_callable__ ( IndexType rowIdx ) mutable {
       if( rowIdx == 0 )
       {
-         function( 0, 0, 0, values_view[ indexer.getGlobalIndex( 0, 0 ) ] );
-         function( 0, 1, 1, values_view[ indexer.getGlobalIndex( 0, 1 ) ] );
+         function( 0, 0, 0, values_view[ indexer.getGlobalIndex( 0, 0 ) ], compute );
+         function( 0, 1, 1, values_view[ indexer.getGlobalIndex( 0, 1 ) ], compute );
       } 
       else if( rowIdx + 1 < indexer.getColumns() )
       {
-         function( rowIdx, 0, rowIdx - 1, values_view[ indexer.getGlobalIndex( rowIdx, 0 ) ] );
-         function( rowIdx, 1, rowIdx,     values_view[ indexer.getGlobalIndex( rowIdx, 1 ) ] );
-         function( rowIdx, 2, rowIdx + 1, values_view[ indexer.getGlobalIndex( rowIdx, 2 ) ] );
+         function( rowIdx, 0, rowIdx - 1, values_view[ indexer.getGlobalIndex( rowIdx, 0 ) ], compute );
+         function( rowIdx, 1, rowIdx,     values_view[ indexer.getGlobalIndex( rowIdx, 1 ) ], compute );
+         function( rowIdx, 2, rowIdx + 1, values_view[ indexer.getGlobalIndex( rowIdx, 2 ) ], compute );
       }
       else if( rowIdx < indexer.getColumns() )
       {
-         function( rowIdx, 0, rowIdx - 1, values_view[ indexer.getGlobalIndex( rowIdx, 0 ) ] );
-         function( rowIdx, 1, rowIdx,     values_view[ indexer.getGlobalIndex( rowIdx, 1 ) ] );
+         function( rowIdx, 0, rowIdx - 1, values_view[ indexer.getGlobalIndex( rowIdx, 0 ) ], compute );
+         function( rowIdx, 1, rowIdx,     values_view[ indexer.getGlobalIndex( rowIdx, 1 ) ], compute );
       }
       else
-         function( rowIdx, 0, rowIdx, values_view[ indexer.getGlobalIndex( rowIdx, 0 ) ] );
+         function( rowIdx, 0, rowIdx, values_view[ indexer.getGlobalIndex( rowIdx, 0 ) ], compute );
    };
    Algorithms::ParallelFor< DeviceType >::exec( first, last, f );
 }

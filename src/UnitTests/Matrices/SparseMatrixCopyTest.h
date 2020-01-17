@@ -15,6 +15,8 @@
 #include <TNL/Matrices/SparseMatrix.h>
 #include <TNL/Matrices/MatrixType.h>
 #include <TNL/Matrices/Dense.h>
+#include <TNL/Matrices/Tridiagonal.h>
+#include <TNL/Matrices/Multidiagonal.h>
 #include <TNL/Containers/Segments/CSR.h>
 #include <TNL/Containers/Segments/Ellpack.h>
 #include <TNL/Containers/Segments/SlicedEllpack.h>
@@ -370,6 +372,7 @@ void testCopyAssignment()
 
       Matrix2 triDiag2;
       triDiag2 = triDiag1;
+      checkTriDiagMatrix( triDiag1 );
       checkTriDiagMatrix( triDiag2 );
    }
    {
@@ -390,6 +393,7 @@ void testCopyAssignment()
 
       Matrix2 unevenRowSize2;
       unevenRowSize2 = unevenRowSize1;
+
       checkUnevenRowSizeMatrix( unevenRowSize2 );
    }
 }
@@ -436,6 +440,62 @@ void testConversion()
 }
 
 template< typename Matrix >
+void tridiagonalMatrixAssignment()
+{
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
+
+   using TridiagonalHost = TNL::Matrices::Tridiagonal< RealType, TNL::Devices::Host, IndexType >;
+   using TridiagonalCuda = TNL::Matrices::Tridiagonal< RealType, TNL::Devices::Cuda, IndexType >;
+
+   const IndexType rows( 10 ), columns( 10 );
+   TridiagonalHost hostMatrix( rows, columns );
+   for( IndexType i = 0; i < columns; i++ )
+      for( IndexType j = TNL::max( 0, i - 1 ); j < TNL::min( rows, i + 2 ); j++ )
+         hostMatrix.setElement( i, j, i + j );
+
+   std::cerr << hostMatrix << std::endl;
+   Matrix matrix;
+   matrix = hostMatrix;
+   std::cerr << matrix << std::endl;
+   using RowCapacitiesType = typename Matrix::RowsCapacitiesType;
+   RowCapacitiesType rowCapacities;
+   matrix.getCompressedRowLengths( rowCapacities );
+   RowCapacitiesType exactRowLengths{ 0, 3, 3, 3, 3, 3, 3, 3, 3, 2 };
+   EXPECT_EQ( rowCapacities, exactRowLengths );
+   for( IndexType i = 0; i < columns; i++ )
+      for( IndexType j = 0; j < rows; j++ )
+      {
+         if( abs( i - j ) > 1 )
+            EXPECT_EQ( matrix.getElement( i, j ), 0.0 );
+         else
+            EXPECT_EQ( matrix.getElement( i, j ), i + j );
+      }
+
+#ifdef HAVE_CUDA
+   TridiagonalCuda cudaMatrix( rows, columns );
+   cudaMatrix = hostMatrix;
+   /*for( IndexType i = 0; i < columns; i++ )
+      for( IndexType j = TNL::max( 0, i - 1 ); j < TNL::min( row, i + 1 ); j++ )
+         cudaMatrix.setElement( i, j, i + j );*/
+
+   matrix = cudaMatrix;
+   matrix.getCompressedRowLengths( rowCapacities );
+   EXPECT_EQ( rowCapacities, exactRowLengths );
+   for( IndexType i = 0; i < columns; i++ )
+      for( IndexType j = 0; j < rows; j++ )
+      {
+         if( abs( i - j ) > 1 )
+            EXPECT_EQ( matrix.getElement( i, j ), 0.0 );
+         else
+            EXPECT_EQ( matrix.getElement( i, j ), i + j );
+      }
+#endif
+
+}
+
+template< typename Matrix >
 void denseMatrixAssignment()
 {
    using RealType = typename Matrix::RealType;
@@ -469,10 +529,10 @@ void denseMatrixAssignment()
 
 #ifdef HAVE_CUDA
    DenseCuda cudaMatrix( rows, columns );
-   //cudaMatrix = hostMatrix;
-   for( IndexType i = 0; i < columns; i++ )
+   cudaMatrix = hostMatrix;
+   /*for( IndexType i = 0; i < columns; i++ )
       for( IndexType j = 0; j <= i; j++ )
-         cudaMatrix.setElement( i, j, i + j );
+         cudaMatrix.setElement( i, j, i + j );*/
 
    matrix = cudaMatrix;
    matrix.getCompressedRowLengths( rowCapacities );
@@ -487,7 +547,7 @@ void denseMatrixAssignment()
       }
 #endif
 }
-
+/*
 TEST( SparseMatrixCopyTest, CSR_HostToHost )
 {
    testCopyAssignment< CSR_host, CSR_host >();
@@ -619,6 +679,43 @@ TEST( SparseMatrixCopyTest, SlicedEllpack_to_Ellpack_cuda )
    testConversion< SE_cuda, E_cuda >();
 }
 #endif
+*/
+
+////
+// Tridiagonal matrix assignment test
+TEST( SparseMatrixCopyTest, TridiagonalMatrixAssignment_to_CSR_host )
+{
+   tridiagonalMatrixAssignment< CSR_host >();
+}
+
+TEST( SparseMatrixCopyTest, TridiagonalMatrixAssignment_to_Ellpack_host )
+{
+   tridiagonalMatrixAssignment< E_host >();
+}
+
+TEST( SparseMatrixCopyTest, TridiagonalMatrixAssignment_to_SlicedEllpack_host )
+{
+   tridiagonalMatrixAssignment< SE_host >();
+}
+
+#ifdef HAVE_CUDA
+TEST( SparseMatrixCopyTest, TridiagonalMatrixAssignment_to_CSR_cuda )
+{
+   tridiagonalMatrixAssignment< CSR_cuda >();
+}
+
+TEST( SparseMatrixCopyTest, TridiagonalMatrixAssignment_to_Ellpack_cuda )
+{
+   tridiagonalMatrixAssignment< E_cuda >();
+}
+
+TEST( SparseMatrixCopyTest, TridiagonalMatrixAssignment_to_SlicedEllpack_cuda )
+{
+   tridiagonalMatrixAssignment< SE_cuda >();
+}
+#endif // HAVE_CUDA
+
+
 
 // Dense matrix assignment test
 TEST( SparseMatrixCopyTest, DenseMatrixAssignment_to_CSR_host )
