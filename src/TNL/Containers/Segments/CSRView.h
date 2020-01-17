@@ -41,6 +41,7 @@ class CSRView
       __cuda_callable__
       CSRView( const OffsetsView& offsets );
 
+      __cuda_callable__
       CSRView( const OffsetsView&& offsets );
 
       __cuda_callable__
@@ -109,6 +110,8 @@ class CSRView
 
       template< typename Fetch, typename Reduction, typename ResultKeeper, typename Real, typename... Args >
       void allReduction( Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const;
+
+      CSRView& operator=( const CSRView& view );
 
       void save( File& file ) const;
 

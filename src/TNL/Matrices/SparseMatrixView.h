@@ -143,6 +143,8 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
                                 Vector2& x,
                                 const RealType& omega = 1.0 ) const;
 
+      SparseMatrixView& operator=( const SparseMatrixView& matrix );
+
       void save( File& file ) const;
 
       void save( const String& fileName ) const;

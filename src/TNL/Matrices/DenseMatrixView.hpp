@@ -320,9 +320,8 @@ DenseMatrixView< Real, Device, Index, RowMajorOrder >::
 forRows( IndexType first, IndexType last, Function& function ) const
 {
    const auto values_view = this->values.getConstView();
-   auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx ) mutable -> bool {
-      function( rowIdx, columnIdx, columnIdx, values_view[ globalIdx ] );
-      return true;
+   auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx, bool& compute ) mutable {
+      function( rowIdx, columnIdx, columnIdx, values_view[ globalIdx ], compute );
    };
    this->segments.forSegments( first, last, f );
 
@@ -338,9 +337,8 @@ DenseMatrixView< Real, Device, Index, RowMajorOrder >::
 forRows( IndexType first, IndexType last, Function& function )
 {
    auto values_view = this->values.getView();
-   auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx ) mutable -> bool {
-      function( rowIdx, columnIdx, globalIdx, values_view[ globalIdx ] );
-      return true;
+   auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx, bool& compute ) mutable {
+      function( rowIdx, columnIdx, globalIdx, values_view[ globalIdx ], compute );
    };
    this->segments.forSegments( first, last, f );
 

@@ -108,11 +108,11 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       __cuda_callable__
       RowView getRow( const IndexType& rowIdx );
 
-      bool setElement( const IndexType row,
+      void setElement( const IndexType row,
                        const IndexType column,
                        const RealType& value );
 
-      bool addElement( const IndexType row,
+      void addElement( const IndexType row,
                        const IndexType column,
                        const RealType& value,
                        const RealType& thisElementMultiplicator );
@@ -172,7 +172,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       /**
        * \brief Assignment of exactly the same matrix type.
        * @param matrix
-       * @return 
+       * @return
        */
       SparseMatrix& operator=( const SparseMatrix& matrix );
 
@@ -181,12 +181,12 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
        */
       template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder, typename RealAllocator_ >
       SparseMatrix& operator=( const Dense< Real_, Device_, Index_, RowMajorOrder, RealAllocator_ >& matrix );
-      
-      
+
+
       /**
        * \brief Assignment of any other matrix type.
        * @param matrix
-       * @return 
+       * @return
        */
       template< typename RHSMatrix >
       SparseMatrix& operator=( const RHSMatrix& matrix );
@@ -213,7 +213,9 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
 
       IndexAllocator indexAllocator;
 
-      RealAllocator realAllocator;
+      //RealAllocator realAllocator;
+
+      ViewType view;
 };
 
 }  // namespace Conatiners

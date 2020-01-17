@@ -18,14 +18,14 @@
 #include <TNL/Containers/Segments/Ellpack.h>
 #include <TNL/Containers/Segments/SlicedEllpack.h>
 
-/*using CSR_host = TNL::Matrices::CSR< int, TNL::Devices::Host, int >;
+using CSR_host = TNL::Matrices::CSR< int, TNL::Devices::Host, int >;
 using CSR_cuda = TNL::Matrices::CSR< int, TNL::Devices::Cuda, int >;
 using E_host = TNL::Matrices::Ellpack< int, TNL::Devices::Host, int >;
 using E_cuda = TNL::Matrices::Ellpack< int, TNL::Devices::Cuda, int >;
 using SE_host = TNL::Matrices::SlicedEllpack< int, TNL::Devices::Host, int, 2 >;
-using SE_cuda = TNL::Matrices::SlicedEllpack< int, TNL::Devices::Cuda, int, 2 >;*/
+using SE_cuda = TNL::Matrices::SlicedEllpack< int, TNL::Devices::Cuda, int, 2 >;
 
-template< typename Device, typename Index, typename IndexAllocator >
+/*template< typename Device, typename Index, typename IndexAllocator >
 using EllpackSegments = TNL::Containers::Segments::Ellpack< Device, Index, IndexAllocator >;
 
 template< typename Device, typename Index, typename IndexAllocator >
@@ -36,10 +36,10 @@ using CSR_cuda = TNL::Matrices::SparseMatrix< int, TNL::Devices::Cuda, int, TNL:
 using E_host   = TNL::Matrices::SparseMatrix< int, TNL::Devices::Host, int, TNL::Matrices::GeneralMatrix, EllpackSegments >;
 using E_cuda   = TNL::Matrices::SparseMatrix< int, TNL::Devices::Cuda, int, TNL::Matrices::GeneralMatrix, EllpackSegments >;
 using SE_host  = TNL::Matrices::SparseMatrix< int, TNL::Devices::Host, int, TNL::Matrices::GeneralMatrix, SlicedEllpackSegments >;
-using SE_cuda  = TNL::Matrices::SparseMatrix< int, TNL::Devices::Cuda, int, TNL::Matrices::GeneralMatrix, SlicedEllpackSegments >;
+using SE_cuda  = TNL::Matrices::SparseMatrix< int, TNL::Devices::Cuda, int, TNL::Matrices::GeneralMatrix, SlicedEllpackSegments >;*/
 
 
-#ifdef HAVE_GTEST 
+#ifdef HAVE_GTEST
 #include <gtest/gtest.h>
 
 /*
@@ -98,7 +98,7 @@ void setupUnevenRowSizeMatrix( Matrix& m )
 
     m.setElement( 7, 0, value++ );   // 7th row
 
-    for( int i = 0; i < cols - 1; i++ )  // 8th row 
+    for( int i = 0; i < cols - 1; i++ )  // 8th row
         m.setElement( 8, i, value++ );
 
     m.setElement( 9, 5, value++ );   // 9th row
@@ -158,21 +158,21 @@ void checkUnevenRowSizeMatrix( Matrix& m )
    EXPECT_EQ( m.getElement( 6, 3 ),  0 );
    EXPECT_EQ( m.getElement( 6, 4 ),  0 );
    EXPECT_EQ( m.getElement( 6, 5 ),  0 );
-   
+
    EXPECT_EQ( m.getElement( 7, 0 ), 22 );
    EXPECT_EQ( m.getElement( 7, 1 ),  0 );
    EXPECT_EQ( m.getElement( 7, 2 ),  0 );
    EXPECT_EQ( m.getElement( 7, 3 ),  0 );
    EXPECT_EQ( m.getElement( 7, 4 ),  0 );
    EXPECT_EQ( m.getElement( 7, 5 ),  0 );
-   
+
    EXPECT_EQ( m.getElement( 8, 0 ), 23 );
    EXPECT_EQ( m.getElement( 8, 1 ), 24 );
    EXPECT_EQ( m.getElement( 8, 2 ), 25 );
    EXPECT_EQ( m.getElement( 8, 3 ), 26 );
    EXPECT_EQ( m.getElement( 8, 4 ), 27 );
    EXPECT_EQ( m.getElement( 8, 5 ),  0 );
-   
+
    EXPECT_EQ( m.getElement( 9, 0 ),  0 );
    EXPECT_EQ( m.getElement( 9, 1 ),  0 );
    EXPECT_EQ( m.getElement( 9, 2 ),  0 );
@@ -205,7 +205,7 @@ void setupAntiTriDiagMatrix( Matrix& m )
     rowLengths.setElement( 0, 4);
     rowLengths.setElement( 1,  4 );
     m.setCompressedRowLengths( rowLengths );
-    
+
     int value = 1;
     for( int i = 0; i < rows; i++ )
         for( int j = cols - 1; j > 2; j-- )
@@ -396,39 +396,39 @@ void testCopyAssignment()
 template< typename Matrix1, typename Matrix2 >
 void testConversion()
 {
-    
+
    {
         SCOPED_TRACE("Tri Diagonal Matrix");
-        
+
         Matrix1 triDiag1;
         setupTriDiagMatrix( triDiag1 );
         checkTriDiagMatrix( triDiag1 );
-        
+
         Matrix2 triDiag2;
         //TNL::Matrices::copySparseMatrix( triDiag2, triDiag1 );
         triDiag2 = triDiag1;
         checkTriDiagMatrix( triDiag2 );
    }
-   
+
    {
         SCOPED_TRACE("Anti Tri Diagonal Matrix");
-                
+
         Matrix1 antiTriDiag1;
         setupAntiTriDiagMatrix( antiTriDiag1 );
         checkAntiTriDiagMatrix( antiTriDiag1 );
-        
+
         Matrix2 antiTriDiag2;
         //TNL::Matrices::copySparseMatrix( antiTriDiag2, antiTriDiag1 );
         antiTriDiag2 = antiTriDiag1;
         checkAntiTriDiagMatrix( antiTriDiag2 );
    }
-   
+
    {
         SCOPED_TRACE("Uneven Row Size Matrix");
         Matrix1 unevenRowSize1;
         setupUnevenRowSizeMatrix( unevenRowSize1 );
         checkUnevenRowSizeMatrix( unevenRowSize1 );
-        
+
         Matrix2 unevenRowSize2;
         //TNL::Matrices::copySparseMatrix( unevenRowSize2, unevenRowSize1 );
         unevenRowSize2 = unevenRowSize1;

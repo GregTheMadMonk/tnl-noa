@@ -171,9 +171,9 @@ forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
       const IndexType begin = offsetsView[ segmentIdx ];
       const IndexType end = offsetsView[ segmentIdx + 1 ];
       IndexType localIdx( 0 );
-      for( IndexType globalIdx = begin; globalIdx < end; globalIdx++  )
-         if( ! f( segmentIdx, localIdx++, globalIdx, args... ) )
-            break;
+      bool compute( true );
+      for( IndexType globalIdx = begin; globalIdx < end && compute; globalIdx++  )
+         f( segmentIdx, localIdx++, globalIdx, compute, args... );
    };
    Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
 }
@@ -218,6 +218,15 @@ CSRView< Device, Index >::
 allReduction( Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    this->segmentsReduction( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
+}
+
+template< typename Device,
+          typename Index >
+CSRView< Device, Index >&
+CSRView< Device, Index >::
+operator=( const CSRView& view )
+{
+   this->offsets.copy( view.offsets );
 }
 
 template< typename Device,

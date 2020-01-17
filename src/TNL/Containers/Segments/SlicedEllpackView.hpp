@@ -14,6 +14,8 @@
 #include <TNL/Algorithms/ParallelFor.h>
 #include <TNL/Containers/Segments/SlicedEllpackView.h>
 
+#include "SlicedEllpackView.h"
+
 namespace TNL {
    namespace Containers {
       namespace Segments {
@@ -240,7 +242,7 @@ forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
    const auto sliceOffsets_view = this->sliceOffsets.getConstView();
    if( RowMajorOrder )
    {
-      auto l = [=] __cuda_callable__ ( const IndexType segmentIdx, Args... args ) {
+      auto l = [=] __cuda_callable__ ( const IndexType segmentIdx, Args... args ) mutable {
          const IndexType sliceIdx = segmentIdx / SliceSize;
          const IndexType segmentInSliceIdx = segmentIdx % SliceSize;
          const IndexType segmentSize = sliceSegmentSizes_view[ sliceIdx ];
@@ -249,14 +251,13 @@ forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
          IndexType localIdx( 0 );
          bool compute( true );
          for( IndexType globalIdx = begin; globalIdx < end && compute; globalIdx++  )
-            if( ! f( segmentIdx, localIdx++, globalIdx, compute, args... ) )
-               break;
+            f( segmentIdx, localIdx++, globalIdx, compute, args... );
       };
       Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
    }
    else
    {
-      auto l = [=] __cuda_callable__ ( const IndexType segmentIdx, Args... args ) {
+      auto l = [=] __cuda_callable__ ( const IndexType segmentIdx, Args... args ) mutable {
          const IndexType sliceIdx = segmentIdx / SliceSize;
          const IndexType segmentInSliceIdx = segmentIdx % SliceSize;
          const IndexType segmentSize = sliceSegmentSizes_view[ sliceIdx ];
@@ -265,8 +266,7 @@ forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
          IndexType localIdx( 0 );
          bool compute( true );
          for( IndexType globalIdx = begin; globalIdx < end && compute; globalIdx += SliceSize )
-            if( ! f( segmentIdx, localIdx++, globalIdx, compute, args... ) )
-               break;
+            f( segmentIdx, localIdx++, globalIdx, compute, args... );
       };
       Algorithms::ParallelFor< Device >::exec( first, last, l, args... );
    }
@@ -342,6 +342,21 @@ SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::
 allReduction( Fetch& fetch, Reduction& reduction, ResultKeeper& keeper, const Real& zero, Args... args ) const
 {
    this->segmentsReduction( 0, this->getSegmentsCount(), fetch, reduction, keeper, zero, args... );
+}
+
+template< typename Device,
+          typename Index,
+          bool RowMajorOrder,
+          int SliceSize >
+SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >&
+SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::
+operator=( const SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >& view )
+{
+   this->size = view.size;
+   this->alignedSize = view.alignedSize;
+   this->segmentsCount = view.segmentsCount;
+   this->sliceOffsets.copy( view.sliceOffsets );
+   this->sliceSegmentSizes.copy( view.sliceSegmentSizes );
 }
 
 template< typename Device,

@@ -1,6 +1,6 @@
 IF( BUILD_CUDA )
-   CUDA_ADD_EXECUTABLE( Legacy_SparseMatrixCopyTest SparseMatrixCopyTest.cu OPTIONS ${CXX_TESTS_FLAGS} )
-   TARGET_LINK_LIBRARIES( Legacy_SparseMatrixCopyTest ${GTEST_BOTH_LIBRARIES} )
+   #CUDA_ADD_EXECUTABLE( Legacy_SparseMatrixCopyTest SparseMatrixCopyTest.cu OPTIONS ${CXX_TESTS_FLAGS} )
+   #TARGET_LINK_LIBRARIES( Legacy_SparseMatrixCopyTest ${GTEST_BOTH_LIBRARIES} )
 
    CUDA_ADD_EXECUTABLE( Legacy_SparseMatrixTest SparseMatrixTest.cu OPTIONS ${CXX_TESTS_FLAGS} )
    TARGET_LINK_LIBRARIES( Legacy_SparseMatrixTest ${GTEST_BOTH_LIBRARIES} )
@@ -24,9 +24,9 @@ IF( BUILD_CUDA )
    TARGET_LINK_LIBRARIES( Legacy_SparseMatrixTest_SlicedEllpack ${GTEST_BOTH_LIBRARIES} )
 
 ELSE(  BUILD_CUDA )
-   ADD_EXECUTABLE( Legacy_SparseMatrixCopyTest SparseMatrixCopyTest.cpp )
-   TARGET_COMPILE_OPTIONS( Legacy_SparseMatrixCopyTest PRIVATE ${CXX_TESTS_FLAGS} )
-   TARGET_LINK_LIBRARIES( Legacy_SparseMatrixCopyTest ${GTEST_BOTH_LIBRARIES} )
+   #ADD_EXECUTABLE( Legacy_SparseMatrixCopyTest SparseMatrixCopyTest.cpp )
+   #TARGET_COMPILE_OPTIONS( Legacy_SparseMatrixCopyTest PRIVATE ${CXX_TESTS_FLAGS} )
+   #TARGET_LINK_LIBRARIES( Legacy_SparseMatrixCopyTest ${GTEST_BOTH_LIBRARIES} )
 
    ADD_EXECUTABLE( Legacy_SparseMatrixTest SparseMatrixTest.cpp )
    TARGET_COMPILE_OPTIONS( Legacy_SparseMatrixTest PRIVATE ${CXX_TESTS_FLAGS} )
@@ -59,7 +59,7 @@ ELSE(  BUILD_CUDA )
 ENDIF( BUILD_CUDA )
 
 
-ADD_TEST( Legacy_SparseMatrixCopyTest ${EXECUTABLE_OUTPUT_PATH}/Legacy_SparseMatrixCopyTest${CMAKE_EXECUTABLE_SUFFIX} )
+#ADD_TEST( Legacy_SparseMatrixCopyTest ${EXECUTABLE_OUTPUT_PATH}/Legacy_SparseMatrixCopyTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( Legacy_SparseMatrixTest ${EXECUTABLE_OUTPUT_PATH}/Legacy_SparseMatrixTest${CMAKE_EXECUTABLE_SUFFIX} )
 # TODO: Uncomment the following when AdEllpack works
 #ADD_TEST( SparseMatrixTest_AdEllpack ${EXECUTABLE_OUTPUT_PATH}/SparseMatrixTest_AdEllpack${CMAKE_EXECUTABLE_SUFFIX} )

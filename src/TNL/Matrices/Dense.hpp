@@ -948,7 +948,7 @@ operator=( const Dense< Real_, Device_, Index_, RowMajorOrder_, RealAllocator_ >
       if( std::is_same< DeviceType, Device_ >::value )
       {
          auto this_view = this->getView();
-         auto f = [=] __cuda_callable__ ( Index_ rowIdx, Index_ columnIdx, Index_ globalIdx, const Real_& value ) mutable {
+         auto f = [=] __cuda_callable__ ( Index_ rowIdx, Index_ columnIdx, Index_ globalIdx, const Real_& value, bool& compute ) mutable {
             this_view.getRow( rowIdx ).setElement( columnIdx, value );
          };
          matrix.forAllRows( f );
@@ -971,7 +971,7 @@ operator=( const Dense< Real_, Device_, Index_, RowMajorOrder_, RealAllocator_ >
 
             ////
             // Copy matrix elements into buffer
-            auto f1 = [=] __cuda_callable__ ( Index_ rowIdx, Index_ columnIdx, Index_ globalIdx, const Real_& value ) mutable {
+            auto f1 = [=] __cuda_callable__ ( Index_ rowIdx, Index_ columnIdx, Index_ globalIdx, const Real_& value, bool& compute ) mutable {
                const IndexType bufferIdx = ( rowIdx - baseRow ) * columns + columnIdx;
                sourceValuesBuffer_view[ bufferIdx ] = value;
             };
@@ -981,7 +981,7 @@ operator=( const Dense< Real_, Device_, Index_, RowMajorOrder_, RealAllocator_ >
 
             ////
             // Copy buffer to this matrix
-            auto f2 = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx, RealType& value ) mutable {
+            auto f2 = [=] __cuda_callable__ ( IndexType rowIdx, IndexType columnIdx, IndexType globalIdx, RealType& value, bool& compute ) mutable {
                const IndexType bufferIdx = ( rowIdx - baseRow ) * columns + columnIdx;
                value = destinationValuesBuffer_view[ bufferIdx ];
             };

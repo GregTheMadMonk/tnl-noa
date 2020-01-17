@@ -118,7 +118,7 @@ getCompressedRowLengths( Vector& rowLengths ) const
    rowLengths.setSize( this->getRows() );
    rowLengths = 0;
    auto rowLengths_view = rowLengths.getView();
-   auto fetch = [] __cuda_callable__ ( IndexType row, IndexType column, const RealType& value ) -> IndexType {
+   auto fetch = [] __cuda_callable__ ( IndexType row, IndexType column, IndexType globalIdx, const RealType& value ) -> IndexType {
       return ( value != 0.0 );
    };
    auto reduce = [] __cuda_callable__ ( IndexType& aux, const IndexType a ) {
@@ -157,20 +157,6 @@ getNumberOfNonzeroMatrixElements() const
       return ( columns_view[ i ] != paddingIndex );
    };
    return Algorithms::Reduction< DeviceType >::reduce( this->columnIndexes.getSize(), std::plus<>{}, fetch, 0 );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename MatrixType,
-          template< typename, typename > class SegmentsView >
-void
-SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
-reset()
-{
-   Matrix< Real, Device, Index >::reset();
-   this->columnIndexes.reset();
-
 }
 
 template< typename Real,
@@ -225,12 +211,10 @@ addElement( const IndexType row,
             const RealType& value,
             const RealType& thisElementMultiplicator )
 {
-   TNL_ASSERT( row >= 0 && row < this->rows &&
-               column >= 0 && column < this->columns,
-               std::cerr << " row = " << row
-                    << " column = " << column
-                    << " this->rows = " << this->rows
-                    << " this->columns = " << this->columns );
+   TNL_ASSERT_GE( row, 0, "Sparse matrix row index cannot be negative." );
+   TNL_ASSERT_LT( row, this->getRows(), "Sparse matrix row index is larger than number of matrix rows." );
+   TNL_ASSERT_GE( column, 0, "Sparse matrix column index cannot be negative." );
+   TNL_ASSERT_LT( column, this->getColumns(), "Sparse matrix column index is larger than number of matrix columns." );
 
    const IndexType rowSize = this->segments.getSegmentSize( row );
    IndexType col( this->getPaddingIndex() );
@@ -291,6 +275,11 @@ SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
 getElement( const IndexType row,
             const IndexType column ) const
 {
+   TNL_ASSERT_GE( row, 0, "Sparse matrix row index cannot be negative." );
+   TNL_ASSERT_LT( row, this->getRows(), "Sparse matrix row index is larger than number of matrix rows." );
+   TNL_ASSERT_GE( column, 0, "Sparse matrix column index cannot be negative." );
+   TNL_ASSERT_LT( column, this->getColumns(), "Sparse matrix column index is larger than number of matrix columns." );
+
    const IndexType rowSize = this->segments.getSegmentSize( row );
    for( IndexType i = 0; i < rowSize; i++ )
    {
@@ -332,7 +321,30 @@ vectorProduct( const InVector& inVector,
                const RealType& matrixMultiplicator,
                const RealType& inVectorAddition ) const
 {
+   TNL_ASSERT_EQ( this->getColumns(), inVector.getSize(), "Matrix columns do not fit with input vector." );
+   TNL_ASSERT_EQ( this->getRows(), outVector.getSize(), "Matrix rows do not fit with output vector." );
+
    const auto inVectorView = inVector.getConstView();
+   auto outVectorView = outVector.getView();
+   const auto valuesView = this->values.getConstView();
+   const auto columnIndexesView = this->columnIndexes.getConstView();
+   const IndexType paddingIndex = this->getPaddingIndex();
+   auto fetch = [=] __cuda_callable__ ( IndexType row, IndexType localIdx, IndexType globalIdx, bool& compute ) -> RealType {
+      const IndexType column = columnIndexesView[ globalIdx ];
+      compute = ( column != paddingIndex );
+      if( ! compute )
+         return 0.0;
+      return valuesView[ globalIdx ] * inVectorView[ column ];
+   };
+   auto reduction = [] __cuda_callable__ ( RealType& sum, const RealType& value ) {
+      sum += value;
+   };
+   auto keeper = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
+      outVectorView[ row ] = value;
+   };
+   this->segments.segmentsReduction( 0, this->getRows(), fetch, reduction, keeper, ( RealType ) 0.0 );
+
+   /*const auto inVectorView = inVector.getConstView();
    auto outVectorView = outVector.getView();
    const auto valuesView = this->values.getConstView();
    const auto columnIndexesView = this->columnIndexes.getConstView();
@@ -351,6 +363,7 @@ vectorProduct( const InVector& inVector,
       outVectorView[ row ] = value;
    };
    this->segments.segmentsReduction( 0, this->getRows(), fetch, reduction, keeper, ( RealType ) 0.0 );
+   */
 }
 
 template< typename Real,
@@ -366,10 +379,10 @@ rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Ke
    const auto columns_view = this->columnIndexes.getConstView();
    const auto values_view = this->values.getConstView();
    const IndexType paddingIndex_ = this->getPaddingIndex();
-   auto fetch_ = [=] __cuda_callable__ ( IndexType rowIdx, IndexType globalIdx ) mutable -> decltype( fetch( IndexType(), IndexType(), RealType() ) ) {
+   auto fetch_ = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType globalIdx, bool& compute ) mutable -> decltype( fetch( IndexType(), IndexType(), IndexType(), RealType() ) ) {
       IndexType columnIdx = columns_view[ globalIdx ];
       if( columnIdx != paddingIndex_ )
-         return fetch( rowIdx, columnIdx, values_view[ globalIdx ] );
+         return fetch( rowIdx, columnIdx, globalIdx, values_view[ globalIdx ] );
       return zero;
    };
    this->segments.segmentsReduction( first, last, fetch_, reduce, keep, zero );
@@ -401,8 +414,8 @@ forRows( IndexType first, IndexType last, Function& function ) const
    const auto columns_view = this->columnIndexes.getConstView();
    const auto values_view = this->values.getConstView();
    const IndexType paddingIndex_ = this->getPaddingIndex();
-   auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType globalIdx ) mutable -> bool {
-      function( rowIdx, localIdx, globalIdx );
+   auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType globalIdx, bool& compute ) mutable -> bool {
+      function( rowIdx, localIdx, columns_view[ globalIdx ], globalIdx, compute );
       return true;
    };
    this->segments.forSegments( first, last, f );
@@ -421,9 +434,8 @@ forRows( IndexType first, IndexType last, Function& function )
    auto columns_view = this->columnIndexes.getView();
    auto values_view = this->values.getView();
    const IndexType paddingIndex_ = this->getPaddingIndex();
-   auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType globalIdx ) mutable -> bool {
-      function( rowIdx, localIdx, globalIdx );
-      return true;
+   auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType globalIdx, bool& compute ) mutable {
+      function( rowIdx, localIdx, columns_view[ globalIdx ], globalIdx, compute );
    };
    this->segments.forSegments( first, last, f );
 }
@@ -499,6 +511,20 @@ performSORIteration( const Vector1& b,
                      const RealType& omega ) const
 {
    return false;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename > class SegmentsView >
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >&
+SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
+operator=( const SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >& matrix )
+{
+   MatrixView< Real, Device, Index >::operator=( matrix );
+   this->columnIndexes.copy( matrix.columnIndexes );
+   this->segments = matrix.segments;
 }
 
 template< typename Real,
