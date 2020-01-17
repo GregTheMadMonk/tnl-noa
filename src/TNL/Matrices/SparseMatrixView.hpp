@@ -415,7 +415,7 @@ forRows( IndexType first, IndexType last, Function& function ) const
    const auto values_view = this->values.getConstView();
    const IndexType paddingIndex_ = this->getPaddingIndex();
    auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType globalIdx, bool& compute ) mutable -> bool {
-      function( rowIdx, localIdx, columns_view[ globalIdx ], globalIdx, compute );
+      function( rowIdx, localIdx, columns_view[ globalIdx ], values_view[ globalIdx ], compute );
       return true;
    };
    this->segments.forSegments( first, last, f );
@@ -435,7 +435,7 @@ forRows( IndexType first, IndexType last, Function& function )
    auto values_view = this->values.getView();
    const IndexType paddingIndex_ = this->getPaddingIndex();
    auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType globalIdx, bool& compute ) mutable {
-      function( rowIdx, localIdx, columns_view[ globalIdx ], globalIdx, compute );
+      function( rowIdx, localIdx, columns_view[ globalIdx ], values_view[ globalIdx ], compute );
    };
    this->segments.forSegments( first, last, f );
 }

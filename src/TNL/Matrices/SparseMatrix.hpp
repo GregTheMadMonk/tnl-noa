@@ -542,6 +542,7 @@ operator=( const SparseMatrix& matrix )
    Matrix< Real, Device, Index >::operator=( matrix );
    this->columnIndexes = matrix.columnIndexes;
    this->segments = matrix.segments;
+   this->view = this->getView();
    return *this;
 }
 
@@ -581,7 +582,7 @@ operator=( const Dense< Real_, Device_, Index_, RowMajorOrder, RealAllocator_ >&
    if( std::is_same< DeviceType, RHSDeviceType >::value )
    {
       const auto segments_view = this->segments.getView();
-      auto f = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType columnIdx, RHSIndexType globalIndex, const RHSRealType& value, bool& compute ) mutable {
+      auto f = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx, RHSIndexType columnIdx, const RHSRealType& value, bool& compute ) mutable {
          if( value != 0.0 )
          {
             IndexType thisGlobalIdx = segments_view.getGlobalIndex( rowIdx, rowLocalIndexes_view[ rowIdx ]++ );
@@ -650,6 +651,7 @@ operator=( const Dense< Real_, Device_, Index_, RowMajorOrder, RealAllocator_ >&
       }
       //std::cerr << "This matrix = " << std::endl << *this << std::endl;
    }
+   this->view = this->getView();
    return *this;
 
 }
@@ -684,7 +686,7 @@ operator=( const RHSMatrix& matrix )
    auto values_view = this->values.getView();
    columns_view = paddingIndex;
 
-   if( std::is_same< DeviceType, RHSDeviceType >::value )
+   /*if( std::is_same< DeviceType, RHSDeviceType >::value )
    {
       const auto segments_view = this->segments.getView();
       auto f = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx, RHSIndexType columnIndex, const RHSRealType& value, bool& compute ) mutable {
@@ -697,7 +699,7 @@ operator=( const RHSMatrix& matrix )
       };
       matrix.forAllRows( f );
    }
-   else
+   else*/
    {
       const IndexType maxRowLength = max( rowLengths );
       const IndexType bufferRowsCount( 128 );
@@ -747,11 +749,11 @@ operator=( const RHSMatrix& matrix )
                value = thisValuesBuffer_view[ bufferIdx ];
             }
          };
-         //this->forRows( baseRow, lastRow, f2 );
+         this->forRows( baseRow, lastRow, f2 );
          baseRow += bufferRowsCount;
       }
-      //std::cerr << "This matrix = " << std::endl << *this << std::endl;
    }
+   this->view = this->getView();
    return *this;
 }
 

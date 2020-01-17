@@ -990,6 +990,7 @@ operator=( const Dense< Real_, Device_, Index_, RowMajorOrder_, RealAllocator_ >
          }
       }
    }
+   this->view = this->getView();
    return *this;
 }
 
