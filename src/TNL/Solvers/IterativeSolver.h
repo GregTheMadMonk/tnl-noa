@@ -2,13 +2,15 @@
                           IterativeSolver.h  -  description
                              -------------------
     begin                : Oct 19, 2012
-    copyright            : (C) 2012 by Tomas Oberhuber
+    copyright            : (C) 2012 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 /* See Copyright Notice in tnl/Copyright */
 
 #pragma once
+
+#include <limits>
 
 #include <TNL/Config/ConfigDescription.h>
 #include <TNL/Config/ParameterContainer.h>
@@ -22,17 +24,16 @@ template< typename Real,
           typename SolverMonitor = IterativeSolverMonitor< Real, Index > >
 class IterativeSolver
 {
-   public:
+public:
+   using SolverMonitorType = SolverMonitor;
 
-      using SolverMonitorType = SolverMonitor;
-      
-   IterativeSolver();
+   IterativeSolver() = default;
 
    static void configSetup( Config::ConfigDescription& config,
                             const String& prefix = "" );
 
    bool setup( const Config::ParameterContainer& parameters,
-              const String& prefix = "" );
+               const String& prefix = "" );
 
    void setMaxIterations( const Index& maxIterations );
 
@@ -70,27 +71,27 @@ class IterativeSolver
 
    void refreshSolverMonitor( bool force = false );
 
+protected:
+   Index maxIterations = 1000000000;
 
-   protected:
+   Index minIterations = 0;
 
-   Index maxIterations;
+   Index currentIteration = 0;
 
-   Index minIterations;
+   Real convergenceResidue = 1e-6;
 
-   Index currentIteration;
+   // If the current residue is greater than divergenceResidue, the solver is stopped.
+   Real divergenceResidue = std::numeric_limits< float >::max();
 
-   Real convergenceResidue;
+   Real currentResidue = 0;
 
-   /****
-    * If the current residue is over divergenceResidue the solver is stopped.
-    */
-   Real divergenceResidue;
+   SolverMonitor* solverMonitor = nullptr;
 
-   Real currentResidue;
+   Index refreshRate = 1;
 
-   SolverMonitor* solverMonitor;
+   String residualHistoryFileName = "";
 
-   Index refreshRate;
+   std::ofstream residualHistoryFile;
 };
 
 } // namespace Solvers

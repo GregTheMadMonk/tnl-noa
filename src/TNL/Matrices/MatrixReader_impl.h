@@ -165,7 +165,7 @@ template< typename Matrix >
 bool MatrixReader< Matrix >::checkMtxHeader( const String& header,
                                                 bool& symmetric )
 {
-   std::vector< String > parsedLine = header.split();
+   std::vector< String > parsedLine = header.split( ' ', String::SplitSkip::SkipEmpty );
    if( (int) parsedLine.size() < 5 )
       return false;
    if( parsedLine[ 0 ] != "%%MatrixMarket" )
@@ -231,7 +231,7 @@ bool MatrixReader< Matrix >::readMtxHeader( std::istream& file,
          return false;
       }
 
-      parsedLine = line.split();
+      parsedLine = line.split( ' ', String::SplitSkip::SkipEmpty );
       if( (int) parsedLine.size() != 3 )
       {
          std::cerr << "Wrong number of parameters in the matrix header." << std::endl;
@@ -389,7 +389,7 @@ bool MatrixReader< Matrix >::parseMtxLineWithElement( const String& line,
                                                          IndexType& column,
                                                          RealType& value )
 {
-   std::vector< String > parsedLine = line.split();
+   std::vector< String > parsedLine = line.split( ' ', String::SplitSkip::SkipEmpty );
    if( (int) parsedLine.size() != 3 )
    {
       std::cerr << "Wrong number of parameters in the matrix row at line:" << line << std::endl;
