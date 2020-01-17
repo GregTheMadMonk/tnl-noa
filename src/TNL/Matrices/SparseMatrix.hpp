@@ -682,7 +682,6 @@ operator=( const RHSMatrix& matrix )
    Containers::Vector< IndexType, DeviceType, IndexType > rowLocalIndexes( matrix.getRows() );
    rowLocalIndexes = 0;
 
-
    // TODO: use getConstView when it works
    const auto matrixView = const_cast< RHSMatrix& >( matrix ).getView();
    const IndexType paddingIndex = this->getPaddingIndex();
@@ -697,7 +696,7 @@ operator=( const RHSMatrix& matrix )
       auto f = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx_, RHSIndexType columnIndex, const RHSRealType& value, bool& compute ) mutable {
          RealType inValue( 0.0 );
          IndexType localIdx( rowLocalIndexes_view[ rowIdx ] );
-         if( columnIndex != paddingIndex )
+         if( value != 0.0 && columnIndex != paddingIndex )
          {
             IndexType thisGlobalIdx = segments_view.getGlobalIndex( rowIdx, localIdx++ );
             columns_view[ thisGlobalIdx ] = columnIndex;

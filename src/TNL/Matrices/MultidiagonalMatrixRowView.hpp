@@ -30,7 +30,7 @@ auto
 MultidiagonalMatrixRowView< ValuesView, Indexer, DiagonalsShiftsView >::
 getSize() const -> IndexType
 {
-   return indexer.getRowSize();
+   return diagonalsShifts.getSize();//indexer.getRowSize( rowIdx );
 }
 
 template< typename ValuesView, typename Indexer, typename DiagonalsShiftsView >
