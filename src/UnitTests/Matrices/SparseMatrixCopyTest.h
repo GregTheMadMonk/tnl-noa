@@ -502,7 +502,7 @@ void multidiagonalMatrixAssignment()
    MultidiagonalHost hostMatrix( rows, columns, diagonals );
    for( IndexType i = 0; i < rows; i++ )
       for( IndexType j = 0; j < columns; j++ )
-         if( diagonals.containsValue( i - j ) )
+         if( diagonals.containsValue( j - i ) )
             hostMatrix.setElement( i, j, i + j );
 
    Matrix matrix;
@@ -510,15 +510,15 @@ void multidiagonalMatrixAssignment()
    using RowCapacitiesType = typename Matrix::RowsCapacitiesType;
    RowCapacitiesType rowCapacities;
    matrix.getCompressedRowLengths( rowCapacities );
-   RowCapacitiesType exactRowLengths{ 1, 3, 3, 3, 3, 3, 3, 3, 3, 2 };
+   RowCapacitiesType exactRowLengths{ 3, 4, 5, 5, 6, 5, 5, 4, 4, 3 };
    EXPECT_EQ( rowCapacities, exactRowLengths );
    for( IndexType i = 0; i < rows; i++ )
       for( IndexType j = 0; j < columns; j++ )
       {
-         if( diagonals.containsValue( i - j ) )
-            EXPECT_EQ( matrix.getElement( i, j ), 0.0 );
-         else
+         if( diagonals.containsValue( j - i ) )
             EXPECT_EQ( matrix.getElement( i, j ), i + j );
+         else
+            EXPECT_EQ( matrix.getElement( i, j ), 0.0 );
       }
 
 #ifdef HAVE_CUDA
@@ -530,10 +530,10 @@ void multidiagonalMatrixAssignment()
    for( IndexType i = 0; i < rows; i++ )
       for( IndexType j = 0; j < columns; j++ )
       {
-         if( diagonals.containsValue( i - j ) > 1 )
-            EXPECT_EQ( matrix.getElement( i, j ), 0.0 );
-         else
+         if( diagonals.containsValue( j - i ) )
             EXPECT_EQ( matrix.getElement( i, j ), i + j );
+         else
+            EXPECT_EQ( matrix.getElement( i, j ), 0.0 );
       }
 #endif
 }
