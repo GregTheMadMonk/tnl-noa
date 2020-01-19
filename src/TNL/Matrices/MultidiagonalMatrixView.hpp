@@ -216,8 +216,10 @@ void
 MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
 setValue( const RealType& v )
 {
+   // we dont do this->values = v here because it would set even elements 'outside' the matrix
+   // method getNumberOfNonzeroElements would not well
    const RealType newValue = v;
-   auto f = [=] __cuda_callable__ ( const IndexType& rowIdx, const IndexType& localIdx, const IndexType columnIdx, RealType& value ) mutable {
+   auto f = [=] __cuda_callable__ ( const IndexType& rowIdx, const IndexType& localIdx, const IndexType columnIdx, RealType& value, bool& compute ) mutable {
       value = newValue;
    };
    this->forAllRows( f );
@@ -419,12 +421,13 @@ forRows( IndexType first, IndexType last, Function& function )
    const IndexType diagonalsCount = this->diagonalsShifts.getSize();
    const IndexType columns = this->getColumns();
    const auto indexer = this->indexer;
+   bool compute( true );
    auto f = [=] __cuda_callable__ ( IndexType rowIdx ) mutable {
-      for( IndexType localIdx = 0; localIdx < diagonalsCount; localIdx++ )
+      for( IndexType localIdx = 0; localIdx < diagonalsCount && compute; localIdx++ )
       {
          const IndexType columnIdx = rowIdx + diagonalsShifts_view[ localIdx ];
          if( columnIdx >= 0 && columnIdx < columns )
-            function( rowIdx, localIdx, columnIdx, values_view[ indexer.getGlobalIndex( rowIdx, localIdx ) ] );
+            function( rowIdx, localIdx, columnIdx, values_view[ indexer.getGlobalIndex( rowIdx, localIdx ) ], compute );
       }
    };
    Algorithms::ParallelFor< DeviceType >::exec( first, last, f );
