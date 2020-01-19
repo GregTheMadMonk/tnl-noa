@@ -1,14 +1,17 @@
 ADD_SUBDIRECTORY( Legacy )
 
 IF( BUILD_CUDA )
-   CUDA_ADD_EXECUTABLE( SparseMatrixCopyTest SparseMatrixCopyTest.cu OPTIONS ${CXX_TESTS_FLAGS} )
-   TARGET_LINK_LIBRARIES( SparseMatrixCopyTest ${GTEST_BOTH_LIBRARIES} )
-
    CUDA_ADD_EXECUTABLE( SparseMatrixTest SparseMatrixTest.cu OPTIONS ${CXX_TESTS_FLAGS} )
    TARGET_LINK_LIBRARIES( SparseMatrixTest ${GTEST_BOTH_LIBRARIES} )
 
+   CUDA_ADD_EXECUTABLE( SparseMatrixCopyTest SparseMatrixCopyTest.cu OPTIONS ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( SparseMatrixCopyTest ${GTEST_BOTH_LIBRARIES} )
+
    CUDA_ADD_EXECUTABLE( DenseMatrixTest DenseMatrixTest.cu OPTIONS ${CXX_TESTS_FLAGS} )
    TARGET_LINK_LIBRARIES( DenseMatrixTest ${GTEST_BOTH_LIBRARIES} )
+
+   CUDA_ADD_EXECUTABLE( DenseMatrixCopyTest DenseMatrixCopyTest.cu OPTIONS ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( DenseMatrixCopyTest ${GTEST_BOTH_LIBRARIES} )
 
    CUDA_ADD_EXECUTABLE( TridiagonalMatrixTest TridiagonalMatrixTest.cu OPTIONS ${CXX_TESTS_FLAGS} )
    TARGET_LINK_LIBRARIES( TridiagonalMatrixTest ${GTEST_BOTH_LIBRARIES} )
@@ -26,17 +29,21 @@ IF( BUILD_CUDA )
    TARGET_LINK_LIBRARIES( SparseMatrixTest_SlicedEllpack_segments ${GTEST_BOTH_LIBRARIES} )
 
 ELSE(  BUILD_CUDA )
-   ADD_EXECUTABLE( SparseMatrixCopyTest SparseMatrixCopyTest.cpp )
-   TARGET_COMPILE_OPTIONS( SparseMatrixCopyTest PRIVATE ${CXX_TESTS_FLAGS} )
-   TARGET_LINK_LIBRARIES( SparseMatrixCopyTest ${GTEST_BOTH_LIBRARIES} )
-
    ADD_EXECUTABLE( SparseMatrixTest SparseMatrixTest.cpp )
    TARGET_COMPILE_OPTIONS( SparseMatrixTest PRIVATE ${CXX_TESTS_FLAGS} )
    TARGET_LINK_LIBRARIES( SparseMatrixTest ${GTEST_BOTH_LIBRARIES} )
 
+   ADD_EXECUTABLE( SparseMatrixCopyTest SparseMatrixCopyTest.cpp )
+   TARGET_COMPILE_OPTIONS( SparseMatrixCopyTest PRIVATE ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( SparseMatrixCopyTest ${GTEST_BOTH_LIBRARIES} )
+
    ADD_EXECUTABLE( DenseMatrixTest DenseMatrixTest.cpp )
    TARGET_COMPILE_OPTIONS( DenseMatrixTest PRIVATE ${CXX_TESTS_FLAGS} )
    TARGET_LINK_LIBRARIES( DenseMatrixTest ${GTEST_BOTH_LIBRARIES} )
+
+   ADD_EXECUTABLE( DenseMatrixCopyTest DenseMatrixCopyTest.cpp )
+   TARGET_COMPILE_OPTIONS( DenseMatrixCopyTest PRIVATE ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( DenseMatrixCopyTest ${GTEST_BOTH_LIBRARIES} )
 
    ADD_EXECUTABLE( TridiagonalMatrixTest TridiagonalMatrixTest.cpp )
    TARGET_COMPILE_OPTIONS( TridiagonalMatrixTest PRIVATE ${CXX_TESTS_FLAGS} )
@@ -60,9 +67,8 @@ ELSE(  BUILD_CUDA )
 
 ENDIF( BUILD_CUDA )
 
-
-ADD_TEST( SparseMatrixCopyTest ${EXECUTABLE_OUTPUT_PATH}/SparseMatrixCopyTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( SparseMatrixTest ${EXECUTABLE_OUTPUT_PATH}/SparseMatrixTest${CMAKE_EXECUTABLE_SUFFIX} )
+ADD_TEST( SparseMatrixCopyTest ${EXECUTABLE_OUTPUT_PATH}/SparseMatrixCopyTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( DenseMatrixTest ${EXECUTABLE_OUTPUT_PATH}/DenseMatrixTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( TridiagonalMatrixTest ${EXECUTABLE_OUTPUT_PATH}/TridiagonalMatrixTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( MultidiagonalMatrixTest ${EXECUTABLE_OUTPUT_PATH}/MultidiagonalMatrixTest${CMAKE_EXECUTABLE_SUFFIX} )

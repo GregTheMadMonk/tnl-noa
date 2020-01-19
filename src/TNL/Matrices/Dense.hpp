@@ -130,7 +130,8 @@ void
 Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
 setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths )
 {
-   this->setDimensions( rowLengths.getSize(), max( rowLengths ) );
+   TNL_ASSERT_EQ( rowLengths.getSize(), this->getRows(), "" );
+   TNL_ASSERT_LE( max( rowLengths ), this->getColumns(), "" );
 }
 
 template< typename Real,
