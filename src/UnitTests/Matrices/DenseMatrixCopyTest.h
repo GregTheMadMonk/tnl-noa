@@ -59,9 +59,20 @@ using Dense_cuda_RowMajorOrder = TNL::Matrices::Dense< int, TNL::Devices::Cuda, 
 template< typename Matrix >
 void setupUnevenRowSizeMatrix( Matrix& m )
 {
-    const int rows = 10;
-    const int cols = 6;
-    m.setDimensions( rows, cols );
+   const int rows = 10;
+   const int cols = 6;
+   m.setDimensions( rows, cols );
+   typename Matrix::CompressedRowLengthsVector rowLengths;
+   rowLengths.setSize( rows );
+   rowLengths.setValue( 5 );
+   rowLengths.setElement( 0, 2 );
+   rowLengths.setElement( 1,  3 );
+   rowLengths.setElement( 2,  3 );
+   rowLengths.setElement( 5,  2 );
+   rowLengths.setElement( 6,  1 );
+   rowLengths.setElement( 7,  1 );
+   rowLengths.setElement( 9,  1 );
+   m.setCompressedRowLengths( rowLengths );
 
     int value = 1;
     for( int i = 0; i < cols - 4; i++ )  // 0th row
@@ -183,15 +194,21 @@ void checkUnevenRowSizeMatrix( Matrix& m )
 template< typename Matrix >
 void setupAntiTriDiagMatrix( Matrix& m )
 {
-    const int rows = 7;
-    const int cols = 6;
-    m.setDimensions( rows, cols );
+   const int rows = 7;
+   const int cols = 6;
+   m.setDimensions( rows, cols );
+   typename Matrix::CompressedRowLengthsVector rowLengths;
+   rowLengths.setSize( rows );
+   rowLengths.setValue( 3 );
+   rowLengths.setElement( 0, 4);
+   rowLengths.setElement( 1,  4 );
+   m.setCompressedRowLengths( rowLengths );
 
-    int value = 1;
-    for( int i = 0; i < rows; i++ )
-        for( int j = cols - 1; j > 2; j-- )
-            if( j - i + 1 < cols && j - i + 1 >= 0 )
-                m.setElement( i, j - i + 1, value++ );
+   int value = 1;
+   for( int i = 0; i < rows; i++ )
+      for( int j = cols - 1; j > 2; j-- )
+         if( j - i + 1 < cols && j - i + 1 >= 0 )
+            m.setElement( i, j - i + 1, value++ );
 }
 
 template< typename Matrix >
@@ -267,6 +284,13 @@ void setupTriDiagMatrix( Matrix& m )
    const int rows = 7;
    const int cols = 6;
    m.setDimensions( rows, cols );
+   typename Matrix::CompressedRowLengthsVector rowLengths;
+   rowLengths.setSize( rows );
+   rowLengths.setValue( 3 );
+   rowLengths.setElement( 0 , 4 );
+   rowLengths.setElement( 1,  4 );
+   m.setCompressedRowLengths( rowLengths );
+
 
    int value = 1;
    for( int i = 0; i < rows; i++ )
@@ -387,7 +411,7 @@ void tridiagonalMatrixAssignment()
 
    Matrix matrix;
    matrix = hostMatrix;
-   using RowCapacitiesType = typename Matrix::RowsCapacitiesType;
+   using RowCapacitiesType = TNL::Containers::Vector< IndexType, DeviceType, IndexType >;
    RowCapacitiesType rowCapacities;
    matrix.getCompressedRowLengths( rowCapacities );
    RowCapacitiesType exactRowLengths{ 1, 3, 3, 3, 3, 3, 3, 3, 3, 2 };
@@ -439,7 +463,7 @@ void multidiagonalMatrixAssignment()
 
    Matrix matrix;
    matrix = hostMatrix;
-   using RowCapacitiesType = typename Matrix::RowsCapacitiesType;
+   using RowCapacitiesType = TNL::Containers::Vector< IndexType, DeviceType, IndexType >;
    RowCapacitiesType rowCapacities;
    matrix.getCompressedRowLengths( rowCapacities );
    RowCapacitiesType exactRowLengths{ 3, 4, 5, 5, 6, 5, 5, 4, 4, 3 };
@@ -488,7 +512,7 @@ void denseMatrixAssignment()
 
    Matrix matrix;
    matrix = hostMatrix;
-   using RowCapacitiesType = typename Matrix::RowsCapacitiesType;
+   using RowCapacitiesType = TNL::Containers::Vector< IndexType, DeviceType, IndexType >;
    RowCapacitiesType rowCapacities;
    matrix.getCompressedRowLengths( rowCapacities );
    RowCapacitiesType exactRowLengths{ 0, 2, 3, 4, 5, 6, 7, 8, 9, 10 };

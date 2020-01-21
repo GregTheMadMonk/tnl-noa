@@ -830,6 +830,20 @@ getElementIndex( const IndexType row, const IndexType column ) const
    return this->indexer.getGlobalIndex( row, localIdx );
 }
 
+template< typename Real,
+          typename Device,
+          typename Index,
+          bool RowMajorOrder,
+          typename RealAllocator,
+          typename IndexAllocator >
+__cuda_callable__
+Index
+Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
+getPaddingIndex() const
+{
+   return this->view.getPaddingIndex();
+}
+
 /*
 template<>
 class MultidiagonalDeviceDependentCode< Devices::Host >

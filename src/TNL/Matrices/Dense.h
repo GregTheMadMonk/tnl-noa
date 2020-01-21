@@ -167,12 +167,31 @@ class Dense : public Matrix< Real, Device, Index >
                                 Vector2& x,
                                 const RealType& omega = 1.0 ) const;
 
-      // copy assignment
+      /**
+       * \brief Assignment operator for exactly the same type of the dense matrix.
+       * 
+       * @param matrix
+       * @return 
+       */
       Dense& operator=( const Dense& matrix );
 
-      // cross-device copy assignment
-      template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_, typename RealAlocator_ >
-      Dense& operator=( const Dense< Real_, Device_, Index_, RowMajorOrder_, RealAlocator_ >& matrix );
+      /**
+       * \brief Assignment operator for other dense matrices.
+       * 
+       * @param matrix
+       * @return 
+       */
+      template< typename RHSReal, typename RHSDevice, typename RHSIndex,
+                 bool RHSRowMajorOrder, typename RHSRealAllocator >
+      Dense& operator=( const Dense< RHSReal, RHSDevice, RHSIndex, RHSRowMajorOrder, RHSRealAllocator >& matrix );
+
+      /**
+       * \brief Assignment operator for other (sparse) types of matrices.
+       * @param matrix
+       * @return 
+       */
+      template< typename RHSMatrix >
+      Dense& operator=( const RHSMatrix& matrix );
 
       template< typename Real_, typename Device_, typename Index_, typename RealAllocator_ >
       bool operator==( const Dense< Real_, Device_, Index_, RowMajorOrder >& matrix ) const;

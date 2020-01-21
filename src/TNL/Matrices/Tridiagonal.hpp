@@ -678,7 +678,8 @@ template< typename Real,
           bool RowMajorOrder,
           typename RealAllocator >
 __cuda_callable__
-Index Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
+Index
+Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
 getElementIndex( const IndexType row, const IndexType column ) const
 {
    IndexType localIdx = column - row;
@@ -689,6 +690,19 @@ getElementIndex( const IndexType row, const IndexType column ) const
    TNL_ASSERT_LT( localIdx, 3, "" );
 
    return this->indexer.getGlobalIndex( row, localIdx );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          bool RowMajorOrder,
+          typename RealAllocator >
+__cuda_callable__
+Index
+Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
+getPaddingIndex() const
+{
+   return this->view.getPaddingIndex();
 }
 
 /*

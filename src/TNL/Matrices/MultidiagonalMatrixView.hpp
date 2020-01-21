@@ -713,11 +713,25 @@ template< typename Real,
           typename Index,
           bool RowMajorOrder >
 __cuda_callable__
-Index MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
+Index
+MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
 getElementIndex( const IndexType row, const IndexType localIdx ) const
 {
    return this->indexer.getGlobalIndex( row, localIdx );
 }
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          bool RowMajorOrder >
+__cuda_callable__
+Index
+MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
+getPaddingIndex() const
+{
+   return -1;
+}
+
 
 } // namespace Matrices
 } // namespace TNL

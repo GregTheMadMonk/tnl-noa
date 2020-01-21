@@ -151,6 +151,9 @@ class TridiagonalMatrixView : public MatrixView< Real, Device, Index >
       __cuda_callable__
       IndexerType& getIndexer();
 
+      __cuda_callable__
+      IndexType getPaddingIndex() const;
+
    protected:
 
       __cuda_callable__
