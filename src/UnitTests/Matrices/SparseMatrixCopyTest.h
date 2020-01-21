@@ -64,7 +64,6 @@ void setupUnevenRowSizeMatrix( Matrix& m )
 {
     const int rows = 10;
     const int cols = 6;
-    m.reset();
     m.setDimensions( rows, cols );
     typename Matrix::CompressedRowLengthsVector rowLengths;
     rowLengths.setSize( rows );

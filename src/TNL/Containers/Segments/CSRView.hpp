@@ -156,6 +156,7 @@ auto
 CSRView< Device, Index >::
 getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
 {
+   printf( "----> size %d \n", offsets[ segmentIdx + 1 ] );
    return SegmentViewType( offsets[ segmentIdx ], offsets[ segmentIdx + 1 ] - offsets[ segmentIdx ], 1 );
 }
 

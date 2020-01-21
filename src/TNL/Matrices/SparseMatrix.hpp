@@ -673,7 +673,6 @@ operator=( const RHSMatrix& matrix )
    using RHSRealType = typename RHSMatrix::RealType;
    using RHSDeviceType = typename RHSMatrix::DeviceType;
    using RHSRealAllocatorType = typename RHSMatrix::RealAllocatorType;
-   using RHSIndexAllocatorType = typename Allocators::Default< RHSDeviceType >::template Allocator< RHSIndexType >;
 
    Containers::Vector< RHSIndexType, RHSDeviceType, RHSIndexType > rowLengths;
    matrix.getCompressedRowLengths( rowLengths );
@@ -712,9 +711,9 @@ operator=( const RHSMatrix& matrix )
       const IndexType bufferRowsCount( 128 );
       const size_t bufferSize = bufferRowsCount * maxRowLength;
       Containers::Vector< RHSRealType, RHSDeviceType, RHSIndexType, RHSRealAllocatorType > matrixValuesBuffer( bufferSize );
-      Containers::Vector< RHSIndexType, RHSDeviceType, RHSIndexType, RHSIndexAllocatorType > matrixColumnsBuffer( bufferSize );
+      Containers::Vector< RHSIndexType, RHSDeviceType, RHSIndexType > matrixColumnsBuffer( bufferSize );
       Containers::Vector< RealType, DeviceType, IndexType, RealAllocatorType > thisValuesBuffer( bufferSize );
-      Containers::Vector< IndexType, DeviceType, IndexType, IndexAllocatorType > thisColumnsBuffer( bufferSize );
+      Containers::Vector< IndexType, DeviceType, IndexType > thisColumnsBuffer( bufferSize );
       auto matrixValuesBuffer_view = matrixValuesBuffer.getView();
       auto matrixColumnsBuffer_view = matrixColumnsBuffer.getView();
       auto thisValuesBuffer_view = thisValuesBuffer.getView();
@@ -754,12 +753,15 @@ operator=( const RHSMatrix& matrix )
             RealType inValue( 0.0 );
             IndexType bufferIdx, localIdx( rowLocalIndexes_view[ rowIdx ] );
             auto matrixRow = matrix_view.getRow( rowIdx );
-            while( inValue == 0.0 && localIdx < matrixRow.getSize() ) //matrix_columns )
+            IndexType s = matrixRow.getSize();
+            //printf( " row %d size %d \n", rowIdx, s );
+            while( inValue == 0.0 && localIdx < 0 )
             {
                bufferIdx = ( rowIdx - baseRow ) * maxRowLength + localIdx++;
-               inValue = thisValuesBuffer_view[ bufferIdx ];
+               TNL_ASSERT_LT( bufferIdx, bufferSize, "" );
+               //inValue = thisValuesBuffer_view[ bufferIdx ];
             }
-            rowLocalIndexes_view[ rowIdx ] = localIdx;
+            /*rowLocalIndexes_view[ rowIdx ] = localIdx;
             if( inValue == 0.0 )
             {
                columnIndex = paddingIndex;
@@ -769,7 +771,7 @@ operator=( const RHSMatrix& matrix )
             {
                columnIndex = thisColumnsBuffer_view[ bufferIdx ];//column - 1;
                value = inValue;
-            }
+            }*/
          };
          this->forRows( baseRow, lastRow, f2 );
          baseRow += bufferRowsCount;
