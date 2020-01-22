@@ -127,17 +127,17 @@ void test_AllReduction_MaximumInSegments()
 
    TNL::Containers::Vector< IndexType, DeviceType, IndexType > v( segments.getStorageSize() );
 
-   IndexType k( 1 );
+   /*IndexType k( 1 );
    for( IndexType i = 0; i < segmentsCount; i++ )
       for( IndexType j = 0; j < segmentSize; j++ )
-         v.setElement( segments.getGlobalIndex( i, j ), k++ );
-   /*auto view = v.getView();
-   auto init = [=] __cuda_callable__ ( const IndexType i, const IndexType j ) mutable -> bool {
-      view[ j ] =  j + 1;
+         v.setElement( segments.getGlobalIndex( i, j ), k++ );*/
+   auto view = v.getView();
+   auto init = [=] __cuda_callable__ ( const IndexType segmentIdx, const IndexType localIdx, const IndexType globalIdx ) mutable -> bool {
+      view[ globalIdx ] =  segmentIdx * 5 + localIdx + 1;
       return true;
    };
    segments.forAll( init );
-   std::cerr << v << std::endl;*/
+   std::cerr << v << std::endl;
 
    TNL::Containers::Vector< IndexType, DeviceType, IndexType >result( segmentsCount );
 

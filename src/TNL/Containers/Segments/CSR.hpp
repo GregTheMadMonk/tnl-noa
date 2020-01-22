@@ -207,7 +207,7 @@ void
 CSR< Device, Index, IndexAllocator >::
 forAll( Function& f, Args... args ) const
 {
-   this->forSegments( 0, this->getSize(), f, args... );
+   this->forSegments( 0, this->getSegmentsCount(), f, args... );
 }
 
 template< typename Device,

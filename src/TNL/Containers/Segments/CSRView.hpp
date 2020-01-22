@@ -156,7 +156,7 @@ auto
 CSRView< Device, Index >::
 getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
 {
-   printf( "----> size %d \n", offsets[ segmentIdx + 1 ] );
+   printf( "----> segmentIdx %d offset %d size %d ptr %p \n",  segmentIdx, offsets[ segmentIdx ], offsets.getSize(), offsets.getData() );
    return SegmentViewType( offsets[ segmentIdx ], offsets[ segmentIdx + 1 ] - offsets[ segmentIdx ], 1 );
 }
 
@@ -186,7 +186,7 @@ void
 CSRView< Device, Index >::
 forAll( Function& f, Args... args ) const
 {
-   this->forSegments( 0, this->getSize(), f, args... );
+   this->forSegments( 0, this->getSegmentsCount(), f, args... );
 }
 
 template< typename Device,

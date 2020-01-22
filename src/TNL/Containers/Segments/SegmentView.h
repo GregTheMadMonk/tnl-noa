@@ -29,16 +29,12 @@ class SegmentView< Index, false >
       SegmentView( const IndexType offset,
                    const IndexType size,
                    const IndexType step )
-      : segmentOffset( offset ), segmentSize( size ), step( step )
-      {
-         printf( "--- size = %d \n", size );
-      };
+      : segmentOffset( offset ), segmentSize( size ), step( step ){};
 
       __cuda_callable__
       SegmentView( const SegmentView& view )
-      : segmentOffset( view.segmentOffset ), segmentSize( view.segmentSize ), step( view.step )
-      {
-      };
+      : segmentOffset( view.segmentOffset ), segmentSize( view.segmentSize ), step( view.step ){};
+
       __cuda_callable__
       IndexType getSize() const
       {
