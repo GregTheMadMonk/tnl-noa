@@ -688,7 +688,7 @@ operator=( const RHSMatrix& matrix )
    auto rowLocalIndexes_view = rowLocalIndexes.getView();
    columns_view = paddingIndex;
 
-   /*if( std::is_same< DeviceType, RHSDeviceType >::value )
+   if( std::is_same< DeviceType, RHSDeviceType >::value )
    {
       const auto segments_view = this->segments.getView();
       auto f = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx_, RHSIndexType columnIndex, const RHSRealType& value, bool& compute ) mutable {
@@ -703,7 +703,7 @@ operator=( const RHSMatrix& matrix )
       };
       matrix.forAllRows( f );
    }
-   else*/
+   else
    {
       const IndexType maxRowLength = max( rowLengths );
       const IndexType bufferRowsCount( 128 );
