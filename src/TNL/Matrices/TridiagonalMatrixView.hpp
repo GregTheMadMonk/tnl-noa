@@ -449,7 +449,6 @@ vectorProduct( const InVector& inVector, OutVector& outVector ) const
 
    const auto inVectorView = inVector.getConstView();
    auto outVectorView = outVector.getView();
-   const auto valuesView = this->values.getConstView();
    auto fetch = [=] __cuda_callable__ ( const IndexType& row, const IndexType& column, const RealType& value ) -> RealType {
       return value * inVectorView[ column ];
    };
