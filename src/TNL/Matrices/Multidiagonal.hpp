@@ -683,9 +683,7 @@ operator=( const Multidiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAllo
          Containers::Vector< RealType, DeviceType, IndexType, RealAllocatorType > thisValuesBuffer( bufferSize );
          Containers::Vector< IndexType, DeviceType, IndexType, IndexAllocatorType > thisColumnsBuffer( bufferSize );
          auto matrixValuesBuffer_view = matrixValuesBuffer.getView();
-         auto matrixColumnsBuffer_view = matrixColumnsBuffer.getView();
          auto thisValuesBuffer_view = thisValuesBuffer.getView();
-         auto thisColumnsBuffer_view = thisColumnsBuffer.getView();
 
          IndexType baseRow( 0 );
          const IndexType rowsCount = this->getRows();
@@ -716,6 +714,7 @@ operator=( const Multidiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAllo
          }
       }
    }
+   return *this;
 }
 
 template< typename Real,

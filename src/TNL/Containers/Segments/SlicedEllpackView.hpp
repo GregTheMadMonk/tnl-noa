@@ -89,6 +89,7 @@ template< typename Device,
           typename Index,
           bool RowMajorOrder,
           int SliceSize >
+__cuda_callable__
 typename SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::ViewType
 SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::
 getView()
@@ -100,6 +101,7 @@ template< typename Device,
           typename Index,
           bool RowMajorOrder,
           int SliceSize >
+__cuda_callable__
 typename SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::ConstViewType
 SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::
 getConstView() const
@@ -357,6 +359,7 @@ operator=( const SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >& v
    this->segmentsCount = view.segmentsCount;
    this->sliceOffsets.copy( view.sliceOffsets );
    this->sliceSegmentSizes.copy( view.sliceSegmentSizes );
+   return *this;
 }
 
 template< typename Device,

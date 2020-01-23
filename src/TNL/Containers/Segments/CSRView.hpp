@@ -66,6 +66,7 @@ getSerializationType()
 
 template< typename Device,
           typename Index >
+__cuda_callable__
 typename CSRView< Device, Index >::ViewType
 CSRView< Device, Index >::
 getView()
@@ -75,6 +76,7 @@ getView()
 
 template< typename Device,
           typename Index >
+__cuda_callable__
 typename CSRView< Device, Index >::ConstViewType
 CSRView< Device, Index >::
 getConstView() const
@@ -156,7 +158,6 @@ auto
 CSRView< Device, Index >::
 getSegmentView( const IndexType segmentIdx ) const -> SegmentViewType
 {
-   printf( "----> segmentIdx %d offset %d size %d ptr %p \n",  segmentIdx, offsets[ segmentIdx ], offsets.getSize(), offsets.getData() );
    return SegmentViewType( offsets[ segmentIdx ], offsets[ segmentIdx + 1 ] - offsets[ segmentIdx ], 1 );
 }
 
@@ -167,7 +168,7 @@ void
 CSRView< Device, Index >::
 forSegments( IndexType first, IndexType last, Function& f, Args... args ) const
 {
-   const auto offsetsView = this->offsets.getConstView();
+   const auto offsetsView = this->offsets;
    auto l = [=] __cuda_callable__ ( const IndexType segmentIdx, Args... args ) mutable {
       const IndexType begin = offsetsView[ segmentIdx ];
       const IndexType end = offsetsView[ segmentIdx + 1 ];
@@ -228,6 +229,7 @@ CSRView< Device, Index >::
 operator=( const CSRView& view )
 {
    this->offsets.copy( view.offsets );
+   return *this;
 }
 
 template< typename Device,

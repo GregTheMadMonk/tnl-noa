@@ -52,8 +52,10 @@ class CSRView
 
       static String getSerializationType();
 
+      __cuda_callable__
       ViewType getView();
 
+      __cuda_callable__
       ConstViewType getConstView() const;
 
       /**

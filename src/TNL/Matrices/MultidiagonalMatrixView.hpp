@@ -338,6 +338,7 @@ operator=( const MultidiagonalMatrixView& view )
    this->diagonalsShifts.copy( view.diagonalsShifts );
    this->hostDiagonalsShifts.copy( view.hostDiagonalsShifts );
    this->indexer = view.indexer;
+   return *this;
 }
 
 template< typename Real,

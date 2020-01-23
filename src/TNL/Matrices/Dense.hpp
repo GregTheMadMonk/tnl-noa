@@ -925,7 +925,6 @@ operator=( const Dense< RHSReal, RHSDevice, RHSIndex, RHSRowMajorOrder, RHSRealA
    auto this_view = this->view;
    if( std::is_same< DeviceType, RHSDeviceType >::value )
    {
-      const auto segments_view = this->segments.getView();
       auto f = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx, RHSIndexType columnIdx, const RHSRealType& value, bool& compute ) mutable {
          this_view( rowIdx, columnIdx ) = value;
       };

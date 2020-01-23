@@ -93,7 +93,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       void getCompressedRowLengths( Vector& rowLengths ) const;
 
       [[deprecated]]
-      virtual IndexType getRowLength( const IndexType row ) const {};
+      virtual IndexType getRowLength( const IndexType row ) const { return 0;};
 
       template< typename Matrix >
       void setLike( const Matrix& matrix );

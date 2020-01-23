@@ -37,7 +37,7 @@ class EllpackView
       template< typename Device_, typename Index_ >
       using ViewTemplate = EllpackView< Device_, Index_ >;
       using ViewType = EllpackView;
-      //using ConstViewType = EllpackView< Device, std::add_const_t< Index > >;
+      using ConstViewType = EllpackView< Device, std::add_const_t< Index > >;
       using SegmentViewType = SegmentView< IndexType, RowMajorOrder >;
 
       __cuda_callable__
@@ -54,9 +54,11 @@ class EllpackView
 
       static String getSerializationType();
 
+      __cuda_callable__
       ViewType getView();
 
-      //ConstViewType getConstView() const;
+      __cuda_callable__
+      ConstViewType getConstView() const;
 
       /**
        * \brief Number segments.

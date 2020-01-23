@@ -78,6 +78,7 @@ template< typename Device,
           typename Index,
           bool RowMajorOrder,
           int Alignment >
+__cuda_callable__
 typename EllpackView< Device, Index, RowMajorOrder, Alignment >::ViewType
 EllpackView< Device, Index, RowMajorOrder, Alignment >::
 getView()
@@ -85,16 +86,17 @@ getView()
    return ViewType( segmentSize, size, alignedSize );
 }
 
-/*template< typename Device,
+template< typename Device,
           typename Index,
           bool RowMajorOrder,
           int Alignment >
+__cuda_callable__
 typename EllpackView< Device, Index, RowMajorOrder, Alignment >::ConstViewType
 EllpackView< Device, Index, RowMajorOrder, Alignment >::
 getConstView() const
 {
    return ConstViewType( segmentSize, size, alignedSize );
-}*/
+}
 
 template< typename Device,
           typename Index,
@@ -233,7 +235,7 @@ void
 EllpackView< Device, Index, RowMajorOrder, Alignment >::
 forAll( Function& f, Args... args ) const
 {
-   this->forSegments( 0, this->getSize(), f, args... );
+   this->forSegments( 0, this->getSegmentsCount(), f, args... );
 }
 
 template< typename Device,
@@ -302,6 +304,7 @@ operator=( const EllpackView< Device, Index, RowMajorOrder, Alignment >& view )
    this->segmentSize = view.segmentSize;
    this->size = view.size;
    this->alignedSize = view.alignedSize;
+   return *this;
 }
 
 template< typename Device,

@@ -91,8 +91,10 @@ class Tridiagonal : public Matrix< Real, Device, Index, RealAllocator >
       template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_, typename RealAllocator_ >
       bool operator != ( const Tridiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAllocator_ >& matrix ) const;
 
+      __cuda_callable__
       RowView getRow( const IndexType& rowIdx );
 
+      __cuda_callable__
       const RowView getRow( const IndexType& rowIdx ) const;
 
       void setValue( const RealType& v );

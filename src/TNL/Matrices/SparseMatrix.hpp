@@ -210,7 +210,7 @@ Index
 SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
 getNumberOfNonzeroMatrixElements() const
 {
-   this->view.getNumberOfNonzeroMatrixElements();
+   return this->view.getNumberOfNonzeroMatrixElements();
 }
 
 template< typename Real,
@@ -602,7 +602,6 @@ operator=( const Dense< Real_, Device_, Index_, RowMajorOrder, RealAllocator_ >&
       Containers::Vector< IndexType, DeviceType, IndexType, IndexAllocatorType > thisColumnsBuffer( bufferSize );
       auto matrixValuesBuffer_view = matrixValuesBuffer.getView();
       auto thisValuesBuffer_view = thisValuesBuffer.getView();
-      auto thisColumnsBuffer_view = thisColumnsBuffer.getView();
 
       IndexType baseRow( 0 );
       const IndexType rowsCount = this->getRows();
@@ -689,11 +688,10 @@ operator=( const RHSMatrix& matrix )
    auto rowLocalIndexes_view = rowLocalIndexes.getView();
    columns_view = paddingIndex;
 
-   if( std::is_same< DeviceType, RHSDeviceType >::value )
+   /*if( std::is_same< DeviceType, RHSDeviceType >::value )
    {
       const auto segments_view = this->segments.getView();
       auto f = [=] __cuda_callable__ ( RHSIndexType rowIdx, RHSIndexType localIdx_, RHSIndexType columnIndex, const RHSRealType& value, bool& compute ) mutable {
-         RealType inValue( 0.0 );
          IndexType localIdx( rowLocalIndexes_view[ rowIdx ] );
          if( value != 0.0 && columnIndex != paddingIndex )
          {
@@ -705,7 +703,7 @@ operator=( const RHSMatrix& matrix )
       };
       matrix.forAllRows( f );
    }
-   else
+   else*/
    {
       const IndexType maxRowLength = max( rowLengths );
       const IndexType bufferRowsCount( 128 );
@@ -714,10 +712,13 @@ operator=( const RHSMatrix& matrix )
       Containers::Vector< RHSIndexType, RHSDeviceType, RHSIndexType > matrixColumnsBuffer( bufferSize );
       Containers::Vector< RealType, DeviceType, IndexType, RealAllocatorType > thisValuesBuffer( bufferSize );
       Containers::Vector< IndexType, DeviceType, IndexType > thisColumnsBuffer( bufferSize );
+      Containers::Vector< IndexType, DeviceType, IndexType > thisRowLengths;
+      thisRowLengths = rowLengths;
       auto matrixValuesBuffer_view = matrixValuesBuffer.getView();
       auto matrixColumnsBuffer_view = matrixColumnsBuffer.getView();
       auto thisValuesBuffer_view = thisValuesBuffer.getView();
       auto thisColumnsBuffer_view = thisColumnsBuffer.getView();
+      matrixValuesBuffer_view = 0.0;
 
       IndexType baseRow( 0 );
       const IndexType rowsCount = this->getRows();
@@ -735,6 +736,7 @@ operator=( const RHSMatrix& matrix )
                const IndexType bufferIdx = ( rowIdx - baseRow ) * maxRowLength + localIdx;
                matrixColumnsBuffer_view[ bufferIdx ] = columnIndex;
                matrixValuesBuffer_view[ bufferIdx ] = value;
+               //std::cerr << " <<<<< rowIdx = " << rowIdx << " localIdx = " << localIdx << " value = " << value << " bufferIdx = " << bufferIdx << std::endl;
             }
          };
          matrix.forRows( baseRow, lastRow, f1 );
@@ -748,20 +750,20 @@ operator=( const RHSMatrix& matrix )
          // Copy matrix elements from the buffer to the matrix and ignoring
          // zero matrix elements
          const IndexType matrix_columns = this->getColumns();
-         auto matrix_view = matrix.getView();
-         auto f2 = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx_, IndexType& columnIndex, RealType& value, bool& compute ) mutable {
+         const auto thisRowLengths_view = thisRowLengths.getConstView();
+         auto f2 = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType& columnIndex, RealType& value, bool& compute ) mutable {
             RealType inValue( 0.0 );
-            IndexType bufferIdx, localIdx( rowLocalIndexes_view[ rowIdx ] );
-            auto matrixRow = matrix_view.getRow( rowIdx );
-            IndexType s = matrixRow.getSize();
-            //printf( " row %d size %d \n", rowIdx, s );
-            while( inValue == 0.0 && localIdx < 0 )
+            size_t bufferIdx;
+            IndexType bufferLocalIdx( rowLocalIndexes_view[ rowIdx ] );
+            while( inValue == 0.0 && localIdx < thisRowLengths_view[ rowIdx ] )
             {
-               bufferIdx = ( rowIdx - baseRow ) * maxRowLength + localIdx++;
+               bufferIdx = ( rowIdx - baseRow ) * maxRowLength + bufferLocalIdx++;
                TNL_ASSERT_LT( bufferIdx, bufferSize, "" );
-               //inValue = thisValuesBuffer_view[ bufferIdx ];
+               inValue = thisValuesBuffer_view[ bufferIdx ];
             }
-            /*rowLocalIndexes_view[ rowIdx ] = localIdx;
+            //std::cerr << "rowIdx = " << rowIdx << " localIdx = " << localIdx << " bufferLocalIdx = " << bufferLocalIdx 
+            //          << " inValue = " << inValue << " bufferIdx = " << bufferIdx << std::endl;
+            rowLocalIndexes_view[ rowIdx ] = bufferLocalIdx;
             if( inValue == 0.0 )
             {
                columnIndex = paddingIndex;
@@ -771,7 +773,7 @@ operator=( const RHSMatrix& matrix )
             {
                columnIndex = thisColumnsBuffer_view[ bufferIdx ];//column - 1;
                value = inValue;
-            }*/
+            }
          };
          this->forRows( baseRow, lastRow, f2 );
          baseRow += bufferRowsCount;

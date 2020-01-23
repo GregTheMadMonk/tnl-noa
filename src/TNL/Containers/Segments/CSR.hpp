@@ -253,6 +253,7 @@ CSR< Device, Index, IndexAllocator >::
 operator=( const CSR< Device_, Index_, IndexAllocator_ >& source )
 {
    this->offsets = source.offsets;
+   return *this;
 }
 
 template< typename Device,

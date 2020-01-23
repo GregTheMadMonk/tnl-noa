@@ -901,6 +901,7 @@ operator=( const DenseMatrixView& matrix )
 {
    MatrixView< Real, Device, Index >::operator=( matrix );
    this->segments = matrix.segments;
+   return *this;
 }
 
 template< typename Real,

@@ -87,8 +87,10 @@ class MultidiagonalMatrixView : public MatrixView< Real, Device, Index >
       template< typename Real_, typename Device_, typename Index_, bool RowMajorOrder_ >
       bool operator != ( const MultidiagonalMatrixView< Real_, Device_, Index_, RowMajorOrder_ >& matrix ) const;
 
+      __cuda_callable__
       RowView getRow( const IndexType& rowIdx );
 
+      __cuda_callable__
       const RowView getRow( const IndexType& rowIdx ) const;
 
       void setValue( const RealType& v );

@@ -293,7 +293,7 @@ void
 Ellpack< Device, Index, IndexAllocator, RowMajorOrder, Alignment >::
 forAll( Function& f, Args... args ) const
 {
-   this->forSegments( 0, this->getSize(), f, args... );
+   this->forSegments( 0, this->getSegmentsCount(), f, args... );
 }
 
 template< typename Device,
@@ -364,6 +364,7 @@ operator=( const Ellpack< Device_, Index_, IndexAllocator_, RowMajorOrder_, Alig
    this->segmentSize = source.segmentSize;
    this->size = source.size;
    this->alignedSize = roundUpDivision( size, this->getAlignment() ) * this->getAlignment();
+   return *this;
 }
 
 template< typename Device,

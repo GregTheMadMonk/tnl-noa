@@ -56,8 +56,10 @@ class SlicedEllpackView
 
       static String getSerializationType();
 
+      __cuda_callable__
       ViewType getView();
 
+      __cuda_callable__
       ConstViewType getConstView() const;
 
       __cuda_callable__

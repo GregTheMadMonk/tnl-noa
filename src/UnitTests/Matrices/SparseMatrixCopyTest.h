@@ -458,6 +458,7 @@ void tridiagonalMatrixAssignment()
    RowCapacitiesType rowCapacities;
    matrix.getCompressedRowLengths( rowCapacities );
    RowCapacitiesType exactRowLengths{ 1, 3, 3, 3, 3, 3, 3, 3, 3, 2 };
+
    EXPECT_EQ( rowCapacities, exactRowLengths );
    for( IndexType i = 0; i < rows; i++ )
       for( IndexType j = 0; j < columns; j++ )
@@ -510,6 +511,10 @@ void multidiagonalMatrixAssignment()
    RowCapacitiesType rowCapacities;
    matrix.getCompressedRowLengths( rowCapacities );
    RowCapacitiesType exactRowLengths{ 3, 4, 5, 5, 6, 5, 5, 4, 4, 3 };
+   /*std::cerr << "hostMatrix " << hostMatrix << std::endl;
+   std::cerr << "matrix " << matrix << std::endl;
+   std::cerr << "rowCapacities " << rowCapacities << std::endl;*/
+
    EXPECT_EQ( rowCapacities, exactRowLengths );
    for( IndexType i = 0; i < rows; i++ )
       for( IndexType j = 0; j < columns; j++ )

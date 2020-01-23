@@ -139,7 +139,7 @@ Index
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
 getRowLength( const IndexType row ) const
 {
-
+   return 0;
 }
 
 template< typename Real,
@@ -525,6 +525,7 @@ operator=( const SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView
    MatrixView< Real, Device, Index >::operator=( matrix );
    this->columnIndexes.copy( matrix.columnIndexes );
    this->segments = matrix.segments;
+   return *this;
 }
 
 template< typename Real,

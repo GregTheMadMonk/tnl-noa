@@ -408,6 +408,7 @@ operator=( const SlicedEllpack< Device_, Index_, IndexAllocator_, RowMajorOrder_
    this->segmentsCount = source.segmentsCount;
    this->sliceOffsets = source.sliceOffsets;
    this->sliceSegmentSizes = source.sliceSegmentSizes;
+   return *this;
 }
 
 template< typename Device,

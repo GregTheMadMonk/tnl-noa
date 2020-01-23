@@ -592,6 +592,7 @@ operator=( const Tridiagonal< Real_, Device_, Index_, RowMajorOrder_, RealAlloca
          this->forAllRows( f );
       }
    }
+   return *this;
 }
 
 template< typename Real,

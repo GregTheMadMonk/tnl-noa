@@ -131,6 +131,7 @@ operator=( const MatrixView& view )
    rows = view.rows;
    columns = view.columns;
    values.copy( view.values );
+   return *this;
 }
 
 template< typename Real,
