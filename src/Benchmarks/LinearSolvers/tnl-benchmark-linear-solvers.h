@@ -365,8 +365,7 @@ struct LinearSolversBenchmark
       // load the matrix
       if( ends_with( file_matrix, ".mtx" ) ) {
          Matrices::MatrixReader< MatrixType > reader;
-         if( ! reader.readMtxFile( file_matrix, *matrixPointer ) )
-            return false;
+         reader.readMtxFile( file_matrix, *matrixPointer );
       }
       else {
          matrixPointer->load( file_matrix );
