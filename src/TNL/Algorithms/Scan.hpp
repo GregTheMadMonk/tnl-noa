@@ -225,8 +225,8 @@ perform( Vector& v,
 
    CudaScanKernelLauncher< Type, RealType, IndexType >::perform(
       end - begin,
-      &v[ begin ],  // input
-      &v[ begin ],  // output
+      &v.getData()[ begin ],  // input
+      &v.getData()[ begin ],  // output
       reduction,
       zero );
 #else
@@ -251,8 +251,8 @@ performFirstPhase( Vector& v,
 
    return CudaScanKernelLauncher< Type, RealType, IndexType >::performFirstPhase(
       end - begin,
-      &v[ begin ],  // input
-      &v[ begin ],  // output
+      &v.getData()[ begin ],  // input
+      &v.getData()[ begin ],  // output
       reduction,
       zero );
 #else
@@ -279,7 +279,7 @@ performSecondPhase( Vector& v,
 
    CudaScanKernelLauncher< Type, RealType, IndexType >::performSecondPhase(
       end - begin,
-      &v[ begin ],  // output
+      &v.getData()[ begin ],  // output
       blockShifts.getData(),
       reduction,
       shift );

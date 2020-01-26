@@ -277,7 +277,7 @@ struct CudaScanKernelLauncher
               elementsInBlock,
               &deviceInput[ gridOffset ],
               &deviceOutput[ gridOffset ],
-              &blockSums[ gridIdx * maxGridSize() ] );
+              &blockSums.getData()[ gridIdx * maxGridSize() ] );
       }
 
       // synchronize the null-stream after all grids

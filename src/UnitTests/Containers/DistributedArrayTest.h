@@ -94,7 +94,7 @@ TYPED_TEST( DistributedArrayTest, copyFromGlobal )
    ArrayViewType localArrayView = this->distributedArray.getLocalView();
    auto globalView = globalArray.getConstView();
    const auto localRange = this->distributedArray.getLocalRange();
-   globalView.bind( &globalArray[ localRange.getBegin() ], localRange.getEnd() - localRange.getBegin() );
+   globalView.bind( &globalArray.getData()[ localRange.getBegin() ], localRange.getEnd() - localRange.getBegin() );
    EXPECT_EQ( localArrayView, globalView );
 }
 
