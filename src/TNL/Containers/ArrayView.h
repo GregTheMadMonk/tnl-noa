@@ -238,7 +238,7 @@ public:
    ArrayView& operator=( const T& array );
 
    /**
-    * \brief Shallow copy of the array view
+    * \brief Makes shallow copy of the array view.
     * 
     * \param view Reference to the source array view.
     * \return Reference to this array view.
