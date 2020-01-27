@@ -176,7 +176,7 @@ public:
              continue;
          if( commPatternStarts( rank, j ) < commPatternEnds( rank, j ) )
             commRequests.push_back( CommunicatorType::IRecv(
-                     &globalBuffer[ commPatternStarts( rank, j ) ],
+                     globalBuffer.getPointer( commPatternStarts( rank, j ) ),
                      commPatternEnds( rank, j ) - commPatternStarts( rank, j ),
                      j, 0, group ) );
       }

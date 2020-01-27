@@ -75,6 +75,17 @@ public:
          return right[ i - left.getSize() - middle.getSize() ];
    }
 
+   __cuda_callable__
+   const Real* getPointer( Index i ) const
+   {
+      if( i < left.getSize() )
+         return &left.getData()[ i ];
+      else if( i < left.getSize() + middle.getSize() )
+         return &middle.getData()[ i - left.getSize() ];
+      else
+         return &right.getData()[ i - left.getSize() - middle.getSize() ];
+   }
+
    friend std::ostream& operator<<( std::ostream& str, const ThreePartVectorView& v )
    {
       str << "[\n\tleft: " << v.left << ",\n\tmiddle: " << v.middle << ",\n\tright: " << v.right << "\n]";
@@ -141,6 +152,17 @@ public:
          return middle[ i - left.getSize() ];
       else
          return right[ i - left.getSize() - middle.getSize() ];
+   }
+
+   __cuda_callable__
+   const Real* getPointer( Index i ) const
+   {
+      if( i < left.getSize() )
+         return &left.getData()[ i ];
+      else if( i < left.getSize() + middle.getSize() )
+         return &middle.getData()[ i - left.getSize() ];
+      else
+         return &right.getData()[ i - left.getSize() - middle.getSize() ];
    }
 
    friend std::ostream& operator<<( std::ostream& str, const ThreePartVector& v )

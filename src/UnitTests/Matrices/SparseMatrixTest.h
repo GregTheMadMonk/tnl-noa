@@ -24,7 +24,7 @@ using CSR_cuda_int = TNL::Matrices::CSR< int, TNL::Devices::Cuda, int >;
 
 TEST( SparseMatrixTest, CSR_perforSORIterationTest_Host )
 {
-    test_PerformSORIteration< CSR_host_float >();
+    //test_PerformSORIteration< CSR_host_float >();
 }
 
 #ifdef HAVE_CUDA
