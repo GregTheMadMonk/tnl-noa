@@ -15,7 +15,7 @@
 
 namespace TNL {
 namespace Solvers {
-namespace PDE {   
+namespace PDE {
 
 template< typename Problem,
           typename TimeStepper >
@@ -53,9 +53,8 @@ TimeDependentPDESolver< Problem, TimeStepper >::
 setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
-   
    BaseType::setup( parameters, prefix );
-   
+
    /////
    // Load the mesh from the mesh file
    //
@@ -65,7 +64,7 @@ setup( const Config::ParameterContainer& parameters,
       return false;
    if( ! Meshes::decomposeMesh< Problem >( parameters, prefix, *this->meshPointer, distributedMesh, *problem ) )
       return false;
-   
+
    problem->setMesh( this->meshPointer );
 
    /****
@@ -77,7 +76,7 @@ setup( const Config::ParameterContainer& parameters,
       return false;
    }
    problem->setCommonData( this->commonDataPointer );
-   
+
    /****
     * Setup the problem
     */
@@ -94,11 +93,10 @@ setup( const Config::ParameterContainer& parameters,
    this->dofsPointer->setSize( problem->getDofs() );
    this->dofsPointer->setValue( 0.0 );
    this->problem->bindDofs( this->dofsPointer );
-   
+
    /***
     * Set-up the initial condition
     */
-   typedef typename Problem :: DofVectorType DofVectorType;
    if( ! this->problem->setInitialCondition( parameters, this->dofsPointer ) ) {
       std::cerr << "Failed to set up the initial condition." << std::endl;
       return false;
@@ -121,7 +119,7 @@ setup( const Config::ParameterContainer& parameters,
     */
    if( ! this->timeStepper.setup( parameters ) )
       return false;
-   this->timeStepper.setSolverMonitor( *this->solverMonitorPointer );      
+   this->timeStepper.setSolverMonitor( *this->solverMonitorPointer );
    return true;
 }
 
@@ -131,7 +129,7 @@ bool
 TimeDependentPDESolver< Problem, TimeStepper >::
 writeProlog( Logger& logger,
              const Config::ParameterContainer& parameters )
-{   
+{
    logger.writeHeader( problem->getPrologHeader() );
    problem->writeProlog( logger, parameters );
    logger.writeSeparator();
@@ -251,7 +249,7 @@ setTimeStep( const RealType& timeStep )
    this->timeStep = timeStep;
    return true;
 }
- 
+
 template< typename Problem,
           typename TimeStepper >
 const typename Problem::RealType&
@@ -280,7 +278,7 @@ solve()
 
    this->ioTimer->reset();
    this->computeTimer->reset();
- 
+
    this->ioTimer->start();
    if( ! this->problem->makeSnapshot( t, step, this->dofsPointer ) )
    {
@@ -316,9 +314,9 @@ solve()
       this->computeTimer->start();
    }
    this->computeTimer->stop();
-   
+
    this->solverMonitorPointer->stopMainLoop();
-   
+
    return true;
 }
 

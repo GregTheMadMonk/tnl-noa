@@ -32,7 +32,7 @@ template< typename MatrixType >
 std::shared_ptr< Linear::LinearSolver< MatrixType > >
 getLinearSolver( const Config::ParameterContainer& parameters )
 {
-   const String& discreteSolver = parameters.getParameter< String>( "discrete-solver" );
+   const String& discreteSolver = parameters.getParameter< String >( "discrete-solver" );
 
    if( discreteSolver == "sor" )
       return std::make_shared< Linear::SOR< MatrixType > >();
@@ -64,7 +64,7 @@ template< typename MatrixType >
 std::shared_ptr< Linear::Preconditioners::Preconditioner< MatrixType > >
 getPreconditioner( const Config::ParameterContainer& parameters )
 {
-   const String& preconditioner = parameters.getParameter< String>( "preconditioner" );
+   const String& preconditioner = parameters.getParameter< String >( "preconditioner" );
 
    if( preconditioner == "none" )
       return nullptr;
