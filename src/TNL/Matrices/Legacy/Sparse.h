@@ -26,7 +26,7 @@ class Sparse : public Matrix< Real, Device, Index >
    typedef Real RealType;
    typedef Device DeviceType;
    typedef Index IndexType;
-   typedef typename Matrix< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
+   typedef typename Matrix< RealType, DeviceType, IndexType >::ValuesHolderType ValuesVector;
    typedef Containers::Vector< IndexType, DeviceType, IndexType > ColumnIndexesVector;
    typedef Matrix< Real, Device, Index > BaseType;
    typedef SparseRow< RealType, IndexType > MatrixRow;

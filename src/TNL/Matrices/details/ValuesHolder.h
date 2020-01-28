@@ -23,9 +23,8 @@ class ValuesHolder
 {};
 
 template< typename Device,
-          typename Index,
-          typename RealAllocator >
-class ValuesHolder< bool, Device, Index, RealAllocator >
+          typename Index >
+class BooleanValuesHolder
 {
    public:
 
@@ -33,10 +32,10 @@ class ValuesHolder< bool, Device, Index, RealAllocator >
       using DeviceType = Device;
       using IndexType = Index;
 
-      ValuesHolder()
+      BooleanValuesHolder()
       : size( 0 ){};
 
-      ValuesdHolder( const IndexType& size )
+      BooleanValuesHolder( const IndexType& size )
       : size( size ){};
 
       void setSize( const IndexType& size ) { this->size = size; };
@@ -47,31 +46,66 @@ class ValuesHolder< bool, Device, Index, RealAllocator >
       __cuda_callable__
       bool operator[]( const IndexType& i ) const { return true; };
 
-      
    protected:
 
       IndexType size;
-
 };
 
 /**
- * \brief Serialization of arrays into binary files.
+ * \brief Serialization of values holder into binary files.
  */
 template< typename Device, typename Index, typename Allocator >
-File& operator<<( File& file, const ValuesHolder< bool, Device, Index, Allocator >& array ) { return file; };
+File& operator<<( File& file, const ValuesHolder< bool, Device, Index, Allocator >& holder ) {
+   file << holder.getSize();
+   return file; };
 
 template< typename Device, typename Index, typename Allocator >
-File& operator<<( File&& file, const ValuesHolder< bool, Device, Index, Allocator >& array ) { return file; };
+File& operator<<( File&& file, const ValuesHolder< bool, Device, Index, Allocator >& holder ) {
+   file << holder.getSize();
+   return file; };
 
 /**
- * \brief Deserialization of arrays from binary files.
+ * \brief Deserialization of values holder from binary files.
  */
 template< typename Device, typename Index, typename Allocator >
-File& operator>>( File& file, ValuesHolder< bool, Device, Index, Allocator >& array ) { return file; };
+File& operator>>( File& file, ValuesHolder< bool, Device, Index, Allocator >& holder ) {
+   Index size;
+   file >> size;
+   holder.setSize( size );
+   return file; };
 
 template< typename Device, typename Index, typename Allocator >
-File& operator>>( File&& file, ValuesHolder< bool, Device, Index, Allocator >& array ) { return file; };
+File& operator>>( File&& file, ValuesHolder< bool, Device, Index, Allocator >& holder ) {
+   Index size;
+   file >> size;
+   holder.setSize( size );
+   return file; };
 
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename RealAllocator >
+struct ValuesHolderSetter
+{
+   using type = ValuesHolder< Real, Device, Index, RealAllocator >;
+};
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename RealAllocator >
+struct SparseMatrixValuesHolderSetter
+{
+   using type = ValuesHolder< Real, Device, Index, RealAllocator >;
+};
+
+template< typename Device,
+          typename Index,
+          typename RealAllocator >
+struct SparseMatrixValuesHolderSetter< bool, Device, Index, RealAllocator >
+{
+   using type = BooleanValuesHolder< Device, Index >;
+};
 
       } //namespace details
    } //namepsace Matrices

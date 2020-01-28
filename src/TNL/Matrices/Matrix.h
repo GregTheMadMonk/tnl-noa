@@ -16,6 +16,7 @@
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/VectorView.h>
 #include <TNL/Matrices/MatrixView.h>
+#include <TNL/Matrices/details/ValuesHolder.h>
 
 namespace TNL {
 /**
@@ -26,7 +27,8 @@ namespace Matrices {
 template< typename Real = double,
           typename Device = Devices::Host,
           typename Index = int,
-          typename RealAllocator = typename Allocators::Default< Device >::template Allocator< Real > >
+          typename RealAllocator = typename Allocators::Default< Device >::template Allocator< Real >,
+          typename ValuesHolder = typename details::ValuesHolder< Real, Device, Index, RealAllocator > >
 class Matrix : public Object
 {
 public:
@@ -36,7 +38,7 @@ public:
    using CompressedRowLengthsVector = Containers::Vector< IndexType, DeviceType, IndexType >;
    using CompressedRowLengthsVectorView = Containers::VectorView< IndexType, DeviceType, IndexType >;
    using ConstCompressedRowLengthsVectorView = typename CompressedRowLengthsVectorView::ConstViewType;
-   using ValuesVector = Containers::Vector< RealType, DeviceType, IndexType, RealAllocator >;
+   using ValuesHolderType = ValuesHolder;
    using RealAllocatorType = RealAllocator;
    using ViewType = MatrixView< Real, Device, Index >;
    using ConstViewType = MatrixView< std::add_const_t< Real >, Device, Index >;
@@ -90,9 +92,9 @@ public:
    virtual Real getElement( const IndexType row,
                             const IndexType column ) const = 0;
 
-   const ValuesVector& getValues() const;
+   const ValuesHolderType& getValues() const;
 
-   ValuesVector& getValues();
+   ValuesHolderType& getValues();
 
    // TODO: parallelize and optimize for sparse matrices
    template< typename Matrix >
@@ -131,7 +133,7 @@ public:
 
    IndexType rows, columns, numberOfColors;
 
-   ValuesVector values;
+   ValuesHolderType values;
 };
 
 template< typename Real, typename Device, typename Index >
