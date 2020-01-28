@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <vector>
+#include <string>
 #include <memory>
 
 #include <TNL/Solvers/Linear/SOR.h>
@@ -28,54 +30,89 @@
 namespace TNL {
 namespace Solvers {
 
+inline std::vector<std::string>
+getLinearSolverOptions()
+{
+   return {
+      "sor",
+      "cg",
+      "bicgstab",
+      "bicgstabl",
+      "gmres",
+      "tfqmr"
+#ifdef HAVE_UMFPACK
+      , "umfpack"
+#endif
+   };
+}
+
+inline std::vector<std::string>
+getPreconditionerOptions()
+{
+   return {
+      "none",
+      "diagonal",
+      "ilu0",
+      "ilut"
+   };
+}
+
 template< typename MatrixType >
 std::shared_ptr< Linear::LinearSolver< MatrixType > >
-getLinearSolver( const Config::ParameterContainer& parameters )
+getLinearSolver( std::string name )
 {
-   const String& discreteSolver = parameters.getParameter< String >( "discrete-solver" );
-
-   if( discreteSolver == "sor" )
+   if( name == "sor" )
       return std::make_shared< Linear::SOR< MatrixType > >();
-   if( discreteSolver == "cg" )
+   if( name == "cg" )
       return std::make_shared< Linear::CG< MatrixType > >();
-   if( discreteSolver == "bicgstab" )
+   if( name == "bicgstab" )
       return std::make_shared< Linear::BICGStab< MatrixType > >();
-   if( discreteSolver == "bicgstabl" )
+   if( name == "bicgstabl" )
       return std::make_shared< Linear::BICGStabL< MatrixType > >();
-   if( discreteSolver == "gmres" )
+   if( name == "gmres" )
       return std::make_shared< Linear::GMRES< MatrixType > >();
-   if( discreteSolver == "tfqmr" )
+   if( name == "tfqmr" )
       return std::make_shared< Linear::TFQMR< MatrixType > >();
 #ifdef HAVE_UMFPACK
    if( discreteSolver == "umfpack" )
       return std::make_shared< Linear::UmfpackWrapper< MatrixType > >();
 #endif
 
-   std::cerr << "Unknown semi-implicit discrete solver " << discreteSolver << ". It can be only: sor, cg, bicgstab, bicgstabl, gmres, tfqmr";
-#ifdef HAVE_UMFPACK
-   std::cerr << ", umfpack"
-#endif
-   std::cerr << "." << std::endl;
+   std::string options;
+   for( auto o : getLinearSolverOptions() )
+      if( options.empty() )
+         options += o;
+      else
+         options += ", " + o;
+
+   std::cerr << "Unknown semi-implicit discrete solver " << name << ". It can be only: " << options << "." << std::endl;
 
    return nullptr;
 }
 
 template< typename MatrixType >
 std::shared_ptr< Linear::Preconditioners::Preconditioner< MatrixType > >
-getPreconditioner( const Config::ParameterContainer& parameters )
+getPreconditioner( std::string name )
 {
-   const String& preconditioner = parameters.getParameter< String >( "preconditioner" );
 
-   if( preconditioner == "none" )
+   if( name == "none" )
       return nullptr;
-   if( preconditioner == "diagonal" )
+   if( name == "diagonal" )
       return std::make_shared< Linear::Preconditioners::Diagonal< MatrixType > >();
-   if( preconditioner == "ilu0" )
+   if( name == "ilu0" )
       return std::make_shared< Linear::Preconditioners::ILU0< MatrixType > >();
-   if( preconditioner == "ilut" )
+   if( name == "ilut" )
       return std::make_shared< Linear::Preconditioners::ILUT< MatrixType > >();
 
-   std::cerr << "Unknown preconditioner " << preconditioner << ". It can be only: none, diagonal, ilu0, ilut." << std::endl;
+   std::string options;
+   for( auto o : getPreconditionerOptions() )
+      if( options.empty() )
+         options += o;
+      else
+         options += ", " + o;
+
+   std::cerr << "Unknown preconditioner " << name << ". It can be only: " << options << "." << std::endl;
+
    return nullptr;
 }
 

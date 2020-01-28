@@ -15,16 +15,7 @@
 #include <TNL/Solvers/DummyProblem.h>
 #include <TNL/Solvers/PDE/ExplicitTimeStepper.h>
 #include <TNL/Solvers/PDE/TimeDependentPDESolver.h>
-#include <TNL/Solvers/Linear/SOR.h>
-#include <TNL/Solvers/Linear/CG.h>
-#include <TNL/Solvers/Linear/BICGStab.h>
-#include <TNL/Solvers/Linear/BICGStabL.h>
-#include <TNL/Solvers/Linear/GMRES.h>
-#include <TNL/Solvers/Linear/TFQMR.h>
-#include <TNL/Solvers/Linear/UmfpackWrapper.h>
-#include <TNL/Solvers/Linear/Preconditioners/Diagonal.h>
-#include <TNL/Solvers/Linear/Preconditioners/ILU0.h>
-#include <TNL/Solvers/Linear/Preconditioners/ILUT.h>
+#include <TNL/Solvers/LinearSolverTypeResolver.h>
 #include <TNL/Matrices/CSR.h>
 #include <TNL/Meshes/DistributedMeshes/DistributedGrid.h>
 
@@ -124,23 +115,11 @@ bool SolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDescri
    }
    if( ConfigTagTimeDiscretisation< ConfigTag, SemiImplicitTimeDiscretisationTag >::enabled )
    {
-      config.addEntryEnum( "cg" );
-      config.addEntryEnum( "bicgstab" );
-      config.addEntryEnum( "bicgstabl" );
-      config.addEntryEnum( "gmres" );
-      config.addEntryEnum( "tfqmr" );
-      config.addEntryEnum( "sor" );
-#ifdef HAVE_UMFPACK
-      config.addEntryEnum( "umfpack" );
-#endif
+      for( auto o : getLinearSolverOptions() )
+         config.addEntryEnum( String( o ) );
       config.addEntry< String >( "preconditioner", "The preconditioner for the discrete solver:", "none" );
-      config.addEntryEnum( "none" );
-      config.addEntryEnum( "diagonal" );
-   // TODO: implement parallel ILU or device-dependent build config tags for preconditioners
-#ifndef HAVE_CUDA
-      config.addEntryEnum( "ilu0" );
-      config.addEntryEnum( "ilut" );
-#endif
+      for( auto o : getPreconditionerOptions() )
+         config.addEntryEnum( String( o ) );
    }
    if( ConfigTagTimeDiscretisation< ConfigTag, ExplicitTimeDiscretisationTag >::enabled ||
        ConfigTagTimeDiscretisation< ConfigTag, SemiImplicitTimeDiscretisationTag >::enabled )

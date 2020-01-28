@@ -33,14 +33,16 @@ setup( const Config::ParameterContainer& parameters,
        const String& prefix )
 {
    // set up the linear solver
-   linearSystemSolver = getLinearSolver< MatrixType >( parameters );
+   const String& discreteSolver = parameters.getParameter< String >( prefix + "discrete-solver" );
+   linearSystemSolver = getLinearSolver< MatrixType >( discreteSolver );
    if( ! linearSystemSolver )
       return false;
    if( ! linearSystemSolver->setup( parameters ) )
       return false;
 
    // set up the preconditioner
-   preconditioner = getPreconditioner< MatrixType >( parameters );
+   const String& preconditionerName = parameters.getParameter< String >( prefix + "preconditioner" );
+   preconditioner = getPreconditioner< MatrixType >( preconditionerName );
    if( preconditioner ) {
       linearSystemSolver->setPreconditioner( preconditioner );
       if( ! preconditioner->setup( parameters ) )
