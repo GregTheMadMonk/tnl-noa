@@ -34,8 +34,8 @@ class Tridiagonal : public Matrix< Real, Device, Index, RealAllocator >
       using RealAllocatorType = RealAllocator;
       using BaseType = Matrix< Real, Device, Index, RealAllocator >;
       using IndexerType = details::TridiagonalMatrixIndexer< IndexType, RowMajorOrder >;
-      using ValuesType = typename BaseType::ValuesVector;
-      using ValuesViewType = typename ValuesType::ViewType;
+      using ValuesHolderType = typename BaseType::ValuesHolderType;
+      using ValuesViewType = typename ValuesHolderType::ViewType;
       using ViewType = TridiagonalMatrixView< Real, Device, Index, RowMajorOrder >;
       using ConstViewType = TridiagonalMatrixView< typename std::add_const< Real >::type, Device, Index, RowMajorOrder >;
       using RowView = TridiagonalMatrixRowView< ValuesViewType, IndexerType >;

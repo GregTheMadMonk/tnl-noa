@@ -39,8 +39,8 @@ class DenseMatrixView : public MatrixView< Real, Device, Index >
       using DeviceType = Device;
       using IndexType = Index;
       using BaseType = Matrix< Real, Device, Index >;
-      using ValuesType = typename BaseType::ValuesVector;
-      using ValuesViewType = typename ValuesType::ViewType;
+      using ValuesHolderType = typename BaseType::ValuesHolderType;
+      using ValuesViewType = typename ValuesHolderType::ViewType;
       using SegmentsType = Containers::Segments::Ellpack< DeviceType, IndexType, typename Allocators::Default< Device >::template Allocator< IndexType >, RowMajorOrder, 1 >;
       using SegmentsViewType = typename SegmentsType::ViewType;
       using SegmentViewType = typename SegmentsType::SegmentViewType;

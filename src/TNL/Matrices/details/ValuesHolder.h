@@ -14,13 +14,54 @@ namespace TNL {
    namespace Matrices {
       namespace details {
 
+
+template< typename Real,
+          typename Device,
+          typename Index >
+struct ValuesHolderView
+: public Containers::VectorView< Real, Device, Index >
+{
+   using RealType = Real;
+   using DeviceType = Device;
+   using IndexType = Index;
+
+   using Containers::VectorView< Real, Device, Index >::VectorView;
+   using Containers::VectorView< Real, Device, Index >::operator=;
+   /*__cuda_callable__
+   ValuesHolderView() = default;
+
+   __cuda_callable__
+   explicit ValuesHolderView( const ValuesHolderView& ) = default;
+
+   __cuda_callable__
+   ValuesHolderView( ValuesHolderView&& ) = default;*/
+
+};
+
 template< typename Real,
           typename Device,
           typename Index,
-          typename RealAllocator >
-class ValuesHolder
-: public Containers::Vector< Real, Device, Index, RealAllocator >
-{};
+          typename Allocator >
+struct ValuesHolder
+: public Containers::Vector< Real, Device, Index, Allocator >
+{
+   using RealType = Real;
+   using DeviceType = Device;
+   using IndexType = Index;
+   using AllocatorType = Allocator;
+   using ViewType = ValuesHolderView< Real, Device, Index >;
+
+   using Containers::Vector< Real, Device, Index, Allocator >::Vector;
+   using Containers::Vector< Real, Device, Index, Allocator >::operator=;
+   /*ValuesHolder() = default;
+
+   explicit ValuesHolder( const ValuesHolder& ) = default;
+
+   explicit ValuesHolder( const ValuesHolder& vector, const AllocatorType& allocator );
+
+   ValuesHolder( ValuesHolder&& ) = default;*/
+
+};
 
 template< typename Device,
           typename Index >
@@ -31,6 +72,7 @@ class BooleanValuesHolder
       using RealType = bool;
       using DeviceType = Device;
       using IndexType = Index;
+      using ViewType = BooleanValuesHolder;
 
       BooleanValuesHolder()
       : size( 0 ){};
