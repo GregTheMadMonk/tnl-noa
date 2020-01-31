@@ -27,6 +27,8 @@ template< typename Real,
 class SparseMatrixView : public MatrixView< Real, Device, Index >
 {
    public:
+      static constexpr bool isSymmetric() { return MatrixType::isSymmetric(); };
+      static constexpr bool isBinary() { return std::is_same< Real, bool >::value; };
 
       using RealType = Real;
       template< typename Device_, typename Index_ >
@@ -35,20 +37,20 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       using SegmentViewType = typename SegmentsViewType::SegmentViewType;
       using DeviceType = Device;
       using IndexType = Index;
+      using BaseType = MatrixView< Real, Device, Index >;
       using RowsCapacitiesView = Containers::VectorView< IndexType, DeviceType, IndexType >;
       using ConstRowsCapacitiesView = typename RowsCapacitiesView::ConstViewType;
-      using ValuesViewType = typename MatrixView< Real, Device, Index >::ValuesView;
+      using ValuesViewType = typename BaseType::ValuesView;
       using ColumnsIndexesViewType = Containers::VectorView< IndexType, DeviceType, IndexType >;
       using ViewType = SparseMatrixView< typename std::remove_const< Real >::type, Device, Index, MatrixType, SegmentsViewTemplate >;
       using ConstViewType = SparseMatrixView< typename std::add_const< Real >::type, Device, Index, MatrixType, SegmentsViewTemplate >;
-      using RowView = SparseMatrixRowView< SegmentViewType, ValuesViewType, ColumnsIndexesViewType >;
+      using RowView = SparseMatrixRowView< SegmentViewType, ValuesViewType, ColumnsIndexesViewType, isBinary() >;
 
       // TODO: remove this - it is here only for compatibility with original matrix implementation
       typedef Containers::Vector< IndexType, DeviceType, IndexType > CompressedRowLengthsVector;
       typedef Containers::VectorView< IndexType, DeviceType, IndexType > CompressedRowLengthsVectorView;
       typedef typename CompressedRowLengthsVectorView::ConstViewType ConstCompressedRowLengthsVectorView;
 
-      static constexpr bool isSymmetric() { return MatrixType::isSymmetric(); };
 
       __cuda_callable__
       SparseMatrixView();

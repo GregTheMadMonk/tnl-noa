@@ -208,7 +208,6 @@ Tridiagonal< Real, Device, Index, RowMajorOrder, RealAllocator >::
 reset()
 {
    Matrix< Real, Device, Index >::reset();
-   this->values.reset();
 }
 
 template< typename Real,

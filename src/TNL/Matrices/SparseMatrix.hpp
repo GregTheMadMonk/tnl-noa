@@ -27,7 +27,7 @@ template< typename Real,
 SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
 SparseMatrix( const RealAllocatorType& realAllocator,
               const IndexAllocatorType& indexAllocator )
-   : Matrix< Real, Device, Index, RealAllocator >( realAllocator ), columnIndexes( indexAllocator )
+   : BaseType( realAllocator ), columnIndexes( indexAllocator )
 {
 }
 
@@ -69,7 +69,7 @@ SparseMatrix( const IndexType rows,
               const IndexType columns,
               const RealAllocatorType& realAllocator,
               const IndexAllocatorType& indexAllocator )
-: Matrix< Real, Device, Index, RealAllocator >( rows, columns, realAllocator ), columnIndexes( indexAllocator )
+: BaseType( rows, columns, realAllocator ), columnIndexes( indexAllocator )
 {
 }
 
@@ -162,8 +162,11 @@ setCompressedRowLengths( const RowsCapacitiesVector& rowsCapacities )
       thisRowsCapacities = rowsCapacities;
       this->segments.setSegmentsSizes( thisRowsCapacities );
    }
-   this->values.setSize( this->segments.getStorageSize() );
-   this->values = ( RealType ) 0;
+   if( ! isBinary() )
+   {
+      this->values.setSize( this->segments.getStorageSize() );
+      this->values = ( RealType ) 0;
+   }
    this->columnIndexes.setSize( this->segments.getStorageSize() );
    this->columnIndexes = this->getPaddingIndex();
    this->view = this->getView();
@@ -196,7 +199,7 @@ void
 SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
 setLike( const Matrix_& matrix )
 {
-   Matrix< Real, Device, Index, RealAllocator >::setLike( matrix );
+   BaseType::setLike( matrix );
 }
 
 template< typename Real,
@@ -224,7 +227,7 @@ void
 SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
 reset()
 {
-   Matrix< Real, Device, Index >::reset();
+   BaseType::reset();
 }
 
 template< typename Real,
@@ -761,7 +764,7 @@ operator=( const RHSMatrix& matrix )
                TNL_ASSERT_LT( bufferIdx, bufferSize, "" );
                inValue = thisValuesBuffer_view[ bufferIdx ];
             }
-            //std::cerr << "rowIdx = " << rowIdx << " localIdx = " << localIdx << " bufferLocalIdx = " << bufferLocalIdx 
+            //std::cerr << "rowIdx = " << rowIdx << " localIdx = " << localIdx << " bufferLocalIdx = " << bufferLocalIdx
             //          << " inValue = " << inValue << " bufferIdx = " << bufferIdx << std::endl;
             rowLocalIndexes_view[ rowIdx ] = bufferLocalIdx;
             if( inValue == 0.0 )

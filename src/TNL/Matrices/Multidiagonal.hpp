@@ -277,7 +277,6 @@ Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator
 reset()
 {
    Matrix< Real, Device, Index >::reset();
-   this->values.reset();
 }
 
 template< typename Real,
@@ -488,7 +487,7 @@ template< typename Real,
           typename IndexAllocator >
 template< typename Vector >
 __cuda_callable__
-typename Vector::RealType 
+typename Vector::RealType
 Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
 rowVectorProduct( const IndexType row, const Vector& vector ) const
 {
@@ -503,7 +502,7 @@ template< typename Real,
           typename IndexAllocator >
    template< typename InVector,
              typename OutVector >
-void 
+void
 Multidiagonal< Real, Device, Index, RowMajorOrder, RealAllocator, IndexAllocator >::
 vectorProduct( const InVector& inVector, OutVector& outVector ) const
 {

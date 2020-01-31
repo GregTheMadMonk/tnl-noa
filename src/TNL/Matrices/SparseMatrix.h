@@ -31,6 +31,8 @@ template< typename Real,
 class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
 {
    public:
+      static constexpr bool isSymmetric() { return MatrixType::isSymmetric(); };
+      static constexpr bool isBinary() { return std::is_same< Real, bool >::value; };
 
       using RealType = Real;
       template< typename Device_, typename Index_, typename IndexAllocator_ >
@@ -43,23 +45,22 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       using IndexType = Index;
       using RealAllocatorType = RealAllocator;
       using IndexAllocatorType = IndexAllocator;
+      using BaseType = Matrix< Real, Device, Index, RealAllocator >;
       using RowsCapacitiesType = Containers::Vector< IndexType, DeviceType, IndexType, IndexAllocatorType >;
       using RowsCapacitiesView = Containers::VectorView< IndexType, DeviceType, IndexType >;
       using ConstRowsCapacitiesView = typename RowsCapacitiesView::ConstViewType;
-      using ValuesHolderType = typename Matrix< Real, Device, Index, RealAllocator >::ValuesHolderType;
-      using ValuesViewType = typename ValuesHolderType::ViewType;
+      using ValuesVectorType = typename Matrix< Real, Device, Index, RealAllocator >::ValuesVectorType;
+      using ValuesViewType = typename ValuesVectorType::ViewType;
       using ColumnsIndexesVectorType = Containers::Vector< IndexType, DeviceType, IndexType, IndexAllocatorType >;
       using ColumnsIndexesViewType = typename ColumnsIndexesVectorType::ViewType;
       using ViewType = SparseMatrixView< Real, Device, Index, MatrixType, SegmentsViewTemplate >;
       using ConstViewType = SparseMatrixView< typename std::add_const< Real >::type, Device, Index, MatrixType, SegmentsViewTemplate >;
-      using RowView = SparseMatrixRowView< SegmentViewType, ValuesViewType, ColumnsIndexesViewType >;
+      using RowView = SparseMatrixRowView< SegmentViewType, ValuesViewType, ColumnsIndexesViewType, isBinary() >;
 
       // TODO: remove this - it is here only for compatibility with original matrix implementation
       typedef Containers::Vector< IndexType, DeviceType, IndexType > CompressedRowLengthsVector;
       typedef Containers::VectorView< IndexType, DeviceType, IndexType > CompressedRowLengthsVectorView;
       typedef typename CompressedRowLengthsVectorView::ConstViewType ConstCompressedRowLengthsVectorView;
-
-      static constexpr bool isSymmetric() { return MatrixType::isSymmetric(); };
 
       SparseMatrix( const RealAllocatorType& realAllocator = RealAllocatorType(),
                     const IndexAllocatorType& indexAllocator = IndexAllocatorType() );

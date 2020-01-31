@@ -35,7 +35,7 @@ template< typename Real,
           typename Index >
 __cuda_callable__
 MatrixView< Real, Device, Index >::
-MatrixView( const IndexType rows_, 
+MatrixView( const IndexType rows_,
             const IndexType columns_,
             const ValuesView& values_ )
  : rows( rows_ ), columns( columns_ ), values( values_ )
@@ -45,7 +45,9 @@ MatrixView( const IndexType rows_,
 template< typename Real,
           typename Device,
           typename Index >
-void MatrixView< Real, Device, Index >::getCompressedRowLengths( CompressedRowLengthsVector& rowLengths ) const
+void
+MatrixView< Real, Device, Index >::
+getCompressedRowLengths( CompressedRowLengthsVector& rowLengths ) const
 {
    rowLengths.setSize( this->getRows() );
    getCompressedRowLengths( rowLengths.getView() );
@@ -54,7 +56,9 @@ void MatrixView< Real, Device, Index >::getCompressedRowLengths( CompressedRowLe
 template< typename Real,
           typename Device,
           typename Index >
-void MatrixView< Real, Device, Index >::getCompressedRowLengths( CompressedRowLengthsVectorView rowLengths ) const
+void
+MatrixView< Real, Device, Index >::
+getCompressedRowLengths( CompressedRowLengthsVectorView rowLengths ) const
 {
    TNL_ASSERT_EQ( rowLengths.getSize(), this->getRows(), "invalid size of the rowLengths vector" );
    for( IndexType row = 0; row < this->getRows(); row++ )
@@ -64,7 +68,9 @@ void MatrixView< Real, Device, Index >::getCompressedRowLengths( CompressedRowLe
 template< typename Real,
           typename Device,
           typename Index >
-Index MatrixView< Real, Device, Index >::getAllocatedElementsCount() const
+Index
+MatrixView< Real, Device, Index >::
+getAllocatedElementsCount() const
 {
    return this->values.getSize();
 }
@@ -72,7 +78,9 @@ Index MatrixView< Real, Device, Index >::getAllocatedElementsCount() const
 template< typename Real,
           typename Device,
           typename Index >
-Index MatrixView< Real, Device, Index >::getNumberOfNonzeroMatrixElements() const
+Index
+MatrixView< Real, Device, Index >::
+getNumberOfNonzeroMatrixElements() const
 {
    const auto values_view = this->values.getConstView();
    auto fetch = [=] __cuda_callable__ ( const IndexType i ) -> IndexType {
@@ -109,12 +117,12 @@ getValues() const
 {
    return this->values;
 }
-   
+
 template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-typename MatrixView< Real, Device, Index >::ValuesView& 
+typename MatrixView< Real, Device, Index >::ValuesView&
 MatrixView< Real, Device, Index >::
 getValues()
 {
@@ -124,7 +132,7 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
-MatrixView< Real, Device, Index >& 
+MatrixView< Real, Device, Index >&
 MatrixView< Real, Device, Index >::
 operator=( const MatrixView& view )
 {
@@ -202,7 +210,7 @@ getNumberOfColors() const
 template< typename Real,
           typename Device,
           typename Index >
-void 
+void
 MatrixView< Real, Device, Index >::
 computeColorsVector(Containers::Vector<Index, Device, Index> &colorsVector)
 {

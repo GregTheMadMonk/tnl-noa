@@ -28,6 +28,9 @@ IF( BUILD_CUDA )
    CUDA_ADD_EXECUTABLE( SparseMatrixTest_SlicedEllpack_segments SparseMatrixTest_SlicedEllpack_segments.cu OPTIONS ${CXX_TESTS_FLAGS} )
    TARGET_LINK_LIBRARIES( SparseMatrixTest_SlicedEllpack_segments ${GTEST_BOTH_LIBRARIES} )
 
+   CUDA_ADD_EXECUTABLE( BinarySparseMatrixTest BinarySparseMatrixTest.cu OPTIONS ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( BinarySparseMatrixTest ${GTEST_BOTH_LIBRARIES} )
+
 ELSE(  BUILD_CUDA )
    ADD_EXECUTABLE( SparseMatrixTest SparseMatrixTest.cpp )
    TARGET_COMPILE_OPTIONS( SparseMatrixTest PRIVATE ${CXX_TESTS_FLAGS} )
@@ -65,6 +68,10 @@ ELSE(  BUILD_CUDA )
    TARGET_COMPILE_OPTIONS( SparseMatrixTest_SlicedEllpack_segments PRIVATE ${CXX_TESTS_FLAGS} )
    TARGET_LINK_LIBRARIES( SparseMatrixTest_SlicedEllpack_segments ${GTEST_BOTH_LIBRARIES} )
 
+   ADD_EXECUTABLE( BinarySparseMatrixTest BinarySparseMatrixTest.cpp )
+   TARGET_COMPILE_OPTIONS( BinarySparseMatrixTest PRIVATE ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( BinarySparseMatrixTest ${GTEST_BOTH_LIBRARIES} )
+
 ENDIF( BUILD_CUDA )
 
 ADD_TEST( SparseMatrixTest ${EXECUTABLE_OUTPUT_PATH}/SparseMatrixTest${CMAKE_EXECUTABLE_SUFFIX} )
@@ -76,6 +83,7 @@ ADD_TEST( MultidiagonalMatrixTest ${EXECUTABLE_OUTPUT_PATH}/MultidiagonalMatrixT
 ADD_TEST( SparseMatrixTest_CSR_segments ${EXECUTABLE_OUTPUT_PATH}/SparseMatrixTest_CSR_segments${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( SparseMatrixTest_Ellpack_segments ${EXECUTABLE_OUTPUT_PATH}/SparseMatrixTest_Ellpack_segments${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( SparseMatrixTest_SlicedEllpack_segments ${EXECUTABLE_OUTPUT_PATH}/SparseMatrixTest_SlicedEllpack_segments${CMAKE_EXECUTABLE_SUFFIX} )
+ADD_TEST( BinarySparseMatrixTest ${EXECUTABLE_OUTPUT_PATH}/BinarySparseMatrixTest${CMAKE_EXECUTABLE_SUFFIX} )
 
 if( ${BUILD_MPI} )
    if( BUILD_CUDA )

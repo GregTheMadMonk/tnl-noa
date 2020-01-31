@@ -17,9 +17,10 @@ namespace TNL {
 
 template< typename SegmentView,
           typename ValuesView,
-          typename ColumnsIndexesView >
+          typename ColumnsIndexesView,
+          bool isBinary_ >
 __cuda_callable__
-SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView >::
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
 SparseMatrixRowView( const SegmentViewType& segmentView,
                      const ValuesViewType& values,
                      const ColumnsIndexesViewType& columnIndexes )
@@ -29,9 +30,10 @@ SparseMatrixRowView( const SegmentViewType& segmentView,
 
 template< typename SegmentView,
           typename ValuesView,
-          typename ColumnsIndexesView >
+          typename ColumnsIndexesView,
+          bool isBinary_ >
 __cuda_callable__ auto
-SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView >::
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
 getSize() const -> IndexType
 {
    return segmentView.getSize();
@@ -39,9 +41,10 @@ getSize() const -> IndexType
 
 template< typename SegmentView,
           typename ValuesView,
-          typename ColumnsIndexesView >
+          typename ColumnsIndexesView,
+          bool isBinary_ >
 __cuda_callable__ auto
-SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView >::
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
 getColumnIndex( const IndexType localIdx ) const -> const IndexType&
 {
    TNL_ASSERT_LT( localIdx, this->getSize(), "Local index exceeds matrix row capacity." );
@@ -50,9 +53,10 @@ getColumnIndex( const IndexType localIdx ) const -> const IndexType&
 
 template< typename SegmentView,
           typename ValuesView,
-          typename ColumnsIndexesView >
+          typename ColumnsIndexesView,
+          bool isBinary_ >
 __cuda_callable__ auto
-SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView >::
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
 getColumnIndex( const IndexType localIdx ) -> IndexType&
 {
    TNL_ASSERT_LT( localIdx, this->getSize(), "Local index exceeds matrix row capacity." );
@@ -61,9 +65,10 @@ getColumnIndex( const IndexType localIdx ) -> IndexType&
 
 template< typename SegmentView,
           typename ValuesView,
-          typename ColumnsIndexesView >
+          typename ColumnsIndexesView,
+          bool isBinary_ >
 __cuda_callable__ auto
-SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView >::
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
 getValue( const IndexType localIdx ) const -> const RealType&
 {
    TNL_ASSERT_LT( localIdx, this->getSize(), "Local index exceeds matrix row capacity." );
@@ -72,9 +77,10 @@ getValue( const IndexType localIdx ) const -> const RealType&
 
 template< typename SegmentView,
           typename ValuesView,
-          typename ColumnsIndexesView >
+          typename ColumnsIndexesView,
+          bool isBinary_ >
 __cuda_callable__ auto
-SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView >::
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
 getValue( const IndexType localIdx ) -> RealType&
 {
    TNL_ASSERT_LT( localIdx, this->getSize(), "Local index exceeds matrix row capacity." );
@@ -83,9 +89,10 @@ getValue( const IndexType localIdx ) -> RealType&
 
 template< typename SegmentView,
           typename ValuesView,
-          typename ColumnsIndexesView >
-__cuda_callable__ void 
-SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView >::
+          typename ColumnsIndexesView,
+          bool isBinary_ >
+__cuda_callable__ void
+SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
 setElement( const IndexType localIdx,
             const IndexType column,
             const RealType& value )
@@ -93,7 +100,8 @@ setElement( const IndexType localIdx,
    TNL_ASSERT_LT( localIdx, this->getSize(), "Local index exceeds matrix row capacity." );
    const IndexType globalIdx = segmentView.getGlobalIndex( localIdx );
    columnIndexes[ globalIdx ] = column;
-   values[ globalIdx ] = value;
+   if( ! isBinary() )
+      values[ globalIdx ] = value;
 }
 
 

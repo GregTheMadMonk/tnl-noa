@@ -1,4 +1,4 @@
-/***************************************************************************
+ /***************************************************************************
                           SparseMatrixRowView.h -  description
                              -------------------
     begin                : Dec 28, 2019
@@ -15,7 +15,8 @@ namespace TNL {
 
 template< typename SegmentView,
           typename ValuesView,
-          typename ColumnsIndexesView >
+          typename ColumnsIndexesView,
+          bool isBinary_ >
 class SparseMatrixRowView
 {
    public:
@@ -25,6 +26,8 @@ class SparseMatrixRowView
       using IndexType = typename SegmentViewType::IndexType;
       using ValuesViewType = ValuesView;
       using ColumnsIndexesViewType = ColumnsIndexesView;
+
+      static constexpr bool isBinary() { return isBinary_; };
 
       __cuda_callable__
       SparseMatrixRowView( const SegmentViewType& segmentView,
@@ -39,7 +42,7 @@ class SparseMatrixRowView
 
       __cuda_callable__
       IndexType& getColumnIndex( const IndexType localIdx );
-      
+
       __cuda_callable__
       const RealType& getValue( const IndexType localIdx ) const;
 
