@@ -35,8 +35,8 @@ class Multidiagonal : public Matrix< Real, Device, Index, RealAllocator >
       using RealAllocatorType = RealAllocator;
       using IndexAllocatorType = IndexAllocator;
       using BaseType = Matrix< Real, Device, Index, RealAllocator >;
-      using ValuesHolderType = typename BaseType::ValuesHolderType;
-      using ValuesViewType = typename ValuesHolderType::ViewType;
+      using ValuesVectorType = typename BaseType::ValuesVectorType;
+      using ValuesViewType = typename ValuesVectorType::ViewType;
       using IndexerType = details::MultidiagonalMatrixIndexer< IndexType, RowMajorOrder >;
       using DiagonalsShiftsType = Containers::Vector< IndexType, DeviceType, IndexType, IndexAllocatorType >;
       using DiagonalsShiftsView = typename DiagonalsShiftsType::ViewType;
