@@ -42,8 +42,8 @@ configSetup( Config::ConfigDescription& config,
    config.addRequiredEntry< double >( prefix + "final-time", "Stop time of the time dependent problem." );
    config.addEntry< double >( prefix + "initial-time", "Initial time of the time dependent problem.", 0 );
    config.addRequiredEntry< double >( prefix + "snapshot-period", "Time period for writing the problem status.");
-   config.addEntry< double >( "time-step", "The time step for the time discretisation.", 1.0 );
-   config.addEntry< double >( "time-step-order", "The time step is set to time-step*pow( space-step, time-step-order).", 0.0 );
+   config.addEntry< double >( prefix + "time-step", "The time step for the time discretisation.", 1.0 );
+   config.addEntry< double >( prefix + "time-step-order", "The time step is set to time-step*pow( space-step, time-step-order).", 0.0 );
 }
 
 template< typename Problem,

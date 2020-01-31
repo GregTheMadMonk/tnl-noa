@@ -130,7 +130,7 @@ class UserDefinedTimeDiscretisationSetter< Problem, ConfigTag, void >
          /****
           * Set-up the time discretisation
           */
-         const String& timeDiscretisation = parameters. getParameter< String>( "time-discretisation" );
+         const String& timeDiscretisation = parameters.getParameter< String>( "time-discretisation" );
          if( timeDiscretisation == "explicit" )
             return SolverStarterTimeDiscretisationSetter< Problem, ExplicitTimeDiscretisationTag, ConfigTag >::run( problem, parameters );
          if( timeDiscretisation == "semi-implicit" )
@@ -182,7 +182,7 @@ class SolverStarterTimeDiscretisationSetter< Problem, ExplicitTimeDiscretisation
       static bool run( Problem& problem,
                        const Config::ParameterContainer& parameters )
       {
-         const String& discreteSolver = parameters. getParameter< String>( "discrete-solver" );
+         const String& discreteSolver = parameters.getParameter< String>( "discrete-solver" );
          if( discreteSolver != "euler" &&
              discreteSolver != "merson" )
          {
@@ -219,7 +219,7 @@ class SolverStarterTimeDiscretisationSetter< Problem, ImplicitTimeDiscretisation
       static bool run( Problem& problem,
                        const Config::ParameterContainer& parameters )
       {
-//         const String& discreteSolver = parameters. getParameter< String>( "discrete-solver" );
+//         const String& discreteSolver = parameters.getParameter< String>( "discrete-solver" );
          return false;
       }
 };
@@ -265,11 +265,11 @@ bool SolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
 {
    this->totalTimer.reset();
    this->totalTimer.start();
-   
+
    using SolverMonitorType = IterativeSolverMonitor< typename Problem::RealType,
                                                      typename Problem::IndexType >;
    SolverMonitorType solverMonitor, *solverMonitorPointer( &solverMonitor );
- 
+
    /****
     * Open the log file
     */
@@ -293,7 +293,7 @@ bool SolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
    solverMonitorPointer->setVerbose( parameters.getParameter< int >( "verbose" ) );
    solverMonitorPointer->setTimer( this->totalTimer );
    solver.setSolverMonitor( *solverMonitorPointer );
-   
+
    // catching exceptions ala gtest:
    // https://github.com/google/googletest/blob/59c795ce08be0c8b225bc894f8da6c7954ea5c14/googletest/src/gtest.cc#L2409-L2431
    const int catch_exceptions = parameters.getParameter< bool >( "catch-exceptions" );
@@ -325,7 +325,7 @@ bool SolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
     * Write a prolog
     */
    const int verbose = parameters.getParameter< int >( "verbose" );
-   parameters.getParameter< int >( "log-width", logWidth );
+   logWidth = parameters.getParameter< int >( "log-width" );
    if( verbose ) {
       Logger logger( logWidth, std::cout );
       solver.writeProlog( logger, parameters );
