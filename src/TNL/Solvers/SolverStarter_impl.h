@@ -305,12 +305,12 @@ bool SolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
       }
       catch ( const std::exception& e ) {
          std::cerr << "Setting up the solver failed due to a C++ exception with description: " << e.what() << std::endl;
-         logFile   << "Setting up The solver failed due to a C++ exception with description: " << e.what() << std::endl;
+         logFile   << "Setting up the solver failed due to a C++ exception with description: " << e.what() << std::endl;
          return false;
       }
       catch (...) {
          std::cerr << "Setting up the solver failed due to an unknown C++ exception." << std::endl;
-         logFile   << "Setting up The solver failed due to an unknown C++ exception." << std::endl;
+         logFile   << "Setting up the solver failed due to an unknown C++ exception." << std::endl;
          throw;
       }
    }
@@ -371,8 +371,8 @@ bool SolverStarter< ConfigTag > :: runPDESolver( Problem& problem,
 
    if( ! returnCode ) {
       if( verbose )
-         std::cerr << std::endl << "The solver did not converge. " << std::endl;
-      logFile << "The solver did not converge. " << std::endl;
+         std::cerr << std::endl << "The solver did not converge." << std::endl;
+      logFile << "The solver did not converge." << std::endl;
    }
 
    /****
