@@ -82,7 +82,7 @@ processEntities(
       {
 #pragma omp parallel firstprivate( begin, end )
          {
-            GridEntity entity( *gridPointer );
+            GridEntity entity( *gridPointer, begin, gridEntityParameters... );
 #pragma omp for
             // TODO: g++ 5.5 crashes when coding this loop without auxiliary x and y as bellow
             for( IndexType y = begin.y(); y <= end.y(); y ++ )
@@ -97,7 +97,7 @@ processEntities(
       }
       else
       {
-         GridEntity entity( *gridPointer );
+         GridEntity entity( *gridPointer, begin, gridEntityParameters... );
          for( entity.getCoordinates().y() = begin.y();
               entity.getCoordinates().y() <= end.y();
               entity.getCoordinates().y() ++ )
@@ -110,7 +110,7 @@ processEntities(
                }
       }
 #else
-      GridEntity entity( *gridPointer );
+      GridEntity entity( *gridPointer, begin, gridEntityParameters... );
          for( entity.getCoordinates().y() = begin.y();
               entity.getCoordinates().y() <= end.y();
               entity.getCoordinates().y() ++ )
