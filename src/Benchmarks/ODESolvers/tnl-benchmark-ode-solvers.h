@@ -192,7 +192,7 @@ configSetup( Config::ConfigDescription& config )
    config.addEntryEnum( "overwrite" );
    config.addEntry< int >( "loops", "Number of repetitions of the benchmark.", 10 );
    config.addEntry< int >( "verbose", "Verbose mode.", 1 );
-   config.addList< String >( "solvers", "Comma-separated list of solvers to run benchmarks for.", "all" );
+   config.addList< String >( "solvers", "List of solvers to run benchmarks for.", {"all"} );
    config.addEntryEnum< String >( "euler" );
    config.addEntryEnum< String >( "merson" );
    config.addEntryEnum< String >( "all" );

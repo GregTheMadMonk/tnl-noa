@@ -1,9 +1,10 @@
 #include <iostream>
 #include <TNL/Config/ConfigDescription.h>
+#include <TNL/String.h>
 
 using namespace TNL;
 using namespace std;
-       
+
 int main()
 {
     Config::ConfigDescription confd;
