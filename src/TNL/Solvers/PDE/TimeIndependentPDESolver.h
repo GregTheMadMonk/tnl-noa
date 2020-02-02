@@ -34,10 +34,11 @@ class TimeIndependentPDESolver : public PDESolver< typename Problem::RealType,
 {
    public:
 
-      typedef Problem ProblemType;
-      typedef typename ProblemType::RealType RealType;
-      typedef typename ProblemType::DeviceType DeviceType;
-      typedef typename ProblemType::IndexType IndexType;
+      using RealType = typename Problem::RealType;
+      using DeviceType = typename Problem::DeviceType;
+      using IndexType = typename Problem::IndexType;
+      using BaseType = PDESolver< RealType, IndexType >;
+      using ProblemType = Problem;
       typedef typename ProblemType::MeshType MeshType;
       typedef typename ProblemType::DofVectorType DofVectorType;
       typedef Pointers::SharedPointer< MeshType, DeviceType > MeshPointer;

@@ -119,15 +119,7 @@ writeProlog( Logger& logger,
    logger.writeParameter< int >( "Maximal number of iterations:", "max-iterations", parameters );
    logger.writeParameter< int >( "Minimal number of iterations:", "min-iterations", parameters );
    logger.writeSeparator();
-   logger.writeParameter< String >( "Real type:", "real-type", parameters, 0 );
-   logger.writeParameter< String >( "Index type:", "index-type", parameters, 0 );
-   logger.writeParameter< String >( "Device:", "device", parameters, 0 );
-   logger.writeSeparator();
-   logger.writeSystemInformation( parameters );
-   logger.writeSeparator();
-   logger.writeCurrentTime( "Started at:" );
-   logger.writeSeparator();
-   return true;
+   return BaseType::template writeProlog< typename Problem::CommunicatorType >( logger, parameters );
 }
 
 template< typename Problem >

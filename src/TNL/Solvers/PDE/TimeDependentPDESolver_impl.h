@@ -146,7 +146,7 @@ writeProlog( Logger& logger,
       logger.writeParameter< double >( "Adaptivity:", "merson-adaptivity", parameters, 1 );
    if( solverName == "sor" )
       logger.writeParameter< double >( "Omega:", "sor-omega", parameters, 1 );
-   if( solverName == "gmres" || solverName == "cwygmres" ) {
+   if( solverName == "gmres" ) {
       logger.writeParameter< int >( "Restarting min:", "gmres-restarting-min", parameters, 1 );
       logger.writeParameter< int >( "Restarting max:", "gmres-restarting-max", parameters, 1 );
       logger.writeParameter< int >( "Restarting step min:", "gmres-restarting-step-min", parameters, 1 );
