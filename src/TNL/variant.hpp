@@ -2671,7 +2671,9 @@ namespace mpark {
 
   template <typename Visitor, typename... Vs>
   inline constexpr decltype(auto) visit(Visitor &&visitor, Vs &&... vs) {
-    return (detail::all({!vs.valueless_by_exception()...})
+    // NOTE: fix for nvcc, see https://github.com/mpark/variant/issues/63
+//    return (detail::all({!vs.valueless_by_exception()...})
+    return (detail::all(std::initializer_list<bool>({!vs.valueless_by_exception()...}))
                 ? (void)0
                 : throw_bad_variant_access()),
            detail::visitation::variant::visit_value(
