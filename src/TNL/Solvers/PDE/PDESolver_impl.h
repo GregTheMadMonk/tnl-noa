@@ -86,7 +86,8 @@ writeProlog( Logger& logger,
    }
    Communicator::writeProlog( logger );
    logger.writeSeparator();
-   logger.writeSystemInformation( parameters );
+   const bool printGPUs = parameters.getParameter< String >( "device" ) == "cuda";
+   logger.writeSystemInformation( printGPUs );
    logger.writeSeparator();
    logger.writeCurrentTime( "Started at:" );
    logger.writeSeparator();

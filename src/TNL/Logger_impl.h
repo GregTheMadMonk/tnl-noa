@@ -42,7 +42,7 @@ Logger::writeSeparator()
 }
 
 inline bool
-Logger::writeSystemInformation( const Config::ParameterContainer& parameters )
+Logger::writeSystemInformation( bool printGPUInfo )
 {
 // compiler detection macros:
 // http://nadeausoftware.com/articles/2012/10/c_c_tip_how_detect_compiler_name_and_version_using_compiler_predefined_macros
@@ -88,7 +88,7 @@ Logger::writeSystemInformation( const Config::ParameterContainer& parameters )
                           + convertToString( cacheSizes.L3 );
    writeParameter< String >( "Cache (L1d, L1i, L2, L3):", cacheInfo, 1 );
 
-   if( parameters.getParameter< String >( "device" ) == "cuda" ) {
+   if( printGPUInfo ) {
       writeParameter< String >( "CUDA GPU info", "" );
       // TODO: Printing all devices does not make sense until TNL can actually
       //       use more than one device for computations. Printing only the active
@@ -129,15 +129,7 @@ Logger::writeParameter( const String& label,
                         const Config::ParameterContainer& parameters,
                         int parameterLevel )
 {
-   stream << "| ";
-   int i;
-   for( i = 0; i < parameterLevel; i ++ )
-      stream << " ";
-   std::stringstream str;
-   str << parameters.getParameter< T >( parameterName );
-   stream << label
-          << std::setw( width - label.getLength() - parameterLevel - 3 )
-          << str.str() << " |" << std::endl;
+   writeParameter( label, parameters.getParameter< T >( parameterName ), parameterLevel );
 }
 
 template< typename T >
@@ -148,7 +140,7 @@ Logger::writeParameter( const String& label,
 {
    stream << "| ";
    int i;
-   for( i = 0; i < parameterLevel; i ++ )
+   for( i = 0; i < parameterLevel; i++ )
       stream << " ";
    std::stringstream str;
    str << value;

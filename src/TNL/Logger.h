@@ -43,8 +43,8 @@ public:
 
    /// \brief Inserts information about various system parameters into the log.
    ///
-   /// \param parameters A container with configuration parameters.
-   bool writeSystemInformation( const Config::ParameterContainer& parameters );
+   /// \param printGPUInfo When \e true, prints information about available GPUs.
+   bool writeSystemInformation( bool printGPUInfo = false );
 
    /////
    /// \brief Inserts a line with current time into the log.
