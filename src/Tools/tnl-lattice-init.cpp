@@ -10,8 +10,7 @@
 
 #include "tnl-lattice-init.h"
 
-#include <TNL/Config/ConfigDescription.h>
-#include <TNL/Config/ParameterContainer.h>
+#include <TNL/Config/parseCommandLine.h>
 
 
 using namespace TNL;

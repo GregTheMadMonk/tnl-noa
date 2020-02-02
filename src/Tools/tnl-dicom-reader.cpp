@@ -8,9 +8,8 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/Config/ConfigDescription.h>
-#include <TNL/Config/ParameterContainer.h>
-#include <TNL/Images//DicomSeries.h>
+#include <TNL/Config/parseCommandLine.h>
+#include <TNL/Images/DicomSeries.h>
 #include <TNL/FileName.h>
 
 using namespace TNL;
@@ -85,15 +84,12 @@ int main( int argc, char* argv[] )
    Config::ConfigDescription configDescription;
    setupConfig( configDescription );
    if( ! parseCommandLine( argc, argv, configDescription, parameters ) )
-   {
-      configDescription.printUsage( argv[ 0 ] );
       return EXIT_FAILURE;
-   }
    if( ! parameters.checkParameter( "dicom-files" ) &&
        ! parameters.checkParameter( "dicom-series") )
    {
        std::cerr << "Neither DICOM series nor DICOM files are given." << std::endl;
-       configDescription.printUsage( argv[ 0 ] );
+       Config::printUsage( configDescription, argv[ 0 ] );
        return EXIT_FAILURE;
    }
 #ifdef HAVE_DCMTK_H

@@ -13,8 +13,7 @@
 
 #include <iostream>
 #include <stdio.h>
-#include <TNL/Config/ConfigDescription.h>
-#include <TNL/Config/ParameterContainer.h>
+#include <TNL/Config/parseCommandLine.h>
 #include <TNL/Timer.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Containers/StaticVector.h>

@@ -8,8 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/Config/ConfigDescription.h>
-#include <TNL/Config/ParameterContainer.h>
+#include <TNL/Config/parseCommandLine.h>
 #include <TNL/FileName.h>
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Pointers/SharedPointer.h>
@@ -206,15 +205,12 @@ int main( int argc, char* argv[] )
    Config::ConfigDescription configDescription;
    configSetup( configDescription );
    if( ! parseCommandLine( argc, argv, configDescription, parameters ) )
-   {
-      configDescription.printUsage( argv[ 0 ] );
       return EXIT_FAILURE;
-   }
    if( ! parameters.checkParameter( "input-images" ) &&
        ! parameters.checkParameter( "input-files") )
    {
        std::cerr << "Neither input images nor input .tnl files are given." << std::endl;
-       configDescription.printUsage( argv[ 0 ] );
+       Config::printUsage( configDescription, argv[ 0 ] );
        return EXIT_FAILURE;
    }
    if( parameters.checkParameter( "input-images" ) )

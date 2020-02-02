@@ -21,8 +21,7 @@
 #include <TNL/Debugging/FPE.h>
 #endif
 
-#include <TNL/Config/ConfigDescription.h>
-#include <TNL/Config/ParameterContainer.h>
+#include <TNL/Config/parseCommandLine.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Communicators/MpiCommunicator.h>
@@ -592,10 +591,8 @@ main( int argc, char* argv[] )
    Communicators::ScopedInitializer< CommunicatorType > scopedInit(argc, argv);
    const int rank = CommunicatorType::GetRank( CommunicatorType::AllGroup );
 
-   if( ! parseCommandLine( argc, argv, conf_desc, parameters ) ) {
-      conf_desc.printUsage( argv[ 0 ] );
+   if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
       return EXIT_FAILURE;
-   }
    if( ! Devices::Host::setup( parameters ) ||
        ! Devices::Cuda::setup( parameters ) ||
        ! CommunicatorType::setup( parameters ) )

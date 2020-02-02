@@ -15,6 +15,7 @@
 #include <TNL/Assert.h>
 #include <TNL/Math.h>
 #include <TNL/Algorithms/ParallelFor.h>
+#include <TNL/Config/parseCommandLine.h>
 
 #include <TNL/Containers/NDArray.h>
 #include <TNL/Containers/ndarray/Operations.h>
@@ -411,10 +412,8 @@ int main( int argc, char* argv[] )
 
    setupConfig( conf_desc );
 
-   if( ! parseCommandLine( argc, argv, conf_desc, parameters ) ) {
-      conf_desc.printUsage( argv[ 0 ] );
+   if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
       return EXIT_FAILURE;
-   }
 
    if( ! Devices::Host::setup( parameters ) ||
        ! Devices::Cuda::setup( parameters ) )
