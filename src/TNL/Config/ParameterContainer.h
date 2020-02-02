@@ -1,50 +1,26 @@
 /***************************************************************************
-                          Config::ParameterContainer.h  -  description
+                          ParameterContainer.h  -  description
                              -------------------
     begin                : 2007/06/15
-    copyright            : (C) 2007 by Tomas Oberhuber
+    copyright            : (C) 2007 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 /* See Copyright Notice in tnl/Copyright */
 
+// Implemented by: Tomáš Oberhuber, Jakub Klinkovský
+
 #pragma once
 
+#include <unordered_map>
 #include <vector>
-#include <memory>
 
+#include <TNL/Config/ConfigEntryType.h>
 #include <TNL/TypeInfo.h>
-#include <TNL/String.h>
-//#include <TNL/Debugging/StackBacktrace.h>
+#include <TNL/Exceptions/ConfigError.h>
 
 namespace TNL {
 namespace Config {
-
-struct ParameterBase
-{
-   ParameterBase( const String& name,
-                  const String& type )
-   : name( name ), type( type )
-   {}
-
-   String name, type;
-
-   // Virtual destructor is needed to avoid undefined behaviour when deleting the
-   // ParameterContainer::parameters vector, see https://stackoverflow.com/a/8752126
-   virtual ~ParameterBase() = default;
-};
-
-template< class T >
-struct Parameter : public ParameterBase
-{
-   Parameter( const String& name,
-              const String& type,
-              const T& value )
-   : ParameterBase( name, type ), value( value )
-   {}
-
-   T value;
-};
 
 class ParameterContainer
 {
@@ -52,33 +28,55 @@ public:
    /**
     * \brief Adds new parameter to the ParameterContainer.
     *
-    * \tparam T Type of parameter value.
     * \param name Name of the new parameter.
     * \param value Value assigned to the parameter.
     */
    template< class T >
-   bool addParameter( const String& name,
+   void addParameter( const std::string& name,
                       const T& value )
    {
-      parameters.push_back( std::make_unique< Parameter< T > >( name, TNL::getType< T >(), value ) );
-      return true;
+      parameters.emplace( name, ParameterTypeCoercion< T >::convert( value ) );
    }
 
    /**
     * \brief Adds new parameter to the ParameterContainer.
     *
-    * \tparam T Type of parameter value.
     * \param name Name of the new parameter.
     * \param value Value assigned to the parameter.
     */
    template< class T >
-   bool addList( const String& name,
-                 const T& value )
+   void addParameter( const std::string& name,
+                      const std::vector< T >& value )
    {
-      std::vector< T > v;
-      v.push_back( value );
-      parameters.push_back( std::make_unique< Parameter< std::vector< T > > >( name, TNL::getType< T >(), v ) );
-      return true;
+      parameters.emplace( name, ParameterTypeCoercion< std::vector< T > >::convert( value ) );
+   }
+
+   /**
+    * \brief Adds new list parameter to the ParameterContainer.
+    *
+    * \param name Name of the new parameter.
+    * \param value Vector of values assigned to the parameter.
+    */
+   template< class T >
+   void addList( const std::string& name,
+                 const std::vector< T >& value )
+   {
+      addParameter( name, value );
+   }
+
+   /**
+    * \brief Adds new list parameter to the ParameterContainer.
+    *
+    * \param name Name of the new parameter.
+    * \param value First value assigned to the parameter.
+    * \param values Other values assigned to the parameter.
+    */
+   template< class T, class... Ts >
+   void addList( const std::string& name,
+                 const T& value,
+                 const Ts&... values )
+   {
+      addParameter( name, std::vector< T >{value, values...} );
    }
 
    /**
@@ -86,19 +84,15 @@ public:
     *
     * \param name Name of the parameter.
     */
-   bool checkParameter( const String& name ) const
+   bool checkParameter( const std::string& name ) const
    {
-      const int size = parameters.size();
-      for( int i = 0; i < size; i++ )
-         if( parameters[ i ]->name == name )
-            return true;
-      return false;
+      return parameters.count( name );
    }
 
    /**
-    * \brief Checks whether the ParameterContainer contains all specified parameter names.
+    * \brief Checks if the ParameterContainer contains all specified parameter names.
     *
-    * \param name Name of the parameter.
+    * \param names List of the parameter names.
     */
    bool checkParameters( std::initializer_list< String > names ) const
    {
@@ -109,6 +103,23 @@ public:
    }
 
    /**
+    * \brief Checks if the parameter \e name already exists in ParameterContainer and holds a value of type \e T.
+    *
+    * \param name Name of the parameter.
+    */
+   template< class T >
+   bool checkParameterType( const std::string& name ) const
+   {
+      using CoercedType = typename ParameterTypeCoercion< T >::type;
+      auto search = parameters.find( name );
+      if( search != parameters.end() ) {
+         if( holds_alternative< CoercedType >( search->second ) )
+            return true;
+      }
+      return false;
+   }
+
+   /**
     * \brief Assigns new \e value to the parameter \e name.
     *
     * \tparam T Type of the parameter value.
@@ -116,212 +127,60 @@ public:
     * \param value Value of type T assigned to the parameter.
     */
    template< class T >
-   bool setParameter( const String& name,
+   void setParameter( const std::string& name,
                       const T& value )
    {
-      for( int i = 0; i < (int) parameters.size(); i++ ) {
-         if( parameters[ i ]->name == name ) {
-            if( parameters[ i ]->type == TNL::getType< T >() ) {
-               Parameter< T >& parameter = dynamic_cast< Parameter< T >& >( *parameters[ i ] );
-               parameter.value = value;
-               return true;
-            }
-            else {
-               std::cerr << "Parameter " << name << " already exists with different type "
-                         << parameters[ i ]->type << " not "
-                         << TNL::getType< T >() << std::endl;
-               throw 0;
-            }
+      using CoercedType = typename ParameterTypeCoercion< T >::type;
+      auto search = parameters.find( name );
+      if( search != parameters.end() ) {
+         if( holds_alternative< CoercedType >( search->second ) ) {
+            search->second = (CoercedType) value;
+         }
+         else {
+            throw std::logic_error( "Parameter " + name + " already exists with different type. "
+                                    "Current type index is " + std::to_string( search->second.index() ) +
+                                    " (variant type is " + std::string( TNL::getType< Parameter >() ) + "), "
+                                    "tried to set value of type " + std::string( TNL::getType< T >() ) + "." );
          }
       }
-      return addParameter< T >( name, value );
-   }
-
-   /**
-    * \brief Checks whether the parameter \e name is given the \e value.
-    *
-    * Returns \e true if the parameter \e name is given the \e value.
-    * If the parameter does not have any value or has different value then the given
-    * \e value the method returns \e false and shows message when \e verbose is \e true.
-    *
-    * \param name Name of parameter.
-    * \param value Value of type T we want to check whether is assigned to the parameter.
-    * \param verbose Boolean value defining whether to show error message (when true) or not (when false).
-    *
-    * \par Example
-    * \include ParameterContainerExample.cpp
-    */
-   template< class T >
-   bool getParameter( const String& name,
-                      T& value,
-                      bool verbose = true ) const
-   {
-      for( int i = 0; i < (int) parameters.size(); i++ )
-         if( parameters[ i ]->name == name )
-         {
-            // dynamic_cast throws std::bad_cast if parameters[i] does not have the type Parameter<T>
-            const Parameter< T >& parameter = dynamic_cast< Parameter< T >& >( *parameters[ i ] );
-            value = parameter.value;
-            return true;
-         }
-      if( verbose )
-      {
-         std::cerr << "Missing parameter '" << name << "'." << std::endl;
-         throw 0; //PrintStackBacktrace;
-      }
-      return false;
+      addParameter< T >( name, value );
    }
 
    /**
     * \brief Returns parameter value.
     *
-    * \param name Name of parameter.
+    * \param name Name of the parameter.
     */
    template< class T >
-   T getParameter( const String& name ) const
+   T getParameter( const std::string& name ) const
    {
-      for( int i = 0; i < (int) parameters.size(); i++ ) {
-         if( parameters[ i ]->name == name ) {
-            // dynamic_cast throws std::bad_cast if parameters[i] does not have the type Parameter<T>
-            const Parameter< T >& parameter = dynamic_cast< Parameter< T >& >( *parameters[ i ] );
-            return parameter.value;
-         }
+      using CoercedType = typename ParameterTypeCoercion< T >::type;
+      auto search = parameters.find( name );
+      if( search != parameters.end() ) {
+         if( holds_alternative< CoercedType >( search->second ) )
+            return ParameterTypeCoercion< T >::template convert_back< T >( get< CoercedType >( search->second ) );
+         else
+            throw Exceptions::ConfigError( "Parameter " + name + " holds a value of different type than requested. "
+                                           "Current type index is " + std::to_string( search->second.index() ) +
+                                           " (variant type is " + std::string( TNL::getType< Parameter >() ) + "), "
+                                           "tried to get value of type " + std::string( TNL::getType< T >() ) + "." );
       }
-      std::cerr << "The program attempts to get unknown parameter " << name << std::endl;
-      std::cerr << "Aborting the program." << std::endl;
-      throw 0;
-   }
-
-   /**
-    * \brief Checks whether the parameter list \e name is given the \e value.
-    *
-    * Returns \e true if the parameter list \e name is given the \e value.
-    * If the parameter list does not have any value or has different value then the given
-    * \e value the method returns \e false and shows message when \e verbose is \e true.
-    *
-    * \param name Name of parameter list.
-    * \param value Value of type T we want to check whether is assigned to the parameter.
-    * \param verbose Boolean value defining whether to show error message (when true) or not (when false).
-    *
-    * \par Example
-    * \include ParameterContainerExample.cpp
-    */
-   template< class T >
-   bool getParameter( const String& name,
-                      std::vector< T >& value,
-                      bool verbose = true ) const
-   {
-      for( int i = 0; i < (int) parameters.size(); i++ )
-         if( parameters[ i ]->name == name )
-         {
-            // dynamic_cast throws std::bad_cast if parameters[i] does not have the type Parameter<T>
-            const Parameter< std::vector< T > >& parameter = dynamic_cast< Parameter< std::vector< T > >& >( *parameters[ i ] );
-            value = parameter.value;
-            return true;
-         }
-      if( verbose )
-      {
-         std::cerr << "Missing parameter '" << name << "'." << std::endl;
-         throw 0; //PrintStackBacktrace;
-      }
-      return false;
+      throw Exceptions::ConfigError( "The program attempts to get unknown parameter " + name + "." );
    }
 
    /**
     * \brief Returns parameter list.
     *
-    * \param name Name of parameter list.
+    * \param name Name of the parameter list.
     */
    template< class T >
-   const std::vector< T >& getList( const String& name ) const
+   std::vector< T > getList( const std::string& name ) const
    {
-      for( int i = 0; i < (int) parameters.size(); i++ ) {
-         if( parameters[ i ]->name == name ) {
-            // dynamic_cast throws std::bad_cast if parameters[i] does not have the type Parameter<T>
-            const Parameter< std::vector< T > >& parameter = dynamic_cast< Parameter< std::vector< T > >& >( *parameters[ i ] );
-            return parameter.value; 
-         }
-      }
-      std::cerr << "The program attempts to get unknown parameter " << name << std::endl;
-      std::cerr << "Aborting the program." << std::endl;
-      throw 0;
+      return getParameter< std::vector< T > >( name );
    }
-
-
-/*
-   //! Broadcast to other nodes in MPI cluster
-   void MPIBcast( int root, MPI_Comm mpi_comm = MPI_COMM_WORLD )
-   {
-   #ifdef USE_MPI
-      int i;
-      int size = parameters. getSize();
-      :: MPIBcast( size, 1, root, mpi_comm );
-      for( i = 0; i < size; i ++ )
-      {
-         if( MPIGetRank() == root )
-         {
-            tnlParameterBase* param = parameters[ i ];
-            param -> type. MPIBcast( root, MPI_COMM_WORLD );
-            param -> name. MPIBcast( root, MPI_COMM_WORLD );
-            if( param -> type == "String" )
-            {
-               ( ( tnlParameter< String >* ) param ) -> value. MPIBcast( root, mpi_comm );
-            }
-            if( param -> type == "bool" )
-            {
-               :: MPIBcast( ( ( tnlParameter< bool >* ) param ) -> value, 1, root, mpi_comm );
-            }
-            if( param -> type == "int" )
-            {
-               :: MPIBcast( ( ( tnlParameter< int >* ) param ) -> value, 1, root, mpi_comm );
-            }
-            if( param -> type == "double" )
-            {
-               :: MPIBcast( ( ( tnlParameter< double >* ) param ) -> value, 1, root, mpi_comm );
-            }
-         }
-         else
-         {
-            String param_type, param_name;
-            param_type. MPIBcast( root, MPI_COMM_WORLD );
-            param_name. MPIBcast( root, MPI_COMM_WORLD );
-            if( param_type == "mString" )
-            {
-               String val;
-               val. MPIBcast( root, mpi_comm );
-               addParameter< String >( param_name. getString(),
-                                        val );
-            }
-            if( param_type == "bool" )
-            {
-               bool val;
-               :: MPIBcast( val, 1, root, mpi_comm );
-               addParameter< bool >( param_name. getString(),
-                                     val );
-            }
-            if( param_type == "int" )
-            {
-               int val;
-               :: MPIBcast( val, 1, root, mpi_comm );
-               addParameter< int >( param_name. getString(),
-                                    val );
-            }
-            if( param_type == "double" )
-            {
-               double val;
-               :: MPIBcast( val, 1, root, mpi_comm );
-               addParameter< double >( param_name. getString(),
-                                       val );
-            }
-
-         }
-      }
-   #endif
-   }
-*/
 
 protected:
-   std::vector< std::unique_ptr< ParameterBase > > parameters;
+   std::unordered_map< std::string, Parameter > parameters;
 };
 
 } // namespace Config

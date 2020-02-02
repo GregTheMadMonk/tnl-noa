@@ -2,54 +2,105 @@
                           ConfigEntryType.h  -  description
                              -------------------
     begin                : Jul 5, 2014
-    copyright            : (C) 2014 by Tomas Oberhuber
+    copyright            : (C) 2014 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 /* See Copyright Notice in tnl/Copyright */
 
+// Implemented by: Tomáš Oberhuber, Jakub Klinkovský
+
 #pragma once
 
+#include <type_traits>
 #include <vector>
-
-#include <TNL/String.h>
+#include <TNL/variant.hpp>   // backport of std::variant from C++17
 
 namespace TNL {
 namespace Config {
 
-template< typename EntryType >
-inline String getUIEntryType() { return "Unknown type."; };
+using mpark::variant;
+using mpark::get;
+using mpark::monostate;
+using mpark::holds_alternative;
 
-template<> inline String getUIEntryType< String >() { return "string"; };
-template<> inline String getUIEntryType< bool >()   { return "bool"; };
-template<> inline String getUIEntryType< int >()    { return "integer"; };
-template<> inline String getUIEntryType< double >() { return "real"; };
+// aliases for integer types
+using UnsignedInteger = std::size_t;
+using Integer = std::make_signed_t< std::size_t >;
 
-template<> inline String getUIEntryType< std::vector< String > >() { return "list of string"; };
-template<> inline String getUIEntryType< std::vector< bool > >()   { return "list of bool"; };
-template<> inline String getUIEntryType< std::vector< int > >()    { return "list of integer"; };
-template<> inline String getUIEntryType< std::vector< double > >() { return "list of real"; };
+using Parameter = variant< monostate,
+                           bool,
+                           Integer,
+                           UnsignedInteger,
+                           double,
+                           std::string,
+                           std::vector< bool >,
+                           std::vector< Integer >,
+                           std::vector< UnsignedInteger >,
+                           std::vector< double >,
+                           std::vector< std::string >
+                         >;
 
-struct ConfigEntryType
+template< typename T >
+struct ParameterTypeCoercion
 {
-   String basic_type;
+   using type =
+      std::conditional_t< std::is_same< T, bool >::value, bool,
+         std::conditional_t< std::is_integral< T >::value && std::is_signed< T >::value, Integer,
+            std::conditional_t< std::is_integral< T >::value && std::is_unsigned< T >::value, UnsignedInteger,
+               std::conditional_t< std::is_floating_point< T >::value, double,
+                  std::conditional_t< std::is_base_of< std::string, T >::value, std::string,
+                     std::conditional_t< std::is_same< std::decay_t< T >, const char* >::value, std::string,
+                        T
+                     >
+                  >
+               >
+            >
+         >
+      >;
 
-   bool list_entry;
+   static type convert( const T& v ) { return v; }
+   template< typename Result >
+   static Result convert_back( const type& v ) { return v; }
+};
 
-   ConfigEntryType() = default;
+template< typename T >
+struct ParameterTypeCoercion< std::vector< T > >
+{
+   using type = std::vector< typename ParameterTypeCoercion< T >::type >;
 
-   ConfigEntryType( const String& _basic_type,
-                    const bool _list_entry )
-   : basic_type( _basic_type ),
-     list_entry( _list_entry )
-   {}
-
-   void Reset()
+   static type convert( const std::vector< T >& vec )
    {
-      basic_type.clear();
-      list_entry = false;
+      type new_vec;
+      for( auto value : vec )
+         new_vec.push_back( value );
+      return new_vec;
+   }
+
+   template< typename Result >
+   static Result convert_back( const type& vec )
+   {
+      Result new_vec;
+      for( auto value : vec )
+         new_vec.push_back( value );
+      return new_vec;
    }
 };
+
+template< typename EntryType >
+std::string getUIEntryType() { throw std::logic_error( "getUIEntryType called with unknown type." ); };
+
+template<> inline std::string getUIEntryType< bool >()             { return "bool"; };
+template<> inline std::string getUIEntryType< Integer >()          { return "integer"; };
+template<> inline std::string getUIEntryType< UnsignedInteger >()  { return "unsigned integer"; };
+template<> inline std::string getUIEntryType< double >()           { return "real"; };
+template<> inline std::string getUIEntryType< std::string >()      { return "string"; };
+
+template<> inline std::string getUIEntryType< std::vector< bool > >()             { return "list of bool"; };
+template<> inline std::string getUIEntryType< std::vector< Integer > >()          { return "list of integer"; };
+template<> inline std::string getUIEntryType< std::vector< UnsignedInteger > >()  { return "list of unsigned integer"; };
+template<> inline std::string getUIEntryType< std::vector< double > >()           { return "list of real"; };
+template<> inline std::string getUIEntryType< std::vector< std::string > >()      { return "list of string"; };
 
 } // namespace Config
 } // namespace TNL

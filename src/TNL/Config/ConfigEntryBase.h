@@ -2,47 +2,59 @@
                           ConfigEntryBase.h  -  description
                              -------------------
     begin                : Jul 5, 2014
-    copyright            : (C) 2014 by Tomas Oberhuber
+    copyright            : (C) 2014 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 /* See Copyright Notice in tnl/Copyright */
 
+// Implemented by: Tomáš Oberhuber, Jakub Klinkovský
+
 #pragma once
+
+#include <string>
 
 namespace TNL {
 namespace Config {
 
-struct ConfigEntryBase
+class ConfigEntryBase
 {
-   String name;
+protected:
+   std::string name;
 
-   String description;
+   std::string description;
 
    bool required;
 
-   bool hasDefaultValue;
+   bool _hasDefaultValue;
 
-   ConfigEntryBase( const String& name,
-                    const String& description,
+public:
+   ConfigEntryBase( const std::string& name,
+                    const std::string& description,
                     bool required )
       : name( name ),
         description( description ),
         required( required ),
-        hasDefaultValue( false )
+        _hasDefaultValue( false )
    {}
 
-   virtual String getEntryType() const = 0;
+   const std::string& getName() const { return name; }
 
-   virtual String getUIEntryType() const = 0;
+   const std::string& getDescription() const { return description; }
+
+   bool isRequired() const { return required; }
+
+   bool hasDefaultValue() const { return _hasDefaultValue; }
+
+   virtual std::string getUIEntryType() const = 0;
 
    virtual bool isDelimiter() const { return false; }
 
-   virtual String printDefaultValue() const { return ""; }
+   virtual std::string printDefaultValue() const { return ""; }
 
    virtual bool hasEnumValues() const { return false; }
 
-   virtual void printEnumValues() const {}
+   virtual void printEnumValues( std::ostream& str ) const {}
 
    virtual ~ConfigEntryBase() = default;
 };
