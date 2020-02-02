@@ -137,6 +137,8 @@ cuda_examples_Debug:
         WITH_CUDA: "yes"
         BUILD_TYPE: Debug
         WITH_EXAMPLES: "yes"
+        # build output snippets for documentation
+        WITH_DOC: "yes"
     # store output snippets for documentation
     artifacts:
         paths:
