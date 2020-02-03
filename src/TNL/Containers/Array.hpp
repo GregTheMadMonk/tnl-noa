@@ -510,9 +510,9 @@ Array< Value, Device, Index, Allocator >::
 operator[]( const Index& i )
 {
 #ifdef __CUDA_ARCH__
-   TNL_ASSERT_TRUE( ( std::is_same< Device, Devices::Cuda >::value ), "Attempt to access data not allocated on CUDA device from CUDA device." );
+   TNL_ASSERT( ( std::is_same< Device, Devices::Cuda >::value ), "Attempt to access data not allocated on CUDA device from CUDA device." );
 #else
-   TNL_ASSERT_TRUE( ( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Sequential >::value ),
+   TNL_ASSERT( ( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Sequential >::value ),
                "Attempt to access data not allocated on the host from the host." );
 #endif
    TNL_ASSERT_GE( i, (Index) 0, "Element index must be non-negative." );
@@ -530,9 +530,9 @@ Array< Value, Device, Index, Allocator >::
 operator[]( const Index& i ) const
 {
 #ifdef __CUDA_ARCH__
-   TNL_ASSERT_TRUE( ( std::is_same< Device, Devices::Cuda >::value ), "Attempt to access data not allocated on CUDA device from CUDA device." );
+   TNL_ASSERT( ( std::is_same< Device, Devices::Cuda >::value ), "Attempt to access data not allocated on CUDA device from CUDA device." );
 #else
-   TNL_ASSERT_TRUE( ( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Sequential >::value ),
+   TNL_ASSERT( ( std::is_same< Device, Devices::Host >::value || std::is_same< Device, Devices::Sequential >::value ),
                "Attempt to access data not allocated on the host from the host." );
 #endif
    TNL_ASSERT_GE( i, (Index) 0, "Element index must be non-negative." );
