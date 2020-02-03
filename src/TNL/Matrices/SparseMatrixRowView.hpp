@@ -72,6 +72,7 @@ SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
 getValue( const IndexType localIdx ) const -> const RealType&
 {
    TNL_ASSERT_LT( localIdx, this->getSize(), "Local index exceeds matrix row capacity." );
+   TNL_ASSERT_FALSE( isBinary(), "Cannot call this method for binary matrix row." );
    return values[ segmentView.getGlobalIndex( localIdx ) ];
 }
 
@@ -84,6 +85,7 @@ SparseMatrixRowView< SegmentView, ValuesView, ColumnsIndexesView, isBinary_ >::
 getValue( const IndexType localIdx ) -> RealType&
 {
    TNL_ASSERT_LT( localIdx, this->getSize(), "Local index exceeds matrix row capacity." );
+   TNL_ASSERT_FALSE( isBinary(), "Cannot call this method for binary matrix row." );
    return values[ segmentView.getGlobalIndex( localIdx ) ];
 }
 

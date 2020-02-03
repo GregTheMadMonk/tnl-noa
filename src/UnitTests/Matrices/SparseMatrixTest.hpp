@@ -284,27 +284,6 @@ void test_GetRow()
     rowLengths.setElement( 9, 10 );
     m.setCompressedRowLengths( rowLengths );
 
-    /*RealType value = 1;
-    for( IndexType i = 0; i < 4; i++ )
-        m.setElement( 0, 2 * i, value++ );
-
-    for( IndexType i = 0; i < 3; i++ )
-        m.setElement( 1, i, value++ );
-
-    for( IndexType i = 0; i < 8; i++ )
-        m.setElement( 2, i, value++ );
-
-    for( IndexType i = 0; i < 2; i++ )
-        m.setElement( 3, i, value++ );
-
-    for( IndexType i = 4; i < 8; i++ )
-        m.setElement( i, 0, value++ );
-
-    for( IndexType j = 8; j < rows; j++)
-    {
-        for( IndexType i = 0; i < cols; i++ )
-            m.setElement( j, i, value++ );
-    }*/
     auto matrixView = m.getView();
     auto f = [=] __cuda_callable__ ( const IndexType rowIdx ) mutable {
        auto row = matrixView.getRow( rowIdx );

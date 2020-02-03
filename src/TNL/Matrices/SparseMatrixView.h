@@ -28,7 +28,7 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
 {
    public:
       static constexpr bool isSymmetric() { return MatrixType::isSymmetric(); };
-      static constexpr bool isBinary() { return std::is_same< Real, bool >::value; };
+      static constexpr bool isBinary() { return MatrixType::isBinary(); };
 
       using RealType = Real;
       template< typename Device_, typename Index_ >

@@ -13,15 +13,51 @@
 namespace TNL {
    namespace Matrices {
 
+template< bool Symmetric,
+          bool Binary >
+struct MatrixType
+{
+   static constexpr bool isSymmetric() { return Symmetric; }
+
+   static constexpr bool isBinary() { return Binary; }
+
+};
+
 struct GeneralMatrix
 {
    static constexpr bool isSymmetric() { return false; }
+
+   static constexpr bool isBinary() { return false; }
 };
 
 struct SymmetricMatrix
 {
    static constexpr bool isSymmetric() { return true; }
+
+   static constexpr bool isBinary() { return false; }
 };
+
+struct BinaryMatrix
+{
+   static constexpr bool isSymmetric() { return false; }
+
+   static constexpr bool isBinary() { return true; }
+};
+
+struct BinarySymmetricMatrix
+{
+   static constexpr bool isSymmetric() { return false; }
+
+   static constexpr bool isBinary() { return true; }
+};
+
+struct SymmetricBinaryMatrix
+{
+   static constexpr bool isSymmetric() { return false; }
+
+   static constexpr bool isBinary() { return true; }
+};
+
 
    } //namespace Matrices
 } //namespace TNL

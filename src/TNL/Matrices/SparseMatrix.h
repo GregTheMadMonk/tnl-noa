@@ -32,7 +32,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
 {
    public:
       static constexpr bool isSymmetric() { return MatrixType::isSymmetric(); };
-      static constexpr bool isBinary() { return std::is_same< Real, bool >::value; };
+      static constexpr bool isBinary() { return MatrixType::isBinary(); };
 
       using RealType = Real;
       template< typename Device_, typename Index_, typename IndexAllocator_ >

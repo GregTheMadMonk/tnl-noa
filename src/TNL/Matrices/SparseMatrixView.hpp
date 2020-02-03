@@ -227,7 +227,8 @@ addElement( const IndexType row,
       col = this->columnIndexes.getElement( globalIdx );
       if( col == column )
       {
-         this->values.setElement( globalIdx, thisElementMultiplicator * this->values.getElement( globalIdx ) + value );
+         if( ! isBinary() )
+            this->values.setElement( globalIdx, thisElementMultiplicator * this->values.getElement( globalIdx ) + value );
          return;
       }
       if( col == this->getPaddingIndex() || col > column )
@@ -242,7 +243,8 @@ addElement( const IndexType row,
    if( col == this->getPaddingIndex() )
    {
       this->columnIndexes.setElement( globalIdx, column );
-      this->values.setElement( globalIdx, value );
+      if( ! isBinary() )
+         this->values.setElement( globalIdx, value );
       return;
    }
    else
@@ -255,7 +257,8 @@ addElement( const IndexType row,
          TNL_ASSERT_LT( globalIdx1, this->columnIndexes.getSize(), "" );
          TNL_ASSERT_LT( globalIdx2, this->columnIndexes.getSize(), "" );
          this->columnIndexes.setElement( globalIdx1, this->columnIndexes.getElement( globalIdx2 ) );
-         this->values.setElement( globalIdx1, this->values.getElement( globalIdx2 ) );
+         if( ! isBinary() )
+            this->values.setElement( globalIdx1, this->values.getElement( globalIdx2 ) );
          j--;
       }
 
@@ -287,7 +290,12 @@ getElement( const IndexType row,
       TNL_ASSERT_LT( globalIdx, this->columnIndexes.getSize(), "" );
       const IndexType col = this->columnIndexes.getElement( globalIdx );
       if( col == column )
-         return this->values.getElement( globalIdx );
+      {
+         if( isBinary() )
+            return 1;
+         else
+            return this->values.getElement( globalIdx );
+      }
    }
    return 0.0;
 }
@@ -334,6 +342,8 @@ vectorProduct( const InVector& inVector,
       compute = ( column != paddingIndex );
       if( ! compute )
          return 0.0;
+      if( isBinary() )
+         return inVectorView[ column ];
       return valuesView[ globalIdx ] * inVectorView[ column ];
    };
    auto reduction = [] __cuda_callable__ ( RealType& sum, const RealType& value ) {
@@ -382,7 +392,12 @@ rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Ke
    auto fetch_ = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType globalIdx, bool& compute ) mutable -> decltype( fetch( IndexType(), IndexType(), IndexType(), RealType() ) ) {
       IndexType columnIdx = columns_view[ globalIdx ];
       if( columnIdx != paddingIndex_ )
-         return fetch( rowIdx, columnIdx, globalIdx, values_view[ globalIdx ] );
+      {
+         if( isBinary() )
+            return fetch( rowIdx, columnIdx, globalIdx, 1 );
+         else
+            return fetch( rowIdx, columnIdx, globalIdx, values_view[ globalIdx ] );
+      }
       return zero;
    };
    this->segments.segmentsReduction( first, last, fetch_, reduce, keep, zero );
@@ -415,7 +430,10 @@ forRows( IndexType first, IndexType last, Function& function ) const
    const auto values_view = this->values.getConstView();
    const IndexType paddingIndex_ = this->getPaddingIndex();
    auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType globalIdx, bool& compute ) mutable -> bool {
-      function( rowIdx, localIdx, columns_view[ globalIdx ], values_view[ globalIdx ], compute );
+      if( isBinary() )
+         function( rowIdx, localIdx, columns_view[ globalIdx ], 1, compute );
+      else
+         function( rowIdx, localIdx, columns_view[ globalIdx ], values_view[ globalIdx ], compute );
       return true;
    };
    this->segments.forSegments( first, last, f );
@@ -435,7 +453,10 @@ forRows( IndexType first, IndexType last, Function& function )
    auto values_view = this->values.getView();
    const IndexType paddingIndex_ = this->getPaddingIndex();
    auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType globalIdx, bool& compute ) mutable {
-      function( rowIdx, localIdx, columns_view[ globalIdx ], values_view[ globalIdx ], compute );
+      if( isBinary() )
+         function( rowIdx, localIdx, columns_view[ globalIdx ], 1, compute );
+      else
+         function( rowIdx, localIdx, columns_view[ globalIdx ], values_view[ globalIdx ], compute );
    };
    this->segments.forSegments( first, last, f );
 }
@@ -573,7 +594,12 @@ print( std::ostream& str ) const
          const IndexType column = this->columnIndexes.getElement( globalIdx );
          if( column == this->getPaddingIndex() )
             break;
-         str << " Col:" << column << "->" << this->values.getElement( globalIdx ) << "\t";
+         RealType value;
+         if( isBinary() )
+            value = 1.0;
+         else
+            value = this->values.getElement( globalIdx );
+         str << " Col:" << column << "->" << value << "\t";
       }
       str << std::endl;
    }
