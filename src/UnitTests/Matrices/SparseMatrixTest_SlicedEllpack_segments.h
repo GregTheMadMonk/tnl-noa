@@ -13,7 +13,7 @@
 #include <TNL/Matrices/MatrixType.h>
 
 
-#include "SparseMatrixTest.hpp"
+#include "SparseMatrixTest.h"
 #include <iostream>
 
 #ifdef HAVE_GTEST
