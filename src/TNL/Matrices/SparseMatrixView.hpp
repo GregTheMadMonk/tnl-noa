@@ -454,7 +454,10 @@ forRows( IndexType first, IndexType last, Function& function )
    const IndexType paddingIndex_ = this->getPaddingIndex();
    auto f = [=] __cuda_callable__ ( IndexType rowIdx, IndexType localIdx, IndexType globalIdx, bool& compute ) mutable {
       if( isBinary() )
-         function( rowIdx, localIdx, columns_view[ globalIdx ], 1, compute );
+      {
+         RealType one( columns_view[ globalIdx ] != paddingIndex_ );
+         function( rowIdx, localIdx, columns_view[ globalIdx ], one, compute );
+      }
       else
          function( rowIdx, localIdx, columns_view[ globalIdx ], values_view[ globalIdx ], compute );
    };
