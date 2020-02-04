@@ -1,8 +1,8 @@
 /***************************************************************************
-                          SparseMatrixTest_Ellpack.h -  description
+                          BinarySparseMatrixTest_Ellpack.h -  description
                              -------------------
-    begin                : Dec 3, 2019
-    copyright            : (C) 2019 by Tomas Oberhuber et al.
+    begin                : Jan 30, 2020
+    copyright            : (C) 2020 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
@@ -12,7 +12,7 @@
 #include <TNL/Matrices/SparseMatrix.h>
 
 
-#include "SparseMatrixTest.h"
+#include "BinarySparseMatrixTest.hpp"
 #include <iostream>
 
 #ifdef HAVE_GTEST
@@ -20,7 +20,7 @@
 
 // test fixture for typed tests
 template< typename Matrix >
-class EllpackMatrixTest : public ::testing::Test
+class BinaryMatrixTest_Ellpack : public ::testing::Test
 {
 protected:
    using EllpackMatrixType = Matrix;
@@ -68,86 +68,73 @@ using EllpackMatrixTypes = ::testing::Types
 #endif
 >;
 
-TYPED_TEST_SUITE( EllpackMatrixTest, EllpackMatrixTypes);
+TYPED_TEST_SUITE( BinaryMatrixTest_Ellpack, EllpackMatrixTypes);
 
-TYPED_TEST( EllpackMatrixTest, setDimensionsTest )
+TYPED_TEST( BinaryMatrixTest_Ellpack, setDimensionsTest )
 {
     using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
 
     test_SetDimensions< EllpackMatrixType >();
 }
 
-//TYPED_TEST( EllpackMatrixTest, setCompressedRowLengthsTest )
-//{
-////    using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
-//
-////    test_SetCompressedRowLengths< EllpackMatrixType >();
-//
-//    bool testRan = false;
-//    EXPECT_TRUE( testRan );
-//    std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
-//    std::cout << "      This test is dependent on the input format. \n";
-//    std::cout << "      Almost every format allocates elements per row differently.\n\n";
-//    std::cout << "\n    TODO: Finish implementation of getNonZeroRowLength (Only non-zero elements, not the number of allocated elements.)\n\n";
-//}
+TYPED_TEST( BinaryMatrixTest_Ellpack, setCompressedRowLengthsTest )
+{
+    using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
 
-TYPED_TEST( EllpackMatrixTest, setLikeTest )
+    test_SetCompressedRowLengths< EllpackMatrixType >();
+}
+
+TYPED_TEST( BinaryMatrixTest_Ellpack, setLikeTest )
 {
     using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
 
     test_SetLike< EllpackMatrixType, EllpackMatrixType >();
 }
 
-TYPED_TEST( EllpackMatrixTest, resetTest )
+TYPED_TEST( BinaryMatrixTest_Ellpack, resetTest )
 {
     using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
 
     test_Reset< EllpackMatrixType >();
 }
 
-TYPED_TEST( EllpackMatrixTest, getRowTest )
+TYPED_TEST( BinaryMatrixTest_Ellpack, getRowTest )
 {
     using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
 
     test_GetRow< EllpackMatrixType >();
 }
 
-TYPED_TEST( EllpackMatrixTest, setElementTest )
+
+TYPED_TEST( BinaryMatrixTest_Ellpack, setElementTest )
 {
     using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
 
     test_SetElement< EllpackMatrixType >();
 }
 
-TYPED_TEST( EllpackMatrixTest, addElementTest )
-{
-    using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
-
-    test_AddElement< EllpackMatrixType >();
-}
-
-TYPED_TEST( EllpackMatrixTest, vectorProductTest )
+TYPED_TEST( BinaryMatrixTest_Ellpack, vectorProductTest )
 {
     using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
 
     test_VectorProduct< EllpackMatrixType >();
 }
 
-TYPED_TEST( EllpackMatrixTest, rowsReduction )
+TYPED_TEST( BinaryMatrixTest_Ellpack, rowsReduction )
 {
     using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
 
     test_RowsReduction< EllpackMatrixType >();
 }
 
-TYPED_TEST( EllpackMatrixTest, saveAndLoadTest )
+TYPED_TEST( BinaryMatrixTest_Ellpack, saveAndLoadTest )
 {
     using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
 
-    test_SaveAndLoad< EllpackMatrixType >( "test_SparseMatrixTest_Ellpack_segments" );
+    test_SaveAndLoad< EllpackMatrixType >( "test_BinarySparseMatrixTest_Ellpack" );
 }
 
-TYPED_TEST( EllpackMatrixTest, printTest )
+TYPED_TEST( BinaryMatrixTest_Ellpack, printTest )
 {
     using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
 

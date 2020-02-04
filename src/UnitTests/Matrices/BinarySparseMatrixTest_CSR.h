@@ -1,5 +1,5 @@
 /***************************************************************************
-                          BinarySparseMatrixTest.h -  description
+                          BinarySparseMatrixTest_CSR.h -  description
                              -------------------
     begin                : Jan 30, 2020
     copyright            : (C) 2020 by Tomas Oberhuber et al.
@@ -20,7 +20,7 @@
 
 // test fixture for typed tests
 template< typename Matrix >
-class CSRMatrixTest : public ::testing::Test
+class BinaryMatrixTest_CSR : public ::testing::Test
 {
 protected:
    using CSRMatrixType = Matrix;
@@ -57,37 +57,37 @@ using CSRMatrixTypes = ::testing::Types
 #endif
 >;
 
-TYPED_TEST_SUITE( CSRMatrixTest, CSRMatrixTypes);
+TYPED_TEST_SUITE( BinaryMatrixTest_CSR, CSRMatrixTypes);
 
-TYPED_TEST( CSRMatrixTest, setDimensionsTest )
+TYPED_TEST( BinaryMatrixTest_CSR, setDimensionsTest )
 {
     using CSRMatrixType = typename TestFixture::CSRMatrixType;
 
     test_SetDimensions< CSRMatrixType >();
 }
 
-TYPED_TEST( CSRMatrixTest, setCompressedRowLengthsTest )
+TYPED_TEST( BinaryMatrixTest_CSR, setCompressedRowLengthsTest )
 {
     using CSRMatrixType = typename TestFixture::CSRMatrixType;
 
     test_SetCompressedRowLengths< CSRMatrixType >();
 }
 
-TYPED_TEST( CSRMatrixTest, setLikeTest )
+TYPED_TEST( BinaryMatrixTest_CSR, setLikeTest )
 {
     using CSRMatrixType = typename TestFixture::CSRMatrixType;
 
     test_SetLike< CSRMatrixType, CSRMatrixType >();
 }
 
-TYPED_TEST( CSRMatrixTest, resetTest )
+TYPED_TEST( BinaryMatrixTest_CSR, resetTest )
 {
     using CSRMatrixType = typename TestFixture::CSRMatrixType;
 
     test_Reset< CSRMatrixType >();
 }
 
-TYPED_TEST( CSRMatrixTest, getRowTest )
+TYPED_TEST( BinaryMatrixTest_CSR, getRowTest )
 {
     using CSRMatrixType = typename TestFixture::CSRMatrixType;
 
@@ -95,35 +95,35 @@ TYPED_TEST( CSRMatrixTest, getRowTest )
 }
 
 
-TYPED_TEST( CSRMatrixTest, setElementTest )
+TYPED_TEST( BinaryMatrixTest_CSR, setElementTest )
 {
     using CSRMatrixType = typename TestFixture::CSRMatrixType;
 
     test_SetElement< CSRMatrixType >();
 }
 
-TYPED_TEST( CSRMatrixTest, vectorProductTest )
+TYPED_TEST( BinaryMatrixTest_CSR, vectorProductTest )
 {
     using CSRMatrixType = typename TestFixture::CSRMatrixType;
 
     test_VectorProduct< CSRMatrixType >();
 }
 
-TYPED_TEST( CSRMatrixTest, rowsReduction )
+TYPED_TEST( BinaryMatrixTest_CSR, rowsReduction )
 {
     using CSRMatrixType = typename TestFixture::CSRMatrixType;
 
     test_RowsReduction< CSRMatrixType >();
 }
 
-TYPED_TEST( CSRMatrixTest, saveAndLoadTest )
+TYPED_TEST( BinaryMatrixTest_CSR, saveAndLoadTest )
 {
     using CSRMatrixType = typename TestFixture::CSRMatrixType;
 
-    test_SaveAndLoad< CSRMatrixType >( "test_BinarySparseMatrixTest" );
+    test_SaveAndLoad< CSRMatrixType >( "test_BinarySparseMatrixTest_CSR" );
 }
 
-TYPED_TEST( CSRMatrixTest, printTest )
+TYPED_TEST( BinaryMatrixTest_CSR, printTest )
 {
     using CSRMatrixType = typename TestFixture::CSRMatrixType;
 

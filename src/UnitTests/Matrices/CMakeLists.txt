@@ -25,8 +25,14 @@ IF( BUILD_CUDA )
    CUDA_ADD_EXECUTABLE( SparseMatrixCopyTest SparseMatrixCopyTest.cu OPTIONS ${CXX_TESTS_FLAGS} )
    TARGET_LINK_LIBRARIES( SparseMatrixCopyTest ${GTEST_BOTH_LIBRARIES} )
 
-   CUDA_ADD_EXECUTABLE( BinarySparseMatrixTest BinarySparseMatrixTest.cu OPTIONS ${CXX_TESTS_FLAGS} )
-   TARGET_LINK_LIBRARIES( BinarySparseMatrixTest ${GTEST_BOTH_LIBRARIES} )
+   CUDA_ADD_EXECUTABLE( BinarySparseMatrixTest_CSR BinarySparseMatrixTest_CSR.cu OPTIONS ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( BinarySparseMatrixTest_CSR ${GTEST_BOTH_LIBRARIES} )
+
+   CUDA_ADD_EXECUTABLE( BinarySparseMatrixTest_Ellpack BinarySparseMatrixTest_Ellpack.cu OPTIONS ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( BinarySparseMatrixTest_Ellpack ${GTEST_BOTH_LIBRARIES} )
+
+   CUDA_ADD_EXECUTABLE( BinarySparseMatrixTest_SlicedEllpack BinarySparseMatrixTest_SlicedEllpack.cu OPTIONS ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( BinarySparseMatrixTest_SlicedEllpack ${GTEST_BOTH_LIBRARIES} )
 
 ELSE(  BUILD_CUDA )
    ADD_EXECUTABLE( DenseMatrixTest DenseMatrixTest.cpp )
@@ -61,9 +67,17 @@ ELSE(  BUILD_CUDA )
    TARGET_COMPILE_OPTIONS( SparseMatrixCopyTest PRIVATE ${CXX_TESTS_FLAGS} )
    TARGET_LINK_LIBRARIES( SparseMatrixCopyTest ${GTEST_BOTH_LIBRARIES} )
 
-   ADD_EXECUTABLE( BinarySparseMatrixTest BinarySparseMatrixTest.cpp )
-   TARGET_COMPILE_OPTIONS( BinarySparseMatrixTest PRIVATE ${CXX_TESTS_FLAGS} )
-   TARGET_LINK_LIBRARIES( BinarySparseMatrixTest ${GTEST_BOTH_LIBRARIES} )
+   ADD_EXECUTABLE( BinarySparseMatrixTest_CSR BinarySparseMatrixTest_CSR.cpp )
+   TARGET_COMPILE_OPTIONS( BinarySparseMatrixTest_CSR PRIVATE ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( BinarySparseMatrixTest_CSR ${GTEST_BOTH_LIBRARIES} )
+
+   ADD_EXECUTABLE( BinarySparseMatrixTest_Ellpack BinarySparseMatrixTest_Ellpack.cpp )
+   TARGET_COMPILE_OPTIONS( BinarySparseMatrixTest_Ellpack PRIVATE ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( BinarySparseMatrixTest_Ellpack ${GTEST_BOTH_LIBRARIES} )
+
+   ADD_EXECUTABLE( BinarySparseMatrixTest_SlicedEllpack BinarySparseMatrixTest_SlicedEllpack.cpp )
+   TARGET_COMPILE_OPTIONS( BinarySparseMatrixTest_SlicedEllpack PRIVATE ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( BinarySparseMatrixTest_SlicedEllpack ${GTEST_BOTH_LIBRARIES} )
 
 ENDIF( BUILD_CUDA )
 
@@ -75,7 +89,9 @@ ADD_TEST( MultidiagonalMatrixTest ${EXECUTABLE_OUTPUT_PATH}/MultidiagonalMatrixT
 ADD_TEST( SparseMatrixTest_CSR ${EXECUTABLE_OUTPUT_PATH}/SparseMatrixTest_CSR${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( SparseMatrixTest_Ellpack ${EXECUTABLE_OUTPUT_PATH}/SparseMatrixTest_Ellpack${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( SparseMatrixTest_SlicedEllpack ${EXECUTABLE_OUTPUT_PATH}/SparseMatrixTest_SlicedEllpack${CMAKE_EXECUTABLE_SUFFIX} )
-ADD_TEST( BinarySparseMatrixTest ${EXECUTABLE_OUTPUT_PATH}/BinarySparseMatrixTest${CMAKE_EXECUTABLE_SUFFIX} )
+ADD_TEST( BinarySparseMatrixTest_CSR ${EXECUTABLE_OUTPUT_PATH}/BinarySparseMatrixTest_CSR${CMAKE_EXECUTABLE_SUFFIX} )
+ADD_TEST( BinarySparseMatrixTest_Ellpack ${EXECUTABLE_OUTPUT_PATH}/BinarySparseMatrixTest_Ellpack${CMAKE_EXECUTABLE_SUFFIX} )
+ADD_TEST( BinarySparseMatrixTest_SlicedEllpack ${EXECUTABLE_OUTPUT_PATH}/BinarySparseMatrixTest_SlicedEllpack${CMAKE_EXECUTABLE_SUFFIX} )
 
 if( ${BUILD_MPI} )
    if( BUILD_CUDA )

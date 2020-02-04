@@ -1,5 +1,5 @@
 /***************************************************************************
-                          BinarySparseMatrixTest.cpp -  description
+                          BinarySparseMatrixTest_SlicedEllpack.cpp -  description
                              -------------------
     begin                : Jan 30, 2020
     copyright            : (C) 2020 by Tomas Oberhuber et al.
@@ -8,4 +8,4 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include "BinarySparseMatrixTest.h"
+#include "BinarySparseMatrixTest_SlicedEllpack.h"
