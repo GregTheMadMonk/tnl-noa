@@ -64,22 +64,22 @@ template< typename GlobalIndex > struct MeshIdTag< TNLViewBuildConfigTag, Global
 
 void setupConfig( Config::ConfigDescription& config )
 {
-   config.addDelimiter                            ( "General settings:" );
-   config.addEntry        < String >           ( "mesh", "Mesh file.", "mesh.tnl" );
-   config.addRequiredList < String >           ( "input-files", "Input files." );
-   config.addList         < String >           ( "output-files", "Output files." );
-   config.addEntry        < bool >                ( "check-output-file", "If the output file already exists, do not recreate it.", false );
+   config.addDelimiter( "General settings:" );
+   config.addEntry        < String >( "mesh", "Mesh file.", "mesh.tnl" );
+   config.addRequiredList < String >( "input-files", "Input files." );
+//   config.addList         < String >( "output-files", "Output files." );
+   config.addEntry        < bool >  ( "check-output-file", "If the output file already exists, do not recreate it.", false );
 
    config.addDelimiter( "Grid settings:");
-   config.addList         < double >              ( "level-lines", "List of level sets which will be drawn." );
-   config.addEntry        < int >                 ( "output-x-size", "X size of the output." );
-   config.addEntry        < int >                 ( "output-y-size", "Y size of the output." );
-   config.addEntry        < int >                 ( "output-z-size", "Z size of the output." );
-   config.addEntry        < double >              ( "scale", "Multiply the function by given number.", 1.0 );
-   config.addEntry        < String >           ( "output-format", "Output file format.", "gnuplot" );
-      config.addEntryEnum  < String >             ( "gnuplot" );
-      config.addEntryEnum  < String >             ( "vtk" );
-   config.addEntry        < int >                 ( "verbose", "Set the verbosity of the program.", 1 );
+//   config.addList         < double >( "level-lines", "List of level sets which will be drawn." );
+//   config.addEntry        < int >   ( "output-x-size", "X size of the output." );
+//   config.addEntry        < int >   ( "output-y-size", "Y size of the output." );
+//   config.addEntry        < int >   ( "output-z-size", "Z size of the output." );
+   config.addEntry        < double >( "scale", "Multiply the function by given number.", 1.0 );
+   config.addEntry        < String >( "output-format", "Output file format.", "gnuplot" );
+      config.addEntryEnum< String > ( "gnuplot" );
+      config.addEntryEnum< String > ( "vtk" );
+   config.addEntry        < int >   ( "verbose", "Set the verbosity of the program.", 1 );
 }
 
 int main( int argc, char* argv[] )
@@ -90,10 +90,9 @@ int main( int argc, char* argv[] )
    if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
       return EXIT_FAILURE;
 
-   String meshFile = parameters.getParameter< String >( "mesh" );
+   const String meshFile = parameters.getParameter< String >( "mesh" );
    return ! TNL::Meshes::resolveMeshType< TNLViewBuildConfigTag,
                                           Devices::Host,
                                           FilesProcessor >
-                                             ( meshFile,
-                                                parameters );
+                                        ( meshFile, parameters );
 }

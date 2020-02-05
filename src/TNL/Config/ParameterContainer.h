@@ -82,7 +82,7 @@ public:
    }
 
    /**
-    * \brief Checks whether the parameter \e name already exists in ParameterContainer.
+    * \brief Checks if the ParameterContainer contains a parameter specified by its name.
     *
     * \param name Name of the parameter.
     */
@@ -93,6 +93,19 @@ public:
          if( parameters[ i ]->name == name )
             return true;
       return false;
+   }
+
+   /**
+    * \brief Checks whether the ParameterContainer contains all specified parameter names.
+    *
+    * \param name Name of the parameter.
+    */
+   bool checkParameters( std::initializer_list< String > names ) const
+   {
+      for( auto name : names )
+         if( ! checkParameter( name ) )
+            return false;
+      return true;
    }
 
    /**
