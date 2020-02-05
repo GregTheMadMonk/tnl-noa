@@ -263,7 +263,8 @@ addElement( const IndexType row,
       }
 
       this->columnIndexes.setElement( globalIdx, column );
-      this->values.setElement( globalIdx, value );
+      if( ! isBinary() )
+         this->values.setElement( globalIdx, value );
       return;
    }
 }
