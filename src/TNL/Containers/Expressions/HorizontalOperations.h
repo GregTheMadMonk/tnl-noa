@@ -80,7 +80,7 @@ template< typename T1 >
 struct Minus
 {
    __cuda_callable__
-   static T1 evaluate( const T1& a )
+   static auto evaluate( const T1& a ) -> decltype( -a )
    {
       return -a;
    }
