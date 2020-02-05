@@ -21,6 +21,9 @@
 #elif defined(STATIC_VECTOR)
    #include <TNL/Containers/StaticVector.h>
 #else
+   #ifdef VECTOR_OF_STATIC_VECTORS
+      #include <TNL/Containers/StaticVector.h>
+   #endif
    #include <TNL/Containers/Vector.h>
    #include <TNL/Containers/VectorView.h>
 #endif
@@ -94,22 +97,34 @@ protected:
       StaticVector< 5, double >
    >;
 #else
-   using VectorTypes = ::testing::Types<
-   #ifndef HAVE_CUDA
-      Vector<     int,       Devices::Host >,
-      VectorView< int,       Devices::Host >,
-      VectorView< const int, Devices::Host >,
-      Vector<     double,    Devices::Host >,
-      VectorView< double,    Devices::Host >
+   #ifdef VECTOR_OF_STATIC_VECTORS
+      using VectorTypes = ::testing::Types<
+      #ifndef HAVE_CUDA
+         Vector<     StaticVector< 3, double >, Devices::Host >,
+         VectorView< StaticVector< 3, double >, Devices::Host >
+      #else
+         Vector<     StaticVector< 3, double >, Devices::Cuda >,
+         VectorView< StaticVector< 3, double >, Devices::Cuda >
+      #endif
+      >;
+   #else
+      using VectorTypes = ::testing::Types<
+      #ifndef HAVE_CUDA
+         Vector<     int,       Devices::Host >,
+         VectorView< int,       Devices::Host >,
+         VectorView< const int, Devices::Host >,
+         Vector<     double,    Devices::Host >,
+         VectorView< double,    Devices::Host >
+      #endif
+      #ifdef HAVE_CUDA
+         Vector<     int,       Devices::Cuda >,
+         VectorView< int,       Devices::Cuda >,
+         VectorView< const int, Devices::Cuda >,
+         Vector<     double,    Devices::Cuda >,
+         VectorView< double,    Devices::Cuda >
+      #endif
+      >;
    #endif
-   #ifdef HAVE_CUDA
-      Vector<     int,       Devices::Cuda >,
-      VectorView< int,       Devices::Cuda >,
-      VectorView< const int, Devices::Cuda >,
-      Vector<     double,    Devices::Cuda >,
-      VectorView< double,    Devices::Cuda >
-   #endif
-   >;
 #endif
 
 TYPED_TEST_SUITE( VectorUnaryOperationsTest, VectorTypes );

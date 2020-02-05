@@ -21,6 +21,9 @@
 #elif defined(STATIC_VECTOR)
    #include <TNL/Containers/StaticVector.h>
 #else
+   #ifdef VECTOR_OF_STATIC_VECTORS
+      #include <TNL/Containers/StaticVector.h>
+   #endif
    #include <TNL/Containers/Vector.h>
    #include <TNL/Containers/VectorView.h>
 #endif
@@ -189,37 +192,53 @@ protected:
       Pair< StaticVector< 5, double >,  StaticVector< 5, double > >
    >;
 #else
-   using VectorPairs = ::testing::Types<
-   #ifndef HAVE_CUDA
-      Pair< Vector<     int,       Devices::Host >, Vector<     int,       Devices::Host > >,
-      Pair< VectorView< int,       Devices::Host >, Vector<     int,       Devices::Host > >,
-      Pair< VectorView< const int, Devices::Host >, Vector<     int,       Devices::Host > >,
-      Pair< Vector<     int,       Devices::Host >, VectorView< int,       Devices::Host > >,
-      Pair< Vector<     int,       Devices::Host >, VectorView< const int, Devices::Host > >,
-      Pair< VectorView< int,       Devices::Host >, VectorView< int,       Devices::Host > >,
-      Pair< VectorView< const int, Devices::Host >, VectorView< int,       Devices::Host > >,
-      Pair< VectorView< const int, Devices::Host >, VectorView< const int, Devices::Host > >,
-      Pair< VectorView< int,       Devices::Host >, VectorView< const int, Devices::Host > >,
-      Pair< Vector<     double,    Devices::Host >, Vector<     double,    Devices::Host > >,
-      Pair< VectorView< double,    Devices::Host >, Vector<     double,    Devices::Host > >,
-      Pair< Vector<     double,    Devices::Host >, VectorView< double,    Devices::Host > >,
-      Pair< VectorView< double,    Devices::Host >, VectorView< double,    Devices::Host > >
+   #ifdef VECTOR_OF_STATIC_VECTORS
+      using VectorPairs = ::testing::Types<
+      #ifndef HAVE_CUDA
+         Pair< Vector<     StaticVector< 3, double >, Devices::Host >, Vector<     StaticVector< 3, double >, Devices::Host > >,
+         Pair< VectorView< StaticVector< 3, double >, Devices::Host >, Vector<     StaticVector< 3, double >, Devices::Host > >,
+         Pair< Vector<     StaticVector< 3, double >, Devices::Host >, VectorView< StaticVector< 3, double >, Devices::Host > >,
+         Pair< VectorView< StaticVector< 3, double >, Devices::Host >, VectorView< StaticVector< 3, double >, Devices::Host > >
+      #else
+         Pair< Vector<     StaticVector< 3, double >, Devices::Cuda >, Vector<     StaticVector< 3, double >, Devices::Cuda > >,
+         Pair< VectorView< StaticVector< 3, double >, Devices::Cuda >, Vector<     StaticVector< 3, double >, Devices::Cuda > >,
+         Pair< Vector<     StaticVector< 3, double >, Devices::Cuda >, VectorView< StaticVector< 3, double >, Devices::Cuda > >,
+         Pair< VectorView< StaticVector< 3, double >, Devices::Cuda >, VectorView< StaticVector< 3, double >, Devices::Cuda > >
+      #endif
+      >;
    #else
-      Pair< Vector<     int,       Devices::Cuda >, Vector<     int,       Devices::Cuda > >,
-      Pair< VectorView< int,       Devices::Cuda >, Vector<     int,       Devices::Cuda > >,
-      Pair< VectorView< const int, Devices::Cuda >, Vector<     int,       Devices::Cuda > >,
-      Pair< Vector<     int,       Devices::Cuda >, VectorView< int,       Devices::Cuda > >,
-      Pair< Vector<     int,       Devices::Cuda >, VectorView< const int, Devices::Cuda > >,
-      Pair< VectorView< int,       Devices::Cuda >, VectorView< int,       Devices::Cuda > >,
-      Pair< VectorView< const int, Devices::Cuda >, VectorView< int,       Devices::Cuda > >,
-      Pair< VectorView< const int, Devices::Cuda >, VectorView< const int, Devices::Cuda > >,
-      Pair< VectorView< int,       Devices::Cuda >, VectorView< const int, Devices::Cuda > >,
-      Pair< Vector<     double,    Devices::Cuda >, Vector<     double,    Devices::Cuda > >,
-      Pair< VectorView< double,    Devices::Cuda >, Vector<     double,    Devices::Cuda > >,
-      Pair< Vector<     double,    Devices::Cuda >, VectorView< double,    Devices::Cuda > >,
-      Pair< VectorView< double,    Devices::Cuda >, VectorView< double,    Devices::Cuda > >
+      using VectorPairs = ::testing::Types<
+      #ifndef HAVE_CUDA
+         Pair< Vector<     int,       Devices::Host >, Vector<     int,       Devices::Host > >,
+         Pair< VectorView< int,       Devices::Host >, Vector<     int,       Devices::Host > >,
+         Pair< VectorView< const int, Devices::Host >, Vector<     int,       Devices::Host > >,
+         Pair< Vector<     int,       Devices::Host >, VectorView< int,       Devices::Host > >,
+         Pair< Vector<     int,       Devices::Host >, VectorView< const int, Devices::Host > >,
+         Pair< VectorView< int,       Devices::Host >, VectorView< int,       Devices::Host > >,
+         Pair< VectorView< const int, Devices::Host >, VectorView< int,       Devices::Host > >,
+         Pair< VectorView< const int, Devices::Host >, VectorView< const int, Devices::Host > >,
+         Pair< VectorView< int,       Devices::Host >, VectorView< const int, Devices::Host > >,
+         Pair< Vector<     double,    Devices::Host >, Vector<     double,    Devices::Host > >,
+         Pair< VectorView< double,    Devices::Host >, Vector<     double,    Devices::Host > >,
+         Pair< Vector<     double,    Devices::Host >, VectorView< double,    Devices::Host > >,
+         Pair< VectorView< double,    Devices::Host >, VectorView< double,    Devices::Host > >
+      #else
+         Pair< Vector<     int,       Devices::Cuda >, Vector<     int,       Devices::Cuda > >,
+         Pair< VectorView< int,       Devices::Cuda >, Vector<     int,       Devices::Cuda > >,
+         Pair< VectorView< const int, Devices::Cuda >, Vector<     int,       Devices::Cuda > >,
+         Pair< Vector<     int,       Devices::Cuda >, VectorView< int,       Devices::Cuda > >,
+         Pair< Vector<     int,       Devices::Cuda >, VectorView< const int, Devices::Cuda > >,
+         Pair< VectorView< int,       Devices::Cuda >, VectorView< int,       Devices::Cuda > >,
+         Pair< VectorView< const int, Devices::Cuda >, VectorView< int,       Devices::Cuda > >,
+         Pair< VectorView< const int, Devices::Cuda >, VectorView< const int, Devices::Cuda > >,
+         Pair< VectorView< int,       Devices::Cuda >, VectorView< const int, Devices::Cuda > >,
+         Pair< Vector<     double,    Devices::Cuda >, Vector<     double,    Devices::Cuda > >,
+         Pair< VectorView< double,    Devices::Cuda >, Vector<     double,    Devices::Cuda > >,
+         Pair< Vector<     double,    Devices::Cuda >, VectorView< double,    Devices::Cuda > >,
+         Pair< VectorView< double,    Devices::Cuda >, VectorView< double,    Devices::Cuda > >
+      #endif
+      >;
    #endif
-   >;
 #endif
 
 TYPED_TEST_SUITE( VectorBinaryOperationsTest, VectorPairs );

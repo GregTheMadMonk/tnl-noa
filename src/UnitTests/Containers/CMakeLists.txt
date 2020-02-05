@@ -68,6 +68,10 @@ ADD_EXECUTABLE( StaticVectorOperationsTest StaticVectorOperationsTest.cpp )
 TARGET_COMPILE_OPTIONS( StaticVectorOperationsTest PRIVATE ${CXX_TESTS_FLAGS} )
 TARGET_LINK_LIBRARIES( StaticVectorOperationsTest ${GTEST_BOTH_LIBRARIES} )
 
+ADD_EXECUTABLE( VectorOfStaticVectorsTest VectorOfStaticVectorsTest.cpp )
+TARGET_COMPILE_OPTIONS( VectorOfStaticVectorsTest PRIVATE ${CXX_TESTS_FLAGS} )
+TARGET_LINK_LIBRARIES( VectorOfStaticVectorsTest ${GTEST_BOTH_LIBRARIES} )
+
 
 ADD_TEST( ArrayTest ${EXECUTABLE_OUTPUT_PATH}/ArrayTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( ArrayViewTest ${EXECUTABLE_OUTPUT_PATH}/ArrayViewTest${CMAKE_EXECUTABLE_SUFFIX} )
@@ -90,6 +94,7 @@ ENDIF()
 ADD_TEST( StaticArrayTest ${EXECUTABLE_OUTPUT_PATH}/StaticArrayTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( StaticVectorTest ${EXECUTABLE_OUTPUT_PATH}/StaticVectorTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( StaticVectorOperationsTest ${EXECUTABLE_OUTPUT_PATH}/StaticVectorOperationsTest${CMAKE_EXECUTABLE_SUFFIX} )
+ADD_TEST( VectorOfStaticVectorsTest ${EXECUTABLE_OUTPUT_PATH}/VectorOfStaticVectorsTest${CMAKE_EXECUTABLE_SUFFIX} )
 
 
 ADD_SUBDIRECTORY( Multimaps )
