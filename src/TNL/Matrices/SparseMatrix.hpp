@@ -590,7 +590,8 @@ operator=( const Dense< Real_, Device_, Index_, RowMajorOrder, RealAllocator_ >&
          {
             IndexType thisGlobalIdx = segments_view.getGlobalIndex( rowIdx, rowLocalIndexes_view[ rowIdx ]++ );
             columns_view[ thisGlobalIdx ] = columnIdx;
-            values_view[ thisGlobalIdx ] = value;
+            if( ! isBinary() )
+               values_view[ thisGlobalIdx ] = value;
          }
       };
       matrix.forAllRows( f );
@@ -700,7 +701,8 @@ operator=( const RHSMatrix& matrix )
          {
             IndexType thisGlobalIdx = segments_view.getGlobalIndex( rowIdx, localIdx++ );
             columns_view[ thisGlobalIdx ] = columnIndex;
-            values_view[ thisGlobalIdx ] = value;
+            if( ! isBinary() )
+               values_view[ thisGlobalIdx ] = value;
             rowLocalIndexes_view[ rowIdx ] = localIdx;
          }
       };

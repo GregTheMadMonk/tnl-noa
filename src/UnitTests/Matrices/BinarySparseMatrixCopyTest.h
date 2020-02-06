@@ -440,7 +440,7 @@ void tridiagonalMatrixAssignment()
    TridiagonalHost hostMatrix( rows, columns );
    for( IndexType i = 0; i < rows; i++ )
       for( IndexType j = TNL::max( 0, i - 1 ); j < TNL::min( columns, i + 2 ); j++ )
-         hostMatrix.setElement( i, j, 1 );
+         hostMatrix.setElement( i, j, TNL::min( i + j, 1 ) );
 
    Matrix matrix;
    matrix = hostMatrix;
@@ -456,7 +456,7 @@ void tridiagonalMatrixAssignment()
          if( abs( i - j ) > 1 )
             EXPECT_EQ( matrix.getElement( i, j ), 0.0 );
          else
-            EXPECT_EQ( matrix.getElement( i, j ), 1.0 );
+            EXPECT_EQ( matrix.getElement( i, j ), TNL::min( i + j, 1 ) );
       }
 
 #ifdef HAVE_CUDA
@@ -471,7 +471,7 @@ void tridiagonalMatrixAssignment()
          if( abs( i - j ) > 1 )
             EXPECT_EQ( matrix.getElement( i, j ), 0.0 );
          else
-            EXPECT_EQ( matrix.getElement( i, j ), 1.0 );
+            EXPECT_EQ( matrix.getElement( i, j ), TNL::min( i + j, 1 ) );
       }
 #endif
 }
@@ -493,7 +493,7 @@ void multidiagonalMatrixAssignment()
    for( IndexType i = 0; i < rows; i++ )
       for( IndexType j = 0; j < columns; j++ )
          if( diagonals.containsValue( j - i ) )
-            hostMatrix.setElement( i, j, 1 );
+            hostMatrix.setElement( i, j, TNL::min( i + j, 1 ) );
 
    Matrix matrix;
    matrix = hostMatrix;
@@ -510,7 +510,7 @@ void multidiagonalMatrixAssignment()
       for( IndexType j = 0; j < columns; j++ )
       {
          if( diagonals.containsValue( j - i ) )
-            EXPECT_EQ( matrix.getElement( i, j ), 1.0 );
+            EXPECT_EQ( matrix.getElement( i, j ), TNL::min( i + j, 1 ) );
          else
             EXPECT_EQ( matrix.getElement( i, j ), 0.0 );
       }
@@ -525,7 +525,7 @@ void multidiagonalMatrixAssignment()
       for( IndexType j = 0; j < columns; j++ )
       {
          if( diagonals.containsValue( j - i ) )
-            EXPECT_EQ( matrix.getElement( i, j ), 1.0 );
+            EXPECT_EQ( matrix.getElement( i, j ), TNL::min( i + j, 1 ) );
          else
             EXPECT_EQ( matrix.getElement( i, j ), 0.0 );
       }
@@ -546,7 +546,7 @@ void denseMatrixAssignment()
    DenseHost hostMatrix( rows, columns );
    for( IndexType i = 0; i < columns; i++ )
       for( IndexType j = 0; j <= i; j++ )
-         hostMatrix( i, j ) = i + j;
+         hostMatrix( i, j ) = TNL::min( i + j, 1 );
 
    Matrix matrix;
    matrix = hostMatrix;
@@ -561,7 +561,7 @@ void denseMatrixAssignment()
          if( j > i )
             EXPECT_EQ( matrix.getElement( i, j ), 0.0 );
          else
-            EXPECT_EQ( matrix.getElement( i, j ), 1.0 );
+            EXPECT_EQ( matrix.getElement( i, j ), TNL::min( i + j, 1 ) );
       }
 
 #ifdef HAVE_CUDA
@@ -576,7 +576,7 @@ void denseMatrixAssignment()
          if( j > i )
             EXPECT_EQ( matrix.getElement( i, j ), 0.0 );
          else
-            EXPECT_EQ( matrix.getElement( i, j ), 1.0 );
+            EXPECT_EQ( matrix.getElement( i, j ), TNL::min( i + j, 1 ) );
       }
 #endif
 }
