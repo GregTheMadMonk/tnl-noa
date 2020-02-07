@@ -135,6 +135,11 @@ TYPED_TEST( ArrayTest, constructors )
    v = 0;
    EXPECT_EQ( v.getSize(), 10 );
 
+   ArrayType vv( 10, 4 );
+   EXPECT_EQ( vv.getSize(), 10 );
+   for( int i = 0; i < 10; i++ )
+      EXPECT_EQ( vv.getElement( i ), 4 );
+
    // deep copy
    ArrayType w( v );
    EXPECT_NE( w.getData(), v.getData() );

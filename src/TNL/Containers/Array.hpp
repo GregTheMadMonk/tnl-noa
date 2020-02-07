@@ -67,6 +67,18 @@ template< typename Value,
           typename Index,
           typename Allocator >
 Array< Value, Device, Index, Allocator >::
+Array( const IndexType& size, const Value& value, const AllocatorType& allocator )
+: allocator( allocator )
+{
+   this->setSize( size );
+   ( *this ) = value;
+}
+
+template< typename Value,
+          typename Device,
+          typename Index,
+          typename Allocator >
+Array< Value, Device, Index, Allocator >::
 Array( Value* data,
        const IndexType& size,
        const AllocatorType& allocator )

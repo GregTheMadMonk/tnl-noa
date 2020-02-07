@@ -138,6 +138,15 @@ class Array
       explicit Array( const IndexType& size, const AllocatorType& allocator = AllocatorType() );
 
       /**
+       * \brief Constructs an array with given size and value.
+       *
+       * \param size The number of array elements to be allocated.
+       * \param value The value all elements will be set to.
+       * \param allocator The allocator to be associated with this array.
+       */
+      explicit Array( const IndexType& size, const Value& value, const AllocatorType& allocator = AllocatorType() );
+
+      /**
        * \brief Constructs an array with given size and copies data from given
        * pointer.
        *
