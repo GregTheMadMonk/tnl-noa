@@ -80,6 +80,48 @@ template< typename Real,
           template< typename, typename, typename > class Segments,
           typename RealAllocator,
           typename IndexAllocator >
+SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
+SparseMatrix( const std::initializer_list< std::tuple< IndexType > >& rowCapacities,
+              const IndexType columns,
+              const RealAllocatorType& realAllocator,
+              const IndexAllocatorType& indexAllocator )
+: BaseType( rowCapacities.size(), columns, realAllocator ), columnIndexes( indexAllocator )
+{
+   this->setCompressedRowLengths( RowCapacitiesType ( rowCapacities ) );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename, typename > class Segments,
+          typename RealAllocator,
+          typename IndexAllocator >
+SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
+SparseMatrix( const IndexType rows,
+              const IndexType columns,
+              const std::initializer_list< std::tuple< IndexType, IndexType, RealType > >& data,
+              const RealAllocatorType& realAllocator,
+              const IndexAllocatorType& indexAllocator )
+: BaseType( rows, columns, realAllocator ), columnIndexes( indexAllocator )
+{
+   Containers::Vector< IndexType, Devices::Host, IndexType > rowCapacities( rows, 0 );
+   for( const auto& i : data )
+      rowCapacities[ std::get< 0 >( i ) ]++;
+   SparseMatrix< Real, Devices::Host, Index, MatrixType, Segments > hostMatrix( rows, columns );
+   hostMatrix.setCompressedRowLength( rowCapacities );
+   for( const auto& i : data )
+      hostMatrix.setElement( std::get< 0 >( i ), std::get< 1 >( i ), std::get< 2 >( i ) );
+   ( *this ) = hostMatrix;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename, typename > class Segments,
+          typename RealAllocator,
+          typename IndexAllocator >
 auto
 SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
 getView() const -> ViewType
