@@ -74,7 +74,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
                     const RealAllocatorType& realAllocator = RealAllocatorType(),
                     const IndexAllocatorType& indexAllocator = IndexAllocatorType() );
 
-      SparseMatrix( const std::initializer_list< std::tuple< IndexType > >& rowCapacities,
+      SparseMatrix( const std::initializer_list< IndexType >& rowCapacities,
                     const IndexType columns,
                     const RealAllocatorType& realAllocator = RealAllocatorType(),
                     const IndexAllocatorType& indexAllocator = IndexAllocatorType() );

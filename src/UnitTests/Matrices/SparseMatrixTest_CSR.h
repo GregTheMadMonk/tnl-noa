@@ -59,6 +59,13 @@ using CSRMatrixTypes = ::testing::Types
 
 TYPED_TEST_SUITE( CSRMatrixTest, CSRMatrixTypes);
 
+TYPED_TEST( CSRMatrixTest, Constructors )
+{
+    using CSRMatrixType = typename TestFixture::CSRMatrixType;
+
+    test_Constructors< CSRMatrixType >();
+}
+
 TYPED_TEST( CSRMatrixTest, setDimensionsTest )
 {
     using CSRMatrixType = typename TestFixture::CSRMatrixType;

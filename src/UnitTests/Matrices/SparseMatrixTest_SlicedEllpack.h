@@ -71,6 +71,13 @@ using SlicedEllpackMatrixTypes = ::testing::Types
 
 TYPED_TEST_SUITE( SlicedEllpackMatrixTest, SlicedEllpackMatrixTypes);
 
+TYPED_TEST( SlicedEllpackMatrixTest, Constructors )
+{
+    using SlicedEllpackMatrixType = typename TestFixture::SlicedEllpackMatrixType;
+
+    test_Constructors< SlicedEllpackMatrixType >();
+}
+
 TYPED_TEST( SlicedEllpackMatrixTest, setDimensionsTest )
 {
     using SlicedEllpackMatrixType = typename TestFixture::SlicedEllpackMatrixType;

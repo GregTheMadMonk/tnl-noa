@@ -81,13 +81,13 @@ template< typename Real,
           typename RealAllocator,
           typename IndexAllocator >
 SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
-SparseMatrix( const std::initializer_list< std::tuple< IndexType > >& rowCapacities,
+SparseMatrix( const std::initializer_list< IndexType >& rowCapacities,
               const IndexType columns,
               const RealAllocatorType& realAllocator,
               const IndexAllocatorType& indexAllocator )
 : BaseType( rowCapacities.size(), columns, realAllocator ), columnIndexes( indexAllocator )
 {
-   this->setCompressedRowLengths( RowCapacitiesType ( rowCapacities ) );
+   this->setCompressedRowLengths( RowsCapacitiesType( rowCapacities ) );
 }
 
 template< typename Real,
@@ -109,7 +109,7 @@ SparseMatrix( const IndexType rows,
    for( const auto& i : data )
       rowCapacities[ std::get< 0 >( i ) ]++;
    SparseMatrix< Real, Devices::Host, Index, MatrixType, Segments > hostMatrix( rows, columns );
-   hostMatrix.setCompressedRowLength( rowCapacities );
+   hostMatrix.setCompressedRowLengths( rowCapacities );
    for( const auto& i : data )
       hostMatrix.setElement( std::get< 0 >( i ), std::get< 1 >( i ), std::get< 2 >( i ) );
    ( *this ) = hostMatrix;

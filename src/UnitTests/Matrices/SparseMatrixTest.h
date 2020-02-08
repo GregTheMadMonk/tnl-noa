@@ -48,8 +48,17 @@ void test_Constructors()
    EXPECT_EQ( m1.getColumns(), 6 );
 
    Matrix m2( {1, 2, 2, 2, 1 }, 5 );
-   typename Matrix::RowCapacitiesType v1, v2{ 1, 2, 2, 2, 1 }; 
-   m2.getCompressedRowLength( v1 );
+   typename Matrix::RowsCapacitiesType v1, v2{ 1, 2, 2, 2, 1 }; 
+   m2.setElement( 0, 0, 1 );   // 0th row
+   m2.setElement( 1, 0, 1 );   // 1st row
+   m2.setElement( 1, 1, 1 );   
+   m2.setElement( 2, 1, 1 );   // 2nd row
+   m2.setElement( 2, 2, 1 );
+   m2.setElement( 3, 2, 1 );   // 3rd row
+   m2.setElement( 3, 3, 1 );
+   m2.setElement( 4, 4, 1 );   // 4th row
+   m2.getCompressedRowLengths( v1 );
+   
    EXPECT_EQ( v1, v2 );
 
    /*
@@ -662,8 +671,14 @@ void test_AddElement()
    const IndexType rows = 6;
    const IndexType cols = 5;
 
-   Matrix m( rows, cols );
-   typename Matrix::CompressedRowLengthsVector rowLengths( rows, 3 );
+   Matrix m( rows, cols, {
+      { 0, 0,  1 }, { 0, 1,  2 }, { 0, 2, 3 },
+                    { 1, 1,  4 }, { 1, 2, 5 }, { 1, 3,  6 },
+                                  { 2, 2, 7 }, { 2, 3,  8 }, { 2, 4, 9 },
+      { 3, 0, 10 }, { 3, 1,  0 }, { 3, 2, 0 },
+                    { 4, 1, 11 }, { 4, 2, 0 }, { 4, 3,  0 },
+                                  { 5, 2, 0 }, { 5, 3, 12 }, { 5, 4, 0 } } );
+   /*typename Matrix::CompressedRowLengthsVector rowLengths( rows, 3 );
    m.setCompressedRowLengths( rowLengths );
 
    RealType value = 1;
@@ -680,7 +695,7 @@ void test_AddElement()
 
    m.setElement( 4, 1, value++ );      // 4th row
 
-   m.setElement( 5, 3, value++ );      // 5th row
+   m.setElement( 5, 3, value++ );      // 5th row*/
 
 
    // Check the set elements

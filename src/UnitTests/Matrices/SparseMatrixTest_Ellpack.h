@@ -70,6 +70,13 @@ using EllpackMatrixTypes = ::testing::Types
 
 TYPED_TEST_SUITE( EllpackMatrixTest, EllpackMatrixTypes);
 
+TYPED_TEST( EllpackMatrixTest, Constructors )
+{
+    using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
+
+    test_Constructors< EllpackMatrixType >();
+}
+
 TYPED_TEST( EllpackMatrixTest, setDimensionsTest )
 {
     using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
