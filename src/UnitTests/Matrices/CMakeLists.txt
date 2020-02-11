@@ -37,6 +37,9 @@ IF( BUILD_CUDA )
    CUDA_ADD_EXECUTABLE( BinarySparseMatrixCopyTest BinarySparseMatrixCopyTest.cu OPTIONS ${CXX_TESTS_FLAGS} )
    TARGET_LINK_LIBRARIES( BinarySparseMatrixCopyTest ${GTEST_BOTH_LIBRARIES} )
 
+   CUDA_ADD_EXECUTABLE( SymmetricSparseMatrixTest_CSR SymmetricSparseMatrixTest_CSR.cu OPTIONS ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( SymmetricSparseMatrixTest_CSR ${GTEST_BOTH_LIBRARIES} )
+
 ELSE(  BUILD_CUDA )
    ADD_EXECUTABLE( DenseMatrixTest DenseMatrixTest.cpp )
    TARGET_COMPILE_OPTIONS( DenseMatrixTest PRIVATE ${CXX_TESTS_FLAGS} )
@@ -86,6 +89,10 @@ ELSE(  BUILD_CUDA )
    TARGET_COMPILE_OPTIONS( BinarySparseMatrixCopyTest PRIVATE ${CXX_TESTS_FLAGS} )
    TARGET_LINK_LIBRARIES( BinarySparseMatrixCopyTest ${GTEST_BOTH_LIBRARIES} )
 
+   ADD_EXECUTABLE( SymmetricSparseMatrixTest_CSR SymmetricSparseMatrixTest_CSR.cpp )
+   TARGET_COMPILE_OPTIONS( SymmetricSparseMatrixTest_CSR PRIVATE ${CXX_TESTS_FLAGS} )
+   TARGET_LINK_LIBRARIES( SymmetricSparseMatrixTest_CSR ${GTEST_BOTH_LIBRARIES} )
+
 ENDIF( BUILD_CUDA )
 
 ADD_TEST( DenseMatrixTest ${EXECUTABLE_OUTPUT_PATH}/DenseMatrixTest${CMAKE_EXECUTABLE_SUFFIX} )
@@ -100,6 +107,7 @@ ADD_TEST( BinarySparseMatrixTest_CSR ${EXECUTABLE_OUTPUT_PATH}/BinarySparseMatri
 ADD_TEST( BinarySparseMatrixTest_Ellpack ${EXECUTABLE_OUTPUT_PATH}/BinarySparseMatrixTest_Ellpack${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( BinarySparseMatrixTest_SlicedEllpack ${EXECUTABLE_OUTPUT_PATH}/BinarySparseMatrixTest_SlicedEllpack${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( BinarySparseMatrixCopyTest ${EXECUTABLE_OUTPUT_PATH}/BinarySparseMatrixCopyTest${CMAKE_EXECUTABLE_SUFFIX} )
+ADD_TEST( SymmetricSparseMatrixTest_CSR ${EXECUTABLE_OUTPUT_PATH}/SymmetricSparseMatrixTest_CSR${CMAKE_EXECUTABLE_SUFFIX} )
 
 if( ${BUILD_MPI} )
    if( BUILD_CUDA )
