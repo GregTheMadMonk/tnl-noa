@@ -920,6 +920,7 @@ template< typename Real,
 void DenseMatrixView< Real, Device, Index, RowMajorOrder >::save( File& file ) const
 {
    MatrixView< Real, Device, Index >::save( file );
+   this->segments.save( file );
 }
 
 template< typename Real,

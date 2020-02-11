@@ -1128,6 +1128,8 @@ template< typename Real,
 void Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::load( File& file )
 {
    Matrix< Real, Device, Index >::load( file );
+   this->segments.load( file );
+   this->view = this->getView();
 }
 
 template< typename Real,

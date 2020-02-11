@@ -48,17 +48,17 @@ void test_Constructors()
    EXPECT_EQ( m1.getColumns(), 6 );
 
    Matrix m2( {1, 2, 2, 2, 1 }, 5 );
-   typename Matrix::RowsCapacitiesType v1, v2{ 1, 2, 2, 2, 1 }; 
+   typename Matrix::RowsCapacitiesType v1, v2{ 1, 2, 2, 2, 1 };
    m2.setElement( 0, 0, 1 );   // 0th row
    m2.setElement( 1, 0, 1 );   // 1st row
-   m2.setElement( 1, 1, 1 );   
+   m2.setElement( 1, 1, 1 );
    m2.setElement( 2, 1, 1 );   // 2nd row
    m2.setElement( 2, 2, 1 );
    m2.setElement( 3, 2, 1 );   // 3rd row
    m2.setElement( 3, 3, 1 );
    m2.setElement( 4, 4, 1 );   // 4th row
    m2.getCompressedRowLengths( v1 );
-   
+
    EXPECT_EQ( v1, v2 );
 
    /*
@@ -1297,9 +1297,7 @@ void test_SaveAndLoad( const char* filename )
 
    ASSERT_NO_THROW( savedMatrix.save( filename ) );
 
-   Matrix loadedMatrix( m_rows, m_cols );
-   typename Matrix::CompressedRowLengthsVector rowLengths2( m_rows, 3 );
-   loadedMatrix.setCompressedRowLengths( rowLengths2 );
+   Matrix loadedMatrix;
 
    ASSERT_NO_THROW( loadedMatrix.load( filename ) );
 

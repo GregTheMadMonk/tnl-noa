@@ -858,6 +858,7 @@ load( File& file )
    Matrix< RealType, DeviceType, IndexType >::load( file );
    file >> this->columnIndexes;
    this->segments.load( file );
+   this->view = this->getView();
 }
 
 template< typename Real,
