@@ -1078,9 +1078,7 @@ void test_SaveAndLoad( const char* filename )
    const IndexType m_cols = 4;
 
    Matrix savedMatrix( m_rows, m_cols );
-   typename Matrix::CompressedRowLengthsVector rowLengths;
-   rowLengths.setSize( m_rows );
-   rowLengths.setValue( 3 );
+   typename Matrix::CompressedRowLengthsVector rowLengths( m_rows, 3 );
    savedMatrix.setCompressedRowLengths( rowLengths );
 
    for( IndexType i = 0; i < m_cols - 1; i++ )   // 0th row
@@ -1098,14 +1096,6 @@ void test_SaveAndLoad( const char* filename )
    ASSERT_NO_THROW( savedMatrix.save( filename ) );
 
    Matrix loadedMatrix;
-   loadedMatrix.reset();
-   loadedMatrix.setDimensions( m_rows, m_cols );
-   typename Matrix::CompressedRowLengthsVector rowLengths2;
-   rowLengths2.setSize( m_rows );
-   rowLengths2.setValue( 3 );
-   loadedMatrix.setCompressedRowLengths( rowLengths2 );
-
-
    ASSERT_NO_THROW( loadedMatrix.load( filename ) );
 
 
@@ -1172,12 +1162,8 @@ void test_Print()
    const IndexType m_rows = 5;
    const IndexType m_cols = 4;
 
-   Matrix m;
-   m.reset();
-   m.setDimensions( m_rows, m_cols );
-   typename Matrix::CompressedRowLengthsVector rowLengths;
-   rowLengths.setSize( m_rows );
-   rowLengths.setValue( 3 );
+   Matrix m( m_rows, m_cols );
+   typename Matrix::CompressedRowLengthsVector rowLengths( m_rows, 3 );
    m.setCompressedRowLengths( rowLengths );
 
    RealType value = 1;
