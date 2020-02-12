@@ -293,51 +293,6 @@ getSmallestSpaceStep() const
 template< typename Real,
           typename Device,
           typename Index >
-   template< typename GridFunction >
-typename GridFunction::RealType
-Grid< 1, Real, Device, Index >::getDifferenceAbsMax( const GridFunction& f1,
-                                                        const GridFunction& f2 ) const
-{
-   typename GridFunction::RealType maxDiff( -1.0 );
-
-   Cell cell( *this );
-   for( cell.getCoordinates().x() = 0;
-        cell.getCoordinates().x() < getDimensions().x();
-        cell.getCoordinates().x()++ )
-   {
-      IndexType c = this->getEntityIndex( cell );
-      maxDiff = max( maxDiff, abs( f1[ c ] - f2[ c ] ) );
-   }
-   return maxDiff;
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-   template< typename GridFunction >
-typename GridFunction::RealType
-Grid< 1, Real, Device, Index >::getDifferenceLpNorm( const GridFunction& f1,
-                                                        const GridFunction& f2,
-                                                        const typename GridFunction::RealType& p ) const
-{
-   typedef typename GridFunction::RealType FunctionRealType;
-   FunctionRealType lpNorm( 0.0 ), cellVolume( this->getSpaceSteps().x() );
-
-   Cell cell( *this );
-   for( cell.getCoordinates().x() = 0;
-        cell.getCoordinates().x() < getDimensions().x();
-        cell.getCoordinates().x()++ )
-   {
-      IndexType c = this->getEntityIndex( cell );
-      lpNorm += ::pow( abs( f1[ c ] - f2[ c ] ), p );
-   }
-   lpNorm *= cellVolume;
-   return ::pow( lpNorm, 1.0 / p );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
 void Grid< 1, Real, Device, Index >:: setDistMesh(DistributedMeshType * distMesh)
 {
     this->distGrid=distMesh;

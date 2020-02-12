@@ -180,16 +180,6 @@ class Grid< 1, Real, Device, Index > : public Object
     */
    __cuda_callable__
    inline RealType getSmallestSpaceStep() const;
-
-
-   template< typename GridFunction >
-   typename GridFunction::RealType getDifferenceAbsMax( const GridFunction& f1,
-                                                        const GridFunction& f2 ) const;
-
-   template< typename GridFunction >
-   typename GridFunction::RealType getDifferenceLpNorm( const GridFunction& f1,
-                                                        const GridFunction& f2,
-                                                        const typename GridFunction::RealType& p ) const;
    
    void setDistMesh(DistributedMeshType * distMesh);
    
