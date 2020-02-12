@@ -12,7 +12,7 @@
 #include <gtest/gtest.h>
 #include <iostream>
 #include <TNL/Matrices/SparseMatrix.h>
-#include "SparseMatrixTest.hpp"
+#include "SymmetricSparseMatrixTest.hpp"
 
 // test fixture for typed tests
 template< typename Matrix >
@@ -23,13 +23,6 @@ protected:
 };
 
 TYPED_TEST_SUITE( MatrixTest, MatrixTypes);
-
-TYPED_TEST( MatrixTest, Constructors )
-{
-    using MatrixType = typename TestFixture::MatrixType;
-
-    test_Constructors< MatrixType >();
-}
 
 TYPED_TEST( MatrixTest, setDimensionsTest )
 {
@@ -110,5 +103,3 @@ TYPED_TEST( MatrixTest, printTest )
 }
 
 #endif
-
-#include "../main.h"

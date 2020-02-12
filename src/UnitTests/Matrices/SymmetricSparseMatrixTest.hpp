@@ -177,13 +177,13 @@ void test_GetNumberOfNonzeroMatrixElements()
       { 0, 0,  1 },
       { 1, 0,  2 }, { 1, 1,  3 },
       { 2, 0,  4 }, { 2, 1,  5 }, {  2, 2,  6 },
-      { 3, 0,  7 }, { 3, 1,  8 },              , { 3, 3,  9 },
+      { 3, 0,  7 }, { 3, 1,  8 },                { 3, 3,  9 },
                     { 4, 1, 10 }, {  4, 2, 11 },               { 4, 4, 12 },
                     { 5, 1, 13 }, {  5, 2, 14 },                              {  5, 5, 15 },
                     { 6, 1, 16 },                { 6, 3, 17 },                              { 6, 6, 18 },
                     { 7, 1, 19 },                { 7, 3, 20 },                                            { 7, 7, 21 },
                                   {  8, 2, 22 },               { 8, 4, 23 },                                           { 8, 8, 24 },
-                                  {  9, 2, 25 },               { 9, 4, 26 },                                                         { 9, 9, 27 }
+                                  {  9, 2, 25 },               { 9, 4, 26 },                                                         { 9, 9, 27 },
                                   { 10, 2, 28 },                              { 10, 4, 29 },                                                      { 10, 10, 30 }
    } );
 
@@ -260,7 +260,7 @@ void test_GetRow()
          case 10: row.setElement( 0, 2, 28 ); row.setElement( 1, 5, 29 ); row.setElement( 2, 10, 30 ); break;
       }
    };
-   TNL::Algorithms::ParallelFor< DeviceType >::exec( ( IndexType ) 0, rows, f );
+   TNL::Algorithms::ParallelFor< DeviceType >::exec( ( IndexType ) 0, m.getRows(), f );
 
    EXPECT_EQ( m.getElement( 0,  0 ),  1 );
    EXPECT_EQ( m.getElement( 0,  1 ),  2 );
@@ -692,8 +692,8 @@ void test_VectorProduct()
                    { 2, 1, 3 },
                    { 3, 1, 4 }, { 3, 2, 5 } } );
 
-   VectorType inVector_1( m_cols, 2 );
-   VectorType outVector_1( m_rows, 1 );
+   VectorType inVector_1( m_cols_1, 2.0 );
+   VectorType outVector_1( m_rows_1, 0.0 );
    m_1.vectorProduct( inVector_1, outVector_1 );
 
    EXPECT_EQ( outVector_1.getElement( 0 ),  2 );
@@ -823,7 +823,7 @@ void test_VectorProduct()
                                                                                                       { 7, 7, 14 }
    } );
 
-   VectorType inVector_5( m_cols_5, { 1, 2, 3, 4, 5, 6, 7, 8 } );
+   VectorType inVector_5( { 1, 2, 3, 4, 5, 6, 7, 8 } );
    VectorType outVector_5( m_rows_5, 0.0 );
    m_5.vectorProduct( inVector_5, outVector_5 );
 
@@ -873,7 +873,8 @@ void test_RowsReduction()
 
    ////
    // Compute number of non-zero elements in rows.
-   typename Matrix::RowsCapacitiesType rowLengths( rows );
+   typename Matrix::RowsCapacitiesType rowLengths( m_rows_5 );
+   typename Matrix::RowsCapacitiesType rowLengths_true( { 1, 1, 4, 4, 4, 4, 1, 1 } );
    auto rowLengths_view = rowLengths.getView();
    auto fetch = [] __cuda_callable__ ( IndexType row, IndexType column, IndexType globalIdx, const RealType& value ) -> IndexType {
       return ( value != 0.0 );
@@ -884,14 +885,15 @@ void test_RowsReduction()
    auto keep = [=] __cuda_callable__ ( const IndexType rowIdx, const IndexType value ) mutable {
       rowLengths_view[ rowIdx ] = value;
    };
-   m.allRowsReduction( fetch, reduce, keep, 0 );
-   EXPECT_EQ( rowsCapacities, rowLengths );
-   m.getCompressedRowLengths( rowLengths );
-   EXPECT_EQ( rowsCapacities, rowLengths );
+   m_5.allRowsReduction( fetch, reduce, keep, 0 );
+
+   EXPECT_EQ( rowLengths_true, rowLengths );
+   m_5.getCompressedRowLengths( rowLengths );
+   EXPECT_EQ( rowLengths_true, rowLengths );
 
    ////
    // Compute max norm
-   TNL::Containers::Vector< RealType, DeviceType, IndexType > rowSums( rows );
+   TNL::Containers::Vector< RealType, DeviceType, IndexType > rowSums( m_5.getRows() );
    auto rowSums_view = rowSums.getView();
    auto max_fetch = [] __cuda_callable__ ( IndexType row, IndexType column, IndexType globalIdx, const RealType& value ) -> IndexType {
       return abs( value );
@@ -902,7 +904,7 @@ void test_RowsReduction()
    auto max_keep = [=] __cuda_callable__ ( const IndexType rowIdx, const IndexType value ) mutable {
       rowSums_view[ rowIdx ] = value;
    };
-   m.allRowsReduction( max_fetch, max_reduce, max_keep, 0 );
+   m_5.allRowsReduction( max_fetch, max_reduce, max_keep, 0 );
    const RealType maxNorm = TNL::max( rowSums );
    EXPECT_EQ( maxNorm, 260 ) ; // 29+30+31+32+33+34+35+36
 }
@@ -999,41 +1001,41 @@ void test_SaveAndLoad( const char* filename )
                                                           { 5, 5, 10 } } );
 
    // Check the set elements
-   EXPECT_EQ( m.getElement( 0, 0 ),  1 );
-   EXPECT_EQ( m.getElement( 0, 1 ),  2 );
-   EXPECT_EQ( m.getElement( 0, 2 ),  0 );
-   EXPECT_EQ( m.getElement( 0, 3 ),  0 );
-   EXPECT_EQ( m.getElement( 0, 4 ),  0 );
+   EXPECT_EQ( savedMatrix.getElement( 0, 0 ),  1 );
+   EXPECT_EQ( savedMatrix.getElement( 0, 1 ),  2 );
+   EXPECT_EQ( savedMatrix.getElement( 0, 2 ),  0 );
+   EXPECT_EQ( savedMatrix.getElement( 0, 3 ),  0 );
+   EXPECT_EQ( savedMatrix.getElement( 0, 4 ),  0 );
 
-   EXPECT_EQ( m.getElement( 1, 0 ),  2 );
-   EXPECT_EQ( m.getElement( 1, 1 ),  3 );
-   EXPECT_EQ( m.getElement( 1, 2 ),  4 );
-   EXPECT_EQ( m.getElement( 1, 3 ),  0 );
-   EXPECT_EQ( m.getElement( 1, 4 ),  0 );
+   EXPECT_EQ( savedMatrix.getElement( 1, 0 ),  2 );
+   EXPECT_EQ( savedMatrix.getElement( 1, 1 ),  3 );
+   EXPECT_EQ( savedMatrix.getElement( 1, 2 ),  4 );
+   EXPECT_EQ( savedMatrix.getElement( 1, 3 ),  0 );
+   EXPECT_EQ( savedMatrix.getElement( 1, 4 ),  0 );
 
-   EXPECT_EQ( m.getElement( 2, 0 ),  0 );
-   EXPECT_EQ( m.getElement( 2, 1 ),  4 );
-   EXPECT_EQ( m.getElement( 2, 2 ),  5 );
-   EXPECT_EQ( m.getElement( 2, 3 ),  6 );
-   EXPECT_EQ( m.getElement( 2, 4 ),  0 );
+   EXPECT_EQ( savedMatrix.getElement( 2, 0 ),  0 );
+   EXPECT_EQ( savedMatrix.getElement( 2, 1 ),  4 );
+   EXPECT_EQ( savedMatrix.getElement( 2, 2 ),  5 );
+   EXPECT_EQ( savedMatrix.getElement( 2, 3 ),  6 );
+   EXPECT_EQ( savedMatrix.getElement( 2, 4 ),  0 );
 
-   EXPECT_EQ( m.getElement( 3, 0 ),  0 );
-   EXPECT_EQ( m.getElement( 3, 1 ),  0 );
-   EXPECT_EQ( m.getElement( 3, 2 ),  6 );
-   EXPECT_EQ( m.getElement( 3, 3 ),  7 );
-   EXPECT_EQ( m.getElement( 3, 4 ),  8 );
+   EXPECT_EQ( savedMatrix.getElement( 3, 0 ),  0 );
+   EXPECT_EQ( savedMatrix.getElement( 3, 1 ),  0 );
+   EXPECT_EQ( savedMatrix.getElement( 3, 2 ),  6 );
+   EXPECT_EQ( savedMatrix.getElement( 3, 3 ),  7 );
+   EXPECT_EQ( savedMatrix.getElement( 3, 4 ),  8 );
 
-   EXPECT_EQ( m.getElement( 4, 0 ),  0 );
-   EXPECT_EQ( m.getElement( 4, 1 ),  0 );
-   EXPECT_EQ( m.getElement( 4, 2 ),  0 );
-   EXPECT_EQ( m.getElement( 4, 3 ),  8 );
-   EXPECT_EQ( m.getElement( 4, 4 ),  9 );
+   EXPECT_EQ( savedMatrix.getElement( 4, 0 ),  0 );
+   EXPECT_EQ( savedMatrix.getElement( 4, 1 ),  0 );
+   EXPECT_EQ( savedMatrix.getElement( 4, 2 ),  0 );
+   EXPECT_EQ( savedMatrix.getElement( 4, 3 ),  8 );
+   EXPECT_EQ( savedMatrix.getElement( 4, 4 ),  9 );
 
-   EXPECT_EQ( m.getElement( 5, 0 ),  0 );
-   EXPECT_EQ( m.getElement( 5, 1 ),  0 );
-   EXPECT_EQ( m.getElement( 5, 2 ),  0 );
-   EXPECT_EQ( m.getElement( 5, 3 ),  0 );
-   EXPECT_EQ( m.getElement( 5, 4 ), 10 );
+   EXPECT_EQ( savedMatrix.getElement( 5, 0 ),  0 );
+   EXPECT_EQ( savedMatrix.getElement( 5, 1 ),  0 );
+   EXPECT_EQ( savedMatrix.getElement( 5, 2 ),  0 );
+   EXPECT_EQ( savedMatrix.getElement( 5, 3 ),  0 );
+   EXPECT_EQ( savedMatrix.getElement( 5, 4 ), 10 );
 
    ASSERT_NO_THROW( savedMatrix.save( filename ) );
 

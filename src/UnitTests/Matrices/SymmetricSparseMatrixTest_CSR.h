@@ -14,12 +14,12 @@
 #include <TNL/Matrices/SparseMatrix.h>
 
 // test fixture for typed tests
-template< typename Matrix >
-class MatrixTest : public ::testing::Test
-{
-protected:
-   using MatrixType = Matrix;
-};
+//template< typename Matrix >
+//class MatrixTest : public ::testing::Test
+//{
+//protected:
+//   using MatrixType = Matrix;
+//};
 
 // types for which MatrixTest is instantiated
 using MatrixTypes = ::testing::Types
@@ -52,9 +52,9 @@ using MatrixTypes = ::testing::Types
 #endif // HAVE_CUDA
 >;
 
-const char* saveAndLoadTestFileName "test_SymmetricSparseMatrixTest_CSR_segments";
+const char* saveAndLoadTestFileName = "test_SymmetricSparseMatrixTest_CSR_segments";
 
-#include "SparseMatrixTest.h"
+#include "SymmetricSparseMatrixTest.h"
 
 #endif // HAVE_GTEST
 
