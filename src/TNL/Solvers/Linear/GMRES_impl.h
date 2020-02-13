@@ -243,8 +243,8 @@ orthogonalize_CGS( const int m, const RealType normb, const RealType beta )
          // w := w - V_i * H_l
          Matrices::MatrixOperations< DeviceType >::
             gemv( size, i + 1,
-                  -1.0, V.getData(), ldSize, H_l,
-                  1.0, Traits::getLocalView( w ).getData() );
+                  (RealType) -1.0, V.getData(), ldSize, H_l,
+                  (RealType) 1.0, Traits::getLocalView( w ).getData() );
       }
       /***
        * H_{i+1,i} = |w|
@@ -607,8 +607,8 @@ hauseholder_cwy( VectorViewType v,
    // v = e_i - Y_i * aux
    Matrices::MatrixOperations< DeviceType >::
       gemv( size, i + 1,
-            -1.0, Y.getData(), ldSize, aux,
-            0.0, Traits::getLocalView( v ).getData() );
+            (RealType) -1.0, Y.getData(), ldSize, aux,
+            (RealType) 0.0, Traits::getLocalView( v ).getData() );
    if( localOffset == 0 )
       v.setElement( i, 1.0 + v.getElement( i ) );
 }
@@ -649,8 +649,8 @@ hauseholder_cwy_transposed( VectorViewType z,
    z = w;
    Matrices::MatrixOperations< DeviceType >::
       gemv( size, i + 1,
-            -1.0, Y.getData(), ldSize, aux,
-            1.0, Traits::getLocalView( z ).getData() );
+            (RealType) -1.0, Y.getData(), ldSize, aux,
+            (RealType) 1.0, Traits::getLocalView( z ).getData() );
 }
 
 template< typename Matrix >
@@ -691,8 +691,8 @@ update( const int k,
       // x = V * y + x
       Matrices::MatrixOperations< DeviceType >::
          gemv( size, k + 1,
-               1.0, V.getData(), ldSize, y,
-               1.0, Traits::getLocalView( x ).getData() );
+               (RealType) 1.0, V.getData(), ldSize, y,
+               (RealType) 1.0, Traits::getLocalView( x ).getData() );
    }
    else {
       // The vectors v_i are not stored, they can be reconstructed as P_0...P_j * e_j.
@@ -723,8 +723,8 @@ update( const int k,
       // x -= Y_{k+1} * aux
       Matrices::MatrixOperations< DeviceType >::
          gemv( size, k + 1,
-               -1.0, Y.getData(), ldSize, aux,
-               1.0, Traits::getLocalView( x ).getData() );
+               (RealType) -1.0, Y.getData(), ldSize, aux,
+               (RealType) 1.0, Traits::getLocalView( x ).getData() );
 
       // x += y
       if( localOffset == 0 )
