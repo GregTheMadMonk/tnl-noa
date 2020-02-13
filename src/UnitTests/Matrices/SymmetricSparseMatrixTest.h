@@ -45,6 +45,13 @@ TYPED_TEST( MatrixTest, setLikeTest )
     test_SetLike< MatrixType, MatrixType >();
 }
 
+TYPED_TEST( MatrixTest, getNumberOfNonzeroMatrixElements )
+{
+    using MatrixType = typename TestFixture::MatrixType;
+
+    test_GetNumberOfNonzeroMatrixElements< MatrixType >();
+}
+
 TYPED_TEST( MatrixTest, resetTest )
 {
     using MatrixType = typename TestFixture::MatrixType;

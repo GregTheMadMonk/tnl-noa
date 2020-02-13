@@ -98,8 +98,8 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
                        const IndexType column,
                        const RealType& value );
 
-      void addElement( const IndexType row,
-                       const IndexType column,
+      void addElement( IndexType row,
+                       IndexType column,
                        const RealType& value,
                        const RealType& thisElementMultiplicator = 1.0 );
 

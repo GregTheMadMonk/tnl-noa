@@ -153,10 +153,36 @@ getNumberOfNonzeroMatrixElements() const
 {
    const auto columns_view = this->columnIndexes.getConstView();
    const IndexType paddingIndex = this->getPaddingIndex();
-   auto fetch = [=] __cuda_callable__ ( const IndexType i ) -> IndexType {
-      return ( columns_view[ i ] != paddingIndex );
-   };
-   return Algorithms::Reduction< DeviceType >::reduce( this->columnIndexes.getSize(), std::plus<>{}, fetch, 0 );
+   if( ! isSymmetric() )
+   {
+      auto fetch = [=] __cuda_callable__ ( const IndexType i ) -> IndexType {
+         return ( columns_view[ i ] != paddingIndex );
+      };
+      return Algorithms::Reduction< DeviceType >::reduce( this->columnIndexes.getSize(), std::plus<>{}, fetch, 0 );
+   }
+   else
+   {
+      const auto rows = this->getRows();
+      const auto columns = this->getColumns();
+      Containers::Vector< IndexType, DeviceType, IndexType > row_sums( this->getRows(), 0 );
+      auto row_sums_view = row_sums.getView();
+      const auto columnIndexesView = this->columnIndexes.getConstView();
+      auto fetch = [=] __cuda_callable__ ( IndexType row, IndexType localIdx, IndexType globalIdx, bool& compute ) -> RealType {
+         const IndexType column = columnIndexesView[ globalIdx ];
+         compute = ( column != paddingIndex );
+         if( ! compute )
+            return 0.0;
+         return 1 + ( column != row && column < rows && row < columns ); // the addition is for non-diagonal elements
+      };
+      auto reduction = [] __cuda_callable__ ( RealType& sum, const RealType& value ) {
+         sum += value;
+      };
+      auto keeper = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
+         row_sums_view[ row ] = value;
+      };
+      this->segments.segmentsReduction( 0, this->getRows(), fetch, reduction, keeper, ( RealType ) 0.0 );
+      return sum( row_sums );
+   }
 }
 
 template< typename Real,
@@ -206,8 +232,8 @@ template< typename Real,
           template< typename, typename > class SegmentsView >
 void
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
-addElement( const IndexType row,
-            const IndexType column,
+addElement( IndexType row,
+            IndexType column,
             const RealType& value,
             const RealType& thisElementMultiplicator )
 {
@@ -215,6 +241,13 @@ addElement( const IndexType row,
    TNL_ASSERT_LT( row, this->getRows(), "Sparse matrix row index is larger than number of matrix rows." );
    TNL_ASSERT_GE( column, 0, "Sparse matrix column index cannot be negative." );
    TNL_ASSERT_LT( column, this->getColumns(), "Sparse matrix column index is larger than number of matrix columns." );
+
+   if( isSymmetric() && row < column )
+   {
+      swap( row, column );
+      TNL_ASSERT_LT( row, this->getRows(), "Column index is out of the symmetric part of the matrix after transposition." );
+      TNL_ASSERT_LT( column,this->getColumns(), "Row index is out of the symmetric part of the matrix after transposition." );
+   }
 
    const IndexType rowSize = this->segments.getSegmentSize( row );
    IndexType col( this->getPaddingIndex() );
@@ -276,13 +309,20 @@ template< typename Real,
           template< typename, typename > class SegmentsView >
 Real
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
-getElement( const IndexType row,
-            const IndexType column ) const
+getElement( IndexType row,
+            IndexType column ) const
 {
    TNL_ASSERT_GE( row, 0, "Sparse matrix row index cannot be negative." );
    TNL_ASSERT_LT( row, this->getRows(), "Sparse matrix row index is larger than number of matrix rows." );
    TNL_ASSERT_GE( column, 0, "Sparse matrix column index cannot be negative." );
    TNL_ASSERT_LT( column, this->getColumns(), "Sparse matrix column index is larger than number of matrix columns." );
+
+   if( isSymmetric() && row < column )
+   {
+      swap( row, column );
+      if( row >= this->getRows() || column >= this->getColumns() )
+         return 0.0;
+   }
 
    const IndexType rowSize = this->segments.getSegmentSize( row );
    for( IndexType i = 0; i < rowSize; i++ )
@@ -588,25 +628,40 @@ void
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
 print( std::ostream& str ) const
 {
-   for( IndexType row = 0; row < this->getRows(); row++ )
+   if( isSymmetric() )
    {
-      str <<"Row: " << row << " -> ";
-      const IndexType rowLength = this->segments.getSegmentSize( row );
-      for( IndexType i = 0; i < rowLength; i++ )
+      for( IndexType row = 0; row < this->getRows(); row++ )
       {
-         const IndexType globalIdx = this->segments.getGlobalIndex( row, i );
-         const IndexType column = this->columnIndexes.getElement( globalIdx );
-         if( column == this->getPaddingIndex() )
-            break;
-         RealType value;
-         if( isBinary() )
-            value = 1.0;
-         else
-            value = this->values.getElement( globalIdx );
-         str << " Col:" << column << "->" << value << "\t";
+         str <<"Row: " << row << " -> ";
+         for( IndexType column = 0; column < this->getColumns(); column++ )
+         {
+            auto value = this->getElement( row, column );
+            if( value )
+               str << " Col:" << column << "->" << value << "\t";
+         }
+         str << std::endl;
       }
-      str << std::endl;
    }
+   else
+      for( IndexType row = 0; row < this->getRows(); row++ )
+      {
+         str <<"Row: " << row << " -> ";
+         const auto rowLength = this->segments.getSegmentSize( row );
+         for( IndexType i = 0; i < rowLength; i++ )
+         {
+            const IndexType globalIdx = this->segments.getGlobalIndex( row, i );
+            const IndexType column = this->columnIndexes.getElement( globalIdx );
+            if( column == this->getPaddingIndex() )
+               break;
+            RealType value;
+            if( isBinary() )
+               value = ( RealType ) 1.0;
+            else
+               value = this->values.getElement( globalIdx );
+            str << " Col:" << column << "->" << value << "\t";
+         }
+         str << std::endl;
+      }
 }
 
 template< typename Real,

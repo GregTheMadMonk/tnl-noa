@@ -11,6 +11,7 @@
 #pragma once
 
 #include <functional>
+#include <sstream>
 #include <TNL/Algorithms/Reduction.h>
 #include <TNL/Matrices/SparseMatrix.h>
 
@@ -107,11 +108,27 @@ SparseMatrix( const IndexType rows,
 {
    Containers::Vector< IndexType, Devices::Host, IndexType > rowCapacities( rows, 0 );
    for( const auto& i : data )
+   {
+      if( std::get< 0 >( i ) >= rows )
+      {
+         std::stringstream s;
+         s << "Wrong row index " << std::get< 0 >( i ) << " in an initializer list";
+         throw std::logic_error( s.str() );
+      }
       rowCapacities[ std::get< 0 >( i ) ]++;
+   }
    SparseMatrix< Real, Devices::Host, Index, MatrixType, Segments > hostMatrix( rows, columns );
    hostMatrix.setCompressedRowLengths( rowCapacities );
    for( const auto& i : data )
+   {
+      if( std::get< 1 >( i ) >= columns )
+      {
+         std::stringstream s;
+         s << "Wrong column index " << std::get< 1 >( i ) << " in an initializer list";
+         throw std::logic_error( s.str() );
+      }
       hostMatrix.setElement( std::get< 0 >( i ), std::get< 1 >( i ), std::get< 2 >( i ) );
+   }
    ( *this ) = hostMatrix;
 }
 

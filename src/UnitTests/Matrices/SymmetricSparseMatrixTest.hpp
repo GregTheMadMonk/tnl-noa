@@ -73,11 +73,11 @@ void test_SetCompressedRowLengths()
     |       24    25             26     |
     \       27       28             30  /
     */
-   const IndexType rows = 10;
+   const IndexType rows = 11;
    const IndexType cols = 11;
 
    Matrix m( rows, cols );
-   typename Matrix::CompressedRowLengthsVector rowLengths { 1, 2, 3, 3, 3, 3, 3, 3, 3, 3  };
+   typename Matrix::CompressedRowLengthsVector rowLengths { 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3  };
    m.setCompressedRowLengths( rowLengths );
 
    // Insert values into the rows.
@@ -120,9 +120,25 @@ void test_SetCompressedRowLengths()
    m.setElement( 7, 3, value++ );
    m.setElement( 7, 7, value++ );
 
+   // 8th row - lower part
+   m.setElement( 8, 2, value++ );
+   m.setElement( 8, 4, value++ );
+   m.setElement( 8, 8, value++ );
+
+   // 8th row - lower part
+   m.setElement( 9, 2, value++ );
+   m.setElement( 9, 4, value++ );
+   m.setElement( 9, 9, value++ );
+
+   // 8th row - lower part
+   m.setElement( 10,  2, value++ );
+   m.setElement( 10,  5, value++ );
+   m.setElement( 10, 10, value++ );
+
    rowLengths = 0;
    m.getCompressedRowLengths( rowLengths );
-   typename Matrix::CompressedRowLengthsVector correctRowLengths{ 1, 2, 3, 3, 3, 3, 3, 3, 3, 3 };
+
+   typename Matrix::CompressedRowLengthsVector correctRowLengths{ 1, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3 };
    EXPECT_EQ( rowLengths, correctRowLengths );
 }
 
@@ -170,8 +186,8 @@ void test_GetNumberOfNonzeroMatrixElements()
                                             49
     */
 
-   const IndexType rows = 10;
-   const IndexType cols = 10;
+   const IndexType rows = 11;
+   const IndexType cols = 11;
 
    Matrix m( rows, cols, {
       { 0, 0,  1 },
@@ -276,7 +292,7 @@ void test_GetRow()
 
    EXPECT_EQ( m.getElement( 1,  0 ),  2 );
    EXPECT_EQ( m.getElement( 1,  1 ),  3 );
-   EXPECT_EQ( m.getElement( 1,  2 ),  4 );
+   EXPECT_EQ( m.getElement( 1,  2 ),  5 );
    EXPECT_EQ( m.getElement( 1,  3 ),  8 );
    EXPECT_EQ( m.getElement( 1,  4 ), 10 );
    EXPECT_EQ( m.getElement( 1,  5 ), 13 );
@@ -421,7 +437,7 @@ void test_SetElement()
    Matrix m( { 1, 1, 1, 4, 1, 1, 7, 1, 1, 1 }, 10 );
 
    RealType value = 1;
-   for( IndexType i = 0; i < 4; i++ )
+   for( IndexType i = 0; i < 3; i++ )
       m.setElement( i, i, value++ );
 
    for( IndexType i = 0; i < 4; i++ )
@@ -574,7 +590,7 @@ void test_AddElement()
                    { 2, 1, 4 }, { 2, 2, 5 },
                                 { 3, 2, 6 }, { 3, 3, 7 },
                                              { 4, 3, 8 }, { 4, 4,  9 },
-                                                          { 5, 5, 10 } } );
+                                                          { 5, 4, 10 } } );
 
    // Check the set elements
    EXPECT_EQ( m.getElement( 0, 0 ),  1 );
@@ -626,9 +642,12 @@ void test_AddElement()
     */
 
    for( IndexType i = 1; i < rows; i++ )
+   {
       m.addElement( i, i - 1, 1.0, 2.0 );
+      m.addElement( i, i, 0.0, 2.0 );
+   }
 
-
+   std::cerr << m << std::endl;
    EXPECT_EQ( m.getElement( 0, 0 ),  2 );
    EXPECT_EQ( m.getElement( 0, 1 ),  5 );
    EXPECT_EQ( m.getElement( 0, 2 ),  0 );
