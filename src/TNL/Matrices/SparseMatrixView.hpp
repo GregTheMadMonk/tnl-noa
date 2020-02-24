@@ -13,6 +13,7 @@
 #include <functional>
 #include <TNL/Matrices/SparseMatrixView.h>
 #include <TNL/Algorithms/Reduction.h>
+#include <TNL/Atomic.h>
 
 namespace TNL {
 namespace Matrices {
@@ -367,8 +368,8 @@ void
 SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
 vectorProduct( const InVector& inVector,
                OutVector& outVector,
-               const RealType& matrixMultiplicator,
-               const RealType& inVectorAddition ) const
+               const RealType matrixMultiplicator,
+               const RealType outVectorMultiplicator ) const
 {
    TNL_ASSERT_EQ( this->getColumns(), inVector.getSize(), "Matrix columns do not fit with input vector." );
    TNL_ASSERT_EQ( this->getRows(), outVector.getSize(), "Matrix rows do not fit with output vector." );
@@ -378,11 +379,19 @@ vectorProduct( const InVector& inVector,
    const auto valuesView = this->values.getConstView();
    const auto columnIndexesView = this->columnIndexes.getConstView();
    const IndexType paddingIndex = this->getPaddingIndex();
+   if( isSymmetric() )
+      outVector *= outVectorMultiplicator;
    auto fetch = [=] __cuda_callable__ ( IndexType row, IndexType localIdx, IndexType globalIdx, bool& compute ) -> RealType {
       const IndexType column = columnIndexesView[ globalIdx ];
       compute = ( column != paddingIndex );
       if( ! compute )
          return 0.0;
+      if( isSymmetric() )
+      {
+         TNL_ASSERT_TRUE( false, "" );
+         //Atomic< RealType, DeviceType > atomic;
+         //if( isBinary() )
+      }
       if( isBinary() )
          return inVectorView[ column ];
       return valuesView[ globalIdx ] * inVectorView[ column ];
@@ -391,7 +400,10 @@ vectorProduct( const InVector& inVector,
       sum += value;
    };
    auto keeper = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
-      outVectorView[ row ] = value;
+      if( outVectorMultiplicator == 0.0 )
+         outVectorView[ row ] = matrixMultiplicator * value;
+      else
+         outVectorView[ row ] = outVectorMultiplicator * outVectorView[ row ] + matrixMultiplicator * value;
    };
    this->segments.segmentsReduction( 0, this->getRows(), fetch, reduction, keeper, ( RealType ) 0.0 );
 

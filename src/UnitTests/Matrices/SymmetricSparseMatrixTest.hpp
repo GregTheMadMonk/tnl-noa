@@ -641,13 +641,14 @@ void test_AddElement()
     *    \  0  0  0  0 10 /   \  0  0  0  0  1 /   \  0  0  0  0 21 /
     */
 
-   for( IndexType i = 1; i < rows; i++ )
+   for( IndexType i = 0; i < rows; i++ )
    {
-      m.addElement( i, i - 1, 1.0, 2.0 );
-      m.addElement( i, i, 0.0, 2.0 );
+      if( i > 0 )
+         m.addElement( i, i - 1, 1.0, 2.0 );
+      if( i < cols )
+         m.addElement( i, i, 0.0, 2.0 );
    }
 
-   std::cerr << m << std::endl;
    EXPECT_EQ( m.getElement( 0, 0 ),  2 );
    EXPECT_EQ( m.getElement( 0, 1 ),  5 );
    EXPECT_EQ( m.getElement( 0, 2 ),  0 );

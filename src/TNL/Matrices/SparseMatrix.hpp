@@ -396,9 +396,9 @@ SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAll
 vectorProduct( const InVector& inVector,
                OutVector& outVector,
                const RealType& matrixMultiplicator,
-               const RealType& inVectorAddition ) const
+               const RealType& outVectorMultiplicator ) const
 {
-   this->view.vectorProduct( inVector, outVector, matrixMultiplicator, inVectorAddition );
+   this->view.vectorProduct( inVector, outVector, matrixMultiplicator, outVectorMultiplicator );
    /*TNL_ASSERT_EQ( this->getColumns(), inVector.getSize(), "Matrix columns do not fit with input vector." );
    TNL_ASSERT_EQ( this->getRows(), outVector.getSize(), "Matrix rows do not fit with output vector." );
 
