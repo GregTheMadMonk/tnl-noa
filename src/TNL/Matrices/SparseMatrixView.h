@@ -51,7 +51,6 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
       typedef Containers::VectorView< IndexType, DeviceType, IndexType > CompressedRowLengthsVectorView;
       typedef typename CompressedRowLengthsVectorView::ConstViewType ConstCompressedRowLengthsVectorView;
 
-
       __cuda_callable__
       SparseMatrixView();
 
@@ -103,8 +102,8 @@ class SparseMatrixView : public MatrixView< Real, Device, Index >
                        const RealType& value,
                        const RealType& thisElementMultiplicator = 1.0 );
 
-      RealType getElement( const IndexType row,
-                           const IndexType column ) const;
+      RealType getElement( IndexType row,
+                           IndexType column ) const;
 
       template< typename Vector >
       __cuda_callable__

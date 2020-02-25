@@ -33,7 +33,7 @@ class SlicedEllpackView
       static constexpr int getSliceSize() { return SliceSize; }
       static constexpr bool getRowMajorOrder() { return RowMajorOrder; }
       template< typename Device_, typename Index_ >
-      using ViewTemplate = SlicedEllpackView< Device_, Index_ >;
+      using ViewTemplate = SlicedEllpackView< Device_, Index_, RowMajorOrder, SliceSize >;
       using ViewType = SlicedEllpackView;
       using ConstViewType = SlicedEllpackView< Device, std::add_const_t< Index > >;
       using SegmentViewType = SegmentView< IndexType, RowMajorOrder >;

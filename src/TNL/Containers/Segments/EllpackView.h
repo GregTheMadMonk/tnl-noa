@@ -35,7 +35,7 @@ class EllpackView
       using OffsetsHolder = Containers::Vector< IndexType, DeviceType, IndexType >;
       using SegmentsSizes = OffsetsHolder;
       template< typename Device_, typename Index_ >
-      using ViewTemplate = EllpackView< Device_, Index_ >;
+      using ViewTemplate = EllpackView< Device_, Index_, RowMajorOrder, Alignment >;
       using ViewType = EllpackView;
       using ConstViewType = EllpackView< Device, std::add_const_t< Index > >;
       using SegmentViewType = SegmentView< IndexType, RowMajorOrder >;

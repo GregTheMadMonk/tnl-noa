@@ -40,6 +40,7 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       using SegmentsType = Segments< Device, Index, IndexAllocator >;
       template< typename Device_, typename Index_ >
       using SegmentsViewTemplate = typename SegmentsType::template ViewTemplate< Device_, Index >;
+      using SegmentsViewType = typename SegmentsType::ViewType;
       using SegmentViewType = typename SegmentsType::SegmentViewType;
       using DeviceType = Device;
       using IndexType = Index;
