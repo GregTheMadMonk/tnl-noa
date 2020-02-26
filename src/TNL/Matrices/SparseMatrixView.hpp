@@ -13,7 +13,7 @@
 #include <functional>
 #include <TNL/Matrices/SparseMatrixView.h>
 #include <TNL/Algorithms/Reduction.h>
-#include <TNL/Atomic.h>
+#include <TNL/Algorithms/AtomicOperations.h>
 
 namespace TNL {
 namespace Matrices {
@@ -382,16 +382,24 @@ vectorProduct( const InVector& inVector,
    const IndexType paddingIndex = this->getPaddingIndex();
    if( isSymmetric() )
       outVector *= outVectorMultiplicator;
-   auto fetch = [=] __cuda_callable__ ( IndexType row, IndexType localIdx, IndexType globalIdx, bool& compute ) -> RealType {
+   auto fetch = [=] __cuda_callable__ ( IndexType row, IndexType localIdx, IndexType globalIdx, bool& compute ) mutable -> RealType {
       const IndexType column = columnIndexesView[ globalIdx ];
       compute = ( column != paddingIndex );
       if( ! compute )
          return 0.0;
-      if( isSymmetric() )
+      if( isSymmetric() && column < row )
       {
-         TNL_ASSERT_TRUE( false, "" );
-         //Atomic< RealType, DeviceType > atomic;
-         //if( isBinary() )
+         if( isBinary() )
+            Algorithms::AtomicOperations< DeviceType >::add( outVectorView[ column ], matrixMultiplicator * inVectorView[ row ] );
+         else
+         {
+            //std::cerr << outVectorView << std::endl;
+            Algorithms::AtomicOperations< DeviceType >::add( outVectorView[ column ], matrixMultiplicator * valuesView[ globalIdx ] * inVectorView[ row ] );
+            //outVectorView[ column ] += matrixMultiplicator * valuesView[ globalIdx ] * inVectorView[ row ];
+
+            //std::cerr << "Symmetric add to out vector row " << column << " value " << valuesView[ globalIdx ] << " * " << inVectorView[ row ] <<
+            //   " --> " << outVectorView[ column ] << std::endl;
+         }
       }
       if( isBinary() )
          return inVectorView[ column ];
@@ -401,10 +409,20 @@ vectorProduct( const InVector& inVector,
       sum += value;
    };
    auto keeper = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
-      if( outVectorMultiplicator == 0.0 )
-         outVectorView[ row ] = matrixMultiplicator * value;
+      if( isSymmetric() )
+      {
+         //std::cerr << outVectorView << std::endl;
+         //std::cerr << "Adding " << matrixMultiplicator * value << " to result vector " << outVectorView[ row ];
+         outVectorView[ row ] += matrixMultiplicator * value;
+         //std::cerr << " ---> " << outVectorView[ row ] << std::endl;
+      }
       else
-         outVectorView[ row ] = outVectorMultiplicator * outVectorView[ row ] + matrixMultiplicator * value;
+      {
+         if( outVectorMultiplicator == 0.0 )
+            outVectorView[ row ] = matrixMultiplicator * value;
+         else
+            outVectorView[ row ] = outVectorMultiplicator * outVectorView[ row ] + matrixMultiplicator * value;
+      }
    };
    this->segments.segmentsReduction( 0, this->getRows(), fetch, reduction, keeper, ( RealType ) 0.0 );
 
