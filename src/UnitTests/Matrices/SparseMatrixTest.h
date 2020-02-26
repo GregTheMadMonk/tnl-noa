@@ -663,9 +663,9 @@ void test_AddElement()
     *    /  1  2  3  0  0 \
     *    |  0  4  5  6  0 |
     *    |  0  0  7  8  9 |
-    *    | 10  0  0  0  0 |
-    *    |  0 11  0  0  0 |
-    *    \  0  0  0 12  0 /
+    *    | 10  1  1  0  0 |
+    *    |  0 11  1  1  0 |
+    *    \  0  0  1 12  1 /
     */
 
    const IndexType rows = 6;
@@ -675,9 +675,9 @@ void test_AddElement()
       { 0, 0,  1 }, { 0, 1,  2 }, { 0, 2, 3 },
                     { 1, 1,  4 }, { 1, 2, 5 }, { 1, 3,  6 },
                                   { 2, 2, 7 }, { 2, 3,  8 }, { 2, 4, 9 },
-      { 3, 0, 10 }, { 3, 1,  0 }, { 3, 2, 0 },
-                    { 4, 1, 11 }, { 4, 2, 0 }, { 4, 3,  0 },
-                                  { 5, 2, 0 }, { 5, 3, 12 }, { 5, 4, 0 } } );
+      { 3, 0, 10 }, { 3, 1,  1 }, { 3, 2, 1 },
+                    { 4, 1, 11 }, { 4, 2, 1 }, { 4, 3,  1 },
+                                  { 5, 2, 1 }, { 5, 3, 12 }, { 5, 4, 1 } } );
    /*typename Matrix::CompressedRowLengthsVector rowLengths( rows, 3 );
    m.setCompressedRowLengths( rowLengths );
 
@@ -718,22 +718,22 @@ void test_AddElement()
    EXPECT_EQ( m.getElement( 2, 4 ),  9 );
 
    EXPECT_EQ( m.getElement( 3, 0 ), 10 );
-   EXPECT_EQ( m.getElement( 3, 1 ),  0 );
-   EXPECT_EQ( m.getElement( 3, 2 ),  0 );
+   EXPECT_EQ( m.getElement( 3, 1 ),  1 );
+   EXPECT_EQ( m.getElement( 3, 2 ),  1 );
    EXPECT_EQ( m.getElement( 3, 3 ),  0 );
    EXPECT_EQ( m.getElement( 3, 4 ),  0 );
 
    EXPECT_EQ( m.getElement( 4, 0 ),  0 );
    EXPECT_EQ( m.getElement( 4, 1 ), 11 );
-   EXPECT_EQ( m.getElement( 4, 2 ),  0 );
-   EXPECT_EQ( m.getElement( 4, 3 ),  0 );
+   EXPECT_EQ( m.getElement( 4, 2 ),  1 );
+   EXPECT_EQ( m.getElement( 4, 3 ),  1 );
    EXPECT_EQ( m.getElement( 4, 4 ),  0 );
 
    EXPECT_EQ( m.getElement( 5, 0 ),  0 );
    EXPECT_EQ( m.getElement( 5, 1 ),  0 );
-   EXPECT_EQ( m.getElement( 5, 2 ),  0 );
+   EXPECT_EQ( m.getElement( 5, 2 ),  1 );
    EXPECT_EQ( m.getElement( 5, 3 ), 12 );
-   EXPECT_EQ( m.getElement( 5, 4 ),  0 );
+   EXPECT_EQ( m.getElement( 5, 4 ),  1 );
 
    // Add new elements to the old elements with a multiplying factor applied to the old elements.
    /*
@@ -742,9 +742,9 @@ void test_AddElement()
     *    /  3  6  9  0  0 \
     *    |  0 12 15 18  0 |
     *    |  0  0 21 24 27 |
-    *    | 30 11 12  0  0 |
-    *    |  0 35 14 15  0 |
-    *    \  0  0 16 41 18 /
+    *    | 30 13 14  0  0 |
+    *    |  0 35 16 17  0 |
+    *    \  0  0 18 41 20 /
     */
 
    RealType newValue = 1;
@@ -786,22 +786,22 @@ void test_AddElement()
    EXPECT_EQ( m.getElement( 2, 4 ), 27 );
 
    EXPECT_EQ( m.getElement( 3, 0 ), 30 );
-   EXPECT_EQ( m.getElement( 3, 1 ), 11 );
-   EXPECT_EQ( m.getElement( 3, 2 ), 12 );
+   EXPECT_EQ( m.getElement( 3, 1 ), 13 );
+   EXPECT_EQ( m.getElement( 3, 2 ), 14 );
    EXPECT_EQ( m.getElement( 3, 3 ),  0 );
    EXPECT_EQ( m.getElement( 3, 4 ),  0 );
 
    EXPECT_EQ( m.getElement( 4, 0 ),  0 );
    EXPECT_EQ( m.getElement( 4, 1 ), 35 );
-   EXPECT_EQ( m.getElement( 4, 2 ), 14 );
-   EXPECT_EQ( m.getElement( 4, 3 ), 15 );
+   EXPECT_EQ( m.getElement( 4, 2 ), 16 );
+   EXPECT_EQ( m.getElement( 4, 3 ), 17 );
    EXPECT_EQ( m.getElement( 4, 4 ),  0 );
 
    EXPECT_EQ( m.getElement( 5, 0 ),  0 );
    EXPECT_EQ( m.getElement( 5, 1 ),  0 );
-   EXPECT_EQ( m.getElement( 5, 2 ), 16 );
+   EXPECT_EQ( m.getElement( 5, 2 ), 18 );
    EXPECT_EQ( m.getElement( 5, 3 ), 41 );
-   EXPECT_EQ( m.getElement( 5, 4 ), 18 );
+   EXPECT_EQ( m.getElement( 5, 4 ), 20 );
 }
 
 template< typename Matrix >
