@@ -106,30 +106,7 @@ SparseMatrix( const IndexType rows,
               const IndexAllocatorType& indexAllocator )
 : BaseType( rows, columns, realAllocator ), columnIndexes( indexAllocator )
 {
-   Containers::Vector< IndexType, Devices::Host, IndexType > rowCapacities( rows, 0 );
-   for( const auto& i : data )
-   {
-      if( std::get< 0 >( i ) >= rows )
-      {
-         std::stringstream s;
-         s << "Wrong row index " << std::get< 0 >( i ) << " in an initializer list";
-         throw std::logic_error( s.str() );
-      }
-      rowCapacities[ std::get< 0 >( i ) ]++;
-   }
-   SparseMatrix< Real, Devices::Host, Index, MatrixType, Segments > hostMatrix( rows, columns );
-   hostMatrix.setCompressedRowLengths( rowCapacities );
-   for( const auto& i : data )
-   {
-      if( std::get< 1 >( i ) >= columns )
-      {
-         std::stringstream s;
-         s << "Wrong column index " << std::get< 1 >( i ) << " in an initializer list";
-         throw std::logic_error( s.str() );
-      }
-      hostMatrix.setElement( std::get< 0 >( i ), std::get< 1 >( i ), std::get< 2 >( i ) );
-   }
-   ( *this ) = hostMatrix;
+   this->setElements( data );
 }
 
 template< typename Real,
@@ -229,6 +206,45 @@ setCompressedRowLengths( const RowsCapacitiesVector& rowsCapacities )
    this->columnIndexes.setSize( this->segments.getStorageSize() );
    this->columnIndexes = this->getPaddingIndex();
    this->view = this->getView();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename, typename > class Segments,
+          typename RealAllocator,
+          typename IndexAllocator >
+void
+SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
+setElements( const std::initializer_list< std::tuple< IndexType, IndexType, RealType > >& data )
+{
+   const auto& rows = this->getRows();
+   const auto& columns = this->getColumns();
+   Containers::Vector< IndexType, Devices::Host, IndexType > rowCapacities( rows, 0 );
+   for( const auto& i : data )
+   {
+      if( std::get< 0 >( i ) >= rows )
+      {
+         std::stringstream s;
+         s << "Wrong row index " << std::get< 0 >( i ) << " in an initializer list";
+         throw std::logic_error( s.str() );
+      }
+      rowCapacities[ std::get< 0 >( i ) ]++;
+   }
+   SparseMatrix< Real, Devices::Host, Index, MatrixType, Segments > hostMatrix( rows, columns );
+   hostMatrix.setCompressedRowLengths( rowCapacities );
+   for( const auto& i : data )
+   {
+      if( std::get< 1 >( i ) >= columns )
+      {
+         std::stringstream s;
+         s << "Wrong column index " << std::get< 1 >( i ) << " in an initializer list";
+         throw std::logic_error( s.str() );
+      }
+      hostMatrix.setElement( std::get< 0 >( i ), std::get< 1 >( i ), std::get< 2 >( i ) );
+   }
+   ( *this ) = hostMatrix;
 }
 
 template< typename Real,

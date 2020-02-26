@@ -102,6 +102,8 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
          this->setCompressedRowLengths( rowLengths );
       };
 
+      void setElements( const std::initializer_list< std::tuple< IndexType, IndexType, RealType > >& data );
+
       template< typename Vector >
       void getCompressedRowLengths( Vector& rowLengths ) const;
 
