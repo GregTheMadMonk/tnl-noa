@@ -392,14 +392,7 @@ vectorProduct( const InVector& inVector,
          if( isBinary() )
             Algorithms::AtomicOperations< DeviceType >::add( outVectorView[ column ], matrixMultiplicator * inVectorView[ row ] );
          else
-         {
-            //std::cerr << outVectorView << std::endl;
             Algorithms::AtomicOperations< DeviceType >::add( outVectorView[ column ], matrixMultiplicator * valuesView[ globalIdx ] * inVectorView[ row ] );
-            //outVectorView[ column ] += matrixMultiplicator * valuesView[ globalIdx ] * inVectorView[ row ];
-
-            //std::cerr << "Symmetric add to out vector row " << column << " value " << valuesView[ globalIdx ] << " * " << inVectorView[ row ] <<
-            //   " --> " << outVectorView[ column ] << std::endl;
-         }
       }
       if( isBinary() )
          return inVectorView[ column ];
@@ -410,12 +403,7 @@ vectorProduct( const InVector& inVector,
    };
    auto keeper = [=] __cuda_callable__ ( IndexType row, const RealType& value ) mutable {
       if( isSymmetric() )
-      {
-         //std::cerr << outVectorView << std::endl;
-         //std::cerr << "Adding " << matrixMultiplicator * value << " to result vector " << outVectorView[ row ];
          outVectorView[ row ] += matrixMultiplicator * value;
-         //std::cerr << " ---> " << outVectorView[ row ] << std::endl;
-      }
       else
       {
          if( outVectorMultiplicator == 0.0 )

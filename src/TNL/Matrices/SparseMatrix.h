@@ -34,6 +34,11 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       static constexpr bool isSymmetric() { return MatrixType::isSymmetric(); };
       static constexpr bool isBinary() { return MatrixType::isBinary(); };
 
+      static_assert( ! isSymmetric() ||
+               ! std::is_same< Device, Devices::Cuda >::value ||
+               ( ( std::is_same< Real, float >::value || std::is_same< Real, double >::value || std::is_same< Real, int >::value || std::is_same< Real, long long int >::value ),
+              "Given Real type is not supported by atomic operations on GPU which are necessary for symmetric operations." ) );
+
       using RealType = Real;
       template< typename Device_, typename Index_, typename IndexAllocator_ >
       using SegmentsTemplate = Segments< Device_, Index_, IndexAllocator_ >;

@@ -36,19 +36,19 @@ using MatrixTypes = ::testing::Types
     TNL::Matrices::SparseMatrix< long,    TNL::Devices::Host, long,  TNL::Matrices::SymmetricMatrix, TNL::Containers::Segments::CSR >,
     TNL::Matrices::SparseMatrix< float,   TNL::Devices::Host, long,  TNL::Matrices::SymmetricMatrix, TNL::Containers::Segments::CSR >,
     TNL::Matrices::SparseMatrix< double,  TNL::Devices::Host, long,  TNL::Matrices::SymmetricMatrix, TNL::Containers::Segments::CSR >
-#ifdef HAVE_CUDA
-   ,TNL::Matrices::SparseMatrix< int,     TNL::Devices::Cuda, short, TNL::Matrices::SymmetricMatrix, TNL::Containers::Segments::CSR >,
-    TNL::Matrices::SparseMatrix< long,    TNL::Devices::Cuda, short, TNL::Matrices::SymmetricMatrix, TNL::Containers::Segments::CSR >,
-    TNL::Matrices::SparseMatrix< float,   TNL::Devices::Cuda, short, TNL::Matrices::SymmetricMatrix, TNL::Containers::Segments::CSR >,
-    TNL::Matrices::SparseMatrix< double,  TNL::Devices::Cuda, short, TNL::Matrices::SymmetricMatrix, TNL::Containers::Segments::CSR >,
+#ifdef HAVE_CUDA // Commented types are not supported by atomic operations on GPU.
+   ,//TNL::Matrices::SparseMatrix< int,     TNL::Devices::Cuda, short, TNL::Matrices::SymmetricMatrix, TNL::Containers::Segments::CSR >,
+    //TNL::Matrices::SparseMatrix< long,    TNL::Devices::Cuda, short, TNL::Matrices::SymmetricMatrix, TNL::Containers::Segments::CSR >,
+    //TNL::Matrices::SparseMatrix< float,   TNL::Devices::Cuda, short, TNL::Matrices::SymmetricMatrix, TNL::Containers::Segments::CSR >,
+    //TNL::Matrices::SparseMatrix< double,  TNL::Devices::Cuda, short, TNL::Matrices::SymmetricMatrix, TNL::Containers::Segments::CSR >,
     TNL::Matrices::SparseMatrix< int,     TNL::Devices::Cuda, int,   TNL::Matrices::SymmetricMatrix, TNL::Containers::Segments::CSR >,
-    TNL::Matrices::SparseMatrix< long,    TNL::Devices::Cuda, int,   TNL::Matrices::SymmetricMatrix, TNL::Containers::Segments::CSR >,
+    //TNL::Matrices::SparseMatrix< long,    TNL::Devices::Cuda, int,   TNL::Matrices::SymmetricMatrix, TNL::Containers::Segments::CSR >,
     TNL::Matrices::SparseMatrix< float,   TNL::Devices::Cuda, int,   TNL::Matrices::SymmetricMatrix, TNL::Containers::Segments::CSR >,
     TNL::Matrices::SparseMatrix< double,  TNL::Devices::Cuda, int,   TNL::Matrices::SymmetricMatrix, TNL::Containers::Segments::CSR >,
-    TNL::Matrices::SparseMatrix< int,     TNL::Devices::Cuda, long,  TNL::Matrices::SymmetricMatrix, TNL::Containers::Segments::CSR >,
-    TNL::Matrices::SparseMatrix< long,    TNL::Devices::Cuda, long,  TNL::Matrices::SymmetricMatrix, TNL::Containers::Segments::CSR >,
-    TNL::Matrices::SparseMatrix< float,   TNL::Devices::Cuda, long,  TNL::Matrices::SymmetricMatrix, TNL::Containers::Segments::CSR >,
-    TNL::Matrices::SparseMatrix< double,  TNL::Devices::Cuda, long,  TNL::Matrices::SymmetricMatrix, TNL::Containers::Segments::CSR >
+    //TNL::Matrices::SparseMatrix< int,     TNL::Devices::Cuda, long,  TNL::Matrices::SymmetricMatrix, TNL::Containers::Segments::CSR >,
+    //TNL::Matrices::SparseMatrix< long,    TNL::Devices::Cuda, long,  TNL::Matrices::SymmetricMatrix, TNL::Containers::Segments::CSR >,
+    //TNL::Matrices::SparseMatrix< float,   TNL::Devices::Cuda, long,  TNL::Matrices::SymmetricMatrix, TNL::Containers::Segments::CSR >,
+    //TNL::Matrices::SparseMatrix< double,  TNL::Devices::Cuda, long,  TNL::Matrices::SymmetricMatrix, TNL::Containers::Segments::CSR >
 #endif // HAVE_CUDA
 >;
 
