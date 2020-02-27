@@ -60,12 +60,6 @@ void MatrixReader< Matrix >::readMtxFileHostMatrix( std::istream& file,
    matrix.setDimensions( rows, columns );
    rowLengths.setSize( rows );
 
-   if( ! computeCompressedRowLengthsFromMtxFile( file, rowLengths, columns, rows, symmetricMatrix, verbose ) )
-   {
-      std::cerr << "Unable to compute compressed row lengths." << std::endl;
-      return false;
-   }
-
    computeCompressedRowLengthsFromMtxFile( file, rowLengths, columns, rows, symmetricMatrix, verbose );
 
    matrix.setCompressedRowLengths( rowLengths );
