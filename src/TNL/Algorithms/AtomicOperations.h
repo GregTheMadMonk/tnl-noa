@@ -12,7 +12,9 @@
 
 #pragma once
 
+#ifdef HAVE_CUDA
 #include <cuda.h>
+#endif
 #include <TNL/Devices/Sequential.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
@@ -80,7 +82,7 @@ struct AtomicOperations< Devices::Cuda >
       TNL_ASSERT_TRUE( false, "Atomic add for long int is not supported on CUDA." );
 #endif // HAVE_CUDA
    }
-   
+
    __cuda_callable__
    static void add( short int& v, const short int& a )
    {
