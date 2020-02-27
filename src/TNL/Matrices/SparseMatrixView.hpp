@@ -209,7 +209,6 @@ SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
 getRow( const IndexType& rowIdx ) -> RowView
 {
    TNL_ASSERT_LT( rowIdx, this->getRows(), "Row index is larger than number of matrix rows." );
-   typename RowView::SegmentViewType t = this->segments.getSegmentView( rowIdx );
    return RowView( this->segments.getSegmentView( rowIdx ), this->values.getView(), this->columnIndexes.getView() );
 }
 
