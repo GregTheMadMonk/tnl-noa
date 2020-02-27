@@ -69,11 +69,10 @@ struct AtomicOperations< Devices::Cuda >
 #else // __CUDA_ARCH__ < 600
       atomicAdd( &v, a );
 #endif //__CUDA_ARCH__ < 600
-
+   }
 #else // HAVE_CUDA
    static void add( double& v, const double& a ){}
 #endif // HAVE_CUDA
-   }
 
    __cuda_callable__
    static void add( long int& v, const long int& a )
