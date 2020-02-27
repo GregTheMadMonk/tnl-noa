@@ -78,6 +78,17 @@ template< typename Device,
           typename Index,
           bool RowMajorOrder,
           int Alignment >
+String
+EllpackView< Device, Index, RowMajorOrder, Alignment >::
+getSegmentsType()
+{
+   return "Ellpack";
+}
+
+template< typename Device,
+          typename Index,
+          bool RowMajorOrder,
+          int Alignment >
 __cuda_callable__
 typename EllpackView< Device, Index, RowMajorOrder, Alignment >::ViewType
 EllpackView< Device, Index, RowMajorOrder, Alignment >::

@@ -39,7 +39,6 @@ class Ellpack
       //using ConstViewType = EllpackView< Device, std::add_const_t< Index >, RowMajorOrder, Alignment >;
       using SegmentViewType = SegmentView< IndexType, RowMajorOrder >;
 
-
       Ellpack();
 
       Ellpack( const SegmentsSizes& sizes );
@@ -51,6 +50,8 @@ class Ellpack
       Ellpack( const Ellpack&& segments );
 
       static String getSerializationType();
+
+      static String getSegmentsType();
 
       ViewType getView();
 

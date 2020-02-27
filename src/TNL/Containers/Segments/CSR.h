@@ -47,6 +47,8 @@ class CSR
 
       static String getSerializationType();
 
+      static String getSegmentsType();
+
       /**
        * \brief Set sizes of particular segments.
        */

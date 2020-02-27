@@ -66,6 +66,15 @@ getSerializationType()
 
 template< typename Device,
           typename Index >
+String
+CSRView< Device, Index >::
+getSegmentsType()
+{
+   return "CSR";
+}
+
+template< typename Device,
+          typename Index >
 __cuda_callable__
 typename CSRView< Device, Index >::ViewType
 CSRView< Device, Index >::

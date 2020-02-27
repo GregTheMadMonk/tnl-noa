@@ -49,6 +49,8 @@ class SlicedEllpack
 
       static String getSerializationType();
 
+      static String getSegmentsType();
+
       ViewType getView();
 
       ConstViewType getConstView() const;

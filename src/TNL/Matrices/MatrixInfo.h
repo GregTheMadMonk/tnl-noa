@@ -12,9 +12,17 @@
 
 #include <TNL/String.h>
 #include <TNL/Matrices/Dense.h>
-#include <TNL/Matrices/DenseView.h>
+#include <TNL/Matrices/DenseMatrixView.h>
 #include <TNL/Matrices/SparseMatrix.h>
 #include <TNL/Matrices/SparseMatrixView.h>
+#include <TNL/Containers/Segments/CSRView.h>
+#include <TNL/Containers/Segments/EllpackView.h>
+#include <TNL/Containers/Segments/SlicedEllpackView.h>
+#include <TNL/Matrices/Legacy/CSR.h>
+#include <TNL/Matrices/Legacy/Ellpack.h>
+#include <TNL/Matrices/Legacy/SlicedEllpack.h>
+#include <TNL/Matrices/Legacy/ChunkedEllpack.h>
+#include <TNL/Matrices/Legacy/BiEllpack.h>
 
 namespace TNL {
 /**
@@ -30,7 +38,7 @@ template< typename Real,
           typename Device,
           typename Index,
           bool RowMajorOrder >
-struct MatrixInfo< DenseView< Real, Device, RowMajorOrder > >
+struct MatrixInfo< DenseMatrixView< Real, Device, Index, RowMajorOrder > >
 {
    static String getDensity() { return String( "dense" ); };
 };
@@ -40,11 +48,10 @@ template< typename Real,
           typename Index,
           bool RowMajorOrder,
           typename RealAllocator >
-struct MatrixInfo< Dense< Real, Device, RowMajorOrder, RealAllocator > >
-: public MatrixInfo< typename Dense< Real, Device, RowMajorOrder, RealAllocator >::ViewType >
+struct MatrixInfo< Dense< Real, Device, Index, RowMajorOrder, RealAllocator > >
+: public MatrixInfo< typename Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::ViewType >
 {
 };
-
 
 template< typename Real,
           typename Device,
@@ -55,9 +62,7 @@ struct MatrixInfo< SparseMatrixView< Real, Device, Index, MatrixType, SegmentsVi
 {
    static String getDensity() { return String( "sparse" ); };
 
-   static String getFormat() {
-      if( std::is_same< SegementsView ........ >)
-   };
+   static String getFormat() { return SegmentsView< Device, Index >::getSegmentsType(); };
 };
 
 template< typename Real,
@@ -68,9 +73,51 @@ template< typename Real,
           typename RealAllocator,
           typename IndexAllocator >
 struct MatrixInfo< SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator > >
-:public MatrixInfo< typename SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::ViewType >
+: public MatrixInfo< typename SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::ViewType >
 {
-}
+};
+
+/////
+// Legacy matrices
+template< typename Real, typename Device, typename Index >
+struct MatrixInfo< BiEllpack< Real, Device, Index > >
+{
+   static String getDensity() { return String( "sparse" ); };
+
+   static String getFormat() { return "BiEllpack Legacy"; };
+};
+
+template< typename Real, typename Device, typename Index >
+struct MatrixInfo< CSR< Real, Device, Index > >
+{
+   static String getDensity() { return String( "sparse" ); };
+
+   static String getFormat() { return "CSR Legacy"; };
+};
+
+template< typename Real, typename Device, typename Index >
+struct MatrixInfo< ChunkedEllpack< Real, Device, Index > >
+{
+   static String getDensity() { return String( "sparse" ); };
+
+   static String getFormat() { return "ChunkedEllpack Legacy"; };
+};
+
+template< typename Real, typename Device, typename Index >
+struct MatrixInfo< Ellpack< Real, Device, Index > >
+{
+   static String getDensity() { return String( "sparse" ); };
+
+   static String getFormat() { return "Ellpack Legacy"; };
+};
+
+template< typename Real, typename Device, typename Index, int SliceSize >
+struct MatrixInfo< SlicedEllpack< Real, Device, Index, SliceSize> >
+{
+   static String getDensity() { return String( "sparse" ); };
+
+   static String getFormat() { return "SlicedEllpack Legacy"; };
+};
 
 } //namespace Matrices
 } //namespace TNL

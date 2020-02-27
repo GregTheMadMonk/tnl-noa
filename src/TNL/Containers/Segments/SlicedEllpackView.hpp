@@ -89,6 +89,17 @@ template< typename Device,
           typename Index,
           bool RowMajorOrder,
           int SliceSize >
+String
+SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::
+getSegmentsType()
+{
+   return "SlicedEllpack";
+}
+
+template< typename Device,
+          typename Index,
+          bool RowMajorOrder,
+          int SliceSize >
 __cuda_callable__
 typename SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::ViewType
 SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >::

@@ -67,6 +67,16 @@ getSerializationType()
 template< typename Device,
           typename Index,
           typename IndexAllocator >
+String
+CSR< Device, Index, IndexAllocator >::
+getSegmentsType()
+{
+   return ViewType::getSegmentsType();
+}
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator >
    template< typename SizesHolder >
 void
 CSR< Device, Index, IndexAllocator >::

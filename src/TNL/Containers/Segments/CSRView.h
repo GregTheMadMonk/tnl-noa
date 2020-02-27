@@ -52,6 +52,8 @@ class CSRView
 
       static String getSerializationType();
 
+      static String getSegmentsType();
+
       __cuda_callable__
       ViewType getView();
 

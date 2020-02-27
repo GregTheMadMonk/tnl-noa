@@ -93,6 +93,18 @@ template< typename Device,
           typename IndexAllocator,
           bool RowMajorOrder,
           int Alignment >
+String
+Ellpack< Device, Index, IndexAllocator, RowMajorOrder, Alignment >::
+getSegmentsType()
+{
+   return ViewType::getSegmentsType();
+}
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator,
+          bool RowMajorOrder,
+          int Alignment >
 typename Ellpack< Device, Index, IndexAllocator, RowMajorOrder, Alignment >::ViewType
 Ellpack< Device, Index, IndexAllocator, RowMajorOrder, Alignment >::
 getView()

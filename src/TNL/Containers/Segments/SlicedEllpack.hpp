@@ -86,6 +86,18 @@ template< typename Device,
           typename IndexAllocator,
           bool RowMajorOrder,
           int SliceSize >
+String
+SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
+getSegmentsType()
+{
+   return ViewType::getSegmentsType();
+}
+
+template< typename Device,
+          typename Index,
+          typename IndexAllocator,
+          bool RowMajorOrder,
+          int SliceSize >
 typename SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::ViewType
 SlicedEllpack< Device, Index, IndexAllocator, RowMajorOrder, SliceSize >::
 getView()
