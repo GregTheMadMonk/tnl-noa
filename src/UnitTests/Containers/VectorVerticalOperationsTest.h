@@ -123,18 +123,28 @@ protected:
    #endif
    >;
 #elif defined(STATIC_VECTOR)
-   using VectorTypes = ::testing::Types<
-      StaticVector< 1, int >,
-      StaticVector< 1, double >,
-      StaticVector< 2, int >,
-      StaticVector< 2, double >,
-      StaticVector< 3, int >,
-      StaticVector< 3, double >,
-      StaticVector< 4, int >,
-      StaticVector< 4, double >,
-      StaticVector< 5, int >,
-      StaticVector< 5, double >
-   >;
+   #ifdef VECTOR_OF_STATIC_VECTORS
+      using VectorTypes = ::testing::Types<
+         StaticVector< 1, StaticVector< 3, double > >,
+         StaticVector< 2, StaticVector< 3, double > >,
+         StaticVector< 3, StaticVector< 3, double > >,
+         StaticVector< 4, StaticVector< 3, double > >,
+         StaticVector< 5, StaticVector< 3, double > >
+      >;
+   #else
+      using VectorTypes = ::testing::Types<
+         StaticVector< 1, int >,
+         StaticVector< 1, double >,
+         StaticVector< 2, int >,
+         StaticVector< 2, double >,
+         StaticVector< 3, int >,
+         StaticVector< 3, double >,
+         StaticVector< 4, int >,
+         StaticVector< 4, double >,
+         StaticVector< 5, int >,
+         StaticVector< 5, double >
+      >;
+   #endif
 #else
    #ifdef VECTOR_OF_STATIC_VECTORS
       using VectorTypes = ::testing::Types<
