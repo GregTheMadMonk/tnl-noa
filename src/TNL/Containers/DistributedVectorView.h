@@ -13,6 +13,7 @@
 #pragma once
 
 #include <TNL/Containers/DistributedArrayView.h>
+#include <TNL/Containers/Expressions/DistributedExpressionTemplates.h>
 #include <TNL/Containers/VectorView.h>
 
 namespace TNL {
@@ -137,8 +138,15 @@ public:
    void scan( IndexType begin = 0, IndexType end = 0 );
 };
 
+// Enable expression templates for DistributedVector
+namespace Expressions {
+   template< typename Real, typename Device, typename Index, typename Communicator >
+   struct HasEnabledDistributedExpressionTemplates< DistributedVectorView< Real, Device, Index, Communicator > >
+   : std::true_type
+   {};
+} // namespace Expressions
+
 } // namespace Containers
 } // namespace TNL
 
 #include <TNL/Containers/DistributedVectorView.hpp>
-#include <TNL/Containers/DistributedVectorViewExpressions.h>

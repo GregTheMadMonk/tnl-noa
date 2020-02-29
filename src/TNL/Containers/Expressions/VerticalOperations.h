@@ -31,7 +31,8 @@ auto ExpressionMin( const Expression& expression ) -> std::decay_t< decltype( ex
    using ResultType = std::decay_t< decltype( expression[0] ) >;
    using IndexType = typename Expression::IndexType;
 
-   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return expression[ i ]; };
+   const auto view = expression.getConstView();
+   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return view[ i ]; };
    auto reduction = [] __cuda_callable__ ( const ResultType& a, const ResultType& b ) { return TNL::min( a, b ); };
    return Algorithms::Reduction< typename Expression::DeviceType >::reduce( expression.getSize(), reduction, fetch, std::numeric_limits< ResultType >::max() );
 }
@@ -43,7 +44,8 @@ auto ExpressionArgMin( const Expression& expression )
    using ResultType = std::decay_t< decltype( expression[0] ) >;
    using IndexType = typename Expression::IndexType;
 
-   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return expression[ i ]; };
+   const auto view = expression.getConstView();
+   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return view[ i ]; };
    auto reduction = [] __cuda_callable__ ( IndexType& aIdx, const IndexType& bIdx, ResultType& a, const ResultType& b ) {
       if( a > b ) {
          a = b;
@@ -61,7 +63,8 @@ auto ExpressionMax( const Expression& expression ) -> std::decay_t< decltype( ex
    using ResultType = std::decay_t< decltype( expression[0] ) >;
    using IndexType = typename Expression::IndexType;
 
-   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return expression[ i ]; };
+   const auto view = expression.getConstView();
+   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return view[ i ]; };
    auto reduction = [] __cuda_callable__ ( const ResultType& a, const ResultType& b ) { return TNL::max( a, b ); };
    return Algorithms::Reduction< typename Expression::DeviceType >::reduce( expression.getSize(), reduction, fetch, std::numeric_limits< ResultType >::lowest() );
 }
@@ -73,7 +76,8 @@ auto ExpressionArgMax( const Expression& expression )
    using ResultType = std::decay_t< decltype( expression[0] ) >;
    using IndexType = typename Expression::IndexType;
 
-   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return expression[ i ]; };
+   const auto view = expression.getConstView();
+   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return view[ i ]; };
    auto reduction = [] __cuda_callable__ ( IndexType& aIdx, const IndexType& bIdx, ResultType& a, const ResultType& b ) {
       if( a < b ) {
          a = b;
@@ -91,37 +95,8 @@ auto ExpressionSum( const Expression& expression ) -> std::decay_t< decltype( ex
    using ResultType = std::decay_t< decltype( expression[0] + expression[0] ) >;
    using IndexType = typename Expression::IndexType;
 
-   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return expression[ i ]; };
-   return Algorithms::Reduction< typename Expression::DeviceType >::reduce( expression.getSize(), std::plus<>{}, fetch, (ResultType) 0 );
-}
-
-template< typename Expression >
-auto ExpressionL1Norm( const Expression& expression ) -> std::decay_t< decltype( expression[0] + expression[0] ) >
-{
-   using ResultType = std::decay_t< decltype( expression[0] + expression[0] ) >;
-   using IndexType = typename Expression::IndexType;
-
-   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return TNL::abs( expression[ i ] ); };
-   return Algorithms::Reduction< typename Expression::DeviceType >::reduce( expression.getSize(), std::plus<>{}, fetch, (ResultType) 0 );
-}
-
-template< typename Expression >
-auto ExpressionL2Norm( const Expression& expression ) -> std::decay_t< decltype( expression[0] * expression[0] ) >
-{
-   using ResultType = std::decay_t< decltype( expression[0] * expression[0] ) >;
-   using IndexType = typename Expression::IndexType;
-
-   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return expression[ i ] * expression[ i ]; };
-   return Algorithms::Reduction< typename Expression::DeviceType >::reduce( expression.getSize(), std::plus<>{}, fetch, (ResultType) 0 );
-}
-
-template< typename Expression, typename Real >
-auto ExpressionLpNorm( const Expression& expression, const Real& p ) -> std::decay_t< decltype( TNL::pow( expression[0], p ) ) >
-{
-   using ResultType = std::decay_t< decltype( TNL::pow( expression[0], p ) ) >;
-   using IndexType = typename Expression::IndexType;
-
-   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return TNL::pow( TNL::abs( expression[ i ] ), p ); };
+   const auto view = expression.getConstView();
+   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return view[ i ]; };
    return Algorithms::Reduction< typename Expression::DeviceType >::reduce( expression.getSize(), std::plus<>{}, fetch, (ResultType) 0 );
 }
 
@@ -131,7 +106,8 @@ auto ExpressionProduct( const Expression& expression ) -> std::decay_t< decltype
    using ResultType = std::decay_t< decltype( expression[0] * expression[0] ) >;
    using IndexType = typename Expression::IndexType;
 
-   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return expression[ i ]; };
+   const auto view = expression.getConstView();
+   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return view[ i ]; };
    return Algorithms::Reduction< typename Expression::DeviceType >::reduce( expression.getSize(), std::multiplies<>{}, fetch, (ResultType) 1 );
 }
 
@@ -141,7 +117,8 @@ auto ExpressionLogicalAnd( const Expression& expression ) -> std::decay_t< declt
    using ResultType = std::decay_t< decltype( expression[0] && expression[0] ) >;
    using IndexType = typename Expression::IndexType;
 
-   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return expression[ i ]; };
+   const auto view = expression.getConstView();
+   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return view[ i ]; };
    return Algorithms::Reduction< typename Expression::DeviceType >::reduce( expression.getSize(), std::logical_and<>{}, fetch, std::numeric_limits< ResultType >::max() );
 }
 
@@ -151,7 +128,8 @@ auto ExpressionLogicalOr( const Expression& expression ) -> std::decay_t< declty
    using ResultType = std::decay_t< decltype( expression[0] || expression[0] ) >;
    using IndexType = typename Expression::IndexType;
 
-   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return expression[ i ]; };
+   const auto view = expression.getConstView();
+   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return view[ i ]; };
    return Algorithms::Reduction< typename Expression::DeviceType >::reduce( expression.getSize(), std::logical_or<>{}, fetch, (ResultType) 0 );
 }
 
@@ -161,7 +139,8 @@ auto ExpressionBinaryAnd( const Expression& expression ) -> std::decay_t< declty
    using ResultType = std::decay_t< decltype( expression[0] & expression[0] ) >;
    using IndexType = typename Expression::IndexType;
 
-   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return expression[ i ]; };
+   const auto view = expression.getConstView();
+   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return view[ i ]; };
    return Algorithms::Reduction< typename Expression::DeviceType >::reduce( expression.getSize(), std::bit_and<>{}, fetch, std::numeric_limits< ResultType >::max() );
 }
 
@@ -171,7 +150,8 @@ auto ExpressionBinaryOr( const Expression& expression ) -> std::decay_t< decltyp
    using ResultType = std::decay_t< decltype( expression[0] | expression[0] ) >;
    using IndexType = typename Expression::IndexType;
 
-   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return expression[ i ]; };
+   const auto view = expression.getConstView();
+   auto fetch = [=] __cuda_callable__ ( IndexType i ) { return view[ i ]; };
    return Algorithms::Reduction< typename Expression::DeviceType >::reduce( expression.getSize(), std::bit_or<>{}, fetch, (ResultType) 0 );
 }
 

@@ -172,11 +172,18 @@ public:
    operator StaticVector< Size, OtherReal >() const;
 };
 
+// Enable expression templates for StaticVector
+namespace Expressions {
+   template< int Size, typename Real >
+   struct HasEnabledStaticExpressionTemplates< StaticVector< Size, Real > >
+   : std::true_type
+   {};
+} // namespace Expressions
+
 } // namespace Containers
 } // namespace TNL
 
 #include <TNL/Containers/StaticVector.hpp>
-#include <TNL/Containers/StaticVectorExpressions.h>
 
 // TODO: move to some other source file
 namespace TNL {

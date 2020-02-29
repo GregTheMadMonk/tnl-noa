@@ -174,7 +174,7 @@ public:
     */
    template< typename VectorExpression,
              typename...,
-             typename = std::enable_if_t< Expressions::IsExpressionTemplate< VectorExpression >::value > >
+             typename = std::enable_if_t< Expressions::HasEnabledExpressionTemplates< VectorExpression >::value && ! IsArrayType< VectorExpression >::value > >
    Vector& operator=( const VectorExpression& expression );
 
    /**
@@ -326,8 +326,15 @@ public:
    void segmentedScan( const VectorExpression& expression, FlagsArray& flags, IndexType begin = 0, IndexType end = 0 );
 };
 
+// Enable expression templates for Vector
+namespace Expressions {
+   template< typename Real, typename Device, typename Index, typename Allocator >
+   struct HasEnabledExpressionTemplates< Vector< Real, Device, Index, Allocator > >
+   : std::true_type
+   {};
+} // namespace Expressions
+
 } // namespace Containers
 } // namespace TNL
 
 #include <TNL/Containers/Vector.hpp>
-#include <TNL/Containers/VectorExpressions.h>

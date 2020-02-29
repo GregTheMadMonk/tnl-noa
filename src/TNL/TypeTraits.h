@@ -104,6 +104,33 @@ public:
 };
 
 /**
+ * \brief Type trait for checking if T has operator+= taking one argument of type T.
+ */
+template< typename T >
+class HasAddAssignmentOperator
+{
+private:
+   template< typename U >
+   static constexpr auto check(U*)
+   -> typename
+      std::enable_if_t<
+         ! std::is_same<
+               decltype( std::declval<U>() += std::declval<U>() ),
+               void
+            >::value,
+         std::true_type
+      >;
+
+   template< typename >
+   static constexpr std::false_type check(...);
+
+   using type = decltype(check<T>(0));
+
+public:
+    static constexpr bool value = type::value;
+};
+
+/**
  * \brief Type trait for checking if T is an array type, e.g.
  *        \ref Containers::Array or \ref Containers::Vector.
  *
@@ -116,6 +143,17 @@ struct IsArrayType
             HasGetArrayDataMethod< T >::value &&
             HasGetSizeMethod< T >::value &&
             HasSubscriptOperator< T >::value >
+{};
+
+/**
+ * \brief Type trait for checking if T is a vector type, e.g.
+ *        \ref Containers::Vector or \ref Containers::VectorView.
+ */
+template< typename T >
+struct IsVectorType
+: public std::integral_constant< bool,
+            IsArrayType< T >::value &&
+            HasAddAssignmentOperator< T >::value >
 {};
 
 /**

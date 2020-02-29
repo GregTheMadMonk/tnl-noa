@@ -24,40 +24,35 @@ namespace TNL {
 namespace Containers {
 namespace Expressions {
 
-////
-// Non-static unary expression template
 template< typename T1,
-          template< typename > class Operation,
-          ExpressionVariableType T1Type = ExpressionVariableTypeGetter< T1 >::value >
-struct UnaryExpressionTemplate
-{};
+          template< typename > class Operation >
+struct UnaryExpressionTemplate;
 
 template< typename T1,
-          template< typename > class Operation,
-          ExpressionVariableType T1Type >
-struct IsExpressionTemplate< UnaryExpressionTemplate< T1, Operation, T1Type > >
+          template< typename > class Operation >
+struct HasEnabledExpressionTemplates< UnaryExpressionTemplate< T1, Operation > >
 : std::true_type
 {};
 
-////
-// Non-static binary expression template
 template< typename T1,
           typename T2,
           template< typename, typename > class Operation,
-          ExpressionVariableType T1Type = ExpressionVariableTypeGetter< T1 >::value,
-          ExpressionVariableType T2Type = ExpressionVariableTypeGetter< T2 >::value >
-struct BinaryExpressionTemplate
-{};
+          ExpressionVariableType T1Type = getExpressionVariableType< T1, T2 >(),
+          ExpressionVariableType T2Type = getExpressionVariableType< T2, T1 >() >
+struct BinaryExpressionTemplate;
 
 template< typename T1,
           typename T2,
           template< typename, typename > class Operation,
           ExpressionVariableType T1Type,
           ExpressionVariableType T2Type >
-struct IsExpressionTemplate< BinaryExpressionTemplate< T1, T2, Operation, T1Type, T2Type > >
+struct HasEnabledExpressionTemplates< BinaryExpressionTemplate< T1, T2, Operation, T1Type, T2Type > >
 : std::true_type
 {};
 
+
+////
+// Non-static binary expression template
 template< typename T1,
           typename T2,
           template< typename, typename > class Operation >
@@ -67,6 +62,7 @@ struct BinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, Ve
                               evaluate( std::declval<T1>()[0], std::declval<T2>()[0] ) );
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
+   using ConstViewType = BinaryExpressionTemplate;
 
    static_assert( std::is_same< typename T1::DeviceType, typename T2::DeviceType >::value,
                   "Attempt to mix operands which have different DeviceType." );
@@ -74,7 +70,7 @@ struct BinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, Ve
                   "Attempt to mix static and non-static operands in binary expression templates." );
 
    BinaryExpressionTemplate( const T1& a, const T2& b )
-   : op1( a ), op2( b )
+   : op1( a.getConstView() ), op2( b.getConstView() )
    {
       TNL_ASSERT_EQ( op1.getSize(), op2.getSize(),
                      "Attempt to mix operands with different sizes." );
@@ -97,9 +93,14 @@ struct BinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, Ve
       return op1.getSize();
    }
 
+   ConstViewType getConstView() const
+   {
+      return *this;
+   }
+
 protected:
-   const T1 op1;
-   const T2 op2;
+   const typename T1::ConstViewType op1;
+   const typename T2::ConstViewType op2;
 };
 
 template< typename T1,
@@ -111,9 +112,10 @@ struct BinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, Ar
                               evaluate( std::declval<T1>()[0], std::declval<T2>() ) );
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
+   using ConstViewType = BinaryExpressionTemplate;
 
    BinaryExpressionTemplate( const T1& a, const T2& b )
-   : op1( a ), op2( b ) {}
+   : op1( a.getConstView() ), op2( b ) {}
 
    RealType getElement( const IndexType i ) const
    {
@@ -132,8 +134,13 @@ struct BinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, Ar
       return op1.getSize();
    }
 
+   ConstViewType getConstView() const
+   {
+      return *this;
+   }
+
 protected:
-   const T1 op1;
+   const typename T1::ConstViewType op1;
    const T2 op2;
 };
 
@@ -146,9 +153,10 @@ struct BinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorEx
                               evaluate( std::declval<T1>(), std::declval<T2>()[0] ) );
    using DeviceType = typename T2::DeviceType;
    using IndexType = typename T2::IndexType;
+   using ConstViewType = BinaryExpressionTemplate;
 
    BinaryExpressionTemplate( const T1& a, const T2& b )
-   : op1( a ), op2( b ) {}
+   : op1( a ), op2( b.getConstView() ) {}
 
    RealType getElement( const IndexType i ) const
    {
@@ -167,24 +175,30 @@ struct BinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorEx
       return op2.getSize();
    }
 
+   ConstViewType getConstView() const
+   {
+      return *this;
+   }
+
 protected:
    const T1 op1;
-   const T2 op2;
+   const typename T2::ConstViewType op2;
 };
 
 ////
 // Non-static unary expression template
 template< typename T1,
           template< typename > class Operation >
-struct UnaryExpressionTemplate< T1, Operation, VectorExpressionVariable >
+struct UnaryExpressionTemplate
 {
    using RealType = decltype( Operation< typename T1::RealType >::
                               evaluate( std::declval<T1>()[0] ) );
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
+   using ConstViewType = UnaryExpressionTemplate;
 
    UnaryExpressionTemplate( const T1& a )
-   : operand( a ) {}
+   : operand( a.getConstView() ) {}
 
    RealType getElement( const IndexType i ) const
    {
@@ -203,9 +217,533 @@ struct UnaryExpressionTemplate< T1, Operation, VectorExpressionVariable >
       return operand.getSize();
    }
 
+   ConstViewType getConstView() const
+   {
+      return *this;
+   }
+
 protected:
-   const T1 operand;
+   const typename T1::ConstViewType operand;
 };
+
+#ifndef DOXYGEN_ONLY
+
+////
+// Binary expressions addition
+template< typename ET1, typename ET2,
+          typename..., typename = EnableIfBinaryExpression_t< ET1, ET2 >, typename = void >
+auto
+operator+( const ET1& a, const ET2& b )
+{
+   return BinaryExpressionTemplate< ET1, ET2, Addition >( a, b );
+}
+
+////
+// Binary expression subtraction
+template< typename ET1, typename ET2,
+          typename..., typename = EnableIfBinaryExpression_t< ET1, ET2 >, typename = void >
+auto
+operator-( const ET1& a, const ET2& b )
+{
+   return BinaryExpressionTemplate< ET1, ET2, Subtraction >( a, b );
+}
+
+////
+// Binary expression multiplication
+template< typename ET1, typename ET2,
+          typename..., typename = EnableIfBinaryExpression_t< ET1, ET2 >, typename = void >
+auto
+operator*( const ET1& a, const ET2& b )
+{
+   return BinaryExpressionTemplate< ET1, ET2, Multiplication >( a, b );
+}
+
+////
+// Binary expression division
+template< typename ET1, typename ET2,
+          typename..., typename = EnableIfBinaryExpression_t< ET1, ET2 >, typename = void >
+auto
+operator/( const ET1& a, const ET2& b )
+{
+   return BinaryExpressionTemplate< ET1, ET2, Division >( a, b );
+}
+
+////
+// Comparison operator ==
+template< typename ET1, typename ET2,
+          typename..., typename = EnableIfBinaryExpression_t< ET1, ET2 >, typename = void >
+bool
+operator==( const ET1& a, const ET2& b )
+{
+   return Comparison< ET1, ET2 >::EQ( a, b );
+}
+
+////
+// Comparison operator !=
+template< typename ET1, typename ET2,
+          typename..., typename = EnableIfBinaryExpression_t< ET1, ET2 >, typename = void >
+bool
+operator!=( const ET1& a, const ET2& b )
+{
+   return Comparison< ET1, ET2 >::NE( a, b );
+}
+
+////
+// Comparison operator <
+template< typename ET1, typename ET2,
+          typename..., typename = EnableIfBinaryExpression_t< ET1, ET2 >, typename = void >
+bool
+operator<( const ET1& a, const ET2& b )
+{
+   return Comparison< ET1, ET2 >::LT( a, b );
+}
+
+////
+// Comparison operator <=
+template< typename ET1, typename ET2,
+          typename..., typename = EnableIfBinaryExpression_t< ET1, ET2 >, typename = void >
+bool
+operator<=( const ET1& a, const ET2& b )
+{
+   return Comparison< ET1, ET2 >::LE( a, b );
+}
+
+////
+// Comparison operator >
+template< typename ET1, typename ET2,
+          typename..., typename = EnableIfBinaryExpression_t< ET1, ET2 >, typename = void >
+bool
+operator>( const ET1& a, const ET2& b )
+{
+   return Comparison< ET1, ET2 >::GT( a, b );
+}
+
+////
+// Comparison operator >=
+template< typename ET1, typename ET2,
+          typename..., typename = EnableIfBinaryExpression_t< ET1, ET2 >, typename = void >
+bool
+operator>=( const ET1& a, const ET2& b )
+{
+   return Comparison< ET1, ET2 >::GE( a, b );
+}
+
+////
+// Scalar product
+template< typename ET1, typename ET2,
+          typename..., typename = EnableIfBinaryExpression_t< ET1, ET2 >, typename = void >
+auto
+operator,( const ET1& a, const ET2& b )
+{
+   return ExpressionSum( a * b );
+}
+
+template< typename ET1, typename ET2,
+          typename..., typename = EnableIfBinaryExpression_t< ET1, ET2 >, typename = void >
+auto
+dot( const ET1& a, const ET2& b )
+{
+   return (a, b);
+}
+
+////
+// Unary expression minus
+template< typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+operator-( const ET1& a )
+{
+   return UnaryExpressionTemplate< ET1, Minus >( a );
+}
+
+////
+// Binary expression min
+template< typename ET1, typename ET2,
+          typename..., typename = EnableIfBinaryExpression_t< ET1, ET2 >, typename = void >
+auto
+min( const ET1& a, const ET2& b )
+{
+   return BinaryExpressionTemplate< ET1, ET2, Min >( a, b );
+}
+
+////
+// Binary expression max
+template< typename ET1, typename ET2,
+          typename..., typename = EnableIfBinaryExpression_t< ET1, ET2 >, typename = void >
+auto
+max( const ET1& a, const ET2& b )
+{
+   return BinaryExpressionTemplate< ET1, ET2, Max >( a, b );
+}
+
+////
+// Abs
+template< typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+abs( const ET1& a )
+{
+   return UnaryExpressionTemplate< ET1, Abs >( a );
+}
+
+////
+// Pow
+template< typename ET1, typename Real,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+pow( const ET1& a, const Real& exp )
+{
+   return BinaryExpressionTemplate< ET1, Real, Pow >( a, exp );
+}
+
+////
+// Exp
+template< typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+exp( const ET1& a )
+{
+   return UnaryExpressionTemplate< ET1, Exp >( a );
+}
+
+////
+// Sqrt
+template< typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+sqrt( const ET1& a )
+{
+   return UnaryExpressionTemplate< ET1, Sqrt >( a );
+}
+
+////
+// Cbrt
+template< typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+cbrt( const ET1& a )
+{
+   return UnaryExpressionTemplate< ET1, Cbrt >( a );
+}
+
+////
+// Log
+template< typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+log( const ET1& a )
+{
+   return UnaryExpressionTemplate< ET1, Log >( a );
+}
+
+////
+// Log10
+template< typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+log10( const ET1& a )
+{
+   return UnaryExpressionTemplate< ET1, Log10 >( a );
+}
+
+////
+// Log2
+template< typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+log2( const ET1& a )
+{
+   return UnaryExpressionTemplate< ET1, Log2 >( a );
+}
+
+////
+// Sin
+template< typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+sin( const ET1& a )
+{
+   return UnaryExpressionTemplate< ET1, Sin >( a );
+}
+
+////
+// Cos
+template< typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+cos( const ET1& a )
+{
+   return UnaryExpressionTemplate< ET1, Cos >( a );
+}
+
+////
+// Tan
+template< typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+tan( const ET1& a )
+{
+   return UnaryExpressionTemplate< ET1, Tan >( a );
+}
+
+////
+// Asin
+template< typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+asin( const ET1& a )
+{
+   return UnaryExpressionTemplate< ET1, Asin >( a );
+}
+
+////
+// Acos
+template< typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+acos( const ET1& a )
+{
+   return UnaryExpressionTemplate< ET1, Acos >( a );
+}
+
+////
+// Atan
+template< typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+atan( const ET1& a )
+{
+   return UnaryExpressionTemplate< ET1, Atan >( a );
+}
+
+////
+// Sinh
+template< typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+sinh( const ET1& a )
+{
+   return UnaryExpressionTemplate< ET1, Sinh >( a );
+}
+
+////
+// Cosh
+template< typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+cosh( const ET1& a )
+{
+   return UnaryExpressionTemplate< ET1, Cosh >( a );
+}
+
+////
+// Tanh
+template< typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+tanh( const ET1& a )
+{
+   return UnaryExpressionTemplate< ET1, Tanh >( a );
+}
+
+////
+// Asinh
+template< typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+asinh( const ET1& a )
+{
+   return UnaryExpressionTemplate< ET1, Asinh >( a );
+}
+
+////
+// Acosh
+template< typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+acosh( const ET1& a )
+{
+   return UnaryExpressionTemplate< ET1, Acosh >( a );
+}
+
+////
+// Atanh
+template< typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+atanh( const ET1& a )
+{
+   return UnaryExpressionTemplate< ET1, Atanh >( a );
+}
+
+////
+// Floor
+template< typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+floor( const ET1& a )
+{
+   return UnaryExpressionTemplate< ET1, Floor >( a );
+}
+
+////
+// Ceil
+template< typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+ceil( const ET1& a )
+{
+   return UnaryExpressionTemplate< ET1, Ceil >( a );
+}
+
+////
+// Sign
+template< typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+sign( const ET1& a )
+{
+   return UnaryExpressionTemplate< ET1, Sign >( a );
+}
+
+////
+// Cast
+template< typename ResultType,
+          typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >,
+          // workaround: templated type alias cannot be declared at block level
+          template<typename> class CastOperation = Containers::Expressions::Cast< ResultType >::template Operation,
+          typename = void >
+auto
+cast( const ET1& a )
+{
+   return UnaryExpressionTemplate< ET1, CastOperation >( a );
+}
+
+////
+// Vertical operations
+template< typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+min( const ET1& a )
+{
+   return ExpressionMin( a );
+}
+
+template< typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+argMin( const ET1& a )
+{
+   return ExpressionArgMin( a );
+}
+
+template< typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+max( const ET1& a )
+{
+   return ExpressionMax( a );
+}
+
+template< typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+argMax( const ET1& a )
+{
+   return ExpressionArgMax( a );
+}
+
+template< typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+sum( const ET1& a )
+{
+   return ExpressionSum( a );
+}
+
+template< typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+maxNorm( const ET1& a )
+{
+   return max( abs( a ) );
+}
+
+template< typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+l1Norm( const ET1& a )
+{
+   return sum( abs( a ) );
+}
+
+template< typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+l2Norm( const ET1& a )
+{
+   using TNL::sqrt;
+   return sqrt( sum( a * a ) );
+}
+
+template< typename ET1,
+          typename Real,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+lpNorm( const ET1& a, const Real& p )
+// since (1.0 / p) has type double, TNL::pow returns double
+-> double
+{
+   if( p == 1.0 )
+      return l1Norm( a );
+   if( p == 2.0 )
+      return l2Norm( a );
+   using TNL::pow;
+   return pow( sum( pow( abs( a ), p ) ), 1.0 / p );
+}
+
+template< typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+product( const ET1& a )
+{
+   return ExpressionProduct( a );
+}
+
+template< typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+logicalAnd( const ET1& a )
+{
+   return ExpressionLogicalAnd( a );
+}
+
+template< typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+logicalOr( const ET1& a )
+{
+   return ExpressionLogicalOr( a );
+}
+
+template< typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+binaryAnd( const ET1& a )
+{
+   return ExpressionBinaryAnd( a );
+}
+
+template< typename ET1,
+          typename..., typename = EnableIfUnaryExpression_t< ET1 >, typename = void >
+auto
+binaryOr( const ET1& a )
+{
+   return ExpressionBinaryOr( a );
+}
+
+#endif // DOXYGEN_ONLY
 
 ////
 // Output stream
@@ -232,1884 +770,105 @@ std::ostream& operator<<( std::ostream& str, const UnaryExpressionTemplate< T, O
    return str;
 }
 
-////
-// Operators are supposed to be in the same namespace as the expression templates
-
-#ifndef DOXYGEN_ONLY
-
-////
-// Binary expressions addition
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-auto
-operator+( const BinaryExpressionTemplate< L1, L2, LOperation >& a,
-           const BinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Addition >( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-auto
-operator+( const BinaryExpressionTemplate< T1, T2, Operation >& a,
-           const typename BinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
-{
-   return BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Addition >( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-auto
-operator+( const typename BinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
-           const BinaryExpressionTemplate< T1, T2, Operation >& b )
-{
-   return BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Addition >( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-auto
-operator+( const UnaryExpressionTemplate< T1, Operation >& a,
-           const typename UnaryExpressionTemplate< T1, Operation >::RealType& b )
-{
-   return BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Addition >( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-auto
-operator+( const typename UnaryExpressionTemplate< T1, Operation >::RealType& a,
-           const UnaryExpressionTemplate< T1, Operation >& b )
-{
-   return BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Addition >( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-auto
-operator+( const UnaryExpressionTemplate< L1, LOperation >& a,
-           const BinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Addition >( a, b );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-auto
-operator+( const BinaryExpressionTemplate< L1, L2, LOperation >& a,
-           const UnaryExpressionTemplate< R1,ROperation >& b )
-{
-   return BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Addition >( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-auto
-operator+( const UnaryExpressionTemplate< L1,LOperation >& a,
-           const UnaryExpressionTemplate< R1,ROperation >& b )
-{
-   return BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Addition >( a, b );
-}
-
-////
-// Binary expression subtraction
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-auto
-operator-( const BinaryExpressionTemplate< L1, L2, LOperation >& a,
-           const BinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Subtraction >( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-auto
-operator-( const BinaryExpressionTemplate< T1, T2, Operation >& a,
-           const typename BinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
-{
-   return BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Subtraction >( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-auto
-operator-( const typename BinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
-           const BinaryExpressionTemplate< T1, T2, Operation >& b )
-{
-   return BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Subtraction >( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-auto
-operator-( const UnaryExpressionTemplate< T1, Operation >& a,
-           const typename UnaryExpressionTemplate< T1, Operation >::RealType& b )
-{
-   return BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Subtraction >( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-auto
-operator-( const typename UnaryExpressionTemplate< T1, Operation >::RealType& a,
-           const UnaryExpressionTemplate< T1, Operation >& b )
-{
-   return BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Subtraction >( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-auto
-operator-( const UnaryExpressionTemplate< L1, LOperation >& a,
-           const BinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Subtraction >( a, b );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-auto
-operator-( const BinaryExpressionTemplate< L1, L2, LOperation >& a,
-           const UnaryExpressionTemplate< R1,ROperation >& b )
-{
-   return BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Subtraction >( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-auto
-operator-( const UnaryExpressionTemplate< L1,LOperation >& a,
-           const UnaryExpressionTemplate< R1,ROperation >& b )
-{
-   return BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Subtraction >( a, b );
-}
-
-////
-// Binary expression multiplication
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-auto
-operator*( const BinaryExpressionTemplate< L1, L2, LOperation >& a,
-           const BinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Multiplication >( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-auto
-operator*( const BinaryExpressionTemplate< T1, T2, Operation >& a,
-           const typename BinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
-{
-   return BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Multiplication >( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-auto
-operator*( const typename BinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
-           const BinaryExpressionTemplate< T1, T2, Operation >& b )
-{
-   return BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Multiplication >( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-auto
-operator*( const UnaryExpressionTemplate< T1, Operation >& a,
-           const typename UnaryExpressionTemplate< T1, Operation >::RealType& b )
-{
-   return BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Multiplication >( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-auto
-operator*( const typename UnaryExpressionTemplate< T1, Operation >::RealType& a,
-           const UnaryExpressionTemplate< T1, Operation >& b )
-{
-   return BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Multiplication >( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-auto
-operator*( const UnaryExpressionTemplate< L1, LOperation >& a,
-           const BinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Multiplication >( a, b );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-auto
-operator*( const BinaryExpressionTemplate< L1, L2, LOperation >& a,
-           const UnaryExpressionTemplate< R1, ROperation >& b )
-{
-   return BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Multiplication >( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-auto
-operator*( const UnaryExpressionTemplate< L1,LOperation >& a,
-           const UnaryExpressionTemplate< R1,ROperation >& b )
-{
-   return BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Multiplication >( a, b );
-}
-
-////
-// Binary expression division
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-auto
-operator/( const BinaryExpressionTemplate< L1, L2, LOperation >& a,
-           const BinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Division >( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-auto
-operator/( const BinaryExpressionTemplate< T1, T2, Operation >& a,
-           const typename BinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
-{
-   return BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Division >( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-auto
-operator/( const typename BinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
-           const BinaryExpressionTemplate< T1, T2, Operation >& b )
-{
-   return BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Division >( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-auto
-operator/( const UnaryExpressionTemplate< T1, Operation >& a,
-           const typename UnaryExpressionTemplate< T1, Operation >::RealType& b )
-{
-   return BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Division >( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-auto
-operator/( const typename UnaryExpressionTemplate< T1, Operation >::RealType& a,
-           const UnaryExpressionTemplate< T1, Operation >& b )
-{
-   return BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Division >( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-auto
-operator/( const UnaryExpressionTemplate< L1, LOperation >& a,
-           const BinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Division >( a, b );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-auto
-operator/( const BinaryExpressionTemplate< L1, L2, LOperation >& a,
-           const UnaryExpressionTemplate< R1,ROperation >& b )
-{
-   return BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Division >( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-auto
-operator/( const UnaryExpressionTemplate< L1,LOperation >& a,
-           const UnaryExpressionTemplate< R1,ROperation >& b )
-{
-   return BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Division >( a, b );
-}
-
-////
-// Comparison operator ==
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-bool
-operator==( const BinaryExpressionTemplate< L1, L2, LOperation >& a,
-            const BinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::EQ( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-bool
-operator==( const BinaryExpressionTemplate< T1, T2, Operation >& a,
-            const typename BinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::EQ( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-bool
-operator==( const UnaryExpressionTemplate< T1, Operation >& a,
-            const typename UnaryExpressionTemplate< T1, Operation >::RealType& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::EQ( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-bool
-operator==( const typename BinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
-            const BinaryExpressionTemplate< T1, T2, Operation >& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::EQ( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-bool
-operator==( const typename UnaryExpressionTemplate< T1, Operation >::RealType& a,
-            const UnaryExpressionTemplate< T1, Operation >& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::EQ( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-bool
-operator==( const UnaryExpressionTemplate< L1, LOperation >& a,
-            const BinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::EQ( a, b );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-bool
-operator==( const BinaryExpressionTemplate< L1, L2, LOperation >& a,
-            const UnaryExpressionTemplate< R1,ROperation >& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::EQ( a, b );
-}
-
-////
-// Comparison operator !=
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-bool
-operator!=( const BinaryExpressionTemplate< L1, L2, LOperation >& a,
-            const BinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::NE( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-bool
-operator!=( const BinaryExpressionTemplate< T1, T2, Operation >& a,
-            const typename BinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::NE( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-bool
-operator!=( const UnaryExpressionTemplate< L1, LOperation >& a,
-            const UnaryExpressionTemplate< R1, ROperation >& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::NE( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-bool
-operator!=( const UnaryExpressionTemplate< T1, Operation >& a,
-            const typename UnaryExpressionTemplate< T1, Operation >::RealType& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::NE( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-bool
-operator!=( const typename BinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
-            const BinaryExpressionTemplate< T1, T2, Operation >& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::NE( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-bool
-operator!=( const typename UnaryExpressionTemplate< T1, Operation >::RealType& a,
-            const UnaryExpressionTemplate< T1, Operation >& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::NE( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-bool
-operator!=( const UnaryExpressionTemplate< L1, LOperation >& a,
-            const BinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::NE( a, b );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-bool
-operator!=( const BinaryExpressionTemplate< L1, L2, LOperation >& a,
-            const UnaryExpressionTemplate< R1,ROperation >& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::NE( a, b );
-}
-
-////
-// Comparison operator <
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-bool
-operator<( const BinaryExpressionTemplate< L1, L2, LOperation >& a,
-           const BinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LT( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-bool
-operator<( const BinaryExpressionTemplate< T1, T2, Operation >& a,
-           const typename BinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LT( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-bool
-operator<( const UnaryExpressionTemplate< L1, LOperation >& a,
-           const UnaryExpressionTemplate< R1, ROperation >& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LT( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-bool
-operator<( const UnaryExpressionTemplate< T1, Operation >& a,
-           const typename UnaryExpressionTemplate< T1, Operation >::RealType& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LT( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-bool
-operator<( const typename BinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
-           const BinaryExpressionTemplate< T1, T2, Operation >& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LT( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-bool
-operator<( const typename UnaryExpressionTemplate< T1, Operation >::RealType& a,
-           const UnaryExpressionTemplate< T1, Operation >& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LT( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-bool
-operator<( const UnaryExpressionTemplate< L1, LOperation >& a,
-           const BinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LT( a, b );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-bool
-operator<( const BinaryExpressionTemplate< L1, L2, LOperation >& a,
-           const UnaryExpressionTemplate< R1,ROperation >& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LT( a, b );
-}
-
-////
-// Comparison operator <=
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-bool
-operator<=( const BinaryExpressionTemplate< L1, L2, LOperation >& a,
-            const BinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LE( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-bool
-operator<=( const BinaryExpressionTemplate< T1, T2, Operation >& a,
-            const typename BinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LE( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-bool
-operator<=( const UnaryExpressionTemplate< L1, LOperation >& a,
-            const UnaryExpressionTemplate< R1, ROperation >& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LE( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-bool
-operator<=( const UnaryExpressionTemplate< T1, Operation >& a,
-            const typename UnaryExpressionTemplate< T1, Operation >::RealType& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LE( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-bool
-operator<=( const typename BinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
-            const BinaryExpressionTemplate< T1, T2, Operation >& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LE( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-bool
-operator<=( const typename UnaryExpressionTemplate< T1, Operation >::RealType& a,
-            const UnaryExpressionTemplate< T1, Operation >& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LE( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-bool
-operator<=( const UnaryExpressionTemplate< L1, LOperation >& a,
-            const BinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LE( a, b );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-bool
-operator<=( const BinaryExpressionTemplate< L1, L2, LOperation >& a,
-            const UnaryExpressionTemplate< R1,ROperation >& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LE( a, b );
-}
-
-////
-// Comparison operator >
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-bool
-operator>( const BinaryExpressionTemplate< L1, L2, LOperation >& a,
-           const BinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GT( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-bool
-operator>( const BinaryExpressionTemplate< T1, T2, Operation >& a,
-           const typename BinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GT( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-bool
-operator>( const UnaryExpressionTemplate< T1, Operation >& a,
-           const typename UnaryExpressionTemplate< T1, Operation >::RealType& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GT( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-bool
-operator>( const typename BinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
-           const BinaryExpressionTemplate< T1, T2, Operation >& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GT( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-bool
-operator>( const typename UnaryExpressionTemplate< T1, Operation >::RealType& a,
-           const UnaryExpressionTemplate< T1, Operation >& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GT( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-bool
-operator>( const UnaryExpressionTemplate< L1, LOperation >& a,
-           const BinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GT( a, b );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-bool
-operator>( const BinaryExpressionTemplate< L1, L2, LOperation >& a,
-           const UnaryExpressionTemplate< R1,ROperation >& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GT( a, b );
-}
-
-////
-// Comparison operator >=
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-bool
-operator>=( const BinaryExpressionTemplate< L1, L2, LOperation >& a,
-            const BinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GE( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-bool
-operator>=( const BinaryExpressionTemplate< T1, T2, Operation >& a,
-            const typename BinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GE( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-bool
-operator>=( const UnaryExpressionTemplate< T1, Operation >& a,
-            const typename UnaryExpressionTemplate< T1, Operation >::RealType& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GE( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-bool
-operator>=( const typename BinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
-            const BinaryExpressionTemplate< T1, T2, Operation >& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GE( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-bool
-operator>=( const typename UnaryExpressionTemplate< T1, Operation >::RealType& a,
-            const UnaryExpressionTemplate< T1, Operation >& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GE( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-bool
-operator>=( const UnaryExpressionTemplate< L1, LOperation >& a,
-            const BinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GE( a, b );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-bool
-operator>=( const BinaryExpressionTemplate< L1, L2, LOperation >& a,
-            const UnaryExpressionTemplate< R1,ROperation >& b )
-{
-   return Comparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GE( a, b );
-}
-
-////
-// Unary operations
-
-////
-// Minus
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-operator-( const BinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return UnaryExpressionTemplate< std::decay_t<decltype(a)>, Minus >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-operator-( const UnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return UnaryExpressionTemplate< std::decay_t<decltype(a)>, Minus >( a );
-}
-
-////
-// Scalar product
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-auto
-operator,( const BinaryExpressionTemplate< L1, L2, LOperation >& a,
-           const BinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return ExpressionSum( a * b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-auto
-operator,( const UnaryExpressionTemplate< L1, LOperation >& a,
-           const UnaryExpressionTemplate< R1, ROperation >& b )
-{
-   return ExpressionSum( a * b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-auto
-operator,( const UnaryExpressionTemplate< L1, LOperation >& a,
-           const BinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return ExpressionSum( a * b );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-auto
-operator,( const BinaryExpressionTemplate< L1, L2, LOperation >& a,
-           const UnaryExpressionTemplate< R1,ROperation >& b )
-{
-   return ExpressionSum( a * b );
-}
-
-#endif // DOXYGEN_ONLY
-
 } // namespace Expressions
+
+// Make all operators visible in the TNL::Containers namespace to be considered
+// even for Vector and VectorView
+using Expressions::operator+;
+using Expressions::operator-;
+using Expressions::operator*;
+using Expressions::operator/;
+using Expressions::operator,;
+using Expressions::operator==;
+using Expressions::operator!=;
+using Expressions::operator<;
+using Expressions::operator<=;
+using Expressions::operator>;
+using Expressions::operator>=;
+
+// Make all functions visible in the TNL::Containers namespace
+using Expressions::dot;
+using Expressions::min;
+using Expressions::max;
+using Expressions::abs;
+using Expressions::pow;
+using Expressions::exp;
+using Expressions::sqrt;
+using Expressions::cbrt;
+using Expressions::log;
+using Expressions::log10;
+using Expressions::log2;
+using Expressions::sin;
+using Expressions::cos;
+using Expressions::tan;
+using Expressions::asin;
+using Expressions::acos;
+using Expressions::atan;
+using Expressions::sinh;
+using Expressions::cosh;
+using Expressions::tanh;
+using Expressions::asinh;
+using Expressions::acosh;
+using Expressions::atanh;
+using Expressions::floor;
+using Expressions::ceil;
+using Expressions::sign;
+using Expressions::cast;
+using Expressions::argMin;
+using Expressions::argMax;
+using Expressions::sum;
+using Expressions::maxNorm;
+using Expressions::l1Norm;
+using Expressions::l2Norm;
+using Expressions::lpNorm;
+using Expressions::product;
+using Expressions::logicalAnd;
+using Expressions::logicalOr;
+using Expressions::binaryAnd;
+using Expressions::binaryOr;
+
 } // namespace Containers
 
-////
-// All operations are supposed to be in namespace TNL
-
-#ifndef DOXYGEN_ONLY
-
-////
-// Binary expression min
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-auto
-min( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a,
-     const Containers::Expressions::BinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return Containers::Expressions::BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Min >( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-auto
-min( const Containers::Expressions::BinaryExpressionTemplate< T1, T2, Operation >& a,
-     const typename Containers::Expressions::BinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
-{
-   return Containers::Expressions::BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Min >( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-auto
-min( const typename Containers::Expressions::BinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
-     const Containers::Expressions::BinaryExpressionTemplate< T1, T2, Operation >& b )
-{
-   return Containers::Expressions::BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Min >( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-auto
-min( const Containers::Expressions::UnaryExpressionTemplate< T1, Operation >& a,
-     const typename Containers::Expressions::UnaryExpressionTemplate< T1, Operation >::RealType& b )
-{
-   return Containers::Expressions::BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Min >( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-auto
-min( const typename Containers::Expressions::UnaryExpressionTemplate< T1, Operation >::RealType& a,
-     const Containers::Expressions::UnaryExpressionTemplate< T1, Operation >& b )
-{
-   return Containers::Expressions::BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Min >( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-auto
-min( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a,
-     const typename Containers::Expressions::BinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return Containers::Expressions::BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Min >( a, b );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-auto
-min( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a,
-     const Containers::Expressions::UnaryExpressionTemplate< R1,ROperation >& b )
-{
-   return Containers::Expressions::BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Min >( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-auto
-min( const Containers::Expressions::UnaryExpressionTemplate< L1,LOperation >& a,
-     const Containers::Expressions::UnaryExpressionTemplate< R1,ROperation >& b )
-{
-   return Containers::Expressions::BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Min >( a, b );
-}
-
-////
-// Binary expression max
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-auto
-max( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a,
-     const Containers::Expressions::BinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return Containers::Expressions::BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Max >( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-auto
-max( const Containers::Expressions::BinaryExpressionTemplate< T1, T2, Operation >& a,
-     const typename Containers::Expressions::BinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
-{
-   return Containers::Expressions::BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Max >( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-auto
-max( const typename Containers::Expressions::BinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
-     const Containers::Expressions::BinaryExpressionTemplate< T1, T2, Operation >& b )
-{
-   return Containers::Expressions::BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Max >( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-auto
-max( const Containers::Expressions::UnaryExpressionTemplate< T1, Operation >& a,
-     const typename Containers::Expressions::UnaryExpressionTemplate< T1, Operation >::RealType& b )
-{
-   return Containers::Expressions::BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Max >( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-auto
-max( const typename Containers::Expressions::UnaryExpressionTemplate< T1, Operation >::RealType& a,
-     const Containers::Expressions::UnaryExpressionTemplate< T1, Operation >& b )
-{
-   return Containers::Expressions::BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Max >( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-auto
-max( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a,
-     const Containers::Expressions::BinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return Containers::Expressions::BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Max >( a, b );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-auto
-max( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a,
-     const Containers::Expressions::UnaryExpressionTemplate< R1,ROperation >& b )
-{
-   return Containers::Expressions::BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Max >( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-auto
-max( const Containers::Expressions::UnaryExpressionTemplate< L1,LOperation >& a,
-     const Containers::Expressions::UnaryExpressionTemplate< R1,ROperation >& b )
-{
-   return Containers::Expressions::BinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Max >( a, b );
-}
-
-////
-// Abs
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-abs( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Abs >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-abs( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Abs >( a );
-}
-
-////
-// Pow
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename Real >
-auto
-pow( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a, const Real& exp )
-{
-   return Containers::Expressions::BinaryExpressionTemplate< std::decay_t<decltype(a)>, Real, Containers::Expressions::Pow >( a, exp );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename Real >
-auto
-pow( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a, const Real& exp )
-{
-   return Containers::Expressions::BinaryExpressionTemplate< std::decay_t<decltype(a)>, Real, Containers::Expressions::Pow >( a, exp );
-}
-
-////
-// Exp
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-exp( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Exp >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-exp( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Exp >( a );
-}
-
-////
-// Sqrt
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-sqrt( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sqrt >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-sqrt( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sqrt >( a );
-}
-
-////
-// Cbrt
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-cbrt( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Cbrt >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-cbrt( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Cbrt >( a );
-}
-
-////
-// Log
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-log( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-log( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log >( a );
-}
-
-////
-// Log10
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-log10( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log10 >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-log10( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log10 >( a );
-}
-
-////
-// Log2
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-log2( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log2 >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-log2( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log2 >( a );
-}
-
-////
-// Sin
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-sin( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sin >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-sin( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sin >( a );
-}
-
-////
-// Cos
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-cos( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Cos >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-cos( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Cos >( a );
-}
-
-////
-// Tan
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-tan( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Tan >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-tan( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Tan >( a );
-}
-
-////
-// Asin
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-asin( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Asin >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-asin( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Asin >( a );
-}
-
-////
-// Acos
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-acos( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Acos >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-acos( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Acos >( a );
-}
-
-////
-// Atan
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-atan( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Atan >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-atan( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Atan >( a );
-}
-
-////
-// Sinh
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-sinh( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sinh >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-sinh( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sinh >( a );
-}
-
-////
-// Cosh
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-cosh( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Cosh >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-cosh( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Cosh >( a );
-}
-
-////
-// Tanh
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-tanh( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Tanh >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-tanh( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Tanh >( a );
-}
-
-////
-// Asinh
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-asinh( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Asinh >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-asinh( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Asinh >( a );
-}
-
-////
-// Acosh
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-acosh( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Acosh >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-acosh( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Acosh >( a );
-}
-
-////
-// Atanh
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-atanh( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Atanh >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-atanh( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Atanh >( a );
-}
-
-////
-// Floor
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-floor( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Floor >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-floor( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Floor >( a );
-}
-
-////
-// Ceil
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-ceil( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Ceil >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-ceil( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Ceil >( a );
-}
-
-////
-// Sign
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-sign( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sign >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-sign( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sign >( a );
-}
-
-////
-// Cast
-template< typename ResultType,
-          typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          // workaround: templated type alias cannot be declared at block level
-          template<typename> class CastOperation = Containers::Expressions::Cast< ResultType >::template Operation >
-auto
-cast( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, CastOperation >( a );
-}
-
-template< typename ResultType,
-          typename L1,
-          template< typename > class LOperation,
-          // workaround: templated type alias cannot be declared at block level
-          template<typename> class CastOperation = Containers::Expressions::Cast< ResultType >::template Operation >
-auto
-cast( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::UnaryExpressionTemplate< std::decay_t<decltype(a)>, CastOperation >( a );
-}
-
-////
-// Vertical operations - min
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-min( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return ExpressionMin( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-min( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return ExpressionMin( a );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-argMin( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return ExpressionArgMin( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-argMin( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return ExpressionArgMin( a );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-max( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return ExpressionMax( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-max( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return ExpressionMax( a );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-argMax( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return ExpressionArgMax( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-argMax( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return ExpressionArgMax( a );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-sum( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return ExpressionSum( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-sum( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return ExpressionSum( a );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-maxNorm( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return max( abs( a ) );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-maxNorm( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return max( abs( a ) );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-l1Norm( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return ExpressionL1Norm( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-l1Norm( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return ExpressionL1Norm( a );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-l2Norm( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return TNL::sqrt( ExpressionL2Norm( a ) );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-l2Norm( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return TNL::sqrt( ExpressionL2Norm( a ) );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename Real >
-auto
-lpNorm( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a, const Real& p )
-// since (1.0 / p) has type double, TNL::pow returns double
--> double
-{
-   if( p == 1.0 )
-      return l1Norm( a );
-   if( p == 2.0 )
-      return l2Norm( a );
-   return TNL::pow( ExpressionLpNorm( a, p ), 1.0 / p );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename Real >
-auto
-lpNorm( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a, const Real& p )
-// since (1.0 / p) has type double, TNL::pow returns double
--> double
-{
-   if( p == 1.0 )
-      return l1Norm( a );
-   if( p == 2.0 )
-      return l2Norm( a );
-   return TNL::pow( ExpressionLpNorm( a, p ), 1.0 / p );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-product( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return ExpressionProduct( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-product( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return ExpressionProduct( a );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-logicalOr( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return ExpressionLogicalOr( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-logicalOr( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return ExpressionLogicalOr( a );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-logicalAnd( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return ExpressionLogicalAnd( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-logicalAnd( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return ExpressionLogicalAnd( a );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-binaryOr( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return ExpressionBinaryOr( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-binaryOr( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return ExpressionBinaryOr( a );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-binaryAnd( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return ExpressionBinaryAnd( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-binaryAnd( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return ExpressionBinaryAnd( a );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-auto
-dot( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a,
-     const Containers::Expressions::BinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return (a, b);
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-auto
-dot( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a,
-     const Containers::Expressions::UnaryExpressionTemplate< R1, ROperation >& b )
-{
-   return (a, b);
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-auto
-dot( const Containers::Expressions::UnaryExpressionTemplate< L1, LOperation >& a,
-     const Containers::Expressions::BinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return (a, b);
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-auto
-dot( const Containers::Expressions::BinaryExpressionTemplate< L1, L2, LOperation >& a,
-     const Containers::Expressions::UnaryExpressionTemplate< R1, ROperation >& b )
-{
-   return (a, b);
-}
-
-#endif // DOXYGEN_ONLY
-
+// Make all functions visible in the main TNL namespace
+using Containers::dot;
+using Containers::min;
+using Containers::max;
+using Containers::abs;
+using Containers::pow;
+using Containers::exp;
+using Containers::sqrt;
+using Containers::cbrt;
+using Containers::log;
+using Containers::log10;
+using Containers::log2;
+using Containers::sin;
+using Containers::cos;
+using Containers::tan;
+using Containers::asin;
+using Containers::acos;
+using Containers::atan;
+using Containers::sinh;
+using Containers::cosh;
+using Containers::tanh;
+using Containers::asinh;
+using Containers::acosh;
+using Containers::atanh;
+using Containers::floor;
+using Containers::ceil;
+using Containers::sign;
+using Containers::cast;
+using Containers::argMin;
+using Containers::argMax;
+using Containers::sum;
+using Containers::maxNorm;
+using Containers::l1Norm;
+using Containers::l2Norm;
+using Containers::lpNorm;
+using Containers::product;
+using Containers::logicalAnd;
+using Containers::logicalOr;
+using Containers::binaryAnd;
+using Containers::binaryOr;
 
 ////
 // Evaluation with reduction
