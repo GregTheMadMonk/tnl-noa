@@ -28,18 +28,10 @@ protected:
 using SlicedEllpackSegmentsTypes = ::testing::Types
 <
     TNL::Containers::Segments::SlicedEllpack< TNL::Devices::Host, int    >,
-    TNL::Containers::Segments::SlicedEllpack< TNL::Devices::Host, long   >,
-    TNL::Containers::Segments::SlicedEllpack< TNL::Devices::Host, int    >,
-    TNL::Containers::Segments::SlicedEllpack< TNL::Devices::Host, long   >,
-    TNL::Containers::Segments::SlicedEllpack< TNL::Devices::Host, int    >,
     TNL::Containers::Segments::SlicedEllpack< TNL::Devices::Host, long   >
 #ifdef HAVE_CUDA
    ,TNL::Containers::Segments::SlicedEllpack< TNL::Devices::Cuda, int    >,
-    TNL::Containers::Segments::SlicedEllpack< TNL::Devices::Cuda, long   >,
-    TNL::Containers::Segments::SlicedEllpack< TNL::Devices::Cuda, int    >,
-    TNL::Containers::Segments::SlicedEllpack< TNL::Devices::Cuda, long   >,
-    TNL::Containers::Segments::SlicedEllpack< TNL::Devices::Cuda, int    >,
-    TNL::Containers::Segments::SlicedEllpack< TNL::Devices::Cuda, long   >,
+    TNL::Containers::Segments::SlicedEllpack< TNL::Devices::Cuda, long   >
 #endif
 >;
 

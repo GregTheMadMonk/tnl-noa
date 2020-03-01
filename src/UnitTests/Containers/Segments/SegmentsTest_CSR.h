@@ -28,18 +28,10 @@ protected:
 using CSRSegmentsTypes = ::testing::Types
 <
     TNL::Containers::Segments::CSR< TNL::Devices::Host, int    >,
-    TNL::Containers::Segments::CSR< TNL::Devices::Host, long   >,
-    TNL::Containers::Segments::CSR< TNL::Devices::Host, int    >,
-    TNL::Containers::Segments::CSR< TNL::Devices::Host, long   >,
-    TNL::Containers::Segments::CSR< TNL::Devices::Host, int    >,
     TNL::Containers::Segments::CSR< TNL::Devices::Host, long   >
 #ifdef HAVE_CUDA
    ,TNL::Containers::Segments::CSR< TNL::Devices::Cuda, int    >,
-    TNL::Containers::Segments::CSR< TNL::Devices::Cuda, long   >,
-    TNL::Containers::Segments::CSR< TNL::Devices::Cuda, int    >,
-    TNL::Containers::Segments::CSR< TNL::Devices::Cuda, long   >,
-    TNL::Containers::Segments::CSR< TNL::Devices::Cuda, int    >,
-    TNL::Containers::Segments::CSR< TNL::Devices::Cuda, long   >,
+    TNL::Containers::Segments::CSR< TNL::Devices::Cuda, long   >
 #endif
 >;
 

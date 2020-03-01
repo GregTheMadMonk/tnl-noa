@@ -28,18 +28,10 @@ protected:
 using EllpackSegmentsTypes = ::testing::Types
 <
     TNL::Containers::Segments::Ellpack< TNL::Devices::Host, int    >,
-    TNL::Containers::Segments::Ellpack< TNL::Devices::Host, long   >,
-    TNL::Containers::Segments::Ellpack< TNL::Devices::Host, int    >,
-    TNL::Containers::Segments::Ellpack< TNL::Devices::Host, long   >,
-    TNL::Containers::Segments::Ellpack< TNL::Devices::Host, int    >,
     TNL::Containers::Segments::Ellpack< TNL::Devices::Host, long   >
 #ifdef HAVE_CUDA
    ,TNL::Containers::Segments::Ellpack< TNL::Devices::Cuda, int    >,
-    TNL::Containers::Segments::Ellpack< TNL::Devices::Cuda, long   >,
-    TNL::Containers::Segments::Ellpack< TNL::Devices::Cuda, int    >,
-    TNL::Containers::Segments::Ellpack< TNL::Devices::Cuda, long   >,
-    TNL::Containers::Segments::Ellpack< TNL::Devices::Cuda, int    >,
-    TNL::Containers::Segments::Ellpack< TNL::Devices::Cuda, long   >,
+    TNL::Containers::Segments::Ellpack< TNL::Devices::Cuda, long   >
 #endif
 >;
 
