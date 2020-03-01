@@ -368,8 +368,8 @@ operator=( const SlicedEllpackView< Device, Index, RowMajorOrder, SliceSize >& v
    this->size = view.size;
    this->alignedSize = view.alignedSize;
    this->segmentsCount = view.segmentsCount;
-   this->sliceOffsets.copy( view.sliceOffsets );
-   this->sliceSegmentSizes.copy( view.sliceSegmentSizes );
+   this->sliceOffsets.bind( view.sliceOffsets );
+   this->sliceSegmentSizes.bind( view.sliceSegmentSizes );
    return *this;
 }
 

@@ -606,7 +606,7 @@ SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >::
 operator=( const SparseMatrixView< Real, Device, Index, MatrixType, SegmentsView >& matrix )
 {
    MatrixView< Real, Device, Index >::operator=( matrix );
-   this->columnIndexes.copy( matrix.columnIndexes );
+   this->columnIndexes.bind( matrix.columnIndexes );
    this->segments = matrix.segments;
    return *this;
 }

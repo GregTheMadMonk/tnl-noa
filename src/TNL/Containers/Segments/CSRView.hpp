@@ -237,7 +237,7 @@ CSRView< Device, Index >&
 CSRView< Device, Index >::
 operator=( const CSRView& view )
 {
-   this->offsets.copy( view.offsets );
+   this->offsets.bind( view.offsets );
    return *this;
 }
 

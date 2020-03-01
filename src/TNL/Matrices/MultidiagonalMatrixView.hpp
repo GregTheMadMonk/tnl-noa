@@ -335,8 +335,8 @@ MultidiagonalMatrixView< Real, Device, Index, RowMajorOrder >::
 operator=( const MultidiagonalMatrixView& view )
 {
    MatrixView< Real, Device, Index >::operator=( view );
-   this->diagonalsShifts.copy( view.diagonalsShifts );
-   this->hostDiagonalsShifts.copy( view.hostDiagonalsShifts );
+   this->diagonalsShifts.bind( view.diagonalsShifts );
+   this->hostDiagonalsShifts.bind( view.hostDiagonalsShifts );
    this->indexer = view.indexer;
    return *this;
 }

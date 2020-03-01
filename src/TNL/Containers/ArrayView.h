@@ -238,15 +238,6 @@ public:
    ArrayView& operator=( const T& array );
 
    /**
-    * \brief Makes shallow copy of the array view.
-    * 
-    * \param view Reference to the source array view.
-    * \return Reference to this array view.
-    */
-   __cuda_callable__
-   ArrayView& copy( const ArrayView& view );
-
-   /**
     * \brief Swaps this array view with another.
     *
     * Swapping is done in a shallow way, i.e. only pointers and sizes are
