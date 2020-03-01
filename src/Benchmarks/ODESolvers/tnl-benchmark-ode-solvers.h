@@ -36,8 +36,6 @@
 #include "Euler.h"
 #include "Merson.h"
 
-#include <TNL/Matrices/Legacy/SlicedEllpack.h>
-
 using namespace TNL;
 using namespace TNL::Benchmarks;
 using namespace TNL::Pointers;
