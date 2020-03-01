@@ -27,10 +27,6 @@ protected:
 // types for which MatrixTest is instantiated
 using EllpackMatrixTypes = ::testing::Types
 <
-    TNL::Matrices::Ellpack< int,    TNL::Devices::Host, short >,
-    TNL::Matrices::Ellpack< long,   TNL::Devices::Host, short >,
-    TNL::Matrices::Ellpack< float,  TNL::Devices::Host, short >,
-    TNL::Matrices::Ellpack< double, TNL::Devices::Host, short >,
     TNL::Matrices::Ellpack< int,    TNL::Devices::Host, int >,
     TNL::Matrices::Ellpack< long,   TNL::Devices::Host, int >,
     TNL::Matrices::Ellpack< float,  TNL::Devices::Host, int >,
@@ -40,11 +36,7 @@ using EllpackMatrixTypes = ::testing::Types
     TNL::Matrices::Ellpack< float,  TNL::Devices::Host, long >,
     TNL::Matrices::Ellpack< double, TNL::Devices::Host, long >
 #ifdef HAVE_CUDA
-   ,TNL::Matrices::Ellpack< int,    TNL::Devices::Cuda, short >,
-    TNL::Matrices::Ellpack< long,   TNL::Devices::Cuda, short >,
-    TNL::Matrices::Ellpack< float,  TNL::Devices::Cuda, short >,
-    TNL::Matrices::Ellpack< double, TNL::Devices::Cuda, short >,
-    TNL::Matrices::Ellpack< int,    TNL::Devices::Cuda, int >,
+   ,TNL::Matrices::Ellpack< int,    TNL::Devices::Cuda, int >,
     TNL::Matrices::Ellpack< long,   TNL::Devices::Cuda, int >,
     TNL::Matrices::Ellpack< float,  TNL::Devices::Cuda, int >,
     TNL::Matrices::Ellpack< double, TNL::Devices::Cuda, int >,

@@ -28,10 +28,6 @@ protected:
 // types for which MatrixTest is instantiated
 using ChEllpackMatrixTypes = ::testing::Types
 <
-    TNL::Matrices::ChunkedEllpack< int,    TNL::Devices::Host, short >,
-    TNL::Matrices::ChunkedEllpack< long,   TNL::Devices::Host, short >,
-    TNL::Matrices::ChunkedEllpack< float,  TNL::Devices::Host, short >,
-    TNL::Matrices::ChunkedEllpack< double, TNL::Devices::Host, short >,
     TNL::Matrices::ChunkedEllpack< int,    TNL::Devices::Host, int >,
     TNL::Matrices::ChunkedEllpack< long,   TNL::Devices::Host, int >,
     TNL::Matrices::ChunkedEllpack< float,  TNL::Devices::Host, int >,
@@ -41,11 +37,7 @@ using ChEllpackMatrixTypes = ::testing::Types
     TNL::Matrices::ChunkedEllpack< float,  TNL::Devices::Host, long >,
     TNL::Matrices::ChunkedEllpack< double, TNL::Devices::Host, long >
 #ifdef HAVE_CUDA
-   ,TNL::Matrices::ChunkedEllpack< int,    TNL::Devices::Cuda, short >,
-    TNL::Matrices::ChunkedEllpack< long,   TNL::Devices::Cuda, short >,
-    TNL::Matrices::ChunkedEllpack< float,  TNL::Devices::Cuda, short >,
-    TNL::Matrices::ChunkedEllpack< double, TNL::Devices::Cuda, short >,
-    TNL::Matrices::ChunkedEllpack< int,    TNL::Devices::Cuda, int >,
+   ,TNL::Matrices::ChunkedEllpack< int,    TNL::Devices::Cuda, int >,
     TNL::Matrices::ChunkedEllpack< long,   TNL::Devices::Cuda, int >,
     TNL::Matrices::ChunkedEllpack< float,  TNL::Devices::Cuda, int >,
     TNL::Matrices::ChunkedEllpack< double, TNL::Devices::Cuda, int >,

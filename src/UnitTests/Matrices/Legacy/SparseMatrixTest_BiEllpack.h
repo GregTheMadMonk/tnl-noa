@@ -27,10 +27,6 @@ protected:
 // types for which MatrixTest is instantiated
 using BiEllpackMatrixTypes = ::testing::Types
 <
-    TNL::Matrices::BiEllpack< int,    TNL::Devices::Host, short >,
-    TNL::Matrices::BiEllpack< long,   TNL::Devices::Host, short >,
-    TNL::Matrices::BiEllpack< float,  TNL::Devices::Host, short >,
-    TNL::Matrices::BiEllpack< double, TNL::Devices::Host, short >,
     TNL::Matrices::BiEllpack< int,    TNL::Devices::Host, int >,
     TNL::Matrices::BiEllpack< long,   TNL::Devices::Host, int >,
     TNL::Matrices::BiEllpack< float,  TNL::Devices::Host, int >,
@@ -40,11 +36,7 @@ using BiEllpackMatrixTypes = ::testing::Types
     TNL::Matrices::BiEllpack< float,  TNL::Devices::Host, long >,
     TNL::Matrices::BiEllpack< double, TNL::Devices::Host, long >
 #ifdef HAVE_CUDA
-   ,TNL::Matrices::BiEllpack< int,    TNL::Devices::Cuda, short >,
-    TNL::Matrices::BiEllpack< long,   TNL::Devices::Cuda, short >,
-    TNL::Matrices::BiEllpack< float,  TNL::Devices::Cuda, short >,
-    TNL::Matrices::BiEllpack< double, TNL::Devices::Cuda, short >,
-    TNL::Matrices::BiEllpack< int,    TNL::Devices::Cuda, int >,
+   ,TNL::Matrices::BiEllpack< int,    TNL::Devices::Cuda, int >,
     TNL::Matrices::BiEllpack< long,   TNL::Devices::Cuda, int >,
     TNL::Matrices::BiEllpack< float,  TNL::Devices::Cuda, int >,
     TNL::Matrices::BiEllpack< double, TNL::Devices::Cuda, int >,

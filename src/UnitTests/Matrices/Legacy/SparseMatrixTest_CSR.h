@@ -27,10 +27,6 @@ protected:
 // types for which MatrixTest is instantiated
 using CSRMatrixTypes = ::testing::Types
 <
-    TNL::Matrices::CSR< int,    TNL::Devices::Host, short >,
-    TNL::Matrices::CSR< long,   TNL::Devices::Host, short >,
-    TNL::Matrices::CSR< float,  TNL::Devices::Host, short >,
-    TNL::Matrices::CSR< double, TNL::Devices::Host, short >,
     TNL::Matrices::CSR< int,    TNL::Devices::Host, int >,
     TNL::Matrices::CSR< long,   TNL::Devices::Host, int >,
     TNL::Matrices::CSR< float,  TNL::Devices::Host, int >,
@@ -40,11 +36,7 @@ using CSRMatrixTypes = ::testing::Types
     TNL::Matrices::CSR< float,  TNL::Devices::Host, long >,
     TNL::Matrices::CSR< double, TNL::Devices::Host, long >
 #ifdef HAVE_CUDA
-   ,TNL::Matrices::CSR< int,    TNL::Devices::Cuda, short >,
-    TNL::Matrices::CSR< long,   TNL::Devices::Cuda, short >,
-    TNL::Matrices::CSR< float,  TNL::Devices::Cuda, short >,
-    TNL::Matrices::CSR< double, TNL::Devices::Cuda, short >,
-    TNL::Matrices::CSR< int,    TNL::Devices::Cuda, int >,
+   ,TNL::Matrices::CSR< int,    TNL::Devices::Cuda, int >,
     TNL::Matrices::CSR< long,   TNL::Devices::Cuda, int >,
     TNL::Matrices::CSR< float,  TNL::Devices::Cuda, int >,
     TNL::Matrices::CSR< double, TNL::Devices::Cuda, int >,

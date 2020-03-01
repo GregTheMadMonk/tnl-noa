@@ -32,10 +32,6 @@ using SlicedEllpackType = TNL::Matrices::SlicedEllpack< Real, Device, Index, 32 
 // types for which MatrixTest is instantiated
 using SlicedEllpackMatrixTypes = ::testing::Types
 <
-    SlicedEllpackType< int,     TNL::Devices::Host, short >,
-    SlicedEllpackType< long,    TNL::Devices::Host, short >,
-    SlicedEllpackType< float,   TNL::Devices::Host, short >,
-    SlicedEllpackType< double,  TNL::Devices::Host, short >,
     SlicedEllpackType< int,     TNL::Devices::Host, int   >,
     SlicedEllpackType< long,    TNL::Devices::Host, int   >,
     SlicedEllpackType< float,   TNL::Devices::Host, int   >,
@@ -45,11 +41,7 @@ using SlicedEllpackMatrixTypes = ::testing::Types
     SlicedEllpackType< float,   TNL::Devices::Host, long  >,
     SlicedEllpackType< double,  TNL::Devices::Host, long  >
 #ifdef HAVE_CUDA
-   ,SlicedEllpackType< int,     TNL::Devices::Cuda, short >,
-    SlicedEllpackType< long,    TNL::Devices::Cuda, short >,
-    SlicedEllpackType< float,   TNL::Devices::Cuda, short >,
-    SlicedEllpackType< double,  TNL::Devices::Cuda, short >,
-    SlicedEllpackType< int,     TNL::Devices::Cuda, int   >,
+   ,SlicedEllpackType< int,     TNL::Devices::Cuda, int   >,
     SlicedEllpackType< long,    TNL::Devices::Cuda, int   >,
     SlicedEllpackType< float,   TNL::Devices::Cuda, int   >,
     SlicedEllpackType< double,  TNL::Devices::Cuda, int   >,
