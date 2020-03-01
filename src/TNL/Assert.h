@@ -124,25 +124,6 @@
 #include <TNL/Debugging/StackBacktrace.h>
 
 namespace TNL {
-
-   // This is alternative implementation of is_same because std::is_same
-   // does not work in CUDA device code ("std::integral_constant<bool, (bool)0> ::value").
-   // This can be removed when std::_is_same works well.
-   //
-   template< typename T1, typename T2 >
-   struct is_same
-   {
-      __cuda_callable__
-      static constexpr bool value() { return false; }
-   };
-
-   template< typename T1 >
-   struct is_same< T1, T1 >
-   {
-      __cuda_callable__
-      static constexpr bool value() { return true; }
-   };
-
 /**
  * \brief Internal namespace for helper classes used in the TNL_ASSERT_* macros.
  */

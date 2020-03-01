@@ -457,7 +457,7 @@ class Array
        * host, and if the array was allocated in the device memory, it can be
        * called only from device kernels. If NDEBUG is not defined, assertions
        * inside this methods performs runtime checks for cross-device memory
-       * accesses which lead to segmentation fault. If you need to do just a 
+       * accesses which lead to segmentation fault. If you need to do just a
        * pointer arithmetics use \e getData instead.
        *
        * \param i The index of the element to be accessed.
@@ -474,7 +474,7 @@ class Array
        * host, and if the array was allocated in the device memory, it can be
        * called only from device kernels. If NDEBUG is not defined, assertions
        * inside this methods performs runtime checks for cross-device memory
-       * accesses which lead to segmentation fault. If you need to do just a 
+       * accesses which lead to segmentation fault. If you need to do just a
        * pointer arithmetics use \e getData instead.
        *
        * \param i The index of the element to be accessed.
