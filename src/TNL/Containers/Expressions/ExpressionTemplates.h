@@ -25,25 +25,25 @@ namespace Containers {
 namespace Expressions {
 
 template< typename T1,
-          template< typename > class Operation >
+          typename Operation >
 struct UnaryExpressionTemplate;
 
 template< typename T1,
-          template< typename > class Operation >
+          typename Operation >
 struct HasEnabledExpressionTemplates< UnaryExpressionTemplate< T1, Operation > >
 : std::true_type
 {};
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation,
+          typename Operation,
           ExpressionVariableType T1Type = getExpressionVariableType< T1, T2 >(),
           ExpressionVariableType T2Type = getExpressionVariableType< T2, T1 >() >
 struct BinaryExpressionTemplate;
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation,
+          typename Operation,
           ExpressionVariableType T1Type,
           ExpressionVariableType T2Type >
 struct HasEnabledExpressionTemplates< BinaryExpressionTemplate< T1, T2, Operation, T1Type, T2Type > >
@@ -55,11 +55,10 @@ struct HasEnabledExpressionTemplates< BinaryExpressionTemplate< T1, T2, Operatio
 // Non-static binary expression template
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
+          typename Operation >
 struct BinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, VectorExpressionVariable >
 {
-   using RealType = decltype( Operation< typename T1::RealType, typename T2::RealType >::
-                              evaluate( std::declval<T1>()[0], std::declval<T2>()[0] ) );
+   using RealType = decltype( Operation::evaluate( std::declval<T1>()[0], std::declval<T2>()[0] ) );
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
    using ConstViewType = BinaryExpressionTemplate;
@@ -78,13 +77,13 @@ struct BinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, Ve
 
    RealType getElement( const IndexType i ) const
    {
-      return Operation< typename T1::RealType, typename T2::RealType >::evaluate( op1.getElement( i ), op2.getElement( i ) );
+      return Operation::evaluate( op1.getElement( i ), op2.getElement( i ) );
    }
 
    __cuda_callable__
    RealType operator[]( const IndexType i ) const
    {
-      return Operation< typename T1::RealType, typename T2::RealType >::evaluate( op1[ i ], op2[ i ] );
+      return Operation::evaluate( op1[ i ], op2[ i ] );
    }
 
    __cuda_callable__
@@ -105,11 +104,10 @@ protected:
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
+          typename Operation >
 struct BinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, ArithmeticVariable >
 {
-   using RealType = decltype( Operation< typename T1::RealType, T2 >::
-                              evaluate( std::declval<T1>()[0], std::declval<T2>() ) );
+   using RealType = decltype( Operation::evaluate( std::declval<T1>()[0], std::declval<T2>() ) );
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
    using ConstViewType = BinaryExpressionTemplate;
@@ -119,13 +117,13 @@ struct BinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, Ar
 
    RealType getElement( const IndexType i ) const
    {
-      return Operation< typename T1::RealType, T2 >::evaluate( op1.getElement( i ), op2 );
+      return Operation::evaluate( op1.getElement( i ), op2 );
    }
 
    __cuda_callable__
    RealType operator[]( const IndexType i ) const
    {
-      return Operation< typename T1::RealType, T2 >::evaluate( op1[ i ], op2 );
+      return Operation::evaluate( op1[ i ], op2 );
    }
 
    __cuda_callable__
@@ -146,11 +144,10 @@ protected:
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
+          typename Operation >
 struct BinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorExpressionVariable >
 {
-   using RealType = decltype( Operation< T1, typename T2::RealType >::
-                              evaluate( std::declval<T1>(), std::declval<T2>()[0] ) );
+   using RealType = decltype( Operation::evaluate( std::declval<T1>(), std::declval<T2>()[0] ) );
    using DeviceType = typename T2::DeviceType;
    using IndexType = typename T2::IndexType;
    using ConstViewType = BinaryExpressionTemplate;
@@ -160,13 +157,13 @@ struct BinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorEx
 
    RealType getElement( const IndexType i ) const
    {
-      return Operation< T1, typename T2::RealType >::evaluate( op1, op2.getElement( i ) );
+      return Operation::evaluate( op1, op2.getElement( i ) );
    }
 
    __cuda_callable__
    RealType operator[]( const IndexType i ) const
    {
-      return Operation< T1, typename T2::RealType >::evaluate( op1, op2[ i ] );
+      return Operation::evaluate( op1, op2[ i ] );
    }
 
    __cuda_callable__
@@ -188,11 +185,10 @@ protected:
 ////
 // Non-static unary expression template
 template< typename T1,
-          template< typename > class Operation >
+          typename Operation >
 struct UnaryExpressionTemplate
 {
-   using RealType = decltype( Operation< typename T1::RealType >::
-                              evaluate( std::declval<T1>()[0] ) );
+   using RealType = decltype( Operation::evaluate( std::declval<T1>()[0] ) );
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
    using ConstViewType = UnaryExpressionTemplate;
@@ -202,13 +198,13 @@ struct UnaryExpressionTemplate
 
    RealType getElement( const IndexType i ) const
    {
-      return Operation< typename T1::RealType >::evaluate( operand.getElement( i ) );
+      return Operation::evaluate( operand.getElement( i ) );
    }
 
    __cuda_callable__
    RealType operator[]( const IndexType i ) const
    {
-      return Operation< typename T1::RealType >::evaluate( operand[ i ] );
+      return Operation::evaluate( operand[ i ] );
    }
 
    __cuda_callable__
@@ -612,7 +608,7 @@ template< typename ResultType,
           typename ET1,
           typename..., typename = EnableIfUnaryExpression_t< ET1 >,
           // workaround: templated type alias cannot be declared at block level
-          template<typename> class CastOperation = Containers::Expressions::Cast< ResultType >::template Operation,
+          typename CastOperation = typename Cast< ResultType >::Operation,
           typename = void >
 auto
 cast( const ET1& a )
@@ -749,7 +745,7 @@ binaryOr( const ET1& a )
 // Output stream
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
+          typename Operation >
 std::ostream& operator<<( std::ostream& str, const BinaryExpressionTemplate< T1, T2, Operation >& expression )
 {
    str << "[ ";
@@ -760,7 +756,7 @@ std::ostream& operator<<( std::ostream& str, const BinaryExpressionTemplate< T1,
 }
 
 template< typename T,
-          template< typename > class Operation >
+          typename Operation >
 std::ostream& operator<<( std::ostream& str, const UnaryExpressionTemplate< T, Operation >& expression )
 {
    str << "[ ";
@@ -875,7 +871,7 @@ using Containers::binaryOr;
 template< typename Vector,
    typename T1,
    typename T2,
-   template< typename, typename > class Operation,
+   typename Operation,
    typename Reduction,
    typename Result >
 Result evaluateAndReduce( Vector& lhs,
@@ -894,7 +890,7 @@ Result evaluateAndReduce( Vector& lhs,
 
 template< typename Vector,
    typename T1,
-   template< typename > class Operation,
+   typename Operation,
    typename Reduction,
    typename Result >
 Result evaluateAndReduce( Vector& lhs,
@@ -916,7 +912,7 @@ Result evaluateAndReduce( Vector& lhs,
 template< typename Vector,
    typename T1,
    typename T2,
-   template< typename, typename > class Operation,
+   typename Operation,
    typename Reduction,
    typename Result >
 Result addAndReduce( Vector& lhs,
@@ -939,7 +935,7 @@ Result addAndReduce( Vector& lhs,
 
 template< typename Vector,
    typename T1,
-   template< typename > class Operation,
+   typename Operation,
    typename Reduction,
    typename Result >
 Result addAndReduce( Vector& lhs,
@@ -965,7 +961,7 @@ Result addAndReduce( Vector& lhs,
 template< typename Vector,
    typename T1,
    typename T2,
-   template< typename, typename > class Operation,
+   typename Operation,
    typename Reduction,
    typename Result >
 Result addAndReduceAbs( Vector& lhs,
@@ -988,7 +984,7 @@ Result addAndReduceAbs( Vector& lhs,
 
 template< typename Vector,
    typename T1,
-   template< typename > class Operation,
+   typename Operation,
    typename Reduction,
    typename Result >
 Result addAndReduceAbs( Vector& lhs,

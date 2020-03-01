@@ -25,25 +25,25 @@ namespace Containers {
 namespace Expressions {
 
 template< typename T1,
-          template< typename > class Operation >
+          typename Operation >
 struct StaticUnaryExpressionTemplate;
 
 template< typename T1,
-          template< typename > class Operation >
+          typename Operation >
 struct HasEnabledStaticExpressionTemplates< StaticUnaryExpressionTemplate< T1, Operation > >
 : std::true_type
 {};
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation,
+          typename Operation,
           ExpressionVariableType T1Type = getExpressionVariableType< T1, T2 >(),
           ExpressionVariableType T2Type = getExpressionVariableType< T2, T1 >() >
 struct StaticBinaryExpressionTemplate;
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation,
+          typename Operation,
           ExpressionVariableType T1Type,
           ExpressionVariableType T2Type >
 struct HasEnabledStaticExpressionTemplates< StaticBinaryExpressionTemplate< T1, T2, Operation, T1Type, T2Type > >
@@ -55,12 +55,11 @@ struct HasEnabledStaticExpressionTemplates< StaticBinaryExpressionTemplate< T1, 
 // Static binary expression template
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
+          typename Operation >
 struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, VectorExpressionVariable >
 {
    using VectorOperandType = T1;
-   using RealType = decltype( Operation< typename T1::RealType, typename T2::RealType >::
-                              evaluate( std::declval<T1>()[0], std::declval<T2>()[0] ) );
+   using RealType = decltype( Operation::evaluate( std::declval<T1>()[0], std::declval<T2>()[0] ) );
 
    static_assert( IsStaticArrayType< T1 >::value,
                   "Left-hand side operand of static expression is not static, i.e. based on static vector." );
@@ -78,7 +77,7 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariab
    __cuda_callable__
    RealType operator[]( const int i ) const
    {
-      return Operation< typename T1::RealType, typename T2::RealType >::evaluate( op1[ i ], op2[ i ] );
+      return Operation::evaluate( op1[ i ], op2[ i ] );
    }
 
    __cuda_callable__
@@ -106,15 +105,14 @@ protected:
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
+          typename Operation >
 struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, ArithmeticVariable  >
 {
    static_assert( IsStaticArrayType< T1 >::value,
                   "Left-hand side operand of static expression is not static, i.e. based on static vector." );
 
    using VectorOperandType = T1;
-   using RealType = decltype( Operation< typename T1::RealType, T2 >::
-                              evaluate( std::declval<T1>()[0], std::declval<T2>() ) );
+   using RealType = decltype( Operation::evaluate( std::declval<T1>()[0], std::declval<T2>() ) );
 
    static constexpr int getSize() { return T1::getSize(); };
 
@@ -125,7 +123,7 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariab
    __cuda_callable__
    RealType operator[]( const int i ) const
    {
-      return Operation< typename T1::RealType, T2 >::evaluate( op1[ i ], op2 );
+      return Operation::evaluate( op1[ i ], op2 );
    }
 
    __cuda_callable__
@@ -153,15 +151,14 @@ protected:
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
+          typename Operation >
 struct StaticBinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorExpressionVariable  >
 {
    static_assert( IsStaticArrayType< T2 >::value,
                   "Right-hand side operand of static expression is not static, i.e. based on static vector." );
 
    using VectorOperandType = T2;
-   using RealType = decltype( Operation< T1, typename T2::RealType >::
-                              evaluate( std::declval<T1>(), std::declval<T2>()[0] ) );
+   using RealType = decltype( Operation::evaluate( std::declval<T1>(), std::declval<T2>()[0] ) );
 
    static constexpr int getSize() { return T2::getSize(); };
 
@@ -172,7 +169,7 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, Ve
    __cuda_callable__
    RealType operator[]( const int i ) const
    {
-      return Operation< T1, typename T2::RealType >::evaluate( op1, op2[ i ] );
+      return Operation::evaluate( op1, op2[ i ] );
    }
 
    __cuda_callable__
@@ -201,12 +198,11 @@ protected:
 ////
 // Static unary expression template
 template< typename T1,
-          template< typename > class Operation >
+          typename Operation >
 struct StaticUnaryExpressionTemplate
 {
    using VectorOperandType = T1;
-   using RealType = decltype( Operation< typename T1::RealType >::
-                              evaluate( std::declval<T1>()[0] ) );
+   using RealType = decltype( Operation::evaluate( std::declval<T1>()[0] ) );
 
    static constexpr int getSize() { return T1::getSize(); };
 
@@ -217,7 +213,7 @@ struct StaticUnaryExpressionTemplate
    __cuda_callable__
    RealType operator[]( const int i ) const
    {
-      return Operation< typename T1::RealType >::evaluate( operand[ i ] );
+      return Operation::evaluate( operand[ i ] );
    }
 
    __cuda_callable__
@@ -666,7 +662,7 @@ template< typename ResultType,
           typename ET1,
           typename..., typename = EnableIfStaticUnaryExpression_t< ET1 >,
           // workaround: templated type alias cannot be declared at block level
-          template<typename> class CastOperation = Containers::Expressions::Cast< ResultType >::template Operation >
+          typename CastOperation = typename Cast< ResultType >::Operation >
 __cuda_callable__
 auto
 cast( const ET1& a )
@@ -818,7 +814,7 @@ binaryOr( const ET1& a )
 // Output stream
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
+          typename Operation >
 std::ostream& operator<<( std::ostream& str, const StaticBinaryExpressionTemplate< T1, T2, Operation >& expression )
 {
    str << "[ ";
@@ -829,7 +825,7 @@ std::ostream& operator<<( std::ostream& str, const StaticBinaryExpressionTemplat
 }
 
 template< typename T,
-          template< typename > class Operation >
+          typename Operation >
 std::ostream& operator<<( std::ostream& str, const StaticUnaryExpressionTemplate< T, Operation >& expression )
 {
    str << "[ ";
@@ -944,7 +940,7 @@ using Containers::binaryOr;
 template< typename Vector,
    typename T1,
    typename T2,
-   template< typename, typename > class Operation,
+   typename Operation,
    typename Reduction,
    typename Result >
 __cuda_callable__
@@ -961,7 +957,7 @@ Result evaluateAndReduce( Vector& lhs,
 
 template< typename Vector,
    typename T1,
-   template< typename > class Operation,
+   typename Operation,
    typename Reduction,
    typename Result >
 __cuda_callable__
@@ -981,7 +977,7 @@ Result evaluateAndReduce( Vector& lhs,
 template< typename Vector,
    typename T1,
    typename T2,
-   template< typename, typename > class Operation,
+   typename Operation,
    typename Reduction,
    typename Result >
 __cuda_callable__
@@ -1001,7 +997,7 @@ Result addAndReduce( Vector& lhs,
 
 template< typename Vector,
    typename T1,
-   template< typename > class Operation,
+   typename Operation,
    typename Reduction,
    typename Result >
 __cuda_callable__
@@ -1024,7 +1020,7 @@ Result addAndReduce( Vector& lhs,
 template< typename Vector,
    typename T1,
    typename T2,
-   template< typename, typename > class Operation,
+   typename Operation,
    typename Reduction,
    typename Result >
 __cuda_callable__
@@ -1044,7 +1040,7 @@ Result addAndReduceAbs( Vector& lhs,
 
 template< typename Vector,
    typename T1,
-   template< typename > class Operation,
+   typename Operation,
    typename Reduction,
    typename Result >
 __cuda_callable__

@@ -73,7 +73,7 @@ public:
     */
    template< typename T1,
              typename T2,
-             template< typename, typename > class Operation >
+             typename Operation >
    __cuda_callable__
    StaticVector( const Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& expr );
 
@@ -83,7 +83,7 @@ public:
     * \param expr is unary expression
     */
    template< typename T,
-             template< typename > class Operation >
+             typename Operation >
    __cuda_callable__
    StaticVector( const Expressions::StaticUnaryExpressionTemplate< T, Operation >& expr );
 

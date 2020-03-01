@@ -22,11 +22,11 @@ namespace Expressions {
 ////
 // Distributed unary expression template
 template< typename T1,
-          template< typename > class Operation >
+          typename Operation >
 struct DistributedUnaryExpressionTemplate;
 
 template< typename T1,
-          template< typename > class Operation >
+          typename Operation >
 struct HasEnabledDistributedExpressionTemplates< DistributedUnaryExpressionTemplate< T1, Operation > >
 : std::true_type
 {};
@@ -35,7 +35,7 @@ struct HasEnabledDistributedExpressionTemplates< DistributedUnaryExpressionTempl
 // Distributed binary expression template
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation,
+          typename Operation,
           ExpressionVariableType T1Type = getExpressionVariableType< T1, T2 >(),
           ExpressionVariableType T2Type = getExpressionVariableType< T2, T1 >() >
 struct DistributedBinaryExpressionTemplate
@@ -43,7 +43,7 @@ struct DistributedBinaryExpressionTemplate
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation,
+          typename Operation,
           ExpressionVariableType T1Type,
           ExpressionVariableType T2Type >
 struct HasEnabledDistributedExpressionTemplates< DistributedBinaryExpressionTemplate< T1, T2, Operation, T1Type, T2Type > >
@@ -52,11 +52,10 @@ struct HasEnabledDistributedExpressionTemplates< DistributedBinaryExpressionTemp
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
+          typename Operation >
 struct DistributedBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, VectorExpressionVariable >
 {
-   using RealType = decltype( Operation< typename T1::RealType, typename T2::RealType >::
-                              evaluate( std::declval<T1>()[0], std::declval<T2>()[0] ) );
+   using RealType = decltype( Operation::evaluate( std::declval<T1>()[0], std::declval<T2>()[0] ) );
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
    using CommunicatorType = typename T1::CommunicatorType;
@@ -121,11 +120,10 @@ protected:
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
+          typename Operation >
 struct DistributedBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, ArithmeticVariable >
 {
-   using RealType = decltype( Operation< typename T1::RealType, T2 >::
-                              evaluate( std::declval<T1>()[0], std::declval<T2>() ) );
+   using RealType = decltype( Operation::evaluate( std::declval<T1>()[0], std::declval<T2>() ) );
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
    using CommunicatorType = typename T1::CommunicatorType;
@@ -175,11 +173,10 @@ protected:
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
+          typename Operation >
 struct DistributedBinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorExpressionVariable >
 {
-   using RealType = decltype( Operation< T1, typename T2::RealType >::
-                              evaluate( std::declval<T1>(), std::declval<T2>()[0] ) );
+   using RealType = decltype( Operation::evaluate( std::declval<T1>(), std::declval<T2>()[0] ) );
    using DeviceType = typename T2::DeviceType;
    using IndexType = typename T2::IndexType;
    using CommunicatorType = typename T2::CommunicatorType;
@@ -230,11 +227,10 @@ protected:
 ////
 // Distributed unary expression template
 template< typename T1,
-          template< typename > class Operation >
+          typename Operation >
 struct DistributedUnaryExpressionTemplate
 {
-   using RealType = decltype( Operation< typename T1::RealType >::
-                              evaluate( std::declval<T1>()[0] ) );
+   using RealType = decltype( Operation::evaluate( std::declval<T1>()[0] ) );
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
    using CommunicatorType = typename T1::CommunicatorType;
@@ -667,7 +663,7 @@ template< typename ResultType,
           typename ET1,
           typename..., typename = EnableIfDistributedUnaryExpression_t< ET1 >,
           // workaround: templated type alias cannot be declared at block level
-          template<typename> class CastOperation = Containers::Expressions::Cast< ResultType >::template Operation,
+          typename CastOperation = typename Cast< ResultType >::Operation,
           typename = void, typename = void >
 auto
 cast( const ET1& a )
@@ -802,7 +798,7 @@ binaryAnd( const ET1& a )
 // Output stream
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
+          typename Operation >
 std::ostream& operator<<( std::ostream& str, const DistributedBinaryExpressionTemplate< T1, T2, Operation >& expression )
 {
    str << "[ ";
@@ -813,7 +809,7 @@ std::ostream& operator<<( std::ostream& str, const DistributedBinaryExpressionTe
 }
 
 template< typename T,
-          template< typename > class Operation >
+          typename Operation >
 std::ostream& operator<<( std::ostream& str, const DistributedUnaryExpressionTemplate< T, Operation >& expression )
 {
    str << "[ ";
@@ -930,7 +926,7 @@ using Containers::binaryOr;
 template< typename Vector,
    typename T1,
    typename T2,
-   template< typename, typename > class Operation,
+   typename Operation,
    typename Reduction,
    typename Result >
 Result evaluateAndReduce( Vector& lhs,
@@ -949,7 +945,7 @@ Result evaluateAndReduce( Vector& lhs,
 
 template< typename Vector,
    typename T1,
-   template< typename > class Operation,
+   typename Operation,
    typename Reduction,
    typename Result >
 Result evaluateAndReduce( Vector& lhs,
@@ -971,7 +967,7 @@ Result evaluateAndReduce( Vector& lhs,
 template< typename Vector,
    typename T1,
    typename T2,
-   template< typename, typename > class Operation,
+   typename Operation,
    typename Reduction,
    typename Result >
 Result addAndReduce( Vector& lhs,
@@ -994,7 +990,7 @@ Result addAndReduce( Vector& lhs,
 
 template< typename Vector,
    typename T1,
-   template< typename > class Operation,
+   typename Operation,
    typename Reduction,
    typename Result >
 Result addAndReduce( Vector& lhs,
@@ -1020,7 +1016,7 @@ Result addAndReduce( Vector& lhs,
 template< typename Vector,
    typename T1,
    typename T2,
-   template< typename, typename > class Operation,
+   typename Operation,
    typename Reduction,
    typename Result >
 Result addAndReduceAbs( Vector& lhs,
@@ -1043,7 +1039,7 @@ Result addAndReduceAbs( Vector& lhs,
 
 template< typename Vector,
    typename T1,
-   template< typename > class Operation,
+   typename Operation,
    typename Reduction,
    typename Result >
 Result addAndReduceAbs( Vector& lhs,

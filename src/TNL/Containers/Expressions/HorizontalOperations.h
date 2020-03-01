@@ -16,9 +16,9 @@ namespace TNL {
 namespace Containers {
 namespace Expressions {
 
-template< typename T1, typename T2 >
 struct Addition
 {
+   template< typename T1, typename T2 >
    __cuda_callable__
    static auto evaluate( const T1& a, const T2& b ) -> decltype( a + b )
    {
@@ -26,9 +26,9 @@ struct Addition
    }
 };
 
-template< typename T1, typename T2 >
 struct Subtraction
 {
+   template< typename T1, typename T2 >
    __cuda_callable__
    static auto evaluate( const T1& a, const T2& b ) -> decltype( a - b )
    {
@@ -36,9 +36,9 @@ struct Subtraction
    }
 };
 
-template< typename T1, typename T2 >
 struct Multiplication
 {
+   template< typename T1, typename T2 >
    __cuda_callable__
    static auto evaluate( const T1& a, const T2& b ) -> decltype( a * b )
    {
@@ -46,9 +46,9 @@ struct Multiplication
    }
 };
 
-template< typename T1, typename T2 >
 struct Division
 {
+   template< typename T1, typename T2 >
    __cuda_callable__
    static auto evaluate( const T1& a, const T2& b ) -> decltype( a / b )
    {
@@ -56,9 +56,9 @@ struct Division
    }
 };
 
-template< typename T1, typename T2 >
 struct Min
 {
+   template< typename T1, typename T2 >
    __cuda_callable__
    static auto evaluate( const T1& a, const T2& b ) -> decltype( min( a , b ) )
    {
@@ -66,9 +66,9 @@ struct Min
    }
 };
 
-template< typename T1, typename T2 >
 struct Max
 {
+   template< typename T1, typename T2 >
    __cuda_callable__
    static auto evaluate( const T1& a, const T2& b ) -> decltype( max( a, b ) )
    {
@@ -76,9 +76,9 @@ struct Max
    }
 };
 
-template< typename T1 >
 struct Minus
 {
+   template< typename T1 >
    __cuda_callable__
    static auto evaluate( const T1& a ) -> decltype( -a )
    {
@@ -86,9 +86,9 @@ struct Minus
    }
 };
 
-template< typename T1 >
 struct Abs
 {
+   template< typename T1 >
    __cuda_callable__
    static auto evaluate( const T1& a ) -> decltype( abs( a ) )
    {
@@ -96,9 +96,9 @@ struct Abs
    }
 };
 
-template< typename T1, typename T2 >
 struct Pow
 {
+   template< typename T1, typename T2 >
    __cuda_callable__
    static auto evaluate( const T1& a, const T2& exp ) -> decltype( pow( a, exp ) )
    {
@@ -106,9 +106,9 @@ struct Pow
    }
 };
 
-template< typename T1 >
 struct Exp
 {
+   template< typename T1 >
    __cuda_callable__
    static auto evaluate( const T1& a ) -> decltype( exp( a ) )
    {
@@ -116,9 +116,9 @@ struct Exp
    }
 };
 
-template< typename T1 >
 struct Sqrt
 {
+   template< typename T1 >
    __cuda_callable__
    static auto evaluate( const T1& a ) -> decltype( sqrt( a ) )
    {
@@ -126,9 +126,9 @@ struct Sqrt
    }
 };
 
-template< typename T1 >
 struct Cbrt
 {
+   template< typename T1 >
    __cuda_callable__
    static auto evaluate( const T1& a ) -> decltype( cbrt( a ) )
    {
@@ -136,9 +136,9 @@ struct Cbrt
    }
 };
 
-template< typename T1 >
 struct Log
 {
+   template< typename T1 >
    __cuda_callable__
    static auto evaluate( const T1& a ) -> decltype( log( a ) )
    {
@@ -146,9 +146,9 @@ struct Log
    }
 };
 
-template< typename T1 >
 struct Log10
 {
+   template< typename T1 >
    __cuda_callable__
    static auto evaluate( const T1& a ) -> decltype( log10( a ) )
    {
@@ -156,9 +156,9 @@ struct Log10
    }
 };
 
-template< typename T1 >
 struct Log2
 {
+   template< typename T1 >
    __cuda_callable__
    static auto evaluate( const T1& a ) -> decltype( log2( a ) )
    {
@@ -166,9 +166,9 @@ struct Log2
    }
 };
 
-template< typename T1 >
 struct Sin
 {
+   template< typename T1 >
    __cuda_callable__
    static auto evaluate( const T1& a ) -> decltype( sin( a ) )
    {
@@ -176,9 +176,9 @@ struct Sin
    }
 };
 
-template< typename T1 >
 struct Cos
 {
+   template< typename T1 >
    __cuda_callable__
    static auto evaluate( const T1& a ) -> decltype( cos( a ) )
    {
@@ -186,9 +186,9 @@ struct Cos
    }
 };
 
-template< typename T1 >
 struct Tan
 {
+   template< typename T1 >
    __cuda_callable__
    static auto evaluate( const T1& a ) -> decltype( tan( a ) )
    {
@@ -196,9 +196,9 @@ struct Tan
    }
 };
 
-template< typename T1 >
 struct Asin
 {
+   template< typename T1 >
    __cuda_callable__
    static auto evaluate( const T1& a ) -> decltype( asin( a ) )
    {
@@ -206,9 +206,9 @@ struct Asin
    }
 };
 
-template< typename T1 >
 struct Acos
 {
+   template< typename T1 >
    __cuda_callable__
    static auto evaluate( const T1& a ) -> decltype( acos( a ) )
    {
@@ -216,9 +216,9 @@ struct Acos
    }
 };
 
-template< typename T1 >
 struct Atan
 {
+   template< typename T1 >
    __cuda_callable__
    static auto evaluate( const T1& a ) -> decltype( atan( a ) )
    {
@@ -226,9 +226,9 @@ struct Atan
    }
 };
 
-template< typename T1 >
 struct Sinh
 {
+   template< typename T1 >
    __cuda_callable__
    static auto evaluate( const T1& a ) -> decltype( sinh( a ) )
    {
@@ -236,9 +236,9 @@ struct Sinh
    }
 };
 
-template< typename T1 >
 struct Cosh
 {
+   template< typename T1 >
    __cuda_callable__
    static auto evaluate( const T1& a ) -> decltype( cosh( a ) )
    {
@@ -246,9 +246,9 @@ struct Cosh
    }
 };
 
-template< typename T1 >
 struct Tanh
 {
+   template< typename T1 >
    __cuda_callable__
    static auto evaluate( const T1& a ) -> decltype( tanh( a ) )
    {
@@ -256,9 +256,9 @@ struct Tanh
    }
 };
 
-template< typename T1 >
 struct Asinh
 {
+   template< typename T1 >
    __cuda_callable__
    static auto evaluate( const T1& a ) -> decltype( asinh( a ) )
    {
@@ -266,9 +266,9 @@ struct Asinh
    }
 };
 
-template< typename T1 >
 struct Acosh
 {
+   template< typename T1 >
    __cuda_callable__
    static auto evaluate( const T1& a ) -> decltype( acosh( a ) )
    {
@@ -276,9 +276,9 @@ struct Acosh
    }
 };
 
-template< typename T1 >
 struct Atanh
 {
+   template< typename T1 >
    __cuda_callable__
    static auto evaluate( const T1& a ) -> decltype( atanh( a ) )
    {
@@ -286,9 +286,9 @@ struct Atanh
    }
 };
 
-template< typename T1 >
 struct Floor
 {
+   template< typename T1 >
    __cuda_callable__
    static auto evaluate( const T1& a ) -> decltype( floor( a ) )
    {
@@ -296,9 +296,9 @@ struct Floor
    }
 };
 
-template< typename T1 >
 struct Ceil
 {
+   template< typename T1 >
    __cuda_callable__
    static auto evaluate( const T1& a ) -> decltype( ceil( a ) )
    {
@@ -306,9 +306,9 @@ struct Ceil
    }
 };
 
-template< typename T1 >
 struct Sign
 {
+   template< typename T1 >
    __cuda_callable__
    static auto evaluate( const T1& a ) -> decltype( sign( a ) )
    {
@@ -319,9 +319,9 @@ struct Sign
 template< typename ResultType >
 struct Cast
 {
-   template< typename T1 >
    struct Operation
    {
+      template< typename T1 >
       __cuda_callable__
       static auto evaluate( const T1& a ) -> ResultType
       {
