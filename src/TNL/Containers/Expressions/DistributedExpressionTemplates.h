@@ -65,10 +65,12 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionV
                                                         typename T2::ConstLocalViewType,
                                                         Operation >;
 
+   static_assert( HasEnabledDistributedExpressionTemplates< T1 >::value,
+                  "Invalid operand in distributed binary expression templates - distributed expression templates are not enabled for the left operand." );
+   static_assert( HasEnabledDistributedExpressionTemplates< T2 >::value,
+                  "Invalid operand in distributed binary expression templates - distributed expression templates are not enabled for the right operand." );
    static_assert( std::is_same< typename T1::DeviceType, typename T2::DeviceType >::value,
                   "Attempt to mix operands which have different DeviceType." );
-   static_assert( IsStaticArrayType< T1 >::value == IsStaticArrayType< T2 >::value,
-                  "Attempt to mix static and non-static operands in binary expression templates." );
 
    DistributedBinaryExpressionTemplate( const T1& a, const T2& b )
    : op1( a ), op2( b )
@@ -131,6 +133,9 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionV
    using LocalRangeType = typename T1::LocalRangeType;
    using ConstLocalViewType = BinaryExpressionTemplate< typename T1::ConstLocalViewType, T2, Operation >;
 
+   static_assert( HasEnabledDistributedExpressionTemplates< T1 >::value,
+                  "Invalid operand in distributed binary expression templates - distributed expression templates are not enabled for the left operand." );
+
    DistributedBinaryExpressionTemplate( const T1& a, const T2& b )
    : op1( a ), op2( b ) {}
 
@@ -183,6 +188,9 @@ struct DistributedBinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariabl
    using CommunicationGroup = typename CommunicatorType::CommunicationGroup;
    using LocalRangeType = typename T2::LocalRangeType;
    using ConstLocalViewType = BinaryExpressionTemplate< T1, typename T2::ConstLocalViewType, Operation >;
+
+   static_assert( HasEnabledDistributedExpressionTemplates< T2 >::value,
+                  "Invalid operand in distributed binary expression templates - distributed expression templates are not enabled for the right operand." );
 
    DistributedBinaryExpressionTemplate( const T1& a, const T2& b )
    : op1( a ), op2( b ) {}
@@ -237,6 +245,9 @@ struct DistributedUnaryExpressionTemplate
    using CommunicationGroup = typename CommunicatorType::CommunicationGroup;
    using LocalRangeType = typename T1::LocalRangeType;
    using ConstLocalViewType = UnaryExpressionTemplate< typename T1::ConstLocalViewType, Operation >;
+
+   static_assert( HasEnabledDistributedExpressionTemplates< T1 >::value,
+                  "Invalid operand in distributed unary expression templates - distributed expression templates are not enabled for the operand." );
 
    DistributedUnaryExpressionTemplate( const T1& a )
    : operand( a ) {}

@@ -65,6 +65,10 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariab
                   "Left-hand side operand of static expression is not static, i.e. based on static vector." );
    static_assert( IsStaticArrayType< T2 >::value,
                   "Right-hand side operand of static expression is not static, i.e. based on static vector." );
+   static_assert( HasEnabledStaticExpressionTemplates< T1 >::value,
+                  "Invalid operand in static binary expression templates - static expression templates are not enabled for the left operand." );
+   static_assert( HasEnabledStaticExpressionTemplates< T2 >::value,
+                  "Invalid operand in static binary expression templates - static expression templates are not enabled for the right operand." );
    static_assert( T1::getSize() == T2::getSize(),
                   "Attempt to mix static operands with different sizes." );
 
@@ -108,11 +112,13 @@ template< typename T1,
           typename Operation >
 struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, ArithmeticVariable  >
 {
-   static_assert( IsStaticArrayType< T1 >::value,
-                  "Left-hand side operand of static expression is not static, i.e. based on static vector." );
-
    using VectorOperandType = T1;
    using RealType = decltype( Operation::evaluate( std::declval<T1>()[0], std::declval<T2>() ) );
+
+   static_assert( IsStaticArrayType< T1 >::value,
+                  "Left-hand side operand of static expression is not static, i.e. based on static vector." );
+   static_assert( HasEnabledStaticExpressionTemplates< T1 >::value,
+                  "Invalid operand in static binary expression templates - static expression templates are not enabled for the left operand." );
 
    static constexpr int getSize() { return T1::getSize(); };
 
@@ -154,11 +160,13 @@ template< typename T1,
           typename Operation >
 struct StaticBinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorExpressionVariable  >
 {
-   static_assert( IsStaticArrayType< T2 >::value,
-                  "Right-hand side operand of static expression is not static, i.e. based on static vector." );
-
    using VectorOperandType = T2;
    using RealType = decltype( Operation::evaluate( std::declval<T1>(), std::declval<T2>()[0] ) );
+
+   static_assert( IsStaticArrayType< T2 >::value,
+                  "Right-hand side operand of static expression is not static, i.e. based on static vector." );
+   static_assert( HasEnabledStaticExpressionTemplates< T2 >::value,
+                  "Invalid operand in static binary expression templates - static expression templates are not enabled for the right operand." );
 
    static constexpr int getSize() { return T2::getSize(); };
 
@@ -203,6 +211,11 @@ struct StaticUnaryExpressionTemplate
 {
    using VectorOperandType = T1;
    using RealType = decltype( Operation::evaluate( std::declval<T1>()[0] ) );
+
+   static_assert( IsStaticArrayType< T1 >::value,
+                  "The operand of static expression is not static, i.e. based on static vector." );
+   static_assert( HasEnabledStaticExpressionTemplates< T1 >::value,
+                  "Invalid operand in static unary expression templates - static expression templates are not enabled for the operand." );
 
    static constexpr int getSize() { return T1::getSize(); };
 

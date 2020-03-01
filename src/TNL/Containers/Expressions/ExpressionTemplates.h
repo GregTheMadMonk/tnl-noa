@@ -63,10 +63,12 @@ struct BinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, Ve
    using IndexType = typename T1::IndexType;
    using ConstViewType = BinaryExpressionTemplate;
 
+   static_assert( HasEnabledExpressionTemplates< T1 >::value,
+                  "Invalid operand in binary expression templates - expression templates are not enabled for the left operand." );
+   static_assert( HasEnabledExpressionTemplates< T2 >::value,
+                  "Invalid operand in binary expression templates - expression templates are not enabled for the right operand." );
    static_assert( std::is_same< typename T1::DeviceType, typename T2::DeviceType >::value,
                   "Attempt to mix operands which have different DeviceType." );
-   static_assert( IsStaticArrayType< T1 >::value == IsStaticArrayType< T2 >::value,
-                  "Attempt to mix static and non-static operands in binary expression templates." );
 
    BinaryExpressionTemplate( const T1& a, const T2& b )
    : op1( a.getConstView() ), op2( b.getConstView() )
@@ -112,6 +114,9 @@ struct BinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, Ar
    using IndexType = typename T1::IndexType;
    using ConstViewType = BinaryExpressionTemplate;
 
+   static_assert( HasEnabledExpressionTemplates< T1 >::value,
+                  "Invalid operand in binary expression templates - expression templates are not enabled for the left operand." );
+
    BinaryExpressionTemplate( const T1& a, const T2& b )
    : op1( a.getConstView() ), op2( b ) {}
 
@@ -151,6 +156,9 @@ struct BinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorEx
    using DeviceType = typename T2::DeviceType;
    using IndexType = typename T2::IndexType;
    using ConstViewType = BinaryExpressionTemplate;
+
+   static_assert( HasEnabledExpressionTemplates< T2 >::value,
+                  "Invalid operand in binary expression templates - expression templates are not enabled for the right operand." );
 
    BinaryExpressionTemplate( const T1& a, const T2& b )
    : op1( a ), op2( b.getConstView() ) {}
@@ -192,6 +200,9 @@ struct UnaryExpressionTemplate
    using DeviceType = typename T1::DeviceType;
    using IndexType = typename T1::IndexType;
    using ConstViewType = UnaryExpressionTemplate;
+
+   static_assert( HasEnabledExpressionTemplates< T1 >::value,
+                  "Invalid operand in unary expression templates - expression templates are not enabled for the operand." );
 
    UnaryExpressionTemplate( const T1& a )
    : operand( a.getConstView() ) {}
