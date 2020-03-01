@@ -63,7 +63,6 @@ do
         --with-tools=*                   ) WITH_TOOLS="${option#*=}" ;;
         --with-benchmarks=*              ) WITH_BENCHMARKS="${option#*=}" ;;
         --with-python=*                  ) WITH_PYTHON="${option#*=}" ;;
-        --with-cxx-flags=*               ) WITH_CXX_FLAGS="${option#*=}" ;;
         --with-ci-flags=*                ) WITH_CI_FLAGS="${option#*=}" ;;
         *                                )
            echo "Unknown option ${option}. Use --help for more information."
@@ -94,8 +93,6 @@ if [[ ${HELP} == "yes" ]]; then
     echo "   --with-tools=yes/no                   Compile the 'src/Tools' directory. 'yes' by default."
     echo "   --with-python=yes/no                  Compile the Python bindings. 'yes' by default."
     echo "   --with-benchmarks=yes/no              Compile the 'src/Benchmarks' directory. 'yes' by default."
-    echo "   --with-cxx-flags=FLAGS                Additional flags for C++ compiler."
-    echo "   --with-cxx-flags=yes/no               Turns on more strict C++ flags for CI. 'no' by default."
     echo "   --cmake=CMAKE                         Path to cmake. 'cmake' by default."
     echo "   --verbose                             It enables verbose build."
     echo "   --root-dir=PATH                       Path to the TNL source code root dir."
@@ -147,7 +144,6 @@ cmake_command=(
          -DWITH_TOOLS=${WITH_TOOLS}
          -DWITH_PYTHON=${WITH_PYTHON}
          -DWITH_BENCHMARKS=${WITH_BENCHMARKS}
-         -DWITH_CXX_FLAGS=${WITH_CXX_FLAGS}
          -DWITH_CI_FLAGS=${WITH_CI_FLAGS}
          -DDCMTK_DIR=${DCMTK_DIR}
 )
