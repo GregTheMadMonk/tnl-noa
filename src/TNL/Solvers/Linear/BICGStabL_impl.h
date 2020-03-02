@@ -102,7 +102,7 @@ solve( ConstVectorViewType b, VectorViewType x )
           */
          Matrices::MatrixOperations< DeviceType >::
             geam( size, j + 1,
-                  1.0, R.getData(), ldSize,
+                  (RealType) 1.0, R.getData(), ldSize,
                   -beta, U.getData(), ldSize,
                   U.getData(), ldSize );
 
@@ -121,7 +121,7 @@ solve( ConstVectorViewType b, VectorViewType x )
           */
          Matrices::MatrixOperations< DeviceType >::
             geam( size, j + 1,
-                  1.0, R.getData(), ldSize,
+                  (RealType) 1.0, R.getData(), ldSize,
                   -alpha, U.getData() + ldSize, ldSize,
                   R.getData(), ldSize );
 
@@ -206,18 +206,18 @@ solve( ConstVectorViewType b, VectorViewType x )
       g_2[ 0 ] = g_0[ 1 ];
       Matrices::MatrixOperations< DeviceType >::
          gemv( size, ell,
-               1.0, R.getData(), ldSize, g_2.getData(),
-               1.0, Traits::getLocalView( x ).getData() );
+               (RealType) 1.0, R.getData(), ldSize, g_2.getData(),
+               (RealType) 1.0, Traits::getLocalView( x ).getData() );
       // r_0 := r_0 - R_[1:ell] * g_1_[1:ell]
       Matrices::MatrixOperations< DeviceType >::
          gemv( size, ell,
-               -1.0, R.getData() + ldSize, ldSize, &g_1[ 1 ],
-               1.0, Traits::getLocalView( r_0 ).getData() );
+               (RealType) -1.0, R.getData() + ldSize, ldSize, &g_1[ 1 ],
+               (RealType) 1.0, Traits::getLocalView( r_0 ).getData() );
       // u_0 := u_0 - U_[1:ell] * g_0_[1:ell]
       Matrices::MatrixOperations< DeviceType >::
          gemv( size, ell,
-               -1.0, U.getData() + ldSize, ldSize, &g_0[ 1 ],
-               1.0, Traits::getLocalView( u_0 ).getData() );
+               (RealType) -1.0, U.getData() + ldSize, ldSize, &g_0[ 1 ],
+               (RealType) 1.0, Traits::getLocalView( u_0 ).getData() );
 
       if( exact_residue ) {
          /****

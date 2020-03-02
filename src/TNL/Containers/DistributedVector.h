@@ -134,8 +134,15 @@ public:
    void scan( IndexType begin = 0, IndexType end = 0 );
 };
 
+// Enable expression templates for DistributedVector
+namespace Expressions {
+   template< typename Real, typename Device, typename Index, typename Communicator >
+   struct HasEnabledDistributedExpressionTemplates< DistributedVector< Real, Device, Index, Communicator > >
+   : std::true_type
+   {};
+} // namespace Expressions
+
 } // namespace Containers
 } // namespace TNL
 
 #include <TNL/Containers/DistributedVector.hpp>
-#include <TNL/Containers/DistributedVectorExpressions.h>

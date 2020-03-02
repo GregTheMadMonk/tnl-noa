@@ -19,8 +19,8 @@ namespace Expressions {
 
 template< typename T1,
           typename T2,
-          ExpressionVariableType T1Type = ExpressionVariableTypeGetter< T1 >::value,
-          ExpressionVariableType T2Type = ExpressionVariableTypeGetter< T2 >::value >
+          ExpressionVariableType T1Type = getExpressionVariableType< T1, T2 >(),
+          ExpressionVariableType T2Type = getExpressionVariableType< T2, T1 >() >
 struct StaticComparison;
 
 /////

@@ -19,14 +19,18 @@ using namespace TNL;
 template< typename RealType, typename IndexType >
 bool setupGrid( const Config::ParameterContainer& parameters )
 {
-   String gridName = parameters. getParameter< String >( "grid-name" );
-   String outputFile = parameters. getParameter< String >( "output-file" );
-   int dimensions = parameters. getParameter< int >( "dimensions" );
-   if( dimensions == 1 )
+   const String gridName = parameters.getParameter< String >( "grid-name" );
+   const String outputFile = parameters.getParameter< String >( "output-file" );
+   const int dimension = parameters.getParameter< int >( "dimension" );
+   if( dimension == 1 )
    {
-      RealType originX = parameters. getParameter< double >( "origin-x" );
-      RealType proportionsX = parameters. getParameter< double >( "proportions-x" );
-      IndexType sizeX = parameters. getParameter< int >( "size-x" );
+      RealType originX = parameters.getParameter< double >( "origin-x" );
+      RealType proportionsX = parameters.getParameter< double >( "proportions-x" );
+      if( ! parameters.checkParameter( "size-x" ) ) {
+         std::cerr << "The parameter size-x is required when the grid dimension is 1." << std::endl;
+         return false;
+      }
+      IndexType sizeX = parameters.getParameter< int >( "size-x" );
 
       typedef Meshes::Grid< 1, RealType, Devices::Host, IndexType > GridType;
       typedef typename GridType::PointType PointType;
@@ -46,12 +50,16 @@ bool setupGrid( const Config::ParameterContainer& parameters )
          return false;
       }
    }
-   if( dimensions == 2 )
+   if( dimension == 2 )
    {
       RealType originX = parameters.getParameter< double >( "origin-x" );
       RealType originY = parameters.getParameter< double >( "origin-y" );
       RealType proportionsX = parameters.getParameter< double >( "proportions-x" );
       RealType proportionsY = parameters.getParameter< double >( "proportions-y" );
+      if( ! parameters.checkParameters( {"size-x", "size-y"} ) ) {
+         std::cerr << "The parameters size-x and size-y are required when the grid dimension is 2." << std::endl;
+         return false;
+      }
       IndexType sizeX = parameters.getParameter< int >( "size-x" );
       IndexType sizeY = parameters.getParameter< int >( "size-y" );
       typedef Meshes::Grid< 2, RealType, Devices::Host, IndexType > GridType;
@@ -84,17 +92,21 @@ bool setupGrid( const Config::ParameterContainer& parameters )
          return false;
       }
    }
-   if( dimensions == 3 )
+   if( dimension == 3 )
    {
-      RealType originX = parameters. getParameter< double >( "origin-x" );
-      RealType originY = parameters. getParameter< double >( "origin-y" );
-      RealType originZ = parameters. getParameter< double >( "origin-z" );
-      RealType proportionsX = parameters. getParameter< double >( "proportions-x" );
-      RealType proportionsY = parameters. getParameter< double >( "proportions-y" );
-      RealType proportionsZ = parameters. getParameter< double >( "proportions-z" );
-      IndexType sizeX = parameters. getParameter< int >( "size-x" );
-      IndexType sizeY = parameters. getParameter< int >( "size-y" );
-      IndexType sizeZ = parameters. getParameter< int >( "size-z" );
+      RealType originX = parameters.getParameter< double >( "origin-x" );
+      RealType originY = parameters.getParameter< double >( "origin-y" );
+      RealType originZ = parameters.getParameter< double >( "origin-z" );
+      RealType proportionsX = parameters.getParameter< double >( "proportions-x" );
+      RealType proportionsY = parameters.getParameter< double >( "proportions-y" );
+      RealType proportionsZ = parameters.getParameter< double >( "proportions-z" );
+      if( ! parameters.checkParameters( {"size-x", "size-y", "size-z"} ) ) {
+         std::cerr << "The parameters size-x, size-y and size-z are required when the grid dimension is 3." << std::endl;
+         return false;
+      }
+      IndexType sizeX = parameters.getParameter< int >( "size-x" );
+      IndexType sizeY = parameters.getParameter< int >( "size-y" );
+      IndexType sizeZ = parameters.getParameter< int >( "size-z" );
 
       typedef Meshes::Grid< 3, RealType, Devices::Host, IndexType > GridType;
       typedef typename GridType::PointType PointType;
@@ -115,7 +127,7 @@ bool setupGrid( const Config::ParameterContainer& parameters )
       }
       std::cout << "Setting dimensions to  ... " << grid.getDimensions() << std::endl;
       std::cout << "Writing the grid to the file " << outputFile << " .... ";      
-      
+
       try
       {
          grid.save( outputFile );
@@ -126,34 +138,34 @@ bool setupGrid( const Config::ParameterContainer& parameters )
          return false;
       }
    }
-  std::cout << "[ OK ] " << std::endl;
+   std::cout << "[ OK ] " << std::endl;
    return true;
 }
 
 template< typename RealType >
 bool resolveIndexType( const Config::ParameterContainer& parameters )
 {
-   const String& indexType = parameters. getParameter< String >( "index-type" );
-  std::cout << "Setting index type to  ... " << indexType << std::endl;
+   const String& indexType = parameters.getParameter< String >( "index-type" );
+   std::cout << "Setting index type to  ... " << indexType << std::endl;
    if( indexType == "int" )
       return setupGrid< RealType, int >( parameters );
    if( indexType == "long-int" )
       return setupGrid< RealType, long int >( parameters );
-   std::cerr << "The index type '" << indexType << "' is not defined. " << std::endl;
+   std::cerr << "The index type '" << indexType << "' is not defined." << std::endl;
    return false;
 }
 
 bool resolveRealType( const Config::ParameterContainer& parameters )
 {
-   String realType = parameters. getParameter< String >( "real-type" );
-  std::cout << "Setting real type to   ... " << realType << std::endl;
+   String realType = parameters.getParameter< String >( "real-type" );
+   std::cout << "Setting real type to   ... " << realType << std::endl;
    if( realType == "float" )
       return resolveIndexType< float >( parameters );
    if( realType == "double" )
       return resolveIndexType< double >( parameters );
    if( realType == "long-double" )
       return resolveIndexType< long double >( parameters );
-   std::cerr << "The real type '" << realType << "' is not supported. " << std::endl;
+   std::cerr << "The real type '" << realType << "' is not supported." << std::endl;
    return false;
 }
 

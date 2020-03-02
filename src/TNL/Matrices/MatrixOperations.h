@@ -46,13 +46,13 @@ public:
    template< typename RealType,
              typename IndexType >
    static void
-   gemv( const IndexType& m,
-         const IndexType& n,
-         const RealType& alpha,
+   gemv( const IndexType m,
+         const IndexType n,
+         const RealType alpha,
          const RealType* A,
-         const IndexType& lda,
+         const IndexType lda,
          const RealType* x,
-         const RealType& beta,
+         const RealType beta,
          RealType* y )
    {
       TNL_ASSERT_GT( m, 0, "m must be positive" );
@@ -164,16 +164,16 @@ public:
    template< typename RealType,
              typename IndexType >
    static void
-   geam( const IndexType& m,
-         const IndexType& n,
-         const RealType& alpha,
+   geam( const IndexType m,
+         const IndexType n,
+         const RealType alpha,
          const RealType* A,
-         const IndexType& lda,
-         const RealType& beta,
+         const IndexType lda,
+         const RealType beta,
          const RealType* B,
-         const IndexType& ldb,
+         const IndexType ldb,
          RealType* C,
-         const IndexType& ldc )
+         const IndexType ldc )
    {
       TNL_ASSERT_GT( m, 0, "m must be positive" );
       TNL_ASSERT_GT( n, 0, "n must be positive" );
@@ -326,13 +326,13 @@ public:
    template< typename RealType,
              typename IndexType >
    static void
-   gemv( const IndexType& m,
-         const IndexType& n,
-         const RealType& alpha,
+   gemv( const IndexType m,
+         const IndexType n,
+         const RealType alpha,
          const RealType* A,
-         const IndexType& lda,
+         const IndexType lda,
          const RealType* x,
-         const RealType& beta,
+         const RealType beta,
          RealType* y )
    {
       TNL_ASSERT( m <= lda, );
@@ -375,16 +375,16 @@ public:
    template< typename RealType,
              typename IndexType >
    static void
-   geam( const IndexType& m,
-         const IndexType& n,
-         const RealType& alpha,
+   geam( const IndexType m,
+         const IndexType n,
+         const RealType alpha,
          const RealType* A,
-         const IndexType& lda,
-         const RealType& beta,
+         const IndexType lda,
+         const RealType beta,
          const RealType* B,
-         const IndexType& ldb,
+         const IndexType ldb,
          RealType* C,
-         const IndexType& ldc )
+         const IndexType ldc )
    {
       TNL_ASSERT_GT( m, 0, "m must be positive" );
       TNL_ASSERT_GT( n, 0, "n must be positive" );

@@ -10,8 +10,7 @@
 
 #pragma once
 
-#include <TNL/TypeTraits.h>
-#include <TNL/Devices/Host.h>
+#include <TNL/Containers/Expressions/TypeTraits.h>
 
 namespace TNL {
 namespace Containers {
@@ -19,41 +18,24 @@ namespace Expressions {
 
 enum ExpressionVariableType { ArithmeticVariable, VectorExpressionVariable, OtherVariable };
 
-template< typename T,
-          bool IsArithmetic = std::is_arithmetic< T >::value,
-          bool IsVector = HasSubscriptOperator< T >::value >
-struct ExpressionVariableTypeGetter
+template< typename T, typename V = T >
+constexpr ExpressionVariableType
+getExpressionVariableType()
 {
-   static constexpr ExpressionVariableType value = OtherVariable;
-};
-
-template< typename T >
-struct  ExpressionVariableTypeGetter< T, true, false >
-{
-   static constexpr ExpressionVariableType value = ArithmeticVariable;
-};
-
-template< typename T >
-struct ExpressionVariableTypeGetter< T, false, true >
-{
-   static constexpr ExpressionVariableType value = VectorExpressionVariable;
-};
-
-////
-// Non-static expression templates might be passed on GPU, for example. In this
-// case, we cannot store ET operands using references but we need to make copies.
-template< typename T,
-          typename Device >
-struct OperandType
-{
-   using type = std::add_const_t< std::remove_reference_t< T > >;
-};
-
-template< typename T >
-struct OperandType< T, Devices::Host >
-{
-   using type = std::add_const_t< std::add_lvalue_reference_t< T > >;
-};
+   if( std::is_arithmetic< std::decay_t< T > >::value )
+      return ArithmeticVariable;
+   // vectors must be considered as an arithmetic type when used as RealType in another vector
+   if( IsArithmeticSubtype< T, V >::value )
+      return ArithmeticVariable;
+   if( HasEnabledExpressionTemplates< T >::value ||
+       HasEnabledStaticExpressionTemplates< T >::value ||
+       HasEnabledDistributedExpressionTemplates< T >::value
+   )
+      return VectorExpressionVariable;
+   if( IsArrayType< T >::value || IsStaticArrayType< T >::value )
+      return VectorExpressionVariable;
+   return OtherVariable;
+}
 
 } // namespace Expressions
 } // namespace Containers

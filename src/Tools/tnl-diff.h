@@ -394,8 +394,11 @@ bool computeDifferenceOfVectors( const MeshPointer& meshPointer, const Config::P
          //if( snapshotPeriod != 0.0 )
          outputFile << std::setw( 6 ) << ( i - half ) * snapshotPeriod << " ";
       }
-      Real l1Diff = meshPointer->getDifferenceLpNorm( v1, v2, 1.0 );
-      Real l2Diff = meshPointer->getDifferenceLpNorm( v1, v2, 2.0 );
+      Real cellVolume = meshPointer->getCellMeasure();
+//      Real l1Diff = meshPointer->getDifferenceLpNorm( v1, v2, 1.0 );
+      Real l1Diff = cellVolume * sum( abs( v1 - v2 ) );
+//      Real l2Diff = meshPointer->getDifferenceLpNorm( v1, v2, 2.0 );
+      Real l2Diff = cellVolume * std::sqrt( dot(v1 - v2, v1 - v2) );
       Real maxDiff = max( abs( v1 - v2 ) );
       if( snapshotPeriod != 0.0 )
       {

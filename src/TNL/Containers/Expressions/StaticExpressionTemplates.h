@@ -25,32 +25,28 @@ namespace Containers {
 namespace Expressions {
 
 template< typename T1,
-          template< typename > class Operation,
-          ExpressionVariableType T1Type = ExpressionVariableTypeGetter< T1 >::value >
-struct StaticUnaryExpressionTemplate
-{};
+          typename Operation >
+struct StaticUnaryExpressionTemplate;
 
 template< typename T1,
-          template< typename > class Operation,
-          ExpressionVariableType T1Type >
-struct IsExpressionTemplate< StaticUnaryExpressionTemplate< T1, Operation, T1Type > >
+          typename Operation >
+struct HasEnabledStaticExpressionTemplates< StaticUnaryExpressionTemplate< T1, Operation > >
 : std::true_type
 {};
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation,
-          ExpressionVariableType T1Type = ExpressionVariableTypeGetter< T1 >::value,
-          ExpressionVariableType T2Type = ExpressionVariableTypeGetter< T2 >::value >
-struct StaticBinaryExpressionTemplate
-{};
+          typename Operation,
+          ExpressionVariableType T1Type = getExpressionVariableType< T1, T2 >(),
+          ExpressionVariableType T2Type = getExpressionVariableType< T2, T1 >() >
+struct StaticBinaryExpressionTemplate;
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation,
+          typename Operation,
           ExpressionVariableType T1Type,
           ExpressionVariableType T2Type >
-struct IsExpressionTemplate< StaticBinaryExpressionTemplate< T1, T2, Operation, T1Type, T2Type > >
+struct HasEnabledStaticExpressionTemplates< StaticBinaryExpressionTemplate< T1, T2, Operation, T1Type, T2Type > >
 : std::true_type
 {};
 
@@ -59,16 +55,20 @@ struct IsExpressionTemplate< StaticBinaryExpressionTemplate< T1, T2, Operation, 
 // Static binary expression template
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
+          typename Operation >
 struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, VectorExpressionVariable >
 {
-   using RealType = decltype( Operation< typename T1::RealType, typename T2::RealType >::
-                              evaluate( std::declval<T1>()[0], std::declval<T2>()[0] ) );
+   using VectorOperandType = T1;
+   using RealType = decltype( Operation::evaluate( std::declval<T1>()[0], std::declval<T2>()[0] ) );
 
    static_assert( IsStaticArrayType< T1 >::value,
                   "Left-hand side operand of static expression is not static, i.e. based on static vector." );
    static_assert( IsStaticArrayType< T2 >::value,
                   "Right-hand side operand of static expression is not static, i.e. based on static vector." );
+   static_assert( HasEnabledStaticExpressionTemplates< T1 >::value,
+                  "Invalid operand in static binary expression templates - static expression templates are not enabled for the left operand." );
+   static_assert( HasEnabledStaticExpressionTemplates< T2 >::value,
+                  "Invalid operand in static binary expression templates - static expression templates are not enabled for the right operand." );
    static_assert( T1::getSize() == T2::getSize(),
                   "Attempt to mix static operands with different sizes." );
 
@@ -81,7 +81,7 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariab
    __cuda_callable__
    RealType operator[]( const int i ) const
    {
-      return Operation< typename T1::RealType, typename T2::RealType >::evaluate( op1[ i ], op2[ i ] );
+      return Operation::evaluate( op1[ i ], op2[ i ] );
    }
 
    __cuda_callable__
@@ -109,14 +109,16 @@ protected:
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
+          typename Operation >
 struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariable, ArithmeticVariable  >
 {
+   using VectorOperandType = T1;
+   using RealType = decltype( Operation::evaluate( std::declval<T1>()[0], std::declval<T2>() ) );
+
    static_assert( IsStaticArrayType< T1 >::value,
                   "Left-hand side operand of static expression is not static, i.e. based on static vector." );
-
-   using RealType = decltype( Operation< typename T1::RealType, T2 >::
-                              evaluate( std::declval<T1>()[0], std::declval<T2>() ) );
+   static_assert( HasEnabledStaticExpressionTemplates< T1 >::value,
+                  "Invalid operand in static binary expression templates - static expression templates are not enabled for the left operand." );
 
    static constexpr int getSize() { return T1::getSize(); };
 
@@ -127,7 +129,7 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariab
    __cuda_callable__
    RealType operator[]( const int i ) const
    {
-      return Operation< typename T1::RealType, T2 >::evaluate( op1[ i ], op2 );
+      return Operation::evaluate( op1[ i ], op2 );
    }
 
    __cuda_callable__
@@ -150,19 +152,21 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, VectorExpressionVariab
 
 protected:
    const T1& op1;
-   const T2& op2;
+   const T2 op2;
 };
 
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
+          typename Operation >
 struct StaticBinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, VectorExpressionVariable  >
 {
+   using VectorOperandType = T2;
+   using RealType = decltype( Operation::evaluate( std::declval<T1>(), std::declval<T2>()[0] ) );
+
    static_assert( IsStaticArrayType< T2 >::value,
                   "Right-hand side operand of static expression is not static, i.e. based on static vector." );
-
-   using RealType = decltype( Operation< T1, typename T2::RealType >::
-                              evaluate( std::declval<T1>(), std::declval<T2>()[0] ) );
+   static_assert( HasEnabledStaticExpressionTemplates< T2 >::value,
+                  "Invalid operand in static binary expression templates - static expression templates are not enabled for the right operand." );
 
    static constexpr int getSize() { return T2::getSize(); };
 
@@ -173,7 +177,7 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, Ve
    __cuda_callable__
    RealType operator[]( const int i ) const
    {
-      return Operation< T1, typename T2::RealType >::evaluate( op1, op2[ i ] );
+      return Operation::evaluate( op1, op2[ i ] );
    }
 
    __cuda_callable__
@@ -195,18 +199,23 @@ struct StaticBinaryExpressionTemplate< T1, T2, Operation, ArithmeticVariable, Ve
    }
 
 protected:
-   const T1& op1;
+   const T1 op1;
    const T2& op2;
 };
 
 ////
 // Static unary expression template
 template< typename T1,
-          template< typename > class Operation >
-struct StaticUnaryExpressionTemplate< T1, Operation, VectorExpressionVariable >
+          typename Operation >
+struct StaticUnaryExpressionTemplate
 {
-   using RealType = decltype( Operation< typename T1::RealType >::
-                              evaluate( std::declval<T1>()[0] ) );
+   using VectorOperandType = T1;
+   using RealType = decltype( Operation::evaluate( std::declval<T1>()[0] ) );
+
+   static_assert( IsStaticArrayType< T1 >::value,
+                  "The operand of static expression is not static, i.e. based on static vector." );
+   static_assert( HasEnabledStaticExpressionTemplates< T1 >::value,
+                  "Invalid operand in static unary expression templates - static expression templates are not enabled for the operand." );
 
    static constexpr int getSize() { return T1::getSize(); };
 
@@ -217,7 +226,7 @@ struct StaticUnaryExpressionTemplate< T1, Operation, VectorExpressionVariable >
    __cuda_callable__
    RealType operator[]( const int i ) const
    {
-      return Operation< typename T1::RealType >::evaluate( operand[ i ] );
+      return Operation::evaluate( operand[ i ] );
    }
 
    __cuda_callable__
@@ -246,1004 +255,570 @@ protected:
 
 ////
 // Binary expressions addition
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
+template< typename ET1, typename ET2,
+          typename..., typename = EnableIfStaticBinaryExpression_t< ET1, ET2 > >
 __cuda_callable__
 auto
-operator+( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-           const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
+operator+( const ET1& a, const ET2& b )
 {
-   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Addition >( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-__cuda_callable__
-auto
-operator+( const StaticBinaryExpressionTemplate< T1, T2, Operation >& a,
-           const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
-{
-   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Addition >( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-__cuda_callable__
-auto
-operator+( const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
-           const StaticBinaryExpressionTemplate< T1, T2, Operation >& b )
-{
-   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Addition >( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-__cuda_callable__
-auto
-operator+( const StaticUnaryExpressionTemplate< T1, Operation >& a,
-           const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& b )
-{
-   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Addition >( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-__cuda_callable__
-auto
-operator+( const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& a,
-           const StaticUnaryExpressionTemplate< T1, Operation >& b )
-{
-   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Addition >( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-__cuda_callable__
-auto
-operator+( const StaticUnaryExpressionTemplate< L1, LOperation >& a,
-           const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Addition >( a, b );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-__cuda_callable__
-auto
-operator+( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-           const StaticUnaryExpressionTemplate< R1, ROperation >& b )
-{
-   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Addition >( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-__cuda_callable__
-auto
-operator+( const StaticUnaryExpressionTemplate< L1,LOperation >& a,
-           const StaticUnaryExpressionTemplate< R1,ROperation >& b )
-{
-   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Addition >( a, b );
+   return StaticBinaryExpressionTemplate< ET1, ET2, Addition >( a, b );
 }
 
 ////
 // Binary expression subtraction
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
+template< typename ET1, typename ET2,
+          typename..., typename = EnableIfStaticBinaryExpression_t< ET1, ET2 > >
 __cuda_callable__
 auto
-operator-( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-           const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
+operator-( const ET1& a, const ET2& b )
 {
-   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Subtraction >( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-__cuda_callable__
-auto
-operator-( const StaticBinaryExpressionTemplate< T1, T2, Operation >& a,
-           const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
-{
-   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Subtraction >( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-__cuda_callable__
-auto
-operator-( const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
-           const StaticBinaryExpressionTemplate< T1, T2, Operation >& b )
-{
-   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Subtraction >( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-__cuda_callable__
-auto
-operator-( const StaticUnaryExpressionTemplate< T1, Operation >& a,
-           const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& b )
-{
-   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Subtraction >( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-__cuda_callable__
-auto
-operator-( const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& a,
-           const StaticUnaryExpressionTemplate< T1, Operation >& b )
-{
-   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Subtraction >( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-__cuda_callable__
-auto
-operator-( const StaticUnaryExpressionTemplate< L1, LOperation >& a,
-           const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Subtraction >( a, b );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-__cuda_callable__
-auto
-operator-( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-           const StaticUnaryExpressionTemplate< R1,ROperation >& b )
-{
-   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Subtraction >( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-__cuda_callable__
-auto
-operator-( const StaticUnaryExpressionTemplate< L1,LOperation >& a,
-           const StaticUnaryExpressionTemplate< R1,ROperation >& b )
-{
-   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Subtraction >( a, b );
+   return StaticBinaryExpressionTemplate< ET1, ET2, Subtraction >( a, b );
 }
 
 ////
 // Binary expression multiplication
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
+template< typename ET1, typename ET2,
+          typename..., typename = EnableIfStaticBinaryExpression_t< ET1, ET2 > >
 __cuda_callable__
 auto
-operator*( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-           const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
+operator*( const ET1& a, const ET2& b )
 {
-   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Multiplication >( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-__cuda_callable__
-auto
-operator*( const StaticBinaryExpressionTemplate< T1, T2, Operation >& a,
-           const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
-{
-   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Multiplication >( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-__cuda_callable__
-auto
-operator*( const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
-           const StaticBinaryExpressionTemplate< T1, T2, Operation >& b )
-{
-   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Multiplication >( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-__cuda_callable__
-auto
-operator*( const StaticUnaryExpressionTemplate< T1, Operation >& a,
-           const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& b )
-{
-   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Multiplication >( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-__cuda_callable__
-auto
-operator*( const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& a,
-           const StaticUnaryExpressionTemplate< T1, Operation >& b )
-{
-   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Multiplication >( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-__cuda_callable__
-auto
-operator*( const StaticUnaryExpressionTemplate< L1, LOperation >& a,
-           const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Multiplication >( a, b );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-__cuda_callable__
-auto
-operator*( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-           const StaticUnaryExpressionTemplate< R1, ROperation >& b )
-{
-   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Multiplication >( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-__cuda_callable__
-auto
-operator*( const StaticUnaryExpressionTemplate< L1,LOperation >& a,
-           const StaticUnaryExpressionTemplate< R1,ROperation >& b )
-{
-   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Multiplication >( a, b );
+   return StaticBinaryExpressionTemplate< ET1, ET2, Multiplication >( a, b );
 }
 
 ////
 // Binary expression division
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
+template< typename ET1, typename ET2,
+          typename..., typename = EnableIfStaticBinaryExpression_t< ET1, ET2 > >
 __cuda_callable__
 auto
-operator/( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-           const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
+operator/( const ET1& a, const ET2& b )
 {
-   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Division >( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-__cuda_callable__
-auto
-operator/( const StaticBinaryExpressionTemplate< T1, T2, Operation >& a,
-           const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
-{
-   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Division >( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-__cuda_callable__
-auto
-operator/( const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
-           const StaticBinaryExpressionTemplate< T1, T2, Operation >& b )
-{
-   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Division >( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-__cuda_callable__
-auto
-operator/( const StaticUnaryExpressionTemplate< T1, Operation >& a,
-           const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& b )
-{
-   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Division >( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-__cuda_callable__
-auto
-operator/( const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& a,
-           const StaticUnaryExpressionTemplate< T1, Operation >& b )
-{
-   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Division >( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-__cuda_callable__
-auto
-operator/( const StaticUnaryExpressionTemplate< L1, LOperation >& a,
-           const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Division >( a, b );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-__cuda_callable__
-auto
-operator/( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-           const StaticUnaryExpressionTemplate< R1,ROperation >& b )
-{
-   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Division >( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-__cuda_callable__
-auto
-operator/( const StaticUnaryExpressionTemplate< L1,LOperation >& a,
-           const StaticUnaryExpressionTemplate< R1,ROperation >& b )
-{
-   return StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Division >( a, b );
+   return StaticBinaryExpressionTemplate< ET1, ET2, Division >( a, b );
 }
 
 ////
 // Comparison operator ==
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
+template< typename ET1, typename ET2,
+          typename..., typename = EnableIfStaticBinaryExpression_t< ET1, ET2 > >
 __cuda_callable__
 bool
-operator==( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-            const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
+operator==( const ET1& a, const ET2& b )
 {
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::EQ( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-__cuda_callable__
-bool
-operator==( const StaticBinaryExpressionTemplate< T1, T2, Operation >& a,
-            const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::EQ( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-__cuda_callable__
-bool
-operator==( const StaticUnaryExpressionTemplate< T1, Operation >& a,
-            const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::EQ( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-__cuda_callable__
-bool
-operator==( const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
-            const StaticBinaryExpressionTemplate< T1, T2, Operation >& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::EQ( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-__cuda_callable__
-bool
-operator==( const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& a,
-            const StaticUnaryExpressionTemplate< T1, Operation >& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::EQ( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-__cuda_callable__
-bool
-operator==( const StaticUnaryExpressionTemplate< L1, LOperation >& a,
-            const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::EQ( a, b );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-__cuda_callable__
-bool
-operator==( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-            const StaticUnaryExpressionTemplate< R1,ROperation >& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::EQ( a, b );
+   return StaticComparison< ET1, ET2 >::EQ( a, b );
 }
 
 ////
 // Comparison operator !=
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
+template< typename ET1, typename ET2,
+          typename..., typename = EnableIfStaticBinaryExpression_t< ET1, ET2 > >
 __cuda_callable__
 bool
-operator!=( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-            const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
+operator!=( const ET1& a, const ET2& b )
 {
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::NE( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-__cuda_callable__
-bool
-operator!=( const StaticBinaryExpressionTemplate< T1, T2, Operation >& a,
-            const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::NE( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-__cuda_callable__
-bool
-operator!=( const StaticUnaryExpressionTemplate< L1, LOperation >& a,
-            const StaticUnaryExpressionTemplate< R1, ROperation >& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::NE( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-__cuda_callable__
-bool
-operator!=( const StaticUnaryExpressionTemplate< T1, Operation >& a,
-            const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::NE( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-__cuda_callable__
-bool
-operator!=( const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
-            const StaticBinaryExpressionTemplate< T1, T2, Operation >& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::NE( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-__cuda_callable__
-bool
-operator!=( const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& a,
-            const StaticUnaryExpressionTemplate< T1, Operation >& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::NE( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-__cuda_callable__
-bool
-operator!=( const StaticUnaryExpressionTemplate< L1, LOperation >& a,
-            const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::NE( a, b );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-__cuda_callable__
-bool
-operator!=( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-            const StaticUnaryExpressionTemplate< R1,ROperation >& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::NE( a, b );
+   return StaticComparison< ET1, ET2 >::NE( a, b );
 }
 
 ////
 // Comparison operator <
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
+template< typename ET1, typename ET2,
+          typename..., typename = EnableIfStaticBinaryExpression_t< ET1, ET2 > >
 __cuda_callable__
 bool
-operator<( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-           const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
+operator<( const ET1& a, const ET2& b )
 {
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LT( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-__cuda_callable__
-bool
-operator<( const StaticBinaryExpressionTemplate< T1, T2, Operation >& a,
-           const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LT( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-__cuda_callable__
-bool
-operator<( const StaticUnaryExpressionTemplate< L1, LOperation >& a,
-           const StaticUnaryExpressionTemplate< R1, ROperation >& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LT( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-__cuda_callable__
-bool
-operator<( const StaticUnaryExpressionTemplate< T1, Operation >& a,
-           const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LT( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-__cuda_callable__
-bool
-operator<( const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
-           const StaticBinaryExpressionTemplate< T1, T2, Operation >& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LT( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-__cuda_callable__
-bool
-operator<( const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& a,
-           const StaticUnaryExpressionTemplate< T1, Operation >& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LT( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-__cuda_callable__
-bool
-operator<( const StaticUnaryExpressionTemplate< L1, LOperation >& a,
-           const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LT( a, b );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-__cuda_callable__
-bool
-operator<( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-           const StaticUnaryExpressionTemplate< R1,ROperation >& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LT( a, b );
+   return StaticComparison< ET1, ET2 >::LT( a, b );
 }
 
 ////
 // Comparison operator <=
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
+template< typename ET1, typename ET2,
+          typename..., typename = EnableIfStaticBinaryExpression_t< ET1, ET2 > >
 __cuda_callable__
 bool
-operator<=( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-            const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
+operator<=( const ET1& a, const ET2& b )
 {
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LE( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-__cuda_callable__
-bool
-operator<=( const StaticBinaryExpressionTemplate< T1, T2, Operation >& a,
-            const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LE( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-__cuda_callable__
-bool
-operator<=( const StaticUnaryExpressionTemplate< L1, LOperation >& a,
-            const StaticUnaryExpressionTemplate< R1, ROperation >& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LE( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-__cuda_callable__
-bool
-operator<=( const StaticUnaryExpressionTemplate< T1, Operation >& a,
-            const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LE( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-__cuda_callable__
-bool
-operator<=( const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
-            const StaticBinaryExpressionTemplate< T1, T2, Operation >& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LE( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-__cuda_callable__
-bool
-operator<=( const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& a,
-            const StaticUnaryExpressionTemplate< T1, Operation >& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LE( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-__cuda_callable__
-bool
-operator<=( const StaticUnaryExpressionTemplate< L1, LOperation >& a,
-            const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LE( a, b );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-__cuda_callable__
-bool
-operator<=( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-            const StaticUnaryExpressionTemplate< R1,ROperation >& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::LE( a, b );
+   return StaticComparison< ET1, ET2 >::LE( a, b );
 }
 
 ////
 // Comparison operator >
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
+template< typename ET1, typename ET2,
+          typename..., typename = EnableIfStaticBinaryExpression_t< ET1, ET2 > >
 __cuda_callable__
 bool
-operator>( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-           const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
+operator>( const ET1& a, const ET2& b )
 {
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GT( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-__cuda_callable__
-bool
-operator>( const StaticBinaryExpressionTemplate< T1, T2, Operation >& a,
-           const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GT( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-__cuda_callable__
-bool
-operator>( const StaticUnaryExpressionTemplate< T1, Operation >& a,
-           const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GT( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-__cuda_callable__
-bool
-operator>( const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
-           const StaticBinaryExpressionTemplate< T1, T2, Operation >& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GT( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-__cuda_callable__
-bool
-operator>( const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& a,
-           const StaticUnaryExpressionTemplate< T1, Operation >& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GT( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-__cuda_callable__
-bool
-operator>( const StaticUnaryExpressionTemplate< L1, LOperation >& a,
-           const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GT( a, b );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-__cuda_callable__
-bool
-operator>( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-           const StaticUnaryExpressionTemplate< R1,ROperation >& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GT( a, b );
+   return StaticComparison< ET1, ET2 >::GT( a, b );
 }
 
 ////
 // Comparison operator >=
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
+template< typename ET1, typename ET2,
+          typename..., typename = EnableIfStaticBinaryExpression_t< ET1, ET2 > >
 __cuda_callable__
 bool
-operator>=( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-            const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
+operator>=( const ET1& a, const ET2& b )
 {
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GE( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-__cuda_callable__
-bool
-operator>=( const StaticBinaryExpressionTemplate< T1, T2, Operation >& a,
-            const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GE( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-__cuda_callable__
-bool
-operator>=( const StaticUnaryExpressionTemplate< T1, Operation >& a,
-            const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GE( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-__cuda_callable__
-bool
-operator>=( const typename StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
-            const StaticBinaryExpressionTemplate< T1, T2, Operation >& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GE( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-__cuda_callable__
-bool
-operator>=( const typename StaticUnaryExpressionTemplate< T1, Operation >::RealType& a,
-            const StaticUnaryExpressionTemplate< T1, Operation >& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GE( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-__cuda_callable__
-bool
-operator>=( const StaticUnaryExpressionTemplate< L1, LOperation >& a,
-            const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GE( a, b );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-__cuda_callable__
-bool
-operator>=( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-            const StaticUnaryExpressionTemplate< R1,ROperation >& b )
-{
-   return StaticComparison< std::decay_t<decltype(a)>, std::decay_t<decltype(b)> >::GE( a, b );
-}
-
-////
-// Unary operations
-
-////
-// Minus
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-__cuda_callable__
-auto
-operator-( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Minus >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-__cuda_callable__
-auto
-operator-( const StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Minus >( a );
+   return Expressions::StaticComparison< ET1, ET2 >::GE( a, b );
 }
 
 ////
 // Scalar product
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
+template< typename ET1, typename ET2,
+          typename..., typename = EnableIfStaticBinaryExpression_t< ET1, ET2 > >
 __cuda_callable__
 auto
-operator,( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-           const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
+operator,( const ET1& a, const ET2& b )
 {
    return StaticExpressionSum( a * b );
 }
 
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
+template< typename ET1, typename ET2,
+          typename..., typename = EnableIfStaticBinaryExpression_t< ET1, ET2 > >
 __cuda_callable__
 auto
-operator,( const StaticUnaryExpressionTemplate< L1, LOperation >& a,
-           const StaticUnaryExpressionTemplate< R1, ROperation >& b )
+dot( const ET1& a, const ET2& b )
 {
-   return StaticExpressionSum( a * b );
+   return (a, b);
 }
 
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
+////
+// Unary expression minus
+template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
 __cuda_callable__
 auto
-operator,( const StaticUnaryExpressionTemplate< L1, LOperation >& a,
-           const StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
+operator-( const ET1& a )
 {
-   return StaticExpressionSum( a * b );
+   return StaticUnaryExpressionTemplate< ET1, Minus >( a );
 }
 
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
+////
+// Binary expression min
+template< typename ET1, typename ET2,
+          typename..., typename = EnableIfStaticBinaryExpression_t< ET1, ET2 > >
 __cuda_callable__
 auto
-operator,( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-           const StaticUnaryExpressionTemplate< R1,ROperation >& b )
+min( const ET1& a, const ET2& b )
 {
-   return StaticExpressionSum( a * b );
+   return StaticBinaryExpressionTemplate< ET1, ET2, Min >( a, b );
+}
+
+////
+// Binary expression max
+template< typename ET1, typename ET2,
+          typename..., typename = EnableIfStaticBinaryExpression_t< ET1, ET2 > >
+__cuda_callable__
+auto
+max( const ET1& a, const ET2& b )
+{
+   return StaticBinaryExpressionTemplate< ET1, ET2, Max >( a, b );
+}
+
+////
+// Abs
+template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+abs( const ET1& a )
+{
+   return StaticUnaryExpressionTemplate< ET1, Abs >( a );
+}
+
+////
+// Pow
+template< typename ET1, typename Real,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+pow( const ET1& a, const Real& exp )
+{
+   return StaticBinaryExpressionTemplate< ET1, Real, Pow >( a, exp );
+}
+
+////
+// Exp
+template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+exp( const ET1& a )
+{
+   return StaticUnaryExpressionTemplate< ET1, Exp >( a );
+}
+
+////
+// Sqrt
+template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+sqrt( const ET1& a )
+{
+   return StaticUnaryExpressionTemplate< ET1, Sqrt >( a );
+}
+
+////
+// Cbrt
+template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+cbrt( const ET1& a )
+{
+   return StaticUnaryExpressionTemplate< ET1, Cbrt >( a );
+}
+
+////
+// Log
+template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+log( const ET1& a )
+{
+   return StaticUnaryExpressionTemplate< ET1, Log >( a );
+}
+
+////
+// Log10
+template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+log10( const ET1& a )
+{
+   return StaticUnaryExpressionTemplate< ET1, Log10 >( a );
+}
+
+////
+// Log2
+template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+log2( const ET1& a )
+{
+   return StaticUnaryExpressionTemplate< ET1, Log2 >( a );
+}
+
+////
+// Sin
+template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+sin( const ET1& a )
+{
+   return StaticUnaryExpressionTemplate< ET1, Sin >( a );
+}
+
+////
+// Cos
+template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+cos( const ET1& a )
+{
+   return StaticUnaryExpressionTemplate< ET1, Cos >( a );
+}
+
+////
+// Tan
+template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+tan( const ET1& a )
+{
+   return StaticUnaryExpressionTemplate< ET1, Tan >( a );
+}
+
+////
+// Asin
+template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+asin( const ET1& a )
+{
+   return StaticUnaryExpressionTemplate< ET1, Asin >( a );
+}
+
+////
+// Acos
+template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+acos( const ET1& a )
+{
+   return StaticUnaryExpressionTemplate< ET1, Acos >( a );
+}
+
+////
+// Atan
+template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+atan( const ET1& a )
+{
+   return StaticUnaryExpressionTemplate< ET1, Atan >( a );
+}
+
+////
+// Sinh
+template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+sinh( const ET1& a )
+{
+   return StaticUnaryExpressionTemplate< ET1, Sinh >( a );
+}
+
+////
+// Cosh
+template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+cosh( const ET1& a )
+{
+   return StaticUnaryExpressionTemplate< ET1, Cosh >( a );
+}
+
+////
+// Tanh
+template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+tanh( const ET1& a )
+{
+   return StaticUnaryExpressionTemplate< ET1, Tanh >( a );
+}
+
+////
+// Asinh
+template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+asinh( const ET1& a )
+{
+   return StaticUnaryExpressionTemplate< ET1, Asinh >( a );
+}
+
+////
+// Acosh
+template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+acosh( const ET1& a )
+{
+   return StaticUnaryExpressionTemplate< ET1, Acosh >( a );
+}
+
+////
+// Atanh
+template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+atanh( const ET1& a )
+{
+   return StaticUnaryExpressionTemplate< ET1, Atanh >( a );
+}
+
+////
+// Floor
+template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+floor( const ET1& a )
+{
+   return StaticUnaryExpressionTemplate< ET1, Floor >( a );
+}
+
+////
+// Ceil
+template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+ceil( const ET1& a )
+{
+   return StaticUnaryExpressionTemplate< ET1, Ceil >( a );
+}
+
+////
+// Sign
+template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+sign( const ET1& a )
+{
+   return StaticUnaryExpressionTemplate< ET1, Sign >( a );
+}
+
+////
+// Cast
+template< typename ResultType,
+          typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 >,
+          // workaround: templated type alias cannot be declared at block level
+          typename CastOperation = typename Cast< ResultType >::Operation >
+__cuda_callable__
+auto
+cast( const ET1& a )
+{
+   return StaticUnaryExpressionTemplate< ET1, CastOperation >( a );
+}
+
+////
+// Vertical operations
+template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+min( const ET1& a )
+{
+   return StaticExpressionMin( a );
+}
+
+template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+argMin( const ET1& a )
+{
+   return StaticExpressionArgMin( a );
+}
+
+template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+max( const ET1& a )
+{
+   return StaticExpressionMax( a );
+}
+
+template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+argMax( const ET1& a )
+{
+   return StaticExpressionArgMax( a );
+}
+
+template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+sum( const ET1& a )
+{
+   return StaticExpressionSum( a );
+}
+
+template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+maxNorm( const ET1& a )
+{
+   return max( abs( a ) );
+}
+
+template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+l1Norm( const ET1& a )
+{
+   return sum( abs( a ) );
+}
+
+template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+l2Norm( const ET1& a )
+{
+   using TNL::sqrt;
+   return sqrt( sum( a * a ) );
+}
+
+template< typename ET1,
+          typename Real,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+lpNorm( const ET1& a, const Real& p )
+// since (1.0 / p) has type double, TNL::pow returns double
+-> double
+//-> RemoveET< decltype(pow( StaticExpressionLpNorm( a, p ), 1.0 / p )) >
+{
+   if( p == 1.0 )
+      return l1Norm( a );
+   if( p == 2.0 )
+      return l2Norm( a );
+   using TNL::pow;
+   return pow( sum( pow( abs( a ), p ) ), 1.0 / p );
+}
+
+template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+product( const ET1& a )
+{
+   return StaticExpressionProduct( a );
+}
+
+template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+logicalAnd( const ET1& a )
+{
+   return StaticExpressionLogicalAnd( a );
+}
+
+template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+logicalOr( const ET1& a )
+{
+   return StaticExpressionLogicalOr( a );
+}
+
+template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+binaryAnd( const ET1& a )
+{
+   return StaticExpressionBinaryAnd( a );
+}
+
+template< typename ET1,
+          typename..., typename = EnableIfStaticUnaryExpression_t< ET1 > >
+__cuda_callable__
+auto
+binaryOr( const ET1& a )
+{
+   return StaticExpressionBinaryOr( a );
 }
 
 #endif // DOXYGEN_ONLY
@@ -1252,7 +827,7 @@ operator,( const StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
 // Output stream
 template< typename T1,
           typename T2,
-          template< typename, typename > class Operation >
+          typename Operation >
 std::ostream& operator<<( std::ostream& str, const StaticBinaryExpressionTemplate< T1, T2, Operation >& expression )
 {
    str << "[ ";
@@ -1263,7 +838,7 @@ std::ostream& operator<<( std::ostream& str, const StaticBinaryExpressionTemplat
 }
 
 template< typename T,
-          template< typename > class Operation >
+          typename Operation >
 std::ostream& operator<<( std::ostream& str, const StaticUnaryExpressionTemplate< T, Operation >& expression )
 {
    str << "[ ";
@@ -1274,1015 +849,111 @@ std::ostream& operator<<( std::ostream& str, const StaticUnaryExpressionTemplate
 }
 
 } // namespace Expressions
+
+// Make all operators visible in the TNL::Containers namespace to be considered
+// even for StaticVector
+using Expressions::operator+;
+using Expressions::operator-;
+using Expressions::operator*;
+using Expressions::operator/;
+using Expressions::operator,;
+using Expressions::operator==;
+using Expressions::operator!=;
+using Expressions::operator<;
+using Expressions::operator<=;
+using Expressions::operator>;
+using Expressions::operator>=;
+
+// Make all functions visible in the TNL::Containers namespace
+using Expressions::dot;
+using Expressions::min;
+using Expressions::max;
+using Expressions::abs;
+using Expressions::pow;
+using Expressions::exp;
+using Expressions::sqrt;
+using Expressions::cbrt;
+using Expressions::log;
+using Expressions::log10;
+using Expressions::log2;
+using Expressions::sin;
+using Expressions::cos;
+using Expressions::tan;
+using Expressions::asin;
+using Expressions::acos;
+using Expressions::atan;
+using Expressions::sinh;
+using Expressions::cosh;
+using Expressions::tanh;
+using Expressions::asinh;
+using Expressions::acosh;
+using Expressions::atanh;
+using Expressions::floor;
+using Expressions::ceil;
+using Expressions::sign;
+using Expressions::cast;
+using Expressions::argMin;
+using Expressions::argMax;
+using Expressions::sum;
+using Expressions::maxNorm;
+using Expressions::l1Norm;
+using Expressions::l2Norm;
+using Expressions::lpNorm;
+using Expressions::product;
+using Expressions::logicalAnd;
+using Expressions::logicalOr;
+using Expressions::binaryAnd;
+using Expressions::binaryOr;
+
 } // namespace Containers
 
-////
-// All operations are supposed to be in namespace TNL
-
-#ifndef DOXYGEN_ONLY
-
-////
-// Binary expression min
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-__cuda_callable__
-auto
-min( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-     const Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Min >( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-__cuda_callable__
-auto
-min( const Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& a,
-     const typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
-{
-   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Min >( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-__cuda_callable__
-auto
-min( const typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
-     const Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& b )
-{
-   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Min >( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-__cuda_callable__
-auto
-min( const Containers::Expressions::StaticUnaryExpressionTemplate< T1, Operation >& a,
-     const typename Containers::Expressions::StaticUnaryExpressionTemplate< T1, Operation >::RealType& b )
-{
-   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Min >( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-__cuda_callable__
-auto
-min( const typename Containers::Expressions::StaticUnaryExpressionTemplate< T1, Operation >::RealType& a,
-     const Containers::Expressions::StaticUnaryExpressionTemplate< T1, Operation >& b )
-{
-   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Min >( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-__cuda_callable__
-auto
-min( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a,
-     const Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Min >( a, b );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-__cuda_callable__
-auto
-min( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-     const Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation >& b )
-{
-   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Min >( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-__cuda_callable__
-auto
-min( const Containers::Expressions::StaticUnaryExpressionTemplate< L1,LOperation >& a,
-     const Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation >& b )
-{
-   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Min >( a, b );
-}
-
-////
-// Binary expression max
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-__cuda_callable__
-auto
-max( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-     const Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Max >( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-__cuda_callable__
-auto
-max( const Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& a,
-     const typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& b )
-{
-   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Max >( a, b );
-}
-
-template< typename T1,
-          typename T2,
-          template< typename, typename > class Operation >
-__cuda_callable__
-auto
-max( const typename Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >::RealType& a,
-     const Containers::Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& b )
-{
-   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Max >( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-__cuda_callable__
-auto
-max( const Containers::Expressions::StaticUnaryExpressionTemplate< T1, Operation >& a,
-     const typename Containers::Expressions::StaticUnaryExpressionTemplate< T1, Operation >::RealType& b )
-{
-   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Max >( a, b );
-}
-
-template< typename T1,
-          template< typename > class Operation >
-__cuda_callable__
-auto
-max( const typename Containers::Expressions::StaticUnaryExpressionTemplate< T1, Operation >::RealType& a,
-     const Containers::Expressions::StaticUnaryExpressionTemplate< T1, Operation >& b )
-{
-   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Max >( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-__cuda_callable__
-auto
-max( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a,
-     const Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Max >( a, b );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-__cuda_callable__
-auto
-max( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-     const Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation >& b )
-{
-   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Max >( a, b );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-__cuda_callable__
-auto
-max( const Containers::Expressions::StaticUnaryExpressionTemplate< L1,LOperation >& a,
-     const Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation >& b )
-{
-   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, std::decay_t<decltype(b)>, Containers::Expressions::Max >( a, b );
-}
-
-////
-// Abs
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-__cuda_callable__
-auto
-abs( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Abs >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-__cuda_callable__
-auto
-abs( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Abs >( a );
-}
-
-////
-// Pow
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename Real >
-__cuda_callable__
-auto
-pow( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a, const Real& exp )
-{
-   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, Real, Containers::Expressions::Pow >( a, exp );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename Real >
-__cuda_callable__
-auto
-pow( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a, const Real& exp )
-{
-   return Containers::Expressions::StaticBinaryExpressionTemplate< std::decay_t<decltype(a)>, Real, Containers::Expressions::Pow >( a, exp );
-}
-
-////
-// Exp
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-__cuda_callable__
-auto
-exp( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Exp >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-__cuda_callable__
-auto
-exp( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Exp >( a );
-}
-
-////
-// Sqrt
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-__cuda_callable__
-auto
-sqrt( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sqrt >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-__cuda_callable__
-auto
-sqrt( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sqrt >( a );
-}
-
-////
-// Cbrt
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-__cuda_callable__
-auto
-cbrt( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Cbrt >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-__cuda_callable__
-auto
-cbrt( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Cbrt >( a );
-}
-
-////
-// Log
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-__cuda_callable__
-auto
-log( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-__cuda_callable__
-auto
-log( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log >( a );
-}
-
-////
-// Log10
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-__cuda_callable__
-auto
-log10( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log10 >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-__cuda_callable__
-auto
-log10( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log10 >( a );
-}
-
-////
-// Log2
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-__cuda_callable__
-auto
-log2( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log2 >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-__cuda_callable__
-auto
-log2( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Log2 >( a );
-}
-
-////
-// Sin
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-__cuda_callable__
-auto
-sin( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sin >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-__cuda_callable__
-auto
-sin( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sin >( a );
-}
-
-////
-// Cos
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-__cuda_callable__
-auto
-cos( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Cos >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-__cuda_callable__
-auto
-cos( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Cos >( a );
-}
-
-////
-// Tan
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-__cuda_callable__
-auto
-tan( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Tan >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-__cuda_callable__
-auto
-tan( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Tan >( a );
-}
-
-////
-// Asin
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-__cuda_callable__
-auto
-asin( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Asin >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-__cuda_callable__
-auto
-asin( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Asin >( a );
-}
-
-////
-// Acos
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-__cuda_callable__
-auto
-acos( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Acos >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-__cuda_callable__
-auto
-acos( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Acos >( a );
-}
-
-////
-// Atan
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-__cuda_callable__
-auto
-atan( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Atan >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-__cuda_callable__
-auto
-atan( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Atan >( a );
-}
-
-////
-// Sinh
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-__cuda_callable__
-auto
-sinh( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sinh >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-__cuda_callable__
-auto
-sinh( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sinh >( a );
-}
-
-////
-// Cosh
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-__cuda_callable__
-auto
-cosh( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Cosh >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-__cuda_callable__
-auto
-cosh( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Cosh >( a );
-}
-
-////
-// Tanh
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-__cuda_callable__
-auto
-tanh( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Tanh >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-__cuda_callable__
-auto
-tanh( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Tanh >( a );
-}
-
-////
-// Asinh
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-__cuda_callable__
-auto
-asinh( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Asinh >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-__cuda_callable__
-auto
-asinh( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Asinh >( a );
-}
-
-////
-// Acosh
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-__cuda_callable__
-auto
-acosh( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Acosh >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-__cuda_callable__
-auto
-acosh( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Acosh >( a );
-}
-
-////
-// Atanh
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-__cuda_callable__
-auto
-atanh( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Atanh >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-__cuda_callable__
-auto
-atanh( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Atanh >( a );
-}
-
-////
-// Floor
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-__cuda_callable__
-auto
-floor( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Floor >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-__cuda_callable__
-auto
-floor( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Floor >( a );
-}
-
-////
-// Ceil
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-__cuda_callable__
-auto
-ceil( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Ceil >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-__cuda_callable__
-auto
-ceil( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Ceil >( a );
-}
-
-////
-// Sign
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-__cuda_callable__
-auto
-sign( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sign >( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-__cuda_callable__
-auto
-sign( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, Containers::Expressions::Sign >( a );
-}
-
-////
-// Cast
-template< typename ResultType,
-          typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          // workaround: templated type alias cannot be declared at block level
-          template<typename> class CastOperation = Containers::Expressions::Cast< ResultType >::template Operation >
-__cuda_callable__
-auto
-cast( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, CastOperation >( a );
-}
-
-template< typename ResultType,
-          typename L1,
-          template< typename > class LOperation,
-          // workaround: templated type alias cannot be declared at block level
-          template<typename> class CastOperation = Containers::Expressions::Cast< ResultType >::template Operation >
-__cuda_callable__
-auto
-cast( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return Containers::Expressions::StaticUnaryExpressionTemplate< std::decay_t<decltype(a)>, CastOperation >( a );
-}
-
-////
-// Vertical operations - min
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-__cuda_callable__
-auto
-min( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return StaticExpressionMin( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-__cuda_callable__
-auto
-min( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return StaticExpressionMin( a );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-__cuda_callable__
-auto
-argMin( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return StaticExpressionArgMin( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-__cuda_callable__
-auto
-argMin( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return StaticExpressionArgMin( a );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-__cuda_callable__
-auto
-max( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return StaticExpressionMax( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-__cuda_callable__
-auto
-max( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return StaticExpressionMax( a );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-__cuda_callable__
-auto
-argMax( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return StaticExpressionArgMax( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-__cuda_callable__
-auto
-argMax( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return StaticExpressionArgMax( a );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-__cuda_callable__
-auto
-sum( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return StaticExpressionSum( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-__cuda_callable__
-auto
-sum( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return StaticExpressionSum( a );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-maxNorm( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return max( abs( a ) );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-maxNorm( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return max( abs( a ) );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-l1Norm( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return StaticExpressionL1Norm( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-l1Norm( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return StaticExpressionL1Norm( a );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-auto
-l2Norm( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return TNL::sqrt( StaticExpressionL2Norm( a ) );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-auto
-l2Norm( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return TNL::sqrt( StaticExpressionL2Norm( a ) );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename Real >
-__cuda_callable__
-auto
-lpNorm( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a, const Real& p )
-// since (1.0 / p) has type double, TNL::pow returns double
--> double
-{
-   if( p == 1.0 )
-      return l1Norm( a );
-   if( p == 2.0 )
-      return l2Norm( a );
-   return TNL::pow( StaticExpressionLpNorm( a, p ), 1.0 / p );
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename Real >
-__cuda_callable__
-auto
-lpNorm( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a, const Real& p )
-// since (1.0 / p) has type double, TNL::pow returns double
--> double
-{
-   if( p == 1.0 )
-      return l1Norm( a );
-   if( p == 2.0 )
-      return l2Norm( a );
-   return TNL::pow( StaticExpressionLpNorm( a, p ), 1.0 / p );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-__cuda_callable__
-auto
-product( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return StaticExpressionProduct( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-__cuda_callable__
-auto
-product( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return StaticExpressionProduct( a );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-__cuda_callable__
-auto
-logicalOr( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return StaticExpressionLogicalOr( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-__cuda_callable__
-auto
-logicalOr( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return StaticExpressionLogicalOr( a );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation >
-__cuda_callable__
-auto
-binaryOr( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a )
-{
-   return StaticExpressionBinaryOr( a );
-}
-
-template< typename L1,
-          template< typename > class LOperation >
-__cuda_callable__
-auto
-binaryOr( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a )
-{
-   return StaticExpressionBinaryOr( a );
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-__cuda_callable__
-auto
-dot( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-     const Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return (a, b);
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-__cuda_callable__
-auto
-dot( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a,
-     const Containers::Expressions::StaticUnaryExpressionTemplate< R1, ROperation >& b )
-{
-   return (a, b);
-}
-
-template< typename L1,
-          template< typename > class LOperation,
-          typename R1,
-          typename R2,
-          template< typename, typename > class ROperation >
-__cuda_callable__
-auto
-dot( const Containers::Expressions::StaticUnaryExpressionTemplate< L1, LOperation >& a,
-     const Containers::Expressions::StaticBinaryExpressionTemplate< R1, R2, ROperation >& b )
-{
-   return (a, b);
-}
-
-template< typename L1,
-          typename L2,
-          template< typename, typename > class LOperation,
-          typename R1,
-          template< typename > class ROperation >
-__cuda_callable__
-auto
-dot( const Containers::Expressions::StaticBinaryExpressionTemplate< L1, L2, LOperation >& a,
-     const Containers::Expressions::StaticUnaryExpressionTemplate< R1,ROperation >& b )
-{
-   return (a, b);
-}
-
-#endif // DOXYGEN_ONLY
+// Make all functions visible in the main TNL namespace
+using Containers::dot;
+using Containers::min;
+using Containers::max;
+using Containers::abs;
+using Containers::pow;
+using Containers::exp;
+using Containers::sqrt;
+using Containers::cbrt;
+using Containers::log;
+using Containers::log10;
+using Containers::log2;
+using Containers::sin;
+using Containers::cos;
+using Containers::tan;
+using Containers::asin;
+using Containers::acos;
+using Containers::atan;
+using Containers::sinh;
+using Containers::cosh;
+using Containers::tanh;
+using Containers::asinh;
+using Containers::acosh;
+using Containers::atanh;
+using Containers::floor;
+using Containers::ceil;
+using Containers::sign;
+using Containers::cast;
+using Containers::argMin;
+using Containers::argMax;
+using Containers::sum;
+using Containers::maxNorm;
+using Containers::l1Norm;
+using Containers::l2Norm;
+using Containers::lpNorm;
+using Containers::product;
+using Containers::logicalAnd;
+using Containers::logicalOr;
+using Containers::binaryAnd;
+using Containers::binaryOr;
 
 ////
 // Evaluation with reduction
 template< typename Vector,
    typename T1,
    typename T2,
-   template< typename, typename > class Operation,
+   typename Operation,
    typename Reduction,
    typename Result >
 __cuda_callable__
@@ -2299,7 +970,7 @@ Result evaluateAndReduce( Vector& lhs,
 
 template< typename Vector,
    typename T1,
-   template< typename > class Operation,
+   typename Operation,
    typename Reduction,
    typename Result >
 __cuda_callable__
@@ -2319,7 +990,7 @@ Result evaluateAndReduce( Vector& lhs,
 template< typename Vector,
    typename T1,
    typename T2,
-   template< typename, typename > class Operation,
+   typename Operation,
    typename Reduction,
    typename Result >
 __cuda_callable__
@@ -2339,7 +1010,7 @@ Result addAndReduce( Vector& lhs,
 
 template< typename Vector,
    typename T1,
-   template< typename > class Operation,
+   typename Operation,
    typename Reduction,
    typename Result >
 __cuda_callable__
@@ -2362,7 +1033,7 @@ Result addAndReduce( Vector& lhs,
 template< typename Vector,
    typename T1,
    typename T2,
-   template< typename, typename > class Operation,
+   typename Operation,
    typename Reduction,
    typename Result >
 __cuda_callable__
@@ -2382,7 +1053,7 @@ Result addAndReduceAbs( Vector& lhs,
 
 template< typename Vector,
    typename T1,
-   template< typename > class Operation,
+   typename Operation,
    typename Reduction,
    typename Result >
 __cuda_callable__

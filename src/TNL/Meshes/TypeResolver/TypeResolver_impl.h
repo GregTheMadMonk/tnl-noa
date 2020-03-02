@@ -19,6 +19,7 @@
 #include <TNL/Meshes/Readers/VTKReader.h>
 #include <TNL/Meshes/TypeResolver/GridTypeResolver.h>
 #include <TNL/Meshes/TypeResolver/MeshTypeResolver.h>
+#include <TNL/Communicators/NoDistrCommunicator.h>
 
 // TODO: implement this in TNL::String
 inline bool ends_with( const std::string& value, const std::string& ending )
@@ -117,7 +118,7 @@ template< typename CommunicatorType,
 bool
 loadMesh( const String& fileName,
           Mesh< MeshConfig, Device >& mesh,
-          DistributedMeshes::DistributedMesh< Mesh< MeshConfig, Device > > &distributedMesh )
+          DistributedMeshes::DistributedMesh< Mesh< MeshConfig, Device > >& distributedMesh )
 {
    if( CommunicatorType::isDistributed() )
    {
@@ -188,9 +189,12 @@ loadMesh( const String& fileName,
    }
 
    Mesh< MeshConfig, Devices::Host > hostMesh;
-   if( ! loadMesh( fileName, hostMesh ) )
+   DistributedMeshes::DistributedMesh< Mesh< MeshConfig, Devices::Host > > hostDistributedMesh;
+   if( ! loadMesh< CommunicatorType >( fileName, hostMesh, hostDistributedMesh ) )
       return false;
    mesh = hostMesh;
+   // TODO
+//   distributedMesh = hostDistributedMesh;
    return true;
 }
 
@@ -276,6 +280,17 @@ decomposeMesh( const Config::ParameterContainer& parameters,
    }
    else
       return true;
+}
+
+// convenient overload for non-distributed meshes
+template< typename Mesh >
+bool
+loadMesh( const String& fileName, Mesh& mesh )
+{
+   using Communicator = TNL::Communicators::NoDistrCommunicator;
+   using DistributedMesh = DistributedMeshes::DistributedMesh< Mesh>;
+   DistributedMesh distributedMesh;
+   return loadMesh< Communicator >( fileName, mesh, distributedMesh );
 }
 
 } // namespace Meshes

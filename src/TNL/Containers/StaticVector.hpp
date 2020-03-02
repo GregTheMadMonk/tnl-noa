@@ -19,7 +19,7 @@ namespace Containers {
 template< int Size, typename Real >
    template< typename T1,
              typename T2,
-             template< typename, typename > class Operation >
+             typename Operation >
 __cuda_callable__
 StaticVector< Size, Real >::StaticVector( const Expressions::StaticBinaryExpressionTemplate< T1, T2, Operation >& expr )
 {
@@ -29,7 +29,7 @@ StaticVector< Size, Real >::StaticVector( const Expressions::StaticBinaryExpress
 template< int Size,
           typename Real >
    template< typename T,
-             template< typename > class Operation >
+             typename Operation >
 __cuda_callable__
 StaticVector< Size, Real >::StaticVector( const Expressions::StaticUnaryExpressionTemplate< T, Operation >& expr )
 {

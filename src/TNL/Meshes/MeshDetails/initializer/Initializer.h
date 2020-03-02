@@ -65,7 +65,9 @@ template< typename MeshConfig,
           bool EntityStorage =
              MeshTraits< MeshConfig >::template EntityTraits< DimensionTag::value >::storageEnabled,
           bool EntityReferenceOrientationStorage =
-             MeshTraits< MeshConfig >::template EntityTraits< DimensionTag::value >::orientationNeeded >
+             MeshTraits< MeshConfig >::template EntityTraits< DimensionTag::value >::orientationNeeded &&
+             // orientationNeeded does not make sense without storageEnabled
+             MeshTraits< MeshConfig >::template EntityTraits< DimensionTag::value >::storageEnabled >
 class InitializerLayer;
 
 

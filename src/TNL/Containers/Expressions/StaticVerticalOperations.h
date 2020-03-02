@@ -11,6 +11,7 @@
 #pragma once
 
 #include <TNL/Math.h>
+#include <TNL/Containers/Expressions/TypeTraits.h>
 
 ////
 // By vertical operations we mean those applied across vector elements or
@@ -24,9 +25,10 @@ template< typename Expression >
 __cuda_callable__
 auto StaticExpressionMin( const Expression& expression )
 {
-   auto aux = expression[ 0 ];
+   using ResultType = RemoveET< typename Expression::RealType >;
+   ResultType aux = expression[ 0 ];
    for( int i = 1; i < expression.getSize(); i++ )
-      aux = TNL::min( aux, expression[ i ] );
+      aux = min( aux, expression[ i ] );
    return aux;
 }
 
@@ -34,8 +36,9 @@ template< typename Expression >
 __cuda_callable__
 auto StaticExpressionArgMin( const Expression& expression )
 {
+   using ResultType = RemoveET< typename Expression::RealType >;
    int arg = 0;
-   auto value = expression[ 0 ];
+   ResultType value = expression[ 0 ];
    for( int i = 1; i < expression.getSize(); i++ )
    {
       if( expression[ i ] < value )
@@ -51,9 +54,10 @@ template< typename Expression >
 __cuda_callable__
 auto StaticExpressionMax( const Expression& expression )
 {
-   auto aux = expression[ 0 ];
+   using ResultType = RemoveET< typename Expression::RealType >;
+   ResultType aux = expression[ 0 ];
    for( int i = 1; i < expression.getSize(); i++ )
-      aux = TNL::max( aux, expression[ i ] );
+      aux = max( aux, expression[ i ] );
    return aux;
 }
 
@@ -61,8 +65,9 @@ template< typename Expression >
 __cuda_callable__
 auto StaticExpressionArgMax( const Expression& expression )
 {
+   using ResultType = RemoveET< typename Expression::RealType >;
    int arg = 0;
-   auto value = expression[ 0 ];
+   ResultType value = expression[ 0 ];
    for( int i = 1; i < expression.getSize(); i++ )
    {
       if( expression[ i ] > value )
@@ -78,7 +83,8 @@ template< typename Expression >
 __cuda_callable__
 auto StaticExpressionSum( const Expression& expression )
 {
-   auto aux = expression[ 0 ];
+   using ResultType = RemoveET< typename Expression::RealType >;
+   ResultType aux = expression[ 0 ];
    for( int i = 1; i < expression.getSize(); i++ )
       aux += expression[ i ];
    return aux;
@@ -86,39 +92,10 @@ auto StaticExpressionSum( const Expression& expression )
 
 template< typename Expression >
 __cuda_callable__
-auto StaticExpressionL1Norm( const Expression& expression )
-{
-   auto aux = TNL::abs( expression[ 0 ] );
-   for( int i = 1; i < expression.getSize(); i++ )
-      aux += TNL::abs( expression[ i ] );
-   return aux;
-}
-
-template< typename Expression >
-__cuda_callable__
-auto StaticExpressionL2Norm( const Expression& expression )
-{
-   auto aux = expression[ 0 ] * expression[ 0 ];
-   for( int i = 1; i < expression.getSize(); i++ )
-      aux += expression[ i ] * expression[ i ];
-   return aux;
-}
-
-template< typename Expression, typename Real >
-__cuda_callable__
-auto StaticExpressionLpNorm( const Expression& expression, const Real& p )
-{
-   auto aux = TNL::pow( TNL::abs( expression[ 0 ] ), p );
-   for( int i = 1; i < expression.getSize(); i++ )
-      aux += TNL::pow( TNL::abs( expression[ i ] ), p );
-   return aux;
-}
-
-template< typename Expression >
-__cuda_callable__
 auto StaticExpressionProduct( const Expression& expression )
 {
-   auto aux = expression[ 0 ];
+   using ResultType = RemoveET< typename Expression::RealType >;
+   ResultType aux = expression[ 0 ];
    for( int i = 1; i < expression.getSize(); i++ )
       aux *= expression[ i ];
    return aux;

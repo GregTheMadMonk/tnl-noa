@@ -376,6 +376,12 @@ TNL_IMPL_CMP_HELPER_( GT, > );
     #define __TNL_PRETTY_FUNCTION __PRETTY_FUNCTION__
 #endif
 
+// On Linux, __STRING is defined in glibc's sys/cdefs.h, but there is no such
+// header on Windows and possibly other platforms.
+#ifndef __STRING
+   #define __STRING(arg) #arg
+#endif
+
 // Internal macro to compose the string representing the assertion.
 // We can't do it easily at runtime, because we have to support assertions
 // in CUDA kernels, which can't use std::string objects. Instead, we do it

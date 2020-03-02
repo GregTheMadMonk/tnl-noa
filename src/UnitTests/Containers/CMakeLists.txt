@@ -30,6 +30,11 @@ ADD_EXECUTABLE( VectorVerticalOperationsTest VectorVerticalOperationsTest.cpp )
 TARGET_COMPILE_OPTIONS( VectorVerticalOperationsTest PRIVATE ${CXX_TESTS_FLAGS} )
 TARGET_LINK_LIBRARIES( VectorVerticalOperationsTest ${GTEST_BOTH_LIBRARIES} )
 
+# FIXME
+#ADD_EXECUTABLE( VectorOfStaticVectorsTest VectorOfStaticVectorsTest.cpp )
+#TARGET_COMPILE_OPTIONS( VectorOfStaticVectorsTest PRIVATE ${CXX_TESTS_FLAGS} )
+#TARGET_LINK_LIBRARIES( VectorOfStaticVectorsTest ${GTEST_BOTH_LIBRARIES} )
+
 IF( BUILD_CUDA )
    CUDA_ADD_EXECUTABLE( ArrayTestCuda ArrayTest.cu
                         OPTIONS ${CXX_TESTS_FLAGS} )
@@ -54,6 +59,10 @@ IF( BUILD_CUDA )
 
    CUDA_ADD_EXECUTABLE( VectorVerticalOperationsTestCuda VectorVerticalOperationsTest.cu OPTIONS ${CXX_TESTS_FLAGS} )
    TARGET_LINK_LIBRARIES( VectorVerticalOperationsTestCuda ${GTEST_BOTH_LIBRARIES} )
+
+   # FIXME
+#   CUDA_ADD_EXECUTABLE( VectorOfStaticVectorsTestCuda VectorOfStaticVectorsTest.cu OPTIONS ${CXX_TESTS_FLAGS} )
+#   TARGET_LINK_LIBRARIES( VectorOfStaticVectorsTestCuda ${GTEST_BOTH_LIBRARIES} )
 ENDIF( BUILD_CUDA )
 
 ADD_EXECUTABLE( StaticArrayTest StaticArrayTest.cpp )
@@ -68,6 +77,11 @@ ADD_EXECUTABLE( StaticVectorOperationsTest StaticVectorOperationsTest.cpp )
 TARGET_COMPILE_OPTIONS( StaticVectorOperationsTest PRIVATE ${CXX_TESTS_FLAGS} )
 TARGET_LINK_LIBRARIES( StaticVectorOperationsTest ${GTEST_BOTH_LIBRARIES} )
 
+# FIXME
+#ADD_EXECUTABLE( StaticVectorOfStaticVectorsTest StaticVectorOfStaticVectorsTest.cpp )
+#TARGET_COMPILE_OPTIONS( StaticVectorOfStaticVectorsTest PRIVATE ${CXX_TESTS_FLAGS} )
+#TARGET_LINK_LIBRARIES( StaticVectorOfStaticVectorsTest ${GTEST_BOTH_LIBRARIES} )
+
 
 ADD_TEST( ArrayTest ${EXECUTABLE_OUTPUT_PATH}/ArrayTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( ArrayViewTest ${EXECUTABLE_OUTPUT_PATH}/ArrayViewTest${CMAKE_EXECUTABLE_SUFFIX} )
@@ -77,6 +91,7 @@ ADD_TEST( VectorEvaluateAndReduceTest ${EXECUTABLE_OUTPUT_PATH}/VectorEvaluateAn
 ADD_TEST( VectorBinaryOperationsTest ${EXECUTABLE_OUTPUT_PATH}/VectorBinaryOperationsTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( VectorUnaryOperationsTest ${EXECUTABLE_OUTPUT_PATH}/VectorUnaryOperationsTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( VectorVerticalOperationsTest ${EXECUTABLE_OUTPUT_PATH}/VectorVerticalOperationsTest${CMAKE_EXECUTABLE_SUFFIX} )
+#ADD_TEST( VectorOfStaticVectorsTest ${EXECUTABLE_OUTPUT_PATH}/VectorOfStaticVectorsTest${CMAKE_EXECUTABLE_SUFFIX} )
 IF( BUILD_CUDA )
    ADD_TEST( ArrayTestCuda ${EXECUTABLE_OUTPUT_PATH}/ArrayTestCuda${CMAKE_EXECUTABLE_SUFFIX} )
    ADD_TEST( ArrayViewTestCuda ${EXECUTABLE_OUTPUT_PATH}/ArrayViewTestCuda${CMAKE_EXECUTABLE_SUFFIX} )
@@ -86,10 +101,12 @@ IF( BUILD_CUDA )
    ADD_TEST( VectorBinaryOperationsTestCuda ${EXECUTABLE_OUTPUT_PATH}/VectorBinaryOperationsTestCuda${CMAKE_EXECUTABLE_SUFFIX} )
    ADD_TEST( VectorUnaryOperationsTestCuda ${EXECUTABLE_OUTPUT_PATH}/VectorUnaryOperationsTestCuda${CMAKE_EXECUTABLE_SUFFIX} )
    ADD_TEST( VectorVerticalOperationsTestCuda ${EXECUTABLE_OUTPUT_PATH}/VectorVerticalOperationsTestCuda${CMAKE_EXECUTABLE_SUFFIX} )
+#   ADD_TEST( VectorOfStaticVectorsTestCuda ${EXECUTABLE_OUTPUT_PATH}/VectorOfStaticVectorsTestCuda${CMAKE_EXECUTABLE_SUFFIX} )
 ENDIF()
 ADD_TEST( StaticArrayTest ${EXECUTABLE_OUTPUT_PATH}/StaticArrayTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( StaticVectorTest ${EXECUTABLE_OUTPUT_PATH}/StaticVectorTest${CMAKE_EXECUTABLE_SUFFIX} )
 ADD_TEST( StaticVectorOperationsTest ${EXECUTABLE_OUTPUT_PATH}/StaticVectorOperationsTest${CMAKE_EXECUTABLE_SUFFIX} )
+#ADD_TEST( StaticVectorOfStaticVectorsTest ${EXECUTABLE_OUTPUT_PATH}/StaticVectorOfStaticVectorsTest${CMAKE_EXECUTABLE_SUFFIX} )
 
 
 ADD_SUBDIRECTORY( Multimaps )

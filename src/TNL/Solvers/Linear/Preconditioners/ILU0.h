@@ -31,7 +31,26 @@ namespace Preconditioners {
 // implementation template
 template< typename Matrix, typename Real, typename Device, typename Index >
 class ILU0_impl
-{};
+: public Preconditioner< Matrix >
+{
+public:
+   using RealType = Real;
+   using DeviceType = Device;
+   using IndexType = Index;
+   using typename Preconditioner< Matrix >::VectorViewType;
+   using typename Preconditioner< Matrix >::ConstVectorViewType;
+   using typename Preconditioner< Matrix >::MatrixPointer;
+
+   virtual void update( const MatrixPointer& matrixPointer ) override
+   {
+      throw Exceptions::NotImplementedError("ILU0 is not implemented yet for the matrix type " + getType< Matrix >());
+   }
+
+   virtual void solve( ConstVectorViewType b, VectorViewType x ) const override
+   {
+      throw Exceptions::NotImplementedError("ILU0 is not implemented yet for the matrix type " + getType< Matrix >());
+   }
+};
 
 // actual template to be used by users
 template< typename Matrix >

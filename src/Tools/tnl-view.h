@@ -415,7 +415,7 @@ struct FilesProcessor
       }
 
       bool checkOutputFile = parameters. getParameter< bool >( "check-output-file" );
-      std::vector< String > inputFiles = parameters. getParameter< std::vector< String > >( "input-files" );
+      std::vector< String > inputFiles = parameters.getParameter< std::vector< String > >( "input-files" );
       bool error( false );
    //#ifdef HAVE_OPENMP
    //#pragma omp parallel for

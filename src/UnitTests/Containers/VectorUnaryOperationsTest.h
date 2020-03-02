@@ -21,6 +21,9 @@
 #elif defined(STATIC_VECTOR)
    #include <TNL/Containers/StaticVector.h>
 #else
+   #ifdef VECTOR_OF_STATIC_VECTORS
+      #include <TNL/Containers/StaticVector.h>
+   #endif
    #include <TNL/Containers/Vector.h>
    #include <TNL/Containers/VectorView.h>
 #endif
@@ -81,35 +84,57 @@ protected:
    #endif
    >;
 #elif defined(STATIC_VECTOR)
-   using VectorTypes = ::testing::Types<
-      StaticVector< 1, int >,
-      StaticVector< 1, double >,
-      StaticVector< 2, int >,
-      StaticVector< 2, double >,
-      StaticVector< 3, int >,
-      StaticVector< 3, double >,
-      StaticVector< 4, int >,
-      StaticVector< 4, double >,
-      StaticVector< 5, int >,
-      StaticVector< 5, double >
-   >;
+   #ifdef VECTOR_OF_STATIC_VECTORS
+      using VectorTypes = ::testing::Types<
+         StaticVector< 1, StaticVector< 3, double > >,
+         StaticVector< 2, StaticVector< 3, double > >,
+         StaticVector< 3, StaticVector< 3, double > >,
+         StaticVector< 4, StaticVector< 3, double > >,
+         StaticVector< 5, StaticVector< 3, double > >
+      >;
+   #else
+      using VectorTypes = ::testing::Types<
+         StaticVector< 1, int >,
+         StaticVector< 1, double >,
+         StaticVector< 2, int >,
+         StaticVector< 2, double >,
+         StaticVector< 3, int >,
+         StaticVector< 3, double >,
+         StaticVector< 4, int >,
+         StaticVector< 4, double >,
+         StaticVector< 5, int >,
+         StaticVector< 5, double >
+      >;
+   #endif
 #else
-   using VectorTypes = ::testing::Types<
-   #ifndef HAVE_CUDA
-      Vector<     int,       Devices::Host >,
-      VectorView< int,       Devices::Host >,
-      VectorView< const int, Devices::Host >,
-      Vector<     double,    Devices::Host >,
-      VectorView< double,    Devices::Host >
+   #ifdef VECTOR_OF_STATIC_VECTORS
+      using VectorTypes = ::testing::Types<
+      #ifndef HAVE_CUDA
+         Vector<     StaticVector< 3, double >, Devices::Host >,
+         VectorView< StaticVector< 3, double >, Devices::Host >
+      #else
+         Vector<     StaticVector< 3, double >, Devices::Cuda >,
+         VectorView< StaticVector< 3, double >, Devices::Cuda >
+      #endif
+      >;
+   #else
+      using VectorTypes = ::testing::Types<
+      #ifndef HAVE_CUDA
+         Vector<     int,       Devices::Host >,
+         VectorView< int,       Devices::Host >,
+         VectorView< const int, Devices::Host >,
+         Vector<     double,    Devices::Host >,
+         VectorView< double,    Devices::Host >
+      #endif
+      #ifdef HAVE_CUDA
+         Vector<     int,       Devices::Cuda >,
+         VectorView< int,       Devices::Cuda >,
+         VectorView< const int, Devices::Cuda >,
+         Vector<     double,    Devices::Cuda >,
+         VectorView< double,    Devices::Cuda >
+      #endif
+      >;
    #endif
-   #ifdef HAVE_CUDA
-      Vector<     int,       Devices::Cuda >,
-      VectorView< int,       Devices::Cuda >,
-      VectorView< const int, Devices::Cuda >,
-      Vector<     double,    Devices::Cuda >,
-      VectorView< double,    Devices::Cuda >
-   #endif
-   >;
 #endif
 
 TYPED_TEST_SUITE( VectorUnaryOperationsTest, VectorTypes );
@@ -297,7 +322,7 @@ TYPED_TEST( VectorUnaryOperationsTest, abs )
    EXPECT_EQ( abs(V1), V1 );
    // unary expression
    EXPECT_EQ( abs(-V1), V1 );
-   // unary expression
+   // binary expression
    EXPECT_EQ( abs(-V1-V1), V2 );
 }
 

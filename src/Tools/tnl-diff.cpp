@@ -23,10 +23,10 @@ void setupConfig( Config::ConfigDescription& config )
       config.addEntryEnum< String >( "halves" );
    config.addEntry< bool >( "exact-match", "Check if the data are exactly the same.", false );
    config.addEntry< bool >( "write-difference", "Write difference grid function.", false );
-   config.addEntry< bool >( "write-exact-curve", "Write exact curve with given radius.", false );
+//   config.addEntry< bool >( "write-exact-curve", "Write exact curve with given radius.", false );
    config.addEntry< int >( "edges-skip", "Width of the edges that will be skipped - not included into the error norms.", 0 );
-   config.addEntry< bool >( "write-graph", "Draws a graph in the Gnuplot format of the dependence of the error norm on t.", true );
-   config.addEntry< bool >( "write-log-graph", "Draws a logarithmic graph in the Gnuplot format of the dependence of the error norm on t.", true );
+//   config.addEntry< bool >( "write-graph", "Draws a graph in the Gnuplot format of the dependence of the error norm on t.", true );
+//   config.addEntry< bool >( "write-log-graph", "Draws a logarithmic graph in the Gnuplot format of the dependence of the error norm on t.", true );
    config.addEntry< double >( "snapshot-period", "The period between consecutive snapshots.", 0.0 );
    config.addEntry< bool >( "verbose", "Sets verbosity.", true );
 }

@@ -79,7 +79,7 @@ ResultType max( const T1& a, const T2& b )
  * \brief This function returns absolute value of given number \e n.
  */
 template< class T,
-          std::enable_if_t< ! std::is_unsigned<T>::value, bool > = true >
+          std::enable_if_t< ! std::is_unsigned<T>::value && ! std::is_class<T>::value, bool > = true >
 __cuda_callable__ inline
 T abs( const T& n )
 {
@@ -147,7 +147,9 @@ ResultType argAbsMax( const T1& a, const T2& b )
 /**
  * \brief This function returns the result of \e base to the power of \e exp.
  */
-template< typename T1, typename T2, typename ResultType = typename std::common_type< T1, T2 >::type >
+template< typename T1, typename T2, typename ResultType = typename std::common_type< T1, T2 >::type,
+          // enable_if is necessary to avoid ambiguity in vector expressions
+          std::enable_if_t< ! std::is_class<T1>::value && ! std::is_class<T2>::value, bool > = true >
 __cuda_callable__ inline
 ResultType pow( const T1& base, const T2& exp )
 {
@@ -458,7 +460,9 @@ void swap( Type& a, Type& b )
  * It extracts the sign of the number \e a. In other words, the signum function projects
  * negative numbers to value -1, positive numbers to value 1 and zero to value 0.
  */
-template< class T >
+template< class T,
+          // enable_if is necessary to avoid ambiguity in vector expressions
+          std::enable_if_t< ! HasSubscriptOperator<T>::value, bool > = true >
 __cuda_callable__
 T sign( const T& a )
 {
