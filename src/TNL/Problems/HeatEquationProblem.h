@@ -18,7 +18,7 @@
 
 #include <TNL/Problems/PDEProblem.h>
 #include <TNL/Operators/diffusion/LinearDiffusion.h>
-#include <TNL/Matrices/Ellpack.h>
+#include <TNL/Matrices/Legacy/Ellpack.h>
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Timer.h>
 #include <TNL/Solvers/PDE/ExplicitUpdater.h>

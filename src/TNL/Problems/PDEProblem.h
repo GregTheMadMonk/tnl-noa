@@ -13,7 +13,7 @@
 #include <TNL/Problems/Problem.h>
 #include <TNL/Problems/CommonData.h>
 #include <TNL/Pointers/SharedPointer.h>
-#include <TNL/Matrices/SlicedEllpack.h>
+#include <TNL/Matrices/Legacy/SlicedEllpack.h>
 #include <TNL/Solvers/PDE/TimeDependentPDESolver.h>
 
 namespace TNL {

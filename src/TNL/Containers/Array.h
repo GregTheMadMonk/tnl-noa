@@ -138,6 +138,15 @@ class Array
       explicit Array( const IndexType& size, const AllocatorType& allocator = AllocatorType() );
 
       /**
+       * \brief Constructs an array with given size and value.
+       *
+       * \param size The number of array elements to be allocated.
+       * \param value The value all elements will be set to.
+       * \param allocator The allocator to be associated with this array.
+       */
+      explicit Array( const IndexType& size, const Value& value, const AllocatorType& allocator = AllocatorType() );
+
+      /**
        * \brief Constructs an array with given size and copies data from given
        * pointer.
        *
@@ -446,7 +455,10 @@ class Array
        * to the memory space where the array was allocated. For example, if the
        * array was allocated in the host memory, it can be called only from
        * host, and if the array was allocated in the device memory, it can be
-       * called only from device kernels.
+       * called only from device kernels. If NDEBUG is not defined, assertions
+       * inside this methods performs runtime checks for cross-device memory
+       * accesses which lead to segmentation fault. If you need to do just a
+       * pointer arithmetics use \e getData instead.
        *
        * \param i The index of the element to be accessed.
        * \return Reference to the \e i-th element.
@@ -460,7 +472,10 @@ class Array
        * to the memory space where the array was allocated. For example, if the
        * array was allocated in the host memory, it can be called only from
        * host, and if the array was allocated in the device memory, it can be
-       * called only from device kernels.
+       * called only from device kernels. If NDEBUG is not defined, assertions
+       * inside this methods performs runtime checks for cross-device memory
+       * accesses which lead to segmentation fault. If you need to do just a
+       * pointer arithmetics use \e getData instead.
        *
        * \param i The index of the element to be accessed.
        * \return Constant reference to the \e i-th element.

@@ -394,7 +394,7 @@ TNL_IMPL_CMP_HELPER_( GT, > );
    pred( __TNL_JOIN_STRINGS( val1, op, val2 ), \
          msg, __FILE__, __TNL_PRETTY_FUNCTION, __LINE__, \
          #val1, #val2, val1, val2 )
-   
+
 // Main definitions of the TNL_ASSERT_* macros
 // unary
 #define TNL_ASSERT_TRUE( val, msg ) \

@@ -30,7 +30,7 @@
 #include "../Benchmarks.h"
 #include "ordering.h"
 
-#include <TNL/Matrices/SlicedEllpack.h>
+#include <TNL/Matrices/Legacy/SlicedEllpack.h>
 
 using namespace TNL;
 using namespace TNL::Benchmarks;

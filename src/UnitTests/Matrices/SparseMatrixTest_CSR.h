@@ -1,16 +1,18 @@
 /***************************************************************************
                           SparseMatrixTest_CSR.h -  description
                              -------------------
-    begin                : Nov 2, 2018
-    copyright            : (C) 2018 by Tomas Oberhuber et al.
+    begin                : Dec 2, 2019
+    copyright            : (C) 2019 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/Matrices/CSR.h>
+#include <TNL/Containers/Segments/CSR.h>
+#include <TNL/Matrices/SparseMatrix.h>
 
-#include "SparseMatrixTest.hpp"
+
+#include "SparseMatrixTest.h"
 #include <iostream>
 
 #ifdef HAVE_GTEST
@@ -27,35 +29,34 @@ protected:
 // types for which MatrixTest is instantiated
 using CSRMatrixTypes = ::testing::Types
 <
-    TNL::Matrices::CSR< int,    TNL::Devices::Host, short >,
-    TNL::Matrices::CSR< long,   TNL::Devices::Host, short >,
-    TNL::Matrices::CSR< float,  TNL::Devices::Host, short >,
-    TNL::Matrices::CSR< double, TNL::Devices::Host, short >,
-    TNL::Matrices::CSR< int,    TNL::Devices::Host, int >,
-    TNL::Matrices::CSR< long,   TNL::Devices::Host, int >,
-    TNL::Matrices::CSR< float,  TNL::Devices::Host, int >,
-    TNL::Matrices::CSR< double, TNL::Devices::Host, int >,
-    TNL::Matrices::CSR< int,    TNL::Devices::Host, long >,
-    TNL::Matrices::CSR< long,   TNL::Devices::Host, long >,
-    TNL::Matrices::CSR< float,  TNL::Devices::Host, long >,
-    TNL::Matrices::CSR< double, TNL::Devices::Host, long >
+    TNL::Matrices::SparseMatrix< int,     TNL::Devices::Host, int,   TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
+    TNL::Matrices::SparseMatrix< long,    TNL::Devices::Host, int,   TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
+    TNL::Matrices::SparseMatrix< float,   TNL::Devices::Host, int,   TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
+    TNL::Matrices::SparseMatrix< double,  TNL::Devices::Host, int,   TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
+    TNL::Matrices::SparseMatrix< int,     TNL::Devices::Host, long,  TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
+    TNL::Matrices::SparseMatrix< long,    TNL::Devices::Host, long,  TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
+    TNL::Matrices::SparseMatrix< float,   TNL::Devices::Host, long,  TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
+    TNL::Matrices::SparseMatrix< double,  TNL::Devices::Host, long,  TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >
 #ifdef HAVE_CUDA
-   ,TNL::Matrices::CSR< int,    TNL::Devices::Cuda, short >,
-    TNL::Matrices::CSR< long,   TNL::Devices::Cuda, short >,
-    TNL::Matrices::CSR< float,  TNL::Devices::Cuda, short >,
-    TNL::Matrices::CSR< double, TNL::Devices::Cuda, short >,
-    TNL::Matrices::CSR< int,    TNL::Devices::Cuda, int >,
-    TNL::Matrices::CSR< long,   TNL::Devices::Cuda, int >,
-    TNL::Matrices::CSR< float,  TNL::Devices::Cuda, int >,
-    TNL::Matrices::CSR< double, TNL::Devices::Cuda, int >,
-    TNL::Matrices::CSR< int,    TNL::Devices::Cuda, long >,
-    TNL::Matrices::CSR< long,   TNL::Devices::Cuda, long >,
-    TNL::Matrices::CSR< float,  TNL::Devices::Cuda, long >,
-    TNL::Matrices::CSR< double, TNL::Devices::Cuda, long >
+   ,TNL::Matrices::SparseMatrix< int,     TNL::Devices::Cuda, int,   TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
+    TNL::Matrices::SparseMatrix< long,    TNL::Devices::Cuda, int,   TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
+    TNL::Matrices::SparseMatrix< float,   TNL::Devices::Cuda, int,   TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
+    TNL::Matrices::SparseMatrix< double,  TNL::Devices::Cuda, int,   TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
+    TNL::Matrices::SparseMatrix< int,     TNL::Devices::Cuda, long,  TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
+    TNL::Matrices::SparseMatrix< long,    TNL::Devices::Cuda, long,  TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
+    TNL::Matrices::SparseMatrix< float,   TNL::Devices::Cuda, long,  TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
+    TNL::Matrices::SparseMatrix< double,  TNL::Devices::Cuda, long,  TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >
 #endif
 >;
 
 TYPED_TEST_SUITE( CSRMatrixTest, CSRMatrixTypes);
+
+TYPED_TEST( CSRMatrixTest, Constructors )
+{
+    using CSRMatrixType = typename TestFixture::CSRMatrixType;
+
+    test_Constructors< CSRMatrixType >();
+}
 
 TYPED_TEST( CSRMatrixTest, setDimensionsTest )
 {
@@ -64,19 +65,12 @@ TYPED_TEST( CSRMatrixTest, setDimensionsTest )
     test_SetDimensions< CSRMatrixType >();
 }
 
-//TYPED_TEST( CSRMatrixTest, setCompressedRowLengthsTest )
-//{
-////    using CSRMatrixType = typename TestFixture::CSRMatrixType;
-//
-////    test_SetCompressedRowLengths< CSRMatrixType >();
-//
-//    bool testRan = false;
-//    EXPECT_TRUE( testRan );
-//    std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
-//    std::cout << "      This test is dependent on the input format. \n";
-//    std::cout << "      Almost every format allocates elements per row differently.\n\n";
-//    std::cout << "\n    TODO: Finish implementation of getNonZeroRowLength (Only non-zero elements, not the number of allocated elements.)\n\n";
-//}
+TYPED_TEST( CSRMatrixTest, setCompressedRowLengthsTest )
+{
+    using CSRMatrixType = typename TestFixture::CSRMatrixType;
+
+    test_SetCompressedRowLengths< CSRMatrixType >();
+}
 
 TYPED_TEST( CSRMatrixTest, setLikeTest )
 {
@@ -92,6 +86,14 @@ TYPED_TEST( CSRMatrixTest, resetTest )
     test_Reset< CSRMatrixType >();
 }
 
+TYPED_TEST( CSRMatrixTest, getRowTest )
+{
+    using CSRMatrixType = typename TestFixture::CSRMatrixType;
+
+    test_GetRow< CSRMatrixType >();
+}
+
+
 TYPED_TEST( CSRMatrixTest, setElementTest )
 {
     using CSRMatrixType = typename TestFixture::CSRMatrixType;
@@ -106,13 +108,6 @@ TYPED_TEST( CSRMatrixTest, addElementTest )
     test_AddElement< CSRMatrixType >();
 }
 
-TYPED_TEST( CSRMatrixTest, setRowTest )
-{
-    using CSRMatrixType = typename TestFixture::CSRMatrixType;
-
-    test_SetRow< CSRMatrixType >();
-}
-
 TYPED_TEST( CSRMatrixTest, vectorProductTest )
 {
     using CSRMatrixType = typename TestFixture::CSRMatrixType;
@@ -120,11 +115,18 @@ TYPED_TEST( CSRMatrixTest, vectorProductTest )
     test_VectorProduct< CSRMatrixType >();
 }
 
+TYPED_TEST( CSRMatrixTest, rowsReduction )
+{
+    using CSRMatrixType = typename TestFixture::CSRMatrixType;
+
+    test_RowsReduction< CSRMatrixType >();
+}
+
 TYPED_TEST( CSRMatrixTest, saveAndLoadTest )
 {
     using CSRMatrixType = typename TestFixture::CSRMatrixType;
 
-    test_SaveAndLoad< CSRMatrixType >( "test_SparseMatrixTest_CSR" );
+    test_SaveAndLoad< CSRMatrixType >( "test_SparseMatrixTest_CSR_segments" );
 }
 
 TYPED_TEST( CSRMatrixTest, printTest )

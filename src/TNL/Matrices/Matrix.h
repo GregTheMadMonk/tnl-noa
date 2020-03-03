@@ -11,9 +11,11 @@
 #pragma once
 
 #include <TNL/Object.h>
+#include <TNL/Allocators/Default.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/VectorView.h>
+#include <TNL/Matrices/MatrixView.h>
 
 namespace TNL {
 /**
@@ -23,39 +25,37 @@ namespace Matrices {
 
 template< typename Real = double,
           typename Device = Devices::Host,
-          typename Index = int >
+          typename Index = int,
+          typename RealAllocator = typename Allocators::Default< Device >::template Allocator< Real > >
 class Matrix : public Object
 {
 public:
-   typedef Real RealType;
-   typedef Device DeviceType;
-   typedef Index IndexType;
-   typedef Containers::Vector< IndexType, DeviceType, IndexType > CompressedRowLengthsVector;
-   typedef Containers::VectorView< IndexType, DeviceType, IndexType > CompressedRowLengthsVectorView;
-   typedef typename CompressedRowLengthsVectorView::ConstViewType ConstCompressedRowLengthsVectorView;
-   typedef Containers::Vector< RealType, DeviceType, IndexType > ValuesVector;
+   using RealType = Real;
+   using DeviceType = Device;
+   using IndexType = Index;
+   using CompressedRowLengthsVector = Containers::Vector< IndexType, DeviceType, IndexType >;
+   using CompressedRowLengthsVectorView = Containers::VectorView< IndexType, DeviceType, IndexType >;
+   using ConstCompressedRowLengthsVectorView = typename CompressedRowLengthsVectorView::ConstViewType;
+   using ValuesVectorType = Containers::Vector< Real, Device, Index, RealAllocator >;
+   using RealAllocatorType = RealAllocator;
+   using ViewType = MatrixView< Real, Device, Index >;
+   using ConstViewType = MatrixView< std::add_const_t< Real >, Device, Index >;
 
-   Matrix();
+   Matrix( const RealAllocatorType& allocator = RealAllocatorType() );
 
-   virtual void setDimensions( const IndexType rows,
-                                 const IndexType columns );
+   Matrix( const IndexType rows,
+           const IndexType columns,
+           const RealAllocatorType& allocator = RealAllocatorType() );
 
-   virtual void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths ) = 0;
+   void setDimensions( const IndexType rows,
+                       const IndexType columns );
 
-   virtual IndexType getRowLength( const IndexType row ) const = 0;
+   template< typename Matrix_ >
+   void setLike( const Matrix_& matrix );
 
-   // TODO: implementation is not parallel
-   // TODO: it would be nice if padding zeros could be stripped
-   void getCompressedRowLengths( CompressedRowLengthsVector& rowLengths ) const;
+   IndexType getAllocatedElementsCount() const;
 
-   virtual void getCompressedRowLengths( CompressedRowLengthsVectorView rowLengths ) const;
-
-   template< typename Real2, typename Device2, typename Index2 >
-   void setLike( const Matrix< Real2, Device2, Index2 >& matrix );
-
-   virtual IndexType getNumberOfMatrixElements() const = 0;
-
-   virtual IndexType getNumberOfNonzeroMatrixElements() const = 0;
+   IndexType getNumberOfNonzeroMatrixElements() const;
 
    void reset();
 
@@ -65,38 +65,9 @@ public:
    __cuda_callable__
    IndexType getColumns() const;
 
-   /****
-    * TODO: The fast variants of the following methods cannot be virtual.
-    * If they were, they could not be used in the CUDA kernels. If CUDA allows it
-    * in the future and it does not slow down, declare them as virtual here.
-    */
+   const ValuesVectorType& getValues() const;
 
-   virtual bool setElement( const IndexType row,
-                            const IndexType column,
-                            const RealType& value ) = 0;
-
-   virtual bool addElement( const IndexType row,
-                            const IndexType column,
-                            const RealType& value,
-                            const RealType& thisElementMultiplicator = 1.0 ) = 0;
-
-   virtual bool setRow( const IndexType row,
-                        const IndexType* columns,
-                        const RealType* values,
-                        const IndexType numberOfElements ) = 0;
-
-   virtual bool addRow( const IndexType row,
-                        const IndexType* columns,
-                        const RealType* values,
-                        const IndexType numberOfElements,
-                        const RealType& thisElementMultiplicator = 1.0 ) = 0;
-
-   virtual Real getElement( const IndexType row,
-                            const IndexType column ) const = 0;
-   
-   const ValuesVector& getValues() const;
-   
-   ValuesVector& getValues();
+   ValuesVectorType& getValues();
 
    // TODO: parallelize and optimize for sparse matrices
    template< typename Matrix >
@@ -113,28 +84,22 @@ public:
 
 
    // TODO: method for symmetric matrices, should not be in general Matrix interface
+   [[deprecated]]
    __cuda_callable__
    const IndexType& getNumberOfColors() const;
 
    // TODO: method for symmetric matrices, should not be in general Matrix interface
+   [[deprecated]]
    void computeColorsVector(Containers::Vector<Index, Device, Index> &colorsVector);
-
-   // TODO: what is this supposed to do?!?  There are redefinitions only in the
-   // EllpackSymmetricGraph and SlicedEllpackSymmetricGraph classes...
-   bool help( bool verbose = false ) { return true;};
-
-   // TODO: copy should be done in the operator= and it should work the other way too
-   void copyFromHostToCuda( Matrices::Matrix< Real, Devices::Host, Index >& matrix );
-
-   // TODO: missing implementation!
-   __cuda_callable__
-   Index getValuesSize() const;
 
    protected:
 
-   IndexType rows, columns, numberOfColors;
+   IndexType rows, columns;
 
-   ValuesVector values;
+   // TODO: remove
+   IndexType numberOfColors;
+
+   ValuesVectorType values;
 };
 
 template< typename Real, typename Device, typename Index >
@@ -144,14 +109,7 @@ std::ostream& operator << ( std::ostream& str, const Matrix< Real, Device, Index
    return str;
 }
 
-template< typename Matrix,
-          typename InVector,
-          typename OutVector >
-void MatrixVectorProductCuda( const Matrix& matrix,
-                              const InVector& inVector,
-                              OutVector& outVector );
-
 } // namespace Matrices
 } // namespace TNL
 
-#include <TNL/Matrices/Matrix_impl.h>
+#include <TNL/Matrices/Matrix.hpp>

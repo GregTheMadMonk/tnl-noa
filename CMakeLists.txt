@@ -96,6 +96,11 @@ set( CMAKE_SHARED_LINKER_FLAGS "" )
 set( CMAKE_SHARED_LINKER_FLAGS_DEBUG "-rdynamic" )
 set( CMAKE_SHARED_LINKER_FLAGS_RELEASE "" )
 
+if( ${WITH_CI_FLAGS} )
+   # enforce (more or less) warning-free builds
+   set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror -Wno-error=deprecated -Wno-error=deprecated-declarations -Wno-error=uninitialized -Wno-error=vla" )
+endif()
+
 # set additional Debug/Release options using generator expressions
 # (that way we can exclude some options for specific targets, see https://stackoverflow.com/a/59734798 for details)
 add_compile_options(

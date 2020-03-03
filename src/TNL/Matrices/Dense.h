@@ -10,214 +10,220 @@
 
 #pragma once
 
+#include <TNL/Allocators/Default.h>
 #include <TNL/Devices/Host.h>
+#include <TNL/Matrices/DenseMatrixRowView.h>
 #include <TNL/Matrices/Matrix.h>
-#include <TNL/Matrices/DenseRow.h>
-#include <TNL/Containers/Array.h>
+#include <TNL/Matrices/DenseMatrixView.h>
+#include <TNL/Containers/Segments/Ellpack.h>
 
 namespace TNL {
-namespace Matrices {   
+namespace Matrices {
 
 template< typename Device >
 class DenseDeviceDependentCode;
 
 template< typename Real = double,
           typename Device = Devices::Host,
-          typename Index = int >
+          typename Index = int,
+          bool RowMajorOrder = std::is_same< Device, Devices::Host >::value,
+          typename RealAllocator = typename Allocators::Default< Device >::template Allocator< Real > >
 class Dense : public Matrix< Real, Device, Index >
 {
-private:
-   // convenient template alias for controlling the selection of copy-assignment operator
-   template< typename Device2 >
-   using Enabler = std::enable_if< ! std::is_same< Device2, Device >::value >;
+   public:
+      using RealType = Real;
+      using DeviceType = Device;
+      using IndexType = Index;
+      using RealAllocatorType = RealAllocator;
+      using BaseType = Matrix< Real, Device, Index, RealAllocator >;
+      using ValuesVectorType = typename BaseType::ValuesVectorType;
+      using ValuesViewType = typename ValuesVectorType::ViewType;
+      using SegmentsType = Containers::Segments::Ellpack< DeviceType, IndexType, typename Allocators::Default< Device >::template Allocator< IndexType >, RowMajorOrder, 1 >;
+      using SegmentViewType = typename SegmentsType::SegmentViewType;
+      using ViewType = DenseMatrixView< Real, Device, Index, RowMajorOrder >;
+      using ConstViewType = DenseMatrixView< typename std::add_const< Real >::type, Device, Index, RowMajorOrder >;
+      using RowView = DenseMatrixRowView< SegmentViewType, ValuesViewType >;
 
-   // friend class will be needed for templated assignment operators
-   template< typename Real2, typename Device2, typename Index2 >
-   friend class Dense;
+      // TODO: remove this
+      using CompressedRowLengthsVector = typename Matrix< Real, Device, Index >::CompressedRowLengthsVector;
+      using ConstCompressedRowLengthsVectorView = typename Matrix< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView;
 
-public:
-   typedef Real RealType;
-   typedef Device DeviceType;
-   typedef Index IndexType;
-   typedef typename Matrix< Real, Device, Index >::CompressedRowLengthsVector CompressedRowLengthsVector;
-   typedef typename Matrix< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
-   typedef Matrix< Real, Device, Index > BaseType;
-   typedef DenseRow< Real, Index > MatrixRow;
+      template< typename _Real = Real,
+                typename _Device = Device,
+                typename _Index = Index >
+      using Self = Dense< _Real, _Device, _Index >;
 
-   template< typename _Real = Real,
-             typename _Device = Device,
-             typename _Index = Index >
-   using Self = Dense< _Real, _Device, _Index >;
+      Dense();
 
-   Dense();
+      Dense( const IndexType rows, const IndexType columns );
 
-   static String getSerializationType();
+      ViewType getView();
 
-   virtual String getSerializationTypeVirtual() const;
+      ConstViewType getConstView() const;
 
-   void setDimensions( const IndexType rows,
-                       const IndexType columns );
+      static String getSerializationType();
 
-   template< typename Real2, typename Device2, typename Index2 >
-   void setLike( const Dense< Real2, Device2, Index2 >& matrix );
+      virtual String getSerializationTypeVirtual() const;
 
-   /****
-    * This method is only for the compatibility with the sparse matrices.
-    */
-   void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths );
+      void setDimensions( const IndexType rows,
+                          const IndexType columns );
 
-   /****
-    * Returns maximal number of the nonzero matrix elements that can be stored
-    * in a given row.
-    */
-   IndexType getRowLength( const IndexType row ) const;
+      template< typename Matrix >
+      void setLike( const Matrix& matrix );
 
-   __cuda_callable__
-   IndexType getRowLengthFast( const IndexType row ) const;
+      /****
+       * This method is only for the compatibility with the sparse matrices.
+       */
+      void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths );
 
-   IndexType getMaxRowLength() const;
+      template< typename Vector >
+      void getCompressedRowLengths( Vector& rowLengths ) const;
 
-   IndexType getNumberOfMatrixElements() const;
+      [[deprecated]]
+      IndexType getRowLength( const IndexType row ) const;
 
-   IndexType getNumberOfNonzeroMatrixElements() const;
+      IndexType getMaxRowLength() const;
 
-   void reset();
+      IndexType getNumberOfMatrixElements() const;
 
-   void setValue( const RealType& v );
+      IndexType getNumberOfNonzeroMatrixElements() const;
 
-   __cuda_callable__
-   Real& operator()( const IndexType row,
-                     const IndexType column );
+      void reset();
 
-   __cuda_callable__
-   const Real& operator()( const IndexType row,
-                           const IndexType column ) const;
+      __cuda_callable__
+      const RowView getRow( const IndexType& rowIdx ) const;
 
-   __cuda_callable__
-   bool setElementFast( const IndexType row,
-                        const IndexType column,
-                        const RealType& value );
+      __cuda_callable__
+      RowView getRow( const IndexType& rowIdx );
 
-   bool setElement( const IndexType row,
-                    const IndexType column,
-                    const RealType& value );
 
-   __cuda_callable__
-   bool addElementFast( const IndexType row,
-                        const IndexType column,
-                        const RealType& value,
-                        const RealType& thisElementMultiplicator = 1.0 );
+      void setValue( const RealType& v );
 
-   bool addElement( const IndexType row,
-                    const IndexType column,
-                    const RealType& value,
-                    const RealType& thisElementMultiplicator = 1.0 );
+      __cuda_callable__
+      Real& operator()( const IndexType row,
+                        const IndexType column );
 
-   __cuda_callable__
-   bool setRowFast( const IndexType row,
-                    const IndexType* columns,
-                    const RealType* values,
-                    const IndexType elements );
-
-   bool setRow( const IndexType row,
-                const IndexType* columns,
-                const RealType* values,
-                const IndexType elements );
-
-   __cuda_callable__
-   bool addRowFast( const IndexType row,
-                    const IndexType* columns,
-                    const RealType* values,
-                    const IndexType elements,
-                    const RealType& thisRowMultiplicator = 1.0 );
-
-   bool addRow( const IndexType row,
-                const IndexType* columns,
-                const RealType* values,
-                const IndexType elements,
-                const RealType& thisRowMultiplicator = 1.0 );
-
-   __cuda_callable__
-   const Real& getElementFast( const IndexType row,
-                               const IndexType column ) const;
-
-   Real getElement( const IndexType row,
-                    const IndexType column ) const;
-
-   __cuda_callable__
-   void getRowFast( const IndexType row,
-                    IndexType* columns,
-                    RealType* values ) const;
-
-   /*void getRow( const IndexType row,
-                IndexType* columns,
-                RealType* values ) const;*/
-
-   __cuda_callable__
-   MatrixRow getRow( const IndexType rowIndex );
-
-   __cuda_callable__
-   const MatrixRow getRow( const IndexType rowIndex ) const;
-
-   template< typename Vector >
-   __cuda_callable__
-   typename Vector::RealType rowVectorProduct( const IndexType row,
-                                               const Vector& vector ) const;
-
-   template< typename InVector, typename OutVector >
-   void vectorProduct( const InVector& inVector,
-                       OutVector& outVector ) const;
-
-   template< typename Matrix >
-   void addMatrix( const Matrix& matrix,
-                   const RealType& matrixMultiplicator = 1.0,
-                   const RealType& thisMatrixMultiplicator = 1.0 );
-
-   template< typename Matrix1, typename Matrix2, int tileDim = 32 >
-   void getMatrixProduct( const Matrix1& matrix1,
-                       const Matrix2& matrix2,
-                       const RealType& matrix1Multiplicator = 1.0,
-                       const RealType& matrix2Multiplicator = 1.0 );
-
-   template< typename Matrix, int tileDim = 32 >
-   void getTransposition( const Matrix& matrix,
-                          const RealType& matrixMultiplicator = 1.0 );
-
-   template< typename Vector1, typename Vector2 >
-   void performSORIteration( const Vector1& b,
-                             const IndexType row,
-                             Vector2& x,
-                             const RealType& omega = 1.0 ) const;
-
-   // copy assignment
-   Dense& operator=( const Dense& matrix );
-
-   // cross-device copy assignment
-   template< typename Real2, typename Device2, typename Index2,
-             typename = typename Enabler< Device2 >::type >
-   Dense& operator=( const Dense< Real2, Device2, Index2 >& matrix );
-
-   void save( const String& fileName ) const;
-
-   void load( const String& fileName );
-
-   void save( File& file ) const;
-
-   void load( File& file );
-
-   void print( std::ostream& str ) const;
-
-protected:
-
-   __cuda_callable__
-   IndexType getElementIndex( const IndexType row,
+      __cuda_callable__
+      const Real& operator()( const IndexType row,
                               const IndexType column ) const;
 
-   typedef DenseDeviceDependentCode< DeviceType > DeviceDependentCode;
-   friend class DenseDeviceDependentCode< DeviceType >;
+      void setElement( const IndexType row,
+                       const IndexType column,
+                       const RealType& value );
+
+      void addElement( const IndexType row,
+                       const IndexType column,
+                       const RealType& value,
+                       const RealType& thisElementMultiplicator = 1.0 );
+
+      Real getElement( const IndexType row,
+                       const IndexType column ) const;
+
+      template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
+      void rowsReduction( IndexType first, IndexType last, Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+
+      template< typename Fetch, typename Reduce, typename Keep, typename FetchReal >
+      void allRowsReduction( Fetch& fetch, Reduce& reduce, Keep& keep, const FetchReal& zero ) const;
+
+      template< typename Function >
+      void forRows( IndexType first, IndexType last, Function& function ) const;
+
+      template< typename Function >
+      void forRows( IndexType first, IndexType last, Function& function );
+
+      template< typename Function >
+      void forAllRows( Function& function ) const;
+
+      template< typename Function >
+      void forAllRows( Function& function );
+
+      template< typename Vector >
+      __cuda_callable__
+      typename Vector::RealType rowVectorProduct( const IndexType row,
+                                                  const Vector& vector ) const;
+
+      template< typename InVector, typename OutVector >
+      void vectorProduct( const InVector& inVector,
+                          OutVector& outVector ) const;
+
+      template< typename Matrix >
+      void addMatrix( const Matrix& matrix,
+                      const RealType& matrixMultiplicator = 1.0,
+                      const RealType& thisMatrixMultiplicator = 1.0 );
+
+      template< typename Matrix1, typename Matrix2, int tileDim = 32 >
+      void getMatrixProduct( const Matrix1& matrix1,
+                          const Matrix2& matrix2,
+                          const RealType& matrix1Multiplicator = 1.0,
+                          const RealType& matrix2Multiplicator = 1.0 );
+
+      template< typename Matrix, int tileDim = 32 >
+      void getTransposition( const Matrix& matrix,
+                             const RealType& matrixMultiplicator = 1.0 );
+
+      template< typename Vector1, typename Vector2 >
+      void performSORIteration( const Vector1& b,
+                                const IndexType row,
+                                Vector2& x,
+                                const RealType& omega = 1.0 ) const;
+
+      /**
+       * \brief Assignment operator for exactly the same type of the dense matrix.
+       * 
+       * @param matrix
+       * @return 
+       */
+      Dense& operator=( const Dense& matrix );
+
+      /**
+       * \brief Assignment operator for other dense matrices.
+       * 
+       * @param matrix
+       * @return 
+       */
+      template< typename RHSReal, typename RHSDevice, typename RHSIndex,
+                 bool RHSRowMajorOrder, typename RHSRealAllocator >
+      Dense& operator=( const Dense< RHSReal, RHSDevice, RHSIndex, RHSRowMajorOrder, RHSRealAllocator >& matrix );
+
+      /**
+       * \brief Assignment operator for other (sparse) types of matrices.
+       * @param matrix
+       * @return 
+       */
+      template< typename RHSMatrix >
+      Dense& operator=( const RHSMatrix& matrix );
+
+      template< typename Real_, typename Device_, typename Index_, typename RealAllocator_ >
+      bool operator==( const Dense< Real_, Device_, Index_, RowMajorOrder >& matrix ) const;
+
+      template< typename Real_, typename Device_, typename Index_, typename RealAllocator_ >
+      bool operator!=( const Dense< Real_, Device_, Index_, RowMajorOrder >& matrix ) const;
+
+      void save( const String& fileName ) const;
+
+      void load( const String& fileName );
+
+      void save( File& file ) const;
+
+      void load( File& file );
+
+      void print( std::ostream& str ) const;
+
+   protected:
+
+      __cuda_callable__
+      IndexType getElementIndex( const IndexType row,
+                                 const IndexType column ) const;
+
+      typedef DenseDeviceDependentCode< DeviceType > DeviceDependentCode;
+      friend class DenseDeviceDependentCode< DeviceType >;
+
+      SegmentsType segments;
+
+      ViewType view;
 };
 
 } // namespace Matrices
 } // namespace TNL
 
-#include <TNL/Matrices/Dense_impl.h>
+#include <TNL/Matrices/Dense.hpp>

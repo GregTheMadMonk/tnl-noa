@@ -1,16 +1,18 @@
 /***************************************************************************
                           SparseMatrixTest_Ellpack.h -  description
                              -------------------
-    begin                : Nov 2, 2018
-    copyright            : (C) 2018 by Tomas Oberhuber et al.
+    begin                : Dec 3, 2019
+    copyright            : (C) 2019 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/Matrices/Ellpack.h>
+#include <TNL/Containers/Segments/Ellpack.h>
+#include <TNL/Matrices/SparseMatrix.h>
 
-#include "SparseMatrixTest.hpp"
+
+#include "SparseMatrixTest.h"
 #include <iostream>
 
 #ifdef HAVE_GTEST
@@ -24,38 +26,48 @@ protected:
    using EllpackMatrixType = Matrix;
 };
 
+////
+// Row-major format is used for the host system
+template< typename Device, typename Index, typename IndexAlocator >
+using RowMajorEllpack = TNL::Containers::Segments::Ellpack< Device, Index, IndexAlocator, true, 32 >;
+
+
+////
+// Column-major format is used for GPUs
+template< typename Device, typename Index, typename IndexAllocator >
+using ColumnMajorEllpack = TNL::Containers::Segments::Ellpack< Device, Index, IndexAllocator, false, 32 >;
+
 // types for which MatrixTest is instantiated
 using EllpackMatrixTypes = ::testing::Types
 <
-    TNL::Matrices::Ellpack< int,    TNL::Devices::Host, short >,
-    TNL::Matrices::Ellpack< long,   TNL::Devices::Host, short >,
-    TNL::Matrices::Ellpack< float,  TNL::Devices::Host, short >,
-    TNL::Matrices::Ellpack< double, TNL::Devices::Host, short >,
-    TNL::Matrices::Ellpack< int,    TNL::Devices::Host, int >,
-    TNL::Matrices::Ellpack< long,   TNL::Devices::Host, int >,
-    TNL::Matrices::Ellpack< float,  TNL::Devices::Host, int >,
-    TNL::Matrices::Ellpack< double, TNL::Devices::Host, int >,
-    TNL::Matrices::Ellpack< int,    TNL::Devices::Host, long >,
-    TNL::Matrices::Ellpack< long,   TNL::Devices::Host, long >,
-    TNL::Matrices::Ellpack< float,  TNL::Devices::Host, long >,
-    TNL::Matrices::Ellpack< double, TNL::Devices::Host, long >
+    TNL::Matrices::SparseMatrix< int,     TNL::Devices::Host, int,   TNL::Matrices::GeneralMatrix, RowMajorEllpack >,
+    TNL::Matrices::SparseMatrix< long,    TNL::Devices::Host, int,   TNL::Matrices::GeneralMatrix, RowMajorEllpack >,
+    TNL::Matrices::SparseMatrix< float,   TNL::Devices::Host, int,   TNL::Matrices::GeneralMatrix, RowMajorEllpack >,
+    TNL::Matrices::SparseMatrix< double,  TNL::Devices::Host, int,   TNL::Matrices::GeneralMatrix, RowMajorEllpack >,
+    TNL::Matrices::SparseMatrix< int,     TNL::Devices::Host, long,  TNL::Matrices::GeneralMatrix, RowMajorEllpack >,
+    TNL::Matrices::SparseMatrix< long,    TNL::Devices::Host, long,  TNL::Matrices::GeneralMatrix, RowMajorEllpack >,
+    TNL::Matrices::SparseMatrix< float,   TNL::Devices::Host, long,  TNL::Matrices::GeneralMatrix, RowMajorEllpack >,
+    TNL::Matrices::SparseMatrix< double,  TNL::Devices::Host, long,  TNL::Matrices::GeneralMatrix, RowMajorEllpack >
 #ifdef HAVE_CUDA
-   ,TNL::Matrices::Ellpack< int,    TNL::Devices::Cuda, short >,
-    TNL::Matrices::Ellpack< long,   TNL::Devices::Cuda, short >,
-    TNL::Matrices::Ellpack< float,  TNL::Devices::Cuda, short >,
-    TNL::Matrices::Ellpack< double, TNL::Devices::Cuda, short >,
-    TNL::Matrices::Ellpack< int,    TNL::Devices::Cuda, int >,
-    TNL::Matrices::Ellpack< long,   TNL::Devices::Cuda, int >,
-    TNL::Matrices::Ellpack< float,  TNL::Devices::Cuda, int >,
-    TNL::Matrices::Ellpack< double, TNL::Devices::Cuda, int >,
-    TNL::Matrices::Ellpack< int,    TNL::Devices::Cuda, long >,
-    TNL::Matrices::Ellpack< long,   TNL::Devices::Cuda, long >,
-    TNL::Matrices::Ellpack< float,  TNL::Devices::Cuda, long >,
-    TNL::Matrices::Ellpack< double, TNL::Devices::Cuda, long >
+   ,TNL::Matrices::SparseMatrix< int,     TNL::Devices::Cuda, int,   TNL::Matrices::GeneralMatrix, ColumnMajorEllpack >,
+    TNL::Matrices::SparseMatrix< long,    TNL::Devices::Cuda, int,   TNL::Matrices::GeneralMatrix, ColumnMajorEllpack >,
+    TNL::Matrices::SparseMatrix< float,   TNL::Devices::Cuda, int,   TNL::Matrices::GeneralMatrix, ColumnMajorEllpack >,
+    TNL::Matrices::SparseMatrix< double,  TNL::Devices::Cuda, int,   TNL::Matrices::GeneralMatrix, ColumnMajorEllpack >,
+    TNL::Matrices::SparseMatrix< int,     TNL::Devices::Cuda, long,  TNL::Matrices::GeneralMatrix, ColumnMajorEllpack >,
+    TNL::Matrices::SparseMatrix< long,    TNL::Devices::Cuda, long,  TNL::Matrices::GeneralMatrix, ColumnMajorEllpack >,
+    TNL::Matrices::SparseMatrix< float,   TNL::Devices::Cuda, long,  TNL::Matrices::GeneralMatrix, ColumnMajorEllpack >,
+    TNL::Matrices::SparseMatrix< double,  TNL::Devices::Cuda, long,  TNL::Matrices::GeneralMatrix, ColumnMajorEllpack >
 #endif
 >;
 
-TYPED_TEST_SUITE( EllpackMatrixTest, EllpackMatrixTypes );
+TYPED_TEST_SUITE( EllpackMatrixTest, EllpackMatrixTypes);
+
+TYPED_TEST( EllpackMatrixTest, Constructors )
+{
+    using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
+
+    test_Constructors< EllpackMatrixType >();
+}
 
 TYPED_TEST( EllpackMatrixTest, setDimensionsTest )
 {
@@ -92,6 +104,13 @@ TYPED_TEST( EllpackMatrixTest, resetTest )
     test_Reset< EllpackMatrixType >();
 }
 
+TYPED_TEST( EllpackMatrixTest, getRowTest )
+{
+    using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
+
+    test_GetRow< EllpackMatrixType >();
+}
+
 TYPED_TEST( EllpackMatrixTest, setElementTest )
 {
     using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
@@ -106,13 +125,6 @@ TYPED_TEST( EllpackMatrixTest, addElementTest )
     test_AddElement< EllpackMatrixType >();
 }
 
-TYPED_TEST( EllpackMatrixTest, setRowTest )
-{
-    using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
-
-    test_SetRow< EllpackMatrixType >();
-}
-
 TYPED_TEST( EllpackMatrixTest, vectorProductTest )
 {
     using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
@@ -120,11 +132,18 @@ TYPED_TEST( EllpackMatrixTest, vectorProductTest )
     test_VectorProduct< EllpackMatrixType >();
 }
 
+TYPED_TEST( EllpackMatrixTest, rowsReduction )
+{
+    using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
+
+    test_RowsReduction< EllpackMatrixType >();
+}
+
 TYPED_TEST( EllpackMatrixTest, saveAndLoadTest )
 {
     using EllpackMatrixType = typename TestFixture::EllpackMatrixType;
 
-    test_SaveAndLoad< EllpackMatrixType >( "test_SparseMatrixTest_Ellpack" );
+    test_SaveAndLoad< EllpackMatrixType >( "test_SparseMatrixTest_Ellpack_segments" );
 }
 
 TYPED_TEST( EllpackMatrixTest, printTest )

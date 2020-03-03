@@ -45,8 +45,6 @@ stages:
           fi
         - export CTEST_OUTPUT_ON_FAILURE=1
         - export CTEST_PARALLEL_LEVEL=4
-        # enforce (more or less) warning-free builds
-        - export CXXFLAGS="-Werror -Wno-error=deprecated -Wno-error=deprecated-declarations -Wno-error=uninitialized -Wno-error=vla"
         - mkdir -p "./builddir/$CI_JOB_NAME"
         - pushd "./builddir/$CI_JOB_NAME"
         - cmake ../..
@@ -64,6 +62,7 @@ stages:
                 -DWITH_EXAMPLES=${WITH_EXAMPLES}
                 -DWITH_TOOLS=${WITH_TOOLS}
                 -DWITH_PYTHON=${WITH_PYTHON}
+                -DWITH_CI_FLAGS=yes
         # "install" implies the "all" target
         - ninja ${NINJAFLAGS} install
         - if [[ ${WITH_TESTS} == "yes" ]]; then

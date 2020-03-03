@@ -239,6 +239,11 @@ __cuda_callable__
 Value& ArrayView< Value, Device, Index >::
 operator[]( Index i )
 {
+#ifdef __CUDA_ARCH__
+   TNL_ASSERT_TRUE( (std::is_same< Device, Devices::Cuda >{}()), "Attempt to access data not allocated on CUDA device from CUDA device." );
+#else
+   TNL_ASSERT_FALSE( (std::is_same< Device, Devices::Cuda >{}()), "Attempt to access data not allocated on the host from the host." );
+#endif
    TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
    TNL_ASSERT_LT( i, this->getSize(), "Element index is out of bounds." );
    return data[ i ];
@@ -252,6 +257,11 @@ const
 Value& ArrayView< Value, Device, Index >::
 operator[]( Index i ) const
 {
+#ifdef __CUDA_ARCH__
+   TNL_ASSERT_TRUE( (std::is_same< Device, Devices::Cuda >{}()), "Attempt to access data not allocated on CUDA device from CUDA device." );
+#else
+   TNL_ASSERT_FALSE( (std::is_same< Device, Devices::Cuda >{}()), "Attempt to access data not allocated on the host from the host." );
+#endif
    TNL_ASSERT_GE( i, 0, "Element index must be non-negative." );
    TNL_ASSERT_LT( i, this->getSize(), "Element index is out of bounds." );
    return data[ i ];

@@ -15,10 +15,10 @@
 #include "../Benchmarks.h"
 
 #include <TNL/Pointers/DevicePointer.h>
-#include <TNL/Matrices/CSR.h>
-#include <TNL/Matrices/Ellpack.h>
-#include <TNL/Matrices/SlicedEllpack.h>
-#include <TNL/Matrices/ChunkedEllpack.h>
+#include <TNL/Matrices/Legacy/CSR.h>
+#include <TNL/Matrices/Legacy/Ellpack.h>
+#include <TNL/Matrices/Legacy/SlicedEllpack.h>
+#include <TNL/Matrices/Legacy/ChunkedEllpack.h>
 
 namespace TNL {
 namespace Benchmarks {

@@ -1,16 +1,19 @@
 /***************************************************************************
                           SparseMatrixTest_SlicedEllpack.h -  description
                              -------------------
-    begin                : Nov 2, 2018
-    copyright            : (C) 2018 by Tomas Oberhuber et al.
+    begin                : Dec 3, 2019
+    copyright            : (C) 2019 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/Matrices/SlicedEllpack.h>
+#include <TNL/Containers/Segments/SlicedEllpack.h>
+#include <TNL/Matrices/SparseMatrix.h>
+#include <TNL/Matrices/MatrixType.h>
 
-#include "SparseMatrixTest.hpp"
+
+#include "SparseMatrixTest.h"
 #include <iostream>
 
 #ifdef HAVE_GTEST
@@ -24,38 +27,48 @@ protected:
    using SlicedEllpackMatrixType = Matrix;
 };
 
+////
+// Row-major format is used for the host system
+template< typename Device, typename Index, typename IndexAllocator >
+using RowMajorSlicedEllpack = TNL::Containers::Segments::SlicedEllpack< Device, Index, IndexAllocator, true, 32 >;
+
+
+////
+// Column-major format is used for GPUs
+template< typename Device, typename Index, typename IndexAllocator >
+using ColumnMajorSlicedEllpack = TNL::Containers::Segments::SlicedEllpack< Device, Index, IndexAllocator, false, 32 >;
+
 // types for which MatrixTest is instantiated
 using SlicedEllpackMatrixTypes = ::testing::Types
 <
-    TNL::Matrices::SlicedEllpack< int,    TNL::Devices::Host, short >,
-    TNL::Matrices::SlicedEllpack< long,   TNL::Devices::Host, short >,
-    TNL::Matrices::SlicedEllpack< float,  TNL::Devices::Host, short >,
-    TNL::Matrices::SlicedEllpack< double, TNL::Devices::Host, short >,
-    TNL::Matrices::SlicedEllpack< int,    TNL::Devices::Host, int >,
-    TNL::Matrices::SlicedEllpack< long,   TNL::Devices::Host, int >,
-    TNL::Matrices::SlicedEllpack< float,  TNL::Devices::Host, int >,
-    TNL::Matrices::SlicedEllpack< double, TNL::Devices::Host, int >,
-    TNL::Matrices::SlicedEllpack< int,    TNL::Devices::Host, long >,
-    TNL::Matrices::SlicedEllpack< long,   TNL::Devices::Host, long >,
-    TNL::Matrices::SlicedEllpack< float,  TNL::Devices::Host, long >,
-    TNL::Matrices::SlicedEllpack< double, TNL::Devices::Host, long >
+    TNL::Matrices::SparseMatrix< int,     TNL::Devices::Host, int,   TNL::Matrices::GeneralMatrix, RowMajorSlicedEllpack >,
+    TNL::Matrices::SparseMatrix< long,    TNL::Devices::Host, int,   TNL::Matrices::GeneralMatrix, RowMajorSlicedEllpack >,
+    TNL::Matrices::SparseMatrix< float,   TNL::Devices::Host, int,   TNL::Matrices::GeneralMatrix, RowMajorSlicedEllpack >,
+    TNL::Matrices::SparseMatrix< double,  TNL::Devices::Host, int,   TNL::Matrices::GeneralMatrix, RowMajorSlicedEllpack >,
+    TNL::Matrices::SparseMatrix< int,     TNL::Devices::Host, long,  TNL::Matrices::GeneralMatrix, RowMajorSlicedEllpack >,
+    TNL::Matrices::SparseMatrix< long,    TNL::Devices::Host, long,  TNL::Matrices::GeneralMatrix, RowMajorSlicedEllpack >,
+    TNL::Matrices::SparseMatrix< float,   TNL::Devices::Host, long,  TNL::Matrices::GeneralMatrix, RowMajorSlicedEllpack >,
+    TNL::Matrices::SparseMatrix< double,  TNL::Devices::Host, long,  TNL::Matrices::GeneralMatrix, RowMajorSlicedEllpack >
 #ifdef HAVE_CUDA
-   ,TNL::Matrices::SlicedEllpack< int,    TNL::Devices::Cuda, short >,
-    TNL::Matrices::SlicedEllpack< long,   TNL::Devices::Cuda, short >,
-    TNL::Matrices::SlicedEllpack< float,  TNL::Devices::Cuda, short >,
-    TNL::Matrices::SlicedEllpack< double, TNL::Devices::Cuda, short >,
-    TNL::Matrices::SlicedEllpack< int,    TNL::Devices::Cuda, int >,
-    TNL::Matrices::SlicedEllpack< long,   TNL::Devices::Cuda, int >,
-    TNL::Matrices::SlicedEllpack< float,  TNL::Devices::Cuda, int >,
-    TNL::Matrices::SlicedEllpack< double, TNL::Devices::Cuda, int >,
-    TNL::Matrices::SlicedEllpack< int,    TNL::Devices::Cuda, long >,
-    TNL::Matrices::SlicedEllpack< long,   TNL::Devices::Cuda, long >,
-    TNL::Matrices::SlicedEllpack< float,  TNL::Devices::Cuda, long >,
-    TNL::Matrices::SlicedEllpack< double, TNL::Devices::Cuda, long >
+   ,TNL::Matrices::SparseMatrix< int,     TNL::Devices::Cuda, int,   TNL::Matrices::GeneralMatrix, ColumnMajorSlicedEllpack >,
+    TNL::Matrices::SparseMatrix< long,    TNL::Devices::Cuda, int,   TNL::Matrices::GeneralMatrix, ColumnMajorSlicedEllpack >,
+    TNL::Matrices::SparseMatrix< float,   TNL::Devices::Cuda, int,   TNL::Matrices::GeneralMatrix, ColumnMajorSlicedEllpack >,
+    TNL::Matrices::SparseMatrix< double,  TNL::Devices::Cuda, int,   TNL::Matrices::GeneralMatrix, ColumnMajorSlicedEllpack >,
+    TNL::Matrices::SparseMatrix< int,     TNL::Devices::Cuda, long,  TNL::Matrices::GeneralMatrix, ColumnMajorSlicedEllpack >,
+    TNL::Matrices::SparseMatrix< long,    TNL::Devices::Cuda, long,  TNL::Matrices::GeneralMatrix, ColumnMajorSlicedEllpack >,
+    TNL::Matrices::SparseMatrix< float,   TNL::Devices::Cuda, long,  TNL::Matrices::GeneralMatrix, ColumnMajorSlicedEllpack >,
+    TNL::Matrices::SparseMatrix< double,  TNL::Devices::Cuda, long,  TNL::Matrices::GeneralMatrix, ColumnMajorSlicedEllpack >
 #endif
 >;
 
-TYPED_TEST_SUITE( SlicedEllpackMatrixTest, SlicedEllpackMatrixTypes );
+TYPED_TEST_SUITE( SlicedEllpackMatrixTest, SlicedEllpackMatrixTypes);
+
+TYPED_TEST( SlicedEllpackMatrixTest, Constructors )
+{
+    using SlicedEllpackMatrixType = typename TestFixture::SlicedEllpackMatrixType;
+
+    test_Constructors< SlicedEllpackMatrixType >();
+}
 
 TYPED_TEST( SlicedEllpackMatrixTest, setDimensionsTest )
 {
@@ -64,19 +77,12 @@ TYPED_TEST( SlicedEllpackMatrixTest, setDimensionsTest )
     test_SetDimensions< SlicedEllpackMatrixType >();
 }
 
-//TYPED_TEST( SlicedEllpackMatrixTest, setCompressedRowLengthsTest )
-//{
-////    using SlicedEllpackMatrixType = typename TestFixture::SlicedEllpackMatrixType;
-//
-////    test_SetCompressedRowLengths< SlicedEllpackMatrixType >();
-//
-//    bool testRan = false;
-//    EXPECT_TRUE( testRan );
-//    std::cout << "\nTEST DID NOT RUN. NOT WORKING.\n\n";
-//    std::cout << "      This test is dependent on the input format. \n";
-//    std::cout << "      Almost every format allocates elements per row differently.\n\n";
-//    std::cout << "\n    TODO: Finish implementation of getNonZeroRowLength (Only non-zero elements, not the number of allocated elements.)\n\n";
-//}
+TYPED_TEST( SlicedEllpackMatrixTest, setCompressedRowLengthsTest )
+{
+   using SlicedEllpackMatrixType = typename TestFixture::SlicedEllpackMatrixType;
+
+   test_SetCompressedRowLengths< SlicedEllpackMatrixType >();
+}
 
 TYPED_TEST( SlicedEllpackMatrixTest, setLikeTest )
 {
@@ -90,6 +96,13 @@ TYPED_TEST( SlicedEllpackMatrixTest, resetTest )
     using SlicedEllpackMatrixType = typename TestFixture::SlicedEllpackMatrixType;
 
     test_Reset< SlicedEllpackMatrixType >();
+}
+
+TYPED_TEST( SlicedEllpackMatrixTest, getRowTest )
+{
+    using SlicedEllpackMatrixType = typename TestFixture::SlicedEllpackMatrixType;
+
+    test_GetRow< SlicedEllpackMatrixType >();
 }
 
 TYPED_TEST( SlicedEllpackMatrixTest, setElementTest )
@@ -106,13 +119,6 @@ TYPED_TEST( SlicedEllpackMatrixTest, addElementTest )
     test_AddElement< SlicedEllpackMatrixType >();
 }
 
-TYPED_TEST( SlicedEllpackMatrixTest, setRowTest )
-{
-    using SlicedEllpackMatrixType = typename TestFixture::SlicedEllpackMatrixType;
-
-    test_SetRow< SlicedEllpackMatrixType >();
-}
-
 TYPED_TEST( SlicedEllpackMatrixTest, vectorProductTest )
 {
     using SlicedEllpackMatrixType = typename TestFixture::SlicedEllpackMatrixType;
@@ -120,11 +126,18 @@ TYPED_TEST( SlicedEllpackMatrixTest, vectorProductTest )
     test_VectorProduct< SlicedEllpackMatrixType >();
 }
 
+TYPED_TEST( SlicedEllpackMatrixTest, rowsReduction )
+{
+    using SlicedEllpackMatrixType = typename TestFixture::SlicedEllpackMatrixType;
+
+    test_RowsReduction< SlicedEllpackMatrixType >();
+}
+
 TYPED_TEST( SlicedEllpackMatrixTest, saveAndLoadTest )
 {
     using SlicedEllpackMatrixType = typename TestFixture::SlicedEllpackMatrixType;
 
-    test_SaveAndLoad< SlicedEllpackMatrixType >( "test_SparseMatrixTest_SlicedEllpack" );
+    test_SaveAndLoad< SlicedEllpackMatrixType >( "test_SparseMatrixTest_SlicedEllpack_segments" );
 }
 
 TYPED_TEST( SlicedEllpackMatrixTest, printTest )

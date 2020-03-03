@@ -19,6 +19,7 @@
 #include <vector>
 #include <utility>  // std::pair
 #include <limits>   // std::numeric_limits
+#include <TNL/Allocators/Host.h>
 #include <TNL/Matrices/Dense.h>
 #include <TNL/Containers/Vector.h>
 #include <TNL/Containers/VectorView.h>
@@ -124,8 +125,8 @@ public:
       preCommPatternEnds.setLike( commPatternEnds );
       for( int j = 0; j < nproc; j++ )
       for( int i = 0; i < nproc; i++ ) {
-         preCommPatternStarts.setElementFast( j, i, span_starts.getElement( i ) );
-         preCommPatternEnds.setElementFast( j, i, span_ends.getElement( i ) );
+         preCommPatternStarts.setElement( j, i, span_starts.getElement( i ) );
+         preCommPatternEnds.setElement( j, i, span_ends.getElement( i ) );
       }
 
       // assemble the commPattern* matrices
@@ -175,7 +176,7 @@ public:
              continue;
          if( commPatternStarts( rank, j ) < commPatternEnds( rank, j ) )
             commRequests.push_back( CommunicatorType::IRecv(
-                     &globalBuffer[ commPatternStarts( rank, j ) ],
+                     globalBuffer.getPointer( commPatternStarts( rank, j ) ),
                      commPatternEnds( rank, j ) - commPatternStarts( rank, j ),
                      j, 0, group ) );
       }
@@ -235,7 +236,7 @@ public:
 
 protected:
    // communication pattern
-   Matrices::Dense< IndexType, Devices::Host, int > commPatternStarts, commPatternEnds;
+   Matrices::Dense< IndexType, Devices::Host, int, true, Allocators::Host< IndexType > > commPatternStarts, commPatternEnds;
 
    // span of rows with only block-diagonal entries
    std::pair< IndexType, IndexType > localOnlySpan;

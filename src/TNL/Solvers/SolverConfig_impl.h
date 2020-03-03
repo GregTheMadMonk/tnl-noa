@@ -16,8 +16,7 @@
 #include <TNL/Solvers/PDE/ExplicitTimeStepper.h>
 #include <TNL/Solvers/PDE/TimeDependentPDESolver.h>
 #include <TNL/Solvers/LinearSolverTypeResolver.h>
-#include <TNL/Matrices/CSR.h>
-#include <TNL/Meshes/DistributedMeshes/DistributedGrid.h>
+#include <TNL/Matrices/Legacy/CSR.h>
 
 namespace TNL {
 namespace Solvers {
