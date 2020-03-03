@@ -45,29 +45,6 @@ MatrixView( const IndexType rows_,
 template< typename Real,
           typename Device,
           typename Index >
-void
-MatrixView< Real, Device, Index >::
-getCompressedRowLengths( CompressedRowLengthsVector& rowLengths ) const
-{
-   rowLengths.setSize( this->getRows() );
-   getCompressedRowLengths( rowLengths.getView() );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
-void
-MatrixView< Real, Device, Index >::
-getCompressedRowLengths( CompressedRowLengthsVectorView rowLengths ) const
-{
-   TNL_ASSERT_EQ( rowLengths.getSize(), this->getRows(), "invalid size of the rowLengths vector" );
-   for( IndexType row = 0; row < this->getRows(); row++ )
-      rowLengths.setElement( row, this->getRowLength( row ) );
-}
-
-template< typename Real,
-          typename Device,
-          typename Index >
 Index
 MatrixView< Real, Device, Index >::
 getAllocatedElementsCount() const
@@ -243,57 +220,6 @@ computeColorsVector(Containers::Vector<Index, Device, Index> &colorsVector)
         }
     }
 }
-
-/*
-#ifdef HAVE_CUDA
-template< typename Matrix,
-          typename InVector,
-          typename OutVector >
-__global__ void MatrixVectorProductCudaKernel( const Matrix* matrix,
-                                               const InVector* inVector,
-                                               OutVector* outVector,
-                                               int gridIdx )
-{
-   static_assert( std::is_same< typename Matrix::DeviceType, Devices::Cuda >::value, "" );
-   const typename Matrix::IndexType rowIdx = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
-   if( rowIdx < matrix->getRows() )
-      ( *outVector )[ rowIdx ] = matrix->rowVectorProduct( rowIdx, *inVector );
-}
-#endif
-
-template< typename Matrix,
-          typename InVector,
-          typename OutVector >
-void MatrixVectorProductCuda( const Matrix& matrix,
-                                 const InVector& inVector,
-                                 OutVector& outVector )
-{
-#ifdef HAVE_CUDA
-   typedef typename Matrix::IndexType IndexType;
-   Matrix* kernel_this = Cuda::passToDevice( matrix );
-   InVector* kernel_inVector = Cuda::passToDevice( inVector );
-   OutVector* kernel_outVector = Cuda::passToDevice( outVector );
-   dim3 cudaBlockSize( 256 ), cudaGridSize( Cuda::getMaxGridSize() );
-   const IndexType cudaBlocks = roundUpDivision( matrix.getRows(), cudaBlockSize.x );
-   const IndexType cudaGrids = roundUpDivision( cudaBlocks, Cuda::getMaxGridSize() );
-   for( IndexType gridIdx = 0; gridIdx < cudaGrids; gridIdx++ )
-   {
-      if( gridIdx == cudaGrids - 1 )
-         cudaGridSize.x = cudaBlocks % Cuda::getMaxGridSize();
-      MatrixVectorProductCudaKernel<<< cudaGridSize, cudaBlockSize >>>
-                                     ( kernel_this,
-                                       kernel_inVector,
-                                       kernel_outVector,
-                                       gridIdx );
-      TNL_CHECK_CUDA_DEVICE;
-   }
-   Cuda::freeFromDevice( kernel_this );
-   Cuda::freeFromDevice( kernel_inVector );
-   Cuda::freeFromDevice( kernel_outVector );
-   TNL_CHECK_CUDA_DEVICE;
-#endif
-}
-*/
 
 } // namespace Matrices
 } // namespace TNL

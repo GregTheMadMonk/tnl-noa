@@ -250,21 +250,6 @@ computeColorsVector(Containers::Vector<Index, Device, Index> &colorsVector)
     }
 }
 
-template< typename Real,
-          typename Device,
-          typename Index,
-          typename RealAllocator >
-void
-Matrix< Real, Device, Index, RealAllocator >::
-copyFromHostToCuda( Matrix< Real, Devices::Host, Index >& matrix )
-{
-    this->numberOfColors = matrix.getNumberOfColors();
-    this->columns = matrix.getColumns();
-    this->rows = matrix.getRows();
-
-    this->values.setSize( matrix.getValuesSize() );
-}
-
 #ifdef HAVE_CUDA
 template< typename Matrix,
           typename InVector,

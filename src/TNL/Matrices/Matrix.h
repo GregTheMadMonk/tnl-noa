@@ -92,18 +92,11 @@ public:
    [[deprecated]]
    void computeColorsVector(Containers::Vector<Index, Device, Index> &colorsVector);
 
-   // TODO: copy should be done in the operator= and it should work the other way too
-   void copyFromHostToCuda( Matrices::Matrix< Real, Devices::Host, Index >& matrix );
-
-   // TODO: missing implementation!
-   //__cuda_callable__
-   //Index getValuesSize() const;
-
    protected:
 
    IndexType rows, columns;
 
-   // TODO: remove1
+   // TODO: remove
    IndexType numberOfColors;
 
    ValuesVectorType values;

@@ -49,14 +49,6 @@ public:
    __cuda_callable__
    MatrixView( const MatrixView& view ) = default;
 
-   virtual IndexType getRowLength( const IndexType row ) const = 0;
-
-   // TODO: implementation is not parallel
-   // TODO: it would be nice if padding zeros could be stripped
-   void getCompressedRowLengths( CompressedRowLengthsVector& rowLengths ) const;
-
-   virtual void getCompressedRowLengths( CompressedRowLengthsVectorView rowLengths ) const;
-
    IndexType getAllocatedElementsCount() const;
 
    virtual IndexType getNumberOfNonzeroMatrixElements() const;
@@ -66,24 +58,6 @@ public:
 
    __cuda_callable__
    IndexType getColumns() const;
-
-   /****
-    * TODO: The fast variants of the following methods cannot be virtual.
-    * If they were, they could not be used in the CUDA kernels. If CUDA allows it
-    * in the future and it does not slow down, declare them as virtual here.
-    */
-
-   virtual void setElement( const IndexType row,
-                            const IndexType column,
-                            const RealType& value ) = 0;
-
-   virtual void addElement( const IndexType row,
-                            const IndexType column,
-                            const RealType& value,
-                            const RealType& thisElementMultiplicator = 1.0 ) = 0;
-
-   virtual Real getElement( const IndexType row,
-                            const IndexType column ) const = 0;
 
    __cuda_callable__
    const ValuesView& getValues() const;
@@ -134,15 +108,6 @@ std::ostream& operator << ( std::ostream& str, const MatrixView< Real, Device, I
    m.print( str );
    return str;
 }
-
-/*
-template< typename Matrix,
-          typename InVector,
-          typename OutVector >
-void MatrixVectorProductCuda( const Matrix& matrix,
-                              const InVector& inVector,
-                              OutVector& outVector );
-*/
 
 } // namespace Matrices
 } // namespace TNL
