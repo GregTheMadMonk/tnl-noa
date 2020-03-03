@@ -126,8 +126,7 @@ public:
    __cuda_callable__
    Index getValuesSize() const;
 
-   // TODO: restore this
-   //protected:
+   protected:
 
    IndexType rows, columns, numberOfColors;
 

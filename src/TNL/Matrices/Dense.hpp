@@ -918,7 +918,7 @@ operator=( const Dense< RHSReal, RHSDevice, RHSIndex, RHSRowMajorOrder, RHSRealA
    this->setLike( matrix );
    if( RowMajorOrder == RHSRowMajorOrder )
    {
-      this->values = matrix.values;
+      this->values = matrix.getValues();
       return *this;
    }
 
