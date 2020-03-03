@@ -374,8 +374,9 @@ template< typename Real,
           bool RowMajorOrder >
    template< typename Vector >
 __cuda_callable__
-typename Vector::RealType DenseMatrixView< Real, Device, Index, RowMajorOrder >::rowVectorProduct( const IndexType row,
-                                                                                   const Vector& vector ) const
+typename Vector::RealType
+DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+rowVectorProduct( const IndexType row, const Vector& vector ) const
 {
    RealType sum( 0.0 );
    // TODO: Fix this
@@ -390,8 +391,9 @@ template< typename Real,
           bool RowMajorOrder >
    template< typename InVector,
              typename OutVector >
-void DenseMatrixView< Real, Device, Index, RowMajorOrder >::vectorProduct( const InVector& inVector,
-                                                           OutVector& outVector ) const
+void
+DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+vectorProduct( const InVector& inVector, OutVector& outVector ) const
 {
    TNL_ASSERT_EQ( this->getColumns(), inVector.getSize(), "Matrix columns count differs with input vector size." );
    TNL_ASSERT_EQ( this->getRows(), outVector.getSize(), "Matrix rows count differs with output vector size." );
@@ -416,9 +418,11 @@ template< typename Real,
           typename Index,
           bool RowMajorOrder >
    template< typename Matrix >
-void DenseMatrixView< Real, Device, Index, RowMajorOrder >::addMatrix( const Matrix& matrix,
-                                              const RealType& matrixMultiplicator,
-                                              const RealType& thisMatrixMultiplicator )
+void
+DenseMatrixView< Real, Device, Index, RowMajorOrder >::
+addMatrix( const Matrix& matrix,
+           const RealType& matrixMultiplicator,
+           const RealType& thisMatrixMultiplicator )
 {
    TNL_ASSERT( this->getColumns() == matrix.getColumns() &&
               this->getRows() == matrix.getRows(),
