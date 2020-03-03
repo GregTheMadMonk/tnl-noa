@@ -9,6 +9,7 @@
 /* See Copyright Notice in tnl/Copyright */
 
 #include "tnl-diff.h"
+#include <TNL/Config/parseCommandLine.h>
 #include <TNL/Meshes/DummyMesh.h>
 #include <TNL/Meshes/Grid.h>
 
@@ -37,10 +38,7 @@ int main( int argc, char* argv[] )
    Config::ConfigDescription conf_desc;
    setupConfig( conf_desc );
    if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
-   {
-      conf_desc.printUsage( argv[ 0 ] );
-      return 1;
-   }
+      return EXIT_FAILURE;
 
    String meshFile = parameters.getParameter< String >( "mesh" );
    /*if( meshFile == "" )

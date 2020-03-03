@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#include <TNL/Config/ParameterContainer.h>
+#include <TNL/Config/parseCommandLine.h>
 #include <TNL/Meshes/TypeResolver/TypeResolver.h>
 #include <TNL/Meshes/Writers/VTKWriter.h>
 #include <TNL/Meshes/Writers/NetgenWriter.h>
@@ -124,9 +124,8 @@ int main( int argc, char* argv[] )
  
    configSetup( conf_desc );
 
-   if( ! parseCommandLine( argc, argv, conf_desc, parameters ) ) {
+   if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
       return EXIT_FAILURE;
-   }
 
    const String inputFileName = parameters.getParameter< String >( "input-file" );
    const String outputFileName = parameters.getParameter< String >( "output-file" );

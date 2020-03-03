@@ -42,12 +42,7 @@ StaticVector< Size, Real >::setup( const Config::ParameterContainer& parameters,
                                    const String& prefix )
 {
    for( int i = 0; i < Size; i++ )
-   {
-      double aux;
-      if( ! parameters.template getParameter< double >( prefix + convertToString( i ), aux ) )
-         return false;
-      this->data[ i ] = aux;
-   }
+      this->data[ i ] = parameters.template getParameter< double >( prefix + convertToString( i ) );
    return true;
 }
 

@@ -11,8 +11,7 @@
 #include "tnl-init.h"
 
 #include <TNL/File.h>
-#include <TNL/Config/ConfigDescription.h>
-#include <TNL/Config/ParameterContainer.h>
+#include <TNL/Config/parseCommandLine.h>
 #include <TNL/Functions/TestFunction.h>
 #include <TNL/Meshes/DummyMesh.h>
 #include <TNL/Meshes/Grid.h>

@@ -2,110 +2,119 @@
                           ConfigEntry.h  -  description
                              -------------------
     begin                : Jul 5, 2014
-    copyright            : (C) 2014 by Tomas Oberhuber
+    copyright            : (C) 2014 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 /* See Copyright Notice in tnl/Copyright */
 
+// Implemented by: Tomáš Oberhuber, Jakub Klinkovský
+
 #pragma once
 
 #include <vector>
+#include <sstream>
 
-#include <TNL/TypeInfo.h>
 #include <TNL/Config/ConfigEntryBase.h>
+#include <TNL/Config/ConfigEntryType.h>
 
 namespace TNL {
 namespace Config {
 
-template< typename EntryType >
-struct ConfigEntry : public ConfigEntryBase
+template< typename EntryType, typename DefaultValueType = EntryType >
+class ConfigEntry : public ConfigEntryBase
 {
-   EntryType defaultValue;
+   static_assert( std::is_same< EntryType, DefaultValueType >::value || std::is_same< std::vector< EntryType >, DefaultValueType >::value,
+                  "DefaultValueType must be the same as either EntryType or std::vector< EntryType >" );
+
+   DefaultValueType defaultValue;
 
    std::vector< EntryType > enumValues;
 
-   public:
-
-   ConfigEntry( const String& name,
-                const String& description,
+public:
+   ConfigEntry( const std::string& name,
+                const std::string& description,
                 bool required )
    : ConfigEntryBase( name,
                       description,
                       required )
    {
-      hasDefaultValue = false;
+      _hasDefaultValue = false;
    }
 
-   ConfigEntry( const String& name,
-                const String& description,
+   ConfigEntry( const std::string& name,
+                const std::string& description,
                 bool required,
-                const EntryType& defaultValue)
+                const DefaultValueType& defaultValue)
    : ConfigEntryBase( name,
                       description,
                       required ),
      defaultValue( defaultValue )
    {
-      hasDefaultValue = true;
+      _hasDefaultValue = true;
    }
 
-   String getEntryType() const
+   virtual std::string getUIEntryType() const override
    {
-      return TNL::getType< EntryType >();
+      return Config::getUIEntryType< DefaultValueType >();
    }
 
-   String getUIEntryType() const
+   virtual std::string printDefaultValue() const override
    {
-      return TNL::Config::getUIEntryType< EntryType >();
+      // printDefaultValue must be compilable even if DefaultValueType is std::vector,
+      // so we can't override the method in ConfigEntryList
+      return _print_value( defaultValue );
    }
 
-   String printDefaultValue() const
-   {
-      return convertToString( defaultValue );
-   }
-
-   std::vector< EntryType >& getEnumValues()
-   {
-      return this->enumValues;
-   }
-
-   bool hasEnumValues() const
+   virtual bool hasEnumValues() const override
    {
       if( enumValues.size() > 0 )
          return true;
       return false;
    }
 
-   void printEnumValues() const
+   virtual void printEnumValues( std::ostream& str ) const override
    {
-      std::cout << "- Can be:           ";
+      str << "- Can be:           ";
       int i;
       for( i = 0; i < (int) enumValues.size() - 1; i++ )
-         std::cout << enumValues[ i ] << ", ";
-      std::cout << enumValues[ i ];
-      std::cout << " ";
+         str << enumValues[ i ] << ", ";
+      str << enumValues[ i ];
+      str << " ";
    }
 
-   bool checkValue( const EntryType& value ) const
+   virtual DefaultValueType getDefaultValue() const
    {
-      if( this->enumValues.size() > 0 )
-      {
-         bool found( false );
-         for( int i = 0; i < (int) this->enumValues.size(); i++ )
-            if( value == this->enumValues[ i ] )
-            {
-               found = true;
-               break;
-            }
-         if( ! found )
-         {
-            std::cerr << "The value " << value << " is not allowed for the config entry " << this->name << "." << std::endl;
-            this->printEnumValues();
-            std::cerr << std::endl;
-            return false;
-         }
-      }
-      return true;
+      return defaultValue;
+   }
+
+   virtual std::vector< EntryType >& getEnumValues()
+   {
+      return enumValues;
+   }
+
+   virtual const std::vector< EntryType >& getEnumValues() const
+   {
+      return enumValues;
+   }
+
+private:
+   static std::string _print_value( const EntryType& value )
+   {
+      std::stringstream str;
+      str << value;
+      return str.str();
+   }
+
+   static std::string _print_value( const std::vector< EntryType >& vec )
+   {
+      std::stringstream str;
+      str << "[ ";
+      for( std::size_t i = 0; i < vec.size() - 1; i++ )
+         str << vec[ i ] << ", ";
+      str << vec[ vec.size() - 1 ];
+      str << " ]";
+      return str.str();
    }
 };
 

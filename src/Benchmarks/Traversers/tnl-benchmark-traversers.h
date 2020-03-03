@@ -16,7 +16,7 @@
 //#include "grid-traversing.h"
 #include "GridTraversersBenchmark.h"
 
-#include <TNL/Config/ConfigDescription.h>
+#include <TNL/Config/parseCommandLine.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Algorithms/ParallelFor.h>
@@ -490,10 +490,8 @@ int main( int argc, char* argv[] )
    Config::ParameterContainer parameters;
    
    setupConfig( config );
-   if( ! parseCommandLine( argc, argv, config, parameters ) ) {
-      config.printUsage( argv[ 0 ] );
+   if( ! parseCommandLine( argc, argv, config, parameters ) )
       return EXIT_FAILURE;
-   }
 
    if( ! Devices::Host::setup( parameters ) ||
        ! Devices::Cuda::setup( parameters ) )

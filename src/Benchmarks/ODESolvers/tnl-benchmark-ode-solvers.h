@@ -20,8 +20,7 @@
 #include <TNL/Debugging/FPE.h>
 #endif
 
-#include <TNL/Config/ConfigDescription.h>
-#include <TNL/Config/ParameterContainer.h>
+#include <TNL/Config/parseCommandLine.h>
 #include <TNL/Devices/Host.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Communicators/MpiCommunicator.h>
@@ -193,7 +192,7 @@ configSetup( Config::ConfigDescription& config )
    config.addEntryEnum( "overwrite" );
    config.addEntry< int >( "loops", "Number of repetitions of the benchmark.", 10 );
    config.addEntry< int >( "verbose", "Verbose mode.", 1 );
-   config.addList< String >( "solvers", "Comma-separated list of solvers to run benchmarks for.", "all" );
+   config.addList< String >( "solvers", "List of solvers to run benchmarks for.", {"all"} );
    config.addEntryEnum< String >( "euler" );
    config.addEntryEnum< String >( "merson" );
    config.addEntryEnum< String >( "all" );
@@ -233,10 +232,8 @@ main( int argc, char* argv[] )
    Communicators::ScopedInitializer< CommunicatorType > scopedInit(argc, argv);
    const int rank = CommunicatorType::GetRank( CommunicatorType::AllGroup );
 
-   if( ! parseCommandLine( argc, argv, conf_desc, parameters ) ) {
-      conf_desc.printUsage( argv[ 0 ] );
+   if( ! parseCommandLine( argc, argv, conf_desc, parameters ) )
       return EXIT_FAILURE;
-   }
    if( ! Devices::Host::setup( parameters ) ||
        ! Devices::Cuda::setup( parameters ) ||
        ! CommunicatorType::setup( parameters ) )

@@ -13,6 +13,7 @@
 #include <TNL/Solvers/SolverInitiator.h>
 #include <TNL/Solvers/SolverStarter.h>
 #include <TNL/Solvers/SolverConfig.h>
+#include <TNL/Config/parseCommandLine.h>
 #include <TNL/Devices/Cuda.h>
 #include <TNL/Communicators/MpiCommunicator.h>
 #include <TNL/Communicators/ScopedInitializer.h>

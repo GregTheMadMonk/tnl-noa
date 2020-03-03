@@ -2,11 +2,13 @@
                           ConfigDelimiter.h  -  description
                              -------------------
     begin                : Jul 5, 2014
-    copyright            : (C) 2014 by Tomas Oberhuber
+    copyright            : (C) 2014 by Tomas Oberhuber et al.
     email                : tomas.oberhuber@fjfi.cvut.cz
  ***************************************************************************/
 
 /* See Copyright Notice in tnl/Copyright */
+
+// Implemented by: Tomáš Oberhuber, Jakub Klinkovský
 
 #pragma once
 
@@ -15,17 +17,16 @@
 namespace TNL {
 namespace Config {
 
-struct ConfigDelimiter : public ConfigEntryBase
+class ConfigDelimiter : public ConfigEntryBase
 {
-   ConfigDelimiter( const String& delimiter )
+public:
+   ConfigDelimiter( const std::string& delimiter )
    : ConfigEntryBase( "", delimiter, false )
    {}
 
-   bool isDelimiter() const { return true; };
+   virtual bool isDelimiter() const override { return true; };
 
-   String getEntryType() const { return ""; };
-
-   String getUIEntryType() const { return ""; };
+   virtual std::string getUIEntryType() const override { return ""; };
 };
 
 } //namespace Config
