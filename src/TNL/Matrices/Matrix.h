@@ -96,8 +96,8 @@ public:
    void copyFromHostToCuda( Matrices::Matrix< Real, Devices::Host, Index >& matrix );
 
    // TODO: missing implementation!
-   __cuda_callable__
-   Index getValuesSize() const;
+   //__cuda_callable__
+   //Index getValuesSize() const;
 
    protected:
 
