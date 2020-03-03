@@ -14,7 +14,7 @@
 #include <TNL/Containers/Vector.h>
 
 namespace TNL {
-namespace Matrices {   
+namespace Matrices {
 
 template< typename Device >
 class EllpackDeviceDependentCode;
@@ -37,6 +37,7 @@ public:
    typedef Index IndexType;
    typedef typename Sparse< RealType, DeviceType, IndexType >::CompressedRowLengthsVector CompressedRowLengthsVector;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
+   typedef typename Sparse< RealType, DeviceType, IndexType >::CompressedRowLengthsVectorView CompressedRowLengthsVectorView;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
    typedef Sparse< Real, Device, Index > BaseType;
@@ -59,20 +60,22 @@ public:
 
    void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths );
 
+   void getCompressedRowLengths( CompressedRowLengthsVectorView rowLengths ) const;
+
    void setConstantCompressedRowLengths( const IndexType& rowLengths );
 
    IndexType getRowLength( const IndexType row ) const;
 
    __cuda_callable__
    IndexType getRowLengthFast( const IndexType row ) const;
-   
+
    IndexType getNonZeroRowLength( const IndexType row ) const;
 
    template< typename Real2, typename Device2, typename Index2 >
    void setLike( const Ellpack< Real2, Device2, Index2 >& matrix );
 
    void reset();
- 
+
    template< typename Real2, typename Device2, typename Index2 >
    bool operator == ( const Ellpack< Real2, Device2, Index2 >& matrix ) const;
 
@@ -175,9 +178,9 @@ public:
 								const Vector& old_x,
 								Vector& x,
 								const RealType& omega ) const;
-   
+
    // copy assignment
-   Ellpack& operator=( const Ellpack& matrix );   
+   Ellpack& operator=( const Ellpack& matrix );
 
    // cross-device copy assignment
    template< typename Real2, typename Device2, typename Index2,

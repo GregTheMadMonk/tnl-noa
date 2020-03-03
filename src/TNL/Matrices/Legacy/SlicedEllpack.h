@@ -66,6 +66,7 @@ public:
    typedef Index IndexType;
    typedef typename Sparse< RealType, DeviceType, IndexType >::CompressedRowLengthsVector CompressedRowLengthsVector;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
+   typedef typename Sparse< RealType, DeviceType, IndexType >::CompressedRowLengthsVectorView CompressedRowLengthsVectorView;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
    typedef Sparse< Real, Device, Index > BaseType;
@@ -88,6 +89,8 @@ public:
                        const IndexType columns );
 
    void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths );
+
+   void getCompressedRowLengths( CompressedRowLengthsVectorView rowLengths ) const;
 
    IndexType getRowLength( const IndexType row ) const;
 

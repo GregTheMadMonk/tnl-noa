@@ -8,7 +8,7 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
-#pragma once 
+#pragma once
 
 #include <TNL/Matrices/Legacy/Sparse.h>
 #include <TNL/Containers/Vector.h>
@@ -18,7 +18,7 @@
 
 namespace TNL {
 namespace Matrices {
-   
+
 #ifdef HAVE_UMFPACK
     template< typename Matrix, typename Preconditioner >
     class UmfpackWrapper;
@@ -48,6 +48,7 @@ public:
    using DeviceType = Device;
    using IndexType = Index;
    typedef typename Sparse< RealType, DeviceType, IndexType >::CompressedRowLengthsVector CompressedRowLengthsVector;
+   typedef typename Sparse< RealType, DeviceType, IndexType >::CompressedRowLengthsVectorView CompressedRowLengthsVectorView;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
    typedef Sparse< Real, Device, Index > BaseType;
    using MatrixRow = typename BaseType::MatrixRow;
@@ -71,13 +72,15 @@ public:
 
    void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths );
 
+   void getCompressedRowLengths( CompressedRowLengthsVectorView rowLengths ) const;
+
    IndexType getRowLength( const IndexType row ) const;
 
    __cuda_callable__
    IndexType getRowLengthFast( const IndexType row ) const;
 
    IndexType getNonZeroRowLength( const IndexType row ) const;
-   
+
    __cuda_callable__
    IndexType getNonZeroRowLengthFast( const IndexType row ) const;
 
@@ -264,7 +267,7 @@ protected:
    int cudaWarpSize, hybridModeSplit;
 
    typedef CSRDeviceDependentCode< DeviceType > DeviceDependentCode;
-   
+
    friend class CSRDeviceDependentCode< DeviceType >;
    friend class CusparseCSR< RealType >;
 };

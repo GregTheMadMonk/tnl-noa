@@ -32,7 +32,7 @@ template< typename Real, typename Device, typename Index >
 class BiEllpack : public Sparse< Real, Device, Index >
 {
 private:
-    
+
     // convenient template alias for controlling the selection of copy-assignment operator
     template< typename Device2 >
     using Enabler = std::enable_if< ! std::is_same< Device2, Device >::value >;
@@ -40,13 +40,14 @@ private:
     // friend class will be needed for templated assignment operators
     template< typename Real2, typename Device2, typename Index2 >
     friend class BiEllpack;
-    
+
 public:
 	typedef Real RealType;
 	typedef Device DeviceType;
 	typedef Index IndexType;
 	typedef typename Sparse< RealType, DeviceType, IndexType >::CompressedRowLengthsVector CompressedRowLengthsVector;
    typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
+   typedef typename Sparse< RealType, DeviceType, IndexType >::CompressedRowLengthsVectorView CompressedRowLengthsVectorView;
 	typedef typename Sparse< RealType, DeviceType, IndexType >::ValuesVector ValuesVector;
 	typedef typename Sparse< RealType, DeviceType, IndexType >::ColumnIndexesVector ColumnIndexesVector;
 
@@ -62,15 +63,17 @@ public:
 
    void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths );
 
+   void getCompressedRowLengths( CompressedRowLengthsVectorView rowLengths ) const;
+
 	IndexType getRowLength( const IndexType row ) const;
 
 	template< typename Real2,
 			  typename Device2,
 			  typename Index2 >
 	void setLike( const BiEllpack< Real2, Device2, Index2 >& matrix );
-        
+
         void reset();
-        
+
         template< typename Real2, typename Device2, typename Index2 >
         bool operator == ( const BiEllpack< Real2, Device2, Index2 >& matrix ) const;
 
@@ -142,7 +145,7 @@ public:
 	IndexType getNumberOfGroups( const IndexType row ) const;
 
 	bool vectorProductTest() const;
-        
+
         // copy assignment
         BiEllpack& operator=( const BiEllpack& matrix );
 
@@ -160,7 +163,7 @@ public:
 	void load( const String& fileName );
 
 	void print( std::ostream& str ) const;
-        
+
         void printValues() const;
 
 	void performRowBubbleSort( Containers::Vector< Index, Device, Index >& tempRowLengths );

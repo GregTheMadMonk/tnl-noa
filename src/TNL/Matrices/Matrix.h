@@ -47,26 +47,15 @@ public:
            const IndexType columns,
            const RealAllocatorType& allocator = RealAllocatorType() );
 
-   virtual void setDimensions( const IndexType rows,
-                               const IndexType columns );
-
-   virtual void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths ) = 0;
-
-   [[deprecated]]
-   virtual IndexType getRowLength( const IndexType row ) const = 0;
-
-   // TODO: implementation is not parallel
-   // TODO: it would be nice if padding zeros could be stripped
-   //void getCompressedRowLengths( CompressedRowLengthsVector& rowLengths ) const;
-
-   virtual void getCompressedRowLengths( CompressedRowLengthsVectorView rowLengths ) const;
+   void setDimensions( const IndexType rows,
+                       const IndexType columns );
 
    template< typename Matrix_ >
    void setLike( const Matrix_& matrix );
 
    IndexType getAllocatedElementsCount() const;
 
-   virtual IndexType getNumberOfNonzeroMatrixElements() const = 0;
+   IndexType getNumberOfNonzeroMatrixElements() const;
 
    void reset();
 
@@ -75,20 +64,6 @@ public:
 
    __cuda_callable__
    IndexType getColumns() const;
-
-   //virtual TODO: uncomment
-   void setElement( const IndexType row,
-                            const IndexType column,
-                            const RealType& value );// = 0;
-
-   //virtual TODO: uncomment
-   void addElement( const IndexType row,
-                            const IndexType column,
-                            const RealType& value,
-                            const RealType& thisElementMultiplicator = 1.0 );// = 0;
-
-   virtual Real getElement( const IndexType row,
-                            const IndexType column ) const = 0;
 
    const ValuesVectorType& getValues() const;
 

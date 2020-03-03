@@ -33,7 +33,7 @@ String Ellpack< Real, Device, Index >::getSerializationType()
 {
    return String( "Matrices::Ellpack< " ) +
           String( TNL::getType< Real >() ) +
-          ", [any device], " + 
+          ", [any device], " +
           getType< Index >() +
           String( " >" );
 }
@@ -66,7 +66,7 @@ void Ellpack< Real, Device, Index >::setDimensions( const IndexType rows,
            IndexType missingRows = this->rows - this->alignedRows;
 
            missingRows = roundToMultiple( missingRows, Cuda::getWarpSize() );
-           
+
            this->alignedRows +=  missingRows;
        }
    }
@@ -86,8 +86,18 @@ void Ellpack< Real, Device, Index >::setCompressedRowLengths( ConstCompressedRow
    TNL_ASSERT_EQ( this->getRows(), rowLengths.getSize(), "wrong size of the rowLengths vector" );
 
    this->rowLengths = this->maxRowLength = max( rowLengths );
-   
+
    allocateElements();
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void Ellpack< Real, Device, Index >::getCompressedRowLengths( CompressedRowLengthsVectorView rowLengths ) const
+{
+   TNL_ASSERT_EQ( rowLengths.getSize(), this->getRows(), "invalid size of the rowLengths vector" );
+   for( IndexType row = 0; row < this->getRows(); row++ )
+      rowLengths.setElement( row, this->getRowLength( row ) );
 }
 
 template< typename Real,
@@ -769,13 +779,13 @@ template< typename Real,
 void Ellpack< Real, Device, Index >::allocateElements()
 {
    IndexType numMtxElmnts = this->alignedRows * this->rowLengths;
-   
+
    if( this->alignedRows != 0 )
    {
-       TNL_ASSERT_EQ( numMtxElmnts / this->alignedRows, this->rowLengths, 
+       TNL_ASSERT_EQ( numMtxElmnts / this->alignedRows, this->rowLengths,
                       "Ellpack cannot store this matrix. The number of matrix elements has overflown the value that IndexType is capable of storing" );
    }
-   
+
    Sparse< Real, Device, Index >::allocateMatrixElements( this->alignedRows * this->rowLengths );
 }
 

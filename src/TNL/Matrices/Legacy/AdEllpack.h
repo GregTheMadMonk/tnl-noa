@@ -10,8 +10,8 @@
 
 /****
  * This class implements AdELL format from:
- * 
- * Maggioni M., Berger-Wolf T., 
+ *
+ * Maggioni M., Berger-Wolf T.,
  * AdELL: An Adaptive Warp-Balancing ELL Format for Efficient Sparse Matrix-Vector Multiplication on GPUs,
  * In proceedings of 42nd International Conference on Parallel Processing, 2013.
  */
@@ -33,7 +33,7 @@ struct warpInfo
     using RealType = typename MatrixType::RealType;
     using DeviceType = typename MatrixType::DeviceType;
     using IndexType = typename MatrixType::IndexType;
-    
+
     IndexType offset;
     IndexType rowOffset;
     IndexType localLoad;
@@ -47,7 +47,7 @@ template< typename MatrixType >
 class warpList
 {
 public:
-    
+
     using RealType = typename MatrixType::RealType;
     using DeviceType = typename MatrixType::DeviceType;
     using IndexType = typename MatrixType::IndexType;
@@ -74,7 +74,7 @@ public:
     { return this->tail; }
 
     ~warpList();
-    
+
     void printList()
     {
         if( this->getHead() == this->getTail() )
@@ -114,7 +114,7 @@ private:
    // friend class will be needed for templated assignment operators
    template< typename Real2, typename Device2, typename Index2 >
    friend class AdEllpack;
-   
+
 public:
 
     typedef Real RealType;
@@ -122,6 +122,7 @@ public:
     typedef Index IndexType;
     typedef typename Sparse< RealType, DeviceType, IndexType >::CompressedRowLengthsVector CompressedRowLengthsVector;
     typedef typename Sparse< RealType, DeviceType, IndexType >::ConstCompressedRowLengthsVectorView ConstCompressedRowLengthsVectorView;
+    typedef typename Sparse< RealType, DeviceType, IndexType >::CompressedRowLengthsVectorView CompressedRowLengthsVectorView;
 
     template< typename _Real = Real,
               typename _Device = Device,
@@ -131,6 +132,8 @@ public:
     AdEllpack();
 
     void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths );
+
+    void getCompressedRowLengths( CompressedRowLengthsVectorView rowLengths ) const;
 
     IndexType getWarp( const IndexType row ) const;
 
@@ -143,7 +146,7 @@ public:
     void setLike( const AdEllpack< Real2, Device2, Index2 >& matrix );
 
     void reset();
-    
+
     template< typename Real2, typename Device2, typename Index2 >
     bool operator == ( const AdEllpack< Real2, Device2, Index2 >& matrix ) const;
 
@@ -186,7 +189,7 @@ public:
               typename OutVector >
     void vectorProduct( const InVector& inVector,
                         OutVector& outVector ) const;
-    
+
     // copy assignment
     AdEllpack& operator=( const AdEllpack& matrix );
 
@@ -194,7 +197,7 @@ public:
     template< typename Real2, typename Device2, typename Index2,
              typename = typename Enabler< Device2 >::type >
     AdEllpack& operator=( const AdEllpack< Real2, Device2, Index2 >& matrix );
-    
+
     void save( File& file ) const;
 
     void load( File& file );
@@ -242,29 +245,29 @@ public:
    void spmvCuda4( const InVector& inVector,
                    OutVector& outVector,
                    const int gridIdx ) const;
-   
+
    template< typename InVector,
           typename OutVector >
    __device__
    void spmvCuda8( const InVector& inVector,
                    OutVector& outVector,
                    const int gridIdx ) const;
-   
+
    template< typename InVector,
           typename OutVector >
    __device__
    void spmvCuda16( const InVector& inVector,
                     OutVector& outVector,
-                    const int gridIdx ) const;   
+                    const int gridIdx ) const;
 
    template< typename InVector,
           typename OutVector >
    __device__
    void spmvCuda32( const InVector& inVector,
                     OutVector& outVector,
-                    const int gridIdx ) const;   
-   
-   
+                    const int gridIdx ) const;
+
+
 #endif
 
 

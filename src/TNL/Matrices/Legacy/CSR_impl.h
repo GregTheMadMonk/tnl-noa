@@ -20,7 +20,7 @@
 #endif
 
 namespace TNL {
-namespace Matrices {   
+namespace Matrices {
 
 #ifdef HAVE_CUSPARSE
 template< typename Real, typename Index >
@@ -102,6 +102,16 @@ void CSR< Real, Device, Index >::setCompressedRowLengths( ConstCompressedRowLeng
 template< typename Real,
           typename Device,
           typename Index >
+void CSR< Real, Device, Index >::getCompressedRowLengths( CompressedRowLengthsVectorView rowLengths ) const
+{
+   TNL_ASSERT_EQ( rowLengths.getSize(), this->getRows(), "invalid size of the rowLengths vector" );
+   for( IndexType row = 0; row < this->getRows(); row++ )
+      rowLengths.setElement( row, this->getRowLength( row ) );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
 Index CSR< Real, Device, Index >::getRowLength( const IndexType row ) const
 {
    return this->rowPointers.getElement( row + 1 ) - this->rowPointers.getElement( row );
@@ -131,7 +141,7 @@ template< typename Real,
           typename Index >
 __cuda_callable__
 Index CSR< Real, Device, Index >::getNonZeroRowLengthFast( const IndexType row ) const
-{  
+{
    ConstMatrixRow matrixRow = this->getRow( row );
    return matrixRow.getNonZeroElementsCount();
 }
@@ -884,10 +894,10 @@ template<>
 class tnlCusparseCSRWrapper< float, int >
 {
    public:
- 
+
       typedef float Real;
       typedef int Index;
- 
+
       static void vectorProduct( const Index rows,
                                  const Index columns,
                                  const Index nnz,
@@ -924,10 +934,10 @@ template<>
 class tnlCusparseCSRWrapper< double, int >
 {
    public:
- 
+
       typedef double Real;
       typedef int Index;
- 
+
       static void vectorProduct( const Index rows,
                                  const Index columns,
                                  const Index nnz,

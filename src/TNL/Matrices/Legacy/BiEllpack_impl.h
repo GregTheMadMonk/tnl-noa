@@ -78,9 +78,9 @@ setCompressedRowLengths( ConstCompressedRowLengthsVectorView constRowLengths )
     CompressedRowLengthsVector rowLengths;
     rowLengths.reset();
     rowLengths.setLike( constRowLengths );
-    
+
     rowLengths = constRowLengths;
-    
+
     if( this->getRows() % this->warpSize != 0 )
             this->setVirtualRows( this->getRows() + this->warpSize - ( this->getRows() % this->warpSize ) );
     else
@@ -88,7 +88,7 @@ setCompressedRowLengths( ConstCompressedRowLengthsVectorView constRowLengths )
     IndexType strips = this->virtualRows / this->warpSize;
     this->rowPermArray.setSize( this->rows );
     this->groupPointers.setSize( strips * ( this->logWarpSize + 1 ) + 1 );
-    
+
     this->groupPointers.setValue( 0 );
 
     DeviceDependentCode::performRowBubbleSort( *this, rowLengths );
@@ -101,6 +101,16 @@ setCompressedRowLengths( ConstCompressedRowLengthsVectorView constRowLengths )
     DeviceDependentCode::verifyRowLengths( *this, rowLengths );
 
     return this->allocateMatrixElements( this->warpSize * this->groupPointers.getElement( strips * ( this->logWarpSize + 1 ) ) );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+void BiEllpack< Real, Device, Index >::getCompressedRowLengths( CompressedRowLengthsVectorView rowLengths ) const
+{
+   TNL_ASSERT_EQ( rowLengths.getSize(), this->getRows(), "invalid size of the rowLengths vector" );
+   for( IndexType row = 0; row < this->getRows(); row++ )
+      rowLengths.setElement( row, this->getRowLength( row ) );
 }
 
 template< typename Real,
@@ -128,7 +138,7 @@ Index BiEllpack< Real, Device, Index >::getNumberOfGroups( const IndexType row )
 	IndexType strip = row / this->warpSize;
 	IndexType rowStripPermutation = this->rowPermArray.getElement( row ) - this->warpSize * strip;
 	IndexType numberOfGroups = this->logWarpSize + 1;
-	IndexType bisection = 1;        
+	IndexType bisection = 1;
 	for( IndexType i = 0; i < this->logWarpSize + 1; i++ )
 	{
 		if( rowStripPermutation < bisection )
@@ -148,7 +158,7 @@ template< typename Real,
 		  typename Index >
 Index BiEllpack< Real, Device, Index >::getRowLength( const IndexType row ) const
 {
-	TNL_ASSERT( row >= 0 && row < this->getRows(), 
+	TNL_ASSERT( row >= 0 && row < this->getRows(),
                     std::cerr << "row = " << row << " this->getRows() = " << this->getRows() );
 
 	const IndexType strip = row / this->warpSize;
@@ -182,7 +192,7 @@ template< typename Real,
 			  typename Device2,
 			  typename Index2 >
 void BiEllpack< Real, Device, Index >::setLike( const BiEllpack< Real2, Device2, Index2 >& matrix )
-{        
+{
 	Sparse< Real, Device, Index >::setLike( matrix );
 	this->rowPermArray.setLike( matrix.rowPermArray );
 	this->groupPointers.setLike( matrix.groupPointers );
@@ -212,9 +222,9 @@ bool BiEllpack< Real, Device, Index >::operator == ( const BiEllpack< Real2, Dev
                     << " matrix.getRows() = " << matrix.getRows()
                     << " this->getColumns() = " << this->getColumns()
                     << " matrix.getColumns() = " << matrix.getColumns() );
-   
+
    TNL_ASSERT_TRUE( false, "operator == is not yet implemented for BiEllpack.");
-   
+
    // TODO: implement this
    return false;
 }
@@ -284,10 +294,10 @@ bool BiEllpack< Real, Device, Index >::addElement( const IndexType row,
                                                               const RealType& value,
                                                               const RealType& thisElementMultiplicator )
 {
-    const IndexType strip = row / this->warpSize;    
-    const IndexType groupBegin = strip * ( this->logWarpSize + 1 );    
-    const IndexType rowStripPerm = this->rowPermArray.getElement( row ) - strip * this->warpSize;    
-    IndexType elementPtr = this->groupPointers.getElement( groupBegin ) * this->warpSize + rowStripPerm;    
+    const IndexType strip = row / this->warpSize;
+    const IndexType groupBegin = strip * ( this->logWarpSize + 1 );
+    const IndexType rowStripPerm = this->rowPermArray.getElement( row ) - strip * this->warpSize;
+    IndexType elementPtr = this->groupPointers.getElement( groupBegin ) * this->warpSize + rowStripPerm;
     IndexType rowMultiplicator = 1;
     IndexType step = this->warpSize;
 
@@ -685,7 +695,7 @@ BiEllpack< Real, Device, Index >::operator=( const BiEllpack< Real2, Device2, In
                   "unknown device" );
    static_assert( std::is_same< Device2, Devices::Host >::value || std::is_same< Device2, Devices::Cuda >::value,
                   "unknown device" );
-   
+
    this->setLike( matrix );
    this->values = matrix.values;
    this->columnIndexes = matrix.columnIndexes;
@@ -777,14 +787,14 @@ void BiEllpack< Real, Device, Index >::printValues() const
 {
     for( Index i = 0; i < this->values.getSize(); i++ ) {
         if( this->columnIndexes.getElement( i ) != this->getColumns() )
-            std::cout << "values.getElement( " << i << " ) = " << this->values.getElement( i ) 
+            std::cout << "values.getElement( " << i << " ) = " << this->values.getElement( i )
              << "\tcolumnIndexes.getElement( " << i << " ) = " << this->columnIndexes.getElement( i ) << std::endl;
     }
-    
+
     for( Index i = 0; i < this->rowPermArray.getSize(); i++ ) {
         std::cout << "rowPermArray[ " << i << " ] = " << this->rowPermArray.getElement( i ) << std::endl;
     }
-    
+
     for( Index i = 0; i < this->groupPointers.getSize(); i++ ) {
         std::cout << "groupPointers[ " << i << " ] = " << this->groupPointers.getElement( i ) << std::endl;
     }
@@ -1146,7 +1156,7 @@ void BiEllpack< Real, Device, Index >::spmvCuda( const InVector& inVector,
     __syncthreads();
     if( warpStart + inWarpIdx >= this->getRows() )
         return;
-    
+
     outVector[ warpStart + inWarpIdx ] = results[ this->rowPermArray[ warpStart + inWarpIdx ] & ( cudaBlockSize - 1 ) ];
 }
 #endif
@@ -1321,7 +1331,7 @@ public:
                     const Index begin = matrix.groupPointers.getElement( groupBegin ) * matrix.warpSize + rowStripPerm * stripLength;
                     Index elementPtr = begin;
                     Index rowLength = 0;
-                    
+
                     for( Index group = 0; group < matrix.getNumberOfGroups( row ); group++ )
                     {
                         for( Index i = 0; i < matrix.getGroupLength( strip, group ); i++ )

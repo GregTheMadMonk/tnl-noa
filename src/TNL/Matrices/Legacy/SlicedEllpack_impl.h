@@ -16,7 +16,7 @@
 #include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
-namespace Matrices {   
+namespace Matrices {
 
 template< typename Real,
           typename Device,
@@ -81,6 +81,17 @@ void SlicedEllpack< Real, Device, Index, SliceSize >::setCompressedRowLengths( C
 
    this->slicePointers.template scan< Algorithms::ScanType::Exclusive >();
    this->allocateMatrixElements( this->slicePointers.getElement( slices ) );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          int SliceSize >
+void SlicedEllpack< Real, Device, Index, SliceSize >::getCompressedRowLengths( CompressedRowLengthsVectorView rowLengths ) const
+{
+   TNL_ASSERT_EQ( rowLengths.getSize(), this->getRows(), "invalid size of the rowLengths vector" );
+   for( IndexType row = 0; row < this->getRows(); row++ )
+      rowLengths.setElement( row, this->getRowLength( row ) );
 }
 
 template< typename Real,
