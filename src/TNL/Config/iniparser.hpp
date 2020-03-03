@@ -56,6 +56,8 @@
 #include <fstream>    // for std::fstream
 #include <string.h>   // for strlen()
 #include <iomanip>    // for std::setprecision
+
+#include <TNL/TypeInfo.h>   // for TNL::getType
 /*---------------------------------------------------------------------------------------------------------------/
 / Defines & Settings
 /---------------------------------------------------------------------------------------------------------------*/
@@ -154,6 +156,8 @@ namespace INI
         T out;
         ss << v;
         ss >> out;
+        if (ss.fail())
+            throw std::runtime_error("Value '" + v + "' could not be converted to type " + TNL::getType<T>().getString() + ".");
         return out;
     }
     /// Special case for string
@@ -793,7 +797,7 @@ namespace INI
             std::map<T,M> ret;
             if (!_val.IsValid())
                 return ret;
-            for (std::map<Value,Value>::iterator it = _val->begin(); it != _val->end(); ++it)
+            for (auto it = _val->begin(); it != _val->end(); ++it)
                 ret.insert(std::pair<T,M>(it->first.AsT<T>(),it->second.AsT<M>()));
             return ret;
         }
@@ -976,7 +980,7 @@ namespace INI
                 if (error_code == INI_ERR_INVALID_FILENAME)
                     return std::string("Failed to open file ") + file_name + "!";
                 if (error_code == INI_ERR_PARSING_ERROR)
-                    return std::string("Parse error in file ") + file_name + " on line ¹" 
+                    return std::string("Parse error in file ") + file_name + " on line " 
                     + t_to_string(error_line) + ": \"" + error_line + "\""; 
                 return "Unknown error!";
             }
