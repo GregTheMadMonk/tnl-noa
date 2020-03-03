@@ -89,10 +89,12 @@ public:
 
 
    // TODO: method for symmetric matrices, should not be in general Matrix interface
+   [[deprecated]]
    __cuda_callable__
    const IndexType& getNumberOfColors() const;
 
    // TODO: method for symmetric matrices, should not be in general Matrix interface
+   [[deprecated]]
    void computeColorsVector(Containers::Vector<Index, Device, Index> &colorsVector);
 
    protected:
