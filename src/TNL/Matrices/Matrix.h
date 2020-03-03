@@ -109,13 +109,6 @@ std::ostream& operator << ( std::ostream& str, const Matrix< Real, Device, Index
    return str;
 }
 
-template< typename Matrix,
-          typename InVector,
-          typename OutVector >
-void MatrixVectorProductCuda( const Matrix& matrix,
-                              const InVector& inVector,
-                              OutVector& outVector );
-
 } // namespace Matrices
 } // namespace TNL
 
