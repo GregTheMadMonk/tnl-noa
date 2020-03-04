@@ -17,6 +17,7 @@
 
 namespace TNL {
 namespace Matrices {
+   namespace Legacy {
 
 template< typename Real,
           typename Index,
@@ -1500,5 +1501,6 @@ class ChunkedEllpackDeviceDependentCode< Devices::Cuda >
 
 };
 
+} //namespace Legacy
 } // namespace Matrices
 } // namespace TNL

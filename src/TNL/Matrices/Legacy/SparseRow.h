@@ -18,6 +18,7 @@
 
 namespace TNL {
 namespace Matrices {
+   namespace Legacy {
 
 template< typename Real, typename Index >
 class SparseRow
@@ -77,6 +78,7 @@ std::ostream& operator<<( std::ostream& str, const SparseRow< Real, Index >& row
    return str;
 }
 
+} //namespace Legacy
 } // namespace Matrices
 } // namespace TNL
 

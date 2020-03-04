@@ -17,6 +17,7 @@
 
 namespace TNL {
 namespace Matrices {
+   namespace Legacy {
 
 template< typename Real,
           typename Device,
@@ -966,5 +967,6 @@ class EllpackDeviceDependentCode< Devices::Cuda >
       }
 };
 
+} //namespace Legacy
 } // namespace Matrices
 } // namespace TNL

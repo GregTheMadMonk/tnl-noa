@@ -139,7 +139,7 @@ bool SolverConfig< ConfigTag, ProblemConfig >::configSetup( Config::ConfigDescri
    if( ConfigTagTimeDiscretisation< ConfigTag, SemiImplicitTimeDiscretisationTag >::enabled )
    {
       config.addDelimiter( " === Semi-implicit solvers parameters === " );
-      typedef Matrices::CSR< double, Devices::Host, int > MatrixType;
+      typedef Matrices::Legacy::CSR< double, Devices::Host, int > MatrixType;
       Linear::CG< MatrixType >::configSetup( config );
       Linear::BICGStab< MatrixType >::configSetup( config );
       Linear::BICGStabL< MatrixType >::configSetup( config );

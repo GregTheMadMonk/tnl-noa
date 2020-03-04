@@ -14,7 +14,8 @@
 #include <TNL/Containers/Vector.h>
 
 namespace TNL {
-namespace Matrices {   
+namespace Matrices {
+   namespace Legacy {
 
 template< typename Device >
 class SlicedEllpackSymmetricGraphDeviceDependentCode;
@@ -233,6 +234,7 @@ class SlicedEllpackSymmetricGraph : public Sparse< Real, Device, Index >
 
 };
 
+} //namespace Legacy
 } // namespace Matrices
 } // namespace TNL
 

@@ -18,6 +18,7 @@
 
 namespace TNL {
    namespace Matrices {
+      namespace Legacy {
 
 
 template< typename Real,
@@ -1499,7 +1500,7 @@ public:
     }
 
 };
-
+      } //namespace Legacy
    } //namespace Matrices
 } // namespace TNL
 

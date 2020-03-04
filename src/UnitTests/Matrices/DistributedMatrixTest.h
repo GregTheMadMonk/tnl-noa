@@ -103,12 +103,12 @@ protected:
 
 // types for which DistributedMatrixTest is instantiated
 using DistributedMatrixTypes = ::testing::Types<
-   Matrices::DistributedMatrix< Matrices::CSR< double, Devices::Host, int >, Communicators::MpiCommunicator >,
-   Matrices::DistributedMatrix< Matrices::CSR< double, Devices::Host, int >, Communicators::NoDistrCommunicator >
+   Matrices::DistributedMatrix< Matrices::Legacy::CSR< double, Devices::Host, int >, Communicators::MpiCommunicator >,
+   Matrices::DistributedMatrix< Matrices::Legacy::CSR< double, Devices::Host, int >, Communicators::NoDistrCommunicator >
 #ifdef HAVE_CUDA
    ,
-   Matrices::DistributedMatrix< Matrices::CSR< double, Devices::Cuda, int >, Communicators::MpiCommunicator >,
-   Matrices::DistributedMatrix< Matrices::CSR< double, Devices::Cuda, int >, Communicators::NoDistrCommunicator >
+   Matrices::DistributedMatrix< Matrices::Legacy::CSR< double, Devices::Cuda, int >, Communicators::MpiCommunicator >,
+   Matrices::DistributedMatrix< Matrices::Legacy::CSR< double, Devices::Cuda, int >, Communicators::NoDistrCommunicator >
 #endif
 >;
 

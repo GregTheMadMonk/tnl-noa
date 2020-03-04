@@ -11,7 +11,8 @@
 #pragma once
 
 namespace TNL {
-namespace Matrices {   
+namespace Matrices {
+   namespace Legacy {
 
 template< typename Real, typename Index >
 __cuda_callable__
@@ -91,5 +92,6 @@ setElement( const Index& elementIndex,
    this->values[ aux * this->step ] = value;
 }
 
+} //namespace Legacy
 } // namespace Matrices
 } // namespace TNL

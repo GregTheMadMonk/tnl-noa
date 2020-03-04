@@ -11,7 +11,8 @@
 #pragma once
 
 namespace TNL {
-namespace Matrices {   
+namespace Matrices {
+   namespace Legacy {
 
 template< typename MeshReal,
           typename Device,
@@ -97,5 +98,6 @@ setupMatrix( const MeshType& mesh,
    return true;
 }
 
+} //namespace Legacy
 } // namespace Matrices
 } // namespace TNL

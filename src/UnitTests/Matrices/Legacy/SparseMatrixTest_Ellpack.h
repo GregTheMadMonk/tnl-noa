@@ -27,23 +27,23 @@ protected:
 // types for which MatrixTest is instantiated
 using EllpackMatrixTypes = ::testing::Types
 <
-    TNL::Matrices::Ellpack< int,    TNL::Devices::Host, int >,
-    TNL::Matrices::Ellpack< long,   TNL::Devices::Host, int >,
-    TNL::Matrices::Ellpack< float,  TNL::Devices::Host, int >,
-    TNL::Matrices::Ellpack< double, TNL::Devices::Host, int >,
-    TNL::Matrices::Ellpack< int,    TNL::Devices::Host, long >,
-    TNL::Matrices::Ellpack< long,   TNL::Devices::Host, long >,
-    TNL::Matrices::Ellpack< float,  TNL::Devices::Host, long >,
-    TNL::Matrices::Ellpack< double, TNL::Devices::Host, long >
+    TNL::Matrices::Legacy::Ellpack< int,    TNL::Devices::Host, int >,
+    TNL::Matrices::Legacy::Ellpack< long,   TNL::Devices::Host, int >,
+    TNL::Matrices::Legacy::Ellpack< float,  TNL::Devices::Host, int >,
+    TNL::Matrices::Legacy::Ellpack< double, TNL::Devices::Host, int >,
+    TNL::Matrices::Legacy::Ellpack< int,    TNL::Devices::Host, long >,
+    TNL::Matrices::Legacy::Ellpack< long,   TNL::Devices::Host, long >,
+    TNL::Matrices::Legacy::Ellpack< float,  TNL::Devices::Host, long >,
+    TNL::Matrices::Legacy::Ellpack< double, TNL::Devices::Host, long >
 #ifdef HAVE_CUDA
-   ,TNL::Matrices::Ellpack< int,    TNL::Devices::Cuda, int >,
-    TNL::Matrices::Ellpack< long,   TNL::Devices::Cuda, int >,
-    TNL::Matrices::Ellpack< float,  TNL::Devices::Cuda, int >,
-    TNL::Matrices::Ellpack< double, TNL::Devices::Cuda, int >,
-    TNL::Matrices::Ellpack< int,    TNL::Devices::Cuda, long >,
-    TNL::Matrices::Ellpack< long,   TNL::Devices::Cuda, long >,
-    TNL::Matrices::Ellpack< float,  TNL::Devices::Cuda, long >,
-    TNL::Matrices::Ellpack< double, TNL::Devices::Cuda, long >
+   ,TNL::Matrices::Legacy::Ellpack< int,    TNL::Devices::Cuda, int >,
+    TNL::Matrices::Legacy::Ellpack< long,   TNL::Devices::Cuda, int >,
+    TNL::Matrices::Legacy::Ellpack< float,  TNL::Devices::Cuda, int >,
+    TNL::Matrices::Legacy::Ellpack< double, TNL::Devices::Cuda, int >,
+    TNL::Matrices::Legacy::Ellpack< int,    TNL::Devices::Cuda, long >,
+    TNL::Matrices::Legacy::Ellpack< long,   TNL::Devices::Cuda, long >,
+    TNL::Matrices::Legacy::Ellpack< float,  TNL::Devices::Cuda, long >,
+    TNL::Matrices::Legacy::Ellpack< double, TNL::Devices::Cuda, long >
 #endif
 >;
 

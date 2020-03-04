@@ -15,6 +15,7 @@
 
 namespace TNL {
 namespace Matrices {
+   namespace Legacy {
 
 template< typename Real,
           typename Device,
@@ -102,7 +103,7 @@ template< typename Real,
 void Sparse< Real, Device, Index >::allocateMatrixElements( const IndexType& numberOfMatrixElements )
 {
    TNL_ASSERT_GE( numberOfMatrixElements, 0, "Number of matrix elements must be non-negative." );
-   
+
    this->values.setSize( numberOfMatrixElements );
    this->columnIndexes.setSize( numberOfMatrixElements );
 
@@ -122,5 +123,6 @@ void Sparse< Real, Device, Index >::printStructure( std::ostream& str ) const
    throw Exceptions::NotImplementedError("Sparse::printStructure is not implemented yet.");
 }
 
+} //namespace Legacy
 } // namespace Matrices
 } // namespace TNL

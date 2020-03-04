@@ -26,7 +26,7 @@ protected:
 };
 
 template< typename Real, typename Device, typename Index >
-using SlicedEllpackType = TNL::Matrices::SlicedEllpack< Real, Device, Index, 32 >;
+using SlicedEllpackType = TNL::Matrices::Legacy::SlicedEllpack< Real, Device, Index, 32 >;
 
 
 // types for which MatrixTest is instantiated

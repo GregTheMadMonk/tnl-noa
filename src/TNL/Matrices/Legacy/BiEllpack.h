@@ -23,6 +23,7 @@
 
 namespace TNL {
    namespace Matrices {
+      namespace Legacy {
 
 
 template< typename Device >
@@ -216,7 +217,7 @@ private:
 	Containers::Vector< Index, Device, Index > groupPointers;
 
 };
-
+      } //namespace Legacy
    } //namespace Matrices
 } // namespace TNL
 

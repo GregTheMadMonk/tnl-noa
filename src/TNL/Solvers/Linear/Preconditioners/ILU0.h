@@ -76,7 +76,7 @@ public:
 
 protected:
    // The factors L and U are stored separately and the rows of U are reversed.
-   Matrices::CSR< RealType, DeviceType, IndexType > L, U;
+   Matrices::Legacy::CSR< RealType, DeviceType, IndexType > L, U;
 
    // Specialized methods to distinguish between normal and distributed matrices
    // in the implementation.
@@ -130,7 +130,7 @@ public:
 protected:
 
 #if defined(HAVE_CUDA) && defined(HAVE_CUSPARSE)
-   using CSR = Matrices::CSR< RealType, DeviceType, IndexType >;
+   using CSR = Matrices::Legacy::CSR< RealType, DeviceType, IndexType >;
    Pointers::UniquePointer< CSR > A, L, U;
    Containers::Vector< RealType, DeviceType, IndexType > y;
 

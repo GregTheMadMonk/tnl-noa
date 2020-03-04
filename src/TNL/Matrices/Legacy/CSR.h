@@ -18,6 +18,7 @@
 
 namespace TNL {
 namespace Matrices {
+   namespace Legacy {
 
 #ifdef HAVE_UMFPACK
     template< typename Matrix, typename Preconditioner >
@@ -272,6 +273,7 @@ protected:
    friend class CusparseCSR< RealType >;
 };
 
+} //namespace Legacy
 } // namespace Matrices
 } // namespace TNL
 

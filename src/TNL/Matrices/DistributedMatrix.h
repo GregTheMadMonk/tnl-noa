@@ -56,8 +56,8 @@ public:
 
    using CompressedRowLengthsVector = Containers::DistributedVector< IndexType, DeviceType, IndexType, CommunicatorType >;
 
-   using MatrixRow = Matrices::SparseRow< RealType, IndexType >;
-   using ConstMatrixRow = Matrices::SparseRow< std::add_const_t< RealType >, std::add_const_t< IndexType > >;
+   using MatrixRow = Matrices::Legacy::SparseRow< RealType, IndexType >;
+   using ConstMatrixRow = Matrices::Legacy::SparseRow< std::add_const_t< RealType >, std::add_const_t< IndexType > >;
 
    template< typename _Real = RealType,
              typename _Device = DeviceType,

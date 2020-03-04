@@ -16,6 +16,7 @@
 
 namespace TNL {
 namespace Matrices {
+   namespace Legacy {
 
 template< typename Real,
           typename Device,
@@ -73,25 +74,25 @@ void EllpackSymmetricGraph< Real, Device, Index >::setDimensions( const IndexTyp
    TNL_ASSERT( rows > 0 && columns > 0,
               std::cerr << "rows = " << rows
                    << " columns = " << columns << std::endl );
-   
+
    this->rows = rows;
    this->columns = columns;
-   
+
    if( std::is_same< DeviceType, Devices::Cuda >::value )
    {
        this->alignedRows = roundToMultiple( columns, Devices::Cuda::getWarpSize() );
-       
+
        if( this->rows - this->alignedRows > 0 )
        {
            IndexType missingRows = this->rows - this->alignedRows;
            missingRows = roundToMultiple( missingRows, Devices::Cuda::getWarpSize() );
            this->alignedRows +=  missingRows;
-           
+
 //           this->alignedRows += roundToMultiple( this->rows - this->alignedRows, Devices::Cuda::getWarpSize() );
        }
    }
    else this->alignedRows = rows;
-   
+
    if( this->rowLengths != 0 )
        allocateElements();
 }
@@ -828,10 +829,10 @@ template< typename Real,
 void EllpackSymmetricGraph< Real, Device, Index >::allocateElements()
 {
    IndexType numberOfMatrixElements = this->alignedRows * this->rowLengths;
-   
-   TNL_ASSERT_TRUE( this->alignedRows != 0 && numberOfMatrixElements / this->alignedRows == this->rowLengths, 
+
+   TNL_ASSERT_TRUE( this->alignedRows != 0 && numberOfMatrixElements / this->alignedRows == this->rowLengths,
            "Ellpack cannot store this matrix. The number of matrix elements has overflown the value that IndexType is capable of storing" );
-   
+
    Sparse< Real, Device, Index >::allocateMatrixElements( this->alignedRows * this->rowLengths );
 }
 
@@ -1038,5 +1039,6 @@ class EllpackSymmetricGraphDeviceDependentCode< Devices::Cuda >
       }
 };
 
+} //namespace Legacy
 } // namespace Matrices
 } // namespace TNL

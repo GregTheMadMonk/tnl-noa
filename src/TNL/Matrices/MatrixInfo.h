@@ -80,7 +80,7 @@ struct MatrixInfo< SparseMatrix< Real, Device, Index, MatrixType, Segments, Real
 /////
 // Legacy matrices
 template< typename Real, typename Device, typename Index >
-struct MatrixInfo< BiEllpack< Real, Device, Index > >
+struct MatrixInfo< Legacy::BiEllpack< Real, Device, Index > >
 {
    static String getDensity() { return String( "sparse" ); };
 
@@ -88,7 +88,7 @@ struct MatrixInfo< BiEllpack< Real, Device, Index > >
 };
 
 template< typename Real, typename Device, typename Index >
-struct MatrixInfo< CSR< Real, Device, Index > >
+struct MatrixInfo< Legacy::CSR< Real, Device, Index > >
 {
    static String getDensity() { return String( "sparse" ); };
 
@@ -96,7 +96,7 @@ struct MatrixInfo< CSR< Real, Device, Index > >
 };
 
 template< typename Real, typename Device, typename Index >
-struct MatrixInfo< ChunkedEllpack< Real, Device, Index > >
+struct MatrixInfo< Legacy::ChunkedEllpack< Real, Device, Index > >
 {
    static String getDensity() { return String( "sparse" ); };
 
@@ -104,7 +104,7 @@ struct MatrixInfo< ChunkedEllpack< Real, Device, Index > >
 };
 
 template< typename Real, typename Device, typename Index >
-struct MatrixInfo< Ellpack< Real, Device, Index > >
+struct MatrixInfo< Legacy::Ellpack< Real, Device, Index > >
 {
    static String getDensity() { return String( "sparse" ); };
 
@@ -112,7 +112,7 @@ struct MatrixInfo< Ellpack< Real, Device, Index > >
 };
 
 template< typename Real, typename Device, typename Index, int SliceSize >
-struct MatrixInfo< SlicedEllpack< Real, Device, Index, SliceSize> >
+struct MatrixInfo< Legacy::SlicedEllpack< Real, Device, Index, SliceSize> >
 {
    static String getDensity() { return String( "sparse" ); };
 

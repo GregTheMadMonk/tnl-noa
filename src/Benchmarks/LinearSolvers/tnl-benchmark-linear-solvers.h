@@ -488,7 +488,7 @@ struct LinearSolversBenchmark
    {
       // direct solvers
       if( parameters.getParameter< bool >( "with-direct" ) ) {
-         using CSR = Matrices::CSR< RealType, DeviceType, IndexType >;
+         using CSR = Matrices::Legacy::CSR< RealType, DeviceType, IndexType >;
          SharedPointer< CSR > matrixCopy;
          Matrices::copySparseMatrix( *matrixCopy, *matrixPointer );
 
@@ -567,7 +567,7 @@ configSetup( Config::ConfigDescription& config )
 
    config.addDelimiter( "Linear solver settings:" );
    Solvers::IterativeSolver< double, int >::configSetup( config );
-   using Matrix = Matrices::SlicedEllpack< double, Devices::Host, int >;
+   using Matrix = Matrices::Legacy::SlicedEllpack< double, Devices::Host, int >;
    using GMRES = Solvers::Linear::GMRES< Matrix >;
    GMRES::configSetup( config );
    using BiCGstabL = Solvers::Linear::BICGStabL< Matrix >;
@@ -621,7 +621,7 @@ main( int argc, char* argv[] )
 //   return ! Matrices::resolveMatrixType< MainConfig,
 //                                         Devices::Host,
 //                                         LinearSolversBenchmark >( benchmark, metadata, parameters );
-   using MatrixType = Matrices::SlicedEllpack< double, Devices::Host, int >;
+   using MatrixType = Matrices::Legacy::SlicedEllpack< double, Devices::Host, int >;
    const bool status = LinearSolversBenchmark< MatrixType >::run( benchmark, metadata, parameters );
 
    if( rank == 0 )

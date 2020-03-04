@@ -11,7 +11,8 @@
 #pragma once
 
 namespace TNL {
-namespace Matrices {   
+namespace Matrices {
+   namespace Legacy {
 
 template< typename Real, typename Index >
 class MultidiagonalRow
@@ -51,6 +52,7 @@ class MultidiagonalRow
       Index row, columns, maxRowLength, step;
 };
 
+} //namespace Legacy
 } // namespace Matrices
 } // namespace TNL
 

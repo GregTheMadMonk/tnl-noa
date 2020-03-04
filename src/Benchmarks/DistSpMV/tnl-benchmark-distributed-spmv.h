@@ -339,7 +339,7 @@ main( int argc, char* argv[] )
 //   return ! Matrices::resolveMatrixType< MainConfig,
 //                                         Devices::Host,
 //                                         SpmvBenchmark >( benchmark, metadata, parameters );
-   using MatrixType = Matrices::SlicedEllpack< double, Devices::Host, int >;
+   using MatrixType = Matrices::Legacy::SlicedEllpack< double, Devices::Host, int >;
    const bool status = SpmvBenchmark< MatrixType >::run( benchmark, metadata, parameters );
 
    if( rank == 0 )

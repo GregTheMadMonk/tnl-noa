@@ -17,6 +17,7 @@
 
 namespace TNL {
 namespace Matrices {
+   namespace Legacy {
 
 template< typename Real,
           typename Device,
@@ -37,7 +38,7 @@ String SlicedEllpackSymmetric< Real, Device, Index, SliceSize >::getType()
           String( ", " ) +
           String( Device :: getDeviceType() ) +
           String( ", " ) +
-          String( TNL::getType< Index >() ) + 
+          String( TNL::getType< Index >() ) +
           String( " >" );
 }
 
@@ -529,8 +530,8 @@ template< typename Real,
           int SliceSize,
           typename InVector,
           typename OutVector >
-__global__ 
-void SlicedEllpackSymmetricVectorProductCudaKernel( 
+__global__
+void SlicedEllpackSymmetricVectorProductCudaKernel(
 const SlicedEllpackSymmetric< Real, Devices::Cuda, Index, SliceSize >* matrix,
                                                        const InVector* inVector,
                                                        OutVector* outVector,
@@ -924,5 +925,6 @@ class SlicedEllpackSymmetricDeviceDependentCode< Devices::Cuda >
 
 };
 
+} //namespace Legacy
 } // namespace Matrices
 } // namespace TNL

@@ -19,6 +19,7 @@
 
 namespace TNL {
 namespace Matrices {
+   namespace Legacy {
 
 template< typename Real, typename Index >
 __cuda_callable__
@@ -165,5 +166,6 @@ print( std::ostream& str ) const
    }
 }
 
+} //namespace Legacy
 } // namespace Matrices
 } // namespace TNL

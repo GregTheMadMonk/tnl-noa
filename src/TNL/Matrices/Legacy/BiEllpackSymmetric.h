@@ -15,6 +15,7 @@
 
 namespace TNL {
 namespace Matrices {
+   namespace Legacy {
 
 template< typename Device >
 class BiEllpackSymmetricDeviceDependentCode;
@@ -175,6 +176,7 @@ private:
 
 };
 
+} //namespace Legacy
 } // namespace Matrices
 } // namespace TNL
 

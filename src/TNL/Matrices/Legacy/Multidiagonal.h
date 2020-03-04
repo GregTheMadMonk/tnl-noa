@@ -15,7 +15,8 @@
 #include <TNL/Matrices/Legacy/MultidiagonalRow.h>
 
 namespace TNL {
-namespace Matrices {   
+namespace Matrices {
+   namespace Legacy {
 
 template< typename Device >
 class MultidiagonalDeviceDependentCode;
@@ -218,6 +219,8 @@ protected:
    friend class MultidiagonalDeviceDependentCode< DeviceType >;
 };
 
+
+} //namespace Legacy
 } // namespace Matrices
 } // namespace TNL
 

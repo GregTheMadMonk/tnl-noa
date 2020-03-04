@@ -17,6 +17,7 @@
 
 namespace TNL {
 namespace Matrices {
+namespace Legacy {
 
 /*
  * Auxiliary list implementation
@@ -1576,6 +1577,6 @@ public:
 };
 
 
-
+} //namespace Legacy
 } // namespace Matrices
 } // namespace TNL

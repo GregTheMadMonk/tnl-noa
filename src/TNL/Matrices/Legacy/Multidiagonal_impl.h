@@ -16,7 +16,8 @@
 #include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
-namespace Matrices {   
+namespace Matrices {
+   namespace Legacy {
 
 template< typename Device >
 class MultidiagonalDeviceDependentCode;
@@ -804,5 +805,6 @@ class MultidiagonalDeviceDependentCode< Devices::Cuda >
       }
 };
 
+} //namespace Legacy
 } // namespace Matrices
 } // namespace TNL

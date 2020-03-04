@@ -25,7 +25,7 @@ namespace Benchmarks {
 
 // silly alias to match the number of template parameters with other formats
 template< typename Real, typename Device, typename Index >
-using SlicedEllpack = Matrices::SlicedEllpack< Real, Device, Index >;
+using SlicedEllpack = Matrices::Legacy::SlicedEllpack< Real, Device, Index >;
 
 template< typename Matrix >
 int setHostTestMatrix( Matrix& matrix,
@@ -173,10 +173,10 @@ benchmarkSpmvSynthetic( Benchmark & benchmark,
                         const int & elementsPerRow )
 {
    // TODO: benchmark all formats from tnl-benchmark-spmv (different parameters of the base formats)
-   benchmarkSpMV< Real, Matrices::CSR >( benchmark, size, elementsPerRow );
-   benchmarkSpMV< Real, Matrices::Ellpack >( benchmark, size, elementsPerRow );
+   benchmarkSpMV< Real, Matrices::Legacy::CSR >( benchmark, size, elementsPerRow );
+   benchmarkSpMV< Real, Matrices::Legacy::Ellpack >( benchmark, size, elementsPerRow );
    benchmarkSpMV< Real, SlicedEllpack >( benchmark, size, elementsPerRow );
-   benchmarkSpMV< Real, Matrices::ChunkedEllpack >( benchmark, size, elementsPerRow );
+   benchmarkSpMV< Real, Matrices::Legacy::ChunkedEllpack >( benchmark, size, elementsPerRow );
 }
 
 } // namespace Benchmarks

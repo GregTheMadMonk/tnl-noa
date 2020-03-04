@@ -21,6 +21,7 @@
 
 namespace TNL {
 namespace Matrices {
+   namespace Legacy {
 
 #ifdef HAVE_CUSPARSE
 template< typename Real, typename Index >
@@ -1003,5 +1004,6 @@ class CSRDeviceDependentCode< Devices::Cuda >
 
 };
 
+} //namespace Legacy
 } // namespace Matrices
 } // namespace TNL

@@ -15,6 +15,7 @@
 
 namespace TNL {
 namespace Matrices {
+   namespace Legacy {
 
 template< typename Device >
 class SlicedEllpackSymmetricDeviceDependentCode;
@@ -202,6 +203,7 @@ class SlicedEllpackSymmetric : public Sparse< Real, Device, Index >
 
 };
 
+} //namespace Legacy
 } // namespace Matrices
 } // namespace TNL
 

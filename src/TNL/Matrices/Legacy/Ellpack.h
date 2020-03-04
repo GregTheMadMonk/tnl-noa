@@ -15,6 +15,7 @@
 
 namespace TNL {
 namespace Matrices {
+   namespace Legacy {
 
 template< typename Device >
 class EllpackDeviceDependentCode;
@@ -207,6 +208,7 @@ protected:
    friend class EllpackDeviceDependentCode< DeviceType >;
 };
 
+} //namespace Legacy
 } // namespace Matrices
 } // namespace TNL
 

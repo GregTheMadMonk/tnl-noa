@@ -15,6 +15,7 @@
 
 namespace TNL {
 namespace Matrices {
+   namespace Legacy {
 
 template< typename Device >
 class EllpackSymmetricGraphDeviceDependentCode;
@@ -203,6 +204,7 @@ class EllpackSymmetricGraph : public Sparse< Real, Device, Index >
    bool rearranged;
 };
 
+} //namespace Legacy
 } // namespace Matrices
 } // namespace TNL
 

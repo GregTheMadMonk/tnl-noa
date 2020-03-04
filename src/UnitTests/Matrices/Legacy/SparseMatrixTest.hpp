@@ -1417,8 +1417,8 @@ void test_OperatorEquals()
        return;
    else
    {
-       using AdELL_host = TNL::Matrices::AdEllpack< RealType, TNL::Devices::Host, IndexType >;
-       using AdELL_cuda = TNL::Matrices::AdEllpack< RealType, TNL::Devices::Cuda, IndexType >;
+       using AdELL_host = TNL::Matrices::Legacy::AdEllpack< RealType, TNL::Devices::Host, IndexType >;
+       using AdELL_cuda = TNL::Matrices::Legacy::AdEllpack< RealType, TNL::Devices::Cuda, IndexType >;
 
        /*
         * Sets up the following 8x8 sparse matrix:

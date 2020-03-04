@@ -26,6 +26,7 @@
 
 namespace TNL {
 namespace Matrices {
+   namespace Legacy {
 
 template< typename Device >
 class SlicedEllpackDeviceDependentCode;
@@ -235,6 +236,7 @@ public:
 #endif
 };
 
+} //namespace Legacy
 } // namespace Matrices
 } // namespace TNL
 

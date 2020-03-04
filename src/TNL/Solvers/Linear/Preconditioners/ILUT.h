@@ -66,7 +66,7 @@ protected:
    Real tau = 1e-4;
 
    // The factors L and U are stored separately and the rows of U are reversed.
-   Matrices::CSR< RealType, DeviceType, IndexType > L, U;
+   Matrices::Legacy::CSR< RealType, DeviceType, IndexType > L, U;
 
    // Specialized methods to distinguish between normal and distributed matrices
    // in the implementation.

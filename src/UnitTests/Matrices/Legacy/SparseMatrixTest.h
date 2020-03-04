@@ -16,11 +16,11 @@
 #ifdef HAVE_GTEST 
 #include <gtest/gtest.h>
 
-using CSR_host_float = TNL::Matrices::CSR< float, TNL::Devices::Host, int >;
-using CSR_host_int = TNL::Matrices::CSR< int, TNL::Devices::Host, int >;
+using CSR_host_float = TNL::Matrices::Legacy::CSR< float, TNL::Devices::Host, int >;
+using CSR_host_int = TNL::Matrices::Legacy::CSR< int, TNL::Devices::Host, int >;
 
-using CSR_cuda_float = TNL::Matrices::CSR< float, TNL::Devices::Cuda, int >;
-using CSR_cuda_int = TNL::Matrices::CSR< int, TNL::Devices::Cuda, int >;
+using CSR_cuda_float = TNL::Matrices::Legacy::CSR< float, TNL::Devices::Cuda, int >;
+using CSR_cuda_int = TNL::Matrices::Legacy::CSR< int, TNL::Devices::Cuda, int >;
 
 TEST( SparseMatrixTest, CSR_perforSORIterationTest_Host )
 {

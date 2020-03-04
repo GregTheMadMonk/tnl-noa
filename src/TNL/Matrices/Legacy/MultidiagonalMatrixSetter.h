@@ -14,7 +14,8 @@
 #include <TNL/Matrices/Legacy/Multidiagonal.h>
 
 namespace TNL {
-namespace Matrices {   
+namespace Matrices {
+   namespace Legacy {
 
 template< typename MeshType >
 class MultidiagonalMatrixSetter
@@ -82,6 +83,7 @@ class MultidiagonalMatrixSetter< Meshes::Grid< 3, MeshReal, Device, MeshIndex > 
                                bool crossStencil = false );
 };
 
+} //namespace Legacy
 } // namespace Matrices
 } // namespace TNL
 

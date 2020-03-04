@@ -39,7 +39,7 @@ class PDEProblem : public Problem< Real, Device, Index >
       using SubdomainOverlapsType = typename DistributedMeshType::SubdomainOverlapsType;
       using DofVectorType = Containers::Vector< RealType, DeviceType, IndexType>;
       using DofVectorPointer = Pointers::SharedPointer< DofVectorType, DeviceType >;
-      using MatrixType = Matrices::SlicedEllpack< RealType, DeviceType, IndexType >;
+      using MatrixType = Matrices::Legacy::SlicedEllpack< RealType, DeviceType, IndexType >;
       using CommunicatorType = Communicator;
       using CommonDataType = CommonData;
       using CommonDataPointer = Pointers::SharedPointer< CommonDataType, DeviceType >;

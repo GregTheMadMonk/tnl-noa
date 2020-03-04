@@ -15,6 +15,7 @@
 
 namespace TNL {
 namespace Matrices {
+   namespace Legacy {
 
 template< typename Device >
 class EllpackSymmetricDeviceDependentCode;
@@ -182,6 +183,7 @@ class EllpackSymmetric : public Sparse< Real, Device, Index >
    friend class EllpackSymmetricDeviceDependentCode< DeviceType >;
 };
 
+} //namespace Legacy
 } // namespace Matrices
 } // namespace TNL
 

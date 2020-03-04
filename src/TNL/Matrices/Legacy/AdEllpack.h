@@ -23,6 +23,7 @@
 
 namespace TNL {
 namespace Matrices {
+namespace Legacy {
 
 template< typename Device >
 class AdEllpackDeviceDependentCode;
@@ -293,6 +294,7 @@ protected:
 
 };
 
+} //namespace Legacy
 } // namespace Matrices
 } // namespace TNL
 

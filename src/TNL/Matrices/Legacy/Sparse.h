@@ -15,6 +15,7 @@
 
 namespace TNL {
 namespace Matrices {
+   namespace Legacy {
 
 template< typename Real,
           typename Device,
@@ -61,6 +62,7 @@ class Sparse : public Matrix< Real, Device, Index >
    Index maxRowLength;
 };
 
+} //namespace Legacy
 } // namespace Matrices
 } // namespace TNL
 
