@@ -139,12 +139,11 @@ Main developers:
 
 Current developers:
 - Aleš Wodecki – adaptive grids
-- Jan Schafer – solvers for compressible Navier–Stokes equations
 - Matouš Fencl – solvers for the Hamilton–Jacobi equation
 - Lukáš Čejka – sparse matrix formats
-- Vojtěch Legler – expression templates
 
 Former developers:
+- Jan Schafer – solvers for compressible Navier–Stokes equations
 - Vít Hanousek – distributed numerical grids
 - Vítězslav Žabka – unstructured numerical meshes
 - Tomáš Sobotík – solvers for the Hamilton–Jacobi equation
