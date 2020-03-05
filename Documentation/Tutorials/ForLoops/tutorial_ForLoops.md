@@ -29,7 +29,7 @@ The `Device` can be either `Devices::Host` or `Devices::Cuda`. The first two par
 
 The result is:
 
-\include ParallelForExample_ug.out 
+\include ParallelForExample.out 
 
 ## n-dimensional Parallel For<a name="n_dimensional_parallel_for"></a>
 
