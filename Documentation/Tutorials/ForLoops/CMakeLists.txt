@@ -4,14 +4,14 @@ IF( BUILD_CUDA )
    CUDA_ADD_EXECUTABLE( ParallelForExample-2D ParallelForExample-2D.cu )
    CUDA_ADD_EXECUTABLE( ParallelForExample-3D ParallelForExample-3D.cu )
 ELSE()
-   ADD_EXECUTABLE( ParallelForExample-2D ParallelForExample-2D.cpp )
-   ADD_EXECUTABLE( ParallelForExample-3D ParallelForExample-3D.cpp )
+   ADD_EXECUTABLE( ParallelForExample-2D ParallelForExample-2D_ug.cpp )
+   ADD_EXECUTABLE( ParallelForExample-3D ParallelForExample-3D_ug.cpp )
 ENDIF()
 
-ADD_EXECUTABLE( StaticForExample StaticForExample.cpp )
+ADD_EXECUTABLE( StaticForExample StaticForExample_ug.cpp )
 ADD_CUSTOM_COMMAND( COMMAND StaticForExample > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/StaticForExample.out OUTPUT StaticForExample.out )
 
-ADD_EXECUTABLE( TemplateStaticForExample TemplateStaticForExample.cpp )
+ADD_EXECUTABLE( TemplateStaticForExample TemplateStaticForExample_ug.cpp )
 ADD_CUSTOM_COMMAND( COMMAND TemplateStaticForExample > ${TNL_DOCUMENTATION_OUTPUT_SNIPPETS_PATH}/TemplateStaticForExample.out OUTPUT TemplateStaticForExample.out )
 
 IF( BUILD_CUDA )

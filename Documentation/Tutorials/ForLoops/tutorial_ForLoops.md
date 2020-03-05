@@ -25,17 +25,17 @@ ParallelFor< Device >::exec( start, end, function, arguments... );
 
 The `Device` can be either `Devices::Host` or `Devices::Cuda`. The first two parameters define the loop bounds in the C style. It means that there will be iterations for indexes `start` ... `end-1`. Function is a lambda function to be performed in each iteration. It is supposed to receive the iteration index and arguments passed to the parallel for (the last arguments). See the following example:
 
-\include ParallelForExample.cpp
+\include ParallelForExample_ug.cpp
 
 The result is:
 
-\include ParallelForExample.out 
+\include ParallelForExample_ug.out 
 
 ## n-dimensional Parallel For<a name="n_dimensional_parallel_for"></a>
 
 Performing for-loops in higher dimensions is simillar. In the following example we build 2D mesh function on top of TNL vector. Two dimensional indexes `( i, j )` are mapped to vector index `idx` as `idx = j * xSize + i`, where the mesh fuction has dimensions `xSize * ySize`. Of course, in this simple example, it does not make any sense to compute a sum of two mesh function this way, it is only an example.
 
-\include ParallelForExample-2D.cpp
+\include ParallelForExample-2D_ug.cpp
 
 Notice the parameters of the lambda function `sum`. The first parameter `i` changes more often than `j` and therefore the index mapping has the form `j * xSize + i` to acces the vector elements sequentialy on CPU and to fullfill coalesced memory accesses on GPU. The for-loop is executed by calling `ParallelFor2D` with proper device. The first four parameters are `startX, startY, endX, endY` and on CPU this is equivalent to the following embeded for loops:
 
@@ -45,13 +45,13 @@ where `args...` stand for additional arguments passed to the for-loop. After the
 
 For the completness, we show modification of the previous example into 3D:
 
-\include ParallelForExample-3D.cpp
+\include ParallelForExample-3D_ug.cpp
 
 ## Static For<a name="static_for"></a>
 
 Static for-loop is designed for short loops with constant (i.e. known at the compile time) number of iterations. It is often used with static arrays and vectors. An adventage of this kind of for loop is that it is explicitly unrolled when the loop is short (up to eight iterations). See the following example:
 
-\include StaticForExample.cpp
+\include StaticForExample_ug.cpp
 
 Notice that the static for-loop works with a lambda function simillar to parallel for-loop. The bounds of the loop are passed as template parameters in the statement `Algorithms::StaticFor< 0, Size >`. The parameters of the static method `exec` are the lambda functions to be performed in each iteration and auxiliar data to be passed to the function. The function gets the loop index `i` first followed by the auxiliary data `sum` in this example. 
 
