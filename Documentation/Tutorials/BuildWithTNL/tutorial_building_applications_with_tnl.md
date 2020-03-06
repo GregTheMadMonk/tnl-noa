@@ -29,6 +29,8 @@ g++ -std=c++14 -I${HOME}/.local/include/tnl example-host.cpp -o example-host
 
 TNL requires standard C++14 which we enforce with the first parameter `-std=c++14`. Next, we need to tell the compiler the folder with TNL headers. This is done with the flag `-I`. By default, TNL installs into `${HOME}/.local/include/tnl`. You may also replace it just with the path where you have downloaded TNL. TNL is header only library and so it does not require any instalation. Finaly, we just past the source code file `example-host.cpp` using the command-line parameter `-c`.
 
+For the best performance we suggest to add parameters `-DNDEBUG -O3 -funroll-loops`. The first one deactivates assertions in TNL which can significantly slow down your program.
+
 ### Compilation with `nvcc` for CUDA <a name="command_line_nvcc"></a>
 
 If you want to profit from the great performance of GPUs using CUDA you need to have the CUDA compiler `nvcc`. It can be obtained with the [CUDA toolkit](https://developer.nvidia.com/cuda-downloads). We first modify our program as follows:
