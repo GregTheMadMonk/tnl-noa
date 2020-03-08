@@ -216,7 +216,7 @@ public:
 
    template< typename InVector,
              typename OutVector,
-             int warpSize >
+             int warpSize > 
    __device__
    void spmvCudaVectorized( const InVector& inVector,
                             OutVector& outVector,
@@ -231,6 +231,24 @@ public:
    void vectorProductCuda( const InVector& inVector,
                            OutVector& outVector,
                            int gridIdx ) const;
+   
+   template< typename InVector,
+             typename OutVector,
+             int warpSize > 
+   __device__
+   void spmvCudaLightSpmv( const InVector& inVector,
+                            OutVector& outVector,
+                            int gridIdx) const;
+   
+   template< typename InVector,
+             typename OutVector,
+             int warpSize > 
+   __device__
+   void spmvCudaVector( const InVector& inVector,
+                        OutVector& outVector,
+                        int gridIdx) const;
+
+   
 #endif
 
    // The following getters allow us to interface TNL with external C-like

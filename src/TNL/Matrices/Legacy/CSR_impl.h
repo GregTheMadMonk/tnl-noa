@@ -671,6 +671,111 @@ Index CSR< Real, Device, Index >::getHybridModeSplit() const
 }
 
 #ifdef HAVE_CUDA
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename InVector,
+             typename OutVector,
+             int warpSize >
+__device__
+void CSR< Real, Device, Index >::spmvCudaLightSpmv( const InVector& inVector,
+                                                      OutVector& outVector,
+                                                      int gridIdx) const
+{
+  const IndexType index = blockIdx.x * blockDim.x + threadIdx.x;
+  const IndexType elemPerThread   = 4;
+  const IndexType laneID      = index % 32;
+  const IndexType groupID     = laneID / elemPerThread;
+  const IndexType inGroupID   = laneID % elemPerThread;
+
+  IndexType row, minID, column, maxID, idxMtx;
+  __shared__ unsigned rowCnt;
+
+  if (index == 0) rowCnt = 0;  // Init shared variable
+  __syncthreads();
+
+  while (true) {
+
+    /* Get row number */
+    if (inGroupID == 0) row = atomicAdd(&rowCnt, 1);
+
+    /* Propagate row number in group */
+    row = __shfl_sync((unsigned)(warpSize - 1), row, groupID * elemPerThread);
+
+    if (row >= this->rowPointers.getSize() - 1)
+      return;
+
+    minID = this->rowPointers[row];
+    maxID = this->rowPointers[row + 1];
+
+    Real result = 0.0;
+
+    idxMtx = minID + inGroupID;
+    while (idxMtx < maxID) {
+      column = this->columnIndexes[idxMtx];
+      if (column >= this->getColumns()) {
+        break;
+      }
+      result += this->values[idxMtx] * inVector[column];
+      idxMtx += elemPerThread;
+    }
+
+    /* Parallel reduction */
+    for (int i = elemPerThread/2; i > 0; i /= 2)
+      result += __shfl_down_sync((unsigned)(warpSize - 1), result, i);
+    /* Write result */
+    if (inGroupID == 0) {
+      outVector[row] = result;
+    }
+  }
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+   template< typename InVector,
+             typename OutVector,
+             int warpSize >
+__device__
+void CSR< Real, Device, Index >::spmvCudaVector( const InVector& inVector,
+                                                   OutVector& outVector,
+                                                   int gridIdx) const
+{
+  const IndexType index = blockIdx.x * blockDim.x + threadIdx.x;
+  const IndexType laneID = index % warpSize;
+  const IndexType row    = index / warpSize; // warpID - one warp per row
+  volatile Real result = 0.0;
+  
+  if (row >= this->rowPointers.getSize() - 1) 
+    return;
+  
+  IndexType minID = this->rowPointers[row];
+  IndexType maxID = this->rowPointers[row + 1];
+  
+  /* Calculate results */  
+  for (IndexType idxMtx = minID + laneID; idxMtx < maxID; idxMtx += warpSize) {
+    IndexType column = this->columnIndexes[idxMtx];
+    if (column >= this->getColumns()) {
+      break;
+    }
+   //  printf("%lf %lf %lf\n", (double)this->values[idxMtx], (double)inVector[column], (double)(this->values[idxMtx] * inVector[column]));
+    result += this->values[idxMtx] * inVector[column];
+  }
+  // printf("=============== lane %d warp %d res %lf\n", (int)laneID, (int)row, (double)result);
+  /* Parallel reduction */
+  result += __shfl_down_sync((warpSize - 1), result, 16);
+  result += __shfl_down_sync((warpSize - 1), result, 8);
+  result += __shfl_down_sync((warpSize - 1), result, 4);
+  result += __shfl_down_sync((warpSize - 1), result, 2);
+  result += __shfl_down_sync((warpSize - 1), result, 1);
+
+  /* Write result */
+  if (laneID == 0) {
+    outVector[row] = result;
+  }
+}
+
 template< typename Real,
           typename Device,
           typename Index >
@@ -724,6 +829,9 @@ void CSR< Real, Device, Index >::vectorProductCuda( const InVector& inVector,
                                                              OutVector& outVector,
                                                              int gridIdx ) const
 {
+   spmvCudaLightSpmv< InVector, OutVector, warpSize >( inVector, outVector, gridIdx );
+   return;
+
    IndexType globalIdx = ( gridIdx * Cuda::getMaxGridSize() + blockIdx.x ) * blockDim.x + threadIdx.x;
    const IndexType warpStart = warpSize * ( globalIdx / warpSize );
    const IndexType warpEnd = min( warpStart + warpSize, this->getRows() );
