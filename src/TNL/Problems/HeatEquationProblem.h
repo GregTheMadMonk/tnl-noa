@@ -38,15 +38,15 @@ template< typename Mesh,
                                                               typename BoundaryCondition::RealType > >
 class HeatEquationProblem : public PDEProblem< Mesh,
                                                Communicator,
-                                               typename DifferentialOperator::RealType,
+                                               typename Mesh::RealType,
                                                typename Mesh::DeviceType,
-                                               typename DifferentialOperator::IndexType  >
+                                               typename Mesh::IndexType  >
 {
    public:
 
-      typedef typename DifferentialOperator::RealType RealType;
+      typedef typename Mesh::RealType RealType;
       typedef typename Mesh::DeviceType DeviceType;
-      typedef typename DifferentialOperator::IndexType IndexType;
+      typedef typename Mesh::IndexType IndexType;
       typedef Functions::MeshFunction< Mesh > MeshFunctionType;
       typedef Pointers::SharedPointer< MeshFunctionType, DeviceType > MeshFunctionPointer;
       typedef PDEProblem< Mesh, Communicator, RealType, DeviceType, IndexType > BaseType;

@@ -207,7 +207,7 @@ bind( const MeshPointer& meshPointer,
 {
    TNL_ASSERT_GE( data->getSize(), offset + meshPointer->template getEntitiesCount< typename MeshType::template EntityType< MeshEntityDimension > >(),
                   "The input vector is not large enough for binding to the mesh function." );
-
+   static_assert( std::is_same< typename Vector::RealType, RealType >::value, "Cannot bind Vector with different Real type." );
    setupSynchronizer(meshPointer->getDistributedMesh());
    this->meshPointer=meshPointer;
    this->data.bind( *data, offset, getMesh().template getEntitiesCount< typename Mesh::template EntityType< MeshEntityDimension > >() );
