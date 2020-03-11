@@ -25,6 +25,55 @@
 namespace TNL {
 namespace Benchmarks {
 
+class LoggingRowElements
+{
+   public:
+   
+      LoggingRowElements()
+      {
+         stream << std::setprecision( 3 ) << std::fixed;
+      }
+
+      template< typename T >
+      LoggingRowElements& operator << ( const T& b )
+      {
+         stream << b;
+         elements.push_back( stream.str() );
+         stream.str( std::string() );
+         return *this;
+      }
+
+      LoggingRowElements& operator << ( decltype( std::setprecision( 2 ) )& setprec )
+      {
+         stream << setprec;
+         return *this;
+      }
+
+      LoggingRowElements& operator << ( decltype( std::fixed )& setfixed ) // the same works also for std::scientific
+      {
+         stream << setfixed;
+         return *this;
+      }
+
+      // iterators
+      auto begin() noexcept { return elements.begin(); }
+
+      auto begin() const noexcept { return elements.begin(); }
+
+      auto cbegin() const noexcept { return elements.cbegin(); }
+
+      auto end() noexcept { return elements.end(); }
+
+      auto end() const noexcept { return elements.end(); }
+
+      auto cend() const noexcept { return elements.cend(); }
+
+   protected:
+      std::list< String > elements;
+
+      std::stringstream stream;
+};
+
 class Logging
 {
 public:
@@ -33,7 +82,7 @@ public:
    using MetadataColumns = std::vector<MetadataElement>;
 
    using HeaderElements = std::vector< String >;
-   using RowElements = std::vector< double >;
+   using RowElements = LoggingRowElements;
 
    Logging( int verbose = true )
    : verbose(verbose)
@@ -131,9 +180,7 @@ public:
          // spanning element is printed as usual column to stdout
          std::cout << std::setw( 15 ) << spanningElement;
          for( auto & it : subElements ) {
-            std::cout << std::setw( 15 );
-            if( it != 0.0 )std::cout << it;
-            else std::cout << "N/A";
+            std::cout << std::setw( 15 ) << it;
          }
          std::cout << std::endl;
       }
@@ -147,8 +194,7 @@ public:
       // benchmark data are indented
       const String indent = "    ";
       for( auto & it : subElements ) {
-         if( it != 0.0 ) log << indent << it << std::endl;
-         else log << indent << "N/A" << std::endl;
+         log << indent << it << std::endl;
       }
    }
 

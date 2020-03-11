@@ -160,8 +160,14 @@ benchmarkSolver( Benchmark& benchmark,
          r = b - r;
          const double residue_true = lpNorm( r, 2.0 ) / lpNorm( b, 2.0 );
 
-         return RowElements({ time, stddev, stddev/time, speedup, (double) converged, (double) iterations,
-                              residue_precond, residue_true });
+         RowElements elements;
+         elements << time << stddev << stddev/time;
+         if( speedup != 0  )
+            elements << speedup;
+         else
+            elements <<  "N/A";
+         elements << ( converged ? "yes" : "no" ) << iterations << residue_precond << residue_true;
+         return elements;
       }
    };
    MyBenchmarkResult benchmarkResult( solver, matrix, x, b );
