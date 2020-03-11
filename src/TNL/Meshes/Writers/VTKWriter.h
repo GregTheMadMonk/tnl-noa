@@ -19,7 +19,19 @@ namespace TNL {
 namespace Meshes {
 namespace Writers {
 
+enum class VTKFileFormat
+{
+   ASCII,
+   BINARY
+};
+
 namespace __impl {
+
+// TODO: 64-bit integers are most likely not supported in the BINARY format
+inline void writeInt( VTKFileFormat format, std::ostream& str, int value );
+
+template< typename Real >
+void writeReal( VTKFileFormat format, std::ostream& str, Real value );
 
 template< typename Mesh, int EntityDimension > struct MeshEntitiesVTKWriter;
 template< typename Mesh, int EntityDimension > struct MeshEntityTypesVTKWriter;
@@ -42,15 +54,15 @@ class VTKWriter
 public:
    using Index = typename Mesh::GlobalIndexType;
 
-   static void writeAllEntities( const Mesh& mesh, std::ostream& str );
+   static void writeAllEntities( const Mesh& mesh, std::ostream& str, VTKFileFormat format = VTKFileFormat::ASCII );
 
    template< int EntityDimension = Mesh::getMeshDimension() >
-   static void writeEntities( const Mesh& mesh, std::ostream& str );
+   static void writeEntities( const Mesh& mesh, std::ostream& str, VTKFileFormat format = VTKFileFormat::ASCII );
 
 protected:
-   static void writeHeader( const Mesh& mesh, std::ostream& str );
+   static void writeHeader( const Mesh& mesh, std::ostream& str, VTKFileFormat format );
 
-   static void writePoints( const Mesh& mesh, std::ostream& str );
+   static void writePoints( const Mesh& mesh, std::ostream& str, VTKFileFormat format );
 };
 
 } // namespace Writers
