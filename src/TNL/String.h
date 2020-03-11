@@ -375,7 +375,7 @@ String convertToString( const T& value )
 /**
  * \brief Specialization of function \ref convertToString for boolean.
  * 
- * The boolean type is converted to 'true' ot 'false'.
+ * The boolean type is converted to 'true' or 'false'.
  */
 template<> inline String convertToString( const bool& b )
 {
