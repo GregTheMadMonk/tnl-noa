@@ -31,7 +31,7 @@ class LoggingRowElements
    
       LoggingRowElements()
       {
-         stream << std::setprecision( 3 ) << std::fixed;
+         stream << std::setprecision( 6 ) << std::fixed;
       }
 
       template< typename T >
