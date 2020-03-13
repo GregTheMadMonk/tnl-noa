@@ -227,7 +227,6 @@ public:
    /**
     * \brief Sets all values of this static array to \e val.
     */
-   [[deprecated( "Use of StaticArray::setValue is deprecated, assignment operator=() should be used instead." )]]
    __cuda_callable__
    void setValue( const ValueType& val );
 
