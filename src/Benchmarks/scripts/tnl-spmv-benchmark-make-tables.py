@@ -111,15 +111,3 @@ df["SlicedEllpack",         "CPU", "Legacy speedup"]   = df["SlicedEllpack",    
 
 pandas.options.display.float_format = '{:,.4f}'.format
 df.to_html("log.html")
-#print( df )
-
-
-# compute speedup between CGS and CWY
-#df["CGS/CWY ratio", "CPU", "time"] = df["CGS-GMRES (Jacobi)", "CPU", "time"] / df["CWY-GMRES (Jacobi)", "CPU", "time"]
-#df["CGS/CWY ratio", "GPU", "time"] = df["CGS-GMRES (Jacobi)", "GPU", "time"] / df["CWY-GMRES (Jacobi)", "GPU", "time"]
-
-
-# print rows where CWY is faster
-#print()
-#print("Matrices for which CWY was faster:")
-#print(df.loc[df["CGS/CWY ratio", "GPU", "time"] >= 1])
