@@ -230,7 +230,7 @@ public:
    __device__
    void vectorProductCuda( const InVector& inVector,
                            OutVector& outVector,
-                           int gridIdx ) const;
+                           int gridIdx, unsigned *blocks, size_t size ) const;
    
    template< typename InVector,
              typename OutVector,
@@ -239,16 +239,16 @@ public:
    void spmvCudaLightSpmv( const InVector& inVector,
                             OutVector& outVector,
                             int gridIdx) const;
-   
+
    template< typename InVector,
              typename OutVector,
              int warpSize > 
    __device__
-   void spmvCudaVector( const InVector& inVector,
-                        OutVector& outVector,
-                        int gridIdx) const;
-
-   
+   void spmvCSRAdaptive( const InVector& inVector,
+                           OutVector& outVector,
+                           int gridIdx,
+                           unsigned *blocks,
+                           size_t blocks_size) const;
 #endif
 
    // The following getters allow us to interface TNL with external C-like
