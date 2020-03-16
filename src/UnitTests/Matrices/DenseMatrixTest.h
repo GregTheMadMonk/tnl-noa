@@ -46,42 +46,68 @@ void test_GetSerializationType()
 template< typename Matrix >
 void test_SetDimensions()
 {
-    using RealType = typename Matrix::RealType;
-    using DeviceType = typename Matrix::DeviceType;
-    using IndexType = typename Matrix::IndexType;
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
 
-    const IndexType rows = 9;
-    const IndexType cols = 8;
+   const IndexType rows = 9;
+   const IndexType cols = 8;
 
-    Matrix m;
-    m.setDimensions( rows, cols );
+   Matrix m;
+   m.setDimensions( rows, cols );
 
-    EXPECT_EQ( m.getRows(), 9 );
-    EXPECT_EQ( m.getColumns(), 8 );
+   EXPECT_EQ( m.getRows(), 9 );
+   EXPECT_EQ( m.getColumns(), 8 );
 }
 
 template< typename Matrix1, typename Matrix2 >
 void test_SetLike()
 {
-    using RealType = typename Matrix1::RealType;
-    using DeviceType = typename Matrix1::DeviceType;
-    using IndexType = typename Matrix1::IndexType;
+   using RealType = typename Matrix1::RealType;
+   using DeviceType = typename Matrix1::DeviceType;
+   using IndexType = typename Matrix1::IndexType;
 
-    const IndexType rows = 8;
-    const IndexType cols = 7;
+   const IndexType rows = 8;
+   const IndexType cols = 7;
 
-    Matrix1 m1;
-    m1.reset();
-    m1.setDimensions( rows + 1, cols + 2 );
+   Matrix1 m1;
+   m1.reset();
+   m1.setDimensions( rows + 1, cols + 2 );
 
-    Matrix2 m2;
-    m2.reset();
-    m2.setDimensions( rows, cols );
+   Matrix2 m2;
+   m2.reset();
+   m2.setDimensions( rows, cols );
 
-    m1.setLike( m2 );
+   m1.setLike( m2 );
 
-    EXPECT_EQ( m1.getRows(), m2.getRows() );
-    EXPECT_EQ( m1.getColumns(), m2.getColumns() );
+   EXPECT_EQ( m1.getRows(), m2.getRows() );
+   EXPECT_EQ( m1.getColumns(), m2.getColumns() );
+}
+
+template< typename Matrix >
+void test_SetElements()
+{
+   using RealType = typename Matrix::RealType;
+   using DeviceType = typename Matrix::DeviceType;
+   using IndexType = typename Matrix::IndexType;
+
+   Matrix m( {
+      { 1, 2, 3 },
+      { 4, 5, 6 },
+      { 7, 8, 9 },
+   } );
+
+   EXPECT_EQ( m.getRows(), 3 );
+   EXPECT_EQ( m.getColumns(), 3 );
+   EXPECT_EQ( m.getElement( 0, 0 ), 1 );
+   EXPECT_EQ( m.getElement( 0, 1 ), 2 );
+   EXPECT_EQ( m.getElement( 0, 2 ), 3 );
+   EXPECT_EQ( m.getElement( 1, 0 ), 4 );
+   EXPECT_EQ( m.getElement( 1, 1 ), 5 );
+   EXPECT_EQ( m.getElement( 1, 2 ), 6 );
+   EXPECT_EQ( m.getElement( 2, 0 ), 7 );
+   EXPECT_EQ( m.getElement( 2, 1 ), 8 );
+   EXPECT_EQ( m.getElement( 2, 2 ), 9 );
 }
 
 template< typename Matrix >
@@ -1384,6 +1410,13 @@ TYPED_TEST( MatrixTest, setLikeTest )
     using MatrixType = typename TestFixture::MatrixType;
 
     test_SetLike< MatrixType, MatrixType >();
+}
+
+TYPED_TEST( MatrixTest, setElementsTest )
+{
+    using MatrixType = typename TestFixture::MatrixType;
+
+    test_SetElements< MatrixType >();
 }
 
 TYPED_TEST( MatrixTest, getRowLengthTest )

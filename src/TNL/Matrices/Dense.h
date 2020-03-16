@@ -57,6 +57,8 @@ class Dense : public Matrix< Real, Device, Index >
 
       Dense( const IndexType rows, const IndexType columns );
 
+      Dense( std::initializer_list< std::initializer_list< RealType > > data );
+
       ViewType getView();
 
       ConstViewType getConstView() const;
@@ -71,7 +73,16 @@ class Dense : public Matrix< Real, Device, Index >
       template< typename Matrix >
       void setLike( const Matrix& matrix );
 
-      /****
+      /**
+       * \brief This method creates dense matrix from 2D initializer list.
+       * 
+       * The matrix dimensions will be adjusted by the input data.
+       * 
+       * @param data
+       */
+      void setElements( std::initializer_list< std::initializer_list< RealType > > data );
+      
+      /**
        * This method is only for the compatibility with the sparse matrices.
        */
       void setCompressedRowLengths( ConstCompressedRowLengthsVectorView rowLengths );

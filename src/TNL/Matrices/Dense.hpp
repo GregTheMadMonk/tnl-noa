@@ -42,6 +42,57 @@ template< typename Real,
           typename Index,
           bool RowMajorOrder,
           typename RealAllocator >
+Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
+Dense( std::initializer_list< std::initializer_list< RealType > > data )
+{
+   this->setElements( data );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          bool RowMajorOrder,
+          typename RealAllocator >
+void
+Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
+setElements( std::initializer_list< std::initializer_list< RealType > > data )
+{
+   IndexType rows = data.size();
+   IndexType columns = 0;
+   for( auto row : data )
+      columns = max( columns, row.size() );
+   this->setDimensions( rows, columns );
+   if( ! std::is_same< DeviceType, Devices::Host >::value )
+   {
+      Dense< RealType, Devices::Host, IndexType > hostDense( rows, columns );
+      IndexType rowIdx( 0 );
+      for( auto row : data )
+      {
+         IndexType columnIdx( 0 );
+         for( auto element : row )
+            hostDense.setElement( rowIdx, columnIdx++, element );
+         rowIdx++;
+      }
+      *this = hostDense;
+   }
+   else
+   {
+      IndexType rowIdx( 0 );
+      for( auto row : data )
+      {
+         IndexType columnIdx( 0 );
+         for( auto element : row )
+            this->setElement( rowIdx, columnIdx++, element );
+         rowIdx++;
+      }
+   }
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          bool RowMajorOrder,
+          typename RealAllocator >
 auto
 Dense< Real, Device, Index, RowMajorOrder, RealAllocator >::
 getView() -> ViewType
