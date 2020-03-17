@@ -116,6 +116,24 @@ template< typename Real,
           template< typename, typename, typename > class Segments,
           typename RealAllocator,
           typename IndexAllocator >
+   template< typename MapIndex,
+             typename MapValue >
+SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
+SparseMatrix( const IndexType rows,
+              const IndexType columns,
+              const std::map< std::pair< MapIndex, MapIndex > , MapValue >& map )
+{
+   this->setDimensions( rows, columns );
+   this->setElements( map );
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename, typename > class Segments,
+          typename RealAllocator,
+          typename IndexAllocator >
 auto
 SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
 getView() const -> ViewType
@@ -245,6 +263,38 @@ setElements( const std::initializer_list< std::tuple< IndexType, IndexType, Real
       hostMatrix.setElement( std::get< 0 >( i ), std::get< 1 >( i ), std::get< 2 >( i ) );
    }
    ( *this ) = hostMatrix;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index,
+          typename MatrixType,
+          template< typename, typename, typename > class Segments,
+          typename RealAllocator,
+          typename IndexAllocator >
+   template< typename MapIndex,
+             typename MapValue >
+void
+SparseMatrix< Real, Device, Index, MatrixType, Segments, RealAllocator, IndexAllocator >::
+setElements( const std::map< std::pair< MapIndex, MapIndex > , MapValue >& map )
+{
+   Containers::Vector< IndexType, Devices::Host, IndexType > rowsCapacities( this->getRows(), 0 );
+   for( auto element : map )
+      rowsCapacities[ element.first.first ]++;
+   if( !std::is_same< DeviceType, Devices::Host >::value )
+   {
+      SparseMatrix< Real, Devices::Host, Index, MatrixType, Segments > hostMatrix( this->getRows(), this->getColumns() );
+      hostMatrix.setCompressedRowLengths( rowsCapacities );
+      for( auto element : map )
+         hostMatrix.setElement( element.first.first, element.first.second, element.second );
+      *this = hostMatrix;
+   }
+   else
+   {
+      this->setCompressedRowLengths( rowsCapacities );
+      for( auto element : map )
+         this->setElement( element.first.first, element.first.second, element.second );
+   }
 }
 
 template< typename Real,

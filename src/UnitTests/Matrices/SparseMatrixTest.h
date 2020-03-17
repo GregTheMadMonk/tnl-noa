@@ -116,6 +116,58 @@ void test_Constructors()
    EXPECT_EQ( m3.getElement( 5, 2 ),  0 );
    EXPECT_EQ( m3.getElement( 5, 3 ), 12 );
    EXPECT_EQ( m3.getElement( 5, 4 ),  0 );
+
+   std::map< std::pair< int, int >, float > map;
+   map[ { 0, 0 } ] = 1.0;
+   map[ { 0, 1 } ] = 2.0;
+   map[ { 0, 2 } ] = 3.0;
+   map[ { 1, 1 } ] = 4.0;
+   map[ { 1, 2 } ] = 5.0;
+   map[ { 1, 3 } ] = 6.0;
+   map[ { 2, 2 } ] = 7.0;
+   map[ { 2, 3 } ] = 8.0;
+   map[ { 2, 4 } ] = 9.0;
+   map[ { 3, 0 } ] = 10.0;
+   map[ { 4, 1 } ] = 11.0;
+   map[ { 5, 3 } ] = 12.0;
+   Matrix m4( 6, 5, map );
+
+   // Check the matrix elements
+   EXPECT_EQ( m4.getElement( 0, 0 ),  1 );
+   EXPECT_EQ( m4.getElement( 0, 1 ),  2 );
+   EXPECT_EQ( m4.getElement( 0, 2 ),  3 );
+   EXPECT_EQ( m4.getElement( 0, 3 ),  0 );
+   EXPECT_EQ( m4.getElement( 0, 4 ),  0 );
+
+   EXPECT_EQ( m4.getElement( 1, 0 ),  0 );
+   EXPECT_EQ( m4.getElement( 1, 1 ),  4 );
+   EXPECT_EQ( m4.getElement( 1, 2 ),  5 );
+   EXPECT_EQ( m4.getElement( 1, 3 ),  6 );
+   EXPECT_EQ( m4.getElement( 1, 4 ),  0 );
+
+   EXPECT_EQ( m4.getElement( 2, 0 ),  0 );
+   EXPECT_EQ( m4.getElement( 2, 1 ),  0 );
+   EXPECT_EQ( m4.getElement( 2, 2 ),  7 );
+   EXPECT_EQ( m4.getElement( 2, 3 ),  8 );
+   EXPECT_EQ( m4.getElement( 2, 4 ),  9 );
+
+   EXPECT_EQ( m4.getElement( 3, 0 ), 10 );
+   EXPECT_EQ( m4.getElement( 3, 1 ),  0 );
+   EXPECT_EQ( m4.getElement( 3, 2 ),  0 );
+   EXPECT_EQ( m4.getElement( 3, 3 ),  0 );
+   EXPECT_EQ( m4.getElement( 3, 4 ),  0 );
+
+   EXPECT_EQ( m4.getElement( 4, 0 ),  0 );
+   EXPECT_EQ( m4.getElement( 4, 1 ), 11 );
+   EXPECT_EQ( m4.getElement( 4, 2 ),  0 );
+   EXPECT_EQ( m4.getElement( 4, 3 ),  0 );
+   EXPECT_EQ( m4.getElement( 4, 4 ),  0 );
+
+   EXPECT_EQ( m4.getElement( 5, 0 ),  0 );
+   EXPECT_EQ( m4.getElement( 5, 1 ),  0 );
+   EXPECT_EQ( m4.getElement( 5, 2 ),  0 );
+   EXPECT_EQ( m4.getElement( 5, 3 ), 12 );
+   EXPECT_EQ( m4.getElement( 5, 4 ),  0 );
 }
 
 template< typename Matrix >

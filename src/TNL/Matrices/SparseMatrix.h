@@ -10,6 +10,7 @@
 
 #pragma once
 
+#include <map>
 #include <TNL/Matrices/Matrix.h>
 #include <TNL/Matrices/MatrixType.h>
 #include <TNL/Allocators/Default.h>
@@ -92,6 +93,12 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
                     const RealAllocatorType& realAllocator = RealAllocatorType(),
                     const IndexAllocatorType& indexAllocator = IndexAllocatorType() );
 
+      template< typename MapIndex,
+                typename MapValue >
+      explicit SparseMatrix( const IndexType rows,
+                             const IndexType columns,
+                             const std::map< std::pair< MapIndex, MapIndex > , MapValue >& map );
+
       ViewType getView() const; // TODO: remove const
 
       ConstViewType getConstView() const;
@@ -109,6 +116,10 @@ class SparseMatrix : public Matrix< Real, Device, Index, RealAllocator >
       };
 
       void setElements( const std::initializer_list< std::tuple< IndexType, IndexType, RealType > >& data );
+
+      template< typename MapIndex,
+                typename MapValue >
+      void setElements( const std::map< std::pair< MapIndex, MapIndex > , MapValue >& map );
 
       template< typename Vector >
       void getCompressedRowLengths( Vector& rowLengths ) const;
