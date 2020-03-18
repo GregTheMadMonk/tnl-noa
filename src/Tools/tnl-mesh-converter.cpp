@@ -92,7 +92,7 @@ struct MeshConverter
       }
       else if( outputFormat == "vtk" ) {
          using VTKWriter = Meshes::Writers::VTKWriter< Mesh >;
-         std::fstream file( outputFileName.getString() );
+         std::ofstream file( outputFileName.getString() );
          VTKWriter writer( file );
          writer.template writeEntities< Mesh::getMeshDimension() >( mesh );
       }
