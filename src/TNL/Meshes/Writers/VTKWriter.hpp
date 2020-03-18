@@ -10,32 +10,16 @@
 
 #pragma once
 
-#include <type_traits>
-
 #include <TNL/Endianness.h>
 #include <TNL/Meshes/Writers/VTKWriter.h>
 #include <TNL/Meshes/Readers/EntityShape.h>
+#include <TNL/Meshes/Writers/VerticesPerEntity.h>
 
 namespace TNL {
 namespace Meshes {
 namespace Writers {
 
-namespace __impl {
-
-template< typename T, typename R = void >
-struct enable_if_type
-{
-   using type = R;
-};
-
-template< typename T, typename Enable = void >
-struct has_entity_topology : std::false_type {};
-
-template< typename T >
-struct has_entity_topology< T, typename enable_if_type< typename T::EntityTopology >::type >
-: std::true_type
-{};
-
+namespace details {
 
 // TODO: 64-bit integers are most likely not supported in the BINARY format
 inline void
@@ -63,51 +47,6 @@ writeReal( VTKFileFormat format, std::ostream& str, Real value )
       str << value << " ";
    }
 }
-
-
-template< typename Entity,
-          bool _is_mesh_entity = has_entity_topology< Entity >::value >
-struct VerticesPerEntity
-{
-   static constexpr int count = Entity::getVerticesCount();
-};
-
-template< typename MeshConfig, typename Device >
-struct VerticesPerEntity< MeshEntity< MeshConfig, Device, Topologies::Vertex >, true >
-{
-   static constexpr int count = 1;
-};
-
-template< typename GridEntity >
-struct VerticesPerEntity< GridEntity, false >
-{
-private:
-   static constexpr int dim = GridEntity::getEntityDimension();
-   static_assert( dim >= 0 && dim <= 3, "unexpected dimension of the grid entity" );
-
-public:
-   static constexpr int count =
-      (dim == 0) ? 1 :
-      (dim == 1) ? 2 :
-      (dim == 2) ? 4 :
-                   8;
-};
-
-
-template< typename GridEntity >
-struct GridEntityShape
-{
-private:
-   static constexpr int dim = GridEntity::getEntityDimension();
-   static_assert( dim >= 0 && dim <= 3, "unexpected dimension of the grid entity" );
-
-public:
-   static constexpr Readers::EntityShape shape =
-      (dim == 0) ? Readers::EntityShape::Vertex :
-      (dim == 1) ? Readers::EntityShape::Line :
-      (dim == 2) ? Readers::EntityShape::Pixel :
-                   Readers::EntityShape::Voxel;
-};
 
 
 template< typename Mesh >
@@ -472,7 +411,7 @@ struct MeshEntityTypesVTKWriter
 
       const Index entitiesCount = mesh.template getEntitiesCount< EntityType >();
       for( Index i = 0; i < entitiesCount; i++ ) {
-         const int type = (int) Meshes::Readers::TopologyToEntityShape< typename EntityType::EntityTopology >::shape;
+         const int type = (int) Readers::TopologyToEntityShape< typename EntityType::EntityTopology >::shape;
          writeInt( format, str, type );
          if( format == VTKFileFormat::ASCII )
             str << "\n";
@@ -495,7 +434,7 @@ struct MeshEntityTypesVTKWriter< Grid< Dimension, MeshReal, Device, MeshIndex >,
 
       const MeshIndex entitiesCount = mesh.template getEntitiesCount< EntityType >();
       for( MeshIndex i = 0; i < entitiesCount; i++ ) {
-         const int type = (int) __impl::GridEntityShape< EntityType >::shape;
+         const int type = (int) Readers::GridEntityShape< EntityType >::shape;
          writeInt( format, str, type );
          if( format == VTKFileFormat::ASCII )
             str << "\n";
@@ -503,7 +442,7 @@ struct MeshEntityTypesVTKWriter< Grid< Dimension, MeshReal, Device, MeshIndex >,
    }
 };
 
-} // namespace __impl
+} // namespace details
 
 template< typename Mesh >
 void
@@ -512,8 +451,8 @@ VTKWriter< Mesh >::writeAllEntities( const Mesh& mesh )
    writeHeader( mesh );
    writePoints( mesh );
 
-   cellsCount = __impl::getAllMeshEntitiesCount( mesh );
-   const IndexType cellsListSize = __impl::getCellsListSize( mesh );
+   cellsCount = details::getAllMeshEntitiesCount( mesh );
+   const IndexType cellsListSize = details::getCellsListSize( mesh );
 
    str << std::endl << "CELLS " << cellsCount << " " << cellsListSize << std::endl;
    Algorithms::TemplateStaticFor< int, 0, Mesh::getMeshDimension() + 1, EntitiesWriter >::exec( mesh, str, format );
@@ -532,7 +471,7 @@ VTKWriter< Mesh >::writeEntities( const Mesh& mesh )
 
    using EntityType = typename Mesh::template EntityType< EntityDimension >;
    cellsCount = mesh.template getEntitiesCount< EntityType >();
-   const IndexType verticesPerEntity = __impl::VerticesPerEntity< EntityType >::count;
+   const IndexType verticesPerEntity = VerticesPerEntity< EntityType >::count;
    const IndexType cellsListSize = cellsCount * ( verticesPerEntity + 1 );
 
    str << std::endl << "CELLS " << cellsCount << " " << cellsListSize << std::endl;
@@ -595,7 +534,7 @@ VTKWriter< Mesh >::writeDataArray( const Array& array,
       str << "VECTORS " << name << " " << getType< typename Array::ValueType >() << " 1" << std::endl;
    }
 
-   using Meshes::Writers::__impl::writeReal;
+   using Meshes::Writers::details::writeReal;
    for( IndexType i = 0; i < array.getSize(); i++ ) {
       writeReal( format, str, array[i] );
       if( format == Meshes::Writers::VTKFileFormat::ASCII )
@@ -617,7 +556,7 @@ template< typename Mesh >
 void
 VTKWriter< Mesh >::writePoints( const Mesh& mesh )
 {
-   using __impl::writeReal;
+   using details::writeReal;
    pointsCount = mesh.template getEntitiesCount< typename Mesh::Vertex >();
    str << "POINTS " << pointsCount << " " << getType< typename Mesh::RealType >() << std::endl;
    for( IndexType i = 0; i < pointsCount; i++ ) {

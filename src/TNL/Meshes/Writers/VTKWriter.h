@@ -31,12 +31,12 @@ enum class VTKDataType
    PointData
 };
 
-namespace __impl {
+namespace details {
 
 template< typename Mesh, int EntityDimension > struct MeshEntitiesVTKWriter;
 template< typename Mesh, int EntityDimension > struct MeshEntityTypesVTKWriter;
 
-} // namespace __impl
+} // namespace details
 
 template< typename Mesh >
 class VTKWriter
@@ -46,10 +46,10 @@ class VTKWriter
 //   static_assert( Mesh::getWorldDimension() <= 3, "The VTK format supports only 1D, 2D and 3D meshes." );
 
    template< int EntityDimension >
-   using EntitiesWriter = __impl::MeshEntitiesVTKWriter< Mesh, EntityDimension >;
+   using EntitiesWriter = details::MeshEntitiesVTKWriter< Mesh, EntityDimension >;
 
    template< int EntityDimension >
-   using EntityTypesWriter = __impl::MeshEntityTypesVTKWriter< Mesh, EntityDimension >;
+   using EntityTypesWriter = details::MeshEntityTypesVTKWriter< Mesh, EntityDimension >;
 
 public:
    using IndexType = typename Mesh::GlobalIndexType;

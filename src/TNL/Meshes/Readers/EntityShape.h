@@ -11,6 +11,7 @@
 #pragma once
 
 #include <ostream>
+#include <cstdint>
 
 #include <TNL/Meshes/Topologies/Edge.h>
 #include <TNL/Meshes/Topologies/Triangle.h>
@@ -26,6 +27,7 @@ namespace Readers {
  * Enumeration of entity shapes, inspired by the VTK library.
  */
 enum class EntityShape
+: std::uint8_t
 {
    Vertex = 1,
    PolyVertex = 2,
@@ -127,6 +129,22 @@ template<> struct TopologyToEntityShape< Topologies::Triangle >       { static c
 template<> struct TopologyToEntityShape< Topologies::Quadrilateral >  { static constexpr EntityShape shape = EntityShape::Quad; };
 template<> struct TopologyToEntityShape< Topologies::Tetrahedron >    { static constexpr EntityShape shape = EntityShape::Tetra; };
 template<> struct TopologyToEntityShape< Topologies::Hexahedron >     { static constexpr EntityShape shape = EntityShape::Hexahedron; };
+
+// mapping used in VTKWriter
+template< typename GridEntity >
+struct GridEntityShape
+{
+private:
+   static constexpr int dim = GridEntity::getEntityDimension();
+   static_assert( dim >= 0 && dim <= 3, "unexpected dimension of the grid entity" );
+
+public:
+   static constexpr EntityShape shape =
+      (dim == 0) ? EntityShape::Vertex :
+      (dim == 1) ? EntityShape::Line :
+      (dim == 2) ? EntityShape::Pixel :
+                   EntityShape::Voxel;
+};
 
 } // namespace Readers
 } // namespace Meshes
