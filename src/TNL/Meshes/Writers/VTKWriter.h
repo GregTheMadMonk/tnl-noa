@@ -25,13 +25,13 @@ enum class VTKFileFormat
    BINARY
 };
 
+enum class VTKDataType
+{
+   CellData,
+   PointData
+};
+
 namespace __impl {
-
-// TODO: 64-bit integers are most likely not supported in the BINARY format
-inline void writeInt( VTKFileFormat format, std::ostream& str, int value );
-
-template< typename Real >
-void writeReal( VTKFileFormat format, std::ostream& str, Real value );
 
 template< typename Mesh, int EntityDimension > struct MeshEntitiesVTKWriter;
 template< typename Mesh, int EntityDimension > struct MeshEntityTypesVTKWriter;
@@ -52,21 +52,50 @@ class VTKWriter
    using EntityTypesWriter = __impl::MeshEntityTypesVTKWriter< Mesh, EntityDimension >;
 
 public:
-   using Index = typename Mesh::GlobalIndexType;
+   using IndexType = typename Mesh::GlobalIndexType;
 
-   static void writeAllEntities( const Mesh& mesh, std::ostream& str, VTKFileFormat format = VTKFileFormat::ASCII );
+   VTKWriter() = delete;
+
+   VTKWriter( std::ostream& str, VTKFileFormat format = VTKFileFormat::ASCII )
+   : str(str), format(format)
+   {}
+
+   void writeAllEntities( const Mesh& mesh );
 
    template< int EntityDimension = Mesh::getMeshDimension() >
-   static void writeEntities( const Mesh& mesh, std::ostream& str, VTKFileFormat format = VTKFileFormat::ASCII );
+   void writeEntities( const Mesh& mesh );
+
+   template< typename Array >
+   void writeDataArray( const Array& array,
+                        const String& name,
+                        const int numberOfComponents = 1,
+                        VTKDataType dataType = VTKDataType::CellData );
 
 protected:
-   static void writeHeader( const Mesh& mesh, std::ostream& str, VTKFileFormat format );
+   void writeHeader( const Mesh& mesh );
 
-   static void writePoints( const Mesh& mesh, std::ostream& str, VTKFileFormat format );
+   void writePoints( const Mesh& mesh );
+
+   std::ostream& str;
+
+   VTKFileFormat format;
+
+   // number of cells (in the VTK sense) written to the file
+   IndexType cellsCount = 0;
+
+   // number of points written to the file
+   IndexType pointsCount = 0;
+
+   // number of data arrays written in each section
+   int cellDataArrays = 0;
+   int pointDataArrays = 0;
+
+   // indicator of the current section
+   VTKDataType currentSection = VTKDataType::CellData;
 };
 
 } // namespace Writers
 } // namespace Meshes
 } // namespace TNL
 
-#include <TNL/Meshes/Writers/VTKWriter_impl.h>
+#include <TNL/Meshes/Writers/VTKWriter.hpp>

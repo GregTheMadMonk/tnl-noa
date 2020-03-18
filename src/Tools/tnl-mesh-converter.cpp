@@ -93,7 +93,8 @@ struct MeshConverter
       else if( outputFormat == "vtk" ) {
          using VTKWriter = Meshes::Writers::VTKWriter< Mesh >;
          std::fstream file( outputFileName.getString() );
-         VTKWriter::template writeEntities< Mesh::getMeshDimension() >( mesh, file );
+         VTKWriter writer( file );
+         writer.template writeEntities< Mesh::getMeshDimension() >( mesh );
       }
       // FIXME: NetgenWriter is not specialized for grids
 //      else if( outputFormat == "netgen" ) {

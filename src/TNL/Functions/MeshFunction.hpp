@@ -405,8 +405,10 @@ write( const String& fileName,
       std::cerr << "Unable to open a file " << fileName << "." << std::endl;
       return false;
    }
-   if( format == "vtk" )
-      return MeshFunctionVTKWriter< MeshFunction >::write( *this, file );
+   if( format == "vtk" ) {
+      MeshFunctionVTKWriter< MeshFunction > writer( file );
+      writer.write( *this );
+   }
    else if( format == "gnuplot" )
       return MeshFunctionGnuplotWriter< MeshFunction >::write( *this, file );
    else {

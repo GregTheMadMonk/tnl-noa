@@ -37,6 +37,7 @@ struct has_entity_topology< T, typename enable_if_type< typename T::EntityTopolo
 {};
 
 
+// TODO: 64-bit integers are most likely not supported in the BINARY format
 inline void
 writeInt( VTKFileFormat format, std::ostream& str, int value )
 {
@@ -506,44 +507,105 @@ struct MeshEntityTypesVTKWriter< Grid< Dimension, MeshReal, Device, MeshIndex >,
 
 template< typename Mesh >
 void
-VTKWriter< Mesh >::writeAllEntities( const Mesh& mesh, std::ostream& str, VTKFileFormat format )
+VTKWriter< Mesh >::writeAllEntities( const Mesh& mesh )
 {
-   writeHeader( mesh, str, format );
-   writePoints( mesh, str, format );
+   writeHeader( mesh );
+   writePoints( mesh );
 
-   const Index allEntitiesCount = __impl::getAllMeshEntitiesCount( mesh );
-   const Index cellsListSize = __impl::getCellsListSize( mesh );
+   cellsCount = __impl::getAllMeshEntitiesCount( mesh );
+   const IndexType cellsListSize = __impl::getCellsListSize( mesh );
 
-   str << std::endl << "CELLS " << allEntitiesCount << " " << cellsListSize << std::endl;
+   str << std::endl << "CELLS " << cellsCount << " " << cellsListSize << std::endl;
    Algorithms::TemplateStaticFor< int, 0, Mesh::getMeshDimension() + 1, EntitiesWriter >::exec( mesh, str, format );
 
-   str << std::endl << "CELL_TYPES " << allEntitiesCount << std::endl;
+   str << std::endl << "CELL_TYPES " << cellsCount << std::endl;
    Algorithms::TemplateStaticFor< int, 0, Mesh::getMeshDimension() + 1, EntityTypesWriter >::exec( mesh, str, format );
 }
 
 template< typename Mesh >
    template< int EntityDimension >
 void
-VTKWriter< Mesh >::writeEntities( const Mesh& mesh, std::ostream& str, VTKFileFormat format )
+VTKWriter< Mesh >::writeEntities( const Mesh& mesh )
 {
-   writeHeader( mesh, str, format );
-   writePoints( mesh, str, format );
+   writeHeader( mesh );
+   writePoints( mesh );
 
    using EntityType = typename Mesh::template EntityType< EntityDimension >;
-   const Index entitiesCount = mesh.template getEntitiesCount< EntityType >();
-   const Index verticesPerEntity = __impl::VerticesPerEntity< EntityType >::count;
-   const Index cellsListSize = entitiesCount * ( verticesPerEntity + 1 );
+   cellsCount = mesh.template getEntitiesCount< EntityType >();
+   const IndexType verticesPerEntity = __impl::VerticesPerEntity< EntityType >::count;
+   const IndexType cellsListSize = cellsCount * ( verticesPerEntity + 1 );
 
-   str << std::endl << "CELLS " << entitiesCount << " " << cellsListSize << std::endl;
+   str << std::endl << "CELLS " << cellsCount << " " << cellsListSize << std::endl;
    EntitiesWriter< EntityDimension >::exec( mesh, str, format );
 
-   str << std::endl << "CELL_TYPES " << entitiesCount << std::endl;
+   str << std::endl << "CELL_TYPES " << cellsCount << std::endl;
    EntityTypesWriter< EntityDimension >::exec( mesh, str, format );
 }
 
 template< typename Mesh >
+   template< typename Array >
 void
-VTKWriter< Mesh >::writeHeader( const Mesh& mesh, std::ostream& str, VTKFileFormat format )
+VTKWriter< Mesh >::writeDataArray( const Array& array,
+                                   const String& name,
+                                   const int numberOfComponents,
+                                   VTKDataType dataType )
+{
+   // use a host buffer if direct access to the array elements is not possible
+   if( std::is_same< typename Array::DeviceType, Devices::Cuda >::value )
+   {
+      using HostArray = typename Array::template Self< typename Array::ValueType, Devices::Host >;
+      HostArray hostBuffer;
+      hostBuffer = array;
+      writeDataArray( hostBuffer, name, numberOfComponents, dataType );
+      return;
+   }
+
+   if( numberOfComponents != 1 && numberOfComponents != 3 )
+      throw std::logic_error("Unsupported numberOfComponents parameter: " + std::to_string(numberOfComponents));
+
+   if( dataType == VTKDataType::CellData )
+      if( array.getSize() / numberOfComponents != cellsCount )
+         throw std::length_error("Mismatched array size for CELL_DATA section: " + std::to_string(array.getSize())
+                                 + " (there are " + std::to_string(cellsCount) + " cells in the file)");
+   if( dataType == VTKDataType::PointData )
+      if( array.getSize() / numberOfComponents != pointsCount )
+         throw std::length_error("Mismatched array size for POINT_DATA section: " + std::to_string(array.getSize())
+                                 + " (there are " + std::to_string(pointsCount) + " points in the file)");
+
+   // check that we won't start the section second time
+   if( dataType != currentSection && cellDataArrays * pointDataArrays != 0 )
+      throw std::logic_error("The requested data section is not the current section and it has already been written.");
+
+   // start the appropriate section if necessary
+   if( dataType == VTKDataType::CellData && cellDataArrays == 0 ) {
+      str << std::endl << "CELL_DATA " << cellsCount << std::endl;
+      ++cellDataArrays;
+   }
+   if( dataType == VTKDataType::PointData && pointDataArrays == 0 ) {
+      str << std::endl << "POINT_DATA " << pointsCount << std::endl;
+      ++pointDataArrays;
+   }
+
+   // write DataArray header
+   if( numberOfComponents == 1 ) {
+      str << "SCALARS " << name << " " << getType< typename Array::ValueType >() << " 1" << std::endl;
+      str << "LOOKUP_TABLE default" << std::endl;
+   }
+   else {
+      str << "VECTORS " << name << " " << getType< typename Array::ValueType >() << " 1" << std::endl;
+   }
+
+   using Meshes::Writers::__impl::writeReal;
+   for( IndexType i = 0; i < array.getSize(); i++ ) {
+      writeReal( format, str, array[i] );
+      if( format == Meshes::Writers::VTKFileFormat::ASCII )
+         str << "\n";
+   }
+}
+
+template< typename Mesh >
+void
+VTKWriter< Mesh >::writeHeader( const Mesh& mesh )
 {
     str << "# vtk DataFile Version 2.0\n"
         << "TNL DATA\n"
@@ -553,18 +615,18 @@ VTKWriter< Mesh >::writeHeader( const Mesh& mesh, std::ostream& str, VTKFileForm
 
 template< typename Mesh >
 void
-VTKWriter< Mesh >::writePoints( const Mesh& mesh, std::ostream& str, VTKFileFormat format )
+VTKWriter< Mesh >::writePoints( const Mesh& mesh )
 {
    using __impl::writeReal;
-   const Index verticesCount = mesh.template getEntitiesCount< typename Mesh::Vertex >();
-   str << "POINTS " << verticesCount << " " << getType< typename Mesh::RealType >() << std::endl;
-   for( Index i = 0; i < verticesCount; i++ ) {
+   pointsCount = mesh.template getEntitiesCount< typename Mesh::Vertex >();
+   str << "POINTS " << pointsCount << " " << getType< typename Mesh::RealType >() << std::endl;
+   for( IndexType i = 0; i < pointsCount; i++ ) {
       const auto& vertex = mesh.template getEntity< typename Mesh::Vertex >( i );
       const auto& point = vertex.getPoint();
-      for( Index j = 0; j < point.getSize(); j++ )
+      for( IndexType j = 0; j < point.getSize(); j++ )
          writeReal( format, str, point[ j ] );
       // VTK needs zeros for unused dimensions
-      for( Index j = 0; j < 3 - point.getSize(); j++ )
+      for( IndexType j = 0; j < 3 - point.getSize(); j++ )
          writeReal( format, str, (typename Mesh::PointType::RealType) 0 );
       if( format == VTKFileFormat::ASCII )
          str << "\n";

@@ -504,8 +504,10 @@ class VectorField< Size, MeshFunctionView< Mesh, MeshEntityDimension, Real > >
             std::cerr << "Unable to open a file " << fileName << "." << std::endl;
             return false;
          }
-         if( format == "vtk" )
-            return VectorFieldVTKWriter< VectorField >::write( *this, file );
+         if( format == "vtk" ) {
+            VectorFieldVTKWriter< VectorField > writer( file );
+            writer.write( *this );
+         }
          else if( format == "gnuplot" )
             return VectorFieldGnuplotWriter< VectorField >::write( *this, file );
          else {
