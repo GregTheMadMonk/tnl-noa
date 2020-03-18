@@ -285,8 +285,7 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, Real > >
       }
 
       bool write( const String& fileName,
-                  const String& format = "vtk",
-                  const double& scale = 1.0 ) const
+                  const String& format = "vtk" ) const
       {
          std::fstream file;
          file.open( fileName.getString(), std::ios::out );
@@ -296,9 +295,9 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, Real > >
             return false;
          }
          if( format == "vtk" )
-            return VectorFieldVTKWriter< VectorField >::write( *this, file, scale );
+            return VectorFieldVTKWriter< VectorField >::write( *this, file );
          else if( format == "gnuplot" )
-            return VectorFieldGnuplotWriter< VectorField >::write( *this, file, scale );
+            return VectorFieldGnuplotWriter< VectorField >::write( *this, file );
          else {
             std::cerr << "Unknown output format: " << format << std::endl;
             return false;

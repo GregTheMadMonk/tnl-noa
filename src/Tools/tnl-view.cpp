@@ -74,7 +74,6 @@ void setupConfig( Config::ConfigDescription& config )
 //   config.addEntry        < int >   ( "output-x-size", "X size of the output." );
 //   config.addEntry        < int >   ( "output-y-size", "Y size of the output." );
 //   config.addEntry        < int >   ( "output-z-size", "Z size of the output." );
-   config.addEntry        < double >( "scale", "Multiply the function by given number.", 1.0 );
    config.addEntry        < String >( "output-format", "Output file format.", "gnuplot" );
       config.addEntryEnum< String > ( "gnuplot" );
       config.addEntryEnum< String > ( "vtk" );

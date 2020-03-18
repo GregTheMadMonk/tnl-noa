@@ -74,8 +74,7 @@ public:
    using GlobalIndex = typename MeshType::GlobalIndexType;
 
    static bool write( const MeshFunction& function,
-                      std::ostream& str,
-                      const double& scale = 1.0 )
+                      std::ostream& str )
    {
       const MeshType& mesh = function.getMesh();
       const GlobalIndex entitiesCount = mesh.template getEntitiesCount< EntityType >();
@@ -84,7 +83,7 @@ public:
          typename MeshType::PointType v = center< EntityType >::get( entity );
          for( int j = 0; j < v.getSize(); j++ )
             str << v[ j ] << " ";
-         str << scale * function.getData().getElement( i ) << "\n";
+         str << function.getData().getElement( i ) << "\n";
       }
       return true;
    }
@@ -104,8 +103,7 @@ public:
    using GlobalIndex = typename MeshType::GlobalIndexType;
 
    static bool write( const MeshFunction& function,
-                      std::ostream& str,
-                      const double& scale = 1.0 )
+                      std::ostream& str )
    {
       const MeshType& grid = function.getMesh();
       EntityType entity( grid );
@@ -119,7 +117,7 @@ public:
             //std::cerr << entity.getCoordinates() << " -> " << v << std::endl;
             for( int j = 0; j < v.getSize(); j++ )
                str << v[ j ] << " ";
-            str << scale * function.getData().getElement( entity.getIndex() ) << "\n";
+            str << function.getData().getElement( entity.getIndex() ) << "\n";
          }
          str << "\n";
       }
@@ -141,8 +139,7 @@ public:
    using GlobalIndex = typename MeshType::GlobalIndexType;
 
    static bool write( const MeshFunction& function,
-                      std::ostream& str,
-                      const double& scale = 1.0 )
+                      std::ostream& str )
    {
       const MeshType& grid = function.getMesh();
       EntityType entity( grid );
@@ -156,7 +153,7 @@ public:
                typename MeshType::PointType v = center< EntityType >::get( entity );
                for( int j = 0; j < v.getSize(); j++ )
                   str << v[ j ] << " ";
-               str << scale * function.getData().getElement( entity.getIndex() ) << "\n";
+               str << function.getData().getElement( entity.getIndex() ) << "\n";
             }
             str << "\n";
          }
