@@ -11,6 +11,7 @@
 #include <TNL/Config/parseCommandLine.h>
 #include <TNL/Meshes/TypeResolver/TypeResolver.h>
 #include <TNL/Meshes/Writers/VTKWriter.h>
+#include <TNL/Meshes/Writers/VTUWriter.h>
 #include <TNL/Meshes/Writers/NetgenWriter.h>
 
 using namespace TNL;
@@ -92,6 +93,12 @@ struct MeshConverter
          VTKWriter writer( file );
          writer.template writeEntities< Mesh::getMeshDimension() >( mesh );
       }
+      else if( outputFormat == "vtu" ) {
+         using VTKWriter = Meshes::Writers::VTUWriter< Mesh >;
+         std::ofstream file( outputFileName.getString() );
+         VTKWriter writer( file );
+         writer.template writeEntities< Mesh::getMeshDimension() >( mesh );
+      }
       // FIXME: NetgenWriter is not specialized for grids
 //      else if( outputFormat == "netgen" ) {
 //         using NetgenWriter = Meshes::Writers::NetgenWriter< Mesh >;
@@ -111,6 +118,7 @@ void configSetup( Config::ConfigDescription& config )
    config.addEntry< String >( "output-format", "Output mesh file format." );
    config.addEntryEnum( "tnl" );
    config.addEntryEnum( "vtk" );
+   config.addEntryEnum( "vtu" );
 //   config.addEntryEnum( "netgen" );
 }
 
