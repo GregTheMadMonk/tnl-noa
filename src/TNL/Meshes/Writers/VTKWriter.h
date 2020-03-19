@@ -50,8 +50,6 @@ public:
          throw std::domain_error("The Legacy VTK file formats support only ASCII and BINARY formats.");
    }
 
-   void writeAllEntities( const Mesh& mesh );
-
    template< int EntityDimension = Mesh::getMeshDimension() >
    void writeEntities( const Mesh& mesh );
 

@@ -27,12 +27,6 @@ public:
    {
       throw Exceptions::NotImplementedError();
    }
-
-   template< int EntityDimension = Mesh::getMeshDimension() >
-   static void writeEntities( const Mesh& mesh, std::ostream& str )
-   {
-      throw Exceptions::NotImplementedError();
-   }
 };
 
 template< typename Real, typename Device, typename Index >
@@ -150,12 +144,6 @@ public:
                 << c. x() + v. x() << ", " << c.y() + v. y() << " ), Arrow(size=1mm),p=blue);" << std::endl;
             */
          }
-   }
-
-   template< int EntityDimension = Mesh::getMeshDimension() >
-   static void writeEntities( const Mesh& mesh, std::ostream& str )
-   {
-      throw Exceptions::NotImplementedError();
    }
 };
 

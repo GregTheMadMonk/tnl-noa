@@ -50,47 +50,6 @@ writeReal( VTK::FileFormat format, std::ostream& str, Real value )
 }
 
 
-template< typename Mesh >
-typename Mesh::GlobalIndexType
-getAllMeshEntitiesCount( const Mesh& mesh, DimensionTag< 0 > )
-{
-   using EntityType = typename Mesh::template EntityType< 0 >;
-   return mesh.template getEntitiesCount< EntityType >();
-}
-
-// TODO: specialization for disabled entities
-template< typename Mesh,
-          typename DimensionTag = Meshes::DimensionTag< Mesh::getMeshDimension() > >
-typename Mesh::GlobalIndexType
-getAllMeshEntitiesCount( const Mesh& mesh, DimensionTag = DimensionTag() )
-{
-   using EntityType = typename Mesh::template EntityType< DimensionTag::value >;
-   return mesh.template getEntitiesCount< EntityType >() +
-          getAllMeshEntitiesCount( mesh, typename DimensionTag::Decrement() );
-}
-
-
-template< typename Mesh >
-typename Mesh::GlobalIndexType
-getCellsListSize( const Mesh& mesh, DimensionTag< 0 > )
-{
-   using EntityType = typename Mesh::template EntityType< 0 >;
-   return mesh.template getEntitiesCount< EntityType >() * 2;
-}
-
-// TODO: specialization for disabled entities
-template< typename Mesh,
-          typename DimensionTag = Meshes::DimensionTag< Mesh::getMeshDimension() > >
-typename Mesh::GlobalIndexType
-getCellsListSize( const Mesh& mesh, DimensionTag = DimensionTag() )
-{
-   using EntityType = typename Mesh::template EntityType< DimensionTag::value >;
-   const auto verticesPerEntity = VerticesPerEntity< EntityType >::count;
-   return ( mesh.template getEntitiesCount< EntityType >() * ( verticesPerEntity + 1 ) ) +
-          getCellsListSize( mesh, typename DimensionTag::Decrement() );
-}
-
-
 // TODO: specialization for disabled entities
 // Unstructured meshes, entities
 template< typename Mesh, int EntityDimension >
@@ -444,23 +403,6 @@ struct MeshEntityTypesVTKWriter< Grid< Dimension, MeshReal, Device, MeshIndex >,
 };
 
 } // namespace details
-
-template< typename Mesh >
-void
-VTKWriter< Mesh >::writeAllEntities( const Mesh& mesh )
-{
-   writeHeader( mesh );
-   writePoints( mesh );
-
-   cellsCount = details::getAllMeshEntitiesCount( mesh );
-   const IndexType cellsListSize = details::getCellsListSize( mesh );
-
-   str << std::endl << "CELLS " << cellsCount << " " << cellsListSize << std::endl;
-   Algorithms::TemplateStaticFor< int, 0, Mesh::getMeshDimension() + 1, EntitiesWriter >::exec( mesh, str, format );
-
-   str << std::endl << "CELL_TYPES " << cellsCount << std::endl;
-   Algorithms::TemplateStaticFor< int, 0, Mesh::getMeshDimension() + 1, EntityTypesWriter >::exec( mesh, str, format );
-}
 
 template< typename Mesh >
    template< int EntityDimension >
