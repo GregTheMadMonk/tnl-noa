@@ -55,6 +55,16 @@ public:
    void writeEntities( const Mesh& mesh );
 
    template< typename Array >
+   void writePointData( const Array& array,
+                        const String& name,
+                        const int numberOfComponents = 1 );
+
+   template< typename Array >
+   void writeCellData( const Array& array,
+                       const String& name,
+                       const int numberOfComponents = 1 );
+
+   template< typename Array >
    void writeDataArray( const Array& array,
                         const String& name,
                         const int numberOfComponents = 1 );
@@ -62,11 +72,11 @@ public:
    ~VTUWriter();
 
 protected:
+   void writePoints( const Mesh& mesh );
+
    void writeHeader();
 
    void writeFooter();
-
-   void writePoints( const Mesh& mesh );
 
    std::ostream& str;
 
@@ -84,12 +94,20 @@ protected:
    // indicator if a <Piece> tag is open
    bool pieceOpen = false;
 
-   // number of data arrays written in each section
-   int cellDataArrays = 0;
-   int pointDataArrays = 0;
+   // indicators if a <CellData> tag is open or closed
+   bool cellDataOpen = false;
+   bool cellDataClosed = false;
 
-   // indicator of the current section
-   VTK::DataType currentSection = VTK::DataType::CellData;
+   // indicators if a <PointData> tag is open or closed
+   bool pointDataOpen = false;
+   bool pointDataClosed = false;
+
+   void openCellData();
+   void closeCellData();
+   void openPointData();
+   void closePointData();
+
+   void closePiece();
 };
 
 } // namespace Writers

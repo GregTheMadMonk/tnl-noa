@@ -16,7 +16,7 @@
 #include <TNL/Functions/MeshFunction.h>
 #include <TNL/Functions/MeshFunctionView.h>
 #include <TNL/Functions/VectorFieldGnuplotWriter.h>
-#include <TNL/Functions/VectorFieldVTKWriter.h>
+#include <TNL/Meshes/Writers/VTKWriter.h>
 
 namespace TNL {
 namespace Functions {
@@ -259,8 +259,28 @@ class VectorField< Size, MeshFunction< Mesh, MeshEntityDimension, Real > >
             std::cerr << "Unable to open a file " << fileName << "." << std::endl;
             return false;
          }
-         if( format == "vtk" )
-            return VectorFieldVTKWriter< VectorField >::write( *this, file );
+         if( format == "vtk" ) {
+            Meshes::Writers::VTKWriter< Mesh > writer( file );
+            writer.template writeEntities< getEntitiesDimension() >( *getMeshPointer() );
+
+            // copy all values from the vector field into a contiguous array
+            using BufferType = Containers::Array< typename VectorField::RealType, Devices::Host, IndexType >;
+            const IndexType entitiesCount = getMeshPointer()->template getEntitiesCount< getEntitiesDimension() >();
+            BufferType buffer( 3 * entitiesCount );
+            IndexType k = 0;
+            for( IndexType i = 0; i < entitiesCount; i++ ) {
+               const VectorType vector = getElement( i );
+               static_assert( getVectorDimension() <= 3, "The VTK format supports only up to 3D vector fields." );
+               for( int j = 0; j < 3; j++ )
+                  buffer[ k++ ] = ( j < vector.getSize() ? vector[ j ] : 0 );
+            }
+
+            // write the buffer
+            if( getEntitiesDimension() == 0 )
+               writer.writePointData( buffer, "cellVectorFieldValues", 3 );
+            else
+               writer.writeCellData( buffer, "pointVectorFieldValues", 3 );
+         }
          else if( format == "gnuplot" )
             return VectorFieldGnuplotWriter< VectorField >::write( *this, file );
          else {
@@ -505,8 +525,26 @@ class VectorField< Size, MeshFunctionView< Mesh, MeshEntityDimension, Real > >
             return false;
          }
          if( format == "vtk" ) {
-            VectorFieldVTKWriter< VectorField > writer( file );
-            writer.write( *this );
+            Meshes::Writers::VTKWriter< Mesh > writer( file );
+            writer.template writeEntities< getEntitiesDimension() >( *getMeshPointer() );
+
+            // copy all values from the vector field into a contiguous array
+            using BufferType = Containers::Array< typename VectorField::RealType, Devices::Host, IndexType >;
+            const IndexType entitiesCount = getMeshPointer()->template getEntitiesCount< getEntitiesDimension() >();
+            BufferType buffer( 3 * entitiesCount );
+            IndexType k = 0;
+            for( IndexType i = 0; i < entitiesCount; i++ ) {
+               const VectorType vector = getElement( i );
+               static_assert( getVectorDimension() <= 3, "The VTK format supports only up to 3D vector fields." );
+               for( int j = 0; j < 3; j++ )
+                  buffer[ k++ ] = ( j < vector.getSize() ? vector[ j ] : 0 );
+            }
+
+            // write the buffer
+            if( getEntitiesDimension() == 0 )
+               writer.writePointData( buffer, "cellVectorFieldValues", 3 );
+            else
+               writer.writeCellData( buffer, "pointVectorFieldValues", 3 );
          }
          else if( format == "gnuplot" )
             return VectorFieldGnuplotWriter< VectorField >::write( *this, file );

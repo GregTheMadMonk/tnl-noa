@@ -14,7 +14,7 @@
 #include <TNL/Functions/MeshFunctionEvaluator.h>
 #include <TNL/Functions/MeshFunctionNormGetter.h>
 #include <TNL/Functions/MeshFunctionGnuplotWriter.h>
-#include <TNL/Functions/MeshFunctionVTKWriter.h>
+#include <TNL/Meshes/Writers/VTKWriter.h>
 
 #pragma once
 
@@ -406,8 +406,12 @@ write( const String& fileName,
       return false;
    }
    if( format == "vtk" ) {
-      MeshFunctionVTKWriter< MeshFunction > writer( file );
-      writer.write( *this );
+      Meshes::Writers::VTKWriter< Mesh > writer( file );
+      writer.template writeEntities< getEntitiesDimension() >( *meshPointer );
+      if( MeshFunction::getEntitiesDimension() == 0 )
+         writer.writePointData( getData(), "cellFunctionValues", 1 );
+      else
+         writer.writeCellData( getData(), "pointFunctionValues", 1 );
    }
    else if( format == "gnuplot" )
       return MeshFunctionGnuplotWriter< MeshFunction >::write( *this, file );

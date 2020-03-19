@@ -388,8 +388,7 @@ VTUWriter< Mesh >::writeEntities( const Mesh& mesh )
 
    if( ! vtkfileOpen )
       writeHeader();
-   if( pieceOpen )
-      str << "</Piece>\n";
+   closePiece();
    str << "<Piece NumberOfPoints=\"" << pointsCount << "\" NumberOfCells=\"" << cellsCount << "\">\n";
    pieceOpen = true;
 
@@ -412,6 +411,38 @@ VTUWriter< Mesh >::writeEntities( const Mesh& mesh )
    writeDataArray( offsets_v, "offsets", 0 );
    writeDataArray( types_v, "types", 0 );
    str << "</Cells>\n";
+}
+
+template< typename Mesh >
+   template< typename Array >
+void
+VTUWriter< Mesh >::writePointData( const Array& array,
+                                   const String& name,
+                                   const int numberOfComponents )
+{
+   if( ! pieceOpen )
+      throw std::logic_error("The <Piece> tag has not been opened yet - call writeEntities first.");
+   if( array.getSize() / numberOfComponents != pointsCount )
+      throw std::length_error("Mismatched array size for <PointData> section: " + std::to_string(array.getSize())
+                              + " (there are " + std::to_string(pointsCount) + " points in the file)");
+   openPointData();
+   writeDataArray( array, name, numberOfComponents );
+}
+
+template< typename Mesh >
+   template< typename Array >
+void
+VTUWriter< Mesh >::writeCellData( const Array& array,
+                                  const String& name,
+                                  const int numberOfComponents )
+{
+   if( ! pieceOpen )
+      throw std::logic_error("The <Piece> tag has not been opened yet - call writeEntities first.");
+   if( array.getSize() / numberOfComponents != cellsCount )
+      throw std::length_error("Mismatched array size for <CellData> section: " + std::to_string(array.getSize())
+                              + " (there are " + std::to_string(cellsCount) + " cells in the file)");
+   openCellData();
+   writeDataArray( array, name, numberOfComponents );
 }
 
 template< typename Mesh >
@@ -458,6 +489,30 @@ VTUWriter< Mesh >::writeDataArray( const Array& array,
 
 template< typename Mesh >
 void
+VTUWriter< Mesh >::writePoints( const Mesh& mesh )
+{
+   // copy all coordinates into a contiguous array
+   using BufferType = Containers::Array< MeshRealType, Devices::Host, IndexType >;
+   BufferType buffer( 3 * pointsCount );
+   IndexType k = 0;
+   for( IndexType i = 0; i < pointsCount; i++ ) {
+      const auto& vertex = mesh.template getEntity< typename Mesh::Vertex >( i );
+      const auto& point = vertex.getPoint();
+      for( IndexType j = 0; j < point.getSize(); j++ )
+         buffer[ k++ ] = point[ j ];
+      // VTK needs zeros for unused dimensions
+      for( IndexType j = point.getSize(); j < 3; j++ )
+         buffer[ k++ ] = 0;
+   }
+
+   // write the buffer
+   str << "<Points>\n";
+   writeDataArray( buffer, "Points", 3 );
+   str << "</Points>\n";
+}
+
+template< typename Mesh >
+void
 VTUWriter< Mesh >::writeHeader()
 {
    str << "<?xml version=\"1.0\"?>\n";
@@ -479,8 +534,7 @@ template< typename Mesh >
 void
 VTUWriter< Mesh >::writeFooter()
 {
-   if( pieceOpen )
-      str << "</Piece>\n";
+   closePiece();
    str << "</UnstructuredGrid>\n";
    str << "</VTKFile>\n";
 }
@@ -494,26 +548,66 @@ VTUWriter< Mesh >::~VTUWriter()
 
 template< typename Mesh >
 void
-VTUWriter< Mesh >::writePoints( const Mesh& mesh )
+VTUWriter< Mesh >::openCellData()
 {
-   // copy all coordinates into a contiguous array
-   using BufferType = Containers::Array< MeshRealType, Devices::Host, IndexType >;
-   BufferType buffer( 3 * pointsCount );
-   IndexType k = 0;
-   for( IndexType i = 0; i < pointsCount; i++ ) {
-      const auto& vertex = mesh.template getEntity< typename Mesh::Vertex >( i );
-      const auto& point = vertex.getPoint();
-      for( IndexType j = 0; j < point.getSize(); j++ )
-         buffer[ k++ ] = point[ j ];
-      // VTK needs zeros for unused dimensions
-      for( IndexType j = point.getSize(); j < 3; j++ )
-         buffer[ k++ ] = 0;
+   if( cellDataClosed )
+      throw std::logic_error("The <CellData> tag has already been closed in the current <Piece> section.");
+   closePointData();
+   if( ! cellDataOpen ) {
+      str << "<CellData>\n";
+      cellDataOpen = true;
    }
+}
 
-   // write the buffer
-   str << "<Points>\n";
-   writeDataArray( buffer, "Points", 3 );
-   str << "</Points>\n";
+template< typename Mesh >
+void
+VTUWriter< Mesh >::closeCellData()
+{
+   if( cellDataOpen ) {
+      str << "</CellData>\n";
+      cellDataClosed = true;
+      cellDataOpen = false;
+   }
+}
+
+template< typename Mesh >
+void
+VTUWriter< Mesh >::openPointData()
+{
+   if( pointDataClosed )
+      throw std::logic_error("The <PointData> tag has already been closed in the current <Piece> section.");
+   closeCellData();
+   if( ! pointDataOpen ) {
+      str << "<PointData>\n";
+      pointDataOpen = true;
+   }
+}
+
+template< typename Mesh >
+void
+VTUWriter< Mesh >::closePointData()
+{
+   if( pointDataOpen ) {
+      str << "</PointData>\n";
+      pointDataClosed = true;
+      pointDataOpen = false;
+   }
+}
+
+template< typename Mesh >
+void
+VTUWriter< Mesh >::closePiece()
+{
+   if( pieceOpen ) {
+      closeCellData();
+      closePointData();
+      str << "</Piece>\n";
+
+      // reset indicators - new <Piece> can be started
+      pieceOpen = false;
+      cellDataOpen = cellDataClosed = false;
+      pointDataOpen = pointDataClosed = false;
+   }
 }
 
 } // namespace Writers

@@ -454,10 +454,57 @@ VTKWriter< Mesh >::writeEntities( const Mesh& mesh )
 template< typename Mesh >
    template< typename Array >
 void
+VTKWriter< Mesh >::writePointData( const Array& array,
+                                   const String& name,
+                                   const int numberOfComponents )
+{
+   if( array.getSize() / numberOfComponents != pointsCount )
+      throw std::length_error("Mismatched array size for POINT_DATA section: " + std::to_string(array.getSize())
+                              + " (there are " + std::to_string(pointsCount) + " points in the file)");
+
+   // check that we won't start the section second time
+   if( currentSection != VTK::DataType::PointData && cellDataArrays * pointDataArrays != 0 )
+      throw std::logic_error("The requested data section is not the current section and it has already been written.");
+   currentSection = VTK::DataType::PointData;
+
+   // start the appropriate section if necessary
+   if( pointDataArrays == 0 )
+      str << std::endl << "POINT_DATA " << pointsCount << std::endl;
+   ++pointDataArrays;
+
+   writeDataArray( array, name, numberOfComponents );
+}
+
+template< typename Mesh >
+   template< typename Array >
+void
+VTKWriter< Mesh >::writeCellData( const Array& array,
+                                  const String& name,
+                                  const int numberOfComponents )
+{
+   if( array.getSize() / numberOfComponents != cellsCount )
+      throw std::length_error("Mismatched array size for CELL_DATA section: " + std::to_string(array.getSize())
+                              + " (there are " + std::to_string(cellsCount) + " cells in the file)");
+
+   // check that we won't start the section second time
+   if( currentSection != VTK::DataType::CellData && cellDataArrays * pointDataArrays != 0 )
+      throw std::logic_error("The requested data section is not the current section and it has already been written.");
+   currentSection = VTK::DataType::CellData;
+
+   // start the appropriate section if necessary
+   if( cellDataArrays == 0 )
+      str << std::endl << "CELL_DATA " << cellsCount << std::endl;
+   ++cellDataArrays;
+
+   writeDataArray( array, name, numberOfComponents );
+}
+
+template< typename Mesh >
+   template< typename Array >
+void
 VTKWriter< Mesh >::writeDataArray( const Array& array,
                                    const String& name,
-                                   const int numberOfComponents,
-                                   VTK::DataType dataType )
+                                   const int numberOfComponents )
 {
    // use a host buffer if direct access to the array elements is not possible
    if( std::is_same< typename Array::DeviceType, Devices::Cuda >::value )
@@ -465,35 +512,12 @@ VTKWriter< Mesh >::writeDataArray( const Array& array,
       using HostArray = typename Array::template Self< typename Array::ValueType, Devices::Host >;
       HostArray hostBuffer;
       hostBuffer = array;
-      writeDataArray( hostBuffer, name, numberOfComponents, dataType );
+      writeDataArray( hostBuffer, name, numberOfComponents );
       return;
    }
 
    if( numberOfComponents != 1 && numberOfComponents != 3 )
       throw std::logic_error("Unsupported numberOfComponents parameter: " + std::to_string(numberOfComponents));
-
-   if( dataType == VTK::DataType::CellData )
-      if( array.getSize() / numberOfComponents != cellsCount )
-         throw std::length_error("Mismatched array size for CELL_DATA section: " + std::to_string(array.getSize())
-                                 + " (there are " + std::to_string(cellsCount) + " cells in the file)");
-   if( dataType == VTK::DataType::PointData )
-      if( array.getSize() / numberOfComponents != pointsCount )
-         throw std::length_error("Mismatched array size for POINT_DATA section: " + std::to_string(array.getSize())
-                                 + " (there are " + std::to_string(pointsCount) + " points in the file)");
-
-   // check that we won't start the section second time
-   if( dataType != currentSection && cellDataArrays * pointDataArrays != 0 )
-      throw std::logic_error("The requested data section is not the current section and it has already been written.");
-
-   // start the appropriate section if necessary
-   if( dataType == VTK::DataType::CellData && cellDataArrays == 0 ) {
-      str << std::endl << "CELL_DATA " << cellsCount << std::endl;
-      ++cellDataArrays;
-   }
-   if( dataType == VTK::DataType::PointData && pointDataArrays == 0 ) {
-      str << std::endl << "POINT_DATA " << pointsCount << std::endl;
-      ++pointDataArrays;
-   }
 
    // write DataArray header
    if( numberOfComponents == 1 ) {
@@ -514,17 +538,6 @@ VTKWriter< Mesh >::writeDataArray( const Array& array,
 
 template< typename Mesh >
 void
-VTKWriter< Mesh >::writeHeader()
-{
-    str << "# vtk DataFile Version 2.0\n"
-        << "TNL DATA\n"
-        << ((format == VTK::FileFormat::ascii) ? "ASCII\n" : "BINARY\n")
-        << "DATASET UNSTRUCTURED_GRID\n";
-    headerWritten = true;
-}
-
-template< typename Mesh >
-void
 VTKWriter< Mesh >::writePoints( const Mesh& mesh )
 {
    using details::writeReal;
@@ -541,6 +554,17 @@ VTKWriter< Mesh >::writePoints( const Mesh& mesh )
       if( format == VTK::FileFormat::ascii )
          str << "\n";
    }
+}
+
+template< typename Mesh >
+void
+VTKWriter< Mesh >::writeHeader()
+{
+    str << "# vtk DataFile Version 2.0\n"
+        << "TNL DATA\n"
+        << ((format == VTK::FileFormat::ascii) ? "ASCII\n" : "BINARY\n")
+        << "DATASET UNSTRUCTURED_GRID\n";
+    headerWritten = true;
 }
 
 } // namespace Writers
