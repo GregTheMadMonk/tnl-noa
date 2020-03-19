@@ -47,12 +47,12 @@ public:
    : str(str), format(format)
    {}
 
-   template< int EntityDimension = Mesh::getMeshDimension() >
-   void writeEntities( const Mesh& mesh );
-
    // If desired, cycle and time of the simulation can put into the file. This follows the instructions at
    // http://www.visitusers.org/index.php?title=Time_and_Cycle_in_VTK_files
    void writeMetadata( std::int32_t cycle = -1, double time = -1 );
+
+   template< int EntityDimension = Mesh::getMeshDimension() >
+   void writeEntities( const Mesh& mesh );
 
    template< typename Array >
    void writeDataArray( const Array& array,
@@ -62,7 +62,7 @@ public:
    ~VTUWriter();
 
 protected:
-   void writeHeader( const Mesh& mesh );
+   void writeHeader();
 
    void writeFooter();
 

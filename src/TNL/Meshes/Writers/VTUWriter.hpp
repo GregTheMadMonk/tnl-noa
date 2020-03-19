@@ -353,6 +353,30 @@ struct MeshEntitiesVTUCollector< Meshes::Grid< 3, MeshReal, Device, MeshIndex >,
 } // namespace details
 
 template< typename Mesh >
+void
+VTUWriter< Mesh >::writeMetadata( int cycle, double time )
+{
+   if( ! vtkfileOpen )
+      writeHeader();
+
+   if( cycle >= 0 || time >= 0 )
+      str << "<FieldData>\n";
+
+   if( cycle >= 0 ) {
+      str << "<DataArray type=\"Int32\" Name=\"CYCLE\" NumberOfTuples=\"1\" format=\"ascii\">"
+          << cycle << "</DataArray>\n";
+   }
+   if( time >= 0 ) {
+      str.precision( std::numeric_limits< double >::digits10 );
+      str << "<DataArray type=\"Float64\" Name=\"TIME\" NumberOfTuples=\"1\" format=\"ascii\">"
+          << time << "</DataArray>\n";
+   }
+
+   if( cycle >= 0 || time >= 0 )
+      str << "</FieldData>\n";
+}
+
+template< typename Mesh >
    template< int EntityDimension >
 void
 VTUWriter< Mesh >::writeEntities( const Mesh& mesh )
@@ -363,7 +387,7 @@ VTUWriter< Mesh >::writeEntities( const Mesh& mesh )
    cellsCount = mesh.template getEntitiesCount< EntityType >();
 
    if( ! vtkfileOpen )
-      writeHeader( mesh );
+      writeHeader();
    if( pieceOpen )
       str << "</Piece>\n";
    str << "<Piece NumberOfPoints=\"" << pointsCount << "\" NumberOfCells=\"" << cellsCount << "\">\n";
@@ -434,7 +458,7 @@ VTUWriter< Mesh >::writeDataArray( const Array& array,
 
 template< typename Mesh >
 void
-VTUWriter< Mesh >::writeHeader( const Mesh& mesh )
+VTUWriter< Mesh >::writeHeader()
 {
    str << "<?xml version=\"1.0\"?>\n";
    str << "<VTKFile type=\"UnstructuredGrid\" version=\"1.0\"";
@@ -466,27 +490,6 @@ VTUWriter< Mesh >::~VTUWriter()
 {
    if( vtkfileOpen )
       writeFooter();
-}
-
-template< typename Mesh >
-void
-VTUWriter< Mesh >::writeMetadata( int cycle, double time )
-{
-   if( cycle >= 0 || time >= 0 )
-      str << "<FieldData>\n";
-
-   if( cycle >= 0 ) {
-      str << "<DataArray type=\"Int32\" Name=\"CYCLE\" NumberOfTuples=\"1\" format=\"ascii\">"
-          << cycle << "</DataArray>\n";
-   }
-   if( time >= 0 ) {
-      str.precision( std::numeric_limits< double >::digits10 );
-      str << "<DataArray type=\"Float64\" Name=\"TIME\" NumberOfTuples=\"1\" format=\"ascii\">"
-          << time << "</DataArray>\n";
-   }
-
-   if( cycle >= 0 || time >= 0 )
-      str << "</FieldData>\n";
 }
 
 template< typename Mesh >
