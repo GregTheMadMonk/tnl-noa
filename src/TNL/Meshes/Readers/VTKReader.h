@@ -16,7 +16,7 @@
 #include <vector>
 
 #include <TNL/Meshes/MeshBuilder.h>
-#include <TNL/Meshes/Readers/EntityShape.h>
+#include <TNL/Meshes/VTKTraits.h>
 #include <TNL/Exceptions/NotImplementedError.h>
 
 namespace TNL {
@@ -107,7 +107,7 @@ public:
 
       // read entity types
       long int entitiesRead = 0;
-      std::map< int, EntityShape > entityTypes;
+      std::map< int, VTK::EntityShape > entityTypes;
       while( entitiesRead < numberOfEntities ) {
          if( ! inputFile ) {
             std::cerr << "VTKReader: unable to read enough entity types, the file may be invalid or corrupted." << std::endl;
@@ -120,7 +120,7 @@ public:
          iss.clear();
          iss.str( line );
          iss >> typeId;
-         const EntityShape type = (EntityShape) typeId;
+         const VTK::EntityShape type = (VTK::EntityShape) typeId;
          const int dimension = getEntityDimension( type );
 
          // check entity type
@@ -128,7 +128,7 @@ public:
             entityTypes.emplace( std::make_pair( dimension, type ) );
          else if( entityTypes[ dimension ] != type ) {
             std::cerr << "Mixed unstructured meshes are not supported. There are elements of dimension " << dimension
-                      << " with type " << entityTypes[ dimension ] << " and " << type << ". "
+                      << " with type " << VTK::getShapeName( entityTypes[ dimension ] ) << " and " << VTK::getShapeName( type ) << ". "
                       << "The type of all entities with the same dimension must be the same." << std::endl;
             this->reset();
             return false;
@@ -156,7 +156,7 @@ public:
       using PointType = typename MeshType::PointType;
       using CellSeedType = typename MeshBuilder::CellSeedType;
 
-      const EntityShape cellType = TopologyToEntityShape< typename MeshType::template EntityTraits< MeshType::getMeshDimension() >::EntityTopology >::shape;
+      const VTK::EntityShape cellType = VTK::TopologyToEntityShape< typename MeshType::template EntityTraits< MeshType::getMeshDimension() >::EntityTopology >::shape;
       MeshBuilder meshBuilder;
 
       std::ifstream inputFile( fileName.getString() );
@@ -232,7 +232,7 @@ public:
       iss >> numberOfEntities;
 
       // read entity types, count cells
-      std::vector< EntityShape > entityTypes;
+      std::vector< VTK::EntityShape > entityTypes;
       entityTypes.resize( numberOfEntities );
       IndexType numberOfCells = 0;
       for( IndexType entityIndex = 0; entityIndex < numberOfEntities; entityIndex++ ) {
@@ -247,7 +247,7 @@ public:
          iss.clear();
          iss.str( line );
          iss >> typeId;
-         entityTypes[ entityIndex ] = (EntityShape) typeId;
+         entityTypes[ entityIndex ] = (VTK::EntityShape) typeId;
          const int dimension = getEntityDimension( entityTypes[ entityIndex ] );
          if( dimension == MeshType::getMeshDimension() )
             numberOfCells++;
@@ -310,7 +310,7 @@ public:
       return worldDimension;
    }
 
-   EntityShape
+   VTK::EntityShape
    getCellShape() const
    {
       return cellShape;
@@ -350,14 +350,14 @@ protected:
 
    String fileName;
    int meshDimension, worldDimension;
-   EntityShape cellShape = EntityShape::Vertex;
+   VTK::EntityShape cellShape = VTK::EntityShape::Vertex;
    std::string realType;
 
    void reset()
    {
       fileName = "";
       meshDimension = worldDimension = 0;
-      cellShape = EntityShape::Vertex;
+      cellShape = VTK::EntityShape::Vertex;
       realType = "";
    }
 

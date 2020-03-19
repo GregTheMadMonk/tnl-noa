@@ -10,26 +10,13 @@
 
 #pragma once
 
-#include <limits>
-
 #include <TNL/Meshes/Grid.h>
 #include <TNL/Meshes/Mesh.h>
+#include <TNL/Meshes/VTKTraits.h>
 
 namespace TNL {
 namespace Meshes {
 namespace Writers {
-
-enum class VTKFileFormat
-{
-   ASCII,
-   BINARY
-};
-
-enum class VTKDataType
-{
-   CellData,
-   PointData
-};
 
 namespace details {
 
@@ -56,9 +43,12 @@ public:
 
    VTKWriter() = delete;
 
-   VTKWriter( std::ostream& str, VTKFileFormat format = VTKFileFormat::ASCII )
+   VTKWriter( std::ostream& str, VTK::FileFormat format = VTK::FileFormat::ascii )
    : str(str), format(format)
-   {}
+   {
+      if( format != VTK::FileFormat::ascii && format != VTK::FileFormat::binary )
+         throw std::domain_error("The Legacy VTK file formats support only ASCII and BINARY formats.");
+   }
 
    void writeAllEntities( const Mesh& mesh );
 
@@ -69,7 +59,7 @@ public:
    void writeDataArray( const Array& array,
                         const String& name,
                         const int numberOfComponents = 1,
-                        VTKDataType dataType = VTKDataType::CellData );
+                        VTK::DataType dataType = VTK::DataType::CellData );
 
 protected:
    void writeHeader( const Mesh& mesh );
@@ -78,7 +68,7 @@ protected:
 
    std::ostream& str;
 
-   VTKFileFormat format;
+   VTK::FileFormat format;
 
    // number of cells (in the VTK sense) written to the file
    IndexType cellsCount = 0;
@@ -91,7 +81,7 @@ protected:
    int pointDataArrays = 0;
 
    // indicator of the current section
-   VTKDataType currentSection = VTKDataType::CellData;
+   VTK::DataType currentSection = VTK::DataType::CellData;
 };
 
 } // namespace Writers

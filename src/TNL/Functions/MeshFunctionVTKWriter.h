@@ -26,7 +26,7 @@ class MeshFunctionVTKWriter
 
 public:
    MeshFunctionVTKWriter( std::ostream& str,
-                          Meshes::Writers::VTKFileFormat format = Meshes::Writers::VTKFileFormat::ASCII )
+                          Meshes::VTK::FileFormat format = Meshes::VTK::FileFormat::ascii )
    : Meshes::Writers::VTKWriter< MeshType >( str, format )
    {}
 
@@ -45,9 +45,9 @@ public:
                         const String& functionName )
    {
       if( MeshFunction::getEntitiesDimension() == 0 )
-         this->writeDataArray( function.getData(), functionName, 1, Meshes::Writers::VTKDataType::PointData );
+         this->writeDataArray( function.getData(), functionName, 1, Meshes::VTK::DataType::PointData );
       else
-         this->writeDataArray( function.getData(), functionName, 1, Meshes::Writers::VTKDataType::CellData );
+         this->writeDataArray( function.getData(), functionName, 1, Meshes::VTK::DataType::CellData );
    }
 };
 
@@ -56,7 +56,7 @@ class MeshFunctionVTKWriter< MeshFunction, false >
 {
 public:
    MeshFunctionVTKWriter( std::ostream& str,
-                          Meshes::Writers::VTKFileFormat format = Meshes::Writers::VTKFileFormat::ASCII )
+                          Meshes::VTK::FileFormat format = Meshes::VTK::FileFormat::ascii )
    {}
 
    bool write( const MeshFunction& function,

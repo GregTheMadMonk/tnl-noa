@@ -1,5 +1,5 @@
 /***************************************************************************
-                          EntityShape.h  -  description
+                          VTKTraits.h  -  description
                              -------------------
     begin                : Nov 22, 2016
     copyright            : (C) 2016 by Tomas Oberhuber et al.
@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <ostream>
+#include <string>
 #include <cstdint>
 
 #include <TNL/Meshes/Topologies/Edge.h>
@@ -21,11 +21,26 @@
 
 namespace TNL {
 namespace Meshes {
-namespace Readers {
+namespace VTK {
 
-/*
- * Enumeration of entity shapes, inspired by the VTK library.
- */
+// VTK file formats
+enum class FileFormat
+: std::uint8_t
+{
+   ascii,
+   binary,
+   zlib_compressed
+};
+
+// VTK data types
+enum class DataType
+: std::uint8_t
+{
+   CellData,
+   PointData
+};
+
+// VTK entity shapes
 enum class EntityShape
 : std::uint8_t
 {
@@ -45,56 +60,40 @@ enum class EntityShape
    Pyramid = 14
 };
 
-inline std::ostream& operator<<( std::ostream& str, EntityShape shape )
+inline std::string getShapeName( EntityShape shape )
 {
    switch( shape )
    {
       case EntityShape::Vertex:
-         str << "Entity::Vertex";
-         break;
+         return "Vertex";
       case EntityShape::PolyVertex:
-         str << "Entity::PolyVertex";
-         break;
+         return "PolyVertex";
       case EntityShape::Line:
-         str << "Entity::Line";
-         break;
+         return "Line";
       case EntityShape::PolyLine:
-         str << "Entity::PolyLine";
-         break;
+         return "PolyLine";
       case EntityShape::Triangle:
-         str << "Entity::Triangle";
-         break;
+         return "Triangle";
       case EntityShape::TriangleStrip:
-         str << "Entity::TriangleStrip";
-         break;
+         return "TriangleStrip";
       case EntityShape::Polygon:
-         str << "Entity::Polygon";
-         break;
+         return "Polygon";
       case EntityShape::Pixel:
-         str << "Entity::Pixel";
-         break;
+         return "Pixel";
       case EntityShape::Quad:
-         str << "Entity::Quad";
-         break;
+         return "Quad";
       case EntityShape::Tetra:
-         str << "Entity::Tetra";
-         break;
+         return "Tetra";
       case EntityShape::Voxel:
-         str << "Entity::Voxel";
-         break;
+         return "Voxel";
       case EntityShape::Hexahedron:
-         str << "Entity::Hexahedron";
-         break;
+         return "Hexahedron";
       case EntityShape::Wedge:
-         str << "Entity::Wedge";
-         break;
+         return "Wedge";
       case EntityShape::Pyramid:
-         str << "Entity::Pyramid";
-         break;
-      default:
-         str << "<unknown entity>";
+         return "Pyramid";
    }
-   return str;
+   return "<unknown entity shape>";
 }
 
 inline int getEntityDimension( EntityShape shape )
@@ -146,6 +145,18 @@ public:
                    EntityShape::Voxel;
 };
 
-} // namespace Readers
+// type names used in the VTK library (for the XML formats)
+inline std::string getTypeName( std::int8_t ) { return "Int8"; }
+inline std::string getTypeName( std::uint8_t ) { return "UInt8"; }
+inline std::string getTypeName( std::int16_t ) { return "Int16"; }
+inline std::string getTypeName( std::uint16_t ) { return "UInt16"; }
+inline std::string getTypeName( std::int32_t ) { return "Int32"; }
+inline std::string getTypeName( std::uint32_t ) { return "UInt32"; }
+inline std::string getTypeName( std::int64_t ) { return "Int64"; }
+inline std::string getTypeName( std::uint64_t ) { return "UInt64"; }
+inline std::string getTypeName( float ) { return "Float32"; }
+inline std::string getTypeName( double ) { return "Float64"; }
+
+} // namespace VTK
 } // namespace Meshes
 } // namespace TNL

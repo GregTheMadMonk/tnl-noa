@@ -26,7 +26,7 @@ class VectorFieldVTKWriter
 
 public:
    VectorFieldVTKWriter( std::ostream& str,
-                         Meshes::Writers::VTKFileFormat format = Meshes::Writers::VTKFileFormat::ASCII )
+                         Meshes::VTK::FileFormat format = Meshes::VTK::FileFormat::ascii )
    : Meshes::Writers::VTKWriter< MeshType >( str, format )
    {}
 
@@ -60,9 +60,9 @@ public:
 
       // write the buffer
       if( VectorField::getEntitiesDimension() == 0 )
-         this->writeDataArray( buffer, fieldName, 3, Meshes::Writers::VTKDataType::PointData );
+         this->writeDataArray( buffer, fieldName, 3, Meshes::VTK::DataType::PointData );
       else
-         this->writeDataArray( buffer, fieldName, 3, Meshes::Writers::VTKDataType::CellData );
+         this->writeDataArray( buffer, fieldName, 3, Meshes::VTK::DataType::CellData );
    }
 };
 

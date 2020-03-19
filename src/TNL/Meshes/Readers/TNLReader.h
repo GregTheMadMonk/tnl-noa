@@ -12,7 +12,7 @@
 
 #include <TNL/String.h>
 #include <TNL/Object.h>
-#include <TNL/Meshes/Readers/EntityShape.h>
+#include <TNL/Meshes/VTKTraits.h>
 
 namespace TNL {
 namespace Meshes {
@@ -42,11 +42,11 @@ public:
          globalIndexType = localIndexType = idType = parsedMeshType[ 4 ];
          // populate entity types (not necessary for GridTypeResolver, but while we're at it...)
          if( meshDimension == 1 )
-            cellShape = EntityShape::Line;
+            cellShape = VTK::EntityShape::Line;
          else if( meshDimension == 2 )
-            cellShape = EntityShape::Quad;
+            cellShape = VTK::EntityShape::Quad;
          else if( meshDimension == 3 )
-            cellShape = EntityShape::Hexahedron;
+            cellShape = VTK::EntityShape::Hexahedron;
       }
       else if( meshType == "Meshes::Mesh" ) {
          const std::vector< String > parsedMeshConfig = parseObjectType( parsedMeshType[ 1 ] );
@@ -72,15 +72,15 @@ public:
          idType = parsedMeshConfig[ 6 ];
 
          if( topology == "MeshEdgeTopology" )
-            cellShape = EntityShape::Line;
+            cellShape = VTK::EntityShape::Line;
          else if( topology == "MeshTriangleTopology" )
-            cellShape = EntityShape::Triangle;
+            cellShape = VTK::EntityShape::Triangle;
          else if( topology == "MeshQuadrilateralTopology" )
-            cellShape = EntityShape::Quad;
+            cellShape = VTK::EntityShape::Quad;
          else if( topology == "MeshTetrahedronTopology" )
-            cellShape = EntityShape::Tetra;
+            cellShape = VTK::EntityShape::Tetra;
          else if( topology == "MeshHexahedronTopology" )
-            cellShape = EntityShape::Hexahedron;
+            cellShape = VTK::EntityShape::Hexahedron;
          else {
             std::cerr << "Detected topology '" << topology << "' is not supported." << std::endl;
             return false;
@@ -120,7 +120,7 @@ public:
       return worldDimension;
    }
 
-   EntityShape
+   VTK::EntityShape
    getCellShape() const
    {
       return cellShape;
@@ -155,7 +155,7 @@ protected:
    String meshType;
    int meshDimension = 0;
    int worldDimension = 0;
-   EntityShape cellShape = EntityShape::Vertex;
+   VTK::EntityShape cellShape = VTK::EntityShape::Vertex;
    String realType;
    String globalIndexType;
    String localIndexType;
@@ -166,7 +166,7 @@ protected:
       fileName = "";
       meshType = "";
       meshDimension = worldDimension = 0;
-      cellShape = EntityShape::Vertex;
+      cellShape = VTK::EntityShape::Vertex;
       realType = localIndexType = globalIndexType = idType = "";
    }
 };

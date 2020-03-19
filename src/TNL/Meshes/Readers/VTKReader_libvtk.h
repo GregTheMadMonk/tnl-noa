@@ -20,7 +20,7 @@
 #include <TNL/Containers/StaticVector.h>
 #include <TNL/Meshes/MeshBuilder.h>
 #include <TNL/Meshes/Topologies/SubentityVertexMap.h>
-#include <TNL/Meshes/Readers/EntityShape.h>
+#include <TNL/Meshes/VTKTraits.h>
 
 #ifdef HAVE_VTK
 #include <vtkSmartPointer.h>
@@ -135,7 +135,7 @@ public:
       return this->meshDimension;
    }
 
-   EntityShape
+   VTK::EntityShape
    getCellShape() const
    {
       return this->entityTypes.at( this->meshDimension );
@@ -147,7 +147,7 @@ public:
 //      return this->verticesInEntities.at( this->getMeshDimension() );
 //   }
 
-//   EntityShape
+//   VTK::EntityShape
 //   getEntityType( int entityDimension ) const
 //   {
 //      return this->entityTypes.at( entityDimension );
@@ -201,7 +201,7 @@ protected:
    std::unordered_map< VTKIndexType, std::vector< VTKIndexType > > entitySeeds;
 
    // maps dimension to VTK type of the entity with given dimension
-   std::unordered_map< int, EntityShape > entityTypes;
+   std::unordered_map< int, VTK::EntityShape > entityTypes;
 
    void reset()
    {
@@ -273,7 +273,7 @@ protected:
          vtkCell* cell = vtkMesh.GetCell( i );
          const int dimension = cell->GetCellDimension();
          const int points = cell->GetNumberOfPoints();
-         const EntityShape type = (EntityShape) cell->GetCellType();
+         const VTK::EntityShape type = (VTK::EntityShape) cell->GetCellType();
 
          // number of vertices in entities
          if( this->verticesInEntities.find( dimension ) == this->verticesInEntities.cend() )
@@ -291,7 +291,7 @@ protected:
             this->entityTypes.emplace( std::make_pair( dimension, type ) );
          else if( this->entityTypes[ dimension ] != type ) {
             std::cerr << "Mixed unstructured meshes are not supported. There are elements of dimension " << dimension
-                      << " with type " << this->entityTypes[ dimension ] << " and " << type
+                      << " with type " << VTK::getShapeName( this->entityTypes[ dimension ] ) << " and " << VTK::getShapeName( type )
                       << ". The type of all entities with the same dimension must be the same." << std::endl;
             this->reset();
             return false;
