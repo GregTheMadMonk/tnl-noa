@@ -15,8 +15,7 @@
 namespace TNL {
 namespace Functions {
 
-template< typename MeshFunction,
-          bool = std::is_fundamental< typename MeshFunction::RealType >::value >
+template< typename MeshFunction >
 class MeshFunctionVTKWriter
 : protected Meshes::Writers::VTKWriter< typename MeshFunction::MeshType >
 {
@@ -48,27 +47,6 @@ public:
          this->writeDataArray( function.getData(), functionName, 1, Meshes::VTK::DataType::PointData );
       else
          this->writeDataArray( function.getData(), functionName, 1, Meshes::VTK::DataType::CellData );
-   }
-};
-
-template< typename MeshFunction >
-class MeshFunctionVTKWriter< MeshFunction, false >
-{
-public:
-   MeshFunctionVTKWriter( std::ostream& str,
-                          Meshes::VTK::FileFormat format = Meshes::VTK::FileFormat::ascii )
-   {}
-
-   bool write( const MeshFunction& function,
-               const String& functionName = "cellFunctionValues" )
-   {
-      throw std::logic_error( "Unsupported RealType - VTKWriter supports only fundamental types." );
-   }
-
-   void appendFunction( const MeshFunction& function,
-                        const String& functionName )
-   {
-      throw std::logic_error( "Unsupported RealType - VTKWriter supports only fundamental types." );
    }
 };
 

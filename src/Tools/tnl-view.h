@@ -307,57 +307,6 @@ bool setIndexType( const MeshPointer& meshPointer,
 }
 
 template< typename MeshPointer >
-bool setTupleType( const MeshPointer& meshPointer,
-                   const String& inputFileName,
-                   const std::vector< String >& parsedObjectType,
-                   const std::vector< String >& parsedValueType,
-                   const Config::ParameterContainer& parameters )
-{
-   int dimensions = atoi( parsedValueType[ 1 ].getString() );
-   String dataType = parsedValueType[ 2 ];
-   if( dataType == "float" )
-      switch( dimensions )
-      {
-         case 1:
-            return setIndexType< MeshPointer, Containers::StaticVector< 1, float >, float >( meshPointer, inputFileName, parsedObjectType, parameters );
-            break;
-         case 2:
-            return setIndexType< MeshPointer, Containers::StaticVector< 2, float >, float >( meshPointer, inputFileName, parsedObjectType, parameters );
-            break;
-         case 3:
-            return setIndexType< MeshPointer, Containers::StaticVector< 3, float >, float >( meshPointer, inputFileName, parsedObjectType, parameters );
-            break;
-      }
-   if( dataType == "double" )
-      switch( dimensions )
-      {
-         case 1:
-            return setIndexType< MeshPointer, Containers::StaticVector< 1, double >, double >( meshPointer, inputFileName, parsedObjectType, parameters );
-            break;
-         case 2:
-            return setIndexType< MeshPointer, Containers::StaticVector< 2, double >, double >( meshPointer, inputFileName, parsedObjectType, parameters );
-            break;
-         case 3:
-            return setIndexType< MeshPointer, Containers::StaticVector< 3, double >, double >( meshPointer, inputFileName, parsedObjectType, parameters );
-            break;
-      }
-//   if( dataType == "long double" )
-//      switch( dimensions )
-//      {
-//         case 1:
-//            return setIndexType< MeshPointer, Containers::StaticVector< 1, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
-//            break;
-//         case 2:
-//            return setIndexType< MeshPointer, Containers::StaticVector< 2, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
-//            break;
-//         case 3:
-//            return setIndexType< MeshPointer, Containers::StaticVector< 3, long double >, long double >( meshPointer, inputFileName, parsedObjectType, parameters );
-//            break;
-//      }
-   return false;
-}
-
-template< typename MeshPointer >
 bool setValueType( const MeshPointer& meshPointer,
                      const String& inputFileName,
                      const std::vector< String >& parsedObjectType,
@@ -381,15 +330,6 @@ bool setValueType( const MeshPointer& meshPointer,
       return setIndexType< MeshPointer, long int, long int >( meshPointer, inputFileName, parsedObjectType, parameters );
    if( elementType == "bool" )
       return setIndexType< MeshPointer, bool, bool >( meshPointer, inputFileName, parsedObjectType, parameters );
-
-   const std::vector< String > parsedValueType = parseObjectType( elementType );
-   if( ! parsedValueType.size() )
-   {
-      std::cerr << "Unable to parse object type " << elementType << "." << std::endl;
-      return false;
-   }
-   if( parsedValueType[ 0 ] == "Containers::StaticVector" )
-      return setTupleType< MeshPointer >( meshPointer, inputFileName, parsedObjectType, parsedValueType, parameters );
 
    std::cerr << "Unknown element type " << elementType << "." << std::endl;
    return false;
