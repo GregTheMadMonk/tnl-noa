@@ -332,6 +332,17 @@ template< typename Real,
           typename Device,
           typename Index >
 __cuda_callable__
+Index
+Grid< 2, Real, Device, Index >::
+getNumberOfNxFaces() const
+{
+   return numberOfNxFaces;
+}
+
+template< typename Real,
+          typename Device,
+          typename Index >
+__cuda_callable__
 const Real&
 Grid< 2, Real, Device, Index >::
 getCellMeasure() const

@@ -168,6 +168,18 @@ class Grid< 3, Real, Device, Index > : public Object
    const RealType& getSpaceStepsProducts() const;
 
    /**
+    * \brief Returns the number of x-normal faces.
+    */
+   __cuda_callable__
+   IndexType getNumberOfNxFaces() const;
+
+   /**
+    * \brief Returns the number of x-normal and y-normal faces.
+    */
+   __cuda_callable__
+   IndexType getNumberOfNxAndNyFaces() const;
+
+   /**
     * \breif Returns the measure (volume) of a cell in this grid.
     */
    __cuda_callable__
