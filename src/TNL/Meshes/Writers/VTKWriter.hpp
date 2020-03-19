@@ -405,11 +405,38 @@ struct MeshEntityTypesVTKWriter< Grid< Dimension, MeshReal, Device, MeshIndex >,
 } // namespace details
 
 template< typename Mesh >
+void
+VTKWriter< Mesh >::writeMetadata( int cycle, double time )
+{
+   if( ! headerWritten )
+      writeHeader();
+
+   int n_metadata = 0;
+   if( cycle >= 0 )
+      ++n_metadata;
+   if( time >= 0 )
+      ++n_metadata;
+   if( n_metadata > 0 )
+      str << "FIELD FieldData " << n_metadata << "\n";
+   if( cycle >= 0 ) {
+      str << "CYCLE 1 1 int\n";
+      details::writeInt( format, str, cycle );
+      str << "\n";
+   }
+   if( time >= 0 ) {
+      str << "TIME 1 1 double\n";
+      details::writeReal( format, str, time );
+      str << "\n";
+   }
+}
+
+template< typename Mesh >
    template< int EntityDimension >
 void
 VTKWriter< Mesh >::writeEntities( const Mesh& mesh )
 {
-   writeHeader( mesh );
+   if( ! headerWritten )
+      writeHeader();
    writePoints( mesh );
 
    using EntityType = typename Mesh::template EntityType< EntityDimension >;
@@ -487,12 +514,13 @@ VTKWriter< Mesh >::writeDataArray( const Array& array,
 
 template< typename Mesh >
 void
-VTKWriter< Mesh >::writeHeader( const Mesh& mesh )
+VTKWriter< Mesh >::writeHeader()
 {
     str << "# vtk DataFile Version 2.0\n"
         << "TNL DATA\n"
         << ((format == VTK::FileFormat::ascii) ? "ASCII\n" : "BINARY\n")
         << "DATASET UNSTRUCTURED_GRID\n";
+    headerWritten = true;
 }
 
 template< typename Mesh >

@@ -50,6 +50,10 @@ public:
          throw std::domain_error("The Legacy VTK file formats support only ASCII and BINARY formats.");
    }
 
+   // If desired, cycle and time of the simulation can put into the file. This follows the instructions at
+   // http://www.visitusers.org/index.php?title=Time_and_Cycle_in_VTK_files
+   void writeMetadata( std::int32_t cycle = -1, double time = -1 );
+
    template< int EntityDimension = Mesh::getMeshDimension() >
    void writeEntities( const Mesh& mesh );
 
@@ -60,7 +64,7 @@ public:
                         VTK::DataType dataType = VTK::DataType::CellData );
 
 protected:
-   void writeHeader( const Mesh& mesh );
+   void writeHeader();
 
    void writePoints( const Mesh& mesh );
 
@@ -73,6 +77,9 @@ protected:
 
    // number of points written to the file
    IndexType pointsCount = 0;
+
+   // indicator if the header has been written
+   bool headerWritten = false;
 
    // number of data arrays written in each section
    int cellDataArrays = 0;
