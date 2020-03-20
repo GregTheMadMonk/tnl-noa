@@ -12,9 +12,9 @@
 
 #include <limits>
 
-#include <TNL/Endianness.h>
 #include <TNL/Meshes/Writers/VTKWriter.h>
 #include <TNL/Meshes/Writers/VerticesPerEntity.h>
+#include <TNL/Endianness.h>
 
 namespace TNL {
 namespace Meshes {

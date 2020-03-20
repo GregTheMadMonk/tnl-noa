@@ -14,9 +14,13 @@
 
 #include <limits>
 
-#include <TNL/Endianness.h>
 #include <TNL/Meshes/Writers/VTUWriter.h>
 #include <TNL/Meshes/Writers/VerticesPerEntity.h>
+#include <TNL/Endianness.h>
+#include <TNL/base64.h>
+#ifdef HAVE_ZLIB
+   #include <TNL/zlib_compression.h>
+#endif
 
 namespace TNL {
 namespace Meshes {
@@ -472,16 +476,30 @@ VTUWriter< Mesh >::writeDataArray( const Array& array,
       str << " NumberOfComponents=\"" << numberOfComponents << "\"";
    str << " format=\"" << ((format == VTK::FileFormat::ascii) ? "ascii" : "binary") << "\">\n";
 
-   if( format == VTK::FileFormat::ascii ) {
-      str.precision( std::numeric_limits< typename Array::ValueType >::digits10 );
-      for( IndexType i = 0; i < array.getSize(); i++ )
-         // If Array::ValueType is uint8_t, it might be a typedef for unsigned char, which
-         // would be normally printed as char rather than a number. Hence, we use the trick
-         // with unary operator+, see https://stackoverflow.com/a/28414758
-         str << +array[i] << " ";
-      str << "\n";
+   switch( format )
+   {
+      case VTK::FileFormat::ascii:
+         str.precision( std::numeric_limits< typename Array::ValueType >::digits10 );
+         for( IndexType i = 0; i < array.getSize(); i++ )
+            // If Array::ValueType is uint8_t, it might be a typedef for unsigned char, which
+            // would be normally printed as char rather than a number. Hence, we use the trick
+            // with unary operator+, see https://stackoverflow.com/a/28414758
+            str << +array[i] << " ";
+         str << "\n";
+         break;
+      case VTK::FileFormat::binary:
+         write_encoded_block< HeaderType >( array.getData(), array.getSize(), str );
+         str << "\n";
+         break;
+      case VTK::FileFormat::zlib_compressed:
+#ifdef HAVE_ZLIB
+         write_compressed_block< HeaderType >( array.getData(), array.getSize(), str );
+         str << "\n";
+         break;
+#else
+         throw std::runtime_error("The ZLIB compression algorithm is not available in this build. Please recompile the program with -DHAVE_ZLIB.");
+#endif
    }
-   // TODO: binary format, compression
 
    // write DataArray footer
    str << "</DataArray>\n";
