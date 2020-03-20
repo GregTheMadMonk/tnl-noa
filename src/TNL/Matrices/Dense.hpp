@@ -99,8 +99,7 @@ getView() -> ViewType
 {
    return ViewType( this->getRows(),
                     this->getColumns(),
-                    this->getValues().getView(),
-                    this->segments.getView() );
+                    this->getValues().getView() );
 }
 
 template< typename Real,
@@ -114,8 +113,7 @@ getConstView() const -> ConstViewType
 {
    return ConstViewType( this->getRows(),
                          this->getColumns(),
-                         this->getValues().getConstView(),
-                         this->segments.getConstView() );
+                         this->getValues().getConstView() );
 }
 
 template< typename Real,
