@@ -43,7 +43,7 @@ public:
 
    VTUWriter() = delete;
 
-   VTUWriter( std::ostream& str, VTK::FileFormat format = VTK::FileFormat::ascii )
+   VTUWriter( std::ostream& str, VTK::FileFormat format = VTK::FileFormat::zlib_compressed )
    : str(str), format(format)
    {}
 

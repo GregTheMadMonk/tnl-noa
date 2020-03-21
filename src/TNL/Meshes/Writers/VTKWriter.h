@@ -43,7 +43,7 @@ public:
 
    VTKWriter() = delete;
 
-   VTKWriter( std::ostream& str, VTK::FileFormat format = VTK::FileFormat::ascii )
+   VTKWriter( std::ostream& str, VTK::FileFormat format = VTK::FileFormat::binary )
    : str(str), format(format)
    {
       if( format != VTK::FileFormat::ascii && format != VTK::FileFormat::binary )

@@ -487,18 +487,17 @@ VTUWriter< Mesh >::writeDataArray( const Array& array,
             str << +array[i] << " ";
          str << "\n";
          break;
-      case VTK::FileFormat::binary:
-         write_encoded_block< HeaderType >( array.getData(), array.getSize(), str );
-         str << "\n";
-         break;
       case VTK::FileFormat::zlib_compressed:
 #ifdef HAVE_ZLIB
          write_compressed_block< HeaderType >( array.getData(), array.getSize(), str );
          str << "\n";
          break;
-#else
-         throw std::runtime_error("The ZLIB compression algorithm is not available in this build. Please recompile the program with -DHAVE_ZLIB.");
 #endif
+         // fall through to binary if HAVE_ZLIB is not defined
+      case VTK::FileFormat::binary:
+         write_encoded_block< HeaderType >( array.getData(), array.getSize(), str );
+         str << "\n";
+         break;
    }
 
    // write DataArray footer
@@ -540,8 +539,10 @@ VTUWriter< Mesh >::writeHeader()
    else
       str << " byte_order=\"BigEndian\"";
    str << " header_type=\"" << VTK::getTypeName( HeaderType{} ) << "\"";
+#ifdef HAVE_ZLIB
    if( format == VTK::FileFormat::zlib_compressed )
       str << " compressor=\"vtkZLibDataCompressor\"";
+#endif
    str << ">\n";
    str << "<UnstructuredGrid>\n";
 
