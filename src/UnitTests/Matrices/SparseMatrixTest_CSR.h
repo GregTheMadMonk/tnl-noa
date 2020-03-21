@@ -8,26 +8,17 @@
 
 /* See Copyright Notice in tnl/Copyright */
 
+#include <iostream>
 #include <TNL/Containers/Segments/CSR.h>
 #include <TNL/Matrices/SparseMatrix.h>
-
-
-#include "SparseMatrixTest.h"
-#include <iostream>
 
 #ifdef HAVE_GTEST
 #include <gtest/gtest.h>
 
-// test fixture for typed tests
-template< typename Matrix >
-class CSRMatrixTest : public ::testing::Test
-{
-protected:
-   using CSRMatrixType = Matrix;
-};
+const char* saveAndLoadFileName = "test_SparseMatrixTest_CSR_segments";
 
 // types for which MatrixTest is instantiated
-using CSRMatrixTypes = ::testing::Types
+using MatrixTypes = ::testing::Types
 <
     TNL::Matrices::SparseMatrix< int,     TNL::Devices::Host, int,   TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
     TNL::Matrices::SparseMatrix< long,    TNL::Devices::Host, int,   TNL::Matrices::GeneralMatrix, TNL::Containers::Segments::CSR >,
@@ -49,93 +40,7 @@ using CSRMatrixTypes = ::testing::Types
 #endif
 >;
 
-TYPED_TEST_SUITE( CSRMatrixTest, CSRMatrixTypes);
-
-TYPED_TEST( CSRMatrixTest, Constructors )
-{
-    using CSRMatrixType = typename TestFixture::CSRMatrixType;
-
-    test_Constructors< CSRMatrixType >();
-}
-
-TYPED_TEST( CSRMatrixTest, setDimensionsTest )
-{
-    using CSRMatrixType = typename TestFixture::CSRMatrixType;
-
-    test_SetDimensions< CSRMatrixType >();
-}
-
-TYPED_TEST( CSRMatrixTest, setCompressedRowLengthsTest )
-{
-    using CSRMatrixType = typename TestFixture::CSRMatrixType;
-
-    test_SetCompressedRowLengths< CSRMatrixType >();
-}
-
-TYPED_TEST( CSRMatrixTest, setLikeTest )
-{
-    using CSRMatrixType = typename TestFixture::CSRMatrixType;
-
-    test_SetLike< CSRMatrixType, CSRMatrixType >();
-}
-
-TYPED_TEST( CSRMatrixTest, resetTest )
-{
-    using CSRMatrixType = typename TestFixture::CSRMatrixType;
-
-    test_Reset< CSRMatrixType >();
-}
-
-TYPED_TEST( CSRMatrixTest, getRowTest )
-{
-    using CSRMatrixType = typename TestFixture::CSRMatrixType;
-
-    test_GetRow< CSRMatrixType >();
-}
-
-
-TYPED_TEST( CSRMatrixTest, setElementTest )
-{
-    using CSRMatrixType = typename TestFixture::CSRMatrixType;
-
-    test_SetElement< CSRMatrixType >();
-}
-
-TYPED_TEST( CSRMatrixTest, addElementTest )
-{
-    using CSRMatrixType = typename TestFixture::CSRMatrixType;
-
-    test_AddElement< CSRMatrixType >();
-}
-
-TYPED_TEST( CSRMatrixTest, vectorProductTest )
-{
-    using CSRMatrixType = typename TestFixture::CSRMatrixType;
-
-    test_VectorProduct< CSRMatrixType >();
-}
-
-TYPED_TEST( CSRMatrixTest, rowsReduction )
-{
-    using CSRMatrixType = typename TestFixture::CSRMatrixType;
-
-    test_RowsReduction< CSRMatrixType >();
-}
-
-TYPED_TEST( CSRMatrixTest, saveAndLoadTest )
-{
-    using CSRMatrixType = typename TestFixture::CSRMatrixType;
-
-    test_SaveAndLoad< CSRMatrixType >( "test_SparseMatrixTest_CSR_segments" );
-}
-
-TYPED_TEST( CSRMatrixTest, printTest )
-{
-    using CSRMatrixType = typename TestFixture::CSRMatrixType;
-
-    test_Print< CSRMatrixType >();
-}
-
 #endif
 
+#include "SparseMatrixTest.h"
 #include "../main.h"
