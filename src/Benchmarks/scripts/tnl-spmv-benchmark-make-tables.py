@@ -160,15 +160,19 @@ ellpack_file.close()
 print( "Generating Gnuplot file..." )
 
 gnuplot_file = open( "gnuplot.gplt", "w" )
-gnuplot_file.write( "set terminal postscript lw 3 20 color\n" )
-gnuplot_file.write( "set grid\n" )
-gnuplot_file.write( "set xlabel 'Matrix'\n" )
-gnuplot_file.write( "set xtics 250\n" )
-gnuplot_file.write( "set ylabel 'Bandwidth GB/sec'\n" )
-gnuplot_file.write( "set output 'ellpack-vs-cusparse.eps'\n" )
-gnuplot_file.write( "plot 'cusparse.gplt' using 1:2 title 'cuSparse' with lines linewidth 2 lt rgb 'red', \\\n" )
-gnuplot_file.write( "     'cusparse.gplt' using 1:3 title 'Ellpack' with dots linewidth 2 lt rgb 'green',\\\n" )
-gnuplot_file.write( "     'cusparse.gplt' using 1:4 title 'Ellpack Legacy' with dots linewidth 2 lt rgb 'blue'\n" )
+# NOTE: """...""" allows multi-line strings, r"..." disables backslash-escaping (so a single \ is just a \ in the output)
+gnuplot_file.write( r"""
+set terminal postscript lw 3 20 color
+set grid
+set xlabel 'Matrix'
+set xtics 250
+set ylabel 'Bandwidth GB/sec'
+set output 'ellpack-vs-cusparse.eps'
+plot 'cusparse.gplt' using 1:2 title 'cuSparse' with lines linewidth 2 lt rgb 'red', \
+     'cusparse.gplt' using 1:3 title 'Ellpack' with dots linewidth 2 lt rgb 'green', \
+     'cusparse.gplt' using 1:4 title 'Ellpack Legacy' with dots linewidth 2 lt rgb 'blue'
+""")
+# TODO: formatting like ^
 gnuplot_file.write( "set output 'sliced-ellpack-vs-cusparse.eps'\n" )
 gnuplot_file.write( "plot 'cusparse.gplt' using 1:2 title 'cuSparse' with lines linewidth 2 lt rgb 'red', \\\n" )
 gnuplot_file.write( "     'cusparse.gplt' using 1:5 title 'Sliced Ellpack' with dots linewidth 2 lt rgb 'green',\\\n" )
